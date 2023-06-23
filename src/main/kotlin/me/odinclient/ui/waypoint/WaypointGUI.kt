@@ -1,5 +1,6 @@
 package me.odinclient.ui.waypoint
 
+import cc.polyfrost.oneconfig.renderer.NanoVGHelper
 import cc.polyfrost.oneconfig.renderer.font.Fonts
 import cc.polyfrost.oneconfig.utils.dsl.*
 import me.odinclient.OdinClient.Companion.waypointConfig
@@ -33,7 +34,7 @@ object WaypointGUI : GuiScreen() {
     private var scrollOffset = 0f
     private val scrollAnimation = LinearAnimation(200)
 
-    private var areaTarget = 18f
+    private var areaTarget = 10f
     private var areaOffset = 100f
     private val areaAnimation = LinearAnimation(200)
 
@@ -85,7 +86,6 @@ object WaypointGUI : GuiScreen() {
                 }
             }
 
-
             drawRoundedRectVaried(0, 0,  480, 25, Color(21, 22, 23).rgb, 10, 10, 0, 0)
             drawLine(0, 25, 480, 25, 1.5, Color(30, 32, 34).rgb)
 
@@ -94,6 +94,9 @@ object WaypointGUI : GuiScreen() {
             drawHollowRoundedRect(10, 5, 78, 15, 5, buttonColor.rgb, 0.75)
 
             val color = if (mouseHandler.isAreaHovered(455f, 5f, 15f, 15f)) Color.LIGHT_GRAY.rgb else Color.WHITE.rgb
+            NanoVGHelper.INSTANCE.translate(this.instance, 462.5f, 12.5f)
+            NanoVGHelper.INSTANCE.rotate(this.instance, Math.toRadians((animY - 25.0) * 12.0).toFloat())
+            NanoVGHelper.INSTANCE.translate(this.instance, -462.5f, -12.5f)
             drawSVG("/assets/odinclient/Settings.svg", 455, 5, 15, 15, color, 36, javaClass)
         }
         super.drawScreen(mouseX, mouseY, partialTicks)
@@ -136,7 +139,7 @@ object WaypointGUI : GuiScreen() {
         if (Mouse.getEventDWheel() != 0) {
             val amount = Mouse.getEventDWheel().sign * -16
             if (drawingAreas) {
-                areaTarget = (areaTarget + amount).coerceAtMost(18f).coerceAtLeast(300f - areas.sumOf { it.width.toInt() })
+                areaTarget = (areaTarget + amount).coerceAtMost(10f).coerceAtLeast(300f - areas.sumOf { it.width.toInt() })
                 areaAnimation.start(true)
             } else {
                 scrollTarget = (scrollTarget + amount).coerceAtMost(-229 + list.size * 40f).coerceAtLeast(0f)
@@ -156,6 +159,7 @@ object WaypointGUI : GuiScreen() {
         AreaButton("Hub", mouseHandler),
         AreaButton("Dungeon Hub", mouseHandler),
         AreaButton("Garden", mouseHandler),
+        AreaButton("Private Island", mouseHandler),
         AreaButton("The Farming Islands", mouseHandler),
         AreaButton("Golden Mine", mouseHandler),
         AreaButton("Deep Caverns", mouseHandler),
