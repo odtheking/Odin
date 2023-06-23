@@ -25,7 +25,7 @@ object ArrowTrajectory {
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         entityRenderQueue.clear()
-        if (!config.arrowTrajectory || mc.thePlayer?.heldItem?.itemID != "ARTISANAL_SHORTBOW") return
+        if (!config.arrowTrajectory || mc.thePlayer?.heldItem?.itemID != "TERMINATOR") return
         setTrajectoryHeading(-5f, 0f)
         setTrajectoryHeading(0f, -0.1f)
         setTrajectoryHeading(5f, 0f)
