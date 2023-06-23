@@ -90,7 +90,6 @@ class OdinClient {
             DeployableTimer,
             Waypoints,
             Reminders,
-            P5Waypoints,
             RenderUtils,
             ArrowTrajectory,
             AutoWish,
