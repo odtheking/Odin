@@ -38,7 +38,7 @@ object PartyCommands {
 
         val message = StringUtils.stripControlCodes(event.message.unformattedText)
 
-        if (!message.contains("EXTRA STATS") && dtToggle) return
+        if (!message.contains("EXTRA STATS") && !dtToggle) return
 
         GlobalScope.launch{
             delay(2500)

@@ -11,12 +11,28 @@ import java.awt.Color
 import java.util.*
 import kotlin.math.floor
 
-// TODO : REWORK COMMAND TO IMPLEMENT PERMANENT WAYPOINTS
 object WaypointCommand : Command("waypoint", listOf("wp", "odwp")) {
+    private val randomColor: Color
+        get() {
+            val random = Random()
+            val hue = random.nextFloat()
+
+            val saturation = random.nextFloat() * 0.5f + 0.5f // High saturation
+            val brightness = random.nextFloat() * 0.5f + 0.5f // High brightness
+
+            val rgb = Color.HSBtoRGB(hue, saturation, brightness)
+            val red = (rgb shr 16) and 0xFF
+            val green = (rgb shr 8) and 0xFF
+            val blue = rgb and 0xFF
+
+            return Color(red, green, blue)
+        }
+
+
     override fun executeCommand(args: Array<String>) {
         if (args.isEmpty()) return modMessage("§cArguments empty. §rUsage: gui, share, here, add, help")
         when (args[0]) {
-            "help" -> modMessage("Usage: gui, share, here, add, help")
+            "help" -> modMessage("Usage: gui, share, here, addtemp, addperm, help")
             "gui" -> display = WaypointGUI
 
             "share" -> {
@@ -28,12 +44,23 @@ object WaypointCommand : Command("waypoint", listOf("wp", "odwp")) {
                 partyMessage(message)
             }
 
-            "here" -> {
+            "heretemp" -> {
                 WaypointManager.addTempWaypoint(
                     "§fWaypoint",
                     floor(mc.thePlayer.posX).toInt(),
                     floor(mc.thePlayer.posY).toInt(),
                     floor(mc.thePlayer.posZ).toInt()
+                )
+                modMessage("Added Waypoint at ${floor(mc.thePlayer.posX).toInt()}, ${floor(mc.thePlayer.posY).toInt()}, ${floor(mc.thePlayer.posZ).toInt()}")
+            }
+
+            "hereperm" -> {
+                WaypointManager.addWaypoint(
+                    "§fWaypoint",
+                    floor(mc.thePlayer.posX).toInt(),
+                    floor(mc.thePlayer.posY).toInt(),
+                    floor(mc.thePlayer.posZ).toInt(),
+                    randomColor
                 )
                 modMessage("Added Waypoint at ${floor(mc.thePlayer.posX).toInt()}, ${floor(mc.thePlayer.posY).toInt()}, ${floor(mc.thePlayer.posZ).toInt()}")
             }
@@ -52,13 +79,11 @@ object WaypointCommand : Command("waypoint", listOf("wp", "odwp")) {
                 if (args.size >= 4) {
                     val values = args.getInt(1, 4) ?: return modMessage("Invalid arguments.")
                     val name = if (args.size == 4) "Waypoint" else args[4]
-                    val randomColor = Random().run { Color(nextInt(255), nextInt(255), nextInt(255)) }
 
                     WaypointManager.addWaypoint("§f$name", values[0], values[1], values[2], randomColor)
                     modMessage("Added $name at ${values.joinToString()}.")
                 } else modMessage("Invalid arguments.")
             }
-            // TODO: show temp waypoints in gui with a timer
             "test" -> {
                 WaypointManager.addWaypoint(
                     "§fWaypoint",
