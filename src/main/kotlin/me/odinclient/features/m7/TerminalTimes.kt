@@ -49,7 +49,6 @@ object TerminalTimes {
 
         terminalNames.forEach { name ->
             if (chestName.startsWith(name)) {
-                modMessage("Entered $name")
                 inTerm = true
                 currentTerminal = chestName
                 timer = System.currentTimeMillis()

@@ -30,8 +30,6 @@ object AutoWish {
         DungeonUtils.teammates.forEach { entityPlayer ->
             val currentHp = entityPlayer.first.health
             val healthPercent = 40 * (config.healthPrecentage / 100)
-            println("Current HP: $currentHp, Health Percent: $healthPercent")
-            println("is ghost ${DungeonUtils.isGhost}")
             if (currentHp < 40 * (config.healthPrecentage / 100) && !DungeonUtils.isGhost) {
                 ChatUtils.modMessage("§7${entityPlayer.first.name}§a is at less than §c${floor(config.healthPrecentage)}% §aHP! Wishing!")
                 PlayerUtils.dropItem()

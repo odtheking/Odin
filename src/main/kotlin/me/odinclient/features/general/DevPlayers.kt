@@ -4,6 +4,7 @@ import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.boss.EntityDragon
+import net.minecraft.util.AxisAlignedBB
 import net.minecraftforge.client.event.RenderLivingEvent
 import net.minecraftforge.client.event.RenderPlayerEvent
 import net.minecraftforge.event.world.WorldEvent
@@ -22,6 +23,7 @@ object DevPlayers {
     )
 
     lateinit var entityDragon: EntityDragon
+    private var dragonBoundingBox: AxisAlignedBB = AxisAlignedBB(-1.0, -1.0, -1.0, 1.0, 1.0, 1.0)
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
@@ -34,22 +36,19 @@ object DevPlayers {
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         if (mc.theWorld == null || mc.thePlayer == null || !::entityDragon.isInitialized) return
-        var yaw = mc.thePlayer.rotationYaw - 180
-        if (yaw < -180) {
+        var yaw = mc.thePlayer.rotationYaw - 180f
+        if (yaw < -180f) {
             yaw += 360f
-        } else if (yaw > 180) {
+        } else if (yaw > 180f) {
             yaw -= 360f
         }
         val yawRadians = mc.thePlayer.rotationYaw * Math.PI / 180
-        entityDragon.setLocationAndAngles(
-            mc.thePlayer.posX + 5 * cos(yawRadians), mc.thePlayer.posY - if (mc.thePlayer.isSneaking) 3.5 else 1.5, mc.thePlayer.posZ + 5 * sin(yawRadians),
-            yaw, mc.thePlayer.rotationPitch
-        )
+        entityDragon.setPosition(mc.thePlayer.posX + 5.0 * cos(yawRadians), mc.thePlayer.posY - if (mc.thePlayer.isSneaking) 3.5 else 1.5, mc.thePlayer.posZ + 5.0 * sin(yawRadians))
+        entityDragon.prevRotationYaw = yaw.also { entityDragon.rotationYaw = it }
+        entityDragon.rotationYaw = yaw
         entityDragon.slowed = true
         entityDragon.isSilent = true
-        if (mc.pointedEntity?.entityId == this.entityDragon.entityId) {
-            mc.pointedEntity = null
-        }
+        entityDragon.entityBoundingBox = dragonBoundingBox
     }
 
     @SubscribeEvent
@@ -61,8 +60,8 @@ object DevPlayers {
         }
         GlStateManager.pushMatrix()
         val yawRadians = mc.thePlayer.rotationYaw * Math.PI / 180
-        GlStateManager.translate(config.personalDragonPosX * cos(yawRadians), config.personalDragonPosY.toDouble(), config.personalDragonPosZ * sin(yawRadians))
-        GlStateManager.scale(0.08, 0.08, 0.08)
+        GlStateManager.translate(config.personalDragonPosHorizontal * cos(yawRadians), config.personalDragonPosVertical.toDouble(), config.personalDragonPosHorizontal.toDouble() * sin(yawRadians))
+        GlStateManager.scale(config.personalDragonScale / 100.0, config.personalDragonScale / 100.0, config.personalDragonScale / 100.0)
         GlStateManager.color(config.personalDragonColor.red.toFloat() / 255, config.personalDragonColor.green.toFloat() / 255, config.personalDragonColor.blue.toFloat() / 255, 1f)
     }
 

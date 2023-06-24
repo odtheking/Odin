@@ -13,6 +13,6 @@ object Camera {
     }
 
     /*
-        Camera distance is in EntityRendererMixin
+        Camera distance is in MixinEntityRenderer
      */
 }

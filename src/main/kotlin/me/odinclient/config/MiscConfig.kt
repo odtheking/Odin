@@ -59,11 +59,9 @@ class MiscConfig(path: File) {
                 if (this == "") return
                 val a: MutableList<String> = gson.fromJson(this, object : TypeToken<MutableList<String>>() {}.type)
                 a.forEach {
-                    println(it)
                     val (name, time) = it.split(": ")
                     TerminalTimes.Times.values().find { a -> a.fullName == name }?.let { b ->
                         b.time = time.toDouble()
-                        println("Loaded ${b.fullName} with time ${b.time}")
                     }
                 }
             }

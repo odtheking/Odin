@@ -7,12 +7,10 @@ import me.odinclient.events.ClientSecondEvent
 import me.odinclient.events.RenderEntityModelEvent
 import me.odinclient.utils.render.OutlineUtils
 import me.odinclient.utils.VecUtils.noSqrt3DDistance
-import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object ESP {
 

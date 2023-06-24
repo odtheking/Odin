@@ -6,6 +6,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.waypointConfig
+import me.odinclient.commands.impl.WaypointCommand.randomColor
 import me.odinclient.ui.waypoint.WaypointGUI
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.render.RenderUtils
@@ -16,7 +17,6 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.awt.Color
-import java.util.*
 
 object WaypointManager {
 
@@ -50,27 +50,22 @@ object WaypointManager {
 
     fun addTempWaypoint(name: String, x: Int, y: Int, z: Int) {
         if (currentArea == null) return modMessage("You are not in Skyblock.")
-        val randomColor = Random().run { Color(nextInt(255), nextInt(255), nextInt(255)) }
-        temporaryWaypoints.add(Pair(Waypoint(name, x, y, z, randomColor), System.currentTimeMillis()))
+        temporaryWaypoints.add(Pair(Waypoint(name, x, y, z, randomColor), System.currentTimeMillis() + 60000))
     }
 
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         if (!config.waypoints || currentArea == null) return
 
-        if (temporaryWaypoints.isNotEmpty()) {
-            temporaryWaypoints.removeAll {
-                if (it.second >= System.currentTimeMillis()) {
-                    it.first.renderBeacon(event.partialTicks)
-                    false
-                } else true
-            }
+        temporaryWaypoints.removeAll {
+            if (it.second >= System.currentTimeMillis()) {
+                it.first.renderBeacon(event.partialTicks)
+                false
+            } else true
         }
 
-        if (waypoints.isNotEmpty()) {
-            waypoints[currentArea]?.forEach {
-                if (it.shouldShow) it.renderBeacon(event.partialTicks)
-            }
+        waypoints[currentArea]?.forEach {
+            if (it.shouldShow) it.renderBeacon(event.partialTicks)
         }
     }
 

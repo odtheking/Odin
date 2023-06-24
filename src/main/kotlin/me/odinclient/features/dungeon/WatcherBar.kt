@@ -24,7 +24,6 @@ object WatcherBar{
 
         if (health < 0.05) {
             name = null
-          //  println("health is too low!")
             return
         }
         val amount = 12 + floor.floorNumber

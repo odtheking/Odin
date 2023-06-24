@@ -12,13 +12,12 @@ import me.odinclient.features.dungeon.AutoSell
 import me.odinclient.hud.*
 import org.lwjgl.input.Keyboard
 
+
 object OdinConfig : Config(Mod("OdinClient", ModType.SKYBLOCK, "/assets/odinclient/LogoSmall.png"), "odinclient.json") {
 
     fun init() {
         initialize()
     }
-
-
 
 
     // Dungeon
@@ -136,7 +135,7 @@ object OdinConfig : Config(Mod("OdinClient", ModType.SKYBLOCK, "/assets/odinclie
         name = "Dungeon key esp",
         description = "Dungeon key esp",
         category = "Dungeon",
-        subcategory = "Dungeon Key ESP",
+        subcategory = "KeyESP",
         size = 2
     )
     var keyESP = false
@@ -287,7 +286,7 @@ object OdinConfig : Config(Mod("OdinClient", ModType.SKYBLOCK, "/assets/odinclie
         name = "Personal Dragon",
         description = "Renders a personal dragon on your shoulder because awesome!",
         category = "General",
-        subcategory = "Misc",
+        subcategory = "Pet Dragon",
         size = 2
     )
     var personalDragon = false
@@ -296,7 +295,7 @@ object OdinConfig : Config(Mod("OdinClient", ModType.SKYBLOCK, "/assets/odinclie
         name = "Render Personal Dragon Only in F5",
         description = "Only renders the personal dragon in f5 mode",
         category = "General",
-        subcategory = "Misc",
+        subcategory = "Pet Dragon",
         size = 2
     )
     var personalDragonOnlyF5 = true
@@ -305,37 +304,38 @@ object OdinConfig : Config(Mod("OdinClient", ModType.SKYBLOCK, "/assets/odinclie
         name = "Personal Dragon Colour",
         description = "Colours your personal dragon!",
         category = "General",
-        subcategory = "Misc",
+        subcategory = "Pet Dragon",
         size = 2
     )
     var personalDragonColor = OneColor(255, 255, 255)
 
     @Slider(
-        name = "X",
+        name = "Horizontal Position",
         min = -10f,
         max = 10f,
         category = "General",
-        subcategory = "Misc",
+        subcategory = "Pet Dragon",
     )
-    var personalDragonPosX = 0.25f
+    var personalDragonPosHorizontal = 0.6f
 
     @Slider(
-        name = "Y",
+        name = "Vertical Position",
         min = -10f,
         max = 10f,
         category = "General",
-        subcategory = "Misc",
+        subcategory = "Pet Dragon",
     )
-    var personalDragonPosY = 1.6f
+    var  personalDragonPosVertical = 1.6f
 
     @Slider(
-        name = "Z",
-        min = -10f,
-        max = 10f,
+        name = "Dragon Scale",
+        min = 0f,
+        max = 50f,
         category = "General",
-        subcategory = "Misc",
+        subcategory = "Pet Dragon",
+        step = 1
     )
-    var personalDragonPosZ = 0.25f
+    var personalDragonScale = 8f
 
     @Checkbox(
         name = "Front Camera",
@@ -612,6 +612,15 @@ object OdinConfig : Config(Mod("OdinClient", ModType.SKYBLOCK, "/assets/odinclie
         subcategory = "Dragon Boxes"
     )
     var dragonBoxesLineWidth = 2f
+
+    @Switch(
+        name = "Shows where to decoy and gyro in p5",
+        description = "Shows where to decoy and gyro in p5",
+        category = "M7",
+        subcategory = "Phase5 Waypoints",
+        size = 2
+    )
+    var p5Waypoint = false
 
     @Switch(
         name = "Shows how long a terminal took to complete",

@@ -41,7 +41,6 @@ object AutoMask {
         val currentTime = System.currentTimeMillis()
         if (currentTime - spiritProc >= spiritCooldown) {
             val slotId = ItemUtils.getItemIndexInInventory("Spirit Mask", true)
-            println(slotId)
             if(slotId == -1) return
             mc.playerController.windowClick(inventory.inventorySlots.windowId, slotId, 0, 2, mc.thePlayer)
             mc.playerController.windowClick(inventory.inventorySlots.windowId, 5 , 0, 2, mc.thePlayer)
@@ -49,7 +48,6 @@ object AutoMask {
             ChatUtils.modMessage("Swapped mask!")
         } else if (currentTime - bonzoProc >= bonzoCooldown) {
             val slotId = ItemUtils.getItemIndexInInventory("Bonzo's Mask", true)
-            println(slotId)
             if(slotId == -1 ) return
             mc.playerController.windowClick(inventory.inventorySlots.windowId, slotId, 0, 2, mc.thePlayer)
             mc.playerController.windowClick(inventory.inventorySlots.windowId, 5 , 0, 2, mc.thePlayer)

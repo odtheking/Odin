@@ -6,7 +6,6 @@ import kotlinx.coroutines.launch
 import me.odinclient.OdinClient
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.utils.AsyncUtils
-import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.ItemStack
@@ -35,7 +34,6 @@ object AutoSell {
 
         if (chestName != "Trades" && !chestName.startsWith("Booster Cookie")) return
 
-        println("clicking index ${toSell[0]}")
         mc.playerController.windowClick(
             mc.thePlayer.openContainer.windowId,
             toSell[0],

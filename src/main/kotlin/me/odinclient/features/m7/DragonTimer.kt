@@ -17,7 +17,7 @@ import kotlin.math.max
 
 object DragonTimer {
     enum class DC(
-        val pos: BlockPos,
+        private val pos: BlockPos,
         val color: String,
         val x: List<Int>,
         val z: List<Int>,

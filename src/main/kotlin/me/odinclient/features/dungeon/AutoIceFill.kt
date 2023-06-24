@@ -83,7 +83,6 @@ object AutoIceFill {
     }
 
     private suspend fun scan(pos: Vec3i, floorIndex: Int) {
-        //println("Scanning floor $floorIndex")
         val rotation = checkRotation(pos, floorIndex) ?: return
 
         val bPos = BlockPos(pos)
@@ -96,7 +95,6 @@ object AutoIceFill {
             }) {
                 val scanTime: Double = (System.nanoTime() - startTime) / 1000000.0
                 ChatUtils.modMessage("Scan took $scanTime ms")
-                //println("Found pattern $element")
 
                 renderPattern(pos, rotation)
                 currentPatterns.add(element.toList())
@@ -116,7 +114,6 @@ object AutoIceFill {
         try {
             deferred1.await()
         } catch (e: Exception) {
-            //println("Turned off auto ice fill")
             return
         }
         val (bx, bz) = transform(pattern[0].x, pattern[0].z, rotation)
@@ -128,10 +125,8 @@ object AutoIceFill {
             try {
                 deferred.await()
             } catch (e: Exception) {
-               // println("Turned off auto ice fill")
                 return
             }
-            //println(pos.add(transformTo(pattern[i + 1], rotation)))
             PlayerUtils.clipTo(
                 pos.add(transformTo(pattern[i + 1], rotation)).addVector(0.0, 1.0, 0.0)
             )
@@ -142,7 +137,6 @@ object AutoIceFill {
         try {
             deferred.await()
         } catch (e: Exception) {
-           // println("Turned off auto ice fill")
             return
         }
         clipToNext(pos, rotation, bx2, bz2, floorIndex)
