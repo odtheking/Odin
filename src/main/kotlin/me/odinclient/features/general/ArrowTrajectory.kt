@@ -5,6 +5,7 @@ import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.RenderEntityModelEvent
 import me.odinclient.utils.render.OutlineUtils
 import me.odinclient.utils.render.RenderUtils
+import me.odinclient.utils.skyblock.ItemUtils.itemID
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.projectile.EntityArrow
@@ -23,8 +24,8 @@ object ArrowTrajectory {
 
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
-        if (!config.arrowTrajectory || mc.thePlayer?.heldItem?.displayName?.contains("Terminator") != true) return
         entityRenderQueue.clear()
+        if (!config.arrowTrajectory || mc.thePlayer?.heldItem?.itemID != "TERMINATOR") return
         setTrajectoryHeading(-5f, 0f)
         setTrajectoryHeading(0f, -0.1f)
         setTrajectoryHeading(5f, 0f)
@@ -57,8 +58,7 @@ object ArrowTrajectory {
             if (hitResult) break
             val vec = motionVec.add(posVec)
             val rayTrace = mc.theWorld.rayTraceBlocks(posVec, vec, false, true, false)
-            val aabb =
-                AxisAlignedBB(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+            val aabb = AxisAlignedBB(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
                     .offset(posVec.xCoord, posVec.yCoord, posVec.zCoord)
                     .addCoord(motionVec.xCoord, motionVec.yCoord, motionVec.zCoord)
                     .expand(0.01, 0.01, 0.01)
@@ -116,10 +116,6 @@ object ArrowTrajectory {
             false
         )
     }
-    // TODO: make it reload the current entities every 30s or so
 
-    private fun hypot(x: Double, y: Double, d: Double): Double {
-        return sqrt(x * x + y * y + d * d)
-    }
-
+    private fun hypot(x: Double, y: Double, d: Double): Double = sqrt(x * x + y * y + d * d)
 }

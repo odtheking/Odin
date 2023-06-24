@@ -59,7 +59,6 @@ class InputField(
 
     fun keyTyped(typedChar: Char, keyCode: Int) {
         if (!listening) return
-        modMessage(typedChar.code)
         if (keyCode == 14 && text.isNotEmpty())
             text = text.dropLast(1)
         else if (((text.isEmpty() && keyCode == Keyboard.KEY_MINUS) || isAllowedCharacter(typedChar)) && text.length <= 30)
