@@ -143,9 +143,9 @@ object PlayerUtils {
     fun alert(title: String, playSound: Boolean = true) {
         if (playSound) mc.thePlayer.playSound("note.pling", 100f, 1f)
         val gui = mc.ingameGUI
-        gui.displayTitle(title, null, 10, 100, 10)
-        gui.displayTitle(null, "", 10, 100, 10)
-        gui.displayTitle(null, null, 10, 100, 10)
+        gui.displayTitle(title, null, 10, 250, 10)
+        gui.displayTitle(null, "", 10, 250, 10)
+        gui.displayTitle(null, null, 10, 250, 10)
     }
 
     val posX get() = mc.thePlayer.posX

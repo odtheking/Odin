@@ -89,7 +89,7 @@ object ChatUtils {
     fun guildCmdsOptions(message: String, name: String) {
         if (BlackList.isInBlacklist(name)) return
         when (message.split(" ")[0].drop(1)) {
-            "help" -> guildMessage("[OdinClient] cmds: coords, odin, boop, cf, 8ball, dice, cat, ping")
+            "help" -> guildMessage("Commands: coords, odin, boop, cf, 8ball, dice, cat, ping")
             "coords" -> guildMessage(
                 "x: ${PlayerUtils.getFlooredPlayerCoords()?.x}, y: ${PlayerUtils.getFlooredPlayerCoords()?.y}, z: ${PlayerUtils.getFlooredPlayerCoords()?.z}"
             )
@@ -115,17 +115,19 @@ object ChatUtils {
     suspend fun partyCmdsOptions(message: String, name: String) {
         if (BlackList.isInBlacklist(name)) return
         when (message.split(" ")[0]) {
-            "help" -> partyMessage("[OdinClient] cmds: warp, coords, allinvite, odin, boop, cf, 8ball, dice, cat, rs, pt, rat, ping, dt")
+            "help" -> partyMessage("Commands: warp, coords, allinvite, odin, boop, cf, 8ball, dice, cat, rs, pt, rat, ping, dt")
             "warp" -> sendCommand("p warp")
             "coords" -> partyMessage("x: ${PlayerUtils.getFlooredPlayerCoords()?.x}, y: ${PlayerUtils.getFlooredPlayerCoords()?.y}, z: ${PlayerUtils.getFlooredPlayerCoords()?.z}")
             "allinvite" -> sendCommand("p settings allinvite")
             "odin" -> partyMessage("OdinClient! https://discord.gg/2nCbC9hkxT")
-            "boop" -> sendChatMessage("/boop $name")
+            "boop" -> {
+                val boopAble = message.substringAfter("boop ")
+                sendChatMessage("/boop $boopAble")
+            }
             "cf" -> partyMessage(flipCoin())
             "8ball" -> partyMessage(eightBall())
             "dice" -> partyMessage(rollDice())
             "cat" -> partyMessage(catPics())
-
             "rs" -> {
                 val currentFloor = LocationUtils.currentDungeon?.floor ?: return
                 modMessage("restarting")
@@ -156,7 +158,7 @@ object ChatUtils {
     fun privateCmdsOptions(message: String, name: String) {
         if (BlackList.isInBlacklist(name)) return
         when (message.split(" ")[0]) {
-            "help" -> privateMessage("[OdinClient] cmds: inv, coords, odin, boop, cf, 8ball, dice, cat ,ping", name)
+            "help" -> privateMessage("Commands: inv, coords, odin, boop, cf, 8ball, dice, cat ,ping", name)
             "coords" -> privateMessage(
                 "x: ${PlayerUtils.getFlooredPlayerCoords()?.x}, y: ${PlayerUtils.getFlooredPlayerCoords()?.y}, z: ${PlayerUtils.getFlooredPlayerCoords()?.z}",
                 name
