@@ -23,7 +23,7 @@ object DungeonUtils : Wrappers() {
     inline val inBoss get() =
         currentDungeon?.inBoss ?: false
 
-    var inp5 = false
+    private var inp5 = false
 
     fun isFloor(vararg options: Int): Boolean {
         for (option in options) {
@@ -33,7 +33,6 @@ object DungeonUtils : Wrappers() {
     }
 
     fun getPhase(): Int? {
-        //if (inp5) return 5 ???? why this
         if (!isFloor(7) || !inBoss) return null
 
         return when {

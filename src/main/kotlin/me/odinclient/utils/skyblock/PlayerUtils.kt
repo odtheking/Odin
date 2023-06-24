@@ -85,15 +85,13 @@ object PlayerUtils {
             try {
                 deferred.await()
             } catch (e: Exception) {
-                println("Promise rejected")
                 return@launch
             }
-            println("last item loaded!")
             val index = getItemIndexInContainerChest(itemName, container, contains)
             if (index == -1) {
                 modMessage("§cCouldn't find §f$itemName!")
                 return@launch
-            } else println("found item at index $index, clicking...")
+            }
 
             mc.playerController.windowClick(
                 mc.thePlayer.openContainer.windowId,

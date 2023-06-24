@@ -16,10 +16,10 @@ import java.util.Map;
 public class MixinModList {
     @Shadow
     private Map<String, String> modTags;
+
     @Inject(method = "<init>(Ljava/util/List;)V", at = @At("RETURN"))
     private void removeMod(List<ModContainer> modList, CallbackInfo ci) {
-        if (!Minecraft.getMinecraft().isIntegratedServerRunning()) {
-            modTags.remove(OdinClient.MOD_ID);
-        }
+        if (Minecraft.getMinecraft().isIntegratedServerRunning()) return;
+        modTags.remove(OdinClient.MOD_ID);
     }
 }

@@ -69,7 +69,6 @@ object AsyncUtils {
                 deferredResult.completeExceptionally(Exception("Promise rejected"))
                 return
             } else if (container.inventory[container.inventory.size - 37] != null) {
-                println("found last item in promise")
                 deferredResult.complete(Unit)
             } else {
                 launch {

@@ -16,7 +16,6 @@ import me.odinclient.utils.gui.GuiUtils.translateWithMouse
 import me.odinclient.utils.gui.MouseHandler
 import me.odinclient.utils.gui.animations.EaseInOut
 import me.odinclient.utils.gui.animations.LinearAnimation
-import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.LocationUtils.currentArea
 import me.odinclient.utils.skyblock.PlayerUtils.floored
 import net.minecraft.client.gui.GuiScreen
@@ -41,7 +40,6 @@ object WaypointGUI : GuiScreen() {
     var mouseHandler = MouseHandler()
 
     override fun initGui() {
-        currentArea?.let { modMessage(it) }
         displayArea = currentArea
         displayArea?.let { updateElements(it) }
         scrollTarget = 0f
@@ -139,7 +137,7 @@ object WaypointGUI : GuiScreen() {
         if (Mouse.getEventDWheel() != 0) {
             val amount = Mouse.getEventDWheel().sign * -16
             if (drawingAreas) {
-                areaTarget = (areaTarget + amount).coerceAtMost(10f).coerceAtLeast(300f - areas.sumOf { it.width.toInt() })
+                areaTarget = (areaTarget + amount).coerceAtMost(10f).coerceAtLeast(200f - areas.sumOf { it.width.toInt() })
                 areaAnimation.start(true)
             } else {
                 scrollTarget = (scrollTarget + amount).coerceAtMost(-229 + list.size * 40f).coerceAtLeast(0f)

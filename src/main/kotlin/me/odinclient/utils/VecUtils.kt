@@ -1,15 +1,10 @@
 package me.odinclient.utils
 
 import me.odinclient.OdinClient.Companion.mc
-import me.odinclient.utils.skyblock.ChatUtils.modMessage
-import net.minecraft.block.Block
 import net.minecraft.entity.Entity
 import net.minecraft.util.AxisAlignedBB
-import net.minecraft.util.BlockPos
 import net.minecraft.util.MathHelper
 import net.minecraft.util.Vec3
-import net.minecraft.world.IBlockAccess
-import net.minecraft.world.World
 import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sin

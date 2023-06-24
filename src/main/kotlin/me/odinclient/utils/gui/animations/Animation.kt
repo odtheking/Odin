@@ -1,8 +1,8 @@
 package me.odinclient.utils.gui.animations
 
 abstract class Animation<T>(private var duration: Long) {
-    var state = AnimationState.FINISHED
-    var startTime = 0L
+    private var state = AnimationState.FINISHED
+    private var startTime = 0L
 
     fun start(bypass: Boolean = false): Boolean {
         if (state != AnimationState.ANIMATING || bypass) {

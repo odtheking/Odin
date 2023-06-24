@@ -30,7 +30,6 @@ import net.minecraftforge.fml.common.Mod.EventHandler
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.InputEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.input.Keyboard
 import java.io.File
@@ -90,6 +89,7 @@ class OdinClient {
             DeployableTimer,
             Waypoints,
             Reminders,
+            P5Waypoints,
             RenderUtils,
             ArrowTrajectory,
             AutoWish,

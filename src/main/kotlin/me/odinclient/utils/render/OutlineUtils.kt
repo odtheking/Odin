@@ -2,7 +2,6 @@ package me.odinclient.utils.render
 
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.RenderEntityModelEvent
-import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import net.minecraft.client.Minecraft
 import net.minecraft.client.model.ModelBase
 import net.minecraft.client.renderer.GlStateManager

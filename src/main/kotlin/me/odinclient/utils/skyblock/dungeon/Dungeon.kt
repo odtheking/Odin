@@ -31,7 +31,7 @@ class Dungeon : Wrappers() {
                 floor = try {
                     Floor.valueOf(line.substringAfter("(").substringBefore(")"))
                 } catch (_ : IllegalArgumentException) {
-                    return println("This should not be possible.")
+                    return println("This should not be possible, error in dungeonutils of odinclient, please report this!.")
                 }
             }
         }

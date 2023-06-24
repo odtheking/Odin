@@ -36,7 +36,6 @@ object ItemUtils {
             )  i
             else continue
         }
-        println("inventory size of player is ${mc.thePlayer.getInventory().size}")
         return -1
     }
 
