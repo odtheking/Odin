@@ -614,15 +614,6 @@ object OdinConfig : Config(Mod("OdinClient", ModType.SKYBLOCK, "/assets/odinclie
     var dragonBoxesLineWidth = 2f
 
     @Switch(
-        name = "Shows where to decoy and gyro in p5",
-        description = "Shows where to decoy and gyro in p5",
-        category = "M7",
-        subcategory = "Phase5 Waypoints",
-        size = 2
-    )
-    var p5Waypoint = false
-
-    @Switch(
         name = "Shows how long a terminal took to complete",
         description = "Shows how long a terminal took to complete",
         category = "M7",
