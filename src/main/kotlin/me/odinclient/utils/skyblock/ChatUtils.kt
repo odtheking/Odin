@@ -149,7 +149,7 @@ object ChatUtils {
             "ping" -> partyMessage("Current Ping: ${floor(Server.averagePing)}ms")
             "dt" -> {
                 modMessage("Reminder set for the end of the run!")
-                dtToggle = false
+                dtToggle = true
                 dtPlayer = name
             }
 

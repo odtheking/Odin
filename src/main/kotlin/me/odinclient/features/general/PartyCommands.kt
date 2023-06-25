@@ -44,8 +44,8 @@ object PartyCommands {
             delay(2500)
             PlayerUtils.alert("§c${ChatUtils.dtPlayer} needs downtime")
             ChatUtils.partyMessage("${ChatUtils.dtPlayer} needs downtime")
-            ChatUtils.dtPlayer = null
             dtToggle = false
+            ChatUtils.dtPlayer = null
         }
     }
 

@@ -37,8 +37,8 @@ object WaypointCommand : Command("waypoint", listOf("wp", "odwp")) {
 
             "share" -> {
                 val message = when (args.size) {
-                    1 -> "x: ${floor(mc.thePlayer.posX).toInt()}, y: ${floor(mc.thePlayer.posY).toInt()}, z: ${floor(mc.thePlayer.posZ).toInt()}"
-                    4 -> "x: ${args[1]}, y: ${args[2]}, z: ${args[3]}"
+                    1 -> "x: ${floor(mc.thePlayer.posX).toInt()} y: ${floor(mc.thePlayer.posY).toInt()} z: ${floor(mc.thePlayer.posZ).toInt()}"
+                    4 -> "x: ${args[1]} y: ${args[2]} z: ${args[3]}"
                     else -> return modMessage("§cInvalid arguments, §r/wp share (x y z).")
                 }
                 partyMessage(message)
