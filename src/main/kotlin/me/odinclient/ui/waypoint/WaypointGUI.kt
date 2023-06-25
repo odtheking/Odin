@@ -40,6 +40,7 @@ object WaypointGUI : GuiScreen() {
     var mouseHandler = MouseHandler()
 
     override fun initGui() {
+        currentArea?.let { modMessage(it) }
         displayArea = currentArea
         displayArea?.let { updateElements(it) }
         scrollTarget = 0f
@@ -75,12 +76,14 @@ object WaypointGUI : GuiScreen() {
             drawRoundedRectVaried(0, 0, 480, animY, Color(21, 22, 23).rgb, 10, 10, 0, 0)
             drawLine(0, animY, 480, animY, 1.5, Color(30, 32, 34).rgb)
 
-            drawingAreas = animY == 50f
+            drawingAreas = animY != 25f
             if (drawingAreas) {
-                areaOffset = areaAnimation.getValue(areaOffset, areaTarget)
-                var currentX = areaOffset
-                for ((index, area) in areas.withIndex()) {
-                    currentX += area.draw(this, currentX, 39f, index != 0)
+                scissor(0f, 25f, 480f, 50f) {
+                    areaOffset = areaAnimation.getValue(areaOffset, areaTarget)
+                    var currentX = areaOffset
+                    for ((index, area) in areas.withIndex()) {
+                        currentX += area.draw(this, currentX, animY - 11f, index != 0)
+                    }
                 }
             }
 
@@ -105,7 +108,7 @@ object WaypointGUI : GuiScreen() {
             if (settingAnimation.start()) settingMenu = !settingMenu
             return
         }
-        if (drawingAreas) {
+        if (drawingAreas && mouseHandler.isAreaHovered(0f, 25f, 480f, 25f)) {
             for (area in areas) {
                 if (!area.mouseClicked()) continue
                 displayArea = area.area
@@ -136,8 +139,8 @@ object WaypointGUI : GuiScreen() {
         super.handleMouseInput()
         if (Mouse.getEventDWheel() != 0) {
             val amount = Mouse.getEventDWheel().sign * -16
-            if (drawingAreas) {
-                areaTarget = (areaTarget + amount).coerceAtMost(10f).coerceAtLeast(200f - areas.sumOf { it.width.toInt() })
+            if (drawingAreas && mouseHandler.isAreaHovered(0f, 25f, 480f, 25f)) {
+                areaTarget = (areaTarget + amount).coerceAtMost(10f).coerceAtLeast(292f - areas.sumOf { it.width.toInt() })
                 areaAnimation.start(true)
             } else {
                 scrollTarget = (scrollTarget + amount).coerceAtMost(-229 + list.size * 40f).coerceAtLeast(0f)
@@ -161,10 +164,11 @@ object WaypointGUI : GuiScreen() {
         AreaButton("The Farming Islands", mouseHandler),
         AreaButton("Golden Mine", mouseHandler),
         AreaButton("Deep Caverns", mouseHandler),
+        AreaButton("Dwarven Mines", mouseHandler),
+        AreaButton("Crystal Hollows", mouseHandler),
         AreaButton("Crimson Isle", mouseHandler),
         AreaButton("Spider's Den", mouseHandler),
         AreaButton("The End", mouseHandler),
-        AreaButton("Dwarven Mines", mouseHandler),
         AreaButton("Catacombs", mouseHandler),
         AreaButton("Dungeon Boss", mouseHandler),
         AreaButton("P1", mouseHandler),
