@@ -40,7 +40,6 @@ object WaypointGUI : GuiScreen() {
     var mouseHandler = MouseHandler()
 
     override fun initGui() {
-        currentArea?.let { modMessage(it) }
         displayArea = currentArea
         displayArea?.let { updateElements(it) }
         scrollTarget = 0f
