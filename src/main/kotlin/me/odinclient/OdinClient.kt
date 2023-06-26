@@ -154,7 +154,7 @@ class OdinClient {
     companion object {
         const val MOD_ID = "OdinClient"
         const val NAME = "OdinClient"
-        const val VERSION = "1.0.0"
+        const val VERSION = "1.0.1"
 
         val mc: Minecraft = Minecraft.getMinecraft()
 
