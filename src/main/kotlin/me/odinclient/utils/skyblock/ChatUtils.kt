@@ -110,16 +110,21 @@ object ChatUtils {
         if(message.lowercase().startsWith("gm")) guildMessage("gm $name")
         if(message.lowercase().startsWith("gn")) guildMessage("gn $name")
     }
-    var dtToggle = false
+    
     var dtPlayer: String? = null
     suspend fun partyCmdsOptions(message: String, name: String) {
         if (BlackList.isInBlacklist(name)) return
         when (message.split(" ")[0]) {
-            "help" -> partyMessage("Commands: warp, coords, allinvite, odin, boop, cf, 8ball, dice, cat, rs, pt, rat, ping, dt")
+            "help" -> partyMessage("Commands: warp, coords, allinvite, odin, boop, cf, 8ball, dice, cat, rs, pt, rat, ping, warptransfer")
             "warp" -> sendCommand("p warp")
+            "warptransfer" -> {
+                sendCommand("p warp")
+                delay(500)
+                sendCommand("p transfer $name")
+            }
             "coords" -> partyMessage("x: ${PlayerUtils.getFlooredPlayerCoords()?.x}, y: ${PlayerUtils.getFlooredPlayerCoords()?.y}, z: ${PlayerUtils.getFlooredPlayerCoords()?.z}")
             "allinvite" -> sendCommand("p settings allinvite")
-            "odin" -> partyMessage("OdinClient! https://discord.gg/2nCbC9hkxT")
+            "odin" -> partyMessage("Odin! https://discord.gg/2nCbC9hkxT")
             "boop" -> {
                 val boopAble = message.substringAfter("boop ")
                 sendChatMessage("/boop $boopAble")
@@ -149,10 +154,8 @@ object ChatUtils {
             "ping" -> partyMessage("Current Ping: ${floor(Server.averagePing)}ms")
             "dt" -> {
                 modMessage("Reminder set for the end of the run!")
-                dtToggle = true
                 dtPlayer = name
             }
-
         }
     }
 
