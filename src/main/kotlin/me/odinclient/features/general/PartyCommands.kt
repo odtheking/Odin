@@ -38,13 +38,12 @@ object PartyCommands {
 
         val message = StringUtils.stripControlCodes(event.message.unformattedText)
 
-        if (!message.contains("EXTRA STATS") && !dtToggle) return
+        if (!message.contains("EXTRA STATS") || ChatUtils.dtPlayer == null) return
 
         GlobalScope.launch{
             delay(2500)
             PlayerUtils.alert("§c${ChatUtils.dtPlayer} needs downtime")
             ChatUtils.partyMessage("${ChatUtils.dtPlayer} needs downtime")
-            dtToggle = false
             ChatUtils.dtPlayer = null
         }
     }
