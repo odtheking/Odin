@@ -6,7 +6,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.odinclient.OdinClient
 import me.odinclient.utils.skyblock.ChatUtils
-import me.odinclient.utils.skyblock.ChatUtils.dtToggle
 import me.odinclient.utils.skyblock.PlayerUtils
 import net.minecraft.util.StringUtils
 import net.minecraftforge.client.event.ClientChatReceivedEvent
