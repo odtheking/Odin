@@ -26,7 +26,7 @@ object SuperBoom {
         val blockState = mc.theWorld?.getBlockState(lookingAt.blockPos) ?: return
         val block = blockState.block
         if (
-            !blockState.getValue(blockState.propertyNames.first()).toString().contains("cracked_stonebrick") &&
+            block.damageDropped(blockState) != 2 &&
             !block.localizedName.contains("Stone Brick Stairs") &&
             !block.localizedName.contains("Stone Slab") &&
             !block.localizedName.contains("Barrier")
