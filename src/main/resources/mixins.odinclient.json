@@ -7,7 +7,7 @@
     "MixinNetworkManager"
   ],
   "client": [
-    "EntityRendererMixin",
+    "MixinEntityRenderer",
     "MinecraftAccessor",
     "MixinEntityPlayerSP",
     "MixinModList",
