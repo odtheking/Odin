@@ -30,10 +30,10 @@ object BlazeAtunement {
             if (currentBlazes.any { it.key == entity }) return@forEach
             val name = stripControlCodes(entity.name)
             val color = when {
-                name.contains("CRYSTAL ♨") -> Color(85, 250, 236, 255)
-                name.contains("ASHEN ♨") -> Color(45, 45, 45, 255)
-                name.contains("AURIC ♨") -> Color(206, 219, 57, 255)
-                name.contains("SPIRIT ♨") -> Color(255, 255, 255, 255)
+                name.contains("CRYSTAL ♨") -> Color(85, 250, 236, 100)
+                name.contains("ASHEN ♨") -> Color(45, 45, 45, 100)
+                name.contains("AURIC ♨") -> Color(206, 219, 57, 100)
+                name.contains("SPIRIT ♨") -> Color(255, 255, 255, 100)
                 else -> return@forEach
             }
 
