@@ -99,7 +99,7 @@ object DioriteFucker {
     fun onTick(event: ClientTickEvent) {
         if (mc.theWorld == null || !config.fuckDiorite || DungeonUtils.getPhase() != 2) return
         for (block in pillars) {
-            if (getIdFromBlock(mc.theWorld.getBlockState(block).block) == 1) {
+            if (mc.theWorld.getChunkFromChunkCoords(block.x shr 4, block.z shr 4).getBlock(block) == Blocks.stone) {
                 mc.theWorld.setBlockState(block, Blocks.glass.defaultState, 3)
             }
         }
