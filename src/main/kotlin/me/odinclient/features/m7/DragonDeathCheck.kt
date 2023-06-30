@@ -6,8 +6,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.odinclient.OdinClient
 import me.odinclient.OdinClient.Companion.mc
-import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.WebUtils
+import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.boss.EntityDragon
 import net.minecraft.util.Vec3

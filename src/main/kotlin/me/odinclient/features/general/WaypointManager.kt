@@ -8,10 +8,10 @@ import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.waypointConfig
 import me.odinclient.commands.impl.WaypointCommand.randomColor
 import me.odinclient.ui.waypoint.WaypointGUI
-import me.odinclient.utils.skyblock.ChatUtils.modMessage
+import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.render.RenderUtils
+import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.LocationUtils.currentArea
-import net.minecraft.util.StringUtils
 import net.minecraft.util.Vec3i
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
@@ -32,7 +32,7 @@ object WaypointManager {
     }
 
     fun removeWaypoint(name: String) {
-        val matchingWaypoint = waypoints[currentArea]?.find { StringUtils.stripControlCodes(it.name).lowercase() == name } ?: return
+        val matchingWaypoint = waypoints[currentArea]?.find { it.name.noControlCodes.lowercase() == name } ?: return
         removeWaypoint(matchingWaypoint)
     }
 

@@ -1,7 +1,9 @@
 package me.odinclient.utils.gui
 
 import cc.polyfrost.oneconfig.renderer.scissor.ScissorHelper
-import cc.polyfrost.oneconfig.utils.dsl.*
+import cc.polyfrost.oneconfig.utils.dsl.VG
+import cc.polyfrost.oneconfig.utils.dsl.scale
+import cc.polyfrost.oneconfig.utils.dsl.translate
 import me.odinclient.ui.waypoint.WaypointGUI
 import net.minecraft.client.gui.ScaledResolution
 

@@ -2,6 +2,7 @@ package me.odinclient.utils.skyblock.dungeon
 
 import me.odinclient.events.ReceivePacketEvent
 import me.odinclient.utils.Executor
+import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.Wrappers
 import me.odinclient.utils.skyblock.ItemUtils
 import me.odinclient.utils.skyblock.LocationUtils
@@ -10,7 +11,6 @@ import me.odinclient.utils.skyblock.ScoreboardUtils
 import me.odinclient.utils.skyblock.ScoreboardUtils.cleanSB
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.server.S02PacketChat
-import net.minecraft.util.StringUtils.stripControlCodes
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.awt.Color
@@ -65,7 +65,7 @@ object DungeonUtils : Wrappers() {
     @SubscribeEvent
     fun onPacket(event: ReceivePacketEvent) {
         if (event.packet !is S02PacketChat) return
-        val message = stripControlCodes(event.packet.chatComponent.unformattedText)
+        val message = event.packet.chatComponent.unformattedText.noControlCodes
         if (message == "[BOSS] Wither King: You.. again?") {
             inp5 = true
         }

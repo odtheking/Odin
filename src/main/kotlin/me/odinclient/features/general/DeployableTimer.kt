@@ -5,9 +5,9 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.utils.Utils.noControlCodes
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.util.ResourceLocation
-import net.minecraft.util.StringUtils.stripControlCodes
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.event.world.WorldEvent
@@ -115,7 +115,7 @@ object DeployableTimer {
         GlobalScope.launch {
             delay(100)
             val armorStand = event.entity as EntityArmorStand
-            val name = stripControlCodes(armorStand.name)
+            val name = armorStand.name.noControlCodes
             val texture =
                 armorStand.inventory
                 ?.get(4)

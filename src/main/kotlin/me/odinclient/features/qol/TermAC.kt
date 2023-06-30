@@ -2,9 +2,9 @@ package me.odinclient.features.qol
 
 import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
-import me.odinclient.utils.skyblock.PlayerUtils.rightClick
 import me.odinclient.utils.Server
 import me.odinclient.utils.skyblock.ItemUtils.itemID
+import me.odinclient.utils.skyblock.PlayerUtils.rightClick
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 

@@ -6,10 +6,10 @@ import kotlinx.coroutines.launch
 import me.odinclient.OdinClient
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.utils.AsyncUtils
+import me.odinclient.utils.Utils.noControlCodes
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.ItemStack
-import net.minecraft.util.StringUtils.stripControlCodes
 import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -60,7 +60,7 @@ object AutoSell {
             val inventory = container.inventorySlots
             for (i in inventory.size - 36 .. inventory.size) {
                 val itemStack: ItemStack = inventory[i]?.stack ?: continue
-                val itemName = stripControlCodes(itemStack.displayName)
+                val itemName = itemStack.displayName.noControlCodes
                 if (sellList.any { itemName.contains(it, true) }) {
                     toSell.add(i)
                 }

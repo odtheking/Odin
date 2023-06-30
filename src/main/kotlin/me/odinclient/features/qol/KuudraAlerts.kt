@@ -1,8 +1,8 @@
 package me.odinclient.features.qol
 
 import me.odinclient.OdinClient.Companion.config
+import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.skyblock.PlayerUtils
-import net.minecraft.util.StringUtils.stripControlCodes
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -18,7 +18,7 @@ object KuudraAlerts {
     @SubscribeEvent
     fun onChat(event: ClientChatReceivedEvent) {
         if (!config.kuudraAlerts) return
-        val message = stripControlCodes(event.message.unformattedText)
+        val message = event.message.unformattedText.noControlCodes
         if (map.containsKey(message)) {
             map[message]?.let { PlayerUtils.alert(it) }
         }
@@ -27,7 +27,7 @@ object KuudraAlerts {
     @SubscribeEvent
     fun onStun(event: ClientChatReceivedEvent) {
         if (!config.kuudraAlerts) return
-        val message = stripControlCodes(event.message.unformattedText)
+        val message = event.message.unformattedText.noControlCodes
         Regex("(.+) destroyed one of Kuudra's pods!").find(message) ?: return
         PlayerUtils.alert("§l§4KUUDRA STUNNED!")
     }
@@ -35,7 +35,7 @@ object KuudraAlerts {
     @SubscribeEvent
     fun onUnready(event: ClientChatReceivedEvent) {
         if (!config.kuudraAlerts) return
-        val message = stripControlCodes(event.message.unformattedText)
+        val message = event.message.unformattedText.noControlCodes
         val match = Regex("(.+) is no longer ready!").find(message) ?: return
         val ign = match.groups[1]?.value
         PlayerUtils.alert("§l§4$ign IS NO LONGER READY!")

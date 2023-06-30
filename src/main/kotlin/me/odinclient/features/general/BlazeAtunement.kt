@@ -4,8 +4,9 @@ import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.ClientSecondEvent
 import me.odinclient.events.RenderEntityModelEvent
-import me.odinclient.utils.render.OutlineUtils
+import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.VecUtils.xzDistance
+import me.odinclient.utils.render.OutlineUtils
 import me.odinclient.utils.render.RenderUtils.bindColor
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
@@ -13,7 +14,6 @@ import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.monster.EntityBlaze
 import net.minecraft.entity.monster.EntityPigZombie
 import net.minecraft.entity.monster.EntitySkeleton
-import net.minecraft.util.StringUtils.stripControlCodes
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import java.awt.Color
@@ -28,7 +28,7 @@ object BlazeAtunement {
         currentBlazes.clear()
         mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()?.forEach { entity ->
             if (currentBlazes.any { it.key == entity }) return@forEach
-            val name = stripControlCodes(entity.name)
+            val name = entity.name.noControlCodes
             val color = when {
                 name.contains("CRYSTAL ♨") -> Color(85, 250, 236, 100)
                 name.contains("ASHEN ♨") -> Color(45, 45, 45, 100)

@@ -1,7 +1,7 @@
 package me.odinclient.utils
 
-import net.minecraft.network.Packet
 import me.odinclient.OdinClient.Companion.mc
+import net.minecraft.network.Packet
 
 object PacketUtils {
     private val packets = ArrayList<Packet<*>>()

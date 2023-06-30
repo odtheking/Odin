@@ -1,8 +1,8 @@
 package me.odinclient.commands.impl
 
 import me.odinclient.OdinClient.Companion.display
-import me.odinclient.commands.Command
 import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.commands.Command
 import me.odinclient.features.general.WaypointManager
 import me.odinclient.ui.waypoint.WaypointGUI
 import me.odinclient.utils.skyblock.ChatUtils.modMessage

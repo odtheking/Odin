@@ -2,11 +2,11 @@ package me.odinclient.features.dungeon
 
 import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.ItemUtils
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.gui.inventory.GuiInventory
-import net.minecraft.util.StringUtils.stripControlCodes
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -27,7 +27,7 @@ object AutoMask {
     @SubscribeEvent
     fun onClientChatReceived(event: ClientChatReceivedEvent) {
         if (!config.autoMask) return
-        val message = stripControlCodes(event.message.unformattedText)
+        val message = event.message.unformattedText.noControlCodes
         val regex = Regex("^(Second Wind Activated!)? ?Your (.+) saved your life!\$")
         when (regex.find(message)?.groupValues?.get(2)) {
             "Spirit Mask" -> spiritProc = System.currentTimeMillis()
