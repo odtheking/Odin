@@ -9,6 +9,7 @@ import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object AutoEdrag {
+    private var going = false
 
     @SubscribeEvent
     fun onChat(event: ClientChatReceivedEvent) {
@@ -16,12 +17,13 @@ object AutoEdrag {
         val message = stripControlCodes(event.message.unformattedText).lowercase()
         if (message == "[boss] wither king: you.. again?") {
             sendCommand("pets")
+            going = true
         }
     }
 
     @SubscribeEvent
     fun guiOpen(event: GuiOpenEvent) {
-        if (!config.autoEdrag) return
+        if (!config.autoEdrag || !going) return
         PlayerUtils.clickItemInContainer("Pets", "Ender Dragon", event)
     }
 }
