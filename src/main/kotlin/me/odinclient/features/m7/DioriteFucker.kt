@@ -88,19 +88,20 @@ object DioriteFucker {
             BlockPos(46, 169, 62),
             BlockPos(47, 169, 62)
         )
-        repeat(37) { height ->
+        repeat(28) { height ->
             for (block in basePillars) {
                 add(block.add(0, height, 0))
             }
         }
     }
-    
+
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (mc.theWorld == null || !config.fuckDiorite || DungeonUtils.getPhase() != 2) return
+        if (event.phase != TickEvent.Phase.END || mc.theWorld == null || !config.fuckDiorite || DungeonUtils.getPhase() != 2) return
         for (block in pillars) {
-            if (mc.theWorld.getChunkFromChunkCoords(block.x shr 4, block.z shr 4).getBlock(block) == Blocks.stone) {
-                mc.theWorld.setBlockState(block, Blocks.glass.defaultState, 3)
+            // doubt this can really be optimized further, except reflection or mixins seeing as most of the fields these methods use are private
+            if (mc.theWorld.chunkProvider.provideChunk(block.x shr 4, block.z shr 4).getBlock(block) == Blocks.stone) {
+                mc.theWorld.setBlockState(block, Blocks.glass.defaultState, 3) // this doesn't need further optimization since it doesn't run often
             }
         }
     }
