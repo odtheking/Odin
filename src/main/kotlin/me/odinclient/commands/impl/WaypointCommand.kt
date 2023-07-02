@@ -12,6 +12,7 @@ import java.util.*
 import kotlin.math.floor
 
 object WaypointCommand : Command("waypoint", listOf("wp", "odwp")) {
+
      val randomColor: Color
         get() {
             val random = Random()
@@ -32,7 +33,7 @@ object WaypointCommand : Command("waypoint", listOf("wp", "odwp")) {
     override fun executeCommand(args: Array<String>) {
         if (args.isEmpty()) return modMessage("§cArguments empty. §rUsage: gui, share, here, add, help")
         when (args[0]) {
-            "help" -> sendHelpMessage()
+            "help" -> modMessage(helpMSG)
             "gui" -> display = WaypointGUI
 
             "share" -> {
@@ -85,20 +86,18 @@ object WaypointCommand : Command("waypoint", listOf("wp", "odwp")) {
                 } else modMessage("§cInvalid arguments, §r/wp add (temp | perm) x y z.")
             }
 
-            else -> sendHelpMessage()
+            else -> modMessage("§cInvalid usage, usage :\n$helpMSG")
         }
     }
 
-    private fun sendHelpMessage() {
-        modMessage(
-            "§cInvalid usage, usage :\n" +
-                " - GUI » §7Opens the Gui \n" +
-                " - Share (x y z) » §7Sends a message with your current coords, unless coords are specified \n" +
-                " - Here (temp | perm) » §7Adds a permanent or temporary waypoint at your current coords\n" +
-                " - Add (temp | perm) x y z » §7Adds a permanent or temporary waypoint at the coords specified\n" +
-                " - Help » §7Shows this message"
-        )
-    }
+    override val shortcuts: List<String> = listOf("help", "gui", "share", "add")
+
+    private const val helpMSG =
+            " - GUI » §7Opens the Gui \n" +
+            " - Share (x y z) » §7Sends a message with your current coords, unless coords are specified \n" +
+            " - Here (temp | perm) » §7Adds a permanent or temporary waypoint at your current coords\n" +
+            " - Add (temp | perm) x y z » §7Adds a permanent or temporary waypoint at the coords specified\n" +
+            " - Help » §7Shows this message"
 
     private fun Array<out String>.getInt(start: Int = 0, end: Int = this.size): Array<Int>? {
         val result = mutableListOf<Int>()

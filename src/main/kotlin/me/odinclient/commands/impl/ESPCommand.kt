@@ -48,4 +48,6 @@ object ESPCommand : Command("esp", listOf("odesp")) {
             }
         }
     }
+
+    override val shortcuts: List<String> = listOf("add", "remove", "clear", "list")
 }

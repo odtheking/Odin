@@ -41,4 +41,6 @@ object BlacklistCommand : Command("blacklist", listOf("odblacklist")) {
             }
         }
     }
+
+    override val shortcuts: List<String> = listOf("add", "remove", "clear", "list")
 }

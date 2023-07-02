@@ -41,4 +41,6 @@ object AutoSellCommand : Command("autosell", listOf("odautosell")) {
             }
         }
     }
+
+    override val shortcuts: List<String> = listOf("add", "remove", "clear", "list")
 }

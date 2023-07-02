@@ -21,18 +21,15 @@ import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
-import net.minecraft.client.settings.KeyBinding
 import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.world.WorldEvent
-import net.minecraftforge.fml.client.registry.ClientRegistry
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.Mod.EventHandler
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.lwjgl.input.Keyboard
 import java.io.File
 
 @Mod(
@@ -43,18 +40,10 @@ import java.io.File
 )
 class OdinClient {
 
-    private val openAppKeyBinding = KeyBinding(
-        "Open Separate Application",
-        Keyboard.KEY_NONE,
-        "Your Mod Name"
-    )
-
     @EventHandler
     fun init(event: FMLInitializationEvent) {
 
         config.init()
-
-        ClientRegistry.registerKeyBinding(openAppKeyBinding)
 
         listOf(
             DragonBoxes,

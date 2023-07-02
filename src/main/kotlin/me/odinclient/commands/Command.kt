@@ -2,6 +2,7 @@ package me.odinclient.commands
 
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
+import net.minecraft.util.BlockPos
 
 abstract class Command(
     private val name: String,
@@ -14,6 +15,10 @@ abstract class Command(
     final override fun processCommand(sender: ICommandSender, args: Array<String>) = executeCommand(args.onEach { it.lowercase() })
 
     abstract fun executeCommand(args: Array<String>)
+
+    abstract val shortcuts: List<String>
+    final override fun addTabCompletionOptions(sender: ICommandSender?, args: Array<out String>?, pos: BlockPos?):
+            MutableList<String> = getListOfStringsMatchingLastWord(args, shortcuts)
 
     /**
      * onEach implementation so it doesn't return out String

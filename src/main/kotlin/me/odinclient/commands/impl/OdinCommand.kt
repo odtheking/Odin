@@ -19,4 +19,6 @@ object OdinCommand : Command("odinclient", listOf("od", "odinclient")) {
             }
         }
     }
+
+    override val shortcuts: List<String> = listOf("help", "autosell", "blacklist", "esp", "waypoint")
 }
