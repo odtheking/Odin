@@ -149,6 +149,15 @@ object OdinConfig : Config(Mod("OdinClient", ModType.SKYBLOCK, "/assets/odinclie
     )
     var superBoom = false
 
+    @Dropdown(
+        name = "Behaviour",
+        options = ["Place", "Switch"],
+        description = "Automatically places or switches to Superboom",
+        category = "Dungeon",
+        subcategory = "Superboom"
+    )
+    var superBoomBehaviour = 0
+
     @Switch(
         name = "Highlights your dungeon teammates",
         description = "Highlights your dungeon teammates",

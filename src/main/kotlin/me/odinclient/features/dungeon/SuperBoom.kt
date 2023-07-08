@@ -32,6 +32,13 @@ object SuperBoom {
             !block.localizedName.contains("Barrier")
         ) return
         val superboomIndex = mc.thePlayer?.inventory?.mainInventory?.indexOfFirst { it?.displayName?.contains("TNT") == true } ?: return
+
+        if (config.superBoomBehaviour == 1) {
+            if (superboomIndex < 9) {
+                mc.thePlayer.inventory.currentItem = superboomIndex
+            }
+            return
+        }
         if (superboomIndex > 8) {
             PlayerUtils.hitWithItemFromInv(superboomIndex, lookingAt.blockPos)
             return
