@@ -12,7 +12,8 @@ import me.odinclient.features.dungeon.*
 import me.odinclient.features.general.*
 import me.odinclient.features.m7.*
 import me.odinclient.features.qol.*
-import me.odinclient.utils.*
+import me.odinclient.utils.Executor
+import me.odinclient.utils.Server
 import me.odinclient.utils.render.RenderUtils
 import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.LocationUtils
@@ -154,7 +155,7 @@ class OdinClient {
     companion object {
         const val MOD_ID = "OdinClient"
         const val NAME = "OdinClient"
-        const val VERSION = "1.0.1"
+        const val VERSION = "1.0.3"
 
         val mc: Minecraft = Minecraft.getMinecraft()
 

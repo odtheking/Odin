@@ -2,13 +2,13 @@ package me.odinclient.features.qol
 
 import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.utils.skyblock.ItemUtils.lore
 import me.odinclient.utils.skyblock.LocationUtils
 import net.minecraft.item.ItemSword
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import me.odinclient.utils.skyblock.ItemUtils.lore
 
 object NoBlockAnimation {
     private var isRightClickKeyDown = false

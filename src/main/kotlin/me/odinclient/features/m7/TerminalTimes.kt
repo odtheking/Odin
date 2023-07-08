@@ -3,10 +3,10 @@ package me.odinclient.features.m7
 import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.OdinClient.Companion.miscConfig
+import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
-import net.minecraft.util.StringUtils.stripControlCodes
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -59,7 +59,7 @@ object TerminalTimes {
     @SubscribeEvent
     fun onClientChatReceived(event: ClientChatReceivedEvent) {
         if (!config.termTimer) return
-        val message = stripControlCodes(event.message.unformattedText)
+        val message = event.message.unformattedText.noControlCodes
         val match = Regex("(.+) (?:activated|completed) a terminal! \\((\\d)/(\\d)\\)").find(message) ?: return
         val (_, name, current, max) = match.groups.map { it?.value }
 

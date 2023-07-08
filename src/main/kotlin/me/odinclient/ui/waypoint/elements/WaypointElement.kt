@@ -9,12 +9,12 @@ import me.odinclient.features.general.WaypointManager
 import me.odinclient.features.general.WaypointManager.Waypoint
 import me.odinclient.ui.waypoint.WaypointGUI
 import me.odinclient.ui.waypoint.WaypointGUI.mouseHandler
+import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.gui.animations.ColorAnimation
-import net.minecraft.util.StringUtils
 import java.awt.Color
 
 class WaypointElement(val waypoint: Waypoint) {
-    private val name get() = StringUtils.stripControlCodes(waypoint.name)
+    private val name get() = waypoint.name.noControlCodes
     private val colorAnimation = ColorAnimation(150)
     var y = 0f
 

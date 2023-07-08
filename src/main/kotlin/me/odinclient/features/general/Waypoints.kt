@@ -1,11 +1,12 @@
 package me.odinclient.features.general
 
 import me.odinclient.OdinClient.Companion.config
+import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.render.RenderUtils
-import net.minecraft.util.StringUtils
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+
 object Waypoints {
 
 
@@ -15,7 +16,7 @@ object Waypoints {
     @SubscribeEvent
     fun onClientChatReceived(event: ClientChatReceivedEvent) {
         if (!config.waypoints ) return
-        val message = StringUtils.stripControlCodes(event.message.unformattedText)
+        val message = event.message.unformattedText.noControlCodes
         val matchResult =
             Regex("Party > (\\[.+\\])? (.{0,16}): Vanquisher spawned at: x: (-?\\d+) y: (-?\\d+) z: (-?\\d+)").find(
                 message
@@ -32,7 +33,7 @@ object Waypoints {
     @SubscribeEvent
     fun w1(event: ClientChatReceivedEvent) {
         if (!config.waypoints ) return
-        val message = StringUtils.stripControlCodes(event.message.unformattedText)
+        val message = event.message.unformattedText.noControlCodes
         val matchResult = Regex("Party > (\\[.+\\])? (.{0,16}): x: (-?\\d+) y: (-?\\d+) z: (-?\\d+)").find(message)
         val rank = matchResult?.groups?.get(1)?.value ?: return
         val player = matchResult.groups[2]?.value ?: return
@@ -45,7 +46,7 @@ object Waypoints {
     @SubscribeEvent
     fun w2(event: ClientChatReceivedEvent) {
         if (!config.waypoints ) return
-        val message = StringUtils.stripControlCodes(event.message.unformattedText)
+        val message = event.message.unformattedText.noControlCodes
         val matchResult = Regex("(\\[.+\\])? (.{0,16}): x: (-?\\d+) y: (-?\\d+) z: (-?\\d+)").find(message)
         val rank = matchResult?.groups?.get(1)?.value ?: return
         val player = matchResult.groups[2]?.value ?: return

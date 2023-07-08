@@ -2,10 +2,10 @@ package me.odinclient.features.qol
 
 import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
-import net.minecraft.util.StringUtils
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -31,7 +31,7 @@ object Reminders {
     fun onClientChatReceived(event: ClientChatReceivedEvent) {
         if (!config.autoLeap || !DungeonUtils.inDungeons) return
 
-        val message = StringUtils.stripControlCodes(event.message.unformattedText)
+        val message = event.message.unformattedText.noControlCodes
 
         if (message in alertMap) {
             if (message.startsWith("[BOSS] Maxor:") && firstlaser) return

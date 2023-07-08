@@ -5,9 +5,9 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.odinclient.OdinClient
+import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.PlayerUtils
-import net.minecraft.util.StringUtils
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -19,7 +19,7 @@ object PartyCommands {
     fun party(event: ClientChatReceivedEvent) {
         if (!OdinClient.config.partyCommands) return
 
-        val message = StringUtils.stripControlCodes(event.message.unformattedText)
+        val message = event.message.unformattedText.noControlCodes
         val match = Regex("Party > (\\[.+\\])? ?(.+): !(.+)").find(message) ?: return
 
         val ign = match.groups[2]?.value
@@ -35,7 +35,7 @@ object PartyCommands {
     fun dt(event: ClientChatReceivedEvent) {
         if (!OdinClient.config.partyCommands) return
 
-        val message = StringUtils.stripControlCodes(event.message.unformattedText)
+        val message = event.message.unformattedText.noControlCodes
 
         if (!message.contains("EXTRA STATS") || ChatUtils.dtPlayer == null) return
 
@@ -52,7 +52,7 @@ object PartyCommands {
     fun private(event: ClientChatReceivedEvent) {
         if (!OdinClient.config.partyCommands) return
 
-        val message = StringUtils.stripControlCodes(event.message.unformattedText)
+        val message = event.message.unformattedText.noControlCodes
         val match = Regex("From (\\[.+\\])? ?(.+): !(.+)").find(message) ?: return
 
         val ign = match.groups[2]?.value
@@ -66,7 +66,7 @@ object PartyCommands {
     fun joinDungeon(event: ClientChatReceivedEvent) {
         if (!OdinClient.config.partyCommands) return
 
-        val message = StringUtils.stripControlCodes(event.message.unformattedText)
+        val message = event.message.unformattedText.noControlCodes
         val match = Regex("(Party >) (\\[.+\\])? ?(.+): !(.+) (.+)").find(message) ?: return
 
         val msg = match.groups[3]?.value?.lowercase()

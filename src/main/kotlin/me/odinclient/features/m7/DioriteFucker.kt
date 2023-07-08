@@ -2,7 +2,6 @@ package me.odinclient.features.m7
 
 import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
-import me.odinclient.utils.skyblock.WorldUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos

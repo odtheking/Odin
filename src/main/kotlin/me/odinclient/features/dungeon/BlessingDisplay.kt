@@ -2,9 +2,9 @@ package me.odinclient.features.dungeon
 
 import me.odinclient.OdinClient.Companion.config
 import me.odinclient.events.ReceivePacketEvent
+import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.network.play.server.S47PacketPlayerListHeaderFooter
-import net.minecraft.util.StringUtils.stripControlCodes
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -40,7 +40,7 @@ object BlessingDisplay {
     @SubscribeEvent
     fun onPacket(event: ReceivePacketEvent) {
         if (event.packet !is S47PacketPlayerListHeaderFooter || !config.powerDisplayHud.isEnabled || !DungeonUtils.inDungeons) return
-        val footer = stripControlCodes(event.packet.footer.unformattedText) ?: return
+        val footer = event.packet.footer.unformattedText.noControlCodes
 
         // This looks like shit but oh well
         if (config.powerBlessing)

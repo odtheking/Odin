@@ -2,7 +2,6 @@ package me.odinclient.commands
 
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
-import java.lang.StringBuilder
 
 abstract class Command(
     private val name: String,

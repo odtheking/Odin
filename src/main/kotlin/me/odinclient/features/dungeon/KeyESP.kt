@@ -5,11 +5,11 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.odinclient.OdinClient.Companion.config
+import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.render.RenderUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
-import net.minecraft.util.StringUtils.stripControlCodes
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.event.world.WorldEvent
@@ -26,7 +26,7 @@ object KeyESP {
 
         GlobalScope.launch {
             delay(500)
-            val name = stripControlCodes(event.entity.name)
+            val name = event.entity.name.noControlCodes
             if (name == "Wither Key") {
                 currentKey = Pair(Color(0, 0, 0), event.entity)
             } else if (name == "Blood Key") {

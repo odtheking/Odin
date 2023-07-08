@@ -1,9 +1,9 @@
 package me.odinclient.features.general
 
 import me.odinclient.OdinClient.Companion.config
+import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.PlayerUtils
-import net.minecraft.util.StringUtils
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -11,7 +11,7 @@ object VanqNotifier {
     @SubscribeEvent
     fun onClientChatReceived(event: ClientChatReceivedEvent) {
         if(!config.vanqNotifier) return
-        val message = StringUtils.stripControlCodes(event.message.unformattedText)
+        val message = event.message.unformattedText.noControlCodes
         if (message !== "A Vanquisher is spawning nearby!") return
         ChatUtils.modMessage("Vanquisher has spawned!")
         PlayerUtils.alert("§5Vanquisher has spawned!")

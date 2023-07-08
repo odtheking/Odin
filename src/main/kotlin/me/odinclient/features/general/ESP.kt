@@ -5,8 +5,8 @@ import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.ClientSecondEvent
 import me.odinclient.events.RenderEntityModelEvent
-import me.odinclient.utils.render.OutlineUtils
 import me.odinclient.utils.VecUtils.noSqrt3DDistance
+import me.odinclient.utils.render.OutlineUtils
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraftforge.event.world.WorldEvent
