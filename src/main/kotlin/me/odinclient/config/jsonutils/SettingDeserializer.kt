@@ -1,14 +1,14 @@
 package me.odinclient.config.jsonutils
 
-import me.odinclient.features.settings.Setting
-import me.odinclient.features.settings.impl.BooleanSetting
-import me.odinclient.features.settings.impl.NumberSetting
-import me.odinclient.features.settings.impl.StringSetting
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
+import me.odinclient.features.settings.Setting
+import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.features.settings.impl.DummySetting
+import me.odinclient.features.settings.impl.NumberSetting
+import me.odinclient.features.settings.impl.StringSetting
 import java.lang.reflect.Type
 
 class SettingDeserializer: JsonDeserializer<Setting<*>> {

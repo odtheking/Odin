@@ -2,7 +2,6 @@ package me.odinclient.utils
 
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.util.concurrent.ConcurrentLinkedQueue
 
 //TODO: ADD AN OPTIONAL EXECUTOR THAT REMOVES AFTER A CERTAIN AMOUNT OF REPEATS
 class Executor(val delay: Long, val func: () -> Unit) {
@@ -15,11 +14,10 @@ class Executor(val delay: Long, val func: () -> Unit) {
     }
 
     companion object {
-        val executors = ConcurrentLinkedQueue<Executor>()
+        val executors = ArrayList<Executor>()
 
         @SubscribeEvent
         fun onUpdate(event: LivingUpdateEvent) {
-            val currentTime = System.nanoTime()
             for (i in executors) {
                 if (i.time >= i.delay) {
                     i.func.invoke()

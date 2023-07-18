@@ -1,10 +1,10 @@
 package me.odinclient.config.jsonutils
 
-import me.odinclient.features.settings.Setting
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
+import me.odinclient.features.settings.Setting
 import me.odinclient.features.settings.impl.*
 import java.lang.reflect.Type
 

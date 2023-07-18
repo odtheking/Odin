@@ -4,7 +4,7 @@ import java.awt.Color
 
 class ColorAnimation(duration: Long): Animation<Color>(duration) {
 
-    override fun getValue(start: Color, end: Color, reverse: Boolean): Color {
+    override fun get(start: Color, end: Color, reverse: Boolean): Color {
         val (startC, endC) = if (reverse) listOf(end, start) else listOf(start, end)
         val percent = getPercent() / 100f
 

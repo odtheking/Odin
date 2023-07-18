@@ -1,6 +1,5 @@
 package me.odinclient.config
 
-import cc.polyfrost.oneconfig.config.core.OneColor
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonIOException
 import com.google.gson.JsonSyntaxException
@@ -10,8 +9,8 @@ import me.odinclient.config.jsonutils.SettingSerializer
 import me.odinclient.features.ConfigModule
 import me.odinclient.features.ModuleManager
 import me.odinclient.features.settings.Setting
-import me.odinclient.clickgui.ClickGUI
 import me.odinclient.features.settings.impl.*
+import java.awt.Color
 import java.io.File
 import java.io.IOException
 
@@ -24,13 +23,11 @@ class Config(path: File) {
         .setPrettyPrinting().create()
 
 
-    private val configFile = File(path, "forknifeConfig.json")
+    private val configFile = File(path, "odin-config.json")
 
     init {
         try {
-            if (!path.exists()) {
-                path.mkdirs()
-            }
+            if (!path.exists()) path.mkdirs()
             configFile.createNewFile()
         } catch (e: Exception) {
             println("Error initializing module config")
@@ -41,9 +38,7 @@ class Config(path: File) {
         try {
             val configModules: ArrayList<ConfigModule>
             with(configFile.bufferedReader().use { it.readText() }) {
-                if (this == "") {
-                    return
-                }
+                if (this == "") return
                 configModules = gson.fromJson(
                     this,
                     object : TypeToken<ArrayList<ConfigModule>>() {}.type
@@ -59,27 +54,15 @@ class Config(path: File) {
                         @Suppress("SENSELESS_COMPARISON")
                         if (configSetting == null) continue
 
-                        /** This is so spells in spell macro can properly save */
-                        /*if (module === SpellMacro) {
-                            if (configSetting.name.startsWith("Spell") && !module.getNameFromSettings(configSetting.name))
-                                module.addSettings(SelectorSetting(configSetting.name, "R-R-R", arrayListOf("R-R-R", "R-L-R", "R-L-L", "R-R-L", "L-L-L", "L-R-L", "L-R-R", "L-L-R")))
-                        }*/
-
                         val setting = module.getSettingByName(configSetting.name) ?: continue
                         when (setting) {
                             is BooleanSetting -> setting.enabled = (configSetting as BooleanSetting).enabled
                             is NumberSetting -> setting.value = (configSetting as NumberSetting).value
-                            is ColorSetting -> setting.value = OneColor((configSetting as NumberSetting).value.toInt())
+                            is ColorSetting -> setting.value = Color((configSetting as NumberSetting).value.toInt())
                             is SelectorSetting -> setting.selected = (configSetting as StringSetting).text
                             is StringSetting -> setting.text = (configSetting as StringSetting).text
                         }
                     }
-                }
-            }
-
-            ClickGUI.panels.forEach { panel ->
-                panel.moduleButtons.forEach {
-                    it.updateElements()
                 }
             }
         } catch (e: JsonSyntaxException) {
