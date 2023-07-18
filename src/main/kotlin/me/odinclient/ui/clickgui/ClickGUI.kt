@@ -6,7 +6,7 @@ import cc.polyfrost.oneconfig.utils.dsl.translate
 import me.odinclient.OdinClient.Companion.moduleConfig
 import me.odinclient.ui.clickgui.elements.menu.ElementColor
 import me.odinclient.features.Category
-import me.odinclient.features.impl.general.ClickGui
+import me.odinclient.features.impl.general.ClickGUIModule
 import me.odinclient.utils.gui.animations.EaseInOut
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.OpenGlHelper
@@ -78,7 +78,7 @@ object ClickGUI : GuiScreen() {
             if (panel.keyTyped(typedChar, keyCode)) return
         }
 
-        if (keyCode == ClickGui.keyCode && System.currentTimeMillis() - openedTime > 350) {
+        if (keyCode == ClickGUIModule.keyCode && System.currentTimeMillis() - openedTime > 350) {
             mc.displayGuiScreen(null as GuiScreen?)
             if (mc.currentScreen == null) {
                 mc.setIngameFocus()
@@ -97,15 +97,15 @@ object ClickGUI : GuiScreen() {
         openedTime = System.currentTimeMillis()
         openingAnimation.start(true)
 
-        if (OpenGlHelper.shadersSupported && mc.renderViewEntity is EntityPlayer && ClickGui.blur) {
+        if (OpenGlHelper.shadersSupported && mc.renderViewEntity is EntityPlayer && ClickGUIModule.blur) {
             mc.entityRenderer.stopUseShader()
             mc.entityRenderer.loadShader(ResourceLocation("shaders/post/blur.json"))
         }
 
         for (panel in panels) {
-            panel.x = ClickGui.panelX[panel.category]!!.value.toFloat()
-            panel.y = ClickGui.panelY[panel.category]!!.value.toFloat()
-            panel.extended = ClickGui.panelExtended[panel.category]!!.enabled
+            panel.x = ClickGUIModule.panelX[panel.category]!!.value.toFloat()
+            panel.y = ClickGUIModule.panelY[panel.category]!!.value.toFloat()
+            panel.extended = ClickGUIModule.panelExtended[panel.category]!!.enabled
         }
     }
 

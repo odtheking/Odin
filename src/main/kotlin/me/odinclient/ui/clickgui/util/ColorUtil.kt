@@ -1,7 +1,7 @@
 package me.odinclient.ui.clickgui.util
 
 import cc.polyfrost.oneconfig.config.core.OneColor
-import me.odinclient.features.impl.general.ClickGui
+import me.odinclient.features.impl.general.ClickGUIModule
 import java.awt.Color
 
 /**
@@ -12,10 +12,10 @@ import java.awt.Color
  */
 object ColorUtil {
     val clickGUIColor: Color
-        get() = ClickGui.color
+        get() = ClickGUIModule.color
 
     val clickGuiSecondColor: Color
-        get() = ClickGui.secondColor
+        get() = ClickGUIModule.secondColor
 
     val outlineColor : Int
         get() = clickGUIColor.darker().rgb

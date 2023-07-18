@@ -61,7 +61,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
         }
     }
 
-    fun drawScreen(vg: VG): Float {
+    fun draw(vg: VG): Float {
         var offs = height
 
         vg.nanoVG {

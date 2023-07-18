@@ -10,7 +10,7 @@ import me.odinclient.ui.clickgui.ClickGUI
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
-object ClickGui: Module(
+object ClickGUIModule: Module(
     "ClickGUI",
     Keyboard.KEY_RSHIFT,
     category = Category.GENERAL,
@@ -24,28 +24,15 @@ object ClickGui: Module(
     val panelExtended = mutableMapOf<Category, BooleanSetting>()
 
     init {
-        // The Panels
-        // this will set the default click gui panel settings. These will be overwritten by the config once it is loaded
         resetPositions()
-
-        for(category in Category.values()) {
-            addSettings(
-                panelX[category]!!,
-                panelY[category]!!,
-                panelExtended[category]!!
-            )
-        }
     }
 
-
     fun resetPositions() {
-        var panelX = 10.0
-
-        for (category in Category.values()) {
-            this.panelX.getOrPut(category) { NumberSetting(category.name + ",x", default = panelX, hidden = true) }.value = panelX
-            panelY.getOrPut(category) { NumberSetting(category.name + ",y", default = 10.0, hidden = true) }.value = 10.0
-            panelExtended.getOrPut(category) { BooleanSetting(category.name + ",extended", default = true, hidden = true) }.enabled = true
-            panelX += 260f
+        Category.values().forEach {
+            val incr = 10.0 + 260.0 * it.ordinal
+            panelX.getOrPut(it) { +NumberSetting(it.name + ",x", default = incr, hidden = true) }.value = incr
+            panelY.getOrPut(it) { +NumberSetting(it.name + ",y", default = 10.0, hidden = true) }.value = 10.0
+            panelExtended.getOrPut(it) { +BooleanSetting(it.name + ",extended", default = true, hidden = true) }.enabled = true
         }
     }
 

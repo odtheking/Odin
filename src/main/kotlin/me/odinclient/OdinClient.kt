@@ -131,6 +131,7 @@ class OdinClient {
                 moduleConfig.loadConfig()
             }
         }
+        ModuleManager.initializeModules()
         ClickGUI.init()
     }
 

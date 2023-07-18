@@ -10,7 +10,7 @@ import me.odinclient.ui.clickgui.util.ColorUtil.elementBackground
 import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinclient.ui.clickgui.util.MouseUtils.isAreaHovered
 import me.odinclient.ui.clickgui.util.MouseUtils.mouseX
-import me.odinclient.features.impl.general.ClickGui
+import me.odinclient.features.impl.general.ClickGUIModule
 import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.utils.gui.GuiUtils.nanoVG
 import net.minecraft.util.MathHelper
@@ -37,8 +37,8 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting) :
             if (x + 6 < x + percentBar * (width - 12f)) {
                 drawGradientRoundedRect(
                     x + 6f, y + 26f, (width - 12f) * percentBar, 6f,
-                    ClickGui.color.withAlpha(if (hoveredOrDragged) 250 else 200).rgb,
-                    ClickGui.secondColor.withAlpha(if (hoveredOrDragged) 250 else 200).rgb,
+                    ClickGUIModule.color.withAlpha(if (hoveredOrDragged) 250 else 200).rgb,
+                    ClickGUIModule.secondColor.withAlpha(if (hoveredOrDragged) 250 else 200).rgb,
                     2.5f
                 )
             }

@@ -13,7 +13,7 @@ import me.odinclient.ui.clickgui.util.MouseUtils.mouseX
 import me.odinclient.ui.clickgui.util.MouseUtils.mouseY
 import me.odinclient.features.Category
 import me.odinclient.features.ModuleManager
-import me.odinclient.features.impl.general.ClickGui
+import me.odinclient.features.impl.general.ClickGUIModule
 import me.odinclient.utils.gui.GuiUtils.nanoVG
 import me.odinclient.utils.gui.GuiUtils.resetScissor
 import me.odinclient.utils.gui.GuiUtils.scissor
@@ -25,10 +25,10 @@ class Panel(
     var dragging = false
     val moduleButtons: ArrayList<ModuleButton> = ArrayList()
 
-    var x = ClickGui.panelX[category]!!.value.toFloat()
-    var y = ClickGui.panelY[category]!!.value.toFloat()
+    var x = ClickGUIModule.panelX[category]!!.value.toFloat()
+    var y = ClickGUIModule.panelY[category]!!.value.toFloat()
 
-    var extended: Boolean = ClickGui.panelExtended[category]!!.enabled
+    var extended: Boolean = ClickGUIModule.panelExtended[category]!!.enabled
 
     var scrollOffset = 0f
     var length = 0f
@@ -58,7 +58,7 @@ class Panel(
             if (extended && moduleButtons.isNotEmpty()) {
                 for (moduleButton in moduleButtons) {
                     moduleButton.y = startY
-                    startY += moduleButton.drawScreen(vg)
+                    startY += moduleButton.draw(vg)
                 }
                 length = startY + 5f
             }
@@ -96,9 +96,9 @@ class Panel(
     fun mouseReleased(state: Int) {
         if (state == 0) dragging = false
 
-        ClickGui.panelX[category]!!.value = x.toDouble()
-        ClickGui.panelY[category]!!.value = y.toDouble()
-        ClickGui.panelExtended[category]!!.enabled = extended
+        ClickGUIModule.panelX[category]!!.value = x.toDouble()
+        ClickGUIModule.panelY[category]!!.value = y.toDouble()
+        ClickGUIModule.panelExtended[category]!!.enabled = extended
 
         if (extended) {
             for (moduleButton in moduleButtons.reversed()) {

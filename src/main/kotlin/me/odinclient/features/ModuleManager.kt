@@ -16,6 +16,10 @@ object ModuleManager {
             .forEach { add(it.instance) }
     }
 
+    fun initializeModules() {
+        modules.forEach { it.initializeModule() }
+    }
+
     @SubscribeEvent
     fun activateModuleKeyBinds(event: InputEvent.KeyInputEvent) {
         if (Keyboard.getEventKeyState()) return
