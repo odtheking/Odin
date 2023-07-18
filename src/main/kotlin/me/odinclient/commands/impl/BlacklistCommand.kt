@@ -2,17 +2,18 @@ package me.odinclient.commands.impl
 
 import me.odinclient.OdinClient.Companion.miscConfig
 import me.odinclient.commands.Command
+import me.odinclient.commands.CommandArguments
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 
-object BlacklistCommand : Command("blacklist", listOf("odblacklist")) {
-    override fun executeCommand(args: Array<String>) {
+object BlacklistCommand : Command("blacklist", listOf("odblacklist"), description = "Command for Blacklist.") {
+    override fun executeCommand(args: CommandArguments) {
         if (args.isEmpty())
             modMessage("§cArguments empty. §fUsage: add, remove, clear, list")
         else {
             when (args[0]) {
                 "add" -> {
-                    if (args.size == 1) return modMessage("You need to name someone to add to the Blacklist.")
-                    val playerName = args[1]
+                    if (args.size == 1) return modMessage("You need to name someone to add to the Blacklist. (Case Sensitive)")
+                    val playerName = args.getRegular(1)
                     if (miscConfig.blacklist.contains(playerName)) return modMessage("$playerName is already in the Blacklist.")
 
                     modMessage("Added $playerName to Blacklist.")
@@ -21,8 +22,8 @@ object BlacklistCommand : Command("blacklist", listOf("odblacklist")) {
                 }
 
                 "remove" -> {
-                    if (args.size == 1) return modMessage("You need to name someone to remove from the Blacklist.")
-                    val playerName = args[1]
+                    if (args.size == 1) return modMessage("You need to name someone to remove from the Blacklist. (Case Sensitive)")
+                    val playerName = args.getRegular(1)
                     if (!miscConfig.blacklist.contains(playerName)) return modMessage("$playerName isn't in the Blacklist.")
 
                     modMessage("Removed $playerName from Blacklist.")

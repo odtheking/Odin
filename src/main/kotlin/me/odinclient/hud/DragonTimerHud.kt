@@ -1,7 +1,7 @@
 package me.odinclient.hud
 
 import cc.polyfrost.oneconfig.hud.TextHud
-import me.odinclient.features.m7.DragonTimer.toRender
+import me.odinclient.features.impl.m7.DragonTimer.toRender
 
 class DragonTimerHud: TextHud(false) {
     override fun getLines(lines: MutableList<String>?, example: Boolean) {

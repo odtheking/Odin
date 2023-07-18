@@ -7,7 +7,7 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import me.odinclient.features.general.WaypointManager.Waypoint
+import me.odinclient.features.impl.general.WaypointManager.Waypoint
 import java.io.File
 import java.io.IOException
 

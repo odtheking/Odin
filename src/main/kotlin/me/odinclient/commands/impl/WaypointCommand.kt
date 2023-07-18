@@ -3,7 +3,8 @@ package me.odinclient.commands.impl
 import me.odinclient.OdinClient.Companion.display
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.commands.Command
-import me.odinclient.features.general.WaypointManager
+import me.odinclient.commands.CommandArguments
+import me.odinclient.features.impl.general.WaypointManager
 import me.odinclient.ui.waypoint.WaypointGUI
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.ChatUtils.partyMessage
@@ -11,7 +12,7 @@ import java.awt.Color
 import java.util.*
 import kotlin.math.floor
 
-object WaypointCommand : Command("waypoint", listOf("wp", "odwp")) {
+object WaypointCommand : Command("waypoint", listOf("wp", "odwp"), "Command for waypoints. Do /waypoint help for more info.") {
 
      val randomColor: Color
         get() {
@@ -30,7 +31,7 @@ object WaypointCommand : Command("waypoint", listOf("wp", "odwp")) {
         }
 
 
-    override fun executeCommand(args: Array<String>) {
+    override fun executeCommand(args: CommandArguments) {
         if (args.isEmpty()) return modMessage("§cArguments empty. §rUsage: gui, share, here, add, help")
         when (args[0]) {
             "help" -> modMessage(helpMSG)
@@ -78,10 +79,9 @@ object WaypointCommand : Command("waypoint", listOf("wp", "odwp")) {
                         WaypointManager.addTempWaypoint("§f$name", values[0], values[1], values[2])
                     else if (args[1] == "perm")
                         WaypointManager.addWaypoint("§f$name", values[0], values[1], values[2], randomColor)
-                    else {
-                        modMessage("§cInvalid arguments, §r/wp add (temp | perm) x y z.")
-                        return
-                    }
+                    else
+                        return modMessage("§cInvalid arguments, §r/wp add (temp | perm) x y z.")
+
                     modMessage("Added ${if (args[1] == "temp") "temporary" else "permanent"} waypoint: $name at ${values.joinToString()}.")
                 } else modMessage("§cInvalid arguments, §r/wp add (temp | perm) x y z.")
             }
@@ -99,7 +99,7 @@ object WaypointCommand : Command("waypoint", listOf("wp", "odwp")) {
             " - Add (temp | perm) x y z » §7Adds a permanent or temporary waypoint at the coords specified\n" +
             " - Help » §7Shows this message"
 
-    private fun Array<out String>.getInt(start: Int = 0, end: Int = this.size): Array<Int>? {
+    private fun CommandArguments.getInt(start: Int = 0, end: Int = this.size): List<Int>? {
         val result = mutableListOf<Int>()
         for (i in start until end) {
             try {
@@ -108,6 +108,6 @@ object WaypointCommand : Command("waypoint", listOf("wp", "odwp")) {
                 return null
             }
         }
-        return result.toTypedArray()
+        return result
     }
 }

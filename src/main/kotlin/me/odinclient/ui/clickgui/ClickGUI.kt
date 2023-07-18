@@ -6,7 +6,7 @@ import cc.polyfrost.oneconfig.utils.dsl.translate
 import me.odinclient.OdinClient.Companion.moduleConfig
 import me.odinclient.ui.clickgui.elements.menu.ElementColor
 import me.odinclient.features.Category
-import me.odinclient.features.general.ClickGui
+import me.odinclient.features.impl.general.ClickGui
 import me.odinclient.utils.gui.animations.EaseInOut
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.OpenGlHelper
@@ -95,7 +95,7 @@ object ClickGUI : GuiScreen() {
 
     override fun initGui() {
         openedTime = System.currentTimeMillis()
-        openingAnimation.start()
+        openingAnimation.start(true)
 
         if (OpenGlHelper.shadersSupported && mc.renderViewEntity is EntityPlayer && ClickGui.blur) {
             mc.entityRenderer.stopUseShader()

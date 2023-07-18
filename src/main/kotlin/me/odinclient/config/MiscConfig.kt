@@ -8,7 +8,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import me.odinclient.features.m7.TerminalTimes
+import me.odinclient.features.impl.m7.TerminalTimes
 import java.io.File
 import java.io.IOException
 

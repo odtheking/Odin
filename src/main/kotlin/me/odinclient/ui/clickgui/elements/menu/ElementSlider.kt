@@ -10,7 +10,7 @@ import me.odinclient.ui.clickgui.util.ColorUtil.elementBackground
 import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinclient.ui.clickgui.util.MouseUtils.isAreaHovered
 import me.odinclient.ui.clickgui.util.MouseUtils.mouseX
-import me.odinclient.features.general.ClickGui
+import me.odinclient.features.impl.general.ClickGui
 import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.utils.gui.GuiUtils.nanoVG
 import net.minecraft.util.MathHelper

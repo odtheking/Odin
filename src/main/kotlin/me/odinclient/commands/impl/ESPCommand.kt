@@ -2,14 +2,15 @@ package me.odinclient.commands.impl
 
 import me.odinclient.OdinClient.Companion.miscConfig
 import me.odinclient.commands.Command
-import me.odinclient.features.general.ESP
+import me.odinclient.commands.CommandArguments
+import me.odinclient.features.impl.general.ESP
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 
-object ESPCommand : Command("esp", listOf("odesp")) {
+object ESPCommand : Command("esp", listOf("odesp"), "Command for ESP.") {
 
     private inline val espList get() = miscConfig.espList
 
-    override fun executeCommand(args: Array<String>) {
+    override fun executeCommand(args: CommandArguments) {
         if (args.isEmpty())
             modMessage("§cArguments empty. §fUsage: add, remove, clear, list")
         else {

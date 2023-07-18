@@ -1,6 +1,6 @@
 package me.odinclient.mixin.model;
 
-import me.odinclient.features.general.BlazeAtunement;
+import me.odinclient.features.impl.general.BlazeAtunement;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.entity.Entity;

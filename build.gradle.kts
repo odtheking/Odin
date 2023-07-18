@@ -43,10 +43,6 @@ sourceSets.main {
     output.setResourcesDir(file("$buildDir/classes/java/main"))
 }
 
-val packageLib by configurations.creating {
-    configurations.implementation.get().extendsFrom(this)
-}
-
 repositories {
     mavenCentral()
     maven("https://repo.spongepowered.org/maven/")
@@ -66,6 +62,8 @@ dependencies {
 
     implementation(kotlin("stdlib-jdk8"))
 
+    implementation("org.reflections:reflections:0.10.2")
+
     annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
     compileOnly("org.spongepowered:mixin:0.8.5")
 
@@ -84,6 +82,7 @@ tasks.named<ShadowJar>("shadowJar") {
 tasks.withType(JavaCompile::class) {
     options.encoding = "UTF-8"
 }
+
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         jvmTarget = "1.8"

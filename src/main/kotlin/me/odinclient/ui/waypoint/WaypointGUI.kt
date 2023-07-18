@@ -4,7 +4,7 @@ import cc.polyfrost.oneconfig.renderer.NanoVGHelper
 import cc.polyfrost.oneconfig.renderer.font.Fonts
 import cc.polyfrost.oneconfig.utils.dsl.*
 import me.odinclient.OdinClient.Companion.waypointConfig
-import me.odinclient.features.general.WaypointManager
+import me.odinclient.features.impl.general.WaypointManager
 import me.odinclient.ui.waypoint.elements.AreaButton
 import me.odinclient.ui.waypoint.elements.WaypointElement
 import me.odinclient.utils.gui.GuiUtils.scaleFactor

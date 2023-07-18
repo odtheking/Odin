@@ -13,7 +13,7 @@ import me.odinclient.ui.clickgui.util.MouseUtils.mouseX
 import me.odinclient.ui.clickgui.util.MouseUtils.mouseY
 import me.odinclient.features.Category
 import me.odinclient.features.ModuleManager
-import me.odinclient.features.general.ClickGui
+import me.odinclient.features.impl.general.ClickGui
 import me.odinclient.utils.gui.GuiUtils.nanoVG
 import me.odinclient.utils.gui.GuiUtils.resetScissor
 import me.odinclient.utils.gui.GuiUtils.scissor

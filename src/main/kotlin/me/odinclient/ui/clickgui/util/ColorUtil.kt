@@ -1,7 +1,7 @@
 package me.odinclient.ui.clickgui.util
 
 import cc.polyfrost.oneconfig.config.core.OneColor
-import me.odinclient.features.general.ClickGui
+import me.odinclient.features.impl.general.ClickGui
 import java.awt.Color
 
 /**

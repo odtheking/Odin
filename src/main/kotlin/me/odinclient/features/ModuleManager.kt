@@ -1,24 +1,20 @@
 package me.odinclient.features
 
-import me.odinclient.features.dungeon.AutoWish
-import me.odinclient.features.general.ClickGui
-import me.odinclient.features.m7.AutoEdrag
-import me.odinclient.features.qol.TermAC
+import me.odinclient.utils.ClassUtils
+import me.odinclient.utils.ClassUtils.instance
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
+import java.lang.reflect.Modifier
 
 object ModuleManager {
-    val modules: ArrayList<Module> = arrayListOf(
-        // TODO: Add all modules here if they extend Module
-        ClickGui,
-        AutoWish,
-        AutoEdrag,
-        TermAC
-    )
-    
-    fun initializeModules() = modules.forEach { it.initializeModule() }
+
+    val modules: ArrayList<Module> = arrayListOf<Module>().apply {
+        ClassUtils.findClasses<Module>("me.odinclient.features.impl")
+            .filter { Modifier.isFinal(it.modifiers) }
+            .forEach { add(it.instance) }
+    }
 
     @SubscribeEvent
     fun activateModuleKeyBinds(event: InputEvent.KeyInputEvent) {

@@ -3,7 +3,6 @@ package me.odinclient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import me.odinclient.clickgui.ClickGUI
 import me.odinclient.commands.impl.*
 import me.odinclient.config.Config
 import me.odinclient.config.MiscConfig
@@ -11,10 +10,11 @@ import me.odinclient.config.OdinConfig
 import me.odinclient.config.WaypointConfig
 import me.odinclient.events.ClientSecondEvent
 import me.odinclient.features.ModuleManager
-import me.odinclient.features.dungeon.*
-import me.odinclient.features.general.*
-import me.odinclient.features.m7.*
-import me.odinclient.features.qol.*
+import me.odinclient.features.impl.dungeon.*
+import me.odinclient.features.impl.m7.*
+import me.odinclient.features.impl.general.*
+import me.odinclient.features.impl.qol.*
+import me.odinclient.ui.clickgui.ClickGUI
 import me.odinclient.utils.Executor
 import me.odinclient.utils.Server
 import me.odinclient.utils.render.RenderUtils
@@ -46,9 +46,6 @@ class OdinClient {
 
     @EventHandler
     fun init(event: FMLInitializationEvent) {
-
-        clickGUI = ClickGUI()
-        MinecraftForge.EVENT_BUS.register(ModuleManager)
 
         config.init()
 
@@ -107,6 +104,7 @@ class OdinClient {
             Welcome,
             Executor,
             DevPlayers,
+            ModuleManager,
             this
         ).forEach {
             MinecraftForge.EVENT_BUS.register(it)
@@ -128,10 +126,12 @@ class OdinClient {
 
     @EventHandler
     fun loadComplete(event: FMLLoadCompleteEvent) = runBlocking {
-        launch {
-            moduleConfig.loadConfig()
+        runBlocking {
+            launch {
+                moduleConfig.loadConfig()
+            }
         }
-        ModuleManager.initializeModules()
+        ClickGUI.init()
     }
 
     @SubscribeEvent
@@ -162,7 +162,6 @@ class OdinClient {
 
         val mc: Minecraft = Minecraft.getMinecraft()
 
-        lateinit var clickGUI: ClickGUI
         val moduleConfig = Config(File(mc.mcDataDir, "config/odinclient"))
 
         var config = OdinConfig

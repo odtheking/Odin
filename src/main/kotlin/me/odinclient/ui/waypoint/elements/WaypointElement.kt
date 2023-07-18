@@ -5,8 +5,8 @@ import cc.polyfrost.oneconfig.utils.dsl.VG
 import cc.polyfrost.oneconfig.utils.dsl.drawRoundedRect
 import cc.polyfrost.oneconfig.utils.dsl.drawSVG
 import cc.polyfrost.oneconfig.utils.dsl.nanoVG
-import me.odinclient.features.general.WaypointManager
-import me.odinclient.features.general.WaypointManager.Waypoint
+import me.odinclient.features.impl.general.WaypointManager
+import me.odinclient.features.impl.general.WaypointManager.Waypoint
 import me.odinclient.ui.waypoint.WaypointGUI
 import me.odinclient.ui.waypoint.WaypointGUI.mouseHandler
 import me.odinclient.utils.Utils.noControlCodes

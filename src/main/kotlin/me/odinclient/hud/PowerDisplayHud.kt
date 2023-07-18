@@ -1,7 +1,7 @@
 package me.odinclient.hud
 
 import cc.polyfrost.oneconfig.hud.TextHud
-import me.odinclient.features.dungeon.BlessingDisplay
+import me.odinclient.features.impl.dungeon.BlessingDisplay
 
 class PowerDisplayHud: TextHud(false) {
     override fun getLines(lines: MutableList<String>?, example: Boolean) {

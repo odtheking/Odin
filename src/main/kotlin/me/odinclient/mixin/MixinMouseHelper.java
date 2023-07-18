@@ -1,6 +1,6 @@
 package me.odinclient.mixin;
 
-import me.odinclient.features.qol.NoCursorReset;
+import me.odinclient.features.impl.qol.NoCursorReset;
 import net.minecraft.util.MouseHelper;
 import org.lwjgl.input.Mouse;
 import org.spongepowered.asm.mixin.Mixin;

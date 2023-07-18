@@ -8,7 +8,7 @@ import cc.polyfrost.oneconfig.config.data.InfoType
 import cc.polyfrost.oneconfig.config.data.Mod
 import cc.polyfrost.oneconfig.config.data.ModType
 import me.odinclient.OdinClient.Companion.miscConfig
-import me.odinclient.features.dungeon.AutoSell
+import me.odinclient.features.impl.dungeon.AutoSell
 import me.odinclient.hud.*
 import org.lwjgl.input.Keyboard
 

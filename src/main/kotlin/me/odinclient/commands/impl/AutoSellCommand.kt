@@ -1,46 +1,46 @@
 package me.odinclient.commands.impl
 
 import me.odinclient.OdinClient.Companion.miscConfig
-import me.odinclient.commands.Command
+import me.odinclient.commands.AbstractCommand
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 
-object AutoSellCommand : Command("autosell", listOf("odautosell")) {
-    override fun executeCommand(args: Array<String>) {
-        if (args.isEmpty())
-            modMessage("Auto sell incorrect usage. Usage: add, remove, clear, list")
-        else {
-            when (args[0]) {
-                "add" -> {
-                    if (args.size == 1) return modMessage("You need to name an item.")
-                    val itemName = args.joinToString(1)
-                    if (miscConfig.autoSell.contains(itemName)) return modMessage("$itemName is already in the Auto sell list.")
+object AutoSellCommand : AbstractCommand(
+    name = "autosell",
+    alias = arrayListOf("odautosell"),
+    description = "Command for Auto Sell."
+) {
+    private inline val autoSell get () = miscConfig.autoSell
+    override val errorMsg: String get() = "Incorrect usage. Usage: ${subcommands.keys.joinToString(", ") }"
 
-                    modMessage("Added $itemName to the Auto sell list.")
-                    miscConfig.autoSell.add(itemName)
-                    miscConfig.saveAllConfigs()
-                }
+    init {
+        "add" does {
+            if (it.size == 1) throw Throwable("You need to name an item.")
+            val itemName = it.joinToString(startIndex = 1)
+            if (autoSell.contains(itemName)) throw Throwable("$itemName is already in the Auto sell list.")
 
-                "remove" -> {
-                    if (args.size == 1) return modMessage("You need to name an item.")
-                    val itemName = args.joinToString(1)
-                    if (!miscConfig.autoSell.contains(itemName)) return modMessage("$itemName isn't in the Auto sell list.")
+            modMessage("Added $itemName to the Auto sell list.")
+            autoSell.add(itemName)
+            miscConfig.saveAllConfigs()
+        }
 
-                    modMessage("Removed $itemName from the Auto sell list.")
-                    miscConfig.autoSell.remove(itemName)
-                    miscConfig.saveAllConfigs()
-                }
+        "remove" does {
+            if (it.size == 1) throw Throwable("You need to name an item.")
+            val itemName = it.joinToString(1)
+            if (!autoSell.contains(itemName)) throw Throwable("$itemName isn't in the Auto sell list.")
 
-                "clear" -> {
-                    modMessage("Auto sell list cleared.")
-                    miscConfig.autoSell.clear()
-                    miscConfig.saveAllConfigs()
-                }
+            modMessage("Removed $itemName from the Auto sell list.")
+            autoSell.remove(itemName)
+            miscConfig.saveAllConfigs()
+        }
 
-                "list" -> miscConfig.autoSell.forEach { modMessage(it) }
-                else -> modMessage("Incorrect usage. Usage: add, remove, clear, list")
-            }
+        "clear" does {
+            modMessage("Auto sell list cleared.")
+            autoSell.clear()
+            miscConfig.saveAllConfigs()
+        }
+
+        "list" does {
+            autoSell.forEach { modMessage(it) }
         }
     }
-
-    override val shortcuts: List<String> = listOf("add", "remove", "clear", "list")
 }
