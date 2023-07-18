@@ -1,14 +1,15 @@
 package me.odinclient.features.general
 
-import cc.polyfrost.oneconfig.config.core.OneColor
-import me.odinclient.OdinClient.Companion.clickGUI
+import cc.polyfrost.oneconfig.libs.checker.units.qual.C
 import me.odinclient.OdinClient.Companion.display
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.features.settings.impl.ColorSetting
 import me.odinclient.features.settings.impl.NumberSetting
+import me.odinclient.ui.clickgui.ClickGUI
 import org.lwjgl.input.Keyboard
+import java.awt.Color
 
 object ClickGui: Module(
     "ClickGUI",
@@ -16,14 +17,12 @@ object ClickGui: Module(
     category = Category.GENERAL,
 ) {
     val blur: Boolean by BooleanSetting("Blur", false, description = "Toggles the background blur for the gui.")
-    val color: OneColor by ColorSetting("Color", OneColor(50, 150, 220), allowAlpha = false, hidden = false, description = "Color theme in the gui.")
+    val color: Color by ColorSetting("Color", Color(50, 150, 220), allowAlpha = false, hidden = false, description = "Color theme in the gui.")
+    val secondColor: Color by ColorSetting("Second Color", Color(70, 30, 220), allowAlpha = false, hidden = false, description = "Second color theme in the gui.")
 
     val panelX = mutableMapOf<Category, NumberSetting>()
     val panelY = mutableMapOf<Category, NumberSetting>()
     val panelExtended = mutableMapOf<Category, BooleanSetting>()
-
-    const val PANEL_WIDTH = 120
-    const val PANEL_HEIGHT = 20
 
     init {
         // The Panels
@@ -47,7 +46,7 @@ object ClickGui: Module(
             this.panelX.getOrPut(category) { NumberSetting(category.name + ",x", default = panelX, hidden = true) }.value = panelX
             panelY.getOrPut(category) { NumberSetting(category.name + ",y", default = 10.0, hidden = true) }.value = 10.0
             panelExtended.getOrPut(category) { BooleanSetting(category.name + ",extended", default = true, hidden = true) }.enabled = true
-            panelX +=  PANEL_WIDTH + 10
+            panelX += 260f
         }
     }
 
@@ -56,7 +55,7 @@ object ClickGui: Module(
     }
 
     override fun onEnable() {
-        display = clickGUI
+        display = ClickGUI
         super.onEnable()
         toggle()
     }

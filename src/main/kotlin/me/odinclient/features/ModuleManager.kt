@@ -1,6 +1,9 @@
 package me.odinclient.features
 
+import me.odinclient.features.dungeon.AutoWish
 import me.odinclient.features.general.ClickGui
+import me.odinclient.features.m7.AutoEdrag
+import me.odinclient.features.qol.TermAC
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import org.lwjgl.input.Keyboard
@@ -10,7 +13,10 @@ object ModuleManager {
 
     val modules: ArrayList<Module> = arrayListOf(
         // TODO: Add all modules here if they extend Module
-        ClickGui
+        ClickGui,
+        AutoWish,
+        AutoEdrag,
+        TermAC
     )
 
     fun initializeModules() {

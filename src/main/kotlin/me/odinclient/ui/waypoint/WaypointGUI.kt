@@ -62,7 +62,7 @@ object WaypointGUI : GuiScreen() {
             drawRoundedRectVaried(0, 25, 480, 239, Color(21, 22, 23, 235).rgb, 0, 0, 10, 10)
 
             scissor(0f, 25f, 480f, 239f) {
-                scrollOffset = scrollAnimation.getValue(scrollOffset, scrollTarget)
+                scrollOffset = scrollAnimation.get(scrollOffset, scrollTarget)
                 var currentY = 35f - scrollOffset
                 for (waypoint in list) {
                     waypoint.y = currentY
@@ -70,7 +70,7 @@ object WaypointGUI : GuiScreen() {
                 }
             }
 
-            val animY = settingAnimation.getValue(25f, 50f, !settingMenu)
+            val animY = settingAnimation.get(25f, 50f, !settingMenu)
 
             drawRoundedRectVaried(0, 0, 480, animY, Color(21, 22, 23).rgb, 10, 10, 0, 0)
             drawLine(0, animY, 480, animY, 1.5, Color(30, 32, 34).rgb)
@@ -78,7 +78,7 @@ object WaypointGUI : GuiScreen() {
             drawingAreas = animY != 25f
             if (drawingAreas) {
                 scissor(0f, 25f, 480f, 50f) {
-                    areaOffset = areaAnimation.getValue(areaOffset, areaTarget)
+                    areaOffset = areaAnimation.get(areaOffset, areaTarget)
                     var currentX = areaOffset
                     for ((index, area) in areas.withIndex()) {
                         currentX += area.draw(this, currentX, animY - 11f, index != 0)
@@ -94,9 +94,9 @@ object WaypointGUI : GuiScreen() {
             drawHollowRoundedRect(10, 5, 78, 15, 5, buttonColor.rgb, 0.75)
 
             val color = if (mouseHandler.isAreaHovered(455f, 5f, 15f, 15f)) Color.LIGHT_GRAY.rgb else Color.WHITE.rgb
-            NanoVGHelper.INSTANCE.translate(this.instance, 462.5f, 12.5f)
+            translate(462.5f, 12.5f)
             NanoVGHelper.INSTANCE.rotate(this.instance, Math.toRadians((animY - 25.0) * 12.0).toFloat())
-            NanoVGHelper.INSTANCE.translate(this.instance, -462.5f, -12.5f)
+            translate(-462.5f, -12.5f)
             drawSVG("/assets/odinclient/Settings.svg", 455, 5, 15, 15, color, 36, javaClass)
         }
         super.drawScreen(mouseX, mouseY, partialTicks)

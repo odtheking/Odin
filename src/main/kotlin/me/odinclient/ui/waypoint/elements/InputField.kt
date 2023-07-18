@@ -36,9 +36,9 @@ class InputField(
             this@InputField.y = y
             this@InputField.width =
                 if (width == 0f) getTextWidth(display, size, font) + 12
-                else inputAnimation.getValue(width, getTextWidth(display, size, font) + 12)
+                else inputAnimation.get(width, getTextWidth(display, size, font) + 12)
 
-            val alpha = outlineAnimation.getValue(0f, 255f, !listening).toInt()
+            val alpha = outlineAnimation.get(0f, 255f, !listening).toInt()
             drawHollowRoundedRect(x, y - size / 2 - 3.5, width, size + 6, 5f, Color(30, 32, 34, alpha).rgb, 0.75)
             drawText(display, x + 6, y + 0.5, color, size, font)
 
