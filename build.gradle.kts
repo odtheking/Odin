@@ -7,7 +7,7 @@ plugins {
     id("gg.essential.loom") version "0.10.0.+"
     id("dev.architectury.architectury-pack200") version "0.1.3"
     id("com.github.johnrengelman.shadow") version "7.1.2"
-    kotlin("jvm") version "1.8.20"
+    kotlin("jvm") version "1.8.22"
 }
 
 group = "com.example.archloomtemplate"
@@ -23,7 +23,6 @@ loom {
     log4jConfigs.from(file("log4j2.xml"))
     launchConfigs {
         "client" {
-            // If you don't want mixins, remove these lines
             property("mixin.debug", "true")
             property("asmhelper.verbose", "true")
             arg("--tweakClass", "cc.polyfrost.oneconfig.loader.stage0.LaunchWrapperTweaker")
@@ -32,10 +31,8 @@ loom {
     }
     forge {
         pack200Provider.set(dev.architectury.pack200.java.Pack200Adapter())
-        // If you don't want mixins, remove this lines
         mixinConfig("mixins.odinclient.json")
     }
-    // If you don't want mixins, remove these lines
     mixin {
         defaultRefmapName.set("mixins.odinclient.refmap.json")
     }
@@ -50,12 +47,9 @@ val packageLib by configurations.creating {
     configurations.implementation.get().extendsFrom(this)
 }
 
-// Dependencies:
-
 repositories {
     mavenCentral()
     maven("https://repo.spongepowered.org/maven/")
-    // If you don't want to log in with your real minecraft account, remove this line
     maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
     maven("https://repo.essential.gg/repository/maven-public/")
     maven("https://repo.polyfrost.cc/releases")
@@ -65,8 +59,6 @@ val shadowImpl: Configuration by configurations.creating {
     configurations.implementation.get().extendsFrom(this)
 }
 
-
-
 dependencies {
     minecraft("com.mojang:minecraft:1.8.9")
     mappings("de.oceanlabs.mcp:mcp_stable:22-1.8.9")
@@ -74,30 +66,20 @@ dependencies {
 
     implementation(kotlin("stdlib-jdk8"))
 
-    // If you don't want mixins, remove these lines
-    shadowImpl("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
-        isTransitive = false
-    }
-    annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT:processor")
+    annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
+    compileOnly("org.spongepowered:mixin:0.8.5")
 
-    // If you don't want to log in with your real minecraft account, remove this line
     runtimeOnly("me.djtheredstoner:DevAuth-forge-legacy:1.1.0")
 
-    // Basic OneConfig dependencies for legacy versions. See OneConfig example mod for more info
-    compileOnly("cc.polyfrost:oneconfig-1.8.9-forge:0.2.0-alpha+") // Should not be included in jar
-    // include should be replaced with a configuration that includes this in the jar
-    shadowImpl("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-beta+") // Should be included in jar
-
+    compileOnly("cc.polyfrost:oneconfig-1.8.9-forge:0.2.0-alpha+")
+    shadowImpl("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-beta+")
 }
 
-// Configures our shadow/shade configuration, so we can
-// include some dependencies within our mod jar file.
 tasks.named<ShadowJar>("shadowJar") {
-    archiveClassifier.set("dev") // TODO: machete gets confused by the `dev` prefix.
+    archiveClassifier.set("dev")
     configurations = listOf(shadowImpl)
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
-// Tasks:
 
 tasks.withType(JavaCompile::class) {
     options.encoding = "UTF-8"
@@ -136,7 +118,6 @@ tasks.shadowJar {
         }
     }
 
-    // If you want to include other dependencies and shadow them, you can relocate them in here
     fun relocate(name: String) = relocate(name, "com.odinclient.deps.$name")
 }
 
