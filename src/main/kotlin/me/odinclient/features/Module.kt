@@ -1,14 +1,13 @@
 package me.odinclient.features
 
-import me.odinclient.features.settings.Setting
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import me.odinclient.features.settings.AlwaysActive
 import me.odinclient.OdinClient
+import me.odinclient.features.settings.AlwaysActive
+import me.odinclient.features.settings.Setting
 import me.odinclient.utils.skyblock.ChatUtils
 import net.minecraftforge.common.MinecraftForge
 import org.lwjgl.input.Keyboard
-import java.util.ArrayList
 import kotlin.reflect.full.hasAnnotation
 
 abstract class Module(

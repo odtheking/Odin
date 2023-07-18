@@ -5,6 +5,7 @@ import cc.polyfrost.oneconfig.utils.dsl.*
 
 object HUDRenderUtils {
 
+    // this dont use
     class DrawScope(private val dX: Number, private val dY: Number, private val dWidth: Number, private val dHeight: Number, val vg: VG) {
         /**
          * Rounded Rects

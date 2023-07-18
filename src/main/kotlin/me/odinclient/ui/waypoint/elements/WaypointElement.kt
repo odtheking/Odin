@@ -29,7 +29,7 @@ class WaypointElement(val waypoint: Waypoint) {
         nanoVG(vg.instance) {
             drawRoundedRect(15, y, 450, 30, 5f, Color(13, 14, 15).rgb)
 
-            val color = colorAnimation.getValue(waypoint.color, Color(21, 22, 23), waypoint.shouldShow).rgb
+            val color = colorAnimation.get(waypoint.color, Color(21, 22, 23), waypoint.shouldShow).rgb
             drawRoundedRect(20, y + 6, 18, 18, 5f, color)
             drawSVG("/assets/odinclient/trash.svg", 442, y + 6, 18, 18, -1, 100, javaClass) // get better svg it looks so pixelated
 

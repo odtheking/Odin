@@ -20,6 +20,316 @@ object OdinConfig : Config(Mod("OdinClient", ModType.SKYBLOCK, "/assets/odinclie
     }
 
 
+    // Dungeon Map
+
+    @Switch(
+        name = "Dungeon Map",
+        description = "Displays a map of the dungeon",
+        category = "Dungeon Map",
+        subcategory = "Map",
+        size = 2
+    )
+    var mapEnabled = false
+
+    @DualOption(
+        name = "Map Type",
+        description = "The type of map to display, seperate window is mainly made for people with two screens",
+        category = "Dungeon Map",
+        subcategory = "Map",
+        size = 2,
+        left = "On Screen",
+        right = "Seperate Window"
+    )
+    var mapWindow = false
+
+    @Switch(
+        name = "Hide in Boss",
+        description = "Hides the map when you are in a boss room",
+        category = "Dungeon Map",
+        subcategory = "Map",
+        size = 2
+    )
+    var mapHideInBoss = true
+
+    @Switch(
+        name = "Show Run Information",
+        description = "Displays information about the run",
+        category = "Dungeon Map",
+        subcategory = "Map",
+        size = 2
+    )
+    var mapShowRunInformation = true
+
+    @Switch(
+        name = "Auto Scan",
+        description = "Automatically scans the dungeon map when you enter a dungeon",
+        category = "Dungeon Map",
+        subcategory = "Map",
+        size = 2
+    )
+    var autoScan = true
+
+    @Switch(
+        name = "Nano Scan Time",
+        description = "Displays the scan time in nanoseconds instead of milliseconds",
+        category = "Dungeon Map",
+        subcategory = "Map",
+        size = 2
+    )
+    var nanoScanTime = false
+
+    @Switch(
+        name = "Scan Chat Info",
+        description = "Displays information about the scan in chat",
+        category = "Dungeon Map",
+        subcategory = "Map",
+        size = 2
+    )
+    var scanChatInfo = true
+
+    @Switch(
+        name = "Color Text",
+        description = "Colors name and secret count based on room state.",
+        category = "Dungeon Map",
+        subcategory = "Display",
+        size = 2
+    )
+    var mapColorText = false
+
+    @Dropdown(
+        name = "Show Player Heads",
+        description = "When to show player heads on the map",
+        category = "Dungeon Map",
+        subcategory = "Display",
+        size = 2,
+        options = ["Off", "Holding Leap", "Always"]
+    )
+    var playerHeads = 1
+
+    @Dropdown(
+        name = "Checkmark Style",
+        description = "The style of the checkmark",
+        category = "Dungeon Map",
+        subcategory = "Display",
+        size = 2,
+        options = ["None", "Default", "NEU"]
+    )
+    var mapCheckmark = 1
+
+    @Dropdown(
+        name = "Room Names",
+        description = "Shows names of rooms on map.",
+        category = "Dungeon Map",
+        subcategory = "Display",
+        options = ["None", "Puzzles / Trap", "All"]
+    )
+    var mapRoomNames = 1
+
+    @Slider(
+        name = "Map X",
+        description = "The x position of the map",
+        category = "Dungeon Map",
+        subcategory = "Display",
+        min = 0f,
+        max = 1920f
+    )
+    var mapX = 0f
+
+    @Slider(
+        name = "Map Y",
+        description = "The y position of the map",
+        category = "Dungeon Map",
+        subcategory = "Display",
+        min = 0f,
+        max = 1080f
+    )
+    var mapY = 0f
+
+    @Slider(
+        name = "Map Scale",
+        description = "The scale of the map",
+        category = "Dungeon Map",
+        subcategory = "Display",
+        min = 0.5f,
+        max = 2f
+    )
+    var mapScale = 1f
+
+    @Slider(
+        name = "Text Scale",
+        description = "The scale of the text",
+        category = "Dungeon Map",
+        subcategory = "Display",
+        min = 0.5f,
+        max = 2f
+    )
+    var textScale = 1f
+
+    @Slider(
+        name = "Player Head Scale",
+        description = "The scale of the player heads",
+        category = "Dungeon Map",
+        subcategory = "Display",
+        min = 0.5f,
+        max = 2f
+    )
+    var playerHeadScale = 1f
+
+    @Slider(
+        name = "Map Border Width",
+        description = "The width of the map border",
+        category = "Dungeon Map",
+        subcategory = "Display",
+        min = 0f,
+        max = 10f
+    )
+    var mapBorderWidth = 3f
+
+    @Color(
+        name = "Map Border Color",
+        description = "The color of the map border",
+        category = "Dungeon Map",
+        subcategory = "Display",
+        size = 2
+    )
+    var mapBorder = OneColor(0, 0, 0)
+
+    @Color(
+        name = "Map Background",
+        description = "The color of the map background",
+        category = "Dungeon Map",
+        subcategory = "Display",
+        size = 2
+    )
+    var mapBackground = OneColor(0, 0, 0, 100)
+
+    @Color(
+        name = "Blood Door Color",
+        description = "The color of blood doors",
+        category = "Dungeon Map",
+        subcategory = "Doors",
+        size = 2
+    )
+    var colorBloodDoor = OneColor(150, 0, 0)
+
+    @Color(
+        name = "Entrance Door Color",
+        description = "The color of entrance doors",
+        category = "Dungeon Map",
+        subcategory = "Doors",
+        size = 2
+    )
+    var colorEntranceDoor = OneColor(0, 150, 0)
+
+    @Color(
+        name = "Open Wither Door Color",
+        description = "The color of open wither doors",
+        category = "Dungeon Map",
+        subcategory = "Doors",
+        size = 2
+    )
+    var colorOpenWitherDoor = OneColor(255, 255, 0)
+
+    @Color(
+        name = "Wither Door Color",
+        description = "The color of wither doors",
+        category = "Dungeon Map",
+        subcategory = "Doors",
+        size = 2
+    )
+    var colorWitherDoor = OneColor(255, 0, 0)
+
+    @Color(
+        name = "Room Door Color",
+        description = "The color of room doors",
+        category = "Dungeon Map",
+        subcategory = "Doors",
+        size = 2
+    )
+    var colorRoomDoor = OneColor(0, 0, 150)
+
+    @Color(
+        name = "Blood Room Color",
+        description = "The color of blood rooms",
+        category = "Dungeon Map",
+        subcategory = "Rooms",
+        size = 2
+    )
+    var colorBlood = OneColor(250, 0, 0)
+
+    @Color(
+        name = "Miniboss Room Color",
+        description = "The color of miniboss rooms",
+        category = "Dungeon Map",
+        subcategory = "Rooms",
+        size = 2
+    )
+    var colorMiniboss = OneColor(200, 200, 0)
+
+    @Color(
+        name = "Entrance Room Color",
+        description = "The color of entrance rooms",
+        category = "Dungeon Map",
+        subcategory = "Rooms",
+        size = 2
+    )
+    var colorEntrance = OneColor(0, 150, 0)
+
+    @Color(
+        name = "Fairy Room Color",
+        description = "The color of fairy rooms",
+        category = "Dungeon Map",
+        subcategory = "Rooms",
+        size = 2
+    )
+    var colorFairy = OneColor(200, 40, 255)
+
+    @Color(
+        name = "Puzzle Room Color",
+        description = "The color of puzzle rooms",
+        category = "Dungeon Map",
+        subcategory = "Rooms",
+        size = 2
+    )
+    var colorPuzzle = OneColor(90, 0, 120)
+
+    @Color(
+        name = "Rare Room Color",
+        description = "The color of rare rooms",
+        category = "Dungeon Map",
+        subcategory = "Rooms",
+        size = 2
+    )
+    var colorRare = OneColor(100, 100, 0)
+
+    @Color(
+        name = "Trap Room Color",
+        description = "The color of trap rooms",
+        category = "Dungeon Map",
+        subcategory = "Rooms",
+        size = 2
+    )
+    var colorTrap = OneColor(160, 90, 0)
+
+    @Color(
+        name = "Room Color",
+        description = "The color of rooms",
+        category = "Dungeon Map",
+        subcategory = "Rooms",
+        size = 2
+    )
+    var colorRoom = OneColor(90, 50, 0)
+
+    @Color(
+        name = "Room Mimic Color",
+        description = "The color of rooms with mimics",
+        category = "Dungeon Map",
+        subcategory = "Rooms",
+        size = 2
+    )
+    var colorRoomMimic = OneColor(90, 10, 0)
+
+
     // Dungeon
 
     @Switch(

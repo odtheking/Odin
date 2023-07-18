@@ -1,14 +1,16 @@
 package me.odinclient.utils.gui
 
+import cc.polyfrost.oneconfig.renderer.scissor.Scissor
 import cc.polyfrost.oneconfig.renderer.scissor.ScissorHelper
 import cc.polyfrost.oneconfig.utils.dsl.VG
+import cc.polyfrost.oneconfig.utils.dsl.nanoVG
 import cc.polyfrost.oneconfig.utils.dsl.scale
 import cc.polyfrost.oneconfig.utils.dsl.translate
 import me.odinclient.ui.waypoint.WaypointGUI
 import net.minecraft.client.gui.ScaledResolution
 
 /**
- * This is here for if you want to make more guis
+ * Helps with making GUIs
  */
 object GuiUtils {
 
@@ -35,8 +37,16 @@ object GuiUtils {
     }
 
     inline fun VG.scissor(x: Float, y: Float, width: Float, height: Float, action: () -> Unit) {
-        ScissorHelper.INSTANCE.scissor(this.instance, x, y, width, height)
-        action.invoke()
-        ScissorHelper.INSTANCE.clearScissors(this.instance)
+        val scissor = ScissorHelper.INSTANCE.scissor(instance, x, y, width, height)
+        action()
+        ScissorHelper.INSTANCE.resetScissor(instance, scissor)
     }
+
+    fun VG.scissor(x: Float, y: Float, width: Float, height: Float) =
+        ScissorHelper.INSTANCE.scissor(this.instance, x, y, width, height)
+
+    fun VG.resetScissor(scissor: Scissor) =
+        ScissorHelper.INSTANCE.resetScissor(this.instance, scissor)
+
+    fun VG.nanoVG(block: VG.() -> Unit) = nanoVG(this.instance, block)
 }
