@@ -8,22 +8,22 @@ import me.odinclient.ui.clickgui.elements.ModuleButton
 import me.odinclient.ui.clickgui.util.ColorUtil
 import me.odinclient.ui.clickgui.util.ColorUtil.elementBackground
 import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinclient.ui.clickgui.util.MouseUtils.isAreaHovered
-import me.odinclient.ui.clickgui.util.MouseUtils.mouseX
+import me.odinclient.utils.gui.MouseUtils.isAreaHovered
+import me.odinclient.utils.gui.MouseUtils.mouseX
 import me.odinclient.features.impl.general.ClickGUIModule
 import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.utils.gui.GuiUtils.nanoVG
-import net.minecraft.util.MathHelper
 import org.lwjgl.input.Keyboard
 import kotlin.math.roundToInt
 
-class ElementSlider(parent: ModuleButton, setting: NumberSetting) :
-    Element<NumberSetting>(parent, setting, ElementType.SLIDER) {
+class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
+    Element<NumberSetting<*>>(parent, setting, ElementType.SLIDER) {
+
+    private val displayVal get() = "${(setting.valueAsDouble * 100.0).roundToInt() / 100.0}"
 
     override fun renderElement(vg: VG) {
-        val displayVal = "${(setting.value * 100.0).roundToInt() / 100.0}"
-        val hoveredOrDragged = isSliderHovered || listening
-        val percentBar = (setting.value - setting.min) / (setting.max - setting.min)
+        val hoveredOrDragged = isHovered || listening
+        val percentBar = (setting.valueAsDouble - setting.min) / (setting.max - setting.min)
 
         vg.nanoVG {
             drawRect(x, y, width, height, elementBackground)
@@ -46,17 +46,17 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting) :
 
         if (listening) {
             val diff = setting.max - setting.min
-            val newVal = setting.min + MathHelper.clamp_double(((mouseX - x) / width.toDouble()), 0.0, 1.0) * diff
-            setting.value = newVal
+            val newVal = setting.min + ((mouseX - x) / width).clamp(0, 1) * diff
+            setting.valueAsDouble = newVal
         }
     }
 
     override fun mouseClicked(mouseButton: Int): Boolean {
-        if (mouseButton == 0 && isSliderHovered) {
+        if (mouseButton == 0 && isHovered) {
             listening = true
             return true
         }
-        return super.mouseClicked(mouseButton)
+        return false
     }
 
     override fun mouseReleased(state: Int) {
@@ -64,16 +64,17 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting) :
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int): Boolean {
-        if (isSliderHovered) {
+        if (isHovered) {
             val amount = when (keyCode) {
                 Keyboard.KEY_RIGHT -> setting.increment
                 Keyboard.KEY_LEFT -> -setting.increment
-                else -> return super.keyTyped(typedChar, keyCode)
+                else -> return false
             }
-            setting.value += amount
+            setting.valueAsDouble += amount
+            return true
         }
-        return super.keyTyped(typedChar, keyCode)
+        return false
     }
 
-    private val isSliderHovered get() = isAreaHovered(x, y, width - 12f, height)
+    override val isHovered: Boolean get() = isAreaHovered(x, y, width - 12f, height)
 }

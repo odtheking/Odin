@@ -8,13 +8,13 @@ import me.odinclient.ui.clickgui.elements.ModuleButton
 import me.odinclient.ui.clickgui.util.ColorUtil
 import me.odinclient.ui.clickgui.util.ColorUtil.elementBackground
 import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinclient.ui.clickgui.util.MouseUtils.isAreaHovered
-import me.odinclient.ui.clickgui.util.MouseUtils.mouseX
+import me.odinclient.utils.gui.MouseUtils.isAreaHovered
+import me.odinclient.utils.gui.MouseUtils.mouseX
 import me.odinclient.features.settings.impl.ColorSetting
+import me.odinclient.utils.Utils.clamp
 import me.odinclient.utils.gui.GuiUtils.resetScissor
 import me.odinclient.utils.gui.GuiUtils.scissor
 import me.odinclient.utils.gui.animations.EaseInOut
-import net.minecraft.util.MathHelper
 import org.lwjgl.input.Keyboard
 import kotlin.math.floor
 import kotlin.math.roundToInt
@@ -35,7 +35,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
             drawDropShadow(x + width - 40, y + 5, 31, 19, 10f, 0.75f, 5f)
             drawRoundedRect(x + width - 40, y + 5, 31, 19, 5f, colorValue.rgb)
             drawHollowRoundedRect(x + width - 41, y + 4, 31.5f, 19.5f, 4f, colorValue.darker().rgb, 1.5f)
-            if (isDisplayHovered) drawHollowRoundedRect(x + width - 41f, y + 4f, 31.5f, 19.5f, 4f, ColorUtil.boxHoverColor, 1.5f)
+            if (isHovered) drawHollowRoundedRect(x + width - 41f, y + 4f, 31.5f, 19.5f, 4f, ColorUtil.boxHoverColor, 1.5f)
 
             if (extended || openAnim.isAnimating()) {
                 val scissor = scissor(x, y, width, height + 1)
@@ -57,7 +57,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
                     }
 
                     if (isColorDragged) {
-                        val newVal = MathHelper.clamp_float((mouseX - x) / (width - textWidth - 18), 0.0f, 1.0f) * 255.0
+                        val newVal = (mouseX - x) / (width - textWidth - 18).clamp(0f, 1f) * 255.0
                         setting.setNumber(currentColor, newVal)
                     }
                     currentY += DEFAULT_HEIGHT
@@ -69,21 +69,19 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
 
     override fun mouseClicked(mouseButton: Int): Boolean {
         if (mouseButton == 0) {
-            if (isDisplayHovered) {
+            if (isHovered) {
                 if (openAnim.start()) extended = !extended
                 return true
             }
             if (!extended) return false
-            var currentY = DEFAULT_HEIGHT
-            for (currentColor in setting.colors) {
-                if (isColorHovered(y + currentY)) {
-                    dragging = currentColor.ordinal
+            for (index in 0 until setting.colors.size) {
+                if (isColorHovered(index)) {
+                    dragging = index
                     return true
                 }
-                currentY += DEFAULT_HEIGHT
             }
         } else if (mouseButton == 1) {
-            if (isDisplayHovered) {
+            if (isHovered) {
                 if (openAnim.start()) extended = !extended
                 return true
             }
@@ -98,21 +96,19 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
     override fun keyTyped(typedChar: Char, keyCode: Int): Boolean {
         if (!extended) return false
 
-        var currentY = DEFAULT_HEIGHT
-        for (currentColor in setting.colors) {
-            if (isColorHovered(y + currentY)) {
+        for (index in 0 until setting.colors.size) {
+            if (isColorHovered(index)) {
                 val amount = when (keyCode) {
                     Keyboard.KEY_RIGHT -> 255f
                     Keyboard.KEY_LEFT -> -255f
-                    else -> return super.keyTyped(typedChar, keyCode)
+                    else -> return false
                 }
-                setting.setNumber(currentColor, setting.getNumber(currentColor) + amount / 255.0)
+                setting.setNumber(index, setting.getNumber(index) + amount / 255.0)
             }
-            currentY += DEFAULT_HEIGHT
         }
         return super.keyTyped(typedChar, keyCode)
     }
 
-    private val isDisplayHovered get() = isAreaHovered(x + width - 41, y + 5, 31.5f, 19f)
-    private fun isColorHovered(currentY: Float) = isAreaHovered(x, currentY, width, DEFAULT_HEIGHT)
+    override val isHovered: Boolean get() = isAreaHovered(x + width - 41, y + 5, 31.5f, 19f)
+    private val isColorHovered: (Int) -> Boolean = { isAreaHovered(x, y + 32f + 32f * it, width, DEFAULT_HEIGHT) }
 }

@@ -1,16 +1,11 @@
 package me.odinclient.ui.clickgui.elements.menu
 
-import cc.polyfrost.oneconfig.renderer.font.Fonts
 import cc.polyfrost.oneconfig.utils.dsl.VG
-import cc.polyfrost.oneconfig.utils.dsl.drawText
 import me.odinclient.ui.clickgui.elements.Element
 import me.odinclient.ui.clickgui.elements.ElementType
 import me.odinclient.ui.clickgui.elements.ModuleButton
-import me.odinclient.ui.clickgui.util.ColorUtil
-import me.odinclient.ui.clickgui.util.FontUtil.getStringWidth
-import me.odinclient.ui.clickgui.util.MouseUtils
+import me.odinclient.utils.gui.MouseUtils
 import me.odinclient.features.settings.impl.ActionSetting
-import me.odinclient.utils.render.HUDRenderUtils.startDraw
 
 class ElementAction(parent: ModuleButton, setting: ActionSetting) :
     Element<ActionSetting>(parent, setting, ElementType.ACTION)  {
@@ -22,6 +17,7 @@ class ElementAction(parent: ModuleButton, setting: ActionSetting) :
     }
 
     override fun renderElement(vg: VG) {
+        /*
         vg.startDraw(x, y, width, height) {
             val middleX = x + width / 2 - getStringWidth(vg, displayName)
             val displayNameWidth = getStringWidth(vg, displayName) * 2 + 3
@@ -35,6 +31,8 @@ class ElementAction(parent: ModuleButton, setting: ActionSetting) :
                 vg.drawText(displayName,  middleX + 1.5, y + 8.5, -1, 16f, Fonts.REGULAR)
             }
         }
+
+         */
     }
 
     override fun mouseClicked(mouseButton: Int): Boolean {

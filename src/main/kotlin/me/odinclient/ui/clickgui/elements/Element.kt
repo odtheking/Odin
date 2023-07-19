@@ -1,7 +1,7 @@
 package me.odinclient.ui.clickgui.elements
 
 import cc.polyfrost.oneconfig.utils.dsl.VG
-import me.odinclient.ui.clickgui.util.MouseUtils.isAreaHovered
+import me.odinclient.utils.gui.MouseUtils.isAreaHovered
 import me.odinclient.features.settings.Setting
 
 open class Element<S : Setting<*>>(val parent: ModuleButton, val setting: S, type: ElementType) {
@@ -22,7 +22,7 @@ open class Element<S : Setting<*>>(val parent: ModuleButton, val setting: S, typ
     var y: Float = 0f
         get() = field + parent.y
 
-    val isHovered
+    open val isHovered
         get() = isAreaHovered(x, y, width, height)
 
     fun drawScreen(vg: VG): Float {

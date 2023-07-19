@@ -57,8 +57,8 @@ class Config(path: File) {
                         val setting = module.getSettingByName(configSetting.name) ?: continue
                         when (setting) {
                             is BooleanSetting -> setting.enabled = (configSetting as BooleanSetting).enabled
-                            is NumberSetting -> setting.value = (configSetting as NumberSetting).value
-                            is ColorSetting -> setting.value = Color((configSetting as NumberSetting).value.toInt())
+                            is NumberSetting -> setting.valueAsDouble = (configSetting as NumberSetting).valueAsDouble
+                            is ColorSetting -> setting.value = Color((configSetting as NumberSetting).valueAsDouble.toInt())
                             is SelectorSetting -> setting.selected = (configSetting as StringSetting).text
                             is StringSetting -> setting.text = (configSetting as StringSetting).text
                         }

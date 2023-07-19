@@ -6,14 +6,14 @@ import cc.polyfrost.oneconfig.utils.dsl.drawDropShadow
 import cc.polyfrost.oneconfig.utils.dsl.drawRoundedRectVaried
 import me.odinclient.ui.clickgui.elements.ModuleButton
 import me.odinclient.ui.clickgui.util.ColorUtil
-import me.odinclient.ui.clickgui.util.FontUtil.capitalizeOnlyFirst
-import me.odinclient.ui.clickgui.util.FontUtil.drawCustomCenteredText
-import me.odinclient.ui.clickgui.util.MouseUtils.isAreaHovered
-import me.odinclient.ui.clickgui.util.MouseUtils.mouseX
-import me.odinclient.ui.clickgui.util.MouseUtils.mouseY
+import me.odinclient.utils.gui.MouseUtils.isAreaHovered
+import me.odinclient.utils.gui.MouseUtils.mouseX
+import me.odinclient.utils.gui.MouseUtils.mouseY
 import me.odinclient.features.Category
 import me.odinclient.features.ModuleManager
 import me.odinclient.features.impl.general.ClickGUIModule
+import me.odinclient.utils.gui.GuiUtils.capitalizeOnlyFirst
+import me.odinclient.utils.gui.GuiUtils.drawCustomCenteredText
 import me.odinclient.utils.gui.GuiUtils.nanoVG
 import me.odinclient.utils.gui.GuiUtils.resetScissor
 import me.odinclient.utils.gui.GuiUtils.scissor
@@ -25,8 +25,8 @@ class Panel(
     var dragging = false
     val moduleButtons: ArrayList<ModuleButton> = ArrayList()
 
-    var x = ClickGUIModule.panelX[category]!!.value.toFloat()
-    var y = ClickGUIModule.panelY[category]!!.value.toFloat()
+    var x = ClickGUIModule.panelX[category]!!.value
+    var y = ClickGUIModule.panelY[category]!!.value
 
     var extended: Boolean = ClickGUIModule.panelExtended[category]!!.enabled
 
@@ -96,8 +96,8 @@ class Panel(
     fun mouseReleased(state: Int) {
         if (state == 0) dragging = false
 
-        ClickGUIModule.panelX[category]!!.value = x.toDouble()
-        ClickGUIModule.panelY[category]!!.value = y.toDouble()
+        ClickGUIModule.panelX[category]!!.value = x
+        ClickGUIModule.panelY[category]!!.value = y
         ClickGUIModule.panelExtended[category]!!.enabled = extended
 
         if (extended) {

@@ -37,13 +37,11 @@ object WaypointManager {
     }
 
     fun removeWaypoint(waypoint: Waypoint) {
-        if (currentArea == null) return modMessage("You are not in Skyblock.")
         waypoints[currentArea]?.remove(waypoint)
         waypointConfig.saveConfig()
     }
 
     fun clearWaypoints() {
-        if (currentArea == null) return modMessage("You are not in Skyblock.")
         waypoints[currentArea]?.clear()
         waypointConfig.saveConfig()
     }

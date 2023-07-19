@@ -74,7 +74,7 @@ object GhostBlock {
         }
     }
 
-    private val airBlocks = setOf(
+    private val airBlocks = arrayOf(
         //phase 1
         BlockPos(88, 220, 61),
         BlockPos(88, 219, 61),

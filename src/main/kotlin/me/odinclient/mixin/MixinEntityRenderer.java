@@ -1,6 +1,6 @@
 package me.odinclient.mixin;
 
-import me.odinclient.config.OdinConfig;
+import me.odinclient.features.impl.general.Camera;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,11 +16,11 @@ abstract public class MixinEntityRenderer implements IResourceManagerReloadListe
 
     @Redirect(method = {"orientCamera"}, at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/EntityRenderer;thirdPersonDistance:F"))
     public float tweakThirdPersonDistance(EntityRenderer instance) {
-        return OdinConfig.INSTANCE.getCameraDistance();
+        return Camera.INSTANCE.getCameraDistance();
     }
 
     @Redirect(method = {"orientCamera"}, at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/EntityRenderer;thirdPersonDistanceTemp:F"))
     public float tweakThirdPersonDistanceTemp(EntityRenderer instance) {
-        return OdinConfig.INSTANCE.getCameraDistance();
+        return Camera.INSTANCE.getCameraDistance();
     }
 }

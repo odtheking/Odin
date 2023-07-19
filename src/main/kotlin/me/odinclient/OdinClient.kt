@@ -101,7 +101,7 @@ class OdinClient {
             GyroRange,
             NoCursorReset,
             DungeonUtils,
-            Welcome,
+
             Executor,
             DevPlayers,
             ModuleManager,

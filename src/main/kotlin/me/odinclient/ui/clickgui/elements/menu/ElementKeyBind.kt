@@ -6,7 +6,6 @@ import me.odinclient.ui.clickgui.elements.Element
 import me.odinclient.ui.clickgui.elements.ElementType
 import me.odinclient.ui.clickgui.elements.ModuleButton
 import me.odinclient.ui.clickgui.util.ColorUtil
-import me.odinclient.ui.clickgui.util.MouseUtils.isAreaHovered
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.DummySetting
 import me.odinclient.utils.gui.animations.ColorAnimation
@@ -17,7 +16,6 @@ import java.awt.Color
 class ElementKeyBind(parent: ModuleButton, private val mod: Module) :
     Element<DummySetting>(parent, DummySetting("Keybind"), ElementType.KEY_BIND) {
 
-    private val isKeybindHovered get() = isAreaHovered(x, y, width, height)
     private val colorAnim = ColorAnimation(100)
 
     override fun renderElement(vg: VG) {
@@ -44,7 +42,7 @@ class ElementKeyBind(parent: ModuleButton, private val mod: Module) :
     }
 
     override fun mouseClicked(mouseButton: Int): Boolean {
-        if (mouseButton == 0 && isKeybindHovered) {
+        if (mouseButton == 0 && isHovered) {
             if (colorAnim.start()) listening = !listening
             return true
         } else if (listening) {

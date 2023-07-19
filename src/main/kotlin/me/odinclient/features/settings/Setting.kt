@@ -5,17 +5,11 @@ import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-/**
- * Super class for all module settings.
- * Functionality is added in the implementations.
- *
- * @author Aton
- */
 abstract class Setting<T> (
     val name: String,
     val hidden: Boolean = false,
     var description: String? = null,
-    ) : ReadWriteProperty<Module, T>, PropertyDelegateProvider<Module, ReadWriteProperty<Module, T>> {
+) : ReadWriteProperty<Module, T>, PropertyDelegateProvider<Module, ReadWriteProperty<Module, T>> {
     protected var visibilityDependency: () -> Boolean = { true }
 
     abstract val default: T

@@ -2,11 +2,11 @@ package me.odinclient.utils
 
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.ReceivePacketEvent
+import me.odinclient.utils.Utils.clamp
 import net.minecraft.network.play.client.C16PacketClientStatus
 import net.minecraft.network.play.server.S01PacketJoinGame
 import net.minecraft.network.play.server.S03PacketTimeUpdate
 import net.minecraft.network.play.server.S37PacketStatistics
-import net.minecraft.util.MathHelper
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -45,11 +45,8 @@ object Server {
             is S03PacketTimeUpdate -> {
                 isPinging = false
                 if (prevTime != 0L) {
-                    averageTps = MathHelper.clamp_float( // try this
-                        (20000 / (System.currentTimeMillis() - prevTime + 1)).toFloat(),
-                        0F,
-                        20F
-                    ) * 0.182 + averageTps * 0.818
+                    averageTps = (20000 / (System.currentTimeMillis() - prevTime + 1f))
+                            .clamp(0f, 20f) * 0.182 + averageTps * 0.818
                 }
                 prevTime = System.currentTimeMillis()
             }

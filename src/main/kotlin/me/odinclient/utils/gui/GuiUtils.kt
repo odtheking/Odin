@@ -1,13 +1,14 @@
 package me.odinclient.utils.gui
 
+import cc.polyfrost.oneconfig.renderer.font.Font
+import cc.polyfrost.oneconfig.renderer.font.Fonts
 import cc.polyfrost.oneconfig.renderer.scissor.Scissor
 import cc.polyfrost.oneconfig.renderer.scissor.ScissorHelper
-import cc.polyfrost.oneconfig.utils.dsl.VG
-import cc.polyfrost.oneconfig.utils.dsl.nanoVG
-import cc.polyfrost.oneconfig.utils.dsl.scale
-import cc.polyfrost.oneconfig.utils.dsl.translate
-import me.odinclient.ui.waypoint.WaypointGUI
+import cc.polyfrost.oneconfig.utils.dsl.*
+import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.ui.clickgui.util.ColorUtil
 import net.minecraft.client.gui.ScaledResolution
+import java.util.*
 
 /**
  * Helps with making GUIs
@@ -15,10 +16,10 @@ import net.minecraft.client.gui.ScaledResolution
 object GuiUtils {
 
     val scaledWidth get() =
-        ScaledResolution(WaypointGUI.mc).scaledWidth
+        ScaledResolution(mc).scaledWidth
 
     val scaledHeight get() =
-        ScaledResolution(WaypointGUI.mc).scaledHeight
+        ScaledResolution(mc).scaledHeight
 
     val scaleFactor: Float
         get() {
@@ -49,4 +50,13 @@ object GuiUtils {
         ScissorHelper.INSTANCE.resetScissor(this.instance, scissor)
 
     fun VG.nanoVG(block: VG.() -> Unit) = nanoVG(this.instance, block)
+
+    fun VG.drawCustomCenteredText(string: String, x: Float, y: Float, size: Float, font: Font, color: Int = ColorUtil.textColor) {
+        val textWidth = (x - this.getTextWidth(string, size, Fonts.MEDIUM) / 2f)
+        drawText(string, textWidth, y, color, size, font)
+    }
+
+    fun String.capitalizeOnlyFirst(): String =
+        this.substring(0, 1).uppercase(Locale.getDefault()) + this.substring(1, this.length).lowercase()
+
 }

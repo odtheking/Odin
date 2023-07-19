@@ -5,8 +5,11 @@ import com.google.gson.annotations.SerializedName
 import me.odinclient.OdinClient
 import me.odinclient.features.settings.AlwaysActive
 import me.odinclient.features.settings.Setting
+import me.odinclient.utils.Executor
 import me.odinclient.utils.skyblock.ChatUtils
+import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
 import kotlin.reflect.full.hasAnnotation
 
@@ -134,5 +137,21 @@ abstract class Module(
             if (set.name == name) return true
         }
         return false
+    }
+
+    fun executor(delay: Long, func: () -> Unit) {
+        executors.add(Executor(delay, false, func))
+    }
+
+    private val executors = ArrayList<Executor>()
+
+    @SubscribeEvent
+    fun onUpdate(event: RenderWorldLastEvent) {
+        for (i in executors) {
+            if (i.time >= i.delay) {
+                i.func()
+                i.lastTime = System.currentTimeMillis()
+            }
+        }
     }
 }

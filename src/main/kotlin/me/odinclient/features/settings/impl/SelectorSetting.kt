@@ -1,7 +1,7 @@
 package me.odinclient.features.settings.impl
 
 import me.odinclient.features.settings.Setting
-import net.minecraft.util.MathHelper
+import me.odinclient.utils.Utils.clamp
 
 class SelectorSetting(
     name: String,
@@ -15,27 +15,25 @@ class SelectorSetting(
 
     override var value: Int
         get() = index
-        set(value) { index = value }
+        set(value) {
+            index = value
+        }
 
     var index: Int = optionIndex(defaultSelected)
-     set(value) {
-         val newVal = processInput(value)
-         field = if (newVal > options.size - 1)  0 else if ( newVal < 0) options.size - 1 else newVal
-     }
+        set(value) {
+            val newVal = processInput(value)
+            field = if (newVal > options.size - 1) 0 else if (newVal < 0) options.size - 1 else newVal
+        }
 
     var selected: String
-     set (value) {
-        index = optionIndex(value)
-    }
-    get() {
-        return options[index]
-    }
+        set(value) {
+            index = optionIndex(value)
+        }
+        get() {
+            return options[index]
+        }
 
-    /**
-     * Finds the index of given option in the option list.
-     * Ignores the case of the strings and returns 0 if not found.
-     */
-    private fun optionIndex(string: String): Int {
-        return MathHelper.clamp_int(this.options.map { it.lowercase() }.indexOf(string.lowercase()), 0, options.size - 1)
-    }
+    private fun optionIndex(string: String): Int =
+        options.map { it.lowercase() }.indexOf(string.lowercase()).clamp(0, options.size - 1)
+
 }

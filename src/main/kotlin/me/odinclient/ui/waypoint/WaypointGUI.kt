@@ -54,7 +54,7 @@ object WaypointGUI : GuiScreen() {
     private var drawingAreas = false
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        nanoVG(true) {
+        nanoVG {
             translateWithMouse(mouseHandler, scaledWidth / 4f, scaledHeight / 4f)
             scaleWithMouse(mouseHandler, scaleFactor, scaleFactor)
 

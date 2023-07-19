@@ -1,6 +1,6 @@
 package me.odinclient.ui.clickgui.elements.menu
 
-import cc.polyfrost.oneconfig.renderer.font.Fonts
+import cc.polyfrost.oneconfig.renderer.font.Fonts.REGULAR
 import cc.polyfrost.oneconfig.utils.dsl.VG
 import cc.polyfrost.oneconfig.utils.dsl.drawRect
 import cc.polyfrost.oneconfig.utils.dsl.drawText
@@ -10,7 +10,7 @@ import me.odinclient.ui.clickgui.elements.ElementType
 import me.odinclient.ui.clickgui.elements.ModuleButton
 import me.odinclient.features.settings.impl.StringSetting
 import me.odinclient.ui.clickgui.util.ColorUtil
-import me.odinclient.ui.clickgui.util.FontUtil.drawCustomCenteredText
+import me.odinclient.utils.gui.GuiUtils.drawCustomCenteredText
 import me.odinclient.utils.gui.GuiUtils.nanoVG
 import org.lwjgl.input.Keyboard
 
@@ -23,14 +23,14 @@ class ElementTextField(parent: ModuleButton, setting: StringSetting) :
         vg.nanoVG {
             drawRect(x, y, width, height, ColorUtil.elementBackground)
 
-            if (getTextWidth(displayValue + "00" + displayName, 16f, Fonts.REGULAR) <= width) {
-                drawText(displayName, x + 4, y + height / 2, -1, 16f, Fonts.REGULAR)
-                drawText(displayValue, x + (width - getTextWidth(displayValue, 16f, Fonts.REGULAR) - 4f), y + height / 2, -1, 16f, Fonts.REGULAR)
+            if (getTextWidth(displayValue + "00" + displayName, 16f, REGULAR) <= width) {
+                drawText(displayName, x + 4, y + height / 2, -1, 16f, REGULAR)
+                drawText(displayValue, x + (width - getTextWidth(displayValue, 16f, REGULAR) - 4f), y + height / 2, -1, 16f, REGULAR)
             } else {
                 if (isHovered || listening) {
-                    drawCustomCenteredText(displayValue, x + width / 2f, y + height / 2f)
+                    drawCustomCenteredText(displayValue, x + width / 2f, y + height / 2f, 16f, REGULAR, -1)
                 } else {
-                    drawCustomCenteredText(displayName, x + width / 2f, y + height / 2f)
+                    drawCustomCenteredText(displayName, x + width / 2f, y + height / 2f, 16f, REGULAR, -1)
                 }
             }
         }

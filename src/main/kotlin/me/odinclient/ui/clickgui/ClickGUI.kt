@@ -103,8 +103,8 @@ object ClickGUI : GuiScreen() {
         }
 
         for (panel in panels) {
-            panel.x = ClickGUIModule.panelX[panel.category]!!.value.toFloat()
-            panel.y = ClickGUIModule.panelY[panel.category]!!.value.toFloat()
+            panel.x = ClickGUIModule.panelX[panel.category]!!.value
+            panel.y = ClickGUIModule.panelY[panel.category]!!.value
             panel.extended = ClickGUIModule.panelExtended[panel.category]!!.enabled
         }
     }

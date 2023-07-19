@@ -6,10 +6,10 @@ import cc.polyfrost.oneconfig.utils.dsl.drawRect
 import me.odinclient.ui.clickgui.Panel
 import me.odinclient.ui.clickgui.elements.menu.*
 import me.odinclient.ui.clickgui.util.ColorUtil
-import me.odinclient.ui.clickgui.util.FontUtil.drawCustomCenteredText
-import me.odinclient.ui.clickgui.util.MouseUtils.isAreaHovered
+import me.odinclient.utils.gui.MouseUtils.isAreaHovered
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.*
+import me.odinclient.utils.gui.GuiUtils.drawCustomCenteredText
 import me.odinclient.utils.gui.GuiUtils.nanoVG
 import me.odinclient.utils.gui.GuiUtils.scissor
 import me.odinclient.utils.gui.animations.EaseInOut
@@ -68,7 +68,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
             drawRect(x, y, width, offs, ColorUtil.moduleColor(module.enabled))
             if (isButtonHovered) drawRect(x, y, width, offs, if (module.enabled) 0x55111111 else ColorUtil.hoverColor)
 
-            drawCustomCenteredText(module.name, x + width / 2, y + height / 2, 18f, Fonts.MEDIUM, ColorUtil.textColor)
+            drawCustomCenteredText(module.name, x + width / 2, y + height / 2, 18f, Fonts.MEDIUM)
 
             if (!extendAnim.isAnimating() && !extended || menuElements.isEmpty()) return@nanoVG
 

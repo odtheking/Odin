@@ -1,23 +1,22 @@
 package me.odinclient.utils.skyblock
 
 import kotlinx.coroutines.delay
+import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.impl.general.BlackList
 import me.odinclient.utils.AutoSessionID
 import me.odinclient.utils.Server
 import me.odinclient.utils.WebUtils
-import net.minecraft.client.Minecraft
+import net.minecraft.event.ClickEvent
+import net.minecraft.event.HoverEvent
 import net.minecraft.util.ChatComponentText
+import net.minecraft.util.ChatStyle
+import net.minecraft.util.EnumChatFormatting
 import net.minecraftforge.client.ClientCommandHandler
 import kotlin.math.floor
 
 object ChatUtils {
 
-    private val mc = Minecraft.getMinecraft()
-    private var cats: Any? = null
-
-    init {
-        cats = WebUtils.fetchURLData("https://pastebin.com/raw/m4L2e62y")
-    }
+    private var cats: Any? = WebUtils.fetchURLData("https://pastebin.com/raw/m4L2e62y")
 
     private fun eightBall(): String {
         val responses = arrayOf(
@@ -189,5 +188,15 @@ object ChatUtils {
             sendCommand("joindungeon catacombs $num")
             modMessage("You should be in f$num in 5 seconds.")
         }
+    }
+
+    fun createClickStyle(action: ClickEvent.Action?, value: String): ChatStyle {
+        val style = ChatStyle()
+        style.chatClickEvent = ClickEvent(action, value)
+        style.chatHoverEvent = HoverEvent(
+            HoverEvent.Action.SHOW_TEXT,
+            ChatComponentText(EnumChatFormatting.YELLOW.toString() + value)
+        )
+        return style
     }
 }

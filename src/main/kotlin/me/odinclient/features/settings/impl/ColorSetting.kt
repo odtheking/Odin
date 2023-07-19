@@ -2,7 +2,7 @@ package me.odinclient.features.settings.impl
 
 import me.odinclient.features.settings.Setting
 import me.odinclient.features.settings.impl.ColorSetting.ColorComponent.*
-import net.minecraft.util.MathHelper
+import me.odinclient.utils.Utils.clamp
 import java.awt.Color
 
 class ColorSetting(
@@ -13,8 +13,6 @@ class ColorSetting(
     description: String? = null,
 ) : Setting<Color>(name, hidden, description){
 
-    // its for clarity for other settinbgs im p sure
-
     override var value: Color = default
         set(value) {
             field = processInput(value)
@@ -23,22 +21,25 @@ class ColorSetting(
     var red: Int
         get() = value.red
         set(input) {
-            value = Color(MathHelper.clamp_int(input,0,255), green, blue, alpha)
+            value = Color(input.clamp(0, 255), green, blue, alpha)
         }
+
     var green: Int
         get() = value.green
         set(input) {
-            value = Color(red, MathHelper.clamp_int(input,0,255), blue, alpha)
+            value = Color(red, input.clamp(0, 255), blue, alpha)
         }
+
     var blue: Int
         get() = value.blue
         set(input) {
-            value = Color(red, green, MathHelper.clamp_int(input,0,255), alpha)
+            value = Color(red, green, input.clamp(0, 255), alpha)
         }
+
     var alpha: Int
         get() = value.alpha
         set (input) {
-            value = Color(red, green, blue, MathHelper.clamp_int(input,0,255))
+            value = Color(red, green, blue, input.clamp(0, 255).toInt())
         }
 
     fun getNumber(colorNumber: ColorComponent): Double {
@@ -50,6 +51,8 @@ class ColorSetting(
         }
     }
 
+    fun getNumber(index: Int): Double = getNumber(colors[index])
+
     fun setNumber(colorNumber: ColorComponent, number: Double) {
         when (colorNumber) {
             RED -> red = number.toInt()
@@ -58,6 +61,8 @@ class ColorSetting(
             ALPHA -> alpha = number.toInt()
         }
     }
+
+    fun setNumber(index: Int, number: Double) = setNumber(colors[index], number)
 
     var colors = arrayOf(RED, GREEN, BLUE)
 
