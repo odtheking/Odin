@@ -1,7 +1,8 @@
 package me.odinclient.features.impl.m7
 
-import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.features.Category
+import me.odinclient.features.Module
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
@@ -9,7 +10,22 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
-object DioriteFucker {
+object DioriteFucker : Module(
+    "Fuck Diorite",
+    category = Category.M7
+) {
+
+    @SubscribeEvent
+    fun onTick(event: ClientTickEvent) {
+        if (event.phase != TickEvent.Phase.END || mc.theWorld == null || DungeonUtils.getPhase() != 2) return
+        for (block in pillars) {
+            // doubt this can really be optimized further, except reflection or mixins seeing as most of the fields these methods use are private
+            if (mc.theWorld.chunkProvider.provideChunk(block.x shr 4, block.z shr 4).getBlock(block) == Blocks.stone) {
+                mc.theWorld.setBlockState(block, Blocks.glass.defaultState, 3) // this doesn't need further optimization since it doesn't run often
+            }
+        }
+    }
+
     private val pillars = ArrayList<BlockPos>().apply {
         val basePillars = arrayListOf(
             BlockPos(45, 169, 44),
@@ -91,17 +107,6 @@ object DioriteFucker {
         repeat(28) { height ->
             for (block in basePillars) {
                 add(block.add(0, height, 0))
-            }
-        }
-    }
-
-    @SubscribeEvent
-    fun onTick(event: ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.END || mc.theWorld == null || !config.fuckDiorite || DungeonUtils.getPhase() != 2) return
-        for (block in pillars) {
-            // doubt this can really be optimized further, except reflection or mixins seeing as most of the fields these methods use are private
-            if (mc.theWorld.chunkProvider.provideChunk(block.x shr 4, block.z shr 4).getBlock(block) == Blocks.stone) {
-                mc.theWorld.setBlockState(block, Blocks.glass.defaultState, 3) // this doesn't need further optimization since it doesn't run often
             }
         }
     }

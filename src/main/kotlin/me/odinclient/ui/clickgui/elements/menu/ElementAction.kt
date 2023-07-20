@@ -16,7 +16,7 @@ class ElementAction(parent: ModuleButton, setting: ActionSetting) :
         return MouseUtils.isAreaHovered(middleX, y + 2f, displayNameWidth, height - 3f)
     }
 
-    override fun renderElement(vg: VG) {
+    override fun draw(vg: VG) {
         /*
         vg.startDraw(x, y, width, height) {
             val middleX = x + width / 2 - getStringWidth(vg, displayName)

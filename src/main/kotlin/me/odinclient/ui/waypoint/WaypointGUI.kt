@@ -78,10 +78,15 @@ object WaypointGUI : GuiScreen() {
             drawingAreas = animY != 25f
             if (drawingAreas) {
                 scissor(0f, 25f, 480f, 50f) {
+
                     areaOffset = areaAnimation.get(areaOffset, areaTarget)
+
                     var currentX = areaOffset
-                    for ((index, area) in areas.withIndex()) {
-                        currentX += area.draw(this, currentX, animY - 11f, index != 0)
+                    for (area in areas) {
+                        area.set(currentX, animY - 11f)
+                        area.draw(this)
+                        drawLine(currentX - 5, animY - 7, currentX - 5, animY + 7, 0.7, -1)
+                        currentX += area.draw(this)
                     }
                 }
             }
@@ -175,5 +180,5 @@ object WaypointGUI : GuiScreen() {
         AreaButton("P3", mouseHandler),
         AreaButton("P4", mouseHandler),
         AreaButton("P5", mouseHandler),
-    ).sortedByDescending { waypointConfig.waypoints[it.area]?.size }
+    )
 }

@@ -1,12 +1,13 @@
 package me.odinclient.utils.skyblock.dungeon
 
+import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.ReceivePacketEvent
 import me.odinclient.utils.Executor
 import me.odinclient.utils.Utils.noControlCodes
-import me.odinclient.utils.Wrappers
 import me.odinclient.utils.skyblock.ItemUtils
 import me.odinclient.utils.skyblock.LocationUtils
 import me.odinclient.utils.skyblock.LocationUtils.currentDungeon
+import me.odinclient.utils.skyblock.PlayerUtils.posY
 import me.odinclient.utils.skyblock.ScoreboardUtils
 import me.odinclient.utils.skyblock.ScoreboardUtils.cleanSB
 import net.minecraft.entity.player.EntityPlayer
@@ -15,7 +16,7 @@ import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.awt.Color
 
-object DungeonUtils : Wrappers() {
+object DungeonUtils {
 
     inline val inDungeons get() =
         LocationUtils.inSkyblock && currentDungeon != null
@@ -40,7 +41,7 @@ object DungeonUtils : Wrappers() {
             posY > 155 -> 2
             posY > 100 -> 3
             posY > 45 -> 4
-            else -> if (currentDungeon?.floor?.isInMM == true) 5 else 4
+            else -> 5
         }
     }
 

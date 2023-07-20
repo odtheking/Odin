@@ -1,22 +1,34 @@
 package me.odinclient.features.impl.general
 
-import me.odinclient.OdinClient.Companion.config
+import me.odinclient.features.Category
+import me.odinclient.features.Module
+import me.odinclient.features.settings.impl.BooleanSetting
+import me.odinclient.utils.Utils.floor
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.PlayerUtils
+import me.odinclient.utils.skyblock.PlayerUtils.posX
+import me.odinclient.utils.skyblock.PlayerUtils.posY
+import me.odinclient.utils.skyblock.PlayerUtils.posZ
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-object VanqNotifier {
+object VanqNotifier : Module(
+    "Vanq Notifier",
+    category = Category.GENERAL
+) {
+    private val ac: Boolean by BooleanSetting("All chat")
+    private val pc: Boolean by BooleanSetting("Party chat")
+
     @SubscribeEvent
     fun onClientChatReceived(event: ClientChatReceivedEvent) {
-        if(!config.vanqNotifier) return
         val message = event.message.unformattedText.noControlCodes
         if (message !== "A Vanquisher is spawning nearby!") return
+
         ChatUtils.modMessage("Vanquisher has spawned!")
         PlayerUtils.alert("§5Vanquisher has spawned!")
-        if (config.vanqNotifierAC) ChatUtils.sendChatMessage("Vanquisher spawned at: x: ${PlayerUtils.getFlooredPlayerCoords()?.x}, y: ${PlayerUtils.getFlooredPlayerCoords()?.y}, z: ${PlayerUtils.getFlooredPlayerCoords()?.z}")
-        if (config.vanqNotifierPC) ChatUtils.partyMessage("Vanquisher spawned at: x: ${PlayerUtils.getFlooredPlayerCoords()?.x}, y: ${PlayerUtils.getFlooredPlayerCoords()?.y}, z: ${PlayerUtils.getFlooredPlayerCoords()?.z}")
 
+        if (ac) ChatUtils.sendChatMessage("Vanquisher spawned at: x: ${posX.floor()}, y: ${posY.floor()}, z: ${posZ.floor()}")
+        if (pc) ChatUtils.partyMessage("Vanquisher spawned at: x: ${posX.floor()}, y: ${posY.floor()}, z: ${posZ.floor()}")
     }
 }

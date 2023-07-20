@@ -39,7 +39,7 @@ class ColorSetting(
     var alpha: Int
         get() = value.alpha
         set (input) {
-            value = Color(red, green, blue, input.clamp(0, 255).toInt())
+            value = Color(red, green, blue, input.clamp(0, 255))
         }
 
     fun getNumber(colorNumber: ColorComponent): Double {

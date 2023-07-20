@@ -4,36 +4,64 @@ import me.odinclient.OdinClient
 import me.odinclient.OdinClient.Companion.display
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.features.settings.AlwaysActive
 import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.features.settings.impl.ColorSetting
 import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.ui.clickgui.ClickGUI
 import me.odinclient.utils.skyblock.ChatUtils
+import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.LocationUtils
 import net.minecraft.event.ClickEvent
 import net.minecraft.util.ChatComponentText
-import net.minecraftforge.event.world.WorldEvent
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
+@AlwaysActive
 object ClickGUIModule: Module(
     "ClickGUI",
     Keyboard.KEY_RSHIFT,
     category = Category.GENERAL,
 ) {
     val blur: Boolean by BooleanSetting("Blur", false, description = "Toggles the background blur for the gui.")
-    val color: Color by ColorSetting("First Color", Color(50, 150, 220), allowAlpha = false, hidden = false, description = "Color theme in the gui.")
-    val secondColor: Color by ColorSetting("Second Color", Color(70, 30, 220), allowAlpha = false, hidden = false, description = "Second color theme in the gui.")
+    val color: Color by ColorSetting("First Color", Color(50, 150, 220), allowAlpha = false, description = "Color theme in the gui.")
+    val secondColor: Color by ColorSetting("Second Color", Color(70, 30, 220), allowAlpha = false, description = "Second color theme in the gui.")
 
     val panelX = mutableMapOf<Category, NumberSetting<Float>>()
     val panelY = mutableMapOf<Category, NumberSetting<Float>>()
     val panelExtended = mutableMapOf<Category, BooleanSetting>()
 
-    private val hasJoined = +BooleanSetting("Welcome Message", false, hidden = true)
+    private val hasJoined = +BooleanSetting("First join", false, hidden = true)
 
     init {
         resetPositions()
+
+        executor(250, condition = hasJoined::enabled) {
+            if (!LocationUtils.inSkyblock) return@executor
+            hasJoined.toggle()
+
+            modMessage("""
+            ${ChatUtils.getChatBreak().dropLast(1)}
+            §d§kOdinClientOnTopWeLoveOdinClientLiterallyTheBestMod
+            
+            §7Thanks for installing §3Odin§bClient ${OdinClient.VERSION}§7!
+
+             §eUse §d§l/od §r§eto access GUI settings.
+             §eUse §d§l/od help §r§efor all of of the commands.
+             
+             §eJoin the discord for support and suggestions.
+        """.trimIndent(), "")
+            OdinClient.mc.thePlayer.addChatMessage(
+                ChatComponentText(" §9https://discord.gg/2nCbC9hkxT")
+                    .setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, "https://discord.gg/2nCbC9hkxT")))
+
+            modMessage("""
+            
+            §d§kOdinClientOnTopWeLoveOdinClientLiterallyTheBestMod
+            ${ChatUtils.getChatBreak()}
+            
+        """.trimIndent(), "")
+        }
     }
 
     fun resetPositions() {
@@ -54,33 +82,4 @@ object ClickGUIModule: Module(
         super.onEnable()
         toggle()
     }
-
-    @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Load) {
-        if (hasJoined.enabled || !LocationUtils.inSkyblock) return
-        hasJoined.toggle()
-        OdinClient.miscConfig.saveAllConfigs()
-        ChatUtils.modMessage("""
-            ${ChatUtils.getChatBreak().dropLast(1)}
-            §d§kOdinClientOnTopWeLoveOdinClientLiterallyTheBestMod
-            
-            §7Thanks for installing §3Odin§bClient ${OdinClient.VERSION}§7!
-
-             §eUse §d§l/od §r§eto access GUI settings.
-             §eUse §d§l/od help §r§efor all of of the commands.
-             
-             §eJoin the discord for support and suggestions.
-        """.trimIndent(), "")
-        OdinClient.mc.thePlayer.addChatMessage(
-            ChatComponentText(" §9https://discord.gg/2nCbC9hkxT")
-            .setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, "https://discord.gg/2nCbC9hkxT")))
-
-        ChatUtils.modMessage("""
-            
-            §d§kOdinClientOnTopWeLoveOdinClientLiterallyTheBestMod
-            ${ChatUtils.getChatBreak()}
-            
-        """.trimIndent(), "")
-    }
-
 }

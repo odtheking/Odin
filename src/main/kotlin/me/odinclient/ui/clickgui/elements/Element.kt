@@ -25,12 +25,12 @@ open class Element<S : Setting<*>>(val parent: ModuleButton, val setting: S, typ
     open val isHovered
         get() = isAreaHovered(x, y, width, height)
 
-    fun drawScreen(vg: VG): Float {
-        renderElement(vg)
+    fun render(vg: VG): Float {
+        draw(vg)
         return height
     }
 
-    protected open fun renderElement(vg: VG) {}
+    protected open fun draw(vg: VG) {}
 
     open fun mouseClicked(mouseButton: Int): Boolean = isAreaHovered(x, y, width, height)
     open fun mouseReleased(state: Int) {}

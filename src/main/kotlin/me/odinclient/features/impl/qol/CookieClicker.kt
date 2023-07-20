@@ -1,46 +1,50 @@
 package me.odinclient.features.impl.qol
 
-import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
-import net.minecraft.client.Minecraft
+import me.odinclient.features.Category
+import me.odinclient.features.Module
+import me.odinclient.features.settings.impl.BooleanSetting
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.client.event.sound.PlaySoundEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent
 
-object CookieClicker {
+object CookieClicker : Module(
+    "Cookie Clicker",
+    category = Category.QOL
+) {
+    private val cancelSound: Boolean by BooleanSetting("Cancel Sound")
 
-    private var tickRamp = 0
-    @SubscribeEvent
-    fun onClientTick(event: TickEvent.ClientTickEvent) {
-        if (!config.cookieClicker) return
-        tickRamp++
-        if (tickRamp % 3 != 0) return
-        val currentScreen = mc.currentScreen
+    init {
+       /* executor(150) {
+            val currentScreen = mc.currentScreen
+            if (currentScreen !is GuiChest) return@executor
+            val container = currentScreen.inventorySlots
+            if (container !is ContainerChest) return@executor
+            val chestName = container.lowerChestInventory.displayName.unformattedText
 
-        if (currentScreen !is GuiChest) return
-        val container = currentScreen.inventorySlots
-        if (container !is ContainerChest) return
-        val chestName = container.lowerChestInventory.displayName.unformattedText
+            if (!chestName.startsWith("Cookie Clicker")) return@executor
+            mc.playerController.windowClick(
+                mc.thePlayer.openContainer.windowId,
+                13,
+                2,
+                3,
+                mc.thePlayer
+            )
+        }
 
-        if (!chestName.startsWith("Cookie Clicker")) return
-        mc.playerController.windowClick(
-            mc.thePlayer.openContainer.windowId,
-            13,
-            2,
-            3,
-            mc.thePlayer
-        )
-
+        */
     }
 
     @SubscribeEvent
     fun onSoundPlay(event: PlaySoundEvent) {
-        val currentScreen = Minecraft.getMinecraft().currentScreen
+        if (!cancelSound) return
+
+        val currentScreen = mc.currentScreen
         if (currentScreen !is GuiChest) return
         val container = currentScreen.inventorySlots
         if (container !is ContainerChest) return
+
         val chestName = container.lowerChestInventory.displayName.unformattedText
         if (!chestName.startsWith("Cookie Clicker")) return
         if (event.name == "random.eat" && event.sound.volume.toInt() == 1) {

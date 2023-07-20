@@ -1,11 +1,12 @@
 package me.odinclient.utils.skyblock.dungeon
 
 import me.odinclient.utils.Executor
-import me.odinclient.utils.Wrappers
+import me.odinclient.utils.skyblock.PlayerUtils.posX
+import me.odinclient.utils.skyblock.PlayerUtils.posZ
 import me.odinclient.utils.skyblock.ScoreboardUtils
 
 // In future maybe add stats about the dungeon like time elapsed, deaths, total secrets etc. could add some system to look back at previous runs.
-class Dungeon : Wrappers() {
+class Dungeon {
 
     init {
         getCurrentFloor()
@@ -31,7 +32,7 @@ class Dungeon : Wrappers() {
                 floor = try {
                     Floor.valueOf(line.substringAfter("(").substringBefore(")"))
                 } catch (_ : IllegalArgumentException) {
-                    return println("This should not be possible, error in dungeonutils of odinclient, please report this!.")
+                    return println("This should not be possible, error in DungeonUtils of OdinClient, please report this!.")
                 }
             }
         }

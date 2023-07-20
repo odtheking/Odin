@@ -2,6 +2,7 @@ package me.odinclient.ui.clickgui.elements
 
 import cc.polyfrost.oneconfig.renderer.font.Fonts
 import cc.polyfrost.oneconfig.utils.dsl.VG
+import cc.polyfrost.oneconfig.utils.dsl.drawGradientRoundedRect
 import cc.polyfrost.oneconfig.utils.dsl.drawRect
 import me.odinclient.ui.clickgui.Panel
 import me.odinclient.ui.clickgui.elements.menu.*
@@ -65,7 +66,8 @@ class ModuleButton(val module: Module, val panel: Panel) {
         var offs = height
 
         vg.nanoVG {
-            drawRect(x, y, width, offs, ColorUtil.moduleColor(module.enabled))
+            if (module.enabled) drawGradientRoundedRect(x, y, width, offs, ColorUtil.clickGUIColor.rgb, ColorUtil.clickGuiSecondColor.rgb, 0f)
+            else drawRect(x, y, width, offs, ColorUtil.moduleColor(module.enabled))
             if (isButtonHovered) drawRect(x, y, width, offs, if (module.enabled) 0x55111111 else ColorUtil.hoverColor)
 
             drawCustomCenteredText(module.name, x + width / 2, y + height / 2, 18f, Fonts.MEDIUM)
@@ -78,7 +80,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
             scissor(x, y, width, offs) {
                 for (menuElement in menuElements) {
                     menuElement.y = drawY
-                    drawY += menuElement.drawScreen(vg)
+                    drawY += menuElement.render(vg)
                 }
             }
         }

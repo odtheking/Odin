@@ -19,7 +19,7 @@ class ElementCheckBox(parent: ModuleButton, setting: BooleanSetting) : Element<B
     private val colorAnim = ColorAnimation(150)
     override val isHovered: Boolean get() = isAreaHovered(x + width - 30f, y + 5f, 21f, 20f)
 
-    override fun renderElement(vg: VG) {
+    override fun draw(vg: VG) {
         vg.nanoVG {
             drawRect(x, y, width, height, ColorUtil.elementBackground)
             drawText(displayName, x + 6, y + height / 2, -1, 16f, Fonts.REGULAR)

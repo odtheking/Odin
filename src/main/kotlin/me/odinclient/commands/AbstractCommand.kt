@@ -29,10 +29,11 @@ abstract class AbstractCommand(
 
     final override fun addTabCompletionOptions(
         sender: ICommandSender?,
-        args: Array<out String>?,
+        args: Array<out String>,
         pos: BlockPos?
     ): MutableList<String> {
-        return getListOfStringsMatchingLastWord(args, tabCompList)
+        return if (args.size == 1) getListOfStringsMatchingLastWord(args, tabCompList)
+        else mutableListOf()
     }
 
     final override fun processCommand(sender: ICommandSender?, args: Array<out String>) {

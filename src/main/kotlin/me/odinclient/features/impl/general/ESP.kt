@@ -7,10 +7,8 @@ import me.odinclient.events.RenderEntityModelEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.ColorSetting
-import me.odinclient.utils.VecUtils.noSqrt3DDistance
 import me.odinclient.utils.render.OutlineUtils
 import net.minecraft.entity.Entity
-import net.minecraft.entity.item.EntityArmorStand
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.awt.Color
@@ -22,10 +20,11 @@ object ESP : Module(
     private val color: Color by ColorSetting("Color", Color.WHITE)
 
     private inline val espList get() = OdinClient.miscConfig.espList
-    private var currentEntities = mutableListOf<Entity>()
+
+    var currentEntities = mutableListOf<Entity>()
 
     init {
-        executor(1000) {
+        /*executor(1000) {
             currentEntities.removeAll { it.isDead }
 
             mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()?.forEach { entity ->
@@ -42,6 +41,8 @@ object ESP : Module(
                 currentEntities.add(entities.first())
             }
         }
+
+         */
 
         executor(30000) {
             currentEntities.clear()
@@ -62,11 +63,6 @@ object ESP : Module(
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
-        clear()
-    }
-
-    // TODO: make it reload the current entities every 30s or so
-    fun clear() {
         currentEntities.clear()
     }
 }

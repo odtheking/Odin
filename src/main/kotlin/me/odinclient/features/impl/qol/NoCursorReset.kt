@@ -1,14 +1,18 @@
 package me.odinclient.features.impl.qol
 
-import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.features.Category
+import me.odinclient.features.Module
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
-object NoCursorReset {
+object NoCursorReset : Module(
+    "No Cursor Reset",
+    category = Category.QOL
+) {
     private var lastContainerOpen = 0L
     private var hasBeenNullFor = 0
 
@@ -25,5 +29,5 @@ object NoCursorReset {
         else hasBeenNullFor++
     }
 
-    fun shouldHookMouse() = System.currentTimeMillis() - lastContainerOpen < 100 && config.noCursorReset && hasBeenNullFor == 0
+    fun shouldHookMouse() = System.currentTimeMillis() - lastContainerOpen < 100 && hasBeenNullFor == 0 && this.enabled
 }

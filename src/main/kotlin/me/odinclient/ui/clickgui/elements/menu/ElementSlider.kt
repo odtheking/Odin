@@ -21,7 +21,7 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
 
     private val displayVal get() = "${(setting.valueAsDouble * 100.0).roundToInt() / 100.0}"
 
-    override fun renderElement(vg: VG) {
+    override fun draw(vg: VG) {
         val hoveredOrDragged = isHovered || listening
         val percentBar = (setting.valueAsDouble - setting.min) / (setting.max - setting.min)
 

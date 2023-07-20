@@ -1,22 +1,26 @@
 package me.odinclient.features.impl.qol
 
-import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.features.Category
+import me.odinclient.features.Module
+import me.odinclient.features.settings.impl.NumberSetting
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent
 
-object GhostPick {
-    private var item = ItemStack(Item.getItemById(278), 1)
-    init {
-        item.addEnchantment(Enchantment.getEnchantmentById(32), 10)
-        item.tagCompound?.setBoolean("Unbreakable", true)
+object GhostPick : Module(
+    "Ghost Pickaxe",
+    category = Category.QOL
+) {
+    private val slot: Int by NumberSetting("Ghost pick slot", 1, 1.0, 9.0, 1.0)
+
+    private var item = ItemStack(Item.getItemById(278), 1).apply {
+        addEnchantment(Enchantment.getEnchantmentById(32), 10)
+        tagCompound?.setBoolean("Unbreakable", true)
     }
-    @SubscribeEvent
-    fun onTick(event: TickEvent.ClientTickEvent) {
-        if (!config.ghostPickKeybind.isActive || mc.thePlayer == null || mc.currentScreen != null) return
-        mc.thePlayer?.inventory?.mainInventory?.set(config.ghostPickSlot.toInt() - 1, item)
+
+    override fun keyBind() {
+        if (mc.thePlayer == null || mc.currentScreen != null) return
+        if (this.enabled) mc.thePlayer?.inventory?.mainInventory?.set(slot - 1, item)
     }
 }

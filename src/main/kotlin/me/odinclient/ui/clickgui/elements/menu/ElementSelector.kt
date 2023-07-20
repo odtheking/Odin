@@ -24,7 +24,7 @@ class ElementSelector(parent: ModuleButton, setting: SelectorSetting) : Element<
     override val isHovered get() = isAreaHovered(x, y, width, DEFAULT_HEIGHT)
     private val isSettingHovered: (Int) -> Boolean = { isAreaHovered(x, y + 38f + 32f * it, width, 32f) }
 
-    override fun renderElement(vg: VG) {
+    override fun draw(vg: VG) {
         height = settingAnim.get(32f, setting.options.size * 36f + DEFAULT_HEIGHT, !extended)
         val displayValue = setting.selected
 

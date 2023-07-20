@@ -6,6 +6,7 @@ import me.odinclient.OdinClient
 import me.odinclient.features.settings.AlwaysActive
 import me.odinclient.features.settings.Setting
 import me.odinclient.utils.Executor
+import me.odinclient.utils.Executor.Companion.executeList
 import me.odinclient.utils.skyblock.ChatUtils
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.common.MinecraftForge
@@ -104,7 +105,7 @@ abstract class Module(
      * This is required for saving and loading these settings to / from a file.
      * Keep in mind, that these settings are passed by reference, which will get lost if the original setting is reassigned.
      */
-    fun addSettings(vararg setArray: Setting<*>) {
+    private fun addSettings(vararg setArray: Setting<*>) {
         this.addSettings(ArrayList(setArray.asList()))
     }
 
@@ -140,18 +141,29 @@ abstract class Module(
     }
 
     fun executor(delay: Long, func: () -> Unit) {
-        executors.add(Executor(delay, false, func))
+        executors.add(Executor(delay, func))
+    }
+
+    fun executor(delay: Long, repeats: Int, func: () -> Unit) {
+        executors.add(Executor.LimitedExecutor(delay, repeats, func))
+    }
+
+    fun executor(delay: Long, repeats: Int, onFinish: () -> Unit, func: () -> Unit) {
+        executors.add(Executor.LimitedExecutor(delay, repeats, func).onFinish(onFinish))
+    }
+
+    fun executor(delay: Long, condition: () -> Boolean, func: () -> Unit) {
+        executors.add(Executor.ConditionalExecutor(delay, condition, func))
+    }
+
+    fun executor(delay: Long, condition: () -> Boolean, onFinish: () -> Unit, func: () -> Unit) {
+        executors.add(Executor.ConditionalExecutor(delay,condition, func).onFinish(onFinish))
     }
 
     private val executors = ArrayList<Executor>()
 
     @SubscribeEvent
     fun onUpdate(event: RenderWorldLastEvent) {
-        for (i in executors) {
-            if (i.time >= i.delay) {
-                i.func()
-                i.lastTime = System.currentTimeMillis()
-            }
-        }
+        executors.executeList()
     }
 }

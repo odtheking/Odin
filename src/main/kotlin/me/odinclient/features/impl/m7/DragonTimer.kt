@@ -1,8 +1,9 @@
 package me.odinclient.features.impl.m7
 
-import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.ReceivePacketEvent
+import me.odinclient.features.Category
+import me.odinclient.features.Module
 import me.odinclient.utils.render.RenderUtils
 import me.odinclient.utils.skyblock.WorldUtils
 import net.minecraft.network.play.server.S2APacketParticles
@@ -15,61 +16,12 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.max
 
-object DragonTimer {
-    enum class DC(
-        private val pos: BlockPos,
-        val color: String,
-        val x: List<Int>,
-        val z: List<Int>,
-        val textPos: Vec3,
-        var alive: Boolean
-    ) {
-        Red(
-            BlockPos(32, 22, 59),
-            "c",
-            listOf(24, 30),
-            listOf(56, 62),
-            Vec3(27.0, 18.0, 60.0),
-            true,
-        ),
-        Orange(
-            BlockPos(80, 23, 56),
-            "6",
-            listOf(82, 88),
-            listOf(53, 59),
-            Vec3(84.0, 18.0, 56.0),
-            true
-        ),
-        Green(
-            BlockPos(32, 23, 94),
-            "a",
-            listOf(23, 29),
-            listOf(91, 97),
-            Vec3(26.0, 18.0, 95.0),
-            true
-        ),
-        Blue(
-            BlockPos(79, 23, 94),
-            "b",
-            listOf(82, 88),
-            listOf(91, 97),
-            Vec3(84.0, 18.0, 95.0),
-            true
-        ),
-        Purple(
-            BlockPos(56, 22, 120),
-            "5",
-            listOf(53, 59),
-            listOf(122, 128),
-            Vec3(57.0, 18.0, 125.0),
-            true
-        );
-
-        fun checkAlive() {
-            this.alive = WorldUtils.getBlockIdAt(this.pos) != 0
-        }
-    }
+object DragonTimer : Module(
+    "Dragon Timer",
+    category = Category.M7
+) {
     private const val dragonSpawnTime = 5000L
+
     private var times: MutableMap<DC, Long> = mutableMapOf(
         DC.Orange to 0L,
         DC.Red to 0L,
@@ -77,17 +29,12 @@ object DragonTimer {
         DC.Blue to 0L,
         DC.Purple to 0L
     )
+
     var toRender: MutableList<Triple<String, Int, DC>> = ArrayList()
 
     @SubscribeEvent
-    fun onTickUpdate(event: TickEvent.ClientTickEvent) {
-        if (!config.dragonTimer /*|| LocationUtils.getPhase() != 5*/) return
-        DC.values().forEach{ it.checkAlive() }
-    }
-
-    @SubscribeEvent
     fun onReceivePacket(event: ReceivePacketEvent) {
-        if (!config.dragonTimer || event.packet !is S2APacketParticles /*|| LocationUtils.getPhase() != 5*/) return
+        if (event.packet !is S2APacketParticles /*|| LocationUtils.getPhase() != 5*/) return
         val particle = event.packet
 
         if (
@@ -114,16 +61,17 @@ object DragonTimer {
 
     private fun checkParticle(event: S2APacketParticles, color: DC): Boolean {
         val (x, y, z) = listOf(event.xCoordinate, event.yCoordinate, event.zCoordinate)
-        return  x >= color.x[0] && x <= color.x[1] &&
+        return  x >= color.x.first && x <= color.x.second &&
                 y >= 15 && y <= 22 &&
-                z >= color.z[0] && z <= color.z[1]
+                z >= color.z.first && z <= color.z.second
     }
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        if (!config.dragonTimer) return
-        val currentTime: Long = System.currentTimeMillis()
+        DC.values().forEach { it.checkAlive() }
+        val currentTime = System.currentTimeMillis()
         toRender = ArrayList()
+
         DC.values().forEachIndexed { index, dragonColor ->
             val time = times[dragonColor] ?: 0L
             if (time == 0L || !dragonColor.alive) return@forEachIndexed
@@ -165,5 +113,59 @@ object DragonTimer {
     fun onWorldLoad(@Suppress("UNUSED_PARAMETER") event: WorldEvent.Load) {
         times.replaceAll { _, _ -> 0L }
         toRender = ArrayList()
+    }
+
+    enum class DC(
+        private val pos: BlockPos,
+        val color: String,
+        val x: Pair<Int, Int>,
+        val z: Pair<Int, Int>,
+        val textPos: Vec3,
+        var alive: Boolean
+    ) {
+        Red(
+            BlockPos(32, 22, 59),
+            "c",
+            Pair(24, 30),
+            Pair(56, 62),
+            Vec3(27.0, 18.0, 60.0),
+            true,
+        ),
+        Orange(
+            BlockPos(80, 23, 56),
+            "6",
+            Pair(82, 88),
+            Pair(53, 59),
+            Vec3(84.0, 18.0, 56.0),
+            true
+        ),
+        Green(
+            BlockPos(32, 23, 94),
+            "a",
+            Pair(23, 29),
+            Pair(91, 97),
+            Vec3(26.0, 18.0, 95.0),
+            true
+        ),
+        Blue(
+            BlockPos(79, 23, 94),
+            "b",
+            Pair(82, 88),
+            Pair(91, 97),
+            Vec3(84.0, 18.0, 95.0),
+            true
+        ),
+        Purple(
+            BlockPos(56, 22, 120),
+            "5",
+            Pair(53, 59),
+            Pair(122, 128),
+            Vec3(57.0, 18.0, 125.0),
+            true
+        );
+
+        fun checkAlive() {
+            this.alive = WorldUtils.getBlockIdAt(this.pos) != 0
+        }
     }
 }

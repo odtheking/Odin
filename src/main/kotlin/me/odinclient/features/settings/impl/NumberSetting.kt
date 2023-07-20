@@ -13,11 +13,11 @@ class NumberSetting<E>(
     var increment: Double = 1.0,
     hidden: Boolean = false,
     description: String? = null,
-) : Setting<E>(name, hidden, description) where E : Number, E :  Comparable<E> {
+) : Setting<E>(name, hidden, description) where E : Number, E : Comparable<E> {
 
     override var value: E = default
         set (newVal) {
-            field = processInput(newVal).toDouble().clamp(min, max) as E
+            field = roundToIncrement(processInput(newVal).toDouble()).clamp(min, max) as E
         }
 
     /**

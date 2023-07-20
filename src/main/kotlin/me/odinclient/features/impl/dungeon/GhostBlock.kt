@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object GhostBlock {
 
-    private val blacklist = setOf(
+    private val blacklist = arrayOf(
         Blocks.acacia_door,
         Blocks.anvil,
         Blocks.beacon,

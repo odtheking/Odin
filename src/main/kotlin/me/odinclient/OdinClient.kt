@@ -10,10 +10,6 @@ import me.odinclient.config.OdinConfig
 import me.odinclient.config.WaypointConfig
 import me.odinclient.events.ClientSecondEvent
 import me.odinclient.features.ModuleManager
-import me.odinclient.features.impl.dungeon.*
-import me.odinclient.features.impl.m7.*
-import me.odinclient.features.impl.general.*
-import me.odinclient.features.impl.qol.*
 import me.odinclient.ui.clickgui.ClickGUI
 import me.odinclient.utils.Executor
 import me.odinclient.utils.Server
@@ -50,60 +46,14 @@ class OdinClient {
         config.init()
 
         listOf(
-            DragonBoxes,
-            DragonTimer,
-            AutoLeap,
-            BlessingDisplay,
-            GuildCommands,
-            PartyCommands,
-            AutoMask,
-            ESP,
-            BrokenHype,
-            SuperBoom,
-            RelicAura,
-            DioriteFucker,
-            AutoReady,
-            TermAC,
-            AutoSprint,
             LocationUtils,
             ChatUtils,
-            WatcherBar,
-            DragonDeathCheck,
-            AutoShield,
-            AutoEdrag,
             Server,
-            AutoIceFill,
-            NoBlockAnimation,
-            GhostPick,
-            KuudraAlerts,
             PlayerUtils,
-            CookieClicker,
-            FPS,
-            VanqNotifier,
-            DeployableTimer,
-            Waypoints,
-            Reminders,
             RenderUtils,
-            ArrowTrajectory,
-            AutoWish,
-            TeammatesOutline,
-            WaypointManager,
-            AutoUlt,
-            TerminalTimes,
-            GhostBlock,
-            KeyESP,
-            CanClip,
-            ItemKeybinds,
-            AutoSell,
-            BlazeAtunement,
-            Camera,
-            Triggerbot,
-            GyroRange,
-            NoCursorReset,
             DungeonUtils,
 
             Executor,
-            DevPlayers,
             ModuleManager,
             this
         ).forEach {

@@ -9,6 +9,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
+// im not touching this mess like wth was who was cooking man
 object ItemKeybinds {
     private var aotsSwitch = false
     private var precorsorSwitch = false

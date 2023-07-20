@@ -8,20 +8,17 @@ import me.odinclient.utils.skyblock.PlayerUtils
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import org.lwjgl.input.Keyboard
 
 object AutoEdrag: Module(
     "Auto Ender Dragon",
-    Keyboard.KEY_NONE,
-    Category.M7
+    category = Category.M7
 ) {
     private var going = false
 
     @SubscribeEvent
     fun onChat(event: ClientChatReceivedEvent) {
-        if (!enabled) return
-        val message = event.message.unformattedText.noControlCodes.lowercase()
-        if (message == "[boss] wither king: you.. again?") {
+        val message = event.message.unformattedText.noControlCodes
+        if (message == "[BOSS] Wither King: You.. again?") {
             sendCommand("pets")
             going = true
         }
@@ -29,7 +26,7 @@ object AutoEdrag: Module(
 
     @SubscribeEvent
     fun guiOpen(event: GuiOpenEvent) {
-        if (!enabled || !going) return
+        if (!going) return
         PlayerUtils.clickItemInContainer("Pets", "Ender Dragon", event)
     }
 }

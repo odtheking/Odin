@@ -17,7 +17,7 @@ import org.lwjgl.input.Keyboard
 class ElementTextField(parent: ModuleButton, setting: StringSetting) :
     Element<StringSetting>(parent, setting, ElementType.TEXT_FIELD) {
 
-    override fun renderElement(vg: VG) {
+    override fun draw(vg: VG) {
         val displayValue = setting.text
         //make look good later
         vg.nanoVG {

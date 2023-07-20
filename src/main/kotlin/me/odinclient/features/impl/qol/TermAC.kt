@@ -10,7 +10,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
 
-object TermAC: Module(
+object TermAC : Module(
     "Terminator AC",
     Keyboard.KEY_NONE,
     Category.QOL

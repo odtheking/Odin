@@ -20,7 +20,7 @@ object LocationUtils {
     var currentArea: String? = null
 
     init {
-        Executor(1000) {
+        Executor(500) {
             if (!inSkyblock)
                 inSkyblock = onHypixel && mc.theWorld.scoreboard.getObjectiveInDisplaySlot(1)?.let { cleanSB(it.displayName).contains("SKYBLOCK") } ?: false
 

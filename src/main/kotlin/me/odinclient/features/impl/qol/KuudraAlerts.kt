@@ -1,13 +1,17 @@
 package me.odinclient.features.impl.qol
 
-import me.odinclient.OdinClient.Companion.config
+import me.odinclient.features.Category
+import me.odinclient.features.Module
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.skyblock.PlayerUtils
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-object KuudraAlerts {
-    private val map: Map<String, String> = mapOf(
+object KuudraAlerts : Module(
+    "Kuudra Alerts",
+    category = Category.QOL
+) {
+    private val map = mapOf(
         "WARNING: You do not have a key for this tier in your inventory, you will not be able to claim rewards." to "§l§4NO KUUDRA KEY!",
         "[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!" to "§l§4BUY UPGRADE ROUTE!",
         "[NPC] Elle: Not again!" to "§lPICKUP SUPPLY!",
@@ -17,27 +21,21 @@ object KuudraAlerts {
 
     @SubscribeEvent
     fun onChat(event: ClientChatReceivedEvent) {
-        if (!config.kuudraAlerts) return
         val message = event.message.unformattedText.noControlCodes
-        if (map.containsKey(message)) {
-            map[message]?.let { PlayerUtils.alert(it) }
+
+        map[message]?.let {
+            PlayerUtils.alert(it)
+            return
         }
-    }
 
-    @SubscribeEvent
-    fun onStun(event: ClientChatReceivedEvent) {
-        if (!config.kuudraAlerts) return
-        val message = event.message.unformattedText.noControlCodes
-        Regex("(.+) destroyed one of Kuudra's pods!").find(message) ?: return
-        PlayerUtils.alert("§l§4KUUDRA STUNNED!")
-    }
+        Regex("(.+) destroyed one of Kuudra's pods!").find(message)?.let {
+            PlayerUtils.alert("§l§4KUUDRA STUNNED!")
+            return
+        }
 
-    @SubscribeEvent
-    fun onUnready(event: ClientChatReceivedEvent) {
-        if (!config.kuudraAlerts) return
-        val message = event.message.unformattedText.noControlCodes
-        val match = Regex("(.+) is no longer ready!").find(message) ?: return
-        val ign = match.groups[1]?.value
-        PlayerUtils.alert("§l§4$ign IS NO LONGER READY!")
+        Regex("(.+) is no longer ready!").find(message)?.let {
+            PlayerUtils.alert("§l§4${it.groups[1]?.value} IS NO LONGER READY!")
+            return
+        }
     }
 }

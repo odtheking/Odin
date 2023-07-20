@@ -3,6 +3,8 @@ package me.odinclient.features.impl.general
 import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.RenderEntityModelEvent
+import me.odinclient.features.Category
+import me.odinclient.features.Module
 import me.odinclient.utils.render.OutlineUtils
 import me.odinclient.utils.render.RenderUtils
 import me.odinclient.utils.skyblock.ItemUtils.itemID
@@ -18,14 +20,17 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-object ArrowTrajectory {
+object ArrowTrajectory : Module(
+    "Arrow Trajectory",
+    category = Category.GENERAL
+) {
     private var boxRenderQueue: MutableList<Pair<Vec3, Vector2d>> = mutableListOf()
     private var entityRenderQueue = mutableListOf<Entity>()
 
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         entityRenderQueue.clear()
-        if (!config.arrowTrajectory || mc.thePlayer?.heldItem?.itemID != "TERMINATOR") return
+        if (mc.thePlayer?.heldItem?.itemID != "TERMINATOR") return
         setTrajectoryHeading(-5f, 0f)
         setTrajectoryHeading(0f, -0.1f)
         setTrajectoryHeading(5f, 0f)
@@ -33,20 +38,22 @@ object ArrowTrajectory {
     }
 
     private fun setTrajectoryHeading(yawOffset: Float, yOffset: Float) {
-        val yaw = mc.thePlayer.rotationYaw + yawOffset
-        val pitch = mc.thePlayer.rotationPitch
-        val yawRadians = (yaw / 180) * Math.PI
-        val pitchRadians = (pitch / 180) * Math.PI
+        val yawRadians = ((mc.thePlayer.rotationYaw + yawOffset) / 180) * Math.PI
+        val pitchRadians = (mc.thePlayer.rotationPitch / 180) * Math.PI
+
         val posX = RenderUtils.playerRenderX
         val posY = RenderUtils.playerRenderY + mc.thePlayer.eyeHeight + yOffset
         val posZ = RenderUtils.playerRenderZ
+
         var motionX = -sin(yawRadians) * cos(pitchRadians)
         var motionY = -sin(pitchRadians)
         var motionZ = cos(yawRadians) * cos(pitchRadians)
         val lengthOffset = sqrt(motionX * motionX + motionY * motionY + motionZ * motionZ)
+
         motionX = motionX / lengthOffset * 3
         motionY = motionY / lengthOffset * 3
         motionZ = motionZ / lengthOffset * 3
+
         calculateTrajectory(Vec3(motionX, motionY, motionZ), Vec3(posX, posY, posZ))
     }
 
@@ -107,7 +114,7 @@ object ArrowTrajectory {
 
     @SubscribeEvent
     fun onRenderModel(event: RenderEntityModelEvent) {
-        if (!config.arrowTrajectory || !entityRenderQueue.contains(event.entity)) return
+        if (!entityRenderQueue.contains(event.entity)) return
         if (!mc.thePlayer.canEntityBeSeen(event.entity)) return
         OutlineUtils.outlineEntity(
             event,

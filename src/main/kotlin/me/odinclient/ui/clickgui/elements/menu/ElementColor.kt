@@ -11,7 +11,6 @@ import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinclient.utils.gui.MouseUtils.isAreaHovered
 import me.odinclient.utils.gui.MouseUtils.mouseX
 import me.odinclient.features.settings.impl.ColorSetting
-import me.odinclient.utils.Utils.clamp
 import me.odinclient.utils.gui.GuiUtils.resetScissor
 import me.odinclient.utils.gui.GuiUtils.scissor
 import me.odinclient.utils.gui.animations.EaseInOut
@@ -25,7 +24,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
     private val openAnim = EaseInOut(200)
     var dragging: Int? = null
 
-    override fun renderElement(vg: VG) {
+    override fun draw(vg: VG) {
         val colorValue = setting.value
 
         nanoVG(vg.instance) {
@@ -57,7 +56,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
                     }
 
                     if (isColorDragged) {
-                        val newVal = (mouseX - x) / (width - textWidth - 18).clamp(0f, 1f) * 255.0
+                        val newVal = ((mouseX - x) / (width - textWidth - 18)).coerceIn(0f, 1f) * 255.0
                         setting.setNumber(currentColor, newVal)
                     }
                     currentY += DEFAULT_HEIGHT
@@ -86,7 +85,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
                 return true
             }
         }
-        return super.mouseClicked(mouseButton)
+        return false
     }
 
     override fun mouseReleased(state: Int) {

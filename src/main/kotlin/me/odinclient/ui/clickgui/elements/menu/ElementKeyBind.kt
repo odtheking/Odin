@@ -18,7 +18,7 @@ class ElementKeyBind(parent: ModuleButton, private val mod: Module) :
 
     private val colorAnim = ColorAnimation(100)
 
-    override fun renderElement(vg: VG) {
+    override fun draw(vg: VG) {
         val displayValue = if (mod.keyCode > 0)
             Keyboard.getKeyName(mod.keyCode) ?: "Err"
         else if (mod.keyCode < 0)

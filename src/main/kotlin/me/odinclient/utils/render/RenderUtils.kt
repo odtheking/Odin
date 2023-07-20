@@ -1,7 +1,7 @@
 package me.odinclient.utils.render
 
 import cc.polyfrost.oneconfig.config.core.OneColor
-import me.odinclient.OdinClient
+import me.odinclient.OdinClient.Companion.mc
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
@@ -23,7 +23,6 @@ import kotlin.math.*
 
 object RenderUtils {
 
-    private val mc: Minecraft = Minecraft.getMinecraft()
     private val tessellator: Tessellator = Tessellator.getInstance()
     private val worldRenderer: WorldRenderer = tessellator.worldRenderer
     private val renderManager: RenderManager = mc.renderManager
@@ -35,7 +34,6 @@ object RenderUtils {
     }
 
     fun renderVec(entity: Entity): Vec3 = Vec3(renderX(entity), renderY(entity), renderZ(entity))
-
 
     private fun renderX(entity: Entity): Double =
         entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks
@@ -248,8 +246,6 @@ object RenderUtils {
 
     private val beaconBeam = ResourceLocation("textures/entity/beacon_beam.png")
 
-
-
     private fun renderBeaconBeam(x: Double, y: Double, z: Double, r: Float, g: Float, b: Float, a: Float, depthCheck: Boolean, partialTicks: Float) {
         val height = 300
         val bottomOffset = 0
@@ -350,7 +346,7 @@ object RenderUtils {
         GlStateManager.enableAlpha()
         GlStateManager.color(1f, 1f, 1f, 1f)
         GlStateManager.translate(x, y, 500.0)
-        OdinClient.mc.textureManager.bindTexture(img)
+        mc.textureManager.bindTexture(img)
         val renderSize = scale.roundToInt()
         drawModel(0, 0, renderSize, renderSize)
         GlStateManager.popMatrix()
@@ -375,7 +371,7 @@ object RenderUtils {
     fun drawCylinder(
         pos: Vec3, baseRadius: Float, topRadius: Float, height: Float,
         slices: Int, stacks: Int, rot1: Float, rot2: Float, rot3: Float,
-        r: Double, g: Double, b: Double, a: Double, phase: Boolean = false, linemode: Boolean = false
+        r: Float, g: Float, b: Float, a: Float, phase: Boolean = false, linemode: Boolean = false
     ) {
         val renderPos = getRenderPos(pos)
         val x = renderPos.xCoord
@@ -393,7 +389,7 @@ object RenderUtils {
 
         if (phase) GlStateManager.disableDepth()
 
-        GlStateManager.color(r.toFloat(), g.toFloat(), b.toFloat(), a.toFloat())
+        GlStateManager.color(r, g, b, a)
         GlStateManager.translate(x, y, z)
         GlStateManager.rotate(rot1, 1f, 0f, 0f)
         GlStateManager.rotate(rot2, 0f, 0f, 1f)

@@ -33,13 +33,13 @@ object ESPCommand : Command("esp", listOf("odesp"), "Command for ESP.") {
                     modMessage("Removed $mobName from the ESP list.")
                     espList.remove(mobName)
                     miscConfig.saveAllConfigs()
-                    ESP.clear()
+                    ESP.currentEntities.clear()
                 }
 
                 "clear" -> {
                     espList.clear()
                     miscConfig.saveAllConfigs()
-                    ESP.clear()
+                    ESP.currentEntities.clear()
                     modMessage("ESP List cleared.")
                 }
 

@@ -1,22 +1,28 @@
 package me.odinclient.features.impl.qol
 
-import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.features.Category
+import me.odinclient.features.Module
+import me.odinclient.features.settings.impl.BooleanSetting
+import me.odinclient.utils.Utils.containsOneOf
 import me.odinclient.utils.Utils.noControlCodes
-import me.odinclient.utils.skyblock.ChatUtils
+import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent
 
-object Reminders {
+object Reminders : Module(
+    "Reminders",
+    category = Category.QOL
+) {
+    private val ultReminder: Boolean by BooleanSetting("Ult Reminder")
+    private val dragReminder: Boolean by BooleanSetting("Drag Reminder")
+    private val readyReminder: Boolean by BooleanSetting("Ready Reminder")
 
-    private var firstlaser = false
-    private var timeindungeonm: Long = 0
-    private var notified = false
-    private var playerready = false
+    private var firstLaser = false
+    private var playerReady = false
 
     private val alertMap = mapOf(
         "[BOSS] Wither King: You.. again?" to "&3Swap to edrag!",
@@ -29,49 +35,40 @@ object Reminders {
 
     @SubscribeEvent
     fun onClientChatReceived(event: ClientChatReceivedEvent) {
-        if (!config.autoLeap || !DungeonUtils.inDungeons) return
+        if (!DungeonUtils.inDungeons) return
+        val msg = event.message.unformattedText.noControlCodes
 
-        val message = event.message.unformattedText.noControlCodes
+        if (msg == "${mc.thePlayer.name} is now ready!") {
+            playerReady = true
+            mc.thePlayer.closeScreen()
+            return
+        }
 
-        if (message in alertMap) {
-            if (message.startsWith("[BOSS] Maxor:") && firstlaser) return
-            if(message.startsWith("[BOSS] Wither King") && !config.dragonReminder) return
-            if(message.startsWith("[BOSS] Maxor") && !config.ultReminder) return
-            if(message.startsWith("[BOSS] Sadan") && !config.ultReminder) return
-            if(message.startsWith("[BOSS] Goldor") && !config.ultReminder) return
+        if (msg in alertMap) {
+            val alert = alertMap[msg] ?: return
 
-            val alert = alertMap[message]
-            PlayerUtils.alert(alert!!)
-            ChatUtils.modMessage(alert)
+            if (msg.startsWith("[BOSS] Maxor:")) if (!firstLaser) firstLaser = true else return
+            if (msg.startsWith("[BOSS] Wither King:") && !dragReminder) return
+            if (!ultReminder && msg.containsOneOf("Maxor", "Goldor", "Sadan")) return
 
-            if (message.startsWith("[BOSS] Maxor:")) {
-                firstlaser = true
-            }
+            PlayerUtils.alert(alert)
+            modMessage(alert)
         }
     }
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
-        timeindungeonm = System.currentTimeMillis()
-        notified = false
-        playerready = false
-        firstlaser = false
+        playerReady = false
+        firstLaser = false
     }
 
-    @SubscribeEvent
-    fun onTick(event: TickEvent.ClientTickEvent) {
-        if (!config.readyReminder || !DungeonUtils.inDungeons || playerready || notified || System.currentTimeMillis() - timeindungeonm <= 7000) return
-        PlayerUtils.alert("&3Ready up!")
-        ChatUtils.modMessage("Ready up!")
-        notified = true
-    }
+    init {
+        executor(10000, 0) {
+            if (!readyReminder || !DungeonUtils.inDungeons) return@executor
+            if (playerReady) return@executor
 
-    @SubscribeEvent
-    fun playerReady(event: ClientChatReceivedEvent) {
-        val message = event.message.unformattedText
-        if (message == "${mc.thePlayer.name} is now ready!") {
-            playerready = true
-            mc.thePlayer.closeScreen()
+            PlayerUtils.alert("&3Ready up!")
+            modMessage("Ready up!")
         }
     }
 }

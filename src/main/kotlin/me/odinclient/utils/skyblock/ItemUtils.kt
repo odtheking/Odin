@@ -23,6 +23,15 @@ object ItemUtils {
             return ""
         }
 
+    val ItemStack.lore: List<String>
+        get() = this.tagCompound?.getCompoundTag("display")?.getTagList("Lore", 8)?.let {
+            val list = mutableListOf<String>()
+            for (i in 0 until it.tagCount()) {
+                list.add(it.getStringTagAt(i))
+            }
+            list
+        } ?: emptyList()
+
 
     fun getItemIndexInContainerChest(item: String, container: ContainerChest, contains: Boolean): Int {
         for (i in 0 until container.inventory.size - 36) {
@@ -52,16 +61,6 @@ object ItemUtils {
         }
         return -1
     }
-
-    val ItemStack.lore: List<String>
-        get() = this.tagCompound?.getCompoundTag("display")?.getTagList("Lore", 8)?.let {
-            val list = mutableListOf<String>()
-            for (i in 0 until it.tagCount()) {
-                list.add(it.getStringTagAt(i))
-            }
-            list
-        } ?: emptyList()
-
 
     enum class ItemRarity(
         val loreName: String,

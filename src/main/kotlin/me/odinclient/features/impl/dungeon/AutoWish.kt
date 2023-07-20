@@ -10,13 +10,11 @@ import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.lwjgl.input.Keyboard
 import kotlin.math.floor
 
 object AutoWish: Module(
     "Auto Wish",
-    Keyboard.KEY_NONE,
-    Category.DUNGEON
+    category =  Category.DUNGEON
 ) {
 
     private val healthPercentage: Double by NumberSetting("Health Percentage", 30.0, 5.0, 80.0, 1.0, description = "The percentage of health to wish at")
@@ -34,7 +32,7 @@ object AutoWish: Module(
 
     @SubscribeEvent
     fun onClientTick(event: TickEvent.ClientTickEvent) {
-        if (!this.enabled || DungeonUtils.inBoss || !DungeonUtils.inDungeons || !canWish) return
+        if (DungeonUtils.inBoss || !DungeonUtils.inDungeons || !canWish) return
         DungeonUtils.teammates.forEach { entityPlayer ->
             val currentHp = entityPlayer.first.health
             if (currentHp < 40 * (healthPercentage / 100) && !DungeonUtils.isGhost) {

@@ -146,7 +146,7 @@ object PlayerUtils {
         gui.displayTitle(null, null, 10, 250, 10)
     }
 
-    val posX get() = mc.thePlayer.posX
-    val posY get() = mc.thePlayer.posY
-    val posZ get() = mc.thePlayer.posZ
+    inline val posX get() = mc.thePlayer.posX
+    inline val posY get() = mc.thePlayer.posY
+    inline val posZ get() = mc.thePlayer.posZ
 }
