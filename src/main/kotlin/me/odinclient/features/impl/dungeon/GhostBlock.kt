@@ -2,6 +2,8 @@ package me.odinclient.features.impl.dungeon
 
 import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.features.Category
+import me.odinclient.features.Module
 import me.odinclient.utils.skyblock.LocationUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.init.Blocks
@@ -9,7 +11,11 @@ import net.minecraft.util.BlockPos
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-object GhostBlock {
+object GhostBlock : Module(
+    name = "Ghost Block",
+    description = "Creates ghost blocks on key press, and in specific locations",
+    category = Category.DUNGEON
+) {
 
     private val blacklist = arrayOf(
         Blocks.acacia_door,
@@ -53,6 +59,7 @@ object GhostBlock {
     fun onTick(event: TickEvent.ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START || !LocationUtils.inSkyblock || !config.ghostBlockBind.isActive || mc.thePlayer == null || mc.currentScreen != null) return
         toAir(mc.objectMouseOver.blockPos)
+        // TODO: change to use the modules keyCode
     }
 
     private fun toAir(blockPos: BlockPos?): Boolean {

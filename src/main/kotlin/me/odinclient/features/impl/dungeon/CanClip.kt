@@ -1,12 +1,19 @@
 package me.odinclient.features.impl.dungeon
 
 import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.features.Category
+import me.odinclient.features.Module
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
-object CanClip {
+object CanClip : Module(
+    name = "Can Clip",
+    description = "Tells you if you are currently able to clip through a stair under you",
+    category = Category.DUNGEON
+
+) {
 
     var canClip = false
 

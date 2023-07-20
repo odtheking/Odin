@@ -5,6 +5,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import me.odinclient.OdinClient
 import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.features.Category
+import me.odinclient.features.Module
 import me.odinclient.utils.AsyncUtils
 import me.odinclient.utils.Utils.noControlCodes
 import net.minecraft.client.gui.inventory.GuiChest
@@ -14,7 +16,11 @@ import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-object AutoSell {
+object AutoSell : Module(
+    name = "Auto Sell",
+    description = "Automatically sell items in trades and cookie menus",
+    category = Category.DUNGEON
+) {
 
     private var toSell = mutableListOf<Int>()
     private val sellList: MutableList<String> get() = OdinClient.miscConfig.autoSell

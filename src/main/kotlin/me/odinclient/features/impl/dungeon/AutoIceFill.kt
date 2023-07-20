@@ -6,6 +6,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.features.Category
+import me.odinclient.features.Module
 import me.odinclient.utils.AsyncUtils
 import me.odinclient.utils.render.RenderUtils
 import me.odinclient.utils.skyblock.ChatUtils
@@ -21,10 +23,16 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.lwjgl.input.Keyboard
 import java.awt.Color
 import kotlin.math.sin
 
-object AutoIceFill {
+object AutoIceFill: Module(
+    name = "Auto Ice Fill",
+    description = "Automatically completes the ice fill puzzle",
+    category = Category.DUNGEON,
+    keyCode = Keyboard.KEY_NONE
+) {
     private var scanned = false
     private var currentPatterns: MutableList<List<Vec3i>> = ArrayList()
     private var renderRotation: Rotation? = null

@@ -2,6 +2,8 @@ package me.odinclient.features.impl.dungeon
 
 import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.features.Category
+import me.odinclient.features.Module
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.ItemUtils
@@ -11,7 +13,11 @@ import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-object AutoMask {
+object AutoMask : Module(
+    name = "Auto Mask",
+    description = "Automatically uses masks when they proc",
+    category = Category.DUNGEON
+) {
 
     private var spiritProc = 0L
     private var bonzoProc = 0L

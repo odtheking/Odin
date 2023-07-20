@@ -2,13 +2,19 @@ package me.odinclient.features.impl.dungeon
 
 import me.odinclient.OdinClient.Companion.config
 import me.odinclient.events.ReceivePacketEvent
+import me.odinclient.features.Category
+import me.odinclient.features.Module
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.network.play.server.S47PacketPlayerListHeaderFooter
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-object BlessingDisplay {
+object BlessingDisplay : Module(
+    name = "Blessing Display",
+    description = "Displays the current blessings of the dungeon",
+    category = Category.DUNGEON
+) {
 
     enum class Blessings (
         var current: Int,

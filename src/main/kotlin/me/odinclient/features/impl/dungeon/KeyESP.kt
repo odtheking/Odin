@@ -5,6 +5,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.odinclient.OdinClient.Companion.config
+import me.odinclient.features.Category
+import me.odinclient.features.Module
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.render.RenderUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
@@ -16,7 +18,11 @@ import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.awt.Color
 
-object KeyESP {
+object KeyESP : Module(
+    name = "Key ESP",
+    description = "Draws a box around the key",
+    category = Category.DUNGEON
+) {
     private var currentKey: Pair<Color, Entity>? = null
 
     @OptIn(DelicateCoroutinesApi::class)

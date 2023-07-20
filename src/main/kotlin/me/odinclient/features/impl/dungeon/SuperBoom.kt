@@ -2,13 +2,19 @@ package me.odinclient.features.impl.dungeon
 
 import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.features.Category
+import me.odinclient.features.Module
 import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.network.play.client.C09PacketHeldItemChange
 import net.minecraftforge.client.event.MouseEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-object SuperBoom {
+object SuperBoom : Module(
+    name = "Super Boom",
+    description = "Places TNT when you left click on a block which can be blown up",
+    category = Category.DUNGEON
+) {
     private var lastclick = 0L
     @SubscribeEvent
     fun onMouseInput(event: MouseEvent) {

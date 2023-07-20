@@ -6,6 +6,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.features.Category
+import me.odinclient.features.Module
 import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.EntityLivingBase
@@ -15,7 +17,11 @@ import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-object AutoReady {
+object AutoReady : Module(
+    name = "Auto Ready",
+    description = "Automatically ready up in dungeons",
+    category = Category.DUNGEON
+) {
 
     private var tped = false
     private var click = false

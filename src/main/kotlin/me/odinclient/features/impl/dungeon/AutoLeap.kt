@@ -2,6 +2,8 @@ package me.odinclient.features.impl.dungeon
 
 import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.features.Category
+import me.odinclient.features.Module
 import me.odinclient.features.impl.general.BlackList
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.skyblock.ChatUtils
@@ -12,7 +14,11 @@ import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-object AutoLeap {
+object AutoLeap : Module(
+    name = "Auto Leap",
+    description = "Automatically leaps to the player who teleported to you",
+    category = Category.DUNGEON
+) {
 
     private var opened = false
     private var target: String? = null
