@@ -7,7 +7,6 @@ import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.utils.Utils.name
 import me.odinclient.utils.skyblock.PlayerUtils.windowClick
-import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.client.event.sound.PlaySoundEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
