@@ -4,6 +4,7 @@ import me.odinclient.OdinClient.Companion.config
 import me.odinclient.events.ReceivePacketEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.network.play.server.S47PacketPlayerListHeaderFooter
@@ -15,6 +16,11 @@ object BlessingDisplay : Module(
     description = "Displays the current blessings of the dungeon",
     category = Category.DUNGEON
 ) {
+    private val power: Boolean by BooleanSetting("Power Blessing", true)
+    private val time: Boolean by BooleanSetting("Time Blessing", true)
+    private val stone: Boolean by BooleanSetting("Stone Blessing")
+    private val life: Boolean by BooleanSetting("Life Blessing")
+    private val wisdom: Boolean by BooleanSetting("Wisdom Blessing")
 
     enum class Blessings (
         var current: Int,
@@ -49,23 +55,23 @@ object BlessingDisplay : Module(
         val footer = event.packet.footer.unformattedText.noControlCodes
 
         // This looks like shit but oh well
-        if (config.powerBlessing)
+        if (power)
             Blessings.POWER.regex.find(footer)?.let { Blessings.POWER.current = romanToInt(it.groupValues[1]) }
         else Blessings.POWER.current = 0
 
-        if (config.lifeBlessing)
+        if (life)
             Blessings.LIFE.regex.find(footer)?.let { Blessings.LIFE.current = romanToInt(it.groupValues[1]) }
         else Blessings.LIFE.current = 0
 
-        if (config.wisdomBlessing)
+        if (wisdom)
             Blessings.WISDOM.regex.find(footer)?.let { Blessings.WISDOM.current = romanToInt(it.groupValues[1]) }
         else Blessings.WISDOM.current = 0
 
-        if (config.stoneBlessing)
+        if (stone)
             Blessings.STONE.regex.find(footer)?.let { Blessings.STONE.current = romanToInt(it.groupValues[1]) }
         else Blessings.STONE.current = 0
 
-        if (config.timeBlessing)
+        if (time)
             Blessings.TIME.regex.find(footer)?.let { Blessings.TIME.current = 5 }
         else Blessings.TIME.current = 0
     }

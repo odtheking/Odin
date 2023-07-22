@@ -8,7 +8,7 @@ import me.odinclient.ui.clickgui.elements.ModuleButton
 import me.odinclient.ui.clickgui.util.ColorUtil
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.DummySetting
-import me.odinclient.utils.gui.animations.ColorAnimation
+import me.odinclient.utils.gui.animations.impl.ColorAnimation
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import java.awt.Color

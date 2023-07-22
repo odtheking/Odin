@@ -21,6 +21,6 @@ object GhostPick : Module(
 
     override fun keyBind() {
         if (mc.thePlayer == null || mc.currentScreen != null) return
-        if (this.enabled) mc.thePlayer?.inventory?.mainInventory?.set(slot - 1, item)
+        if (enabled) mc.thePlayer?.inventory?.mainInventory?.set(slot - 1, item)
     }
 }

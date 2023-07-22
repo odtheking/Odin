@@ -1,10 +1,12 @@
 package me.odinclient.utils
 
 import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.utils.Utils.floor
 import net.minecraft.entity.Entity
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.MathHelper
 import net.minecraft.util.Vec3
+import net.minecraft.util.Vec3i
 import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sin
@@ -69,4 +71,12 @@ object VecUtils {
 
     private fun isVecInXY(vec: Vec3, aabb: AxisAlignedBB): Boolean =
         vec.xCoord in aabb.minX..aabb.maxX && vec.yCoord in aabb.minY..aabb.maxY
+
+    operator fun Vec3.plus(vec3: Vec3): Vec3 {
+        return this.add(vec3)
+    }
+
+    fun Vec3.floored(): Vec3i {
+        return Vec3i(xCoord.floor(), xCoord.floor(), xCoord.floor())
+    }
 }

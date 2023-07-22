@@ -6,9 +6,10 @@ import kotlinx.coroutines.launch
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.mixin.MinecraftAccessor
 import me.odinclient.utils.AsyncUtils
+import me.odinclient.utils.VecUtils.floored
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.ItemUtils.getItemIndexInContainerChest
-import me.odinclient.utils.skyblock.ItemUtils.getItemIndexInInventory
+import me.odinclient.utils.skyblock.ItemUtils.getItemSlot
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.inventory.ContainerChest
@@ -17,15 +18,16 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
 import net.minecraftforge.client.event.GuiOpenEvent
-import kotlin.math.floor
 
 object PlayerUtils {
 
-    fun rightClick() =
+    fun rightClick() {
         (mc as MinecraftAccessor).invokeRightClickMouse()
+    }
 
-    fun leftClick() =
+    fun leftClick() {
         (mc as MinecraftAccessor).invokeClickMouse()
+    }
 
     fun dropItem() {
         mc.thePlayer.dropOneItem(false)
@@ -33,7 +35,7 @@ object PlayerUtils {
 
     fun useItem(item: String, swapBack: Boolean = true) {
         val inventory = mc.thePlayer.inventory
-        val index = ItemUtils.getItemSlot(item)
+        val index = getItemSlot(item) ?: return modMessage("Couldn't find $item")
         if (index !in 0..8) return modMessage("Couldn't find $item")
 
         val prevItem = inventory.currentItem
@@ -56,50 +58,53 @@ object PlayerUtils {
         mc.thePlayer.sendQueue.addToSendQueue(packet)
     }
 
-    fun getFlooredPlayerCoords(): Vec3i? =
-        if (mc.thePlayer == null) null
-        else mc.thePlayer.positionVector.floored()
-        //else Vec3i(floor(mc.thePlayer.posX), floor(mc.thePlayer.posY), floor(mc.thePlayer.posZ))
-
-    fun Vec3.floored() = Vec3i(floor(this.xCoord), floor(this.yCoord), floor(this.zCoord))
-
-    fun clipTo(pos: Vec3) =
+    fun clipTo(pos: Vec3) {
         mc.thePlayer.setPosition(pos.xCoord + 0.5, pos.yCoord, pos.zCoord + 0.5)
+    }
 
-    fun clipTo(x: Double, y: Double, z: Double) =
+    fun clipTo(x: Double, y: Double, z: Double) {
         mc.thePlayer.setPosition(x + 0.5, y, z + 0.5)
+    }
 
-    private fun windowClick(slot: Int, mode: Int) =
-        mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, slot, mode, 2, mc.thePlayer)
+
+    fun windowClick(windowId: Int, slotId: Int, button: Int, mode: Int) {
+        mc.playerController.windowClick(windowId, slotId, button, mode, mc.thePlayer)
+    }
+
+    private fun windowClick(slot: Int, button: Int) {
+        windowClick(mc.thePlayer.inventoryContainer.windowId, slot, button, 2)
+    }
+
+    fun leftClickWindow(windowId: Int, index : Int) {
+        windowClick(windowId, index, 0, 0)
+    }
+
+    fun shiftClickWindow(windowId: Int, index : Int) {
+        windowClick(windowId, index, 0, 1)
+    }
 
     @OptIn(DelicateCoroutinesApi::class)
     fun clickItemInContainer(containerName: String, itemName: String, event: GuiOpenEvent, contains: Boolean = true) {
         if (event.gui !is GuiChest) return
+
         val container = (event.gui as GuiChest).inventorySlots
         if (container !is ContainerChest) return
+
         val chestName = container.lowerChestInventory.displayName.unformattedText
         if (!chestName.contains(containerName)) return
 
-        GlobalScope.launch{
+        GlobalScope.launch {
             val deferred = AsyncUtils.waitUntilLastItem(container)
             try {
                 deferred.await()
             } catch (e: Exception) {
                 return@launch
             }
-            val index = getItemIndexInContainerChest(itemName, container, contains)
-            if (index == -1) {
-                modMessage("§cCouldn't find §f$itemName!")
-                return@launch
-            }
 
-            mc.playerController.windowClick(
-                mc.thePlayer.openContainer.windowId,
-                index,
-                2,
-                3,
-                mc.thePlayer
-            )
+            val index = getItemIndexInContainerChest(container, itemName, contains)
+                ?: return@launch modMessage("§cCouldn't find §f$itemName!")
+
+            windowClick(container.windowId, index, 2, 3)
             mc.thePlayer.closeScreen()
         }
     }
@@ -120,12 +125,12 @@ object PlayerUtils {
                 println("Promise rejected")
                 return@launch
             }
+
             println("last item loaded!")
-            val index = getItemIndexInInventory(itemName, contains)
-            if (index == -1) {
-                modMessage("§cCouldn't find §f$itemName!")
-                return@launch
-            } else println("found item at index $index, clicking...")
+
+            val index = getItemSlot(itemName, contains) ?: return@launch modMessage("§cCouldn't find §f$itemName!")
+
+            println("found item at index $index, clicking...")
 
             mc.playerController.windowClick(
                 mc.thePlayer.openContainer.windowId,
@@ -140,11 +145,17 @@ object PlayerUtils {
 
     fun alert(title: String, playSound: Boolean = true) {
         if (playSound) mc.thePlayer.playSound("note.pling", 100f, 1f)
-        val gui = mc.ingameGUI
-        gui.displayTitle(title, null, 10, 250, 10)
-        gui.displayTitle(null, "", 10, 250, 10)
-        gui.displayTitle(null, null, 10, 250, 10)
+        mc.ingameGUI.run {
+            displayTitle(title, null, 10, 250, 10)
+            displayTitle(null, "", 10, 250, 10)
+            displayTitle(null, null, 10, 250, 10)
+        }
     }
+
+    val posFloored
+        get() = mc.thePlayer.positionVector.floored()
+
+    fun getFlooredPlayerCoords(): Vec3i = mc.thePlayer.positionVector.floored()
 
     inline val posX get() = mc.thePlayer.posX
     inline val posY get() = mc.thePlayer.posY

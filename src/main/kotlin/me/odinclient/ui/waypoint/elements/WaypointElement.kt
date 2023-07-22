@@ -10,7 +10,7 @@ import me.odinclient.features.impl.general.WaypointManager.Waypoint
 import me.odinclient.ui.waypoint.WaypointGUI
 import me.odinclient.ui.waypoint.WaypointGUI.mouseHandler
 import me.odinclient.utils.Utils.noControlCodes
-import me.odinclient.utils.gui.animations.ColorAnimation
+import me.odinclient.utils.gui.animations.impl.ColorAnimation
 import java.awt.Color
 
 class WaypointElement(val waypoint: Waypoint) {

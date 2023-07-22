@@ -1,9 +1,6 @@
 package me.odinclient.features.impl.dungeon
 
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import me.odinclient.OdinClient.Companion.config
 import me.odinclient.features.Category
 import me.odinclient.features.Module
@@ -25,18 +22,18 @@ object KeyESP : Module(
 ) {
     private var currentKey: Pair<Color, Entity>? = null
 
-    @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
     fun onEntityJoin(event: EntityJoinWorldEvent) {
-        if (event.entity !is EntityArmorStand || !DungeonUtils.inDungeons || !config.keyESP) return
+        if (event.entity !is EntityArmorStand || !DungeonUtils.inDungeons) return
 
-        GlobalScope.launch {
+        CoroutineScope(Dispatchers.IO).launch {
             delay(500)
+
             val name = event.entity.name.noControlCodes
             if (name == "Wither Key") {
-                currentKey = Pair(Color(0, 0, 0), event.entity)
+                currentKey = Color(0, 0, 0) to event.entity
             } else if (name == "Blood Key") {
-                currentKey = Pair(Color(255, 0, 0), event.entity)
+                currentKey = Color(255, 0, 0) to event.entity
             }
         }
     }
@@ -44,11 +41,13 @@ object KeyESP : Module(
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (currentKey == null) return
+
         val (color, entity) = currentKey!!
         if (entity.isDead) {
             currentKey = null
             return
         }
+
         val pos = entity.positionVector
         RenderUtils.drawCustomEspBox(
             pos.xCoord - 0.5, 1.0,

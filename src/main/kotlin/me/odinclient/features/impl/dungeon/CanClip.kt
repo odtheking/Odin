@@ -12,7 +12,6 @@ object CanClip : Module(
     name = "Can Clip",
     description = "Tells you if you are currently able to clip through a stair under you",
     category = Category.DUNGEON
-
 ) {
 
     var canClip = false

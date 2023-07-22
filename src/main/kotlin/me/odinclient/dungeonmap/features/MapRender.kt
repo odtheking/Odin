@@ -8,7 +8,7 @@ import me.odinclient.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import me.odinclient.utils.skyblock.dungeon.map.MapUtils
 import me.odinclient.utils.skyblock.dungeon.map.MapUtils.equalsOneOf
 import me.odinclient.utils.skyblock.dungeon.map.MapUtils.roomSize
-import me.odinclient.utils.skyblock.dungeon.map.RenderUtils
+import me.odinclient.utils.skyblock.dungeon.map.MapRenderUtils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.RenderGameOverlayEvent
@@ -33,7 +33,7 @@ object MapRender {
         GlStateManager.translate(config.mapX, config.mapY, 0f)
         GlStateManager.scale(config.mapScale, config.mapScale, 1f)
 
-        RenderUtils.renderRect(
+        MapRenderUtils.renderRect(
             0.0,
             0.0,
             128.0,
@@ -41,7 +41,7 @@ object MapRender {
             config.mapBackground.toJavaColor()
         )
 
-        RenderUtils.renderRectBorder(
+        MapRenderUtils.renderRectBorder(
             0.0,
             0.0,
             128.0,
@@ -83,7 +83,7 @@ object MapRender {
 
                 when {
                     xEven && yEven -> if (tile is Room) {
-                        RenderUtils.renderRect(
+                        MapRenderUtils.renderRect(
                             xOffset.toDouble(),
                             yOffset.toDouble(),
                             roomSize.toDouble(),
@@ -92,7 +92,7 @@ object MapRender {
                         )
                     }
                     !xEven && !yEven -> {
-                        RenderUtils.renderRect(
+                        MapRenderUtils.renderRect(
                             xOffset.toDouble(),
                             yOffset.toDouble(),
                             (roomSize + connectorSize).toDouble(),
@@ -140,7 +140,7 @@ object MapRender {
                             GlStateManager.color(255f, 255f, 255f, 255f)
                             mc.textureManager.bindTexture(it)
 
-                            RenderUtils.drawTexturedModalRect(
+                            MapRenderUtils.drawTexturedModalRect(
                                 xOffset + (roomSize - checkmarkSize) / 2,
                                 yOffset + (roomSize - checkmarkSize) / 2,
                                 checkmarkSize,
@@ -168,7 +168,7 @@ object MapRender {
                         name.addAll(tile.data.name.split(" "))
                     }
                     // Offset + half of roomsize
-                    RenderUtils.renderCenteredText(name, xOffset + (roomSize shr 1), yOffset + (roomSize shr 1), color)
+                    MapRenderUtils.renderCenteredText(name, xOffset + (roomSize shr 1), yOffset + (roomSize shr 1), color)
                 }
             }
         }
@@ -195,13 +195,13 @@ object MapRender {
 
     private fun renderPlayerHeads() {
         if (Dungeon.dungeonTeammates.isEmpty()) {
-            RenderUtils.drawPlayerHead(mc.thePlayer.name, DungeonPlayer(mc.thePlayer.locationSkin).apply {
+            MapRenderUtils.drawPlayerHead(mc.thePlayer.name, DungeonPlayer(mc.thePlayer.locationSkin).apply {
                 yaw = mc.thePlayer.rotationYawHead
             })
         } else {
             Dungeon.dungeonTeammates.forEach { (name, teammate) ->
                 if (!teammate.dead) {
-                    RenderUtils.drawPlayerHead(name, teammate)
+                    MapRenderUtils.drawPlayerHead(name, teammate)
                 }
             }
         }
@@ -222,7 +222,7 @@ object MapRender {
         if (doorway) {
             if (vertical) y1 += doorwayOffset else x1 += doorwayOffset
         }
-        RenderUtils.renderRect(
+        MapRenderUtils.renderRect(
             x1.toDouble(), y1.toDouble(),
             (if (vertical) doorWidth else width).toDouble(),
             (if (vertical) width else doorWidth).toDouble(),

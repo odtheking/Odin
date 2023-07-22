@@ -11,9 +11,9 @@ import me.odinclient.dungeonmap.core.map.Tile
 import me.odinclient.events.ReceivePacketEvent
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils.inDungeons
+import me.odinclient.utils.skyblock.dungeon.map.MapRenderUtils
 import me.odinclient.utils.skyblock.dungeon.map.MapUtils
 import me.odinclient.utils.skyblock.dungeon.map.MapUtils.equalsOneOf
-import me.odinclient.utils.skyblock.dungeon.map.RenderUtils
 import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.util.StringUtils
@@ -111,9 +111,9 @@ object Dungeon {
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
         if (!inDungeons || !config.mapEnabled) return
-        playerImage = RenderUtils.createBufferedImageFromTexture(mc.textureManager.getTexture(mc.thePlayer.locationSkin).glTextureId)
+        playerImage = MapRenderUtils.createBufferedImageFromTexture(mc.textureManager.getTexture(mc.thePlayer.locationSkin).glTextureId)
         dungeonTeammates.values.forEach {
-            it.bufferedImage = RenderUtils.createBufferedImageFromTexture(mc.textureManager.getTexture(it.skin).glTextureId)
+            it.bufferedImage = MapRenderUtils.createBufferedImageFromTexture(mc.textureManager.getTexture(it.skin).glTextureId)
         }
     }
 

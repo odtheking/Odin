@@ -1,14 +1,16 @@
 package me.odinclient.utils.gui.animations
 
+import me.odinclient.utils.clock.Clock
+
 abstract class Animation<T>(private var duration: Long) {
 
     private var animating = false
-    private var startTime = 0L
+    private val clock = Clock(duration)
 
     fun start(bypass: Boolean = false): Boolean {
         if (!animating || bypass) {
             animating = true
-            startTime = System.currentTimeMillis()
+            clock.update()
             return true
         }
         return false
@@ -16,7 +18,7 @@ abstract class Animation<T>(private var duration: Long) {
 
     fun getPercent(): Int {
         return if (animating) {
-            val percent = ((System.currentTimeMillis() - startTime) / duration.toDouble() * 100).toInt()
+            val percent = (clock.getTime() / duration.toDouble() * 100).toInt()
             if (percent > 100) animating = false
             percent
         } else {

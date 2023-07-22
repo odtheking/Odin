@@ -7,6 +7,7 @@ import me.odinclient.OdinClient.Companion.waypointConfig
 import me.odinclient.features.impl.general.WaypointManager
 import me.odinclient.ui.waypoint.elements.AreaButton
 import me.odinclient.ui.waypoint.elements.WaypointElement
+import me.odinclient.utils.VecUtils.floored
 import me.odinclient.utils.gui.GuiUtils.scaleFactor
 import me.odinclient.utils.gui.GuiUtils.scaleWithMouse
 import me.odinclient.utils.gui.GuiUtils.scaledHeight
@@ -14,10 +15,9 @@ import me.odinclient.utils.gui.GuiUtils.scaledWidth
 import me.odinclient.utils.gui.GuiUtils.scissor
 import me.odinclient.utils.gui.GuiUtils.translateWithMouse
 import me.odinclient.utils.gui.MouseHandler
-import me.odinclient.utils.gui.animations.EaseInOut
-import me.odinclient.utils.gui.animations.LinearAnimation
+import me.odinclient.utils.gui.animations.impl.EaseInOut
+import me.odinclient.utils.gui.animations.impl.LinearAnimation
 import me.odinclient.utils.skyblock.LocationUtils.currentArea
-import me.odinclient.utils.skyblock.PlayerUtils.floored
 import net.minecraft.client.gui.GuiScreen
 import org.lwjgl.input.Mouse
 import java.awt.Color

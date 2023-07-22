@@ -5,8 +5,9 @@ import com.google.gson.annotations.SerializedName
 import me.odinclient.OdinClient
 import me.odinclient.features.settings.AlwaysActive
 import me.odinclient.features.settings.Setting
-import me.odinclient.utils.Executor
-import me.odinclient.utils.Executor.Companion.executeList
+import me.odinclient.utils.clock.AbstractExecutor
+import me.odinclient.utils.clock.AbstractExecutor.*
+import me.odinclient.utils.clock.AbstractExecutor.Companion.executeAll
 import me.odinclient.utils.skyblock.ChatUtils
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.common.MinecraftForge
@@ -83,10 +84,8 @@ abstract class Module(
      */
     fun toggle() {
         enabled = !enabled
-        if (enabled)
-            onEnable()
-        else
-            onDisable()
+        if (enabled) onEnable()
+        else onDisable()
     }
 
     /**
@@ -106,7 +105,7 @@ abstract class Module(
      * Keep in mind, that these settings are passed by reference, which will get lost if the original setting is reassigned.
      */
     private fun addSettings(vararg setArray: Setting<*>) {
-        this.addSettings(ArrayList(setArray.asList()))
+        addSettings(ArrayList(setArray.asList()))
     }
 
     fun <K: Setting<*>> register(setting: K): K {
@@ -145,25 +144,29 @@ abstract class Module(
     }
 
     fun executor(delay: Long, repeats: Int, func: () -> Unit) {
-        executors.add(Executor.LimitedExecutor(delay, repeats, func))
+        executors.add(LimitedExecutor(delay, repeats, func))
     }
 
     fun executor(delay: Long, repeats: Int, onFinish: () -> Unit, func: () -> Unit) {
-        executors.add(Executor.LimitedExecutor(delay, repeats, func).onFinish(onFinish))
+        executors.add(LimitedExecutor(delay, repeats, func).onFinish(onFinish))
     }
 
     fun executor(delay: Long, condition: () -> Boolean, func: () -> Unit) {
-        executors.add(Executor.ConditionalExecutor(delay, condition, func))
+        executors.add(ConditionalExecutor(delay, condition, func))
     }
 
     fun executor(delay: Long, condition: () -> Boolean, onFinish: () -> Unit, func: () -> Unit) {
-        executors.add(Executor.ConditionalExecutor(delay,condition, func).onFinish(onFinish))
+        executors.add(ConditionalExecutor(delay,condition, func).onFinish(onFinish))
     }
 
-    private val executors = ArrayList<Executor>()
+    fun executor(delay: () -> Long, func: () -> Unit) {
+        executors.add(VaryingExecutor(delay, func))
+    }
+
+    private val executors = ArrayList<AbstractExecutor>()
 
     @SubscribeEvent
-    fun onUpdate(event: RenderWorldLastEvent) {
-        executors.executeList()
+    fun onRender(event: RenderWorldLastEvent) {
+        executors.executeAll()
     }
 }

@@ -7,7 +7,7 @@ import me.odinclient.OdinClient.Companion.moduleConfig
 import me.odinclient.ui.clickgui.elements.menu.ElementColor
 import me.odinclient.features.Category
 import me.odinclient.features.impl.general.ClickGUIModule
-import me.odinclient.utils.gui.animations.EaseInOut
+import me.odinclient.utils.gui.animations.impl.EaseInOut
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.entity.player.EntityPlayer
@@ -97,6 +97,7 @@ object ClickGUI : GuiScreen() {
         openedTime = System.currentTimeMillis()
         openingAnimation.start(true)
 
+        // use a different blur
         if (OpenGlHelper.shadersSupported && mc.renderViewEntity is EntityPlayer && ClickGUIModule.blur) {
             mc.entityRenderer.stopUseShader()
             mc.entityRenderer.loadShader(ResourceLocation("shaders/post/blur.json"))

@@ -4,8 +4,12 @@ import kotlinx.coroutines.delay
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.impl.general.BlackList
 import me.odinclient.utils.AutoSessionID
-import me.odinclient.utils.Server
+import me.odinclient.utils.ServerUtils
+import me.odinclient.utils.Utils.floor
 import me.odinclient.utils.WebUtils
+import me.odinclient.utils.skyblock.PlayerUtils.posX
+import me.odinclient.utils.skyblock.PlayerUtils.posY
+import me.odinclient.utils.skyblock.PlayerUtils.posZ
 import net.minecraft.event.ClickEvent
 import net.minecraft.event.HoverEvent
 import net.minecraft.util.ChatComponentText
@@ -90,7 +94,7 @@ object ChatUtils {
         when (message.split(" ")[0].drop(1)) {
             "help" -> guildMessage("Commands: coords, odin, boop, cf, 8ball, dice, cat, ping")
             "coords" -> guildMessage(
-                "x: ${PlayerUtils.getFlooredPlayerCoords()?.x}, y: ${PlayerUtils.getFlooredPlayerCoords()?.y}, z: ${PlayerUtils.getFlooredPlayerCoords()?.z}"
+                "x: ${posX.floor()}, y: ${posY.floor()}, z: ${posZ.floor()}"
             )
             "odin" -> guildMessage("OdinClient! https://discord.gg/2nCbC9hkxT")
             "boop" -> sendChatMessage("/boop $name")
@@ -98,7 +102,7 @@ object ChatUtils {
             "8ball" -> guildMessage(eightBall())
             "dice" -> guildMessage(rollDice())
             "cat" -> guildMessage(catPics())
-            "ping" -> guildMessage("Current Ping: ${floor(Server.averagePing)}ms")
+            "ping" -> guildMessage("Current Ping: ${floor(ServerUtils.averagePing)}ms")
             "gm" -> guildMessage("Good Morning $name!")
             "gn" -> guildMessage("Good Night $name.")
         }
@@ -121,7 +125,7 @@ object ChatUtils {
                 delay(500)
                 sendCommand("p transfer $name")
             }
-            "coords" -> partyMessage("x: ${PlayerUtils.getFlooredPlayerCoords()?.x}, y: ${PlayerUtils.getFlooredPlayerCoords()?.y}, z: ${PlayerUtils.getFlooredPlayerCoords()?.z}")
+            "coords" -> partyMessage("x: ${PlayerUtils.getFlooredPlayerCoords().x}, y: ${PlayerUtils.getFlooredPlayerCoords().y}, z: ${PlayerUtils.getFlooredPlayerCoords().z}")
             "allinvite" -> sendCommand("p settings allinvite")
             "odin" -> partyMessage("Odin! https://discord.gg/2nCbC9hkxT")
             "boop" -> {
@@ -150,7 +154,7 @@ object ChatUtils {
                 partyMessage(line)
                 delay(350)
             }
-            "ping" -> partyMessage("Current Ping: ${floor(Server.averagePing)}ms")
+            "ping" -> partyMessage("Current Ping: ${floor(ServerUtils.averagePing)}ms")
             "dt" -> {
                 modMessage("Reminder set for the end of the run!")
                 dtPlayer = name
@@ -163,7 +167,7 @@ object ChatUtils {
         when (message.split(" ")[0]) {
             "help" -> privateMessage("Commands: inv, coords, odin, boop, cf, 8ball, dice, cat ,ping", name)
             "coords" -> privateMessage(
-                "x: ${PlayerUtils.getFlooredPlayerCoords()?.x}, y: ${PlayerUtils.getFlooredPlayerCoords()?.y}, z: ${PlayerUtils.getFlooredPlayerCoords()?.z}",
+                "x: ${posX.floor()}, y: ${posY.floor()}, z: ${posZ.floor()}",
                 name
             )
             "odin" -> privateMessage("OdinClient! https://discord.gg/2nCbC9hkxT", name)
@@ -172,7 +176,7 @@ object ChatUtils {
             "8ball" -> privateMessage(eightBall(), name)
             "dice" -> privateMessage(rollDice(), name)
             "cat" -> privateMessage(catPics(), name)
-            "ping" -> privateMessage("Current Ping: ${floor(Server.averagePing)}ms", name)
+            "ping" -> privateMessage("Current Ping: ${floor(ServerUtils.averagePing)}ms", name)
             "inv" -> sendCommand("party invite $name")
             "gm" -> privateMessage("Good Morning $name!", name)
             "gn" -> privateMessage("Good Night $name.", name)

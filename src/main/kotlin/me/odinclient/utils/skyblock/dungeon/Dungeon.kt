@@ -1,6 +1,8 @@
 package me.odinclient.utils.skyblock.dungeon
 
-import me.odinclient.utils.Executor
+import me.odinclient.utils.clock.AbstractExecutor.ConditionalExecutor
+import me.odinclient.utils.clock.AbstractExecutor.Companion.register
+import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.PlayerUtils.posX
 import me.odinclient.utils.skyblock.PlayerUtils.posZ
 import me.odinclient.utils.skyblock.ScoreboardUtils
@@ -8,38 +10,41 @@ import me.odinclient.utils.skyblock.ScoreboardUtils
 // In future maybe add stats about the dungeon like time elapsed, deaths, total secrets etc. could add some system to look back at previous runs.
 class Dungeon {
 
+    lateinit var floor: Floor
+    var inBoss = false
+    private lateinit var bossGetter: () -> Boolean
+
     init {
         getCurrentFloor()
 
-        Executor(500) {
-            inBoss = when (floor.floorNumber) {
-                1 -> posX > -71 && posZ > -39
-                2, 3, 4 -> posX > -39 && posZ > -39
-                5, 6 -> posX > -39 && posZ > -7
-                7 -> posX > -7 && posZ > -7
-                else -> false
-            }
+        ConditionalExecutor(500, condition = bossGetter) {
+            inBoss = bossGetter()
+        }.register()
+
+        bossGetter = when (floor.floorNumber) {
+            1 -> {{ posX > -71 && posZ > -39 }}
+            2, 3, 4 -> {{ posX > -39 && posZ > -39 }}
+            5, 6 -> {{ posX > -39 && posZ > -7 }}
+            7 -> {{ posX > -7 && posZ > -7 }}
+            else -> {{ false }}
         }
     }
 
-    lateinit var floor: Floor
-    var inBoss = false
-
     private fun getCurrentFloor() {
-        ScoreboardUtils.sidebarLines.forEach {
-            val line = ScoreboardUtils.cleanSB(it)
+        for (i in ScoreboardUtils.sidebarLines) {
+
+            val line = ScoreboardUtils.cleanSB(i)
+
             if (line.contains("The Catacombs (")) {
-                floor = try {
-                    Floor.valueOf(line.substringAfter("(").substringBefore(")"))
-                } catch (_ : IllegalArgumentException) {
-                    return println("This should not be possible, error in DungeonUtils of OdinClient, please report this!.")
-                }
+                runCatching { floor = Floor.valueOf(line.substringAfter("(").substringBefore(")")) }
+                    .onFailure { modMessage("Could not get correct floor. Please report this.") }
             }
         }
     }
 
     enum class Floor {
-        E, F1, F2, F3, F4, F5, F6, F7, M1, M2, M3, M4, M5, M6, M7;
+        E, F1, F2, F3, F4, F5, F6, F7,
+        M1, M2, M3, M4, M5, M6, M7;
 
         val floorNumber: Int
             get() {

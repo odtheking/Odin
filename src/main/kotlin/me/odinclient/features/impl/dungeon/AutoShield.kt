@@ -4,6 +4,7 @@ import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.utils.clock.Clock
 import me.odinclient.utils.skyblock.ItemUtils
 import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
@@ -15,17 +16,18 @@ object AutoShield : Module(
     category = Category.DUNGEON
 ) {
     private val witherSwords = arrayOf("Astraea", "Hyperion", "Valkyrie", "Scylla")
-    private var delay = System.currentTimeMillis()
+
+    private val clock = Clock(5000)
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (delay > System.currentTimeMillis() || mc.thePlayer == null) return
+        if (clock.hasTimePassed() || mc.thePlayer == null) return
 
         if (config.inBoss && !DungeonUtils.inBoss) return
         witherSwords.forEach {
-            if (ItemUtils.getItemSlot(it) == -1) return@forEach
+            if (ItemUtils.getItemSlot(it) == null) return@forEach
             PlayerUtils.useItem(it)
-            delay = System.currentTimeMillis() + 5000
+            clock.update()
             return
         }
     }

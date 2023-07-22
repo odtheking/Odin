@@ -4,7 +4,6 @@ import me.odinclient.OdinClient.Companion.mc
 import org.lwjgl.input.Mouse
 
 object MouseUtils {
-
     val mouseX
         get() = Mouse.getX().toFloat()
 

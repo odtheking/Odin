@@ -1,7 +1,7 @@
 package me.odinclient.hud
 
 import cc.polyfrost.oneconfig.hud.TextHud
-import me.odinclient.utils.Server
+import me.odinclient.utils.ServerUtils
 import kotlin.math.floor
 
 class ServerHud: TextHud(false) {
@@ -11,8 +11,8 @@ class ServerHud: TextHud(false) {
             lines?.add(0, "§6Ping §a60ms")
             lines?.add(1, "§3TPS §a20.0")
         } else {
-            lines?.add(0, "§6Ping ${colorizePing(floor(Server.averagePing * 10) / 10)}ms")
-            lines?.add(1, "§3TPS ${colorizeTps(floor(Server.averageTps * 10) / 10)}")
+            lines?.add(0, "§6Ping ${colorizePing(floor(ServerUtils.averagePing * 10) / 10)}ms")
+            lines?.add(1, "§3TPS ${colorizeTps(floor(ServerUtils.averageTps * 10) / 10)}")
         }
     }
 

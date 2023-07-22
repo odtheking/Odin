@@ -31,7 +31,7 @@ object AutoLeap : Module(
 
     @SubscribeEvent
     fun onClientChatReceived(event: ClientChatReceivedEvent) {
-        if (!config.autoLeap || !DungeonUtils.inDungeons) return
+        if (!DungeonUtils.inDungeons) return
         val message = event.message.unformattedText.noControlCodes
         val playerName = Regex("^Party > ?(?:\\[.+\\])? (.{0,16}): !tp ?(?:.+)?").find(message)?.groups?.get(1)?.value?.lowercase() ?: return
         if (playerName == mc.thePlayer.name || BlackList.isInBlacklist(playerName)) return
@@ -43,7 +43,7 @@ object AutoLeap : Module(
 
     @SubscribeEvent
     fun autoLeap(event: GuiOpenEvent) {
-        if (!opened || !config.autoLeap || !DungeonUtils.inDungeons) return
+        if (!opened || !DungeonUtils.inDungeons) return
         PlayerUtils.clickItemInContainer("Spirit Leap", target!!, event )
         ChatUtils.modMessage("§rLeaped to $target")
         opened = false

@@ -1,3 +1,4 @@
+
 package me.odinclient.utils.skyblock
 
 import me.odinclient.OdinClient.Companion.mc
@@ -8,10 +9,15 @@ import java.awt.Color
 
 object ItemUtils {
 
-    fun getItemSlot(item: String, ignoreCase: Boolean = true): Int =
-        List(35) { mc.thePlayer.inventory.getStackInSlot(it) }
-            .indexOfFirst { i -> i?.displayName?.contains(item, ignoreCase) == true }
+    /**
+     * Returns displayName without control codes.
+     */
+    private val ItemStack.unformattedName: String
+        get() = this.displayName.noControlCodes
 
+    /**
+     * Returns Item ID for an Item
+     */
     val ItemStack.itemID: String
         get() {
             if (this.hasTagCompound() && this.tagCompound.hasKey("ExtraAttributes")) {
@@ -23,6 +29,9 @@ object ItemUtils {
             return ""
         }
 
+    /**
+     * Returns the lore for an Item
+     */
     val ItemStack.lore: List<String>
         get() = this.tagCompound?.getCompoundTag("display")?.getTagList("Lore", 8)?.let {
             val list = mutableListOf<String>()
@@ -33,33 +42,25 @@ object ItemUtils {
         } ?: emptyList()
 
 
-    fun getItemIndexInContainerChest(item: String, container: ContainerChest, contains: Boolean): Int {
-        for (i in 0 until container.inventory.size - 36) {
-            val itemStack: ItemStack = container.inventory[i] ?: continue
-            return if (
-                if (contains)
-                    itemStack.displayName.noControlCodes.contains(item)
-                else
-                    itemStack.displayName.noControlCodes == item
-            )  i
-            else continue
+    /**
+     * Returns first slot of an Item
+     */
+    fun getItemSlot(item: String, ignoreCase: Boolean = true): Int? {
+        val index = mc.thePlayer.inventory.mainInventory.indexOfFirst {
+            it?.unformattedName?.contains(item, ignoreCase) == true
         }
-        return -1
+        return index.takeIf { it != -1 }
     }
 
-    fun getItemIndexInInventory(item: String, contains: Boolean): Int {
-        val inventory = mc.thePlayer.inventory.mainInventory
-        for (i in inventory.indices) {
-            val itemStack: ItemStack = inventory[i] ?: continue
-            return if (
-                if (contains)
-                    itemStack.displayName.noControlCodes.contains(item)
-                else
-                    itemStack.displayName.noControlCodes == item
-            )  i
-            else continue
-        }
-        return -1
+    /**
+     * Gets index of an item in a chest.
+     * @return null if not found.
+     * @return null
+     */
+    fun getItemIndexInContainerChest(container: ContainerChest, item: String, ignoreCase: Boolean): Int? {
+        return container.inventorySlots.subList(0, container.inventory.size - 36).firstOrNull {
+            it.stack?.unformattedName?.contains(item, ignoreCase) == true
+        }?.slotNumber
     }
 
     enum class ItemRarity(

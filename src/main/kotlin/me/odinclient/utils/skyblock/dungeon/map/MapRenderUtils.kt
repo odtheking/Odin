@@ -17,7 +17,7 @@ import java.awt.image.BufferedImage
 import java.nio.ByteBuffer
 
 
-object RenderUtils {
+object MapRenderUtils {
 
     private val tessellator: Tessellator = Tessellator.getInstance()
     private val worldRenderer: WorldRenderer = tessellator.worldRenderer

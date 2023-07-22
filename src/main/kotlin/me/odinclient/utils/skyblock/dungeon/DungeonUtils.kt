@@ -2,8 +2,9 @@ package me.odinclient.utils.skyblock.dungeon
 
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.ReceivePacketEvent
-import me.odinclient.utils.Executor
 import me.odinclient.utils.Utils.noControlCodes
+import me.odinclient.utils.clock.AbstractExecutor.Executor
+import me.odinclient.utils.clock.AbstractExecutor.Companion.register
 import me.odinclient.utils.skyblock.ItemUtils
 import me.odinclient.utils.skyblock.LocationUtils
 import me.odinclient.utils.skyblock.LocationUtils.currentDungeon
@@ -56,11 +57,11 @@ object DungeonUtils {
         HEALER("H", "§a", Color(85, 255, 85)),
         TANK("T", "§2", Color(0, 170, 0))
     }
-    val isGhost: Boolean get() = ItemUtils.getItemIndexInInventory("Haunt", true) != -1
+    val isGhost: Boolean get() = ItemUtils.getItemSlot("Haunt", true) != null
     var teammates: List<Pair<EntityPlayer, Classes>> = emptyList()
 
     init {
-        Executor(1000) { if (inDungeons) teammates = getDungeonTeammates() }
+        Executor(1000) { if (inDungeons) teammates = getDungeonTeammates() }.register()
     }
 
     @SubscribeEvent

@@ -14,7 +14,7 @@ import me.odinclient.features.settings.impl.SelectorSetting
 import me.odinclient.utils.gui.GuiUtils.drawCustomCenteredText
 import me.odinclient.utils.gui.GuiUtils.nanoVG
 import me.odinclient.utils.gui.GuiUtils.scissor
-import me.odinclient.utils.gui.animations.EaseInOut
+import me.odinclient.utils.gui.animations.impl.EaseInOut
 import java.util.*
 
 class ElementSelector(parent: ModuleButton, setting: SelectorSetting) : Element<SelectorSetting>(parent, setting, ElementType.SELECTOR) {

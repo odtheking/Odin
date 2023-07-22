@@ -13,7 +13,7 @@ import me.odinclient.utils.gui.MouseUtils.mouseX
 import me.odinclient.features.settings.impl.ColorSetting
 import me.odinclient.utils.gui.GuiUtils.resetScissor
 import me.odinclient.utils.gui.GuiUtils.scissor
-import me.odinclient.utils.gui.animations.EaseInOut
+import me.odinclient.utils.gui.animations.impl.EaseInOut
 import org.lwjgl.input.Keyboard
 import kotlin.math.floor
 import kotlin.math.roundToInt

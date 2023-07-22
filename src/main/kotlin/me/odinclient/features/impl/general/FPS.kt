@@ -29,5 +29,7 @@ object FPS : Module(
         }
     }
 
-    private fun isNullVec(entity: Entity): Boolean = entity.posX == 0.0 && entity.posY == 0.0 && entity.posZ == 0.0
+    private fun isNullVec(entity: Entity): Boolean {
+        return entity.posX == 0.0 && entity.posY == 0.0 && entity.posZ == 0.0
+    }
 }

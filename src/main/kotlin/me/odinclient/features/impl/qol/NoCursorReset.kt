@@ -3,6 +3,7 @@ package me.odinclient.features.impl.qol
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.utils.clock.Clock
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraftforge.client.event.GuiOpenEvent
@@ -13,21 +14,22 @@ object NoCursorReset : Module(
     "No Cursor Reset",
     category = Category.QOL
 ) {
-    private var lastContainerOpen = 0L
-    private var hasBeenNullFor = 0
+    private val clock = Clock(100)
+    private var hasBeenNull = false
 
     @SubscribeEvent
     fun onGuiOpen(e: GuiOpenEvent) {
         val oldGuiScreen = mc.currentScreen
         if (e.gui is GuiChest && (oldGuiScreen is GuiContainer || oldGuiScreen == null))
-            lastContainerOpen = System.currentTimeMillis()
+            clock.update()
     }
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (mc.currentScreen != null) hasBeenNullFor = 0
-        else hasBeenNullFor++
+        hasBeenNull = mc.currentScreen != null
     }
 
-    fun shouldHookMouse() = System.currentTimeMillis() - lastContainerOpen < 100 && hasBeenNullFor == 0 && this.enabled
+    fun shouldHookMouse(): Boolean {
+        return clock.hasTimePassed() && !hasBeenNull && this.enabled
+    }
 }

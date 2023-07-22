@@ -3,7 +3,7 @@ package me.odinclient.features.impl.qol
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.Category
 import me.odinclient.features.Module
-import me.odinclient.utils.Server
+import me.odinclient.utils.ServerUtils
 import me.odinclient.utils.skyblock.ItemUtils.itemID
 import me.odinclient.utils.skyblock.PlayerUtils.rightClick
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -22,7 +22,7 @@ object TermAC : Module(
         if (!enabled || mc.thePlayer?.heldItem?.itemID != "TERMINATOR" || !mc.gameSettings.keyBindUseItem.isKeyDown) return
         val nowMillis = System.currentTimeMillis()
         if (nowMillis < nextClick) return
-        nextClick = nowMillis + (1000 / Server.averageTps) - 15 + (Math.random() * 30)
+        nextClick = nowMillis + (1000 / ServerUtils.averageTps) - 15 + (Math.random() * 30)
         rightClick()
     }
 }

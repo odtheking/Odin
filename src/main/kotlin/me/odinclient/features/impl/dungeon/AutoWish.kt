@@ -16,7 +16,6 @@ object AutoWish: Module(
     "Auto Wish",
     category =  Category.DUNGEON
 ) {
-
     private val healthPercentage: Double by NumberSetting("Health Percentage", 30.0, 5.0, 80.0, 1.0, description = "The percentage of health to wish at")
 
     private var canWish = true

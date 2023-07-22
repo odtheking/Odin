@@ -9,11 +9,13 @@ import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.utils.AsyncUtils
+import me.odinclient.utils.VecUtils.floored
+import me.odinclient.utils.VecUtils.plus
 import me.odinclient.utils.render.RenderUtils
 import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.IceFillFloors.floors
 import me.odinclient.utils.skyblock.PlayerUtils
-import me.odinclient.utils.skyblock.PlayerUtils.floored
+import me.odinclient.utils.skyblock.PlayerUtils.posFloored
 import me.odinclient.utils.skyblock.WorldUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.util.BlockPos
@@ -23,7 +25,6 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.lwjgl.input.Keyboard
 import java.awt.Color
 import kotlin.math.sin
 
@@ -31,7 +32,6 @@ object AutoIceFill: Module(
     name = "Auto Ice Fill",
     description = "Automatically completes the ice fill puzzle",
     category = Category.DUNGEON,
-    keyCode = Keyboard.KEY_NONE
 ) {
     private var scanned = false
     private var currentPatterns: MutableList<List<Vec3i>> = ArrayList()
@@ -65,11 +65,11 @@ object AutoIceFill: Module(
         for (i in 0 until currentPatterns.size) {
             val pattern = currentPatterns[i]
             val pos = rPos[i]
-            RenderUtils.draw3DLine(pos, pos.add(transformTo(pattern[0], renderRotation!!)), color, 10, true, pt)
+            RenderUtils.draw3DLine(pos, pos + transformTo(pattern[0], renderRotation!!), color, 10, true, pt)
 
             for (j in 1 until pattern.size) {
                 RenderUtils.draw3DLine(
-                    pos.add(transformTo(pattern[j - 1], renderRotation!!)), pos.add(transformTo(pattern[j], renderRotation!!)), color, 10, true, pt
+                    pos.add(transformTo(pattern[j - 1], renderRotation!!)), pos + transformTo(pattern[j], renderRotation!!), color, 10, true, pt
                 )
             }
         }
@@ -78,8 +78,8 @@ object AutoIceFill: Module(
     @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
     fun onClientTick(event: TickEvent.ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.END) return
-        val pos = PlayerUtils.getFlooredPlayerCoords() ?: return
+        if (event.phase != TickEvent.Phase.END || mc.thePlayer == null) return
+        val pos = posFloored
         if (
             !config.autoIceFill ||
             scanned ||
@@ -131,7 +131,7 @@ object AutoIceFill: Module(
         PlayerUtils.clipTo(x + bx, y + 1, z + bz)
         for (i in 0..pattern.size - 2) {
             val deferred = AsyncUtils.waitUntilPacked(
-                pos.add(transformTo(pattern[i], rotation))
+                pos + transformTo(pattern[i], rotation)
             )
             try {
                 deferred.await()
@@ -139,7 +139,7 @@ object AutoIceFill: Module(
                 return
             }
             PlayerUtils.clipTo(
-                pos.add(transformTo(pattern[i + 1], rotation)).addVector(0.0, 1.0, 0.0)
+                pos + transformTo(pattern[i + 1], rotation).addVector(0.0, 1.0, 0.0)
             )
         }
         if (floorIndex == 2) return
@@ -171,7 +171,6 @@ object AutoIceFill: Module(
             delay(100)
             PlayerUtils.clipTo(x + bx + nx * 4, y + 2, z + bz + ny * 4)
             scan(mc.thePlayer.positionVector.floored(), floorIndex + 1)
-            //PlayerUtils.getFlooredPlayerCoords()?.let { scan(it, floorIndex + 1) }
         }
     }
 

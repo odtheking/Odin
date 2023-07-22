@@ -9,7 +9,7 @@ import me.odinclient.ui.clickgui.util.ColorUtil
 import me.odinclient.utils.gui.MouseUtils.isAreaHovered
 import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.utils.gui.GuiUtils.nanoVG
-import me.odinclient.utils.gui.animations.ColorAnimation
+import me.odinclient.utils.gui.animations.impl.ColorAnimation
 import java.awt.Color
 
 class ElementCheckBox(parent: ModuleButton, setting: BooleanSetting) : Element<BooleanSetting>(

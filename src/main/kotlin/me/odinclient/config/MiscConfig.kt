@@ -4,10 +4,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonIOException
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import me.odinclient.features.impl.m7.TerminalTimes
 import java.io.File
 import java.io.IOException
@@ -78,9 +75,8 @@ class MiscConfig(path: File) {
         }
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     fun saveAllConfigs() {
-        GlobalScope.launch(Dispatchers.IO) {
+        CoroutineScope(Dispatchers.IO).launch {
             try {
                 espConfigFile.bufferedWriter().use {
                     it.write(gson.toJson(espList))

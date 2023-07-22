@@ -13,10 +13,7 @@ class StringSetting(
     override var value: String = default
         set(newStr) {
             val tempStr = processInput(newStr)
-            field = if (tempStr.length > length) {
-                tempStr.substring(0, length - 1)
-            } else
-                tempStr
+            field = if (tempStr.length <= length) tempStr else return
         }
 
     var text: String by this::value

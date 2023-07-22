@@ -13,7 +13,7 @@ import me.odinclient.features.settings.impl.*
 import me.odinclient.utils.gui.GuiUtils.drawCustomCenteredText
 import me.odinclient.utils.gui.GuiUtils.nanoVG
 import me.odinclient.utils.gui.GuiUtils.scissor
-import me.odinclient.utils.gui.animations.EaseInOut
+import me.odinclient.utils.gui.animations.impl.EaseInOut
 import kotlin.math.floor
 
 class ModuleButton(val module: Module, val panel: Panel) {

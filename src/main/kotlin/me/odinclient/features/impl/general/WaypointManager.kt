@@ -9,6 +9,7 @@ import me.odinclient.OdinClient.Companion.waypointConfig
 import me.odinclient.commands.impl.WaypointCommand.randomColor
 import me.odinclient.ui.waypoint.WaypointGUI
 import me.odinclient.utils.Utils.noControlCodes
+import me.odinclient.utils.clock.Clock
 import me.odinclient.utils.render.RenderUtils
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.LocationUtils.currentArea
@@ -21,7 +22,7 @@ import java.awt.Color
 object WaypointManager {
 
     private inline val waypoints get() = waypointConfig.waypoints
-    private var temporaryWaypoints = mutableListOf<Pair<Waypoint, Long>>()
+    private var temporaryWaypoints = mutableListOf<Pair<Waypoint, Clock>>()
 
     fun addWaypoint(name: String, x: Int, y: Int, z: Int, color: Color) =
         addWaypoint(Waypoint(name, x, y, z, color))
@@ -48,7 +49,7 @@ object WaypointManager {
 
     fun addTempWaypoint(name: String, x: Int, y: Int, z: Int) {
         if (currentArea == null) return modMessage("You are not in Skyblock.")
-        temporaryWaypoints.add(Pair(Waypoint(name, x, y, z, randomColor), System.currentTimeMillis() + 60000))
+        temporaryWaypoints.add(Pair(Waypoint(name, x, y, z, randomColor), Clock(60_000)))
     }
 
     @SubscribeEvent
@@ -56,7 +57,7 @@ object WaypointManager {
         if (!config.waypoints || currentArea == null) return
 
         temporaryWaypoints.removeAll {
-            if (it.second >= System.currentTimeMillis()) {
+            if (!it.second.hasTimePassed()) {
                 it.first.renderBeacon(event.partialTicks)
                 false
             } else true

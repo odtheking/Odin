@@ -1,9 +1,5 @@
 package me.odinclient.features.impl.dungeon
 
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.utils.skyblock.ChatUtils
@@ -24,7 +20,6 @@ object AutoUlt : Module(
         firstLaser = false
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
     fun ultDetect(event: ClientChatReceivedEvent) {
         when (event.message.unformattedText) {
@@ -42,8 +37,7 @@ object AutoUlt : Module(
             }
 
             "[BOSS] Sadan: My giants! Unleashed!" -> {
-                GlobalScope.launch {
-                    delay(3000L)
+                executor(30000, 0) {
                     ChatUtils.modMessage("§eGiants incoming")
                     PlayerUtils.dropItem()
                 }

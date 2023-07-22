@@ -3,7 +3,7 @@ package me.odinclient.mixin;
 import io.netty.channel.ChannelHandlerContext;
 import me.odinclient.events.PacketSentEvent;
 import me.odinclient.events.ReceivePacketEvent;
-import me.odinclient.utils.PacketUtils;
+import me.odinclient.utils.ServerUtils;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraftforge.common.MinecraftForge;
@@ -25,7 +25,7 @@ public class MixinNetworkManager {
 
     @Inject(method = {"sendPacket(Lnet/minecraft/network/Packet;)V"}, at = {@At("HEAD")}, cancellable = true)
     private void onSendPacket(Packet<?> packet, CallbackInfo ci) {
-        if (!PacketUtils.INSTANCE.handleSendPacket(packet)) {
+        if (!ServerUtils.INSTANCE.handleSendPacket(packet)) {
             if (MinecraftForge.EVENT_BUS.post(new PacketSentEvent(packet)))
                 ci.cancel();
         }

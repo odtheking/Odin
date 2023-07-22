@@ -11,8 +11,8 @@ import me.odinclient.config.WaypointConfig
 import me.odinclient.events.ClientSecondEvent
 import me.odinclient.features.ModuleManager
 import me.odinclient.ui.clickgui.ClickGUI
-import me.odinclient.utils.Executor
-import me.odinclient.utils.Server
+import me.odinclient.utils.ServerUtils
+import me.odinclient.utils.clock.AbstractExecutor
 import me.odinclient.utils.render.RenderUtils
 import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.LocationUtils
@@ -48,12 +48,12 @@ class OdinClient {
         listOf(
             LocationUtils,
             ChatUtils,
-            Server,
+            ServerUtils,
             PlayerUtils,
             RenderUtils,
             DungeonUtils,
 
-            Executor,
+            AbstractExecutor,
             ModuleManager,
             this
         ).forEach {

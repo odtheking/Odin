@@ -1,7 +1,8 @@
 package me.odinclient.utils.skyblock
 
 import me.odinclient.OdinClient.Companion.mc
-import me.odinclient.utils.Executor
+import me.odinclient.utils.clock.AbstractExecutor.Executor
+import me.odinclient.utils.clock.AbstractExecutor.Companion.register
 import me.odinclient.utils.skyblock.ScoreboardUtils.cleanSB
 import me.odinclient.utils.skyblock.ScoreboardUtils.sidebarLines
 import me.odinclient.utils.skyblock.dungeon.Dungeon
@@ -19,19 +20,27 @@ object LocationUtils {
     var currentDungeon: Dungeon? = null
     var currentArea: String? = null
 
+    // Switch to locraw
     init {
         Executor(500) {
-            if (!inSkyblock)
-                inSkyblock = onHypixel && mc.theWorld.scoreboard.getObjectiveInDisplaySlot(1)?.let { cleanSB(it.displayName).contains("SKYBLOCK") } ?: false
+            if (!inSkyblock) {
+                inSkyblock = onHypixel && mc.theWorld.scoreboard.getObjectiveInDisplaySlot(1)
+                    ?.let { cleanSB(it.displayName).contains("SKYBLOCK") } ?: false
+            }
 
-            if (currentDungeon == null)
+            if (currentDungeon == null) {
                 if (inSkyblock && sidebarLines.any {
-                        cleanSB(it).run { (contains("The Catacombs") && !contains("Queue")) || contains("Dungeon Cleared:") }
-                    }) currentDungeon = Dungeon()
+                        cleanSB(it).run {
+                            (contains("The Catacombs") && !contains("Queue")) || contains("Dungeon Cleared:")
+                        }
+                    }
+                ) currentDungeon = Dungeon()
+            }
 
-            if (currentArea == null || currentDungeon != null)
+            if (currentArea == null || currentDungeon != null) {
                 currentArea = getArea()
-        }
+            }
+        }.register()
     }
 
     @SubscribeEvent
