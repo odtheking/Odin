@@ -4,6 +4,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.utils.Utils.noControlCodes
 import net.minecraft.entity.item.EntityArmorStand
@@ -149,7 +150,7 @@ object DeployableTimer {
 
     @SubscribeEvent
     fun onRenderOverlay(event: RenderGameOverlayEvent) {
-        if (event.type != RenderGameOverlayEvent.ElementType.TEXT || currentDeployables.size == 0) return
+        if (!config.deployableHud.isEnabled || event.type != RenderGameOverlayEvent.ElementType.TEXT || currentDeployables.size == 0) return
         val currentMillis = System.currentTimeMillis()
         val d = currentDeployables.firstOrNull { mc.thePlayer.getDistanceToEntity(it.entity) <= it.range }
 
