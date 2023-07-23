@@ -7,7 +7,7 @@ import net.minecraft.scoreboard.ScorePlayerTeam
 object ScoreboardUtils {
 
     fun cleanSB(scoreboard: String?): String {
-        return scoreboard.noControlCodes.toCharArray().filter { it.code in 21..126 }.joinToString("")
+        return scoreboard.noControlCodes.filter { it.code in 21..126 }
     }
 
     val sidebarLines: List<String>

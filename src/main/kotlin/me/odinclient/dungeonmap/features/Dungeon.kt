@@ -9,6 +9,7 @@ import me.odinclient.dungeonmap.core.map.Door
 import me.odinclient.dungeonmap.core.map.Room
 import me.odinclient.dungeonmap.core.map.Tile
 import me.odinclient.events.ReceivePacketEvent
+import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import me.odinclient.utils.skyblock.dungeon.map.MapRenderUtils
@@ -89,7 +90,7 @@ object Dungeon {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onChatPacket(event: ReceivePacketEvent) {
         if (event.packet !is S02PacketChat || event.packet.type.toInt() == 2 || !inDungeons) return
-        val text = StringUtils.stripControlCodes(event.packet.chatComponent.unformattedText)
+        val text = event.packet.chatComponent.unformattedText.noControlCodes
         when {
             text.equalsOneOf(
                 "Dungeon starts in 4 seconds.",

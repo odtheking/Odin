@@ -3,6 +3,7 @@ package me.odinclient.dungeonmap.features
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.dungeonmap.core.DungeonPlayer
 import me.odinclient.dungeonmap.core.map.*
+import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import me.odinclient.utils.skyblock.dungeon.map.MapUtils
 import me.odinclient.utils.skyblock.dungeon.map.MapUtils.mapX
@@ -46,7 +47,7 @@ object MapUpdate {
         var iconNum = 0
         for (i in listOf(5, 9, 13, 17, 1)) {
             with(tabEntries[i]) {
-                val name = StringUtils.stripControlCodes(second).trim().split(" ")[0]
+                val name = second.noControlCodes.trim().split(" ")[0] // TODO: Make this use regex to account for new symbol and maybe ironman?
                 if (name != "") {
                     Dungeon.dungeonTeammates[name] = DungeonPlayer(first.locationSkin).apply {
                         icon = "icon-$iconNum"
@@ -63,7 +64,7 @@ object MapUpdate {
 
         var iconNum = 0
         for (i in listOf(5, 9, 13, 17, 1)) {
-            val tabText = StringUtils.stripControlCodes(tabEntries[i].second).trim()
+            val tabText = tabEntries[i].second.noControlCodes.trim()
             val text = tabText.split(" ")
             val name = if (text.size < 2) text[0] else text[1]
             if (name == "") continue

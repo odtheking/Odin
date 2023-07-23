@@ -83,6 +83,7 @@ object DungeonUtils {
         ScoreboardUtils.sidebarLines.forEach {
             val line = cleanSB(it)
             if (!line.startsWith("[")) return@forEach
+            // TODO: Make this use regex to account for new symbol and maybe ironman?
             val symbol = line[1].toString()
             val name = line.substringAfter("] ").substringBefore(" ")
 
