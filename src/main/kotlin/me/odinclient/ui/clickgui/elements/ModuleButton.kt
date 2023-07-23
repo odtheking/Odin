@@ -2,7 +2,6 @@ package me.odinclient.ui.clickgui.elements
 
 import cc.polyfrost.oneconfig.renderer.font.Fonts
 import cc.polyfrost.oneconfig.utils.dsl.VG
-import cc.polyfrost.oneconfig.utils.dsl.drawGradientRoundedRect
 import cc.polyfrost.oneconfig.utils.dsl.drawRect
 import me.odinclient.ui.clickgui.Panel
 import me.odinclient.ui.clickgui.elements.menu.*
@@ -35,6 +34,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
     init {
         updateElements()
         if (module.keyCode != -999) menuElements.add(ElementKeyBind(this, module))
+        menuElements.add(ElementDescription(this, module.description))
     }
 
     fun updateElements() {
@@ -51,6 +51,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
                     is StringSetting -> ElementTextField(this, setting)
                     is ColorSetting -> ElementColor(this, setting)
                     is ActionSetting -> ElementAction(this, setting)
+                    is DualSetting -> ElementDual(this, setting)
                     else -> return@addElement
                 }
                 menuElements.add(position, newElement)
@@ -66,7 +67,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
         var offs = height
 
         vg.nanoVG {
-            if (module.enabled) drawGradientRoundedRect(x, y, width, offs, ColorUtil.clickGUIColor.rgb, ColorUtil.clickGuiSecondColor.rgb, 0f)
+            if (module.enabled) drawRect(x, y, width, offs, ColorUtil.clickGUIColor.rgb)
             else drawRect(x, y, width, offs, ColorUtil.moduleColor(module.enabled))
             if (isButtonHovered) drawRect(x, y, width, offs, if (module.enabled) 0x55111111 else ColorUtil.hoverColor)
 

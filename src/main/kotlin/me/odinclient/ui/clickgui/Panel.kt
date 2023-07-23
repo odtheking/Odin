@@ -66,7 +66,7 @@ class Panel(
 
             drawRoundedRectVaried(x, y, width, height, ColorUtil.moduleButtonColor, 5f, 5f, 0f, 0f)
             drawDropShadow(x, y, width, startY + 10f, 12.5f, 6f, 5f)
-            //val color = if (moduleButtons.isNotEmpty()) ColorUtil.moduleColor(moduleButtons.last().module.enabled && extended) else
+
             drawRoundedRectVaried(x, y + startY, width, 10f, ColorUtil.moduleColor(moduleButtons.last().module.enabled && extended), 0f, 0f, 5f, 5f)
             drawCustomCenteredText(category.name.capitalizeOnlyFirst(), x + width / 2, y + height / 2, 22f, Fonts.SEMIBOLD)
         }

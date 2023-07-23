@@ -3,25 +3,24 @@ package me.odinclient.features.impl.m7
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object DioriteFucker : Module(
     "Fuck Diorite",
     category = Category.M7
 ) {
+    private val delay: Long by NumberSetting("Delay", 80L, 20, 300, 10)
 
-    @SubscribeEvent
-    fun onTick(event: ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.END || mc.theWorld == null || DungeonUtils.getPhase() != 2) return
-        for (block in pillars) {
-            // doubt this can really be optimized further, except reflection or mixins seeing as most of the fields these methods use are private
-            if (mc.theWorld.chunkProvider.provideChunk(block.x shr 4, block.z shr 4).getBlock(block) == Blocks.stone) {
-                mc.theWorld.setBlockState(block, Blocks.glass.defaultState, 3) // this doesn't need further optimization since it doesn't run often
+    init {
+        executor(delay = { delay }) {
+            if (mc.theWorld == null || DungeonUtils.getPhase() != 2) return@executor
+            for (block in pillars) {
+                if (mc.theWorld.chunkProvider.provideChunk(block.x shr 4, block.z shr 4).getBlock(block) == Blocks.stone) {
+                    mc.theWorld.setBlockState(block, Blocks.glass.defaultState, 3)
+                }
             }
         }
     }

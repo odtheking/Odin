@@ -12,6 +12,9 @@ import me.odinclient.utils.gui.MouseUtils.isAreaHovered
 import me.odinclient.utils.gui.MouseUtils.mouseX
 import me.odinclient.features.impl.general.ClickGUIModule
 import me.odinclient.features.settings.impl.NumberSetting
+import me.odinclient.features.settings.impl.minus
+import me.odinclient.features.settings.impl.plus
+import me.odinclient.features.settings.impl.unaryMinus
 import me.odinclient.utils.gui.GuiUtils.nanoVG
 import org.lwjgl.input.Keyboard
 import kotlin.math.roundToInt

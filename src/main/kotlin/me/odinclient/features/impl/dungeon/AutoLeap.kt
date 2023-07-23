@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.dungeon
 
-import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.Category
 import me.odinclient.features.Module
@@ -16,7 +15,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object AutoLeap : Module(
     name = "Auto Leap",
-    description = "Automatically leaps to the player who teleported to you",
+    description = "Automatically leaps to the player who sent !tp in party chat",
     category = Category.DUNGEON
 ) {
 
@@ -33,7 +32,7 @@ object AutoLeap : Module(
     fun onClientChatReceived(event: ClientChatReceivedEvent) {
         if (!DungeonUtils.inDungeons) return
         val message = event.message.unformattedText.noControlCodes
-        val playerName = Regex("^Party > ?(?:\\[.+\\])? (.{0,16}): !tp ?(?:.+)?").find(message)?.groups?.get(1)?.value?.lowercase() ?: return
+        val playerName = Regex("^Party > ?(?:\\[.+])? (.{0,16}): !tp ?(?:.+)?").find(message)?.groups?.get(1)?.value?.lowercase() ?: return
         if (playerName == mc.thePlayer.name || BlackList.isInBlacklist(playerName)) return
         PlayerUtils.useItem("leap")
         opened = true

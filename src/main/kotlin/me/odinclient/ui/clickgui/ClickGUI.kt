@@ -97,7 +97,7 @@ object ClickGUI : GuiScreen() {
         openedTime = System.currentTimeMillis()
         openingAnimation.start(true)
 
-        // use a different blur
+        // TODO: use a different blur
         if (OpenGlHelper.shadersSupported && mc.renderViewEntity is EntityPlayer && ClickGUIModule.blur) {
             mc.entityRenderer.stopUseShader()
             mc.entityRenderer.loadShader(ResourceLocation("shaders/post/blur.json"))

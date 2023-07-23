@@ -25,7 +25,7 @@ open class Element<S : Setting<*>>(val parent: ModuleButton, val setting: S, typ
     open val isHovered
         get() = isAreaHovered(x, y, width, height)
 
-    fun render(vg: VG): Float {
+    open fun render(vg: VG): Float {
         draw(vg)
         return height
     }

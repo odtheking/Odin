@@ -1,20 +1,59 @@
 package me.odinclient.features
 
-import me.odinclient.utils.ClassUtils
-import me.odinclient.utils.ClassUtils.instance
+import me.odinclient.features.impl.dungeon.*
+import me.odinclient.features.impl.general.*
+import me.odinclient.features.impl.m7.AutoEdrag
+import me.odinclient.features.impl.m7.DioriteFucker
+import me.odinclient.features.impl.m7.DragonBoxes
+import me.odinclient.features.impl.m7.DragonTimer
+import me.odinclient.features.impl.qol.*
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
-import java.lang.reflect.Modifier
 
 object ModuleManager {
 
-    val modules: ArrayList<Module> = arrayListOf<Module>().apply {
-        ClassUtils.findClasses<Module>("me.odinclient.features.impl")
-            .filter { Modifier.isFinal(it.modifiers) }
-            .forEach { add(it.instance) }
-    }
+    val modules: ArrayList<Module> = arrayListOf(
+        AutoIceFill,
+        AutoLeap,
+        AutoMask,
+        AutoReady,
+        AutoSell,
+        AutoShield,
+        AutoUlt,
+        AutoWish,
+        BlessingDisplay,
+        CanClip,
+        GhostBlock,
+        KeyESP,
+        SuperBoom,
+        TeammatesOutline,
+        Triggerbot,
+        WatcherBar,
+
+        ArrowTrajectory,
+        Camera,
+        ClickGUIModule,
+        ESP,
+        FPS,
+        VanqNotifier,
+        AutoEdrag,
+        DioriteFucker,
+        DragonBoxes,
+        DragonTimer,
+        AutoSprint,
+        BrokenHype,
+        CookieClicker,
+        GhostPick,
+        GyroRange,
+        KuudraAlerts,
+        NoBlockAnimation,
+        NoCursorReset,
+        Reminders,
+        TermAC
+    )
+
 
     fun initializeModules() {
         modules.forEach { it.initializeModule() }

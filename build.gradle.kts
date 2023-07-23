@@ -62,8 +62,6 @@ dependencies {
 
     implementation(kotlin("stdlib-jdk8"))
 
-    implementation("org.reflections:reflections:0.10.2")
-
     annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
     compileOnly("org.spongepowered:mixin:0.8.5")
 
