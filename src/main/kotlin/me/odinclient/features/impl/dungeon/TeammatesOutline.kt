@@ -23,7 +23,7 @@ object TeammatesOutline : Module(
 
     @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
-        if (!DungeonUtils.inDungeons || !DungeonUtils.teammates.any { it.first == event.entity } || (inBoss && DungeonUtils.inBoss)) return
+        if (!DungeonUtils.inDungeons || event.entity == mc.thePlayer || !DungeonUtils.teammates.any { it.first == event.entity } || (inBoss && DungeonUtils.inBoss)) return
         if (!config.teammatesOutlineWhenVisible && mc.thePlayer.canEntityBeSeen(event.entity)) return
         val color = DungeonUtils.teammates.first { it.first == event.entity }.second.color
         OutlineUtils.outlineEntity(
@@ -38,7 +38,7 @@ object TeammatesOutline : Module(
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (!DungeonUtils.inDungeons || (!inBoss && DungeonUtils.inBoss)) return
         DungeonUtils.teammates.forEach {
-            if (mc.thePlayer.canEntityBeSeen(it.first)) return
+            if (mc.thePlayer.canEntityBeSeen(it.first) || it.first == mc.thePlayer) return
             RenderUtils.drawStringInWorld(
                 RenderUtils.renderVec(it.first).addVector(0.0, 2.7, 0.0),
                 "${it.second.code}${it.first.name}",

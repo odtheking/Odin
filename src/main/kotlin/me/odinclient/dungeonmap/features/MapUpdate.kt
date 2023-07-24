@@ -47,7 +47,9 @@ object MapUpdate {
         var iconNum = 0
         for (i in listOf(5, 9, 13, 17, 1)) {
             with(tabEntries[i]) {
-                val name = second.noControlCodes.trim().split(" ")[0] // TODO: Make this use regex to account for new symbol and maybe ironman?
+                // TODO: Test
+                val match = DungeonUtils.tablistRegex.matchEntire(second.noControlCodes)
+                val name = match?.groups?.get(1)?.value ?: ""
                 if (name != "") {
                     Dungeon.dungeonTeammates[name] = DungeonPlayer(first.locationSkin).apply {
                         icon = "icon-$iconNum"

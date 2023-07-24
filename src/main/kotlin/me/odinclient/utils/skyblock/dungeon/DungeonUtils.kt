@@ -1,6 +1,7 @@
 package me.odinclient.utils.skyblock.dungeon
 
 import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.dungeonmap.features.Dungeon
 import me.odinclient.events.ReceivePacketEvent
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.clock.AbstractExecutor.Executor
@@ -47,16 +48,16 @@ object DungeonUtils {
     }
 
     enum class Classes(
-        val letter: String,
         val code: String,
         val color: Color
     ) {
-        ARCHER("A", "§6", Color(255, 170, 0)),
-        MAGE("M", "§5", Color(170, 0, 170)),
-        BERSERKER("B", "§4", Color(170, 0, 0)),
-        HEALER("H", "§a", Color(85, 255, 85)),
-        TANK("T", "§2", Color(0, 170, 0))
+        Archer("§6", Color(255, 170, 0)),
+        Mage("§5", Color(170, 0, 170)),
+        Berserker("§4", Color(170, 0, 0)),
+        Healer("§a", Color(85, 255, 85)),
+        Tank("§2", Color(0, 170, 0))
     }
+    val tablistRegex = Regex("^\\[(\\d+)] (?:\\[\\w+] )*(\\w+) (?:.)*?\\((\\w+)(?: (\\w+))*\\)\$")
     val isGhost: Boolean get() = ItemUtils.getItemSlot("Haunt", true) != null
     var teammates: List<Pair<EntityPlayer, Classes>> = emptyList()
 
@@ -80,18 +81,16 @@ object DungeonUtils {
 
     private fun getDungeonTeammates(): List<Pair<EntityPlayer, Classes>> {
         val teammates = mutableListOf<Pair<EntityPlayer, Classes>>()
-        ScoreboardUtils.sidebarLines.forEach {
-            val line = cleanSB(it)
-            if (!line.startsWith("[")) return@forEach
-            // TODO: Make this use regex to account for new symbol and maybe ironman?
-            val symbol = line[1].toString()
-            val name = line.substringAfter("] ").substringBefore(" ")
+        Dungeon.getDungeonTabList()?.forEach { (_, line) ->
+            val match = tablistRegex.matchEntire(line) ?: return@forEach
+            val (_, sbLevel, name, clazz, level) = match.groupValues
 
             mc.theWorld.playerEntities.find { player ->
-                player.name == name && player != mc.thePlayer
+                player.name == name
             }?.let { player ->
-                teammates.add(Pair(player, Classes.values().find { classes -> classes.letter == symbol }!!))
+                teammates.add(Pair(player, Classes.values().find { classes -> classes.name == clazz }!!))
             }
+
         }
         return teammates
     }
