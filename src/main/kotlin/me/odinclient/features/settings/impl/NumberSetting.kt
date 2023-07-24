@@ -1,6 +1,8 @@
 package me.odinclient.features.settings.impl
 
 import me.odinclient.features.settings.Setting
+import me.odinclient.utils.Utils.coerceIn
+import me.odinclient.utils.Utils.div
 import kotlin.math.round
 
 @Suppress("UNCHECKED_CAST")
@@ -16,11 +18,11 @@ class NumberSetting<E>(
 
     override var value: E = default
         set (newVal) {
-            field = roundToIncrement(processInput(newVal).toDouble()).coerceIn(min, max) as E
+            field = roundToIncrement(processInput(newVal)).coerceIn(min, max) as E
         }
 
     /**
-     * way to save and do maffs
+     * way for config to save due to errors.
      */
     var valueAsDouble
         get() = value.toDouble()
@@ -28,31 +30,7 @@ class NumberSetting<E>(
             this.value = value as E
         }
 
-    private fun roundToIncrement(x: Double): Double {
-        return round(x / increment) * increment
+    private fun roundToIncrement(x: Number): Number {
+        return round((x / increment).toDouble()) * increment.toDouble()
     }
-}
-
-fun Number.coerceIn(min: Number, max: Number): Number {
-    return this.toDouble().coerceIn(min.toDouble(), max.toDouble())
-}
-
-operator fun Number.div(number: Number): Double {
-    return this.toDouble() / number.toDouble()
-}
-
-operator fun Number.times(number: Number): Double {
-    return this.toDouble() * number.toDouble()
-}
-
-operator fun Number.minus(number: Number): Double {
-    return this.toDouble() - number.toDouble()
-}
-
-operator fun Number.plus(number: Number): Double {
-    return this.toDouble() + number.toDouble()
-}
-
-operator fun Number.unaryMinus(): Number {
-    return -this.toDouble()
 }

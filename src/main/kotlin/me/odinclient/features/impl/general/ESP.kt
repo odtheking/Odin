@@ -8,7 +8,7 @@ import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.ColorSetting
 import me.odinclient.utils.VecUtils.noSqrt3DDistance
-import me.odinclient.utils.render.OutlineUtils
+import me.odinclient.utils.render.world.OutlineUtils
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraftforge.event.world.WorldEvent

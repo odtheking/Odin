@@ -4,7 +4,7 @@ import me.odinclient.OdinClient.Companion.config
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.NumberSetting
-import me.odinclient.utils.render.RenderUtils
+import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.skyblock.WorldUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.util.BlockPos

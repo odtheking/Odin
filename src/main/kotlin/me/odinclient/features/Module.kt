@@ -13,6 +13,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
+import org.lwjgl.input.Mouse
 import kotlin.reflect.full.hasAnnotation
 
 abstract class Module(
@@ -75,7 +76,7 @@ abstract class Module(
      * It can be overwritten in the module to change that behaviour.
      */
     open fun keyBind() {
-        this.toggle()
+        toggle()
         ChatUtils.modMessage("$name ${if (enabled) "§aenabled" else "§cdisabled"}.")
     }
 
@@ -88,28 +89,8 @@ abstract class Module(
         else onDisable()
     }
 
-    /**
-     * Adds all settings in the input to the settings field of the module.
-     * This is required for saving and loading these settings to / from a file.
-     * Keep in mind, that these settings are passed by reference, which will get lost if the original setting is reassigned.
-     */
-    fun addSettings(setArray: ArrayList<Setting<*>>) {
-        setArray.forEach {
-            settings.add(it)
-        }
-    }
-
-    /**
-     * Adds all settings in the input to the settings field of the module.
-     * This is required for saving and loading these settings to / from a file.
-     * Keep in mind, that these settings are passed by reference, which will get lost if the original setting is reassigned.
-     */
-    private fun addSettings(vararg setArray: Setting<*>) {
-        addSettings(ArrayList(setArray.asList()))
-    }
-
     fun <K: Setting<*>> register(setting: K): K {
-        addSettings(setting)
+        settings.add(setting)
         return setting
     }
 
@@ -117,7 +98,8 @@ abstract class Module(
      * Overloads the unaryPlus operator for [Setting] classes to register them to the module.
      * The following is an example of how it can be used to define a setting for a module.
      *
-     *     private val distance = +NumberSetting("Distance", 4.0, 1.0,10.0,0.1)
+     *     private val feature = +BooleanSetting("Feature", true)
+     *
      * @see register
      */
     operator fun <K: Setting<*>> K.unaryPlus(): K = register(this)
@@ -137,6 +119,10 @@ abstract class Module(
             if (set.name == name) return true
         }
         return false
+    }
+
+    internal fun isKeybindDown(): Boolean {
+        return keyCode != 0 && (Keyboard.isKeyDown(keyCode) || Mouse.isButtonDown(keyCode + 100))
     }
 
     fun executor(delay: Long, func: () -> Unit) {

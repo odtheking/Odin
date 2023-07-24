@@ -1,8 +1,6 @@
 package me.odinclient
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import me.odinclient.commands.impl.*
 import me.odinclient.config.Config
 import me.odinclient.config.MiscConfig
@@ -13,7 +11,7 @@ import me.odinclient.features.ModuleManager
 import me.odinclient.ui.clickgui.ClickGUI
 import me.odinclient.utils.ServerUtils
 import me.odinclient.utils.clock.AbstractExecutor
-import me.odinclient.utils.render.RenderUtils
+import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.LocationUtils
 import me.odinclient.utils.skyblock.PlayerUtils
@@ -67,10 +65,14 @@ class OdinClient {
     }
 
     @EventHandler
-    fun postInit(event: FMLPostInitializationEvent) = runBlocking {
-        launch(Dispatchers.IO) {
-            miscConfig.loadConfig()
-            waypointConfig.loadConfig()
+    fun postInit(event: FMLPostInitializationEvent) {
+        CoroutineScope(Dispatchers.IO).launch {
+            launch {
+                miscConfig.loadConfig()
+            }
+            launch {
+                waypointConfig.loadConfig()
+            }
         }
     }
 

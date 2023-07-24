@@ -10,7 +10,7 @@ import me.odinclient.features.impl.general.WaypointManager.Waypoint
 import me.odinclient.ui.waypoint.WaypointGUI
 import me.odinclient.ui.waypoint.WaypointGUI.mouseHandler
 import me.odinclient.utils.Utils.noControlCodes
-import me.odinclient.utils.gui.animations.impl.ColorAnimation
+import me.odinclient.utils.render.gui.animations.impl.ColorAnimation
 import java.awt.Color
 
 class WaypointElement(val waypoint: Waypoint) {
@@ -19,10 +19,10 @@ class WaypointElement(val waypoint: Waypoint) {
     var y = 0f
 
     private val inputFields = arrayOf(
-        InputField(name, mouseHandler, 12f, Fonts.REGULAR),
-        InputField(waypoint.x, "x:", mouseHandler, 10f, Fonts.REGULAR),
-        InputField(waypoint.y, "y:", mouseHandler, 10f, Fonts.REGULAR),
-        InputField(waypoint.z, "z:", mouseHandler, 10f, Fonts.REGULAR),
+        WaypointInputField(name, mouseHandler, 12f, Fonts.REGULAR),
+        WaypointInputField(waypoint.x, "x:", mouseHandler, 10f, Fonts.REGULAR),
+        WaypointInputField(waypoint.y, "y:", mouseHandler, 10f, Fonts.REGULAR),
+        WaypointInputField(waypoint.z, "z:", mouseHandler, 10f, Fonts.REGULAR),
     )
 
     fun drawScreen(vg: VG): Int {

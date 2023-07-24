@@ -27,6 +27,7 @@ abstract class AbstractCommand(
         return "/$name"
     }
 
+    // TODO: Add a system of subclasses under subclasses somehow so this will auto complete only stuff under a certain subcommand
     final override fun addTabCompletionOptions(
         sender: ICommandSender?,
         args: Array<out String>,

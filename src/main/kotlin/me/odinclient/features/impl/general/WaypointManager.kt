@@ -10,7 +10,7 @@ import me.odinclient.commands.impl.WaypointCommand.randomColor
 import me.odinclient.ui.waypoint.WaypointGUI
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.clock.Clock
-import me.odinclient.utils.render.RenderUtils
+import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.LocationUtils.currentArea
 import net.minecraft.util.Vec3i
@@ -49,7 +49,7 @@ object WaypointManager {
 
     fun addTempWaypoint(name: String, x: Int, y: Int, z: Int) {
         if (currentArea == null) return modMessage("You are not in Skyblock.")
-        temporaryWaypoints.add(Pair(Waypoint(name, x, y, z, randomColor), Clock(60_000)))
+        temporaryWaypoints.add(Pair(Waypoint(name, x, y, z, randomColor()), Clock(60_000)))
     }
 
     @SubscribeEvent

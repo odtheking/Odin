@@ -4,6 +4,7 @@ import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
 import net.minecraft.util.BlockPos
 
+@Deprecated("Old", ReplaceWith("AbstractCommand", "me.odinclient.commands.AbstractCommand"))
 abstract class Command(
     val name: String,
     private val alias: List<String>,

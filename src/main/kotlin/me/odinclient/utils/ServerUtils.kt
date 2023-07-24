@@ -52,25 +52,20 @@ object ServerUtils {
     @SubscribeEvent
     fun onPacket(event: ReceivePacketEvent) {
         when (event.packet) {
-            is S37PacketStatistics -> {
-                isPinging = false
-                averagePing = (System.nanoTime() - pingStartTime) / 1e6 * 0.4 + averagePing * 0.6
-            }
+            is S37PacketStatistics -> averagePing = (System.nanoTime() - pingStartTime) / 1e6 * 0.4 + averagePing * 0.6
+
+            is S01PacketJoinGame -> averagePing = 0.0
 
             is S03PacketTimeUpdate -> {
-                isPinging = false
                 if (prevTime != 0L) {
                     averageTps = (20000 / (System.currentTimeMillis() - prevTime + 1f))
                         .coerceIn(0f, 20f) * 0.182 + averageTps * 0.818
                 }
                 prevTime = System.currentTimeMillis()
             }
-
-            is S01PacketJoinGame -> {
-                isPinging = false
-                averagePing = 0.0
-            }
+            else -> return
         }
+        isPinging = false
     }
     private fun sendPing() {
         if (isPinging || mc.thePlayer == null) return

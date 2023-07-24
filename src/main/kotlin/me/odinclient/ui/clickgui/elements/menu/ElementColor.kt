@@ -8,12 +8,14 @@ import me.odinclient.ui.clickgui.elements.ModuleButton
 import me.odinclient.ui.clickgui.util.ColorUtil
 import me.odinclient.ui.clickgui.util.ColorUtil.elementBackground
 import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinclient.utils.gui.MouseUtils.isAreaHovered
-import me.odinclient.utils.gui.MouseUtils.mouseX
+import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
+import me.odinclient.utils.render.gui.MouseUtils.mouseX
 import me.odinclient.features.settings.impl.ColorSetting
-import me.odinclient.utils.gui.GuiUtils.resetScissor
-import me.odinclient.utils.gui.GuiUtils.scissor
-import me.odinclient.utils.gui.animations.impl.EaseInOut
+import me.odinclient.ui.clickgui.util.ColorUtil.clickGUIColor
+import me.odinclient.utils.render.gui.GuiUtils.drawHSBBox
+import me.odinclient.utils.render.gui.GuiUtils.resetScissor
+import me.odinclient.utils.render.gui.GuiUtils.scissor
+import me.odinclient.utils.render.gui.animations.impl.EaseInOut
 import org.lwjgl.input.Keyboard
 import kotlin.math.floor
 import kotlin.math.roundToInt
@@ -28,6 +30,8 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
         val colorValue = setting.value
 
         nanoVG(vg.instance) {
+
+            //nanoVGHelper.drawHSBBox(vg.instance, x, y, width, height, clickGUIColor.rgb)
             height = floor(openAnim.get(36f, DEFAULT_HEIGHT * (if (setting.allowAlpha) 5 else 4), !extended))
             drawRect(x, y, width, height, elementBackground)
             drawText(displayName, x + 6, y + 18f, -1, 16f, Fonts.REGULAR)
@@ -63,6 +67,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
                 }
                 resetScissor(scissor)
             }
+            //vg.drawHSBBox(x, y, width, height, clickGUIColor.rgb)
         }
     }
 

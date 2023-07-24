@@ -7,8 +7,8 @@ import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.features.settings.impl.NumberSetting
-import me.odinclient.utils.render.OutlineUtils
-import me.odinclient.utils.render.RenderUtils
+import me.odinclient.utils.render.world.OutlineUtils
+import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent

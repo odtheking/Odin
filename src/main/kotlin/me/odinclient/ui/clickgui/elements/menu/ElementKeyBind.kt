@@ -8,7 +8,7 @@ import me.odinclient.ui.clickgui.elements.ModuleButton
 import me.odinclient.ui.clickgui.util.ColorUtil
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.DummySetting
-import me.odinclient.utils.gui.animations.impl.ColorAnimation
+import me.odinclient.utils.render.gui.animations.impl.ColorAnimation
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import java.awt.Color
@@ -28,9 +28,11 @@ class ElementKeyBind(parent: ModuleButton, private val mod: Module) :
 
         nanoVG(vg.instance) {
             drawRect(x, y, width, height, ColorUtil.elementBackground)
+
             val length = getTextWidth(displayValue, 16f, Fonts.REGULAR)
             drawRoundedRect(x + width - 20 - length, y + 4, length + 12f, 22f, 5f, Color(35, 35, 35).rgb)
             drawDropShadow(x + width - 20 - length, y + 4, length + 12f, 22f, 10f, 0.75f, 5f)
+
             if (listening || colorAnim.isAnimating()) {
                 val color = colorAnim.get(ColorUtil.clickGUIColor, Color(35, 35, 35), listening).rgb
                 drawHollowRoundedRect(x + width - 21 - length, y + 3, length + 12.5f, 22.5f, 4f, color, 1.5f)
@@ -49,7 +51,7 @@ class ElementKeyBind(parent: ModuleButton, private val mod: Module) :
             mod.keyCode = -100 + mouseButton
             if (colorAnim.start()) listening = false
         }
-        return super.mouseClicked(mouseButton)
+        return false
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int): Boolean {
@@ -59,14 +61,12 @@ class ElementKeyBind(parent: ModuleButton, private val mod: Module) :
                 if (colorAnim.start()) listening = false
             } else if (keyCode == Keyboard.KEY_NUMPADENTER || keyCode == Keyboard.KEY_RETURN) {
                 if (colorAnim.start()) listening = false
-            } else if (!keyBlacklist.contains(keyCode)) {
+            } else {
                 mod.keyCode = keyCode
                 if (colorAnim.start()) listening = false
             }
             return true
         }
-        return super.keyTyped(typedChar, keyCode)
+        return false
     }
-
-    private val keyBlacklist = intArrayOf()
 }

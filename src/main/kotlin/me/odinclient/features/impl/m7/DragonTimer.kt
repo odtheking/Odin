@@ -4,7 +4,7 @@ import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.ReceivePacketEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
-import me.odinclient.utils.render.RenderUtils
+import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.skyblock.WorldUtils
 import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraft.util.BlockPos

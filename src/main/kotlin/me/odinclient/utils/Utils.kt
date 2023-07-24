@@ -17,7 +17,7 @@ object Utils {
         if (this < min) min else this.coerceAtMost(max)
 
     fun String.containsOneOf(vararg options: String, ignoreCase: Boolean = false): Boolean {
-        for (i in options) if (this.contains(i, ignoreCase)) return true
+        for (i in options.indices) if (this.contains(options[i], ignoreCase)) return true
         return false
     }
 
@@ -26,10 +26,48 @@ object Utils {
         return false
     }
 
+    fun Any?.equalsOneOf(vararg other: Any): Boolean {
+        return other.any {
+            this == it
+        }
+    }
+
     fun Double.floor(): Double {
         return kotlin.math.floor(this)
     }
 
     val ContainerChest.name: String
         get() = this.lowerChestInventory.displayName.unformattedText
+
+
+
+    operator fun Number.div(number: Number): Number {
+        return this.toDouble() / number.toDouble()
+    }
+
+    operator fun Number.times(number: Number): Number {
+        return this.toDouble() * number.toDouble()
+    }
+
+    operator fun Number.minus(number: Number): Number {
+        return this.toDouble() - number.toDouble()
+    }
+
+    operator fun Number.plus(number: Number): Number {
+        return this.toDouble() + number.toDouble()
+    }
+
+    operator fun Number.unaryMinus(): Number {
+        return -this.toDouble()
+    }
+
+    operator fun Number.compareTo(number: Number): Int {
+        return this.toDouble().compareTo(number.toDouble())
+    }
+
+    fun Number.coerceIn(min: Number, max: Number): Number {
+        if (this < min) return min
+        if (this > max) return max
+        return this
+    }
 }

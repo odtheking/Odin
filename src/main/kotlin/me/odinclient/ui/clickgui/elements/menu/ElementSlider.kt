@@ -8,14 +8,18 @@ import me.odinclient.ui.clickgui.elements.ModuleButton
 import me.odinclient.ui.clickgui.util.ColorUtil
 import me.odinclient.ui.clickgui.util.ColorUtil.elementBackground
 import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinclient.utils.gui.MouseUtils.isAreaHovered
-import me.odinclient.utils.gui.MouseUtils.mouseX
+import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
+import me.odinclient.utils.render.gui.MouseUtils.mouseX
 import me.odinclient.features.impl.general.ClickGUIModule
 import me.odinclient.features.settings.impl.NumberSetting
-import me.odinclient.features.settings.impl.minus
-import me.odinclient.features.settings.impl.plus
-import me.odinclient.features.settings.impl.unaryMinus
-import me.odinclient.utils.gui.GuiUtils.nanoVG
+import me.odinclient.utils.Utils.coerceIn
+import me.odinclient.utils.Utils.compareTo
+import me.odinclient.utils.Utils.div
+import me.odinclient.utils.Utils.minus
+import me.odinclient.utils.Utils.plus
+import me.odinclient.utils.Utils.times
+import me.odinclient.utils.Utils.unaryMinus
+import me.odinclient.utils.render.gui.GuiUtils.nanoVG
 import org.lwjgl.input.Keyboard
 import kotlin.math.roundToInt
 
@@ -26,7 +30,7 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
 
     override fun draw(vg: VG) {
         val hoveredOrDragged = isHovered || listening
-        val percentBar = (setting.valueAsDouble - setting.min) / (setting.max - setting.min)
+        val percentBar = (setting.value - setting.min) / (setting.max - setting.min)
 
         vg.nanoVG {
             drawRect(x, y, width, height, elementBackground)
@@ -37,9 +41,9 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
             drawRoundedRect(x + 6f, y + 26f, width - 12f, 6f, 2.5f, ColorUtil.sliderBackgroundColor)
             drawDropShadow(x + 6f, y + 26f, width - 12f, 6f, 10F, 0.75f, 5f)
 
-            if (x + 6 < x + percentBar * (width - 12f)) {
+            if (x + percentBar * (width - 12f) > x + 6) {
                 drawGradientRoundedRect(
-                    x + 6f, y + 26f, (width - 12f) * percentBar, 6f,
+                    x + 6f, y + 26f, percentBar * (width - 12f), 6f,
                     ClickGUIModule.color.withAlpha(if (hoveredOrDragged) 250 else 200).rgb,
                     ClickGUIModule.secondColor.withAlpha(if (hoveredOrDragged) 250 else 200).rgb,
                     2.5f
@@ -49,8 +53,8 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
 
         if (listening) {
             val diff = setting.max - setting.min
-            val newVal = setting.min + ((mouseX - x) / width).clamp(0, 1) * diff
-            setting.valueAsDouble = newVal
+            val newVal = setting.min + ((mouseX - x) / width).coerceIn(0, 1) * diff
+            setting.valueAsDouble = newVal.toDouble()
         }
     }
 
@@ -69,8 +73,8 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
     override fun keyTyped(typedChar: Char, keyCode: Int): Boolean {
         if (isHovered) {
             val amount = when (keyCode) {
-                Keyboard.KEY_RIGHT -> setting.increment
-                Keyboard.KEY_LEFT -> -setting.increment
+                Keyboard.KEY_RIGHT -> setting.increment.toDouble()
+                Keyboard.KEY_LEFT -> -setting.increment.toDouble()
                 else -> return false
             }
             setting.valueAsDouble += amount

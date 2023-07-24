@@ -6,13 +6,13 @@ import cc.polyfrost.oneconfig.utils.dsl.drawRect
 import me.odinclient.ui.clickgui.Panel
 import me.odinclient.ui.clickgui.elements.menu.*
 import me.odinclient.ui.clickgui.util.ColorUtil
-import me.odinclient.utils.gui.MouseUtils.isAreaHovered
+import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.*
-import me.odinclient.utils.gui.GuiUtils.drawCustomCenteredText
-import me.odinclient.utils.gui.GuiUtils.nanoVG
-import me.odinclient.utils.gui.GuiUtils.scissor
-import me.odinclient.utils.gui.animations.impl.EaseInOut
+import me.odinclient.utils.render.gui.GuiUtils.drawCustomCenteredText
+import me.odinclient.utils.render.gui.GuiUtils.nanoVG
+import me.odinclient.utils.render.gui.GuiUtils.scissor
+import me.odinclient.utils.render.gui.animations.impl.EaseInOut
 import kotlin.math.floor
 
 class ModuleButton(val module: Module, val panel: Panel) {
@@ -34,7 +34,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
     init {
         updateElements()
         if (module.keyCode != -999) menuElements.add(ElementKeyBind(this, module))
-        menuElements.add(ElementDescription(this, module.description))
+        //menuElements.add(ElementDescription(this, module.description))
     }
 
     fun updateElements() {

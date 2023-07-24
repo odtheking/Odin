@@ -1,6 +1,6 @@
-package me.odinclient.utils.gui.animations.impl
+package me.odinclient.utils.render.gui.animations.impl
 
-import me.odinclient.utils.gui.animations.Animation
+import me.odinclient.utils.render.gui.animations.Animation
 import kotlin.math.pow
 
 class EaseInOut(duration: Long): Animation<Float>(duration) {

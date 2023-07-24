@@ -14,21 +14,20 @@ import kotlin.math.floor
 
 object WaypointCommand : Command("waypoint", listOf("wp", "odwp"), "Command for waypoints. Do /waypoint help for more info.") {
 
-     val randomColor: Color
-        get() {
-            val random = Random()
-            val hue = random.nextFloat()
+    fun randomColor(): Color {
+        val random = Random()
+        val hue = random.nextFloat()
 
-            val saturation = random.nextFloat() * 0.5f + 0.5f // High saturation
-            val brightness = random.nextFloat() * 0.5f + 0.5f // High brightness
+        val saturation = random.nextFloat() * 0.5f + 0.5f // High saturation
+        val brightness = random.nextFloat() * 0.5f + 0.5f // High brightness
 
-            val rgb = Color.HSBtoRGB(hue, saturation, brightness)
-            val red = (rgb shr 16) and 0xFF
-            val green = (rgb shr 8) and 0xFF
-            val blue = rgb and 0xFF
+        val rgb = Color.HSBtoRGB(hue, saturation, brightness)
+        val red = (rgb shr 16) and 0xFF
+        val green = (rgb shr 8) and 0xFF
+        val blue = rgb and 0xFF
 
-            return Color(red, green, blue)
-        }
+        return Color(red, green, blue)
+    }
 
 
     override fun executeCommand(args: CommandArguments) {
@@ -61,7 +60,7 @@ object WaypointCommand : Command("waypoint", listOf("wp", "odwp"), "Command for 
                         floor(mc.thePlayer.posX).toInt(),
                         floor(mc.thePlayer.posY).toInt(),
                         floor(mc.thePlayer.posZ).toInt(),
-                        randomColor
+                        randomColor()
                     )
                 } else {
                     modMessage("§cInvalid arguments, §r/wp here (temp | perm).")
@@ -78,7 +77,7 @@ object WaypointCommand : Command("waypoint", listOf("wp", "odwp"), "Command for 
                     if (args[1] == "temp")
                         WaypointManager.addTempWaypoint("§f$name", values[0], values[1], values[2])
                     else if (args[1] == "perm")
-                        WaypointManager.addWaypoint("§f$name", values[0], values[1], values[2], randomColor)
+                        WaypointManager.addWaypoint("§f$name", values[0], values[1], values[2], randomColor())
                     else
                         return modMessage("§cInvalid arguments, §r/wp add (temp | perm) x y z.")
 

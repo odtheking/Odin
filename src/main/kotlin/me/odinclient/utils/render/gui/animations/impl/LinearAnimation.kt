@@ -1,6 +1,6 @@
-package me.odinclient.utils.gui.animations.impl
+package me.odinclient.utils.render.gui.animations.impl
 
-import me.odinclient.utils.gui.animations.Animation
+import me.odinclient.utils.render.gui.animations.Animation
 
 class LinearAnimation(duration: Long): Animation<Float>(duration) {
 

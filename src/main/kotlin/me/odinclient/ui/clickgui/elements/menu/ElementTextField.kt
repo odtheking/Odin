@@ -10,8 +10,8 @@ import me.odinclient.ui.clickgui.elements.ElementType
 import me.odinclient.ui.clickgui.elements.ModuleButton
 import me.odinclient.features.settings.impl.StringSetting
 import me.odinclient.ui.clickgui.util.ColorUtil
-import me.odinclient.utils.gui.GuiUtils.drawCustomCenteredText
-import me.odinclient.utils.gui.GuiUtils.nanoVG
+import me.odinclient.utils.render.gui.GuiUtils.drawCustomCenteredText
+import me.odinclient.utils.render.gui.GuiUtils.nanoVG
 import org.lwjgl.input.Keyboard
 
 class ElementTextField(parent: ModuleButton, setting: StringSetting) :
@@ -120,6 +120,6 @@ class ElementTextField(parent: ModuleButton, setting: StringSetting) :
     )
 
     operator fun Int.contains(intArray: IntArray): Boolean {
-        return !intArray.contains(this)
+        return intArray.contains(this)
     }
 }

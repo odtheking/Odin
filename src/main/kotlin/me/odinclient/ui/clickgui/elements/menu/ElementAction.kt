@@ -4,7 +4,7 @@ import cc.polyfrost.oneconfig.utils.dsl.VG
 import me.odinclient.ui.clickgui.elements.Element
 import me.odinclient.ui.clickgui.elements.ElementType
 import me.odinclient.ui.clickgui.elements.ModuleButton
-import me.odinclient.utils.gui.MouseUtils
+import me.odinclient.utils.render.gui.MouseUtils
 import me.odinclient.features.settings.impl.ActionSetting
 
 class ElementAction(parent: ModuleButton, setting: ActionSetting) :

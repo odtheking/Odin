@@ -5,7 +5,7 @@ import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.ColorSetting
 import me.odinclient.features.settings.impl.NumberSetting
-import me.odinclient.utils.render.RenderUtils
+import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.skyblock.ItemUtils.itemID
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent

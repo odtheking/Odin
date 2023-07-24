@@ -15,8 +15,6 @@ import net.minecraft.tileentity.TileEntitySkull
 import net.minecraft.util.BlockPos
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.lwjgl.input.Keyboard
-import org.lwjgl.input.Mouse
 
 //TODO: Rename settings
 object GhostBlock : Module(
@@ -38,7 +36,7 @@ object GhostBlock : Module(
         if (!gkey) super.keyBind()
     }
 
-    private val blacklist = listOf(
+    private val blacklist = arrayOf(
         Blocks.stone_button,
         Blocks.chest,
         Blocks.trapped_chest,
@@ -48,11 +46,17 @@ object GhostBlock : Module(
     init {
         executor(delay = { gkeySpeed }) {
             if (!gkey || display != null || (onlyDungeon && !inDungeons)) return@executor
-            if (keyCode >= 0 && !Keyboard.isKeyDown(keyCode)) return@executor
-            if (keyCode < 0 && !Mouse.isButtonDown(keyCode + 100)) return@executor
+            if (!isKeybindDown()) return@executor
 
             val lookingAt = mc.thePlayer?.rayTrace(gbRange, 1f)
             toAir(lookingAt?.blockPos)
+        }
+
+        executor(500) {
+            if (!DungeonUtils.isFloor(7) || !DungeonUtils.inBoss || preGhostBlock) return@executor
+            for (i in blocks[getPhase()] ?: return@executor) {
+                mc.theWorld?.setBlockToAir(i)
+            }
         }
     }
 
@@ -66,14 +70,6 @@ object GhostBlock : Module(
             }
         }
         return false
-    }
-
-    @SubscribeEvent
-    fun ticks(event: TickEvent.ClientTickEvent) {
-        if (!DungeonUtils.isFloor(7) || !DungeonUtils.inBoss || preGhostBlock) return
-        for (i in blocks[getPhase()] ?: return) {
-            mc.theWorld?.setBlockToAir(i)
-        }
     }
 
     private val blocks = mapOf(

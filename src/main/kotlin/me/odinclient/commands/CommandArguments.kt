@@ -1,15 +1,15 @@
 package me.odinclient.commands
 
-class CommandArguments(private val data: Array<out String>): AbstractList<String>(), RandomAccess {
+class CommandArguments(private val args: Array<out String>): AbstractList<String>(), RandomAccess {
 
-    override val size = data.size
+    override val size = args.size
 
     override fun get(index: Int): String {
-        return data[index].lowercase()
+        return args[index].lowercase()
     }
 
     fun getRegular(index: Int): String {
-        return data[index]
+        return args[index]
     }
 
     fun joinToString(startIndex: Int, endIndex: Int = this.size): String {

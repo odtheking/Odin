@@ -6,8 +6,8 @@ import me.odinclient.events.ClientSecondEvent
 import me.odinclient.events.RenderEntityModelEvent
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.VecUtils.xzDistance
-import me.odinclient.utils.render.OutlineUtils
-import me.odinclient.utils.render.RenderUtils.bindColor
+import me.odinclient.utils.render.world.OutlineUtils
+import me.odinclient.utils.render.world.RenderUtils.bindColor
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand

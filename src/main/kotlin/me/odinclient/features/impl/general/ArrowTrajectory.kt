@@ -5,8 +5,8 @@ import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.RenderEntityModelEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
-import me.odinclient.utils.render.OutlineUtils
-import me.odinclient.utils.render.RenderUtils
+import me.odinclient.utils.render.world.OutlineUtils
+import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.skyblock.ItemUtils.itemID
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand

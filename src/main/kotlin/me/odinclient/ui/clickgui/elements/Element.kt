@@ -1,7 +1,7 @@
 package me.odinclient.ui.clickgui.elements
 
 import cc.polyfrost.oneconfig.utils.dsl.VG
-import me.odinclient.utils.gui.MouseUtils.isAreaHovered
+import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinclient.features.settings.Setting
 
 open class Element<S : Setting<*>>(val parent: ModuleButton, val setting: S, type: ElementType) {

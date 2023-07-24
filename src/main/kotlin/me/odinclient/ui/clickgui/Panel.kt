@@ -6,17 +6,17 @@ import cc.polyfrost.oneconfig.utils.dsl.drawDropShadow
 import cc.polyfrost.oneconfig.utils.dsl.drawRoundedRectVaried
 import me.odinclient.ui.clickgui.elements.ModuleButton
 import me.odinclient.ui.clickgui.util.ColorUtil
-import me.odinclient.utils.gui.MouseUtils.isAreaHovered
-import me.odinclient.utils.gui.MouseUtils.mouseX
-import me.odinclient.utils.gui.MouseUtils.mouseY
+import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
+import me.odinclient.utils.render.gui.MouseUtils.mouseX
+import me.odinclient.utils.render.gui.MouseUtils.mouseY
 import me.odinclient.features.Category
 import me.odinclient.features.ModuleManager
 import me.odinclient.features.impl.general.ClickGUIModule
-import me.odinclient.utils.gui.GuiUtils.capitalizeOnlyFirst
-import me.odinclient.utils.gui.GuiUtils.drawCustomCenteredText
-import me.odinclient.utils.gui.GuiUtils.nanoVG
-import me.odinclient.utils.gui.GuiUtils.resetScissor
-import me.odinclient.utils.gui.GuiUtils.scissor
+import me.odinclient.utils.render.gui.GuiUtils.capitalizeOnlyFirst
+import me.odinclient.utils.render.gui.GuiUtils.drawCustomCenteredText
+import me.odinclient.utils.render.gui.GuiUtils.nanoVG
+import me.odinclient.utils.render.gui.GuiUtils.resetScissor
+import me.odinclient.utils.render.gui.GuiUtils.scissor
 import kotlin.math.floor
 
 class Panel(

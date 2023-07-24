@@ -3,7 +3,7 @@ package me.odinclient.hud
 import cc.polyfrost.oneconfig.hud.TextHud
 import cc.polyfrost.oneconfig.libs.universal.UMatrixStack
 import me.odinclient.features.impl.general.DeployableTimer
-import me.odinclient.utils.render.RenderUtils
+import me.odinclient.utils.render.world.RenderUtils
 import net.minecraft.util.ResourceLocation
 
 class DeployableHud: TextHud(false) {

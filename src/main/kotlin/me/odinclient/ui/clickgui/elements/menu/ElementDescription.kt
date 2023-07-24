@@ -8,6 +8,7 @@ import me.odinclient.ui.clickgui.elements.ElementType
 import me.odinclient.ui.clickgui.elements.ModuleButton
 import me.odinclient.ui.clickgui.util.ColorUtil
 
+// Nuh uh remove this
 class ElementDescription(parent: ModuleButton, private val description: String) : Element<DummySetting>(parent, DummySetting("Description"), ElementType.DESCRIPTION) {
 
 

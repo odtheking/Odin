@@ -7,10 +7,10 @@ import me.odinclient.ui.clickgui.elements.Element
 import me.odinclient.ui.clickgui.elements.ElementType
 import me.odinclient.ui.clickgui.elements.ModuleButton
 import me.odinclient.ui.clickgui.util.ColorUtil
-import me.odinclient.utils.gui.GuiUtils.drawCustomCenteredText
-import me.odinclient.utils.gui.GuiUtils.nanoVG
-import me.odinclient.utils.gui.MouseUtils
-import me.odinclient.utils.gui.animations.impl.ColorAnimation
+import me.odinclient.utils.render.gui.GuiUtils.drawCustomCenteredText
+import me.odinclient.utils.render.gui.GuiUtils.nanoVG
+import me.odinclient.utils.render.gui.MouseUtils
+import me.odinclient.utils.render.gui.animations.impl.ColorAnimation
 import java.awt.Color
 
 class ElementDual(parent: ModuleButton, setting: DualSetting) : Element<DualSetting>(

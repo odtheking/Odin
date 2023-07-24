@@ -11,7 +11,7 @@ import me.odinclient.features.Module
 import me.odinclient.utils.AsyncUtils
 import me.odinclient.utils.VecUtils.floored
 import me.odinclient.utils.VecUtils.plus
-import me.odinclient.utils.render.RenderUtils
+import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.IceFillFloors.floors
 import me.odinclient.utils.skyblock.PlayerUtils
