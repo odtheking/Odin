@@ -3,6 +3,7 @@ package me.odinclient.features.impl.dungeon
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.utils.skyblock.ChatUtils
+import me.odinclient.utils.skyblock.ChatUtils.unformattedText
 import me.odinclient.utils.skyblock.PlayerUtils
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.event.world.WorldEvent
@@ -21,8 +22,8 @@ object AutoUlt : Module(
     }
 
     @SubscribeEvent
-    fun ultDetect(event: ClientChatReceivedEvent) {
-        when (event.message.unformattedText) {
+    fun onChat(event: ClientChatReceivedEvent) {
+        when (event.unformattedText) {
             "[BOSS] Maxor: YOU TRICKED ME!", "[BOSS] Maxor: THAT BEAM! IT HURTS! IT HURTS!!" -> {
 
                 if (firstLaser) return
@@ -37,7 +38,7 @@ object AutoUlt : Module(
             }
 
             "[BOSS] Sadan: My giants! Unleashed!" -> {
-                executor(30000, 0) {
+                execute(3000, 0) {
                     ChatUtils.modMessage("§eGiants incoming")
                     PlayerUtils.dropItem()
                 }
