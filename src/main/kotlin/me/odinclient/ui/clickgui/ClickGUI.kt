@@ -3,7 +3,7 @@ package me.odinclient.ui.clickgui
 import cc.polyfrost.oneconfig.utils.dsl.nanoVG
 import cc.polyfrost.oneconfig.utils.dsl.setAlpha
 import cc.polyfrost.oneconfig.utils.dsl.translate
-import me.odinclient.OdinClient.Companion.moduleConfig
+import me.odinclient.config.Config
 import me.odinclient.ui.clickgui.elements.menu.ElementColor
 import me.odinclient.features.Category
 import me.odinclient.features.impl.general.ClickGUIModule
@@ -14,6 +14,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Mouse
 import java.io.IOException
+import java.util.*
 import kotlin.math.floor
 
 object ClickGUI : GuiScreen() {
@@ -130,7 +131,7 @@ object ClickGUI : GuiScreen() {
                 }
             }
         }
-        moduleConfig.saveConfig()
+        Config.saveConfig()
     }
 
     override fun doesGuiPauseGame(): Boolean = false

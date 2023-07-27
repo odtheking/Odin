@@ -54,11 +54,6 @@ object ModuleManager {
         TermAC
     )
 
-
-    fun initializeModules() {
-        modules.forEach { it.initializeModule() }
-    }
-
     @SubscribeEvent
     fun activateModuleKeyBinds(event: InputEvent.KeyInputEvent) {
         if (Keyboard.getEventKeyState()) return

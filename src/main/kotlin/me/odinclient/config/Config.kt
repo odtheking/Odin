@@ -4,6 +4,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonIOException
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
+import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.config.jsonutils.SettingDeserializer
 import me.odinclient.config.jsonutils.SettingSerializer
 import me.odinclient.features.ConfigModule
@@ -14,7 +15,7 @@ import java.awt.Color
 import java.io.File
 import java.io.IOException
 
-class Config(path: File) {
+object Config {
 
     private val gson = GsonBuilder()
         .registerTypeAdapter(object : TypeToken<Setting<*>>(){}.type, SettingSerializer())
@@ -22,13 +23,9 @@ class Config(path: File) {
         .excludeFieldsWithoutExposeAnnotation()
         .setPrettyPrinting().create()
 
-
-    private val configFile = File(path, "odin-config.json")
-
-    init {
+    private val configFile = File(mc.mcDataDir, "config/odinclient/odin-config.json").apply {
         try {
-            if (!path.exists()) path.mkdirs()
-            configFile.createNewFile()
+            createNewFile()
         } catch (e: Exception) {
             println("Error initializing module config")
         }

@@ -63,9 +63,9 @@ object Reminders : Module(
     }
 
     init {
-        executor(10000, 0) {
-            if (!readyReminder || !DungeonUtils.inDungeons) return@executor
-            if (playerReady) return@executor
+        execute(10000, 0) {
+            if (!readyReminder || !DungeonUtils.inDungeons) return@execute
+            if (playerReady) return@execute
 
             PlayerUtils.alert("&3Ready up!")
             modMessage("Ready up!")

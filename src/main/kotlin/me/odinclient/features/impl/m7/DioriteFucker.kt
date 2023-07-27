@@ -12,11 +12,11 @@ object DioriteFucker : Module(
     "Fuck Diorite",
     category = Category.M7
 ) {
-    private val delay: Long by NumberSetting("Delay", 80L, 20, 300, 10)
+    private val delay: Long by NumberSetting("Delay", 80, 50, 1000, 10)
 
     init {
-        executor(delay = { delay }) {
-            if (mc.theWorld == null || DungeonUtils.getPhase() != 2) return@executor
+        execute(delay = { delay }) {
+            if (mc.theWorld == null || DungeonUtils.getPhase() != 2) return@execute
             for (block in pillars) {
                 if (mc.theWorld.chunkProvider.provideChunk(block.x shr 4, block.z shr 4).getBlock(block) == Blocks.stone) {
                     mc.theWorld.setBlockState(block, Blocks.glass.defaultState, 3)

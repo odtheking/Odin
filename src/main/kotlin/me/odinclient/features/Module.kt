@@ -5,9 +5,9 @@ import com.google.gson.annotations.SerializedName
 import me.odinclient.OdinClient
 import me.odinclient.features.settings.AlwaysActive
 import me.odinclient.features.settings.Setting
-import me.odinclient.utils.clock.AbstractExecutor
-import me.odinclient.utils.clock.AbstractExecutor.*
-import me.odinclient.utils.clock.AbstractExecutor.Companion.executeAll
+import me.odinclient.utils.clock.Executable
+import me.odinclient.utils.clock.Executor
+import me.odinclient.utils.clock.Executor.Companion.executeAll
 import me.odinclient.utils.skyblock.ChatUtils
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.common.MinecraftForge
@@ -43,7 +43,7 @@ abstract class Module(
     val settings: ArrayList<Setting<*>>
 
     /**
-     * Will be used for an advanced info gui
+     * Will be used for a tooltip
      */
     var description: String
 
@@ -53,9 +53,7 @@ abstract class Module(
         this.category = category
         this.settings = settings
         this.description = description
-    }
 
-    fun initializeModule() {
         if (this::class.hasAnnotation<AlwaysActive>()) {
             MinecraftForge.EVENT_BUS.register(this)
         }
@@ -125,31 +123,19 @@ abstract class Module(
         return keyCode != 0 && (Keyboard.isKeyDown(keyCode) || Mouse.isButtonDown(keyCode + 100))
     }
 
-    fun executor(delay: Long, func: () -> Unit) {
+    fun execute(delay: Long, func: Executable) {
         executors.add(Executor(delay, func))
     }
 
-    fun executor(delay: Long, repeats: Int, func: () -> Unit) {
-        executors.add(LimitedExecutor(delay, repeats, func))
+    fun execute(delay: Long, repeats: Int, func: Executable) {
+        executors.add(Executor.LimitedExecutor(delay, repeats, func))
     }
 
-    fun executor(delay: Long, repeats: Int, onFinish: () -> Unit, func: () -> Unit) {
-        executors.add(LimitedExecutor(delay, repeats, func).onFinish(onFinish))
+    fun execute(delay: () -> Long, func: Executable) {
+        executors.add(Executor.VaryingExecutor(delay, func))
     }
 
-    fun executor(delay: Long, condition: () -> Boolean, func: () -> Unit) {
-        executors.add(ConditionalExecutor(delay, condition, func))
-    }
-
-    fun executor(delay: Long, condition: () -> Boolean, onFinish: () -> Unit, func: () -> Unit) {
-        executors.add(ConditionalExecutor(delay,condition, func).onFinish(onFinish))
-    }
-
-    fun executor(delay: () -> Long, func: () -> Unit) {
-        executors.add(VaryingExecutor(delay, func))
-    }
-
-    private val executors = ArrayList<AbstractExecutor>()
+    private val executors = ArrayList<Executor>()
 
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {

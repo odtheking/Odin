@@ -1,6 +1,7 @@
 package me.odinclient.features.impl.dungeon
 
 import kotlinx.coroutines.*
+import me.odinclient.OdinClient.Companion.scope
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.utils.Utils.noControlCodes
@@ -25,7 +26,7 @@ object KeyESP : Module(
     fun onEntityJoin(event: EntityJoinWorldEvent) {
         if (event.entity !is EntityArmorStand || !DungeonUtils.inDungeons) return
 
-        CoroutineScope(Dispatchers.IO).launch {
+        scope.launch(Dispatchers.IO) {
             delay(500)
 
             val name = event.entity.name.noControlCodes

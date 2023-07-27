@@ -1,6 +1,5 @@
 package me.odinclient.commands.impl
 
-import me.odinclient.OdinClient.Companion.miscConfig
 import me.odinclient.commands.AbstractCommand
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 
@@ -9,6 +8,38 @@ object AutoSellCommand : AbstractCommand(
     alias = arrayListOf("odautosell"),
     description = "Command for Auto Sell."
 ) {
+
+    init {
+
+        empty {
+            modMessage("Actually empty")
+        }
+
+        "1" - {
+            "2" - {
+                does {
+                    modMessage("2")
+                }
+
+                "3" does {
+                    modMessage("3")
+                }
+            }
+
+            "holy" - {
+                does {
+                    modMessage("holy")
+                }
+
+                "moly" does {
+                    modMessage("moly")
+                }
+            }
+        }
+    }
+
+
+    /*
     private inline val autoSell get () = miscConfig.autoSell
     override val errorMsg: String get() = "Incorrect usage. Usage: ${subcommands.keys.joinToString(", ") }"
 
@@ -43,4 +74,6 @@ object AutoSellCommand : AbstractCommand(
             autoSell.forEach { modMessage(it) }
         }
     }
+
+     */
 }
