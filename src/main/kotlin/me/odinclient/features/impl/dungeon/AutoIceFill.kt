@@ -62,7 +62,7 @@ object AutoIceFill: Module(
         val color = getRainbowColor()
         val pt = event.partialTicks
 
-        for (i in 0 until currentPatterns.size) {
+        for (i in currentPatterns.indices) {
             val pattern = currentPatterns[i]
             val pos = rPos[i]
             RenderUtils.draw3DLine(pos, pos + transformTo(pattern[0], renderRotation!!), color, 10, true, pt)
@@ -92,7 +92,7 @@ object AutoIceFill: Module(
         }
     }
 
-    suspend fun scan(pos: Vec3i, floorIndex: Int) {
+    private suspend fun scan(pos: Vec3i, floorIndex: Int) {
         val rotation = checkRotation(pos, floorIndex) ?: return
 
         val bPos = BlockPos(pos)
