@@ -77,6 +77,6 @@ object VecUtils {
     }
 
     fun Vec3.floored(): Vec3i {
-        return Vec3i(xCoord.floor(), xCoord.floor(), xCoord.floor())
+        return Vec3i(xCoord.floor(), yCoord.floor(), zCoord.floor())
     }
 }

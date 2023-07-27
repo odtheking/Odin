@@ -4,7 +4,6 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.Category
 import me.odinclient.features.Module
@@ -14,6 +13,7 @@ import me.odinclient.utils.VecUtils.plus
 import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.IceFillFloors.floors
+import me.odinclient.utils.skyblock.IceFillFloors.representativeFloors
 import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinclient.utils.skyblock.PlayerUtils.posFloored
 import me.odinclient.utils.skyblock.WorldUtils
@@ -81,7 +81,6 @@ object AutoIceFill: Module(
         if (event.phase != TickEvent.Phase.END || mc.thePlayer == null) return
         val pos = posFloored
         if (
-            !config.autoIceFill ||
             scanned ||
             !DungeonUtils.inDungeons ||
             WorldUtils.getBlockIdAt(BlockPos(pos.x, pos.y - 1, pos.z )) != 79 ||
@@ -93,25 +92,27 @@ object AutoIceFill: Module(
         }
     }
 
-    private suspend fun scan(pos: Vec3i, floorIndex: Int) {
+    suspend fun scan(pos: Vec3i, floorIndex: Int) {
         val rotation = checkRotation(pos, floorIndex) ?: return
 
         val bPos = BlockPos(pos)
-        val floor = floors[floorIndex]
+
+        val floorHeight = representativeFloors[floorIndex]
         val startTime = System.nanoTime()
 
-        for (element in floor) {
-            if (element.all {
-                WorldUtils.isAir(bPos.add(transform(it, rotation)))
-            }) {
+        for (index in floorHeight.indices) {
+            if (
+                WorldUtils.isAir(bPos.add(transform(floorHeight[index].first, rotation))) &&
+                !WorldUtils.isAir(bPos.add(transform(floorHeight[index].second, rotation)))
+            ) {
                 val scanTime: Double = (System.nanoTime() - startTime) / 1000000.0
                 ChatUtils.modMessage("Scan took $scanTime ms")
 
                 renderPattern(pos, rotation)
-                currentPatterns.add(element.toList())
+                currentPatterns.add(floors[floorIndex][index].toMutableList())
 
 
-                move(Vec3(pos.x.toDouble(), pos.y - 1.0, pos.z.toDouble()), element.toList(), rotation, floorIndex)
+                move(Vec3(pos.x.toDouble(), pos.y - 1.0, pos.z.toDouble()), floors[floorIndex][index].toMutableList(), rotation, floorIndex)
                 return
             }
         }
