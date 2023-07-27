@@ -1,13 +1,14 @@
 package me.odinclient.utils.skyblock.dungeon
 
-import me.odinclient.utils.clock.AbstractExecutor.ConditionalExecutor
-import me.odinclient.utils.clock.AbstractExecutor.Companion.register
+import me.odinclient.utils.clock.Executor
+import me.odinclient.utils.clock.Executor.Companion.register
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.PlayerUtils.posX
 import me.odinclient.utils.skyblock.PlayerUtils.posZ
 import me.odinclient.utils.skyblock.ScoreboardUtils
 
-// In future maybe add stats about the dungeon like time elapsed, deaths, total secrets etc. could add some system to look back at previous runs.
+// In future maybe add stats about the dungeon like time elapsed, deaths, total secrets etc.
+// could add some system to look back at previous runs.
 class Dungeon {
 
     lateinit var floor: Floor
@@ -17,8 +18,11 @@ class Dungeon {
     init {
         getCurrentFloor()
 
-        ConditionalExecutor(500, condition = bossGetter) {
-            inBoss = bossGetter()
+        Executor(500) {
+            if (bossGetter()) {
+                inBoss = true
+                destroyExecutor()
+            }
         }.register()
 
         bossGetter = when (floor.floorNumber) {

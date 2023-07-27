@@ -4,6 +4,7 @@ import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.utils.Utils.noControlCodes
+import me.odinclient.utils.clock.Clock
 import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.ItemUtils
 import me.odinclient.utils.skyblock.PlayerUtils.windowClick
@@ -18,17 +19,8 @@ object AutoMask : Module(
     description = "Automatically uses masks when they proc",
     category = Category.DUNGEON
 ) {
-
-    private var spiritProc = 0L
-    private var bonzoProc = 0L
-    private const val spiritCooldown = 30000L
-    private const val bonzoCooldown = 180000L
-
-    @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Load) {
-        spiritProc = 0
-        bonzoProc = 0
-    }
+    private val spiritClock = Clock(30_000)
+    private val bonzoClock = Clock(180_000)
 
     @SubscribeEvent
     fun onClientChatReceived(event: ClientChatReceivedEvent) {
@@ -37,13 +29,13 @@ object AutoMask : Module(
         if (!regex.matches(msg)) return
 
         when (regex.find(msg)?.groupValues?.get(2)) {
-            "Spirit Mask" -> spiritProc = System.currentTimeMillis()
-            "Bonzo's Mask", "⚚ Bonzo's Mask" -> bonzoProc = System.currentTimeMillis()
+            "Spirit Mask" -> spiritClock.update()
+            "Bonzo's Mask", "⚚ Bonzo's Mask" -> bonzoClock.update()
         }
 
         val inventory = GuiInventory(mc.thePlayer) as GuiContainer
-        val currentTime = System.currentTimeMillis()
-        if (currentTime - spiritProc >= spiritCooldown) {
+
+        if (spiritClock.hasTimePassed()) {
 
             val slotId = ItemUtils.getItemSlot("Spirit Mask", true) ?: return
             val windowID = inventory.inventorySlots.windowId
@@ -53,7 +45,7 @@ object AutoMask : Module(
             windowClick(windowID, slotId, 0, 2)
 
             ChatUtils.modMessage("Swapped mask!")
-        } else if (currentTime - bonzoProc >= bonzoCooldown) {
+        } else if (bonzoClock.hasTimePassed()) {
 
             val slotId = ItemUtils.getItemSlot("Bonzo's Mask", true) ?: return
             val windowID = inventory.inventorySlots.windowId
@@ -64,5 +56,11 @@ object AutoMask : Module(
 
             ChatUtils.modMessage("Swapped mask!")
         } else ChatUtils.modMessage("Masks are on cooldown or no mask was found!")
+    }
+
+    @SubscribeEvent
+    fun onWorldLoad(event: WorldEvent.Load) {
+        spiritClock.setTime(0)
+        bonzoClock.setTime(0)
     }
 }

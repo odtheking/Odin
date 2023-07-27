@@ -13,8 +13,6 @@ import me.odinclient.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import net.minecraft.init.Blocks
 import net.minecraft.tileentity.TileEntitySkull
 import net.minecraft.util.BlockPos
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent
 
 //TODO: Rename settings
 object GhostBlock : Module(
@@ -44,17 +42,17 @@ object GhostBlock : Module(
     )
 
     init {
-        executor(delay = { gkeySpeed }) {
-            if (!gkey || display != null || (onlyDungeon && !inDungeons)) return@executor
-            if (!isKeybindDown()) return@executor
+        execute({ gkeySpeed }) {
+            if (!gkey || display != null || (onlyDungeon && !inDungeons)) return@execute
+            if (!isKeybindDown()) return@execute
 
             val lookingAt = mc.thePlayer?.rayTrace(gbRange, 1f)
             toAir(lookingAt?.blockPos)
         }
 
-        executor(500) {
-            if (!DungeonUtils.isFloor(7) || !DungeonUtils.inBoss || preGhostBlock) return@executor
-            for (i in blocks[getPhase()] ?: return@executor) {
+        execute(500) {
+            if (!DungeonUtils.isFloor(7) || !DungeonUtils.inBoss || preGhostBlock) return@execute
+            for (i in blocks[getPhase()] ?: return@execute) {
                 mc.theWorld?.setBlockToAir(i)
             }
         }

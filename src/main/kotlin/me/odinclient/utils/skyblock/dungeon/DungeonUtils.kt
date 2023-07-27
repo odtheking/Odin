@@ -4,14 +4,12 @@ import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.dungeonmap.features.Dungeon
 import me.odinclient.events.ReceivePacketEvent
 import me.odinclient.utils.Utils.noControlCodes
-import me.odinclient.utils.clock.AbstractExecutor.Executor
-import me.odinclient.utils.clock.AbstractExecutor.Companion.register
+import me.odinclient.utils.clock.Executor
+import me.odinclient.utils.clock.Executor.Companion.register
 import me.odinclient.utils.skyblock.ItemUtils
 import me.odinclient.utils.skyblock.LocationUtils
 import me.odinclient.utils.skyblock.LocationUtils.currentDungeon
 import me.odinclient.utils.skyblock.PlayerUtils.posY
-import me.odinclient.utils.skyblock.ScoreboardUtils
-import me.odinclient.utils.skyblock.ScoreboardUtils.cleanSB
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraftforge.event.world.WorldEvent

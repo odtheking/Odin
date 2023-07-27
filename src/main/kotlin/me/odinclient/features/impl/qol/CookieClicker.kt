@@ -15,13 +15,13 @@ object CookieClicker : Module(
     "Cookie Clicker",
     category = Category.QOL
 ) {
-    private val delay: Long by NumberSetting("Delay", 150, 50.0, 300.0, 5.0)
+    private val delay: Long by NumberSetting("Delay", 150, 50, 300, 5)
     private val cancelSound: Boolean by BooleanSetting("Cancel Sound")
 
     init {
-        executor(delay = { delay }) {
-            val container = mc.thePlayer.openContainer ?: return@executor
-            if (container !is ContainerChest) return@executor
+        execute(delay = { delay }) {
+            val container = mc.thePlayer.openContainer ?: return@execute
+            if (container !is ContainerChest) return@execute
 
             val chestName = container.name
             if (chestName.startsWith("Cookie Clicker")) {

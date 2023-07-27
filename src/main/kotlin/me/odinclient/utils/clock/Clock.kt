@@ -4,6 +4,7 @@ package me.odinclient.utils.clock
  * Class to simplify handling delays with [System.currentTimeMillis]
  *
  * @see [hasTimePassed]
+ * @see [Executor]
  */
 class Clock(val delay: Long = 0L) {
 
@@ -11,6 +12,10 @@ class Clock(val delay: Long = 0L) {
 
     inline fun getTime(): Long {
         return System.currentTimeMillis() - lastTime
+    }
+
+    inline fun setTime(time: Long) {
+        lastTime = time
     }
 
     /**

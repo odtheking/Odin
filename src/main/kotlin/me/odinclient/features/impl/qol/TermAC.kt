@@ -8,18 +8,16 @@ import me.odinclient.utils.skyblock.ItemUtils.itemID
 import me.odinclient.utils.skyblock.PlayerUtils.rightClick
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import org.lwjgl.input.Keyboard
 
 object TermAC : Module(
     "Terminator AC",
-    Keyboard.KEY_NONE,
-    Category.QOL
+    category = Category.QOL
 ) {
     private var nextClick = Double.MIN_VALUE
 
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
-        if (!enabled || mc.thePlayer?.heldItem?.itemID != "TERMINATOR" || !mc.gameSettings.keyBindUseItem.isKeyDown) return
+        if (mc.thePlayer?.heldItem?.itemID != "TERMINATOR" || !mc.gameSettings.keyBindUseItem.isKeyDown) return
         val nowMillis = System.currentTimeMillis()
         if (nowMillis < nextClick) return
         nextClick = nowMillis + (1000 / ServerUtils.averageTps) - 15 + (Math.random() * 30)

@@ -1,8 +1,8 @@
 package me.odinclient.utils.skyblock
 
 import me.odinclient.OdinClient.Companion.mc
-import me.odinclient.utils.clock.AbstractExecutor.Executor
-import me.odinclient.utils.clock.AbstractExecutor.Companion.register
+import me.odinclient.utils.clock.Executor
+import me.odinclient.utils.clock.Executor.Companion.register
 import me.odinclient.utils.skyblock.ScoreboardUtils.cleanSB
 import me.odinclient.utils.skyblock.ScoreboardUtils.sidebarLines
 import me.odinclient.utils.skyblock.dungeon.Dungeon

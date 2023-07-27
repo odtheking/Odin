@@ -5,9 +5,18 @@ import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.utils.Utils.noControlCodes
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.ItemStack
+import net.minecraft.nbt.NBTTagCompound
 import java.awt.Color
 
 object ItemUtils {
+
+    /**
+     * Returns the ExtraAttribute Compound
+     */
+    private val ItemStack.extraAttributes: NBTTagCompound?
+        get() {
+            return this.getSubCompound("ExtraAttributes", false)
+        }
 
     /**
      * Returns displayName without control codes.
@@ -19,15 +28,10 @@ object ItemUtils {
      * Returns Item ID for an Item
      */
     val ItemStack.itemID: String
-        get() {
-            if (this.hasTagCompound() && this.tagCompound.hasKey("ExtraAttributes")) {
-                val attributes = this.getSubCompound("ExtraAttributes", false)
-                if (attributes.hasKey("id", 8)) {
-                    return attributes.getString("id")
-                }
-            }
-            return ""
-        }
+        get() = this.extraAttributes?.getString("id") ?: ""
+
+    inline val heldItem: ItemStack?
+        get() = mc.thePlayer?.heldItem
 
     /**
      * Returns the lore for an Item

@@ -27,18 +27,17 @@ object ClickGUIModule: Module(
     val color: Color by ColorSetting("First Color", Color(50, 150, 220), allowAlpha = false, description = "Color theme in the gui.")
     val secondColor: Color by ColorSetting("Second Color", Color(70, 30, 220), allowAlpha = false, description = "Second color theme in the gui.")
 
+    private var hasJoined: Boolean by BooleanSetting("First join", false, hidden = true)
+
     val panelX = mutableMapOf<Category, NumberSetting<Float>>()
     val panelY = mutableMapOf<Category, NumberSetting<Float>>()
     val panelExtended = mutableMapOf<Category, BooleanSetting>()
 
-    private val hasJoined = +BooleanSetting("First join", false, hidden = true)
-
     init {
-        resetPositions()
-
-        executor(250, condition = hasJoined::enabled) {
-            if (!LocationUtils.inSkyblock) return@executor
-            hasJoined.toggle()
+        execute(250) {
+            if (hasJoined) destroyExecutor()
+            if (!LocationUtils.inSkyblock) return@execute
+            hasJoined = true
 
             modMessage("""
             ${ChatUtils.getChatBreak().dropLast(1)}
@@ -62,6 +61,8 @@ object ClickGUIModule: Module(
             
         """.trimIndent(), "")
         }
+
+        resetPositions()
     }
 
     fun resetPositions() {

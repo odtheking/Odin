@@ -23,8 +23,8 @@ object FPS : Module(
     }
 
     init {
-        executor(30000) {
-            if (!crimsonIsle || mc.theWorld == null) return@executor
+        execute(30000) {
+            if (!crimsonIsle || mc.theWorld == null) return@execute
             mc.theWorld.playerEntities.removeAll { it.isDead || isNullVec(it) && it != mc.thePlayer }
         }
     }

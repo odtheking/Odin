@@ -14,7 +14,7 @@ object GhostPick : Module(
 ) {
     private val slot: Int by NumberSetting("Ghost pick slot", 1, 1.0, 9.0, 1.0)
 
-    private var item = ItemStack(Item.getItemById(278), 1).apply {
+    private val item = ItemStack(Item.getItemById(278), 1).apply {
         addEnchantment(Enchantment.getEnchantmentById(32), 10)
         tagCompound?.setBoolean("Unbreakable", true)
     }

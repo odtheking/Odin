@@ -26,7 +26,7 @@ object ESP : Module(
     var currentEntities = mutableListOf<Entity>()
 
     init {
-        executor(1000) {
+        execute(1000) {
             currentEntities.removeAll { it.isDead }
 
             mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()?.forEach { entity ->
@@ -44,7 +44,7 @@ object ESP : Module(
             }
         }
 
-        executor(30000) {
+        execute(30000) {
             currentEntities.clear()
         }
     }

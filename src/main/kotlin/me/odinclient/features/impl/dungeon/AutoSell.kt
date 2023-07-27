@@ -19,13 +19,13 @@ object AutoSell : Module(
     private val delay: Long by NumberSetting("Delay", 100, 50.0, 300.0, 5.0)
 
     init {
-        executor(delay = { delay }) {
-            val container = mc.thePlayer.openContainer ?: return@executor
-            if (container !is ContainerChest) return@executor
+        execute(delay = { delay }) {
+            val container = mc.thePlayer.openContainer ?: return@execute
+            if (container !is ContainerChest) return@execute
 
             val chestName = container.name
             if (chestName == "Trades" || chestName == "Booster Cookie") {
-                val slot = container.inventorySlots.subList(54, 90).firstOrNull { doSell(it) }?.slotNumber ?: return@executor
+                val slot = container.inventorySlots.subList(54, 90).firstOrNull { doSell(it) }?.slotNumber ?: return@execute
                 shiftClickWindow(container.windowId, slot)
             }
         }

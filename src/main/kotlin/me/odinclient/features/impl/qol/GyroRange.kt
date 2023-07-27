@@ -6,6 +6,7 @@ import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.ColorSetting
 import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.utils.render.world.RenderUtils
+import me.odinclient.utils.skyblock.ItemUtils.heldItem
 import me.odinclient.utils.skyblock.ItemUtils.itemID
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -17,12 +18,12 @@ object GyroRange : Module(
     category = Category.QOL
 ) {
     private val color: Color by ColorSetting("Color", Color(192, 64, 192, 128), allowAlpha = true)
-    private val thickness: Float by NumberSetting("Thickness", 5f, 0.0, 10.0, 0.5)
-    private val steps: Int by NumberSetting("Steps", 40, 20.0, 80.0, 1.0)
+    private val thickness: Float by NumberSetting("Thickness", 1f, 0, 10, 0.25)
+    private val steps: Int by NumberSetting("Smoothness", 40, 20, 80, 1)
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (mc.thePlayer?.heldItem?.itemID != "GYROKINETIC_WAND") return
+        if (heldItem?.itemID != "GYROKINETIC_WAND") return
         val pos = mc.thePlayer.rayTrace(25.0, event.partialTicks)?.blockPos ?: return
         val block = mc.theWorld?.getBlockState(pos)?.block ?: return
         if (block.isAir(mc.theWorld, pos)) return
