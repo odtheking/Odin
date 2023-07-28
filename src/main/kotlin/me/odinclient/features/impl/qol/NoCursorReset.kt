@@ -8,13 +8,14 @@ import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object NoCursorReset : Module(
     "No Cursor Reset",
     category = Category.QOL
 ) {
-    private val clock = Clock(100)
-    private val hasBeenNull get() = mc.currentScreen != null // test this cuz I cant test stuff
+    private val clock = Clock(150)
+    private var wasNotNull = false
 
     @SubscribeEvent
     fun onGuiOpen(e: GuiOpenEvent) {
@@ -24,7 +25,12 @@ object NoCursorReset : Module(
         }
     }
 
+    @SubscribeEvent
+    fun onTick(event: ClientTickEvent) {
+        wasNotNull = mc.currentScreen != null
+    }
+
     fun shouldHookMouse(): Boolean {
-        return clock.hasTimePassed() && !hasBeenNull && enabled
+        return !clock.hasTimePassed() && wasNotNull && enabled
     }
 }
