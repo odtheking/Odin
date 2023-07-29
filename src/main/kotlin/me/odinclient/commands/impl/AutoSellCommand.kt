@@ -4,18 +4,14 @@ import me.odinclient.OdinClient.Companion.miscConfig
 import me.odinclient.commands.AbstractCommand
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 
-object AutoSellCommand : AbstractCommand(
-    name = "autosell",
-    alias = arrayListOf("odautosell"),
-    description = "Command for Auto Sell."
-) {
+object AutoSellCommand : AbstractCommand("autosell", "odautosell", description = "Command for Auto Sell.") {
 
     private inline val autoSell get () = miscConfig.autoSell
 
     init {
         "add" - {
             does {
-                if (it.size == 1) return@does
+                if (it.size == 1) return@does modMessage("You need to name an item.")
                 val itemName = it.copyOfRange(1, it.size).joinToString(" ")
                 if (autoSell.contains(itemName)) return@does modMessage("$itemName is already in the Auto sell list.")
 
@@ -27,7 +23,7 @@ object AutoSellCommand : AbstractCommand(
 
         "remove" - {
             does {
-                if (it.size == 1) return@does
+                if (it.size == 1) return@does modMessage("You need to name an item.")
                 val itemName = it.copyOfRange(1, it.size).joinToString(" ")
                 if (!autoSell.contains(itemName)) return@does modMessage("$itemName isn't in the Auto sell list.")
 
@@ -45,8 +41,11 @@ object AutoSellCommand : AbstractCommand(
             }
         }
 
-        "list" does {
-            autoSell.forEach { modMessage(it) }
+        "list" - {
+            does {
+                if (autoSell.isEmpty()) return@does modMessage("Auto sell list is empty!")
+                autoSell.forEach { modMessage(it) }
+            }
         }
 
         orElse {

@@ -17,8 +17,7 @@ import java.awt.Color
 import java.util.*
 
 object WaypointCommand : AbstractCommand(
-    name = "waypoint",
-    alias = arrayListOf("wp", "odwp"),
+    "waypoint", "wp", "odwp",
     description = "Command for waypoints. Do /waypoint help for more info."
 ) {
     init {
@@ -44,11 +43,13 @@ object WaypointCommand : AbstractCommand(
             }
             and(
                 "temp" does {
-                    WaypointManager.addTempWaypoint("§fWaypoint", mc.thePlayer.positionVector.floored())
+                    WaypointManager.addTempWaypoint(vec3 = mc.thePlayer.positionVector.floored())
+                    modMessage("Added temporary waypoint.")
                 },
 
                 "perm" does {
-                    WaypointManager.addWaypoint("§fWaypoint", mc.thePlayer.positionVector.floored(), randomColor())
+                    WaypointManager.addWaypoint(vec3 = mc.thePlayer.positionVector.floored(), color = randomColor())
+                    modMessage("Added permanent waypoint.")
                 }
             )
         }
@@ -74,6 +75,9 @@ object WaypointCommand : AbstractCommand(
                         WaypointManager.addTempWaypoint(vec3 = pos)
                         modMessage("Added permanent waypoint at ${pos.x}, ${pos.y}, ${pos.z}.")
                     }
+                    and(
+                        "testing" - {}
+                    )
                 }
             )
         }
