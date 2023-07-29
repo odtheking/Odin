@@ -3,7 +3,7 @@ package me.odinclient.ui.waypoint
 import cc.polyfrost.oneconfig.renderer.NanoVGHelper
 import cc.polyfrost.oneconfig.renderer.font.Fonts
 import cc.polyfrost.oneconfig.utils.dsl.*
-import me.odinclient.OdinClient.Companion.waypointConfig
+import me.odinclient.config.WaypointConfig
 import me.odinclient.features.impl.general.WaypointManager
 import me.odinclient.ui.waypoint.elements.AreaButton
 import me.odinclient.ui.waypoint.elements.WaypointElement
@@ -44,7 +44,7 @@ object WaypointGUI : GuiScreen() {
         displayArea?.let { updateElements(it) }
         scrollTarget = 0f
         scrollOffset = 0f
-        areas = areas.sortedByDescending { waypointConfig.waypoints[it.area]?.size }
+        areas = areas.sortedByDescending { WaypointConfig.waypoints[it.area]?.size }
         super.initGui()
     }
 
@@ -154,7 +154,7 @@ object WaypointGUI : GuiScreen() {
     }
 
     fun updateElements(area: String = currentArea ?: "") {
-        list = waypointConfig.waypoints[area]?.map { WaypointElement(it) }?.toMutableList() ?: mutableListOf()
+        list = WaypointConfig.waypoints[area]?.map { WaypointElement(it) }?.toMutableList() ?: mutableListOf()
     }
 
     override fun doesGuiPauseGame(): Boolean = false

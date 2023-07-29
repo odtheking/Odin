@@ -1,10 +1,6 @@
 package me.odinclient.commands
 
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import me.odinclient.OdinClient.Companion.scope
-import me.odinclient.commands.impl.AutoSellCommand.map
-import me.odinclient.utils.skyblock.ChatUtils.modMessage
+import me.odinclient.commands.impl.AutoSellCommand.cmds
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
 import net.minecraft.util.BlockPos
@@ -42,102 +38,84 @@ abstract class AbstractCommand(
 
     final override fun processCommand(sender: ICommandSender?, args: Array<String>) {
         val e = System.nanoTime()
-        val subcmd =
-            map[args.getOrNull(0) ?: ""] ?: map[null] ?: return modMessage("Sub-command not recognized.")
-        subcmd.execute(args)
+        execute(args)
         println(System.nanoTime() - e)
     }
 
-    internal val map = HashMap<String?, Subcommand>()
+    internal val cmds = ArrayList<Subcommand>()
 
-    private infix fun <E> String.subcommand(block: Subcommand.() -> E): Subcommand {
+    private var emptyCmd: ((Array<out String>) -> Unit)? = null
+    private var extraCmd: ((Array<out String>) -> Unit)? = null
+
+    fun empty(func: (Array<out String>) -> Unit) {
+        emptyCmd = func
+    }
+
+    // TODO: Rename
+    fun orElse(func: (Array<out String>) -> Unit) {
+        extraCmd = func
+    }
+
+    infix fun String.cmd(block: Subcommand.() -> Unit): Subcommand {
         return Subcommand(this).apply {
-            block().let {
-                if (it is Subcommand) {
-                    subcommands.add(it)
-                    it.parent = this
-                }
-            }
+            block()
         }
     }
 
-    infix fun String.does(block: Action): Subcommand {
-        return Subcommand(this, block)
+    operator fun String.minus(block: Subcommand.() -> Unit): Subcommand {
+        return this.cmd(block)
     }
 
-    fun Subcommand.does(block: Action) {
-        this.action = block
+    fun Subcommand.does(func: (Array<out String>) -> Unit) {
+        this.func = func
     }
 
-    fun empty(action: Action?) {
-        map[""] = Subcommand("", action)
+    infix fun String.does(func: (Array<out String>) -> Unit): Subcommand {
+        return Subcommand(this, func)
     }
 
-    /**
-     *  This looks nicer than using [subcommand]
-     *
-     *  Code goes from:
-     *  ```
-     *  "subcommand" subcmd {
-     *      // do stuff..
-     *  }
-     *  ```
-     *  to
-     *  ```
-     *  "subcommand" - {
-     *      // do stuff..
-     *  }
-     *  ```
-     */
-    operator fun <E> String.minus(block: Subcommand.() -> E): Subcommand {
-        return this.subcommand(block)
+    fun Subcommand.and(vararg cmd: Subcommand) {
+        children.addAll(cmd)
+        initChildren()
     }
 
-    operator fun String.minusAssign(block: Action) {
-        this.does(block)
+    // TODO: Make it cut off the part of array used for finding subcommand
+    // TODO: For example, args are "add temp x y z" but it will dispatch only x y z to subcommand temp under add
+    fun execute(args: Array<out String>) {
+        if (args.isEmpty()) {
+            emptyCmd?.let {
+                it(args)
+                return
+            }
+        }
+
+        val string = args.joinToString(" ") { it.lowercase() }
+        for (i in cmds) {
+            if (string == i.lineageName) {
+                i.func?.let { it(args) }
+                return
+            }
+        }
+        extraCmd?.let { it(args) }
     }
 
-    // It may be better to use subcommand as a simple wrapper for data and then just put it together with the action in a hashmap
-    class Subcommand(val name: String? = null, var action: Action? = null, vararg subcommands: Subcommand) {
+    class Subcommand(val name: String, inline var func: ((Array<out String>) -> Unit)? = null) {
+        val children = ArrayList<Subcommand>()
 
-        val subcommands = ArrayList<Subcommand>().apply { addAll(subcommands) }
         var parent: Subcommand? = null
+        var lineageName = name
 
         init {
-            this.subcommands.forEach {
-                it.parent = this
-            }
-
-            scope.launch {
-                delay(100)
-                if (parent == null) map[name] = this@Subcommand
-            }
+            cmds.add(this)
         }
 
-        // TODO: IMPROVE PERFORMANCE
-        fun findSubcommand(args: Array<out String>, index: Int = 0): Subcommand? {
-            if (name.isNullOrBlank()) return this
-            println("$name, ${args[index]}")
-            if (args[index] != name) return null
-            if (args.size == 1 + index) return this
-
-            for (sub in subcommands) {
-                sub.findSubcommand(args, index + 1)?.let {
-                    return it
-                }
-            }
-            return null
-        }
-
-        // TODO: IMPROVE PERFORMANCE
-        fun execute(args: Array<String>) {
-            val lowercaseArgs = args.onEach { it.lowercase() }
-
-            findSubcommand(lowercaseArgs)?.let {
-                it.action?.let { it(lowercaseArgs) }
+        // shouldn't really matter that it's being run a few more times than needed since its only done once.
+        fun initChildren() {
+            for (i in children) {
+                if (i.parent == null) i.parent = this
+                i.lineageName = "$lineageName ${i.name}"
+                i.initChildren()
             }
         }
     }
 }
-
-typealias Action = (Array<out String>) -> Unit

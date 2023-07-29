@@ -74,7 +74,7 @@ class OdinClient {
             miscConfig.loadConfig()
         }
         launch {
-            waypointConfig.loadConfig()
+            WaypointConfig.loadConfig()
         }
     }
 
@@ -119,7 +119,6 @@ class OdinClient {
 
         var config = OdinConfig
         val miscConfig = MiscConfig(File(mc.mcDataDir, "config/odin"))
-        val waypointConfig = WaypointConfig(File(mc.mcDataDir, "config/odin"))
         var display: GuiScreen? = null
         var tickRamp = 0
 

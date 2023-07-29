@@ -1,20 +1,22 @@
 package me.odinclient.commands.impl
 
 import me.odinclient.OdinClient.Companion.display
-import me.odinclient.commands.Command
-import me.odinclient.commands.CommandArguments
+import me.odinclient.commands.AbstractCommand
 import me.odinclient.features.impl.general.ClickGUIModule
 import me.odinclient.ui.clickgui.ClickGUI
 
-object OdinCommand : Command("odinclient", listOf("od", "odinclient"), "Main command for Odin.") {
-    override fun executeCommand(args: CommandArguments) {
-        if (args.isEmpty()) {
+object OdinCommand : AbstractCommand(
+    name = "odinclient",
+    arrayListOf("od", "odinclient"),
+    "Main command for Odin."
+) {
+    init {
+        empty {
             display = ClickGUI
-            return
-        } else {
+        }
+
+        "resetgui" does {
             ClickGUIModule.resetPositions()
         }
     }
-
-    override val shortcuts: List<String> = listOf("help", "autosell", "blacklist", "esp", "waypoint")
 }

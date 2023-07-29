@@ -23,7 +23,7 @@ object Config {
         .excludeFieldsWithoutExposeAnnotation()
         .setPrettyPrinting().create()
 
-    private val configFile = File(mc.mcDataDir, "config/odinclient/odin-config.json").apply {
+    private val configFile = File(mc.mcDataDir, "config/odin/odin-config.json").apply {
         try {
             createNewFile()
         } catch (e: Exception) {

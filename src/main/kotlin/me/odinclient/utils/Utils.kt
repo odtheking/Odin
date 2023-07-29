@@ -36,6 +36,10 @@ object Utils {
         return kotlin.math.floor(this)
     }
 
+    fun Double.floorToInt(): Int {
+        return kotlin.math.floor(this).toInt()
+    }
+
     val ContainerChest.name: String
         get() = this.lowerChestInventory.displayName.unformattedText
 

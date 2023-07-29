@@ -5,8 +5,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.odinclient.OdinClient.Companion.config
-import me.odinclient.OdinClient.Companion.waypointConfig
 import me.odinclient.commands.impl.WaypointCommand.randomColor
+import me.odinclient.config.WaypointConfig
 import me.odinclient.ui.waypoint.WaypointGUI
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.clock.Clock
@@ -19,17 +19,23 @@ import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.awt.Color
 
+// TODO: Make changes cuz ngl its kinda eh (eg: good ordered waypoints for mining so people dont need to use ct)
+// TODO: Make all waypoint areas constant and make LocationUtils use locraw
+// this is o
 object WaypointManager {
 
-    private inline val waypoints get() = waypointConfig.waypoints
+    private inline val waypoints get() = WaypointConfig.waypoints
     private var temporaryWaypoints = mutableListOf<Pair<Waypoint, Clock>>()
 
-    fun addWaypoint(name: String, x: Int, y: Int, z: Int, color: Color) =
+    fun addWaypoint(name: String = "§fWaypoint", x: Int, y: Int, z: Int, color: Color) =
         addWaypoint(Waypoint(name, x, y, z, color))
+
+    fun addWaypoint(name: String = "§fWaypoint", vec3: Vec3i, color: Color) =
+        addWaypoint(Waypoint(name, vec3.x, vec3.y, vec3.z, color))
 
     fun addWaypoint(waypoint: Waypoint, area: String = currentArea!!) {
         waypoints.getOrPut(area) { mutableListOf() }.add(waypoint)
-        waypointConfig.saveConfig()
+        WaypointConfig.saveConfig()
     }
 
     fun removeWaypoint(name: String) {
@@ -39,17 +45,22 @@ object WaypointManager {
 
     fun removeWaypoint(waypoint: Waypoint) {
         waypoints[currentArea]?.remove(waypoint)
-        waypointConfig.saveConfig()
+        WaypointConfig.saveConfig()
     }
 
     fun clearWaypoints() {
         waypoints[currentArea]?.clear()
-        waypointConfig.saveConfig()
+        WaypointConfig.saveConfig()
     }
 
-    fun addTempWaypoint(name: String, x: Int, y: Int, z: Int) {
+    fun addTempWaypoint(name: String = "§fWaypoint", x: Int, y: Int, z: Int) {
         if (currentArea == null) return modMessage("You are not in Skyblock.")
         temporaryWaypoints.add(Pair(Waypoint(name, x, y, z, randomColor()), Clock(60_000)))
+    }
+
+    fun addTempWaypoint(name: String = "§fWaypoint", vec3: Vec3i) {
+        if (currentArea == null) return modMessage("You are not in Skyblock.")
+        temporaryWaypoints.add(Pair(Waypoint(name, vec3.x, vec3.y, vec3.z, randomColor()), Clock(60_000)))
     }
 
     @SubscribeEvent
