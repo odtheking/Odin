@@ -27,6 +27,7 @@ object ModuleManager {
         CanClip,
         GhostBlock,
         KeyESP,
+        SecretHitboxes,
         SuperBoom,
         TeammatesOutline,
         Triggerbot,

@@ -4,6 +4,9 @@
   "minVersion": "0.7",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "MixinBlockButton",
+    "MixinBlockLever",
+    "MixinBlockSkull",
     "MixinNetworkManager"
   ],
   "client": [
