@@ -60,8 +60,13 @@ abstract class AbstractCommand(
         }
 
         for (i in subcommands.size - 1 downTo 0) {
-            if (subcommands[i].argsRequired.all { it in args }) {
+            if (subcommands[i].argsRequired.all {
+                    println("$it ")
+                    it in args
+            }) {
                 subcommands[i].execute(args)
+                println("${subcommands[i].name} and ${subcommands.joinToString { it.name }}")
+                return
             }
         }
         extraCmd?.let { it(args) }
@@ -74,17 +79,21 @@ abstract class AbstractCommand(
      */
     final override fun addTabCompletionOptions(
         sender: ICommandSender?, args: Array<out String>, pos: BlockPos?
-    ): MutableList<String>? {
-        if (args[0].isBlank()) {
-            return getListOfStringsMatchingLastWord(args, subcommands.filter { it.parent == null }.map { it.name })
+    ): List<String> {
+        if (args.size == 1) {
+            return subcommands
+                .filter { it.parent == null && it.name.startsWith(args[0], true) }
+                .map { it.name }
         }
 
         for (i in subcommands.size - 1 downTo 0) {
             if (subcommands[i].argsRequired.all { it in args }) {
-                return getListOfStringsMatchingLastWord(args, subcommands[i].children.map { it.name })
+                return subcommands[i].children
+                    .map { it.name }
+                    .filter { it.startsWith(args.last()) }
             }
         }
-        return mutableListOf()
+        return listOf()
     }
 
     /**
@@ -154,7 +163,7 @@ abstract class AbstractCommand(
             for (i in children) {
                 if (i.parent == null) i.parent = this
 
-                i.argsRequired = argsRequired.plus(name)
+                i.argsRequired = argsRequired.plus(i.name)
                 i.initChildren()
             }
         }
@@ -208,8 +217,8 @@ abstract class AbstractCommand(
      */
     infix fun String.cmd(block: Subcommand.() -> Unit): Subcommand {
         return Subcommand(this).apply {
-            block()
             subcommands.add(this)
+            block()
         }
     }
 

@@ -12,7 +12,6 @@ import me.odinclient.utils.skyblock.ChatUtils.partyMessage
 import me.odinclient.utils.skyblock.PlayerUtils.posX
 import me.odinclient.utils.skyblock.PlayerUtils.posY
 import me.odinclient.utils.skyblock.PlayerUtils.posZ
-import net.minecraft.util.Vec3i
 import java.awt.Color
 import java.util.*
 
@@ -62,22 +61,19 @@ object WaypointCommand : AbstractCommand(
             and(
                 "temp" - {
                     does {
-                        if (it.size < 4) return@does modMessage("§cInvalid coordinates")
-                        val pos = it.getVec(2) ?: return@does modMessage("§cInvalid coordinates")
-                        WaypointManager.addTempWaypoint(vec3 = pos)
-                        modMessage("Added temporary waypoint at ${pos.x}, ${pos.y}, ${pos.z}.")
+                        if (it.size != 3) return@does modMessage("§cInvalid coordinates")
+                        val pos = it.getInt() ?: return@does modMessage("§cInvalid coordinates")
+                        WaypointManager.addTempWaypoint(x = pos[0], y = pos[1], z = pos[2])
+                        modMessage("Added temporary waypoint at ${pos[0]}, ${pos[1]}, ${pos[2]}.")
                     }
                 },
                 "perm" - {
                     does {
-                        if (it.size < 4) return@does modMessage("§cInvalid coordinates")
-                        val pos = it.getVec(2) ?: return@does modMessage("§cInvalid coordinates")
-                        WaypointManager.addTempWaypoint(vec3 = pos)
-                        modMessage("Added permanent waypoint at ${pos.x}, ${pos.y}, ${pos.z}.")
+                        if (it.size != 3) return@does modMessage("§cInvalid coordinates")
+                        val pos = it.getInt() ?: return@does modMessage("§cInvalid coordinates")
+                        WaypointManager.addWaypoint(x = pos[0], y = pos[1], z = pos[2], color = randomColor())
+                        modMessage("Added permanent waypoint at ${pos[0]}, ${pos[1]}, ${pos[2]}.")
                     }
-                    and(
-                        "testing" - {}
-                    )
                 }
             )
         }
@@ -92,18 +88,16 @@ object WaypointCommand : AbstractCommand(
             " - Add (temp | perm) x y z » §7Adds a permanent or temporary waypoint at the coords specified\n" +
             " - Help » §7Shows this message"
 
-    private fun Array<out String>.getVec(start: Int = 0): Vec3i? {
-        if (this.size < start + 3) return null
-
+    private fun Array<out String>.getInt(start: Int = 0, end: Int = size): List<Int>? {
         val result = mutableListOf<Int>()
-        for (i in start..start + 3) {
+        for (i in start until end) {
             try {
                 result.add(this[i].toInt())
             } catch (e: NumberFormatException) {
                 return null
             }
         }
-        return Vec3i(result[0], result[1], result[2])
+        return result
     }
 
     fun randomColor(): Color {

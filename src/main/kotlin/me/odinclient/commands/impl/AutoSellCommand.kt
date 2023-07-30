@@ -11,8 +11,8 @@ object AutoSellCommand : AbstractCommand("autosell", "odautosell", description =
     init {
         "add" - {
             does {
-                if (it.size == 1) return@does modMessage("You need to name an item.")
-                val itemName = it.copyOfRange(1, it.size).joinToString(" ")
+                if (it.isEmpty()) return@does modMessage("You need to name an item.")
+                val itemName = it.joinToString(" ")
                 if (autoSell.contains(itemName)) return@does modMessage("$itemName is already in the Auto sell list.")
 
                 modMessage("Added $itemName to the Auto sell list.")
