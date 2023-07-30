@@ -24,11 +24,15 @@ public class MixinBlockLever extends Block {
     @Inject(method = "setBlockBoundsBasedOnState", at = @At("HEAD"), cancellable = true)
     private void onSetBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos, CallbackInfo ci)
     {
-        if (SecretHitboxes.INSTANCE.getEnabled() && SecretHitboxes.INSTANCE.getLever())
+        if (SecretHitboxes.INSTANCE.getLever())
         {
             SecretHitboxes.INSTANCE.getExpandedLevers().put(this, worldIn.getBlockState(pos).getValue(FACING));
-            this.setBlockBounds(0, 0, 0, 1, 1, 1);
-            ci.cancel();
+
+            if (SecretHitboxes.INSTANCE.getEnabled())
+            {
+                this.setBlockBounds(0, 0, 0, 1, 1, 1);
+                ci.cancel();
+            }
         }
     }
 
