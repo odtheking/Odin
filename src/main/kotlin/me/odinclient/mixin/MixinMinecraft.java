@@ -2,6 +2,7 @@ package me.odinclient.mixin;
 
 import me.odinclient.events.PreKeyInputEvent;
 import me.odinclient.events.PreMouseInputEvent;
+import me.odinclient.features.impl.general.CPSDisplay;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.input.Keyboard;
@@ -28,5 +29,15 @@ public class MixinMinecraft {
         if (Mouse.getEventButtonState()) {
             MinecraftForge.EVENT_BUS.post(new PreMouseInputEvent(k));
         }
+    }
+
+    @Inject(method = "rightClickMouse", at = @At("HEAD"))
+    private void rightClickMouse(CallbackInfo ci) {
+        CPSDisplay.INSTANCE.onRightClick();
+    }
+
+    @Inject(method = "clickMouse", at = @At("HEAD"))
+    private void clickMouse(CallbackInfo ci) {
+        CPSDisplay.INSTANCE.onLeftClick();
     }
 }

@@ -13,14 +13,14 @@ object TermAC : Module(
     "Terminator AC",
     category = Category.QOL
 ) {
-    private var nextClick = Double.MIN_VALUE
+    private var nextClick = .0
 
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         if (mc.thePlayer?.heldItem?.itemID != "TERMINATOR" || !mc.gameSettings.keyBindUseItem.isKeyDown) return
         val nowMillis = System.currentTimeMillis()
         if (nowMillis < nextClick) return
-        nextClick = nowMillis + (1000 / ServerUtils.averageTps) - 15 + (Math.random() * 30)
+        nextClick = nowMillis + (1000 / ServerUtils.averageTps) - 30 + (Math.random() * 60)
         rightClick()
     }
 }

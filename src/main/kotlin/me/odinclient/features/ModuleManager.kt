@@ -37,6 +37,7 @@ object ModuleManager {
         ClickGUIModule,
         ESP,
         FPS,
+        CPSDisplay,
         VanqNotifier,
         AutoEdrag,
         DioriteFucker,
