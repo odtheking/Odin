@@ -38,6 +38,7 @@ object ModuleManager {
         ESP,
         FPS,
         CPSDisplay,
+        LockCursor,
         VanqNotifier,
         AutoEdrag,
         DioriteFucker,
