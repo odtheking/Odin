@@ -13,6 +13,7 @@
     "MinecraftAccessor",
     "MixinEntityPlayerSP",
     "MixinEntityRenderer",
+    "MixinGuiContainer",
     "MixinMinecraft",
     "MixinModList",
     "MixinMouseHelper",

@@ -2,10 +2,7 @@ package me.odinclient.features
 
 import me.odinclient.features.impl.dungeon.*
 import me.odinclient.features.impl.general.*
-import me.odinclient.features.impl.m7.AutoEdrag
-import me.odinclient.features.impl.m7.DioriteFucker
-import me.odinclient.features.impl.m7.DragonBoxes
-import me.odinclient.features.impl.m7.DragonTimer
+import me.odinclient.features.impl.m7.*
 import me.odinclient.features.impl.qol.*
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.InputEvent
@@ -48,6 +45,9 @@ object ModuleManager {
         DioriteFucker,
         DragonBoxes,
         DragonTimer,
+        LeapHelper,
+        NecronDropTimer,
+        DecoyDeadMessage,
         AutoSprint,
         BrokenHype,
         CookieClicker,
