@@ -65,11 +65,7 @@ object Ghosts : Module(
         val name = "${bracketsColor}[${lvlColor}Lv250${bracketsColor}] ${nameColor + if (isRunic) "Runic " else ""}Ghost ${currentHealthColor + transformToSuffixedNumber(currentHealth.toDouble()) + "&f"}/${maxHealthColor + transformToSuffixedNumber(maxHealth) + "&c" + "❤"}".replace("&", "§")
         RenderUtils.drawStringInWorld(
             name,
-            Vec3(
-                creeper.lastTickPosX + (creeper.posX - creeper.lastTickPosX) * pTicks,
-                (creeper.lastTickPosY + creeper.height + 0.5) + (creeper.posY - creeper.lastTickPosY) * pTicks,
-                creeper.lastTickPosZ + (creeper.posZ - creeper.lastTickPosZ) * pTicks,
-            ),
+            RenderUtils.renderVec(creeper),
             0,
             renderBlackBox = true,
             increase = false,
