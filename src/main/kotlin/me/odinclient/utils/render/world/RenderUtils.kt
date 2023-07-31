@@ -1,6 +1,5 @@
 package me.odinclient.utils.render.world
 
-import cc.polyfrost.oneconfig.config.core.OneColor
 import me.odinclient.OdinClient.Companion.mc
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
@@ -100,55 +99,65 @@ object RenderUtils {
     }
 
     fun drawStringInWorld(
-        location: Vec3,
         text: String,
-        depthTest: Boolean = true,
-        scale: Float = 1f,
+        vec3: Vec3,
+        color: Int = 0xffffffff.toInt(),
         renderBlackBox: Boolean = true,
+        increase: Boolean = true,
+        depthTest: Boolean = true,
+        scale: Float = 1f
     ) {
-        if (!depthTest) {
-            GL11.glDisable(GL11.GL_DEPTH_TEST)
-            GL11.glDepthMask(false)
+        var lScale = scale
+
+        val renderPos = getRenderPos(vec3)
+
+        if (increase) {
+            val distance = sqrt(renderPos.xCoord * renderPos.xCoord + renderPos.yCoord * renderPos.yCoord + renderPos.zCoord * renderPos.zCoord)
+            val multiplier = distance / 120f
+            lScale *= 0.45f * multiplier.toFloat()
         }
-        GlStateManager.pushMatrix()
-        GlStateManager.enableBlend()
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        GlStateManager.translate(
-            location.xCoord - mc.renderManager.viewerPosX,
-            location.yCoord - mc.renderManager.viewerPosY,
-            location.zCoord - mc.renderManager.viewerPosZ
-        )
+
+        if (!depthTest) {
+            GlStateManager.disableDepth()
+            GlStateManager.depthMask(false)
+        }
+
+        val xMultiplier = if (Minecraft.getMinecraft().gameSettings.thirdPersonView == 2) -1 else 1
+
         GlStateManager.color(1f, 1f, 1f, 0.5f)
-        GlStateManager.rotate(-mc.renderManager.playerViewY, 0.0f, 1.0f, 0.0f)
-        GlStateManager.rotate(mc.renderManager.playerViewX, 1.0f, 0.0f, 0.0f)
-        GlStateManager.scale(-scale / 25, -scale / 25, scale / 25)
+        GlStateManager.pushMatrix()
+        GlStateManager.translate(renderPos.xCoord, renderPos.yCoord, renderPos.zCoord)
+        GlStateManager.rotate(-renderManager.playerViewY, 0.0f, 1.0f, 0.0f)
+        GlStateManager.rotate(renderManager.playerViewX * xMultiplier, 1.0f, 0.0f, 0.0f)
+        GlStateManager.scale(-lScale, -lScale, lScale)
+        GlStateManager.disableLighting()
+        GlStateManager.enableBlend()
+        GlStateManager.blendFunc(770, 771)
+
+        val textWidth = mc.fontRendererObj.getStringWidth(text)
 
         if (renderBlackBox) {
-            val j = mc.fontRendererObj.getStringWidth(text) / 2
+            val j = textWidth / 2
             GlStateManager.disableTexture2D()
-            val worldRenderer = Tessellator.getInstance().worldRenderer
             worldRenderer.begin(7, DefaultVertexFormats.POSITION_COLOR)
             worldRenderer.pos((-j - 1).toDouble(), (-1).toDouble(), 0.0).color(0.0f, 0.0f, 0.0f, 0.25f).endVertex()
             worldRenderer.pos((-j - 1).toDouble(), 8.toDouble(), 0.0).color(0.0f, 0.0f, 0.0f, 0.25f).endVertex()
             worldRenderer.pos((j + 1).toDouble(), 8.toDouble(), 0.0).color(0.0f, 0.0f, 0.0f, 0.25f).endVertex()
             worldRenderer.pos((j + 1).toDouble(), (-1).toDouble(), 0.0).color(0.0f, 0.0f, 0.0f, 0.25f).endVertex()
-            Tessellator.getInstance().draw()
+            tessellator.draw()
             GlStateManager.enableTexture2D()
         }
 
-
-        mc.fontRendererObj.drawStringWithShadow(
-            text,
-            -mc.fontRendererObj.getStringWidth(text) / 2f,
-            0f,
-            0
-        )
+        mc.fontRendererObj.drawString(text, -textWidth / 2, 0, color)
 
         if (!depthTest) {
-            GL11.glEnable(GL11.GL_DEPTH_TEST)
-            GL11.glDepthMask(true)
+            GlStateManager.enableDepth()
+            GlStateManager.depthMask(true)
         }
-        GlStateManager.disableBlend()
+
+        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
+        GlStateManager.depthMask(true)
+        GlStateManager.enableDepth()
         GlStateManager.popMatrix()
     }
 
@@ -170,11 +179,13 @@ object RenderUtils {
             true
         )
         drawStringInWorld(
-            Vec3(floor(x) + 0.5, floor(y) + 1.7 + dist / 30, floor(z) + 0.5),
             "$title §r§f(§3${dist.toInt()}m§f)",
-            false,
-            max(0.5, dist / 8.0).toFloat(),
-            true
+            Vec3(floor(x) + 0.5, floor(y) + 1.7 + dist / 30, floor(z) + 0.5),
+            0,
+            renderBlackBox = true,
+            increase = false,
+            depthTest = false,
+            max(0.5, dist / 8.0).toFloat()
         )
         val a = min(1f, max(0f, dist.toFloat()) / 60f)
         renderBeaconBeam(
@@ -202,13 +213,14 @@ object RenderUtils {
             true
         )
         drawStringInWorld(
-            Vec3(floor(x) + 0.5, floor(y) + 0.7, floor(z) + 0.5),
             title,
-            false,
-            max(1.0, dist / 5.0).toFloat(),
-            true
+            Vec3(floor(x) + 0.5, floor(y) + 0.7, floor(z) + 0.5),
+            0,
+            depthTest = false,
+            renderBlackBox = false,
+            increase = false,
+            scale = max(1.0, dist / 5.0).toFloat()
         )
-
     }
 
     fun draw3DLine(pos1: Vec3, pos2: Vec3, color: Color, lineWidth: Int, depth: Boolean, partialTicks: Float) {

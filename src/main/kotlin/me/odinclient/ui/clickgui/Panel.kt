@@ -1,9 +1,7 @@
 package me.odinclient.ui.clickgui
 
 import cc.polyfrost.oneconfig.renderer.font.Fonts
-import cc.polyfrost.oneconfig.utils.dsl.VG
-import cc.polyfrost.oneconfig.utils.dsl.drawDropShadow
-import cc.polyfrost.oneconfig.utils.dsl.drawRoundedRectVaried
+import cc.polyfrost.oneconfig.utils.dsl.*
 import me.odinclient.ui.clickgui.elements.ModuleButton
 import me.odinclient.ui.clickgui.util.ColorUtil
 import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
@@ -36,9 +34,11 @@ class Panel(
     private var y2 = 0f
 
     init {
-        for (module in ModuleManager.modules) {
-            if (module.category != this.category) continue
-            moduleButtons.add(ModuleButton(module, this))
+        nanoVG {
+            for (module in ModuleManager.modules.sortedByDescending { this.getTextWidth(it.name, 18, Fonts.MEDIUM) }) {
+                if (module.category != this@Panel.category) continue
+                moduleButtons.add(ModuleButton(module, this@Panel))
+            }
         }
     }
 

@@ -100,12 +100,13 @@ object DragonTimer : Module(
         if (toRender.size == 0) return
         toRender.forEach {
             RenderUtils.drawStringInWorld(
-                it.third.textPos,
                 it.first,
-                false,
-                max(1.0, mc.thePlayer.positionVector.distanceTo(it.third.textPos) / 5.0).toFloat()
+                it.third.textPos,
+                depthTest = false,
+                increase = false,
+                renderBlackBox = true,
+                scale = max(1.0, mc.thePlayer.positionVector.distanceTo(it.third.textPos) / 5.0).toFloat()
             )
-
         }
     }
 
