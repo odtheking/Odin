@@ -2,7 +2,8 @@ package me.odinclient.features.impl.dungeon
 
 import me.odinclient.features.Category
 import me.odinclient.features.Module
-import me.odinclient.utils.skyblock.ChatUtils
+import me.odinclient.features.settings.impl.SelectorSetting
+import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.ChatUtils.unformattedText
 import me.odinclient.utils.skyblock.PlayerUtils
 import net.minecraftforge.client.event.ClientChatReceivedEvent
@@ -13,6 +14,7 @@ object AutoUlt : Module(
     "Auto Ultimate",
     category = Category.DUNGEON
 ) {
+    private val mode: Int by SelectorSetting("Mode", "Legit", arrayListOf("Legit", "Auto"))
 
     private var firstLaser = false
 
@@ -21,25 +23,42 @@ object AutoUlt : Module(
         firstLaser = false
     }
 
+
     @SubscribeEvent
     fun onChat(event: ClientChatReceivedEvent) {
         when (event.unformattedText) {
             "[BOSS] Maxor: YOU TRICKED ME!", "[BOSS] Maxor: THAT BEAM! IT HURTS! IT HURTS!!" -> {
-
                 if (firstLaser) return
-                ChatUtils.modMessage("§eFrenzy soon... ULT TIME!")
+
+                if (mode == 0) {
+                    modMessage("&3Use ult!")
+                    PlayerUtils.alert("&3Use ult!")
+                    return
+                }
+
+                modMessage("§eFrenzy soon... ULT TIME!")
                 PlayerUtils.dropItem()
                 firstLaser = true
             }
 
             "[BOSS] Goldor: You have done it, you destroyed the factory…" -> {
-                ChatUtils.modMessage("§eGoldor time zzz")
+                if (mode == 0) {
+                    modMessage("&3Use ult!")
+                    PlayerUtils.alert("&3Use ult!")
+                    return
+                }
+                modMessage("§eGoldor time zzz")
                 PlayerUtils.dropItem()
             }
 
             "[BOSS] Sadan: My giants! Unleashed!" -> {
+                if (mode == 0) {
+                    modMessage("&3Use ult!")
+                    PlayerUtils.alert("&3Use ult!")
+                    return
+                }
                 execute(3000, 0) {
-                    ChatUtils.modMessage("§eGiants incoming")
+                    modMessage("§eGiants incoming")
                     PlayerUtils.dropItem()
                 }
             }

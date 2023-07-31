@@ -1,7 +1,7 @@
 package me.odinclient.features.settings.impl
 
 import me.odinclient.features.settings.Setting
-import me.odinclient.utils.Utils.coerceIn
+import me.odinclient.utils.Utils.coerceInNumber
 import me.odinclient.utils.Utils.div
 import kotlin.math.round
 
@@ -18,7 +18,7 @@ class NumberSetting<E>(
 
     override var value: E = default
         set (newVal) {
-            field = roundToIncrement(processInput(newVal)).coerceIn(min, max) as E
+            field = roundToIncrement(processInput(newVal)).coerceInNumber(min, max) as E
         }
 
     /**

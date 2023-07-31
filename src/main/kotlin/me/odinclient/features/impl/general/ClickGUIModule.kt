@@ -9,13 +9,13 @@ import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.features.settings.impl.ColorSetting
 import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.ui.clickgui.ClickGUI
+import me.odinclient.utils.render.Color
 import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.LocationUtils
 import net.minecraft.event.ClickEvent
 import net.minecraft.util.ChatComponentText
 import org.lwjgl.input.Keyboard
-import java.awt.Color
 
 @AlwaysActive
 object ClickGUIModule: Module(
@@ -25,7 +25,7 @@ object ClickGUIModule: Module(
 ) {
     val blur: Boolean by BooleanSetting("Blur", false, description = "Toggles the background blur for the gui.")
     val color: Color by ColorSetting("First Color", Color(50, 150, 220), allowAlpha = false, description = "Color theme in the gui.")
-    val secondColor: Color by ColorSetting("Second Color", Color(70, 30, 220), allowAlpha = false, description = "Second color theme in the gui.")
+    val switchType: Boolean by DualSetting("Switch Type", "Checkbox", "test")
 
     private var hasJoined: Boolean by BooleanSetting("First join", false, hidden = true)
 
@@ -75,7 +75,7 @@ object ClickGUIModule: Module(
         }
     }
 
-    override fun keyBind() {
+    override fun onKeybind() {
         this.toggle()
     }
 

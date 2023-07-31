@@ -30,8 +30,9 @@ object GhostBlock : Module(
     private val onlyDungeon: Boolean by BooleanSetting("Only In Dungeon", false, description = "Will only work inside of a dungeon.")
         .withDependency { gkey }
     private val preGhostBlock: Boolean by BooleanSetting("F7 Ghost blocks")
-    override fun keyBind() {
-        if (!gkey) super.keyBind()
+
+    override fun onKeybind() {
+        if (!gkey) super.onKeybind()
     }
 
     private val blacklist = arrayOf(

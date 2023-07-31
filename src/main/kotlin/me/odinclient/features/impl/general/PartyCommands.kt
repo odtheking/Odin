@@ -12,10 +12,12 @@ import me.odinclient.utils.skyblock.PlayerUtils
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-object PartyCommands {
+object PartyCommands : Module(
+    name = "Party Commands",
+    category = Category.GENERAL,
+    description = ""
+) {
 
-
-    @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
     fun party(event: ClientChatReceivedEvent) {
         if (!OdinClient.config.partyCommands) return
@@ -26,7 +28,7 @@ object PartyCommands {
         val ign = match.groups[2]?.value
         val msg = match.groups[3]?.value?.lowercase()
 
-        GlobalScope.launch{
+        scope.launch {
             delay(150)
             ChatUtils.partyCmdsOptions(msg!!, ign!!)
         }

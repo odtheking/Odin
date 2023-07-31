@@ -16,7 +16,7 @@ class SettingSerializer : JsonSerializer<Setting<*>> {
                 is NumberSetting -> this.addProperty(src.name, src.valueAsDouble)
                 is SelectorSetting -> this.addProperty(src.name, src.selected)
                 is StringSetting -> this.addProperty(src.name, src.text)
-                is ColorSetting -> this.addProperty(src.name, src.value.rgb)
+                is ColorSetting -> this.addProperty(src.name, src.value.rgba)
             }
         }
     }

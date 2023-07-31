@@ -13,7 +13,7 @@ object Camera : Module(
     category = Category.GENERAL
 ) {
     private val frontCamera: Boolean by BooleanSetting("No Front Camera", false)
-    private val cameraDist: Float by NumberSetting("hello", 4f, 3.0, 12.0, 0.5)
+    private val cameraDist: Float by NumberSetting("Distance", 4f, 3.0, 12.0, 0.5)
 
     fun getCameraDistance(): Float = if (enabled) cameraDist else 4f
 

@@ -7,11 +7,11 @@ import me.odinclient.ui.clickgui.elements.Element
 import me.odinclient.ui.clickgui.elements.ElementType
 import me.odinclient.ui.clickgui.elements.ModuleButton
 import me.odinclient.ui.clickgui.util.ColorUtil
+import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.gui.GuiUtils.drawCustomCenteredText
 import me.odinclient.utils.render.gui.GuiUtils.nanoVG
 import me.odinclient.utils.render.gui.MouseUtils
 import me.odinclient.utils.render.gui.animations.impl.ColorAnimation
-import java.awt.Color
 
 class ElementDual(parent: ModuleButton, setting: DualSetting) : Element<DualSetting>(
     parent, setting, ElementType.DUAL
@@ -25,12 +25,12 @@ class ElementDual(parent: ModuleButton, setting: DualSetting) : Element<DualSett
         vg.nanoVG {
             drawRect(x, y, width, height, ColorUtil.elementBackground)
             drawDropShadow(x + 7f, y + 3f, width - 14f, 28f, 10f, 3.75f, 5f)
-            drawRoundedRect(x + 7f, y + 3f, width - 14f, 28f, 5f, Color(35, 35, 35).rgb)
+            drawRoundedRect(x + 7f, y + 3f, width - 14f, 28f, 5f, Color(35, 35, 35).rgba)
 
-            val rightColor = rightColorAnim.get(ColorUtil.clickGUIColor, if (isRightHovered) Color(45, 45, 45) else Color(35, 35, 35), setting.enabled).rgb
+            val rightColor = rightColorAnim.get(ColorUtil.clickGUIColor, if (isRightHovered) Color(45, 45, 45) else Color(35, 35, 35), setting.enabled).rgba
             drawRoundedRect(x + width / 2 + 7f, y + 3f, width / 2 - 14f, 28f, 5f, rightColor)
 
-            val leftColor = leftColorAnim.get(ColorUtil.clickGUIColor, if (isLeftHovered) Color(45, 45, 45) else Color(35, 35, 35), !setting.enabled).rgb
+            val leftColor = leftColorAnim.get(ColorUtil.clickGUIColor, if (isLeftHovered) Color(45, 45, 45) else Color(35, 35, 35), !setting.enabled).rgba
             drawRoundedRect(x + 7f, y + 3f, width / 2 - 14f, 28f, 5f, leftColor)
 
             drawCustomCenteredText(setting.firstOption, x + width / 4, y + 3f + height / 2, 16f, Fonts.REGULAR, -1)

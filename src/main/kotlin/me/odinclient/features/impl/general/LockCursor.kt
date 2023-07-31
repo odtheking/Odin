@@ -7,6 +7,4 @@ object LockCursor: Module(
     name = "Lock Cursor",
     description = "Makes you completely unable to move your camera",
     category = Category.GENERAL,
-) {
-
-}
+) // rest is in mixins

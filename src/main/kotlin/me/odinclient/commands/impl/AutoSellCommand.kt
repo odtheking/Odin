@@ -9,7 +9,7 @@ object AutoSellCommand : AbstractCommand("autosell", "odautosell", description =
     private inline val autoSell get () = miscConfig.autoSell
 
     init {
-        "add" - {
+        "add" {
             does {
                 if (it.isEmpty()) return@does modMessage("You need to name an item.")
                 val itemName = it.joinToString(" ")
@@ -21,7 +21,7 @@ object AutoSellCommand : AbstractCommand("autosell", "odautosell", description =
             }
         }
 
-        "remove" - {
+        "remove" {
             does {
                 if (it.size == 1) return@does modMessage("You need to name an item.")
                 val itemName = it.copyOfRange(1, it.size).joinToString(" ")
@@ -33,7 +33,7 @@ object AutoSellCommand : AbstractCommand("autosell", "odautosell", description =
             }
         }
 
-        "clear" - {
+        "clear" {
             does {
                 modMessage("Auto sell list cleared.")
                 autoSell.clear()
@@ -41,7 +41,7 @@ object AutoSellCommand : AbstractCommand("autosell", "odautosell", description =
             }
         }
 
-        "list" - {
+        "list" {
             does {
                 if (autoSell.isEmpty()) return@does modMessage("Auto sell list is empty!")
                 autoSell.forEach { modMessage(it) }

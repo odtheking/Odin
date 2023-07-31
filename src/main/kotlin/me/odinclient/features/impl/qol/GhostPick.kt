@@ -19,7 +19,7 @@ object GhostPick : Module(
         tagCompound?.setBoolean("Unbreakable", true)
     }
 
-    override fun keyBind() {
+    override fun onKeybind() {
         if (mc.thePlayer == null || mc.currentScreen != null) return
         if (enabled) mc.thePlayer?.inventory?.mainInventory?.set(slot - 1, item)
     }

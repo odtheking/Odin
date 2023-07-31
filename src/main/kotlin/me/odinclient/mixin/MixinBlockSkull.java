@@ -5,7 +5,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockSkull;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
 import net.minecraft.tileentity.TileEntitySkull;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
@@ -17,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import static me.odinclient.OdinClient.mc;
 import static net.minecraft.block.BlockSkull.FACING;
 
 @Mixin(BlockSkull.class)
@@ -30,7 +30,7 @@ public class MixinBlockSkull extends Block {
     @Inject(method = "setBlockBoundsBasedOnState", at = @At("HEAD"), cancellable = true)
     private void onSetBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos, CallbackInfo ci)
     {
-        if (SecretHitboxes.INSTANCE.getEssence() && ((TileEntitySkull) Minecraft.getMinecraft().theWorld.getTileEntity(pos)).getPlayerProfile().getId().toString().equals("26bb1a8d-7c66-31c6-82d5-a9c04c94fb02"))
+        if (SecretHitboxes.INSTANCE.addEssence(pos))
         {
             SecretHitboxes.INSTANCE.getExpandedSkulls().put(this, worldIn.getBlockState(pos).getValue(FACING));
 

@@ -1,5 +1,6 @@
 package me.odinclient.features.impl.dungeon
 
+import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.BooleanSetting
@@ -7,14 +8,15 @@ import net.minecraft.block.Block
 import net.minecraft.block.BlockButton
 import net.minecraft.block.BlockLever.EnumOrientation
 import net.minecraft.block.state.IBlockState
+import net.minecraft.tileentity.TileEntitySkull
+import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 
-object SecretHitboxes: Module(
+object SecretHitboxes : Module(
     name = "Secret Hitboxes",
     description = "Full block Secret hitboxes",
     category = Category.DUNGEON
 ) {
-
     val lever: Boolean by BooleanSetting("Lever", default = true)
     val button: Boolean by BooleanSetting("Button", default = true)
     val essence: Boolean by BooleanSetting("Essence", default = true)
@@ -23,41 +25,29 @@ object SecretHitboxes: Module(
     var expandedButtons: HashMap<Block, IBlockState> = HashMap()
     var expandedSkulls: HashMap<Block, EnumFacing> = HashMap()
 
-    override fun onEnable()
-    {
-        if (lever)
-        {
-            for (lever in expandedLevers)
-            {
-                lever.key.setBlockBounds(0f, 0f, 0f, 1f, 1f, 1f)
-            }
+    fun addEssence(blockPos: BlockPos): Boolean {
+        return essence && (mc.theWorld.getTileEntity(blockPos) as? TileEntitySkull)?.playerProfile?.id?.toString() == "26bb1a8d-7c66-31c6-82d5-a9c04c94fb02"
+    }
+
+    override fun onEnable() {
+        if (lever) expandedLevers.forEach { (k, _) ->
+            k.setBlockBounds(0f, 0f, 0f, 1f, 1f, 1f)
         }
 
-        if (button)
-        {
-            for (button in expandedButtons)
-            {
-                button.key.setBlockBounds(0f, 0f, 0f, 1f, 1f, 1f)
-            }
+        if (button) expandedButtons.forEach { (k, _) ->
+            k.setBlockBounds(0f, 0f, 0f, 1f, 1f, 1f)
         }
 
-        if (essence)
-        {
-            for (skull in expandedSkulls)
-            {
-                skull.key.setBlockBounds(0f, 0f, 0f, 1f, 1f, 1f)
-            }
+        if (essence) expandedSkulls.forEach { (k, _) ->
+            k.setBlockBounds(0f, 0f, 0f, 1f, 1f, 1f)
         }
 
         super.onEnable()
     }
 
-    override fun onDisable()
-    {
-        if (lever)
-        {
-            for (lever in expandedLevers)
-            {
+    override fun onDisable() {
+        if (lever) {
+            for (lever in expandedLevers) {
                 var f = 0.1875f
                 when (lever.value) {
                     EnumOrientation.EAST -> {
@@ -89,10 +79,8 @@ object SecretHitboxes: Module(
             }
         }
 
-        if (button)
-        {
-            for (button in expandedButtons)
-            {
+        if (button) {
+            for (button in expandedButtons) {
                 val enumfacing: EnumFacing = button.value.getValue(BlockButton.FACING)
                 val flag: Boolean = button.value.getValue(BlockButton.POWERED)
                 val f2 = (if (flag) 1 else 2).toFloat() / 16.0f
@@ -124,10 +112,8 @@ object SecretHitboxes: Module(
             }
         }
 
-        if (essence)
-        {
-            for (skull in expandedSkulls)
-            {
+        if (essence) {
+            for (skull in expandedSkulls) {
                 when (skull.value) {
                     EnumFacing.NORTH -> {
                         skull.key.setBlockBounds(0.25f, 0.25f, 0.5f, 0.75f, 0.75f, 1.0f)
@@ -151,8 +137,6 @@ object SecretHitboxes: Module(
                 }
             }
         }
-
         super.onDisable()
     }
-
 }

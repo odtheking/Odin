@@ -8,18 +8,18 @@ import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.ColorSetting
 import me.odinclient.utils.VecUtils.noSqrt3DDistance
+import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.world.OutlineUtils
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.awt.Color
 
 object ESP : Module(
     "ESP",
     category = Category.GENERAL
 ) {
-    private val color: Color by ColorSetting("Color", Color.WHITE)
+    private val color: Color by ColorSetting("Color", Color(255, 0, 0))
 
     private inline val espList get() = OdinClient.miscConfig.espList
 
@@ -56,7 +56,7 @@ object ESP : Module(
         OutlineUtils.outlineEntity(
             event,
             config.espThickness,
-            color,
+            java.awt.Color.WHITE,//color,
             config.espCancelHurt
         )
     }

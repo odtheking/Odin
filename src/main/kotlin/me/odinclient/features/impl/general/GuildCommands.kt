@@ -22,7 +22,7 @@ object GuildCommands {
 
         val ign = match.groups[2]?.value?.split(" ")?.get(0) // Get rid of guild rank by splitting the string and getting the first word
         val msg = match.groups[4]?.value?.lowercase()
-        GlobalScope.launch {
+        scope.launch {
             delay(150)
             ChatUtils.guildCmdsOptions(msg!!, ign!!)
             if (config.guildGM && mc.thePlayer.name !== ign) ChatUtils.autoGM(msg, ign)

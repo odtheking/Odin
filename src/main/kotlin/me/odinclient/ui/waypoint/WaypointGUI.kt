@@ -3,6 +3,7 @@ package me.odinclient.ui.waypoint
 import cc.polyfrost.oneconfig.renderer.NanoVGHelper
 import cc.polyfrost.oneconfig.renderer.font.Fonts
 import cc.polyfrost.oneconfig.utils.dsl.*
+import me.odinclient.commands.impl.WaypointCommand.randomColor
 import me.odinclient.config.WaypointConfig
 import me.odinclient.features.impl.general.WaypointManager
 import me.odinclient.ui.waypoint.elements.AreaButton
@@ -31,11 +32,11 @@ object WaypointGUI : GuiScreen() {
 
     private var scrollTarget = 0f // idk a better name
     private var scrollOffset = 0f
-    private val scrollAnimation = LinearAnimation(200)
+    private val scrollAnimation = LinearAnimation<Float>(200)
 
     private var areaTarget = 10f
     private var areaOffset = 100f
-    private val areaAnimation = LinearAnimation(200)
+    private val areaAnimation = LinearAnimation<Float>(200)
 
     var mouseHandler = MouseHandler()
 
@@ -122,8 +123,7 @@ object WaypointGUI : GuiScreen() {
             return
         }
         if (mouseHandler.isAreaHovered(10f, 5f, 78.5f, 15f)) {
-            val randomColor = Random().run { Color(nextInt(255), nextInt(255), nextInt(255)) }
-            val waypoint = WaypointManager.Waypoint("§fWaypoint", mc.thePlayer.positionVector.floored(), randomColor)
+            val waypoint = WaypointManager.Waypoint("§fWaypoint", mc.thePlayer.positionVector.floored(), randomColor())
             WaypointManager.addWaypoint(waypoint, displayArea ?: "")
             list.add(WaypointElement(waypoint))
             return

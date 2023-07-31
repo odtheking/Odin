@@ -10,8 +10,8 @@ import me.odinclient.features.impl.general.WaypointManager.Waypoint
 import me.odinclient.ui.waypoint.WaypointGUI
 import me.odinclient.ui.waypoint.WaypointGUI.mouseHandler
 import me.odinclient.utils.Utils.noControlCodes
+import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.gui.animations.impl.ColorAnimation
-import java.awt.Color
 
 class WaypointElement(val waypoint: Waypoint) {
     private val name get() = waypoint.name.noControlCodes
@@ -27,9 +27,9 @@ class WaypointElement(val waypoint: Waypoint) {
 
     fun drawScreen(vg: VG): Int {
         nanoVG(vg.instance) {
-            drawRoundedRect(15, y, 450, 30, 5f, Color(13, 14, 15).rgb)
+            drawRoundedRect(15, y, 450, 30, 5f, Color(13, 14, 15).rgba)
 
-            val color = colorAnimation.get(waypoint.color, Color(21, 22, 23), waypoint.shouldShow).rgb
+            val color = colorAnimation.get(waypoint.color, Color(21, 22, 23), waypoint.shouldShow).rgba
             drawRoundedRect(20, y + 6, 18, 18, 5f, color)
             drawSVG("/assets/odinclient/trash.svg", 442, y + 6, 18, 18, -1, 100, javaClass) // get better svg it looks so pixelated
 

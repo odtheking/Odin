@@ -1,9 +1,7 @@
 package me.odinclient.features.settings.impl
 
 import me.odinclient.features.settings.Setting
-import me.odinclient.features.settings.impl.ColorSetting.ColorComponent.*
-import me.odinclient.utils.Utils.clamp
-import java.awt.Color
+import me.odinclient.utils.render.Color
 
 class ColorSetting(
     name: String,
@@ -18,64 +16,30 @@ class ColorSetting(
             field = processInput(value)
         }
 
-    var red: Int
-        get() = value.red
-        set(input) {
-            value = Color(input.clamp(0, 255), green, blue, alpha)
+    inline val rgb: Int
+        get() = value.rgba
+
+    var hue: Float
+        get() = value.hue
+        set(value) {
+            this.value.hue = value.coerceIn(0f, 1f)
         }
 
-    var green: Int
-        get() = value.green
-        set(input) {
-            value = Color(red, input.clamp(0, 255), blue, alpha)
+    var saturation: Float
+        get() = value.saturation
+        set(value) {
+            this.value.saturation = value.coerceIn(0f, 1f)
         }
 
-    var blue: Int
-        get() = value.blue
-        set(input) {
-            value = Color(red, green, input.clamp(0, 255), alpha)
+    var brightness: Float
+        get() = value.brightness
+        set(value) {
+            this.value.brightness = value.coerceIn(0f, 1f)
         }
 
-    var alpha: Int
+    var alpha: Float
         get() = value.alpha
-        set (input) {
-            value = Color(red, green, blue, input.clamp(0, 255))
+        set(value) {
+            this.value.alpha = value.coerceIn(0f, 1f)
         }
-
-    fun getNumber(colorNumber: ColorComponent): Double {
-        return when (colorNumber) {
-            RED -> red.toDouble()
-            GREEN -> green.toDouble()
-            BLUE -> blue.toDouble()
-            ALPHA -> alpha.toDouble()
-        }
-    }
-
-    fun getNumber(index: Int): Double = getNumber(colors[index])
-
-    fun setNumber(colorNumber: ColorComponent, number: Double) {
-        when (colorNumber) {
-            RED -> red = number.toInt()
-            GREEN -> green = number.toInt()
-            BLUE -> blue = number.toInt()
-            ALPHA -> alpha = number.toInt()
-        }
-    }
-
-    fun setNumber(index: Int, number: Double) = setNumber(colors[index], number)
-
-    var colors = arrayOf(RED, GREEN, BLUE)
-
-    init {
-        if (allowAlpha) colors += ALPHA
-    }
-
-    enum class ColorComponent(
-        val color: Color,
-    ) {
-        RED(Color(255, 0, 0)),
-        GREEN(Color(0, 255, 0)),
-        BLUE(Color(0, 100, 255)),
-        ALPHA(Color(255, 255, 255));
-    }
 }

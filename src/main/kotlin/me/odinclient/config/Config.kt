@@ -11,7 +11,7 @@ import me.odinclient.features.ConfigModule
 import me.odinclient.features.ModuleManager
 import me.odinclient.features.settings.Setting
 import me.odinclient.features.settings.impl.*
-import java.awt.Color
+import me.odinclient.utils.render.Color
 import java.io.File
 import java.io.IOException
 

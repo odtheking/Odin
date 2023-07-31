@@ -11,6 +11,7 @@ import me.odinclient.ui.clickgui.util.ColorUtil.clickGUIColor
 import me.odinclient.ui.clickgui.util.ColorUtil.elementBackground
 import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinclient.features.settings.impl.SelectorSetting
+import me.odinclient.utils.render.gui.GuiUtils.capitalizeOnlyFirst
 import me.odinclient.utils.render.gui.GuiUtils.drawCustomCenteredText
 import me.odinclient.utils.render.gui.GuiUtils.nanoVG
 import me.odinclient.utils.render.gui.GuiUtils.scissor
@@ -33,7 +34,7 @@ class ElementSelector(parent: ModuleButton, setting: SelectorSetting) : Element<
             val length = getTextWidth(displayValue, 16f, Fonts.REGULAR)
             drawDropShadow(x + width - 20f - length, y + 4f, length + 12f, 22f, 10f, 0.75f, 5f)
             drawRoundedRect(x + width - 20f - length, y + 4f, length + 12f, 22f, 5f, buttonColor)
-            if (isHovered) drawHollowRoundedRect(x + width - 21f - length, y + 3f, length + 12.5f, 22.5f, 4f, clickGUIColor.rgb, 1.5f)
+            if (isHovered) drawHollowRoundedRect(x + width - 21f - length, y + 3f, length + 12.5f, 22.5f, 4f, clickGUIColor.rgba, 1.5f)
 
             drawText(displayName, x + 6f, y + DEFAULT_HEIGHT / 2f, -1, 16f, Fonts.REGULAR)
             drawText(displayValue, x + width - 14f - length, y + DEFAULT_HEIGHT / 2f, -1, 16f, Fonts.REGULAR)
@@ -43,11 +44,12 @@ class ElementSelector(parent: ModuleButton, setting: SelectorSetting) : Element<
                     drawRoundedRect(x + 6, y + 37f, width - 12f, setting.options.size * 32f, 5f, buttonColor)
                     drawDropShadow(x + 6, y + 37f, width - 12f, setting.options.size * 32f, 10f, 0.75f, 5f)
 
-                    for ((index, option) in setting.options.withIndex()) {
-                        val y = y + 38 + 32 * index
-                        val elementTitle = option.substring(0, 1).uppercase(Locale.getDefault()) + option.substring(1, option.length)
-                        drawCustomCenteredText(elementTitle, x + width / 2f, y, 16f, Fonts.REGULAR)
-                        if (isSettingHovered(index)) drawHollowRoundedRect(x + 5, y - 1f, width - 11.5f, 32.5f, 4f, ColorUtil.outlineColor, 1.5f)
+                    for (i in 0 until setting.options.size) {
+                        val y = y + 38 + 32 * i
+                        drawCustomCenteredText(setting.options[i].capitalizeOnlyFirst(), x + width / 2f, y + 16f, 16f, Fonts.REGULAR)
+                        if (isSettingHovered(i)) {
+                            drawHollowRoundedRect(x + 5, y - 1f, width - 11.5f, 32.5f, 4f, ColorUtil.outlineColor, 1.5f)
+                        }
                     }
                 }
             }

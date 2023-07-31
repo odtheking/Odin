@@ -62,7 +62,7 @@ object ModuleManager {
         if (Keyboard.getEventKeyState()) return
         val eventKey = Keyboard.getEventKey()
         if (eventKey == 0) return
-        modules.filter { it.keyCode == eventKey }.forEach { it.keyBind() }
+        modules.filter { it.keyCode == eventKey }.forEach { it.onKeybind() }
     }
 
     @SubscribeEvent
@@ -70,7 +70,7 @@ object ModuleManager {
         if (Mouse.getEventButtonState()) return
         val eventButton = Mouse.getEventButton()
         if (eventButton == 0) return
-        modules.filter { it.keyCode + 100 == eventButton }.forEach { it.keyBind() }
+        modules.filter { it.keyCode + 100 == eventButton }.forEach { it.onKeybind() }
     }
 
     fun getModuleByName(name: String): Module? = modules.firstOrNull { it.name.equals(name, true) }

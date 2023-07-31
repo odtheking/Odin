@@ -10,6 +10,7 @@ import me.odinclient.config.WaypointConfig
 import me.odinclient.ui.waypoint.WaypointGUI
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.clock.Clock
+import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.LocationUtils.currentArea
@@ -17,7 +18,6 @@ import net.minecraft.util.Vec3i
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.awt.Color
 
 // TODO: Make changes cuz ngl its kinda eh (eg: good ordered waypoints for mining so people dont need to use ct)
 // TODO: Make all waypoint areas constant and make LocationUtils use locraw
@@ -94,11 +94,11 @@ object WaypointManager {
         var x: Int,
         var y: Int,
         var z: Int,
-        var color: Color = Color.RED,
+        var color: Color,
         var shouldShow: Boolean = true,
     ) {
         constructor(name: String, vec3: Vec3i, color: Color) : this(name, vec3.x, vec3.y, vec3.z, color, true)
 
-        fun renderBeacon(partialTicks: Float) = RenderUtils.renderCustomBeacon(name, x + .5, y + .5, z + .5, color, partialTicks)
+        fun renderBeacon(partialTicks: Float) {}//RenderUtils.renderCustomBeacon(name, x + .5, y + .5, z + .5, color, partialTicks)
     }
 }

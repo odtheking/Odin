@@ -12,13 +12,12 @@ import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinclient.utils.render.gui.MouseUtils.mouseX
 import me.odinclient.features.impl.general.ClickGUIModule
 import me.odinclient.features.settings.impl.NumberSetting
-import me.odinclient.utils.Utils.coerceIn
+import me.odinclient.utils.Utils.coerceInNumber
 import me.odinclient.utils.Utils.compareTo
 import me.odinclient.utils.Utils.div
 import me.odinclient.utils.Utils.minus
 import me.odinclient.utils.Utils.plus
 import me.odinclient.utils.Utils.times
-import me.odinclient.utils.Utils.unaryMinus
 import me.odinclient.utils.render.gui.GuiUtils.nanoVG
 import org.lwjgl.input.Keyboard
 import kotlin.math.roundToInt
@@ -38,22 +37,20 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
             drawText(displayName, x + 6f, y + height / 2f - 3f, -1, 16f, Fonts.REGULAR)
             drawText(displayVal, x + width - textWidth - 6f, y + height / 2f - 3f, -1, 16f, Fonts.REGULAR)
 
-            drawRoundedRect(x + 6f, y + 26f, width - 12f, 6f, 2.5f, ColorUtil.sliderBackgroundColor)
-            drawDropShadow(x + 6f, y + 26f, width - 12f, 6f, 10F, 0.75f, 5f)
+            drawRoundedRect(x + 6f, y + 27f, width - 12f, 6f, 2.5f, ColorUtil.sliderBackgroundColor)
+            drawDropShadow(x + 6f, y + 27f, width - 12f, 6f, 10F, 0.75f, 5f)
 
             if (x + percentBar * (width - 12f) > x + 6) {
-                drawGradientRoundedRect(
-                    x + 6f, y + 26f, percentBar * (width - 12f), 6f,
-                    ClickGUIModule.color.withAlpha(if (hoveredOrDragged) 250 else 200).rgb,
-                    ClickGUIModule.secondColor.withAlpha(if (hoveredOrDragged) 250 else 200).rgb,
-                    2.5f
+                drawRoundedRect(
+                    x + 6f, y + 27f, percentBar * (width - 12f), 6f, 2.5f,
+                    ClickGUIModule.color.withAlpha(if (hoveredOrDragged) 250 else 200).rgba,
                 )
             }
         }
 
         if (listening) {
             val diff = setting.max - setting.min
-            val newVal = setting.min + ((mouseX - x) / width).coerceIn(0, 1) * diff
+            val newVal = setting.min + ((mouseX - (x + 6f)) / (width - 12f)).coerceInNumber(0, 1) * diff
             setting.valueAsDouble = newVal.toDouble()
         }
     }

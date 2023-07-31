@@ -60,12 +60,8 @@ abstract class AbstractCommand(
         }
 
         for (i in subcommands.size - 1 downTo 0) {
-            if (subcommands[i].argsRequired.all {
-                    println("$it ")
-                    it in args
-            }) {
+            if (subcommands[i].argsRequired.all { it in args }) {
                 subcommands[i].execute(args)
-                println("${subcommands[i].name} and ${subcommands.joinToString { it.name }}")
                 return
             }
         }
@@ -113,7 +109,7 @@ abstract class AbstractCommand(
      */
     private var extraCmd: ((Array<out String>) -> Unit)? = null
 
-    // TODO: Add a description and automatic help command.
+    // TODO: Add a description system and automatic help command.
 
     /**
      * ## Subcommand
@@ -236,9 +232,9 @@ abstract class AbstractCommand(
      *  }
      *
      *  // Turns into
-     *  "hello" - {
+     *  "hello" {
      *      and(
-     *          "world" - {
+     *          "world" {
      *          }
      *      }
      *  }
@@ -247,7 +243,7 @@ abstract class AbstractCommand(
      * @see and
      * @see does
      */
-    operator fun String.minus(block: Subcommand.() -> Unit): Subcommand {
+    operator fun String.invoke(block: Subcommand.() -> Unit): Subcommand {
         return this.cmd(block)
     }
 

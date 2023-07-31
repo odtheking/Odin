@@ -897,43 +897,6 @@ object OdinConfig : Config(Mod("OdinClient", ModType.SKYBLOCK, "/assets/odinclie
     //M7
 
     @Switch(
-        name = "Automatically equips edrag after relics",
-        description = "Automatically equips edrag after relics",
-        category = "M7",
-        subcategory = "Auto Edrag",
-        size = 2
-    )
-    var autoEdrag = false
-
-    @Switch(
-        name = "Replaces diorite with glass in p2 ",
-        description = "Replaces diorite with glass in p2 (don't use connected blocks)",
-        category = "M7",
-        subcategory = "FUCK DIORITE",
-        size = 2
-    )
-    var fuckDiorite = false
-
-    @Switch(
-        name = "Creates custom and decently accurate boxes in p5",
-        description = "Creates custom and decently accurate boxes in p5",
-        category = "M7",
-        subcategory = "Dragon Boxes",
-        size = 2
-    )
-    var dragonBoxes = false
-
-
-    @Slider(
-        name = "Line Width",
-        min = 1f,
-        max = 5f,
-        category = "M7",
-        subcategory = "Dragon Boxes"
-    )
-    var dragonBoxesLineWidth = 2f
-
-    @Switch(
         name = "Shows how long a terminal took to complete",
         description = "Shows how long a terminal took to complete",
         category = "M7",

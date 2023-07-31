@@ -9,6 +9,7 @@ import me.odinclient.ui.clickgui.util.ColorUtil
 import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.*
+import me.odinclient.ui.clickgui.util.HoverThingRenamelaterr
 import me.odinclient.utils.render.gui.GuiUtils.drawCustomCenteredText
 import me.odinclient.utils.render.gui.GuiUtils.nanoVG
 import me.odinclient.utils.render.gui.GuiUtils.scissor
@@ -30,6 +31,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
 
     var extended = false
     private val extendAnim = EaseInOut(250)
+    val hoverHandler = HoverThingRenamelaterr()
 
     init {
         updateElements()
@@ -37,7 +39,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
         //menuElements.add(ElementDescription(this, module.description))
     }
 
-    fun updateElements() {
+    private fun updateElements() {
         var position = -1 // This looks weird, but it starts at -1 because it gets incremented before being used.
         for (setting in module.settings) {
             /** Don't show hidden settings */
@@ -66,9 +68,13 @@ class ModuleButton(val module: Module, val panel: Panel) {
     fun draw(vg: VG): Float {
         var offs = height
 
+        hoverHandler.handle(x, y, width, height)
+        if (hoverHandler.timeHovered != 0L) println("${hoverHandler.timeHovered} at ${module.name}")
+
         vg.nanoVG {
-            if (module.enabled) drawRect(x, y, width, offs, ColorUtil.clickGUIColor.rgb)
+            if (module.enabled) drawRect(x, y, width, offs, ColorUtil.clickGUIColor.rgba)
             else drawRect(x, y, width, offs, ColorUtil.moduleColor(module.enabled))
+
             if (isButtonHovered) drawRect(x, y, width, offs, if (module.enabled) 0x55111111 else ColorUtil.hoverColor)
 
             drawCustomCenteredText(module.name, x + width / 2, y + height / 2, 18f, Fonts.MEDIUM)

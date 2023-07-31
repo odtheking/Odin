@@ -29,7 +29,7 @@ class WaypointInputField(
     private var width = 0f
 
     private val outlineAnimation = EaseInOut(250)
-    private val inputAnimation = LinearAnimation(325)
+    private val inputAnimation = LinearAnimation<Float>(325)
 
     fun draw(vg: VG, x: Float, y: Float, color: Int): Float {
         nanoVG(vg.instance) {

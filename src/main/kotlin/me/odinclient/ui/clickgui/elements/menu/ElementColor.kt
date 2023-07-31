@@ -2,91 +2,112 @@ package me.odinclient.ui.clickgui.elements.menu
 
 import cc.polyfrost.oneconfig.renderer.font.Fonts
 import cc.polyfrost.oneconfig.utils.dsl.*
+import me.odinclient.features.settings.impl.ColorSetting
 import me.odinclient.ui.clickgui.elements.Element
 import me.odinclient.ui.clickgui.elements.ElementType
 import me.odinclient.ui.clickgui.elements.ModuleButton
 import me.odinclient.ui.clickgui.util.ColorUtil
+import me.odinclient.ui.clickgui.util.ColorUtil.darker
 import me.odinclient.ui.clickgui.util.ColorUtil.elementBackground
+import me.odinclient.ui.clickgui.util.ColorUtil.hsbMax
 import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
-import me.odinclient.utils.render.gui.MouseUtils.mouseX
-import me.odinclient.features.settings.impl.ColorSetting
-import me.odinclient.ui.clickgui.util.ColorUtil.clickGUIColor
+import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.gui.GuiUtils.drawHSBBox
+import me.odinclient.utils.render.gui.GuiUtils.drawOutlineRoundedRect
+import me.odinclient.utils.render.gui.GuiUtils.nanoVG
 import me.odinclient.utils.render.gui.GuiUtils.resetScissor
 import me.odinclient.utils.render.gui.GuiUtils.scissor
+import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
+import me.odinclient.utils.render.gui.MouseUtils.mouseX
+import me.odinclient.utils.render.gui.MouseUtils.mouseY
 import me.odinclient.utils.render.gui.animations.impl.EaseInOut
-import org.lwjgl.input.Keyboard
 import kotlin.math.floor
-import kotlin.math.roundToInt
 
 class ElementColor(parent: ModuleButton, setting: ColorSetting) :
     Element<ColorSetting>(parent, setting, ElementType.COLOR) {
 
-    private val openAnim = EaseInOut(200)
+    private val anim = EaseInOut(200)
     var dragging: Int? = null
 
+    // TODO: MAKE A BETTER DESIGN (FUNCTION IS ALL HERE P MUCH)
     override fun draw(vg: VG) {
+        height = floor(anim.get(36f, if (setting.allowAlpha) 253f else 233f, !extended))
         val colorValue = setting.value
 
-        nanoVG(vg.instance) {
-
-            //nanoVGHelper.drawHSBBox(vg.instance, x, y, width, height, clickGUIColor.rgb)
-            height = floor(openAnim.get(36f, DEFAULT_HEIGHT * (if (setting.allowAlpha) 5 else 4), !extended))
+        vg.nanoVG {
             drawRect(x, y, width, height, elementBackground)
-            drawText(displayName, x + 6, y + 18f, -1, 16f, Fonts.REGULAR)
-            drawDropShadow(x + width - 40, y + 5, 31, 19, 10f, 0.75f, 5f)
-            drawRoundedRect(x + width - 40, y + 5, 31, 19, 5f, colorValue.rgb)
-            drawHollowRoundedRect(x + width - 41, y + 4, 31.5f, 19.5f, 4f, colorValue.darker().rgb, 1.5f)
-            if (isHovered) drawHollowRoundedRect(x + width - 41f, y + 4f, 31.5f, 19.5f, 4f, ColorUtil.boxHoverColor, 1.5f)
+            drawText(displayName, x + 6f, y + 18f, -1, 16f, Fonts.REGULAR)
+            drawDropShadow(x + width - 40f, y + 5f, 31f, 19f, 10f, 0.75f, 5f)
+            drawRoundedRect(x + width - 40f, y + 5f, 31f, 19f, 5f, setting.rgb)
+            drawOutlineRoundedRect(x + width - 40f, y + 5f, 31f, 19f, 5f, colorValue.darker().rgba, 1.5f)
+            if (isHovered) drawOutlineRoundedRect(x + width - 40f, y + 5f, 31f, 19f, 5f, ColorUtil.boxHoverColor, 1.5f)
 
-            if (extended || openAnim.isAnimating()) {
-                val scissor = scissor(x, y, width, height + 1)
-                var currentY = y + DEFAULT_HEIGHT
+            if (!extended && !anim.isAnimating()) return@nanoVG
 
-                for (currentColor in setting.colors) {
-                    val isColorDragged = dragging == currentColor.ordinal
-                    val displayVal = "${(setting.getNumber(currentColor).roundToInt())}"
-                    val textWidth = getTextWidth(displayVal, 16f, Fonts.REGULAR)
-                    vg.drawText(displayVal, x + width - textWidth - 6, currentY + 16, -1, 16f,Fonts.REGULAR)
+            val scissor = scissor(x, y, width, height + 1)
 
-                    drawRoundedRect(x + 6, currentY + 11.5, width - 62, 6, 2.5f, ColorUtil.sliderBackgroundColor)
-                    drawDropShadow(x + 6, currentY + 11.5, width - 62, 6, 10f, 0.75f, 5f)
+            // SATURATION AND BRIGHTNESS
+            drawHSBBox(x + 10f, y + 38f, width - 20f, 170f, colorValue.hsbMax().rgba)
+            drawDropShadow(x + 10f, y + 38f, width - 20f, 170f, 10f, 0.5f, 8f)
 
-                    val percentage = setting.getNumber(currentColor) / 255
-                    if (x + 6 < x + percentage * (width - 12)) {
-                        val color = currentColor.color.withAlpha(if (isColorDragged) 255 else 200).rgb
-                        drawRoundedRect(x + 6, currentY + 11.5, percentage * (width - 62), 6, 2.5f, color)
-                    }
+            val sbPointer = Pair((x + 10f + setting.saturation * 220), (y + 38f + (1 - setting.brightness) * 170))
+            drawDropShadow(sbPointer.first - 8.5f, sbPointer.second - 8.5f, 17f, 17f, 2.5f, 2.5f, 9f)
+            drawCircle(sbPointer.first, sbPointer.second, 9f, colorValue.darker(0.5f).rgba)
+            drawCircle(sbPointer.first, sbPointer.second, 7f, colorValue.rgba)
 
-                    if (isColorDragged) {
-                        val newVal = ((mouseX - x) / (width - textWidth - 18)).coerceIn(0f, 1f) * 255.0
-                        setting.setNumber(currentColor, newVal)
-                    }
-                    currentY += DEFAULT_HEIGHT
-                }
-                resetScissor(scissor)
+            // HUE
+            drawDropShadow(x + 10f, y + 214f, width - 20f, 15f, 10f, 0.5f, 5f)
+            drawRoundedImage("/assets/odinclient/HueGradient.png", x + 10f, y + 214f, width - 20f, 15f, 5f, javaClass)
+            drawOutlineRoundedRect(x + 10f, y + 214f, width - 20f, 15f, 5f, Color(38, 38, 38).rgba, 1f)
+
+            val hue = Pair((x + 10f + setting.hue * 221f), y + 221f)
+            drawDropShadow(hue.first - 8.5f, hue.second - 8.5f, 17f, 17f, 2.5f, 2.5f, 9f)
+            drawCircle(hue.first, hue.second, 9f, colorValue.hsbMax().darker(0.5f).rgba)
+            drawCircle(hue.first, hue.second, 7f, colorValue.hsbMax().rgba)
+
+            // ALPHA
+            if (setting.allowAlpha) {
+                drawDropShadow(x + 10f, y + 235f, width - 20f, 15f, 10f, 0.5f, 5f)
+                //drawRoundedImage("/assets/odinclient/AlphaGrid.png", x + 10f, y + 235f, width - 20f, 15f, 5f, javaClass)
+                drawGradientRoundedRect(x + 10f, y + 235f, width - 20f, 15f, Color.TRANSPARENT.rgba, colorValue.withAlpha(1f).rgba, 5f)
+
+                val alpha = Pair((x + 10f + setting.alpha * 220f), y + 243f)
+                drawDropShadow(alpha.first - 8.5f, alpha.second - 8.5f, 17f, 17f, 2.5f, 2.5f, 9f)
+                drawCircle(alpha.first, alpha.second, 9f, Color(-1, setting.alpha).darker(.5f).rgba)
+                drawCircle(alpha.first, alpha.second, 7f, Color(-1, setting.alpha).rgba)
             }
-            //vg.drawHSBBox(x, y, width, height, clickGUIColor.rgb)
+
+            when (dragging) {
+                0 -> {
+                    setting.saturation = (mouseX - (x + 10f)) / 220f
+                    setting.brightness = -((mouseY - (y + 38f)) - 170f) / 170f
+                }
+                1 -> setting.hue = (mouseX - (x + 10f)) / (width - 20f)
+                2 -> setting.alpha = (mouseX - (x + 10f)) / (width - 20f)
+            }
+
+            resetScissor(scissor)
         }
     }
 
     override fun mouseClicked(mouseButton: Int): Boolean {
         if (mouseButton == 0) {
             if (isHovered) {
-                if (openAnim.start()) extended = !extended
+                if (anim.start()) extended = !extended
                 return true
             }
             if (!extended) return false
-            for (index in 0 until setting.colors.size) {
-                if (isColorHovered(index)) {
-                    dragging = index
-                    return true
-                }
+
+            dragging = when {
+                isAreaHovered(x + 10f, y + 38f, width - 20f, 170f) -> 0 // sat & brightness
+                isAreaHovered(x + 10f, y + 214f, width - 20f, 15f) -> 1 // hue
+                isAreaHovered(x + 10f, y + 235f, width - 20f, 15f) && setting.allowAlpha -> 2 // alpha
+                else -> null
             }
+
         } else if (mouseButton == 1) {
             if (isHovered) {
-                if (openAnim.start()) extended = !extended
+                if (anim.start()) extended = !extended
                 return true
             }
         }
@@ -97,22 +118,6 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
         dragging = null
     }
 
-    override fun keyTyped(typedChar: Char, keyCode: Int): Boolean {
-        if (!extended) return false
-
-        for (index in 0 until setting.colors.size) {
-            if (isColorHovered(index)) {
-                val amount = when (keyCode) {
-                    Keyboard.KEY_RIGHT -> 255f
-                    Keyboard.KEY_LEFT -> -255f
-                    else -> return false
-                }
-                setting.setNumber(index, setting.getNumber(index) + amount / 255.0)
-            }
-        }
-        return super.keyTyped(typedChar, keyCode)
-    }
-
-    override val isHovered: Boolean get() = isAreaHovered(x + width - 41, y + 5, 31.5f, 19f)
-    private val isColorHovered: (Int) -> Boolean = { isAreaHovered(x, y + 32f + 32f * it, width, DEFAULT_HEIGHT) }
+    override val isHovered: Boolean
+        get() = isAreaHovered(x + width - 41, y + 5, 31.5f, 19f)
 }

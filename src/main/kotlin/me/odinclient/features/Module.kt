@@ -38,6 +38,7 @@ abstract class Module(
     @SerializedName("enabled")
     var enabled: Boolean = toggled
         private set
+
     @Expose
     @SerializedName("settings")
     val settings: ArrayList<Setting<*>>
@@ -73,7 +74,7 @@ abstract class Module(
      * By default, this will toggle the module and send a chat message.
      * It can be overwritten in the module to change that behaviour.
      */
-    open fun keyBind() {
+    open fun onKeybind() {
         toggle()
         ChatUtils.modMessage("$name ${if (enabled) "§aenabled" else "§cdisabled"}.")
     }
@@ -110,13 +111,6 @@ abstract class Module(
         }
         System.err.println("[" + OdinClient.NAME + "] Error Setting NOT found: '" + name + "'!")
         return null
-    }
-
-    fun getNameFromSettings(name: String): Boolean {
-        for (set in settings) {
-            if (set.name == name) return true
-        }
-        return false
     }
 
     internal fun isKeybindDown(): Boolean {
