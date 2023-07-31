@@ -1,9 +1,7 @@
 package me.odinclient.ui.clickgui.elements
 
 import cc.polyfrost.oneconfig.renderer.font.Fonts
-import cc.polyfrost.oneconfig.utils.dsl.VG
-import cc.polyfrost.oneconfig.utils.dsl.drawRect
-import cc.polyfrost.oneconfig.utils.dsl.drawRoundedRect
+import cc.polyfrost.oneconfig.utils.dsl.*
 import me.odinclient.ui.clickgui.Panel
 import me.odinclient.ui.clickgui.elements.menu.*
 import me.odinclient.ui.clickgui.util.ColorUtil
@@ -35,7 +33,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
     var extended = false
     private val extendAnim = EaseInOut(250)
 
-    private val hoverHandler = HoverHandler(300)
+    private val hoverHandler = HoverHandler(2000)
 
     init {
         updateElements()
@@ -75,10 +73,12 @@ class ModuleButton(val module: Module, val panel: Panel) {
         hoverHandler.handle(x, y, width, height)
 
         vg.nanoVG {
-
             val percent = hoverHandler.percent()
-            if (percent != 0) {
-                drawRoundedRect(x + width + 10f, y, 200f, height, 5f, Color(buttonColor, percent / 100f).rgba)
+            drawText(percent.toString(), x - 20f, y, -1, 16f, Fonts.REGULAR)
+            if (percent > 70) {
+                val bounds = nanoVGHelper.getWrappedStringBounds(this.instance, module.description, 200f, 14f, Fonts.REGULAR)
+                drawRoundedRect(x + width + 10f, y, bounds[2] - bounds[0] + 10, bounds[3] - bounds[1] + 8, 5f, Color(buttonColor, percent / 100f).rgba)
+                drawWrappedString(module.description, x + width + 17f, y + 12f, 200f, -1, 14f, 1f, Fonts.REGULAR)
             }
 
             if (module.enabled) drawRect(x, y, width, offs, ColorUtil.clickGUIColor.rgba)

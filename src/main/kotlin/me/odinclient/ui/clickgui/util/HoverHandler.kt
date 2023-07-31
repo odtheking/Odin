@@ -10,7 +10,8 @@ class HoverHandler(val delay: Long) {
     private var isHovered = false
 
     fun percent(): Int {
-        return anim.get(0, 100, !isHovered)
+        if (!isHovered) return anim.get(0, anim.getPercent(), true)
+        return anim.get(0, 100)
     }
 
     fun handle(x: Float, y: Float, w: Float, h: Float) {

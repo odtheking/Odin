@@ -6,6 +6,7 @@ import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.RenderEntityModelEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.features.settings.impl.ColorSetting
 import me.odinclient.utils.VecUtils.noSqrt3DDistance
 import me.odinclient.utils.render.Color
@@ -20,6 +21,7 @@ object ESP : Module(
     category = Category.GENERAL
 ) {
     private val color: Color by ColorSetting("Color", Color(255, 0, 0))
+    private val through: Boolean by BooleanSetting("Through Walls", true)
 
     private inline val espList get() = OdinClient.miscConfig.espList
 
@@ -52,11 +54,11 @@ object ESP : Module(
     @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
         if (!currentEntities.contains(event.entity)) return
-        if (!mc.thePlayer.canEntityBeSeen(event.entity) && !config.espThrough) return
+        if (!mc.thePlayer.canEntityBeSeen(event.entity) && !through) return
         OutlineUtils.outlineEntity(
             event,
             config.espThickness,
-            java.awt.Color.WHITE,//color,
+            color.javaColor,
             config.espCancelHurt
         )
     }
