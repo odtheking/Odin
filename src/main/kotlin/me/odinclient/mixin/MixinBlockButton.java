@@ -21,11 +21,15 @@ public class MixinBlockButton extends Block {
     @Inject(method = "updateBlockBounds", at = @At("HEAD"), cancellable = true)
     private void onUpdateBlockBounds(IBlockState state, CallbackInfo ci)
     {
-        if (SecretHitboxes.INSTANCE.getEnabled() && SecretHitboxes.INSTANCE.getButton())
+        if (SecretHitboxes.INSTANCE.getButton())
         {
             SecretHitboxes.INSTANCE.getExpandedButtons().put(this, state);
-            this.setBlockBounds(0, 0, 0, 1, 1, 1);
-            ci.cancel();
+
+            if (SecretHitboxes.INSTANCE.getEnabled())
+            {
+                this.setBlockBounds(0, 0, 0, 1, 1, 1);
+                ci.cancel();
+            }
         }
     }
 
