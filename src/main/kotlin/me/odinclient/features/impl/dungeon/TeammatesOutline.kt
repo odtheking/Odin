@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.dungeon
 
-import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.RenderEntityModelEvent
 import me.odinclient.features.Category
@@ -41,11 +40,12 @@ object TeammatesOutline : Module(
         DungeonUtils.teammates.forEach {
             if (mc.thePlayer.canEntityBeSeen(it.first) || it.first == mc.thePlayer) return
             RenderUtils.drawStringInWorld(
-                RenderUtils.renderVec(it.first).addVector(0.0, 2.7, 0.0),
                 "${it.second.code}${it.first.name}",
-                false,
-                max(1.5f, (mc.thePlayer.getDistanceToEntity(it.first) / 15)),
-                false
+                RenderUtils.renderVec(it.first).addVector(0.0, 2.7, 0.0),
+                depthTest = false,
+                increase = false,
+                renderBlackBox = false,
+                scale = max(1.5f, (mc.thePlayer.getDistanceToEntity(it.first) / 15))
             )
         }
     }

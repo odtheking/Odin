@@ -57,7 +57,8 @@ object ModuleManager {
         NoBlockAnimation,
         NoCursorReset,
         Reminders,
-        TermAC
+        TermAC,
+        Ghosts
     )
 
     @SubscribeEvent
