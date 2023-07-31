@@ -4,10 +4,10 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.EntityLivingBase
@@ -27,6 +27,8 @@ object AutoReady : Module(
     private var click = false
     private var playerReady = false
 
+    private val autoMort: Boolean by BooleanSetting("Auto Mort")
+
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
         tped = false
@@ -37,7 +39,7 @@ object AutoReady : Module(
     @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
     fun onClientTick(event: TickEvent.ClientTickEvent) {
-        if (!config.autoMort || !DungeonUtils.inDungeons || playerReady || click) return
+        if (autoMort || !DungeonUtils.inDungeons || playerReady || click) return
         val mort = mc.theWorld?.loadedEntityList?.find { it.name.contains("Mort") } as? EntityLivingBase ?: return
         val dist = mc.thePlayer.getDistanceToEntity(mort)
         if (dist <= 5) {
@@ -68,7 +70,7 @@ object AutoReady : Module(
 
     @SubscribeEvent
     fun autoReady(event: GuiOpenEvent) {
-        if (playerReady || !config.autoReady || !DungeonUtils.inDungeons) return
+        if (playerReady || !DungeonUtils.inDungeons) return
 
         PlayerUtils.clickItemInContainer("Start Dungeon?", "Start Dungeon?", event, true)
         PlayerUtils.clickItemInContainer("Catacombs -", mc.thePlayer?.name.toString(), event, true)

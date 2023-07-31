@@ -5,6 +5,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.odinclient.OdinClient
+import me.odinclient.features.impl.dungeon.AutoIceFill
 import me.odinclient.utils.skyblock.WorldUtils
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.util.BlockPos
@@ -15,7 +16,7 @@ object AsyncUtils {
         val deferredResult = CompletableDeferred<Unit>()
 
         fun check() {
-            if (!OdinClient.config.autoIceFill) {
+            if (!AutoIceFill.enabled) {
                 deferredResult.completeExceptionally(Exception("Promise rejected"))
                 return
             }
@@ -41,7 +42,7 @@ object AsyncUtils {
         val bPos = BlockPos(vec)
 
         fun check() {
-            if (!OdinClient.config.autoIceFill) {
+            if (!AutoIceFill.enabled) {
                 deferredResult.completeExceptionally(Exception("Promise rejected"))
                 return
             }

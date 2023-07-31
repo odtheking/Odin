@@ -2,6 +2,7 @@ package me.odinclient.ui.clickgui.elements.menu
 
 import cc.polyfrost.oneconfig.renderer.font.Fonts
 import cc.polyfrost.oneconfig.utils.dsl.*
+import me.odinclient.features.impl.general.ClickGUIModule
 import me.odinclient.ui.clickgui.elements.Element
 import me.odinclient.ui.clickgui.elements.ElementType
 import me.odinclient.ui.clickgui.elements.ModuleButton
@@ -18,7 +19,13 @@ class ElementCheckBox(parent: ModuleButton, setting: BooleanSetting) : Element<B
     parent, setting, ElementType.CHECK_BOX
 ) {
     private val colorAnim = ColorAnimation(150)
-    override val isHovered: Boolean get() = isAreaHovered(x + width - 30f, y + 5f, 21f, 20f)
+    private val linearAnimation = LinearAnimation<Float>(150)
+
+    override val isHovered: Boolean get() =
+        if (!ClickGUIModule.switchType)
+            isAreaHovered(x + width - 30f, y + 5f, 21f, 20f)
+        else
+            isAreaHovered(x + width - 80f, y + 12f, 50f, 20f)
 
     override fun draw(vg: VG) {
         vg.nanoVG {

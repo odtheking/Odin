@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.dungeon
 
-import me.odinclient.OdinClient.Companion.config
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.utils.Utils.noControlCodes
@@ -22,8 +21,7 @@ object WatcherBar : Module(
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        if (!config.watcherBar || !DungeonUtils.inDungeons) return
-        if (!BossStatus.bossName.noControlCodes.contains("The Watcher")) return
+        if (!DungeonUtils.inDungeons || !BossStatus.bossName.noControlCodes.contains("The Watcher")) return
 
         val health = BossStatus.healthScale
         val floor = LocationUtils.currentDungeon?.floor ?: return

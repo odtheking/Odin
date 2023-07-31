@@ -5,6 +5,9 @@ import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.RenderEntityModelEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.features.settings.impl.ColorSetting
+import me.odinclient.features.settings.impl.NumberSetting
+import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.world.OutlineUtils
 import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.skyblock.ItemUtils.itemID
@@ -24,6 +27,9 @@ object ArrowTrajectory : Module(
     "Arrow Trajectory",
     category = Category.GENERAL
 ) {
+    private val thickness: Float by NumberSetting("Line Width", 2f, 1.0, 5.0, 0.5)
+    private val color: Color by ColorSetting("Color", Color(170, 170, 0), true)
+
     private var boxRenderQueue: MutableList<Pair<Vec3, Vector2d>> = mutableListOf()
     private var entityRenderQueue = mutableListOf<Entity>()
 
@@ -104,8 +110,8 @@ object ArrowTrajectory : Module(
                 b.first.xCoord, b.second.x,
                 b.first.yCoord, b.second.y,
                 b.first.zCoord, b.second.x,
-                config.arrowTrajectoryColor.toJavaColor(),
-                config.arrowTrajectoryThickness / 3,
+                color.javaColor,
+                thickness / 3,
                 phase = true
             )
         }
@@ -118,8 +124,8 @@ object ArrowTrajectory : Module(
         if (!mc.thePlayer.canEntityBeSeen(event.entity)) return
         OutlineUtils.outlineEntity(
             event,
-            config.arrowTrajectoryThickness,
-            config.arrowTrajectoryColor.toJavaColor(),
+            thickness,
+            color.javaColor,
             false
         )
     }

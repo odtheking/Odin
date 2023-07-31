@@ -19,12 +19,13 @@ object TeammatesOutline : Module(
     category = Category.DUNGEON
 ) {
     private val thickness: Float by NumberSetting("Line Width", 2f, 1.0, 5.0, 0.5)
+    private val whenVisible: Boolean by BooleanSetting("When Visible")
     private val inBoss: Boolean by BooleanSetting("In boss")
 
     @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
         if (!DungeonUtils.inDungeons || event.entity == mc.thePlayer || !DungeonUtils.teammates.any { it.first == event.entity } || (inBoss && DungeonUtils.inBoss)) return
-        if (!config.teammatesOutlineWhenVisible && mc.thePlayer.canEntityBeSeen(event.entity)) return
+        if (whenVisible && mc.thePlayer.canEntityBeSeen(event.entity)) return
         val color = DungeonUtils.teammates.first { it.first == event.entity }.second.color
         OutlineUtils.outlineEntity(
             event,

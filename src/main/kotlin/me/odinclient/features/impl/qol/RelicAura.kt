@@ -2,6 +2,9 @@ package me.odinclient.features.impl.qol
 
 import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.features.Category
+import me.odinclient.features.Module
+import me.odinclient.utils.skyblock.ChatUtils.unformattedText
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
@@ -12,7 +15,11 @@ import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-object RelicAura {
+object RelicAura : Module(
+    name = "Relic Aura",
+    category = Category.M7,
+    description = ""
+){
     private var disabler = false
 
     @SubscribeEvent
@@ -22,13 +29,13 @@ object RelicAura {
 
     @SubscribeEvent
     fun onChat(event: ClientChatReceivedEvent) {
-        val message = event.message.unformattedText
+        val message = event.unformattedText
         if (message == "[BOSS] Wither King: You.. again?") disabler = true
     }
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        if (disabler || !config.relicAura || !DungeonUtils.inDungeons) return
+        if (disabler || !DungeonUtils.inDungeons) return
         val armorStands = mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>() ?: return
         for (armorStand in armorStands) {
             if (armorStand.inventory?.get(4)?.displayName?.contains("Relic") != true || mc.thePlayer.getDistanceToEntity(armorStand) > 4) continue

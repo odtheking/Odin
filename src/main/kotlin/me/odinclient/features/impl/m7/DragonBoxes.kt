@@ -21,13 +21,13 @@ object DragonBoxes : Module(
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        if (!config.dragonBoxes || DungeonUtils.getPhase() != 5) return
+        if (DungeonUtils.getPhase() != 5) return
         DragonColors.values().forEach { it.checkAlive() }
     }
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (!config.dragonBoxes || DungeonUtils.getPhase() != 5) return
+        if (DungeonUtils.getPhase() != 5) return
         // Blue
         if (DragonColors.Blue.alive)
             RenderUtils.drawCustomEspBox(

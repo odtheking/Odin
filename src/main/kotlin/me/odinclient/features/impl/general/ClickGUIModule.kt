@@ -7,6 +7,7 @@ import me.odinclient.features.Module
 import me.odinclient.features.settings.AlwaysActive
 import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.features.settings.impl.ColorSetting
+import me.odinclient.features.settings.impl.DualSetting
 import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.ui.clickgui.ClickGUI
 import me.odinclient.utils.render.Color
