@@ -1,6 +1,6 @@
 # OdinClient
 
-OdinClient is a comprehensive Forge mod for Hypixel Skyblock, offering a range of features to enhance your gaming experience. Access its GUI using the `/od` or `/odinclient` commands.
+OdinClient is a comprehensive Forge mod for Hypixel Skyblock, offering a range of features to enhance Your gaming experience. Access its GUI using the `/od` or `/odinclient` commands.
 
 ## Features
 
