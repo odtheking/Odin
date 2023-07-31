@@ -52,7 +52,8 @@ object ClickGUIModule: Module(
         """.trimIndent(), "")
             OdinClient.mc.thePlayer.addChatMessage(
                 ChatComponentText(" §9https://discord.gg/2nCbC9hkxT")
-                    .setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, "https://discord.gg/2nCbC9hkxT")))
+                .setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, "https://discord.gg/2nCbC9hkxT"))
+            )
 
             modMessage("""
             

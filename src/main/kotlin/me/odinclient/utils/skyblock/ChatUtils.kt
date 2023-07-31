@@ -161,6 +161,13 @@ object ChatUtils {
             "inv" -> sendCommand("party invite $name")
             "gm" -> privateMessage("Good Morning $name!", name)
             "gn" -> privateMessage("Good Night $name.", name)
+            "invite" -> {
+                mc.thePlayer.playSound("note.pling", 100f, 1f)
+                mc.thePlayer.addChatMessage(
+                    ChatComponentText("§3Odin§bClient §8»§r Click on this message to invite $name to your party!")
+                        .setChatStyle(createClickStyle(ClickEvent.Action.RUN_COMMAND, "/party invite $name"))
+                )
+            }
         }
     }
 

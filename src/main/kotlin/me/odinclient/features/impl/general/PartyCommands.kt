@@ -7,6 +7,7 @@ import kotlinx.coroutines.launch
 import me.odinclient.OdinClient
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.skyblock.ChatUtils
+import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.PlayerUtils
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -53,7 +54,9 @@ object PartyCommands {
         if (!OdinClient.config.partyCommands) return
 
         val message = event.message.unformattedText.noControlCodes
-        val match = Regex("From (\\[.+\\])? ?(.+): !(.+)").find(message) ?: return
+        val match = Regex("From (\\[.+])? ?(.+): !(.+)").find(message) ?: return
+
+        modMessage("gotten pm")
 
         val ign = match.groups[2]?.value
         val msg = match.groups[3]?.value?.lowercase()

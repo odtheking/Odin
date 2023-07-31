@@ -11,6 +11,7 @@ import me.odinclient.config.OdinConfig
 import me.odinclient.config.WaypointConfig
 import me.odinclient.events.ClientSecondEvent
 import me.odinclient.features.ModuleManager
+import me.odinclient.features.impl.general.PartyCommands
 import me.odinclient.ui.clickgui.ClickGUI
 import me.odinclient.utils.ServerUtils
 import me.odinclient.utils.clock.Executor
@@ -55,6 +56,7 @@ class OdinClient {
             PlayerUtils,
             RenderUtils,
             DungeonUtils,
+            PartyCommands,
 
             Executor,
             ModuleManager,
