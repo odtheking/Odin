@@ -3,13 +3,16 @@ package me.odinclient.ui.clickgui.elements
 import cc.polyfrost.oneconfig.renderer.font.Fonts
 import cc.polyfrost.oneconfig.utils.dsl.VG
 import cc.polyfrost.oneconfig.utils.dsl.drawRect
+import cc.polyfrost.oneconfig.utils.dsl.drawRoundedRect
 import me.odinclient.ui.clickgui.Panel
 import me.odinclient.ui.clickgui.elements.menu.*
 import me.odinclient.ui.clickgui.util.ColorUtil
 import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.*
-import me.odinclient.ui.clickgui.util.HoverThingRenamelaterr
+import me.odinclient.ui.clickgui.util.ColorUtil.buttonColor
+import me.odinclient.ui.clickgui.util.HoverHandler
+import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.gui.GuiUtils.drawCustomCenteredText
 import me.odinclient.utils.render.gui.GuiUtils.nanoVG
 import me.odinclient.utils.render.gui.GuiUtils.scissor
@@ -31,7 +34,8 @@ class ModuleButton(val module: Module, val panel: Panel) {
 
     var extended = false
     private val extendAnim = EaseInOut(250)
-    val hoverHandler = HoverThingRenamelaterr()
+
+    private val hoverHandler = HoverHandler(300)
 
     init {
         updateElements()
@@ -43,7 +47,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
         var position = -1 // This looks weird, but it starts at -1 because it gets incremented before being used.
         for (setting in module.settings) {
             /** Don't show hidden settings */
-            if (setting.shouldBeVisible && !setting.hidden) run addElement@{
+            if (setting.shouldBeVisible) run addElement@{
                 position++
                 if (menuElements.any { it.setting === setting }) return@addElement
                 val newElement = when (setting) {
@@ -58,7 +62,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
                 }
                 menuElements.add(position, newElement)
             } else {
-                menuElements.removeIf {
+                menuElements.removeAll {
                     it.setting === setting
                 }
             }
@@ -69,9 +73,14 @@ class ModuleButton(val module: Module, val panel: Panel) {
         var offs = height
 
         hoverHandler.handle(x, y, width, height)
-        if (hoverHandler.timeHovered != 0L) println("${hoverHandler.timeHovered} at ${module.name}")
 
         vg.nanoVG {
+
+            val percent = hoverHandler.percent()
+            if (percent != 0) {
+                drawRoundedRect(x + width + 10f, y, 200f, height, 5f, Color(buttonColor, percent / 100f).rgba)
+            }
+
             if (module.enabled) drawRect(x, y, width, offs, ColorUtil.clickGUIColor.rgba)
             else drawRect(x, y, width, offs, ColorUtil.moduleColor(module.enabled))
 

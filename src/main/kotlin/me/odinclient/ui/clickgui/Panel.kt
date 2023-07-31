@@ -15,8 +15,6 @@ import me.odinclient.features.impl.general.ClickGUIModule
 import me.odinclient.utils.render.gui.GuiUtils.capitalizeOnlyFirst
 import me.odinclient.utils.render.gui.GuiUtils.drawCustomCenteredText
 import me.odinclient.utils.render.gui.GuiUtils.nanoVG
-import me.odinclient.utils.render.gui.GuiUtils.resetScissor
-import me.odinclient.utils.render.gui.GuiUtils.scissor
 import kotlin.math.floor
 
 class Panel(
@@ -53,7 +51,7 @@ class Panel(
         if (scrollAmount != 0f) handleScroll()
 
         vg.nanoVG {
-            val scissor = scissor(x - 2f, y + height, x + width + 1, y + height + 4000)
+            //val scissor = scissor(x - 2f, y + height, x + width + 1, y + height + 4000)
             var startY = height
             if (extended && moduleButtons.isNotEmpty()) {
                 for (moduleButton in moduleButtons) {
@@ -62,7 +60,7 @@ class Panel(
                 }
                 length = startY + 5f
             }
-            resetScissor(scissor)
+            //resetScissor(scissor)
 
             drawRoundedRectVaried(x, y, width, height, ColorUtil.moduleButtonColor, 5f, 5f, 0f, 0f)
             drawDropShadow(x, y, width, startY + 10f, 12.5f, 6f, 5f)

@@ -24,7 +24,7 @@ abstract class Setting<T> (
 
     val shouldBeVisible: Boolean
         get() {
-            return visibilityDependency()
+            return visibilityDependency() && !hidden
         }
 
     override operator fun provideDelegate(thisRef: Module, property: KProperty<*>): ReadWriteProperty<Module, T> {
