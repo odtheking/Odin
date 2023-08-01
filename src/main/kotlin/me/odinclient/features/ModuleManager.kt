@@ -59,7 +59,8 @@ object ModuleManager {
         NoCursorReset,
         Reminders,
         TermAC,
-        Ghosts
+        Ghosts,
+        BPS
     )
 
     @SubscribeEvent
