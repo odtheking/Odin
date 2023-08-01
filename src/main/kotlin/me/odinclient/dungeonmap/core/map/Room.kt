@@ -1,7 +1,7 @@
 package me.odinclient.dungeonmap.core.map
 
-import me.odinclient.OdinClient.Companion.config
 import me.odinclient.dungeonmap.core.RoomData
+import me.odinclient.features.impl.dungeon.MapModule
 import java.awt.Color
 
 class Room(override val x: Int, override val z: Int, var data: RoomData) : Tile {
@@ -11,13 +11,13 @@ class Room(override val x: Int, override val z: Int, var data: RoomData) : Tile 
     override var state: RoomState = RoomState.UNDISCOVERED
     override val color: Color
         get() = when (data.type) {
-            RoomType.BLOOD -> config.colorBlood.toJavaColor()
-            RoomType.CHAMPION -> config.colorMiniboss.toJavaColor()
-            RoomType.ENTRANCE -> config.colorEntrance.toJavaColor()
-            RoomType.FAIRY -> config.colorFairy.toJavaColor()
-            RoomType.PUZZLE -> config.colorPuzzle.toJavaColor()
-            RoomType.RARE -> config.colorRare.toJavaColor()
-            RoomType.TRAP -> config.colorTrap.toJavaColor()
-            else -> if (hasMimic) config.colorRoomMimic.toJavaColor() else config.colorRoom.toJavaColor()
+            RoomType.BLOOD -> MapModule.bloodColor.javaColor
+            RoomType.CHAMPION -> MapModule.miniBossColor.javaColor
+            RoomType.ENTRANCE -> MapModule.entranceColor.javaColor
+            RoomType.FAIRY -> MapModule.fairyColor.javaColor
+            RoomType.PUZZLE -> MapModule.puzzleColor.javaColor
+            RoomType.RARE -> MapModule.rareColor.javaColor
+            RoomType.TRAP -> MapModule.trapColor.javaColor
+            else -> if (hasMimic) MapModule.mimicRoomColor.javaColor else MapModule.roomColor.javaColor
         }
 }

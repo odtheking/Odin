@@ -13,7 +13,7 @@ object MapUtils {
     var startCorner = Pair(5, 5)
     var roomSize = 16
     var calibrated = false
-    var coordMultiplier = 1.0
+    var coordMultiplier = .5
 
     fun getMapData(): MapData? {
         val map = mc.thePlayer?.inventory?.getStackInSlot(8) ?: return null

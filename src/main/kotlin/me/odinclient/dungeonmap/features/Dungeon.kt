@@ -8,7 +8,9 @@ import me.odinclient.dungeonmap.core.DungeonPlayer
 import me.odinclient.dungeonmap.core.map.Door
 import me.odinclient.dungeonmap.core.map.Room
 import me.odinclient.dungeonmap.core.map.Tile
+import me.odinclient.events.ChatPacketEvent
 import me.odinclient.events.ReceivePacketEvent
+import me.odinclient.features.impl.dungeon.MapModule
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.Utils.equalsOneOf
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
@@ -72,6 +74,10 @@ object Dungeon {
                 isScanning = false
             }
         }
+        getDungeonTabList()?.let {
+            MapUpdate.updatePlayers(it)
+            RunInformation.updateRunInformation(it)
+        }
         if (hasScanned) {
             launch {
                 if (!mimicFound && DungeonUtils.isFloor(6,7)) {
@@ -79,25 +85,32 @@ object Dungeon {
                 }
                 MapUpdate.updateRooms()
                 MapUpdate.updateDoors()
-                getDungeonTabList()?.let {
-                    MapUpdate.updatePlayers(it)
-                    RunInformation.updateRunInformation(it)
-                }
             }
         }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    fun onChatPacket(event: ReceivePacketEvent) {
-        if (event.packet !is S02PacketChat || event.packet.type.toInt() == 2 || !inDungeons) return
-        val text = event.packet.chatComponent.unformattedText.noControlCodes
+    fun onChatPacket(event: ChatPacketEvent) {
+        if (!inDungeons) return
         when {
-            text.equalsOneOf(
+            event.message.equalsOneOf(
                 "Dungeon starts in 4 seconds.",
                 "Dungeon starts in 4 seconds. Get ready!"
             ) -> MapUpdate.preloadHeads()
-            text == "[NPC] Mort: Here, I found this map when I first entered the dungeon." -> MapUpdate.getPlayers()
-            entryMessages.any { it == text } -> inBoss = true
+            event.message == "[NPC] Mort: Here, I found this map when I first entered the dungeon." -> {
+                MapUpdate.getPlayers()
+                MapUtils.startCorner = when {
+                    DungeonUtils.isFloor(1) -> Pair(22, 11)
+                    DungeonUtils.isFloor(2, 3) -> Pair(11, 11)
+                    DungeonUtils.isFloor(4) -> Pair(5, 16)
+                    else -> Pair(5, 5)
+                }
+
+                MapUtils.roomSize = if (DungeonUtils.isFloor(1, 2, 3)) 18 else 16
+
+                MapUtils.coordMultiplier = (MapUtils.roomSize + 4.0) / roomSize
+            }
+            entryMessages.any { it == event.message } -> inBoss = true
         }
     }
 
@@ -111,7 +124,7 @@ object Dungeon {
     var playerImage = BufferedImage(8, 8, BufferedImage.TYPE_INT_ARGB)
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
-        if (!inDungeons || !config.mapEnabled) return
+        if (!inDungeons || !MapModule.enabled) return
         playerImage = MapRenderUtils.createBufferedImageFromTexture(mc.textureManager.getTexture(mc.thePlayer.locationSkin).glTextureId)
         dungeonTeammates.values.forEach {
             it.bufferedImage = MapRenderUtils.createBufferedImageFromTexture(mc.textureManager.getTexture(it.skin).glTextureId)
@@ -119,7 +132,7 @@ object Dungeon {
     }
 
     private val shouldScan get() =
-        config.autoScan && !isScanning && !hasScanned && System.currentTimeMillis() - lastScanTime >= 250 && inDungeons
+        MapModule.autoScan && !isScanning && !hasScanned && System.currentTimeMillis() - lastScanTime >= 250 && inDungeons
 
     fun getDungeonTabList(): List<Pair<NetworkPlayerInfo, String>>? {
         val tabEntries = MapUtils.tabList

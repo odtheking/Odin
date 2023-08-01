@@ -74,7 +74,6 @@ class ModuleButton(val module: Module, val panel: Panel) {
 
         vg.nanoVG {
             val percent = hoverHandler.percent()
-            drawText(percent.toString(), x - 20f, y, -1, 16f, Fonts.REGULAR)
             if (percent > 70) {
                 val bounds = nanoVGHelper.getWrappedStringBounds(this.instance, module.description, 200f, 14f, Fonts.REGULAR)
                 drawRoundedRect(x + width + 10f, y, bounds[2] - bounds[0] + 10, bounds[3] - bounds[1] + 8, 5f, Color(buttonColor, percent / 100f).rgba)

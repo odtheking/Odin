@@ -4,6 +4,7 @@ import cc.polyfrost.oneconfig.libs.universal.UChat
 import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.dungeonmap.core.map.*
+import me.odinclient.features.impl.dungeon.MapModule
 import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.dungeon.map.ScanUtils.getCore
 import me.odinclient.utils.skyblock.dungeon.map.ScanUtils.getRoomData
@@ -16,7 +17,7 @@ object DungeonScan {
     fun scanDungeon() {
         Dungeon.reset()
         var allLoaded = true
-        val startTime = if (config.nanoScanTime) System.nanoTime() else System.currentTimeMillis()
+        val startTime = if (MapModule.nanoScanTime) System.nanoTime() else System.currentTimeMillis()
 
         scan@ for (x in 0..10) {
             for (z in 0..10) {
@@ -41,10 +42,10 @@ object DungeonScan {
             Dungeon.hasScanned = true
             MapUpdate.calibrate()
 
-            if (config.scanChatInfo) {
+            if (MapModule.scanChatInfo) {
                 UChat.chat("""
                     ${ChatUtils.getChatBreak().dropLast(1)}
-                    §3Odin§bClient §8» §6Scan Finished! It took §a${if (config.nanoScanTime) "${System.nanoTime() - startTime}ns" else "${System.currentTimeMillis() - startTime}ms"}
+                    §3Odin§bClient §8» §6Scan Finished! It took §a${if (MapModule.nanoScanTime) "${System.nanoTime() - startTime}ns" else "${System.currentTimeMillis() - startTime}ms"}
                     §9Puzzles (§c${Dungeon.puzzles.size}§9): §d${Dungeon.puzzles.joinToString("§7, §d")}
                     §6Trap: §d${Dungeon.trapType}
                     §8Wither Doors: §7${Dungeon.doors.size - 1}

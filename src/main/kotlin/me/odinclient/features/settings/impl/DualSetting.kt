@@ -9,8 +9,8 @@ import me.odinclient.features.settings.Setting
  */
 class DualSetting (
     name: String,
-    val firstOption: String,
-    val secondOption: String,
+    val left: String,
+    val right: String,
     override val default: Boolean = false,
     hidden: Boolean = false,
     description: String? = null,

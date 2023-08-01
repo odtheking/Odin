@@ -33,8 +33,8 @@ class ElementDual(parent: ModuleButton, setting: DualSetting) : Element<DualSett
             val leftColor = leftColorAnim.get(ColorUtil.clickGUIColor, if (isLeftHovered) Color(45, 45, 45) else Color(35, 35, 35), !setting.enabled).rgba
             drawRoundedRect(x + 7f, y + 3f, width / 2 - 14f, 28f, 5f, leftColor)
 
-            drawCustomCenteredText(setting.firstOption, x + width / 4, y + 3f + height / 2, 16f, Fonts.REGULAR, -1)
-            drawCustomCenteredText(setting.secondOption, x + width * 3 / 4,y + 3f + height / 2,  16f, Fonts.REGULAR, -1)
+            drawCustomCenteredText(setting.left, x + width / 4, y + 3f + height / 2, 16f, Fonts.REGULAR, -1)
+            drawCustomCenteredText(setting.right, x + width * 3 / 4,y + 3f + height / 2,  16f, Fonts.REGULAR, -1)
         }
 
     }

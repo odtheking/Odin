@@ -4,6 +4,7 @@ import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.dungeonmap.core.DungeonPlayer
 import me.odinclient.dungeonmap.features.Dungeon
+import me.odinclient.features.impl.dungeon.MapModule
 import me.odinclient.utils.skyblock.ItemUtils.itemID
 import me.odinclient.utils.skyblock.dungeon.map.MapUtils.equalsOneOf
 import net.minecraft.client.gui.Gui
@@ -72,7 +73,7 @@ object MapRenderUtils {
         GlStateManager.pushMatrix()
 
         GlStateManager.translate(x.toFloat(), y.toFloat(), 0f)
-        GlStateManager.scale(config.textScale, config.textScale, 1f)
+        GlStateManager.scale(MapModule.textScale, MapModule.textScale, 1f)
 
         if (text.isNotEmpty()) {
             val yTextOffset = text.size * 5f
@@ -111,7 +112,7 @@ object MapRenderUtils {
                 GlStateManager.translate(player.mapX.toFloat(), player.mapZ.toFloat(), 0f)
             }
 
-            if (config.playerHeads == 2 || config.playerHeads == 1 && mc.thePlayer.heldItem?.itemID.equalsOneOf(
+            if (MapModule.playerHeads == 2 || MapModule.playerHeads == 1 && mc.thePlayer.heldItem?.itemID.equalsOneOf(
                     "SPIRIT_LEAP",
                     "INFINITE_SPIRIT_LEAP"
                 )
@@ -128,9 +129,9 @@ object MapRenderUtils {
             }
 
             GlStateManager.rotate(player.yaw + 180f, 0f, 0f, 1f)
-            GlStateManager.scale(config.playerHeadScale, config.playerHeadScale, 1f)
+            GlStateManager.scale(MapModule.playerHeadScale, MapModule.playerHeadScale, 1f)
 
-            renderRectBorder(-6.0, -6.0, 12.0, 12.0, 1.0, Color(0, 0, 0, 255))
+            renderRectBorder(-6.0, -6.0, 12.0, 12.0, 1.0, Color.BLACK)
             GlStateManager.color(1f, 1f, 1f, 1f)
             mc.textureManager.bindTexture(player.skin)
 

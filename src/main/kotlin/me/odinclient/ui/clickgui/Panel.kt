@@ -13,6 +13,8 @@ import me.odinclient.features.impl.general.ClickGUIModule
 import me.odinclient.utils.render.gui.GuiUtils.capitalizeOnlyFirst
 import me.odinclient.utils.render.gui.GuiUtils.drawCustomCenteredText
 import me.odinclient.utils.render.gui.GuiUtils.nanoVG
+import me.odinclient.utils.render.gui.GuiUtils.resetScissor
+import me.odinclient.utils.render.gui.GuiUtils.scissor
 import kotlin.math.floor
 
 class Panel(
@@ -51,22 +53,23 @@ class Panel(
         if (scrollAmount != 0f) handleScroll()
 
         vg.nanoVG {
-            //val scissor = scissor(x - 2f, y + height, x + width + 1, y + height + 4000)
-            var startY = height
+            drawText(scrollOffset.toString(), x + 100f, 100f, -1, 18f, Fonts.MEDIUM)
+            drawRoundedRectVaried(x, y, width, height, ColorUtil.moduleButtonColor, 5f, 5f, 0f, 0f)
+            drawCustomCenteredText(category.name.capitalizeOnlyFirst(), x + width / 2, y + height / 2, 22f, Fonts.SEMIBOLD)
+
+            var startY = height + scrollOffset
+            val scissor = scissor(x - 2f, y + height, x + width + 1000, y + height + 4000)
             if (extended && moduleButtons.isNotEmpty()) {
                 for (moduleButton in moduleButtons) {
                     moduleButton.y = startY
                     startY += moduleButton.draw(vg)
                 }
                 length = startY + 5f
-            }
-            //resetScissor(scissor)
-
-            drawRoundedRectVaried(x, y, width, height, ColorUtil.moduleButtonColor, 5f, 5f, 0f, 0f)
-            drawDropShadow(x, y, width, startY + 10f, 12.5f, 6f, 5f)
-
+            } else startY = height
+            resetScissor(scissor)
             drawRoundedRectVaried(x, y + startY, width, 10f, ColorUtil.moduleColor(moduleButtons.last().module.enabled && extended), 0f, 0f, 5f, 5f)
-            drawCustomCenteredText(category.name.capitalizeOnlyFirst(), x + width / 2, y + height / 2, 22f, Fonts.SEMIBOLD)
+
+            drawDropShadow(x, y, width, startY + 10f, 12.5f, 6f, 5f)
         }
     }
 
@@ -116,8 +119,8 @@ class Panel(
 
     fun initializeScroll(amount: Int): Boolean {
         if (isMouseOverExtended) {
-            val diff = (-amount * SCROLL_DISTANCE).coerceAtMost(length - height - 16)
-            val realDiff = (scrollOffset + diff).coerceAtLeast(0f) - scrollOffset
+            val diff = amount * SCROLL_DISTANCE
+            val realDiff = (scrollOffset + diff).coerceIn(-length + scrollOffset + 50f, 0f) - scrollOffset
 
             scrollAmount = realDiff
             return true
@@ -144,6 +147,6 @@ class Panel(
     companion object {
         const val width = 240f
         const val height = 40f
-        private const val SCROLL_DISTANCE = 16f
+        private const val SCROLL_DISTANCE = 20f
     }
 }

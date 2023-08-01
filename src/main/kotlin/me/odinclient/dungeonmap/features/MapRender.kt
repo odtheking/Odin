@@ -4,6 +4,7 @@ import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.dungeonmap.core.DungeonPlayer
 import me.odinclient.dungeonmap.core.map.*
+import me.odinclient.features.impl.dungeon.MapModule
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import me.odinclient.utils.skyblock.dungeon.map.MapUtils
 import me.odinclient.utils.skyblock.dungeon.map.MapUtils.equalsOneOf
@@ -26,35 +27,35 @@ object MapRender {
 
     @SubscribeEvent
     fun onOverlay(event: RenderGameOverlayEvent.Post) {
-        if (event.type != RenderGameOverlayEvent.ElementType.HOTBAR || !inDungeons || !config.mapEnabled) return
-        if (config.mapHideInBoss && Dungeon.inBoss || !Dungeon.hasScanned || config.mapWindow) return
+        if (event.type != RenderGameOverlayEvent.ElementType.HOTBAR || !inDungeons || !MapModule.enabled) return
+        if (MapModule.hideInBoss && Dungeon.inBoss || !Dungeon.hasScanned || MapModule.mapWindow) return
 
         GlStateManager.pushMatrix()
-        GlStateManager.translate(config.mapX, config.mapY, 0f)
-        GlStateManager.scale(config.mapScale, config.mapScale, 1f)
+        GlStateManager.translate(MapModule.mapX, MapModule.mapY, 0f)
+        GlStateManager.scale(MapModule.mapScale, MapModule.mapScale, 1f)
 
         MapRenderUtils.renderRect(
             0.0,
             0.0,
             128.0,
-            if (config.mapShowRunInformation) 138.0 else 128.0,
-            config.mapBackground.toJavaColor()
+            if (MapModule.showRunInfo) 138.0 else 128.0,
+            MapModule.backgroundColor.javaColor
         )
 
         MapRenderUtils.renderRectBorder(
             0.0,
             0.0,
             128.0,
-            if (config.mapShowRunInformation) 138.0 else 128.0,
-            config.mapBorderWidth.toDouble(),
-            config.mapBorder.toJavaColor()
+            if (MapModule.showRunInfo) 138.0 else 128.0,
+            MapModule.borderWidth,
+            MapModule.borderColor.javaColor
         )
 
         renderRooms()
 
 
         renderPlayerHeads()
-        if (config.mapShowRunInformation) {
+        if (MapModule.showRunInfo) {
             renderRunInformation()
             renderText()
         }
@@ -119,7 +120,7 @@ object MapRender {
         GlStateManager.translate(MapUtils.startCorner.first.toFloat(), MapUtils.startCorner.second.toFloat(), 0f)
 
         val connectorSize = roomSize shr 2
-        val checkmarkSize = when (config.mapCheckmark) {
+        val checkmarkSize = when (MapModule.checkMarkStyle) {
             1 -> 8 // default
             else -> 10 // neu
         }
@@ -134,8 +135,8 @@ object MapRender {
                     val xOffset = (x shr 1) * (roomSize + connectorSize)
                     val yOffset = (y shr 1) * (roomSize + connectorSize)
 
-                    if (config.mapCheckmark != 0) {
-                        getCheckmark(tile.state, config.mapCheckmark)?.let {
+                    if (MapModule.checkMarkStyle != 0) {
+                        getCheckmark(tile.state, MapModule.checkMarkStyle)?.let {
                             GlStateManager.enableAlpha()
                             GlStateManager.color(255f, 255f, 255f, 255f)
                             mc.textureManager.bindTexture(it)
@@ -150,7 +151,7 @@ object MapRender {
                         }
                     }
 
-                    val color = if (config.mapColorText) when (tile.state) {
+                    val color = if (MapModule.colorText) when (tile.state) {
                         RoomState.GREEN -> 0x55ff55
                         RoomState.CLEARED, RoomState.FAILED -> 0xffffff
                         else -> 0xaaaaaa
@@ -158,8 +159,8 @@ object MapRender {
 
                     val name = mutableListOf<String>()
 
-                    if (config.mapRoomNames != 0 && tile.data.type.equalsOneOf(RoomType.PUZZLE, RoomType.TRAP) ||
-                        config.mapRoomNames == 2 && tile.data.type.equalsOneOf(
+                    if (MapModule.roomNames != 0 && tile.data.type.equalsOneOf(RoomType.PUZZLE, RoomType.TRAP) ||
+                        MapModule.roomNames == 2 && tile.data.type.equalsOneOf(
                             RoomType.NORMAL,
                             RoomType.RARE,
                             RoomType.CHAMPION

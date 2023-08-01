@@ -29,6 +29,7 @@ object ModuleManager {
         TeammatesOutline,
         Triggerbot,
         WatcherBar,
+        MapModule,
 
         ArrowTrajectory,
         Camera,

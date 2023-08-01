@@ -4,6 +4,7 @@ import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.dungeonmap.core.DungeonPlayer
 import me.odinclient.dungeonmap.core.map.*
+import me.odinclient.features.impl.dungeon.MapModule
 import me.odinclient.utils.skyblock.ItemUtils.itemID
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import me.odinclient.utils.skyblock.dungeon.map.MapUtils
@@ -13,12 +14,11 @@ import java.awt.Color
 import java.awt.Graphics
 import java.awt.Graphics2D
 import java.awt.image.BufferedImage
+import javax.imageio.ImageIO
 import javax.swing.JFrame
 import javax.swing.JPanel
 import javax.swing.Timer
 
-
-// some of the most aids shit ever written
 object Window: JFrame() {
 
     private val xScale get() = width / 400.0
@@ -32,14 +32,14 @@ object Window: JFrame() {
         val panel = object : JPanel() {
             override fun paintComponent(g: Graphics) {
                 super.paintComponent(g)
-                if (!DungeonUtils.inDungeons || !config.mapEnabled || (config.mapHideInBoss && Dungeon.inBoss) || !Dungeon.hasScanned) return
+                if (!DungeonUtils.inDungeons || !MapModule.enabled || (MapModule.hideInBoss && Dungeon.inBoss) || !Dungeon.hasScanned) return
                 val g2d = g as Graphics2D
 
-                this.background = config.mapBackground.toJavaColor()
+                this.background = MapModule.backgroundColor.javaColor
 
                 g2d.scale(xScale * 2.8, yScale * 2.8)
                 renderRooms(g2d) // Renders all the rooms
-                if (config.mapShowRunInformation) renderRunInformation(g2d) // Renders the run information underneath the map (Secrets deaths crypts)
+                if (MapModule.showRunInfo) renderRunInformation(g2d) // Renders the run information underneath the map (Secrets deaths crypts)
                 renderText(g2d) // Renders the text and checkmarks on the rooms depending on player's config
                 renderPlayerHeads(g2d) // Renders the player heads (is last, so it renders on top of everything else)
             }
@@ -58,7 +58,7 @@ object Window: JFrame() {
     }
 
     // Decides whether the window should be visible or not
-    val shouldShow get() = config.mapWindow && DungeonUtils.inDungeons && config.mapEnabled && (!config.mapHideInBoss || !Dungeon.inBoss) && Dungeon.hasScanned
+    val shouldShow get() = MapModule.mapWindow && DungeonUtils.inDungeons && MapModule.enabled && (!MapModule.hideInBoss || !Dungeon.inBoss) && Dungeon.hasScanned
 
     private fun renderRooms(g2d: Graphics2D) {
         g2d.translate(MapUtils.startCorner.first, MapUtils.startCorner.second)
@@ -165,7 +165,7 @@ object Window: JFrame() {
                 g2d.translate(player.mapX, player.mapZ)
             }
 
-            if (config.playerHeads == 2 || config.playerHeads == 1 && mc.thePlayer.heldItem?.itemID.equalsOneOf(
+            if (MapModule.playerHeads == 2 || MapModule.playerHeads == 1 && mc.thePlayer.heldItem?.itemID.equalsOneOf(
                     "SPIRIT_LEAP",
                     "INFINITE_SPIRIT_LEAP"
                 )
@@ -180,7 +180,7 @@ object Window: JFrame() {
             }
 
             g2d.rotate(Math.toRadians(player.yaw + 180.0), .0, .0)
-            g2d.scale(config.playerHeadScale.toDouble() * 1.5, config.playerHeadScale.toDouble() * 1.5)
+            g2d.scale(MapModule.playerHeadScale.toDouble() * 1.5, MapModule.playerHeadScale.toDouble() * 1.5)
             g2d.color = Color.BLACK
             g2d.fillRect(-5, -5, 10, 10) // Draw outline
 
@@ -190,7 +190,7 @@ object Window: JFrame() {
                 g2d.drawImage(player.bufferedImage.getSubimage(8, 8, 8, 8), -4, -4, this) // Draw head
             }
 
-            g2d.scale(.66 / config.playerHeadScale.toDouble(), .66 / config.playerHeadScale.toDouble())
+            g2d.scale(.66 / MapModule.playerHeadScale.toDouble(), .66 / MapModule.playerHeadScale.toDouble())
             g2d.rotate(-Math.toRadians(player.yaw + 180.0), .0, .0)
 
 
@@ -211,7 +211,7 @@ object Window: JFrame() {
         g2d.translate(MapUtils.startCorner.first, MapUtils.startCorner.second)
 
         val connectorSize = roomSize shr 2
-        val checkmarkSize = when (config.mapCheckmark) {
+        val checkmarkSize = when (MapModule.checkMarkStyle) {
             1 -> 8 // default
             else -> 10 // neu
         }
@@ -226,8 +226,8 @@ object Window: JFrame() {
                 val xOffset = (x shr 1) * (roomSize + connectorSize)
                 val yOffset = (y shr 1) * (roomSize + connectorSize)
 
-                if (config.mapCheckmark != 0) {
-                    getCheckmark(tile.state, config.mapCheckmark)?.let {
+                if (MapModule.checkMarkStyle != 0) {
+                    getCheckmark(tile.state, MapModule.checkMarkStyle)?.let {
                         g2d.drawImage(
                             it,
                             xOffset + (roomSize - checkmarkSize) / 2,
@@ -239,7 +239,7 @@ object Window: JFrame() {
                     }
                 }
 
-                val color = if (config.mapColorText) when (tile.state) {
+                val color = if (MapModule.colorText) when (tile.state) {
                     RoomState.GREEN -> Color(0, 170, 0)
                     RoomState.CLEARED, RoomState.FAILED -> Color.WHITE
                     else -> Color.GRAY
@@ -247,8 +247,8 @@ object Window: JFrame() {
 
                 val name = mutableListOf<String>()
 
-                if (config.mapRoomNames != 0 && tile.data.type.equalsOneOf(RoomType.PUZZLE, RoomType.TRAP) ||
-                    config.mapRoomNames == 2 && tile.data.type.equalsOneOf(
+                if (MapModule.roomNames != 0 && tile.data.type.equalsOneOf(RoomType.PUZZLE, RoomType.TRAP) ||
+                    MapModule.roomNames == 2 && tile.data.type.equalsOneOf(
                         RoomType.NORMAL,
                         RoomType.RARE,
                         RoomType.CHAMPION
@@ -266,7 +266,7 @@ object Window: JFrame() {
     private fun renderCenteredText(text: List<String>, x: Int, y: Int, color: Color, g2d: Graphics2D) {
 
         g2d.translate(x, y + 3)
-        g2d.scale(config.textScale.toDouble() / 1.5, config.textScale.toDouble() / 1.5)
+        g2d.scale(MapModule.textScale.toDouble() / 1.5, MapModule.textScale.toDouble() / 1.5)
 
         g2d.color = color
         if (text.isNotEmpty()) {
@@ -279,7 +279,7 @@ object Window: JFrame() {
                 )
             }
         }
-        g2d.scale(1.5 / config.textScale.toDouble(), 1.5 / config.textScale.toDouble())
+        g2d.scale(1.5 / MapModule.textScale.toDouble(), 1.5 / MapModule.textScale.toDouble())
         g2d.translate(-x, -y - 3)
     }
 
@@ -309,12 +309,8 @@ object Window: JFrame() {
     private val neuCross = loadImage("/assets/odinclient/neu/cross.png")
 
     private fun loadImage(path: String): BufferedImage {
-        // TODO: Put the bottom back, when done with debug mode, as it crashes in debug
-        return BufferedImage(8, 8, BufferedImage.TYPE_INT_ARGB)
-        /*
         val resource = this::class.java.getResource(path)
+            ?: return BufferedImage(8, 8, BufferedImage.TYPE_INT_ARGB) // poor fix for debug mode
         return ImageIO.read(resource)
-
-         */
     }
 }

@@ -9,6 +9,9 @@ import me.odinclient.config.Config
 import me.odinclient.config.MiscConfig
 import me.odinclient.config.OdinConfig
 import me.odinclient.config.WaypointConfig
+import me.odinclient.dungeonmap.features.Dungeon
+import me.odinclient.dungeonmap.features.MapRender
+import me.odinclient.dungeonmap.features.Window
 import me.odinclient.events.ChatPacketEventSender
 import me.odinclient.events.ClientSecondEvent
 import me.odinclient.events.ServerTickEventSender
@@ -53,6 +56,7 @@ class OdinClient {
     fun init(event: FMLInitializationEvent) {
 
         config.init()
+        window.init()
 
         listOf(
             LocationUtils,
@@ -61,7 +65,9 @@ class OdinClient {
             PlayerUtils,
             RenderUtils,
             DungeonUtils,
-            PartyCommands,
+
+            Dungeon,
+            MapRender,
 
             ServerTickEventSender,
             ChatPacketEventSender,
@@ -103,6 +109,8 @@ class OdinClient {
         if (event.phase != TickEvent.Phase.START) return
         tickRamp++
 
+        if (window.isVisible != window.shouldShow) window.isVisible = window.shouldShow
+
         if (display != null) {
             mc.displayGuiScreen(display)
             display = null
@@ -128,6 +136,7 @@ class OdinClient {
         val mc: Minecraft = Minecraft.getMinecraft()
 
         var config = OdinConfig
+        var window = Window
         val miscConfig = MiscConfig(File(mc.mcDataDir, "config/odin"))
         var display: GuiScreen? = null
         var tickRamp = 0
