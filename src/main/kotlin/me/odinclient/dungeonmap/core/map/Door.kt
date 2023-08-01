@@ -1,6 +1,5 @@
 package me.odinclient.dungeonmap.core.map
 
-import me.odinclient.OdinClient.Companion.config
 import me.odinclient.features.impl.dungeon.MapModule
 import java.awt.Color
 

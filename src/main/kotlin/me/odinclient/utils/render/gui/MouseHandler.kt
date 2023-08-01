@@ -1,7 +1,5 @@
 package me.odinclient.utils.render.gui
 
-import cc.polyfrost.oneconfig.libs.universal.UMouse
-
 /**
  * Edited verison of OneConfig InputHandler to have a translation option cuz why not
  * Add more stuff here and maybe merge with the nanoVG stuff so its nice and clean

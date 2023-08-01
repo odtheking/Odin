@@ -2,6 +2,7 @@ package me.odinclient.ui.clickgui.elements.menu
 
 import cc.polyfrost.oneconfig.renderer.font.Fonts
 import cc.polyfrost.oneconfig.utils.dsl.*
+import me.odinclient.features.settings.impl.SelectorSetting
 import me.odinclient.ui.clickgui.elements.Element
 import me.odinclient.ui.clickgui.elements.ElementType
 import me.odinclient.ui.clickgui.elements.ModuleButton
@@ -9,14 +10,12 @@ import me.odinclient.ui.clickgui.util.ColorUtil
 import me.odinclient.ui.clickgui.util.ColorUtil.buttonColor
 import me.odinclient.ui.clickgui.util.ColorUtil.clickGUIColor
 import me.odinclient.ui.clickgui.util.ColorUtil.elementBackground
-import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
-import me.odinclient.features.settings.impl.SelectorSetting
 import me.odinclient.utils.render.gui.GuiUtils.capitalizeOnlyFirst
 import me.odinclient.utils.render.gui.GuiUtils.drawCustomCenteredText
 import me.odinclient.utils.render.gui.GuiUtils.nanoVG
 import me.odinclient.utils.render.gui.GuiUtils.scissor
+import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinclient.utils.render.gui.animations.impl.EaseInOut
-import java.util.*
 
 class ElementSelector(parent: ModuleButton, setting: SelectorSetting) : Element<SelectorSetting>(parent, setting, ElementType.SELECTOR) {
 

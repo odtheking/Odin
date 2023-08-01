@@ -3,15 +3,15 @@ package me.odinclient.ui.clickgui.elements.menu
 import cc.polyfrost.oneconfig.renderer.font.Fonts
 import cc.polyfrost.oneconfig.utils.dsl.*
 import me.odinclient.features.impl.general.ClickGUIModule
+import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.ui.clickgui.elements.Element
 import me.odinclient.ui.clickgui.elements.ElementType
 import me.odinclient.ui.clickgui.elements.ModuleButton
 import me.odinclient.ui.clickgui.util.ColorUtil
-import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
-import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.gui.GuiUtils.drawOutlineRoundedRect
 import me.odinclient.utils.render.gui.GuiUtils.nanoVG
+import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinclient.utils.render.gui.animations.impl.ColorAnimation
 import me.odinclient.utils.render.gui.animations.impl.LinearAnimation
 

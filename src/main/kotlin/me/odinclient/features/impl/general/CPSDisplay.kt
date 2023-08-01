@@ -3,7 +3,6 @@ package me.odinclient.features.impl.general
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.Category
 import me.odinclient.features.Module
-import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent

@@ -1,7 +1,6 @@
 package me.odinclient.dungeonmap.features
 
 import cc.polyfrost.oneconfig.libs.universal.UChat
-import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.dungeonmap.core.map.*
 import me.odinclient.features.impl.dungeon.MapModule

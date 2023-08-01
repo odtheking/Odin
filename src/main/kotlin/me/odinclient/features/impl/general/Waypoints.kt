@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.general
 
-import me.odinclient.OdinClient.Companion.config
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.BooleanSetting

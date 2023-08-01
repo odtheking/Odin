@@ -1,7 +1,10 @@
 package me.odinclient.ui.clickgui.elements.menu
 
 import cc.polyfrost.oneconfig.renderer.font.Fonts
-import cc.polyfrost.oneconfig.utils.dsl.*
+import cc.polyfrost.oneconfig.utils.dsl.VG
+import cc.polyfrost.oneconfig.utils.dsl.drawDropShadow
+import cc.polyfrost.oneconfig.utils.dsl.drawRect
+import cc.polyfrost.oneconfig.utils.dsl.drawRoundedRect
 import me.odinclient.features.settings.impl.DualSetting
 import me.odinclient.ui.clickgui.elements.Element
 import me.odinclient.ui.clickgui.elements.ElementType

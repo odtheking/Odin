@@ -4,9 +4,9 @@ import cc.polyfrost.oneconfig.utils.dsl.nanoVG
 import cc.polyfrost.oneconfig.utils.dsl.setAlpha
 import cc.polyfrost.oneconfig.utils.dsl.translate
 import me.odinclient.config.Config
-import me.odinclient.ui.clickgui.elements.menu.ElementColor
 import me.odinclient.features.Category
 import me.odinclient.features.impl.general.ClickGUIModule
+import me.odinclient.ui.clickgui.elements.menu.ElementColor
 import me.odinclient.utils.render.gui.animations.impl.EaseInOut
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.OpenGlHelper

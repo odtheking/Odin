@@ -4,7 +4,6 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import me.odinclient.OdinClient.Companion.config
 import me.odinclient.commands.impl.WaypointCommand.randomColor
 import me.odinclient.config.WaypointConfig
 import me.odinclient.ui.waypoint.WaypointGUI

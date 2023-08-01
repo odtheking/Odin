@@ -2,16 +2,14 @@ package me.odinclient.ui.clickgui.elements.menu
 
 import cc.polyfrost.oneconfig.renderer.font.Fonts
 import cc.polyfrost.oneconfig.utils.dsl.*
+import me.odinclient.features.impl.general.ClickGUIModule
+import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.ui.clickgui.elements.Element
 import me.odinclient.ui.clickgui.elements.ElementType
 import me.odinclient.ui.clickgui.elements.ModuleButton
 import me.odinclient.ui.clickgui.util.ColorUtil
 import me.odinclient.ui.clickgui.util.ColorUtil.elementBackground
 import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
-import me.odinclient.utils.render.gui.MouseUtils.mouseX
-import me.odinclient.features.impl.general.ClickGUIModule
-import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.utils.Utils.coerceInNumber
 import me.odinclient.utils.Utils.compareTo
 import me.odinclient.utils.Utils.div
@@ -19,6 +17,8 @@ import me.odinclient.utils.Utils.minus
 import me.odinclient.utils.Utils.plus
 import me.odinclient.utils.Utils.times
 import me.odinclient.utils.render.gui.GuiUtils.nanoVG
+import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
+import me.odinclient.utils.render.gui.MouseUtils.mouseX
 import org.lwjgl.input.Keyboard
 import kotlin.math.roundToInt
 

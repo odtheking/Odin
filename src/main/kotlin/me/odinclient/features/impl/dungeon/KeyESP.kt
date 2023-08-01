@@ -1,6 +1,8 @@
 package me.odinclient.features.impl.dungeon
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import me.odinclient.OdinClient.Companion.scope
 import me.odinclient.features.Category
 import me.odinclient.features.Module

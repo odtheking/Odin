@@ -1,13 +1,10 @@
 package me.odinclient.features.impl.m7
 
-import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.OdinClient.Companion.miscConfig
 import me.odinclient.features.Category
 import me.odinclient.features.Module
-import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.features.settings.impl.SelectorSetting
-import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.ChatUtils.unformattedText
 import net.minecraft.client.gui.inventory.GuiChest

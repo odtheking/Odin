@@ -1,5 +1,6 @@
 package me.odinclient.commands
 
+import me.odinclient.commands.AbstractCommand.Subcommand
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
 import net.minecraft.util.BlockPos

@@ -5,10 +5,10 @@ import cc.polyfrost.oneconfig.utils.dsl.VG
 import cc.polyfrost.oneconfig.utils.dsl.drawRect
 import cc.polyfrost.oneconfig.utils.dsl.drawText
 import cc.polyfrost.oneconfig.utils.dsl.getTextWidth
+import me.odinclient.features.settings.impl.StringSetting
 import me.odinclient.ui.clickgui.elements.Element
 import me.odinclient.ui.clickgui.elements.ElementType
 import me.odinclient.ui.clickgui.elements.ModuleButton
-import me.odinclient.features.settings.impl.StringSetting
 import me.odinclient.ui.clickgui.util.ColorUtil
 import me.odinclient.utils.render.gui.GuiUtils.drawCustomCenteredText
 import me.odinclient.utils.render.gui.GuiUtils.nanoVG

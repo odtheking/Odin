@@ -3,7 +3,6 @@ package me.odinclient.utils.render.gui.animations.impl
 import me.odinclient.utils.Utils.minus
 import me.odinclient.utils.Utils.plus
 import me.odinclient.utils.Utils.times
-import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.gui.animations.Animation
 
 class LinearAnimation<E>(duration: Long): Animation<E>(duration) where E : Number, E: Comparable<E> {

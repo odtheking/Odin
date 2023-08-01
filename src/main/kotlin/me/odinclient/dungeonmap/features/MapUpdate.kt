@@ -13,7 +13,6 @@ import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.entity.player.EnumPlayerModelParts
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
-import net.minecraft.util.StringUtils
 
 object MapUpdate {
     fun calibrate() {

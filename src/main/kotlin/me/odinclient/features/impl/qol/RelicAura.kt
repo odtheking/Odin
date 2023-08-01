@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.qol
 
-import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.Category
 import me.odinclient.features.Module

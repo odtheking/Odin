@@ -1,6 +1,5 @@
 package me.odinclient.mixin;
 
-import me.odinclient.config.OdinConfig;
 import me.odinclient.features.impl.qol.PortalFix;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;

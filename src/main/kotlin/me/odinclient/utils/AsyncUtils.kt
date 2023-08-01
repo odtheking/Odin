@@ -4,7 +4,6 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import me.odinclient.OdinClient
 import me.odinclient.features.impl.dungeon.AutoIceFill
 import me.odinclient.utils.skyblock.WorldUtils
 import net.minecraft.inventory.ContainerChest

@@ -3,13 +3,13 @@ package me.odinclient.features.impl.dungeon
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.utils.clock.Clock
 import me.odinclient.utils.skyblock.ItemUtils
 import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
-import me.odinclient.features.settings.impl.BooleanSetting
 
 object AutoShield : Module(
     "Auto Shield",

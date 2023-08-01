@@ -2,7 +2,6 @@ package me.odinclient.features.impl.general
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.OdinClient.Companion.scope
 import me.odinclient.features.Category

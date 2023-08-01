@@ -1,15 +1,14 @@
 package me.odinclient.dungeonmap.features
 
-import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.dungeonmap.core.DungeonPlayer
 import me.odinclient.dungeonmap.core.map.*
 import me.odinclient.features.impl.dungeon.MapModule
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils.inDungeons
+import me.odinclient.utils.skyblock.dungeon.map.MapRenderUtils
 import me.odinclient.utils.skyblock.dungeon.map.MapUtils
 import me.odinclient.utils.skyblock.dungeon.map.MapUtils.equalsOneOf
 import me.odinclient.utils.skyblock.dungeon.map.MapUtils.roomSize
-import me.odinclient.utils.skyblock.dungeon.map.MapRenderUtils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.RenderGameOverlayEvent

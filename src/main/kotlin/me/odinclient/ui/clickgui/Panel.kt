@@ -2,20 +2,20 @@ package me.odinclient.ui.clickgui
 
 import cc.polyfrost.oneconfig.renderer.font.Fonts
 import cc.polyfrost.oneconfig.utils.dsl.*
-import me.odinclient.ui.clickgui.elements.ModuleButton
-import me.odinclient.ui.clickgui.util.ColorUtil
-import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
-import me.odinclient.utils.render.gui.MouseUtils.mouseX
-import me.odinclient.utils.render.gui.MouseUtils.mouseY
 import me.odinclient.features.Category
 import me.odinclient.features.ModuleManager
 import me.odinclient.features.impl.general.ClickGUIModule
+import me.odinclient.ui.clickgui.elements.ModuleButton
+import me.odinclient.ui.clickgui.util.ColorUtil
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.gui.GuiUtils.capitalizeOnlyFirst
 import me.odinclient.utils.render.gui.GuiUtils.drawCustomCenteredText
 import me.odinclient.utils.render.gui.GuiUtils.nanoVG
 import me.odinclient.utils.render.gui.GuiUtils.resetScissor
 import me.odinclient.utils.render.gui.GuiUtils.scissor
+import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
+import me.odinclient.utils.render.gui.MouseUtils.mouseX
+import me.odinclient.utils.render.gui.MouseUtils.mouseY
 import kotlin.math.floor
 
 class Panel(

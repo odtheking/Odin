@@ -2,18 +2,18 @@ package me.odinclient.ui.clickgui.elements
 
 import cc.polyfrost.oneconfig.renderer.font.Fonts
 import cc.polyfrost.oneconfig.utils.dsl.*
+import me.odinclient.features.Module
+import me.odinclient.features.settings.impl.*
 import me.odinclient.ui.clickgui.Panel
 import me.odinclient.ui.clickgui.elements.menu.*
 import me.odinclient.ui.clickgui.util.ColorUtil
-import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
-import me.odinclient.features.Module
-import me.odinclient.features.settings.impl.*
 import me.odinclient.ui.clickgui.util.ColorUtil.buttonColor
 import me.odinclient.ui.clickgui.util.HoverHandler
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.gui.GuiUtils.drawCustomCenteredText
 import me.odinclient.utils.render.gui.GuiUtils.nanoVG
 import me.odinclient.utils.render.gui.GuiUtils.scissor
+import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinclient.utils.render.gui.animations.impl.EaseInOut
 import kotlin.math.floor
 

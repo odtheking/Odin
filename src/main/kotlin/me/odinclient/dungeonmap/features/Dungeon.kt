@@ -2,24 +2,19 @@ package me.odinclient.dungeonmap.features
 
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.dungeonmap.core.DungeonPlayer
 import me.odinclient.dungeonmap.core.map.Door
 import me.odinclient.dungeonmap.core.map.Room
 import me.odinclient.dungeonmap.core.map.Tile
 import me.odinclient.events.ChatPacketEvent
-import me.odinclient.events.ReceivePacketEvent
 import me.odinclient.features.impl.dungeon.MapModule
-import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.Utils.equalsOneOf
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import me.odinclient.utils.skyblock.dungeon.map.MapRenderUtils
 import me.odinclient.utils.skyblock.dungeon.map.MapUtils
 import net.minecraft.client.network.NetworkPlayerInfo
-import net.minecraft.network.play.server.S02PacketChat
-import net.minecraft.util.StringUtils
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.EventPriority

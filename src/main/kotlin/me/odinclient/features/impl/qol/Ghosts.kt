@@ -7,7 +7,6 @@ import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.utils.render.world.RenderUtils
 import net.minecraft.entity.SharedMonsterAttributes
 import net.minecraft.entity.monster.EntityCreeper
-import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
