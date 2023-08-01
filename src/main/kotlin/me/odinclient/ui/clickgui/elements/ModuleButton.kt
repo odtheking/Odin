@@ -56,6 +56,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
                     is ColorSetting -> ElementColor(this, setting)
                     is ActionSetting -> ElementAction(this, setting)
                     is DualSetting -> ElementDual(this, setting)
+                    is HudSetting -> ElementHud(this, setting)
                     else -> return@addElement
                 }
                 menuElements.add(position, newElement)

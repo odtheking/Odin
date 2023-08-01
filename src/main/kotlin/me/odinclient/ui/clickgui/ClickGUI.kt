@@ -7,6 +7,7 @@ import me.odinclient.config.Config
 import me.odinclient.features.Category
 import me.odinclient.features.impl.general.ClickGUIModule
 import me.odinclient.ui.clickgui.elements.menu.ElementColor
+import me.odinclient.ui.hud.BaseHud
 import me.odinclient.utils.render.gui.animations.impl.EaseInOut
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.OpenGlHelper

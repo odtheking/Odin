@@ -1,46 +1,39 @@
 package me.odinclient.ui.clickgui.elements.menu
 
-import cc.polyfrost.oneconfig.utils.dsl.VG
+import cc.polyfrost.oneconfig.renderer.font.Fonts
+import cc.polyfrost.oneconfig.utils.dsl.*
 import me.odinclient.features.settings.impl.ActionSetting
 import me.odinclient.ui.clickgui.elements.Element
 import me.odinclient.ui.clickgui.elements.ElementType
 import me.odinclient.ui.clickgui.elements.ModuleButton
+import me.odinclient.ui.clickgui.util.ColorUtil
+import me.odinclient.ui.clickgui.util.ColorUtil.darker
+import me.odinclient.utils.render.gui.GuiUtils.drawCustomCenteredText
+import me.odinclient.utils.render.gui.GuiUtils.drawOutlineRoundedRect
+import me.odinclient.utils.render.gui.GuiUtils.nanoVG
 import me.odinclient.utils.render.gui.MouseUtils
 
-class ElementAction(parent: ModuleButton, setting: ActionSetting) :
-    Element<ActionSetting>(parent, setting, ElementType.ACTION)  {
+// I made this so it exists, but it currently does not look great so feel free to improve it!
+class ElementAction(parent: ModuleButton, setting: ActionSetting) : Element<ActionSetting>(parent, setting, ElementType.ACTION) {
+    override val isHovered: Boolean
+        get() = MouseUtils.isAreaHovered(x + 20f, y, width - 40f, height - 10f)
 
-    private var clicked: Boolean = false
-
-    private fun checkIsHovered(middleX: Float, displayNameWidth: Float): Boolean {
-        return MouseUtils.isAreaHovered(middleX, y + 2f, displayNameWidth, height - 3f)
-    }
 
     override fun draw(vg: VG) {
-        /*
-        vg.startDraw(x, y, width, height) {
-            val middleX = x + width / 2 - getStringWidth(vg, displayName)
-            val displayNameWidth = getStringWidth(vg, displayName) * 2 + 3
-            if (checkIsHovered(middleX, displayNameWidth)) {
-                roundedRect(middleX, y + 2, displayNameWidth, height - 3, ColorUtil.clickGUIColor.darker().rgb, 5f, 5f)
-                roundRectOutline(middleX, y + 2, displayNameWidth, height - 3, ColorUtil.clickGUIColor.darker().rgb, radius = 5f, 1.25f)
-                vg.drawText(displayName,  middleX + 1.5, y + 8.5, -1, 16f, Fonts.REGULAR)
-            } else {
-                drawShadow(middleX, y + 2, displayNameWidth, height - 3, blur = 10f, spread = 0.75f, radius = 5f)
-                roundedRect(middleX, y + 2, displayNameWidth, height - 3, ColorUtil.clickableColor, 5f, 5f)
-                vg.drawText(displayName,  middleX + 1.5, y + 8.5, -1, 16f, Fonts.REGULAR)
-            }
+        vg.nanoVG {
+            drawRect(x, y, width, height, ColorUtil.elementBackground)
+            drawRoundedRect(x + 20f, y, width - 40f, height - 10f, 5f,
+                if (isHovered) ColorUtil.clickGUIColor.rgba else ColorUtil.buttonColor
+            )
+            drawCustomCenteredText(displayName, x + width / 2, y + 12f, 16f, Fonts.REGULAR)
         }
-
-         */
     }
 
     override fun mouseClicked(mouseButton: Int): Boolean {
         if (mouseButton == 0 && isHovered) {
-            (setting as? ActionSetting)?.doAction()
-            clicked = true
+            setting.doAction()
             return true
         }
-        return super.mouseClicked(mouseButton)
+        return false
     }
 }
