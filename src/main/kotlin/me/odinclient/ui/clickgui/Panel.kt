@@ -53,7 +53,6 @@ class Panel(
         if (scrollAmount != 0f) handleScroll()
 
         vg.nanoVG {
-            drawText(scrollOffset.toString(), x + 100f, 100f, -1, 18f, Fonts.MEDIUM)
             drawRoundedRectVaried(x, y, width, height, ColorUtil.moduleButtonColor, 5f, 5f, 0f, 0f)
             drawCustomCenteredText(category.name.capitalizeOnlyFirst(), x + width / 2, y + height / 2, 22f, Fonts.SEMIBOLD)
 
