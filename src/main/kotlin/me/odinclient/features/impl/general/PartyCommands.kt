@@ -18,15 +18,13 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object PartyCommands : Module(
     name = "Party Commands",
     category = Category.GENERAL,
-    description = ""
+    description = "Party Commands! Use /blacklist to blacklist players from using this module. !help for help."
 ) {
 
     @SubscribeEvent
     fun party(event: ClientChatReceivedEvent) {
-        if (!OdinClient.config.partyCommands) return
-
         val message = event.message.unformattedText.noControlCodes
-        val match = Regex("Party > (\\[.+\\])? ?(.+): !(.+)").find(message) ?: return
+        val match = Regex("Party > (\\[.+])? ?(.+): !(.+)").find(message) ?: return
 
         val ign = match.groups[2]?.value
         val msg = match.groups[3]?.value?.lowercase()
@@ -39,8 +37,6 @@ object PartyCommands : Module(
     @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
     fun dt(event: ClientChatReceivedEvent) {
-        if (!OdinClient.config.partyCommands) return
-
         val message = event.message.unformattedText.noControlCodes
 
         if (!message.contains("EXTRA STATS") || ChatUtils.dtPlayer == null) return
@@ -55,10 +51,8 @@ object PartyCommands : Module(
 
     @SubscribeEvent
     fun joinDungeon(event: ClientChatReceivedEvent) {
-        if (!OdinClient.config.partyCommands) return
-
         val message = event.message.unformattedText.noControlCodes
-        val match = Regex("(Party >) (\\[.+\\])? ?(.+): !(.+) (.+)").find(message) ?: return
+        val match = Regex("(Party >) (\\[.+])? ?(.+): !(.+) (.+)").find(message) ?: return
 
         val msg = match.groups[3]?.value?.lowercase()
         val num = match.groups[4]?.value

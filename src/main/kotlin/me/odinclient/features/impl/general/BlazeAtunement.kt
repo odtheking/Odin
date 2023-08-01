@@ -4,6 +4,10 @@ import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.ClientSecondEvent
 import me.odinclient.events.RenderEntityModelEvent
+import me.odinclient.features.Category
+import me.odinclient.features.Module
+import me.odinclient.features.settings.impl.BooleanSetting
+import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.VecUtils.xzDistance
 import me.odinclient.utils.render.world.OutlineUtils
@@ -18,13 +22,18 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import java.awt.Color
 
-object BlazeAtunement {
+object BlazeAtunement : Module(
+    "Blaze Atunement",
+    category = Category.GENERAL
+) {
+    private val overlay: Boolean by BooleanSetting("Overlay Entities", false)
+    private val thickness: Float by NumberSetting("Outline Thickness", 5f, 5f, 20f, 0.5f)
+    private val cancelHurt: Boolean by BooleanSetting("Cancel Hurt", true)
 
     private var currentBlazes = hashMapOf<Entity, Color>()
 
     @SubscribeEvent
     fun onSecond(event: ClientSecondEvent) {
-        if (!config.atunementOutline) return
         currentBlazes.clear()
         mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()?.forEach { entity ->
             if (currentBlazes.any { it.key == entity }) return@forEach
@@ -48,18 +57,18 @@ object BlazeAtunement {
 
     @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
-        if (!config.atunementOutline || !currentBlazes.containsKey(event.entity)) return
+        if (!currentBlazes.containsKey(event.entity)) return
         val color = currentBlazes[event.entity] ?: return
         OutlineUtils.outlineEntity(
             event,
-            config.atunementOutlineThickness,
+            thickness,
             color,
-            config.atunementCancelHurt
+            cancelHurt
         )
     }
 
     fun changeBlazeColor(entity: Entity, p_78088_2_: Float, p_78088_3_: Float, p_78088_4_: Float, p_78088_5_: Float, p_78088_6_: Float, scale: Float, ci: CallbackInfo) {
-        if (currentBlazes.size == 0 || !config.atunementColored) return
+        if (currentBlazes.size == 0 || !overlay) return
         val color = currentBlazes[entity] ?: return
         GlStateManager.disableTexture2D()
         GlStateManager.enableBlend()
@@ -68,13 +77,13 @@ object BlazeAtunement {
     }
 
     fun renderModelBlazePost(entityIn: Entity, p_78088_2_: Float, p_78088_3_: Float, p_78088_4_: Float, p_78088_5_: Float, p_78088_6_: Float, scale: Float, ci: CallbackInfo) {
-        if (currentBlazes.size == 0 || !config.atunementColored) return
+        if (currentBlazes.size == 0 || !overlay) return
         GlStateManager.disableBlend()
         GlStateManager.enableTexture2D()
     }
 
     fun changeBipedColor(entity: Entity, p_78088_2_: Float, p_78088_3_: Float, p_78088_4_: Float, p_78088_5_: Float, p_78088_6_: Float, scale: Float, ci: CallbackInfo) {
-        if (currentBlazes.size == 0 || !config.atunementColored) return
+        if (currentBlazes.size == 0 || !overlay) return
         val color = currentBlazes[entity] ?: return
         GlStateManager.disableTexture2D()
         GlStateManager.enableBlend()
@@ -83,7 +92,7 @@ object BlazeAtunement {
     }
 
     fun renderModelBipedPost(entityIn: Entity, p_78088_2_: Float, p_78088_3_: Float, p_78088_4_: Float, p_78088_5_: Float, p_78088_6_: Float, scale: Float, ci: CallbackInfo) {
-        if (currentBlazes.size == 0 || !config.atunementColored) return
+        if (currentBlazes.size == 0 || !overlay) return
         GlStateManager.disableBlend()
         GlStateManager.enableTexture2D()
     }

@@ -12,6 +12,7 @@ import net.minecraft.block.Block
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
 import net.minecraft.util.ResourceLocation
+import java.io.FileNotFoundException
 
 object ScanUtils {
     val roomList: Set<RoomData> = try {
@@ -25,6 +26,9 @@ object ScanUtils {
         setOf()
     } catch (e: JsonIOException) {
         println("Error reading room data.")
+        setOf()
+    } catch (e: FileNotFoundException) {
+        println("Room data not found. You are either in developer environment, or something went wrong. Please report this!")
         setOf()
     }
 

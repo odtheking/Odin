@@ -151,7 +151,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
         return false
     }
 
-    private val isButtonHovered
+    val isButtonHovered
         get() = isAreaHovered(x, y, width, height)
 
     private val isMouseUnderButton

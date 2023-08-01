@@ -2,6 +2,7 @@ package me.odinclient.features.impl.general
 
 import me.odinclient.OdinClient
 import me.odinclient.OdinClient.Companion.display
+import me.odinclient.config.Config
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.AlwaysActive
@@ -39,6 +40,7 @@ object ClickGUIModule: Module(
             if (hasJoined) destroyExecutor()
             if (!LocationUtils.inSkyblock) return@execute
             hasJoined = true
+            Config.saveConfig()
 
             modMessage("""
             ${ChatUtils.getChatBreak().dropLast(1)}

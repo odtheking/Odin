@@ -4,6 +4,7 @@ import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.utils.VecUtils
 import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
@@ -17,6 +18,8 @@ object Triggerbot : Module(
     description = "Instantly left clicks if you are looking at a spirit bear or blood mob when they spawn",
     category = Category.DUNGEON
 ) {
+    private val bloodTriggerbot: Boolean by BooleanSetting("Blood Triggerbot", false)
+    private val spiritBearTriggerbot: Boolean by BooleanSetting("Spirit Bear Triggerbot", false)
 
     private val bloodMobs: Set<String> = setOf(
         "Revoker", "Psycho", "Reaper", "Cannibal", "Mute", "Ooze", "Putrid", "Freak", "Leech", "Tear",
@@ -33,8 +36,8 @@ object Triggerbot : Module(
         val ent = event.entity
         val name = ent.name.replace(" ", "")
         if (
-            !(bloodMobs.contains(name) && config.bloodTriggerbot) &&
-            !(name == "Spirit Bear" && config.spiritBearTriggerbot)
+            !(bloodMobs.contains(name) && bloodTriggerbot) &&
+            !(name == "Spirit Bear" && spiritBearTriggerbot)
         ) return
 
         if (

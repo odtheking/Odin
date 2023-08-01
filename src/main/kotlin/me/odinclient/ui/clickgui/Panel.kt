@@ -10,6 +10,7 @@ import me.odinclient.utils.render.gui.MouseUtils.mouseY
 import me.odinclient.features.Category
 import me.odinclient.features.ModuleManager
 import me.odinclient.features.impl.general.ClickGUIModule
+import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.gui.GuiUtils.capitalizeOnlyFirst
 import me.odinclient.utils.render.gui.GuiUtils.drawCustomCenteredText
 import me.odinclient.utils.render.gui.GuiUtils.nanoVG
@@ -55,6 +56,7 @@ class Panel(
         vg.nanoVG {
             drawRoundedRectVaried(x, y, width, height, ColorUtil.moduleButtonColor, 5f, 5f, 0f, 0f)
             drawCustomCenteredText(category.name.capitalizeOnlyFirst(), x + width / 2, y + height / 2, 22f, Fonts.SEMIBOLD)
+            drawLine(x, y + height - 5f, x + width, y + height - 5f, 3f, Color(45, 45, 45).rgba)
 
             var startY = height + scrollOffset
             val scissor = scissor(x - 2f, y + height, x + width + 1000, y + height + 4000)
@@ -66,7 +68,9 @@ class Panel(
                 length = startY + 5f
             } else startY = height
             resetScissor(scissor)
+
             drawRoundedRectVaried(x, y + startY, width, 10f, ColorUtil.moduleColor(moduleButtons.last().module.enabled && extended), 0f, 0f, 5f, 5f)
+            if (moduleButtons.last().isButtonHovered) drawRoundedRectVaried(x, y + startY, width, 10f, if (moduleButtons.last().module.enabled) 0x55111111 else ColorUtil.hoverColor, 0f, 0f, 5f, 5f)
 
             drawDropShadow(x, y, width, startY + 10f, 12.5f, 6f, 5f)
         }

@@ -3,15 +3,25 @@ package me.odinclient.features.impl.m7
 import me.odinclient.OdinClient.Companion.config
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.OdinClient.Companion.miscConfig
+import me.odinclient.features.Category
+import me.odinclient.features.Module
+import me.odinclient.features.settings.impl.BooleanSetting
+import me.odinclient.features.settings.impl.SelectorSetting
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
+import me.odinclient.utils.skyblock.ChatUtils.unformattedText
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-object TerminalTimes {
+object TerminalTimes : Module(
+    name = "Terminal Times",
+    description = "Keeps track of how long you took to complete a terminal.",
+    category = Category.M7
+) {
+    private val sendMessage: Int by SelectorSetting("Show Message", "Always", arrayListOf("Only if Personal Best", "Always"))
 
     private var inTerm = false
     private var timer = 0L
@@ -39,7 +49,7 @@ object TerminalTimes {
 
     @SubscribeEvent
     fun onClientTick(event: TickEvent.ClientTickEvent) {
-        if (inTerm || !config.termTimer) return
+        if (inTerm) return
         val currentScreen = mc.currentScreen
 
         if (currentScreen !is GuiChest) return
@@ -58,8 +68,7 @@ object TerminalTimes {
 
     @SubscribeEvent
     fun onClientChatReceived(event: ClientChatReceivedEvent) {
-        if (!config.termTimer) return
-        val message = event.message.unformattedText.noControlCodes
+        val message = event.unformattedText
         val match = Regex("(.+) (?:activated|completed) a terminal! \\((\\d)/(\\d)\\)").find(message) ?: return
         val (_, name, current, max) = match.groups.map { it?.value }
 
@@ -76,7 +85,7 @@ object TerminalTimes {
         inTerm = false
         val time = (System.currentTimeMillis() - timer) / 1000.0
 
-        modMessage("§6$currentTerminal §ftook §a${time}s")
+        if (sendMessage == 1) modMessage("§6$currentTerminal §ftook §a${time}s")
 
         for (times in Times.values()) {
             if (times.fullName == currentTerminal && time < times.time) {

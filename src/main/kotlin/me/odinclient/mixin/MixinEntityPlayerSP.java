@@ -1,6 +1,7 @@
 package me.odinclient.mixin;
 
 import me.odinclient.config.OdinConfig;
+import me.odinclient.features.impl.qol.PortalFix;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
 import org.spongepowered.asm.mixin.Mixin;
@@ -12,7 +13,7 @@ public abstract class MixinEntityPlayerSP {
 
     @Redirect(method = {"onLivingUpdate"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiScreen;doesGuiPauseGame()Z"))
     private boolean useChatInPortal(GuiScreen gui) {
-        if (OdinConfig.INSTANCE.getPortalFix()) {
+        if (PortalFix.INSTANCE.getEnabled()) {
             return (!(gui instanceof net.minecraft.client.gui.inventory.GuiContainer) || gui.doesGuiPauseGame());
         } else return gui.doesGuiPauseGame();
     }

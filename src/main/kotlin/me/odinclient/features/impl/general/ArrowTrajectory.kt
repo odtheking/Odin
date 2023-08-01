@@ -29,6 +29,7 @@ object ArrowTrajectory : Module(
 ) {
     private val thickness: Float by NumberSetting("Line Width", 2f, 1.0, 5.0, 0.5)
     private val color: Color by ColorSetting("Color", Color(170, 170, 0), true)
+    private val boxSize: Float by NumberSetting("Box Size", 0.5f, 0.5f, 3.0f, 0.1f)
 
     private var boxRenderQueue: MutableList<Pair<Vec3, Vector2d>> = mutableListOf()
     private var entityRenderQueue = mutableListOf<Entity>()
@@ -82,8 +83,8 @@ object ArrowTrajectory : Module(
             } else if (rayTrace != null) {
                 boxRenderQueue.add(
                     Pair(
-                        rayTrace.hitVec.addVector(-0.15 * config.arrowTrajectoryBoxSize, 0.0, -0.15 * config.arrowTrajectoryBoxSize),
-                        Vector2d(0.3 * config.arrowTrajectoryBoxSize, 0.3 * config.arrowTrajectoryBoxSize)
+                        rayTrace.hitVec.addVector(-0.15 * boxSize, 0.0, -0.15 * boxSize),
+                        Vector2d(0.3 * boxSize, 0.3 * boxSize)
                     )
                 )
                 hitResult = true

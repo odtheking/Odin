@@ -1,7 +1,6 @@
 package me.odinclient.features.settings.impl
 
 import me.odinclient.features.settings.Setting
-import me.odinclient.utils.Utils.clamp
 
 class SelectorSetting(
     name: String,
@@ -34,6 +33,6 @@ class SelectorSetting(
         }
 
     private fun optionIndex(string: String): Int =
-        options.map { it.lowercase() }.indexOf(string.lowercase()).clamp(0, options.size - 1)
+        options.map { it.lowercase() }.indexOf(string.lowercase()).coerceIn(0, options.size - 1)
 
 }

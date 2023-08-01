@@ -11,7 +11,7 @@ import org.lwjgl.input.Mouse
 
 object ModuleManager {
 
-    val modules: ArrayList<Module> = arrayListOf(
+    val modules: Set<Module> = setOf(
         AutoIceFill,
         AutoLeap,
         AutoMask,
@@ -60,7 +60,11 @@ object ModuleManager {
         Reminders,
         TermAC,
         Ghosts,
-        BPS
+        BPS,
+        PortalFix,
+        TerminalTimes,
+        Waypoints,
+
     )
 
     @SubscribeEvent

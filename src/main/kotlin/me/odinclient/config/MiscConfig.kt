@@ -17,13 +17,11 @@ class MiscConfig(path: File) {
     private val blacklistConfigFile = File(path, "blacklist-config.json")
     private val autoSellConfigFile = File(path, "autoSell-config.json")
     private val terminalPBFile = File(path, "terminalPB.json")
-    private val hasJoinedFile = File(path, "hasJoined.json")
 
     var espList: MutableList<String> = mutableListOf()
     var blacklist: MutableList<String> = mutableListOf()
     var autoSell: MutableList<String> = mutableListOf()
     private inline val terminalPB get() = TerminalTimes.Times.values().map { "${it.fullName}: ${it.time}"}
-    var hasJoined: Boolean = false
 
     init {
         try {
@@ -32,7 +30,6 @@ class MiscConfig(path: File) {
             blacklistConfigFile.createNewFile()
             autoSellConfigFile.createNewFile()
             terminalPBFile.createNewFile()
-            hasJoinedFile.createNewFile()
         } catch (e: Exception) {
             println("Error initializing configs.")
         }
@@ -63,10 +60,6 @@ class MiscConfig(path: File) {
                     }
                 }
             }
-            with(hasJoinedFile.bufferedReader().use { it.readText() }) {
-                if (this == "") return
-                hasJoined = gson.fromJson(this, object : TypeToken<Boolean>() {}.type)
-            }
         } catch (e: JsonSyntaxException) {
             println("Error parsing configs.")
             println(e.message)
@@ -90,9 +83,6 @@ class MiscConfig(path: File) {
                 }
                 terminalPBFile.bufferedWriter().use {
                     it.write(gson.toJson(terminalPB))
-                }
-                hasJoinedFile.bufferedWriter().use {
-                    it.write(gson.toJson(hasJoined))
                 }
             } catch (e: IOException) {
                 println("Error saving configs.")

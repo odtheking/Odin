@@ -8,6 +8,7 @@ import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.features.settings.impl.ColorSetting
+import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.utils.VecUtils.noSqrt3DDistance
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.world.OutlineUtils
@@ -22,6 +23,8 @@ object ESP : Module(
 ) {
     private val color: Color by ColorSetting("Color", Color(255, 0, 0))
     private val through: Boolean by BooleanSetting("Through Walls", true)
+    private val thickness: Float by NumberSetting("Outline Thickness", 5f, 5f, 20f, 0.5f)
+    private val cancelHurt: Boolean by BooleanSetting("Cancel Hurt", true)
 
     private inline val espList get() = OdinClient.miscConfig.espList
 
@@ -57,9 +60,9 @@ object ESP : Module(
         if (!mc.thePlayer.canEntityBeSeen(event.entity) && !through) return
         OutlineUtils.outlineEntity(
             event,
-            config.espThickness,
+            thickness,
             color.javaColor,
-            config.espCancelHurt
+            cancelHurt
         )
     }
 

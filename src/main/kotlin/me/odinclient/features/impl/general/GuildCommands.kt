@@ -7,6 +7,7 @@ import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.OdinClient.Companion.scope
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.skyblock.ChatUtils
 import net.minecraftforge.client.event.ClientChatReceivedEvent
@@ -17,10 +18,10 @@ object GuildCommands : Module(
     category = Category.GENERAL,
     description = ""
 ) {
+    private val guildGM: Boolean by BooleanSetting("Guild GM")
+
     @SubscribeEvent
     fun guild(event: ClientChatReceivedEvent) {
-        if (!config.guildCommands) return
-
         val message = event.message.unformattedText.noControlCodes
         val match = Regex("Guild > (\\[.+])? ?(.+) ?(\\[.+])?: ?(.+)").find(message) ?: return
 
@@ -29,7 +30,7 @@ object GuildCommands : Module(
         scope.launch {
             delay(150)
             ChatUtils.guildCmdsOptions(msg!!, ign!!)
-            if (config.guildGM && mc.thePlayer.name !== ign) ChatUtils.autoGM(msg, ign)
+            if (guildGM && mc.thePlayer.name !== ign) ChatUtils.autoGM(msg, ign)
         }
 
     }
