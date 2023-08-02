@@ -11,6 +11,8 @@ import net.minecraft.block.state.IBlockState
 import net.minecraft.tileentity.TileEntitySkull
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
+import net.minecraftforge.event.world.WorldEvent
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object SecretHitboxes : Module(
     name = "Secret Hitboxes",
@@ -24,6 +26,14 @@ object SecretHitboxes : Module(
     var expandedLevers: HashMap<Block, EnumOrientation> = HashMap()
     var expandedButtons: HashMap<Block, IBlockState> = HashMap()
     var expandedSkulls: HashMap<Block, EnumFacing> = HashMap()
+
+    @SubscribeEvent
+    fun onWorldLoad(event: WorldEvent.Unload)
+    {
+        this.expandedLevers.clear()
+        this.expandedButtons.clear()
+        this.expandedSkulls.clear()
+    }
 
     fun addEssence(blockPos: BlockPos): Boolean {
         return essence && (mc.theWorld.getTileEntity(blockPos) as? TileEntitySkull)?.playerProfile?.id?.toString() == "26bb1a8d-7c66-31c6-82d5-a9c04c94fb02"
