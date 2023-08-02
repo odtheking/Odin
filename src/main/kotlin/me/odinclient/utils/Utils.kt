@@ -41,6 +41,20 @@ object Utils {
         return floor(this).toInt()
     }
 
+    fun Double.round(decimals: Int): Double
+    {
+        var multiplier = 1.0
+        repeat(decimals) { multiplier *= 10 }
+        return kotlin.math.round(this * multiplier) / multiplier
+    }
+
+    fun Float.round(decimals: Int): Float
+    {
+        var multiplier = 1.0f
+        repeat(decimals) { multiplier *= 10 }
+        return kotlin.math.round(this * multiplier) / multiplier
+    }
+
     val ContainerChest.name: String
         get() = this.lowerChestInventory.displayName.unformattedText
 

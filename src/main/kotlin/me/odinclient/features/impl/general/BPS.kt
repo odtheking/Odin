@@ -2,10 +2,10 @@ package me.odinclient.features.impl.general
 
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.utils.Utils.round
 import net.minecraftforge.event.world.BlockEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
-import kotlin.math.round
 
 object BPS : Module(
     name = "BPS",
@@ -39,14 +39,6 @@ object BPS : Module(
             startTime = 0
             lastBrokenBlock = 0
         }
-    }
-
-    // basically JavaScript toFixed() method
-    private fun Double.round(decimals: Int): Double
-    {
-        var multiplier = 1.0
-        repeat(decimals) { multiplier *= 10 }
-        return round(this * multiplier) / multiplier
     }
 
 }
