@@ -1,5 +1,6 @@
 package me.odinclient.features
 
+import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.impl.dungeon.*
 import me.odinclient.features.impl.general.*
 import me.odinclient.features.impl.m7.*
@@ -91,7 +92,7 @@ object ModuleManager {
     @SubscribeEvent
     fun onRenderOverlay(event: RenderGameOverlayEvent.Text) {
         huds.forEach {
-            if (it.second.isEnabled) it.first.draw()
+            if (it.second.isEnabled && mc.currentScreen == null) it.first.render()
         }
     }
 

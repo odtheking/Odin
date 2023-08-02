@@ -2,14 +2,12 @@ package me.odinclient.hud
 
 import me.odinclient.ui.hud.TextHud
 
-class CameraHud : TextHud(0f, 0f) {
+object CameraHud : TextHud(200f, 200f) {
     override fun getLines(example: Boolean): MutableList<String> {
-        return if (example) {
-            mutableListOf(
-                "Example Camera Hud"
-            )
-        } else mutableListOf(
+        return mutableListOf(if (example) {
+            "Example Camera Hud"
+        } else {
             "CameraHud"
-        )
+        })
     }
 }

@@ -2,6 +2,7 @@ package me.odinclient.ui.clickgui.elements.menu
 
 import cc.polyfrost.oneconfig.renderer.font.Fonts
 import cc.polyfrost.oneconfig.utils.dsl.*
+import me.odinclient.OdinClient
 import me.odinclient.features.settings.impl.ActionSetting
 import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.features.settings.impl.HudSetting
@@ -10,6 +11,7 @@ import me.odinclient.ui.clickgui.elements.ElementType
 import me.odinclient.ui.clickgui.elements.ModuleButton
 import me.odinclient.ui.clickgui.util.ColorUtil
 import me.odinclient.ui.clickgui.util.ColorUtil.darker
+import me.odinclient.ui.hud.ExampleHudGui
 import me.odinclient.utils.render.gui.GuiUtils.drawOutlineRoundedRect
 import me.odinclient.utils.render.gui.GuiUtils.nanoVG
 import me.odinclient.utils.render.gui.GuiUtils.resetScissor
@@ -31,8 +33,7 @@ class ElementHud(parent: ModuleButton, setting: HudSetting) : Element<HudSetting
     private val isEnabledElement = ElementCheckBox(this.parent, isEnabledSetting)
 
     private val openExampleHudSetting = ActionSetting("Open Example Hud") {
-        modMessage("Opening example hud...")
-        // TODO: Create and actually open the example hud
+        OdinClient.display = ExampleHudGui
     }
     private val openExampleHudElement = ElementAction(this.parent, openExampleHudSetting)
 

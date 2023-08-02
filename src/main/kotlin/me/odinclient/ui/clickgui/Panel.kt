@@ -21,7 +21,7 @@ import kotlin.math.floor
 class Panel(
     var category: Category,
 ) {
-    var dragging = false
+    private var dragging = false
     val moduleButtons: ArrayList<ModuleButton> = ArrayList()
 
     var x = ClickGUIModule.panelX[category]!!.value

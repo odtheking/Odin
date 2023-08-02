@@ -19,23 +19,6 @@ object OdinConfig : Config(Mod("OdinClient", ModType.SKYBLOCK, "/assets/odinclie
     // Dungeon
 
 
-    @Button(
-        name = "Add default dungeon items to your auto sell list",
-        description = "",
-        category = "Dungeon",
-        subcategory = "Auto Sell",
-        text = "Add default dungeon items",
-        size = 2
-    )
-    fun addDefault() {
-        AutoSell.defaultItems.forEach {
-            if (!miscConfig.autoSell.contains(it)) {
-                miscConfig.autoSell.add(it)
-            }
-        }
-        miscConfig.saveAllConfigs()
-    }
-
 
     @HUD(
         name = "Blessing Display HUD",
@@ -107,21 +90,6 @@ object OdinConfig : Config(Mod("OdinClient", ModType.SKYBLOCK, "/assets/odinclie
         step = 1
     )
     var personalDragonScale = 8f
-
-
-    @Button(
-        name = "Adds the star mob star to your esp list so all star mobs are highlighted",
-        description = "",
-        category = "General",
-        subcategory = "ESP",
-        text = "Add star to esp list",
-        size = 2
-    )
-    fun addStar() {
-        if (miscConfig.espList.contains("✯")) return
-        miscConfig.espList.add("✯")
-        miscConfig.saveAllConfigs()
-    }
 
     @HUD(
         name = "Deployable HUD",

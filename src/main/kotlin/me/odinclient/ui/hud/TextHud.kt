@@ -5,17 +5,21 @@ import me.odinclient.OdinClient.Companion.mc
 open class TextHud(x: Float, y: Float) : BaseHud(x, y) {
     private var lines: MutableList<String> = mutableListOf()
 
-    override fun draw(example: Boolean) {
+    override fun draw(example: Boolean): Pair<Float, Float> {
         lines = getLines(example)
 
         var yOffset = 0f
+        var width = 0f
         lines.forEach { line ->
-            mc.fontRendererObj.drawStringWithShadow(line, 2f, y + yOffset, 0xffffff)
+            width = width.coerceAtLeast(mc.fontRendererObj.getStringWidth(line).toFloat())
+            mc.fontRendererObj.drawStringWithShadow(line, x, y + yOffset, 0xffffff)
             yOffset += 12f
         }
+        return Pair(width, yOffset)
     }
 
     open fun getLines(example: Boolean): MutableList<String> {
         return mutableListOf()
     }
+
 }

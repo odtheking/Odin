@@ -4,9 +4,11 @@ import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.OdinClient.Companion.miscConfig
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.features.settings.impl.ActionSetting
 import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.utils.Utils.containsOneOf
 import me.odinclient.utils.Utils.name
+import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.PlayerUtils.shiftClickWindow
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.Slot
@@ -17,6 +19,15 @@ object AutoSell : Module(
     category = Category.DUNGEON
 ) {
     private val delay: Long by NumberSetting("Delay", 100, 50.0, 300.0, 5.0)
+    private val addDefaults: () -> Unit by ActionSetting("Add defaults") {
+        defaultItems.forEach {
+            if (!miscConfig.autoSell.contains(it)) {
+                miscConfig.autoSell.add(it)
+            }
+        }
+        modMessage("Added default items to auto sell list")
+        miscConfig.saveAllConfigs()
+    }
 
     init {
         execute(delay = { delay }) {
