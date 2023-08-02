@@ -3,9 +3,13 @@ package me.odinclient.features
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import me.odinclient.OdinClient
+import me.odinclient.features.ModuleManager.hud
 import me.odinclient.features.impl.general.ClickGUIModule
 import me.odinclient.features.settings.AlwaysActive
+import me.odinclient.features.settings.Hud
 import me.odinclient.features.settings.Setting
+import me.odinclient.features.settings.impl.HudSetting
+import me.odinclient.ui.hud.HudElement
 import me.odinclient.utils.clock.Executable
 import me.odinclient.utils.clock.Executor
 import me.odinclient.utils.clock.Executor.Companion.executeAll
@@ -15,6 +19,7 @@ import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
+import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 
 abstract class Module(
@@ -49,6 +54,8 @@ abstract class Module(
      */
     var description: String
 
+    val hudElements: ArrayList<HudElement> = arrayListOf()
+
     init {
         this.name = name
         this.keyCode = keyCode
@@ -59,15 +66,32 @@ abstract class Module(
         if (this::class.hasAnnotation<AlwaysActive>()) {
             MinecraftForge.EVENT_BUS.register(this)
         }
+
+        /**
+         * A little bit scuffed but ig it works.
+         */
+        this::class.nestedClasses
+            .filter { it.hasAnnotation<Hud>() }
+            .mapNotNull { it.objectInstance }
+            .filterIsInstance<HudElement>()
+            .forEach { hudElement ->
+                val hudset = hudElement::class.findAnnotation<Hud>() ?: return@forEach
+                register(HudSetting(hudset.name, hudset.toggle, default = hudElement, hidden = hudset.hidden))
+                hudElement.init(this)
+                hud.add(hudElement)
+            }
     }
 
     open fun onEnable() {
         MinecraftForge.EVENT_BUS.register(this)
+        for (i in 0 until hudElements.size) MinecraftForge.EVENT_BUS.register(hudElements[i])
     }
+
     open fun onDisable() {
         if (!this::class.hasAnnotation<AlwaysActive>()) {
             MinecraftForge.EVENT_BUS.unregister(this)
         }
+        for (i in 0 until hudElements.size) MinecraftForge.EVENT_BUS.unregister(hudElements[i])
     }
 
     /**
@@ -89,9 +113,13 @@ abstract class Module(
         else onDisable()
     }
 
-    fun <K: Setting<*>> register(setting: K): K {
+    fun <K : Setting<*>> register(setting: K): K {
         settings.add(setting)
         return setting
+    }
+
+    fun register(vararg setting: Setting<*>) {
+        settings.addAll(setting)
     }
 
     /**
@@ -102,7 +130,7 @@ abstract class Module(
      *
      * @see register
      */
-    operator fun <K: Setting<*>> K.unaryPlus(): K = register(this)
+    operator fun <K : Setting<*>> K.unaryPlus(): K = register(this)
 
     fun getSettingByName(name: String): Setting<*>? {
         for (set in settings) {

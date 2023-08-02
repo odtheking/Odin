@@ -6,11 +6,9 @@ import me.odinclient.config.Config
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.AlwaysActive
-import me.odinclient.features.settings.impl.BooleanSetting
-import me.odinclient.features.settings.impl.ColorSetting
-import me.odinclient.features.settings.impl.DualSetting
-import me.odinclient.features.settings.impl.NumberSetting
+import me.odinclient.features.settings.impl.*
 import me.odinclient.ui.clickgui.ClickGUI
+import me.odinclient.ui.hud.ExampleHudGui
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
@@ -29,6 +27,9 @@ object ClickGUIModule: Module(
     val enableNotification: Boolean by BooleanSetting("Enable notifications", false, description = "Shows you a notification in chat when you toggle an option with a keybind")
     val color: Color by ColorSetting("GUI Color", Color(50, 150, 220), allowAlpha = false, description = "Color theme in the gui.")
     val switchType: Boolean by DualSetting("Switch Type", "Checkbox", "Switch")
+    val action: () -> Unit by ActionSetting("Example Hud") {
+        display = ExampleHudGui
+    }
 
     private var hasJoined: Boolean by BooleanSetting("First join", false, hidden = true)
 

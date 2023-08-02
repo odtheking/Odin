@@ -7,8 +7,6 @@ import kotlinx.coroutines.launch
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.Category
 import me.odinclient.features.Module
-import me.odinclient.ui.hud.HudData
-import me.odinclient.features.settings.impl.HudSetting
 import me.odinclient.ui.hud.TextHud
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.render.world.RenderUtils
@@ -114,7 +112,7 @@ object DeployableTimer : Module(
         val timeAdded: Long = System.currentTimeMillis()
     )
 
-    private val hud: HudData by HudSetting("Deployable Hud", DeployableHud)
+    //private val hud: HudData by HudSetting("Deployable Hud", DeployableHud)
 
     private val currentDeployables = mutableListOf<Deployable>()
     private val orbRegex = Regex("(.+) (\\d+)s")

@@ -34,11 +34,11 @@ object Utils {
     }
 
     fun Double.floor(): Double {
-        return kotlin.math.floor(this)
+        return floor(this)
     }
 
     fun Double.floorToInt(): Int {
-        return kotlin.math.floor(this).toInt()
+        return floor(this).toInt()
     }
 
     val ContainerChest.name: String

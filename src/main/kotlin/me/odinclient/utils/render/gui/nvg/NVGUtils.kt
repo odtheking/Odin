@@ -85,6 +85,16 @@ fun NVG.text(text: String, x: Float, y: Float, color: Color, size: Float, font: 
     renderer.drawText(context, text, drawX, y, color.rgba, size, font)
 }
 
+// Temporary
+fun NVG.text(text: String, x: Float, y: Float, color: Color, size: Float, font: Font, align: TextAlign, verticalAlign: TextPos) {
+    val drawY = when (verticalAlign) {
+        TextPos.Top -> y + size / 2f
+        TextPos.Middle -> y
+        TextPos.Bottom -> y - size / 2f
+    }
+    text(text, x, drawY, color, size, font, align)
+}
+
 fun NVG.getTextWidth(text: String, size: Float, font: Font) =
     renderer.getTextWidth(context, text, size, font)
 
@@ -93,6 +103,9 @@ fun NVG.dropShadow(x: Float, y: Float, w: Float, h: Float, blur: Float, spread: 
 
 fun NVG.translate(x: Float, y: Float) =
     renderer.translate(context, x, y)
+
+fun NVG.resetTransform() =
+    renderer.resetTransform(context)
 
 fun NVG.scale(x: Float, y: Float) =
     renderer.scale(context, x, y)
@@ -111,6 +124,12 @@ fun NVG.resetScissor(scissor: Scissor) {
 fun NVG.image(filePath: String, x: Float, y: Float, width: Float, height: Float, radius: Float, clazz: Class<*>) =
     renderer.drawRoundImage(context, filePath, x, y, width, height, radius, clazz)
 
+// TODO: Simplify
 enum class TextAlign {
     Left, Middle, Right
+}
+
+// TODO: Simplify
+enum class TextPos {
+    Top, Bottom, Middle
 }

@@ -5,8 +5,9 @@ import me.odinclient.features.impl.dungeon.*
 import me.odinclient.features.impl.general.*
 import me.odinclient.features.impl.m7.*
 import me.odinclient.features.impl.qol.*
-import me.odinclient.features.settings.impl.HudSetting
-import me.odinclient.ui.hud.BaseHud
+import me.odinclient.ui.hud.ExampleHudGui
+import me.odinclient.ui.hud.HudElement
+import me.odinclient.utils.render.gui.nvg.drawNVG
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.InputEvent
@@ -14,7 +15,8 @@ import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 
 object ModuleManager {
-    val huds = mutableListOf<Pair<BaseHud, HudSetting>>()
+
+    val hud = arrayListOf<HudElement>()
 
     val modules: ArrayList<Module> = arrayListOf(
         AutoIceFill,
@@ -92,8 +94,11 @@ object ModuleManager {
 
     @SubscribeEvent
     fun onRenderOverlay(event: RenderGameOverlayEvent.Text) {
-        huds.forEach {
-            if (it.second.value.isEnabled && mc.currentScreen == null) it.first.render()
+        if (mc.currentScreen == ExampleHudGui) return
+        drawNVG {
+            for (i in 0 until hud.size) {
+                hud[i].draw(this, false)
+            }
         }
     }
 

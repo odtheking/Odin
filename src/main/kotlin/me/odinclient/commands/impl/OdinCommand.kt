@@ -18,6 +18,7 @@ object OdinCommand : AbstractCommand("odinclient", "od", "odinclient", descripti
             modMessage("Reset click gui positions.")
         }
 
+        // TODO: make a command that sets both and make it not go above vanilla
         "setyaw" does {
             if (it.isEmpty()) return@does modMessage("§cMissing yaw!")
             val yaw = it.first().toFloatOrNull() ?: return@does modMessage("§cInvalid yaw!")

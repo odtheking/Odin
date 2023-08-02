@@ -18,9 +18,6 @@ class SettingSerializer : JsonSerializer<Setting<*>> {
                 is SelectorSetting -> addProperty(src.name, src.selected)
                 is StringSetting -> addProperty(src.name, src.text)
                 is ColorSetting -> addProperty(src.name, src.value.rgba)
-                is HudSetting -> add(src.name, JsonObject().apply {
-                    context?.serialize(src.value)
-                })
             }
         }
     }

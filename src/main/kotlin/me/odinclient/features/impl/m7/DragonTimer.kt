@@ -4,8 +4,6 @@ import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.ReceivePacketEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
-import me.odinclient.ui.hud.HudData
-import me.odinclient.features.settings.impl.HudSetting
 import me.odinclient.ui.hud.TextHud
 import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.skyblock.WorldUtils
@@ -25,7 +23,7 @@ object DragonTimer : Module(
 ) {
     private const val dragonSpawnTime = 5000L
 
-    private val hud: HudData by HudSetting("Dragon Timer Hud", DragonTimerHud)
+    //private val hud: HudData by HudSetting("Dragon Timer Hud", DragonTimerHud)
 
     private var times: MutableMap<DC, Long> = mutableMapOf(
         DC.Orange to 0L,
