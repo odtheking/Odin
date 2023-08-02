@@ -12,7 +12,7 @@ open class TextHud(x: Float, y: Float) : BaseHud(x, y) {
         var width = 0f
         lines.forEach { line ->
             width = width.coerceAtLeast(mc.fontRendererObj.getStringWidth(line).toFloat())
-            mc.fontRendererObj.drawStringWithShadow(line, x, y + yOffset, 0xffffff)
+            mc.fontRendererObj.drawStringWithShadow(line, 0f, yOffset, 0xffffff)
             yOffset += 12f
         }
         return Pair(width, yOffset)

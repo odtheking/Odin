@@ -1,11 +1,16 @@
 package me.odinclient.ui.hud
 
 import me.odinclient.features.ModuleManager
+import me.odinclient.ui.waypoint.WaypointGUI
+import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
+import org.lwjgl.input.Mouse
+import java.io.IOException
+import kotlin.math.sign
 
 object ExampleHudGui : GuiScreen() {
-    private var exampleHuds = arrayListOf<ExampleHud>()
+    private var exampleHuds = listOf<ExampleHud>()
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         GlStateManager.pushMatrix()
@@ -17,8 +22,16 @@ object ExampleHudGui : GuiScreen() {
         GlStateManager.popMatrix()
     }
 
+    @Throws(IOException::class)
+    override fun handleMouseInput() {
+        super.handleMouseInput()
+        if (Mouse.getEventDWheel() != 0) {
+            exampleHuds.forEach { if (it.handleScroll(Mouse.getEventDWheel().sign * 4)) return }
+        }
+    }
+
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        exampleHuds.forEach { it.mouseClicked(mouseButton) }
+        exampleHuds.forEach { if(it.mouseClicked(mouseButton)) return }
 
         super.mouseClicked(mouseX, mouseY, mouseButton)
     }
@@ -32,7 +45,7 @@ object ExampleHudGui : GuiScreen() {
 
 
     override fun initGui() {
-        exampleHuds.addAll(ModuleManager.huds.map { ExampleHud(it.first) })
+        exampleHuds = ModuleManager.huds.map { ExampleHud(it.first) }
     }
 
     override fun onGuiClosed() {
