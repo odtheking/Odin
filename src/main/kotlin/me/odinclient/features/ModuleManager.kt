@@ -71,7 +71,8 @@ object ModuleManager {
         Waypoints,
         Server,
         DeployableTimer,
-        CanClip
+        CanClip,
+        TerracottaTimer
     )
 
     @SubscribeEvent

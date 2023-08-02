@@ -34,11 +34,25 @@ object Utils {
     }
 
     fun Double.floor(): Double {
-        return kotlin.math.floor(this)
+        return floor(this)
     }
 
     fun Double.floorToInt(): Int {
-        return kotlin.math.floor(this).toInt()
+        return floor(this).toInt()
+    }
+
+    fun Double.round(decimals: Int): Double
+    {
+        var multiplier = 1.0
+        repeat(decimals) { multiplier *= 10 }
+        return kotlin.math.round(this * multiplier) / multiplier
+    }
+
+    fun Float.round(decimals: Int): Float
+    {
+        var multiplier = 1.0f
+        repeat(decimals) { multiplier *= 10 }
+        return kotlin.math.round(this * multiplier) / multiplier
     }
 
     val ContainerChest.name: String
@@ -169,6 +183,4 @@ object Utils {
         return out
     }
 
-    inline val milliseconds
-        get() = System.currentTimeMillis()
 }
