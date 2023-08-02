@@ -51,8 +51,6 @@ class Panel(
             y = floor(y2 + mouseY)
         }
 
-        if (scrollAmount != 0f) handleScroll()
-
         vg.nanoVG {
             drawRoundedRectVaried(x, y, width, height, ColorUtil.moduleButtonColor, 5f, 5f, 0f, 0f)
             drawCustomCenteredText(category.name.capitalizeOnlyFirst(), x + width / 2, y + height / 2, 22f, Fonts.SEMIBOLD)
@@ -120,27 +118,6 @@ class Panel(
         return false
     }
 
-    fun initializeScroll(amount: Int): Boolean {
-        if (isMouseOverExtended) {
-            val diff = amount * SCROLL_DISTANCE
-            val realDiff = (scrollOffset + diff).coerceIn(-length + scrollOffset + 50f, 0f) - scrollOffset
-
-            scrollAmount = realDiff
-            return true
-        }
-        return false
-    }
-
-    private fun handleScroll() {
-        if (scrollAmount > 0) {
-            scrollAmount--
-            scrollOffset++
-        } else {
-            scrollAmount++
-            scrollOffset--
-        }
-    }
-
     private val isHovered
         get() = isAreaHovered(x, y, width, height)
 
@@ -150,6 +127,5 @@ class Panel(
     companion object {
         const val width = 240f
         const val height = 40f
-        private const val SCROLL_DISTANCE = 20f
     }
 }

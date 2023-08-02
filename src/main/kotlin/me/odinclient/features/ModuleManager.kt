@@ -6,7 +6,6 @@ import me.odinclient.features.impl.m7.*
 import me.odinclient.features.impl.qol.*
 import me.odinclient.features.settings.impl.HudSetting
 import me.odinclient.ui.hud.BaseHud
-import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.InputEvent
@@ -69,7 +68,6 @@ object ModuleManager {
         PortalFix,
         TerminalTimes,
         Waypoints,
-
     )
 
     @SubscribeEvent
