@@ -3,7 +3,7 @@ package me.odinclient.ui.hud
 import me.odinclient.OdinClient.Companion.mc
 
 open class TextHud(x: Float, y: Float) : BaseHud(x, y) {
-    private var lines: MutableList<String> = mutableListOf()
+    var lines: MutableList<String> = mutableListOf()
 
     override fun draw(example: Boolean): Pair<Float, Float> {
         lines = getLines(example)

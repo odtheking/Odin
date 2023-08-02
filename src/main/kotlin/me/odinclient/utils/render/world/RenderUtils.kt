@@ -354,15 +354,14 @@ object RenderUtils {
         if (!depthCheck) GlStateManager.enableDepth()
     }
 
-    fun renderImage(img: ResourceLocation, x: Double, y: Double, scale: Float) {
-        GlStateManager.pushMatrix()
+    fun renderImage(img: ResourceLocation, x: Double, y: Double, scale: Float): Int {
         GlStateManager.enableAlpha()
         GlStateManager.color(1f, 1f, 1f, 1f)
         GlStateManager.translate(x, y, 500.0)
         mc.textureManager.bindTexture(img)
         val renderSize = scale.roundToInt()
         drawModel(0, 0, renderSize, renderSize)
-        GlStateManager.popMatrix()
+        return renderSize
     }
 
     private fun drawModel(x: Int, y: Int, width: Int, height: Int) {

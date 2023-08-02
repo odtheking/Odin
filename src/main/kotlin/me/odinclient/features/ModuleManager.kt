@@ -26,7 +26,6 @@ object ModuleManager {
         AutoUlt,
         AutoWish,
         BlessingDisplay,
-        CanClip,
         GhostBlock,
         KeyESP,
         SecretHitboxes,
@@ -35,6 +34,7 @@ object ModuleManager {
         Triggerbot,
         WatcherBar,
         MapModule,
+        PersonalDragon,
 
         ArrowTrajectory,
         Camera,
@@ -69,6 +69,9 @@ object ModuleManager {
         PortalFix,
         TerminalTimes,
         Waypoints,
+        Server,
+        DeployableTimer,
+        CanClip
     )
 
     @SubscribeEvent

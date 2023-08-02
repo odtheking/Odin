@@ -7,7 +7,6 @@ import kotlinx.coroutines.runBlocking
 import me.odinclient.commands.impl.*
 import me.odinclient.config.Config
 import me.odinclient.config.MiscConfig
-import me.odinclient.config.OdinConfig
 import me.odinclient.config.WaypointConfig
 import me.odinclient.dungeonmap.features.Dungeon
 import me.odinclient.dungeonmap.features.MapRender
@@ -51,7 +50,6 @@ class OdinClient {
     @EventHandler
     fun init(event: FMLInitializationEvent) {
 
-        config.init()
         window.init()
 
         listOf(
@@ -131,7 +129,6 @@ class OdinClient {
         @JvmField
         val mc: Minecraft = Minecraft.getMinecraft()
 
-        var config = OdinConfig
         var window = Window
         val miscConfig = MiscConfig(File(mc.mcDataDir, "config/odin"))
         var display: GuiScreen? = null

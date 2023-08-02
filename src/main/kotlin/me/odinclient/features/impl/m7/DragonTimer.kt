@@ -4,6 +4,8 @@ import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.ReceivePacketEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.features.settings.impl.HudSetting
+import me.odinclient.ui.hud.TextHud
 import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.skyblock.WorldUtils
 import net.minecraft.network.play.server.S2APacketParticles
@@ -21,6 +23,8 @@ object DragonTimer : Module(
     category = Category.M7
 ) {
     private const val dragonSpawnTime = 5000L
+
+    private val hud: Boolean by HudSetting("Dragon Timer Hud", DragonTimerHud)
 
     private var times: MutableMap<DC, Long> = mutableMapOf(
         DC.Orange to 0L,
@@ -114,6 +118,19 @@ object DragonTimer : Module(
     fun onWorldLoad(@Suppress("UNUSED_PARAMETER") event: WorldEvent.Load) {
         times.replaceAll { _, _ -> 0L }
         toRender = ArrayList()
+    }
+
+    object DragonTimerHud : TextHud(0f, 0f) {
+        override fun getLines(example: Boolean): MutableList<String> {
+            return if (example) {
+                mutableListOf(
+                    "§6Purple spawning in §a4500ms",
+                    "§cRed spawning in §e1200ms"
+                )
+            } else if (toRender.size != 0) {
+                toRender.map { it.first }.toMutableList()
+            } else mutableListOf()
+        }
     }
 
     enum class DC(

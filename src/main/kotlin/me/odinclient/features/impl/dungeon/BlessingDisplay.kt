@@ -1,10 +1,11 @@
 package me.odinclient.features.impl.dungeon
 
-import me.odinclient.OdinClient.Companion.config
 import me.odinclient.events.ReceivePacketEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.BooleanSetting
+import me.odinclient.features.settings.impl.HudSetting
+import me.odinclient.ui.hud.TextHud
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.network.play.server.S47PacketPlayerListHeaderFooter
@@ -21,6 +22,8 @@ object BlessingDisplay : Module(
     private val stone: Boolean by BooleanSetting("Stone Blessing")
     private val life: Boolean by BooleanSetting("Life Blessing")
     private val wisdom: Boolean by BooleanSetting("Wisdom Blessing")
+
+    private val hud: Boolean by HudSetting("Blessing Display Hud", BlessingDisplayHud)
 
     enum class Blessings (
         var current: Int,
@@ -51,7 +54,7 @@ object BlessingDisplay : Module(
 
     @SubscribeEvent
     fun onPacket(event: ReceivePacketEvent) {
-        if (event.packet !is S47PacketPlayerListHeaderFooter || !config.powerDisplayHud.isEnabled || !DungeonUtils.inDungeons) return
+        if (event.packet !is S47PacketPlayerListHeaderFooter || /*!config.powerDisplayHud.isEnabled ||*/ !DungeonUtils.inDungeons) return
         val footer = event.packet.footer.unformattedText.noControlCodes
 
         // This looks like shit but oh well
@@ -79,5 +82,20 @@ object BlessingDisplay : Module(
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
         Blessings.values().forEach { it.reset() }
+    }
+
+    object BlessingDisplayHud : TextHud(0f, 0f) {
+        override fun getLines(example: Boolean): MutableList<String> {
+            return if (example) {
+                mutableListOf(
+                    "§cPower §a29",
+                    "§cT§6i§am§5e §a5"
+                )
+            } else BlessingDisplay.Blessings.values().map {
+                if (it.current != 0)
+                    "${it.displayString} §a${it.current}"
+                else ""
+            }.filter { it != "" }.toMutableList()
+        }
     }
 }

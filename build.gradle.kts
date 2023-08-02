@@ -61,7 +61,6 @@ dependencies {
     forge("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9")
 
     implementation(kotlin("stdlib-jdk8"))
-    compileOnly("cc.polyfrost:lwjgl-1.8.9-forge:1.0.0-alpha23")
 
     annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
     compileOnly("org.spongepowered:mixin:0.8.5")
