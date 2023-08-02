@@ -1,39 +1,44 @@
 package me.odinclient.ui.clickgui.elements
 
 import cc.polyfrost.oneconfig.renderer.font.Fonts
-import cc.polyfrost.oneconfig.utils.dsl.*
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.*
 import me.odinclient.ui.clickgui.Panel
 import me.odinclient.ui.clickgui.elements.menu.*
-import me.odinclient.ui.clickgui.util.ColorUtil
-import me.odinclient.ui.clickgui.util.ColorUtil.buttonColor
+import me.odinclient.ui.clickgui.util.ColorUtil.brighter
+import me.odinclient.ui.clickgui.util.ColorUtil.clickGUIColor
+import me.odinclient.ui.clickgui.util.ColorUtil.moduleButtonColor
+import me.odinclient.ui.clickgui.util.ColorUtil.textColor
 import me.odinclient.ui.clickgui.util.HoverHandler
 import me.odinclient.utils.render.Color
-import me.odinclient.utils.render.gui.GuiUtils.drawCustomCenteredText
-import me.odinclient.utils.render.gui.GuiUtils.nanoVG
-import me.odinclient.utils.render.gui.GuiUtils.scissor
 import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
+import me.odinclient.utils.render.gui.animations.impl.ColorAnimation
 import me.odinclient.utils.render.gui.animations.impl.EaseInOut
+import me.odinclient.utils.render.gui.nvg.*
 import kotlin.math.floor
 
 class ModuleButton(val module: Module, val panel: Panel) {
 
     val menuElements: ArrayList<Element<*>> = ArrayList()
 
-    inline val x: Float
-        get() = panel.x
+    val x: Float
+        inline get() = panel.x
 
     var y: Float = 0f
         get() = field + panel.y
+
+    private val colorAnim = ColorAnimation(300)
+
+    val color: Color
+        get() = colorAnim.get(clickGUIColor, moduleButtonColor, module.enabled).brighter(1 + hoverHandler.percent() / 300f)
 
     val width = Panel.width
     val height = 32f
 
     var extended = false
-    private val extendAnim = EaseInOut(250)
 
-    private val hoverHandler = HoverHandler(2000)
+    private val extendAnim = EaseInOut(250)
+    private val hoverHandler = HoverHandler(150)
 
     init {
         updateElements()
@@ -68,50 +73,44 @@ class ModuleButton(val module: Module, val panel: Panel) {
         }
     }
 
-    fun draw(vg: VG): Float {
+    fun draw(nvg: NVG): Float {
         var offs = height
 
         hoverHandler.handle(x, y, width, height)
 
-        vg.nanoVG {
+        nvg {
+            /*
             val percent = hoverHandler.percent()
-            if (percent > 70) {
+            if (percent > 50) {
                 val bounds = nanoVGHelper.getWrappedStringBounds(this.instance, module.description, 200f, 14f, Fonts.REGULAR)
-                drawRoundedRect(x + width + 10f, y, bounds[2] - bounds[0] + 10, bounds[3] - bounds[1] + 8, 5f, Color(buttonColor, percent / 100f).rgba)
+                drawRoundedRect(x + width + 10f, y, bounds[2] - bounds[0] + 10, bounds[3] - bounds[1] + 8, 5f, Color(buttonColor, (percent - 30) / 100f).rgba)
                 drawWrappedString(module.description, x + width + 17f, y + 12f, 200f, -1, 14f, 1f, Fonts.REGULAR)
             }
+             */
+            rect(x, y, width, height, color)
+            text(module.name, x + width / 2, y + height / 2, textColor, 18f, Fonts.MEDIUM, TextAlign.Middle)
 
-            if (module.enabled) drawRect(x, y, width, offs, ColorUtil.clickGUIColor.rgba)
-            else drawRect(x, y, width, offs, ColorUtil.moduleColor(module.enabled))
-
-            if (isButtonHovered) drawRect(x, y, width, offs, if (module.enabled) 0x55111111 else ColorUtil.hoverColor)
-
-            drawCustomCenteredText(module.name, x + width / 2, y + height / 2, 18f, Fonts.MEDIUM)
-
-            if (!extendAnim.isAnimating() && !extended || menuElements.isEmpty()) return@nanoVG
+            if (!extendAnim.isAnimating() && !extended || menuElements.isEmpty()) return@nvg
 
             var drawY = offs
             offs = height + floor(extendAnim.get(0f, getSettingHeight(), !extended))
 
-            scissor(x, y, width, offs) {
-                for (menuElement in menuElements) {
-                    menuElement.y = drawY
-                    drawY += menuElement.render(vg)
-                }
+            val scissor = scissor(x, y, width, offs)
+            for (i in 0 until menuElements.size) {
+                menuElements[i].y = drawY
+                drawY += menuElements[i].render(nvg)
             }
+            resetScissor(scissor)
         }
         return offs
     }
 
     fun mouseClicked(mouseButton: Int): Boolean {
         if (isButtonHovered) {
-
             if (mouseButton == 0) {
-                module.toggle()
+                if (colorAnim.start()) module.toggle()
                 return true
-
             } else if (mouseButton == 1) {
-
                 if (menuElements.size > 0) {
                     extendAnim.start()
                     extended = !extended
@@ -123,7 +122,6 @@ class ModuleButton(val module: Module, val panel: Panel) {
                 }
                 return true
             }
-
         } else if (isMouseUnderButton) {
             for (menuElement in menuElements.reversed()) {
                 if (menuElement.mouseClicked(mouseButton)) {
@@ -160,7 +158,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
 
     private fun getSettingHeight(): Float {
         var totalHeight = 0f
-        for (i in menuElements) totalHeight += i.height
+        for (i in menuElements) totalHeight += i.h
         return totalHeight
     }
 }

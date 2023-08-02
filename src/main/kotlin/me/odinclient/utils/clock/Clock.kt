@@ -1,5 +1,6 @@
 package me.odinclient.utils.clock
 
+@Suppress("NOTHING_TO_INLINE")
 /**
  * Class to simplify handling delays with [System.currentTimeMillis]
  *

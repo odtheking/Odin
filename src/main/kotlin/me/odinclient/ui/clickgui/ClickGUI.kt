@@ -1,13 +1,13 @@
 package me.odinclient.ui.clickgui
 
-import cc.polyfrost.oneconfig.utils.dsl.nanoVG
-import cc.polyfrost.oneconfig.utils.dsl.setAlpha
-import cc.polyfrost.oneconfig.utils.dsl.translate
 import me.odinclient.config.Config
 import me.odinclient.features.Category
 import me.odinclient.features.impl.general.ClickGUIModule
 import me.odinclient.ui.clickgui.elements.menu.ElementColor
 import me.odinclient.utils.render.gui.animations.impl.EaseInOut
+import me.odinclient.utils.render.gui.nvg.drawNVG
+import me.odinclient.utils.render.gui.nvg.setAlpha
+import me.odinclient.utils.render.gui.nvg.translate
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.entity.player.EntityPlayer
@@ -29,14 +29,14 @@ object ClickGUI : GuiScreen() {
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        nanoVG {
+        drawNVG {
             if (openingAnimation.isAnimating()) {
                 translate(0f, floor(openingAnimation.get(-10f, 0f)))
                 setAlpha(openingAnimation.get(0f, 1f))
             }
 
-            for (p in panels) {
-                p.drawScreen(this)
+            for (i in 0 until panels.size) {
+                panels[i].draw(this)
             }
         }
     }
@@ -103,9 +103,6 @@ object ClickGUI : GuiScreen() {
 
         for (panel in panels.reversed()) {
             if (panel.extended) {
-                if (panel.scrollAmount != 0f)
-                    panel.scrollOffset -= panel.scrollAmount
-
                 for (moduleButton in panel.moduleButtons) {
                     if (moduleButton.extended) {
                         for (element in moduleButton.menuElements) {

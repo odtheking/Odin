@@ -1,56 +1,62 @@
 package me.odinclient.ui.clickgui.elements.menu
 
 import cc.polyfrost.oneconfig.renderer.font.Fonts
-import cc.polyfrost.oneconfig.utils.dsl.*
-import me.odinclient.features.impl.general.ClickGUIModule
 import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.ui.clickgui.elements.Element
 import me.odinclient.ui.clickgui.elements.ElementType
 import me.odinclient.ui.clickgui.elements.ModuleButton
-import me.odinclient.ui.clickgui.util.ColorUtil
+import me.odinclient.ui.clickgui.util.ColorUtil.brighter
+import me.odinclient.ui.clickgui.util.ColorUtil.clickGUIColor
 import me.odinclient.ui.clickgui.util.ColorUtil.elementBackground
-import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinclient.ui.clickgui.util.ColorUtil.sliderBackgroundColor
+import me.odinclient.ui.clickgui.util.ColorUtil.textColor
+import me.odinclient.ui.clickgui.util.HoverHandler
 import me.odinclient.utils.Utils.coerceInNumber
-import me.odinclient.utils.Utils.compareTo
 import me.odinclient.utils.Utils.div
 import me.odinclient.utils.Utils.minus
 import me.odinclient.utils.Utils.plus
 import me.odinclient.utils.Utils.times
-import me.odinclient.utils.render.gui.GuiUtils.nanoVG
+import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinclient.utils.render.gui.MouseUtils.mouseX
+import me.odinclient.utils.render.gui.nvg.*
 import org.lwjgl.input.Keyboard
 import kotlin.math.roundToInt
 
 class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
     Element<NumberSetting<*>>(parent, setting, ElementType.SLIDER) {
 
-    private val displayVal get() = "${(setting.valueAsDouble * 100.0).roundToInt() / 100.0}"
+    private val displayVal: String
+        get() = "${(setting.valueAsDouble * 100.0).roundToInt() / 100.0}"
 
-    override fun draw(vg: VG) {
-        val hoveredOrDragged = isHovered || listening
-        val percentBar = (setting.value - setting.min) / (setting.max - setting.min)
+    override val isHovered: Boolean
+        get() = isAreaHovered(x, y, w - 12f, h)
 
-        vg.nanoVG {
-            drawRect(x, y, width, height, elementBackground)
-            val textWidth = getTextWidth(displayVal, 16f, Fonts.REGULAR)
-            drawText(displayName, x + 6f, y + height / 2f - 3f, -1, 16f, Fonts.REGULAR)
-            drawText(displayVal, x + width - textWidth - 6f, y + height / 2f - 3f, -1, 16f, Fonts.REGULAR)
+    private val sliderBGColor = Color(sliderBackgroundColor)
 
-            drawRoundedRect(x + 6f, y + 27f, width - 12f, 6f, 2.5f, ColorUtil.sliderBackgroundColor)
-            drawDropShadow(x + 6f, y + 27f, width - 12f, 6f, 10F, 0.75f, 5f)
+    private val hoverHandler = HoverHandler(150)
 
-            if (x + percentBar * (width - 12f) > x + 6) {
-                drawRoundedRect(
-                    x + 6f, y + 27f, percentBar * (width - 12f), 6f, 2.5f,
-                    ClickGUIModule.color.withAlpha(if (hoveredOrDragged) 250 else 200).rgba,
-                )
-            }
+    private inline val color: Color
+        get() = clickGUIColor.brighter(1 + hoverHandler.percent() / 200f)
+
+    override fun draw(nvg: NVG) {
+        hoverHandler.handle(x, y, w - 12f, h)
+        val percentage = ((setting.value - setting.min) / (setting.max - setting.min)).toFloat()
+
+        nvg {
+            rect(x, y, w, h, elementBackground)
+
+            text(name, x + 6f, y + h / 2f - 3f, textColor, 16f, Fonts.REGULAR)
+            text(displayVal, x + w - 6f, y + h / 2f - 3f, textColor, 16f, Fonts.REGULAR, TextAlign.Right)
+
+            rect(x + 6f, y + 28f, w - 12f, 7f, sliderBGColor, 2.5f, 2.5f, 2.5f, 3f)
+            dropShadow(x + 6f, y + 28f, w - 12f, 7f, 10f, 0.75f, 3f)
+            if (x + percentage * (w - 12f) > x + 6) rect(x + 6f, y + 28f, percentage * (w - 12f), 7f, color, 3f)
         }
 
         if (listening) {
             val diff = setting.max - setting.min
-            val newVal = setting.min + ((mouseX - (x + 6f)) / (width - 12f)).coerceInNumber(0, 1) * diff
+            val newVal = setting.min + ((mouseX - (x + 6f)) / (w - 12f)).coerceInNumber(0, 1) * diff
             setting.valueAsDouble = newVal.toDouble()
         }
     }
@@ -79,6 +85,4 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
         }
         return false
     }
-
-    override val isHovered: Boolean get() = isAreaHovered(x, y, width - 12f, height)
 }

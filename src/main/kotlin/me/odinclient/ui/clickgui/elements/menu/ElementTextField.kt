@@ -1,37 +1,32 @@
 package me.odinclient.ui.clickgui.elements.menu
 
 import cc.polyfrost.oneconfig.renderer.font.Fonts.REGULAR
-import cc.polyfrost.oneconfig.utils.dsl.VG
-import cc.polyfrost.oneconfig.utils.dsl.drawRect
-import cc.polyfrost.oneconfig.utils.dsl.drawText
-import cc.polyfrost.oneconfig.utils.dsl.getTextWidth
 import me.odinclient.features.settings.impl.StringSetting
 import me.odinclient.ui.clickgui.elements.Element
 import me.odinclient.ui.clickgui.elements.ElementType
 import me.odinclient.ui.clickgui.elements.ModuleButton
-import me.odinclient.ui.clickgui.util.ColorUtil
-import me.odinclient.utils.render.gui.GuiUtils.drawCustomCenteredText
-import me.odinclient.utils.render.gui.GuiUtils.nanoVG
+import me.odinclient.ui.clickgui.util.ColorUtil.elementBackground
+import me.odinclient.ui.clickgui.util.ColorUtil.textColor
+import me.odinclient.utils.render.gui.nvg.*
 import org.lwjgl.input.Keyboard
 
 class ElementTextField(parent: ModuleButton, setting: StringSetting) :
     Element<StringSetting>(parent, setting, ElementType.TEXT_FIELD) {
 
-    override fun draw(vg: VG) {
-        val displayValue = setting.text
-        //make look good later
-        vg.nanoVG {
-            drawRect(x, y, width, height, ColorUtil.elementBackground)
+    val display: String
+        inline get() = setting.text
 
-            if (getTextWidth(displayValue + "00" + displayName, 16f, REGULAR) <= width) {
-                drawText(displayName, x + 4, y + height / 2, -1, 16f, REGULAR)
-                drawText(displayValue, x + (width - getTextWidth(displayValue, 16f, REGULAR) - 4f), y + height / 2, -1, 16f, REGULAR)
+    // TODO: MAKE LOOK GOOD!!!!
+    override fun draw(nvg: NVG) {
+        nvg {
+            rect(x, y, w, h, elementBackground)
+
+            if (getTextWidth(display + "00" + name, 16f, REGULAR) <= w) {
+                text(name, x + 4, y + h / 2, textColor, 16f, REGULAR)
+                text(display, x + (w - getTextWidth(display, 16f, REGULAR) - 4f), y + h / 2, textColor, 16f, REGULAR)
             } else {
-                if (isHovered || listening) {
-                    drawCustomCenteredText(displayValue, x + width / 2f, y + height / 2f, 16f, REGULAR, -1)
-                } else {
-                    drawCustomCenteredText(displayName, x + width / 2f, y + height / 2f, 16f, REGULAR, -1)
-                }
+                if (isHovered || listening) text(display, x + w / 2f, y + h / 2f, textColor, 16f, REGULAR, TextAlign.Middle)
+                else text(name, x + w / 2f, y + h / 2f, textColor, 16f, REGULAR, TextAlign.Middle)
             }
         }
     }

@@ -2,7 +2,6 @@ package me.odinclient.utils.render.gui
 
 import cc.polyfrost.oneconfig.renderer.font.Font
 import cc.polyfrost.oneconfig.renderer.font.Fonts
-import cc.polyfrost.oneconfig.renderer.scissor.Scissor
 import cc.polyfrost.oneconfig.renderer.scissor.ScissorHelper
 import cc.polyfrost.oneconfig.utils.dsl.*
 import me.odinclient.OdinClient.Companion.mc
@@ -10,7 +9,6 @@ import me.odinclient.ui.clickgui.util.ColorUtil
 import me.odinclient.utils.Utils.minus
 import me.odinclient.utils.Utils.plus
 import net.minecraft.client.gui.ScaledResolution
-import java.awt.Color
 import java.util.*
 
 
@@ -41,34 +39,24 @@ object GuiUtils {
         mouseHandler.scale(x, y)
     }
 
+    @Deprecated("Use NVG.scissor")
     inline fun VG.scissor(x: Float, y: Float, width: Float, height: Float, action: () -> Unit) {
         val scissor = ScissorHelper.INSTANCE.scissor(instance, x, y, width, height)
         action()
         ScissorHelper.INSTANCE.resetScissor(instance, scissor)
     }
 
-    fun VG.scissor(x: Float, y: Float, width: Float, height: Float): Scissor {
-        return ScissorHelper.INSTANCE.scissor(instance, x, y, width, height)
-    }
-
-    fun VG.resetScissor(scissor: Scissor) {
-        ScissorHelper.INSTANCE.resetScissor(instance, scissor)
-    }
-
+    @Deprecated("Use drawNVG")
     fun VG.nanoVG(block: VG.() -> Unit) = nanoVG(this.instance, block)
 
-    fun VG.drawCustomCenteredText(string: String, x: Float, y: Float, size: Float, font: Font, color: Int = ColorUtil.textColor) {
+    @Deprecated("Use NVG.text instead")
+    fun VG.drawCustomCenteredText(string: String, x: Float, y: Float, size: Float, font: Font, color: Int = ColorUtil.textColor.rgba) {
         val textWidth = (x - getTextWidth(string, size, Fonts.MEDIUM) / 2f)
         drawText(string, textWidth, y, color, size, font)
     }
 
-    fun String.capitalizeOnlyFirst(): String {
+    fun String.capitalizeFirst(): String {
         return substring(0, 1).uppercase(Locale.getDefault()) + substring(1, length).lowercase()
-    }
-
-    fun VG.drawHSBBox(x: Number, y: Number, w: Number, h: Number, color: Int) {
-        nanoVGHelper.drawHSBBox(this.instance, x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(), color)
-        drawOutlineRoundedRect(x, y, w, h, 8f, Color(38, 38, 38).rgb, 1f)
     }
 
     /**

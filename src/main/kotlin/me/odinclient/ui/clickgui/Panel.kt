@@ -1,26 +1,24 @@
 package me.odinclient.ui.clickgui
 
 import cc.polyfrost.oneconfig.renderer.font.Fonts
-import cc.polyfrost.oneconfig.utils.dsl.*
 import me.odinclient.features.Category
-import me.odinclient.features.ModuleManager
+import me.odinclient.features.ModuleManager.modules
 import me.odinclient.features.impl.general.ClickGUIModule
 import me.odinclient.ui.clickgui.elements.ModuleButton
-import me.odinclient.ui.clickgui.util.ColorUtil
-import me.odinclient.utils.render.Color
-import me.odinclient.utils.render.gui.GuiUtils.capitalizeOnlyFirst
-import me.odinclient.utils.render.gui.GuiUtils.drawCustomCenteredText
-import me.odinclient.utils.render.gui.GuiUtils.nanoVG
-import me.odinclient.utils.render.gui.GuiUtils.resetScissor
-import me.odinclient.utils.render.gui.GuiUtils.scissor
+import me.odinclient.ui.clickgui.util.ColorUtil.moduleButtonColor
+import me.odinclient.ui.clickgui.util.ColorUtil.textColor
+import me.odinclient.utils.render.gui.GuiUtils.capitalizeFirst
 import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinclient.utils.render.gui.MouseUtils.mouseX
 import me.odinclient.utils.render.gui.MouseUtils.mouseY
+import me.odinclient.utils.render.gui.nvg.*
 import kotlin.math.floor
 
 class Panel(
     var category: Category,
 ) {
+    val displayName = category.name.capitalizeFirst()
+
     private var dragging = false
     val moduleButtons: ArrayList<ModuleButton> = ArrayList()
 
@@ -29,48 +27,41 @@ class Panel(
 
     var extended: Boolean = ClickGUIModule.panelExtended[category]!!.enabled
 
-    var scrollOffset = 0f
     var length = 0f
-    var scrollAmount = 0f
 
     private var x2 = 0f
     private var y2 = 0f
 
     init {
-        nanoVG {
-            for (module in ModuleManager.modules.sortedByDescending { this.getTextWidth(it.name, 18, Fonts.MEDIUM) }) {
+        drawNVG {
+            for (module in modules.sortedByDescending { getTextWidth(it.name, 18f, Fonts.MEDIUM) }) {
                 if (module.category != this@Panel.category) continue
                 moduleButtons.add(ModuleButton(module, this@Panel))
             }
         }
     }
 
-    fun drawScreen(vg: VG) {
+    fun draw(nvg: NVG) {
         if (dragging) {
             x = floor(x2 + mouseX)
             y = floor(y2 + mouseY)
         }
 
-        vg.nanoVG {
-            drawRoundedRectVaried(x, y, width, height, ColorUtil.moduleButtonColor, 5f, 5f, 0f, 0f)
-            drawCustomCenteredText(category.name.capitalizeOnlyFirst(), x + width / 2, y + height / 2, 22f, Fonts.SEMIBOLD)
-            drawLine(x, y + height - 5f, x + width, y + height - 5f, 3f, Color(45, 45, 45).rgba)
+        nvg {
+            rect(x, y, width, height, moduleButtonColor, 5f, 5f, 0f, 0f)
+            text(displayName, x + width / 2f, y + height / 2f, textColor, 22f, Fonts.SEMIBOLD, TextAlign.Middle)
 
-            var startY = height + scrollOffset
-            val scissor = scissor(x - 2f, y + height, x + width + 1000, y + height + 4000)
+            var startY = height
             if (extended && moduleButtons.isNotEmpty()) {
-                for (moduleButton in moduleButtons) {
-                    moduleButton.y = startY
-                    startY += moduleButton.draw(vg)
+                for (i  in 0 until moduleButtons.size) {
+                    moduleButtons[i].y = startY
+                    startY += moduleButtons[i].draw(nvg)
                 }
                 length = startY + 5f
-            } else startY = height
-            resetScissor(scissor)
+            }
 
-            drawRoundedRectVaried(x, y + startY, width, 10f, ColorUtil.moduleColor(moduleButtons.last().module.enabled && extended), 0f, 0f, 5f, 5f)
-            if (moduleButtons.last().isButtonHovered) drawRoundedRectVaried(x, y + startY, width, 10f, if (moduleButtons.last().module.enabled) 0x55111111 else ColorUtil.hoverColor, 0f, 0f, 5f, 5f)
-
-            drawDropShadow(x, y, width, startY + 10f, 12.5f, 6f, 5f)
+            rect(x, y + startY, width, 10f, moduleButtons.last().color, 0f, 0f, 5f, 5f)
+            dropShadow(x, y, width, startY + 10f, 12.5f, 6f, 5f)
         }
     }
 
@@ -86,8 +77,8 @@ class Panel(
                 return true
             }
         } else if (isMouseOverExtended) {
-            for (moduleButton in moduleButtons.reversed()) {
-                if (moduleButton.mouseClicked(mouseButton)) {
+            for (i in moduleButtons.size - 1 downTo 0) {
+                if (moduleButtons[i].mouseClicked(mouseButton)) {
                     return true
                 }
             }
@@ -103,16 +94,16 @@ class Panel(
         ClickGUIModule.panelExtended[category]!!.enabled = extended
 
         if (extended) {
-            for (moduleButton in moduleButtons.reversed()) {
-                moduleButton.mouseReleased(state)
+            for (i in moduleButtons.size - 1 downTo 0) {
+                moduleButtons[i].mouseReleased(state)
             }
         }
     }
 
     fun keyTyped(typedChar: Char, keyCode: Int): Boolean {
         if (extended) {
-            for (moduleButton in moduleButtons.reversed()) {
-                if (moduleButton.keyTyped(typedChar, keyCode)) return true
+            for (i in moduleButtons.size - 1 downTo 0) {
+                if (moduleButtons[i].keyTyped(typedChar, keyCode)) return true
             }
         }
         return false

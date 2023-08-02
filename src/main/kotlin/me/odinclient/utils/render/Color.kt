@@ -9,6 +9,13 @@ import me.odinclient.utils.Utils.RGBtoHSB
  */
 class Color(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f) {
 
+    /**
+     * Prints Color's RGBA values.
+     */
+    override fun toString(): String {
+        return "Color(red=$r,green=$g,blue=$b,alpha=$a)"
+    }
+
     constructor(hsb: FloatArray, alpha: Float = 1f) : this(hsb[0], hsb[1], hsb[2], alpha)
     constructor(r: Int, g: Int, b: Int, alpha: Float = 1f) : this(RGBtoHSB(r, g, b), alpha)
 
@@ -63,6 +70,9 @@ class Color(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f)
     inline val g get() = rgba.green
     inline val b get() = rgba.blue
     inline val a get() = rgba.alpha
+
+    val isTransparent: Boolean
+        get() = alpha == 0f
 
     companion object {
 

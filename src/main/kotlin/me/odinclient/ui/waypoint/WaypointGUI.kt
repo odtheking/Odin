@@ -9,6 +9,7 @@ import me.odinclient.features.impl.general.WaypointManager
 import me.odinclient.ui.waypoint.elements.AreaButton
 import me.odinclient.ui.waypoint.elements.WaypointElement
 import me.odinclient.utils.VecUtils.floored
+import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.gui.GuiUtils.scaleFactor
 import me.odinclient.utils.render.gui.GuiUtils.scaleWithMouse
 import me.odinclient.utils.render.gui.GuiUtils.scaledHeight
@@ -21,9 +22,7 @@ import me.odinclient.utils.render.gui.animations.impl.LinearAnimation
 import me.odinclient.utils.skyblock.LocationUtils.currentArea
 import net.minecraft.client.gui.GuiScreen
 import org.lwjgl.input.Mouse
-import java.awt.Color
 import java.io.IOException
-import java.util.*
 import kotlin.math.sign
 
 object WaypointGUI : GuiScreen() {
@@ -60,7 +59,7 @@ object WaypointGUI : GuiScreen() {
             scaleWithMouse(mouseHandler, scaleFactor, scaleFactor)
 
             drawDropShadow(0, 0, 480, 264, 10f, 1f, 10f)
-            drawRoundedRectVaried(0, 25, 480, 239, Color(21, 22, 23, 235).rgb, 0, 0, 10, 10)
+            drawRoundedRectVaried(0, 25, 480, 239, Color(21, 22, 23, 0.9f).rgba, 0, 0, 10, 10)
 
             scissor(0f, 25f, 480f, 239f) {
                 scrollOffset = scrollAnimation.get(scrollOffset, scrollTarget)
@@ -73,8 +72,8 @@ object WaypointGUI : GuiScreen() {
 
             val animY = settingAnimation.get(25f, 50f, !settingMenu)
 
-            drawRoundedRectVaried(0, 0, 480, animY, Color(21, 22, 23).rgb, 10, 10, 0, 0)
-            drawLine(0, animY, 480, animY, 1.5, Color(30, 32, 34).rgb)
+            drawRoundedRectVaried(0, 0, 480, animY, Color(21, 22, 23).rgba, 10, 10, 0, 0)
+            drawLine(0, animY, 480, animY, 1.5, Color(30, 32, 34).rgba)
 
             drawingAreas = animY != 25f
             if (drawingAreas) {
@@ -92,14 +91,14 @@ object WaypointGUI : GuiScreen() {
                 }
             }
 
-            drawRoundedRectVaried(0, 0,  480, 25, Color(21, 22, 23).rgb, 10, 10, 0, 0)
-            drawLine(0, 25, 480, 25, 1.5, Color(30, 32, 34).rgb)
+            drawRoundedRectVaried(0, 0,  480, 25, Color(21, 22, 23).rgba, 10, 10, 0, 0)
+            drawLine(0, 25, 480, 25, 1.5, Color(30, 32, 34).rgba)
 
-            drawText("Add Waypoint", 16, 13.25, Color.LIGHT_GRAY.rgb, 10, Fonts.REGULAR)
+            drawText("Add Waypoint", 16, 13.25, Color(192, 192, 192).rgba, 10, Fonts.REGULAR)
             val buttonColor = if (mouseHandler.isAreaHovered(10f, 5f, 78.5f, 15f)) Color(38, 40, 42) else Color(30, 32, 34)
-            drawHollowRoundedRect(10, 5, 78, 15, 5, buttonColor.rgb, 0.75)
+            drawHollowRoundedRect(10, 5, 78, 15, 5, buttonColor.rgba, 0.75)
 
-            val color = if (mouseHandler.isAreaHovered(455f, 5f, 15f, 15f)) Color.LIGHT_GRAY.rgb else Color.WHITE.rgb
+            val color = if (mouseHandler.isAreaHovered(455f, 5f, 15f, 15f)) Color(192, 192, 192).rgba else -1
             translate(462.5f, 12.5f)
             NanoVGHelper.INSTANCE.rotate(this.instance, Math.toRadians((animY - 25.0) * 12.0).toFloat())
             translate(-462.5f, -12.5f)

@@ -5,7 +5,7 @@ import me.odinclient.utils.render.gui.animations.impl.LinearAnimation
 
 class HoverHandler(val delay: Long) {
 
-    val anim = LinearAnimation<Int>(delay)
+    private val anim = LinearAnimation<Int>(delay)
 
     private var isHovered = false
 
@@ -22,7 +22,7 @@ class HoverHandler(val delay: Long) {
             }
         } else {
             if (isHovered) {
-                anim.start(true)
+                anim.start()
                 isHovered = false
             }
         }

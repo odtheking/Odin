@@ -168,4 +168,7 @@ object Utils {
         out[2] = brightness
         return out
     }
+
+    inline val milliseconds
+        get() = System.currentTimeMillis()
 }

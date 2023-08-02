@@ -1,15 +1,20 @@
 package me.odinclient.ui.clickgui.elements.menu
 
 import cc.polyfrost.oneconfig.renderer.font.Fonts
-import cc.polyfrost.oneconfig.utils.dsl.*
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.DummySetting
 import me.odinclient.ui.clickgui.elements.Element
 import me.odinclient.ui.clickgui.elements.ElementType
 import me.odinclient.ui.clickgui.elements.ModuleButton
 import me.odinclient.ui.clickgui.util.ColorUtil
+import me.odinclient.ui.clickgui.util.ColorUtil.clickGUIColor
+import me.odinclient.ui.clickgui.util.ColorUtil.darker
+import me.odinclient.ui.clickgui.util.ColorUtil.elementBackground
+import me.odinclient.ui.clickgui.util.ColorUtil.textColor
+import me.odinclient.ui.clickgui.util.HoverHandler
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.gui.animations.impl.ColorAnimation
+import me.odinclient.utils.render.gui.nvg.*
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 
@@ -18,28 +23,32 @@ class ElementKeyBind(parent: ModuleButton, private val mod: Module) :
 
     private val colorAnim = ColorAnimation(100)
 
-    override fun draw(vg: VG) {
-        val displayValue = if (mod.keyCode > 0)
-            Keyboard.getKeyName(mod.keyCode) ?: "Err"
-        else if (mod.keyCode < 0)
-            Mouse.getButtonName(mod.keyCode + 100)
-        else
-            "None"
+    private val hover = HoverHandler(150)
 
-        nanoVG(vg.instance) {
-            drawRect(x, y, width, height, ColorUtil.elementBackground)
+    private val buttonColor: Color
+        inline get() = ColorUtil.buttonColor.darker(1 + hover.percent() / 500f)
 
-            val length = getTextWidth(displayValue, 16f, Fonts.REGULAR)
-            drawRoundedRect(x + width - 20 - length, y + 4, length + 12f, 22f, 5f, Color(35, 35, 35).rgba)
-            drawDropShadow(x + width - 20 - length, y + 4, length + 12f, 22f, 10f, 0.75f, 5f)
+    override fun draw(nvg: NVG) {
+        val value = if (mod.keyCode > 0) Keyboard.getKeyName(mod.keyCode) ?: "Err"
+        else if (mod.keyCode < 0) Mouse.getButtonName(mod.keyCode + 100)
+        else "None"
+
+        nvg {
+            rect(x, y, w, h, elementBackground)
+
+            val width = getTextWidth(value, 16f, Fonts.REGULAR)
+            hover.handle(x + w - 20 - width, y + 4, width + 12f, 22f)
+
+            rect(x + w - 20 - width, y + 4, width + 12f, 22f, buttonColor, 5f)
+            dropShadow(x + w - 20 - width, y + 4, width + 12f, 22f, 10f, 0.75f, 5f)
 
             if (listening || colorAnim.isAnimating()) {
-                val color = colorAnim.get(ColorUtil.clickGUIColor, Color(35, 35, 35), listening).rgba
-                drawHollowRoundedRect(x + width - 21 - length, y + 3, length + 12.5f, 22.5f, 4f, color, 1.5f)
+                val color = colorAnim.get(clickGUIColor, buttonColor, listening)
+                rectOutline(x + w - 21 - width, y + 3, width + 12.5f, 22.5f, color, 4f,1.5f)
             }
 
-            drawText(displayName,  x + 6f, y + height / 2, -1, 16f, Fonts.REGULAR)
-            drawText(displayValue, x + width - 14 - length, y + 16f, -1, 16f, Fonts.REGULAR)
+            text(name,  x + 6f, y + h / 2, textColor, 16f, Fonts.REGULAR)
+            text(value, x + w - 14, y + 16f, textColor, 16f, Fonts.REGULAR, TextAlign.Right)
         }
     }
 

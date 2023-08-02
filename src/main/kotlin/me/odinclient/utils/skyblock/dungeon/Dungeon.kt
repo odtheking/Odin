@@ -41,7 +41,7 @@ class Dungeon {
 
             if (line.contains("The Catacombs (")) {
                 runCatching { floor = Floor.valueOf(line.substringAfter("(").substringBefore(")")) }
-                    .onFailure { modMessage("Could not get correct floor. Please report this.") }
+                .onFailure { modMessage("Could not get correct floor. Please report this.") }
             }
         }
     }
