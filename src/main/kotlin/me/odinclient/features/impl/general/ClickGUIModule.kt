@@ -26,6 +26,7 @@ object ClickGUIModule: Module(
     category = Category.GENERAL,
 ) {
     val blur: Boolean by BooleanSetting("Blur", false, description = "Toggles the background blur for the gui.")
+    val enableNotification: Boolean by BooleanSetting("Enable notifications", false, description = "Shows you a notification in chat when you toggle an option with a keybind")
     val color: Color by ColorSetting("First Color", Color(50, 150, 220), allowAlpha = false, description = "Color theme in the gui.")
     val switchType: Boolean by DualSetting("Switch Type", "Checkbox", "Switch")
 

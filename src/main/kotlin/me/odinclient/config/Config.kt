@@ -12,7 +12,6 @@ import me.odinclient.features.ModuleManager
 import me.odinclient.features.settings.Setting
 import me.odinclient.features.settings.impl.*
 import me.odinclient.utils.render.Color
-import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import java.io.File
 import java.io.IOException
 
@@ -81,7 +80,6 @@ object Config {
             configFile.bufferedWriter().use {
                 it.write(gson.toJson(ModuleManager.modules))
             }
-            modMessage("Saved config.")
         } catch (e: IOException) {
             println("Error saving config.")
         }

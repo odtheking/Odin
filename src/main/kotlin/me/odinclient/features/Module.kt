@@ -3,6 +3,7 @@ package me.odinclient.features
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import me.odinclient.OdinClient
+import me.odinclient.features.impl.general.ClickGUIModule
 import me.odinclient.features.settings.AlwaysActive
 import me.odinclient.features.settings.Setting
 import me.odinclient.utils.clock.Executable
@@ -76,7 +77,7 @@ abstract class Module(
      */
     open fun onKeybind() {
         toggle()
-        ChatUtils.modMessage("$name ${if (enabled) "§aenabled" else "§cdisabled"}.")
+        if (ClickGUIModule.enableNotification) ChatUtils.modMessage("$name ${if (enabled) "§aenabled" else "§cdisabled"}.")
     }
 
     /**
