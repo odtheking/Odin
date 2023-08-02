@@ -7,13 +7,11 @@ import me.odinclient.config.Config
 import me.odinclient.features.Category
 import me.odinclient.features.impl.general.ClickGUIModule
 import me.odinclient.ui.clickgui.elements.menu.ElementColor
-import me.odinclient.ui.hud.BaseHud
 import me.odinclient.utils.render.gui.animations.impl.EaseInOut
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
-import org.lwjgl.input.Mouse
 import java.io.IOException
 import java.util.*
 import kotlin.math.floor
@@ -40,18 +38,6 @@ object ClickGUI : GuiScreen() {
             for (p in panels) {
                 p.drawScreen(this)
             }
-        }
-    }
-
-    @Throws(IOException::class)
-    override fun handleMouseInput() {
-        super.handleMouseInput()
-
-        var amount = Mouse.getEventDWheel().coerceIn(-1..1)
-        if (isShiftKeyDown()) amount *= 7
-
-        for (panel in panels.reversed()) {
-            if (panel.initializeScroll(amount)) return
         }
     }
 

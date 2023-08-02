@@ -39,6 +39,8 @@ class Color(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f)
             needsUpdate = true
         }
 
+    // need to remove this cuz defeats whole purpose of this class
+    // (to make getting colors from hsba and converting it to rgba without needing to do it more than once)
     val javaColor get() = java.awt.Color(r, g, b, a)
 
     private var needsUpdate = true // this updates argb
