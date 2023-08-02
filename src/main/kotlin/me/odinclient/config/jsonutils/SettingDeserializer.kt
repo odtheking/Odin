@@ -5,11 +5,10 @@ import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import me.odinclient.features.settings.Setting
-import me.odinclient.features.settings.impl.BooleanSetting
-import me.odinclient.features.settings.impl.DummySetting
-import me.odinclient.features.settings.impl.NumberSetting
-import me.odinclient.features.settings.impl.StringSetting
+import me.odinclient.features.settings.impl.*
+import me.odinclient.ui.hud.HudData
 import java.lang.reflect.Type
+import kotlin.jvm.internal.Reflection
 
 class SettingDeserializer: JsonDeserializer<Setting<*>> {
     override fun deserialize(json: JsonElement?, typeOfT: Type?, context: JsonDeserializationContext?): Setting<*> {

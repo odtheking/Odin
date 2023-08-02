@@ -45,7 +45,7 @@ object ExampleHudGui : GuiScreen() {
 
 
     override fun initGui() {
-        exampleHuds = ModuleManager.huds.map { ExampleHud(it.first) }
+        exampleHuds = ModuleManager.huds.map { ExampleHud(it.first, it.second) }
     }
 
     override fun onGuiClosed() {

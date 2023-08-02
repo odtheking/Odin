@@ -1,18 +1,13 @@
 package me.odinclient.ui.hud
 
-import cc.polyfrost.oneconfig.renderer.font.Fonts
-import cc.polyfrost.oneconfig.utils.dsl.drawText
-import cc.polyfrost.oneconfig.utils.dsl.nanoVG
-import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.features.settings.impl.HudSetting
 import me.odinclient.utils.render.RenderUtils2d
 import me.odinclient.utils.render.gui.MouseUtils
-import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import net.minecraft.client.renderer.GlStateManager
 import java.awt.Color
-import java.util.*
 import kotlin.math.floor
 
-class ExampleHud(val hud: BaseHud) {
+class ExampleHud(val hud: BaseHud, val setting: HudSetting) {
     private var dragging = false
 
     private var x2 = 0f
@@ -67,5 +62,6 @@ class ExampleHud(val hud: BaseHud) {
 
     fun onClose() {
         dragging = false
+        setting.value = HudData(hud.x, hud.y, hud.scale, setting.value.isEnabled)
     }
 }

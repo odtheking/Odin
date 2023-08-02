@@ -2,9 +2,11 @@ package me.odinclient.features.impl.general
 
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.ui.hud.HudData
 import me.odinclient.features.settings.impl.HudSetting
 import me.odinclient.ui.hud.TextHud
 import me.odinclient.utils.ServerUtils
+import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import kotlin.math.floor
 
 object Server : Module(
@@ -12,9 +14,9 @@ object Server : Module(
     category = Category.GENERAL,
     description = "Server related features."
 ) {
-    private val hud: Boolean by HudSetting("Server Hud", ServerHud)
+    private val hud: HudData by HudSetting("Server Hud", ServerHud)
 
-    object ServerHud: TextHud(0f, 0f) {
+    object ServerHud : TextHud() {
         override fun getLines(example: Boolean): MutableList<String> {
             return if (example) {
                 mutableListOf(

@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.general
 
-import cc.polyfrost.oneconfig.libs.universal.UMatrixStack
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -8,6 +7,7 @@ import kotlinx.coroutines.launch
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.ui.hud.HudData
 import me.odinclient.features.settings.impl.HudSetting
 import me.odinclient.ui.hud.TextHud
 import me.odinclient.utils.Utils.noControlCodes
@@ -114,7 +114,7 @@ object DeployableTimer : Module(
         val timeAdded: Long = System.currentTimeMillis()
     )
 
-    private val hud: Boolean by HudSetting("Deployable Hud", DeployableHud)
+    private val hud: HudData by HudSetting("Deployable Hud", DeployableHud)
 
     private val currentDeployables = mutableListOf<Deployable>()
     private val orbRegex = Regex("(.+) (\\d+)s")
@@ -183,7 +183,7 @@ object DeployableTimer : Module(
         lines = Triple(null, null, null)
     }
 
-    object DeployableHud: TextHud(0f, 0f) {
+    object DeployableHud: TextHud() {
         private val firework: ResourceLocation = ResourceLocation("odinclient", "firework.png")
 
         override fun draw(example: Boolean): Pair<Float, Float> {
@@ -200,9 +200,9 @@ object DeployableTimer : Module(
 
             var renderSize = 0
             if (example) {
-                renderSize = RenderUtils.renderImage(firework, -3.0 - scale * 20, -2.0, 50f)
+                renderSize = RenderUtils.renderImage(firework, -27.0, -2.0, 25f)
             } else if (DeployableTimer.lines.third != null) {
-                renderSize = RenderUtils.renderImage(DeployableTimer.lines.third!!, x.toDouble() - scale * 25, y.toDouble(), 20 * scale)
+                renderSize = RenderUtils.renderImage(DeployableTimer.lines.third!!, -3.0, -2.0, 50f)
             }
 
             width += renderSize

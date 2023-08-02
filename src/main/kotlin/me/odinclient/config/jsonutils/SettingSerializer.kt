@@ -12,11 +12,15 @@ class SettingSerializer : JsonSerializer<Setting<*>> {
     override fun serialize(src: Setting<*>?, typeOfSrc: Type?, context: JsonSerializationContext?): JsonElement {
         return JsonObject().apply {
             when (src) {
-                is BooleanSetting -> this.addProperty(src.name, src.enabled)
-                is NumberSetting -> this.addProperty(src.name, src.valueAsDouble)
-                is SelectorSetting -> this.addProperty(src.name, src.selected)
-                is StringSetting -> this.addProperty(src.name, src.text)
-                is ColorSetting -> this.addProperty(src.name, src.value.rgba)
+                is BooleanSetting -> addProperty(src.name, src.enabled)
+                is DualSetting -> addProperty(src.name, src.enabled)
+                is NumberSetting -> addProperty(src.name, src.valueAsDouble)
+                is SelectorSetting -> addProperty(src.name, src.selected)
+                is StringSetting -> addProperty(src.name, src.text)
+                is ColorSetting -> addProperty(src.name, src.value.rgba)
+                is HudSetting -> add(src.name, JsonObject().apply {
+                    context?.serialize(src.value)
+                })
             }
         }
     }

@@ -3,8 +3,10 @@ package me.odinclient.features.impl.dungeon
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.ui.hud.HudData
 import me.odinclient.features.settings.impl.HudSetting
 import me.odinclient.ui.hud.TextHud
+import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -15,7 +17,7 @@ object CanClip : Module(
     description = "Tells you if you are currently able to clip through a stair under you",
     category = Category.DUNGEON
 ) {
-    private val hud: Boolean by HudSetting("Can Clip Hud", CanClipHud)
+    private val hud: HudData by HudSetting("Can Clip Hud", CanClipHud)
 
     var canClip = false
 
@@ -30,9 +32,9 @@ object CanClip : Module(
         canClip = x in 0.24..0.26 || x in 0.74..0.76 || z in 0.24..0.26 || z in 0.74..0.76
     }
 
-    object CanClipHud: TextHud(0f, 0f) {
+    object CanClipHud: TextHud() {
         override fun getLines(example: Boolean): MutableList<String> {
-            return mutableListOf(if (example) "Can Clip" else if (CanClip.canClip) "Can Clip" else "")
+            return mutableListOf(if (example) "Can Clip" else if (canClip) "Can Clip" else "")
         }
     }
 }

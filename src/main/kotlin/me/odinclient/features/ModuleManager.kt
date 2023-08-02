@@ -93,7 +93,7 @@ object ModuleManager {
     @SubscribeEvent
     fun onRenderOverlay(event: RenderGameOverlayEvent.Text) {
         huds.forEach {
-            if (it.second.isEnabled && mc.currentScreen == null) it.first.render()
+            if (it.second.value.isEnabled && mc.currentScreen == null) it.first.render()
         }
     }
 

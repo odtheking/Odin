@@ -30,7 +30,7 @@ class ElementHud(parent: ModuleButton, setting: HudSetting) : Element<HudSetting
 
     private val anim = EaseInOut(200)
 
-    private val isEnabledSetting = BooleanSetting("Enabled", setting.isEnabled)
+    private val isEnabledSetting = BooleanSetting("Enabled", setting.value.isEnabled)
     private val isEnabledElement = ElementCheckBox(this.parent, isEnabledSetting)
 
     private val openExampleHudSetting = ActionSetting("Open Example Hud") {
@@ -68,7 +68,7 @@ class ElementHud(parent: ModuleButton, setting: HudSetting) : Element<HudSetting
             if (anim.start()) extended = !extended
             return true
         } else if (isEnabledElement.mouseClicked(mouseButton)) {
-            setting.isEnabled = isEnabledSetting.value
+            setting.value.isEnabled = isEnabledSetting.value
             return true
         } else if (openExampleHudElement.mouseClicked(mouseButton)) {
             return true

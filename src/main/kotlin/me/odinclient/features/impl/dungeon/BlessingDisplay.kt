@@ -4,9 +4,11 @@ import me.odinclient.events.ReceivePacketEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.BooleanSetting
+import me.odinclient.ui.hud.HudData
 import me.odinclient.features.settings.impl.HudSetting
 import me.odinclient.ui.hud.TextHud
 import me.odinclient.utils.Utils.noControlCodes
+import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.network.play.server.S47PacketPlayerListHeaderFooter
 import net.minecraftforge.event.world.WorldEvent
@@ -23,7 +25,7 @@ object BlessingDisplay : Module(
     private val life: Boolean by BooleanSetting("Life Blessing")
     private val wisdom: Boolean by BooleanSetting("Wisdom Blessing")
 
-    private val hud: Boolean by HudSetting("Blessing Display Hud", BlessingDisplayHud)
+    private val hud: HudData by HudSetting("Blessing Display Hud", BlessingDisplayHud)
 
     enum class Blessings (
         var current: Int,
@@ -57,7 +59,6 @@ object BlessingDisplay : Module(
         if (event.packet !is S47PacketPlayerListHeaderFooter || /*!config.powerDisplayHud.isEnabled ||*/ !DungeonUtils.inDungeons) return
         val footer = event.packet.footer.unformattedText.noControlCodes
 
-        // This looks like shit but oh well
         if (power)
             Blessings.POWER.regex.find(footer)?.let { Blessings.POWER.current = romanToInt(it.groupValues[1]) }
         else Blessings.POWER.current = 0
@@ -84,7 +85,7 @@ object BlessingDisplay : Module(
         Blessings.values().forEach { it.reset() }
     }
 
-    object BlessingDisplayHud : TextHud(0f, 0f) {
+    object BlessingDisplayHud : TextHud() {
         override fun getLines(example: Boolean): MutableList<String> {
             return if (example) {
                 mutableListOf(
