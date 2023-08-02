@@ -40,12 +40,12 @@ object Ghosts : Module(
 
             if (showGhostNametag)
             {
-                this.drawGhostNameTag(creeper, event.partialTicks)
+                this.drawGhostNameTag(creeper)
             }
         }
     }
 
-    private fun drawGhostNameTag(creeper: EntityCreeper, pTicks: Float) {
+    private fun drawGhostNameTag(creeper: EntityCreeper) {
         val currentHealth = creeper.health
         val maxHealth = creeper.getEntityAttribute(SharedMonsterAttributes.maxHealth).baseValue
         val isRunic = maxHealth == 4000000.0
@@ -68,7 +68,7 @@ object Ghosts : Module(
             0,
             renderBlackBox = true,
             increase = false,
-            depthTest = true,
+            depthTest = false,
             0.016666668f * 1.6f,
         )
     }
