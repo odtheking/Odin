@@ -1,11 +1,15 @@
 package me.odinclient.ui.clickgui.elements
 
+import cc.polyfrost.oneconfig.renderer.NanoVGHelper
 import cc.polyfrost.oneconfig.renderer.font.Fonts
+import cc.polyfrost.oneconfig.utils.dsl.nanoVGHelper
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.*
+import me.odinclient.ui.clickgui.ClickGUI
 import me.odinclient.ui.clickgui.Panel
 import me.odinclient.ui.clickgui.elements.menu.*
-import me.odinclient.ui.clickgui.util.ColorUtil.brighter
+import me.odinclient.ui.clickgui.util.ColorUtil.brighterIf
+import me.odinclient.ui.clickgui.util.ColorUtil.buttonColor
 import me.odinclient.ui.clickgui.util.ColorUtil.clickGUIColor
 import me.odinclient.ui.clickgui.util.ColorUtil.moduleButtonColor
 import me.odinclient.ui.clickgui.util.ColorUtil.textColor
@@ -30,7 +34,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
     private val colorAnim = ColorAnimation(300)
 
     val color: Color
-        get() = colorAnim.get(clickGUIColor, moduleButtonColor, module.enabled).brighter(1 + hoverHandler.percent() / 300f)
+        get() = colorAnim.get(clickGUIColor, moduleButtonColor, module.enabled).brighterIf(isButtonHovered, 1 + hoverHandler.alpha)
 
     val width = Panel.width
     val height = 32f
@@ -38,7 +42,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
     var extended = false
 
     private val extendAnim = EaseInOut(250)
-    private val hoverHandler = HoverHandler(150)
+    private val hoverHandler = HoverHandler(1000, 200)
 
     init {
         updateElements()
@@ -78,17 +82,27 @@ class ModuleButton(val module: Module, val panel: Panel) {
 
         hoverHandler.handle(x, y, width, height - 1)
 
-        nvg {
-            /*
-            val percent = hoverHandler.percent()
-            if (percent > 50) {
-                val bounds = nanoVGHelper.getWrappedStringBounds(this.instance, module.description, 200f, 14f, Fonts.REGULAR)
-                drawRoundedRect(x + width + 10f, y, bounds[2] - bounds[0] + 10, bounds[3] - bounds[1] + 8, 5f, Color(buttonColor, (percent - 30) / 100f).rgba)
-                drawWrappedString(module.description, x + width + 17f, y + 12f, 200f, -1, 14f, 1f, Fonts.REGULAR)
+        val percent = hoverHandler.percent()
+        if (percent > 0) {
+            ClickGUI.descriptionToRender = {
+                val bounds =
+                    nanoVGHelper.getWrappedStringBounds(this.context, module.description, 300f, 16f, Fonts.REGULAR)
+                rect(
+                    x + width + 10f, y, bounds[2] - bounds[0] + 10, bounds[3] - bounds[1] + 8,
+                    Color(buttonColor.rgba, (percent / 200f).coerceAtLeast(0.3f)), 5f
+                )
+                NanoVGHelper.INSTANCE.drawWrappedString(this.context, module.description, x + width + 17f, y + 12f, 300f, -1, 16f, 1f, Fonts.REGULAR)
             }
-             */
+        }
+
+        nvg {
+
             rect(x, y, width, height, color)
             text(module.name, x + width / 2, y + height / 2, textColor, 18f, Fonts.MEDIUM, TextAlign.Middle)
+            val textWidth = getTextWidth(module.name, 18f, Fonts.MEDIUM)
+            if (module.bannable) NanoVGHelper.INSTANCE.drawSvg( this.context,
+                "/assets/odinclient/hazard.svg", x + width / 2 + textWidth / 2 + 10f, y + 5f, 20f, 20f, javaClass
+            )
 
             if (!extendAnim.isAnimating() && !extended || menuElements.isEmpty()) return@nvg
 

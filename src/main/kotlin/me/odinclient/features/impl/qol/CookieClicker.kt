@@ -13,6 +13,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object CookieClicker : Module(
     "Cookie Clicker",
+    description = "Automatically clicks the cookie in the Cookie Clicker menu.",
     category = Category.QOL
 ) {
     private val delay: Long by NumberSetting("Delay", 150, 50, 300, 5)

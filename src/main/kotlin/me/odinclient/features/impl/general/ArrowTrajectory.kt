@@ -24,6 +24,7 @@ import kotlin.math.sqrt
 
 object ArrowTrajectory : Module(
     "Arrow Trajectory",
+    description = "Displays the trajectory of the arrows your Terminator would shoot.",
     category = Category.GENERAL
 ) {
     private val thickness: Float by NumberSetting("Line Width", 2f, 1.0, 5.0, 0.5)

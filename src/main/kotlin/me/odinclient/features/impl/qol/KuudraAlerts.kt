@@ -9,6 +9,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object KuudraAlerts : Module(
     "Kuudra Alerts",
+    description = "Displays alerts for certain Kuudra events.",
     category = Category.QOL
 ) {
     private val map = mapOf(

@@ -13,6 +13,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object BrokenHype : Module(
     "Broken Hype",
+    description = "Displays a notification if your Witherblade breaks.",
     category = Category.QOL
 ) {
     private val showAlert: Boolean by BooleanSetting("Alert", true)

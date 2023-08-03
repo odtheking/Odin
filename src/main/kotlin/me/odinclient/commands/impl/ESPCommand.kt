@@ -1,6 +1,5 @@
 package me.odinclient.commands.impl
 
-import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.OdinClient.Companion.miscConfig
 import me.odinclient.commands.Command
 import me.odinclient.commands.CommandArguments

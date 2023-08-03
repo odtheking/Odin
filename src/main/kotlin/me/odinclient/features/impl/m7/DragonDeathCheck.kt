@@ -16,6 +16,7 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
+// This is currently broken and i cba to fix it
 object DragonDeathCheck {
     private enum class DragonColors(
         val pos: Vec3

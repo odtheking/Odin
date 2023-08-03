@@ -1,20 +1,20 @@
 package me.odinclient.features.impl.qol
 
 import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.events.ChatPacketEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.utils.Utils.containsOneOf
-import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
-import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object Reminders : Module(
     "Reminders",
+    description = "Helpful reminders for dungeons.",
     category = Category.QOL
 ) {
     private val ultReminder: Boolean by BooleanSetting("Ult Reminder")
@@ -34,9 +34,9 @@ object Reminders : Module(
     )
 
     @SubscribeEvent
-    fun onClientChatReceived(event: ClientChatReceivedEvent) {
+    fun onClientChatReceived(event: ChatPacketEvent) {
         if (!DungeonUtils.inDungeons) return
-        val msg = event.message.unformattedText.noControlCodes
+        val msg = event.message
 
         if (msg == "${mc.thePlayer.name} is now ready!") {
             playerReady = true

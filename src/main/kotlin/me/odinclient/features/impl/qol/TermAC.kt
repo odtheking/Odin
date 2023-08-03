@@ -11,6 +11,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object TermAC : Module(
     "Terminator AC",
+    description = "Randomized auto-clicker for Terminator, clicks at the servers current TPS, meaning you should never get kicked.",
     category = Category.QOL
 ) {
     private var nextClick = .0

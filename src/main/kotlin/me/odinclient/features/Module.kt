@@ -28,7 +28,9 @@ abstract class Module(
     category: Category = Category.GENERAL,
     toggled: Boolean = false,
     settings: ArrayList<Setting<*>> = ArrayList(),
-    description: String = ""
+    description: String = "",
+    val bannable: Boolean = false,
+    val fpsHeavy: Boolean = false
 ) {
 
     @Expose

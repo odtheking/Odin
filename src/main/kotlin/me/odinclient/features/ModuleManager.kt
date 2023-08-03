@@ -74,7 +74,8 @@ object ModuleManager {
         CanClip,
         TerracottaTimer,
         NoRender,
-        NoCarpet
+        NoCarpet,
+        RelicAura
     )
 
     @SubscribeEvent

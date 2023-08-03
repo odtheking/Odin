@@ -1,7 +1,6 @@
 package me.odinclient.ui.hud
 
 import me.odinclient.OdinClient.Companion.mc
-import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import net.minecraft.client.renderer.GlStateManager
 
 open class BaseHud(var x: Float = 0f, var y: Float = 0f, var scale: Float = 1f) {

@@ -6,11 +6,9 @@ import me.odinclient.ui.clickgui.elements.Element
 import me.odinclient.ui.clickgui.elements.ElementType
 import me.odinclient.ui.clickgui.elements.ModuleButton
 import me.odinclient.ui.clickgui.util.ColorUtil
-import me.odinclient.ui.clickgui.util.ColorUtil.darker
 import me.odinclient.ui.clickgui.util.ColorUtil.darkerIf
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.gui.MouseUtils
-import me.odinclient.utils.render.gui.animations.impl.ColorAnimation
 import me.odinclient.utils.render.gui.animations.impl.LinearAnimation
 import me.odinclient.utils.render.gui.nvg.*
 

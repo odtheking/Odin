@@ -8,7 +8,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object NecronDropTimer : Module(
     name = "Necron Drop Timer",
-    description = "Shows a timer for when Necron drops his loot",
+    description = "Shows a timer for when Necron drops you down.",
     category = Category.M7
 ) {
     var timer: Byte = 0

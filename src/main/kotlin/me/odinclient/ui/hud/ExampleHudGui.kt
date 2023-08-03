@@ -1,16 +1,11 @@
 package me.odinclient.ui.hud
 
-import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinclient.config.Config
 import me.odinclient.features.ModuleManager.hud
-import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.gui.MouseUtils
 import me.odinclient.utils.render.gui.nvg.drawNVG
-import me.odinclient.utils.render.gui.nvg.textWithControlCodes
 import net.minecraft.client.gui.GuiScreen
 import org.lwjgl.input.Mouse
-import org.lwjgl.opengl.XRandR.Screen
-import org.lwjgl.util.Display
 import java.io.IOException
 import kotlin.math.sign
 

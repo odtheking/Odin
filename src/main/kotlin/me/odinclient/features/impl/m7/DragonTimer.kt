@@ -19,6 +19,7 @@ import kotlin.math.max
 
 object DragonTimer : Module(
     "Dragon Timer",
+    description = "Displays a timer for when M7 dragons spawn.",
     category = Category.M7
 ) {
     private const val dragonSpawnTime = 5000L

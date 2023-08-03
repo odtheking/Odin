@@ -1,7 +1,5 @@
 package me.odinclient.mixin;
 
-import me.odinclient.OdinClient;
-import me.odinclient.features.impl.general.DevPlayers;
 import me.odinclient.features.impl.general.PersonalDragon;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.entity.Entity;

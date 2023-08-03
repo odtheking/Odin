@@ -13,6 +13,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object NoBlockAnimation : Module(
     "No Block Animation",
+    description = "Stops the block animation when using a sword ability.",
     category = Category.QOL
 ) {
     private var isRightClickKeyDown = false

@@ -14,6 +14,7 @@ import java.awt.Color
 
 object DragonBoxes : Module(
     "Dragon Boxes",
+    description = "Shows semi-accurate kill boxes for M7 dragons.",
     category = Category.M7
 ) {
     private val lineThickness: Float by NumberSetting("Line width", 2f, 1.0, 5.0, 0.5)

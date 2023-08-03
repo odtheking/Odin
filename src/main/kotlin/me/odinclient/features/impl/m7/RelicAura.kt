@@ -1,15 +1,14 @@
-package me.odinclient.features.impl.qol
+package me.odinclient.features.impl.m7
 
 import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.events.ChatPacketEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
-import me.odinclient.utils.skyblock.ChatUtils.unformattedText
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.util.Vec3
-import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -17,7 +16,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 object RelicAura : Module(
     name = "Relic Aura",
     category = Category.M7,
-    description = ""
+    description = "Automatically picks up relics in the Wither King boss-fight.",
+    bannable = true
 ){
     private var disabler = false
 
@@ -27,9 +27,8 @@ object RelicAura : Module(
     }
 
     @SubscribeEvent
-    fun onChat(event: ClientChatReceivedEvent) {
-        val message = event.unformattedText
-        if (message == "[BOSS] Wither King: You.. again?") disabler = true
+    fun onChat(event: ChatPacketEvent) {
+        if (event.message == "[BOSS] Wither King: You.. again?") disabler = true
     }
 
     @SubscribeEvent

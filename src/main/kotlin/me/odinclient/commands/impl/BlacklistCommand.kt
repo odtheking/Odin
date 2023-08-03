@@ -2,8 +2,6 @@ package me.odinclient.commands.impl
 
 import me.odinclient.OdinClient.Companion.miscConfig
 import me.odinclient.commands.AbstractCommand
-import me.odinclient.commands.Command
-import me.odinclient.commands.CommandArguments
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 
 object BlacklistCommand : AbstractCommand("blacklist", "odblacklist", description = "Command for Blacklist.") {

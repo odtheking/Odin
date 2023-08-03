@@ -5,6 +5,7 @@ import me.odinclient.features.Category
 import me.odinclient.features.impl.general.ClickGUIModule
 import me.odinclient.ui.clickgui.elements.menu.ElementColor
 import me.odinclient.utils.render.gui.animations.impl.EaseInOut
+import me.odinclient.utils.render.gui.nvg.NVG
 import me.odinclient.utils.render.gui.nvg.drawNVG
 import me.odinclient.utils.render.gui.nvg.setAlpha
 import me.odinclient.utils.render.gui.nvg.translate
@@ -20,6 +21,7 @@ object ClickGUI : GuiScreen() {
     private var openedTime = System.currentTimeMillis()
 
     private var panels: ArrayList<Panel> = arrayListOf()
+    var descriptionToRender: (NVG.() -> Unit)? = null
 
     fun init() {
         for (category in Category.values()) {
@@ -37,6 +39,9 @@ object ClickGUI : GuiScreen() {
             for (i in 0 until panels.size) {
                 panels[i].draw(this)
             }
+
+            if (descriptionToRender != null) descriptionToRender?.invoke(this)
+            descriptionToRender = null
         }
     }
 

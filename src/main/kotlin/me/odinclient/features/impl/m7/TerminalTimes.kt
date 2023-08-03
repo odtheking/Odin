@@ -18,7 +18,7 @@ object TerminalTimes : Module(
     description = "Keeps track of how long you took to complete a terminal.",
     category = Category.M7
 ) {
-    private val sendMessage: Int by SelectorSetting("Show Message", "Always", arrayListOf("Only if Personal Best", "Always"))
+    private val sendMessage: Int by SelectorSetting("Send Message", "Always", arrayListOf("Only PB", "Always"))
 
     private var inTerm = false
     private var timer = 0L

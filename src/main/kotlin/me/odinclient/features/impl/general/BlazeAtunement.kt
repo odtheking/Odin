@@ -23,6 +23,7 @@ import java.awt.Color
 
 object BlazeAtunement : Module(
     "Blaze Atunement",
+    description = "Displays what atunement a blaze boss needs.",
     category = Category.GENERAL
 ) {
     private val overlay: Boolean by BooleanSetting("Overlay Entities", false)

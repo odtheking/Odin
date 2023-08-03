@@ -44,6 +44,10 @@ object ColorUtil {
         return Color(hue, saturation, (brightness * factor.coerceAtLeast(1f)).coerceAtMost(1f), alpha)
     }
 
+    fun Color.brighterIf(condition: Boolean, factor: Float = 1.3f): Color {
+        return if (condition) brighter(factor) else this
+    }
+
     fun Color.darker(factor: Float = 0.7f): Color {
         return Color(hue, saturation, brightness * factor, alpha)
     }

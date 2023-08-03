@@ -19,7 +19,7 @@ import java.awt.Color
 
 object LeapHelper : Module(
     name = "Leap Helper",
-    description = "Shows where to leap to",
+    description = "Shows which player is the most practical to leap to in the M7 boss-fight.",
     category = Category.M7
 ) {
     private val NONE = Vec3(0.0, 0.0, 0.0)

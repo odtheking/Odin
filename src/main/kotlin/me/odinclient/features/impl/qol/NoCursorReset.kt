@@ -12,6 +12,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object NoCursorReset : Module(
     "No Cursor Reset",
+    description = "Makes your cursor stop resetting between guis.",
     category = Category.QOL
 ) {
     private val clock = Clock(150)
