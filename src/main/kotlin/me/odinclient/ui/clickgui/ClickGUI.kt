@@ -13,14 +13,13 @@ import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
 import java.io.IOException
-import java.util.*
 import kotlin.math.floor
 
 object ClickGUI : GuiScreen() {
-    private val openingAnimation = EaseInOut(200)
+    var openingAnimation = EaseInOut(200)
     private var openedTime = System.currentTimeMillis()
 
-    var panels: ArrayList<Panel> = arrayListOf()
+    private var panels: ArrayList<Panel> = arrayListOf()
 
     fun init() {
         for (category in Category.values()) {

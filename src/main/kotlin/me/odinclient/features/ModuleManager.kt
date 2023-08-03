@@ -74,7 +74,8 @@ object ModuleManager {
         Server,
         DeployableTimer,
         CanClip,
-        TerracottaTimer
+        TerracottaTimer,
+        NoRender
     )
 
     @SubscribeEvent
