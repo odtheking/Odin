@@ -38,7 +38,6 @@ object ESPCommand : Command("esp", listOf("odesp"), "Command for ESP.") {
                 }
 
                 "clear" -> {
-                    mc.thePlayer.setPosition(206.5, 4.0, 116.5)
                     espList.clear()
                     miscConfig.saveAllConfigs()
                     ESP.currentEntities.clear()
