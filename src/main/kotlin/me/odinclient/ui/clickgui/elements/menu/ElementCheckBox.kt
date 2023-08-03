@@ -6,12 +6,16 @@ import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.ui.clickgui.elements.Element
 import me.odinclient.ui.clickgui.elements.ElementType
 import me.odinclient.ui.clickgui.elements.ModuleButton
+import me.odinclient.ui.clickgui.util.ColorUtil
 import me.odinclient.ui.clickgui.util.ColorUtil.brighter
 import me.odinclient.ui.clickgui.util.ColorUtil.buttonColor
 import me.odinclient.ui.clickgui.util.ColorUtil.clickGUIColor
+import me.odinclient.ui.clickgui.util.ColorUtil.darker
+import me.odinclient.ui.clickgui.util.ColorUtil.darkerIf
 import me.odinclient.ui.clickgui.util.ColorUtil.elementBackground
 import me.odinclient.ui.clickgui.util.ColorUtil.textColor
 import me.odinclient.ui.clickgui.util.HoverHandler
+import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinclient.utils.render.gui.animations.impl.ColorAnimation
 import me.odinclient.utils.render.gui.animations.impl.LinearAnimation
@@ -42,7 +46,12 @@ class ElementCheckBox(parent: ModuleButton, setting: BooleanSetting) : Element<B
                 rect(x + w - 30f, y + 5f, 21f, 20f, color, 5f)
                 rectOutline(x + w - 30f, y + 5f, 21f, 20f, clickGUIColor, 5f, 1.5f)
             } else {
-                // some1 else do it
+                dropShadow(x + w - 43f, y + 4f, 34f, 20f, 10f, 0.75f, 5f)
+                rect(x + w - 43f, y + 4f, 34f, 20f, color, 9f)
+                if (isHovered) rectOutline(x + w - 43f, y + 4f, 34f, 20f, clickGUIColor.darker(), 9f, .5f)
+                circle(x + w - linearAnimation.get(35f, 15f, !setting.enabled), y + 14f, 7f,
+                    Color(220, 220, 220).darkerIf(isHovered, 0.9f)
+                )
             }
         }
 
@@ -66,9 +75,7 @@ class ElementCheckBox(parent: ModuleButton, setting: BooleanSetting) : Element<B
                     1.5f
                 )
             } else {
-                drawRoundedRect(x + w - 43f, y + 4f, 34f, 20f, 9f, color)
-                if (isHovered) drawOutlineRoundedRect(x + w - 43f, y + 4f, 34f, 20f, 9f, ColorUtil.boxHoverColor, 1.5f)
-                drawCircle(x + w - linearAnimation.get(35f, 15f, !setting.enabled), y + 14f, 7f, if (isHovered) Color(220, 220, 220).rgba else -1)
+
             }
         }
 

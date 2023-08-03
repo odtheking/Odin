@@ -79,6 +79,8 @@ class Color(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f)
         @JvmField
         val TRANSPARENT = Color(0, 0, 0, 0f)
 
+        val WHITE = Color(255, 255, 255)
+
         inline val Int.red get() = this shr 16 and 0xFF
         inline val Int.green get() = this shr 8 and 0xFF
         inline val Int.blue get() = this and 0xFF

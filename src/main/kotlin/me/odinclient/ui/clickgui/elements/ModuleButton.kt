@@ -76,7 +76,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
     fun draw(nvg: NVG): Float {
         var offs = height
 
-        hoverHandler.handle(x, y, width, height)
+        hoverHandler.handle(x, y, width, height - 1)
 
         nvg {
             /*

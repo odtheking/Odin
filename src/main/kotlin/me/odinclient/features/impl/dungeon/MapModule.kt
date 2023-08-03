@@ -11,7 +11,7 @@ object MapModule : Module(
     description = "A dungeon map that scans the dungeon, heavily inspired by Funnymap",
     category = Category.DUNGEON
 ) {
-    val mapWindow: Boolean by DualSetting("", "On Screen", "Window")
+    val mapWindow: Boolean by DualSetting("Is Window", "On Screen", "Window")
     val hideInBoss: Boolean by BooleanSetting("Hide in Boss Room", true)
     val showRunInfo: Boolean by BooleanSetting("Show Run Info", true)
     val autoScan: Boolean by BooleanSetting("Auto Scan", true)

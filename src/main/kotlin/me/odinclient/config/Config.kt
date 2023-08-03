@@ -51,13 +51,18 @@ object Config {
                         @Suppress("SENSELESS_COMPARISON")
                         if (configSetting == null) continue
 
-                        val setting = module.getSettingByName(configSetting.name) ?: continue
+                        val setting = module.getSettingByName(configSetting.name)
+                        if (setting == null) {
+                            println("Setting ${configSetting.name} not found in module ${module.name}, if this is an ActionSetting, ignore this message.")
+                            continue
+                        }
                         when (setting) {
                             is BooleanSetting -> setting.enabled = (configSetting as BooleanSetting).enabled
                             is NumberSetting -> setting.valueAsDouble = (configSetting as NumberSetting).valueAsDouble
                             is ColorSetting -> setting.value = Color((configSetting as NumberSetting).valueAsDouble.toInt())
                             is SelectorSetting -> setting.selected = (configSetting as StringSetting).text
                             is StringSetting -> setting.text = (configSetting as StringSetting).text
+                            is DualSetting -> setting.enabled = (configSetting as DualSetting).enabled
                         }
                     }
                 }

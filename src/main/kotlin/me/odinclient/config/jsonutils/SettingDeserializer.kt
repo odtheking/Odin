@@ -8,7 +8,7 @@ import me.odinclient.features.settings.Setting
 import me.odinclient.features.settings.impl.*
 import java.lang.reflect.Type
 
-class SettingDeserializer: JsonDeserializer<Setting<*>> {
+class SettingDeserializer : JsonDeserializer<Setting<*>> {
     override fun deserialize(json: JsonElement?, typeOfT: Type?, context: JsonDeserializationContext?): Setting<*> {
         if (json?.isJsonObject == true) {
             if (json.asJsonObject.entrySet().isEmpty()) return DummySetting("Undefined")
@@ -25,7 +25,12 @@ class SettingDeserializer: JsonDeserializer<Setting<*>> {
                 when {
                     (value as JsonPrimitive).isBoolean -> return BooleanSetting(name, value.asBoolean)
                     value.isNumber -> return NumberSetting(name, value.asDouble)
-                    value.isString -> return StringSetting(name, value.asString)
+                    value.isString -> {
+                        return if (value.asString == "Left" || value.asString == "Right") {
+                            val stuff = name.split(",")
+                            DualSetting(stuff[0], stuff[1], stuff[2], value.asString == "Right")
+                        } else StringSetting(name, value.asString)
+                    }
                 }
             }
         }

@@ -51,12 +51,14 @@ class ElementSelector(parent: ModuleButton, setting: SelectorSetting) :
             hover.handle(x + w - 20f - width, y + 4f, width + 12f, 22f)
             dropShadow(x + w - 20f - width, y + 4f, width + 12f, 22f, 10f, 0.75f, 5f)
             rect(x + w - 20f - width, y + 4f, width + 12f, 22f, color, 5f)
-            rectOutline(x + w - 20f - width, y + 4f, width + 12f, 22f, clickGUIColor, 5f, 1.5f)
+
 
             text(name, x + 6f, y + 16f, textColor, 16f, Fonts.REGULAR)
             text(display, x + w - 14f - width, y + 16f, textColor, 16f, Fonts.REGULAR)
 
             if (!extended && !settingAnim.isAnimating()) return@nvg
+
+            rectOutline(x + w - 20f - width, y + 4f, width + 12f, 22f, clickGUIColor, 5f, 1.5f)
 
             val scissor = scissor(x, y, w, h)
 
