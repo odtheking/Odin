@@ -73,7 +73,8 @@ object ModuleManager {
         DeployableTimer,
         CanClip,
         TerracottaTimer,
-        NoRender
+        NoRender,
+        NoCarpet
     )
 
     @SubscribeEvent
