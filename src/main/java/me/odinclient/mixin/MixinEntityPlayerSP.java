@@ -12,8 +12,6 @@ public abstract class MixinEntityPlayerSP {
 
     @Redirect(method = {"onLivingUpdate"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiScreen;doesGuiPauseGame()Z"))
     private boolean useChatInPortal(GuiScreen gui) {
-        if (PortalFix.INSTANCE.getEnabled()) {
-            return (!(gui instanceof net.minecraft.client.gui.inventory.GuiContainer) || gui.doesGuiPauseGame());
-        } else return gui.doesGuiPauseGame();
+        return PortalFix.INSTANCE.useChatInPortalMixin(gui);
     }
 }
