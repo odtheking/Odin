@@ -26,7 +26,7 @@ class ElementCheckBox(parent: ModuleButton, setting: BooleanSetting) : Element<B
     private val colorAnim = ColorAnimation(250)
     private val linearAnimation = LinearAnimation<Float>(200)
 
-    private val hover = HoverHandler(150)
+    private val hover = HoverHandler(0, 150)
 
     override val isHovered: Boolean get() =
         if (!ClickGUIModule.switchType) isAreaHovered(x + w - 30f, y + 5f, 21f, 20f)

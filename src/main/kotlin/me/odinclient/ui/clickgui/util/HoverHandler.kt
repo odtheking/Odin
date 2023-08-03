@@ -4,7 +4,7 @@ package me.odinclient.ui.clickgui.util
 import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinclient.utils.render.gui.animations.impl.LinearAnimation
 
-class HoverHandler(val delay: Long) {
+class HoverHandler(private val startDelay: Long, delay: Long) {
 
     private val anim = LinearAnimation<Int>(delay)
 
@@ -33,7 +33,7 @@ class HoverHandler(val delay: Long) {
             hoverStartTime = null
             if (hasStarted) {
                 anim.start()
-                isHovered = false
+                hasStarted = false
             }
         }
     }

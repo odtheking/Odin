@@ -23,7 +23,7 @@ class ElementKeyBind(parent: ModuleButton, private val mod: Module) :
 
     private val colorAnim = ColorAnimation(100)
 
-    private val hover = HoverHandler(150)
+    private val hover = HoverHandler(0, 150)
 
     private val buttonColor: Color
         inline get() = ColorUtil.buttonColor.darker(1 + hover.percent() / 500f)

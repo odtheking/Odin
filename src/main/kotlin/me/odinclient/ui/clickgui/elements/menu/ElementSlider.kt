@@ -34,7 +34,7 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
 
     private val sliderBGColor = Color(sliderBackgroundColor)
 
-    private val hoverHandler = HoverHandler(150)
+    private val hoverHandler = HoverHandler(0, 150)
 
     private inline val color: Color
         get() = clickGUIColor.brighter(1 + hoverHandler.percent() / 200f)

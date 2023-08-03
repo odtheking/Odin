@@ -30,7 +30,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
     inline val color: Color
         get() = setting.value
 
-    private val hover = HoverHandler(150)
+    private val hover = HoverHandler(0, 150)
 
     // TODO: MAKE A BETTER DESIGN (FUNCTION IS ALL HERE P MUCH)
     override fun draw(nvg: NVG) {

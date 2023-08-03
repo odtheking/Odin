@@ -36,7 +36,7 @@ class ElementSelector(parent: ModuleButton, setting: SelectorSetting) :
         isAreaHovered(x, y + 38f + 32f * it, w, 32f)
     }
 
-    private val hover = HoverHandler(150)
+    private val hover = HoverHandler(0, 150)
 
     private val color: Color
         get() = buttonColor.brighter(1 + hover.percent() / 500f)
