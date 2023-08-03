@@ -4,6 +4,7 @@ import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.PostGuiOpenEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.mixin.MinecraftAccessor
 import me.odinclient.ui.clickgui.ClickGUI
 import me.odinclient.utils.render.gui.animations.impl.EaseInOut
@@ -14,8 +15,10 @@ import net.minecraft.client.renderer.WorldRenderer
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.crash.CrashReport
 import net.minecraft.crash.CrashReportCategory
+import net.minecraft.entity.item.EntityFallingBlock
 import net.minecraft.util.ReportedException
 import net.minecraftforge.client.ForgeHooksClient
+import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Mouse
 import java.awt.Color
@@ -27,6 +30,14 @@ object NoRender : Module(
     category = Category.GENERAL,
     description = "Disables certain render function when they are not necessary, resulting in a decrease in gpu usage"
 ) {
+
+    private val fallingBlocks: Boolean by BooleanSetting("Remove falling blocks", true)
+
+    @SubscribeEvent
+    fun onFallingBlock(event: EntityJoinWorldEvent) {
+        if (event.entity !is EntityFallingBlock || !this.fallingBlocks) return
+        event.entity.setDead()
+    }
 
     override fun onEnable()
     {

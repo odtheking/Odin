@@ -5,7 +5,6 @@ import me.odinclient.features.impl.dungeon.*
 import me.odinclient.features.impl.general.*
 import me.odinclient.features.impl.m7.*
 import me.odinclient.features.impl.qol.*
-import me.odinclient.ui.hud.ExampleHudGui
 import me.odinclient.ui.hud.HudElement
 import me.odinclient.utils.render.gui.nvg.drawNVG
 import net.minecraftforge.client.event.RenderGameOverlayEvent
@@ -42,7 +41,6 @@ object ModuleManager {
         Camera,
         ClickGUIModule,
         ESP,
-        FPS,
         CPSDisplay,
         LockCursor,
         VanqNotifier,
