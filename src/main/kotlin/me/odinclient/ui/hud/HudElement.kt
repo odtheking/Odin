@@ -11,11 +11,11 @@ import me.odinclient.utils.render.gui.nvg.*
  */
 abstract class HudElement {
 
-    constructor(x: Float = 0f, y: Float = 0f, defaultScale: Float = 1f) {
+    constructor(x: Float = 0f, y: Float = 0f, defaultScale: Float = 1.4f) {
 
-        val xHud = NumberSetting("xHud", default = x, hidden = false)
-        val yHud = NumberSetting("yHud", default = y, hidden = false)
-        val scaleHud = NumberSetting("scaleHud", defaultScale, 0.1, 4.0, 0.01, hidden = false)
+        val xHud = NumberSetting("xHud", default = x, hidden = false, min = 0f, max = 1920f)
+        val yHud = NumberSetting("yHud", default = y, hidden = false, min = 0f, max = 1080f)
+        val scaleHud = NumberSetting("scaleHud", defaultScale, 0.8f, 6.0f, 0.01f, hidden = false)
 
         this.xSetting = xHud
         this.ySetting = yHud
@@ -57,7 +57,7 @@ abstract class HudElement {
     internal var scale: Float
         inline get() = scaleSetting.value
         set(value) {
-            if (value > 0.3f) scaleSetting.value = value
+            if (value > 0.8f) scaleSetting.value = value
         }
 
     /**
@@ -74,8 +74,10 @@ abstract class HudElement {
         vg.translate(x, y)
         vg.scale(scale, scale)
 
-        val (width, height) = render(vg, example)
-        if (example) vg.rect(0f, 0f, width, height, Color(0, 0, 0, 1.5f))
+        val (w, h) = render(vg, example)
+        this.width = w
+        this.height = h
+        if (example) vg.rect(0f, 0f, width, height, if (accept()) Color(0, 0, 0,.3f) else Color(0, 0, 0,.15f))
         vg.resetTransform()
 
         this.width = width

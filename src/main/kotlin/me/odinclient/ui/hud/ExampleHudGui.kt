@@ -1,11 +1,16 @@
 package me.odinclient.ui.hud
 
+import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinclient.config.Config
 import me.odinclient.features.ModuleManager.hud
+import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.gui.MouseUtils
 import me.odinclient.utils.render.gui.nvg.drawNVG
+import me.odinclient.utils.render.gui.nvg.textWithControlCodes
 import net.minecraft.client.gui.GuiScreen
 import org.lwjgl.input.Mouse
+import org.lwjgl.opengl.XRandR.Screen
+import org.lwjgl.util.Display
 import java.io.IOException
 import kotlin.math.sign
 
@@ -16,16 +21,20 @@ object ExampleHudGui : GuiScreen() {
     var startY: Float = 0f
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        drawNVG {
-            for (i in 0 until hud.size) {
-                hud[i].draw(this, example = true)
-            }
-        }
-
         dragging?.let {
             it.x = MouseUtils.mouseX - startX
             it.y = MouseUtils.mouseY - startY
         }
+
+        drawNVG {
+            for (hudElement in hud) {
+                hudElement.x = hudElement.x.coerceIn(0f, mc.displayWidth - hudElement.width * hudElement.scale)
+                hudElement.y = hudElement.y.coerceIn(0f, mc.displayHeight - hudElement.height * hudElement.scale)
+                hudElement.draw(this, example = true)
+            }
+        }
+
+
     }
 
     @Throws(IOException::class)
@@ -33,7 +42,9 @@ object ExampleHudGui : GuiScreen() {
         super.handleMouseInput()
         if (Mouse.getEventDWheel() != 0) {
             for (i in hud.size - 1 downTo 0) {
-                if (hud[i].accept()) hud[i].scale += Mouse.getEventDWheel().sign * 0.05f
+                if (hud[i].accept()) {
+                    hud[i].scale += Mouse.getEventDWheel().sign * 0.05f
+                }
             }
         }
     }

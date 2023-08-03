@@ -27,7 +27,7 @@ object ClickGUIModule: Module(
     val enableNotification: Boolean by BooleanSetting("Enable notifications", false, description = "Shows you a notification in chat when you toggle an option with a keybind")
     val color: Color by ColorSetting("GUI Color", Color(50, 150, 220), allowAlpha = false, description = "Color theme in the gui.")
     val switchType: Boolean by DualSetting("Switch Type", "Checkbox", "Switch")
-    val action: () -> Unit by ActionSetting("Example Hud") {
+    val action: () -> Unit by ActionSetting("Open Example Hud") {
         display = ExampleHudGui
     }
 

@@ -75,6 +75,46 @@ fun NVG.circle(x: Float, y: Float, radius: Float, color: Color) {
     renderer.drawCircle(context, x, y, radius, color.rgba)
 }
 
+val colorCodes = arrayOf(
+    Color(0, 0, 0),
+    Color(0, 0, 170),
+    Color(0, 170, 0),
+    Color(0, 170, 170),
+    Color(170, 0, 0),
+    Color(170, 0, 170),
+    Color(255, 170, 0),
+    Color(170, 170, 170),
+    Color(85, 85, 85),
+    Color(85, 85, 255),
+    Color(85, 255, 85),
+    Color(85, 255, 255),
+    Color(255, 85, 85),
+    Color(255, 85, 255),
+    Color(255, 255, 85),
+    Color(255, 255, 255),
+    Color(255, 255, 255)
+)
+
+fun NVG.textWithControlCodes(text: String, x: Float, y: Float, size: Float, font: Font): Float {
+    var i = 0
+    var color = Color(255, 255, 255)
+    var xPos = x
+    while (i < text.length) {
+        val char = text[i]
+        if (char == '\u00a7' && i + 1 < text.length) {
+            val colorCode = "0123456789abcdefr".indexOf(text.lowercase()[i + 1])
+            color = colorCodes[colorCode]
+
+            i += 2
+            continue
+        }
+        text(char.toString(), xPos, y, color, size, font)
+        xPos += getTextWidth(char.toString(), size, font)
+        i++
+    }
+    return xPos
+}
+
 fun NVG.text(text: String, x: Float, y: Float, color: Color, size: Float, font: Font, align: TextAlign = Left) {
     if (color.isTransparent) return
     val drawX = when (align) {
