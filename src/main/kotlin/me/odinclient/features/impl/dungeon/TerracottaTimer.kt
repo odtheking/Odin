@@ -33,12 +33,12 @@ object TerracottaTimer: Module(
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent)
     {
-        for (timer in terracottaTimers)
-        {
-            val time = (timer.value / 1000f).round(2).toString()
-            val vec3 = Vec3(timer.key.x.toDouble(), timer.key.y.toDouble(), timer.key.z.toDouble()).addVector(0.0, 1.5, 0.0)
-            val color = Color(1 - timer.value / 15000f, timer.value / 15000f, 0f).rgb
-            RenderUtils.drawStringInWorld(time, vec3, color, renderBlackBox = false, increase = false, depthTest = false, scale = 0.016666668f * 1.6f)
+        terracottaTimers.entries.removeAll {
+            val time = it.value - System.currentTimeMillis()
+            val vec3 = Vec3(it.key.x.toDouble(), it.key.y.toDouble(), it.key.z.toDouble()).addVector(0.0, 1.5, 0.0)
+            val color = Color(1 - it.value / 15000f, it.value / 15000f, 0f).rgb
+            RenderUtils.drawStringInWorld((time / 1000f).round(2).toString(), vec3, color, renderBlackBox = false, increase = false, depthTest = false, scale = 0.016666668f * 1.6f)
+            return@removeAll time <= 0
         }
     }
 
