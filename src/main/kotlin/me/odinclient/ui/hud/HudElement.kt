@@ -57,7 +57,7 @@ abstract class HudElement {
     internal var scale: Float
         inline get() = scaleSetting.value
         set(value) {
-            if (value > 0.3f) scaleSetting.value = value
+            if (value > .8f) scaleSetting.value = value
         }
 
     /**
