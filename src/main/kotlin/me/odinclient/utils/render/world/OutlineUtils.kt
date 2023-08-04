@@ -2,7 +2,7 @@ package me.odinclient.utils.render.world
 
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.RenderEntityModelEvent
-import net.minecraft.client.Minecraft
+import me.odinclient.utils.render.Color
 import net.minecraft.client.model.ModelBase
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
@@ -12,9 +12,9 @@ import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.EXTFramebufferObject
 import org.lwjgl.opengl.EXTPackedDepthStencil
 import org.lwjgl.opengl.GL11
-import java.awt.Color
 
 
+// TODO: TEST WITH NEW COLOR :PRAY: IT WORKS
 /**
  * Modified from LiquidBounce under GPL-3.0
  * https://github.com/CCBlueX/LiquidBounce/blob/legacy/LICENSE
@@ -163,15 +163,15 @@ object OutlineUtils {
 
     private fun setColor(color: Color) {
         GL11.glColor4d(
-            (color.red / 255f).toDouble(),
-            (color.green / 255f).toDouble(),
-            (color.blue / 255f).toDouble(),
-            (color.alpha / 255f).toDouble()
+            (color.r / 255f).toDouble(),
+            (color.g / 255f).toDouble(),
+            (color.b / 255f).toDouble(),
+            (color.a / 255f).toDouble()
         )
     }
 
     private fun checkSetupFBO() {
-        val fbo = Minecraft.getMinecraft().framebuffer
+        val fbo = mc.framebuffer
         if (fbo != null) {
             if (fbo.depthBuffer > -1) {
                 setupFBO(fbo)

@@ -16,7 +16,6 @@ import me.odinclient.events.ClientSecondEvent
 import me.odinclient.events.senders.ClientSecondEventSender
 import me.odinclient.events.senders.ServerTickEventSender
 import me.odinclient.features.ModuleManager
-import me.odinclient.features.impl.general.UpdateAvailableMessage
 import me.odinclient.ui.clickgui.ClickGUI
 import me.odinclient.utils.ServerUtils
 import me.odinclient.utils.clock.Executor
@@ -64,7 +63,6 @@ class OdinClient {
 
             Dungeon,
             MapRender,
-            UpdateAvailableMessage,
 
             ServerTickEventSender,
             ChatPacketEventSender,

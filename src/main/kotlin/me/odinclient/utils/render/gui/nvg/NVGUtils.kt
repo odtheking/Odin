@@ -97,7 +97,7 @@ val colorCodes = arrayOf(
 
 fun NVG.textWithControlCodes(text: String, x: Float, y: Float, size: Float, font: Font): Float {
     var i = 0
-    var color = Color(255, 255, 255)
+    var color = Color.WHITE
     var xPos = x
     while (i < text.length) {
         val char = text[i]

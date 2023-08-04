@@ -17,7 +17,7 @@ object RelicAura : Module(
     name = "Relic Aura",
     category = Category.M7,
     description = "Automatically picks up relics in the Wither King boss-fight.",
-    bannable = true
+    risky = true
 ){
     private var disabler = false
 

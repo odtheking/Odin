@@ -1,6 +1,6 @@
 package me.odinclient.dungeonmap.core.map
 
-import java.awt.Color
+import me.odinclient.utils.render.Color
 
 interface Tile {
     val x: Int

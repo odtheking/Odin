@@ -6,8 +6,11 @@ import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.features.settings.impl.NumberSetting
+import me.odinclient.utils.VecUtils.addVec
+import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.world.OutlineUtils
 import me.odinclient.utils.render.world.RenderUtils
+import me.odinclient.utils.render.world.RenderUtils.renderVec
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -26,10 +29,11 @@ object TeammatesOutline : Module(
         if (!DungeonUtils.inDungeons || event.entity == mc.thePlayer || !DungeonUtils.teammates.any { it.first == event.entity } || (inBoss && DungeonUtils.inBoss)) return
         if (whenVisible && mc.thePlayer.canEntityBeSeen(event.entity)) return
         val color = DungeonUtils.teammates.first { it.first == event.entity }.second.color
+
         OutlineUtils.outlineEntity(
             event,
             thickness,
-            color,
+            Color(color.red, color.blue, color.green, color.alpha / 255f), // temporary
             false
         )
     }
@@ -41,7 +45,7 @@ object TeammatesOutline : Module(
             if (mc.thePlayer.canEntityBeSeen(it.first) || it.first == mc.thePlayer) return
             RenderUtils.drawStringInWorld(
                 "${it.second.code}${it.first.name}",
-                RenderUtils.renderVec(it.first).addVector(0.0, 2.7, 0.0),
+                it.first.renderVec.addVec(y = 2.7),
                 depthTest = false,
                 increase = false,
                 renderBlackBox = false,

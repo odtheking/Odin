@@ -4,6 +4,8 @@ import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.dungeonmap.core.DungeonPlayer
 import me.odinclient.dungeonmap.features.Dungeon
 import me.odinclient.features.impl.dungeon.MapModule
+import me.odinclient.utils.render.Color
+import me.odinclient.utils.render.world.RenderUtils.bindColor
 import me.odinclient.utils.skyblock.ItemUtils.itemID
 import me.odinclient.utils.skyblock.dungeon.map.MapUtils.equalsOneOf
 import net.minecraft.client.gui.Gui
@@ -12,7 +14,6 @@ import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.WorldRenderer
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import org.lwjgl.opengl.GL11
-import java.awt.Color
 import java.awt.image.BufferedImage
 import java.nio.ByteBuffer
 
@@ -23,12 +24,12 @@ object MapRenderUtils {
     private val worldRenderer: WorldRenderer = tessellator.worldRenderer
 
     fun renderRect(x: Double, y: Double, w: Double, h: Double, color: Color) {
-        if (color.alpha == 0) return
+        if (color.isTransparent) return
         GlStateManager.enableBlend()
         GlStateManager.disableTexture2D()
         GlStateManager.enableAlpha()
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        GlStateManager.color(color.red / 255f, color.green / 255f, color.blue / 255f, color.alpha / 255f)
+        color.bindColor()
 
         worldRenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION)
         addQuadVertices(x, y, w, h)
@@ -40,11 +41,11 @@ object MapRenderUtils {
     }
 
     fun renderRectBorder(x: Double, y: Double, w: Double, h: Double, thickness: Double, color: Color) {
-        if (color.alpha == 0) return
+        if (color.isTransparent) return
         GlStateManager.enableBlend()
         GlStateManager.disableTexture2D()
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        GlStateManager.color(color.red / 255f, color.green / 255f, color.blue / 255f, color.alpha / 255f)
+        color.bindColor()
 
         worldRenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION)
         GlStateManager.shadeModel(GL11.GL_FLAT)

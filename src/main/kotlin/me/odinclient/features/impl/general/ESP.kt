@@ -26,6 +26,7 @@ object ESP : Module(
     private val through: Boolean by BooleanSetting("Through Walls", true)
     private val thickness: Float by NumberSetting("Outline Thickness", 5f, 5f, 20f, 0.5f)
     private val cancelHurt: Boolean by BooleanSetting("Cancel Hurt", true)
+
     private val addStar: () -> Unit by ActionSetting("Add Star") {
         if (miscConfig.espList.contains("✯")) return@ActionSetting
         modMessage("Added ✯ to ESP list")
@@ -68,7 +69,7 @@ object ESP : Module(
         OutlineUtils.outlineEntity(
             event,
             thickness,
-            color.javaColor,
+            color,
             cancelHurt
         )
     }

@@ -3,6 +3,7 @@ package me.odinclient.ui.hud
 import me.odinclient.OdinClient.Companion.mc
 import net.minecraft.client.renderer.GlStateManager
 
+@Deprecated("dont use this.")
 open class BaseHud(var x: Float = 0f, var y: Float = 0f, var scale: Float = 1f) {
     var width = 0f
     var height = 0f

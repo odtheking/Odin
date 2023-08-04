@@ -17,7 +17,7 @@ class SettingSerializer : JsonSerializer<Setting<*>> {
                 is SelectorSetting -> addProperty(src.name, src.selected)
                 is StringSetting -> addProperty(src.name, src.text)
                 is ColorSetting -> addProperty(src.name, src.value.rgba)
-                is DualSetting -> addProperty("${src.name}, ${src.left}, ${src.right}", if (src.enabled) "Right" else "Left")
+                is DualSetting -> addProperty(src.name, src.enabled)
             }
         }
     }

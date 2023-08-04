@@ -10,6 +10,7 @@ import me.odinclient.features.Module
 import me.odinclient.utils.AsyncUtils
 import me.odinclient.utils.VecUtils.floored
 import me.odinclient.utils.VecUtils.plus
+import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.IceFillFloors.floors
@@ -25,14 +26,13 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import java.awt.Color
 import kotlin.math.sin
 
 object AutoIceFill: Module(
     name = "Auto Ice Fill",
     description = "Automatically completes the ice fill puzzle",
     category = Category.DUNGEON,
-    bannable = true
+    risky = true
 ) {
     private var scanned = false
     private var currentPatterns: MutableList<List<Vec3i>> = ArrayList()
@@ -70,7 +70,7 @@ object AutoIceFill: Module(
 
             for (j in 1 until pattern.size) {
                 RenderUtils.draw3DLine(
-                    pos.add(transformTo(pattern[j - 1], renderRotation!!)), pos + transformTo(pattern[j], renderRotation!!), color, 10, true, pt
+                    pos + transformTo(pattern[j - 1], renderRotation!!), pos + transformTo(pattern[j], renderRotation!!), color, 10, true, pt
                 )
             }
         }

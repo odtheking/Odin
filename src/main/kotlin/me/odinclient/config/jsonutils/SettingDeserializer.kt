@@ -25,12 +25,6 @@ class SettingDeserializer : JsonDeserializer<Setting<*>> {
                 when {
                     (value as JsonPrimitive).isBoolean -> return BooleanSetting(name, value.asBoolean)
                     value.isNumber -> return NumberSetting(name, value.asDouble)
-                    value.isString -> {
-                        return if (value.asString == "Left" || value.asString == "Right") {
-                            val stuff = name.split(",")
-                            DualSetting(stuff[0], stuff[1], stuff[2], value.asString == "Right")
-                        } else StringSetting(name, value.asString)
-                    }
                 }
             }
         }

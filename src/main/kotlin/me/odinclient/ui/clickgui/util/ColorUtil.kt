@@ -3,19 +3,10 @@ package me.odinclient.ui.clickgui.util
 import me.odinclient.features.impl.general.ClickGUIModule
 import me.odinclient.utils.render.Color
 
-/**
- * Provides color for the click gui.
- * Based on HeroCode's gui.
- *
- * @author HeroCode, Aton
- */
 object ColorUtil {
 
     inline val clickGUIColor: Color
         get() = ClickGUIModule.color
-
-    val hoverColor: Int
-        get() = clickGUIColor.darker(0.5f).rgba
 
     val buttonColor = Color(38, 38, 38)
 
@@ -23,21 +14,17 @@ object ColorUtil {
     val elementBackground = Color(37, 38, 38, 0.7f)
     val textColor = Color(239, 239, 239)
 
-    fun moduleColor(boolean: Boolean) =
-        if (boolean) clickGUIColor else moduleButtonColor
-
-    //const val moduleButtonColor = -0xe5e5e6
-    const val boxHoverColor = 0x55111111
-    //const val textColor = -0x101011
     const val sliderBackgroundColor = -0xefeff0
-    //const val elementBackground = -0x4DD9D9DA
 
-    fun Color.withAlpha(alpha: Float): Color {
+    /**
+     * Changes or creates a new color with the given alpha. (There is no checks if alpha is in valid range for now.)
+     */
+    fun Color.withAlpha(alpha: Float, newInstance: Boolean = false): Color {
+        if (!newInstance) {
+            this.alpha = alpha
+            return this
+        }
         return Color(r, g, b, alpha)
-    }
-
-    fun Color.withAlpha(alpha: Int): Color {
-        return Color(r, g, b, alpha / 255f)
     }
 
     fun Color.brighter(factor: Float = 1.3f): Color {

@@ -62,7 +62,7 @@ object Config {
                             is ColorSetting -> setting.value = Color((configSetting as NumberSetting).valueAsDouble.toInt())
                             is SelectorSetting -> setting.selected = (configSetting as StringSetting).text
                             is StringSetting -> setting.text = (configSetting as StringSetting).text
-                            is DualSetting -> setting.enabled = (configSetting as DualSetting).enabled
+                            is DualSetting -> setting.enabled = (configSetting as BooleanSetting).enabled
                         }
                     }
                 }

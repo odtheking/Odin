@@ -65,7 +65,6 @@ object VecUtils {
     private fun isVecInYZ(vec: Vec3, aabb: AxisAlignedBB): Boolean =
         vec.yCoord in aabb.minY..aabb.maxY && vec.zCoord in aabb.minZ..aabb.maxZ
 
-
     private fun isVecInXZ(vec: Vec3, aabb: AxisAlignedBB): Boolean =
         vec.xCoord in aabb.minX..aabb.maxX && vec.zCoord in aabb.minZ..aabb.maxZ
 
@@ -74,6 +73,10 @@ object VecUtils {
 
     operator fun Vec3.plus(vec3: Vec3): Vec3 {
         return this.add(vec3)
+    }
+
+    fun Vec3.addVec(x: Double = .0, y: Double = .0, z: Double = .0): Vec3 {
+        return this.addVector(x, y, z)
     }
 
     fun Vec3.floored(): Vec3i {

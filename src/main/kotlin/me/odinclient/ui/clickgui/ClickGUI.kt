@@ -17,7 +17,7 @@ import java.io.IOException
 import kotlin.math.floor
 
 object ClickGUI : GuiScreen() {
-    var openingAnimation = EaseInOut(200)
+    var anim = EaseInOut(400)
     private var openedTime = System.currentTimeMillis()
 
     private var panels: ArrayList<Panel> = arrayListOf()
@@ -31,9 +31,9 @@ object ClickGUI : GuiScreen() {
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawNVG {
-            if (openingAnimation.isAnimating()) {
-                translate(0f, floor(openingAnimation.get(-10f, 0f)))
-                setAlpha(openingAnimation.get(0f, 1f))
+            if (anim.isAnimating()) {
+                translate(0f, floor(anim.get(-10f, 0f)))
+                setAlpha(anim.get(0f, 1f))
             }
 
             for (i in 0 until panels.size) {
@@ -46,8 +46,8 @@ object ClickGUI : GuiScreen() {
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        for (panel in panels.reversed()) {
-            if (panel.mouseClicked(mouseButton)) return
+        for (i in panels.size - 1 downTo 0) {
+            if (panels[i].mouseClicked(mouseButton)) return
         }
 
         try {
@@ -58,16 +58,15 @@ object ClickGUI : GuiScreen() {
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
-        for (panel in panels.reversed()) {
-            panel.mouseReleased(state)
+        for (i in panels.size - 1 downTo 0) {
+            panels[i].mouseReleased(state)
         }
-
         super.mouseReleased(mouseX, mouseY, state)
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
-        for (panel in panels.reversed()) {
-            if (panel.keyTyped(typedChar, keyCode)) return
+        for (i in panels.size - 1 downTo 0) {
+            if (panels[i].keyTyped(typedChar, keyCode)) return
         }
 
         if (keyCode == ClickGUIModule.keyCode && System.currentTimeMillis() - openedTime > 350) {
@@ -87,7 +86,7 @@ object ClickGUI : GuiScreen() {
 
     override fun initGui() {
         openedTime = System.currentTimeMillis()
-        openingAnimation.start(true)
+        anim.start(true)
 
         // TODO: use a different blur
         if (OpenGlHelper.shadersSupported && mc.renderViewEntity is EntityPlayer && ClickGUIModule.blur) {
