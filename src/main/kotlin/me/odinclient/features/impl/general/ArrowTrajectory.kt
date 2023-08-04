@@ -9,6 +9,9 @@ import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.world.OutlineUtils
 import me.odinclient.utils.render.world.RenderUtils
+import me.odinclient.utils.render.world.RenderUtils.renderX
+import me.odinclient.utils.render.world.RenderUtils.renderY
+import me.odinclient.utils.render.world.RenderUtils.renderZ
 import me.odinclient.utils.skyblock.ItemUtils.itemID
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
@@ -48,9 +51,9 @@ object ArrowTrajectory : Module(
         val yawRadians = ((mc.thePlayer.rotationYaw + yawOffset) / 180) * Math.PI
         val pitchRadians = (mc.thePlayer.rotationPitch / 180) * Math.PI
 
-        val posX = RenderUtils.playerRenderX
-        val posY = RenderUtils.playerRenderY + mc.thePlayer.eyeHeight + yOffset
-        val posZ = RenderUtils.playerRenderZ
+        val posX = mc.thePlayer.renderX
+        val posY = mc.thePlayer.renderY + mc.thePlayer.eyeHeight + yOffset
+        val posZ = mc.thePlayer.renderZ
 
         var motionX = -sin(yawRadians) * cos(pitchRadians)
         var motionY = -sin(pitchRadians)
@@ -99,19 +102,19 @@ object ArrowTrajectory : Module(
         for (b in boxRenderQueue) {
             if (
                 hypot(
-                    RenderUtils.playerRenderX - b.first.xCoord,
-                    RenderUtils.playerRenderY + mc.thePlayer.eyeHeight - b.first.yCoord,
-                    RenderUtils.playerRenderZ - b.first.zCoord
+                    mc.thePlayer.renderX - b.first.xCoord,
+                    mc.thePlayer.renderY + mc.thePlayer.eyeHeight - b.first.yCoord,
+                    mc.thePlayer.renderZ - b.first.zCoord
                 ) < 2
             ) {
                 boxRenderQueue.clear()
                 return
             }
-            RenderUtils.drawCustomEspBox(
+            RenderUtils.drawCustomESPBox(
                 b.first.xCoord, b.second.x,
                 b.first.yCoord, b.second.y,
                 b.first.zCoord, b.second.x,
-                color.javaColor,
+                color,
                 thickness / 3,
                 phase = true
             )
@@ -126,7 +129,7 @@ object ArrowTrajectory : Module(
         OutlineUtils.outlineEntity(
             event,
             thickness,
-            color.javaColor,
+            color,
             false
         )
     }

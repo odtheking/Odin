@@ -13,9 +13,9 @@ abstract class HudElement {
 
     constructor(x: Float = 0f, y: Float = 0f, defaultScale: Float = 1.4f) {
 
-        val xHud = NumberSetting("xHud", default = x, hidden = false, min = 0f, max = 1920f)
-        val yHud = NumberSetting("yHud", default = y, hidden = false, min = 0f, max = 1080f)
-        val scaleHud = NumberSetting("scaleHud", defaultScale, 0.8f, 6.0f, 0.01f, hidden = false)
+        val xHud = NumberSetting("xHud", default = x, hidden = true, min = 0f, max = 1920f)
+        val yHud = NumberSetting("yHud", default = y, hidden = true, min = 0f, max = 1080f)
+        val scaleHud = NumberSetting("scaleHud", defaultScale, 0.8f, 6.0f, 0.01f, hidden = true)
 
         this.xSetting = xHud
         this.ySetting = yHud
@@ -57,7 +57,7 @@ abstract class HudElement {
     internal var scale: Float
         inline get() = scaleSetting.value
         set(value) {
-            if (value > 0.8f) scaleSetting.value = value
+            if (value > 0.3f) scaleSetting.value = value
         }
 
     /**
@@ -74,11 +74,8 @@ abstract class HudElement {
         vg.translate(x, y)
         vg.scale(scale, scale)
 
-        val (w, h) = render(vg, example)
-        this.width = w
-        this.height = h
-        if (example) vg.rect(0f, 0f, width, height, if (accept()) Color(0, 0, 0,.3f) else Color(0, 0, 0,.15f))
-        render(vg, example) // render again to make sure the element is on top of the rect, remove this if it breaks anything
+        if (example) vg.rect(0f, 0f, width, height, Color(0, 0, 0, 1.5f))
+        val (width, height) = render(vg, example)
         vg.resetTransform()
 
         this.width = width

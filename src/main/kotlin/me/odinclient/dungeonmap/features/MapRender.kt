@@ -4,6 +4,7 @@ import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.dungeonmap.core.DungeonPlayer
 import me.odinclient.dungeonmap.core.map.*
 import me.odinclient.features.impl.dungeon.MapModule
+import me.odinclient.utils.render.Color
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import me.odinclient.utils.skyblock.dungeon.map.MapRenderUtils
@@ -14,8 +15,8 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.awt.Color
 
+// TODO: MAKE IT RENDER WITH HUD ELEMENT.
 object MapRender {
 
     private val neuGreen = ResourceLocation("odinclient", "neu/green_check.png")
@@ -39,7 +40,7 @@ object MapRender {
             0.0,
             128.0,
             if (MapModule.showRunInfo) 138.0 else 128.0,
-            MapModule.backgroundColor.javaColor
+            MapModule.backgroundColor
         )
 
         MapRenderUtils.renderRectBorder(
@@ -48,7 +49,7 @@ object MapRender {
             128.0,
             if (MapModule.showRunInfo) 138.0 else 128.0,
             MapModule.borderWidth,
-            MapModule.borderColor.javaColor
+            MapModule.borderColor
         )
 
         renderRooms()

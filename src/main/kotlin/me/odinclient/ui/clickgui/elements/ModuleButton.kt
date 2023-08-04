@@ -31,7 +31,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
     var y: Float = 0f
         get() = field + panel.y
 
-    private val colorAnim = ColorAnimation(300)
+    private val colorAnim = ColorAnimation(150)
 
     val color: Color
         get() = colorAnim.get(clickGUIColor, moduleButtonColor, module.enabled).brighterIf(isButtonHovered, 1 + hoverHandler.alpha)
@@ -100,7 +100,9 @@ class ModuleButton(val module: Module, val panel: Panel) {
             rect(x, y, width, height, color)
             text(module.name, x + width / 2, y + height / 2, textColor, 18f, Fonts.MEDIUM, TextAlign.Middle)
             val textWidth = getTextWidth(module.name, 18f, Fonts.MEDIUM)
-            if (module.bannable) {
+
+            // make this optional and better svg imo like a warnning triangle thats red would be better
+            if (module.risky) {
                 NanoVGHelper.INSTANCE.drawSvg(this.context,
                     "/assets/odinclient/hazard.svg", x + width / 2 + textWidth / 2 + 10f, y + 5f, 20f, 20f, javaClass
                 )
@@ -128,8 +130,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
                 return true
             } else if (mouseButton == 1) {
                 if (menuElements.size > 0) {
-                    extendAnim.start()
-                    extended = !extended
+                    if (extendAnim.start()) extended = !extended
                     if (!extended) {
                         menuElements.forEach {
                             it.listening = false
@@ -166,10 +167,10 @@ class ModuleButton(val module: Module, val panel: Panel) {
         return false
     }
 
-    val isButtonHovered
+    private val isButtonHovered: Boolean
         get() = isAreaHovered(x, y, width, height - 1)
 
-    private val isMouseUnderButton
+    private val isMouseUnderButton: Boolean
         get() = extended && isAreaHovered(x, y + height, width)
 
     private fun getSettingHeight(): Float {

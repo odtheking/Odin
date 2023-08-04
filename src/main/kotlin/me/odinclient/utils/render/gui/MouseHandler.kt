@@ -3,7 +3,7 @@ package me.odinclient.utils.render.gui
 /**
  * Edited verison of OneConfig InputHandler to have a translation option cuz why not
  * Add more stuff here and maybe merge with the nanoVG stuff so its nice and clean
- * TODO: Instead of a class implement methods
+ * // TODO: Instead of a class implement methods
  */
 class MouseHandler {
     private var scaleX = 1f

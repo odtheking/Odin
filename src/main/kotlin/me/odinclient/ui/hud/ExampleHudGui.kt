@@ -28,8 +28,6 @@ object ExampleHudGui : GuiScreen() {
                 hudElement.draw(this, example = true)
             }
         }
-
-
     }
 
     @Throws(IOException::class)

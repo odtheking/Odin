@@ -29,7 +29,7 @@ abstract class Module(
     toggled: Boolean = false,
     settings: ArrayList<Setting<*>> = ArrayList(),
     description: String = "",
-    val bannable: Boolean = false,
+    val risky: Boolean = false,
     val fpsHeavy: Boolean = false
 ) {
 
@@ -96,19 +96,11 @@ abstract class Module(
         for (i in 0 until hudElements.size) MinecraftForge.EVENT_BUS.unregister(hudElements[i])
     }
 
-    /**
-     * Call to perform the key bind action for this module.
-     * By default, this will toggle the module and send a chat message.
-     * It can be overwritten in the module to change that behaviour.
-     */
     open fun onKeybind() {
         toggle()
         if (ClickGUIModule.enableNotification) ChatUtils.modMessage("$name ${if (enabled) "§aenabled" else "§cdisabled"}.")
     }
 
-    /**
-     * Will toggle the module
-     */
     fun toggle() {
         enabled = !enabled
         if (enabled) onEnable()
@@ -124,14 +116,6 @@ abstract class Module(
         settings.addAll(setting)
     }
 
-    /**
-     * Overloads the unaryPlus operator for [Setting] classes to register them to the module.
-     * The following is an example of how it can be used to define a setting for a module.
-     *
-     *     private val feature = +BooleanSetting("Feature", true)
-     *
-     * @see register
-     */
     operator fun <K : Setting<*>> K.unaryPlus(): K = register(this)
 
     fun getSettingByName(name: String): Setting<*>? {
@@ -165,5 +149,10 @@ abstract class Module(
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
         executors.executeAll()
+    }
+
+    // TODO: Do this and a vararg instead to make it cleaner.
+    enum class Tags {
+        Bannable, FpsHeavy
     }
 }

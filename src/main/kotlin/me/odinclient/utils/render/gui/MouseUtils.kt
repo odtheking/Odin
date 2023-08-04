@@ -5,10 +5,10 @@ import org.lwjgl.input.Mouse
 
 object MouseUtils {
 
-    val mouseX
+    val mouseX: Float
         get() = Mouse.getX().toFloat()
 
-    val mouseY
+    val mouseY: Float
         get() = mc.displayHeight - Mouse.getY() - 1f
 
     fun isAreaHovered(x: Float, y: Float, w: Float, h: Float): Boolean {

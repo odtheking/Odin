@@ -1,7 +1,7 @@
 package me.odinclient.dungeonmap.core.map
 
 import me.odinclient.features.impl.dungeon.MapModule
-import java.awt.Color
+import me.odinclient.utils.render.Color
 
 class Door(override val x: Int, override val z: Int) : Tile {
     var type = DoorType.NONE
@@ -9,9 +9,9 @@ class Door(override val x: Int, override val z: Int) : Tile {
     override var state: RoomState = RoomState.UNDISCOVERED
     override val color: Color
         get() = when (this.type) {
-            DoorType.BLOOD -> MapModule.bloodDoorColor.javaColor
-            DoorType.ENTRANCE -> MapModule.entranceDoorColor.javaColor
-            DoorType.WITHER -> if (opened) MapModule.openWitherDoorColor.javaColor else MapModule.witherDoorColor.javaColor
-            else -> MapModule.roomDoorColor.javaColor
+            DoorType.BLOOD -> MapModule.bloodDoorColor
+            DoorType.ENTRANCE -> MapModule.entranceDoorColor
+            DoorType.WITHER -> if (opened) MapModule.openWitherDoorColor else MapModule.witherDoorColor
+            else -> MapModule.roomDoorColor
         }
 }

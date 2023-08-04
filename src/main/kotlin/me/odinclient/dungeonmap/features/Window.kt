@@ -79,7 +79,7 @@ object Window: JFrame() {
 
                 when {
                     xEven && yEven -> if (tile is Room) {
-                        g2d.color = color
+                        g2d.color = color.javaColor
                         g2d.fillRect(
                             xOffset,
                             yOffset,
@@ -88,7 +88,7 @@ object Window: JFrame() {
                         )
                     }
                     !xEven && !yEven -> {
-                        g2d.color = color
+                        g2d.color = color.javaColor
                         g2d.fillRect(
                             xOffset,
                             yOffset,
@@ -102,7 +102,7 @@ object Window: JFrame() {
                         connectorSize,
                         tile is Door,
                         !xEven,
-                        color,
+                        color.javaColor,
                         g2d
                     )
                 }

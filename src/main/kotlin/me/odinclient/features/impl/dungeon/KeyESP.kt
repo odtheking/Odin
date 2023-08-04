@@ -7,6 +7,7 @@ import me.odinclient.OdinClient.Companion.scope
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.utils.Utils.noControlCodes
+import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.Entity
@@ -15,7 +16,6 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.awt.Color
 
 object KeyESP : Module(
     name = "Key ESP",
@@ -33,7 +33,7 @@ object KeyESP : Module(
 
             val name = event.entity.name.noControlCodes
             if (name == "Wither Key") {
-                currentKey = Color(0, 0, 0) to event.entity
+                currentKey = Color.BLACK to event.entity
             } else if (name == "Blood Key") {
                 currentKey = Color(255, 0, 0) to event.entity
             }
@@ -51,7 +51,7 @@ object KeyESP : Module(
         }
 
         val pos = entity.positionVector
-        RenderUtils.drawCustomEspBox(
+        RenderUtils.drawCustomESPBox(
             pos.xCoord - 0.5, 1.0,
             pos.yCoord + 1.15, 1.0,
             pos.zCoord - 0.5, 1.0,

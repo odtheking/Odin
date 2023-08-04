@@ -24,7 +24,7 @@ import org.lwjgl.input.Mouse
 import java.awt.Color
 import java.util.concurrent.Callable
 
-
+// TODO: I think this needs a better name
 object NoRender : Module(
     name = "No Render",
     category = Category.GENERAL,
@@ -42,9 +42,9 @@ object NoRender : Module(
     override fun onEnable()
     {
         mc.skipRenderWorld = true
-        ClickGUI.openingAnimation = EaseInOut(0)
+        ClickGUI.anim = EaseInOut(0)
         mc.displayGuiScreen(ClickGUI)
-        ClickGUI.openingAnimation = EaseInOut(200)
+        ClickGUI.anim = EaseInOut(200)
     }
 
     override fun onDisable()
@@ -133,6 +133,7 @@ object NoRender : Module(
         val f4 = (color shr 16 and 0xFF) / 255.0f
         val f5 = (color shr 8 and 0xFF) / 255.0f
         val f6 = (color and 0xFF) / 255.0f
+
         val tessellator: Tessellator = Tessellator.getInstance()
         val worldRenderer: WorldRenderer = tessellator.worldRenderer
         GlStateManager.enableBlend()
@@ -149,5 +150,4 @@ object NoRender : Module(
         GlStateManager.enableTexture2D()
         GlStateManager.disableBlend()
     }
-
 }
