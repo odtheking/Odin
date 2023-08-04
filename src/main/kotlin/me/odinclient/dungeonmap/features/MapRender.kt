@@ -4,6 +4,7 @@ import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.dungeonmap.core.DungeonPlayer
 import me.odinclient.dungeonmap.core.map.*
 import me.odinclient.features.impl.dungeon.MapModule
+import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import me.odinclient.utils.skyblock.dungeon.map.MapRenderUtils
 import me.odinclient.utils.skyblock.dungeon.map.MapUtils
@@ -27,7 +28,7 @@ object MapRender {
     @SubscribeEvent
     fun onOverlay(event: RenderGameOverlayEvent.Post) {
         if (event.type != RenderGameOverlayEvent.ElementType.HOTBAR || !inDungeons || !MapModule.enabled) return
-        if (MapModule.hideInBoss && Dungeon.inBoss || !Dungeon.hasScanned || MapModule.mapWindow) return
+        if ((MapModule.hideInBoss && DungeonUtils.inBoss) || !Dungeon.hasScanned || MapModule.mapWindow) return
 
         GlStateManager.pushMatrix()
         GlStateManager.translate(MapModule.mapX, MapModule.mapY, 0f)

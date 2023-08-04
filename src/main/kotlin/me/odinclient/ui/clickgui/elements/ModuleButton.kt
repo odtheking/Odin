@@ -50,7 +50,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
         //menuElements.add(ElementDescription(this, module.description))
     }
 
-    private fun updateElements() {
+    fun updateElements() {
         var position = -1 // This looks weird, but it starts at -1 because it gets incremented before being used.
         for (setting in module.settings) {
             /** Don't show hidden settings */

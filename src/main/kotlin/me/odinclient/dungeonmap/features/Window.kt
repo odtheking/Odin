@@ -31,7 +31,7 @@ object Window: JFrame() {
         val panel = object : JPanel() {
             override fun paintComponent(g: Graphics) {
                 super.paintComponent(g)
-                if (!DungeonUtils.inDungeons || !MapModule.enabled || (MapModule.hideInBoss && Dungeon.inBoss) || !Dungeon.hasScanned) return
+                if (!DungeonUtils.inDungeons || !MapModule.enabled || (MapModule.hideInBoss && DungeonUtils.inBoss) || !Dungeon.hasScanned) return
                 val g2d = g as Graphics2D
 
                 this.background = MapModule.backgroundColor.javaColor
@@ -57,7 +57,7 @@ object Window: JFrame() {
     }
 
     // Decides whether the window should be visible or not
-    val shouldShow get() = MapModule.mapWindow && DungeonUtils.inDungeons && MapModule.enabled && (!MapModule.hideInBoss || !Dungeon.inBoss) && Dungeon.hasScanned
+    val shouldShow get() = MapModule.mapWindow && DungeonUtils.inDungeons && MapModule.enabled && (!MapModule.hideInBoss || !DungeonUtils.inBoss) && Dungeon.hasScanned
 
     private fun renderRooms(g2d: Graphics2D) {
         g2d.translate(MapUtils.startCorner.first, MapUtils.startCorner.second)

@@ -58,8 +58,6 @@ object Utils {
     val ContainerChest.name: String
         get() = this.lowerChestInventory.displayName.unformattedText
 
-
-
     operator fun Number.div(number: Number): Number {
         return this.toDouble() / number.toDouble()
     }

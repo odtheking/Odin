@@ -78,6 +78,7 @@ abstract class HudElement {
         this.width = w
         this.height = h
         if (example) vg.rect(0f, 0f, width, height, if (accept()) Color(0, 0, 0,.3f) else Color(0, 0, 0,.15f))
+        render(vg, example) // render again to make sure the element is on top of the rect, remove this if it breaks anything
         vg.resetTransform()
 
         this.width = width

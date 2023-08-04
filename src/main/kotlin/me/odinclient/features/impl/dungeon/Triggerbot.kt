@@ -3,6 +3,7 @@ package me.odinclient.features.impl.dungeon
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.features.settings.Setting.Companion.withDependency
 import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.utils.VecUtils
 import me.odinclient.utils.skyblock.PlayerUtils

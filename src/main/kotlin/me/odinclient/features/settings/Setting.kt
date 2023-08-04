@@ -7,7 +7,7 @@ import kotlin.reflect.KProperty
 
 abstract class Setting<T> (
     val name: String,
-    val hidden: Boolean = false,
+    var hidden: Boolean = false,
     var description: String? = null,
 ) : ReadWriteProperty<Module, T>, PropertyDelegateProvider<Module, ReadWriteProperty<Module, T>> {
     protected var visibilityDependency: () -> Boolean = { true }

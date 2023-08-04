@@ -33,7 +33,6 @@ object Dungeon {
     var hasScanned = false
 
     // 6 x 6 room grid, 11 x 11 with connections
-    var inBoss = false
     val dungeonList = Array<Tile>(121) { Door(0, 0) }
     val uniqueRooms = mutableListOf<Room>()
     val rooms = mutableListOf<Room>()
@@ -47,16 +46,6 @@ object Dungeon {
     var trapType = ""
     var witherDoors = 0
     var secretCount = 0
-
-    private val entryMessages = listOf(
-        "[BOSS] Bonzo: Gratz for making it this far, but I’m basically unbeatable.",
-        "[BOSS] Scarf: This is where the journey ends for you, Adventurers.",
-        "[BOSS] The Professor: I was burdened with terrible news recently...",
-        "[BOSS] Thorn: Welcome Adventurers! I am Thorn, the Spirit! And host of the Vegan Trials!",
-        "[BOSS] Livid: Welcome, you arrive right on time. I am Livid, the Master of Shadows.",
-        "[BOSS] Sadan: So you made it all the way here... Now you wish to defy me? Sadan?!",
-        "[BOSS] Maxor: WELL WELL WELL LOOK WHO’S HERE!"
-    )
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) = runBlocking {
@@ -105,7 +94,6 @@ object Dungeon {
 
                 MapUtils.coordMultiplier = (MapUtils.roomSize + 4.0) / roomSize
             }
-            entryMessages.any { it == event.message } -> inBoss = true
         }
     }
 
@@ -113,7 +101,6 @@ object Dungeon {
     fun onWorldLoad(event: WorldEvent.Unload) {
         reset()
         hasScanned = false
-        inBoss = false
     }
 
     var playerImage = BufferedImage(8, 8, BufferedImage.TYPE_INT_ARGB)
