@@ -15,10 +15,8 @@ import me.odinclient.events.ChatPacketEventSender
 import me.odinclient.events.ClientSecondEvent
 import me.odinclient.events.ServerTickEventSender
 import me.odinclient.features.ModuleManager
-import me.odinclient.features.impl.general.UpdateAvailableMessage
 import me.odinclient.ui.clickgui.ClickGUI
 import me.odinclient.utils.ServerUtils
-import me.odinclient.utils.WebUtils
 import me.odinclient.utils.clock.Executor
 import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.skyblock.ChatUtils
@@ -64,7 +62,6 @@ class OdinClient {
 
             Dungeon,
             MapRender,
-            UpdateAvailableMessage,
 
             ServerTickEventSender,
             ChatPacketEventSender,
