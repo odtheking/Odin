@@ -100,9 +100,11 @@ class ModuleButton(val module: Module, val panel: Panel) {
             rect(x, y, width, height, color)
             text(module.name, x + width / 2, y + height / 2, textColor, 18f, Fonts.MEDIUM, TextAlign.Middle)
             val textWidth = getTextWidth(module.name, 18f, Fonts.MEDIUM)
-            if (module.bannable) NanoVGHelper.INSTANCE.drawSvg( this.context,
-                "/assets/odinclient/hazard.svg", x + width / 2 + textWidth / 2 + 10f, y + 5f, 20f, 20f, javaClass
-            )
+            if (module.bannable) {
+                NanoVGHelper.INSTANCE.drawSvg(this.context,
+                    "/assets/odinclient/hazard.svg", x + width / 2 + textWidth / 2 + 10f, y + 5f, 20f, 20f, javaClass
+                )
+            }
 
             if (!extendAnim.isAnimating() && !extended || menuElements.isEmpty()) return@nvg
 

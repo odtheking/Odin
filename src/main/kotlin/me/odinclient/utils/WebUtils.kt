@@ -7,20 +7,28 @@ import javax.net.ssl.HttpsURLConnection
 
 object WebUtils {
     fun fetchURLData(url: String): String {
-        val connection = URL(url).openConnection()
-        connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3")
+        try {
+            val connection = URL(url).openConnection()
+            connection.setRequestProperty(
+                "User-Agent",
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+            )
 
-        val inputStream = connection.getInputStream()
-        val reader = BufferedReader(InputStreamReader(inputStream))
-        val content = StringBuilder()
+            val inputStream = connection.getInputStream()
+            val reader = BufferedReader(InputStreamReader(inputStream))
+            val content = StringBuilder()
 
-        var line: String?
-        while (reader.readLine().also { line = it } != null) {
-            content.append(line)
+            var line: String?
+            while (reader.readLine().also { line = it } != null) {
+                content.append(line)
+            }
+
+            reader.close()
+            return content.toString()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return ""
         }
-
-        reader.close()
-        return content.toString()
     }
 
     fun sendDiscordWebhook(webhookUrl: String, title: String, message: String, color: Int) {

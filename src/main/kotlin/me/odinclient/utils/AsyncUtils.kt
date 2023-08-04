@@ -4,6 +4,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.impl.dungeon.AutoIceFill
 import me.odinclient.utils.skyblock.WorldUtils
 import net.minecraft.inventory.ContainerChest
@@ -83,6 +84,31 @@ object AsyncUtils {
 
         launch {
             check()
+        }
+
+        deferredResult
+    }
+
+    suspend fun waitUntilPlayer() = coroutineScope {
+        val deferredResult = CompletableDeferred<Unit>()
+
+        fun check(times: Int) {
+            if (times > 100) {
+                deferredResult.completeExceptionally(Exception("Player took too long to load, aborting!"))
+                return
+            }
+            if (mc.thePlayer != null) {
+                deferredResult.complete(Unit)
+            } else {
+                launch {
+                    delay(500)
+                    check(times + 1)
+                }
+            }
+        }
+
+        launch {
+            check(0)
         }
 
         deferredResult
