@@ -11,14 +11,14 @@ import me.odinclient.config.WaypointConfig
 import me.odinclient.dungeonmap.features.Dungeon
 import me.odinclient.dungeonmap.features.MapRender
 import me.odinclient.dungeonmap.features.Window
-import me.odinclient.events.ChatPacketEventSender
+import me.odinclient.events.senders.ChatPacketEventSender
 import me.odinclient.events.ClientSecondEvent
-import me.odinclient.events.ServerTickEventSender
+import me.odinclient.events.senders.ClientSecondEventSender
+import me.odinclient.events.senders.ServerTickEventSender
 import me.odinclient.features.ModuleManager
 import me.odinclient.features.impl.general.UpdateAvailableMessage
 import me.odinclient.ui.clickgui.ClickGUI
 import me.odinclient.utils.ServerUtils
-import me.odinclient.utils.WebUtils
 import me.odinclient.utils.clock.Executor
 import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.skyblock.ChatUtils
@@ -68,6 +68,7 @@ class OdinClient {
 
             ServerTickEventSender,
             ChatPacketEventSender,
+            ClientSecondEventSender,
 
             Executor,
             ModuleManager,
@@ -104,7 +105,6 @@ class OdinClient {
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START) return
-        tickRamp++
 
         if (window.isVisible != window.shouldShow) window.isVisible = window.shouldShow
 
@@ -112,16 +112,6 @@ class OdinClient {
             mc.displayGuiScreen(display)
             display = null
         }
-
-        if (tickRamp % 20 == 0) {
-            if (mc.thePlayer != null) MinecraftForge.EVENT_BUS.post(ClientSecondEvent())
-            tickRamp = 0
-        }
-    }
-
-    @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Load) {
-        tickRamp = 18
     }
 
     companion object {
@@ -135,7 +125,6 @@ class OdinClient {
         var window = Window
         val miscConfig = MiscConfig(File(mc.mcDataDir, "config/odin"))
         var display: GuiScreen? = null
-        var tickRamp = 0
 
         val scope = CoroutineScope(EmptyCoroutineContext)
 

@@ -4,6 +4,9 @@ import net.minecraft.client.model.ModelBase
 import net.minecraft.entity.EntityLivingBase
 import net.minecraftforge.fml.common.eventhandler.Event
 
+/**
+ * @see me.odinclient.mixin.MixinRendererLivingEntity.renderModel
+ */
 class RenderEntityModelEvent(
     var entity: EntityLivingBase,
     var limbSwing: Float,
