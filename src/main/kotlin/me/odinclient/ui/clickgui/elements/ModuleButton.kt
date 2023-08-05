@@ -13,6 +13,7 @@ import me.odinclient.ui.clickgui.util.ColorUtil.buttonColor
 import me.odinclient.ui.clickgui.util.ColorUtil.clickGUIColor
 import me.odinclient.ui.clickgui.util.ColorUtil.moduleButtonColor
 import me.odinclient.ui.clickgui.util.ColorUtil.textColor
+import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinclient.ui.clickgui.util.HoverHandler
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
@@ -42,7 +43,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
     var extended = false
 
     private val extendAnim = EaseInOut(250)
-    private val hoverHandler = HoverHandler(1000, 200)
+    private val hoverHandler = HoverHandler(1000, 400)
 
     init {
         updateElements()
@@ -89,9 +90,9 @@ class ModuleButton(val module: Module, val panel: Panel) {
                     nanoVGHelper.getWrappedStringBounds(this.context, module.description, 300f, 16f, Fonts.REGULAR)
                 rect(
                     x + width + 10f, y, bounds[2] - bounds[0] + 10, bounds[3] - bounds[1] + 8,
-                    Color(buttonColor.rgba, (percent / 200f).coerceAtLeast(0.3f)), 5f
+                    Color(buttonColor.rgba, percent / 200f), 5f
                 )
-                NanoVGHelper.INSTANCE.drawWrappedString(this.context, module.description, x + width + 17f, y + 12f, 300f, -1, 16f, 1f, Fonts.REGULAR)
+                NanoVGHelper.INSTANCE.drawWrappedString(this.context, module.description, x + width + 17f, y + 12f, 300f, Color.WHITE.withAlpha(percent / 100f).rgba, 16f, 1f, Fonts.REGULAR)
             }
         }
 
@@ -101,7 +102,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
             text(module.name, x + width / 2, y + height / 2, textColor, 18f, Fonts.MEDIUM, TextAlign.Middle)
             val textWidth = getTextWidth(module.name, 18f, Fonts.MEDIUM)
 
-            // make this optional and better svg imo like a warnning triangle thats red would be better
+            // TODO: improve this svg, maybe a Warning Triangle
             if (module.risky) {
                 NanoVGHelper.INSTANCE.drawSvg(this.context,
                     "/assets/odinclient/hazard.svg", x + width / 2 + textWidth / 2 + 10f, y + 5f, 20f, 20f, javaClass

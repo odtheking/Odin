@@ -5,6 +5,8 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import me.odinclient.OdinClient
 import me.odinclient.OdinClient.Companion.display
+import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.OdinClient.Companion.scope
 import me.odinclient.config.Config
 import me.odinclient.features.Category
 import me.odinclient.features.Module
@@ -81,7 +83,7 @@ object ClickGUIModule: Module(
     private var hasSentMessage = false
 
     @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Load) = OdinClient.scope.launch {
+    fun onWorldLoad(event: WorldEvent.Load) = scope.launch {
         if (hasSentMessage) return@launch
 
         val newestVersion = try {
@@ -90,22 +92,22 @@ object ClickGUIModule: Module(
 
         val link = newestVersion.jsonObject["html_url"].toString().replace("\"", "")
         val tag = newestVersion.jsonObject["tag_name"].toString().replace("\"", "")
-        var curVers = OdinClient.VERSION
+        val current = OdinClient.VERSION
 
-        if (isSecondNewer(curVers, tag)) {
+        if (isSecondNewer(current, tag)) {
             hasSentMessage = true
 
             val def = AsyncUtils.waitUntilPlayer()
             try { def.await() } catch (e: Exception) { return@launch }
 
-            OdinClient.mc.thePlayer.addChatMessage(
+            mc.thePlayer.addChatMessage(
                 ChatComponentText("§3Odin§bClient §8»§r §7Update available! §r${newestVersion.jsonObject["tag_name"].toString()} §e$link")
                     .setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, link))
             )
         }
     }
 
-    fun isSecondNewer(current: String, second: String): Boolean {
+    private fun isSecondNewer(current: String, second: String): Boolean {
         val (major, minor, patch) = current.split(".").map { it.toInt() }
         val (major2, minor2, patch2) = second.split(".").map { it.toInt() }
         return when {

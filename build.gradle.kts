@@ -7,7 +7,7 @@ plugins {
     id("gg.essential.loom") version "0.10.0.+"
     id("dev.architectury.architectury-pack200") version "0.1.3"
     id("com.github.johnrengelman.shadow") version "7.1.2"
-    kotlin("jvm") version "1.8.22"
+    kotlin("jvm") version "1.9.0"
 }
 
 group = "com.example.archloomtemplate"
@@ -23,8 +23,6 @@ loom {
     log4jConfigs.from(file("log4j2.xml"))
     launchConfigs {
         "client" {
-            property("mixin.debug", "true")
-            property("asmhelper.verbose", "true")
             arg("--tweakClass", "cc.polyfrost.oneconfig.loader.stage0.LaunchWrapperTweaker")
             arg("--mixin", "mixins.odinclient.json")
         }

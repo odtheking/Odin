@@ -112,8 +112,6 @@ object DeployableTimer : Module(
         val timeAdded: Long = System.currentTimeMillis()
     )
 
-    //private val hud: HudData by HudSetting("Deployable Hud", DeployableHud)
-
     private val currentDeployables = mutableListOf<Deployable>()
     private val orbRegex = Regex("(.+) (\\d+)s")
     var lines: Triple<String?, String?, ResourceLocation?> = Triple(null, null, null)
@@ -136,13 +134,13 @@ object DeployableTimer : Module(
                 ?.getCompoundTagAt(0)
                 ?.getString("Value")
 
-            if (Deployables.values().any { it.texture == texture }) {
-                val flare = Deployables.values().first { it.texture == texture }
+            if (Deployables.entries.any { it.texture == texture }) {
+                val flare = Deployables.entries.first { it.texture == texture }
                 currentDeployables.add(Deployable(flare.priority, flare.duration, armorStand, flare.renderName, flare.img, flare.range))
                 currentDeployables.sortByDescending { it.priority }
                 resetLines()
-            } else if (Deployables.values().any { name.startsWith(it.displayName)}) {
-                val orb = Deployables.values().first { name.startsWith(it.displayName)}
+            } else if (Deployables.entries.any { name.startsWith(it.displayName)}) {
+                val orb = Deployables.entries.first { name.startsWith(it.displayName)}
                 val time = orbRegex.find(name)?.groupValues?.get(2)?.toInt() ?: return@launch
                 currentDeployables.add(Deployable(orb.priority, time * 1000, armorStand, orb.renderName, orb.img, orb.range))
                 currentDeployables.sortByDescending { it.priority }
@@ -159,7 +157,7 @@ object DeployableTimer : Module(
 
     @SubscribeEvent
     fun onRenderOverlay(event: RenderGameOverlayEvent) {
-        if (/*!config.deployableHud.isEnabled */ event.type != RenderGameOverlayEvent.ElementType.TEXT || currentDeployables.size == 0) return
+        if (event.type != RenderGameOverlayEvent.ElementType.TEXT || currentDeployables.size == 0) return
         val currentMillis = System.currentTimeMillis()
         val d = currentDeployables.firstOrNull { mc.thePlayer.getDistanceToEntity(it.entity) <= it.range }
 
