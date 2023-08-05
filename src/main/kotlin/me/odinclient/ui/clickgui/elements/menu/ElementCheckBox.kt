@@ -48,7 +48,7 @@ class ElementCheckBox(parent: ModuleButton, setting: BooleanSetting) : Element<B
                 dropShadow(x + w - 43f, y + 4f, 34f, 20f, 10f, 0.75f, 9f)
 
                 rect(x + w - 43f, y + 4f, 34f, 20f, buttonColor, 9f)
-                rect(x + w - 43f, y + 4f, linearAnimation.get(34f, 9f, setting.enabled), 20f, color, 9f)
+                if (setting.enabled || linearAnimation.isAnimating()) rect(x + w - 43f, y + 4f, linearAnimation.get(34f, 9f, setting.enabled), 20f, color, 9f)
 
                 if (isHovered) rectOutline(x + w - 43f, y + 4f, 34f, 20f, color.darker(.85f), 9f, .5f)
                 circle(x + w - linearAnimation.get(33f, 17f, !setting.enabled), y + 14f, 6f,
