@@ -21,12 +21,12 @@ public class MixinMouseHelper {
         }
     }
 
-    @Redirect(method = "mouseXYChange", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Mouse;getDX()I"))
+    @Redirect(method = "mouseXYChange", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Mouse;getDX()I"), remap = false)
     private int getDX() {
         return LockCursor.INSTANCE.getEnabled() ? 0 : Mouse.getDX();
     }
 
-    @Redirect(method = "mouseXYChange", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Mouse;getDY()I"))
+    @Redirect(method = "mouseXYChange", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Mouse;getDY()I"), remap = false)
     private int getDY() {
         return LockCursor.INSTANCE.getEnabled() ? 0 : Mouse.getDY();
     }
