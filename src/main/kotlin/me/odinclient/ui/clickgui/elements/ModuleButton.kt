@@ -92,7 +92,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
                     x + width + 10f, y, bounds[2] - bounds[0] + 10, bounds[3] - bounds[1] + 8,
                     Color(buttonColor.rgba, percent / 200f), 5f
                 )
-                NanoVGHelper.INSTANCE.drawWrappedString(this.context, module.description, x + width + 17f, y + 12f, 300f, Color.WHITE.withAlpha(percent / 100f).rgba, 16f, 1f, Fonts.REGULAR)
+                NanoVGHelper.INSTANCE.drawWrappedString(this.context, module.description, x + width + 17f, y + 12f, 300f, Color.WHITE.withAlpha(percent / 100f, true).rgba, 16f, 1f, Fonts.REGULAR)
             }
         }
 

@@ -45,10 +45,16 @@ class ElementCheckBox(parent: ModuleButton, setting: BooleanSetting) : Element<B
                 rect(x + w - 30f, y + 5f, 21f, 20f, color, 5f)
                 rectOutline(x + w - 30f, y + 5f, 21f, 20f, clickGUIColor, 5f, 1.5f)
             } else {
-                dropShadow(x + w - 43f, y + 4f, 34f, 20f, 10f, 0.75f, 5f)
-                rect(x + w - 43f, y + 4f, 34f, 20f, color, 9f)
-                if (isHovered) rectOutline(x + w - 43f, y + 4f, 34f, 20f, clickGUIColor.darker(), 9f, .5f)
-                circle(x + w - linearAnimation.get(35f, 15f, !setting.enabled), y + 14f, 7f,
+                dropShadow(x + w - 43f, y + 4f, 34f, 20f, 10f, 0.75f, 9f)
+
+                rect(x + w - 43f, y + 4f, 34f, 20f, buttonColor, 9f)
+
+                val scissor = scissor(x + w - 43f, y + 4f, 34f, 20f)
+                rect(x + w - 43f, y + 4f, linearAnimation.get(34f, 3f, setting.enabled), 20f, color, 9f)
+                resetScissor(scissor)
+
+                if (isHovered) rectOutline(x + w - 43f, y + 4f, 34f, 20f, color.darker(.85f), 9f, .5f)
+                circle(x + w - linearAnimation.get(34f, 16f, !setting.enabled), y + 14f, 7f,
                     Color(220, 220, 220).darkerIf(isHovered, 0.9f)
                 )
             }
