@@ -13,7 +13,7 @@ class NumberSetting<E>(
     var max: Number = 10000,
     var increment: Number = 1,
     hidden: Boolean = false,
-    description: String? = null,
+    description: String = "",
 ) : Setting<E>(name, hidden, description) where E : Number, E : Comparable<E> {
 
     override var value: E = default

@@ -19,7 +19,7 @@ object ColorUtil {
     /**
      * Changes or creates a new color with the given alpha. (There is no checks if alpha is in valid range for now.)
      */
-    fun Color.withAlpha(alpha: Float, newInstance: Boolean = false): Color {
+    fun Color.withAlpha(alpha: Float, newInstance: Boolean = true): Color {
         if (!newInstance) {
             this.alpha = alpha
             return this
@@ -29,10 +29,6 @@ object ColorUtil {
 
     fun Color.brighter(factor: Float = 1.3f): Color {
         return Color(hue, saturation, (brightness * factor.coerceAtLeast(1f)).coerceAtMost(1f), alpha)
-    }
-
-    fun Color.brighterIf(condition: Boolean, factor: Float = 1.3f): Color {
-        return if (condition) brighter(factor) else this
     }
 
     fun Color.darker(factor: Float = 0.7f): Color {

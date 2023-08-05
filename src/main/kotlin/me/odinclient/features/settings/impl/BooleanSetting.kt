@@ -2,16 +2,11 @@ package me.odinclient.features.settings.impl
 
 import me.odinclient.features.settings.Setting
 
-/**
- * A boolean setting for Modules, can be represented by a checkbox in the gui.
- *
- * @author Aton
- */
 class BooleanSetting (
     name: String,
     override val default: Boolean = false,
     hidden: Boolean = false,
-    description: String? = null,
+    description: String = "",
 ): Setting<Boolean>(name, hidden, description) {
 
     override var value: Boolean = default

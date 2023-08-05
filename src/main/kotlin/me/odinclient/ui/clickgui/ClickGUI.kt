@@ -1,29 +1,35 @@
 package me.odinclient.ui.clickgui
 
+import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinclient.config.Config
 import me.odinclient.features.Category
 import me.odinclient.features.impl.general.ClickGUIModule
+import me.odinclient.ui.Screen
 import me.odinclient.ui.clickgui.elements.menu.ElementColor
+import me.odinclient.ui.clickgui.util.ColorUtil.buttonColor
+import me.odinclient.ui.clickgui.util.ColorUtil.textColor
+import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinclient.ui.clickgui.util.HoverHandler
+import me.odinclient.utils.clock.Executor
+import me.odinclient.utils.clock.Executor.Companion.register
 import me.odinclient.utils.render.gui.animations.impl.EaseInOut
-import me.odinclient.utils.render.gui.nvg.NVG
-import me.odinclient.utils.render.gui.nvg.drawNVG
-import me.odinclient.utils.render.gui.nvg.setAlpha
-import me.odinclient.utils.render.gui.nvg.translate
+import me.odinclient.utils.render.gui.nvg.*
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Mouse
-import java.io.IOException
 import kotlin.math.floor
 import kotlin.math.sign
 
-object ClickGUI : GuiScreen() {
-    var anim = EaseInOut(400)
-    private var openedTime = System.currentTimeMillis()
+object ClickGUI : Screen() {
 
-    private var panels: ArrayList<Panel> = arrayListOf()
-    var descriptionToRender: (NVG.() -> Unit)? = null
+    private val panels: ArrayList<Panel> = arrayListOf()
+
+    var anim = EaseInOut(400)
+    var open = false
+
+    var desc: Description = Description(null, 0f, 0f, null)
 
     fun init() {
         for (category in Category.entries) {
@@ -31,28 +37,26 @@ object ClickGUI : GuiScreen() {
         }
     }
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        drawNVG {
+    override fun draw(nvg: NVG) {
+        nvg {
             if (anim.isAnimating()) {
-                translate(0f, floor(anim.get(-10f, 0f)))
-                setAlpha(anim.get(0f, 1f))
+                translate(0f, floor(anim.get(-10f, 0f, !open)))
+                setAlpha(anim.get(0f, 1f, !open))
             }
 
             for (i in 0 until panels.size) {
                 panels[i].draw(this)
             }
 
-            if (descriptionToRender != null) descriptionToRender?.invoke(this)
-            descriptionToRender = null
+            desc.render(this)
         }
     }
 
-    override fun handleMouseInput() {
-        super.handleMouseInput()
+    override fun onScroll(amount: Int) {
         if (Mouse.getEventDWheel() != 0) {
-            val amount = Mouse.getEventDWheel().sign * 16
-            panels.forEach {
-                if (it.handleScroll(amount)) return@forEach
+            val actualAmount = amount.sign * 16
+            for (i in panels.size - 1 downTo 0) {
+                if (panels[i].handleScroll(actualAmount)) return
             }
         }
     }
@@ -61,19 +65,12 @@ object ClickGUI : GuiScreen() {
         for (i in panels.size - 1 downTo 0) {
             if (panels[i].mouseClicked(mouseButton)) return
         }
-
-        try {
-            super.mouseClicked(mouseX, mouseY, mouseButton)
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
         for (i in panels.size - 1 downTo 0) {
             panels[i].mouseReleased(state)
         }
-        super.mouseReleased(mouseX, mouseY, state)
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
@@ -81,26 +78,19 @@ object ClickGUI : GuiScreen() {
             if (panels[i].keyTyped(typedChar, keyCode)) return
         }
 
-        if (keyCode == ClickGUIModule.keyCode && System.currentTimeMillis() - openedTime > 350) {
+        if (keyCode == ClickGUIModule.keyCode && !anim.isAnimating()) {
             mc.displayGuiScreen(null as GuiScreen?)
             if (mc.currentScreen == null) {
                 mc.setIngameFocus()
             }
-            return
         }
-
-        try {
-            super.keyTyped(typedChar, keyCode)
-        } catch (e2: IOException) {
-            e2.printStackTrace()
-        }
+        super.keyTyped(typedChar, keyCode)
     }
 
     override fun initGui() {
-        openedTime = System.currentTimeMillis()
+        open = true
         anim.start(true)
 
-        // TODO: use a different blur
         if (OpenGlHelper.shadersSupported && mc.renderViewEntity is EntityPlayer && ClickGUIModule.blur) {
             mc.entityRenderer.stopUseShader()
             mc.entityRenderer.loadShader(ResourceLocation("shaders/post/blur.json"))
@@ -114,7 +104,15 @@ object ClickGUI : GuiScreen() {
     }
 
     override fun onGuiClosed() {
+        open = false
+        anim.start(true)
         mc.entityRenderer.stopUseShader()
+
+        /** Used to render the closing animation */
+        Executor(0) {
+            if (!anim.isAnimating()) destroyExecutor()
+            drawScreen(0, 0, 0f)
+        }.register()
 
         for (panel in panels.reversed()) {
             if (panel.extended) {
@@ -133,5 +131,35 @@ object ClickGUI : GuiScreen() {
         Config.saveConfig()
     }
 
-    override fun doesGuiPauseGame(): Boolean = false
+    /** Sets the description without creating a new data class which isn't optimal */
+    fun setDescription(text: String, x: Float,  y: Float, hoverHandler: HoverHandler) {
+        desc.text = text
+        desc.x = x
+        desc.y = y
+        desc.hoverHandler = hoverHandler
+    }
+
+    /** Used to render Descriptions */
+    data class Description(var text: String?, var x: Float, var y: Float, var hoverHandler: HoverHandler?) {
+        /** Test whether a description is active or not */
+        private val shouldRender: Boolean
+            get() = text != null && hoverHandler != null && text != ""
+        /** Handles rendering, if it's not active then it won't render */
+        fun render(nvg: NVG) {
+            if (shouldRender) {
+                nvg {
+                    val area = wrappedTextBounds(text!!, 300f, 16f, Fonts.REGULAR)
+                    rect(
+                        x, y, area[2] - area[0] + 10, area[3] - area[1] + 8,
+                        buttonColor.withAlpha((hoverHandler!!.percent() / 100f).coerceIn(0f, 0.8f)), 5f
+                    )
+                    wrappedText(text!!, x + 7f, y + 12f, 300f, 1f, textColor, 16f, Fonts.REGULAR)
+                    if (hoverHandler!!.percent() == 0) {
+                        text = null
+                        hoverHandler = null
+                    }
+                }
+            }
+        }
+    }
 }

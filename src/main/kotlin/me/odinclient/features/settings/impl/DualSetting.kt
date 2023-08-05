@@ -13,7 +13,7 @@ class DualSetting (
     val right: String,
     override val default: Boolean = false,
     hidden: Boolean = false,
-    description: String? = null,
+    description: String = "",
 ): Setting<Boolean>(name, hidden, description) {
 
     override var value: Boolean = default

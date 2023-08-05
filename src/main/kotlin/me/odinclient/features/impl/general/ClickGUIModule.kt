@@ -36,6 +36,7 @@ object ClickGUIModule: Module(
     val enableNotification: Boolean by BooleanSetting("Enable notifications", false, description = "Shows you a notification in chat when you toggle an option with a keybind")
     val color: Color by ColorSetting("GUI Color", Color(50, 150, 220), allowAlpha = false, description = "Color theme in the gui.")
     val switchType: Boolean by DualSetting("Switch Type", "Checkbox", "Switch")
+
     val action: () -> Unit by ActionSetting("Open Example Hud") {
         display = ExampleHudGui
     }
@@ -64,7 +65,7 @@ object ClickGUIModule: Module(
              
              §eJoin the discord for support and suggestions.
         """.trimIndent(), "")
-            OdinClient.mc.thePlayer.addChatMessage(
+            mc.thePlayer.addChatMessage(
                 ChatComponentText(" §9https://discord.gg/2nCbC9hkxT")
                 .setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, "https://discord.gg/2nCbC9hkxT"))
             )
@@ -92,9 +93,8 @@ object ClickGUIModule: Module(
 
         val link = newestVersion.jsonObject["html_url"].toString().replace("\"", "")
         val tag = newestVersion.jsonObject["tag_name"].toString().replace("\"", "")
-        val current = OdinClient.VERSION
 
-        if (isSecondNewer(current, tag)) {
+        if (isSecondNewer(tag)) {
             hasSentMessage = true
 
             val def = AsyncUtils.waitUntilPlayer()
@@ -107,8 +107,8 @@ object ClickGUIModule: Module(
         }
     }
 
-    private fun isSecondNewer(current: String, second: String): Boolean {
-        val (major, minor, patch) = current.split(".").map { it.toInt() }
+    private fun isSecondNewer(second: String): Boolean {
+        val (major, minor, patch) = OdinClient.VERSION.split(".").map { it.toInt() }
         val (major2, minor2, patch2) = second.split(".").map { it.toInt() }
         return when {
             major > major2 -> false
@@ -122,7 +122,7 @@ object ClickGUIModule: Module(
     }
 
     fun resetPositions() {
-        Category.values().forEach {
+        Category.entries.forEach {
             val incr = 10f + 260f * it.ordinal
             panelX.getOrPut(it) { +NumberSetting(it.name + ",x", default = incr, hidden = true) }.value = incr
             panelY.getOrPut(it) { +NumberSetting(it.name + ",y", default = 10f, hidden = true) }.value = 10f

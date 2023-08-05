@@ -12,7 +12,6 @@ import me.odinclient.dungeonmap.features.Dungeon
 import me.odinclient.dungeonmap.features.MapRender
 import me.odinclient.dungeonmap.features.Window
 import me.odinclient.events.senders.ChatPacketEventSender
-import me.odinclient.events.ClientSecondEvent
 import me.odinclient.events.senders.ClientSecondEventSender
 import me.odinclient.events.senders.ServerTickEventSender
 import me.odinclient.features.ModuleManager
@@ -28,7 +27,6 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.common.MinecraftForge
-import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.Mod.EventHandler
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
@@ -121,6 +119,8 @@ class OdinClient {
         val mc: Minecraft = Minecraft.getMinecraft()
 
         var window = Window
+
+        // TODO: Remove
         val miscConfig = MiscConfig(File(mc.mcDataDir, "config/odin"))
         var display: GuiScreen? = null
 

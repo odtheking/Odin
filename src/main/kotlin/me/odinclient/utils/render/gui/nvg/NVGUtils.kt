@@ -75,26 +75,6 @@ fun NVG.circle(x: Float, y: Float, radius: Float, color: Color) {
     renderer.drawCircle(context, x, y, radius, color.rgba)
 }
 
-val colorCodes = arrayOf(
-    Color(0, 0, 0),
-    Color(0, 0, 170),
-    Color(0, 170, 0),
-    Color(0, 170, 170),
-    Color(170, 0, 0),
-    Color(170, 0, 170),
-    Color(255, 170, 0),
-    Color(170, 170, 170),
-    Color(85, 85, 85),
-    Color(85, 85, 255),
-    Color(85, 255, 85),
-    Color(85, 255, 255),
-    Color(255, 85, 85),
-    Color(255, 85, 255),
-    Color(255, 255, 85),
-    Color(255, 255, 255),
-    Color(255, 255, 255)
-)
-
 fun NVG.textWithControlCodes(text: String, x: Float, y: Float, size: Float, font: Font): Float {
     var i = 0
     var color = Color.WHITE
@@ -161,8 +141,16 @@ fun NVG.resetScissor(scissor: Scissor) {
     ScissorHelper.INSTANCE.resetScissor(context, scissor)
 }
 
-fun NVG.image(filePath: String, x: Float, y: Float, width: Float, height: Float, radius: Float, clazz: Class<*>) =
-    renderer.drawRoundImage(context, filePath, x, y, width, height, radius, clazz)
+fun NVG.image(filePath: String, x: Float, y: Float, w: Float, h: Float, radius: Float, clazz: Class<*>) =
+    renderer.drawRoundImage(context, filePath, x, y, w, h, radius, clazz)
+
+fun NVG.wrappedText(text: String, x: Float, y: Float, w: Float, h: Float, color: Color, size: Float, font: Font) {
+    if (color.isTransparent) return
+    renderer.drawWrappedString(context, text, x, y, w, color.rgba, size, h, font)
+}
+
+fun NVG.wrappedTextBounds(text: String, width: Float, size: Float, font: Font)
+    = renderer.getWrappedStringBounds(context, text, width, size, font)
 
 // TODO: Simplify
 enum class TextAlign {
@@ -173,3 +161,23 @@ enum class TextAlign {
 enum class TextPos {
     Top, Bottom, Middle
 }
+
+val colorCodes = arrayOf(
+    Color(0, 0, 0),
+    Color(0, 0, 170),
+    Color(0, 170, 0),
+    Color(0, 170, 170),
+    Color(170, 0, 0),
+    Color(170, 0, 170),
+    Color(255, 170, 0),
+    Color(170, 170, 170),
+    Color(85, 85, 85),
+    Color(85, 85, 255),
+    Color(85, 255, 85),
+    Color(85, 255, 255),
+    Color(255, 85, 85),
+    Color(255, 85, 255),
+    Color(255, 255, 85),
+    Color(255, 255, 255),
+    Color(255, 255, 255)
+)

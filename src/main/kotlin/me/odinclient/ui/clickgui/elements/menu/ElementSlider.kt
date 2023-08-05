@@ -34,13 +34,13 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
 
     private val sliderBGColor = Color(sliderBackgroundColor)
 
-    private val hoverHandler = HoverHandler(0, 150)
+    private val handler = HoverHandler(0, 150)
 
     private inline val color: Color
-        get() = clickGUIColor.brighter(1 + hoverHandler.percent() / 200f)
+        get() = clickGUIColor.brighter(1 + handler.percent() / 200f)
 
     override fun draw(nvg: NVG) {
-        hoverHandler.handle(x, y, w - 12f, h)
+        handler.handle(x, y, w - 12f, h)
         val percentage = ((setting.value - setting.min) / (setting.max - setting.min)).toFloat()
 
         nvg {

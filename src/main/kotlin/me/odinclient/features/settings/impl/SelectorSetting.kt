@@ -7,7 +7,7 @@ class SelectorSetting(
     defaultSelected: String,
     var options: ArrayList<String>,
     hidden: Boolean = false,
-    description: String? = null,
+    description: String = "",
 ) : Setting<Int>(name, hidden, description) {
 
     override val default: Int = optionIndex(defaultSelected)

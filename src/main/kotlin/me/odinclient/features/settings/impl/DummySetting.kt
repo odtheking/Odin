@@ -5,7 +5,7 @@ import me.odinclient.features.settings.Setting
 class DummySetting(
     name: String,
     hidden: Boolean = false,
-    description: String? = null,
+    description: String = "",
 ) : Setting<Any?>(name, hidden, description) {
     /**
      * Always is null.

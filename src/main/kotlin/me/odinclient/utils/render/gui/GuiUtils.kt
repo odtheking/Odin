@@ -61,7 +61,7 @@ object GuiUtils {
 
     /**
      * Fixed version of [drawHollowRoundedRect]
-     * Original verison is offset for whatever reason.
+     * Original version is offset for whatever reason.
      */
     fun VG.drawOutlineRoundedRect(x: Number, y: Number, w: Number, h: Number, radius: Number, color: Int, thickness: Number) {
         drawHollowRoundedRect(x - 1, y - 1, w + .5, h + .5, radius - 1, color, thickness)

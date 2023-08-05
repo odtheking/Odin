@@ -2,18 +2,15 @@ package me.odinclient.ui.clickgui.elements
 
 import cc.polyfrost.oneconfig.renderer.NanoVGHelper
 import cc.polyfrost.oneconfig.renderer.font.Fonts
-import cc.polyfrost.oneconfig.utils.dsl.nanoVGHelper
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.*
 import me.odinclient.ui.clickgui.ClickGUI
 import me.odinclient.ui.clickgui.Panel
 import me.odinclient.ui.clickgui.elements.menu.*
-import me.odinclient.ui.clickgui.util.ColorUtil.brighterIf
-import me.odinclient.ui.clickgui.util.ColorUtil.buttonColor
+import me.odinclient.ui.clickgui.util.ColorUtil.brighter
 import me.odinclient.ui.clickgui.util.ColorUtil.clickGUIColor
 import me.odinclient.ui.clickgui.util.ColorUtil.moduleButtonColor
 import me.odinclient.ui.clickgui.util.ColorUtil.textColor
-import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinclient.ui.clickgui.util.HoverHandler
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
@@ -35,7 +32,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
     private val colorAnim = ColorAnimation(150)
 
     val color: Color
-        get() = colorAnim.get(clickGUIColor, moduleButtonColor, module.enabled).brighterIf(isButtonHovered, 1 + hoverHandler.alpha)
+        get() = colorAnim.get(clickGUIColor, moduleButtonColor, module.enabled).brighter(1 + hoverHandler.alpha)
 
     val width = Panel.width
     val height = 32f
@@ -43,15 +40,14 @@ class ModuleButton(val module: Module, val panel: Panel) {
     var extended = false
 
     private val extendAnim = EaseInOut(250)
-    private val hoverHandler = HoverHandler(1000, 400)
+    private val hoverHandler = HoverHandler(1000, 200)
 
     init {
         updateElements()
         if (module.keyCode != -999) menuElements.add(ElementKeyBind(this, module))
-        //menuElements.add(ElementDescription(this, module.description))
     }
 
-    fun updateElements() {
+    private fun updateElements() {
         var position = -1 // This looks weird, but it starts at -1 because it gets incremented before being used.
         for (setting in module.settings) {
             /** Don't show hidden settings */
@@ -82,18 +78,8 @@ class ModuleButton(val module: Module, val panel: Panel) {
         var offs = height
 
         hoverHandler.handle(x, y, width, height - 1)
-
-        val percent = hoverHandler.percent()
-        if (percent > 0) {
-            ClickGUI.descriptionToRender = {
-                val bounds =
-                    nanoVGHelper.getWrappedStringBounds(this.context, module.description, 300f, 16f, Fonts.REGULAR)
-                rect(
-                    x + width + 10f, y, bounds[2] - bounds[0] + 10, bounds[3] - bounds[1] + 8,
-                    Color(buttonColor.rgba, percent / 200f), 5f
-                )
-                NanoVGHelper.INSTANCE.drawWrappedString(this.context, module.description, x + width + 17f, y + 12f, 300f, Color.WHITE.withAlpha(percent / 100f, true).rgba, 16f, 1f, Fonts.REGULAR)
-            }
+        if (hoverHandler.percent() > 0) {
+            ClickGUI.setDescription(module.description, x + width + 10f, y, hoverHandler)
         }
 
         nvg {
@@ -102,7 +88,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
             text(module.name, x + width / 2, y + height / 2, textColor, 18f, Fonts.MEDIUM, TextAlign.Middle)
             val textWidth = getTextWidth(module.name, 18f, Fonts.MEDIUM)
 
-            // TODO: improve this svg, maybe a Warning Triangle
+            // make this optional and better svg imo like a warnning triangle thats red would be better
             if (module.risky) {
                 NanoVGHelper.INSTANCE.drawSvg(this.context,
                     "/assets/odinclient/hazard.svg", x + width / 2 + textWidth / 2 + 10f, y + 5f, 20f, 20f, javaClass
@@ -141,8 +127,8 @@ class ModuleButton(val module: Module, val panel: Panel) {
                 return true
             }
         } else if (isMouseUnderButton) {
-            for (menuElement in menuElements.reversed()) {
-                if (menuElement.mouseClicked(mouseButton)) {
+            for (i in menuElements.size - 1 downTo 0) {
+                if (menuElements[i].mouseClicked(mouseButton)) {
                     updateElements()
                     return true
                 }
@@ -153,16 +139,16 @@ class ModuleButton(val module: Module, val panel: Panel) {
 
     fun mouseReleased(state: Int) {
         if (extended) {
-            for (menuElement in menuElements.reversed()) {
-                menuElement.mouseReleased(state)
+            for (i in menuElements.size - 1 downTo 0) {
+                menuElements[i].mouseReleased(state)
             }
         }
     }
 
     fun keyTyped(typedChar: Char, keyCode: Int): Boolean {
         if (extended) {
-            for (menuElement in menuElements.reversed()) {
-                if (menuElement.keyTyped(typedChar, keyCode)) return true
+            for (i in menuElements.size - 1 downTo 0) {
+                if (menuElements[i].keyTyped(typedChar, keyCode)) return true
             }
         }
         return false

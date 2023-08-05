@@ -5,7 +5,7 @@ import me.odinclient.features.settings.Setting
 class ActionSetting(
     name: String,
     hidden: Boolean = false,
-    description: String? = null,
+    description: String = "",
     override val default: () -> Unit = {}
 ) : Setting<() -> Unit>(name, hidden, description) {
 

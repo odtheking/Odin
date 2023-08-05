@@ -56,8 +56,6 @@ abstract class Module(
      */
     var description: String
 
-    val hudElements: ArrayList<HudElement> = arrayListOf()
-
     init {
         this.name = name
         this.keyCode = keyCode
@@ -73,27 +71,22 @@ abstract class Module(
          * A little bit scuffed but ig it works.
          */
         this::class.nestedClasses
-            .filter { it.hasAnnotation<Hud>() }
             .mapNotNull { it.objectInstance }
             .filterIsInstance<HudElement>()
             .forEach { hudElement ->
                 val hudset = hudElement::class.findAnnotation<Hud>() ?: return@forEach
-                register(HudSetting(hudset.name, hudset.toggle, default = hudElement, hidden = hudset.hidden))
-                hudElement.init(this)
-                hud.add(hudElement)
+                register(HudSetting(hudset.name, hudElement, hudset.toggleable, hidden = hudset.hidden))
             }
     }
 
     open fun onEnable() {
         MinecraftForge.EVENT_BUS.register(this)
-        for (i in 0 until hudElements.size) MinecraftForge.EVENT_BUS.register(hudElements[i])
     }
 
     open fun onDisable() {
         if (!this::class.hasAnnotation<AlwaysActive>()) {
             MinecraftForge.EVENT_BUS.unregister(this)
         }
-        for (i in 0 until hudElements.size) MinecraftForge.EVENT_BUS.unregister(hudElements[i])
     }
 
     open fun onKeybind() {
@@ -109,6 +102,9 @@ abstract class Module(
 
     fun <K : Setting<*>> register(setting: K): K {
         settings.add(setting)
+        if (setting is HudSetting) {
+            setting.value.init(this)
+        }
         return setting
     }
 

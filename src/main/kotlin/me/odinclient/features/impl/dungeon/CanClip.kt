@@ -44,10 +44,10 @@ object CanClip : Module(
 
     @Hud("Can Clip", false)
     object CanClipHud : HudElement() {
-        override fun render(vg: NVG, example: Boolean): Pair<Float, Float> {
+        override fun render(nvg: NVG, example: Boolean): Pair<Float, Float> {
             val string = "Can Clip"
-            vg.text(string, 0f, 1f, Color(0, 255, 0, animation.get(0f, 1f, !canClip)), 16f, Fonts.REGULAR, TextAlign.Left, TextPos.Top)
-            return vg.getTextWidth(string, 16f, Fonts.REGULAR) to 16f
+            nvg.text(string, 0f, 1f, Color(0, 255, 0, animation.get(0f, 1f, !canClip)), 16f, Fonts.REGULAR, TextAlign.Left, TextPos.Top)
+            return nvg.getTextWidth(string, 16f, Fonts.REGULAR) to 16f
         }
     }
 }

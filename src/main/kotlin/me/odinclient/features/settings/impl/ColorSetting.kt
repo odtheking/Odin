@@ -8,16 +8,13 @@ class ColorSetting(
     override val default: Color,
     var allowAlpha: Boolean = false,
     hidden: Boolean = false,
-    description: String? = null,
+    description: String = "",
 ) : Setting<Color>(name, hidden, description){
 
     override var value: Color = default
         set(value) {
             field = processInput(value)
         }
-
-    inline val rgb: Int
-        get() = value.rgba
 
     var hue: Float
         get() = value.hue

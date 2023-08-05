@@ -56,7 +56,7 @@ class Panel(
             rect(x, y, width, height, ColorUtil.moduleButtonColor, 5f, 5f, 0f, 0f)
             text(displayName, x + width / 2f, y + height / 2f, ColorUtil.textColor, 22f, Fonts.SEMIBOLD, TextAlign.Middle)
 
-            scrollOffset = scrollAnimation.get(scrollOffset, scrollTarget).round(0) // prevents weird rendering issues
+            scrollOffset = scrollAnimation.get(scrollOffset, scrollTarget).round(1)
             var startY = scrollOffset + height
 
             val s = scissor(x, y + height, width, 5000f)
@@ -77,7 +77,7 @@ class Panel(
 
     fun handleScroll(amount: Int): Boolean {
         if (isMouseOverExtended) {
-            scrollTarget = (scrollTarget + amount).coerceIn(-length + scrollOffset + 20f, 0f)
+            scrollTarget = (scrollTarget + amount).coerceIn(-length + scrollOffset + 72f, 0f)
             scrollAnimation.start(true)
             return true
         }
