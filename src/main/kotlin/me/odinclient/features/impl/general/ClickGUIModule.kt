@@ -86,19 +86,13 @@ object ClickGUIModule: Module(
 
         val newestVersion = try {
             Json.parseToJsonElement(WebUtils.fetchURLData("https://api.github.com/repos/odtheking/OdinClient/releases/latest"))
-        } catch (e: Exception) {
-            return@launch
-        }
+        } catch (e: Exception) { return@launch }
 
         val link = newestVersion.jsonObject["html_url"].toString().replace("\"", "")
         val tag = newestVersion.jsonObject["tag_name"].toString().replace("\"", "")
+        var curVers = OdinClient.VERSION
 
-        var vers = try { tag.toFloat() } catch (e: Exception) { 0f }
-        var curVers = try { OdinClient.VERSION.replace(".", "").toFloat() } catch (e: Exception) { 0f }
-        if (vers > 1000f) vers /= 1000f
-        if (curVers > 1000f) curVers /= 1000f
-
-        if (vers > curVers) {
+        if (isSecondNewer(curVers, tag)) {
             hasSentMessage = true
 
             val def = AsyncUtils.waitUntilPlayer()
@@ -108,6 +102,20 @@ object ClickGUIModule: Module(
                 ChatComponentText("§3Odin§bClient §8»§r §7Update available! §r${newestVersion.jsonObject["tag_name"].toString()} §e$link")
                     .setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, link))
             )
+        }
+    }
+
+    fun isSecondNewer(current: String, second: String): Boolean {
+        val (major, minor, patch) = current.split(".").map { it.toInt() }
+        val (major2, minor2, patch2) = second.split(".").map { it.toInt() }
+        return when {
+            major > major2 -> false
+            major < major2 -> true
+            minor > minor2 -> false
+            minor < minor2 -> true
+            patch > patch2 -> false
+            patch < patch2 -> true
+            else -> false // equal, or something went wrong, either way it's best to assume it's false.
         }
     }
 
