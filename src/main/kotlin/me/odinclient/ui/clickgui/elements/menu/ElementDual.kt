@@ -31,11 +31,11 @@ class ElementDual(parent: ModuleButton, setting: DualSetting) : Element<DualSett
             dropShadow(x + 7f, y + 3f, w - 14f, 28f, 10f, 3.75f, 5f)
             rect(x + 7f, y + 3f, w - 14f, 28f, buttonColor, 5f)
 
-            val pos = posAnim.get(7f, w / 2 + 6f, !setting.enabled)
+            val pos = posAnim.get(8f, w / 2, !setting.enabled)
             rect(x + pos, y + 3f, w / 2 - 6f, 28f, clickGUIColor, 5f)
 
-            text(setting.left, x + w / 4 + 4f, y + 3f + h / 2, Color.WHITE.darkerIf(isLeftHovered), 16f, Fonts.REGULAR, TextAlign.Middle)
-            text(setting.right, x + w * 3 / 4 + 4f,y + 3f + h / 2,  Color.WHITE.darkerIf(isRightHovered), 16f, Fonts.REGULAR, TextAlign.Middle)
+            text(setting.left, x + w / 4 + 6f, y + 3f + h / 2,Color.WHITE.darkerIf(isLeftHovered), 16f, Fonts.REGULAR, TextAlign.Middle)
+            text(setting.right, x + w * 3 / 4 - 3f,y + 3f + h / 2, Color.WHITE.darkerIf(isRightHovered), 16f, Fonts.REGULAR, TextAlign.Middle)
         }
     }
 

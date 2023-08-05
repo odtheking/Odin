@@ -13,8 +13,10 @@ import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
+import org.lwjgl.input.Mouse
 import java.io.IOException
 import kotlin.math.floor
+import kotlin.math.sign
 
 object ClickGUI : GuiScreen() {
     var anim = EaseInOut(400)
@@ -24,7 +26,7 @@ object ClickGUI : GuiScreen() {
     var descriptionToRender: (NVG.() -> Unit)? = null
 
     fun init() {
-        for (category in Category.values()) {
+        for (category in Category.entries) {
             panels.add(Panel(category))
         }
     }
@@ -42,6 +44,16 @@ object ClickGUI : GuiScreen() {
 
             if (descriptionToRender != null) descriptionToRender?.invoke(this)
             descriptionToRender = null
+        }
+    }
+
+    override fun handleMouseInput() {
+        super.handleMouseInput()
+        if (Mouse.getEventDWheel() != 0) {
+            val amount = Mouse.getEventDWheel().sign * 16
+            panels.forEach {
+                if (it.handleScroll(amount)) return@forEach
+            }
         }
     }
 

@@ -48,43 +48,14 @@ class ElementCheckBox(parent: ModuleButton, setting: BooleanSetting) : Element<B
                 dropShadow(x + w - 43f, y + 4f, 34f, 20f, 10f, 0.75f, 9f)
 
                 rect(x + w - 43f, y + 4f, 34f, 20f, buttonColor, 9f)
-
-                val scissor = scissor(x + w - 43f, y + 4f, 34f, 20f)
-                rect(x + w - 43f, y + 4f, linearAnimation.get(34f, 3f, setting.enabled), 20f, color, 9f)
-                resetScissor(scissor)
+                rect(x + w - 43f, y + 4f, linearAnimation.get(34f, 9f, setting.enabled), 20f, color, 9f)
 
                 if (isHovered) rectOutline(x + w - 43f, y + 4f, 34f, 20f, color.darker(.85f), 9f, .5f)
-                circle(x + w - linearAnimation.get(34f, 16f, !setting.enabled), y + 14f, 7f,
+                circle(x + w - linearAnimation.get(33f, 17f, !setting.enabled), y + 14f, 6f,
                     Color(220, 220, 220).darkerIf(isHovered, 0.9f)
                 )
             }
         }
-
-
-        /*
-        nvg.nanoVG {
-            drawRect(x, y, w, h, 1)
-            drawText(name, x + 6, y + h / 2, -1, 16f, Fonts.REGULAR)
-            val color = colorAnim.get(ColorUtil.clickGUIColor, Color(38, 38, 38), setting.enabled).rgba
-            if (!ClickGUIModule.switchType) {
-                drawDropShadow(x + w - 30f, y + 5f, 21f, 20f, 10f, 0.75f, 5f)
-                drawRoundedRect(x + w - 30f, y + 5f, 21f, 20f, 5f, color)
-                drawOutlineRoundedRect(x + w - 30f, y + 5f, 21f, 20f, 5f, ColorUtil.clickGUIColor.rgba, 1.5f)
-                if (isHovered) drawOutlineRoundedRect(
-                    x + w - 30f,
-                    y + 5f,
-                    21f,
-                    20f,
-                    5f,
-                    ColorUtil.boxHoverColor,
-                    1.5f
-                )
-            } else {
-
-            }
-        }
-
-         */
     }
 
     override fun mouseClicked(mouseButton: Int): Boolean {
