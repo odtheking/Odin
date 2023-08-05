@@ -13,16 +13,12 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.WorldRenderer
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.crash.CrashReport
-import net.minecraft.crash.CrashReportCategory
 import net.minecraft.entity.item.EntityFallingBlock
-import net.minecraft.util.ReportedException
 import net.minecraftforge.client.ForgeHooksClient
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Mouse
 import java.awt.Color
-import java.util.concurrent.Callable
 
 // TODO: I think this needs a better name
 object NoRender : Module(
@@ -76,33 +72,7 @@ object NoRender : Module(
             try {
                 ForgeHooksClient.drawScreen(mc.currentScreen, k1, l1, (mc as MinecraftAccessor).timer.renderPartialTicks)
             } catch (throwable: Throwable) {
-                val crashReport: CrashReport = CrashReport.makeCrashReport(throwable, "Rendering screen")
-                val crashReportCategory: CrashReportCategory = crashReport.makeCategory("Screen render details")
-                crashReportCategory.addCrashSectionCallable("Screen name") { mc.currentScreen.javaClass.canonicalName }
-                crashReportCategory.addCrashSectionCallable(
-                    "Mouse location",
-                    Callable {
-                        java.lang.String.format(
-                            "Scaled: (%d, %d). Absolute: (%d, %d)",
-                            k1,
-                            l1,
-                            Mouse.getX(),
-                            Mouse.getY()
-                        )
-                    } as Callable<String>)
-                crashReportCategory.addCrashSectionCallable(
-                    "Screen size",
-                    Callable {
-                        java.lang.String.format(
-                            "Scaled: (%d, %d). Absolute: (%d, %d). Scale factor of %d",
-                            scaledResolution.scaledWidth,
-                            scaledResolution.scaledHeight,
-                            mc.displayWidth,
-                            mc.displayHeight,
-                            scaledResolution.scaleFactor
-                        )
-                    } as Callable<String>)
-                throw ReportedException(crashReport)
+                throwable.printStackTrace()
             }
         }
     }
