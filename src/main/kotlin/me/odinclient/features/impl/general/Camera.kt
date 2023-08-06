@@ -26,7 +26,7 @@ object Camera : Module(
 
     private val color: Color by ColorSetting("HUD Color", Color(255, 0, 0))
 
-    private val hud: HudElement by HudSetting("Name", 10f, 10f, 1f) { example ->
+    private val hud: HudElement by HudSetting("Name", 10f, 10f, 1f, true) { example ->
         val string = if (example) "Example Hud" else "Not Example Hud"
         text(string, 0f, 0f, color, 16f, Fonts.REGULAR, TextAlign.Left, TextPos.Top)
         getTextWidth(string, 16f, Fonts.REGULAR) to 16f

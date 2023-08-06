@@ -3,17 +3,25 @@ package me.odinclient.ui.hud
 import me.odinclient.config.Config
 import me.odinclient.features.ModuleManager.hud
 import me.odinclient.ui.Screen
+import me.odinclient.utils.render.Color
+import me.odinclient.utils.render.gui.GuiUtils.scaleFactor
+import me.odinclient.utils.render.gui.GuiUtils.scaledHeight
+import me.odinclient.utils.render.gui.GuiUtils.scaledWidth
 import me.odinclient.utils.render.gui.MouseUtils
-import me.odinclient.utils.render.gui.nvg.NVG
-import me.odinclient.utils.render.gui.nvg.drawNVG
+import me.odinclient.utils.render.gui.animations.Animation
+import me.odinclient.utils.render.gui.animations.impl.EaseInOut
+import me.odinclient.utils.render.gui.nvg.*
 import kotlin.math.sign
 
-object ExampleHudGui : Screen() {
+object EditHUDGui : Screen() {
 
     var dragging: HudElement? = null
 
-    var startX: Float = 0f
-    var startY: Float = 0f
+    private var startX: Float = 0f
+    private var startY: Float = 0f
+
+    private val openAnim = EaseInOut(600)
+    private val resetAnim = EaseInOut(750)
 
     override fun draw(nvg: NVG) {
         dragging?.let {
@@ -22,7 +30,17 @@ object ExampleHudGui : Screen() {
         }
 
         drawNVG {
-            for (i in hud.size - 1 downTo 0) {
+            translate(scaledWidth.toFloat(), scaledHeight * 2f - 100f)
+            if (openAnim.isAnimating()) {
+                setAlpha(openAnim.get(0f, 1f))
+                val animVal = openAnim.get(0f, 1f)
+                scale(animVal, animVal)
+            }
+
+            rect(-75f, 0f, 150f, 50f, Color.WHITE) // make this good
+            resetTransform()
+
+            for (i in 0 until hud.size) {
                 hud[i].draw(this, example = true)
             }
         }
@@ -55,7 +73,14 @@ object ExampleHudGui : Screen() {
         super.mouseReleased(mouseX, mouseY, state)
     }
 
+    override fun initGui() {
+        openAnim.start()
+    }
+
     override fun onGuiClosed() {
+        for (i in 0 until hud.size) {
+            hud[i].hoverHandler.reset()
+        }
         Config.saveConfig()
     }
 }

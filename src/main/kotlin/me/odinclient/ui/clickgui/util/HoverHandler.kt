@@ -13,11 +13,6 @@ class HoverHandler(private val startDelay: Long, delay: Long) {
     private var hoverStartTime: Long? = null
     var hasStarted = false
 
-    val alpha: Float
-        get() {
-            return hoverStartTime?.let { (System.currentTimeMillis() - it) / 750f }?.coerceIn(0f, 0.3f) ?: 0f
-        }
-
     fun percent(): Int {
         if (!hasStarted) return 100 - anim.getPercent()
         return anim.getPercent()
@@ -38,5 +33,10 @@ class HoverHandler(private val startDelay: Long, delay: Long) {
                 hasStarted = false
             }
         }
+    }
+
+    fun reset() {
+        hoverStartTime = null
+        hasStarted = false
     }
 }

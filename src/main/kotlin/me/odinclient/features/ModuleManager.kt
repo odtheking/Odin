@@ -80,6 +80,7 @@ object ModuleManager {
         RelicAnnouncer,
 
         CloseChest,
+        EnchantingExperiments,
         ThornStun
     )
 

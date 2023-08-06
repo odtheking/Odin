@@ -5,7 +5,7 @@ import me.odinclient.features.ModuleManager.hud
 import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinclient.ui.clickgui.util.HoverHandler
-import me.odinclient.ui.hud.ExampleHudGui.dragging
+import me.odinclient.ui.hud.EditHUDGui.dragging
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinclient.utils.render.gui.animations.impl.EaseInOut
@@ -80,10 +80,10 @@ open class HudElement(
         vg.translate(x, y)
         vg.scale(scale, scale)
         val (width, height) = render(vg, example)
+
         if (example) {
             hoverHandler.handle(x, y, width * scale, height * scale)
-
-            var thickness = anim.get(.25f, .75f, !hasStarted)
+            var thickness = anim.get(.25f, 1f, !hasStarted)
             if (anim2.isAnimating() || dragging != null) {
                 thickness += anim2.get(0f, .5f, dragging == null)
             }
@@ -95,7 +95,7 @@ open class HudElement(
                 3f + height,
                 Color.WHITE.withAlpha(percent / 100f),
                 5f,
-                thickness
+                thickness / (scale / 3)
             )
         }
         vg.resetTransform()
@@ -123,22 +123,16 @@ open class HudElement(
      */
     val anim2 = EaseInOut(200)
 
-    /**
-     * Wrapper
-     */
-    inline val anim
+    /** Wrapper */
+    private inline val anim
         get() = hoverHandler.anim
 
-    /**
-     * Wrapper
-     */
-    inline val percent: Int
+    /** Wrapper */
+    private inline val percent: Int
         get() = hoverHandler.percent()
 
-    /**
-     * Wrapper
-     */
-    inline val hasStarted: Boolean
+    /** Wrapper */
+    private inline val hasStarted: Boolean
         get() = hoverHandler.hasStarted
 
     init {

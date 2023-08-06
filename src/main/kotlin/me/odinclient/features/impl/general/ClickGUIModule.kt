@@ -13,7 +13,7 @@ import me.odinclient.features.Module
 import me.odinclient.features.settings.AlwaysActive
 import me.odinclient.features.settings.impl.*
 import me.odinclient.ui.clickgui.ClickGUI
-import me.odinclient.ui.hud.ExampleHudGui
+import me.odinclient.ui.hud.EditHUDGui
 import me.odinclient.utils.AsyncUtils
 import me.odinclient.utils.WebUtils
 import me.odinclient.utils.render.Color
@@ -38,7 +38,7 @@ object ClickGUIModule: Module(
     val switchType: Boolean by DualSetting("Switch Type", "Checkbox", "Switch")
 
     val action: () -> Unit by ActionSetting("Open Example Hud") {
-        display = ExampleHudGui
+        display = EditHUDGui
     }
 
     private var hasJoined: Boolean by BooleanSetting("First join", false, hidden = true)

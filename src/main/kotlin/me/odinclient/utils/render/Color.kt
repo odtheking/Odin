@@ -134,7 +134,7 @@ class Color(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f)
         val BLACK = Color(0, 0, 0)
 
         /**
-         * Performs bitshift
+         * Performs bit-shift thingy
          */
         inline val Int.red
             get() = this shr 16 and 0xFF
