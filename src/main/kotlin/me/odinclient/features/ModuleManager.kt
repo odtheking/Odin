@@ -77,7 +77,9 @@ object ModuleManager {
         NoRender,
         NoCarpet,
         RelicAura,
-        RelicAnnouncer
+        RelicAnnouncer,
+
+        CloseChest
     )
 
     @SubscribeEvent
