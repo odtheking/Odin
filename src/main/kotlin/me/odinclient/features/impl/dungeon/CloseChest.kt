@@ -11,10 +11,10 @@ import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object CloseChest : Module(
-    "Block opening secret chests",
+    "Cancel Chest Open",
     category = Category.DUNGEON,
-    description = "Cancels secret chests from opening."
-){
+    description = "Cancels the opening of chests in dungeons"
+) {
     @SubscribeEvent
     fun onOpenWindow(event: ReceivePacketEvent) {
         if (!inDungeons) return
