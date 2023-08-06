@@ -10,7 +10,6 @@
 	"authorList": [
 	  "Odin", "Cezar", "Stivais", "Bonsai", "Ilmars"
 	],
-	"credits": "Odin, Cezar, Stivais, Bonsai, Ilmars and many more who helped along the way",
 	"logoFile": "assets/odinclient/logo.png",
 	"screenshots": [],
 	"dependencies": []

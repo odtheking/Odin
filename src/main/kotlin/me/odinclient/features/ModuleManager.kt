@@ -35,6 +35,8 @@ object ModuleManager {
         WatcherBar,
         MapModule,
         PersonalDragon,
+        CustomEnd,
+        EscrowFix,
 
         ArrowTrajectory,
         Camera,
@@ -74,7 +76,8 @@ object ModuleManager {
         TerracottaTimer,
         NoRender,
         NoCarpet,
-        RelicAura
+        RelicAura,
+        RelicAnnouncer
     )
 
     @SubscribeEvent
