@@ -79,7 +79,8 @@ object ModuleManager {
         RelicAura,
         RelicAnnouncer,
 
-        CloseChest
+        CloseChest,
+        EnchantingExperiments
     )
 
     @SubscribeEvent
