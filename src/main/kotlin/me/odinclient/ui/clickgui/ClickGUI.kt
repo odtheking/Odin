@@ -1,6 +1,7 @@
 package me.odinclient.ui.clickgui
 
 import cc.polyfrost.oneconfig.renderer.font.Fonts
+import me.odinclient.OdinClient.Companion.display
 import me.odinclient.config.Config
 import me.odinclient.features.Category
 import me.odinclient.features.impl.general.ClickGUIModule
@@ -27,9 +28,8 @@ object ClickGUI : Screen() {
     private val panels: ArrayList<Panel> = arrayListOf()
 
     var anim = EaseInOut(400)
-    var open = false
-
-    var desc: Description = Description(null, 0f, 0f, null)
+    private var open = false
+    private var desc: Description = Description(null, 0f, 0f, null)
 
     fun init() {
         for (category in Category.entries) {
@@ -104,16 +104,6 @@ object ClickGUI : Screen() {
     }
 
     override fun onGuiClosed() {
-        open = false
-        anim.start(true)
-        mc.entityRenderer.stopUseShader()
-
-        /** Used to render the closing animation */
-        Executor(0) {
-            if (!anim.isAnimating()) destroyExecutor()
-            drawScreen(0, 0, 0f)
-        }.register()
-
         for (panel in panels.reversed()) {
             if (panel.extended) {
                 for (moduleButton in panel.moduleButtons) {
@@ -129,6 +119,24 @@ object ClickGUI : Screen() {
             }
         }
         Config.saveConfig()
+
+        open = false
+        anim.start(true)
+        mc.entityRenderer.stopUseShader()
+
+        /** Used to render the closing animation */
+        Executor(0) {
+            if (!anim.isAnimating()) destroyExecutor()
+            drawScreen(0, 0, 0f)
+        }.register()
+    }
+
+    /**
+     * Used to smooth transition between screens.
+     */
+    fun swapScreens(other: Screen) {
+        // TODO: ACTUALLY MAKLE THIS WORK
+        display = other
     }
 
     /** Sets the description without creating a new data class which isn't optimal */
@@ -139,11 +147,16 @@ object ClickGUI : Screen() {
         desc.hoverHandler = hoverHandler
     }
 
-    /** Used to render Descriptions */
+    /**
+     * Used to render Descriptions
+     * @see draw
+     */
     data class Description(var text: String?, var x: Float, var y: Float, var hoverHandler: HoverHandler?) {
+
         /** Test whether a description is active or not */
         private val shouldRender: Boolean
             get() = text != null && hoverHandler != null && text != ""
+
         /** Handles rendering, if it's not active then it won't render */
         fun render(nvg: NVG) {
             if (shouldRender) {

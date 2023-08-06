@@ -6,10 +6,12 @@ import me.odinclient.utils.render.gui.animations.impl.LinearAnimation
 
 class HoverHandler(private val startDelay: Long, delay: Long) {
 
-    private val anim = LinearAnimation<Int>(delay)
+    constructor(delay: Long) : this(0, delay)
+
+    val anim = LinearAnimation<Float>(delay)
 
     private var hoverStartTime: Long? = null
-    private var hasStarted = false
+    var hasStarted = false
 
     val alpha: Float
         get() {

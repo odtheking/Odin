@@ -3,7 +3,6 @@ package me.odinclient.features
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import me.odinclient.OdinClient
-import me.odinclient.features.ModuleManager.hud
 import me.odinclient.features.impl.general.ClickGUIModule
 import me.odinclient.features.settings.AlwaysActive
 import me.odinclient.features.settings.Hud

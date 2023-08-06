@@ -36,12 +36,23 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
 
     private val handler = HoverHandler(0, 150)
 
+    /** Used to make slider smoother and not jittery (doesn't change value.) */
+    private var sliderPercentage: Float = ((setting.value - setting.min) / (setting.max - setting.min)).toFloat()
+
     private inline val color: Color
         get() = clickGUIColor.brighter(1 + handler.percent() / 200f)
 
     override fun draw(nvg: NVG) {
         handler.handle(x, y, w - 12f, h)
         val percentage = ((setting.value - setting.min) / (setting.max - setting.min)).toFloat()
+
+        if (listening) {
+            sliderPercentage = ((mouseX - (x + 6f)) / (w - 12f)).coerceIn(0f, 1f)
+            println(sliderPercentage)
+            val diff = setting.max - setting.min
+            val newVal = setting.min + ((mouseX - (x + 6f)) / (w - 12f)).coerceInNumber(0, 1) * diff
+            setting.valueAsDouble = newVal.toDouble()
+        }
 
         nvg {
             rect(x, y, w, h, elementBackground)
@@ -51,13 +62,7 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
 
             rect(x + 6f, y + 28f, w - 12f, 7f, sliderBGColor, 2.5f, 2.5f, 2.5f, 3f)
             dropShadow(x + 6f, y + 28f, w - 12f, 7f, 10f, 0.75f, 3f)
-            if (x + percentage * (w - 12f) > x + 6) rect(x + 6f, y + 28f, percentage * (w - 12f), 7f, color, 3f)
-        }
-
-        if (listening) {
-            val diff = setting.max - setting.min
-            val newVal = setting.min + ((mouseX - (x + 6f)) / (w - 12f)).coerceInNumber(0, 1) * diff
-            setting.valueAsDouble = newVal.toDouble()
+            if (x + percentage * (w - 12f) > x + 6) rect(x + 6f, y + 28f, sliderPercentage * (w - 12f), 7f, color, 3f)
         }
     }
 

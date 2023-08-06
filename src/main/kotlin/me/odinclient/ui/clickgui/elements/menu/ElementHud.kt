@@ -1,8 +1,8 @@
 package me.odinclient.ui.clickgui.elements.menu
 
 import cc.polyfrost.oneconfig.renderer.font.Fonts
-import me.odinclient.OdinClient.Companion.display
 import me.odinclient.features.settings.impl.HudSetting
+import me.odinclient.ui.clickgui.ClickGUI
 import me.odinclient.ui.clickgui.elements.Element
 import me.odinclient.ui.clickgui.elements.ElementType
 import me.odinclient.ui.clickgui.elements.ModuleButton
@@ -57,7 +57,8 @@ class ElementHud(parent: ModuleButton, setting: HudSetting) : Element<HudSetting
         if (mouseButton == 0) {
             when {
                 isHovered -> if (colorAnim.start()) setting.enabled = !setting.enabled
-                isShortcutHovered -> display = ExampleHudGui
+                isShortcutHovered -> ClickGUI.swapScreens(ExampleHudGui)
+                else -> return false
             }
             return true
         }

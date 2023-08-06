@@ -32,7 +32,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
     private val colorAnim = ColorAnimation(150)
 
     val color: Color
-        get() = colorAnim.get(clickGUIColor, moduleButtonColor, module.enabled).brighter(1 + hoverHandler.alpha)
+        get() = colorAnim.get(clickGUIColor, moduleButtonColor, module.enabled).brighter(1 + hover.percent() / 500f)
 
     val width = Panel.width
     val height = 32f
@@ -41,6 +41,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
 
     private val extendAnim = EaseInOut(250)
     private val hoverHandler = HoverHandler(1000, 200)
+    private val hover = HoverHandler(250)
 
     init {
         updateElements()
@@ -78,6 +79,8 @@ class ModuleButton(val module: Module, val panel: Panel) {
         var offs = height
 
         hoverHandler.handle(x, y, width, height - 1)
+        hover.handle(x, y, width, height - 1)
+
         if (hoverHandler.percent() > 0) {
             ClickGUI.setDescription(module.description, x + width + 10f, y, hoverHandler)
         }

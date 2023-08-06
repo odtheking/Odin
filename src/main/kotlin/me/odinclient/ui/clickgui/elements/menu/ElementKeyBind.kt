@@ -7,8 +7,8 @@ import me.odinclient.ui.clickgui.elements.Element
 import me.odinclient.ui.clickgui.elements.ElementType
 import me.odinclient.ui.clickgui.elements.ModuleButton
 import me.odinclient.ui.clickgui.util.ColorUtil
+import me.odinclient.ui.clickgui.util.ColorUtil.brighter
 import me.odinclient.ui.clickgui.util.ColorUtil.clickGUIColor
-import me.odinclient.ui.clickgui.util.ColorUtil.darker
 import me.odinclient.ui.clickgui.util.ColorUtil.elementBackground
 import me.odinclient.ui.clickgui.util.ColorUtil.textColor
 import me.odinclient.ui.clickgui.util.HoverHandler
@@ -26,7 +26,7 @@ class ElementKeyBind(parent: ModuleButton, private val mod: Module) :
     private val hover = HoverHandler(0, 150)
 
     private val buttonColor: Color
-        inline get() = ColorUtil.buttonColor.darker(1 + hover.percent() / 500f)
+        inline get() = ColorUtil.buttonColor.brighter(1 + hover.percent() / 500f)
 
     override fun draw(nvg: NVG) {
         val value = if (mod.keyCode > 0) Keyboard.getKeyName(mod.keyCode) ?: "Err"

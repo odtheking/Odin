@@ -22,7 +22,7 @@ import kotlin.math.floor
 
 object ChatUtils {
 
-    val ClientChatReceivedEvent.unformattedText
+    inline val ClientChatReceivedEvent.unformattedText
         get() = this.message.unformattedText.noControlCodes
 
     private fun eightBall(): String {
