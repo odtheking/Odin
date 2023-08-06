@@ -1,8 +1,8 @@
 package me.odinclient.features.impl.m7
 
 import me.odinclient.OdinClient.Companion.mc
-import me.odinclient.events.ChatPacketEvent
-import me.odinclient.events.DrawSlotEvent
+import me.odinclient.events.impl.ChatPacketEvent
+import me.odinclient.events.impl.DrawSlotEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.utils.Utils.noControlCodes

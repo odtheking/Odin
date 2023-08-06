@@ -1,6 +1,6 @@
 package me.odinclient.features.impl.dungeon
 
-import me.odinclient.events.ReceivePacketEvent
+import me.odinclient.events.impl.ReceivePacketEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.BooleanSetting
@@ -79,7 +79,7 @@ object BlessingDisplay : Module(
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
-        Blessings.values().forEach { it.reset() }
+        Blessings.entries.forEach { it.reset() }
     }
 
     object BlessingDisplayHud : TextHud() {

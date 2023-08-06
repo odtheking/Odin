@@ -1,7 +1,7 @@
 package me.odinclient.features.impl.dungeon
 
 import me.odinclient.OdinClient.Companion.mc
-import me.odinclient.events.BlockUpdateEvent
+import me.odinclient.events.impl.BlockUpdateEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.utils.Utils.round

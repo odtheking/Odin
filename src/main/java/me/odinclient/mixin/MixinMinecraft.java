@@ -1,8 +1,8 @@
 package me.odinclient.mixin;
 
-import me.odinclient.events.PostGuiOpenEvent;
-import me.odinclient.events.PreKeyInputEvent;
-import me.odinclient.events.PreMouseInputEvent;
+import me.odinclient.events.impl.PostGuiOpenEvent;
+import me.odinclient.events.impl.PreKeyInputEvent;
+import me.odinclient.events.impl.PreMouseInputEvent;
 import me.odinclient.features.impl.general.CPSDisplay;
 import me.odinclient.features.impl.general.NoRender;
 import net.minecraft.client.Minecraft;

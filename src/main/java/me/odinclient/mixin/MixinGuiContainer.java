@@ -1,6 +1,6 @@
 package me.odinclient.mixin;
 
-import me.odinclient.events.DrawSlotEvent;
+import me.odinclient.events.impl.DrawSlotEvent;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;

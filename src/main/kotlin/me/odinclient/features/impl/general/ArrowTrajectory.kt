@@ -1,7 +1,7 @@
 package me.odinclient.features.impl.general
 
 import me.odinclient.OdinClient.Companion.mc
-import me.odinclient.events.RenderEntityModelEvent
+import me.odinclient.events.impl.RenderEntityModelEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.ColorSetting

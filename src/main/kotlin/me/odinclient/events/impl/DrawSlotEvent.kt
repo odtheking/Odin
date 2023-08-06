@@ -1,4 +1,4 @@
-package me.odinclient.events
+package me.odinclient.events.impl
 
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.inventory.Container

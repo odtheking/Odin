@@ -1,8 +1,8 @@
 package me.odinclient.features
 
 import me.odinclient.OdinClient.Companion.mc
-import me.odinclient.events.PreKeyInputEvent
-import me.odinclient.events.PreMouseInputEvent
+import me.odinclient.events.impl.PreKeyInputEvent
+import me.odinclient.events.impl.PreMouseInputEvent
 import me.odinclient.features.impl.dungeon.*
 import me.odinclient.features.impl.general.*
 import me.odinclient.features.impl.m7.*

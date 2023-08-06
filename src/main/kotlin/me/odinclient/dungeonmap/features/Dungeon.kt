@@ -7,7 +7,7 @@ import me.odinclient.dungeonmap.core.DungeonPlayer
 import me.odinclient.dungeonmap.core.map.Door
 import me.odinclient.dungeonmap.core.map.Room
 import me.odinclient.dungeonmap.core.map.Tile
-import me.odinclient.events.ChatPacketEvent
+import me.odinclient.events.impl.ChatPacketEvent
 import me.odinclient.features.impl.dungeon.MapModule
 import me.odinclient.utils.Utils.equalsOneOf
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils

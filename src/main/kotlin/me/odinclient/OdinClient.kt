@@ -11,9 +11,7 @@ import me.odinclient.config.WaypointConfig
 import me.odinclient.dungeonmap.features.Dungeon
 import me.odinclient.dungeonmap.features.MapRender
 import me.odinclient.dungeonmap.features.Window
-import me.odinclient.events.senders.ChatPacketEventSender
-import me.odinclient.events.senders.ClientSecondEventSender
-import me.odinclient.events.senders.ServerTickEventSender
+import me.odinclient.events.EventDispatcher
 import me.odinclient.features.ModuleManager
 import me.odinclient.ui.clickgui.ClickGUI
 import me.odinclient.utils.ServerUtils
@@ -62,9 +60,7 @@ class OdinClient {
             Dungeon,
             MapRender,
 
-            ServerTickEventSender,
-            ChatPacketEventSender,
-            ClientSecondEventSender,
+            EventDispatcher,
 
             Executor,
             ModuleManager,

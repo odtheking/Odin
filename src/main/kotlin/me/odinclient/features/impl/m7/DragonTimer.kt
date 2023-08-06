@@ -1,7 +1,7 @@
 package me.odinclient.features.impl.m7
 
 import me.odinclient.OdinClient.Companion.mc
-import me.odinclient.events.ReceivePacketEvent
+import me.odinclient.events.impl.ReceivePacketEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.ui.hud.TextHud
@@ -56,7 +56,7 @@ object DragonTimer : Module(
 
 
 
-        DC.values().forEach { c ->
+        DC.entries.forEach { c ->
             if (checkParticle(particle, c) && times[c] == 0L) {
                 times[c] = System.currentTimeMillis()
             }
@@ -72,11 +72,11 @@ object DragonTimer : Module(
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        DC.values().forEach { it.checkAlive() }
+        DC.entries.forEach { it.checkAlive() }
         val currentTime = System.currentTimeMillis()
         toRender = ArrayList()
 
-        DC.values().forEachIndexed { index, dragonColor ->
+        DC.entries.forEachIndexed { index, dragonColor ->
             val time = times[dragonColor] ?: 0L
             if (time == 0L || !dragonColor.alive) return@forEachIndexed
             if (currentTime - time < dragonSpawnTime) {

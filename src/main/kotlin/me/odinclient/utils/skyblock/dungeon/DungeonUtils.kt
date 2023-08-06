@@ -2,7 +2,7 @@ package me.odinclient.utils.skyblock.dungeon
 
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.dungeonmap.features.Dungeon
-import me.odinclient.events.ReceivePacketEvent
+import me.odinclient.events.impl.ReceivePacketEvent
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.clock.Executor
 import me.odinclient.utils.clock.Executor.Companion.register

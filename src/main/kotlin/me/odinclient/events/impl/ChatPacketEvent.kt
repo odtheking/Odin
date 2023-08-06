@@ -1,8 +1,9 @@
-package me.odinclient.events
+package me.odinclient.events.impl
 
 import net.minecraftforge.fml.common.eventhandler.Event
 
 /**
- * @see me.odinclient.events.senders.ChatPacketEventSender
+ * Chat packet without formatting.
+ * @see me.odinclient.events.EventDispatcher
  */
 class ChatPacketEvent(val message: String) : Event()

@@ -1,6 +1,6 @@
 package me.odinclient.features.impl.m7
 
-import me.odinclient.events.ChatPacketEvent
+import me.odinclient.events.impl.ChatPacketEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.utils.skyblock.ChatUtils.sendCommand

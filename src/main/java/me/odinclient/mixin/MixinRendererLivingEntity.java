@@ -1,6 +1,6 @@
 package me.odinclient.mixin;
 
-import me.odinclient.events.RenderEntityModelEvent;
+import me.odinclient.events.impl.RenderEntityModelEvent;
 import me.odinclient.features.impl.dungeon.TeammatesOutline;
 import me.odinclient.features.impl.general.ArrowTrajectory;
 import me.odinclient.features.impl.general.BlazeAtunement;

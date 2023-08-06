@@ -1,13 +1,12 @@
 package me.odinclient.features.impl.dungeon
 
 import me.odinclient.OdinClient.Companion.mc
-import me.odinclient.events.RenderEntityModelEvent
+import me.odinclient.events.impl.RenderEntityModelEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.utils.VecUtils.addVec
-import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.world.OutlineUtils
 import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.render.world.RenderUtils.renderVec

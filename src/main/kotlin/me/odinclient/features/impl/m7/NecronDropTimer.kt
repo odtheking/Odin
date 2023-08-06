@@ -1,9 +1,10 @@
 package me.odinclient.features.impl.m7
 
-import me.odinclient.events.ChatPacketEvent
-import me.odinclient.events.ServerTickEvent
+import me.odinclient.events.impl.ChatPacketEvent
+import me.odinclient.events.impl.ServerTickEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 // Todo: make hud for this
@@ -16,6 +17,7 @@ object NecronDropTimer : Module(
 
     @SubscribeEvent
     fun onServerTick(event: ServerTickEvent) {
+        modMessage("Server tick. ")
         if (timer > 0) {
             timer--
         }

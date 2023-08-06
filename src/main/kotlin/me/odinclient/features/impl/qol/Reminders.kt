@@ -1,7 +1,7 @@
 package me.odinclient.features.impl.qol
 
 import me.odinclient.OdinClient.Companion.mc
-import me.odinclient.events.ChatPacketEvent
+import me.odinclient.events.impl.ChatPacketEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.BooleanSetting

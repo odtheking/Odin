@@ -1,6 +1,6 @@
 package me.odinclient.mixin;
 
-import me.odinclient.events.SpawnParticleEvent;
+import me.odinclient.events.impl.SpawnParticleEvent;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.util.EnumParticleTypes;
