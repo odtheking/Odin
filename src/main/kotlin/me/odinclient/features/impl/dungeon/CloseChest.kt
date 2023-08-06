@@ -17,11 +17,8 @@ object CloseChest : Module(
 ) {
     @SubscribeEvent
     fun onOpenWindow(event: ReceivePacketEvent) {
-        if (!inDungeons) return
-        if (event.packet !is S2DPacketOpenWindow) return
-        if (event.packet.windowTitle.unformattedText.equalsOneOf("Chest", "Large Chest") ) {
-            mc.netHandler.networkManager.sendPacket(C0DPacketCloseWindow(event.packet.windowId))
-            event.isCanceled = true
-        }
+        if (!inDungeons || event.packet !is S2DPacketOpenWindow || !event.packet.windowTitle.unformattedText.equalsOneOf("Chest", "Large Chest")) return
+        mc.netHandler.networkManager.sendPacket(C0DPacketCloseWindow(event.packet.windowId))
+        event.isCanceled = true
     }
 }
