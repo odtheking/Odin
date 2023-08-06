@@ -62,7 +62,6 @@ object ESP : Module(
         }
     }
 
-    @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
         if (!currentEntities.contains(event.entity)) return
         if (!mc.thePlayer.canEntityBeSeen(event.entity) && !through) return

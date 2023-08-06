@@ -57,7 +57,6 @@ object BlazeAtunement : Module(
         }
     }
 
-    @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
         if (!currentBlazes.containsKey(event.entity)) return
         val color = currentBlazes[event.entity] ?: return

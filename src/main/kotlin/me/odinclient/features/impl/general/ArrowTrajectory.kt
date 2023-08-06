@@ -122,7 +122,6 @@ object ArrowTrajectory : Module(
         boxRenderQueue.clear()
     }
 
-    @SubscribeEvent
     fun onRenderModel(event: RenderEntityModelEvent) {
         if (!entityRenderQueue.contains(event.entity)) return
         if (!mc.thePlayer.canEntityBeSeen(event.entity)) return

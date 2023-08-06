@@ -1,12 +1,11 @@
 package me.odinclient.features.impl.m7
 
+import me.odinclient.events.ChatPacketEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.SelectorSetting
 import me.odinclient.utils.skyblock.ChatUtils
-import me.odinclient.utils.skyblock.ChatUtils.unformattedText
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
-import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object RelicAnnouncer : Module(
@@ -18,9 +17,9 @@ object RelicAnnouncer : Module(
     private val selected: Int by SelectorSetting("Color", "Green", colors)
 
     @SubscribeEvent
-    fun onChatReceived(event: ClientChatReceivedEvent) {
+    fun onChatReceived(event: ChatPacketEvent) {
         if (!DungeonUtils.inDungeons) return
-        if (event.unformattedText !== "[BOSS] Necron: All this, for nothing...") return
+        if (event.message !== "[BOSS] Necron: All this, for nothing...") return
         ChatUtils.partyMessage("${colors[selected]} Relic")
     }
 }

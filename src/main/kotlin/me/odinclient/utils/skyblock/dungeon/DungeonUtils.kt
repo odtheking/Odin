@@ -6,6 +6,7 @@ import me.odinclient.events.ReceivePacketEvent
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.clock.Executor
 import me.odinclient.utils.clock.Executor.Companion.register
+import me.odinclient.utils.render.Color
 import me.odinclient.utils.skyblock.ItemUtils
 import me.odinclient.utils.skyblock.LocationUtils
 import me.odinclient.utils.skyblock.LocationUtils.currentDungeon
@@ -14,7 +15,6 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.awt.Color
 
 object DungeonUtils {
 

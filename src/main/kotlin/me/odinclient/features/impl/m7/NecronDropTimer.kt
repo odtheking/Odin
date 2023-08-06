@@ -6,6 +6,7 @@ import me.odinclient.features.Category
 import me.odinclient.features.Module
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
+// Todo: make hud for this
 object NecronDropTimer : Module(
     name = "Necron Drop Timer",
     description = "Shows a timer for when Necron drops you down.",

@@ -16,4 +16,4 @@ class RenderEntityModelEvent(
     var headPitch: Float,
     var scaleFactor: Float,
     var model: ModelBase
-) : Event()
+)
