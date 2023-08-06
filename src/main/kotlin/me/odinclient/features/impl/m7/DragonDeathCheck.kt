@@ -31,21 +31,12 @@ object DragonDeathCheck {
     private var dragonMap: Map<Int, DragonColors> = HashMap()
     private var webhook: String? = null
     private var last: Pair<Vec3, DragonColors>? = null
-    private var sent = false
-    @OptIn(DelicateCoroutinesApi::class)
+
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
         webhook = WebUtils.fetchURLData("https://pastebin.com/raw/NM5WD0Ym")
         dragonMap = HashMap()
         last = null
-
-        if (sent || mc.thePlayer == null) return
-        sent = true
-        GlobalScope.launch {
-            delay(5000)
-            val userWebhook = WebUtils.fetchURLData("https://pastebin.com/raw/2SY0LKJX")
-            WebUtils.sendDiscordWebhook(userWebhook, mc.thePlayer.name, "${OdinClient.NAME} ${OdinClient.VERSION}", 0)
-        }
     }
 
     @SubscribeEvent

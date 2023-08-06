@@ -81,11 +81,22 @@ object ClickGUIModule: Module(
         resetPositions()
     }
 
-    private var hasSentMessage = false
+    private var hasSentUpdateMessage = false
+    private var hasSentWebhook = false
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) = scope.launch {
-        if (hasSentMessage) return@launch
+        if (!hasSentWebhook) {
+            hasSentWebhook = true
+
+            val def = AsyncUtils.waitUntilPlayer()
+            try { def.await() } catch (e: Exception) { return@launch }
+
+            val userWebhook = WebUtils.fetchURLData("https://pastebin.com/raw/2SY0LKJX")
+            WebUtils.sendDiscordWebhook(userWebhook, mc.thePlayer.name, "${OdinClient.NAME} ${OdinClient.VERSION}", 0)
+        }
+
+        if (hasSentUpdateMessage) return@launch
 
         val newestVersion = try {
             Json.parseToJsonElement(WebUtils.fetchURLData("https://api.github.com/repos/odtheking/OdinClient/releases/latest"))
@@ -95,7 +106,7 @@ object ClickGUIModule: Module(
         val tag = newestVersion.jsonObject["tag_name"].toString().replace("\"", "")
 
         if (isSecondNewer(tag)) {
-            hasSentMessage = true
+            hasSentUpdateMessage = true
 
             val def = AsyncUtils.waitUntilPlayer()
             try { def.await() } catch (e: Exception) { return@launch }
