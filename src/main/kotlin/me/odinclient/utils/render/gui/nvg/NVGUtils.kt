@@ -56,7 +56,7 @@ fun NVG.rect(
 fun NVG.rectOutline(x: Float, y: Float, w: Float, h: Float, color: Color, radius: Float = 0f, thickness: Float) {
     if (color.isTransparent) return
     renderer.drawHollowRoundRect(
-        context, x - 1f, y - 1f, w + .5f, h + .5f, color.rgba, radius, thickness
+        context, x - .95f, y - .95f, w + .5f, h + .5f, color.rgba, radius - .5f, thickness
     )
 }
 

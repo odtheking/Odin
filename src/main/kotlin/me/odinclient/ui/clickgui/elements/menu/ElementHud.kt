@@ -10,8 +10,9 @@ import me.odinclient.ui.clickgui.util.ColorUtil
 import me.odinclient.ui.clickgui.util.ColorUtil.brighter
 import me.odinclient.ui.clickgui.util.ColorUtil.buttonColor
 import me.odinclient.ui.clickgui.util.ColorUtil.clickGUIColor
+import me.odinclient.ui.clickgui.util.ColorUtil.textColor
 import me.odinclient.ui.clickgui.util.HoverHandler
-import me.odinclient.ui.hud.ExampleHudGui
+import me.odinclient.ui.hud.EditHUDGui
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinclient.utils.render.gui.animations.impl.ColorAnimation
@@ -36,7 +37,7 @@ class ElementHud(parent: ModuleButton, setting: HudSetting) : Element<HudSetting
     override fun draw(nvg: NVG) {
         nvg {
             rect(x, y, w, h, ColorUtil.elementBackground)
-            text(name, x + 6f, y + 18f, Color.WHITE, 16f, Fonts.REGULAR)
+            text(name, x + 6f, y + 18f, textColor, 16f, Fonts.REGULAR)
 
             var offset = 30f
             if (setting.displayToggle) {
@@ -57,7 +58,7 @@ class ElementHud(parent: ModuleButton, setting: HudSetting) : Element<HudSetting
         if (mouseButton == 0) {
             when {
                 isHovered -> if (colorAnim.start()) setting.enabled = !setting.enabled
-                isShortcutHovered -> ClickGUI.swapScreens(ExampleHudGui)
+                isShortcutHovered -> ClickGUI.swapScreens(EditHUDGui)
                 else -> return false
             }
             return true
