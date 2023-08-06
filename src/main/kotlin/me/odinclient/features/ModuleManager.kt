@@ -79,7 +79,11 @@ object ModuleManager {
         RelicAura,
         RelicAnnouncer,
 
-        CloseChest
+        CloseChest,
+        AntiBlind,
+        AntiPortal,
+        ImpactParticles,
+        NoWaterFOV
     )
 
     @SubscribeEvent
