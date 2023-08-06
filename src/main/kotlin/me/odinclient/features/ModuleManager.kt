@@ -80,7 +80,8 @@ object ModuleManager {
         RelicAnnouncer,
 
         CloseChest,
-        EnchantingExperiments
+        EnchantingExperiments,
+        StopOpeningSouls
     )
 
     @SubscribeEvent
