@@ -7,15 +7,8 @@ object Utils {
 
     private val FORMATTING_CODE_PATTERN = Regex("§[0-9a-fk-or]", RegexOption.IGNORE_CASE)
 
-    val String?.noControlCodes: String get() = this?.let { FORMATTING_CODE_PATTERN.replace(it, "") } ?: ""
-
-    @Deprecated("This is useless", replaceWith = ReplaceWith("coerceIn"))
-    fun Number.clamp(min: Number = 0F, max: Number = 1F): Float =
-        if (this.toFloat() < min.toFloat()) min.toFloat() else this.toFloat().coerceAtMost(max.toFloat())
-
-    @Deprecated("This is useless", replaceWith = ReplaceWith("coerceIn"))
-    fun Int.clamp(min: Int, max: Int): Int =
-        if (this < min) min else this.coerceAtMost(max)
+    val String?.noControlCodes: String
+            get() = this?.let { FORMATTING_CODE_PATTERN.replace(it, "") } ?: ""
 
     fun String.containsOneOf(vararg options: String, ignoreCase: Boolean = false): Boolean {
         for (i in options.indices) if (this.contains(options[i], ignoreCase)) return true
@@ -180,7 +173,4 @@ object Utils {
         out[2] = brightness
         return out
     }
-
-    inline val milliseconds
-        get() = System.currentTimeMillis()
 }

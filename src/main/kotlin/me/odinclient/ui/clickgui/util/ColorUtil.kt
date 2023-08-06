@@ -14,8 +14,6 @@ object ColorUtil {
     val elementBackground = Color(37, 38, 38, 0.7f)
     val textColor = Color(239, 239, 239)
 
-    const val sliderBackgroundColor = -0xefeff0
-
     /**
      * Changes or creates a new color with the given alpha. (There is no checks if alpha is in valid range for now.)
      */

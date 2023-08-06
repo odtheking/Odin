@@ -8,7 +8,6 @@ import me.odinclient.ui.clickgui.elements.ModuleButton
 import me.odinclient.ui.clickgui.util.ColorUtil.brighter
 import me.odinclient.ui.clickgui.util.ColorUtil.clickGUIColor
 import me.odinclient.ui.clickgui.util.ColorUtil.elementBackground
-import me.odinclient.ui.clickgui.util.ColorUtil.sliderBackgroundColor
 import me.odinclient.ui.clickgui.util.ColorUtil.textColor
 import me.odinclient.ui.clickgui.util.HoverHandler
 import me.odinclient.utils.Utils.coerceInNumber
@@ -32,7 +31,7 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
     override val isHovered: Boolean
         get() = isAreaHovered(x, y, w - 12f, h)
 
-    private val sliderBGColor = Color(sliderBackgroundColor)
+    private val sliderBGColor = Color(-0xefeff0)
 
     private val handler = HoverHandler(0, 150)
 
