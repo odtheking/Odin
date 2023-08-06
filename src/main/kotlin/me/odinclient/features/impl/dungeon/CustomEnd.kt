@@ -1,9 +1,14 @@
 package me.odinclient.features.impl.dungeon
 
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.OdinClient.Companion.scope
+import me.odinclient.events.ChatPacketEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.utils.Utils.noControlCodes
+import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.event.world.WorldEvent
@@ -15,11 +20,8 @@ object CustomEnd : Module(
     description = "Shows run info in your chat at the end of the run",
     category = Category.DUNGEON
 ) {
-
-
-    private var ticks = 0
-    private var showExtraStatsTime = -1
     private var hasShownExtraStats = false
+    private val msgList = listOf("Master Mode Catacombs - ", "The Catacombs - ")
 
     @SubscribeEvent
     fun onWorldUnload(event: WorldEvent.Unload) {
@@ -27,21 +29,16 @@ object CustomEnd : Module(
     }
 
     @SubscribeEvent(receiveCanceled = true)
-    fun onChatReceived(event: ClientChatReceivedEvent) {
-        if (!DungeonUtils.inDungeons) return
-        val stripped = event.message.unformattedText.noControlCodes.trim().replace(",", "")
-        if (!hasShownExtraStats && listOf("Master Mode Catacombs - ", "The Catacombs - ").any { stripped.startsWith(it) }) {
-            showExtraStatsTime = ticks + 10
+    fun onChatReceived(event: ChatPacketEvent) {
+        if (!DungeonUtils.inDungeons || hasShownExtraStats) return
+        val stripped = event.message.trim().replace(",", "")
+        if (msgList.any { stripped.startsWith(it) }) {
+            scope.launch {
+                delay(3000)
+                ChatUtils.sendCommand("showextrastats")
+            }
             hasShownExtraStats = true
         }
     }
 
-    @SubscribeEvent
-    fun onTick(event: TickEvent.ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.START) return
-        if (ticks == showExtraStatsTime) {
-            mc.thePlayer?.sendChatMessage("/showextrastats")
-        }
-        ticks++
-    }
 }
