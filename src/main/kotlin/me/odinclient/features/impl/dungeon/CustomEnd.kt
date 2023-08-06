@@ -14,10 +14,9 @@ object CustomEnd : Module(
     category = Category.DUNGEON
 ) {
     // TODO: Test
-    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
+    @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
         if (!inDungeons) return
-
         if (event.message == "                             > EXTRA STATS <") {
             ChatUtils.sendCommand("showextrastats")
         }
