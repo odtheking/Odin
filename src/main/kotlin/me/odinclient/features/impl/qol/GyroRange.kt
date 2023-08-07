@@ -7,6 +7,7 @@ import me.odinclient.features.settings.impl.ColorSetting
 import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.world.RenderUtils
+import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.ItemUtils.heldItem
 import me.odinclient.utils.skyblock.ItemUtils.itemID
 import net.minecraft.util.Vec3
@@ -37,7 +38,7 @@ object GyroRange : Module(
             color.r / 255f,
             color.g / 255f,
             color.b / 255f,
-            color.alpha / 255f
+            color.alpha
         )
     }
 }
