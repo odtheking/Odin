@@ -1,49 +1,57 @@
 package me.odinclient.features.impl.general
 
+import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.features.impl.dungeon.BlessingDisplay
+import me.odinclient.features.settings.impl.HudSetting
+import me.odinclient.ui.hud.HudElement
 import me.odinclient.ui.hud.TextHud
 import me.odinclient.utils.ServerUtils
+import me.odinclient.utils.Utils.noControlCodes
+import me.odinclient.utils.Utils.round
+import me.odinclient.utils.render.gui.nvg.getTextWidth
+import me.odinclient.utils.render.gui.nvg.textWithControlCodes
 import kotlin.math.floor
+import kotlin.math.max
 
 object Server : Module(
-    name = "Server",
+    name = "Server Hud",
     category = Category.GENERAL,
-    description = "Server related features."
+    description = "Displays your current ping and the server's TPS."
 ) {
-    //private val hud: HudData by HudSetting("Server Hud", ServerHud)
+    private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
+        if (it) {
+            textWithControlCodes("§6Ping §a60ms", 1f, 9f, 16f, Fonts.REGULAR)
+            textWithControlCodes("§3TPS §a20.0", 1f, 26f, 16f, Fonts.REGULAR)
+            max(getTextWidth("Ping 60ms", 16f, Fonts.REGULAR),
+                getTextWidth("TPS 20.0", 16f, Fonts.REGULAR)
+            ) + 2f to 33f
+        } else {
+            textWithControlCodes("§6Ping §a${colorizePing(ServerUtils.averagePing.toInt())}ms", 1f, 9f, 16f, Fonts.REGULAR)
+            textWithControlCodes("§3TPS §a${colorizeTps(ServerUtils.averageTps.round(1))}", 1f, 26f, 16f, Fonts.REGULAR)
 
-    object ServerHud : TextHud() {
-        override fun getLines(example: Boolean): MutableList<String> {
-            return if (example) {
-                mutableListOf(
-                    "§6Ping §a60ms",
-                    "§3TPS §a20.0"
-                )
-            } else {
-                mutableListOf(
-                    "§6Ping ${colorizePing(floor(ServerUtils.averagePing * 10) / 10)}ms",
-                    "§3TPS ${colorizeTps(floor(ServerUtils.averageTps * 10) / 10)}"
-                )
-            }
+            max(getTextWidth("Ping ${colorizePing(ServerUtils.averagePing.toInt())}ms", 16f, Fonts.REGULAR),
+                getTextWidth("TPS ${colorizeTps(ServerUtils.averageTps)}", 16f, Fonts.REGULAR)
+            ) + 2f to 33f
         }
+    }
 
-        private fun colorizePing(ping: Double): String {
-            return when {
-                ping < 150.0 -> "§a$ping"
-                ping < 200.0 -> "§e$ping"
-                ping < 250.0 -> "§c$ping"
-                else -> "§4$ping"
-            }
+    private fun colorizePing(ping: Int): String {
+        return when {
+            ping < 150 -> "§a$ping"
+            ping < 200 -> "§e$ping"
+            ping < 250 -> "§c$ping"
+            else -> "§4$ping"
         }
+    }
 
-        private fun colorizeTps(tps: Double): String {
-            return when {
-                tps > 18.0 -> "§a$tps"
-                tps > 15.0 -> "§e$tps"
-                tps > 10.0 -> "§c$tps"
-                else -> "§4$tps"
-            }
+    private fun colorizeTps(tps: Double): String {
+        return when {
+            tps > 18.0 -> "§a$tps"
+            tps > 15.0 -> "§e$tps"
+            tps > 10.0 -> "§c$tps"
+            else -> "§4$tps"
         }
     }
 }
