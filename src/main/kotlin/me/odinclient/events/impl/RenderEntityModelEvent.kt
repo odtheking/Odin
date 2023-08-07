@@ -2,6 +2,7 @@ package me.odinclient.events.impl
 
 import net.minecraft.client.model.ModelBase
 import net.minecraft.entity.EntityLivingBase
+import net.minecraftforge.fml.common.eventhandler.Event
 
 /**
  * @see me.odinclient.mixin.MixinRendererLivingEntity.renderModel
@@ -15,4 +16,4 @@ class RenderEntityModelEvent(
     var headPitch: Float,
     var scaleFactor: Float,
     var model: ModelBase
-)
+): Event()

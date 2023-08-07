@@ -1,5 +1,6 @@
 package me.odinclient.ui.hud
 
+import cc.polyfrost.oneconfig.renderer.NanoVGHelper
 import me.odinclient.features.Module
 import me.odinclient.features.ModuleManager.hud
 import me.odinclient.features.settings.impl.NumberSetting
@@ -10,6 +11,8 @@ import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinclient.utils.render.gui.animations.impl.EaseInOut
 import me.odinclient.utils.render.gui.nvg.*
+import org.lwjgl.opengl.GL11
+import java.util.function.LongConsumer
 
 /**
  * Inspired by [FloppaClient](https://github.com/FloppaCoding/FloppaClient/blob/master/src/main/kotlin/floppaclient/ui/hud/HudElement.kt)
