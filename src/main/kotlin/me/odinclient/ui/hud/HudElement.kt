@@ -17,7 +17,7 @@ import me.odinclient.utils.render.gui.nvg.*
 open class HudElement(
     x: Float = 0f,
     y: Float = 0f,
-    defaultScale: Float = 1.4f,
+    defaultScale: Float = 2f,
     inline val render: Render = { 0f to 0f }
 ) {
 
