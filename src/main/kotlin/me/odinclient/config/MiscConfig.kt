@@ -22,7 +22,7 @@ class MiscConfig(path: File) {
     var espList: MutableList<String> = mutableListOf()
     var blacklist: MutableList<String> = mutableListOf()
     var autoSell: MutableList<String> = mutableListOf()
-    private inline val terminalPB get() = TerminalTimes.Times.values().map { "${it.fullName}: ${it.time}"}
+    private inline val terminalPB get() = TerminalTimes.Times.values().map { "${it.fullName}: ${it.time}"} // todo: change this into a number setting and make it hidden.
 
     init {
         try {

@@ -19,7 +19,7 @@ object CPSDisplay : Module(
     description = "Displays your CPS",
     category = Category.GENERAL
 ) {
-    private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
+    private val hud: HudElement by HudSetting("Display", 10f, 10f, 2f, false) {
         leftClicks.removeAll { System.currentTimeMillis() - it > 1000 }
         rightClicks.removeAll { System.currentTimeMillis() - it > 1000 }
 

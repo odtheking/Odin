@@ -1,8 +1,7 @@
 package me.odinclient.ui.hud
 
-import cc.polyfrost.oneconfig.renderer.NanoVGHelper
 import me.odinclient.features.Module
-import me.odinclient.features.ModuleManager.hud
+import me.odinclient.features.ModuleManager.huds
 import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinclient.ui.clickgui.util.HoverHandler
@@ -11,8 +10,6 @@ import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinclient.utils.render.gui.animations.impl.EaseInOut
 import me.odinclient.utils.render.gui.nvg.*
-import org.lwjgl.opengl.GL11
-import java.util.function.LongConsumer
 
 /**
  * Inspired by [FloppaClient](https://github.com/FloppaCoding/FloppaClient/blob/master/src/main/kotlin/floppaclient/ui/hud/HudElement.kt)
@@ -46,7 +43,7 @@ open class HudElement(
             scaleSetting
         )
 
-        hud.add(this)
+        huds.add(this)
     }
 
     internal var x: Float
@@ -137,6 +134,15 @@ open class HudElement(
     /** Wrapper */
     private inline val hasStarted: Boolean
         get() = hoverHandler.hasStarted
+
+    /** Used for smooth resetting animations */
+    internal var resetX: Float = 0f
+
+    /** Used for smooth resetting animations */
+    internal var resetY: Float = 0f
+
+    /** Used for smooth resetting animations */
+    internal var resetScale: Float = 0f
 
     init {
         val xHud = NumberSetting("xHud", default = x, hidden = true, min = 0f, max = 1920f)
