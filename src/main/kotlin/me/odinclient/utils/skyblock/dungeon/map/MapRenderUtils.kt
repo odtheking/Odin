@@ -171,13 +171,4 @@ object MapRenderUtils {
 
         return image
     }
-
-    fun abgrToRgba(abgr: Int): Int {
-        val alpha = abgr and 0xFF
-        val blue = (abgr shr 8) and 0xFF
-        val green = (abgr shr 16) and 0xFF
-        val red = (abgr shr 24) and 0xFF
-
-        return (red shl 24) or (green shl 16) or (blue shl 8) or alpha
-    }
 }
