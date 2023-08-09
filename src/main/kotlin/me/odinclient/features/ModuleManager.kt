@@ -80,7 +80,9 @@ object ModuleManager {
         RelicAnnouncer,
 
         CloseChest,
-        EnchantingExperiments
+        EnchantingExperiments,
+        ThornStun,
+        HiddenMobs
     )
 
     @SubscribeEvent
