@@ -48,7 +48,8 @@ object DungeonScan {
                     §9Puzzles (§c${Dungeon.puzzles.size}§9): §d${Dungeon.puzzles.joinToString("§7, §d")}
                     §6Trap: §d${Dungeon.trapType}
                     §8Wither Doors: §7${Dungeon.doors.size - 1}
-                    §7Total Secrets: §b${Dungeon.secretCount}
+                    §7Total Secrets: §b${Dungeon.secretCount} 
+                    ${if (Dungeon.uniqueRooms.any { it.data.name == "Mini Rails" }) "§aThis map has trinity, the abiphone contact! The room is called Mini Rails" else ""}
                     ${ChatUtils.getChatBreak()}
                 """.trimIndent())
             }
