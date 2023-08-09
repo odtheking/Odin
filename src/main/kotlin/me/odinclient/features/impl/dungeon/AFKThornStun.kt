@@ -3,6 +3,7 @@ package me.odinclient.features.impl.dungeon
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.utils.Utils.equalsOneOf
+import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.ItemUtils.heldItem
 import me.odinclient.utils.skyblock.ItemUtils.itemID
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
@@ -14,12 +15,11 @@ object ThornStun : Module(
     category = Category.DUNGEON,
     description = "Toggle right click while holding Tribal Spear or Bonemerang in F4/M4"
 ) {
-
     private var isClicking = false
 
     @SubscribeEvent
     fun onMouse(event: MouseEvent) {
-        if (DungeonUtils.isFloor(4) || event.button != 1 || event.buttonState ||!heldItem?.itemID?.equalsOneOf("TRIBAL_SPEAR", "BONE_BOOMERANG")) return
+        if (DungeonUtils.isFloor(4) || event.button != 1 || event.buttonstate || heldItem?.itemID?.equalsOneOf("TRIBAL_SPEAR", "BONE_BOOMERANG") == true) return
         event.isCanceled = true
         isClicking = !isClicking
         ChatUtils.modMessage("Thorn Stun: ${if (isClicking) "§aClicking!" else "§cNot Clicking."}")
