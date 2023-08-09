@@ -25,6 +25,7 @@ class SettingDeserializer : JsonDeserializer<Setting<*>> {
                 when {
                     (value as JsonPrimitive).isBoolean -> return BooleanSetting(name, value.asBoolean)
                     value.isNumber -> return NumberSetting(name, value.asDouble)
+                    value.isString -> return StringSetting(name, value.asString)
                 }
             }
         }
