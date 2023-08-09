@@ -28,8 +28,8 @@ object MapModule : Module(
     val playerHeadScale: Float by NumberSetting("Player Head Scale", 1f, 0.5f, 2f, .1f)
     val borderWidth: Double by NumberSetting("Border Width", 3.0, 0.0, 10.0, .5)
 
-    val borderColor: Color by ColorSetting("Border Color", Color(0, 0, 0))
-    val backgroundColor: Color by ColorSetting("Background Color", Color(0, 0, 0, 100f))
+    val borderColor: Color by ColorSetting("Border Color", Color(0, 0, 0), true)
+    val backgroundColor: Color by ColorSetting("Background Color", Color(0, 0, 0, 100f), true)
     val bloodDoorColor: Color by ColorSetting("Blood Door Color", Color(150, 0, 0))
     val entranceDoorColor: Color by ColorSetting("Entrance Door Color", Color(0, 150, 0))
     val openWitherDoorColor: Color by ColorSetting("Open Wither Door Color", Color(250, 250, 0))
