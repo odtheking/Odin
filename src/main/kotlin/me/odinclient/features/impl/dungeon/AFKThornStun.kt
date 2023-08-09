@@ -15,7 +15,6 @@ object ThornStun : Module(
     category = Category.DUNGEON,
     description = "Toggle right click while holding Tribal Spear or Bonemerang in F4/M4"
 ) {
-
     private var isClicking = false
 
     @SubscribeEvent
