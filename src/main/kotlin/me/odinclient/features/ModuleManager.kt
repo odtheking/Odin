@@ -14,7 +14,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object ModuleManager {
 
-    val hud = arrayListOf<HudElement>()
+    val huds = arrayListOf<HudElement>()
 
     val modules: ArrayList<Module> = arrayListOf(
         AutoIceFill,
@@ -81,10 +81,7 @@ object ModuleManager {
 
         CloseChest,
         EnchantingExperiments,
-        AntiBlind,
-        AntiPortal,
-        ImpactParticles,
-        NoWaterFOV
+        NoDebuff
     )
 
     @SubscribeEvent
@@ -98,11 +95,11 @@ object ModuleManager {
     }
 
     @SubscribeEvent
-    fun onRenderOverlay(event: RenderGameOverlayEvent.Text) {
-        if (mc.currentScreen != null) return
+    fun onRenderOverlay(event: RenderGameOverlayEvent.Pre) {
+        if (mc.currentScreen != null || event.type != RenderGameOverlayEvent.ElementType.TEXT) return
         drawNVG {
-            for (i in 0 until hud.size) {
-                hud[i].draw(this, false)
+            for (i in 0 until huds.size) {
+                huds[i].draw(this, false)
             }
         }
     }
