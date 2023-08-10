@@ -58,11 +58,11 @@ object Config {
                         }
                         when (setting) {
                             is BooleanSetting -> setting.enabled = (configSetting as BooleanSetting).enabled
+                            is DualSetting -> setting.enabled = (configSetting as BooleanSetting).enabled
                             is NumberSetting -> setting.valueAsDouble = (configSetting as NumberSetting).valueAsDouble
                             is ColorSetting -> setting.value = Color((configSetting as NumberSetting).valueAsDouble.toInt())
                             is SelectorSetting -> setting.selected = (configSetting as StringSetting).text
                             is StringSetting -> setting.text = (configSetting as StringSetting).text
-                            is DualSetting -> setting.enabled = (configSetting as BooleanSetting).enabled
                         }
                     }
                 }
