@@ -81,7 +81,8 @@ object ModuleManager {
 
         CloseChest,
         EnchantingExperiments,
-        ThornStun
+        ThornStun,
+        MelodyMessage
     )
 
     @SubscribeEvent
