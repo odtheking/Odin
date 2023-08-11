@@ -55,7 +55,7 @@ object ClickGUIModule: Module(
             Config.saveConfig()
 
             modMessage("""
-            ${ChatUtils.getChatBreak().dropLast(1)}
+            ${ChatUtils.getChatBreak()}
             §d§kOdinClientOnTopWeLoveOdinClientLiterallyTheBestMod
             
             §7Thanks for installing §3Odin§bClient ${OdinClient.VERSION}§7!
@@ -64,7 +64,7 @@ object ClickGUIModule: Module(
              §eUse §d§l/od help §r§efor all of of the commands.
              
              §eJoin the discord for support and suggestions.
-        """.trimIndent(), "")
+        """.trimIndent(), false)
             mc.thePlayer.addChatMessage(
                 ChatComponentText(" §9https://discord.gg/2nCbC9hkxT")
                 .setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, "https://discord.gg/2nCbC9hkxT"))
@@ -75,7 +75,7 @@ object ClickGUIModule: Module(
             §d§kOdinClientOnTopWeLoveOdinClientLiterallyTheBestMod
             ${ChatUtils.getChatBreak()}
             
-        """.trimIndent(), "")
+        """.trimIndent(), false)
         }
 
         resetPositions()
