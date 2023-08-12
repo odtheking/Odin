@@ -73,17 +73,16 @@ object ModuleManager {
         Server,
         DeployableTimer,
         CanClip,
-        TerracottaTimer,
         NoRender,
         NoCarpet,
         RelicAura,
         RelicAnnouncer,
-      
         CloseChest,
         EnchantingExperiments,
         ThornStun,
         SimonSays,
-        NoDebuff
+        NoDebuff,
+        FarmingHitboxes,
     )
 
     @SubscribeEvent
