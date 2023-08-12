@@ -8,6 +8,7 @@
     "MixinBlockCarpet",
     "MixinBlockLever",
     "MixinBlockSkull",
+    "MixinChunk",
     "MixinNetworkManager",
     "MixinWorld"
   ],

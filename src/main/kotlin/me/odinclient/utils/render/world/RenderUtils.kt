@@ -1,5 +1,7 @@
 package me.odinclient.utils.render.world
 
+import cc.polyfrost.oneconfig.libs.universal.UGraphics
+import cc.polyfrost.oneconfig.libs.universal.UMatrixStack
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinclient.utils.render.Color
@@ -9,6 +11,7 @@ import net.minecraft.client.renderer.WorldRenderer
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.Entity
+import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.MathHelper
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.Vec3
@@ -32,6 +35,16 @@ object RenderUtils {
     fun onRenderWorld(event: RenderWorldLastEvent) {
         partialTicks = event.partialTicks
     }
+
+    val viewerPos: Triple<Double, Double, Double>
+        get() {
+            val viewer = mc.renderViewEntity
+            return Triple(
+                viewer.lastTickPosX + (viewer.posX - viewer.lastTickPosX) * partialTicks,
+                viewer.lastTickPosY + (viewer.posY - viewer.lastTickPosY) * partialTicks,
+                viewer.lastTickPosZ + (viewer.posZ - viewer.lastTickPosZ) * partialTicks
+            )
+        }
 
     val Entity.renderX: Double
         get() = lastTickPosX + (posX - lastTickPosX) * partialTicks
@@ -100,6 +113,62 @@ object RenderUtils {
         GlStateManager.disableBlend()
         GlStateManager.enableDepth()
         GlStateManager.popMatrix()
+    }
+
+    fun drawFilledBox(matrixStack: UMatrixStack, aabb: AxisAlignedBB, color: Color) {
+        UGraphics.enableBlend()
+        UGraphics.disableLighting()
+        UGraphics.tryBlendFuncSeparate(770, 771, 1, 0)
+        val wr = UGraphics.getFromTessellator()
+        wr.beginWithDefaultShader(UGraphics.DrawMode.QUADS, DefaultVertexFormats.POSITION_COLOR)
+
+        val r = color.r
+        val g = color.g
+        val b = color.b
+        val a = color.a
+        // vertical
+
+        // bottom
+        wr.pos(matrixStack, aabb.minX, aabb.minY, aabb.minZ).color(r, g, b, a).endVertex()
+        wr.pos(matrixStack, aabb.maxX, aabb.minY, aabb.minZ).color(r, g, b, a).endVertex()
+        wr.pos(matrixStack, aabb.maxX, aabb.minY, aabb.maxZ).color(r, g, b, a).endVertex()
+        wr.pos(matrixStack, aabb.minX, aabb.minY, aabb.maxZ).color(r, g, b, a).endVertex()
+        // top
+        wr.pos(matrixStack, aabb.minX, aabb.maxY, aabb.maxZ).color(r, g, b, a).endVertex()
+        wr.pos(matrixStack, aabb.maxX, aabb.maxY, aabb.maxZ).color(r, g, b, a).endVertex()
+        wr.pos(matrixStack, aabb.maxX, aabb.maxY, aabb.minZ).color(r, g, b, a).endVertex()
+        wr.pos(matrixStack, aabb.minX, aabb.maxY, aabb.minZ).color(r, g, b, a).endVertex()
+
+
+        // x axis
+
+
+        // west
+        wr.pos(matrixStack, aabb.minX, aabb.minY, aabb.maxZ).color(r, g, b, a).endVertex()
+        wr.pos(matrixStack, aabb.minX, aabb.maxY, aabb.maxZ).color(r, g, b, a).endVertex()
+        wr.pos(matrixStack, aabb.minX, aabb.maxY, aabb.minZ).color(r, g, b, a).endVertex()
+        wr.pos(matrixStack, aabb.minX, aabb.minY, aabb.minZ).color(r, g, b, a).endVertex()
+        // east
+        wr.pos(matrixStack, aabb.maxX, aabb.minY, aabb.minZ).color(r, g, b, a).endVertex()
+        wr.pos(matrixStack, aabb.maxX, aabb.maxY, aabb.minZ).color(r, g, b, a).endVertex()
+        wr.pos(matrixStack, aabb.maxX, aabb.maxY, aabb.maxZ).color(r, g, b, a).endVertex()
+        wr.pos(matrixStack, aabb.maxX, aabb.minY, aabb.maxZ).color(r, g, b, a).endVertex()
+
+
+        // north
+        wr.pos(matrixStack, aabb.minX, aabb.maxY, aabb.minZ).color(r, g, b, a).endVertex()
+        wr.pos(matrixStack, aabb.maxX, aabb.maxY, aabb.minZ).color(r, g, b, a).endVertex()
+        wr.pos(matrixStack, aabb.maxX, aabb.minY, aabb.minZ).color(r, g, b, a).endVertex()
+        wr.pos(matrixStack, aabb.minX, aabb.minY, aabb.minZ).color(r, g, b, a).endVertex()
+        // south
+        wr.pos(matrixStack, aabb.minX, aabb.minY, aabb.maxZ).color(r, g, b, a).endVertex()
+        wr.pos(matrixStack, aabb.maxX, aabb.minY, aabb.maxZ).color(r, g, b, a).endVertex()
+        wr.pos(matrixStack, aabb.maxX, aabb.maxY, aabb.maxZ).color(r, g, b, a).endVertex()
+        wr.pos(matrixStack, aabb.minX, aabb.maxY, aabb.maxZ).color(r, g, b, a).endVertex()
+
+        wr.drawDirect()
+        UGraphics.disableBlend()
+        UGraphics.enableLighting()
     }
 
     fun drawStringInWorld(

@@ -35,7 +35,6 @@ open class Executor(open val delay: Long, inline val func: Executable) {
         }
     }
 
-    // Keep the Executor. cuz it looks nicer with it lmao
     /**
      * Allows to stop executing an executor
      *

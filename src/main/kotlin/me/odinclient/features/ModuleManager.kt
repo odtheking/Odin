@@ -78,10 +78,11 @@ object ModuleManager {
         NoCarpet,
         RelicAura,
         RelicAnnouncer,
-
+      
         CloseChest,
         EnchantingExperiments,
         ThornStun,
+        SimonSays,
         NoDebuff
     )
 
