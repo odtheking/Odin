@@ -78,11 +78,12 @@ object ModuleManager {
         NoCarpet,
         RelicAura,
         RelicAnnouncer,
-
+      
         CloseChest,
         EnchantingExperiments,
         ThornStun,
-        SimonSays
+        SimonSays,
+        NoDebuff
     )
 
     @SubscribeEvent
