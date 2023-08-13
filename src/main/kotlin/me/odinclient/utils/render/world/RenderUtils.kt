@@ -29,7 +29,7 @@ object RenderUtils {
     private val worldRenderer: WorldRenderer = tessellator.worldRenderer
     private val renderManager: RenderManager = mc.renderManager
 
-    private var partialTicks = 0f
+    var partialTicks = 0f
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
@@ -65,11 +65,17 @@ object RenderUtils {
     inline operator fun WorldRenderer.invoke(block: WorldRenderer.() -> Unit) {
         block.invoke(this)
     }
-    
+
+    /**
+     * @param color Has to be in the range of 0-255
+     */
     fun drawCustomESPBox(x: Double, y: Double, z: Double, scale: Double, color: Color, thickness: Float = 3f, phase: Boolean) {
         drawCustomESPBox(x, scale, y, scale, z, scale, color, thickness, phase)
     }
 
+    /**
+     * @param color Has to be in the range of 0-255
+     */
     fun drawCustomESPBox(x: Double, xWidth: Double, y: Double, yWidth: Double, z: Double, zWidth: Double, color: Color, thickness: Float = 3f, phase: Boolean) {
         GlStateManager.pushMatrix()
         color.bindColor()
@@ -87,6 +93,54 @@ object RenderUtils {
         
         worldRenderer {
             begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
+            pos(x1, y1, z1).endVertex()
+            pos(x1, y1, z).endVertex()
+            pos(x, y1, z).endVertex()
+            pos(x, y1, z1).endVertex()
+            pos(x1, y1, z1).endVertex()
+            pos(x1, y, z1).endVertex()
+            pos(x1, y, z).endVertex()
+            pos(x, y, z).endVertex()
+            pos(x, y, z1).endVertex()
+            pos(x, y, z).endVertex()
+            pos(x, y1, z).endVertex()
+            pos(x, y, z).endVertex()
+            pos(x1, y, z).endVertex()
+            pos(x1, y1, z).endVertex()
+            pos(x1, y, z).endVertex()
+            pos(x1, y, z1).endVertex()
+            pos(x, y, z1).endVertex()
+            pos(x, y1, z1).endVertex()
+            pos(x1, y1, z1).endVertex()
+        }
+
+        tessellator.draw()
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
+        GlStateManager.enableDepth()
+        GlStateManager.popMatrix()
+    }
+
+    /**
+     * @param color Has to be in the range of 0-255
+     */
+    fun drawCustomFilledEspBox(x: Double, xWidth: Double, y: Double, yWidth: Double, z: Double, zWidth: Double, color: Color, phase: Boolean)
+    {
+        GlStateManager.pushMatrix()
+        color.bindColor()
+        GlStateManager.translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+        if (phase) GlStateManager.disableDepth()
+        GlStateManager.disableTexture2D()
+        GlStateManager.disableLighting()
+        GlStateManager.enableBlend()
+
+        val x1 = x + xWidth
+        val y1 = y + yWidth
+        val z1 = z + zWidth
+
+        worldRenderer {
+            begin(GL_QUADS, DefaultVertexFormats.POSITION)
             pos(x1, y1, z1).endVertex()
             pos(x1, y1, z).endVertex()
             pos(x, y1, z).endVertex()
