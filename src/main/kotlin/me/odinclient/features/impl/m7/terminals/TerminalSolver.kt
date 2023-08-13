@@ -1,25 +1,21 @@
 package me.odinclient.features.impl.m7.terminals
 
-import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.impl.DrawSlotEvent
+import me.odinclient.events.impl.GuiClosedEvent
 import me.odinclient.events.impl.GuiLoadedEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.features.impl.m7.terminals.TerminalSolver.currentTerm
 import me.odinclient.features.impl.m7.terminals.TerminalSolver.solution
 import me.odinclient.features.settings.AlwaysActive
 import me.odinclient.utils.render.Color
-import me.odinclient.utils.render.gui.nvg.TextAlign
-import me.odinclient.utils.render.gui.nvg.drawNVG
-import me.odinclient.utils.render.gui.nvg.text
-import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.awt.SystemColor.text
 
 @AlwaysActive // So it can be used in other modules
 object TerminalSolver : Module(
@@ -30,8 +26,9 @@ object TerminalSolver : Module(
     private val terminalNames = listOf(
         "Correct all the panes!",
         "Change all to same color!",
+        "Click in order!",
         "Large Chest",
-        "What starts with",
+        //"What starts with",
         "Select all the"
     )
     private var currentTerm = -1
@@ -46,8 +43,9 @@ object TerminalSolver : Module(
             0 -> solvePanes(items)
             1 -> solveColor(items)
             2 -> solveNumbers(items)
+
+            3 -> solveStartsWith(items, event.gui.lowerChestInventory.displayName.unformattedText)
             /*
-            3 -> solveStartsWith(items)
             4 -> solveSelect(items)
              */
         }
@@ -57,7 +55,20 @@ object TerminalSolver : Module(
     fun onSlotRender(event: DrawSlotEvent) {
         if (event.container !is ContainerChest || currentTerm == -1) return
         if (event.slot.inventory.name != terminalNames[currentTerm]) return
-        if (event.slot.slotIndex !in solution) return
+        if (event.slot.slotIndex !in solution) {
+            /*if (currentTerm == 3 /*&& removeWrong*/) {
+                Gui.drawRect(
+                    event.slot.xDisplayPosition,
+                    event.slot.yDisplayPosition,
+                    event.slot.xDisplayPosition + 16,
+                    event.slot.yDisplayPosition + 16,
+                    Color(45, 45, 45, 1f).rgba
+                )
+                event.isCanceled = true
+            }
+             */
+            return
+        }
         GlStateManager.translate(0f, 0f, 600f)
         when (currentTerm) {
             1 -> {
@@ -93,8 +104,23 @@ object TerminalSolver : Module(
 
                 event.isCanceled = true
             }
+            3 -> {
+                Gui.drawRect(
+                    event.slot.xDisplayPosition,
+                    event.slot.yDisplayPosition,
+                    event.slot.xDisplayPosition + 16,
+                    event.slot.yDisplayPosition + 16,
+                    Color(0, 170, 170, 0.5f).rgba
+                )
+            }
         }
         GlStateManager.translate(0f, 0f, -600f)
+    }
+
+    @SubscribeEvent
+    fun onGuiClosed(event: GuiClosedEvent) {
+        currentTerm = -1
+        solution = emptyList()
     }
 
     private fun solvePanes(items: List<ItemStack?>) {
@@ -117,13 +143,15 @@ object TerminalSolver : Module(
         }.map { panes.indexOf(it) }
     }
 
-    private fun dist(pane: Int, most: Int): Int =
-        if (pane > most)
-            (most + colorOrder.size) - pane
-        else
-            most - pane
+    private fun dist(pane: Int, most: Int): Int = if (pane > most) (most + colorOrder.size) - pane else most - pane
 
     private fun solveNumbers(items: List<ItemStack?>) {
         solution = items.filter { it?.metadata == 14 && Item.getIdFromItem(it.item) == 160 }.filterNotNull().sortedBy { it.stackSize }.map { items.indexOf(it) }
+    }
+
+    private fun solveStartsWith(items: List<ItemStack?>, name: String) {
+        val letter = Regex("What starts with: '(\\w+)'?").find(name)?.groupValues?.get(1) ?: return
+
+        solution = items.filter { it?.displayName?.startsWith(letter) == true }.map { items.indexOf(it) }
     }
 }

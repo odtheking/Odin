@@ -1,6 +1,7 @@
 package me.odinclient.mixin;
 
 import me.odinclient.events.impl.DrawSlotEvent;
+import me.odinclient.events.impl.GuiClosedEvent;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
@@ -23,5 +24,10 @@ public class MixinGuiContainer {
     private void onDrawSlot(Slot slotIn, CallbackInfo ci) {
         if (MinecraftForge.EVENT_BUS.post(new DrawSlotEvent(inventorySlots, gui, slotIn)))
             ci.cancel();
+    }
+
+    @Inject(method = "onGuiClosed", at = @At("HEAD"))
+    private void onGuiClosed(CallbackInfo ci) {
+        MinecraftForge.EVENT_BUS.post(new GuiClosedEvent(gui));
     }
 }
