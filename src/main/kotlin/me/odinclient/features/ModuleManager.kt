@@ -6,6 +6,7 @@ import me.odinclient.events.impl.PreMouseInputEvent
 import me.odinclient.features.impl.dungeon.*
 import me.odinclient.features.impl.general.*
 import me.odinclient.features.impl.m7.*
+import me.odinclient.features.impl.m7.terminals.TerminalSolver
 import me.odinclient.features.impl.qol.*
 import me.odinclient.ui.hud.HudElement
 import me.odinclient.utils.render.gui.nvg.drawNVG
@@ -82,7 +83,8 @@ object ModuleManager {
         CloseChest,
         EnchantingExperiments,
         ThornStun,
-        SimonSays
+        SimonSays,
+        TerminalSolver
     )
 
     @SubscribeEvent

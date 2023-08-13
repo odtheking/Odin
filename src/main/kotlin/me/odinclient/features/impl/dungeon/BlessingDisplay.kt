@@ -38,9 +38,9 @@ object BlessingDisplay : Module(
         } else {
             var width = 0f
             var height = 0f
-            Blessings.entries.forEachIndexed { index, blessing ->
-                if (blessing.current == 0) return@forEachIndexed
-                textWithControlCodes("${blessing.displayString} §a${blessing.current}", 1f, 9f + index * 17f, 16f, Fonts.REGULAR)
+            Blessings.entries.forEach { blessing ->
+                if (blessing.current == 0) return@forEach
+                textWithControlCodes("${blessing.displayString} §a${blessing.current}", 1f, 9f + height, 16f, Fonts.REGULAR)
                 width = max(width, getTextWidth("${blessing.displayString} §a${blessing.current}".noControlCodes, 16f, Fonts.REGULAR))
                 height += 17f
             }

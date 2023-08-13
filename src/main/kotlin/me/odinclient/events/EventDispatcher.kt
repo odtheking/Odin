@@ -1,14 +1,20 @@
 package me.odinclient.events
 
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import me.odinclient.OdinClient
 import me.odinclient.OdinClient.Companion.mc
-import me.odinclient.events.impl.ChatPacketEvent
-import me.odinclient.events.impl.ClientSecondEvent
-import me.odinclient.events.impl.ReceivePacketEvent
-import me.odinclient.events.impl.ServerTickEvent
+import me.odinclient.OdinClient.Companion.scope
+import me.odinclient.events.impl.*
+import me.odinclient.utils.AsyncUtils
 import me.odinclient.utils.ServerUtils
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.clock.Clock
+import me.odinclient.utils.skyblock.ChatUtils.modMessage
+import net.minecraft.client.gui.inventory.GuiChest
+import net.minecraft.inventory.ContainerChest
 import net.minecraft.network.play.server.S02PacketChat
+import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.world.WorldEvent
@@ -65,5 +71,23 @@ object EventDispatcher {
         if (nextTime.hasTimePassed((1000L / ServerUtils.averageTps).toLong(), setTime = true)) {
             post(ServerTickEvent())
         }
+    }
+
+    /**
+     * Dispatches [GuiLoadedEvent]
+     */
+    @SubscribeEvent
+    fun onGuiOpen(event: GuiOpenEvent) = scope.launch {
+        if (event.gui !is GuiChest) return@launch
+
+        val container = (event.gui as GuiChest).inventorySlots
+
+        if (container !is ContainerChest) return@launch
+        val chestName = container.lowerChestInventory.displayName.unformattedText
+
+        val deferred = AsyncUtils.waitUntilLastItem(container)
+        try { deferred.await() } catch (e: Exception) { return@launch } // Wait until the last item in the chest isn't null
+
+        MinecraftForge.EVENT_BUS.post(GuiLoadedEvent(chestName, container))
     }
 }
