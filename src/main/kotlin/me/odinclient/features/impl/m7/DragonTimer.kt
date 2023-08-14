@@ -1,10 +1,16 @@
 package me.odinclient.features.impl.m7
 
+import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.impl.ReceivePacketEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.features.settings.impl.HudSetting
+import me.odinclient.ui.hud.HudElement
 import me.odinclient.ui.hud.TextHud
+import me.odinclient.utils.Utils.noControlCodes
+import me.odinclient.utils.render.gui.nvg.getTextWidth
+import me.odinclient.utils.render.gui.nvg.textWithControlCodes
 import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.skyblock.WorldUtils
 import net.minecraft.network.play.server.S2APacketParticles
@@ -24,7 +30,23 @@ object DragonTimer : Module(
 ) {
     private const val dragonSpawnTime = 5000L
 
-    //private val hud: HudData by HudSetting("Dragon Timer Hud", DragonTimerHud)
+    // TODO: add a background to make it more readable (a setting)
+    private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, true) {
+        if (it) {
+            textWithControlCodes("§5Purple spawning in §a4500ms", 1f, 9f, 16f, Fonts.REGULAR)
+            textWithControlCodes("§cRed spawning in §e1200ms", 1f, 26f, 16f, Fonts.REGULAR)
+            max(getTextWidth("Purple spawning in 4500ms", 16f, Fonts.REGULAR),
+                getTextWidth("Red spawning in 1200ms", 16f, Fonts.REGULAR)
+            ) + 2f to 33f
+        } else if (toRender.size != 0) {
+            var width = 0f
+            toRender.forEachIndexed { index, triple ->
+                textWithControlCodes(triple.first, 1f, 9f + index * 17f, 16f, Fonts.REGULAR)
+                width = max(width, getTextWidth(triple.first.noControlCodes, 16f, Fonts.REGULAR))
+            }
+            width to toRender.size * 17f
+        } else 0f to 0f
+    }
 
     private var times: MutableMap<DC, Long> = mutableMapOf(
         DC.Orange to 0L,
@@ -34,7 +56,7 @@ object DragonTimer : Module(
         DC.Purple to 0L
     )
 
-    var toRender: MutableList<Triple<String, Int, DC>> = ArrayList()
+    private var toRender: MutableList<Triple<String, Int, DC>> = ArrayList()
 
     @SubscribeEvent
     fun onReceivePacket(event: ReceivePacketEvent) {

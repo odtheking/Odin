@@ -46,7 +46,7 @@ fun NVG.rect(
     x: Float, y: Float, w: Float, h: Float, color: Color, topL: Float, topR: Float, botL: Float, botR: Float
 ) {
     if (color.isTransparent) return
-    renderer.drawRoundedRectVaried(context, x, y, w, h, color.rgba, topL, topR, botL, botR)
+    renderer.drawRoundedRectVaried(context, x, y, w, h, color.rgba, topL, topR, botR, botL)
 }
 
 fun NVG.rect(

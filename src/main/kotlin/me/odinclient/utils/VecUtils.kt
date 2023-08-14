@@ -82,4 +82,8 @@ object VecUtils {
     fun Vec3.floored(): Vec3i {
         return Vec3i(xCoord.floor(), yCoord.floor(), zCoord.floor())
     }
+
+    fun scale(vec3: Vec3i,scale: Float): Vec3 {
+        return Vec3((vec3.x * scale).toDouble(), (vec3.y* scale).toDouble(), (vec3.z * scale).toDouble())
+    }
 }

@@ -36,16 +36,17 @@ object ESP : Module(
 
     private inline val espList get() = miscConfig.espList
 
-    var currentEntities = mutableListOf<Entity>()
+    var currentEntities = mutableListOf<Pair<Entity, Boolean>>()
 
     init {
         execute(1000) {
-            currentEntities.removeAll { it.isDead }
+            currentEntities.removeAll { it.first.isDead }
+            currentEntities = currentEntities.map { Pair(it.first, mc.thePlayer.canEntityBeSeen(it.first)) }.toMutableList()
 
             mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()?.forEach { entity ->
                 if (
                     !espList.any { entity.name.lowercase().contains(it) } ||
-                    currentEntities.contains(entity)
+                    currentEntities.any {it.first == entity}
                 ) return@forEach
 
                 val entities =
@@ -53,7 +54,7 @@ object ESP : Module(
                         .filter { it != null && it !is EntityArmorStand && it != mc.thePlayer }
                         .sortedByDescending { noSqrt3DDistance(it, entity) }
                 if (entities.isEmpty()) return@forEach
-                currentEntities.add(entities.first())
+                currentEntities.add(Pair(entities.first(), mc.thePlayer.canEntityBeSeen(entities.first())))
             }
         }
 
@@ -62,9 +63,11 @@ object ESP : Module(
         }
     }
 
+    @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
-        if (!currentEntities.contains(event.entity)) return
+        if (!currentEntities.any { it.first == event.entity }) return
         if (!mc.thePlayer.canEntityBeSeen(event.entity) && !through) return
+
         OutlineUtils.outlineEntity(
             event,
             thickness,

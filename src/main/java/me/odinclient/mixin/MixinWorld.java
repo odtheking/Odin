@@ -6,12 +6,15 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(World.class)
-public class MixinWorld {
+public abstract class MixinWorld {
+
+    @Shadow public abstract IBlockState getBlockState(BlockPos pos);
 
     @Inject(method = "setBlockState(Lnet/minecraft/util/BlockPos;Lnet/minecraft/block/state/IBlockState;)Z", at = @At("HEAD"))
     private void onsetBlockState(BlockPos pos, IBlockState state, CallbackInfoReturnable<Boolean> cir)

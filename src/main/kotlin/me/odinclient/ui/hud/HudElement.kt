@@ -1,7 +1,7 @@
 package me.odinclient.ui.hud
 
 import me.odinclient.features.Module
-import me.odinclient.features.ModuleManager.hud
+import me.odinclient.features.ModuleManager.huds
 import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinclient.ui.clickgui.util.HoverHandler
@@ -17,7 +17,7 @@ import me.odinclient.utils.render.gui.nvg.*
 open class HudElement(
     x: Float = 0f,
     y: Float = 0f,
-    defaultScale: Float = 1.4f,
+    defaultScale: Float = 2f,
     inline val render: Render = { 0f to 0f }
 ) {
 
@@ -43,7 +43,7 @@ open class HudElement(
             scaleSetting
         )
 
-        hud.add(this)
+        huds.add(this)
     }
 
     internal var x: Float
@@ -134,6 +134,15 @@ open class HudElement(
     /** Wrapper */
     private inline val hasStarted: Boolean
         get() = hoverHandler.hasStarted
+
+    /** Used for smooth resetting animations */
+    internal var resetX: Float = 0f
+
+    /** Used for smooth resetting animations */
+    internal var resetY: Float = 0f
+
+    /** Used for smooth resetting animations */
+    internal var resetScale: Float = 0f
 
     init {
         val xHud = NumberSetting("xHud", default = x, hidden = true, min = 0f, max = 1920f)

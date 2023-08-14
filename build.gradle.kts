@@ -10,15 +10,13 @@ plugins {
     kotlin("jvm") version "1.9.0"
 }
 
-group = "me.odinclient"
+group = "com.example.archloomtemplate"
 version = "1.0.3"
 
-// Toolchains:
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(8))
 }
 
-// Minecraft configuration:
 loom {
     log4jConfigs.from(file("log4j2.xml"))
     launchConfigs {
