@@ -1,10 +1,10 @@
 package me.odinclient.dungeonmap.features
 
-import cc.polyfrost.oneconfig.libs.universal.UChat
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.dungeonmap.core.map.*
 import me.odinclient.features.impl.dungeon.MapModule
 import me.odinclient.utils.skyblock.ChatUtils
+import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.dungeon.map.ScanUtils.getCore
 import me.odinclient.utils.skyblock.dungeon.map.ScanUtils.getRoomData
 import me.odinclient.utils.skyblock.dungeon.map.ScanUtils.isColumnAir
@@ -42,15 +42,16 @@ object DungeonScan {
             MapUpdate.calibrate()
 
             if (MapModule.scanChatInfo) {
-                UChat.chat("""
-                    ${ChatUtils.getChatBreak().dropLast(1)}
+                modMessage("""
+                    ${ChatUtils.getChatBreak()}
                     §3Odin§bClient §8» §6Scan Finished! It took §a${if (MapModule.nanoScanTime) "${System.nanoTime() - startTime}ns" else "${System.currentTimeMillis() - startTime}ms"}
                     §9Puzzles (§c${Dungeon.puzzles.size}§9): §d${Dungeon.puzzles.joinToString("§7, §d")}
                     §6Trap: §d${Dungeon.trapType}
                     §8Wither Doors: §7${Dungeon.doors.size - 1}
-                    §7Total Secrets: §b${Dungeon.secretCount}
+                    §7Total Secrets: §b${Dungeon.secretCount} 
+                    ${if (Dungeon.uniqueRooms.any { it.data.name == "Mini Rails" }) "§aThis map has trinity, the abiphone contact! The room is called Mini Rails" else ""}
                     ${ChatUtils.getChatBreak()}
-                """.trimIndent())
+                """.trimIndent(), false)
             }
         } else Dungeon.reset()
     }

@@ -20,14 +20,21 @@ object OdinCommand : AbstractCommand("odinclient", "od", "odinclient", descripti
             }
         }
 
-        "reset" does {
-            "clickgui" does {
-                ClickGUIModule.resetPositions()
-                modMessage("Reset click gui positions.")
+        "reset" {
+            does {
+                modMessage("Incorrect usage. Usage: clickgui, hud")
             }
-            "hud" does {
-                // todo: add a reset function
-            }
+            and(
+                "clickgui" does {
+                    ClickGUIModule.resetPositions()
+                    modMessage("Reset click gui positions.")
+
+                },
+                "hud" does {
+                    EditHUDGui.resetHUDs()
+                    modMessage("Reset HUD positions.")
+                }
+            )
         }
 
         // TODO: make a command that sets both and make it not go above vanilla

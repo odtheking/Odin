@@ -6,6 +6,7 @@ import me.odinclient.events.impl.PreMouseInputEvent
 import me.odinclient.features.impl.dungeon.*
 import me.odinclient.features.impl.general.*
 import me.odinclient.features.impl.m7.*
+import me.odinclient.features.impl.m7.terminals.TerminalSolver
 import me.odinclient.features.impl.qol.*
 import me.odinclient.ui.hud.HudElement
 import me.odinclient.utils.render.gui.nvg.drawNVG
@@ -14,7 +15,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object ModuleManager {
 
-    val hud = arrayListOf<HudElement>()
+    val huds = arrayListOf<HudElement>()
 
     val modules: ArrayList<Module> = arrayListOf(
         AutoIceFill,
@@ -73,14 +74,17 @@ object ModuleManager {
         Server,
         DeployableTimer,
         CanClip,
-        TerracottaTimer,
         NoRender,
         NoCarpet,
         RelicAura,
         RelicAnnouncer,
-
         CloseChest,
         EnchantingExperiments,
+        ThornStun,
+        SimonSays,
+        NoDebuff,
+        FarmingHitboxes,
+        TerminalSolver,
         MonolithESP
     )
 
@@ -95,11 +99,11 @@ object ModuleManager {
     }
 
     @SubscribeEvent
-    fun onRenderOverlay(event: RenderGameOverlayEvent.Text) {
-        if (mc.currentScreen != null) return
+    fun onRenderOverlay(event: RenderGameOverlayEvent.Pre) {
+        if (mc.currentScreen != null || event.type != RenderGameOverlayEvent.ElementType.TEXT) return
         drawNVG {
-            for (i in 0 until hud.size) {
-                hud[i].draw(this, false)
+            for (i in 0 until huds.size) {
+                huds[i].draw(this, false)
             }
         }
     }
