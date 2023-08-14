@@ -40,18 +40,19 @@ object ChatUtils {
     private fun rollDice(): Int = (1..6).random()
 
 
-    fun sendChatMessage(message: Any) {
-        mc.thePlayer.sendChatMessage(message.toString())
-    }
-
     fun sendCommand(text: Any, clientSide: Boolean = false) {
         if (clientSide) ClientCommandHandler.instance.executeCommand(mc.thePlayer, "/$text")
         else sendChatMessage("/$text")
     }
 
-    fun modMessage(message: Any, prefix: String = "§3Odin§bClient §8»§r") {
+    fun sendChatMessage(message: Any) {
+        mc.thePlayer.sendChatMessage(message.toString())
+    }
+
+    fun modMessage(message: Any, prefix: Boolean = true) {
         if (mc.thePlayer == null) return
-        mc.thePlayer?.addChatMessage(ChatComponentText("$prefix $message"))
+        val msg = if (prefix) "§3Odin§bClient §8»§r $message" else message.toString()
+        mc.thePlayer?.addChatMessage(ChatComponentText(msg))
     }
 
     private fun guildMessage(message: Any) {
@@ -66,9 +67,10 @@ object ChatUtils {
         sendCommand("w $name $message")
     }
 
-    fun getChatBreak(): String = mc.ingameGUI?.chatGUI?.chatWidth?.let {
-        "§9§m" + "-".repeat(it / mc.fontRendererObj.getStringWidth("-"))
-    } ?: ""
+    fun getChatBreak(): String =
+        mc.ingameGUI?.chatGUI?.chatWidth?.let {
+            "§9§m" + "-".repeat(it / mc.fontRendererObj.getStringWidth("-"))
+        } ?: ""
 
     fun guildCmdsOptions(message: String, name: String) {
         if (BlackList.isInBlacklist(name)) return

@@ -6,8 +6,11 @@
   "mixins": [
     "MixinBlockButton",
     "MixinBlockCarpet",
+    "MixinBlockCocoa",
     "MixinBlockLever",
+    "MixinBlockMushroom",
     "MixinBlockSkull",
+    "MixinChunk",
     "MixinNetworkManager",
     "MixinWorld"
   ],

@@ -1,7 +1,9 @@
 package me.odinclient.utils
 
 import net.minecraft.inventory.ContainerChest
+import kotlin.math.round
 import kotlin.math.floor
+import kotlin.math.pow
 
 object Utils {
 
@@ -26,26 +28,24 @@ object Utils {
         }
     }
 
-    fun Double.floor(): Double {
+    @Suppress("NOTHING_TO_INLINE")
+    inline fun Double.floor(): Double {
         return floor(this)
     }
 
-    fun Double.floorToInt(): Int {
+    @Suppress("NOTHING_TO_INLINE")
+    inline fun Double.floorToInt(): Int {
         return floor(this).toInt()
     }
 
-    fun Double.round(decimals: Int): Double
-    {
-        var multiplier = 1.0
-        repeat(decimals) { multiplier *= 10 }
-        return kotlin.math.round(this * multiplier) / multiplier
+    fun Double.round(decimals: Int): Double {
+        val multiplier = 10.0.pow(decimals)
+        return round(this * multiplier) / multiplier
     }
 
-    fun Float.round(decimals: Int): Float
-    {
-        var multiplier = 1.0f
-        repeat(decimals) { multiplier *= 10 }
-        return kotlin.math.round(this * multiplier) / multiplier
+    fun Float.round(decimals: Int): Float {
+        val multiplier = 10f.pow(decimals)
+        return round(this * multiplier) / multiplier
     }
 
     val ContainerChest.name: String

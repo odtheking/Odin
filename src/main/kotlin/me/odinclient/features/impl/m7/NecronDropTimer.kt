@@ -5,13 +5,10 @@ import me.odinclient.events.impl.ChatPacketEvent
 import me.odinclient.events.impl.ServerTickEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
-import me.odinclient.features.impl.general.CPSDisplay
 import me.odinclient.features.settings.impl.HudSetting
-import me.odinclient.ui.clickgui.util.ColorUtil.brighter
-import me.odinclient.ui.clickgui.util.ColorUtil.textColor
 import me.odinclient.ui.hud.HudElement
-import me.odinclient.utils.render.gui.nvg.*
-import me.odinclient.utils.skyblock.ChatUtils.modMessage
+import me.odinclient.utils.render.gui.nvg.getTextWidth
+import me.odinclient.utils.render.gui.nvg.textWithControlCodes
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object NecronDropTimer : Module(
