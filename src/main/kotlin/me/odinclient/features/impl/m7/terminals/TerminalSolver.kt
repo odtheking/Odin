@@ -10,6 +10,7 @@ import me.odinclient.features.impl.m7.terminals.TerminalSolver.currentTerm
 import me.odinclient.features.impl.m7.terminals.TerminalSolver.solution
 import me.odinclient.features.settings.AlwaysActive
 import me.odinclient.utils.render.Color
+import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest
@@ -27,8 +28,7 @@ object TerminalSolver : Module(
         "Correct all the panes!",
         "Change all to same color!",
         "Click in order!",
-        "Large Chest",
-        //"What starts with",
+        "What starts with",
         "Select all the"
     )
     private var currentTerm = -1
@@ -43,11 +43,14 @@ object TerminalSolver : Module(
             0 -> solvePanes(items)
             1 -> solveColor(items)
             2 -> solveNumbers(items)
-
-            3 -> solveStartsWith(items, event.gui.lowerChestInventory.displayName.unformattedText)
-            /*
-            4 -> solveSelect(items)
-             */
+            3 -> {
+                val letter = Regex("What starts with: '(\\w+)'?").find(event.gui.lowerChestInventory.displayName.unformattedText)?.groupValues?.get(1) ?: return
+                solveStartsWith(items, letter)
+            }
+            4 -> {
+                val color = Regex("Select all the (\\w+) items!").find(event.gui.lowerChestInventory.displayName.unformattedText)?.groupValues?.get(1) ?: return
+                solveSelect(items, color.lowercase())
+            }
         }
     }
 
@@ -112,6 +115,17 @@ object TerminalSolver : Module(
                     event.slot.yDisplayPosition + 16,
                     Color(0, 170, 170, 0.5f).rgba
                 )
+                event.isCanceled = true
+            }
+            4 -> {
+                Gui.drawRect(
+                    event.slot.xDisplayPosition,
+                    event.slot.yDisplayPosition,
+                    event.slot.xDisplayPosition + 16,
+                    event.slot.yDisplayPosition + 16,
+                    Color(0, 170, 170, 0.5f).rgba
+                )
+                event.isCanceled = true
             }
         }
         GlStateManager.translate(0f, 0f, -600f)
@@ -149,9 +163,12 @@ object TerminalSolver : Module(
         solution = items.filter { it?.metadata == 14 && Item.getIdFromItem(it.item) == 160 }.filterNotNull().sortedBy { it.stackSize }.map { items.indexOf(it) }
     }
 
-    private fun solveStartsWith(items: List<ItemStack?>, name: String) {
-        val letter = Regex("What starts with: '(\\w+)'?").find(name)?.groupValues?.get(1) ?: return
-
+    private fun solveStartsWith(items: List<ItemStack?>, letter: String) {
         solution = items.filter { it?.displayName?.startsWith(letter) == true }.map { items.indexOf(it) }
+    }
+
+    private val colorMap = listOf("wool" to "white", "bone" to "white", "lapis" to "blue", "ink" to "black", "cocoa" to "brown", "dandelion" to "yellow", "rose" to "red", "cactus" to "green", "light gray" to "silver")
+    private fun solveSelect(items: List<ItemStack?>, color: String) {
+        solution = items.filter { (colorMap.any {c -> it?.displayName?.lowercase()?.contains(c.first) == true && c.second == color } || it?.displayName?.contains(color) == true) && it?.isItemEnchanted == false }.map { items.indexOf(it) }
     }
 }
