@@ -1,4 +1,4 @@
-package me.odinclient.features.impl.m7.terminals
+package me.odinclient.features.impl.m7.p3
 
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.impl.DrawSlotEvent
@@ -6,11 +6,8 @@ import me.odinclient.events.impl.GuiClosedEvent
 import me.odinclient.events.impl.GuiLoadedEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
-import me.odinclient.features.impl.m7.terminals.TerminalSolver.currentTerm
-import me.odinclient.features.impl.m7.terminals.TerminalSolver.solution
 import me.odinclient.features.settings.AlwaysActive
 import me.odinclient.utils.render.Color
-import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest
@@ -56,7 +53,7 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun onSlotRender(event: DrawSlotEvent) {
-        if (event.container !is ContainerChest || currentTerm == -1) return
+        if (event.container !is ContainerChest || currentTerm == -1 || !enabled) return
         if (event.slot.inventory.name != terminalNames[currentTerm]) return
         if (event.slot.slotIndex !in solution) {
             /*if (currentTerm == 3 /*&& removeWrong*/) {

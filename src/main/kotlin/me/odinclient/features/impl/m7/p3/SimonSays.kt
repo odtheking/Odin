@@ -1,4 +1,4 @@
-package me.odinclient.features.impl.m7
+package me.odinclient.features.impl.m7.p3
 
 import cc.polyfrost.oneconfig.libs.universal.UMatrixStack
 import me.odinclient.OdinClient.Companion.mc
@@ -43,7 +43,7 @@ object SimonSays : Module(
         val pos = event.pos
         val old = event.old
         val state = event.update
-        //if (!DungeonUtils.isFloor(7)) return
+        if (!DungeonUtils.isFloor(7)) return
 
         if (pos == firstButton && state.block == Blocks.stone_button && state.getValue(BlockButtonStone.POWERED)) {
             clickInOrder.clear()
