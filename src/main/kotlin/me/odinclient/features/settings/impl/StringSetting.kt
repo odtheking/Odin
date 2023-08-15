@@ -2,6 +2,10 @@ package me.odinclient.features.settings.impl
 
 import me.odinclient.features.settings.Setting
 
+/**
+ * Setting that lets you type a string.
+ * @author Aton
+ */
 class StringSetting(
     name: String,
     override val default: String = "",

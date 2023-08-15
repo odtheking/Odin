@@ -21,6 +21,15 @@ import me.odinclient.utils.render.gui.animations.impl.EaseInOut
 import me.odinclient.utils.render.gui.nvg.*
 import kotlin.math.floor
 
+/**
+ * Renders all the modules.
+ *
+ * Backend made by Aton, with some changes
+ * Design mostly made by Stivais
+ *
+ * @author Stivais, Aton
+ * @see [Element]
+ */
 class ElementColor(parent: ModuleButton, setting: ColorSetting) :
     Element<ColorSetting>(parent, setting, ElementType.COLOR) {
 

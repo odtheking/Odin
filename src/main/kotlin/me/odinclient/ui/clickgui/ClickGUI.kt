@@ -23,6 +23,15 @@ import org.lwjgl.input.Mouse
 import kotlin.math.floor
 import kotlin.math.sign
 
+/**
+ * Renders all the modules.
+ *
+ * Backend made by Aton, with some changes
+ * Design mostly made by Stivais
+ *
+ * @author Stivais, Aton
+ * @see [Panel]
+ */
 object ClickGUI : Screen() {
 
     private val panels: ArrayList<Panel> = arrayListOf()

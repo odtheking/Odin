@@ -22,6 +22,15 @@ import me.odinclient.utils.render.gui.nvg.*
 import org.lwjgl.input.Keyboard
 import kotlin.math.roundToInt
 
+/**
+ * Renders all the modules.
+ *
+ * Backend made by Aton, with some changes
+ * Design mostly made by Stivais
+ *
+ * @author Stivais, Aton
+ * @see [Element]
+ */
 class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
     Element<NumberSetting<*>>(parent, setting, ElementType.SLIDER) {
 

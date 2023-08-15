@@ -18,6 +18,15 @@ import me.odinclient.utils.render.gui.nvg.*
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 
+/**
+ * Renders all the modules.
+ *
+ * Backend made by Aton, with some changes
+ * Design mostly made by Stivais
+ *
+ * @author Stivais, Aton
+ * @see [Element]
+ */
 class ElementKeyBind(parent: ModuleButton, private val mod: Module) :
     Element<DummySetting>(parent, DummySetting("Keybind"), ElementType.KEY_BIND) {
 

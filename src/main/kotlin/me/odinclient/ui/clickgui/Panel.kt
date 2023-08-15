@@ -15,6 +15,15 @@ import me.odinclient.utils.render.gui.animations.impl.LinearAnimation
 import me.odinclient.utils.render.gui.nvg.*
 import kotlin.math.floor
 
+/**
+ * Renders all the panels.
+ *
+ * Backend made by Aton, with some changes
+ * Design mostly made by Stivais
+ *
+ * @author Stivais, Aton
+ * @see [ModuleButton]
+ */
 class Panel(
     var category: Category,
 ) {

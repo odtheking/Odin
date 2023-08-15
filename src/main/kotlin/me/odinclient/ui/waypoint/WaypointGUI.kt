@@ -25,6 +25,10 @@ import org.lwjgl.input.Mouse
 import java.io.IOException
 import kotlin.math.sign
 
+/**
+ * (not proud of this one ngl. its ass and rushed)
+ * @author Stivais
+ */
 object WaypointGUI : GuiScreen() {
     var displayArea: String? = null // rename
     var list = mutableListOf<WaypointElement>()

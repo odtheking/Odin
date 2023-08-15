@@ -3,9 +3,8 @@ package me.odinclient.features.settings.impl
 import me.odinclient.features.settings.Setting
 
 /**
- * A boolean setting for Modules, represented by two options you can toggle between.
- *
- * @author Bonsai
+ * A true-false setting.
+ * @author Aton, Bonsai
  */
 class DualSetting (
     name: String,

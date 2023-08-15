@@ -15,6 +15,10 @@ import me.odinclient.utils.render.gui.nvg.drawNVG
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
+/**
+ * Class that contains all Modules and huds
+ * @author Aton
+ */
 object ModuleManager {
 
     val huds = arrayListOf<HudElement>()

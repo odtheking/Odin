@@ -21,6 +21,10 @@ import org.lwjgl.input.Mouse
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 
+/**
+ * Class that represents a module. And handles all the settings.
+ * @author Aton
+ */
 abstract class Module(
     name: String,
     keyCode: Int = Keyboard.KEY_NONE,

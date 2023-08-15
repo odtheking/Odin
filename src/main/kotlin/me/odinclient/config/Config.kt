@@ -15,6 +15,9 @@ import me.odinclient.utils.render.Color
 import java.io.File
 import java.io.IOException
 
+/**
+ * @author Stivais, Aton
+ */
 object Config {
 
     private val gson = GsonBuilder()

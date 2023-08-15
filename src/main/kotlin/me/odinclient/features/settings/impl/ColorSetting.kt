@@ -3,6 +3,10 @@ package me.odinclient.features.settings.impl
 import me.odinclient.features.settings.Setting
 import me.odinclient.utils.render.Color
 
+/**
+ * Setting that has hsba values.
+ * @author Stivais
+ */
 class ColorSetting(
     name: String,
     override val default: Color,

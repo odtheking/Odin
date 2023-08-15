@@ -17,6 +17,11 @@ import me.odinclient.utils.render.gui.animations.impl.EaseInOut
 import me.odinclient.utils.render.gui.nvg.*
 import kotlin.math.sign
 
+/**
+ * Screen that renders all your active Hud's
+ *
+ * @author Stivais
+ */
 object EditHUDGui : Screen() {
 
     var dragging: HudElement? = null

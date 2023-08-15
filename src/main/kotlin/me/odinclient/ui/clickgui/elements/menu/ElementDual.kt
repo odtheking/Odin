@@ -14,6 +14,15 @@ import me.odinclient.utils.render.gui.MouseUtils
 import me.odinclient.utils.render.gui.animations.impl.EaseInOut
 import me.odinclient.utils.render.gui.nvg.*
 
+/**
+ * Renders all the modules.
+ *
+ * Backend made by Aton, with some changes
+ * Design mostly made by Stivais
+ *
+ * @author Stivais, Aton
+ * @see [Element]
+ */
 class ElementDual(parent: ModuleButton, setting: DualSetting) : Element<DualSetting>(
     parent, setting, ElementType.DUAL
 ) {

@@ -2,6 +2,10 @@ package me.odinclient.features.settings.impl
 
 import me.odinclient.features.settings.Setting
 
+/**
+ * A true-false setting.
+ * @author Aton
+ */
 class BooleanSetting (
     name: String,
     override val default: Boolean = false,
