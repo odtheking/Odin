@@ -12,8 +12,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object NoBlockAnimation : Module(
-    "No Block Animation",
-    description = "Stops the block animation when using a sword ability.",
+    "No Block",
+    description = "Prevents you from blocking with items that have an ability, this is effectively NoSlow",
     category = Category.QOL
 ) {
     private var isRightClickKeyDown = false
