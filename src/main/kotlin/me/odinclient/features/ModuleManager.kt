@@ -91,7 +91,8 @@ object ModuleManager {
         FarmingHitboxes,
         TerminalSolver,
         SimonSays,
-        Levers
+        Levers,
+        NickHider
     )
 
     @SubscribeEvent
