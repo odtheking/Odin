@@ -3,7 +3,7 @@ package me.odinclient.ui.clickgui
 import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinclient.features.Category
 import me.odinclient.features.ModuleManager.modules
-import me.odinclient.features.impl.general.ClickGUIModule
+import me.odinclient.features.impl.render.ClickGUIModule
 import me.odinclient.ui.clickgui.elements.ModuleButton
 import me.odinclient.ui.clickgui.util.ColorUtil
 import me.odinclient.utils.Utils.round

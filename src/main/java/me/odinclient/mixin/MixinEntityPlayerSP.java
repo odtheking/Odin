@@ -1,6 +1,6 @@
 package me.odinclient.mixin;
 
-import me.odinclient.features.impl.qol.PortalFix;
+import me.odinclient.features.impl.skyblock.PortalFix;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
 import org.spongepowered.asm.mixin.Mixin;

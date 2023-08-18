@@ -3,7 +3,7 @@ package me.odinclient.commands.impl
 import me.odinclient.OdinClient.Companion.display
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.commands.AbstractCommand
-import me.odinclient.features.impl.general.ClickGUIModule
+import me.odinclient.features.impl.render.ClickGUIModule
 import me.odinclient.ui.clickgui.ClickGUI
 import me.odinclient.ui.hud.EditHUDGui
 import me.odinclient.utils.skyblock.ChatUtils.modMessage

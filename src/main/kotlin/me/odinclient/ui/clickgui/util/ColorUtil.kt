@@ -1,6 +1,6 @@
 package me.odinclient.ui.clickgui.util
 
-import me.odinclient.features.impl.general.ClickGUIModule
+import me.odinclient.features.impl.render.ClickGUIModule
 import me.odinclient.utils.render.Color
 
 object ColorUtil {

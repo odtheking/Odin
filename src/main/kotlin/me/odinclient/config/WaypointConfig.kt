@@ -8,7 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.odinclient.OdinClient
 import me.odinclient.OdinClient.Companion.scope
-import me.odinclient.features.impl.general.WaypointManager.Waypoint
+import me.odinclient.features.impl.render.WaypointManager.Waypoint
 import java.io.File
 import java.io.IOException
 

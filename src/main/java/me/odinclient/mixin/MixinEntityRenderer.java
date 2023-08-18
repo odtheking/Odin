@@ -1,6 +1,6 @@
 package me.odinclient.mixin;
 
-import me.odinclient.features.impl.general.Camera;
+import me.odinclient.features.impl.render.Camera;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 import org.spongepowered.asm.mixin.Mixin;

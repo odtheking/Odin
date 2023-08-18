@@ -4,7 +4,7 @@ import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinclient.OdinClient.Companion.display
 import me.odinclient.config.Config
 import me.odinclient.features.Category
-import me.odinclient.features.impl.general.ClickGUIModule
+import me.odinclient.features.impl.render.ClickGUIModule
 import me.odinclient.ui.Screen
 import me.odinclient.ui.clickgui.elements.menu.ElementColor
 import me.odinclient.ui.clickgui.util.ColorUtil.buttonColor

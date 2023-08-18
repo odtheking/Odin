@@ -1,6 +1,6 @@
 package me.odinclient.mixin;
 
-import me.odinclient.features.impl.qol.FarmingHitboxes;
+import me.odinclient.features.impl.skyblock.FarmingHitboxes;
 import net.minecraft.block.BlockCocoa;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.IBlockAccess;

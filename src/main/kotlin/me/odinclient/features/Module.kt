@@ -3,7 +3,7 @@ package me.odinclient.features
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import me.odinclient.OdinClient
-import me.odinclient.features.impl.general.ClickGUIModule
+import me.odinclient.features.impl.render.ClickGUIModule
 import me.odinclient.features.settings.AlwaysActive
 import me.odinclient.features.settings.Hud
 import me.odinclient.features.settings.Setting
@@ -28,7 +28,7 @@ import kotlin.reflect.full.hasAnnotation
 abstract class Module(
     name: String,
     keyCode: Int = Keyboard.KEY_NONE,
-    category: Category = Category.GENERAL,
+    category: Category = Category.RENDER,
     toggled: Boolean = false,
     settings: ArrayList<Setting<*>> = ArrayList(),
     description: String = "",

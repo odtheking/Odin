@@ -3,7 +3,7 @@ package me.odinclient.commands.impl
 import me.odinclient.OdinClient.Companion.display
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.commands.AbstractCommand
-import me.odinclient.features.impl.general.WaypointManager
+import me.odinclient.features.impl.render.WaypointManager
 import me.odinclient.ui.waypoint.WaypointGUI
 import me.odinclient.utils.Utils.floorToInt
 import me.odinclient.utils.VecUtils.floored
