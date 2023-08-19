@@ -5,6 +5,10 @@ import me.odinclient.utils.Utils.coerceInNumber
 import me.odinclient.utils.Utils.div
 import kotlin.math.round
 
+/**
+ * Setting that lets you pick a number between a range.
+ * @author Stivais, Aton
+ */
 @Suppress("UNCHECKED_CAST")
 class NumberSetting<E>(
     name: String,

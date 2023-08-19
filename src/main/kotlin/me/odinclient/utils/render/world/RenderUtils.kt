@@ -76,6 +76,13 @@ object RenderUtils {
     /**
      * @param color Has to be in the range of 0-255
      */
+    fun drawCustomESPBox(x: Double, y: Double, z: Double, width: Double, height: Double, color: Color, thickness: Float = 3f, phase: Boolean) {
+        drawCustomESPBox(x, width, y, height, z, width, color, thickness, phase)
+    }
+
+    /**
+     * @param color Has to be in the range of 0-255
+     */
     fun drawCustomESPBox(x: Double, xWidth: Double, y: Double, yWidth: Double, z: Double, zWidth: Double, color: Color, thickness: Float = 3f, phase: Boolean) {
         GlStateManager.pushMatrix()
         color.bindColor()

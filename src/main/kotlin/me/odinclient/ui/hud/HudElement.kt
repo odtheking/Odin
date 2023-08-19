@@ -12,13 +12,16 @@ import me.odinclient.utils.render.gui.animations.impl.EaseInOut
 import me.odinclient.utils.render.gui.nvg.*
 
 /**
+ * Class to render elements on hud
+ *
  * Inspired by [FloppaClient](https://github.com/FloppaCoding/FloppaClient/blob/master/src/main/kotlin/floppaclient/ui/hud/HudElement.kt)
+ * @author Stivais, Aton
  */
 open class HudElement(
     x: Float = 0f,
     y: Float = 0f,
     defaultScale: Float = 2f,
-    inline val render: Render = { 0f to 0f }
+    val render: Render = { 0f to 0f }
 ) {
 
     private var parentModule: Module? = null

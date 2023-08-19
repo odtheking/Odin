@@ -10,6 +10,15 @@ import me.odinclient.ui.clickgui.util.ColorUtil.textColor
 import me.odinclient.utils.render.gui.nvg.*
 import org.lwjgl.input.Keyboard
 
+/**
+ * Renders all the modules.
+ *
+ * Backend made by Aton, with some changes
+ * Design mostly made by Stivais
+ *
+ * @author Stivais, Aton
+ * @see [Element]
+ */
 class ElementTextField(parent: ModuleButton, setting: StringSetting) :
     Element<StringSetting>(parent, setting, ElementType.TEXT_FIELD) {
 

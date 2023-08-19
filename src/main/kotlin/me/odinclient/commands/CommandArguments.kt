@@ -1,5 +1,6 @@
 package me.odinclient.commands
 
+@Deprecated("No use.")
 class CommandArguments(private val args: Array<out String>): AbstractList<String>(), RandomAccess {
 
     override val size = args.size

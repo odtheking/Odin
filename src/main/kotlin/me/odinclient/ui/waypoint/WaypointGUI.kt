@@ -5,7 +5,7 @@ import cc.polyfrost.oneconfig.renderer.font.Fonts
 import cc.polyfrost.oneconfig.utils.dsl.*
 import me.odinclient.commands.impl.WaypointCommand.randomColor
 import me.odinclient.config.WaypointConfig
-import me.odinclient.features.impl.general.WaypointManager
+import me.odinclient.features.impl.render.WaypointManager
 import me.odinclient.ui.waypoint.elements.AreaButton
 import me.odinclient.ui.waypoint.elements.WaypointElement
 import me.odinclient.utils.VecUtils.floored
@@ -25,6 +25,10 @@ import org.lwjgl.input.Mouse
 import java.io.IOException
 import kotlin.math.sign
 
+/**
+ * (not proud of this one ngl. its ass and rushed)
+ * @author Stivais
+ */
 object WaypointGUI : GuiScreen() {
     var displayArea: String? = null // rename
     var list = mutableListOf<WaypointElement>()

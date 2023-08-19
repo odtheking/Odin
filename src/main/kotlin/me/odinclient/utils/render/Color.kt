@@ -5,7 +5,7 @@ import me.odinclient.utils.Utils.RGBtoHSB
 
 // TODO: Clean up all color related stuff etc
 /**
- * Taken from [PolyUI](https://github.com/Polyfrost/polyui-jvm/blob/master/src/main/kotlin/cc/polyfrost/polyui/color/Color.kt)
+ * Based on [PolyUI](https://github.com/Polyfrost/polyui-jvm/blob/master/src/main/kotlin/cc/polyfrost/polyui/color/Color.kt)
  */
 class Color(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f) {
 

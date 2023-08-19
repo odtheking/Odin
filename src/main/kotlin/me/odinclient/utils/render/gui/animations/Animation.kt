@@ -2,6 +2,10 @@ package me.odinclient.utils.render.gui.animations
 
 import me.odinclient.utils.clock.Clock
 
+/**
+ * Simple class that calculates a "point" between 2 values and a percentage.
+ * @author Stivais
+ */
 abstract class Animation<T>(private var duration: Long) {
 
     private var animating = false
