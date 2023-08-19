@@ -12,6 +12,7 @@
     "MixinBlockSkull",
     "MixinChunk",
     "MixinNetworkManager",
+    "MixinS1CPacketEntityMetadata",
     "MixinWorld"
   ],
   "client": [
