@@ -3,7 +3,7 @@ package me.odinclient.commands.impl
 import me.odinclient.OdinClient.Companion.miscConfig
 import me.odinclient.commands.Command
 import me.odinclient.commands.CommandArguments
-import me.odinclient.features.impl.general.ESP
+import me.odinclient.features.impl.render.ESP
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 
 object ESPCommand : Command("esp", listOf("odesp"), "Command for ESP.") {

@@ -17,13 +17,14 @@ object AutoShield : Module(
 ) {
     private val witherSwords = arrayOf("Astraea", "Hyperion", "Valkyrie", "Scylla")
     private val onlyBoss: Boolean by BooleanSetting("Only Boss")
+    private val inGUIs: Boolean by BooleanSetting("In GUIs")
 
     private val clock = Clock(5000)
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         if (clock.hasTimePassed() || mc.thePlayer == null) return
-
+        if (mc.currentScreen != null && !inGUIs) return
         if (onlyBoss && !DungeonUtils.inBoss) return
         witherSwords.forEach {
             if (ItemUtils.getItemSlot(it) == null) return@forEach

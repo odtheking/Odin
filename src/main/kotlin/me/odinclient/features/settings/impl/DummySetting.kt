@@ -2,6 +2,10 @@ package me.odinclient.features.settings.impl
 
 import me.odinclient.features.settings.Setting
 
+/**
+ * Placeholder setting class.
+ * @author Aton
+ */
 class DummySetting(
     name: String,
     hidden: Boolean = false,

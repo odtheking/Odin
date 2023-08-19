@@ -2,6 +2,10 @@ package me.odinclient.features.settings.impl
 
 import me.odinclient.features.settings.Setting
 
+/**
+ * Setting that gets ran when pressed.
+ * @author Aton
+ */
 class ActionSetting(
     name: String,
     hidden: Boolean = false,

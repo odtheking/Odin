@@ -6,6 +6,7 @@ package me.odinclient.utils.clock
  *
  * @see [hasTimePassed]
  * @see [Executor]
+ * @author Stivais
  */
 class Clock(val delay: Long = 0L) {
 

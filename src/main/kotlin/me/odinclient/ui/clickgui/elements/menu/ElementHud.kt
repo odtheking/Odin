@@ -18,6 +18,15 @@ import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinclient.utils.render.gui.animations.impl.ColorAnimation
 import me.odinclient.utils.render.gui.nvg.*
 
+/**
+ * Renders all the modules.
+ *
+ * Backend made by Aton, with some changes
+ * Design mostly made by Stivais
+ *
+ * @author Stivais, Aton
+ * @see [Element]
+ */
 class ElementHud(parent: ModuleButton, setting: HudSetting) : Element<HudSetting>(
     parent, setting, ElementType.DUAL
 ) {

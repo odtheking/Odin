@@ -18,6 +18,7 @@
     "MinecraftAccessor",
     "MixinEntityPlayerSP",
     "MixinEntityRenderer",
+    "MixinFontRenderer",
     "MixinGuiContainer",
     "MixinMinecraft",
     "MixinModList",

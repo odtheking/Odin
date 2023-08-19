@@ -5,6 +5,10 @@ import me.odinclient.utils.render.gui.nvg.drawNVG
 import net.minecraft.client.gui.GuiScreen
 import org.lwjgl.input.Mouse
 
+/**
+ * Simple class that automatically passes a nanovg context
+ * @see NVG
+ */
 abstract class Screen : GuiScreen() {
 
     abstract fun draw(nvg: NVG)

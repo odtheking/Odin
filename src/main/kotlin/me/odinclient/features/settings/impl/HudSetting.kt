@@ -5,7 +5,7 @@ import me.odinclient.ui.hud.HudElement
 import me.odinclient.ui.hud.Render
 
 /**
- * Used for just rendering
+ * @author Stivais, Bonsai
  */
 class HudSetting(
     name: String,

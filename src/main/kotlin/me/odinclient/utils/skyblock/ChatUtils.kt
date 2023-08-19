@@ -2,7 +2,7 @@ package me.odinclient.utils.skyblock
 
 import kotlinx.coroutines.delay
 import me.odinclient.OdinClient.Companion.mc
-import me.odinclient.features.impl.general.BlackList
+import me.odinclient.features.impl.skyblock.BlackList
 import me.odinclient.utils.AutoSessionID
 import me.odinclient.utils.ServerUtils
 import me.odinclient.utils.Utils.floor
