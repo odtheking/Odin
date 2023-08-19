@@ -28,13 +28,13 @@ object PersonalDragon : Module(
     private val verticalPos: Double by NumberSetting("Vertical Position", 1.6, -10.0, 10.0, 0.1)
     private val scale: Double by NumberSetting("Dragon Scale", 8.0, 0.0, 50.0, 1.0)
 
-    lateinit var entityDragon: EntityDragon
+    var entityDragon: EntityDragon? = null
     private var dragonBoundingBox: AxisAlignedBB = AxisAlignedBB(-1.0, -1.0, -1.0, 1.0, 1.0, 1.0)
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
         if (mc.theWorld == null) return
-        if (!::entityDragon.isInitialized)
+        if (entityDragon == null)
         {
             val dragon = EntityDragon(mc.theWorld)
             mc.theWorld.spawnEntityInWorld(dragon)
@@ -49,18 +49,24 @@ object PersonalDragon : Module(
                 yaw -= 360f
             }
             val yawRadians = mc.thePlayer.rotationYaw * Math.PI / 180
-            entityDragon.setPosition(mc.thePlayer.posX + 5.0 * cos(yawRadians), mc.thePlayer.posY - if (mc.thePlayer.isSneaking) 3.5 else 1.5, mc.thePlayer.posZ + 5.0 * sin(yawRadians))
-            entityDragon.prevRotationYaw = yaw.also { entityDragon.rotationYaw = it }
-            entityDragon.rotationYaw = yaw
-            entityDragon.slowed = true
-            entityDragon.isSilent = true
-            entityDragon.entityBoundingBox = dragonBoundingBox
+            entityDragon!!.setPosition(mc.thePlayer.posX + 5.0 * cos(yawRadians), mc.thePlayer.posY - if (mc.thePlayer.isSneaking) 3.5 else 1.5, mc.thePlayer.posZ + 5.0 * sin(yawRadians))
+            entityDragon!!.prevRotationYaw = yaw.also { entityDragon!!.rotationYaw = it }
+            entityDragon!!.rotationYaw = yaw
+            entityDragon!!.slowed = true
+            entityDragon!!.isSilent = true
+            entityDragon!!.entityBoundingBox = dragonBoundingBox
         }
+    }
+
+    override fun onDisable() {
+        entityDragon?.setDead()
+        entityDragon = null
+        super.onDisable()
     }
 
     @SubscribeEvent
     fun onRenderLiving(event: RenderLivingEvent.Pre<EntityDragon>) {
-        if (!PersonalDragon::entityDragon.isInitialized || event.entity != entityDragon) return
+        if (entityDragon == null || event.entity != entityDragon) return
         if (onlyF5 && mc.gameSettings.thirdPersonView == 0) {
             event.isCanceled = true
             return
@@ -74,7 +80,7 @@ object PersonalDragon : Module(
 
     @SubscribeEvent
     fun onRenderLiving(event: RenderLivingEvent.Post<EntityDragon>) {
-        if (!PersonalDragon::entityDragon.isInitialized) return
+        if (entityDragon == null) return
         if (event.entity == entityDragon) GlStateManager.popMatrix()
     }
 }
