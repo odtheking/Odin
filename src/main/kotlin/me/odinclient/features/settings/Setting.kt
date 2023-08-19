@@ -5,6 +5,10 @@ import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
+/**
+ * Superclass of Settings.
+ * @author Aton
+ */
 abstract class Setting<T> (
     val name: String,
     var hidden: Boolean = false,

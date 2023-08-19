@@ -1,6 +1,6 @@
 package me.odinclient.mixin;
 
-import me.odinclient.features.impl.qol.FarmingHitboxes;
+import me.odinclient.features.impl.skyblock.FarmingHitboxes;
 import net.minecraft.block.BlockMushroom;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

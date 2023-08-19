@@ -3,7 +3,7 @@ package me.odinclient.features.impl.dungeon
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.Category
 import me.odinclient.features.Module
-import me.odinclient.features.impl.general.BlackList
+import me.odinclient.features.impl.skyblock.BlackList
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.PlayerUtils

@@ -2,6 +2,10 @@ package me.odinclient.features.settings.impl
 
 import me.odinclient.features.settings.Setting
 
+/**
+ * Setting that lets you pick between an array of strings.
+ * @author Aton
+ */
 class SelectorSetting(
     name: String,
     defaultSelected: String,

@@ -3,7 +3,7 @@ package me.odinclient.ui.clickgui
 import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinclient.features.Category
 import me.odinclient.features.ModuleManager.modules
-import me.odinclient.features.impl.general.ClickGUIModule
+import me.odinclient.features.impl.render.ClickGUIModule
 import me.odinclient.ui.clickgui.elements.ModuleButton
 import me.odinclient.ui.clickgui.util.ColorUtil
 import me.odinclient.utils.Utils.round
@@ -15,6 +15,15 @@ import me.odinclient.utils.render.gui.animations.impl.LinearAnimation
 import me.odinclient.utils.render.gui.nvg.*
 import kotlin.math.floor
 
+/**
+ * Renders all the panels.
+ *
+ * Backend made by Aton, with some changes
+ * Design mostly made by Stivais
+ *
+ * @author Stivais, Aton
+ * @see [ModuleButton]
+ */
 class Panel(
     var category: Category,
 ) {
@@ -54,7 +63,7 @@ class Panel(
 
         nvg {
             rect(x, y, width, height, ColorUtil.moduleButtonColor, 5f, 5f, 0f, 0f)
-            text(displayName, x + width / 2f, y + height / 2f, ColorUtil.textColor, 22f, Fonts.SEMIBOLD, TextAlign.Middle)
+            text(if (displayName == "Floor7") "Floor 7" else displayName, x + width / 2f, y + height / 2f, ColorUtil.textColor, 22f, Fonts.SEMIBOLD, TextAlign.Middle)
 
             scrollOffset = scrollAnimation.get(scrollOffset, scrollTarget).round(0)
             var startY = scrollOffset + height

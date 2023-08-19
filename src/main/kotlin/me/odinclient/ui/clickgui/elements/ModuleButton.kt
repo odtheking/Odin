@@ -19,6 +19,15 @@ import me.odinclient.utils.render.gui.animations.impl.EaseInOut
 import me.odinclient.utils.render.gui.nvg.*
 import kotlin.math.floor
 
+/**
+ * Renders all the modules.
+ *
+ * Backend made by Aton, with some changes
+ * Design mostly made by Stivais
+ *
+ * @author Stivais, Aton
+ * @see [Element]
+ */
 class ModuleButton(val module: Module, val panel: Panel) {
 
     val menuElements: ArrayList<Element<*>> = ArrayList()

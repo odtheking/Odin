@@ -14,6 +14,15 @@ import me.odinclient.utils.render.gui.nvg.TextAlign
 import me.odinclient.utils.render.gui.nvg.rect
 import me.odinclient.utils.render.gui.nvg.text
 
+/**
+ * Renders all the modules.
+ *
+ * Backend made by Aton, with some changes
+ * Design mostly made by Stivais
+ *
+ * @author Stivais, Aton
+ * @see [Element]
+ */
 class ElementAction(parent: ModuleButton, setting: ActionSetting) : Element<ActionSetting>(parent, setting, ElementType.ACTION) {
     override val isHovered: Boolean
         get() = MouseUtils.isAreaHovered(x + 20f, y, w - 40f, h - 10f)

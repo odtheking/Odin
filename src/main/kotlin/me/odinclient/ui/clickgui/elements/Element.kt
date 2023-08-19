@@ -6,6 +6,15 @@ import me.odinclient.ui.clickgui.util.HoverHandler
 import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinclient.utils.render.gui.nvg.NVG
 
+/**
+ * Renders all the modules.
+ *
+ * Backend made by Aton, with some changes
+ * Design mostly made by Stivais
+ *
+ * @author Stivais, Aton
+ * @see [Element]
+ */
 open class Element<S : Setting<*>>(val parent: ModuleButton, val setting: S, type: ElementType) {
 
     inline val name: String

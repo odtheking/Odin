@@ -1,7 +1,7 @@
 package me.odinclient.ui.clickgui.elements.menu
 
 import cc.polyfrost.oneconfig.renderer.font.Fonts
-import me.odinclient.features.impl.general.ClickGUIModule
+import me.odinclient.features.impl.render.ClickGUIModule
 import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.ui.clickgui.elements.Element
 import me.odinclient.ui.clickgui.elements.ElementType
@@ -20,6 +20,15 @@ import me.odinclient.utils.render.gui.animations.impl.ColorAnimation
 import me.odinclient.utils.render.gui.animations.impl.LinearAnimation
 import me.odinclient.utils.render.gui.nvg.*
 
+/**
+ * Renders all the modules.
+ *
+ * Backend made by Aton, with some changes
+ * Design mostly made by Stivais
+ *
+ * @author Stivais, Aton
+ * @see [Element]
+ */
 class ElementCheckBox(parent: ModuleButton, setting: BooleanSetting) : Element<BooleanSetting>(
     parent, setting, ElementType.CHECK_BOX
 ) {

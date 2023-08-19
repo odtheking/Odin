@@ -29,6 +29,8 @@ inline val renderer: NanoVGHelper
  *  VG.nanoVG {
  *      drawRect(/*args*/)
  *  }
+ *  ```
+ *  @author Stivais
  */
 @JvmInline
 value class NVG(val context: Long) {

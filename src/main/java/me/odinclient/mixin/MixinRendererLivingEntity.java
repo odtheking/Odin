@@ -1,14 +1,9 @@
 package me.odinclient.mixin;
 
 import me.odinclient.events.impl.RenderEntityModelEvent;
-import me.odinclient.features.impl.dungeon.TeammatesOutline;
-import me.odinclient.features.impl.general.ArrowTrajectory;
-import me.odinclient.features.impl.general.BlazeAtunement;
-import me.odinclient.features.impl.general.ESP;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.MinecraftForge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

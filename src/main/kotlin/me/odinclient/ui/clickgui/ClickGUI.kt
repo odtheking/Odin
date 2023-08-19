@@ -4,7 +4,7 @@ import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinclient.OdinClient.Companion.display
 import me.odinclient.config.Config
 import me.odinclient.features.Category
-import me.odinclient.features.impl.general.ClickGUIModule
+import me.odinclient.features.impl.render.ClickGUIModule
 import me.odinclient.ui.Screen
 import me.odinclient.ui.clickgui.elements.menu.ElementColor
 import me.odinclient.ui.clickgui.util.ColorUtil.buttonColor
@@ -23,6 +23,15 @@ import org.lwjgl.input.Mouse
 import kotlin.math.floor
 import kotlin.math.sign
 
+/**
+ * Renders all the modules.
+ *
+ * Backend made by Aton, with some changes
+ * Design mostly made by Stivais
+ *
+ * @author Stivais, Aton
+ * @see [Panel]
+ */
 object ClickGUI : Screen() {
 
     private val panels: ArrayList<Panel> = arrayListOf()

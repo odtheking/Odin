@@ -4,15 +4,21 @@ import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.impl.PreKeyInputEvent
 import me.odinclient.events.impl.PreMouseInputEvent
 import me.odinclient.features.impl.dungeon.*
-import me.odinclient.features.impl.general.*
-import me.odinclient.features.impl.m7.*
-import me.odinclient.features.impl.m7.terminals.TerminalSolver
-import me.odinclient.features.impl.qol.*
+import me.odinclient.features.impl.floor7.*
+import me.odinclient.features.impl.floor7.p3.Levers
+import me.odinclient.features.impl.floor7.p3.SimonSays
+import me.odinclient.features.impl.floor7.p3.TerminalSolver
+import me.odinclient.features.impl.render.*
+import me.odinclient.features.impl.skyblock.*
 import me.odinclient.ui.hud.HudElement
 import me.odinclient.utils.render.gui.nvg.drawNVG
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
+/**
+ * Class that contains all Modules and huds
+ * @author Aton
+ */
 object ModuleManager {
 
     val huds = arrayListOf<HudElement>()
@@ -62,7 +68,7 @@ object ModuleManager {
         GhostPick,
         GyroRange,
         KuudraAlerts,
-        NoBlockAnimation,
+        NoBlock,
         NoCursorReset,
         Reminders,
         TermAC,
@@ -81,10 +87,13 @@ object ModuleManager {
         CloseChest,
         EnchantingExperiments,
         ThornStun,
-        SimonSays,
         NoDebuff,
         FarmingHitboxes,
         TerminalSolver,
+        SimonSays,
+        Levers,
+        NickHider,
+        DragonHitboxes,
         StopOpeningSouls
     )
 
