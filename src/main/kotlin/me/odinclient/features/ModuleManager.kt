@@ -92,7 +92,8 @@ object ModuleManager {
         TerminalSolver,
         SimonSays,
         Levers,
-        NickHider
+        NickHider,
+        DragonHitboxes
     )
 
     @SubscribeEvent
