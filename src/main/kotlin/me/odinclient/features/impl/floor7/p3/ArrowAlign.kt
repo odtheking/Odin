@@ -4,9 +4,14 @@ import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.impl.PostEntityMetadata
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.features.settings.Setting.Companion.withDependency
 import me.odinclient.features.settings.impl.BooleanSetting
+import me.odinclient.features.settings.impl.NumberSetting
+import me.odinclient.utils.clock.Clock
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.world.RenderUtils
+import me.odinclient.utils.skyblock.PlayerUtils
+import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.item.EntityItemFrame
 import net.minecraft.init.Blocks
 import net.minecraft.init.Items
@@ -17,7 +22,6 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.*
-import javax.vecmath.Vector2d
 
 object ArrowAlign : Module(
     name = "Arrow Align",
@@ -26,6 +30,7 @@ object ArrowAlign : Module(
 ) {
     private val solver: Boolean by BooleanSetting("Solver")
     private val triggerBot: Boolean by BooleanSetting("Trigger Bot")
+    private val delay: Long by NumberSetting<Long>("Delay", 200, 70, 500).withDependency { triggerBot }
 
     private val area = BlockPos.getAllInBox(BlockPos(-2, 125, 79), BlockPos(-2, 121, 75))
         .toList().sortedWith { a, b ->
@@ -34,13 +39,14 @@ object ArrowAlign : Module(
             if (a.y > b.y) return@sortedWith -1
             return@sortedWith 0
         }
+    private val triggerBotClock = Clock(delay)
     private data class Vec2(val x: Int, val y: Int)
     //                                    xy pos         entity,          needed clicks        (x is technically z in the world)
     private val neededRotations = HashMap<Vec2, Pair<EntityItemFrame, Int>>()
 
     init {
         execute(3000) {
-            if (mc.thePlayer.getDistanceSq(BlockPos(-2, 122, 76)) > 225 /*|| !DungeonUtils.inBoss || !DungeonUtils.isFloor(7)*/) return@execute
+            if (mc.thePlayer.getDistanceSq(BlockPos(-2, 122, 76)) > 225 /*|| DungeonUtils.getPhase() != 3*/) return@execute
             calculate()
         }
     }
@@ -56,8 +62,17 @@ object ArrowAlign : Module(
         neededRotations.clear()
     }
 
+    private fun triggerBot() {
+        if (!triggerBotClock.hasTimePassed(delay)) return
+        val rotations = neededRotations.values.find { it.first == mc.objectMouseOver?.entityHit }?.second ?: return
+        if (rotations == 0) return
+        PlayerUtils.rightClick()
+        triggerBotClock.update()
+    }
+
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
+        if (triggerBot) triggerBot()
         if (!solver) return
         for (place in neededRotations) {
             val clicksNeeded = place.value.second
