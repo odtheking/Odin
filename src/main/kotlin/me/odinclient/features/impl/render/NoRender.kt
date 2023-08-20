@@ -27,7 +27,8 @@ object NoRender : Module(
     description = "Disables certain render function when they are not necessary, resulting in a decrease in gpu usage"
 ) {
 
-    private val fallingBlocks: Boolean by BooleanSetting("Remove falling blocks", true)
+    private val decreaseGpuUsage: Boolean by BooleanSetting(name = "Reduce GPU Usage", default = true)
+    private val fallingBlocks: Boolean by BooleanSetting(name = "Remove falling blocks", default = true)
 
     @SubscribeEvent
     fun onFallingBlock(event: EntityJoinWorldEvent) {
