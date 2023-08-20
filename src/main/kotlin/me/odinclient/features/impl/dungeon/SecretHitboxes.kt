@@ -44,8 +44,35 @@ object SecretHitboxes : Module(
             k.setBlockBounds(0f, 0f, 0f, 1f, 1f, 1f)
         }
 
-        if (button) expandedButtons.forEach { (k, _) ->
-            k.setBlockBounds(0f, 0f, 0f, 1f, 1f, 1f)
+        if (button) expandedButtons.forEach { (key, value) ->
+            val enumfacing: EnumFacing = value.getValue(BlockButton.FACING)
+            val flag: Boolean = value.getValue(BlockButton.POWERED)
+            val f2 = (if (flag) 1 else 2).toFloat() / 16.0f
+            when (enumfacing) {
+                EnumFacing.EAST -> {
+                    key.setBlockBounds(0.0f, 0.0f, 0.0f, f2, 1.0f, 1.0f)
+                }
+
+                EnumFacing.WEST -> {
+                    key.setBlockBounds(1.0f - f2, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f)
+                }
+
+                EnumFacing.SOUTH -> {
+                    key.setBlockBounds(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, f2)
+                }
+
+                EnumFacing.NORTH -> {
+                    key.setBlockBounds(0.0f, 0.0f, 1.0f - f2, 1.0f, 1.0f, 1.0f)
+                }
+
+                EnumFacing.UP -> {
+                    key.setBlockBounds(0.0f, 0.0f, 0.0f, 1f, 0.0f + f2, 1.0f)
+                }
+
+                EnumFacing.DOWN -> {
+                    key.setBlockBounds(0.0f, 1.0f - f2, 0.0f, 1.0f, 1.0f, 1.0f)
+                }
+            }
         }
 
         if (essence) expandedSkulls.forEach { (k, _) ->
