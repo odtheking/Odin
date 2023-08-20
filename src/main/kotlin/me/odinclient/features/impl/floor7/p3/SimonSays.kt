@@ -31,7 +31,7 @@ object SimonSays : Module(
     private val solver: Boolean by BooleanSetting("Solver")
     private val triggerBot: Boolean by BooleanSetting("Triggerbot")
     private val delay: Long by NumberSetting<Long>("Delay", 200, 70, 500).withDependency { triggerBot }
-    private val fullBlock: Boolean by BooleanSetting("Full Block (SBC)", false).withDependency { triggerBot }
+    private val fullBlock: Boolean by BooleanSetting("Full Block (needs SBC)", false).withDependency { triggerBot }
 
     private val triggerBotClock = Clock(delay)
 
