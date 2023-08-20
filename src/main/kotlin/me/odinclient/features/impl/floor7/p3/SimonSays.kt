@@ -8,6 +8,7 @@ import me.odinclient.features.Module
 import me.odinclient.features.settings.Setting.Companion.withDependency
 import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.features.settings.impl.NumberSetting
+import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinclient.utils.clock.Clock
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.world.RenderUtils
@@ -40,10 +41,10 @@ object SimonSays : Module(
 
     @SubscribeEvent
     fun onBlockChange(event: BlockChangeEvent) {
+        if (DungeonUtils.getPhase() != 3) return
         val pos = event.pos
         val old = event.old
         val state = event.update
-        if (!DungeonUtils.isFloor(7)) return
 
         if (pos == firstButton && state.block == Blocks.stone_button && state.getValue(BlockButtonStone.POWERED)) {
             clickInOrder.clear()
@@ -58,6 +59,7 @@ object SimonSays : Module(
         } else if (pos.x == 110) {
             if (state.block == Blocks.air) {
                 clickNeeded = 0
+                clickInOrder.clear() // TODO: Make sure this works most of the time, or maybe add a setting for this as this will provide less consistency, but work better with "ss skip"
             } else if (state.block == Blocks.stone_button && old.block == Blocks.stone_button && state.getValue(BlockButtonStone.POWERED)) {
                 val index = clickInOrder.indexOf(pos.add(1, 0, 0)) + 1
                 clickNeeded = if (index >= clickInOrder.size) 0 else index
@@ -89,12 +91,12 @@ object SimonSays : Module(
             val x = pos.x - viewerX - .125
             val y = pos.y - viewerY + .3125
             val z = pos.z - viewerZ + .25
-            val color = if (index == clickNeeded) Color(0, 170, 0, .5f) else if (index == clickNeeded + 1) Color(255, 170, 0, .5f) else Color(170, 0, 0, .5f)
-            RenderUtils.drawFilledBox(
-                matrixStack,
-                AxisAlignedBB(x, y, z, x + .1875, y + .375, z + .5),
-                color
-            )
+            val color = when (index) {
+                clickNeeded -> Color(0, 170, 0)
+                clickNeeded + 1 -> Color(255, 170, 0)
+                else -> Color(170, 0, 0)
+            }.withAlpha(.5f)
+            RenderUtils.drawFilledBox(matrixStack, AxisAlignedBB(x, y, z, x + .1875, y + .375, z + .5), color)
         }
         GlStateManager.enableCull()
     }

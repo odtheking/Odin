@@ -6,6 +6,7 @@ import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.utils.clock.Clock
 import me.odinclient.utils.skyblock.PlayerUtils.rightClick
+import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.block.BlockLever
 import net.minecraft.util.BlockPos
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -30,10 +31,9 @@ object Levers : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (!triggerBotClock.hasTimePassed(delay)/* || DungeonUtils.getPhase() != 3*/) return
+        if (!triggerBotClock.hasTimePassed(delay) || DungeonUtils.getPhase() != 3) return
         val pos = mc.objectMouseOver?.blockPos ?: return
-        if (pos !in levers) return
-        if (mc.theWorld.getBlockState(pos).getValue(BlockLever.POWERED)) return
+        if (pos !in levers || mc.theWorld.getBlockState(pos).getValue(BlockLever.POWERED)) return
         rightClick()
         triggerBotClock.update()
     }
