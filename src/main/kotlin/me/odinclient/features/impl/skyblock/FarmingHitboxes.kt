@@ -12,7 +12,7 @@ object FarmingHitboxes : Module(
         description = "Expands the hitbox of some crops to a full block"
 ) {
 
-    var mushroom: Boolean by BooleanSetting(name = "Cocoa", default = true)
+    var mushroom: Boolean by BooleanSetting(name = "Mushroom", default = true)
     private var cocoa: Boolean by BooleanSetting(name = "Cocoa", default = true)
 
     fun setBlockBoundsMixin(block: Block): Boolean
