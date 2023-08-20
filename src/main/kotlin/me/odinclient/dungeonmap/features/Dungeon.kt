@@ -110,8 +110,8 @@ object Dungeon {
     fun onRender(event: RenderWorldLastEvent) {
         if (!inDungeons || !MapModule.enabled || hasCreatedImages) return
         playerImage = MapRenderUtils.createBufferedImageFromTexture(mc.textureManager.getTexture(mc.thePlayer.locationSkin).glTextureId)
-        dungeonTeammates.values.forEach {
-            it.bufferedImage = MapRenderUtils.createBufferedImageFromTexture(mc.textureManager.getTexture(it.skin).glTextureId)
+        dungeonTeammates.forEach { (_, player) ->
+            player.bufferedImage = MapRenderUtils.createBufferedImageFromTexture(mc.textureManager.getTexture(player.skin).glTextureId)
         }
         hasCreatedImages = true
     }
