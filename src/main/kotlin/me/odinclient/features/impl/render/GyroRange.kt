@@ -1,4 +1,4 @@
-package me.odinclient.features.impl.skyblock
+package me.odinclient.features.impl.render
 
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.Category
