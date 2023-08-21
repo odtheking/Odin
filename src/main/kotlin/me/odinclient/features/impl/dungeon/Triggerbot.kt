@@ -4,7 +4,6 @@ import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.BooleanSetting
-import me.odinclient.mixin.MinecraftAccessor
 import me.odinclient.utils.VecUtils
 import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.skyblock.PlayerUtils
@@ -40,7 +39,7 @@ object Triggerbot : Module(
             val creeperMaxHealth = (lookingAt as EntityCreeper).getEntityAttribute(SharedMonsterAttributes.maxHealth).baseValue
             if ((ghosts && (creeperMaxHealth == 1000000.0 || creeperMaxHealth == 4000000.0)))
             {
-                (mc as MinecraftAccessor).invokeClickMouse()
+                PlayerUtils.leftClick()
             }
         }
     }
