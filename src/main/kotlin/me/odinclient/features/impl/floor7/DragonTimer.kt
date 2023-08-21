@@ -1,11 +1,12 @@
 package me.odinclient.features.impl.floor7
 
 import cc.polyfrost.oneconfig.renderer.font.Fonts
-import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.impl.ReceivePacketEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.features.settings.impl.HudSetting
+import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.ui.hud.HudElement
 import me.odinclient.ui.hud.TextHud
 import me.odinclient.utils.Utils.noControlCodes
@@ -28,6 +29,11 @@ object DragonTimer : Module(
     description = "Displays a timer for when M7 dragons spawn.",
     category = Category.FLOOR7
 ) {
+
+    private val textScale: Float by NumberSetting(name = "Text scale", default = 1f, min = 0f, max = 10f, increment = 0.1f)
+    private val textBackground: Boolean by BooleanSetting(name = "Text background")
+    private val increaseWithDistance: Boolean by BooleanSetting(name = "Increase With Distance")
+
     private const val dragonSpawnTime = 5000L
 
     // TODO: add a background to make it more readable (a setting)
@@ -129,9 +135,9 @@ object DragonTimer : Module(
                 it.first,
                 it.third.textPos,
                 depthTest = false,
-                increase = false,
+                increase = true,
                 renderBlackBox = true,
-                scale = max(1.0, mc.thePlayer.positionVector.distanceTo(it.third.textPos) / 5.0).toFloat()
+                scale = textScale
             )
         }
     }

@@ -5,6 +5,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockButton;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.util.EnumFacing;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -27,7 +28,35 @@ public class MixinBlockButton extends Block {
 
             if (SecretHitboxes.INSTANCE.getEnabled())
             {
-                this.setBlockBounds(0, 0, 0, 1, 1, 1);
+                EnumFacing enumfacing = state.getValue(BlockButton.FACING);
+                boolean flag = state.getValue(BlockButton.POWERED);
+                float f2 = (flag ? 1 : 2) / 16.0f;
+
+                switch (enumfacing) {
+                    case EAST:
+                        this.setBlockBounds(0.0f, 0.0f, 0.0f, f2, 1.0f, 1.0f);
+                        break;
+
+                    case WEST:
+                        this.setBlockBounds(1.0f - f2, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+                        break;
+
+                    case SOUTH:
+                        this.setBlockBounds(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, f2);
+                        break;
+
+                    case NORTH:
+                        this.setBlockBounds(0.0f, 0.0f, 1.0f - f2, 1.0f, 1.0f, 1.0f);
+                        break;
+
+                    case UP:
+                        this.setBlockBounds(0.0f, 0.0f, 0.0f, 1.0f, 0.0f + f2, 1.0f);
+                        break;
+
+                    case DOWN:
+                        this.setBlockBounds(0.0f, 1.0f - f2, 0.0f, 1.0f, 1.0f, 1.0f);
+                        break;
+                }
                 ci.cancel();
             }
         }

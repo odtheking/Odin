@@ -5,6 +5,7 @@ import me.odinclient.events.impl.PreKeyInputEvent
 import me.odinclient.events.impl.PreMouseInputEvent
 import me.odinclient.features.impl.dungeon.*
 import me.odinclient.features.impl.floor7.*
+import me.odinclient.features.impl.floor7.p3.ArrowAlign
 import me.odinclient.features.impl.floor7.p3.Levers
 import me.odinclient.features.impl.floor7.p3.SimonSays
 import me.odinclient.features.impl.floor7.p3.TerminalSolver
@@ -94,6 +95,7 @@ object ModuleManager {
         Levers,
         NickHider,
         DragonHitboxes,
+        ArrowAlign,
         MimicMessage
     )
 

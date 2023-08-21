@@ -2,8 +2,8 @@ package me.odinclient.features.impl.dungeon
 
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.impl.ReceivePacketEvent
-import me.odinclient.features.Module
 import me.odinclient.features.Category
+import me.odinclient.features.Module
 import me.odinclient.utils.Utils.equalsOneOf
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import net.minecraft.network.play.client.C0DPacketCloseWindow

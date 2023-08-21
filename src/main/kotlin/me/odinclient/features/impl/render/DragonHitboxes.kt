@@ -11,6 +11,7 @@ import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.boss.EntityDragon
 import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
@@ -26,13 +27,13 @@ object DragonHitboxes : Module(
     private val lineWidth: Float by NumberSetting(name = "Line Thickness", default = 3f, min = 0f, max = 10f, increment = 0.1f)
 
     private val entityPositions = mutableMapOf<Int, Array<Double>>()
-    private var dragonRenderQueue: List<EntityDragon> = ArrayList()
+    private var dragonRenderQueue: ArrayList<EntityDragon> = ArrayList()
 
     @SubscribeEvent
     fun onClientTick(event: ClientTickEvent) {
         if (mc.theWorld == null) return
         val entityDragons = mc.theWorld.loadedEntityList.filterIsInstance<EntityDragon>()
-        dragonRenderQueue = entityDragons
+        dragonRenderQueue = entityDragons as ArrayList<EntityDragon>
         if (event.phase == TickEvent.Phase.END) return
 
         for (dragon in entityDragons) {
@@ -85,6 +86,13 @@ object DragonHitboxes : Module(
                 }
             }
         }
+    }
+
+    @SubscribeEvent
+    fun onWorldUnload(event: WorldEvent.Unload)
+    {
+        entityPositions.clear()
+        dragonRenderQueue.clear()
     }
 
 }
