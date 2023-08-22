@@ -4,6 +4,7 @@ import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.impl.ChatPacketEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.features.impl.skyblock.Reminders.readyReminder
 import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.utils.Utils.containsOneOf
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
@@ -44,16 +45,14 @@ object Reminders : Module(
             return
         }
 
-        if (msg in alertMap) {
-            val alert = alertMap[msg] ?: return
+        val alert = alertMap[msg] ?: return
 
-            if (msg.startsWith("[BOSS] Maxor:")) if (!firstLaser) firstLaser = true else return
-            if (msg.startsWith("[BOSS] Wither King:") && !dragReminder) return
-            if (!ultReminder && msg.containsOneOf("Maxor", "Goldor", "Sadan")) return
+        if (msg.startsWith("[BOSS] Maxor:")) if (!firstLaser) firstLaser = true else return
+        if (msg.startsWith("[BOSS] Wither King:") && !dragReminder) return
+        if (!ultReminder && msg.containsOneOf("Maxor", "Goldor", "Sadan")) return
 
-            PlayerUtils.alert(alert)
-            modMessage(alert)
-        }
+        PlayerUtils.alert(alert)
+        modMessage(alert)
     }
 
     @SubscribeEvent

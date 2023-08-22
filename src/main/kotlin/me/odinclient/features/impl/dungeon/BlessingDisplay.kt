@@ -7,7 +7,6 @@ import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.features.settings.impl.HudSetting
 import me.odinclient.ui.hud.HudElement
-import me.odinclient.ui.hud.TextHud
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.render.gui.nvg.getTextWidth
 import me.odinclient.utils.render.gui.nvg.textWithControlCodes
@@ -32,14 +31,12 @@ object BlessingDisplay : Module(
         if (it) {
             textWithControlCodes("§cPower §a29", 1f, 9f, 16f, Fonts.REGULAR)
             textWithControlCodes("§cT§6i§am§5e §a5", 1f, 26f, 16f, Fonts.REGULAR)
-            max(getTextWidth("Power 29", 16f, Fonts.REGULAR),
-                getTextWidth("Time 5", 16f, Fonts.REGULAR)
-            ) + 2f to 33f
+            max(getTextWidth("Power 29", 16f, Fonts.REGULAR), getTextWidth("Time 5", 16f, Fonts.REGULAR)) + 2f to 33f
         } else {
             var width = 0f
             var height = 0f
             Blessings.entries.forEach { blessing ->
-                if (blessing.current == 0) return@forEach
+                if (blessing.current == 0 || !blessing.enabled.invoke()) return@forEach
                 textWithControlCodes("${blessing.displayString} §a${blessing.current}", 1f, 9f + height, 16f, Fonts.REGULAR)
                 width = max(width, getTextWidth("${blessing.displayString} §a${blessing.current}".noControlCodes, 16f, Fonts.REGULAR))
                 height += 17f
@@ -48,23 +45,24 @@ object BlessingDisplay : Module(
         }
     }
 
-    private enum class Blessings (
+    private enum class Blessings(
         var current: Int,
         var regex: Regex,
-        val displayString: String
+        val displayString: String,
+        val enabled: () -> Boolean
     ){
-        POWER(0, Regex("Blessing of Power (X{0,3}(IX|IV|V?I{0,3}))"), "§cPower"),
-        LIFE(0, Regex("Blessing of Life (X{0,3}(IX|IV|V?I{0,3}))"), "§4Life"),
-        WISDOM(0, Regex("Blessing of Wisdom (X{0,3}(IX|IV|V?I{0,3}))"), "§bWisdom"),
-        STONE(0, Regex("Blessing of Stone (X{0,3}(IX|IV|V?I{0,3}))"), "§8Stone"),
-        TIME(0, Regex("Blessing of Time V"), "§cT§6i§am§5e");
+        POWER(0, Regex("Blessing of Power (X{0,3}(IX|IV|V?I{0,3}))"), "§cPower", { power }),
+        LIFE(0, Regex("Blessing of Life (X{0,3}(IX|IV|V?I{0,3}))"), "§4Life", { life }),
+        WISDOM(0, Regex("Blessing of Wisdom (X{0,3}(IX|IV|V?I{0,3}))"), "§bWisdom", { wisdom }),
+        STONE(0, Regex("Blessing of Stone (X{0,3}(IX|IV|V?I{0,3}))"), "§8Stone", { stone }),
+        TIME(0, Regex("Blessing of Time V"), "§cT§6i§am§5e", { time });
 
         fun reset() {
             current = 0
         }
     }
-    private val romanMap = hashMapOf('I' to 1, 'V' to 5, 'X' to 10)
 
+    private val romanMap = hashMapOf('I' to 1, 'V' to 5, 'X' to 10)
     private fun romanToInt(s: String): Int {
         var result = 0
         for (i in 0 until s.length - 1) {
@@ -77,47 +75,17 @@ object BlessingDisplay : Module(
 
     @SubscribeEvent
     fun onPacket(event: ReceivePacketEvent) {
-        if (event.packet !is S47PacketPlayerListHeaderFooter || /*!config.powerDisplayHud.isEnabled ||*/ !DungeonUtils.inDungeons) return
+        if (event.packet !is S47PacketPlayerListHeaderFooter || !DungeonUtils.inDungeons) return
         val footer = event.packet.footer.unformattedText.noControlCodes
-
-        if (power)
-            Blessings.POWER.regex.find(footer)?.let { Blessings.POWER.current = romanToInt(it.groupValues[1]) }
-        else Blessings.POWER.current = 0
-
-        if (life)
-            Blessings.LIFE.regex.find(footer)?.let { Blessings.LIFE.current = romanToInt(it.groupValues[1]) }
-        else Blessings.LIFE.current = 0
-
-        if (wisdom)
-            Blessings.WISDOM.regex.find(footer)?.let { Blessings.WISDOM.current = romanToInt(it.groupValues[1]) }
-        else Blessings.WISDOM.current = 0
-
-        if (stone)
-            Blessings.STONE.regex.find(footer)?.let { Blessings.STONE.current = romanToInt(it.groupValues[1]) }
-        else Blessings.STONE.current = 0
-
-        if (time)
-            Blessings.TIME.regex.find(footer)?.let { Blessings.TIME.current = 5 }
-        else Blessings.TIME.current = 0
+        Blessings.entries.forEach { blessing ->
+            blessing.regex.find(footer)?.let { match ->
+                blessing.current = romanToInt(match.groupValues[1])
+            }
+        }
     }
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
         Blessings.entries.forEach { it.reset() }
-    }
-
-    object BlessingDisplayHud : TextHud() {
-        override fun getLines(example: Boolean): MutableList<String> {
-            return if (example) {
-                mutableListOf(
-                    "§cPower §a29",
-                    "§cT§6i§am§5e §a5"
-                )
-            } else Blessings.entries.map {
-                if (it.current != 0)
-                    "${it.displayString} §a${it.current}"
-                else ""
-            }.filter { it != "" }.toMutableList()
-        }
     }
 }
