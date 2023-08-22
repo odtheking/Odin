@@ -46,16 +46,16 @@ object BlessingDisplay : Module(
     }
 
     private enum class Blessings(
-        var current: Int,
         var regex: Regex,
         val displayString: String,
-        val enabled: () -> Boolean
-    ){
-        POWER(0, Regex("Blessing of Power (X{0,3}(IX|IV|V?I{0,3}))"), "§cPower", { power }),
-        LIFE(0, Regex("Blessing of Life (X{0,3}(IX|IV|V?I{0,3}))"), "§4Life", { life }),
-        WISDOM(0, Regex("Blessing of Wisdom (X{0,3}(IX|IV|V?I{0,3}))"), "§bWisdom", { wisdom }),
-        STONE(0, Regex("Blessing of Stone (X{0,3}(IX|IV|V?I{0,3}))"), "§8Stone", { stone }),
-        TIME(0, Regex("Blessing of Time V"), "§cT§6i§am§5e", { time });
+        val enabled: () -> Boolean,
+        var current: Int = 0
+    ) {
+        POWER(Regex("Blessing of Power (X{0,3}(IX|IV|V?I{0,3}))"), "§cPower", { power }),
+        LIFE(Regex("Blessing of Life (X{0,3}(IX|IV|V?I{0,3}))"), "§4Life", { life }),
+        WISDOM(Regex("Blessing of Wisdom (X{0,3}(IX|IV|V?I{0,3}))"), "§bWisdom", { wisdom }),
+        STONE(Regex("Blessing of Stone (X{0,3}(IX|IV|V?I{0,3}))"), "§8Stone", { stone }),
+        TIME(Regex("Blessing of Time V"), "§cT§6i§am§5e", { time });
 
         fun reset() {
             current = 0
