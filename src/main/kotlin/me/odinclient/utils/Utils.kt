@@ -1,5 +1,6 @@
 package me.odinclient.utils
 
+import net.minecraft.client.Minecraft
 import net.minecraft.inventory.ContainerChest
 import kotlin.math.floor
 import kotlin.math.pow
@@ -172,5 +173,15 @@ object Utils {
         out[1] = saturation
         out[2] = brightness
         return out
+    }
+
+    fun rightClick() {
+        val method = try {
+            Minecraft::class.java.getDeclaredMethod("func_147121_ag")
+        } catch (e: NoSuchMethodException) {
+            Minecraft::class.java.getDeclaredMethod("rightClickMouse")
+        }
+        method.isAccessible = true
+        method.invoke(Minecraft.getMinecraft())
     }
 }
