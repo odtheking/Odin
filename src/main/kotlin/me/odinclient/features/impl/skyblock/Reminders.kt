@@ -26,11 +26,11 @@ object Reminders : Module(
     private var playerReady = false
 
     private val alertMap = mapOf(
-        "[BOSS] Wither King: You.. again?" to "&3Swap to edrag!",
-        "[BOSS] Maxor: YOU TRICKED ME!" to "&3Use ult!",
-        "[BOSS] Maxor: THAT BEAM! IT HURTS! IT HURTS!!" to "&3Use ult!",
-        "[BOSS] Goldor: You have done it, you destroyed the factory…" to "&3Use ult!",
-        "[BOSS] Sadan: My giants! Unleashed!" to "&3Use ult!"
+        "[BOSS] Wither King: You.. again?" to "§3Swap to edrag!",
+        "[BOSS] Maxor: YOU TRICKED ME!" to "§3Use ult!",
+        "[BOSS] Maxor: THAT BEAM! IT HURTS! IT HURTS!!" to "§3Use ult!",
+        "[BOSS] Goldor: You have done it, you destroyed the factory…" to "§3Use ult!",
+        "[BOSS] Sadan: My giants! Unleashed!" to "§3Use ult!"
         // Add more pairs here as needed
     )
 
@@ -66,7 +66,7 @@ object Reminders : Module(
             if (!readyReminder || !DungeonUtils.inDungeons) return@execute
             if (playerReady) return@execute
 
-            PlayerUtils.alert("&3Ready up!")
+            PlayerUtils.alert("§3Ready up!")
             modMessage("Ready up!")
         }
     }

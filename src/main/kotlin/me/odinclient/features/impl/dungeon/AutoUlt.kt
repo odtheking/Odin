@@ -31,8 +31,8 @@ object AutoUlt : Module(
                 if (firstLaser) return
 
                 if (mode == 0) {
-                    modMessage("&3Use ult!")
-                    PlayerUtils.alert("&3Use ult!")
+                    modMessage("§3Use ult!")
+                    PlayerUtils.alert("§3Use ult!")
                     return
                 }
 
@@ -43,8 +43,8 @@ object AutoUlt : Module(
 
             "[BOSS] Goldor: You have done it, you destroyed the factory…" -> {
                 if (mode == 0) {
-                    modMessage("&3Use ult!")
-                    PlayerUtils.alert("&3Use ult!")
+                    modMessage("§3Use ult!")
+                    PlayerUtils.alert("§3Use ult!")
                     return
                 }
                 modMessage("§eGoldor time zzz")
@@ -53,8 +53,8 @@ object AutoUlt : Module(
 
             "[BOSS] Sadan: My giants! Unleashed!" -> {
                 if (mode == 0) {
-                    modMessage("&3Use ult!")
-                    PlayerUtils.alert("&3Use ult!")
+                    modMessage("§3Use ult!")
+                    PlayerUtils.alert("§3Use ult!")
                     return
                 }
                 execute(3000, 0) {
