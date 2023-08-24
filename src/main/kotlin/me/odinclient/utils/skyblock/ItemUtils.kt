@@ -3,6 +3,8 @@ package me.odinclient.utils.skyblock
 
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.utils.Utils.noControlCodes
+import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
@@ -99,4 +101,7 @@ object ItemUtils {
         }
         return null
     }
+
+    val GuiScreen.chest: ContainerChest?
+        get() = (this as? GuiChest)?.inventorySlots as? ContainerChest
 }

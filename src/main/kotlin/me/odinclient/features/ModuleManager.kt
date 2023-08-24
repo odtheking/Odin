@@ -5,10 +5,7 @@ import me.odinclient.events.impl.PreKeyInputEvent
 import me.odinclient.events.impl.PreMouseInputEvent
 import me.odinclient.features.impl.dungeon.*
 import me.odinclient.features.impl.floor7.*
-import me.odinclient.features.impl.floor7.p3.ArrowAlign
-import me.odinclient.features.impl.floor7.p3.Levers
-import me.odinclient.features.impl.floor7.p3.SimonSays
-import me.odinclient.features.impl.floor7.p3.TerminalSolver
+import me.odinclient.features.impl.floor7.p3.*
 import me.odinclient.features.impl.render.*
 import me.odinclient.features.impl.skyblock.*
 import me.odinclient.ui.hud.HudElement
@@ -95,7 +92,8 @@ object ModuleManager {
         Levers,
         NickHider,
         DragonHitboxes,
-        ArrowAlign
+        ArrowAlign,
+        MelodyMessage
     )
 
     @SubscribeEvent

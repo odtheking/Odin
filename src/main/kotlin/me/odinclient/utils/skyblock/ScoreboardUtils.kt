@@ -3,11 +3,16 @@ package me.odinclient.utils.skyblock
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.utils.Utils.noControlCodes
 import net.minecraft.scoreboard.ScorePlayerTeam
+import net.minecraft.util.StringUtils
 
 object ScoreboardUtils {
 
     fun cleanSB(scoreboard: String?): String {
         return scoreboard.noControlCodes.filter { it.code in 21..126 }
+    }
+
+    fun String.stripControlCodes(): String {
+        return StringUtils.stripControlCodes(this)
     }
 
     val sidebarLines: List<String>
