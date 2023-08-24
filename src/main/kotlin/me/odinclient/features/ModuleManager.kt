@@ -95,7 +95,8 @@ object ModuleManager {
         Levers,
         NickHider,
         DragonHitboxes,
-        ArrowAlign
+        ArrowAlign,
+        GemstoneESP
     )
 
     @SubscribeEvent
