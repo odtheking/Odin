@@ -1,5 +1,7 @@
 package me.odinclient.utils
 
+import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
 import kotlin.math.floor
 import kotlin.math.pow
@@ -172,5 +174,11 @@ object Utils {
         out[1] = saturation
         out[2] = brightness
         return out
+    }
+
+    fun getGuiName(gui: GuiScreen?): String {
+        return if (gui is GuiChest) {
+            (gui.inventorySlots as ContainerChest).lowerChestInventory.displayName.unformattedText
+        } else ""
     }
 }
