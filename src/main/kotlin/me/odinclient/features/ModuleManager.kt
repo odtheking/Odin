@@ -13,6 +13,7 @@ import me.odinclient.features.impl.render.*
 import me.odinclient.features.impl.skyblock.*
 import me.odinclient.ui.hud.HudElement
 import me.odinclient.utils.render.gui.nvg.drawNVG
+import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
