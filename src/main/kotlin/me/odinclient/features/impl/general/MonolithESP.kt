@@ -4,9 +4,8 @@ import cc.polyfrost.oneconfig.libs.universal.UChat
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.Category
 import me.odinclient.features.Module
-import me.odinclient.utils.skyblock.LocationUtils.inSkyblock
-import me.odinclient.utils.skyblock.ScoreboardUtils.cleanSB
-import me.odinclient.utils.skyblock.ScoreboardUtils.sidebarLines
+import me.odinclient.utils.skyblock.Area
+import me.odinclient.utils.skyblock.LocationUtils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -26,26 +25,6 @@ object MonolithESP : Module(
     category = Category.RENDER
 ) {
 
-    private val locations = listOf(
-        "Barracks Of Heroes",
-        "Cliffside Veins",
-        "Divan's Gateway",
-        "Dwarven Tavern",
-        "Dwarven Village",
-        "Far Reserve",
-        "Forge Basin",
-        "Goblin Burrows",
-        "Grand Library",
-        "Hanging Court",
-        "Lava Springs",
-        "Palace Bridge",
-        "Rampart's Quarry",
-        "Royal Mines",
-        "Royal Palace",
-        "The Forge",
-        "The Lift",
-        "Upper Mines"
-    )
     private val monolithBlockCoords = listOf(
         Vec3(-15.5,236.0,-92.5),
         Vec3(49.5,202.0,-162.5),
@@ -68,8 +47,9 @@ object MonolithESP : Module(
     private var monolithCoords : Vec3? = null
 
     @SubscribeEvent
-    fun worldRender(event: RenderWorldLastEvent){
-        if (isDwarvenMine() || System.currentTimeMillis()/1000 - lastTimeChecked > 1) {
+    fun worldRender(event: RenderWorldLastEvent) {
+        if (LocationUtils.area != Area.DwarvenMines) return
+        if (System.currentTimeMillis()/1000 - lastTimeChecked > 1) {
             if (monolithCoords != null) {
                 val actualCoords = Vec3(monolithCoords!!.xCoord, monolithCoords!!.yCoord + 1.5, monolithCoords!!.zCoord)
                 if (mc.theWorld.getChunkFromBlockCoords(BlockPos(actualCoords)).getBlock(BlockPos(actualCoords)) == Blocks.dragon_egg) {
@@ -178,9 +158,5 @@ object MonolithESP : Module(
         val z = pos.zCoord - 0.5 - viewerZ
 
         drawFilledBoundingBox(AxisAlignedBB(x, y, z, x + 1, y + 1, z + 1), color, 0.6f)
-    }
-
-    private fun isDwarvenMine(): Boolean {
-        return inSkyblock && sidebarLines.any { s -> locations.any { cleanSB(s).contains(it) } }
     }
 }

@@ -5,6 +5,8 @@ import me.odinclient.utils.clock.Executor
 import me.odinclient.utils.clock.Executor.Companion.register
 import me.odinclient.utils.skyblock.ScoreboardUtils.cleanSB
 import me.odinclient.utils.skyblock.ScoreboardUtils.sidebarLines
+import me.odinclient.utils.skyblock.ScoreboardUtils.stripControlCodes
+import me.odinclient.utils.skyblock.TabListUtils.fetchTabEntries
 import me.odinclient.utils.skyblock.dungeon.Dungeon
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils.getPhase
 import net.minecraft.client.network.NetHandlerPlayClient
@@ -19,6 +21,10 @@ object LocationUtils {
 
     var currentDungeon: Dungeon? = null
     var currentArea: String? = null
+
+    private var areaRegex = Regex("^(?:Area|Dungeon): ([\\w ].+)\$")
+    var area: Area? = null
+    private var areaString: String? = null
 
     // Switch to locraw
     init {
@@ -35,6 +41,16 @@ object LocationUtils {
                         }
                     }
                 ) currentDungeon = Dungeon()
+            }
+
+            if (inSkyblock) {
+                if (areaString == null) {
+                    val tab = fetchTabEntries()
+                    val areaString = tab.firstNotNullOfOrNull { areaRegex.find(it.text.stripControlCodes()) }?.let {
+                        it.groupValues.getOrNull(1)
+                    }
+                    area = Area.fromString(areaString)
+                }
             }
 
             if (currentArea == null || currentDungeon != null) {
@@ -68,7 +84,6 @@ object LocationUtils {
                 ?: currentServerData?.serverIP?.lowercase()?.contains("hypixel")) == true)
         }.getOrDefault(false)
     }
-
 
     /**
      * Returns the current area from the tab list info.
