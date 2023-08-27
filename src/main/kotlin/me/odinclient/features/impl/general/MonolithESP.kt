@@ -23,8 +23,7 @@ import java.awt.Color
 
 object MonolithESP : Module(
     name = "Monolith ESP",
-    category = Category.RENDER,
-    new = true
+    category = Category.RENDER
 ) {
 
     private val locations = listOf(
