@@ -4,10 +4,7 @@ import cc.polyfrost.oneconfig.libs.universal.UChat
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.Category
 import me.odinclient.features.Module
-import me.odinclient.features.impl.fishing.CrimsonFishing
-import me.odinclient.utils.skyblock.LocationUtils
 import me.odinclient.utils.skyblock.LocationUtils.inSkyblock
-import me.odinclient.utils.skyblock.ScoreboardUtils
 import me.odinclient.utils.skyblock.ScoreboardUtils.cleanSB
 import me.odinclient.utils.skyblock.ScoreboardUtils.sidebarLines
 import net.minecraft.client.renderer.GlStateManager
