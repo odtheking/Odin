@@ -3,6 +3,7 @@ package me.odinclient.features
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.impl.PreKeyInputEvent
 import me.odinclient.events.impl.PreMouseInputEvent
+import me.odinclient.events.impl.ReceivePacketEvent
 import me.odinclient.features.impl.dungeon.*
 import me.odinclient.features.impl.floor7.*
 import me.odinclient.features.impl.floor7.p3.ArrowAlign
@@ -14,6 +15,7 @@ import me.odinclient.features.impl.skyblock.*
 import me.odinclient.ui.hud.HudElement
 import me.odinclient.utils.render.gui.nvg.drawNVG
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
+import net.minecraft.network.Packet
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -22,7 +24,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
  * @author Aton
  */
 object ModuleManager {
+    data class PacketFunction<T : Packet<*>>(val type: Class<T>, val function: ExecutableFunction<T>)
 
+    val packetFunctions = mutableListOf<PacketFunction<*>>()
     val huds = arrayListOf<HudElement>()
 
     val modules: ArrayList<Module> = arrayListOf(
@@ -101,6 +105,17 @@ object ModuleManager {
     )
 
     @SubscribeEvent
+    fun onReceivePacket(event: ReceivePacketEvent) {
+        packetFunctions.forEach {
+            @Suppress("UNCHECKED_CAST")
+            val h = it as PacketFunction<Packet<*>>
+            if (!it.type.isInstance(event.packet)) return@forEach
+
+            it.function(event.packet)
+        }
+    }
+
+    @SubscribeEvent
     fun activateModuleKeyBinds(event: PreKeyInputEvent) {
         modules.filter { it.keyCode == event.keycode }.forEach { it.onKeybind() }
     }
@@ -122,3 +137,4 @@ object ModuleManager {
 
     fun getModuleByName(name: String): Module? = modules.firstOrNull { it.name.equals(name, true) }
 }
+typealias ExecutableFunction<T> = (T) -> Unit

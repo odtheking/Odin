@@ -13,6 +13,12 @@ import me.odinclient.utils.clock.Executable
 import me.odinclient.utils.clock.Executor
 import me.odinclient.utils.clock.Executor.Companion.executeAll
 import me.odinclient.utils.skyblock.ChatUtils
+import me.odinclient.utils.skyblock.ChatUtils.modMessage
+import net.minecraft.network.INetHandler
+import net.minecraft.network.Packet
+import net.minecraft.network.play.INetHandlerPlayClient
+import net.minecraft.network.play.client.C12PacketUpdateSign
+import net.minecraft.network.play.server.S23PacketBlockChange
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -129,6 +135,13 @@ abstract class Module(
 
     internal fun isKeybindDown(): Boolean {
         return keyCode != 0 && (Keyboard.isKeyDown(keyCode) || Mouse.isButtonDown(keyCode + 100))
+    }
+
+    /**
+     * Helper function to make cleaner code, and more performance, since we don't need multiple registers for packet received events.
+     */
+    fun <T : Packet<*>> onPacket(type: Class<T>, func: T.() -> Unit) {
+        ModuleManager.packetFunctions.add(ModuleManager.PacketFunction(type, func))
     }
 
     fun execute(delay: Long, func: Executable) {
