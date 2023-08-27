@@ -11,10 +11,8 @@ import net.minecraft.client.renderer.WorldRenderer
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.Entity
-import net.minecraft.util.AxisAlignedBB
-import net.minecraft.util.MathHelper
-import net.minecraft.util.ResourceLocation
-import net.minecraft.util.Vec3
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.util.*
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.opengl.GL11
@@ -555,5 +553,132 @@ object RenderUtils {
         GlStateManager.enableTexture2D()
         if (phase) GlStateManager.enableDepth()
         GlStateManager.popMatrix()
+    }
+    fun drawBlockBox(blockPos: BlockPos, color: java.awt.Color, outline: Boolean, fill: Boolean, partialTicks: Float) {
+        if (!outline && !fill) return
+        val renderManager = mc.renderManager
+        val x = blockPos.x - renderManager.viewerPosX
+        val y = blockPos.y - renderManager.viewerPosY
+        val z = blockPos.z - renderManager.viewerPosZ
+
+        var axisAlignedBB = AxisAlignedBB(x, y, z, x + 1.0, y + 1.0, z + 1.0)
+        val block = mc.theWorld.getBlockState(blockPos).block
+        if (block != null) {
+            val player: EntityPlayer = mc.thePlayer
+            val posX = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks
+            val posY = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks
+            val posZ = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks
+            block.setBlockBoundsBasedOnState(mc.theWorld, blockPos)
+            axisAlignedBB = block.getSelectedBoundingBox(mc.theWorld, blockPos)
+                .expand(0.0020000000949949026, 0.0020000000949949026, 0.0020000000949949026)
+                .offset(-posX, -posY, -posZ)
+        }
+
+        GL11.glPushMatrix()
+        GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS)
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+        GL11.glDisable(GL11.GL_TEXTURE_2D)
+        GL11.glDisable(GL11.GL_DEPTH_TEST)
+        GL11.glDisable(GL11.GL_LIGHTING)
+        GL11.glDepthMask(false)
+
+        if (outline) {
+            GL11.glLineWidth(1.5f)
+            drawOutlinedAABB(axisAlignedBB, color)
+        }
+        if (fill) {
+            drawFilledAABB(axisAlignedBB, color)
+        }
+
+        GL11.glDepthMask(true)
+        GL11.glPopAttrib()
+        GL11.glPopMatrix()
+    }
+    private fun drawFilledAABB(aabb: AxisAlignedBB, color: java.awt.Color) {
+        GL11.glColor4f(color.red / 255f, color.green / 255f, color.blue / 255f, 0.3f)
+
+        worldRenderer.begin(GL_QUADS, DefaultVertexFormats.POSITION)
+
+        worldRenderer.pos(aabb.minX, aabb.minY, aabb.minZ).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.maxY, aabb.minZ).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.minY, aabb.minZ).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.maxY, aabb.minZ).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.minY, aabb.maxZ).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.maxY, aabb.maxZ).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.minY, aabb.maxZ).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.maxY, aabb.maxZ).endVertex()
+
+        worldRenderer.pos(aabb.maxX, aabb.maxY, aabb.minZ).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.minY, aabb.minZ).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.maxY, aabb.minZ).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.minY, aabb.minZ).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.maxY, aabb.maxZ).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.minY, aabb.maxZ).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.maxY, aabb.maxZ).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.minY, aabb.maxZ).endVertex()
+
+        worldRenderer.pos(aabb.minX, aabb.maxY, aabb.minZ).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.maxY, aabb.minZ).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.maxY, aabb.maxZ).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.maxY, aabb.maxZ).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.maxY, aabb.minZ).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.maxY, aabb.maxZ).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.maxY, aabb.maxZ).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.maxY, aabb.minZ).endVertex()
+
+        worldRenderer.pos(aabb.minX, aabb.minY, aabb.minZ).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.minY, aabb.minZ).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.minY, aabb.maxZ).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.minY, aabb.maxZ).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.minY, aabb.minZ).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.minY, aabb.maxZ).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.minY, aabb.maxZ).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.minY, aabb.minZ).endVertex()
+
+        worldRenderer.pos(aabb.minX, aabb.minY, aabb.minZ).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.maxY, aabb.minZ).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.minY, aabb.maxZ).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.maxY, aabb.maxZ).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.minY, aabb.maxZ).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.maxY, aabb.maxZ).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.minY, aabb.minZ).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.maxY, aabb.minZ).endVertex()
+
+        worldRenderer.pos(aabb.minX, aabb.maxY, aabb.maxZ).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.minY, aabb.maxZ).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.maxY, aabb.minZ).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.minY, aabb.minZ).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.maxY, aabb.minZ).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.minY, aabb.minZ).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.maxY, aabb.maxZ).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.minY, aabb.maxZ).endVertex()
+        tessellator.draw()
+    }
+
+    private fun drawOutlinedAABB(aabb: AxisAlignedBB, color: java.awt.Color) {
+        GL11.glColor4f(color.red / 255f, color.green / 255f, color.blue / 255f, 0.3f)
+
+        worldRenderer.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
+
+        worldRenderer.pos(aabb.minX, aabb.minY, aabb.minZ).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.minY, aabb.maxZ).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.minY, aabb.maxZ).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.minY, aabb.minZ).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.minY, aabb.minZ).endVertex()
+
+        worldRenderer.pos(aabb.minX, aabb.maxY, aabb.minZ).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.maxY, aabb.maxZ).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.maxY, aabb.maxZ).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.maxY, aabb.minZ).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.maxY, aabb.minZ).endVertex()
+
+        worldRenderer.pos(aabb.minX, aabb.maxY, aabb.maxZ).endVertex()
+        worldRenderer.pos(aabb.minX, aabb.minY, aabb.maxZ).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.minY, aabb.maxZ).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.maxY, aabb.maxZ).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.maxY, aabb.minZ).endVertex()
+        worldRenderer.pos(aabb.maxX, aabb.minY, aabb.minZ).endVertex()
+
+        tessellator.draw()
     }
 }

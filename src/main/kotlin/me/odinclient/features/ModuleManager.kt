@@ -96,7 +96,8 @@ object ModuleManager {
         Levers,
         NickHider,
         DragonHitboxes,
-        ArrowAlign
+        ArrowAlign,
+        WormFishingLavaESP
     )
 
     @SubscribeEvent
