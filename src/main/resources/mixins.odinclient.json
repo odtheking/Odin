@@ -29,6 +29,7 @@
     "MixinRender",
     "MixinRenderDragon",
     "MixinRendererLivingEntity",
+    "MixinPlayerControllerMP",
     "model.MixinModelBiped",
     "model.MixinModelBlaze"
   ]

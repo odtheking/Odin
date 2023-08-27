@@ -33,6 +33,12 @@ object ItemUtils {
     inline val heldItem: ItemStack?
         get() = mc.thePlayer?.heldItem
 
+    val ItemStack.enchants: Map<String, Int>?
+        get() = this.extraAttributes?.let { extraAttributes ->
+            if (!extraAttributes.hasKey("enchantments", 10)) return null
+            val enchantments = extraAttributes.getCompoundTag("enchantments")
+            enchantments.keySet.associateWith { enchantments.getInteger(it) }
+        }
     /**
      * Returns the lore for an Item
      */
