@@ -56,7 +56,6 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
 
         if (listening) {
             sliderPercentage = ((mouseX - (x + 6f)) / (w - 12f)).coerceIn(0f, 1f)
-            println(sliderPercentage)
             val diff = setting.max - setting.min
             val newVal = setting.min + ((mouseX - (x + 6f)) / (w - 12f)).coerceInNumber(0, 1) * diff
             setting.valueAsDouble = newVal.toDouble()

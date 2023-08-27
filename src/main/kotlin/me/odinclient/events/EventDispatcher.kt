@@ -1,8 +1,6 @@
 package me.odinclient.events
 
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import me.odinclient.OdinClient
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.OdinClient.Companion.scope
 import me.odinclient.events.impl.*
@@ -10,7 +8,6 @@ import me.odinclient.utils.AsyncUtils
 import me.odinclient.utils.ServerUtils
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.clock.Clock
-import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.network.play.server.S02PacketChat
