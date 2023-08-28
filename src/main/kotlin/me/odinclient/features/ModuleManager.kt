@@ -1,9 +1,8 @@
 package me.odinclient.features
 
+import cc.polyfrost.oneconfig.events.event.SendPacketEvent
 import me.odinclient.OdinClient.Companion.mc
-import me.odinclient.events.impl.PreKeyInputEvent
-import me.odinclient.events.impl.PreMouseInputEvent
-import me.odinclient.events.impl.ReceivePacketEvent
+import me.odinclient.events.impl.*
 import me.odinclient.features.impl.dungeon.*
 import me.odinclient.features.impl.floor7.*
 import me.odinclient.features.impl.floor7.p3.ArrowAlign
@@ -26,9 +25,11 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
  * @author Aton
  */
 object ModuleManager {
-    data class PacketFunction<T : Packet<*>>(val type: Class<T>, val function: ExecutableFunction<T>)
+    data class PacketFunction<T : Packet<*>>(val type: Class<T>, val function: (T) -> Unit)
+    data class MessageFunction(val filter: Regex, val function: (String) -> Unit)
 
-    val packetFunctions = mutableListOf<PacketFunction<*>>()
+    val packetFunctions = mutableListOf<PacketFunction<Packet<*>>>()
+    val messageFunctions = mutableListOf<MessageFunction>()
     val huds = arrayListOf<HudElement>()
     val executors = ArrayList<Executor>()
 
@@ -109,13 +110,17 @@ object ModuleManager {
 
     @SubscribeEvent
     fun onReceivePacket(event: ReceivePacketEvent) {
-        packetFunctions.forEach {
-            @Suppress("UNCHECKED_CAST")
-            val h = it as PacketFunction<Packet<*>>
-            if (!it.type.isInstance(event.packet)) return@forEach
+        packetFunctions.filter { it.type.isInstance(event.packet) }.forEach { it.function(event.packet) }
+    }
 
-            it.function(event.packet)
-        }
+    @SubscribeEvent
+    fun onSendPacket(event: PacketSentEvent) {
+        packetFunctions.filter { it.type.isInstance(event.packet) }.forEach { it.function(event.packet) }
+    }
+
+    @SubscribeEvent
+    fun onChatPacket(event: ChatPacketEvent) {
+        messageFunctions.filter { event.message matches it.filter }.forEach { it.function(event.message) }
     }
 
     @SubscribeEvent
@@ -145,4 +150,3 @@ object ModuleManager {
 
     fun getModuleByName(name: String): Module? = modules.firstOrNull { it.name.equals(name, true) }
 }
-typealias ExecutableFunction<T> = (T) -> Unit

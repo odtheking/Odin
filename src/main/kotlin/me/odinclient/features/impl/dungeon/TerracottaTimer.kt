@@ -9,6 +9,7 @@ import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
+import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S23PacketBlockChange
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -23,8 +24,8 @@ object TerracottaTimer : Module(
     private var terrasSpawning = mutableListOf<Terracotta>()
 
     init {
-        onPacket(S23PacketBlockChange::class.java) {
-            // This is an example of how this can be used
+        onPacket(C08PacketPlayerBlockPlacement::class.java) {
+            modMessage("asd")
         }
     }
 

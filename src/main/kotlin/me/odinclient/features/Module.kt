@@ -141,8 +141,15 @@ abstract class Module(
     /**
      * Helper function to make cleaner code, and more performance, since we don't need multiple registers for packet received events.
      */
-    fun <T : Packet<*>> onPacket(type: Class<T>, func: T.() -> Unit) {
-        ModuleManager.packetFunctions.add(ModuleManager.PacketFunction(type, func))
+    fun <T : Packet<*>> onPacket(type: Class<T>, func: (T) -> Unit) {
+        @Suppress("UNCHECKED_CAST")
+        ModuleManager.packetFunctions.add(
+            ModuleManager.PacketFunction(type, func) as ModuleManager.PacketFunction<Packet<*>>
+        )
+    }
+
+    fun onMessage(filter: Regex, func: (String) -> Unit) {
+        ModuleManager.messageFunctions.add(ModuleManager.MessageFunction(filter, func))
     }
 
     fun execute(delay: Long, func: Executable) {
