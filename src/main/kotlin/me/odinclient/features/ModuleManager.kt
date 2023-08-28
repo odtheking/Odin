@@ -13,10 +13,12 @@ import me.odinclient.features.impl.floor7.p3.TerminalSolver
 import me.odinclient.features.impl.render.*
 import me.odinclient.features.impl.skyblock.*
 import me.odinclient.ui.hud.HudElement
+import me.odinclient.utils.clock.Executor
 import me.odinclient.utils.render.gui.nvg.drawNVG
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import net.minecraft.network.Packet
 import net.minecraftforge.client.event.RenderGameOverlayEvent
+import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 /**
@@ -28,6 +30,7 @@ object ModuleManager {
 
     val packetFunctions = mutableListOf<PacketFunction<*>>()
     val huds = arrayListOf<HudElement>()
+    val executors = ArrayList<Executor>()
 
     val modules: ArrayList<Module> = arrayListOf(
         AutoIceFill,
@@ -133,6 +136,11 @@ object ModuleManager {
                 huds[i].draw(this, false)
             }
         }
+    }
+
+    @SubscribeEvent
+    fun onRenderWorld(event: RenderWorldLastEvent) {
+        executors.removeAll { it.run() }
     }
 
     fun getModuleByName(name: String): Module? = modules.firstOrNull { it.name.equals(name, true) }

@@ -3,6 +3,7 @@ package me.odinclient.features
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import me.odinclient.OdinClient
+import me.odinclient.features.ModuleManager.executors
 import me.odinclient.features.impl.render.ClickGUIModule
 import me.odinclient.features.settings.AlwaysActive
 import me.odinclient.features.settings.Hud
@@ -154,13 +155,6 @@ abstract class Module(
 
     fun execute(delay: () -> Long, func: Executable) {
         executors.add(Executor.VaryingExecutor(delay, func))
-    }
-
-    private val executors = ArrayList<Executor>()
-
-    @SubscribeEvent
-    fun onRender(event: RenderWorldLastEvent) {
-        executors.executeAll()
     }
 
     // TODO: Do this and a vararg instead to make it cleaner.
