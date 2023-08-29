@@ -6,6 +6,7 @@ import kotlinx.coroutines.launch
 import me.odinclient.OdinClient.Companion.scope
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.world.RenderUtils
@@ -23,6 +24,7 @@ object KeyESP : Module(
     category = Category.DUNGEON
 ) {
     private var currentKey: Pair<Color, Entity>? = null
+    private val thickness: Float by NumberSetting("Thickness", 5f, 3f, 20f, .1f)
 
     @SubscribeEvent
     fun onEntityJoin(event: EntityJoinWorldEvent) {
@@ -56,7 +58,7 @@ object KeyESP : Module(
             pos.yCoord + 1.15, 1.0,
             pos.zCoord - 0.5, 1.0,
             color,
-            5f,
+            thickness,
             true
         )
     }

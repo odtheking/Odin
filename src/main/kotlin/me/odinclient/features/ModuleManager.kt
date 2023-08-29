@@ -25,7 +25,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
  * @author Aton
  */
 object ModuleManager {
-    data class PacketFunction<T : Packet<*>>(val type: Class<T>, val function: (T) -> Unit)
+    data class PacketFunction<T : Packet<*>>(val type: Class<T>, val function: (T) -> Unit, val shouldRun: () -> Boolean)
     data class MessageFunction(val filter: Regex, val function: (String) -> Unit)
 
     val packetFunctions = mutableListOf<PacketFunction<Packet<*>>>()
@@ -110,7 +110,7 @@ object ModuleManager {
 
     @SubscribeEvent
     fun onReceivePacket(event: ReceivePacketEvent) {
-        packetFunctions.filter { it.type.isInstance(event.packet) }.forEach { it.function(event.packet) }
+        packetFunctions.filter { it.type.isInstance(event.packet) && it.shouldRun.invoke() }.forEach { it.function(event.packet) }
     }
 
     @SubscribeEvent

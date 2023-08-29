@@ -23,12 +23,6 @@ object TerracottaTimer : Module(
     private data class Terracotta(val pos: Vec3, var time: Int)
     private var terrasSpawning = mutableListOf<Terracotta>()
 
-    init {
-        onPacket(C08PacketPlayerBlockPlacement::class.java) {
-            modMessage("asd")
-        }
-    }
-
     @SubscribeEvent
     fun onBlockPacket(event: BlockChangeEvent) {
         if (!DungeonUtils.isFloor(6) || !DungeonUtils.inBoss) return
