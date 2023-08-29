@@ -21,7 +21,8 @@ object Camera : Module(
     "Camera",
     category = Category.RENDER,
 ) {
-    private val frontCamera: Boolean by BooleanSetting("No Front Camera", false)
+    private val frontCamera: Boolean by BooleanSetting("No Front Camera")
+    private val cameraClip: Boolean by BooleanSetting("Camera Clip")
     private val cameraDist: Float by NumberSetting("Distance", 4f, 3.0, 12.0, 0.5)
 
     private val color: Color by ColorSetting("HUD Color", Color(255, 0, 0))
@@ -34,6 +35,10 @@ object Camera : Module(
 
     fun getCameraDistance(): Float {
         return if (enabled) cameraDist else 4f
+    }
+
+    fun getCameraClipEnabled(): Boolean {
+        return if (enabled) cameraClip else false
     }
 
     @SubscribeEvent
