@@ -13,6 +13,7 @@ import me.odinclient.dungeonmap.features.MapRender
 import me.odinclient.dungeonmap.features.Window
 import me.odinclient.events.EventDispatcher
 import me.odinclient.features.ModuleManager
+import me.odinclient.features.impl.render.WaypointManager
 import me.odinclient.ui.clickgui.ClickGUI
 import me.odinclient.utils.ServerUtils
 import me.odinclient.utils.clock.Executor
@@ -64,6 +65,7 @@ class OdinClient {
 
             Executor,
             ModuleManager,
+            WaypointManager,
             this
         ).forEach {
             MinecraftForge.EVENT_BUS.register(it)

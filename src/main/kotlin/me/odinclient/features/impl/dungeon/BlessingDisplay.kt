@@ -73,13 +73,12 @@ object BlessingDisplay : Module(
         return result + (romanMap[s.last()] ?: 0)
     }
 
-    @SubscribeEvent
-    fun onPacket(event: ReceivePacketEvent) {
-        if (event.packet !is S47PacketPlayerListHeaderFooter || !DungeonUtils.inDungeons) return
-        val footer = event.packet.footer.unformattedText.noControlCodes
-        Blessings.entries.forEach { blessing ->
-            blessing.regex.find(footer)?.let { match ->
-                blessing.current = romanToInt(match.groupValues[1])
+    init {
+        onPacket(S47PacketPlayerListHeaderFooter::class.java) {
+            Blessings.entries.forEach { blessing ->
+                blessing.regex.find(it.footer.unformattedText.noControlCodes)?.let { match ->
+                    blessing.current = romanToInt(match.groupValues[1])
+                }
             }
         }
     }
