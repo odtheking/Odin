@@ -104,7 +104,8 @@ object ModuleManager {
         DragonHitboxes,
         ArrowAlign,
         TerracottaTimer,
-        MimicMessage
+        MimicMessage,
+        AutoRenewCrystalHollows
     )
 
     @SubscribeEvent
