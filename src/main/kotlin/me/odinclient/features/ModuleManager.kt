@@ -96,6 +96,7 @@ object ModuleManager {
         NickHider,
         DragonHitboxes,
         ArrowAlign,
+        TerracottaTimer,
         MimicMessage
     )
 
