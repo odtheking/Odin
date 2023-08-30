@@ -61,11 +61,6 @@ object PlayerUtils {
         mc.thePlayer.inventory.mainInventory[mc.thePlayer.inventory.currentItem] = currentHeldItemStack
     }
 
-    fun interactWithEntity(entity: EntityLivingBase) {
-        val packet = C02PacketUseEntity(entity, C02PacketUseEntity.Action.INTERACT)
-        mc.thePlayer.sendQueue.addToSendQueue(packet)
-    }
-
     fun clipTo(pos: Vec3) {
         mc.thePlayer.setPosition(pos.xCoord + 0.5, pos.yCoord, pos.zCoord + 0.5)
     }
