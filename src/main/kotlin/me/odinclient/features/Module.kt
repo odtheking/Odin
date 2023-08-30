@@ -3,6 +3,7 @@ package me.odinclient.features
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import me.odinclient.OdinClient
+import me.odinclient.features.ModuleManager.executors
 import me.odinclient.features.impl.render.ClickGUIModule
 import me.odinclient.features.settings.AlwaysActive
 import me.odinclient.features.settings.Hud
@@ -13,6 +14,12 @@ import me.odinclient.utils.clock.Executable
 import me.odinclient.utils.clock.Executor
 import me.odinclient.utils.clock.Executor.Companion.executeAll
 import me.odinclient.utils.skyblock.ChatUtils
+import me.odinclient.utils.skyblock.ChatUtils.modMessage
+import net.minecraft.network.INetHandler
+import net.minecraft.network.Packet
+import net.minecraft.network.play.INetHandlerPlayClient
+import net.minecraft.network.play.client.C12PacketUpdateSign
+import net.minecraft.network.play.server.S23PacketBlockChange
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -131,6 +138,24 @@ abstract class Module(
         return keyCode != 0 && (Keyboard.isKeyDown(keyCode) || Mouse.isButtonDown(keyCode + 100))
     }
 
+    /**
+     * Helper function to make cleaner code, and more performance, since we don't need multiple registers for packet received events.
+     *
+     * @param type The packet type to listen for.
+     * @param shouldRun Get whether the function should run (Will in most cases be used with the "enabled" value)
+     * @param func The function to run when the packet is received.
+     */
+    fun <T : Packet<*>> onPacket(type: Class<T>, shouldRun: () -> Boolean = {true}, func: (T) -> Unit) {
+        @Suppress("UNCHECKED_CAST")
+        ModuleManager.packetFunctions.add(
+            ModuleManager.PacketFunction(type, func, shouldRun) as ModuleManager.PacketFunction<Packet<*>>
+        )
+    }
+
+    fun onMessage(filter: Regex, shouldRun: () -> Boolean = {true}, func: (String) -> Unit) {
+        ModuleManager.messageFunctions.add(ModuleManager.MessageFunction(filter, func))
+    }
+
     fun execute(delay: Long, func: Executable) {
         executors.add(Executor(delay, func))
     }
@@ -141,13 +166,6 @@ abstract class Module(
 
     fun execute(delay: () -> Long, func: Executable) {
         executors.add(Executor.VaryingExecutor(delay, func))
-    }
-
-    private val executors = ArrayList<Executor>()
-
-    @SubscribeEvent
-    fun onRender(event: RenderWorldLastEvent) {
-        executors.executeAll()
     }
 
     // TODO: Do this and a vararg instead to make it cleaner.

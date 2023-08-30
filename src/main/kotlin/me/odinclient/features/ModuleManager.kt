@@ -1,8 +1,8 @@
 package me.odinclient.features
 
+import cc.polyfrost.oneconfig.events.event.SendPacketEvent
 import me.odinclient.OdinClient.Companion.mc
-import me.odinclient.events.impl.PreKeyInputEvent
-import me.odinclient.events.impl.PreMouseInputEvent
+import me.odinclient.events.impl.*
 import me.odinclient.features.impl.dungeon.*
 import me.odinclient.features.impl.floor7.*
 import me.odinclient.features.impl.floor7.p3.ArrowAlign
@@ -12,8 +12,12 @@ import me.odinclient.features.impl.floor7.p3.TerminalSolver
 import me.odinclient.features.impl.render.*
 import me.odinclient.features.impl.skyblock.*
 import me.odinclient.ui.hud.HudElement
+import me.odinclient.utils.clock.Executor
 import me.odinclient.utils.render.gui.nvg.drawNVG
+import me.odinclient.utils.skyblock.ChatUtils.modMessage
+import net.minecraft.network.Packet
 import net.minecraftforge.client.event.RenderGameOverlayEvent
+import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 /**
@@ -21,14 +25,18 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
  * @author Aton
  */
 object ModuleManager {
+    data class PacketFunction<T : Packet<*>>(val type: Class<T>, val function: (T) -> Unit, val shouldRun: () -> Boolean)
+    data class MessageFunction(val filter: Regex, val function: (String) -> Unit)
 
+    val packetFunctions = mutableListOf<PacketFunction<Packet<*>>>()
+    val messageFunctions = mutableListOf<MessageFunction>()
     val huds = arrayListOf<HudElement>()
+    val executors = ArrayList<Executor>()
 
     val modules: ArrayList<Module> = arrayListOf(
         AutoIceFill,
         AutoLeap,
         AutoMask,
-        AutoReady,
         AutoSell,
         AutoShield,
         AutoUlt,
@@ -64,7 +72,6 @@ object ModuleManager {
         NecronDropTimer,
         DecoyDeadMessage,
         AutoSprint,
-        BrokenHype,
         CookieClicker,
         GhostPick,
         GyroRange,
@@ -101,6 +108,21 @@ object ModuleManager {
     )
 
     @SubscribeEvent
+    fun onReceivePacket(event: ReceivePacketEvent) {
+        packetFunctions.filter { it.type.isInstance(event.packet) && it.shouldRun.invoke() }.forEach { it.function(event.packet) }
+    }
+
+    @SubscribeEvent
+    fun onSendPacket(event: PacketSentEvent) {
+        packetFunctions.filter { it.type.isInstance(event.packet) }.forEach { it.function(event.packet) }
+    }
+
+    @SubscribeEvent
+    fun onChatPacket(event: ChatPacketEvent) {
+        messageFunctions.filter { event.message matches it.filter }.forEach { it.function(event.message) }
+    }
+
+    @SubscribeEvent
     fun activateModuleKeyBinds(event: PreKeyInputEvent) {
         modules.filter { it.keyCode == event.keycode }.forEach { it.onKeybind() }
     }
@@ -118,6 +140,11 @@ object ModuleManager {
                 huds[i].draw(this, false)
             }
         }
+    }
+
+    @SubscribeEvent
+    fun onRenderWorld(event: RenderWorldLastEvent) {
+        executors.removeAll { it.run() }
     }
 
     fun getModuleByName(name: String): Module? = modules.firstOrNull { it.name.equals(name, true) }

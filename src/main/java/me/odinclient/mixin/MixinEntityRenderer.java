@@ -5,6 +5,8 @@ import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Constant;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 /*
@@ -23,4 +25,11 @@ abstract public class MixinEntityRenderer implements IResourceManagerReloadListe
     public float tweakThirdPersonDistanceTemp(EntityRenderer instance) {
         return Camera.INSTANCE.getCameraDistance();
     }
+
+    @ModifyConstant(method = "orientCamera", constant = @Constant(intValue = 8))
+    public int cameraClip(int constant)
+    {
+        return Camera.INSTANCE.getCameraClipEnabled() ? 0: constant;
+    }
+
 }

@@ -11,6 +11,7 @@ import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.ItemUtils.getItemIndexInContainerChest
 import me.odinclient.utils.skyblock.ItemUtils.getItemSlot
 import net.minecraft.client.gui.inventory.GuiChest
+import net.minecraft.client.settings.KeyBinding
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.network.play.client.C02PacketUseEntity
@@ -22,12 +23,18 @@ import net.minecraftforge.client.event.GuiOpenEvent
 
 object PlayerUtils {
 
+    /**
+     * Right-clicks the next tick
+     */
     fun rightClick() {
-        (mc as MinecraftAccessor).invokeRightClickMouse()
+        KeyBinding.onTick(-99) // Simple way of making completely sure the right-clicks are sent at the same time as vanilla ones.
     }
 
+    /**
+     * Left-clicks the next tick
+     */
     fun leftClick() {
-        (mc as MinecraftAccessor).invokeClickMouse()
+        KeyBinding.onTick(-100) // Simple way of making completely sure the left-clicks are sent at the same time as vanilla ones.
     }
 
     fun dropItem() {
@@ -52,11 +59,6 @@ object PlayerUtils {
         mc.playerController?.clickBlock(blockPos, mc.objectMouseOver.sideHit)
         windowClick(itemIndex, 2)
         mc.thePlayer.inventory.mainInventory[mc.thePlayer.inventory.currentItem] = currentHeldItemStack
-    }
-
-    fun interactWithEntity(entity: EntityLivingBase) {
-        val packet = C02PacketUseEntity(entity, C02PacketUseEntity.Action.INTERACT)
-        mc.thePlayer.sendQueue.addToSendQueue(packet)
     }
 
     fun clipTo(pos: Vec3) {

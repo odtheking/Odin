@@ -4,6 +4,7 @@ import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.impl.ChatPacketEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.features.impl.skyblock.Reminders.readyReminder
 import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.utils.Utils.containsOneOf
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
@@ -25,11 +26,11 @@ object Reminders : Module(
     private var playerReady = false
 
     private val alertMap = mapOf(
-        "[BOSS] Wither King: You.. again?" to "&3Swap to edrag!",
-        "[BOSS] Maxor: YOU TRICKED ME!" to "&3Use ult!",
-        "[BOSS] Maxor: THAT BEAM! IT HURTS! IT HURTS!!" to "&3Use ult!",
-        "[BOSS] Goldor: You have done it, you destroyed the factory…" to "&3Use ult!",
-        "[BOSS] Sadan: My giants! Unleashed!" to "&3Use ult!"
+        "[BOSS] Wither King: You.. again?" to "§3Swap to edrag!",
+        "[BOSS] Maxor: YOU TRICKED ME!" to "§3Use ult!",
+        "[BOSS] Maxor: THAT BEAM! IT HURTS! IT HURTS!!" to "§3Use ult!",
+        "[BOSS] Goldor: You have done it, you destroyed the factory…" to "§3Use ult!",
+        "[BOSS] Sadan: My giants! Unleashed!" to "§3Use ult!"
         // Add more pairs here as needed
     )
 
@@ -44,16 +45,14 @@ object Reminders : Module(
             return
         }
 
-        if (msg in alertMap) {
-            val alert = alertMap[msg] ?: return
+        val alert = alertMap[msg] ?: return
 
-            if (msg.startsWith("[BOSS] Maxor:")) if (!firstLaser) firstLaser = true else return
-            if (msg.startsWith("[BOSS] Wither King:") && !dragReminder) return
-            if (!ultReminder && msg.containsOneOf("Maxor", "Goldor", "Sadan")) return
+        if (msg.startsWith("[BOSS] Maxor:")) if (!firstLaser) firstLaser = true else return
+        if (msg.startsWith("[BOSS] Wither King:") && !dragReminder) return
+        if (!ultReminder && msg.containsOneOf("Maxor", "Goldor", "Sadan")) return
 
-            PlayerUtils.alert(alert)
-            modMessage(alert)
-        }
+        PlayerUtils.alert(alert)
+        modMessage(alert)
     }
 
     @SubscribeEvent
@@ -67,7 +66,7 @@ object Reminders : Module(
             if (!readyReminder || !DungeonUtils.inDungeons) return@execute
             if (playerReady) return@execute
 
-            PlayerUtils.alert("&3Ready up!")
+            PlayerUtils.alert("§3Ready up!")
             modMessage("Ready up!")
         }
     }

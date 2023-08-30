@@ -65,12 +65,9 @@ object WaypointManager {
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         if (!Waypoints.enabled || currentArea == null) return
-
         temporaryWaypoints.removeAll {
-            if (!it.second.hasTimePassed()) {
-                it.first.renderBeacon(event.partialTicks)
-                false
-            } else true
+            it.first.renderBeacon(event.partialTicks)
+            it.second.hasTimePassed()
         }
 
         waypoints[currentArea]?.forEach {
