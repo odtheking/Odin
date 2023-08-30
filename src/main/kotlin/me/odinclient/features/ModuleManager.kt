@@ -103,7 +103,8 @@ object ModuleManager {
         NickHider,
         DragonHitboxes,
         ArrowAlign,
-        TerracottaTimer
+        TerracottaTimer,
+        MimicMessage
     )
 
     @SubscribeEvent
