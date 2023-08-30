@@ -314,7 +314,7 @@ object RenderUtils {
             renderBlackBox = true,
             increase = false,
             depthTest = false,
-            max(0.5, dist / 8.0).toFloat()
+            max(0.03, dist / 180.0).toFloat()
         )
         val a = min(1f, max(0f, dist.toFloat()) / 60f)
         renderBeaconBeam(x - .5, .0, z - .5, color, a, true, partialTicks)
