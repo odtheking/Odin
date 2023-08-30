@@ -295,8 +295,7 @@ object RenderUtils {
         GlStateManager.popMatrix()
     }
 
-   /// fun renderCustomBeacon(title: String, x: Double, y: Double, z: Double, color: Color, partialTicks: Float) =
-   //     renderCustomBeacon(title, x, y, z, color.r, color.g, color.b, partialTicks)
+
     
 
     fun renderCustomBeacon(title: String, x: Double, y: Double, z: Double, color: Color, partialTicks: Float) {

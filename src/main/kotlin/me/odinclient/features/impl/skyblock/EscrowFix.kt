@@ -11,11 +11,10 @@ object EscrowFix : Module(
     description = "Automatically reopens the ah/bz when it gets closed by escrow",
     category = Category.SKYBLOCK
 ) {
+    //need to get bazzar actual message still
     private val messages = hashMapOf(
         "Visit the Bazaar to collect your item!" to "bz",
-        "Your auction has been sold!" to "ah",
-        "You have won an auction!" to "ah",
-        "Visit the Auction House to collect your item!" to "ah"
+        "(AUCTION_EXPIRED_OR_NOT_FOUND)" to "ah",
     )
 
     @SubscribeEvent

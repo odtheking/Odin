@@ -7,6 +7,7 @@ import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.clock.Executor
 import me.odinclient.utils.clock.Executor.Companion.register
 import me.odinclient.utils.render.Color
+import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.ItemUtils
 import me.odinclient.utils.skyblock.LocationUtils
 import me.odinclient.utils.skyblock.LocationUtils.currentDungeon
@@ -55,7 +56,6 @@ object DungeonUtils {
         Healer("§a", Color(85, 255, 85)),
         Tank("§2", Color(0, 170, 0))
     }
-    val tablistRegex = Regex("^\\[(\\d+)] (?:\\[\\w+] )*(\\w+) (?:.)*?\\((\\w+)(?: (\\w+))*\\)\$")
     val isGhost: Boolean get() = ItemUtils.getItemSlot("Haunt", true) != null
     var teammates: List<Pair<EntityPlayer, Classes>> = emptyList()
 
@@ -76,20 +76,23 @@ object DungeonUtils {
     fun onWorldLoad(event: WorldEvent.Load) {
         inp5 = false
     }
+    val tablistRegex = Regex("^\\[(\\d+)] (?:\\[\\w+] )*(\\w+) (?:.)*?\\((\\w+)(?: (\\w+))*\\)\$")
 
     private fun getDungeonTeammates(): List<Pair<EntityPlayer, Classes>> {
         val teammates = mutableListOf<Pair<EntityPlayer, Classes>>()
         Dungeon.getDungeonTabList()?.forEach { (_, line) ->
-            val match = tablistRegex.matchEntire(line) ?: return@forEach
-            val (_, sbLevel, name, clazz, level) = match.groupValues
 
+            val match = tablistRegex.matchEntire(line.noControlCodes) ?: return@forEach
+            val (_, sbLevel, name, clazz, level) = match.groupValues
+            if (name == mc.thePlayer.name) return@forEach
             mc.theWorld.playerEntities.find { player ->
                 player.name == name
             }?.let { player ->
-                teammates.add(Pair(player, Classes.values().find { classes -> classes.name == clazz }!!))
+                teammates.add(Pair(player, Classes.entries.find { classes -> classes.name == clazz }!!))
             }
 
         }
+        //ChatUtils.modMessage(teammates)
         return teammates
     }
 }

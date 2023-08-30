@@ -1,5 +1,7 @@
 package me.odinclient.features.impl.skyblock
 
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.odinclient.OdinClient.Companion.mc
@@ -35,6 +37,7 @@ object GuildCommands : Module(
     private var gm: Boolean by BooleanSetting(name = "gm", default = true)
     private var gn: Boolean by BooleanSetting(name = "gn", default = true)
 
+    @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
     fun guild(event: ClientChatReceivedEvent) {
         val message = event.message.unformattedText.noControlCodes
@@ -42,7 +45,7 @@ object GuildCommands : Module(
 
         val ign = match.groups[2]?.value?.split(" ")?.get(0) // Get rid of guild rank by splitting the string and getting the first word
         val msg = match.groups[4]?.value?.lowercase()
-        scope.launch {
+        GlobalScope.launch {
             delay(150)
             guildCmdsOptions(msg!!, ign!!)
             if (guildGM && mc.thePlayer.name !== ign) ChatUtils.autoGM(msg, ign)

@@ -1,17 +1,26 @@
 package me.odinclient.features.impl.floor7
 
+import me.odinclient.features.Category
+import me.odinclient.features.Module
 import me.odinclient.utils.WebUtils
+import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.boss.EntityDragon
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.ClientChatReceivedEvent
+import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.event.entity.living.LivingDeathEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import tv.twitch.chat.Chat
 
-// This is currently broken and i cba to fix it
-object DragonDeathCheck {
+object DragonDeathCheck : Module(
+    "DRAGONDEATHNOTIF",
+    category = Category.FLOOR7
+
+) {
+
     private enum class DragonColors(
         val pos: Vec3
     ) {
@@ -32,6 +41,9 @@ object DragonDeathCheck {
         dragonMap = HashMap()
         last = null
     }
+    private fun Vec3.dragonCheck(vec3: Vec3): Boolean {
+        return this.xCoord == vec3.xCoord && this.yCoord == vec3.yCoord && this.zCoord == vec3.zCoord
+    }
 
     @SubscribeEvent
     fun onEntityJoin(event: EntityJoinWorldEvent) {
@@ -39,14 +51,17 @@ object DragonDeathCheck {
         val entity = event.entity
         if (entity !is EntityDragon) return
 
-        val color = DragonColors.values().find { it.pos == Vec3(entity.posX, entity.posY, entity.posZ) } ?: return
-        dragonMap.plus(Pair(entity.entityId, color))
-    }
+        val entityPos = Vec3(entity.posX, entity.posY, entity.posZ)
+        val color = DragonColors.entries.find { color -> entityPos.dragonCheck(color.pos) } ?: return
+        ChatUtils.modMessage(color)
 
+        dragonMap = dragonMap.plus(Pair(entity.entityId, color))
+    }
     @SubscribeEvent
     fun onEntityLeave(event: LivingDeathEvent) {
         if (event.entity !is EntityDragon || !DungeonUtils.inDungeons) return
         val color = dragonMap[event.entity.entityId] ?: return
+        ChatUtils.modMessage("${event.entity.posX} ${event.entity.posY} ${event.entity.posZ} $color")
         last = Pair(Vec3(event.entity.posX, event.entity.posY, event.entity.posZ), color)
         dragonMap = dragonMap.minus(event.entity.entityId)
     }
@@ -64,13 +79,12 @@ object DragonDeathCheck {
         ) return
 
         val (vec, color) = last!!
-        //ChatUtils.modMessage("$color dragon counted!")
+        ChatUtils.modMessage("$color dragon counts!")
         if (color == DragonColors.Purple) return
-
         WebUtils.sendDiscordWebhook(
             webhook!!,
             "Dragon Counted",
-            "Color: $color x: ${vec.xCoord} y: ${vec.yCoord} z: ${vec.zCoord}",
+            "Color: $color x: ${"%.2f".format(vec.xCoord)} y: ${"%.2f".format(vec.yCoord)} z: ${"%.2f".format(vec.zCoord)}",
             4081151
         )
     }

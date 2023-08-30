@@ -1,5 +1,7 @@
 package me.odinclient.features.impl.skyblock
 
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.odinclient.OdinClient
@@ -38,6 +40,7 @@ object PrivateCommands : Module(
     private var gn: Boolean by BooleanSetting(name = "gn", default = true)
     private val invite: Boolean by BooleanSetting(name = "invite", default = true)
 
+    @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
     fun private(event: ClientChatReceivedEvent) {
         val message = event.message.unformattedText.noControlCodes
@@ -45,7 +48,7 @@ object PrivateCommands : Module(
 
         val ign = match.groups[2]?.value
         val msg = match.groups[3]?.value?.lowercase()
-        scope.launch {
+        GlobalScope.launch {
             delay(150)
             privateCmdsOptions(msg!!, ign!!)
         }

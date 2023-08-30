@@ -10,7 +10,9 @@ import me.odinclient.utils.VecUtils.addVec
 import me.odinclient.utils.render.world.OutlineUtils
 import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.render.world.RenderUtils.renderVec
+import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
+import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.max
@@ -22,10 +24,11 @@ object TeammatesOutline : Module(
     private val thickness: Float by NumberSetting("Line Width", 2f, 1.0, 5.0, 0.5)
     private val whenVisible: Boolean by BooleanSetting("When Visible")
     private val inBoss: Boolean by BooleanSetting("In boss")
+    private val outline: Boolean by BooleanSetting("Outline", true)
 
     @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
-        if (!DungeonUtils.inDungeons || event.entity == mc.thePlayer) return
+        if (!DungeonUtils.inDungeons || event.entity == mc.thePlayer || !outline) return
         if (!DungeonUtils.teammates.any { it.first == event.entity } || (inBoss && DungeonUtils.inBoss)) return
         if (whenVisible && mc.thePlayer.canEntityBeSeen(event.entity)) return
         val color = DungeonUtils.teammates.first { it.first == event.entity }.second.color

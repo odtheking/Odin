@@ -23,7 +23,6 @@ object AutoUlt : Module(
         firstLaser = false
     }
 
-
     @SubscribeEvent
     fun onChat(event: ClientChatReceivedEvent) {
         when (event.unformattedText) {

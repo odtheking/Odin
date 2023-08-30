@@ -10,8 +10,8 @@ object DevPlayers {
 
     private val devs = hashMapOf(
         "_Inton_" to PlayerSize(2f, .5f, 2f),
-        "OdinClient" to PlayerSize(1f, 1f, 1f),
-        "Odtheking" to PlayerSize(1f, 1f, 1f)
+        "OdinClient" to PlayerSize(2f, 1f, 1f),
+        "Odtheking" to PlayerSize(2f, 1f, 1f)
 
     )
 

@@ -44,7 +44,7 @@ object DungeonScan {
             if (MapModule.scanChatInfo) {
                 modMessage("""
                     ${ChatUtils.getChatBreak()}
-                    §3Odin§bClient §8» §6Scan Finished! It took §a${if (MapModule.nanoScanTime) "${System.nanoTime() - startTime}ns" else "${System.currentTimeMillis() - startTime}ms"}
+                    §6Scan Finished! It took §a${if (MapModule.nanoScanTime) "${System.nanoTime() - startTime}ns" else "${System.currentTimeMillis() - startTime}ms"}
                     §9Puzzles (§c${Dungeon.puzzles.size}§9): §d${Dungeon.puzzles.joinToString("§7, §d")}
                     §6Trap: §d${Dungeon.trapType}
                     §8Wither Doors: §7${Dungeon.doors.size - 1}

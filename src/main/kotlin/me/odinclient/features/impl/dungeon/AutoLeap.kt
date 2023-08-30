@@ -1,6 +1,7 @@
 package me.odinclient.features.impl.dungeon
 
 import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.events.impl.ChatPacketEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.impl.skyblock.BlackList
@@ -29,9 +30,9 @@ object AutoLeap : Module(
     }
 
     @SubscribeEvent
-    fun onClientChatReceived(event: ClientChatReceivedEvent) {
+    fun onChat(event: ChatPacketEvent) {
         if (!DungeonUtils.inDungeons) return
-        val message = event.message.unformattedText.noControlCodes
+        val message = event.message.noControlCodes
         val playerName = Regex("^Party > ?(?:\\[.+])? (.{0,16}): !tp ?(?:.+)?").find(message)?.groups?.get(1)?.value?.lowercase() ?: return
         if (playerName == mc.thePlayer.name || BlackList.isInBlacklist(playerName)) return
         PlayerUtils.useItem("leap")

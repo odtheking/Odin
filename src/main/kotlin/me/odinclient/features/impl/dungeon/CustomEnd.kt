@@ -12,7 +12,7 @@ object CustomEnd : Module(
     description = "Automatically clicks the Extra Stats at the end of a dungeon.",
     category = Category.DUNGEON
 ) {
-    // TODO: Test
+
     @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
         if (!inDungeons) return
