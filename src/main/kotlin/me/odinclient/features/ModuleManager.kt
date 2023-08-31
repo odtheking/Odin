@@ -105,7 +105,9 @@ object ModuleManager {
         ArrowAlign,
         TerracottaTimer,
         MimicMessage,
-        AutoRenewCrystalHollows
+        AutoRenewCrystalHollows,
+        AutoDungeonReque,
+        DragonDeathCheck
     )
 
     @SubscribeEvent

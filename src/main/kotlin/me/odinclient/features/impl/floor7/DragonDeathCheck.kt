@@ -2,24 +2,28 @@ package me.odinclient.features.impl.floor7
 
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.features.settings.AlwaysActive
+import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.utils.WebUtils
 import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.boss.EntityDragon
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.ClientChatReceivedEvent
-import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.event.entity.living.LivingDeathEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import tv.twitch.chat.Chat
 
+@AlwaysActive
 object DragonDeathCheck : Module(
-    "DRAGONDEATHNOTIF",
+    "Dragon death confrimation",
     category = Category.FLOOR7
 
 ) {
+
+    private val sendNotif: Boolean by BooleanSetting("Send dragon confirmation", true)
+
 
     private enum class DragonColors(
         val pos: Vec3
@@ -79,7 +83,7 @@ object DragonDeathCheck : Module(
         ) return
 
         val (vec, color) = last!!
-        ChatUtils.modMessage("$color dragon counts!")
+        if(sendNotif) ChatUtils.modMessage("$color dragon counts!")
         if (color == DragonColors.Purple) return
         WebUtils.sendDiscordWebhook(
             webhook!!,

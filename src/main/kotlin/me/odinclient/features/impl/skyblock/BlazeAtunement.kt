@@ -25,7 +25,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 object BlazeAtunement : Module(
     "Blaze Atunement",
     category = Category.SKYBLOCK,
-    description = "Displays what atunement a blaze boss needs.",
+    description = "Displays what atunement a blaze boss needs."
 ) {
     private val overlay: Boolean by BooleanSetting("Overlay Entities", false)
     private val thickness: Float by NumberSetting("Outline Thickness", 5f, 5f, 20f, 0.5f)

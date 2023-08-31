@@ -29,9 +29,9 @@ object TeammatesOutline : Module(
     @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
         if (!DungeonUtils.inDungeons || event.entity == mc.thePlayer || !outline) return
-        if (!DungeonUtils.teammates.any { it.first == event.entity } || (inBoss && DungeonUtils.inBoss)) return
-        if (whenVisible && mc.thePlayer.canEntityBeSeen(event.entity)) return
-        val color = DungeonUtils.teammates.first { it.first == event.entity }.second.color
+        if (!DungeonUtils.teammates.any { it.first == event.entity } || (!inBoss && DungeonUtils.inBoss)) return
+        if (!whenVisible && mc.thePlayer.canEntityBeSeen(event.entity)) return
+        val color = DungeonUtils.teammates.find { it.first == event.entity }?.second?.color ?: return
 
         OutlineUtils.outlineEntity(
             event,
@@ -52,7 +52,7 @@ object TeammatesOutline : Module(
                 depthTest = false,
                 increase = false,
                 renderBlackBox = false,
-                scale = max(1.5f, (mc.thePlayer.getDistanceToEntity(it.first) / 15))
+                scale = max(0.03f, mc.thePlayer.getDistanceToEntity(it.first) / 250)
             )
         }
     }

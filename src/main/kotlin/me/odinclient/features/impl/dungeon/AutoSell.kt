@@ -18,7 +18,7 @@ object AutoSell : Module(
     description = "Automatically sell items in trades and cookie menus",
     category = Category.DUNGEON
 ) {
-    private val delay: Long by NumberSetting("Delay", 100, 50.0, 300.0, 5.0)
+    private val delay: Long by NumberSetting("Delay", 100, 10.0, 300.0, 5.0)
     private val addDefaults: () -> Unit by ActionSetting("Add defaults") {
         defaultItems.forEach {
             if (!miscConfig.autoSell.contains(it)) {
@@ -46,7 +46,7 @@ object AutoSell : Module(
         return slot.stack?.displayName?.containsOneOf(miscConfig.autoSell, true) == true
     }
 
-    val defaultItems = arrayOf(
+    private val defaultItems = arrayOf(
         "Enchanted Ice", "Health Potion", "Superboom TNT", "Rotten", "Skeleton Master", "Skeleton Grunt",
         "Skeleton Lord", "Skeleton Soldier", "Zombie Soldier", "Zombie Knight", "Zombie Commander", "Zombie Lord",
         "Skeletor", "Super Heavy", "Heavy", "Sniper Helmet", "Dreadlord", "Earth Shard", "Zombie Commander Whip",

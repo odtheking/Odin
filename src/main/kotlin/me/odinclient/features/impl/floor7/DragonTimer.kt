@@ -148,19 +148,6 @@ object DragonTimer : Module(
         toRender = ArrayList()
     }
 
-    object DragonTimerHud : TextHud() {
-        override fun getLines(example: Boolean): MutableList<String> {
-            return if (example) {
-                mutableListOf(
-                    "§6Purple spawning in §a4500ms",
-                    "§cRed spawning in §e1200ms"
-                )
-            } else if (toRender.size != 0) {
-                toRender.map { it.first }.toMutableList()
-            } else mutableListOf()
-        }
-    }
-
     enum class DC(
         private val pos: BlockPos,
         val color: String,
