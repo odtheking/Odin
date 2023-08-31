@@ -152,7 +152,7 @@ abstract class Module(
         )
     }
 
-    fun onMessage(filter: Regex, shouldRun: () -> Boolean = {true}, func: (String) -> Unit) {
+    fun onMessage(filter: Regex, shouldRun: () -> Boolean = { enabled }, func: (String) -> Unit) {
         ModuleManager.messageFunctions.add(ModuleManager.MessageFunction(filter, func))
     }
 

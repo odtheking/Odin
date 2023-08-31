@@ -1,5 +1,6 @@
 package me.odinclient.utils.clock
 
+import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -63,7 +64,9 @@ open class Executor(open val delay: Long, inline val func: Executable) {
         private val executors = ArrayList<Executor>()
 
         fun ArrayList<Executor>.executeAll() {
-            this.removeAll { it.run() }
+            this.removeAll {
+                it.run()
+            }
         }
 
         fun Executor.register() {

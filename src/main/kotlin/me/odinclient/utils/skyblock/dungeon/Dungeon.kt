@@ -1,5 +1,6 @@
 package me.odinclient.utils.skyblock.dungeon
 
+import me.odinclient.features.impl.render.ClickGUIModule
 import me.odinclient.utils.clock.Executor
 import me.odinclient.utils.clock.Executor.Companion.register
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
@@ -13,24 +14,24 @@ class Dungeon {
 
     lateinit var floor: Floor
     var inBoss = false
-    private lateinit var bossGetter: () -> Boolean
+    private fun getBoss(floor: Int): Boolean {
+         return when (floor) {
+            1 -> posX > -71 && posZ > -39
+            2, 3, 4 ->  posX > -39 && posZ > -39
+            5, 6 ->  posX > -39 && posZ > -7
+            7 ->  posX > -7 && posZ > -7
+            else -> false
+        }
+    }
 
     init {
         getCurrentFloor()
 
-        Executor(500) {
-            if (bossGetter()) {
+        ClickGUIModule.execute(500) {
+            if (getBoss(floor.floorNumber)) {
                 inBoss = true
                 destroyExecutor()
             }
-        }.register()
-
-        bossGetter = when (floor.floorNumber) {
-            1 -> {{ posX > -71 && posZ > -39 }}
-            2, 3, 4 -> {{ posX > -39 && posZ > -39 }}
-            5, 6 -> {{ posX > -39 && posZ > -7 }}
-            7 -> {{ posX > -7 && posZ > -7 }}
-            else -> {{ false }}
         }
     }
 
