@@ -1,13 +1,21 @@
 package me.odinclient.ui.clickgui.elements.menu
 
+import cc.polyfrost.oneconfig.renderer.font.Fonts
 import cc.polyfrost.oneconfig.renderer.font.Fonts.REGULAR
 import me.odinclient.features.settings.impl.StringSetting
 import me.odinclient.ui.clickgui.elements.Element
 import me.odinclient.ui.clickgui.elements.ElementType
 import me.odinclient.ui.clickgui.elements.ModuleButton
+import me.odinclient.ui.clickgui.util.ColorUtil
+import me.odinclient.ui.clickgui.util.ColorUtil.brighter
+import me.odinclient.ui.clickgui.util.ColorUtil.buttonColor
 import me.odinclient.ui.clickgui.util.ColorUtil.elementBackground
 import me.odinclient.ui.clickgui.util.ColorUtil.textColor
+import me.odinclient.ui.clickgui.util.HoverHandler
+import me.odinclient.utils.render.Color
+import me.odinclient.utils.render.gui.animations.impl.ColorAnimation
 import me.odinclient.utils.render.gui.nvg.*
+import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import org.lwjgl.input.Keyboard
 
 /**
@@ -25,16 +33,41 @@ class ElementTextField(parent: ModuleButton, setting: StringSetting) :
     val display: String
         inline get() = setting.text
 
-    // TODO: MAKE LOOK GOOD!!!!
+    private val colorAnim = ColorAnimation(100)
+    private val hover = HoverHandler(0, 150)
+
+    private val buttonColor: Color
+        inline get() = ColorUtil.buttonColor.brighter(1 + hover.percent() / 500f)
+
     override fun draw(nvg: NVG) {
         nvg {
             rect(x, y, w, h, elementBackground)
 
             if (getTextWidth(display + "00" + name, 16f, REGULAR) <= w) {
-                text(name, x + 4, y + h / 2, textColor, 16f, REGULAR)
-                text(display, x + (w - getTextWidth(display, 16f, REGULAR) - 4f), y + h / 2, textColor, 16f, REGULAR)
+                val width = getTextWidth(display, 16f, REGULAR)
+                hover.handle(x + w - 15 - width, y + 4, width + 12f, 22f)
+                rect(x + w - 15 - width, y + 4, width + 12f, 22f, buttonColor, 5f)
+
+                if (listening || colorAnim.isAnimating()) {
+                    val color = colorAnim.get(ColorUtil.clickGUIColor, buttonColor, listening)
+                    rectOutline(x + w - 16 - width, y + 3, width + 12.5f, 22.5f, color, 4f,1.5f)
+                }
+
+                text(display, x + w - 10, y + 16f, textColor, 16f, REGULAR, TextAlign.Right)
+                text(name,  x + 6f, y + h / 2, textColor, 16f, REGULAR)
             } else {
-                if (isHovered || listening) text(display, x + w / 2f, y + h / 2f, textColor, 16f, REGULAR, TextAlign.Middle)
+                if (isHovered || listening) {
+                    val width = getTextWidth(display, 16f, REGULAR)
+                    hover.handle(x + w - 15 - width, y + 4, width + 12f, 22f)
+                    rect(x + w / 2 - width / 2 - 6, y + 4, width + 12f, 22f, buttonColor, 5f)
+
+                    if (listening || colorAnim.isAnimating()) {
+                        val color = colorAnim.get(ColorUtil.clickGUIColor, buttonColor, listening)
+                        rectOutline(x + w / 2 - width / 2 - 7, y + 3, width + 12.5f, 22.5f, color, 4f,1.5f)
+                    }
+
+                    text(display, x + w / 2f, y + h / 2f, textColor, 16f, REGULAR, TextAlign.Middle)
+                }
                 else text(name, x + w / 2f, y + h / 2f, textColor, 16f, REGULAR, TextAlign.Middle)
             }
         }
@@ -42,8 +75,10 @@ class ElementTextField(parent: ModuleButton, setting: StringSetting) :
 
     override fun mouseClicked(mouseButton: Int): Boolean {
         if (mouseButton == 0 && isHovered) {
-            listening = true
+            if (colorAnim.start()) listening = !listening
             return true
+        } else if (listening) {
+            if (colorAnim.start()) listening = false
         }
         return false
     }
@@ -51,9 +86,9 @@ class ElementTextField(parent: ModuleButton, setting: StringSetting) :
     override fun keyTyped(typedChar: Char, keyCode: Int): Boolean {
         if (listening) {
             when (keyCode) {
-                Keyboard.KEY_ESCAPE, Keyboard.KEY_NUMPADENTER, Keyboard.KEY_RETURN -> listening = false
+                Keyboard.KEY_ESCAPE, Keyboard.KEY_NUMPADENTER, Keyboard.KEY_RETURN -> if (colorAnim.start()) listening = false
                 Keyboard.KEY_BACK -> setting.text = setting.text.dropLast(1)
-                !in keyBlackList ->  setting.text = setting.text + typedChar.toString()
+                !in keyBlackList -> setting.text += typedChar.toString()
             }
             return true
         }
@@ -122,8 +157,4 @@ class ElementTextField(parent: ModuleButton, setting: StringSetting) :
         Keyboard.KEY_AX,
         Keyboard.KEY_TAB,
     )
-
-    operator fun Int.contains(intArray: IntArray): Boolean {
-        return intArray.contains(this)
-    }
 }
