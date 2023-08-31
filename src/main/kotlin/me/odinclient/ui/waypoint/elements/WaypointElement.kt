@@ -31,7 +31,9 @@ class WaypointElement(val waypoint: Waypoint) {
 
             val color = colorAnimation.get(waypoint.color, Color(21, 22, 23), waypoint.shouldShow).rgba
             drawRoundedRect(20, y + 6, 18, 18, 5f, color)
-            drawSVG("/assets/odinclient/trash.svg", 442, y + 6, 18, 18, -1, 100, javaClass) // get better svg it looks so pixelated
+
+            val trashColor = if (mouseHandler.isAreaHovered(442f, y + 6, 18f, 18f)) Color(192, 192, 192).rgba else -1
+            drawSVG("/assets/odinclient/trash.svg", 442, y + 6, 18, 18, trashColor, 100, javaClass) // get better svg it looks so pixelated
 
             var currentX = 40f
             for (i in inputFields) {

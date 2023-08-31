@@ -77,7 +77,8 @@ fun NVG.circle(x: Float, y: Float, radius: Float, color: Color) {
     renderer.drawCircle(context, x, y, radius, color.rgba)
 }
 
-fun NVG.textWithControlCodes(text: String, x: Float, y: Float, size: Float, font: Font): Float {
+fun NVG.textWithControlCodes(text: String?, x: Float, y: Float, size: Float, font: Font): Float {
+    if (text == null) return 0f
     var i = 0
     var color = Color.WHITE
     var xPos = x

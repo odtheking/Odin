@@ -6,6 +6,7 @@ import me.odinclient.commands.AbstractCommand
 import me.odinclient.features.impl.render.ClickGUIModule
 import me.odinclient.ui.clickgui.ClickGUI
 import me.odinclient.ui.hud.EditHUDGui
+import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 
 object OdinCommand : AbstractCommand("odinclient", "od", "odinclient", description = "Main command for Odin.") {
@@ -51,5 +52,27 @@ object OdinCommand : AbstractCommand("odinclient", "od", "odinclient", descripti
             mc.thePlayer.rotationPitch = pitch
             modMessage("Set pitch to $pitch.")
         }
+
+        orElse {
+            val arg = it.firstOrNull() ?: return@orElse modMessage("§cMissing argument!")
+            if (arg.first() == 'f' || arg.first() == 'm') {
+                if (arg.length != 2 || !arg[1].isDigit()) return@orElse modMessage("§cInvalid floorfr!")
+                val type = it.first().first()
+                val floor = numberMap[it.first()[1].digitToInt()] ?: return@orElse modMessage("§cInvalid floor!")
+                val prefix = if (type == 'm') "master_" else ""
+                ChatUtils.sendCommand("joininstance ${prefix}catacombs_floor_$floor ")
+            } else {
+                modMessage("§cInvalid floor!")
+            }
+        }
+
+        "rq" {
+            ChatUtils.sendCommand("instancerequeue")
+            modMessage("requeing dungeon run")
+        }
+
+
     }
+
+    private val numberMap = mapOf(1 to "one", 2 to "two", 3 to "three", 4 to "four", 5 to "five", 6 to "six", 7 to "seven")
 }

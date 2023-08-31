@@ -36,9 +36,7 @@ object ChatUtils {
 
     fun flipCoin(): String = if (Math.random() < 0.5) "heads" else "tails"
 
-
     fun rollDice(): Int = (1..6).random()
-
 
     fun sendCommand(text: Any, clientSide: Boolean = false) {
         if (clientSide) ClientCommandHandler.instance.executeCommand(mc.thePlayer, "/$text")
@@ -46,6 +44,7 @@ object ChatUtils {
     }
 
     fun sendChatMessage(message: Any) {
+        if (mc.thePlayer == null) return
         mc.thePlayer.sendChatMessage(message.toString())
     }
 

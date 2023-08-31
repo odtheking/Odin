@@ -50,10 +50,10 @@ object RenderUtils {
         get() = lastTickPosX + (posX - lastTickPosX) * partialTicks
 
     val Entity.renderY: Double
-        get() = lastTickPosX + (posX - lastTickPosX) * partialTicks
+        get() = lastTickPosY + (posY - lastTickPosY) * partialTicks
 
     val Entity.renderZ: Double
-        get() = lastTickPosX + (posX - lastTickPosX) * partialTicks
+        get() = lastTickPosZ + (posZ - lastTickPosZ) * partialTicks
     
     val Entity.renderVec: Vec3
         get() = Vec3(renderX, renderY, renderZ)
@@ -239,7 +239,8 @@ object RenderUtils {
         renderBlackBox: Boolean = true,
         increase: Boolean = true,
         depthTest: Boolean = true,
-        scale: Float = 1f
+        scale: Float = 1f,
+        shadow: Boolean = true
     ) {
         var lScale = scale
 
@@ -282,7 +283,8 @@ object RenderUtils {
             GlStateManager.enableTexture2D()
         }
 
-        mc.fontRendererObj.drawString(text, -textWidth / 2, 0, color)
+        if (shadow) mc.fontRendererObj.drawStringWithShadow(text, -textWidth / 2f, 0f, color)
+        else mc.fontRendererObj.drawString(text, -textWidth / 2, 0, color)
 
         if (!depthTest) {
             GlStateManager.enableDepth()

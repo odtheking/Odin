@@ -59,8 +59,8 @@ object WaypointGUI : GuiScreen() {
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         nanoVG {
-            translateWithMouse(mouseHandler, scaledWidth / 4f, scaledHeight / 4f)
-            scaleWithMouse(mouseHandler, scaleFactor, scaleFactor)
+            translateWithMouse(mouseHandler, scaledWidth / 2f, scaledHeight / 2f)
+            scaleWithMouse(mouseHandler, scaleFactor * 2f, scaleFactor * 2f)
 
             drawDropShadow(0, 0, 480, 264, 10f, 1f, 10f)
             drawRoundedRectVaried(0, 25, 480, 239, Color(21, 22, 23, 0.9f).rgba, 0, 0, 10, 10)
@@ -89,7 +89,6 @@ object WaypointGUI : GuiScreen() {
                     for (area in areas) {
                         area.set(currentX, animY - 11f)
                         area.draw(this)
-                        drawLine(currentX - 5, animY - 7, currentX - 5, animY + 7, 0.7, -1)
                         currentX += area.draw(this)
                     }
                 }
