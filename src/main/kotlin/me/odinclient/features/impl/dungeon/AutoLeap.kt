@@ -32,7 +32,7 @@ object AutoLeap : Module(
     @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
         if (!DungeonUtils.inDungeons) return
-        val message = event.message.noControlCodes
+        val message = event.message
         val playerName = Regex("^Party > ?(?:\\[.+])? (.{0,16}): !tp ?(?:.+)?").find(message)?.groups?.get(1)?.value?.lowercase() ?: return
         if (playerName == mc.thePlayer.name || BlackList.isInBlacklist(playerName)) return
         PlayerUtils.useItem("leap")

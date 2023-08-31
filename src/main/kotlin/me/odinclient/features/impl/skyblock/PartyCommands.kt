@@ -24,28 +24,26 @@ object PartyCommands : Module(
     description = "Party Commands! Use /blacklist to blacklist players from using this module. !help for help."
 ) {
 
-    private var help: Boolean by BooleanSetting(name = "help", default = true)
-    private var warp: Boolean by BooleanSetting(name = "warp", default = true)
-    private var coords: Boolean by BooleanSetting(name = "coords", default = true)
-    private var allinvite: Boolean by BooleanSetting(name = "allinvite", default = true)
-    private var odin: Boolean by BooleanSetting(name = "odin", default = true)
-    private var boop: Boolean by BooleanSetting(name = "boop", default = true)
-    private var cf: Boolean by BooleanSetting(name = "cf", default = true)
-    private var eightball: Boolean by BooleanSetting(name = "eightball", default = true)
-    private var dice: Boolean by BooleanSetting(name = "dice", default = true)
-    private var cat: Boolean by BooleanSetting(name = "cat", default = true)
-    private var ping: Boolean by BooleanSetting(name = "ping", default = true)
-    private var pt: Boolean by BooleanSetting(name = "pt", default = true)
-    private val warptransfer: Boolean by BooleanSetting(name = "warptransfer", default = true)
-    private val rat: Boolean by BooleanSetting(name = "rat", default = true)
-    private val dt: Boolean by BooleanSetting(name = "dt", default = true)
-
-
+    private var help: Boolean by BooleanSetting(name = "Help", default = true)
+    private var warp: Boolean by BooleanSetting(name = "Warp", default = true)
+    private var warptransfer: Boolean by BooleanSetting(name = "Warp then transfer (warptransfer)", default = true)
+    private var coords: Boolean by BooleanSetting(name = "Coords (coords)", default = true)
+    private var allinvite: Boolean by BooleanSetting(name = "Allinvite", default = true)
+    private var odin: Boolean by BooleanSetting(name = "Odin", default = true)
+    private var boop: Boolean by BooleanSetting(name = "Boop", default = true)
+    private var cf: Boolean by BooleanSetting(name = "Coinflip (cf)", default = true)
+    private var eightball: Boolean by BooleanSetting(name = "Eightball", default = true)
+    private var dice: Boolean by BooleanSetting(name = "Dice", default = true)
+    private var cat: Boolean by BooleanSetting(name = "Cat", default = true)
+    private var pt: Boolean by BooleanSetting(name = "Party transfer (pt)", default = true)
+    private var rat: Boolean by BooleanSetting(name = "Rat", default = true)
+    private var ping: Boolean by BooleanSetting(name = "Ping", default = true)
+    private var dt: Boolean by BooleanSetting(name = "Dt", default = true)
+    private var dtPlayer: String? = null
 
     @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
     fun party(event: ClientChatReceivedEvent) {
-
         val message = event.message.unformattedText.noControlCodes
         val match = Regex("Party > (\\[.+])? ?(.+): !(.+)").find(message) ?: return
 
@@ -56,18 +54,19 @@ object PartyCommands : Module(
             partyCmdsOptions(msg!!, ign!!)
         }
     }
+
     @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
     fun dt(event: ClientChatReceivedEvent) {
         val message = event.message.unformattedText.noControlCodes
 
-        if (!message.contains("EXTRA STATS") || ChatUtils.dtPlayer == null) return
+        if (!message.contains("EXTRA STATS") || dtPlayer == null) return
 
         GlobalScope.launch{
             delay(2500)
-            PlayerUtils.alert("§c${ChatUtils.dtPlayer} needs downtime")
-            ChatUtils.partyMessage("${ChatUtils.dtPlayer} needs downtime")
-            ChatUtils.dtPlayer = null
+            PlayerUtils.alert("§c$dtPlayer needs downtime")
+            ChatUtils.partyMessage("$dtPlayer needs downtime")
+            dtPlayer = null
         }
     }
 
@@ -99,9 +98,9 @@ object PartyCommands : Module(
                 delay(350)
             }
             "ping" -> if (ping) ChatUtils.partyMessage("Current Ping: ${floor(ServerUtils.averagePing)}ms")
-            "dt" -> { if (dt)
+            "dt" -> if (dt) {
                 ChatUtils.modMessage("Reminder set for the end of the run!")
-                ChatUtils.dtPlayer = name
+                dtPlayer = name
             }
         }
     }

@@ -145,7 +145,7 @@ abstract class Module(
      * @param shouldRun Get whether the function should run (Will in most cases be used with the "enabled" value)
      * @param func The function to run when the packet is received.
      */
-    fun <T : Packet<*>> onPacket(type: Class<T>, shouldRun: () -> Boolean = {true}, func: (T) -> Unit) {
+    fun <T : Packet<*>> onPacket(type: Class<T>, shouldRun: () -> Boolean = { enabled }, func: (T) -> Unit) {
         @Suppress("UNCHECKED_CAST")
         ModuleManager.packetFunctions.add(
             ModuleManager.PacketFunction(type, func, shouldRun) as ModuleManager.PacketFunction<Packet<*>>
