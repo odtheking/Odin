@@ -1,8 +1,6 @@
 package me.odinclient.utils.skyblock.dungeon
 
 import me.odinclient.features.impl.render.ClickGUIModule
-import me.odinclient.utils.clock.Executor
-import me.odinclient.utils.clock.Executor.Companion.register
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.PlayerUtils.posX
 import me.odinclient.utils.skyblock.PlayerUtils.posZ

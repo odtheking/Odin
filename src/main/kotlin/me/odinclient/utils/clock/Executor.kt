@@ -1,6 +1,5 @@
 package me.odinclient.utils.clock
 
-import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 

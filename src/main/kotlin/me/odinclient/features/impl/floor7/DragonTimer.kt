@@ -8,7 +8,6 @@ import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.features.settings.impl.HudSetting
 import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.ui.hud.HudElement
-import me.odinclient.ui.hud.TextHud
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.render.gui.nvg.getTextWidth
 import me.odinclient.utils.render.gui.nvg.textWithControlCodes

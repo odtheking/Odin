@@ -7,13 +7,14 @@ import net.minecraft.block.Block
 import net.minecraft.block.BlockCocoa
 
 object FarmingHitboxes : Module(
-        name = "Farming Hitboxes",
-        category = Category.SKYBLOCK,
-        description = "Expands the hitbox of some crops to a full block"
+    name = "Farming Hitboxes",
+    category = Category.SKYBLOCK,
+    description = "Expands the hitbox of some crops to a full block",
+    tag = TagType.NEW
 ) {
 
-    var mushroom: Boolean by BooleanSetting(name = "Mushroom", default = true)
-    private var cocoa: Boolean by BooleanSetting(name = "Cocoa", default = true)
+    val mushroom: Boolean by BooleanSetting(name = "Mushroom", default = true)
+    private val cocoa: Boolean by BooleanSetting(name = "Cocoa", default = true)
 
     fun setBlockBoundsMixin(block: Block): Boolean
     {

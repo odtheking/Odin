@@ -14,7 +14,6 @@ import me.odinclient.ui.clickgui.util.ColorUtil.clickGUIColor
 import me.odinclient.ui.clickgui.util.ColorUtil.textColor
 import me.odinclient.ui.clickgui.util.HoverHandler
 import me.odinclient.ui.hud.EditHUDGui
-import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinclient.utils.render.gui.animations.impl.ColorAnimation
 import me.odinclient.utils.render.gui.nvg.*
@@ -60,7 +59,7 @@ class ElementHud(parent: ModuleButton, setting: HudSetting) : Element<HudSetting
                 offset = 60f
             }
             NanoVGHelper.INSTANCE.drawSvg(this.context,
-                "/assets/odinclient/MovementIcon.svg", x + w - offset, y + 5f, 20f, 20f, 20f, javaClass
+                "/assets/odinclient/ui/clickgui/MovementIcon.svg", x + w - offset, y + 5f, 20f, 20f, 20f, javaClass
             )
         }
     }

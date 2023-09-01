@@ -11,7 +11,7 @@ import net.minecraft.item.ItemStack
 object GhostPick : Module(
     "Ghost Pickaxe",
     description = "Gives you a ghost pickaxe in your selected slot when you press the keybind.",
-    category = Category.DUNGEON
+    category = Category.DUNGEON,
 ) {
     private val slot: Int by NumberSetting("Ghost pick slot", 1, 1.0, 9.0, 1.0)
 

@@ -12,17 +12,9 @@ import me.odinclient.features.settings.impl.HudSetting
 import me.odinclient.ui.hud.HudElement
 import me.odinclient.utils.clock.Executable
 import me.odinclient.utils.clock.Executor
-import me.odinclient.utils.clock.Executor.Companion.executeAll
 import me.odinclient.utils.skyblock.ChatUtils
-import me.odinclient.utils.skyblock.ChatUtils.modMessage
-import net.minecraft.network.INetHandler
 import net.minecraft.network.Packet
-import net.minecraft.network.play.INetHandlerPlayClient
-import net.minecraft.network.play.client.C12PacketUpdateSign
-import net.minecraft.network.play.server.S23PacketBlockChange
-import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.common.MinecraftForge
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import kotlin.reflect.full.findAnnotation
@@ -39,9 +31,14 @@ abstract class Module(
     toggled: Boolean = false,
     settings: ArrayList<Setting<*>> = ArrayList(),
     description: String = "",
-    val risky: Boolean = false,
-    val fpsHeavy: Boolean = false
+    val tag: Int = TagType.NONE
 ) {
+    object TagType {
+        const val NONE = 0
+        const val NEW = 1
+        const val RISKY = 2
+        const val FPSTAX = 3
+    }
 
     @Expose
     @SerializedName("name")
@@ -166,10 +163,5 @@ abstract class Module(
 
     fun execute(delay: () -> Long, func: Executable) {
         executors.add(Executor.VaryingExecutor(delay, func))
-    }
-
-    // TODO: Do this and a vararg instead to make it cleaner.
-    enum class Tags {
-        Bannable, FpsHeavy
     }
 }

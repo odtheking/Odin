@@ -18,7 +18,7 @@ import net.minecraft.util.BlockPos
 object GhostBlock : Module(
     name = "Ghost Blocks",
     description = "Creates ghost blocks on key press, and in specific locations",
-    category = Category.DUNGEON
+    category = Category.DUNGEON,
 ) {
     private val gkey: Boolean by BooleanSetting("GKey", true)
     private val gkeySpeed: Long by NumberSetting("Speed", 50L, 0.0, 300.0, 10.0)

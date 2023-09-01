@@ -9,8 +9,6 @@ import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
-import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
-import net.minecraft.network.play.server.S23PacketBlockChange
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -18,7 +16,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object TerracottaTimer : Module(
     name = "Terracotta Timer",
     description = "Displays the time until the terracotta spawns",
-    category = Category.DUNGEON
+    category = Category.DUNGEON,
+    tag = TagType.NEW
 ) {
     private data class Terracotta(val pos: Vec3, var time: Int)
     private var terrasSpawning = mutableListOf<Terracotta>()

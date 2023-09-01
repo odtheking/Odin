@@ -19,12 +19,12 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 // TODO: MAKE IT RENDER WITH HUD ELEMENT.
 object MapRender {
 
-    private val neuGreen = ResourceLocation("odinclient", "neu/green_check.png")
-    private val neuWhite = ResourceLocation("odinclient", "neu/white_check.png")
-    private val neuCross = ResourceLocation("odinclient", "neu/cross.png")
-    private val defaultGreen = ResourceLocation("odinclient", "default/green_check.png")
-    private val defaultWhite = ResourceLocation("odinclient", "default/white_check.png")
-    private val defaultCross = ResourceLocation("odinclient", "default/cross.png")
+    private val neuGreen = ResourceLocation("odinclient", "map/neu/green_check.png")
+    private val neuWhite = ResourceLocation("odinclient", "map/neu/white_check.png")
+    private val neuCross = ResourceLocation("odinclient", "map/neu/cross.png")
+    private val defaultGreen = ResourceLocation("odinclient", "map/default/green_check.png")
+    private val defaultWhite = ResourceLocation("odinclient", "map/default/white_check.png")
+    private val defaultCross = ResourceLocation("odinclient", "map/default/cross.png")
 
     @SubscribeEvent
     fun onOverlay(event: RenderGameOverlayEvent.Post) {

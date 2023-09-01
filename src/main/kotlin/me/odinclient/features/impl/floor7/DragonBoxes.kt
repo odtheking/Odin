@@ -15,7 +15,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 object DragonBoxes : Module(
     "Dragon Boxes",
     description = "Shows semi-accurate kill boxes for M7 dragons.",
-    category = Category.FLOOR7
+    category = Category.FLOOR7,
 ) {
     private val lineThickness: Float by NumberSetting("Line width", 2f, 1.0, 5.0, 0.5)
 

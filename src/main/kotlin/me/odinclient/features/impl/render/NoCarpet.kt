@@ -8,7 +8,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object NoCarpet : Module(
     name = "No Carpet",
-    category = Category.RENDER
+    category = Category.RENDER,
+    tag = TagType.NEW
 ) {
 
     var carpetList: ArrayList<BlockCarpet> = ArrayList()

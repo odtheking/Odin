@@ -17,7 +17,7 @@ import java.io.FileNotFoundException
 object ScanUtils {
     val roomList: Set<RoomData> = try {
         Gson().fromJson(
-            mc.resourceManager.getResource(ResourceLocation("odinclient", "rooms.json"))
+            mc.resourceManager.getResource(ResourceLocation("odinclient", "map/rooms.json"))
                 .inputStream.bufferedReader(),
             object : TypeToken<Set<RoomData>>() {}.type
         )

@@ -13,6 +13,7 @@ import me.odinclient.dungeonmap.features.MapRender
 import me.odinclient.dungeonmap.features.Window
 import me.odinclient.events.EventDispatcher
 import me.odinclient.features.ModuleManager
+import me.odinclient.features.impl.render.ClickGUIModule
 import me.odinclient.features.impl.render.WaypointManager
 import me.odinclient.ui.clickgui.ClickGUI
 import me.odinclient.utils.ServerUtils
@@ -91,6 +92,14 @@ class OdinClient {
         runBlocking {
             launch {
                 Config.loadConfig()
+
+                repeat(100) {
+                    println(ClickGUIModule.lastSeenVersion + " " + VERSION)
+                }
+                ChatUtils.modMessage(ClickGUIModule.lastSeenVersion)
+                ChatUtils.modMessage(VERSION)
+                ClickGUIModule.firstTimeOnVersion = ClickGUIModule.lastSeenVersion != VERSION
+                ClickGUIModule.lastSeenVersion = VERSION
             }
         }
         ClickGUI.init()

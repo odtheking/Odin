@@ -14,7 +14,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object NecronDropTimer : Module(
     name = "Necron Drop Timer",
     description = "Shows a timer for when Necron drops you down.",
-    category = Category.FLOOR7
+    category = Category.FLOOR7,
+    tag = TagType.NEW
 ) {
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {

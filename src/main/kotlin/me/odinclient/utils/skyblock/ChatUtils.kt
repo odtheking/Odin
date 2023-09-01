@@ -1,16 +1,9 @@
 package me.odinclient.utils.skyblock
 
-import kotlinx.coroutines.delay
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.impl.skyblock.BlackList
-import me.odinclient.utils.AutoSessionID
-import me.odinclient.utils.ServerUtils
-import me.odinclient.utils.Utils.floor
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.WebUtils
-import me.odinclient.utils.skyblock.PlayerUtils.posX
-import me.odinclient.utils.skyblock.PlayerUtils.posY
-import me.odinclient.utils.skyblock.PlayerUtils.posZ
 import net.minecraft.event.ClickEvent
 import net.minecraft.event.HoverEvent
 import net.minecraft.util.ChatComponentText
@@ -18,7 +11,6 @@ import net.minecraft.util.ChatStyle
 import net.minecraft.util.EnumChatFormatting
 import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.client.event.ClientChatReceivedEvent
-import kotlin.math.floor
 
 object ChatUtils {
 

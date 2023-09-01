@@ -1,6 +1,5 @@
 package me.odinclient.ui.clickgui.elements.menu
 
-import cc.polyfrost.oneconfig.renderer.font.Fonts
 import cc.polyfrost.oneconfig.renderer.font.Fonts.REGULAR
 import me.odinclient.features.settings.impl.StringSetting
 import me.odinclient.ui.clickgui.elements.Element
@@ -8,14 +7,12 @@ import me.odinclient.ui.clickgui.elements.ElementType
 import me.odinclient.ui.clickgui.elements.ModuleButton
 import me.odinclient.ui.clickgui.util.ColorUtil
 import me.odinclient.ui.clickgui.util.ColorUtil.brighter
-import me.odinclient.ui.clickgui.util.ColorUtil.buttonColor
 import me.odinclient.ui.clickgui.util.ColorUtil.elementBackground
 import me.odinclient.ui.clickgui.util.ColorUtil.textColor
 import me.odinclient.ui.clickgui.util.HoverHandler
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.gui.animations.impl.ColorAnimation
 import me.odinclient.utils.render.gui.nvg.*
-import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import org.lwjgl.input.Keyboard
 
 /**

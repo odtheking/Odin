@@ -11,7 +11,6 @@ import me.odinclient.utils.clock.Clock
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.skyblock.PlayerUtils
-import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.item.EntityItemFrame
 import net.minecraft.init.Blocks
 import net.minecraft.init.Items
@@ -26,7 +25,8 @@ import java.util.*
 object ArrowAlign : Module(
     name = "Arrow Align",
     description = "Different features for the arrow alignment device",
-    category = Category.FLOOR7
+    category = Category.FLOOR7,
+    tag = TagType.NEW
 ) {
     private val solver: Boolean by BooleanSetting("Solver")
     private val triggerBot: Boolean by BooleanSetting("Trigger Bot")

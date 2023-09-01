@@ -20,7 +20,8 @@ import java.awt.Color
 object LeapHelper : Module(
     name = "Leap Helper",
     description = "Shows which player is the most practical to leap to in the M7 boss-fight.",
-    category = Category.FLOOR7
+    category = Category.FLOOR7,
+    tag = TagType.NEW
 ) {
     private val NONE = Vec3(0.0, 0.0, 0.0)
     private val messageMap = mapOf(

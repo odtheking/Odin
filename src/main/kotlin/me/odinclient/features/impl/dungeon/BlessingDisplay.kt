@@ -1,7 +1,6 @@
 package me.odinclient.features.impl.dungeon
 
 import cc.polyfrost.oneconfig.renderer.font.Fonts
-import me.odinclient.events.impl.ReceivePacketEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.BooleanSetting
@@ -10,7 +9,6 @@ import me.odinclient.ui.hud.HudElement
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.render.gui.nvg.getTextWidth
 import me.odinclient.utils.render.gui.nvg.textWithControlCodes
-import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.network.play.server.S47PacketPlayerListHeaderFooter
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -19,7 +17,7 @@ import kotlin.math.max
 object BlessingDisplay : Module(
     name = "Blessing Display",
     description = "Displays the current blessings of the dungeon",
-    category = Category.DUNGEON
+    category = Category.DUNGEON,
 ) {
     private val power: Boolean by BooleanSetting("Power Blessing", true)
     private val time: Boolean by BooleanSetting("Time Blessing", true)

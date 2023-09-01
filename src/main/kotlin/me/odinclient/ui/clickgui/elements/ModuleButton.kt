@@ -3,6 +3,7 @@ package me.odinclient.ui.clickgui.elements
 import cc.polyfrost.oneconfig.renderer.NanoVGHelper
 import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinclient.features.Module
+import me.odinclient.features.impl.render.ClickGUIModule
 import me.odinclient.features.settings.impl.*
 import me.odinclient.ui.clickgui.ClickGUI
 import me.odinclient.ui.clickgui.Panel
@@ -100,12 +101,21 @@ class ModuleButton(val module: Module, val panel: Panel) {
             text(module.name, x + width / 2, y + height / 2, textColor, 18f, Fonts.MEDIUM, TextAlign.Middle)
             val textWidth = getTextWidth(module.name, 18f, Fonts.MEDIUM)
 
-            // make this optional and better svg imo like a warnning triangle thats red would be better
-            if (module.risky) {
+            if (textWidth > width - 80)// too long text, not drawing symbol
+            else if (module.tag == Module.TagType.RISKY) {
                 NanoVGHelper.INSTANCE.drawSvg(this.context,
-                    "/assets/odinclient/hazard.svg", x + width / 2 + textWidth / 2 + 10f, y + 5f, 20f, 20f, javaClass
+                    "/assets/odinclient/ui/clickgui/bannableIcon.svg", x + width / 2 + textWidth / 2 + 10f, y + 4f, 25f, 25f, javaClass
+                )
+            } else if (module.tag == Module.TagType.FPSTAX) {
+                NanoVGHelper.INSTANCE.drawSvg(this.context,
+                    "/assets/odinclient/ui/clickgui/fpsHeavyIcon.svg", x + width / 2 + textWidth / 2 + 20f, y, 35f, 35f, javaClass
+                )
+            } else if (module.tag == Module.TagType.NEW && ClickGUIModule.firstTimeOnVersion) {
+                NanoVGHelper.INSTANCE.drawSvg(this.context,
+                    "/assets/odinclient/ui/clickgui/newFeatureIcon.svg", x + width / 2 + textWidth / 2 + 10f, y, 35f, 35f, javaClass
                 )
             }
+
 
             if (!extendAnim.isAnimating() && !extended || menuElements.isEmpty()) return@nvg
 

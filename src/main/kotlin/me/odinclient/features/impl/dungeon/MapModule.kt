@@ -9,7 +9,7 @@ import me.odinclient.utils.render.Color
 object MapModule : Module(
     name = "Dungeon Map",
     description = "A dungeon map that scans the dungeon, heavily inspired by Funnymap",
-    category = Category.DUNGEON
+    category = Category.DUNGEON,
 ) {
     val mapWindow: Boolean by DualSetting("Is Window", "On Screen", "Window")
     val hideInBoss: Boolean by BooleanSetting("Hide in Boss Room", true)

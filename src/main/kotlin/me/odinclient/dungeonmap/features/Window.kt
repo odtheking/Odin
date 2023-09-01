@@ -300,12 +300,12 @@ object Window: JFrame() {
         }
     }
 
-    private val defaultWhite = loadImage("/assets/odinclient/default/white_check.png")
-    private val defaultGreen = loadImage("/assets/odinclient/default/green_check.png")
-    private val defaultCross = loadImage("/assets/odinclient/default/cross.png")
-    private val neuWhite = loadImage("/assets/odinclient/neu/white_check.png")
-    private val neuGreen = loadImage("/assets/odinclient/neu/green_check.png")
-    private val neuCross = loadImage("/assets/odinclient/neu/cross.png")
+    private val defaultWhite = loadImage("/assets/odinclient/map/default/white_check.png")
+    private val defaultGreen = loadImage("/assets/odinclient/map/default/green_check.png")
+    private val defaultCross = loadImage("/assets/odinclient/map/default/cross.png")
+    private val neuWhite = loadImage("/assets/odinclient/map/neu/white_check.png")
+    private val neuGreen = loadImage("/assets/odinclient/map/neu/green_check.png")
+    private val neuCross = loadImage("/assets/odinclient/map/neu/cross.png")
 
     private fun loadImage(path: String): BufferedImage {
         val resource = this::class.java.getResource(path)

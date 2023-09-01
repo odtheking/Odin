@@ -70,7 +70,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
             // HUE
 
             dropShadow(x + 10f, y + 214f, w - 20f, 15f, 10f, 0.5f, 5f)
-            image("/assets/odinclient/HueGradient.png", x + 10f, y + 214f, w - 20f, 15f, 5f, javaClass)
+            image("/assets/odinclient/ui/clickgui/HueGradient.png", x + 10f, y + 214f, w - 20f, 15f, 5f, javaClass)
             rectOutline(x + 10f, y + 214f, w - 20f, 15f, buttonColor, 5f, 1f)
 
             val hue = Pair((x + 10f + setting.hue * 221f), y + 221f)

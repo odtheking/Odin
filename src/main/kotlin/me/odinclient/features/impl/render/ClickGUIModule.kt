@@ -30,7 +30,7 @@ import org.lwjgl.input.Keyboard
 object ClickGUIModule: Module(
     "ClickGUI",
     Keyboard.KEY_RSHIFT,
-    category = Category.RENDER,
+    category = Category.RENDER
 ) {
     val blur: Boolean by BooleanSetting("Blur", false, description = "Toggles the background blur for the gui.")
     val enableNotification: Boolean by BooleanSetting("Enable notifications", false, description = "Shows you a notification in chat when you toggle an option with a keybind")
@@ -42,6 +42,8 @@ object ClickGUIModule: Module(
     }
 
     private var hasJoined: Boolean by BooleanSetting("First join", false, hidden = true)
+    var lastSeenVersion: String by StringSetting("Last seen version", "1.0.0", hidden = true)
+    var firstTimeOnVersion = false
 
     val panelX = mutableMapOf<Category, NumberSetting<Float>>()
     val panelY = mutableMapOf<Category, NumberSetting<Float>>()

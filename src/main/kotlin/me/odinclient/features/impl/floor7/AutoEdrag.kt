@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object AutoEdrag: Module(
     "Auto Ender Dragon",
     description = "Automatically clicks the Ender Dragon pet at the start of p5.",
-    category = Category.FLOOR7
+    category = Category.FLOOR7,
 ) {
     private var going = false
 

@@ -4,7 +4,6 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import me.odinclient.OdinClient.Companion.mc
-import me.odinclient.mixin.MinecraftAccessor
 import me.odinclient.utils.AsyncUtils
 import me.odinclient.utils.VecUtils.floored
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
@@ -12,9 +11,7 @@ import me.odinclient.utils.skyblock.ItemUtils.getItemIndexInContainerChest
 import me.odinclient.utils.skyblock.ItemUtils.getItemSlot
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.settings.KeyBinding
-import net.minecraft.entity.EntityLivingBase
 import net.minecraft.inventory.ContainerChest
-import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i

@@ -15,7 +15,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object ThornStun : Module(
     "AFK Thorn Stun",
     category = Category.DUNGEON,
-    description = "Toggle right click while holding Tribal Spear or Bonemerang in F4/M4"
+    description = "Toggle right click while holding Tribal Spear or Bonemerang in F4/M4",
+    tag = TagType.NEW
 ) {
 
     private var isClicking = false

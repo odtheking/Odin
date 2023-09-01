@@ -20,7 +20,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object ESP : Module(
     "ESP",
-    category = Category.RENDER
+    category = Category.RENDER,
+    tag = TagType.FPSTAX
 ) {
     private val color: Color by ColorSetting("Color", Color(255, 0, 0))
     private val through: Boolean by BooleanSetting("Through Walls", true)

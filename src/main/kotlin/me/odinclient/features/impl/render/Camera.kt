@@ -19,7 +19,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object Camera : Module(
     "Camera",
-    category = Category.RENDER,
+    category = Category.RENDER
 ) {
     private val frontCamera: Boolean by BooleanSetting("No Front Camera")
     private val cameraClip: Boolean by BooleanSetting("Camera Clip")

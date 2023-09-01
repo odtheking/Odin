@@ -10,7 +10,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object CustomEnd : Module(
     name = "Auto Extra stats",
     description = "Automatically clicks the Extra Stats at the end of a dungeon.",
-    category = Category.DUNGEON
+    category = Category.DUNGEON,
 ) {
 
     @SubscribeEvent

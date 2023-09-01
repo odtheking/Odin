@@ -10,7 +10,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object AutoDungeonReque : Module(
     name = "Auto Dungeon Requeue",
     description = "Automatically starts a new dungeon at the end of a dungeon.",
-    category = Category.DUNGEON
+    category = Category.DUNGEON,
+    tag = TagType.NEW
 ) {
 
     @SubscribeEvent

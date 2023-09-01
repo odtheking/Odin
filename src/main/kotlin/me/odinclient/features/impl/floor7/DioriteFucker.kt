@@ -11,7 +11,7 @@ import net.minecraft.util.BlockPos
 object DioriteFucker : Module(
     "Fuck Diorite",
     description = "Replaces the pillars in the F7 & M7 boss-fight with glass",
-    category = Category.FLOOR7
+    category = Category.FLOOR7,
 ) {
     private val delay: Long by NumberSetting("Delay", 80, 50, 1000, 10)
 

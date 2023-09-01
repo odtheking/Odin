@@ -4,7 +4,6 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import me.odinclient.OdinClient.Companion.scope
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.BooleanSetting
@@ -12,7 +11,6 @@ import me.odinclient.utils.AutoSessionID
 import me.odinclient.utils.ServerUtils
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.skyblock.ChatUtils
-import me.odinclient.utils.skyblock.LocationUtils
 import me.odinclient.utils.skyblock.PlayerUtils
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -21,7 +19,7 @@ import kotlin.math.floor
 object PartyCommands : Module(
     name = "Party Commands",
     category = Category.SKYBLOCK,
-    description = "Party Commands! Use /blacklist to blacklist players from using this module. !help for help."
+    description = "Party Commands! Use /blacklist to blacklist players from using this module. !help for help.",
 ) {
 
     private var help: Boolean by BooleanSetting(name = "Help", default = true)

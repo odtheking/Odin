@@ -21,7 +21,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object KeyESP : Module(
     name = "Key ESP",
     description = "Draws a box around the key",
-    category = Category.DUNGEON
+    category = Category.DUNGEON,
 ) {
     private var currentKey: Pair<Color, Entity>? = null
     private val thickness: Float by NumberSetting("Thickness", 5f, 3f, 20f, .1f)

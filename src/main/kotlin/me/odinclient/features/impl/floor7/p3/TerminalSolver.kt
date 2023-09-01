@@ -19,7 +19,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object TerminalSolver : Module(
     name = "Terminal Solver",
     description = "Solves terminals in f7/m7",
-    category = Category.FLOOR7
+    category = Category.FLOOR7,
+    tag = TagType.NEW
 ) {
     private val terminalNames = listOf(
         "Correct all the panes!",

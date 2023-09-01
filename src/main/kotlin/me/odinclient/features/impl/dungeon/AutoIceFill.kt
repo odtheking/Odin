@@ -32,7 +32,7 @@ object AutoIceFill: Module(
     name = "Auto Ice Fill",
     description = "Automatically completes the ice fill puzzle",
     category = Category.DUNGEON,
-    risky = true
+    tag = TagType.RISKY
 ) {
     private var scanned = false
     private var currentPatterns: MutableList<List<Vec3i>> = ArrayList()
