@@ -93,11 +93,6 @@ class OdinClient {
             launch {
                 Config.loadConfig()
 
-                repeat(100) {
-                    println(ClickGUIModule.lastSeenVersion + " " + VERSION)
-                }
-                ChatUtils.modMessage(ClickGUIModule.lastSeenVersion)
-                ChatUtils.modMessage(VERSION)
                 ClickGUIModule.firstTimeOnVersion = ClickGUIModule.lastSeenVersion != VERSION
                 ClickGUIModule.lastSeenVersion = VERSION
             }
