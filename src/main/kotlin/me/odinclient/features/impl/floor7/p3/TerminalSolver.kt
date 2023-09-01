@@ -34,7 +34,7 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun onGuiLoad(event: GuiLoadedEvent) {
-        currentTerm = terminalNames.indexOfFirst { it.startsWith(event.name) }
+        currentTerm = terminalNames.indexOfFirst { event.name.startsWith(it) }
         if (currentTerm == -1) return
         val items = event.gui.inventory.subList(0, event.gui.inventory.size - 37)
         when (currentTerm) {
