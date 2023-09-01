@@ -6,14 +6,19 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.events.impl.PostEntityMetadata
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.features.impl.dungeon.KeyESP
 import me.odinclient.features.settings.impl.HudSetting
 import me.odinclient.ui.hud.HudElement
 import me.odinclient.utils.Utils.noControlCodes
+import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.gui.nvg.getTextWidth
 import me.odinclient.utils.render.gui.nvg.image
 import me.odinclient.utils.render.gui.nvg.textWithControlCodes
+import me.odinclient.utils.skyblock.ChatUtils.modMessage
+import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
@@ -54,19 +59,19 @@ object DeployableTimer : Module(
     }
 
     private enum class Deployables (val texture: String, val displayName: String, val renderName: String, val priority: Int, val duration: Int, val imgPath: String, val range: Float)  {
-        Warning("ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzMwNjIyMywKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjJlMmJmNmMxZWMzMzAyNDc5MjdiYTYzNDc5ZTU4NzJhYzY2YjA2OTAzYzg2YzgyYjUyZGFjOWYxYzk3MTQ1OCIKICAgIH0KICB9Cn0=", "Warning Flare", "§aWarning Flare", 3, 180000, "/assets/odinclient/firework.png", 20f),
+        Warning("ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzMwNjIyMywKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjJlMmJmNmMxZWMzMzAyNDc5MjdiYTYzNDc5ZTU4NzJhYzY2YjA2OTAzYzg2YzgyYjUyZGFjOWYxYzk3MTQ1OCIKICAgIH0KICB9Cn0=", "Warning Flare", "§aWarning Flare", 3, 180000, "/assets/odinclient/deployable/firework.png", 20f),
 
-        Alert("ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzMyNjQzMiwKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWQyYmY5ODY0NzIwZDg3ZmQwNmI4NGVmYTgwYjc5NWM0OGVkNTM5YjE2NTIzYzNiMWYxOTkwYjQwYzAwM2Y2YiIKICAgIH0KICB9Cn0=", "Alert Flare", "§9Alert Flare", 5, 180000, "/assets/odinclient/firework.png", 20f),
+        Alert("ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzMyNjQzMiwKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWQyYmY5ODY0NzIwZDg3ZmQwNmI4NGVmYTgwYjc5NWM0OGVkNTM5YjE2NTIzYzNiMWYxOTkwYjQwYzAwM2Y2YiIKICAgIH0KICB9Cn0=", "Alert Flare", "§9Alert Flare", 5, 180000, "/assets/odinclient/deployable/firework.png", 20f),
 
-        SOS("ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzM0NzQ4OSwKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzAwNjJjYzk4ZWJkYTcyYTZhNGI4OTc4M2FkY2VmMjgxNWI0ODNhMDFkNzNlYTg3YjNkZjc2MDcyYTg5ZDEzYiIKICAgIH0KICB9Cn0=", "SOS Flare", "§5SOS Flare", 7, 180000, "/assets/odinclient/firework.png", 20f),
+        SOS("ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzM0NzQ4OSwKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzAwNjJjYzk4ZWJkYTcyYTZhNGI4OTc4M2FkY2VmMjgxNWI0ODNhMDFkNzNlYTg3YjNkZjc2MDcyYTg5ZDEzYiIKICAgIH0KICB9Cn0=", "SOS Flare", "§5SOS Flare", 7, 180000, "/assets/odinclient/deployable/firework.png", 20f),
 
-        Radiant("RADIANTPLACEHOLDERTEXTURE", "Radiant", "§aRadiant Orb", 1, 30000, "/assets/odinclient/RADIANTPOWERORB.png", 20f),
+        Radiant("RADIANTPLACEHOLDERTEXTURE", "Radiant", "§aRadiant Orb", 1, 30000, "/assets/odinclient/deployable/RADIANTPOWERORB.png", 20f),
 
-        Mana("MANAFLUXPLACEHOLDERTEXTURE", "Mana" , "§9Mana Flux Orb", 2, 30000, "/assets/odinclient/MANAFLUXPOWERORB.png", 20f),
+        Mana("MANAFLUXPLACEHOLDERTEXTURE", "Mana" , "§9Mana Flux Orb", 2, 30000, "/assets/odinclient/deployable/MANAFLUXPOWERORB.png", 20f),
 
-        Overflux("OVERFLUXPLACEHOLDERTEXTURE", "Overflux", "§5Overflux Orb", 4, 30000, "/assets/odinclient/OVERFLUXPOWERORB.png", 20f),
+        Overflux("OVERFLUXPLACEHOLDERTEXTURE", "Overflux", "§5Overflux Orb", 4, 30000, "/assets/odinclient/deployable/OVERFLUXPOWERORB.png", 20f),
 
-        Plasma("PLASMAFLUXPLACEHOLDERTEXTURE", "Plasma", "§dPlasmaflux", 5, 60000, "/assets/odinclient/PLASMAPOWERORB.png", 20f),
+        Plasma("PLASMAFLUXPLACEHOLDERTEXTURE", "Plasma", "§dPlasmaflux", 5, 60000, "/assets/odinclient/deployable/PLASMAPOWERORB.png", 20f),
     }
 
     class Deployable(val priority: Int, val duration: Int, val entity: EntityArmorStand, val renderName: String, val imgPath: String, val range: Float, val timeAdded: Long = System.currentTimeMillis())
@@ -77,30 +82,30 @@ object DeployableTimer : Module(
 
     private var toRender = RenderableDeployable("", "", "")
 
-    @OptIn(DelicateCoroutinesApi::class, DelicateCoroutinesApi::class)
     @SubscribeEvent
-    fun onEntityJoinWorld(event: EntityJoinWorldEvent) {
-        if (event.entity !is EntityArmorStand) return
-        GlobalScope.launch {
-            delay(100)
-            val armorStand = event.entity as EntityArmorStand
-            val name = armorStand.name.noControlCodes
-            val texture = getSkullValue(armorStand) ?: return@launch
+    fun postMetadata(event: PostEntityMetadata) {
+        if (mc.theWorld.getEntityByID(event.packet.entityId) !is EntityArmorStand) return
 
-            if (Deployables.entries.any { it.texture == texture }) {
-                val flare = Deployables.entries.first { it.texture == texture }
-                currentDeployables.add(Deployable(flare.priority, flare.duration, armorStand, flare.renderName, flare.imgPath, flare.range))
-                currentDeployables.sortByDescending { it.priority }
-                resetLines()
-            } else if (Deployables.entries.any { name.startsWith(it.displayName)}) {
-                val orb = Deployables.entries.first { name.startsWith(it.displayName)}
-                val time = orbRegex.find(name)?.groupValues?.get(2)?.toInt() ?: return@launch
-                currentDeployables.add(Deployable(orb.priority, time * 1000, armorStand, orb.renderName, orb.imgPath, orb.range))
-                currentDeployables.sortByDescending { it.priority }
-                resetLines()
-            }
+        val entity = mc.theWorld.getEntityByID(event.packet.entityId) as EntityArmorStand
+        if (currentDeployables.any { it.entity == entity }) return
+        val name = entity.name.noControlCodes
+        val texture = getSkullValue(entity)
+
+        if (Deployables.entries.any { it.texture == texture }) {
+            val flare = Deployables.entries.first { it.texture == texture }
+            currentDeployables.add(Deployable(flare.priority, flare.duration, entity, flare.renderName, flare.imgPath, flare.range))
+            currentDeployables.sortByDescending { it.priority }
+            resetLines()
+        } else if (Deployables.entries.any { name.startsWith(it.displayName)}) {
+            val orb = Deployables.entries.first { name.startsWith(it.displayName)}
+            val time = orbRegex.find(name)?.groupValues?.get(2)?.toInt() ?: return
+            currentDeployables.add(Deployable(orb.priority, time * 1000, entity, orb.renderName, orb.imgPath, orb.range))
+            currentDeployables.sortByDescending { it.priority }
+            resetLines()
         }
+
     }
+
     private fun getSkullValue(armorStand: EntityArmorStand): String? {
         return armorStand.inventory
             ?.get(4)
