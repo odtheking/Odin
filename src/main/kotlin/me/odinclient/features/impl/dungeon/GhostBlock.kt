@@ -52,7 +52,7 @@ object GhostBlock : Module(
         }
 
         execute(500) {
-            if (!DungeonUtils.isFloor(7) || !DungeonUtils.inBoss || preGhostBlock) return@execute
+            if (!DungeonUtils.isFloor(7) || !DungeonUtils.inBoss || !preGhostBlock || !enabled) return@execute
             for (i in blocks[getPhase()] ?: return@execute) {
                 mc.theWorld?.setBlockToAir(i)
             }
