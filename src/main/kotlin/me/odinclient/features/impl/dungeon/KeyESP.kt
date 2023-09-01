@@ -3,16 +3,20 @@ package me.odinclient.features.impl.dungeon
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.OdinClient.Companion.scope
+import me.odinclient.events.impl.PostEntityMetadata
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.world.RenderUtils
+import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
+import net.minecraft.network.play.server.S0FPacketSpawnMob
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.event.world.WorldEvent
@@ -27,26 +31,21 @@ object KeyESP : Module(
     private val thickness: Float by NumberSetting("Thickness", 5f, 3f, 20f, .1f)
 
     @SubscribeEvent
-    fun onEntityJoin(event: EntityJoinWorldEvent) {
-        if (event.entity !is EntityArmorStand || !DungeonUtils.inDungeons) return
+    fun postMetadata(event: PostEntityMetadata) {
+        if (mc.theWorld.getEntityByID(event.packet.entityId) !is EntityArmorStand || !DungeonUtils.inDungeons || DungeonUtils.inBoss) return
 
-        scope.launch(Dispatchers.IO) {
-            delay(500)
-
-            val name = event.entity.name.noControlCodes
-            if (name == "Wither Key") {
-                currentKey = Color.BLACK to event.entity
-            } else if (name == "Blood Key") {
-                currentKey = Color(255, 0, 0) to event.entity
-            }
+        val entity = mc.theWorld.getEntityByID(event.packet.entityId) as EntityArmorStand
+        val name = entity.name.noControlCodes
+        if (name == "Wither Key") {
+            currentKey = Color.BLACK to entity
+        } else if (name == "Blood Key") {
+            currentKey = Color(255, 0, 0) to entity
         }
     }
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (currentKey == null) return
-
-        val (color, entity) = currentKey!!
+        val (color, entity) = currentKey ?: return
         if (entity.isDead) {
             currentKey = null
             return
