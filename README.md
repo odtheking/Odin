@@ -5,59 +5,84 @@ OdinClient is a comprehensive Forge mod for Hypixel Skyblock, offering a range o
 ## Features
 
 ### Dungeon
-- **Auto Ice Fill:** Completes the ice fill puzzle on your behalf.
-- **Auto Leap:** Automatically leaps to a party member when "!tp" is written in party chat.
-- **Auto Mask:** Prioritizes Spirit mask due to its lower cooldown, and switches between Spirit and Bonzo masks as needed.
-- **Auto Ready:** Moves into range, opens the GUI, and readies/starts the dungeon automatically.
-- **Auto Mort:** Automatically navigates from dungeon spawn to Mort and opens his GUI.
-- **Auto Ult:** Activates your ult at crucial moments, such as when giants spawn, Maxor is stuck in the first laser, or Goldor starts.
-- **Auto Shield:** Utilizes Wither shield every 5 seconds when health is not full (works with all Wither swords).
-- **Auto Wish:** Grants wishes for your teammates when they are low on health.
-- **Auto Sell:** Automatically sells items in the Trades GUI, configured via /autosell.
-- **Can Clip:** Indicates when you can clip through a stair while in boss room.
-- **Key ESP:** Highlights the Wither/Blood key.
-- **Blessing Display:** Displays active dungeon blessings on your screen.
-- **Superboom:** Allows Superboom usage with any item click.
+- **Auto Dungeon Requeue:** Automatically starts a new dungeon at the end of a dungeon.
+- **Mimic Killed Message:** Sends message in party chat when mimic is killed.
+- **Cancel Chest Open:** Cancels the opening of chests in dungeons.
 - **TeammatesHighlight:** Enhances visibility of your dungeon teammates and their name tags.
-- **Triggerbot:** Offers various trigger bots for different mobs.
-- **Watcher Bar:** Displays the count of mobs killed and remaining in the blood room.
-- **Ghost Block:** Preset m7/f7 ghostblock + keybind.
+- **Terracotta Timer:** Displays the time until the terracotta spawns.
+- **Auto Extra Stats:** Automatically clicks the extra stats at the end of a dungeon.
+- **Blessing Display:** Displays the current blessings of the dungeon.
+- **Secret Hitboxes:** Full block Secret hitboxes.
+- **AFK Thorn Stun:** Toggle right click while holding Tribal Spear or Bonemerang in F4/M4
+- **Ghost Pick:** Gives you a ghost pickaxe in your selected slot when uyou press the keybind.
+- **Dungeon Map:** A dungeon map that scans the dungeon, heavily inspired by FunnyMap
+- **Auto Ult:** Activates your ult at crucial moments, such as when giants spawn, Maxor is stuck in the first laser, or Goldor starts.
+- **Ghost Block:** Creates ghost blocks on keypress, and in specific locations.
+- **Watcher Bar:** Shows the watcher's health.
+- **Superboom:** Places TNT when you left click on a block which can blow up.
+- **Auto Ice Fill:** AutomaTically completes the ice fill puzzle.
+- **Auto Shield:** Utilizes Wither shield every 5 seconds when health is not full (works with all Wither swords).
+- **Auto Mask:** Automatically uses masks when they proc.
+- **Triggerbot:** Instantly left clicks if you are looking at a specified mob.
+- **Auto Wish:** Grants wishes for your teammates when they are low on health.
+- **Auto Leap:** Automatically leaps to the player who sent !tp in party chat.
+- **Auto Sell:** Automatically sell items in trades and cookie menus.
+- **Key ESP:** Draws a box around the key.
 
-### General
-- **Arrow Trajectory:** Displays arrow trajectory and the entity it will hit.
-- **Blaze Atunement:** Highlights Slayer Boss with the atunement color.
-- **Camera:** Provides the ability to set camera range.
-- **Deployable Timer:** Shows active deployable and remaining time.
-- **ESP:** Highlights mobs as per your choice via /esp.
-- **FPS:** Improves performance by fixing some Hypixel issues.
-- **Vanquisher Notifier:** Sends alerts when a Vanquisher spawns.
-- **Waypoints:** Allows the creation of various waypoints with different triggers /wp help.
-- **Party Commands:** Offers custom commands for party use, accessible via !help in party chat.
-- **Guild Commands:** Offers custom commands for guild use, accessible via !help in guild chat.
-- **Guild GM:** Automatically sends gm/gn in guild chat in response to others.
-- **Serverhud:** Displays your ping and the server's TPS.
+### Floor 7
+- **Decoy Dead Message:** Sends a message in party chat when a decoy dies
+- **Auto Ender Dragon:** Automatically clicks the Ender Dragon pet at the start of p5.
+- **Necron Drop Timer:** Shows a timer for when Necron drops you down.
+- **Levers Triggerbot:** Triggerbot for the levers device.
+- **Relic Announcer:** Automatically announce your relic to the rest of the party.
+- **Terminal Solver:** Solves terminals in f7/m7.
+- **Terminal Times:** Keeps track of how long you took to complete a terminal.
+- **Dragon Boxes:** Shows semi-accurate kill boxes for M7 dragons.
+- **Dragon Timer:** Displays a timer for when M7 dragons spawn.
+- **FUCK DIORITE:** Replaces the pillars in the F7 & M7 boss-fight with glass.
+- **Leap Helper:** Shows which player is the most practical to leap to in the M7 boss-fight.
+- **Simon Says:** Different features for the Simon Says puzzle in f7/m7.
+- **Arrow Align:** Different features for the arrow alignment device.
+- **Relic Auto:** Automatically picks relics in the Witherking boss-fight.
 
-### M7
-- **Auto EDrag:** Automatically equips your Ender Dragon pet when p5 starts.
-- **FUCK DIORITE:** Replaces the Diorite pillars with glass in p2.
-- **Dragon Boxes:** Indicates where the dragon can be killed.
-- **Dragon Timer:** Shows when the dragon is about to spawn.
-- **Terminal Times:** Displays how long a terminal took to complete.
+### Render
+- **Arrow Trajectory:** Displays the trajectory of the arrows your terminator would shoot.
+- **Dragon Hitboxes:** Renders real dragon hitboxes
+- **Personal Dragon:** Renders your own personal dragon.
+- **No Cursor Reset:** Makes your cursor stop resetting between guis.
+- **Lock Cursor:** Makes you completely unable to move your camera.
+- **CPS Display:** Displays your CPS
+- **Serverhud:** Displays your current ping and the server's TPS.
+- **Waypoints:** Custom Waypoints /wp gui.
+- **No Render:** Disables certain render functions when they are not necessary, resulting in a decrease in gpu usage
+- **No Debuff:** Disables certain debuffs.
+- **No Carpet:** Removes nearby carpets.
+- **Nick Hider:** Replace your name, color codes work.
+- **Camera:** Allows you to disable front cam and change distance.
+- **ESP:** Allows you to highlight selected mobs.
 
-### QOL
-- **Abiphone Ghoster:** Blocks calls from Abiphone.
-- **Auto Sprint:** Toggles sprint.
-- **Broken Hype:** Sends alerts when your Hype stops giving combat XP.
-- **Relic Aura:** Changes how you interact with and see a relic within a 5-block range.
-- **Item Keybind:** Allows certain items to be used via key bind.
-- **Ghost Pick:** Summons a ghost pickaxe on key press.
-- **Terminator AC:** Automatically clicks when holding Terminator, randomized AC for robust anti-cheat.
-- **Cookie Clicker:** COOKIEESS
-- **Kuudra Alerts:** Sends on-screen notifications about specific events occurring in Kuudra, a boss in the Hypixel Skyblock game.
-- **Gyro Range:"** Shows the range of the gyrokinetic wand.
-- **No Block Animation:** Disables the block animations of swords (like 1.9.0).0
-- **No Cursor Reset:** Prevents the cursor from resetting when swapping inventories (like SBA's).
-- **Reminders:** Various skyblock-related reminders/alerts.
+##Skyblock
+- **Auto-Renew Hollows Pass:** Automatically rebuy a crystal hollows pass.
+- **Private Commands:** Offers custom commands for private message use, accessible via !help in private chat.
+- **Auto Experiemnts:** Automatically click on the Chronomatron and Ultrasequencer experiments.
+- **Farming Hitboxes:** Expands the hitbox of some crops to a full block
+- **Deployable Timer:** Shows the time left on deployables.
+- **Party Commands:** Party commands! Use /blacklist to blacklist players from using this module. !help for help.
+- **Guild Commands:** Guild commands! Use /blacklist to blacklist players from using this module. !help for help.
+- **Terminator AC:** Randomized auto-clicker for Terminator, delay adapts to the server's current TPS, meaning you should never get kicked.
+- **Cookie Clicker:** Automatically clicks the cookie in the cookie clicker menu.
+- **Kuudra Alerts:** Displays alerts for certain kuudra events.
+- **Vanq Notifier:** Sends a message whenever a vanquisher spawns
+- **Gyro Range:** Renders a helpful circle to show the range of the Gyrokinetic Wand.
+- **Auto Sprint:** Automatically makes you sprint.
+- **Escrow Fix:** Automatically reopens the ah/bz when it gets closed by escrow.
+- **Reminders:** helpful reminders for dungeons.
+- **PortalFix:** Lets you use chat while in portal.
+- **No Block:** Prevents you from blocking with items that have an ability, this is effectively NoSlow.
+- **Can Clip:** Tells you if you are currently able to clip through a stair under you.
+- **Ghosts:** Diverse QOL for ghosts in the Dwarven Mines.
+
+
 
 Keep in mind that the specifics of each feature may vary depending on the version of OdinClient you're using, as well as the specific configuration you've set up in your client.
 Use this modification at your own risk
