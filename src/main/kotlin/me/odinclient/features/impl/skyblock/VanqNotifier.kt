@@ -15,7 +15,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object VanqNotifier : Module(
     "Vanq Notifier",
-    category = Category.SKYBLOCK
+    category = Category.SKYBLOCK,
+    description = "Sends a message whenever a vanquisher spawns"
 ) {
     private val ac: Boolean by BooleanSetting("All chat")
     private val pc: Boolean by BooleanSetting("Party chat")

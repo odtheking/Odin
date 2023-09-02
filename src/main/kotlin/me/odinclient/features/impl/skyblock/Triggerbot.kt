@@ -14,7 +14,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object Triggerbot : Module(
     name = "Triggerbot",
-    description = "Instantly left clicks if you are looking at a specified mob",
+    description = "Instantly left clicks if you are looking at a specified mob.",
     category = Category.DUNGEON
 ) {
     private val blood: Boolean by BooleanSetting("Blood Mobs")

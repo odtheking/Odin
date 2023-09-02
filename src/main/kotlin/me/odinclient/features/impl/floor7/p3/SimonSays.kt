@@ -25,7 +25,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object SimonSays : Module(
     name = "Simon Says",
-    description = "Different features for the Simon Says puzzle in f7/m7",
+    description = "Different features for the Simon Says puzzle in f7/m7.",
     category = Category.FLOOR7,
     tag = TagType.NEW
 ) {

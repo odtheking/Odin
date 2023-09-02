@@ -8,7 +8,7 @@ import me.odinclient.utils.skyblock.ChatUtils.modMessage
 object Waypoints : Module(
     name = "Waypoints",
     category = Category.RENDER,
-    description = "Custom Waypoints! /wp gui"
+    description = "Custom Waypoints! /wp gui."
 ) {
     private val vanq: Boolean by BooleanSetting("Vanquisher Spawns")
     private val fromParty: Boolean by BooleanSetting("From Party Chat", true)

@@ -12,7 +12,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object MimicMessage : Module(
     "Mimic Killed Message",
-    description = "Send message in party chat when mimic is killed",
+    description = "Send message in party chat when mimic is killed.",
     category = Category.DUNGEON,
     tag = TagType.NEW
 ) {

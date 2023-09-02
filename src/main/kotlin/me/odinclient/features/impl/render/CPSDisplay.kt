@@ -19,7 +19,7 @@ import me.odinclient.utils.render.gui.nvg.text
 
 object CPSDisplay : Module(
     "CPS Display",
-    description = "Displays your CPS",
+    description = "Displays your CPS.",
     category = Category.RENDER
 ) {
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 2f, false) {

@@ -22,7 +22,7 @@ import kotlin.math.floor
 object PrivateCommands : Module(
     name = "Private Commands",
     category = Category.SKYBLOCK,
-    description = ""
+    description = "Party commands! Use /blacklist to blacklist players from using this module. !help for help."
 ) {
 
     private var help: Boolean by BooleanSetting(name = "help", default = true)

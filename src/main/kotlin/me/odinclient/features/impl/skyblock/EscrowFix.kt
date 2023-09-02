@@ -8,7 +8,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object EscrowFix : Module(
     name = "Escrow Fix",
-    description = "Automatically reopens the ah/bz when it gets closed by escrow",
+    description = "Automatically reopens the ah/bz when it gets closed by escrow.",
     category = Category.SKYBLOCK,
     tag = TagType.NEW
 ) {

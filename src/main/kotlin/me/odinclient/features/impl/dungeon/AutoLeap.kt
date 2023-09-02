@@ -14,7 +14,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object AutoLeap : Module(
     name = "Auto Leap",
-    description = "Automatically leaps to the player who sent !tp in party chat",
+    description = "Automatically leaps to the player who sent !tp in party chat.",
     category = Category.DUNGEON
 ) {
 

@@ -16,7 +16,7 @@ import kotlin.math.max
 
 object BlessingDisplay : Module(
     name = "Blessing Display",
-    description = "Displays the current blessings of the dungeon",
+    description = "Displays the current blessings of the dungeon.",
     category = Category.DUNGEON,
 ) {
     private val power: Boolean by BooleanSetting("Power Blessing", true)

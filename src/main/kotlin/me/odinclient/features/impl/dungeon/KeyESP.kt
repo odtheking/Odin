@@ -24,7 +24,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object KeyESP : Module(
     name = "Key ESP",
-    description = "Draws a box around the key",
+    description = "Draws a box around the key.",
     category = Category.DUNGEON,
 ) {
     private var currentKey: Pair<Color, Entity>? = null

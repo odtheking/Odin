@@ -18,6 +18,7 @@ import kotlin.math.max
 object TeammatesOutline : Module(
     "Teammate Outline",
     category = Category.DUNGEON,
+    description = "Enhances visibility of your dungeon teammates and their name tags."
 ) {
     private val thickness: Float by NumberSetting("Line Width", 2f, 1.0, 5.0, 0.5)
     private val whenVisible: Boolean by BooleanSetting("When Visible")

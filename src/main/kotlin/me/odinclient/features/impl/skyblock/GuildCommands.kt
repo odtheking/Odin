@@ -20,7 +20,7 @@ import kotlin.math.floor
 object GuildCommands : Module(
     name = "Guild Commands",
     category = Category.SKYBLOCK,
-    description = ""
+    description = "Guild commands! Use /blacklist to blacklist players from using this module. !help for help."
 ) {
     private val guildGM: Boolean by BooleanSetting("Guild GM")
 

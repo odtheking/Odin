@@ -8,7 +8,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object DecoyDeadMessage : Module(
     name = "Decoy Dead Message",
-    description = "Sends a message in party chat when a decoy dies",
+    description = "Sends a message in party chat when a decoy dies.",
     category = Category.FLOOR7,
     tag = TagType.NEW
 ) {

@@ -14,7 +14,8 @@ import kotlin.math.floor
 
 object AutoWish: Module(
     "Auto Wish",
-    category =  Category.DUNGEON
+    category =  Category.DUNGEON,
+    description = "Grants wishes for your teammates when they are low on health."
 ) {
     private val healthPercentage: Double by NumberSetting("Health Percentage", 30.0, 5.0, 80.0, 1.0, description = "The percentage of health to wish at")
 

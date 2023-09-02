@@ -15,7 +15,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object TerracottaTimer : Module(
     name = "Terracotta Timer",
-    description = "Displays the time until the terracotta spawns",
+    description = "Displays the time until the terracotta spawns.",
     category = Category.DUNGEON,
     tag = TagType.NEW
 ) {

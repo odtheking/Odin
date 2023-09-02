@@ -41,7 +41,7 @@ object ClickGUIModule: Module(
         display = EditHUDGui
     }
 
-    private var hasJoined: Boolean by BooleanSetting("First join", false, hidden = true)
+    private var joined: Boolean by BooleanSetting("First join", false, hidden = true)
     var lastSeenVersion: String by StringSetting("Last seen version", "1.0.0", hidden = true)
     var firstTimeOnVersion = false
 
@@ -51,9 +51,9 @@ object ClickGUIModule: Module(
 
     init {
         execute(250) {
-            if (hasJoined) destroyExecutor()
+            if (joined) destroyExecutor()
             if (!LocationUtils.inSkyblock) return@execute
-            hasJoined = true
+            joined = true
             Config.saveConfig()
 
             modMessage("""

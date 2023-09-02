@@ -17,7 +17,7 @@ import kotlin.math.abs
 
 object CanClip : Module(
     name = "Can Clip",
-    description = "Tells you if you are currently able to clip through a stair under you",
+    description = "Tells you if you are currently able to clip through a stair under you.",
     category = Category.SKYBLOCK
 ) {
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {

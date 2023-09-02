@@ -14,7 +14,7 @@ import kotlin.math.roundToInt
 
 object WatcherBar : Module(
     name = "Watcher Bar",
-    description = "Shows the watcher's health",
+    description = "Shows the watcher's health.",
     category = Category.DUNGEON,
 ) {
     private var currentName: String? = null

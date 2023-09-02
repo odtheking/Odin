@@ -9,7 +9,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object NoCarpet : Module(
     name = "No Carpet",
     category = Category.RENDER,
-    tag = TagType.NEW
+    tag = TagType.NEW,
+    description = "Removes nearby carpets."
 ) {
 
     var carpetList: ArrayList<BlockCarpet> = ArrayList()

@@ -24,7 +24,7 @@ import java.util.*
 
 object ArrowAlign : Module(
     name = "Arrow Align",
-    description = "Different features for the arrow alignment device",
+    description = "Different features for the arrow alignment device.",
     category = Category.FLOOR7,
     tag = TagType.NEW
 ) {

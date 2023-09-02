@@ -24,7 +24,7 @@ import java.awt.Color
 object NoRender : Module(
     name = "No Render",
     category = Category.RENDER,
-    description = "Disables certain render function when they are not necessary, resulting in a decrease in gpu usage"
+    description = "Disables certain render function when they are not necessary, resulting in a decrease in gpu usage."
 ) {
 
     private val decreaseGpuUsage: Boolean by BooleanSetting(name = "Reduce GPU Usage", default = true)

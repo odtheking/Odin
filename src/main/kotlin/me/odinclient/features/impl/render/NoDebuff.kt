@@ -18,7 +18,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object NoDebuff : Module(
     "No Debuff",
     category = Category.RENDER,
-    tag = TagType.NEW
+    tag = TagType.NEW,
+    description = "Disables certain debuffs."
 ) {
 
     private val antiBlind: Boolean by BooleanSetting("No Blindness", false, description = "Disables blindness")

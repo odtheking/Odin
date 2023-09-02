@@ -17,7 +17,7 @@ import net.minecraft.util.BlockPos
 //TODO: Rename settings
 object GhostBlock : Module(
     name = "Ghost Blocks",
-    description = "Creates ghost blocks on key press, and in specific locations",
+    description = "Creates ghost blocks on key press, and in specific locations.",
     category = Category.DUNGEON,
 ) {
     private val gkey: Boolean by BooleanSetting("GKey", true)

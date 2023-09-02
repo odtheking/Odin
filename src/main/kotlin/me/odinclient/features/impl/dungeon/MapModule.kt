@@ -8,7 +8,7 @@ import me.odinclient.utils.render.Color
 // Used to keep track of all dungeon map settings
 object MapModule : Module(
     name = "Dungeon Map",
-    description = "A dungeon map that scans the dungeon, heavily inspired by Funnymap",
+    description = "A dungeon map that scans the dungeon, heavily inspired by Funnymap.",
     category = Category.DUNGEON,
 ) {
     val mapWindow: Boolean by DualSetting("Is Window", "On Screen", "Window")

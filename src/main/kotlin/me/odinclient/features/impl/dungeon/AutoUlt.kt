@@ -12,7 +12,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object AutoUlt : Module(
     "Auto Ultimate",
-    category = Category.DUNGEON
+    category = Category.DUNGEON,
+    description = "Activates your ult at crucial moments, such as when giants spawn, Maxor is stuck in the first laser, or Goldor starts."
 ) {
     private val mode: Int by SelectorSetting("Mode", "Legit", arrayListOf("Legit", "Auto"))
 

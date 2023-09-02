@@ -23,7 +23,7 @@ import kotlin.math.max
 
 object DeployableTimer : Module(
     name = "Deployable Timer",
-    description = "Shows the time left on deployables",
+    description = "Shows the time left on deployables.",
     category = Category.SKYBLOCK
 ) {
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {

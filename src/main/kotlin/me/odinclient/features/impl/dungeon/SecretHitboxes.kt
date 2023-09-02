@@ -16,7 +16,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object SecretHitboxes : Module(
     name = "Secret Hitboxes",
-    description = "Full block Secret hitboxes",
+    description = "Full block Secret hitboxes.",
     category = Category.DUNGEON,
     tag = TagType.NEW
 ) {

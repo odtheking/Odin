@@ -20,7 +20,7 @@ import kotlin.math.sin
 object PersonalDragon : Module(
     name = "Personal Dragon",
     category = Category.RENDER,
-    description = "Renders your own personal dragon!"
+    description = "Renders your own personal dragon."
 ) {
     private val onlyF5: Boolean by BooleanSetting("Only F5", true)
     private val color: Color by ColorSetting("Color", Color(255, 255, 255))

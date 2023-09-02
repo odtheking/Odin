@@ -30,7 +30,7 @@ import kotlin.math.sin
 
 object AutoIceFill: Module(
     name = "Auto Ice Fill",
-    description = "Automatically completes the ice fill puzzle",
+    description = "Automatically completes the ice fill puzzle.",
     category = Category.DUNGEON,
     tag = TagType.RISKY
 ) {

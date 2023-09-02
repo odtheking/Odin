@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object CloseChest : Module(
     "Cancel Chest Open",
     category = Category.DUNGEON,
-    description = "Cancels the opening of chests in dungeons",
+    description = "Cancels the opening of chests in dungeons.",
     tag = TagType.NEW
 ) {
     @SubscribeEvent

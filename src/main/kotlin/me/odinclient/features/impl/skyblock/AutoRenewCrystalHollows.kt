@@ -7,7 +7,8 @@ import me.odinclient.utils.skyblock.ChatUtils
 object AutoRenewCrystalHollows : Module(
     name = "Auto-Renew Hollows Pass",
     category = Category.SKYBLOCK,
-    tag = TagType.NEW
+    tag = TagType.NEW,
+    description = "Automatically rebuy a crystal hollows pass."
 ) {
 
     init {

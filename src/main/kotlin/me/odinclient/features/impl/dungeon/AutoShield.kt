@@ -13,7 +13,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object AutoShield : Module(
     "Auto Shield",
-    category = Category.DUNGEON
+    category = Category.DUNGEON,
+    description = "Utilizes Wither shield every 5 seconds when health is not full (works with all Wither swords)."
 ) {
     private val witherSwords = arrayOf("Astraea", "Hyperion", "Valkyrie", "Scylla")
     private val onlyBoss: Boolean by BooleanSetting("Only Boss")

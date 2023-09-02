@@ -12,7 +12,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object SuperBoom : Module(
     name = "Super Boom",
-    description = "Places TNT when you left click on a block which can be blown up",
+    description = "Places TNT when you left click on a block which can be blown up.",
     category = Category.DUNGEON,
 ) {
     private val behavior: Boolean by DualSetting("Behavior", "Place", "Switch")

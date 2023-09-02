@@ -15,7 +15,7 @@ import net.minecraft.inventory.Slot
 
 object AutoSell : Module(
     name = "Auto Sell",
-    description = "Automatically sell items in trades and cookie menus",
+    description = "Automatically sell items in trades and cookie menus.",
     category = Category.DUNGEON
 ) {
     private val delay: Long by NumberSetting("Delay", 100, 10.0, 300.0, 5.0)

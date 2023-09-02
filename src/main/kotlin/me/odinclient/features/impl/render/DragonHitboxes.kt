@@ -19,7 +19,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 object DragonHitboxes : Module(
     name = "Dragon Hitboxes",
     category = Category.RENDER,
-    description = "Renders real dragon hitboxes",
+    description = "Renders real dragon hitboxes.",
     tag = TagType.NEW
 ) {
 
