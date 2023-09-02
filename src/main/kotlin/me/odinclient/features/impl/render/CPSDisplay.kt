@@ -33,10 +33,10 @@ object CPSDisplay : Module(
             rect(0f, 0f, 50f, 36f, color.brighter(leftAnim.get(1f, 1.5f, leftAnim.getPercent() >= 50)), 9f, 0f, 9f, 0f)
             rect(50f, 0f, 50f, 36f, color.brighter(rightAnim.get(1f, 1.5f, rightAnim.getPercent() >= 50)), 0f, 9f, 0f, 9f)
 
-            dropShadow(0f, 0f, 100f, 36f, 10f, 1f, 9f)
+            if (outline) dropShadow(0f, 0f, 100f, 36f, 10f, 1f, 9f)
         } else {
             rect(0f, 0f, 50f, 36f, color.brighter(anim.get(1f, 1.5f, anim.getPercent() >= 50)), 9f)
-            dropShadow(0f, 0f, 50f, 36f, 10f, 1f, 9f)
+            if (outline) dropShadow(0f, 0f, 50f, 36f, 10f, 1f, 9f)
         }
 
         if (mouseText) {
@@ -72,6 +72,9 @@ object CPSDisplay : Module(
         .withDependency { advanced }
 
     private val textColor: Color by ColorSetting("Text Color", Color(239, 239, 239, 1f), allowAlpha = true)
+        .withDependency { advanced }
+
+    private val outline: Boolean by BooleanSetting("Outline", true)
         .withDependency { advanced }
 
     private val leftAnim = EaseInOut(300)

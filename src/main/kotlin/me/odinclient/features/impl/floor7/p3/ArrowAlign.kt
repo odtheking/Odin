@@ -41,8 +41,9 @@ object ArrowAlign : Module(
         }
     private val triggerBotClock = Clock(delay)
     private data class Vec2(val x: Int, val y: Int)
+    private data class Frame(val entity: EntityItemFrame, var rotations: Int)
     //                                    xy pos         entity,          needed clicks        (x is technically z in the world)
-    private val neededRotations = HashMap<Vec2, Pair<EntityItemFrame, Int>>()
+    private val neededRotations = HashMap<Vec2, Frame>()
 
     init {
         execute(3000) {
@@ -64,9 +65,10 @@ object ArrowAlign : Module(
 
     private fun triggerBot() {
         if (!triggerBotClock.hasTimePassed(delay)) return
-        val rotations = neededRotations.values.find { it.first == mc.objectMouseOver?.entityHit }?.second ?: return
-        if (rotations == 0) return
+        val rot = neededRotations.values.find { it.entity == mc.objectMouseOver?.entityHit } ?: return
+        if (rot.rotations == 0) return
         PlayerUtils.rightClick()
+        rot.rotations--
         triggerBotClock.update()
     }
 
@@ -75,7 +77,7 @@ object ArrowAlign : Module(
         if (triggerBot) triggerBot()
         if (!solver) return
         for (place in neededRotations) {
-            val clicksNeeded = place.value.second
+            val clicksNeeded = place.value.rotations
             val color = when {
                 clicksNeeded == 0 -> continue
                 clicksNeeded < 3 -> Color(85, 255, 85).rgba
@@ -113,7 +115,7 @@ object ArrowAlign : Module(
                 else -> 0
             }
             when (maze[x][y]) {
-                1 -> neededRotations[Vec2(x, y)] = Pair(frame, frame.rotation)
+                1 -> neededRotations[Vec2(x, y)] = Frame(frame, frame.rotation)
                 3 -> queue.add(Vec2(x, y))
             }
         }
@@ -129,11 +131,11 @@ object ArrowAlign : Module(
                 queue.add(Vec2(x, y))
                 solutions[s] = rotations
                 if (visited[s.x][s.y]) continue
-                val frame = neededRotations[s]?.first ?: continue
-                var neededRotation = neededRotations[s]?.second ?: continue
+                val frame = neededRotations[s]?.entity ?: continue
+                var neededRotation = neededRotations[s]?.rotations ?: continue
                 neededRotation = rotations - neededRotation
                 if (neededRotation < 0) neededRotation += 8
-                neededRotations[s] = Pair(frame, neededRotation)
+                neededRotations[s] = Frame(frame, neededRotation)
                 visited[s.x][s.y] = true
             }
         }

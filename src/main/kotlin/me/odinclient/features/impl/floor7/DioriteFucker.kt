@@ -17,7 +17,7 @@ object DioriteFucker : Module(
 
     init {
         execute(delay = { delay }) {
-            if (mc.theWorld == null || DungeonUtils.getPhase() != 2) return@execute
+            if (mc.theWorld == null || DungeonUtils.getPhase() != 2 || !enabled) return@execute
             for (block in pillars) {
                 if (mc.theWorld.chunkProvider.provideChunk(block.x shr 4, block.z shr 4).getBlock(block) == Blocks.stone) {
                     mc.theWorld.setBlockState(block, Blocks.glass.defaultState, 3)

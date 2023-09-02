@@ -22,7 +22,7 @@ object DragonBoxes : Module(
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
         if (DungeonUtils.getPhase() != 5) return
-        DragonColors.values().forEach { it.checkAlive() }
+        DragonColors.entries.forEach { it.checkAlive() }
     }
 
     @SubscribeEvent
