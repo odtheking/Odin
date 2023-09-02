@@ -16,7 +16,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 object RelicAura : Module(
     name = "Relic Aura",
     category = Category.FLOOR7,
-    description = "Automatically picks up relics in the Wither King boss-fight."
+    description = "Automatically picks up relics in the Wither King boss-fight.",
+    tag = TagType.RISKY
 ){
     private var disabler = false
 

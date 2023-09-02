@@ -24,7 +24,7 @@ object PlayerUtils {
      * Right-clicks the next tick
      */
     fun rightClick() {
-        KeyBinding.onTick(-99) // Simple way of making completely sure the right-clicks are sent at the same time as vanilla ones.
+        KeyBinding.onTick(100 - mc.gameSettings.keyBindUseItem.keyCode) // Simple way of making completely sure the right-clicks are sent at the same time as vanilla ones.
     }
 
     /**
