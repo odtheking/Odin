@@ -7,7 +7,7 @@ import me.odinclient.utils.skyblock.ChatUtils.sendCommand
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object EscrowFix : Module(
-    name = "Escrow Fix",
+    name = "AH Re-open",
     description = "Automatically reopens the ah/bz when it gets closed by escrow",
     category = Category.SKYBLOCK,
     tag = TagType.NEW

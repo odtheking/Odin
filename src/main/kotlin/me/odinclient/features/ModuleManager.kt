@@ -79,7 +79,6 @@ object ModuleManager {
         Reminders,
         TermAC,
         Ghosts,
-        BPS,
         PortalFix,
         TerminalTimes,
         Waypoints,
