@@ -69,6 +69,7 @@ object DragonHitboxes : Module(
         for (dragon in dragonRenderQueue) {
             for (entity in dragon.dragonPartArray) {
                 val entityId = entity.entityId
+                if (entityId == PersonalDragon.entityDragon?.entityId) return
                 entityPositions[entityId]?.apply {
                     val lastX = this[0]
                     val lastY = this[1]
