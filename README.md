@@ -72,7 +72,7 @@ OdinClient is a comprehensive Forge mod for Hypixel Skyblock, offering a range o
 - **Terminator AC:** Randomized auto-clicker for Terminator, delay adapts to the server's current TPS, meaning you should never get kicked.
 - **Cookie Clicker:** Automatically clicks the cookie in the cookie clicker menu.
 - **Kuudra Alerts:** Displays alerts for certain kuudra events.
-- **Vanq Notifier:** Sends a message whenever a vanquisher spawns
+- **Vanq Notifier:** Sends a message whenever a vanquisher spawns.
 - **Gyro Range:** Renders a helpful circle to show the range of the Gyrokinetic Wand.
 - **Auto Sprint:** Automatically makes you sprint.
 - **Escrow Fix:** Automatically reopens the ah/bz when it gets closed by escrow.
