@@ -1,6 +1,7 @@
 package me.odinclient.features.impl.render
 
 import cc.polyfrost.oneconfig.renderer.font.Fonts
+import me.odinclient.events.impl.PacketSentEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.Setting.Companion.withDependency
@@ -16,6 +17,8 @@ import me.odinclient.utils.render.gui.nvg.TextAlign
 import me.odinclient.utils.render.gui.nvg.dropShadow
 import me.odinclient.utils.render.gui.nvg.rect
 import me.odinclient.utils.render.gui.nvg.text
+import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object CPSDisplay : Module(
     "CPS Display",
@@ -91,5 +94,12 @@ object CPSDisplay : Module(
     fun onRightClick() {
         rightClicks.add(System.currentTimeMillis())
         rightAnim.start(true)
+    }
+
+    @SubscribeEvent
+    fun onSendPacket(event: PacketSentEvent) { // This is for any block placement packet that gets sent outside the rightclickmouse method :eyes:
+        if (event.packet !is C08PacketPlayerBlockPlacement) return
+        if (rightClicks.any { System.currentTimeMillis() - it < 10 }) return
+        onRightClick()
     }
 }

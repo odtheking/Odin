@@ -16,7 +16,6 @@ class BooleanSetting (
     override var value: Boolean = default
         set (value) {
             field = processInput(value)
-
         }
 
     var enabled: Boolean by this::value

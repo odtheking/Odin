@@ -67,7 +67,10 @@ class ElementHud(parent: ModuleButton, setting: HudSetting) : Element<HudSetting
     override fun mouseClicked(mouseButton: Int): Boolean {
         if (mouseButton == 0) {
             when {
-                isHovered -> if (colorAnim.start()) setting.enabled = !setting.enabled
+                isHovered -> if (colorAnim.start()) {
+                    setting.enabled = !setting.enabled
+                    setting.value.enabledSetting.value = setting.enabled
+                }
                 isShortcutHovered -> ClickGUI.swapScreens(EditHUDGui)
                 else -> return false
             }

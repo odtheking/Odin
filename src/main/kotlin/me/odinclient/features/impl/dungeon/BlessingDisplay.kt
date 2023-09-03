@@ -25,7 +25,7 @@ object BlessingDisplay : Module(
     private val life: Boolean by BooleanSetting("Life Blessing")
     private val wisdom: Boolean by BooleanSetting("Wisdom Blessing")
 
-    private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, true) {
+    private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {
             textWithControlCodes("§cPower §a29", 1f, 9f, 16f, Fonts.REGULAR)
             textWithControlCodes("§cT§6i§am§5e §a5", 1f, 26f, 16f, Fonts.REGULAR)

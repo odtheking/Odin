@@ -3,6 +3,7 @@ package me.odinclient.ui.hud
 import me.odinclient.features.Module
 import me.odinclient.features.ModuleManager.huds
 import me.odinclient.features.settings.impl.BooleanSetting
+import me.odinclient.features.settings.impl.HudSetting
 import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinclient.ui.clickgui.util.HoverHandler
@@ -21,6 +22,7 @@ import me.odinclient.utils.render.gui.nvg.*
 open class HudElement(
     x: Float = 0f,
     y: Float = 0f,
+    val displayToggle: Boolean,
     defaultScale: Float = 2f,
     val render: Render = { 0f to 0f }
 ) {
@@ -35,6 +37,7 @@ open class HudElement(
     internal val xSetting: NumberSetting<Float>
     internal val ySetting: NumberSetting<Float>
     internal val scaleSetting: NumberSetting<Float>
+    val enabledSetting: BooleanSetting = BooleanSetting("hudEnabled", default = enabled, hidden = true)
 
     val hoverHandler = HoverHandler(200)
 
@@ -44,7 +47,8 @@ open class HudElement(
         module.register(
             xSetting,
             ySetting,
-            scaleSetting
+            scaleSetting,
+            enabledSetting
         )
 
         huds.add(this)
@@ -79,6 +83,7 @@ open class HudElement(
      * Renders and positions the element and if it's rendering the example then draw a rect behind it.
      */
     fun draw(vg: NVG, example: Boolean) {
+        if (displayToggle) enabled = enabledSetting.value
         if (!isEnabled) return
 
         vg.translate(x, y)
@@ -156,6 +161,7 @@ open class HudElement(
         this.xSetting = xHud
         this.ySetting = yHud
         this.scaleSetting = scaleHud
+        this.enabled = enabledSetting.value
     }
 }
 
