@@ -53,7 +53,7 @@ object BlessingDisplay : Module(
         LIFE(Regex("Blessing of Life (X{0,3}(IX|IV|V?I{0,3}))"), "§4Life", { life }),
         WISDOM(Regex("Blessing of Wisdom (X{0,3}(IX|IV|V?I{0,3}))"), "§bWisdom", { wisdom }),
         STONE(Regex("Blessing of Stone (X{0,3}(IX|IV|V?I{0,3}))"), "§8Stone", { stone }),
-        TIME(Regex("Blessing of Time V"), "§cT§6i§am§5e", { time });
+        TIME(Regex("Blessing of Time (V)"), "§cT§6i§am§5e", { time });
 
         fun reset() {
             current = 0
