@@ -1,7 +1,7 @@
 package me.odin.utils.render.world
 
-import me.odin.events.impl.RenderEntityModelEvent
 import me.odin.Odin.Companion.mc
+import me.odin.events.impl.RenderEntityModelEvent
 import me.odin.utils.render.Color
 import net.minecraft.client.model.ModelBase
 import net.minecraft.client.renderer.GlStateManager

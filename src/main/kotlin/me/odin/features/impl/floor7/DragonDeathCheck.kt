@@ -2,7 +2,6 @@ package me.odin.features.impl.floor7
 
 import me.odin.features.Category
 import me.odin.features.Module
-import me.odin.features.settings.AlwaysActive
 import me.odin.features.settings.impl.BooleanSetting
 import me.odin.utils.WebUtils
 import me.odin.utils.skyblock.ChatUtils

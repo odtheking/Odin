@@ -5,10 +5,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.odin.Odin.Companion.mc
-import me.odin.utils.skyblock.WorldUtils
 import net.minecraft.inventory.ContainerChest
-import net.minecraft.util.BlockPos
-import net.minecraft.util.Vec3
 
 object AsyncUtils {
     suspend fun waitUntilLastItem(container: ContainerChest) = coroutineScope {

@@ -25,7 +25,7 @@ object BlessingDisplay : Module(
     private val life: Boolean by BooleanSetting("Life Blessing")
     private val wisdom: Boolean by BooleanSetting("Wisdom Blessing")
 
-    private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, true) {
+    private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {
             textWithControlCodes("§cPower §a29", 1f, 9f, 16f, Fonts.REGULAR)
             textWithControlCodes("§cT§6i§am§5e §a5", 1f, 26f, 16f, Fonts.REGULAR)
@@ -53,7 +53,7 @@ object BlessingDisplay : Module(
         LIFE(Regex("Blessing of Life (X{0,3}(IX|IV|V?I{0,3}))"), "§4Life", { life }),
         WISDOM(Regex("Blessing of Wisdom (X{0,3}(IX|IV|V?I{0,3}))"), "§bWisdom", { wisdom }),
         STONE(Regex("Blessing of Stone (X{0,3}(IX|IV|V?I{0,3}))"), "§8Stone", { stone }),
-        TIME(Regex("Blessing of Time V"), "§cT§6i§am§5e", { time });
+        TIME(Regex("Blessing of Time (V)"), "§cT§6i§am§5e", { time });
 
         fun reset() {
             current = 0

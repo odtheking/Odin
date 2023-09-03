@@ -16,7 +16,7 @@ class HudSetting(
 ) : Setting<HudElement>(name, hidden, description) {
 
     constructor(name: String, x: Float, y: Float, scale: Float = 1f, toggleable: Boolean, draw: Render) :
-            this(name, HudElement(x, y, scale, draw), toggleable)
+            this(name, HudElement(x, y, toggleable, scale, draw), toggleable)
 
     override val default: HudElement = hud
 

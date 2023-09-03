@@ -7,7 +7,6 @@ import me.odin.features.Module
 import me.odin.features.settings.impl.BooleanSetting
 import me.odin.features.settings.impl.NumberSetting
 import me.odin.utils.Utils.containsOneOf
-import me.odin.utils.skyblock.ChatUtils
 import me.odin.utils.skyblock.ChatUtils.modMessage
 import me.odin.utils.skyblock.PlayerUtils
 import me.odin.utils.skyblock.dungeon.DungeonUtils
