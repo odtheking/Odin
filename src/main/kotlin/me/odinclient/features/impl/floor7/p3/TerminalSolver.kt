@@ -47,8 +47,7 @@ object TerminalSolver : Module(
         "Correct all the panes!",
         "Change all to same color!",
         "Click in order!",
-        "Large Chest",
-        //"What starts with",
+        "What starts with",
         "Select all the"
     )
     private var currentTerm = -1
@@ -104,11 +103,11 @@ object TerminalSolver : Module(
             }
             2 -> {
                 val index = solution.indexOf(event.slot.slotIndex)
-                if (index < 3)
-                    Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, orderColor.withAlpha(2f / (index + 3)).rgba)
+                if (index < 3) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, orderColor.withAlpha(2f / (index + 3)).rgba)
 
                 val amount = event.slot.stack?.stackSize ?: 0
                 mc.fontRendererObj.drawString(amount.toString(), event.x + 9 - mc.fontRendererObj.getStringWidth(amount.toString()) / 2, event.y + 5, textColor.rgba)
+                event.isCanceled = true
             }
             3 -> Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, startsWithColor.rgba)
             4 -> Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, selectColor.rgba)
