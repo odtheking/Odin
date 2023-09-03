@@ -31,6 +31,7 @@ object AutoSell : Module(
 
     init {
         execute(delay = { delay }) {
+            if (!enabled) return@execute
             val container = mc.thePlayer.openContainer ?: return@execute
             if (container !is ContainerChest) return@execute
 
