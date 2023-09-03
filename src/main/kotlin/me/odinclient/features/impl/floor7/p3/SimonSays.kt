@@ -60,7 +60,7 @@ object SimonSays : Module(
         } else if (pos.x == 110) {
             if (state.block == Blocks.air) {
                 clickNeeded = 0
-                clickInOrder.clear() // TODO: Make sure this works most of the time, or maybe add a setting for this as this will provide less consistency, but work better with "ss skip"
+                //clickInOrder.clear() // TODO: Add a setting for this, not clearing the list makes it more consistent, but might break with "ss skip"
             } else if (state.block == Blocks.stone_button && old.block == Blocks.stone_button && state.getValue(BlockButtonStone.POWERED)) {
                 val index = clickInOrder.indexOf(pos.add(1, 0, 0)) + 1
                 clickNeeded = if (index >= clickInOrder.size) 0 else index
