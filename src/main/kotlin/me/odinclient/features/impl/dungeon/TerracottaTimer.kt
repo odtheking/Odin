@@ -32,7 +32,6 @@ object TerracottaTimer : Module(
                 1500
             )
         )
-        modMessage("added terracotta")
     }
 
     @SubscribeEvent
