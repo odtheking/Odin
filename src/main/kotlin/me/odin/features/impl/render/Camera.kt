@@ -23,8 +23,6 @@ object Camera : Module(
     description = "Allows you to disable front cam."
 ) {
     private val frontCamera: Boolean by BooleanSetting("No Front Camera")
-    private val cameraClip: Boolean by BooleanSetting("Camera Clip")
-    private val cameraDist: Float by NumberSetting("Distance", 4f, 3.0, 12.0, 0.5)
 
     private val color: Color by ColorSetting("HUD Color", Color(255, 0, 0))
 
