@@ -97,7 +97,7 @@ object SimonSays : Module(
                 clickNeeded + 1 -> Color(255, 170, 0)
                 else -> Color(170, 0, 0)
             }.withAlpha(.5f)
-            RenderUtils.drawFilledBox(matrixStack, AxisAlignedBB(x, y, z, x + .1875, y + .375, z + .5), color)
+            RenderUtils.drawFilledBox(AxisAlignedBB(x, y, z, x + .1875, y + .375, z + .5), color)
         }
         GlStateManager.enableCull()
     }

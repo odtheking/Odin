@@ -7,15 +7,20 @@ import me.odinclient.features.Category
 import me.odinclient.features.impl.render.ClickGUIModule
 import me.odinclient.ui.Screen
 import me.odinclient.ui.clickgui.elements.menu.ElementColor
+import me.odinclient.ui.clickgui.util.ColorUtil
 import me.odinclient.ui.clickgui.util.ColorUtil.buttonColor
 import me.odinclient.ui.clickgui.util.ColorUtil.textColor
 import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinclient.ui.clickgui.util.HoverHandler
 import me.odinclient.utils.clock.Executor
 import me.odinclient.utils.clock.Executor.Companion.register
+import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.gui.animations.impl.EaseInOut
 import me.odinclient.utils.render.gui.nvg.*
+import me.odinclient.utils.render.world.RenderUtils.bindColor
 import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
@@ -47,7 +52,10 @@ object ClickGUI : Screen() {
     }
 
     override fun draw(nvg: NVG) {
+        val sr = ScaledResolution(mc)
+        GlStateManager.scale(1.0 / sr.scaleFactor, 1.0 / sr.scaleFactor, 1.0)
         nvg {
+            rect(100f, 100f, 100f, 100f, ColorUtil.elementBackground, 5f)
             if (anim.isAnimating()) {
                 translate(0f, floor(anim.get(-10f, 0f, !open)))
                 setAlpha(anim.get(0f, 1f, !open))
@@ -59,6 +67,7 @@ object ClickGUI : Screen() {
 
             desc.render(this)
         }
+        GlStateManager.scale(sr.scaleFactor.toDouble(), sr.scaleFactor.toDouble(), 1.0)
     }
 
     override fun onScroll(amount: Int) {
