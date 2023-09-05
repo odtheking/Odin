@@ -20,7 +20,7 @@ OdinClient is a comprehensive Forge mod for Hypixel Skyblock, offering a range o
 - **Ghost Block:** Creates ghost blocks on keypress, and in specific locations.
 - **Watcher Bar:** Shows the watcher's health.
 - **Superboom:** Places TNT when you left click on a block which can blow up.
-- **Auto Ice Fill:** AutomaTically completes the ice fill puzzle.
+- **Auto Ice Fill:** Automatically completes the ice fill puzzle.
 - **Auto Shield:** Utilizes Wither shield every 5 seconds when health is not full (works with all Wither swords).
 - **Auto Mask:** Automatically uses masks when they proc.
 - **Triggerbot:** Instantly left clicks if you are looking at a specified mob.
@@ -63,6 +63,7 @@ OdinClient is a comprehensive Forge mod for Hypixel Skyblock, offering a range o
 
 ##Skyblock
 - **Auto-Renew Hollows Pass:** Automatically rebuy a crystal hollows pass.
+- **Auto Limbo Leave:** Automatically leaves limbo whenever you get kicked.
 - **Private Commands:** Offers custom commands for private message use, accessible via !help in private chat.
 - **Auto Experiemnts:** Automatically click on the Chronomatron and Ultrasequencer experiments.
 - **Farming Hitboxes:** Expands the hitbox of some crops to a full block

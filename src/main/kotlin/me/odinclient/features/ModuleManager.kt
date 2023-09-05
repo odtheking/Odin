@@ -103,7 +103,8 @@ object ModuleManager {
         TerracottaTimer,
         MimicMessage,
         AutoRenewCrystalHollows,
-        AutoDungeonReque
+        AutoDungeonReque,
+        LimboLeave
     )
 
     @SubscribeEvent
