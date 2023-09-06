@@ -55,7 +55,6 @@ object ClickGUI : Screen() {
         val sr = ScaledResolution(mc)
         GlStateManager.scale(1.0 / sr.scaleFactor, 1.0 / sr.scaleFactor, 1.0)
         nvg {
-            rect(100f, 100f, 100f, 100f, ColorUtil.elementBackground, 5f)
             if (anim.isAnimating()) {
                 translate(0f, floor(anim.get(-10f, 0f, !open)))
                 setAlpha(anim.get(0f, 1f, !open))

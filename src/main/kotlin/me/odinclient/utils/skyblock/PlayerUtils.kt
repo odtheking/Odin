@@ -31,7 +31,7 @@ object PlayerUtils {
      * Left-clicks the next tick
      */
     fun leftClick() {
-        KeyBinding.onTick(mc.gameSettings.keyBindUseItem.keyCode) // Simple way of making completely sure the left-clicks are sent at the same time as vanilla ones.
+        KeyBinding.onTick(mc.gameSettings.keyBindAttack.keyCode) // Simple way of making completely sure the left-clicks are sent at the same time as vanilla ones.
     }
 
     fun dropItem() {

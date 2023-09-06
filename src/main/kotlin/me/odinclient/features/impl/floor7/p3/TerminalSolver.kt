@@ -18,6 +18,7 @@ import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest
+import net.minecraft.item.EnumDyeColor
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
@@ -69,8 +70,8 @@ object TerminalSolver : Module(
                 solveStartsWith(items, letter)
             }
             4 -> {
-                val color = Regex("Select all the ([\\w| ]+) items!").find(event.name)?.groupValues?.get(1) ?: return modMessage("Failed to find color, please report this!")
-                solveSelect(items, color.lowercase())
+                val colorNeeded = EnumDyeColor.entries.find { event.name.contains(it.getName().replace("_", " ").uppercase()) }?.unlocalizedName ?: return modMessage("Failed to find color, please report this!")
+                solveSelect(items, colorNeeded.lowercase())
             }
         }
     }
@@ -163,8 +164,7 @@ object TerminalSolver : Module(
         solution = items.filter { it?.displayName?.noControlCodes?.startsWith(letter, true) == true && !it.isItemEnchanted }.map { items.indexOf(it) }
     }
 
-    private val colorMap = listOf("wool" to "white", "bone" to "white", "lapis" to "blue", "ink" to "black", "cocoa" to "brown", "dandelion" to "yellow", "rose" to "red", "cactus" to "green", "light gray" to "silver")
     private fun solveSelect(items: List<ItemStack?>, color: String) {
-        solution = items.filter { (colorMap.any {c -> it?.displayName?.lowercase()?.contains(c.first, true) == true && c.second == color } || it?.displayName?.contains(color) == true) && it?.isItemEnchanted == false }.map { items.indexOf(it) }
+        solution = items.filter { it?.isItemEnchanted == false && it.unlocalizedName.contains(color) }.map { items.indexOf(it) }
     }
 }

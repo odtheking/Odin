@@ -63,6 +63,8 @@ object CPSDisplay : Module(
         if (button == 2) 100f to 38f else 50f to 38f
     }
 
+    private val countPackets: Boolean by BooleanSetting("Count Packets", false, description = "Counts packets sent outside of the rightclickmouse method, this will be better at detecting other mods' autoclickers, but might show innacurate values.")
+
     private val advanced: Boolean by BooleanSetting("Settings", false)
 
     private val button: Int by SelectorSetting("Button", "Both", arrayListOf("Left", "Right", "Both"))
@@ -98,8 +100,8 @@ object CPSDisplay : Module(
 
     @SubscribeEvent
     fun onSendPacket(event: PacketSentEvent) { // This is for any block placement packet that gets sent outside the rightclickmouse method :eyes:
-        if (event.packet !is C08PacketPlayerBlockPlacement) return
-        if (rightClicks.any { System.currentTimeMillis() - it < 10 }) return
+        if (event.packet !is C08PacketPlayerBlockPlacement || !countPackets) return
+        if (rightClicks.any { System.currentTimeMillis() - it < 5 }) return
         onRightClick()
     }
 }
