@@ -13,7 +13,6 @@ As far as the community is aware this mod should not break any hypixel rules but
 - **Auto Extra Stats:** Automatically clicks the extra stats at the end of a dungeon.
 - **Blessing Display:** Displays the current blessings of the dungeon.
 - **Watcher Bar:** Shows the watcher's health.
-- **Auto Ice Fill:** AutomaTically completes the ice fill puzzle.
 - **Key Highlights:** Draws a box around the key.
 
 ### Floor 7
