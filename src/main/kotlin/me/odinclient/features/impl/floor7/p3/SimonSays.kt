@@ -87,7 +87,6 @@ object SimonSays : Module(
         val (viewerX, viewerY, viewerZ) = RenderUtils.viewerPos
 
         for (index in clickNeeded until clickInOrder.size) {
-            val matrixStack = UMatrixStack()
             val pos = clickInOrder[index]
             val x = pos.x - viewerX - .125
             val y = pos.y - viewerY + .3125

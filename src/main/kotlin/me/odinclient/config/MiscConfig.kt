@@ -7,7 +7,7 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.odinclient.OdinClient.Companion.scope
-import me.odinclient.features.impl.floor7.TerminalTimes
+import me.odinclient.features.impl.floor7.p3.TerminalTimes
 import java.io.File
 import java.io.IOException
 

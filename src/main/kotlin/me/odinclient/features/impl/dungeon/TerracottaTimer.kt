@@ -8,6 +8,7 @@ import me.odinclient.utils.VecUtils.addVec
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
+import me.odinclient.utils.skyblock.LocationUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -29,7 +30,7 @@ object TerracottaTimer : Module(
         terrasSpawning.add(
             Terracotta(
                 Vec3(event.pos).addVec(.5, 1.5, .5),
-                1500
+                if (LocationUtils.currentDungeon?.floor?.isInMM == true) 1200 else 1500
             )
         )
     }

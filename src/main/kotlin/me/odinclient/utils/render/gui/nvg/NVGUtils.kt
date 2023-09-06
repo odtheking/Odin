@@ -5,6 +5,7 @@ import cc.polyfrost.oneconfig.renderer.font.Font
 import cc.polyfrost.oneconfig.renderer.scissor.Scissor
 import cc.polyfrost.oneconfig.renderer.scissor.ScissorHelper
 import cc.polyfrost.oneconfig.utils.dsl.nanoVGHelper
+import me.odinclient.features.impl.render.ClickGUIModule.experimentalRendering
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.gui.nvg.TextAlign.*
 import me.odinclient.utils.render.world.RenderUtils
@@ -62,7 +63,10 @@ fun NVG.rect(
     x: Float, y: Float, w: Float, h: Float, color: Color, topL: Float, topR: Float, botL: Float, botR: Float
 ) {
     if (color.isTransparent) return
-    //renderer.drawRoundedRectVaried(context, x, y, w, h, color.rgba, topL, topR, botR, botL)
+    if (!experimentalRendering) {
+        renderer.drawRoundedRectVaried(context, x, y, w, h, color.rgba, topL, topR, botR, botL)
+        return
+    }
     GlStateManager.pushMatrix()
     GlStateManager.enableAlpha()
     GlStateManager.disableTexture2D()

@@ -1,6 +1,7 @@
 package me.odinclient.features.impl.floor7.p3
 
 import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.events.impl.ChatPacketEvent
 import me.odinclient.events.impl.DrawSlotEvent
 import me.odinclient.events.impl.GuiClosedEvent
 import me.odinclient.events.impl.GuiLoadedEvent
@@ -11,6 +12,7 @@ import me.odinclient.features.settings.Setting.Companion.withDependency
 import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.features.settings.impl.ColorSetting
 import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import net.minecraft.client.gui.Gui
@@ -67,7 +69,7 @@ object TerminalSolver : Module(
                 solveStartsWith(items, letter)
             }
             4 -> {
-                val color = Regex("Select all the (\\w+) items!").find(event.name)?.groupValues?.get(1) ?: return modMessage("Failed to find color, please report this!")
+                val color = Regex("Select all the ([\\w| ]+) items!").find(event.name)?.groupValues?.get(1) ?: return modMessage("Failed to find color, please report this!")
                 solveSelect(items, color.lowercase())
             }
         }
@@ -127,6 +129,13 @@ object TerminalSolver : Module(
         solution = emptyList()
     }
 
+    @SubscribeEvent
+    fun onChat(event: ChatPacketEvent) {
+        val match = Regex("(.+) (?:activated|completed) a terminal! \\((\\d)/(\\d)\\)").find(event.message) ?: return
+        if (match.groups[1]?.value != mc.thePlayer.name) return
+        currentTerm = -1
+    }
+
     private fun solvePanes(items: List<ItemStack?>) {
         solution = items.filter { it?.metadata == 14 && Item.getIdFromItem(it.item) == 160 }.filterNotNull().map { items.indexOf(it) }
     }
@@ -151,11 +160,11 @@ object TerminalSolver : Module(
     }
 
     private fun solveStartsWith(items: List<ItemStack?>, letter: String) {
-        solution = items.filter { it?.displayName?.startsWith(letter, true) == true && !it.isItemEnchanted }.map { items.indexOf(it) }
+        solution = items.filter { it?.displayName?.noControlCodes?.startsWith(letter, true) == true && !it.isItemEnchanted }.map { items.indexOf(it) }
     }
 
     private val colorMap = listOf("wool" to "white", "bone" to "white", "lapis" to "blue", "ink" to "black", "cocoa" to "brown", "dandelion" to "yellow", "rose" to "red", "cactus" to "green", "light gray" to "silver")
     private fun solveSelect(items: List<ItemStack?>, color: String) {
-        solution = items.filter { (colorMap.any {c -> it?.displayName?.lowercase()?.contains(c.first) == true && c.second == color } || it?.displayName?.contains(color) == true) && it?.isItemEnchanted == false }.map { items.indexOf(it) }
+        solution = items.filter { (colorMap.any {c -> it?.displayName?.lowercase()?.contains(c.first, true) == true && c.second == color } || it?.displayName?.contains(color) == true) && it?.isItemEnchanted == false }.map { items.indexOf(it) }
     }
 }

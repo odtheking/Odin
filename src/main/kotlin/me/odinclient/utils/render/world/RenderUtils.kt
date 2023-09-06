@@ -176,7 +176,9 @@ object RenderUtils {
     }
 
     fun drawFilledBox(aabb: AxisAlignedBB, color: Color) {
+        GlStateManager.pushMatrix()
         GlStateManager.disableTexture2D()
+        GlStateManager.enableAlpha()
         color.bindColor()
         worldRenderer {
             begin(7, DefaultVertexFormats.POSITION_NORMAL)
@@ -207,7 +209,9 @@ object RenderUtils {
         }
         tessellator.draw()
         GlStateManager.resetColor()
+        GlStateManager.disableAlpha()
         GlStateManager.enableTexture2D()
+        GlStateManager.popMatrix()
     }
 
     fun drawStringInWorld(
