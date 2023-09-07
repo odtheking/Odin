@@ -101,7 +101,8 @@ object ModuleManager {
         MimicMessage,
         AutoRenewCrystalHollows,
         AutoDungeonReque,
-        LimboLeave
+        LimboLeave,
+        HoverTerms
     )
 
     @SubscribeEvent

@@ -45,6 +45,7 @@ object TerminalSolver : Module(
     private val wrongColor: Color by ColorSetting("Wrong Color", Color(45, 45, 45), true).withDependency { removeWrong }
 
     private val zLevel: Float get() = if (behindItem) 100f else 200f
+    private var lastLeftTerm = 0L
 
     private val terminalNames = listOf(
         "Correct all the panes!",
@@ -54,12 +55,13 @@ object TerminalSolver : Module(
         "Select all the"
     )
     private var currentTerm = -1
-    private var solution = listOf<Int>()
+    var solution = listOf<Int>()
 
     @SubscribeEvent
     fun onGuiLoad(event: GuiLoadedEvent) {
         currentTerm = terminalNames.indexOfFirst { event.name.startsWith(it) }
         if (currentTerm == -1) return
+        lastLeftTerm = 0L
         val items = event.gui.inventory.subList(0, event.gui.inventory.size - 37)
         when (currentTerm) {
             0 -> solvePanes(items)
@@ -120,7 +122,7 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun onTooltip(event: ItemTooltipEvent) {
-        if (currentTerm == -1 || !cancelToolTip) return
+        if (lastLeftTerm - System.currentTimeMillis() < 500 || !cancelToolTip) return
         event.toolTip.clear()
     }
 
@@ -128,6 +130,7 @@ object TerminalSolver : Module(
     fun onGuiClosed(event: GuiClosedEvent) {
         currentTerm = -1
         solution = emptyList()
+        lastLeftTerm = System.currentTimeMillis()
     }
 
     @SubscribeEvent
