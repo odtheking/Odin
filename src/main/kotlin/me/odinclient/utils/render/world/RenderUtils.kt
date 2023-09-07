@@ -1,6 +1,5 @@
 package me.odinclient.utils.render.world
 
-import cc.polyfrost.oneconfig.libs.universal.UMatrixStack
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinclient.utils.render.Color
@@ -18,6 +17,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.GL_QUADS
+import org.lwjgl.opengl.GLSync
 import org.lwjgl.util.glu.Cylinder
 import org.lwjgl.util.glu.GLU
 import kotlin.math.*
@@ -28,7 +28,7 @@ object RenderUtils {
     private val worldRenderer: WorldRenderer = tessellator.worldRenderer
     private val renderManager: RenderManager = mc.renderManager
 
-    var partialTicks = 0f
+    private var partialTicks = 0f
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
@@ -63,6 +63,20 @@ object RenderUtils {
     
     inline operator fun WorldRenderer.invoke(block: WorldRenderer.() -> Unit) {
         block.invoke(this)
+    }
+
+    /**
+     * @param color Has to be in the range of 0-255
+     */
+    fun drawCustomESPBox(aabb: AxisAlignedBB, color: Color, thickness: Float = 3f, phase: Boolean) {
+        drawCustomESPBox(
+            aabb.minX, aabb.maxX - aabb.minX,
+            aabb.minY, aabb.maxY - aabb.minY,
+            aabb.minZ, aabb.maxZ - aabb.minZ,
+            color,
+            thickness,
+            phase
+        )
     }
 
     /**
@@ -127,10 +141,13 @@ object RenderUtils {
         GlStateManager.popMatrix()
     }
 
-    fun drawFilledBox(aabb: AxisAlignedBB, color: Color) {
+    fun drawFilledBox(aabb: AxisAlignedBB, color: Color, phase: Boolean = false) {
         GlStateManager.pushMatrix()
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+        if (phase) GlStateManager.disableDepth()
         GlStateManager.disableTexture2D()
-        GlStateManager.enableAlpha()
+        GlStateManager.disableLighting()
+        GlStateManager.enableBlend()
         color.bindColor()
         worldRenderer {
             begin(7, DefaultVertexFormats.POSITION_NORMAL)
@@ -160,9 +177,10 @@ object RenderUtils {
             pos(aabb.maxX, aabb.minY, aabb.maxZ).normal(1f, 0f, 0f).endVertex()
         }
         tessellator.draw()
-        GlStateManager.resetColor()
-        GlStateManager.disableAlpha()
         GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
+        GlStateManager.enableDepth()
+        GlStateManager.resetColor()
         GlStateManager.popMatrix()
     }
 

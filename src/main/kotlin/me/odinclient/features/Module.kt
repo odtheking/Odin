@@ -155,6 +155,10 @@ abstract class Module(
         ModuleManager.messageFunctions.add(ModuleManager.MessageFunction(filter, func))
     }
 
+    fun onWorldLoad(func: () -> Unit) {
+        ModuleManager.worldLoadFunctions.add(func)
+    }
+
     fun execute(delay: Long, func: Executable) {
         executors.add(Executor(delay, func))
     }

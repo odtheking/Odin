@@ -13,6 +13,7 @@ import me.odinclient.utils.render.gui.nvg.drawNVG
 import net.minecraft.network.Packet
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 /**
@@ -22,9 +23,11 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object ModuleManager {
     data class PacketFunction<T : Packet<*>>(val type: Class<T>, val function: (T) -> Unit, val shouldRun: () -> Boolean)
     data class MessageFunction(val filter: Regex, val function: (String) -> Unit)
+    data class WorldLoadFunction(val function: () -> Unit, val shouldRun: () -> Boolean)
 
     val packetFunctions = mutableListOf<PacketFunction<Packet<*>>>()
     val messageFunctions = mutableListOf<MessageFunction>()
+    val worldLoadFunctions = mutableListOf<() -> Unit>()
     val huds = arrayListOf<HudElement>()
     val executors = ArrayList<Executor>()
 
@@ -119,6 +122,11 @@ object ModuleManager {
     @SubscribeEvent
     fun onChatPacket(event: ChatPacketEvent) {
         messageFunctions.filter { event.message matches it.filter }.forEach { it.function(event.message) }
+    }
+
+    @SubscribeEvent
+    fun onWorldLoad(event: WorldEvent.Load) {
+        worldLoadFunctions.forEach { it.invoke() }
     }
 
     @SubscribeEvent

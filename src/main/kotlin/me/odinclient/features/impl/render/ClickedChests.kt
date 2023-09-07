@@ -5,8 +5,10 @@ import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.features.settings.impl.ColorSetting
 import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinclient.utils.Utils.equalsOneOf
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.world.RenderUtils
+import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import net.minecraft.init.Blocks
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
@@ -22,37 +24,42 @@ object ClickedChests : Module(
     tag = TagType.NEW
 ) {
     private val chests = mutableSetOf<BlockPos>()
-    private val color: Color by ColorSetting("Color", Color.GOLD.withAlpha(.5f), description = "The color of the box.")
+    private val color: Color by ColorSetting("Color", Color.GOLD.withAlpha(.4f), allowAlpha = true, description = "The color of the box.")
     private val filled: Boolean by BooleanSetting("Filled", true, description = "Whether or not the box should be filled.")
+    private val phase: Boolean by BooleanSetting("Phase", true, description = "Boxes show through walls.")
 
     @SubscribeEvent
     fun onInteract(event: PlayerInteractEvent) {
-        if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || mc.theWorld.getBlockState(event.pos) != Blocks.chest.defaultState) return
+        if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || !mc.theWorld.getBlockState(event.pos).block.equalsOneOf(Blocks.chest, Blocks.trapped_chest)) return
         chests.add(event.pos)
     }
 
-    @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Load) {
-        chests.clear()
+    init {
+        onWorldLoad {
+            chests.clear()
+            println("yo")
+        }
     }
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (chests.isEmpty()) return
         chests.forEach {
-            if (filled)
-                RenderUtils.drawFilledBox(it.chestAABB, color)
-            else
+            if (filled) {
+                val (viewerX, viewerY, viewerZ) = RenderUtils.viewerPos
+                val x = it.x - viewerX + .0625
+                val y = it.y - viewerY
+                val z = it.z - viewerZ + .0625
+                RenderUtils.drawFilledBox(AxisAlignedBB(x, y, z, x + .875, y + 0.875, z + 0.875), color, phase)
+            } else
                 RenderUtils.drawCustomESPBox(
-                    it.x + .125, .75,
+                    it.x + .0625, .875,
                     it.y.toDouble(), .875,
-                    it.z + .125, .125,
+                    it.z + .0625, .875,
                     color,
                     3f,
-                    true
+                    phase
                 )
         }
     }
-
-    private val BlockPos.chestAABB get() = AxisAlignedBB.fromBounds(x.toDouble() + .125, y.toDouble(), z.toDouble() + .125, x + .75, y + .875, z + .75)
 }
