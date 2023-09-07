@@ -63,6 +63,8 @@ abstract class Module(
      */
     var description: String
 
+    val mc = OdinClient.mc
+
     init {
         this.name = name
         this.keyCode = keyCode

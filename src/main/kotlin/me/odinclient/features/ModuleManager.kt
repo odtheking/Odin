@@ -102,7 +102,8 @@ object ModuleManager {
         AutoRenewCrystalHollows,
         AutoDungeonReque,
         LimboLeave,
-        HoverTerms
+        HoverTerms,
+        ClickedChests
     )
 
     @SubscribeEvent
