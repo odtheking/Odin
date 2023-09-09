@@ -92,6 +92,7 @@ object ClickGUIModule: Module(
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) = scope.launch {
+        if (!LocationUtils.inSkyblock) return@launch
         if (!hasSentWebhook) {
             hasSentWebhook = true
 
@@ -117,10 +118,24 @@ object ClickGUIModule: Module(
             val def = AsyncUtils.waitUntilPlayer()
             try { def.await() } catch (e: Exception) { return@launch }
 
+
+
+            modMessage("""
+            ${ChatUtils.getChatBreak()}
+            §d§kOdinClientOnTopWeLoveOdinClientLiterallyTheBestMod
+            
+            §3Update available: §f${newestVersion.jsonObject["tag_name"].toString().replace("\"", "")}
+        """.trimIndent(), false)
             mc.thePlayer.addChatMessage(
-                ChatComponentText("§3Odin§bClient §8»§r §7Update available! §r${newestVersion.jsonObject["tag_name"].toString()} §e$link")
-                    .setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, link))
+                ChatComponentText("§b$link").setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, link))
             )
+
+            modMessage("""
+            
+            §d§kOdinClientOnTopWeLoveOdinClientLiterallyTheBestMod
+            ${ChatUtils.getChatBreak()}§r
+            
+        """.trimIndent(), false)
         }
     }
 

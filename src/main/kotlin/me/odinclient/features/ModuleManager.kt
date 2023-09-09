@@ -77,7 +77,6 @@ object ModuleManager {
         NoBlock,
         NoCursorReset,
         Reminders,
-        TermAC,
         Ghosts,
         PortalFix,
         TerminalTimes,
@@ -107,6 +106,7 @@ object ModuleManager {
         LimboLeave,
         HoverTerms,
         ClickedChests
+
     )
 
     @SubscribeEvent
