@@ -154,5 +154,5 @@ object ModuleManager {
         executors.removeAll { it.run() }
     }
 
-    fun getModuleByName(name: String): Module? = modules.firstOrNull { it.name.equals(name, true) }
+    inline fun getModuleByName(name: String): Module? = modules.firstOrNull { it.name.equals(name, true) }
 }

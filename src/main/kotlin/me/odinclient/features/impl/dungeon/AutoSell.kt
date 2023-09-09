@@ -1,7 +1,6 @@
 package me.odinclient.features.impl.dungeon
 
-import me.odinclient.OdinClient.Companion.mc
-import me.odinclient.OdinClient.Companion.miscConfig
+import me.odinclient.config.MiscConfig
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.ActionSetting
@@ -21,12 +20,12 @@ object AutoSell : Module(
     private val delay: Long by NumberSetting("Delay", 100, 10.0, 300.0, 5.0)
     private val addDefaults: () -> Unit by ActionSetting("Add defaults") {
         defaultItems.forEach {
-            if (!miscConfig.autoSell.contains(it)) {
-                miscConfig.autoSell.add(it)
+            if (!MiscConfig.autoSell.contains(it)) {
+                MiscConfig.autoSell.add(it)
             }
         }
         modMessage("Added default items to auto sell list")
-        miscConfig.saveAllConfigs()
+        MiscConfig.saveAllConfigs()
     }
 
     init {
@@ -44,7 +43,7 @@ object AutoSell : Module(
     }
 
     private fun doSell(slot: Slot): Boolean {
-        return slot.stack?.displayName?.containsOneOf(miscConfig.autoSell, true) == true
+        return slot.stack?.displayName?.containsOneOf(MiscConfig.autoSell, true) == true
     }
 
     private val defaultItems = arrayOf(

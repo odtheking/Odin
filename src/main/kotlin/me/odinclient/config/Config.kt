@@ -4,9 +4,9 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonIOException
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
-import me.odinclient.OdinClient.Companion.mc
-import me.odinclient.config.jsonutils.SettingDeserializer
-import me.odinclient.config.jsonutils.SettingSerializer
+import me.odinclient.config.utils.ConfigFile
+import me.odinclient.config.utils.SettingDeserializer
+import me.odinclient.config.utils.SettingSerializer
 import me.odinclient.features.ConfigModule
 import me.odinclient.features.Module
 import me.odinclient.features.ModuleManager
@@ -14,7 +14,6 @@ import me.odinclient.features.ModuleManager.getModuleByName
 import me.odinclient.features.settings.Setting
 import me.odinclient.features.settings.impl.*
 import me.odinclient.utils.render.Color
-import java.io.File
 import java.io.IOException
 
 /**
@@ -29,14 +28,7 @@ object Config {
         .excludeFieldsWithoutExposeAnnotation()
         .setPrettyPrinting().create()
 
-    private val configFile = File(mc.mcDataDir, "config/odin/odin-config.json").apply {
-        try {
-            createNewFile()
-        } catch (e: IOException) {
-            println("Error creating module config.\n${e.message}")
-            e.printStackTrace()
-        }
-    }
+    private val configFile = ConfigFile("odin-config")
 
     fun loadConfig() {
         try {
@@ -59,15 +51,14 @@ object Config {
             getModuleByName(cfg.name)?.let {
                 if (it.enabled != cfg.enabled) it.toggle()
                 it.keyCode = cfg.keyCode
-                handleSettings(it)
+                handleSettings(cfg, it)
             }
         }
     }
 
-    private inline fun handleSettings(module: Module) {
-        module.settings.forEach { cfg ->
+    private inline fun handleSettings(cfgModule: ConfigModule, module: Module) {
+        cfgModule.settings.forEach { cfg ->
             if (cfg == null) return@forEach
-
             module.getSettingByName(cfg.name)?.let {
                 when (it) {
                     is BooleanSetting -> it.enabled = (cfg as BooleanSetting).enabled
@@ -77,7 +68,7 @@ object Config {
                     is SelectorSetting -> it.selected = (cfg as StringSetting).text
                     is StringSetting -> it.text = (cfg as StringSetting).text
                 }
-            } ?: print("Setting ${cfg.name} not found in module ${module.name}")
+            } ?: println("Setting ${cfg.name} not found in module ${module.name}")
         }
     }
 

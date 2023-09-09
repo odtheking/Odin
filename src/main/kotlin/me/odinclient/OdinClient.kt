@@ -1,9 +1,6 @@
 package me.odinclient
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import me.odinclient.commands.impl.*
 import me.odinclient.config.Config
 import me.odinclient.config.MiscConfig
@@ -79,8 +76,14 @@ class OdinClient {
 
     @EventHandler
     fun postInit(event: FMLPostInitializationEvent) = scope.launch(Dispatchers.IO) {
+
+        val config = File(mc.mcDataDir, "config/odin")
+        if (!config.exists()) {
+            config.mkdirs()
+        }
+
         launch {
-            miscConfig.loadConfig()
+            MiscConfig.loadConfig()
         }
         launch {
             WaypointConfig.loadConfig()
@@ -122,8 +125,6 @@ class OdinClient {
 
         var window = Window
 
-        // TODO: Remove
-        val miscConfig = MiscConfig(File(mc.mcDataDir, "config/odin"))
         var display: GuiScreen? = null
 
         val scope = CoroutineScope(EmptyCoroutineContext)

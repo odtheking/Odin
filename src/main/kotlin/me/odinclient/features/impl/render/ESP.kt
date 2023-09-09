@@ -1,7 +1,6 @@
 package me.odinclient.features.impl.render
 
-import me.odinclient.OdinClient.Companion.mc
-import me.odinclient.OdinClient.Companion.miscConfig
+import me.odinclient.config.MiscConfig
 import me.odinclient.events.impl.RenderEntityModelEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
@@ -30,13 +29,13 @@ object ESP : Module(
     private val cancelHurt: Boolean by BooleanSetting("Cancel Hurt", true)
 
     private val addStar: () -> Unit by ActionSetting("Add Star") {
-        if (miscConfig.espList.contains("✯")) return@ActionSetting
+        if (MiscConfig.espList.contains("✯")) return@ActionSetting
         modMessage("Added ✯ to ESP list")
-        miscConfig.espList.add("✯")
-        miscConfig.saveAllConfigs()
+        MiscConfig.espList.add("✯")
+        MiscConfig.saveAllConfigs()
     }
 
-    private inline val espList get() = miscConfig.espList
+    private inline val espList get() = MiscConfig.espList
 
     var currentEntities = mutableListOf<Pair<Entity, Boolean>>()
 

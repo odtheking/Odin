@@ -110,7 +110,11 @@ abstract class Module(
     operator fun <K : Setting<*>> K.unaryPlus(): K = register(this)
 
     fun getSettingByName(name: String): Setting<*>? {
-        settings.find { it.name.equals(name, ignoreCase = true) }
+        for (set in settings) {
+            if (set.name.equals(name, ignoreCase = true)) {
+                return set
+            }
+        }
         System.err.println("[" + OdinClient.NAME + "] Error Setting NOT found: '" + name + "'!")
         return null
     }

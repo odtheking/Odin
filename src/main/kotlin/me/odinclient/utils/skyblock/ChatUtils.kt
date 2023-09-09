@@ -1,7 +1,7 @@
 package me.odinclient.utils.skyblock
 
 import me.odinclient.OdinClient.Companion.mc
-import me.odinclient.features.impl.skyblock.BlackList
+import me.odinclient.config.MiscConfig
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.WebUtils
 import net.minecraft.event.ClickEvent
@@ -64,7 +64,7 @@ object ChatUtils {
         } ?: ""
 
     fun autoGM(message: String, name: String) {
-        if (BlackList.isInBlacklist(name)) return
+        if (isInBlacklist(name)) return
         if(message.lowercase().startsWith("gm")) guildMessage("gm $name")
         if(message.lowercase().startsWith("gn")) guildMessage("gn $name")
     }
@@ -104,4 +104,6 @@ object ChatUtils {
         "Outlook not so good",
         "Very doubtful"
     )
+
+    fun isInBlacklist(name: String) : Boolean = MiscConfig.blacklist.contains(name.lowercase())
 }

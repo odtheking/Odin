@@ -12,6 +12,7 @@ import me.odinclient.utils.ServerUtils
 import me.odinclient.utils.Utils.floor
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.skyblock.ChatUtils
+import me.odinclient.utils.skyblock.ChatUtils.isInBlacklist
 import me.odinclient.utils.skyblock.PlayerUtils
 import net.minecraft.event.ClickEvent
 import net.minecraft.util.ChatComponentText
@@ -54,7 +55,7 @@ object PrivateCommands : Module(
     }
 
     private fun privateCmdsOptions(message: String,name: String) {
-        if (BlackList.isInBlacklist(name)) return
+        if (isInBlacklist(name)) return
         when (message.split(" ")[0]) {
             "help" -> if (help) ChatUtils.privateMessage("Commands: inv, coords, odin, boop, cf, 8ball, dice, cat ,ping",name)
             "coords" -> if (coords) ChatUtils.privateMessage(

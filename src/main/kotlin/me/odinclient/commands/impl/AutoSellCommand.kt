@@ -1,12 +1,12 @@
 package me.odinclient.commands.impl
 
-import me.odinclient.OdinClient.Companion.miscConfig
 import me.odinclient.commands.AbstractCommand
+import me.odinclient.config.MiscConfig
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 
 object AutoSellCommand : AbstractCommand("autosell", "odautosell", description = "Command for Auto Sell.") {
 
-    private inline val autoSell get () = miscConfig.autoSell
+    private inline val autoSell get () = MiscConfig.autoSell
 
     init {
         "add" {
@@ -17,7 +17,7 @@ object AutoSellCommand : AbstractCommand("autosell", "odautosell", description =
 
                 modMessage("Added $itemName to the Auto sell list.")
                 autoSell.add(itemName)
-                miscConfig.saveAllConfigs()
+                MiscConfig.saveAllConfigs()
             }
         }
 
@@ -29,7 +29,7 @@ object AutoSellCommand : AbstractCommand("autosell", "odautosell", description =
 
                 modMessage("Removed $itemName from the Auto sell list.")
                 autoSell.remove(itemName)
-                miscConfig.saveAllConfigs()
+                MiscConfig.saveAllConfigs()
             }
         }
 
@@ -37,7 +37,7 @@ object AutoSellCommand : AbstractCommand("autosell", "odautosell", description =
             does {
                 modMessage("Auto sell list cleared.")
                 autoSell.clear()
-                miscConfig.saveAllConfigs()
+                MiscConfig.saveAllConfigs()
             }
         }
 

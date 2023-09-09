@@ -11,6 +11,7 @@ import me.odinclient.utils.AutoSessionID
 import me.odinclient.utils.ServerUtils
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.skyblock.ChatUtils
+import me.odinclient.utils.skyblock.ChatUtils.isInBlacklist
 import me.odinclient.utils.skyblock.PlayerUtils
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -69,7 +70,7 @@ object PartyCommands : Module(
     }
 
     private suspend fun partyCmdsOptions(message: String, name: String) {
-        if (BlackList.isInBlacklist(name)) return
+        if (isInBlacklist(name)) return
         when (message.split(" ")[0]) {
             "help" -> if (help) ChatUtils.partyMessage("Commands: warp, coords, allinvite, odin, boop, cf, 8ball, dice, cat, pt, rat, ping, warptransfer")
             "warp" -> if (warp) ChatUtils.sendCommand("p warp")

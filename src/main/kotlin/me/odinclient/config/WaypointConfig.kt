@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.odinclient.OdinClient
 import me.odinclient.OdinClient.Companion.scope
+import me.odinclient.config.utils.ConfigFile
 import me.odinclient.features.impl.render.WaypointManager.Waypoint
 import java.io.File
 import java.io.IOException
@@ -18,14 +19,7 @@ object WaypointConfig {
 
     var waypoints: MutableMap<String, MutableList<Waypoint>> = mutableMapOf()
 
-    private val configFile = File(OdinClient.mc.mcDataDir, "config/odin/waypoint-config.json").apply {
-        try {
-            createNewFile()
-        } catch (e: IOException) {
-            println("Error creating file.\n${e.message}")
-            e.printStackTrace()
-        }
-    }
+    private val configFile = ConfigFile("waypoint-config")
 
     fun loadConfig() {
         try {

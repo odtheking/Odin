@@ -1,13 +1,13 @@
 package me.odinclient.features.impl.floor7.p3
 
-import me.odinclient.OdinClient.Companion.mc
-import me.odinclient.OdinClient.Companion.miscConfig
+import me.odinclient.config.Config
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.features.settings.impl.SelectorSetting
+import me.odinclient.utils.Utils.name
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.ChatUtils.unformattedText
-import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -20,51 +20,42 @@ object TerminalTimes : Module(
 ) {
     private val sendMessage: Int by SelectorSetting("Send Message", "Always", arrayListOf("Only PB", "Always"))
 
-    private var inTerm = false
-    private var timer = 0L
-    private var currentTerminal = ""
-    private val terminalNames = listOf(
-        "Correct all the panes!",
-        "Change all to same color!",
-        "Click in order!",
-        "Click the button on time!",
-        "What starts with",
-        "Select all the"
-    )
+    private var currentTerminal: Terminals? = null
+    private var startTimer = 0L
 
-    enum class Times (
+    @Suppress("UNUSED")
+    enum class Terminals(
         val fullName: String,
-        var time: Double = 1000.0
+        val setting: NumberSetting<Double>
     ) {
-        Panes("Correct all the panes!"),
-        Color("Change all to same color!"),
-        Numbers("Click in order!"),
-        Melody("Click the button on time!"),
-        StartsWith("What starts with"),
-        Select("Select all the");
+        Panes("Correct all the panes!", +NumberSetting("Panes PB", 1000.0, hidden = true)),
+        Color("Change all to same color!", +NumberSetting("Panes PB", 1000.0, hidden = true)),
+        Numbers("Click in order!", +NumberSetting("Numbers PB", 1000.0, hidden = true)),
+        Melody("Click the button on time!", +NumberSetting("Melody PB", 1000.0, hidden = true)),
+        `Starts With`("What starts with", +NumberSetting("Starts With PB", 1000.0, hidden = true)),
+        `Select All`("Select all the", +NumberSetting("Select All PB", 1000.0, hidden = true)),
     }
 
     @SubscribeEvent
     fun onClientTick(event: TickEvent.ClientTickEvent) {
-        if (inTerm) return
-        val currentScreen = mc.currentScreen
+        if (currentTerminal != null) return
 
-        if (currentScreen !is GuiChest) return
-        val container = currentScreen.inventorySlots
+        val container = mc.thePlayer.openContainer ?: return
         if (container !is ContainerChest) return
-        val chestName = container.lowerChestInventory.displayName.unformattedText ?: return
 
-        terminalNames.forEach { name ->
-            if (chestName.startsWith(name)) {
-                inTerm = true
-                currentTerminal = chestName
-                timer = System.currentTimeMillis()
+        Terminals.entries.find {
+            if (container.name.startsWith(it.fullName)) {
+                currentTerminal = it
+                startTimer = System.currentTimeMillis()
+                return@find true
             }
+            return@find false
         }
     }
 
     @SubscribeEvent
     fun onClientChatReceived(event: ClientChatReceivedEvent) {
+        if (currentTerminal == null) return
         val message = event.unformattedText
         val match = Regex("(.+) (?:activated|completed) a terminal! \\((\\d)/(\\d)\\)").find(message) ?: return
         val (_, name, current, max) = match.groups.map { it?.value }
@@ -72,27 +63,22 @@ object TerminalTimes : Module(
         if (current?.toInt() == max?.toInt() || current?.toInt() == 0) {
             if (name != mc.thePlayer.name) {
                 // Gate opened and not by player
-                inTerm = false
-                currentTerminal = ""
+                currentTerminal = null
                 return
             }
         }
 
         if (name != mc.thePlayer.name) return
-        inTerm = false
-        val time = (System.currentTimeMillis() - timer) / 1000.0
+        val time = (System.currentTimeMillis() - startTimer) / 1000.0
 
-        if (sendMessage == 1) modMessage("§6$currentTerminal §ftook §a${time}s")
+        if (sendMessage == 1) modMessage("§6${currentTerminal?.name} §ftook §a${time}s")
 
-        for (times in Times.values()) {
-            if (times.fullName == currentTerminal && time < times.time) {
-                modMessage("§fNew best time for §6${times.fullName} §fis §a${time}s, §fold best time was §a${times.time}s")
-                times.time = time
-                miscConfig.saveAllConfigs()
-                break
-            }
+        val previousTime = currentTerminal!!.setting.value
+        if (time < previousTime) {
+            modMessage("§fNew best time for §6${currentTerminal?.name} §fis §a${time}s, §fold best time was §a${previousTime}s")
+            currentTerminal!!.setting.value = time
+            Config.saveConfig()
         }
-
-        currentTerminal = ""
+        currentTerminal = null
     }
 }

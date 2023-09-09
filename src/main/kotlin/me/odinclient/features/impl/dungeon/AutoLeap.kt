@@ -1,11 +1,10 @@
 package me.odinclient.features.impl.dungeon
 
-import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.impl.ChatPacketEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
-import me.odinclient.features.impl.skyblock.BlackList
 import me.odinclient.utils.skyblock.ChatUtils
+import me.odinclient.utils.skyblock.ChatUtils.isInBlacklist
 import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraftforge.client.event.GuiOpenEvent
@@ -17,7 +16,6 @@ object AutoLeap : Module(
     description = "Automatically leaps to the player who sent !tp in party chat.",
     category = Category.DUNGEON
 ) {
-
     private var opened = false
     private var target: String? = null
 
@@ -28,11 +26,11 @@ object AutoLeap : Module(
     }
 
     @SubscribeEvent
-    fun onChat(event: ChatPacketEvent) {
+    fun onChatMessage(event: ChatPacketEvent) {
         if (!DungeonUtils.inDungeons) return
         val message = event.message
         val playerName = Regex("^Party > ?(?:\\[.+])? (.{0,16}): !tp ?(?:.+)?").find(message)?.groups?.get(1)?.value?.lowercase() ?: return
-        if (playerName == mc.thePlayer.name || BlackList.isInBlacklist(playerName)) return
+        if (playerName == mc.thePlayer.name || isInBlacklist(playerName)) return
         PlayerUtils.useItem("leap")
         opened = true
         target = playerName
@@ -40,7 +38,7 @@ object AutoLeap : Module(
     }
 
     @SubscribeEvent
-    fun autoLeap(event: GuiOpenEvent) {
+    fun onGuiOpen(event: GuiOpenEvent) {
         if (!opened || !DungeonUtils.inDungeons) return
         PlayerUtils.clickItemInContainer("Spirit Leap", target!!, event )
         ChatUtils.modMessage("§rLeaped to $target")

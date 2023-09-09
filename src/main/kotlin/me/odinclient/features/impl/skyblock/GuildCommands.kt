@@ -4,7 +4,6 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.BooleanSetting
@@ -12,6 +11,7 @@ import me.odinclient.utils.ServerUtils
 import me.odinclient.utils.Utils.floor
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.skyblock.ChatUtils
+import me.odinclient.utils.skyblock.ChatUtils.isInBlacklist
 import me.odinclient.utils.skyblock.PlayerUtils
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -53,7 +53,7 @@ object GuildCommands : Module(
     }
 
     private fun guildCmdsOptions(message: String,name: String) {
-        if (BlackList.isInBlacklist(name)) return
+        if (isInBlacklist(name)) return
         when (message.split(" ")[0].drop(1)) {
             "help" -> if (help) ChatUtils.guildMessage("Commands: coords, odin, boop, cf, 8ball, dice, cat, ping")
             "coords" -> if (coords) ChatUtils.guildMessage(

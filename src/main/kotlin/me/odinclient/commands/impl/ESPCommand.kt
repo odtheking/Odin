@@ -1,14 +1,14 @@
 package me.odinclient.commands.impl
 
-import me.odinclient.OdinClient.Companion.miscConfig
 import me.odinclient.commands.Command
 import me.odinclient.commands.CommandArguments
+import me.odinclient.config.MiscConfig
 import me.odinclient.features.impl.render.ESP
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 
 object ESPCommand : Command("esp", listOf("odesp"), "Command for ESP.") {
 
-    private inline val espList get() = miscConfig.espList
+    private inline val espList get() = MiscConfig.espList
 
     override fun executeCommand(args: CommandArguments) {
         if (args.isEmpty())
@@ -22,7 +22,7 @@ object ESPCommand : Command("esp", listOf("odesp"), "Command for ESP.") {
 
                     modMessage("Added $mobName to the ESP list.")
                     espList.add(mobName)
-                    miscConfig.saveAllConfigs()
+                    MiscConfig.saveAllConfigs()
                 }
 
                 "remove" -> {
@@ -32,13 +32,13 @@ object ESPCommand : Command("esp", listOf("odesp"), "Command for ESP.") {
 
                     modMessage("Removed $mobName from the ESP list.")
                     espList.remove(mobName)
-                    miscConfig.saveAllConfigs()
+                    MiscConfig.saveAllConfigs()
                     ESP.currentEntities.clear()
                 }
 
                 "clear" -> {
                     espList.clear()
-                    miscConfig.saveAllConfigs()
+                    MiscConfig.saveAllConfigs()
                     ESP.currentEntities.clear()
                     modMessage("ESP List cleared.")
                 }
