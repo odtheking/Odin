@@ -21,7 +21,7 @@ object ItemUtils {
     /**
      * Returns displayName without control codes.
      */
-    private val ItemStack.unformattedName: String
+    val ItemStack.unformattedName: String
         get() = this.displayName.noControlCodes
 
     /**
@@ -49,12 +49,8 @@ object ItemUtils {
     /**
      * Returns first slot of an Item
      */
-    fun getItemSlot(item: String, ignoreCase: Boolean = true): Int? {
-        val index = mc.thePlayer.inventory.mainInventory.indexOfFirst {
-            it?.unformattedName?.contains(item, ignoreCase) == true
-        }
-        return index.takeIf { it != -1 }
-    }
+    fun getItemSlot(item: String, ignoreCase: Boolean = true): Int? =
+        mc.thePlayer.inventory.mainInventory.indexOfFirst { it?.unformattedName?.contains(item, ignoreCase) == true }.takeIf { it != -1 }
 
     /**
      * Gets index of an item in a chest.

@@ -23,7 +23,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object ModuleManager {
     data class PacketFunction<T : Packet<*>>(val type: Class<T>, val function: (T) -> Unit, val shouldRun: () -> Boolean)
     data class MessageFunction(val filter: Regex, val function: (String) -> Unit)
-    data class WorldLoadFunction(val function: () -> Unit, val shouldRun: () -> Boolean)
 
     val packetFunctions = mutableListOf<PacketFunction<Packet<*>>>()
     val messageFunctions = mutableListOf<MessageFunction>()
@@ -105,7 +104,8 @@ object ModuleManager {
         AutoDungeonReque,
         LimboLeave,
         HoverTerms,
-        ClickedChests
+        ClickedChests,
+        SecretTriggerbot
 
     )
 
