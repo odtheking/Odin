@@ -21,8 +21,9 @@ object WaypointConfig {
     private val configFile = File(OdinClient.mc.mcDataDir, "config/odin/waypoint-config.json").apply {
         try {
             createNewFile()
-        } catch (e: Exception) {
-            println("Error initializing module config")
+        } catch (e: IOException) {
+            println("Error creating file.\n${e.message}")
+            e.printStackTrace()
         }
     }
 
@@ -36,12 +37,10 @@ object WaypointConfig {
                     object : TypeToken<MutableMap<String, MutableList<Waypoint>>>() {}.type
                 )
             }
-        }  catch (e: JsonSyntaxException) {
-            println("Error parsing configs.")
-            println(e.message)
-            e.printStackTrace()
+        } catch (e: JsonSyntaxException) {
+            println("Error parsing configs.\n${e.message}")
         } catch (e: JsonIOException) {
-            println("Error reading configs.")
+            println("Error reading configs.\n${e.message}")
         }
     }
 
@@ -52,7 +51,7 @@ object WaypointConfig {
                     it.write(gson.toJson(waypoints))
                 }
             } catch (e: IOException) {
-                println("Error saving Waypoint config.")
+                println("Error saving Waypoint config.\n${e.message}")
             }
         }
     }

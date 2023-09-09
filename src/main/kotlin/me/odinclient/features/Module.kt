@@ -6,10 +6,8 @@ import me.odinclient.OdinClient
 import me.odinclient.features.ModuleManager.executors
 import me.odinclient.features.impl.render.ClickGUIModule
 import me.odinclient.features.settings.AlwaysActive
-import me.odinclient.features.settings.Hud
 import me.odinclient.features.settings.Setting
 import me.odinclient.features.settings.impl.HudSetting
-import me.odinclient.ui.hud.HudElement
 import me.odinclient.utils.clock.Executable
 import me.odinclient.utils.clock.Executor
 import me.odinclient.utils.skyblock.ChatUtils
@@ -17,7 +15,6 @@ import net.minecraft.network.Packet
 import net.minecraftforge.common.MinecraftForge
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
-import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 
 /**
@@ -75,17 +72,6 @@ abstract class Module(
         if (this::class.hasAnnotation<AlwaysActive>()) {
             MinecraftForge.EVENT_BUS.register(this)
         }
-
-        /**
-         * A little bit scuffed but ig it works.
-         */
-        this::class.nestedClasses
-            .mapNotNull { it.objectInstance }
-            .filterIsInstance<HudElement>()
-            .forEach { hudElement ->
-                val hudset = hudElement::class.findAnnotation<Hud>() ?: return@forEach
-                register(HudSetting(hudset.name, hudElement, hudset.toggleable, hidden = hudset.hidden))
-            }
     }
 
     open fun onEnable() {
@@ -124,11 +110,7 @@ abstract class Module(
     operator fun <K : Setting<*>> K.unaryPlus(): K = register(this)
 
     fun getSettingByName(name: String): Setting<*>? {
-        for (set in settings) {
-            if (set.name.equals(name, ignoreCase = true)) {
-                return set
-            }
-        }
+        settings.find { it.name.equals(name, ignoreCase = true) }
         System.err.println("[" + OdinClient.NAME + "] Error Setting NOT found: '" + name + "'!")
         return null
     }
