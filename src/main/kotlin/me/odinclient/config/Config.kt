@@ -8,7 +8,9 @@ import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.config.jsonutils.SettingDeserializer
 import me.odinclient.config.jsonutils.SettingSerializer
 import me.odinclient.features.ConfigModule
+import me.odinclient.features.Module
 import me.odinclient.features.ModuleManager
+import me.odinclient.features.ModuleManager.getModuleByName
 import me.odinclient.features.settings.Setting
 import me.odinclient.features.settings.impl.*
 import me.odinclient.utils.render.Color
@@ -18,6 +20,7 @@ import java.io.IOException
 /**
  * @author Stivais, Aton
  */
+@Suppress("NOTHING_TO_INLINE", "SENSELESS_COMPARISON")
 object Config {
 
     private val gson = GsonBuilder()
@@ -29,57 +32,52 @@ object Config {
     private val configFile = File(mc.mcDataDir, "config/odin/odin-config.json").apply {
         try {
             createNewFile()
-        } catch (e: Exception) {
-            println("Error initializing module config")
+        } catch (e: IOException) {
+            println("Error creating module config.\n${e.message}")
+            e.printStackTrace()
         }
     }
 
     fun loadConfig() {
         try {
-            val configModules: ArrayList<ConfigModule>
             with(configFile.bufferedReader().use { it.readText() }) {
                 if (this == "") return
-                configModules = gson.fromJson(
-                    this,
-                    object : TypeToken<ArrayList<ConfigModule>>() {}.type
-                )
-            }
-            configModules.forEach { configModule ->
-                ModuleManager.getModuleByName(configModule.name).run updateModule@{
-                    val module = this ?: return@updateModule
-                    if (module.enabled != configModule.enabled) module.toggle()
-                    module.keyCode = configModule.keyCode
-
-                    for (configSetting in configModule.settings) {
-                        @Suppress("SENSELESS_COMPARISON")
-                        if (configSetting == null) continue
-
-                        val setting = module.getSettingByName(configSetting.name)
-                        if (setting == null) {
-                            println("Setting ${configSetting.name} not found in module ${module.name}, if this is an ActionSetting, ignore this message.")
-                            continue
-                        }
-                        when (setting) {
-                            is BooleanSetting -> setting.enabled = (configSetting as BooleanSetting).enabled
-                            is DualSetting -> setting.enabled = (configSetting as BooleanSetting).enabled
-                            is NumberSetting -> setting.valueAsDouble = (configSetting as NumberSetting).valueAsDouble
-                            is ColorSetting -> setting.value = Color((configSetting as NumberSetting).valueAsDouble.toInt())
-                            is SelectorSetting -> setting.selected = (configSetting as StringSetting).text
-                            is StringSetting -> setting.text = (configSetting as StringSetting).text
-                        }
-                    }
-                }
+                handleModules(gson.fromJson(this, object : TypeToken<ArrayList<ConfigModule>>() {}.type))
             }
         } catch (e: JsonSyntaxException) {
-            println("Error parsing config.")
-            println(e.message)
-            e.printStackTrace()
+            println("Error parsing config.\n${e.message}")
         } catch (e: JsonIOException) {
-            println("Error reading config.")
+            println("Error reading config.\n${e.message}")
         } catch (e: Exception) {
-            println("Config Error.")
-            println(e.message)
-            e.printStackTrace()
+            println("Config Error.\n${e.message}")
+        }
+    }
+
+    // inline because it is used only in load config.
+    private inline fun handleModules(modules: ArrayList<ConfigModule>) {
+        modules.forEach { cfg ->
+            getModuleByName(cfg.name)?.let {
+                if (it.enabled != cfg.enabled) it.toggle()
+                it.keyCode = cfg.keyCode
+                handleSettings(it)
+            }
+        }
+    }
+
+    private inline fun handleSettings(module: Module) {
+        module.settings.forEach { cfg ->
+            if (cfg == null) return@forEach
+
+            module.getSettingByName(cfg.name)?.let {
+                when (it) {
+                    is BooleanSetting -> it.enabled = (cfg as BooleanSetting).enabled
+                    is DualSetting -> it.enabled = (cfg as BooleanSetting).enabled
+                    is NumberSetting -> it.valueAsDouble = (cfg as NumberSetting).valueAsDouble
+                    is ColorSetting -> it.value = Color((cfg as NumberSetting).valueAsDouble.toInt())
+                    is SelectorSetting -> it.selected = (cfg as StringSetting).text
+                    is StringSetting -> it.text = (cfg as StringSetting).text
+                }
+            } ?: print("Setting ${cfg.name} not found in module ${module.name}")
         }
     }
 
@@ -89,7 +87,7 @@ object Config {
                 it.write(gson.toJson(ModuleManager.modules))
             }
         } catch (e: IOException) {
-            println("Error saving config.")
+            println("Error saving config.\n${e.message}")
         }
     }
 }
