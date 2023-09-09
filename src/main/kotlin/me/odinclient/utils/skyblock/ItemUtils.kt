@@ -2,6 +2,7 @@
 package me.odinclient.utils.skyblock
 
 import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.ui.waypoint.WaypointGUI.list
 import me.odinclient.utils.Utils.noControlCodes
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.ItemStack
@@ -38,11 +39,7 @@ object ItemUtils {
      */
     val ItemStack.lore: List<String>
         get() = this.tagCompound?.getCompoundTag("display")?.getTagList("Lore", 8)?.let {
-            val list = mutableListOf<String>()
-            for (i in 0 until it.tagCount()) {
-                list.add(it.getStringTagAt(i))
-            }
-            list
+            List(it.tagCount()) { i -> it.getStringTagAt(i) }
         } ?: emptyList()
 
 
