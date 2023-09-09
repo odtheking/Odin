@@ -21,6 +21,7 @@ import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.EnumDyeColor
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
+import net.minecraftforge.client.event.sound.PlaySoundEvent
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -44,7 +45,8 @@ object TerminalSolver : Module(
     private val removeWrongSelect: Boolean by BooleanSetting("Stop Select", true).withDependency { removeWrong }
     private val wrongColor: Color by ColorSetting("Wrong Color", Color(45, 45, 45), true).withDependency { removeWrong }
 
-    private val zLevel: Float get() = if (behindItem) 100f else 200f
+    private val zLevel: Float get() = if (behindItem) 200f else 100f
+    private var lastLeftTerm = 0L
 
     private val terminalNames = listOf(
         "Correct all the panes!",
@@ -53,13 +55,14 @@ object TerminalSolver : Module(
         "What starts with",
         "Select all the"
     )
-    private var currentTerm = -1
-    private var solution = listOf<Int>()
+    var currentTerm = -1
+    var solution = listOf<Int>()
 
     @SubscribeEvent
     fun onGuiLoad(event: GuiLoadedEvent) {
         currentTerm = terminalNames.indexOfFirst { event.name.startsWith(it) }
         if (currentTerm == -1) return
+        lastLeftTerm = 0L
         val items = event.gui.inventory.subList(0, event.gui.inventory.size - 37)
         when (currentTerm) {
             0 -> solvePanes(items)
@@ -120,7 +123,7 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun onTooltip(event: ItemTooltipEvent) {
-        if (currentTerm == -1 || !cancelToolTip) return
+        if (!cancelToolTip || (currentTerm == -1 && lastLeftTerm - System.currentTimeMillis() > 500)) return
         event.toolTip.clear()
     }
 
@@ -128,6 +131,7 @@ object TerminalSolver : Module(
     fun onGuiClosed(event: GuiClosedEvent) {
         currentTerm = -1
         solution = emptyList()
+        lastLeftTerm = System.currentTimeMillis()
     }
 
     @SubscribeEvent

@@ -64,7 +64,7 @@ object AsyncUtils {
         deferredResult
     }
 
-    suspend fun waitUntilLastItem(container: ContainerChest) = coroutineScope {
+    suspend fun waitUntilNoneAreNull(container: ContainerChest) = coroutineScope {
         val deferredResult = CompletableDeferred<Unit>()
         val startTime = System.currentTimeMillis()
 
@@ -72,7 +72,7 @@ object AsyncUtils {
             if (System.currentTimeMillis() - startTime > 1000) {
                 deferredResult.completeExceptionally(Exception("Promise rejected"))
                 return
-            } else if (container.inventory[container.inventory.size - 37] != null) {
+            } else if (container.inventory.subList(0, container.inventory.size - 37).all { it != null }) {
                 deferredResult.complete(Unit)
             } else {
                 launch {

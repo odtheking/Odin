@@ -127,7 +127,7 @@ fun glRect(x: Float, y: Float, w: Float, h: Float) {
     GlStateManager.popMatrix()
 }
 
-fun drawCircle(x: Float, y: Float, radius: Float, steps: Int = 15) {
+fun drawCircle(x: Float, y: Float, radius: Float, steps: Int = 20) {
     val theta = 2 * PI / steps
     val cos = cos(theta).toFloat()
     val sin = sin(theta).toFloat()

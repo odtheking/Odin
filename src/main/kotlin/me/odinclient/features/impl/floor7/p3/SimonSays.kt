@@ -33,12 +33,15 @@ object SimonSays : Module(
     private val triggerBot: Boolean by BooleanSetting("Triggerbot")
     private val delay: Long by NumberSetting<Long>("Delay", 200, 70, 500).withDependency { triggerBot }
     private val fullBlock: Boolean by BooleanSetting("Full Block (needs SBC)", false).withDependency { triggerBot }
+    private val clearAfter: Boolean by BooleanSetting("Clear After", false, description = "Clears the clicks when showing next, should work better with ss skip, but will be less consistent")
 
     private val triggerBotClock = Clock(delay)
+    private val firstClickClock = Clock(800)
 
     private val firstButton = BlockPos(110, 121, 91)
     private val clickInOrder = ArrayList<BlockPos>()
     private var clickNeeded = 0
+
 
     @SubscribeEvent
     fun onBlockChange(event: BlockChangeEvent) {
@@ -60,7 +63,7 @@ object SimonSays : Module(
         } else if (pos.x == 110) {
             if (state.block == Blocks.air) {
                 clickNeeded = 0
-                //clickInOrder.clear() // TODO: Add a setting for this, not clearing the list makes it more consistent, but might break with "ss skip"
+                if (clearAfter) clickInOrder.clear()
             } else if (state.block == Blocks.stone_button && old.block == Blocks.stone_button && state.getValue(BlockButtonStone.POWERED)) {
                 val index = clickInOrder.indexOf(pos.add(1, 0, 0)) + 1
                 clickNeeded = if (index >= clickInOrder.size) 0 else index
@@ -72,6 +75,12 @@ object SimonSays : Module(
         if (!triggerBotClock.hasTimePassed(delay) || clickInOrder.size == 0) return
         val pos = mc.objectMouseOver?.blockPos ?: return
         if (clickInOrder[clickNeeded] != pos.add(1, 0, 0) && !(fullBlock && clickInOrder[clickNeeded] == pos)) return
+        if (clickNeeded == 0) { // Stops spamming the first button and breaking the puzzle.
+            if (!firstClickClock.hasTimePassed()) return
+            rightClick()
+            firstClickClock.update()
+            return
+        }
         rightClick()
         triggerBotClock.update()
     }

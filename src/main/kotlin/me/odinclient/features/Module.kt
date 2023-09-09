@@ -60,6 +60,8 @@ abstract class Module(
      */
     var description: String
 
+    val mc = OdinClient.mc
+
     init {
         this.name = name
         this.keyCode = keyCode
@@ -133,6 +135,10 @@ abstract class Module(
 
     fun onMessage(filter: Regex, shouldRun: () -> Boolean = { enabled }, func: (String) -> Unit) {
         ModuleManager.messageFunctions.add(ModuleManager.MessageFunction(filter, func))
+    }
+
+    fun onWorldLoad(func: () -> Unit) {
+        ModuleManager.worldLoadFunctions.add(func)
     }
 
     fun execute(delay: Long, func: Executable) {

@@ -40,6 +40,7 @@ object ArrowAlign : Module(
             return@sortedWith 0
         }
     private val triggerBotClock = Clock(delay)
+    private val lastClickClock = Clock(800)
     private data class Vec2(val x: Int, val y: Int)
     private data class Frame(val entity: EntityItemFrame, var rotations: Int)
     //                                    xy pos         entity,          needed clicks        (x is technically z in the world)
@@ -67,6 +68,12 @@ object ArrowAlign : Module(
         if (!triggerBotClock.hasTimePassed(delay)) return
         val rot = neededRotations.values.find { it.entity == mc.objectMouseOver?.entityHit } ?: return
         if (rot.rotations == 0) return
+        if (rot.rotations == 1) {
+            if (!lastClickClock.hasTimePassed()) return
+            PlayerUtils.rightClick()
+            lastClickClock.update()
+            return
+        }
         PlayerUtils.rightClick()
         rot.rotations--
         triggerBotClock.update()
