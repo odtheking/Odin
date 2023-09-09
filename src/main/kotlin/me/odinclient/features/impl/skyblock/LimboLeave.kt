@@ -20,13 +20,11 @@ object LimboLeave: Module(
     @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
-        if (event.message == "Oops! You are not on SkyBlock so we couldn't warp you!") { // need to find the other kicked one
-            if(LocationUtils.inSkyblock) return
-            sendCommand("l")
-            GlobalScope.launch {
-                delay(3000)
-                sendCommand("play skyblock")
-            }
+        if (event.message != "Oops! You are not on SkyBlock so we couldn't warp you!" || LocationUtils.inSkyblock) return // need to find the other kicked one
+        sendCommand("l")
+        GlobalScope.launch {
+            delay(3000)
+            sendCommand("play skyblock")
         }
     }
 }

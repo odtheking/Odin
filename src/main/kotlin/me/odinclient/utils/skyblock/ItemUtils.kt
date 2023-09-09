@@ -2,7 +2,6 @@
 package me.odinclient.utils.skyblock
 
 import me.odinclient.OdinClient.Companion.mc
-import me.odinclient.ui.waypoint.WaypointGUI.list
 import me.odinclient.utils.Utils.noControlCodes
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.ItemStack
@@ -28,8 +27,8 @@ object ItemUtils {
     /**
      * Returns Item ID for an Item
      */
-    val ItemStack.itemID: String
-        get() = this.extraAttributes?.getString("id") ?: ""
+    val ItemStack?.itemID: String
+        get() = this?.extraAttributes?.getString("id") ?: ""
 
     inline val heldItem: ItemStack?
         get() = mc.thePlayer?.heldItem
