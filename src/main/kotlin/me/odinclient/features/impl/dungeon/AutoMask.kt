@@ -17,7 +17,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object AutoMask : Module(
     name = "Auto Mask",
     description = "Automatically uses masks when they proc.",
-    category = Category.DUNGEON
+    category = Category.DUNGEON,
+    tag = TagType.RISKY
 ) {
     private val spiritClock = Clock(30_000)
     private val bonzoClock = Clock(180_000)

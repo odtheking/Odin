@@ -15,6 +15,8 @@ import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
+import me.odinclient.utils.skyblock.ItemUtils.unformattedName
+import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest
@@ -123,7 +125,7 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun onTooltip(event: ItemTooltipEvent) {
-        if (!cancelToolTip || (currentTerm == -1 && lastLeftTerm - System.currentTimeMillis() > 500)) return
+        if (!cancelToolTip || (currentTerm == -1 && System.currentTimeMillis() - lastLeftTerm > 500) || !DungeonUtils.inDungeons) return
         event.toolTip.clear()
     }
 
@@ -131,7 +133,7 @@ object TerminalSolver : Module(
     fun onGuiClosed(event: GuiClosedEvent) {
         currentTerm = -1
         solution = emptyList()
-        lastLeftTerm = System.currentTimeMillis()
+        lastLeftTerm = 0L
     }
 
     @SubscribeEvent
@@ -165,7 +167,7 @@ object TerminalSolver : Module(
     }
 
     private fun solveStartsWith(items: List<ItemStack?>, letter: String) {
-        solution = items.filter { it?.displayName?.noControlCodes?.startsWith(letter, true) == true && !it.isItemEnchanted }.map { items.indexOf(it) }
+        solution = items.filter { it?.unformattedName?.startsWith(letter, true) == true && !it.isItemEnchanted }.map { items.indexOf(it) }
     }
 
     private fun solveSelect(items: List<ItemStack?>, color: String) {

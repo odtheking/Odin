@@ -21,14 +21,14 @@ object ItemUtils {
     /**
      * Returns displayName without control codes.
      */
-    private val ItemStack.unformattedName: String
+    val ItemStack.unformattedName: String
         get() = this.displayName.noControlCodes
 
     /**
      * Returns Item ID for an Item
      */
-    val ItemStack.itemID: String
-        get() = this.extraAttributes?.getString("id") ?: ""
+    val ItemStack?.itemID: String
+        get() = this?.extraAttributes?.getString("id") ?: ""
 
     inline val heldItem: ItemStack?
         get() = mc.thePlayer?.heldItem
@@ -38,23 +38,15 @@ object ItemUtils {
      */
     val ItemStack.lore: List<String>
         get() = this.tagCompound?.getCompoundTag("display")?.getTagList("Lore", 8)?.let {
-            val list = mutableListOf<String>()
-            for (i in 0 until it.tagCount()) {
-                list.add(it.getStringTagAt(i))
-            }
-            list
+            List(it.tagCount()) { i -> it.getStringTagAt(i) }
         } ?: emptyList()
 
 
     /**
      * Returns first slot of an Item
      */
-    fun getItemSlot(item: String, ignoreCase: Boolean = true): Int? {
-        val index = mc.thePlayer.inventory.mainInventory.indexOfFirst {
-            it?.unformattedName?.contains(item, ignoreCase) == true
-        }
-        return index.takeIf { it != -1 }
-    }
+    fun getItemSlot(item: String, ignoreCase: Boolean = true): Int? =
+        mc.thePlayer.inventory.mainInventory.indexOfFirst { it?.unformattedName?.contains(item, ignoreCase) == true }.takeIf { it != -1 }
 
     /**
      * Gets index of an item in a chest.
