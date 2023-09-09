@@ -5,6 +5,7 @@ import me.odinclient.events.impl.PreKeyInputEvent;
 import me.odinclient.events.impl.PreMouseInputEvent;
 import me.odinclient.features.impl.render.CPSDisplay;
 import me.odinclient.features.impl.render.NoRender;
+import me.odinclient.utils.skyblock.PlayerUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.Timer;
@@ -38,6 +39,11 @@ public class MixinMinecraft {
         if (Mouse.getEventButtonState()) {
             MinecraftForge.EVENT_BUS.post(new PreMouseInputEvent(k));
         }
+    }
+
+    @Inject(method = {"runTick"}, at = {@At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiScreen;handleInput()V")})
+    private void handleInput(CallbackInfo ci) {
+        PlayerUtils.INSTANCE.handleWindowClickQueue();
     }
 
     @Inject(method = "rightClickMouse", at = @At("HEAD"))

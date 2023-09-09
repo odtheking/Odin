@@ -52,9 +52,9 @@ object PlayerUtils {
     fun hitWithItemFromInv(itemIndex: Int, blockPos: BlockPos) {
         if (itemIndex < 8) return
         val currentHeldItemStack = mc.thePlayer.inventory.getStackInSlot(mc.thePlayer.inventory.currentItem)
-        windowClick(itemIndex, 2)
+        middleClickWindow(itemIndex)
         mc.playerController?.clickBlock(blockPos, mc.objectMouseOver.sideHit)
-        windowClick(itemIndex, 2)
+        middleClickWindow(itemIndex)
         mc.thePlayer.inventory.mainInventory[mc.thePlayer.inventory.currentItem] = currentHeldItemStack
     }
 
@@ -66,13 +66,27 @@ object PlayerUtils {
         mc.thePlayer.setPosition(x + 0.5, y, z + 0.5)
     }
 
+    private data class WindowClick(val windowId: Int, val slotId: Int, val button: Int, val mode: Int)
+    private val windowClickQueue = mutableListOf<WindowClick>()
 
     fun windowClick(windowId: Int, slotId: Int, button: Int, mode: Int) {
+        windowClickQueue.add(WindowClick(windowId, slotId, button, mode))
+    }
+
+    fun handleWindowClickQueue() {
+        if (windowClickQueue.isEmpty()) return
+        windowClickQueue.removeAll {
+            sendWindowClick(it.windowId, it.slotId, it.button, it.mode)
+            true
+        }
+    }
+
+    private fun sendWindowClick(windowId: Int, slotId: Int, button: Int, mode: Int) {
         mc.playerController.windowClick(windowId, slotId, button, mode, mc.thePlayer)
     }
 
-    private fun windowClick(slot: Int, button: Int) {
-        windowClick(mc.thePlayer.inventoryContainer.windowId, slot, button, 2)
+    private fun middleClickWindow(slot: Int) {
+        windowClick(mc.thePlayer.inventoryContainer.windowId, slot, 2, 2)
     }
 
     fun leftClickWindow(windowId: Int, index : Int) {
@@ -94,7 +108,7 @@ object PlayerUtils {
         if (!chestName.contains(containerName)) return
 
         GlobalScope.launch {
-            val deferred = AsyncUtils.waitUntilLastItem(container)
+            val deferred = AsyncUtils.waitUntilNoneAreNull(container)
             try {
                 deferred.await()
             } catch (e: Exception) {
@@ -118,7 +132,7 @@ object PlayerUtils {
         if (!chestName.contains(containerName)) return
 
         GlobalScope.launch{
-            val deferred = AsyncUtils.waitUntilLastItem(container)
+            val deferred = AsyncUtils.waitUntilNoneAreNull(container)
             try {
                 deferred.await()
             } catch (e: Exception) {
@@ -132,12 +146,11 @@ object PlayerUtils {
 
             println("found item at index $index, clicking...")
 
-            mc.playerController.windowClick(
+            windowClick(
                 mc.thePlayer.openContainer.windowId,
                 index,
                 2,
-                3,
-                mc.thePlayer
+                3
             )
            mc.thePlayer.closeScreen()
         }

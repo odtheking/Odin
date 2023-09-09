@@ -26,6 +26,13 @@ object HoverTerms : Module(
             if (gui.inventorySlots !is ContainerChest || gui.slotUnderMouse.inventory == mc.thePlayer.inventory) return@execute
             val hoveredItem = gui.slotUnderMouse.slotIndex
             if (hoveredItem !in TerminalSolver.solution) return@execute
+            if (TerminalSolver.currentTerm == 1) {
+                val needed = TerminalSolver.solution.count { it == hoveredItem }
+                if (needed >= 3) {
+                    windowClick(gui.inventorySlots.windowId, hoveredItem, 1,0)
+                    return@execute
+                }
+            }
             windowClick(gui.inventorySlots.windowId, hoveredItem, if (middleClick) 2 else 0, if (middleClick) 3 else 0)
         }
     }

@@ -82,7 +82,7 @@ object EventDispatcher {
         if (container !is ContainerChest) return@launch
         val chestName = container.lowerChestInventory.displayName.unformattedText
 
-        val deferred = AsyncUtils.waitUntilLastItem(container)
+        val deferred = AsyncUtils.waitUntilNoneAreNull(container)
         try { deferred.await() } catch (e: Exception) { return@launch } // Wait until the last item in the chest isn't null
 
         MinecraftForge.EVENT_BUS.post(GuiLoadedEvent(chestName, container))

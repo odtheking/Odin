@@ -54,7 +54,7 @@ object TerminalSolver : Module(
         "What starts with",
         "Select all the"
     )
-    private var currentTerm = -1
+    var currentTerm = -1
     var solution = listOf<Int>()
 
     @SubscribeEvent
@@ -122,7 +122,7 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun onTooltip(event: ItemTooltipEvent) {
-        if (lastLeftTerm - System.currentTimeMillis() < 500 || !cancelToolTip) return
+        if (!cancelToolTip || (currentTerm == -1 && lastLeftTerm - System.currentTimeMillis() > 500)) return
         event.toolTip.clear()
     }
 
