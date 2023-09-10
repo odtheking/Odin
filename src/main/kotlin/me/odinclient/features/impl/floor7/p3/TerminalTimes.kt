@@ -40,7 +40,7 @@ object TerminalTimes : Module(
     fun onClientTick(event: TickEvent.ClientTickEvent) {
         if (currentTerminal != null) return
 
-        val container = mc.thePlayer.openContainer ?: return
+        val container = mc.thePlayer?.openContainer ?: return
         if (container !is ContainerChest) return
 
         Terminals.entries.find {
