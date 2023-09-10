@@ -3,9 +3,11 @@ package me.odinclient.features.impl.dungeon
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.impl.dungeon.SecretTriggerbot.WITHER_ESSENCE_ID
+import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.utils.clock.Clock
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
+import me.odinclient.utils.skyblock.LocationUtils
 import me.odinclient.utils.skyblock.PlayerUtils.rightClick
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.block.BlockSkull
@@ -23,19 +25,25 @@ object SecretTriggerbot : Module(
     tag = TagType.NEW
 ) {
     private val delay: Long by NumberSetting<Long>("Delay", 200, 70, 500)
+    private val crystalHollowsChests: Boolean by BooleanSetting("Crystal Hollows Chests", true, description = "Opens chests in crystal hollows when looking at them")
     private val triggerBotClock = Clock(delay)
     private val clickedPositions = mutableSetOf<Pair<BlockPos, Long>>()
     private const val WITHER_ESSENCE_ID = "26bb1a8d-7c66-31c6-82d5-a9c04c94fb02"
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (!triggerBotClock.hasTimePassed(delay) || !DungeonUtils.inDungeons) return
+        if (!triggerBotClock.hasTimePassed(delay)) return
         val pos = mc.objectMouseOver?.blockPos ?: return
         val state = mc.theWorld.getBlockState(pos) ?: return
         clickedPositions.removeAll { it.second + 1000 < System.currentTimeMillis() }
 
-        if (isSecret(state, pos) && !clickedPositions.any { it.first == pos }) {
-            modMessage("Found secret at $pos")
+        if (crystalHollowsChests && LocationUtils.currentArea == "Crystal Hollows" && state.block == Blocks.chest && !clickedPositions.any { it.first == pos }) {
+            rightClick()
+            triggerBotClock.update()
+            clickedPositions.add(Pair(pos, System.currentTimeMillis()))
+            return
+        } else if (!DungeonUtils.inDungeons) return
+        else if (isSecret(state, pos) && !clickedPositions.any { it.first == pos }) {
             rightClick()
             triggerBotClock.update()
             clickedPositions.add(Pair(pos, System.currentTimeMillis()))
