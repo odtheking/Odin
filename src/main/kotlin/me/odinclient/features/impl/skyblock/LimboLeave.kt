@@ -1,14 +1,14 @@
 package me.odinclient.features.impl.skyblock
 
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import me.odinclient.OdinClient
 import me.odinclient.features.Module
 import me.odinclient.events.impl.ChatPacketEvent
 import me.odinclient.features.Category
+import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.utils.skyblock.ChatUtils.sendCommand
-import me.odinclient.utils.skyblock.LocationUtils
+import me.odinclient.utils.skyblock.LocationUtils.inSkyblock
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object LimboLeave: Module(
@@ -16,17 +16,20 @@ object LimboLeave: Module(
     description = "Automatically leaves limbo whenever you get kicked.",
     category = Category.SKYBLOCK,
 ) {
+    private val goIsland: Boolean by BooleanSetting("Go to Island", true)
 
-    @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
-        if (event.message != "Oops! You are not on SkyBlock so we couldn't warp you!" || LocationUtils.inSkyblock) return // need to find the other kicked one
+        // find other message
+        if (event.message != "Oops! You are not on SkyBlock so we couldn't warp you!" || inSkyblock) return
         sendCommand("l")
-        GlobalScope.launch {
-            delay(3000)
+        OdinClient.scope.launch {
+            delay(timeMillis = 3000)
             sendCommand("play skyblock")
-            delay(3000)
-            sendCommand("is")
+            if (goIsland) {
+                delay(timeMillis = 3000)
+                sendCommand("is")
+            }
         }
     }
 }
