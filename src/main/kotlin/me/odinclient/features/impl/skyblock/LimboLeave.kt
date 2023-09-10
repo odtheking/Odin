@@ -25,6 +25,8 @@ object LimboLeave: Module(
         GlobalScope.launch {
             delay(3000)
             sendCommand("play skyblock")
+            delay(3000)
+            sendCommand("is")
         }
     }
 }
