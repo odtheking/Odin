@@ -1,9 +1,9 @@
 package me.odinclient.features.impl.skyblock
 
-import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.BooleanSetting
+import me.odinclient.features.settings.impl.DualSetting
 import me.odinclient.utils.VecUtils
 import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
@@ -19,39 +19,24 @@ object Triggerbot : Module(
 ) {
     private val blood: Boolean by BooleanSetting("Blood Mobs")
     private val spiritBear: Boolean by BooleanSetting("Spirit Bear")
+    private val bloodClickType: Boolean by DualSetting("Blood Click Type", "Left", "Right", description = "What button to click for blood mobs.")
 
     private val bloodMobs: Set<String> = setOf(
-        "Revoker", "Psycho", "Reaper", "Cannibal", "Mute", "Ooze", "Putrid", "Freak", "Leech", "Tear",
-        "Parasite", "Flamer", "Skull", "Mr.Dead", "Vader", "Frost", "Walker", "Bonzo", "Scarf", "Livid", "WanderingSoul"
+        "Revoker", "Tear", "Ooze", "Cannibal", "Walker", "Putrid", "Mute", "Parasite", "WanderingSoul", "Leech",
+        "Flamer", "Skull", "Mr.Dead", "Vader", "Frost", "Freak", "Bonzo", "Scarf", "Livid", "Psycho", "Reaper",
     )
 
     @SubscribeEvent
     fun onEntityJoin(event: EntityJoinWorldEvent) {
-        if (
-            event.entity !is EntityOtherPlayerMP ||
-            DungeonUtils.inBoss ||
-            mc.currentScreen != null
-        ) return
+        if (event.entity !is EntityOtherPlayerMP || mc.currentScreen != null || !DungeonUtils.inDungeons) return
         val ent = event.entity
         val name = ent.name.replace(" ", "")
-        if (
-            !(bloodMobs.contains(name) && blood) &&
-            !(name == "Spirit Bear" && spiritBear)
-        ) return
+        if (!(bloodMobs.contains(name) && blood) && !(name == "Spirit Bear" && spiritBear)) return
 
-        if (
-            VecUtils.isFacingAABB(
-                AxisAlignedBB(
-                    event.entity.posX - 0.5,
-                    event.entity.posY - 2.0,
-                    event.entity.posZ - 0.5,
-                    event.entity.posX + 0.5,
-                    event.entity.posY + 3.0,
-                    event.entity.posZ + 0.5
-                ), 30f
-            )
-        ) {
-            PlayerUtils.leftClick()
-        }
+        val (x, y, z) = Triple(ent.posX, ent.posY, ent.posZ)
+        if (!VecUtils.isFacingAABB(AxisAlignedBB(x - .5, y - 2.0, z - .5, x + .5, y + 3.0, z + .5), 30f)) return
+
+        if (bloodClickType && name != "Spirit Bear") PlayerUtils.rightClick()
+        else PlayerUtils.leftClick()
     }
 }
