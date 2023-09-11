@@ -44,7 +44,7 @@ object GhostBlock : Module(
 
     init {
         execute({ gkeySpeed }) {
-            if (!gkey || !enabled || display != null || (onlyDungeon && !inDungeons)) return@execute
+            if (!gkey || !enabled || mc.currentScreen != null || (onlyDungeon && !inDungeons)) return@execute
             if (!isKeybindDown()) return@execute
 
             val lookingAt = mc.thePlayer?.rayTrace(gbRange, 1f)
