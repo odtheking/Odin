@@ -9,6 +9,8 @@ import me.odinclient.utils.Utils.equalsOneOf
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.entity.projectile.EntityArrow
 import net.minecraft.init.Blocks
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
@@ -34,12 +36,7 @@ object ClickedChests : Module(
         chests.add(event.pos)
     }
 
-    init {
-        onWorldLoad {
-            chests.clear()
-            println("yo")
-        }
-    }
+    init { onWorldLoad { chests.clear() } }
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {

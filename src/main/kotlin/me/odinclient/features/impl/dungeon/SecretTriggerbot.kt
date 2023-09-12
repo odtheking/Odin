@@ -26,6 +26,7 @@ object SecretTriggerbot : Module(
 ) {
     private val delay: Long by NumberSetting<Long>("Delay", 200, 70, 500)
     private val crystalHollowsChests: Boolean by BooleanSetting("Crystal Hollows Chests", true, description = "Opens chests in crystal hollows when looking at them")
+    private val inBoss: Boolean by BooleanSetting("In Boss", false, description = "Makes the triggerbot work in dungeon boss aswell.")
     private val triggerBotClock = Clock(delay)
     private val clickedPositions = mutableSetOf<Pair<BlockPos, Long>>()
     private const val WITHER_ESSENCE_ID = "26bb1a8d-7c66-31c6-82d5-a9c04c94fb02"
@@ -42,7 +43,7 @@ object SecretTriggerbot : Module(
             triggerBotClock.update()
             clickedPositions.add(Pair(pos, System.currentTimeMillis()))
             return
-        } else if (!DungeonUtils.inDungeons) return
+        } else if (!DungeonUtils.inDungeons || (!inBoss && !DungeonUtils.inBoss)) return
         else if (isSecret(state, pos) && !clickedPositions.any { it.first == pos }) {
             rightClick()
             triggerBotClock.update()

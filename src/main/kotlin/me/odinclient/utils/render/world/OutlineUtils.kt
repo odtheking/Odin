@@ -3,6 +3,7 @@ package me.odinclient.utils.render.world
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.impl.RenderEntityModelEvent
 import me.odinclient.utils.render.Color
+import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import net.minecraft.client.model.ModelBase
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
@@ -13,8 +14,6 @@ import org.lwjgl.opengl.EXTFramebufferObject
 import org.lwjgl.opengl.EXTPackedDepthStencil
 import org.lwjgl.opengl.GL11
 
-
-// TODO: TEST WITH NEW COLOR :PRAY: IT WORKS
 /**
  * Modified from LiquidBounce under GPL-3.0
  * https://github.com/CCBlueX/LiquidBounce/blob/legacy/LICENSE
@@ -39,51 +38,18 @@ object OutlineUtils {
         mc.gameSettings.gammaSetting = Float.MAX_VALUE
         if (shouldCancelHurt) livingBase?.hurtTime = 0
         val entity = livingBase as? Entity
-        GlStateManager.resetColor()
         setColor(color)
         renderOne(thickness)
-        model.render(
-            entity,
-            limbSwing,
-            limbSwingAmount,
-            ageInTicks,
-            headYaw,
-            headPitch,
-            scaleFactor
-        )
+        model.render(entity, limbSwing, limbSwingAmount, ageInTicks, headYaw, headPitch, scaleFactor)
         setColor(color)
         renderTwo()
-        model.render(
-            entity,
-            limbSwing,
-            limbSwingAmount,
-            ageInTicks,
-            headYaw,
-            headPitch,
-            scaleFactor
-        )
+        model.render(entity, limbSwing, limbSwingAmount, ageInTicks, headYaw, headPitch, scaleFactor)
         setColor(color)
         renderThree()
-        model.render(
-            entity,
-            limbSwing,
-            limbSwingAmount,
-            ageInTicks,
-            headYaw,
-            headPitch,
-            scaleFactor
-        )
+        model.render(entity, limbSwing, limbSwingAmount, ageInTicks, headYaw, headPitch, scaleFactor)
         setColor(color)
         renderFour(color)
-        model.render(
-            entity,
-            limbSwing,
-            limbSwingAmount,
-            ageInTicks,
-            headYaw,
-            headPitch,
-            scaleFactor
-        )
+        model.render(entity, limbSwing, limbSwingAmount, ageInTicks, headYaw, headPitch, scaleFactor)
         setColor(color)
         renderFive()
         setColor(Color.WHITE)

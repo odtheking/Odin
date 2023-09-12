@@ -19,10 +19,13 @@ public abstract class MixinRendererLivingEntity {
 
     @Inject(method = "renderModel", at = @At("HEAD"), cancellable = true)
     private void renderModel(EntityLivingBase entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, CallbackInfo callbackInfo) {
+        long start = System.nanoTime();
         if (MinecraftForge.EVENT_BUS.post(new RenderEntityModelEvent(
                 entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, mainModel
         ))) {
             callbackInfo.cancel();
+            System.out.println("AAAA");
         }
+        //System.out.println("RenderEntityModelEvent took " + (System.nanoTime() - start) + "ns");
     }
 }

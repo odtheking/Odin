@@ -42,25 +42,13 @@ object ESP : Module(
     init {
         execute(1000) {
             currentEntities.removeAll { it.first.isDead }
-            currentEntities = currentEntities.map { Pair(it.first, mc.thePlayer.canEntityBeSeen(it.first)) }.toMutableList()
 
-            mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()?.forEach { entity ->
-                if (
-                    !espList.any { entity.name.lowercase().contains(it) } ||
-                    currentEntities.any {it.first == entity}
-                ) return@forEach
-
-                val entities =
-                    mc.theWorld.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.expand(1.0, 5.0, 1.0))
-                        .filter { it != null && it !is EntityArmorStand && it != mc.thePlayer }
-                        .sortedByDescending { noSqrt3DDistance(it, entity) }
-                if (entities.isEmpty()) return@forEach
-                currentEntities.add(Pair(entities.first(), mc.thePlayer.canEntityBeSeen(entities.first())))
-            }
+            getEntities()
         }
 
         execute(30000) {
             currentEntities.clear()
+            getEntities()
         }
     }
 
@@ -80,5 +68,21 @@ object ESP : Module(
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
         currentEntities.clear()
+    }
+
+    private fun getEntities() {
+        mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()?.forEach { entity ->
+            if (
+                !espList.any { entity.name.lowercase().contains(it) } ||
+                currentEntities.any {it.first == entity}
+            ) return@forEach
+
+            val entities =
+                mc.theWorld.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.expand(1.0, 5.0, 1.0))
+                    .filter { it != null && it !is EntityArmorStand && it != mc.thePlayer }
+                    .sortedByDescending { noSqrt3DDistance(it, entity) }
+            if (entities.isEmpty()) return@forEach
+            currentEntities.add(Pair(entities.first(), mc.thePlayer.canEntityBeSeen(entities.first())))
+        }
     }
 }
