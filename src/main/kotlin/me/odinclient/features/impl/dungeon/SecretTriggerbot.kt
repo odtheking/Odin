@@ -43,7 +43,7 @@ object SecretTriggerbot : Module(
             triggerBotClock.update()
             clickedPositions.add(Pair(pos, System.currentTimeMillis()))
             return
-        } else if (!DungeonUtils.inDungeons || (!inBoss && !DungeonUtils.inBoss)) return
+        } else if (!DungeonUtils.inDungeons || (!inBoss && DungeonUtils.inBoss)) return
         else if (isSecret(state, pos) && !clickedPositions.any { it.first == pos }) {
             rightClick()
             triggerBotClock.update()
