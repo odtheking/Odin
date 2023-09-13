@@ -68,15 +68,11 @@ object ArrowAlign : Module(
         if (!triggerBotClock.hasTimePassed(delay)) return
         val rot = neededRotations.values.find { it.entity == mc.objectMouseOver?.entityHit } ?: return
         if (rot.rotations == 0) return
-        if (rot.rotations == 1) {
-            if (!lastClickClock.hasTimePassed()) return
-            PlayerUtils.rightClick()
-            lastClickClock.update()
-            return
-        }
+        if (rot.rotations == 1 && !lastClickClock.hasTimePassed()) return
         PlayerUtils.rightClick()
         rot.rotations--
         triggerBotClock.update()
+        if (rot.rotations == 2 || rot.rotations == 1) lastClickClock.update()
     }
 
     @SubscribeEvent
