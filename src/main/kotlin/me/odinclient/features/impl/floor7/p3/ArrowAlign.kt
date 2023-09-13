@@ -57,6 +57,11 @@ object ArrowAlign : Module(
     fun onArrowChange(event: PostEntityMetadata) {
         if (mc.theWorld?.getEntityByID(event.packet.entityId)?.position !in area) return
         calculate()
+        val ent = mc.theWorld.getEntityByID(event.packet.entityId)
+        if (ent is EntityItemFrame) {
+            val rotations = neededRotations.values.find { it.entity == ent }?.rotations ?: return
+            if (rotations == 0) lastClickClock.lastTime = System.currentTimeMillis()
+        }
     }
 
     @SubscribeEvent

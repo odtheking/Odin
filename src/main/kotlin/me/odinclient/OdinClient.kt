@@ -135,6 +135,7 @@ class OdinClient {
             WaypointCommand,
             BlacklistCommand,
             AutoSellCommand,
+            TerminalSimCommand
         )
     }
 }
