@@ -39,7 +39,7 @@ object StartGui : GuiChest(
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         if (mouseButton != 0) return
-        val slot = slotUnderMouse
+        val slot = slotUnderMouse ?: return
         if (slot.slotIndex !in 11..15) return
         modMessage("clicked lil nigga")
     }
