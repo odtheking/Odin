@@ -125,7 +125,7 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun onTooltip(event: ItemTooltipEvent) {
-        if (!cancelToolTip || (currentTerm == -1 && System.currentTimeMillis() - lastLeftTerm > 500) || !DungeonUtils.inDungeons) return
+        if (!cancelToolTip || (currentTerm == -1 && System.currentTimeMillis() - lastLeftTerm > 100) || !DungeonUtils.inDungeons) return
         event.toolTip.clear()
     }
 
@@ -133,7 +133,7 @@ object TerminalSolver : Module(
     fun onGuiClosed(event: GuiClosedEvent) {
         currentTerm = -1
         solution = emptyList()
-        lastLeftTerm = 0L
+        lastLeftTerm = System.currentTimeMillis()
     }
 
     @SubscribeEvent

@@ -75,6 +75,7 @@ object LeapHelper : Module(
 
     @SubscribeEvent
     fun onRenderSlot(event: DrawSlotEvent) {
+        if (closestPlayer == "") return
         if (!DungeonUtils.inDungeons || event.slot.inventory?.name != "Spirit Leap") return
         if (event.slot.stack?.displayName.noControlCodes != closestPlayer) return
         Gui.drawRect(event.slot.xDisplayPosition, event.slot.yDisplayPosition, event.slot.xDisplayPosition + 16, event.slot.yDisplayPosition + 16, Color.RED.rgb)

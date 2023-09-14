@@ -10,6 +10,8 @@ import me.odinclient.dungeonmap.features.MapRender
 import me.odinclient.dungeonmap.features.Window
 import me.odinclient.events.EventDispatcher
 import me.odinclient.features.ModuleManager
+import me.odinclient.features.impl.floor7.p3.termsim.StartGui
+import me.odinclient.features.impl.floor7.p3.termsim.TermSimEvents
 import me.odinclient.features.impl.render.ClickGUIModule
 import me.odinclient.features.impl.render.WaypointManager
 import me.odinclient.ui.clickgui.ClickGUI
@@ -58,6 +60,8 @@ class OdinClient {
 
             Dungeon,
             MapRender,
+
+            TermSimEvents,
 
             EventDispatcher,
 
