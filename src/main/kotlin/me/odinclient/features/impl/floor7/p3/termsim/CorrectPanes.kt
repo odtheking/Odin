@@ -10,8 +10,8 @@ import kotlin.math.floor
 object CorrectPanes : TermSimGui(
     "Correct all the panes!", 45
 ) {
-    private val greenPane = ItemStack(pane, 1, 5).apply { setStackDisplayName("") }
-    private val redPane = ItemStack(pane, 1, 14).apply { setStackDisplayName("") }
+    private val greenPane get() = ItemStack(pane, 1, 5 ).apply { setStackDisplayName("") }
+    private val redPane   get() = ItemStack(pane, 1, 14).apply { setStackDisplayName("") }
 
     override fun create() {
         this.inventorySlots.inventorySlots.subList(0, 45).forEachIndexed { index, it ->
@@ -26,8 +26,8 @@ object CorrectPanes : TermSimGui(
     }
 
     override fun slotClick(slot: Slot, button: Int) {
-        if (slot.stack.metadata != 14) return
-        slot.putStack(greenPane)
+        if (slot.stack.metadata == 15) return
+        if (slot.stack.metadata == 14) slot.putStack(greenPane) else slot.putStack(redPane)
         mc.thePlayer.playSound("random.orb", 1f, 1f)
         TerminalSolver.onGuiLoad(GuiLoadedEvent(name, inventorySlots as ContainerChest))
         if (inventorySlots.inventorySlots.subList(0, 45).none { it?.stack?.metadata == 14 }) {

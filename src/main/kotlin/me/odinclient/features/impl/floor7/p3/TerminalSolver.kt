@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.floor7.p3
 
-import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.impl.ChatPacketEvent
 import me.odinclient.events.impl.DrawSlotEvent
 import me.odinclient.events.impl.GuiClosedEvent
@@ -12,7 +11,6 @@ import me.odinclient.features.settings.Setting.Companion.withDependency
 import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.features.settings.impl.ColorSetting
 import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.ItemUtils.unformattedName
@@ -23,7 +21,6 @@ import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.EnumDyeColor
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
-import net.minecraftforge.client.event.sound.PlaySoundEvent
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -101,7 +98,6 @@ object TerminalSolver : Module(
             }
             return
         }
-        modMessage("a")
         GlStateManager.translate(0f, 0f, zLevel)
         GlStateManager.disableLighting()
         when (currentTerm) {
@@ -156,7 +152,6 @@ object TerminalSolver : Module(
         solution = panes.flatMap { pane ->
             if (pane.metadata != most) {
                 val distance = dist(colorOrder.indexOf(pane.metadata), colorOrder.indexOf(most))
-                modMessage("$distance ${colorOrder.indexOf(pane.metadata)} ${colorOrder.indexOf(most)}")
                 Array(distance) { pane }.toList()
             } else emptyList()
         }.map { items.indexOf(it) }

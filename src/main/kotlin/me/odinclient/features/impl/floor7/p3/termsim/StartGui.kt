@@ -29,8 +29,8 @@ object StartGui : TermSimGui(
         when (slot.slotIndex) {
             11 -> CorrectPanes.open()
             12 -> SameColor.open()
-            /*
             13 -> InOrder.open()
+            /*
             14 -> StartsWith.open()
             15 -> Select.open()
              */

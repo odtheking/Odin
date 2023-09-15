@@ -4,6 +4,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.features.impl.floor7.p3.termsim.TermSimGui
 import me.odinclient.utils.AsyncUtils
 import me.odinclient.utils.VecUtils.floored
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
@@ -70,7 +71,9 @@ object PlayerUtils {
     private val windowClickQueue = mutableListOf<WindowClick>()
 
     fun windowClick(windowId: Int, slotId: Int, button: Int, mode: Int) {
-        windowClickQueue.add(WindowClick(windowId, slotId, button, mode))
+        if (mc.currentScreen is TermSimGui) {
+            (mc.currentScreen as TermSimGui).slotClick((mc.currentScreen as GuiChest).inventorySlots.getSlot(slotId), button)
+        } else windowClickQueue.add(WindowClick(windowId, slotId, button, mode))
     }
 
     fun handleWindowClickQueue() {

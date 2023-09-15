@@ -13,13 +13,6 @@ object SameColor : TermSimGui(
     45
 ) {
     private val order = listOf(1, 4, 13, 11, 14)
-    private val panes = listOf(
-        ItemStack(pane, 1, 1).apply  { setStackDisplayName("") },
-        ItemStack(pane, 1, 4).apply  { setStackDisplayName("") },
-        ItemStack(pane, 1, 13).apply { setStackDisplayName("") },
-        ItemStack(pane, 1, 11).apply { setStackDisplayName("") },
-        ItemStack(pane, 1, 14).apply { setStackDisplayName("") }
-    )
     private val grid get() = inventorySlots.inventorySlots.subList(0, 45).filter { it?.stack?.metadata != 15 }
 
     override fun create() {
@@ -33,10 +26,10 @@ object SameColor : TermSimGui(
         if (slot.stack?.metadata !in order) return
         val current = order.find { it == slot.stack.metadata } ?: return
         when (button) {
-            0, 2 -> slot.putStack(panes[(order.indexOf(current) + 1) % order.size])
+            0, 2 -> slot.putStack(genStack(order[(order.indexOf(current) + 1) % order.size]))
             1 -> {
                 val nextIndex = order.indexOf(current) - 1
-                slot.putStack(if (nextIndex < 0) panes.last() else panes[nextIndex])
+                slot.putStack(if (nextIndex < 0) genStack(order.last()) else genStack(order[nextIndex]))
             }
             else -> return
         }
@@ -50,11 +43,13 @@ object SameColor : TermSimGui(
     private fun getPane(): ItemStack {
         val a = Math.random()
         return when {
-            a < .2 -> panes[0]
-            a < .4 -> panes[1]
-            a < .6 -> panes[2]
-            a < .8 -> panes[3]
-            else -> panes[4]
+            a < .2 -> genStack(order[0])
+            a < .4 -> genStack(order[1])
+            a < .6 -> genStack(order[2])
+            a < .8 -> genStack(order[3])
+            else ->   genStack(order[4])
         }
     }
+
+    private fun genStack(meta: Int) = ItemStack(pane, 1, meta).apply { setStackDisplayName("") } // This makes unique itemstacks, so terminalsolver works.
 }

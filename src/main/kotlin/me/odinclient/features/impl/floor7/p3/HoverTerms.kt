@@ -18,21 +18,29 @@ object HoverTerms : Module(
     category = Category.FLOOR7,
     tag = TagType.NEW
 ) {
-    private val delay: Long by NumberSetting<Long>("Delay", 200, 70, 500)
+    private val triggerDelay: Long by NumberSetting<Long>("Delay", 200, 70, 500)
     private val middleClick: Boolean by DualSetting("Click Type", "Left", "Middle", default = true, description = "What Click to use")
-    private val triggerBotClock = Clock(delay)
+    private val triggerBotClock = Clock(triggerDelay)
 
     init {
         execute(10) {// Virtually the same thing as a render world trigger, except it will only fire 100fps and under (there is no need for more in this case)
-            if (TerminalSolver.solution.isEmpty() || mc.currentScreen !is GuiChest || !enabled || !triggerBotClock.hasTimePassed(delay)) return@execute
+            if (TerminalSolver.solution.isEmpty() || mc.currentScreen !is GuiChest || !enabled || !triggerBotClock.hasTimePassed(triggerDelay)) return@execute
             val gui = mc.currentScreen as GuiChest
             if (gui.inventorySlots !is ContainerChest || gui.slotUnderMouse.inventory == mc.thePlayer.inventory) return@execute
             val hoveredItem = gui.slotUnderMouse.slotIndex
             if (hoveredItem !in TerminalSolver.solution) return@execute
+
             if (TerminalSolver.currentTerm == 1) {
                 val needed = TerminalSolver.solution.count { it == hoveredItem }
                 if (needed >= 3) {
                     windowClick(gui.inventorySlots.windowId, hoveredItem, 1,0)
+                    triggerBotClock.update()
+                    return@execute
+                }
+            } else if (TerminalSolver.currentTerm == 2) {
+                if (TerminalSolver.solution.first() == hoveredItem) {
+                    windowClick(gui.inventorySlots.windowId, hoveredItem, 1,0)
+                    triggerBotClock.update()
                     return@execute
                 }
             }
