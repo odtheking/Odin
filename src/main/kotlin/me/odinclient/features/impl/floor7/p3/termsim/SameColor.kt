@@ -2,7 +2,6 @@ package me.odinclient.features.impl.floor7.p3.termsim
 
 import me.odinclient.events.impl.GuiLoadedEvent
 import me.odinclient.features.impl.floor7.p3.TerminalSolver
-import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.Slot
 import net.minecraft.item.ItemStack

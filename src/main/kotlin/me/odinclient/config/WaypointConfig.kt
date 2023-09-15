@@ -6,11 +6,9 @@ import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import me.odinclient.OdinClient
 import me.odinclient.OdinClient.Companion.scope
 import me.odinclient.config.utils.ConfigFile
 import me.odinclient.features.impl.render.WaypointManager.Waypoint
-import java.io.File
 import java.io.IOException
 
 object WaypointConfig {

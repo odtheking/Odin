@@ -1,8 +1,8 @@
 package me.odinclient.features.impl.floor7.p3.termsim
 
+import me.odinclient.OdinClient.Companion.mc
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import me.odinclient.OdinClient.Companion.mc
 
 object TermSimEvents {
     @SubscribeEvent

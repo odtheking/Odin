@@ -4,7 +4,6 @@ import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinclient.events.impl.ReceivePacketEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
-import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.features.settings.impl.HudSetting
 import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.ui.hud.HudElement
@@ -13,6 +12,7 @@ import me.odinclient.utils.render.gui.nvg.getTextWidth
 import me.odinclient.utils.render.gui.nvg.textWithControlCodes
 import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.skyblock.WorldUtils
+import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumParticleTypes
@@ -30,10 +30,8 @@ object DragonTimer : Module(
 ) {
 
     private val textScale: Float by NumberSetting(name = "Text scale", default = 1f, min = 0f, max = 10f, increment = 0.1f)
-    private val textBackground: Boolean by BooleanSetting(name = "Text background")
-    private val increaseWithDistance: Boolean by BooleanSetting(name = "Increase With Distance")
 
-    private const val dragonSpawnTime = 5000L
+    private const val DRAGON_SPAWN_TIME = 5000L
 
     // TODO: add a background to make it more readable (a setting)
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, true) {
@@ -65,7 +63,7 @@ object DragonTimer : Module(
 
     @SubscribeEvent
     fun onReceivePacket(event: ReceivePacketEvent) {
-        if (event.packet !is S2APacketParticles /*|| LocationUtils.getPhase() != 5*/) return
+        if (event.packet !is S2APacketParticles || DungeonUtils.getPhase() != 5) return
         val particle = event.packet
 
         if (
@@ -81,8 +79,6 @@ object DragonTimer : Module(
             particle.zCoordinate % 1 != 0.0
         ) return
 
-
-
         DC.entries.forEach { c ->
             if (checkParticle(particle, c) && times[c] == 0L) {
                 times[c] = System.currentTimeMillis()
@@ -91,10 +87,9 @@ object DragonTimer : Module(
     }
 
     private fun checkParticle(event: S2APacketParticles, color: DC): Boolean {
-        val (x, y, z) = listOf(event.xCoordinate, event.yCoordinate, event.zCoordinate)
-        return  x >= color.x.first && x <= color.x.second &&
-                y >= 15 && y <= 22 &&
-                z >= color.z.first && z <= color.z.second
+        return  event.xCoordinate in color.x.first..color.x.second &&
+                event.yCoordinate in 15.0..22.0 &&
+                event.zCoordinate in color.z.first..color.z.second
     }
 
     @SubscribeEvent
@@ -106,20 +101,14 @@ object DragonTimer : Module(
         DC.entries.forEachIndexed { index, dragonColor ->
             val time = times[dragonColor] ?: 0L
             if (time == 0L || !dragonColor.alive) return@forEachIndexed
-            if (currentTime - time < dragonSpawnTime) {
-                val spawnTime = dragonSpawnTime - (currentTime - time)
+            if (currentTime - time < DRAGON_SPAWN_TIME) {
+                val spawnTime = DRAGON_SPAWN_TIME - (currentTime - time)
                 val colorCode = when {
                     spawnTime <= 1000 -> "§c"
                     spawnTime <= 3000 -> "§e"
                     else -> "§a"
                 }
-                toRender.add(
-                    Triple(
-                        "§${dragonColor.color}${dragonColor} spawning in ${colorCode}${spawnTime} ms",
-                        index,
-                        dragonColor
-                    )
-                )
+                toRender.add(Triple("§${dragonColor.color}${dragonColor} spawning in ${colorCode}${spawnTime} ms", index, dragonColor))
             } else {
                 times[dragonColor] = 0L
             }
@@ -150,54 +139,19 @@ object DragonTimer : Module(
     enum class DC(
         private val pos: BlockPos,
         val color: String,
-        val x: Pair<Int, Int>,
-        val z: Pair<Int, Int>,
+        val x: Pair<Double, Double>,
+        val z: Pair<Double, Double>,
         val textPos: Vec3,
         var alive: Boolean
     ) {
-        Red(
-            BlockPos(32, 22, 59),
-            "c",
-            Pair(24, 30),
-            Pair(56, 62),
-            Vec3(27.0, 18.0, 60.0),
-            true,
-        ),
-        Orange(
-            BlockPos(80, 23, 56),
-            "6",
-            Pair(82, 88),
-            Pair(53, 59),
-            Vec3(84.0, 18.0, 56.0),
-            true
-        ),
-        Green(
-            BlockPos(32, 23, 94),
-            "a",
-            Pair(23, 29),
-            Pair(91, 97),
-            Vec3(26.0, 18.0, 95.0),
-            true
-        ),
-        Blue(
-            BlockPos(79, 23, 94),
-            "b",
-            Pair(82, 88),
-            Pair(91, 97),
-            Vec3(84.0, 18.0, 95.0),
-            true
-        ),
-        Purple(
-            BlockPos(56, 22, 120),
-            "5",
-            Pair(53, 59),
-            Pair(122, 128),
-            Vec3(57.0, 18.0, 125.0),
-            true
-        );
+        Red   (BlockPos(32, 22, 59), "c", Pair(24.0, 30.0), Pair(56.0, 62.0),   Vec3(27.0, 18.0, 60.0), true),
+        Orange(BlockPos(80, 23, 56), "6", Pair(82.0, 88.0), Pair(53.0, 59.0),   Vec3(84.0, 18.0, 56.0), true),
+        Green (BlockPos(32, 23, 94), "a", Pair(23.0, 29.0), Pair(91.0, 97.0),   Vec3(26.0, 18.0, 95.0), true),
+        Blue  (BlockPos(79, 23, 94), "b", Pair(82.0, 88.0), Pair(91.0, 97.0),   Vec3(84.0, 18.0, 95.0), true),
+        Purple(BlockPos(56, 22, 120),"5", Pair(53.0, 59.0), Pair(122.0, 128.0), Vec3(57.0, 18.0, 125.0),true);
 
         fun checkAlive() {
-            this.alive = WorldUtils.getBlockIdAt(this.pos) != 0
+            this.alive = !WorldUtils.isAir(this.pos)
         }
     }
 }

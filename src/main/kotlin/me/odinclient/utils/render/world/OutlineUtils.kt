@@ -3,9 +3,7 @@ package me.odinclient.utils.render.world
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.impl.RenderEntityModelEvent
 import me.odinclient.utils.render.Color
-import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import net.minecraft.client.model.ModelBase
-import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.shader.Framebuffer
 import net.minecraft.entity.Entity

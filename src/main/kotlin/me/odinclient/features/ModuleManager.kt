@@ -67,7 +67,6 @@ object ModuleManager {
         DragonTimer,
         LeapHelper,
         NecronDropTimer,
-        DecoyDeadMessage,
         AutoSprint,
         CookieClicker,
         GhostPick,

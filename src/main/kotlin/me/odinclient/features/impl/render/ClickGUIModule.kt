@@ -5,7 +5,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import me.odinclient.OdinClient
 import me.odinclient.OdinClient.Companion.display
-import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.OdinClient.Companion.scope
 import me.odinclient.config.Config
 import me.odinclient.features.Category

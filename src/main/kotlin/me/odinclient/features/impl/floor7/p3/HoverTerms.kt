@@ -1,13 +1,10 @@
 package me.odinclient.features.impl.floor7.p3
 
-import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.Category
 import me.odinclient.features.Module
-import me.odinclient.features.impl.dungeon.SecretTriggerbot
 import me.odinclient.features.settings.impl.DualSetting
 import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.utils.clock.Clock
-import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.PlayerUtils.windowClick
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest

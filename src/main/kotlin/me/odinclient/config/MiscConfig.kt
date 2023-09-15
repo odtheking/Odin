@@ -6,12 +6,8 @@ import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import me.odinclient.OdinClient
-import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.OdinClient.Companion.scope
 import me.odinclient.config.utils.ConfigFile
-import me.odinclient.features.impl.floor7.p3.TerminalTimes
-import java.io.File
 import java.io.IOException
 
 object MiscConfig {

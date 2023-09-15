@@ -8,7 +8,6 @@ import cc.polyfrost.oneconfig.utils.dsl.nanoVGHelper
 import me.odinclient.features.impl.render.ClickGUIModule.experimentalRendering
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.gui.nvg.TextAlign.*
-import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.render.world.RenderUtils.bindColor
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator

@@ -1,7 +1,5 @@
 package me.odinclient.features.impl.floor7.p3
 
-import cc.polyfrost.oneconfig.libs.universal.UMatrixStack
-import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.impl.BlockChangeEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module

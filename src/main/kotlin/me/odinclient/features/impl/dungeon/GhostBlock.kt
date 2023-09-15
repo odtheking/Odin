@@ -1,7 +1,5 @@
 package me.odinclient.features.impl.dungeon
 
-import me.odinclient.OdinClient.Companion.display
-import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.Setting.Companion.withDependency

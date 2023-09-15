@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.floor7.p3
 
-import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.NumberSetting
@@ -21,7 +20,7 @@ object Levers : Module(
     private val delay: Long by NumberSetting<Long>("Delay", 200, 70, 500)
     private val triggerBotClock = Clock(delay)
 
-    private val levers = listOf(
+    private val levers = setOf(
         BlockPos(58, 136, 142),
         BlockPos(58, 133, 142),
         BlockPos(60, 135, 142),

@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.floor7
 
-import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.impl.ChatPacketEvent
 import me.odinclient.events.impl.DrawSlotEvent
 import me.odinclient.features.Category

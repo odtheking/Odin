@@ -7,17 +7,14 @@ import me.odinclient.features.Category
 import me.odinclient.features.impl.render.ClickGUIModule
 import me.odinclient.ui.Screen
 import me.odinclient.ui.clickgui.elements.menu.ElementColor
-import me.odinclient.ui.clickgui.util.ColorUtil
 import me.odinclient.ui.clickgui.util.ColorUtil.buttonColor
 import me.odinclient.ui.clickgui.util.ColorUtil.textColor
 import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinclient.ui.clickgui.util.HoverHandler
 import me.odinclient.utils.clock.Executor
 import me.odinclient.utils.clock.Executor.Companion.register
-import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.gui.animations.impl.EaseInOut
 import me.odinclient.utils.render.gui.nvg.*
-import me.odinclient.utils.render.world.RenderUtils.bindColor
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager

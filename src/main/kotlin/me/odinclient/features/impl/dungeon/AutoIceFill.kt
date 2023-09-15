@@ -4,7 +4,6 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.utils.AsyncUtils

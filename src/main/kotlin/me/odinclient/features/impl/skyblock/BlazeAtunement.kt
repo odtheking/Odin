@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.skyblock
 
-import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.impl.ClientSecondEvent
 import me.odinclient.events.impl.RenderEntityModelEvent
 import me.odinclient.features.Category

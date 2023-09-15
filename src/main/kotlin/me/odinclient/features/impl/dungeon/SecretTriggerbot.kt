@@ -2,11 +2,9 @@ package me.odinclient.features.impl.dungeon
 
 import me.odinclient.features.Category
 import me.odinclient.features.Module
-import me.odinclient.features.impl.dungeon.SecretTriggerbot.WITHER_ESSENCE_ID
 import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.utils.clock.Clock
-import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.LocationUtils
 import me.odinclient.utils.skyblock.PlayerUtils.rightClick
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils

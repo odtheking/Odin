@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.skyblock
 
-import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.NumberSetting

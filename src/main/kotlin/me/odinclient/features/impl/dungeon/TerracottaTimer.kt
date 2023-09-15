@@ -7,7 +7,6 @@ import me.odinclient.features.Module
 import me.odinclient.utils.VecUtils.addVec
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.world.RenderUtils
-import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.LocationUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.util.Vec3

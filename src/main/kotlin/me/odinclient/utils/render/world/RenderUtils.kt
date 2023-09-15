@@ -17,7 +17,6 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.GL_QUADS
-import org.lwjgl.opengl.GLSync
 import org.lwjgl.util.glu.Cylinder
 import org.lwjgl.util.glu.GLU
 import kotlin.math.*

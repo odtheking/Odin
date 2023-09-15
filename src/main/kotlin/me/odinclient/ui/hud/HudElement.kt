@@ -3,7 +3,6 @@ package me.odinclient.ui.hud
 import me.odinclient.features.Module
 import me.odinclient.features.ModuleManager.huds
 import me.odinclient.features.settings.impl.BooleanSetting
-import me.odinclient.features.settings.impl.HudSetting
 import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinclient.ui.clickgui.util.HoverHandler

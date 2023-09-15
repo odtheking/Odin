@@ -3,9 +3,9 @@ package me.odinclient.features.impl.skyblock
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.odinclient.OdinClient
-import me.odinclient.features.Module
 import me.odinclient.events.impl.ChatPacketEvent
 import me.odinclient.features.Category
+import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.utils.skyblock.ChatUtils.sendCommand
 import me.odinclient.utils.skyblock.LocationUtils.inSkyblock
