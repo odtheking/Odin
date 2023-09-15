@@ -24,12 +24,12 @@ object StartGui : TermSimGui(
         }
     }
 
-    override fun slotClick(slot: Slot) {
+    override fun slotClick(slot: Slot, button: Int) {
         if (slot.slotIndex !in 11..15) return
         when (slot.slotIndex) {
             11 -> CorrectPanes.open()
-            /*
             12 -> SameColor.open()
+            /*
             13 -> InOrder.open()
             14 -> StartsWith.open()
             15 -> Select.open()

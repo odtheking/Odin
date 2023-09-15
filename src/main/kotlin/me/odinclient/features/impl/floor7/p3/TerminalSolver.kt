@@ -101,6 +101,7 @@ object TerminalSolver : Module(
             }
             return
         }
+        modMessage("a")
         GlStateManager.translate(0f, 0f, zLevel)
         GlStateManager.disableLighting()
         when (currentTerm) {
@@ -155,6 +156,7 @@ object TerminalSolver : Module(
         solution = panes.flatMap { pane ->
             if (pane.metadata != most) {
                 val distance = dist(colorOrder.indexOf(pane.metadata), colorOrder.indexOf(most))
+                modMessage("$distance ${colorOrder.indexOf(pane.metadata)} ${colorOrder.indexOf(most)}")
                 Array(distance) { pane }.toList()
             } else emptyList()
         }.map { items.indexOf(it) }

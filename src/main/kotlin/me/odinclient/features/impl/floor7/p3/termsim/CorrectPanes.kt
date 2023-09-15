@@ -1,19 +1,14 @@
 package me.odinclient.features.impl.floor7.p3.termsim
 
-import me.odinclient.OdinClient
-import me.odinclient.OdinClient.Companion.display
-import me.odinclient.features.impl.floor7.p3.termsim.StartGui.blackPane
-import me.odinclient.features.impl.floor7.p3.termsim.StartGui.pane
-import me.odinclient.utils.Utils.round
-import me.odinclient.utils.skyblock.ChatUtils.modMessage
-import net.minecraft.client.gui.inventory.GuiChest
-import net.minecraft.inventory.InventoryBasic
+import me.odinclient.events.impl.GuiLoadedEvent
+import me.odinclient.features.impl.floor7.p3.TerminalSolver
+import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.Slot
 import net.minecraft.item.ItemStack
 import kotlin.math.floor
 
 object CorrectPanes : TermSimGui(
-    "Correct The Panes!", 45
+    "Correct all the panes!", 45
 ) {
     private val greenPane = ItemStack(pane, 1, 5).apply { setStackDisplayName("") }
     private val redPane = ItemStack(pane, 1, 14).apply { setStackDisplayName("") }
@@ -30,10 +25,11 @@ object CorrectPanes : TermSimGui(
         return if (a > 0.75) greenPane else redPane
     }
 
-    override fun slotClick(slot: Slot) {
+    override fun slotClick(slot: Slot, button: Int) {
         if (slot.stack.metadata != 14) return
         slot.putStack(greenPane)
         mc.thePlayer.playSound("random.orb", 1f, 1f)
+        TerminalSolver.onGuiLoad(GuiLoadedEvent(name, inventorySlots as ContainerChest))
         if (inventorySlots.inventorySlots.subList(0, 45).none { it?.stack?.metadata == 14 }) {
             solved()
         }
