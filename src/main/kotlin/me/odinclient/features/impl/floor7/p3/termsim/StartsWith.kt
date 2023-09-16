@@ -52,9 +52,7 @@ class StartsWith(private val letter: String) : TermSimGui(
     }
 
     override fun slotClick(slot: Slot, button: Int) {
-        if (
-            !slot.stack.displayName.startsWith(letter, true)
-        ) return
+        if (!slot.stack.displayName.startsWith(letter, true) || slot.stack.isItemEnchanted) return
 
         slot.stack.addEnchantment(Enchantment.infinity, 1)
         mc.thePlayer.playSound("random.orb", 1f, 1f)

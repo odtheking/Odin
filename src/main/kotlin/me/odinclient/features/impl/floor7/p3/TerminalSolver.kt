@@ -142,20 +142,34 @@ object TerminalSolver : Module(
     }
 
     private fun solvePanes(items: List<ItemStack?>) {
-        solution = items.filter { it?.metadata == 14 && Item.getIdFromItem(it.item) == 160 }.filterNotNull().map { items.indexOf(it) }
+        solution = items.filter { it?.metadata == 14 }.map { items.indexOf(it) }
     }
 
     private val colorOrder = listOf(1, 4, 13, 11, 14)
     private fun solveColor(items: List<ItemStack>) {
         val panes = items.filter { it.metadata != 15 && Item.getIdFromItem(it.item) == 160 }
-        val most = colorOrder.maxByOrNull { color -> panes.count { it.metadata == color } } ?: 1
+        var temp = List(100) { i -> i }
+        for (color in colorOrder) {
+            val temp2 = panes.flatMap { pane ->
+                if (pane.metadata != color) {
+                    Array(dist(colorOrder.indexOf(pane.metadata), colorOrder.indexOf(color))) { pane }.toList()
+                } else emptyList()
+            }.map { items.indexOf(it) }
 
-        solution = panes.flatMap { pane ->
-            if (pane.metadata != most) {
-                val distance = dist(colorOrder.indexOf(pane.metadata), colorOrder.indexOf(most))
-                Array(distance) { pane }.toList()
-            } else emptyList()
-        }.map { items.indexOf(it) }
+            if (getRealSize(temp2) < getRealSize(temp)) {
+                temp = temp2
+            }
+        }
+        solution = temp
+    }
+
+    private fun getRealSize(list: List<Int>): Int {
+        var size = 0
+        list.distinct().forEach { pane ->
+            val count = list.count { it == pane }
+            size += if (count >= 3) 5 - count else count
+        }
+        return size
     }
 
     private fun dist(pane: Int, most: Int): Int = if (pane > most) (most + colorOrder.size) - pane else most - pane
