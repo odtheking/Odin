@@ -33,6 +33,15 @@ object ItemUtils {
     inline val heldItem: ItemStack?
         get() = mc.thePlayer?.heldItem
 
+    val ItemStack?.hasAbility: Boolean
+        get() {
+            val lore = this?.lore
+            lore?.forEach{
+                if(it.contains("Ability:") && it.endsWith("RIGHT CLICK")) return true
+            }
+            return false
+        }
+
     /**
      * Returns the lore for an Item
      */

@@ -10,9 +10,12 @@ import me.odinclient.utils.VecUtils.floored
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.ItemUtils.getItemIndexInContainerChest
 import me.odinclient.utils.skyblock.ItemUtils.getItemSlot
+import me.odinclient.utils.skyblock.ItemUtils.itemID
+import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.inventory.ContainerChest
+import net.minecraft.item.ItemStack
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
@@ -166,6 +169,27 @@ object PlayerUtils {
             displayTitle(null, "", 10, 250, 10)
             displayTitle(null, null, 10, 250, 10)
         }
+    }
+
+    fun EntityPlayerSP?.isHolding(vararg names: String, ignoreCase: Boolean = false, mode: Int = 0): Boolean {
+        val regex = Regex("${if (ignoreCase) "(?i)" else ""}${names.joinToString("|")}")
+        return this.isHolding(regex, mode)
+    }
+
+    fun EntityPlayerSP?.isHolding(regex: Regex, mode: Int = 0): Boolean {
+        return this.isHolding { it?.run {
+            when (mode) {
+                0 -> displayName.contains(regex) || itemID.matches(regex)
+                1 -> displayName.contains(regex)
+                2 -> itemID.matches(regex)
+                else -> false
+            } } == true
+        }
+    }
+
+    private fun EntityPlayerSP?.isHolding(predicate: (ItemStack?) -> Boolean): Boolean {
+        if (this == null) return false
+        return predicate(this.heldItem)
     }
 
     val posFloored

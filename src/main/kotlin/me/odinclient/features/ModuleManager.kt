@@ -104,8 +104,8 @@ object ModuleManager {
         LimboLeave,
         HoverTerms,
         ClickedChests,
-        SecretTriggerbot
-
+        SecretTriggerbot,
+        CancelInteract
     )
 
     @SubscribeEvent

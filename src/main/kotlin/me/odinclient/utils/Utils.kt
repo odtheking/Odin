@@ -81,6 +81,10 @@ object Utils {
         return this
     }
 
+    fun <T> Collection<T>.getRandom(): T {
+        return this.elementAt((Math.random() * this.size).floorToInt())
+    }
+
     /**
      * Taken from PolyUI
      */

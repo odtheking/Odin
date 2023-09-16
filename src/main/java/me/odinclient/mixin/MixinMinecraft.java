@@ -3,11 +3,14 @@ package me.odinclient.mixin;
 import me.odinclient.events.impl.PostGuiOpenEvent;
 import me.odinclient.events.impl.PreKeyInputEvent;
 import me.odinclient.events.impl.PreMouseInputEvent;
+import me.odinclient.features.impl.dungeon.CancelInteract;
 import me.odinclient.features.impl.render.CPSDisplay;
 import me.odinclient.features.impl.render.NoRender;
 import me.odinclient.utils.skyblock.PlayerUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.Timer;
 import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.input.Keyboard;
@@ -16,6 +19,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Minecraft.class)
@@ -54,6 +58,11 @@ public class MixinMinecraft {
     @Inject(method = "clickMouse", at = @At("HEAD"))
     private void clickMouse(CallbackInfo ci) {
         CPSDisplay.INSTANCE.onLeftClick();
+    }
+
+    @Redirect(method = {"rightClickMouse"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/WorldClient;isAirBlock(Lnet/minecraft/util/BlockPos;)Z"))
+    public boolean shouldCancelInteract(WorldClient instance, BlockPos blockPos) {
+        return CancelInteract.INSTANCE.cancelInteractHook(instance, blockPos);
     }
 
     @Inject(method = "displayGuiScreen", at = @At("RETURN"))

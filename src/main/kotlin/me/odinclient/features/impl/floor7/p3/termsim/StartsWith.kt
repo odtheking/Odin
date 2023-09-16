@@ -2,6 +2,7 @@ package me.odinclient.features.impl.floor7.p3.termsim
 
 import me.odinclient.events.impl.GuiLoadedEvent
 import me.odinclient.features.impl.floor7.p3.TerminalSolver
+import me.odinclient.utils.Utils.getRandom
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.inventory.ContainerChest
@@ -20,31 +21,18 @@ class StartsWith(private val letter: String) : TermSimGui(
             if (floor(index / 9.0) in 1.0..4.0 && index % 9 in 1..7) {
                 if (index == guaranteed) {
                     it.putStack(ItemStack(
-                        GameData.getItemRegistry()
-                            .filter {
-                                it.registryName.replace("minecraft:", "").startsWith(letter, true)
-                            }
-                            .shuffled().
-                            first()))
+                        GameData.getItemRegistry().filter { it.registryName.replace("minecraft:", "").startsWith(letter, true) }.getRandom()
+                    ))
                     return@forEachIndexed
                 }
                 val shouldBeCorrect = Math.random() > .7
                 if (shouldBeCorrect)
                     it.putStack(ItemStack(
-                        GameData.getItemRegistry()
-                            .filter {
-                                it.registryName.replace("minecraft:", "").startsWith(letter, true)
-                            }
-                            .shuffled().
-                            first()))
+                        GameData.getItemRegistry().filter { it.registryName.replace("minecraft:", "").startsWith(letter, true) }.getRandom()
+                    ))
                 else
                     it.putStack(ItemStack(
-                        GameData.getItemRegistry()
-                            .filterNot {
-                                it.registryName.replace("minecraft:", "").startsWith(letter, true)
-                            }
-                            .shuffled()
-                            .first()
+                        GameData.getItemRegistry().filterNot { it.registryName.replace("minecraft:", "").startsWith(letter, true) }.getRandom()
                     ))
             }
             else it.putStack(blackPane)
