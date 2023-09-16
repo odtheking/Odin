@@ -38,13 +38,13 @@ object TerminalSolver : Module(
     private val selectColor: Color by ColorSetting("Select Color", Color(0, 170, 170), true)
     private val cancelToolTip: Boolean by BooleanSetting("Stop Tooltips", default = true, description = "Stops rendering tooltips in terminals")
     private val removeWrong: Boolean by BooleanSetting("Stop Rendering Wrong", description = "Stops rendering wrong items in terminals")
+    private val wrongColor: Color by ColorSetting("Wrong Color", Color(45, 45, 45), true).withDependency { removeWrong }
     private val removeWrongRubix: Boolean by BooleanSetting("Stop Rubix", true).withDependency { removeWrong }
     private val removeWrongOrder: Boolean by BooleanSetting("Stop Order", true).withDependency { removeWrong }
     private val removeWrongStartsWith: Boolean by BooleanSetting("Stop Starts With", true).withDependency { removeWrong }
     private val removeWrongSelect: Boolean by BooleanSetting("Stop Select", true).withDependency { removeWrong }
-    private val wrongColor: Color by ColorSetting("Wrong Color", Color(45, 45, 45), true).withDependency { removeWrong }
 
-    private val zLevel: Float get() = if (behindItem) 200f else 100f
+    private val zLevel: Float get() = if (behindItem) 200f else 999f
     private var lastLeftTerm = 0L
 
     private val terminalNames = listOf(
@@ -92,7 +92,8 @@ object TerminalSolver : Module(
                 else -> false
             }
             if (removeWrong && shouldCancel) {
-                Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, wrongColor.rgba)
+                GlStateManager.disableLighting()
+                Gui.drawRect(event.x - 1, event.y - 1, event.x + 18, event.y + 18, wrongColor.rgba)
                 GlStateManager.enableDepth()
                 event.isCanceled = true
             }
@@ -114,15 +115,15 @@ object TerminalSolver : Module(
                 mc.fontRendererObj.drawString(amount.toString(), event.x + 9 - mc.fontRendererObj.getStringWidth(amount.toString()) / 2, event.y + 5, textColor.rgba)
                 event.isCanceled = true
             }
-            3 -> Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, startsWithColor.rgba)
-            4 -> Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, selectColor.rgba)
+            3 -> Gui.drawRect(event.x, event.y, event.x + if (removeWrongStartsWith && removeWrong) 18 else 16, event.y + if (removeWrongStartsWith && removeWrong) 18 else 16, startsWithColor.rgba)
+            4 -> Gui.drawRect(event.x, event.y, event.x + if (removeWrongSelect && removeWrong) 18 else 16, event.y + if (removeWrongSelect && removeWrong) 18 else 16, selectColor.rgba)
         }
         GlStateManager.translate(0f, 0f, -zLevel)
     }
 
     @SubscribeEvent
     fun onTooltip(event: ItemTooltipEvent) {
-        if (!cancelToolTip || (currentTerm == -1 && System.currentTimeMillis() - lastLeftTerm > 100) || !DungeonUtils.inDungeons) return
+        if (!cancelToolTip || (currentTerm == -1 && System.currentTimeMillis() - lastLeftTerm > 100)) return
         event.toolTip.clear()
     }
 
