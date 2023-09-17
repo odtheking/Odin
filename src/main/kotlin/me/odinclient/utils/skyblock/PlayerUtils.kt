@@ -81,7 +81,8 @@ object PlayerUtils {
 
     fun windowClick(windowId: Int, slotId: Int, button: Int, mode: Int) {
         if (mc.currentScreen is TermSimGui) {
-            (mc.currentScreen as TermSimGui).slotClick((mc.currentScreen as GuiChest).inventorySlots.getSlot(slotId), button)
+            val gui = mc.currentScreen as TermSimGui
+            gui.slotClick(gui.inventorySlots.getSlot(slotId), button)
         } else windowClickQueue.add(WindowClick(windowId, slotId, button, mode))
     }
 
