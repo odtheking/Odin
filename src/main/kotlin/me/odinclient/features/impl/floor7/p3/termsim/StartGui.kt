@@ -1,6 +1,8 @@
 package me.odinclient.features.impl.floor7.p3.termsim
 
+import me.odinclient.utils.Utils.getRandom
 import net.minecraft.inventory.Slot
+import net.minecraft.item.EnumDyeColor
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 
@@ -31,9 +33,7 @@ object StartGui : TermSimGui(
             12 -> SameColor.open()
             13 -> InOrder.open()
             14 -> StartsWith(StartsWith.letters.shuffled().first()).open()
-            /*
-            15 -> Select.open()
-             */
+            15 -> SelectAll(EnumDyeColor.entries.getRandom().name.replace("_", " ").uppercase()).open()
         }
     }
 }

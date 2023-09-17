@@ -16,7 +16,7 @@ class StartsWith(private val letter: String) : TermSimGui(
     54
 ) {
     override fun create() {
-        val guaranteed = (10..16).shuffled().first()
+        val guaranteed = (10..16).getRandom()
         inventorySlots.inventorySlots.subList(0, size).forEachIndexed { index, it ->
             if (floor(index / 9.0) in 1.0..4.0 && index % 9 in 1..7) {
                 if (index == guaranteed) {

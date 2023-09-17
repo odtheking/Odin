@@ -105,7 +105,8 @@ object ModuleManager {
         HoverTerms,
         ClickedChests,
         SecretTriggerbot,
-        CancelInteract
+        CancelInteract,
+        CancelWrongTerms
     )
 
     @SubscribeEvent

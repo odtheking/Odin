@@ -183,6 +183,6 @@ object TerminalSolver : Module(
     }
 
     private fun solveSelect(items: List<ItemStack?>, color: String) {
-        solution = items.filter { it?.isItemEnchanted == false && it.unlocalizedName.contains(color) }.map { items.indexOf(it) }
+        solution = items.filter { it?.isItemEnchanted == false && it.unlocalizedName?.contains(color, true) == true && Item.getIdFromItem(it.item) != 160 }.map { items.indexOf(it) }
     }
 }

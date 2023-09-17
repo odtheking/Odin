@@ -7,6 +7,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object TermSimEvents {
     @SubscribeEvent
     fun onDrawTooltip(event: ItemTooltipEvent) {
-        if (mc.currentScreen is TermSimGui && event.itemStack?.displayName == "") event.toolTip.clear()
+        //if (mc.currentScreen is TermSimGui && event.itemStack?.displayName == "") event.toolTip.clear()
     }
 }

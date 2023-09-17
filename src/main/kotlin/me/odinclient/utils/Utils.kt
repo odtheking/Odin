@@ -81,6 +81,10 @@ object Utils {
         return this
     }
 
+    fun IntRange.getRandom(): Int {
+        return this.toList().getRandom()
+    }
+
     fun <T> Collection<T>.getRandom(): T {
         return this.elementAt((Math.random() * this.size).floorToInt())
     }

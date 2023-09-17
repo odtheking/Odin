@@ -29,7 +29,7 @@ open class TermSimGui(val name: String, val size: Int) : GuiChest(
         create()
         display = this
         startTime = System.currentTimeMillis()
-        TerminalSolver.onGuiLoad(GuiLoadedEvent(name, inventorySlots as ContainerChest))
+        //TerminalSolver.onGuiLoad(GuiLoadedEvent(name, inventorySlots as ContainerChest))
     }
 
     fun solved() {
@@ -42,7 +42,7 @@ open class TermSimGui(val name: String, val size: Int) : GuiChest(
 
     final override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         val slot = slotUnderMouse ?: return
-        if (slot.stack?.metadata == 15) return
+        if (slot.stack?.item == pane) return
         slotClick(slot, mouseButton)
     }
 }
