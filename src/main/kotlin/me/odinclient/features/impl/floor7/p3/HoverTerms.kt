@@ -5,6 +5,7 @@ import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.DualSetting
 import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.utils.clock.Clock
+import me.odinclient.utils.skyblock.PlayerUtils.ClickType
 import me.odinclient.utils.skyblock.PlayerUtils.windowClick
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
@@ -30,18 +31,16 @@ object HoverTerms : Module(
             if (TerminalSolver.currentTerm == 1) {
                 val needed = TerminalSolver.solution.count { it == hoveredItem }
                 if (needed >= 3) {
-                    windowClick(gui.inventorySlots.windowId, hoveredItem, 1,0)
+                    windowClick(gui.inventorySlots.windowId, hoveredItem, ClickType.Right)
                     triggerBotClock.update()
                     return@execute
                 }
-            } else if (TerminalSolver.currentTerm == 2) {
-                if (TerminalSolver.solution.first() == hoveredItem) {
-                    windowClick(gui.inventorySlots.windowId, hoveredItem, 1,0)
-                    triggerBotClock.update()
-                    return@execute
-                }
+            } else if (TerminalSolver.currentTerm == 2 && TerminalSolver.solution.first() == hoveredItem) {
+                windowClick(gui.inventorySlots.windowId, hoveredItem, if (middleClick) ClickType.Middle else ClickType.Left)
+                triggerBotClock.update()
+                return@execute
             }
-            windowClick(gui.inventorySlots.windowId, hoveredItem, if (middleClick) 2 else 0, if (middleClick) 3 else 0)
+            windowClick(gui.inventorySlots.windowId, hoveredItem, if (middleClick) ClickType.Middle else ClickType.Left)
             triggerBotClock.update()
         }
     }

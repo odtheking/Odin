@@ -51,7 +51,7 @@ object TerminalSolver : Module(
         "Correct all the panes!",
         "Change all to same color!",
         "Click in order!",
-        "What starts with",
+        "What starts with:",
         "Select all the"
     )
     var currentTerm = -1
@@ -139,6 +139,8 @@ object TerminalSolver : Module(
         val match = Regex("(.+) (?:activated|completed) a terminal! \\((\\d)/(\\d)\\)").find(event.message) ?: return
         if (match.groups[1]?.value != mc.thePlayer.name) return
         currentTerm = -1
+        lastLeftTerm = System.currentTimeMillis()
+        solution = emptyList()
     }
 
     private fun solvePanes(items: List<ItemStack?>) {

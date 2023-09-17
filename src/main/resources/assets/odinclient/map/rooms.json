@@ -8,6 +8,17 @@
     "crypts": 34
   },
   {
+    "name": "Altar",
+    "type": "NORMAL",
+    "cores": [
+      1823952110,
+      1004879775,
+      -1690727070
+    ],
+    "crypts": 3,
+    "secrets": 6
+  },
+  {
     "name": "Andesite",
     "type": "NORMAL",
     "cores": [
@@ -171,12 +182,14 @@
   },
   {
     "name": "Carpets",
-    "type": "RARE",
+    "type": "NORMAL",
     "cores": [
       988444684,
-      1890757664
+      1890757664,
+      1186348038,
+      -1160833644
     ],
-    "crypts": 4,
+    "crypts": 3,
     "secrets": 1
   },
   {
@@ -244,6 +257,16 @@
     "cores": [
       -755321869
     ]
+  },
+  {
+    "name": "Criss-Cross",
+    "type": "NORMAL",
+    "cores": [
+      650161016,
+      1002362494
+    ],
+    "crypts": 6,
+    "secrets": 1
   },
   {
     "name": "Crypt",
@@ -779,6 +802,29 @@
     "secrets": 2
   },
   {
+    "name": "Pipes",
+    "type": "NORMAL",
+    "cores": [
+      952529534,
+      -901820944,
+      -664950032,
+      -1205767926
+    ],
+    "crypts": 9,
+    "secrets": 7
+  },
+  {
+    "name": "Pirate",
+    "type": "NORMAL",
+    "cores": [
+      -1175423677,
+      1942933815,
+      2002468229
+    ],
+    "crypts": 2,
+    "secrets": 6
+  },
+  {
     "name": "Pit",
     "type": "NORMAL",
     "cores": [
@@ -913,6 +959,15 @@
     "secrets": 3
   },
   {
+    "name": "Redstone Crypt",
+    "type": "NORMAL",
+    "cores": [
+      -1054702517,
+      127199896
+    ],
+    "secrets": 3
+  },
+  {
     "name": "Redstone Key",
     "type": "NORMAL",
     "cores": [
@@ -930,6 +985,15 @@
       1819727964
     ],
     "crypts": 4,
+    "secrets": 3
+  },
+  {
+    "name": "Ritual",
+    "type": "NORMAL",
+    "cores": [
+      758637731
+    ],
+    "crypts": 1,
     "secrets": 3
   },
   {
@@ -993,6 +1057,18 @@
     "secrets": 2
   },
   {
+    "name": "Slime",
+    "type": "NORMAL",
+    "cores": [
+      1203689085,
+      611794931,
+      -1050545277
+    ],
+    "crypts": 1,
+    "secrets": 5,
+    "trappedChests": 1
+  },
+  {
     "name": "Sloth",
     "type": "NORMAL",
     "cores": [
@@ -1035,6 +1111,15 @@
     "type": "NORMAL",
     "cores": [
       881396995
+    ],
+    "crypts": 2,
+    "secrets": 3
+  },
+  {
+    "name": "Staircase",
+    "type": "NORMAL",
+    "cores": [
+      1386509425
     ],
     "crypts": 2,
     "secrets": 3
@@ -1085,14 +1170,16 @@
     "name": "Teleport Maze",
     "type": "PUZZLE",
     "cores": [
-      487124604
+      487124604,
+      2089453469
     ]
   },
   {
     "name": "Temple",
     "type": "NORMAL",
     "cores": [
-      1663174337
+      1663174337,
+      1480555517
     ],
     "secrets": 3
   },

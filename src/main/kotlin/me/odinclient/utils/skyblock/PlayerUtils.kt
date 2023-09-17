@@ -70,6 +70,12 @@ object PlayerUtils {
         mc.thePlayer.setPosition(x + 0.5, y, z + 0.5)
     }
 
+    sealed class ClickType {
+        data object Left : ClickType()
+        data object Right : ClickType()
+        data object Middle : ClickType()
+    }
+
     private data class WindowClick(val windowId: Int, val slotId: Int, val button: Int, val mode: Int)
     private val windowClickQueue = mutableListOf<WindowClick>()
 
@@ -93,6 +99,14 @@ object PlayerUtils {
 
     private fun middleClickWindow(slot: Int) {
         windowClick(mc.thePlayer.inventoryContainer.windowId, slot, 2, 2)
+    }
+
+    fun windowClick(windowId: Int, slotId: Int, clickType: ClickType) {
+        when (clickType) {
+            is ClickType.Left -> windowClick(windowId, slotId, 0, 0)
+            is ClickType.Right -> windowClick(windowId, slotId, 1, 0)
+            is ClickType.Middle -> windowClick(windowId, slotId, 2, 2)
+        }
     }
 
     fun leftClickWindow(windowId: Int, index : Int) {
