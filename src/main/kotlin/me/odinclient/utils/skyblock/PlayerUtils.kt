@@ -106,7 +106,7 @@ object PlayerUtils {
         when (clickType) {
             is ClickType.Left -> windowClick(windowId, slotId, 0, 0)
             is ClickType.Right -> windowClick(windowId, slotId, 1, 0)
-            is ClickType.Middle -> windowClick(windowId, slotId, 2, 2)
+            is ClickType.Middle -> windowClick(windowId, slotId, 2, 3)
         }
     }
 
