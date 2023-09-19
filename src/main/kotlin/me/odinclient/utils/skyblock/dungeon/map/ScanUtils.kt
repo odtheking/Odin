@@ -6,13 +6,15 @@ import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.dungeonmap.core.RoomData
+import me.odinclient.dungeonmap.core.map.Room
 import me.odinclient.dungeonmap.features.Dungeon
-import me.odinclient.utils.skyblock.dungeon.map.MapUtils.equalsOneOf
+import me.odinclient.dungeonmap.features.DungeonScan
+import me.odinclient.utils.Utils.equalsOneOf
 import net.minecraft.block.Block
-import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
 import net.minecraft.util.ResourceLocation
 import java.io.FileNotFoundException
+import kotlin.math.roundToInt
 
 object ScanUtils {
     val roomList: Set<RoomData> = try {
@@ -41,24 +43,16 @@ object ScanUtils {
     }
 
     fun getRoomCentre(posX: Int, posZ: Int): Pair<Int, Int> {
-        val roomX = (posX - Dungeon.startX) shr 5
-        val roomZ = (posZ - Dungeon.startZ) shr 5
-        var x = 32 * roomX + Dungeon.startX
-        if (x !in posX - 16..posX + 16) x += 32
-        var z = 32 * roomZ + Dungeon.startZ
-        if (z !in posZ - 16..posZ + 16) z += 32
-        return Pair(x, z)
+        val roomX = ((posX - DungeonScan.startX) / 32f).roundToInt()
+        val roomZ = ((posZ - DungeonScan.startZ) / 32f).roundToInt()
+        return Pair(roomX * 32 + DungeonScan.startX, roomZ * 32 + DungeonScan.startZ)
     }
 
-    fun isColumnAir(x: Int, z: Int): Boolean = List(128) { mc.theWorld.getBlockState(BlockPos(x, it, z)).block }.all { it == Blocks.air }
-
-
-    fun isDoor(x: Int, z: Int): Boolean {
-        val xPlus4 = isColumnAir(x + 4, z)
-        val xMinus4 = isColumnAir(x - 4, z)
-        val zPlus4 = isColumnAir(x, z + 4)
-        val zMinus4 = isColumnAir(x, z - 4)
-        return xPlus4 && xMinus4 && !zPlus4 && !zMinus4 || !xPlus4 && !xMinus4 && zPlus4 && zMinus4
+    fun getRoomFromPos(pos: BlockPos): Room? {
+        val x = ((pos.x - DungeonScan.startX + 15) shr 5)
+        val z = ((pos.z - DungeonScan.startZ + 15) shr 5)
+        val room = Dungeon.Info.dungeonList.getOrNull(x * 2 + z * 22)
+        return if (room is Room) room else null
     }
 
     fun getCore(x: Int, z: Int): Int {

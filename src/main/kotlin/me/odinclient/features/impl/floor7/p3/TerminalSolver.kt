@@ -1,6 +1,9 @@
 package me.odinclient.features.impl.floor7.p3
 
-import me.odinclient.events.impl.*
+import me.odinclient.events.impl.ChatPacketEvent
+import me.odinclient.events.impl.DrawGuiEvent
+import me.odinclient.events.impl.GuiClosedEvent
+import me.odinclient.events.impl.GuiLoadedEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.AlwaysActive
@@ -11,21 +14,14 @@ import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.ItemUtils.unformattedName
-import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.client.gui.Gui
-import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.gui.inventory.GuiChest
-import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.init.Blocks.chest
-import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.EnumDyeColor
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
-import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import org.lwjgl.opengl.GLSync
 
 @AlwaysActive // So it can be used in other modules
 object TerminalSolver : Module(

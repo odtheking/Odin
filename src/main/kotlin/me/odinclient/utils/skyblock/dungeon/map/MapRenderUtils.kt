@@ -3,11 +3,12 @@ package me.odinclient.utils.skyblock.dungeon.map
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.dungeonmap.core.DungeonPlayer
 import me.odinclient.dungeonmap.features.Dungeon
+import me.odinclient.dungeonmap.features.DungeonScan
 import me.odinclient.features.impl.dungeon.MapModule
+import me.odinclient.utils.Utils.equalsOneOf
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.world.RenderUtils.bindColor
 import me.odinclient.utils.skyblock.ItemUtils.itemID
-import me.odinclient.utils.skyblock.dungeon.map.MapUtils.equalsOneOf
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
@@ -104,8 +105,8 @@ object MapRenderUtils {
         try {
             if (name == mc.thePlayer.name) {
                 GlStateManager.translate(
-                    (mc.thePlayer.posX - Dungeon.startX + 15) * MapUtils.coordMultiplier + MapUtils.startCorner.first - 2,
-                    (mc.thePlayer.posZ - Dungeon.startZ + 15) * MapUtils.coordMultiplier + MapUtils.startCorner.second - 2,
+                    (mc.thePlayer.posX - DungeonScan.startX + 15) * MapUtils.coordMultiplier + MapUtils.startCorner.first - 2,
+                    (mc.thePlayer.posZ - DungeonScan.startZ + 15) * MapUtils.coordMultiplier + MapUtils.startCorner.second - 2,
                     0.0
                 )
             } else {

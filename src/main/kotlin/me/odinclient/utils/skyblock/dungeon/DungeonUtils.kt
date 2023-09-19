@@ -11,6 +11,7 @@ import me.odinclient.utils.skyblock.ItemUtils
 import me.odinclient.utils.skyblock.LocationUtils
 import me.odinclient.utils.skyblock.LocationUtils.currentDungeon
 import me.odinclient.utils.skyblock.PlayerUtils.posY
+import me.odinclient.utils.skyblock.dungeon.map.MapUtils
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraftforge.event.world.WorldEvent
@@ -79,7 +80,7 @@ object DungeonUtils {
 
     private fun getDungeonTeammates(): List<Pair<EntityPlayer, Classes>> {
         val teammates = mutableListOf<Pair<EntityPlayer, Classes>>()
-        Dungeon.getDungeonTabList()?.forEach { (_, line) ->
+        MapUtils.getDungeonTabList()?.forEach { (_, line) ->
 
             val match = tablistRegex.matchEntire(line.noControlCodes) ?: return@forEach
             val (_, sbLevel, name, clazz, level) = match.groupValues

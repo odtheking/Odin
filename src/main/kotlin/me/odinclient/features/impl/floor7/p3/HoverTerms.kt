@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.floor7.p3
 
-import cc.polyfrost.oneconfig.libs.eventbus.Subscribe
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.DualSetting
@@ -11,7 +10,6 @@ import me.odinclient.utils.skyblock.PlayerUtils.windowClick
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.client.event.RenderGameOverlayEvent
-import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object HoverTerms : Module(

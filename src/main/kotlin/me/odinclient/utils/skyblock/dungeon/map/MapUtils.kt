@@ -2,6 +2,10 @@ package me.odinclient.utils.skyblock.dungeon.map
 
 import com.google.common.collect.ComparisonChain
 import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.dungeonmap.features.Dungeon
+import me.odinclient.dungeonmap.features.DungeonScan
+import me.odinclient.utils.Utils.equalsOneOf
+import me.odinclient.utils.skyblock.LocationUtils
 import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.item.ItemMap
 import net.minecraft.util.Vec4b
@@ -9,17 +13,6 @@ import net.minecraft.world.WorldSettings
 import net.minecraft.world.storage.MapData
 
 object MapUtils {
-
-    var startCorner = Pair(5, 5)
-    var roomSize = 16
-    var calibrated = false
-    var coordMultiplier = .5
-
-    fun getMapData(): MapData? {
-        val map = mc.thePlayer?.inventory?.getStackInSlot(8) ?: return null
-        if (map.item !is ItemMap || !map.displayName.contains("Magical Map")) return null
-        return (map.item as ItemMap).getMapData(map, mc.theWorld)
-    }
 
     val Vec4b.mapX
         get() = (this.func_176112_b() + 128) shr 1
@@ -30,10 +23,58 @@ object MapUtils {
     val Vec4b.yaw
         get() = this.func_176111_d() * 22.5f
 
-    fun Any?.equalsOneOf(vararg other: Any): Boolean {
-        return other.any {
-            this == it
+    var startCorner = Pair(5, 5)
+    var mapRoomSize = 16
+    var coordMultiplier = 0.625
+    var calibrated = false
+
+    fun getMapData(): MapData? {
+        val map = mc.thePlayer?.inventory?.getStackInSlot(8) ?: return null
+        if (map.item !is ItemMap || !map.displayName.contains("Magical Map")) return null
+        return (map.item as ItemMap).getMapData(map, mc.theWorld)
+    }
+
+    /**
+     * Calibrates map metrics based on the size and location of the entrance room.
+     */
+    fun calibrateMap(): Boolean {
+        val (start, size) = findEntranceCorner()
+        if (size.equalsOneOf(16, 18)) {
+            mapRoomSize = size
+            startCorner = when (LocationUtils.currentDungeon?.floor?.floorNumber) {
+                0 -> Pair(22, 22)
+                1 -> Pair(22, 11)
+                2, 3 -> Pair(11, 11)
+                else -> {
+                    val startX = start and 127
+                    val startZ = start shr 7
+                    Pair(startX % (mapRoomSize + 4), startZ % (mapRoomSize + 4))
+                }
+            }
+            coordMultiplier = (mapRoomSize + 4.0) / DungeonScan.roomSize
+            return true
         }
+        return false
+    }
+
+    /**
+     * Finds the starting index of the entrance room as well as the size of the room.
+     */
+    private fun findEntranceCorner(): Pair<Int, Int> {
+        var start = 0
+        var currLength = 0
+        getMapData()?.colors?.forEachIndexed { index, byte ->
+            if (byte.toInt() == 30) {
+                if (currLength == 0) start = index
+                currLength++
+            } else {
+                if (currLength >= 16) {
+                    return Pair(start, currLength)
+                }
+                currLength = 0
+            }
+        }
+        return Pair(start, currLength)
     }
 
     private val tabListOrder = Comparator<NetworkPlayerInfo> { o1, o2 ->
@@ -48,7 +89,11 @@ object MapUtils {
         ).compare(o1.gameProfile.name, o2.gameProfile.name).result()
     }
 
-    val tabList: List<Pair<NetworkPlayerInfo, String>>
+    private val tabList: List<Pair<NetworkPlayerInfo, String>>
         get() = (mc.thePlayer?.sendQueue?.playerInfoMap?.sortedWith(tabListOrder) ?: emptyList())
             .map { Pair(it, mc.ingameGUI.tabList.getPlayerName(it)) }
+
+    fun getDungeonTabList(): List<Pair<NetworkPlayerInfo, String>>? {
+        return tabList.let { if (it.size > 18 && it[0].second.contains("§r§b§lParty §r§f(")) it else null }
+    }
 }

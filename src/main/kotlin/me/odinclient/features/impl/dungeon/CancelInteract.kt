@@ -5,7 +5,6 @@ import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.utils.skyblock.ItemUtils.hasAbility
 import me.odinclient.utils.skyblock.PlayerUtils.isHolding
-import me.odinclient.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import net.minecraft.block.Block
 import net.minecraft.client.multiplayer.WorldClient
 import net.minecraft.init.Blocks

@@ -3,12 +3,13 @@ package me.odinclient.dungeonmap.features
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.dungeonmap.core.DungeonPlayer
 import me.odinclient.dungeonmap.core.map.*
+import me.odinclient.dungeonmap.features.Dungeon.Info.dungeonList
 import me.odinclient.features.impl.dungeon.MapModule
+import me.odinclient.utils.Utils.equalsOneOf
 import me.odinclient.utils.skyblock.ItemUtils.itemID
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import me.odinclient.utils.skyblock.dungeon.map.MapUtils
-import me.odinclient.utils.skyblock.dungeon.map.MapUtils.equalsOneOf
-import me.odinclient.utils.skyblock.dungeon.map.MapUtils.roomSize
+import me.odinclient.utils.skyblock.dungeon.map.MapUtils.mapRoomSize
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Graphics2D
@@ -31,7 +32,7 @@ object Window: JFrame() {
         val panel = object : JPanel() {
             override fun paintComponent(g: Graphics) {
                 super.paintComponent(g)
-                if (!DungeonUtils.inDungeons || !MapModule.enabled || (MapModule.hideInBoss && DungeonUtils.inBoss) || !Dungeon.hasScanned) return
+                if (!DungeonUtils.inDungeons || !MapModule.enabled || (MapModule.hideInBoss && DungeonUtils.inBoss) || !DungeonScan.hasScanned) return
                 val g2d = g as Graphics2D
 
                 this.background = MapModule.backgroundColor.javaColor
@@ -57,20 +58,20 @@ object Window: JFrame() {
     }
 
     // Decides whether the window should be visible or not
-    val shouldShow get() = MapModule.mapWindow && DungeonUtils.inDungeons && MapModule.enabled && (!MapModule.hideInBoss || !DungeonUtils.inBoss) && Dungeon.hasScanned
+    val shouldShow get() = MapModule.mapWindow && DungeonUtils.inDungeons && MapModule.enabled && (!MapModule.hideInBoss || !DungeonUtils.inBoss) && DungeonScan.hasScanned
 
     private fun renderRooms(g2d: Graphics2D) {
         g2d.translate(MapUtils.startCorner.first, MapUtils.startCorner.second)
 
-        val connectorSize = roomSize shr 2
+        val connectorSize = mapRoomSize shr 2
 
         for (y in 0..10) {
             for (x in 0..10) {
-                val tile = Dungeon.dungeonList[y * 11 + x]
+                val tile = Dungeon.Info.dungeonList[y * 11 + x]
                 if (tile is Door && tile.type == DoorType.NONE) continue
 
-                val xOffset = (x shr 1) * (roomSize + connectorSize)
-                val yOffset = (y shr 1) * (roomSize + connectorSize)
+                val xOffset = (x shr 1) * (mapRoomSize + connectorSize)
+                val yOffset = (y shr 1) * (mapRoomSize + connectorSize)
 
                 val xEven = x and 1 == 0
                 val yEven = y and 1 == 0
@@ -83,8 +84,8 @@ object Window: JFrame() {
                         g2d.fillRect(
                             xOffset,
                             yOffset,
-                            roomSize,
-                            roomSize
+                            mapRoomSize,
+                            mapRoomSize
                         )
                     }
                     !xEven && !yEven -> {
@@ -92,8 +93,8 @@ object Window: JFrame() {
                         g2d.fillRect(
                             xOffset,
                             yOffset,
-                            (roomSize + connectorSize),
-                            (roomSize + connectorSize)
+                            (mapRoomSize + connectorSize),
+                            (mapRoomSize + connectorSize)
                         )
                     }
                     else -> drawRoomConnector(
@@ -113,10 +114,10 @@ object Window: JFrame() {
     }
 
     private fun drawRoomConnector(x: Int, y: Int, doorWidth: Int, doorway: Boolean, vertical: Boolean, color: Color, g2d: Graphics2D) {
-        val doorwayOffset = if (roomSize == 16) 5 else 6
-        val width = if (doorway) 6 else roomSize
-        var x1 = if (vertical) x + roomSize else x
-        var y1 = if (vertical) y else y + roomSize
+        val doorwayOffset = if (mapRoomSize == 16) 5 else 6
+        val width = if (doorway) 6 else mapRoomSize
+        var x1 = if (vertical) x + mapRoomSize else x
+        var y1 = if (vertical) y else y + mapRoomSize
         if (doorway) {
             if (vertical) y1 += doorwayOffset else x1 += doorwayOffset
         }
@@ -132,7 +133,7 @@ object Window: JFrame() {
         g2d.translate(0, 128)
         g2d.scale(1 / 1.5, 1 / 1.5)
         g2d.color = Color.WHITE
-        g2d.drawString("Secrets: ${RunInformation.secretCount}/${Dungeon.secretCount}", 5, 0)
+        g2d.drawString("Secrets: ${RunInformation.secretCount}/${Dungeon.Info.secretCount}", 5, 0)
         g2d.drawString("Crypts: ${RunInformation.cryptsCount}", 85, 0)
         g2d.drawString("Deaths: ${RunInformation.deathCount}", 140, 0)
         g2d.scale(1.5, 1.5)
@@ -157,8 +158,8 @@ object Window: JFrame() {
         try {
             if (name == mc.thePlayer.name) {
                 g2d.translate(
-                    (mc.thePlayer.posX - Dungeon.startX + 15) * MapUtils.coordMultiplier + MapUtils.startCorner.first - 2,
-                    (mc.thePlayer.posZ - Dungeon.startZ + 15) * MapUtils.coordMultiplier + MapUtils.startCorner.second - 2
+                    (mc.thePlayer.posX - DungeonScan.startX + 15) * MapUtils.coordMultiplier + MapUtils.startCorner.first - 2,
+                    (mc.thePlayer.posZ - DungeonScan.startZ + 15) * MapUtils.coordMultiplier + MapUtils.startCorner.second - 2
                 )
             } else {
                 g2d.translate(player.mapX, player.mapZ)
@@ -195,8 +196,8 @@ object Window: JFrame() {
 
             if (name == mc.thePlayer.name) {
                 g2d.translate(
-                    -((mc.thePlayer.posX - Dungeon.startX + 15) * MapUtils.coordMultiplier + MapUtils.startCorner.first - 2),
-                    -((mc.thePlayer.posZ - Dungeon.startZ + 15) * MapUtils.coordMultiplier + MapUtils.startCorner.second - 2)
+                    -((mc.thePlayer.posX - DungeonScan.startX + 15) * MapUtils.coordMultiplier + MapUtils.startCorner.first - 2),
+                    -((mc.thePlayer.posZ - DungeonScan.startZ + 15) * MapUtils.coordMultiplier + MapUtils.startCorner.second - 2)
                 )
             } else {
                 g2d.translate(-player.mapX, -player.mapZ)
@@ -209,7 +210,7 @@ object Window: JFrame() {
     private fun renderText(g2d: Graphics2D) {
         g2d.translate(MapUtils.startCorner.first, MapUtils.startCorner.second)
 
-        val connectorSize = roomSize shr 2
+        val connectorSize = mapRoomSize shr 2
         val checkmarkSize = when (MapModule.checkMarkStyle) {
             1 -> 8 // default
             else -> 10 // neu
@@ -218,19 +219,19 @@ object Window: JFrame() {
         for (y in 0..10 step 2) {
             for (x in 0..10 step 2) {
 
-                val tile = Dungeon.dungeonList[y * 11 + x]
+                val tile = dungeonList[y * 11 + x]
 
-                if (tile !is Room || tile !in Dungeon.uniqueRooms) continue
+                if (tile !is Room || tile !in Dungeon.Info.uniqueRooms) continue
 
-                val xOffset = (x shr 1) * (roomSize + connectorSize)
-                val yOffset = (y shr 1) * (roomSize + connectorSize)
+                val xOffset = (x shr 1) * (mapRoomSize + connectorSize)
+                val yOffset = (y shr 1) * (mapRoomSize + connectorSize)
 
                 if (MapModule.checkMarkStyle != 0) {
                     getCheckmark(tile.state, MapModule.checkMarkStyle)?.let {
                         g2d.drawImage(
                             it,
-                            xOffset + (roomSize - checkmarkSize) / 2,
-                            yOffset + (roomSize - checkmarkSize) / 2,
+                            xOffset + (mapRoomSize - checkmarkSize) / 2,
+                            yOffset + (mapRoomSize - checkmarkSize) / 2,
                             checkmarkSize,
                             checkmarkSize,
                             this
@@ -256,7 +257,7 @@ object Window: JFrame() {
                     name.addAll(tile.data.name.split(" "))
                 }
                 // Offset + half of the room's size
-                renderCenteredText(name, xOffset + (roomSize shr 1), yOffset + (roomSize shr 1), color, g2d)
+                renderCenteredText(name, xOffset + (mapRoomSize shr 1), yOffset + (mapRoomSize shr 1), color, g2d)
             }
         }
         g2d.translate(-MapUtils.startCorner.first, -MapUtils.startCorner.second)
