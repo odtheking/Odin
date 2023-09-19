@@ -1,9 +1,6 @@
 package me.odinclient.features.impl.floor7.p3
 
-import me.odinclient.events.impl.ChatPacketEvent
-import me.odinclient.events.impl.DrawSlotEvent
-import me.odinclient.events.impl.GuiClosedEvent
-import me.odinclient.events.impl.GuiLoadedEvent
+import me.odinclient.events.impl.*
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.AlwaysActive
@@ -16,13 +13,19 @@ import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.ItemUtils.unformattedName
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.client.gui.Gui
+import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.gui.inventory.GuiChest
+import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.init.Blocks.chest
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.EnumDyeColor
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
+import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import org.lwjgl.opengl.GLSync
 
 @AlwaysActive // So it can be used in other modules
 object TerminalSolver : Module(
@@ -33,6 +36,7 @@ object TerminalSolver : Module(
 ) {
     private val behindItem: Boolean by BooleanSetting("Behind Item", description = "Shows the item over the rendered solution")
     private val textColor: Color by ColorSetting("Text Color", Color(220, 220, 220), true)
+    private val rubixColor: Color by ColorSetting("Rubix Color", Color(0, 170, 170), true)
     private val orderColor: Color by ColorSetting("Order Color", Color(0, 170, 170), true)
     private val startsWithColor: Color by ColorSetting("Starts With Color", Color(0, 170, 170), true)
     private val selectColor: Color by ColorSetting("Select Color", Color(0, 170, 170), true)
@@ -40,7 +44,6 @@ object TerminalSolver : Module(
     private val removeWrong: Boolean by BooleanSetting("Stop Rendering Wrong", description = "Stops rendering wrong items in terminals")
     private val wrongColor: Color by ColorSetting("Wrong Color", Color(45, 45, 45), true).withDependency { removeWrong }
     private val removeWrongRubix: Boolean by BooleanSetting("Stop Rubix", true).withDependency { removeWrong }
-    private val removeWrongOrder: Boolean by BooleanSetting("Stop Order", true).withDependency { removeWrong }
     private val removeWrongStartsWith: Boolean by BooleanSetting("Stop Starts With", true).withDependency { removeWrong }
     private val removeWrongSelect: Boolean by BooleanSetting("Stop Select", true).withDependency { removeWrong }
 
@@ -79,46 +82,47 @@ object TerminalSolver : Module(
     }
 
     @SubscribeEvent
-    fun onSlotRender(event: DrawSlotEvent) {
-        if (event.container !is ContainerChest || currentTerm == -1 || !enabled) return
-        if (!event.slot.inventory.name.startsWith(terminalNames[currentTerm])) return
-        if (event.slot.slotIndex !in solution) {
-            val shouldCancel = when (currentTerm) {
-                0 -> false
-                1 -> removeWrongRubix
-                2 -> removeWrongOrder
-                3 -> removeWrongStartsWith
-                4 -> removeWrongSelect
-                else -> false
+    fun onSlotRender(event: DrawGuiEvent) {
+        if (currentTerm == -1 || !enabled || event.gui !is GuiChest) return
+        if (currentTerm == 2 || removeWrong) {
+            if (
+                (currentTerm == 1 && removeWrongRubix) ||
+                (currentTerm == 2) ||
+                (currentTerm == 3 && removeWrongStartsWith) ||
+                (currentTerm == 4 && removeWrongSelect)
+            ) {
+                GlStateManager.translate(0f, 0f, 999f)
+                Gui.drawRect(7, 16, event.xSize - 7, event.ySize - 96, wrongColor.rgba)
+                GlStateManager.translate(0f, 0f, -999f)
             }
-            if (removeWrong && shouldCancel) {
-                GlStateManager.disableLighting()
-                Gui.drawRect(event.x - 1, event.y - 1, event.x + 18, event.y + 18, wrongColor.rgba)
-                GlStateManager.enableDepth()
-                event.isCanceled = true
-            }
-            return
         }
+        GlStateManager.pushMatrix()
         GlStateManager.translate(0f, 0f, zLevel)
-        GlStateManager.disableLighting()
-        when (currentTerm) {
-            1 -> {
-                val needed = solution.count { it == event.slot.slotIndex }
-                val text = if (needed < 3) needed.toString() else (needed - 5).toString()
-                mc.fontRendererObj.drawString(text,event.x + 9 - mc.fontRendererObj.getStringWidth(text) / 2, event.y + 5, textColor.rgba)
-            }
-            2 -> {
-                val index = solution.indexOf(event.slot.slotIndex)
-                if (index < 3) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, orderColor.withAlpha(2f / (index + 3)).rgba)
+        solution.forEach { slotIndex ->
+            val slot = event.container.inventorySlots[slotIndex]
+            val x = slot.xDisplayPosition
+            val y = slot.yDisplayPosition
+            when (currentTerm) {
+                1 -> {
+                    val needed = solution.count { it == slot.slotIndex }
+                    val text = if (needed < 3) needed.toString() else (needed - 5).toString()
+                    if (removeWrong && removeWrongRubix) Gui.drawRect(x, y, x + 16, y + 16, rubixColor.rgba)
+                    mc.fontRendererObj.drawString(text, x + 9 - mc.fontRendererObj.getStringWidth(text) / 2, y + 5, textColor.rgba)
+                }
+                2 -> {
+                    val index = solution.indexOf(slot.slotIndex)
+                    if (index < 3) Gui.drawRect(x, y, x + 16, y + 16, orderColor.withAlpha(2f / (index + 3)).rgba)
 
-                val amount = event.slot.stack?.stackSize ?: 0
-                mc.fontRendererObj.drawString(amount.toString(), event.x + 9 - mc.fontRendererObj.getStringWidth(amount.toString()) / 2, event.y + 5, textColor.rgba)
-                event.isCanceled = true
+                    val amount = slot.stack?.stackSize ?: 0
+                    mc.fontRendererObj.drawString(amount.toString(), x + 9 - mc.fontRendererObj.getStringWidth(amount.toString()) / 2, y + 5, textColor.rgba)
+                    event.isCanceled = true
+                }
+                3 -> Gui.drawRect(x, y, x + 16, y + 16, startsWithColor.rgba)
+                4 -> Gui.drawRect(x, y, x + 16, y + 16, selectColor.rgba)
             }
-            3 -> Gui.drawRect(event.x, event.y, event.x + if (removeWrongStartsWith && removeWrong) 18 else 16, event.y + if (removeWrongStartsWith && removeWrong) 18 else 16, startsWithColor.rgba)
-            4 -> Gui.drawRect(event.x, event.y, event.x + if (removeWrongSelect && removeWrong) 18 else 16, event.y + if (removeWrongSelect && removeWrong) 18 else 16, selectColor.rgba)
         }
         GlStateManager.translate(0f, 0f, -zLevel)
+        GlStateManager.popMatrix()
     }
 
     @SubscribeEvent

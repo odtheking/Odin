@@ -1,5 +1,6 @@
 package me.odinclient.features.impl.floor7.p3
 
+import cc.polyfrost.oneconfig.libs.eventbus.Subscribe
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.DualSetting
@@ -9,6 +10,9 @@ import me.odinclient.utils.skyblock.PlayerUtils.ClickType
 import me.odinclient.utils.skyblock.PlayerUtils.windowClick
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
+import net.minecraftforge.client.event.RenderGameOverlayEvent
+import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object HoverTerms : Module(
     name = "Hover Terms",
@@ -20,28 +24,27 @@ object HoverTerms : Module(
     private val middleClick: Boolean by DualSetting("Click Type", "Left", "Middle", default = true, description = "What Click to use")
     private val triggerBotClock = Clock(triggerDelay)
 
-    init {
-        execute(10) {// Virtually the same thing as a render world trigger, except it will only fire 100fps and under (there is no need for more in this case)
-            if (TerminalSolver.solution.isEmpty() || mc.currentScreen !is GuiChest || !enabled || !triggerBotClock.hasTimePassed(triggerDelay)) return@execute
-            val gui = mc.currentScreen as GuiChest
-            if (gui.inventorySlots !is ContainerChest || gui.slotUnderMouse.inventory == mc.thePlayer.inventory) return@execute
-            val hoveredItem = gui.slotUnderMouse.slotIndex
-            if (hoveredItem !in TerminalSolver.solution) return@execute
+    @SubscribeEvent
+    fun onRenderWorld(event: RenderGameOverlayEvent.Pre) {
+        if (TerminalSolver.solution.isEmpty() || mc.currentScreen !is GuiChest || !enabled || !triggerBotClock.hasTimePassed(triggerDelay)) return
+        val gui = mc.currentScreen as GuiChest
+        if (gui.inventorySlots !is ContainerChest || gui.slotUnderMouse?.inventory == mc.thePlayer?.inventory) return
+        val hoveredItem = gui.slotUnderMouse?.slotIndex ?: return
+        if (hoveredItem !in TerminalSolver.solution) return
 
-            if (TerminalSolver.currentTerm == 1) {
-                val needed = TerminalSolver.solution.count { it == hoveredItem }
-                if (needed >= 3) {
-                    windowClick(gui.inventorySlots.windowId, hoveredItem, ClickType.Right)
-                    triggerBotClock.update()
-                    return@execute
-                }
-            } else if (TerminalSolver.currentTerm == 2 && TerminalSolver.solution.first() == hoveredItem) {
-                windowClick(gui.inventorySlots.windowId, hoveredItem, if (middleClick) ClickType.Middle else ClickType.Left)
+        if (TerminalSolver.currentTerm == 1) {
+            val needed = TerminalSolver.solution.count { it == hoveredItem }
+            if (needed >= 3) {
+                windowClick(gui.inventorySlots.windowId, hoveredItem, ClickType.Right)
                 triggerBotClock.update()
-                return@execute
+                return
             }
+        } else if (TerminalSolver.currentTerm == 2 && TerminalSolver.solution.first() == hoveredItem) {
             windowClick(gui.inventorySlots.windowId, hoveredItem, if (middleClick) ClickType.Middle else ClickType.Left)
             triggerBotClock.update()
+            return
         }
+        windowClick(gui.inventorySlots.windowId, hoveredItem, if (middleClick) ClickType.Middle else ClickType.Left)
+        triggerBotClock.update()
     }
 }
