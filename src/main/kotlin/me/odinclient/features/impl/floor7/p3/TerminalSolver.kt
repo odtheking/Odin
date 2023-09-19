@@ -148,8 +148,8 @@ object TerminalSolver : Module(
     }
 
     private val colorOrder = listOf(1, 4, 13, 11, 14)
-    private fun solveColor(items: List<ItemStack>) {
-        val panes = items.filter { it.metadata != 15 && Item.getIdFromItem(it.item) == 160 }
+    private fun solveColor(items: List<ItemStack?>) {
+        val panes = items.filter { it?.metadata != 15 && Item.getIdFromItem(it?.item) == 160 }.filterNotNull()
         var temp = List(100) { i -> i }
         for (color in colorOrder) {
             val temp2 = panes.flatMap { pane ->
