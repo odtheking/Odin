@@ -64,8 +64,6 @@ object DungeonScan {
 
         if (allChunksLoaded) {
             hasScanned = true
-            modMessage("has scanned")
-
             if (MapModule.scanChatInfo) {
                 modMessage("""
                     ${ChatUtils.getChatBreak()}
@@ -91,7 +89,6 @@ object DungeonScan {
             // Scanning a room
             rowEven && columnEven -> {
                 val roomCore = getCore(x, z)
-                modMessage(roomCore)
                 Room(x, z, getRoomData(roomCore) ?: return null).apply {
                     core = roomCore
                     // Checks if a room with the same name has already been scanned.

@@ -10,6 +10,7 @@ import me.odinclient.dungeonmap.core.map.Tile
 import me.odinclient.dungeonmap.core.map.Unknown
 import me.odinclient.events.impl.ChatPacketEvent
 import me.odinclient.features.impl.dungeon.MapModule
+import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import me.odinclient.utils.skyblock.dungeon.map.MapRenderUtils
@@ -36,7 +37,7 @@ object Dungeon {
 
         if (shouldSearchMimic()) {
             MimicDetector.findMimic()?.let {
-                UChat.chat("&7Mimic Room: &c$it")
+                if (MapModule.mimicMessage) modMessage("&7Mimic Room: &c$it")
                 Info.mimicFound = true
             }
         }

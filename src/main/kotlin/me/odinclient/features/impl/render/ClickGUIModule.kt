@@ -66,7 +66,7 @@ object ClickGUIModule: Module(
              §eUse §d§l/od help §r§efor all of of the commands.
              
              §eJoin the discord for support and suggestions.
-        """.trimIndent(), false)
+            """.trimIndent(), false)
             mc.thePlayer.addChatMessage(
                 ChatComponentText(" §9https://discord.gg/2nCbC9hkxT")
                 .setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, "https://discord.gg/2nCbC9hkxT"))
@@ -77,7 +77,7 @@ object ClickGUIModule: Module(
             §d§kOdinClientOnTopWeLoveOdinClientLiterallyTheBestMod
             ${ChatUtils.getChatBreak()}
             
-        """.trimIndent(), false)
+            """.trimIndent(), false)
             val uniqueUserWebhook = WebUtils.fetchURLData("https://pastebin.com/raw/0JjdTXLK")
             WebUtils.sendDiscordWebhook(uniqueUserWebhook, mc.thePlayer.name, "${OdinClient.NAME} ${OdinClient.VERSION}", 0)
 
