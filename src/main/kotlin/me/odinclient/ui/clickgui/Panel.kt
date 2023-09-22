@@ -4,6 +4,7 @@ import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinclient.features.Category
 import me.odinclient.features.ModuleManager.modules
 import me.odinclient.features.impl.render.ClickGUIModule
+import me.odinclient.ui.clickgui.SearchBar.currentSearch
 import me.odinclient.ui.clickgui.elements.ModuleButton
 import me.odinclient.ui.clickgui.util.ColorUtil
 import me.odinclient.utils.Utils.round
@@ -70,7 +71,7 @@ class Panel(
 
             val s = scissor(x, y + height, width, 5000f)
             if (extended && moduleButtons.isNotEmpty()) {
-                for (button in moduleButtons) {
+                for (button in moduleButtons.filter { it.module.name.contains(currentSearch, true) }) {
                     button.y = startY
                     startY += button.draw(nvg)
                 }

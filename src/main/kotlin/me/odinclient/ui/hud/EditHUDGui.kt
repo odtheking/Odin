@@ -4,6 +4,7 @@ import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinclient.config.Config
 import me.odinclient.features.ModuleManager.huds
 import me.odinclient.ui.Screen
+import me.odinclient.ui.clickgui.SearchBar
 import me.odinclient.ui.clickgui.util.ColorUtil.textColor
 import me.odinclient.ui.clickgui.util.HoverHandler
 import me.odinclient.utils.clock.Executor
