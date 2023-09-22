@@ -39,13 +39,12 @@ object ESP : Module(
     var currentEntities = mutableListOf<Entity>()
 
     init {
-        execute(1000) {
+        execute(1_000) {
             currentEntities.removeAll { it.isDead }
-
             getEntities()
         }
 
-        execute(30000) {
+        execute(30_000) {
             currentEntities.clear()
             getEntities()
         }
@@ -71,18 +70,14 @@ object ESP : Module(
     }
 
     private fun getEntities() {
-        mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()?.forEach { entity ->
-            if (
-                !espList.any { entity.name.lowercase().contains(it) } ||
-                currentEntities.contains(entity)
-            ) return@forEach
-
-            val entities =
+        mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()?.filterNot {
+            ent -> !espList.any { ent.name.contains(it, true) } || currentEntities.contains(ent)
+        }?.forEach { entity ->
+            currentEntities.add(
                 mc.theWorld.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.expand(1.0, 5.0, 1.0))
                     .filter { it != null && it !is EntityArmorStand && it != mc.thePlayer }
-                    .sortedByDescending { noSqrt3DDistance(it, entity) }
-            if (entities.isEmpty()) return@forEach
-            currentEntities.add(entities.first())
+                    .minByOrNull { noSqrt3DDistance(it, entity) } ?: return@forEach
+            )
         }
     }
 }
