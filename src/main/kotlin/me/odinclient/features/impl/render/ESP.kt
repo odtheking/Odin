@@ -4,10 +4,8 @@ import me.odinclient.config.MiscConfig
 import me.odinclient.events.impl.RenderEntityModelEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
-import me.odinclient.features.settings.impl.ActionSetting
-import me.odinclient.features.settings.impl.BooleanSetting
-import me.odinclient.features.settings.impl.ColorSetting
-import me.odinclient.features.settings.impl.NumberSetting
+import me.odinclient.features.settings.Setting.Companion.withDependency
+import me.odinclient.features.settings.impl.*
 import me.odinclient.utils.VecUtils.noSqrt3DDistance
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.world.OutlineUtils
@@ -23,10 +21,11 @@ object ESP : Module(
     tag = TagType.FPSTAX,
     description = "Allows you to highlight selected mobs."
 ) {
-    private val color: Color by ColorSetting("Color", Color(255, 0, 0))
-    private val through: Boolean by BooleanSetting("Through Walls", true)
-    private val thickness: Float by NumberSetting("Outline Thickness", 5f, 5f, 20f, 0.5f)
-    private val cancelHurt: Boolean by BooleanSetting("Cancel Hurt", true)
+    val color: Color by ColorSetting("Color", Color(255, 0, 0), true)
+    val mode: Int by SelectorSetting("Mode", "Outline", arrayListOf("Outline", "Overlay", "Both"))
+    val xray: Boolean by BooleanSetting("Through Walls", true)
+    private val thickness: Float by NumberSetting("Outline Thickness", 5f, 5f, 20f, 0.5f).withDependency { mode != 1 }
+    private val cancelHurt: Boolean by BooleanSetting("Cancel Hurt", true).withDependency { mode != 1 }
 
     private val addStar: () -> Unit by ActionSetting("Add Star") {
         if (MiscConfig.espList.contains("✯")) return@ActionSetting
@@ -37,11 +36,11 @@ object ESP : Module(
 
     private inline val espList get() = MiscConfig.espList
 
-    var currentEntities = mutableListOf<Pair<Entity, Boolean>>()
+    var currentEntities = mutableListOf<Entity>()
 
     init {
         execute(1000) {
-            currentEntities.removeAll { it.first.isDead }
+            currentEntities.removeAll { it.isDead }
 
             getEntities()
         }
@@ -54,8 +53,9 @@ object ESP : Module(
 
     @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
-        if (!currentEntities.any { it.first == event.entity }) return
-        if (!mc.thePlayer.canEntityBeSeen(event.entity) && !through) return
+        if (mode == 1) return
+        if (!currentEntities.contains(event.entity)) return
+        if (!mc.thePlayer.canEntityBeSeen(event.entity) && !xray) return
 
         OutlineUtils.outlineEntity(
             event,
@@ -74,7 +74,7 @@ object ESP : Module(
         mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()?.forEach { entity ->
             if (
                 !espList.any { entity.name.lowercase().contains(it) } ||
-                currentEntities.any {it.first == entity}
+                currentEntities.contains(entity)
             ) return@forEach
 
             val entities =
@@ -82,7 +82,7 @@ object ESP : Module(
                     .filter { it != null && it !is EntityArmorStand && it != mc.thePlayer }
                     .sortedByDescending { noSqrt3DDistance(it, entity) }
             if (entities.isEmpty()) return@forEach
-            currentEntities.add(Pair(entities.first(), mc.thePlayer.canEntityBeSeen(entities.first())))
+            currentEntities.add(entities.first())
         }
     }
 }
