@@ -21,7 +21,7 @@ object TermAC : Module(
         if (mc.thePlayer?.heldItem?.itemID != "TERMINATOR" || !mc.gameSettings.keyBindUseItem.isKeyDown) return
         val nowMillis = System.currentTimeMillis()
         if (nowMillis < nextClick) return
-        nextClick = nowMillis + ((1000 / cps) * ((Math.random() - .5) * 60.0))
+        nextClick = nowMillis + ((1000 / cps) + ((Math.random() - .5) * 60.0))
         leftClick()
     }
 }
