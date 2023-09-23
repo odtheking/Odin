@@ -24,8 +24,7 @@ object TerracottaTimer : Module(
 
     @SubscribeEvent
     fun onBlockPacket(event: BlockChangeEvent) {
-        if (!DungeonUtils.isFloor(6) || !DungeonUtils.inBoss) return
-        if (!event.update.block.isFlowerPot) return
+        if (!DungeonUtils.isFloor(6) || !DungeonUtils.inBoss || !event.update.block.isFlowerPot) return
         terrasSpawning.add(
             Terracotta(
                 Vec3(event.pos).addVec(.5, 1.5, .5),
@@ -36,8 +35,10 @@ object TerracottaTimer : Module(
 
     @SubscribeEvent
     fun onServerTick(event: ServerTickEvent) {
-        terrasSpawning.forEach { it.time -= 5 }
-        terrasSpawning.removeAll { it.time <= 0 }
+        terrasSpawning.removeAll {
+            it.time -= 5
+            it.time <= 0
+        }
     }
 
     @SubscribeEvent

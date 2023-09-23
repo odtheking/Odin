@@ -11,12 +11,14 @@ import me.odinclient.features.settings.Setting.Companion.withDependency
 import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.features.settings.impl.ColorSetting
 import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinclient.utils.Utils.name
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.ItemUtils.unformattedName
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.EnumDyeColor
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
@@ -79,7 +81,7 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun onSlotRender(event: DrawGuiEvent) {
-        if (currentTerm == -1 || !enabled || event.gui !is GuiChest) return
+        if (currentTerm == -1 || !enabled || event.container !is ContainerChest) return
         if (currentTerm == 2 || removeWrong) {
             if (
                 (currentTerm == 1 && removeWrongRubix) ||

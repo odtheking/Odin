@@ -37,7 +37,7 @@ object Dungeon {
 
         if (shouldSearchMimic()) {
             MimicDetector.findMimic()?.let {
-                if (MapModule.mimicMessage) modMessage("&7Mimic Room: &c$it")
+                if (MapModule.mimicMessage) modMessage("§7Mimic Room: §c$it")
                 Info.mimicFound = true
             }
         }
