@@ -1,6 +1,6 @@
 package me.odinclient.ui.clickgui
 
-import cc.polyfrost.oneconfig.renderer.font.Fonts
+import cc.polyfrost.oneconfig.renderer.font.Fonts.SEMIBOLD
 import me.odinclient.features.Category
 import me.odinclient.features.ModuleManager.modules
 import me.odinclient.features.impl.render.ClickGUIModule
@@ -8,7 +8,6 @@ import me.odinclient.ui.clickgui.SearchBar.currentSearch
 import me.odinclient.ui.clickgui.elements.ModuleButton
 import me.odinclient.ui.clickgui.util.ColorUtil
 import me.odinclient.utils.Utils.round
-import me.odinclient.utils.render.gui.GuiUtils.capitalizeFirst
 import me.odinclient.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinclient.utils.render.gui.MouseUtils.mouseX
 import me.odinclient.utils.render.gui.MouseUtils.mouseY
@@ -28,8 +27,6 @@ import kotlin.math.floor
 class Panel(
     var category: Category,
 ) {
-    val displayName = category.name.capitalizeFirst()
-
     private var dragging = false
     val moduleButtons: ArrayList<ModuleButton> = ArrayList()
 
@@ -49,7 +46,7 @@ class Panel(
 
     init {
         drawNVG {
-            for (module in modules.sortedByDescending { getTextWidth(it.name, 18f, Fonts.MEDIUM) }) {
+            for (module in modules.sortedByDescending { getTextWidth(it.name, 18f, SEMIBOLD) }) {
                 if (module.category != this@Panel.category) continue
                 moduleButtons.add(ModuleButton(module, this@Panel))
             }
@@ -64,14 +61,15 @@ class Panel(
 
         nvg {
             rect(x, y, width, height, ColorUtil.moduleButtonColor, 5f, 5f, 0f, 0f)
-            text(if (displayName == "Floor7") "Floor 7" else displayName, x + width / 2f, y + height / 2f, ColorUtil.textColor, 22f, Fonts.SEMIBOLD, TextAlign.Middle)
+            text(category.displayName, x + width / 2f, y + height / 2f, ColorUtil.textColor, 22f, SEMIBOLD, TextAlign.Middle)
 
             scrollOffset = scrollAnimation.get(scrollOffset, scrollTarget).round(0)
             var startY = scrollOffset + height
 
             val s = scissor(x, y + height, width, 5000f)
             if (extended && moduleButtons.isNotEmpty()) {
-                for (button in moduleButtons.filter { it.module.name.contains(currentSearch, true) }) {
+                for (button in moduleButtons) {
+                    if (!button.module.name.contains(currentSearch, ignoreCase = true)) continue
                     button.y = startY
                     startY += button.draw(nvg)
                 }

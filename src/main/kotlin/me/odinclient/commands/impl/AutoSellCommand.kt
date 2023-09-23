@@ -47,9 +47,5 @@ object AutoSellCommand : AbstractCommand("autosell", "odautosell", description =
                 autoSell.forEach { modMessage(it) }
             }
         }
-
-        orElse {
-            modMessage("what lil bro cooked")
-        }
     }
 }
