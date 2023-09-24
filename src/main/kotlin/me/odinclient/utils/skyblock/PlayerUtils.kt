@@ -110,10 +110,6 @@ object PlayerUtils {
         }
     }
 
-    fun leftClickWindow(windowId: Int, index : Int) {
-        windowClick(windowId, index, 0, 0)
-    }
-
     fun shiftClickWindow(windowId: Int, index : Int) {
         windowClick(windowId, index, 0, 1)
     }

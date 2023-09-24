@@ -11,12 +11,10 @@ import me.odinclient.features.settings.Setting.Companion.withDependency
 import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.features.settings.impl.ColorSetting
 import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinclient.utils.Utils.name
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.ItemUtils.unformattedName
 import net.minecraft.client.gui.Gui
-import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.EnumDyeColor
@@ -24,6 +22,7 @@ import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import org.lwjgl.opengl.GL11.*
 
 @AlwaysActive // So it can be used in other modules
 object TerminalSolver : Module(
