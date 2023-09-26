@@ -2,6 +2,7 @@ package me.odinclient.utils.render.world
 
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinclient.utils.VecUtils.plus
 import me.odinclient.utils.render.Color
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
@@ -296,6 +297,11 @@ object RenderUtils {
             scale = max(0.03, dist / 180.0).toFloat()
         )
     }
+
+    fun renderBoxText(title: String, position: Vec3, color: Color) {
+        renderBoxText(title, position.xCoord, position.yCoord, position.zCoord, color)
+    }
+
 
     fun draw3DLine(pos1: Vec3, pos2: Vec3, color: Color, lineWidth: Int, depth: Boolean, partialTicks: Float) {
         val render: Entity = mc.renderViewEntity
