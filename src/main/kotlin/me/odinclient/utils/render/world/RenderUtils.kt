@@ -293,7 +293,7 @@ object RenderUtils {
             depthTest = false,
             renderBlackBox = false,
             increase = false,
-            scale = max(1.0, dist / 5.0).toFloat()
+            scale = max(0.03, dist / 180.0).toFloat()
         )
     }
 

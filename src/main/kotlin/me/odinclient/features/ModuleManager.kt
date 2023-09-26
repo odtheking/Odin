@@ -1,5 +1,6 @@
 package me.odinclient.features
 
+import cc.polyfrost.oneconfig.libs.checker.units.qual.m
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.impl.*
 import me.odinclient.features.impl.dungeon.*
@@ -107,7 +108,8 @@ object ModuleManager {
         SecretTriggerbot,
         CancelInteract,
         CancelWrongTerms,
-        TermAC
+        TermAC,
+        DianaHelper
     )
 
     @SubscribeEvent
