@@ -250,7 +250,9 @@ object RenderUtils {
     }
 
 
-    
+    fun renderCustomBeacon(title: String, pos: Vec3, color: Color, partialTicks: Float = this.partialTicks) {
+        renderCustomBeacon(title, pos.xCoord, pos.yCoord, pos.zCoord, color, partialTicks)
+    }
 
     fun renderCustomBeacon(title: String, x: Double, y: Double, z: Double, color: Color, partialTicks: Float) {
         val distX = x - mc.renderManager.viewerPosX
