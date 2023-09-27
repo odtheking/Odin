@@ -275,34 +275,6 @@ object RenderUtils {
         renderBeaconBeam(x - .5, .0, z - .5, color, a, true, partialTicks)
     }
 
-    fun renderBoxText(title: String, x: Double, y: Double, z: Double, color: Color) {
-        val distX = x - mc.renderManager.viewerPosX
-        val distY = y - mc.renderManager.viewerPosY - mc.renderViewEntity.eyeHeight
-        val distZ = z - mc.renderManager.viewerPosZ
-        val dist = sqrt(distX * distX + distY * distY + distZ * distZ)
-
-        drawCustomESPBox(
-            floor(x), 1.0,
-            floor(y), 1.0,
-            floor(z), 1.0,
-            color,
-            3f,
-            true
-        )
-        drawStringInWorld(
-            title,
-            Vec3(floor(x) + 0.5, floor(y) + 0.7, floor(z) + 0.5),
-            color.rgba,
-            depthTest = false,
-            renderBlackBox = false,
-            increase = false,
-            scale = max(0.03, dist / 180.0).toFloat()
-        )
-    }
-
-    fun renderBoxText(title: String, position: Vec3, color: Color) {
-        renderBoxText(title, position.xCoord, position.yCoord, position.zCoord, color)
-    }
 
 
     fun draw3DLine(pos1: Vec3, pos2: Vec3, color: Color, lineWidth: Int, depth: Boolean, partialTicks: Float) {

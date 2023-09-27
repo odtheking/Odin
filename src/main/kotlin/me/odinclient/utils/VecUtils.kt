@@ -86,4 +86,28 @@ object VecUtils {
     fun scale(vec3: Vec3i,scale: Float): Vec3 {
         return Vec3((vec3.x * scale).toDouble(), (vec3.y* scale).toDouble(), (vec3.z * scale).toDouble())
     }
+
+    fun Vec3.clone(): Vec3 = Vec3(this.xCoord, this.yCoord, this.zCoord)
+
+    fun Vec3.toDoubleArray(): DoubleArray {
+        return doubleArrayOf(xCoord, yCoord, zCoord)
+    }
+
+    fun DoubleArray.toVec3(): Vec3 {
+        return Vec3(this[0], this[1], this[2])
+    }
+
+    fun Vec3.multiply(d: Double): Vec3 = Vec3(xCoord multiplyZeroSave d, yCoord multiplyZeroSave d, zCoord multiplyZeroSave d)
+
+    infix fun Double.multiplyZeroSave(other: Double): Double {
+        val result = this * other
+        return if (result == -0.0) 0.0 else result
+    }
+
+    fun solveEquationThing(x: Vec3, y: Vec3): Triple<Double, Double, Double> {
+        val a = (-y.xCoord * x.yCoord * x.xCoord - y.yCoord * x.yCoord * x.zCoord + y.yCoord * x.yCoord * x.xCoord + x.yCoord * x.zCoord * y.zCoord + x.xCoord * x.zCoord * y.xCoord - x.xCoord * x.zCoord * y.zCoord) / (x.yCoord * y.xCoord - x.yCoord * y.zCoord + x.xCoord * y.zCoord - y.xCoord * x.zCoord + y.yCoord * x.zCoord - y.yCoord * x.xCoord)
+        val b = (y.xCoord - y.yCoord) * (x.xCoord + a) * (x.yCoord + a) / (x.yCoord - x.xCoord)
+        val c = y.xCoord - b / (x.xCoord + a)
+        return Triple(a, b, c)
+    }
 }

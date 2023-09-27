@@ -4,6 +4,7 @@ import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.world.RenderUtils
+import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.SoopyGuessBurrow
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.network.play.server.S2APacketParticles
@@ -34,7 +35,9 @@ object DianaHelper : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
+
         renderPos?.let {
+            ChatUtils.modMessage(it )
             RenderUtils.renderCustomBeacon("Burrow", it, Color.WHITE)
         }
     }
