@@ -27,7 +27,7 @@ import org.lwjgl.opengl.GL11.*
 @AlwaysActive // So it can be used in other modules
 object TerminalSolver : Module(
     name = "Terminal Solver",
-    description = "Solves terminals in f7/m7",
+    description = "Renders solution of terminals in f7/m7",
     category = Category.FLOOR7,
     tag = TagType.NEW
 ) {
