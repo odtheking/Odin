@@ -133,12 +133,12 @@ class OdinClient {
         val scope = CoroutineScope(EmptyCoroutineContext)
 
         val commandList = arrayOf(
-            OdinCommand,
+            mainCommand,
+            termSimCommand,
+            autoSellCommand,
+            blacklistCommand,
             ESPCommand,
             WaypointCommand,
-            BlacklistCommand,
-            AutoSellCommand,
-            TerminalSimCommand
         )
     }
 }

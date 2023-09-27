@@ -15,6 +15,7 @@ import net.minecraft.network.Packet
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
+import net.minecraftforge.fml.common.eventhandler.Event
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 /**
@@ -29,7 +30,7 @@ object ModuleManager {
     val messageFunctions = mutableListOf<MessageFunction>()
     val worldLoadFunctions = mutableListOf<() -> Unit>()
     val huds = arrayListOf<HudElement>()
-    val executors = ArrayList<Executor>()
+    val executors = ArrayList<Pair<Module, Executor>>()
 
     val modules: ArrayList<Module> = arrayListOf(
         AutoIceFill,
@@ -156,7 +157,10 @@ object ModuleManager {
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        executors.removeAll { it.run() }
+        executors.removeAll {
+            if (!it.first.enabled) return@removeAll false // pls test i cba
+            it.second.run()
+        }
     }
 
     inline fun getModuleByName(name: String): Module? = modules.firstOrNull { it.name.equals(name, true) }

@@ -67,7 +67,7 @@ class Panel(
             var startY = scrollOffset + height
 
             val s = scissor(x, y + height, width, 5000f)
-            if (extended && moduleButtons.isNotEmpty()) {
+            if (extended && moduleButtons.size != 0) {
                 for (button in moduleButtons) {
                     if (!button.module.name.contains(currentSearch, ignoreCase = true)) continue
                     button.y = startY

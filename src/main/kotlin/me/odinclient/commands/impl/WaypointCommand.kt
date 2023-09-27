@@ -20,7 +20,7 @@ object WaypointCommand : AbstractCommand(
     description = "Command for waypoints. Do /waypoint help for more info."
 ) {
     init {
-        empty { modMessage("§cArguments empty. §rUsage: gui, share, here, add, help") }
+        //empty { modMessage("§cArguments empty. §rUsage: gui, share, here, add, help") }
 
         "help" does { modMessage(helpMSG) }
         "gui" does { display = WaypointGUI }
@@ -34,7 +34,7 @@ object WaypointCommand : AbstractCommand(
             partyMessage(message)
         }
 
-        "here" {
+        /*"here" {
             does {
                 modMessage("§cInvalid arguments. §r/wp here (temp | perm).")
             }
@@ -71,9 +71,9 @@ object WaypointCommand : AbstractCommand(
                     modMessage("Added permanent waypoint at ${pos[0]}, ${pos[1]}, ${pos[2]}.")
                 }
             )
-        }
+        }*/
 
-        orElse { modMessage("§cInvalid usage, usage :\n$helpMSG") }
+       // orElse { modMessage("§cInvalid usage, usage :\n$helpMSG") }
     }
 
     private const val helpMSG =

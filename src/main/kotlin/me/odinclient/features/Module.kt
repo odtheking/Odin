@@ -146,14 +146,14 @@ abstract class Module(
     }
 
     fun execute(delay: Long, func: Executable) {
-        executors.add(Executor(delay, func))
+        executors.add(this to Executor(delay, func))
     }
 
     fun execute(delay: Long, repeats: Int, func: Executable) {
-        executors.add(Executor.LimitedExecutor(delay, repeats, func))
+        executors.add(this to Executor.LimitedExecutor(delay, repeats, func))
     }
 
     fun execute(delay: () -> Long, func: Executable) {
-        executors.add(Executor.VaryingExecutor(delay, func))
+        executors.add(this to Executor(delay, func))
     }
 }
