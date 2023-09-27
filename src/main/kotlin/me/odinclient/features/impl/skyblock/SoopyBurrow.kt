@@ -96,7 +96,7 @@ object SoopyBurrow : Module(
 
 
             val directionVec = it.pos.subtract(lastSoundPoint ?: it.pos)
-
+            //render pos seems to just end whenever the particles end instead of using the distance  variable
             renderPos = it.pos.add(directionVec.multiplyXZ(distance!!))
             ChatUtils.modMessage(lastSoundPoint!!.add(directionVec.multiplyXZ(distance!!)))
 
