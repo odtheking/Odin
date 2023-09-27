@@ -109,6 +109,7 @@ object ModuleManager {
         CancelInteract,
         CancelWrongTerms,
         TermAC,
+        SoopyBurrow,
         DianaHelper
     )
 
