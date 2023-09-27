@@ -35,7 +35,7 @@ OdinClient is a comprehensive Forge mod for Hypixel Skyblock, offering a range o
 - **Necron Drop Timer:** Shows a timer for when Necron drops you down.
 - **Levers Triggerbot:** Triggerbot for the levers device.
 - **Relic Announcer:** Automatically announce your relic to the rest of the party.
-- **Terminal Solver:** Solves terminals in f7/m7.
+- **Terminal Solver:** Renders the solution of terminals in f7/m7.
 - **Terminal Times:** Keeps track of how long you took to complete a terminal.
 - **Dragon Boxes:** Shows semi-accurate kill boxes for M7 dragons.
 - **Dragon Timer:** Displays a timer for when M7 dragons spawn.
