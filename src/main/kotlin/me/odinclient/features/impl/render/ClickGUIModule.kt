@@ -62,10 +62,10 @@ object ClickGUIModule: Module(
             
             §7Thanks for installing §3Odin§bClient ${OdinClient.VERSION}§7!
 
-             §eUse §d§l/od §r§eto access GUI settings.
-             §eUse §d§l/od help §r§efor all of of the commands.
+            §7Use §d§l/od §r§7to access GUI settings.
+            §7Use §d§l/od help §r§7for all of of the commands.
              
-             §eJoin the discord for support and suggestions.
+            §7Join the discord for support and suggestions.
             """.trimIndent(), false)
             mc.thePlayer.addChatMessage(
                 ChatComponentText(" §9https://discord.gg/2nCbC9hkxT")
