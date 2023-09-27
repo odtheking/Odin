@@ -1,6 +1,5 @@
 package me.odinclient.features
 
-import cc.polyfrost.oneconfig.libs.checker.units.qual.m
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.events.impl.*
 import me.odinclient.features.impl.dungeon.*
@@ -15,7 +14,6 @@ import net.minecraft.network.Packet
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
-import net.minecraftforge.fml.common.eventhandler.Event
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 /**
@@ -110,8 +108,7 @@ object ModuleManager {
         CancelInteract,
         CancelWrongTerms,
         TermAC,
-        SoopyBurrow,
-        DianaHelper
+        SwapStonk
     )
 
     @SubscribeEvent

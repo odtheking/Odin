@@ -62,6 +62,16 @@ object PlayerUtils {
         mc.thePlayer.inventory.mainInventory[mc.thePlayer.inventory.currentItem] = currentHeldItemStack
     }
 
+    fun swapToItem(name: String, contains: Boolean = false) {
+        val index = getItemSlot(name, contains) ?: return modMessage("Couldn't find $name")
+        if (index !in 0..8) return modMessage("Couldn't find $name")
+        swapToIndex(index)
+    }
+
+    fun swapToIndex(index: Int) {
+        KeyBinding.onTick(mc.gameSettings.keyBindsHotbar[index].keyCode)
+    }
+
     fun clipTo(pos: Vec3) {
         mc.thePlayer.setPosition(pos.xCoord + 0.5, pos.yCoord, pos.zCoord + 0.5)
     }

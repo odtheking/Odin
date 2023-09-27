@@ -290,7 +290,7 @@ object RenderUtils {
         drawStringInWorld(
             title,
             Vec3(floor(x) + 0.5, floor(y) + 0.7, floor(z) + 0.5),
-            0,
+            color.rgba,
             depthTest = false,
             renderBlackBox = false,
             increase = false,
