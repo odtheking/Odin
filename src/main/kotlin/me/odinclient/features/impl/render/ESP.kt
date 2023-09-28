@@ -21,6 +21,7 @@ object ESP : Module(
     tag = TagType.FPSTAX,
     description = "Allows you to highlight selected mobs."
 ) {
+    private val scanDelay: Long by NumberSetting("Scan Delay", 500L, 100L, 2000L, 100L)
     val color: Color by ColorSetting("Color", Color(255, 0, 0), true)
     val mode: Int by SelectorSetting("Mode", "Outline", arrayListOf("Outline", "Overlay", "Both"))
     val xray: Boolean by BooleanSetting("Through Walls", true)
@@ -39,7 +40,7 @@ object ESP : Module(
     var currentEntities = mutableListOf<Entity>()
 
     init {
-        execute(1_000) {
+        execute({ scanDelay }) {
             currentEntities.removeAll { it.isDead }
             getEntities()
         }

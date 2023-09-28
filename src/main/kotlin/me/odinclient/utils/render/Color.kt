@@ -39,7 +39,7 @@ class Color(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f)
             needsUpdate = true
         }
 
-    // TODO: REMOVE!!!!!!!!!!!
+    // Only used in Window, because that rendering needs java.awt.Color
     val javaColor get() = java.awt.Color(r, g, b, a)
 
     /**

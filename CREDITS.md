@@ -4,6 +4,7 @@ We would like to express our gratitude to the following open-source projects, wh
 - [Dulkir Mod](https://github.com/inglettronald/DulkirMod)
 - [Skyblock Addons](https://github.com/BiscuitDevelopment/SkyblockAddons)
 - [Skyblock Client](https://github.com/Harry282/Skyblock-Client)
+- [Funny Map](https://github.com/Harry282/FunnyMap)
 - [Skytils](https://github.com/Skytils/SkytilsMod)
 
 Please feel free to use this project as inspiration, and copy parts of it, although credits are always much appreciated!

@@ -41,7 +41,6 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
 
     private val hover = HoverHandler(0, 150)
 
-    // TODO: MAKE A BETTER DESIGN (FUNCTION IS ALL HERE P MUCH)
     override fun draw(nvg: NVG) {
         h = floor(anim.get(36f, if (setting.allowAlpha) 253f else 233f, !extended))
 
