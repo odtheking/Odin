@@ -14,7 +14,7 @@ val autoSellCommand = "autosell" {
     "add" does {
         if (it.isEmpty()) return@does modMessage("You need to name an item.")
         val itemName = it.joinToString(" ")
-        if (autoSell.contains(itemName)) return@does modMessage("$itemName is already in the Auto sell list.")
+        if (itemName in autoSell) return@does modMessage("$itemName is already in the Auto sell list.")
 
         modMessage("Added $itemName to the Auto sell list.")
         autoSell.add(itemName)
@@ -24,7 +24,7 @@ val autoSellCommand = "autosell" {
     "remove" does {
         if (it.size == 1) return@does modMessage("You need to name an item.")
         val itemName = it.copyOfRange(1, it.size).joinToString(" ")
-        if (!autoSell.contains(itemName)) return@does modMessage("$itemName isn't in the Auto sell list.")
+        if (itemName !in autoSell) return@does modMessage("$itemName isn't in the Auto sell list.")
 
         modMessage("Removed $itemName from the Auto sell list.")
         autoSell.remove(itemName)

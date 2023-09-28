@@ -18,7 +18,7 @@ object ESPCommand : Command("esp", listOf("odesp"), "Command for ESP.") {
                 "add" -> {
                     if (args.size == 1) return modMessage("§cMissing mob name!")
                     val mobName = args.joinToString(1)
-                    if (espList.contains(mobName)) return modMessage("$mobName is already on the ESP list.")
+                    if (mobName in espList) return modMessage("$mobName is already on the ESP list.")
 
                     modMessage("Added $mobName to the ESP list.")
                     espList.add(mobName)
@@ -28,7 +28,7 @@ object ESPCommand : Command("esp", listOf("odesp"), "Command for ESP.") {
                 "remove" -> {
                     if (args.size == 1) return modMessage("§cMissing mob name!")
                     val mobName = args.joinToString(1)
-                    if (!espList.contains(mobName)) return modMessage("$mobName isn't on the list.")
+                    if (mobName !in espList) return modMessage("$mobName isn't on the list.")
 
                     modMessage("Removed $mobName from the ESP list.")
                     espList.remove(mobName)

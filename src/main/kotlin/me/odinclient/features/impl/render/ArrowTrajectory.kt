@@ -123,7 +123,7 @@ object ArrowTrajectory : Module(
 
     @SubscribeEvent
     fun onRenderModel(event: RenderEntityModelEvent) {
-        if (!entityRenderQueue.contains(event.entity)) return
+        if (event.entity !in entityRenderQueue) return
         if (!mc.thePlayer.canEntityBeSeen(event.entity)) return
         OutlineUtils.outlineEntity(
             event,

@@ -56,7 +56,7 @@ object SimonSays : Module(
 
         if (pos.y !in 120..123 || pos.z !in 92..95) return
 
-        if (pos.x == 111 && state.block == Blocks.sea_lantern && !clickInOrder.contains(pos)) {
+        if (pos.x == 111 && state.block == Blocks.sea_lantern && pos !in clickInOrder) {
             clickInOrder.add(pos)
         } else if (pos.x == 110) {
             if (state.block == Blocks.air) {

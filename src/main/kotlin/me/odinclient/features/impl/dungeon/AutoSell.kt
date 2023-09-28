@@ -20,7 +20,7 @@ object AutoSell : Module(
     private val delay: Long by NumberSetting("Delay", 100, 10.0, 300.0, 5.0)
     private val addDefaults: () -> Unit by ActionSetting("Add defaults") {
         defaultItems.forEach {
-            if (!MiscConfig.autoSell.contains(it)) {
+            if (it !in MiscConfig.autoSell) {
                 MiscConfig.autoSell.add(it)
             }
         }

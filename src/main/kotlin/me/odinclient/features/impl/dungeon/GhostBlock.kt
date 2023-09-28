@@ -60,7 +60,7 @@ object GhostBlock : Module(
     private fun toAir(blockPos: BlockPos?): Boolean {
         if (blockPos != null) {
             val block = mc.theWorld.getBlockState(blockPos).block
-            if (!blacklist.contains(block) && (block !== Blocks.skull || (ghostBlockSkulls && (mc.theWorld.getTileEntity(blockPos) as? TileEntitySkull)?.playerProfile?.id?.toString() != "26bb1a8d-7c66-31c6-82d5-a9c04c94fb02"))
+            if (block !in blacklist && (block !== Blocks.skull || (ghostBlockSkulls && (mc.theWorld.getTileEntity(blockPos) as? TileEntitySkull)?.playerProfile?.id?.toString() != "26bb1a8d-7c66-31c6-82d5-a9c04c94fb02"))
             ) {
                 mc.theWorld.setBlockToAir(blockPos)
                 return true

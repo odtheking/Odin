@@ -39,7 +39,7 @@ object DragonHitboxes : Module(
         for (dragon in entityDragons) {
             for (entity in dragon.dragonPartArray) {
                 val entityId = entity.entityId
-                if (!entityPositions.containsKey(entityId)) {
+                if (entityId !in entityPositions) {
                     entityPositions[entityId] = arrayOf(
                         entity.posX,
                         entity.posY,

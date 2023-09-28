@@ -1,6 +1,7 @@
 package me.odinclient.features.impl.render
 
 import me.odinclient.config.MiscConfig
+import me.odinclient.events.impl.PostEntityMetadata
 import me.odinclient.events.impl.RenderEntityModelEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
@@ -12,7 +13,6 @@ import me.odinclient.utils.render.world.OutlineUtils
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
-import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object ESP : Module(
@@ -37,7 +37,7 @@ object ESP : Module(
 
     private inline val espList get() = MiscConfig.espList
 
-    var currentEntities = mutableListOf<Entity>()
+    var currentEntities = mutableSetOf<Entity>()
 
     init {
         execute({ scanDelay }) {
@@ -49,12 +49,14 @@ object ESP : Module(
             currentEntities.clear()
             getEntities()
         }
+
+        onWorldLoad { currentEntities.clear() }
     }
 
     @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
         if (mode == 1) return
-        if (!currentEntities.contains(event.entity)) return
+        if (event.entity !in currentEntities) return
         if (!mc.thePlayer.canEntityBeSeen(event.entity) && !xray) return
 
         OutlineUtils.outlineEntity(
@@ -66,19 +68,21 @@ object ESP : Module(
     }
 
     @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Load) {
-        currentEntities.clear()
+    fun postMeta(event: PostEntityMetadata) {
+        checkEntity(mc.theWorld.getEntityByID(event.packet.entityId) ?: return)
     }
 
     private fun getEntities() {
         mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()?.filterNot {
             ent -> !espList.any { ent.name.contains(it, true) } || currentEntities.contains(ent)
-        }?.forEach { entity ->
-            currentEntities.add(
-                mc.theWorld.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.expand(1.0, 5.0, 1.0))
-                    .filter { it != null && it !is EntityArmorStand && it != mc.thePlayer }
-                    .minByOrNull { noSqrt3DDistance(it, entity) } ?: return@forEach
-            )
-        }
+        }?.forEach(::checkEntity)
+    }
+
+    private fun checkEntity(entity: Entity) {
+        currentEntities.add(
+            mc.theWorld.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.expand(1.0, 5.0, 1.0))
+                .filter { it != null && it !is EntityArmorStand && it != mc.thePlayer }
+                .minByOrNull { noSqrt3DDistance(it, entity) } ?: return
+        )
     }
 }

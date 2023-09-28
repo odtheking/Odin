@@ -16,7 +16,7 @@ object ServerUtils {
     private val packets = ArrayList<Packet<*>>()
 
     fun handleSendPacket(packet: Packet<*>): Boolean {
-        if (packets.contains(packet)) {
+        if (packet in packets) {
             packets.remove(packet)
             return true
         }
