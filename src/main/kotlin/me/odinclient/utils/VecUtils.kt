@@ -3,6 +3,7 @@ package me.odinclient.utils
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.utils.Utils.floor
 import net.minecraft.entity.Entity
+import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.MathHelper
 import net.minecraft.util.Vec3
@@ -110,4 +111,23 @@ object VecUtils {
         val c = y.xCoord - b / (x.xCoord + a)
         return Triple(a, b, c)
     }
+
+    fun Vec3.with(x: Double = this.xCoord, y: Double = this.yCoord, z: Double = this.zCoord): Vec3 {
+        return Vec3(x, y, z)
+    }
+
+    fun Vec3.coerceXIn(min: Double, max: Double): Vec3 {
+        return Vec3(xCoord.coerceIn(min, max), yCoord, zCoord)
+    }
+
+    fun Vec3.coerceYIn(min: Double, max: Double): Vec3 {
+        return Vec3(xCoord, yCoord.coerceIn(min, max), zCoord)
+    }
+
+    fun Vec3.coerceZIn(min: Double, max: Double): Vec3 {
+        return Vec3(xCoord, yCoord, zCoord.coerceIn(min, max))
+    }
+
+    val S29PacketSoundEffect.pos: Vec3
+        get() = Vec3(this.x, this.y, this.z)
 }

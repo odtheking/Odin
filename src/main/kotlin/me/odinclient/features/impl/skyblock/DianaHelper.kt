@@ -29,27 +29,12 @@ object DianaHelper : Module(
         onPacket(S2APacketParticles::class.java) {
             SoopyGuessBurrow.handleParticlePacket(it)
         }
-
-
     }
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-
         renderPos?.let {
-            ChatUtils.modMessage(it )
-            RenderUtils.renderCustomBeacon("Burrow", it, Color.WHITE)
+            RenderUtils.renderCustomBeacon("Burrow", it, Color.WHITE, event.partialTicks)
         }
     }
-
-
-
-
-
-
-
-
-
-
-
 }

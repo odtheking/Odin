@@ -4,6 +4,7 @@ import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinclient.utils.VecUtils.plus
 import me.odinclient.utils.render.Color
+import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.WorldRenderer
@@ -265,14 +266,14 @@ object RenderUtils {
         drawStringInWorld(
             "$title §r§f(§3${dist.toInt()}m§f)",
             Vec3(floor(x) + .5, floor(y) + 1.7 + dist / 30, floor(z) + .5),
-            0,
+            color.rgba,
             renderBlackBox = true,
             increase = false,
             depthTest = false,
             max(0.03, dist / 180.0).toFloat()
         )
         val a = min(1f, max(0f, dist.toFloat()) / 60f)
-        renderBeaconBeam(x - .5, .0, z - .5, color, a, true, partialTicks)
+        renderBeaconBeam(floor(x), .0, floor(z), color, a, true, partialTicks)
     }
 
 
