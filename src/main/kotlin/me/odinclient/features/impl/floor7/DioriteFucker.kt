@@ -3,6 +3,7 @@ package me.odinclient.features.impl.floor7
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.NumberSetting
+import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.LocationUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
@@ -18,8 +19,8 @@ object DioriteFucker : Module(
 
     init {
         execute(delay = { delay }) {
-            modMessage("phase: ${DungeonUtils.getPhase() ?: "none"}")
-            modMessage("floor: ${LocationUtils.currentDungeon?.floor?.floorNumber ?: "none"}")
+            ChatUtils.devModMessage("phase: ${DungeonUtils.getPhase() ?: "none"}")
+            ChatUtils.devModMessage("floor: ${LocationUtils.currentDungeon?.floor?.floorNumber ?: "none"}")
             if (mc.theWorld == null || DungeonUtils.getPhase() != 2 || !enabled) return@execute
             for (block in pillars) {
                 if (mc.theWorld.chunkProvider.provideChunk(block.x shr 4, block.z shr 4).getBlock(block) == Blocks.stone) {

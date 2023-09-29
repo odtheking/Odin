@@ -7,6 +7,7 @@ import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.clock.Executor
 import me.odinclient.utils.clock.Executor.Companion.register
 import me.odinclient.utils.render.Color
+import me.odinclient.utils.skyblock.ChatUtils.devModMessage
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.ItemUtils
 import me.odinclient.utils.skyblock.LocationUtils
@@ -34,11 +35,11 @@ object DungeonUtils {
 
     fun getPhase(): Int? {
         if (!isFloor(7)) {
-            modMessage("not floor 7")
+            devModMessage("not floor 7")
             return null
         }
         if (!inBoss) {
-            modMessage("not in boss")
+            devModMessage("not in boss")
             return null
         }
 

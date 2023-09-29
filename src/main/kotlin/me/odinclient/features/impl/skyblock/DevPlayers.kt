@@ -8,12 +8,15 @@ object DevPlayers {
 
     data class PlayerSize(val xScale: Float, val yScale: Float, val zScale: Float)
 
-    private val devs = hashMapOf(
+    val devs = hashMapOf(
         "_Inton_" to PlayerSize(2f, .5f, 2f),
         "OdinClient" to PlayerSize(2f, 1f, 1f),
+        "Odtheking" to PlayerSize(2f, 1f, 1f),
+        "Stivais" to PlayerSize(2f, 1f, 1f),
         "Odtheking" to PlayerSize(2f, 1f, 1f)
 
-    )
+
+        )
 
     @SubscribeEvent
     fun onRenderPlayer(event: RenderPlayerEvent.Pre) {

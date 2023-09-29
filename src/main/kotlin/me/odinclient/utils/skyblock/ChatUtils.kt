@@ -2,6 +2,7 @@ package me.odinclient.utils.skyblock
 
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.config.MiscConfig
+import me.odinclient.features.impl.skyblock.DevPlayers.devs
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.WebUtils
 import net.minecraft.event.ClickEvent
@@ -43,6 +44,13 @@ object ChatUtils {
     fun modMessage(message: Any?, prefix: Boolean = true) {
         if (mc.thePlayer == null) return
         val msg = if (prefix) "§3Odin§bClient §8»§r $message" else message.toString()
+        mc.thePlayer?.addChatMessage(ChatComponentText(msg))
+    }
+
+    fun devModMessage(message: Any, prefix: Boolean = true) {
+        if (mc.thePlayer == null) return
+        if (!devs.containsKey(mc.thePlayer.name)) return
+        val msg = if (prefix) "§3Odin§bDev §8»§r $message" else message.toString()
         mc.thePlayer?.addChatMessage(ChatComponentText(msg))
     }
 
