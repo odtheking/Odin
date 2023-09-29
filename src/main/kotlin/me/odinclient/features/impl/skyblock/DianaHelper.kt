@@ -21,6 +21,8 @@ object DianaHelper : Module(
 
     var renderPos: Vec3? = null
 
+
+
     init {
         onPacket(S29PacketSoundEffect::class.java) {
             SoopyGuessBurrow.handleSoundPacket(it)
@@ -29,12 +31,30 @@ object DianaHelper : Module(
         onPacket(S2APacketParticles::class.java) {
             SoopyGuessBurrow.handleParticlePacket(it)
         }
+
+        onPacket(S2APacketParticles::class.java) {
+            SoopyGuessBurrow.handleBurrow(it)
+        }
+
+
     }
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
+
         renderPos?.let {
-            RenderUtils.renderCustomBeacon("Burrow", it, Color.WHITE, event.partialTicks)
+            RenderUtils.renderCustomBeacon("Burrow", it, Color.WHITE)
         }
     }
+
+
+
+
+
+
+
+
+
+
+
 }

@@ -12,25 +12,24 @@ import net.minecraft.init.Blocks
 import net.minecraft.tileentity.TileEntitySkull
 import net.minecraft.util.BlockPos
 
-//TODO: Rename settings
 object GhostBlock : Module(
     name = "Ghost Blocks",
     description = "Creates ghost blocks on key press, and in specific locations.",
     category = Category.DUNGEON,
 ) {
-    private val gkey: Boolean by BooleanSetting("GKey", true)
-    private val gkeySpeed: Long by NumberSetting("Speed", 50L, 0.0, 300.0, 10.0)
-        .withDependency { gkey }
+    private val ghostBlockKey: Boolean by BooleanSetting("GKey", true)
+    private val ghostBlockSpeed: Long by NumberSetting("Speed", 50L, 0.0, 300.0, 10.0)
+        .withDependency { ghostBlockKey }
     private val ghostBlockSkulls: Boolean by BooleanSetting("Ghost Skulls", true, description = "If enabled skulls will also be turned into ghost blocks.")
-        .withDependency { gkey }
-    private val gbRange: Double by NumberSetting("Range", 8.0, 4.5, 60.0, 0.5, description = "Maximum range at which ghost blocks will be created.")
-        .withDependency { gkey }
+        .withDependency { ghostBlockKey }
+    private val ghostBlockRange: Double by NumberSetting("Range", 8.0, 4.5, 60.0, 0.5, description = "Maximum range at which ghost blocks will be created.")
+        .withDependency { ghostBlockKey }
     private val onlyDungeon: Boolean by BooleanSetting("Only In Dungeon", false, description = "Will only work inside of a dungeon.")
-        .withDependency { gkey }
+        .withDependency { ghostBlockKey }
     private val preGhostBlock: Boolean by BooleanSetting("F7 Ghost blocks")
 
     override fun onKeybind() {
-        if (!gkey) super.onKeybind()
+        if (!ghostBlockKey) super.onKeybind()
     }
 
     private val blacklist = arrayOf(
@@ -41,11 +40,11 @@ object GhostBlock : Module(
     )
 
     init {
-        execute({ gkeySpeed }) {
-            if (!gkey || !enabled || mc.currentScreen != null || (onlyDungeon && !inDungeons)) return@execute
+        execute({ ghostBlockSpeed }) {
+            if (!ghostBlockKey || !enabled || mc.currentScreen != null || (onlyDungeon && !inDungeons)) return@execute
             if (!isKeybindDown()) return@execute
 
-            val lookingAt = mc.thePlayer?.rayTrace(gbRange, 1f)
+            val lookingAt = mc.thePlayer?.rayTrace(ghostBlockRange, 1f)
             toAir(lookingAt?.blockPos)
         }
 

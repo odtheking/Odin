@@ -48,7 +48,7 @@ object ModuleManager {
         WatcherBar,
         MapModule,
         PersonalDragon,
-        CustomEnd,
+        ExtraStats,
         EscrowFix,
 
         ArrowTrajectory,

@@ -2,6 +2,7 @@ package me.odinclient.utils.skyblock
 
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.features.impl.skyblock.DianaHelper
+import me.odinclient.utils.Utils.equalsOneOf
 import me.odinclient.utils.VecUtils.clone
 import me.odinclient.utils.VecUtils.coerceYIn
 import me.odinclient.utils.VecUtils.multiply
@@ -9,12 +10,14 @@ import me.odinclient.utils.VecUtils.pos
 import me.odinclient.utils.VecUtils.solveEquationThing
 import me.odinclient.utils.VecUtils.toDoubleArray
 import me.odinclient.utils.VecUtils.toVec3
+import me.odinclient.utils.render.Color
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumParticleTypes
 import net.minecraft.util.Vec3
+import tv.twitch.chat.Chat
 import kotlin.math.*
 
 
@@ -32,11 +35,20 @@ object SoopyGuessBurrow {
 
     private var lastSoundPoint: Vec3? = null
     private var locs = mutableListOf<Vec3>()
+   // private val burrows = mutableMapOf<Vec3, Burrow>()
+
 
     private var dingSlope = mutableListOf<Float>()
 
     private var distance: Double? = null
     private var distance2: Double? = null
+
+    enum class BurrowType(val text: String, val color: Color) {
+        START("§aStart", Color.GREEN),
+        MOB("§cMob", Color.RED),
+        TREASURE("§6Treasure", Color.GOLD),
+        UNKNOWN("§fUnknown?!", Color.WHITE),
+    }
 
     private fun reset() {
         lastDing = 0L
@@ -224,4 +236,54 @@ object SoopyGuessBurrow {
             guessPoint = Vec3(it.xCoord + changes[0] * distance!!, it.yCoord + changes[1], it.zCoord + changes[2] * distance!!)
         }
     }
+
+    fun handleBurrow(it: S2APacketParticles) {
+        val particleType = ParticleType.getParticleType(it) ?: return
+
+        val location = Vec3(it.xCoordinate, it.yCoordinate, it.zCoordinate)
+       // val burrow = burrows
+
+/*
+        when (particleType) {
+            ParticleType.FOOTSTEP -> burrow.hasFootstep = true
+            ParticleType.ENCHANT -> burrow.hasEnchant = true
+            ParticleType.EMPTY -> burrow.type = 0
+            ParticleType.MOB -> burrow.type = 1
+            ParticleType.TREASURE -> burrow.type = 2
+        }*/
+
+    }
+
+    private enum class ParticleType(val check: S2APacketParticles.() -> Boolean) {
+        EMPTY({
+            particleType == net.minecraft.util.EnumParticleTypes.CRIT_MAGIC && particleCount == 4 && particleSpeed == 0.01f && xOffset == 0.5f && yOffset == 0.1f && zOffset == 0.5f
+        }),
+        MOB({
+            particleType == net.minecraft.util.EnumParticleTypes.CRIT && particleCount == 3 && particleSpeed == 0.01f && xOffset == 0.5f && yOffset == 0.1f && zOffset == 0.5f
+
+        }),
+        TREASURE({
+            particleType == net.minecraft.util.EnumParticleTypes.DRIP_LAVA && particleCount == 2 && particleSpeed == 0.01f && xOffset == 0.35f && yOffset == 0.1f && zOffset == 0.35f
+        }),
+        FOOTSTEP({
+            particleType == net.minecraft.util.EnumParticleTypes.FOOTSTEP && particleCount == 1 && particleSpeed == 0.0f && xOffset == 0.05f && yOffset == 0.0f && zOffset == 0.05f
+        }),
+        ENCHANT({
+            particleType == net.minecraft.util.EnumParticleTypes.ENCHANTMENT_TABLE && particleCount == 5 && particleSpeed == 0.05f && xOffset == 0.5f && yOffset == 0.4f && zOffset == 0.5f
+        });
+
+        companion object {
+
+            fun getParticleType(packet: S2APacketParticles): ParticleType? {
+                if (!packet.isLongDistance) return null
+                for (type in entries) {
+                    if (type.check(packet)) {
+                        return type
+                    }
+                }
+                return null
+            }
+        }
+    }
+
 }

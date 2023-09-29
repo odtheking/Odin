@@ -136,6 +136,12 @@ class Color(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f)
         @JvmField
         val GOLD = Color(255, 170, 0)
 
+        @JvmField
+        val GREEN = Color(0, 255, 0)
+
+        @JvmField
+        val RED = Color(255, 0, 0)
+
         /**
          * Performs bit-shift thingy
          */

@@ -19,9 +19,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Mouse
 import java.awt.Color
 
-// TODO: I think this needs a better name
 object NoRender : Module(
-    name = "No Render",
+    name = "Render Optimizer",
     category = Category.RENDER,
     description = "Disables certain render function when they are not necessary, resulting in a decrease in gpu usage."
 ) {
