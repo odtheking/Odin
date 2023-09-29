@@ -25,6 +25,14 @@ object ItemUtils {
         get() = this.displayName.noControlCodes
 
     /**
+     * Returns the lore for an Item
+     */
+    val ItemStack.lore: List<String>
+        get() = this.tagCompound?.getCompoundTag("display")?.getTagList("Lore", 8)?.let {
+            List(it.tagCount()) { i -> it.getStringTagAt(i) }
+        } ?: emptyList()
+
+    /**
      * Returns Item ID for an Item
      */
     val ItemStack?.itemID: String
@@ -37,19 +45,15 @@ object ItemUtils {
         get() {
             val lore = this?.lore
             lore?.forEach{
-                if(it.contains("Ability:") && it.endsWith("RIGHT CLICK")) return true
+                if (it.contains("Ability:") && it.endsWith("RIGHT CLICK")) return true
             }
             return false
         }
 
-    /**
-     * Returns the lore for an Item
-     */
-    val ItemStack.lore: List<String>
-        get() = this.tagCompound?.getCompoundTag("display")?.getTagList("Lore", 8)?.let {
-            List(it.tagCount()) { i -> it.getStringTagAt(i) }
-        } ?: emptyList()
-
+    val ItemStack?.isShortbow: Boolean
+        get() {
+            return this?.lore?.any { it.contains("Shortbow: Instantly shoots!") } == true
+        }
 
     /**
      * Returns first slot of an Item

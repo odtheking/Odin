@@ -109,7 +109,8 @@ object ModuleManager {
         CancelWrongTerms,
         TermAC,
         SwapStonk,
-        DianaHelper
+        DianaHelper,
+        Arrows
     )
 
     @SubscribeEvent

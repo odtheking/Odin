@@ -40,7 +40,7 @@ object ChatUtils {
         mc.thePlayer.sendChatMessage(message.toString())
     }
 
-    fun modMessage(message: Any, prefix: Boolean = true) {
+    fun modMessage(message: Any?, prefix: Boolean = true) {
         if (mc.thePlayer == null) return
         val msg = if (prefix) "§3Odin§bClient §8»§r $message" else message.toString()
         mc.thePlayer?.addChatMessage(ChatComponentText(msg))

@@ -1,6 +1,5 @@
 package me.odinclient.utils.skyblock.dungeon
 
-import me.odinclient.features.impl.render.ClickGUIModule
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.PlayerUtils.posX
 import me.odinclient.utils.skyblock.PlayerUtils.posZ
@@ -11,26 +10,19 @@ import me.odinclient.utils.skyblock.ScoreboardUtils
 class Dungeon {
 
     lateinit var floor: Floor
-    var inBoss = false
+    val inBoss get() = getBoss(floor.floorNumber)
     private fun getBoss(floor: Int): Boolean {
          return when (floor) {
-            1 -> posX > -71 && posZ > -39
+            1 ->        posX > -71 && posZ > -39
             2, 3, 4 ->  posX > -39 && posZ > -39
-            5, 6 ->  posX > -39 && posZ > -7
-            7 ->  posX > -7 && posZ > -7
+            5, 6 ->     posX > -39 && posZ > -7
+            7 ->        posX > -7  && posZ > -7
             else -> false
         }
     }
 
     init {
         getCurrentFloor()
-
-        ClickGUIModule.execute(500) {
-            if (getBoss(floor.floorNumber)) {
-                inBoss = true
-                destroyExecutor()
-            }
-        }
     }
 
     private fun getCurrentFloor() {
