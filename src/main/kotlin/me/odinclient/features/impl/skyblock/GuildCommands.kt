@@ -4,6 +4,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import me.odinclient.events.impl.ChatPacketEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.BooleanSetting
@@ -38,9 +39,8 @@ object GuildCommands : Module(
 
     @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
-    fun guild(event: ClientChatReceivedEvent) {
-        val message = event.message.unformattedText.noControlCodes
-        val match = Regex("Guild > (\\[.+])? ?(.+) ?(\\[.+])?: ?(.+)").find(message) ?: return
+    fun guild(event: ChatPacketEvent) {
+        val match = Regex("Guild > (\\[.+])? ?(.+) ?(\\[.+])?: ?(.+)").find(event.message) ?: return
 
         val ign = match.groups[2]?.value?.split(" ")?.get(0) // Get rid of guild rank by splitting the string and getting the first word
         val msg = match.groups[4]?.value?.lowercase()

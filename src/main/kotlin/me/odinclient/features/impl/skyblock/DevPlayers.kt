@@ -13,10 +13,8 @@ object DevPlayers {
         "OdinClient" to PlayerSize(2f, 1f, 1f),
         "Odtheking" to PlayerSize(2f, 1f, 1f),
         "Stivais" to PlayerSize(2f, 1f, 1f),
-        "Odtheking" to PlayerSize(2f, 1f, 1f)
-
-
-        )
+        "saksiq" to PlayerSize(2f, 1f, 1f),
+    )
 
     @SubscribeEvent
     fun onRenderPlayer(event: RenderPlayerEvent.Pre) {

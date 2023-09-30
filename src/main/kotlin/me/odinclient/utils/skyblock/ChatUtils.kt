@@ -49,7 +49,7 @@ object ChatUtils {
 
     fun devMessage(message: Any, prefix: Boolean = true) {
         if (mc.thePlayer == null) return
-        if (!devs.containsKey(mc.thePlayer.name)) return
+        if (!devs.keys.contains(mc.thePlayer.name)) return
         val msg = if (prefix) "§3Odin§bDev §8»§r $message" else message.toString()
         mc.thePlayer?.addChatMessage(ChatComponentText(msg))
     }

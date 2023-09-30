@@ -4,6 +4,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import me.odinclient.events.impl.ChatPacketEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.BooleanSetting
@@ -42,9 +43,8 @@ object PartyCommands : Module(
 
     @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
-    fun party(event: ClientChatReceivedEvent) {
-        val message = event.message.unformattedText.noControlCodes
-        val match = Regex("Party > (\\[.+])? ?(.+): !(.+)").find(message) ?: return
+    fun party(event: ChatPacketEvent) {
+        val match = Regex("Party > (\\[.+])? ?(.+): !(.+)").find(event.message) ?: return
 
         val ign = match.groups[2]?.value
         val msg = match.groups[3]?.value?.lowercase()
@@ -56,10 +56,8 @@ object PartyCommands : Module(
 
     @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
-    fun dt(event: ClientChatReceivedEvent) {
-        val message = event.message.unformattedText.noControlCodes
-
-        if (!message.contains("EXTRA STATS") || dtPlayer == null) return
+    fun dt(event: ChatPacketEvent) {
+        if (!event.message.contains("EXTRA STATS") || dtPlayer == null) return
 
         GlobalScope.launch{
             delay(2500)

@@ -5,6 +5,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.odinclient.OdinClient
+import me.odinclient.events.impl.ChatPacketEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.BooleanSetting
@@ -42,9 +43,8 @@ object PrivateCommands : Module(
 
     @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
-    fun private(event: ClientChatReceivedEvent) {
-        val message = event.message.unformattedText.noControlCodes
-        val match = Regex("From (\\[.+])? ?(.+): !(.+)").find(message) ?: return
+    fun private(event: ChatPacketEvent) {
+        val match = Regex("From (\\[.+])? ?(.+): !(.+)").find(event.message) ?: return
 
         val ign = match.groups[2]?.value
         val msg = match.groups[3]?.value?.lowercase()

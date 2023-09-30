@@ -11,6 +11,7 @@ import me.odinclient.utils.clock.Clock
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.skyblock.ChatUtils.devMessage
+import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.PlayerUtils.rightClick
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.block.BlockButtonStone
@@ -47,6 +48,7 @@ object SimonSays : Module(
     private val clickInOrder = ArrayList<BlockPos>()
     private var clickNeeded = 0
     private var currentPhase = 0
+    private val phaseClock = Clock(500)
 
     init {
         onMessage("\\[BOSS] Goldor: Who dares tresspass into my domain\\?".toRegex(), { solver && enabled}) {
@@ -85,9 +87,16 @@ object SimonSays : Module(
         } else if (pos.x == 110) {
             if (state.block == Blocks.air) {
                 clickNeeded = 0
-                currentPhase++
+                if (phaseClock.hasTimePassed()) {
+                    currentPhase++
+                    phaseClock.update()
+                }
+                modMessage(currentPhase)
                 if (clearAfter) clickInOrder.clear()
             } else if (state.block == Blocks.stone_button) {
+                if (old.block == Blocks.air && clickInOrder.size > currentPhase) {
+                    modMessage("was skipped!?!?!")
+                }
                 if (old.block == Blocks.stone_button && state.getValue(BlockButtonStone.POWERED)) {
                     val index = clickInOrder.indexOf(pos.add(1, 0, 0)) + 1
                     clickNeeded = if (index >= clickInOrder.size) 0 else index
@@ -102,6 +111,7 @@ object SimonSays : Module(
         val item = event.entity as EntityItem
         if (Item.getIdFromItem(item.entityItem.item) != 77) return
         devMessage("AAA")
+        item.thrower
     }
 
     private fun triggerBot() {
@@ -147,5 +157,6 @@ object SimonSays : Module(
     fun onWorldChange(event: WorldEvent.Load) {
         clickInOrder.clear()
         clickNeeded = 0
+        currentPhase = 0
     }
 }
