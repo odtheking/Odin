@@ -10,14 +10,18 @@ import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinclient.utils.clock.Clock
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.world.RenderUtils
+import me.odinclient.utils.skyblock.ChatUtils.devMessage
 import me.odinclient.utils.skyblock.PlayerUtils.rightClick
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.block.BlockButtonStone
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.entity.item.EntityItem
 import net.minecraft.init.Blocks
+import net.minecraft.item.Item
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -28,6 +32,9 @@ object SimonSays : Module(
     tag = TagType.NEW
 ) {
     private val solver: Boolean by BooleanSetting("Solver")
+    private val start: Boolean by BooleanSetting("Start", default = true, description = "Starts the device when it can be started.")
+    private val startClicks: Int by NumberSetting("Start Clicks", 1, 1, 10).withDependency { start }
+    private val startClickDelay: Int by NumberSetting("Start Click Delay", 3, 1, 5).withDependency { start }
     private val triggerBot: Boolean by BooleanSetting("Triggerbot")
     private val delay: Long by NumberSetting<Long>("Delay", 200, 70, 500).withDependency { triggerBot }
     private val fullBlock: Boolean by BooleanSetting("Full Block (needs SBC)", false).withDependency { triggerBot }
@@ -39,7 +46,23 @@ object SimonSays : Module(
     private val firstButton = BlockPos(110, 121, 91)
     private val clickInOrder = ArrayList<BlockPos>()
     private var clickNeeded = 0
+    private var currentPhase = 0
 
+    init {
+        onMessage("\\[BOSS] Goldor: Who dares tresspass into my domain\\?".toRegex(), { solver && enabled}) {
+            if (mc.objectMouseOver?.blockPos == firstButton)
+                repeat(startClicks) { rightClick() }
+        }
+    }
+
+    override fun onKeybind() {
+        if (mc.objectMouseOver?.blockPos == firstButton)
+            repeat(startClicks) {
+                runIn(it * startClickDelay) {
+                    rightClick()
+                }
+            }
+    }
 
     @SubscribeEvent
     fun onBlockChange(event: BlockChangeEvent) {
@@ -51,6 +74,7 @@ object SimonSays : Module(
         if (pos == firstButton && state.block == Blocks.stone_button && state.getValue(BlockButtonStone.POWERED)) {
             clickInOrder.clear()
             clickNeeded = 0
+            currentPhase = 0
             return
         }
 
@@ -61,12 +85,23 @@ object SimonSays : Module(
         } else if (pos.x == 110) {
             if (state.block == Blocks.air) {
                 clickNeeded = 0
+                currentPhase++
                 if (clearAfter) clickInOrder.clear()
-            } else if (state.block == Blocks.stone_button && old.block == Blocks.stone_button && state.getValue(BlockButtonStone.POWERED)) {
-                val index = clickInOrder.indexOf(pos.add(1, 0, 0)) + 1
-                clickNeeded = if (index >= clickInOrder.size) 0 else index
+            } else if (state.block == Blocks.stone_button) {
+                if (old.block == Blocks.stone_button && state.getValue(BlockButtonStone.POWERED)) {
+                    val index = clickInOrder.indexOf(pos.add(1, 0, 0)) + 1
+                    clickNeeded = if (index >= clickInOrder.size) 0 else index
+                }
             }
         }
+    }
+
+    @SubscribeEvent
+    fun onEntityJoin(event: EntityJoinWorldEvent) {
+        if (event.entity !is EntityItem) return
+        val item = event.entity as EntityItem
+        if (Item.getIdFromItem(item.entityItem.item) != 77) return
+        devMessage("AAA")
     }
 
     private fun triggerBot() {

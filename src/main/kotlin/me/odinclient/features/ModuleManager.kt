@@ -10,11 +10,13 @@ import me.odinclient.features.impl.skyblock.*
 import me.odinclient.ui.hud.HudElement
 import me.odinclient.utils.clock.Executor
 import me.odinclient.utils.render.gui.nvg.drawNVG
+import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import net.minecraft.network.Packet
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 
 /**
  * Class that contains all Modules and huds
@@ -22,11 +24,13 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
  */
 object ModuleManager {
     data class PacketFunction<T : Packet<*>>(val type: Class<T>, val function: (T) -> Unit, val shouldRun: () -> Boolean)
-    data class MessageFunction(val filter: Regex, val function: (String) -> Unit)
+    data class MessageFunction(val filter: Regex, val shouldRun: () -> Boolean, val function: (String) -> Unit)
+    data class TickTask(var ticksLeft: Int, val function: () -> Unit)
 
     val packetFunctions = mutableListOf<PacketFunction<Packet<*>>>()
     val messageFunctions = mutableListOf<MessageFunction>()
     val worldLoadFunctions = mutableListOf<() -> Unit>()
+    val tickTasks = mutableListOf<TickTask>()
     val huds = arrayListOf<HudElement>()
     val executors = ArrayList<Pair<Module, Executor>>()
 
@@ -110,8 +114,23 @@ object ModuleManager {
         TermAC,
         SwapStonk,
         DianaHelper,
-        Arrows
+        Arrows,
+        RelicPlacer
     )
+
+    @SubscribeEvent
+    fun onTick(event: TickEvent.ClientTickEvent) {
+        if (event.phase != TickEvent.Phase.START) return
+
+        tickTasks.removeAll {
+            if (it.ticksLeft <= 0) {
+                it.function()
+                return@removeAll true
+            }
+            it.ticksLeft--
+            false
+        }
+    }
 
     @SubscribeEvent
     fun onReceivePacket(event: ReceivePacketEvent) {
@@ -125,7 +144,7 @@ object ModuleManager {
 
     @SubscribeEvent
     fun onChatPacket(event: ChatPacketEvent) {
-        messageFunctions.filter { event.message matches it.filter }.forEach { it.function(event.message) }
+        messageFunctions.filter { event.message matches it.filter && it.shouldRun() }.forEach { it.function(event.message) }
     }
 
     @SubscribeEvent

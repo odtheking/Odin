@@ -138,7 +138,11 @@ abstract class Module(
     }
 
     fun onMessage(filter: Regex, shouldRun: () -> Boolean = { enabled }, func: (String) -> Unit) {
-        ModuleManager.messageFunctions.add(ModuleManager.MessageFunction(filter, func))
+        ModuleManager.messageFunctions.add(ModuleManager.MessageFunction(filter, shouldRun, func))
+    }
+
+    fun runIn(ticks: Int, func: () -> Unit) {
+        ModuleManager.tickTasks.add(ModuleManager.TickTask(ticks, func))
     }
 
     fun onWorldLoad(func: () -> Unit) {

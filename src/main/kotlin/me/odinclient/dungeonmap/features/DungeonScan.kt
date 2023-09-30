@@ -64,7 +64,7 @@ object DungeonScan {
 
         if (allChunksLoaded) {
             hasScanned = true
-            if (MapModule.scanChatInfo) {
+            if (MapModule.scanChatInfo && MapModule.enabled) {
                 modMessage("""
                     ${ChatUtils.getChatBreak()}
                     §9Puzzles (§c${Dungeon.Info.puzzles.size}§9): §d${Dungeon.Info.puzzles.joinToString("§7, §d")}
