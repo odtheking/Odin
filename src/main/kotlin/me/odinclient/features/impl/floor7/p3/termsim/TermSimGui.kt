@@ -34,7 +34,6 @@ open class TermSimGui(val name: String, val size: Int) : GuiChest(
 
     fun solved() {
         modMessage("§aTerminal solved in §6${(System.currentTimeMillis() - startTime) / 1000.0}s §a!")
-        TerminalSolver.onGuiClosed(GuiClosedEvent(this))
         StartGui.open()
     }
 

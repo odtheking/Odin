@@ -2,7 +2,6 @@ package me.odinclient.features.impl.floor7.p3
 
 import me.odinclient.events.impl.ChatPacketEvent
 import me.odinclient.events.impl.DrawGuiEvent
-import me.odinclient.events.impl.GuiClosedEvent
 import me.odinclient.events.impl.GuiLoadedEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
@@ -22,7 +21,8 @@ import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import org.lwjgl.opengl.GL11.*
+import net.minecraftforge.fml.common.gameevent.TickEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 @AlwaysActive // So it can be used in other modules
 object TerminalSolver : Module(
@@ -45,7 +45,6 @@ object TerminalSolver : Module(
     private val removeWrongSelect: Boolean by BooleanSetting("Stop Select", true).withDependency { removeWrong }
 
     private val zLevel: Float get() = if (behindItem) 200f else 999f
-    private var lastLeftTerm = 0L
 
     private val terminalNames = listOf(
         "Correct all the panes!",
@@ -61,7 +60,6 @@ object TerminalSolver : Module(
     fun onGuiLoad(event: GuiLoadedEvent) {
         currentTerm = terminalNames.indexOfFirst { event.name.startsWith(it) }
         if (currentTerm == -1) return
-        lastLeftTerm = 0L
         val items = event.gui.inventory.subList(0, event.gui.inventory.size - 37)
         when (currentTerm) {
             0 -> solvePanes(items)
@@ -124,15 +122,20 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun onTooltip(event: ItemTooltipEvent) {
-        if (!cancelToolTip || (currentTerm == -1 && System.currentTimeMillis() - lastLeftTerm > 100)) return
+        if (!cancelToolTip || currentTerm == -1) return
         event.toolTip.clear()
     }
 
+    private var lastWasNull = false
     @SubscribeEvent
-    fun onGuiClosed(event: GuiClosedEvent) {
-        currentTerm = -1
-        solution = emptyList()
-        lastLeftTerm = System.currentTimeMillis()
+    fun onTick(event: ClientTickEvent) {
+        if (event.phase != TickEvent.Phase.END) return
+        val isNull = mc.currentScreen == null
+        if (isNull && lastWasNull) {
+            currentTerm = -1
+            solution = emptyList()
+        }
+        lastWasNull = isNull
     }
 
     @SubscribeEvent
@@ -140,7 +143,6 @@ object TerminalSolver : Module(
         val match = Regex("(.+) (?:activated|completed) a terminal! \\((\\d)/(\\d)\\)").find(event.message) ?: return
         if (match.groups[1]?.value != mc.thePlayer.name) return
         currentTerm = -1
-        lastLeftTerm = System.currentTimeMillis()
         solution = emptyList()
     }
 

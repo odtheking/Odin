@@ -37,9 +37,11 @@ object HoverTerms : Module(
                 triggerBotClock.update()
                 return
             }
-        } else if (TerminalSolver.currentTerm == 2 && TerminalSolver.solution.first() == hoveredItem) {
-            windowClick(gui.inventorySlots.windowId, hoveredItem, if (middleClick) ClickType.Middle else ClickType.Left)
-            triggerBotClock.update()
+        } else if (TerminalSolver.currentTerm == 2) {
+            if (TerminalSolver.solution.first() == hoveredItem) {
+                windowClick(gui.inventorySlots.windowId, hoveredItem, if (middleClick) ClickType.Middle else ClickType.Left)
+                triggerBotClock.update()
+            }
             return
         }
         windowClick(gui.inventorySlots.windowId, hoveredItem, if (middleClick) ClickType.Middle else ClickType.Left)

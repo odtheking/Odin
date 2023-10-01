@@ -33,7 +33,7 @@ object EventDispatcher {
      */
     @SubscribeEvent
     fun onPacket(event: ReceivePacketEvent) {
-        if (event.packet is S02PacketChat) {
+        if (event.packet is S02PacketChat && event.packet.type != 2.toByte()) {
             post(ChatPacketEvent(event.packet.chatComponent.unformattedText.noControlCodes))
         }
     }
