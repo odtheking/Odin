@@ -68,7 +68,6 @@ object DianaBurrowEstimate {
     }
 
     fun handleSoundPacket(it: S29PacketSoundEffect) {
-        ChatUtils.devMessage(LocationUtils.currentArea ?: "null")
         if (it.soundName != "note.harp" || LocationUtils.currentArea != "Hub") return
 
         if (lastDing == 0L) firstPitch = it.pitch

@@ -115,7 +115,8 @@ object ModuleManager {
         SwapStonk,
         DianaHelper,
         Arrows,
-        RelicPlacer
+        RelicPlacer,
+        BPS
     )
 
     @SubscribeEvent

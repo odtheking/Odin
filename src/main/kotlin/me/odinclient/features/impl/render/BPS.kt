@@ -48,8 +48,7 @@ object BPS : Module(
         if (!isBreaking) return
         val secondsElapsed = (System.currentTimeMillis() - startTime) / 1000.0
         bps = (blocksBroken / secondsElapsed).round(2)
-
-        if (System.currentTimeMillis() - lastBrokenBlock > 1000 * 1) {
+        if (System.currentTimeMillis() - lastBrokenBlock > 1000) {
             bps = 0.0
             isBreaking = false
             blocksBroken = 0
