@@ -9,7 +9,9 @@ import me.odinclient.utils.skyblock.SoopyGuessBurrow
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraft.util.Vec3
+import net.minecraft.util.Vec3i
 import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object DianaHelper : Module(
@@ -20,7 +22,14 @@ object DianaHelper : Module(
 ) {
 
     var renderPos: Vec3? = null
+    val burrowsRender = mutableMapOf<Vec3i, BurrowType>()
 
+    enum class BurrowType(val text: String, val color: Color) {
+        START("§aStart", Color.GREEN),
+        MOB("§cMob", Color.RED),
+        TREASURE("§6Treasure", Color.GOLD),
+        UNKNOWN("§fUnknown?!", Color.WHITE),
+    }
 
 
     init {
@@ -43,18 +52,12 @@ object DianaHelper : Module(
     fun onRenderWorld(event: RenderWorldLastEvent) {
 
         renderPos?.let {
-            RenderUtils.renderCustomBeacon("Burrow", it, Color.WHITE)
+            RenderUtils.renderCustomBeacon("Burrow", it, Color.WHITE, event.partialTicks)
+        }
+
+        burrowsRender.forEach { (location, type) ->
+            RenderUtils.renderCustomBeacon(type.text, Vec3(location), type.color, event.partialTicks)
         }
     }
-
-
-
-
-
-
-
-
-
-
 
 }

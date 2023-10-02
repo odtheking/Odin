@@ -35,20 +35,13 @@ object SoopyGuessBurrow {
 
     private var lastSoundPoint: Vec3? = null
     private var locs = mutableListOf<Vec3>()
-   // private val burrows = mutableMapOf<Vec3, Burrow>()
-
+    private val burrows = mutableMapOf<Vec3i, Burrow>()
 
     private var dingSlope = mutableListOf<Float>()
 
     private var distance: Double? = null
     private var distance2: Double? = null
 
-    enum class BurrowType(val text: String, val color: Color) {
-        START("§aStart", Color.GREEN),
-        MOB("§cMob", Color.RED),
-        TREASURE("§6Treasure", Color.GOLD),
-        UNKNOWN("§fUnknown?!", Color.WHITE),
-    }
 
     private fun reset() {
         lastDing = 0L
@@ -240,17 +233,21 @@ object SoopyGuessBurrow {
     fun handleBurrow(it: S2APacketParticles) {
         val particleType = ParticleType.getParticleType(it) ?: return
 
-        val location = Vec3(it.xCoordinate, it.yCoordinate, it.zCoordinate)
-       // val burrow = burrows
+        val location = Vec3i(it.xCoordinate, it.yCoordinate - 1, it.zCoordinate)
+        val burrow = burrows.getOrPut(location) { Burrow(location) }
 
-/*
         when (particleType) {
             ParticleType.FOOTSTEP -> burrow.hasFootstep = true
             ParticleType.ENCHANT -> burrow.hasEnchant = true
             ParticleType.EMPTY -> burrow.type = 0
             ParticleType.MOB -> burrow.type = 1
             ParticleType.TREASURE -> burrow.type = 2
-        }*/
+        }
+
+        if (burrow.hasEnchant && burrow.hasFootstep && burrow.type != -1 && !burrow.found) {
+            DianaHelper.burrowsRender[burrow.location] = burrow.getType()
+            burrow.found = true
+        }
 
     }
 
@@ -280,4 +277,33 @@ object SoopyGuessBurrow {
         }
     }
 
+    class Burrow(
+        var location: Vec3i,
+        var hasFootstep: Boolean = false,
+        var hasEnchant: Boolean = false,
+        var type: Int = -1,
+        var found: Boolean = false,
+    ) {
+        fun getType(): DianaHelper.BurrowType {
+            return when (this.type) {
+                0 -> DianaHelper.BurrowType.START
+                1 -> DianaHelper.BurrowType.MOB
+                2 -> DianaHelper.BurrowType.TREASURE
+                else -> DianaHelper.BurrowType.UNKNOWN
+            }
+        }
+    }
+
+    fun blockEvent(event: PlayerInteractEvent) {
+        if (
+            event.action.equalsOneOf(PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK, PlayerInteractEvent.Action.LEFT_CLICK_BLOCK) ||
+            event.pos.toVec3i() !in burrows.keys ||
+            !isHolding("ANCESTRAL_SPADE")
+        ) return
+        burrows.keys.remove(event.pos.toVec3i())
+        
+        ChatUtils.devMessage("removed burrow ${burrows.keys}.")
+    }
+
 }
+
