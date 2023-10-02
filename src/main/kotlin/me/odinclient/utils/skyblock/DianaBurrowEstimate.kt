@@ -1,18 +1,15 @@
 package me.odinclient.utils.skyblock
 
 import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.events.impl.ChatPacketEvent
 import me.odinclient.features.impl.skyblock.DianaHelper
-import me.odinclient.utils.Utils.equalsOneOf
 import me.odinclient.utils.VecUtils.clone
 import me.odinclient.utils.VecUtils.coerceYIn
-import me.odinclient.utils.VecUtils.multiply
 import me.odinclient.utils.VecUtils.pos
 import me.odinclient.utils.VecUtils.solveEquationThing
 import me.odinclient.utils.VecUtils.toDoubleArray
 import me.odinclient.utils.VecUtils.toVec3
-import me.odinclient.utils.VecUtils.toVec3i
 import me.odinclient.utils.skyblock.ItemUtils.isHolding
-import me.odinclient.utils.skyblock.ItemUtils.itemID
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.network.play.server.S2APacketParticles
@@ -20,11 +17,10 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumParticleTypes
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
-import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import tv.twitch.chat.Chat
 import kotlin.math.*
 
-object SoopyGuessBurrow {
+object DianaBurrowEstimate {
 
     private var dingIndex = 0
     private var lastDing = 0L
@@ -39,11 +35,12 @@ object SoopyGuessBurrow {
     private var lastSoundPoint: Vec3? = null
     private var locs = mutableListOf<Vec3>()
     private val burrows = mutableMapOf<Vec3i, Burrow>()
+    private var lastBurrow: Vec3i? = null
+    val recentBurrows = mutableListOf<Vec3i>()
 
     private var dingSlope = mutableListOf<Float>()
 
     private var distance: Double? = null
-    private var distance2: Double? = null
 
 
     fun reset() {
@@ -56,11 +53,9 @@ object SoopyGuessBurrow {
         firstParticlePoint = null
         particlePoint = null
         guessPoint = null
-        distance = null
         dingIndex = 0
         dingSlope.clear()
         burrows.clear()
-
     }
 
     private fun findNearestGrassBlock(pos: Vec3): Vec3 {
@@ -73,20 +68,17 @@ object SoopyGuessBurrow {
     }
 
     fun handleSoundPacket(it: S29PacketSoundEffect) {
-        if (it.soundName != "note.harp") return
-        val pitch = it.pitch
+        ChatUtils.devMessage(LocationUtils.currentArea ?: "null")
+        if (it.soundName != "note.harp" || LocationUtils.currentArea != "Hub") return
 
-        if (lastDing == 0L) {
-            firstPitch = pitch
-        }
+        if (lastDing == 0L) firstPitch = it.pitch
 
         lastDing = System.currentTimeMillis()
 
-        if (pitch < lastDingPitch) reset()
+        if (it.pitch < lastDingPitch) reset()
 
         if (lastDingPitch == 0f) {
-            lastDingPitch = pitch
-            distance = null
+            lastDingPitch = it.pitch
             lastParticlePoint = null
             lastParticlePoint2 = null
             lastSoundPoint = null
@@ -96,24 +88,23 @@ object SoopyGuessBurrow {
         }
 
         dingIndex++
-        if (dingIndex > 1) dingSlope.add(pitch - lastDingPitch)
+        if (dingIndex > 1) dingSlope.add(it.pitch - lastDingPitch)
         if (dingSlope.size > 20) dingSlope.removeFirst()
         val slope = if (dingSlope.isNotEmpty()) dingSlope.average() else 0.0
         lastSoundPoint = it.pos
-        lastDingPitch = pitch
+        lastDingPitch = it.pitch
 
         if (lastParticlePoint2 == null || particlePoint == null || firstParticlePoint == null) return
 
-        distance2 = (Math.E / slope) - firstParticlePoint?.distanceTo(it.pos)!!
+        distance = (Math.E / slope) - firstParticlePoint?.distanceTo(it.pos)!!
 
-        if (distance2!! > 1000) {
-            distance2 = null
+        if (distance!! > 1000) {
+            distance = null
             return
         }
 
         val lineDist = lastParticlePoint2?.distanceTo(particlePoint!!)!!
 
-        distance = distance2!!
         val changesHelp = particlePoint?.subtract(lastParticlePoint2!!)!!
         val changes = listOf(changesHelp.xCoord, changesHelp.yCoord, changesHelp.zCoord).map { it / lineDist }
 
@@ -153,8 +144,8 @@ object SoopyGuessBurrow {
                 val pr2 = mutableListOf<Vec3>()
 
                 val start = slopeThing.size - 1
-                val lastPos = locs[start].multiply(1.0).toDoubleArray()
-                val lastPos2 = locs[start].multiply(1.0).toDoubleArray()
+                val lastPos = locs[start].toDoubleArray()
+                val lastPos2 = locs[start].toDoubleArray()
 
                 var distCovered = 0.0
 
@@ -164,7 +155,7 @@ object SoopyGuessBurrow {
                 )
 
                 var i = start + 1
-                while (distCovered < distance2!! && i < 10000) {
+                while (distCovered < distance!! && i < 10000) {
                     val y = b / (i + a) + c
                     val dist = distMultiplier * (0.06507 * i + 0.259) // this is where inaccuracy comes from
 
@@ -186,12 +177,11 @@ object SoopyGuessBurrow {
                         pr1.add(lastPos.toVec3())
                         pr2.add(lastPos2.toVec3())
 
-
                         lastSoundPoint?.let {
                             distCovered = hypot(lastPos[0] - it.xCoord, lastPos[2] - it.zCoord)
                         }
 
-                        if (distCovered > distance2!!) break
+                        if (distCovered > distance!!) break
                     }
                     i++
                 }
@@ -201,15 +191,15 @@ object SoopyGuessBurrow {
                 val p2 = pr2.last()
 
                 guessPoint?.let {
-                    val finalLocation = if (
-                        ((p1.xCoord - it.xCoord) * (2 + p1.zCoord - it.zCoord)).pow(2) <
-                        ((p2.xCoord - it.xCoord) * (2 + p2.zCoord - it.zCoord)).pow(2)
+                    DianaHelper.renderPos = findNearestGrassBlock(
+                        if (
+                            ((p1.xCoord - it.xCoord) * (2 + p1.zCoord - it.zCoord)).pow(2) <
+                            ((p2.xCoord - it.xCoord) * (2 + p2.zCoord - it.zCoord)).pow(2)
+                        )
+                            Vec3(floor(p1.xCoord), 120.0, floor(p1.zCoord))
+                        else
+                            Vec3(floor(p2.xCoord), 120.0, floor(p2.zCoord))
                     )
-                        Vec3(floor(p1.xCoord), 120.0, floor(p1.zCoord))
-                    else
-                        Vec3(floor(p2.xCoord), 120.0, floor(p2.zCoord))
-
-                    DianaHelper.renderPos = findNearestGrassBlock(finalLocation)
                 }
             }
         }
@@ -219,9 +209,8 @@ object SoopyGuessBurrow {
         lastParticlePoint = particlePoint
         particlePoint = currLoc.clone()
 
-        if (lastParticlePoint2 == null || firstParticlePoint == null || distance2 == null || lastSoundPoint == null) return
+        if (lastParticlePoint2 == null || firstParticlePoint == null || distance == null || lastSoundPoint == null) return
         val lineDist = lastParticlePoint2?.distanceTo(particlePoint!!)!!
-        distance = distance2!!
 
         val changesHelp = particlePoint?.subtract(lastParticlePoint2!!)!!
         val changes = listOf(changesHelp.xCoord, changesHelp.yCoord, changesHelp.zCoord).map { it / lineDist }
@@ -233,31 +222,31 @@ object SoopyGuessBurrow {
 
     fun handleBurrow(it: S2APacketParticles) {
         val particleType = ParticleType.getParticleType(it) ?: return
-
         val location = Vec3i(it.xCoordinate, it.yCoordinate - 1, it.zCoordinate)
         val burrow = burrows.getOrPut(location) { Burrow(location) }
 
-        when (particleType) {
-            ParticleType.FOOTSTEP -> burrow.hasFootstep = true
-            ParticleType.ENCHANT -> burrow.hasEnchant = true
-            ParticleType.EMPTY -> burrow.type = 0
-            ParticleType.MOB -> burrow.type = 1
-            ParticleType.TREASURE -> burrow.type = 2
+        burrow.apply {
+            when (particleType) {
+                ParticleType.FOOTSTEP -> hasFootstep = true
+                ParticleType.ENCHANT -> hasEnchant = true
+                ParticleType.EMPTY -> type = 0
+                ParticleType.MOB -> type = 1
+                ParticleType.TREASURE -> type = 2
+            }
         }
 
-        if (burrow.hasEnchant && burrow.hasFootstep && burrow.type != -1 && !burrow.found) {
-            DianaHelper.burrowsRender[burrow.location] = burrow.getType()
-            burrow.found = true
-        }
+        if (!burrow.hasEnchant || !burrow.hasFootstep || burrow.type == -1 || burrow.found || location in recentBurrows) return
 
+        DianaHelper.burrowsRender[burrow.location] = burrow.getType()
+        burrow.found = true
     }
 
     private enum class ParticleType(val check: S2APacketParticles.() -> Boolean) {
-        EMPTY({ particleType == EnumParticleTypes.CRIT_MAGIC && particleCount == 4 && particleSpeed == 0.01f && xOffset == 0.5f && yOffset == 0.1f && zOffset == 0.5f }),
-        MOB({ particleType == EnumParticleTypes.CRIT && particleCount == 3 && particleSpeed == 0.01f && xOffset == 0.5f && yOffset == 0.1f && zOffset == 0.5f }),
-        TREASURE({ particleType == EnumParticleTypes.DRIP_LAVA && particleCount == 2 && particleSpeed == 0.01f && xOffset == 0.35f && yOffset == 0.1f && zOffset == 0.35f }),
-        FOOTSTEP({ particleType == EnumParticleTypes.FOOTSTEP && particleCount == 1 && particleSpeed == 0.0f && xOffset == 0.05f && yOffset == 0.0f && zOffset == 0.05f }),
-        ENCHANT({ particleType == EnumParticleTypes.ENCHANTMENT_TABLE && particleCount == 5 && particleSpeed == 0.05f && xOffset == 0.5f && yOffset == 0.4f && zOffset == 0.5f });
+        EMPTY   ({ particleType == EnumParticleTypes.CRIT_MAGIC && particleCount == 4 && particleSpeed == .01f && xOffset == .5f && yOffset == .1f && zOffset == .5f }),
+        MOB     ({ particleType == EnumParticleTypes.CRIT && particleCount == 3 && particleSpeed == .01f && xOffset == .5f && yOffset == .1f && zOffset == .5f }),
+        TREASURE({ particleType == EnumParticleTypes.DRIP_LAVA && particleCount == 2 && particleSpeed == .01f && xOffset == .35f && yOffset == .1f && zOffset == .35f }),
+        FOOTSTEP({ particleType == EnumParticleTypes.FOOTSTEP && particleCount == 1 && particleSpeed == .0f && xOffset == .05f && yOffset == .0f && zOffset == .05f }),
+        ENCHANT ({ particleType == EnumParticleTypes.ENCHANTMENT_TABLE && particleCount == 5 && particleSpeed == .05f && xOffset == .5f && yOffset == .4f && zOffset == .5f });
 
         companion object {
             fun getParticleType(packet: S2APacketParticles): ParticleType? {
@@ -284,16 +273,18 @@ object SoopyGuessBurrow {
         }
     }
 
-    fun blockEvent(event: PlayerInteractEvent) {
-        if (
-            event.action.equalsOneOf(PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK, PlayerInteractEvent.Action.LEFT_CLICK_BLOCK) ||
-            event.pos.toVec3i() !in burrows.keys ||
-            !isHolding("ANCESTRAL_SPADE")
-        ) return
-        burrows.keys.remove(event.pos.toVec3i())
-        
-        ChatUtils.devMessage("removed burrow ${burrows.keys}.")
+    fun blockEvent(pos: Vec3i) {
+        if (pos !in burrows.keys || !isHolding("ANCESTRAL_SPADE")) return
+        lastBurrow = pos
     }
 
+    fun chat(event: ChatPacketEvent) {
+        if (!event.message.startsWith("You dug out a Griffin Burrow!") && event.message != "You finished the Griffin burrow chain! (4/4)") return
+        lastBurrow?.let {
+            recentBurrows.add(it)
+            burrows.remove(it)
+            DianaHelper.burrowsRender.remove(it)
+            lastBurrow = null
+        }
+    }
 }
-

@@ -2,12 +2,16 @@ package me.odinclient.features.impl.render
 
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.features.settings.impl.HudSetting
+import me.odinclient.ui.hud.HudElement
 import me.odinclient.utils.Utils.round
+import me.odinclient.utils.render.Color
+import me.odinclient.utils.render.gui.nvg.getTextWidth
+import me.odinclient.utils.render.gui.nvg.text
 import net.minecraftforge.event.world.BlockEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
-// TODO: Make this do something??????
 object BPS : Module(
     name = "BPS",
     category = Category.RENDER

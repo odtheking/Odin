@@ -33,20 +33,19 @@ object DianaHelper : Module(
 
 
     init {
-        onPacket(S29PacketSoundEffect::class.java) {
-            SoopyGuessBurrow.handleSoundPacket(it)
+        onMessage(Regex("Woah! You dug out a Minos Inquisitor!")) {
+            ChatUtils.partyMessage("x: ${PlayerUtils.posX.floor()}, y: ${PlayerUtils.posY.floor()}, z: ${PlayerUtils.posZ.floor()}")
+            PlayerUtils.alert("§a§lInquisitor!")
         }
 
-        onPacket(S2APacketParticles::class.java) {
-            SoopyGuessBurrow.handleParticlePacket(it)
-        }
+        onPacket(S29PacketSoundEffect::class.java) { DianaBurrowEstimate.handleSoundPacket(it) }
 
-        onPacket(S2APacketParticles::class.java) {
-            SoopyGuessBurrow.handleBurrow(it)
-        }
+        onPacket(S2APacketParticles::class.java) { DianaBurrowEstimate.handleParticlePacket(it) }
+
+        onPacket(S2APacketParticles::class.java) { DianaBurrowEstimate.handleBurrow(it) }
 
         onWorldLoad {
-            SoopyGuessBurrow.reset()
+            DianaBurrowEstimate.reset()
             burrowsRender.clear()
             renderPos = null
         }
