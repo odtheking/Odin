@@ -1,6 +1,8 @@
 package me.odinclient.features.impl.render
 
+import cc.polyfrost.oneconfig.events.event.SendPacketEvent
 import cc.polyfrost.oneconfig.renderer.font.Fonts
+import me.odinclient.events.impl.PacketSentEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.HudSetting
@@ -9,6 +11,9 @@ import me.odinclient.utils.Utils.round
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.gui.nvg.getTextWidth
 import me.odinclient.utils.render.gui.nvg.text
+import me.odinclient.utils.render.gui.nvg.textWithControlCodes
+import me.odinclient.utils.skyblock.ChatUtils
+import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraftforge.event.world.BlockEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
@@ -27,16 +32,17 @@ object BPS : Module(
 
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 2f, false) {
         if (it) { // example
-            text("§7BPS: §r17.8", 1f, 9f, Color.WHITE, 16f, Fonts.REGULAR)
+            textWithControlCodes("§7BPS: §r17.8", 1f, 9f, 16f, Fonts.REGULAR)
             getTextWidth("BPS: 17.8", 16f, Fonts.REGULAR ) to 16f
         } else {
-            text("§7BPS: §r${bps.round(1)}", 1f, 9f, Color.WHITE, 16f, Fonts.REGULAR)
+            textWithControlCodes("§7BPS: §r${bps.round(1)}", 1f, 9f, 16f, Fonts.REGULAR)
             getTextWidth("BPS: ${bps.round(1)}", 16f, Fonts.REGULAR ) to 16f
         }
     }
 
     @SubscribeEvent
-    fun blockBreak(event: BlockEvent.BreakEvent) {
+    fun packet(event: PacketSentEvent) {
+        if (event.packet !is C07PacketPlayerDigging || event.packet.status != C07PacketPlayerDigging.Action.START_DESTROY_BLOCK) return
         if (startTime == 0L) startTime = System.currentTimeMillis()
         isBreaking = true
         blocksBroken++
