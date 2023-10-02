@@ -5,6 +5,7 @@ import me.odinclient.utils.Utils.floor
 import net.minecraft.entity.Entity
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.util.AxisAlignedBB
+import net.minecraft.util.BlockPos
 import net.minecraft.util.MathHelper
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
@@ -84,6 +85,10 @@ object VecUtils {
         return Vec3i(xCoord.floor(), yCoord.floor(), zCoord.floor())
     }
 
+    fun Vec3.flooredVec(): Vec3 {
+        return Vec3(xCoord.floor(), yCoord.floor(), zCoord.floor())
+    }
+
     fun scale(vec3: Vec3i,scale: Float): Vec3 {
         return Vec3((vec3.x * scale).toDouble(), (vec3.y* scale).toDouble(), (vec3.z * scale).toDouble())
     }
@@ -92,6 +97,10 @@ object VecUtils {
 
     fun Vec3.toDoubleArray(): DoubleArray {
         return doubleArrayOf(xCoord, yCoord, zCoord)
+    }
+
+    fun BlockPos.toVec3i(): Vec3i {
+        return Vec3i(x, y, z)
     }
 
     fun DoubleArray.toVec3(): Vec3 {

@@ -10,16 +10,19 @@ import me.odinclient.utils.VecUtils.pos
 import me.odinclient.utils.VecUtils.solveEquationThing
 import me.odinclient.utils.VecUtils.toDoubleArray
 import me.odinclient.utils.VecUtils.toVec3
-import me.odinclient.utils.render.Color
+import me.odinclient.utils.VecUtils.toVec3i
+import me.odinclient.utils.skyblock.ItemUtils.isHolding
+import me.odinclient.utils.skyblock.ItemUtils.itemID
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumParticleTypes
 import net.minecraft.util.Vec3
+import net.minecraft.util.Vec3i
+import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import tv.twitch.chat.Chat
 import kotlin.math.*
-
 
 object SoopyGuessBurrow {
 
@@ -43,7 +46,7 @@ object SoopyGuessBurrow {
     private var distance2: Double? = null
 
 
-    private fun reset() {
+    fun reset() {
         lastDing = 0L
         lastDingPitch = 0f
         firstPitch = 0f
@@ -56,10 +59,8 @@ object SoopyGuessBurrow {
         distance = null
         dingIndex = 0
         dingSlope.clear()
-    }
+        burrows.clear()
 
-    fun onWorldLoad() {
-        reset()
     }
 
     private fun findNearestGrassBlock(pos: Vec3): Vec3 {
@@ -252,22 +253,11 @@ object SoopyGuessBurrow {
     }
 
     private enum class ParticleType(val check: S2APacketParticles.() -> Boolean) {
-        EMPTY({
-            particleType == EnumParticleTypes.CRIT_MAGIC && particleCount == 4 && particleSpeed == 0.01f && xOffset == 0.5f && yOffset == 0.1f && zOffset == 0.5f
-        }),
-        MOB({
-            particleType == EnumParticleTypes.CRIT && particleCount == 3 && particleSpeed == 0.01f && xOffset == 0.5f && yOffset == 0.1f && zOffset == 0.5f
-
-        }),
-        TREASURE({
-            particleType == EnumParticleTypes.DRIP_LAVA && particleCount == 2 && particleSpeed == 0.01f && xOffset == 0.35f && yOffset == 0.1f && zOffset == 0.35f
-        }),
-        FOOTSTEP({
-            particleType == EnumParticleTypes.FOOTSTEP && particleCount == 1 && particleSpeed == 0.0f && xOffset == 0.05f && yOffset == 0.0f && zOffset == 0.05f
-        }),
-        ENCHANT({
-            particleType == EnumParticleTypes.ENCHANTMENT_TABLE && particleCount == 5 && particleSpeed == 0.05f && xOffset == 0.5f && yOffset == 0.4f && zOffset == 0.5f
-        });
+        EMPTY({ particleType == EnumParticleTypes.CRIT_MAGIC && particleCount == 4 && particleSpeed == 0.01f && xOffset == 0.5f && yOffset == 0.1f && zOffset == 0.5f }),
+        MOB({ particleType == EnumParticleTypes.CRIT && particleCount == 3 && particleSpeed == 0.01f && xOffset == 0.5f && yOffset == 0.1f && zOffset == 0.5f }),
+        TREASURE({ particleType == EnumParticleTypes.DRIP_LAVA && particleCount == 2 && particleSpeed == 0.01f && xOffset == 0.35f && yOffset == 0.1f && zOffset == 0.35f }),
+        FOOTSTEP({ particleType == EnumParticleTypes.FOOTSTEP && particleCount == 1 && particleSpeed == 0.0f && xOffset == 0.05f && yOffset == 0.0f && zOffset == 0.05f }),
+        ENCHANT({ particleType == EnumParticleTypes.ENCHANTMENT_TABLE && particleCount == 5 && particleSpeed == 0.05f && xOffset == 0.5f && yOffset == 0.4f && zOffset == 0.5f });
 
         companion object {
             fun getParticleType(packet: S2APacketParticles): ParticleType? {

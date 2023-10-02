@@ -45,12 +45,20 @@ object DianaHelper : Module(
             SoopyGuessBurrow.handleBurrow(it)
         }
 
+        onWorldLoad {
+            SoopyGuessBurrow.reset()
+            burrowsRender.clear()
+            renderPos = null
+        }
+    }
 
+    @SubscribeEvent
+    fun onInteract(event: PlayerInteractEvent) {
+        SoopyGuessBurrow.blockEvent(event)
     }
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-
         renderPos?.let {
             RenderUtils.renderCustomBeacon("Burrow", it, Color.WHITE, event.partialTicks)
         }

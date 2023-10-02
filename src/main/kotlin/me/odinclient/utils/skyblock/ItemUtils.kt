@@ -1,4 +1,3 @@
-
 package me.odinclient.utils.skyblock
 
 import me.odinclient.OdinClient.Companion.mc
@@ -55,6 +54,9 @@ object ItemUtils {
             return this?.lore?.any { it.contains("Shortbow: Instantly shoots!") } == true
         }
 
+    fun isHolding(id: String): Boolean =
+        mc.thePlayer?.heldItem?.itemID == id
+
     /**
      * Returns first slot of an Item
      */
@@ -96,12 +98,10 @@ object ItemUtils {
             val currentLine = lore[i]
             val match = rarityRegex.find(currentLine) ?: continue
             val rarity: String = match.groups["rarity"]?.value ?: continue
-            for (itemRarity in ItemRarity.values()) {
-                if (currentLine.noControlCodes.startsWith(itemRarity.loreName)) {
-                    return itemRarity
-                }
-            }
+            return ItemRarity.entries.find { currentLine.noControlCodes.startsWith(it.loreName) }
         }
         return null
     }
 }
+
+
