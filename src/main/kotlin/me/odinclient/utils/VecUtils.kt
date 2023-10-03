@@ -3,12 +3,14 @@ package me.odinclient.utils
 import me.odinclient.OdinClient.Companion.mc
 import me.odinclient.utils.Utils.floor
 import net.minecraft.entity.Entity
+import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.MathHelper
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
+import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sin
@@ -139,4 +141,14 @@ object VecUtils {
 
     val S29PacketSoundEffect.pos: Vec3
         get() = Vec3(this.x, this.y, this.z)
+
+
+    fun findNearestGrassBlock(pos: Vec3): Vec3 {
+        val chunk = mc.theWorld.getChunkFromBlockCoords(BlockPos(pos))
+        if (!chunk.isLoaded) return pos.coerceYIn(50.0, 90.0)
+
+        val blocks = List(70) { i -> BlockPos(pos.xCoord, i + 50.0, pos.zCoord) }.filter { chunk.getBlock(it) == Blocks.grass }
+        if (blocks.isEmpty()) return pos.coerceYIn(50.0, 90.0)
+        return Vec3(blocks.minBy { abs(pos.yCoord - it.y) })
+    }
 }
