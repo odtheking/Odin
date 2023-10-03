@@ -1,6 +1,7 @@
 package me.odinclient.utils.skyblock.dungeon
 
 import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.dungeonmap.core.map.Room
 import me.odinclient.dungeonmap.features.Dungeon
 import me.odinclient.events.impl.ReceivePacketEvent
 import me.odinclient.utils.Utils.noControlCodes
@@ -13,8 +14,10 @@ import me.odinclient.utils.skyblock.LocationUtils
 import me.odinclient.utils.skyblock.LocationUtils.currentDungeon
 import me.odinclient.utils.skyblock.PlayerUtils.posY
 import me.odinclient.utils.skyblock.dungeon.map.MapUtils
+import me.odinclient.utils.skyblock.dungeon.map.ScanUtils
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.server.S02PacketChat
+import net.minecraftforge.event.entity.living.LivingEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -25,6 +28,9 @@ object DungeonUtils {
 
     inline val inBoss get() =
         currentDungeon?.inBoss ?: false
+
+    private var lastRoomPos: Pair<Int, Int>? = null
+    var currentRoom: Room? = null
 
     private var inp5 = false
 
@@ -41,6 +47,24 @@ object DungeonUtils {
             posY > 45 -> 4
             else -> 5
         }
+    }
+
+    @SubscribeEvent
+    fun onMove(event: LivingEvent.LivingUpdateEvent) {
+        if (mc.theWorld == null ||! inDungeons ||! event.entity.equals(mc.thePlayer) || inBoss) return
+        ScanUtils.getRoomCentre(mc.thePlayer.posX.toInt(), mc.thePlayer.posZ.toInt()).run {
+            if (this != lastRoomPos) {
+                lastRoomPos = this
+                setCurrentRoom(this)
+            }
+        }
+    }
+
+    private fun setCurrentRoom(pos: Pair<Int, Int>) {
+        val data = ScanUtils.getRoomFromPos(pos)?.data?: return
+        val room: Room = Dungeon.Info.uniqueRooms.toList().find { data.name == it.data.name }?: return
+        if (room != currentRoom)
+            currentRoom = room
     }
 
     enum class Classes(
@@ -72,6 +96,7 @@ object DungeonUtils {
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
         inp5 = false
+        currentRoom = null
     }
     private val tablistRegex = Regex("^\\[(\\d+)] (?:\\[\\w+] )*(\\w+) (?:.)*?\\((\\w+)(?: (\\w+))*\\)\$")
 

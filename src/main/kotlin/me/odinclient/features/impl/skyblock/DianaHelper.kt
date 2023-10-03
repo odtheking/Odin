@@ -8,6 +8,7 @@ import me.odinclient.features.settings.Setting.Companion.withDependency
 import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.features.settings.impl.ColorSetting
 import me.odinclient.utils.Utils.floor
+import me.odinclient.utils.VecUtils.addVec
 import me.odinclient.utils.VecUtils.toVec3i
 import me.odinclient.utils.clock.Clock
 import me.odinclient.utils.render.Color
@@ -31,6 +32,8 @@ object DianaHelper : Module(
     tag = TagType.NEW
 ) {
     private val guessColor: Color by ColorSetting("Guess Color", default = Color.WHITE)
+    private val tracer: Boolean by BooleanSetting("Tracer", default = false)
+    private val sendInqMsg: Boolean by BooleanSetting("Send Inq Msg", default = true)
     private val showWarpSettings: Boolean by BooleanSetting("Show Warp Settings", default = true)
     private val castle: Boolean by BooleanSetting("Castle Warp").withDependency { showWarpSettings }
     private val crypt: Boolean by BooleanSetting("Crypt Warp").withDependency { showWarpSettings }
@@ -52,7 +55,7 @@ object DianaHelper : Module(
 
 
     init {
-        onMessage(Regex("Woah! You dug out a Minos Inquisitor!")) {
+        onMessage(Regex("Woah! You dug out a Minos Inquisitor!"), { sendInqMsg && enabled }) {
             ChatUtils.partyMessage("x: ${PlayerUtils.posX.floor()}, y: ${PlayerUtils.posY.floor()}, z: ${PlayerUtils.posZ.floor()}")
             PlayerUtils.alert("§a§lInquisitor!")
         }
@@ -87,8 +90,10 @@ object DianaHelper : Module(
         renderPos?.let { guess ->
             warpLocation = WarpPoint.entries.filter { it.unlocked() }.minBy { warp ->
                 warp.location.distanceTo(guess)
-            }.takeIf { it.location.distanceTo(guess) < mc.thePlayer.positionVector.distanceTo(guess) }
+            }.takeIf { it.location.distanceTo(guess) + 20 < mc.thePlayer.positionVector.distanceTo(guess) }
             RenderUtils.renderCustomBeacon("§6Guess${warpLocation?.displayName ?: ""}§r", guess, guessColor, event.partialTicks)
+            if (tracer)
+                RenderUtils.draw3DLine(mc.thePlayer.positionVector.addVec(y = mc.thePlayer.eyeHeight.toDouble()), guess, guessColor, 5, true, event.partialTicks)
         }
 
         burrowsRender.forEach { (location, type) ->

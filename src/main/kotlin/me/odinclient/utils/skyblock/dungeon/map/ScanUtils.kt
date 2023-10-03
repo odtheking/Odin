@@ -55,6 +55,13 @@ object ScanUtils {
         return if (room is Room) room else null
     }
 
+    fun getRoomFromPos(pos: Pair<Int, Int>): Room? {
+        val x = ((pos.first - DungeonScan.startX + 15) shr 5)
+        val z = ((pos.second - DungeonScan.startZ + 15) shr 5)
+        val room = Dungeon.Info.dungeonList.getOrNull(x * 2 + z * 22)
+        return if (room is Room) room else null
+    }
+
     fun getCore(x: Int, z: Int): Int {
         val blocks = arrayListOf<Int>()
         for (y in 140 downTo 12) {

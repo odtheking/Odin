@@ -36,7 +36,7 @@ public abstract class MixinRendererLivingEntity {
 
     @Inject(method = "setBrightness", at = @At(value = "HEAD"), cancellable = true)
     private  <T extends EntityLivingBase> void setBrightness(T entity, float partialTicks, boolean combineTextures, CallbackInfoReturnable<Boolean> cir) {
-        if (ESP.INSTANCE.getCurrentEntities().contains(entity) && ESP.INSTANCE.getMode() != 0) {
+        if (ESP.INSTANCE.getCurrentEntities().contains(entity) && ESP.INSTANCE.getMode() == 1) {
             GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
             GlStateManager.enableTexture2D();
             GL11.glTexEnvi(8960, 8704, OpenGlHelper.GL_COMBINE);
@@ -90,7 +90,7 @@ public abstract class MixinRendererLivingEntity {
 
     @Inject(method = "doRender(Lnet/minecraft/entity/EntityLivingBase;DDDFF)V", at = @At("HEAD"))
     private <T extends EntityLivingBase> void injectChamsPre(T entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo callbackInfo) {
-        if (ESP.INSTANCE.getCurrentEntities().contains(entity) && ESP.INSTANCE.getMode() != 0 && ESP.INSTANCE.getXray()) {
+        if (ESP.INSTANCE.getCurrentEntities().contains(entity) && ESP.INSTANCE.getMode() == 1 && ESP.INSTANCE.getXray()) {
             glEnable(GL_POLYGON_OFFSET_FILL);
             glPolygonOffset(1f, -1000000F);
         }
@@ -98,7 +98,7 @@ public abstract class MixinRendererLivingEntity {
 
     @Inject(method = "doRender(Lnet/minecraft/entity/EntityLivingBase;DDDFF)V", at = @At("RETURN"))
     private <T extends EntityLivingBase> void injectChamsPost(T entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo callbackInfo) {
-        if (ESP.INSTANCE.getCurrentEntities().contains(entity) && ESP.INSTANCE.getMode() != 0 && ESP.INSTANCE.getXray()) {
+        if (ESP.INSTANCE.getCurrentEntities().contains(entity) && ESP.INSTANCE.getMode() == 1 && ESP.INSTANCE.getXray()) {
             glPolygonOffset(1f, 1000000F);
             glDisable(GL_POLYGON_OFFSET_FILL);
         }

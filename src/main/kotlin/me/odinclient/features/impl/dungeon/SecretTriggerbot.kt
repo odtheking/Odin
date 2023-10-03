@@ -4,7 +4,9 @@ import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.features.settings.impl.NumberSetting
+import me.odinclient.utils.Utils.equalsOneOf
 import me.odinclient.utils.clock.Clock
+import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.LocationUtils
 import me.odinclient.utils.skyblock.PlayerUtils.rightClick
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
@@ -31,7 +33,7 @@ object SecretTriggerbot : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (!triggerBotClock.hasTimePassed(delay)) return
+        if (!triggerBotClock.hasTimePassed(delay) || DungeonUtils.currentRoom?.data?.name.equalsOneOf("Water Board", "Three Weirdos")) return
         val pos = mc.objectMouseOver?.blockPos ?: return
         val state = mc.theWorld.getBlockState(pos) ?: return
         clickedPositions.removeAll { it.second + 1000 < System.currentTimeMillis() }

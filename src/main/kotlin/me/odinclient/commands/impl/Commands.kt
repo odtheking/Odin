@@ -17,21 +17,6 @@ val termSimCommand = "termsim" {
 }
 
 val mainCommand = "od" {
-    does {
-        if (it.isEmpty()) display = ClickGUI
-        else { // test please
-            val arg = it[0]
-            if (arg.first() == 'f' || arg.first() == 'm') {
-                if (arg.length != 2 || !arg[1].isDigit()) return@does modMessage("§cInvalid floorfr!")
-                val type = it.first().first()
-                val floor = numberMap[it.first()[1].digitToInt()] ?: return@does modMessage("§cInvalid floor!")
-                val prefix = if (type == 'm') "master_" else ""
-                ChatUtils.sendCommand("joininstance ${prefix}catacombs_floor_$floor ")
-            } else {
-                modMessage("§cInvalid floor!")
-            }
-        }
-    }
 
     "edithud" does {
         display = EditHUDGui
@@ -61,6 +46,7 @@ val mainCommand = "od" {
                 if (setRotation(it[0], it[1])) modMessage("Set yaw and pitch to ${it[0]}, ${it[1]}")
                 else modMessage("§cInvalid yaw and or pitch.")
             }
+    }
         }
 
         "yaw" does {
@@ -78,11 +64,42 @@ val mainCommand = "od" {
                 else modMessage("§cInvalid pitch.")
             }
         }
-    }
 
     "rq" {
         ChatUtils.sendCommand("instancerequeue")
         modMessage("requeing dungeon run")
+    }
+
+    "help" {
+        modMessage(
+            "List of commands:" +
+                    "\n§7od help §8- §7Shows this message." +
+                    "\n§7od §8- §7Opens the click gui." +
+                    "\n§7od hud §8- §7Opens the hud editor." +
+                    "\n§7od reset (clickgui|hud) §8- §7Resets the click gui or hud positions." +
+                    "\n§7od set (pitch|yaw) # §8- §7Sets your yaw and pitch to #." +
+                    "\n§7od rq §8- §7Requeues your dungeon run." +
+                    "\n§7od f# §8- §7Joins floor #." +
+                    "\n§7od m# §8- §7Joins master floor #." +
+                    "\n§7termsim §8- §7Opens the term simulator."
+
+        )
+    }
+
+    does {
+        if (it.isEmpty()) display = ClickGUI
+        else { // test please
+            val arg = it[0]
+            if (arg.first() == 'f' || arg.first() == 'm') {
+                if (arg.length != 2 || !arg[1].isDigit()) return@does modMessage("§cInvalid floorfr!")
+                val type = it.first().first()
+                val floor = numberMap[it.first()[1].digitToInt()] ?: return@does modMessage("§cInvalid floor!")
+                val prefix = if (type == 'm') "master_" else ""
+                ChatUtils.sendCommand("joininstance ${prefix}catacombs_floor_$floor ")
+            } else {
+                modMessage("§cInvalid command! Use od help for a list of commands.")
+            }
+        }
     }
 }
 

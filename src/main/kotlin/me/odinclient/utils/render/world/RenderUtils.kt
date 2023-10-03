@@ -66,9 +66,6 @@ object RenderUtils {
         block.invoke(this)
     }
 
-    /**
-     * @param color Has to be in the range of 0-255
-     */
     fun drawCustomESPBox(aabb: AxisAlignedBB, color: Color, thickness: Float = 3f, phase: Boolean) {
         drawCustomESPBox(
             aabb.minX, aabb.maxX - aabb.minX,

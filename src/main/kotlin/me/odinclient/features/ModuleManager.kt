@@ -116,7 +116,8 @@ object ModuleManager {
         DianaHelper,
         Arrows,
         RelicPlacer,
-        BPS
+        BPS,
+        AutoGFS
     )
 
     @SubscribeEvent
