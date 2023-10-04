@@ -51,8 +51,7 @@ object WaterSolver : Module(
 
     @SubscribeEvent
     fun onClientTick(event: TickEvent.ClientTickEvent) {
-        if (event.phase == TickEvent.Phase.END) return
-        if (!DungeonUtils.inDungeons) return
+        if (event.phase == TickEvent.Phase.END || !DungeonUtils.inDungeons) return
         val player = Minecraft.getMinecraft().thePlayer ?: return
         val world = Minecraft.getMinecraft().theWorld ?: return
 
@@ -63,8 +62,7 @@ object WaterSolver : Module(
                     inWaterRoom = false
                     if (BlockPos.getAllInBox(
                             BlockPos(player.posX.toInt() - 13, 54, player.posZ.toInt() - 13),
-                            BlockPos(player.posX.toInt() + 13, 54, player.posZ.toInt() + 13)
-                        )
+                            BlockPos(player.posX.toInt() + 13, 54, player.posZ.toInt() + 13))
                             .any { world.getBlockState(it).block == Blocks.sticky_piston }) {
                         val xRange = player.posX.toInt() - 25..player.posX.toInt() + 25
                         val zRange = player.posZ.toInt() - 25..player.posZ.toInt() + 25
@@ -87,76 +85,8 @@ object WaterSolver : Module(
 
                         if (chestPos == null) return@launch
 
-                        BlockPos.getAllInBox(
-                            BlockPos(player.posX.toInt() - 25, 82, player.posZ.toInt() - 25),
-                            BlockPos(player.posX.toInt() + 25, 82, player.posZ.toInt() + 25)
-                        )
-                            .find { world.getBlockState(it).block == Blocks.piston_head }?.let {
-                                inWaterRoom = true
-                                if (!prevInWaterRoom) {
-                                    val blockList = BlockPos.getAllInBox(BlockPos(it.x + 1, 78, it.z + 1), BlockPos(it.x - 1, 77, it.z - 1))
-                                    var foundGold = false
-                                    var foundClay = false
-                                    var foundEmerald = false
-                                    var foundQuartz = false
-                                    var foundDiamond = false
-                                    for (blockPos in blockList) {
-                                        when (world.getBlockState(blockPos).block) {
-                                            Blocks.gold_block -> foundGold = true
-                                            Blocks.hardened_clay -> foundClay = true
-                                            Blocks.emerald_block -> foundEmerald = true
-                                            Blocks.quartz_block -> foundQuartz = true
-                                            Blocks.diamond_block -> foundDiamond = true
-                                        }
-                                    }
-                                    if (foundGold && foundClay) {
-                                        variant = 0
-                                    } else if (foundEmerald && foundQuartz) {
-                                        variant = 1
-                                    } else if (foundQuartz && foundDiamond) {
-                                        variant = 2
-                                    } else if (foundGold && foundQuartz) {
-                                        variant = 3
-                                    }
-                                    for (value in WoolColor.entries) {
-                                        if (value.isExtended) {
-                                            extendedSlots += value.ordinal.toString()
-                                        }
-                                    }
+                        findWaterRoom()
 
-                                    if (extendedSlots.length != 3) {
-                                        println("Didn't find the solution! Retrying")
-                                        println("Slots: $extendedSlots")
-                                        println("Water: $inWaterRoom ($prevInWaterRoom)")
-                                        println("Chest: $chestPos")
-                                        println("Rotation: $roomFacing")
-                                        extendedSlots = ""
-                                        inWaterRoom = false
-                                        prevInWaterRoom = false
-                                        variant = -1
-                                        return@launch
-                                    }
-
-                                    ChatUtils.modMessage("Variant: $variant:$extendedSlots:${roomFacing?.name}")
-
-
-                                    solutions.clear()
-                                    val solutionObj = waterSolutions[variant.toString()].asJsonObject[extendedSlots].asJsonObject
-                                    for (mutableEntry in solutionObj.entrySet()) {
-                                        val lever = when (mutableEntry.key) {
-                                            "minecraft:quartz_block" -> LeverBlock.QUARTZ
-                                            "minecraft:gold_block" -> LeverBlock.GOLD
-                                            "minecraft:coal_block" -> LeverBlock.COAL
-                                            "minecraft:diamond_block" -> LeverBlock.DIAMOND
-                                            "minecraft:emerald_block" -> LeverBlock.EMERALD
-                                            "minecraft:hardened_clay" -> LeverBlock.CLAY
-                                            "minecraft:water" -> LeverBlock.WATER
-                                            else -> LeverBlock.NONE
-                                        }
-                                        solutions[lever] = mutableEntry.value.asJsonArray.map { it.asDouble }.toTypedArray()
-                                    }
-                                }
-                            }
                     } else {
                         solutions.clear()
                         variant = -1
@@ -203,6 +133,91 @@ object WaterSolver : Module(
                     if (openedWater == -1L) {
                         openedWater = System.currentTimeMillis()
                     }
+                }
+            }
+        }
+    }
+
+    private fun findWaterRoom() {
+        val playerPos = mc.thePlayer.position
+        val box = BlockPos.getAllInBox(
+            BlockPos(playerPos.x - 25, 82, playerPos.z - 25),
+            BlockPos(playerPos.x + 25, 82, playerPos.z + 25))
+
+        // Find the piston head block.
+        val pistonHeadPos = box.find { mc.theWorld.getBlockState(it).block == Blocks.piston_head }
+
+        // If the piston head block is found, then we are in the water room.
+        if (pistonHeadPos != null) {
+            inWaterRoom = true
+            if (!prevInWaterRoom) {
+                // Find the blocks in the box around the piston head block.
+                val blockList = BlockPos.getAllInBox(BlockPos(pistonHeadPos.x + 1, 78, pistonHeadPos.z + 1), BlockPos(pistonHeadPos.x - 1, 77, pistonHeadPos.z - 1))
+
+                // Check for the required blocks in the box.
+                var foundGold = false
+                var foundClay = false
+                var foundEmerald = false
+                var foundQuartz = false
+                var foundDiamond = false
+                for (blockPos in blockList) {
+                    when (mc.theWorld.getBlockState(blockPos).block) {
+                        Blocks.gold_block -> foundGold = true
+                        Blocks.hardened_clay -> foundClay = true
+                        Blocks.emerald_block -> foundEmerald = true
+                        Blocks.quartz_block -> foundQuartz = true
+                        Blocks.diamond_block -> foundDiamond = true
+                    }
+                }
+
+                // If the required blocks are found, then set the variant and extendedSlots.
+                variant = when {
+                    foundGold && foundClay -> 0
+                    foundEmerald && foundQuartz -> 1
+                    foundQuartz && foundDiamond -> 2
+                    foundGold && foundQuartz -> 3
+                    else -> -1
+                }
+
+                extendedSlots = ""
+                for (value in WoolColor.entries) {
+                    if (value.isExtended) {
+                        extendedSlots += value.ordinal.toString()
+                    }
+                }
+
+                // If the extendedSlots length is not 3, then retry.
+                if (extendedSlots.length != 3) {
+                    println("Didn't find the solution! Retrying")
+                    println("Slots: $extendedSlots")
+                    println("Water: $inWaterRoom ($prevInWaterRoom)")
+                    println("Chest: $chestPos")
+                    println("Rotation: $roomFacing")
+                    extendedSlots = ""
+                    inWaterRoom = false
+                    prevInWaterRoom = false
+                    variant = -1
+                    return
+                }
+
+                // Print the variant and extendedSlots.
+                ChatUtils.modMessage("Variant: $variant:$extendedSlots:${roomFacing?.name}")
+
+                // Clear the solutions and add the new solutions.
+                solutions.clear()
+                val solutionObj = waterSolutions[variant.toString()].asJsonObject[extendedSlots].asJsonObject
+                for (mutableEntry in solutionObj.entrySet()) {
+                    val lever = when (mutableEntry.key) {
+                        "minecraft:quartz_block" -> LeverBlock.QUARTZ
+                        "minecraft:gold_block" -> LeverBlock.GOLD
+                        "minecraft:coal_block" -> LeverBlock.COAL
+                        "minecraft:diamond_block" -> LeverBlock.DIAMOND
+                        "minecraft:emerald_block" -> LeverBlock.EMERALD
+                        "minecraft:hardened_clay" -> LeverBlock.CLAY
+                        "minecraft:water" -> LeverBlock.WATER
+                        else -> LeverBlock.NONE
+                    }
+                    solutions[lever] = mutableEntry.value.asJsonArray.map { it.asDouble }.toTypedArray()
                 }
             }
         }
