@@ -126,7 +126,8 @@ object ModuleManager {
         RelicPlacer,
         BPS,
         AutoGFS,
-        DragonDeathCheck
+        DragonDeathCheck,
+        WaterSolver
     )
 
     @SubscribeEvent
