@@ -121,7 +121,8 @@ object ModuleManager {
         Arrows,
         RelicPlacer,
         BPS,
-        AutoGFS
+        AutoGFS,
+        DragonDeathCheck
     )
 
     @SubscribeEvent
