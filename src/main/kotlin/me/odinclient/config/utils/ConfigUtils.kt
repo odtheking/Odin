@@ -1,6 +1,6 @@
 package me.odinclient.config.utils
 
-import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.ModCore.Companion.mc
 import java.io.File
 import java.io.IOException
 

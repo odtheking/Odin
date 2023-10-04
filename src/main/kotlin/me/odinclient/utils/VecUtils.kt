@@ -1,6 +1,6 @@
 package me.odinclient.utils
 
-import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.ModCore.Companion.mc
 import me.odinclient.utils.Utils.floor
 import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks

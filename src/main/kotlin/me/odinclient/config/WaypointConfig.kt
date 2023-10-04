@@ -6,7 +6,7 @@ import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import me.odinclient.OdinClient.Companion.scope
+import me.odinclient.ModCore.Companion.scope
 import me.odinclient.config.utils.ConfigFile
 import me.odinclient.features.impl.render.WaypointManager.Waypoint
 import java.io.IOException

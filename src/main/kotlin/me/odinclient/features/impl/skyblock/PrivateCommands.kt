@@ -4,20 +4,18 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import me.odinclient.OdinClient
+import me.odinclient.ModCore
 import me.odinclient.events.impl.ChatPacketEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.utils.ServerUtils
 import me.odinclient.utils.Utils.floor
-import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.ChatUtils.isInBlacklist
 import me.odinclient.utils.skyblock.PlayerUtils
 import net.minecraft.event.ClickEvent
 import net.minecraft.util.ChatComponentText
-import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.floor
 
@@ -73,8 +71,8 @@ object PrivateCommands : Module(
             "gm" -> if (gm) ChatUtils.privateMessage("Good Morning $name!",name)
             "gn" -> if (gn) ChatUtils.privateMessage("Good Night $name.",name)
             "invite" -> if (invite) {
-                OdinClient.mc.thePlayer.playSound("note.pling", 100f, 1f)
-                OdinClient.mc.thePlayer.addChatMessage(
+                ModCore.mc.thePlayer.playSound("note.pling", 100f, 1f)
+                ModCore.mc.thePlayer.addChatMessage(
                     ChatComponentText("§3Odin§bClient §8»§r Click on this message to invite $name to your party!")
                         .setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.RUN_COMMAND,"/party invite $name"))
                 )

@@ -2,7 +2,7 @@ package me.odinclient.features
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import me.odinclient.OdinClient
+import me.odinclient.ModCore
 import me.odinclient.features.ModuleManager.executors
 import me.odinclient.features.impl.render.ClickGUIModule
 import me.odinclient.features.settings.AlwaysActive
@@ -60,7 +60,7 @@ abstract class Module(
      */
     var description: String
 
-    val mc = OdinClient.mc
+    val mc = ModCore.mc
 
     init {
         this.name = name
@@ -115,7 +115,7 @@ abstract class Module(
                 return set
             }
         }
-        System.err.println("[" + OdinClient.NAME + "] Error Setting NOT found: '" + name + "'!")
+        System.err.println("[" + ModCore.NAME + "] Error Setting NOT found: '" + name + "'!")
         return null
     }
 

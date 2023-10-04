@@ -4,7 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonIOException
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
-import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.ModCore.Companion.mc
 import me.odinclient.dungeonmap.core.RoomData
 import me.odinclient.dungeonmap.core.map.Room
 import me.odinclient.dungeonmap.features.Dungeon

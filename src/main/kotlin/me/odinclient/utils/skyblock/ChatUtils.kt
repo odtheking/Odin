@@ -1,6 +1,7 @@
 package me.odinclient.utils.skyblock
 
-import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.ModCore
+import me.odinclient.ModCore.Companion.mc
 import me.odinclient.config.MiscConfig
 import me.odinclient.features.impl.skyblock.DevPlayers.devs
 import me.odinclient.utils.Utils.noControlCodes
@@ -43,7 +44,7 @@ object ChatUtils {
 
     fun modMessage(message: Any?, prefix: Boolean = true) {
         if (mc.thePlayer == null) return
-        val msg = if (prefix) "§3Odin§bClient §8»§r $message" else message.toString()
+        val msg = if (prefix) "${ModCore.PREFIX} $message" else message.toString()
         mc.thePlayer?.addChatMessage(ChatComponentText(msg))
     }
 
@@ -73,8 +74,8 @@ object ChatUtils {
 
     fun autoGM(message: String, name: String) {
         if (isInBlacklist(name)) return
-        if(message.lowercase().startsWith("gm")) guildMessage("gm $name")
-        if(message.lowercase().startsWith("gn")) guildMessage("gn $name")
+        if (message.lowercase().startsWith("gm")) guildMessage("gm $name")
+        if (message.lowercase().startsWith("gn")) guildMessage("gn $name")
     }
 
     fun createClickStyle(action: ClickEvent.Action?, value: String): ChatStyle {

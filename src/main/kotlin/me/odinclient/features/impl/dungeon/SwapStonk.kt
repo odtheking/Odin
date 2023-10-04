@@ -2,7 +2,7 @@ package me.odinclient.features.impl.dungeon
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import me.odinclient.OdinClient.Companion.scope
+import me.odinclient.ModCore.Companion.scope
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.utils.skyblock.ItemUtils.unformattedName

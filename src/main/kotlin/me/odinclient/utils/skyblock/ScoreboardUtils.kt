@@ -1,6 +1,6 @@
 package me.odinclient.utils.skyblock
 
-import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.ModCore.Companion.mc
 import me.odinclient.utils.Utils.noControlCodes
 import net.minecraft.scoreboard.ScorePlayerTeam
 

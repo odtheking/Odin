@@ -1,6 +1,6 @@
 package me.odinclient.ui.hud
 
-import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.ModCore.Companion.mc
 import net.minecraft.client.renderer.GlStateManager
 
 @Deprecated("dont use this.")

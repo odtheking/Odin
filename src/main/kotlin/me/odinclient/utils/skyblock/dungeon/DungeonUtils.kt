@@ -1,6 +1,6 @@
 package me.odinclient.utils.skyblock.dungeon
 
-import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.ModCore.Companion.mc
 import me.odinclient.dungeonmap.core.map.Room
 import me.odinclient.dungeonmap.features.Dungeon
 import me.odinclient.events.impl.ReceivePacketEvent
@@ -8,7 +8,6 @@ import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.clock.Executor
 import me.odinclient.utils.clock.Executor.Companion.register
 import me.odinclient.utils.render.Color
-import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.ItemUtils
 import me.odinclient.utils.skyblock.LocationUtils
 import me.odinclient.utils.skyblock.LocationUtils.currentDungeon

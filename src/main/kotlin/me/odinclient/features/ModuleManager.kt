@@ -1,6 +1,6 @@
 package me.odinclient.features
 
-import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.ModCore.Companion.mc
 import me.odinclient.events.impl.*
 import me.odinclient.features.impl.dungeon.*
 import me.odinclient.features.impl.floor7.*
@@ -10,7 +10,6 @@ import me.odinclient.features.impl.skyblock.*
 import me.odinclient.ui.hud.HudElement
 import me.odinclient.utils.clock.Executor
 import me.odinclient.utils.render.gui.nvg.drawNVG
-import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import net.minecraft.network.Packet
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent

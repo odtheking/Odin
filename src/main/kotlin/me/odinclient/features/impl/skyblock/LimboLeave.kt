@@ -2,7 +2,7 @@ package me.odinclient.features.impl.skyblock
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import me.odinclient.OdinClient
+import me.odinclient.ModCore
 import me.odinclient.events.impl.ChatPacketEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
@@ -23,7 +23,7 @@ object LimboLeave: Module(
         // find other message
         if (event.message != "Oops! You are not on SkyBlock so we couldn't warp you!" || inSkyblock) return
         sendCommand("l")
-        OdinClient.scope.launch {
+        ModCore.scope.launch {
             delay(timeMillis = 3000)
             sendCommand("play skyblock")
             if (goIsland) {

@@ -1,6 +1,6 @@
 package me.odinclient.dungeonmap.features
 
-import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.ModCore.Companion.mc
 import me.odinclient.dungeonmap.core.map.*
 import me.odinclient.dungeonmap.features.DungeonScan.scan
 import me.odinclient.features.impl.dungeon.MapModule
@@ -8,7 +8,6 @@ import me.odinclient.utils.Utils.equalsOneOf
 import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
-import me.odinclient.utils.skyblock.dungeon.map.MapUtils.mapRoomSize
 import me.odinclient.utils.skyblock.dungeon.map.ScanUtils.getCore
 import me.odinclient.utils.skyblock.dungeon.map.ScanUtils.getRoomData
 import net.minecraft.init.Blocks

@@ -1,6 +1,6 @@
 package me.odinclient.dungeonmap.features
 
-import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.ModCore.Companion.mc
 import me.odinclient.dungeonmap.core.DungeonPlayer
 import me.odinclient.dungeonmap.core.map.*
 import me.odinclient.dungeonmap.features.Dungeon.Info.dungeonList

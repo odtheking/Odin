@@ -1,6 +1,6 @@
 package me.odinclient.ui.hud
 
-import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.ModCore.Companion.mc
 
 @Deprecated("dont use this.")
 open class TextHud(x: Float = 0f, y: Float = 0f) : BaseHud(x, y) {

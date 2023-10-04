@@ -1,7 +1,7 @@
 package me.odinclient.ui.clickgui
 
 import cc.polyfrost.oneconfig.renderer.font.Fonts
-import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.ModCore.Companion.mc
 import me.odinclient.ui.clickgui.elements.menu.ElementTextField
 import me.odinclient.ui.clickgui.util.ColorUtil
 import me.odinclient.ui.clickgui.util.ColorUtil.buttonColor
@@ -10,7 +10,6 @@ import me.odinclient.utils.render.Color
 import me.odinclient.utils.render.gui.MouseUtils
 import me.odinclient.utils.render.gui.animations.impl.ColorAnimation
 import me.odinclient.utils.render.gui.nvg.*
-import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import org.lwjgl.input.Keyboard
 
 object SearchBar {

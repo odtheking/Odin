@@ -1,7 +1,7 @@
 package me.odinclient.ui.clickgui
 
 import cc.polyfrost.oneconfig.renderer.font.Fonts
-import me.odinclient.OdinClient.Companion.display
+import me.odinclient.ModCore.Companion.display
 import me.odinclient.config.Config
 import me.odinclient.features.Category
 import me.odinclient.features.impl.render.ClickGUIModule

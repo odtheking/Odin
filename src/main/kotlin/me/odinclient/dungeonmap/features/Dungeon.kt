@@ -1,9 +1,8 @@
 package me.odinclient.dungeonmap.features
 
-import cc.polyfrost.oneconfig.libs.universal.UChat
 import kotlinx.coroutines.launch
-import me.odinclient.OdinClient.Companion.mc
-import me.odinclient.OdinClient.Companion.scope
+import me.odinclient.ModCore.Companion.mc
+import me.odinclient.ModCore.Companion.scope
 import me.odinclient.dungeonmap.core.DungeonPlayer
 import me.odinclient.dungeonmap.core.map.Room
 import me.odinclient.dungeonmap.core.map.Tile

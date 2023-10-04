@@ -1,10 +1,8 @@
 package me.odinclient.utils.render.world
 
-import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.ModCore.Companion.mc
 import me.odinclient.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinclient.utils.VecUtils.plus
 import me.odinclient.utils.render.Color
-import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.WorldRenderer

@@ -3,7 +3,7 @@ package me.odinclient.utils.skyblock
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.ModCore.Companion.mc
 import me.odinclient.features.impl.floor7.p3.termsim.TermSimGui
 import me.odinclient.utils.AsyncUtils
 import me.odinclient.utils.VecUtils.floored

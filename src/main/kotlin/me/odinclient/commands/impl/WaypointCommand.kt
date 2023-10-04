@@ -1,12 +1,9 @@
 package me.odinclient.commands.impl
 
-import me.odinclient.OdinClient.Companion.display
-import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.ModCore.Companion.display
 import me.odinclient.commands.AbstractCommand
-import me.odinclient.features.impl.render.WaypointManager
 import me.odinclient.ui.waypoint.WaypointGUI
 import me.odinclient.utils.Utils.floorToInt
-import me.odinclient.utils.VecUtils.floored
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.ChatUtils.partyMessage

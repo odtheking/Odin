@@ -4,7 +4,7 @@ import cc.polyfrost.oneconfig.renderer.font.Font
 import cc.polyfrost.oneconfig.renderer.font.Fonts
 import cc.polyfrost.oneconfig.renderer.scissor.ScissorHelper
 import cc.polyfrost.oneconfig.utils.dsl.*
-import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.ModCore.Companion.mc
 import me.odinclient.ui.clickgui.util.ColorUtil
 import me.odinclient.utils.Utils.minus
 import me.odinclient.utils.Utils.plus

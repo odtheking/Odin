@@ -1,8 +1,8 @@
 package me.odinclient.events
 
 import kotlinx.coroutines.launch
-import me.odinclient.OdinClient.Companion.mc
-import me.odinclient.OdinClient.Companion.scope
+import me.odinclient.ModCore.Companion.mc
+import me.odinclient.ModCore.Companion.scope
 import me.odinclient.events.impl.*
 import me.odinclient.utils.AsyncUtils
 import me.odinclient.utils.ServerUtils

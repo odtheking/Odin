@@ -1,6 +1,6 @@
 package me.odinclient.utils.render.gui
 
-import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.ModCore.Companion.mc
 import org.lwjgl.input.Mouse
 
 object MouseUtils {

@@ -1,6 +1,6 @@
 package me.odinclient.dungeonmap.features
 
-import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.ModCore.Companion.mc
 import me.odinclient.dungeonmap.core.map.Room
 import me.odinclient.utils.skyblock.dungeon.map.ScanUtils.getRoomFromPos
 import net.minecraft.tileentity.TileEntityChest

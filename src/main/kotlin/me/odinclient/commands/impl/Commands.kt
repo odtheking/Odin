@@ -1,7 +1,7 @@
 package me.odinclient.commands.impl
 
-import me.odinclient.OdinClient.Companion.display
-import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.ModCore.Companion.display
+import me.odinclient.ModCore.Companion.mc
 import me.odinclient.commands.invoke
 import me.odinclient.features.impl.floor7.p3.termsim.StartGui
 import me.odinclient.features.impl.render.ClickGUIModule

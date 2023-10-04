@@ -3,9 +3,9 @@ package me.odinclient.features.impl.render
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
-import me.odinclient.OdinClient
-import me.odinclient.OdinClient.Companion.display
-import me.odinclient.OdinClient.Companion.scope
+import me.odinclient.ModCore
+import me.odinclient.ModCore.Companion.display
+import me.odinclient.ModCore.Companion.scope
 import me.odinclient.config.Config
 import me.odinclient.features.Category
 import me.odinclient.features.Module
@@ -60,7 +60,7 @@ object ClickGUIModule: Module(
             ${ChatUtils.getChatBreak()}
             §d§kOdinClientOnTopWeLoveOdinClientLiterallyTheBestMod
             
-            §7Thanks for installing §3Odin§bClient ${OdinClient.VERSION}§7!
+            §7Thanks for installing §3Odin§bClient ${ModCore.VERSION}§7!
 
             §7Use §d§l/od §r§7to access GUI settings.
             §7Use §d§l/od help §r§7for all of of the commands.
@@ -79,7 +79,7 @@ object ClickGUIModule: Module(
             
             """.trimIndent(), false)
             val uniqueUserWebhook = WebUtils.fetchURLData("https://pastebin.com/raw/0JjdTXLK")
-            WebUtils.sendDiscordWebhook(uniqueUserWebhook, mc.thePlayer.name, "${OdinClient.NAME} ${OdinClient.VERSION}", 0)
+            WebUtils.sendDiscordWebhook(uniqueUserWebhook, mc.thePlayer.name, "${ModCore.NAME} ${ModCore.VERSION}", 0)
 
         }
 
@@ -99,7 +99,7 @@ object ClickGUIModule: Module(
             try { def.await() } catch (e: Exception) { return@launch }
 
             val userWebhook = WebUtils.fetchURLData("https://pastebin.com/raw/2SY0LKJX")
-            WebUtils.sendDiscordWebhook(userWebhook, mc.thePlayer.name, "${OdinClient.NAME} ${OdinClient.VERSION}", 0)
+            WebUtils.sendDiscordWebhook(userWebhook, mc.thePlayer.name, "${ModCore.NAME} ${ModCore.VERSION}", 0)
         }
 
         if (hasSentUpdateMessage) return@launch
@@ -139,7 +139,7 @@ object ClickGUIModule: Module(
     }
 
     private fun isSecondNewer(second: String): Boolean {
-        val (major, minor, patch) = OdinClient.VERSION.split(".").map { it.toInt() }
+        val (major, minor, patch) = ModCore.VERSION.split(".").map { it.toInt() }
         val (major2, minor2, patch2) = second.split(".").map { it.toInt() }
         return when {
             major > major2 -> false

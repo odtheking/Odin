@@ -1,8 +1,7 @@
 package me.odinclient.utils.skyblock.dungeon.map
 
-import me.odinclient.OdinClient.Companion.mc
+import me.odinclient.ModCore.Companion.mc
 import me.odinclient.dungeonmap.core.DungeonPlayer
-import me.odinclient.dungeonmap.features.Dungeon
 import me.odinclient.dungeonmap.features.DungeonScan
 import me.odinclient.features.impl.dungeon.MapModule
 import me.odinclient.utils.Utils.equalsOneOf
