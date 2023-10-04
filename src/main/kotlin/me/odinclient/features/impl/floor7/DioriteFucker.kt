@@ -3,8 +3,6 @@ package me.odinclient.features.impl.floor7
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.NumberSetting
-import me.odinclient.utils.skyblock.ChatUtils.modMessage
-import me.odinclient.utils.skyblock.LocationUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos

@@ -1,9 +1,12 @@
 package me.odinclient.commands.impl
 
 import me.odinclient.ModCore.Companion.display
+import me.odinclient.ModCore.Companion.mc
 import me.odinclient.commands.AbstractCommand
+import me.odinclient.features.impl.render.WaypointManager
 import me.odinclient.ui.waypoint.WaypointGUI
 import me.odinclient.utils.Utils.floorToInt
+import me.odinclient.utils.VecUtils.floored
 import me.odinclient.utils.render.Color
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.ChatUtils.partyMessage
@@ -14,9 +17,9 @@ import java.util.*
 
 object WaypointCommand : AbstractCommand("waypoint", "wp", "odwp",) {
     init {
-        //empty { modMessage("§cArguments empty. §rUsage: gui, share, here, add, help") }
+        does { modMessage("§cArguments empty. §rUsage: gui, share, here, add, help") }
 
-        "help" does { modMessage(helpMSG) }
+        "help" does { modMessage(HELP_MESSAGE) }
         "gui" does { display = WaypointGUI }
 
         "share" does {
@@ -28,21 +31,20 @@ object WaypointCommand : AbstractCommand("waypoint", "wp", "odwp",) {
             partyMessage(message)
         }
 
-        /*"here" {
+        "here" {
             does {
                 modMessage("§cInvalid arguments. §r/wp here (temp | perm).")
             }
-            and(
-                "temp" does {
-                    WaypointManager.addTempWaypoint(vec3 = mc.thePlayer.positionVector.floored())
-                    modMessage("Added temporary waypoint.")
-                },
 
-                "perm" does {
-                    WaypointManager.addWaypoint(vec3 = mc.thePlayer.positionVector.floored(), color = randomColor())
-                    modMessage("Added permanent waypoint.")
-                }
-            )
+            "temp" does {
+                WaypointManager.addTempWaypoint(vec3 = mc.thePlayer.positionVector.floored())
+                modMessage("Added temporary waypoint.")
+            }
+
+            "perm" does {
+                WaypointManager.addWaypoint(vec3 = mc.thePlayer.positionVector.floored(), color = randomColor())
+                modMessage("Added permanent waypoint.")
+            }
         }
 
         "add" {
@@ -50,27 +52,23 @@ object WaypointCommand : AbstractCommand("waypoint", "wp", "odwp",) {
                 modMessage("§cInvalid arguments. §r/wp add (temp | perm) x y z.")
             }
 
-            and(
-                "temp" does {
-                    if (it.size != 3) return@does modMessage("§cInvalid coordinates")
-                    val pos = it.getInt() ?: return@does modMessage("§cInvalid coordinates")
-                    WaypointManager.addTempWaypoint(x = pos[0], y = pos[1], z = pos[2])
-                    modMessage("Added temporary waypoint at ${pos[0]}, ${pos[1]}, ${pos[2]}.")
+            "temp" does {
+                if (it.size != 3) return@does modMessage("§cInvalid coordinates")
+                val pos = it.getInt() ?: return@does modMessage("§cInvalid coordinates")
+                WaypointManager.addTempWaypoint(x = pos[0], y = pos[1], z = pos[2])
+                modMessage("Added temporary waypoint at ${pos[0]}, ${pos[1]}, ${pos[2]}.")
+            }
 
-                },
-                "perm" does {
-                    if (it.size != 3) return@does modMessage("§cInvalid coordinates")
-                    val pos = it.getInt() ?: return@does modMessage("§cInvalid coordinates")
-                    WaypointManager.addWaypoint(x = pos[0], y = pos[1], z = pos[2], color = randomColor())
-                    modMessage("Added permanent waypoint at ${pos[0]}, ${pos[1]}, ${pos[2]}.")
-                }
-            )
-        }*/
-
-       // orElse { modMessage("§cInvalid usage, usage :\n$helpMSG") }
+            "perm" does {
+                if (it.size != 3) return@does modMessage("§cInvalid coordinates")
+                val pos = it.getInt() ?: return@does modMessage("§cInvalid coordinates")
+                WaypointManager.addWaypoint(x = pos[0], y = pos[1], z = pos[2], color = randomColor())
+                modMessage("Added permanent waypoint at ${pos[0]}, ${pos[1]}, ${pos[2]}.")
+            }
+        }
     }
 
-    private const val helpMSG =
+    private const val HELP_MESSAGE =
         " - GUI » §7Opens the Gui \n" +
                 " - Share (x y z) » §7Sends a message with your current coords, unless coords are specified \n" +
                 " - Here (temp | perm) » §7Adds a permanent or temporary waypoint at your current coords\n" +

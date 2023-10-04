@@ -31,7 +31,6 @@ object ClickedChests : Module(
     fun onInteract(event: PlayerInteractEvent) {
         if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || !mc.theWorld.getBlockState(event.pos).block.equalsOneOf(Blocks.chest, Blocks.trapped_chest)) return
         chests.add(event.pos)
-        (mc.theWorld.getBlockState(event.pos) as BlockLever).blockBoundsMaxY
     }
 
     init { onWorldLoad { chests.clear() } }

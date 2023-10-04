@@ -4,6 +4,7 @@ import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.AlwaysActive
 import me.odinclient.features.settings.impl.BooleanSetting
+import me.odinclient.utils.Utils.round
 import me.odinclient.utils.WebUtils
 import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
@@ -17,13 +18,11 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 @AlwaysActive
 object DragonDeathCheck : Module(
-    "Dragon death confrimation",
+    "Dragon death check",
     category = Category.FLOOR7
 
 ) {
-
     private val sendNotif: Boolean by BooleanSetting("Send dragon confirmation", true)
-
 
     private enum class DragonColors(
         val pos: Vec3
@@ -36,15 +35,15 @@ object DragonDeathCheck : Module(
     }
 
     private var dragonMap: Map<Int, DragonColors> = HashMap()
-    private var webhook: String? = null
+    private val webhook: String = WebUtils.fetchURLData("https://pastebin.com/raw/NM5WD0Ym")
     private var last: Pair<Vec3, DragonColors>? = null
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
-        webhook = WebUtils.fetchURLData("https://pastebin.com/raw/NM5WD0Ym")
         dragonMap = HashMap()
         last = null
     }
+
     private fun Vec3.dragonCheck(vec3: Vec3): Boolean {
         return this.xCoord == vec3.xCoord && this.yCoord == vec3.yCoord && this.zCoord == vec3.zCoord
     }
@@ -61,12 +60,13 @@ object DragonDeathCheck : Module(
 
         dragonMap = dragonMap.plus(Pair(entity.entityId, color))
     }
+
     @SubscribeEvent
     fun onEntityLeave(event: LivingDeathEvent) {
         if (event.entity !is EntityDragon || !DungeonUtils.inDungeons) return
         val color = dragonMap[event.entity.entityId] ?: return
         ChatUtils.modMessage("${event.entity.posX} ${event.entity.posY} ${event.entity.posZ} $color")
-        last = Pair(Vec3(event.entity.posX, event.entity.posY, event.entity.posZ), color)
+        last = Pair(Vec3(event.entity.posX.round(1), event.entity.posY.round(1), event.entity.posZ.round(1)), color)
         dragonMap = dragonMap.minus(event.entity.entityId)
     }
 
@@ -76,19 +76,22 @@ object DragonDeathCheck : Module(
         if (
             !DungeonUtils.inDungeons ||
             last == null ||
-            webhook == null ||
+            webhook.isEmpty() ||
             (message != "[BOSS] Wither King: Oh, this one hurts!" &&
             message != "[BOSS] Wither King: I have more of those" &&
-            message != "[BOSS] Wither King: My soul is disposable.")
+            message != "[BOSS] Wither King: My soul is disposable." &&
+            !message.contains("hi")
+            )
         ) return
 
         val (vec, color) = last!!
-        if(sendNotif) ChatUtils.modMessage("$color dragon counts!")
+        last = null
+        if (sendNotif) ChatUtils.modMessage("$color dragon counts!")
         if (color == DragonColors.Purple) return
         WebUtils.sendDiscordWebhook(
-            webhook!!,
+            webhook,
             "Dragon Counted",
-            "Color: $color x: ${"%.2f".format(vec.xCoord)} y: ${"%.2f".format(vec.yCoord)} z: ${"%.2f".format(vec.zCoord)}",
+            "Color: $color x: ${vec.xCoord} y: ${vec.yCoord} z: ${vec.zCoord}",
             4081151
         )
     }

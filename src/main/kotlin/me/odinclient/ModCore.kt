@@ -45,7 +45,6 @@ import kotlin.coroutines.EmptyCoroutineContext
     clientSideOnly = true
 )
 class ModCore {
-
     @EventHandler
     fun init(event: FMLInitializationEvent) {
 
@@ -138,7 +137,7 @@ class ModCore {
             termSimCommand,
             autoSellCommand,
             blacklistCommand,
-            ESPCommand,
+            espCommand,
             WaypointCommand,
         )
     }

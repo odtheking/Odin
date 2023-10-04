@@ -23,7 +23,7 @@ object ServerUtils {
         return false
     }
 
-    fun sendPacketNoEvent(packet: Packet<*>) {
+    private fun sendPacketNoEvent(packet: Packet<*>) {
         packets.add(packet)
         mc.netHandler?.addToSendQueue(packet)
     }
@@ -71,10 +71,6 @@ object ServerUtils {
         if (isPinging || mc.thePlayer == null) return
         pingStartTime = System.nanoTime()
         isPinging = true
-        sendPacketNoEvent(
-            C16PacketClientStatus(
-                C16PacketClientStatus.EnumState.REQUEST_STATS
-            )
-        )
+        sendPacketNoEvent(C16PacketClientStatus(C16PacketClientStatus.EnumState.REQUEST_STATS))
     }
 }

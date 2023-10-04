@@ -1,5 +1,7 @@
 package me.odinclient.features
 
+import cc.polyfrost.oneconfig.loader.stage0.OneConfigWrapperBase
+import me.odinclient.ModCore
 import me.odinclient.ModCore.Companion.mc
 import me.odinclient.events.impl.*
 import me.odinclient.features.impl.dungeon.*
@@ -10,16 +12,18 @@ import me.odinclient.features.impl.skyblock.*
 import me.odinclient.ui.hud.HudElement
 import me.odinclient.utils.clock.Executor
 import me.odinclient.utils.render.gui.nvg.drawNVG
+import net.minecraft.launchwrapper.LaunchClassLoader
 import net.minecraft.network.Packet
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import kotlin.collections.ArrayList
 
 /**
  * Class that contains all Modules and huds
- * @author Aton
+ * @author Aton, Bonsai
  */
 object ModuleManager {
     data class PacketFunction<T : Packet<*>>(

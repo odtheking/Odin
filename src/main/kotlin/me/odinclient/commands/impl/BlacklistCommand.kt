@@ -1,6 +1,5 @@
 package me.odinclient.commands.impl
 
-import me.odinclient.commands.AbstractCommand
 import me.odinclient.commands.invoke
 import me.odinclient.config.MiscConfig
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
@@ -41,5 +40,4 @@ val blacklistCommand = "blacklist" {
     "list" does {
         MiscConfig.blacklist.forEach { modMessage(it) }
     }
-
 }
