@@ -12,10 +12,7 @@ import me.odinclient.utils.skyblock.PlayerUtils.posY
 import me.odinclient.utils.skyblock.PlayerUtils.posZ
 import java.util.*
 
-object WaypointCommand : AbstractCommand(
-    "waypoint", "wp", "odwp",
-    description = "Command for waypoints. Do /waypoint help for more info."
-) {
+object WaypointCommand : AbstractCommand("waypoint", "wp", "odwp",) {
     init {
         //empty { modMessage("§cArguments empty. §rUsage: gui, share, here, add, help") }
 

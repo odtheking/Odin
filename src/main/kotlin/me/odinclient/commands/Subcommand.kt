@@ -7,7 +7,7 @@ package me.odinclient.commands
  * enabling the nesting of subcommands within each other, resulting in a more sophisticated command structure.
  *
  * A Subcommand object can have a parent, which establishes a parent-child relationship among commands.
- * This makes it convenient to create comprehensive command trees.
+ * This makes it convenient to create command trees.
  */
 class Subcommand(val name: String, private val root: AbstractCommand, var parent: Subcommand? = null) {
 
@@ -24,11 +24,7 @@ class Subcommand(val name: String, private val root: AbstractCommand, var parent
         }
     }
 
-    infix fun String.does(block: (Array<out String>) -> Unit): Subcommand {
-        return this {
-            func = block
-        }
-    }
+    infix fun String.does(block: (Array<out String>) -> Unit): Subcommand = this { func = block }
 
     /**
      * Children of this class.
@@ -39,13 +35,13 @@ class Subcommand(val name: String, private val root: AbstractCommand, var parent
      * Args required to execute or auto complete.
      * (All the parent's names + it's name)
      *
-     * @see processCommand
-     * @see addTabCompletionOptions
+     * @see AbstractCommand.processCommand
+     * @see AbstractCommand.addTabCompletionOptions
      */
     var argsRequired = arrayOf(name)
 
     /**
-     * Invokes this classes function (if it's present.)
+     * Invokes this classes function (if it's present)
      */
     fun execute(args: Array<out String>) {
         func?.let {

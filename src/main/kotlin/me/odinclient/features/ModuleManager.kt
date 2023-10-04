@@ -22,7 +22,12 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
  * @author Aton
  */
 object ModuleManager {
-    data class PacketFunction<T : Packet<*>>(val type: Class<T>, val function: (T) -> Unit, val shouldRun: () -> Boolean)
+    data class PacketFunction<T : Packet<*>>(
+        val type: Class<T>,
+        val function: (T) -> Unit,
+        val shouldRun: () -> Boolean
+    )
+
     data class MessageFunction(val filter: Regex, val shouldRun: () -> Boolean, val function: (String) -> Unit)
     data class TickTask(var ticksLeft: Int, val function: () -> Unit)
 
@@ -135,7 +140,8 @@ object ModuleManager {
 
     @SubscribeEvent
     fun onReceivePacket(event: ReceivePacketEvent) {
-        packetFunctions.filter { it.type.isInstance(event.packet) && it.shouldRun.invoke() }.forEach { it.function(event.packet) }
+        packetFunctions.filter { it.type.isInstance(event.packet) && it.shouldRun.invoke() }
+            .forEach { it.function(event.packet) }
     }
 
     @SubscribeEvent
@@ -145,7 +151,8 @@ object ModuleManager {
 
     @SubscribeEvent
     fun onChatPacket(event: ChatPacketEvent) {
-        messageFunctions.filter { event.message matches it.filter && it.shouldRun() }.forEach { it.function(event.message) }
+        messageFunctions.filter { event.message matches it.filter && it.shouldRun() }
+            .forEach { it.function(event.message) }
     }
 
     @SubscribeEvent

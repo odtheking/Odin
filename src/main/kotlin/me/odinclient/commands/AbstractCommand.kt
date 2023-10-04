@@ -13,12 +13,10 @@ import net.minecraft.util.BlockPos
  *
  * For example:
  * ```
- *  object Command : AbstractCommand("commandName", "cmdName", description = "Description...") {
+ *  object Command : AbstractCommand("commandName", "cmdName") {
  *      init {
  *          "hello" {
- *              does {
- *                  println("hello")
- *              }
+ *              sendError("Invalid use. Correct Use: world, hey")
  *              "world" does {
  *                  println("hello")
  *              }
@@ -37,7 +35,6 @@ import net.minecraft.util.BlockPos
  */
 abstract class AbstractCommand(
     private vararg val names: String,
-    val description: String = "",
 ) : CommandBase() {
 
     final override fun getCommandName() = names[0]
@@ -53,7 +50,7 @@ abstract class AbstractCommand(
      * If it's unable to find anything in [subcommands] and [extraCmd] is present it will run that.
      */
     final override fun processCommand(sender: ICommandSender?, args: Array<String>) {
-        for (i in subcommands.size - 1 downTo 0) {
+        for (i in subcommands.size - 1 downTo 0) { // doing this is soo much simpler than like tree system i cba
             if (subcommands[i].argsRequired.all { it in args }) {
                 subcommands[i].execute(args)
                 return
@@ -94,7 +91,9 @@ abstract class AbstractCommand(
      */
     val subcommands = ArrayList<Subcommand>()
 
-
+    /**
+     * Function for base command, aka if args are empty or gibberish.
+     */
     private var baseFunction: ((Array<out String>) -> Unit)? = null
 
     /**
@@ -105,7 +104,7 @@ abstract class AbstractCommand(
     }
 
     /**
-     * Cleaner code.
+     * DSL
      */
     operator fun String.invoke(block: Subcommand.() -> Unit): Subcommand {
         return Subcommand(this, this@AbstractCommand).apply {
@@ -115,16 +114,19 @@ abstract class AbstractCommand(
     }
 
     /**
-     * Initializes the function for the sub-command
+     * DSL, looks nicer, etc.
      */
     fun Subcommand.does(func: (Array<out String>) -> Unit) {
         this.func = func
     }
 
     /**
-     * Use to simplify sending error messages if arguments are not met
+     * Use to simplify sending error messages if arguments are not met.
      *
-     * If you use it in a
+     * Is literally just:
+     * does {
+     *     modMessage(msg)
+     * }
      */
     fun Subcommand.sendError(message: String) {
         this.does { modMessage(message) }
@@ -140,6 +142,9 @@ abstract class AbstractCommand(
     }
 }
 
+/**
+ * Factory so instead of creating a whole class to make init block it just thing
+ */
 operator fun String.invoke(block: AbstractCommand.() -> Unit): AbstractCommand {
     return object : AbstractCommand(this) {
         init {

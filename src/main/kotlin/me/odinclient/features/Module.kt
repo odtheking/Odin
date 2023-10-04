@@ -55,12 +55,9 @@ abstract class Module(
     @SerializedName("settings")
     val settings: ArrayList<Setting<*>>
 
-    /**
-     * Will be used for a tooltip
-     */
     var description: String
 
-    val mc = ModCore.mc
+    protected inline val mc get() = ModCore.mc
 
     init {
         this.name = name
