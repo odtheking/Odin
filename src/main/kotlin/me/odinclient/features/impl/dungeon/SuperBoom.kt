@@ -30,6 +30,7 @@ object SuperBoom : Module(
         val lookingAt = mc.objectMouseOver ?: return
         if (lookingAt.typeOfHit != net.minecraft.util.MovingObjectPosition.MovingObjectType.BLOCK) return
         val blockState = mc.theWorld?.getBlockState(lookingAt.blockPos) ?: return
+        val sideHit = lookingAt.sideHit ?: return
         val block = blockState.block
         if (
             block.damageDropped(blockState) != 2 &&
@@ -51,11 +52,15 @@ object SuperBoom : Module(
         }
         val previousItemIndex = mc.thePlayer.inventory.currentItem
 
-        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(superboomIndex))
-        mc.thePlayer.inventory.currentItem = superboomIndex
-        mc.playerController.clickBlock(lookingAt.blockPos, lookingAt.sideHit)
-        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(previousItemIndex))
-        mc.thePlayer.inventory.currentItem = previousItemIndex
+        try {
+            mc.netHandler.addToSendQueue(C09PacketHeldItemChange(superboomIndex))
+            mc.thePlayer.inventory.currentItem = superboomIndex
+            mc.playerController.clickBlock(lookingAt.blockPos, sideHit)
+            mc.netHandler.addToSendQueue(C09PacketHeldItemChange(previousItemIndex))
+            mc.thePlayer.inventory.currentItem = previousItemIndex
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
         lastclick = System.currentTimeMillis()
     }
