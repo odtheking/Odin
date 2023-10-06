@@ -61,7 +61,7 @@ OdinClient is a comprehensive Forge mod for Hypixel Skyblock, offering a range o
 - **Camera:** Allows you to disable front cam and change distance.
 - **ESP:** Allows you to highlight selected mobs.
 
-##Skyblock
+### Skyblock
 - **Auto-Renew Hollows Pass:** Automatically rebuy a crystal hollows pass.
 - **Auto Limbo Leave:** Automatically leaves limbo whenever you get kicked.
 - **Private Commands:** Offers custom commands for private message use, accessible via !help in private chat.
