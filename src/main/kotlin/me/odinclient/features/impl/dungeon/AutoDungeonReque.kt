@@ -6,6 +6,7 @@ import me.odinclient.ModCore.Companion.scope
 import me.odinclient.events.impl.ChatPacketEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
+import me.odinclient.features.impl.skyblock.PartyCommands
 import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
@@ -22,6 +23,10 @@ object AutoDungeonReque : Module(
     @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
         if (!DungeonUtils.inDungeons || event.message != "                             > EXTRA STATS <") return
+        if (PartyCommands.disableReque == true) {
+            PartyCommands.disableReque = false
+            return
+        }
         scope.launch {
             delay(delay * 1000L)
             ChatUtils.sendCommand("instancerequeue")

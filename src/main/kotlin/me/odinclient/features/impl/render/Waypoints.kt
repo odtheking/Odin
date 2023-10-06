@@ -32,7 +32,6 @@ object Waypoints : Module(
         onMessage(Regex("(?:\\[\\d+])? ?(\\[.+])? (.{0,16}): x: (-?\\d+),? y: (-?\\d+),? z: (-?\\d+)"), { fromAll }) { // greatest regex of all time!
             val matchResult = Regex("(?:\\[\\d+])? ?(\\[.+])? (.{0,16}): x: (-?\\d+),? y: (-?\\d+),? z: (-?\\d+)").find(it) ?: return@onMessage
             val (rank, player) = matchResult.destructured
-            matchResult.destructured.toList().forEach(::modMessage)
             val (x, y, z) = matchResult.groupValues.drop(3).map { a -> a.toInt() }
             WaypointManager.addTempWaypoint(getColorFromRank(rank) + player,x,y,z)
         }

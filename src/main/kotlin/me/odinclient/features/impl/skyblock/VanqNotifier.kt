@@ -21,15 +21,13 @@ object VanqNotifier : Module(
     private val ac: Boolean by BooleanSetting("All chat")
     private val pc: Boolean by BooleanSetting("Party chat")
 
-    @SubscribeEvent
-    fun onClientChatReceived(event: ClientChatReceivedEvent) {
-        val message = event.message.unformattedText.noControlCodes
-        if (message !== "A Vanquisher is spawning nearby!") return
+    init {
+        onMessage(Regex("A Vanquisher is spawning nearby!")) {
+            ChatUtils.modMessage("Vanquisher has spawned!")
+            PlayerUtils.alert("§5Vanquisher has spawned!")
 
-        ChatUtils.modMessage("Vanquisher has spawned!")
-        PlayerUtils.alert("§5Vanquisher has spawned!")
-
-        if (ac) ChatUtils.sendChatMessage("Vanquisher spawned at: x: ${posX.floor()}, y: ${posY.floor()}, z: ${posZ.floor()}")
-        if (pc) ChatUtils.partyMessage("Vanquisher spawned at: x: ${posX.floor()}, y: ${posY.floor()}, z: ${posZ.floor()}")
+            if (ac) ChatUtils.sendChatMessage("Vanquisher spawned at: x: ${posX.floor()}, y: ${posY.floor()}, z: ${posZ.floor()}")
+            if (pc) ChatUtils.partyMessage("Vanquisher spawned at: x: ${posX.floor()}, y: ${posY.floor()}, z: ${posZ.floor()}")
+        }
     }
 }

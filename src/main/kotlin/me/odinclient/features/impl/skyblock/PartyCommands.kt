@@ -10,6 +10,7 @@ import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.utils.AutoSessionID
 import me.odinclient.utils.ServerUtils
+import me.odinclient.utils.Utils.floor
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.ChatUtils.isInBlacklist
@@ -38,8 +39,11 @@ object PartyCommands : Module(
     private var pt: Boolean by BooleanSetting(name = "Party transfer (pt)", default = true)
     private var rat: Boolean by BooleanSetting(name = "Rat", default = true)
     private var ping: Boolean by BooleanSetting(name = "Ping", default = true)
+    private var tps: Boolean by BooleanSetting(name = "tps", default = true)
     private var dt: Boolean by BooleanSetting(name = "Dt", default = true)
     private var dtPlayer: String? = null
+    var disableReque: Boolean? = false
+
 
     @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
@@ -94,10 +98,12 @@ object PartyCommands : Module(
                 ChatUtils.partyMessage(line)
                 delay(350)
             }
-            "ping" -> if (ping) ChatUtils.partyMessage("Current Ping: ${floor(ServerUtils.averagePing)}ms")
+            "ping" -> if (ping) ChatUtils.partyMessage("Current Ping: ${floor(ServerUtils.averagePing.floor())}ms")
+            "tps" -> if (tps) ChatUtils.partyMessage("Current Ping: ${floor(ServerUtils.averageTps.floor())}ms")
             "dt" -> if (dt) {
                 ChatUtils.modMessage("Reminder set for the end of the run!")
                 dtPlayer = name
+                disableReque = true
             }
         }
     }
