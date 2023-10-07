@@ -23,10 +23,6 @@ object ChatUtils {
         return responses.random()
     }
 
-    fun catPics(): String {
-        val catsArray = cats.toString().split(",")
-        return catsArray.random()
-    }
 
     fun flipCoin(): String = if (Math.random() < 0.5) "heads" else "tails"
 
@@ -87,9 +83,6 @@ object ChatUtils {
         )
         return style
     }
-
-
-    private var cats: Any? = WebUtils.fetchURLData("https://pastebin.com/raw/m4L2e62y")
 
     private val responses = arrayOf(
         "It is certain",

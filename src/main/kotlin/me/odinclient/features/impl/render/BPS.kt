@@ -21,7 +21,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 object BPS : Module(
     name = "Blocks Broken",
     category = Category.RENDER,
-    description = "Displays hows many blocks per second you're breaking"
+    description = "Displays how many blocks per second you're breaking."
 ) {
 
     private var startTime: Long = 0

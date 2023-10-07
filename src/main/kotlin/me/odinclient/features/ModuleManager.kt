@@ -71,8 +71,6 @@ object ModuleManager {
         LockCursor,
         VanqNotifier,
         PartyCommands,
-        GuildCommands,
-        PrivateCommands,
         AutoEdrag,
         DioriteFucker,
         DragonBoxes,
@@ -127,7 +125,8 @@ object ModuleManager {
         BPS,
         AutoGFS,
         DragonDeathCheck,
-        WaterSolver
+        WaterSolver,
+        MelodyMessage
     )
 
     @SubscribeEvent

@@ -53,6 +53,12 @@ object GhostBlock : Module(
             for (i in blocks[getPhase()] ?: return@execute) {
                 mc.theWorld?.setBlockToAir(i)
             }
+            for (i in enderchests) {
+                mc.theWorld?.setBlockState(i, Blocks.ender_chest.defaultState)
+            }
+            for (i in glass) {
+                mc.theWorld?.setBlockState(i, Blocks.glass.defaultState)
+            }
         }
     }
 
@@ -68,6 +74,17 @@ object GhostBlock : Module(
         return false
     }
 
+    private val enderchests = arrayOf(
+        BlockPos(77, 221, 35),
+        BlockPos(77, 221, 34),
+        BlockPos(77, 221, 33)
+    )
+
+    private val glass = arrayOf(
+        BlockPos(77, 221, 36),
+        BlockPos(78, 221, 36),
+    )
+
     private val blocks = mapOf(
         1 to arrayOf(
             BlockPos(88, 220, 61),
@@ -81,6 +98,8 @@ object GhostBlock : Module(
             BlockPos(88, 212, 61),
             BlockPos(88, 211, 61),
             BlockPos(88, 210, 61),
+            BlockPos(77, 220, 35),
+            BlockPos(78, 220, 35)
         ),
 
         2 to arrayOf(
