@@ -95,4 +95,14 @@ object WebUtils {
         // Return the response.
         return response
     }
+
+    fun imgurID(URL: String): String {
+        val image: Any = fetchURLData(URL)
+
+        val imageArray = image.toString().split(",")[1]
+
+        val imageLink  = upload(imageArray.substring(imageArray.indexOf('"') + 1, imageArray.lastIndexOf('"')).drop(6))
+
+        return imageLink.split(",")[27].drop(31).dropLast(6)
+    }
 }

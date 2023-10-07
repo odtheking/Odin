@@ -11,6 +11,7 @@ import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.utils.ServerUtils
 import me.odinclient.utils.Utils.floor
+import me.odinclient.utils.WebUtils
 import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.ChatUtils.isInBlacklist
 import me.odinclient.utils.skyblock.PlayerUtils
@@ -65,7 +66,7 @@ object PrivateCommands : Module(
             "cf" -> if (cf) ChatUtils.privateMessage(ChatUtils.flipCoin(),name)
             "8ball" -> if (eightball) ChatUtils.privateMessage(ChatUtils.eightBall(),name)
             "dice" -> if (dice) ChatUtils.privateMessage(ChatUtils.rollDice(),name)
-            "cat" -> if (cat) ChatUtils.privateMessage("https://i.imgur.com/${ChatUtils.catPics()}.png",name)
+            "cat" -> if (cat) ChatUtils.privateMessage("https://i.imgur.com/${WebUtils.imgurID("https://api.thecatapi.com/v1/images/search")}.png",name)
             "ping" -> if (ping) ChatUtils.privateMessage("Current Ping: ${floor(ServerUtils.averagePing)}ms",name)
             "inv" -> if (inv) ChatUtils.sendCommand("party invite $name")
             "gm" -> if (gm) ChatUtils.privateMessage("Good Morning $name!",name)

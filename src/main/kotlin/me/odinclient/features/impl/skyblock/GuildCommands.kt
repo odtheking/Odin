@@ -10,11 +10,10 @@ import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.utils.ServerUtils
 import me.odinclient.utils.Utils.floor
-import me.odinclient.utils.Utils.noControlCodes
+import me.odinclient.utils.WebUtils
 import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.ChatUtils.isInBlacklist
 import me.odinclient.utils.skyblock.PlayerUtils
-import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.floor
 
@@ -34,8 +33,8 @@ object GuildCommands : Module(
     private var dice: Boolean by BooleanSetting(name = "dice", default = true)
     private var cat: Boolean by BooleanSetting(name = "cat", default = true)
     private var ping: Boolean by BooleanSetting(name = "ping", default = true)
-    private var gm: Boolean by BooleanSetting(name = "gm", default = true)
-    private var gn: Boolean by BooleanSetting(name = "gn", default = true)
+    private var tps: Boolean by BooleanSetting(name = "tps", default = true)
+
 
     @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
@@ -56,7 +55,7 @@ object GuildCommands : Module(
         if (isInBlacklist(name)) return
         if (!message.startsWith("!")) return
         when (message.split(" ")[0].drop(1)) {
-            "help" -> if (help) ChatUtils.guildMessage("Commands: coords, odin, boop, cf, 8ball, dice, cat, ping")
+            "help" -> if (help) ChatUtils.guildMessage("Commands: coords, odin, boop, cf, 8ball, dice, cat, ping, tps")
             "coords" -> if (coords) ChatUtils.guildMessage(
                 "x: ${PlayerUtils.posX.floor()}, y: ${PlayerUtils.posY.floor()}, z: ${PlayerUtils.posZ.floor()}"
             )
@@ -65,8 +64,10 @@ object GuildCommands : Module(
             "cf" -> if (cf) ChatUtils.guildMessage(ChatUtils.flipCoin())
             "8ball" -> if (eightball) ChatUtils.guildMessage(ChatUtils.eightBall())
             "dice" -> if (dice) ChatUtils.guildMessage(ChatUtils.rollDice())
-            "cat" -> if (cat) ChatUtils.guildMessage("https://i.imgur.com/${ChatUtils.catPics()}.png")
+            "cat" -> if (cat) ChatUtils.guildMessage("https://i.imgur.com/${WebUtils.imgurID("https://api.thecatapi.com/v1/images/search")}.png")
             "ping" -> if (ping) ChatUtils.guildMessage("Current Ping: ${floor(ServerUtils.averagePing)}ms")
+            "tps" -> if (tps) ChatUtils.partyMessage("Current Ping: ${floor(ServerUtils.averageTps.floor())}ms")
+
 
         }
     }

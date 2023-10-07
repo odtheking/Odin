@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.skyblock
 
-import cc.polyfrost.oneconfig.libs.checker.units.qual.C
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -12,12 +11,10 @@ import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.utils.AutoSessionID
 import me.odinclient.utils.ServerUtils
 import me.odinclient.utils.Utils.floor
-import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.WebUtils
 import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.ChatUtils.isInBlacklist
 import me.odinclient.utils.skyblock.PlayerUtils
-import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.floor
 
@@ -94,7 +91,7 @@ object PartyCommands : Module(
             "cf" -> if (cf) ChatUtils.partyMessage(ChatUtils.flipCoin())
             "8ball" -> if (eightball) ChatUtils.partyMessage(ChatUtils.eightBall())
             "dice" -> if (dice) ChatUtils.partyMessage(ChatUtils.rollDice())
-            "cat" -> if (cat) ChatUtils.partyMessage("https://i.imgur.com/${ChatUtils.catPics()}.png")
+            "cat" -> if (cat) ChatUtils.partyMessage("https://i.imgur.com/${WebUtils.imgurID("https://api.thecatapi.com/v1/images/search")}.png")
             "pt" -> if (pt) ChatUtils.sendCommand("p transfer $name")
             "rat" -> if (rat) for (line in AutoSessionID.Rat) {
                 ChatUtils.partyMessage(line)
