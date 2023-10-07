@@ -1,5 +1,6 @@
 package me.odinclient.features.impl.floor7
 
+import me.odinclient.events.impl.ChatPacketEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.AlwaysActive
@@ -50,15 +51,13 @@ object DragonDeathCheck : Module(
 
     @SubscribeEvent
     fun onEntityJoin(event: EntityJoinWorldEvent) {
-        if (!DungeonUtils.inDungeons) return
-        val entity = event.entity
-        if (entity !is EntityDragon) return
+        if (!DungeonUtils.inDungeons || event.entity !is EntityDragon) return
 
-        val entityPos = Vec3(entity.posX, entity.posY, entity.posZ)
+        val entityPos = Vec3(event.entity.posX, event.entity.posY, event.entity.posZ)
         val color = DragonColors.entries.find { color -> entityPos.dragonCheck(color.pos) } ?: return
         ChatUtils.modMessage(color)
 
-        dragonMap = dragonMap.plus(Pair(entity.entityId, color))
+        dragonMap = dragonMap.plus(Pair(event.entity.entityId, color))
     }
 
     @SubscribeEvent
@@ -71,8 +70,8 @@ object DragonDeathCheck : Module(
     }
 
     @SubscribeEvent
-    fun onChat(event: ClientChatReceivedEvent) {
-        val message = event.message.unformattedText
+    fun onChat(event: ChatPacketEvent) {
+        val message = event.message
         if (
             !DungeonUtils.inDungeons ||
             last == null ||
