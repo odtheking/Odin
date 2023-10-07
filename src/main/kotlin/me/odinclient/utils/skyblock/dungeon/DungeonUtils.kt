@@ -2,8 +2,7 @@ package me.odinclient.utils.skyblock.dungeon
 
 import me.odinclient.ModCore.Companion.mc
 import me.odinclient.dungeonmap.core.map.Room
-import me.odinclient.dungeonmap.features.Dungeon
-import me.odinclient.events.impl.ReceivePacketEvent
+import me.odinclient.events.impl.ChatPacketEvent
 import me.odinclient.utils.Utils.noControlCodes
 import me.odinclient.utils.clock.Executor
 import me.odinclient.utils.clock.Executor.Companion.register
@@ -15,7 +14,6 @@ import me.odinclient.utils.skyblock.PlayerUtils.posY
 import me.odinclient.utils.skyblock.dungeon.map.MapUtils
 import me.odinclient.utils.skyblock.dungeon.map.ScanUtils
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.network.play.server.S02PacketChat
 import net.minecraftforge.event.entity.living.LivingEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -54,16 +52,9 @@ object DungeonUtils {
         ScanUtils.getRoomCentre(mc.thePlayer.posX.toInt(), mc.thePlayer.posZ.toInt()).run {
             if (this != lastRoomPos) {
                 lastRoomPos = this
-                setCurrentRoom(this)
+                currentRoom = ScanUtils.getRoomFromPos(this) ?: return
             }
         }
-    }
-
-    private fun setCurrentRoom(pos: Pair<Int, Int>) {
-        val data = ScanUtils.getRoomFromPos(pos)?.data?: return
-        val room: Room = Dungeon.Info.uniqueRooms.toList().find { data.name == it.data.name }?: return
-        if (room != currentRoom)
-            currentRoom = room
     }
 
     enum class Classes(
@@ -84,12 +75,9 @@ object DungeonUtils {
     }
 
     @SubscribeEvent
-    fun onPacket(event: ReceivePacketEvent) {
-        if (event.packet !is S02PacketChat) return
-        val message = event.packet.chatComponent.unformattedText.noControlCodes
-        if (message == "[BOSS] Wither King: You.. again?") {
+    fun onPacket(event: ChatPacketEvent) {
+        if (event.message == "[BOSS] Wither King: You.. again?")
             inp5 = true
-        }
     }
 
     @SubscribeEvent
@@ -97,6 +85,7 @@ object DungeonUtils {
         inp5 = false
         currentRoom = null
     }
+
     private val tablistRegex = Regex("^\\[(\\d+)] (?:\\[\\w+] )*(\\w+) (?:.)*?\\((\\w+)(?: (\\w+))*\\)\$")
 
     private fun getDungeonTeammates(): List<Pair<EntityPlayer, Classes>> {
