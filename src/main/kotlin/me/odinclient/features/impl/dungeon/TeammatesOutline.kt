@@ -43,7 +43,8 @@ object TeammatesOutline : Module(
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (!DungeonUtils.inDungeons || (!inBoss && DungeonUtils.inBoss)) return
         DungeonUtils.teammates.forEach {
-            if (mc.thePlayer.canEntityBeSeen(it.first) || it.first == mc.thePlayer) return
+            if (!whenVisible && mc.thePlayer.canEntityBeSeen(it.first)) return
+            if (it.first == mc.thePlayer) return
             RenderUtils.drawStringInWorld(
                 "${it.second.code}${it.first.name}",
                 it.first.renderVec.addVec(y = 2.7),

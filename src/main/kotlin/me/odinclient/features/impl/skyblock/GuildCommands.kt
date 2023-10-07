@@ -54,7 +54,7 @@ object GuildCommands : Module(
 
     private fun guildCmdsOptions(message: String,name: String) {
         if (isInBlacklist(name)) return
-        if (message.drop(1) !== "!" || message.drop(1) !== "?") return
+        if (!message.startsWith("!")) return
         when (message.split(" ")[0].drop(1)) {
             "help" -> if (help) ChatUtils.guildMessage("Commands: coords, odin, boop, cf, 8ball, dice, cat, ping")
             "coords" -> if (coords) ChatUtils.guildMessage(
@@ -65,7 +65,7 @@ object GuildCommands : Module(
             "cf" -> if (cf) ChatUtils.guildMessage(ChatUtils.flipCoin())
             "8ball" -> if (eightball) ChatUtils.guildMessage(ChatUtils.eightBall())
             "dice" -> if (dice) ChatUtils.guildMessage(ChatUtils.rollDice())
-            "cat" -> if (cat) ChatUtils.guildMessage(ChatUtils.catPics())
+            "cat" -> if (cat) ChatUtils.guildMessage("https://i.imgur.com/${ChatUtils.catPics()}.png")
             "ping" -> if (ping) ChatUtils.guildMessage("Current Ping: ${floor(ServerUtils.averagePing)}ms")
 
         }

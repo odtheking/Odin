@@ -24,9 +24,16 @@ object ChatUtils {
     }
 
     fun catPics(): String {
-        val catsArray = cats.toString().split(",")
-        return catsArray.random()
+        val cats: Any = WebUtils.fetchURLData("https://api.thecatapi.com/v1/images/search")
+
+        val catsArray = cats.toString().split(",")[1]
+
+        val cat = WebUtils.upload(catsArray.substring(catsArray.indexOf('"') + 1, catsArray.lastIndexOf('"')).drop(6))
+
+        return cat.split(",")[27].drop(31).dropLast(6)
     }
+
+
 
     fun flipCoin(): String = if (Math.random() < 0.5) "heads" else "tails"
 
@@ -89,7 +96,9 @@ object ChatUtils {
     }
 
 
-    private var cats: Any? = WebUtils.fetchURLData("https://pastebin.com/raw/m4L2e62y")
+
+
+
 
     private val responses = arrayOf(
         "It is certain",

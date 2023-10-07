@@ -6,6 +6,16 @@ import java.net.URL
 import javax.net.ssl.HttpsURLConnection
 
 object WebUtils {
+
+
+    private var IMGUR_KEYS = arrayOf(
+        "d30c6dc9941b52b",
+        "b2e8519cbb7712a",
+        "eb1f61e23b9eabd",
+        "d1275dca5af8904",
+        "ed46361ccd67d6d"
+    )
+
     fun fetchURLData(url: String): String {
         try {
             val connection = URL(url).openConnection()
@@ -54,5 +64,35 @@ object WebUtils {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    fun upload(image: String): String {
+        // Get a random Imgur client ID.
+        val clientID = IMGUR_KEYS.random()
+
+        // Create a POST request to upload the image to Imgur.
+        val url = URL("https://api.imgur.com/3/image")
+        val con = url.openConnection() as HttpsURLConnection
+        con.addRequestProperty("Content-Type", "application/json")
+        con.addRequestProperty("Authorization", "Client-ID $clientID")
+        con.doOutput = true
+        con.requestMethod = "POST"
+
+        // Write the image URL to the request body.
+        val stream = con.outputStream
+        stream.write(image.toByteArray())
+        stream.flush()
+        stream.close()
+
+        // Make the POST request and read the response.
+        val inputStream = con.inputStream
+        val reader = BufferedReader(InputStreamReader(inputStream))
+        val response = reader.readLine()
+
+        // Close the connection.
+        con.disconnect()
+
+        // Return the response.
+        return response
     }
 }

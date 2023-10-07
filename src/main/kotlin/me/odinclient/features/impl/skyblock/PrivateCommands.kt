@@ -65,7 +65,7 @@ object PrivateCommands : Module(
             "cf" -> if (cf) ChatUtils.privateMessage(ChatUtils.flipCoin(),name)
             "8ball" -> if (eightball) ChatUtils.privateMessage(ChatUtils.eightBall(),name)
             "dice" -> if (dice) ChatUtils.privateMessage(ChatUtils.rollDice(),name)
-            "cat" -> if (cat) ChatUtils.privateMessage(ChatUtils.catPics(),name)
+            "cat" -> if (cat) ChatUtils.privateMessage("https://i.imgur.com/${ChatUtils.catPics()}.png",name)
             "ping" -> if (ping) ChatUtils.privateMessage("Current Ping: ${floor(ServerUtils.averagePing)}ms",name)
             "inv" -> if (inv) ChatUtils.sendCommand("party invite $name")
             "gm" -> if (gm) ChatUtils.privateMessage("Good Morning $name!",name)
