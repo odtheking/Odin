@@ -75,8 +75,7 @@ object DragonDeathCheck : Module(
             (message != "[BOSS] Wither King: Oh, this one hurts!" &&
             message != "[BOSS] Wither King: I have more of those" &&
             message != "[BOSS] Wither King: My soul is disposable." &&
-            !message.contains("hi")
-            )
+            !message.contains("hi"))
         ) return
 
         val (vec, color) = last!!
