@@ -43,6 +43,7 @@ object TeammatesOutline : Module(
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (!DungeonUtils.inDungeons || (!inBoss && DungeonUtils.inBoss)) return
         DungeonUtils.teammates.forEach {
+            if (!inBoss && DungeonUtils.inBoss) return
             if (!whenVisible && mc.thePlayer.canEntityBeSeen(it.first)) return
             if (it.first == mc.thePlayer) return
             RenderUtils.drawStringInWorld(
