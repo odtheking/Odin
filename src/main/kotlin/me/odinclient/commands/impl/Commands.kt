@@ -81,8 +81,10 @@ val mainCommand = "od" {
                     "\n§7od rq §8- §7Requeues your dungeon run." +
                     "\n§7od f# §8- §7Joins floor #." +
                     "\n§7od m# §8- §7Joins master floor #." +
-                    "\n§7termsim §8- §7Opens the term simulator."
-
+                    "\n§7termsim §8- §7Opens the term simulator." +
+                    "\n§7od esp help §8- §7Configures the esp commands #." +
+                    "\n§7od blacklist help §8- §7Configures the blacklist commands #." +
+                    "\n§7od autosell help §8- §7Configures the autosell commands #."
         )
     }
 

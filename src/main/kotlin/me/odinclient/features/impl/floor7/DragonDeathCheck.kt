@@ -50,22 +50,17 @@ object DragonDeathCheck : Module(
 
     @SubscribeEvent
     fun onEntityJoin(event: EntityJoinWorldEvent) {
-        if (!DungeonUtils.inDungeons) return
-        val entity = event.entity
-        if (entity !is EntityDragon) return
+        if (event.entity !is EntityDragon || !DungeonUtils.inDungeons) return
 
-        val entityPos = Vec3(entity.posX, entity.posY, entity.posZ)
+        val entityPos = event.entity.positionVector
         val color = DragonColors.entries.find { color -> entityPos.dragonCheck(color.pos) } ?: return
-        ChatUtils.modMessage(color)
-
-        dragonMap = dragonMap.plus(Pair(entity.entityId, color))
+        dragonMap = dragonMap.plus(Pair(event.entity.entityId, color))
     }
 
     @SubscribeEvent
     fun onEntityLeave(event: LivingDeathEvent) {
         if (event.entity !is EntityDragon || !DungeonUtils.inDungeons) return
         val color = dragonMap[event.entity.entityId] ?: return
-        ChatUtils.modMessage("${event.entity.posX} ${event.entity.posY} ${event.entity.posZ} $color")
         last = Pair(Vec3(event.entity.posX.round(1), event.entity.posY.round(1), event.entity.posZ.round(1)), color)
         dragonMap = dragonMap.minus(event.entity.entityId)
     }

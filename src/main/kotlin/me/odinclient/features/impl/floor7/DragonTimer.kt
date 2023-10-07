@@ -65,7 +65,7 @@ object DragonTimer : Module(
 
     @SubscribeEvent
     fun onReceivePacket(event: ReceivePacketEvent) {
-        if (event.packet !is S2APacketParticles || DungeonUtils.getPhase() != 5) return
+        if (event.packet !is S2APacketParticles || !DungeonUtils.inDungeons) return
         val particle = event.packet
 
         if (
