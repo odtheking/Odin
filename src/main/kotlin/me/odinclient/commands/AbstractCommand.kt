@@ -132,6 +132,10 @@ abstract class AbstractCommand(
         this.does { modMessage(message) }
     }
 
+    fun sendError(message: String) {
+        this.does { modMessage(message) }
+    }
+
     /**
      * Creates and initializes the function for the sub-command
      */
