@@ -7,17 +7,9 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import kotlinx.coroutines.launch
 import me.odinclient.ModCore
-import me.odinclient.features.impl.dungeon.WaterSolver.chestPos
-import me.odinclient.features.impl.dungeon.WaterSolver.extendedSlots
-import me.odinclient.features.impl.dungeon.WaterSolver.inWaterRoom
-import me.odinclient.features.impl.dungeon.WaterSolver.openedWater
-import me.odinclient.features.impl.dungeon.WaterSolver.prevInWaterRoom
-import me.odinclient.features.impl.dungeon.WaterSolver.roomFacing
-import me.odinclient.features.impl.dungeon.WaterSolver.solutions
-import me.odinclient.features.impl.dungeon.WaterSolver.variant
+import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
-import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.init.Blocks
 import net.minecraft.util.*
@@ -32,6 +24,8 @@ object WaterSolver : Module(
     description = "Solves the water puzzle with a single flow.",
     category = Category.DUNGEON,
 ) {
+    private val showOrder: Boolean by BooleanSetting("Show Order", true, description = "Shows the order of the levers to click.")
+
     private var waterSolutions: JsonObject
 
     init {
@@ -53,7 +47,7 @@ object WaterSolver : Module(
         execute(1000) {
             //if (DungeonUtils.currentRoom?.data?.name != "Water Board") return@execute
             ModCore.scope.launch {
-                prevInWaterRoom = false//inWaterRoom
+                prevInWaterRoom = inWaterRoom
                 inWaterRoom = false
 
                 val x = -25//DungeonUtils.currentRoom?.x ?: return@launch
@@ -77,31 +71,44 @@ object WaterSolver : Module(
 
     @SubscribeEvent
     fun onWorldRender(event: RenderWorldLastEvent) {
+        val sortedSolutions = mutableListOf<Double>().apply {
+            solutions.forEach { (lever, times) ->
+                times.drop(lever.i).filter { it != 0.0 }.forEach { time ->
+                    add(time)
+                }
+            }
+        }.sortedBy { it }
         for (solution in solutions) {
+            // Draw order
+            var orderText = ""
+
+            solution.value.drop(solution.key.i).forEach {
+                orderText = if (it == 0.0) orderText.plus("0")
+                else orderText.plus("${if (orderText.isEmpty()) "" else ", "}${sortedSolutions.indexOf(it) + 1}")
+            }
+            if (showOrder) RenderUtils.drawStringInWorld(orderText, Vec3(solution.key.leverPos).addVector(.5, .5, .5), -1, false, increase = false, depthTest = false, 0.035f)
+
             for (i in solution.key.i until solution.value.size) {
                 val time = solution.value[i]
                 val displayText = if (openedWater == -1L) {
-                    if (time == 0.0) {
-                        "§a§lCLICK ME!"
-                    } else {
-                        "§e${time}s"
-                    }
+                    if (time == 0.0) "§a§lCLICK ME!"
+                    else "§e${time}s"
                 } else {
                     val remainingTime = openedWater + time * 1000L - System.currentTimeMillis()
-                    if (remainingTime > 0) {
-                        "§e${remainingTime / 1000}s"
-                    } else {
-                        "§a§lCLICK ME!"
-                    }
+                    if (remainingTime > 0) "§e${remainingTime / 1000}s"
+                    else "§a§lCLICK ME!"
+
                 }
-                RenderUtils.drawStringInWorld(displayText, Vec3(solution.key.leverPos).addVector(0.5, (i - solution.key.i) * 0.5 + 1.5, 0.5), 0, false, increase = false, depthTest = true, 0.05f )
+                RenderUtils.drawStringInWorld(displayText, Vec3(solution.key.leverPos).addVector(0.5, (i - solution.key.i) * 0.5 + 1.5, 0.5), 0, false, increase = false, depthTest = true, 0.04f)
             }
+
+
         }
     }
 
     @SubscribeEvent
     fun onBlockInteract(event: PlayerInteractEvent) {
-        if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || solutions.isEmpty()) return
+        if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || solutions.isEmpty() || event.world != mc.theWorld) return
         LeverBlock.entries.find { it.leverPos == event.pos }?.let {
             it.i++
             if (it != LeverBlock.WATER || openedWater != -1L) return
