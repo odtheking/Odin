@@ -98,9 +98,9 @@ object PlayerUtils {
 
     fun handleWindowClickQueue() {
         if (windowClickQueue.isEmpty()) return
-        windowClickQueue.removeAll {
-            sendWindowClick(it.windowId, it.slotId, it.button, it.mode)
-            true
+        windowClickQueue.first().apply {
+            sendWindowClick(windowId, slotId, button, mode)
+            windowClickQueue.remove(this)
         }
     }
 
