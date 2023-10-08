@@ -10,6 +10,7 @@ import me.odinclient.ModCore
 import me.odinclient.features.settings.impl.BooleanSetting
 import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
+import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.init.Blocks
 import net.minecraft.util.*
@@ -45,13 +46,13 @@ object WaterSolver : Module(
 
     init {
         execute(1000) {
-            //if (DungeonUtils.currentRoom?.data?.name != "Water Board") return@execute
+            if (DungeonUtils.currentRoom?.data?.name != "Water Board") return@execute
             ModCore.scope.launch {
                 prevInWaterRoom = inWaterRoom
                 inWaterRoom = false
 
-                val x = -25//DungeonUtils.currentRoom?.x ?: return@launch
-                val z = -185//DungeonUtils.currentRoom?.z ?: return@launch
+                val x = DungeonUtils.currentRoom?.x ?: return@launch
+                val z = DungeonUtils.currentRoom?.z ?: return@launch
 
                 for (direction in EnumFacing.HORIZONTALS) {
                     val stairPos = BlockPos(x + direction.opposite.frontOffsetX * 4, 56, z + direction.opposite.frontOffsetZ * 4)
