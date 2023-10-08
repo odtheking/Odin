@@ -97,6 +97,7 @@ object PlayerUtils {
     }
 
     fun handleWindowClickQueue() {
+        if (mc.thePlayer?.openContainer == null) return windowClickQueue.clear()
         if (windowClickQueue.isEmpty()) return
         windowClickQueue.first().apply {
             try {
@@ -110,8 +111,18 @@ object PlayerUtils {
         windowClickQueue.removeFirstOrNull()
     }
 
+    /**
+     * Used to clear the click queue every 500ms, to make sure it isn't getting filled up.
+     */
+    fun clearWindowClickQueue() {
+        windowClickQueue.clear()
+    }
+
     private fun sendWindowClick(slotId: Int, button: Int, mode: Int) {
-        mc.thePlayer.openContainer?.windowId?.let { mc.playerController.windowClick(it, slotId, button, mode, mc.thePlayer) }
+        mc.thePlayer.openContainer?.let {
+            if (it !is ContainerChest) return@let
+            mc.playerController.windowClick(it.windowId, slotId, button, mode, mc.thePlayer)
+        }
     }
 
     private fun middleClickWindow(slot: Int) {

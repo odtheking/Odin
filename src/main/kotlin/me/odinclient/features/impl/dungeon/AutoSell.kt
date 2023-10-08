@@ -6,8 +6,10 @@ import me.odinclient.features.Module
 import me.odinclient.features.settings.impl.ActionSetting
 import me.odinclient.features.settings.impl.NumberSetting
 import me.odinclient.utils.Utils.containsOneOf
+import me.odinclient.utils.Utils.equalsOneOf
 import me.odinclient.utils.Utils.name
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
+import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinclient.utils.skyblock.PlayerUtils.shiftClickWindow
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.Slot
@@ -35,10 +37,14 @@ object AutoSell : Module(
             if (container !is ContainerChest) return@execute
 
             val chestName = container.name
-            if (chestName == "Trades" || chestName == "Booster Cookie") {
+            if (chestName.equalsOneOf("Trades", "Booster Cookie", "Farm Merchant")) {
                 val slot = container.inventorySlots.subList(54, 90).firstOrNull { doSell(it) }?.slotNumber ?: return@execute
                 shiftClickWindow(slot)
             }
+        }
+
+        execute(500) {
+            PlayerUtils.clearWindowClickQueue()
         }
     }
 
