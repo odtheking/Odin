@@ -86,42 +86,48 @@ object PlayerUtils {
         data object Middle : ClickType()
     }
 
-    private data class WindowClick(val windowId: Int, val slotId: Int, val button: Int, val mode: Int)
+    private data class WindowClick(val slotId: Int, val button: Int, val mode: Int)
     private val windowClickQueue = mutableListOf<WindowClick>()
 
-    fun windowClick(windowId: Int, slotId: Int, button: Int, mode: Int) {
+    fun windowClick(slotId: Int, button: Int, mode: Int) {
         if (mc.currentScreen is TermSimGui) {
             val gui = mc.currentScreen as TermSimGui
             gui.slotClick(gui.inventorySlots.getSlot(slotId), button)
-        } else windowClickQueue.add(WindowClick(windowId, slotId, button, mode))
+        } else windowClickQueue.add(WindowClick(slotId, button, mode))
     }
 
     fun handleWindowClickQueue() {
         if (windowClickQueue.isEmpty()) return
         windowClickQueue.first().apply {
-            sendWindowClick(windowId, slotId, button, mode)
-            windowClickQueue.remove(this)
+            try {
+                sendWindowClick(slotId, button, mode)
+            } catch (e: Exception) {
+                println("Error sending window click: $this")
+                e.printStackTrace()
+                windowClickQueue.clear()
+            }
         }
+        windowClickQueue.removeFirstOrNull()
     }
 
-    private fun sendWindowClick(windowId: Int, slotId: Int, button: Int, mode: Int) {
-        mc.playerController.windowClick(windowId, slotId, button, mode, mc.thePlayer)
+    private fun sendWindowClick(slotId: Int, button: Int, mode: Int) {
+        mc.thePlayer.openContainer?.windowId?.let { mc.playerController.windowClick(it, slotId, button, mode, mc.thePlayer) }
     }
 
     private fun middleClickWindow(slot: Int) {
-        windowClick(mc.thePlayer.inventoryContainer.windowId, slot, 2, 2)
+        windowClick(slot, 2, 2)
     }
 
-    fun windowClick(windowId: Int, slotId: Int, clickType: ClickType) {
+    fun windowClick(slotId: Int, clickType: ClickType) {
         when (clickType) {
-            is ClickType.Left -> windowClick(windowId, slotId, 0, 0)
-            is ClickType.Right -> windowClick(windowId, slotId, 1, 0)
-            is ClickType.Middle -> windowClick(windowId, slotId, 2, 3)
+            is ClickType.Left -> windowClick(slotId, 0, 0)
+            is ClickType.Right -> windowClick(slotId, 1, 0)
+            is ClickType.Middle -> windowClick(slotId, 2, 3)
         }
     }
 
-    fun shiftClickWindow(windowId: Int, index : Int) {
-        windowClick(windowId, index, 0, 1)
+    fun shiftClickWindow(index : Int) {
+        windowClick(index, 0, 1)
     }
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -145,7 +151,7 @@ object PlayerUtils {
             val index = getItemIndexInContainerChest(container, itemName, contains)
                 ?: return@launch modMessage("§cCouldn't find §f$itemName!")
 
-            windowClick(container.windowId, index, 2, 3)
+            windowClick(index, 2, 3)
             mc.thePlayer.closeScreen()
         }
     }
@@ -174,7 +180,6 @@ object PlayerUtils {
             println("found item at index $index, clicking...")
 
             windowClick(
-                mc.thePlayer.openContainer.windowId,
                 index,
                 2,
                 3

@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import me.odinclient.ModCore
 import me.odinclient.utils.render.world.RenderUtils
 import me.odinclient.utils.skyblock.ChatUtils
+import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.init.Blocks
@@ -49,42 +50,23 @@ object WaterSolver : Module(
 
     init {
         execute(1000) {
-            if (!DungeonUtils.inDungeons) return@execute
-            val player = Minecraft.getMinecraft().thePlayer ?: return@execute
-            val world = Minecraft.getMinecraft().theWorld ?: return@execute
+            if (DungeonUtils.currentRoom?.data?.name != "Water Board") return@execute
             ModCore.scope.launch {
                 prevInWaterRoom = inWaterRoom
                 inWaterRoom = false
-                if (BlockPos.getAllInBox(
-                        BlockPos(player.posX.toInt() - 13, 54, player.posZ.toInt() - 13),
-                        BlockPos(player.posX.toInt() + 13, 54, player.posZ.toInt() + 13))
-                        .any { world.getBlockState(it).block == Blocks.sticky_piston }) {
-                    val xRange = player.posX.toInt() - 25..player.posX.toInt() + 25
-                    val zRange = player.posZ.toInt() - 25..player.posZ.toInt() + 25
-                    roomRotation@
-                    for (te in world.loadedTileEntityList) {
-                        if (te.pos.y == 56 && te is TileEntityChest && te.numPlayersUsing == 0 && te.pos.x in xRange && te.pos.z in zRange) {
-                            if (world.getBlockState(te.pos.down()).block == Blocks.stone && world.getBlockState(te.pos.up(2)).block == Blocks.stained_glass) {
-                                for (horizontal in EnumFacing.HORIZONTALS) {
-                                    if (world.getBlockState(te.pos.offset(horizontal.opposite, 3).down(2)).block == Blocks.sticky_piston) {
-                                        if (world.getBlockState(te.pos.offset(horizontal, 2)).block == Blocks.stone) {
-                                            chestPos = te.pos
-                                            roomFacing = horizontal
-                                            break@roomRotation
-                                        }
-                                    }
-                                }
-                            }
-                        }
+
+                val x = DungeonUtils.currentRoom?.x ?: return@launch
+                val z = DungeonUtils.currentRoom?.z ?: return@launch
+
+                for (direction in EnumFacing.HORIZONTALS) {
+                    val stairPos = BlockPos(x + direction.opposite.frontOffsetX * 4, 56, z + direction.opposite.frontOffsetZ * 4)
+                    if (mc.theWorld.getBlockState(stairPos).block == Blocks.stone_brick_stairs) {
+                        roomFacing = direction
+                        chestPos = stairPos.offset(direction, 11)
+
+                        findWaterRoom()
+                        return@launch
                     }
-
-                    if (chestPos == null) return@launch
-
-                    findWaterRoom()
-
-                } else {
-                    solutions.clear()
-                    variant = -1
                 }
             }
         }
@@ -190,7 +172,7 @@ object WaterSolver : Module(
                 }
 
                 // Print the variant and extendedSlots.
-                ChatUtils.modMessage("Variant: $variant:$extendedSlots:${roomFacing?.name}")
+                modMessage("Variant: $variant:$extendedSlots:${roomFacing?.name}")
 
                 // Clear the solutions and add the new solutions.
                 solutions.clear()

@@ -32,27 +32,22 @@ object AutoMask : Module(
             "Spirit Mask" -> spiritClock.update()
             "Bonzo's Mask", "⚚ Bonzo's Mask" -> bonzoClock.update()
         }
-
-        val inventory = GuiInventory(mc.thePlayer) as GuiContainer
-
         if (spiritClock.hasTimePassed()) {
 
             val slotId = ItemUtils.getItemSlot("Spirit Mask", true) ?: return
-            val windowID = inventory.inventorySlots.windowId
 
-            windowClick(windowID, slotId, 0, 2)
-            windowClick(windowID, 5, 0, 2)
-            windowClick(windowID, slotId, 0, 2)
+            windowClick(slotId, 0, 2)
+            windowClick(5, 0, 2)
+            windowClick(slotId, 0, 2)
 
             ChatUtils.modMessage("Swapped mask!")
         } else if (bonzoClock.hasTimePassed()) {
 
             val slotId = ItemUtils.getItemSlot("Bonzo's Mask", true) ?: return
-            val windowID = inventory.inventorySlots.windowId
 
-            windowClick(windowID, slotId, 0, 2)
-            windowClick(windowID, 5, 0, 2)
-            windowClick(windowID, slotId, 0, 2)
+            windowClick(slotId, 0, 2)
+            windowClick(5, 0, 2)
+            windowClick(slotId, 0, 2)
 
             ChatUtils.modMessage("Swapped mask!")
         } else ChatUtils.modMessage("Masks are on cooldown or no mask was found!")
