@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.floor7
 
-import me.odinclient.events.impl.ChatPacketEvent
 import me.odinclient.features.Category
 import me.odinclient.features.Module
 import me.odinclient.features.settings.AlwaysActive
@@ -51,12 +50,10 @@ object DragonDeathCheck : Module(
 
     @SubscribeEvent
     fun onEntityJoin(event: EntityJoinWorldEvent) {
-        if (!DungeonUtils.inDungeons || event.entity !is EntityDragon) return
+        if (event.entity !is EntityDragon || !DungeonUtils.inDungeons) return
 
-        val entityPos = Vec3(event.entity.posX, event.entity.posY, event.entity.posZ)
+        val entityPos = event.entity.positionVector
         val color = DragonColors.entries.find { color -> entityPos.dragonCheck(color.pos) } ?: return
-        ChatUtils.modMessage(color)
-
         dragonMap = dragonMap.plus(Pair(event.entity.entityId, color))
     }
 
@@ -64,14 +61,13 @@ object DragonDeathCheck : Module(
     fun onEntityLeave(event: LivingDeathEvent) {
         if (event.entity !is EntityDragon || !DungeonUtils.inDungeons) return
         val color = dragonMap[event.entity.entityId] ?: return
-        ChatUtils.modMessage("${event.entity.posX} ${event.entity.posY} ${event.entity.posZ} $color")
         last = Pair(Vec3(event.entity.posX.round(1), event.entity.posY.round(1), event.entity.posZ.round(1)), color)
         dragonMap = dragonMap.minus(event.entity.entityId)
     }
 
     @SubscribeEvent
-    fun onChat(event: ChatPacketEvent) {
-        val message = event.message
+    fun onChat(event: ClientChatReceivedEvent) {
+        val message = event.message.unformattedText
         if (
             !DungeonUtils.inDungeons ||
             last == null ||
@@ -79,8 +75,7 @@ object DragonDeathCheck : Module(
             (message != "[BOSS] Wither King: Oh, this one hurts!" &&
             message != "[BOSS] Wither King: I have more of those" &&
             message != "[BOSS] Wither King: My soul is disposable." &&
-            !message.contains("hi")
-            )
+            !message.contains("hi"))
         ) return
 
         val (vec, color) = last!!
