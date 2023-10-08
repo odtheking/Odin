@@ -7,6 +7,8 @@ import me.odinclient.ModCore.Companion.mc
 import me.odinclient.features.impl.floor7.p3.termsim.TermSimGui
 import me.odinclient.utils.AsyncUtils
 import me.odinclient.utils.VecUtils.floored
+import me.odinclient.utils.clock.Executor
+import me.odinclient.utils.clock.Executor.Companion.register
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.ItemUtils.getItemIndexInContainerChest
 import me.odinclient.utils.skyblock.ItemUtils.getItemSlot
@@ -87,7 +89,13 @@ object PlayerUtils {
     }
 
     private data class WindowClick(val slotId: Int, val button: Int, val mode: Int)
+
     private val windowClickQueue = mutableListOf<WindowClick>()
+
+    init {
+        // Used to clear the click queue every 500ms, to make sure it isn't getting filled up.
+        Executor(delay = 500) { windowClickQueue.clear() }.register()
+    }
 
     fun windowClick(slotId: Int, button: Int, mode: Int) {
         if (mc.currentScreen is TermSimGui) {
@@ -109,13 +117,6 @@ object PlayerUtils {
             }
         }
         windowClickQueue.removeFirstOrNull()
-    }
-
-    /**
-     * Used to clear the click queue every 500ms, to make sure it isn't getting filled up.
-     */
-    fun clearWindowClickQueue() {
-        windowClickQueue.clear()
     }
 
     private fun sendWindowClick(slotId: Int, button: Int, mode: Int) {

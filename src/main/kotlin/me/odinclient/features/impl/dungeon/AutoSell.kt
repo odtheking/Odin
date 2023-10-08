@@ -9,7 +9,6 @@ import me.odinclient.utils.Utils.containsOneOf
 import me.odinclient.utils.Utils.equalsOneOf
 import me.odinclient.utils.Utils.name
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
-import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinclient.utils.skyblock.PlayerUtils.shiftClickWindow
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.Slot
@@ -38,13 +37,10 @@ object AutoSell : Module(
 
             val chestName = container.name
             if (chestName.equalsOneOf("Trades", "Booster Cookie", "Farm Merchant")) {
-                val slot = container.inventorySlots.subList(54, 90).firstOrNull { doSell(it) }?.slotNumber ?: return@execute
-                shiftClickWindow(slot)
+                shiftClickWindow(
+                    container.inventorySlots.subList(54, 90).firstOrNull { doSell(it) }?.slotNumber ?: return@execute
+                )
             }
-        }
-
-        execute(500) {
-            PlayerUtils.clearWindowClickQueue()
         }
     }
 
@@ -53,11 +49,11 @@ object AutoSell : Module(
     }
 
     private val defaultItems = arrayOf(
-        "Enchanted Ice", "Health Potion", "Superboom TNT", "Rotten", "Skeleton Master", "Skeleton Grunt",
+        "Enchanted Ice", "Health Potion", "Superboom TNT", "Rotten", "Skeleton Master", "Skeleton Grunt", "Cutlass",
         "Skeleton Lord", "Skeleton Soldier", "Zombie Soldier", "Zombie Knight", "Zombie Commander", "Zombie Lord",
         "Skeletor", "Super Heavy", "Heavy", "Sniper Helmet", "Dreadlord", "Earth Shard", "Zombie Commander Whip",
-        "Machine Gun", "Sniper Bow", "Soulstealer Bow", "Cutlass", "Silent Death", "Training Weight", "Health Potion VIII",
-        "Health Potion 8", "Beating Heart", "Premium Flesh", "Mimic Fragment", "Enchanted Rotten Flesh", "Enchanted Bone",
-        "Defuse Kit", "Optic Lens", "Tripwire Hook", "Button", "Carpet", "Lever", "Sign", "Diamond Atom"
+        "Machine Gun", "Sniper Bow", "Soulstealer Bow", "Silent Death", "Training Weight", "Health Potion VIII",
+        "Health Potion 8", "Beating Heart", "Premium Flesh", "Mimic Fragment", "Enchanted Rotten Flesh", "Sign",
+        "Enchanted Bone", "Defuse Kit", "Optic Lens", "Tripwire Hook", "Button", "Carpet", "Lever", "Diamond Atom"
     )
 }
