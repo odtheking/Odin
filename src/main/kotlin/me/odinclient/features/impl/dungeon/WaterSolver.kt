@@ -5,24 +5,25 @@ import me.odinclient.features.Category
 import me.odinclient.features.Module
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import me.odinclient.ModCore
+import me.odinclient.features.impl.dungeon.WaterSolver.chestPos
+import me.odinclient.features.impl.dungeon.WaterSolver.extendedSlots
+import me.odinclient.features.impl.dungeon.WaterSolver.inWaterRoom
+import me.odinclient.features.impl.dungeon.WaterSolver.openedWater
+import me.odinclient.features.impl.dungeon.WaterSolver.prevInWaterRoom
+import me.odinclient.features.impl.dungeon.WaterSolver.roomFacing
+import me.odinclient.features.impl.dungeon.WaterSolver.solutions
+import me.odinclient.features.impl.dungeon.WaterSolver.variant
 import me.odinclient.utils.render.world.RenderUtils
-import me.odinclient.utils.skyblock.ChatUtils
 import me.odinclient.utils.skyblock.ChatUtils.modMessage
 import me.odinclient.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.init.Blocks
-import net.minecraft.item.EnumDyeColor
-import net.minecraft.tileentity.TileEntityChest
 import net.minecraft.util.*
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
-import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent
-import tv.twitch.chat.Chat
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 
@@ -50,13 +51,13 @@ object WaterSolver : Module(
 
     init {
         execute(1000) {
-            if (DungeonUtils.currentRoom?.data?.name != "Water Board") return@execute
+            //if (DungeonUtils.currentRoom?.data?.name != "Water Board") return@execute
             ModCore.scope.launch {
-                prevInWaterRoom = inWaterRoom
+                prevInWaterRoom = false//inWaterRoom
                 inWaterRoom = false
 
-                val x = DungeonUtils.currentRoom?.x ?: return@launch
-                val z = DungeonUtils.currentRoom?.z ?: return@launch
+                val x = -25//DungeonUtils.currentRoom?.x ?: return@launch
+                val z = -185//DungeonUtils.currentRoom?.z ?: return@launch
 
                 for (direction in EnumFacing.HORIZONTALS) {
                     val stairPos = BlockPos(x + direction.opposite.frontOffsetX * 4, 56, z + direction.opposite.frontOffsetZ * 4)
@@ -64,7 +65,7 @@ object WaterSolver : Module(
                         roomFacing = direction
                         chestPos = stairPos.offset(direction, 11)
 
-                        findWaterRoom()
+                        solve()
                         return@launch
                     }
                 }
@@ -81,16 +82,16 @@ object WaterSolver : Module(
                 val time = solution.value[i]
                 val displayText = if (openedWater == -1L) {
                     if (time == 0.0) {
-                        EnumChatFormatting.GREEN.toString() + EnumChatFormatting.BOLD.toString() + "CLICK ME!"
+                        "§a§lCLICK ME!"
                     } else {
-                        EnumChatFormatting.YELLOW.toString() + time + "s"
+                        "§e${time}s"
                     }
                 } else {
                     val remainingTime = openedWater + time * 1000L - System.currentTimeMillis()
                     if (remainingTime > 0) {
-                        EnumChatFormatting.YELLOW.toString() + (remainingTime / 1000).toString() + "s"
+                        "§e${remainingTime / 1000}s"
                     } else {
-                        EnumChatFormatting.GREEN.toString() + EnumChatFormatting.BOLD.toString() + "CLICK ME!"
+                        "§a§lCLICK ME!"
                     }
                 }
                 RenderUtils.drawStringInWorld(displayText, Vec3(solution.key.leverPos).addVector(0.5, (i - solution.key.i) * 0.5 + 1.5, 0.5), 0, false, increase = false, depthTest = true, 0.05f )
@@ -101,96 +102,81 @@ object WaterSolver : Module(
     @SubscribeEvent
     fun onBlockInteract(event: PlayerInteractEvent) {
         if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || solutions.isEmpty()) return
-        for (value in LeverBlock.entries) {
-            if (value.leverPos != event.pos) continue
-            value.i++
-            if (value != LeverBlock.WATER || openedWater != -1L) continue
+        LeverBlock.entries.find { it.leverPos == event.pos }?.let {
+            it.i++
+            if (it != LeverBlock.WATER || openedWater != -1L) return
             openedWater = System.currentTimeMillis()
         }
     }
 
-    private fun findWaterRoom() {
-        val playerPos = mc.thePlayer.position
-        val box = BlockPos.getAllInBox(
-            BlockPos(playerPos.x - 25, 82, playerPos.z - 25),
-            BlockPos(playerPos.x + 25, 82, playerPos.z + 25))
-
+    private fun solve() {
         // Find the piston head block.
-        val pistonHeadPos = box.find { mc.theWorld.getBlockState(it).block == Blocks.piston_head }
+        val pistonHeadPos = chestPos!!.offset(roomFacing, 5).up(26)
+        if (mc.theWorld.getBlockState(pistonHeadPos).block !== Blocks.piston_head) return
+
 
         // If the piston head block is found, then we are in the water room.
-        if (pistonHeadPos != null) {
-            inWaterRoom = true
-            if (!prevInWaterRoom) {
-                // Find the blocks in the box around the piston head block.
-                val blockList = BlockPos.getAllInBox(BlockPos(pistonHeadPos.x + 1, 78, pistonHeadPos.z + 1), BlockPos(pistonHeadPos.x - 1, 77, pistonHeadPos.z - 1))
+        inWaterRoom = true
+        if (prevInWaterRoom) return
+        // Find the blocks in the box around the piston head block.
+        val blockList = BlockPos.getAllInBox(BlockPos(pistonHeadPos.x + 1, 78, pistonHeadPos.z + 1), BlockPos(pistonHeadPos.x - 1, 77, pistonHeadPos.z - 1))
 
-                // Check for the required blocks in the box.
-                var foundGold = false
-                var foundClay = false
-                var foundEmerald = false
-                var foundQuartz = false
-                var foundDiamond = false
-                for (blockPos in blockList) {
-                    when (mc.theWorld.getBlockState(blockPos).block) {
-                        Blocks.gold_block -> foundGold = true
-                        Blocks.hardened_clay -> foundClay = true
-                        Blocks.emerald_block -> foundEmerald = true
-                        Blocks.quartz_block -> foundQuartz = true
-                        Blocks.diamond_block -> foundDiamond = true
-                    }
-                }
-
-                // If the required blocks are found, then set the variant and extendedSlots.
-                variant = when {
-                    foundGold && foundClay -> 0
-                    foundEmerald && foundQuartz -> 1
-                    foundQuartz && foundDiamond -> 2
-                    foundGold && foundQuartz -> 3
-                    else -> -1
-                }
-
-                extendedSlots = ""
-                for (value in WoolColor.entries) {
-                    if (value.isExtended) {
-                        extendedSlots += value.ordinal.toString()
-                    }
-                }
-
-                // If the extendedSlots length is not 3, then retry.
-                if (extendedSlots.length != 3) {
-                    println("Didn't find the solution! Retrying")
-                    println("Slots: $extendedSlots")
-                    println("Water: $inWaterRoom ($prevInWaterRoom)")
-                    println("Chest: $chestPos")
-                    println("Rotation: $roomFacing")
-                    extendedSlots = ""
-                    inWaterRoom = false
-                    prevInWaterRoom = false
-                    variant = -1
-                    return
-                }
-
-                // Print the variant and extendedSlots.
-                modMessage("Variant: $variant:$extendedSlots:${roomFacing?.name}")
-
-                // Clear the solutions and add the new solutions.
-                solutions.clear()
-                val solutionObj = waterSolutions[variant.toString()].asJsonObject[extendedSlots].asJsonObject
-                for (mutableEntry in solutionObj.entrySet()) {
-                    val lever = when (mutableEntry.key) {
-                        "minecraft:quartz_block" -> LeverBlock.QUARTZ
-                        "minecraft:gold_block" -> LeverBlock.GOLD
-                        "minecraft:coal_block" -> LeverBlock.COAL
-                        "minecraft:diamond_block" -> LeverBlock.DIAMOND
-                        "minecraft:emerald_block" -> LeverBlock.EMERALD
-                        "minecraft:hardened_clay" -> LeverBlock.CLAY
-                        "minecraft:water" -> LeverBlock.WATER
-                        else -> LeverBlock.NONE
-                    }
-                    solutions[lever] = mutableEntry.value.asJsonArray.map { it.asDouble }.toTypedArray()
-                }
+        // Check for the required blocks in the box.
+        var foundGold = false
+        var foundClay = false
+        var foundEmerald = false
+        var foundQuartz = false
+        var foundDiamond = false
+        for (blockPos in blockList) {
+            when (mc.theWorld.getBlockState(blockPos).block) {
+                Blocks.gold_block -> foundGold = true
+                Blocks.hardened_clay -> foundClay = true
+                Blocks.emerald_block -> foundEmerald = true
+                Blocks.quartz_block -> foundQuartz = true
+                Blocks.diamond_block -> foundDiamond = true
             }
+        }
+
+        // If the required blocks are found, then set the variant and extendedSlots.
+        variant = when {
+            foundGold && foundClay -> 0
+            foundEmerald && foundQuartz -> 1
+            foundQuartz && foundDiamond -> 2
+            foundGold && foundQuartz -> 3
+            else -> -1
+        }
+
+        extendedSlots = ""
+        WoolColor.entries.filter { it.isExtended }.forEach { extendedSlots += it.ordinal.toString() }
+
+        // If the extendedSlots length is not 3, then retry.
+        if (extendedSlots.length != 3) {
+            extendedSlots = ""
+            inWaterRoom = false
+            prevInWaterRoom = false
+            variant = -1
+            return
+        }
+
+        // Print the variant and extendedSlots.
+        modMessage("Variant: $variant:$extendedSlots:${roomFacing?.name}")
+
+        // Clear the solutions and add the new solutions.
+        solutions.clear()
+        val solutionObj = waterSolutions[variant.toString()].asJsonObject[extendedSlots].asJsonObject
+        for (mutableEntry in solutionObj.entrySet()) {
+            solutions[
+                when (mutableEntry.key) {
+                    "minecraft:quartz_block" -> LeverBlock.QUARTZ
+                    "minecraft:gold_block" -> LeverBlock.GOLD
+                    "minecraft:coal_block" -> LeverBlock.COAL
+                    "minecraft:diamond_block" -> LeverBlock.DIAMOND
+                    "minecraft:emerald_block" -> LeverBlock.EMERALD
+                    "minecraft:hardened_clay" -> LeverBlock.CLAY
+                    "minecraft:water" -> LeverBlock.WATER
+                    else -> LeverBlock.NONE
+                }
+            ] = mutableEntry.value.asJsonArray.map { it.asDouble }.toTypedArray()
         }
     }
 
