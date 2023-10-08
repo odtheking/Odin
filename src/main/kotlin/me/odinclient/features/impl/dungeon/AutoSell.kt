@@ -37,7 +37,7 @@ object AutoSell : Module(
             val chestName = container.name
             if (chestName == "Trades" || chestName == "Booster Cookie") {
                 val slot = container.inventorySlots.subList(54, 90).firstOrNull { doSell(it) }?.slotNumber ?: return@execute
-                shiftClickWindow(container.windowId, slot)
+                shiftClickWindow(slot)
             }
         }
     }

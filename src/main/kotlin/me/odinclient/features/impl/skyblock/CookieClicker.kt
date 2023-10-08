@@ -25,7 +25,7 @@ object CookieClicker : Module(
 
             val chestName = container.name
             if (chestName.startsWith("Cookie Clicker")) {
-                windowClick(container.windowId, 13, 2, 3)
+                windowClick(13, 2, 3)
             }
         }
     }

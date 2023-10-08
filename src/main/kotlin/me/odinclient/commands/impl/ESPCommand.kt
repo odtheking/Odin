@@ -9,7 +9,7 @@ private inline val espList get() = MiscConfig.espList
 
 val espCommand = "esp" {
     does {
-        modMessage("Blacklist incorrect usage. Usage: add, remove, clear, list")
+        modMessage("ESP incorrect usage. Usage: add, remove, clear, list")
     }
 
     "add" does {

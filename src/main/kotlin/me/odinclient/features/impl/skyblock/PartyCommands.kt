@@ -32,7 +32,7 @@ object PartyCommands : Module(
     private var private: Boolean by BooleanSetting(name = "Private cmds", default = true)
 
     private var warp: Boolean by BooleanSetting(name = "Warp", default = true)
-    private var warptransfer: Boolean by BooleanSetting(name = "Warp then transfer (warptransfer)", default = true)
+    private var warptransfer: Boolean by BooleanSetting(name = "Warp & pt (warptransfer)", default = true)
     private var coords: Boolean by BooleanSetting(name = "Coords (coords)", default = true)
     private var allinvite: Boolean by BooleanSetting(name = "Allinvite", default = true)
     private var odin: Boolean by BooleanSetting(name = "Odin", default = true)
@@ -57,7 +57,7 @@ object PartyCommands : Module(
     @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
     fun party(event: ChatPacketEvent) {
-        if(!party) return
+        if (!party) return
         val match = Regex("Party > (\\[.+])? ?(.+): !(.+)").find(event.message) ?: return
 
         val ign = match.groups[2]?.value
@@ -71,7 +71,7 @@ object PartyCommands : Module(
     @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
     fun guild(event: ChatPacketEvent) {
-        if(!guild) return
+        if (!guild) return
         val match = Regex("Guild > (\\[.+])? ?(.+) ?(\\[.+])?: ?(.+)").find(event.message) ?: return
 
         val ign = match.groups[2]?.value?.split(" ")?.get(0) // Get rid of guild rank by splitting the string and getting the first word
@@ -87,7 +87,7 @@ object PartyCommands : Module(
     @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
     fun private(event: ChatPacketEvent) {
-        if(!private) return
+        if (!private) return
         val match = Regex("From (\\[.+])? ?(.+): !(.+)").find(event.message) ?: return
 
         val ign = match.groups[2]?.value

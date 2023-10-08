@@ -2,6 +2,7 @@ package me.odinclient.utils.skyblock.dungeon.map
 
 import com.google.gson.Gson
 import com.google.gson.JsonIOException
+import com.google.gson.JsonParser
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import me.odinclient.ModCore.Companion.mc
@@ -9,15 +10,23 @@ import me.odinclient.dungeonmap.core.RoomData
 import me.odinclient.dungeonmap.core.map.Room
 import me.odinclient.dungeonmap.features.Dungeon
 import me.odinclient.dungeonmap.features.DungeonScan
+import me.odinclient.features.impl.dungeon.WaterSolver
 import me.odinclient.utils.Utils.equalsOneOf
 import net.minecraft.block.Block
 import net.minecraft.util.BlockPos
 import net.minecraft.util.ResourceLocation
 import java.io.FileNotFoundException
+import java.io.InputStreamReader
+import java.nio.charset.StandardCharsets
 import kotlin.math.roundToInt
 
 object ScanUtils {
     val roomList: Set<RoomData> = try {
+        /*Gson().fromJson(WaterSolver::class.java.getResourceAsStream("/watertimes.json")
+            ?.let { InputStreamReader(it, StandardCharsets.UTF_8) })
+
+         */
+
         Gson().fromJson(
             mc.resourceManager.getResource(ResourceLocation("odinclient", "map/rooms.json"))
                 .inputStream.bufferedReader(),

@@ -106,7 +106,7 @@ val mainCommand = "od" {
 private val numberMap = mapOf(1 to "one", 2 to "two", 3 to "three", 4 to "four", 5 to "five", 6 to "six", 7 to "seven")
 
 /** Function to parse strings and set your yaw and pitch. */
-private fun setRotation(yaw: String = "0", pitch: String = "0"): Boolean {
+fun setRotation(yaw: String = "0", pitch: String = "0"): Boolean {
     yaw.toFloatOrNull()?.let { mc.thePlayer.rotationYaw = it } ?: return false
     pitch.toFloatOrNull()?.let { mc.thePlayer.rotationPitch = it } ?: return false
     return true

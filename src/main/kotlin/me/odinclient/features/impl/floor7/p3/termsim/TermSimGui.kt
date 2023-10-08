@@ -44,4 +44,10 @@ open class TermSimGui(val name: String, val size: Int) : GuiChest(
         slotClick(slot, mouseButton)
         inventorySlots
     }
+
+    final override fun handleMouseClick(slotIn: Slot?, slotId: Int, clickedButton: Int, clickType: Int) {
+        val slot = slotIn ?: return
+        if (slot.stack?.item == pane && slot.stack?.metadata == 15 || clickedButton != 4) return
+        slotClick(slot, 0)
+    }
 }

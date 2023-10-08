@@ -33,18 +33,18 @@ object HoverTerms : Module(
         if (TerminalSolver.currentTerm == 1) {
             val needed = TerminalSolver.solution.count { it == hoveredItem }
             if (needed >= 3) {
-                windowClick(gui.inventorySlots.windowId, hoveredItem, ClickType.Right)
+                windowClick(hoveredItem, ClickType.Right)
                 triggerBotClock.update()
                 return
             }
         } else if (TerminalSolver.currentTerm == 2) {
             if (TerminalSolver.solution.first() == hoveredItem) {
-                windowClick(gui.inventorySlots.windowId, hoveredItem, if (middleClick) ClickType.Middle else ClickType.Left)
+                windowClick(hoveredItem, if (middleClick) ClickType.Middle else ClickType.Left)
                 triggerBotClock.update()
             }
             return
         }
-        windowClick(gui.inventorySlots.windowId, hoveredItem, if (middleClick) ClickType.Middle else ClickType.Left)
+        windowClick(hoveredItem, if (middleClick) ClickType.Middle else ClickType.Left)
         triggerBotClock.update()
     }
 }
