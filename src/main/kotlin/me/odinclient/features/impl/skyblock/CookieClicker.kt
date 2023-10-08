@@ -34,7 +34,7 @@ object CookieClicker : Module(
     fun onSoundPlay(event: PlaySoundEvent) {
         if (!cancelSound) return
 
-        val container = mc.thePlayer.openContainer ?: return
+        val container = mc.thePlayer?.openContainer ?: return
         if (container !is ContainerChest) return
 
         val chestName = container.lowerChestInventory.displayName.unformattedText
