@@ -70,29 +70,26 @@ val mainCommand = "od" {
         modMessage("requeing dungeon run")
     }
 
-    "help" {
-        modMessage(
-            "List of commands:" +
-                    "\n§7od help §8- §7Shows this message." +
-                    "\n§7od §8- §7Opens the click gui." +
-                    "\n§7od hud §8- §7Opens the hud editor." +
-                    "\n§7od reset (clickgui|hud) §8- §7Resets the click gui or hud positions." +
-                    "\n§7od set (pitch|yaw) # §8- §7Sets your yaw and pitch to #." +
-                    "\n§7od rq §8- §7Requeues your dungeon run." +
-                    "\n§7od f# §8- §7Joins floor #." +
-                    "\n§7od m# §8- §7Joins master floor #." +
-                    "\n§7termsim §8- §7Opens the term simulator." +
-                    "\n§7od esp help §8- §7Configures the esp commands #." +
-                    "\n§7od blacklist help §8- §7Configures the blacklist commands #." +
-                    "\n§7od autosell help §8- §7Configures the autosell commands #."
-        )
-    }
-
     does {
         if (it.isEmpty()) display = ClickGUI
         else { // test please
             val arg = it[0]
-            if (arg.first() == 'f' || arg.first() == 'm') {
+            if (arg == "help")  modMessage(
+                "List of commands:" +
+                        "\n§7od help §8- §7Shows this message." +
+                        "\n§7od §8- §7Opens the click gui." +
+                        "\n§7od hud §8- §7Opens the hud editor." +
+                        "\n§7od reset (clickgui|hud) §8- §7Resets the click gui or hud positions." +
+                        "\n§7od set (pitch|yaw) # §8- §7Sets your yaw and pitch to #." +
+                        "\n§7od rq §8- §7Requeues your dungeon run." +
+                        "\n§7od f# §8- §7Joins floor #." +
+                        "\n§7od m# §8- §7Joins master floor #." +
+                        "\n§7termsim §8- §7Opens the term simulator." +
+                        "\n§7od esp help §8- §7Configures the esp commands." +
+                        "\n§7od blacklist help §8- §7Configures the blacklist commands." +
+                        "\n§7od autosell help §8- §7Configures the autosell commands."
+            )
+            else if (arg.first() == 'f' || arg.first() == 'm') {
                 if (arg.length != 2 || !arg[1].isDigit()) return@does modMessage("§cInvalid floorfr!")
                 val type = it.first().first()
                 val floor = numberMap[it.first()[1].digitToInt()] ?: return@does modMessage("§cInvalid floor!")
@@ -112,4 +109,6 @@ fun setRotation(yaw: String = "0", pitch: String = "0"): Boolean {
     yaw.toFloatOrNull()?.let { mc.thePlayer.rotationYaw = it } ?: return false
     pitch.toFloatOrNull()?.let { mc.thePlayer.rotationPitch = it } ?: return false
     return true
+
+
 }
