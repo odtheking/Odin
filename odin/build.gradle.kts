@@ -22,7 +22,7 @@ loom {
     launchConfigs {
         "client" {
             arg("--tweakClass", "cc.polyfrost.oneconfig.loader.stage0.LaunchWrapperTweaker")
-            arg("--mixin", "mixins.odinclient.json")
+            arg("--mixin", "mixins.odin.json")
         }
     }
     forge {
@@ -54,11 +54,13 @@ val shadowImpl: Configuration by configurations.creating {
 
 
 dependencies {
+    implementation(project(mapOf("path" to ":odinmain")))
     minecraft("com.mojang:minecraft:1.8.9")
     mappings("de.oceanlabs.mcp:mcp_stable:22-1.8.9")
     forge("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9")
 
     implementation(kotlin("stdlib-jdk8"))
+    implementation(project(":odinmain"))
 
     annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
     compileOnly("org.spongepowered:mixin:0.8.5")
@@ -86,7 +88,7 @@ tasks.withType<KotlinCompile> {
 }
 
 tasks.withType(Jar::class) {
-    archiveBaseName.set("odinclient")
+    archiveBaseName.set("odin")
     manifest.attributes.run {
         this["FMLCorePluginContainsFMLMod"] = "true"
         this["ForceLoadAsMod"] = "true"
@@ -113,7 +115,7 @@ tasks.shadowJar {
         }
     }
 
-    fun relocate(name: String) = relocate(name, "com.odinclient.deps.$name")
+    fun relocate(name: String) = relocate(name, "com.odin.deps.$name")
 }
 
 tasks.withType<Jar> { duplicatesStrategy = DuplicatesStrategy.EXCLUDE }

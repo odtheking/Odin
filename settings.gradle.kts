@@ -20,3 +20,4 @@ pluginManagement {
 }
 
 rootProject.name = "OdinClient"
+include("odinmain", "odinclient", "odin")
