@@ -1,12 +1,7 @@
 package me.odinmain.ui.clickgui.elements.menu
 
 import cc.polyfrost.oneconfig.renderer.font.Fonts
-import me.odin.features.impl.render.ClickGUIModule
-import me.odin.utils.render.Color
-import me.odin.utils.render.gui.MouseUtils.isAreaHovered
-import me.odin.utils.render.gui.animations.impl.ColorAnimation
-import me.odin.utils.render.gui.animations.impl.LinearAnimation
-import me.odin.utils.render.gui.nvg.*
+import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.ui.clickgui.elements.Element
 import me.odinmain.ui.clickgui.elements.ElementType
@@ -19,6 +14,11 @@ import me.odinmain.ui.clickgui.util.ColorUtil.darkerIf
 import me.odinmain.ui.clickgui.util.ColorUtil.elementBackground
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.HoverHandler
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
+import me.odinmain.utils.render.gui.animations.impl.ColorAnimation
+import me.odinmain.utils.render.gui.animations.impl.LinearAnimation
+import me.odinmain.utils.render.gui.nvg.*
 
 /**
  * Renders all the modules.

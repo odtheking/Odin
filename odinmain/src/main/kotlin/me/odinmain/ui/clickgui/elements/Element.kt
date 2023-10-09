@@ -1,10 +1,11 @@
 package me.odinmain.ui.clickgui.elements
 
-import me.odin.features.settings.Setting
-import me.odin.utils.render.gui.MouseUtils.isAreaHovered
-import me.odin.utils.render.gui.nvg.NVG
+
+import me.odinmain.features.settings.Setting
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.clickgui.util.HoverHandler
+import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
+import me.odinmain.utils.render.gui.nvg.NVG
 
 /**
  * Renders all the modules.

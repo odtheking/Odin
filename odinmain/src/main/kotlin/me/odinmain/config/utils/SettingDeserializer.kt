@@ -1,4 +1,4 @@
-package me.odinmain.config.jsonutils
+package me.odinmain.config.utils
 
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer

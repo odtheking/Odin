@@ -2,9 +2,6 @@ package me.odinmain.ui.clickgui.elements.menu
 
 import cc.polyfrost.oneconfig.renderer.NanoVGHelper
 import cc.polyfrost.oneconfig.renderer.font.Fonts
-import me.odin.utils.render.gui.MouseUtils.isAreaHovered
-import me.odin.utils.render.gui.animations.impl.ColorAnimation
-import me.odin.utils.render.gui.nvg.*
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.clickgui.elements.Element
@@ -17,6 +14,9 @@ import me.odinmain.ui.clickgui.util.ColorUtil.clickGUIColor
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.HoverHandler
 import me.odinmain.ui.hud.EditHUDGui
+import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
+import me.odinmain.utils.render.gui.animations.impl.ColorAnimation
+import me.odinmain.utils.render.gui.nvg.*
 
 /**
  * Renders all the modules.

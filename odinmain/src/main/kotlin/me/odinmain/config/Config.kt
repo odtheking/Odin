@@ -4,15 +4,14 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonIOException
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
-import me.odin.Odin.Companion.mc
-import me.odin.features.ConfigModule
-import me.odin.features.ModuleManager
-import me.odin.features.settings.Setting
-import me.odin.features.settings.impl.*
-import me.odin.utils.render.Color
-import me.odinmain.config.jsonutils.SettingDeserializer
-import me.odinmain.config.jsonutils.SettingSerializer
+import me.odinmain.OdinMain.mc
+import me.odinmain.config.utils.SettingDeserializer
+import me.odinmain.config.utils.SettingSerializer
+import me.odinmain.features.ConfigModule
+import me.odinmain.features.ModuleManager
+import me.odinmain.features.settings.Setting
 import me.odinmain.features.settings.impl.*
+import me.odinmain.utils.render.Color
 import java.io.File
 import java.io.IOException
 

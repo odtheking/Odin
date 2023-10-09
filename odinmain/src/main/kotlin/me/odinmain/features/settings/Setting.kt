@@ -1,5 +1,6 @@
 package me.odinmain.features.settings
 
+import me.odinmain.features.Module
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty

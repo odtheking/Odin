@@ -8,6 +8,7 @@ import me.odinmain.commands.AbstractCommand
 import me.odinmain.ui.waypoint.WaypointGUI
 import me.odinmain.utils.Utils.floorToInt
 import me.odinmain.utils.VecUtils.floored
+import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import me.odinmain.utils.skyblock.ChatUtils.partyMessage
 import me.odinmain.utils.skyblock.PlayerUtils.posX

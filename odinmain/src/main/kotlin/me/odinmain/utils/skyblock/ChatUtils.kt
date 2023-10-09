@@ -1,6 +1,7 @@
 package me.odinmain.utils.skyblock
 
-import me.odinmain.OdinMain.Companion.mc
+import me.odinmain.OdinMain.mc
+import me.odinmain.config.MiscConfig
 import me.odinmain.utils.Utils.noControlCodes
 import me.odinmain.utils.WebUtils
 import net.minecraft.event.ClickEvent

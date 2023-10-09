@@ -1,15 +1,16 @@
 package me.odinmain.ui.hud
 
-import me.odin.features.ModuleManager.huds
-import me.odin.utils.render.Color
-import me.odin.utils.render.gui.MouseUtils.isAreaHovered
-import me.odin.utils.render.gui.animations.impl.EaseInOut
-import me.odin.utils.render.gui.nvg.*
+import me.odinmain.features.Module
+import me.odinmain.features.ModuleManager.huds
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.clickgui.util.HoverHandler
 import me.odinmain.ui.hud.EditHUDGui.dragging
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
+import me.odinmain.utils.render.gui.animations.impl.EaseInOut
+import me.odinmain.utils.render.gui.nvg.*
 
 /**
  * Class to render elements on hud

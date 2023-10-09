@@ -1,18 +1,18 @@
 package me.odinmain.ui.clickgui
 
 import cc.polyfrost.oneconfig.renderer.font.Fonts
-import me.odin.features.Category
-import me.odin.features.ModuleManager.modules
-import me.odin.features.impl.render.ClickGUIModule
-import me.odin.utils.Utils.round
-import me.odin.utils.render.gui.GuiUtils.capitalizeFirst
-import me.odin.utils.render.gui.MouseUtils.isAreaHovered
-import me.odin.utils.render.gui.MouseUtils.mouseX
-import me.odin.utils.render.gui.MouseUtils.mouseY
-import me.odin.utils.render.gui.animations.impl.LinearAnimation
-import me.odin.utils.render.gui.nvg.*
+import me.odinmain.features.Category
+import me.odinmain.features.ModuleManager.modules
+import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.ui.clickgui.elements.ModuleButton
 import me.odinmain.ui.clickgui.util.ColorUtil
+import me.odinmain.utils.Utils.round
+import me.odinmain.utils.render.gui.GuiUtils.capitalizeFirst
+import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
+import me.odinmain.utils.render.gui.MouseUtils.mouseX
+import me.odinmain.utils.render.gui.MouseUtils.mouseY
+import me.odinmain.utils.render.gui.animations.impl.LinearAnimation
+import me.odinmain.utils.render.gui.nvg.*
 import kotlin.math.floor
 
 /**

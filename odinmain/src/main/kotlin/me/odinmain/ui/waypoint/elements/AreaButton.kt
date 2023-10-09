@@ -2,10 +2,10 @@ package me.odinmain.ui.waypoint.elements
 
 import cc.polyfrost.oneconfig.renderer.font.Fonts
 import cc.polyfrost.oneconfig.utils.dsl.*
-import me.odin.utils.render.gui.GuiUtils.nanoVG
-import me.odin.utils.render.gui.GuiUtils.scissor
-import me.odin.utils.render.gui.MouseHandler
 import me.odinmain.ui.waypoint.WaypointGUI
+import me.odinmain.utils.render.gui.GuiUtils.nanoVG
+import me.odinmain.utils.render.gui.GuiUtils.scissor
+import me.odinmain.utils.render.gui.MouseHandler
 import java.awt.Color
 
 class AreaButton(

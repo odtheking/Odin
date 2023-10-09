@@ -2,14 +2,8 @@ package me.odinmain.ui.clickgui.elements
 
 import cc.polyfrost.oneconfig.renderer.NanoVGHelper
 import cc.polyfrost.oneconfig.renderer.font.Fonts
-import me.odin.features.impl.render.ClickGUIModule
-import me.odin.features.settings.impl.*
-import me.odin.ui.clickgui.elements.menu.*
-import me.odin.utils.render.Color
-import me.odin.utils.render.gui.MouseUtils.isAreaHovered
-import me.odin.utils.render.gui.animations.impl.ColorAnimation
-import me.odin.utils.render.gui.animations.impl.EaseInOut
-import me.odin.utils.render.gui.nvg.*
+import me.odinmain.features.Module
+import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.clickgui.Panel
@@ -19,6 +13,11 @@ import me.odinmain.ui.clickgui.util.ColorUtil.clickGUIColor
 import me.odinmain.ui.clickgui.util.ColorUtil.moduleButtonColor
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.HoverHandler
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
+import me.odinmain.utils.render.gui.animations.impl.ColorAnimation
+import me.odinmain.utils.render.gui.animations.impl.EaseInOut
+import me.odinmain.utils.render.gui.nvg.*
 import kotlin.math.floor
 
 /**

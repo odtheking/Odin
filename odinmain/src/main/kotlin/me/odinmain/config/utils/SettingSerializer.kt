@@ -1,11 +1,10 @@
-package me.odinmain.config.jsonutils
+package me.odinmain.config.utils
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
-import me.odin.features.settings.Setting
-import me.odin.features.settings.impl.*
+import me.odinmain.features.settings.Setting
 import me.odinmain.features.settings.impl.*
 import java.lang.reflect.Type
 

@@ -1,20 +1,20 @@
 package me.odinmain.ui.clickgui
 
 import cc.polyfrost.oneconfig.renderer.font.Fonts
-import me.odin.Odin.Companion.display
-import me.odin.features.Category
-import me.odin.features.impl.render.ClickGUIModule
-import me.odin.utils.clock.Executor
-import me.odin.utils.clock.Executor.Companion.register
-import me.odin.utils.render.gui.animations.impl.EaseInOut
-import me.odin.utils.render.gui.nvg.*
+import me.odinmain.OdinMain.display
 import me.odinmain.config.Config
+import me.odinmain.features.Category
+import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.ui.Screen
 import me.odinmain.ui.clickgui.elements.menu.ElementColor
 import me.odinmain.ui.clickgui.util.ColorUtil.buttonColor
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.clickgui.util.HoverHandler
+import me.odinmain.utils.clock.Executor
+import me.odinmain.utils.clock.Executor.Companion.register
+import me.odinmain.utils.render.gui.animations.impl.EaseInOut
+import me.odinmain.utils.render.gui.nvg.*
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.entity.player.EntityPlayer

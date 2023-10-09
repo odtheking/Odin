@@ -1,6 +1,7 @@
 package me.odinmain.features.settings.impl
 
-import me.odin.features.settings.Setting
+import me.odinmain.features.settings.Setting
+
 
 /**
  * Setting that lets you type a string.

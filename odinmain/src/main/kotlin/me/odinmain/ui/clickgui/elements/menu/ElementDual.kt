@@ -1,10 +1,6 @@
 package me.odinmain.ui.clickgui.elements.menu
 
 import cc.polyfrost.oneconfig.renderer.font.Fonts
-import me.odin.utils.render.Color
-import me.odin.utils.render.gui.MouseUtils
-import me.odin.utils.render.gui.animations.impl.EaseInOut
-import me.odin.utils.render.gui.nvg.*
 import me.odinmain.features.settings.impl.DualSetting
 import me.odinmain.ui.clickgui.elements.Element
 import me.odinmain.ui.clickgui.elements.ElementType
@@ -13,6 +9,10 @@ import me.odinmain.ui.clickgui.util.ColorUtil.buttonColor
 import me.odinmain.ui.clickgui.util.ColorUtil.clickGUIColor
 import me.odinmain.ui.clickgui.util.ColorUtil.darkerIf
 import me.odinmain.ui.clickgui.util.ColorUtil.elementBackground
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.gui.MouseUtils
+import me.odinmain.utils.render.gui.animations.impl.EaseInOut
+import me.odinmain.utils.render.gui.nvg.*
 
 /**
  * Renders all the modules.
@@ -43,7 +43,8 @@ class ElementDual(parent: ModuleButton, setting: DualSetting) : Element<DualSett
             val pos = posAnim.get(8f, w / 2, !setting.enabled)
             rect(x + pos, y + 3f, w / 2 - 6f, 28f, clickGUIColor, 5f)
 
-            text(setting.left, x + w / 4 + 6f, y + 3f + h / 2,Color.WHITE.darkerIf(isLeftHovered), 16f, Fonts.REGULAR, TextAlign.Middle)
+            text(setting.left, x + w / 4 + 6f, y + 3f + h / 2,
+                Color.WHITE.darkerIf(isLeftHovered), 16f, Fonts.REGULAR, TextAlign.Middle)
             text(setting.right, x + w * 3 / 4 - 3f,y + 3f + h / 2, Color.WHITE.darkerIf(isRightHovered), 16f, Fonts.REGULAR, TextAlign.Middle)
         }
     }

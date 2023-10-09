@@ -1,20 +1,20 @@
 package me.odinmain.ui.hud
 
 import cc.polyfrost.oneconfig.renderer.font.Fonts
-import me.odin.features.ModuleManager.huds
-import me.odin.utils.clock.Executor
-import me.odin.utils.clock.Executor.Companion.register
-import me.odin.utils.render.Color
-import me.odin.utils.render.gui.GuiUtils.scaledHeight
-import me.odin.utils.render.gui.GuiUtils.scaledWidth
-import me.odin.utils.render.gui.MouseUtils
-import me.odin.utils.render.gui.MouseUtils.isAreaHovered
-import me.odin.utils.render.gui.animations.impl.EaseInOut
-import me.odin.utils.render.gui.nvg.*
 import me.odinmain.config.Config
+import me.odinmain.features.ModuleManager.huds
 import me.odinmain.ui.Screen
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.HoverHandler
+import me.odinmain.utils.clock.Executor
+import me.odinmain.utils.clock.Executor.Companion.register
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.gui.GuiUtils.scaledHeight
+import me.odinmain.utils.render.gui.GuiUtils.scaledWidth
+import me.odinmain.utils.render.gui.MouseUtils
+import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
+import me.odinmain.utils.render.gui.animations.impl.EaseInOut
+import me.odinmain.utils.render.gui.nvg.*
 import kotlin.math.sign
 
 /**
