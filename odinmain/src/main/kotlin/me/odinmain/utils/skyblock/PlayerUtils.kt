@@ -1,6 +1,6 @@
 package me.odinmain.utils.skyblock
 
-import me.odinmain.OdinMain.Companion.mc
+import me.odinmain.OdinMain.mc
 import me.odinmain.utils.VecUtils.floored
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.util.Vec3i

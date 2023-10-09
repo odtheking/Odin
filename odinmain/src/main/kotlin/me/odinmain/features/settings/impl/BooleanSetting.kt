@@ -1,6 +1,6 @@
 package me.odinmain.features.settings.impl
 
-import me.odin.features.settings.Setting
+import me.odinmain.features.settings.Setting
 
 /**
  * A true-false setting.
@@ -16,7 +16,6 @@ class BooleanSetting (
     override var value: Boolean = default
         set (value) {
             field = processInput(value)
-
         }
 
     var enabled: Boolean by this::value

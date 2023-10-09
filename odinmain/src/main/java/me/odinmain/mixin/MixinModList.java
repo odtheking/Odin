@@ -1,6 +1,5 @@
 package me.odinmain.mixin;
 
-import me.odin.Odin;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.ModContainer;
 import net.minecraftforge.fml.common.network.handshake.FMLHandshakeMessage;
@@ -21,6 +20,6 @@ public class MixinModList {
     @Inject(method = "<init>(Ljava/util/List;)V", at = @At("RETURN"))
     private void removeMod(List<ModContainer> modList, CallbackInfo ci) {
         if (Minecraft.getMinecraft().isIntegratedServerRunning()) return;
-        modTags.remove(Odin.MOD_ID);
+        modTags.remove("odin");
     }
 }

@@ -1,9 +1,9 @@
 package me.odinmain.commands.impl
 
-import me.odin.features.impl.render.ClickGUIModule
-import me.odinmain.OdinMain.Companion.display
-import me.odinmain.OdinMain.Companion.mc
+import me.odinmain.OdinMain.display
+import me.odinmain.OdinMain.mc
 import me.odinmain.commands.AbstractCommand
+import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.utils.skyblock.ChatUtils

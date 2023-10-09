@@ -1,5 +1,5 @@
 {
-  "package": "me.odin.mixin",
+  "package": "me.odinmain.mixin",
   "refmap": "mixins.odin.refmap.json",
   "minVersion": "0.7",
   "compatibilityLevel": "JAVA_8",

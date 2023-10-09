@@ -5,13 +5,13 @@ import net.minecraftforge.fml.common.eventhandler.Cancelable
 import net.minecraftforge.fml.common.eventhandler.Event
 
 /**
- * @see me.odin.mixin.MixinNetworkManager.onReceivePacket
+ * @see me.odinmain.mixin.MixinNetworkManager.onReceivePacket
  */
 @Cancelable
 class ReceivePacketEvent(val packet: Packet<*>) : Event()
 
 /**
- * @see me.odin.mixin.MixinNetworkManager.onSendPacket
+ * @see me.odinmain.mixin.MixinNetworkManager.onSendPacket
  */
 @Cancelable
 class PacketSentEvent(val packet: Packet<*>) : Event()

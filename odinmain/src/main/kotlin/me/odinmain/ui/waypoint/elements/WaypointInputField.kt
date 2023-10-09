@@ -2,9 +2,9 @@ package me.odinmain.ui.waypoint.elements
 
 import cc.polyfrost.oneconfig.renderer.font.Font
 import cc.polyfrost.oneconfig.utils.dsl.*
-import me.odin.utils.render.gui.MouseHandler
-import me.odin.utils.render.gui.animations.impl.EaseInOut
-import me.odin.utils.render.gui.animations.impl.LinearAnimation
+import me.odinmain.utils.render.gui.MouseHandler
+import me.odinmain.utils.render.gui.animations.impl.EaseInOut
+import me.odinmain.utils.render.gui.animations.impl.LinearAnimation
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 

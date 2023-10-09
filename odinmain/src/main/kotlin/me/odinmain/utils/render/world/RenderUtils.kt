@@ -2,7 +2,7 @@ package me.odinmain.utils.render.world
 
 import cc.polyfrost.oneconfig.libs.universal.UGraphics
 import cc.polyfrost.oneconfig.libs.universal.UMatrixStack
-import me.odinmain.OdinMain.Companion.mc
+import me.odinmain.OdinMain.mc
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
 import net.minecraft.client.renderer.GlStateManager

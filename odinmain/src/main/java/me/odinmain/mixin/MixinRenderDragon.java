@@ -1,6 +1,6 @@
 package me.odinmain.mixin;
 
-import me.odin.features.impl.render.PersonalDragon;
+import me.odinmain.features.impl.render.PersonalDragon;
 import net.minecraft.client.renderer.entity.RenderDragon;
 import net.minecraft.entity.boss.BossStatus;
 import net.minecraft.entity.boss.EntityDragon;

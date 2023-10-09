@@ -1,6 +1,6 @@
 package me.odinmain.utils
 
-import me.odinmain.OdinMain.Companion.mc
+import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.ReceivePacketEvent
 import net.minecraft.network.Packet
 import net.minecraft.network.play.client.C16PacketClientStatus

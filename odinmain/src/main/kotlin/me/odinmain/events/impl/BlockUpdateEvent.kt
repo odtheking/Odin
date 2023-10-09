@@ -6,6 +6,6 @@ import net.minecraftforge.fml.common.eventhandler.Event
 
 /**
  * Sent when a block has been updated.
- * @see me.odin.mixin.MixinWorld.onsetBlockState
+ * @see me.odinmain.mixin.MixinWorld.onsetBlockState
  */
 class BlockUpdateEvent(var pos: BlockPos, var state: IBlockState) : Event()

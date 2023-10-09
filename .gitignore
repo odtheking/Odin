@@ -4,3 +4,9 @@
 /.vscode/
 /.gradle/
 /.idea/
+/odinmain/.gradle/
+/odinmain/build/
+/odinclient/.gradle/
+/odinclient/build/
+/odin/.gradle/
+/odin/build

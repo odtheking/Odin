@@ -1,6 +1,6 @@
 package me.odinmain.utils.skyblock.dungeon
 
-import me.odin.features.impl.render.ClickGUIModule
+import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import me.odinmain.utils.skyblock.PlayerUtils.posX
 import me.odinmain.utils.skyblock.PlayerUtils.posZ

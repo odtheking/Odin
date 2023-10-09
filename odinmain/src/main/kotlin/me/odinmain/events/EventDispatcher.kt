@@ -1,14 +1,13 @@
 package me.odinmain.events
 
 import kotlinx.coroutines.launch
-import me.odin.Odin.Companion.mc
-import me.odin.Odin.Companion.scope
-import me.odin.events.impl.*
-import me.odin.utils.AsyncUtils
-import me.odin.utils.ServerUtils
-import me.odin.utils.Utils.noControlCodes
-import me.odin.utils.clock.Clock
+import me.odinmain.OdinMain.mc
+import me.odinmain.OdinMain.scope
 import me.odinmain.events.impl.*
+import me.odinmain.utils.AsyncUtils
+import me.odinmain.utils.ServerUtils
+import me.odinmain.utils.Utils.noControlCodes
+import me.odinmain.utils.clock.Clock
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.network.play.server.S02PacketChat
@@ -58,7 +57,6 @@ object EventDispatcher {
         tickRamp = 18
     }
 
-    // use this. alot more readable and cleaner code. Should be barely less performant cuz everything is inlined.
     private val nextTime = Clock()
 
     /**

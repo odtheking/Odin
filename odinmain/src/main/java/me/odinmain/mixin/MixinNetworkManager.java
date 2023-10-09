@@ -1,9 +1,9 @@
 package me.odinmain.mixin;
 
 import io.netty.channel.ChannelHandlerContext;
-import me.odin.events.impl.PacketSentEvent;
-import me.odin.events.impl.ReceivePacketEvent;
-import me.odin.utils.ServerUtils;
+import me.odinmain.events.impl.PacketSentEvent;
+import me.odinmain.events.impl.ReceivePacketEvent;
+import me.odinmain.utils.ServerUtils;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraftforge.common.MinecraftForge;

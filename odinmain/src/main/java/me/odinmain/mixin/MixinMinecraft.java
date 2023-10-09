@@ -1,10 +1,10 @@
 package me.odinmain.mixin;
 
-import me.odin.events.impl.PostGuiOpenEvent;
-import me.odin.events.impl.PreKeyInputEvent;
-import me.odin.events.impl.PreMouseInputEvent;
-import me.odin.features.impl.render.CPSDisplay;
-import me.odin.features.impl.render.NoRender;
+import me.odinmain.events.impl.PostGuiOpenEvent;
+import me.odinmain.events.impl.PreKeyInputEvent;
+import me.odinmain.events.impl.PreMouseInputEvent;
+import me.odinmain.features.impl.render.CPSDisplay;
+import me.odinmain.features.impl.render.RenderOptimizer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.Timer;
@@ -60,7 +60,7 @@ public class MixinMinecraft {
     private void onRunGameLoop(CallbackInfo ci)
     {
         if (this.skipRenderWorld) {
-            NoRender.INSTANCE.drawGui();
+            RenderOptimizer.INSTANCE.drawGui();
             try {
                 Thread.sleep((long) (50.0 / this.timer.timerSpeed));
             } catch (InterruptedException e) {

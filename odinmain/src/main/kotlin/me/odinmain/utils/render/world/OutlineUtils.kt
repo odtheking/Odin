@@ -1,6 +1,6 @@
 package me.odinmain.utils.render.world
 
-import me.odinmain.OdinMain.Companion.mc
+import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.RenderEntityModelEvent
 import me.odinmain.utils.render.Color
 import net.minecraft.client.model.ModelBase

@@ -1,6 +1,6 @@
 package me.odinmain.utils.skyblock
 
-import me.odinmain.OdinMain.Companion.mc
+import me.odinmain.OdinMain.mc
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.skyblock.ScoreboardUtils.cleanSB

@@ -5,7 +5,7 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraftforge.fml.common.eventhandler.Event
 
 /**
- * @see me.odin.mixin.MixinRendererLivingEntity.renderModel
+ * @see me.odinmain.mixin.MixinRendererLivingEntity.renderModel
  */
 class RenderEntityModelEvent(
     var entity: EntityLivingBase,

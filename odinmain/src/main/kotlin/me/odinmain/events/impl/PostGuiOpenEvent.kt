@@ -3,6 +3,6 @@ package me.odinmain.events.impl
 import net.minecraftforge.fml.common.eventhandler.Event
 
 /**
- * @see me.odin.mixin.MixinMinecraft.onDisplayGuiScreen
+ * @see me.odinmain.mixin.MixinMinecraft.onDisplayGuiScreen
  */
 class PostGuiOpenEvent : Event()

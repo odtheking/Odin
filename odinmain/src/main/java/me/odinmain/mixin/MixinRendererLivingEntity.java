@@ -1,6 +1,6 @@
 package me.odinmain.mixin;
 
-import me.odin.events.impl.RenderEntityModelEvent;
+import me.odinmain.events.impl.RenderEntityModelEvent;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.entity.EntityLivingBase;

@@ -1,6 +1,6 @@
 package me.odinmain.utils
 
-import me.odinmain.OdinMain.Companion.mc
+import me.odinmain.OdinMain.mc
 import me.odinmain.utils.Utils.floor
 import net.minecraft.entity.Entity
 import net.minecraft.util.AxisAlignedBB

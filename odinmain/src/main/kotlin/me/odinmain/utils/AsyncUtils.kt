@@ -4,7 +4,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import me.odinmain.OdinMain.Companion.mc
+import me.odinmain.OdinMain.mc
 import net.minecraft.inventory.ContainerChest
 
 object AsyncUtils {

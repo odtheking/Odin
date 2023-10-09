@@ -1,10 +1,10 @@
 package me.odinmain.commands.impl
 
-import me.odin.features.impl.render.WaypointManager
-import me.odin.utils.render.Color
-import me.odinmain.OdinMain.Companion.display
-import me.odinmain.OdinMain.Companion.mc
+
+import me.odinmain.OdinMain.display
+import me.odinmain.OdinMain.mc
 import me.odinmain.commands.AbstractCommand
+import me.odinmain.features.impl.render.WaypointManager
 import me.odinmain.ui.waypoint.WaypointGUI
 import me.odinmain.utils.Utils.floorToInt
 import me.odinmain.utils.VecUtils.floored

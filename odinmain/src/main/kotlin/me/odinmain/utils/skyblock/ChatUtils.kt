@@ -63,10 +63,12 @@ object ChatUtils {
             "§9§m" + "-".repeat(it / mc.fontRendererObj.getStringWidth("-"))
         } ?: ""
 
+    fun isInBlacklist(name: String) : Boolean = MiscConfig.blacklist.contains(name.lowercase())
+
     fun autoGM(message: String, name: String) {
-        if (BlackList.isInBlacklist(name)) return
-        if(message.lowercase().startsWith("gm")) guildMessage("gm $name")
-        if(message.lowercase().startsWith("gn")) guildMessage("gn $name")
+        if (isInBlacklist(name)) return
+        if (message.lowercase().startsWith("gm")) guildMessage("gm $name")
+        if (message.lowercase().startsWith("gn")) guildMessage("gn $name")
     }
 
     fun createClickStyle(action: ClickEvent.Action?, value: String): ChatStyle {

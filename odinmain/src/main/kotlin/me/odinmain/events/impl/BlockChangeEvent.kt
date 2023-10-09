@@ -6,6 +6,6 @@ import net.minecraftforge.fml.common.eventhandler.Event
 
 /**
  * Sent when a block has been updated.
- * @see me.odin.mixin.MixinChunk.onBlockChange
+ * @see me.odinmain.mixin.MixinChunk.onBlockChange
  */
 class BlockChangeEvent(val pos: BlockPos, val old: IBlockState, val update: IBlockState) : Event()

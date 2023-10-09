@@ -1,7 +1,7 @@
 package me.odinmain.utils.skyblock.dungeon
 
 import com.google.common.collect.ComparisonChain
-import me.odinmain.OdinMain.Companion.mc
+import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.ReceivePacketEvent
 import me.odinmain.utils.Utils.noControlCodes
 import me.odinmain.utils.clock.Executor

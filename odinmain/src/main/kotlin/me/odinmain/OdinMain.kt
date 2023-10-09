@@ -1,5 +1,10 @@
 package me.odinmain
 
+import kotlinx.coroutines.CoroutineScope
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.GuiScreen
+import kotlin.coroutines.EmptyCoroutineContext
+
 object OdinMain {
     val mc: Minecraft = Minecraft.getMinecraft()
 

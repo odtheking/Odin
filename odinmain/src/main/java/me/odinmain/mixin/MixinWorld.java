@@ -1,6 +1,6 @@
 package me.odinmain.mixin;
 
-import me.odin.events.impl.BlockUpdateEvent;
+import me.odinmain.events.impl.BlockUpdateEvent;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;

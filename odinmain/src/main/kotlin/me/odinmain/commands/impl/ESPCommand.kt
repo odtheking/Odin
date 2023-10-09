@@ -1,7 +1,5 @@
 package me.odinmain.commands.impl
 
-import me.odin.features.impl.render.ESP
-import me.odinmain.OdinMain.Companion.miscConfig
 import me.odinmain.commands.Command
 import me.odinmain.commands.CommandArguments
 import me.odinmain.config.MiscConfig

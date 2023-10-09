@@ -58,6 +58,8 @@ abstract class Module(
     @SerializedName("settings")
     val settings: ArrayList<Setting<*>>
 
+    protected inline val mc get() = OdinMain.mc
+
     /**
      * Will be used for a tooltip
      */
@@ -127,7 +129,7 @@ abstract class Module(
                 return set
             }
         }
-        System.err.println("[" + Odin.NAME + "] Error Setting NOT found: '" + name + "'!")
+        System.err.println("[Odin] Error Setting NOT found: '$name'!")
         return null
     }
 

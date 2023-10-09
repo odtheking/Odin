@@ -1,7 +1,7 @@
-package me.odin.features.settings.impl
+package me.odinmain.features.settings.impl
 
-import me.odin.features.settings.Setting
-import me.odin.utils.render.Color
+import me.odinmain.features.settings.Setting
+import me.odinmain.utils.render.Color
 
 /**
  * Setting that has hsba values.

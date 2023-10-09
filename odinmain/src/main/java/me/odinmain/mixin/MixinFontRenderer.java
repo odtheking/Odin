@@ -1,6 +1,6 @@
 package me.odinmain.mixin;
 
-import me.odin.features.impl.render.NickHider;
+import me.odinmain.features.impl.render.NickHider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import org.spongepowered.asm.mixin.Mixin;

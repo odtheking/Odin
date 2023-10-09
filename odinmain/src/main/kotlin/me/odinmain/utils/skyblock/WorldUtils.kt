@@ -1,6 +1,6 @@
 package me.odinmain.utils.skyblock
 
-import me.odinmain.OdinMain.Companion.mc
+import me.odinmain.OdinMain.mc
 import net.minecraft.block.Block.getIdFromBlock
 import net.minecraft.util.BlockPos
 

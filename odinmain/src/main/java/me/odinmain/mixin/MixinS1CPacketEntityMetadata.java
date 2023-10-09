@@ -1,6 +1,6 @@
 package me.odinmain.mixin;
 
-import me.odin.events.impl.PostEntityMetadata;
+import me.odinmain.events.impl.PostEntityMetadata;
 import net.minecraft.network.play.INetHandlerPlayClient;
 import net.minecraft.network.play.server.S1CPacketEntityMetadata;
 import net.minecraftforge.common.MinecraftForge;

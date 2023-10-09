@@ -1,7 +1,7 @@
 package me.odinmain.ui.clickgui.util
 
-import me.odin.features.impl.render.ClickGUIModule
-import me.odin.utils.render.Color
+import me.odinmain.features.impl.render.ClickGUIModule
+import me.odinmain.utils.render.Color
 
 object ColorUtil {
 
