@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-FMLCorePluginContainsFMLMod: true
-ForceLoadAsMod: true
-TweakClass: cc.polyfrost.oneconfig.loader.stage0.LaunchWrapperTweaker
-MixinConfigs: mixins.odinclient.json
-
