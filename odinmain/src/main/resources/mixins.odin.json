@@ -1,0 +1,25 @@
+{
+  "package": "me.odin.mixin",
+  "refmap": "mixins.odin.refmap.json",
+  "minVersion": "0.7",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "MixinChunk",
+    "MixinNetworkManager",
+    "MixinS1CPacketEntityMetadata",
+    "MixinWorld"
+  ],
+  "client": [
+    "MinecraftAccessor",
+    "MixinFontRenderer",
+    "MixinGuiContainer",
+    "MixinMinecraft",
+    "MixinModList",
+    "MixinMouseHelper",
+    "MixinNetworkManager",
+    "MixinRender",
+    "MixinRendererLivingEntity",
+    "model.MixinModelBiped",
+    "model.MixinModelBlaze"
+  ]
+}

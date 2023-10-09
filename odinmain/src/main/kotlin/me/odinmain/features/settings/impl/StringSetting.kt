@@ -1,0 +1,24 @@
+package me.odinmain.features.settings.impl
+
+import me.odin.features.settings.Setting
+
+/**
+ * Setting that lets you type a string.
+ * @author Aton
+ */
+class StringSetting(
+    name: String,
+    override val default: String = "",
+    var length: Int = 20,
+    hidden: Boolean = false,
+    description: String = "",
+) : Setting<String>(name, hidden, description) {
+
+    override var value: String = default
+        set(newStr) {
+            val tempStr = processInput(newStr)
+            field = if (tempStr.length <= length) tempStr else return
+        }
+
+    var text: String by this::value
+}

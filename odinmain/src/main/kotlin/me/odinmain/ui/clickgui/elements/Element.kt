@@ -1,0 +1,64 @@
+package me.odinmain.ui.clickgui.elements
+
+import me.odin.features.settings.Setting
+import me.odin.utils.render.gui.MouseUtils.isAreaHovered
+import me.odin.utils.render.gui.nvg.NVG
+import me.odinmain.ui.clickgui.ClickGUI
+import me.odinmain.ui.clickgui.util.HoverHandler
+
+/**
+ * Renders all the modules.
+ *
+ * Backend made by Aton, with some changes
+ * Design mostly made by Stivais
+ *
+ * @author Stivais, Aton
+ * @see [Element]
+ */
+open class Element<S : Setting<*>>(val parent: ModuleButton, val setting: S, type: ElementType) {
+
+    inline val name: String
+        get () = setting.name
+
+    val w: Float
+        inline get() = parent.width
+
+    var h: Float = when (type) {
+        ElementType.SLIDER -> 40f
+        else -> DEFAULT_HEIGHT
+    }
+
+    var extended = false
+    var listening = false
+
+    val x: Float
+        inline get() = parent.x
+
+    var y: Float = 0f
+        get() = field + parent.y
+
+    open val isHovered
+        get() = isAreaHovered(x, y, w, h)
+
+    private val hoverHandler = HoverHandler(1250, 200)
+
+    open fun render(nvg: NVG): Float {
+        hoverHandler.handle(x, y, w, h)
+        if (hoverHandler.percent() > 0) {
+            ClickGUI.setDescription(setting.description, x + w + 10f, y, hoverHandler)
+        }
+        draw(nvg)
+        return h
+    }
+
+    protected open fun draw(nvg: NVG) {}
+
+    open fun mouseClicked(mouseButton: Int): Boolean = isAreaHovered(x, y, w, h)
+    open fun mouseReleased(state: Int) {}
+
+    open fun keyTyped(typedChar: Char, keyCode: Int): Boolean = false
+
+    companion object {
+        const val DEFAULT_HEIGHT = 32f
+    }
+}
