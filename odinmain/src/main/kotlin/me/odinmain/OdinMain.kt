@@ -56,7 +56,7 @@ class OdinMain {
 
             Executor,
             ModuleManager,
-            WaypointManager,
+            WaypointManager,,
             this
         ).forEach {
             MinecraftForge.EVENT_BUS.register(it)
