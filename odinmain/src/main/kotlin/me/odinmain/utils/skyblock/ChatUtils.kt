@@ -1,7 +1,7 @@
 package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.config.MiscConfig
+import me.odinmain.features.impl.skyblock.DevPlayers.devs
 import me.odinmain.utils.Utils.noControlCodes
 import me.odinmain.utils.WebUtils
 import net.minecraft.event.ClickEvent
@@ -46,6 +46,13 @@ object ChatUtils {
         mc.thePlayer?.addChatMessage(ChatComponentText(msg))
     }
 
+    fun devMessage(message: Any, prefix: Boolean = true) {
+        if (mc.thePlayer == null) return
+        if (!devs.keys.contains(mc.thePlayer.name)) return
+        val msg = if (prefix) "§3Odin§bDev §8»§r $message" else message.toString()
+        mc.thePlayer?.addChatMessage(ChatComponentText(msg))
+    }
+
     fun guildMessage(message: Any) {
         sendCommand("gc $message")
     }
@@ -62,14 +69,6 @@ object ChatUtils {
         mc.ingameGUI?.chatGUI?.chatWidth?.let {
             "§9§m" + "-".repeat(it / mc.fontRendererObj.getStringWidth("-"))
         } ?: ""
-
-    fun isInBlacklist(name: String) : Boolean = MiscConfig.blacklist.contains(name.lowercase())
-
-    fun autoGM(message: String, name: String) {
-        if (isInBlacklist(name)) return
-        if (message.lowercase().startsWith("gm")) guildMessage("gm $name")
-        if (message.lowercase().startsWith("gn")) guildMessage("gn $name")
-    }
 
     fun createClickStyle(action: ClickEvent.Action?, value: String): ChatStyle {
         val style = ChatStyle()

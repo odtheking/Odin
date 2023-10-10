@@ -5,8 +5,19 @@ import cc.polyfrost.oneconfig.renderer.font.Font
 import cc.polyfrost.oneconfig.renderer.scissor.Scissor
 import cc.polyfrost.oneconfig.renderer.scissor.ScissorHelper
 import cc.polyfrost.oneconfig.utils.dsl.nanoVGHelper
+import me.odinmain.features.impl.render.ClickGUIModule.experimentalRendering
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.nvg.TextAlign.*
+import me.odinmain.utils.render.world.RenderUtils.bindColor
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.Tessellator
+import net.minecraft.client.renderer.WorldRenderer
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import java.util.*
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.max
+import kotlin.math.sin
 
 /**
  * Makes it more understanding that [nanoVGHelper] is used for rendering and acts like a wrapper.
@@ -15,6 +26,9 @@ import me.odinmain.utils.render.gui.nvg.TextAlign.*
  */
 inline val renderer: NanoVGHelper
     get() = nanoVGHelper
+
+private val tessellator: Tessellator = Tessellator.getInstance()
+private val worldRenderer: WorldRenderer = tessellator.worldRenderer
 
 /**
  * This classes acts like wrapper for nvg context.
@@ -48,12 +62,94 @@ fun NVG.rect(
     x: Float, y: Float, w: Float, h: Float, color: Color, topL: Float, topR: Float, botL: Float, botR: Float
 ) {
     if (color.isTransparent) return
-    renderer.drawRoundedRectVaried(context, x, y, w, h, color.rgba, topL, topR, botR, botL)
+    if (!experimentalRendering) {
+        renderer.drawRoundedRectVaried(context, x, y, w, h, color.rgba, topL, topR, botR, botL)
+        return
+    }
+    GlStateManager.pushMatrix()
+    GlStateManager.enableAlpha()
+    GlStateManager.disableTexture2D()
+    GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+    color.bindColor()
+
+    // Draw the top-left corner
+    drawCircle(x + topL, y + topL, topL)
+
+    // Draw the top-right corner
+    drawCircle(x + w - topR, y + topR, topR)
+
+    // Draw the bottom-left corner
+    drawCircle(x + botL, y + h - botL, botL)
+
+    // Draw the bottom-right corner
+    drawCircle(x + w - botR, y + h - botR, botR)
+
+    // Draw the top edge
+    glRect(x + topL, y, w - topL - topR, topL)
+
+    // Draw the right edge
+    glRect(x + w - max(topR, botR), y + topR, max(topR, botR), h - topR - botR)
+
+    // Draw the bottom edge
+    glRect(x + botL, y + h - max(botR, botL), w - botL - botR, botL)
+
+    // Draw the left edge
+    glRect(x, y + topL, max(topL, botL), h - topL - botR)
+
+    // Draw the middle
+    glRect(x + topL, y + topL, w - max(topR, botR), h - max(botL, botR))
+
+    GlStateManager.resetColor()
+    GlStateManager.enableTexture2D()
+    //GlStateManager.disableBlend()
+    GlStateManager.popMatrix()
 }
 
 fun NVG.rect(
     x: Float, y: Float, w: Float, h: Float, color: Color, radius: Float = 0f
 ) = rect(x, y, w, h, color, radius, radius, radius, radius)
+
+fun glRect(x: Float, y: Float, w: Float, h: Float) {
+    val pos = mutableListOf(x, y, x + w, y + h)
+    if (pos[0] > pos[2])
+        Collections.swap(pos, 0, 2)
+    if (pos[1] > pos[3])
+        Collections.swap(pos, 1, 3)
+
+    GlStateManager.pushMatrix()
+    worldRenderer.begin(7, DefaultVertexFormats.POSITION)
+    worldRenderer.pos(pos[0].toDouble(), pos[3].toDouble(), 0.0).endVertex()
+    worldRenderer.pos(pos[2].toDouble(), pos[3].toDouble(), 0.0).endVertex()
+    worldRenderer.pos(pos[2].toDouble(), pos[1].toDouble(), 0.0).endVertex()
+    worldRenderer.pos(pos[0].toDouble(), pos[1].toDouble(), 0.0).endVertex()
+    tessellator.draw()
+    GlStateManager.popMatrix()
+}
+
+fun drawCircle(x: Float, y: Float, radius: Float, steps: Int = 20) {
+    val theta = 2 * PI / steps
+    val cos = cos(theta).toFloat()
+    val sin = sin(theta).toFloat()
+
+    var xHolder: Float
+    var circleX = 1f
+    var circleY = 0f
+
+    GlStateManager.pushMatrix()
+    worldRenderer.begin(5, DefaultVertexFormats.POSITION)
+
+    for (i in 0..steps) {
+        worldRenderer.pos(x.toDouble(), y.toDouble(), 0.0).endVertex()
+        worldRenderer.pos((circleX * radius + x).toDouble(), (circleY * radius + y).toDouble(), 0.0).endVertex()
+        xHolder = circleX
+        circleX = cos * circleX - sin * circleY
+        circleY = sin * xHolder + cos * circleY
+        worldRenderer.pos((circleX * radius + x).toDouble(), (circleY * radius + y).toDouble(), 0.0).endVertex()
+    }
+
+    tessellator.draw()
+    GlStateManager.popMatrix()
+}
 
 fun NVG.rectOutline(x: Float, y: Float, w: Float, h: Float, color: Color, radius: Float = 0f, thickness: Float) {
     if (color.isTransparent) return
@@ -153,7 +249,7 @@ fun NVG.wrappedText(text: String, x: Float, y: Float, w: Float, h: Float, color:
 }
 
 fun NVG.wrappedTextBounds(text: String, width: Float, size: Float, font: Font)
-    = renderer.getWrappedStringBounds(context, text, width, size, font)
+        = renderer.getWrappedStringBounds(context, text, width, size, font)
 
 // TODO: Simplify
 enum class TextAlign {

@@ -20,40 +20,48 @@ object ItemUtils {
     /**
      * Returns displayName without control codes.
      */
-    private val ItemStack.unformattedName: String
+    val ItemStack.unformattedName: String
         get() = this.displayName.noControlCodes
-
-    /**
-     * Returns Item ID for an Item
-     */
-    val ItemStack.itemID: String
-        get() = this.extraAttributes?.getString("id") ?: ""
-
-    inline val heldItem: ItemStack?
-        get() = mc.thePlayer?.heldItem
 
     /**
      * Returns the lore for an Item
      */
     val ItemStack.lore: List<String>
         get() = this.tagCompound?.getCompoundTag("display")?.getTagList("Lore", 8)?.let {
-            val list = mutableListOf<String>()
-            for (i in 0 until it.tagCount()) {
-                list.add(it.getStringTagAt(i))
-            }
-            list
+            List(it.tagCount()) { i -> it.getStringTagAt(i) }
         } ?: emptyList()
 
+    /**
+     * Returns Item ID for an Item
+     */
+    val ItemStack?.itemID: String
+        get() = this?.extraAttributes?.getString("id") ?: ""
+
+    inline val heldItem: ItemStack?
+        get() = mc.thePlayer?.heldItem
+
+    val ItemStack?.hasAbility: Boolean
+        get() {
+            val lore = this?.lore
+            lore?.forEach{
+                if (it.contains("Ability:") && it.endsWith("RIGHT CLICK")) return true
+            }
+            return false
+        }
+
+    val ItemStack?.isShortbow: Boolean
+        get() {
+            return this?.lore?.any { it.contains("Shortbow: Instantly shoots!") } == true
+        }
+
+    fun isHolding(id: String): Boolean =
+        mc.thePlayer?.heldItem?.itemID == id
 
     /**
      * Returns first slot of an Item
      */
-    fun getItemSlot(item: String, ignoreCase: Boolean = true): Int? {
-        val index = mc.thePlayer.inventory.mainInventory.indexOfFirst {
-            it?.unformattedName?.contains(item, ignoreCase) == true
-        }
-        return index.takeIf { it != -1 }
-    }
+    fun getItemSlot(item: String, ignoreCase: Boolean = true): Int? =
+        mc.thePlayer.inventory.mainInventory.indexOfFirst { it?.unformattedName?.contains(item, ignoreCase) == true }.takeIf { it != -1 }
 
     /**
      * Gets index of an item in a chest.
@@ -90,11 +98,7 @@ object ItemUtils {
             val currentLine = lore[i]
             val match = rarityRegex.find(currentLine) ?: continue
             val rarity: String = match.groups["rarity"]?.value ?: continue
-            for (itemRarity in ItemRarity.values()) {
-                if (currentLine.noControlCodes.startsWith(itemRarity.loreName)) {
-                    return itemRarity
-                }
-            }
+            return ItemRarity.entries.find { currentLine.noControlCodes.startsWith(it.loreName) }
         }
         return null
     }

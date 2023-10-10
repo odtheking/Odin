@@ -1,12 +1,11 @@
 package me.odinmain.commands.impl
 
-import me.odinmain.commands.Command
-import me.odinmain.commands.CommandArguments
+import me.odinmain.commands.Subcommand
 import me.odinmain.config.MiscConfig
 import me.odinmain.features.impl.render.CommonESP
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
 
-object ESPCommand : Command("esp", listOf("odesp"), "Command for ESP.") {
+object ESPCommand : Subcommand("esp", listOf("odesp"), "Command for ESP.") {
 
     private inline val espList get() = MiscConfig.espList
 

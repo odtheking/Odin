@@ -10,7 +10,7 @@ object Utils {
     private val FORMATTING_CODE_PATTERN = Regex("§[0-9a-fk-or]", RegexOption.IGNORE_CASE)
 
     val String?.noControlCodes: String
-            get() = this?.let { FORMATTING_CODE_PATTERN.replace(it, "") } ?: ""
+        get() = this?.let { FORMATTING_CODE_PATTERN.replace(it, "") } ?: ""
 
     fun String.containsOneOf(vararg options: String, ignoreCase: Boolean = false): Boolean {
         for (i in options.indices) if (this.contains(options[i], ignoreCase)) return true
@@ -79,6 +79,14 @@ object Utils {
         if (this < min) return min
         if (this > max) return max
         return this
+    }
+
+    fun IntRange.getRandom(): Int {
+        return this.toList().getRandom()
+    }
+
+    fun <T> Collection<T>.getRandom(): T {
+        return this.elementAt((Math.random() * this.size).floorToInt())
     }
 
     /**

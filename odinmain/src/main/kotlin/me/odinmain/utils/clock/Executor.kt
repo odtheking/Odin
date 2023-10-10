@@ -7,30 +7,21 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
  * Class that allows repeating execution of code while being dynamic.
  * @author Stivais
  */
-open class Executor(open val delay: Long, inline val func: Executable) {
+open class Executor(val delay: () -> Long, val func: Executable) {
 
-    private val clock = Clock()
-    private var shouldFinish = false
+    constructor(delay: Long, func: Executable) : this({ delay } , func)
 
-    open fun also() {}
+    internal val clock = Clock()
+    internal var shouldFinish = false
 
-    fun run(): Boolean {
+    open fun run(): Boolean {
         if (shouldFinish) return true
-        if (clock.hasTimePassed(delay, true)) {
+        if (clock.hasTimePassed(delay(), true)) {
             runCatching {
-                also()
                 func()
             }
         }
         return false
-    }
-
-    /**
-     * Starts an executor that can vary in delay rather than being static.
-     * @author Stivais
-     */
-    class VaryingExecutor(val delay2: () -> Long, func: Executable) : Executor(delay2(), func) {
-        override val delay: Long get() = delay2()
     }
 
     /**
@@ -41,9 +32,16 @@ open class Executor(open val delay: Long, inline val func: Executable) {
         private val repeats = repeats - 1
         private var totalRepeats = 0
 
-        override fun also() {
-            if (totalRepeats >= repeats) destroyExecutor()
-            totalRepeats++
+        override fun run(): Boolean {
+            if (shouldFinish) return true
+            if (clock.hasTimePassed(delay(), true)) {
+                runCatching {
+                    if (totalRepeats >= repeats) destroyExecutor()
+                    totalRepeats++
+                    func()
+                }
+            }
+            return false
         }
     }
 

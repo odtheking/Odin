@@ -39,7 +39,7 @@ class Color(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f)
             needsUpdate = true
         }
 
-    // TODO: REMOVE!!!!!!!!!!!
+    // Only used in Window, because that rendering needs java.awt.Color
     val javaColor get() = java.awt.Color(r, g, b, a)
 
     /**
@@ -132,6 +132,15 @@ class Color(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f)
 
         @JvmField
         val BLACK = Color(0, 0, 0)
+
+        @JvmField
+        val GOLD = Color(255, 170, 0)
+
+        @JvmField
+        val GREEN = Color(0, 255, 0)
+
+        @JvmField
+        val RED = Color(255, 0, 0)
 
         /**
          * Performs bit-shift thingy
