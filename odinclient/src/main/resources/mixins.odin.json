@@ -1,0 +1,18 @@
+{
+  "package": "me.odinclient.mixin",
+  "refmap": "mixins.odinclient.refmap.json",
+  "minVersion": "0.7",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "MixinBlockButton",
+    "MixinBlockCarpet",
+    "MixinBlockCocoa",
+    "MixinBlockLever",
+    "MixinBlockMushroom",
+    "MixinBlockSkull"
+  ],
+  "client": [
+    "MixinEntityRenderer",
+    "MixinNetHandlerPlayClient"
+  ]
+}
