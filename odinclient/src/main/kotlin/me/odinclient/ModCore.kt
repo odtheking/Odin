@@ -66,8 +66,10 @@ import kotlin.coroutines.EmptyCoroutineContext
 class ModCore {
     @EventHandler
     fun init(event: FMLInitializationEvent) {
+        ModuleManager.modules.addAll(modules)
 
         Window.init()
+        OdinMain.onLegitVersion = false
 
         listOf(
             LocationUtils,
@@ -176,9 +178,9 @@ class ModCore {
 
         if (Window.isVisible != Window.shouldShow) Window.isVisible = Window.shouldShow
 
-        if (display != null) {
-            mc.displayGuiScreen(display)
-            display = null
+        if (OdinMain.display != null) {
+            mc.displayGuiScreen(OdinMain.display)
+            OdinMain.display = null
         }
     }
 
@@ -186,13 +188,6 @@ class ModCore {
         const val MOD_ID = "OdinClient"
         const val NAME = "OdinClient"
         const val VERSION = OdinMain.VERSION
-        const val PREFIX = "§3Odin§bClient §8»§r"
-
-
-
-        //var window = Window
-
-        var display: GuiScreen? = null
 
         val scope = CoroutineScope(EmptyCoroutineContext)
 

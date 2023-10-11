@@ -10,4 +10,4 @@ import net.minecraftforge.fml.common.eventhandler.Event
  * @see me.odinmain.mixin.MixinGuiContainer.onDrawSlot
  */
 @Cancelable
-class DrawSlotEvent(val container: Container, val gui: GuiContainer, var slot: Slot) : Event()
+class DrawSlotEvent(val container: Container, val gui: GuiContainer, var slot: Slot, val x: Int, val y: Int) : Event()

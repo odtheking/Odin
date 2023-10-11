@@ -43,8 +43,6 @@ import kotlin.coroutines.EmptyCoroutineContext
 class ModCore {
     @EventHandler
     fun init(event: FMLInitializationEvent) {
-
-
         listOf(
             LocationUtils,
             ChatUtils,

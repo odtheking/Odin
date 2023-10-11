@@ -73,6 +73,12 @@ val mainCommand = "od" {
         modMessage("requeing dungeon run")
     }
 
+    "simulate" does {
+        if (it.isEmpty()) return@does modMessage("§cMissing message!")
+        mc.thePlayer.addChatMessage(ChatComponentText(it.joinToString(" ")))
+        MinecraftForge.EVENT_BUS.post(ChatPacketEvent(it.joinToString(" ")))
+    }
+
     "help" {
         does {
             modMessage("""

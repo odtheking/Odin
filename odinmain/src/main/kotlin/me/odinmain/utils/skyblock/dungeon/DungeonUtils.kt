@@ -29,6 +29,9 @@ object DungeonUtils {
     inline val inBoss get() =
         currentDungeon?.inBoss ?: false
 
+    private var lastRoomPos: Pair<Int, Int>? = null
+    var currentRoom: Room? = null
+
     private var inp5 = false
 
     fun isFloor(vararg options: Int): Boolean {
@@ -48,6 +51,35 @@ object DungeonUtils {
             posY > 45 -> 4
             else -> 5
         }
+    }
+
+    const val roomSize = 32
+    const val startX = -185
+    const val startZ = -185
+
+    @SubscribeEvent
+    fun onMove(event: LivingEvent.LivingUpdateEvent) {
+        if (mc.theWorld == null ||! inDungeons ||! event.entity.equals(mc.thePlayer) || inBoss) return
+        val xPos = ((mc.thePlayer.posX + 200) / 32).floorToInt()
+        val zPos = ((mc.thePlayer.posZ + 200) / 32).floorToInt()
+        ChatUtils.modMessage("x: $xPos, z: $zPos")
+
+        currentRoom = scanRoom(xPos, zPos, 0, 0)
+    }
+
+    private fun scanRoom(x: Int, z: Int, row: Int, column: Int): Room? {
+        val height = mc.theWorld.getChunkFromChunkCoords(x shr 4, z shr 4).getHeightValue(x and 15, z and 15)
+        if (height == 0) return null
+
+        val rowEven = row and 1 == 0
+        val columnEven = column and 1 == 0
+
+        return if (rowEven && columnEven) {
+            val roomCore = ScanUtils.getCore(x, z)
+            Room(x, z, ScanUtils.getRoomData(roomCore) ?: return null).apply {
+                core = roomCore
+            }
+        } else null
     }
 
     enum class Classes(

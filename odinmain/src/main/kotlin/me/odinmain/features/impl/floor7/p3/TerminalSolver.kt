@@ -44,7 +44,7 @@ object TerminalSolver : Module(
     private val removeWrongStartsWith: Boolean by BooleanSetting("Stop Starts With", true).withDependency { removeWrong }
     private val removeWrongSelect: Boolean by BooleanSetting("Stop Select", true).withDependency { removeWrong }
 
-    private val zLevel: Float get() = if (behindItem) 200f else 999f
+    private val zLevel: Float get() = if (behindItem && currentTerm != 1) 200f else 999f
 
     private val terminalNames = listOf(
         "Correct all the panes!",

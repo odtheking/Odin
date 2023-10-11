@@ -22,15 +22,15 @@ loom {
     launchConfigs {
         "client" {
             arg("--tweakClass", "cc.polyfrost.oneconfig.loader.stage0.LaunchWrapperTweaker")
-            arg("--mixin", "mixins.odinclient.json")
+            arg("--mixin", "mixins.odinmain.json")
         }
     }
     forge {
         pack200Provider.set(dev.architectury.pack200.java.Pack200Adapter())
-        mixinConfig("mixins.odinclient.json")
+        mixinConfig("mixins.odinmain.json")
     }
     mixin {
-        defaultRefmapName.set("mixins.odinclient.refmap.json")
+        defaultRefmapName.set("mixins.odinmain.refmap.json")
     }
 }
 

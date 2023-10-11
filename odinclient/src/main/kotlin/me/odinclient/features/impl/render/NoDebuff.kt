@@ -45,8 +45,9 @@ object NoDebuff : Module(
     @SubscribeEvent
     fun onPacket(event: ReceivePacketEvent) {
         if (!noShieldParticles || event.packet !is S2APacketParticles) return
-        if (event.packet.particleType.equalsOneOf(EnumParticleTypes.SPELL_WITCH, EnumParticleTypes.HEART)) {
-            val particlePos = event.packet.run { Vec3(xCoordinate, yCoordinate, zCoordinate) }
+        val packet = event.packet as S2APacketParticles
+        if (packet.particleType.equalsOneOf(EnumParticleTypes.SPELL_WITCH, EnumParticleTypes.HEART)) {
+            val particlePos = event.packet.run { Vec3(packet.xCoordinate, packet.yCoordinate, packet.zCoordinate) }
             if (particlePos.squareDistanceTo(mc.thePlayer.positionVector) <= 169) {
                 event.isCanceled = true
             }

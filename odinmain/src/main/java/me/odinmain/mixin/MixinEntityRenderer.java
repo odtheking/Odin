@@ -1,6 +1,6 @@
 package me.odinmain.mixin;
 
-import me.odinclient.features.impl.render.Camera;
+import me.odinmain.features.impl.render.Camera;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,8 +27,7 @@ abstract public class MixinEntityRenderer implements IResourceManagerReloadListe
     }
 
     @ModifyConstant(method = "orientCamera", constant = @Constant(intValue = 8))
-    public int cameraClip(int constant)
-    {
+    public int cameraClip(int constant) {
         return Camera.INSTANCE.getCameraClipEnabled() ? 0: constant;
     }
 

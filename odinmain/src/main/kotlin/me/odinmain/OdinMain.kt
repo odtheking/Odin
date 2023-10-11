@@ -13,5 +13,6 @@ object OdinMain {
     val scope = CoroutineScope(EmptyCoroutineContext)
 
     var display: GuiScreen? = null
+    var onLegitVersion = true
 
 }

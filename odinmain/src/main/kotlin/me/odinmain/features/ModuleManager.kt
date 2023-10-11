@@ -2,6 +2,14 @@ package me.odinmain.features
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.*
+import me.odinmain.features.impl.dungeon.*
+import me.odinmain.features.impl.floor7.*
+import me.odinmain.features.impl.floor7.p3.ArrowAlign
+import me.odinmain.features.impl.floor7.p3.SimonSays
+import me.odinmain.features.impl.floor7.p3.TerminalSolver
+import me.odinmain.features.impl.floor7.p3.TerminalTimes
+import me.odinmain.features.impl.render.*
+import me.odinmain.features.impl.skyblock.*
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.render.gui.nvg.drawNVG
@@ -33,7 +41,51 @@ object ModuleManager {
     val huds = arrayListOf<HudElement>()
     val executors = ArrayList<Pair<Module, Executor>>()
 
-    val modules: ArrayList<Module> = arrayListOf()
+    val modules: ArrayList<Module> = arrayListOf(
+        AutoDungeonReque,
+        BlessingDisplay,
+        ExtraStats,
+        KeyESP,
+        MimicMessage,
+        TeammatesHighlight,
+        TerracottaTimer,
+        WatcherBar,
+        WaterSolver,
+        ArrowAlign,
+        SimonSays,
+        TerminalSolver,
+        TerminalTimes,
+        DragonBoxes,
+        DragonDeathCheck,
+        DragonTimer,
+        LeapHelper,
+        MelodyMessage,
+        NecronDropTimer,
+        RelicAnnouncer,
+        BPS,
+        Camera,
+        ClickedChests,
+        ClickGUIModule,
+        ESP,
+        CPSDisplay,
+        DragonHitboxes,
+        GyroRange,
+        NickHider,
+        NoCursorReset,
+        PersonalDragon,
+        RenderOptimizer,
+        Server,
+        Waypoints,
+        AutoRenewCrystalHollows,
+        AutoSprint,
+        BlazeAtunement,
+        CanClip,
+        ChatCommands,
+        DeployableTimer,
+        DianaHelper,
+        Reminders,
+        VanqNotifier
+    )
 
 
     @SubscribeEvent
