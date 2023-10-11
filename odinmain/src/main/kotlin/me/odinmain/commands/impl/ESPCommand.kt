@@ -2,7 +2,7 @@ package me.odinmain.commands.impl
 
 import me.odinmain.commands.invoke
 import me.odinmain.config.MiscConfig
-import me.odinmain.features.impl.render.CommonESP
+import me.odinmain.features.impl.render.ESP
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
 
 private inline val espList get() = MiscConfig.espList
@@ -30,14 +30,14 @@ val espCommand = "esp" {
         modMessage("Removed $mobName from the ESP list.")
         espList.remove(mobName)
         MiscConfig.saveAllConfigs()
-        CommonESP.currentEntities.clear()
+        ESP.currentEntities.clear()
     }
 
 
     "clear" does {
         espList.clear()
         MiscConfig.saveAllConfigs()
-        CommonESP.currentEntities.clear()
+        ESP.currentEntities.clear()
         modMessage("ESP List cleared.")
     }
 

@@ -1,5 +1,6 @@
 package me.odinmain.mixin;
 
+import me.odinmain.events.impl.DrawGuiEvent;
 import me.odinmain.events.impl.DrawSlotEvent;
 import me.odinmain.events.impl.GuiClosedEvent;
 import net.minecraft.client.gui.inventory.GuiContainer;

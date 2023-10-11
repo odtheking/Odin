@@ -3,12 +3,15 @@ package me.odinmain.commands.impl
 import me.odinmain.OdinMain.display
 import me.odinmain.OdinMain.mc
 import me.odinmain.commands.invoke
+import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.impl.floor7.p3.termsim.StartGui
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
+import net.minecraft.util.ChatComponentText
+import net.minecraftforge.common.MinecraftForge
 
 val termSimCommand = "termsim" {
     does {

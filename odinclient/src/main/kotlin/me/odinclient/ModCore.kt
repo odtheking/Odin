@@ -7,6 +7,20 @@ import kotlinx.coroutines.runBlocking
 import me.odinclient.dungeonmap.features.Dungeon
 import me.odinclient.dungeonmap.features.MapRender
 import me.odinclient.dungeonmap.features.Window
+import me.odinclient.features.impl.dungeon.*
+import me.odinclient.features.impl.floor7.AutoEdrag
+import me.odinclient.features.impl.floor7.DioriteFucker
+import me.odinclient.features.impl.floor7.RelicAura
+import me.odinclient.features.impl.floor7.RelicPlacer
+import me.odinclient.features.impl.floor7.p3.Arrows
+import me.odinclient.features.impl.floor7.p3.CancelWrongTerms
+import me.odinclient.features.impl.floor7.p3.HoverTerms
+import me.odinclient.features.impl.floor7.p3.Levers
+import me.odinclient.features.impl.render.ArrowTrajectory
+import me.odinclient.features.impl.render.Ghosts
+import me.odinclient.features.impl.render.NoCarpet
+import me.odinclient.features.impl.render.NoDebuff
+import me.odinclient.features.impl.skyblock.*
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.commands.impl.*
@@ -14,7 +28,11 @@ import me.odinmain.config.Config
 import me.odinmain.config.MiscConfig
 import me.odinmain.config.WaypointConfig
 import me.odinmain.events.EventDispatcher
+import me.odinmain.features.Module
 import me.odinmain.features.ModuleManager
+import me.odinmain.features.impl.dungeon.KeyESP
+import me.odinmain.features.impl.floor7.p3.ArrowAlign
+import me.odinmain.features.impl.floor7.p3.SimonSays
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.impl.render.WaypointManager
 import me.odinmain.ui.clickgui.ClickGUI
@@ -25,7 +43,6 @@ import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import net.minecraft.client.gui.GuiScreen
 import net.minecraft.command.ICommand
 import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.common.MinecraftForge
@@ -77,6 +94,52 @@ class ModCore {
             ClientCommandHandler.instance.registerCommand(command as ICommand?)
         }
     }
+
+    private val modules: ArrayList<Module> = arrayListOf(
+        AutoGFS,
+        AutoIceFill,
+        AutoLeap,
+        AutoMask,
+        AutoSell,
+        AutoShield,
+        AutoUlt,
+        AutoWish,
+        CancelInteract,
+        CloseChest,
+        GhostPick,
+        KeyESP,
+        MapModule,
+        SecretHitboxes,
+        SecretTriggerbot,
+        SuperBoom,
+        SwapStonk,
+        ThornStun,
+
+        ArrowAlign,
+        Arrows,
+        CancelWrongTerms,
+        HoverTerms,
+        Levers,
+        SimonSays,
+
+        AutoEdrag,
+        DioriteFucker,
+        RelicAura,
+        RelicPlacer,
+
+        ArrowTrajectory,
+        Ghosts,
+        NoCarpet,
+        NoDebuff,
+
+        CookieClicker,
+        EnchantingExperiments,
+        FarmingHitboxes,
+        LimboLeave,
+        NoBlock,
+        TermAC,
+        Triggerbot
+    )
 
     @EventHandler
     fun postInit(event: FMLPostInitializationEvent) = scope.launch(Dispatchers.IO) {

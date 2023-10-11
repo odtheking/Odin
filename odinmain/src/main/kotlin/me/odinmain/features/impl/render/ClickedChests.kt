@@ -22,17 +22,32 @@ object ClickedChests : Module(
     tag = TagType.NEW
 ) {
     private val chests = mutableSetOf<BlockPos>()
-    private val color: Color by ColorSetting("Color", Color.GOLD.withAlpha(.4f), allowAlpha = true, description = "The color of the box.")
-    private val filled: Boolean by BooleanSetting("Filled", true, description = "Whether or not the box should be filled.")
+    private val color: Color by ColorSetting(
+        "Color",
+        Color.GOLD.withAlpha(.4f),
+        allowAlpha = true,
+        description = "The color of the box."
+    )
+    private val filled: Boolean by BooleanSetting(
+        "Filled",
+        true,
+        description = "Whether or not the box should be filled."
+    )
     private val phase: Boolean by BooleanSetting("Phase", true, description = "Boxes show through walls.")
 
     @SubscribeEvent
     fun onInteract(event: PlayerInteractEvent) {
-        if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || !mc.theWorld.getBlockState(event.pos).block.equalsOneOf(Blocks.chest, Blocks.trapped_chest)) return
+        if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || !mc.theWorld.getBlockState(event.pos).block.equalsOneOf(
+                Blocks.chest,
+                Blocks.trapped_chest
+            )
+        ) return
         chests.add(event.pos)
     }
 
-    init { onWorldLoad { chests.clear() } }
+    init {
+        onWorldLoad { chests.clear() }
+    }
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
@@ -55,3 +70,4 @@ object ClickedChests : Module(
                 )
         }
     }
+}
