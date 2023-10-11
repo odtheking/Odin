@@ -6,10 +6,8 @@ import me.odinmain.OdinMain
 import me.odinmain.features.ModuleManager.executors
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.settings.AlwaysActive
-import me.odinmain.features.settings.Hud
 import me.odinmain.features.settings.Setting
 import me.odinmain.features.settings.impl.HudSetting
-import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.clock.Executable
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.skyblock.ChatUtils
@@ -17,7 +15,6 @@ import net.minecraft.network.Packet
 import net.minecraftforge.common.MinecraftForge
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
-import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 
 /**
@@ -58,12 +55,9 @@ abstract class Module(
     @SerializedName("settings")
     val settings: ArrayList<Setting<*>>
 
-    protected inline val mc get() = OdinMain.mc
-
-    /**
-     * Will be used for a tooltip
-     */
     var description: String
+
+    protected inline val mc get() = OdinMain.mc
 
     init {
         this.name = name
@@ -75,17 +69,6 @@ abstract class Module(
         if (this::class.hasAnnotation<AlwaysActive>()) {
             MinecraftForge.EVENT_BUS.register(this)
         }
-
-        /**
-         * A little bit scuffed but ig it works.
-         */
-        this::class.nestedClasses
-            .mapNotNull { it.objectInstance }
-            .filterIsInstance<HudElement>()
-            .forEach { hudElement ->
-                val hudset = hudElement::class.findAnnotation<Hud>() ?: return@forEach
-                register(HudSetting(hudset.name, hudElement, hudset.toggleable, hidden = hudset.hidden))
-            }
     }
 
     open fun onEnable() {
@@ -129,11 +112,11 @@ abstract class Module(
                 return set
             }
         }
-        System.err.println("[Odin] Error Setting NOT found: '$name'!")
+        System.err.println("[ ODIN ] Error Setting NOT found: '" + name + "'!")
         return null
     }
 
-    internal fun isKeybindDown(): Boolean {
+    fun isKeybindDown(): Boolean {
         return keyCode != 0 && (Keyboard.isKeyDown(keyCode) || Mouse.isButtonDown(keyCode + 100))
     }
 
@@ -152,18 +135,26 @@ abstract class Module(
     }
 
     fun onMessage(filter: Regex, shouldRun: () -> Boolean = { enabled }, func: (String) -> Unit) {
-        ModuleManager.messageFunctions.add(ModuleManager.MessageFunction(filter, func))
+        ModuleManager.messageFunctions.add(ModuleManager.MessageFunction(filter, shouldRun, func))
+    }
+
+    fun runIn(ticks: Int, func: () -> Unit) {
+        ModuleManager.tickTasks.add(ModuleManager.TickTask(ticks, func))
+    }
+
+    fun onWorldLoad(func: () -> Unit) {
+        ModuleManager.worldLoadFunctions.add(func)
     }
 
     fun execute(delay: Long, func: Executable) {
-        executors.add(Executor(delay, func))
+        executors.add(this to Executor(delay, func))
     }
 
     fun execute(delay: Long, repeats: Int, func: Executable) {
-        executors.add(Executor.LimitedExecutor(delay, repeats, func))
+        executors.add(this to Executor.LimitedExecutor(delay, repeats, func))
     }
 
     fun execute(delay: () -> Long, func: Executable) {
-        executors.add(Executor.VaryingExecutor(delay, func))
+        executors.add(this to Executor(delay, func))
     }
 }

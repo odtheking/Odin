@@ -191,7 +191,7 @@ object ChatCommands : Module(
         }
     }
 
-    private fun isInBlacklist(name: String) : Boolean = MiscConfig.blacklist.contains(name.lowercase())
+    fun isInBlacklist(name: String) : Boolean = MiscConfig.blacklist.contains(name.lowercase())
 
     fun autoGM(message: String, name: String) {
         if (isInBlacklist(name)) return
