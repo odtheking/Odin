@@ -18,7 +18,7 @@ object AutoSell : Module(
     description = "Automatically sell items in trades and cookie menus.",
     category = Category.DUNGEON
 ) {
-    private val delay: Long by NumberSetting("Delay", 100, 10.0, 300.0, 5.0)
+    private val delay: Long by NumberSetting("Delay", 100, 30.0, 300.0, 5.0)
     private val addDefaults: () -> Unit by ActionSetting("Add defaults") {
         defaultItems.forEach {
             if (it !in MiscConfig.autoSell) {
