@@ -17,6 +17,7 @@ import net.minecraft.item.Item
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.*
@@ -61,6 +62,13 @@ object ArrowAlign : Module(
             val rotations = neededRotations.values.find { it.entity == ent }?.rotations ?: return
             if (rotations == 0) lastClickClock.lastTime = System.currentTimeMillis()
         }
+    }
+
+    @SubscribeEvent
+    fun onInteract(event: net.minecraftforge.event.entity.player.EntityInteractEvent) {
+        val frame = neededRotations.values.find { it.entity == event.entity } ?: return
+        if (frame.rotations == 0) return
+        frame.rotations--
     }
 
     @SubscribeEvent
