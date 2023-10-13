@@ -1,4 +1,4 @@
-package me.odinmain.mixin;
+package me.odinclient.mixin;
 
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.ModContainer;

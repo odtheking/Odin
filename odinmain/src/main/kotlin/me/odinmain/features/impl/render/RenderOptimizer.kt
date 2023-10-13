@@ -4,9 +4,9 @@ import me.odinmain.events.impl.PostGuiOpenEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.mixin.MinecraftAccessor
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.utils.render.gui.animations.impl.EaseInOut
+import me.odinmain.utils.render.world.RenderUtils
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
@@ -42,8 +42,7 @@ object RenderOptimizer : Module(
         ClickGUI.anim = EaseInOut(200)
     }
 
-    override fun onDisable()
-    {
+    override fun onDisable() {
         mc.skipRenderWorld = false
     }
 
@@ -69,7 +68,7 @@ object RenderOptimizer : Module(
             GlStateManager.clear(256)
             drawRect(i1.toFloat(), j1.toFloat(), Color.black.rgb)
             try {
-                ForgeHooksClient.drawScreen(mc.currentScreen, k1, l1, (mc as MinecraftAccessor).timer.renderPartialTicks)
+                ForgeHooksClient.drawScreen(mc.currentScreen, k1, l1, RenderUtils.partialTicks)
             } catch (throwable: Throwable) {
                 throwable.printStackTrace()
             }
@@ -77,13 +76,11 @@ object RenderOptimizer : Module(
     }
 
     @SubscribeEvent
-    fun onPostGui(event: PostGuiOpenEvent)
-    {
+    fun onPostGui(event: PostGuiOpenEvent) {
         mc.skipRenderWorld = true
     }
 
-    private fun drawRect(right: Float, bottom: Float, color: Int)
-    {
+    private fun drawRect(right: Float, bottom: Float, color: Int) {
         var left = 0f
         var top = 0f
         var right = right

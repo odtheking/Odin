@@ -22,15 +22,15 @@ loom {
     launchConfigs {
         "client" {
             arg("--tweakClass", "cc.polyfrost.oneconfig.loader.stage0.LaunchWrapperTweaker")
-            arg("--mixin", "mixins.odinmain.json")
+            arg("--mixin", "mixins.odin.json")
         }
     }
     forge {
         pack200Provider.set(dev.architectury.pack200.java.Pack200Adapter())
-        mixinConfig("mixins.odinmain.json")
+        mixinConfig("mixins.odin.json")
     }
     mixin {
-        defaultRefmapName.set("mixins.odinmain.refmap.json")
+        defaultRefmapName.set("mixins.odin.refmap.json")
     }
 }
 
@@ -60,7 +60,7 @@ dependencies {
     forge("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9")
 
     implementation(kotlin("stdlib-jdk8"))
-    implementation(project(":odinmain"))
+    shadowImpl(project(":odinmain"))
 
     annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
     compileOnly("org.spongepowered:mixin:0.8.5")
@@ -95,7 +95,7 @@ tasks.withType(Jar::class) {
 
         // If you don't want mixins, remove these lines
         this["TweakClass"] = "cc.polyfrost.oneconfig.loader.stage0.LaunchWrapperTweaker"
-        this["MixinConfigs"] = "mixins.odinmain.json"
+        this["MixinConfigs"] = "mixins.odin.json"
     }
 }
 

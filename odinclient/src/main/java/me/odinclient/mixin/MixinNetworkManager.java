@@ -1,9 +1,10 @@
-package me.odinmain.mixin;
+package me.odinclient.mixin;
 
 import io.netty.channel.ChannelHandlerContext;
 import me.odinmain.events.impl.PacketSentEvent;
 import me.odinmain.events.impl.ReceivePacketEvent;
 import me.odinmain.utils.ServerUtils;
+import me.odinmain.utils.skyblock.ChatUtils;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraftforge.common.MinecraftForge;
@@ -17,6 +18,7 @@ public class MixinNetworkManager {
 
     @Inject(method = "channelRead0*", at = @At("HEAD"), cancellable = true)
     private void onReceivePacket(ChannelHandlerContext context, Packet<?> packet, CallbackInfo ci) {
+        ChatUtils.INSTANCE.modMessage("aAAAA", true);
         if (MinecraftForge.EVENT_BUS.post(new ReceivePacketEvent(packet)))
             ci.cancel();
     }

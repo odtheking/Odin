@@ -30,6 +30,8 @@ import net.minecraftforge.fml.common.Mod.EventHandler
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.io.File
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -63,6 +65,16 @@ class ModCore {
 
         for (command in commandList) {
             ClientCommandHandler.instance.registerCommand(command as ICommand?)
+        }
+    }
+
+    @SubscribeEvent
+    fun onTick(event: TickEvent.ClientTickEvent) {
+        if (event.phase != TickEvent.Phase.START) return
+
+        if (OdinMain.display != null) {
+            mc.displayGuiScreen(OdinMain.display)
+            OdinMain.display = null
         }
     }
 

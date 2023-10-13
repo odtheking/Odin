@@ -1,4 +1,4 @@
-package me.odinmain.mixin;
+package me.odin.mixin;
 
 import me.odinmain.events.impl.DrawGuiEvent;
 import me.odinmain.events.impl.DrawSlotEvent;

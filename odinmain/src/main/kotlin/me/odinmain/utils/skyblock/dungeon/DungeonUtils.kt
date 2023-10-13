@@ -59,7 +59,7 @@ object DungeonUtils {
 
     @SubscribeEvent
     fun onMove(event: LivingEvent.LivingUpdateEvent) {
-        if (mc.theWorld == null ||! inDungeons ||! event.entity.equals(mc.thePlayer) || inBoss) return
+        if (mc.theWorld == null || !inDungeons || !event.entity.equals(mc.thePlayer) || inBoss) return
         val xPos = ((mc.thePlayer.posX + 200) / 32).floorToInt()
         val zPos = ((mc.thePlayer.posZ + 200) / 32).floorToInt()
         ChatUtils.modMessage("x: $xPos, z: $zPos")
@@ -76,6 +76,7 @@ object DungeonUtils {
 
         return if (rowEven && columnEven) {
             val roomCore = ScanUtils.getCore(x, z)
+            ChatUtils.modMessage("Room core: $roomCore")
             Room(x, z, ScanUtils.getRoomData(roomCore) ?: return null).apply {
                 core = roomCore
             }

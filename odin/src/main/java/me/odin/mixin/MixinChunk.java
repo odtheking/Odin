@@ -1,4 +1,4 @@
-package me.odinmain.mixin;
+package me.odin.mixin;
 
 import me.odinmain.events.impl.BlockChangeEvent;
 import net.minecraft.block.state.IBlockState;

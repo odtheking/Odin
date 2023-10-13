@@ -27,7 +27,7 @@ object RenderUtils {
     private val worldRenderer: WorldRenderer = tessellator.worldRenderer
     private val renderManager: RenderManager = mc.renderManager
 
-    private var partialTicks = 0f
+    var partialTicks = 0f
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {

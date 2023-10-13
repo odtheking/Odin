@@ -1,4 +1,4 @@
-package me.odinmain.mixin;
+package me.odin.mixin;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Timer;

@@ -1,4 +1,4 @@
-package me.odinmain.mixin;
+package me.odin.mixin;
 
 import me.odinmain.features.impl.render.PersonalDragon;
 import net.minecraft.client.renderer.entity.RenderDragon;

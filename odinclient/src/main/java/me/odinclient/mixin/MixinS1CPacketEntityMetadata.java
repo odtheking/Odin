@@ -1,4 +1,4 @@
-package me.odinmain.mixin;
+package me.odinclient.mixin;
 
 import me.odinmain.events.impl.PostEntityMetadata;
 import net.minecraft.network.play.INetHandlerPlayClient;

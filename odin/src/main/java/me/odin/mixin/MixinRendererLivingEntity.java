@@ -1,4 +1,4 @@
-package me.odinmain.mixin;
+package me.odin.mixin;
 
 import me.odinmain.events.impl.RenderEntityModelEvent;
 import me.odinmain.features.impl.render.ESP;

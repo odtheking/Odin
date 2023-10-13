@@ -1,4 +1,4 @@
-package me.odinmain.mixin.model;
+package me.odinclient.mixin.model;
 
 import me.odinmain.features.impl.skyblock.BlazeAtunement;
 import net.minecraft.client.model.ModelBase;
