@@ -19,7 +19,7 @@ object HoverTerms : Module(
     category = Category.FLOOR7,
     tag = TagType.NEW
 ) {
-    private val triggerDelay: Long by NumberSetting<Long>("Delay", 200, 70, 500)
+    private val triggerDelay: Long by NumberSetting<Long>("Delay", 200, 50, 800)
     private val middleClick: Boolean by DualSetting("Click Type", "Left", "Middle", default = true, description = "What Click to use")
     private val triggerBotClock = Clock(triggerDelay)
 
