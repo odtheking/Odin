@@ -1,8 +1,8 @@
 package me.odinclient.dungeonmap.features
 
-import me.odinclient.dungeonmap.core.map.Room
 import me.odinclient.utils.skyblock.dungeon.map.ScanUtils.getRoomFromPos
 import me.odinmain.OdinMain.mc
+import me.odinmain.utils.skyblock.dungeon.Room
 import net.minecraft.tileentity.TileEntityChest
 
 object MimicDetector {

@@ -60,6 +60,7 @@ object DungeonUtils {
     @SubscribeEvent
     fun onMove(event: LivingEvent.LivingUpdateEvent) {
         if (mc.theWorld == null || !inDungeons || !event.entity.equals(mc.thePlayer) || inBoss) return
+        val tempX = (mc.thePlayer.posX + 200) / 32
         val x = ((mc.thePlayer.posX + 200) / 32).floorToInt()
         val z = ((mc.thePlayer.posZ + 200) / 32).floorToInt()
         val xPos = startX + x * roomSize

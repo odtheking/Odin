@@ -18,7 +18,6 @@ public class MixinNetworkManager {
 
     @Inject(method = "channelRead0*", at = @At("HEAD"), cancellable = true)
     private void onReceivePacket(ChannelHandlerContext context, Packet<?> packet, CallbackInfo ci) {
-        ChatUtils.INSTANCE.modMessage("aAAAA", true);
         if (MinecraftForge.EVENT_BUS.post(new ReceivePacketEvent(packet)))
             ci.cancel();
     }

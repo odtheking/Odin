@@ -19,7 +19,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinMinecraft {
     @Inject(method = {"runTick"}, at = {@At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;dispatchKeypresses()V")})
     public void keyPresses(CallbackInfo ci) {
-        ChatUtils.INSTANCE.modMessage("keyPresses", true);
         int k = (Keyboard.getEventKey() == 0) ? (Keyboard.getEventCharacter() + 256) : Keyboard.getEventKey();
         if (Keyboard.getEventKeyState()) {
             MinecraftForge.EVENT_BUS.post(new PreKeyInputEvent(k));

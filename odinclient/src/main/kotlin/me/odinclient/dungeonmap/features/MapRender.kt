@@ -1,7 +1,6 @@
 package me.odinclient.dungeonmap.features
 
 import me.odinclient.dungeonmap.core.DungeonPlayer
-import me.odinclient.dungeonmap.core.map.*
 import me.odinclient.features.impl.dungeon.MapModule
 import me.odinclient.utils.skyblock.dungeon.map.MapRenderUtils
 import me.odinclient.utils.skyblock.dungeon.map.MapUtils
@@ -9,7 +8,7 @@ import me.odinclient.utils.skyblock.dungeon.map.MapUtils.mapRoomSize
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.Utils.equalsOneOf
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.ResourceLocation

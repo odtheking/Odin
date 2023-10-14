@@ -1,4 +1,4 @@
-package me.odinclient.dungeonmap.core.map
+package me.odinmain.utils.skyblock.dungeon
 
 import me.odinmain.utils.render.Color
 

@@ -1,5 +1,6 @@
 package me.odinclient.features.impl.dungeon
 
+import me.odinmain.OdinMain
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
@@ -44,4 +45,21 @@ object MapModule : Module(
     val trapColor: Color by ColorSetting("Trap Room Color", Color(150, 90, 0))
     val roomColor: Color by ColorSetting("Room Color", Color(90, 50, 0))
     val mimicRoomColor: Color by ColorSetting("Mimic Room Color", Color(90, 10, 0))
+
+    init {
+        OdinMain.MapColors.bloodDoorColor = bloodDoorColor
+        OdinMain.MapColors.entranceDoorColor = entranceDoorColor
+        OdinMain.MapColors.openWitherDoorColor = openWitherDoorColor
+        OdinMain.MapColors.witherDoorColor = witherDoorColor
+        OdinMain.MapColors.roomDoorColor = roomDoorColor
+        OdinMain.MapColors.bloodColor = bloodColor
+        OdinMain.MapColors.miniBossColor = miniBossColor
+        OdinMain.MapColors.entranceColor = entranceColor
+        OdinMain.MapColors.fairyColor = fairyColor
+        OdinMain.MapColors.puzzleColor = puzzleColor
+        OdinMain.MapColors.rareColor = rareColor
+        OdinMain.MapColors.trapColor = trapColor
+        OdinMain.MapColors.mimicRoomColor = mimicRoomColor
+        OdinMain.MapColors.roomColor = roomColor
+    }
 }

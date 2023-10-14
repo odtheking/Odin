@@ -2,9 +2,6 @@ package me.odinclient.dungeonmap.features
 
 import kotlinx.coroutines.launch
 import me.odinclient.dungeonmap.core.DungeonPlayer
-import me.odinclient.dungeonmap.core.map.Room
-import me.odinclient.dungeonmap.core.map.Tile
-import me.odinclient.dungeonmap.core.map.Unknown
 import me.odinclient.features.impl.dungeon.MapModule
 import me.odinclient.utils.skyblock.dungeon.map.MapRenderUtils
 import me.odinclient.utils.skyblock.dungeon.map.MapUtils
@@ -14,6 +11,9 @@ import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
+import me.odinmain.utils.skyblock.dungeon.Room
+import me.odinmain.utils.skyblock.dungeon.Tile
+import me.odinmain.utils.skyblock.dungeon.Unknown
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
