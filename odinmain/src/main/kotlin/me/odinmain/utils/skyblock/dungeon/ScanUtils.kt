@@ -5,15 +5,10 @@ import com.google.gson.JsonIOException
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import me.odinmain.OdinMain.mc
-import me.odinmain.utils.Utils.equalsOneOf
-import me.odinmain.utils.skyblock.dungeon.ScanUtils.roomList
+import me.odinmain.utils.equalsOneOf
 import net.minecraft.block.Block
 import net.minecraft.util.BlockPos
-import net.minecraft.util.ResourceLocation
 import java.io.FileNotFoundException
-import java.io.InputStream
-import java.io.InputStreamReader
-import java.nio.charset.StandardCharsets
 
 object ScanUtils {
     val roomList: Set<RoomData> = try {

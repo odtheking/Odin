@@ -5,8 +5,8 @@ import cc.polyfrost.oneconfig.renderer.font.Fonts
 import cc.polyfrost.oneconfig.renderer.scissor.ScissorHelper
 import cc.polyfrost.oneconfig.utils.dsl.*
 import me.odinmain.ui.clickgui.util.ColorUtil
-import me.odinmain.utils.Utils.minus
-import me.odinmain.utils.Utils.plus
+import me.odinmain.utils.minus
+import me.odinmain.utils.plus
 import net.minecraft.client.gui.ScaledResolution
 import java.util.*
 

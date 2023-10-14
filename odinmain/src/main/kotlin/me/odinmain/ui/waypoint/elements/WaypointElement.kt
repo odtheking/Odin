@@ -9,7 +9,7 @@ import me.odinmain.features.impl.render.WaypointManager
 import me.odinmain.features.impl.render.WaypointManager.Waypoint
 import me.odinmain.ui.waypoint.WaypointGUI
 import me.odinmain.ui.waypoint.WaypointGUI.mouseHandler
-import me.odinmain.utils.Utils.noControlCodes
+import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.animations.impl.ColorAnimation
 

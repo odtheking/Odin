@@ -2,8 +2,8 @@ package me.odinmain.features.settings.impl
 
 
 import me.odinmain.features.settings.Setting
-import me.odinmain.utils.Utils.coerceInNumber
-import me.odinmain.utils.Utils.div
+import me.odinmain.utils.coerceInNumber
+import me.odinmain.utils.div
 import kotlin.math.round
 
 /**

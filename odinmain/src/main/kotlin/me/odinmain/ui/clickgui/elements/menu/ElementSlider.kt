@@ -10,11 +10,7 @@ import me.odinmain.ui.clickgui.util.ColorUtil.clickGUIColor
 import me.odinmain.ui.clickgui.util.ColorUtil.elementBackground
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.HoverHandler
-import me.odinmain.utils.Utils.coerceInNumber
-import me.odinmain.utils.Utils.div
-import me.odinmain.utils.Utils.minus
-import me.odinmain.utils.Utils.plus
-import me.odinmain.utils.Utils.times
+import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinmain.utils.render.gui.MouseUtils.mouseX

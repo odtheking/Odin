@@ -3,10 +3,10 @@ package me.odinmain.utils.skyblock.dungeon
 import com.google.common.collect.ComparisonChain
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.ReceivePacketEvent
-import me.odinmain.utils.Utils.floorToInt
-import me.odinmain.utils.Utils.noControlCodes
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
+import me.odinmain.utils.floor
+import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.ItemUtils
@@ -61,8 +61,8 @@ object DungeonUtils {
     fun onMove(event: LivingEvent.LivingUpdateEvent) {
         if (mc.theWorld == null || !inDungeons || !event.entity.equals(mc.thePlayer) || inBoss) return
         val tempX = (mc.thePlayer.posX + 200) / 32
-        val x = ((mc.thePlayer.posX + 200) / 32).floorToInt()
-        val z = ((mc.thePlayer.posZ + 200) / 32).floorToInt()
+        val x = ((mc.thePlayer.posX + 200) / 32).floor().toInt()
+        val z = ((mc.thePlayer.posZ + 200) / 32).floor().toInt()
         val xPos = startX + x * roomSize
         val zPos = startZ + z * roomSize
         ChatUtils.modMessage("x: $x, z: $z, xPos: $xPos, zPos: $zPos")

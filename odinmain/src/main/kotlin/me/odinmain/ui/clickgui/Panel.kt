@@ -6,13 +6,13 @@ import me.odinmain.features.ModuleManager.modules
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.ui.clickgui.elements.ModuleButton
 import me.odinmain.ui.clickgui.util.ColorUtil
-import me.odinmain.utils.Utils.round
 import me.odinmain.utils.render.gui.GuiUtils.capitalizeFirst
 import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinmain.utils.render.gui.MouseUtils.mouseX
 import me.odinmain.utils.render.gui.MouseUtils.mouseY
 import me.odinmain.utils.render.gui.animations.impl.LinearAnimation
 import me.odinmain.utils.render.gui.nvg.*
+import me.odinmain.utils.round
 import kotlin.math.floor
 
 /**

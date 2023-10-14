@@ -2,7 +2,7 @@ package me.odinmain.features.impl.floor7.p3.termsim
 
 import me.odinmain.events.impl.GuiLoadedEvent
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
-import me.odinmain.utils.Utils.getRandom
+import me.odinmain.utils.getRandom
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.Slot

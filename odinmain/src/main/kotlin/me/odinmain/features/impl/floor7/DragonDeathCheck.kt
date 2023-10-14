@@ -6,8 +6,8 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.utils.Utils.round
 import me.odinmain.utils.WebUtils
+import me.odinmain.utils.round
 import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.boss.EntityDragon

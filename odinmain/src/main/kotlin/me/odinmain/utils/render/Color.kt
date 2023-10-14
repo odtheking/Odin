@@ -1,7 +1,7 @@
 package me.odinmain.utils.render
 
-import me.odinmain.utils.Utils.HSBtoRGB
-import me.odinmain.utils.Utils.RGBtoHSB
+import me.odinmain.utils.HSBtoRGB
+import me.odinmain.utils.RGBtoHSB
 
 // TODO: Clean up all color related stuff etc
 /**

@@ -5,7 +5,7 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.SelectorSetting
-import me.odinmain.utils.Utils.name
+import me.odinmain.utils.name
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import me.odinmain.utils.skyblock.ChatUtils.unformattedText
 import net.minecraft.inventory.ContainerChest

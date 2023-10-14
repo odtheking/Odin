@@ -12,8 +12,8 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.AutoSessionID
 import me.odinmain.utils.ServerUtils
-import me.odinmain.utils.Utils.floor
 import me.odinmain.utils.WebUtils
+import me.odinmain.utils.floor
 import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.PlayerUtils
 import net.minecraft.event.ClickEvent

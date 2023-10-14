@@ -7,10 +7,10 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.utils.Utils.floor
 import me.odinmain.utils.VecUtils.addVec
 import me.odinmain.utils.VecUtils.toVec3i
 import me.odinmain.utils.clock.Clock
+import me.odinmain.utils.floor
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.skyblock.ChatUtils

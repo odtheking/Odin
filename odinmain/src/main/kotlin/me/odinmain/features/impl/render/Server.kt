@@ -6,9 +6,9 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.ServerUtils
-import me.odinmain.utils.Utils.round
 import me.odinmain.utils.render.gui.nvg.getTextWidth
 import me.odinmain.utils.render.gui.nvg.textWithControlCodes
+import me.odinmain.utils.round
 import kotlin.math.max
 
 object Server : Module(

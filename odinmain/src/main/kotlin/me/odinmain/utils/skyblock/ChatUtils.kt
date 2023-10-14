@@ -2,7 +2,7 @@ package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.skyblock.DevPlayers.devs
-import me.odinmain.utils.Utils.noControlCodes
+import me.odinmain.utils.noControlCodes
 import net.minecraft.event.ClickEvent
 import net.minecraft.event.HoverEvent
 import net.minecraft.util.ChatComponentText

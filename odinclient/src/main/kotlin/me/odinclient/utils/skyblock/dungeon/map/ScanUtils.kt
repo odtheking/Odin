@@ -3,7 +3,7 @@ package me.odinclient.utils.skyblock.dungeon.map
 import me.odinclient.dungeonmap.features.Dungeon
 import me.odinclient.dungeonmap.features.DungeonScan
 import me.odinmain.OdinMain.mc
-import me.odinmain.utils.Utils.equalsOneOf
+import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.skyblock.dungeon.Room
 import me.odinmain.utils.skyblock.dungeon.RoomData
 import me.odinmain.utils.skyblock.dungeon.ScanUtils.roomList

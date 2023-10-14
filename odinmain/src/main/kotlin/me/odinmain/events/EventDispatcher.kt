@@ -6,8 +6,8 @@ import me.odinmain.OdinMain.scope
 import me.odinmain.events.impl.*
 import me.odinmain.utils.AsyncUtils
 import me.odinmain.utils.ServerUtils
-import me.odinmain.utils.Utils.noControlCodes
 import me.odinmain.utils.clock.Clock
+import me.odinmain.utils.noControlCodes
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.network.play.server.S02PacketChat

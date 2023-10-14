@@ -1,6 +1,6 @@
 package me.odinmain.features.impl.floor7.p3.termsim
 
-import me.odinmain.utils.Utils.getRandom
+import me.odinmain.utils.getRandom
 import net.minecraft.inventory.Slot
 import net.minecraft.item.EnumDyeColor
 import net.minecraft.item.Item

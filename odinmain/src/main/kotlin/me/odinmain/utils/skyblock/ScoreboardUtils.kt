@@ -1,7 +1,7 @@
 package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.utils.Utils.noControlCodes
+import me.odinmain.utils.noControlCodes
 import net.minecraft.scoreboard.ScorePlayerTeam
 
 object ScoreboardUtils {

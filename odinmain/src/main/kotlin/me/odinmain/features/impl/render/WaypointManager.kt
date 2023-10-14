@@ -7,8 +7,8 @@ import kotlinx.coroutines.launch
 import me.odinmain.commands.impl.WaypointCommand.randomColor
 import me.odinmain.config.WaypointConfig
 import me.odinmain.ui.waypoint.WaypointGUI
-import me.odinmain.utils.Utils.noControlCodes
 import me.odinmain.utils.clock.Clock
+import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.skyblock.ChatUtils.modMessage

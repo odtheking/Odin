@@ -7,7 +7,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.utils.Utils.noControlCodes
+import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.gui.nvg.getTextWidth
 import me.odinmain.utils.render.gui.nvg.textWithControlCodes
 import me.odinmain.utils.render.world.RenderUtils

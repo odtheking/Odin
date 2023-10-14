@@ -4,7 +4,7 @@ import me.odinmain.events.impl.ReceivePacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.utils.Utils.equalsOneOf
+import me.odinmain.utils.equalsOneOf
 import net.minecraft.block.material.Material
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.network.play.server.S2APacketParticles

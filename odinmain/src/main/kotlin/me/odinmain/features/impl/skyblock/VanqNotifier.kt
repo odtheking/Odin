@@ -3,7 +3,7 @@ package me.odinmain.features.impl.skyblock
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.utils.Utils.floor
+import me.odinmain.utils.floor
 import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.PlayerUtils.posX

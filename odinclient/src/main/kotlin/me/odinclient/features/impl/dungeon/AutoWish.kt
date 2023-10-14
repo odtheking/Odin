@@ -4,7 +4,7 @@ import me.odinclient.utils.skyblock.PlayerUtils.dropItem
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.utils.Utils.noControlCodes
+import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraftforge.client.event.ClientChatReceivedEvent

@@ -4,8 +4,8 @@ import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.events.impl.DrawSlotEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.utils.Utils.noControlCodes
 import me.odinmain.utils.VecUtils.equal
+import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.client.gui.Gui
 import net.minecraft.init.Blocks

@@ -4,8 +4,8 @@ import me.odinmain.events.impl.ReceivePacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.DualSetting
-import me.odinmain.utils.Utils.equalsOneOf
-import me.odinmain.utils.Utils.name
+import me.odinmain.utils.equalsOneOf
+import me.odinmain.utils.name
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest

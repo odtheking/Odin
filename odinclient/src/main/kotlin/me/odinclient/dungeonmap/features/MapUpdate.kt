@@ -6,7 +6,7 @@ import me.odinclient.utils.skyblock.dungeon.map.MapUtils.mapX
 import me.odinclient.utils.skyblock.dungeon.map.MapUtils.mapZ
 import me.odinclient.utils.skyblock.dungeon.map.MapUtils.yaw
 import me.odinmain.OdinMain.mc
-import me.odinmain.utils.Utils.noControlCodes
+import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.dungeon.Room
 import me.odinmain.utils.skyblock.dungeon.RoomState
 import me.odinmain.utils.skyblock.dungeon.RoomType

@@ -3,8 +3,8 @@ package me.odinclient.features.impl.dungeon
 import me.odinclient.utils.skyblock.PlayerUtils.windowClick
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.utils.Utils.noControlCodes
 import me.odinmain.utils.clock.Clock
+import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.ItemUtils
 import net.minecraftforge.client.event.ClientChatReceivedEvent

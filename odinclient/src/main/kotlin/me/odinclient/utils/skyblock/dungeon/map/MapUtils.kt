@@ -3,7 +3,7 @@ package me.odinclient.utils.skyblock.dungeon.map
 import com.google.common.collect.ComparisonChain
 import me.odinclient.dungeonmap.features.DungeonScan
 import me.odinmain.OdinMain.mc
-import me.odinmain.utils.Utils.equalsOneOf
+import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.skyblock.LocationUtils
 import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.item.ItemMap
