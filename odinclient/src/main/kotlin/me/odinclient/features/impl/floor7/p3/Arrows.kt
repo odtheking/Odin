@@ -1,5 +1,6 @@
 package me.odinclient.features.impl.floor7.p3
 
+import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.NumberSetting
@@ -9,7 +10,6 @@ import me.odinmain.utils.render.world.RenderUtils.renderY
 import me.odinmain.utils.render.world.RenderUtils.renderZ
 import me.odinmain.utils.skyblock.ItemUtils.isShortbow
 import me.odinmain.utils.skyblock.ItemUtils.itemID
-import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.WorldUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.util.MovingObjectPosition

@@ -13,7 +13,6 @@ import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.skyblock.ChatUtils.devMessage
-import me.odinmain.utils.skyblock.PlayerUtils.rightClick
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.block.BlockButtonStone
 import net.minecraft.client.renderer.GlStateManager
@@ -24,7 +23,6 @@ import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-// TODO: REMOVE THE CHEATS TY
 object SimonSays : Module(
     name = "Simon Says",
     description = "Different features for the Simon Says puzzle in f7/m7.",
@@ -35,13 +33,8 @@ object SimonSays : Module(
     private val start: Boolean by BooleanSetting("Start", default = true, description = "Starts the device when it can be started.")
     private val startClicks: Int by NumberSetting("Start Clicks", 1, 1, 10).withDependency { start }
     private val startClickDelay: Int by NumberSetting("Start Click Delay", 3, 1, 5).withDependency { start }
-    private val triggerBot: Boolean by BooleanSetting("Triggerbot")
-    private val delay: Long by NumberSetting<Long>("Delay", 200, 70, 500).withDependency { triggerBot }
-    private val fullBlock: Boolean by BooleanSetting("Full Block (needs SBC)", false).withDependency { triggerBot }
     private val clearAfter: Boolean by BooleanSetting("Clear After", false, description = "Clears the clicks when showing next, should work better with ss skip, but will be less consistent")
 
-    private val triggerBotClock = Clock(delay)
-    private val firstClickClock = Clock(800)
 
     private val firstButton = BlockPos(110, 121, 91)
     private val clickInOrder = ArrayList<BlockPos>()
@@ -53,7 +46,7 @@ object SimonSays : Module(
         if (mc.objectMouseOver?.blockPos == firstButton)
             repeat(startClicks) {
                 runIn(it * startClickDelay) {
-                    rightClick()
+
                 }
             }
     }
@@ -124,25 +117,10 @@ object SimonSays : Module(
         }
     }
 
-    private fun triggerBot() {
-        if (!triggerBotClock.hasTimePassed(delay) || clickInOrder.size == 0) return
-        val pos = mc.objectMouseOver?.blockPos ?: return
-        if (clickInOrder[clickNeeded] != pos.east() && !(fullBlock && clickInOrder[clickNeeded] == pos)) return
-        if (clickNeeded == 0) { // Stops spamming the first button and breaking the puzzle.
-            if (!firstClickClock.hasTimePassed()) return
-            rightClick()
-            firstClickClock.update()
-            return
-        }
-        rightClick()
-        triggerBotClock.update()
-    }
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (clickNeeded >= clickInOrder.size) return
-
-        if (triggerBot) triggerBot()
 
         if (!solver) return
         GlStateManager.disableCull()

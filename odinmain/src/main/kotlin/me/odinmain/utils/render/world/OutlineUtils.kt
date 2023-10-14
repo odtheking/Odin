@@ -14,7 +14,6 @@ import org.lwjgl.opengl.EXTPackedDepthStencil
 import org.lwjgl.opengl.GL11
 
 
-// TODO: TEST WITH NEW COLOR :PRAY: IT WORKS
 /**
  * Modified from LiquidBounce under GPL-3.0
  * https://github.com/CCBlueX/LiquidBounce/blob/legacy/LICENSE

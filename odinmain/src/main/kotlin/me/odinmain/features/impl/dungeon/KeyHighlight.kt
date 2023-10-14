@@ -15,7 +15,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-object KeyESP : Module(
+object KeyHighlight : Module(
     name = "Key ESP",
     description = "Draws a box around the key.",
     category = Category.DUNGEON,

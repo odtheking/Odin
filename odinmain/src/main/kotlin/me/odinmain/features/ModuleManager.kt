@@ -45,7 +45,7 @@ object ModuleManager {
         AutoDungeonReque,
         BlessingDisplay,
         ExtraStats,
-        KeyESP,
+        KeyHighlight,
         MimicMessage,
         TeammatesHighlight,
         TerracottaTimer,

@@ -1,5 +1,6 @@
 package me.odinclient.features.impl.dungeon
 
+import me.odinclient.utils.skyblock.PlayerUtils.rightClick
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.NumberSetting
@@ -7,7 +8,6 @@ import me.odinmain.utils.Utils.equalsOneOf
 import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.ItemUtils.heldItem
 import me.odinmain.utils.skyblock.ItemUtils.itemID
-import me.odinmain.utils.skyblock.PlayerUtils.rightClick
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent

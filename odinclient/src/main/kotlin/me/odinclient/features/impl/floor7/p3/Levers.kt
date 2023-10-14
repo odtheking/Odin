@@ -1,10 +1,10 @@
 package me.odinclient.features.impl.floor7.p3
 
+import me.odinclient.utils.skyblock.PlayerUtils.rightClick
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.clock.Clock
-import me.odinmain.utils.skyblock.PlayerUtils.rightClick
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.block.BlockLever
 import net.minecraft.util.BlockPos

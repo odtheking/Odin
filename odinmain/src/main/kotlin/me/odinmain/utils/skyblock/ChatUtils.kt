@@ -3,7 +3,6 @@ package me.odinmain.utils.skyblock
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.skyblock.DevPlayers.devs
 import me.odinmain.utils.Utils.noControlCodes
-import me.odinmain.utils.WebUtils
 import net.minecraft.event.ClickEvent
 import net.minecraft.event.HoverEvent
 import net.minecraft.util.ChatComponentText
@@ -19,11 +18,6 @@ object ChatUtils {
 
     fun eightBall(): String {
         return responses.random()
-    }
-
-    fun catPics(): String {
-        val catsArray = cats.toString().split(",")
-        return catsArray.random()
     }
 
     fun flipCoin(): String = if (Math.random() < 0.5) "heads" else "tails"
@@ -79,9 +73,6 @@ object ChatUtils {
         )
         return style
     }
-
-
-    private var cats: Any? = WebUtils.fetchURLData("https://pastebin.com/raw/m4L2e62y")
 
     private val responses = arrayOf(
         "It is certain",

@@ -1,9 +1,9 @@
 package me.odinclient.features.impl.floor7
 
+import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.skyblock.ItemUtils.unformattedName
-import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.util.BlockPos
 
