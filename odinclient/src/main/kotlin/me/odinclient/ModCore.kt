@@ -31,7 +31,7 @@ import me.odinmain.events.EventDispatcher
 import me.odinmain.features.Module
 import me.odinmain.features.ModuleManager
 import me.odinmain.features.impl.dungeon.KeyESP
-import me.odinmain.features.impl.floor7.p3.ArrowAlign
+import me.odinclient.features.impl.floor7.p3.ArrowAlign
 import me.odinmain.features.impl.floor7.p3.SimonSays
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.impl.render.WaypointManager
