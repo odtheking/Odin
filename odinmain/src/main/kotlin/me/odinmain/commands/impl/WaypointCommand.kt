@@ -5,8 +5,8 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.commands.AbstractCommand
 import me.odinmain.features.impl.render.WaypointManager
 import me.odinmain.ui.waypoint.WaypointGUI
-import me.odinmain.utils.Utils.floorToInt
 import me.odinmain.utils.VecUtils.floored
+import me.odinmain.utils.floor
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import me.odinmain.utils.skyblock.ChatUtils.partyMessage
@@ -24,7 +24,7 @@ object WaypointCommand : AbstractCommand("waypoint", "wp", "odwp",) {
 
         "share" does {
             val message = when (it.size) {
-                0 -> "x: ${posX.floorToInt()} y: ${posY.floorToInt()} z: ${posZ.floorToInt()}"
+                0 -> "x: ${posX.floor().toInt()} y: ${posY.floor().toInt()} z: ${posZ.floor().toInt()}"
                 3 -> "x: ${it[0]} y: ${it[1]} z: ${it[2]}"
                 else -> return@does modMessage("§cInvalid arguments, §r/wp share (x y z).")
             }
