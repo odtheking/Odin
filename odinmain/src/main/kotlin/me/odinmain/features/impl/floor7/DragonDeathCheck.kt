@@ -5,6 +5,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.Utils.round
+import me.odinmain.utils.VecUtils.equal
 import me.odinmain.utils.WebUtils
 import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -44,16 +45,12 @@ object DragonDeathCheck : Module(
         last = null
     }
 
-    private fun Vec3.dragonCheck(vec3: Vec3): Boolean {
-        return this.xCoord == vec3.xCoord && this.yCoord == vec3.yCoord && this.zCoord == vec3.zCoord
-    }
-
     @SubscribeEvent
     fun onEntityJoin(event: EntityJoinWorldEvent) {
         if (event.entity !is EntityDragon || !DungeonUtils.inDungeons) return
 
         val entityPos = event.entity.positionVector
-        val color = DragonColors.entries.find { color -> entityPos.dragonCheck(color.pos) } ?: return
+        val color = DragonColors.entries.find { color -> entityPos.equal(color.pos) } ?: return
         dragonMap = dragonMap.plus(Pair(event.entity.entityId, color))
     }
 

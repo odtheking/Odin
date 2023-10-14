@@ -5,6 +5,7 @@ import me.odinmain.events.impl.DrawSlotEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.Utils.noControlCodes
+import me.odinmain.utils.VecUtils.equal
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.client.gui.Gui
 import net.minecraft.init.Blocks
@@ -84,9 +85,5 @@ object LeapHelper : Module(
     fun onWorldLoad(event: WorldEvent.Load) {
         currentPos = NONE
         closestPlayer = ""
-    }
-
-    private fun Vec3.equal(other: Vec3): Boolean {
-        return this.xCoord == other.xCoord && this.yCoord == other.yCoord && this.zCoord == other.zCoord
     }
 }
