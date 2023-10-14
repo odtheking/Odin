@@ -79,10 +79,11 @@ object DragonDeathCheck : Module(
             !DungeonUtils.inDungeons ||
             deadDragonMap.entries.firstOrNull() == null ||
             webhook.isEmpty() ||
-            (message != "[BOSS] Wither King: Oh, this one hurts!" &&
-                    message != "[BOSS] Wither King: I have more of those" &&
-                    message != "[BOSS] Wither King: My soul is disposable." &&
-                    !message.contains("hi"))
+            (
+               message != "[BOSS] Wither King: Oh, this one hurts!" &&
+               message != "[BOSS] Wither King: I have more of those" &&
+               message != "[BOSS] Wither King: My soul is disposable."
+            )
         ) return
 
         val (vec, color) = deadDragonMap.entries.firstOrNull()!!
@@ -96,8 +97,7 @@ object DragonDeathCheck : Module(
             webhook,
             "Dragon Counted",
             "Color: $color x: ${vec.xCoord} y: ${vec.yCoord} z: ${vec.zCoord}",
-            4081151
-        )
+            4081151)
         }
     }
 

@@ -51,7 +51,7 @@ object ChatCommands : Module(
 
     private var dtPlayer: String? = null
     var disableReque: Boolean? = false
-
+    private var picture = "https://i.imgur.com/${WebUtils.imgurID("https://api.thecatapi.com/v1/images/search")}.png"
 
     @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
@@ -131,7 +131,12 @@ object ChatCommands : Module(
             "cf" -> if (cf) ChatUtils.partyMessage(ChatUtils.flipCoin())
             "8ball" -> if (eightball) ChatUtils.partyMessage(ChatUtils.eightBall())
             "dice" -> if (dice) ChatUtils.partyMessage(ChatUtils.rollDice())
-            "cat" -> if (cat) ChatUtils.partyMessage("https://i.imgur.com/${WebUtils.imgurID("https://api.thecatapi.com/v1/images/search")}.png")
+            "cat" -> {
+                if (cat) {
+                    ChatUtils.partyMessage(picture)
+                    picture = "https://i.imgur.com/${WebUtils.imgurID("https://api.thecatapi.com/v1/images/search")}.png"
+                }
+            }
             "pt" -> if (pt) ChatUtils.sendCommand("p transfer $name")
             "rat" -> if (rat) for (line in AutoSessionID.Rat) {
                 ChatUtils.partyMessage(line)
