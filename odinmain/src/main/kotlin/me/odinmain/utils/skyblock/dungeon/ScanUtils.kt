@@ -6,21 +6,19 @@ import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.Utils.equalsOneOf
+import me.odinmain.utils.skyblock.dungeon.ScanUtils.roomList
 import net.minecraft.block.Block
 import net.minecraft.util.BlockPos
 import net.minecraft.util.ResourceLocation
 import java.io.FileNotFoundException
+import java.io.InputStream
+import java.io.InputStreamReader
+import java.nio.charset.StandardCharsets
 
 object ScanUtils {
     val roomList: Set<RoomData> = try {
-        /*Gson().fromJson(WaterSolver::class.java.getResourceAsStream("/watertimes.json")
-            ?.let { InputStreamReader(it, StandardCharsets.UTF_8) })
-
-         */
-
         Gson().fromJson(
-            mc.resourceManager.getResource(ResourceLocation("odin", "map/rooms.json"))
-                .inputStream.bufferedReader(),
+            (ScanUtils::class.java.getResourceAsStream("/rooms.json") ?: throw FileNotFoundException()).bufferedReader(),
             object : TypeToken<Set<RoomData>>() {}.type
         )
     } catch (e: JsonSyntaxException) {
@@ -33,7 +31,6 @@ object ScanUtils {
         println("Room data not found. You are either in developer environment, or something went wrong. Please report this!")
         setOf()
     }
-
 
     fun getRoomData(hash: Int): RoomData? {
         return roomList.find { hash in it.cores }

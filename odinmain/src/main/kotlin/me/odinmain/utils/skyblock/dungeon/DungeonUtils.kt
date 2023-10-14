@@ -60,27 +60,25 @@ object DungeonUtils {
     @SubscribeEvent
     fun onMove(event: LivingEvent.LivingUpdateEvent) {
         if (mc.theWorld == null || !inDungeons || !event.entity.equals(mc.thePlayer) || inBoss) return
-        val xPos = ((mc.thePlayer.posX + 200) / 32).floorToInt()
-        val zPos = ((mc.thePlayer.posZ + 200) / 32).floorToInt()
-        ChatUtils.modMessage("x: $xPos, z: $zPos")
+        val x = ((mc.thePlayer.posX + 200) / 32).floorToInt()
+        val z = ((mc.thePlayer.posZ + 200) / 32).floorToInt()
+        val xPos = startX + x * roomSize
+        val zPos = startZ + z * roomSize
+        ChatUtils.modMessage("x: $x, z: $z, xPos: $xPos, zPos: $zPos")
 
-        currentRoom = scanRoom(xPos, zPos, 0, 0)
+        currentRoom = scanRoom(xPos, zPos)
+        ChatUtils.modMessage("Current room: ${currentRoom?.data?.name}")
     }
 
-    private fun scanRoom(x: Int, z: Int, row: Int, column: Int): Room? {
+    private fun scanRoom(x: Int, z: Int): Room? {
         val height = mc.theWorld.getChunkFromChunkCoords(x shr 4, z shr 4).getHeightValue(x and 15, z and 15)
         if (height == 0) return null
 
-        val rowEven = row and 1 == 0
-        val columnEven = column and 1 == 0
-
-        return if (rowEven && columnEven) {
-            val roomCore = ScanUtils.getCore(x, z)
-            ChatUtils.modMessage("Room core: $roomCore")
-            Room(x, z, ScanUtils.getRoomData(roomCore) ?: return null).apply {
-                core = roomCore
-            }
-        } else null
+        val roomCore = ScanUtils.getCore(x, z)
+        ChatUtils.modMessage("Room core: $roomCore")
+        return Room(x, z, ScanUtils.getRoomData(roomCore) ?: return null).apply {
+            core = roomCore
+        }
     }
 
     enum class Classes(

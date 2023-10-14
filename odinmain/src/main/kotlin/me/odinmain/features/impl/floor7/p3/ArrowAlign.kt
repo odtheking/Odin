@@ -62,8 +62,6 @@ object ArrowAlign : Module(
         neededRotations.clear()
     }
 
-
-
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (!solver) return
