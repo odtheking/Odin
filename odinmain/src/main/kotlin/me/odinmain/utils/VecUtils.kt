@@ -39,6 +39,10 @@ object VecUtils {
         return isInterceptable(aabb, range)
     }
 
+    fun Vec3.equal(other: Vec3): Boolean {
+        return this.xCoord == other.xCoord && this.yCoord == other.yCoord && this.zCoord == other.zCoord
+    }
+
     private fun isInterceptable(aabb: AxisAlignedBB, range: Float): Boolean {
         val player = mc.thePlayer ?: return false
         val position = Vec3(player.posX, player.posY + fastEyeHeight(), player.posZ)

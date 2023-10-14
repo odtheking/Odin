@@ -125,7 +125,7 @@ object SimonSays : Module(
     }
 
     private fun triggerBot() {
-        if (!triggerBotClock.hasTimePassed(delay) || clickInOrder.size == 0) return
+        if (!triggerBotClock.hasTimePassed(delay) || clickInOrder.size == 0 || mc.currentScreen != null) return
         val pos = mc.objectMouseOver?.blockPos ?: return
         if (clickInOrder[clickNeeded] != pos.east() && !(fullBlock && clickInOrder[clickNeeded] == pos)) return
         if (clickNeeded == 0) { // Stops spamming the first button and breaking the puzzle.

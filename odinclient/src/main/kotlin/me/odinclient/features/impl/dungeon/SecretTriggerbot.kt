@@ -32,7 +32,7 @@ object SecretTriggerbot : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (!triggerBotClock.hasTimePassed(delay) || DungeonUtils.currentRoom?.data?.name.equalsOneOf("Water Board", "Three Weirdos")) return
+        if (!triggerBotClock.hasTimePassed(delay) || DungeonUtils.currentRoom?.data?.name.equalsOneOf("Water Board", "Three Weirdos") || mc.currentScreen != null) return
         val pos = mc.objectMouseOver?.blockPos ?: return
         val state = mc.theWorld.getBlockState(pos) ?: return
         clickedPositions.removeAll { it.second + 1000 < System.currentTimeMillis() }

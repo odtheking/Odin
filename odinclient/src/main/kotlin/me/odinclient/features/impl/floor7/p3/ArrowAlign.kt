@@ -17,6 +17,7 @@ import net.minecraft.item.Item
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.event.entity.player.EntityInteractEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.*
@@ -39,7 +40,6 @@ object ArrowAlign : Module(
             return@sortedWith 0
         }
     private val triggerBotClock = Clock(delay)
-    private val lastClickClock = Clock(800)
     private data class Vec2(val x: Int, val y: Int)
     private data class Frame(val entity: EntityItemFrame, var rotations: Int)
     //                                    xy pos         entity,          needed clicks        (x is technically z in the world)
@@ -56,11 +56,13 @@ object ArrowAlign : Module(
     fun onArrowChange(event: PostEntityMetadata) {
         if (mc.theWorld?.getEntityByID(event.packet.entityId)?.position !in area) return
         calculate()
-        val ent = mc.theWorld.getEntityByID(event.packet.entityId)
-        if (ent is EntityItemFrame) {
-            val rotations = neededRotations.values.find { it.entity == ent }?.rotations ?: return
-            if (rotations == 0) lastClickClock.lastTime = System.currentTimeMillis()
-        }
+    }
+
+    @SubscribeEvent
+    fun onInteract(event: EntityInteractEvent) {
+        val frame = neededRotations.values.find { it.entity == event.entity } ?: return
+        if (frame.rotations == 0) return
+        frame.rotations--
     }
 
     @SubscribeEvent
@@ -72,11 +74,9 @@ object ArrowAlign : Module(
         if (!triggerBotClock.hasTimePassed(delay)) return
         val rot = neededRotations.values.find { it.entity == mc.objectMouseOver?.entityHit } ?: return
         if (rot.rotations == 0) return
-        if (rot.rotations == 1 && !lastClickClock.hasTimePassed()) return
         PlayerUtils.rightClick()
         rot.rotations--
         triggerBotClock.update()
-        if (rot.rotations == 2 || rot.rotations == 1) lastClickClock.update()
     }
 
     @SubscribeEvent
