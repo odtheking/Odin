@@ -60,15 +60,12 @@ object DungeonUtils {
     @SubscribeEvent
     fun onMove(event: LivingEvent.LivingUpdateEvent) {
         if (mc.theWorld == null || !inDungeons || !event.entity.equals(mc.thePlayer) || inBoss) return
-        val tempX = (mc.thePlayer.posX + 200) / 32
         val x = ((mc.thePlayer.posX + 200) / 32).floor().toInt()
         val z = ((mc.thePlayer.posZ + 200) / 32).floor().toInt()
         val xPos = startX + x * roomSize
         val zPos = startZ + z * roomSize
-        ChatUtils.modMessage("x: $x, z: $z, xPos: $xPos, zPos: $zPos")
 
         currentRoom = scanRoom(xPos, zPos)
-        ChatUtils.modMessage("Current room: ${currentRoom?.data?.name}")
     }
 
     private fun scanRoom(x: Int, z: Int): Room? {
@@ -76,7 +73,6 @@ object DungeonUtils {
         if (height == 0) return null
 
         val roomCore = ScanUtils.getCore(x, z)
-        ChatUtils.modMessage("Room core: $roomCore")
         return Room(x, z, ScanUtils.getRoomData(roomCore) ?: return null).apply {
             core = roomCore
         }
