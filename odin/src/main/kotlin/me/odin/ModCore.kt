@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import me.odin.features.impl.floor7.p3.ArrowAlign
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.commands.impl.*
@@ -11,6 +12,7 @@ import me.odinmain.config.Config
 import me.odinmain.config.MiscConfig
 import me.odinmain.config.WaypointConfig
 import me.odinmain.events.EventDispatcher
+import me.odinmain.features.Module
 import me.odinmain.features.ModuleManager
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.impl.render.WaypointManager
@@ -45,6 +47,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 class ModCore {
     @EventHandler
     fun init(event: FMLInitializationEvent) {
+        ModuleManager.modules.addAll(modules)
         listOf(
             LocationUtils,
             ChatUtils,
@@ -67,6 +70,10 @@ class ModCore {
             ClientCommandHandler.instance.registerCommand(command as ICommand?)
         }
     }
+
+    private val modules = arrayListOf<Module>(
+        ArrowAlign
+    )
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {

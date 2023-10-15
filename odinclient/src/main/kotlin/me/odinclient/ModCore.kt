@@ -106,7 +106,6 @@ class ModCore {
         AutoShield,
         AutoUlt,
         AutoWish,
-        KeyHighlight,
         CancelInteract,
         CloseChest,
         GhostPick,
@@ -117,7 +116,6 @@ class ModCore {
         SwapStonk,
         ThornStun,
 
-        ArrowAlign,
         Arrows,
         CancelWrongTerms,
         HoverTerms,
