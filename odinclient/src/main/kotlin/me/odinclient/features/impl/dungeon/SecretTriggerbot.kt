@@ -36,6 +36,7 @@ object SecretTriggerbot : Module(
         val pos = mc.objectMouseOver?.blockPos ?: return
         val state = mc.theWorld.getBlockState(pos) ?: return
         clickedPositions.removeAll { it.second + 1000 < System.currentTimeMillis() }
+        if (pos.x in 58..62 && pos.y in 133..136) return // looking at lights device
 
         if (crystalHollowsChests && LocationUtils.currentArea == "Crystal Hollows" && state.block == Blocks.chest && !clickedPositions.any { it.first == pos }) {
             rightClick()

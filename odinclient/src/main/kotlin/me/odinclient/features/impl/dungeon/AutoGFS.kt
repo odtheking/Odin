@@ -21,7 +21,7 @@ object AutoGFS : Module(
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START || !DungeonUtils.inDungeons) return
-        if (mc.thePlayer?.inventory?.mainInventory?.none { it?.item == Items.ender_pearl} == true && sackCooldown.hasTimePassed()) {
+        if (mc.thePlayer?.inventory?.mainInventory?.all { it?.item != Items.ender_pearl} == true && sackCooldown.hasTimePassed()) {
             ChatUtils.sendCommand("gfs ENDER_PEARL 16")
             sackCooldown.update()
         }
