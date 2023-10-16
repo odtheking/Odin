@@ -12,10 +12,7 @@ import me.odinclient.features.impl.floor7.AutoEdrag
 import me.odinclient.features.impl.floor7.DioriteFucker
 import me.odinclient.features.impl.floor7.RelicAura
 import me.odinclient.features.impl.floor7.RelicPlacer
-import me.odinclient.features.impl.floor7.p3.Arrows
-import me.odinclient.features.impl.floor7.p3.CancelWrongTerms
-import me.odinclient.features.impl.floor7.p3.HoverTerms
-import me.odinclient.features.impl.floor7.p3.Levers
+import me.odinclient.features.impl.floor7.p3.*
 import me.odinclient.features.impl.render.ArrowTrajectory
 import me.odinclient.features.impl.render.Ghosts
 import me.odinclient.features.impl.render.NoCarpet
@@ -30,8 +27,6 @@ import me.odinmain.config.WaypointConfig
 import me.odinmain.events.EventDispatcher
 import me.odinmain.features.Module
 import me.odinmain.features.ModuleManager
-import me.odinmain.features.impl.dungeon.KeyHighlight
-import me.odinmain.features.impl.floor7.p3.ArrowAlign
 import me.odinmain.features.impl.floor7.p3.SimonSays
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.impl.render.WaypointManager
@@ -117,6 +112,7 @@ class ModCore {
         ThornStun,
 
         Arrows,
+        ArrowAlign,
         CancelWrongTerms,
         HoverTerms,
         Levers,
