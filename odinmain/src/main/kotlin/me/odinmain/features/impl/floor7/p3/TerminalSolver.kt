@@ -3,6 +3,7 @@ package me.odinmain.features.impl.floor7.p3
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.events.impl.DrawGuiEvent
 import me.odinmain.events.impl.GuiLoadedEvent
+import me.odinmain.events.impl.TerminalOpenedEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.AlwaysActive
@@ -10,6 +11,7 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinmain.utils.minBy
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import me.odinmain.utils.skyblock.ItemUtils.unformattedName
@@ -19,6 +21,7 @@ import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.EnumDyeColor
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
+import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -74,6 +77,7 @@ object TerminalSolver : Module(
                 solveSelect(items, colorNeeded.lowercase())
             }
         }
+        MinecraftForge.EVENT_BUS.post(TerminalOpenedEvent(currentTerm, solution))
     }
 
     @SubscribeEvent
@@ -160,7 +164,6 @@ object TerminalSolver : Module(
                     Array(dist(colorOrder.indexOf(pane.metadata), colorOrder.indexOf(color))) { pane }.toList()
                 } else emptyList()
             }.map { items.indexOf(it) }
-
             if (getRealSize(temp2) < getRealSize(temp)) {
                 temp = temp2
             }

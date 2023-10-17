@@ -4,7 +4,6 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.*
 import me.odinmain.features.impl.dungeon.*
 import me.odinmain.features.impl.floor7.*
-import me.odinmain.features.impl.floor7.p3.SimonSays
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalTimes
 import me.odinmain.features.impl.render.*
@@ -50,7 +49,6 @@ object ModuleManager {
         TerracottaTimer,
         WatcherBar,
         WaterSolver,
-        SimonSays,
         TerminalSolver,
         TerminalTimes,
         DragonBoxes,

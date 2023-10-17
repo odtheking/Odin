@@ -27,7 +27,6 @@ import me.odinmain.config.WaypointConfig
 import me.odinmain.events.EventDispatcher
 import me.odinmain.features.Module
 import me.odinmain.features.ModuleManager
-import me.odinmain.features.impl.floor7.p3.SimonSays
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.impl.render.WaypointManager
 import me.odinmain.ui.clickgui.ClickGUI
@@ -134,7 +133,8 @@ class ModCore {
         LimboLeave,
         NoBlock,
         TermAC,
-        Triggerbot
+        Triggerbot,
+        GhostBlock
     )
 
     @EventHandler

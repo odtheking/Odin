@@ -25,29 +25,33 @@ object SecretTriggerbot : Module(
 ) {
     private val delay: Long by NumberSetting<Long>("Delay", 200, 70, 500)
     private val crystalHollowsChests: Boolean by BooleanSetting("Crystal Hollows Chests", true, description = "Opens chests in crystal hollows when looking at them")
-    private val inBoss: Boolean by BooleanSetting("In Boss", false, description = "Makes the triggerbot work in dungeon boss aswell.")
+    private val inBoss: Boolean by BooleanSetting("In Boss", true, description = "Makes the triggerbot work in dungeon boss aswell.")
     private val triggerBotClock = Clock(delay)
-    private val clickedPositions = mutableSetOf<Pair<BlockPos, Long>>()
+    private var clickedPositions = mutableMapOf<BlockPos, Long>()
     private const val WITHER_ESSENCE_ID = "26bb1a8d-7c66-31c6-82d5-a9c04c94fb02"
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (!triggerBotClock.hasTimePassed(delay) || DungeonUtils.currentRoom?.data?.name.equalsOneOf("Water Board", "Three Weirdos") || mc.currentScreen != null) return
+        if (
+            !triggerBotClock.hasTimePassed(delay) ||
+            DungeonUtils.currentRoom?.data?.name.equalsOneOf("Water Board", "Three Weirdos") ||
+            mc.currentScreen != null
+        ) return
         val pos = mc.objectMouseOver?.blockPos ?: return
         val state = mc.theWorld.getBlockState(pos) ?: return
-        clickedPositions.removeAll { it.second + 1000 < System.currentTimeMillis() }
-        if (pos.x in 58..62 && pos.y in 133..136) return // looking at lights device
+        clickedPositions = clickedPositions.filter { it.value + 1000L < System.currentTimeMillis() }.toMutableMap()
+        if (pos.x in 58..62 && pos.y in 133..136 && pos.z == 142) return // looking at lights device
 
-        if (crystalHollowsChests && LocationUtils.currentArea == "Crystal Hollows" && state.block == Blocks.chest && !clickedPositions.any { it.first == pos }) {
+        if (crystalHollowsChests && LocationUtils.currentArea == "Crystal Hollows" && state.block == Blocks.chest && !clickedPositions.containsKey(pos)) {
             rightClick()
             triggerBotClock.update()
-            clickedPositions.add(Pair(pos, System.currentTimeMillis()))
+            clickedPositions.plus(pos to System.currentTimeMillis())
             return
         } else if (!DungeonUtils.inDungeons || (!inBoss && DungeonUtils.inBoss)) return
-        else if (isSecret(state, pos) && !clickedPositions.any { it.first == pos }) {
+        else if (isSecret(state, pos) && !clickedPositions.containsKey(pos)) {
             rightClick()
             triggerBotClock.update()
-            clickedPositions.add(Pair(pos, System.currentTimeMillis()))
+            clickedPositions.plus(pos to System.currentTimeMillis())
         }
     }
 

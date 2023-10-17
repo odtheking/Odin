@@ -20,6 +20,7 @@ import net.minecraft.world.WorldSettings
 import net.minecraftforge.event.entity.living.LivingEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import tv.twitch.chat.Chat
 
 object DungeonUtils {
 
@@ -73,6 +74,7 @@ object DungeonUtils {
         if (height == 0) return null
 
         val roomCore = ScanUtils.getCore(x, z)
+        ChatUtils.devMessage("Room core: $roomCore")
         return Room(x, z, ScanUtils.getRoomData(roomCore) ?: return null).apply {
             core = roomCore
         }
