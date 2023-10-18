@@ -1,8 +1,10 @@
 package me.odinmain.features.impl.floor7.p3
 
 import me.odinmain.config.Config
+import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.impl.skyblock.ChatCommands.private
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.utils.name
@@ -19,7 +21,6 @@ object TerminalTimes : Module(
     category = Category.FLOOR7
 ) {
     private val sendMessage: Int by SelectorSetting("Send Message", "Always", arrayListOf("Only PB", "Always"))
-
     private var currentTerminal: Terminals? = null
     private var startTimer = 0L
 
@@ -54,10 +55,10 @@ object TerminalTimes : Module(
     }
 
     @SubscribeEvent
-    fun onClientChatReceived(event: ClientChatReceivedEvent) {
+    fun onClientChatReceived(event: ChatPacketEvent) {
         if (currentTerminal == null) return
-        val message = event.unformattedText
-        val match = Regex("(.+) (?:activated|completed) a terminal! \\((\\d)/(\\d)\\)").find(message) ?: return
+        modMessage(event.message)
+        val match = Regex("(.+) (?:activated|completed) a terminal! \\((\\d)/(\\d)\\)").find(event.message) ?: return
         val (_, name, current, max) = match.groups.map { it?.value }
 
         if (current?.toInt() == max?.toInt() || current?.toInt() == 0) {

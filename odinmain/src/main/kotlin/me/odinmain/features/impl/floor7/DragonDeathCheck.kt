@@ -2,17 +2,19 @@ package me.odinmain.features.impl.floor7
 
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.scope
+import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.WebUtils
+import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.round
 import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.boss.EntityDragon
 import net.minecraft.util.Vec3
-import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.event.entity.living.LivingDeathEvent
 import net.minecraftforge.event.world.WorldEvent
@@ -29,13 +31,14 @@ object DragonDeathCheck : Module(
 
     private enum class Dragons(
         val pos: Vec3,
-        val colorCodes: String
+        val colorCode: String,
+        val setting: NumberSetting<Double>
     ) {
-        Red(Vec3(27.0, 14.0, 59.0), "c"),
-        Orange(Vec3(85.0, 14.0, 56.0), "6"),
-        Green(Vec3(27.0, 14.0, 94.0), "a"),
-        Blue(Vec3(84.0, 14.0, 94.0), "b"),
-        Purple(Vec3(56.0, 14.0, 125.0), "5")
+        Red(Vec3(27.0, 14.0, 59.0), "c", +NumberSetting("Red PB", 1000.0, increment = 0.01, hidden = true)),
+        Orange(Vec3(85.0, 14.0, 56.0), "6", +NumberSetting("Orange PB", 1000.0, increment = 0.01, hidden = true)),
+        Green(Vec3(27.0, 14.0, 94.0), "a", +NumberSetting("Green PB", 1000.0, increment = 0.01, hidden = true)),
+        Blue(Vec3(84.0, 14.0, 94.0), "b", +NumberSetting("Blue PB", 1000.0, increment = 0.01, hidden = true)),
+        Purple(Vec3(56.0, 14.0, 125.0), "5", +NumberSetting("Purple PB", 1000.0, increment = 0.01, hidden = true))
     }
 
     private var dragonMap: Map<Int, Dragons> = HashMap()
@@ -68,36 +71,38 @@ object DragonDeathCheck : Module(
 
         deadDragonMap = deadDragonMap.plus(Pair(Vec3(event.entity.posX.round(1), event.entity.posY.round(1), event.entity.posZ.round(1)), color))
 
-        if (sendTime && enabled) ChatUtils.modMessage("§${Dragons.entries.find { color.name == it.name }?.colorCodes}$color §fdragon was alive for ${printSecondsWithColor(event.entity.ticksExisted.toFloat() / 20.0, 3.5, 7.5, down = false)}.")
+        if (sendTime && enabled) {
+            val dragon = Dragons.entries.find { color.name == it.name } ?: return
+            val oldPB = dragon.setting.value
+            val killTime = event.entity.ticksExisted / 20.0
+            if (killTime < oldPB)
+                dragon.setting.value = killTime
+            ChatUtils.modMessage("§${dragon.colorCode}$color §fdragon was alive for ${printSecondsWithColor(killTime, 3.5, 7.5, down = false)}${if (killTime < oldPB) " §7(§dNew PB§7)" else ""}.")
+        }
         dragonMap = dragonMap.minus(event.entity.entityId)
     }
 
     @SubscribeEvent
-    fun onChat(event: ClientChatReceivedEvent) {
-        val message = event.message.unformattedText
+    fun onChat(event: ChatPacketEvent) {
         if (
             !DungeonUtils.inDungeons ||
-            deadDragonMap.entries.firstOrNull() == null ||
             webhook.isEmpty() ||
-            (
-               message != "[BOSS] Wither King: Oh, this one hurts!" &&
-               message != "[BOSS] Wither King: I have more of those" &&
-               message != "[BOSS] Wither King: My soul is disposable."
+            !event.message.equalsOneOf(
+                "[BOSS] Wither King: Oh, this one hurts!",
+                "[BOSS] Wither King: I have more of those",
+                "[BOSS] Wither King: My soul is disposable."
             )
         ) return
 
-        val (vec, color) = deadDragonMap.entries.firstOrNull()!!
+        val (vec, color) = deadDragonMap.entries.firstOrNull() ?: return
         deadDragonMap = deadDragonMap.minus(deadDragonMap.keys.first())
 
-        if (sendNotif && enabled) ChatUtils.modMessage("§${Dragons.entries.find { color.name == it.name }?.colorCodes}$color dragon counts.")
+        if (sendNotif && enabled) ChatUtils.modMessage("§${Dragons.entries.find { color.name == it.name }?.colorCode}$color dragon counts.")
+
         if (color == Dragons.Purple) return
 
-        scope.launch{
-            WebUtils.sendDiscordWebhook(
-            webhook,
-            "Dragon Counted",
-            "Color: $color x: ${vec.xCoord} y: ${vec.yCoord} z: ${vec.zCoord}",
-            4081151)
+        scope.launch {
+            WebUtils.sendDiscordWebhook(webhook, "Dragon Counted", "Color: $color x: ${vec.xCoord} y: ${vec.yCoord} z: ${vec.zCoord}", 4081151)
         }
     }
 
@@ -117,8 +122,4 @@ object DragonDeathCheck : Module(
         }
         return "§$colorCode${time1}s"
     }
-
-
-
-
 }

@@ -1,12 +1,14 @@
 package me.odinclient.features.impl.dungeon
 
 import me.odinclient.utils.skyblock.PlayerUtils.rightClick
+import me.odinmain.OdinMain
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.equalsOneOf
+import me.odinmain.utils.floor
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.block.BlockSkull
@@ -29,6 +31,7 @@ object SecretTriggerbot : Module(
     private val triggerBotClock = Clock(delay)
     private var clickedPositions = mutableMapOf<BlockPos, Long>()
     private const val WITHER_ESSENCE_ID = "26bb1a8d-7c66-31c6-82d5-a9c04c94fb02"
+    private val debugMsgs: Boolean by BooleanSetting("Debug Messages", false)
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
@@ -52,6 +55,13 @@ object SecretTriggerbot : Module(
             rightClick()
             triggerBotClock.update()
             clickedPositions.plus(pos to System.currentTimeMillis())
+            if (debugMsgs) {
+                val x = ((OdinMain.mc.thePlayer.posX + 200) / 32).floor().toInt()
+                val z = ((OdinMain.mc.thePlayer.posZ + 200) / 32).floor().toInt()
+                val xPos = -185 + x * 32
+                val zPos = -185 + z * 32
+                DungeonUtils.scanRoom(xPos, zPos, printDebug = true)
+            }
         }
     }
 

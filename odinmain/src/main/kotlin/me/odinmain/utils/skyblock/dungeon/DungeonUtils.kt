@@ -1,7 +1,9 @@
 package me.odinmain.utils.skyblock.dungeon
 
 import com.google.common.collect.ComparisonChain
+import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
+import me.odinmain.OdinMain.scope
 import me.odinmain.events.impl.ReceivePacketEvent
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
@@ -9,6 +11,7 @@ import me.odinmain.utils.floor
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.ChatUtils
+import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import me.odinmain.utils.skyblock.ItemUtils
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.LocationUtils.currentDungeon
@@ -54,9 +57,9 @@ object DungeonUtils {
         }
     }
 
-    const val roomSize = 32
-    const val startX = -185
-    const val startZ = -185
+    private const val roomSize = 32
+    private const val startX = -185
+    private const val startZ = -185
 
     @SubscribeEvent
     fun onMove(event: LivingEvent.LivingUpdateEvent) {
@@ -69,14 +72,15 @@ object DungeonUtils {
         currentRoom = scanRoom(xPos, zPos)
     }
 
-    private fun scanRoom(x: Int, z: Int): Room? {
+    fun scanRoom(x: Int, z: Int, printDebug: Boolean = false): Room? {
         val height = mc.theWorld.getChunkFromChunkCoords(x shr 4, z shr 4).getHeightValue(x and 15, z and 15)
         if (height == 0) return null
 
         val roomCore = ScanUtils.getCore(x, z)
-        ChatUtils.devMessage("Room core: $roomCore")
+        if (printDebug) modMessage("Room core: $roomCore")
         return Room(x, z, ScanUtils.getRoomData(roomCore) ?: return null).apply {
             core = roomCore
+            if (printDebug) modMessage("Room name: ${data.name}")
         }
     }
 
@@ -150,7 +154,7 @@ object DungeonUtils {
         ).compare(o1.gameProfile.name, o2.gameProfile.name).result()
     }
 
-    val tabList: List<Pair<NetworkPlayerInfo, String>>
+    private val tabList: List<Pair<NetworkPlayerInfo, String>>
         get() = (mc.thePlayer?.sendQueue?.playerInfoMap?.sortedWith(tabListOrder) ?: emptyList())
             .map { Pair(it, mc.ingameGUI.tabList.getPlayerName(it)) }
 }
