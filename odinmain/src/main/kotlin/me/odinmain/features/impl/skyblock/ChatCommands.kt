@@ -143,7 +143,7 @@ object ChatCommands : Module(
                 delay(350)
             }
             "ping" -> if (ping) ChatUtils.partyMessage("Current Ping: ${floor(ServerUtils.averagePing.floor())}ms")
-            "tps" -> if (tps) ChatUtils.partyMessage("Current Ping: ${floor(ServerUtils.averageTps.floor())}ms")
+            "tps" -> if (tps) ChatUtils.partyMessage("Current TPS: ${floor(ServerUtils.averageTps.floor())}ms")
             "dt" -> if (dt) {
                 ChatUtils.modMessage("Reminder set for the end of the run!")
                 dtPlayer = name
@@ -166,7 +166,7 @@ object ChatCommands : Module(
             "dice" -> if (dice) ChatUtils.guildMessage(ChatUtils.rollDice())
             "cat" -> if (cat) ChatUtils.guildMessage("https://i.imgur.com/${WebUtils.imgurID("https://api.thecatapi.com/v1/images/search")}.png")
             "ping" -> if (ping) ChatUtils.guildMessage("Current Ping: ${floor(ServerUtils.averagePing)}ms")
-            "tps" -> if (tps) ChatUtils.partyMessage("Current Ping: ${floor(ServerUtils.averageTps.floor())}ms")
+            "tps" -> if (tps) ChatUtils.partyMessage("Current TPS: ${floor(ServerUtils.averageTps.floor())}ms")
         }
     }
 
