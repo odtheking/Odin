@@ -6,27 +6,27 @@
       ],
       "minecraft:quartz_block": [
         0.0,
-        9.0
+        10.0
       ],
       "minecraft:water": [
         0.0
       ],
       "minecraft:diamond_block": [
-        2.0
+        0.0
+      ],
+      "minecraft:gold_block": [
+        0.0
       ],
       "minecraft:emerald_block": [
-        7.0
+        7.9
       ]
     },
     "013": {
       "minecraft:hardened_clay": [
         0.0,
-        10.0
+        6.5
       ],
       "minecraft:gold_block": [
-        0.0
-      ],
-      "minecraft:quartz_block": [
         0.0,
         11.0
       ],
@@ -34,10 +34,11 @@
         0.0
       ],
       "minecraft:coal_block": [
-        3.0
+        0.0
       ],
       "minecraft:diamond_block": [
-        6.0
+        0.0,
+        7.6
       ]
     },
     "014": {
@@ -295,15 +296,21 @@
       ],
       "minecraft:gold_block": [
         0.0,
-        8.9
+        9.0
       ],
       "minecraft:diamond_block": [
-        0.0,
-        2.6,
         10.0
       ],
-      "minecraft:water": [
+      "minecraft:emerald_block": [
         0.0
+      ],
+      "minecraft:hardened_clay": [
+        0.0,
+        5.6
+      ],
+      "minecraft:water": [
+        0.0,
+        6.9
       ]
     },
     "124": {
@@ -403,7 +410,7 @@
       ],
       "minecraft:diamond_block": [
         11.2,
-        13.6
+        13.8
       ]
     },
     "014": {
@@ -485,19 +492,13 @@
     },
     "123": {
       "minecraft:emerald_block": [
-        0.0,
-        4.6,
         6.2,
-        8.2,
-        11.0
+        8.0,
+        10.4
       ],
       "minecraft:water": [
         0.0,
-        0.0
-      ],
-      "minecraft:diamond_block": [
-        5.8,
-        10.2
+        3.8
       ]
     },
     "124": {
@@ -551,15 +552,17 @@
       "minecraft:gold_block": [
         0.0
       ],
-      "minecraft:water": [
-        0.0,
-        0.3
+      "minecraft:quartz_block": [
+        0.0
       ],
-      "minecraft:hardened_clay": [
-        7.0
+      "minecraft:water": [
+        0.0
       ],
       "minecraft:emerald_block": [
-        8.5
+        8.2
+      ],
+      "minecraft:coal_block": [
+        9.3
       ]
     },
     "013": {
@@ -573,7 +576,12 @@
         0.0
       ],
       "minecraft:emerald_block": [
-        8.2
+        0.0,
+        8.1
+      ],
+      "minecraft:hardened_clay": [
+        0.0,
+        5.6
       ]
     },
     "014": {
@@ -636,10 +644,21 @@
         0.0
       ],
       "minecraft:water": [
-        0.0
+        2.0
       ],
       "minecraft:emerald_block": [
-        5.3
+        0.0
+      ],
+      "minecraft:hardened_clay": [
+        0.0,
+        5.5
+      ],
+      "minecraft:quartz_block": [
+        0.0,
+        8.9
+      ],
+      "minecraft:coal_block": [
+        11.8
       ]
     },
     "123": {

@@ -1,12 +1,8 @@
 package me.odinclient.features.impl.dungeon
 
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import me.odinclient.utils.skyblock.PlayerUtils
-import me.odinmain.OdinMain.scope
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.utils.skyblock.ItemUtils.unformattedName
 
 object SwapStonk : Module(
     name = "Swap Stonk",
@@ -15,12 +11,11 @@ object SwapStonk : Module(
     tag = TagType.NEW
 ) {
     override fun onKeybind() {
-        scope.launch {
-            val originalItem = mc.thePlayer.heldItem.unformattedName
-            PlayerUtils.leftClick()
-            PlayerUtils.swapToItem("Pickaxe", true)
-            delay(100)
-            PlayerUtils.swapToItem(originalItem, true)
+        val originalItem = mc.thePlayer?.inventory?.currentItem ?: 0
+        PlayerUtils.leftClick()
+        PlayerUtils.swapToItem("Pickaxe", true)
+        runIn(2) {
+            PlayerUtils.swapToIndex(originalItem)
         }
     }
 }

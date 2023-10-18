@@ -139,6 +139,10 @@ abstract class Module(
     }
 
     fun runIn(ticks: Int, func: () -> Unit) {
+        if (ticks <= 0) {
+            func()
+            return
+        }
         ModuleManager.tickTasks.add(ModuleManager.TickTask(ticks, func))
     }
 

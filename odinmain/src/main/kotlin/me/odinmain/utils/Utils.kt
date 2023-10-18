@@ -104,6 +104,14 @@ fun <T> Collection<T>.getRandom(): T {
 }
 
 /**
+ * Returns the value of the pair which gives the lowest value when passed to the selector function.
+ * If both values are equal, the first value is returned.
+ */
+inline fun <T>Pair<T, T>.minBy(selector: (T) -> Number): T {
+    return if (selector(this.first) <= selector(this.second)) this.first else this.second
+}
+
+/**
  * Taken from PolyUI
  */
 fun HSBtoRGB(hue: Float, saturation: Float, brightness: Float): Int {

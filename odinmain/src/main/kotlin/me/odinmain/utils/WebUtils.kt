@@ -67,37 +67,41 @@ object WebUtils {
     }
 
     fun upload(image: String): String {
-        // Get a random Imgur client ID.
-        val clientID = IMGUR_KEYS.random()
+        try {
+            // Get a random Imgur client ID.
+            val clientID = IMGUR_KEYS.random()
 
-        // Create a POST request to upload the image to Imgur.
-        val url = URL("https://api.imgur.com/3/image")
-        val con = url.openConnection() as HttpsURLConnection
-        con.addRequestProperty("Content-Type", "application/json")
-        con.addRequestProperty("Authorization", "Client-ID $clientID")
-        con.doOutput = true
-        con.requestMethod = "POST"
+            // Create a POST request to upload the image to Imgur.
+            val url = URL("https://api.imgur.com/3/image")
+            val con = url.openConnection() as HttpsURLConnection
+            con.addRequestProperty("Content-Type", "application/json")
+            con.addRequestProperty("Authorization", "Client-ID $clientID")
+            con.doOutput = true
+            con.requestMethod = "POST"
 
-        // Write the image URL to the request body.
-        val stream = con.outputStream
-        stream.write(image.toByteArray())
-        stream.flush()
-        stream.close()
+            // Write the image URL to the request body.
+            val stream = con.outputStream
+            stream.write(image.toByteArray())
+            stream.flush()
+            stream.close()
 
-        // Make the POST request and read the response.
-        val inputStream = con.inputStream
-        val reader = BufferedReader(InputStreamReader(inputStream))
-        val response = reader.readLine()
+            // Make the POST request and read the response.
+            val inputStream = con.inputStream
+            val reader = BufferedReader(InputStreamReader(inputStream))
+            val response = reader.readLine()
 
-        // Close the connection.
-        con.disconnect()
+            // Close the connection.
+            con.disconnect()
 
-        // Return the response.
-        return response
+            // Return the response.
+            return response
+        } catch (e: Exception) {
+            return ""
+        }
     }
 
-    fun imgurID(URL: String): String {
-        val image: Any = fetchURLData(URL)
+    fun imgurID(url: String): String {
+        val image: Any = fetchURLData(url)
 
         val imageArray = image.toString().split(",")[1]
 

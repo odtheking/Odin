@@ -14,6 +14,7 @@ object DevPlayers {
         "Odtheking" to PlayerSize(2f, 1f, 1f),
         "Stivais" to PlayerSize(2f, 1f, 1f),
         "saksiq" to PlayerSize(2f, 1f, 1f),
+        "stiff_maister89" to PlayerSize(1f, 1f, 1f),
     )
 
     @SubscribeEvent

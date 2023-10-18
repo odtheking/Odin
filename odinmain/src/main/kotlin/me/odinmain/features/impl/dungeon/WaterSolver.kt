@@ -6,6 +6,7 @@ import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.scope
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.settings.impl.ActionSetting
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
@@ -27,6 +28,9 @@ object WaterSolver : Module(
     category = Category.DUNGEON,
 ) {
     private val showOrder: Boolean by BooleanSetting("Show Order", true, description = "Shows the order of the levers to click.")
+    private val reset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
+        reset()
+    }
 
     private var waterSolutions: JsonObject
 

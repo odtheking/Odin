@@ -1,4 +1,4 @@
-package me.odinmain.features.impl.floor7.p3
+package me.odin.features.impl.floor7.p3
 
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category

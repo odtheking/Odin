@@ -1,4 +1,4 @@
-package me.odinmain.features.impl.floor7.p3
+package me.odin.features.impl.floor7.p3
 
 import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.PostEntityMetadata
@@ -31,11 +31,7 @@ object SimonSays : Module(
     tag = TagType.NEW
 ) {
     private val solver: Boolean by BooleanSetting("Solver")
-    private val start: Boolean by BooleanSetting("Start", default = true, description = "Starts the device when it can be started.")
-    private val startClicks: Int by NumberSetting("Start Clicks", 1, 1, 10).withDependency { start }
-    private val startClickDelay: Int by NumberSetting("Start Click Delay", 3, 1, 5).withDependency { start }
     private val clearAfter: Boolean by BooleanSetting("Clear After", false, description = "Clears the clicks when showing next, should work better with ss skip, but will be less consistent")
-
 
     private val firstButton = BlockPos(110, 121, 91)
     private val clickInOrder = ArrayList<BlockPos>()
@@ -43,28 +39,13 @@ object SimonSays : Module(
     private var currentPhase = 0
     private val phaseClock = Clock(500)
 
-    private fun start() {
-        if (mc.objectMouseOver?.blockPos == firstButton)
-            repeat(startClicks) {
-                runIn(it * startClickDelay) {
-
-                }
-            }
-    }
-
     init {
-        onMessage(Regex("${"[BOSS]"} Goldor: Who dares tresspass into my domain${"?"}"), { start && enabled }) {
-            start()
-        }
-
         onWorldLoad {
             clickInOrder.clear()
             clickNeeded = 0
             currentPhase = 0
         }
     }
-
-    override fun onKeybind() = start()
 
     @SubscribeEvent
     fun onBlockChange(event: BlockChangeEvent) {

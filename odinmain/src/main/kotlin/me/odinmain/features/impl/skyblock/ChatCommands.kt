@@ -51,7 +51,27 @@ object ChatCommands : Module(
 
     private var dtPlayer: String? = null
     var disableReque: Boolean? = false
-    private var picture = "https://i.imgur.com/${WebUtils.imgurID("https://api.thecatapi.com/v1/images/search")}.png"
+    private var picture = getCatPic()
+
+    private fun getCatPic(): String {
+        return try {
+            "https://i.imgur.com/${WebUtils.imgurID("https://api.thecatapi.com/v1/images/search")}.png"
+        } catch (e: Exception) {
+            "Failed to get a cat pic"
+        }
+    }
+
+    private fun useCatPic(): String {
+        val temp = picture
+        picture = getCatPic()
+        return temp
+    }
+
+    init {
+        execute(3000) {
+            if (picture == "Failed to get a cat pic") picture = getCatPic()
+        }
+    }
 
     @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
@@ -131,12 +151,7 @@ object ChatCommands : Module(
             "cf" -> if (cf) ChatUtils.partyMessage(ChatUtils.flipCoin())
             "8ball" -> if (eightball) ChatUtils.partyMessage(ChatUtils.eightBall())
             "dice" -> if (dice) ChatUtils.partyMessage(ChatUtils.rollDice())
-            "cat" -> {
-                if (cat) {
-                    ChatUtils.partyMessage(picture)
-                    picture = "https://i.imgur.com/${WebUtils.imgurID("https://api.thecatapi.com/v1/images/search")}.png"
-                }
-            }
+            "cat" -> if (cat) { ChatUtils.partyMessage(useCatPic()) }
             "pt" -> if (pt) ChatUtils.sendCommand("p transfer $name")
             "rat" -> if (rat) for (line in AutoSessionID.Rat) {
                 ChatUtils.partyMessage(line)
@@ -164,7 +179,7 @@ object ChatCommands : Module(
             "cf" -> if (cf) ChatUtils.guildMessage(ChatUtils.flipCoin())
             "8ball" -> if (eightball) ChatUtils.guildMessage(ChatUtils.eightBall())
             "dice" -> if (dice) ChatUtils.guildMessage(ChatUtils.rollDice())
-            "cat" -> if (cat) ChatUtils.guildMessage("https://i.imgur.com/${WebUtils.imgurID("https://api.thecatapi.com/v1/images/search")}.png")
+            "cat" -> if (cat) ChatUtils.guildMessage(useCatPic())
             "ping" -> if (ping) ChatUtils.guildMessage("Current Ping: ${floor(ServerUtils.averagePing)}ms")
             "tps" -> if (tps) ChatUtils.partyMessage("Current TPS: ${floor(ServerUtils.averageTps.floor())}ms")
         }
@@ -183,7 +198,7 @@ object ChatCommands : Module(
             "cf" -> if (cf) ChatUtils.privateMessage(ChatUtils.flipCoin(),name)
             "8ball" -> if (eightball) ChatUtils.privateMessage(ChatUtils.eightBall(),name)
             "dice" -> if (dice) ChatUtils.privateMessage(ChatUtils.rollDice(),name)
-            "cat" -> if (cat) ChatUtils.privateMessage("https://i.imgur.com/${WebUtils.imgurID("https://api.thecatapi.com/v1/images/search")}.png",name)
+            "cat" -> if (cat) ChatUtils.privateMessage(useCatPic(),name)
             "ping" -> if (ping) ChatUtils.privateMessage("Current Ping: ${floor(ServerUtils.averagePing)}ms",name)
             "inv" -> if (inv) ChatUtils.sendCommand("party invite $name")
             "invite" -> if (invite) {
