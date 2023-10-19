@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import me.odin.features.impl.floor7.p3.ArrowAlign
+import me.odin.features.impl.floor7.p3.SimonSays
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.commands.impl.*
@@ -72,7 +73,8 @@ class ModCore {
     }
 
     private val modules = arrayListOf<Module>(
-        ArrowAlign
+        ArrowAlign,
+        SimonSays
     )
 
     @SubscribeEvent

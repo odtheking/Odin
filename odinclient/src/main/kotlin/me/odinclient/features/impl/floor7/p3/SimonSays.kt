@@ -14,6 +14,7 @@ import me.odinmain.utils.floor
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.skyblock.ChatUtils.devMessage
+import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.block.BlockButtonStone
 import net.minecraft.client.renderer.GlStateManager
@@ -59,7 +60,7 @@ object SimonSays : Module(
     }
 
     init {
-        onMessage(Regex("${"[BOSS]"} Goldor: Who dares tresspass into my domain${"?"}"), { start && enabled }) {
+        onMessage(Regex("\\[BOSS] Goldor: Who dares tresspass into my domain\\?"), { start && enabled }) {
             start()
         }
 

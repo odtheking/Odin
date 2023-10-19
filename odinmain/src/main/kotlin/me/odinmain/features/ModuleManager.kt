@@ -100,34 +100,43 @@ object ModuleManager {
 
     @SubscribeEvent
     fun onReceivePacket(event: ReceivePacketEvent) {
-        packetFunctions.filter { it.type.isInstance(event.packet) && it.shouldRun.invoke() }
+        packetFunctions
+            .filter { it.type.isInstance(event.packet) && it.shouldRun.invoke() }
             .forEach { it.function(event.packet) }
     }
 
     @SubscribeEvent
     fun onSendPacket(event: PacketSentEvent) {
-        packetFunctions.filter { it.type.isInstance(event.packet) }.forEach { it.function(event.packet) }
+        packetFunctions
+            .filter { it.type.isInstance(event.packet) }
+            .forEach { it.function(event.packet) }
     }
 
     @SubscribeEvent
     fun onChatPacket(event: ChatPacketEvent) {
-        messageFunctions.filter { event.message matches it.filter && it.shouldRun() }
+        messageFunctions
+            .filter { event.message matches it.filter && it.shouldRun() }
             .forEach { it.function(event.message) }
     }
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
-        worldLoadFunctions.forEach { it.invoke() }
+        worldLoadFunctions
+            .forEach { it.invoke() }
     }
 
     @SubscribeEvent
     fun activateModuleKeyBinds(event: PreKeyInputEvent) {
-        modules.filter { it.keyCode == event.keycode }.forEach { it.onKeybind() }
+        modules
+            .filter { it.keyCode == event.keycode }
+            .forEach { it.onKeybind() }
     }
 
     @SubscribeEvent
     fun activateModuleMouseBinds(event: PreMouseInputEvent) {
-        modules.filter { it.keyCode + 100 == event.button }.forEach { it.onKeybind() }
+        modules
+            .filter { it.keyCode + 100 == event.button }
+            .forEach { it.onKeybind() }
     }
 
     @SubscribeEvent
