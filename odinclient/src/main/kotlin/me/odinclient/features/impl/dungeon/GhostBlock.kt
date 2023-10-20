@@ -50,13 +50,14 @@ object GhostBlock : Module(
 
         execute(500) {
             if (!DungeonUtils.isFloor(7) || !DungeonUtils.inBoss || !preGhostBlock || !enabled) return@execute
-            for (i in blocks[getPhase()] ?: return@execute) {
+            val phase = getPhase()
+            for (i in blocks[phase] ?: return@execute) {
                 mc.theWorld?.setBlockToAir(i)
             }
-            for (i in enderchests) {
+            for (i in enderchests[phase] ?: return@execute) {
                 mc.theWorld?.setBlockState(i, Blocks.ender_chest.defaultState)
             }
-            for (i in glass) {
+            for (i in glass[phase] ?: return@execute) {
                 mc.theWorld?.setBlockState(i, Blocks.glass.defaultState)
             }
         }
@@ -74,15 +75,29 @@ object GhostBlock : Module(
         return false
     }
 
-    private val enderchests = arrayOf(
-        BlockPos(77, 221, 35),
-        BlockPos(77, 221, 34),
-        BlockPos(77, 221, 33)
+    private val enderchests = mapOf(
+        1 to arrayOf(
+            BlockPos(77, 221, 35),
+            BlockPos(77, 221, 34),
+            BlockPos(77, 221, 33),
+        ),
+
+        2 to arrayOf(
+            BlockPos(101, 168, 48),
+            BlockPos(100, 168, 48),
+            BlockPos(99, 168, 48),
+        )
     )
 
-    private val glass = arrayOf(
-        BlockPos(77, 221, 36),
-        BlockPos(78, 221, 36),
+    private val glass = mapOf(
+        1 to arrayOf(
+            BlockPos(77, 221, 36),
+            BlockPos(78, 221, 36),
+        ),
+
+        2 to arrayOf(
+            BlockPos(102, 168, 47),
+        )
     )
 
     private val blocks = mapOf(
@@ -151,6 +166,10 @@ object GhostBlock : Module(
             BlockPos(93, 165, 40),
             BlockPos(94, 165, 40),
             BlockPos(95, 165, 40),
+            BlockPos(101, 168, 47),
+            BlockPos(101, 168, 46),
+            BlockPos(101, 167, 46),
+            BlockPos(101, 166, 46),
         ),
 
         3 to arrayOf(
