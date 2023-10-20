@@ -35,6 +35,7 @@ object DungeonUtils {
 
     private var lastRoomPos: Pair<Int, Int>? = null
     var currentRoom: Room? = null
+    val currenRoomName get() = currentRoom?.data?.name ?: "Unknown"
 
     private var inp5 = false
 

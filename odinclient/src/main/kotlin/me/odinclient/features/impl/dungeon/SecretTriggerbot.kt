@@ -37,7 +37,7 @@ object SecretTriggerbot : Module(
     fun tryTriggerbot() {
         if (
             !triggerBotClock.hasTimePassed(delay) ||
-            DungeonUtils.currentRoom?.data?.name.equalsOneOf("Water Board", "Three Weirdos") ||
+            DungeonUtils.currenRoomName.equalsOneOf("Water Board", "Three Weirdos") ||
             mc.currentScreen != null
         ) return
 
