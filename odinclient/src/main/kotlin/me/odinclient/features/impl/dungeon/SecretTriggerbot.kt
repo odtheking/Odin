@@ -9,6 +9,7 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.floor
+import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.block.BlockSkull
@@ -25,43 +26,45 @@ object SecretTriggerbot : Module(
     category = Category.DUNGEON,
     tag = TagType.NEW
 ) {
-    private val delay: Long by NumberSetting<Long>("Delay", 200, 70, 500)
+    private val delay: Long by NumberSetting("Delay", 200L, 70, 1000)
     private val crystalHollowsChests: Boolean by BooleanSetting("Crystal Hollows Chests", true, description = "Opens chests in crystal hollows when looking at them")
     private val inBoss: Boolean by BooleanSetting("In Boss", true, description = "Makes the triggerbot work in dungeon boss aswell.")
     private val triggerBotClock = Clock(delay)
-    private var clickedPositions = mutableMapOf<BlockPos, Long>()
+    private var clickedPositions = mapOf<BlockPos, Long>()
     private const val WITHER_ESSENCE_ID = "26bb1a8d-7c66-31c6-82d5-a9c04c94fb02"
     private val debugMsgs: Boolean by BooleanSetting("Debug Messages", false)
 
-    @SubscribeEvent
-    fun onRenderWorld(event: RenderWorldLastEvent) {
+    fun tryTriggerbot() {
         if (
             !triggerBotClock.hasTimePassed(delay) ||
             DungeonUtils.currentRoom?.data?.name.equalsOneOf("Water Board", "Three Weirdos") ||
             mc.currentScreen != null
         ) return
+
         val pos = mc.objectMouseOver?.blockPos ?: return
         val state = mc.theWorld.getBlockState(pos) ?: return
-        clickedPositions = clickedPositions.filter { it.value + 1000L < System.currentTimeMillis() }.toMutableMap()
-        if (pos.x in 58..62 && pos.y in 133..136 && pos.z == 142) return // looking at lights device
+        clickedPositions = clickedPositions.filter { it.value + 1000L > System.currentTimeMillis() }
+        if (
+            (pos.x in 58..62 && pos.y in 133..136 && pos.z == 142) || // looking at lights device
+            clickedPositions.containsKey(pos) // already clicked
+        ) return
 
-        if (crystalHollowsChests && LocationUtils.currentArea == "Crystal Hollows" && state.block == Blocks.chest && !clickedPositions.containsKey(pos)) {
+        if (crystalHollowsChests && LocationUtils.currentArea == "Crystal Hollows" && state.block == Blocks.chest) {
             rightClick()
             triggerBotClock.update()
-            clickedPositions.plus(pos to System.currentTimeMillis())
+            clickedPositions = clickedPositions.plus(pos to System.currentTimeMillis())
             return
-        } else if (!DungeonUtils.inDungeons || (!inBoss && DungeonUtils.inBoss)) return
-        else if (isSecret(state, pos) && !clickedPositions.containsKey(pos)) {
-            rightClick()
-            triggerBotClock.update()
-            clickedPositions.plus(pos to System.currentTimeMillis())
-            if (debugMsgs) {
-                val x = ((OdinMain.mc.thePlayer.posX + 200) / 32).floor().toInt()
-                val z = ((OdinMain.mc.thePlayer.posZ + 200) / 32).floor().toInt()
-                val xPos = -185 + x * 32
-                val zPos = -185 + z * 32
-                DungeonUtils.scanRoom(xPos, zPos, printDebug = true)
-            }
+        } else if (!DungeonUtils.inDungeons || (!inBoss && DungeonUtils.inBoss) || !isSecret(state, pos)) return
+
+        rightClick()
+        triggerBotClock.update()
+        clickedPositions = clickedPositions.plus(pos to System.currentTimeMillis())
+        if (debugMsgs) {
+            val x = ((mc.thePlayer.posX + 200) / 32).floor().toInt()
+            val z = ((mc.thePlayer.posZ + 200) / 32).floor().toInt()
+            val xPos = -185 + x * 32
+            val zPos = -185 + z * 32
+            DungeonUtils.scanRoom(xPos, zPos, printDebug = true)
         }
     }
 

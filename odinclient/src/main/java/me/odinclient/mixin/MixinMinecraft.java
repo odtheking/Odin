@@ -1,5 +1,6 @@
 package me.odinclient.mixin;
 
+import me.odinclient.features.impl.dungeon.SecretTriggerbot;
 import me.odinmain.events.impl.PostGuiOpenEvent;
 import me.odinmain.events.impl.PreKeyInputEvent;
 import me.odinmain.events.impl.PreMouseInputEvent;
@@ -31,6 +32,11 @@ public class MixinMinecraft {
         if (Mouse.getEventButtonState()) {
             MinecraftForge.EVENT_BUS.post(new PreMouseInputEvent(k));
         }
+    }
+
+    @Inject(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/settings/KeyBinding;isPressed()Z", ordinal = 11))
+    private void preRightClicks(CallbackInfo ci) {
+        SecretTriggerbot.INSTANCE.tryTriggerbot();
     }
 
     @Inject(method = "rightClickMouse", at = @At("HEAD"))
