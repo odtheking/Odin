@@ -4,6 +4,7 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.skyblock.ChatUtils
+import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.init.Items
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -16,11 +17,11 @@ object AutoGFS : Module(
     category = Category.DUNGEON,
     tag = TagType.NEW
 ) {
-    private val sackCooldown = Clock(1000)
+    private val sackCooldown = Clock(4000)
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.START || !DungeonUtils.inDungeons) return
+        if (event.phase != TickEvent.Phase.START || !DungeonUtils.inDungeons || DungeonUtils.isGhost) return
         if (mc.thePlayer?.inventory?.mainInventory?.all { it?.item != Items.ender_pearl} == true && sackCooldown.hasTimePassed()) {
             ChatUtils.sendCommand("gfs ENDER_PEARL 16")
             sackCooldown.update()
