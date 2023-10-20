@@ -1,7 +1,7 @@
 package me.odinclient.mixin;
 
 import me.odinmain.events.impl.RenderEntityModelEvent;
-import me.odinmain.features.impl.render.ESP;
+import me.odinmain.features.impl.render.CustomESP;
 import me.odinmain.utils.render.Color;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
@@ -38,7 +38,7 @@ public abstract class MixinRendererLivingEntity {
 
     @Inject(method = "setBrightness", at = @At(value = "HEAD"), cancellable = true)
     private  <T extends EntityLivingBase> void setBrightness(T entity, float partialTicks, boolean combineTextures, CallbackInfoReturnable<Boolean> cir) {
-        if (ESP.INSTANCE.getCurrentEntities().contains(entity) && ESP.INSTANCE.getMode() == 1) {
+        if (CustomESP.INSTANCE.getCurrentEntities().contains(entity) && CustomESP.INSTANCE.getMode() == 1) {
             GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
             GlStateManager.enableTexture2D();
             GL11.glTexEnvi(8960, 8704, OpenGlHelper.GL_COMBINE);
@@ -64,7 +64,7 @@ public abstract class MixinRendererLivingEntity {
             GL11.glTexEnvi(8960, OpenGlHelper.GL_SOURCE0_ALPHA, OpenGlHelper.GL_PREVIOUS);
             GL11.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_ALPHA, 770);
             this.brightnessBuffer.position(0);
-            Color color = ESP.INSTANCE.getColor();
+            Color color = CustomESP.INSTANCE.getColor();
             brightnessBuffer.put(color.getR() / 255f);
             brightnessBuffer.put(color.getG() / 255f);
             brightnessBuffer.put(color.getB() / 255f);
@@ -92,7 +92,7 @@ public abstract class MixinRendererLivingEntity {
 
     @Inject(method = "doRender(Lnet/minecraft/entity/EntityLivingBase;DDDFF)V", at = @At("HEAD"))
     private <T extends EntityLivingBase> void injectChamsPre(T entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo callbackInfo) {
-        if (ESP.INSTANCE.getCurrentEntities().contains(entity) && ESP.INSTANCE.getMode() == 1 && ESP.INSTANCE.getRenderThrough()) {
+        if (CustomESP.INSTANCE.getCurrentEntities().contains(entity) && CustomESP.INSTANCE.getMode() == 1 && CustomESP.INSTANCE.getRenderThrough()) {
             glEnable(GL_POLYGON_OFFSET_FILL);
             glPolygonOffset(1f, -1000000F);
         }
@@ -100,7 +100,7 @@ public abstract class MixinRendererLivingEntity {
 
     @Inject(method = "doRender(Lnet/minecraft/entity/EntityLivingBase;DDDFF)V", at = @At("RETURN"))
     private <T extends EntityLivingBase> void injectChamsPost(T entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo callbackInfo) {
-        if (ESP.INSTANCE.getCurrentEntities().contains(entity) && ESP.INSTANCE.getMode() == 1 && ESP.INSTANCE.getRenderThrough()) {
+        if (CustomESP.INSTANCE.getCurrentEntities().contains(entity) && CustomESP.INSTANCE.getMode() == 1 && CustomESP.INSTANCE.getRenderThrough()) {
             glPolygonOffset(1f, 1000000F);
             glDisable(GL_POLYGON_OFFSET_FILL);
         }

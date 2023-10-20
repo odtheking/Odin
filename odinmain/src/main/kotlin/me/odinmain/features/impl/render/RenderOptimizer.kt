@@ -36,6 +36,7 @@ object RenderOptimizer : Module(
 
     override fun onEnable()
     {
+        if (!decreaseGpuUsage) return
         mc.skipRenderWorld = true
         ClickGUI.anim = EaseInOut(0)
         mc.displayGuiScreen(ClickGUI)
@@ -43,10 +44,12 @@ object RenderOptimizer : Module(
     }
 
     override fun onDisable() {
+        if (!decreaseGpuUsage) return
         mc.skipRenderWorld = false
     }
 
     fun drawGui() {
+        if (!decreaseGpuUsage) return
         if (mc.skipRenderWorld && mc.currentScreen != null) {
             mc.setIngameNotInFocus()
             if (mc.theWorld == null) {
@@ -77,10 +80,12 @@ object RenderOptimizer : Module(
 
     @SubscribeEvent
     fun onPostGui(event: PostGuiOpenEvent) {
+        if (!decreaseGpuUsage) return
         mc.skipRenderWorld = true
     }
 
     private fun drawRect(right: Float, bottom: Float, color: Int) {
+        if (!decreaseGpuUsage) return
         var left = 0f
         var top = 0f
         var right = right

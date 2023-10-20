@@ -63,7 +63,7 @@ object ModuleManager {
         Camera,
         ClickedChests,
         ClickGUIModule,
-        ESP,
+        CustomESP,
         CPSDisplay,
         DragonHitboxes,
         GyroRange,
