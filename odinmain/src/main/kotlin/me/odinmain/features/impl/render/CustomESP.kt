@@ -23,8 +23,8 @@ import net.minecraft.entity.item.EntityArmorStand
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-object ESP : Module(
-    "ESP",
+object CustomESP : Module(
+    "Custom ESP",
     category = Category.RENDER,
     tag = TagType.FPSTAX,
     description = "Allows you to highlight selected mobs (/esp)"
