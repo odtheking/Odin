@@ -27,6 +27,7 @@ import net.minecraft.util.MouseHelper
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Mouse
+import java.awt.Robot
 
 object SimonSays : Module(
     name = "Simon Says",
@@ -144,7 +145,6 @@ object SimonSays : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        mc.mouseHelper.deltaX += 10
         if (clickNeeded >= clickInOrder.size) return
 
         if (triggerBot) triggerBot()
