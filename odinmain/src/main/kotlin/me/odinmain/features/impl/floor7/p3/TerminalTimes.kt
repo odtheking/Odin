@@ -4,6 +4,9 @@ import me.odinmain.config.Config
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.impl.floor7.p3.TerminalTimes.currentTerminal
+import me.odinmain.features.impl.floor7.p3.TerminalTimes.sendMessage
+import me.odinmain.features.impl.floor7.p3.TerminalTimes.startTimer
 import me.odinmain.features.impl.skyblock.ChatCommands.private
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.SelectorSetting
@@ -44,13 +47,9 @@ object TerminalTimes : Module(
         val container = mc.thePlayer?.openContainer ?: return
         if (container !is ContainerChest) return
 
-        Terminals.entries.find {
-            if (container.name.startsWith(it.fullName)) {
-                currentTerminal = it
-                startTimer = System.currentTimeMillis()
-                return@find true
-            }
-            return@find false
+        Terminals.entries.find { container.name.startsWith(it.fullName) }?.let {
+            currentTerminal = it
+            startTimer = System.currentTimeMillis()
         }
     }
 

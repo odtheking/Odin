@@ -42,7 +42,6 @@ sourceSets.main {
 repositories {
     mavenCentral()
     maven("https://repo.spongepowered.org/maven/")
-    maven("https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1")
     maven("https://repo.essential.gg/repository/maven-public/")
     maven("https://repo.polyfrost.cc/releases")
 }
@@ -64,8 +63,6 @@ dependencies {
 
     annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
     compileOnly("org.spongepowered:mixin:0.8.5")
-
-    runtimeOnly("me.djtheredstoner:DevAuth-forge-legacy:1.1.0")
 
     compileOnly("cc.polyfrost:oneconfig-1.8.9-forge:0.2.0-alpha+")
     shadowImpl("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-beta+")

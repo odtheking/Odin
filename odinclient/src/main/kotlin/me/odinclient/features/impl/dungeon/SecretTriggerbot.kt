@@ -36,6 +36,7 @@ object SecretTriggerbot : Module(
 
     fun tryTriggerbot() {
         if (
+            !enabled ||
             !triggerBotClock.hasTimePassed(delay) ||
             DungeonUtils.currenRoomName.equalsOneOf("Water Board", "Three Weirdos") ||
             mc.currentScreen != null
@@ -54,7 +55,9 @@ object SecretTriggerbot : Module(
             triggerBotClock.update()
             clickedPositions = clickedPositions.plus(pos to System.currentTimeMillis())
             return
-        } else if (!DungeonUtils.inDungeons || (!inBoss && DungeonUtils.inBoss) || !isSecret(state, pos)) return
+        }
+
+        if (!DungeonUtils.inDungeons || (!inBoss && DungeonUtils.inBoss) || !isSecret(state, pos)) return
 
         rightClick()
         triggerBotClock.update()

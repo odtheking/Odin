@@ -115,13 +115,9 @@ object ModuleManager {
 
     @SubscribeEvent
     fun onChatPacket(event: ChatPacketEvent) {
-        modMessage(event.message)
         messageFunctions
             .filter { event.message matches it.filter && it.shouldRun() }
-            .forEach {
-                modMessage(it.filter)
-                it.function(event.message)
-            }
+            .forEach { it.function(event.message) }
     }
 
     @SubscribeEvent
