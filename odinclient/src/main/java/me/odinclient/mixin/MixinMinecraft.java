@@ -2,6 +2,7 @@ package me.odinclient.mixin;
 
 import me.odinclient.features.impl.dungeon.CancelInteract;
 import me.odinclient.features.impl.dungeon.SecretTriggerbot;
+import me.odinclient.utils.skyblock.PlayerUtils;
 import me.odinmain.events.impl.ClickEvent;
 import me.odinmain.events.impl.PostGuiOpenEvent;
 import me.odinmain.events.impl.PreKeyInputEvent;
@@ -40,6 +41,11 @@ public class MixinMinecraft {
         if (Mouse.getEventButtonState()) {
             MinecraftForge.EVENT_BUS.post(new PreMouseInputEvent(k));
         }
+    }
+
+    @Inject(method = {"runTick"}, at = {@At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiScreen;handleInput()V")})
+    private void handleInput(CallbackInfo ci) {
+        PlayerUtils.INSTANCE.handleWindowClickQueue();
     }
 
     @Inject(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/settings/KeyBinding;isPressed()Z", ordinal = 11))
