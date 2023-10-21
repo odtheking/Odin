@@ -26,6 +26,7 @@ public class MixinBlockLever extends Block {
     {
         if (SecretHitboxes.INSTANCE.getLever())
         {
+            if (pos.getX() >= 58 && pos.getX() <= 62 && pos.getY() >= 133 && pos.getY() <= 136 && pos.getZ() == 142) { return; }
             SecretHitboxes.INSTANCE.getExpandedLevers().put(this, worldIn.getBlockState(pos).getValue(FACING));
 
             if (SecretHitboxes.INSTANCE.getEnabled())
