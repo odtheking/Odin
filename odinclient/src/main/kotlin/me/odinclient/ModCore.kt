@@ -111,7 +111,7 @@ class ModCore {
         ArrowAlign,
         CancelWrongTerms,
         HoverTerms,
-        Levers,
+        LeversTriggerbot,
         SimonSays,
 
         AutoEdrag,
