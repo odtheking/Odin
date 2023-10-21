@@ -11,7 +11,7 @@ import net.minecraft.util.BlockPos
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-object Levers : Module(
+object LeversTriggerbot : Module(
     name = "Levers Triggerbot",
     description = "Triggerbot for the levers device.",
     category = Category.FLOOR7,

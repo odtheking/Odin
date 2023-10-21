@@ -1,24 +1,32 @@
 package me.odinclient.mixin;
 
+import me.odinclient.features.impl.dungeon.CancelInteract;
 import me.odinclient.features.impl.dungeon.SecretTriggerbot;
+import me.odinclient.utils.skyblock.PlayerUtils;
 import me.odinmain.events.impl.ClickEvent;
 import me.odinmain.events.impl.PostGuiOpenEvent;
 import me.odinmain.events.impl.PreKeyInputEvent;
 import me.odinmain.events.impl.PreMouseInputEvent;
 import me.odinmain.features.impl.render.CPSDisplay;
-import me.odinmain.utils.skyblock.ChatUtils;
+import me.odinmain.features.impl.render.RenderOptimizer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.util.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = {Minecraft.class}, priority = 800)
 public class MixinMinecraft {
+    @Shadow public boolean skipRenderWorld;
+
     @Inject(method = {"runTick"}, at = {@At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;dispatchKeypresses()V")})
     public void keyPresses(CallbackInfo ci) {
         int k = (Keyboard.getEventKey() == 0) ? (Keyboard.getEventCharacter() + 256) : Keyboard.getEventKey();
@@ -33,6 +41,11 @@ public class MixinMinecraft {
         if (Mouse.getEventButtonState()) {
             MinecraftForge.EVENT_BUS.post(new PreMouseInputEvent(k));
         }
+    }
+
+    @Inject(method = {"runTick"}, at = {@At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiScreen;handleInput()V")})
+    private void handleInput(CallbackInfo ci) {
+        PlayerUtils.INSTANCE.handleWindowClickQueue();
     }
 
     @Inject(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/settings/KeyBinding;isPressed()Z", ordinal = 11))
@@ -56,4 +69,25 @@ public class MixinMinecraft {
     private void onDisplayGuiScreen(GuiScreen guiScreenIn, CallbackInfo ci) {
         MinecraftForge.EVENT_BUS.post(new PostGuiOpenEvent());
     }
+
+    @Redirect(method = {"rightClickMouse"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/WorldClient;isAirBlock(Lnet/minecraft/util/BlockPos;)Z"))
+    public boolean shouldCancelInteract(WorldClient instance, BlockPos blockPos) {
+        return CancelInteract.INSTANCE.cancelInteractHook(instance, blockPos);
+    }
+
+    @Inject(method = { "runGameLoop" }, at = { @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;skipRenderWorld:Z") })
+    public void skipRenderWorld(final CallbackInfo ci) {
+        if (this.skipRenderWorld) {
+            RenderOptimizer.INSTANCE.drawGui();
+            try {
+                Thread.sleep((long)(50.0f / ((MinecraftAccessor) this).getTimer().timerSpeed));
+            }
+            catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+
 }
