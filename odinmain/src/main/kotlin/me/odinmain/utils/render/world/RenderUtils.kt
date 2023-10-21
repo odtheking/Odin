@@ -89,6 +89,10 @@ object RenderUtils {
         drawCustomESPBox(x, width, y, height, z, width, color, thickness, phase)
     }
 
+    fun drawCustomESPBox(x: Number, y: Number, z: Number, scale: Number, color: Color, thickness: Float = 3f, phase: Boolean) {
+        drawCustomESPBox(x.toDouble(), scale.toDouble(), y.toDouble(), scale.toDouble(), z.toDouble(), scale.toDouble(), color, thickness, phase)
+    }
+
     /**
      * @param color Has to be in the range of 0-255
      */

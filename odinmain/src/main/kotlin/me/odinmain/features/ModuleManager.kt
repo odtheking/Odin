@@ -81,7 +81,8 @@ object ModuleManager {
         DeployableTimer,
         DianaHelper,
         Reminders,
-        VanqNotifier
+        VanqNotifier,
+        TPMaze
     )
 
 
