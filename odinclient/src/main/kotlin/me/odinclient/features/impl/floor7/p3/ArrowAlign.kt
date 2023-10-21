@@ -1,6 +1,9 @@
 package me.odinclient.features.impl.floor7.p3
 
+import me.odinclient.features.impl.floor7.p3.ArrowAlign.area
+import me.odinclient.features.impl.floor7.p3.ArrowAlign.neededRotations
 import me.odinclient.utils.skyblock.PlayerUtils
+import me.odinmain.events.impl.ClickEvent
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -10,6 +13,8 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
+import me.odinmain.utils.skyblock.ChatUtils.modMessage
+import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.entity.item.EntityItemFrame
 import net.minecraft.init.Blocks
 import net.minecraft.init.Items
@@ -29,6 +34,7 @@ object ArrowAlign : Module(
     tag = TagType.NEW
 ) {
     private val solver: Boolean by BooleanSetting("Solver")
+    private val blockWrong: Boolean by BooleanSetting("Block Wrong Clicks", false, description = "Blocks wrong clicks")
     private val triggerBot: Boolean by BooleanSetting("Trigger Bot")
     private val delay: Long by NumberSetting<Long>("Delay", 200, 70, 500).withDependency { triggerBot }
 
@@ -59,9 +65,13 @@ object ArrowAlign : Module(
     }
 
     @SubscribeEvent
-    fun onInteract(event: EntityInteractEvent) {
-        val frame = neededRotations.values.find { it.entity == event.entity } ?: return
-        if (frame.rotations == 0) return
+    fun onRightClick(event: ClickEvent.RightClickEvent) {
+        if (mc.objectMouseOver?.entityHit !is EntityItemFrame) return
+        val frame = neededRotations.values.find { it.entity == mc.objectMouseOver.entityHit as EntityItemFrame } ?: return
+        if (frame.rotations == 0 && blockWrong) {
+            event.isCanceled = true
+            return
+        }
         frame.rotations--
     }
 
@@ -75,7 +85,6 @@ object ArrowAlign : Module(
         val rot = neededRotations.values.find { it.entity == mc.objectMouseOver?.entityHit } ?: return
         if (rot.rotations == 0) return
         PlayerUtils.rightClick()
-        rot.rotations--
         triggerBotClock.update()
     }
 
@@ -98,8 +107,7 @@ object ArrowAlign : Module(
     private fun calculate() {
         val frames = mc.theWorld.getEntities(EntityItemFrame::class.java) {
             it != null && it.position in area && it.displayedItem != null
-        }
-        if (frames.isEmpty()) return
+        }.takeIf { it.isNotEmpty() } ?: return
         val solutions = HashMap<Vec2, Int>()
         val maze = Array(5) { IntArray(5) }
         val queue = LinkedList<Vec2>()

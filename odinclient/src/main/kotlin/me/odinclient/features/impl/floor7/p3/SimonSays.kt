@@ -23,8 +23,10 @@ import net.minecraft.init.Blocks
 import net.minecraft.item.Item
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
+import net.minecraft.util.MouseHelper
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import org.lwjgl.input.Mouse
 
 object SimonSays : Module(
     name = "Simon Says",
@@ -76,7 +78,7 @@ object SimonSays : Module(
 
     @SubscribeEvent
     fun onBlockChange(event: BlockChangeEvent) {
-        if (DungeonUtils.getPhase() != 3) return
+        //if (DungeonUtils.getPhase() != 3) return
         val pos = event.pos
         val old = event.old
         val state = event.update
@@ -142,6 +144,7 @@ object SimonSays : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
+        mc.mouseHelper.deltaX += 10
         if (clickNeeded >= clickInOrder.size) return
 
         if (triggerBot) triggerBot()

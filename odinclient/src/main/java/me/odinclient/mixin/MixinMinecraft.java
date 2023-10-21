@@ -1,6 +1,7 @@
 package me.odinclient.mixin;
 
 import me.odinclient.features.impl.dungeon.SecretTriggerbot;
+import me.odinmain.events.impl.ClickEvent;
 import me.odinmain.events.impl.PostGuiOpenEvent;
 import me.odinmain.events.impl.PreKeyInputEvent;
 import me.odinmain.events.impl.PreMouseInputEvent;
@@ -39,13 +40,15 @@ public class MixinMinecraft {
         SecretTriggerbot.INSTANCE.tryTriggerbot();
     }
 
-    @Inject(method = "rightClickMouse", at = @At("HEAD"))
+    @Inject(method = "rightClickMouse", at = @At("HEAD"), cancellable = true)
     private void rightClickMouse(CallbackInfo ci) {
+        if (MinecraftForge.EVENT_BUS.post(new ClickEvent.RightClickEvent())) ci.cancel();
         CPSDisplay.INSTANCE.onRightClick();
     }
 
-    @Inject(method = "clickMouse", at = @At("HEAD"))
+    @Inject(method = "clickMouse", at = @At("HEAD"), cancellable = true)
     private void clickMouse(CallbackInfo ci) {
+        if (MinecraftForge.EVENT_BUS.post(new ClickEvent.LeftClickEvent())) ci.cancel();
         CPSDisplay.INSTANCE.onLeftClick();
     }
 
