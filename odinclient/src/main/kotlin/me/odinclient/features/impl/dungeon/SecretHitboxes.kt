@@ -28,7 +28,7 @@ object SecretHitboxes : Module(
     var expandedSkulls: HashMap<Block, EnumFacing> = HashMap()
 
     @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Unload)
+    fun onWorldUnLoad(event: WorldEvent.Unload)
     {
         this.expandedLevers.clear()
         this.expandedButtons.clear()
