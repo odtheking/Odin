@@ -1,6 +1,5 @@
 package me.odinmain.utils.skyblock.dungeon
 
-import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import me.odinmain.utils.skyblock.PlayerUtils.posX
 import me.odinmain.utils.skyblock.PlayerUtils.posZ
@@ -12,8 +11,8 @@ class Dungeon {
 
     lateinit var floor: Floor
     var inBoss = false
-    private fun getBoss(floor: Int): Boolean {
-         return when (floor) {
+    fun setBoss() {
+        inBoss = when (floor.floorNumber) {
             1 -> posX > -71 && posZ > -39
             2, 3, 4 ->  posX > -39 && posZ > -39
             5, 6 ->  posX > -39 && posZ > -7
@@ -24,13 +23,6 @@ class Dungeon {
 
     init {
         getCurrentFloor()
-
-        ClickGUIModule.execute(500) {
-            if (getBoss(floor.floorNumber)) {
-                inBoss = true
-                destroyExecutor()
-            }
-        }
     }
 
     private fun getCurrentFloor() {

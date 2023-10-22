@@ -4,7 +4,9 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
+import me.odinmain.utils.skyblock.ChatUtils.devMessage
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
+import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.init.Blocks
 import net.minecraft.util.AxisAlignedBB
@@ -21,7 +23,7 @@ object TPMaze : Module(
     private var portals = setOf<BlockPos>()
 
     init {
-        execute(200) {
+        execute(1000) {
             if (!enabled || portals.size >= 30/* || DungeonUtils.currenRoomName != "Teleport Maze"*/) return@execute
             val pos = mc.thePlayer?.position ?: return@execute
             portals = portals.plus(BlockPos.getAllInBox(BlockPos(pos.x + 22, 70, pos.z + 22), BlockPos(pos.x - 22, 69, pos.z - 22)).filter {

@@ -40,6 +40,8 @@ object LocationUtils {
             if (currentArea == null || currentDungeon != null) {
                 currentArea = getArea()
             }
+
+            currentDungeon?.setBoss()
         }.register()
     }
 
@@ -65,7 +67,7 @@ object LocationUtils {
     fun onConnect(event: FMLNetworkEvent.ClientConnectedToServerEvent) {
         onHypixel = mc.runCatching {
             !event.isLocal && ((thePlayer?.clientBrand?.lowercase()?.contains("hypixel")
-                ?: currentServerData?.serverIP?.lowercase()?.contains("hypixel")) == true)
+                ?: currentServerData?.serverIP?.contains("hypixel", true)) == true)
         }.getOrDefault(false)
     }
 

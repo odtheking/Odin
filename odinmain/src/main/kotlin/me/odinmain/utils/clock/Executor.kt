@@ -1,5 +1,6 @@
 package me.odinmain.utils.clock
 
+import me.odinmain.utils.skyblock.ChatUtils.devMessage
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -7,9 +8,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
  * Class that allows repeating execution of code while being dynamic.
  * @author Stivais
  */
-open class Executor(val delay: () -> Long, val func: Executable) {
+open class Executor(val delay: () -> Long, val func: Executor.() -> Unit) {
 
-    constructor(delay: Long, func: Executable) : this({ delay } , func)
+    constructor(delay: Long, func: Executor.() -> Unit) : this({ delay } , func)
 
     internal val clock = Clock()
     internal var shouldFinish = false
@@ -18,7 +19,7 @@ open class Executor(val delay: () -> Long, val func: Executable) {
         if (shouldFinish) return true
         if (clock.hasTimePassed(delay(), true)) {
             runCatching {
-                func()
+                this.func()
             }
         }
         return false
@@ -28,7 +29,7 @@ open class Executor(val delay: () -> Long, val func: Executable) {
      * Starts an executor that ends after a certain amount of times.
      * @author Stivais
      */
-    class LimitedExecutor(delay: Long, repeats: Int, func: Executable) : Executor(delay, func) {
+    class LimitedExecutor(delay: Long, repeats: Int, func: Executor.() -> Unit) : Executor(delay, func) {
         private val repeats = repeats - 1
         private var totalRepeats = 0
 
@@ -52,6 +53,7 @@ open class Executor(val delay: () -> Long, val func: Executable) {
      * @author Stivais
      */
     fun Executor.destroyExecutor(): Nothing {
+        devMessage("destroying")
         shouldFinish = true
         throw Throwable()
     }
@@ -60,24 +62,13 @@ open class Executor(val delay: () -> Long, val func: Executable) {
 
         private val executors = ArrayList<Executor>()
 
-        fun ArrayList<Executor>.executeAll() {
-            this.removeAll {
-                it.run()
-            }
-        }
-
         fun Executor.register() {
             executors.add(this)
         }
 
         @SubscribeEvent
         fun onRender(event: RenderWorldLastEvent) {
-            executors.executeAll()
+            executors.removeAll { it.run() }
         }
     }
 }
-
-/**
- * Here for more readability
- */
-typealias Executable = Executor.() -> Unit
