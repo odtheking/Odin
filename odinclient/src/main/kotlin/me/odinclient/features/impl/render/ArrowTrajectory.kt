@@ -11,6 +11,7 @@ import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.render.world.RenderUtils.renderX
 import me.odinmain.utils.render.world.RenderUtils.renderY
 import me.odinmain.utils.render.world.RenderUtils.renderZ
+import me.odinmain.utils.skyblock.ItemUtils.isShortbow
 import me.odinmain.utils.skyblock.ItemUtils.itemID
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
@@ -39,10 +40,14 @@ object ArrowTrajectory : Module(
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         entityRenderQueue.clear()
-        if (mc.thePlayer?.heldItem?.itemID != "TERMINATOR") return
-        setTrajectoryHeading(-5f, 0f)
-        setTrajectoryHeading(0f, -0.1f)
-        setTrajectoryHeading(5f, 0f)
+        if (mc.thePlayer?.heldItem?.isShortbow == true) {
+            setTrajectoryHeading(0f, -0.1f)
+        }
+        if (mc.thePlayer?.heldItem?.isShortbow == true && mc.thePlayer?.heldItem?.itemID == "TERMINATOR") {
+            setTrajectoryHeading(-5f, -0.1f)
+            setTrajectoryHeading(0f, -0.1f)
+            setTrajectoryHeading(5f, -0.1f)
+        }
         drawCollisionBoxes()
     }
 
