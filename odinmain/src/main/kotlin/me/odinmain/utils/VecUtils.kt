@@ -36,11 +36,11 @@ object VecUtils {
         return if (mc.thePlayer?.isSneaking == true) 1.54f else 1.62f
     }
 
-    private fun getPositionEyes(): Vec3 {
+    private fun getPositionEyes(pos: Vec3 = mc.thePlayer.positionVector): Vec3 {
         return Vec3(
-            mc.thePlayer.posX,
-            mc.thePlayer.posY + fastEyeHeight(),
-            mc.thePlayer.posZ
+            pos.xCoord,
+            pos.yCoord + fastEyeHeight(),
+            pos.zCoord
         )
     }
 
@@ -57,8 +57,8 @@ object VecUtils {
         return isInterceptable(aabb, range, yaw, pitch)
     }
 
-    fun isXZInterceptable(aabb: AxisAlignedBB, range: Float, yaw: Float, pitch: Float): Boolean {
-        val position = getPositionEyes()
+    fun isXZInterceptable(aabb: AxisAlignedBB, range: Float, pos: Vec3, yaw: Float, pitch: Float): Boolean {
+        val position = getPositionEyes(pos)
         val look = getLook(yaw, pitch)
         return isXZInterceptable(
             position,

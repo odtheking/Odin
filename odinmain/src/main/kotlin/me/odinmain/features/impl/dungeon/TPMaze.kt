@@ -12,6 +12,7 @@ import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
+import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -35,18 +36,19 @@ object TPMaze : Module(
 
         onPacket(S08PacketPlayerPosLook::class.java) {
             if (DungeonUtils.currenRoomName != "Teleport Maze") return@onPacket
-            getCorrectPortals(it.yaw, it.pitch)
+            getCorrectPortals(Vec3(it.x, it.y, it.z), it.yaw, it.pitch)
         }
     }
 
-    fun getCorrectPortals(yaw: Float, pitch: Float) {
+    fun getCorrectPortals(pos: Vec3, yaw: Float, pitch: Float) {
         if (correctPortals.isEmpty()) correctPortals = correctPortals.plus(portals)
 
 
         correctPortals = correctPortals.filter {
             VecUtils.isXZInterceptable(
-                AxisAlignedBB(it.x.toDouble(), it.y.toDouble(), it.z.toDouble(), it.x + 1.0, it.y + 4.0, it.z + 1.0),
+                AxisAlignedBB(it.x.toDouble(), it.y.toDouble(), it.z.toDouble(), it.x + 1.0, it.y + 4.0, it.z + 1.0).expand(1.0, 0.0, 1.0),
                 40f,
+                pos,
                 yaw,
                 pitch
             )
