@@ -103,7 +103,7 @@ val mainCommand = "od" {
     }
 
     "testTP" does {
-        TPMaze.getCorrectPortals(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
+        TPMaze.getCorrectPortals(mc.thePlayer.positionVector, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
     }
 
     "resetTP" does {
