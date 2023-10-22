@@ -46,7 +46,7 @@ object TPMaze : Module(
 
         correctPortals = correctPortals.filter {
             VecUtils.isXZInterceptable(
-                AxisAlignedBB(it.x.toDouble(), it.y.toDouble(), it.z.toDouble(), it.x + 1.0, it.y + 4.0, it.z + 1.0).expand(1.0, 0.0, 1.0),
+                AxisAlignedBB(it.x.toDouble(), it.y.toDouble(), it.z.toDouble(), it.x + 1.0, it.y + 4.0, it.z + 1.0).expand(0.5, 0.0, 0.5),
                 40f,
                 pos,
                 yaw,
