@@ -17,12 +17,11 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.projectile.EntityArrow
 import net.minecraft.util.AxisAlignedBB
+import net.minecraft.util.MathHelper
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import javax.vecmath.Vector2d
-import kotlin.math.cos
-import kotlin.math.sin
 import kotlin.math.sqrt
 
 object ArrowTrajectory : Module(
@@ -41,34 +40,36 @@ object ArrowTrajectory : Module(
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         entityRenderQueue.clear()
         if (mc.thePlayer?.heldItem?.isShortbow == true) {
-            setTrajectoryHeading(0f, -0.1f)
+            if (mc.thePlayer?.heldItem?.itemID == "TERMINATOR") {
+                setTrajectoryHeading(-5f, -0.1f)
+                setTrajectoryHeading(0f, -0.1f)
+                setTrajectoryHeading(5f, -0.1f)
+            }
+            else {
+                setTrajectoryHeading(0f, -0.1f)
+            }
+            drawCollisionBoxes()
         }
-        if (mc.thePlayer?.heldItem?.isShortbow == true && mc.thePlayer?.heldItem?.itemID == "TERMINATOR") {
-            setTrajectoryHeading(-5f, -0.1f)
-            setTrajectoryHeading(0f, -0.1f)
-            setTrajectoryHeading(5f, -0.1f)
-        }
-        drawCollisionBoxes()
     }
 
     private fun setTrajectoryHeading(yawOffset: Float, yOffset: Float) {
-        val yawRadians = ((mc.thePlayer.rotationYaw + yawOffset) / 180) * Math.PI
-        val pitchRadians = (mc.thePlayer.rotationPitch / 180) * Math.PI
+        val yawRadians = ((mc.thePlayer.rotationYaw + yawOffset) / 180) * Math.PI.toFloat()
+        val pitchRadians = (mc.thePlayer.rotationPitch / 180) * Math.PI.toFloat()
 
         val posX = mc.thePlayer.renderX
         val posY = mc.thePlayer.renderY + mc.thePlayer.eyeHeight + yOffset
         val posZ = mc.thePlayer.renderZ
 
-        var motionX = -sin(yawRadians) * cos(pitchRadians)
-        var motionY = -sin(pitchRadians)
-        var motionZ = cos(yawRadians) * cos(pitchRadians)
+        var motionX = -MathHelper.sin(yawRadians) * MathHelper.cos(pitchRadians)
+        var motionY = -MathHelper.sin(pitchRadians)
+        var motionZ = MathHelper.cos(yawRadians) * MathHelper.cos(pitchRadians)
         val lengthOffset = sqrt(motionX * motionX + motionY * motionY + motionZ * motionZ)
 
         motionX = motionX / lengthOffset * 3
         motionY = motionY / lengthOffset * 3
         motionZ = motionZ / lengthOffset * 3
 
-        calculateTrajectory(Vec3(motionX, motionY, motionZ), Vec3(posX, posY, posZ))
+        calculateTrajectory(Vec3(motionX.toDouble(), motionY.toDouble(), motionZ.toDouble()), Vec3(posX, posY, posZ))
     }
 
     private fun calculateTrajectory(mV: Vec3, pV: Vec3) {
