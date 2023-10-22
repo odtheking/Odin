@@ -23,7 +23,7 @@ object TPMaze : Module(
     private var portals = setOf<BlockPos>()
 
     init {
-        execute(1000) {
+        execute(200) {
             if (!enabled || portals.size >= 30/* || DungeonUtils.currenRoomName != "Teleport Maze"*/) return@execute
             val pos = mc.thePlayer?.position ?: return@execute
             portals = portals.plus(BlockPos.getAllInBox(BlockPos(pos.x + 22, 70, pos.z + 22), BlockPos(pos.x - 22, 69, pos.z - 22)).filter {

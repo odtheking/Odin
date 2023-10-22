@@ -8,13 +8,14 @@ import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.features.settings.Setting
 import me.odinmain.features.settings.impl.HudSetting
+import me.odinmain.utils.clock.Executable
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.skyblock.ChatUtils
 import net.minecraft.network.Packet
 import net.minecraftforge.common.MinecraftForge
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
-import java.lang.reflect.Executable
+
 import kotlin.reflect.full.hasAnnotation
 
 /**
@@ -150,15 +151,15 @@ abstract class Module(
         ModuleManager.worldLoadFunctions.add(func)
     }
 
-    fun execute(delay: Long, func: Executor.() -> Unit) {
+    fun execute(delay: Long, func: Executable) {
         executors.add(this to Executor(delay, func))
     }
 
-    fun execute(delay: Long, repeats: Int, func: Executor.() -> Unit) {
+    fun execute(delay: Long, repeats: Int, func:Executable) {
         executors.add(this to Executor.LimitedExecutor(delay, repeats, func))
     }
 
-    fun execute(delay: () -> Long, func: Executor.() -> Unit) {
+    fun execute(delay: () -> Long, func: Executable) {
         executors.add(this to Executor(delay, func))
     }
 }
