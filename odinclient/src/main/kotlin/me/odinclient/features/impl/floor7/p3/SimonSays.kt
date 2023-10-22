@@ -151,13 +151,12 @@ object SimonSays : Module(
 
         if (!solver) return
         GlStateManager.disableCull()
-        val (viewerX, viewerY, viewerZ) = RenderUtils.viewerPos
 
         for (index in clickNeeded until clickInOrder.size) {
             val pos = clickInOrder[index]
-            val x = pos.x - viewerX - .125
-            val y = pos.y - viewerY + .3125
-            val z = pos.z - viewerZ + .25
+            val x = pos.x - .125
+            val y = pos.y + .3125
+            val z = pos.z + .25
             val color = when (index) {
                 clickNeeded -> Color(0, 170, 0)
                 clickNeeded + 1 -> Color(255, 170, 0)

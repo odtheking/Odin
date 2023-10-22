@@ -14,6 +14,7 @@ object FreezeGame : Module(
     private val freezeTime: Long by NumberSetting("Freeze Time", 8000L, 100L, 12000L)
 
     override fun onKeybind() {
+        if (!enabled) return
         modMessage("Freezing game for $freezeTime ms")
         Thread.sleep(freezeTime)
     }

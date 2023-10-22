@@ -4,13 +4,16 @@ import me.odinmain.OdinMain.display
 import me.odinmain.OdinMain.mc
 import me.odinmain.commands.invoke
 import me.odinmain.events.impl.ChatPacketEvent
+import me.odinmain.features.impl.dungeon.TPMaze
 import me.odinmain.features.impl.floor7.p3.termsim.StartGui
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
+import net.minecraft.util.BlockPos
 import net.minecraft.util.ChatComponentText
+import net.minecraft.util.Vec3
 import net.minecraftforge.common.MinecraftForge
 
 val termSimCommand = "termsim" {
@@ -99,18 +102,14 @@ val mainCommand = "od" {
         }
     }
 
+    "testTP" does {
+        TPMaze.getCorrectPortals(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
+    }
 
-    /*"List of commands:" +
-            "\n§7od help §8- §7Shows this message." +
-            "\n§7od §8- §7Opens the click gui." +
-            "\n§7od hud §8- §7Opens the hud editor." +
-            "\n§7od reset (clickgui|hud) §8- §7Resets the click gui or hud positions." +
-            "\n§7od set (pitch|yaw) # §8- §7Sets your yaw and pitch to #." +
-            "\n§7od rq §8- §7Requeues your dungeon run." +
-            "\n§7od f# §8- §7Joins floor #." +
-            "\n§7od m# §8- §7Joins master floor #." +
-            "\n§7termsim §8- §7Opens the term simulator."
-*/
+    "resetTP" does {
+        TPMaze.correctPortals = listOf()
+        TPMaze.portals = setOf()
+    }
 
     does {
         if (it.isEmpty()) display = ClickGUI
@@ -123,7 +122,7 @@ val mainCommand = "od" {
                 val prefix = if (type == 'm') "master_" else ""
                 ChatUtils.sendCommand("joininstance ${prefix}catacombs_floor_$floor ")
             } else {
-                modMessage("§cInvalid command! Use `od help this` for a list of commands.")
+                modMessage("§cInvalid command! Use `od help` for a list of commands.")
             }
         }
     }

@@ -141,7 +141,16 @@ object RenderUtils {
         GlStateManager.popMatrix()
     }
 
-    fun drawFilledBox(aabb: AxisAlignedBB, color: Color, phase: Boolean = false) {
+    fun drawFilledBox(ab: AxisAlignedBB, color: Color, phase: Boolean = false) {
+        val (viewerX, viewerY, viewerZ) = viewerPos
+        val aabb = AxisAlignedBB(
+            ab.minX - viewerX,
+            ab.minY - viewerY,
+            ab.minZ - viewerZ,
+            ab.maxX - viewerX,
+            ab.maxY - viewerY,
+            ab.maxZ - viewerZ
+        )
         GlStateManager.pushMatrix()
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
         if (phase) GlStateManager.disableDepth()

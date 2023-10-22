@@ -54,10 +54,9 @@ object ClickedChests : Module(
         if (chests.isEmpty()) return
         chests.forEach {
             if (filled) {
-                val (viewerX, viewerY, viewerZ) = RenderUtils.viewerPos
-                val x = it.x - viewerX + .0625
-                val y = it.y - viewerY
-                val z = it.z - viewerZ + .0625
+                val x = it.x + .0625
+                val y = it.y.toDouble()
+                val z = it.z + .0625
                 RenderUtils.drawFilledBox(AxisAlignedBB(x, y, z, x + .875, y + 0.875, z + 0.875), color, phase)
             } else
                 RenderUtils.drawCustomESPBox(

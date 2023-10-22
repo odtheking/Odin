@@ -2,13 +2,14 @@ package me.odinmain.features.impl.dungeon
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinmain.utils.VecUtils
+import me.odinmain.utils.VecUtils.toAABB
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
-import me.odinmain.utils.skyblock.ChatUtils.devMessage
-import me.odinmain.utils.skyblock.ChatUtils.modMessage
-import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.init.Blocks
+import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -20,7 +21,8 @@ object TPMaze : Module(
     category = Category.DUNGEON,
     tag = TagType.NEW
 ) {
-    private var portals = setOf<BlockPos>()
+    var portals = setOf<BlockPos>()
+    var correctPortals = listOf<BlockPos>()
 
     init {
         execute(200) {
@@ -30,13 +32,32 @@ object TPMaze : Module(
                 mc.theWorld.getBlockState(it).block == Blocks.end_portal_frame
             })
         }
+
+        onPacket(S08PacketPlayerPosLook::class.java) {
+            if (DungeonUtils.currenRoomName != "Teleport Maze") return@onPacket
+            getCorrectPortals(it.yaw, it.pitch)
+        }
+    }
+
+    fun getCorrectPortals(yaw: Float, pitch: Float) {
+        if (correctPortals.isEmpty()) correctPortals = correctPortals.plus(portals)
+
+
+        correctPortals = correctPortals.filter {
+            VecUtils.isXZInterceptable(
+                AxisAlignedBB(it.x.toDouble(), it.y.toDouble(), it.z.toDouble(), it.x + 1.0, it.y + 4.0, it.z + 1.0),
+                40f,
+                yaw,
+                pitch
+            )
+        }
     }
 
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
-        //if (/*|| DungeonUtils.currenRoomName != "Teleport Maze"*/) return
-        portals.forEach {
-            RenderUtils.drawCustomESPBox(it.x, it.y, it.z, 1, Color.GOLD, phase = false)
+        //if (DungeonUtils.currenRoomName != "Teleport Maze") return
+        correctPortals.forEach {
+            RenderUtils.drawFilledBox(it.toAABB(), Color.GREEN.withAlpha(.5f), phase = true)
         }
     }
 }

@@ -1,6 +1,8 @@
 package me.odinmain.utils
 
 import me.odinmain.OdinMain.mc
+import me.odinmain.utils.skyblock.ChatUtils.devMessage
+import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S29PacketSoundEffect
@@ -34,25 +36,64 @@ object VecUtils {
         return if (mc.thePlayer?.isSneaking == true) 1.54f else 1.62f
     }
 
-    fun isFacingAABB(aabb: AxisAlignedBB, range: Float): Boolean {
-        return isInterceptable(aabb, range)
+    private fun getPositionEyes(): Vec3 {
+        return Vec3(
+            mc.thePlayer.posX,
+            mc.thePlayer.posY + fastEyeHeight(),
+            mc.thePlayer.posZ
+        )
+    }
+
+    private fun getLook(yaw: Float = mc.thePlayer.rotationYaw, pitch: Float = mc.thePlayer.rotationPitch): Vec3 {
+        val f2 = -MathHelper.cos(-pitch * 0.017453292f).toDouble()
+        return Vec3(
+            MathHelper.sin(-yaw * 0.017453292f - 3.1415927f) * f2,
+            MathHelper.sin(-pitch * 0.017453292f).toDouble(),
+            MathHelper.cos(-yaw * 0.017453292f - 3.1415927f) * f2
+        )
+    }
+
+    fun isFacingAABB(aabb: AxisAlignedBB, range: Float, yaw: Float = mc.thePlayer.rotationYaw, pitch: Float = mc.thePlayer.rotationPitch): Boolean {
+        return isInterceptable(aabb, range, yaw, pitch)
+    }
+
+    fun isXZInterceptable(aabb: AxisAlignedBB, range: Float, yaw: Float, pitch: Float): Boolean {
+        val position = getPositionEyes()
+        val look = getLook(yaw, pitch)
+        return isXZInterceptable(
+            position,
+            position.addVector(look.xCoord * range, look.yCoord * range, look.zCoord * range),
+            aabb
+        )
+    }
+
+    private fun isXZInterceptable(start: Vec3, goal: Vec3?, aabb: AxisAlignedBB): Boolean {
+        return isVecInZ(start.getIntermediateWithXValue(goal, aabb.minX), aabb) ||
+                isVecInZ(start.getIntermediateWithXValue(goal, aabb.maxX), aabb) ||
+                isVecInX(start.getIntermediateWithZValue(goal, aabb.minZ), aabb) ||
+                isVecInX(start.getIntermediateWithZValue(goal, aabb.maxZ), aabb) /*||
+                isVecInXZ(start.getIntermediateWithYValue(goal, 0.0), aabb) ||
+                isVecInXZ(start.getIntermediateWithYValue(goal, 255.0), aabb)
+                */
     }
 
     fun Vec3.equal(other: Vec3): Boolean {
         return this.xCoord == other.xCoord && this.yCoord == other.yCoord && this.zCoord == other.zCoord
     }
 
-    private fun isInterceptable(aabb: AxisAlignedBB, range: Float): Boolean {
+    private fun isInterceptable(aabb: AxisAlignedBB, range: Float, yaw: Float, pitch: Float): Boolean {
         val player = mc.thePlayer ?: return false
         val position = Vec3(player.posX, player.posY + fastEyeHeight(), player.posZ)
-        val f2: Float = -MathHelper.cos(-player.rotationPitch * 0.017453292f)
 
-
+        val f2: Float = -cos(-pitch * 0.017453292f)
         val look = Vec3(
-            sin(-player.rotationYaw * Math.toRadians(1.0) - Math.PI) * f2,
-            sin(-player.rotationPitch * Math.toRadians(1.0)),
-            cos(-player.rotationYaw * Math.toRadians(1.0) - Math.PI) * f2
+            sin(-yaw * Math.toRadians(1.0) - Math.PI) * f2,
+            sin   (-pitch * Math.toRadians(1.0)),
+            cos(-yaw * Math.toRadians(1.0) - Math.PI) * f2
         )
+
+        modMessage("look: ${position}, ${position.addVector(look.xCoord * range, look.yCoord * range, look.zCoord * range)} $aabb")
+
         return isInterceptable3(
             position,
             position.addVector(look.xCoord * range, look.yCoord * range, look.zCoord * range),
@@ -62,13 +103,17 @@ object VecUtils {
 
     private fun isInterceptable3(start: Vec3, goal: Vec3, aabb: AxisAlignedBB): Boolean {
         return try { (
-                isVecInYZ(start.getIntermediateWithXValue(goal, aabb.minX), aabb) ||
-                        isVecInYZ(start.getIntermediateWithXValue(goal, aabb.maxX), aabb) ||
-                        isVecInXZ(start.getIntermediateWithYValue(goal, aabb.minY), aabb) ||
-                        isVecInXZ(start.getIntermediateWithYValue(goal, aabb.maxY), aabb) ||
-                        isVecInXY(start.getIntermediateWithZValue(goal, aabb.minZ), aabb) ||
-                        isVecInXY(start.getIntermediateWithZValue(goal, aabb.maxZ), aabb)
-                ) } catch (e: Exception) { false }
+                    isVecInYZ(start.getIntermediateWithXValue(goal, aabb.minX), aabb) ||
+                    isVecInYZ(start.getIntermediateWithXValue(goal, aabb.maxX), aabb) ||
+                    isVecInXZ(start.getIntermediateWithYValue(goal, aabb.minY), aabb) ||
+                    isVecInXZ(start.getIntermediateWithYValue(goal, aabb.maxY), aabb) ||
+                    isVecInXY(start.getIntermediateWithZValue(goal, aabb.minZ), aabb) ||
+                    isVecInXY(start.getIntermediateWithZValue(goal, aabb.maxZ), aabb)
+                ) } catch (e: Exception) {
+                    devMessage("error? ${e.message}")
+                    e.printStackTrace()
+                    false
+                }
     }
 
     private fun isVecInYZ(vec: Vec3, aabb: AxisAlignedBB): Boolean =
@@ -79,6 +124,14 @@ object VecUtils {
 
     private fun isVecInXY(vec: Vec3, aabb: AxisAlignedBB): Boolean =
         vec.xCoord in aabb.minX..aabb.maxX && vec.yCoord in aabb.minY..aabb.maxY
+
+    private fun isVecInZ(vec: Vec3?, aabb: AxisAlignedBB): Boolean {
+        return vec != null && vec.zCoord >= aabb.minZ && vec.zCoord <= aabb.maxZ
+    }
+
+    private fun isVecInX(vec: Vec3?, aabb: AxisAlignedBB): Boolean {
+        return vec != null && vec.xCoord >= aabb.minX && vec.xCoord <= aabb.maxX
+    }
 
     operator fun Vec3.plus(vec3: Vec3): Vec3 {
         return this.add(vec3)
@@ -103,6 +156,10 @@ object VecUtils {
      */
     fun Vec3.flooredVec(): Vec3 {
         return Vec3(xCoord.floor(), yCoord.floor(), zCoord.floor())
+    }
+
+    fun BlockPos.toAABB(): AxisAlignedBB {
+        return AxisAlignedBB(this.x.toDouble(), this.y.toDouble(), this.z.toDouble(), this.x.toDouble() + 1.0, this.y.toDouble() + 1.0, this.z.toDouble() + 1.0).expand(0.01, 0.01, 0.01)
     }
 
     /**
