@@ -48,6 +48,7 @@ object TerminalSolver : Module(
     private val removeWrongSelect: Boolean by BooleanSetting("Stop Select", true).withDependency { removeWrong }
 
     private val zLevel: Float get() = if (behindItem && currentTerm != 1) 200f else 999f
+    var openedTerminalTime = 0L
 
     private val terminalNames = listOf(
         "Correct all the panes!",
@@ -61,7 +62,11 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun onGuiLoad(event: GuiLoadedEvent) {
-        currentTerm = terminalNames.indexOfFirst { event.name.startsWith(it) }
+        val newTerm = terminalNames.indexOfFirst { event.name.startsWith(it) }
+        if (newTerm != currentTerm) {
+            currentTerm = newTerm
+            openedTerminalTime = System.currentTimeMillis()
+        }
         if (currentTerm == -1) return
         val items = event.gui.inventory.subList(0, event.gui.inventory.size - 37)
         when (currentTerm) {

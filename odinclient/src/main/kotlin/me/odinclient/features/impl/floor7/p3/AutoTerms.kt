@@ -19,13 +19,20 @@ object AutoTerms : Module(
     category = Category.FLOOR7,
     tag = TagType.RISKY
 ) {
-    private val autoDelay: Long by NumberSetting<Long>("Delay", 200, 50, 800)
+    private val autoDelay: Long by NumberSetting("Delay", 200L, 50, 800)
+    private val firstClickDelay: Long by NumberSetting("First Click Delay", 200L, 50, 500)
     private val middleClick: Boolean by DualSetting("Click Type", "Left", "Middle", default = true, description = "What Click to use")
     private val clock = Clock(autoDelay)
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderGameOverlayEvent.Pre) {
-        if (TerminalSolver.solution.isEmpty() || mc.currentScreen !is GuiChest || !enabled || !clock.hasTimePassed(autoDelay, setTime = true)) return
+        if (
+            TerminalSolver.solution.isEmpty() ||
+            mc.currentScreen !is GuiChest ||
+            !enabled ||
+            !clock.hasTimePassed(autoDelay, setTime = true) ||
+            System.currentTimeMillis() - TerminalSolver.openedTerminalTime <= firstClickDelay
+        ) return
         val gui = mc.currentScreen as GuiChest
         if (gui.inventorySlots !is ContainerChest || gui.slotUnderMouse?.inventory == mc.thePlayer?.inventory) return
 

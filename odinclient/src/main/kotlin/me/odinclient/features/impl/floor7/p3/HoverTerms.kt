@@ -19,13 +19,20 @@ object HoverTerms : Module(
     category = Category.FLOOR7,
     tag = TagType.NEW
 ) {
-    private val triggerDelay: Long by NumberSetting<Long>("Delay", 200, 50, 800)
+    private val triggerDelay: Long by NumberSetting("Delay", 200L, 50, 800)
+    private val firstClickDelay: Long by NumberSetting("First Click Delay", 200L, 50, 500)
     private val middleClick: Boolean by DualSetting("Click Type", "Left", "Middle", default = true, description = "What Click to use")
     private val triggerBotClock = Clock(triggerDelay)
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderGameOverlayEvent.Pre) {
-        if (TerminalSolver.solution.isEmpty() || mc.currentScreen !is GuiChest || !enabled || !triggerBotClock.hasTimePassed(triggerDelay)) return
+        if (
+            TerminalSolver.solution.isEmpty() ||
+            mc.currentScreen !is GuiChest ||
+            !enabled ||
+            !triggerBotClock.hasTimePassed(triggerDelay) ||
+            System.currentTimeMillis() - TerminalSolver.openedTerminalTime <= firstClickDelay
+        ) return
         val gui = mc.currentScreen as GuiChest
         if (gui.inventorySlots !is ContainerChest || gui.slotUnderMouse?.inventory == mc.thePlayer?.inventory) return
         val hoveredItem = gui.slotUnderMouse?.slotIndex ?: return

@@ -110,8 +110,6 @@ object VecUtils {
                     isVecInXY(start.getIntermediateWithZValue(goal, aabb.minZ), aabb) ||
                     isVecInXY(start.getIntermediateWithZValue(goal, aabb.maxZ), aabb)
                 ) } catch (e: Exception) {
-                    devMessage("error? ${e.message}")
-                    e.printStackTrace()
                     false
                 }
     }
