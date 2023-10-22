@@ -11,9 +11,7 @@ import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
-import net.minecraft.util.BlockPos
 import net.minecraft.util.ChatComponentText
-import net.minecraft.util.Vec3
 import net.minecraftforge.common.MinecraftForge
 
 val termSimCommand = "termsim" {
@@ -103,7 +101,7 @@ val mainCommand = "od" {
     }
 
     "testTP" does {
-        TPMaze.getCorrectPortals(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
+        TPMaze.getCorrectPortals(mc.thePlayer.positionVector, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
     }
 
     "resetTP" does {
