@@ -53,7 +53,6 @@ open class Executor(val delay: () -> Long, val func: Executor.() -> Unit) {
      * @author Stivais
      */
     fun Executor.destroyExecutor(): Nothing {
-        devMessage("destroying")
         shouldFinish = true
         throw Throwable()
     }

@@ -13,6 +13,7 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
+import me.odinmain.utils.skyblock.ChatUtils.devMessage
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.entity.item.EntityItemFrame
@@ -48,7 +49,6 @@ object ArrowAlign : Module(
     private val triggerBotClock = Clock(delay)
     private data class Vec2(val x: Int, val y: Int)
     private data class Frame(val entity: EntityItemFrame, var rotations: Int)
-    //                                    xy pos         entity,          needed clicks        (x is technically z in the world)
     private val neededRotations = HashMap<Vec2, Frame>()
 
     init {
