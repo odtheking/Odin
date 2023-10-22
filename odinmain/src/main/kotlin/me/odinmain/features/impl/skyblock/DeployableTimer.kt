@@ -49,17 +49,17 @@ object DeployableTimer : Module(
     }
 
     private enum class Deployables (val texture: String, val displayName: String, val renderName: String, val priority: Int, val duration: Int, val imgPath: String, val range: Float)  {
-        Warning("ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzMwNjIyMywKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjJlMmJmNmMxZWMzMzAyNDc5MjdiYTYzNDc5ZTU4NzJhYzY2YjA2OTAzYzg2YzgyYjUyZGFjOWYxYzk3MTQ1OCIKICAgIH0KICB9Cn0=", "Warning Flare", "§aWarning Flare", 3, 180000, "/assets/odinclient/deployable/firework.png", 20f),
+        Warning("ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzMwNjIyMywKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjJlMmJmNmMxZWMzMzAyNDc5MjdiYTYzNDc5ZTU4NzJhYzY2YjA2OTAzYzg2YzgyYjUyZGFjOWYxYzk3MTQ1OCIKICAgIH0KICB9Cn0=", "Warning Flare", "§aWarning Flare", 3, 180000, "/assets/odinclient/deployable/firework.png", 40f),
 
-        Alert("ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzMyNjQzMiwKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWQyYmY5ODY0NzIwZDg3ZmQwNmI4NGVmYTgwYjc5NWM0OGVkNTM5YjE2NTIzYzNiMWYxOTkwYjQwYzAwM2Y2YiIKICAgIH0KICB9Cn0=", "Alert Flare", "§9Alert Flare", 5, 180000, "/assets/odinclient/deployable/firework.png", 20f),
+        Alert("ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzMyNjQzMiwKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWQyYmY5ODY0NzIwZDg3ZmQwNmI4NGVmYTgwYjc5NWM0OGVkNTM5YjE2NTIzYzNiMWYxOTkwYjQwYzAwM2Y2YiIKICAgIH0KICB9Cn0=", "Alert Flare", "§9Alert Flare", 5, 180000, "/assets/odinclient/deployable/firework.png", 40f),
 
-        SOS("ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzM0NzQ4OSwKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzAwNjJjYzk4ZWJkYTcyYTZhNGI4OTc4M2FkY2VmMjgxNWI0ODNhMDFkNzNlYTg3YjNkZjc2MDcyYTg5ZDEzYiIKICAgIH0KICB9Cn0=", "SOS Flare", "§5SOS Flare", 7, 180000, "/assets/odinclient/deployable/firework.png", 20f),
+        SOS("ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzM0NzQ4OSwKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzAwNjJjYzk4ZWJkYTcyYTZhNGI4OTc4M2FkY2VmMjgxNWI0ODNhMDFkNzNlYTg3YjNkZjc2MDcyYTg5ZDEzYiIKICAgIH0KICB9Cn0=", "SOS Flare", "§5SOS Flare", 7, 180000, "/assets/odinclient/deployable/firework.png", 40f),
 
-        Radiant("RADIANTPLACEHOLDERTEXTURE", "Radiant", "§aRadiant Orb", 1, 30000, "/assets/odinclient/deployable/RADIANTPOWERORB.png", 20f),
+        Radiant("RADIANTPLACEHOLDERTEXTURE", "Radiant", "§aRadiant Orb", 1, 30000, "/assets/odinclient/deployable/RADIANTPOWERORB.png", 18f),
 
-        Mana("MANAFLUXPLACEHOLDERTEXTURE", "Mana" , "§9Mana Flux Orb", 2, 30000, "/assets/odinclient/deployable/MANAFLUXPOWERORB.png", 20f),
+        Mana("MANAFLUXPLACEHOLDERTEXTURE", "Mana" , "§9Mana Flux Orb", 2, 30000, "/assets/odinclient/deployable/MANAFLUXPOWERORB.png", 18f),
 
-        Overflux("OVERFLUXPLACEHOLDERTEXTURE", "Overflux", "§5Overflux Orb", 4, 30000, "/assets/odinclient/deployable/OVERFLUXPOWERORB.png", 20f),
+        Overflux("OVERFLUXPLACEHOLDERTEXTURE", "Overflux", "§5Overflux Orb", 4, 30000, "/assets/odinclient/deployable/OVERFLUXPOWERORB.png", 18f),
 
         Plasma("PLASMAFLUXPLACEHOLDERTEXTURE", "Plasma", "§dPlasmaflux", 5, 60000, "/assets/odinclient/deployable/PLASMAPOWERORB.png", 20f),
     }
