@@ -27,7 +27,7 @@ object TPMaze : Module(
 
     init {
         execute(200) {
-            if (!enabled || portals.size >= 30/* || DungeonUtils.currenRoomName != "Teleport Maze"*/) return@execute
+            if (!enabled || portals.size >= 30 || DungeonUtils.currenRoomName != "Teleport Maze") return@execute
             val pos = mc.thePlayer?.position ?: return@execute
             portals = portals.plus(BlockPos.getAllInBox(BlockPos(pos.x + 22, 70, pos.z + 22), BlockPos(pos.x - 22, 69, pos.z - 22)).filter {
                 mc.theWorld.getBlockState(it).block == Blocks.end_portal_frame
@@ -47,19 +47,26 @@ object TPMaze : Module(
         correctPortals = correctPortals.filter {
             VecUtils.isXZInterceptable(
                 AxisAlignedBB(it.x.toDouble(), it.y.toDouble(), it.z.toDouble(), it.x + 1.0, it.y + 4.0, it.z + 1.0).expand(0.5, 0.0, 0.5),
-                40f,
+                80f,
                 pos,
                 yaw,
                 pitch
-            )
+            ) && !BlockPos(it.x, it.y, it.z).toAABB().expand(0.5, 0.5, 0.5).isVecInside(mc.thePlayer.positionVector)
         }
     }
 
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
-        //if (DungeonUtils.currenRoomName != "Teleport Maze") return
-        correctPortals.forEach {
-            RenderUtils.drawFilledBox(it.toAABB(), Color.GREEN.withAlpha(.5f), phase = true)
+        if (DungeonUtils.currenRoomName != "Teleport Maze") return
+        if (correctPortals.size == 1) {
+            correctPortals.forEach {
+                RenderUtils.drawFilledBox(it.toAABB(), Color.GREEN.withAlpha(.5f), phase = true)
+            }
+        }
+        if (correctPortals.size > 1) {
+            correctPortals.forEach {
+                RenderUtils.drawFilledBox(it.toAABB(), Color.ORANGE.withAlpha(.5f), phase = true)
+            }
         }
     }
 }

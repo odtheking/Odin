@@ -50,7 +50,7 @@ object DianaHelper : Module(
     enum class BurrowType(val text: String, val color: Color) {
         START("§aStart", Color.GREEN),
         MOB("§cMob", Color.RED),
-        TREASURE("§6Treasure", Color.GOLD),
+        TREASURE("§6Treasure", Color.ORANGE),
         UNKNOWN("§fUnknown?!", Color.WHITE),
     }
 

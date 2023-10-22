@@ -134,7 +134,7 @@ class Color(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f)
         val BLACK = Color(0, 0, 0)
 
         @JvmField
-        val GOLD = Color(255, 170, 0)
+        val ORANGE = Color(255, 170, 0)
 
         @JvmField
         val GREEN = Color(0, 255, 0)

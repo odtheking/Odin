@@ -24,7 +24,7 @@ object ClickedChests : Module(
     private val chests = mutableSetOf<BlockPos>()
     private val color: Color by ColorSetting(
         "Color",
-        Color.GOLD.withAlpha(.4f),
+        Color.ORANGE.withAlpha(.4f),
         allowAlpha = true,
         description = "The color of the box."
     )
