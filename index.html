@@ -1,91 +1,54 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>OdinClient</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      margin: 0;
-      background-color: #f0ffff;
-      text-align: center;
-    }
-
-    h1 {
-      font-size: 3em;
-      margin: 0;
-      color: #006699;
-    }
-
-    p {
-      font-size: 1.5em;
-      margin: 0;
-      color: #006699;
-    }
-
-    ul {
-      list-style-type: none;
-      padding: 0;
-    }
-
-    li {
-      margin-bottom: 1em;
-      color: #006699;
-    }
-
-    .features {
-      margin-top: 2em;
-    }
-
-    .feature-title {
-      font-size: 2em;
-      margin-bottom: 0.5em;
-      color: #006699;
-    }
-
-    .feature-description {
-      font-size: 1em;
-      color: #006699;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.0/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css"
+    integrity="sha256-gsmEoJAws/Kd3CjuOQzLie5Q3yshhvmo7YNtBG7aaEY=" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css">
 </head>
 <body>
-  <h1>OdinClient</h1>
-  <p>OdinClient is a comprehensive Forge mod for Hypixel Skyblock, offering a range of features to enhance Your gaming experience. Access its GUI using the /od or /odinclient commands.</p>
 
-  <section class="features">
-    <h2 class="feature-title">Features</h2>
+  <div class="navBar">
+    <div class="logo">
+      <a href="https://odtheking.github.io/OdinClient/">
+        <img src="https://cdn.discordapp.com/attachments/863836118394732586/1165595696284565545/Odin_Logo_1.png?ex=65476c95&is=6534f795&hm=a21aea1502f042160bc05e6cc64880346431c49e535cef9934b87a76a965f237&" alt="Image alt text">
+      </a>
+    </div>
 
-    <ul>
-      <li class="feature-description">
-        **Dungeon**
-        <ul>
-          <li>Auto Dungeon Requeue: Automatically starts a new dungeon at the end of a dungeon.</li>
-          <li>Mimic Killed Message: Sends message in party chat when mimic is killed.</li>
-          <li>Cancel Chest Open: Cancels the opening of chests in dungeons.</li>
-          <li>TeammatesHighlight: Enhances visibility of your dungeon teammates and their name tags.</li>
-          <li>Secret Triggerbot: Automatically gets secrets when looking at them.</li>
-          <li>Terracotta Timer: Displays the time until the terracotta spawns.</li>
-          <li>Blessing Display: Displays the current blessings of the dungeon.</li>
-          <li>Secret Hitboxes: Full block Secret hitboxes.</li>
-          <li>Auto Extra Stats: Automatically clicks the extra stats at the end of a dungeon.</li>
-          <li>AFK Thorn Stun: Toggle right click while holding Tribal Spear or Bonemerang in F4/M4</li>
-          <li>Cancel Interact: Cancels the interaction with certain blocks, so that the item can be used instead.</li>
-          <li>Ghost Pick: Gives you a ghost pickaxe in your selected slot when uyou press the keybind.</li>
-          <li>Auto Ult: Activates your ult at crucial moments, such as when giants spawn, Maxor is stuck in the first laser, or Goldor starts.</li>
-          <li>Dungeon Map: A dungeon map that scans the dungeon, heavily inspired by FunnyMap</li>
-          <li>Ghost Block: Creates ghost blocks on keypress, and in specific locations.</li>
-          <li>Water Solver: Solves the water puzzle with a single flow.</li>
-          <li>Watcher Bar: Shows the watcher's health.</li>
-          <li>Superboom: Places TNT when you left click on a block which can blow up.</li>
-          <li>Swap Stonk: Does a swap stonk when you press the keybind.</li>
-          <li>Auto Ice Fill: Automatically completes the ice fill puzzle.</li>
-          <li>Auto Shield: Utilizes Wither shield every 5 seconds when health is not full (works with all Wither swords).</li>
-          <li>Triggerbot: Instantly left clicks if you are looking at a specified mob.</li>
-          <li>Auto Mask: Automatically uses masks when they proc.</li>
-          <li>Auto Wish: Grants wishes for your teammates when they are low on health.</li>
-          <li>Auto Leap: Automatically leaps to the
-          <li>Auto GFS: Automatically gets pearls from sacks if your inventory doesn't have any.</li>
-          <li>Auto Sell: Automatically sell items in trades and cookie menus.</li>
-          <li>Key ESP: Draws a box around the key.</li>
-        </ul>
-      </li>
+    <div class="links">
+      <a href="https://discord.gg/2nCbC9hkxT">
+        <div class="tooltip">
+        <i class="fa fa-discord" style="font-size:75px;color:white"></i>
+        <span class="tooltiptext">Discord</span>
+        </div>
+      </a>
+      <a href="https://github.com/odtheking/OdinClient">
+        <div class="tooltip">
+        <i class="fa fa-github" style="font-size:75px;color:white"></i>
+        <span class="tooltiptext">GitHub</span>
+        </div>
+      </a>
+      <div class="gap"></div>
+    </div>
+  </div>
+
+  <div class="container-divider"></div>
+
+  <main></main>
+
+  <footer>
+    <p>&copy; 2023 OdinClient</p>
+    <p>Other Mods Privacy</p>
+  </footer>
+
+  <script src="scripts.js"></script>
+
+</body>
+</html>
+ 
