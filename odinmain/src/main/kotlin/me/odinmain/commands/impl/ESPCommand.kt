@@ -1,33 +1,35 @@
 package me.odinmain.commands.impl
 
+import me.odinmain.OdinMain
 import me.odinmain.commands.invoke
 import me.odinmain.config.MiscConfig
 import me.odinmain.features.impl.render.CustomESP
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
 
 private inline val espList get() = MiscConfig.espList
+private val name = if (OdinMain.onLegitVersion) "highlight" else "ESP"
 
-val espCommand = "esp" {
+val espCommand = name {
     does {
-        modMessage("ESP incorrect usage. Usage: add, remove, clear, list")
+        modMessage("$name incorrect usage. Usage: add, remove, clear, list")
     }
 
     "add" does {
         if (it.isEmpty()) return@does modMessage("§cMissing mob name!")
         val mobName = it.joinToString(" ")
-        if (mobName in espList) return@does modMessage("$mobName is already on the ESP list.")
+        if (mobName in espList) return@does modMessage("$mobName is already on the $name list.")
 
-        modMessage("Added $mobName to the ESP list.")
+        modMessage("Added $mobName to the $name list.")
         espList.add(mobName)
         MiscConfig.saveAllConfigs()
     }
 
     "remove" does {
-        if (it.isEmpty()) return@does modMessage("§cMissing mob name!")
+        if (it.isEmpty()) return@does modMessage("§cMissing mob $name!")
         val mobName = it.joinToString(" ")
         if (mobName !in espList) return@does modMessage("$mobName isn't on the list.")
 
-        modMessage("Removed $mobName from the ESP list.")
+        modMessage("Removed $mobName from the $name list.")
         espList.remove(mobName)
         MiscConfig.saveAllConfigs()
         CustomESP.currentEntities.clear()
@@ -38,7 +40,7 @@ val espCommand = "esp" {
         espList.clear()
         MiscConfig.saveAllConfigs()
         CustomESP.currentEntities.clear()
-        modMessage("ESP List cleared.")
+        modMessage("$name List cleared.")
     }
 
 

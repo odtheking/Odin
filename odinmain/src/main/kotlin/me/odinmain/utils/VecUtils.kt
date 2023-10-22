@@ -1,8 +1,6 @@
 package me.odinmain.utils
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.utils.skyblock.ChatUtils.devMessage
-import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S29PacketSoundEffect
@@ -91,8 +89,6 @@ object VecUtils {
             sin   (-pitch * Math.toRadians(1.0)),
             cos(-yaw * Math.toRadians(1.0) - Math.PI) * f2
         )
-
-        modMessage("look: ${position}, ${position.addVector(look.xCoord * range, look.yCoord * range, look.zCoord * range)} $aabb")
 
         return isInterceptable3(
             position,

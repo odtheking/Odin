@@ -1,5 +1,6 @@
 package me.odinmain.commands.impl
 
+import me.odinmain.OdinMain
 import me.odinmain.OdinMain.display
 import me.odinmain.OdinMain.mc
 import me.odinmain.commands.invoke
@@ -81,8 +82,11 @@ val mainCommand = "od" {
     }
 
     "help" {
+
         does {
-            modMessage("""
+            if (!OdinMain.onLegitVersion) {
+                modMessage(
+                    """
             List of commands:
              - /od » §7Main command. Do `/od help this` for more info about this command.
              - /autosell » §7Used to configure what items are automatically sold with Auto Sell.
@@ -90,14 +94,20 @@ val mainCommand = "od" {
              - /esp » §7Used to configure ESP list.
              - /waypoint » §7Configure waypoints.
              - /termsim » §7Simulates terminals so you can practice them.
-            """.trimIndent())
+            """.trimIndent()
+                )
+            } else
+                modMessage(
+                    """
+                List of commands:
+             - /od » §7Main command. Do `/od help this` for more info about this command.
+             - /blacklist » §7 Word this to describe what blacklist even does.
+             - /highlight » §7Used to configure highlight list.
+             - /waypoint » §7Configure waypoints.
+             - /termsim » §7Simulates terminals so you can practice them.""".trimIndent()
+                )
         }
 
-        "this" does {
-            modMessage("""
-                hi someone else do this and dont make it shit 
-            """.trimIndent())
-        }
     }
 
     "testTP" does {
