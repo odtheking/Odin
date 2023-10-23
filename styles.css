@@ -240,12 +240,21 @@ footer {
 @media screen and (max-width: 1600px){
 /*For Mobile only*/
 .logo {
-  width:200px;
+  width:150px;
   align-self: flex-start;
   justify-self: start;
   padding-left:0;
   padding-top:0em;
 
+}
+
+#cat {
+  width: 50px;
+  height: 50px;
+}
+
+.centered-text p {
+  font-size: 60px;
 }
 
 .navBar {
