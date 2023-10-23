@@ -4,17 +4,11 @@ import me.odinmain.config.Config
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.impl.floor7.p3.TerminalTimes.currentTerminal
-import me.odinmain.features.impl.floor7.p3.TerminalTimes.sendMessage
-import me.odinmain.features.impl.floor7.p3.TerminalTimes.startTimer
-import me.odinmain.features.impl.skyblock.ChatCommands.private
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.utils.name
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
-import me.odinmain.utils.skyblock.ChatUtils.unformattedText
 import net.minecraft.inventory.ContainerChest
-import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
@@ -56,7 +50,6 @@ object TerminalTimes : Module(
     @SubscribeEvent
     fun onClientChatReceived(event: ChatPacketEvent) {
         if (currentTerminal == null) return
-        modMessage(event.message)
         val match = Regex("(.+) (?:activated|completed) a terminal! \\((\\d)/(\\d)\\)").find(event.message) ?: return
         val (_, name, current, max) = match.groups.map { it?.value }
 

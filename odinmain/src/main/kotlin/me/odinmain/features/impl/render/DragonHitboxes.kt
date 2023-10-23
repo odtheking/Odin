@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.render
 
+import me.odinmain.OdinMain
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -83,7 +84,7 @@ object DragonHitboxes : Module(
                     val w = entity.width
                     val h = entity.height
 
-                    RenderUtils.drawCustomESPBox(dX - w / 2, dY, dZ - w / 2, w.toDouble(), h.toDouble(), color, lineWidth, phase = true)
+                    RenderUtils.drawCustomESPBox(dX - w / 2, dY, dZ - w / 2, w.toDouble(), h.toDouble(), color, lineWidth, !OdinMain.onLegitVersion)
                 }
             }
         }
