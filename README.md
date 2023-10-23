@@ -1,5 +1,3 @@
-Certainly, here's the text you provided without the asterisks:
-
 Category: Dungeons
 - Auto Dungeon Requeue: Automatically starts a new dungeon at the end of a dungeon.
 - Mimic Killed Message: Sends message in party chat when mimic is killed.
