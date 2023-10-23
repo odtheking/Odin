@@ -19,6 +19,7 @@
     "MixinMouseHelper",
     "MixinNetworkManager",
     "MixinRender",
+    "MixinRenderDragon",
     "MixinRendererLivingEntity",
     "model.MixinModelBiped",
     "model.MixinModelBlaze"
