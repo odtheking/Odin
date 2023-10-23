@@ -23,7 +23,7 @@ body::before {
   grid-template-rows: 60px;
   padding: 1em;
   color: white;
-  font-family: montserrat;
+  font-family: 'montserrat'; /* Added single quotes around font name */
 }
 
 .logo {
@@ -31,13 +31,8 @@ body::before {
   align-self: center;
   padding-top: 1.5em;
   padding-bottom: 1.5em;
-  width:250px;
-    
-
-    
+  width: 250px; /* Added a missing semicolon */
 }
-
-
 
 .links {
   z-index: 2;
@@ -48,7 +43,6 @@ body::before {
   justify-content: center;
   gap: 15px;
   margin-right: -1em;
-    
 }
 
 /*TOOL TIPS*/
@@ -56,14 +50,12 @@ body::before {
   z-index: 2;
   position: relative;
   display: inline-block;
-
 }
 
 .tooltip .tooltiptext {
   z-index: 2;
   visibility: hidden;
   width: 120px;
-
   color: #fff;
   text-align: center;
   border-radius: 6px;
@@ -73,7 +65,6 @@ body::before {
   top: 80%;
   left: 50%;
   margin-left: -60px;
-
   font-size: 20px;
 
   /* Fade in tooltip - takes 1 second to go from 0% to 100% opac: */
@@ -87,7 +78,7 @@ body::before {
   opacity: 1;
 }
 
-.links > div{
+.links > div {
   z-index: 2;
 }
 
@@ -95,7 +86,7 @@ body::before {
   background-color: white;
   height: 0.5px;
   margin: 0;
-  line-height: 0.1;
+  line-height: 0.1px; /* Added a unit (px) */
   box-shadow: 0 0 10px white;
   margin-top: auto;
   opacity: 0.25;
@@ -104,7 +95,6 @@ body::before {
 .spacer1 {
   height: 155px; /* Set the desired height of the space */
 }
-
 
 .centered-text {
   display: flex;
@@ -119,15 +109,12 @@ body::before {
   font-size: 50px; /* Adjust the font size as needed */
   color: white;
   font-weight: lighter;
-  text-shadow: 0 0 15px #fff
+  text-shadow: 0 0 15px #fff;
 }
-
 
 .spacer2 {
   height: 155px; /* Set the desired height of the space */
 }
-
-
 
 .grid-container {
   display: grid;
@@ -146,7 +133,6 @@ body::before {
   position: relative;
 }
 
-
 .DungeonMap {
   font-size: 20px;
   font-weight: bold;
@@ -164,7 +150,6 @@ body::before {
   height: 1px; /* Adjust the height of the line as needed */
   background-color: white; /* Set the color of the line */
   left: 48%; /* Adjust this value to start the line more to the right */
-
 }
 
 .text {
@@ -174,15 +159,6 @@ body::before {
   position: relative;
   top: 20px; /* Adjust this value to move .text down */
 }
-
-
-
-
-
-
-
-
- 
 
 .spacerfoot {
   height: 390px; /* Set the desired height of the space */
@@ -194,5 +170,3 @@ footer {
   padding: 20px;
   text-align: center;
 }
-
-
