@@ -1,4 +1,5 @@
 LEGIT
+
 Category: Dungeons
 - Auto Dungeon Requeue: Automatically starts a new dungeon at the end of a dungeon.
 - Mimic Killed Message: Sends message in party chat when mimic is killed.
@@ -45,6 +46,7 @@ Category: Skyblock
 - Can Clip: Tells you if you are currently able to clip through a stair under you.
 
 CHEATER
+
 Category: Dungeons
 - Auto Dungeon Requeue: Automatically starts a new dungeon at the end of a dungeon.
 - Mimic Killed Message: Sends message in party chat when mimic is killed.
