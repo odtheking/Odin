@@ -29,7 +29,8 @@ body::before {
 .logo {
   z-index: 2;
   align-self: center;
-  padding-top: 1.5em;
+  grid-column: start/logo-end;
+  padding-top: 2em;
   padding-bottom: 1.5em;
   width: 250px; /* Added a missing semicolon */
 }
@@ -42,7 +43,7 @@ body::before {
   align-content: center;
   justify-content: center;
   gap: 15px;
-  margin-right: -1em;
+  margin-right: -0.6em;
 }
 
 /*TOOL TIPS*/
@@ -82,6 +83,43 @@ body::before {
   z-index: 2;
 }
 
+.version-container {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  width: 100%;
+  height: 10vh; /* Set the desired height for vertical centering */
+  gap: 20px;
+}
+
+.version-container div {
+  text-align: center; /* Center the text within the container */
+  font-size: 45px; /* Adjust the font size as needed */
+  color: white;
+  font-weight: lighter;
+  text-shadow: 0 0 15px #fff;
+  text-underline-offset: 15px;
+}
+
+.legit, .cheater {
+  font-size: 24px;
+  margin: 20px;
+  padding: 1em;
+  cursor: pointer;
+  transition: color 0.3s;
+  
+}
+
+.legit:hover, .cheater:hover {
+  color: #8b8b8b; /* Darken the font color */
+}
+
+
+
+
+
+
+
 .container-divider {
   background-color: white;
   height: 0.5px;
@@ -93,7 +131,7 @@ body::before {
 }
 
 .spacer1 {
-  height: 155px; /* Set the desired height of the space */
+  height: 130px; /* Set the desired height of the space */
 }
 
 .centered-text {
@@ -106,34 +144,39 @@ body::before {
 
 .centered-text p {
   text-align: center; /* Center the text within the container */
-  font-size: 50px; /* Adjust the font size as needed */
+  font-size: 90px; /* Adjust the font size as needed */
   color: white;
   font-weight: lighter;
   text-shadow: 0 0 15px #fff;
 }
 
 .spacer2 {
-  height: 155px; /* Set the desired height of the space */
+  height: 175px; /* Set the desired height of the space */
 }
 
 .grid-container {
   display: grid;
   grid-template-columns: [start] 0.1fr 0.1fr 0.1fr; /* Add 1fr for each space between logos */
   justify-content: center;
-  gap: 15px;
+  gap: 50px;
 }
 
 .rounded-rectangle {
   border: 0.5px solid white;
   border-radius: 10px;
-  width: 320px;
-  height: 160px;
+  width: 370px;
+  height: 170px;
   box-shadow: 0 0 10px white;
   opacity: 1;
   position: relative;
+  transition: transform 0.6s; /* Add transition for transform property */
 }
 
-.DungeonMap {
+.rounded-rectangle:hover {
+  transform: scale(1.1);
+}
+
+.Module {
   font-size: 20px;
   font-weight: bold;
   text-align: center;
@@ -142,7 +185,7 @@ body::before {
   top: 10px; /* Adjust this value to move .DungeonMap down */
 }
 
-.DungeonMap::after {
+.Module::after {
   content: "";
   display: block;
   position: relative;
@@ -161,7 +204,7 @@ body::before {
 }
 
 .spacerfoot {
-  height: 390px; /* Set the desired height of the space */
+  height: 140px; /* Set the desired height of the space */
 }
 
 footer {
@@ -169,4 +212,112 @@ footer {
   color: #fff;
   padding: 20px;
   text-align: center;
+  position: relative; /* Add relative positioning to the footer */
+  overflow: hidden; /* Ensure the image won't overflow the footer */
 }
+
+#cat {
+  width: 100px;
+  height: 100px;
+  border-radius: 10px;
+  opacity: 1;
+  position: absolute;
+  left: 0;
+  bottom: 0; /* Stick it to the bottom of the footer */
+  transition: transform 0.6s; /* Add transition for transform property */
+}
+
+.white-link {
+  color: white;
+  text-decoration: underline;
+}
+
+.white-link:hover{
+  color: #8b8b8b; /* Darken the font color */
+}
+
+
+@media screen and (max-width: 1600px){
+/*For Mobile only*/
+.logo {
+  width:200px;
+  align-self: flex-start;
+  justify-self: start;
+  padding-left:0;
+  padding-top:0em;
+
+}
+
+.navBar {
+  grid-template-columns: [start] 1fr [logo-end] 1fr [menu-start] 1fr [menu-end];
+  grid-template-rows: repeat(2,50px);
+}
+
+.tooltip .tooltiptext {
+  top: -100%;
+}
+}
+
+
+@media screen and (max-width: 700px){
+  /*For Mobile only*/
+  .logo {
+    width:200px;
+    align-self: flex-start;
+    justify-self: start;
+    padding-left:0;
+    padding-top:0em;
+  
+  }
+  }
+
+
+
+/* Style for module names */
+.module-name {
+  font-family: 'Your-Font-Name', sans-serif; /* Change 'Your-Font-Name' to your desired font */
+  font-size: 20px; /* Change the initial font size as needed */
+  font-weight: bold; /* You can set font weight as needed */
+  color: #ffffff; /* Change the color as needed */
+  transition: font-size 0.2s ease; /* Add a smooth transition effect */
+
+  /* Add other font-related properties if necessary */
+}
+
+/* Apply the hover effect */
+.module-name:hover {
+  font-size: 22px; /* Change to the desired bigger font size on hover */
+}
+
+
+/* Style for module descriptions */
+.module-description {
+  font-family: 'Another-Font-Name', sans-serif; /* Change 'Another-Font-Name' to your desired font */
+  font-size: 14px; /* Change the font size as needed */
+  font-weight: lighter; /* You can set font weight as needed */
+  color: #ffffff; /* Change the color as needed */
+  /* Add other font-related properties if necessary */
+}
+
+/* Style for category headers */
+.category-header {
+  font-family: 'Category-Font', sans-serif; /* Change 'Category-Font' to your desired font */
+  font-size: 30px; /* Change the font size as needed */
+  font-weight: bold; /* You can set font weight as needed */
+  color: #0066cc; /* Change the color as needed */
+  margin-top: 10px; /* Add margin or spacing as desired */
+  /* Add other font-related properties if necessary */
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+
+  
+
+
+  

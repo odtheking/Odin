@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.0/css/bulma.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css"
@@ -38,12 +38,20 @@
     </div>
   </div>
 
+  
+
   <div class="container-divider"></div>
 
+  <div class="version-container">
+    <div class="legit" id="legit">Legit</div>
+    <div class="cheater" id="cheater">Cheat</div>
+  </div>
+
+  
   <div class="spacer1"></div>
 
   <div class="centered-text">
-    <p><a href="../index.html">Let's get you started with OdinClient.</a></p>
+    <p>Introducing Odin</p>
   </div>
 
   <div class="spacer2"></div>
@@ -52,34 +60,36 @@
     <div class="grid-container">
 
     <div class="rounded-rectangle">
-      <img src="https://shadyaddons.com/assets/icons/dungeon-map.png" alt="Image" width="160" height="80" style="float: left; margin-right: 10px; ">
-      <span class="DungeonMap">Dungeon Map</span>
-      <span class="text">Map the entire dungeon before it even begins</span>
+      <img src="assets/rubix.png" alt="Image" width="170" height="85" style="float: left; margin-right: 10px; transform: scale(0.85);">
+      <span class="Module">Terminal Simulator</span>
+      <span class="text">Simulates an F7 terminal for practice.</span>
     </div>
     <div class="rounded-rectangle">
-      <img src="https://shadyaddons.com/assets/icons/dungeon-map.png" alt="Image" width="160" height="80" style="float: left; margin-right: 10px; ">
-      <span class="DungeonMap">Dungeon Map</span>
-      <span class="text">Map the entire dungeon before it even begins</span>
+      <img src="assets/firework.gif" alt="Image" width="170" height="85" style="float: left; margin-right: 10px;">
+      <span class="Module">Deployable Timer</span>
+      <span class="text">Displays the active deployable near you.</span>
     </div>
     <div class="rounded-rectangle">
-      <img src="https://shadyaddons.com/assets/icons/dungeon-map.png" alt="Image" width="160" height="80" style="float: left; margin-right: 10px; ">
-      <span class="DungeonMap">Dungeon Map</span>
-      <span class="text">Map the entire dungeon before it even begins</span>
+      <img src="assets/shovel.gif" alt="Image" width="170" height="85" style="float: left; margin-right: 10px; transform: scale(0.9);">
+      <span class="Module">Diana Helper</span>
+      <span class="text">Multiple features to make Diana more enjoyable.</span>
     </div>
     <div class="rounded-rectangle">
-      <img src="https://shadyaddons.com/assets/icons/dungeon-map.png" alt="Image" width="160" height="80" style="float: left; margin-right: 10px; ">
-      <span class="DungeonMap">Dungeon Map</span>
-      <span class="text">Map the entire dungeon before it even begins</span>
+      <img src="assets/esp.png" alt="Image" width="125" height="85" style="float: left; margin-right: 60px; ">
+      <span class="Module">Highlight</span>
+      <span class="text">Highlight any mob! Customizable rendering.</span>
     </div>
     <div class="rounded-rectangle">
-      <img src="https://shadyaddons.com/assets/icons/dungeon-map.png" alt="Image" width="160" height="80" style="float: left; margin-right: 10px; ">
-      <span class="DungeonMap">Dungeon Map</span>
-      <span class="text">Map the entire dungeon before it even begins</span>
+      <img src="assets/blessing.png" alt="Image" width="160" height="60" style="float: left; margin-right: 20px; transform: scale(0.8);">
+      <span class="Module">Blessing Display</span>
+      <span class="text">Displays the dungeon's current blessings to your liking.</span>
     </div>
     <div class="rounded-rectangle">
-      <img src="https://shadyaddons.com/assets/icons/dungeon-map.png" alt="Image" width="160" height="80" style="float: left; margin-right: 10px; ">
-      <span class="DungeonMap">Dungeon Map</span>
-      <span class="text">Map the entire dungeon before it even begins</span>
+      <img src="assets/dragon.gif" alt="Image" width="170" height="85" style="float: left; margin-right: 10px; transform: scaleX(-0.85);">
+      <span class="Module">Dragon QOL</span>
+      <span class="text">Dragon Timer</span><br>
+      <span class="text">Dragon Boxes</span><br>
+      <span class="text">Dragon Kill Timer</span>
     </div>
     </div>
   </main>
@@ -87,11 +97,22 @@
   <div class="spacerfoot"></div>
 
   <footer>
-    <p>&copy; 2023 OdinClient</p>
-    <p>Other Mods Privacy</p>
+    <p>&copy; 2023 Odin</p>
+    
+    <p>
+      <a class="white-link" href="installation_guide.html">Installation Guide</a> | <a class="white-link" href="feature_list_legit.html">Full Feature List</a>
+    </p>
+    
+
+
+   
+      
+    <img id="cat"  alt="Image alt text" title="Click me!" width="100px" height="100px" onclick="onClick()">
+      
+    
   </footer>
 
-  <script src="scripts.js"></script>
+  <script src="script.js"></script>
 
 </body>
 </html>
