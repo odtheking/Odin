@@ -350,6 +350,7 @@ footer {
   /*For Mobile only*/
   .logo {
       width:200px;
+      margin-right: 2em;
   }
 
   .grid-container {
