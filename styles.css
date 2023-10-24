@@ -307,7 +307,7 @@ footer {
   }
 
   .centered-text p {
-    font-size: 50px;
+    font-size: 40px;
   }
 
   .container
@@ -356,14 +356,14 @@ footer {
     display: grid;
     grid-template-columns: repeat(2, minmax(28%, 0.1fr)); /* Adjust the percentage as needed */
     justify-content: center;
-    margin-right: 4em;
-    column-gap: 6em;
+    margin-right: 7.5em;
+    column-gap: 8.5em;
     row-gap: 1em;
   }
 
   .rounded-rectangle {
-    height: 40vw; /* was 20 */
-    width: 38vw;
+    height: 100px ;
+    width: 200px;
   }
  
 }
