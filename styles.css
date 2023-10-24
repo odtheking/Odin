@@ -346,19 +346,9 @@ footer {
     margin-right: 2vh;
   }
 
-  .grid-container {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(28%, 0.1fr)); /* Adjust the percentage as needed */
-    justify-content: center;
-    margin-right: 3em;
-    column-gap: 2.4em;
-    row-gap: 1em;
-  }
+  
 
-  .rounded-rectangle {
-    height: 22vw;
-    width: 30vw;
-  }
+  
 
 }
 
@@ -367,6 +357,20 @@ footer {
   /*For Mobile only*/
   .logo {
       width:200px;
+  }
+
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(28%, 0.1fr)); /* Adjust the percentage as needed */
+    justify-content: center;
+    margin-right: 3em;
+    column-gap: 3em;
+    row-gap: 1em;
+  }
+
+  .rounded-rectangle {
+    height: 22vw;
+    width: 30vw;
   }
  
 }
