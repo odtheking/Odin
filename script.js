@@ -98,6 +98,7 @@ function parseReadmeContent(content) {
 function populateModuleList(apiUrl, moduleListId) {
     const moduleList = document.getElementById(moduleListId);
     let currentCategory = ''; // Store the current category
+    let currentCat
     let isLegitCategory = true; // Initialize as true
 
     // Fetch the README content from the GitHub API and handle it in the promise chain
@@ -128,16 +129,16 @@ function populateModuleList(apiUrl, moduleListId) {
                 if (isLegitCategory) {
                     // Check if the category has changed
                     if (module.category !== currentCategory) {
-                        // Create a blank row before the new category
-                        const blankRow = document.createElement("div");
-                        blankRow.classList.add("blank-row");
-                        moduleList.appendChild(blankRow);
-
                         // Create a category header without "Category:" prefix
+                        const category = document.createElement("div");
                         const categoryHeader = document.createElement("div");
-                        categoryHeader.classList.add("category-header");
+
+                        category.classList.add("category-" + module.category.replaceAll(" ", ""));
+                        categoryHeader.classList.add("category-header")
                         categoryHeader.textContent = module.category.replace('Category: ', '');
-                        moduleList.appendChild(categoryHeader);
+                        moduleList.appendChild(category);
+                        category.appendChild(categoryHeader)
+                        currentCat = category
 
                         // Update the current category
                         currentCategory = module.category;
@@ -172,7 +173,7 @@ function populateModuleList(apiUrl, moduleListId) {
                     moduleItem.appendChild(moduleDescription);
 
                     // Append the module item to the module list
-                    moduleList.appendChild(moduleItem);
+                    currentCat.appendChild(moduleItem);
                 }
             });
         })
@@ -198,8 +199,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 /*
-https://api.thecatapi.com/v1/images/search
-[{"id":"aoc","url":"https://cdn2.thecatapi.com/images/aoc.jpg","width":628,"height":956}]
+Auto Terms
 
+
+Arrow Trajectory
 
 */

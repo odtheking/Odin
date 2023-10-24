@@ -43,7 +43,6 @@
 
 
   
-  <div class="spacer1"></div>
 
  
   
@@ -58,15 +57,37 @@
             text-align: center; /* Center-align the content within the body */
         }
 
+        .grid-container {
+          column-count: 3;
+          margin-bottom: 12.8em;
+        }
+
+        .java-container {
+          column-span: 1;
+        }
+
+        .forge-container {
+          column-span: 2;
+        }
+
+        .odin-container {
+          column-span: 3;
+        }
+
         h2 {
-            font-size: 24px;
+          font-size: 24px;
+          height: 70px;
+          text-decoration: underline;
+          text-shadow: 0 0 15px #fff;
+          text-underline-offset: 10px;
         }
 
         ol {
-            list-style: decimal;
-            margin-left: 20px;
-            text-align: left; /* Reset text alignment within the ordered list */
-            display: inline-block; /* Center the ordered list */
+          list-style: decimal;
+          margin-left: 40px;
+          text-align: left; /* Reset text alignment within the ordered list */
+          display: inline-block; /* Center the ordered list */
+          line-height: 30px;
         }
 
         ul {
@@ -79,45 +100,60 @@
         a {
             color: blue; /* Change link color to blue */
         }
+
+        li {
+          min-height: 40px;
+        }
     </style>
     
   </head>
   <body>
-    <h2>Installing Java</h2>
-<ol>
-    <li>Download the Java 8 Installer from: <a href="https://java.com/">https://java.com/</a></li>
-    <li>Open the installer and follow the wizard instructions.</li>
-</ol>
+    <div class="grid-container">
+      <div class="java-container">
+      <h2>Installing Java</h2>
+        <ol>
+          <li>Download the Java 8 Installer from: <a href="https://java.com/">https://java.com/</a></li>
+          <li>Open the installer you just downloaded.</li>
+          <li>Follow the instructions of the installer.</li>
+          <li>Read and accept the license agreement.</li>
+          <li>Choose the installation location and click "Next".</li>
+          <li>Wait for the installation process to complete.</li>
+          <li>Once the installation is finished, click "Close" to exit the installer.</li>
+          <li>Verify the installation by opening a command prompt or terminal window and typing "java -version". You should see information about the installed Java version.</li>
+        </ol>
+      </div>
 
-<h2>Installing Forge</h2>
-<ol>
-    <li>Run normal Minecraft 1.8.9 and once it reaches the title screen, wait about 5 seconds and close it.</li>
-    <li>Install Minecraft 1.8.9 Forge from the Forge website.</li>
-    <li>Open the installer, select Install client, and click Install.</li>
-    <li>When Forge is installed, open the Minecraft launcher, go under the Installations tab, click New installation, select the version release 1.8.9-forge1.8.9-11.15.1.xxxx (it will usually be all the way towards the bottom).</li>
-    <li>Once you are done, run this new installation that you just created. Once it reaches the title screen, wait about 5 seconds and close it.</li>
-</ol>
+      <div class="forge-container">
+        <h2>Installing Forge</h2>
+        <ol>
+          <li>Run normal Minecraft 1.8.9 and once it reaches the title screen, wait about 5 seconds and close it.</li>
+          <li>Install Minecraft 1.8.9 Forge from the Forge website.</li>
+          <li>Open the installer, select Install client, and click Install.</li>
+          <li>When Forge is installed, open the Minecraft launcher, go under the Installations tab, click New installation, select the version release 1.8.9-forge1.8.9-11.15.1.xxxx (it will usually be all the way towards the bottom).</li>
+          <li>Once you are done, run this new installation that you just created. Once it reaches the title screen, wait about 5 seconds and close it.</li>
+        </ol>
+      </div>
 
-<h2>Installing the Odin Mod</h2>
-<ol>
-    <li>Download the latest mod release from <a href="https://github.com/odtheking/OdinClient">https://github.com/odtheking/OdinClient</a>. If it says this file may harm your computer, click Allow anyways as all Java files will be suspect to this from the Windows firewall.</li>
-    <li>Add the Odin mod:
-        <ul>
-            <li>Press the Windows key + R; type %appdata%; click on the folder called .minecraft; click on the folder called mods and drag the mods file in here.</li>
-        </ul>
-    </li>
-    <li>Open the Minecraft launcher and run your Forge installation you set up earlier.</li>
-</ol>
+      <div class="odin-container">
+        <h2>Installing the Odin Mod</h2>
+        <ol>
+
+          <li>Download the latest mod release from <a href="https://github.com/odtheking/OdinClient">https://github.com/odtheking/OdinClient</a>. <br>If it says this file may harm your computer, click Allow anyways as all Java files will be suspect to this from the Windows firewall.</li>
+          <li>Add the Odin mod:
+            <ul>
+              <li>Press the Windows key + R; type %appdata%; click on the folder called .minecraft; click on the folder called mods and drag the mods file in here.</li>
+            </ul>
+          </li>
+          <li>Open the Minecraft launcher and run your Forge installation you set up earlier.</li>
+        </ol>
+      </div>
+    </div>
 
     
-  </body>
-  </html>
-  
-
-  <div class="spacer2"></div>
+</body>
 
 
-  <div class="spacerfoot"></div>
+
 
   <footer>
     <p>&copy; 2023 Odin</p>
@@ -137,6 +173,5 @@
 
   <script src="script.js"></script>
 
-</body>
 </html>
  

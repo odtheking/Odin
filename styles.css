@@ -102,7 +102,6 @@ body::before {
 }
 
 .legit, .cheater {
-  font-size: 24px;
   margin: 20px;
   padding: 1em;
   cursor: pointer;
@@ -200,18 +199,18 @@ body::before {
 .text {
   font-size: 0.8vw; /* Adjust this value based on your design */
   height: auto; /* Maintain aspect ratio, adjust width to control height */
-    text-align: center;
+  text-align: center;
   color: white;
   position: relative;
   top: 2vw; /* Adjusted from 20px */
-  line-height: 1.2;
 }
 
 .rubix {
+  margin-top: 1.5%;
   width: 50%; /* Adjust this percentage based on your design */
   height: auto; /* Maintain aspect ratio, adjust width to control height */
   float: left;
-  transform: scale(0.85); /* Adjust as needed */
+  transform: scale(0.9); /* Adjust as needed */
 }
 
 .firework {
@@ -255,6 +254,95 @@ body::before {
 }
 
 
+.fuckdiorite {
+  width: 50%; /* Adjust this percentage based on your design */
+  height: auto; /* Maintain aspect ratio, adjust width to control height */
+  float: left;
+  margin-right: 1vh; /* Use percentage for margin-right */
+  transform: scaleY(0.95) scale(0.9); /* Adjust as needed */
+  animation-name: fadeInImage1;
+
+}
+
+.fuckglass {
+  width: 50%; /* Adjust this percentage based on your design */
+  height: auto; /* Maintain aspect ratio, adjust width to control height */
+  float: left;
+  margin-right: 1vh; /* Use percentage for margin-right */
+  transform: scaleY(0.95) scale(0.9) translateY(-117%); /* Adjust as needed */
+  animation-name: fadeInImage2;
+
+}
+
+.fuckdiorite, .fuckglass {
+  animation-duration: 10s; /* Set the animation duration as needed */
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+@keyframes fadeInImage1 {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 2;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes fadeInImage2 {
+  0% {
+    opacity: 2;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 2;
+  }
+}
+
+.ghostpick {
+  margin-top: 10%;
+  width: 50%; /* Adjust this percentage based on your design */
+  height: auto; /* Maintain aspect ratio, adjust width to control height */
+  float: left;
+  transform: scaleX(.9) scale(1.15);
+}
+
+.cookie {
+  margin-top: 1.5%;
+  width: 50%; /* Adjust this percentage based on your design */
+  height: auto; /* Maintain aspect ratio, adjust width to control height */
+  float: left;
+  transform: scale(0.9); /* Adjust as needed */
+}
+
+.ghost {
+  width: 50%; /* Adjust this percentage based on your design */
+  height: auto; /* Maintain aspect ratio, adjust width to control height */
+  float: left;
+  transform: scale(0.5); /* Adjust as needed */
+  margin-top: -95px;
+}
+
+.tnt {
+  width: 50%; /* Adjust this percentage based on your design */
+  height: auto; /* Maintain aspect ratio, adjust width to control height */
+  float: left;
+  transform: scale(0.9); /* Adjust as needed */
+}
+
+.bow {
+  width: 50%; /* Adjust this percentage based on your design */
+  height: auto; /* Maintain aspect ratio, adjust width to control height */
+  float: left;
+  transform: scale(0.8); /* Adjust as needed */
+}
+
+
 
 
 
@@ -262,12 +350,11 @@ body::before {
   height: 140px; /* Set the desired height of the space */
 }
 
-.content {
-  flex: 1; /* Allow content to grow to fill the available space */
-  /* Add any styles you need for your main content area */
-}
 
+
+/* Style your footer */
 footer {
+  margin-top: 100px;
   background-color: #333;
   color: #fff;
   padding: 12px;
@@ -277,9 +364,21 @@ footer {
   
 }
 
+
+
+/* Set a minimum height for the content area to push the footer down */
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  position: relative;
+}
+
+
+
 #cat {
-  width: 100px;
-  height: 100px;
+  width: 72px;
+  height: 72px;
   border-radius: 10px;
   opacity: 1;
   position: absolute;
@@ -310,28 +409,34 @@ footer {
     font-size: 40px;
   }
 
-  .container
-
   .navBar {
     grid-template-columns: [start] 1fr [logo-end] 1fr [menu-start] 1fr [menu-end];
     
   }
 
-  .links {
-    margin-right: -0.7em;
-  }
-
+ 
  
 
   .text {
-    font-size: 0.9vw; /* Adjust for smaller screens */
-    top: 3%; /* Adjust for smaller screens */
-    line-height: 0px;
-    margin-bottom: 0.2em; /* Adjust the margin to decrease spacing between lines */
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.7vw; /* Adjust for smaller screens */
+    margin-bottom: 0em; /* Adjust the margin to decrease spacing between lines */
+    text-align: left;
+    top: 50%;
+    position: absolute;
+    
+  }
+
+  .ghost {
+    width: 50%; /* Adjust this percentage based on your design */
+    height: auto; /* Maintain aspect ratio, adjust width to control height */
+    float: left;
+    transform: scale(0.5); /* Adjust as needed */
+    margin-top: -40px;
   }
 
   .Module {
-    font-size: 0.9vw; /* Adjust for smaller screens */
+    font-size: 1.4vw; /* Adjust for smaller screens */
     top: 3%; /* Adjust for smaller screens */
   }
 
@@ -339,10 +444,9 @@ footer {
     margin-right: 2vh;
   }
 
-  
-
-  
-
+  .rounded-rectangle:hover {
+    transform: scale(1);
+  }
 }
 
 
@@ -358,18 +462,91 @@ footer {
     grid-template-columns: repeat(2, minmax(28%, 0.1fr)); /* Adjust the percentage as needed */
     justify-content: center;
     margin-right: 7.5em;
-    column-gap: 8.5em;
+    column-gap: 7em;
     row-gap: 1em;
   }
 
   .rounded-rectangle {
-    height: 100px ;
-    width: 200px;
+    height: 80px ;
+    width: 160px;
+  }
+
+  .version-container div {
+    text-align: center; /* Center the text within the container */
+    font-size: 35px; /* Adjust the font size as needed */
+    color: white;
+    font-weight: lighter;
+    text-shadow: 0 0 15px #fff;
+    text-underline-offset: 15px;
   }
  
 }
 
-  
+
+
+.module-list-legit {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(20%, 0.1fr)); /* Adjust the percentage as needed */
+  grid-auto-flow: column; /* Change the flow to column */
+  justify-content: center;
+  margin-bottom: 14.5em;
+}
+
+.module-list-cheater {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(20%, 0.1fr)); /* Adjust the percentage as needed */
+  grid-auto-flow: column; /* Change the flow to column */
+  justify-content: center;
+}
+
+/* Style for category headers */
+.category-Dungeons {
+  font-family: 'Category-Font', sans-serif; /* Change 'Category-Font' to your desired font */
+  font-size: 30px; /* Change the font size as needed */
+  font-weight: bold; /* You can set font weight as needed */
+  color: #0066cc; /* Change the color as needed */
+  position: relative;
+  user-select: none;
+  text-align: center;
+
+
+}
+
+.category-Floor7 {
+  font-family: 'Category-Font', sans-serif; /* Change 'Category-Font' to your desired font */
+  font-size: 30px; /* Change the font size as needed */
+  font-weight: bold; /* You can set font weight as needed */
+  color: #0066cc; /* Change the color as needed */
+  position: relative;
+  user-select: none;
+  text-align: center;
+
+}
+
+.category-Render {
+  font-family: 'Category-Font', sans-serif; /* Change 'Category-Font' to your desired font */
+  font-size: 30px; /* Change the font size as needed */
+  font-weight: bold; /* You can set font weight as needed */
+  color: #0066cc; /* Change the color as needed */
+  position: relative;
+  user-select: none;
+  text-align: center;
+
+
+}
+
+.category-Skyblock {
+  font-family: 'Category-Font', sans-serif; /* Change 'Category-Font' to your desired font */
+  font-size: 30px; /* Change the font size as needed */
+  font-weight: bold; /* You can set font weight as needed */
+  color: #0066cc; /* Change the color as needed */
+  position: relative;
+  user-select: none;
+  text-align: center;
+
+
+}
+
 
 
 
@@ -377,49 +554,24 @@ footer {
 
 /* Style for module names */
 .module-name {
-  font-family: 'Your-Font-Name', sans-serif; /* Change 'Your-Font-Name' to your desired font */
-  font-size: 20px; /* Change the initial font size as needed */
+  font-size: 22px; /* Change the initial font size as needed */
   font-weight: bold; /* You can set font weight as needed */
   color: #ffffff; /* Change the color as needed */
   transition: font-size 0.2s ease; /* Add a smooth transition effect */
-
   /* Add other font-related properties if necessary */
 }
 
 /* Apply the hover effect */
 .module-name:hover {
-  font-size: 22px; /* Change to the desired bigger font size on hover */
+  font-size: 24px; /* Change to the desired bigger font size on hover */
 }
 
 
 /* Style for module descriptions */
 .module-description {
-  font-family: 'Another-Font-Name', sans-serif; /* Change 'Another-Font-Name' to your desired font */
-  font-size: 14px; /* Change the font size as needed */
+  font-size: 17px; /* Change the font size as needed */
   font-weight: lighter; /* You can set font weight as needed */
-  color: #ffffff; /* Change the color as needed */
+  color: #ffffff9a; /* Change the color as needed */
   /* Add other font-related properties if necessary */
 }
 
-/* Style for category headers */
-.category-header {
-  font-family: 'Category-Font', sans-serif; /* Change 'Category-Font' to your desired font */
-  font-size: 30px; /* Change the font size as needed */
-  font-weight: bold; /* You can set font weight as needed */
-  color: #0066cc; /* Change the color as needed */
-  margin-top: 10px; /* Add margin or spacing as desired */
-  /* Add other font-related properties if necessary */
-}
-
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-
-
-  
-
-
-  
