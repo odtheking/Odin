@@ -123,7 +123,7 @@ body::before {
 .container-divider {
   background-color: white;
   height: 0.5px;
-  margin: 0;
+  margin: 0 auto;
   line-height: 0.1px; /* Added a unit (px) */
   box-shadow: 0 0 10px white;
   margin-top: auto;
@@ -156,33 +156,35 @@ body::before {
 
 .grid-container {
   display: grid;
-  grid-template-columns: [start] 0.1fr 0.1fr 0.1fr; /* Add 1fr for each space between logos */
+  grid-template-columns: repeat(3, minmax(20%, 0.1fr)); /* Adjust the percentage as needed */
   justify-content: center;
-  gap: 50px;
+  padding: 1em;
+  gap: 2em;
 }
 
 .rounded-rectangle {
   border: 0.5px solid white;
   border-radius: 10px;
-  width: 370px;
-  height: 170px;
+  width: 100%; /* Relative to the grid cell */
+  height: 10vw; /* Using vw for height, adjust as needed */
   box-shadow: 0 0 10px white;
   opacity: 1;
   position: relative;
-  transition: transform 0.6s; /* Add transition for transform property */
+  transition: transform 0.6s;
 }
+
 
 .rounded-rectangle:hover {
   transform: scale(1.1);
 }
 
 .Module {
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 1vw; /* Adjust this value based on your design */
+  height: auto; /* Maintain aspect ratio, adjust width to control height */  font-weight: bold;
   text-align: center;
   color: white;
   position: relative;
-  top: 10px; /* Adjust this value to move .DungeonMap down */
+  top: 1vh; /* Adjusted from 10px */
 }
 
 .Module::after {
@@ -196,29 +198,88 @@ body::before {
 }
 
 .text {
-  font-size: 16px;
-  text-align: center;
+  font-size: 0.8vw; /* Adjust this value based on your design */
+  height: auto; /* Maintain aspect ratio, adjust width to control height */
+    text-align: center;
   color: white;
   position: relative;
-  top: 20px; /* Adjust this value to move .text down */
+  top: 2vw; /* Adjusted from 20px */
+  line-height: 1.2;
 }
+
+.rubix {
+  width: 50%; /* Adjust this percentage based on your design */
+  height: auto; /* Maintain aspect ratio, adjust width to control height */
+  float: left;
+  transform: scale(0.85); /* Adjust as needed */
+}
+
+.firework {
+  width: 50%; /* Adjust this percentage based on your design */
+  height: auto; /* Maintain aspect ratio, adjust width to control height */
+  float: left;
+  margin-right: 0.1vh; /* Use percentage for margin-right */
+  transform: scale(0.85); /* Adjust as needed */
+}
+
+.shovel {
+  width: 50%; /* Adjust this percentage based on your design */
+  height: auto; /* Maintain aspect ratio, adjust width to control height */
+  float: left;
+  margin-right: 1vh; /* Use percentage for margin-right */
+  transform: scale(0.85); /* Adjust as needed */
+}
+
+.esp {
+  width: 40%; /* Adjust this percentage based on your design */
+  height: auto; /* Maintain aspect ratio, adjust width to control height */
+  float: left;
+  margin-right: 4vh; /* Use percentage for margin-right */
+  transform: scale(0.9); /* Adjust as needed */
+}
+
+.blessing {
+  width: 50%; /* Adjust this percentage based on your design */
+  height: auto; /* Maintain aspect ratio, adjust width to control height */
+  float: left;
+   /* Use percentage for margin-right */
+  transform: scale(0.85); /* Adjust as needed */
+}
+
+.dragon {
+  width: 50%; /* Adjust this percentage based on your design */
+  height: auto; /* Maintain aspect ratio, adjust width to control height */
+  float: left;
+  margin-right: 1vh; /* Use percentage for margin-right */
+  transform: scaleX(-0.85); /* Adjust as needed */
+}
+
+
+
+
 
 .spacerfoot {
   height: 140px; /* Set the desired height of the space */
 }
 
+.content {
+  flex: 1; /* Allow content to grow to fill the available space */
+  /* Add any styles you need for your main content area */
+}
+
 footer {
   background-color: #333;
   color: #fff;
-  padding: 20px;
+  padding: 30px;
   text-align: center;
   position: relative; /* Add relative positioning to the footer */
   overflow: hidden; /* Ensure the image won't overflow the footer */
+  
 }
 
 #cat {
-  width: 100px;
-  height: 100px;
+  width: 110px;
+  height: 110px;
   border-radius: 10px;
   opacity: 1;
   position: absolute;
@@ -239,46 +300,70 @@ footer {
 
 @media screen and (max-width: 1600px){
 /*For Mobile only*/
-.logo {
-  width:150px;
-  align-self: flex-start;
-  justify-self: start;
-  padding-left:0;
-  padding-top:0em;
 
-}
+  #cat {
+    width: 70px;
+    height: 70px;
+  }
 
-#cat {
-  width: 50px;
-  height: 50px;
-}
+  .centered-text p {
+    font-size: 60px;
+  }
 
-.centered-text p {
-  font-size: 60px;
-}
+  .container
 
-.navBar {
-  grid-template-columns: [start] 1fr [logo-end] 1fr [menu-start] 1fr [menu-end];
-  grid-template-rows: repeat(2,50px);
-}
+  .navBar {
+    grid-template-columns: [start] 1fr [logo-end] 1fr [menu-start] 1fr [menu-end];
+    
+  }
 
-.tooltip .tooltiptext {
-  top: -100%;
-}
+  .links{
+    position: absolute;
+  right: 0;
+  bottom: 0; /* Stick it to the bottom of the footer */
+    padding: 1em;
+    /*grid-column: menu-start/menu-end;*/
+    /*grid-row: top-footer/bottom-footer;*/
+  }
+
+  footer {
+    position:fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+
+  }
+
+  .text {
+    font-size: 0.9vw; /* Adjust for smaller screens */
+    top: 3%; /* Adjust for smaller screens */
+    line-height: 0px;
+    margin-bottom: 0.2em; /* Adjust the margin to decrease spacing between lines */
+  }
+
+  .Module {
+    font-size: 0.9vw; /* Adjust for smaller screens */
+    top: 3%; /* Adjust for smaller screens */
+  }
+
+  .esp {
+    margin-right: 2vh;
+  }
+
 }
 
 
 @media screen and (max-width: 700px){
   /*For Mobile only*/
   .logo {
-    width:200px;
-    align-self: flex-start;
-    justify-self: start;
-    padding-left:0;
-    padding-top:0em;
+      width:200px;
+  }
+ 
+}
+
   
-  }
-  }
+
+
 
 
 
