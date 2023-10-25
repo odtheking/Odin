@@ -575,24 +575,14 @@ footer {
 }
 
 .download {
-  font-size: 22px;
+  font-size: 30px;
   font-weight: bold;
   justify-content: center;
   display: flex;
-  margin-top: 0px;
+  margin-bottom: -2em;
 }
 
-.rounded-rectangle-download {
-  border: 0.5px solid rgb(0, 0, 0);
-  border-radius: 200px;
-  width: 45%; /* Relative to the grid cell */
-  height: 10vw; /* Using vw for height, adjust as needed */
-  opacity: 1;
-  position: absolute;
-  top: 30%;
-  left: 28%;
-  transition: transform 0.6s;
-}
+
  
 
   .spacer1 {
