@@ -23,7 +23,6 @@ body::before {
   grid-template-rows: 60px;
   padding: 1em;
   color: white;
-  font-family: 'montserrat'; /* Added single quotes around font name */
 }
 
 .logo {
@@ -144,7 +143,8 @@ body::before {
   color: white;
   font-weight: lighter;
   text-shadow: 0 0 15px #fff;
-  
+  user-select: none;
+
 }
 
 .download {
@@ -155,6 +155,8 @@ body::before {
   justify-content: center;
   display: flex;
   margin-top: 3px;
+  user-select: none;
+
 
 }
 
@@ -224,6 +226,8 @@ body::before {
   color: white;
   position: relative;
   top: 1vh; /* Adjusted from 10px */
+  user-select: none;
+
 }
 
 .Module::after {
@@ -243,6 +247,8 @@ body::before {
   color: white;
   position: relative;
   top: 0.7vw; /* Adjusted from 20px */
+  user-select: none;
+
 }
 
 .rubix {
@@ -404,6 +410,8 @@ footer {
   text-align: center;
   position: relative; /* Add relative positioning to the footer */
   overflow: hidden; /* Ensure the image won't overflow the footer */
+  user-select: none;
+
   
 }
 
@@ -603,7 +611,6 @@ footer {
   }
 
   .text {
-    font-family: 'Courier New', Courier, monospace;
     font-size: 4.4vw; /* Adjust for smaller screens */
     margin-bottom: 0em; /* Adjust the margin to decrease spacing between lines */
     text-align: left;
