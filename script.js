@@ -27,9 +27,9 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
-if (currentPage === 'legit.html') {
+if (currentPage === 'legit.html' || currentPage === 'feature_list_legit.html') {
     document.getElementById('legit').style.textDecoration = 'underline';
-} else if (currentPage === 'cheater.html') {
+} else if (currentPage === 'cheater.html' || currentPage === 'feature_list_cheater.html') {
     document.getElementById('cheater').style.textDecoration = 'underline';
 }
 
