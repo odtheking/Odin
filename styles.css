@@ -170,19 +170,7 @@ body::before {
 
 
 
-.rounded-rectangle-download {
-  border: 0.5px solid rgb(0, 0, 0);
-  border-radius: 200px;
-  width: 15%; /* Relative to the grid cell */
-  height: 3vw; /* Using vw for height, adjust as needed */
-  opacity: 1;
-  transition: transform 0.6s;
-  background: transparent; /* Define your gradient colors */
-  position: absolute;
-  left: 42.5%;
-  margin-top: 2em;
-  box-shadow: 0 0 10px white;
-}
+
 
 
 
