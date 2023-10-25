@@ -44,7 +44,7 @@ function onClick() {
 
             var image = document.getElementById('cat');
             image.src = imageUrl;
-
+            
 
 
             // Now you can use the imageUrl variable in your code as needed.
