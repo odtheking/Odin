@@ -1,7 +1,7 @@
 Category: Dungeons
 - Auto Dungeon Requeue: Automatically starts a new dungeon at the end of a dungeon.
 - Mimic Killed Message: Sends message in party chat when mimic is killed.
-- TeammatesHighlight: Enhances visibility of your dungeon teammates and their name tags.
+- Teammates Highlight: Enhances visibility of your dungeon teammates and their name tags.
 - Terracotta Timer: Displays the time until the terracotta spawns.
 - Auto Extra Stats: Automatically clicks the extra stats at the end of a dungeon.
 - Blessing Display: Displays the current blessings of the dungeon.
