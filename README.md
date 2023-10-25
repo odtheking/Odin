@@ -47,7 +47,7 @@ Category: Dungeons
 - Auto Dungeon Requeue: Automatically starts a new dungeon at the end of a dungeon.
 - Mimic Killed Message: Sends message in party chat when mimic is killed.
 - Cancel Chest Open: Cancels the opening of chests in dungeons.
-- Teammates Outline: Enhances visibility of your dungeon teammates and their name tags.
+- Teammate Outline: Enhances visibility of your dungeon teammates and their name tags.
 - Secret Triggerbot: Automatically gets secrets when looking at them.
 - Terracotta Timer: Displays the time until the terracotta spawns.
 - Auto Extra Stats: Automatically clicks the extra stats at the end of a dungeon.
