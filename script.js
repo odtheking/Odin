@@ -27,7 +27,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
-var currentPage = window.location.href.split('/').pop();
 if (currentPage === 'legit.html') {
     document.getElementById('legit').style.textDecoration = 'underline';
 } else if (currentPage === 'cheater.html') {

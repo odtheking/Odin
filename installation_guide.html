@@ -26,7 +26,7 @@
     <div class="links">
       <a href="https://discord.gg/2nCbC9hkxT">
         <div class="tooltip">
-        <i class="fa fa-discord" style="font-size:75px;color:white"></i>
+        <i class="fa fa-discord" style="color:white"></i>
         <span class="tooltiptext">Discord</span>
         </div>
       </a>
@@ -58,21 +58,15 @@
         }
 
         .grid-container {
-          column-count: 3;
+                  display: grid;
+          grid-template-columns: repeat(3, minmax(20%, 0.1fr)); /* Adjust the percentage as needed */
+          justify-content: center;
+          padding: 1em;
+          gap: 2em;
           margin-bottom: 12.8em;
         }
 
-        .java-container {
-          column-span: 1;
-        }
-
-        .forge-container {
-          column-span: 2;
-        }
-
-        .odin-container {
-          column-span: 3;
-        }
+       
 
         h2 {
           font-size: 24px;
@@ -104,6 +98,16 @@
         li {
           min-height: 40px;
         }
+
+        @media screen and (max-width: 768px) {
+          .grid-container {
+          display: grid;
+          grid-template-columns: 1fr; /* Adjust the percentage as needed */
+          justify-content: center;
+          margin-left: 10.5em;
+
+        }
+      }
     </style>
     
   </head>
