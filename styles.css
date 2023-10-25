@@ -37,13 +37,14 @@ body::before {
 
 .links {
   z-index: 2;
-  grid-column: social-start/social-end;
   display: flex;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   align-content: center;
   justify-content: center;
   gap: 15px;
-  margin-right: -0.6em;
+  font-size:75px;
+  margin-top: -0.24em;
+  
 }
 
 /*TOOL TIPS*/
@@ -401,8 +402,8 @@ body {
 /*For Mobile only*/
 
   #cat {
-    width: 70px;
-    height: 70px;
+    width: 72px;
+    height: 72px;
   }
 
   .centered-text p {
@@ -410,19 +411,29 @@ body {
   }
 
   .navBar {
-    grid-template-columns: [start] 1fr [logo-end] 1fr [menu-start] 1fr [menu-end];
-    
+    grid-template-columns: [start] 1fr [logo-end] 0.5fr [social-start] auto [social-end];
+
   }
 
- 
+ .links {
+  
+  
+  font-size: 60px;
+  margin-top: 0.02em;
+  gap: 10px;
+ }
+
+ .tooltip .tooltiptext {
+  display: none;
+}
  
 
   .text {
     font-family: 'Courier New', Courier, monospace;
-    font-size: 1.7vw; /* Adjust for smaller screens */
+    font-size: 2.1vw; /* Adjust for smaller screens */
     margin-bottom: 0em; /* Adjust the margin to decrease spacing between lines */
     text-align: left;
-    top: 50%;
+    top: 42%;
     position: absolute;
     
   }
@@ -436,7 +447,7 @@ body {
   }
 
   .Module {
-    font-size: 1.4vw; /* Adjust for smaller screens */
+    font-size: 2.4vw; /* Adjust for smaller screens */
     top: 3%; /* Adjust for smaller screens */
   }
 
@@ -454,21 +465,20 @@ body {
   /*For Mobile only*/
   .logo {
       width:200px;
-      margin-right: 2em;
   }
 
   .grid-container {
     display: grid;
     grid-template-columns: repeat(2, minmax(28%, 0.1fr)); /* Adjust the percentage as needed */
     justify-content: center;
-    margin-right: 7.5em;
-    column-gap: 7em;
+    margin-right: 7em;
+    column-gap: 7.5em;
     row-gap: 1em;
   }
 
   .rounded-rectangle {
-    height: 80px ;
-    width: 160px;
+    height: 90px ;
+    width: 180px;
   }
 
   .version-container div {
