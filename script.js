@@ -118,10 +118,7 @@ function populateModuleList(moduleListId, type) {
             // Parse the README content and get module pairs
             const modulePairs = parseReadmeContent(decodedContent);
 
-            // Log the module pairs (or use them as needed)
-            //console.log(modulePairs);
-
-            // Filter and display only the "LEGIT" or "CHEATER" features
+            // Iterate over the module pairs and create the module list
             modulePairs.forEach((module, index) => {
                 
                 if (module.currentMainCategory !== type) return;

@@ -150,15 +150,15 @@ body::before {
 }
 
 .download {
-  font-size: 30px;
-  color: white;
-  font-weight: lighter;
-  text-shadow: 0 0 15px #fff;
+  font-size: 50px;
+  color: #0066cc;
+  font-weight:400;
+  text-shadow: 0 0 15px #0066cc;
   justify-content: center;
   display: flex;
-  margin-top: 3px;
+  margin-top: 25px;
   user-select: none;
-  
+  margin-bottom: -1.5em;
 
 }
 
@@ -244,7 +244,7 @@ body::before {
 }
 
 .text {
-  font-size: 1.2vw; /* Adjust this value based on your design */
+  font-size: 1vw; /* Adjust this value based on your design */
   height: auto; /* Maintain aspect ratio, adjust width to control height */
   text-align: center;
   color: white;
