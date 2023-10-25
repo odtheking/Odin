@@ -62,17 +62,21 @@ window.onload = function() {
 
 
 // JavaScript
-const apiUrlCheater = `https://api.github.com/repos/odtheking/odinclient/contents/README.md`;
-const apiUrlLegit = `https://api.github.com/repos/odtheking/odin/contents/README.md`;
 
 function parseReadmeContent(content) {
     const lines = content.split('\n');
     const modulePairs = [];
     let currentCategory = ''; // Store the current category
+    let isCheaterCategory = false; // Initialize as false
+    let currentMainCategory = ''; // Store the current category
+
 
     for (const line of lines) {
         if (line.startsWith('Category')) {
             // Extract the category name and store it
+            if (currentCategory == 'Skyblock' && line == 'Category: Dungeons') {
+                isCheaterCategory = true;
+            }
             currentCategory = line.replace('Category: ', '');
         } else if (line.startsWith('- ')) {
             // Extract the module name and description
@@ -81,7 +85,13 @@ function parseReadmeContent(content) {
                 const moduleName = match[1];
                 const moduleDescription = match[2];
                 // Create an object with category, module name, and module description
+                if (isCheaterCategory) {
+                    currentMainCategory = "cheater"
+                } else {
+                    currentMainCategory = "legit"
+                }
                 const module = {
+                    currentMainCategory: currentMainCategory,
                     category: currentCategory,
                     name: moduleName,
                     description: moduleDescription
@@ -94,14 +104,12 @@ function parseReadmeContent(content) {
     return modulePairs;
 }
 
-function populateModuleList(apiUrl, moduleListId) {
+function populateModuleList(moduleListId, type) {
     const moduleList = document.getElementById(moduleListId);
     let currentCategory = ''; // Store the current category
     let currentCat
-    let isLegitCategory = true; // Initialize as true
-
     // Fetch the README content from the GitHub API and handle it in the promise chain
-    fetch(apiUrl)
+    fetch("https://api.github.com/repos/odtheking/odinclient/contents/README.md")
         .then(response => response.json())
         .then(data => {
             // The content is base64 encoded, so you need to decode it
@@ -115,17 +123,8 @@ function populateModuleList(apiUrl, moduleListId) {
 
             // Filter and display only the "LEGIT" or "CHEATER" features
             modulePairs.forEach((module, index) => {
-                // Check for "LEGIT" and "CHEATER" keywords
-                if (module.name.includes("LEGIT")) {
-                    isLegitCategory = true;
-                    return; // Skip to the next module
-                } else if (module.name.includes("CHEATER")) {
-                    isLegitCategory = false;
-                    return; // Skip to the next module
-                }
-
-                // Only display features in the "LEGIT" or "CHEATER" category
-                if (isLegitCategory) {
+                
+                if (module.currentMainCategory !== type) return;
                     // Check if the category has changed
                     if (module.category !== currentCategory) {
                         // Create a category header without "Category:" prefix
@@ -166,6 +165,7 @@ function populateModuleList(apiUrl, moduleListId) {
                             moduleDescription.style.display = "block";
                         }
                     });
+                    
 
                     // Append module name and description to the module item
                     moduleItem.appendChild(moduleName);
@@ -173,7 +173,7 @@ function populateModuleList(apiUrl, moduleListId) {
 
                     // Append the module item to the module list
                     currentCat.appendChild(moduleItem);
-                }
+                
             });
         })
         .catch(error => {
@@ -181,26 +181,14 @@ function populateModuleList(apiUrl, moduleListId) {
         });
 }
 
+
+
 document.addEventListener("DOMContentLoaded", function () {
-    if (currentPage === "feature_list_legit.html") populateModuleList(apiUrlLegit, "module-list-legit");
 
     // Populate the "CHEATER" list
-    if (currentPage === "feature_list_cheater.html") populateModuleList(apiUrlCheater, "module-list-cheater") 
+    if (currentPage === "feature_list_cheater.html") populateModuleList("module-list-cheater", "cheater") 
+
+    if (currentPage === "feature_list_legit.html") populateModuleList("module-list-legit", "legit") 
+
 });
 
-
-
-
-
-
-
-
-
-
-/*
-Auto Terms
-
-
-Arrow Trajectory
-
-*/
