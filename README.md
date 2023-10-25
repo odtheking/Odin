@@ -1,3 +1,5 @@
+LEGIT
+
 Category: Dungeons
 - Auto Dungeon Requeue: Automatically starts a new dungeon at the end of a dungeon.
 - Mimic Killed Message: Sends message in party chat when mimic is killed.
@@ -27,6 +29,7 @@ Category: Dungeons
 - Auto GFS: Automatically gets pearls from sacks if your inventory doesn't have any.
 - Auto Sell: Automatically sell items in trades and cookie menus.
 - Key ESP: Draws a box around the key.
+CHEATER
 
 Category: Floor 7
 - Dragon Death Confirmation: Confirms if a dragon in p5 counted or not.
