@@ -23,7 +23,7 @@ import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 
 object WaterSolver : Module(
-    name = "Water solver",
+    name = "Water Solver",
     description = "Solves the water puzzle with a single flow.",
     category = Category.DUNGEON,
 ) {
