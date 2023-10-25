@@ -30,7 +30,8 @@ body::before {
   align-self: center;
   grid-column: start/logo-end;
   padding-top: 3em;
-  padding-bottom: 3em;
+  margin-bottom: 3em;
+  padding-bottom: -2em;
   width: 200px; /* Added a missing semicolon */
 }
 
@@ -44,7 +45,7 @@ body::before {
   justify-content: center;
   gap: 15px;
   font-size:75px;
-  margin-top: -0.24em;
+  margin-top: -0.3em;
   
 }
 
@@ -91,7 +92,6 @@ body::before {
   align-items: center; /* Center vertically */
   width: 100%;
   height: 10vh; /* Set the desired height for vertical centering */
-  gap: 20px;
 }
 
 .version-container div {
@@ -108,6 +108,8 @@ body::before {
   padding: 1em;
   cursor: pointer;
   transition: color 0.3s;
+  user-select: none;
+
   
 }
 
@@ -156,7 +158,7 @@ body::before {
   display: flex;
   margin-top: 3px;
   user-select: none;
-
+  
 
 }
 
@@ -179,6 +181,7 @@ body::before {
   position: absolute;
   left: 42.5%;
   margin-top: 2em;
+  box-shadow: 0 0 10px white;
 }
 
 
@@ -611,7 +614,7 @@ footer {
   }
 
   .text {
-    font-size: 4.4vw; /* Adjust for smaller screens */
+    font-size: 5.2vw; /* Adjust for smaller screens */
     margin-bottom: 0em; /* Adjust the margin to decrease spacing between lines */
     text-align: left;
     top: 25%;
@@ -662,6 +665,14 @@ footer {
     font-weight: lighter;
     text-shadow: 0 0 15px #fff;
     text-underline-offset: 15px;
+  }
+
+  .legit, .cheater {
+    margin: 15px;
+    margin-top: 0.5em;
+    
+  
+    
   }
 
   .module-list-legit {
