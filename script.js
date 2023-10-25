@@ -7,29 +7,29 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (legitElement) {
         legitElement.addEventListener('click', function() {
-            if (currentPage === 'cheater.html' || currentPage === 'legit.html') {
-                window.location.href = 'legit.html'; // Redirect to legit.html
-            } else if (currentPage === 'feature_list_legit.html' || currentPage === 'feature_list_cheater.html') {
-                window.location.href = 'feature_list_legit.html'; // Redirect to feature_list_legit.html
+            if (currentPage === 'cheater' || currentPage === 'legit') {
+                window.location.href = 'legit'; 
+            } else if (currentPage === 'feature_list_legit' || currentPage === 'feature_list_cheater') {
+                window.location.href = 'feature_list_legit'; 
             }
         });
     }
 
     if (cheaterElement) {
         cheaterElement.addEventListener('click', function() {
-            if (currentPage === 'cheater.html' || currentPage === 'legit.html') {
-                window.location.href = 'cheater.html'; // Redirect to cheater.html
-            } else if (currentPage === 'feature_list_legit.html' || currentPage === 'feature_list_cheater.html') {
-                window.location.href = 'feature_list_cheater.html'; // Redirect to feature_list_cheater.html
+            if (currentPage === 'cheater' || currentPage === 'legit') {
+                window.location.href = 'cheater'; 
+            } else if (currentPage === 'feature_list_legit' || currentPage === 'feature_list_cheater') {
+                window.location.href = 'feature_list_cheater'; 
             }
         });
     }
 });
 
 
-if (currentPage === 'legit.html' || currentPage === 'feature_list_legit.html') {
+if (currentPage === 'legit' || currentPage === 'feature_list_legit') {
     document.getElementById('legit').style.textDecoration = 'underline';
-} else if (currentPage === 'cheater.html' || currentPage === 'feature_list_cheater.html') {
+} else if (currentPage === 'cheater' || currentPage === 'feature_list_cheater') {
     document.getElementById('cheater').style.textDecoration = 'underline';
 }
 
@@ -183,9 +183,9 @@ function populateModuleList(moduleListId, type) {
 document.addEventListener("DOMContentLoaded", function () {
 
     // Populate the "CHEATER" list
-    if (currentPage === "feature_list_cheater.html") populateModuleList("module-list-cheater", "cheater") 
+    if (currentPage === "feature_list_cheater") populateModuleList("module-list-cheater", "cheater") 
 
-    if (currentPage === "feature_list_legit.html") populateModuleList("module-list-legit", "legit") 
+    if (currentPage === "feature_list_legit") populateModuleList("module-list-legit", "legit") 
 
 });
 
