@@ -93,8 +93,8 @@ Category: Floor 7
 - Dragon Death: Displays data about dragon death.
 - Dragon Timer: Displays a timer for when M7 dragons spawn.
 - Freeze Game: Freezes the game when you press the keybind.
-- Relic Placer: Places the relic if you hover over the correct cauldron
 - Hover Terms: Clicks the hovered item in a terminal if it is correct.
+- Relic Placer: Places the relic if you hover over the correct cauldron
 - Auto Terms: Automatically completes the terminals in f7/m7.
 - Arrow Align: Different features for the arrow alignment device.
 - Leap Helper: Shows which player is the most practical to leap to in the M7 boss-fight.
