@@ -1,10 +1,12 @@
 var currentPage = window.location.href.split('/').pop();
+var legitElement = document.getElementById('legit');
+var cheaterElement = document.getElementById('cheater');
+
 
 document.addEventListener("DOMContentLoaded", function () {
     var currentPage = window.location.href.split('/').pop();
     var legitElement = document.getElementById('legit');
     var cheaterElement = document.getElementById('cheater');
-
     if (legitElement) {
         legitElement.addEventListener('click', function() {
             if (currentPage === 'cheater' || currentPage === 'legit') {
@@ -24,14 +26,15 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
+
+    if (currentPage === 'legit' || currentPage === 'feature_list_legit') {
+        legitElement.style.textDecoration = 'underline';
+    } else if (currentPage === 'cheater' || currentPage === 'feature_list_cheater') {
+        cheaterElement.style.textDecoration = 'underline';
+    }
 });
 
 
-if (currentPage === 'legit' || currentPage === 'feature_list_legit') {
-    document.getElementById('legit').style.textDecoration = 'underline';
-} else if (currentPage === 'cheater' || currentPage === 'feature_list_cheater') {
-    document.getElementById('cheater').style.textDecoration = 'underline';
-}
 
 function onClick() {
     

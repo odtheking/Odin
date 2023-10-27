@@ -241,7 +241,7 @@ color: #8b8b8b; /* Darken the font color */
 }
 
 .Module {
-  font-size: 1vw; /* Adjust this value based on your design */
+  font-size: 1.2rem; /* Adjust this value based on your design */
   height: auto; /* Maintain aspect ratio, adjust width to control height */  font-weight: bold;
   text-align: center;
   color: white;
@@ -261,7 +261,7 @@ color: #8b8b8b; /* Darken the font color */
 }
 
 .text {
-  font-size: 2.3vh; /* Adjust this value based on your design */
+  font-size: 1.3rem; /* Adjust this value based on your design */
   height: auto; /* Maintain aspect ratio, adjust width to control height */
   text-align: center;
   color: white;
@@ -284,7 +284,6 @@ color: #8b8b8b; /* Darken the font color */
   width: 50%; /* Adjust this percentage based on your design */
   height: auto; /* Maintain aspect ratio, adjust width to control height */
   float: left;
-  margin-right: 1vh; /* Use percentage for margin-right */
   transform: scale(1); /* Adjust as needed */
 }
 
@@ -297,7 +296,7 @@ color: #8b8b8b; /* Darken the font color */
 }
 
 .esp {
-  margin-top: 3vh;
+  margin-top: 1vh;
   width: 35%; /* Adjust this percentage based on your design */
   height: auto; /* Maintain aspect ratio, adjust width to control height */
   float: left;
