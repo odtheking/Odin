@@ -64,9 +64,9 @@ Category: Dungeons
 - Ghost Pickaxe: Gives you a ghost pickaxe in your selected slot when you press the keybind.
 - Dungeon Map: A dungeon map that scans the dungeon, heavily inspired by FunnyMap
 - Auto Ultimate: Activates your ult at crucial moments, such as when giants spawn, Maxor is stuck in the first laser, or Goldor starts.
-- Ghost Block: Creates ghost blocks on keypress, and in specific locations.
 - Water Solver: Solves the water puzzle with a single flow.
 - Watcher Bar: Shows the watcher's health.
+- Ghost Block: Creates ghost blocks on keypress, and in specific locations.
 - Super Boom: Places TNT when you left click on a block which can blow up.
 - Swap Stonk: Does a swap stonk when you press the keybind.
 - Auto Ice Fill: Automatically completes the ice fill puzzle.
@@ -77,7 +77,6 @@ Category: Dungeons
 - Auto Leap: Automatically leaps to the player who sent !tp in party chat.
 - Auto GFS: Automatically gets pearls from sacks if your inventory doesn't have any.
 - Auto Sell: Automatically sell items in trades and cookie menus.
-- Auto Ult: Activates your ult at crucial moments, such as when giants spawn, Maxor is stuck in the first laser, or Goldor starts.
 - Key ESP: Draws a box around the key.
 
 Category: Floor 7
@@ -88,13 +87,13 @@ Category: Floor 7
 - Levers Triggerbot: Triggerbot for the levers device.
 - Melody Message: Sends a message whenever you open the melody terminal.
 - Relic Announcer: Automatically announce your relic to the rest of the party.
-- Relic Placer: Places the relic if you hover over the correct cauldron
 - Terminal Solver: Renders the solution of terminals in f7/m7.
 - Terminal Times: Keeps track of how long you took to complete a terminal.
 - Dragon Boxes: Shows semi-accurate kill boxes for M7 dragons.
 - Dragon Death: Displays data about dragon death.
 - Dragon Timer: Displays a timer for when M7 dragons spawn.
 - Freeze Game: Freezes the game when you press the keybind.
+- Relic Placer: Places the relic if you hover over the correct cauldron
 - Hover Terms: Clicks the hovered item in a terminal if it is correct.
 - Auto Terms: Automatically completes the terminals in f7/m7.
 - Arrow Align: Different features for the arrow alignment device.
