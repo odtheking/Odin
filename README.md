@@ -1,3 +1,14 @@
+Category: Dungeons
+- Auto Dungeon Requeue: Automatically starts a new dungeon at the end of a dungeon.
+- Mimic Killed Message: Sends message in party chat when mimic is killed.
+- Teammate Outline: Enhances visibility of your dungeon teammates and their name tags.
+- Terracotta Timer: Displays the time until the terracotta spawns.
+- Auto Extra Stats: Automatically clicks the extra stats at the end of a dungeon.
+- Blessing Display: Displays the current blessings of the dungeon.
+- Key Highlight: Draws a box around the key.
+- Water Solver: Solves the water puzzle with a single flow.
+- Watcher Bar: Shows the watcher's health.
+
 Category: Floor 7
 - Necron Drop Timer: Shows a timer for when Necron drops you down.
 - Melody Message: Sends a message whenever you open the melody terminal.
@@ -41,13 +52,33 @@ Category: Skyblock
 Category: Dungeons
 - Auto Dungeon Requeue: Automatically starts a new dungeon at the end of a dungeon.
 - Mimic Killed Message: Sends message in party chat when mimic is killed.
+- Cancel Chest Open: Cancels the opening of chests in dungeons.
 - Teammate Outline: Enhances visibility of your dungeon teammates and their name tags.
+- Secret Triggerbot: Automatically gets secrets when looking at them.
 - Terracotta Timer: Displays the time until the terracotta spawns.
 - Auto Extra Stats: Automatically clicks the extra stats at the end of a dungeon.
 - Blessing Display: Displays the current blessings of the dungeon.
-- Key Highlight: Draws a box around the key.
+- Secret Hitboxes: Full block Secret hitboxes.
+- AFK Thorn Stun: Toggle right click while holding Tribal Spear or Bonemerang in F4/M4
+- Cancel Interact: Cancels the interaction with certain blocks, so that the item can be used instead.
+- Ghost Pickaxe: Gives you a ghost pickaxe in your selected slot when you press the keybind.
+- Dungeon Map: A dungeon map that scans the dungeon, heavily inspired by FunnyMap
+- Auto Ultimate: Activates your ult at crucial moments, such as when giants spawn, Maxor is stuck in the first laser, or Goldor starts.
+- Ghost Block: Creates ghost blocks on keypress, and in specific locations.
 - Water Solver: Solves the water puzzle with a single flow.
 - Watcher Bar: Shows the watcher's health.
+- Super Boom: Places TNT when you left click on a block which can blow up.
+- Swap Stonk: Does a swap stonk when you press the keybind.
+- Auto Ice Fill: Automatically completes the ice fill puzzle.
+- Auto Shield: Utilizes Wither shield every 5 seconds when health is not full (works with all Wither swords).
+- Auto Mask: Automatically uses masks when they proc.
+- Triggerbot: Instantly left clicks if you are looking at a specified mob.
+- Auto Wish: Grants wishes for your teammates when they are low on health.
+- Auto Leap: Automatically leaps to the player who sent !tp in party chat.
+- Auto GFS: Automatically gets pearls from sacks if your inventory doesn't have any.
+- Auto Sell: Automatically sell items in trades and cookie menus.
+- Auto Ult: Activates your ult at crucial moments, such as when giants spawn, Maxor is stuck in the first laser, or Goldor starts.
+- Key ESP: Draws a box around the key.
 
 Category: Floor 7
 - Auto Ender Dragon: Automatically clicks the Ender Dragon pet at the start of p5.
