@@ -137,7 +137,7 @@ class ModCore {
         Triggerbot,
         GhostBlock,
         FreezeGame,
-        AutoTerms
+        //AutoTerms
     )
 
     @EventHandler
