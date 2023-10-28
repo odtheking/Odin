@@ -108,7 +108,7 @@ function parseReadmeContent(content) {
 }
 
 function populateModuleList(moduleListId, type) {
-    const moduleList = document.getElementById(moduleListId);
+    const moduleList = document.getElementById(moduleListId); 
     let currentCategory = ''; // Store the current category
     let currentCat
     // Fetch the README content from the GitHub API and handle it in the promise chain
@@ -191,4 +191,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (currentPage === "feature_list_legit") populateModuleList("module-list-legit", "legit") 
 
 });
+
+
+
 

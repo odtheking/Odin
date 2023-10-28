@@ -189,7 +189,6 @@ color: #8b8b8b; /* Darken the font color */
   display: flex;
   margin-top: 25px;
   user-select: none;
-  margin-bottom: 0.75em;
 
 }
 
@@ -199,22 +198,6 @@ color: #8b8b8b; /* Darken the font color */
   text-shadow: 0 0 15px #fff;
 }
 
-
-
-
-
-
-
-.rounded-rectangle-download:hover { 
-  border: 0.5px solid rgb(37, 36, 36);
-  transform: scale(1.05);
-
-}
-
-
-
-
-
 .grid-container {
   display: grid;
   grid-template-columns: repeat(3, minmax(20%, 0.1fr)); /* Adjust the percentage as needed */
@@ -222,122 +205,119 @@ color: #8b8b8b; /* Darken the font color */
   padding: 1em;
   gap: 2em;
   margin-bottom: 6.74rem;
+  overflow: hidden; /* Hide the text that overflows the rectangle */
+
 }
 
 .rounded-rectangle {
-  border: 0.5px solid white;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(10%, 1fr)); /* Two columns: 40% for the image, 60% for "Module" and "Text" */
+  grid-template-rows: 0.25fr 1fr; /* Two rows: 40% for the image, 60% for "Module" and "Text" */
+  justify-content: center;
+  border: 1px solid #000;
   border-radius: 10px;
-  width: 100%; /* Relative to the grid cell */
+  width: 100%; /* Relative to the parent container */
   height: 10vw; /* Using vw for height, adjust as needed */
   box-shadow: 0 0 10px white;
-  opacity: 1;
   position: relative;
+  overflow: hidden;
   transition: transform 0.6s;
 }
-
 
 .rounded-rectangle:hover {
   transform: scale(1.1);
 }
 
 .Module {
-  font-size: 1.2rem; /* Adjust this value based on your design */
-  height: auto; /* Maintain aspect ratio, adjust width to control height */  font-weight: bold;
+  font-size: 1.1vw; /* Adjust the font size using vw */
   text-align: center;
   color: white;
-  position: relative;
   user-select: none;
-
+  grid-column-start: 2; /* Position "Module" in the second column */
+  
+  margin-bottom: -6em;
+  
 }
 
 .Module::after {
   content: "";
   display: block;
   position: relative;
-  width: 50%; /* Increase the width to make the line extend more to the right */
+  width: 100%; /* Increase the width to make the line extend more to the right */
   height: 1px; /* Adjust the height of the line as needed */
   background-color: white; /* Set the color of the line */
-  left: 48%; /* Adjust this value to start the line more to the right */
 }
 
 .text {
-  font-size: 1.3rem; /* Adjust this value based on your design */
-  height: auto; /* Maintain aspect ratio, adjust width to control height */
-  text-align: center;
+  font-size: 1.1vw; /* Adjust the font size using vw */
+  object-fit: cover; /* Adjusts the image */
   color: white;
-  position: relative;
-  top: 1%; /* Adjusted from 20px */
   user-select: none;
-
+  grid-column-start: 2; /* Position "Text" in the second column */
+  margin-left: 0.5vw;
 }
 
 .rubix {
-  margin-top: 1.5%;
-  width: 50%; /* Adjust this percentage based on your design */
-  height: auto; /* Maintain aspect ratio, adjust width to control height */
-  float: left;
-  transform: scale(0.9); /* Adjust as needed */
+  max-width: 100%; /* Ensure the image fits within the grid cell */
+  height: 100%; /* Maintain aspect ratio */
+  transform: scale(0.9);
+  grid-row: span 2; /* Make the image span two rows */
 }
 
 .firework {
+  max-width: 100%; /* Ensure the image fits within the grid cell */
+  height: 100%; /* Maintain aspect ratio */
+  transform: scale(1.05);
+  margin-top: -0.5vw;
+  grid-row: span 2; /* Make the image span two rows */
+  
 
-  width: 50%; /* Adjust this percentage based on your design */
-  height: auto; /* Maintain aspect ratio, adjust width to control height */
-  float: left;
-  transform: scale(1); /* Adjust as needed */
 }
 
 .shovel {
-  width: 50%; /* Adjust this percentage based on your design */
-  height: auto; /* Maintain aspect ratio, adjust width to control height */
-  float: left;
-  margin-right: 1vh; /* Use percentage for margin-right */
-  transform: scale(0.85); /* Adjust as needed */
+  max-width: 100%; /* Ensure the image fits within the grid cell */
+  height: 100%; /* Maintain aspect ratio */
+  transform: scale(0.9);
+  grid-row: span 2; /* Make the image span two rows */
 }
 
 .esp {
-  margin-top: 1vh;
-  width: 35%; /* Adjust this percentage based on your design */
-  height: auto; /* Maintain aspect ratio, adjust width to control height */
-  float: left;
-  margin-right: 7vh; /* Use percentage for margin-right */
-  transform: scale(1.1); /* Adjust as needed */
+  max-width: 100%; /* Ensure the image fits within the grid cell */
+  height: 100%; /* Maintain aspect ratio */
+  transform: scale(0.9);
+  grid-row: span 2; /* Make the image span two rows */
 }
 
 .blessing {
-  width: 50%; /* Adjust this percentage based on your design */
-  height: auto; /* Maintain aspect ratio, adjust width to control height */
-  float: left;
-   /* Use percentage for margin-right */
-  transform: scale(0.85); /* Adjust as needed */
+  max-width: 100%; /* Ensure the image fits within the grid cell */
+  height: 100%; /* Maintain aspect ratio */
+  transform: scale(0.9);
+  grid-row: span 2; /* Make the image span two rows */
 }
 
 .dragon {
-  width: 50%; /* Adjust this percentage based on your design */
-  height: auto; /* Maintain aspect ratio, adjust width to control height */
-  float: left;
-  margin-right: 1vh; /* Use percentage for margin-right */
-  transform: scaleX(-0.85); /* Adjust as needed */
+  max-width: 100%; /* Ensure the image fits within the grid cell */
+  height: 100%; /* Maintain aspect ratio */
+  transform: scale(0.9);
+  grid-row: span 2; /* Make the image span two rows */
 }
 
 
 .fuckdiorite {
-  width: 50%; /* Adjust this percentage based on your design */
-  height: auto; /* Maintain aspect ratio, adjust width to control height */
-  float: left;
-  margin-right: 1vh; /* Use percentage for margin-right */
-  transform: scaleY(0.95) scale(0.9); /* Adjust as needed */
+  max-width: 100%; /* Ensure the image fits within the grid cell */
+  transform: scale(0.9);
+  grid-row: span 2; /* Make the image span two rows */
   animation-name: fadeInImage1;
 
 }
 
 .fuckglass {
-  width: 50%; /* Adjust this percentage based on your design */
-  height: auto; /* Maintain aspect ratio, adjust width to control height */
-  float: left;
-  margin-right: 1vh; /* Use percentage for margin-right */
-  transform: scaleY(0.95) scale(0.9) translateY(-117%); /* Adjust as needed */
+  max-width: 100%; /* Ensure the image fits within the grid cell */
+  height: 100%; /* Maintain aspect ratio */
+  grid-row: span 2; /* Make the image span two rows */
+  transform:  scale(0.9) translateY(-117%); /* Adjust as needed */
   animation-name: fadeInImage2;
+  grid-column-start: 1;
 
 }
 
@@ -372,41 +352,39 @@ color: #8b8b8b; /* Darken the font color */
 }
 
 .ghostpick {
-  margin-top: 10%;
-  width: 50%; /* Adjust this percentage based on your design */
-  height: auto; /* Maintain aspect ratio, adjust width to control height */
-  float: left;
-  transform: scaleX(.9) scale(1.15);
+  max-width: 100%; /* Ensure the image fits within the grid cell */
+  height: 100%; /* Maintain aspect ratio */
+  grid-row: span 2; /* Make the image span two rows */
+  transform: scale(0.95);
 }
 
 .cookie {
-  margin-top: 1.5%;
-  width: 50%; /* Adjust this percentage based on your design */
-  height: auto; /* Maintain aspect ratio, adjust width to control height */
-  float: left;
-  transform: scale(0.9); /* Adjust as needed */
+  max-width: 100%; /* Ensure the image fits within the grid cell */
+  height: 100%; /* Maintain aspect ratio */
+  transform: scale(0.9);
+  grid-row: span 2; /* Make the image span two rows */
 }
 
 .ghost {
-  width: 50%; /* Adjust this percentage based on your design */
-  height: auto; /* Maintain aspect ratio, adjust width to control height */
-  float: left;
-  transform: scale(0.5); /* Adjust as needed */
-  margin-top: -95px;
+  max-width: 100%; /* Ensure the image fits within the grid cell */
+  height: 100%; /* Maintain aspect ratio */
+  grid-row: span 2; /* Make the image span two rows */
+  margin-left: 2vw;
+  
 }
 
 .tnt {
-  width: 50%; /* Adjust this percentage based on your design */
-  height: auto; /* Maintain aspect ratio, adjust width to control height */
-  float: left;
-  transform: scale(0.9); /* Adjust as needed */
+  max-width: 100%; /* Ensure the image fits within the grid cell */
+  height: 100%; /* Maintain aspect ratio */
+  transform: scale(0.9);
+  grid-row: span 2; /* Make the image span two rows */
 }
 
 .bow {
-  width: 50%; /* Adjust this percentage based on your design */
-  height: auto; /* Maintain aspect ratio, adjust width to control height */
-  float: left;
-  transform: scale(0.8); /* Adjust as needed */
+  max-width: 100%; /* Ensure the image fits within the grid cell */
+  height: 100%; /* Maintain aspect ratio */
+  transform: scale(0.9);
+  grid-row: span 2; /* Make the image span two rows */
 }
 
 .module-list-legit {
@@ -515,7 +493,7 @@ color: #8b8b8b; /* Darken the font color */
   }
 
   .centered-text p {
-    font-size: 40px;
+    font-size: 35px;
   }
 
   footer {
@@ -523,22 +501,8 @@ color: #8b8b8b; /* Darken the font color */
     padding: 12px;
   }
 
-  .navBar {
-    grid-template-columns: [start] 1fr [logo-end] 0.5fr [social-start] auto [social-end];
-
-  }
-
- 
-
-  .rubix {
-    margin-right: -0.5em;
-  }
-
-
  .links {
-  
   margin-right: -0.25em;
-
   font-size: 60px;
   margin-top: -0.2em;
   gap: 10px;
@@ -546,44 +510,9 @@ color: #8b8b8b; /* Darken the font color */
 
  .tooltip .tooltiptext {
   display: none;
-}
-
-.download {
-  font-size: 30px;
-  font-weight: bold;
-  justify-content: center;
-  display: flex;
-  margin-bottom: -2em;
-}
-
-
-
+  }
 
  
-
-  .text {
-    font-size: 5.2vw; /* Adjust for smaller screens */
-    margin-bottom: 0em; /* Adjust the margin to decrease spacing between lines */
-    text-align: left;
-    top: 25%;
-    position: absolute;
-    
-  }
-
-  .ghost {
-    width: 50%; /* Adjust this percentage based on your design */
-    height: auto; /* Maintain aspect ratio, adjust width to control height */
-    float: left;
-    transform: scale(0.5); /* Adjust as needed */
-    margin-top: -90px;
-  }
-
-  .Module {
-    font-size: 5vw; /* Adjust for smaller screens */
-    top: 3%; /* Adjust for smaller screens */
-  }
-
-  
 
   .rounded-rectangle:hover {
     transform: scale(1);
@@ -591,19 +520,25 @@ color: #8b8b8b; /* Darken the font color */
 
 
   .grid-container {
-    display: grid;
-    grid-template-columns: repeat(1, minmax(28%, 0.1fr)); /* Adjust the percentage as needed */
-    justify-content: center;
-    margin-right: 21.5em;
-    column-gap: 7.5em;
-    row-gap: 1em;
-    margin-top: 2.5em;
-
+    grid-template-columns: repeat(1, minmax(25%, 0.9575fr)); /* Adjust the percentage as needed */
   }
 
   .rounded-rectangle {
-    height: 175px ;
-    width: 350px;
+  
+    height: 45vw; /* Using vw for height, adjust as needed */
+    
+  }
+
+  .Module {
+    font-size: 5vw; /* Adjust the font size using vw */
+  }
+  
+  .Module::after {
+    height: 2px; /* Adjust the height of the line as needed */
+  }
+  
+  .text {
+    font-size: 4.5vw; /* Adjust the font size using vw */
   }
 
   .version-container div {
@@ -618,13 +553,9 @@ color: #8b8b8b; /* Darken the font color */
   .legit, .cheater {
     margin: 15px;
     margin-top: 0.5em;
-    
-  
-    
   }
 
   .module-list-legit {
-  
     display: grid;
     grid-template-columns: repeat(1, minmax(100%, 0.1fr)); /* Adjust the percentage as needed */
     justify-content: center;
