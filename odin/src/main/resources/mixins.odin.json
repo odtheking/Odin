@@ -5,6 +5,8 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "MixinChunk",
+    "MixinEntityLivingBase",
+    "MixinItem",
     "MixinNetworkManager",
     "MixinS1CPacketEntityMetadata",
     "MixinWorld"
@@ -14,6 +16,7 @@
     "MixinEntityRenderer",
     "MixinFontRenderer",
     "MixinGuiContainer",
+    "MixinItemRenderer",
     "MixinMinecraft",
     "MixinModList",
     "MixinMouseHelper",
