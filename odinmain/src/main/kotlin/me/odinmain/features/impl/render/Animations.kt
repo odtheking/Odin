@@ -7,10 +7,14 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.item.ItemStack
 import net.minecraft.potion.Potion
 import net.minecraft.util.MathHelper
+import net.minecraft.util.MovingObjectPosition
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 import kotlin.math.exp
+
 
 /*
 /*
@@ -67,18 +71,6 @@ object Animations : Module(
         return true
     }
 
-    fun swingItemHook() {
-        val player = mc.thePlayer
-        val stack: ItemStack = player.heldItem
-        if (stack != null && stack.item != null && stack.item.onEntitySwing(player,stack)) {
-            return
-        }
-        if (!player.isSwingInProgress || player.swingProgressInt >= this.getArmSwingAnimationEnd(player) / 2 || player.swingProgressInt < 0) {
-            player.swingProgressInt = -1
-            player.isSwingInProgress = true
-        }
-    }
-
     private fun getArmSwingAnimationEnd(player: EntityPlayerSP): Int {
         if (ignoreHaste) return 6
         return if (player.isPotionActive(Potion.digSpeed)) 6 - (1 + player.getActivePotionEffect(Potion.digSpeed)
@@ -86,6 +78,22 @@ object Animations : Module(
                 Potion.digSlowdown
             )
         ) 6 + (1 + player.getActivePotionEffect(Potion.digSlowdown).amplifier) * 2 else 6
+    }
+
+    /*
+    Taken from Sk1erLLC's OldAnimations Mod
+     */
+    @SubscribeEvent
+    fun onTick(event: ClientTickEvent) {
+        if (event.phase != TickEvent.Phase.END) return
+        val player = mc.thePlayer ?: return
+
+        if (this.blockHit && mc.gameSettings.keyBindAttack.isKeyDown && mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit === MovingObjectPosition.MovingObjectType.BLOCK) {
+            if (!player.isSwingInProgress || player.swingProgressInt >= getArmSwingAnimationEnd(player) / 2 || player.swingProgressInt < 0) {
+                player.isSwingInProgress = true
+                player.swingProgressInt = -1
+            }
+        }
     }
 
 }

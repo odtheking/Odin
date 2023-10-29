@@ -10,7 +10,6 @@
     "MixinBlockSkull",
     "MixinChunk",
     "MixinEntityLivingBase",
-    "MixinItem",
     "MixinNetworkManager",
     "MixinS1CPacketEntityMetadata",
     "MixinWorld"

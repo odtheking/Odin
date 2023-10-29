@@ -67,7 +67,7 @@ public abstract class MixinItemRenderer {
 
     @Overwrite
     public void renderItemInFirstPerson(float partialTicks) {
-        float f = 1.0f - (this.prevEquippedProgress + (this.equippedProgress - this.prevEquippedProgress) * partialTicks);
+        float f = (Animations.INSTANCE.getEnabled() &&Animations.INSTANCE.getNoEquipReset()) ? 1.0f : 1.0f - (this.prevEquippedProgress + (this.equippedProgress - this.prevEquippedProgress) * partialTicks);
         EntityPlayerSP abstractclientplayer = this.mc.thePlayer;
         float f1 = abstractclientplayer.getSwingProgress(partialTicks);
         float f2 = abstractclientplayer.prevRotationPitch + (abstractclientplayer.rotationPitch - abstractclientplayer.prevRotationPitch) * partialTicks;
@@ -89,6 +89,11 @@ public abstract class MixinItemRenderer {
                     }
                     case EAT:
                     case DRINK: {
+                        if (Animations.INSTANCE.getEnabled() && Animations.INSTANCE.getBlockHit()) {
+                            this.performDrinking(abstractclientplayer, partialTicks);
+                            this.transformFirstPersonItem(f, f1);
+                            break;
+                        }
                         this.performDrinking(abstractclientplayer, partialTicks);
                         this.transformFirstPersonItem(f, 0.0f);
                         break;
@@ -104,6 +109,11 @@ public abstract class MixinItemRenderer {
                         break;
                     }
                     case BOW: {
+                        if (Animations.INSTANCE.getEnabled() && Animations.INSTANCE.getBlockHit()) {
+                            this.transformFirstPersonItem(f, 0.0f);
+                            this.doBowTransformations(partialTicks, abstractclientplayer);
+                            break;
+                        }
                         this.transformFirstPersonItem(f, 0.0f);
                         this.doBowTransformations(partialTicks, abstractclientplayer);
                     }

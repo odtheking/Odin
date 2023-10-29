@@ -9,6 +9,8 @@ import me.odinmain.features.impl.render.RenderOptimizer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.item.EnumAction;
+import net.minecraft.item.ItemBlock;
 import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -44,6 +46,16 @@ public class MixinMinecraft {
     @Inject(method = "rightClickMouse", at = @At("HEAD"))
     private void rightClickMouse(CallbackInfo ci) {
         CPSDisplay.INSTANCE.onRightClick();
+        /*
+        Taken from Sk1erLLC's OldAnimations Mod
+        */
+        if (Animations.INSTANCE.getBlockHit() &&
+                Minecraft.getMinecraft().playerController.getIsHittingBlock() &&
+                Minecraft.getMinecraft().thePlayer.getHeldItem() != null &&
+                (Minecraft.getMinecraft().thePlayer.getHeldItem().getItemUseAction() != EnumAction.NONE ||
+                        Minecraft.getMinecraft().thePlayer.getHeldItem().getItem() instanceof ItemBlock)) {
+            Minecraft.getMinecraft().playerController.resetBlockRemoving();
+        }
     }
 
     @Inject(method = "clickMouse", at = @At("HEAD"))
@@ -67,11 +79,6 @@ public class MixinMinecraft {
     @Inject(method = "displayGuiScreen", at = @At("RETURN"))
     private void onDisplayGuiScreen(GuiScreen guiScreenIn, CallbackInfo ci) {
         MinecraftForge.EVENT_BUS.post(new PostGuiOpenEvent());
-    }
-
-    @Inject(method = "sendClickBlockToController", at = @At("HEAD"))
-    private void onSendClickBlockToController(boolean leftClick, CallbackInfo ci) {
-        if (Animations.INSTANCE.getBlockHit() && this.thePlayer.isUsingItem() && leftClick) Animations.INSTANCE.swingItemHook();
     }
 
 }

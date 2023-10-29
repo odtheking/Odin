@@ -14,6 +14,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.item.EnumAction;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.util.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.input.Keyboard;
@@ -59,8 +61,21 @@ public class MixinMinecraft {
 
     @Inject(method = "rightClickMouse", at = @At("HEAD"), cancellable = true)
     private void rightClickMouse(CallbackInfo ci) {
-        if (MinecraftForge.EVENT_BUS.post(new ClickEvent.RightClickEvent())) ci.cancel();
-        CPSDisplay.INSTANCE.onRightClick();
+        if (MinecraftForge.EVENT_BUS.post(new ClickEvent.RightClickEvent())) {
+            ci.cancel();
+            CPSDisplay.INSTANCE.onRightClick();
+            return;
+        }
+        /*
+        Taken from Sk1erLLC's OldAnimations Mod
+        */
+        if (Animations.INSTANCE.getBlockHit() &&
+                Minecraft.getMinecraft().playerController.getIsHittingBlock() &&
+                Minecraft.getMinecraft().thePlayer.getHeldItem() != null &&
+                (Minecraft.getMinecraft().thePlayer.getHeldItem().getItemUseAction() != EnumAction.NONE ||
+                Minecraft.getMinecraft().thePlayer.getHeldItem().getItem() instanceof ItemBlock)) {
+            Minecraft.getMinecraft().playerController.resetBlockRemoving();
+        }
     }
 
     @Inject(method = "clickMouse", at = @At("HEAD"), cancellable = true)
@@ -90,11 +105,6 @@ public class MixinMinecraft {
                 e.printStackTrace();
             }
         }
-    }
-
-    @Inject(method = "sendClickBlockToController", at = @At("HEAD"))
-    private void onSendClickBlockToController(boolean leftClick, CallbackInfo ci) {
-        if (Animations.INSTANCE.getBlockHit() && this.thePlayer.isUsingItem() && leftClick) Animations.INSTANCE.swingItemHook();
     }
 
 }
