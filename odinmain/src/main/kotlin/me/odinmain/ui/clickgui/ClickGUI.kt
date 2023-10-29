@@ -151,15 +151,6 @@ object ClickGUI : Screen() {
         display = other
     }
 
-    /**
-     * I can't find a better way to do this rn
-     */
-    fun refreshGui() {
-        anim = EaseInOut(0)
-        mc.displayGuiScreen(ClickGUI)
-        anim = EaseInOut(200)
-    }
-
     /** Sets the description without creating a new data class which isn't optimal */
     fun setDescription(text: String, x: Float,  y: Float, hoverHandler: HoverHandler) {
         desc.text = text

@@ -4,7 +4,6 @@ import me.odinmain.events.impl.PostGuiOpenEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.utils.render.world.RenderUtils
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
@@ -37,7 +36,6 @@ object RenderOptimizer : Module(
     {
         if (!decreaseGpuUsage) return
         mc.skipRenderWorld = true
-        if (mc.currentScreen is ClickGUI) ClickGUI.refreshGui()
     }
 
     override fun onDisable() {

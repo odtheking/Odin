@@ -1,7 +1,6 @@
 package me.odinmain.features.settings.impl
 
 import me.odinmain.features.settings.Setting
-import me.odinmain.ui.clickgui.ClickGUI
 
 /**
  * Setting that gets ran when pressed.
@@ -20,6 +19,5 @@ class ActionSetting(
 
     fun doAction() {
         action()
-        ClickGUI.refreshGui()
     }
 }
