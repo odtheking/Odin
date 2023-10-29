@@ -500,7 +500,16 @@ color: #8b8b8b; /* Darken the font color */
 
   .centered-text p {
     margin-top: 0.45em;
-    font-size: 35px;
+    font-size: 38px;
+  }
+
+  .download {
+    font-size: 30px;
+  }
+
+  main {
+    padding-top: 0px;
+
   }
 
   footer {
