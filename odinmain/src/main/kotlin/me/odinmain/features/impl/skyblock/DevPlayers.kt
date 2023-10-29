@@ -1,8 +1,8 @@
 package me.odinmain.features.impl.skyblock
 
+
+import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraftforge.client.event.RenderPlayerEvent
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object DevPlayers {
 
@@ -17,17 +17,9 @@ object DevPlayers {
         "stiff_maister89" to PlayerSize(1f, 1f, 1f),
     )
 
-    @SubscribeEvent
-    fun onRenderPlayer(event: RenderPlayerEvent.Pre) {
-        if (!devs.containsKey(event.entity.name)) return
-        val size = devs[event.entity.name]!!
-        GlStateManager.pushMatrix()
-        GlStateManager.scale(size.xScale, size.yScale, size.zScale)
-    }
-
-    @SubscribeEvent
-    fun onRenderPlayer(event: RenderPlayerEvent.Post) {
-        if (!devs.containsKey(event.entity.name)) return
-        GlStateManager.popMatrix()
+    fun preRenderCallbackScaleHook(entityLivingBaseIn: AbstractClientPlayer ) {
+        if (!devs.containsKey(entityLivingBaseIn.name)) return
+        val dev = devs[entityLivingBaseIn.name]
+        if (dev != null) { GlStateManager.scale(dev.xScale, dev.yScale, dev.zScale) }
     }
 }
