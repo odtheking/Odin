@@ -20,6 +20,7 @@ import net.minecraft.event.ClickEvent
 import net.minecraft.util.ChatComponentText
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.floor
+import kotlin.random.Random
 
 object ChatCommands : Module(
     name = "Chat commands",
@@ -47,6 +48,7 @@ object ChatCommands : Module(
     private var dt: Boolean by BooleanSetting(name = "Dt", default = true)
     private var inv: Boolean by BooleanSetting(name = "inv", default = true)
     private val invite: Boolean by BooleanSetting(name = "invite", default = true)
+    private val racism: Boolean by BooleanSetting(name = "Racism", default = true)
     private val guildGM: Boolean by BooleanSetting("Guild GM").withDependency { guild }
 
     private var dtPlayer: String? = null
@@ -133,7 +135,7 @@ object ChatCommands : Module(
     private suspend fun partyCmdsOptions(message: String, name: String) {
         if (isInBlacklist(name)) return
         when (message.split(" ")[0]) {
-            "help" -> ChatUtils.partyMessage("Commands: warp, coords, allinvite, odin, boop, cf, 8ball, dice, cat, pt, rat, ping, warptransfer")
+            "help" -> ChatUtils.partyMessage("Commands: warp, coords, allinvite, odin, boop, cf, 8ball, dice, cat, pt, rat, ping, warptransfer, racism, dt")
             "warp" -> if (warp) ChatUtils.sendCommand("p warp")
             "warptransfer" -> { if (warptransfer)
                 ChatUtils.sendCommand("p warp")
@@ -164,6 +166,7 @@ object ChatCommands : Module(
                 dtPlayer = name
                 disableReque = true
             }
+            "racism" -> if (racism) ChatUtils.partyMessage("$name is ${Random.nextInt(1, 101)}% racist. Racism is not allowed!")
         }
     }
 
@@ -171,7 +174,7 @@ object ChatCommands : Module(
         if (isInBlacklist(name)) return
         if (!message.startsWith("!")) return
         when (message.split(" ")[0].drop(1)) {
-            "help" -> ChatUtils.guildMessage("Commands: coords, odin, boop, cf, 8ball, dice, cat, ping, tps")
+            "help" -> ChatUtils.guildMessage("Commands: coords, odin, boop, cf, 8ball, dice, cat, ping, tps, racism")
             "coords" -> if (coords) ChatUtils.guildMessage(
                 "x: ${PlayerUtils.posX.floor()}, y: ${PlayerUtils.posY.floor()}, z: ${PlayerUtils.posZ.floor()}")
             "odin" -> if (odin) ChatUtils.guildMessage("OdinClient! https://discord.gg/2nCbC9hkxT")
@@ -182,13 +185,14 @@ object ChatCommands : Module(
             "cat" -> if (cat) ChatUtils.guildMessage(useCatPic())
             "ping" -> if (ping) ChatUtils.guildMessage("Current Ping: ${floor(ServerUtils.averagePing)}ms")
             "tps" -> if (tps) ChatUtils.partyMessage("Current TPS: ${floor(ServerUtils.averageTps.floor())}ms")
+            "racism" -> if (racism) ChatUtils.guildMessage("$name is ${Random.nextInt(1, 101)}% racist. Racism is not allowed!")
         }
     }
 
     private fun privateCmdsOptions(message: String,name: String) {
         if (isInBlacklist(name)) return
         when (message.split(" ")[0]) {
-            "help" -> ChatUtils.privateMessage("Commands: inv, coords, odin, boop, cf, 8ball, dice, cat ,ping",name)
+            "help" -> ChatUtils.privateMessage("Commands: inv, coords, odin, boop, cf, 8ball, dice, cat ,ping, racism",name)
             "coords" -> if (coords) ChatUtils.privateMessage(
                 "x: ${PlayerUtils.posX.floor()}, y: ${PlayerUtils.posY.floor()}, z: ${PlayerUtils.posZ.floor()}",
                 name
@@ -208,12 +212,13 @@ object ChatCommands : Module(
                         .setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.RUN_COMMAND,"/party invite $name"))
                 )
             }
+            "racism" -> if (racism) ChatUtils.privateMessage("$name is ${Random.nextInt(1, 101)}% racist. Racism is not allowed!",name)
         }
     }
 
     fun isInBlacklist(name: String) : Boolean = MiscConfig.blacklist.contains(name.lowercase())
 
-    fun autoGM(message: String, name: String) {
+    private fun autoGM(message: String, name: String) {
         if (isInBlacklist(name)) return
         if (message.lowercase().startsWith("gm")) ChatUtils.guildMessage("gm $name")
         if (message.lowercase().startsWith("gn")) ChatUtils.guildMessage("gn $name")

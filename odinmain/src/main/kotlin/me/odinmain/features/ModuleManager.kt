@@ -82,7 +82,8 @@ object ModuleManager {
         Reminders,
         VanqNotifier,
         TPMaze,
-        Animations
+        Animations,
+        SpaceHelmet
     )
 
 
