@@ -18,6 +18,7 @@ body {
   box-sizing: inherit;
   background-color: black;
   opacity: 0.94;
+  overflow: hidden;
 
 }
 footer {
