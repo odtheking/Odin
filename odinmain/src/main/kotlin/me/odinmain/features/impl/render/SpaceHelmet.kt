@@ -17,22 +17,17 @@ object SpaceHelmet : Module(
     private var currentIndex = 0 // Initialize the counter
 
     init {
-        Executor(delay = 250) {
-            if (mc.thePlayer == null || !enabled) return@Executor
+        execute(250) {
+            if (mc.thePlayer == null) return@execute
 
             val color = values[currentIndex]
             currentIndex = (currentIndex + 1) % values.size
-            val item = ItemStack(Item.getItemFromBlock(Blocks.stained_glass), 1, color) . apply {setStackDisplayName("§c§lSpace Helmet") }
+            val item = ItemStack(Item.getItemFromBlock(Blocks.stained_glass), 1, color).apply {
+                setStackDisplayName("§c§lSpace Helmet")
+            }
 
             mc.thePlayer?.inventory?.armorInventory?.set(3, item)
 
-        }.register()
+        }
     }
-
-
-
-
-
-
-
 }
