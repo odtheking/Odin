@@ -32,7 +32,6 @@ object SecretTriggerbot : Module(
     private val triggerBotClock = Clock(delay)
     private var clickedPositions = mapOf<BlockPos, Long>()
     private const val WITHER_ESSENCE_ID = "26bb1a8d-7c66-31c6-82d5-a9c04c94fb02"
-    private val debugMsgs: Boolean by BooleanSetting("Debug Messages", false)
 
     fun tryTriggerbot() {
         if (
@@ -62,13 +61,6 @@ object SecretTriggerbot : Module(
         rightClick()
         triggerBotClock.update()
         clickedPositions = clickedPositions.plus(pos to System.currentTimeMillis())
-        if (debugMsgs) {
-            val x = ((mc.thePlayer.posX + 200) / 32).floor().toInt()
-            val z = ((mc.thePlayer.posZ + 200) / 32).floor().toInt()
-            val xPos = -185 + x * 32
-            val zPos = -185 + z * 32
-            DungeonUtils.scanRoom(xPos, zPos, printDebug = true)
-        }
     }
 
     private fun isSecret(state: IBlockState, pos: BlockPos): Boolean {

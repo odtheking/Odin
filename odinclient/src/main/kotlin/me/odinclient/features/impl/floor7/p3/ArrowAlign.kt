@@ -53,15 +53,13 @@ object ArrowAlign : Module(
 
     init {
         execute(3000) {
-            if (mc.thePlayer.getDistanceSq(BlockPos(-2, 122, 76)) > 225 /*|| DungeonUtils.getPhase() != 3*/) return@execute
+            if (mc.thePlayer.getDistanceSq(BlockPos(-2, 122, 76)) > 20 * 20 /*|| DungeonUtils.getPhase() != 3*/) return@execute
             calculate()
         }
-    }
 
-    @SubscribeEvent
-    fun onArrowChange(event: PostEntityMetadata) {
-        if (mc.theWorld?.getEntityByID(event.packet.entityId)?.position !in area) return
-        calculate()
+        onWorldLoad {
+            neededRotations.clear()
+        }
     }
 
     @SubscribeEvent
@@ -73,11 +71,6 @@ object ArrowAlign : Module(
             return
         }
         frame.rotations--
-    }
-
-    @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Load) {
-        neededRotations.clear()
     }
 
     private fun triggerBot() {
@@ -136,10 +129,10 @@ object ArrowAlign : Module(
         }
         while (queue.size != 0) {
             val s = queue.poll()
-            val directions = arrayOf(Pair(1, 0), Pair(0, 1), Pair(-1, 0), Pair(0, -1))
+            val directions = arrayOf(Vec2(1, 0), Vec2(0, 1), Vec2(-1, 0), Vec2(0, -1))
             for (i in 3 downTo 0) {
-                val x = (s.x + directions[i].first)
-                val y = (s.y + directions[i].second)
+                val x = s.x + directions[i].x
+                val y = s.y + directions[i].y
                 if (x !in 0..4 || y !in 0..4) continue
                 val rotations = i * 2 + 1
                 if (solutions[Vec2(x, y)] != null || maze[x][y] !in 1..2) continue
