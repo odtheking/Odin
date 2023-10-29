@@ -57,6 +57,7 @@ object ClickGUI : Screen() {
                 panels[i].draw(this)
             }
 
+            SearchBar.draw(this)
             desc.render(this)
         }
     }
@@ -71,6 +72,7 @@ object ClickGUI : Screen() {
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+        if (SearchBar.mouseClicked(mouseButton)) return
         for (i in panels.size - 1 downTo 0) {
             if (panels[i].mouseClicked(mouseButton)) return
         }
@@ -83,6 +85,7 @@ object ClickGUI : Screen() {
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
+        if (SearchBar.keyTyped(typedChar, keyCode)) return
         for (i in panels.size - 1 downTo 0) {
             if (panels[i].keyTyped(typedChar, keyCode)) return
         }
