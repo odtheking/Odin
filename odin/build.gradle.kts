@@ -11,7 +11,7 @@ plugins {
 }
 
 group = "com.example.archloomtemplate"
-version = "1.1.2"
+version = "1.2"
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(8))

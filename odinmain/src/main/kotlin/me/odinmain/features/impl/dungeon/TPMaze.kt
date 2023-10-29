@@ -38,6 +38,11 @@ object TPMaze : Module(
             if (DungeonUtils.currenRoomName != "Teleport Maze") return@onPacket
             getCorrectPortals(Vec3(it.x, it.y, it.z), it.yaw, it.pitch)
         }
+
+        onWorldLoad {
+            portals = setOf()
+            correctPortals = listOf()
+        }
     }
 
     fun getCorrectPortals(pos: Vec3, yaw: Float, pitch: Float) {

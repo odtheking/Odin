@@ -11,7 +11,6 @@ import me.odinmain.features.impl.skyblock.*
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.render.gui.nvg.drawNVG
-import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import net.minecraft.network.Packet
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -82,7 +81,9 @@ object ModuleManager {
         DianaHelper,
         Reminders,
         VanqNotifier,
-        TPMaze
+        TPMaze,
+        Animations,
+        SpaceHelmet
     )
 
 

@@ -5,7 +5,6 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.ui.clickgui.ClickGUI
-import me.odinmain.utils.render.gui.animations.impl.EaseInOut
 import me.odinmain.utils.render.world.RenderUtils
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
@@ -38,9 +37,7 @@ object RenderOptimizer : Module(
     {
         if (!decreaseGpuUsage) return
         mc.skipRenderWorld = true
-        ClickGUI.anim = EaseInOut(0)
-        mc.displayGuiScreen(ClickGUI)
-        ClickGUI.anim = EaseInOut(200)
+        if (mc.currentScreen is ClickGUI) ClickGUI.refreshGui()
     }
 
     override fun onDisable() {

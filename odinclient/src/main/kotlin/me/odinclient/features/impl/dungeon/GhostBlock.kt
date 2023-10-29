@@ -83,9 +83,9 @@ object GhostBlock : Module(
         ),
 
         2 to arrayOf(
-            BlockPos(101, 168, 48),
-            BlockPos(100, 168, 48),
-            BlockPos(99, 168, 48),
+            BlockPos(101, 169, 46),
+            BlockPos(100, 169, 46),
+            BlockPos(99, 169, 46)
         )
     )
 
@@ -96,7 +96,7 @@ object GhostBlock : Module(
         ),
 
         2 to arrayOf(
-            BlockPos(102, 168, 47),
+            BlockPos(102, 169, 47),
         )
     )
 
@@ -168,6 +168,8 @@ object GhostBlock : Module(
             BlockPos(95, 165, 40),
             BlockPos(101, 168, 47),
             BlockPos(101, 168, 46),
+            BlockPos(101, 167, 47),
+            BlockPos(101, 166, 47),
             BlockPos(101, 167, 46),
             BlockPos(101, 166, 46),
         ),
