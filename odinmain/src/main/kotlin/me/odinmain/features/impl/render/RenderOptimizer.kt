@@ -37,7 +37,7 @@ object RenderOptimizer : Module(
     {
         if (!decreaseGpuUsage) return
         mc.skipRenderWorld = true
-        ClickGUI.refreshGui()
+        if (mc.currentScreen is ClickGUI) ClickGUI.refreshGui()
     }
 
     override fun onDisable() {

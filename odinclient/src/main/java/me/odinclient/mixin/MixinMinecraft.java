@@ -7,9 +7,11 @@ import me.odinmain.events.impl.ClickEvent;
 import me.odinmain.events.impl.PostGuiOpenEvent;
 import me.odinmain.events.impl.PreKeyInputEvent;
 import me.odinmain.events.impl.PreMouseInputEvent;
+import me.odinmain.features.impl.render.Animations;
 import me.odinmain.features.impl.render.CPSDisplay;
 import me.odinmain.features.impl.render.RenderOptimizer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.util.BlockPos;
@@ -26,6 +28,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(value = {Minecraft.class}, priority = 800)
 public class MixinMinecraft {
     @Shadow public boolean skipRenderWorld;
+
+    @Shadow public EntityPlayerSP thePlayer;
 
     @Inject(method = {"runTick"}, at = {@At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;dispatchKeypresses()V")})
     public void keyPresses(CallbackInfo ci) {
@@ -88,6 +92,9 @@ public class MixinMinecraft {
         }
     }
 
-
+    @Inject(method = "sendClickBlockToController", at = @At("HEAD"))
+    private void onSendClickBlockToController(boolean leftClick, CallbackInfo ci) {
+        if (Animations.INSTANCE.getBlockHit() && this.thePlayer.isUsingItem() && leftClick) Animations.INSTANCE.swingItemHook();
+    }
 
 }
