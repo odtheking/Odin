@@ -10,10 +10,10 @@ import me.odinclient.dungeonmap.features.Window
 import me.odinclient.features.impl.dungeon.*
 import me.odinclient.features.impl.floor7.*
 import me.odinclient.features.impl.floor7.p3.*
-import me.odinclient.features.impl.render.ArrowTrajectory
 import me.odinclient.features.impl.render.Ghosts
 import me.odinclient.features.impl.render.NoCarpet
 import me.odinclient.features.impl.render.NoDebuff
+import me.odinclient.features.impl.render.Trajectories
 import me.odinclient.features.impl.skyblock.*
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
@@ -123,7 +123,7 @@ class ModCore {
         RelicAura,
         RelicPlacer,
 
-        ArrowTrajectory,
+        Trajectories,
         Ghosts,
         NoCarpet,
         NoDebuff,

@@ -3,6 +3,7 @@ package me.odinclient.features.impl.render
 import me.odinmain.events.impl.RenderEntityModelEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.render.Color
@@ -16,6 +17,7 @@ import me.odinmain.utils.skyblock.ItemUtils.itemID
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.projectile.EntityArrow
+import net.minecraft.item.ItemEnderPearl
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.MathHelper
 import net.minecraft.util.Vec3
@@ -24,35 +26,97 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import javax.vecmath.Vector2d
 import kotlin.math.sqrt
 
-object ArrowTrajectory : Module(
-    "Arrow Trajectory",
-    description = "Displays the trajectory of the arrows your Terminator would shoot.",
+object Trajectories : Module(
+    "Trajectories",
+    description = "Displays the trajectory of certain items",
     category = Category.RENDER
 ) {
+
+    private val bows: Boolean by BooleanSetting("Bows", false, description = "Render trajectories of shortbow arrows")
+    private val pearls: Boolean by BooleanSetting("Pearls", false, description = "Render trajectories of ender pearls")
+
+    private val range: Float by NumberSetting("Solver Range", 30f, 1f, 60f, 1f, description = "Performance impact scales with this")
     private val thickness: Float by NumberSetting("Line Width", 2f, 1.0, 5.0, 0.5)
-    private val color: Color by ColorSetting("Color", Color(170, 170, 0), true)
     private val boxSize: Float by NumberSetting("Box Size", 0.5f, 0.5f, 3.0f, 0.1f)
+    private val color: Color by ColorSetting("Color", Color(170, 170, 0), true)
 
     private var boxRenderQueue: MutableList<Pair<Vec3, Vector2d>> = mutableListOf()
     private var entityRenderQueue = mutableListOf<Entity>()
 
+    private var pearlImpactPos: Pair<Vec3,Vector2d>? = null
+
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
-        entityRenderQueue.clear()
-        if (mc.thePlayer?.heldItem?.isShortbow == true) {
-            if (mc.thePlayer?.heldItem?.itemID == "TERMINATOR") {
-                setTrajectoryHeading(-5f, -0.1f)
-                setTrajectoryHeading(0f, -0.1f)
-                setTrajectoryHeading(5f, -0.1f)
+        if (bows) {
+            entityRenderQueue.clear()
+            if (mc.thePlayer?.heldItem?.isShortbow == true) {
+                if (mc.thePlayer?.heldItem?.itemID == "TERMINATOR") {
+                    this.setBowTrajectoryHeading(-5f, -0.1f)
+                    this.setBowTrajectoryHeading(0f, -0.1f)
+                    this.setBowTrajectoryHeading(5f, -0.1f)
+                }
+                else {
+                    this.setBowTrajectoryHeading(0f, -0.1f)
+                }
+                this.drawBowCollisionBoxes()
             }
-            else {
-                setTrajectoryHeading(0f, -0.1f)
+        }
+        if (pearls) {
+            pearlImpactPos = null
+            val itemStack = mc.thePlayer?.heldItem
+            if (itemStack?.item is ItemEnderPearl && !itemStack.displayName.contains("leap", ignoreCase = true)) {
+                this.setPearlTrajectoryHeading()
+                this.drawPearlCollisionBox()
             }
-            drawCollisionBoxes()
         }
     }
 
-    private fun setTrajectoryHeading(yawOffset: Float, yOffset: Float) {
+    private fun setPearlTrajectoryHeading() {
+        var motionX =
+            (-MathHelper.sin(mc.thePlayer.rotationYaw / 180.0f * Math.PI.toFloat()) * MathHelper.cos(mc.thePlayer.rotationPitch / 180.0f * Math.PI.toFloat()) * 0.4)
+        var motionZ =
+            (MathHelper.cos(mc.thePlayer.rotationYaw / 180.0f * Math.PI.toFloat()) * MathHelper.cos(mc.thePlayer.rotationPitch / 180.0f * Math.PI.toFloat()) * 0.4)
+        var motionY =
+            (-MathHelper.sin(mc.thePlayer.rotationPitch / 180.0f * Math.PI.toFloat()) * 0.4)
+        var posX = mc.thePlayer.renderX
+        var posY = mc.thePlayer.renderY + mc.thePlayer.eyeHeight
+        var posZ = mc.thePlayer.renderZ
+        posX -= (MathHelper.cos(mc.thePlayer.rotationYaw / 180.0f * Math.PI.toFloat()) * 0.16f).toDouble()
+        posY -= 0.1f
+        posZ -= (MathHelper.sin(mc.thePlayer.rotationYaw / 180.0f * Math.PI.toFloat()) * 0.16f).toDouble()
+        val f = MathHelper.sqrt_double(motionX * motionX + motionY * motionY + motionZ * motionZ)
+        motionX /= f
+        motionY /= f
+        motionZ /= f
+        motionX *= 1.5f
+        motionY *= 1.5f
+        motionZ *= 1.5f
+
+        calculatePearlTrajectory(Vec3(motionX, motionY, motionZ), Vec3(posX, posY, posZ))
+    }
+
+    private fun calculatePearlTrajectory(mV: Vec3,pV: Vec3) {
+        var hitResult = false
+        var motionVec = mV
+        var posVec = pV
+        for (i in 0..range.toInt()) {
+            if (hitResult) break
+            val vec = motionVec.add(posVec)
+            val rayTrace = mc.theWorld.rayTraceBlocks(posVec, vec, false, true, false)
+            if (rayTrace != null) {
+                pearlImpactPos =
+                    Pair(
+                        rayTrace.hitVec.addVector(-0.15 * boxSize, 0.0, -0.15 * boxSize),
+                        Vector2d(0.3 * boxSize, 0.3 * boxSize)
+                    )
+                hitResult = true
+            }
+            posVec = posVec.add(motionVec)
+            motionVec = Vec3(motionVec.xCoord * 0.99, motionVec.yCoord * 0.99 - 0.03, motionVec.zCoord * 0.99)
+        }
+    }
+
+    private fun setBowTrajectoryHeading(yawOffset: Float, yOffset: Float) {
         val yawRadians = ((mc.thePlayer.rotationYaw + yawOffset) / 180) * Math.PI.toFloat()
         val pitchRadians = (mc.thePlayer.rotationPitch / 180) * Math.PI.toFloat()
 
@@ -69,14 +133,14 @@ object ArrowTrajectory : Module(
         motionY = motionY / lengthOffset * 3
         motionZ = motionZ / lengthOffset * 3
 
-        calculateTrajectory(Vec3(motionX.toDouble(), motionY.toDouble(), motionZ.toDouble()), Vec3(posX, posY, posZ))
+        calculateBowTrajectory(Vec3(motionX.toDouble(), motionY.toDouble(), motionZ.toDouble()), Vec3(posX, posY, posZ))
     }
 
-    private fun calculateTrajectory(mV: Vec3, pV: Vec3) {
+    private fun calculateBowTrajectory(mV: Vec3,pV: Vec3) {
         var hitResult = false
         var motionVec = mV
         var posVec = pV
-        for (i in 0..60) {
+        for (i in 0..range.toInt()) {
             if (hitResult) break
             val vec = motionVec.add(posVec)
             val rayTrace = mc.theWorld.rayTraceBlocks(posVec, vec, false, true, false)
@@ -102,7 +166,20 @@ object ArrowTrajectory : Module(
         }
     }
 
-    private fun drawCollisionBoxes() {
+    private fun drawPearlCollisionBox() {
+        if (pearlImpactPos == null) return
+        RenderUtils.drawCustomESPBox(
+            pearlImpactPos!!.first.xCoord, pearlImpactPos!!.second.x,
+            pearlImpactPos!!.first.yCoord, pearlImpactPos!!.second.y,
+            pearlImpactPos!!.first.zCoord, pearlImpactPos!!.second.x,
+            color,
+            thickness / 3,
+            phase = true
+        )
+        pearlImpactPos = null
+    }
+
+    private fun drawBowCollisionBoxes() {
         if (boxRenderQueue.size == 0) return
         for (b in boxRenderQueue) {
             if (
