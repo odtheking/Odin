@@ -36,7 +36,7 @@ loom {
 
 sourceSets.main {
     java.srcDir(file("$projectDir/src/main/kotlin"))
-    output.setResourcesDir(file("$buildDir/classes/java/main"))
+    output.setResourcesDir(file("${layout.buildDirectory}/classes/java/main"))
 }
 
 repositories {
