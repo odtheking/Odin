@@ -23,11 +23,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(value = ItemRenderer.class, priority = 1)
 public abstract class MixinItemRenderer {
 
-    @Shadow private float prevEquippedProgress;
+    @Shadow
+    private float prevEquippedProgress;
 
     @Shadow private float equippedProgress;
 
-    @Final @Shadow private Minecraft mc;
+    @Final
+    @Shadow private Minecraft mc;
 
     @Shadow private ItemStack itemToRender;
 
@@ -65,7 +67,7 @@ public abstract class MixinItemRenderer {
 
     @Overwrite
     public void renderItemInFirstPerson(float partialTicks) {
-        float f = 1.0f - (this.prevEquippedProgress + (this.equippedProgress - this.prevEquippedProgress) * partialTicks);
+        float f = (Animations.INSTANCE.getEnabled() &&Animations.INSTANCE.getNoEquipReset()) ? 1.0f : 1.0f - (this.prevEquippedProgress + (this.equippedProgress - this.prevEquippedProgress) * partialTicks);
         EntityPlayerSP abstractclientplayer = this.mc.thePlayer;
         float f1 = abstractclientplayer.getSwingProgress(partialTicks);
         float f2 = abstractclientplayer.prevRotationPitch + (abstractclientplayer.rotationPitch - abstractclientplayer.prevRotationPitch) * partialTicks;
@@ -80,6 +82,7 @@ public abstract class MixinItemRenderer {
                 this.renderItemMap(abstractclientplayer, f2, f, f1);
             } else if (abstractclientplayer.getItemInUseCount() > 0) {
                 EnumAction enumaction = this.itemToRender.getItemUseAction();
+                boolean isBlockHit = Animations.INSTANCE.getEnabled() && Animations.INSTANCE.getBlockHit();
                 switch (enumaction) {
                     case NONE: {
                         this.transformFirstPersonItem(f, 0.0f);
@@ -88,21 +91,16 @@ public abstract class MixinItemRenderer {
                     case EAT:
                     case DRINK: {
                         this.performDrinking(abstractclientplayer, partialTicks);
-                        this.transformFirstPersonItem(f, 0.0f);
+                        this.transformFirstPersonItem(f, isBlockHit ? f1 : 0.0f);
                         break;
                     }
                     case BLOCK: {
-                        if (Animations.INSTANCE.getEnabled() && Animations.INSTANCE.getBlockHit()) {
-                            this.transformFirstPersonItem(f, f1);
-                            this.doBlockTransformations();
-                            break;
-                        }
-                        this.transformFirstPersonItem(f, 0.0f);
+                        this.transformFirstPersonItem(f, isBlockHit ? f1 : 0.0f);
                         this.doBlockTransformations();
                         break;
                     }
                     case BOW: {
-                        this.transformFirstPersonItem(f, 0.0f);
+                        this.transformFirstPersonItem(f, isBlockHit ? f1 : 0.0f);
                         this.doBowTransformations(partialTicks, abstractclientplayer);
                     }
                 }
@@ -120,6 +118,6 @@ public abstract class MixinItemRenderer {
     }
 
     @Inject(method = "doItemUsedTransformations", at = @At("HEAD"), cancellable = true)
-    private void noSwing(float swingProgress, CallbackInfo ci) { if (Animations.INSTANCE.getNoSwing()) ci.cancel(); }
+    private void noSwing(float swingProgress, CallbackInfo ci) { if (Animations.INSTANCE.getNoSwing() && Animations.INSTANCE.getEnabled()) ci.cancel(); }
 
 }

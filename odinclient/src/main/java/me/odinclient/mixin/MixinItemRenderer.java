@@ -82,6 +82,7 @@ public abstract class MixinItemRenderer {
                 this.renderItemMap(abstractclientplayer, f2, f, f1);
             } else if (abstractclientplayer.getItemInUseCount() > 0) {
                 EnumAction enumaction = this.itemToRender.getItemUseAction();
+                boolean isBlockHit = Animations.INSTANCE.getEnabled() && Animations.INSTANCE.getBlockHit();
                 switch (enumaction) {
                     case NONE: {
                         this.transformFirstPersonItem(f, 0.0f);
@@ -89,32 +90,17 @@ public abstract class MixinItemRenderer {
                     }
                     case EAT:
                     case DRINK: {
-                        if (Animations.INSTANCE.getEnabled() && Animations.INSTANCE.getBlockHit()) {
-                            this.performDrinking(abstractclientplayer, partialTicks);
-                            this.transformFirstPersonItem(f, f1);
-                            break;
-                        }
                         this.performDrinking(abstractclientplayer, partialTicks);
-                        this.transformFirstPersonItem(f, 0.0f);
+                        this.transformFirstPersonItem(f, isBlockHit ? f1 : 0.0f);
                         break;
                     }
                     case BLOCK: {
-                        if (Animations.INSTANCE.getEnabled() && Animations.INSTANCE.getBlockHit()) {
-                            this.transformFirstPersonItem(f, f1);
-                            this.doBlockTransformations();
-                            break;
-                        }
-                        this.transformFirstPersonItem(f, 0.0f);
+                        this.transformFirstPersonItem(f, isBlockHit ? f1 : 0.0f);
                         this.doBlockTransformations();
                         break;
                     }
                     case BOW: {
-                        if (Animations.INSTANCE.getEnabled() && Animations.INSTANCE.getBlockHit()) {
-                            this.transformFirstPersonItem(f, 0.0f);
-                            this.doBowTransformations(partialTicks, abstractclientplayer);
-                            break;
-                        }
-                        this.transformFirstPersonItem(f, 0.0f);
+                        this.transformFirstPersonItem(f, isBlockHit ? f1 : 0.0f);
                         this.doBowTransformations(partialTicks, abstractclientplayer);
                     }
                 }
@@ -132,6 +118,6 @@ public abstract class MixinItemRenderer {
     }
 
     @Inject(method = "doItemUsedTransformations", at = @At("HEAD"), cancellable = true)
-    private void noSwing(float swingProgress, CallbackInfo ci) { if (Animations.INSTANCE.getNoSwing()) ci.cancel(); }
+    private void noSwing(float swingProgress, CallbackInfo ci) { if (Animations.INSTANCE.getNoSwing() && Animations.INSTANCE.getEnabled()) ci.cancel(); }
 
 }
