@@ -23,8 +23,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 @AlwaysActive
 object DragonDeathCheck : Module(
     "Dragon Death",
-    category = Category.FLOOR7
-
+    category = Category.FLOOR7,
+    description = "Displays data about dragon death."
 ) {
     private val sendNotif: Boolean by BooleanSetting("Send dragon confirmation", true)
     private val sendTime: Boolean by BooleanSetting("Send dragon time alive", true)
