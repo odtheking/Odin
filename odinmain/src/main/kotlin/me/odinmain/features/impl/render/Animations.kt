@@ -80,6 +80,7 @@ object Animations : Module(
     }
 
     private fun getArmSwingAnimationEnd(player: EntityPlayerSP): Int {
+        if (ignoreHaste) return 6
         return if (player.isPotionActive(Potion.digSpeed)) 6 - (1 + player.getActivePotionEffect(Potion.digSpeed)
             .amplifier) * 1 else if (player.isPotionActive(
                 Potion.digSlowdown
