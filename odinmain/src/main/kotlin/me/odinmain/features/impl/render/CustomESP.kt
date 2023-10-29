@@ -33,7 +33,7 @@ object CustomESP : Module(
     private val scanDelay: Long by NumberSetting("Scan Delay", 500L, 100L, 2000L, 100L)
     val color: Color by ColorSetting("Color", Color(255, 0, 0), true)
     val mode: Int by SelectorSetting("Mode", "Outline", arrayListOf("Outline", "Overlay", "Boxes"))
-    val xray: Boolean by BooleanSetting("Through Walls", true).withDependency { !OdinMain.onLegitVersion }
+    private val xray: Boolean by BooleanSetting("Through Walls", true).withDependency { !OdinMain.onLegitVersion }
     val renderThrough: Boolean get() = if (OdinMain.onLegitVersion) false else xray
     private val thickness: Float by NumberSetting("Outline Thickness", 5f, 5f, 20f, 0.5f).withDependency { mode != 1 }
     private val cancelHurt: Boolean by BooleanSetting("Cancel Hurt", true).withDependency { mode != 1 }

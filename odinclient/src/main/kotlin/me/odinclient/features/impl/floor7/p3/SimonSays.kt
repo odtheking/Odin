@@ -118,8 +118,7 @@ object SimonSays : Module(
     @SubscribeEvent
     fun onEntityJoin(event: PostEntityMetadata) {
         val ent = mc.theWorld.getEntityByID(event.packet.entityId)
-        if (ent !is EntityItem) return
-        if (Item.getIdFromItem(ent.entityItem.item) != 77) return
+        if (ent !is EntityItem || Item.getIdFromItem(ent.entityItem.item) != 77) return
         val pos = BlockPos(ent.posX.floor(), ent.posY.floor(), ent.posZ.floor()).east()
         val index = clickInOrder.indexOf(pos)
         if (index == 2 && clickInOrder.size == 3) {
@@ -144,6 +143,7 @@ object SimonSays : Module(
     }
 
     @SubscribeEvent
+
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (clickNeeded >= clickInOrder.size) return
 

@@ -1,16 +1,14 @@
 package me.odinmain.utils.skyblock.dungeon
 
 import com.google.common.collect.ComparisonChain
-import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
-import me.odinmain.OdinMain.scope
 import me.odinmain.events.impl.ReceivePacketEvent
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.floor
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.skyblock.ChatUtils
+import me.odinmain.utils.skyblock.ChatUtils.devMessage
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import me.odinmain.utils.skyblock.ItemUtils
 import me.odinmain.utils.skyblock.LocationUtils
@@ -19,11 +17,11 @@ import me.odinmain.utils.skyblock.PlayerUtils.posY
 import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.server.S02PacketChat
+import net.minecraft.util.EnumFacing
 import net.minecraft.world.WorldSettings
 import net.minecraftforge.event.entity.living.LivingEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import tv.twitch.chat.Chat
 
 object DungeonUtils {
 
@@ -58,30 +56,32 @@ object DungeonUtils {
         }
     }
 
-    private const val roomSize = 32
-    private const val startX = -185
-    private const val startZ = -185
+    private const val ROOM_SIZE = 32
+    private const val START_X = -185
+    private const val START_Z = -185
 
     @SubscribeEvent
     fun onMove(event: LivingEvent.LivingUpdateEvent) {
-        if (mc.theWorld == null || !inDungeons || !event.entity.equals(mc.thePlayer) || inBoss) return
+        if (mc.theWorld == null /*|| !inDungeons ||  inBoss */|| !event.entity.equals(mc.thePlayer)) return
         val x = ((mc.thePlayer.posX + 200) / 32).floor().toInt()
         val z = ((mc.thePlayer.posZ + 200) / 32).floor().toInt()
-        val xPos = startX + x * roomSize
-        val zPos = startZ + z * roomSize
+        val xPos = START_X + x * ROOM_SIZE
+        val zPos = START_Z + z * ROOM_SIZE
 
         currentRoom = scanRoom(xPos, zPos)
+        val maxCoreRotation = EnumFacing.HORIZONTALS.maxBy {
+            ScanUtils.getCore(xPos + it.frontOffsetX, zPos + it.frontOffsetZ)
+        } // will eventually be used to determine the rotation of the room
+        //devMessage("rotation: ${currentRoom?.rotation}, maximum core $maxCoreRotation")
     }
 
-    fun scanRoom(x: Int, z: Int, printDebug: Boolean = false): Room? {
+    private fun scanRoom(x: Int, z: Int): Room? {
         val height = mc.theWorld.getChunkFromChunkCoords(x shr 4, z shr 4).getHeightValue(x and 15, z and 15)
         if (height == 0) return null
 
         val roomCore = ScanUtils.getCore(x, z)
-        if (printDebug) modMessage("Room core: $roomCore")
         return Room(x, z, ScanUtils.getRoomData(roomCore) ?: return null).apply {
             core = roomCore
-            if (printDebug) modMessage("Room name: ${data.name}")
         }
     }
 

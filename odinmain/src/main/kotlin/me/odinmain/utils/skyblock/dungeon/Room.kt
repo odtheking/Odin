@@ -2,11 +2,13 @@ package me.odinmain.utils.skyblock.dungeon
 
 import me.odinmain.OdinMain
 import me.odinmain.utils.render.Color
+import net.minecraft.util.EnumFacing
 
 class Room(override val x: Int, override val z: Int, var data: RoomData) : Tile {
     var core = 0
     var hasMimic = false
     var isSeparator = false
+    var rotation = EnumFacing.NORTH
     override var state: RoomState = RoomState.UNDISCOVERED
     override val color: Color
         get() = when (data.type) {
