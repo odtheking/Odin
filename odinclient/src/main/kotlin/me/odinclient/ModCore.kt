@@ -26,7 +26,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.ModuleManager
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.impl.render.WaypointManager
-import me.odinmain.features.impl.skyblock.DevPlayers
+import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.clock.Executor

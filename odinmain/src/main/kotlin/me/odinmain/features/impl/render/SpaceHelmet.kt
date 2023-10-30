@@ -2,6 +2,7 @@ package me.odinmain.features.impl.render
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.settings.impl.NumberSetting
 import net.minecraft.init.Blocks
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
@@ -13,10 +14,12 @@ object SpaceHelmet : Module(
 ) {
     private val values = listOf(14, 1, 4, 5, 13, 9, 11, 10, 6) // Define the values you want to cycle through
     private var currentIndex = 0 // Initialize the counter
+    private val speed: Long by NumberSetting("Speed", 250, 100, 1000, 10)
 
     init {
-        execute(250) {
-            if (mc.thePlayer == null) return@execute
+        execute({ speed }) {
+            if (mc.thePlayer == null || mc.thePlayer.openContainer != mc.thePlayer.inventoryContainer) return@execute
+
 
             val color = values[currentIndex]
             currentIndex = (currentIndex + 1) % values.size

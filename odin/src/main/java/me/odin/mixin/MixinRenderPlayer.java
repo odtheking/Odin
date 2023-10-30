@@ -1,6 +1,6 @@
 package me.odin.mixin;
 
-import me.odinmain.features.impl.skyblock.DevPlayers;
+import me.odinmain.features.impl.render.DevPlayers;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.entity.RenderPlayer;
 import org.spongepowered.asm.mixin.Mixin;

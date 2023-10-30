@@ -20,18 +20,24 @@ object TerminalTimes : Module(
     private val sendMessage: Int by SelectorSetting("Send Message", "Always", arrayListOf("Only PB", "Always"))
     private var currentTerminal: Terminals? = null
     private var startTimer = 0L
+    private val panesPB = +NumberSetting("Panes PB", 1000.0, increment = 0.01, hidden = true)
+    private val colorPB = +NumberSetting("Color PB", 1000.0, increment = 0.01, hidden = true)
+    private val numbersPB = +NumberSetting("Numbers PB", 1000.0, increment = 0.01, hidden = true)
+    private val melodyPB = +NumberSetting("Melody PB", 1000.0, increment = 0.01, hidden = true)
+    private val startsWithPB = +NumberSetting("Starts With PB", 1000.0, increment = 0.01, hidden = true)
+    private val selectAllPB = +NumberSetting("Select All PB", 1000.0, increment = 0.01, hidden = true)
 
     @Suppress("UNUSED")
     enum class Terminals(
         val fullName: String,
         val setting: NumberSetting<Double>
     ) {
-        Panes("Correct all the panes!", +NumberSetting("Panes PB", 1000.0, increment = 0.01, hidden = true)),
-        Color("Change all to same color!", +NumberSetting("Panes PB", 1000.0, increment = 0.01, hidden = true)),
-        Numbers("Click in order!", +NumberSetting("Numbers PB", 1000.0, increment = 0.01, hidden = true)),
-        Melody("Click the button on time!", +NumberSetting("Melody PB", 1000.0, increment = 0.01, hidden = true)),
-        `Starts With`("What starts with", +NumberSetting("Starts With PB", 1000.0, increment = 0.01, hidden = true)),
-        `Select All`("Select all the", +NumberSetting("Select All PB", 1000.0, increment = 0.01, hidden = true)),
+        Panes("Correct all the panes!", panesPB),
+        Color("Change all to same color!", colorPB),
+        Numbers("Click in order!", numbersPB),
+        Melody("Click the button on time!", melodyPB),
+        `Starts With`("What starts with", startsWithPB),
+        `Select All`("Select all the", selectAllPB),
     }
 
     @SubscribeEvent

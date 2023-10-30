@@ -1,4 +1,4 @@
-package me.odinmain.features.impl.skyblock
+package me.odinmain.features.impl.render
 
 
 import net.minecraft.client.entity.AbstractClientPlayer
@@ -14,8 +14,7 @@ object DevPlayers {
         "Odtheking" to PlayerSize(3f, 3f, 3f),
         "Stivais" to PlayerSize(2f, 1f, 1f),
         "saksiq" to PlayerSize(2f, 1f, 1f),
-        "stiff_maister89" to PlayerSize(1f, 1f, 1f),
-
+        "stiff_maister89" to PlayerSize(1f, .8f, 1f),
     )
 
     fun preRenderCallbackScaleHook(entityLivingBaseIn: AbstractClientPlayer ) {

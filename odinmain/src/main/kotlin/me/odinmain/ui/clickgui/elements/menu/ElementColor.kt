@@ -70,10 +70,10 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
             // HUE
 
             dropShadow(x + 10f, y + 214f, w - 20f, 15f, 10f, 0.5f, 5f)
-            image("/assets/odin/ui/clickgui/HueGradient.png", x + 10f, y + 214f, w - 20f, 15f, 5f, javaClass)
+            image("/assets/odinmain/ui/clickgui/HueGradient.png", x + 10f, y + 214f, w - 20f, 15f, 5f, javaClass)
             rectOutline(x + 10f, y + 214f, w - 20f, 15f, buttonColor, 5f, 1f)
 
-            val hue = Pair((x + 10f + setting.hue * 221f), y + 221f)
+            val hue = x + 10f + setting.hue * 221f to y + 221f
             dropShadow(hue.first - 8.5f, hue.second - 8.5f, 17f, 17f, 2.5f, 2.5f, 9f)
             circle(hue.first, hue.second, 9f, color.hsbMax().darker(0.5f))
             circle(hue.first, hue.second, 7f, color.hsbMax())
@@ -85,8 +85,8 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
 
                 val alpha = Pair((x + 10f + setting.alpha * 220f), y + 243f)
                 dropShadow(alpha.first - 8.5f, alpha.second - 8.5f, 17f, 17f, 2.5f, 2.5f, 9f)
-                circle(alpha.first, alpha.second, 9f, Color(-1, setting.alpha).darker(.5f))
-                circle(alpha.first, alpha.second, 7f, Color(-1, setting.alpha))
+                circle(alpha.first, alpha.second, 9f, Color.WHITE.withAlpha(setting.alpha).darker(.5f))
+                circle(alpha.first, alpha.second, 7f, Color.WHITE.withAlpha(setting.alpha))
             }
 
             when (dragging) {

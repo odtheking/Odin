@@ -88,7 +88,7 @@ object DungeonUtils {
     ) {
         Archer("§6", Color(255, 170, 0)),
         Mage("§5", Color(170, 0, 170)),
-        Berserker("§4", Color(170, 0, 0)),
+        Berserk("§4", Color(170, 0, 0)),
         Healer("§a", Color(85, 255, 85)),
         Tank("§2", Color(0, 170, 0))
     }
@@ -96,7 +96,9 @@ object DungeonUtils {
     var teammates: List<Pair<EntityPlayer, Classes>> = emptyList()
 
     init {
-        execute(1000) { if (inDungeons) teammates = getDungeonTeammates() }
+        Executor(1000) {
+            if (inDungeons) teammates = getDungeonTeammates()
+        }.register()
     }
 
     @SubscribeEvent
@@ -114,18 +116,17 @@ object DungeonUtils {
         teammates = emptyList()
     }
 
-    private val tablistRegex = Regex("^\\[(\\d+)] (?:\\[\\w+] )*(\\w+) (?:.)*?\\((\\w+)(?: (\\w+))*\\)\$")
+    private val tablistRegex = Regex("\\[(\\d+)] (?:\\[\\w+] )*(\\w+) (?:.)*?\\((\\w+)(?: (\\w+))*\\)")
 
     private fun getDungeonTeammates(): List<Pair<EntityPlayer, Classes>> {
         val teammates = mutableListOf<Pair<EntityPlayer, Classes>>()
         val tabList = getDungeonTabList() ?: return emptyList()
 
         for ((_, line) in tabList) {
-            val (_, sbLevel, name, clazz, level) = tablistRegex.matchEntire(line.noControlCodes)?.groupValues ?: continue
+            val (_, sbLevel, name, clazz, level) = tablistRegex.find(line.noControlCodes)?.groupValues ?: continue
 
-            if (name != mc.thePlayer.name) continue
             mc.theWorld.getPlayerEntityByName(name)?.let { player ->
-                Classes.entries.find { it.code == clazz }?.let { foundClass ->
+                Classes.entries.find { it.name == clazz }?.let { foundClass ->
                     teammates.add(Pair(player, foundClass))
                 }
             }

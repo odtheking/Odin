@@ -24,22 +24,24 @@ object TeammatesHighlight : Module(
     private val whenVisible: Boolean by BooleanSetting("When Visible")
     private val inBoss: Boolean by BooleanSetting("In boss")
     private val outline: Boolean by BooleanSetting("Outline", true)
+
     // TODO: TEST
     @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
-        if (!shouldRender(event.entity) || outline) return
+        if (!shouldRender(event.entity) || !outline) return
 
         val teammate = DungeonUtils.teammates.find { it.first == event.entity } ?: return
+
+        if (!whenVisible && mc.thePlayer.canEntityBeSeen(teammate.first)) return
 
         OutlineUtils.outlineEntity(event, thickness, teammate.second.color, true)
     }
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-
         DungeonUtils.teammates.forEach { teammate ->
-
             if (!shouldRender(teammate.first)) return@forEach
+            if (!whenVisible && mc.thePlayer.canEntityBeSeen(teammate.first)) return@forEach
 
             RenderUtils.drawStringInWorld(
                 "${teammate.second.code}${teammate.first.name}",
@@ -53,8 +55,7 @@ object TeammatesHighlight : Module(
     }
 
     private fun shouldRender(teammate: Entity): Boolean {
-        return !(whenVisible || mc.thePlayer.canEntityBeSeen(teammate)) // visible
-                && (inBoss || !DungeonUtils.inBoss) // boss
+        return (inBoss || !DungeonUtils.inBoss) // boss
                 && teammate != mc.thePlayer // self
                 && DungeonUtils.inDungeons // in dungeon
     }

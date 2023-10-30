@@ -56,22 +56,16 @@ object TPMaze : Module(
                 pos,
                 yaw,
                 pitch
-            ) && !BlockPos(it.x, it.y, it.z).toAABB().expand(0.5, 0.5, 0.5).isVecInside(mc.thePlayer.positionVector)
+            ) && !BlockPos(it.x, it.y, it.z).toAABB().expand(0.75, .0, 0.75).isVecInside(mc.thePlayer.positionVector)
         }
     }
 
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
         if (DungeonUtils.currenRoomName != "Teleport Maze") return
-        if (correctPortals.size == 1) {
-            correctPortals.forEach {
-                RenderUtils.drawFilledBox(it.toAABB(), Color.GREEN.withAlpha(.5f), phase = true)
-            }
-        }
-        if (correctPortals.size > 1) {
-            correctPortals.forEach {
-                RenderUtils.drawFilledBox(it.toAABB(), Color.ORANGE.withAlpha(.5f), phase = true)
-            }
+        val color = if (correctPortals.size == 1) Color.GREEN else Color.ORANGE
+        correctPortals.forEach {
+            RenderUtils.drawFilledBox(it.toAABB(), color.withAlpha(.5f), phase = true)
         }
     }
 }

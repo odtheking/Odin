@@ -1,7 +1,7 @@
 package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.features.impl.skyblock.DevPlayers.devs
+import me.odinmain.features.impl.render.DevPlayers.devs
 import me.odinmain.utils.noControlCodes
 import net.minecraft.event.ClickEvent
 import net.minecraft.event.HoverEvent

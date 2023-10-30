@@ -8,6 +8,7 @@ import me.odinmain.config.Config
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.AlwaysActive
+import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.hud.EditHUDGui
