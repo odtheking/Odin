@@ -14,6 +14,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 import kotlin.math.exp
+import kotlin.math.max
 
 
 /*
@@ -33,9 +34,9 @@ object Animations : Module(
     val x: Float by NumberSetting("X", 0.0f, -2.5, 1.5, 0.05, description = "Moves the held item. Default: 0")
     val y: Float by NumberSetting("Y", 0.0f, -1.5, 1.5, 0.05, description = "Moves the held item. Default: 0")
     val z: Float by NumberSetting("Z", 0.0f, -1.5, 3.0, 0.05, description = "Moves the held item. Default: 0")
-    val yaw: Float by NumberSetting("Yaw", 0.0f, -180.0, 180.0, 5.0, description = "Rotates your held item. Default: 0")
-    val pitch: Float by NumberSetting("Pitch", 0.0f, -180.0, 180.0, 5.0, description = "Rotates your held item. Default: 0")
-    val roll: Float by NumberSetting("Roll", 0.0f, -180.0, 180.0, 5.0, description = "Rotates your held item. Default: 0")
+    val yaw: Float by NumberSetting("Yaw", 0.0f, -180.0, 180.0, 1.0, description = "Rotates your held item. Default: 0")
+    val pitch: Float by NumberSetting("Pitch", 0.0f, -180.0, 180.0, 1.0, description = "Rotates your held item. Default: 0")
+    val roll: Float by NumberSetting("Roll", 0.0f, -180.0, 180.0, 1.0, description = "Rotates your held item. Default: 0")
     val speed: Float by NumberSetting("Speed", 0.0f, -2.0, 1.0, 0.05, description = "Speed of the swing animation.")
     val ignoreHaste: Boolean by BooleanSetting("Ignore Haste", false, description = "Makes the chosen speed override haste modifiers.")
     val noEquipReset: Boolean by BooleanSetting("No Equip Reset", default = false, description = "Makes items instantly appear in your hand after switching")
@@ -72,12 +73,12 @@ object Animations : Module(
     }
 
     private fun getArmSwingAnimationEnd(player: EntityPlayerSP): Int {
-        if (ignoreHaste) return 6
-        return if (player.isPotionActive(Potion.digSpeed)) 6 - (1 + player.getActivePotionEffect(Potion.digSpeed)
-            .amplifier) * 1 else if (player.isPotionActive(
-                Potion.digSlowdown
-            )
-        ) 6 + (1 + player.getActivePotionEffect(Potion.digSlowdown).amplifier) * 2 else 6
+        val length =
+            if (ignoreHaste) 6
+            else if (player.isPotionActive(Potion.digSpeed)) 6 - (1 + player.getActivePotionEffect(Potion.digSpeed).amplifier)
+            else if (player.isPotionActive(Potion.digSlowdown)) 6 + (1 + player.getActivePotionEffect(Potion.digSlowdown).amplifier) * 2
+            else 6
+        return max((length * exp(-speed)),1.0f).toInt()
     }
 
     /*
