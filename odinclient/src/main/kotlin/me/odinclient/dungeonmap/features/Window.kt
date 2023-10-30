@@ -7,13 +7,13 @@ import me.odinclient.utils.skyblock.dungeon.map.MapUtils
 import me.odinclient.utils.skyblock.dungeon.map.MapUtils.mapRoomSize
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.equalsOneOf
+import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.skyblock.ItemUtils.itemID
 import me.odinmain.utils.skyblock.dungeon.*
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Graphics2D
 import java.awt.image.BufferedImage
-import javax.imageio.ImageIO
 import javax.swing.JFrame
 import javax.swing.JPanel
 import javax.swing.Timer
@@ -300,16 +300,12 @@ object Window: JFrame() {
         }
     }
 
-    private val defaultWhite = loadImage("/assets/odinclient/map/default/white_check.png")
-    private val defaultGreen = loadImage("/assets/odinclient/map/default/green_check.png")
-    private val defaultCross = loadImage("/assets/odinclient/map/default/cross.png")
-    private val neuWhite = loadImage("/assets/odinclient/map/neu/white_check.png")
-    private val neuGreen = loadImage("/assets/odinclient/map/neu/green_check.png")
-    private val neuCross = loadImage("/assets/odinclient/map/neu/cross.png")
+    private val defaultWhite = RenderUtils.loadImage("/assets/odinclient/map/default/white_check.png")
+    private val defaultGreen = RenderUtils.loadImage("/assets/odinclient/map/default/green_check.png")
+    private val defaultCross = RenderUtils.loadImage("/assets/odinclient/map/default/cross.png")
+    private val neuWhite = RenderUtils.loadImage("/assets/odinclient/map/neu/white_check.png")
+    private val neuGreen = RenderUtils.loadImage("/assets/odinclient/map/neu/green_check.png")
+    private val neuCross = RenderUtils.loadImage("/assets/odinclient/map/neu/cross.png")
 
-    private fun loadImage(path: String): BufferedImage {
-        val resource = this::class.java.getResource(path)
-            ?: return BufferedImage(8, 8, BufferedImage.TYPE_INT_ARGB) // poor fix for debug mode
-        return ImageIO.read(resource)
-    }
+
 }

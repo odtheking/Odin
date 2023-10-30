@@ -10,11 +10,12 @@ object DevPlayers {
 
     val devs = hashMapOf(
         "_Inton_" to PlayerSize(2f, .5f, 2f),
-        "OdinClient" to PlayerSize(2f, .5f, 1f),
-        "Odtheking" to PlayerSize(2f, .5f, 2f),
+        "odthebestest" to PlayerSize(0.1f, 0.1f, 0.1f),
+        "Odtheking" to PlayerSize(3f, 3f, 3f),
         "Stivais" to PlayerSize(2f, 1f, 1f),
         "saksiq" to PlayerSize(2f, 1f, 1f),
         "stiff_maister89" to PlayerSize(1f, 1f, 1f),
+
     )
 
     fun preRenderCallbackScaleHook(entityLivingBaseIn: AbstractClientPlayer ) {

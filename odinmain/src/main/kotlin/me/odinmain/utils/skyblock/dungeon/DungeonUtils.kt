@@ -3,13 +3,10 @@ package me.odinmain.utils.skyblock.dungeon
 import com.google.common.collect.ComparisonChain
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.ReceivePacketEvent
-import me.odinmain.utils.clock.Executor
-import me.odinmain.utils.clock.Executor.Companion.register
+import me.odinmain.features.impl.dungeon.AutoDungeonReque.execute
 import me.odinmain.utils.floor
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.skyblock.ChatUtils.devMessage
-import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import me.odinmain.utils.skyblock.ItemUtils
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.LocationUtils.currentDungeon
@@ -99,7 +96,7 @@ object DungeonUtils {
     var teammates: List<Pair<EntityPlayer, Classes>> = emptyList()
 
     init {
-        Executor(1000) { if (inDungeons) teammates = getDungeonTeammates() }.register()
+        execute(1000) { if (inDungeons) teammates = getDungeonTeammates() }
     }
 
     @SubscribeEvent
@@ -114,26 +111,29 @@ object DungeonUtils {
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
         inp5 = false
+        teammates = emptyList()
     }
+
     private val tablistRegex = Regex("^\\[(\\d+)] (?:\\[\\w+] )*(\\w+) (?:.)*?\\((\\w+)(?: (\\w+))*\\)\$")
 
     private fun getDungeonTeammates(): List<Pair<EntityPlayer, Classes>> {
         val teammates = mutableListOf<Pair<EntityPlayer, Classes>>()
-        getDungeonTabList()?.forEach { (_, line) ->
+        val tabList = getDungeonTabList() ?: return emptyList()
 
-            val match = tablistRegex.matchEntire(line.noControlCodes) ?: return@forEach
-            val (_, sbLevel, name, clazz, level) = match.groupValues
-            if (name == mc.thePlayer.name) return@forEach
-            mc.theWorld.playerEntities.find { player ->
-                player.name == name
-            }?.let { player ->
-                teammates.add(Pair(player, Classes.entries.find { classes -> classes.name == clazz }!!))
+        for ((_, line) in tabList) {
+            val (_, sbLevel, name, clazz, level) = tablistRegex.matchEntire(line.noControlCodes)?.groupValues ?: continue
+
+            if (name != mc.thePlayer.name) continue
+            mc.theWorld.getPlayerEntityByName(name)?.let { player ->
+                Classes.entries.find { it.code == clazz }?.let { foundClass ->
+                    teammates.add(Pair(player, foundClass))
+                }
             }
 
         }
-        //ChatUtils.modMessage(teammates)
         return teammates
     }
+
 
     private fun getDungeonTabList(): List<Pair<NetworkPlayerInfo, String>>? {
         val tabEntries = tabList
