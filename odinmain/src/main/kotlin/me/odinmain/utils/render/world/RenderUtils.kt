@@ -433,16 +433,6 @@ object RenderUtils {
         if (!depthCheck) GlStateManager.enableDepth()
     }
 
-    fun renderImage(img: ResourceLocation, x: Double, y: Double, scale: Float): Int {
-        GlStateManager.enableAlpha()
-        GlStateManager.color(1f, 1f, 1f, 1f)
-        GlStateManager.translate(x, y, 500.0)
-        mc.textureManager.bindTexture(img)
-        val renderSize = scale.roundToInt()
-        drawModel(0, 0, renderSize, renderSize)
-        return renderSize
-    }
-
     private fun drawModel(x: Int, y: Int, width: Int, height: Int) {
         worldRenderer.begin(GL_QUADS, DefaultVertexFormats.POSITION_TEX)
         worldRenderer.pos(x.toDouble(), (y + height).toDouble(), 0.0).tex(0.0, 1.0).endVertex()
@@ -505,4 +495,10 @@ object RenderUtils {
             ?: return BufferedImage(8, 8, BufferedImage.TYPE_INT_ARGB) // poor fix for debug mode
         return ImageIO.read(resource)
     }
+
+    private fun drawBufferedImage() {
+
+    }
+
+
 }

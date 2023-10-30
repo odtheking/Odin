@@ -35,17 +35,17 @@ object TerminalSolver : Module(
     tag = TagType.NEW
 ) {
     private val behindItem: Boolean by BooleanSetting("Behind Item", description = "Shows the item over the rendered solution")
+    private val cancelToolTip: Boolean by BooleanSetting("Stop Tooltips", default = true, description = "Stops rendering tooltips in terminals")
+    private val removeWrong: Boolean by BooleanSetting("Stop Rendering Wrong", description = "Stops rendering wrong items in terminals")
+    private val removeWrongRubix: Boolean by BooleanSetting("Stop Rubix", true).withDependency { removeWrong }
+    private val removeWrongStartsWith: Boolean by BooleanSetting("Stop Starts With", true).withDependency { removeWrong }
+    private val removeWrongSelect: Boolean by BooleanSetting("Stop Select", true).withDependency { removeWrong }
+    private val wrongColor: Color by ColorSetting("Wrong Color", Color(45, 45, 45), true).withDependency { removeWrong }
     private val textColor: Color by ColorSetting("Text Color", Color(220, 220, 220), true)
     private val rubixColor: Color by ColorSetting("Rubix Color", Color(0, 170, 170), true)
     private val orderColor: Color by ColorSetting("Order Color", Color(0, 170, 170), true)
     private val startsWithColor: Color by ColorSetting("Starts With Color", Color(0, 170, 170), true)
     private val selectColor: Color by ColorSetting("Select Color", Color(0, 170, 170), true)
-    private val cancelToolTip: Boolean by BooleanSetting("Stop Tooltips", default = true, description = "Stops rendering tooltips in terminals")
-    private val removeWrong: Boolean by BooleanSetting("Stop Rendering Wrong", description = "Stops rendering wrong items in terminals")
-    private val wrongColor: Color by ColorSetting("Wrong Color", Color(45, 45, 45), true).withDependency { removeWrong }
-    private val removeWrongRubix: Boolean by BooleanSetting("Stop Rubix", true).withDependency { removeWrong }
-    private val removeWrongStartsWith: Boolean by BooleanSetting("Stop Starts With", true).withDependency { removeWrong }
-    private val removeWrongSelect: Boolean by BooleanSetting("Stop Select", true).withDependency { removeWrong }
 
     private val zLevel: Float get() = if (behindItem && currentTerm != 1) 200f else 999f
     var openedTerminalTime = 0L

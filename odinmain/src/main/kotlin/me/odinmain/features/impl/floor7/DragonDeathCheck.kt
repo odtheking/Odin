@@ -1,10 +1,12 @@
 package me.odinmain.features.impl.floor7
 
+import com.sun.org.apache.xpath.internal.operations.Bool
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.scope
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.impl.floor7.p3.TerminalTimes.unaryPlus
 import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
@@ -29,16 +31,22 @@ object DragonDeathCheck : Module(
     private val sendNotif: Boolean by BooleanSetting("Send dragon confirmation", true)
     private val sendTime: Boolean by BooleanSetting("Send dragon time alive", true)
 
+    private val redPB = +NumberSetting("Panes PB", 1000.0, increment = 0.01, hidden = true)
+    private val orangePB = +NumberSetting("Color PB", 1000.0, increment = 0.01, hidden = true)
+    private val greenPB = +NumberSetting("Numbers PB", 1000.0, increment = 0.01, hidden = true)
+    private val bluePB = +NumberSetting("Melody PB", 1000.0, increment = 0.01, hidden = true)
+    private val purplePB = +NumberSetting("Starts With PB", 1000.0, increment = 0.01, hidden = true)
+
     private enum class Dragons(
         val pos: Vec3,
         val colorCode: String,
         val setting: NumberSetting<Double>
     ) {
-        Red(Vec3(27.0, 14.0, 59.0), "c", +NumberSetting("Red PB", 1000.0, increment = 0.01, hidden = true)),
-        Orange(Vec3(85.0, 14.0, 56.0), "6", +NumberSetting("Orange PB", 1000.0, increment = 0.01, hidden = true)),
-        Green(Vec3(27.0, 14.0, 94.0), "a", +NumberSetting("Green PB", 1000.0, increment = 0.01, hidden = true)),
-        Blue(Vec3(84.0, 14.0, 94.0), "b", +NumberSetting("Blue PB", 1000.0, increment = 0.01, hidden = true)),
-        Purple(Vec3(56.0, 14.0, 125.0), "5", +NumberSetting("Purple PB", 1000.0, increment = 0.01, hidden = true))
+        Red(Vec3(27.0, 14.0, 59.0), "c", redPB),
+        Orange(Vec3(85.0, 14.0, 56.0), "6", orangePB),
+        Green(Vec3(27.0, 14.0, 94.0), "a", greenPB),
+        Blue(Vec3(84.0, 14.0, 94.0), "b", bluePB),
+        Purple(Vec3(56.0, 14.0, 125.0), "5", purplePB)
     }
 
     private var dragonMap: Map<Int, Dragons> = HashMap()
