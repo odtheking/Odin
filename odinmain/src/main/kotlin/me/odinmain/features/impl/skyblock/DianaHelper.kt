@@ -37,6 +37,7 @@ object DianaHelper : Module(
     private val guessColor: Color by ColorSetting("Guess Color", default = Color.WHITE)
     private val tracerColor: Color by ColorSetting("Tracer Line Color", default = Color.WHITE, allowAlpha = true)
     private val tracer: Boolean by BooleanSetting("Tracer", default = false)
+    private val tracerWidth: Int by NumberSetting("Tracer Width", default = 5, min = 1, max = 20)
     private val sendInqMsg: Boolean by BooleanSetting("Send Inq Msg", default = true)
     private val showWarpSettings: Boolean by BooleanSetting("Show Warp Settings", default = true)
     private val castle: Boolean by BooleanSetting("Castle Warp").withDependency { showWarpSettings }
@@ -97,6 +98,7 @@ object DianaHelper : Module(
             }.takeIf { it.location.distanceTo(guess) + 30 < mc.thePlayer.positionVector.distanceTo(guess) }
 
             RenderUtils.renderCustomBeacon("§6Guess${warpLocation?.displayName ?: ""}§r", guess, guessColor, event.partialTicks)
+
             if (tracer)
                 RenderUtils.draw3DLine(mc.thePlayer.renderVec.addVec(y = mc.thePlayer.eyeHeight.toDouble()), guess, tracerColor, tracerWidth, depth = true, event.partialTicks)
         }
@@ -110,7 +112,7 @@ object DianaHelper : Module(
 
     override fun onKeybind() {
         if (!cmdCooldown.hasTimePassed()) return
-        warpLocation?.let { ChatUtils.sendCommand("warp ${it.name}") }
+        ChatUtils.sendCommand("warp ${warpLocation?.name ?: return}")
     }
 
     private enum class WarpPoint(
