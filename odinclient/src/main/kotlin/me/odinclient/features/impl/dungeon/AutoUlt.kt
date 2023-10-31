@@ -1,12 +1,12 @@
 package me.odinclient.features.impl.dungeon
 
 import me.odinclient.utils.skyblock.PlayerUtils
+import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.SelectorSetting
+import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
-import me.odinmain.utils.skyblock.ChatUtils.unformattedText
-import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -25,8 +25,8 @@ object AutoUlt : Module(
     }
 
     @SubscribeEvent
-    fun onChat(event: ClientChatReceivedEvent) {
-        when (event.unformattedText) {
+    fun onChat(event: ChatPacketEvent) {
+        when (event.message.noControlCodes) {
             "[BOSS] Maxor: YOU TRICKED ME!", "[BOSS] Maxor: THAT BEAM! IT HURTS! IT HURTS!!" -> {
                 if (firstLaser) return
 

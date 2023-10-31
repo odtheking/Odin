@@ -7,12 +7,14 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
+import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.VecUtils.addVec
 import me.odinmain.utils.VecUtils.toVec3i
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.floor
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
+import me.odinmain.utils.render.world.RenderUtils.renderVec
 import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.DianaBurrowEstimate
 import me.odinmain.utils.skyblock.PlayerUtils
@@ -33,6 +35,7 @@ object DianaHelper : Module(
     tag = TagType.NEW
 ) {
     private val guessColor: Color by ColorSetting("Guess Color", default = Color.WHITE)
+    private val tracerColor: Color by ColorSetting("Tracer Line Color", default = Color.WHITE, allowAlpha = true)
     private val tracer: Boolean by BooleanSetting("Tracer", default = false)
     private val sendInqMsg: Boolean by BooleanSetting("Send Inq Msg", default = true)
     private val showWarpSettings: Boolean by BooleanSetting("Show Warp Settings", default = true)
@@ -91,13 +94,16 @@ object DianaHelper : Module(
         renderPos?.let { guess ->
             warpLocation = WarpPoint.entries.filter { it.unlocked() }.minBy { warp ->
                 warp.location.distanceTo(guess)
-            }.takeIf { it.location.distanceTo(guess) + 20 < mc.thePlayer.positionVector.distanceTo(guess) }
+            }.takeIf { it.location.distanceTo(guess) + 30 < mc.thePlayer.positionVector.distanceTo(guess) }
+
             RenderUtils.renderCustomBeacon("§6Guess${warpLocation?.displayName ?: ""}§r", guess, guessColor, event.partialTicks)
             if (tracer)
-                RenderUtils.draw3DLine(mc.thePlayer.positionVector.addVec(y = mc.thePlayer.eyeHeight.toDouble()), guess, guessColor, 5, true, event.partialTicks)
+                RenderUtils.draw3DLine(mc.thePlayer.renderVec.addVec(y = mc.thePlayer.eyeHeight.toDouble()), guess, tracerColor, tracerWidth, depth = true, event.partialTicks)
         }
 
-        burrowsRender.forEach { (location, type) ->
+        val iterator = burrowsRender.iterator()
+        while (iterator.hasNext()) {
+            val (location, type) = iterator.next()
             RenderUtils.renderCustomBeacon(type.text, Vec3(location), type.color, event.partialTicks)
         }
     }
@@ -112,11 +118,11 @@ object DianaHelper : Module(
         val location: Vec3,
         var unlocked: () -> Boolean
     ) {
-        HUB     (displayName = " §8(Hub)",          Vec3(-3.0, 70.0, -70.0),   { true }),
-        CASTLE  (displayName = " §8(Castle)",       Vec3(-250.0, 130.0, 45.0), { castle }),
-        CRYPT   (displayName = " §8(Crypt)",        Vec3(-190.0, 74.0, -88.0), { crypt }),
-        DA      (displayName = " §8(Dark Auction)", Vec3(91.0, 74.0, 17.03),   { darkAuction }),
-        MUSEUM  (displayName = " §8(Museum)",       Vec3(-75.0, 76.0, 81.0),   { museum }),
-        WIZARD  (displayName = " §8(Wizard)",       Vec3(42.5, 122.0, 69.0),   { wizard })
+        HUB     (displayName = " §8(§fHub§8)",          Vec3(-3.0, 70.0, -70.0),   { true }),
+        CASTLE  (displayName = " §8(§fCastle§8)",       Vec3(-250.0, 130.0, 45.0), { castle }),
+        CRYPT   (displayName = " §8(§fCrypt§8)",        Vec3(-190.0, 74.0, -88.0), { crypt }),
+        DA      (displayName = " §8(§fDark Auction§8)", Vec3(91.0, 75.0, 173.0),   { darkAuction }),
+        MUSEUM  (displayName = " §8(§fMuseum§8)",       Vec3(-75.0, 76.0, 81.0),   { museum }),
+        WIZARD  (displayName = " §8(§fWizard§8)",       Vec3(42.5, 122.0, 69.0),   { wizard })
     }
 }

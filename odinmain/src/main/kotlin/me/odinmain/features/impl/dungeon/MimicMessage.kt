@@ -16,7 +16,6 @@ object MimicMessage : Module(
     category = Category.DUNGEON,
     tag = TagType.NEW
 ) {
-
     private val mimicMessage: String by StringSetting("Mimic Message", "Mimic Killed", 40, description = "Message sent when mimic is detected as killed")
 
     private var mimicKilled = false

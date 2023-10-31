@@ -1,13 +1,13 @@
 package me.odinclient.features.impl.dungeon
 
 import me.odinclient.utils.skyblock.PlayerUtils.dropItem
+import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.floor
@@ -22,8 +22,8 @@ object AutoWish: Module(
     private var canWish = true
 
     @SubscribeEvent
-    fun onChat(event: ClientChatReceivedEvent) {
-        val message = event.message.unformattedText.noControlCodes
+    fun onChat(event: ChatPacketEvent) {
+        val message = event.message.noControlCodes
         if ((message.contains("Wish is ready to use!") || message.contains("Your Healer ULTIMATE wish is now available!")) && !DungeonUtils.inBoss && !DungeonUtils.isGhost)
             canWish = true
         else if (DungeonUtils.inBoss && canWish && !DungeonUtils.isGhost)

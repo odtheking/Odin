@@ -1,13 +1,13 @@
 package me.odinclient.features.impl.dungeon
 
 import me.odinclient.utils.skyblock.PlayerUtils.windowClick
+import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.ItemUtils
-import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -21,8 +21,8 @@ object AutoMask : Module(
     private val bonzoClock = Clock(180_000)
 
     @SubscribeEvent
-    fun onClientChatReceived(event: ClientChatReceivedEvent) {
-        val msg = event.message.unformattedText.noControlCodes
+    fun onClientChatReceived(event: ChatPacketEvent) {
+        val msg = event.message.noControlCodes
         val regex = Regex("^(Second Wind Activated!)? ?Your (.+) saved your life!\$")
         if (!regex.matches(msg)) return
 

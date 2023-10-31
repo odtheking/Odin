@@ -251,4 +251,11 @@ object VecUtils {
         if (blocks.isEmpty()) return pos.coerceYIn(50.0, 90.0)
         return Vec3(blocks.minBy { abs(pos.yCoord - it.y) })
     }
+
+    fun Vec3.lerp(otherVec: Vec3, alpha: Double): Vec3 {
+        val x = (otherVec.xCoord - this.xCoord) * alpha + this.xCoord
+        val y = (otherVec.yCoord - this.yCoord) * alpha + this.yCoord
+        val z = (otherVec.zCoord - this.zCoord) * alpha + this.zCoord
+        return Vec3(x, y, z)
+    }
 }
