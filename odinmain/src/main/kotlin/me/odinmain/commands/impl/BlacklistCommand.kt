@@ -6,7 +6,7 @@ import me.odinmain.utils.skyblock.ChatUtils.modMessage
 
 val blacklistCommand = "blacklist" {
     does {
-        modMessage("Blacklist incorrect usage. Usage: add, remove, clear, list")
+        modMessage("§cBlacklist incorrect usage. §fUsage: add, remove, clear, list")
     }
 
     "add" does {

@@ -1,6 +1,5 @@
 package me.odinmain.commands.impl
 
-import me.odinmain.OdinMain
 import me.odinmain.commands.invoke
 import me.odinmain.config.MiscConfig
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
@@ -9,8 +8,7 @@ private inline val autoSell get() = MiscConfig.autoSell
 
 val autoSellCommand = "autosell" {
     does {
-        if (OdinMain.onLegitVersion) return@does modMessage("This feature is not available on the legit version.")
-        modMessage("Incorrect usage. Usage: add, remove, clear, list")
+        modMessage("§cIncorrect usage. §fUsage: add, remove, clear, list")
     }
 
     "add" does {

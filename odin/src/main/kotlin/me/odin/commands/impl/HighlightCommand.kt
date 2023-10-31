@@ -1,5 +1,6 @@
-package me.odinmain.commands.impl
+package me.odin.commands.impl
 
+import me.odinmain.OdinMain
 import me.odinmain.commands.invoke
 import me.odinmain.config.MiscConfig
 import me.odinmain.features.impl.render.CustomESP
@@ -7,27 +8,28 @@ import me.odinmain.utils.skyblock.ChatUtils.modMessage
 
 private inline val espList get() = MiscConfig.espList
 
-val espCommand = "esp" {
+val highlightCommand = "highlight" {
     does {
-        modMessage("§cESP incorrect usage. §fUsage: add, remove, clear, list")
+        if (!OdinMain.onLegitVersion) return@does modMessage("§cThis command isn't available here try §f/esp.")
+        modMessage("§cHighlight incorrect usage. §fUsage: add, remove, clear, list")
     }
 
     "add" does {
         if (it.isEmpty()) return@does modMessage("§cMissing mob name!")
         val mobName = it.joinToString(" ")
-        if (mobName in espList) return@does modMessage("$mobName is already on the ESP list.")
+        if (mobName in espList) return@does modMessage("$mobName is already on the Highlight list.")
 
-        modMessage("Added $mobName to the ESP list.")
+        modMessage("Added $mobName to the Highlight list.")
         espList.add(mobName)
         MiscConfig.saveAllConfigs()
     }
 
     "remove" does {
-        if (it.isEmpty()) return@does modMessage("§cMissing mob ESP!")
+        if (it.isEmpty()) return@does modMessage("§cMissing mob Highlight!")
         val mobName = it.joinToString(" ")
         if (mobName !in espList) return@does modMessage("$mobName isn't on the list.")
 
-        modMessage("Removed $mobName from the ESP list.")
+        modMessage("Removed $mobName from the Highlight list.")
         espList.remove(mobName)
         MiscConfig.saveAllConfigs()
         CustomESP.currentEntities.clear()
@@ -38,7 +40,7 @@ val espCommand = "esp" {
         espList.clear()
         MiscConfig.saveAllConfigs()
         CustomESP.currentEntities.clear()
-        modMessage("ESP List cleared.")
+        modMessage("Highlight List cleared.")
     }
 
 

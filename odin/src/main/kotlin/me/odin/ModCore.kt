@@ -4,11 +4,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import me.odin.commands.impl.highlightCommand
 import me.odin.features.impl.floor7.p3.ArrowAlign
 import me.odin.features.impl.floor7.p3.SimonSays
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
-import me.odinmain.commands.impl.*
+import me.odinmain.commands.impl.WaypointCommand
+import me.odinmain.commands.impl.blacklistCommand
+import me.odinmain.commands.impl.mainCommand
+import me.odinmain.commands.impl.termSimCommand
 import me.odinmain.config.Config
 import me.odinmain.config.MiscConfig
 import me.odinmain.config.WaypointConfig
@@ -16,8 +20,8 @@ import me.odinmain.events.EventDispatcher
 import me.odinmain.features.Module
 import me.odinmain.features.ModuleManager
 import me.odinmain.features.impl.render.ClickGUIModule
-import me.odinmain.features.impl.render.WaypointManager
 import me.odinmain.features.impl.render.DevPlayers
+import me.odinmain.features.impl.render.WaypointManager
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.clock.Executor
@@ -132,10 +136,9 @@ class ModCore {
         val commandList = arrayOf(
             mainCommand,
             termSimCommand,
-            autoSellCommand,
             blacklistCommand,
-            espCommand,
             WaypointCommand,
+            highlightCommand,
         )
     }
 }

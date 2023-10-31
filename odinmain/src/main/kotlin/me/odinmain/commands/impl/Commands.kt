@@ -3,6 +3,7 @@ package me.odinmain.commands.impl
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.display
 import me.odinmain.OdinMain.mc
+import me.odinmain.OdinMain.onLegitVersion
 import me.odinmain.commands.invoke
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.impl.dungeon.TPMaze
@@ -44,8 +45,9 @@ val mainCommand = "od" {
 
     "set" {
         sendError("Incorrect Usage. Usage: rotation, yaw, pitch")
-
         "rotation" does {
+            if (onLegitVersion) return@does modMessage("§cInvalid command! Use `od help` for a list of commands.")
+
             if (it.size != 2) modMessage("§cMissing yaw and pitch!")
             else {
                 if (setRotation(it[0], it[1])) modMessage("Set yaw and pitch to ${it[0]}, ${it[1]}")
@@ -54,6 +56,8 @@ val mainCommand = "od" {
         }
 
         "yaw" does {
+            if (onLegitVersion) return@does modMessage("§cInvalid command! Use `od help` for a list of commands.")
+
             if (it.size != 1) modMessage("§cMissing yaw!")
             else {
                 if (setRotation(yaw = it[0])) modMessage("Set yaw to ${it[0]}")
@@ -62,6 +66,8 @@ val mainCommand = "od" {
         }
 
         "pitch" does {
+            if (onLegitVersion) return@does modMessage("§cInvalid command! Use `od help` for a list of commands.")
+
             if (it.size != 1) modMessage("§cMissing pitch!")
             else {
                 if (setRotation(pitch = it[0])) modMessage("Set pitchto ${it[0]}")
@@ -87,24 +93,36 @@ val mainCommand = "od" {
             if (!OdinMain.onLegitVersion) {
                 modMessage(
                     """
-            List of commands:
-             - /od » §7Main command. Do `/od help this` for more info about this command.
-             - /autosell » §7Used to configure what items are automatically sold with Auto Sell.
-             - /blacklist » §7 Word this to describe what blacklist even does.
-             - /esp » §7Used to configure ESP list.
-             - /waypoint » §7Configure waypoints.
-             - /termsim » §7Simulates terminals so you can practice them.
-            """.trimIndent()
+                    List of commands:
+                     §3- /od » §8Main command.
+                     §3- /autosell » §8Used to configure what items are automatically sold with Auto Sell.
+                     §3- /blacklist » §8Used to configure your blacklist.
+                     §3- /esp » §8Used to configure ESP list.
+                     §3- /waypoint » §8Configure waypoints.
+                     §3- /termsim » §8Simulates terminals so you can practice them.
+                     §3- /rq » §8Requeues dungeon run.
+                     §3- /simulate » §8Simulates chat messages.
+                     §3- /set yaw » §8Sets your yaw.
+                     §3- /set pitch » §8Sets your pitch.
+                     §3- /set rotation » §8Sets your yaw and pitch.
+                     §3- /m? » §8Teleports you to a floor in master mode.
+                     §3- /f? » §8Teleports you to a floor in normal mode.
+                    """.trimIndent()
                 )
             } else
                 modMessage(
                     """
-                List of commands:
-             - /od » §7Main command. Do `/od help this` for more info about this command.
-             - /blacklist » §7 Word this to describe what blacklist even does.
-             - /highlight » §7Used to configure highlight list.
-             - /waypoint » §7Configure waypoints.
-             - /termsim » §7Simulates terminals so you can practice them.""".trimIndent()
+                     List of commands:
+                     §3- /od §7» §8Main command.
+                     §3- /blacklist §7» §8Used to configure your blacklist.
+                     §3- /highlight §7» §8Used to configure Highlight list.
+                     §3- /waypoint §7» §8Configure waypoints.
+                     §3- /termsim §7» §8Simulates terminals so you can practice them.
+                     §3- /rq §7» §8Requeues dungeon run.
+                     §3- /simulate §7» §8Simulates chat messages.
+                     §3- /m? §7» §8Teleports you to a floor in master mode.
+                     §3- /f? §7» §8Teleports you to a floor in normal mode.
+                     """.trimIndent()
                 )
         }
 
