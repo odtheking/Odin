@@ -40,7 +40,7 @@ object DianaBurrowEstimate {
 
 
     fun handleBurrow(it: S2APacketParticles) {
-        val particleType = ParticleType.getParticleType(it) ?: ParticleType.EMPTY
+        val particleType = ParticleType.getParticleType(it) ?: return
         val location = Vec3i(it.xCoordinate, it.yCoordinate - 1, it.zCoordinate)
         val burrow = burrows.getOrPut(location) { Burrow(location) }
 

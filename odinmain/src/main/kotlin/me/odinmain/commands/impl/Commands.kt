@@ -9,6 +9,7 @@ import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.impl.dungeon.TPMaze
 import me.odinmain.features.impl.floor7.p3.termsim.StartGui
 import me.odinmain.features.impl.render.ClickGUIModule
+import me.odinmain.features.impl.skyblock.DianaHelper
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.utils.skyblock.ChatUtils
@@ -107,6 +108,7 @@ val mainCommand = "od" {
                      §3- /set rotation » §8Sets your yaw and pitch.
                      §3- /m? » §8Teleports you to a floor in master mode.
                      §3- /f? » §8Teleports you to a floor in normal mode.
+                     §3- /dianareset §7» §8Resets all active diana waypoints.
                     """.trimIndent()
                 )
             } else
@@ -122,6 +124,7 @@ val mainCommand = "od" {
                      §3- /simulate §7» §8Simulates chat messages.
                      §3- /m? §7» §8Teleports you to a floor in master mode.
                      §3- /f? §7» §8Teleports you to a floor in normal mode.
+                     §3- /dianareset §7» §8Resets all active diana waypoints.
                      """.trimIndent()
                 )
         }
@@ -135,6 +138,10 @@ val mainCommand = "od" {
     "resetTP" does {
         TPMaze.correctPortals = listOf()
         TPMaze.portals = setOf()
+    }
+
+    "dianareset" does {
+        DianaHelper.burrowsRender.clear()
     }
 
     does {
