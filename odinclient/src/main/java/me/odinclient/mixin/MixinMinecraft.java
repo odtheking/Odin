@@ -4,15 +4,12 @@ import me.odinclient.features.impl.dungeon.CancelInteract;
 import me.odinclient.features.impl.dungeon.SecretTriggerbot;
 import me.odinclient.utils.skyblock.PlayerUtils;
 import me.odinmain.events.impl.ClickEvent;
-import me.odinmain.events.impl.PostGuiOpenEvent;
 import me.odinmain.events.impl.PreKeyInputEvent;
 import me.odinmain.events.impl.PreMouseInputEvent;
 import me.odinmain.features.impl.render.Animations;
 import me.odinmain.features.impl.render.CPSDisplay;
-import me.odinmain.features.impl.render.RenderOptimizer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemBlock;
@@ -79,14 +76,10 @@ public class MixinMinecraft {
     }
 
     @Inject(method = "clickMouse", at = @At("HEAD"), cancellable = true)
-    private void clickMouse(CallbackInfo ci) {
+    private void clickMouse(CallbackInfo ci)
+    {
         CPSDisplay.INSTANCE.onLeftClick();
         if (MinecraftForge.EVENT_BUS.post(new ClickEvent.LeftClickEvent())) ci.cancel();
-    }
-
-    @Inject(method = "displayGuiScreen", at = @At("RETURN"))
-    private void onDisplayGuiScreen(GuiScreen guiScreenIn, CallbackInfo ci) {
-        MinecraftForge.EVENT_BUS.post(new PostGuiOpenEvent());
     }
 
     @Redirect(method = {"rightClickMouse"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/WorldClient;isAirBlock(Lnet/minecraft/util/BlockPos;)Z"))
@@ -94,7 +87,7 @@ public class MixinMinecraft {
         return CancelInteract.INSTANCE.cancelInteractHook(instance, blockPos);
     }
 
-    @Inject(method = { "runGameLoop" }, at = { @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;skipRenderWorld:Z") })
+    /*@Inject(method = { "runGameLoop" }, at = { @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;skipRenderWorld:Z") })
     public void skipRenderWorld(final CallbackInfo ci) {
         if (this.skipRenderWorld) {
             RenderOptimizer.INSTANCE.drawGui();
@@ -106,5 +99,10 @@ public class MixinMinecraft {
             }
         }
     }
+
+    @Inject(method = "displayGuiScreen", at = @At("RETURN"))
+    private void onDisplayGuiScreen(GuiScreen guiScreenIn, CallbackInfo ci) {
+        MinecraftForge.EVENT_BUS.post(new PostGuiOpenEvent());
+    }*/
 
 }
