@@ -346,7 +346,7 @@ color: #8b8b8b; /* Darken the font color */
   max-width: 100%; /* Ensure the image fits within the grid cell */
   height: 100%; /* Maintain aspect ratio */
   grid-row: span 2; /* Make the image span two rows */
-  transform: scale(0.95);
+  transform: scale(1.9);
 }
 
 .cookie {
