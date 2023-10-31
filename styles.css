@@ -152,12 +152,6 @@ color: #8b8b8b; /* Darken the font color */
   color: #8b8b8b; /* Darken the font color */
 }
 
-
-
-
-
-
-
 .container-divider {
   background-color: white;
   height: 0.5px;
@@ -166,10 +160,6 @@ color: #8b8b8b; /* Darken the font color */
   margin-top: 0 auto;
   opacity: 0.25;
 }
-
-
-
-
 
 .centered-text p {
   text-align: center; /* Center the text within the container */
@@ -310,17 +300,16 @@ color: #8b8b8b; /* Darken the font color */
   transform: scale(0.9);
   grid-row: span 2; /* Make the image span two rows */
   animation-name: fadeInImage1;
+  grid-column: 1 / 1;
 
 }
 
 .fuckglass {
   max-width: 100%; /* Ensure the image fits within the grid cell */
-  height: 100%; /* Maintain aspect ratio */
   grid-row: span 2; /* Make the image span two rows */
-  transform:  scale(0.9) translateY(-117%); /* Adjust as needed */
+  transform:  scale(0.9) translateY(-2%); /* Adjust as needed */
   animation-name: fadeInImage2;
-  grid-column-start: 1;
-
+  grid-column: 1 / 1;
 }
 
 .fuckdiorite, .fuckglass {
@@ -371,7 +360,7 @@ color: #8b8b8b; /* Darken the font color */
   max-width: 100%; /* Ensure the image fits within the grid cell */
   height: 100%; /* Maintain aspect ratio */
   grid-row: span 2; /* Make the image span two rows */
-  margin-left: 2vw;
+  margin-left: 2rem;
   
 }
 
@@ -555,10 +544,6 @@ color: #8b8b8b; /* Darken the font color */
   
   .text {
     font-size: 4.5vw; /* Adjust the font size using vw */
-  }
-
-  .ghost {
-    margin-left: 10vw;
   }
 
   .module-list-legit {
