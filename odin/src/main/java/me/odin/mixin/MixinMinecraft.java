@@ -1,5 +1,6 @@
 package me.odin.mixin;
 
+import me.odinmain.events.impl.ClickEvent;
 import me.odinmain.events.impl.PostGuiOpenEvent;
 import me.odinmain.events.impl.PreKeyInputEvent;
 import me.odinmain.events.impl.PreMouseInputEvent;
@@ -43,8 +44,9 @@ public class MixinMinecraft {
         }
     }
 
-    @Inject(method = "rightClickMouse", at = @At("HEAD"))
+    @Inject(method = "rightClickMouse", at = @At("HEAD"), cancellable = true)
     private void rightClickMouse(CallbackInfo ci) {
+        if (MinecraftForge.EVENT_BUS.post(new ClickEvent.RightClickEvent())) ci.cancel();
         CPSDisplay.INSTANCE.onRightClick();
         /*
         Taken from Sk1erLLC's OldAnimations Mod
@@ -58,8 +60,9 @@ public class MixinMinecraft {
         }
     }
 
-    @Inject(method = "clickMouse", at = @At("HEAD"))
+    @Inject(method = "clickMouse", at = @At("HEAD"), cancellable = true)
     private void clickMouse(CallbackInfo ci) {
+        if (MinecraftForge.EVENT_BUS.post(new ClickEvent.LeftClickEvent())) ci.cancel();
         CPSDisplay.INSTANCE.onLeftClick();
     }
 

@@ -30,7 +30,7 @@ object VecUtils {
                 (entity.posZ - entity1.posZ).pow(2.0)
     }
 
-    private fun fastEyeHeight(): Float {
+    fun fastEyeHeight(): Float {
         return if (mc.thePlayer?.isSneaking == true) 1.54f else 1.62f
     }
 
@@ -134,8 +134,8 @@ object VecUtils {
     /**
      * Adds the given coordinates to the Vec3.
      */
-    fun Vec3.addVec(x: Double = .0, y: Double = .0, z: Double = .0): Vec3 {
-        return this.addVector(x, y, z)
+    fun Vec3.addVec(x: Number = .0, y: Number = .0, z: Number = .0): Vec3 {
+        return this.addVector(x.toDouble(), y.toDouble(), z.toDouble())
     }
 
     /**

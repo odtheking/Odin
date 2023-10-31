@@ -61,9 +61,9 @@ public class MixinMinecraft {
 
     @Inject(method = "rightClickMouse", at = @At("HEAD"), cancellable = true)
     private void rightClickMouse(CallbackInfo ci) {
+        CPSDisplay.INSTANCE.onRightClick();
         if (MinecraftForge.EVENT_BUS.post(new ClickEvent.RightClickEvent())) {
             ci.cancel();
-            CPSDisplay.INSTANCE.onRightClick();
             return;
         }
         /*
@@ -80,8 +80,8 @@ public class MixinMinecraft {
 
     @Inject(method = "clickMouse", at = @At("HEAD"), cancellable = true)
     private void clickMouse(CallbackInfo ci) {
-        if (MinecraftForge.EVENT_BUS.post(new ClickEvent.LeftClickEvent())) ci.cancel();
         CPSDisplay.INSTANCE.onLeftClick();
+        if (MinecraftForge.EVENT_BUS.post(new ClickEvent.LeftClickEvent())) ci.cancel();
     }
 
     @Inject(method = "displayGuiScreen", at = @At("RETURN"))

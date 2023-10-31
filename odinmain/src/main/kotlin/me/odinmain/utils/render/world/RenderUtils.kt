@@ -59,6 +59,7 @@ object RenderUtils {
         get() = Vec3(renderX, renderY, renderZ)
 
     fun Color.bindColor() {
+        GlStateManager.resetColor()
         GlStateManager.color(r / 255f, g / 255f, b / 255f, a / 255f)
     }
 
@@ -140,6 +141,7 @@ object RenderUtils {
         GlStateManager.enableTexture2D()
         GlStateManager.disableBlend()
         GlStateManager.enableDepth()
+        GlStateManager.resetColor()
         GlStateManager.popMatrix()
     }
 
@@ -254,7 +256,7 @@ object RenderUtils {
             GlStateManager.depthMask(true)
         }
 
-        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
+        GlStateManager.resetColor()
         GlStateManager.depthMask(true)
         GlStateManager.enableDepth()
         GlStateManager.popMatrix()
@@ -286,6 +288,9 @@ object RenderUtils {
         renderBeaconBeam(floor(x), .0, floor(z), color, a, true, partialTicks)
     }
 
+    fun WorldRenderer.color(color: Color) { // local function is used to simplify this.
+        this.color(color.r / 255f, color.g / 255f, color.b / 255f, color.alpha).endVertex()
+    }
 
 
     fun draw3DLine(pos1: Vec3, pos2: Vec3, color: Color, lineWidth: Int, depth: Boolean, partialTicks: Float) {
@@ -296,6 +301,7 @@ object RenderUtils {
         val realZ: Double = render.lastTickPosZ + (render.posZ - render.lastTickPosZ) * partialTicks
 
         GlStateManager.pushMatrix()
+        color.bindColor()
         GlStateManager.translate(-realX, -realY, -realZ)
         GlStateManager.disableTexture2D()
         GlStateManager.enableBlend()
@@ -307,7 +313,6 @@ object RenderUtils {
             GL11.glDisable(GL11.GL_DEPTH_TEST)
             GlStateManager.depthMask(false)
         }
-        color.bindColor()
 
         worldRenderer.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
         worldRenderer.pos(pos1.xCoord, pos1.yCoord, pos1.zCoord).endVertex()
@@ -324,7 +329,7 @@ object RenderUtils {
         GlStateManager.disableBlend()
         GlStateManager.enableAlpha()
         GlStateManager.enableTexture2D()
-        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
+        GlStateManager.resetColor()
         GlStateManager.popMatrix()
     }
 
@@ -395,6 +400,7 @@ object RenderUtils {
 
             tessellator.draw()
             GlStateManager.disableBlend()
+            GlStateManager.resetColor()
             GlStateManager.popMatrix()
             GlStateManager.disableCull()
             GlStateManager.pushMatrix()
@@ -426,6 +432,7 @@ object RenderUtils {
             endVertex()
         }
         tessellator.draw()
+        GlStateManager.resetColor()
         GlStateManager.disableBlend()
         GlStateManager.popMatrix()
         GlStateManager.enableLighting()
@@ -486,6 +493,7 @@ object RenderUtils {
         GlStateManager.enableLighting()
         GlStateManager.depthMask(true)
         GlStateManager.enableTexture2D()
+        GlStateManager.resetColor()
         if (phase) GlStateManager.enableDepth()
         GlStateManager.popMatrix()
     }

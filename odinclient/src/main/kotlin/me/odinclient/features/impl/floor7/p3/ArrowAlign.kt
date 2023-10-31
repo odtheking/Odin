@@ -1,10 +1,7 @@
 package me.odinclient.features.impl.floor7.p3
 
-import me.odinclient.features.impl.floor7.p3.ArrowAlign.area
-import me.odinclient.features.impl.floor7.p3.ArrowAlign.neededRotations
 import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinmain.events.impl.ClickEvent
-import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -13,9 +10,6 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
-import me.odinmain.utils.skyblock.ChatUtils.devMessage
-import me.odinmain.utils.skyblock.ChatUtils.modMessage
-import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.entity.item.EntityItemFrame
 import net.minecraft.init.Blocks
 import net.minecraft.init.Items
@@ -23,8 +17,6 @@ import net.minecraft.item.Item
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
-import net.minecraftforge.event.entity.player.EntityInteractEvent
-import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.*
 
@@ -38,6 +30,8 @@ object ArrowAlign : Module(
     private val blockWrong: Boolean by BooleanSetting("Block Wrong Clicks", false, description = "Blocks wrong clicks")
     private val triggerBot: Boolean by BooleanSetting("Trigger Bot")
     private val delay: Long by NumberSetting<Long>("Delay", 200, 70, 500).withDependency { triggerBot }
+    private val multipleScans: Boolean by BooleanSetting("Multiple Scans", true)
+    private var scanned = false
 
     private val area = BlockPos.getAllInBox(BlockPos(-2, 125, 79), BlockPos(-2, 121, 75))
         .toList().sortedWith { a, b ->
@@ -53,11 +47,12 @@ object ArrowAlign : Module(
 
     init {
         execute(3000) {
-            if (mc.thePlayer.getDistanceSq(BlockPos(-2, 122, 76)) > 20 * 20 /*|| DungeonUtils.getPhase() != 3*/) return@execute
+            if (mc.thePlayer.getDistanceSq(BlockPos(-2, 122, 76)) > 225 /*|| DungeonUtils.getPhase() != 3*/ || (scanned && !multipleScans)) return@execute
             calculate()
         }
 
         onWorldLoad {
+            scanned = false
             neededRotations.clear()
         }
     }
