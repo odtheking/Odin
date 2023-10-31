@@ -25,7 +25,6 @@ object TeammatesHighlight : Module(
     private val inBoss: Boolean by BooleanSetting("In boss")
     private val outline: Boolean by BooleanSetting("Outline", true)
 
-    // TODO: TEST
     @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
         if (!shouldRender(event.entity) || !outline) return

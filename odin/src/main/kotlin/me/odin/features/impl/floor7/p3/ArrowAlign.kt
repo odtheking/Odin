@@ -25,6 +25,7 @@ object ArrowAlign : Module(
     tag = TagType.NEW
 ) {
     private val solver: Boolean by BooleanSetting("Solver")
+    private val multipleScans: Boolean by BooleanSetting("Multiple Scans")
 
     private val area = BlockPos.getAllInBox(BlockPos(-2, 125, 79), BlockPos(-2, 121, 75))
         .toList().sortedWith { a, b ->
@@ -41,6 +42,7 @@ object ArrowAlign : Module(
 
     init {
         execute(3000) {
+            if (!multipleScans) return@execute
             if (mc.thePlayer.getDistanceSq(BlockPos(-2, 122, 76)) > 225 /*|| DungeonUtils.getPhase() != 3*/) return@execute
             calculate()
         }
