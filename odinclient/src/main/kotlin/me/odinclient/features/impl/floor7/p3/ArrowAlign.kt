@@ -34,7 +34,7 @@ object ArrowAlign : Module(
     private var scanned = false
 
     private val area = BlockPos.getAllInBox(BlockPos(-2, 125, 79), BlockPos(-2, 121, 75))
-        .toList().sortedWith { a, b ->
+        .sortedWith { a, b ->
             if (a.y == b.y) return@sortedWith b.z - a.z
             if (a.y < b.y) return@sortedWith 1
             if (a.y > b.y) return@sortedWith -1

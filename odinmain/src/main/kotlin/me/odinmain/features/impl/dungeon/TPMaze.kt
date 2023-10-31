@@ -51,12 +51,12 @@ object TPMaze : Module(
 
         correctPortals = correctPortals.filter {
             VecUtils.isXZInterceptable(
-                AxisAlignedBB(it.x.toDouble(), it.y.toDouble(), it.z.toDouble(), it.x + 1.0, it.y + 4.0, it.z + 1.0).expand(0.5, 0.0, 0.5),
+                AxisAlignedBB(it.x.toDouble(), it.y.toDouble(), it.z.toDouble(), it.x + 1.0, it.y + 4.0, it.z + 1.0).expand(0.75, 0.0, 0.75),
                 80f,
                 pos,
                 yaw,
                 pitch
-            ) && !BlockPos(it.x, it.y, it.z).toAABB().expand(0.75, .0, 0.75).isVecInside(mc.thePlayer.positionVector)
+            ) && !BlockPos(it.x, it.y, it.z).toAABB().expand(.5, .0, .5).isVecInside(mc.thePlayer.positionVector)
         }
     }
 

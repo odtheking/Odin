@@ -44,6 +44,10 @@ object PlayerUtils {
         mc.thePlayer.dropOneItem(false)
     }
 
+    fun dropAll() {
+        mc.thePlayer.dropOneItem(true)
+    }
+
     fun useItem(item: String, swapBack: Boolean = true) {
         val inventory = mc.thePlayer.inventory
         val index = getItemSlot(item) ?: return modMessage("Couldn't find $item")
