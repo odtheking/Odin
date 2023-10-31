@@ -40,6 +40,7 @@ object DianaHelper : Module(
     private val tracer: Boolean by BooleanSetting("Tracer", default = false)
     private val tracerWidth: Int by NumberSetting("Tracer Width", default = 5, min = 1, max = 20)
     private val sendInqMsg: Boolean by BooleanSetting("Send Inq Msg", default = true)
+    val playSound: Boolean by BooleanSetting("Play Ding", default = true)
     private val showWarpSettings: Boolean by BooleanSetting("Show Warp Settings", default = true)
     private val castle: Boolean by BooleanSetting("Castle Warp").withDependency { showWarpSettings }
     private val crypt: Boolean by BooleanSetting("Crypt Warp").withDependency { showWarpSettings }
@@ -104,9 +105,9 @@ object DianaHelper : Module(
             RenderUtils.renderCustomBeacon("§6Guess${warpLocation?.displayName ?: ""}§r", guess, guessColor, event.partialTicks)
         }
 
-        val iterator = burrowsRender.iterator()
-        while (iterator.hasNext()) {
-            val (location, type) = iterator.next()
+        val burrowsRenderCopy = HashMap(burrowsRender)
+
+        burrowsRenderCopy.forEach { (location, type) ->
             RenderUtils.renderCustomBeacon(type.text, Vec3(location), type.color, event.partialTicks)
         }
     }

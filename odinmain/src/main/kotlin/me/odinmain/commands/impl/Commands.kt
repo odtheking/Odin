@@ -141,6 +141,7 @@ val mainCommand = "od" {
     }
 
     "dianareset" does {
+        modMessage("Resetting all active diana waypoints.")
         DianaHelper.burrowsRender.clear()
     }
 
