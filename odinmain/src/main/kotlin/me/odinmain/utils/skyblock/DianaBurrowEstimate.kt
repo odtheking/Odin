@@ -1,5 +1,6 @@
 package me.odinmain.utils.skyblock
 
+import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.impl.skyblock.DianaHelper
 import me.odinmain.utils.VecUtils
@@ -58,6 +59,7 @@ object DianaBurrowEstimate {
 
         DianaHelper.burrowsRender[burrow.location] = burrow.getType()
         burrow.found = true
+        mc.thePlayer.playSound("note.pling", 100f, 1f)
     }
 
 
