@@ -8,6 +8,7 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.utils.VecUtils
 import me.odinmain.utils.VecUtils.addVec
 import me.odinmain.utils.VecUtils.toVec3i
 import me.odinmain.utils.clock.Clock
@@ -97,10 +98,10 @@ object DianaHelper : Module(
                 warp.location.distanceTo(guess)
             }.takeIf { it.location.distanceTo(guess) + 30 < mc.thePlayer.positionVector.distanceTo(guess) }
 
-            RenderUtils.renderCustomBeacon("§6Guess${warpLocation?.displayName ?: ""}§r", guess, guessColor, event.partialTicks)
-
             if (tracer)
-                RenderUtils.draw3DLine(mc.thePlayer.renderVec.addVec(y = mc.thePlayer.eyeHeight.toDouble()), guess, tracerColor, tracerWidth, depth = true, event.partialTicks)
+                RenderUtils.draw3DLine(mc.thePlayer.renderVec.addVec(y = VecUtils.fastEyeHeight()), guess.addVec(.5, .5, .5), tracerColor, tracerWidth, depth = true, event.partialTicks)
+
+            RenderUtils.renderCustomBeacon("§6Guess${warpLocation?.displayName ?: ""}§r", guess, guessColor, event.partialTicks)
         }
 
         val iterator = burrowsRender.iterator()

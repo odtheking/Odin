@@ -1,5 +1,6 @@
 package me.odin.features.impl.floor7.p3
 
+import me.odinmain.events.impl.ClickEvent
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -25,7 +26,8 @@ object ArrowAlign : Module(
     tag = TagType.NEW
 ) {
     private val solver: Boolean by BooleanSetting("Solver")
-    private val multipleScans: Boolean by BooleanSetting("Multiple Scans")
+    private val multipleScans: Boolean by BooleanSetting("Multiple Scans", true)
+    private var scanned = false
 
     private val area = BlockPos.getAllInBox(BlockPos(-2, 125, 79), BlockPos(-2, 121, 75))
         .toList().sortedWith { a, b ->
@@ -34,7 +36,6 @@ object ArrowAlign : Module(
             if (a.y > b.y) return@sortedWith -1
             return@sortedWith 0
         }
-    private val lastClickClock = Clock(800)
     private data class Vec2(val x: Int, val y: Int)
     private data class Frame(val entity: EntityItemFrame, var rotations: Int)
     //                                    xy pos         entity,          needed clicks        (x is technically z in the world)
@@ -42,26 +43,21 @@ object ArrowAlign : Module(
 
     init {
         execute(3000) {
-            if (!multipleScans) return@execute
-            if (mc.thePlayer.getDistanceSq(BlockPos(-2, 122, 76)) > 225 /*|| DungeonUtils.getPhase() != 3*/) return@execute
+            if (mc.thePlayer.getDistanceSq(BlockPos(-2, 122, 76)) > 225 /*|| DungeonUtils.getPhase() != 3*/ || (scanned && !multipleScans)) return@execute
             calculate()
         }
-    }
 
-    @SubscribeEvent
-    fun onArrowChange(event: PostEntityMetadata) {
-        if (mc.theWorld?.getEntityByID(event.packet.entityId)?.position !in area) return
-        calculate()
-        val ent = mc.theWorld.getEntityByID(event.packet.entityId)
-        if (ent is EntityItemFrame) {
-            val rotations = neededRotations.values.find { it.entity == ent }?.rotations ?: return
-            if (rotations == 0) lastClickClock.lastTime = System.currentTimeMillis()
+        onWorldLoad {
+            scanned = false
+            neededRotations.clear()
         }
     }
 
     @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Load) {
-        neededRotations.clear()
+    fun onRightClick(event: ClickEvent.RightClickEvent) {
+        if (mc.objectMouseOver?.entityHit !is EntityItemFrame) return
+        val frame = neededRotations.values.find { it.entity == mc.objectMouseOver.entityHit as EntityItemFrame } ?: return
+        frame.rotations--
     }
 
     @SubscribeEvent
