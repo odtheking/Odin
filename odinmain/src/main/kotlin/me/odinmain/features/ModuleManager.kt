@@ -83,7 +83,8 @@ object ModuleManager {
         VanqNotifier,
         TPMaze,
         Animations,
-        SpaceHelmet
+        SpaceHelmet,
+        EscrowFix
     )
 
 
