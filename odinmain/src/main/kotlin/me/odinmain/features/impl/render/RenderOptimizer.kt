@@ -1,24 +1,11 @@
 package me.odinmain.features.impl.render
 
-import me.odinmain.events.impl.PostGuiOpenEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.utils.render.world.RenderUtils
-import me.odinmain.utils.skyblock.ChatUtils.devMessage
-import me.odinmain.utils.skyblock.ChatUtils.modMessage
-import net.minecraft.client.gui.ScaledResolution
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.Tessellator
-import net.minecraft.client.renderer.WorldRenderer
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.item.EntityFallingBlock
-import net.minecraftforge.client.ForgeHooksClient
-import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import org.lwjgl.input.Mouse
-import java.awt.Color
 
 object RenderOptimizer : Module(
     name = "Render Optimizer",
@@ -26,7 +13,7 @@ object RenderOptimizer : Module(
     description = "Disables certain render function when they are not necessary, resulting in a decrease in gpu usage."
 ) {
 
-    private val decreaseGpuUsage: Boolean by BooleanSetting(name = "Reduce GPU Usage", default = true)
+    //private val decreaseGpuUsage: Boolean by BooleanSetting(name = "Reduce GPU Usage", default = true)
     private val fallingBlocks: Boolean by BooleanSetting(name = "Remove falling blocks", default = true)
 
     @SubscribeEvent
@@ -35,19 +22,7 @@ object RenderOptimizer : Module(
         event.entity.setDead()
     }
 
-    override fun onEnable() {
-        MinecraftForge.EVENT_BUS.register(this)
-        if (!decreaseGpuUsage) return
-        mc.skipRenderWorld = true
-    }
-
-    override fun onDisable() {
-        MinecraftForge.EVENT_BUS.unregister(this)
-        if (!decreaseGpuUsage) return
-        mc.skipRenderWorld = false
-    }
-
-    fun drawGui() {
+    /*fun drawGui() {
         if (!decreaseGpuUsage) return
         if (mc.skipRenderWorld && mc.currentScreen != null) {
             mc.setIngameNotInFocus()
@@ -119,5 +94,5 @@ object RenderOptimizer : Module(
         GlStateManager.color(1.0f, 1.0f, 1.0f)
         GlStateManager.enableTexture2D()
         GlStateManager.disableBlend()
-    }
+    }*/
 }
