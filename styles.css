@@ -187,7 +187,7 @@ color: #8b8b8b; /* Darken the font color */
 .download:hover { 
   color: white;
   font-weight: lighter;
-  text-shadow: 0 0 15px #fff;
+  text-shadow: 0 0 15px #0066cc;
 }
 
 .grid-container {
