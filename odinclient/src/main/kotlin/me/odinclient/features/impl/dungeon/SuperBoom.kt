@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.dungeon
 
-import me.odinclient.utils.skyblock.PlayerUtils.hitWithItemFromInv
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.DualSetting
@@ -47,7 +46,7 @@ object SuperBoom : Module(
             return
         }
         if (superboomIndex > 8) {
-            hitWithItemFromInv(superboomIndex, lookingAt.blockPos)
+            //hitWithItemFromInv(superboomIndex, lookingAt.blockPos)
             return
         }
         val previousItemIndex = mc.thePlayer.inventory.currentItem
