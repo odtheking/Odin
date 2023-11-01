@@ -16,7 +16,7 @@ object Camera : Module(
 ) {
     private val frontCamera: Boolean by BooleanSetting("No Front Camera")
     private val cameraClip: Boolean by BooleanSetting("Camera Clip").withDependency { !OdinMain.onLegitVersion }
-    private val cameraDist: Float by NumberSetting("Distance", 4f, 3.0, 12.0, 0.5).withDependency { !OdinMain.onLegitVersion }
+    private val cameraDist: Float by NumberSetting("Distance", 4f, 3.0, 12.0, 0.1).withDependency { !OdinMain.onLegitVersion }
 
     fun getCameraDistance(): Float {
         return if (enabled && !OdinMain.onLegitVersion) cameraDist else 4f
