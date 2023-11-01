@@ -40,7 +40,6 @@ object DianaHelper : Module(
     private val tracer: Boolean by BooleanSetting("Tracer", default = false)
     private val tracerWidth: Int by NumberSetting("Tracer Width", default = 5, min = 1, max = 20)
     private val sendInqMsg: Boolean by BooleanSetting("Send Inq Msg", default = true)
-    val playSound: Boolean by BooleanSetting("Play Ding", default = true)
     private val showWarpSettings: Boolean by BooleanSetting("Show Warp Settings", default = true)
     private val castle: Boolean by BooleanSetting("Castle Warp").withDependency { showWarpSettings }
     private val crypt: Boolean by BooleanSetting("Crypt Warp").withDependency { showWarpSettings }
@@ -62,11 +61,6 @@ object DianaHelper : Module(
 
 
     init {
-        onMessage(Regex("Woah! You dug out a Minos Inquisitor!"), { sendInqMsg && enabled }) {
-            ChatUtils.partyMessage("x: ${PlayerUtils.posX.floor()}, y: ${PlayerUtils.posY.floor()}, z: ${PlayerUtils.posZ.floor()}")
-            PlayerUtils.alert("§a§lInquisitor!")
-        }
-
         onPacket(S29PacketSoundEffect::class.java) { DianaBurrowEstimate.handleSoundPacket(it) }
 
         onPacket(S2APacketParticles::class.java) { DianaBurrowEstimate.handleParticlePacket(it) }
@@ -81,8 +75,18 @@ object DianaHelper : Module(
         }
     }
 
+
     @SubscribeEvent
-    fun onChat(event: ChatPacketEvent) { DianaBurrowEstimate.chat(event) }
+    fun onChat(event: ChatPacketEvent) {
+        DianaBurrowEstimate.chat(event)
+
+        if(!event.message.contains("You dug out ") || !event.message.contains("Inquis") || !enabled || !sendInqMsg) return
+
+        ChatUtils.partyMessage("x: ${PlayerUtils.posX.floor()}, y: ${PlayerUtils.posY.floor()}, z: ${PlayerUtils.posZ.floor()}")
+        PlayerUtils.alert("§6§lInquisitor!")
+
+
+    }
 
     @SubscribeEvent
     fun onInteract(event: PacketSentEvent) {

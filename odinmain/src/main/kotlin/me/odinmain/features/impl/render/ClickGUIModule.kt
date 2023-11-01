@@ -35,8 +35,9 @@ object ClickGUIModule: Module(
     val color: Color by ColorSetting("GUI Color", Color(50, 150, 220), allowAlpha = false, description = "Color theme in the gui.")
     val switchType: Boolean by DualSetting("Switch Type", "Checkbox", "Switch")
     val experimentalRendering: Boolean by BooleanSetting("Experimental Rendering", false, description = "Enables experimental rendering for the gui and hud.")
-    private val isDev get() = DevPlayers.devs.containsKey(mc.thePlayer?.name)
-    private val devMessages: Boolean by BooleanSetting("Dev Messages", false, description = "Enables dev messages in chat.").withDependency { isDev }
+    val isDev get() = DevPlayers.devs.containsKey(mc.thePlayer?.name)
+    val devMessages: Boolean by BooleanSetting("Dev Messages", false, description = "Enables dev messages in chat.").withDependency { isDev }
+    val devSize: Boolean by BooleanSetting("Dev Size", true, description = "Toggles client side dev size.").withDependency { isDev }
 
     val action: () -> Unit by ActionSetting("Open Example Hud") {
         OdinMain.display = EditHUDGui

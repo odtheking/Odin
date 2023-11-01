@@ -11,7 +11,7 @@ object PlayerUtils {
         if (playSound) mc.thePlayer.playSound("note.pling", 100f, 1f)
         mc.ingameGUI.run {
             displayTitle(title, null, 10, 250, 10)
-            displayTitle(null, "", 10, 250, 10)
+            displayTitle(null, "", 10, 100, 10)
             displayTitle(null, null, 10, 250, 10)
         }
     }

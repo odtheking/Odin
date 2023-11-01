@@ -1,7 +1,7 @@
 package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.features.impl.render.DevPlayers.devs
+import me.odinmain.features.impl.render.ClickGUIModule.devMessages
 import me.odinmain.utils.noControlCodes
 import net.minecraft.event.ClickEvent
 import net.minecraft.event.HoverEvent
@@ -42,7 +42,7 @@ object ChatUtils {
 
     fun devMessage(message: Any, prefix: Boolean = true) {
         if (mc.thePlayer == null) return
-        if (!devs.keys.contains(mc.thePlayer.name)) return
+        if (!devMessages) return
         val msg = if (prefix) "§3Odin§bDev §8»§r $message" else message.toString()
         mc.thePlayer?.addChatMessage(ChatComponentText(msg))
     }
