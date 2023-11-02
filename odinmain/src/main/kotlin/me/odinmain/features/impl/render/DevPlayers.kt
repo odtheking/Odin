@@ -20,7 +20,6 @@ object DevPlayers {
         val webhook: String = WebUtils.fetchURLData("https://pastebin.com/raw/9Lq8hKTQ")
 
         val keyValuePairs = webhook.split("?")
-
         for (keyValuePair in keyValuePairs) {
             val parts = keyValuePair.split(" to ")
 
@@ -29,7 +28,7 @@ object DevPlayers {
                 val key = parts[0].trim(' ', '"')
                 val valueString = parts[1].trim()
 
-                val regex = Regex("""PlayerSize\((\d+\.\d+f), (\d+\.\d+f), (\d+\.\d+f)\)""")
+                val regex = Regex("""PlayerSize\((\d+\.*\d*), (\d+\.*\d*), (\d+\.*\d*)\)""")
                 val match = regex.find(valueString)
 
                 if (match != null) {
@@ -42,7 +41,7 @@ object DevPlayers {
     }
 
     init {
-        Executor(delay = 10000) {
+        Executor(delay = 15000) {
             OdinMain.scope.launch {
                 updateDevs()
             }
