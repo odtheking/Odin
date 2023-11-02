@@ -25,8 +25,8 @@ import me.odinmain.events.EventDispatcher
 import me.odinmain.features.Module
 import me.odinmain.features.ModuleManager
 import me.odinmain.features.impl.render.ClickGUIModule
-import me.odinmain.features.impl.render.WaypointManager
 import me.odinmain.features.impl.render.DevPlayers
+import me.odinmain.features.impl.render.WaypointManager
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.clock.Executor
@@ -109,7 +109,6 @@ class ModCore {
         SecretTriggerbot,
         SuperBoom,
         SwapStonk,
-        ThornStun,
 
         Arrows,
         ArrowAlign,
