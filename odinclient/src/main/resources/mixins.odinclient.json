@@ -28,6 +28,7 @@
     "MixinNetHandlerPlayClient",
     "MixinNetworkManager",
     "MixinRender",
+    "MixinRenderDragon",
     "MixinRendererLivingEntity",
     "MixinRenderPlayer",
     "model.MixinModelBiped",
