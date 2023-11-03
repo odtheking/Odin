@@ -24,9 +24,8 @@ public abstract class MixinFontRenderer {
         if (text != null && NickHider.INSTANCE.getEnabled() && text.contains(name) && !name.equals(NickHider.INSTANCE.getNick()))
         {
             ci.cancel();
-            String nick = NickHider.INSTANCE.getNick().replaceAll("\\$", "");
-            text = text.replaceAll("&", "§").replaceAll(name, nick);
-            this.renderStringAtPos(text, shadow);
+            String nick = NickHider.INSTANCE.getNick().replaceAll("&", "§").replaceAll("\\$", "");
+            this.renderStringAtPos(text.replaceAll(name, nick), shadow);
         }
     }
 
@@ -36,9 +35,8 @@ public abstract class MixinFontRenderer {
         String name = Minecraft.getMinecraft().getSession().getUsername();
         if (text != null && NickHider.INSTANCE.getEnabled() && text.contains(name) && !name.equals(NickHider.INSTANCE.getNick()))
         {
-            String nick = NickHider.INSTANCE.getNick().replaceAll("\\$", "");
-            text = text.replaceAll("&", "§").replaceAll(name, nick);
-            cir.setReturnValue(this.getStringWidth(text));
+            String nick = NickHider.INSTANCE.getNick().replaceAll("&", "§").replaceAll("\\$", "");
+            cir.setReturnValue(this.getStringWidth(text.replaceAll(name, nick)));
         }
     }
 
