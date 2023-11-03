@@ -23,10 +23,10 @@ public abstract class MixinFontRenderer {
         String name = Minecraft.getMinecraft().getSession().getUsername();
         if (text != null && NickHider.INSTANCE.getEnabled() && text.contains(name) && !name.equals(NickHider.INSTANCE.getNick()))
         {
+            ci.cancel();
             String nick = NickHider.INSTANCE.getNick().replaceAll("\\$", "");
             text = text.replaceAll("&", "§").replaceAll(name, nick);
             this.renderStringAtPos(text, shadow);
-            ci.cancel();
         }
     }
 
