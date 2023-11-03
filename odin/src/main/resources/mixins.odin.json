@@ -4,27 +4,26 @@
   "minVersion": "0.7",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "MixinChunk",
-    "MixinEntityLivingBase",
-    "MixinNetworkManager",
-    "MixinS1CPacketEntityMetadata",
-    "MixinWorld"
+    "mixins.MixinChunk",
+    "mixins.MixinEntityLivingBase",
+    "mixins.MixinNetworkManager",
+    "mixins.MixinS1CPacketEntityMetadata",
+    "mixins.MixinWorld"
   ],
   "client": [
-    "MinecraftAccessor",
-    "MixinEntityRenderer",
-    "MixinFontRenderer",
-    "MixinGuiContainer",
-    "MixinItemRenderer",
-    "MixinMinecraft",
-    "MixinModList",
-    "MixinMouseHelper",
-    "MixinNetworkManager",
-    "MixinRender",
-    "MixinRenderDragon",
-    "MixinRendererLivingEntity",
-    "MixinRenderPlayer",
-    "model.MixinModelBiped",
-    "model.MixinModelBlaze"
+    "mixins.MixinEntityRenderer",
+    "mixins.MixinFontRenderer",
+    "mixins.MixinGuiContainer",
+    "mixins.MixinItemRenderer",
+    "mixins.MixinMinecraft",
+    "mixins.MixinModList",
+    "mixins.MixinMouseHelper",
+    "mixins.MixinNetworkManager",
+    "mixins.MixinRender",
+    "mixins.MixinRenderDragon",
+    "mixins.MixinRendererLivingEntity",
+    "mixins.MixinRenderPlayer",
+    "mixins.model.MixinModelBiped",
+    "mixins.model.MixinModelBlaze"
   ]
 }
