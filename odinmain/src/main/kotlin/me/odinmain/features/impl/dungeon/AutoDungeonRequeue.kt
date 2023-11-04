@@ -12,8 +12,8 @@ import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-object AutoDungeonReque : Module(
-    name = "Auto Dungeon Requeue",
+object AutoDungeonRequeue : Module(
+    name = "Auto Requeue",
     description = "Automatically starts a new dungeon at the end of a dungeon.",
     category = Category.DUNGEON,
     tag = TagType.NEW

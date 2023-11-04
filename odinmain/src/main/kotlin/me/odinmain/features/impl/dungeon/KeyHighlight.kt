@@ -16,7 +16,7 @@ import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object KeyHighlight : Module(
-    name = "Key ESP",
+    name = "Key Esp",
     description = "Draws a box around the key.",
     category = Category.DUNGEON,
 ) {

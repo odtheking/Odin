@@ -19,7 +19,7 @@ object DragonBoxes : Module(
     description = "Shows semi-accurate kill boxes for M7 dragons.",
     category = Category.FLOOR7,
 ) {
-    private val lineThickness: Float by NumberSetting("Line width", 2f, 1.0, 5.0, 0.5)
+    private val lineThickness: Float by NumberSetting("Line Width", 2f, 1.0, 5.0, 0.5)
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {

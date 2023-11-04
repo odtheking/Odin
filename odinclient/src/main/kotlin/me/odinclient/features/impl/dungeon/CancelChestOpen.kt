@@ -14,7 +14,7 @@ import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-object CloseChest : Module(
+object CancelChestOpen : Module(
     "Cancel Chest Open",
     category = Category.DUNGEON,
     description = "Cancels the opening of chests in dungeons.",

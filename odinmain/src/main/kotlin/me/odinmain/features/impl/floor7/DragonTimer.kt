@@ -29,7 +29,7 @@ object DragonTimer : Module(
     category = Category.FLOOR7
 ) {
 
-    private val textScale: Float by NumberSetting(name = "Text scale", default = 1f, min = 0f, max = 10f, increment = 0.1f)
+    private val textScale: Float by NumberSetting(name = "Text Scale", default = 1f, min = 0f, max = 10f, increment = 0.1f)
 
     private const val DRAGON_SPAWN_TIME = 5000L
 

@@ -17,7 +17,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object TPMaze : Module(
-    name = "TP Maze Solver (WIP)",
+    name = "TP Maze Solver",
     description = "Automatically solves the TP maze.",
     category = Category.DUNGEON,
     tag = TagType.NEW
@@ -56,7 +56,7 @@ object TPMaze : Module(
                 pos,
                 yaw,
                 pitch
-            ) && !BlockPos(it.x, it.y, it.z).toAABB().expand(.5, .0, .5).isVecInside(mc.thePlayer.positionVector)
+            ) && !it.toAABB().expand(.5, .0, .5).isVecInside(mc.thePlayer.positionVector)
         }
     }
 

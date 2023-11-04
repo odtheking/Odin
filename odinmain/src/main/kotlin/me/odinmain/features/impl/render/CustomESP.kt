@@ -23,7 +23,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object CustomESP : Module(
-    "Custom ESP",
+    "Custom Esp",
     category = Category.RENDER,
     tag = TagType.FPSTAX,
     description = "Allows you to highlight selected mobs (/esp)"
