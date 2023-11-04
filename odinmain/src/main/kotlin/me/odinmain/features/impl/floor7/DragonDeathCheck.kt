@@ -1,12 +1,10 @@
 package me.odinmain.features.impl.floor7
 
-import com.sun.org.apache.xpath.internal.operations.Bool
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.scope
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.impl.floor7.p3.TerminalTimes.unaryPlus
 import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
@@ -28,8 +26,8 @@ object DragonDeathCheck : Module(
     category = Category.FLOOR7,
     description = "Displays data about dragon death."
 ) {
-    private val sendNotif: Boolean by BooleanSetting("Send dragon confirmation", true)
-    private val sendTime: Boolean by BooleanSetting("Send dragon time alive", true)
+    private val sendNotif: Boolean by BooleanSetting("Send Dragon Confirmation", true)
+    private val sendTime: Boolean by BooleanSetting("Send Dragon Time Alive", true)
 
     private val redPB = +NumberSetting("Panes PB", 1000.0, increment = 0.01, hidden = true)
     private val orangePB = +NumberSetting("Color PB", 1000.0, increment = 0.01, hidden = true)

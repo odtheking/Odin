@@ -10,7 +10,7 @@ object NoCarpet : Module(
     name = "No Carpet",
     category = Category.RENDER,
     tag = TagType.NEW,
-    description = "Removes nearby carpets."
+    description = "Removes nearby carpet hitboxes."
 ) {
 
     var carpetList: ArrayList<BlockCarpet> = ArrayList()

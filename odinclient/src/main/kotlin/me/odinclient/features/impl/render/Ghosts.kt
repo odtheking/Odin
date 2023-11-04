@@ -18,8 +18,8 @@ object Ghosts : Module(
     tag = TagType.NEW
 ) {
 
-    private var showGhosts: Boolean by BooleanSetting(name = "Show Ghosts")
     private var showGhostNametag: Boolean by BooleanSetting(name = "Show Ghost Nametag")
+    private var showGhosts: Boolean by BooleanSetting(name = "Hide Ghosts")
     private var hideChargedLayer: Boolean by BooleanSetting(name = "Hide Charged Layer")
 
     @SubscribeEvent
@@ -29,7 +29,7 @@ object Ghosts : Module(
 
         for (creeper in creepers)
         {
-            creeper.isInvisible = !showGhosts
+            creeper.isInvisible = showGhosts
 
             val chargedGhostLayerWatcher: Byte = creeper.dataWatcher.getWatchableObjectByte(17)
             if (hideChargedLayer)

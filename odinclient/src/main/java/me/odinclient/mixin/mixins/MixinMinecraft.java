@@ -1,7 +1,7 @@
 package me.odinclient.mixin.mixins;
 
-import me.odinclient.features.impl.dungeon.CancelInteract;
 import me.odinclient.features.impl.dungeon.SecretTriggerbot;
+import me.odinclient.features.impl.skyblock.CancelInteract;
 import me.odinclient.utils.skyblock.PlayerUtils;
 import me.odinmain.events.impl.ClickEvent;
 import me.odinmain.events.impl.PreKeyInputEvent;

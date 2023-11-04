@@ -8,7 +8,7 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object ExtraStats : Module(
-    name = "Auto Extra stats",
+    name = "Auto Extra Stats",
     description = "Automatically clicks the Extra Stats at the end of a dungeon.",
     category = Category.DUNGEON,
 ) {

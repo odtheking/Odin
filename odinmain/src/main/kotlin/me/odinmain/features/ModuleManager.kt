@@ -40,7 +40,7 @@ object ModuleManager {
     val executors = ArrayList<Pair<Module, Executor>>()
 
     val modules: ArrayList<Module> = arrayListOf(
-        AutoDungeonReque,
+        AutoDungeonRequeue,
         BlessingDisplay,
         ExtraStats,
         KeyHighlight,
@@ -58,7 +58,7 @@ object ModuleManager {
         MelodyMessage,
         NecronDropTimer,
         RelicAnnouncer,
-        BPS,
+        BPSDisplay,
         Camera,
         ClickedChests,
         ClickGUIModule,

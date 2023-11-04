@@ -99,7 +99,7 @@ class ModCore {
         AutoUlt,
         AutoWish,
         CancelInteract,
-        CloseChest,
+        CancelChestOpen,
         GhostPick,
         MapModule,
         SecretHitboxes,

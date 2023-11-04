@@ -21,7 +21,7 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object CPSDisplay : Module(
-    "CPS Display",
+    "Cps Display",
     description = "Displays your CPS.",
     category = Category.RENDER
 ) {

@@ -15,8 +15,8 @@ object VanqNotifier : Module(
     category = Category.SKYBLOCK,
     description = "Sends a message whenever a vanquisher spawns"
 ) {
-    private val ac: Boolean by BooleanSetting("All chat")
-    private val pc: Boolean by BooleanSetting("Party chat")
+    private val ac: Boolean by BooleanSetting("All Chat")
+    private val pc: Boolean by BooleanSetting("Party Chat")
 
     init {
         onMessage(Regex("A Vanquisher is spawning nearby!")) {

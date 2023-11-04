@@ -16,7 +16,7 @@ object RenderOptimizer : Module(
 ) {
 
     //private val decreaseGpuUsage: Boolean by BooleanSetting(name = "Reduce GPU Usage", default = true)
-    private val fallingBlocks: Boolean by BooleanSetting(name = "Remove falling blocks", default = true)
+    private val fallingBlocks: Boolean by BooleanSetting(name = "Remove Falling Blocks", default = true)
     private val p5Mobs: Boolean by BooleanSetting(name = "Remove P5 Armor Stands", default = true)
 
     @SubscribeEvent
