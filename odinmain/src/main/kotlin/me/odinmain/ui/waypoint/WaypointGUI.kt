@@ -105,7 +105,7 @@ object WaypointGUI : GuiScreen() {
             translate(462.5f, 12.5f)
             NanoVGHelper.INSTANCE.rotate(this.instance, Math.toRadians((animY - 25.0) * 12.0).toFloat())
             translate(-462.5f, -12.5f)
-            drawSVG("/assets/odin/ui/waypoint/Settings.svg", 455, 5, 15, 15, color, 36, javaClass)
+            drawSVG("/assets/odinmain/ui/waypoint/Settings.svg", 455, 5, 15, 15, color, 36, javaClass)
         }
         super.drawScreen(mouseX, mouseY, partialTicks)
     }

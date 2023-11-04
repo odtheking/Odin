@@ -82,7 +82,7 @@ object DianaHelper : Module(
 
         if(!event.message.contains("You dug out ") || !event.message.contains("Inquis") || !enabled || !sendInqMsg) return
 
-        ChatUtils.partyMessage("x: ${PlayerUtils.posX.floor()}, y: ${PlayerUtils.posY.floor()}, z: ${PlayerUtils.posZ.floor()}")
+        ChatUtils.modMessage("x: ${PlayerUtils.posX.floor().toInt()}, y: ${PlayerUtils.posY.floor().toInt()}, z: ${PlayerUtils.posZ.floor().toInt()}")
         PlayerUtils.alert("§6§lInquisitor!")
 
 

@@ -59,7 +59,7 @@ class ElementHud(parent: ModuleButton, setting: HudSetting) : Element<HudSetting
                 offset = 60f
             }
             NanoVGHelper.INSTANCE.drawSvg(this.context,
-                "/assets/odin/ui/clickgui/MovementIcon.svg", x + w - offset, y + 5f, 20f, 20f, 20f, javaClass
+                "/assets/odinmain/ui/clickgui/MovementIcon.svg", x + w - offset, y + 5f, 20f, 20f, 20f, javaClass
             )
         }
     }

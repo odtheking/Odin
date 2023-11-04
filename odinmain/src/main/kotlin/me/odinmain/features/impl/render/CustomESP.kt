@@ -16,7 +16,6 @@ import me.odinmain.utils.render.world.RenderUtils.renderX
 import me.odinmain.utils.render.world.RenderUtils.renderY
 import me.odinmain.utils.render.world.RenderUtils.renderZ
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.Entity
 import net.minecraft.entity.boss.EntityWither
 import net.minecraft.entity.item.EntityArmorStand
@@ -107,7 +106,7 @@ object CustomESP : Module(
             mc.theWorld.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.expand(1.0, 5.0, 1.0))
                 .filter { it != null && it !is EntityArmorStand && it != mc.thePlayer }
                 .minByOrNull { noSqrt3DDistance(it, entity) }
-                .takeIf { it !is EntityWither || DungeonUtils.inBoss } ?: return
+                .takeIf { !(it is EntityWither && it.isInvisible) } ?: return
         )
     }
 }
