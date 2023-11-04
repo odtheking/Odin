@@ -63,7 +63,7 @@ object Arrows : Module(
     private fun calculateBowTrajectory(mV: Vec3, pV: Vec3) {
         var motionVec = mV
         var posVec = pV
-        for (i in 0..60) {
+        for (i in 0..20) {
             val vec = motionVec.add(posVec)
             val rayTrace = mc.theWorld.rayTraceBlocks(posVec, vec, false, true, false)
             if (rayTrace?.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
