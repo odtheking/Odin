@@ -1,10 +1,9 @@
-package me.odinclient.features.impl.dungeon
+package me.odinclient.features.impl.skyblock
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.skyblock.ChatUtils
-import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.init.Items
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent

@@ -21,9 +21,9 @@ object TeammatesHighlight : Module(
     description = "Enhances visibility of your dungeon teammates and their name tags."
 ) {
     private val thickness: Float by NumberSetting("Line Width", 2f, 1.0, 5.0, 0.5)
-    private val whenVisible: Boolean by BooleanSetting("When Visible")
-    private val inBoss: Boolean by BooleanSetting("In boss")
-    private val outline: Boolean by BooleanSetting("Outline", true)
+    private val whenVisible: Boolean by BooleanSetting("When Visible", true, description = "Highlights teammates only when they are visible.")
+    private val inBoss: Boolean by BooleanSetting("In boss", true, description = "Highlights teammates in boss rooms.")
+    private val outline: Boolean by BooleanSetting("Outline", true, description = "Highlights teammates with an outline.")
 
     @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {

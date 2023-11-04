@@ -1,4 +1,4 @@
-package me.odinclient.features.impl.dungeon
+package me.odinclient.features.impl.skyblock
 
 import me.odinclient.utils.skyblock.PlayerUtils.isHolding
 import me.odinmain.features.Category
@@ -19,7 +19,7 @@ import net.minecraft.util.BlockPos
  */
 object CancelInteract : Module(
     name = "Cancel Interact",
-    category = Category.DUNGEON,
+    category = Category.SKYBLOCK,
     description = "Cancels the interaction with certain blocks, so that the item can be used instead. " +
             "The following rules will be followed in that priority: " +
             "Will never cancel interaction with chests, levers, buttons. " +
