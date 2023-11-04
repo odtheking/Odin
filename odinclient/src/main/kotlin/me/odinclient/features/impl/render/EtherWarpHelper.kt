@@ -1,8 +1,10 @@
 package me.odinclient.features.impl.render
 
 import me.odinclient.mixin.accessors.IEntityPlayerSPAccessor
+import me.odinmain.events.impl.ClickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.impl.skyblock.ChatCommands.private
 import me.odinmain.utils.skyblock.EtherWarpUtils
 import me.odinmain.utils.skyblock.EtherWarpUtils.etherPos
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -24,7 +26,8 @@ object EtherWarpHelper : Module(
     category = Category.RENDER,
     tag = TagType.NEW
 ) {
-
+    private val zeroPing: Boolean by BooleanSetting("Zero Ping", false)
+    private val render: Boolean by BooleanSetting("Show Etherwarp Guess", true)
     private val color: Color by ColorSetting("Color", Color.ORANGE.withAlpha(.5f), allowAlpha = true)
     private val filled: Boolean by DualSetting("Type", "Outline", "Filled", default = false)
     private val thickness: Float by NumberSetting("Thickness", 3f, 1f, 10f, .1f).withDependency { !filled }
@@ -34,7 +37,7 @@ object EtherWarpHelper : Module(
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         val player = mc.thePlayer as? IEntityPlayerSPAccessor ?: return
         etherPos = EtherWarpUtils.getEtherPos(Vec3(player.lastReportedPosX, player.lastReportedPosY, player.lastReportedPosZ), yaw = player.lastReportedYaw, pitch = player.lastReportedPitch)
-        if (etherPos.succeeded && mc.thePlayer.isSneaking && mc.thePlayer.heldItem.extraAttributes?.getBoolean("ethermerge") == true) {
+        if (render && etherPos.succeeded && mc.thePlayer.isSneaking && mc.thePlayer.heldItem.extraAttributes?.getBoolean("ethermerge") == true) {
             val pos = etherPos.pos ?: return
 
             if (filled)
@@ -44,5 +47,17 @@ object EtherWarpHelper : Module(
         }
     }
 
-
+    @SubscribeEvent
+    fun onClick(event: ClickEvent.RightClickEvent) {
+        if (
+            zeroPing &&
+            mc.thePlayer.heldItem?.extraAttributes?.getBoolean("ethermerge") == true &&
+            etherPos.succeeded &&
+            mc.thePlayer.isSneaking
+        ) {
+            val pos = etherPos.pos ?: return
+            mc.thePlayer.setPosition(pos.x + .5, pos.y + 1.0, pos.z + .5)
+            mc.thePlayer.setVelocity(.0, .0, .0)
+        }
+    }
 }
