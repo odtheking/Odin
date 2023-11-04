@@ -12,10 +12,9 @@ import me.odinmain.utils.skyblock.ItemUtils.isShortbow
 import me.odinmain.utils.skyblock.ItemUtils.itemID
 import me.odinmain.utils.skyblock.WorldUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import net.minecraft.util.MathHelper
 import net.minecraft.util.MovingObjectPosition
 import net.minecraft.util.Vec3
-import kotlin.math.cos
-import kotlin.math.sin
 import kotlin.math.sqrt
 
 object Arrows : Module(
@@ -30,36 +29,41 @@ object Arrows : Module(
     init {
         execute(10) {
             if (!triggerBotClock.hasTimePassed(triggerBotDelay) || mc.thePlayer?.heldItem?.isShortbow == false || DungeonUtils.getPhase() != 3) return@execute
-            setTrajectoryHeading(0f, -0.1f)
+            setBowTrajectoryHeading(0f)
             if (mc.thePlayer?.heldItem?.itemID != "TERMINATOR") {
-                setTrajectoryHeading(-5f, 0f)
-                setTrajectoryHeading(5f, 0f)
+                setBowTrajectoryHeading(-5f)
+                setBowTrajectoryHeading(5f)
             }
         }
     }
 
-    private fun setTrajectoryHeading(yawOffset: Float, yOffset: Float) {
-        val yawRadians = ((mc.thePlayer.rotationYaw + yawOffset) / 180) * Math.PI
-        val pitchRadians = (mc.thePlayer.rotationPitch / 180) * Math.PI
-        val motionX = -sin(yawRadians) * cos(pitchRadians)
-        val motionY = -sin(pitchRadians)
-        val motionZ = cos(yawRadians) * cos(pitchRadians)
-        val lengthOffset = sqrt(motionX * motionX + motionY * motionY + motionZ * motionZ)
+    private fun setBowTrajectoryHeading(yawOffset: Float) {
+        val yawRadians = ((mc.thePlayer.rotationYaw + yawOffset) / 180) * Math.PI.toFloat()
+        val pitchRadians = (mc.thePlayer.rotationPitch / 180) * Math.PI.toFloat()
 
-        calculateTrajectory(
-            Vec3(
-                motionX / lengthOffset * 3,
-                motionY / lengthOffset * 3,
-                motionZ / lengthOffset * 3
-            ),
-            Vec3(mc.thePlayer.renderX, mc.thePlayer.renderY + mc.thePlayer.eyeHeight + yOffset, mc.thePlayer.renderZ)
-        )
+        var posX = mc.thePlayer.renderX
+        var posY = mc.thePlayer.renderY + mc.thePlayer.eyeHeight
+        var posZ = mc.thePlayer.renderZ
+        posX -= (MathHelper.cos(mc.thePlayer.rotationYaw / 180.0f * Math.PI.toFloat()) * 0.16f).toDouble()
+        posY -= 0.1
+        posZ -= (MathHelper.sin(mc.thePlayer.rotationYaw / 180.0f * Math.PI.toFloat()) * 0.16f).toDouble()
+
+        var motionX = (-MathHelper.sin(yawRadians) * MathHelper.cos(pitchRadians)).toDouble()
+        var motionY = -MathHelper.sin(pitchRadians).toDouble()
+        var motionZ = (MathHelper.cos(yawRadians) * MathHelper.cos(pitchRadians)).toDouble()
+
+        val lengthOffset = sqrt(motionX * motionX + motionY * motionY + motionZ * motionZ)
+        motionX = motionX / lengthOffset * 3
+        motionY = motionY / lengthOffset * 3
+        motionZ = motionZ / lengthOffset * 3
+
+        calculateBowTrajectory(Vec3(motionX,motionY,motionZ),Vec3(posX,posY,posZ))
     }
 
-    private fun calculateTrajectory(mV: Vec3, pV: Vec3) {
+    private fun calculateBowTrajectory(mV: Vec3, pV: Vec3) {
         var motionVec = mV
         var posVec = pV
-        for (i in 0..60) {
+        for (i in 0..20) {
             val vec = motionVec.add(posVec)
             val rayTrace = mc.theWorld.rayTraceBlocks(posVec, vec, false, true, false)
             if (rayTrace?.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {

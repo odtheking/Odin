@@ -51,12 +51,12 @@ object Trajectories : Module(
             entityRenderQueue.clear()
             if (mc.thePlayer?.heldItem?.isShortbow == true) {
                 if (mc.thePlayer?.heldItem?.itemID == "TERMINATOR") {
-                    this.setBowTrajectoryHeading(-5f, -0.1f)
-                    this.setBowTrajectoryHeading(0f, -0.1f)
-                    this.setBowTrajectoryHeading(5f, -0.1f)
+                    this.setBowTrajectoryHeading(-5f)
+                    this.setBowTrajectoryHeading(0f)
+                    this.setBowTrajectoryHeading(5f)
                 }
                 else {
-                    this.setBowTrajectoryHeading(0f, -0.1f)
+                    this.setBowTrajectoryHeading(0f)
                 }
                 this.drawBowCollisionBoxes()
             }
@@ -116,24 +116,27 @@ object Trajectories : Module(
         }
     }
 
-    private fun setBowTrajectoryHeading(yawOffset: Float, yOffset: Float) {
+    private fun setBowTrajectoryHeading(yawOffset: Float) {
         val yawRadians = ((mc.thePlayer.rotationYaw + yawOffset) / 180) * Math.PI.toFloat()
         val pitchRadians = (mc.thePlayer.rotationPitch / 180) * Math.PI.toFloat()
 
-        val posX = mc.thePlayer.renderX
-        val posY = mc.thePlayer.renderY + mc.thePlayer.eyeHeight + yOffset
-        val posZ = mc.thePlayer.renderZ
+        var posX = mc.thePlayer.renderX
+        var posY = mc.thePlayer.renderY + mc.thePlayer.eyeHeight
+        var posZ = mc.thePlayer.renderZ
+        posX -= (MathHelper.cos(mc.thePlayer.rotationYaw / 180.0f * Math.PI.toFloat()) * 0.16f).toDouble()
+        posY -= 0.1
+        posZ -= (MathHelper.sin(mc.thePlayer.rotationYaw / 180.0f * Math.PI.toFloat()) * 0.16f).toDouble()
 
-        var motionX = -MathHelper.sin(yawRadians) * MathHelper.cos(pitchRadians)
-        var motionY = -MathHelper.sin(pitchRadians)
-        var motionZ = MathHelper.cos(yawRadians) * MathHelper.cos(pitchRadians)
+        var motionX = (-MathHelper.sin(yawRadians) * MathHelper.cos(pitchRadians)).toDouble()
+        var motionY = -MathHelper.sin(pitchRadians).toDouble()
+        var motionZ = (MathHelper.cos(yawRadians) * MathHelper.cos(pitchRadians)).toDouble()
+
         val lengthOffset = sqrt(motionX * motionX + motionY * motionY + motionZ * motionZ)
-
         motionX = motionX / lengthOffset * 3
         motionY = motionY / lengthOffset * 3
         motionZ = motionZ / lengthOffset * 3
 
-        calculateBowTrajectory(Vec3(motionX.toDouble(), motionY.toDouble(), motionZ.toDouble()), Vec3(posX, posY, posZ))
+        calculateBowTrajectory(Vec3(motionX, motionY, motionZ), Vec3(posX, posY, posZ))
     }
 
     private fun calculateBowTrajectory(mV: Vec3,pV: Vec3) {
