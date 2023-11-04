@@ -5,16 +5,10 @@ import me.odinclient.dungeonmap.features.DungeonScan
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.skyblock.dungeon.Room
-import me.odinmain.utils.skyblock.dungeon.RoomData
-import me.odinmain.utils.skyblock.dungeon.ScanUtils.roomList
 import net.minecraft.block.Block
 import net.minecraft.util.BlockPos
 
 object ScanUtils {
-    fun getRoomData(hash: Int): RoomData? {
-        return roomList.find { hash in it.cores }
-    }
-
     fun getRoomFromPos(pos: BlockPos): Room? {
         val x = ((pos.x - DungeonScan.startX + 15) shr 5)
         val z = ((pos.z - DungeonScan.startZ + 15) shr 5)

@@ -8,9 +8,6 @@ import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.floor
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.skyblock.ChatUtils
-import me.odinmain.utils.skyblock.ChatUtils.devMessage
-import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import me.odinmain.utils.skyblock.ItemUtils
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.LocationUtils.currentDungeon
@@ -64,17 +61,17 @@ object DungeonUtils {
 
     @SubscribeEvent
     fun onMove(event: LivingEvent.LivingUpdateEvent) {
-        if (mc.theWorld == null /*|| !inDungeons ||  inBoss */|| !event.entity.equals(mc.thePlayer)) return
+        if (mc.theWorld == null/* || !inDungeons ||  inBoss */|| !event.entity.equals(mc.thePlayer)) return
         val x = ((mc.thePlayer.posX + 200) / 32).floor().toInt()
         val z = ((mc.thePlayer.posZ + 200) / 32).floor().toInt()
         val xPos = START_X + x * ROOM_SIZE
         val zPos = START_Z + z * ROOM_SIZE
 
         currentRoom = scanRoom(xPos, zPos)
-        val maxCoreRotation = EnumFacing.HORIZONTALS.maxBy {
-            ScanUtils.getCore(xPos + it.frontOffsetX, zPos + it.frontOffsetZ)
-        } // will eventually be used to determine the rotation of the room
-        //devMessage("rotation: ${currentRoom?.rotation}, maximum core $maxCoreRotation")
+        currentRoom?.rotation = EnumFacing.HORIZONTALS.find {
+            currentRoom?.data?.rotationCores?.any { core -> ScanUtils.getCore(xPos + it.frontOffsetX, zPos + it.frontOffsetZ) == core } == true
+        } ?: EnumFacing.NORTH
+
     }
 
     private fun scanRoom(x: Int, z: Int): Room? {

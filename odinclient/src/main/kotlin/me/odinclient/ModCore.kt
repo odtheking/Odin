@@ -197,6 +197,7 @@ class ModCore {
             blacklistCommand,
             espCommand,
             WaypointCommand,
+            devCommand,
         )
     }
 }

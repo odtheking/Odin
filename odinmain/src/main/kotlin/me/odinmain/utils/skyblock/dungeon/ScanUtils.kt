@@ -1,6 +1,6 @@
 package me.odinmain.utils.skyblock.dungeon
 
-import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.JsonIOException
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
@@ -12,10 +12,12 @@ import java.io.FileNotFoundException
 
 object ScanUtils {
     val roomList: Set<RoomData> = try {
-        Gson().fromJson(
-            (ScanUtils::class.java.getResourceAsStream("/rooms.json") ?: throw FileNotFoundException()).bufferedReader(),
-            object : TypeToken<Set<RoomData>>() {}.type
-        )
+        GsonBuilder()
+            .registerTypeAdapter(RoomData::class.java, RoomDataDeserializer())
+            .create().fromJson(
+                (ScanUtils::class.java.getResourceAsStream("/rooms.json") ?: throw FileNotFoundException()).bufferedReader(),
+                object : TypeToken<Set<RoomData>>() {}.type
+            )
     } catch (e: JsonSyntaxException) {
         println("Error parsing room data.")
         setOf()
@@ -25,12 +27,17 @@ object ScanUtils {
     } catch (e: FileNotFoundException) {
         println("Room data not found. You are either in developer environment, or something went wrong. Please report this!")
         setOf()
+    } catch (e: Exception) {
+        println("Unknown error while reading room data.")
+        e.printStackTrace()
+        println(e.message)
+        setOf()
+
     }
 
     fun getRoomData(hash: Int): RoomData? {
         return roomList.find { hash in it.cores }
     }
-
 
     fun getCore(x: Int, z: Int): Int {
         val blocks = arrayListOf<Int>()

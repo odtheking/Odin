@@ -10,10 +10,7 @@ import me.odin.features.impl.floor7.p3.SimonSays
 import me.odin.features.impl.render.EtherWarpHelper
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
-import me.odinmain.commands.impl.WaypointCommand
-import me.odinmain.commands.impl.blacklistCommand
-import me.odinmain.commands.impl.mainCommand
-import me.odinmain.commands.impl.termSimCommand
+import me.odinmain.commands.impl.*
 import me.odinmain.config.Config
 import me.odinmain.config.MiscConfig
 import me.odinmain.config.WaypointConfig
@@ -141,6 +138,7 @@ class ModCore {
             blacklistCommand,
             WaypointCommand,
             highlightCommand,
+            devCommand
         )
     }
 }

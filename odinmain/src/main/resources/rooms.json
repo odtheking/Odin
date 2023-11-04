@@ -115,6 +115,9 @@
     "type": "BLOOD",
     "cores": [
       -2130054003
+    ],
+    "rotationcores":[
+      -1273468080
     ]
   },
   {
@@ -170,7 +173,10 @@
     "cores": [
       272954274
     ],
-    "secrets": 1
+    "secrets": 1,
+    "rotationcores": [
+      -1056565051
+    ]
   },
   {
     "name": "Cages",
@@ -221,7 +227,10 @@
     "cores": [
       1751890846
     ],
-    "secrets": 1
+    "secrets": 1,
+    "rotationcores": [
+      -824792416
+    ]
   },
   {
     "name": "Chains",
@@ -229,7 +238,10 @@
     "cores": [
       113272043
     ],
-    "secrets": 2
+    "secrets": 2,
+    "rotationcores": [
+      -2050318443
+    ]
   },
   {
     "name": "Chambers",
@@ -379,6 +391,9 @@
     ],
     "crypts": 6,
     "secrets": 3,
+    "rotationcores": [
+      0
+    ],
     "trappedChests": 1
   },
   {
@@ -405,6 +420,9 @@
       274652966,
       -1092072828,
       1913969999
+    ],
+    "rotationcores":[
+      521832056
     ]
   },
   {
@@ -412,6 +430,9 @@
     "type": "FAIRY",
     "cores": [
       1484567748
+    ],
+    "rotationcores":[
+      -183612452
     ]
   },
   {
@@ -488,6 +509,9 @@
     "type": "NORMAL",
     "cores": [
       -2131538192
+    ],
+    "rotationcores":[
+      1657197555
     ]
   },
   {
@@ -736,7 +760,10 @@
     "cores": [
       1073109158
     ],
-    "secrets": 1
+    "secrets": 1,
+    "rotationcores": [
+      13151484
+    ]
   },
   {
     "name": "New Trap",
@@ -746,6 +773,9 @@
     ],
     "crypts": 1,
     "secrets": 3,
+    "rotationcores": [
+      0
+    ],
     "trappedChests": 1
   },
   {
@@ -755,7 +785,10 @@
       1128554492
     ],
     "crypts": 2,
-    "secrets": 4
+    "secrets": 4,
+    "rotationcores": [
+      283282892
+    ]
   },
   {
     "name": "Overgrown",
@@ -975,6 +1008,9 @@
     ],
     "crypts": 4,
     "secrets": 3,
+    "rotationcores": [
+      0
+    ],
     "trappedChests": 1
   },
   {
@@ -1066,6 +1102,9 @@
     ],
     "crypts": 1,
     "secrets": 5,
+    "rotationcores": [
+      0
+    ],
     "trappedChests": 1
   },
   {
