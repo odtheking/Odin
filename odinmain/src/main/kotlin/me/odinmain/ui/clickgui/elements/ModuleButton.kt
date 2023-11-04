@@ -104,15 +104,15 @@ class ModuleButton(val module: Module, val panel: Panel) {
             if (textWidth > width - 80)// too long text, not drawing symbol
             else if (module.tag == Module.TagType.RISKY) {
                 NanoVGHelper.INSTANCE.drawSvg(this.context,
-                    "/assets/odin/ui/clickgui/bannableIcon.svg", x + width / 2 + textWidth / 2 + 10f, y + 4f, 25f, 25f, javaClass
+                    "/assets/odinmain/ui/clickgui/bannableIcon.svg", x + width / 2 + textWidth / 2 + 10f, y + 4f, 25f, 25f, javaClass
                 )
             } else if (module.tag == Module.TagType.FPSTAX) {
                 NanoVGHelper.INSTANCE.drawSvg(this.context,
-                    "/assets/odin/ui/clickgui/fpsHeavyIcon.svg", x + width / 2 + textWidth / 2 + 20f, y, 35f, 35f, javaClass
+                    "/assets/odinmain/ui/clickgui/fpsHeavyIcon.svg", x + width / 2 + textWidth / 2 + 20f, y, 35f, 35f, javaClass
                 )
             } else if (module.tag == Module.TagType.NEW && ClickGUIModule.firstTimeOnVersion) {
                 NanoVGHelper.INSTANCE.drawSvg(this.context,
-                    "/assets/odin/ui/clickgui/newFeatureIcon.svg", x + width / 2 + textWidth / 2 + 10f, y, 35f, 35f, javaClass
+                    "/assets/odinmain/ui/clickgui/newFeatureIcon.svg", x + width / 2 + textWidth / 2 + 10f, y, 35f, 35f, javaClass
                 )
             }
 

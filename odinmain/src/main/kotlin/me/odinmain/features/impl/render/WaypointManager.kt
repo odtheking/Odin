@@ -17,6 +17,7 @@ import net.minecraft.util.Vec3i
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import kotlin.math.absoluteValue
 
 // TODO: Make changes cuz ngl its kinda eh (eg: good ordered waypoints for mining so people dont need to use ct)
 // TODO: Make all waypoint areas constant and make LocationUtils use locraw
@@ -54,6 +55,8 @@ object WaypointManager {
 
     fun addTempWaypoint(name: String = "§fWaypoint", x: Int, y: Int, z: Int) {
         if (currentArea == null) return modMessage("You are not in Skyblock.")
+        if (x.absoluteValue > 5000 || y.absoluteValue > 5000 || z.absoluteValue > 5000) return modMessage("§cWaypoint out of bounds.")
+        modMessage("Added waypoint at $x, $y, $z.")
         temporaryWaypoints.add(Pair(Waypoint(name, x, y, z, randomColor()), Clock(60_000)))
     }
 
