@@ -1,5 +1,6 @@
 package me.odinclient.features.impl.floor7.p3
 
+import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -40,7 +41,7 @@ object TerminalQOL : Module(
         if (!terminalTriggerbot || DungeonUtils.getPhase() != 3 || System.currentTimeMillis() - lastClick < 1000) return
         val lookingAt = mc.objectMouseOver.entityHit ?: return
         if (lookingAt !is EntityArmorStand || lookingAt.name.noControlCodes.contains("Inactive", true) || mc.currentScreen != null || this.onGround && !mc.thePlayer.onGround ) return
-        mc.playerController.isPlayerRightClickingOnEntity(mc.thePlayer, lookingAt, mc.objectMouseOver)
+        PlayerUtils.rightClick()
         lastClick = System.currentTimeMillis()
     }
 
