@@ -8,7 +8,10 @@ import me.odinclient.dungeonmap.features.Dungeon
 import me.odinclient.dungeonmap.features.MapRender
 import me.odinclient.dungeonmap.features.Window
 import me.odinclient.features.impl.dungeon.*
-import me.odinclient.features.impl.floor7.*
+import me.odinclient.features.impl.floor7.AutoEdrag
+import me.odinclient.features.impl.floor7.DioriteFucker
+import me.odinclient.features.impl.floor7.FreezeGame
+import me.odinclient.features.impl.floor7.RelicAura
 import me.odinclient.features.impl.floor7.p3.*
 import me.odinclient.features.impl.render.*
 import me.odinclient.features.impl.skyblock.*
@@ -117,7 +120,7 @@ class ModCore {
         AutoEdrag,
         DioriteFucker,
         RelicAura,
-        RelicPlacer,
+        //RelicPlacer,
 
         Trajectories,
         Ghosts,

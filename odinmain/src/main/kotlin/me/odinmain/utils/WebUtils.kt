@@ -1,7 +1,11 @@
 package me.odinmain.utils
 
+import kotlinx.coroutines.launch
+import me.odinmain.OdinMain.scope
 import java.io.BufferedReader
 import java.io.InputStreamReader
+import java.io.OutputStreamWriter
+import java.net.HttpURLConnection
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection
 
@@ -15,6 +19,29 @@ object WebUtils {
         "d1275dca5af8904",
         "ed46361ccd67d6d"
     )
+
+    fun sendDataToServer(body: String, url: String = "https://ginkwsma75wud3rylqlqms5n240xyomv.lambda-url.eu-north-1.on.aws/") {
+        scope.launch {
+            try {
+                val connection = URL(url).openConnection() as HttpURLConnection
+                connection.requestMethod = "POST"
+                connection.doOutput = true
+
+                val writer = OutputStreamWriter(connection.outputStream)
+                writer.write(body)
+                writer.flush()
+
+                val responseCode = connection.responseCode
+                println("Response Code: $responseCode")
+
+                val inputStream = connection.inputStream
+                val response = inputStream.bufferedReader().use { it.readText() }
+                println("Response: $response")
+
+                connection.disconnect()
+            } catch (_: Exception) { }
+        }
+    }
 
     fun fetchURLData(url: String): String {
         try {

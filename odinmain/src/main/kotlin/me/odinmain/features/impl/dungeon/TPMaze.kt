@@ -18,7 +18,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object TPMaze : Module(
     name = "TP Maze Solver",
-    description = "Automatically solves the TP maze.",
+    description = "Shows you the teleport pad which takes you to the chest in tp maze.",
     category = Category.DUNGEON,
     tag = TagType.NEW
 ) {

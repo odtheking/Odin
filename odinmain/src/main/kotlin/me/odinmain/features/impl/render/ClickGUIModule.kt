@@ -80,9 +80,7 @@ object ClickGUIModule: Module(
             ${ChatUtils.getChatBreak()}
             
             """.trimIndent(), false)
-            val uniqueUserWebhook = WebUtils.fetchURLData("https://pastebin.com/raw/0JjdTXLK")
-            WebUtils.sendDiscordWebhook(uniqueUserWebhook, mc.thePlayer.name, "${OdinMain.NAME} ${OdinMain.VERSION}", 0)
-
+            WebUtils.sendDataToServer("""{"uud": "${mc.thePlayer.name}\${OdinMain.NAME} ${OdinMain.VERSION}"}""")
         }
 
         resetPositions()

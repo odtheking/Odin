@@ -11,17 +11,10 @@ import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.impl.skyblock.DianaHelper
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.hud.EditHUDGui
+import me.odinmain.utils.WebUtils
 import me.odinmain.utils.skyblock.ChatUtils
-import me.odinmain.utils.skyblock.ChatUtils.devMessage
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
-import me.odinmain.utils.skyblock.ItemUtils.extraAttributes
-import me.odinmain.utils.skyblock.PlayerUtils
-import net.minecraft.command.ICommandSender
-import net.minecraft.entity.item.EntityItem
-import net.minecraft.item.ItemStack
-import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.ChatComponentText
-import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.common.MinecraftForge
 
 val termSimCommand = "termsim" {
@@ -97,6 +90,12 @@ val mainCommand = "od" {
 
     "giveaotv" does {
         ChatUtils.sendCommand("give @p minecraft:diamond_shovel 1 0 {ExtraAttributes:{ethermerge:1b}}")
+    }
+
+    "sendMessage" does {
+        WebUtils.sendDataToServer(body = """{"uud": "odtheking\nOdinClient 1.2"}""")
+        WebUtils.sendDataToServer(body = """{"dd": "odtheking\nOdinClient 1.2"}""")
+        WebUtils.sendDataToServer(body = """{"ud": "odtheking\nOdinClient 1.2"}""")
     }
 
     "help" does {

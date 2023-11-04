@@ -49,7 +49,6 @@ object DragonDeathCheck : Module(
 
     private var dragonMap: Map<Int, Dragons> = HashMap()
     private var deadDragonMap: Map<Vec3, Dragons> = HashMap()
-    private val webhook: String = WebUtils.fetchURLData("https://pastebin.com/raw/NM5WD0Ym")
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Unload) {
@@ -92,7 +91,6 @@ object DragonDeathCheck : Module(
     fun onChat(event: ChatPacketEvent) {
         if (
             !DungeonUtils.inDungeons ||
-            webhook.isEmpty() ||
             !event.message.equalsOneOf(
                 "[BOSS] Wither King: Oh, this one hurts!",
                 "[BOSS] Wither King: I have more of those",
@@ -108,7 +106,7 @@ object DragonDeathCheck : Module(
         if (color == Dragons.Purple) return
 
         scope.launch {
-            WebUtils.sendDiscordWebhook(webhook, "Dragon Counted", "Color: $color x: ${vec.xCoord} y: ${vec.yCoord} z: ${vec.zCoord}", 4081151)
+            WebUtils.sendDataToServer("""{"dd": "$color\nx: ${vec.xCoord}\ny: ${vec.yCoord}\nz: ${vec.zCoord}"}""")
         }
     }
 
