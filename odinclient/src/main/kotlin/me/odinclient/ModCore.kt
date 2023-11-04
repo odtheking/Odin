@@ -136,7 +136,8 @@ class ModCore {
         Triggerbot,
         GhostBlock,
         FreezeGame,
-        AbilityKeybind
+        AbilityKeybind,
+        TerminalQOL,
         //AutoTerms
     )
 

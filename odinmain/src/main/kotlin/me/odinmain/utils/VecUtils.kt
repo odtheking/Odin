@@ -1,7 +1,6 @@
 package me.odinmain.utils
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.utils.VecUtils.fastEyeHeight
 import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S29PacketSoundEffect
@@ -166,8 +165,18 @@ object VecUtils {
         return Vec3(xCoord.floor(), yCoord.floor(), zCoord.floor())
     }
 
-    fun BlockPos.toAABB(): AxisAlignedBB {
-        return AxisAlignedBB(this.x.toDouble(), this.y.toDouble(), this.z.toDouble(), this.x.toDouble() + 1.0, this.y.toDouble() + 1.0, this.z.toDouble() + 1.0).expand(0.01, 0.01, 0.01)
+    /**
+     * @param add Will determine the maximum bounds
+     */
+    fun BlockPos.toAABB(add: Double = 1.0): AxisAlignedBB {
+        return AxisAlignedBB(this.x.toDouble(), this.y.toDouble(), this.z.toDouble(), this.x + add, this.y + add, this.z + add).expand(0.01, 0.01, 0.01)
+    }
+
+    /**
+     * @param add Will determine the maximum bounds
+     */
+    fun Vec3.toAABB(add: Double = 1.0): AxisAlignedBB {
+        return AxisAlignedBB(this.xCoord, this.yCoord, this.zCoord, this.xCoord + add, this.yCoord + add, this.zCoord + add)
     }
 
     /**
