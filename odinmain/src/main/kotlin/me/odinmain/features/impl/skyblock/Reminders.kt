@@ -75,9 +75,9 @@ object Reminders : Module(
     fun onClientTick(event: TickEvent.ClientTickEvent) {
         if (!wishAlert || DungeonUtils.inBoss || !DungeonUtils.inDungeons || !canWish) return
         DungeonUtils.teammates.forEach { entityPlayer ->
-            val currentHp = entityPlayer.first.health
+            val currentHp = entityPlayer.entity?.health ?: 40f
             if (currentHp < 40 * (healthPrecentage / 100) && !DungeonUtils.isGhost) {
-                modMessage("§7${entityPlayer.first.name}§a is at less than §c$healthPrecentage% §aHP!")
+                modMessage("§7${entityPlayer.name}§a is at less than §c$healthPrecentage% §aHP!")
                 PlayerUtils.alert("USE WISH")
                 canWish = false
             }

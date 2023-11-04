@@ -43,11 +43,11 @@ object LeapHelper : Module(
         if (currentPos == NONE) return
         closestPlayer = DungeonUtils.teammates
             .filter {
-                it != mc.thePlayer &&
-                        if (currentPos.equal(Vec3(54.0, 4.0, 95.0))) it.first.positionVector.yCoord < 54.0 else true // To make sure the player is underneath necron's platform
+                it.entity != null && it.entity != mc.thePlayer &&
+                        if (currentPos.equal(Vec3(54.0, 4.0, 95.0))) it.entity.positionVector.yCoord < 54.0 else true // To make sure the player is underneath necron's platform
             }
-            .minByOrNull { it.first.positionVector.distanceTo(currentPos) }
-            ?.first
+            .minByOrNull { it.entity?.positionVector?.distanceTo(currentPos) ?: 10000.0 }
+            ?.entity
             ?.displayNameString
             .noControlCodes
     }

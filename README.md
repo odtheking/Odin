@@ -20,7 +20,7 @@ Category: Floor 7
 - Dragon Timer: Displays a timer for when M7 dragons spawn.
 - Arrow Align: Different features for the arrow alignment device.
 - Leap Helper: Shows which player is the most practical to leap to in the M7 boss-fight.
-- Fuck Diorite: Replaces the pillars in the F7 & M7 boss-fight with glass.
+- Fuck Diorite: Replaces storm's pillars with glass in f7/m7.
 - Simon Says: Different features for the Simon Says puzzle in f7/m7.
 
 Category: Render
@@ -67,11 +67,11 @@ Category: Dungeons
 - Water Solver: Solves the water puzzle with a single flow.
 - Watcher Bar: Shows the watcher's health.
 - Ghost Block: Creates ghost blocks on keypress, and in specific locations.
-- Super Boom: Places TNT when you left click on a block which can blow up.
+- Super Boom: Places TNT when you left-click on a block which can blow up.
 - Swap Stonk: Does a swap stonk when you press the keybind.
 - Auto Ice Fill: Automatically completes the ice fill puzzle.
 - Auto Shield: Utilizes Wither shield every 5 seconds when health is not full (works with all Wither swords).
-- Auto Mask: Automatically uses masks when they proc.
+- Auto Mask: Automatically switches masks when they activate.
 - Triggerbot: Instantly left clicks if you are looking at a specified mob.
 - Auto Wish: Grants wishes for your teammates when they are low on health.
 - Auto Leap: Automatically leaps to the player who sent !tp in party chat.
@@ -98,7 +98,7 @@ Category: Floor 7
 - Auto Terms: Automatically completes the terminals in f7/m7.
 - Arrow Align: Different features for the arrow alignment device.
 - Leap Helper: Shows which player is the most practical to leap to in the M7 boss-fight.
-- Fuck Diorite: Replaces the pillars in the F7 & M7 boss-fight with glass.
+- Fuck Diorite: Replaces storm's pillars with glass in f7/m7.
 - Simon Says: Different features for the Simon Says puzzle in f7/m7.
 - Relic Aura: Automatically picks relics in the Witherking boss-fight.
 
