@@ -1,69 +1,27 @@
-package me.odinmain.features.impl.render
+package me.odinmain.utils.skyblock
 
-import me.odinmain.features.Category
-import me.odinmain.features.Module
-import me.odinmain.features.impl.skyblock.ChatCommands.private
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.DualSetting
-import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinmain.OdinMain.mc
 import me.odinmain.utils.VecUtils
 import me.odinmain.utils.VecUtils.get
 import me.odinmain.utils.VecUtils.multiply
 import me.odinmain.utils.VecUtils.toDoubleArray
-import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.world.RenderUtils
-import me.odinmain.utils.skyblock.ItemUtils.extraAttributes
-import me.odinmain.utils.skyblock.ItemUtils.itemID
-import me.odinmain.utils.skyblock.WorldUtils
-import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
-import net.minecraftforge.client.event.RenderWorldLastEvent
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.lang.reflect.Field
 import kotlin.math.*
 
-object EtherWarpHelper : Module(
-    name = "Ether Warp Helper",
-    description = "Shows you where your etherwarp will teleport you.",
-    category = Category.RENDER,
-    tag = TagType.NEW
-) {
-    private data class EtherPos(val succeeded: Boolean, val pos: BlockPos?) {
+object EtherWarpUtils {
+    data class EtherPos(val succeeded: Boolean, val pos: BlockPos?) {
         companion object {
             val NONE = EtherPos(false, null)
         }
     }
-    private var etherPos: EtherPos = EtherPos.NONE
+    var etherPos: EtherPos = EtherPos.NONE
 
-    private val color: Color by ColorSetting("Color", Color.ORANGE.withAlpha(.5f), allowAlpha = true)
-    private val filled: Boolean by DualSetting("Type", "Outline", "Filled", default = false)
-    private val thickness: Float by NumberSetting("Thickness", 3f, 1f, 10f, .1f).withDependency { !filled }
-    private val phase: Boolean by BooleanSetting("Phase", false)
+    fun getEtherPos(pos: Vec3, yaw: Float, pitch: Float): EtherPos {
+        mc.thePlayer ?: return EtherPos.NONE
 
-    @SubscribeEvent
-    fun onRenderWorldLast(event: RenderWorldLastEvent) {
-        etherPos = getEtherPos()
-        if (etherPos.succeeded && mc.thePlayer.isSneaking && mc.thePlayer.heldItem.extraAttributes?.getBoolean("etherMerge") == true) {
-            val pos = etherPos.pos ?: return
-
-            if (filled)
-                RenderUtils.drawFilledBox(pos, color, phase = phase)
-            else
-                RenderUtils.drawCustomESPBox(pos, color, thickness = thickness, phase = phase)
-        }
-    }
-
-    private fun getEtherPos(): EtherPos {
-        val p = mc.thePlayer ?: return EtherPos.NONE
-
-        val (yaw, pitch) = Pair(serverYaw.get(p) as Float, serverPitch.get(p) as Float)
         val lookVec = VecUtils.getLook(yaw = yaw, pitch = pitch).normalize().multiply(60.0)
-        val startPos: Vec3 = VecUtils.getPositionEyes(Vec3(serverPosX.get(p) as Double, serverPosY.get(p) as Double, serverPosZ.get(p) as Double))
+        val startPos: Vec3 = VecUtils.getPositionEyes(pos)
 
         val endPos = lookVec.add(startPos)
 

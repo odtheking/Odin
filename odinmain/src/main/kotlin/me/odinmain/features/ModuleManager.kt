@@ -85,7 +85,6 @@ object ModuleManager {
         Animations,
         SpaceHelmet,
         EscrowFix,
-        EtherWarpHelper,
         //LeapMenu
     )
 

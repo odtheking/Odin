@@ -7,6 +7,7 @@ import kotlinx.coroutines.runBlocking
 import me.odin.commands.impl.highlightCommand
 import me.odin.features.impl.floor7.p3.ArrowAlign
 import me.odin.features.impl.floor7.p3.SimonSays
+import me.odin.features.impl.render.EtherWarpHelper
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.commands.impl.WaypointCommand
@@ -82,7 +83,8 @@ class ModCore {
 
     private val modules = arrayListOf<Module>(
         ArrowAlign,
-        SimonSays
+        SimonSays,
+        EtherWarpHelper
     )
 
     @SubscribeEvent
