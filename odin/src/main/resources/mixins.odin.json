@@ -11,6 +11,7 @@
     "mixins.MixinWorld"
   ],
   "client": [
+    "accessors.IEntityPlayerSPAccessor",
     "mixins.MixinEntityRenderer",
     "mixins.MixinFontRenderer",
     "mixins.MixinGuiContainer",

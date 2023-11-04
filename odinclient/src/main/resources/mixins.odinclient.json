@@ -15,6 +15,7 @@
     "mixins.MixinWorld"
   ],
   "client": [
+    "accessors.IEntityPlayerSPAccessor",
     "mixins.MixinBlockButton",
     "mixins.MixinBlockCarpet",
     "mixins.MixinEntityRenderer",
