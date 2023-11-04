@@ -1,6 +1,5 @@
 package me.odinmain.commands.impl
 
-import me.odinmain.OdinMain
 import me.odinmain.OdinMain.display
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.onLegitVersion
@@ -13,8 +12,16 @@ import me.odinmain.features.impl.skyblock.DianaHelper
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.utils.skyblock.ChatUtils
+import me.odinmain.utils.skyblock.ChatUtils.devMessage
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
+import me.odinmain.utils.skyblock.ItemUtils.extraAttributes
+import me.odinmain.utils.skyblock.PlayerUtils
+import net.minecraft.command.ICommandSender
+import net.minecraft.entity.item.EntityItem
+import net.minecraft.item.ItemStack
+import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.ChatComponentText
+import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.common.MinecraftForge
 
 val termSimCommand = "termsim" {
@@ -88,47 +95,47 @@ val mainCommand = "od" {
         MinecraftForge.EVENT_BUS.post(ChatPacketEvent(it.joinToString(" ")))
     }
 
-    "help" {
+    "giveaotv" does {
+        ChatUtils.sendCommand("give @p minecraft:diamond_shovel 1 0 {ExtraAttributes:{ethermerge:1b}}")
+    }
 
-        does {
-            if (!OdinMain.onLegitVersion) {
-                modMessage(
-                    """
-                    List of commands:
-                     §3- /od » §8Main command.
-                     §3- /autosell » §8Used to configure what items are automatically sold with Auto Sell.
-                     §3- /blacklist » §8Used to configure your blacklist.
-                     §3- /esp » §8Used to configure ESP list.
-                     §3- /waypoint » §8Configure waypoints.
-                     §3- /termsim » §8Simulates terminals so you can practice them.
-                     §3- /rq » §8Requeues dungeon run.
-                     §3- /simulate » §8Simulates chat messages.
-                     §3- /set yaw » §8Sets your yaw.
-                     §3- /set pitch » §8Sets your pitch.
-                     §3- /set rotation » §8Sets your yaw and pitch.
-                     §3- /m? » §8Teleports you to a floor in master mode.
-                     §3- /f? » §8Teleports you to a floor in normal mode.
-                     §3- /dianareset §7» §8Resets all active diana waypoints.
-                    """.trimIndent()
-                )
-            } else
-                modMessage(
-                    """
-                     List of commands:
-                     §3- /od §7» §8Main command.
-                     §3- /blacklist §7» §8Used to configure your blacklist.
-                     §3- /highlight §7» §8Used to configure Highlight list.
-                     §3- /waypoint §7» §8Configure waypoints.
-                     §3- /termsim §7» §8Simulates terminals so you can practice them.
-                     §3- /rq §7» §8Requeues dungeon run.
-                     §3- /simulate §7» §8Simulates chat messages.
-                     §3- /m? §7» §8Teleports you to a floor in master mode.
-                     §3- /f? §7» §8Teleports you to a floor in normal mode.
-                     §3- /dianareset §7» §8Resets all active diana waypoints.
-                     """.trimIndent()
-                )
-        }
-
+    "help" does {
+        if (!onLegitVersion) {
+            modMessage(
+                """
+                List of commands:
+                 §3- /od » §8Main command.
+                 §3- /autosell » §8Used to configure what items are automatically sold with Auto Sell.
+                 §3- /blacklist » §8Used to configure your blacklist.
+                 §3- /esp » §8Used to configure ESP list.
+                 §3- /waypoint » §8Configure waypoints.
+                 §3- /termsim » §8Simulates terminals so you can practice them.
+                 §3- /rq » §8Requeues dungeon run.
+                 §3- /simulate » §8Simulates chat messages.
+                 §3- /set yaw » §8Sets your yaw.
+                 §3- /set pitch » §8Sets your pitch.
+                 §3- /set rotation » §8Sets your yaw and pitch.
+                 §3- /m? » §8Teleports you to a floor in master mode.
+                 §3- /f? » §8Teleports you to a floor in normal mode.
+                 §3- /dianareset §7» §8Resets all active diana waypoints.
+                """.trimIndent()
+            )
+        } else
+            modMessage(
+                """
+                 List of commands:
+                 §3- /od §7» §8Main command.
+                 §3- /blacklist §7» §8Used to configure your blacklist.
+                 §3- /highlight §7» §8Used to configure Highlight list.
+                 §3- /waypoint §7» §8Configure waypoints.
+                 §3- /termsim §7» §8Simulates terminals so you can practice them.
+                 §3- /rq §7» §8Requeues dungeon run.
+                 §3- /simulate §7» §8Simulates chat messages.
+                 §3- /m? §7» §8Teleports you to a floor in master mode.
+                 §3- /f? §7» §8Teleports you to a floor in normal mode.
+                 §3- /dianareset §7» §8Resets all active diana waypoints.
+                 """.trimIndent()
+            )
     }
 
     "testTP" does {
