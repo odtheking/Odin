@@ -12,9 +12,9 @@ object ItemUtils {
     /**
      * Returns the ExtraAttribute Compound
      */
-    private val ItemStack.extraAttributes: NBTTagCompound?
+    val ItemStack?.extraAttributes: NBTTagCompound?
         get() {
-            return this.getSubCompound("ExtraAttributes", false)
+            return this?.getSubCompound("ExtraAttributes", false)
         }
 
     /**

@@ -2,6 +2,7 @@ package me.odinmain.features.impl.render
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.impl.skyblock.ChatCommands.private
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
@@ -15,6 +16,7 @@ import me.odinmain.utils.VecUtils.toDoubleArray
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
+import me.odinmain.utils.skyblock.ItemUtils.extraAttributes
 import me.odinmain.utils.skyblock.ItemUtils.itemID
 import me.odinmain.utils.skyblock.WorldUtils
 import net.minecraft.client.entity.EntityPlayerSP
@@ -37,19 +39,6 @@ object EtherWarpHelper : Module(
         }
     }
     private var etherPos: EtherPos = EtherPos.NONE
-    private val serverPosX: Field = EntityPlayerSP::class.java.getDeclaredField("lastReportedPosX")
-    private val serverPosY: Field = EntityPlayerSP::class.java.getDeclaredField("lastReportedPosY")
-    private val serverPosZ: Field = EntityPlayerSP::class.java.getDeclaredField("lastReportedPosZ")
-    private val serverYaw: Field = EntityPlayerSP::class.java.getDeclaredField("lastReportedYaw")
-    private val serverPitch: Field = EntityPlayerSP::class.java.getDeclaredField("lastReportedPitch")
-
-    init {
-        serverPosX.isAccessible = true
-        serverPosY.isAccessible = true
-        serverPosZ.isAccessible = true
-        serverYaw.isAccessible = true
-        serverPitch.isAccessible = true
-    }
 
     private val color: Color by ColorSetting("Color", Color.ORANGE.withAlpha(.5f), allowAlpha = true)
     private val filled: Boolean by DualSetting("Type", "Outline", "Filled", default = false)
@@ -59,7 +48,7 @@ object EtherWarpHelper : Module(
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         etherPos = getEtherPos()
-        if (etherPos.succeeded && mc.thePlayer.isSneaking && mc.thePlayer.heldItem.itemID.equalsOneOf("ASPECT_OF_THE_VOID", "ASPECT_OF_THE_END")) {
+        if (etherPos.succeeded && mc.thePlayer.isSneaking && mc.thePlayer.heldItem.extraAttributes?.getBoolean("etherMerge") == true) {
             val pos = etherPos.pos ?: return
 
             if (filled)
