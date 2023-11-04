@@ -49,6 +49,7 @@ object ArrowAlign : Module(
         execute(3000) {
             if (mc.thePlayer.getDistanceSq(BlockPos(-2, 122, 76)) > 225 /*|| DungeonUtils.getPhase() != 3*/ || (scanned && !multipleScans)) return@execute
             calculate()
+            scanned = true
         }
 
         onWorldLoad {
@@ -65,7 +66,8 @@ object ArrowAlign : Module(
             event.isCanceled = true
             return
         }
-        frame.rotations--
+        if (frame.rotations == 0) frame.rotations = 7
+        else frame.rotations--
     }
 
     private fun triggerBot() {

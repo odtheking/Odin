@@ -45,6 +45,7 @@ object ArrowAlign : Module(
         execute(3000) {
             if (mc.thePlayer.getDistanceSq(BlockPos(-2, 122, 76)) > 225 /*|| DungeonUtils.getPhase() != 3*/ || (scanned && !multipleScans)) return@execute
             calculate()
+            scanned = true
         }
 
         onWorldLoad {
@@ -57,7 +58,8 @@ object ArrowAlign : Module(
     fun onRightClick(event: ClickEvent.RightClickEvent) {
         if (mc.objectMouseOver?.entityHit !is EntityItemFrame) return
         val frame = neededRotations.values.find { it.entity == mc.objectMouseOver.entityHit as EntityItemFrame } ?: return
-        frame.rotations--
+        if (frame.rotations == 0) frame.rotations = 7
+        else frame.rotations--
     }
 
     @SubscribeEvent
