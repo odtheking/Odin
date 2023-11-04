@@ -151,7 +151,7 @@ object RenderUtils {
     }
 
     fun drawFilledBox(pos: BlockPos, color: Color, phase: Boolean = false) {
-        drawFilledBox(AxisAlignedBB(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble(), pos.x + 1.001, pos.y + 1.001, pos.z + 1.001), color, phase)
+        drawFilledBox(AxisAlignedBB(pos, pos.add(1, 1, 1)).expand(0.001, 0.001, 0.001), color, phase)
     }
 
     fun drawFilledBox(ab: AxisAlignedBB, color: Color, phase: Boolean = false) {

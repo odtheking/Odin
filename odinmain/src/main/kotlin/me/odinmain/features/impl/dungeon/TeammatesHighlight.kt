@@ -29,26 +29,26 @@ object TeammatesHighlight : Module(
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
         if (!shouldRender(event.entity) || !outline) return
 
-        val teammate = DungeonUtils.teammates.find { it.first == event.entity } ?: return
+        val teammate = DungeonUtils.teammates.find { it.entity == event.entity } ?: return
 
-        if (!whenVisible && mc.thePlayer.canEntityBeSeen(teammate.first)) return
+        if (!whenVisible && mc.thePlayer.canEntityBeSeen(teammate.entity)) return
 
-        OutlineUtils.outlineEntity(event, thickness, teammate.second.color, true)
+        OutlineUtils.outlineEntity(event, thickness, teammate.clazz.color, true)
     }
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
         DungeonUtils.teammates.forEach { teammate ->
-            if (!shouldRender(teammate.first)) return@forEach
-            if (!whenVisible && mc.thePlayer.canEntityBeSeen(teammate.first)) return@forEach
+            if (teammate.entity?.let { shouldRender(it) } != true) return@forEach
+            if (!whenVisible && mc.thePlayer.canEntityBeSeen(teammate.entity)) return@forEach
 
             RenderUtils.drawStringInWorld(
-                "${teammate.second.code}${teammate.first.name}",
-                teammate.first.renderVec.addVec(y = 2.7),
+                "${teammate.clazz.code}${teammate.name}",
+                teammate.entity.renderVec.addVec(y = 2.7),
                 depthTest = false,
                 increase = false,
                 renderBlackBox = false,
-                scale = max(0.03f, mc.thePlayer.getDistanceToEntity(teammate.first) / 250)
+                scale = max(0.03f, mc.thePlayer.getDistanceToEntity(teammate.entity) / 250)
             )
         }
     }

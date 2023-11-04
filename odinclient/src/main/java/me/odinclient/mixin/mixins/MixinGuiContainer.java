@@ -1,8 +1,6 @@
 package me.odinclient.mixin.mixins;
 
-import me.odinmain.events.impl.DrawGuiEvent;
-import me.odinmain.events.impl.DrawSlotEvent;
-import me.odinmain.events.impl.GuiClosedEvent;
+import me.odinmain.events.impl.*;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
@@ -34,6 +32,18 @@ public class MixinGuiContainer {
     @Inject(method = "drawScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/inventory/GuiContainer;drawGuiContainerForegroundLayer(II)V"))
     private void onDrawScreen(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
         MinecraftForge.EVENT_BUS.post(new DrawGuiEvent(gui.inventorySlots, gui, this.xSize, this.ySize));
+    }
+
+    @Inject(method = "drawScreen", at = @At(value = "HEAD"), cancellable = true)
+    private void startDrawScreen(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
+        if (MinecraftForge.EVENT_BUS.post(new DrawGuiScreenEvent(gui.inventorySlots, gui, this.xSize, this.ySize)))
+            ci.cancel();
+    }
+
+    @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
+    private void onMouseClicked(int mouseX, int mouseY, int mouseButton, CallbackInfo ci) {
+        if (MinecraftForge.EVENT_BUS.post(new GuiClickEvent(gui.inventorySlots, gui, mouseX, mouseY, mouseButton)))
+            ci.cancel();
     }
 
     @Inject(method = "onGuiClosed", at = @At("HEAD"))

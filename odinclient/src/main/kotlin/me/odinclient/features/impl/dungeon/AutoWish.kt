@@ -34,9 +34,9 @@ object AutoWish: Module(
     fun onClientTick(event: TickEvent.ClientTickEvent) {
         if (DungeonUtils.inBoss || !DungeonUtils.inDungeons || !canWish) return
         DungeonUtils.teammates.forEach { entityPlayer ->
-            val currentHp = entityPlayer.first.health
+            val currentHp = entityPlayer.entity?.health ?: 40f
             if (currentHp < 40 * (healthPercentage / 100) && !DungeonUtils.isGhost) {
-                ChatUtils.modMessage("§7${entityPlayer.first.name}§a is at less than §c${floor(healthPercentage)}% §aHP! Wishing!")
+                ChatUtils.modMessage("§7${entityPlayer.name}§a is at less than §c${floor(healthPercentage)}% §aHP! Wishing!")
                 dropItem()
                 canWish = false
             }

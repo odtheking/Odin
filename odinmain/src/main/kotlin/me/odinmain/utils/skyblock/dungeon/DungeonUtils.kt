@@ -19,6 +19,7 @@ import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.util.EnumFacing
+import net.minecraft.util.ResourceLocation
 import net.minecraft.world.WorldSettings
 import net.minecraftforge.event.entity.living.LivingEvent
 import net.minecraftforge.event.world.WorldEvent
@@ -96,8 +97,9 @@ object DungeonUtils {
         Healer("§a", Color(85, 255, 85)),
         Tank("§2", Color(0, 170, 0))
     }
+    data class DungeonPlayer(val name: String, val clazz: Classes, val locationSkin: ResourceLocation, val entity: EntityPlayer? = null)
     val isGhost: Boolean get() = ItemUtils.getItemSlot("Haunt", true) != null
-    var teammates: List<Pair<EntityPlayer, Classes>> = emptyList()
+    var teammates: List<DungeonPlayer> = emptyList()
 
     init {
         Executor(1000) {
@@ -122,17 +124,17 @@ object DungeonUtils {
 
     private val tablistRegex = Regex("\\[(\\d+)] (?:\\[\\w+] )*(\\w+) (?:.)*?\\((\\w+)(?: (\\w+))*\\)")
 
-    private fun getDungeonTeammates(): List<Pair<EntityPlayer, Classes>> {
-        val teammates = mutableListOf<Pair<EntityPlayer, Classes>>()
+    private fun getDungeonTeammates(): List<DungeonPlayer> {
+        val teammates = mutableListOf<DungeonPlayer>()
         val tabList = getDungeonTabList() ?: return emptyList()
 
-        for ((_, line) in tabList) {
+        for ((networkPlayerInfo, line) in tabList) {
             val (_, sbLevel, name, clazz, level) = tablistRegex.find(line.noControlCodes)?.groupValues ?: continue
 
-            mc.theWorld.getPlayerEntityByName(name)?.let { player ->
-                Classes.entries.find { it.name == clazz }?.let { foundClass ->
-                    teammates.add(Pair(player, foundClass))
-                }
+            Classes.entries.find { it.name == clazz }?.let { foundClass ->
+                mc.theWorld.getPlayerEntityByName(name)?.let { player ->
+                    teammates.add(DungeonPlayer(name, foundClass, networkPlayerInfo.locationSkin, player))
+                } ?: teammates.add(DungeonPlayer(name, foundClass, networkPlayerInfo.locationSkin))
             }
 
         }
