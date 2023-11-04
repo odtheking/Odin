@@ -84,7 +84,8 @@ object ModuleManager {
         TPMaze,
         Animations,
         SpaceHelmet,
-        EscrowFix
+        EscrowFix,
+        EtherWarpHelper
     )
 
 

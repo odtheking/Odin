@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.Entity
 import net.minecraft.util.AxisAlignedBB
+import net.minecraft.util.BlockPos
 import net.minecraft.util.MathHelper
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.Vec3
@@ -85,6 +86,10 @@ object RenderUtils {
         drawCustomESPBox(x, scale, y, scale, z, scale, color, thickness, phase)
     }
 
+    fun drawCustomESPBox(pos: BlockPos, color: Color, thickness: Float = 3f, phase: Boolean) {
+        drawCustomESPBox(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble(), 1.0, color, thickness, phase)
+    }
+
     /**
      * @param color Has to be in the range of 0-255
      */
@@ -143,6 +148,10 @@ object RenderUtils {
         GlStateManager.enableDepth()
         GlStateManager.resetColor()
         GlStateManager.popMatrix()
+    }
+
+    fun drawFilledBox(pos: BlockPos, color: Color, phase: Boolean = false) {
+        drawFilledBox(AxisAlignedBB(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble(), pos.x + 1.001, pos.y + 1.001, pos.z + 1.001), color, phase)
     }
 
     fun drawFilledBox(ab: AxisAlignedBB, color: Color, phase: Boolean = false) {

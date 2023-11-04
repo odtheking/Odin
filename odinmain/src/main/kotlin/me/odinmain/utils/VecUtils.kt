@@ -1,6 +1,7 @@
 package me.odinmain.utils
 
 import me.odinmain.OdinMain.mc
+import me.odinmain.utils.VecUtils.fastEyeHeight
 import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S29PacketSoundEffect
@@ -34,7 +35,7 @@ object VecUtils {
         return if (mc.thePlayer?.isSneaking == true) 1.54f else 1.62f
     }
 
-    private fun getPositionEyes(pos: Vec3 = mc.thePlayer.positionVector): Vec3 {
+    fun getPositionEyes(pos: Vec3 = mc.thePlayer.positionVector): Vec3 {
         return Vec3(
             pos.xCoord,
             pos.yCoord + fastEyeHeight(),
@@ -42,7 +43,7 @@ object VecUtils {
         )
     }
 
-    private fun getLook(yaw: Float = mc.thePlayer.rotationYaw, pitch: Float = mc.thePlayer.rotationPitch): Vec3 {
+    fun getLook(yaw: Float = mc.thePlayer.rotationYaw, pitch: Float = mc.thePlayer.rotationPitch): Vec3 {
         val f2 = -MathHelper.cos(-pitch * 0.017453292f).toDouble()
         return Vec3(
             MathHelper.sin(-yaw * 0.017453292f - 3.1415927f) * f2,
@@ -77,6 +78,19 @@ object VecUtils {
 
     fun Vec3.equal(other: Vec3): Boolean {
         return this.xCoord == other.xCoord && this.yCoord == other.yCoord && this.zCoord == other.zCoord
+    }
+
+    fun Vec3.multiply(factor: Double): Vec3 {
+        return Vec3(this.xCoord * factor, this.yCoord * factor, this.zCoord * factor)
+    }
+
+    fun Vec3.get(index: Int): Double {
+        return when (index) {
+            0 -> this.xCoord
+            1 -> this.yCoord
+            2 -> this.zCoord
+            else -> throw IndexOutOfBoundsException("Index: $index, Size: 3")
+        }
     }
 
     private fun isInterceptable(aabb: AxisAlignedBB, range: Float, yaw: Float, pitch: Float): Boolean {

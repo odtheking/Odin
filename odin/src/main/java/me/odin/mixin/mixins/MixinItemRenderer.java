@@ -67,7 +67,7 @@ public abstract class MixinItemRenderer {
 
     @Overwrite
     public void renderItemInFirstPerson(float partialTicks) {
-        float f = (Animations.INSTANCE.getEnabled() &&Animations.INSTANCE.getNoEquipReset()) ? 1.0f : 1.0f - (this.prevEquippedProgress + (this.equippedProgress - this.prevEquippedProgress) * partialTicks);
+        float f = 1.0f - (this.prevEquippedProgress + (this.equippedProgress - this.prevEquippedProgress) * partialTicks);
         EntityPlayerSP abstractclientplayer = this.mc.thePlayer;
         float f1 = abstractclientplayer.getSwingProgress(partialTicks);
         float f2 = abstractclientplayer.prevRotationPitch + (abstractclientplayer.rotationPitch - abstractclientplayer.prevRotationPitch) * partialTicks;
