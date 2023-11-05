@@ -11,7 +11,6 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinmain.utils.minBy
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import me.odinmain.utils.skyblock.ItemUtils.unformattedName
@@ -119,7 +118,6 @@ object TerminalSolver : Module(
 
                     val amount = slot.stack?.stackSize ?: 0
                     mc.fontRendererObj.drawString(amount.toString(), x + 9 - mc.fontRendererObj.getStringWidth(amount.toString()) / 2, y + 5, textColor.rgba)
-                    event.isCanceled = true
                 }
                 3 -> Gui.drawRect(x, y, x + 16, y + 16, startsWithColor.rgba)
                 4 -> Gui.drawRect(x, y, x + 16, y + 16, selectColor.rgba)

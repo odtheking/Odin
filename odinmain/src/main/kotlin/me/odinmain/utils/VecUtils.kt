@@ -92,6 +92,16 @@ object VecUtils {
         }
     }
 
+    fun Vec3.rotateAroundNorth(rotation: EnumFacing): Vec3 {
+        return when (rotation) {
+            EnumFacing.NORTH -> this
+            EnumFacing.EAST -> Vec3(-this.xCoord, this.yCoord, this.zCoord)
+            EnumFacing.SOUTH -> Vec3(-this.xCoord, this.yCoord, -this.zCoord)
+            EnumFacing.WEST -> Vec3(this.xCoord, this.yCoord, -this.zCoord)
+            else -> this
+        }
+    }
+
     private fun isInterceptable(aabb: AxisAlignedBB, range: Float, yaw: Float, pitch: Float): Boolean {
         val player = mc.thePlayer ?: return false
         val position = Vec3(player.posX, player.posY + fastEyeHeight(), player.posZ)

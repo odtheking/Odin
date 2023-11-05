@@ -5,6 +5,9 @@
     "cores": [
       -1989372370
     ],
+    "rotationCores":[
+      862236082
+    ],
     "crypts": 34
   },
   {
@@ -116,7 +119,7 @@
     "cores": [
       -2130054003
     ],
-    "rotationcores":[
+    "rotationCores":[
       -1273468080
     ]
   },
@@ -174,7 +177,7 @@
       272954274
     ],
     "secrets": 1,
-    "rotationcores": [
+    "rotationCores": [
       -1056565051
     ]
   },
@@ -228,7 +231,7 @@
       1751890846
     ],
     "secrets": 1,
-    "rotationcores": [
+    "rotationCores": [
       -824792416
     ]
   },
@@ -239,7 +242,7 @@
       113272043
     ],
     "secrets": 2,
-    "rotationcores": [
+    "rotationCores": [
       -2050318443
     ]
   },
@@ -391,7 +394,7 @@
     ],
     "crypts": 6,
     "secrets": 3,
-    "rotationcores": [
+    "rotationCores": [
       0
     ],
     "trappedChests": 1
@@ -421,8 +424,10 @@
       -1092072828,
       1913969999
     ],
-    "rotationcores":[
-      521832056
+    "rotationCores":[
+      -1149503754,
+      -327386702,
+      1992539143
     ]
   },
   {
@@ -431,7 +436,7 @@
     "cores": [
       1484567748
     ],
-    "rotationcores":[
+    "rotationCores":[
       -183612452
     ]
   },
@@ -510,7 +515,7 @@
     "cores": [
       -2131538192
     ],
-    "rotationcores":[
+    "rotationCores":[
       1657197555
     ]
   },
@@ -562,6 +567,9 @@
     "type": "CHAMPION",
     "cores": [
       -1678546839
+    ],
+    "rotationCores":[
+      370278909
     ],
     "crypts": 1
   },
@@ -695,6 +703,12 @@
       1363618678,
       1227315161
     ],
+    "rotationCores":[
+      1460850194,
+      1488502459,
+      -353447990,
+      512830660
+    ],
     "crypts": 11,
     "secrets": 10
   },
@@ -751,6 +765,12 @@
       -1797804860,
       1514395908
     ],
+    "rotationCores":[
+      1781303198,
+      809334639,
+      469646540,
+      -236379496
+    ],
     "crypts": 4,
     "secrets": 5
   },
@@ -761,7 +781,7 @@
       1073109158
     ],
     "secrets": 1,
-    "rotationcores": [
+    "rotationCores": [
       13151484
     ]
   },
@@ -773,7 +793,7 @@
     ],
     "crypts": 1,
     "secrets": 3,
-    "rotationcores": [
+    "rotationCores": [
       0
     ],
     "trappedChests": 1
@@ -786,7 +806,7 @@
     ],
     "crypts": 2,
     "secrets": 4,
-    "rotationcores": [
+    "rotationCores": [
       283282892
     ]
   },
@@ -1008,7 +1028,7 @@
     ],
     "crypts": 4,
     "secrets": 3,
-    "rotationcores": [
+    "rotationCores": [
       0
     ],
     "trappedChests": 1
@@ -1064,6 +1084,9 @@
     "cores": [
       -430117371
     ],
+    "rotationCores":[
+      -1944017374
+    ],
     "crypts": 2
   },
   {
@@ -1102,7 +1125,7 @@
     ],
     "crypts": 1,
     "secrets": 5,
-    "rotationcores": [
+    "rotationCores": [
       0
     ],
     "trappedChests": 1
@@ -1228,6 +1251,9 @@
     "cores": [
       633179672
     ],
+    "rotationCores": [
+      -1959304032
+    ],
     "secrets": 1
   },
   {
@@ -1295,6 +1321,9 @@
       -714138899,
       -1489069695,
       -685683836
+    ],
+    "rotationCores":[
+      961134951
     ]
   },
   {

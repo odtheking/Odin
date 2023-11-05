@@ -67,16 +67,22 @@ object DungeonUtils {
         val xPos = START_X + x * ROOM_SIZE
         val zPos = START_Z + z * ROOM_SIZE
 
-        currentRoom = scanRoom(xPos, zPos)
-        currentRoom?.rotation = EnumFacing.HORIZONTALS.find {
-            currentRoom?.data?.rotationCores?.any { core -> ScanUtils.getCore(xPos + it.frontOffsetX, zPos + it.frontOffsetZ) == core } == true
-        } ?: EnumFacing.NORTH
+        currentRoom = scanRoom(xPos, zPos)?.apply {
+            rotation = EnumFacing.HORIZONTALS.find {
+                data.rotationCores.any { core ->
+                    val temp = ScanUtils.getCore(xPos + it.frontOffsetX, zPos + it.frontOffsetZ)
+                    println("Temp: $temp Core: $core rotation: $it")
+                    temp == core
+                }
+            } ?: EnumFacing.NORTH
+        }
 
     }
 
     private fun scanRoom(x: Int, z: Int): Room? {
         val height = mc.theWorld.getChunkFromChunkCoords(x shr 4, z shr 4).getHeightValue(x and 15, z and 15)
         if (height == 0) return null
+
 
         val roomCore = ScanUtils.getCore(x, z)
         return Room(x, z, ScanUtils.getRoomData(roomCore) ?: return null).apply {

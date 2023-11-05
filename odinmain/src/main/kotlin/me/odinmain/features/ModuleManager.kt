@@ -85,6 +85,7 @@ object ModuleManager {
         Animations,
         SpaceHelmet,
         EscrowFix,
+        DungeonWaypoints
         //LeapMenu
     )
 

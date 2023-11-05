@@ -35,9 +35,9 @@ object ScanUtils {
 
     }
 
-    fun getRoomData(hash: Int): RoomData? {
-        return roomList.find { hash in it.cores }
-    }
+    fun getRoomData(hash: Int): RoomData? =
+        roomList.find { it.cores.any { core -> hash == core } }
+
 
     fun getCore(x: Int, z: Int): Int {
         val blocks = arrayListOf<Int>()

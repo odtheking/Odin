@@ -3,12 +3,12 @@ package me.odinclient.dungeonmap.features
 import me.odinclient.dungeonmap.features.DungeonScan.scan
 import me.odinclient.features.impl.dungeon.MapModule
 import me.odinclient.utils.skyblock.dungeon.map.ScanUtils.getCore
-import me.odinclient.utils.skyblock.dungeon.map.ScanUtils.getRoomData
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import me.odinmain.utils.skyblock.dungeon.*
+import me.odinmain.utils.skyblock.dungeon.ScanUtils.getRoomData
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
 
