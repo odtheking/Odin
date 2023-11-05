@@ -85,7 +85,8 @@ object ModuleManager {
         Animations,
         SpaceHelmet,
         EscrowFix,
-        DungeonWaypoints
+        DungeonWaypoints,
+        SecretChime
         //LeapMenu
     )
 

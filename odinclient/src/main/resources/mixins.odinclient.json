@@ -31,6 +31,7 @@
     "mixins.MixinRenderDragon",
     "mixins.MixinRendererLivingEntity",
     "mixins.MixinRenderPlayer",
+    "mixins.MixinSoundManager",
     "mixins.model.MixinModelBiped",
     "mixins.model.MixinModelBlaze"
   ]

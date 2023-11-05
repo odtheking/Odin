@@ -2,7 +2,6 @@ package me.odinmain.utils.skyblock.dungeon
 
 import com.google.common.collect.ComparisonChain
 import me.odinmain.OdinMain.mc
-import me.odinmain.events.impl.ReceivePacketEvent
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.floor
@@ -12,9 +11,13 @@ import me.odinmain.utils.skyblock.ItemUtils
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.LocationUtils.currentDungeon
 import me.odinmain.utils.skyblock.PlayerUtils.posY
+import net.minecraft.block.BlockSkull
+import net.minecraft.block.state.IBlockState
 import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.network.play.server.S02PacketChat
+import net.minecraft.init.Blocks
+import net.minecraft.tileentity.TileEntitySkull
+import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.ResourceLocation
 import net.minecraft.world.WorldSettings
@@ -34,7 +37,11 @@ object DungeonUtils {
     var currentRoom: Room? = null
     val currenRoomName get() = currentRoom?.data?.name ?: "Unknown"
 
-    private var inp5 = false
+
+    private const val WITHER_ESSENCE_ID = "26bb1a8d-7c66-31c6-82d5-a9c04c94fb02"
+    private const val ROOM_SIZE = 32
+    private const val START_X = -185
+    private const val START_Z = -185
 
     fun isFloor(vararg options: Int): Boolean {
         for (option in options) {
@@ -55,10 +62,6 @@ object DungeonUtils {
         }
     }
 
-    private const val ROOM_SIZE = 32
-    private const val START_X = -185
-    private const val START_Z = -185
-
     @SubscribeEvent
     fun onMove(event: LivingEvent.LivingUpdateEvent) {
         if (mc.theWorld == null/* || !inDungeons ||  inBoss */|| !event.entity.equals(mc.thePlayer)) return
@@ -69,11 +72,7 @@ object DungeonUtils {
 
         currentRoom = scanRoom(xPos, zPos)?.apply {
             rotation = EnumFacing.HORIZONTALS.find {
-                data.rotationCores.any { core ->
-                    val temp = ScanUtils.getCore(xPos + it.frontOffsetX, zPos + it.frontOffsetZ)
-                    println("Temp: $temp Core: $core rotation: $it")
-                    temp == core
-                }
+                data.rotationCores.any { core -> ScanUtils.getCore(xPos + it.frontOffsetX, zPos + it.frontOffsetZ) == core }
             } ?: EnumFacing.NORTH
         }
 
@@ -111,17 +110,7 @@ object DungeonUtils {
     }
 
     @SubscribeEvent
-    fun onPacket(event: ReceivePacketEvent) {
-        if (event.packet !is S02PacketChat) return
-        val message = event.packet.chatComponent.unformattedText.noControlCodes
-        if (message == "[BOSS] Wither King: You.. again?") {
-            inp5 = true
-        }
-    }
-
-    @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
-        inp5 = false
         teammates = emptyList()
     }
 
@@ -168,4 +157,14 @@ object DungeonUtils {
     private val tabList: List<Pair<NetworkPlayerInfo, String>>
         get() = (mc.thePlayer?.sendQueue?.playerInfoMap?.sortedWith(tabListOrder) ?: emptyList())
             .map { Pair(it, mc.ingameGUI.tabList.getPlayerName(it)) }
+
+    fun isSecret(state: IBlockState, pos: BlockPos): Boolean {
+        if (state.block == Blocks.chest || state.block == Blocks.trapped_chest || state.block == Blocks.lever) return true
+        else if (state.block is BlockSkull) {
+            val tile = mc.theWorld.getTileEntity(pos) ?: return false
+            if (tile !is TileEntitySkull) return false
+            return tile.playerProfile?.id.toString() == WITHER_ESSENCE_ID
+        }
+        return false
+    }
 }

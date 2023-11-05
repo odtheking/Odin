@@ -6,6 +6,13 @@ import net.minecraft.util.Vec3i
 
 
 object PlayerUtils {
+    var shouldBypassVolume = false
+
+    fun playLoudSound(sound: String?, volume: Float, pitch: Float) {
+        shouldBypassVolume = true
+        mc.thePlayer?.playSound(sound, volume, pitch)
+        shouldBypassVolume = false
+    }
 
     fun alert(title: String, playSound: Boolean = true) {
         if (playSound) mc.thePlayer.playSound("note.pling", 100f, 1f)
