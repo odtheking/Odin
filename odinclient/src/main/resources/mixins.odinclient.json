@@ -27,6 +27,7 @@
     "mixins.MixinMouseHelper",
     "mixins.MixinNetHandlerPlayClient",
     "mixins.MixinNetworkManager",
+    "mixins.MixinPlayerControllerMP",
     "mixins.MixinRender",
     "mixins.MixinRenderDragon",
     "mixins.MixinRendererLivingEntity",
