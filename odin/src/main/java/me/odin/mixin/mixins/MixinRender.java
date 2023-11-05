@@ -15,7 +15,7 @@ public class MixinRender {
     @Inject(method = "renderShadow", at = @At("HEAD"), cancellable = true)
     private void onRenderShadow(Entity entityIn, double x, double y, double z, float shadowAlpha, float partialTicks, CallbackInfo ci) {
         if (!PersonalDragon.INSTANCE.getEnabled() || !(entityIn instanceof EntityDragon)) return;
-        if (entityIn.getEntityId() == PersonalDragon.INSTANCE.getEntityDragon().getEntityId()) {
+        if (entityIn.getEntityId() == PersonalDragon.INSTANCE.getDragon().getEntityId()) {
             ci.cancel();
         }
     }
