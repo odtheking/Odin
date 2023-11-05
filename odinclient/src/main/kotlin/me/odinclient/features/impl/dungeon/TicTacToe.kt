@@ -177,7 +177,7 @@ object TicTacToe : Module(
 
     @SubscribeEvent
     fun onRightClick(event: ClickEvent.RightClickEvent) {
-        if (!currentRoomName.contains("Tic Tac Toe") || mc.objectMouseOver.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK || mc.theWorld.getBlockState(mc.objectMouseOver.blockPos).block != Blocks.stone_button) return
+        if (!currentRoomName.contains("Tic Tac Toe") || !blockWrongClicks || mc.objectMouseOver.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK || mc.theWorld.getBlockState(mc.objectMouseOver.blockPos).block != Blocks.stone_button) return
         if (bestMove != null && !mc.objectMouseOver.blockPos.equals(bestMove)) event.isCanceled = true
         if (bestMove == null) event.isCanceled = true
     }
