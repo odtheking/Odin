@@ -6,6 +6,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
@@ -27,22 +28,22 @@ object TerminalQOL : Module(
     private val showInactive: Boolean by BooleanSetting(name = "Show Inactive")
     private val throughWalls: Boolean by BooleanSetting(name = "Through Walls").withDependency { showInactive }
 
-    private var lastClick = 0L
+    private val clickClock = Clock(1000)
     private var terminalList = listOf<Entity>()
 
     init {
         execute(1000) {
-            terminalList = mc.theWorld?.loadedEntityList?.filter { it is EntityArmorStand && it.name.noControlCodes.contains("Inactive", true) }!!
+            terminalList = mc.theWorld?.loadedEntityList?.filter { it is EntityArmorStand && it.name.noControlCodes.contains("Inactive", true) } ?: emptyList()
         }
     }
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (!terminalTriggerbot || DungeonUtils.getPhase() != 3 || System.currentTimeMillis() - lastClick < 1000) return
+        if (!terminalTriggerbot || DungeonUtils.getPhase() != 3 || !clickClock.hasTimePassed()) return
         val lookingAt = mc.objectMouseOver.entityHit ?: return
         if (lookingAt !is EntityArmorStand || lookingAt.name.noControlCodes.contains("Inactive", true) || mc.currentScreen != null || this.onGround && !mc.thePlayer.onGround ) return
         PlayerUtils.rightClick()
-        lastClick = System.currentTimeMillis()
+        clickClock.update()
     }
 
     @SubscribeEvent
