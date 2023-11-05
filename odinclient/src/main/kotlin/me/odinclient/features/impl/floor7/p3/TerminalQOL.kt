@@ -19,11 +19,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 object TerminalQOL : Module(
     name = "Terminal Qol",
     category = Category.FLOOR7,
-    description = "Automatically opens a terminal if you look at one"
+    description = "Triggerbot to open inactive terminals and an option to show inactive terminals"
 ) {
 
     private val terminalTriggerbot: Boolean by BooleanSetting(name = "Terminal Triggerbot")
-    private val onGround: Boolean by BooleanSetting(name = "On Ground")
+    private val onGround: Boolean by BooleanSetting(name = "On Ground").withDependency { terminalTriggerbot }
     private val showInactive: Boolean by BooleanSetting(name = "Show Inactive")
     private val throughWalls: Boolean by BooleanSetting(name = "Through Walls").withDependency { showInactive }
 

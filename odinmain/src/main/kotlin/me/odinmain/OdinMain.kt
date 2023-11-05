@@ -9,7 +9,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 object OdinMain {
     val mc: Minecraft = Minecraft.getMinecraft()
 
-    const val VERSION = "1.1.2"
+    const val VERSION = "1.2"
     const val NAME: String = "Odin"
     val scope = CoroutineScope(EmptyCoroutineContext)
 

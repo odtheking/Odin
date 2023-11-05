@@ -6,10 +6,14 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.world.RenderUtils.renderX
+import me.odinmain.utils.render.world.RenderUtils.renderY
+import me.odinmain.utils.render.world.RenderUtils.renderZ
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.boss.EntityDragon
-import net.minecraft.util.AxisAlignedBB
 import net.minecraftforge.client.event.RenderLivingEvent
+import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.cos
@@ -21,65 +25,71 @@ object PersonalDragon : Module(
     category = Category.RENDER,
     description = "Renders your own personal dragon."
 ) {
-    private val onlyF5: Boolean by BooleanSetting("Only F5", true)
-    private val color: Color by ColorSetting("Color", Color(255, 255, 255))
-    private val horizontalPos: Double by NumberSetting("Horizontal Position", 0.6, -10.0, 10.0, 0.1)
-    private val verticalPos: Double by NumberSetting("Vertical Position", 1.6, -10.0, 10.0, 0.1)
-    private val scale: Double by NumberSetting("Dragon Scale", 8.0, 0.0, 50.0, 1.0)
 
-    var entityDragon: EntityDragon? = null
-    private var dragonBoundingBox: AxisAlignedBB = AxisAlignedBB(-1.0, -1.0, -1.0, 1.0, 1.0, 1.0)
+    private val onlyF5: Boolean by BooleanSetting(name = "Only F5", default = true)
+    private val scale: Float by NumberSetting(name = "Scale", 0.5f, 0.0f, 1.0f, 0.01f)
+    private val horizontal: Float by NumberSetting(name = "Horizontal", 0.0f, -10.0f, 10.0f, 0.1f)
+    private val vertical: Float by NumberSetting(name = "Vertical", 0.0f, -10.0f, 10.0f, 0.1f)
+    private val degrees: Float by NumberSetting(name = "Degrees", 0.0f, -180.0f, 180.0f, 1.0f)
+    private val animationSpeed: Float by NumberSetting(name = "Animation Speed", 0.5f, 0.0f, 1.0f, 0.01f)
+    private val color: Color by ColorSetting(name = "Color", default = Color.WHITE)
 
-    @SubscribeEvent
-    fun onTick(event: TickEvent.ClientTickEvent) {
-        if (mc.theWorld == null) return
-        if (entityDragon == null)
-        {
-            val dragon = EntityDragon(mc.theWorld)
-            mc.theWorld.spawnEntityInWorld(dragon)
-            entityDragon = dragon
-        }
-        else
-        {
-            var yaw = mc.thePlayer.rotationYaw - 180f
-            if (yaw < -180f) {
-                yaw += 360f
-            } else if (yaw > 180f) {
-                yaw -= 360f
-            }
-            val yawRadians = mc.thePlayer.rotationYaw * Math.PI / 180
-            entityDragon!!.setPosition(mc.thePlayer.posX + 5.0 * cos(yawRadians), mc.thePlayer.posY - if (mc.thePlayer.isSneaking) 3.5 else 1.5, mc.thePlayer.posZ + 5.0 * sin(yawRadians))
-            entityDragon!!.prevRotationYaw = yaw.also { entityDragon!!.rotationYaw = it }
-            entityDragon!!.rotationYaw = yaw
-            entityDragon!!.slowed = true
-            entityDragon!!.isSilent = true
-            entityDragon!!.entityBoundingBox = dragonBoundingBox
-        }
-    }
+    var dragon: EntityDragon? = null
 
     override fun onDisable() {
-        entityDragon?.setDead()
-        entityDragon = null
+        if (this.dragon == null) return
+        mc.theWorld?.removeEntityFromWorld(this.dragon!!.entityId)
+        this.dragon = null
         super.onDisable()
     }
 
     @SubscribeEvent
-    fun onRenderLiving(event: RenderLivingEvent.Pre<EntityDragon>) {
-        if (entityDragon == null || event.entity != entityDragon) return
-        if (onlyF5 && mc.gameSettings.thirdPersonView == 0) {
-            event.isCanceled = true
-            return
+    fun onWorldUnload(event: WorldEvent.Unload) {
+        if (this.dragon != null) {
+            mc.theWorld.removeEntityFromWorld(dragon!!.entityId)
+            this.dragon = null
         }
-        GlStateManager.pushMatrix()
-        val yawRadians = mc.thePlayer.rotationYaw * Math.PI / 180
-        GlStateManager.translate(horizontalPos * cos(yawRadians), verticalPos, horizontalPos * sin(yawRadians))
-        GlStateManager.scale(scale / 100.0, scale / 100.0, scale / 100.0)
-        GlStateManager.color(color.r.toFloat() / 255, color.g.toFloat() / 255, color.b.toFloat() / 255, 1f)
     }
 
     @SubscribeEvent
-    fun onRenderLiving(event: RenderLivingEvent.Post<EntityDragon>) {
-        if (entityDragon == null) return
-        if (event.entity == entityDragon) GlStateManager.popMatrix()
+    fun onRenderWorld(event: RenderWorldLastEvent) {
+        if (this.dragon == null && mc.theWorld != null) {
+            dragon = EntityDragon(mc.theWorld)
+            mc.theWorld.addEntityToWorld(dragon!!.entityId, dragon)
+            return
+        }
+        if (mc.thePlayer == null) return
+        var yaw = mc.thePlayer.rotationYaw
+        if (yaw < 0) yaw += 180 else if (yaw > 0) yaw -= 180
+        dragon?.apply {
+            setLocationAndAngles(mc.thePlayer.renderX, mc.thePlayer.renderY + 6, mc.thePlayer.renderZ, yaw, mc.thePlayer.rotationPitch)
+        }
     }
+
+    @SubscribeEvent
+    fun onTick(event: TickEvent.ClientTickEvent) {
+        if (dragon == null || event.phase != TickEvent.Phase.END) return
+        dragon?.apply {
+            animTime -= (1 - animationSpeed) / 5
+            isSilent = true
+        }
+    }
+
+    @SubscribeEvent
+    fun onRenderEntityPre(event: RenderLivingEvent.Pre<EntityDragon>){
+        if (this.dragon == null || event.entity.entityId != this.dragon!!.entityId) return
+        if (onlyF5 && mc.gameSettings.thirdPersonView == 0) { event.isCanceled = true; return }
+        val yawRadians = Math.toRadians(mc.thePlayer.rotationYaw.toDouble() + this.degrees)
+        GlStateManager.pushMatrix()
+        GlStateManager.translate(this.horizontal * cos(yawRadians), this.vertical.toDouble(), this.horizontal * sin(yawRadians))
+        GlStateManager.scale(this.scale / 4, this.scale / 4, this.scale / 4)
+        GlStateManager.color(color.r / 255f, color.g / 255f, color.b / 255f)
+    }
+
+    @SubscribeEvent
+    fun onRenderEntityPost(event: RenderLivingEvent.Post<EntityDragon>) {
+        if (this.dragon == null || event.entity.entityId != this.dragon!!.entityId) return
+        GlStateManager.popMatrix()
+    }
+
 }

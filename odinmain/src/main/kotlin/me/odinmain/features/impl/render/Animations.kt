@@ -5,8 +5,11 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.ActionSetting
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
+import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.item.ItemStack
+import net.minecraft.item.ItemSword
 import net.minecraft.potion.Potion
 import net.minecraft.util.MathHelper
 import net.minecraft.util.MovingObjectPosition
@@ -19,7 +22,7 @@ import kotlin.math.max
 
 /*
 /*
- * From Floppa Client
+ * Parts taken from Floppa Client
  * https://github.com/FloppaCoding/FloppaClient/blob/master/src/main/java/floppaclient/mixins/render/EntityRendererMixin.java
  */
  */
@@ -41,6 +44,7 @@ object Animations : Module(
     val ignoreHaste: Boolean by BooleanSetting("Ignore Haste", false, description = "Makes the chosen speed override haste modifiers.")
     val noSwing: Boolean by BooleanSetting("No Swing", false, description = "Prevents your item from visually swinging forward")
     val blockHit: Boolean by BooleanSetting("Block Hit", false, description = "Visual 1.7 block hit animation")
+    val noBlock: Boolean by BooleanSetting("No Block", false, description = "Disables the visual block animation")
 
     val reset: () -> Unit by ActionSetting("Reset") {
         this.settings.forEach { it.reset() }
@@ -69,6 +73,11 @@ object Animations : Module(
         GlStateManager.rotate(f1 * -80.0f, 1.0f, 0.0f, 0.0f)
         GlStateManager.scale(newSize, newSize, newSize)
         return true
+    }
+
+    fun getItemInUseCountHook(player: AbstractClientPlayer, itemToRender: ItemStack): Int {
+        if (this.noBlock && itemToRender.item is ItemSword && player.itemInUseDuration <= 7) return 0
+        return player.itemInUseCount
     }
 
     private fun getArmSwingAnimationEnd(player: EntityPlayerSP): Int {
