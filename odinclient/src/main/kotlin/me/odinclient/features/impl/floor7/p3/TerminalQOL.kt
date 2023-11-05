@@ -19,8 +19,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 object TerminalQOL : Module(
     name = "Terminal Qol",
     category = Category.FLOOR7,
-    description = "Triggerbot to open inactive terminals" +
-            "Show inactive terminal hitboxes"
+    description = "Triggerbot to open inactive terminals and an option to show inactive terminals"
 ) {
 
     private val terminalTriggerbot: Boolean by BooleanSetting(name = "Terminal Triggerbot")
