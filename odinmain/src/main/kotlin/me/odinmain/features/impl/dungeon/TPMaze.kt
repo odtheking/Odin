@@ -27,7 +27,7 @@ object TPMaze : Module(
 
     init {
         execute(200) {
-            if (!enabled || portals.size >= 30 || DungeonUtils.currenRoomName != "Teleport Maze") return@execute
+            if (!enabled || portals.size >= 30 || DungeonUtils.currentRoomName != "Teleport Maze") return@execute
             val pos = mc.thePlayer?.position ?: return@execute
             portals = portals.plus(BlockPos.getAllInBox(BlockPos(pos.x + 22, 70, pos.z + 22), BlockPos(pos.x - 22, 69, pos.z - 22)).filter {
                 mc.theWorld.getBlockState(it).block == Blocks.end_portal_frame
@@ -35,7 +35,7 @@ object TPMaze : Module(
         }
 
         onPacket(S08PacketPlayerPosLook::class.java) {
-            if (DungeonUtils.currenRoomName != "Teleport Maze") return@onPacket
+            if (DungeonUtils.currentRoomName != "Teleport Maze") return@onPacket
             getCorrectPortals(Vec3(it.x, it.y, it.z), it.yaw, it.pitch)
         }
 
@@ -62,7 +62,7 @@ object TPMaze : Module(
 
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
-        if (DungeonUtils.currenRoomName != "Teleport Maze") return
+        if (DungeonUtils.currentRoomName != "Teleport Maze") return
         val color = if (correctPortals.size == 1) Color.GREEN else Color.ORANGE
         correctPortals.forEach {
             RenderUtils.drawFilledBox(it.toAABB(), color.withAlpha(.5f), phase = true)
