@@ -80,7 +80,7 @@ public abstract class MixinItemRenderer {
         if (this.itemToRender != null) {
             if (this.itemToRender.getItem() instanceof ItemMap) {
                 this.renderItemMap(abstractclientplayer, f2, f, f1);
-            } else if (abstractclientplayer.getItemInUseCount() > 0) {
+            } else if (Animations.INSTANCE.getItemInUseCountHook(abstractclientplayer, itemToRender) > 0) {
                 EnumAction enumaction = this.itemToRender.getItemUseAction();
                 boolean isBlockHit = Animations.INSTANCE.getEnabled() && Animations.INSTANCE.getBlockHit();
                 switch (enumaction) {
