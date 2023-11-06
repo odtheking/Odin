@@ -10,6 +10,7 @@ import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
+import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
@@ -33,6 +34,7 @@ object TerminalSolver : Module(
     category = Category.FLOOR7,
     tag = TagType.NEW
 ) {
+    private val customSize: Int by NumberSetting("Custom Size", 3, 1, 4, 1, description = "Custom size of the terminal")
     private val behindItem: Boolean by BooleanSetting("Behind Item", description = "Shows the item over the rendered solution")
     private val cancelToolTip: Boolean by BooleanSetting("Stop Tooltips", default = true, description = "Stops rendering tooltips in terminals")
     private val removeWrong: Boolean by BooleanSetting("Stop Rendering Wrong", description = "Stops rendering wrong items in terminals")
@@ -48,6 +50,7 @@ object TerminalSolver : Module(
 
     private val zLevel: Float get() = if (behindItem && currentTerm != 1) 200f else 999f
     var openedTerminalTime = 0L
+    private var lastGuiScale = 0
 
     private val terminalNames = listOf(
         "Correct all the panes!",
@@ -65,8 +68,9 @@ object TerminalSolver : Module(
         if (newTerm != currentTerm) {
             currentTerm = newTerm
             openedTerminalTime = System.currentTimeMillis()
+            if (currentTerm != -1) mc.gameSettings.guiScale = customSize
         }
-        if (currentTerm == -1) return
+        if (currentTerm == -1) return leftTerm()
         val items = event.gui.inventory.subList(0, event.gui.inventory.size - 37)
         when (currentTerm) {
             0 -> solvePanes(items)
@@ -137,10 +141,12 @@ object TerminalSolver : Module(
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.END) return
+        if (currentTerm == -1) {
+            lastGuiScale = mc.gameSettings.guiScale
+        }
         val isNull = mc.currentScreen == null
-        if (isNull && lastWasNull) {
-            currentTerm = -1
-            solution = emptyList()
+        if (isNull && lastWasNull && currentTerm != -1) {
+            leftTerm()
         }
         lastWasNull = isNull
     }
@@ -149,8 +155,13 @@ object TerminalSolver : Module(
     fun onChat(event: ChatPacketEvent) {
         val match = Regex("(.+) (?:activated|completed) a terminal! \\((\\d)/(\\d)\\)").find(event.message) ?: return
         if (match.groups[1]?.value != mc.thePlayer.name) return
+        leftTerm()
+    }
+
+    private fun leftTerm() {
         currentTerm = -1
         solution = emptyList()
+        mc.gameSettings.guiScale = lastGuiScale
     }
 
     private fun solvePanes(items: List<ItemStack?>) {
