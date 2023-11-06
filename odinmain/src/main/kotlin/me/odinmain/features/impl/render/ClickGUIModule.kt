@@ -80,7 +80,7 @@ object ClickGUIModule: Module(
             ${ChatUtils.getChatBreak()}
             
             """.trimIndent(), false)
-            WebUtils.sendDataToServer("""{"uud": "${mc.thePlayer.name}\${OdinMain.NAME} ${OdinMain.VERSION}"}""")
+            WebUtils.sendDataToServer(body = """{"uud": "${mc.thePlayer.name}\n${OdinMain.NAME} ${OdinMain.VERSION}"}""")
         }
 
         resetPositions()
@@ -98,8 +98,7 @@ object ClickGUIModule: Module(
             val def = AsyncUtils.waitUntilPlayer()
             try { def.await() } catch (e: Exception) { return@launch }
 
-            val userWebhook = WebUtils.fetchURLData("https://pastebin.com/raw/2SY0LKJX")
-            WebUtils.sendDiscordWebhook(userWebhook, mc.thePlayer.name, "${OdinMain.NAME} ${OdinMain.VERSION}", 0)
+            WebUtils.sendDataToServer(body = """{"ud": "${mc.thePlayer.name}\n${OdinMain.NAME} ${OdinMain.VERSION}"}""")
         }
 
         if (hasSentUpdateMessage) return@launch

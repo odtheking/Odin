@@ -28,7 +28,7 @@ object SecretTriggerbot : Module(
         if (
             !enabled ||
             !triggerBotClock.hasTimePassed(delay) ||
-            DungeonUtils.currenRoomName.equalsOneOf("Water Board", "Three Weirdos") ||
+            DungeonUtils.currentRoomName.equalsOneOf("Water Board", "Three Weirdos") ||
             mc.currentScreen != null
         ) return
 

@@ -35,7 +35,7 @@ object DungeonUtils {
 
     private var lastRoomPos: Pair<Int, Int>? = null
     var currentRoom: Room? = null
-    val currenRoomName get() = currentRoom?.data?.name ?: "Unknown"
+    val currentRoomName get() = currentRoom?.data?.name ?: "Unknown"
 
 
     private const val WITHER_ESSENCE_ID = "26bb1a8d-7c66-31c6-82d5-a9c04c94fb02"

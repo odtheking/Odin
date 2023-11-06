@@ -56,6 +56,7 @@ object WaypointManager {
     fun addTempWaypoint(name: String = "§fWaypoint", x: Int, y: Int, z: Int) {
         if (currentArea == null) return modMessage("You are not in Skyblock.")
         if (x.absoluteValue > 5000 || y.absoluteValue > 5000 || z.absoluteValue > 5000) return modMessage("§cWaypoint out of bounds.")
+        if (temporaryWaypoints.any { it.first.x == x && it.first.y == y && it.first.z == z }) return modMessage("§cWaypoint already exists at $x, $y, $z.")
         modMessage("Added waypoint at $x, $y, $z.")
         temporaryWaypoints.add(Pair(Waypoint(name, x, y, z, randomColor()), Clock(60_000)))
     }

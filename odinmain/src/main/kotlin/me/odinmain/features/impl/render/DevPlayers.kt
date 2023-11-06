@@ -3,6 +3,7 @@ package me.odinmain.features.impl.render
 
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain
+import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.render.ClickGUIModule.devSize
 import me.odinmain.utils.WebUtils
 import me.odinmain.utils.clock.Executor
@@ -50,7 +51,7 @@ object DevPlayers {
 
     fun preRenderCallbackScaleHook(entityLivingBaseIn: AbstractClientPlayer ) {
         if (!devs.containsKey(entityLivingBaseIn.name)) return
-        if (!devSize) return
+        if (!devSize && entityLivingBaseIn.name == mc.thePlayer.name) return
         val dev = devs[entityLivingBaseIn.name]
         if (dev != null) { GlStateManager.scale(dev.xScale, dev.yScale, dev.zScale) }
     }

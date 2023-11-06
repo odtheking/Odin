@@ -138,7 +138,8 @@ class ModCore {
         FreezeGame,
         AbilityKeybind,
         TerminalQOL,
-        EtherWarpHelper
+        EtherWarpHelper,
+        TicTacToe,
         //AutoTerms
     )
 
