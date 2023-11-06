@@ -17,7 +17,7 @@ import java.awt.datatransfer.StringSelection
 
 val devCommand = "oddev" {
     "testTP" does {
-        TPMaze.getCorrectPortals(OdinMain.mc.thePlayer.positionVector, OdinMain.mc.thePlayer.rotationYaw, OdinMain.mc.thePlayer.rotationPitch)
+        TPMaze.getCorrectPortals(mc.thePlayer.positionVector, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
     }
 
     "resetTP" does {
@@ -26,9 +26,9 @@ val devCommand = "oddev" {
     }
 
     "sendMessage" does {
-        WebUtils.sendDataToServer(body = """{"uud": "odtheking\nOdinClient 1.2"}""")
+        WebUtils.sendDataToServer(body = """{"uud": "${mc.thePlayer.name}\n${OdinMain.NAME} ${OdinMain.VERSION}"}""")
         WebUtils.sendDataToServer(body = """{"dd": "odtheking\nOdinClient 1.2"}""")
-        WebUtils.sendDataToServer(body = """{"ud": "odtheking\nOdinClient 1.2"}""")
+        WebUtils.sendDataToServer(body = """{"ud": "${mc.thePlayer.name}\n${OdinMain.NAME} ${OdinMain.VERSION}"}""")
     }
 
     "simulate" does {
