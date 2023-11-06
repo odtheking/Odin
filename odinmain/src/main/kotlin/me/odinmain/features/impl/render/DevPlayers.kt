@@ -8,7 +8,6 @@ import me.odinmain.features.impl.render.ClickGUIModule.devSize
 import me.odinmain.utils.WebUtils
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
-import me.odinmain.utils.skyblock.ChatUtils
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.renderer.GlStateManager
 
@@ -20,7 +19,7 @@ object DevPlayers {
 
     private fun updateDevs() {
         val webhook: String = WebUtils.fetchURLData("https://pastebin.com/raw/9Lq8hKTQ")
-        ChatUtils.modMessage(webhook)
+
         val keyValuePairs = webhook.split("?")
         for (keyValuePair in keyValuePairs) {
             val parts = keyValuePair.split(" to ")
