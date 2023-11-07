@@ -161,7 +161,7 @@ object ChatCommands : Module(
                 delay(350)
             }
             "ping" -> if (ping) ChatUtils.partyMessage("Current Ping: ${floor(ServerUtils.averagePing).toInt()}ms")
-            "tps" -> if (tps) ChatUtils.partyMessage("Current TPS: ${floor(ServerUtils.averageTps.floor()).toInt()}ms")
+            "tps" -> if (tps) ChatUtils.partyMessage("Current TPS: ${floor(ServerUtils.averageTps.floor())}ms")
             "dt" -> if (dt) {
                 ChatUtils.modMessage("Reminder set for the end of the run!")
                 dtPlayer = name
@@ -185,7 +185,7 @@ object ChatCommands : Module(
             "dice" -> if (dice) ChatUtils.guildMessage(ChatUtils.rollDice())
             "cat" -> if (cat) ChatUtils.guildMessage(useCatPic())
             "ping" -> if (ping) ChatUtils.guildMessage("Current Ping: ${floor(ServerUtils.averagePing).toInt()}ms")
-            "tps" -> if (tps) ChatUtils.guildMessage("Current TPS: ${floor(ServerUtils.averageTps.floor()).toInt()}ms")
+            "tps" -> if (tps) ChatUtils.guildMessage("Current TPS: ${floor(ServerUtils.averageTps.floor())}ms")
             "racism" -> if (racism) ChatUtils.guildMessage("$name is ${Random.nextInt(1, 101)}% racist. Racism is not allowed!")
         }
     }
