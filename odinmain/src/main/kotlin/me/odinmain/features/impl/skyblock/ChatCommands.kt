@@ -160,8 +160,8 @@ object ChatCommands : Module(
                 ChatUtils.partyMessage(line)
                 delay(350)
             }
-            "ping" -> if (ping) ChatUtils.partyMessage("Current Ping: ${floor(ServerUtils.averagePing.floor())}ms")
-            "tps" -> if (tps) ChatUtils.partyMessage("Current TPS: ${floor(ServerUtils.averageTps.floor())}ms")
+            "ping" -> if (ping) ChatUtils.partyMessage("Current Ping: ${floor(ServerUtils.averagePing).toInt()}ms")
+            "tps" -> if (tps) ChatUtils.partyMessage("Current TPS: ${floor(ServerUtils.averageTps.floor()).toInt()}ms")
             "dt" -> if (dt) {
                 ChatUtils.modMessage("Reminder set for the end of the run!")
                 dtPlayer = name
@@ -178,14 +178,14 @@ object ChatCommands : Module(
             "help" -> ChatUtils.guildMessage("Commands: coords, odin, boop, cf, 8ball, dice, cat, ping, tps, racism")
             "coords" -> if (coords) ChatUtils.guildMessage(
                 "x: ${PlayerUtils.posX.floor()}, y: ${PlayerUtils.posY.floor()}, z: ${PlayerUtils.posZ.floor()}")
-            "odin" -> if (odin) ChatUtils.guildMessage("OdinClient! https://discord.gg/2nCbC9hkxT")
+            "odin" -> if (odin) ChatUtils.guildMessage("Odin! https://discord.gg/2nCbC9hkxT")
             "boop" -> if (boop) ChatUtils.sendChatMessage("/boop $name")
             "cf" -> if (cf) ChatUtils.guildMessage(ChatUtils.flipCoin())
             "8ball" -> if (eightball) ChatUtils.guildMessage(ChatUtils.eightBall())
             "dice" -> if (dice) ChatUtils.guildMessage(ChatUtils.rollDice())
             "cat" -> if (cat) ChatUtils.guildMessage(useCatPic())
-            "ping" -> if (ping) ChatUtils.guildMessage("Current Ping: ${floor(ServerUtils.averagePing)}ms")
-            "tps" -> if (tps) ChatUtils.partyMessage("Current TPS: ${floor(ServerUtils.averageTps.floor())}ms")
+            "ping" -> if (ping) ChatUtils.guildMessage("Current Ping: ${floor(ServerUtils.averagePing).toInt()}ms")
+            "tps" -> if (tps) ChatUtils.guildMessage("Current TPS: ${floor(ServerUtils.averageTps.floor()).toInt()}ms")
             "racism" -> if (racism) ChatUtils.guildMessage("$name is ${Random.nextInt(1, 101)}% racist. Racism is not allowed!")
         }
     }
@@ -198,13 +198,13 @@ object ChatCommands : Module(
                 "x: ${PlayerUtils.posX.floor()}, y: ${PlayerUtils.posY.floor()}, z: ${PlayerUtils.posZ.floor()}",
                 name
             )
-            "odin" -> if (odin) ChatUtils.privateMessage("OdinClient! https://discord.gg/2nCbC9hkxT",name)
+            "odin" -> if (odin) ChatUtils.privateMessage("Odin! https://discord.gg/2nCbC9hkxT",name)
             "boop" -> if (boop) ChatUtils.sendChatMessage("/boop $name")
             "cf" -> if (cf) ChatUtils.privateMessage(ChatUtils.flipCoin(),name)
             "8ball" -> if (eightball) ChatUtils.privateMessage(ChatUtils.eightBall(),name)
             "dice" -> if (dice) ChatUtils.privateMessage(ChatUtils.rollDice(),name)
             "cat" -> if (cat) ChatUtils.privateMessage(useCatPic(),name)
-            "ping" -> if (ping) ChatUtils.privateMessage("Current Ping: ${floor(ServerUtils.averagePing)}ms",name)
+            "ping" -> if (ping) ChatUtils.privateMessage("Current Ping: ${floor(ServerUtils.averagePing).toInt()}ms",name)
             "inv" -> if (inv) ChatUtils.sendCommand("party invite $name")
             "invite" -> if (invite) {
                 mc.thePlayer.playSound("note.pling", 100f, 1f)
