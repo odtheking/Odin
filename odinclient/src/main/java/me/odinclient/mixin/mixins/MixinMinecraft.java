@@ -26,7 +26,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = {Minecraft.class}, priority = 800)
 public class MixinMinecraft {
-    @Shadow public boolean skipRenderWorld;
 
     @Shadow public EntityPlayerSP thePlayer;
 
@@ -86,23 +85,5 @@ public class MixinMinecraft {
     public boolean shouldCancelInteract(WorldClient instance, BlockPos blockPos) {
         return CancelInteract.INSTANCE.cancelInteractHook(instance, blockPos);
     }
-
-    /*@Inject(method = { "runGameLoop" }, at = { @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;skipRenderWorld:Z") })
-    public void skipRenderWorld(final CallbackInfo ci) {
-        if (this.skipRenderWorld) {
-            RenderOptimizer.INSTANCE.drawGui();
-            try {
-                Thread.sleep((long)(50.0f / ((MinecraftAccessor) this).getTimer().timerSpeed));
-            }
-            catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @Inject(method = "displayGuiScreen", at = @At("RETURN"))
-    private void onDisplayGuiScreen(GuiScreen guiScreenIn, CallbackInfo ci) {
-        MinecraftForge.EVENT_BUS.post(new PostGuiOpenEvent());
-    }*/
 
 }
