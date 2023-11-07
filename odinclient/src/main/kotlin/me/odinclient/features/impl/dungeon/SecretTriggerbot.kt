@@ -15,8 +15,7 @@ import net.minecraft.util.BlockPos
 object SecretTriggerbot : Module(
     name = "Secret Triggerbot",
     description = "Automatically gets secrets when looking at them.",
-    category = Category.DUNGEON,
-    tag = TagType.NEW
+    category = Category.DUNGEON
 ) {
     private val delay: Long by NumberSetting("Delay", 200L, 70, 1000)
     private val crystalHollowsChests: Boolean by BooleanSetting("Crystal Hollows Chests", true, description = "Opens chests in crystal hollows when looking at them")

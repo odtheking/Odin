@@ -1,11 +1,9 @@
 package me.odin.features.impl.floor7.p3
 
 import me.odinmain.events.impl.ClickEvent
-import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
 import net.minecraft.entity.item.EntityItemFrame
@@ -15,7 +13,6 @@ import net.minecraft.item.Item
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
-import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.*
 
@@ -23,7 +20,6 @@ object ArrowAlign : Module(
     name = "Arrow Align",
     description = "Different features for the arrow alignment device.",
     category = Category.FLOOR7,
-    tag = TagType.NEW
 ) {
     private val solver: Boolean by BooleanSetting("Solver")
     private val multipleScans: Boolean by BooleanSetting("Multiple Scans", true)

@@ -9,7 +9,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object NoCarpet : Module(
     name = "No Carpet",
     category = Category.RENDER,
-    tag = TagType.NEW,
     description = "Removes nearby carpet hitboxes."
 ) {
 

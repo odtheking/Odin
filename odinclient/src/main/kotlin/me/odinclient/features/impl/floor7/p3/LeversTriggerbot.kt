@@ -14,8 +14,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object LeversTriggerbot : Module(
     name = "Levers Triggerbot",
     description = "Triggerbot for the levers device.",
-    category = Category.FLOOR7,
-    tag = TagType.NEW
+    category = Category.FLOOR7
 ) {
     private val delay: Long by NumberSetting<Long>("Delay", 200, 70, 500)
     private val triggerBotClock = Clock(delay)

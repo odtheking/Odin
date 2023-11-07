@@ -16,8 +16,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object SecretHitboxes : Module(
     name = "Secret Hitboxes",
     description = "Full block Secret hitboxes.",
-    category = Category.DUNGEON,
-    tag = TagType.NEW
+    category = Category.DUNGEON
 ) {
     val lever: Boolean by BooleanSetting("Lever", default = true)
     val button: Boolean by BooleanSetting("Button", default = true)

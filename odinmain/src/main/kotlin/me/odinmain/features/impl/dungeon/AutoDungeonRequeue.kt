@@ -15,8 +15,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object AutoDungeonRequeue : Module(
     name = "Auto Requeue",
     description = "Automatically starts a new dungeon at the end of a dungeon.",
-    category = Category.DUNGEON,
-    tag = TagType.NEW
+    category = Category.DUNGEON
 ) {
     private val delay: Int by NumberSetting("Delay", 10, 0, 30, 1)
 

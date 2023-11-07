@@ -26,6 +26,7 @@ object ChatCommands : Module(
     name = "Chat commands",
     category = Category.SKYBLOCK,
     description = "type !help in the corresponding channel for cmd list. Use /blacklist.",
+    tag = TagType.NEW
 ) {
     private var party: Boolean by BooleanSetting(name = "Party cmds", default = true)
     private var guild: Boolean by BooleanSetting(name = "Guild cmds", default = true)

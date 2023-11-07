@@ -17,8 +17,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object CancelChestOpen : Module(
     "Cancel Chest Open",
     category = Category.DUNGEON,
-    description = "Cancels the opening of chests in dungeons.",
-    tag = TagType.NEW
+    description = "Cancels the opening of chests in dungeons."
 ) {
     private val mode: Boolean by DualSetting("Mode", "Auto", "Any Key", description = "The mode to use, auto will automatically close the chest, any key will make any key input close the chest.")
 

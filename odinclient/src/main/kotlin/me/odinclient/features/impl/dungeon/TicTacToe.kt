@@ -28,7 +28,8 @@ import kotlin.experimental.and
 object TicTacToe : Module(
     name = "Tic Tac Solver",
     category = Category.DUNGEON,
-    description = "Shows a solution for the Tic Tac Toe puzzle"
+    description = "Shows a solution for the Tic Tac Toe puzzle",
+    tag = TagType.NEW
 ) {
 
     private val blockWrongClicks: Boolean by BooleanSetting(name = "Block Wrong Clicks")

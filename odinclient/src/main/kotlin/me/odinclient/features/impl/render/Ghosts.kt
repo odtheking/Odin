@@ -14,8 +14,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object Ghosts : Module(
     name = "Ghosts",
     description = "Diverse QOL for ghosts in the Dwarven Mines.",
-    category = Category.SKYBLOCK,
-    tag = TagType.NEW
+    category = Category.SKYBLOCK
 ) {
 
     private var showGhostNametag: Boolean by BooleanSetting(name = "Show Ghost Nametag")

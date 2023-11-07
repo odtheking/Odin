@@ -19,8 +19,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 object DragonHitboxes : Module(
     name = "Dragon Hitboxes",
     category = Category.RENDER,
-    description = "Renders real dragon hitboxes.",
-    tag = TagType.NEW
+    description = "Renders real dragon hitboxes."
 ) {
 
     private val onlyM7: Boolean by BooleanSetting(name = "Only M7")

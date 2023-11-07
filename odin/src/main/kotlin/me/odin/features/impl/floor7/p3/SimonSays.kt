@@ -4,9 +4,7 @@ import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.floor
@@ -28,7 +26,6 @@ object SimonSays : Module(
     name = "Simon Says",
     description = "Different features for the Simon Says puzzle in f7/m7.",
     category = Category.FLOOR7,
-    tag = TagType.NEW
 ) {
     private val solver: Boolean by BooleanSetting("Solver")
     private val clearAfter: Boolean by BooleanSetting("Clear After", false, description = "Clears the clicks when showing next, should work better with ss skip, but will be less consistent")

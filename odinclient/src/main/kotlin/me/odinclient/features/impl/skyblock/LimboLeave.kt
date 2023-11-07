@@ -15,6 +15,7 @@ object LimboLeave: Module(
     "Auto Limbo Leave",
     description = "Automatically leaves limbo whenever you get kicked.",
     category = Category.SKYBLOCK,
+    tag = TagType.NEW
 ) {
     private val goIsland: Boolean by BooleanSetting("Go to Island", true)
 

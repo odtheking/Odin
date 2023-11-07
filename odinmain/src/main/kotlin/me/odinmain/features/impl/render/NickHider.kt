@@ -10,8 +10,7 @@ import me.odinmain.features.settings.impl.StringSetting
 object NickHider : Module(
     name = "Nick Hider",
     category = Category.RENDER,
-    description = "Replace your name, color codes work.",
-    tag = TagType.NEW
+    description = "Replace your name, color codes work."
 ) {
     val nick: String by StringSetting("Nick")
 }

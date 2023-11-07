@@ -10,8 +10,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object LeapMenu : Module(
     name = "Leap Menu",
     description = "Renders a custom leap menu when in the Spirit Leap gui.",
-    category = Category.DUNGEON,
-    tag = TagType.NEW
+    category = Category.DUNGEON
 ) {
     @SubscribeEvent
     fun onDrawScreen(event: DrawGuiScreenEvent) {

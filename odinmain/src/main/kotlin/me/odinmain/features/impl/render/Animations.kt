@@ -30,7 +30,8 @@ import kotlin.math.max
 object Animations : Module(
     name = "Animations",
     category = Category.RENDER,
-    description = "Changes the appearance of the first-person view model"
+    description = "Changes the appearance of the first-person view model",
+    tag = TagType.NEW
 ) {
 
     val size: Float by NumberSetting("Size", 0.0f, -1.5, 1.5, 0.05, description = "Scales the size of your currently held item. Default: 0")

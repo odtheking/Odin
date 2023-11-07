@@ -12,7 +12,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object DungeonWaypoints : Module(
-    name = "wip",
+    name = "Dungeon Waypoints",
     description = "Shows waypoints for dungeons",
     category = Category.DUNGEON,
     tag = TagType.NEW

@@ -17,7 +17,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object NoDebuff : Module(
     "No Debuff",
     category = Category.RENDER,
-    tag = TagType.NEW,
     description = "Disables certain debuffs."
 ) {
 

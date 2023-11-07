@@ -9,6 +9,7 @@ object AbilityKeybind : Module(
     name = "Ability Keybind",
     description = "Activates your class ability when you press the keybind.",
     category = Category.DUNGEON,
+    tag = TagType.NEW
 ) {
     override fun onKeybind() {
         if (!DungeonUtils.inDungeons || !enabled) return

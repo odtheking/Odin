@@ -21,8 +21,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object EtherWarpHelper : Module(
     name = "Ether Warp Helper",
     description = "Shows you where your etherwarp will teleport you.",
-    category = Category.RENDER,
-    tag = TagType.NEW
+    category = Category.RENDER
 ) {
 
     private val color: Color by ColorSetting("Color", Color.ORANGE.withAlpha(.5f), allowAlpha = true)

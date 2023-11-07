@@ -11,8 +11,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object RelicAnnouncer : Module(
     name = "Relic Announcer",
     description = "Automatically announce your relic to the rest of the party.",
-    category = Category.FLOOR7,
-    tag = TagType.NEW
+    category = Category.FLOOR7
 ) {
     private val colors = arrayListOf("Green", "Purple", "Blue", "Orange", "Red")
     private val selected: Int by SelectorSetting("Color", "Green", colors)

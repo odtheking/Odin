@@ -26,6 +26,7 @@ object WaterSolver : Module(
     name = "Water Solver",
     description = "Solves the water puzzle with a single flow.",
     category = Category.DUNGEON,
+    tag = TagType.NEW
 ) {
     private val showOrder: Boolean by BooleanSetting("Show Order", true, description = "Shows the order of the levers to click.")
     private val reset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {

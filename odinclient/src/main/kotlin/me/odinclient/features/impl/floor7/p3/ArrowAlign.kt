@@ -23,8 +23,7 @@ import java.util.*
 object ArrowAlign : Module(
     name = "Arrow Align",
     description = "Different features for the arrow alignment device.",
-    category = Category.FLOOR7,
-    tag = TagType.NEW
+    category = Category.FLOOR7
 ) {
     private val solver: Boolean by BooleanSetting("Solver")
     private val blockWrong: Boolean by BooleanSetting("Block Wrong Clicks", false, description = "Blocks wrong clicks")

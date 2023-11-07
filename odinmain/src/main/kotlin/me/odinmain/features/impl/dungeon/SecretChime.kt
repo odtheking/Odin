@@ -21,7 +21,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object SecretChime : Module(
     name = "Secret Chime",
     category = Category.DUNGEON,
-    description = "Plays a sound whenever you get a secret. Do not use the bat death sound or your game will freeze!"
+    description = "Plays a sound whenever you get a secret. Do not use the bat death sound or your game will freeze!",
+    tag = TagType.NEW
 ){
     private val defaultSounds = arrayListOf("mob.blaze.hit", "fire.ignite", "random.orb", "random.break", "mob.guardian.land.hit", "Custom")
     private val sound: Int by SelectorSetting("Sound", "mob.blaze.hit", defaultSounds, description = "Which sound to play when you get a secret.")

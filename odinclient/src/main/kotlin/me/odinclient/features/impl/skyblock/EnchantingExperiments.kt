@@ -17,8 +17,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object EnchantingExperiments : Module(
     "Auto Experiments",
     category = Category.SKYBLOCK,
-    description = "Automatically click on the Chronomatron and Ultrasequencer experiments.",
-    tag = TagType.NEW
+    description = "Automatically click on the Chronomatron and Ultrasequencer experiments."
 ){
 
     private val delay: Long by NumberSetting("Click Delay", 200, 0, 1000, 10, description = "Time in ms between automatic test clicks.")

@@ -10,7 +10,8 @@ import net.minecraft.item.ItemStack
 object SpaceHelmet : Module(
     name = "Space Helmet",
     category = Category.RENDER,
-    description = "Equips you with a space helmet."
+    description = "Equips you with a space helmet.",
+    tag = TagType.NEW
 ) {
     private val values = listOf(14, 1, 4, 5, 13, 9, 11, 10, 6) // Define the values you want to cycle through
     private var currentIndex = 0 // Initialize the counter
@@ -18,7 +19,7 @@ object SpaceHelmet : Module(
 
     init {
         execute({ speed }) {
-            if (mc.thePlayer == null || mc.thePlayer.openContainer != mc.thePlayer.inventoryContainer) return@execute
+            if (mc.thePlayer == null || mc.currentScreen !== null) return@execute
 
 
             val color = values[currentIndex]
