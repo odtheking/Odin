@@ -86,7 +86,8 @@ object ModuleManager {
         SpaceHelmet,
         EscrowFix,
         DungeonWaypoints,
-        SecretChime
+        SecretChime,
+        ShareCoords
         //LeapMenu
     )
 
