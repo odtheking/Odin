@@ -1,3 +1,6 @@
+07/11/2023:
+This version is no longer updated feel free to check the updated version on https://github.com/odtheking/OdinClient
+
 Category: Dungeons
 - Auto Dungeon Requeue: Automatically starts a new dungeon at the end of a dungeon.
 - Mimic Killed Message: Sends message in party chat when mimic is killed.
