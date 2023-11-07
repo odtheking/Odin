@@ -9,7 +9,7 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import kotlin.math.*
 
-object EtherWarpUtils {
+object EtherWarpHelper {
     data class EtherPos(val succeeded: Boolean, val pos: BlockPos?) {
         companion object {
             val NONE = EtherPos(false, null)

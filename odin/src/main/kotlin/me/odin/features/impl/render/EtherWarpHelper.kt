@@ -3,8 +3,6 @@ package me.odin.features.impl.render
 import me.odin.mixin.accessors.IEntityPlayerSPAccessor
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.utils.skyblock.EtherWarpUtils
-import me.odinmain.utils.skyblock.EtherWarpUtils.etherPos
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
@@ -13,6 +11,8 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
+import me.odinmain.utils.skyblock.EtherWarpHelper
+import me.odinmain.utils.skyblock.EtherWarpHelper.etherPos
 import me.odinmain.utils.skyblock.ItemUtils.extraAttributes
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -33,7 +33,7 @@ object EtherWarpHelper : Module(
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         val player = mc.thePlayer as? IEntityPlayerSPAccessor ?: return
-        etherPos = EtherWarpUtils.getEtherPos(Vec3(player.lastReportedPosX, player.lastReportedPosY, player.lastReportedPosZ), yaw = player.lastReportedYaw, pitch = player.lastReportedPitch)
+        etherPos = EtherWarpHelper.getEtherPos(Vec3(player.lastReportedPosX, player.lastReportedPosY, player.lastReportedPosZ), yaw = player.lastReportedYaw, pitch = player.lastReportedPitch)
         if (etherPos.succeeded && mc.thePlayer.isSneaking && mc.thePlayer.heldItem.extraAttributes?.getBoolean("etherMerge") == true) {
             val pos = etherPos.pos ?: return
 
