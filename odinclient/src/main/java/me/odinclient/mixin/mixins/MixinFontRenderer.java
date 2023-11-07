@@ -12,7 +12,7 @@ public class MixinFontRenderer {
 
     @ModifyVariable(method = "renderStringAtPos", at = @At("HEAD"), argsOnly = true)
     private String modifyRenderStringAtPos(String text) {
-        if (text == null) return null;
+        if (!NickHider.INSTANCE.getEnabled() || text == null) return null;
         String name = Minecraft.getMinecraft().getSession().getUsername();
         String nick = NickHider.INSTANCE.getNick().replaceAll("&", "§").replaceAll("\\$", "");
         return text.replaceAll(name, nick);
@@ -20,7 +20,7 @@ public class MixinFontRenderer {
 
     @ModifyVariable(method = "getStringWidth", at = @At(value = "HEAD"), argsOnly = true)
     private String modifyGetStringWidth(String text) {
-        if (text == null) return null;
+        if (!NickHider.INSTANCE.getEnabled() || text == null) return null;
         String name = Minecraft.getMinecraft().getSession().getUsername();
         String nick = NickHider.INSTANCE.getNick().replaceAll("&", "§").replaceAll("\\$", "");
         return text.replaceAll(name, nick);
