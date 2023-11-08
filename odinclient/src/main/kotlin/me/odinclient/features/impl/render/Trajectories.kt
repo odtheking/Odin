@@ -14,6 +14,7 @@ import me.odinmain.utils.render.world.RenderUtils.renderY
 import me.odinmain.utils.render.world.RenderUtils.renderZ
 import me.odinmain.utils.skyblock.ItemUtils.isShortbow
 import me.odinmain.utils.skyblock.ItemUtils.itemID
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.projectile.EntityArrow
@@ -49,6 +50,7 @@ object Trajectories : Module(
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         if (bows) {
+            if (DungeonUtils.currentRoomName == "Higher Blaze" || DungeonUtils.currentRoomName == "Lower Blaze") return
             entityRenderQueue.clear()
             if (mc.thePlayer?.heldItem?.isShortbow == true) {
                 if (mc.thePlayer?.heldItem?.itemID == "TERMINATOR") {
