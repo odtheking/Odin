@@ -3,11 +3,11 @@ package me.odinmain.features.impl.dungeon
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import kotlinx.coroutines.launch
+import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
-import me.odinmain.features.Category
-import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.ActionSetting
-import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.impl.dungeon.PuzzleSolvers.showOrder
+import me.odinmain.utils.clock.Executor
+import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -18,20 +18,12 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
+import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 
-object WaterSolver : Module(
-    name = "Water Solver",
-    description = "Solves the water puzzle with a single flow.",
-    category = Category.DUNGEON,
-    tag = TagType.NEW
-) {
-    private val showOrder: Boolean by BooleanSetting("Show Order", true, description = "Shows the order of the levers to click.")
-    private val reset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
-        reset()
-    }
+object WaterSolver {
 
     private var waterSolutions: JsonObject
 
@@ -51,8 +43,8 @@ object WaterSolver : Module(
     private var openedWater = -1L
 
     init {
-        execute(1000) {
-            if (DungeonUtils.currentRoom?.data?.name != "Water Board") return@execute
+        Executor(1000) {
+            if (DungeonUtils.currentRoom?.data?.name != "Water Board" || !PuzzleSolvers.waterSolver) return@Executor
             scope.launch {
                 prevInWaterRoom = inWaterRoom
                 inWaterRoom = false
@@ -71,13 +63,17 @@ object WaterSolver : Module(
                     }
                 }
             }
-        }
-
-        onWorldLoad { reset() }
+        }.register()
+    }
+    @SubscribeEvent
+    fun onWorldLoad(event: WorldEvent.Load) {
+        reset()
     }
 
-    @SubscribeEvent
+
+        @SubscribeEvent
     fun onWorldRender(event: RenderWorldLastEvent) {
+        if (!PuzzleSolvers.waterSolver) return
         val sortedSolutions = mutableListOf<Double>().apply {
             solutions.forEach { (lever, times) ->
                 times.drop(lever.i).filter { it != 0.0 }.forEach { time ->
@@ -93,7 +89,7 @@ object WaterSolver : Module(
                 orderText = if (it == 0.0) orderText.plus("0")
                 else orderText.plus("${if (orderText.isEmpty()) "" else ", "}${sortedSolutions.indexOf(it) + 1}")
             }
-            if (showOrder) RenderUtils.drawStringInWorld(orderText, Vec3(solution.key.leverPos).addVector(.5, .5, .5), -1, false, increase = false, depthTest = false, 0.035f)
+            if (PuzzleSolvers.waterSolver && showOrder) RenderUtils.drawStringInWorld(orderText, Vec3(solution.key.leverPos).addVector(.5, .5, .5), -1, false, increase = false, depthTest = false, 0.035f)
 
             for (i in solution.key.i until solution.value.size) {
                 val time = solution.value[i]
