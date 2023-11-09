@@ -20,12 +20,7 @@ public class MixinBlockCarpet extends Block {
     @Inject(method = "setBlockBoundsFromMeta", at = @At("HEAD"), cancellable = true)
     private void onSetBlockBoundsFromMeta(int meta, CallbackInfo ci)
     {
-        NoCarpet.INSTANCE.getCarpetList().add((BlockCarpet)this.blockState.getBlock());
-        if (NoCarpet.INSTANCE.getEnabled())
-        {
-            this.setBlockBounds(0f, 0f, 0f, 1f, 0f, 1f);
-            ci.cancel();
-        }
+        if (NoCarpet.INSTANCE.noCarpetHook((BlockCarpet) this.blockState.getBlock())) ci.cancel();
     }
 
 }
