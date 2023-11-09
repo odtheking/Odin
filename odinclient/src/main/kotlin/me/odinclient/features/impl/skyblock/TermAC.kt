@@ -9,7 +9,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object TermAC : Module(
-    "Terminator AC",
+    "Terminator Ac",
     description = "Randomized auto-clicker for Terminator's salvation ability, enabled when holding right click.",
     category = Category.SKYBLOCK
 ) {

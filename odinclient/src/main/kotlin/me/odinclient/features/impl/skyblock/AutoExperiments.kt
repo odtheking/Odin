@@ -14,7 +14,7 @@ import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-object EnchantingExperiments : Module(
+object AutoExperiments : Module(
     "Auto Experiments",
     category = Category.SKYBLOCK,
     description = "Automatically click on the Chronomatron and Ultrasequencer experiments."
