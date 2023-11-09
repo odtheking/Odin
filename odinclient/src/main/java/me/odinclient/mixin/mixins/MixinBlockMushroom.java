@@ -1,13 +1,14 @@
 package me.odinclient.mixin.mixins;
 
 import me.odinclient.features.impl.skyblock.FarmingHitboxes;
+import net.minecraft.block.BlockBush;
 import net.minecraft.block.BlockMushroom;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(BlockMushroom.class)
-public class MixinBlockMushroom {
+public class MixinBlockMushroom extends BlockBush {
 
     @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockMushroom;setBlockBounds(FFFFFF)V"))
     private void onConstructor(BlockMushroom instance, float minX, float minY, float minZ, float maxX, float maxY, float maxZ)
