@@ -207,26 +207,7 @@ function submitForm() {
     // Convert the data to JSON
     var jsonData = JSON.stringify(data);
 
-    // Make a POST request to your AWS server
-    fetch('your_aws_server_endpoint', {
-        method: 'POST',
-        headers: {
-            'body': 'application/json',
-        },
-        body: jsonData,
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Handle the response from the server
-        if (data.authenticated) {
-            alert('Login successful!');
-        } else {
-            alert('Login failed. Please check your credentials.');
-        }
-    })
-    .catch((error) => {
-        console.error('Error:', error);
-    });
+   
 }
 
 
