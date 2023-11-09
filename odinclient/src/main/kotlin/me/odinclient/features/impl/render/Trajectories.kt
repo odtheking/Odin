@@ -17,6 +17,7 @@ import me.odinmain.utils.skyblock.ItemUtils.itemID
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
+import net.minecraft.entity.monster.EntityBlaze
 import net.minecraft.entity.projectile.EntityArrow
 import net.minecraft.item.ItemEnderPearl
 import net.minecraft.util.AxisAlignedBB
@@ -50,7 +51,6 @@ object Trajectories : Module(
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         if (bows) {
-            if (DungeonUtils.currentRoomName == "Higher Blaze" || DungeonUtils.currentRoomName == "Lower Blaze") return
             entityRenderQueue.clear()
             if (mc.thePlayer?.heldItem?.isShortbow == true) {
                 if (mc.thePlayer?.heldItem?.itemID == "TERMINATOR") {
@@ -214,6 +214,7 @@ object Trajectories : Module(
     fun onRenderModel(event: RenderEntityModelEvent) {
         if (event.entity !in entityRenderQueue) return
         if (!mc.thePlayer.canEntityBeSeen(event.entity)) return
+        if(event.entity !is EntityBlaze || !DungeonUtils.inDungeons) return
         OutlineUtils.outlineEntity(
             event,
             thickness,
