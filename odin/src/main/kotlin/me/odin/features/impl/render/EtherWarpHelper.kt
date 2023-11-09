@@ -33,7 +33,7 @@ object EtherWarpHelper : Module(
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         val player = mc.thePlayer as? IEntityPlayerSPAccessor ?: return
         etherPos = EtherWarpHelper.getEtherPos(Vec3(player.lastReportedPosX, player.lastReportedPosY, player.lastReportedPosZ), yaw = player.lastReportedYaw, pitch = player.lastReportedPitch)
-        if (etherPos.succeeded && mc.thePlayer.isSneaking && mc.thePlayer.heldItem.extraAttributes?.getBoolean("etherMerge") == true) {
+        if (etherPos.succeeded && mc.thePlayer.isSneaking && mc.thePlayer.heldItem.extraAttributes?.getBoolean("ethermerge") == true) {
             val pos = etherPos.pos ?: return
 
             if (filled)

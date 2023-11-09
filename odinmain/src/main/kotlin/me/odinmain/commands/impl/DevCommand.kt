@@ -26,9 +26,9 @@ val devCommand = "oddev" {
     }
 
     "sendMessage" does {
-        WebUtils.sendDataToServer(body = """{"uud": "${mc.thePlayer.name}\n${OdinMain.NAME} ${OdinMain.VERSION}"}""")
+        WebUtils.sendDataToServer(body = """{"ud": "${mc.thePlayer.name}\n${ if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""")
         WebUtils.sendDataToServer(body = """{"dd": "odtheking\nOdinClient 1.2"}""")
-        WebUtils.sendDataToServer(body = """{"ud": "${mc.thePlayer.name}\n${OdinMain.NAME} ${OdinMain.VERSION}"}""")
+        WebUtils.sendDataToServer(body = """{"ud": "${mc.thePlayer.name}\n${ if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""")
     }
 
     "simulate" does {

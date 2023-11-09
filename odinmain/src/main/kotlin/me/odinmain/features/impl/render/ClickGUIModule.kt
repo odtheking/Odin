@@ -98,7 +98,7 @@ object ClickGUIModule: Module(
             val def = AsyncUtils.waitUntilPlayer()
             try { def.await() } catch (e: Exception) { return@launch }
 
-            WebUtils.sendDataToServer(body = """{"ud": "${mc.thePlayer.name}\n${OdinMain.NAME} ${OdinMain.VERSION}"}""")
+            WebUtils.sendDataToServer(body = """{"ud": "${mc.thePlayer.name}\n${ if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""")
         }
 
         if (hasSentUpdateMessage) return@launch
@@ -137,9 +137,15 @@ object ClickGUIModule: Module(
         }
     }
 
-    private fun isSecondNewer(second: String): Boolean {
-        val (major, minor, patch) = OdinMain.VERSION.split(".").map { it.toInt() }
-        val (major2, minor2, patch2) = second.split(".").map { it.toInt() }
+    private fun isSecondNewer(second: String?): Boolean {
+        val currentVersion = OdinMain.VERSION
+        if (currentVersion.isEmpty() || second.isNullOrEmpty()) {
+            return false // Handle null or empty strings appropriately
+        }
+
+        val (major, minor, patch) = currentVersion.split(".").map { it.toIntOrNull() ?: 0 }
+        val (major2, minor2, patch2) = second.split(".").map { it.toIntOrNull() ?: 0 }
+
         return when {
             major > major2 -> false
             major < major2 -> true

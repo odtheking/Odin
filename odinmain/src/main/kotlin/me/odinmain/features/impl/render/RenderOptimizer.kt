@@ -26,7 +26,7 @@ object RenderOptimizer : Module(
             DungeonUtils.getPhase() == 5 &&
             event.entity.posY < 15 && // don't kill dragon tags
             event.entity.posX !in 47.0..61.0 && event.entity.posZ !in 70.0..84.0 && // chest positions
-            !event.entity.name.contains("«relic»", true)
+            !event.entity.name.contains("relic", true)
         )
             event.entity.setDead()
 

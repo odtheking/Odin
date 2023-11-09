@@ -10,7 +10,6 @@ import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
@@ -34,7 +33,7 @@ object TerminalSolver : Module(
     category = Category.FLOOR7,
     tag = TagType.NEW
 ) {
-    private val customSize: Int by NumberSetting("Custom Size", 3, 1, 4, 1, description = "Custom size of the terminal")
+    //private val customSize: Int by NumberSetting("Custom Size", 3, 1, 4, 1, description = "Custom size of the terminal")
     private val behindItem: Boolean by BooleanSetting("Behind Item", description = "Shows the item over the rendered solution")
     private val cancelToolTip: Boolean by BooleanSetting("Stop Tooltips", default = true, description = "Stops rendering tooltips in terminals")
     private val removeWrong: Boolean by BooleanSetting("Stop Rendering Wrong", description = "Stops rendering wrong items in terminals")
@@ -68,7 +67,7 @@ object TerminalSolver : Module(
         if (newTerm != currentTerm) {
             currentTerm = newTerm
             openedTerminalTime = System.currentTimeMillis()
-            if (currentTerm != -1) mc.gameSettings.guiScale = customSize
+            // if (currentTerm != -1) mc.gameSettings.guiScale = customSize
         }
         if (currentTerm == -1) return leftTerm()
         val items = event.gui.inventory.subList(0, event.gui.inventory.size - 37)
