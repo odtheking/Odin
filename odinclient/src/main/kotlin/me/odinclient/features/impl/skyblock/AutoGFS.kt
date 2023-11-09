@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object AutoGFS : Module(
-    name = "Auto GFS",
+    name = "Auto Gfs",
     description = "Automatically gets pearls from sacks if your inventory doesn't have any.",
     category = Category.DUNGEON,
     tag = TagType.NEW

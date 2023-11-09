@@ -128,7 +128,7 @@ class ModCore {
         NoDebuff,
 
         CookieClicker,
-        EnchantingExperiments,
+        AutoExperiments,
         FarmingHitboxes,
         LimboLeave,
         NoBlock,

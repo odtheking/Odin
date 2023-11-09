@@ -8,7 +8,7 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.util.BlockPos
 
 object RelicPlacer : Module(
-    name = "Relic Placer WIP",
+    name = "Relic Placer (WIP)",
     description = "Places the relic if you hover over the correct cauldron",
     category = Category.FLOOR7,
     tag = TagType.NEW

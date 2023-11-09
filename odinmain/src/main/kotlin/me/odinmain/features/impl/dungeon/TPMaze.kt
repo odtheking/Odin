@@ -17,7 +17,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object TPMaze : Module(
-    name = "TP Maze Solver",
+    name = "Maze Solver",
     description = "Shows you the teleport pad which takes you to the chest in tp maze.",
     category = Category.DUNGEON,
     tag = TagType.NEW
