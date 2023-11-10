@@ -139,7 +139,6 @@ class ModCore {
         AbilityKeybind,
         TerminalQOL,
         EtherWarpHelper,
-        TicTacToe,
         //AutoTerms
     )
 

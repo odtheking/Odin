@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.dungeon
 
+import me.odinmain.OdinMain
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -25,7 +26,8 @@ object PuzzleSolvers : Module(
     val mazeColorMultiple: Color by ColorSetting("Color for multiple solutions", Color.ORANGE, true)
 
     val tttSolver: Boolean by BooleanSetting("Tic Tac Solver", true, description = "Shows you the solution for the TTT puzzle")
-    val blockWrongClicks: Boolean by BooleanSetting(name = "Block Wrong Clicks")
+    val blockWrongClicks: Boolean by BooleanSetting(name = "Block Wrong Clicks").withDependency { tttSolver && !OdinMain.onLegitVersion }
+
 
 
 

@@ -82,7 +82,6 @@ class ModCore {
         ArrowAlign,
         SimonSays,
         EtherWarpHelper,
-
     )
 
     @SubscribeEvent
@@ -126,8 +125,8 @@ class ModCore {
 
 
     companion object {
-        const val MOD_ID = "OdinClient"
-        const val NAME = "OdinClient"
+        const val MOD_ID = "Odin"
+        const val NAME = "Odin"
         const val VERSION = OdinMain.VERSION
         const val PREFIX = "§3Odin §8»§r"
 

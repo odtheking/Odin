@@ -1,7 +1,8 @@
-package me.odin.features.impl.dungeon
+package me.odinmain.features.impl.dungeon
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.features.impl.dungeon.PuzzleSolvers
+import me.odinmain.events.impl.ClickEvent
+import me.odinmain.features.impl.dungeon.PuzzleSolvers.blockWrongClicks
 import me.odinmain.utils.VecUtils.toAABB
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
@@ -12,6 +13,7 @@ import net.minecraft.init.Blocks
 import net.minecraft.init.Items
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
+import net.minecraft.util.MovingObjectPosition
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -164,6 +166,13 @@ object TicTacToe {
                 phase = true
             )
         }
+    }
+
+    @SubscribeEvent
+    fun onRightClick(event: ClickEvent.RightClickEvent) {
+        if (!currentRoomName.contains("Tic Tac Toe") || !blockWrongClicks || mc.objectMouseOver.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK || mc.theWorld.getBlockState(mc.objectMouseOver.blockPos).block != Blocks.stone_button) return
+        if (bestMove != null && !mc.objectMouseOver.blockPos.equals(bestMove)) event.isCanceled = true
+        if (bestMove == null) event.isCanceled = true
     }
 
     /**
@@ -457,7 +466,7 @@ object TicTacToe {
          * @param board     the Tic Tac Toe board to play on
          * @param ply       the maximum depth
          */
-        fun run(board: Board,ply: Double = Double.POSITIVE_INFINITY): Int {
+        fun run(board: Board, ply: Double = Double.POSITIVE_INFINITY): Int {
             return run(board.turn, board, ply)
         }
 
@@ -468,7 +477,7 @@ object TicTacToe {
          * @param maxPly        the maximum depth
          * @return              the score of the move
          */
-        private fun run(player: Board.State,board: Board,maxPly: Double): Int {
+        private fun run(player: Board.State, board: Board, maxPly: Double): Int {
             require(maxPly >= 1) { "Maximum depth must be greater than 0." }
             AlphaBetaAdvanced.maxPly = maxPly
             return alphaBetaPruning(player, board, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, 0)
@@ -483,7 +492,7 @@ object TicTacToe {
          * @param currentPly    the current depth
          * @return              the index of the move to make
          */
-        private fun alphaBetaPruning(player: Board.State,board: Board,alpha: Double,beta: Double,currentPly: Int): Int {
+        private fun alphaBetaPruning(player: Board.State, board: Board, alpha: Double, beta: Double, currentPly: Int): Int {
             var cp = currentPly
             if (cp++.toDouble() == maxPly || board.isGameOver) {
                 return score(player, board, cp)
@@ -504,7 +513,7 @@ object TicTacToe {
          * @param currentPly    the current depth
          * @return              the index of the move to make
          */
-        private fun getMax(player: Board.State,board: Board,alpha: Double,beta: Double,currentPly: Int): Int {
+        private fun getMax(player: Board.State, board: Board, alpha: Double, beta: Double, currentPly: Int): Int {
             var a = alpha
             var indexOfBestMove = -1
             for (theMove in board.availableMoves) {
@@ -534,7 +543,7 @@ object TicTacToe {
          * @param currentPly    the current depth
          * @return              the score of the move
          */
-        private fun getMin(player: Board.State,board: Board,alpha: Double,beta: Double,currentPly: Int): Int {
+        private fun getMin(player: Board.State, board: Board, alpha: Double, beta: Double, currentPly: Int): Int {
             var b = beta
             var indexOfBestMove = -1
             for (theMove in board.availableMoves) {
@@ -562,7 +571,7 @@ object TicTacToe {
          * @param currentPly    the current depth
          * @return              the score of the move
          */
-        private fun score(player: Board.State,board: Board,currentPly: Int): Int {
+        private fun score(player: Board.State, board: Board, currentPly: Int): Int {
             require(player != Board.State.Blank) { "Player must be X or O." }
             val opponent = if (player == Board.State.X) Board.State.O else Board.State.X
             return if (board.isGameOver && board.winner == player) {
