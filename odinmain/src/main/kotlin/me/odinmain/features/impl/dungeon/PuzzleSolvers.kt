@@ -10,7 +10,7 @@ import me.odinmain.utils.render.Color
 
 object PuzzleSolvers : Module(
     name = "Puzzle Solvers",
-    category = Category.RENDER,
+    category = Category.DUNGEON,
     description = "Dungeon puzzle solvers."
 ) {
 
@@ -23,6 +23,11 @@ object PuzzleSolvers : Module(
     val tpMaze: Boolean by BooleanSetting("TP Maze Solver", true, description = "Shows you the solution for the TP maze puzzle")
     val mazeColorOne: Color by ColorSetting("Color for 1 solution", Color.GREEN, true)
     val mazeColorMultiple: Color by ColorSetting("Color for multiple solutions", Color.ORANGE, true)
+
+    val tttSolver: Boolean by BooleanSetting("Tic Tac Solver", true, description = "Shows you the solution for the TTT puzzle")
+    val blockWrongClicks: Boolean by BooleanSetting(name = "Block Wrong Clicks")
+
+
 
 
 

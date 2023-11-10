@@ -5,7 +5,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import me.odin.commands.impl.highlightCommand
-import me.odin.features.impl.dungeon.TicTacToe
 import me.odin.features.impl.floor7.p3.ArrowAlign
 import me.odin.features.impl.floor7.p3.SimonSays
 import me.odin.features.impl.render.EtherWarpHelper
@@ -83,7 +82,7 @@ class ModCore {
         ArrowAlign,
         SimonSays,
         EtherWarpHelper,
-        TicTacToe,
+
     )
 
     @SubscribeEvent

@@ -48,7 +48,6 @@ object ModuleManager {
         TeammatesHighlight,
         TerracottaTimer,
         WatcherBar,
-        WaterSolver,
         TerminalSolver,
         TerminalTimes,
         DragonBoxes,
@@ -81,14 +80,15 @@ object ModuleManager {
         DianaHelper,
         Reminders,
         VanqNotifier,
-        TPMaze,
         Animations,
         SpaceHelmet,
         EscrowFix,
         //DungeonWaypoints,
         SecretChime,
-        ShareCoords
-        //LeapMenu
+        ShareCoords,
+        //LeapMenu,
+        PuzzleSolvers,
+        ArrowHit
     )
 
 

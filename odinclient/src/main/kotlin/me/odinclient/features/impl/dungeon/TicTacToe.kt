@@ -3,7 +3,8 @@ package me.odinclient.features.impl.dungeon
 import me.odinmain.events.impl.ClickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.impl.dungeon.PuzzleSolvers
+import me.odinmain.features.impl.dungeon.PuzzleSolvers.blockWrongClicks
 import me.odinmain.utils.VecUtils.toAABB
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
@@ -31,8 +32,6 @@ object TicTacToe : Module(
     description = "Shows a solution for the Tic Tac Toe puzzle",
     tag = TagType.NEW
 ) {
-
-    private val blockWrongClicks: Boolean by BooleanSetting(name = "Block Wrong Clicks")
 
     private var topLeft: BlockPos? = null
     private var roomFacing: EnumFacing? = null
@@ -165,7 +164,7 @@ object TicTacToe : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (!inDungeons) return
+        if (!inDungeons || !PuzzleSolvers.tttSolver) return
         if (bestMove != null) {
             RenderUtils.drawCustomESPBox(
                 bestMove!!.toAABB(),

@@ -1,7 +1,7 @@
 package me.odin.features.impl.dungeon
 
-import me.odinmain.features.Category
-import me.odinmain.features.Module
+import me.odinmain.OdinMain.mc
+import me.odinmain.features.impl.dungeon.PuzzleSolvers
 import me.odinmain.utils.VecUtils.toAABB
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
@@ -22,11 +22,7 @@ import kotlin.experimental.and
  * Solver based on [Floppa Client](https://github.com/FloppaCoding/FloppaClient/)
  * and [Skytils](https://github.com/Skytils/SkytilsMod/)
  */
-object TicTacToe : Module(
-    name = "Tic Tac Solver",
-    category = Category.DUNGEON,
-    description = "Shows a solution for the Tic Tac Toe puzzle"
-) {
+object TicTacToe {
 
     private var topLeft: BlockPos? = null
     private var roomFacing: EnumFacing? = null
@@ -159,7 +155,7 @@ object TicTacToe : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (!inDungeons) return
+        if (!inDungeons || !PuzzleSolvers.tttSolver) return
         if (bestMove != null) {
             RenderUtils.drawCustomESPBox(
                 bestMove!!.toAABB(),
