@@ -9,6 +9,7 @@ import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.impl.skyblock.DianaHelper
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.hud.EditHUDGui
+import me.odinmain.utils.DevUtils
 import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
 
@@ -66,7 +67,7 @@ val mainCommand = "od" {
 
             if (it.size != 1) modMessage("§cMissing pitch!")
             else {
-                if (setRotation(pitch = it[0])) modMessage("Set pitchto ${it[0]}")
+                if (setRotation(pitch = it[0])) modMessage("Set pitch to ${it[0]}")
                 else modMessage("§cInvalid pitch.")
             }
         }
@@ -75,10 +76,6 @@ val mainCommand = "od" {
     "rq" does {
         ChatUtils.sendCommand("instancerequeue")
         modMessage("requeing dungeon run")
-    }
-
-    "giveaotv" does {
-        ChatUtils.sendCommand("give @p minecraft:diamond_shovel 1 0 {ExtraAttributes:{ethermerge:1b}}")
     }
 
     "help" does {
@@ -123,6 +120,14 @@ val mainCommand = "od" {
     "dianareset" does {
         modMessage("Resetting all active diana waypoints.")
         DianaHelper.burrowsRender.clear()
+    }
+
+    "dev" does {
+        if (it.size != 1) modMessage("§cMissing argument")
+        else {
+            if (it[0] == "entity") DevUtils.copyEntityData()
+            if (it[0] == "block") DevUtils.copyBlockData()
+        }
     }
 
     does {
