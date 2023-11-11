@@ -68,8 +68,8 @@ object RenderUtils {
         block.invoke(this)
     }
 
-    fun drawCustomESPBox(aabb: AxisAlignedBB, color: Color, thickness: Float = 3f, phase: Boolean) {
-        drawCustomESPBox(
+    fun drawCustomBox(aabb: AxisAlignedBB, color: Color, thickness: Float = 3f, phase: Boolean) {
+        drawCustomBox(
             aabb.minX, aabb.maxX - aabb.minX,
             aabb.minY, aabb.maxY - aabb.minY,
             aabb.minZ, aabb.maxZ - aabb.minZ,
@@ -82,29 +82,29 @@ object RenderUtils {
     /**
      * @param color Has to be in the range of 0-255
      */
-    fun drawCustomESPBox(x: Double, y: Double, z: Double, scale: Double, color: Color, thickness: Float = 3f, phase: Boolean) {
-        drawCustomESPBox(x, scale, y, scale, z, scale, color, thickness, phase)
+    fun drawCustomBox(x: Double, y: Double, z: Double, scale: Double, color: Color, thickness: Float = 3f, phase: Boolean) {
+        drawCustomBox(x, scale, y, scale, z, scale, color, thickness, phase)
     }
 
-    fun drawCustomESPBox(pos: BlockPos, color: Color, thickness: Float = 3f, phase: Boolean) {
-        drawCustomESPBox(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble(), 1.0, color, thickness, phase)
-    }
-
-    /**
-     * @param color Has to be in the range of 0-255
-     */
-    fun drawCustomESPBox(x: Double, y: Double, z: Double, width: Double, height: Double, color: Color, thickness: Float = 3f, phase: Boolean) {
-        drawCustomESPBox(x, width, y, height, z, width, color, thickness, phase)
-    }
-
-    fun drawCustomESPBox(x: Number, y: Number, z: Number, scale: Number, color: Color, thickness: Float = 3f, phase: Boolean) {
-        drawCustomESPBox(x.toDouble(), scale.toDouble(), y.toDouble(), scale.toDouble(), z.toDouble(), scale.toDouble(), color, thickness, phase)
+    fun drawCustomBox(pos: BlockPos, color: Color, thickness: Float = 3f, phase: Boolean) {
+        drawCustomBox(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble(), 1.0, color, thickness, phase)
     }
 
     /**
      * @param color Has to be in the range of 0-255
      */
-    fun drawCustomESPBox(x: Double, xWidth: Double, y: Double, yWidth: Double, z: Double, zWidth: Double, color: Color, thickness: Float = 3f, phase: Boolean) {
+    fun drawCustomBox(x: Double, y: Double, z: Double, width: Double, height: Double, color: Color, thickness: Float = 3f, phase: Boolean) {
+        drawCustomBox(x, width, y, height, z, width, color, thickness, phase)
+    }
+
+    fun drawCustomBox(x: Number, y: Number, z: Number, scale: Number, color: Color, thickness: Float = 3f, phase: Boolean) {
+        drawCustomBox(x.toDouble(), scale.toDouble(), y.toDouble(), scale.toDouble(), z.toDouble(), scale.toDouble(), color, thickness, phase)
+    }
+
+    /**
+     * @param color Has to be in the range of 0-255
+     */
+    fun drawCustomBox(x: Double, xWidth: Double, y: Double, yWidth: Double, z: Double, zWidth: Double, color: Color, thickness: Float = 3f, phase: Boolean) {
         GlStateManager.pushMatrix()
         color.bindColor()
         GlStateManager.translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
@@ -282,7 +282,7 @@ object RenderUtils {
         val distZ = z - mc.renderManager.viewerPosZ
         val dist = sqrt(distX * distX + distY * distY + distZ * distZ)
 
-        drawCustomESPBox(floor(x), floor(y), floor(z), 1.0, color.withAlpha(1f), 3f, true)
+        drawCustomBox(floor(x), floor(y), floor(z), 1.0, color.withAlpha(1f), 3f, true)
 
         drawStringInWorld(
             "$title §r§f(§3${dist.toInt()}m§f)",

@@ -43,8 +43,8 @@ object Animations : Module(
     val roll: Float by NumberSetting("Roll", 0.0f, -180.0, 180.0, 1.0, description = "Rotates your held item. Default: 0")
     val speed: Float by NumberSetting("Speed", 0.0f, -2.0, 1.0, 0.05, description = "Speed of the swing animation.")
     val ignoreHaste: Boolean by BooleanSetting("Ignore Haste", false, description = "Makes the chosen speed override haste modifiers.")
-    val noSwing: Boolean by BooleanSetting("No Swing", false, description = "Prevents your item from visually swinging forward")
     val blockHit: Boolean by BooleanSetting("Block Hit", false, description = "Visual 1.7 block hit animation")
+    val noSwing: Boolean by BooleanSetting("No Swing", false, description = "Prevents your item from visually swinging forward")
     val noBlock: Boolean by BooleanSetting("No Block", false, description = "Disables the visual block animation")
 
     val reset: () -> Unit by ActionSetting("Reset") {

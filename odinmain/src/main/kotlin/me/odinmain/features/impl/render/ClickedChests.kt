@@ -59,7 +59,7 @@ object ClickedChests : Module(
                 val z = it.z + .0625
                 RenderUtils.drawFilledBox(AxisAlignedBB(x, y, z, x + .875, y + 0.875, z + 0.875), color, phase)
             } else
-                RenderUtils.drawCustomESPBox(
+                RenderUtils.drawCustomBox(
                     it.x + .0625, .875,
                     it.y.toDouble(), .875,
                     it.z + .0625, .875,

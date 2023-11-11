@@ -26,7 +26,7 @@ object ArrowAlign : Module(
     category = Category.FLOOR7
 ) {
     private val solver: Boolean by BooleanSetting("Solver")
-    private val blockWrong: Boolean by BooleanSetting("Block Wrong Clicks", false, description = "Blocks wrong clicks")
+    private val blockWrong: Boolean by BooleanSetting("Block Wrong Clicks", false, description = "Blocks wrong clicks, shift will override this")
     private val triggerBot: Boolean by BooleanSetting("Trigger Bot")
     private val delay: Long by NumberSetting<Long>("Delay", 200, 70, 500).withDependency { triggerBot }
     private val multipleScans: Boolean by BooleanSetting("Multiple Scans", true)
@@ -61,7 +61,7 @@ object ArrowAlign : Module(
     fun onRightClick(event: ClickEvent.RightClickEvent) {
         if (mc.objectMouseOver?.entityHit !is EntityItemFrame) return
         val frame = neededRotations.values.find { it.entity == mc.objectMouseOver.entityHit as EntityItemFrame } ?: return
-        if (frame.rotations == 0 && blockWrong) {
+        if (frame.rotations == 0 && blockWrong && !mc.thePlayer.isSneaking) {
             event.isCanceled = true
             return
         }

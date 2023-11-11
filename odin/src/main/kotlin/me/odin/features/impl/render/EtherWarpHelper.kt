@@ -39,7 +39,7 @@ object EtherWarpHelper : Module(
             if (filled)
                 RenderUtils.drawFilledBox(pos, color, phase = phase)
             else
-                RenderUtils.drawCustomESPBox(pos, color, thickness = thickness, phase = phase)
+                RenderUtils.drawCustomBox(pos, color, thickness = thickness, phase = phase)
         }
     }
 

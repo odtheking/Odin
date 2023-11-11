@@ -137,8 +137,9 @@ class ModCore {
         GhostBlock,
         FreezeGame,
         AbilityKeybind,
-        TerminalQOL,
+        TerminalTriggerbot,
         EtherWarpHelper,
+        ChestEsp,
         //AutoTerms
     )
 

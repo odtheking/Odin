@@ -159,7 +159,7 @@ object TicTacToe {
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (!inDungeons || !PuzzleSolvers.tttSolver) return
         if (bestMove != null) {
-            RenderUtils.drawCustomESPBox(
+            RenderUtils.drawCustomBox(
                 bestMove!!.toAABB(),
                 Color.GREEN,
                 thickness = 2f,

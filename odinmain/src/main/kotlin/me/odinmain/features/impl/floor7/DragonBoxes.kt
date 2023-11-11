@@ -32,7 +32,7 @@ object DragonBoxes : Module(
         if (DungeonUtils.getPhase() != 5) return
         DragonColors.entries.forEach {
             if (!it.alive) return@forEach
-            RenderUtils.drawCustomESPBox(it.aabb, it.color.withAlpha(0.5f), lineThickness, phase = false)
+            RenderUtils.drawCustomBox(it.aabb, it.color.withAlpha(0.5f), lineThickness, phase = false)
         }
     }
 

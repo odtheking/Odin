@@ -83,7 +83,7 @@ object DragonHitboxes : Module(
                     val w = entity.width
                     val h = entity.height
 
-                    RenderUtils.drawCustomESPBox(dX - w / 2, dY, dZ - w / 2, w.toDouble(), h.toDouble(), color, lineWidth, !OdinMain.onLegitVersion)
+                    RenderUtils.drawCustomBox(dX - w / 2, dY, dZ - w / 2, w.toDouble(), h.toDouble(), color, lineWidth, !OdinMain.onLegitVersion)
                 }
             }
         }
