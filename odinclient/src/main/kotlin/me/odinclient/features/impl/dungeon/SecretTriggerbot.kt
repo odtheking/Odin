@@ -23,33 +23,36 @@ object SecretTriggerbot : Module(
     private val triggerBotClock = Clock(delay)
     private var clickedPositions = mapOf<BlockPos, Long>()
 
-    fun tryTriggerbot() {
-        if (
-            !enabled ||
-            !triggerBotClock.hasTimePassed(delay) ||
-            DungeonUtils.currentRoomName.equalsOneOf("Water Board", "Three Weirdos") ||
-            mc.currentScreen != null
-        ) return
 
-        val pos = mc.objectMouseOver?.blockPos ?: return
-        val state = mc.theWorld.getBlockState(pos) ?: return
-        clickedPositions = clickedPositions.filter { it.value + 1000L > System.currentTimeMillis() }
-        if (
-            (pos.x in 58..62 && pos.y in 133..136 && pos.z == 142) || // looking at lights device
-            clickedPositions.containsKey(pos) // already clicked
-        ) return
+    init {
+        execute(0) {
+            if (
+                !enabled ||
+                !triggerBotClock.hasTimePassed(SecretTriggerbot.delay) ||
+                DungeonUtils.currentRoomName.equalsOneOf("Water Board", "Three Weirdos") ||
+                mc.currentScreen != null
+            ) return@execute
 
-        if (crystalHollowsChests && LocationUtils.currentArea == "Crystal Hollows" && state.block == Blocks.chest) {
+            val pos = mc.objectMouseOver?.blockPos ?: return@execute
+            val state = mc.theWorld.getBlockState(pos) ?: return@execute
+            clickedPositions = clickedPositions.filter { it.value + 1000L > System.currentTimeMillis() }
+            if (
+                (pos.x in 58..62 && pos.y in 133..136 && pos.z == 142) || // looking at lights device
+                clickedPositions.containsKey(pos) // already clicked
+            ) return@execute
+
+            if (crystalHollowsChests && LocationUtils.currentArea == "Crystal Hollows" && state.block == Blocks.chest) {
+                rightClick()
+                triggerBotClock.update()
+                clickedPositions = clickedPositions.plus(pos to System.currentTimeMillis())
+                return@execute
+            }
+
+            if (!DungeonUtils.inDungeons || (!inBoss && DungeonUtils.inBoss) || !DungeonUtils.isSecret(state, pos)) return@execute
+
             rightClick()
             triggerBotClock.update()
             clickedPositions = clickedPositions.plus(pos to System.currentTimeMillis())
-            return
         }
-
-        if (!DungeonUtils.inDungeons || (!inBoss && DungeonUtils.inBoss) || !DungeonUtils.isSecret(state, pos)) return
-
-        rightClick()
-        triggerBotClock.update()
-        clickedPositions = clickedPositions.plus(pos to System.currentTimeMillis())
     }
 }

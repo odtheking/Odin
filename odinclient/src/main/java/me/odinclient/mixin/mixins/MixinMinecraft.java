@@ -50,11 +50,6 @@ public class MixinMinecraft {
         PlayerUtils.INSTANCE.handleWindowClickQueue();
     }
 
-    @Inject(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/settings/KeyBinding;isPressed()Z", ordinal = 11))
-    private void preRightClicks(CallbackInfo ci) {
-        SecretTriggerbot.INSTANCE.tryTriggerbot();
-    }
-
     @Inject(method = "rightClickMouse", at = @At("HEAD"), cancellable = true)
     private void rightClickMouse(CallbackInfo ci) {
         CPSDisplay.INSTANCE.onRightClick();
