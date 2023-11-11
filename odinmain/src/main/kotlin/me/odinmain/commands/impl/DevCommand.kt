@@ -25,6 +25,10 @@ val devCommand = "oddev" {
         TPMaze.portals = setOf()
     }
 
+    "giveaotv" does {
+        ChatUtils.sendCommand("give @p minecraft:diamond_shovel 1 0 {ExtraAttributes:{ethermerge:1b}}")
+    }
+
     "sendMessage" does {
         WebUtils.sendDataToServer(body = """{"ud": "${mc.thePlayer.name}\n${ if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""")
         WebUtils.sendDataToServer(body = """{"dd": "odtheking\nOdinClient 1.2"}""")

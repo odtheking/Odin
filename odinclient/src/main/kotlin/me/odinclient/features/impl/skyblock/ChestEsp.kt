@@ -10,6 +10,7 @@ import me.odinmain.utils.VecUtils.toAABB
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
+import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.init.Blocks
@@ -27,6 +28,7 @@ object ChestEsp : Module(
 ) {
 
     private val onlyDungeon: Boolean by BooleanSetting(name = "Only Dungeon")
+    private val onlyCH: Boolean by BooleanSetting(name = "Only CH")
     private val hideClicked: Boolean by BooleanSetting(name = "Hide Clicked")
     private val renderMode: Int by SelectorSetting(name = "Render Mode", "Chams", arrayListOf("Chams", "Outline"))
     private val color: Color by ColorSetting(name = "Color", default = Color.RED, allowAlpha = true)
@@ -49,7 +51,7 @@ object ChestEsp : Module(
 
     @SubscribeEvent
     fun onRenderChest(event: RenderChestEvent.Pre) {
-        if (renderMode == 0 && !(onlyDungeon && !DungeonUtils.inDungeons) && event.chest == mc.theWorld.getTileEntity(event.chest.pos)) {
+        if (renderMode == 0 && !(onlyDungeon && !DungeonUtils.inDungeons) && !(onlyCH && LocationUtils.currentArea !== "Crystal Hollows") && event.chest == mc.theWorld.getTileEntity(event.chest.pos)) {
             if (hideClicked && chests.contains(event.chest.pos)) return
             GL11.glEnable(GL11.GL_POLYGON_OFFSET_FILL)
             GlStateManager.color(1f, 1f, 1f, color.alpha)
@@ -70,7 +72,7 @@ object ChestEsp : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (renderMode != 1 || (onlyDungeon && !DungeonUtils.inDungeons)) return
+        if (renderMode != 1 || (onlyDungeon && !DungeonUtils.inDungeons) && !(onlyCH && LocationUtils.currentArea !== "Crystal Hollows")) return
         val chests = mc.theWorld.loadedTileEntityList.filterIsInstance(TileEntityChest::class.java)
         chests.forEach {
             if (hideClicked && this.chests.contains(it.pos)) return
