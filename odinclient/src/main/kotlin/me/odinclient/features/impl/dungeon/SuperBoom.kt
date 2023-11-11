@@ -39,7 +39,7 @@ object SuperBoom : Module(
         ) return
         val superboomIndex = mc.thePlayer?.inventory?.mainInventory?.indexOfFirst { it?.displayName?.contains("TNT") == true } ?: return
 
-        if (!behavior) {
+        if (behavior) {
             if (superboomIndex < 9) {
                 mc.thePlayer.inventory.currentItem = superboomIndex
             }
