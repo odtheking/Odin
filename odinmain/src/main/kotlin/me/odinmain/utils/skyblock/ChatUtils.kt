@@ -61,6 +61,16 @@ object ChatUtils {
         sendCommand("w $name $message")
     }
 
+    fun channelMessage(message: Any, name: String, channel: String) {
+        when (channel) {
+            "guild" -> guildMessage(message)
+            "party" -> partyMessage(message)
+            "private" -> privateMessage(message, name)
+            // Add more cases as needed for other channels
+            else -> throw IllegalArgumentException("Unsupported channel: $channel")
+        }
+    }
+
     fun getChatBreak(): String =
         mc.ingameGUI?.chatGUI?.chatWidth?.let {
             "§9§m" + "-".repeat(it / mc.fontRendererObj.getStringWidth("-"))
