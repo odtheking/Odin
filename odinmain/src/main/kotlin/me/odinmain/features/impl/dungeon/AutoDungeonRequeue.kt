@@ -34,7 +34,7 @@ object AutoDungeonRequeue : Module(
             if (type) {
                 ChatUtils.sendCommand("instancerequeue")
             } else
-                ChatUtils.sendCommand("od ${LocationUtils.currentDungeon?.floor}", true)
+                ChatUtils.sendCommand("od ${LocationUtils.currentDungeon?.floor?.name}", true)
         }
     }
 }

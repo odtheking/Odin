@@ -14,9 +14,6 @@ import net.minecraft.init.Items
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.MovingObjectPosition
-import net.minecraftforge.client.event.RenderWorldLastEvent
-import net.minecraftforge.event.world.WorldEvent
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.experimental.and
 
@@ -37,8 +34,8 @@ object TicTacToe {
      *
      * Taken from Skytils.
      */
-    @SubscribeEvent
-    fun onTick(event: TickEvent.ClientTickEvent) {
+
+    fun tttTick(event: TickEvent.ClientTickEvent) {
         if (!inDungeons) return
         if (event.phase != TickEvent.Phase.START || mc.thePlayer == null || mc.theWorld == null) return
         if (!currentRoomName.contains("Tic Tac Toe")) {
@@ -146,8 +143,7 @@ object TicTacToe {
         }
     }
 
-    @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Load) {
+    fun reset() {
         topLeft = null
         roomFacing = null
         board = null
@@ -155,8 +151,8 @@ object TicTacToe {
         mappedPositions.clear()
     }
 
-    @SubscribeEvent
-    fun onRenderWorld(event: RenderWorldLastEvent) {
+
+    fun tttRender() {
         if (!inDungeons || !PuzzleSolvers.tttSolver) return
         if (bestMove != null) {
             RenderUtils.drawCustomBox(
@@ -168,8 +164,7 @@ object TicTacToe {
         }
     }
 
-    @SubscribeEvent
-    fun onRightClick(event: ClickEvent.RightClickEvent) {
+    fun tttRightClick(event: ClickEvent.RightClickEvent) {
         if (!currentRoomName.contains("Tic Tac Toe") || !blockWrongClicks || mc.objectMouseOver.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK || mc.theWorld.getBlockState(mc.objectMouseOver.blockPos).block != Blocks.stone_button) return
         if (bestMove != null && !mc.objectMouseOver.blockPos.equals(bestMove)) event.isCanceled = true
         if (bestMove == null) event.isCanceled = true

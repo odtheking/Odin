@@ -6,8 +6,6 @@ import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
 import me.odinmain.features.impl.dungeon.PuzzleSolvers.showOrder
-import me.odinmain.utils.clock.Executor
-import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -16,10 +14,7 @@ import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
-import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
-import net.minecraftforge.event.world.WorldEvent
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 
@@ -42,37 +37,31 @@ object WaterSolver {
     private var solutions = mutableMapOf<LeverBlock, Array<Double>>()
     private var openedWater = -1L
 
-    init {
-        Executor(1000) {
-            if (DungeonUtils.currentRoom?.data?.name != "Water Board" || !PuzzleSolvers.waterSolver) return@Executor
-            scope.launch {
-                prevInWaterRoom = inWaterRoom
-                inWaterRoom = false
 
-                val x = DungeonUtils.currentRoom?.x ?: return@launch
-                val z = DungeonUtils.currentRoom?.z ?: return@launch
+    fun scan() {
+        if (DungeonUtils.currentRoom?.data?.name != "Water Board" || !PuzzleSolvers.waterSolver) return
+        scope.launch {
+            prevInWaterRoom = inWaterRoom
+            inWaterRoom = false
 
-                for (direction in EnumFacing.HORIZONTALS) {
-                    val stairPos = BlockPos(x + direction.opposite.frontOffsetX * 4, 56, z + direction.opposite.frontOffsetZ * 4)
-                    if (mc.theWorld.getBlockState(stairPos).block == Blocks.stone_brick_stairs) {
-                        roomFacing = direction
-                        chestPos = stairPos.offset(direction, 11)
+            val x = DungeonUtils.currentRoom?.x ?: return@launch
+            val z = DungeonUtils.currentRoom?.z ?: return@launch
 
-                        solve()
-                        return@launch
-                    }
+            for (direction in EnumFacing.HORIZONTALS) {
+                val stairPos = BlockPos(x + direction.opposite.frontOffsetX * 4, 56, z + direction.opposite.frontOffsetZ * 4)
+                if (mc.theWorld.getBlockState(stairPos).block == Blocks.stone_brick_stairs) {
+                    roomFacing = direction
+                    chestPos = stairPos.offset(direction, 11)
+
+                    solve()
+                    return@launch
                 }
             }
-        }.register()
-    }
-    @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Load) {
-        reset()
+        }
     }
 
 
-        @SubscribeEvent
-    fun onWorldRender(event: RenderWorldLastEvent) {
+    fun waterRender() {
         if (!PuzzleSolvers.waterSolver) return
         val sortedSolutions = mutableListOf<Double>().apply {
             solutions.forEach { (lever, times) ->
@@ -109,8 +98,7 @@ object WaterSolver {
         }
     }
 
-    @SubscribeEvent
-    fun onBlockInteract(event: PlayerInteractEvent) {
+    fun waterInteract(event: PlayerInteractEvent) {
         if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || solutions.isEmpty() || event.world != mc.theWorld) return
         LeverBlock.entries.find { it.leverPos == event.pos }?.let {
             it.i++
