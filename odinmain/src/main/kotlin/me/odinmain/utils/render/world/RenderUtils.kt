@@ -9,11 +9,7 @@ import net.minecraft.client.renderer.WorldRenderer
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.Entity
-import net.minecraft.util.AxisAlignedBB
-import net.minecraft.util.BlockPos
-import net.minecraft.util.MathHelper
-import net.minecraft.util.ResourceLocation
-import net.minecraft.util.Vec3
+import net.minecraft.util.*
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.opengl.GL11
@@ -66,6 +62,16 @@ object RenderUtils {
 
     inline operator fun WorldRenderer.invoke(block: WorldRenderer.() -> Unit) {
         block.invoke(this)
+    }
+
+    fun drawTexturedModalRect(xPos: Number, yPos: Number, w: Number, h: Number) {
+        val (x, y, width, height) = arrayOf(xPos, yPos, w, h).map { it.toDouble() }
+        worldRenderer.begin(GL_QUADS, DefaultVertexFormats.POSITION_TEX)
+        worldRenderer.pos(x, y + height, 0.0).tex(.0, 1.0).endVertex()
+        worldRenderer.pos(x + width, (y + height), .0).tex(1.0, 1.0).endVertex()
+        worldRenderer.pos(x + width, y, 0.0).tex(1.0, .0).endVertex()
+        worldRenderer.pos(x, y, .0).tex(.0, .0).endVertex()
+        tessellator.draw()
     }
 
     fun drawCustomBox(aabb: AxisAlignedBB, color: Color, thickness: Float = 3f, phase: Boolean) {

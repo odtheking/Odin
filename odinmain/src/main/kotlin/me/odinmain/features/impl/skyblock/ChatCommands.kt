@@ -81,26 +81,27 @@ object ChatCommands : Module(
     @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
     fun chatCommands(event: ChatPacketEvent) {
+        val message = event.message
         val channel = when {
-            partyRegex.matches(event.message) -> "party"
-            guildRegex.matches(event.message) -> "guild"
-            fromRegex.matches(event.message) -> "private"
+            partyRegex.matches(message) -> "party"
+            guildRegex.matches(message) -> "guild"
+            fromRegex.matches(message) -> "private"
             else -> return
         }
 
         val ign = when (channel) {
-            "party" -> partyRegex.matchEntire(event.message)?.groups?.get(2)?.value
-            "guild" -> guildRegex.matchEntire(event.message)?.groups?.get(2)?.value
-            "private" -> fromRegex.matchEntire(event.message)?.groups?.get(2)?.value
-            else -> ""
-        }
+            "party" -> partyRegex.matchEntire(message)?.groups?.get(2)?.value
+            "guild" -> guildRegex.matchEntire(message)?.groups?.get(2)?.value
+            "private" -> fromRegex.matchEntire(message)?.groups?.get(2)?.value
+            else -> return
+        } ?: return
 
-        if (ign?.let { isInBlacklist(it) } == true) return
+        if (isInBlacklist(ign)) return
 
         val msg = when (channel) {
-            "party" -> partyRegex.matchEntire(event.message)?.groups?.get(3)?.value?.lowercase()
-            "guild" -> guildRegex.matchEntire(event.message)?.groups?.get(4)?.value?.lowercase()
-            "private" -> fromRegex.matchEntire(event.message)?.groups?.get(3)?.value?.lowercase()
+            "party" -> partyRegex.matchEntire(message)?.groups?.get(3)?.value?.lowercase()
+            "guild" -> guildRegex.matchEntire(message)?.groups?.get(4)?.value?.lowercase()
+            "private" -> fromRegex.matchEntire(message)?.groups?.get(3)?.value?.lowercase()
             else -> ""
         }
 
@@ -114,7 +115,7 @@ object ChatCommands : Module(
 
         GlobalScope.launch {
             delay(350)
-            cmdsAll(msg!!, ign!!, channel)
+            cmdsAll(msg!!, ign, channel)
         }
 
     }
