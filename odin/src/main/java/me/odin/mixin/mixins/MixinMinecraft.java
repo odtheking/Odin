@@ -40,7 +40,7 @@ public class MixinMinecraft {
         if (MinecraftForge.EVENT_BUS.post(new ClickEvent.RightClickEvent())) ci.cancel();
         CPSDisplay.INSTANCE.onRightClick();
         /*
-        Taken from Sk1erLLC's OldAnimations Mod
+        Taken from [Sk1erLLC's OldAnimations Mod](https://github.com/Sk1erLLC/OldAnimations) to enable block hitting
         */
         if (Animations.INSTANCE.getBlockHit() &&
                 Minecraft.getMinecraft().playerController.getIsHittingBlock() &&

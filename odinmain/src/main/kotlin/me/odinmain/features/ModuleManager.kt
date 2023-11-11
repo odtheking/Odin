@@ -74,7 +74,7 @@ object ModuleManager {
         Waypoints,
         AutoRenewCrystalHollows,
         AutoSprint,
-        BlazeAtunement,
+        BlazeAttunement,
         CanClip,
         ChatCommands,
         DeployableTimer,

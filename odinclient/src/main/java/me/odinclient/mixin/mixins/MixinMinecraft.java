@@ -1,6 +1,5 @@
 package me.odinclient.mixin.mixins;
 
-import me.odinclient.features.impl.dungeon.SecretTriggerbot;
 import me.odinclient.features.impl.skyblock.CancelInteract;
 import me.odinclient.utils.skyblock.PlayerUtils;
 import me.odinmain.events.impl.ClickEvent;
@@ -58,7 +57,7 @@ public class MixinMinecraft {
             return;
         }
         /*
-        Taken from Sk1erLLC's OldAnimations Mod
+        Taken from [Sk1erLLC's OldAnimations Mod](https://github.com/Sk1erLLC/OldAnimations) to enable block hitting
         */
         if (Animations.INSTANCE.getBlockHit() &&
                 Minecraft.getMinecraft().playerController.getIsHittingBlock() &&

@@ -20,11 +20,8 @@ import kotlin.math.exp
 import kotlin.math.max
 
 
-/*
-/*
- * Parts taken from Floppa Client
- * https://github.com/FloppaCoding/FloppaClient/blob/master/src/main/java/floppaclient/mixins/render/EntityRendererMixin.java
- */
+/**
+ * Parts taken from [Floppa Client](https://github.com/FloppaCoding/FloppaClient)
  */
 
 object Animations : Module(
@@ -91,8 +88,8 @@ object Animations : Module(
         return max((length * exp(-speed)),1.0f).toInt()
     }
 
-    /*
-    Taken from Sk1erLLC's OldAnimations Mod
+    /**
+    Taken from [Sk1erLLC's OldAnimations Mod](https://github.com/Sk1erLLC/OldAnimations) to enable block hitting
      */
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {

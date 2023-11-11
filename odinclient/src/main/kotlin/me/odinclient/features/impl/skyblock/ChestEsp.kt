@@ -51,7 +51,7 @@ object ChestEsp : Module(
 
     @SubscribeEvent
     fun onRenderChest(event: RenderChestEvent.Pre) {
-        if (renderMode == 0 && !(onlyDungeon && !DungeonUtils.inDungeons) && !(onlyCH && LocationUtils.currentArea !== "Crystal Hollows") && event.chest == mc.theWorld.getTileEntity(event.chest.pos)) {
+        if (renderMode == 0 && (!(onlyDungeon && !DungeonUtils.inDungeons) || !(onlyCH && LocationUtils.currentArea !== "Crystal Hollows")) && event.chest == mc.theWorld.getTileEntity(event.chest.pos)) {
             if (hideClicked && chests.contains(event.chest.pos)) return
             GL11.glEnable(GL11.GL_POLYGON_OFFSET_FILL)
             GlStateManager.color(1f, 1f, 1f, color.alpha)
@@ -62,7 +62,7 @@ object ChestEsp : Module(
 
     @SubscribeEvent
     fun onRenderChest(event: RenderChestEvent.Post) {
-        if (renderMode == 0 && !(onlyDungeon && !DungeonUtils.inDungeons) && event.chest == mc.theWorld.getTileEntity(event.chest.pos)) {
+        if (renderMode == 0 && (!(onlyDungeon && !DungeonUtils.inDungeons) || !(onlyCH && LocationUtils.currentArea !== "Crystal Hollows")) && event.chest == mc.theWorld.getTileEntity(event.chest.pos)) {
             if (hideClicked && chests.contains(event.chest.pos)) return
             GL11.glDisable(GL11.GL_POLYGON_OFFSET_FILL)
             GlStateManager.doPolygonOffset(1f, 1000000f)
