@@ -88,6 +88,9 @@ public abstract class MixinItemRenderer {
     }
 
     @Inject(method = "doItemUsedTransformations", at = @At("HEAD"), cancellable = true)
-    private void noSwing(float swingProgress, CallbackInfo ci) { if (Animations.INSTANCE.getNoSwing() && Animations.INSTANCE.getEnabled()) ci.cancel(); }
+    private void noSwing(float swingProgress, CallbackInfo ci) {
+        if (Animations.INSTANCE.getNoSwing() && Animations.INSTANCE.getEnabled())
+            ci.cancel();
+    }
 
 }
