@@ -2,7 +2,10 @@
 
 package me.odinmain.utils
 
+import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import net.minecraft.inventory.ContainerChest
+import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.fml.common.eventhandler.Event
 import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.math.round
@@ -220,4 +223,17 @@ fun RGBtoHSB(r: Int, g: Int, b: Int, out: FloatArray? = null): FloatArray {
     out[1] = saturation
     out[2] = brightness
     return out
+}
+
+/**
+ * Posts an event to the event bus and catches any errors.
+ * @author Skytils
+ */
+fun Event.postAndCatch(): Boolean {
+    return runCatching {
+        MinecraftForge.EVENT_BUS.post(this)
+    }.onFailure {
+        it.printStackTrace()
+        modMessage("Caught and logged an ${it::class.simpleName ?: "error"} at ${this::class.simpleName}. Please report this!")
+    }.getOrDefault(isCanceled)
 }
