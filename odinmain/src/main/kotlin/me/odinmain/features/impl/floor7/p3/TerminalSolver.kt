@@ -10,6 +10,7 @@ import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
+import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
@@ -20,6 +21,7 @@ import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.EnumDyeColor
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
+import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -33,7 +35,7 @@ object TerminalSolver : Module(
     category = Category.FLOOR7,
     tag = TagType.NEW
 ) {
-    //private val customSize: Int by NumberSetting("Custom Size", 3, 1, 4, 1, description = "Custom size of the terminal")
+    private val customSize: Int by NumberSetting("Custom Size", 3, 1, 4, 1, description = "Custom size of the terminal")
     private val behindItem: Boolean by BooleanSetting("Behind Item", description = "Shows the item over the rendered solution")
     private val cancelToolTip: Boolean by BooleanSetting("Stop Tooltips", default = true, description = "Stops rendering tooltips in terminals")
     private val removeWrong: Boolean by BooleanSetting("Stop Rendering Wrong", description = "Stops rendering wrong items in terminals")
@@ -56,10 +58,19 @@ object TerminalSolver : Module(
         "Change all to same color!",
         "Click in order!",
         "What starts with:",
-        "Select all the"
+        "Select all the",
+        "Farm Merchant"
     )
     var currentTerm = -1
     var solution = listOf<Int>()
+    init {
+        onPacket(S2DPacketOpenWindow::class.java) {
+            val newTerm = terminalNames.indexOfFirst { term -> it.windowTitle.siblings.firstOrNull()?.unformattedText?.startsWith(term)
+                ?: return@onPacket }
+            lastGuiScale = mc.gameSettings.guiScale
+            if (newTerm != currentTerm && newTerm != -1) mc.gameSettings.guiScale = customSize
+        }
+    }
 
     @SubscribeEvent
     fun onGuiLoad(event: GuiLoadedEvent) {
@@ -67,7 +78,6 @@ object TerminalSolver : Module(
         if (newTerm != currentTerm) {
             currentTerm = newTerm
             openedTerminalTime = System.currentTimeMillis()
-            // if (currentTerm != -1) mc.gameSettings.guiScale = customSize
         }
         if (currentTerm == -1) return leftTerm()
         val items = event.gui.inventory.subList(0, event.gui.inventory.size - 37)
@@ -140,14 +150,12 @@ object TerminalSolver : Module(
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.END) return
-        if (currentTerm == -1) {
-            lastGuiScale = mc.gameSettings.guiScale
-        }
         val isNull = mc.currentScreen == null
         if (isNull && lastWasNull && currentTerm != -1) {
             leftTerm()
         }
         lastWasNull = isNull
+
     }
 
     @SubscribeEvent
