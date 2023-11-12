@@ -109,11 +109,11 @@ object DungeonUtils {
         val code: String,
         val color: Color
     ) {
-        Archer("§6", Color(255, 170, 0)),
-        Mage("§5", Color(170, 0, 170)),
-        Berserk("§4", Color(170, 0, 0)),
-        Healer("§a", Color(85, 255, 85)),
-        Tank("§2", Color(0, 170, 0))
+        Archer("§6", Color.ORANGE),
+        Mage("§5", Color.PURPLE),
+        Berserk("§4", Color.DARK_RED),
+        Healer("§a", Color.GREEN),
+        Tank("§2", Color.DARK_GREEN)
     }
     data class DungeonPlayer(val name: String, val clazz: Classes, val locationSkin: ResourceLocation, val entity: EntityPlayer? = null)
     val isGhost: Boolean get() = ItemUtils.getItemSlot("Haunt", true) != null

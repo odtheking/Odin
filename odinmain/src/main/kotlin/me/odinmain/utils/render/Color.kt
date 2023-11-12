@@ -134,10 +134,19 @@ class Color(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f)
         val BLACK = Color(0, 0, 0)
 
         @JvmField
+        val PURPLE = Color(170, 0, 170)
+
+        @JvmField
         val ORANGE = Color(255, 170, 0)
 
         @JvmField
         val GREEN = Color(0, 255, 0)
+
+        @JvmField
+        val DARK_GREEN = Color(0, 170, 0)
+
+        @JvmField
+        val DARK_RED = Color(170, 0, 0)
 
         @JvmField
         val RED = Color(255, 0, 0)
