@@ -50,6 +50,18 @@ fun Any?.equalsOneOf(vararg options: Any): Boolean {
     return false
 }
 
+fun Pair<Any?, Any?>?.equal(first: Any?, second: Any?): Boolean {
+    return this?.first == first && this?.second == second
+}
+
+/**
+ * This needs to exist for some reason??
+ * @see me.odinmain.utils.skyblock.dungeon.DungeonUtils
+ */
+fun List<Any>?.contain(element: Any?): Boolean {
+    return this?.any { it == element } == true
+}
+
 inline fun Double.floor(): Double = floor(this)
 
 fun Double.round(decimals: Int): Double {

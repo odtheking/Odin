@@ -53,10 +53,11 @@ val devCommand = "oddev" {
             """
             ${ChatUtils.getChatBreak()}
             Middle: $xPos, $zPos
-            Room: ${room?.data?.name}
+            Room: ${room?.room?.data?.name}
             Core: $core
             North Core: $northCore
-            Rotation: ${room?.rotation}
+            Rotation: ${room?.room?.rotation}
+            Positions: ${room?.positions}
             ${ChatUtils.getChatBreak()}
             """.trimIndent(), false)
         Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(northCore.toString()), null)
