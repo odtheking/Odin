@@ -20,7 +20,7 @@ object ShareCoords: Module(
     description = "Sends a message whenever a mob spawns",
     tag = TagType.NEW
 ) {
-    private val mobName: String by StringSetting("Mob Name", "ZZZ??", 40, description = "Message sent when mob is detected as spawned")
+    private val mobName: String by StringSetting("Mob Name", "MobName", 40, description = "Message sent when mob is detected as spawned")
     private val ac: Boolean by BooleanSetting("All Chat")
     private val pc: Boolean by BooleanSetting("Party Chat")
 
