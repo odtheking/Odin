@@ -9,6 +9,7 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.ActionSetting
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
+import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -29,8 +30,9 @@ object PuzzleSolvers : Module(
     }.withDependency { waterSolver }
 
     val tpMaze: Boolean by BooleanSetting("Teleport Maze", true, description = "Shows you the solution for the TP maze puzzle")
-    val mazeColorOne: Color by ColorSetting("Color for 1 solution", Color.GREEN, true).withDependency { tpMaze }
-    val mazeColorMultiple: Color by ColorSetting("Color for multiple solutions", Color.ORANGE, true).withDependency { tpMaze }
+    val mazeColorOne: Color by ColorSetting("Color for 1 solution", Color.GREEN.withAlpha(.5f), true).withDependency { tpMaze }
+    val mazeColorMultiple: Color by ColorSetting("Color for multiple solutions", Color.ORANGE.withAlpha(.5f), true).withDependency { tpMaze }
+    val mazeColorVisited: Color by ColorSetting("Color for visited", Color.RED.withAlpha(.5f), true).withDependency { tpMaze }
 
     val tttSolver: Boolean by BooleanSetting("Tic Tac Toe", true, description = "Shows you the solution for the TTT puzzle")
     val blockWrongClicks: Boolean by BooleanSetting(name = "Block Wrong Clicks").withDependency { tttSolver && !OdinMain.onLegitVersion }

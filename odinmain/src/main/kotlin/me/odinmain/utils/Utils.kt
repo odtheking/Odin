@@ -7,11 +7,11 @@ import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.math.round
 
-// TODO: ADD GOOD COMMENTS
-data object Utils
-
 private val FORMATTING_CODE_PATTERN = Regex("§[0-9a-fk-or]", RegexOption.IGNORE_CASE)
 
+/**
+ * Returns the string without any minecraft formatting codes.
+ */
 val String?.noControlCodes: String
     get() = this?.let { FORMATTING_CODE_PATTERN.replace(it, "") } ?: ""
 
@@ -23,8 +23,7 @@ val String?.noControlCodes: String
  * @return `true` if the string contains at least one of the specified options, otherwise `false`.
  */
 fun String.containsOneOf(vararg options: String, ignoreCase: Boolean = false): Boolean {
-    for (i in 0..<options.size) if (this.contains(options[i], ignoreCase)) return true
-    return false
+    return options.any { this.contains(it, ignoreCase) }
 }
 
 /**
@@ -35,8 +34,7 @@ fun String.containsOneOf(vararg options: String, ignoreCase: Boolean = false): B
  * @return `true` if the string contains at least one of the specified options, otherwise `false`.
  */
 fun String.containsOneOf(options: List<String>, ignoreCase: Boolean = false): Boolean {
-    for (i in 0..<options.size) if (this.contains(options[i], ignoreCase)) return true
-    return false
+    return options.any { this.contains(it, ignoreCase) }
 }
 
 /**
@@ -46,21 +44,32 @@ fun String.containsOneOf(options: List<String>, ignoreCase: Boolean = false): Bo
  * @return `true` if the object is equal to one of the specified objects.
  */
 fun Any?.equalsOneOf(vararg options: Any): Boolean {
-    for (i in 0..<options.size) if (this == options[i]) return true
-    return false
+    return options.any { this == it }
 }
 
+/**
+ * Checks if the first value in the pair equals the first argument and the second value in the pair equals the second argument.
+ */
 fun Pair<Any?, Any?>?.equal(first: Any?, second: Any?): Boolean {
     return this?.first == first && this?.second == second
 }
 
+/**
+ * Floors the double.
+ */
 inline fun Double.floor(): Double = floor(this)
 
+/**
+ * Rounds the double to the specified number of decimal places.
+ */
 fun Double.round(decimals: Int): Double {
     val multiplier = 10.0.pow(decimals)
     return round(this * multiplier) / multiplier
 }
 
+/**
+ * Rounds the float to the specified number of decimal places.
+ */
 fun Float.round(decimals: Int): Float {
     val multiplier = 10f.pow(decimals)
     return round(this * multiplier) / multiplier
@@ -99,10 +108,16 @@ fun Number.coerceInNumber(min: Number, max: Number): Number {
     return this
 }
 
+/**
+ * Returns a random number between the specified range.
+ */
 fun IntRange.getRandom(): Int {
     return this.toList().getRandom()
 }
 
+/**
+ * Returns a random element from the specified collection.
+ */
 fun <T> Collection<T>.getRandom(): T {
     return this.elementAt((Math.random() * this.size).floor().toInt())
 }
@@ -116,7 +131,8 @@ inline fun <T>Pair<T, T>.minBy(selector: (T) -> Number): T {
 }
 
 /**
- * Taken from PolyUI
+ * Converts the HSB color to RGB Int.
+ * @author PolyUI
  */
 fun HSBtoRGB(hue: Float, saturation: Float, brightness: Float): Int {
     var r = 0
@@ -129,44 +145,44 @@ fun HSBtoRGB(hue: Float, saturation: Float, brightness: Float): Int {
     } else {
         val h = (hue - floor(hue)) * 6.0f
         val f = h - floor(h)
-        val p = brightness * (1.0f - saturation)
-        val q = brightness * (1.0f - saturation * f)
-        val t = brightness * (1.0f - saturation * (1.0f - f))
+        val p = brightness * (1f - saturation)
+        val q = brightness * (1f - saturation * f)
+        val t = brightness * (1f - saturation * (1f - f))
         when (h.toInt()) {
             0 -> {
-                r = (brightness * 255.0f + 0.5f).toInt()
-                g = (t * 255.0f + 0.5f).toInt()
-                b = (p * 255.0f + 0.5f).toInt()
+                r = (brightness * 255f + 0.5f).toInt()
+                g = (t * 255f + .5f).toInt()
+                b = (p * 255f + .5f).toInt()
             }
 
             1 -> {
-                r = (q * 255.0f + 0.5f).toInt()
-                g = (brightness * 255.0f + 0.5f).toInt()
-                b = (p * 255.0f + 0.5f).toInt()
+                r = (q * 255f + .5f).toInt()
+                g = (brightness * 255.0f + .5f).toInt()
+                b = (p * 255f + .5f).toInt()
             }
 
             2 -> {
-                r = (p * 255.0f + 0.5f).toInt()
-                g = (brightness * 255.0f + 0.5f).toInt()
-                b = (t * 255.0f + 0.5f).toInt()
+                r = (p * 255f + .5f).toInt()
+                g = (brightness * 255f + .5f).toInt()
+                b = (t * 255f + .5f).toInt()
             }
 
             3 -> {
-                r = (p * 255.0f + 0.5f).toInt()
-                g = (q * 255.0f + 0.5f).toInt()
-                b = (brightness * 255.0f + 0.5f).toInt()
+                r = (p * 255f + .5f).toInt()
+                g = (q * 255f + .5f).toInt()
+                b = (brightness * 255f + .5f).toInt()
             }
 
             4 -> {
-                r = (t * 255.0f + 0.5f).toInt()
-                g = (p * 255.0f + 0.5f).toInt()
-                b = (brightness * 255.0f + 0.5f).toInt()
+                r = (t * 255f + .5f).toInt()
+                g = (p * 255f + .5f).toInt()
+                b = (brightness * 255f + .5f).toInt()
             }
 
             5 -> {
-                r = (brightness * 255.0f + 0.5f).toInt()
-                g = (p * 255.0f + 0.5f).toInt()
-                b = (q * 255.0f + 0.5f).toInt()
+                r = (brightness * 255f + .5f).toInt()
+                g = (p * 255f + .5f).toInt()
+                b = (q * 255f + .5f).toInt()
             }
         }
     }
@@ -188,7 +204,7 @@ fun RGBtoHSB(r: Int, g: Int, b: Int, out: FloatArray? = null): FloatArray {
     var cmin = if (r < g) r else g
     if (b < cmin) cmin = b
 
-    brightness = cmax.toFloat() / 255.0f
+    brightness = cmax.toFloat() / 255f
     saturation = if (cmax != 0) (cmax - cmin).toFloat() / cmax.toFloat() else 0f
     if (saturation == 0f) {
         hue = 0f
@@ -196,9 +212,9 @@ fun RGBtoHSB(r: Int, g: Int, b: Int, out: FloatArray? = null): FloatArray {
         val redc = (cmax - r).toFloat() / (cmax - cmin).toFloat()
         val greenc = (cmax - g).toFloat() / (cmax - cmin).toFloat()
         val bluec = (cmax - b).toFloat() / (cmax - cmin).toFloat()
-        hue = if (r == cmax) bluec - greenc else if (g == cmax) 2.0f + redc - bluec else 4.0f + greenc - redc
-        hue /= 6.0f
-        if (hue < 0) hue += 1.0f
+        hue = if (r == cmax) bluec - greenc else if (g == cmax) 2f + redc - bluec else 4f + greenc - redc
+        hue /= 6f
+        if (hue < 0) hue += 1f
     }
     out[0] = hue
     out[1] = saturation
