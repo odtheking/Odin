@@ -21,10 +21,10 @@ import net.minecraft.entity.monster.EntitySkeleton
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 
-object BlazeAtunement : Module(
-    "Blaze Atunement",
+object BlazeAttunement : Module(
+    "Blaze Attunement",
     category = Category.SKYBLOCK,
-    description = "Displays what atunement a blaze boss needs."
+    description = "Displays what attunement a blaze boss needs."
 ) {
     private val overlay: Boolean by BooleanSetting("Overlay Entities", false)
     private val thickness: Float by NumberSetting("Outline Thickness", 5f, 5f, 20f, 0.5f)

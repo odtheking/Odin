@@ -4,7 +4,7 @@ import com.google.common.collect.ComparisonChain
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
-import me.odinmain.utils.floor
+import me.odinmain.utils.equal
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.ItemUtils
@@ -33,9 +33,11 @@ object DungeonUtils {
     inline val inBoss get() =
         currentDungeon?.inBoss ?: false
 
-    private var lastRoomPos: Pair<Int, Int>? = null
-    var currentRoom: Room? = null
-    val currentRoomName get() = currentRoom?.data?.name ?: "Unknown"
+    data class Vec2(val x: Int, val z: Int)
+    data class FullRoom(val room: Room, val positions: List<Vec2>)
+    private var lastRoomPos: Pair<Int, Int> = Pair(0, 0)
+    var currentRoom: FullRoom? = null
+    val currentRoomName get() = currentRoom?.room?.data?.name ?: "Unknown"
 
 
     private const val WITHER_ESSENCE_ID = "26bb1a8d-7c66-31c6-82d5-a9c04c94fb02"
@@ -65,23 +67,37 @@ object DungeonUtils {
     @SubscribeEvent
     fun onMove(event: LivingEvent.LivingUpdateEvent) {
         if (mc.theWorld == null/* || !inDungeons ||  inBoss */|| !event.entity.equals(mc.thePlayer)) return
-        val x = ((mc.thePlayer.posX + 200) / 32).floor().toInt()
-        val z = ((mc.thePlayer.posZ + 200) / 32).floor().toInt()
-        val xPos = START_X + x * ROOM_SIZE
-        val zPos = START_Z + z * ROOM_SIZE
+        val xPos = START_X + ((mc.thePlayer.posX + 200) / 32).toInt() * ROOM_SIZE
+        val zPos = START_Z + ((mc.thePlayer.posZ + 200) / 32).toInt() * ROOM_SIZE
+        if (lastRoomPos.equal(xPos, zPos) && currentRoom != null) return
+        lastRoomPos = Pair(xPos, zPos)
 
-        currentRoom = scanRoom(xPos, zPos)?.apply {
+        val room = scanRoom(xPos, zPos)?.apply {
             rotation = EnumFacing.HORIZONTALS.find {
-                data.rotationCores.any { core -> ScanUtils.getCore(xPos + it.frontOffsetX, zPos + it.frontOffsetZ) == core }
-            } ?: EnumFacing.NORTH
+                data.rotationCores.any { c -> ScanUtils.getCore(xPos + it.frontOffsetX * 4, zPos + it.frontOffsetZ * 4) == c }
+            } ?: EnumFacing.DOWN
         }
+        val positions = room?.let { findRoomTilesRecursively(it.x, it.z, it, mutableSetOf()) } ?: emptyList()
+        currentRoom = room?.let { FullRoom(it, positions) }
+    }
 
+    private fun findRoomTilesRecursively(x: Int, z: Int, room: Room, visited: MutableSet<Vec2>): List<Vec2> {
+        val tiles = mutableListOf<Vec2>()
+        val pos = Vec2(x, z)
+        if (visited.contains(pos)) return tiles
+        visited.add(pos)
+        if (room.data.cores.any { ScanUtils.getCore(x, z) == it }) {
+            tiles.add(pos)
+            EnumFacing.HORIZONTALS.forEach {
+                tiles.addAll(findRoomTilesRecursively(x + it.frontOffsetX * ROOM_SIZE, z + it.frontOffsetZ * ROOM_SIZE, room, visited))
+            }
+        }
+        return tiles
     }
 
     private fun scanRoom(x: Int, z: Int): Room? {
         val height = mc.theWorld.getChunkFromChunkCoords(x shr 4, z shr 4).getHeightValue(x and 15, z and 15)
         if (height == 0) return null
-
 
         val roomCore = ScanUtils.getCore(x, z)
         return Room(x, z, ScanUtils.getRoomData(roomCore) ?: return null).apply {

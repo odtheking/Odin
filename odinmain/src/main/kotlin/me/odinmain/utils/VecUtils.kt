@@ -95,9 +95,19 @@ object VecUtils {
     fun Vec3.rotateAroundNorth(rotation: EnumFacing): Vec3 {
         return when (rotation) {
             EnumFacing.NORTH -> this
-            EnumFacing.EAST -> Vec3(-this.xCoord, this.yCoord, this.zCoord)
+            EnumFacing.EAST -> Vec3(-this.zCoord, this.yCoord, this.xCoord)
             EnumFacing.SOUTH -> Vec3(-this.xCoord, this.yCoord, -this.zCoord)
-            EnumFacing.WEST -> Vec3(this.xCoord, this.yCoord, -this.zCoord)
+            EnumFacing.WEST -> Vec3(this.zCoord, this.yCoord, -this.xCoord)
+            else -> this
+        }
+    }
+
+    fun Vec3.rotateToNorth(rotation: EnumFacing): Vec3 {
+        return when (rotation) {
+            EnumFacing.NORTH -> this
+            EnumFacing.EAST -> Vec3(this.zCoord, this.yCoord, -this.xCoord)
+            EnumFacing.SOUTH -> Vec3(-this.xCoord, this.yCoord, -this.zCoord)
+            EnumFacing.WEST -> Vec3(-this.zCoord, this.yCoord, this.xCoord)
             else -> this
         }
     }
@@ -160,6 +170,14 @@ object VecUtils {
     fun Vec3.addVec(x: Number = .0, y: Number = .0, z: Number = .0): Vec3 {
         return this.addVector(x.toDouble(), y.toDouble(), z.toDouble())
     }
+
+    /**
+     * Removes the given coordinates to the Vec3.
+     */
+    fun Vec3.subtractVec(x: Number = .0, y: Number = .0, z: Number = .0): Vec3 {
+        return this.addVector(-x.toDouble(), -y.toDouble(), -z.toDouble())
+    }
+
 
     /**
      * Floors every coordinate of a Vec3 and turns it into a Vec3i.

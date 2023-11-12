@@ -7,7 +7,6 @@ import net.minecraft.block.properties.IProperty
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.*
-import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.BlockPos
 import net.minecraft.util.MovingObjectPosition
 import net.minecraft.world.WorldType
@@ -24,12 +23,12 @@ import java.io.IOException
 object DevUtils {
 
     fun copyEntityData() {
-        if (mc.objectMouseOver == null || mc.objectMouseOver.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK || mc.objectMouseOver.blockPos == null) {
+        if (mc.objectMouseOver == null || mc.objectMouseOver.typeOfHit != MovingObjectPosition.MovingObjectType.ENTITY) {
             ChatUtils.devMessage("You are not looking at an entity!")
             return
         }
         val stringBuilder = StringBuilder()
-        val entity = mc.objectMouseOver.entityHit
+        val entity = mc.objectMouseOver?.entityHit ?: return
 
         // Copy the NBT data from the loaded entities.
         val entityData = NBTTagCompound()
@@ -63,10 +62,10 @@ object DevUtils {
         if (mc.theWorld.worldType !== WorldType.DEBUG_WORLD) {
             blockState = blockState.block.getActualState(blockState, mc.theWorld, blockPos)
         }
-        val tileEntity: TileEntity = mc.theWorld.getTileEntity(blockPos)
+        val tileEntity = mc.theWorld.getTileEntity(blockPos)
         val nbt = NBTTagCompound()
         val nbtTileEntity = NBTTagCompound()
-        tileEntity.writeToNBT(nbtTileEntity)
+        tileEntity?.writeToNBT(nbtTileEntity)
         nbt.setTag("tileEntity", nbtTileEntity)
         nbt.setString("type", Block.blockRegistry.getNameForObject(blockState.block).toString())
         blockState.properties.forEach { (key: IProperty<*>, value: Comparable<*>) ->

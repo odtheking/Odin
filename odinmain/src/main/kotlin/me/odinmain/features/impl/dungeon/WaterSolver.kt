@@ -39,13 +39,13 @@ object WaterSolver {
 
 
     fun scan() {
-        if (DungeonUtils.currentRoom?.data?.name != "Water Board" || !PuzzleSolvers.waterSolver) return
+        if (DungeonUtils.currentRoomName != "Water Board" || !PuzzleSolvers.waterSolver) return
         scope.launch {
             prevInWaterRoom = inWaterRoom
             inWaterRoom = false
 
-            val x = DungeonUtils.currentRoom?.x ?: return@launch
-            val z = DungeonUtils.currentRoom?.z ?: return@launch
+            val x = DungeonUtils.currentRoom?.room?.x ?: return@launch
+            val z = DungeonUtils.currentRoom?.room?.z ?: return@launch
 
             for (direction in EnumFacing.HORIZONTALS) {
                 val stairPos = BlockPos(x + direction.opposite.frontOffsetX * 4, 56, z + direction.opposite.frontOffsetZ * 4)

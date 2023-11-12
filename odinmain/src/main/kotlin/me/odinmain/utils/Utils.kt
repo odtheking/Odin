@@ -50,6 +50,10 @@ fun Any?.equalsOneOf(vararg options: Any): Boolean {
     return false
 }
 
+fun Pair<Any?, Any?>?.equal(first: Any?, second: Any?): Boolean {
+    return this?.first == first && this?.second == second
+}
+
 inline fun Double.floor(): Double = floor(this)
 
 fun Double.round(decimals: Int): Double {
