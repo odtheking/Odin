@@ -4,6 +4,7 @@ import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.commands.invoke
 import me.odinmain.events.impl.ChatPacketEvent
+import me.odinmain.features.impl.dungeon.DungeonWaypoints
 import me.odinmain.features.impl.dungeon.TPMaze
 import me.odinmain.utils.WebUtils
 import me.odinmain.utils.skyblock.ChatUtils
@@ -48,7 +49,8 @@ val devCommand = "oddev" {
         val xPos = -185 + x * 32
         val zPos = -185 + z * 32
         val core = ScanUtils.getCore(xPos, zPos)
-        val northCore = ScanUtils.getCore(xPos, zPos - 1)
+        val northPos = DungeonUtils.Vec2(xPos, zPos - 4)
+        val northCore = ScanUtils.getCore(northPos.x, northPos.z)
         modMessage(
             """
             ${ChatUtils.getChatBreak()}
@@ -56,10 +58,15 @@ val devCommand = "oddev" {
             Room: ${room?.room?.data?.name}
             Core: $core
             North Core: $northCore
+            North Pos: ${northPos.x}, ${northPos.z}
             Rotation: ${room?.room?.rotation}
             Positions: ${room?.positions}
             ${ChatUtils.getChatBreak()}
             """.trimIndent(), false)
         Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(northCore.toString()), null)
+    }
+
+    "resetWaypoints" does {
+        DungeonWaypoints.waypoints.clear()
     }
 }

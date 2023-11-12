@@ -74,8 +74,8 @@ object DungeonUtils {
 
         val room = scanRoom(xPos, zPos)?.apply {
             rotation = EnumFacing.HORIZONTALS.find {
-                data.rotationCores.any { c -> ScanUtils.getCore(xPos + it.frontOffsetX, zPos + it.frontOffsetZ) == c }
-            } ?: EnumFacing.NORTH
+                data.rotationCores.any { c -> ScanUtils.getCore(xPos + it.frontOffsetX * 4, zPos + it.frontOffsetZ * 4) == c }
+            } ?: EnumFacing.DOWN
         }
         val positions = room?.let { findRoomTilesRecursively(it.x, it.z, it, mutableSetOf()) } ?: emptyList()
         currentRoom = room?.let { FullRoom(it, positions) }
