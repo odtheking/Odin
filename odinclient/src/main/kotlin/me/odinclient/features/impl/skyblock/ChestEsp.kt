@@ -28,7 +28,7 @@ object ChestEsp : Module(
 ) {
 
     private val onlyDungeon: Boolean by BooleanSetting(name = "Only Dungeon")
-    private val onlyCH: Boolean by BooleanSetting(name = "Only CH")
+    private val onlyCH: Boolean by BooleanSetting(name = "Only Crystal Hollows")
     private val hideClicked: Boolean by BooleanSetting(name = "Hide Clicked")
     private val renderMode: Int by SelectorSetting(name = "Render Mode", "Chams", arrayListOf("Chams", "Outline"))
     private val color: Color by ColorSetting(name = "Color", default = Color.RED, allowAlpha = true)
@@ -51,19 +51,22 @@ object ChestEsp : Module(
 
     @SubscribeEvent
     fun onRenderChest(event: RenderChestEvent.Pre) {
-        if (renderMode == 0 && (!(onlyDungeon && !DungeonUtils.inDungeons) || !(onlyCH && LocationUtils.currentArea !== "Crystal Hollows")) && event.chest == mc.theWorld.getTileEntity(event.chest.pos)) {
-            if (hideClicked && chests.contains(event.chest.pos)) return
+        if (renderMode != 0 || event.chest != mc.theWorld.getTileEntity(event.chest.pos)) return
+        if (hideClicked && chests.contains(event.chest.pos)) return
+        if ((onlyDungeon && DungeonUtils.inDungeons) || (onlyCH && LocationUtils.currentArea == "Crystal Hollows") || (!onlyDungeon && !onlyCH)) {
             GL11.glEnable(GL11.GL_POLYGON_OFFSET_FILL)
             GlStateManager.color(1f, 1f, 1f, color.alpha)
             GlStateManager.enablePolygonOffset()
             GlStateManager.doPolygonOffset(1f, -1000000f)
         }
+
     }
 
     @SubscribeEvent
     fun onRenderChest(event: RenderChestEvent.Post) {
-        if (renderMode == 0 && (!(onlyDungeon && !DungeonUtils.inDungeons) || !(onlyCH && LocationUtils.currentArea !== "Crystal Hollows")) && event.chest == mc.theWorld.getTileEntity(event.chest.pos)) {
-            if (hideClicked && chests.contains(event.chest.pos)) return
+        if (renderMode != 0 || event.chest != mc.theWorld.getTileEntity(event.chest.pos)) return
+        if (hideClicked && chests.contains(event.chest.pos)) return
+        if ((onlyDungeon && DungeonUtils.inDungeons) || (onlyCH && LocationUtils.currentArea == "Crystal Hollows") || (!onlyDungeon && !onlyCH)) {
             GL11.glDisable(GL11.GL_POLYGON_OFFSET_FILL)
             GlStateManager.doPolygonOffset(1f, 1000000f)
             GlStateManager.disablePolygonOffset()

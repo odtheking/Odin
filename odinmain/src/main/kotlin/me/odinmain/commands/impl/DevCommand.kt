@@ -6,6 +6,7 @@ import me.odinmain.commands.invoke
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.impl.dungeon.DungeonWaypoints
 import me.odinmain.features.impl.dungeon.TPMaze
+import me.odinmain.utils.DevUtils
 import me.odinmain.utils.WebUtils
 import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
@@ -17,6 +18,12 @@ import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 
 val devCommand = "oddev" {
+
+    "getdata" does {
+        if (it[0] == "entity") DevUtils.copyEntityData()
+        if (it[0] == "block") DevUtils.copyBlockData()
+    }
+
     "testTP" does {
         TPMaze.getCorrectPortals(mc.thePlayer.positionVector, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
     }

@@ -15,10 +15,9 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 object TerminalTriggerbot : Module(
     name = "Terminal Triggerbot",
     category = Category.FLOOR7,
-    description = "Triggerbot to open inactive terminals and an option to show inactive terminals"
+    description = "Triggerbot to open inactive terminals"
 ) {
 
-    private val terminalTriggerbot: Boolean by BooleanSetting(name = "Terminal Triggerbot")
     private val onGround: Boolean by BooleanSetting(name = "On Ground")
 
     private val clickClock = Clock(1000)
@@ -26,15 +25,16 @@ object TerminalTriggerbot : Module(
 
     init {
         execute(1000) {
-            terminalList = mc.theWorld?.loadedEntityList?.filter { it is EntityArmorStand && it.name.noControlCodes.contains("Inactive", true) } ?: emptyList()
+            if (!enabled) return@execute
+            terminalList = mc.theWorld?.loadedEntityList?.filter { it is EntityArmorStand && it.name.noControlCodes == "Inactive Terminal"} ?: emptyList()
         }
     }
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (!terminalTriggerbot || DungeonUtils.getPhase() != 3 || !clickClock.hasTimePassed()) return
+        if (DungeonUtils.getPhase() != 3 || !clickClock.hasTimePassed()) return
         val lookingAt = mc.objectMouseOver.entityHit ?: return
-        if (lookingAt !is EntityArmorStand || !lookingAt.name.noControlCodes.contains("Inactive Terminal", true) || mc.currentScreen != null || this.onGround && !mc.thePlayer.onGround ) return
+        if (lookingAt !is EntityArmorStand || mc.currentScreen != null || this.onGround && !mc.thePlayer.onGround ) return
         PlayerUtils.rightClick()
         clickClock.update()
     }
