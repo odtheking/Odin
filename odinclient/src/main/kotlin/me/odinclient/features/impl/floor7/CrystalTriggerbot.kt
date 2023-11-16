@@ -6,13 +6,8 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.noControlCodes
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.world.RenderUtils
-import me.odinmain.utils.render.world.RenderUtils.renderBoundingBox
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.item.EntityEnderCrystal
-import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
@@ -33,15 +28,6 @@ object CrystalTriggerbot : Module(
         if (take && mc.objectMouseOver.entityHit is EntityEnderCrystal || place && mc.objectMouseOver.entityHit.name.noControlCodes == "CLICK HERE") {
             PlayerUtils.rightClick()
             clickClock.update()
-        }
-    }
-
-    @SubscribeEvent
-    fun onRenderWorld(event: RenderWorldLastEvent) {
-        val entityList = mc.theWorld.loadedEntityList.filterIsInstance<EntityArmorStand>()
-        entityList.forEach {
-            it.isInvisible = false
-            RenderUtils.drawCustomBox(it.renderBoundingBox, Color.GREEN, 2f, false)
         }
     }
 
