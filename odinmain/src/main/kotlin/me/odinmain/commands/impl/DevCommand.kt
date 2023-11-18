@@ -4,7 +4,6 @@ import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.commands.invoke
 import me.odinmain.events.impl.ChatPacketEvent
-import me.odinmain.features.impl.dungeon.DungeonWaypoints
 import me.odinmain.features.impl.dungeon.TPMaze
 import me.odinmain.utils.WebUtils
 import me.odinmain.utils.skyblock.ChatUtils
@@ -64,9 +63,5 @@ val devCommand = "oddev" {
             ${ChatUtils.getChatBreak()}
             """.trimIndent(), false)
         Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(northCore.toString()), null)
-    }
-
-    "resetWaypoints" does {
-        DungeonWaypoints.waypoints.clear()
     }
 }

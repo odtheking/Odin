@@ -19,6 +19,7 @@ import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.commands.impl.*
 import me.odinmain.config.Config
+import me.odinmain.config.DungeonWaypointConfig
 import me.odinmain.config.MiscConfig
 import me.odinmain.config.WaypointConfig
 import me.odinmain.events.EventDispatcher
@@ -156,6 +157,9 @@ class ModCore {
         }
         launch {
             WaypointConfig.loadConfig()
+        }
+        launch {
+            DungeonWaypointConfig.loadConfig()
         }
     }
 

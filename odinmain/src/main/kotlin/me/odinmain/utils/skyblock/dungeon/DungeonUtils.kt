@@ -2,6 +2,11 @@ package me.odinmain.utils.skyblock.dungeon
 
 import com.google.common.collect.ComparisonChain
 import me.odinmain.OdinMain.mc
+import me.odinmain.config.DungeonWaypointConfig
+import me.odinmain.features.impl.dungeon.DungeonWaypoints.DungeonWaypoint
+import me.odinmain.features.impl.dungeon.DungeonWaypoints.toVec3
+import me.odinmain.utils.VecUtils.addVec
+import me.odinmain.utils.VecUtils.rotateAroundNorth
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.equal
@@ -34,7 +39,7 @@ object DungeonUtils {
         currentDungeon?.inBoss ?: false
 
     data class Vec2(val x: Int, val z: Int)
-    data class FullRoom(val room: Room, val positions: List<Vec2>)
+    data class FullRoom(val room: Room, val positions: List<Pair<Vec2, Int>>, var waypoints: List<DungeonWaypoint>)
     private var lastRoomPos: Pair<Int, Int> = Pair(0, 0)
     var currentRoom: FullRoom? = null
     val currentRoomName get() = currentRoom?.room?.data?.name ?: "Unknown"
@@ -78,16 +83,42 @@ object DungeonUtils {
             } ?: EnumFacing.DOWN
         }
         val positions = room?.let { findRoomTilesRecursively(it.x, it.z, it, mutableSetOf()) } ?: emptyList()
-        currentRoom = room?.let { FullRoom(it, positions) }
+        currentRoom = room?.let { FullRoom(it, positions, emptyList()) }
+        setWaypoints()
     }
 
-    private fun findRoomTilesRecursively(x: Int, z: Int, room: Room, visited: MutableSet<Vec2>): List<Vec2> {
-        val tiles = mutableListOf<Vec2>()
+    /**
+     * Sets the waypoints for the current room.
+     * this code is way too much list manipulation, but it works
+     */
+    fun setWaypoints() {
+        currentRoom?.let {
+            val room = it.room
+            it.waypoints = mutableListOf<DungeonWaypoint>().apply {
+                DungeonWaypointConfig.waypoints[it.room.data.name]?.let {
+                    wp -> addAll(wp.map { a ->
+                        val vec = a.toVec3().rotateAroundNorth(it.room.rotation).addVec(x = room.x, z = room.z)
+                        DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, a.color)
+                    })
+                }
+                it.positions.forEach { pos ->
+                    addAll(DungeonWaypointConfig.waypoints[pos.second.toString()]?.map { wp ->
+                        val vec = wp.toVec3().rotateAroundNorth(it.room.rotation).addVec(x = pos.first.x, z = pos.first.z)
+                        DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, wp.color)
+                    } ?: emptyList())
+                }
+            }
+        }
+    }
+
+    private fun findRoomTilesRecursively(x: Int, z: Int, room: Room, visited: MutableSet<Vec2>): List<Pair<Vec2, Int>> {
+        val tiles = mutableListOf<Pair<Vec2, Int>>()
         val pos = Vec2(x, z)
         if (visited.contains(pos)) return tiles
         visited.add(pos)
-        if (room.data.cores.any { ScanUtils.getCore(x, z) == it }) {
-            tiles.add(pos)
+        val core = ScanUtils.getCore(x, z)
+        if (room.data.cores.any { core == it }) {
+            tiles.add(pos to core)
             EnumFacing.HORIZONTALS.forEach {
                 tiles.addAll(findRoomTilesRecursively(x + it.frontOffsetX * ROOM_SIZE, z + it.frontOffsetZ * ROOM_SIZE, room, visited))
             }
