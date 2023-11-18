@@ -56,6 +56,9 @@ object RenderUtils {
     val Entity.renderVec: Vec3
         get() = Vec3(renderX, renderY, renderZ)
 
+    val Entity.renderBoundingBox: AxisAlignedBB
+        get() = AxisAlignedBB(renderX - this.width / 2, renderY, renderZ - this.width / 2, renderX + this.width / 2, renderY + this.height, renderZ + this.width / 2)
+
     fun Color.bindColor() {
         GlStateManager.resetColor()
         GlStateManager.color(r / 255f, g / 255f, b / 255f, a / 255f)
@@ -552,6 +555,134 @@ object RenderUtils {
 
     private fun drawBufferedImage() {
 
+    }
+
+    fun drawRoundedRect(x: Double, y: Double, x2: Double, y2: Double, radius: Double, color: Color) {
+        var x = x
+        var y = y
+        var x2 = x2
+        var y2 = y2
+        GlStateManager.disableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        GL11.glPushAttrib(0)
+        GL11.glScaled(0.25, 0.25, 0.25)
+        x *= 2.0
+        y *= 2.0
+        x2 *= 2.0
+        y2 *= 2.0
+        GL11.glDisable(3553)
+        GlStateManager.color(color.r / 255f, color.g / 255f, color.b / 255f, color.alpha)
+        GL11.glEnable(2848)
+        GL11.glBegin(9)
+        run {
+            var i = 0
+            while (i <= 90) {
+                GL11.glVertex2d(
+                    x + radius + sin(i * 3.141592653589793 / 180.0) * (radius * -1.0),
+                    y + radius + cos(i * 3.141592653589793 / 180.0) * (radius * -1.0)
+                )
+                i += 3
+            }
+        }
+        run {
+            var i = 90
+            while (i <= 180) {
+                GL11.glVertex2d(
+                    x + radius + sin(i * 3.141592653589793 / 180.0) * (radius * -1.0),
+                    y2 - radius + cos(i * 3.141592653589793 / 180.0) * (radius * -1.0)
+                )
+                i += 3
+            }
+        }
+        run {
+            var i = 0
+            while (i <= 90) {
+                GL11.glVertex2d(
+                    x2 - radius + sin(i * 3.141592653589793 / 180.0) * radius,
+                    y2 - radius + cos(i * 3.141592653589793 / 180.0) * radius
+                )
+                i += 3
+            }
+        }
+        var i = 90
+        while (i <= 180) {
+            GL11.glVertex2d(
+                x2 - radius + sin(i * 3.141592653589793 / 180.0) * radius,
+                y + radius + cos(i * 3.141592653589793 / 180.0) * radius
+            )
+            i += 3
+        }
+        GL11.glEnd()
+        GL11.glEnable(3553)
+        GL11.glDisable(2848)
+        GL11.glScaled(4.0, 4.0, 4.0)
+        GL11.glPopAttrib()
+        GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
+        GlStateManager.enableTexture2D()
+    }
+
+    fun drawRoundedRect2(x: Double, y: Double, width: Double, height: Double, radius: Double, color: Color) {
+        var x = x
+        var y = y
+        GlStateManager.disableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        var x2 = x + width
+        var y2 = y + height
+        GL11.glPushAttrib(0)
+        GL11.glScaled(0.25, 0.25, 0.25)
+        x *= 2.0
+        y *= 2.0
+        x2 *= 2.0
+        y2 *= 2.0
+        GL11.glDisable(3553)
+        GlStateManager.color(color.r / 255f, color.g / 255f, color.b / 255f, color.alpha)
+        GL11.glEnable(2848)
+        GL11.glBegin(9)
+        run {
+            var i = 0
+            while (i <= 90) {
+                GL11.glVertex2d(
+                    x + radius + sin(i * 3.141592653589793 / 180.0) * (radius * -1.0),
+                    y + radius + cos(i * 3.141592653589793 / 180.0) * (radius * -1.0)
+                )
+                i += 3
+            }
+        }
+        run {
+            var i = 90
+            while (i <= 180) {
+                GL11.glVertex2d(
+                    x + radius + sin(i * 3.141592653589793 / 180.0) * (radius * -1.0),
+                    y2 - radius + cos(i * 3.141592653589793 / 180.0) * (radius * -1.0)
+                )
+                i += 3
+            }
+        }
+        run {
+            var i = 0
+            while (i <= 90) {
+                GL11.glVertex2d(
+                    x2 - radius + sin(i * 3.141592653589793 / 180.0) * radius,
+                    y2 - radius + cos(i * 3.141592653589793 / 180.0) * radius
+                )
+                i += 3
+            }
+        }
+        var i = 90
+        while (i <= 180) {
+            GL11.glVertex2d(
+                x2 - radius + sin(i * 3.141592653589793 / 180.0) * radius,
+                y + radius + cos(i * 3.141592653589793 / 180.0) * radius
+            )
+            i += 3
+        }
+        GL11.glEnd()
+        GL11.glEnable(3553)
+        GL11.glDisable(2848)
+        GL11.glScaled(4.0, 4.0, 4.0)
+        GL11.glPopAttrib()
+        GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
+        GlStateManager.enableTexture2D()
     }
 
 

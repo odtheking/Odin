@@ -61,7 +61,7 @@ object ArrowAlign : Module(
     fun onRightClick(event: ClickEvent.RightClickEvent) {
         if (mc.objectMouseOver?.entityHit !is EntityItemFrame) return
         val frame = neededRotations.values.find { it.entity == mc.objectMouseOver.entityHit as EntityItemFrame } ?: return
-        if (frame.rotations == 0 && blockWrong && !mc.thePlayer.isSneaking) {
+        if (frame.rotations == 0 && blockWrong) {
             event.isCanceled = true
             return
         }

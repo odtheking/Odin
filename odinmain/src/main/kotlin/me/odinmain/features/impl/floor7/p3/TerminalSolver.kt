@@ -65,6 +65,7 @@ object TerminalSolver : Module(
     var solution = listOf<Int>()
     init {
         onPacket(S2DPacketOpenWindow::class.java) {
+            if (!enabled) return@onPacket
             val newTerm = terminalNames.indexOfFirst { term -> it.windowTitle.siblings.firstOrNull()?.unformattedText?.startsWith(term)
                 ?: return@onPacket }
             lastGuiScale = mc.gameSettings.guiScale
