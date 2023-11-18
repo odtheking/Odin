@@ -4,7 +4,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import me.odinmain.commands.impl.*
 import me.odinmain.config.Config
 import me.odinmain.config.DungeonWaypointConfig
 import me.odinmain.config.MiscConfig
@@ -25,8 +24,6 @@ import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
-import net.minecraft.command.ICommand
-import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.common.MinecraftForge
 import java.io.File
 import kotlin.coroutines.EmptyCoroutineContext

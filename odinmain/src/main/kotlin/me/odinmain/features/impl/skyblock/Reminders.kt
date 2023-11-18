@@ -39,6 +39,23 @@ object Reminders : Module(
     )
 
     @SubscribeEvent
+    fun onChat(event: ChatPacketEvent) {
+
+        when (event.message) {
+            "[BOSS] Wither King: You.. again?" -> PlayerUtils.alert("§3Swap to edrag!")
+
+            "[BOSS] Maxor: YOU TRICKED ME!" -> {
+                if (!firstLaser) {
+
+                }
+            }
+        }
+
+    }
+
+
+
+    @SubscribeEvent
     fun onClientChatReceived(event: ChatPacketEvent) {
         if (!DungeonUtils.inDungeons) return
         val msg = event.message

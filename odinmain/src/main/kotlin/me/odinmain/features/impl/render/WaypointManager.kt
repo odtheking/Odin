@@ -17,7 +17,7 @@ import net.minecraft.util.Vec3i
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import kotlin.math.absoluteValue
+import kotlin.math.abs
 
 // TODO: Make changes cuz ngl its kinda eh (eg: good ordered waypoints for mining so people dont need to use ct)
 // TODO: Make all waypoint areas constant and make LocationUtils use locraw

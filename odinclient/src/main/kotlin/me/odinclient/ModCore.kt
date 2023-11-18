@@ -15,6 +15,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.ModuleManager
 import net.minecraft.command.ICommand
 import net.minecraftforge.client.ClientCommandHandler
+import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.Mod.EventHandler
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
@@ -38,6 +39,7 @@ class ModCore {
         Window.init()
         OdinMain.onLegitVersion = false
         OdinMain.init()
+        MinecraftForge.EVENT_BUS.register(this)
 
         commandList.forEach { ClientCommandHandler.instance.registerCommand(it as ICommand?) }
     }

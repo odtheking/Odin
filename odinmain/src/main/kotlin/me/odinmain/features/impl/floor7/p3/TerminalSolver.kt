@@ -35,7 +35,7 @@ object TerminalSolver : Module(
     category = Category.FLOOR7,
     tag = TagType.NEW
 ) {
-    private val customSize: Int by NumberSetting("Custom Size", 3, 1, 4, 1, description = "Custom size of the terminal")
+    private val customSize: Int by NumberSetting("Custom Size", 2, 1, 4, 1, description = "Custom size of the terminal")
     private val behindItem: Boolean by BooleanSetting("Behind Item", description = "Shows the item over the rendered solution")
     private val cancelToolTip: Boolean by BooleanSetting("Stop Tooltips", default = true, description = "Stops rendering tooltips in terminals")
     private val removeWrong: Boolean by BooleanSetting("Stop Rendering Wrong", description = "Stops rendering wrong items in terminals")
@@ -51,7 +51,7 @@ object TerminalSolver : Module(
 
     private val zLevel: Float get() = if (behindItem && currentTerm != 1) 200f else 999f
     var openedTerminalTime = 0L
-    private var lastGuiScale = 0
+    private var lastGuiScale = mc.gameSettings.guiScale
 
     private val terminalNames = listOf(
         "Correct all the panes!",
@@ -59,17 +59,19 @@ object TerminalSolver : Module(
         "Click in order!",
         "What starts with:",
         "Select all the",
-        "Farm Merchant"
     )
     var currentTerm = -1
     var solution = listOf<Int>()
     init {
         onPacket(S2DPacketOpenWindow::class.java) {
             if (!enabled) return@onPacket
-            val newTerm = terminalNames.indexOfFirst { term -> it.windowTitle.siblings.firstOrNull()?.unformattedText?.startsWith(term)
-                ?: return@onPacket }
+            val newTerm = terminalNames
+                .indexOfFirst { term ->
+                    it.windowTitle.siblings.firstOrNull()?.unformattedText?.startsWith(term) == true
+                }
+                .takeIf { it != -1 } ?: return@onPacket
             lastGuiScale = mc.gameSettings.guiScale
-            if (newTerm != currentTerm && newTerm != -1) mc.gameSettings.guiScale = customSize
+            if (newTerm != currentTerm) mc.gameSettings.guiScale = customSize
         }
     }
 

@@ -31,10 +31,10 @@ object AutoDungeonRequeue : Module(
         }
         scope.launch {
             delay(delay * 1000L)
-            if (type) {
+            if (type)
                 ChatUtils.sendCommand("instancerequeue")
-            } else
-                ChatUtils.sendCommand("od ${LocationUtils.currentDungeon?.floor?.name}", true)
+            else
+                ChatUtils.sendCommand("od ${LocationUtils.currentDungeon?.floor?.name?.lowercase()}", true)
         }
     }
 }

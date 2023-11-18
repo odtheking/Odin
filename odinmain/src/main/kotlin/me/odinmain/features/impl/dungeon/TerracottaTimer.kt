@@ -12,6 +12,7 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import java.util.*
 
 object TerracottaTimer : Module(
     name = "Terracotta Timer",
@@ -46,7 +47,7 @@ object TerracottaTimer : Module(
         while (iterator.hasNext()) {
             val it = iterator.next()
             RenderUtils.drawStringInWorld(
-                "${it.time / 100.0}s",
+                "${String.format(Locale.US, "%.2f",it.time / 100.0)}s",
                 it.pos,
                 getColor(it.time / 100.0).rgba,
                 renderBlackBox = false,

@@ -9,6 +9,7 @@ import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalTimes
 import me.odinmain.features.impl.render.*
 import me.odinmain.features.impl.skyblock.*
+import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.render.gui.nvg.drawNVG
@@ -18,6 +19,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import kotlin.reflect.full.hasAnnotation
 
 /**
  * Class that contains all Modules and huds
@@ -163,7 +165,7 @@ object ModuleManager {
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
         executors.removeAll {
-            if (!it.first.enabled) return@removeAll false // pls test i cba
+            if (!it.first.enabled && !it.first::class.hasAnnotation<AlwaysActive>()) return@removeAll false // pls test i cba
             it.second.run()
         }
     }
