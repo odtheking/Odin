@@ -20,7 +20,7 @@ object AutoDungeonRequeue : Module(
     category = Category.DUNGEON
 ) {
     private val delay: Int by NumberSetting("Delay", 10, 0, 30, 1)
-    private val type: Boolean by DualSetting("Type", "Requeue", "Normal", default = false)
+    private val type: Boolean by DualSetting("Type", "Normal", "Requeue", default = true)
 
     @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
