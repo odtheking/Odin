@@ -8,7 +8,7 @@ import me.odinmain.config.WaypointConfig
 import me.odinmain.features.impl.render.WaypointManager
 import me.odinmain.ui.waypoint.elements.AreaButton
 import me.odinmain.ui.waypoint.elements.WaypointElement
-import me.odinmain.utils.VecUtils.floored
+import me.odinmain.utils.floored
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.GuiUtils.scaleFactor
 import me.odinmain.utils.render.gui.GuiUtils.scaleWithMouse

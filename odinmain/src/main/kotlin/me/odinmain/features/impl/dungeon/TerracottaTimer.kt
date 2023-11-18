@@ -4,7 +4,7 @@ import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.utils.VecUtils.addVec
+import me.odinmain.utils.addVec
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.skyblock.LocationUtils

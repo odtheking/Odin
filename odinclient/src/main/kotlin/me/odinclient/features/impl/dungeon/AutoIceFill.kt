@@ -11,8 +11,8 @@ import me.odinclient.utils.skyblock.PlayerUtils.clipTo
 import me.odinclient.utils.skyblock.PlayerUtils.posFloored
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.utils.VecUtils.floored
-import me.odinmain.utils.VecUtils.plus
+import me.odinmain.utils.floored
+import me.odinmain.utils.plus
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.skyblock.ChatUtils

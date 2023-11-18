@@ -8,10 +8,9 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.utils.VecUtils
-import me.odinmain.utils.VecUtils.addVec
-import me.odinmain.utils.VecUtils.toVec3i
+import me.odinmain.utils.addVec
 import me.odinmain.utils.clock.Clock
+import me.odinmain.utils.fastEyeHeight
 import me.odinmain.utils.floor
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
@@ -19,6 +18,7 @@ import me.odinmain.utils.render.world.RenderUtils.renderVec
 import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.DianaBurrowEstimate
 import me.odinmain.utils.skyblock.PlayerUtils
+import me.odinmain.utils.toVec3i
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S29PacketSoundEffect
@@ -104,7 +104,7 @@ object DianaHelper : Module(
             }.takeIf { it.location.distanceTo(guess) + 30 < mc.thePlayer.positionVector.distanceTo(guess) }
 
             if (tracer)
-                RenderUtils.draw3DLine(mc.thePlayer.renderVec.addVec(y = VecUtils.fastEyeHeight()), guess.addVec(.5, .5, .5), tracerColor, tracerWidth, depth = true, event.partialTicks)
+                RenderUtils.draw3DLine(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), guess.addVec(.5, .5, .5), tracerColor, tracerWidth, depth = true, event.partialTicks)
 
             RenderUtils.renderCustomBeacon("§6Guess${warpLocation?.displayName ?: ""}§r", guess, guessColor, event.partialTicks)
         }

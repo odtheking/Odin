@@ -5,7 +5,7 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.commands.AbstractCommand
 import me.odinmain.features.impl.render.WaypointManager
 import me.odinmain.ui.waypoint.WaypointGUI
-import me.odinmain.utils.VecUtils.floored
+import me.odinmain.utils.floored
 import me.odinmain.utils.floor
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.ChatUtils.modMessage

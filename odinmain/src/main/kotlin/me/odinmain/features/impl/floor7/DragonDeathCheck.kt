@@ -8,9 +8,9 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.utils.WebUtils
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.round
+import me.odinmain.utils.sendDataToServer
 import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.boss.EntityDragon
@@ -106,7 +106,7 @@ object DragonDeathCheck : Module(
         if (color == Dragons.Purple) return
 
         scope.launch {
-            WebUtils.sendDataToServer("""{"dd": "$color\nx: ${vec.xCoord}\ny: ${vec.yCoord}\nz: ${vec.zCoord}"}""")
+            sendDataToServer("""{"dd": "$color\nx: ${vec.xCoord}\ny: ${vec.yCoord}\nz: ${vec.zCoord}"}""")
         }
     }
 

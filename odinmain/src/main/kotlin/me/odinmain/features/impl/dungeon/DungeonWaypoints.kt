@@ -4,9 +4,9 @@ import me.odinmain.config.DungeonWaypointConfig
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.utils.VecUtils.equal
-import me.odinmain.utils.VecUtils.rotateToNorth
-import me.odinmain.utils.VecUtils.subtractVec
+import me.odinmain.utils.equal
+import me.odinmain.utils.rotateToNorth
+import me.odinmain.utils.subtractVec
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.skyblock.ChatUtils.devMessage

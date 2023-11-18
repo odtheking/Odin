@@ -5,9 +5,9 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.config.DungeonWaypointConfig
 import me.odinmain.features.impl.dungeon.DungeonWaypoints.DungeonWaypoint
 import me.odinmain.features.impl.dungeon.DungeonWaypoints.toVec3
-import me.odinmain.utils.VecUtils.addRotationCoords
-import me.odinmain.utils.VecUtils.addVec
-import me.odinmain.utils.VecUtils.rotateAroundNorth
+import me.odinmain.utils.addRotationCoords
+import me.odinmain.utils.addVec
+import me.odinmain.utils.rotateAroundNorth
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.equal

@@ -8,7 +8,7 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.VecUtils.noSqrt3DDistance
+import me.odinmain.utils.noSqrt3DDistance
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.OutlineUtils
 import me.odinmain.utils.render.world.RenderUtils

@@ -11,8 +11,8 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.ServerUtils
-import me.odinmain.utils.WebUtils
 import me.odinmain.utils.floor
+import me.odinmain.utils.imgurID
 import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.PlayerUtils
 import net.minecraft.event.ClickEvent
@@ -56,7 +56,7 @@ object ChatCommands : Module(
 
     private fun getCatPic(): String {
         return try {
-            "https://i.imgur.com/${WebUtils.imgurID("https://api.thecatapi.com/v1/images/search")}.png"
+            "https://i.imgur.com/${imgurID("https://api.thecatapi.com/v1/images/search")}.png"
         } catch (e: Exception) {
             "Failed to get a cat pic"
         }

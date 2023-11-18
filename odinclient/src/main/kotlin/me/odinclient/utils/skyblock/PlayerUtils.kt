@@ -5,14 +5,14 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.floor7.p3.termsim.TermSimGui
-import me.odinmain.utils.AsyncUtils.waitUntilLastItem
-import me.odinmain.utils.VecUtils.floored
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
+import me.odinmain.utils.floored
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import me.odinmain.utils.skyblock.ItemUtils.getItemIndexInContainerChest
 import me.odinmain.utils.skyblock.ItemUtils.getItemSlot
 import me.odinmain.utils.skyblock.ItemUtils.itemID
+import me.odinmain.utils.waitUntilLastItem
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.settings.KeyBinding
@@ -20,7 +20,6 @@ import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.ItemStack
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
-import net.minecraft.util.Vec3i
 import net.minecraftforge.client.event.GuiOpenEvent
 
 
@@ -236,10 +235,4 @@ object PlayerUtils {
 
     val posFloored
         get() = mc.thePlayer.positionVector.floored()
-
-    fun getFlooredPlayerCoords(): Vec3i = mc.thePlayer.positionVector.floored()
-
-    inline val posX get() = mc.thePlayer.posX
-    inline val posY get() = mc.thePlayer.posY
-    inline val posZ get() = mc.thePlayer.posZ
 }

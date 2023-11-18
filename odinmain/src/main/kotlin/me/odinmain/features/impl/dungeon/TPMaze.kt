@@ -5,10 +5,10 @@ import me.odinmain.features.impl.dungeon.PuzzleSolvers.mazeColorMultiple
 import me.odinmain.features.impl.dungeon.PuzzleSolvers.mazeColorOne
 import me.odinmain.features.impl.dungeon.PuzzleSolvers.mazeColorVisited
 import me.odinmain.features.impl.dungeon.PuzzleSolvers.tpMaze
-import me.odinmain.utils.VecUtils
-import me.odinmain.utils.VecUtils.toAABB
+import me.odinmain.utils.isXZInterceptable
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.toAABB
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.AxisAlignedBB
@@ -47,7 +47,7 @@ object TPMaze {
         if (correctPortals.isEmpty()) correctPortals = correctPortals.plus(portals)
 
         correctPortals = correctPortals.filter {
-            VecUtils.isXZInterceptable(
+            isXZInterceptable(
                 AxisAlignedBB(it.x.toDouble(), it.y.toDouble(), it.z.toDouble(), it.x + 1.0, it.y + 4.0, it.z + 1.0).expand(0.75, 0.0, 0.75),
                 60f,
                 pos,
