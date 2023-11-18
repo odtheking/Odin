@@ -80,7 +80,9 @@ object ClickGUIModule: Module(
             ${ChatUtils.getChatBreak()}
             
             """.trimIndent(), false)
-            WebUtils.sendDataToServer(body = """{"uud": "${mc.thePlayer.name}\n${OdinMain.NAME} ${OdinMain.VERSION}"}""")
+            OdinMain.scope.launch {
+                WebUtils.sendDataToServer(body = """{"uud": "${mc.thePlayer.name}\n${if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""")
+            }
         }
 
         resetPositions()

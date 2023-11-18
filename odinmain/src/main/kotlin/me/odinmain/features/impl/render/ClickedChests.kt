@@ -8,6 +8,7 @@ import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.init.Blocks
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
@@ -21,6 +22,9 @@ object ClickedChests : Module(
     description = "Draws a box around all the chests you have clicked.",
     tag = TagType.NEW
 ) {
+
+    val onlyDungeon: Boolean by BooleanSetting("Only in dungeon", true, description = "Toggles if it renders everywhere or only in dungeon")
+
     private val chests = mutableSetOf<BlockPos>()
     private val color: Color by ColorSetting(
         "Color",
@@ -51,6 +55,7 @@ object ClickedChests : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
+        if (onlyDungeon && DungeonUtils.inDungeons) return
         if (chests.isEmpty()) return
         chests.forEach {
             if (filled) {

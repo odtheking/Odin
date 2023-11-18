@@ -18,7 +18,7 @@ object TerracottaTimer : Module(
     description = "Displays the time until the terracotta spawns.",
     category = Category.DUNGEON
 ) {
-    private data class Terracotta(val pos: Vec3, var time: Int)
+    private data class Terracotta(val pos: Vec3, var time: Double)
     private var terrasSpawning = mutableListOf<Terracotta>()
 
     @SubscribeEvent
@@ -27,7 +27,7 @@ object TerracottaTimer : Module(
         terrasSpawning.add(
             Terracotta(
                 Vec3(event.pos).addVec(.5, 1.5, .5),
-                if (LocationUtils.currentDungeon?.floor?.isInMM == true) 1200 else 1500
+                if (LocationUtils.currentDungeon?.floor?.isInMM == true) 1200.0 else 1500.0
             )
         )
     }

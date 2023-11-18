@@ -9,6 +9,7 @@ import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.impl.skyblock.DianaHelper
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.hud.EditHUDGui
+import me.odinmain.utils.floor
 import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
 
@@ -135,6 +136,10 @@ val mainCommand = "od" {
                 modMessage("§cInvalid command! Use `od help` for a list of commands.")
             }
         }
+    }
+
+    "sendcoords" does {
+        ChatUtils.sendChatMessage("x: ${mc.thePlayer.posX.floor()}, y: ${mc.thePlayer.posY.floor()}, z: ${mc.thePlayer.posZ.floor()}")
     }
 }
 
