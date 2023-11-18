@@ -30,7 +30,7 @@ object Arrows : Module(
         execute(10) {
             if (!triggerBotClock.hasTimePassed(triggerBotDelay) || mc.thePlayer?.heldItem?.isShortbow == false || DungeonUtils.getPhase() != 3) return@execute
             setBowTrajectoryHeading(0f)
-            if (mc.thePlayer?.heldItem?.itemID != "TERMINATOR") {
+            if (mc.thePlayer?.heldItem?.itemID == "TERMINATOR") {
                 setBowTrajectoryHeading(-5f)
                 setBowTrajectoryHeading(5f)
             }

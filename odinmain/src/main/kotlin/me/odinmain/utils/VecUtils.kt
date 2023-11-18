@@ -205,14 +205,14 @@ object VecUtils {
      * @param add Will determine the maximum bounds
      */
     fun BlockPos.toAABB(add: Double = 1.0): AxisAlignedBB {
-        return AxisAlignedBB(this.x.toDouble(), this.y.toDouble(), this.z.toDouble(), this.x + add, this.y + add, this.z + add).expand(0.01, 0.01, 0.01)
+        return AxisAlignedBB(this.x.toDouble(), this.y.toDouble(), this.z.toDouble(), this.x + add, this.y + add, this.z + add).expand(0.001, 0.001, 0.001)
     }
 
     /**
      * @param add Will determine the maximum bounds
      */
     fun Vec3.toAABB(add: Double = 1.0): AxisAlignedBB {
-        return AxisAlignedBB(this.xCoord, this.yCoord, this.zCoord, this.xCoord + add, this.yCoord + add, this.zCoord + add).expand(0.01, 0.01, 0.01)
+        return AxisAlignedBB(this.xCoord, this.yCoord, this.zCoord, this.xCoord + add, this.yCoord + add, this.zCoord + add).expand(0.001, 0.001, 0.001)
     }
 
     /**
@@ -250,7 +250,7 @@ object VecUtils {
 
     /**
      * Solves the equation for diana burrow estimate.
-     * @see me.odinclient.utils.skyblock.DianaBurrowEstimate.guessPosition
+     * @see [me.odinmain.utils.skyblock.DianaBurrowEstimate.guessPosition]
      * @author Soopy
      */
     fun solveEquationThing(x: Vec3, y: Vec3): Triple<Double, Double, Double> {
