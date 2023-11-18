@@ -71,4 +71,10 @@ val devCommand = "oddev" {
             """.trimIndent(), false)
         Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(northCore.toString()), null)
     }
+
+    "getCore" does {
+        val core = ScanUtils.getCore(mc.thePlayer.posX.toInt(), mc.thePlayer.posZ.toInt())
+        modMessage("Core: $core")
+        Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(core.toString()), null)
+    }
 }

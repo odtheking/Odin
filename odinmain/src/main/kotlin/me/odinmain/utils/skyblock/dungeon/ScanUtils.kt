@@ -39,6 +39,8 @@ object ScanUtils {
         roomList.find { it.cores.any { core -> hash == core } }
 
 
+    fun getCore(pos: DungeonUtils.Vec2): Int = getCore(pos.x, pos.z)
+
     fun getCore(x: Int, z: Int): Int {
         val blocks = arrayListOf<Int>()
         for (y in 140 downTo 12) {

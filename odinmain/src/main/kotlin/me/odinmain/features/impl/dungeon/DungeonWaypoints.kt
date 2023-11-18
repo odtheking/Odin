@@ -3,6 +3,7 @@ package me.odinmain.features.impl.dungeon
 import me.odinmain.config.DungeonWaypointConfig
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.VecUtils.equal
 import me.odinmain.utils.VecUtils.rotateToNorth
 import me.odinmain.utils.VecUtils.subtractVec
@@ -22,22 +23,30 @@ object DungeonWaypoints : Module(
     category = Category.DUNGEON,
     tag = TagType.NEW
 ) {
+    private val debugWaypoint: Boolean by BooleanSetting("Debug Waypoint", false)
+    private var allowEdits: Boolean by BooleanSetting("Allow Edits", false)
+
     data class DungeonWaypoint(val x: Double, val y: Double, val z: Double, val color: Color)
+
+    override fun onKeybind() {
+        allowEdits = !allowEdits
+    }
 
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
-        val allCores = DungeonUtils.currentRoom?.positions ?: return
-        val room = DungeonUtils.currentRoom ?: return
-
-
-        room.waypoints.forEach {
+        DungeonUtils.currentRoom?.waypoints?.forEach {
             RenderUtils.drawCustomBox(it.x, it.y, it.z, 1.0, it.color, 3f, true)
+        }
+
+        if (debugWaypoint) {
+            val room = DungeonUtils.currentRoom?.room ?: return
+            RenderUtils.drawCustomBox(room.x, 70, room.z - 4, 1.0, Color.GREEN, 3f, true)
         }
     }
 
     @SubscribeEvent
     fun onInteract(event: PlayerInteractEvent) {
-        if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || event.world != mc.theWorld) return
+        if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || event.world != mc.theWorld || !allowEdits) return
         val room = DungeonUtils.currentRoom?.room ?: return
         val vec = Vec3(event.pos)
             .subtractVec(x = room.x, z = room.z)

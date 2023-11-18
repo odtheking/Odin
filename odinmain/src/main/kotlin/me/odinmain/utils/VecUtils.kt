@@ -1,6 +1,7 @@
 package me.odinmain.utils
 
 import me.odinmain.OdinMain.mc
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.Vec2
 import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S29PacketSoundEffect
@@ -110,6 +111,13 @@ object VecUtils {
             EnumFacing.WEST -> Vec3(-this.zCoord, this.yCoord, this.xCoord)
             else -> this
         }
+    }
+
+    fun Vec2.addRotationCoords(rotation: EnumFacing, dist: Int = 4): Vec2 {
+        return Vec2(
+            x + rotation.frontOffsetX * dist,
+            z + rotation.frontOffsetZ * dist
+        )
     }
 
     private fun isInterceptable(aabb: AxisAlignedBB, range: Float, yaw: Float, pitch: Float): Boolean {
