@@ -11,7 +11,6 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import me.odinmain.utils.skyblock.ItemUtils.unformattedName
@@ -45,7 +44,9 @@ object TerminalSolver : Module(
     private val wrongColor: Color by ColorSetting("Wrong Color", Color(45, 45, 45), true).withDependency { removeWrong }
     private val textColor: Color by ColorSetting("Text Color", Color(220, 220, 220), true)
     private val rubixColor: Color by ColorSetting("Rubix Color", Color(0, 170, 170), true)
-    private val orderColor: Color by ColorSetting("Order Color", Color(0, 170, 170), true)
+    private val orderColor: Color by ColorSetting("Order Color 1", Color(0, 170, 170, .7f), true)
+    private val orderColor2: Color by ColorSetting("Order Color 2", Color(0, 100, 100, .5f), true)
+    private val orderColor3: Color by ColorSetting("Order Color 3", Color(0, 65, 65, .45f), true)
     private val startsWithColor: Color by ColorSetting("Starts With Color", Color(0, 170, 170), true)
     private val selectColor: Color by ColorSetting("Select Color", Color(0, 170, 170), true)
 
@@ -130,7 +131,14 @@ object TerminalSolver : Module(
                 }
                 2 -> {
                     val index = solution.indexOf(slot.slotIndex)
-                    if (index < 3) Gui.drawRect(x, y, x + 16, y + 16, orderColor.withAlpha(2f / (index + 3)).rgba)
+                    if (index < 3) {
+                        val color = when (index) {
+                            0 -> orderColor
+                            1 -> orderColor2
+                            else -> orderColor3
+                        }.rgba
+                        Gui.drawRect(x, y, x + 16, y + 16, color)
+                    }
 
                     val amount = slot.stack?.stackSize ?: 0
                     mc.fontRendererObj.drawString(amount.toString(), x + 9 - mc.fontRendererObj.getStringWidth(amount.toString()) / 2, y + 5, textColor.rgba)

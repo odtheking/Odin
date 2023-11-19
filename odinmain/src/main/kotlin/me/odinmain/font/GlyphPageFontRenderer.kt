@@ -9,8 +9,8 @@
  */
 package me.odinmain.font
 
+import me.odinmain.OdinMain.mc
 import me.odinmain.utils.render.Color
-import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -381,7 +381,7 @@ class GlyphPageFontRenderer(
                 chars[i] = i.toChar()
             }
             val regularPage: GlyphPage
-            val inputStream = Minecraft.getMinecraft().resourceManager.getResource(fontLocation).inputStream
+            val inputStream = mc.resourceManager.getResource(fontLocation).inputStream
             val font = Font.createFont(Font.PLAIN, inputStream)
             regularPage = GlyphPage(font.deriveFont(size), isAntiAliasingEnabled = true, isFractionalMetricsEnabled = true)
             inputStream.close()

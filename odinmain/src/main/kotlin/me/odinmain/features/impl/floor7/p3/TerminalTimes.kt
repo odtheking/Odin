@@ -26,6 +26,11 @@ object TerminalTimes : Module(
     private val melodyPB = +NumberSetting("Melody PB", 1000.0, increment = 0.01, hidden = true)
     private val startsWithPB = +NumberSetting("Starts With PB", 1000.0, increment = 0.01, hidden = true)
     private val selectAllPB = +NumberSetting("Select All PB", 1000.0, increment = 0.01, hidden = true)
+    val simPanesPB = +NumberSetting("Sim Panes PB", 1000.0, increment = 0.01, hidden = true)
+    val simColorPB = +NumberSetting("Sim Color PB", 1000.0, increment = 0.01, hidden = true)
+    val simNumbersPB = +NumberSetting("Sim Numbers PB", 1000.0, increment = 0.01, hidden = true)
+    val simStartsWithPB = +NumberSetting("Sim Starts With PB", 1000.0, increment = 0.01, hidden = true)
+    val simSelectAllPB = +NumberSetting("Sim Select All PB", 1000.0, increment = 0.01, hidden = true)
 
     @Suppress("UNUSED")
     enum class Terminals(
@@ -75,7 +80,7 @@ object TerminalTimes : Module(
         val previousTime = currentTerminal!!.setting.value
         if (time < previousTime) {
             modMessage("§fNew best time for §6${currentTerminal?.name} §fis §a${time}s, §fold best time was §a${previousTime}s")
-            currentTerminal!!.setting.value = time
+            currentTerminal?.setting?.value = time
             Config.saveConfig()
         }
         currentTerminal = null

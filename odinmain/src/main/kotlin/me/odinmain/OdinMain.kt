@@ -63,39 +63,24 @@ object OdinMain {
             PlayerUtils,
             RenderUtils,
             DungeonUtils,
-
             EventDispatcher,
-
             Executor,
             ModuleManager,
             WaypointManager,
-
             DevPlayers,
-
             this
-        ).forEach {
-            MinecraftForge.EVENT_BUS.register(it)
-        }
+        ).forEach { MinecraftForge.EVENT_BUS.register(it) }
     }
 
-
-
     fun postInit() = scope.launch(Dispatchers.IO) {
-
         val config = File(mc.mcDataDir, "config/odin")
         if (!config.exists()) {
             config.mkdirs()
         }
 
-        launch {
-            MiscConfig.loadConfig()
-        }
-        launch {
-            WaypointConfig.loadConfig()
-        }
-        launch {
-            DungeonWaypointConfig.loadConfig()
-        }
+        launch { MiscConfig.loadConfig() }
+        launch { WaypointConfig.loadConfig() }
+        launch { DungeonWaypointConfig.loadConfig() }
     }
 
     fun loadComplete() = runBlocking {
