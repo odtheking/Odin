@@ -12,6 +12,7 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.skyblock.ChatUtils.devMessage
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import me.odinmain.utils.skyblock.ItemUtils.unformattedName
 import net.minecraft.client.gui.Gui
@@ -44,6 +45,7 @@ object TerminalSolver : Module(
     private val wrongColor: Color by ColorSetting("Wrong Color", Color(45, 45, 45), true).withDependency { removeWrong }
     private val textColor: Color by ColorSetting("Text Color", Color(220, 220, 220), true)
     private val rubixColor: Color by ColorSetting("Rubix Color", Color(0, 170, 170), true)
+    private val oppositeRubixColor: Color by ColorSetting("Negative Rubix Color", Color(170, 85, 0), true)
     private val orderColor: Color by ColorSetting("Order Color 1", Color(0, 170, 170, .7f), true)
     private val orderColor2: Color by ColorSetting("Order Color 2", Color(0, 100, 100, .5f), true)
     private val orderColor3: Color by ColorSetting("Order Color 3", Color(0, 65, 65, .45f), true)
@@ -66,14 +68,18 @@ object TerminalSolver : Module(
     init {
         onPacket(S2DPacketOpenWindow::class.java) {
             if (!enabled) return@onPacket
-            val newTerm = terminalNames
-                .indexOfFirst { term ->
-                    it.windowTitle.siblings.firstOrNull()?.unformattedText?.startsWith(term) == true
-                }
-                .takeIf { it != -1 } ?: return@onPacket
-            lastGuiScale = mc.gameSettings.guiScale
-            if (newTerm != currentTerm) mc.gameSettings.guiScale = customSize
+            handlePacket(it.windowTitle.siblings.firstOrNull()?.unformattedText ?: return@onPacket)
         }
+    }
+
+    fun handlePacket(windowName: String) {
+        val newTerm = terminalNames
+            .indexOfFirst { term ->
+                windowName.startsWith(term)
+            }
+            .takeIf { it != -1 } ?: return
+        lastGuiScale = mc.gameSettings.guiScale
+        if (newTerm != currentTerm) mc.gameSettings.guiScale = customSize
     }
 
     @SubscribeEvent
@@ -103,6 +109,7 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun onSlotRender(event: DrawGuiEvent) {
+        devMessage("a")
         if (currentTerm == -1 || !enabled || event.container !is ContainerChest) return
         if (currentTerm == 2 || removeWrong) {
             if (
@@ -126,7 +133,7 @@ object TerminalSolver : Module(
                 1 -> {
                     val needed = solution.count { it == slot.slotIndex }
                     val text = if (needed < 3) needed.toString() else (needed - 5).toString()
-                    if (removeWrong && removeWrongRubix) Gui.drawRect(x, y, x + 16, y + 16, rubixColor.rgba)
+                    if (removeWrong && removeWrongRubix) Gui.drawRect(x, y, x + 16, y + 16, if (needed < 3) rubixColor.rgba else oppositeRubixColor.rgba)
                     mc.fontRendererObj.drawString(text, x + 9 - mc.fontRendererObj.getStringWidth(text) / 2, y + 5, textColor.rgba)
                 }
                 2 -> {

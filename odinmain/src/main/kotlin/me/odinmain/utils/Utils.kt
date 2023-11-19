@@ -2,6 +2,7 @@
 
 package me.odinmain.utils
 
+import me.odinmain.features.ModuleManager
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.common.MinecraftForge
@@ -236,4 +237,17 @@ fun Event.postAndCatch(): Boolean {
         it.printStackTrace()
         modMessage("Caught and logged an ${it::class.simpleName ?: "error"} at ${this::class.simpleName}. Please report this!")
     }.getOrDefault(isCanceled)
+}
+
+/**
+ * Executes the specified function after the specified number of **minecraft** ticks.
+ * @param ticks The number of ticks to wait.
+ * @param func The function to execute after the specified number of
+ */
+fun runIn(ticks: Int, func: () -> Unit) {
+    if (ticks <= 0) {
+        func()
+        return
+    }
+    ModuleManager.tickTasks.add(ModuleManager.TickTask(ticks, func))
 }

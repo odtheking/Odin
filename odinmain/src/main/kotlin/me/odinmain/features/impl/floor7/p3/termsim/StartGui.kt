@@ -1,8 +1,11 @@
 package me.odinmain.features.impl.floor7.p3.termsim
 
+import me.odinmain.config.Config
 import me.odinmain.features.impl.floor7.p3.TerminalTimes
 import me.odinmain.utils.getRandom
 import me.odinmain.utils.round
+import me.odinmain.utils.skyblock.ChatUtils.devMessage
+import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import net.minecraft.inventory.Slot
 import net.minecraft.item.EnumDyeColor
 import net.minecraft.item.Item
@@ -23,6 +26,8 @@ object StartGui : TermSimGui(
         ItemStack(dye, 1, 5).setStackDisplayName("§5What starts with: \"*\"?"),
         ItemStack(dye, 1, 12).setStackDisplayName("§bSelect all the \"*\" items!")
     )
+    private val resetButton = ItemStack(dye, 1, 8).setStackDisplayName("§cReset PBs")
+    private val randomButton = ItemStack(dye, 1, 15).setStackDisplayName("§7Random")
     private val pbTimes = listOf(
         TerminalTimes.simPanesPB,
         TerminalTimes.simColorPB,
@@ -37,10 +42,12 @@ object StartGui : TermSimGui(
 
     override fun create() {
         this.inventorySlots.inventorySlots.subList(0, 27).forEachIndexed { index, it ->
-            if (index in 11..15)
-                it.putStack(termItems[index - 11])
-            else
-                it.putStack(blackPane)
+            when (index) {
+                4 -> it.putStack(resetButton)
+                in 11..15 -> it.putStack(termItems[index - 11])
+                22 -> it.putStack(randomButton)
+                else -> it.putStack(blackPane)
+            }
         }
     }
 
@@ -52,13 +59,29 @@ object StartGui : TermSimGui(
     }
 
     override fun slotClick(slot: Slot, button: Int) {
-        if (slot.slotIndex !in 11..15) return
+        val terms = listOf(
+            CorrectPanes,
+            SameColor,
+            InOrder,
+            StartsWith(StartsWith.letters.shuffled().first()),
+            SelectAll(EnumDyeColor.entries.getRandom().name.replace("_", " ").uppercase())
+        )
         when (slot.slotIndex) {
-            11 -> CorrectPanes.open()
-            12 -> SameColor.open()
-            13 -> InOrder.open()
-            14 -> StartsWith(StartsWith.letters.shuffled().first()).open()
-            15 -> SelectAll(EnumDyeColor.entries.getRandom().name.replace("_", " ").uppercase()).open()
+            4 -> {
+                pbTimes.forEach { it.value = 99.0 }
+                Config.saveConfig()
+                modMessage("§cPBs reset!")
+                StartGui.open(ping)
+            }
+            11 -> terms[0].open(ping)
+            12 -> terms[1].open(ping)
+            13 -> terms[2].open(ping)
+            14 -> terms[3].open(ping)
+            15 -> terms[4].open(ping)
+            22 -> {
+                devMessage("a")
+                terms.getRandom().open(ping)
+            }
         }
     }
 }
