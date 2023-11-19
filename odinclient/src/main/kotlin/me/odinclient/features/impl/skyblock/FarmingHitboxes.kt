@@ -1,5 +1,6 @@
 package me.odinclient.features.impl.skyblock
 
+import me.odinclient.mixin.accessors.IBlockAccessor
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import net.minecraft.block.Block
@@ -12,7 +13,13 @@ object FarmingHitboxes : Module(
 ) {
 
     fun setFullBlock(block: Block) {
-        block.setBlockBounds(0f, 0f, 0f, 1f, 1f, 1f)
+        val accessor = (block as IBlockAccessor)
+        accessor.setMinX(0.0)
+        accessor.setMinY(0.0)
+        accessor.setMinZ(0.0)
+        accessor.setMaxX(1.0)
+        accessor.setMaxY(1.0)
+        accessor.setMaxZ(1.0)
     }
 
 }

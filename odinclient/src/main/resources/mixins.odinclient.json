@@ -4,6 +4,7 @@
   "minVersion": "0.7",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "accessors.IBlockAccessor",
     "mixins.MixinBlock",
     "mixins.MixinBlockCocoa",
     "mixins.MixinBlockCrops",
