@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(value = GuiContainer.class, priority = 999)
+@Mixin(value = GuiContainer.class, priority = 1)
 public class MixinGuiContainer {
 
     private final GuiContainer gui = (GuiContainer) (Object) this;
