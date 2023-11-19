@@ -40,13 +40,13 @@ object DragonBoxes : Module(
         val pos: BlockPos,
         val aabb: AxisAlignedBB,
         val color: Color,
-        var alive: Boolean
+        var alive: Boolean = true
     ) {
-        Red   (BlockPos(32, 22, 59),  AxisAlignedBB(14.5, 13.0, 45.5, 39.5, 28.0, 70.5),  Color(255,85, 85), true),
-        Orange(BlockPos(80, 23, 56),  AxisAlignedBB(72.0, 8.0,  47.0, 102.0,28.0, 77.0),  Color(255,170,0),  true),
-        Green (BlockPos(32, 23, 94),  AxisAlignedBB(7.0,  8.0,  80.0, 37.0, 28.0, 110.0), Color(85, 255,85), true),
-        Blue  (BlockPos(79, 23, 94),  AxisAlignedBB(71.5, 16.0, 82.5, 96.5, 26.0, 107.5), Color(0,  170,170),true),
-        Purple(BlockPos(56, 22, 120), AxisAlignedBB(45.5, 13.0, 113.5,68.5, 23.0, 136.5), Color(170,0,  170),true);
+        Red   (BlockPos(32, 22, 59),  AxisAlignedBB(14.5, 13.0, 45.5, 39.5, 28.0, 70.5),  Color(255,85, 85)),
+        Orange(BlockPos(80, 23, 56),  AxisAlignedBB(72.0, 8.0,  47.0, 102.0,28.0, 77.0),  Color.ORANGE),
+        Green (BlockPos(32, 23, 94),  AxisAlignedBB(7.0,  8.0,  80.0, 37.0, 28.0, 110.0), Color.GREEN),
+        Blue  (BlockPos(79, 23, 94),  AxisAlignedBB(71.5, 16.0, 82.5, 96.5, 26.0, 107.5), Color(0,  170,170)),
+        Purple(BlockPos(56, 22, 120), AxisAlignedBB(45.5, 13.0, 113.5,68.5, 23.0, 136.5), Color.PURPLE);
 
         fun checkAlive() {
             this.alive = !WorldUtils.isAir(this.pos)

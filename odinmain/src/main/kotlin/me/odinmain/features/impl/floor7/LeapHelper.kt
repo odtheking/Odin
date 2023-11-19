@@ -6,6 +6,7 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.equal
 import me.odinmain.utils.noControlCodes
+import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.client.gui.Gui
 import net.minecraft.init.Blocks
@@ -15,7 +16,6 @@ import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
-import java.awt.Color
 
 object LeapHelper : Module(
     name = "Leap Helper",
@@ -78,7 +78,7 @@ object LeapHelper : Module(
         if (closestPlayer == "") return
         if (!DungeonUtils.inDungeons || event.slot.inventory?.name != "Spirit Leap") return
         if (event.slot.stack?.displayName.noControlCodes != closestPlayer) return
-        Gui.drawRect(event.slot.xDisplayPosition, event.slot.yDisplayPosition, event.slot.xDisplayPosition + 16, event.slot.yDisplayPosition + 16, Color.RED.rgb)
+        Gui.drawRect(event.slot.xDisplayPosition, event.slot.yDisplayPosition, event.slot.xDisplayPosition + 16, event.slot.yDisplayPosition + 16, Color.RED.rgba)
     }
 
     @SubscribeEvent
