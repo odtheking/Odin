@@ -12,7 +12,6 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.skyblock.ChatUtils.devMessage
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import me.odinmain.utils.skyblock.ItemUtils.unformattedName
 import net.minecraft.client.gui.Gui
@@ -109,7 +108,6 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun onSlotRender(event: DrawGuiEvent) {
-        devMessage("a")
         if (currentTerm == -1 || !enabled || event.container !is ContainerChest) return
         if (currentTerm == 2 || removeWrong) {
             if (
