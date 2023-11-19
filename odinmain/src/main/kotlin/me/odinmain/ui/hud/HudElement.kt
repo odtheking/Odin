@@ -1,5 +1,6 @@
 package me.odinmain.ui.hud
 
+import me.odinmain.OdinMain.mc
 import me.odinmain.features.Module
 import me.odinmain.features.ModuleManager.huds
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -11,6 +12,8 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinmain.utils.render.gui.animations.impl.EaseInOut
 import me.odinmain.utils.render.gui.nvg.*
+import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.Display
 
 /**
@@ -93,6 +96,13 @@ open class HudElement(
 
         vg.translate(x, y)
         vg.scale(scale, scale)
+        GlStateManager.pushMatrix()
+        val sr = ScaledResolution(mc)
+
+        GlStateManager.scale(1.0 / sr.scaleFactor, 1.0 / sr.scaleFactor, 1.0)
+        GlStateManager.translate(x, y, 0f)
+        GlStateManager.scale(scale, scale, 1f)
+
         val (width, height) = render(vg, example)
 
         if (example) {
@@ -113,6 +123,7 @@ open class HudElement(
             )
         }
         vg.resetTransform()
+        GlStateManager.popMatrix()
 
         this.width = width
         this.height = height

@@ -9,12 +9,10 @@
  */
 package me.odinmain.font
 
-import me.odinmain.OdinMain.mc
 import me.odinmain.utils.render.Color
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import java.awt.Font
 import java.awt.FontFormatException
@@ -375,16 +373,16 @@ class GlyphPageFontRenderer(
 
     companion object {
         @Throws(IOException::class, FontFormatException::class)
-        fun create(fontLocation: ResourceLocation?, size: Float): GlyphPageFontRenderer {
+        fun create(fontName: String, size: Float): GlyphPageFontRenderer {
             val chars = CharArray(256)
             for (i in chars.indices) {
                 chars[i] = i.toChar()
             }
             val regularPage: GlyphPage
-            val inputStream = mc.resourceManager.getResource(fontLocation).inputStream
+            val inputStream = this::class.java.getResourceAsStream(fontName)
             val font = Font.createFont(Font.PLAIN, inputStream)
             regularPage = GlyphPage(font.deriveFont(size), isAntiAliasingEnabled = true, isFractionalMetricsEnabled = true)
-            inputStream.close()
+            inputStream?.close()
             regularPage.generateGlyphPage(chars)
             regularPage.setupTexture()
             return GlyphPageFontRenderer(regularPage, regularPage, regularPage, regularPage)

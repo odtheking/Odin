@@ -1,14 +1,16 @@
 package me.odinmain.font
 
 import me.odinmain.utils.render.Color
-import net.minecraft.util.ResourceLocation
 
 object FontRenderer {
 
-    private var fontRenderer = GlyphPageFontRenderer.create(ResourceLocation("odinmain", "font/Inter-Regular.ttf"), 18f)
+    private var fontRenderer = GlyphPageFontRenderer.create("/Inter-Regular.ttf", 18f)
 
-    fun drawString(text: String, x: Float, y: Float, color: Color, shadow: Boolean) {
-        fontRenderer.drawString(text, x, y, color, shadow)
+    fun drawString(text: String, x: Number, y: Number, color: Color, shadow: Boolean) {
+        fontRenderer.drawString(text, x.toFloat(), y.toFloat(), color, shadow)
     }
 
+    fun getWidth(text: String): Int {
+        return fontRenderer.getStringWidth(text)
+    }
 }
