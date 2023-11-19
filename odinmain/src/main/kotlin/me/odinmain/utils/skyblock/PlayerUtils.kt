@@ -1,7 +1,7 @@
 package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.utils.VecUtils.floored
+import me.odinmain.utils.floored
 import net.minecraft.util.Vec3i
 
 

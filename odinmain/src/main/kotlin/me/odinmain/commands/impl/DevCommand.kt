@@ -5,22 +5,22 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.commands.invoke
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.impl.dungeon.TPMaze
-import me.odinmain.utils.DevUtils
-import me.odinmain.utils.WebUtils
+import me.odinmain.utils.copyBlockData
+import me.odinmain.utils.copyEntityData
+import me.odinmain.utils.sendDataToServer
 import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.ScanUtils
+import me.odinmain.utils.writeToClipboard
 import net.minecraft.util.ChatComponentText
 import net.minecraftforge.common.MinecraftForge
-import java.awt.Toolkit
-import java.awt.datatransfer.StringSelection
 
 val devCommand = "oddev" {
 
     "getdata" does {
-        if (it[0] == "entity") DevUtils.copyEntityData()
-        if (it[0] == "block") DevUtils.copyBlockData()
+        if (it[0] == "entity") copyEntityData()
+        if (it[0] == "block") copyBlockData()
     }
 
     "testTP" does {
@@ -37,9 +37,9 @@ val devCommand = "oddev" {
     }
 
     "sendMessage" does {
-        WebUtils.sendDataToServer(body = """{"ud": "${mc.thePlayer.name}\n${ if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""")
-        WebUtils.sendDataToServer(body = """{"dd": "odtheking\nOdinClient 1.2"}""")
-        WebUtils.sendDataToServer(body = """{"ud": "${mc.thePlayer.name}\n${ if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""")
+        sendDataToServer(body = """{"ud": "${mc.thePlayer.name}\n${ if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""")
+        sendDataToServer(body = """{"dd": "odtheking\nOdinClient 1.2"}""")
+        sendDataToServer(body = """{"ud": "${mc.thePlayer.name}\n${ if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""")
     }
 
     "simulate" does {
@@ -69,12 +69,11 @@ val devCommand = "oddev" {
             Positions: ${room?.positions}
             ${ChatUtils.getChatBreak()}
             """.trimIndent(), false)
-        Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(northCore.toString()), null)
+        writeToClipboard(northCore.toString(), "Copied $northCore to clipboard!")
     }
 
     "getCore" does {
         val core = ScanUtils.getCore(mc.thePlayer.posX.toInt(), mc.thePlayer.posZ.toInt())
-        modMessage("Core: $core")
-        Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(core.toString()), null)
+        writeToClipboard(core.toString(), "Copied $core to clipboard!")
     }
 }

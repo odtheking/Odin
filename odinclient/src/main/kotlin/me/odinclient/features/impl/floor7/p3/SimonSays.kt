@@ -13,9 +13,9 @@ import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.floor
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
+import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.ChatUtils.devMessage
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.block.BlockButtonStone
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.item.EntityItem
@@ -23,11 +23,8 @@ import net.minecraft.init.Blocks
 import net.minecraft.item.Item
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
-import net.minecraft.util.MouseHelper
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import org.lwjgl.input.Mouse
-import java.awt.Robot
 
 object SimonSays : Module(
     name = "Simon Says",

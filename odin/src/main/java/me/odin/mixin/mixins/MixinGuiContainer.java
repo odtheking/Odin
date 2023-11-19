@@ -1,9 +1,7 @@
 package me.odin.mixin.mixins;
 
-import me.odinmain.events.impl.DrawGuiEvent;
-import me.odinmain.events.impl.DrawGuiScreenEvent;
-import me.odinmain.events.impl.DrawSlotEvent;
-import me.odinmain.events.impl.GuiClosedEvent;
+import me.odinmain.events.impl.*;
+import me.odinmain.utils.skyblock.ChatUtils;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
@@ -14,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(value = GuiContainer.class, priority = 999)
+@Mixin(value = GuiContainer.class, priority = 1)
 public class MixinGuiContainer {
 
     private final GuiContainer gui = (GuiContainer) (Object) this;
@@ -40,6 +38,12 @@ public class MixinGuiContainer {
     @Inject(method = "drawScreen", at = @At(value = "HEAD"), cancellable = true)
     private void startDrawScreen(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
         if (MinecraftForge.EVENT_BUS.post(new DrawGuiScreenEvent(gui.inventorySlots, gui, this.xSize, this.ySize)))
+            ci.cancel();
+    }
+
+    @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
+    private void onMouseClicked(int mouseX, int mouseY, int mouseButton, CallbackInfo ci) {
+        if (MinecraftForge.EVENT_BUS.post(new GuiClickEvent(gui.inventorySlots, gui, mouseX, mouseY, mouseButton)))
             ci.cancel();
     }
 

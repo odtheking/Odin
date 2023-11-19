@@ -139,14 +139,6 @@ abstract class Module(
         ModuleManager.messageFunctions.add(ModuleManager.MessageFunction(filter, shouldRun, func))
     }
 
-    fun runIn(ticks: Int, func: () -> Unit) {
-        if (ticks <= 0) {
-            func()
-            return
-        }
-        ModuleManager.tickTasks.add(ModuleManager.TickTask(ticks, func))
-    }
-
     fun onWorldLoad(func: () -> Unit) {
         ModuleManager.worldLoadFunctions.add(func)
     }

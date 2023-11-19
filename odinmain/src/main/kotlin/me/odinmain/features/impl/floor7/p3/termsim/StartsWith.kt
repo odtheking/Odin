@@ -2,6 +2,7 @@ package me.odinmain.features.impl.floor7.p3.termsim
 
 import me.odinmain.events.impl.GuiLoadedEvent
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
+import me.odinmain.features.impl.floor7.p3.TerminalTimes
 import me.odinmain.utils.getRandom
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.inventory.ContainerChest
@@ -45,7 +46,7 @@ class StartsWith(private val letter: String) : TermSimGui(
         mc.thePlayer.playSound("random.orb", 1f, 1f)
         TerminalSolver.onGuiLoad(GuiLoadedEvent(name, inventorySlots as ContainerChest))
         if (inventorySlots.inventorySlots.subList(0, size).none { it.stack.displayName.startsWith(letter, true) && !it.stack.isItemEnchanted }) {
-            solved()
+            solved(this.name, TerminalTimes.simStartsWithPB)
         }
     }
 

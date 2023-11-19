@@ -8,9 +8,9 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.DualSetting
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.utils.VecUtils
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.equalsOneOf
+import me.odinmain.utils.isFacingAABB
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -59,7 +59,7 @@ object Triggerbot : Module(
         if (!(bloodMobs.contains(name) && blood) && !(name == "Spirit Bear" && spiritBear)) return
 
         val (x, y, z) = Triple(ent.posX, ent.posY, ent.posZ)
-        if (!VecUtils.isFacingAABB(AxisAlignedBB(x - .5, y - 2.0, z - .5, x + .5, y + 3.0, z + .5), 30f)) return
+        if (!isFacingAABB(AxisAlignedBB(x - .5, y - 2.0, z - .5, x + .5, y + 3.0, z + .5), 30f)) return
 
         if (bloodClickType && name != "Spirit Bear") PlayerUtils.rightClick()
         else leftClick()

@@ -12,12 +12,13 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.hud.EditHUDGui
-import me.odinmain.utils.AsyncUtils
-import me.odinmain.utils.WebUtils
+import me.odinmain.utils.fetchURLData
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.sendDataToServer
 import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import me.odinmain.utils.skyblock.LocationUtils
+import me.odinmain.utils.waitUntilPlayer
 import net.minecraft.event.ClickEvent
 import net.minecraft.util.ChatComponentText
 import net.minecraftforge.event.world.WorldEvent
@@ -81,7 +82,7 @@ object ClickGUIModule: Module(
             
             """.trimIndent(), false)
             OdinMain.scope.launch {
-                WebUtils.sendDataToServer(body = """{"uud": "${mc.thePlayer.name}\n${if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""")
+                sendDataToServer(body = """{"uud": "${mc.thePlayer.name}\n${if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""")
             }
         }
 
@@ -97,16 +98,16 @@ object ClickGUIModule: Module(
         if (!hasSentWebhook) {
             hasSentWebhook = true
 
-            val def = AsyncUtils.waitUntilPlayer()
+            val def = waitUntilPlayer()
             try { def.await() } catch (e: Exception) { return@launch }
 
-            WebUtils.sendDataToServer(body = """{"ud": "${mc.thePlayer.name}\n${ if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""")
+            sendDataToServer(body = """{"ud": "${mc.thePlayer.name}\n${ if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""")
         }
 
         if (hasSentUpdateMessage) return@launch
 
         val newestVersion = try {
-            Json.parseToJsonElement(WebUtils.fetchURLData("https://api.github.com/repos/odtheking/OdinClient/releases/latest"))
+            Json.parseToJsonElement(fetchURLData("https://api.github.com/repos/odtheking/OdinClient/releases/latest"))
         } catch (e: Exception) { return@launch }
 
         val link = newestVersion.jsonObject["html_url"].toString().replace("\"", "")
@@ -115,7 +116,7 @@ object ClickGUIModule: Module(
         if (isSecondNewer(tag)) {
             hasSentUpdateMessage = true
 
-            val def = AsyncUtils.waitUntilPlayer()
+            val def = waitUntilPlayer()
             try { def.await() } catch (e: Exception) { return@launch }
 
 

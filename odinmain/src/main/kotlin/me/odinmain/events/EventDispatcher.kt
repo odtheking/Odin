@@ -4,10 +4,10 @@ import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
 import me.odinmain.events.impl.*
-import me.odinmain.utils.AsyncUtils
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.noControlCodes
+import me.odinmain.utils.waitUntilLastItem
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.network.play.server.S02PacketChat
@@ -81,7 +81,7 @@ object EventDispatcher {
         if (container !is ContainerChest) return@launch
         val chestName = container.lowerChestInventory.displayName.unformattedText
 
-        val deferred = AsyncUtils.waitUntilLastItem(container)
+        val deferred = waitUntilLastItem(container)
         try { deferred.await() } catch (e: Exception) { return@launch } // Wait until the last item in the chest isn't null
 
         MinecraftForge.EVENT_BUS.post(GuiLoadedEvent(chestName, container))

@@ -2,12 +2,7 @@ package me.odinmain.utils.skyblock
 
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.impl.skyblock.DianaHelper
-import me.odinmain.utils.VecUtils
-import me.odinmain.utils.VecUtils.clone
-import me.odinmain.utils.VecUtils.pos
-import me.odinmain.utils.VecUtils.solveEquationThing
-import me.odinmain.utils.VecUtils.toDoubleArray
-import me.odinmain.utils.VecUtils.toVec3
+import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.ItemUtils.isHolding
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.network.play.server.S2APacketParticles
@@ -220,7 +215,7 @@ object DianaBurrowEstimate {
                 val p2 = pr2.last()
 
                 estimatedBurrowPosition?.let {
-                    DianaHelper.renderPos = VecUtils.findNearestGrassBlock(
+                    DianaHelper.renderPos = findNearestGrassBlock(
                         if (
                             ((p1.xCoord - it.xCoord) * (2 + p1.zCoord - it.zCoord)).pow(2) <
                             ((p2.xCoord - it.xCoord) * (2 + p2.zCoord - it.zCoord)).pow(2)

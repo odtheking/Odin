@@ -1,10 +1,7 @@
 package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.utils.VecUtils
-import me.odinmain.utils.VecUtils.get
-import me.odinmain.utils.VecUtils.multiply
-import me.odinmain.utils.VecUtils.toDoubleArray
+import me.odinmain.utils.*
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import kotlin.math.*
@@ -20,8 +17,8 @@ object EtherWarpHelper {
     fun getEtherPos(pos: Vec3, yaw: Float, pitch: Float): EtherPos {
         mc.thePlayer ?: return EtherPos.NONE
 
-        val lookVec = VecUtils.getLook(yaw = yaw, pitch = pitch).normalize().multiply(60.0)
-        val startPos: Vec3 = VecUtils.getPositionEyes(pos)
+        val lookVec = getLook(yaw = yaw, pitch = pitch).normalize().multiply(60.0)
+        val startPos: Vec3 = getPositionEyes(pos)
 
         val endPos = lookVec.add(startPos)
 

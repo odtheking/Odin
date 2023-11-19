@@ -3,7 +3,7 @@ package me.odinmain.features.impl.dungeon
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.ClickEvent
 import me.odinmain.features.impl.dungeon.PuzzleSolvers.blockWrongClicks
-import me.odinmain.utils.VecUtils.toAABB
+import me.odinmain.utils.toAABB
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.currentRoomName
