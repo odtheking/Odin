@@ -8,7 +8,6 @@ import cc.polyfrost.oneconfig.utils.dsl.nanoVGHelper
 import me.odinmain.features.impl.render.ClickGUIModule.experimentalRendering
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.nvg.TextAlign.*
-import me.odinmain.utils.render.world.RenderUtils.bindColor
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.WorldRenderer
@@ -16,8 +15,8 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import java.util.*
 import kotlin.math.PI
 import kotlin.math.cos
-import kotlin.math.max
 import kotlin.math.sin
+
 
 /**
  * Makes it more understanding that [nanoVGHelper] is used for rendering and acts like a wrapper.
@@ -66,44 +65,9 @@ fun NVG.rect(
         renderer.drawRoundedRectVaried(context, x, y, w, h, color.rgba, topL, topR, botR, botL)
         return
     }
-    GlStateManager.pushMatrix()
-    GlStateManager.enableAlpha()
-    GlStateManager.disableTexture2D()
-    GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-    color.bindColor()
 
-    // Draw the top-left corner
-    drawCircle(x + topL, y + topL, topL)
-
-    // Draw the top-right corner
-    drawCircle(x + w - topR, y + topR, topR)
-
-    // Draw the bottom-left corner
-    drawCircle(x + botL, y + h - botL, botL)
-
-    // Draw the bottom-right corner
-    drawCircle(x + w - botR, y + h - botR, botR)
-
-    // Draw the top edge
-    glRect(x + topL, y, w - topL - topR, topL)
-
-    // Draw the right edge
-    glRect(x + w - max(topR, botR), y + topR, max(topR, botR), h - topR - botR)
-
-    // Draw the bottom edge
-    glRect(x + botL, y + h - max(botR, botL), w - botL - botR, botL)
-
-    // Draw the left edge
-    glRect(x, y + topL, max(topL, botL), h - topL - botR)
-
-    // Draw the middle
-    glRect(x + topL, y + topL, w - max(topR, botR), h - max(botL, botR))
-
-    GlStateManager.resetColor()
-    GlStateManager.enableTexture2D()
-    //GlStateManager.disableBlend()
-    GlStateManager.popMatrix()
 }
+
 
 fun NVG.rect(
     x: Float, y: Float, w: Float, h: Float, color: Color, radius: Float = 0f

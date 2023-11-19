@@ -109,7 +109,6 @@ object ChatCommands : Module(
             "party" -> if (!party) return
             "guild" -> if (!guild) return
             "private" -> if (!private) return
-            // Add more cases as needed for other channels
             else -> return // Handle unknown channels, or adjust as needed
         }
 
