@@ -20,17 +20,17 @@ object TerminalTimes : Module(
     private val sendMessage: Int by SelectorSetting("Send Message", "Always", arrayListOf("Only PB", "Always"))
     private var currentTerminal: Terminals? = null
     private var startTimer = 0L
-    private val panesPB = +NumberSetting("Panes PB", 1000.0, increment = 0.01, hidden = true)
-    private val colorPB = +NumberSetting("Color PB", 1000.0, increment = 0.01, hidden = true)
-    private val numbersPB = +NumberSetting("Numbers PB", 1000.0, increment = 0.01, hidden = true)
-    private val melodyPB = +NumberSetting("Melody PB", 1000.0, increment = 0.01, hidden = true)
-    private val startsWithPB = +NumberSetting("Starts With PB", 1000.0, increment = 0.01, hidden = true)
-    private val selectAllPB = +NumberSetting("Select All PB", 1000.0, increment = 0.01, hidden = true)
-    val simPanesPB = +NumberSetting("Sim Panes PB", 1000.0, increment = 0.01, hidden = true)
-    val simColorPB = +NumberSetting("Sim Color PB", 1000.0, increment = 0.01, hidden = true)
-    val simNumbersPB = +NumberSetting("Sim Numbers PB", 1000.0, increment = 0.01, hidden = true)
-    val simStartsWithPB = +NumberSetting("Sim Starts With PB", 1000.0, increment = 0.01, hidden = true)
-    val simSelectAllPB = +NumberSetting("Sim Select All PB", 1000.0, increment = 0.01, hidden = true)
+    private val panesPB = +NumberSetting("Panes PB", 99.0, increment = 0.01, hidden = true)
+    private val colorPB = +NumberSetting("Color PB", 99.0, increment = 0.01, hidden = true)
+    private val numbersPB = +NumberSetting("Numbers PB", 99.0, increment = 0.01, hidden = true)
+    private val melodyPB = +NumberSetting("Melody PB", 99.0, increment = 0.01, hidden = true)
+    private val startsWithPB = +NumberSetting("Starts With PB", 99.0, increment = 0.01, hidden = true)
+    private val selectAllPB = +NumberSetting("Select All PB", 99.0, increment = 0.01, hidden = true)
+    val simPanesPB = +NumberSetting("Sim Panes PB", 99.0, increment = 0.01, hidden = true)
+    val simColorPB = +NumberSetting("Sim Color PB", 99.0, increment = 0.01, hidden = true)
+    val simNumbersPB = +NumberSetting("Sim Numbers PB", 99.0, increment = 0.01, hidden = true)
+    val simStartsWithPB = +NumberSetting("Sim Starts With PB", 99.0, increment = 0.01, hidden = true)
+    val simSelectAllPB = +NumberSetting("Sim Select All PB", 99.0, increment = 0.01, hidden = true)
 
     @Suppress("UNUSED")
     enum class Terminals(

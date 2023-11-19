@@ -14,7 +14,7 @@ import me.odinmain.utils.skyblock.ChatUtils.modMessage
 
 val termSimCommand = "termsim" {
     does {
-        StartGui.open()
+        StartGui.open(it.firstOrNull()?.toLongOrNull() ?: 0L)
     }
 }
 
