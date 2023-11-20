@@ -316,7 +316,7 @@ object RenderUtils {
         renderCustomBeacon(title, pos.xCoord, pos.yCoord, pos.zCoord, color, partialTicks)
     }
 
-    fun renderCustomBeacon(title: String, x: Double, y: Double, z: Double, color: Color, partialTicks: Float) {
+    fun renderCustomBeacon(title: String, x: Double, y: Double, z: Double, color: Color, partialTicks: Float, beacon: Boolean = true) {
         val distX = x - mc.renderManager.viewerPosX
         val distY = y - mc.renderManager.viewerPosY - mc.renderViewEntity.eyeHeight
         val distZ = z - mc.renderManager.viewerPosZ
@@ -334,7 +334,7 @@ object RenderUtils {
             max(0.03, dist / 180.0).toFloat()
         )
         val a = min(1f, max(0f, dist.toFloat()) / 60f)
-        renderBeaconBeam(floor(x), .0, floor(z), color, a, true, partialTicks)
+        if (beacon) renderBeaconBeam(floor(x), .0, floor(z), color, a, true, partialTicks)
     }
 
     fun WorldRenderer.color(color: Color) { // local function is used to simplify this.

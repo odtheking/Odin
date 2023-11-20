@@ -32,6 +32,7 @@ object CustomESP : Module(
     private val scanDelay: Long by NumberSetting("Scan Delay", 500L, 100L, 2000L, 100L)
     val color: Color by ColorSetting("Color", Color(255, 0, 0), true)
     val mode: Int by SelectorSetting("Mode", "Outline", arrayListOf("Outline", "Overlay", "Boxes"))
+    val includeArmorStand by BooleanSetting("Allow armorstands", false)
     private val xray: Boolean by BooleanSetting("Through Walls", true).withDependency { !OdinMain.onLegitVersion }
     val renderThrough: Boolean get() = if (OdinMain.onLegitVersion) false else xray
     private val thickness: Float by NumberSetting("Outline Thickness", 5f, 5f, 20f, 0.5f).withDependency { mode != 1 }
@@ -101,7 +102,7 @@ object CustomESP : Module(
     }
 
     private fun checkEntity(entity: Entity) {
-        if (entity !is EntityArmorStand || espList.none { entity.name.contains(it, true) } || entity in currentEntities) return
+        if ( (includeArmorStand && entity !is EntityArmorStand) || espList.none { entity.name.contains(it, true) } || entity in currentEntities) return
         currentEntities.add(
             mc.theWorld.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.expand(1.0, 5.0, 1.0))
                 .filter { it != null && it !is EntityArmorStand && it != mc.thePlayer }

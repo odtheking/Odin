@@ -59,7 +59,7 @@ object WaypointManager {
         if (listOf(x, y,z).any { abs(it) > 5000}) return modMessage("§cWaypoint out of bounds.")
         if (temporaryWaypoints.any { it.first.x == x && it.first.y == y && it.first.z == z }) return modMessage("§cWaypoint already exists at $x, $y, $z.")
         modMessage("Added waypoint at $x, $y, $z.")
-        temporaryWaypoints.add(Pair(Waypoint(name, x, y, z, randomColor()), Clock(60_000)))
+        temporaryWaypoints.add(Pair(Waypoint(if (Waypoints.onlyDistance) "" else name, x, y, z, randomColor()), Clock(60_000)))
     }
 
     fun addTempWaypoint(name: String = "§fWaypoint", vec3: Vec3i) {
@@ -100,6 +100,6 @@ object WaypointManager {
     ) {
         constructor(name: String, vec3: Vec3i, color: Color) : this(name, vec3.x, vec3.y, vec3.z, color, true)
 
-        fun renderBeacon(partialTicks: Float) = RenderUtils.renderCustomBeacon(name, x + .5, y + .5, z + .5, color, partialTicks)
+        fun renderBeacon(partialTicks: Float) = RenderUtils.renderCustomBeacon(name, x + .5, y + .5, z + .5, color, partialTicks, Waypoints.onlyBox)
     }
 }

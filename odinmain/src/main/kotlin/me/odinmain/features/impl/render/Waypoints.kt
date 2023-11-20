@@ -13,6 +13,9 @@ object Waypoints : Module(
     private val vanq: Boolean by BooleanSetting("Vanquisher Spawns")
     private val fromParty: Boolean by BooleanSetting("From Party Chat", true)
     private val fromAll: Boolean by BooleanSetting("From All Chat", true)
+    val onlyBox: Boolean by BooleanSetting("Only shows the box", false)
+    val onlyDistance: Boolean by BooleanSetting("Only shows the distance as name", false)
+
 
     init {
         onMessage(Regex("Party > (\\[.+])? (.{0,16}): Vanquisher spawned at: x: (-?\\d+),? y: (-?\\d+),? z: (-?\\d+)"), { vanq }) {
