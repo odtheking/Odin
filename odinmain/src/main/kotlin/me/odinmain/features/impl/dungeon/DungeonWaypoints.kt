@@ -5,13 +5,14 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.equal
-import me.odinmain.utils.rotateToNorth
-import me.odinmain.utils.subtractVec
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
+import me.odinmain.utils.rotateToNorth
 import me.odinmain.utils.skyblock.ChatUtils.devMessage
+import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.RoomType
+import me.odinmain.utils.subtractVec
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
@@ -48,6 +49,7 @@ object DungeonWaypoints : Module(
     fun onInteract(event: PlayerInteractEvent) {
         if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || event.world != mc.theWorld || !allowEdits) return
         val room = DungeonUtils.currentRoom?.room ?: return
+        val rotationCore = room.rotationCore ?: return modMessage("This room doesn't have a rotationcore ??? Please report this! §7(${room.data.name})")
         val vec = Vec3(event.pos)
             .subtractVec(x = room.x, z = room.z)
             .rotateToNorth(room.rotation)
@@ -56,7 +58,7 @@ object DungeonWaypoints : Module(
             if (room.data.type == RoomType.PUZZLE)
                 DungeonWaypointConfig.waypoints.getOrPut(room.data.name) { mutableListOf() }
             else
-                DungeonWaypointConfig.waypoints.getOrPut(room.core.toString()) { mutableListOf() }
+                DungeonWaypointConfig.waypoints.getOrPut(rotationCore.toString()) { mutableListOf() }
 
         if (!waypoints.any { it.toVec3().equal(vec) }) {
             waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, Color.GREEN))

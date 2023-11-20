@@ -1,13 +1,13 @@
 package me.odinmain.features.impl.render
 
-import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.HudSetting
+import me.odinmain.font.FontRenderer.drawString
+import me.odinmain.font.FontRenderer.getWidth
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.ServerUtils
-import me.odinmain.utils.render.gui.nvg.getTextWidth
-import me.odinmain.utils.render.gui.nvg.textWithControlCodes
+import me.odinmain.utils.render.Color
 import me.odinmain.utils.round
 import kotlin.math.max
 
@@ -18,17 +18,18 @@ object Server : Module(
 ) {
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {
-            textWithControlCodes("§6Ping §a60ms", 1f, 9f, 16f, Fonts.REGULAR)
-            textWithControlCodes("§3TPS §a20.0", 1f, 26f, 16f, Fonts.REGULAR)
-            max(getTextWidth("Ping 60ms", 16f, Fonts.REGULAR),
-                getTextWidth("TPS 20.0", 16f, Fonts.REGULAR)
-            ) + 2f to 33f
+            drawString("§ePing §a60ms", 0f, 0f, Color.WHITE, true)
+            drawString("§3TPS §a20.0", 0f, 9f, Color.WHITE, true)
+            max(
+                getWidth("Ping 60ms"),
+                getWidth("TPS 20.0")
+            ) + 2f to 18f
         } else {
-            textWithControlCodes("§6Ping §a${colorizePing(ServerUtils.averagePing.toInt())}ms", 1f, 9f, 16f, Fonts.REGULAR)
-            textWithControlCodes("§3TPS §a${colorizeTps(ServerUtils.averageTps.round(1))}", 1f, 26f, 16f, Fonts.REGULAR)
-
-            max(getTextWidth("Ping ${colorizePing(ServerUtils.averagePing.toInt())}ms", 16f, Fonts.REGULAR),
-                getTextWidth("TPS ${colorizeTps(ServerUtils.averageTps)}", 16f, Fonts.REGULAR)
+            drawString("§ePing ${colorizePing(ServerUtils.averagePing.toInt())}ms", 0f, 0f, Color.WHITE, true)
+            drawString("§3TPS ${colorizeTps(ServerUtils.averageTps.round(1))}", 0f, 9f, Color.WHITE, true)
+            max(
+                getWidth("Ping 60ms"),
+                getWidth("TPS 20.0")
             ) + 2f to 33f
         }
     }

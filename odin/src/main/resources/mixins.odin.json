@@ -17,6 +17,7 @@
     "mixins.MixinFontRenderer",
     "mixins.MixinGuiContainer",
     "mixins.MixinItemRenderer",
+    "mixins.MixinLayerCape",
     "mixins.MixinMinecraft",
     "mixins.MixinModList",
     "mixins.MixinMouseHelper",

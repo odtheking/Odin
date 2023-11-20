@@ -3,18 +3,26 @@ package me.odinclient.mixin.mixins;
 import me.odinclient.features.impl.skyblock.FarmingHitboxes;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.BlockMushroom;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(BlockMushroom.class)
 public class MixinBlockMushroom extends BlockBush {
 
-    @Redirect(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockMushroom;setBlockBounds(FFFFFF)V"))
-    private void onConstructor(BlockMushroom instance, float minX, float minY, float minZ, float maxX, float maxY, float maxZ)
-    {
-        if (FarmingHitboxes.INSTANCE.getMushroom() && FarmingHitboxes.INSTANCE.getEnabled()) instance.setBlockBounds(0f, 0f, 0f, 1f, 1f, 1f);
-        else instance.setBlockBounds(minX, minY, minZ, maxX, maxY, maxZ);
+    @Override
+    public AxisAlignedBB getSelectedBoundingBox(World worldIn, BlockPos pos) {
+        FarmingHitboxes.INSTANCE.setFullBlock(worldIn.getBlockState(pos).getBlock());
+        return super.getSelectedBoundingBox(worldIn, pos);
+    }
+
+    @Override
+    public MovingObjectPosition collisionRayTrace(World worldIn, BlockPos pos, Vec3 start, Vec3 end) {
+        FarmingHitboxes.INSTANCE.setFullBlock(worldIn.getBlockState(pos).getBlock());
+        return super.collisionRayTrace(worldIn, pos, start, end);
     }
 
 }

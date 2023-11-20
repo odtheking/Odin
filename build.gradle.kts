@@ -22,15 +22,15 @@ loom {
     launchConfigs {
         "client" {
             arg("--tweakClass", "cc.polyfrost.oneconfig.loader.stage0.LaunchWrapperTweaker")
-            arg("--mixin", "mixins.odin.json")
+            arg("--mixin", "mixins.odinclient.json")
         }
     }
     forge {
         pack200Provider.set(dev.architectury.pack200.java.Pack200Adapter())
-        mixinConfig("mixins.odin.json")
+        mixinConfig("mixins.odinclient.json")
     }
     mixin {
-        defaultRefmapName.set("mixins.odin.refmap.json")
+        defaultRefmapName.set("mixins.odinclient.refmap.json")
     }
 }
 
@@ -93,7 +93,7 @@ tasks.withType(Jar::class) {
 
         // If you don't want mixins, remove these lines
         this["TweakClass"] = "cc.polyfrost.oneconfig.loader.stage0.LaunchWrapperTweaker"
-        this["MixinConfigs"] = "mixins.odin.json"
+        this["MixinConfigs"] = "mixins.odinclient.json"
     }
 }
 
@@ -113,7 +113,7 @@ tasks.shadowJar {
         }
     }
 
-    fun relocate(name: String) = relocate(name, "com.odin.deps.$name")
+    fun relocate(name: String) = relocate(name, "com.odinclient.deps.$name")
 }
 
 tasks.withType<Jar> { duplicatesStrategy = DuplicatesStrategy.EXCLUDE }

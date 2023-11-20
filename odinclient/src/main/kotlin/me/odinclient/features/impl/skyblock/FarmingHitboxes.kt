@@ -1,10 +1,9 @@
 package me.odinclient.features.impl.skyblock
 
+import me.odinclient.mixin.accessors.IBlockAccessor
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.BooleanSetting
 import net.minecraft.block.Block
-import net.minecraft.block.BlockCocoa
 
 object FarmingHitboxes : Module(
     name = "Farming Hitboxes",
@@ -13,16 +12,14 @@ object FarmingHitboxes : Module(
     tag = TagType.NEW
 ) {
 
-    val mushroom: Boolean by BooleanSetting(name = "Mushroom", default = true)
-    private val cocoa: Boolean by BooleanSetting(name = "Cocoa", default = true)
-
-    fun setBlockBoundsMixin(block: Block): Boolean
-    {
-        if (this.enabled)
-        {
-            if (cocoa && block is BlockCocoa) { block.setBlockBounds(0f, 0f, 0f, 1f, 1f, 1f); return true }
-        }
-        return false
+    fun setFullBlock(block: Block) {
+        val accessor = (block as IBlockAccessor)
+        accessor.setMinX(0.0)
+        accessor.setMinY(0.0)
+        accessor.setMinZ(0.0)
+        accessor.setMaxX(1.0)
+        accessor.setMaxY(1.0)
+        accessor.setMaxZ(1.0)
     }
 
 }

@@ -5,13 +5,9 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.config.DungeonWaypointConfig
 import me.odinmain.features.impl.dungeon.DungeonWaypoints.DungeonWaypoint
 import me.odinmain.features.impl.dungeon.DungeonWaypoints.toVec3
-import me.odinmain.utils.addRotationCoords
-import me.odinmain.utils.addVec
-import me.odinmain.utils.rotateAroundNorth
+import me.odinmain.utils.*
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
-import me.odinmain.utils.equal
-import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.ItemUtils
 import me.odinmain.utils.skyblock.LocationUtils
@@ -81,7 +77,11 @@ object DungeonUtils {
 
         val room = scanRoom(xPos, zPos)?.apply {
             rotation = EnumFacing.HORIZONTALS.find {
-                data.rotationCores.any { c -> ScanUtils.getCore(xPos + it.frontOffsetX * 4, zPos + it.frontOffsetZ * 4) == c }
+                val core = ScanUtils.getCore(xPos + it.frontOffsetX * 4, zPos + it.frontOffsetZ * 4)
+                return@find if (data.rotationCores.any { c -> core == c }) {
+                    rotationCore = core
+                    true
+                } else false
             } ?: EnumFacing.DOWN
         }
         val positions = room?.let { findRoomTilesRecursively(it.x, it.z, it, mutableSetOf()) } ?: emptyList()

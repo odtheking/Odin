@@ -4,9 +4,13 @@
   "minVersion": "0.7",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "accessors.IBlockAccessor",
+    "mixins.MixinBlock",
     "mixins.MixinBlockCocoa",
+    "mixins.MixinBlockCrops",
     "mixins.MixinBlockLever",
     "mixins.MixinBlockMushroom",
+    "mixins.MixinBlockNetherWart",
     "mixins.MixinBlockSkull",
     "mixins.MixinChunk",
     "mixins.MixinEntityLivingBase",

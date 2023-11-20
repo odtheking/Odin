@@ -5,9 +5,9 @@ import kotlinx.coroutines.launch
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.render.ClickGUIModule.devSize
-import me.odinmain.utils.WebUtils
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
+import me.odinmain.utils.fetchURLData
 import me.odinmain.utils.render.Color
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.model.ModelBase
@@ -30,7 +30,7 @@ object DevPlayers {
     val devs = HashMap<String, Dev>()
 
     private fun updateDevs() {
-        val webhook: String = WebUtils.fetchURLData("https://pastebin.com/raw/9Lq8hKTQ")
+        val webhook: String = fetchURLData("https://pastebin.com/raw/9Lq8hKTQ")
 
         val keyValuePairs = webhook.split("?")
         for (keyValuePair in keyValuePairs) {
