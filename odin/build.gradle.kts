@@ -1,3 +1,4 @@
+
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -6,8 +7,8 @@ plugins {
     java
     id("gg.essential.loom") version "0.10.0.+"
     id("dev.architectury.architectury-pack200") version "0.1.3"
-    id("com.github.johnrengelman.shadow") version "7.1.2"
-    kotlin("jvm") version "1.9.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
+    kotlin("jvm") version "2.0.0-Beta1"
 }
 
 group = "com.example.archloomtemplate"
@@ -36,7 +37,7 @@ loom {
 
 sourceSets.main {
     java.srcDir(file("$projectDir/src/main/kotlin"))
-    output.setResourcesDir(file("$buildDir/classes/java/main"))
+    output.setResourcesDir(sourceSets.main.flatMap { it.java.classesDirectory })
 }
 
 repositories {
@@ -76,6 +77,7 @@ tasks.named<ShadowJar>("shadowJar") {
 
 tasks.withType(JavaCompile::class) {
     options.encoding = "UTF-8"
+    mustRunAfter(":odinmain:processResources")
 }
 
 tasks.withType<KotlinCompile> {

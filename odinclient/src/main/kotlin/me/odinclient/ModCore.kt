@@ -91,6 +91,7 @@ class ModCore {
         TerminalTriggerbot,
         EtherWarpHelper,
         ChestEsp,
+        NoBreakReset,
         //AutoTerms
     )
 
