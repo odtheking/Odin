@@ -30,29 +30,4 @@ object WebUtils {
             return ""
         }
     }
-
-    fun sendDiscordWebhook(webhookUrl: String, title: String, message: String, color: Int) {
-        var jsonBrut = ""
-        jsonBrut += ("{\"embeds\": [{"
-                + "\"title\": \"" + title + "\","
-                + "\"description\": \"" + message + "\","
-                + "\"color\": $color"
-                + "}]}")
-        try {
-            val url = URL(webhookUrl)
-            val con = url.openConnection() as HttpsURLConnection
-            con.addRequestProperty("Content-Type", "application/json")
-            con.addRequestProperty("User-Agent", "Java-DiscordWebhook-BY-Gelox_")
-            con.doOutput = true
-            con.requestMethod = "POST"
-            val stream = con.outputStream
-            stream.write(jsonBrut.toByteArray())
-            stream.flush()
-            stream.close()
-            con.inputStream.close()
-            con.disconnect()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
 }
