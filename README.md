@@ -104,7 +104,7 @@ Category: Floor 7
 
 Category: Render
 - Render Optimizer: Disables certain render functions when they are not necessary, resulting in a decrease in GPU usage
-- Arrow Trajectory: Displays the trajectory of the arrows your terminator would shoot.
+- Arrow Trajectory: Displays the trajectory of the arrows your shortbow would shoot.
 - Dragon Hitboxes: Renders real dragon hitboxes
 - No Cursor Reset: Makes your cursor stop resetting between GUIs.
 - Personal Dragon: Renders your own personal dragon.
