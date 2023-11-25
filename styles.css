@@ -550,15 +550,12 @@ color: #8b8b8b; /* Darken the font color */
     display: grid;
     grid-template-columns: repeat(1, minmax(100%, 0.1fr)); /* Adjust the percentage as needed */
     justify-content: center;
-   
   }
 
   .module-list-cheater {
-  
     display: grid;
     grid-template-columns: repeat(1, minmax(100%, 0.1fr)); /* Adjust the percentage as needed */
     justify-content: center;
-   
   }
 
 }
