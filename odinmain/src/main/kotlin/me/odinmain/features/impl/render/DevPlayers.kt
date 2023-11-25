@@ -41,14 +41,13 @@ object DevPlayers {
                 val key = parts[0].trim(' ', '"')
                 val valueString = parts[1].trim()
 
-                val regex = Regex("""Dev\((\d+\.*\d*), (\d+\.*\d*), (\d+\.*\d*)\), (\d+), Color\((\d+), (\d+), (\d+)\)\)""")
-                val match = regex.find(valueString)
+                val regex = Regex("""Dev\((\d+\.*\d*), (\d+\.*\d*), (\d+\.*\d*)\), (\w+), Color\((\d+), (\d+), (\d+)\)\)""")
+                val match = regex.find(valueString) ?: return
 
-                if (match != null) {
-                    val (x, y, z, wings, wingRed, wingGreen, wingBlue) = match.destructured
-                    val dev = Dev(x.toFloat(), y.toFloat(), z.toFloat(), wings.toBoolean(), Color(wingRed.toInt(), wingGreen.toInt(), wingBlue.toInt()))
-                    devs[key] = dev
-                }
+                val (x, y, z, wings, wingRed, wingGreen, wingBlue) = match.destructured
+                val dev = Dev(x.toFloat(), y.toFloat(), z.toFloat(), wings.toBoolean(), Color(wingRed.toInt(), wingGreen.toInt(), wingBlue.toInt()))
+                devs[key] = dev
+
             }
         }
     }
