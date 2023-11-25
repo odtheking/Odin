@@ -72,7 +72,7 @@ object ModuleManager {
         NoCursorReset,
         PersonalDragon,
         RenderOptimizer,
-        Server,
+        ServerDisplay,
         Waypoints,
         AutoRenewCrystalHollows,
         AutoSprint,
