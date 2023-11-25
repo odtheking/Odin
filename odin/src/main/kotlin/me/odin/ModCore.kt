@@ -58,7 +58,7 @@ class ModCore {
 
 
     companion object {
-        const val MOD_ID = "Odin"
+        const val MOD_ID = "odin"
         const val NAME = "Odin"
         const val VERSION = OdinMain.VERSION
         const val PREFIX = "§3Odin §8»§r"

@@ -113,7 +113,7 @@ class ModCore {
     }
 
     companion object {
-        const val MOD_ID = "OdinClient"
+        const val MOD_ID = "odinclient"
         const val NAME = "OdinClient"
         const val VERSION = OdinMain.VERSION
 
