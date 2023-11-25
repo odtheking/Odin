@@ -153,7 +153,7 @@ object ModuleManager {
 
     @SubscribeEvent
     fun onRenderOverlay(event: RenderGameOverlayEvent.Pre) {
-        if (mc.currentScreen != null) return
+        if (mc.currentScreen != null || event.type != RenderGameOverlayEvent.ElementType.ALL) return
         drawNVG {
             for (i in 0 until huds.size) {
                 huds[i].draw(this, false)

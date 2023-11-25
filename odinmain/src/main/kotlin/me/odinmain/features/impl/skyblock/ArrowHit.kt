@@ -12,7 +12,7 @@ import net.minecraft.network.play.server.S29PacketSoundEffect
 object ArrowHit : Module(
     name = "Arrow hit",
     category = Category.SKYBLOCK,
-    description = "Counts how many arrows you hit in certain time periods.",
+    description = "Counts how many arrows you hit in certain time periods",
     tag = TagType.NEW
 ) {
 

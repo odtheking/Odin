@@ -14,9 +14,7 @@ import me.odinmain.utils.render.gui.animations.impl.EaseInOut
 import me.odinmain.utils.render.gui.nvg.*
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.OpenGlHelper
 import org.lwjgl.opengl.Display
-import org.lwjgl.opengl.GL11
 
 /**
  * Class to render elements on hud
@@ -100,8 +98,6 @@ open class HudElement(
         vg.scale(scale, scale)
         GlStateManager.pushMatrix()
         val sr = ScaledResolution(mc)
-
-        OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0)
         GlStateManager.scale(1.0 / sr.scaleFactor, 1.0 / sr.scaleFactor, 1.0)
         GlStateManager.translate(x, y, 0f)
         GlStateManager.scale(scale, scale, 1f)

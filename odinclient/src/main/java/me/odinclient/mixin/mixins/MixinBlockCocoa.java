@@ -59,7 +59,9 @@ public abstract class MixinBlockCocoa extends BlockDirectional {
 
     @Override
     public MovingObjectPosition collisionRayTrace(World worldIn, BlockPos pos, Vec3 start, Vec3 end) {
-        FarmingHitboxes.INSTANCE.setFullBlock(worldIn.getBlockState(pos).getBlock());
+        if (FarmingHitboxes.INSTANCE.getEnabled()){
+            FarmingHitboxes.INSTANCE.setFullBlock(worldIn.getBlockState(pos).getBlock());
+        }
         return super.collisionRayTrace(worldIn, pos, start, end);
     }
 
