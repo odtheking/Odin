@@ -201,13 +201,36 @@ function submitForm() {
     // Create an object with the data
     var data = {
         username: username,
-        password: password
+        pw: password
     };
 
     // Convert the data to JSON
     var jsonData = JSON.stringify(data);
 
-   
+    // Make an HTTP POST request to the AWS Lambda function
+    fetch('https://ginkwsma75wud3rylqlqms5n240xyomv.lambda-url.eu-north-1.on.aws/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: jsonData
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Handle the response from the server
+        console.log(data);
+
+        // You can check the response and take appropriate actions
+        if (data.success) {
+            // Login successful, do something
+        } else {
+            // Login failed, display an error message or take other actions
+        }
+    })
+    .catch(error => {
+        // Handle errors during the fetch
+        console.error('Error:', error);
+    });
 }
 
 
