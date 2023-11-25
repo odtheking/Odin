@@ -37,9 +37,14 @@ object ItemUtils {
     val ItemStack?.itemID: String
         get() = this?.extraAttributes?.getString("id") ?: ""
 
+
     inline val heldItem: ItemStack?
         get() = mc.thePlayer?.heldItem
 
+
+     /**
+     * Returns if an item has an ability
+     */
     val ItemStack?.hasAbility: Boolean
         get() {
             val lore = this?.lore
@@ -48,12 +53,17 @@ object ItemUtils {
             }
             return false
         }
-
+     /**
+     * Returns if an item is a shortbow
+     */
     val ItemStack?.isShortbow: Boolean
         get() {
             return this?.lore?.any { it.contains("Shortbow: Instantly shoots!") } == true
         }
 
+    /**
+     * Returns the ID of held item
+     */
     fun isHolding(id: String): Boolean =
         mc.thePlayer?.heldItem?.itemID == id
 
@@ -92,6 +102,10 @@ object ItemUtils {
 
     private val rarityRegex: Regex = Regex("§l(?<rarity>[A-Z]+) ?(?<type>[A-Z ]+)?(?:§[0-9a-f]§l§ka)?$")
 
+    /**
+     * Gets the rarity of an item
+     * @param lore Lore of an item
+     */
     fun getRarity(lore: List<String>): ItemRarity? {
         // Start from the end since the rarity is usually the last line or one of the last.
         for (i in lore.indices.reversed()) {

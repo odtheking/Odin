@@ -179,6 +179,15 @@ fun Vec2.addRotationCoords(rotation: EnumFacing, dist: Int = 4): Vec2 {
     )
 }
 
+/**
+ * Checks if an axis-aligned bounding box (AABB) is interceptable based on the player's position, range, yaw, and pitch.
+ *
+ * @param aabb The axis-aligned bounding box to check for interceptability.
+ * @param range The range of the interception.
+ * @param yaw The yaw angle.
+ * @param pitch The pitch angle.
+ * @return `true` if the AABB is interceptable, `false` otherwise.
+ */
 private fun isInterceptable(aabb: AxisAlignedBB, range: Float, yaw: Float, pitch: Float): Boolean {
     val player = mc.thePlayer ?: return false
     val position = Vec3(player.posX, player.posY + fastEyeHeight(), player.posZ)
@@ -186,7 +195,7 @@ private fun isInterceptable(aabb: AxisAlignedBB, range: Float, yaw: Float, pitch
     val f2: Float = -cos(-pitch * 0.017453292f)
     val look = Vec3(
         sin(-yaw * Math.toRadians(1.0) - Math.PI) * f2,
-        sin   (-pitch * Math.toRadians(1.0)),
+        sin(-pitch * Math.toRadians(1.0)),
         cos(-yaw * Math.toRadians(1.0) - Math.PI) * f2
     )
 
@@ -197,39 +206,89 @@ private fun isInterceptable(aabb: AxisAlignedBB, range: Float, yaw: Float, pitch
     )
 }
 
+/**
+ * Checks if an axis-aligned bounding box (AABB) is interceptable between two points.
+ *
+ * @param start The starting point.
+ * @param goal The ending point.
+ * @param aabb The axis-aligned bounding box to check for interceptability.
+ * @return `true` if the AABB is interceptable, `false` otherwise.
+ */
 private fun isInterceptable3(start: Vec3, goal: Vec3, aabb: AxisAlignedBB): Boolean {
-    return try { (
+    return try {
+        (
                 isVecInYZ(start.getIntermediateWithXValue(goal, aabb.minX), aabb) ||
-                isVecInYZ(start.getIntermediateWithXValue(goal, aabb.maxX), aabb) ||
-                isVecInXZ(start.getIntermediateWithYValue(goal, aabb.minY), aabb) ||
-                isVecInXZ(start.getIntermediateWithYValue(goal, aabb.maxY), aabb) ||
-                isVecInXY(start.getIntermediateWithZValue(goal, aabb.minZ), aabb) ||
-                isVecInXY(start.getIntermediateWithZValue(goal, aabb.maxZ), aabb)
-            ) } catch (e: Exception) {
-                false
-            }
+                        isVecInYZ(start.getIntermediateWithXValue(goal, aabb.maxX), aabb) ||
+                        isVecInXZ(start.getIntermediateWithYValue(goal, aabb.minY), aabb) ||
+                        isVecInXZ(start.getIntermediateWithYValue(goal, aabb.maxY), aabb) ||
+                        isVecInXY(start.getIntermediateWithZValue(goal, aabb.minZ), aabb) ||
+                        isVecInXY(start.getIntermediateWithZValue(goal, aabb.maxZ), aabb)
+                )
+    } catch (e: Exception) {
+        false
+    }
 }
 
+/**
+ * Checks if a Vec3 is within the YZ bounds of an axis-aligned bounding box (AABB).
+ *
+ * @param vec The Vec3 to check.
+ * @param aabb The axis-aligned bounding box.
+ * @return `true` if the Vec3 is within the YZ bounds, `false` otherwise.
+ */
 private fun isVecInYZ(vec: Vec3, aabb: AxisAlignedBB): Boolean =
     vec.yCoord in aabb.minY..aabb.maxY && vec.zCoord in aabb.minZ..aabb.maxZ
 
+/**
+ * Checks if a Vec3 is within the XZ bounds of an axis-aligned bounding box (AABB).
+ *
+ * @param vec The Vec3 to check.
+ * @param aabb The axis-aligned bounding box.
+ * @return `true` if the Vec3 is within the XZ bounds, `false` otherwise.
+ */
 private fun isVecInXZ(vec: Vec3, aabb: AxisAlignedBB): Boolean =
     vec.xCoord in aabb.minX..aabb.maxX && vec.zCoord in aabb.minZ..aabb.maxZ
 
+/**
+ * Checks if a Vec3 is within the XY bounds of an axis-aligned bounding box (AABB).
+ *
+ * @param vec The Vec3 to check.
+ * @param aabb The axis-aligned bounding box.
+ * @return `true` if the Vec3 is within the XY bounds, `false` otherwise.
+ */
 private fun isVecInXY(vec: Vec3, aabb: AxisAlignedBB): Boolean =
     vec.xCoord in aabb.minX..aabb.maxX && vec.yCoord in aabb.minY..aabb.maxY
 
-private fun isVecInZ(vec: Vec3?, aabb: AxisAlignedBB): Boolean {
-    return vec != null && vec.zCoord >= aabb.minZ && vec.zCoord <= aabb.maxZ
-}
+/**
+ * Checks if a Vec3 is within the Z bounds of an axis-aligned bounding box (AABB).
+ *
+ * @param vec The Vec3 to check.
+ * @param aabb The axis-aligned bounding box.
+ * @return `true` if the Vec3 is within the Z bounds, `false` otherwise.
+ */
+private fun isVecInZ(vec: Vec3?, aabb: AxisAlignedBB): Boolean =
+    vec != null && vec.zCoord >= aabb.minZ && vec.zCoord <= aabb.maxZ
 
-private fun isVecInX(vec: Vec3?, aabb: AxisAlignedBB): Boolean {
-    return vec != null && vec.xCoord >= aabb.minX && vec.xCoord <= aabb.maxX
-}
+/**
+ * Checks if a Vec3 is within the X bounds of an axis-aligned bounding box (AABB).
+ *
+ * @param vec The Vec3 to check.
+ * @param aabb The axis-aligned bounding box.
+ * @return `true` if the Vec3 is within the X bounds, `false` otherwise.
+ */
+private fun isVecInX(vec: Vec3?, aabb: AxisAlignedBB): Boolean =
+    vec != null && vec.xCoord >= aabb.minX && vec.xCoord <= aabb.maxX
 
+/**
+ * Overloads the `plus` operator for Vec3 to provide vector addition.
+ *
+ * @param vec3 The Vec3 to add to the current Vec3.
+ * @return A new Vec3 representing the sum of the two vectors.
+ */
 operator fun Vec3.plus(vec3: Vec3): Vec3 {
     return this.add(vec3)
 }
+
 
 /**
  * Adds the given coordinates to the Vec3.

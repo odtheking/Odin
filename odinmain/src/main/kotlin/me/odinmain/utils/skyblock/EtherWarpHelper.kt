@@ -14,6 +14,14 @@ object EtherWarpHelper {
     }
     var etherPos: EtherPos = EtherPos.NONE
 
+    /**
+     * Gets the position of an entity in the "ether" based on the player's view direction.
+     *
+     * @param pos The initial position of the entity.
+     * @param yaw The yaw angle representing the player's horizontal viewing direction.
+     * @param pitch The pitch angle representing the player's vertical viewing direction.
+     * @return An `EtherPos` representing the calculated position in the "ether" or `EtherPos.NONE` if the player is not present.
+     */
     fun getEtherPos(pos: Vec3, yaw: Float, pitch: Float): EtherPos {
         mc.thePlayer ?: return EtherPos.NONE
 

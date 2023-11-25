@@ -34,6 +34,11 @@ object RenderUtils {
         partialTicks = event.partialTicks
     }
 
+    /**
+     * Gets the viewer's position as a triple of x, y, and z coordinates.
+     *
+     * @return A `Triple` representing the viewer's position.
+     */
     val viewerPos: Triple<Double, Double, Double>
         get() {
             val viewer = mc.renderViewEntity
@@ -44,20 +49,58 @@ object RenderUtils {
             )
         }
 
+    /**
+     * Gets the rendered x-coordinate of an entity based on its last tick and current tick positions.
+     *
+     * @receiver The entity for which to retrieve the rendered x-coordinate.
+     * @return The rendered x-coordinate.
+     */
     val Entity.renderX: Double
         get() = lastTickPosX + (posX - lastTickPosX) * partialTicks
 
+    /**
+     * Gets the rendered y-coordinate of an entity based on its last tick and current tick positions.
+     *
+     * @receiver The entity for which to retrieve the rendered y-coordinate.
+     * @return The rendered y-coordinate.
+     */
     val Entity.renderY: Double
         get() = lastTickPosY + (posY - lastTickPosY) * partialTicks
 
+    /**
+     * Gets the rendered z-coordinate of an entity based on its last tick and current tick positions.
+     *
+     * @receiver The entity for which to retrieve the rendered z-coordinate.
+     * @return The rendered z-coordinate.
+     */
     val Entity.renderZ: Double
         get() = lastTickPosZ + (posZ - lastTickPosZ) * partialTicks
 
+    /**
+     * Gets the rendered position of an entity as a `Vec3`.
+     *
+     * @receiver The entity for which to retrieve the rendered position.
+     * @return The rendered position as a `Vec3`.
+     */
     val Entity.renderVec: Vec3
         get() = Vec3(renderX, renderY, renderZ)
 
+    /**
+     * Gets the rendered bounding box of an entity based on its last tick and current tick positions.
+     *
+     * @receiver The entity for which to retrieve the rendered bounding box.
+     * @return The rendered bounding box as an `AxisAlignedBB`.
+     */
     val Entity.renderBoundingBox: AxisAlignedBB
-        get() = AxisAlignedBB(renderX - this.width / 2, renderY, renderZ - this.width / 2, renderX + this.width / 2, renderY + this.height, renderZ + this.width / 2)
+        get() = AxisAlignedBB(
+            renderX - this.width / 2,
+            renderY,
+            renderZ - this.width / 2,
+            renderX + this.width / 2,
+            renderY + this.height,
+            renderZ + this.width / 2
+        )
+
 
     fun Color.bindColor() {
         GlStateManager.resetColor()
@@ -120,29 +163,75 @@ object RenderUtils {
     }
 
     /**
-     * @param color Has to be in the range of 0-255
+     * Draws a custom box in the 3D world space.
+     *
+     * @param x X-coordinate of the box.
+     * @param y Y-coordinate of the box.
+     * @param z Z-coordinate of the box.
+     * @param scale The scale of the box.
+     * @param color The color of the box (must be in the range of 0-255).
+     * @param thickness The thickness of the lines forming the box. Default is 3f.
+     * @param phase If `true`, disables depth testing for the box. Default is `false`.
      */
-    fun drawCustomBox(x: Double, y: Double, z: Double, scale: Double, color: Color, thickness: Float = 3f, phase: Boolean) {
+    fun drawCustomBox(x: Double, y: Double, z: Double, scale: Double, color: Color, thickness: Float = 3f, phase: Boolean = false) {
         drawCustomBox(x, scale, y, scale, z, scale, color, thickness, phase)
     }
 
-    fun drawCustomBox(pos: BlockPos, color: Color, thickness: Float = 3f, phase: Boolean) {
+    /**
+     * Draws a custom box in the 3D world space using block coordinates.
+     *
+     * @param pos The block position of the box.
+     * @param color The color of the box (must be in the range of 0-255).
+     * @param thickness The thickness of the lines forming the box. Default is 3f.
+     * @param phase If `true`, disables depth testing for the box. Default is `false`.
+     */
+    fun drawCustomBox(pos: BlockPos, color: Color, thickness: Float = 3f, phase: Boolean = false) {
         drawCustomBox(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble(), 1.0, color, thickness, phase)
     }
 
     /**
-     * @param color Has to be in the range of 0-255
+     * Draws a custom box in the 3D world space.
+     *
+     * @param x X-coordinate of the box.
+     * @param y Y-coordinate of the box.
+     * @param z Z-coordinate of the box.
+     * @param width The width of the box.
+     * @param height The height of the box.
+     * @param color The color of the box (must be in the range of 0-255).
+     * @param thickness The thickness of the lines forming the box. Default is 3f.
+     * @param phase If `true`, disables depth testing for the box. Default is `false`.
      */
-    fun drawCustomBox(x: Double, y: Double, z: Double, width: Double, height: Double, color: Color, thickness: Float = 3f, phase: Boolean) {
+    fun drawCustomBox(x: Double, y: Double, z: Double, width: Double, height: Double, color: Color, thickness: Float = 3f, phase: Boolean = false) {
         drawCustomBox(x, width, y, height, z, width, color, thickness, phase)
     }
 
-    fun drawCustomBox(x: Number, y: Number, z: Number, scale: Number, color: Color, thickness: Float = 3f, phase: Boolean) {
+    /**
+     * Draws a custom box in the 3D world space.
+     *
+     * @param x X-coordinate of the box.
+     * @param y Y-coordinate of the box.
+     * @param z Z-coordinate of the box.
+     * @param scale The scale of the box.
+     * @param color The color of the box (must be in the range of 0-255).
+     * @param thickness The thickness of the lines forming the box. Default is 3f.
+     * @param phase If `true`, disables depth testing for the box. Default is `false`.
+     */
+    fun drawCustomBox(x: Number, y: Number, z: Number, scale: Number, color: Color, thickness: Float = 3f, phase: Boolean = false) {
         drawCustomBox(x.toDouble(), scale.toDouble(), y.toDouble(), scale.toDouble(), z.toDouble(), scale.toDouble(), color, thickness, phase)
     }
 
     /**
-     * @param color Has to be in the range of 0-255
+     * Draws a custom box in the 3D world space.
+     *
+     * @param x X-coordinate of the box.
+     * @param xWidth The width of the box along the x-axis.
+     * @param y Y-coordinate of the box.
+     * @param yWidth The width of the box along the y-axis.
+     * @param z Z-coordinate of the box.
+     * @param zWidth The width of the box along the z-axis.
+     * @param color The color of the box (must be in the range of 0-255).
+     * @param thickness The thickness of the lines forming the box. Default is 3f.
+     * @param phase If `true`, disables depth testing for the box. Default is `false`.
      */
     fun drawCustomBox(x: Double, xWidth: Double, y: Double, yWidth: Double, z: Double, zWidth: Double, color: Color, thickness: Float = 3f, phase: Boolean) {
         GlStateManager.pushMatrix()
@@ -190,10 +279,24 @@ object RenderUtils {
         GlStateManager.popMatrix()
     }
 
+    /**
+     * Draws a filled box in the 3D world space using block coordinates.
+     *
+     * @param pos The block position of the box.
+     * @param color The color of the box.
+     * @param phase If `true`, disables depth testing for the box. Default is `false`.
+     */
     fun drawFilledBox(pos: BlockPos, color: Color, phase: Boolean = false) {
         drawFilledBox(AxisAlignedBB(pos, pos.add(1, 1, 1)).expand(0.001, 0.001, 0.001), color, phase)
     }
 
+    /**
+     * Draws a filled box in the 3D world space.
+     *
+     * @param ab The `AxisAlignedBB` representing the box.
+     * @param color The color of the box.
+     * @param phase If `true`, disables depth testing for the box. Default is `false`.
+     */
     fun drawFilledBox(ab: AxisAlignedBB, color: Color, phase: Boolean = false) {
         val (viewerX, viewerY, viewerZ) = viewerPos
         val aabb = AxisAlignedBB(

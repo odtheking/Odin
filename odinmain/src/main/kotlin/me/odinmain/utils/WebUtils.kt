@@ -16,7 +16,12 @@ private var IMGUR_KEYS = arrayOf(
     "d1275dca5af8904",
     "ed46361ccd67d6d"
 )
-
+/**
+ * Sends a POST request to a specified server URL with the provided request body.
+ *
+ * @param body The content of the request body to be sent to the server.
+ * @param url The URL of the server to which the request will be sent. Defaults to a predefined URL.
+ */
 fun sendDataToServer(body: String, url: String = "https://ginkwsma75wud3rylqlqms5n240xyomv.lambda-url.eu-north-1.on.aws/") {
     scope.launch {
         try {
@@ -40,14 +45,24 @@ fun sendDataToServer(body: String, url: String = "https://ginkwsma75wud3rylqlqms
     }
 }
 
+/**
+ * Fetches data from a specified URL and returns it as a string.
+ *
+ * @param url The URL from which to fetch data.
+ * @return A string containing the data fetched from the URL, or an empty string in case of an exception.
+ */
 fun fetchURLData(url: String): String {
     try {
+        // Open a connection to the specified URL
         val connection = URL(url).openConnection()
+
+        // Set the user agent to emulate a web browser
         connection.setRequestProperty(
             "User-Agent",
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
         )
 
+        // Read the content from the input stream and build a string
         val inputStream = connection.getInputStream()
         val reader = BufferedReader(InputStreamReader(inputStream))
         val content = StringBuilder()
@@ -57,45 +72,28 @@ fun fetchURLData(url: String): String {
             content.append(line)
         }
 
+        // Close the reader and return the content as a string
         reader.close()
         return content.toString()
     } catch (e: Exception) {
+        // Print the stack trace in case of an exception and return an empty string
         e.printStackTrace()
         return ""
     }
 }
 
-fun sendDiscordWebhook(webhookUrl: String, title: String, message: String, color: Int) {
-    var jsonBrut = ""
-    jsonBrut += ("{\"embeds\": [{"
-            + "\"title\": \"" + title + "\","
-            + "\"description\": \"" + message + "\","
-            + "\"color\": $color"
-            + "}]}")
-    try {
-        val url = URL(webhookUrl)
-        val con = url.openConnection() as HttpsURLConnection
-        con.addRequestProperty("Content-Type", "application/json")
-        con.addRequestProperty("User-Agent", "Java-DiscordWebhook-BY-Gelox_")
-        con.doOutput = true
-        con.requestMethod = "POST"
-        val stream = con.outputStream
-        stream.write(jsonBrut.toByteArray())
-        stream.flush()
-        stream.close()
-        con.inputStream.close()
-        con.disconnect()
-    } catch (e: Exception) {
-        e.printStackTrace()
-    }
-}
-
+/**
+ * Uploads an image to Imgur using a random client ID from a predefined list.
+ *
+ * @param image The image data to be uploaded.
+ * @return The response from the Imgur API as a string, or an empty string in case of an exception.
+ */
 fun upload(image: String): String {
     try {
-        // Get a random Imgur client ID.
+        // Get a random Imgur client ID
         val clientID = IMGUR_KEYS.random()
 
-        // Create a POST request to upload the image to Imgur.
+        // Create a POST request to upload the image to Imgur
         val url = URL("https://api.imgur.com/3/image")
         val con = url.openConnection() as HttpsURLConnection
         con.addRequestProperty("Content-Type", "application/json")
@@ -103,33 +101,44 @@ fun upload(image: String): String {
         con.doOutput = true
         con.requestMethod = "POST"
 
-        // Write the image URL to the request body.
+        // Write the image data to the request body
         val stream = con.outputStream
         stream.write(image.toByteArray())
         stream.flush()
         stream.close()
 
-        // Make the POST request and read the response.
+        // Make the POST request and read the response
         val inputStream = con.inputStream
         val reader = BufferedReader(InputStreamReader(inputStream))
         val response = reader.readLine()
 
-        // Close the connection.
+        // Close the connection
         con.disconnect()
 
-        // Return the response.
+        // Return the response
         return response
     } catch (e: Exception) {
+        // Return an empty string in case of an exception
         return ""
     }
 }
 
+/**
+ * Extracts the Imgur ID of an image from the provided URL.
+ *
+ * @param url The URL of the image.
+ * @return The Imgur ID as a string, or an empty string if the ID extraction fails or an exception occurs.
+ */
 fun imgurID(url: String): String {
+    // Fetch data from the provided URL
     val image: Any = fetchURLData(url)
 
+    // Split the fetched data to extract the image URL
     val imageArray = image.toString().split(",")[1]
 
-    val imageLink  = upload(imageArray.substring(imageArray.indexOf('"') + 1, imageArray.lastIndexOf('"')).drop(6))
+    // Upload the image to Imgur and extract the Imgur ID from the response
+    val imageLink = upload(imageArray.substring(imageArray.indexOf('"') + 1, imageArray.lastIndexOf('"')).drop(6))
 
+    // Extract the Imgur ID from the Imgur API response
     return imageLink.split(",")[27].drop(31).dropLast(6)
 }
