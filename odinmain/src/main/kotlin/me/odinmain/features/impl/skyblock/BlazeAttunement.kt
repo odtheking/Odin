@@ -32,27 +32,28 @@ object BlazeAttunement : Module(
 
     private var currentBlazes = hashMapOf<Entity, Color>()
 
-    @SubscribeEvent
-    fun onSecond(event: ClientSecondEvent) {
-        currentBlazes.clear()
-        mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()?.forEach { entity ->
-            if (currentBlazes.any { it.key == entity }) return@forEach
-            val name = entity.name.noControlCodes
+    init {
+        execute(1000) {
+            currentBlazes.clear()
+            mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()?.forEach { entity ->
+                if (currentBlazes.any { it.key == entity }) return@forEach
+                val name = entity.name.noControlCodes
 
-            val color = when {
-                name.contains("CRYSTAL ♨") -> Color(85, 250, 236)
-                name.contains("ASHEN ♨") -> Color(45, 45, 45)
-                name.contains("AURIC ♨") -> Color(206, 219, 57)
-                name.contains("SPIRIT ♨") -> Color(255, 255, 255)
-                else -> return@forEach
-            }.withAlpha(.4f)
+                val color = when {
+                    name.contains("CRYSTAL ♨") -> Color(85, 250, 236)
+                    name.contains("ASHEN ♨") -> Color(45, 45, 45)
+                    name.contains("AURIC ♨") -> Color(206, 219, 57)
+                    name.contains("SPIRIT ♨") -> Color(255, 255, 255)
+                    else -> return@forEach
+                }.withAlpha(.4f)
 
-            val entities =
-                mc.theWorld.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.expand(0.0, 3.0, 0.0))
-                    .filter { it is EntityBlaze || it is EntitySkeleton || it is EntityPigZombie }
-                    .sortedByDescending { xzDistance(it, entity) }
-            if (entities.isEmpty()) return@forEach
-            currentBlazes[entities.first()] = color
+                val entities =
+                    mc.theWorld.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.expand(0.0, 3.0, 0.0))
+                        .filter { it is EntityBlaze || it is EntitySkeleton || it is EntityPigZombie }
+                        .sortedByDescending { xzDistance(it, entity) }
+                if (entities.isEmpty()) return@forEach
+                currentBlazes[entities.first()] = color
+            }
         }
     }
 
