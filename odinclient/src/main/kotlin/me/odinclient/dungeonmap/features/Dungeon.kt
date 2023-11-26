@@ -8,6 +8,7 @@ import me.odinclient.utils.skyblock.dungeon.map.MapUtils
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
 import me.odinmain.events.impl.ChatPacketEvent
+import me.odinmain.utils.skyblock.ChatUtils.devMessage
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
@@ -29,6 +30,7 @@ object Dungeon {
         if (event.phase != TickEvent.Phase.START || !inDungeons) return
 
         if (DungeonScan.shouldScan) {
+            devMessage("§7Scanning dungeon...")
             scope.launch { DungeonScan.scan() }
         }
 

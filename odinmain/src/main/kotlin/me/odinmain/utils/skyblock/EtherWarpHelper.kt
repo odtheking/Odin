@@ -8,6 +8,7 @@ import kotlin.math.*
 
 object EtherWarpHelper {
     data class EtherPos(val succeeded: Boolean, val pos: BlockPos?) {
+        val vec: Vec3? get() = pos?.let { Vec3(it) }
         companion object {
             val NONE = EtherPos(false, null)
         }

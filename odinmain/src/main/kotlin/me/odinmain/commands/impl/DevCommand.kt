@@ -5,14 +5,11 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.commands.invoke
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.impl.dungeon.TPMaze
-import me.odinmain.utils.copyBlockData
-import me.odinmain.utils.copyEntityData
-import me.odinmain.utils.sendDataToServer
+import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.ScanUtils
-import me.odinmain.utils.writeToClipboard
 import net.minecraft.util.ChatComponentText
 import net.minecraftforge.common.MinecraftForge
 
@@ -56,24 +53,32 @@ val devCommand = "oddev" {
         val zPos = -185 + z * 32
         val core = ScanUtils.getCore(xPos, zPos)
         val northPos = DungeonUtils.Vec2(xPos, zPos - 4)
-        val northCore = ScanUtils.getCore(northPos.x, northPos.z)
+        val northCores =
+            room?.positions
+                ?.map {
+                    modMessage("Scanning ${it.x}, ${it.z - 4}: ${ScanUtils.getCore(it.x, it.z - 4)}")
+                    ScanUtils.getCore(
+                        it.x,
+                        it.z - 4
+                    )
+                } ?: listOf()
         modMessage(
             """
             ${ChatUtils.getChatBreak()}
             Middle: $xPos, $zPos
             Room: ${room?.room?.data?.name}
             Core: $core
-            North Core: $northCore
+            North Core: $northCores
             North Pos: ${northPos.x}, ${northPos.z}
             Rotation: ${room?.room?.rotation}
             Positions: ${room?.positions}
             ${ChatUtils.getChatBreak()}
             """.trimIndent(), false)
-        writeToClipboard(northCore.toString(), "Copied $northCore to clipboard!")
+        writeToClipboard(northCores.toString(), "Copied $northCores to clipboard!")
     }
 
     "getCore" does {
-        val core = ScanUtils.getCore(mc.thePlayer.posX.toInt(), mc.thePlayer.posZ.toInt())
+        val core = ScanUtils.getCore(mc.thePlayer.posX.floor().toInt(), mc.thePlayer.posZ.floor().toInt())
         writeToClipboard(core.toString(), "Copied $core to clipboard!")
     }
 }

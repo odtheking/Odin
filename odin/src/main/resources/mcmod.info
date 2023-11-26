@@ -1,6 +1,6 @@
 [
   {
-	"modid": "Odin",
+	"modid": "od",
 	"name": "Odin",
 	"description": "Odin is a versatile Forge mod tailored specifically for Hypixel Skyblock, offering a host of features designed to enhance your gameplay. You can access the GUI via the /od or /odinclient commands.",
 	"version": "1.2.1",

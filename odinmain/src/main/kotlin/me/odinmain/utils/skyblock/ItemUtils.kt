@@ -2,6 +2,7 @@ package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.noControlCodes
+import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
@@ -60,6 +61,9 @@ object ItemUtils {
         get() {
             return this?.lore?.any { it.contains("Shortbow: Instantly shoots!") } == true
         }
+
+    val EntityPlayerSP.holdingEtherWarp: Boolean
+        get() = this.heldItem?.itemID == "ETHER_WARP"
 
     /**
      * Returns the ID of held item

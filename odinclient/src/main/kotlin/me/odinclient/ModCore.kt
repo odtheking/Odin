@@ -7,7 +7,10 @@ import me.odinclient.features.impl.floor7.DioriteFucker
 import me.odinclient.features.impl.floor7.FreezeGame
 import me.odinclient.features.impl.floor7.RelicAura
 import me.odinclient.features.impl.floor7.p3.*
-import me.odinclient.features.impl.render.*
+import me.odinclient.features.impl.render.Ghosts
+import me.odinclient.features.impl.render.NoCarpet
+import me.odinclient.features.impl.render.NoDebuff
+import me.odinclient.features.impl.render.Trajectories
 import me.odinclient.features.impl.skyblock.*
 import me.odinmain.OdinMain
 import me.odinmain.commands.impl.*
@@ -113,7 +116,7 @@ class ModCore {
     }
 
     companion object {
-        const val MOD_ID = "odinclient"
+        const val MOD_ID = "odclient"
         const val NAME = "OdinClient"
         const val VERSION = OdinMain.VERSION
 

@@ -3,6 +3,8 @@ package me.odinmain.features.impl.dungeon
 import me.odinmain.config.DungeonWaypointConfig
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.impl.render.ClickGUIModule
+import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.equal
 import me.odinmain.utils.render.Color
@@ -24,7 +26,7 @@ object DungeonWaypoints : Module(
     category = Category.DUNGEON,
     tag = TagType.NEW
 ) {
-    private val debugWaypoint: Boolean by BooleanSetting("Debug Waypoint", false)
+    private val debugWaypoint: Boolean by BooleanSetting("Debug Waypoint", false).withDependency { ClickGUIModule.isDev }
     private var allowEdits: Boolean by BooleanSetting("Allow Edits", false)
 
     data class DungeonWaypoint(val x: Double, val y: Double, val z: Double, val color: Color)

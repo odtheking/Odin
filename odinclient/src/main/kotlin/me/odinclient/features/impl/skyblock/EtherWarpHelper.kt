@@ -1,20 +1,27 @@
-package me.odinclient.features.impl.render
+package me.odinclient.features.impl.skyblock
 
 import me.odinclient.mixin.accessors.IEntityPlayerSPAccessor
+import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinmain.events.impl.ClickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.impl.dungeon.DungeonWaypoints.toVec3
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.DualSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinmain.utils.clock.Clock
+import me.odinmain.utils.equal
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
+import me.odinmain.utils.skyblock.ChatUtils.devMessage
 import me.odinmain.utils.skyblock.EtherWarpHelper
 import me.odinmain.utils.skyblock.EtherWarpHelper.etherPos
 import me.odinmain.utils.skyblock.ItemUtils.extraAttributes
+import me.odinmain.utils.skyblock.ItemUtils.holdingEtherWarp
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -31,9 +38,25 @@ object EtherWarpHelper : Module(
     private val filled: Boolean by DualSetting("Type", "Outline", "Filled", default = false)
     private val thickness: Float by NumberSetting("Thickness", 3f, 1f, 10f, .1f).withDependency { !filled }
     private val phase: Boolean by BooleanSetting("Phase", false)
+    private val etherWarpTriggerBot: Boolean by BooleanSetting("Trigger Bot", false, description = "Uses Dungeon Waypoints to trigger bot to the closest waypoint.")
+    private val etherWarpTBDelay: Long by NumberSetting("Trigger Bot Delay", 200L, 0, 1000, 10).withDependency { etherWarpTriggerBot }
+    private val etherWarpHelper: Boolean by BooleanSetting("Ether Warp Helper", false, description = "Rotates you to the closest waypoint when you left click with aotv.")
+
+    private val tbClock = Clock(etherWarpTBDelay)
 
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
+        if (
+            etherWarpTriggerBot &&
+            tbClock.hasTimePassed(etherWarpTBDelay) &&
+            DungeonUtils.currentRoom?.waypoints?.any { etherPos.vec?.equal(it.toVec3()) == true } == true &&
+            mc.thePlayer.isSneaking &&
+            mc.thePlayer.holdingEtherWarp
+        ) {
+            tbClock.update()
+            PlayerUtils.rightClick()
+        }
+
         val player = mc.thePlayer as? IEntityPlayerSPAccessor ?: return
         etherPos = EtherWarpHelper.getEtherPos(Vec3(player.lastReportedPosX, player.lastReportedPosY, player.lastReportedPosZ), yaw = player.lastReportedYaw, pitch = player.lastReportedPitch)
         if (render && etherPos.succeeded && mc.thePlayer.isSneaking && mc.thePlayer.heldItem.extraAttributes?.getBoolean("ethermerge") == true) {
@@ -50,7 +73,7 @@ object EtherWarpHelper : Module(
     fun onClick(event: ClickEvent.RightClickEvent) {
         if (
             zeroPing &&
-            mc.thePlayer.heldItem?.extraAttributes?.getBoolean("ethermerge") == true &&
+            mc.thePlayer.holdingEtherWarp &&
             etherPos.succeeded &&
             mc.thePlayer.isSneaking
         ) {
@@ -58,5 +81,10 @@ object EtherWarpHelper : Module(
             mc.thePlayer.setPosition(pos.x + .5, pos.y + 1.0, pos.z + .5)
             mc.thePlayer.setVelocity(.0, .0, .0)
         }
+    }
+
+    @SubscribeEvent
+    fun onLeftClick(event: ClickEvent.LeftClickEvent) {
+        devMessage("a")
     }
 }
