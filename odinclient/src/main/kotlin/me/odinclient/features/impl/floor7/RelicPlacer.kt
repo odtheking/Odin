@@ -24,8 +24,8 @@ object RelicPlacer : Module(
     init {
         execute(50) {
             if (DungeonUtils.getPhase() != 5) return@execute
-            val pos = mc.objectMouseOver?.blockPos ?: return@execute
             val relic = relicMap.keys.find { mc.thePlayer.inventory.mainInventory[8].unformattedName.contains(it) } ?: return@execute
+            val pos = mc.objectMouseOver?.blockPos ?: return@execute
             if (pos == relicMap[relic]) {
                 PlayerUtils.rightClick()
             }
