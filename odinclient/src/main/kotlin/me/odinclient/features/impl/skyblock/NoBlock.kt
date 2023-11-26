@@ -2,7 +2,7 @@ package me.odinclient.features.impl.skyblock
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.utils.skyblock.ItemUtils.lore
+import me.odinmain.utils.skyblock.lore
 import me.odinmain.utils.skyblock.LocationUtils
 import net.minecraft.item.ItemSword
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement

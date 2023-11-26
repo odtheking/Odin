@@ -4,7 +4,7 @@ import me.odinclient.utils.skyblock.PlayerUtils.isHolding
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.utils.skyblock.ItemUtils.hasAbility
+import me.odinmain.utils.skyblock.hasAbility
 import net.minecraft.block.Block
 import net.minecraft.client.multiplayer.WorldClient
 import net.minecraft.init.Blocks
@@ -62,7 +62,6 @@ object CancelInteract : Module(
     )
 
     /**
-     * @see me.odinclient.mixin.MixinMinecraft
      * Redirected to by the MinecraftMixin. Replaces the check for whether the targeted block is air.
      * @return true when the item's ability should be used.
      */

@@ -15,9 +15,9 @@ import me.odinmain.utils.floored
 import me.odinmain.utils.plus
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
-import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.WorldUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
@@ -106,7 +106,7 @@ object AutoIceFill: Module(
                 !WorldUtils.isAir(bPos.add(transform(floorHeight[index].second, rotation)))
             ) {
                 val scanTime: Double = (System.nanoTime() - startTime) / 1000000.0
-                ChatUtils.modMessage("Scan took $scanTime ms")
+                modMessage("Scan took $scanTime ms")
 
                 renderPattern(pos, rotation)
                 currentPatterns.add(floors[floorIndex][index].toMutableList())

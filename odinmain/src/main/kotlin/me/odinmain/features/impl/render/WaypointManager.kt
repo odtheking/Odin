@@ -11,7 +11,7 @@ import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
-import me.odinmain.utils.skyblock.ChatUtils.modMessage
+import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.LocationUtils.currentArea
 import net.minecraft.util.Vec3i
 import net.minecraftforge.client.event.RenderWorldLastEvent

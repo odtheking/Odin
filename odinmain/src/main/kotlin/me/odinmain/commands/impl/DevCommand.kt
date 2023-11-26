@@ -6,10 +6,11 @@ import me.odinmain.commands.invoke
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.impl.dungeon.TPMaze
 import me.odinmain.utils.*
-import me.odinmain.utils.skyblock.ChatUtils
-import me.odinmain.utils.skyblock.ChatUtils.modMessage
+import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.ScanUtils
+import me.odinmain.utils.skyblock.getChatBreak
+import me.odinmain.utils.skyblock.sendCommand
 import net.minecraft.util.ChatComponentText
 import net.minecraftforge.common.MinecraftForge
 
@@ -30,7 +31,7 @@ val devCommand = "oddev" {
     }
 
     "giveaotv" does {
-        ChatUtils.sendCommand("give @p minecraft:diamond_shovel 1 0 {ExtraAttributes:{ethermerge:1b}}")
+        sendCommand("give @p minecraft:diamond_shovel 1 0 {ExtraAttributes:{ethermerge:1b}}")
     }
 
     "sendMessage" does {
@@ -64,7 +65,7 @@ val devCommand = "oddev" {
                 } ?: listOf()
         modMessage(
             """
-            ${ChatUtils.getChatBreak()}
+            ${getChatBreak()}
             Middle: $xPos, $zPos
             Room: ${room?.room?.data?.name}
             Core: $core
@@ -72,7 +73,7 @@ val devCommand = "oddev" {
             North Pos: ${northPos.x}, ${northPos.z}
             Rotation: ${room?.room?.rotation}
             Positions: ${room?.positions}
-            ${ChatUtils.getChatBreak()}
+            ${getChatBreak()}
             """.trimIndent(), false)
         writeToClipboard(northCores.toString(), "Copied $northCores to clipboard!")
     }

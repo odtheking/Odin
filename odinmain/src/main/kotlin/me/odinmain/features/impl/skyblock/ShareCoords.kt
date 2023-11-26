@@ -7,11 +7,13 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.StringSetting
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.floor
-import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.PlayerUtils.posX
 import me.odinmain.utils.skyblock.PlayerUtils.posY
 import me.odinmain.utils.skyblock.PlayerUtils.posZ
+import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.skyblock.partyMessage
+import me.odinmain.utils.skyblock.sendChatMessage
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object ShareCoords: Module(
@@ -33,11 +35,11 @@ object ShareCoords: Module(
 
             time.update()
 
-            ChatUtils.modMessage("Mob has spawned!")
+            modMessage("Mob has spawned!")
             PlayerUtils.alert("§5Mob has spawned!")
 
-            if (ac) ChatUtils.sendChatMessage("Mob spawned at: x: ${posX.floor()}, y: ${posY.floor()}, z: ${posZ.floor()}")
-            if (pc) ChatUtils.partyMessage("Mob spawned at: x: ${posX.floor()}, y: ${posY.floor()}, z: ${posZ.floor()}")
+            if (ac) sendChatMessage("Mob spawned at: x: ${posX.floor()}, y: ${posY.floor()}, z: ${posZ.floor()}")
+            if (pc) partyMessage("Mob spawned at: x: ${posX.floor()}, y: ${posY.floor()}, z: ${posZ.floor()}")
         }
     }
 }

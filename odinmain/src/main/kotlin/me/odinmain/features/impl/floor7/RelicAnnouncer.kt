@@ -4,8 +4,8 @@ import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.SelectorSetting
-import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.partyMessage
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object RelicAnnouncer : Module(
@@ -20,6 +20,6 @@ object RelicAnnouncer : Module(
     fun onChatReceived(event: ChatPacketEvent) {
         if (!DungeonUtils.inDungeons) return
         if (event.message !== "[BOSS] Necron: All this, for nothing...") return
-        ChatUtils.partyMessage("${colors[selected]} Relic")
+        partyMessage("${colors[selected]} Relic")
     }
 }

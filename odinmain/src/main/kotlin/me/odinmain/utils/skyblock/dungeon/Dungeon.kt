@@ -1,9 +1,10 @@
 package me.odinmain.utils.skyblock.dungeon
 
-import me.odinmain.utils.skyblock.ChatUtils.modMessage
+import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.PlayerUtils.posX
 import me.odinmain.utils.skyblock.PlayerUtils.posZ
-import me.odinmain.utils.skyblock.ScoreboardUtils
+import me.odinmain.utils.skyblock.cleanSB
+import me.odinmain.utils.skyblock.sidebarLines
 
 // In future maybe add stats about the dungeon like time elapsed, deaths, total secrets etc.
 // could add some system to look back at previous runs.
@@ -26,9 +27,9 @@ class Dungeon {
     }
 
     private fun getCurrentFloor() {
-        for (i in ScoreboardUtils.sidebarLines) {
+        for (i in sidebarLines) {
 
-            val line = ScoreboardUtils.cleanSB(i)
+            val line = cleanSB(i)
 
             if (line.contains("The Catacombs (")) {
                 runCatching { floor = Floor.valueOf(line.substringAfter("(").substringBefore(")")) }

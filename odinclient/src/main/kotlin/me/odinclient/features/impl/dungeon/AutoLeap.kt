@@ -6,8 +6,8 @@ import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.skyblock.ChatCommands.isInBlacklist
-import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -42,7 +42,7 @@ object AutoLeap : Module(
     fun onGuiOpen(event: GuiOpenEvent) {
         if (!opened || !DungeonUtils.inDungeons) return
         clickItemInContainer("Spirit Leap", target!!, event )
-        ChatUtils.modMessage("§rLeaped to $target")
+        modMessage("§rLeaped to $target")
         opened = false
         target = null
     }

@@ -22,8 +22,8 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.skyblock.EtherWarpHelper
 import me.odinmain.utils.skyblock.EtherWarpHelper.etherPos
-import me.odinmain.utils.skyblock.ItemUtils.extraAttributes
-import me.odinmain.utils.skyblock.ItemUtils.holdingEtherWarp
+import me.odinmain.utils.skyblock.extraAttributes
+import me.odinmain.utils.skyblock.holdingEtherWarp
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.util.MathHelper
 import net.minecraft.util.Vec3

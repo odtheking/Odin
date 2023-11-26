@@ -5,10 +5,10 @@ import me.odinclient.features.impl.dungeon.MapModule
 import me.odinclient.utils.skyblock.dungeon.map.ScanUtils.getCore
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.skyblock.ChatUtils
-import me.odinmain.utils.skyblock.ChatUtils.modMessage
+import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.dungeon.*
 import me.odinmain.utils.skyblock.dungeon.ScanUtils.getRoomData
+import me.odinmain.utils.skyblock.getChatBreak
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
 
@@ -64,12 +64,12 @@ object DungeonScan {
             hasScanned = true
             if (MapModule.scanChatInfo && MapModule.enabled) {
                 modMessage("""
-                    ${ChatUtils.getChatBreak()}
+                    ${getChatBreak()}
                     §9Puzzles (§c${Dungeon.Info.puzzles.size}§9): §d${Dungeon.Info.puzzles.joinToString("§7, §d")}
                     §6Trap: §3${Dungeon.Info.trapType}
                     §8Wither Doors: §7${Dungeon.Info.witherDoors - 1}
                     §7Total Secrets: §b${Dungeon.Info.secretCount} ${if (Dungeon.Info.uniqueRooms.any { it.data.name == "Mini Rails" }) "\n§aThis map has trinity, the abiphone contact! The room is called Mini Rails" else ""}
-                    ${ChatUtils.getChatBreak()}
+                    ${getChatBreak()}
                 """.trimIndent(), prefix = false)
             }
         }

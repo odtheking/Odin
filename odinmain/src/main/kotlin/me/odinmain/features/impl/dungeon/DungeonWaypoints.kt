@@ -10,8 +10,8 @@ import me.odinmain.utils.equal
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.rotateToNorth
-import me.odinmain.utils.skyblock.ChatUtils.devMessage
-import me.odinmain.utils.skyblock.ChatUtils.modMessage
+import me.odinmain.utils.skyblock.devMessage
+import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.RoomType
 import me.odinmain.utils.subtractVec
@@ -21,6 +21,10 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
+/**
+ * Custom Waypoints for Dungeons
+ * @author Bonsai
+ */
 object DungeonWaypoints : Module(
     name = "Dungeon Waypoints",
     description = "Shows waypoints for dungeons",
@@ -44,7 +48,7 @@ object DungeonWaypoints : Module(
 
         if (debugWaypoint) {
             val room = DungeonUtils.currentRoom?.room ?: return
-            RenderUtils.drawCustomBox(room.x, 70, room.z - 4, 1.0, Color.GREEN, 3f, true)
+            RenderUtils.drawCustomBox(room.x, 70, room.z - 4, 1, Color.GREEN, 3, true)
         }
     }
 

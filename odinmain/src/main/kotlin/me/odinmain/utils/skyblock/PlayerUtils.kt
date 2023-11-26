@@ -14,6 +14,8 @@ object PlayerUtils {
      * @param sound The identifier of the sound to be played.
      * @param volume The volume at which the sound should be played.
      * @param pitch The pitch at which the sound should be played.
+     *
+     * @author Aton
      */
     fun playLoudSound(sound: String?, volume: Float, pitch: Float) {
         shouldBypassVolume = true
@@ -26,6 +28,8 @@ object PlayerUtils {
      *
      * @param title String to be displayed.
      * @param playSound Toggle for sound.
+     *
+     * @author Odtheking, Bonsai
      */
     fun alert(title: String, playSound: Boolean = true) {
         if (playSound) mc.thePlayer.playSound("note.pling", 100f, 1f)

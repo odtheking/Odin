@@ -15,9 +15,10 @@ import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.utils.fetchURLData
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.sendDataToServer
-import me.odinmain.utils.skyblock.ChatUtils
-import me.odinmain.utils.skyblock.ChatUtils.modMessage
+import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.LocationUtils
+import me.odinmain.utils.skyblock.createClickStyle
+import me.odinmain.utils.skyblock.getChatBreak
 import me.odinmain.utils.waitUntilPlayer
 import net.minecraft.event.ClickEvent
 import net.minecraft.util.ChatComponentText
@@ -60,7 +61,7 @@ object ClickGUIModule: Module(
             Config.saveConfig()
 
             modMessage("""
-            ${ChatUtils.getChatBreak()}
+            ${getChatBreak()}
             §d§kOdinClientOnTopWeLoveOdinClientLiterallyTheBestMod
             
             §7Thanks for installing §3Odin§bClient ${OdinMain.VERSION}§7!
@@ -72,13 +73,13 @@ object ClickGUIModule: Module(
             """.trimIndent(), false)
             mc.thePlayer.addChatMessage(
                 ChatComponentText(" §9https://discord.gg/2nCbC9hkxT")
-                    .setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, "https://discord.gg/2nCbC9hkxT"))
+                    .setChatStyle(createClickStyle(ClickEvent.Action.OPEN_URL, "https://discord.gg/2nCbC9hkxT"))
             )
 
             modMessage("""
             
             §d§kOdinClientOnTopWeLoveOdinClientLiterallyTheBestMod
-            ${ChatUtils.getChatBreak()}
+            ${getChatBreak()}
             
             """.trimIndent(), false)
             OdinMain.scope.launch {
@@ -122,19 +123,19 @@ object ClickGUIModule: Module(
 
 
             modMessage("""
-            ${ChatUtils.getChatBreak()}
+            ${getChatBreak()}
             §d§kOdinClientOnTopWeLoveOdinClientLiterallyTheBestMod
             
             §3Update available: §f${newestVersion.jsonObject["tag_name"].toString().replace("\"", "")}
         """.trimIndent(), false)
             mc.thePlayer.addChatMessage(
-                ChatComponentText("§b$link").setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.OPEN_URL, link))
+                ChatComponentText("§b$link").setChatStyle(createClickStyle(ClickEvent.Action.OPEN_URL, link))
             )
 
             modMessage("""
             
             §d§kOdinClientOnTopWeLoveOdinClientLiterallyTheBestMod
-            ${ChatUtils.getChatBreak()}§r
+            ${getChatBreak()}§r
             
         """.trimIndent(), false)
         }

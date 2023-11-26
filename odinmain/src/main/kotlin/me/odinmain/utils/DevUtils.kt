@@ -1,7 +1,7 @@
 package me.odinmain.utils
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.utils.skyblock.ChatUtils
+import me.odinmain.utils.skyblock.devMessage
 import net.minecraft.block.Block
 import net.minecraft.block.properties.IProperty
 import net.minecraft.block.state.IBlockState
@@ -26,7 +26,7 @@ import java.io.IOException
  */
 fun copyEntityData() {
     if (mc.objectMouseOver == null || mc.objectMouseOver.typeOfHit != MovingObjectPosition.MovingObjectType.ENTITY) {
-        ChatUtils.devMessage("You are not looking at an entity!")
+        devMessage("You are not looking at an entity!")
         return
     }
     val stringBuilder = StringBuilder()
@@ -56,7 +56,7 @@ fun copyEntityData() {
 
 fun copyBlockData() {
     if (mc.objectMouseOver == null || mc.objectMouseOver.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK || mc.objectMouseOver.blockPos == null) {
-        ChatUtils.devMessage("You are not looking at a block!")
+        devMessage("You are not looking at a block!")
         return
     }
     val blockPos: BlockPos = mc.objectMouseOver.blockPos
@@ -87,9 +87,9 @@ fun writeToClipboard(text: String, successMessage: String?) {
     try {
         clipboard.setContents(StringSelection(text), null)
         if (successMessage != null)
-            ChatUtils.devMessage(successMessage)
+            devMessage(successMessage)
     } catch (exception: Exception) {
-        ChatUtils.devMessage("Clipboard not available!")
+        devMessage("Clipboard not available!")
     }
 }
 

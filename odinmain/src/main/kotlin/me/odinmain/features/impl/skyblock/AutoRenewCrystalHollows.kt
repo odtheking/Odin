@@ -2,7 +2,7 @@ package me.odinmain.features.impl.skyblock
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.utils.skyblock.ChatUtils
+import me.odinmain.utils.skyblock.sendCommand
 
 object AutoRenewCrystalHollows : Module(
     name = "Hollows Pass Renew",
@@ -12,7 +12,7 @@ object AutoRenewCrystalHollows : Module(
 
     init {
         onMessage("Your pass to the Crystal Hollows will expire in 1 minute".toRegex(), { enabled }) {
-            ChatUtils.sendCommand("purchasecrystallhollowspass");
+            sendCommand("purchasecrystallhollowspass");
         }
     }
 

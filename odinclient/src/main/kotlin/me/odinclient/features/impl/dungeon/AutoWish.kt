@@ -6,8 +6,8 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.noControlCodes
-import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.floor
@@ -36,7 +36,7 @@ object AutoWish: Module(
         DungeonUtils.teammates.forEach { entityPlayer ->
             val currentHp = entityPlayer.entity?.health ?: 40f
             if (currentHp < 40 * (healthPercentage / 100) && !DungeonUtils.isGhost) {
-                ChatUtils.modMessage("§7${entityPlayer.name}§a is at less than §c${floor(healthPercentage)}% §aHP! Wishing!")
+                modMessage("§7${entityPlayer.name}§a is at less than §c${floor(healthPercentage)}% §aHP! Wishing!")
                 dropItem()
                 canWish = false
             }

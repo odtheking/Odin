@@ -9,9 +9,9 @@ import me.odinmain.features.Module
 import me.odinmain.features.impl.skyblock.ChatCommands
 import me.odinmain.features.settings.impl.DualSetting
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.sendCommand
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object AutoDungeonRequeue : Module(
@@ -31,10 +31,7 @@ object AutoDungeonRequeue : Module(
         }
         scope.launch {
             delay(delay * 1000L)
-            if (type)
-                ChatUtils.sendCommand("instancerequeue")
-            else
-                ChatUtils.sendCommand("od ${LocationUtils.currentDungeon?.floor?.name?.lowercase()}", true)
+            sendCommand(if (type) "instancerequeue" else "od ${LocationUtils.currentDungeon?.floor?.name?.lowercase()}")
         }
     }
 }

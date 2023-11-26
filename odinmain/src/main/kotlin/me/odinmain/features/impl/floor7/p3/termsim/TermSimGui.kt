@@ -9,7 +9,7 @@ import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.round
 import me.odinmain.utils.runIn
-import me.odinmain.utils.skyblock.ChatUtils.modMessage
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.InventoryBasic

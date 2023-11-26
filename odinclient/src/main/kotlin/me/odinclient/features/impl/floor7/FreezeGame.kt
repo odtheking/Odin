@@ -3,7 +3,7 @@ package me.odinclient.features.impl.floor7
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.utils.skyblock.ChatUtils.modMessage
+import me.odinmain.utils.skyblock.modMessage
 
 object FreezeGame : Module(
     name = "Freeze Game",

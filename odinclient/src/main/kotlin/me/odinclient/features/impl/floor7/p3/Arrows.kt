@@ -8,10 +8,10 @@ import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.world.RenderUtils.renderX
 import me.odinmain.utils.render.world.RenderUtils.renderY
 import me.odinmain.utils.render.world.RenderUtils.renderZ
-import me.odinmain.utils.skyblock.ItemUtils.isShortbow
-import me.odinmain.utils.skyblock.ItemUtils.itemID
 import me.odinmain.utils.skyblock.WorldUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.isShortbow
+import me.odinmain.utils.skyblock.itemID
 import net.minecraft.util.MathHelper
 import net.minecraft.util.MovingObjectPosition
 import net.minecraft.util.Vec3

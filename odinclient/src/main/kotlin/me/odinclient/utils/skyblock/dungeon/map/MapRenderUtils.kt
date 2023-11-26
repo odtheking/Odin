@@ -8,7 +8,7 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils.bindColor
-import me.odinmain.utils.skyblock.ItemUtils.itemID
+import me.odinmain.utils.skyblock.itemID
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator

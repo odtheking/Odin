@@ -11,8 +11,8 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.round
 import me.odinmain.utils.sendDataToServer
-import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.entity.boss.EntityDragon
 import net.minecraft.util.Vec3
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
@@ -82,7 +82,7 @@ object DragonDeathCheck : Module(
             val killTime = event.entity.ticksExisted / 20.0
             if (killTime < oldPB)
                 dragon.setting.value = killTime
-            ChatUtils.modMessage("§${dragon.colorCode}$color §fdragon was alive for ${printSecondsWithColor(killTime, 3.5, 7.5, down = false)}${if (killTime < oldPB) " §7(§dNew PB§7)" else ""}.")
+            modMessage("§${dragon.colorCode}$color §fdragon was alive for ${printSecondsWithColor(killTime, 3.5, 7.5, down = false)}${if (killTime < oldPB) " §7(§dNew PB§7)" else ""}.")
         }
         dragonMap = dragonMap.minus(event.entity.entityId)
     }
@@ -101,7 +101,7 @@ object DragonDeathCheck : Module(
         val (vec, color) = deadDragonMap.entries.firstOrNull() ?: return
         deadDragonMap = deadDragonMap.minus(deadDragonMap.keys.first())
 
-        if (sendNotif && enabled) ChatUtils.modMessage("§${Dragons.entries.find { color.name == it.name }?.colorCode}$color dragon counts.")
+        if (sendNotif && enabled) modMessage("§${Dragons.entries.find { color.name == it.name }?.colorCode}$color dragon counts.")
 
         if (color == Dragons.Purple) return
 

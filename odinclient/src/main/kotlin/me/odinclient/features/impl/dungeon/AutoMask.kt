@@ -6,8 +6,8 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.noControlCodes
-import me.odinmain.utils.skyblock.ChatUtils
-import me.odinmain.utils.skyblock.ItemUtils
+import me.odinmain.utils.skyblock.getItemSlot
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -32,23 +32,23 @@ object AutoMask : Module(
         }
         if (spiritClock.hasTimePassed()) {
 
-            val slotId = ItemUtils.getItemSlot("Spirit Mask", true) ?: return
+            val slotId = getItemSlot("Spirit Mask", true) ?: return
 
             windowClick(slotId, 0, 2)
             windowClick(5, 0, 2)
             windowClick(slotId, 0, 2)
 
-            ChatUtils.modMessage("Swapped mask!")
+            modMessage("Swapped mask!")
         } else if (bonzoClock.hasTimePassed()) {
 
-            val slotId = ItemUtils.getItemSlot("Bonzo's Mask", true) ?: return
+            val slotId = getItemSlot("Bonzo's Mask", true) ?: return
 
             windowClick(slotId, 0, 2)
             windowClick(5, 0, 2)
             windowClick(slotId, 0, 2)
 
-            ChatUtils.modMessage("Swapped mask!")
-        } else ChatUtils.modMessage("Masks are on cooldown or no mask was found!")
+            modMessage("Swapped mask!")
+        } else modMessage("Masks are on cooldown or no mask was found!")
     }
 
     @SubscribeEvent

@@ -9,7 +9,7 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.containsOneOf
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.name
-import me.odinmain.utils.skyblock.ChatUtils.modMessage
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.Slot
 

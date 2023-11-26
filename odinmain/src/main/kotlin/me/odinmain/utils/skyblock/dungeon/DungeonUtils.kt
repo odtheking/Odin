@@ -9,10 +9,10 @@ import me.odinmain.utils.*
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.skyblock.ItemUtils
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.LocationUtils.currentDungeon
 import me.odinmain.utils.skyblock.PlayerUtils.posY
+import me.odinmain.utils.skyblock.getItemSlot
 import net.minecraft.block.BlockSkull
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.network.NetworkPlayerInfo
@@ -144,7 +144,7 @@ object DungeonUtils {
         Tank("§2", Color.DARK_GREEN)
     }
     data class DungeonPlayer(val name: String, val clazz: Classes, val locationSkin: ResourceLocation, val entity: EntityPlayer? = null)
-    val isGhost: Boolean get() = ItemUtils.getItemSlot("Haunt", true) != null
+    val isGhost: Boolean get() = getItemSlot("Haunt", true) != null
     var teammates: List<DungeonPlayer> = emptyList()
 
     init {

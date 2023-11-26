@@ -4,11 +4,13 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.floor
-import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.PlayerUtils.posX
 import me.odinmain.utils.skyblock.PlayerUtils.posY
 import me.odinmain.utils.skyblock.PlayerUtils.posZ
+import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.skyblock.partyMessage
+import me.odinmain.utils.skyblock.sendChatMessage
 
 object VanqNotifier : Module(
     "Vanq Notifier",
@@ -20,11 +22,11 @@ object VanqNotifier : Module(
 
     init {
         onMessage(Regex("A Vanquisher is spawning nearby!")) {
-            ChatUtils.modMessage("Vanquisher has spawned!")
+            modMessage("Vanquisher has spawned!")
             PlayerUtils.alert("§5Vanquisher has spawned!")
 
-            if (ac) ChatUtils.sendChatMessage("Vanquisher spawned at: x: ${posX.floor()}, y: ${posY.floor()}, z: ${posZ.floor()}")
-            if (pc) ChatUtils.partyMessage("Vanquisher spawned at: x: ${posX.floor()}, y: ${posY.floor()}, z: ${posZ.floor()}")
+            if (ac) sendChatMessage("Vanquisher spawned at: x: ${posX.floor()}, y: ${posY.floor()}, z: ${posZ.floor()}")
+            if (pc) partyMessage("Vanquisher spawned at: x: ${posX.floor()}, y: ${posY.floor()}, z: ${posZ.floor()}")
         }
     }
 }

@@ -5,8 +5,8 @@ import me.odinmain.events.impl.GuiLoadedEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.StringSetting
-import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.partyMessage
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -25,7 +25,7 @@ object MelodyMessage : Module(
         if (saidMelody) return
         if (!event.name.startsWith("Click the button on time!")) return
 
-        ChatUtils.partyMessage(melodyMessage)
+        partyMessage(melodyMessage)
         saidMelody = true
     }
 

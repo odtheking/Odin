@@ -4,8 +4,8 @@ import me.odinmain.config.Config
 import me.odinmain.features.impl.floor7.p3.TerminalTimes
 import me.odinmain.utils.getRandom
 import me.odinmain.utils.round
-import me.odinmain.utils.skyblock.ChatUtils.devMessage
-import me.odinmain.utils.skyblock.ChatUtils.modMessage
+import me.odinmain.utils.skyblock.devMessage
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.inventory.Slot
 import net.minecraft.item.EnumDyeColor
 import net.minecraft.item.Item

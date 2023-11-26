@@ -6,8 +6,9 @@ import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
-import me.odinmain.utils.skyblock.ItemUtils.heldItem
-import me.odinmain.utils.skyblock.ItemUtils.itemID
+import me.odinmain.utils.skyblock.heldItem
+import me.odinmain.utils.skyblock.itemID
+
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent

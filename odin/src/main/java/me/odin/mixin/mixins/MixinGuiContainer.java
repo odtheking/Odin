@@ -1,7 +1,6 @@
 package me.odin.mixin.mixins;
 
 import me.odinmain.events.impl.*;
-import me.odinmain.utils.skyblock.ChatUtils;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;

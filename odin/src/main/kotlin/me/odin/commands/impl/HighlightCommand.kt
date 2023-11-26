@@ -4,7 +4,7 @@ import me.odinmain.OdinMain
 import me.odinmain.commands.invoke
 import me.odinmain.config.MiscConfig
 import me.odinmain.features.impl.render.CustomESP
-import me.odinmain.utils.skyblock.ChatUtils.modMessage
+import me.odinmain.utils.skyblock.modMessage
 
 private inline val espList get() = MiscConfig.espList
 

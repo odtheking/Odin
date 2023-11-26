@@ -10,7 +10,7 @@ import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.floor
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
-import me.odinmain.utils.skyblock.ChatUtils.devMessage
+import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.block.BlockButtonStone
 import net.minecraft.client.renderer.GlStateManager

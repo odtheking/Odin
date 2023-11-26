@@ -4,7 +4,7 @@ import me.odinclient.utils.skyblock.PlayerUtils.leftClick
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.utils.skyblock.ItemUtils.itemID
+import me.odinmain.utils.skyblock.itemID
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 

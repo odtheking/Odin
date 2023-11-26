@@ -3,8 +3,6 @@ package me.odinmain.utils.skyblock
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
-import me.odinmain.utils.skyblock.ScoreboardUtils.cleanSB
-import me.odinmain.utils.skyblock.ScoreboardUtils.sidebarLines
 import me.odinmain.utils.skyblock.dungeon.Dungeon
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getPhase
 import net.minecraft.client.network.NetHandlerPlayClient
@@ -20,7 +18,7 @@ object LocationUtils {
     var currentDungeon: Dungeon? = null
     var currentArea: String? = null
 
-    // Switch to locraw
+
     init {
         Executor(500) {
             if (!inSkyblock) {
@@ -62,6 +60,8 @@ object LocationUtils {
 
     /**
      * Taken from [SBC](https://github.com/Harry282/Skyblock-Client/blob/main/src/main/kotlin/skyblockclient/utils/LocationUtils.kt)
+     *
+     * @author Harry282
      */
     @SubscribeEvent
     fun onConnect(event: FMLNetworkEvent.ClientConnectedToServerEvent) {
@@ -75,6 +75,8 @@ object LocationUtils {
     /**
      * Returns the current area from the tab list info.
      * If no info can be found return null.
+     *
+     * @author Aton
      */
     private fun getArea(): String? {
         if (mc.isSingleplayer) return "Singleplayer" // debugging

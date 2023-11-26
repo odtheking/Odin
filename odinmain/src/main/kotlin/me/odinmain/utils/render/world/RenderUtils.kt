@@ -216,8 +216,8 @@ object RenderUtils {
      * @param thickness The thickness of the lines forming the box. Default is 3f.
      * @param phase If `true`, disables depth testing for the box. Default is `false`.
      */
-    fun drawCustomBox(x: Number, y: Number, z: Number, scale: Number, color: Color, thickness: Float = 3f, phase: Boolean = false) {
-        drawCustomBox(x.toDouble(), scale.toDouble(), y.toDouble(), scale.toDouble(), z.toDouble(), scale.toDouble(), color, thickness, phase)
+    fun drawCustomBox(x: Number, y: Number, z: Number, scale: Number, color: Color, thickness: Number = 3f, phase: Boolean = false) {
+        drawCustomBox(x.toDouble(), scale.toDouble(), y.toDouble(), scale.toDouble(), z.toDouble(), scale.toDouble(), color, thickness.toFloat(), phase)
     }
 
     /**

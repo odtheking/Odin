@@ -15,9 +15,10 @@ import me.odinmain.utils.floor
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.render.world.RenderUtils.renderVec
-import me.odinmain.utils.skyblock.ChatUtils
 import me.odinmain.utils.skyblock.DianaBurrowEstimate
 import me.odinmain.utils.skyblock.PlayerUtils
+import me.odinmain.utils.skyblock.partyMessage
+import me.odinmain.utils.skyblock.sendCommand
 import me.odinmain.utils.toVec3i
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
@@ -82,7 +83,7 @@ object DianaHelper : Module(
 
         if(!event.message.contains("You dug out ") || !event.message.contains("Inquis") || !enabled || !sendInqMsg) return
 
-        ChatUtils.partyMessage("x: ${PlayerUtils.posX.floor().toInt()}, y: ${PlayerUtils.posY.floor().toInt()}, z: ${PlayerUtils.posZ.floor().toInt()}")
+        partyMessage("x: ${PlayerUtils.posX.floor().toInt()}, y: ${PlayerUtils.posY.floor().toInt()}, z: ${PlayerUtils.posZ.floor().toInt()}")
         PlayerUtils.alert("§6§lInquisitor!")
 
 
@@ -118,7 +119,7 @@ object DianaHelper : Module(
 
     override fun onKeybind() {
         if (!cmdCooldown.hasTimePassed()) return
-        ChatUtils.sendCommand("warp ${warpLocation?.name ?: return}")
+        sendCommand("warp ${warpLocation?.name ?: return}")
     }
 
     private enum class WarpPoint(

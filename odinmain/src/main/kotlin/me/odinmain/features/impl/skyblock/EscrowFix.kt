@@ -3,7 +3,7 @@ package me.odinmain.features.impl.skyblock
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.utils.skyblock.ChatUtils.sendCommand
+import me.odinmain.utils.skyblock.sendCommand
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object EscrowFix : Module(

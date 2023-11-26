@@ -9,8 +9,9 @@ import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.impl.skyblock.DianaHelper
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.hud.EditHUDGui
-import me.odinmain.utils.skyblock.ChatUtils
-import me.odinmain.utils.skyblock.ChatUtils.modMessage
+import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.skyblock.sendChatMessage
+import me.odinmain.utils.skyblock.sendCommand
 
 val termSimCommand = "termsim" {
     does {
@@ -73,7 +74,7 @@ val mainCommand = "od" {
     }
 
     "rq" does {
-        ChatUtils.sendCommand("instancerequeue")
+        sendCommand("instancerequeue")
         modMessage("requeing dungeon run")
     }
 
@@ -130,7 +131,7 @@ val mainCommand = "od" {
                 val type = it.first().first()
                 val floor = numberMap[it.first()[1].digitToInt()] ?: return@does modMessage("§cInvalid floor!")
                 val prefix = if (type == 'm') "master_" else ""
-                ChatUtils.sendCommand("joininstance ${prefix}catacombs_floor_$floor ")
+                sendCommand("joininstance ${prefix}catacombs_floor_$floor ")
             } else {
                 modMessage("§cInvalid command! Use `od help` for a list of commands.")
             }
@@ -138,7 +139,7 @@ val mainCommand = "od" {
     }
 
     "sendcoords" does {
-        ChatUtils.sendChatMessage("x: ${mc.thePlayer.posX.toInt()}, y: ${mc.thePlayer.posY.toInt()}, z: ${mc.thePlayer.posZ.toInt()}")
+        sendChatMessage("x: ${mc.thePlayer.posX.toInt()}, y: ${mc.thePlayer.posY.toInt()}, z: ${mc.thePlayer.posZ.toInt()}")
     }
 }
 

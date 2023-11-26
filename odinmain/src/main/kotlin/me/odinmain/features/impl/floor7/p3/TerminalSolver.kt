@@ -12,8 +12,8 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.skyblock.ChatUtils.modMessage
-import me.odinmain.utils.skyblock.ItemUtils.unformattedName
+import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.skyblock.unformattedName
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest

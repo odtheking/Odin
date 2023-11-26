@@ -2,7 +2,7 @@ package me.odinmain.commands.impl
 
 import me.odinmain.commands.invoke
 import me.odinmain.config.MiscConfig
-import me.odinmain.utils.skyblock.ChatUtils.modMessage
+import me.odinmain.utils.skyblock.modMessage
 
 private inline val autoSell get() = MiscConfig.autoSell
 

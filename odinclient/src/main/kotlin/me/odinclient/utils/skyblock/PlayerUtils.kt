@@ -8,10 +8,10 @@ import me.odinmain.features.impl.floor7.p3.termsim.TermSimGui
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.floored
-import me.odinmain.utils.skyblock.ChatUtils.modMessage
-import me.odinmain.utils.skyblock.ItemUtils.getItemIndexInContainerChest
-import me.odinmain.utils.skyblock.ItemUtils.getItemSlot
-import me.odinmain.utils.skyblock.ItemUtils.itemID
+import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.skyblock.getItemIndexInContainerChest
+import me.odinmain.utils.skyblock.getItemSlot
+import me.odinmain.utils.skyblock.itemID
 import me.odinmain.utils.waitUntilLastItem
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.gui.inventory.GuiChest

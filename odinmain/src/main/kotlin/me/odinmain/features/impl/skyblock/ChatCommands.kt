@@ -13,8 +13,7 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.floor
 import me.odinmain.utils.imgurID
-import me.odinmain.utils.skyblock.ChatUtils
-import me.odinmain.utils.skyblock.PlayerUtils
+import me.odinmain.utils.skyblock.*
 import net.minecraft.event.ClickEvent
 import net.minecraft.util.ChatComponentText
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -129,47 +128,47 @@ object ChatCommands : Module(
         }
 
         when (message.split(" ")[0]) {
-            "help" -> ChatUtils.channelMessage(helpMessage, name, channel)
-            "coords" -> if (coords) ChatUtils.channelMessage("x: ${PlayerUtils.getFlooredPlayerCoords().x}, y: ${PlayerUtils.getFlooredPlayerCoords().y}, z: ${PlayerUtils.getFlooredPlayerCoords().z}", name, channel)
-            "odin" -> if (odin) ChatUtils.channelMessage("Odin! https://discord.gg/2nCbC9hkxT", name, channel)
+            "help" -> channelMessage(helpMessage, name, channel)
+            "coords" -> if (coords) channelMessage("x: ${PlayerUtils.getFlooredPlayerCoords().x}, y: ${PlayerUtils.getFlooredPlayerCoords().y}, z: ${PlayerUtils.getFlooredPlayerCoords().z}", name, channel)
+            "odin" -> if (odin) channelMessage("Odin! https://discord.gg/2nCbC9hkxT", name, channel)
             "boop" -> {
                 if (boop) {
                     val boopAble = message.substringAfter("boop ")
-                    ChatUtils.sendChatMessage("/boop $boopAble") }
+                    sendChatMessage("/boop $boopAble") }
             }
-            "cf" -> if (cf) ChatUtils.channelMessage(ChatUtils.flipCoin(), name, channel)
-            "8ball" -> if (eightball) ChatUtils.channelMessage(ChatUtils.eightBall(), name, channel)
-            "dice" -> if (dice) ChatUtils.channelMessage(ChatUtils.rollDice(), name, channel)
-            "cat" -> if (cat) ChatUtils.channelMessage(useCatPic(), name, channel)
-            "racism" -> if (racism) ChatUtils.channelMessage("$name is ${Random.nextInt(1, 101)}% racist. Racism is not allowed!", name, channel)
-            "ping" -> if (ping) ChatUtils.channelMessage("Current Ping: ${floor(ServerUtils.averagePing).toInt()}ms", name, channel)
-            "tps" -> if (tps) ChatUtils.channelMessage("Current TPS: ${floor(ServerUtils.averageTps.floor())}", name, channel)
+            "cf" -> if (cf) channelMessage(flipCoin(), name, channel)
+            "8ball" -> if (eightball) channelMessage(eightBall(), name, channel)
+            "dice" -> if (dice) channelMessage(rollDice(), name, channel)
+            "cat" -> if (cat) channelMessage(useCatPic(), name, channel)
+            "racism" -> if (racism) channelMessage("$name is ${Random.nextInt(1, 101)}% racist. Racism is not allowed!", name, channel)
+            "ping" -> if (ping) channelMessage("Current Ping: ${floor(ServerUtils.averagePing).toInt()}ms", name, channel)
+            "tps" -> if (tps) channelMessage("Current TPS: ${floor(ServerUtils.averageTps.floor())}", name, channel)
 
             // Party cmds only
 
-            "warp" -> if (warp && channel == "party") ChatUtils.sendCommand("p warp")
+            "warp" -> if (warp && channel == "party") sendCommand("p warp")
             "warptransfer" -> { if (warptransfer && channel == "party")
-                ChatUtils.sendCommand("p warp")
+                sendCommand("p warp")
                 delay(500)
-                ChatUtils.sendCommand("p transfer $name")
+                sendCommand("p transfer $name")
             }
-            "allinvite" -> if (allinvite && channel == "party") ChatUtils.sendCommand("p settings allinvite")
-            "pt" -> if (pt && channel == "party") ChatUtils.sendCommand("p transfer $name")
+            "allinvite" -> if (allinvite && channel == "party") sendCommand("p settings allinvite")
+            "pt" -> if (pt && channel == "party") sendCommand("p transfer $name")
 
             "dt" -> if (dt && channel == "party") {
-                ChatUtils.modMessage("Reminder set for the end of the run!")
+                modMessage("Reminder set for the end of the run!")
                 dtPlayer = name
                 disableReque = true
             }
 
             // Private cmds only
 
-            "inv" -> if (inv && channel == "private") ChatUtils.sendCommand("party invite $name")
+            "inv" -> if (inv && channel == "private") sendCommand("party invite $name")
             "invite" -> if (invite && channel == "private") {
                 mc.thePlayer.playSound("note.pling", 100f, 1f)
                 mc.thePlayer.addChatMessage(
                     ChatComponentText("§3Odin§bClient §8»§r Click on this message to invite $name to your party!")
-                        .setChatStyle(ChatUtils.createClickStyle(ClickEvent.Action.RUN_COMMAND,"/party invite $name"))
+                        .setChatStyle(createClickStyle(ClickEvent.Action.RUN_COMMAND,"/party invite $name"))
                 )
             }
         }
@@ -183,7 +182,7 @@ object ChatCommands : Module(
         GlobalScope.launch{
             delay(2500)
             PlayerUtils.alert("§c$dtPlayer needs downtime")
-            ChatUtils.partyMessage("$dtPlayer needs downtime")
+            partyMessage("$dtPlayer needs downtime")
             dtPlayer = null
         }
     }

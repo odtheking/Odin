@@ -10,7 +10,7 @@ import me.odinmain.features.settings.Setting
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.utils.clock.Executable
 import me.odinmain.utils.clock.Executor
-import me.odinmain.utils.skyblock.ChatUtils
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.Packet
 import net.minecraftforge.common.MinecraftForge
 import org.lwjgl.input.Keyboard
@@ -84,7 +84,7 @@ abstract class Module(
 
     open fun onKeybind() {
         toggle()
-        if (ClickGUIModule.enableNotification) ChatUtils.modMessage("$name ${if (enabled) "§aenabled" else "§cdisabled"}.")
+        if (ClickGUIModule.enableNotification) modMessage("$name ${if (enabled) "§aenabled" else "§cdisabled"}.")
     }
 
     fun toggle() {

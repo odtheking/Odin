@@ -14,8 +14,8 @@ import me.odinmain.utils.floor
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.runIn
-import me.odinmain.utils.skyblock.ChatUtils.devMessage
-import me.odinmain.utils.skyblock.ChatUtils.modMessage
+import me.odinmain.utils.skyblock.devMessage
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.block.BlockButtonStone
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.item.EntityItem

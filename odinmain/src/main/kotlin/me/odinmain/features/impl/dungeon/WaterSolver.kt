@@ -7,7 +7,7 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
 import me.odinmain.features.impl.dungeon.PuzzleSolvers.showOrder
 import me.odinmain.utils.render.world.RenderUtils
-import me.odinmain.utils.skyblock.ChatUtils.modMessage
+import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.init.Blocks
