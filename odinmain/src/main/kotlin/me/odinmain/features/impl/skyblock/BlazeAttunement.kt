@@ -45,7 +45,7 @@ object BlazeAttunement : Module(
                 name.contains("AURIC ♨") -> Color(206, 219, 57)
                 name.contains("SPIRIT ♨") -> Color(255, 255, 255)
                 else -> return@forEach
-            }.withAlpha(0.4f, true)
+            }.withAlpha(.4f)
 
             val entities =
                 mc.theWorld.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.expand(0.0, 3.0, 0.0))
