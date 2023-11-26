@@ -38,6 +38,8 @@ object ScanUtils {
     fun getRoomData(hash: Int): RoomData? =
         roomList.find { it.cores.any { core -> hash == core } }
 
+    fun getRoomDataFromRotationCore(rotationCore: Int): RoomData? =
+        roomList.find { it.rotationCores.any { roomCore -> rotationCore == roomCore } }
 
     fun getCore(pos: DungeonUtils.Vec2): Int = getCore(pos.x, pos.z)
 

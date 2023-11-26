@@ -37,7 +37,7 @@ object DungeonUtils {
 
     data class Vec2(val x: Int, val z: Int)
     data class FullRoom(val room: Room, val positions: List<ExtraRoom>, var waypoints: List<DungeonWaypoint>)
-    data class ExtraRoom(val x: Int, val z: Int, val core: Int, val rotationCore: Int)
+    data class ExtraRoom(val x: Int, val z: Int, val rotationCore: Int)
     private var lastRoomPos: Pair<Int, Int> = Pair(0, 0)
     var currentRoom: FullRoom? = null
     val currentRoomName get() = currentRoom?.room?.data?.name ?: "Unknown"
@@ -75,15 +75,7 @@ object DungeonUtils {
         if (lastRoomPos.equal(xPos, zPos) && currentRoom != null) return
         lastRoomPos = Pair(xPos, zPos)
 
-        val room = scanRoom(xPos, zPos)?.apply {
-            rotation = EnumFacing.HORIZONTALS.find {
-                val core = ScanUtils.getCore(xPos + it.frontOffsetX * 4, zPos + it.frontOffsetZ * 4)
-                return@find if (data.rotationCores.any { c -> core == c }) {
-                    rotationCore = core
-                    true
-                } else false
-            } ?: EnumFacing.DOWN
-        }
+        val room = scanRoom(xPos, zPos)
         val positions = room?.let { findRoomTilesRecursively(it.x, it.z, it, mutableSetOf()) } ?: emptyList()
         currentRoom = room?.let { FullRoom(it, positions, emptyList()) }
         setWaypoints()
@@ -94,21 +86,20 @@ object DungeonUtils {
      * this code is way too much list manipulation, but it works
      */
     fun setWaypoints() {
-        currentRoom?.let {
-            val room = it.room
-            it.waypoints = mutableListOf<DungeonWaypoint>().apply {
-                DungeonWaypointConfig.waypoints[it.room.data.name]?.let {
-                    wp -> addAll(wp.map { a ->
-                        val vec = a.toVec3().rotateAroundNorth(it.room.rotation).addVec(x = room.x, z = room.z)
-                        DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, a.color)
-                    })
-                }
-                it.positions.forEach { pos ->
-                    addAll(DungeonWaypointConfig.waypoints[pos.rotationCore.toString()]?.map { wp ->
-                        val vec = wp.toVec3().rotateAroundNorth(it.room.rotation).addVec(x = pos.x, z = pos.z)
-                        DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, wp.color)
-                    } ?: emptyList())
-                }
+        val curRoom = currentRoom ?: return
+        val room = curRoom.room
+        curRoom.waypoints = mutableListOf<DungeonWaypoint>().apply {
+            DungeonWaypointConfig.waypoints[room.data.name]?.let { waypoints ->
+                addAll(waypoints.map { waypoint ->
+                    val vec = waypoint.toVec3().rotateAroundNorth(room.rotation).addVec(x = room.x, z = room.z)
+                    DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, waypoint.color)
+                })
+            }
+            curRoom.positions.forEach { pos ->
+                addAll(DungeonWaypointConfig.waypoints[pos.rotationCore.toString()]?.map { waypoint ->
+                    val vec = waypoint.toVec3().rotateAroundNorth(room.rotation).addVec(x = pos.x, z = pos.z)
+                    DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, waypoint.color)
+                } ?: emptyList())
             }
         }
     }
@@ -118,9 +109,9 @@ object DungeonUtils {
         val pos = Vec2(x, z)
         if (visited.contains(pos)) return tiles
         visited.add(pos)
-        val core = ScanUtils.getCore(pos)
-        if (room.data.cores.any { core == it }) {
-            tiles.add(ExtraRoom(x, z, core, ScanUtils.getCore(pos.addRotationCoords(room.rotation))))
+        val rotCore = ScanUtils.getCore(pos.addRotationCoords(room.rotation))
+        if (room.data.rotationCores.any { rotCore == it }) {
+            tiles.add(ExtraRoom(x, z, rotCore))
             EnumFacing.HORIZONTALS.forEach {
                 tiles.addAll(findRoomTilesRecursively(x + it.frontOffsetX * ROOM_SIZE, z + it.frontOffsetZ * ROOM_SIZE, room, visited))
             }
@@ -129,12 +120,16 @@ object DungeonUtils {
     }
 
     private fun scanRoom(x: Int, z: Int): Room? {
-        val height = mc.theWorld.getChunkFromChunkCoords(x shr 4, z shr 4).getHeightValue(x and 15, z and 15)
-        if (height == 0) return null
-
-        val roomCore = ScanUtils.getCore(x, z)
-        return Room(x, z, ScanUtils.getRoomData(roomCore) ?: return null).apply {
-            core = roomCore
+        return EnumFacing.HORIZONTALS.firstNotNullOfOrNull {
+            val rotCore = ScanUtils.getCore(x + it.frontOffsetX * 4, z + it.frontOffsetZ * 4)
+            Room(
+                x, z,
+                data = ScanUtils.getRoomDataFromRotationCore(rotCore) ?: return@firstNotNullOfOrNull null
+            ).apply {
+                rotationCore = rotCore
+                rotation = it
+                core = ScanUtils.getCore(x, z)
+            }
         }
     }
 

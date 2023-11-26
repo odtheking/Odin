@@ -15,6 +15,7 @@ import me.odinmain.utils.skyblock.ChatUtils.modMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.RoomType
 import me.odinmain.utils.subtractVec
+import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
@@ -57,7 +58,7 @@ object DungeonWaypoints : Module(
             .rotateToNorth(room.rotation)
 
         val waypoints =
-            if (room.data.type == RoomType.PUZZLE)
+            if (room.data.type != RoomType.NORMAL)
                 DungeonWaypointConfig.waypoints.getOrPut(room.data.name) { mutableListOf() }
             else
                 DungeonWaypointConfig.waypoints.getOrPut(rotationCore.toString()) { mutableListOf() }
@@ -74,4 +75,5 @@ object DungeonWaypoints : Module(
     }
 
     fun DungeonWaypoint.toVec3() = Vec3(x, y, z)
+    fun DungeonWaypoint.toBlockPos() = BlockPos(x, y, z)
 }

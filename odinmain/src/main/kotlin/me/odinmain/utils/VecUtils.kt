@@ -6,10 +6,7 @@ import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.util.*
-import kotlin.math.abs
-import kotlin.math.cos
-import kotlin.math.pow
-import kotlin.math.sin
+import kotlin.math.*
 
 /**
  * Gets the distance between two entities squared.
@@ -421,4 +418,93 @@ fun findNearestGrassBlock(pos: Vec3): Vec3 {
     val blocks = List(70) { i -> BlockPos(pos.xCoord, i + 50.0, pos.zCoord) }.filter { chunk.getBlock(it) == Blocks.grass }
     if (blocks.isEmpty()) return pos.coerceYIn(50.0, 90.0)
     return Vec3(blocks.minBy { abs(pos.yCoord - it.y) })
+}
+
+/**
+ * Returns Triple(distance, yaw, pitch) in minecraft coordinate system to get from x0y0z0 to x1y1z1.
+ *
+ * @param x0 X coordinate of the first point
+ * @param y0 Y coordinate of the first point
+ * @param z0 Z coordinate of the first point
+ *
+ * @param x1 X coordinate of the second point
+ * @param y1 Y coordinate of the second point
+ * @param z1 Z coordinate of the second point
+ *
+ * @return Triple of distance, yaw, pitch
+ * @author Aton
+ */
+fun getDirection(x0: Double, y0: Double, z0: Double, x1: Double, y1: Double, z1: Double): Triple<Double, Float, Float> {
+    val dist = sqrt((x1 - x0).pow(2) + (y1 - y0).pow(2) + (z1 - z0).pow(2))
+    val yaw = -atan2((x1-x0), (z1-z0)) / Math.PI * 180
+    val pitch = -atan2((y1-y0), sqrt((x1 - x0).pow(2) + (z1 - z0).pow(2))) / Math.PI*180
+    return Triple(dist, yaw.toFloat() % 360f, pitch.toFloat() % 360f)
+}
+
+/**
+ * Returns a triple of distance, yaw, pitch to rotate to the given position with etherwarp physics, or null if etherwarp is not possible.
+ *
+ * @param targetPos The position to rotate to.
+ * @return A triple of distance, yaw, pitch to rotate to the given position with etherwarp physics, or null if etherwarp is not possible
+ * @see getDirection
+ * @author Aton
+ */
+fun etherwarpRotateTo(targetPos: BlockPos): Triple<Double, Float, Float>? {
+    val distance = mc.thePlayer.getDistanceSq(targetPos)
+    val dist = 61.0
+
+    if (distance > (dist + 2) * (dist + 2)) {
+        return null
+    }
+
+
+    // check whether the block can be seen or is to far away
+    val targets = listOf(
+        Vec3(targetPos).add(Vec3(0.5, 1.0, 0.5)),
+        Vec3(targetPos).add(Vec3(0.0, 0.5, 0.5)),
+        Vec3(targetPos).add(Vec3(0.5, 0.5, 0.0)),
+        Vec3(targetPos).add(Vec3(1.0, 0.5, 0.5)),
+        Vec3(targetPos).add(Vec3(0.5, 0.5, 1.0)),
+        Vec3(targetPos).add(Vec3(0.5, 0.0, 0.5)),
+
+        // corners of the block
+        Vec3(targetPos).add(Vec3(0.1, 0.0, 0.1)),
+        Vec3(targetPos).add(Vec3(0.1, 1.0, 0.1)),
+
+        Vec3(targetPos).add(Vec3(1.0, 0.0, 0.1)),
+        Vec3(targetPos).add(Vec3(1.0, 1.0, 0.1)),
+
+        Vec3(targetPos).add(Vec3(0.1, 0.0, 1.0)),
+        Vec3(targetPos).add(Vec3(0.1, 1.0, 1.0)),
+
+        Vec3(targetPos).add(Vec3(0.9, 1.0, 1.0)),
+        Vec3(targetPos).add(Vec3(1.0, 1.0, 0.9)),
+        Vec3(targetPos).add(Vec3(0.9, 1.0, 1.0))
+    )
+
+    var target: Vec3? = null
+    for (targetVec in targets) {
+        val eyeVec = getPositionEyes()
+
+        val dirVec = targetVec.subtract(eyeVec).normalize()
+
+        val vec32 = eyeVec.addVector(dirVec.xCoord * dist, dirVec.yCoord * dist, dirVec.zCoord * dist)
+        // TODO: Make this use etherwarp raytracing, not default minecraft (Take from EtherWarpHelper)
+        val obj = mc.theWorld.rayTraceBlocks(eyeVec, vec32, true, false, true) ?: run {
+            return null
+        }
+        if (obj.blockPos == targetPos) {
+            target = targetVec
+            break
+        }
+    }
+
+    if (target == null) {
+        return null
+    }
+
+    return getDirection(
+        mc.thePlayer.posX, mc.thePlayer.posY + fastEyeHeight(), mc.thePlayer.posZ,
+        target.xCoord, target.yCoord, target.zCoord
+    )
 }

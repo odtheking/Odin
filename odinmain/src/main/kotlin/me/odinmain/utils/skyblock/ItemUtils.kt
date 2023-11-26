@@ -63,7 +63,7 @@ object ItemUtils {
         }
 
     val EntityPlayerSP.holdingEtherWarp: Boolean
-        get() = this.heldItem?.itemID == "ETHER_WARP"
+        get() = this.heldItem?.extraAttributes?.getBoolean("ethermerge") == true
 
     /**
      * Returns the ID of held item
