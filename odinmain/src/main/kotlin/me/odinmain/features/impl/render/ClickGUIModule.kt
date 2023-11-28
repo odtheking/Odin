@@ -15,10 +15,10 @@ import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.utils.fetchURLData
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.sendDataToServer
-import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.createClickStyle
 import me.odinmain.utils.skyblock.getChatBreak
+import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.waitUntilPlayer
 import net.minecraft.event.ClickEvent
 import net.minecraft.util.ChatComponentText
@@ -147,8 +147,8 @@ object ClickGUIModule: Module(
             return false // Handle null or empty strings appropriately
         }
 
-        val (major, minor, patch) = currentVersion.split(".").map { it.toIntOrNull() ?: 0 }
-        val (major2, minor2, patch2) = second.split(".").map { it.toIntOrNull() ?: 0 }
+        val (major, minor, patch) = currentVersion.split(".").mapNotNull { it.toIntOrNull() }
+        val (major2, minor2, patch2) = second.split(".").mapNotNull { it.toIntOrNull() }
 
         return when {
             major > major2 -> false

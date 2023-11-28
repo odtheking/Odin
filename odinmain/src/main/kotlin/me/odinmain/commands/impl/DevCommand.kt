@@ -1,15 +1,14 @@
 package me.odinmain.commands.impl
 
-import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.commands.invoke
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.impl.dungeon.TPMaze
 import me.odinmain.utils.*
-import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.ScanUtils
 import me.odinmain.utils.skyblock.getChatBreak
+import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.sendCommand
 import net.minecraft.util.ChatComponentText
 import net.minecraftforge.common.MinecraftForge
@@ -35,9 +34,9 @@ val devCommand = "oddev" {
     }
 
     "sendMessage" does {
-        sendDataToServer(body = """{"ud": "${mc.thePlayer.name}\n${ if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""")
-        sendDataToServer(body = """{"dd": "odtheking\nOdinClient 1.2"}""")
-        sendDataToServer(body = """{"ud": "${mc.thePlayer.name}\n${ if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""")
+        if (it.isEmpty()) return@does modMessage("§cMissing message!")
+        sendDataToServer("""{"${it.first()}": "This is a test message"}""")
+        modMessage("""{"${it.first()}": "This is a test message"}""")
     }
 
     "simulate" does {

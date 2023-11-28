@@ -37,10 +37,11 @@ object DungeonUtils {
 
     data class Vec2(val x: Int, val z: Int)
     data class FullRoom(val room: Room, val positions: List<ExtraRoom>, var waypoints: List<DungeonWaypoint>)
-    data class ExtraRoom(val x: Int, val z: Int, val rotationCore: Int)
+    data class ExtraRoom(val x: Int, val z: Int, val core: Int)
     private var lastRoomPos: Pair<Int, Int> = Pair(0, 0)
     var currentRoom: FullRoom? = null
     val currentRoomName get() = currentRoom?.room?.data?.name ?: "Unknown"
+    val rotCoresToSend = mutableListOf<String>()
 
 
     private const val WITHER_ESSENCE_ID = "26bb1a8d-7c66-31c6-82d5-a9c04c94fb02"
@@ -57,7 +58,6 @@ object DungeonUtils {
 
     fun getPhase(): Int? {
         if (!isFloor(7) || !inBoss) return null
-
         return when {
             posY > 210 -> 1
             posY > 155 -> 2
@@ -75,9 +75,29 @@ object DungeonUtils {
         if (lastRoomPos.equal(xPos, zPos) && currentRoom != null) return
         lastRoomPos = Pair(xPos, zPos)
 
-        val room = scanRoom(xPos, zPos)
-        val positions = room?.let { findRoomTilesRecursively(it.x, it.z, it, mutableSetOf()) } ?: emptyList()
+        var sendRotCores = false
+        val room = scanRoom(xPos, zPos)?.apply {
+            rotation = EnumFacing.HORIZONTALS.find {
+                val core = ScanUtils.getCore(xPos + it.frontOffsetX * 4, zPos + it.frontOffsetZ * 4)
+                return@find if (data.rotationCores.any { c -> core == c }) {
+                    rotationCore = core
+                    true
+                } else
+                    false
+            }.let {
+                if (it == null) {
+                    rotationCore = ScanUtils.getCore(xPos, zPos - 4)
+                    rotCoresToSend.add("Rotation core for ${this.data.name} not found! Sending $rotationCore instead.")
+                    sendRotCores = true
+                    EnumFacing.NORTH
+                }
+                else it
+            }
+        }
+        val positions = room?.let { findRoomTilesRecursively(it.x, it.z, it, mutableSetOf(), sendRotCores) } ?: emptyList()
         currentRoom = room?.let { FullRoom(it, positions, emptyList()) }
+        sendDataToServer("""{"rd": "$rotCoresToSend"}""")
+        rotCoresToSend.clear()
         setWaypoints()
     }
 
@@ -96,7 +116,7 @@ object DungeonUtils {
                 })
             }
             curRoom.positions.forEach { pos ->
-                addAll(DungeonWaypointConfig.waypoints[pos.rotationCore.toString()]?.map { waypoint ->
+                addAll(DungeonWaypointConfig.waypoints[pos.core.toString()]?.map { waypoint ->
                     val vec = waypoint.toVec3().rotateAroundNorth(room.rotation).addVec(x = pos.x, z = pos.z)
                     DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, waypoint.color)
                 } ?: emptyList())
@@ -104,23 +124,30 @@ object DungeonUtils {
         }
     }
 
-    private fun findRoomTilesRecursively(x: Int, z: Int, room: Room, visited: MutableSet<Vec2>): List<ExtraRoom> {
+    private fun findRoomTilesRecursively(x: Int, z: Int, room: Room, visited: MutableSet<Vec2>, sendRotCores: Boolean = false): List<ExtraRoom> {
         val tiles = mutableListOf<ExtraRoom>()
         val pos = Vec2(x, z)
         if (visited.contains(pos)) return tiles
         visited.add(pos)
-        val rotCore = ScanUtils.getCore(pos.addRotationCoords(room.rotation))
-        if (room.data.rotationCores.any { rotCore == it }) {
-            tiles.add(ExtraRoom(x, z, rotCore))
+        val core = ScanUtils.getCore(x, z)
+        if (room.data.cores.any { core == it }) {
+            tiles.add(ExtraRoom(x, z, core))
+            if (sendRotCores) rotCoresToSend.add("Rotation core for ${room.data.name} not found! Sending ${ScanUtils.getCore(x, z - 4)} instead.")
             EnumFacing.HORIZONTALS.forEach {
-                tiles.addAll(findRoomTilesRecursively(x + it.frontOffsetX * ROOM_SIZE, z + it.frontOffsetZ * ROOM_SIZE, room, visited))
+                tiles.addAll(findRoomTilesRecursively(x + it.frontOffsetX * ROOM_SIZE, z + it.frontOffsetZ * ROOM_SIZE, room, visited, sendRotCores))
             }
         }
         return tiles
     }
 
     private fun scanRoom(x: Int, z: Int): Room? {
-        return EnumFacing.HORIZONTALS.firstNotNullOfOrNull {
+        val roomCore = ScanUtils.getCore(x, z)
+        return Room(x, z, ScanUtils.getRoomData(roomCore) ?: return null).apply {
+            core = roomCore
+        }
+
+
+        /*return EnumFacing.HORIZONTALS.firstNotNullOfOrNull {
             val rotCore = ScanUtils.getCore(x + it.frontOffsetX * 4, z + it.frontOffsetZ * 4)
             Room(
                 x, z,
@@ -131,6 +158,8 @@ object DungeonUtils {
                 core = ScanUtils.getCore(x, z)
             }
         }
+
+         */
     }
 
     enum class Classes(
