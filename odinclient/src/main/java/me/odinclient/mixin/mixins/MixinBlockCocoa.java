@@ -9,10 +9,10 @@ import net.minecraft.util.*;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static net.minecraft.block.BlockCocoa.AGE;
 
@@ -23,38 +23,38 @@ public abstract class MixinBlockCocoa extends BlockDirectional {
         super(material);
     }
 
-    /**
-     * @author Cezar
-     * @reason Full crop hitboxes
-     */
-    @Overwrite
-    public AxisAlignedBB getCollisionBoundingBox(World worldIn, BlockPos pos, IBlockState state) {
-        IBlockState iblockstate = worldIn.getBlockState(pos);
-        EnumFacing enumfacing = iblockstate.getValue(FACING);
-        int i = iblockstate.getValue(AGE);
-        int j = 4 + i * 2;
-        int k = 5 + i * 2;
-        float f = (float)j / 2.0f;
-        switch (enumfacing) {
-            case SOUTH: {
-                this.setBlockBounds((8.0f - f) / 16.0f, (12.0f - (float)k) / 16.0f, (15.0f - (float)j) / 16.0f, (8.0f + f) / 16.0f, 0.75f, 0.9375f);
-                break;
+
+    @Inject(method = "getCollisionBoundingBox", at = @At("HEAD"), cancellable = true)
+    private void onGetCollisionBoundingBox(World worldIn, BlockPos pos, IBlockState state, CallbackInfoReturnable<AxisAlignedBB> cir)
+    {
+        if (FarmingHitboxes.INSTANCE.getEnabled())
+        {
+            IBlockState iblockstate = worldIn.getBlockState(pos);
+            EnumFacing enumfacing = iblockstate.getValue(FACING);
+            int i = iblockstate.getValue(AGE);
+            int j = 4 + i * 2;
+            int k = 5 + i * 2;
+            float f = (float)j / 2.0F;
+            switch (enumfacing) {
+                case SOUTH:
+                    this.setBlockBounds((8.0F - f) / 16.0F, (12.0F - (float)k) / 16.0F, (15.0F - (float)j) / 16.0F, (8.0F + f) / 16.0F, 0.75F, 0.9375F);
+                    break;
+                case NORTH:
+                    this.setBlockBounds((8.0F - f) / 16.0F, (12.0F - (float)k) / 16.0F, 0.0625F, (8.0F + f) / 16.0F, 0.75F, (1.0F + (float)j) / 16.0F);
+                    break;
+                case WEST:
+                    this.setBlockBounds(0.0625F, (12.0F - (float)k) / 16.0F, (8.0F - f) / 16.0F, (1.0F + (float)j) / 16.0F, 0.75F, (8.0F + f) / 16.0F);
+                    break;
+                case EAST:
+                    this.setBlockBounds((15.0F - (float)j) / 16.0F, (12.0F - (float)k) / 16.0F, (8.0F - f) / 16.0F, 0.9375F, 0.75F, (8.0F + f) / 16.0F);
             }
-            case NORTH: {
-                this.setBlockBounds((8.0f - f) / 16.0f, (12.0f - (float)k) / 16.0f, 0.0625f, (8.0f + f) / 16.0f, 0.75f, (1.0f + (float)j) / 16.0f);
-                break;
-            }
-            case WEST: {
-                this.setBlockBounds(0.0625f, (12.0f - (float)k) / 16.0f, (8.0f - f) / 16.0f, (1.0f + (float)j) / 16.0f, 0.75f, (8.0f + f) / 16.0f);
-                break;
-            }
-            case EAST: {
-                this.setBlockBounds((15.0f - (float)j) / 16.0f, (12.0f - (float)k) / 16.0f, (8.0f - f) / 16.0f, 0.9375f, 0.75f, (8.0f + f) / 16.0f);
-            }
+
+            AxisAlignedBB collisionBoundingBox = super.getCollisionBoundingBox(worldIn, pos, state);
+            this.setBlockBounds(0, 0, 0, 1, 1, 1);
+            FarmingHitboxes.INSTANCE.setFullBlock(this);
+            cir.setReturnValue(collisionBoundingBox);
+            cir.cancel();
         }
-        AxisAlignedBB collisionBoundingBox = new AxisAlignedBB(pos.getX() + minX, pos.getY() + minY, pos.getZ() + minZ, pos.getZ() + maxX, pos.getY() + maxY, pos.getZ() + maxZ);
-        this.setBlockBoundsBasedOnState(worldIn, pos);
-        return collisionBoundingBox;
     }
 
     @Override
@@ -68,7 +68,7 @@ public abstract class MixinBlockCocoa extends BlockDirectional {
     @Inject(method = "setBlockBoundsBasedOnState", at = @At("HEAD"), cancellable = true)
     private void modifyBlockHitbox(IBlockAccess worldIn, BlockPos pos, CallbackInfo ci) {
         if (FarmingHitboxes.INSTANCE.getEnabled()) {
-            worldIn.getBlockState(pos).getBlock().setBlockBounds(0f, 0f, 0f, 1f, 1f, 1f);
+            FarmingHitboxes.INSTANCE.setFullBlock(worldIn.getBlockState(pos).getBlock());
             ci.cancel();
         }
     }
