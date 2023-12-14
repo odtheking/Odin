@@ -11,8 +11,8 @@ import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
-import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.LocationUtils.currentArea
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.util.Vec3i
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
@@ -28,10 +28,10 @@ object WaypointManager {
     private var temporaryWaypoints = mutableListOf<Pair<Waypoint, Clock>>()
 
     fun addWaypoint(name: String = "§fWaypoint", x: Int, y: Int, z: Int, color: Color) =
-        addWaypoint(Waypoint(name, x, y, z, color))
+        addWaypoint(Waypoint(if (Waypoints.onlyDistance) "" else name, x, y, z, color))
 
     fun addWaypoint(name: String = "§fWaypoint", vec3: Vec3i, color: Color) =
-        addWaypoint(Waypoint(name, vec3.x, vec3.y, vec3.z, color))
+        addWaypoint(Waypoint(if (Waypoints.onlyDistance) "" else name, vec3.x, vec3.y, vec3.z, color))
 
     fun addWaypoint(waypoint: Waypoint, area: String = currentArea!!) {
         waypoints.getOrPut(area) { mutableListOf() }.add(waypoint)
@@ -44,7 +44,7 @@ object WaypointManager {
     }
 
     fun removeWaypoint(waypoint: Waypoint) {
-        waypoints[currentArea]?.remove(waypoint)
+        waypoints[WaypointGUI.displayArea]?.remove(waypoint)
         WaypointConfig.saveConfig()
     }
 
@@ -63,8 +63,7 @@ object WaypointManager {
     }
 
     fun addTempWaypoint(name: String = "§fWaypoint", vec3: Vec3i) {
-        if (currentArea == null) return modMessage("You are not in Skyblock.")
-        temporaryWaypoints.add(Pair(Waypoint(name, vec3.x, vec3.y, vec3.z, randomColor()), Clock(60_000)))
+        addTempWaypoint(name, vec3.x, vec3.y, vec3.z)
     }
 
     @SubscribeEvent
@@ -100,6 +99,6 @@ object WaypointManager {
     ) {
         constructor(name: String, vec3: Vec3i, color: Color) : this(name, vec3.x, vec3.y, vec3.z, color, true)
 
-        fun renderBeacon(partialTicks: Float) = RenderUtils.renderCustomBeacon(name, x + .5, y + .5, z + .5, color, partialTicks, Waypoints.onlyBox)
+        fun renderBeacon(partialTicks: Float) = RenderUtils.renderCustomBeacon(name, x + .5, y + .5, z + .5, color, partialTicks, !Waypoints.onlyBox)
     }
 }

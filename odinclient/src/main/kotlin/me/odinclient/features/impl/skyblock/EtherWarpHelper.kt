@@ -22,9 +22,9 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.skyblock.EtherWarpHelper
 import me.odinmain.utils.skyblock.EtherWarpHelper.etherPos
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.extraAttributes
 import me.odinmain.utils.skyblock.holdingEtherWarp
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.util.MathHelper
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -45,12 +45,13 @@ object EtherWarpHelper : Module(
     private val filled: Boolean by DualSetting("Type", "Outline", "Filled", default = false).withDependency { render }
     private val thickness: Float by NumberSetting("Thickness", 3f, 1f, 10f, .1f).withDependency { !filled && render }
     private val phase: Boolean by BooleanSetting("Phase", false).withDependency { render }
-    private val etherWarpTriggerBot: Boolean by BooleanSetting("Trigger Bot", false, description = "Uses Dungeon Waypoints to trigger bot to the closest waypoint.")
+    private val etherWarpTriggerBot: Boolean by BooleanSetting("Trigger Bot", false, description = "Uses Dungeon Waypoints to trigger bot to the closest waypoint.").withDependency { notReady }
     private val etherWarpTBDelay: Long by NumberSetting("Trigger Bot Delay", 200L, 0, 1000, 10).withDependency { etherWarpTriggerBot }
-    private val etherWarpHelper: Boolean by BooleanSetting("Ether Warp Helper", false, description = "Rotates you to the closest waypoint when you left click with aotv.")
+    private val etherWarpHelper: Boolean by BooleanSetting("Ether Warp Helper", false, description = "Rotates you to the closest waypoint when you left click with aotv.").withDependency { etherWarpTriggerBot }
     private val rotTime: Long by NumberSetting("Rotation Time", 100L, 10L, 300L, 1L).withDependency { etherWarpHelper }
     private val maxRot: Float by NumberSetting("Max Rotation", 90f, 0f, 360f, 1f).withDependency { etherWarpHelper }
 
+    private val notReady = false
 
     private val tbClock = Clock(etherWarpTBDelay)
 

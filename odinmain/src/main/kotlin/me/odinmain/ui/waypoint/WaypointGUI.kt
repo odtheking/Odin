@@ -6,6 +6,7 @@ import cc.polyfrost.oneconfig.utils.dsl.*
 import me.odinmain.commands.impl.WaypointCommand.randomColor
 import me.odinmain.config.WaypointConfig
 import me.odinmain.features.impl.render.WaypointManager
+import me.odinmain.features.impl.render.Waypoints
 import me.odinmain.ui.waypoint.elements.AreaButton
 import me.odinmain.ui.waypoint.elements.WaypointElement
 import me.odinmain.utils.floored
@@ -125,7 +126,7 @@ object WaypointGUI : GuiScreen() {
             return
         }
         if (mouseHandler.isAreaHovered(10f, 5f, 78.5f, 15f)) {
-            val waypoint = WaypointManager.Waypoint("§fWaypoint", mc.thePlayer.positionVector.floored(), randomColor())
+            val waypoint = WaypointManager.Waypoint(if (Waypoints.onlyDistance) "" else "§fWaypoint", mc.thePlayer.positionVector.floored(), randomColor())
             WaypointManager.addWaypoint(waypoint, displayArea ?: "")
             list.add(WaypointElement(waypoint))
             return
@@ -146,7 +147,7 @@ object WaypointGUI : GuiScreen() {
         if (Mouse.getEventDWheel() != 0) {
             val amount = Mouse.getEventDWheel().sign * -16
             if (drawingAreas && mouseHandler.isAreaHovered(0f, 25f, 480f, 25f)) {
-                areaTarget = (areaTarget + amount).coerceAtMost(10f).coerceAtLeast(292f - areas.sumOf { it.width.toInt() })
+                areaTarget = (areaTarget + amount).coerceAtMost(10f).coerceAtLeast(280f - areas.sumOf { it.width.toInt() })
                 areaAnimation.start(true)
             } else {
                 scrollTarget = (scrollTarget + amount).coerceAtMost(-229 + list.size * 40f).coerceAtLeast(0f)

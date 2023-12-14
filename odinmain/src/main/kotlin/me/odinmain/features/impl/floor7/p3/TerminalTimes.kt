@@ -7,6 +7,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.utils.name
+import me.odinmain.utils.round
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -80,7 +81,7 @@ object TerminalTimes : Module(
         val previousTime = currentTerminal!!.setting.value
         if (time < previousTime) {
             modMessage("§fNew best time for §6${currentTerminal?.name} §fis §a${time}s, §fold best time was §a${previousTime}s")
-            currentTerminal?.setting?.value = time
+            currentTerminal?.setting?.value = time.round(2)
             Config.saveConfig()
         }
         currentTerminal = null

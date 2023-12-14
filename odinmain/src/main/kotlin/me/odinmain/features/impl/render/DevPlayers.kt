@@ -24,7 +24,7 @@ import kotlin.math.sin
 object DevPlayers {
 
     data class Dev(val xScale: Float = 1f, val yScale: Float = 1f, val zScale: Float = 1f,
-                   val wings: Boolean = false, val wingsColor: Color = Color.WHITE
+                   val wings: Boolean = false, val wingsColor: Color = Color(255, 255, 255)
     )
 
     val devs = HashMap<String, Dev>()
@@ -46,6 +46,7 @@ object DevPlayers {
 
                 val (x, y, z, wings, wingRed, wingGreen, wingBlue) = match.destructured
                 val dev = Dev(x.toFloat(), y.toFloat(), z.toFloat(), wings.toBoolean(), Color(wingRed.toInt(), wingGreen.toInt(), wingBlue.toInt()))
+
                 devs[key] = dev
 
             }
@@ -54,9 +55,7 @@ object DevPlayers {
 
     init {
         Executor(delay = 15000) {
-            OdinMain.scope.launch {
-                updateDevs()
-            }
+            OdinMain.scope.launch { updateDevs() }
         }.register()
     }
 
@@ -106,7 +105,7 @@ object DevPlayers {
                 GlStateManager.translate(0.0, (0.125 / 1.0) * dev.yScale, 0.0)
             }
 
-            GlStateManager.color(0.63f, 0.05f, 0.09f, 1f)
+            GlStateManager.color(dev.wingsColor.r.toFloat()/255, dev.wingsColor.g.toFloat()/255, dev.wingsColor.b.toFloat()/255, 1f)
             mc.textureManager.bindTexture(dragonWingTextureLocation)
 
             for (j in 0..1) {
@@ -127,6 +126,7 @@ object DevPlayers {
             GlStateManager.disableCull()
             GlStateManager.color(1f, 1f, 1f, 1f)
             GlStateManager.popMatrix()
+
         }
 
         private fun interpolate(yaw1: Float, yaw2: Float, percent: Float): Float {
@@ -141,10 +141,10 @@ object DevPlayers {
 
     @SubscribeEvent
     fun onRenderPlayer(event: RenderPlayerEvent.Post) {
-        val player = event.entityPlayer
-        val dev = devs[player.gameProfile.name] ?: return
-        if (!dev.wings || player.isInvisible) return
-        DragonWings.renderWings(player, event.partialRenderTick, dev)
+        if (!devs.containsKey(event.entity.name)) return
+        if (!devSize && event.entity.name == mc.thePlayer.name) return
+        val dev = devs[event.entity.name]
+        if (dev != null) DragonWings.renderWings(event.entityPlayer, event.partialRenderTick, dev)
     }
 
 }

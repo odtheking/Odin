@@ -12,9 +12,9 @@ import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.render.world.RenderUtils.renderX
 import me.odinmain.utils.render.world.RenderUtils.renderY
 import me.odinmain.utils.render.world.RenderUtils.renderZ
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.isShortbow
 import me.odinmain.utils.skyblock.itemID
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.monster.EntityBlaze
@@ -214,7 +214,7 @@ object Trajectories : Module(
     fun onRenderModel(event: RenderEntityModelEvent) {
         if (event.entity !in entityRenderQueue) return
         if (!mc.thePlayer.canEntityBeSeen(event.entity)) return
-        if(event.entity !is EntityBlaze || !DungeonUtils.inDungeons) return
+        if(event.entity is EntityBlaze && DungeonUtils.inDungeons) return
         OutlineUtils.outlineEntity(
             event,
             thickness,

@@ -34,7 +34,7 @@ object TerminalSolver : Module(
     category = Category.FLOOR7,
     tag = TagType.NEW
 ) {
-    private val customSize: Int by NumberSetting("Custom Size", 2, 1, 4, 1, description = "Custom size of the terminal")
+    private val customSize: Int by NumberSetting("Custom Size", mc.gameSettings.guiScale, 1, 4, 1, description = "Custom size of the terminal")
     private val behindItem: Boolean by BooleanSetting("Behind Item", description = "Shows the item over the rendered solution")
     private val cancelToolTip: Boolean by BooleanSetting("Stop Tooltips", default = true, description = "Stops rendering tooltips in terminals")
     private val removeWrong: Boolean by BooleanSetting("Stop Rendering Wrong", description = "Stops rendering wrong items in terminals")
