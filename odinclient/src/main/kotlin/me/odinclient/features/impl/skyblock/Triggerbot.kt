@@ -31,9 +31,7 @@ object Triggerbot : Module(
 ) {
     private val blood: Boolean by BooleanSetting("Blood Mobs")
     private val spiritBear: Boolean by BooleanSetting("Spirit Bear")
-    private val bloodClickType: Boolean by DualSetting("Blood Click Type", "Left", "Right", description = "What button to click for blood mobs.").withDependency {
-        blood
-    }
+    private val bloodClickType: Boolean by DualSetting("Blood Click Type", "Left", "Right", description = "What button to click for blood mobs.").withDependency { blood }
     private val crystal: Boolean by BooleanSetting("Crystal", default = false)
     private val take: Boolean by BooleanSetting("Take", default = true).withDependency { crystal }
     private val place: Boolean by BooleanSetting("Place", default = true).withDependency { crystal }

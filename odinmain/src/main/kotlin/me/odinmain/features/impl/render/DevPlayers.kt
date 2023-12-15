@@ -126,6 +126,7 @@ object DevPlayers {
             GlStateManager.disableCull()
             GlStateManager.color(1f, 1f, 1f, 1f)
             GlStateManager.popMatrix()
+            GlStateManager.disableAlpha()
 
         }
 
