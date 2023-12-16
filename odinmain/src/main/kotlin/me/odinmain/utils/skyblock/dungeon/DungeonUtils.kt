@@ -51,15 +51,41 @@ object DungeonUtils {
     private const val START_X = -185
     private const val START_Z = -185
 
+    /**
+     * Checks if the current dungeon floor number matches any of the specified options.
+     *
+     * This function iterates through the provided floor number options and returns true if the current dungeon floor
+     * matches any of them. Otherwise, it returns false.
+     *
+     * @param options The floor number options to compare with the current dungeon floor.
+     * @return `true` if the current dungeon floor matches any of the specified options, otherwise `false`.
+     */
     fun isFloor(vararg options: Int): Boolean {
         for (option in options) {
-            if (currentDungeon?.floor?.floorNumber == option) return true
+            if (currentDungeon?.floor?.floorNumber == option) {
+                return true
+            }
         }
         return false
     }
 
+    /**
+     * Determines the phase based on the current dungeon floor and vertical position (y-coordinate).
+     *
+     * This function calculates the phase of the dungeon based on specific vertical position thresholds and the current floor.
+     * The phase indicates the relative vertical position within the dungeon and is used in certain boss-related scenarios.
+     *
+     * @return The phase as an integer value. Returns `null` if the conditions for determining the phase are not met.
+     * - Phase 1: posY > 210
+     * - Phase 2: posY > 155
+     * - Phase 3: posY > 100
+     * - Phase 4: posY > 45
+     * - Phase 5: posY <= 45
+     */
     fun getPhase(): Int? {
-        if (!isFloor(7) || !inBoss) return null
+        if (!isFloor(7) || !inBoss) {
+            return null
+        }
         return when {
             posY > 210 -> 1
             posY > 155 -> 2
@@ -68,6 +94,7 @@ object DungeonUtils {
             else -> 5
         }
     }
+
 
     @SubscribeEvent
     fun onMove(event: LivingEvent.LivingUpdateEvent) {
@@ -165,17 +192,60 @@ object DungeonUtils {
          */
     }
 
+    /**
+     * Enumeration representing player classes in a dungeon setting.
+     *
+     * Each class is associated with a specific code and color used for formatting in the game. The classes include Archer,
+     * Mage, Berserk, Healer, and Tank.
+     *
+     * @property code The formatting code used in-game for the class.
+     * @property color The color associated with the class.
+     */
     enum class Classes(
         val code: String,
         val color: Color
     ) {
+        /**
+         * Archer class with formatting code "§6" (gold) and orange color.
+         */
         Archer("§6", Color.ORANGE),
+
+        /**
+         * Mage class with formatting code "§5" (purple) and purple color.
+         */
         Mage("§5", Color.PURPLE),
+
+        /**
+         * Berserk class with formatting code "§4" (dark red) and dark red color.
+         */
         Berserk("§4", Color.DARK_RED),
+
+        /**
+         * Healer class with formatting code "§a" (green) and green color.
+         */
         Healer("§a", Color.GREEN),
+
+        /**
+         * Tank class with formatting code "§2" (dark green) and dark green color.
+         */
         Tank("§2", Color.DARK_GREEN)
     }
-    data class DungeonPlayer(val name: String, val clazz: Classes, val locationSkin: ResourceLocation, val entity: EntityPlayer? = null)
+
+    /**
+     * Data class representing a player in a dungeon, including their name, class, skin location, and associated player entity.
+     *
+     * @property name The name of the player.
+     * @property clazz The player's class, defined by the [Classes] enum.
+     * @property locationSkin The resource location of the player's skin.
+     * @property entity The optional associated player entity. Defaults to `null`.
+     */
+    data class DungeonPlayer(
+        val name: String,
+        val clazz: Classes,
+        val locationSkin: ResourceLocation,
+        val entity: EntityPlayer? = null
+    )
+
     val isGhost: Boolean get() = getItemSlot("Haunt", true) != null
     var teammates: List<DungeonPlayer> = emptyList()
 
@@ -234,13 +304,29 @@ object DungeonUtils {
         get() = (mc.thePlayer?.sendQueue?.playerInfoMap?.sortedWith(tabListOrder) ?: emptyList())
             .map { Pair(it, mc.ingameGUI.tabList.getPlayerName(it)) }
 
+    /**
+     * Determines whether a given block state and position represent a secret location.
+     *
+     * This function checks if the specified block state and position correspond to a secret location based on certain criteria.
+     * It considers blocks such as chests, trapped chests, and levers as well as player skulls with a specific player profile ID.
+     *
+     * @param state The block state to be evaluated for secrecy.
+     * @param pos The position (BlockPos) of the block in the world.
+     * @return `true` if the specified block state and position indicate a secret location, otherwise `false`.
+     */
     fun isSecret(state: IBlockState, pos: BlockPos): Boolean {
-        if (state.block == Blocks.chest || state.block == Blocks.trapped_chest || state.block == Blocks.lever) return true
-        else if (state.block is BlockSkull) {
+        // Check if the block is a chest, trapped chest, or lever
+        if (state.block == Blocks.chest || state.block == Blocks.trapped_chest || state.block == Blocks.lever) {
+            return true
+        } else if (state.block is BlockSkull) {
+            // Check if the block is a player skull with a specific player profile ID
             val tile = mc.theWorld.getTileEntity(pos) ?: return false
             if (tile !is TileEntitySkull) return false
             return tile.playerProfile?.id.toString() == WITHER_ESSENCE_ID
         }
+
+        // If none of the above conditions are met, it is not a secret location
         return false
     }
+
 }

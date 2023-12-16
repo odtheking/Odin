@@ -648,6 +648,7 @@ object RenderUtils {
         GlStateManager.resetColor()
         if (phase) GlStateManager.enableDepth()
         GlStateManager.popMatrix()
+        GlStateManager.disableAlpha()
     }
 
     fun loadImage(path: String): BufferedImage {
