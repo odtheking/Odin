@@ -30,9 +30,9 @@ object Triggerbot : Module(
     category = Category.DUNGEON
 ) {
     private val blood: Boolean by BooleanSetting("Blood Mobs")
-    private val spiritBear: Boolean by BooleanSetting("Spirit Bear")
     private val bloodClickType: Boolean by DualSetting("Blood Click Type", "Left", "Right", description = "What button to click for blood mobs.").withDependency { blood }
-    private val crystal: Boolean by BooleanSetting("Crystal", default = false)
+    private val spiritBear: Boolean by BooleanSetting("Spirit Bear")
+    private val crystal: Boolean by BooleanSetting("Crystal Triggerbot", default = false)
     private val take: Boolean by BooleanSetting("Take", default = true).withDependency { crystal }
     private val place: Boolean by BooleanSetting("Place", default = true).withDependency { crystal }
 
@@ -65,7 +65,7 @@ object Triggerbot : Module(
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        if (!DungeonUtils.inBoss || DungeonUtils.getPhase() != 1 || !clickClock.hasTimePassed() || mc.objectMouseOver == null) return
+        if (!DungeonUtils.inBoss || DungeonUtils.getPhase() != 1 || !clickClock.hasTimePassed() || mc.objectMouseOver == null || !crystal) return
         if ((take && mc.objectMouseOver.entityHit is EntityEnderCrystal) || (place && mc.objectMouseOver.entityHit?.name?.noControlCodes == "Energy Crystal Missing" && mc.thePlayer.heldItem.displayName.noControlCodes == "Energy Crystal")) {
             PlayerUtils.rightClick()
             clickClock.update()
@@ -75,7 +75,7 @@ object Triggerbot : Module(
     init {
         execute(0) {
             if (
-                !enabled ||
+                !secretTriggerbot ||
                 !triggerBotClock.hasTimePassed(stbDelay) ||
                 DungeonUtils.currentRoomName.equalsOneOf("Water Board", "Three Weirdos") ||
                 mc.currentScreen != null

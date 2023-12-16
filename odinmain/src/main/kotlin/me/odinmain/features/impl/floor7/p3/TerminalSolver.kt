@@ -1,9 +1,6 @@
 package me.odinmain.features.impl.floor7.p3
 
-import me.odinmain.events.impl.ChatPacketEvent
-import me.odinmain.events.impl.DrawGuiEvent
-import me.odinmain.events.impl.GuiLoadedEvent
-import me.odinmain.events.impl.TerminalOpenedEvent
+import me.odinmain.events.impl.*
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.AlwaysActive
@@ -34,7 +31,8 @@ object TerminalSolver : Module(
     category = Category.FLOOR7,
     tag = TagType.NEW
 ) {
-    private val customSize: Int by NumberSetting("Custom Size", mc.gameSettings.guiScale, 1, 4, 1, description = "Custom size of the terminal")
+    private val customSizeToggle: Boolean by BooleanSetting("Custom Size", default = false, description = "Toggles custom size of the terminal")
+    private val customSize: Int by NumberSetting("Custom Size", 3, 1, 4, 1, description = "Custom size of the terminal").withDependency { customSizeToggle }
     private val behindItem: Boolean by BooleanSetting("Behind Item", description = "Shows the item over the rendered solution")
     private val cancelToolTip: Boolean by BooleanSetting("Stop Tooltips", default = true, description = "Stops rendering tooltips in terminals")
     private val removeWrong: Boolean by BooleanSetting("Stop Rendering Wrong", description = "Stops rendering wrong items in terminals")
@@ -104,6 +102,10 @@ object TerminalSolver : Module(
             }
         }
         MinecraftForge.EVENT_BUS.post(TerminalOpenedEvent(currentTerm, solution))
+    }
+    @SubscribeEvent
+    fun guiClose(event: GuiClosedEvent) {
+        mc.gameSettings.guiScale = lastGuiScale
     }
 
     @SubscribeEvent
@@ -184,7 +186,6 @@ object TerminalSolver : Module(
     private fun leftTerm() {
         currentTerm = -1
         solution = emptyList()
-        mc.gameSettings.guiScale = lastGuiScale
     }
 
     private fun solvePanes(items: List<ItemStack?>) {
