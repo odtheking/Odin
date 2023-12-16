@@ -96,6 +96,10 @@ object DevPlayers {
             val rotation = this.interpolate(player.prevRenderYawOffset, player.renderYawOffset, partialTicks)
 
             GlStateManager.pushMatrix()
+            val x = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks
+            val y = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks
+            val z = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks
+            GlStateManager.translate(-mc.renderManager.viewerPosX + x, -mc.renderManager.viewerPosY + y, -mc.renderManager.viewerPosZ + z)
             GlStateManager.scale(-0.2 * dev.xScale, -0.2 * dev.yScale, 0.2 * dev.zScale)
             GlStateManager.rotate(180 + rotation, 0f, 1f, 0f)
             GlStateManager.translate(0.0, -(1.25 / 0.2f), 0.0)
@@ -111,10 +115,10 @@ object DevPlayers {
             for (j in 0..1) {
                 GlStateManager.enableCull()
                 val f11 = System.currentTimeMillis() % 1000 / 1000f * Math.PI.toFloat() * 2.0f
-                wing.rotateAngleX = Math.toRadians(-80.0).toFloat() - cos(f11.toDouble()).toFloat() * 0.2f
-                wing.rotateAngleY = Math.toRadians(20.0).toFloat() + sin(f11.toDouble()).toFloat() * 0.4f
+                wing.rotateAngleX = Math.toRadians(-80.0).toFloat() - cos(f11) * 0.2f
+                wing.rotateAngleY = Math.toRadians(20.0).toFloat() + sin(f11) * 0.4f
                 wing.rotateAngleZ = Math.toRadians(20.0).toFloat()
-                wingTip.rotateAngleZ = -(sin((f11 + 2.0f).toDouble()) + 0.5).toFloat() * 0.75f
+                wingTip.rotateAngleZ = -(sin((f11 + 2.0f)) + 0.5).toFloat() * 0.75f
                 wing.render(0.0625f)
                 GlStateManager.scale(-1.0f, 1.0f, 1.0f)
                 if (j == 0) {
@@ -126,7 +130,6 @@ object DevPlayers {
             GlStateManager.disableCull()
             GlStateManager.color(1f, 1f, 1f, 1f)
             GlStateManager.popMatrix()
-            GlStateManager.disableAlpha()
 
         }
 
