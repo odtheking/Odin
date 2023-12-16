@@ -93,6 +93,8 @@ object ModuleManager {
         PuzzleSolvers,
         ArrowHit,
         InactiveWaypoints,
+        Ragaxe,
+        MobSpawn
     )
 
 
