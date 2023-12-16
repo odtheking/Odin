@@ -31,8 +31,8 @@ object TerminalSolver : Module(
     category = Category.FLOOR7,
     tag = TagType.NEW
 ) {
-    private val customSizeToggle: Boolean by BooleanSetting("Custom Size", default = false, description = "Toggles custom size of the terminal")
-    private val customSize: Int by NumberSetting("Custom Size", 3, 1, 4, 1, description = "Custom size of the terminal").withDependency { customSizeToggle }
+    private val customSizeToggle: Boolean by BooleanSetting("Custom Size Toggle", description = "Toggles custom size of the terminal")
+    private val customSize: Int by NumberSetting("Custom Terminal Size", 3, 1.0, 4.0, 1.0, description = "Custom size of the terminal").withDependency { customSizeToggle }
     private val behindItem: Boolean by BooleanSetting("Behind Item", description = "Shows the item over the rendered solution")
     private val cancelToolTip: Boolean by BooleanSetting("Stop Tooltips", default = true, description = "Stops rendering tooltips in terminals")
     private val removeWrong: Boolean by BooleanSetting("Stop Rendering Wrong", description = "Stops rendering wrong items in terminals")
@@ -76,7 +76,9 @@ object TerminalSolver : Module(
             }
             .takeIf { it != -1 } ?: return
         lastGuiScale = mc.gameSettings.guiScale
-        if (newTerm != currentTerm) mc.gameSettings.guiScale = customSize
+        if (customSizeToggle && newTerm != currentTerm) mc.gameSettings.guiScale = customSize
+
+
     }
 
     @SubscribeEvent
@@ -105,7 +107,7 @@ object TerminalSolver : Module(
     }
     @SubscribeEvent
     fun guiClose(event: GuiClosedEvent) {
-        mc.gameSettings.guiScale = lastGuiScale
+        if (customSizeToggle) mc.gameSettings.guiScale = lastGuiScale
     }
 
     @SubscribeEvent
