@@ -12,10 +12,10 @@ val blacklistCommand = "blacklist" {
     "add" does {
         if (it.isEmpty()) return@does modMessage("You need to name someone to add to the Blacklist.")
         val name = it[0]
-        if (name !in MiscConfig.blacklist) return@does modMessage("$name is already in the Blacklist.")
+        if (name in MiscConfig.blacklist) return@does modMessage("$name is already in the Blacklist.")
 
         modMessage("Added $name to Blacklist.")
-        MiscConfig.blacklist.add(name)
+        MiscConfig.blacklist.add(name.lowercase())
         MiscConfig.saveAllConfigs()
     }
 
@@ -25,7 +25,7 @@ val blacklistCommand = "blacklist" {
         if (name !in MiscConfig.blacklist) return@does modMessage("$name isn't in the Blacklist.")
 
         modMessage("Removed $name from Blacklist.")
-        MiscConfig.blacklist.remove(name)
+        MiscConfig.blacklist.remove(name.lowercase())
         MiscConfig.saveAllConfigs()
     }
 
