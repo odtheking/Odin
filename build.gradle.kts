@@ -11,10 +11,10 @@ plugins {
 }
 
 group = "com.example.archloomtemplate"
-version = "1.2.5"
+version = "1.2.4"
 
 allprojects {
-    version = "1.2.5"
+    version = "1.2.4"
 }
 
 java {

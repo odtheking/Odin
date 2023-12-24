@@ -67,12 +67,6 @@ object ChatCommands : Module(
         return temp
     }
 
-    init {
-        execute(3000) {
-            if (picture == "Failed to get a cat pic") picture = getCatPic()
-        }
-    }
-
     private val partyRegex = Regex("Party > (\\[.+])? ?(.+): !(.+)")
     private val guildRegex = Regex("Guild > (\\[.+])? ?(.+) ?(\\[.+])?: !?(.+)")
     private val fromRegex = Regex("From (\\[.+])? ?(.+): !(.+)")

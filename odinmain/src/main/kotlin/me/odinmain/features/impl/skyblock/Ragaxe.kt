@@ -5,7 +5,6 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.heldItem
-import me.odinmain.utils.skyblock.itemID
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object Ragaxe : Module(
@@ -16,7 +15,7 @@ object Ragaxe : Module(
     @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
 
-        if (event.message.contains("CASTING") && heldItem.itemID == "Ragnarock Axe")
+        if (event.message.contains("CASTING") && heldItem?.displayName == "Ragnarock Axe")
             PlayerUtils.alert("Casting Rag Axe")
 
 
