@@ -32,7 +32,8 @@ import kotlin.coroutines.EmptyCoroutineContext
 object OdinMain {
     val mc: Minecraft = Minecraft.getMinecraft()
 
-    const val VERSION = "1.2.4"
+    const val VERSION = "@VAR@"
+
     val scope = CoroutineScope(EmptyCoroutineContext)
 
     var display: GuiScreen? = null
