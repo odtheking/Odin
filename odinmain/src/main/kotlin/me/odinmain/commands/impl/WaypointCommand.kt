@@ -5,7 +5,6 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.commands.CommandNode
 import me.odinmain.commands.Commodore
 import me.odinmain.features.impl.render.WaypointManager
-import me.odinmain.features.impl.render.WaypointManager.randomColor
 import me.odinmain.ui.waypoint.WaypointGUI
 import me.odinmain.utils.floor
 import me.odinmain.utils.floored
@@ -52,9 +51,7 @@ object WaypointCommand : Commodore {
 
                 literal("perm") {
                     runs { name: String ->
-                        WaypointManager.addWaypoint(
-                            name = name, vec3 = mc.thePlayer.positionVector.floored(), color = randomColor()
-                        )
+                        WaypointManager.addWaypoint(name = name, vec3 = mc.thePlayer.positionVector.floored())
                         modMessage("Added permanent waypoint \"$name\".")
                     }
                     runs { name: String, x: Int, y: Int, z: Int ->

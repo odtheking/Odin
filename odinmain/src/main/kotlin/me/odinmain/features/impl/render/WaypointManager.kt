@@ -30,7 +30,7 @@ object WaypointManager {
     fun addWaypoint(name: String = "§fWaypoint", x: Int, y: Int, z: Int, color: Color = randomColor()) =
         addWaypoint(Waypoint(if (Waypoints.onlyDistance) "" else name, x, y, z, color))
 
-    fun addWaypoint(name: String = "§fWaypoint", vec3: Vec3i, color: Color) =
+    fun addWaypoint(name: String = "§fWaypoint", vec3: Vec3i, color: Color = randomColor()) =
         addWaypoint(Waypoint(if (Waypoints.onlyDistance) "" else name, vec3.x, vec3.y, vec3.z, color))
 
     fun addWaypoint(waypoint: Waypoint, area: String = currentArea!!) {
