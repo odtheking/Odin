@@ -4,7 +4,6 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import me.odinmain.commands.impl.WaypointCommand.randomColor
 import me.odinmain.config.WaypointConfig
 import me.odinmain.ui.waypoint.WaypointGUI
 import me.odinmain.utils.clock.Clock
@@ -17,6 +16,7 @@ import net.minecraft.util.Vec3i
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import java.util.*
 import kotlin.math.abs
 
 // TODO: Make changes cuz ngl its kinda eh (eg: good ordered waypoints for mining so people dont need to use ct)
@@ -27,7 +27,7 @@ object WaypointManager {
     private inline val waypoints get() = WaypointConfig.waypoints
     private var temporaryWaypoints = mutableListOf<Pair<Waypoint, Clock>>()
 
-    fun addWaypoint(name: String = "§fWaypoint", x: Int, y: Int, z: Int, color: Color) =
+    fun addWaypoint(name: String = "§fWaypoint", x: Int, y: Int, z: Int, color: Color = randomColor()) =
         addWaypoint(Waypoint(if (Waypoints.onlyDistance) "" else name, x, y, z, color))
 
     fun addWaypoint(name: String = "§fWaypoint", vec3: Vec3i, color: Color) =
@@ -59,11 +59,21 @@ object WaypointManager {
         if (listOf(x, y,z).any { abs(it) > 5000}) return modMessage("§cWaypoint out of bounds.")
         if (temporaryWaypoints.any { it.first.x == x && it.first.y == y && it.first.z == z }) return modMessage("§cWaypoint already exists at $x, $y, $z.")
         modMessage("Added waypoint at $x, $y, $z.")
-        temporaryWaypoints.add(Pair(Waypoint(if (Waypoints.onlyDistance) "" else name, x, y, z, randomColor()), Clock(60_000)))
+        temporaryWaypoints.add(Pair(Waypoint(if (Waypoints.onlyDistance) "" else name, x, y, z, Color.RED), Clock(60_000)))
     }
 
     fun addTempWaypoint(name: String = "§fWaypoint", vec3: Vec3i) {
         addTempWaypoint(name, vec3.x, vec3.y, vec3.z)
+    }
+
+    fun randomColor(): Color {
+        val random = Random()
+
+        val hue = random.nextFloat()
+        val saturation = random.nextFloat() * 0.5f + 0.5f // High saturation
+        val brightness = random.nextFloat() * 0.5f + 0.5f // High brightness
+
+        return Color(hue, saturation, brightness)
     }
 
     @SubscribeEvent

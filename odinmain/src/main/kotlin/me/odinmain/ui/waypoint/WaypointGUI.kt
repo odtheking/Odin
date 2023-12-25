@@ -3,9 +3,9 @@ package me.odinmain.ui.waypoint
 import cc.polyfrost.oneconfig.renderer.NanoVGHelper
 import cc.polyfrost.oneconfig.renderer.font.Fonts
 import cc.polyfrost.oneconfig.utils.dsl.*
-import me.odinmain.commands.impl.WaypointCommand.randomColor
 import me.odinmain.config.WaypointConfig
 import me.odinmain.features.impl.render.WaypointManager
+import me.odinmain.features.impl.render.WaypointManager.randomColor
 import me.odinmain.features.impl.render.Waypoints
 import me.odinmain.ui.waypoint.elements.AreaButton
 import me.odinmain.ui.waypoint.elements.WaypointElement

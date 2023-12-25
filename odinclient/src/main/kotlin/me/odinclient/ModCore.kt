@@ -1,5 +1,7 @@
 package me.odinclient
 
+import me.odinclient.commands.impl.AutoSellCommand
+import me.odinclient.commands.impl.ESPCommand
 import me.odinclient.dungeonmap.features.Window
 import me.odinclient.features.impl.dungeon.*
 import me.odinclient.features.impl.floor7.AutoEdrag
@@ -13,11 +15,9 @@ import me.odinclient.features.impl.render.NoDebuff
 import me.odinclient.features.impl.render.Trajectories
 import me.odinclient.features.impl.skyblock.*
 import me.odinmain.OdinMain
-import me.odinmain.commands.impl.*
+import me.odinmain.commands.register
 import me.odinmain.features.Module
 import me.odinmain.features.ModuleManager
-import net.minecraft.command.ICommand
-import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.Mod.EventHandler
@@ -44,7 +44,10 @@ class ModCore {
         OdinMain.init()
         MinecraftForge.EVENT_BUS.register(this)
 
-        commandList.forEach { ClientCommandHandler.instance.registerCommand(it as ICommand?) }
+        register(
+            ESPCommand,
+            AutoSellCommand,
+        )
     }
 
     private val modules: ArrayList<Module> = arrayListOf(
@@ -119,15 +122,5 @@ class ModCore {
         const val MOD_ID = "odclient"
         const val NAME = "OdinClient"
         const val VERSION = OdinMain.VERSION
-
-        val commandList = arrayOf(
-            mainCommand,
-            termSimCommand,
-            autoSellCommand,
-            blacklistCommand,
-            espCommand,
-            WaypointCommand,
-            devCommand,
-        )
     }
 }

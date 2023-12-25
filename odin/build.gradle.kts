@@ -67,6 +67,13 @@ dependencies {
 
     compileOnly("cc.polyfrost:oneconfig-1.8.9-forge:0.2.0-alpha+")
     shadowImpl("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-beta+")
+
+    api("com.mojang:brigadier:1.0.18")
+
+    shadowImpl("com.github.Stivais:Commodore:9342db41b1") {
+        exclude(module = "kotlin-stdlib-jdk8")
+        exclude(module = "kotlin-reflect")
+    }
 }
 
 tasks.named<ShadowJar>("shadowJar") {

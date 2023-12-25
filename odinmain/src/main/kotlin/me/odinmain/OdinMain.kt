@@ -4,6 +4,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import me.odinmain.commands.impl.*
+import me.odinmain.commands.register
 import me.odinmain.config.Config
 import me.odinmain.config.DungeonWaypointConfig
 import me.odinmain.config.MiscConfig
@@ -67,6 +69,14 @@ object OdinMain {
             DevPlayers,
             this
         ).forEach { MinecraftForge.EVENT_BUS.register(it) }
+
+        register(
+            DevCommand,
+            OdinCommand,
+            TermsimCommand,
+            WaypointCommand,
+            BlacklistCommand
+        )
     }
 
     fun postInit() = scope.launch(Dispatchers.IO) {

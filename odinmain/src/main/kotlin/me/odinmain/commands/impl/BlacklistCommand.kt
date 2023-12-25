@@ -1,43 +1,41 @@
 package me.odinmain.commands.impl
 
-import me.odinmain.commands.invoke
+import me.odinmain.commands.CommandNode
+import me.odinmain.commands.Commodore
 import me.odinmain.config.MiscConfig
 import me.odinmain.utils.skyblock.modMessage
 
-val blacklistCommand = "blacklist" {
-    does {
-        modMessage("§cBlacklist incorrect usage. §fUsage: add, remove, clear, list")
-    }
+object BlacklistCommand : Commodore {
+    override val command: CommandNode =
+        literal("blacklist") {
 
-    "add" does {
-        if (it.isEmpty()) return@does modMessage("You need to name someone to add to the Blacklist.")
-        val name = it[0]
-        if (name in MiscConfig.blacklist) return@does modMessage("$name is already in the Blacklist.")
+            literal("add").runs { name: String ->
+                val lowercase = name.lowercase()
+                if (lowercase in MiscConfig.blacklist) return@runs modMessage("$name is already in the Blacklist.")
 
-        modMessage("Added $name to Blacklist.")
-        MiscConfig.blacklist.add(name.lowercase())
-        MiscConfig.saveAllConfigs()
-    }
+                modMessage("Added $name to Blacklist.")
+                MiscConfig.blacklist.add(lowercase)
+                MiscConfig.saveAllConfigs()
+            }
 
-    "remove" does {
-        if (it.isEmpty()) return@does modMessage("You need to name someone to remove from the Blacklist.")
-        val name = it[0]
-        if (name !in MiscConfig.blacklist) return@does modMessage("$name isn't in the Blacklist.")
+            literal("remove").runs { name: String ->
+                val lowercase = name.lowercase()
+                if (lowercase !in MiscConfig.blacklist) return@runs modMessage("$name isn't in the Blacklist.")
 
-        modMessage("Removed $name from Blacklist.")
-        MiscConfig.blacklist.remove(name.lowercase())
-        MiscConfig.saveAllConfigs()
-    }
+                modMessage("Removed $name from Blacklist.")
+                MiscConfig.blacklist.remove(lowercase)
+                MiscConfig.saveAllConfigs()
+            }
 
+            literal("clear").runs {
+                modMessage("Blacklist cleared.")
+                MiscConfig.blacklist.clear()
+                MiscConfig.saveAllConfigs()
+            }
 
-    "clear" does {
-        modMessage("Blacklist cleared.")
-        MiscConfig.blacklist.clear()
-        MiscConfig.saveAllConfigs()
-    }
-
-
-    "list" does {
-        MiscConfig.blacklist.forEach { modMessage(it) }
-    }
+            literal("list").runs {
+                if (MiscConfig.blacklist.size == 0) return@runs modMessage("Blacklist is empty")
+                modMessage("Blacklist:\n${MiscConfig.blacklist.joinToString("\n")}")
+            }
+        }
 }
