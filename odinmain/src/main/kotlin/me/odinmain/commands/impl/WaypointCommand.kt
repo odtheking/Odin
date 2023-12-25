@@ -37,25 +37,30 @@ object WaypointCommand : Commodore {
                 }
             }
 
-            literal("here") {
-                literal("temp").runs {
-                    WaypointManager.addTempWaypoint(vec3 = mc.thePlayer.positionVector.floored())
-                    modMessage("Added temporary waypoint.")
-                }
-                literal("perm").runs {
-                    WaypointManager.addWaypoint(vec3 = mc.thePlayer.positionVector.floored(), color = randomColor())
-                    modMessage("Added permanent waypoint.")
-                }
-            }
-
             literal("add") {
-                literal("temp").runs { x: Int, y: Int, z: Int -> // honestly should remove temp waypoints
-                    WaypointManager.addTempWaypoint(x = x, y = y, z = z)
-                    modMessage("Added temporary waypoint at $x, $y, $z.")
+
+                literal("temp") {
+                    runs {
+                        WaypointManager.addTempWaypoint(vec3 = mc.thePlayer.positionVector.floored())
+                        modMessage("Added temporary waypoint.")
+                    }
+                    runs { x: Int, y: Int, z: Int -> // honestly should remove temp waypoints
+                        WaypointManager.addTempWaypoint(x = x, y = y, z = z)
+                        modMessage("Added temporary waypoint at $x, $y, $z.")
+                    }
                 }
-                literal("perm").runs { name: String, x: Int, y: Int, z: Int ->
-                    WaypointManager.addWaypoint(name, x, y, z)
-                    modMessage("Added permanent waypoint at $x, $y, $z.")
+
+                literal("perm") {
+                    runs { name: String ->
+                        WaypointManager.addWaypoint(
+                            name = name, vec3 = mc.thePlayer.positionVector.floored(), color = randomColor()
+                        )
+                        modMessage("Added permanent waypoint \"$name\".")
+                    }
+                    runs { name: String, x: Int, y: Int, z: Int ->
+                        WaypointManager.addWaypoint(name, x, y, z)
+                        modMessage("Added permanent waypoint \"$name\" at $x, $y, $z.")
+                    }
                 }
             }
         }
