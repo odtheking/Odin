@@ -8,10 +8,12 @@ plugins {
     id("dev.architectury.architectury-pack200") version "0.1.3"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     kotlin("jvm") version "2.0.0-Beta1"
+
+    // allows to automatically update version in mcmod.info
+    id("net.kyori.blossom") version "1.3.1"
 }
 
 group = "com.example.archloomtemplate"
-version = "${rootProject.version}"
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(8))
@@ -101,6 +103,16 @@ tasks.withType(Jar::class) {
     }
 }
 
+tasks.processResources {
+    inputs.property("version", version)
+    filesMatching("mcmod.info") {
+        expand(
+            mapOf(
+                "version" to version
+            )
+        )
+    }
+}
 
 val remapJar by tasks.named<net.fabricmc.loom.task.RemapJarTask>("remapJar") {
     archiveClassifier.set("all")

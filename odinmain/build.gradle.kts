@@ -11,7 +11,6 @@ plugins {
 }
 
 group = "com.example.archloomtemplate"
-version = "1.2.3.beta1"
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(8))
@@ -71,6 +70,10 @@ dependencies {
     }
 }
 
+tasks.processResources {
+
+}
+
 tasks.named<ShadowJar>("shadowJar") {
     archiveClassifier.set("dev")
     configurations = listOf(shadowImpl)
@@ -99,7 +102,6 @@ tasks.withType(Jar::class) {
         this["MixinConfigs"] = "mixins.odinmain.json"
     }
 }
-
 
 val remapJar by tasks.named<net.fabricmc.loom.task.RemapJarTask>("remapJar") {
     archiveClassifier.set("all")
