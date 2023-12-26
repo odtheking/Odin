@@ -147,8 +147,9 @@ object DevPlayers {
     fun onRenderPlayer(event: RenderPlayerEvent.Post) {
         if (!devs.containsKey(event.entity.name)) return
         if (!devSize && event.entity.name == mc.thePlayer.name) return
-        val dev = devs[event.entity.name]
-        if (dev != null) DragonWings.renderWings(event.entityPlayer, event.partialRenderTick, dev)
+        val dev = devs[event.entity.name] ?: return
+        if (!dev.wings) return
+        DragonWings.renderWings(event.entityPlayer, event.partialRenderTick, dev)
     }
 
 }
