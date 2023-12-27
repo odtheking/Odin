@@ -36,6 +36,7 @@ object Trajectories : Module(
 ) {
 
     private val bows: Boolean by BooleanSetting("Bows", false, description = "Render trajectories of shortbow arrows")
+    private val allBows: Boolean by BooleanSetting("All Bows", false, description = "Render trajectories of all bows")
     private val pearls: Boolean by BooleanSetting("Pearls", false, description = "Render trajectories of ender pearls")
 
     private val range: Float by NumberSetting("Solver Range", 30f, 1f, 60f, 1f, description = "Performance impact scales with this")
@@ -50,9 +51,9 @@ object Trajectories : Module(
 
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
-        if (bows) {
+        if (bows || allBows) {
             entityRenderQueue.clear()
-            if (mc.thePlayer?.heldItem?.isShortbow == true) {
+            if (mc.thePlayer?.heldItem?.isShortbow == true && !allBows) {
                 if (mc.thePlayer?.heldItem?.itemID == "TERMINATOR") {
                     this.setBowTrajectoryHeading(-5f)
                     this.setBowTrajectoryHeading(0f)
