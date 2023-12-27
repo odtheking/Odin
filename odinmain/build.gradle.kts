@@ -1,4 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -8,29 +7,13 @@ plugins {
     id("dev.architectury.architectury-pack200") version "0.1.3"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     kotlin("jvm") version "2.0.0-Beta1"
+    id("net.kyori.blossom") version "1.3.1"
 }
 
-group = "com.example.archloomtemplate"
+group = "me.odinmain"
 
-java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(8))
-}
-
-loom {
-    log4jConfigs.from(file("log4j2.xml"))
-    launchConfigs {
-        "client" {
-            arg("--tweakClass", "cc.polyfrost.oneconfig.loader.stage0.LaunchWrapperTweaker")
-            arg("--mixin", "mixins.odinmain.json")
-        }
-    }
-    forge {
-        pack200Provider.set(dev.architectury.pack200.java.Pack200Adapter())
-        mixinConfig("mixins.odinmain.json")
-    }
-    mixin {
-        defaultRefmapName.set("mixins.odinmain.refmap.json")
-    }
+blossom {
+    replaceToken("@VER@", version)
 }
 
 sourceSets.main {
@@ -70,57 +53,36 @@ dependencies {
     }
 }
 
-tasks.processResources {
-
-}
-
-tasks.named<ShadowJar>("shadowJar") {
-    archiveClassifier.set("dev")
-    configurations = listOf(shadowImpl)
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
-tasks.withType(JavaCompile::class) {
-    options.encoding = "UTF-8"
-    mustRunAfter(":odinmain:processResources")
-}
-
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-        jvmTarget = "1.8"
+tasks {
+    jar {
+        dependsOn(shadowJar)
+        enabled = false
     }
-}
 
-tasks.withType(Jar::class) {
-    archiveBaseName.set("odinclient")
-    manifest.attributes.run {
-        this["FMLCorePluginContainsFMLMod"] = "true"
-        this["ForceLoadAsMod"] = "true"
-
-        // If you don't want mixins, remove these lines
-        this["TweakClass"] = "cc.polyfrost.oneconfig.loader.stage0.LaunchWrapperTweaker"
-        this["MixinConfigs"] = "mixins.odinmain.json"
+    remapJar {
+        archiveBaseName = "odinclient"
+        input = shadowJar.get().archiveFile
     }
-}
 
-val remapJar by tasks.named<net.fabricmc.loom.task.RemapJarTask>("remapJar") {
-    archiveClassifier.set("all")
-    from(tasks.shadowJar)
-    input.set(tasks.shadowJar.get().archiveFile)
-}
+    shadowJar {
+        archiveBaseName = "odinclient"
+        archiveClassifier = "dev"
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        configurations = listOf(shadowImpl)
+        mergeServiceFiles()
+    }
 
-tasks.shadowJar {
-    archiveClassifier.set("all-dev")
-    configurations = listOf(shadowImpl)
-    doLast {
-        configurations.forEach {
-            println("Config: ${it.files}")
+    withType<JavaCompile> {
+        options.encoding = "UTF-8"
+    }
+
+    withType<KotlinCompile> {
+        kotlinOptions {
+            jvmTarget = "1.8"
         }
     }
-
-    fun relocate(name: String) = relocate(name, "com.odinclient.deps.$name")
 }
 
-tasks.withType<Jar> { duplicatesStrategy = DuplicatesStrategy.EXCLUDE }
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(8))
 
-tasks.assemble.get().dependsOn(tasks.remapJar)
+kotlin.jvmToolchain(8)
