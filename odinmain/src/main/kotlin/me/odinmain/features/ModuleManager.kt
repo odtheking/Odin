@@ -89,7 +89,7 @@ object ModuleManager {
         //DungeonWaypoints,
         SecretChime,
         ShareCoords,
-        //LeapMenu,
+        LeapMenu,
         PuzzleSolvers,
         ArrowHit,
         InactiveWaypoints,
