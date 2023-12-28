@@ -104,7 +104,7 @@ object WaypointGUI : GuiScreen() {
 
             val color = if (mouseHandler.isAreaHovered(455f, 5f, 15f, 15f)) Color(192, 192, 192).rgba else -1
             translate(462.5f, 12.5f)
-            NanoVGHelper.INSTANCE.rotate(this.instance, Math.toRadians((animY - 25.0) * 12.0).toFloat())
+            NanoVGHelper.INSTANCE.rotate(this.instance, Math.toRadians((animY - 25.0) * 12.0))
             translate(-462.5f, -12.5f)
             drawSVG("/assets/odinmain/ui/waypoint/Settings.svg", 455, 5, 15, 15, color, 36, javaClass)
         }
