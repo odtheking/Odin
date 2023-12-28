@@ -124,7 +124,7 @@ fun NVG.rectOutline(x: Float, y: Float, w: Float, h: Float, color: Color, radius
 
 fun NVG.gradientRect(x: Float, y: Float, w: Float, h: Float, color1: Color, color2: Color, radius: Float) {
     if (color1.isTransparent && color2.isTransparent) return
-    renderer.drawGradientRoundedRect(context, x, y, w, h, color1.rgba, color2.rgba, radius)
+    renderer.drawGradientRoundedRect(context, x, y, w, h, color1.rgba, color2.rgba, radius, NanoVGHelper.GradientDirection.RIGHT)
 }
 
 fun NVG.drawHSBBox(x: Float, y: Float, w: Float, h: Float, color: Color) {

@@ -45,7 +45,7 @@ dependencies {
     annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
     compileOnly("org.spongepowered:mixin:0.8.5")
 
-    compileOnly("cc.polyfrost:oneconfig-1.8.9-forge:0.2.0-alpha+")
+    compileOnly("cc.polyfrost:oneconfig-1.8.9-forge:0.2.2-alpha+")
     shadowImpl("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-beta+")
 
     api("com.mojang:brigadier:1.0.18")
@@ -57,10 +57,11 @@ dependencies {
 
 loom {
     log4jConfigs.from(file("log4j2.xml"))
-    launchConfigs {
-        "client" {
-            arg("--tweakClass", "cc.polyfrost.oneconfig.loader.stage0.LaunchWrapperTweaker")
-            arg("--mixin", "mixins.odinclient.json")
+    runConfigs {
+        getByName("client") {
+            programArgs("--tweakClass", "cc.polyfrost.oneconfig.loader.stage0.LaunchWrapperTweaker")
+            programArgs("--mixin", "mixins.odinclient.json")
+            isIdeConfigGenerated = true
         }
     }
     forge {

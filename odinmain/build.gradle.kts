@@ -42,7 +42,7 @@ dependencies {
     annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
     compileOnly("org.spongepowered:mixin:0.8.5")
 
-    compileOnly("cc.polyfrost:oneconfig-1.8.9-forge:0.2.0-alpha+")
+    compileOnly("cc.polyfrost:oneconfig-1.8.9-forge:0.2.2-alpha+")
     shadowImpl("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-beta+")
 
     api("com.mojang:brigadier:1.0.18")
