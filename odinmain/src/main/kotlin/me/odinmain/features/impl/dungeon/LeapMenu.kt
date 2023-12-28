@@ -4,15 +4,14 @@ import me.odinmain.events.impl.DrawGuiScreenEvent
 import me.odinmain.events.impl.GuiLoadedEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.utils.name
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.Classes
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.DungeonPlayer
 import net.minecraft.client.gui.Gui
-import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.ItemSkull
+import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object LeapMenu : Module(
@@ -21,7 +20,9 @@ object LeapMenu : Module(
     category = Category.DUNGEON
 ) {
 
-    private var leapTeammates = mutableListOf<DungeonPlayer>()
+    private var leapTeammates = mutableListOf(
+        DungeonPlayer("Bonzi", Classes.Mage, ResourceLocation("minecraft:potato"))
+    )
 
     @SubscribeEvent
     fun onGuiLoad(event: GuiLoadedEvent) {
@@ -38,8 +39,10 @@ object LeapMenu : Module(
 
     @SubscribeEvent
     fun onDrawScreen(event: DrawGuiScreenEvent) {
-        val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
+        /*val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
         if (chest !is ContainerChest || chest.name != "Spirit Leap") return
+
+         */
         leapTeammates.forEachIndexed { index, it ->
             GlStateManager.pushMatrix()
             GlStateManager.enableAlpha()
