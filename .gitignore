@@ -10,9 +10,4 @@
 /odinclient/build/
 /odin/.gradle/
 /odin/build
-/odinmain/.gradle/
-/odinmain/build/
-/odinclient/.gradle/
-/odinclient/build/
-/odin/.gradle/
-/odin/build
+/**/run/

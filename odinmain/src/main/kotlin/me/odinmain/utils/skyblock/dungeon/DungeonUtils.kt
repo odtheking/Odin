@@ -203,32 +203,34 @@ object DungeonUtils {
      */
     enum class Classes(
         val code: String,
-        val color: Color
+        val color: Color,
+        val defaultQuandrant: Int,
+        val prio: Int
     ) {
         /**
          * Archer class with formatting code "§6" (gold) and orange color.
          */
-        Archer("§6", Color.ORANGE),
+        Archer("§6", Color.ORANGE, 0, 1),
 
         /**
          * Mage class with formatting code "§5" (purple) and purple color.
          */
-        Mage("§5", Color.PURPLE),
+        Mage("§5", Color.PURPLE, 3, 1),
 
         /**
          * Berserk class with formatting code "§4" (dark red) and dark red color.
          */
-        Berserk("§4", Color.DARK_RED),
+        Berserk("§4", Color.DARK_RED,1, 0),
 
         /**
          * Healer class with formatting code "§a" (green) and green color.
          */
-        Healer("§a", Color.GREEN),
+        Healer("§a", Color.GREEN, 2, 1),
 
         /**
          * Tank class with formatting code "§2" (dark green) and dark green color.
          */
-        Tank("§2", Color.DARK_GREEN)
+        Tank("§2", Color.DARK_GREEN, 3, 1)
     }
 
     /**
@@ -242,7 +244,7 @@ object DungeonUtils {
     data class DungeonPlayer(
         val name: String,
         val clazz: Classes,
-        val locationSkin: ResourceLocation,
+        val locationSkin: ResourceLocation = ResourceLocation("textures/entity/steve.png"),
         val entity: EntityPlayer? = null
     )
 

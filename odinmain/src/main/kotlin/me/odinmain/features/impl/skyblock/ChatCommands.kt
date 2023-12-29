@@ -67,9 +67,9 @@ object ChatCommands : Module(
         return temp
     }
 
-    private val partyRegex = Regex("Party > (\\[.+])? ?(.+): !(.+)")
-    private val guildRegex = Regex("Guild > (\\[.+])? ?(.+) ?(\\[.+])?: !?(.+)")
-    private val fromRegex = Regex("From (\\[.+])? ?(.+): !(.+)")
+    private val partyRegex = Regex("Party > (\\[.+])? ?(.+): (.+)")
+    private val guildRegex = Regex("Guild > (\\[.+])? ?(.+) ?(\\[.+])?: ?(.+)")
+    private val fromRegex = Regex("From (\\[.+])? ?(.+): (.+)")
 
     @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
@@ -120,8 +120,8 @@ object ChatCommands : Module(
             "private" -> "Commands: coords, odin, boop, cf, 8ball, dice, cat, racism, ping, tps, inv, invite"
             else -> ""
         }
-
-        when (message.split(" ")[0]) {
+        if (message.startsWith("!")) return
+        when (message.split(" ")[0].drop(1)) {
             "help" -> channelMessage(helpMessage, name, channel)
             "coords" -> if (coords) channelMessage("x: ${PlayerUtils.getFlooredPlayerCoords().x}, y: ${PlayerUtils.getFlooredPlayerCoords().y}, z: ${PlayerUtils.getFlooredPlayerCoords().z}", name, channel)
             "odin" -> if (odin) channelMessage("Odin! https://discord.gg/2nCbC9hkxT", name, channel)
