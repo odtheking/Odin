@@ -4,8 +4,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import me.odinmain.commands.Commodore.Companion.registerCommands
 import me.odinmain.commands.impl.*
-import me.odinmain.commands.register
 import me.odinmain.config.Config
 import me.odinmain.config.DungeonWaypointConfig
 import me.odinmain.config.MiscConfig
@@ -23,7 +23,6 @@ import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraftforge.common.MinecraftForge
@@ -71,7 +70,7 @@ object OdinMain {
             this
         ).forEach { MinecraftForge.EVENT_BUS.register(it) }
 
-        register(
+        registerCommands(
             DevCommand,
             OdinCommand,
             TermsimCommand,

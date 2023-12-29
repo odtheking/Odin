@@ -5,7 +5,7 @@ import me.odin.features.impl.floor7.p3.ArrowAlign
 import me.odin.features.impl.floor7.p3.SimonSays
 import me.odin.features.impl.render.EtherWarpHelper
 import me.odinmain.OdinMain
-import me.odinmain.commands.register
+import me.odinmain.commands.Commodore.Companion.registerCommands
 import me.odinmain.features.ModuleManager
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.Mod
@@ -30,7 +30,7 @@ class ModCore {
         OdinMain.init()
         MinecraftForge.EVENT_BUS.register(this)
 
-        register(
+        registerCommands(
             HighlightCommand
         )
     }

@@ -20,8 +20,6 @@ import kotlin.math.sin
 
 /**
  * Makes it more understanding that [nanoVGHelper] is used for rendering and acts like a wrapper.
- *
- * And helps me cope that one config won`t be removed :sob:
  */
 inline val renderer: NanoVGHelper
     get() = nanoVGHelper
@@ -47,7 +45,7 @@ private val worldRenderer: WorldRenderer = tessellator.worldRenderer
  */
 @JvmInline
 value class NVG(val context: Long) {
-    operator fun invoke(block: NVG.() -> Unit) = block.invoke(this)
+    inline operator fun invoke(block: NVG.() -> Unit) = block.invoke(this)
 }
 
 /**

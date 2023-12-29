@@ -15,7 +15,7 @@ import me.odinclient.features.impl.render.NoDebuff
 import me.odinclient.features.impl.render.Trajectories
 import me.odinclient.features.impl.skyblock.*
 import me.odinmain.OdinMain
-import me.odinmain.commands.register
+import me.odinmain.commands.Commodore.Companion.registerCommands
 import me.odinmain.features.Module
 import me.odinmain.features.ModuleManager
 import net.minecraftforge.common.MinecraftForge
@@ -44,7 +44,7 @@ class ModCore {
         OdinMain.init()
         MinecraftForge.EVENT_BUS.register(this)
 
-        register(
+        registerCommands(
             ESPCommand,
             AutoSellCommand,
         )
