@@ -91,8 +91,8 @@ open class HudElement(
         if (displayToggle) enabled = enabledSetting.value
         if (!isEnabled) return
 
-        xHud.max = Display.getWidth()
-        yHud.max = Display.getHeight()
+        xSetting.max = Display.getWidth()
+        ySetting.max = Display.getHeight()
 
         vg.translate(x, y)
         vg.scale(scale, scale)
@@ -168,8 +168,8 @@ open class HudElement(
     /** Used for smooth resetting animations */
     internal var resetScale: Float = 0f
 
-    private val xHud = NumberSetting("xHud", default = x, hidden = true, min = 0f, max = Display.getWidth())
-    private val yHud = NumberSetting("yHud", default = y, hidden = true, min = 0f, max = Display.getHeight())
+    private val xHud = NumberSetting("xHud", default = x, hidden = true, min = 0f, max = Float.MAX_VALUE)
+    private val yHud = NumberSetting("yHud", default = y, hidden = true, min = 0f, max = Float.MAX_VALUE)
 
     init {
         val scaleHud = NumberSetting("scaleHud", defaultScale, 0.8f, 6.0f, 0.01f, hidden = true)
