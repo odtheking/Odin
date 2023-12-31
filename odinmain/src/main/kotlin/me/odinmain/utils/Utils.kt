@@ -2,6 +2,8 @@
 
 package me.odinmain.utils
 
+import me.odinmain.OdinMain
+import me.odinmain.OdinMain.mc
 import me.odinmain.features.ModuleManager
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.inventory.ContainerChest
@@ -250,4 +252,31 @@ fun runIn(ticks: Int, func: () -> Unit) {
         return
     }
     ModuleManager.tickTasks.add(ModuleManager.TickTask(ticks, func))
+}
+
+/**
+ * Profiles the specified function with the specified string as profile section name.
+ * Uses the minecraft profiler.
+ *
+ * @param name The name of the profile section.
+ * @param func The code to profile.
+ */
+fun profile(name: String, func: () -> Unit) {
+    startProfile(name)
+    func()
+    endProfile()
+}
+
+/**
+ * Starts a minecraft profiler section with the specified name + "Odin: ".
+ */
+fun startProfile(name: String) {
+    mc.mcProfiler.startSection("Odin: $name")
+}
+
+/**
+ * Ends the current minecraft profiler section.
+ */
+fun endProfile() {
+    mc.mcProfiler.endSection()
 }

@@ -1,6 +1,8 @@
 package me.odinclient.commands.impl
 
 import com.github.stivais.commodore.parsers.impl.GreedyString
+import me.odinclient.mixin.accessors.IMinecraftAccessor
+import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.onLegitVersion
 import me.odinmain.commands.CommandNode
 import me.odinmain.commands.Commodore
@@ -44,6 +46,10 @@ object ESPCommand : Commodore {
             literal("list").runs {
                 if (MiscConfig.espList.size == 0) return@runs modMessage("ESP list is empty")
                 modMessage("ESP list:\n${MiscConfig.espList.joinToString("\n")}")
+            }
+
+            literal("profile").runs { key: Int ->
+                (mc as IMinecraftAccessor).invokeUpdateDebugProfilerName(key)
             }
         }
 }

@@ -8,10 +8,12 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.clickgui.util.HoverHandler
 import me.odinmain.ui.hud.EditHUDGui.dragging
+import me.odinmain.utils.endProfile
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinmain.utils.render.gui.animations.impl.EaseInOut
 import me.odinmain.utils.render.gui.nvg.*
+import me.odinmain.utils.startProfile
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.Display
@@ -91,8 +93,10 @@ open class HudElement(
         if (displayToggle) enabled = enabledSetting.value
         if (!isEnabled) return
 
-        xHud.max = Display.getWidth()
-        yHud.max = Display.getHeight()
+        startProfile(this.parentModule?.name + " Hud")
+
+        xSetting.max = Display.getWidth()
+        ySetting.max = Display.getHeight()
 
         vg.translate(x, y)
         vg.scale(scale, scale)
@@ -126,6 +130,8 @@ open class HudElement(
 
         this.width = width
         this.height = height
+
+        endProfile()
     }
 
     fun accept(): Boolean {
@@ -168,8 +174,8 @@ open class HudElement(
     /** Used for smooth resetting animations */
     internal var resetScale: Float = 0f
 
-    private val xHud = NumberSetting("xHud", default = x, hidden = true, min = 0f, max = Display.getWidth())
-    private val yHud = NumberSetting("yHud", default = y, hidden = true, min = 0f, max = Display.getHeight())
+    private val xHud = NumberSetting("xHud", default = x, hidden = true, min = 0f, max = Float.MAX_VALUE)
+    private val yHud = NumberSetting("yHud", default = y, hidden = true, min = 0f, max = Float.MAX_VALUE)
 
     init {
         val scaleHud = NumberSetting("scaleHud", defaultScale, 0.8f, 6.0f, 0.01f, hidden = true)

@@ -143,15 +143,15 @@ abstract class Module(
         ModuleManager.worldLoadFunctions.add(func)
     }
 
-    fun execute(delay: Long, func: Executable) {
-        executors.add(this to Executor(delay, func))
+    fun execute(delay: Long, profileName: String = this.name, func: Executable) {
+        executors.add(this to Executor(delay, profileName, func))
     }
 
-    fun execute(delay: Long, repeats: Int, func:Executable) {
-        executors.add(this to Executor.LimitedExecutor(delay, repeats, func))
+    fun execute(delay: Long, repeats: Int, profileName: String = this.name, func:Executable) {
+        executors.add(this to Executor.LimitedExecutor(delay, repeats, profileName, func))
     }
 
-    fun execute(delay: () -> Long, func: Executable) {
-        executors.add(this to Executor(delay, func))
+    fun execute(delay: () -> Long, profileName: String = this.name, func: Executable) {
+        executors.add(this to Executor(delay, profileName, func))
     }
 }

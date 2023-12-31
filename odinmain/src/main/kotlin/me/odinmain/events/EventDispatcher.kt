@@ -1,7 +1,6 @@
 package me.odinmain.events
 
 import kotlinx.coroutines.launch
-import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
 import me.odinmain.events.impl.*
 import me.odinmain.utils.ServerUtils
@@ -14,19 +13,13 @@ import net.minecraft.network.play.server.S02PacketChat
 import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.common.MinecraftForge
-import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.Event
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object EventDispatcher {
 
-    private var tickRamp = 0
-
     /** Used to make code simpler. */
-    fun post(event: Event) {
-        MinecraftForge.EVENT_BUS.post(event)
-    }
+    fun post(event: Event) = MinecraftForge.EVENT_BUS.post(event)
 
     /**
      * Dispatches [ChatPacketEvent].
@@ -36,25 +29,6 @@ object EventDispatcher {
         if (event.packet is S02PacketChat) {
             post(ChatPacketEvent(event.packet.chatComponent.unformattedText.noControlCodes))
         }
-    }
-
-    /**
-     * Dispatches [ClientSecondEvent]
-     */
-    @SubscribeEvent
-    fun onTick(event: TickEvent.ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.START) return
-        tickRamp++
-
-        if (tickRamp % 20 == 0) {
-            if (mc.thePlayer != null) post(ClientSecondEvent())
-            tickRamp = 0
-        }
-    }
-
-    @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Load) {
-        tickRamp = 18
     }
 
     private val nextTime = Clock()
