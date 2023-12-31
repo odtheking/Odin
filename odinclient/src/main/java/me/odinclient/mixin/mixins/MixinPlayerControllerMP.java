@@ -21,7 +21,7 @@ public class MixinPlayerControllerMP {
 
     @Inject(method = "isHittingPosition", at = @At("RETURN"), cancellable = true)
     private void onIsHittingPosition(BlockPos pos, CallbackInfoReturnable<Boolean> cir) {
-        NoBreakReset.INSTANCE.isHittingPositionHook(pos, cir, currentItemHittingBlock, currentBlock);
+        NoBreakReset.isHittingPositionHook(pos, cir, currentItemHittingBlock, currentBlock);
     }
 
 }
