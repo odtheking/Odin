@@ -119,7 +119,7 @@ object LeapMenu : Module(
             GlStateManager.scale(6.0 / sr.scaleFactor,  6.0 / sr.scaleFactor, 1.0)
             GlStateManager.color(255f, 255f, 255f, 255f)
             GlStateManager.translate(30 + (index % 2 * 145f), if (index >= 2) 120f else 40f, 0f)
-            mc.textureManager.bindTexture(ResourceLocation("textures/entity/steve.png"))
+            mc.textureManager.bindTexture(it.locationSkin)
 
             Gui.drawRect(-5, -15, 120, 35, if (!colorStyle) Color.DARK_GRAY.rgba else it.clazz.color.rgba)
 
