@@ -12,7 +12,6 @@ import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.Classes
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.DungeonPlayer
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils.teammates
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
@@ -22,7 +21,6 @@ import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.ItemSkull
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import org.lwjgl.opengl.Display
 
 object LeapMenu : Module(
     name = "Leap Menu",
@@ -37,12 +35,12 @@ object LeapMenu : Module(
     private var leapTeammates = mutableListOf<DungeonPlayer>()
 
 
-    /*private var teammates: List<DungeonPlayer> = listOf(
+    private var teammates: List<DungeonPlayer> = listOf(
         DungeonPlayer("Bonzi", Classes.Mage, ResourceLocation("textures/entity/steve.png")),
         DungeonPlayer("OdthekingABCDFEGH", Classes.Archer, ResourceLocation("textures/entity/steve.png")),
         DungeonPlayer("CEzar", Classes.Tank, ResourceLocation("textures/entity/steve.png")),
         DungeonPlayer("Stiviaisd", Classes.Berserk, ResourceLocation("textures/entity/steve.png"))
-    )*/
+    )
 
     @SubscribeEvent
     fun mouseClicked(event: GuiClickEvent) {
@@ -107,23 +105,25 @@ object LeapMenu : Module(
     fun onDrawScreen(event: DrawGuiScreenEvent) {
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
         if (chest !is ContainerChest || chest.name != "Spirit Leap") return
-        if (leapTeammates.isEmpty()) {
+        if (teammates.isEmpty()) {
             mc.currentScreen = null
             return
         }
 
-        val width = Display.getWidth() / 1920
-        val height = Display.getHeight() / 1080
-
+        val width = mc.displayWidth / 1920.0
+        val height = mc.displayHeight / 1080.0
         val sr = ScaledResolution(mc)
-        leapTeammates.forEachIndexed { index, it ->
+        teammates.forEachIndexed { index, it ->
             if (it == EMPTY) return@forEachIndexed
             GlStateManager.pushMatrix()
             GlStateManager.enableAlpha()
+            GlStateManager.scale(width, height, 0.0)
             GlStateManager.scale(6.0 / sr.scaleFactor,  6.0 / sr.scaleFactor, 1.0)
             GlStateManager.color(255f, 255f, 255f, 255f)
-            GlStateManager.translate(((30 + (index % 2 * 145f)) * width).toDouble(),
-                (if (index >= 2) 120f else 40f) * height.toDouble(), 0.0)
+            GlStateManager.translate(
+                (30.0 + (index % 2 * 145.0)),
+                (if (index >= 2) 120.0 else 40.0),
+                0.0)
             mc.textureManager.bindTexture(it.locationSkin)
             //if (it.highlight) Gui.drawRect(-10, -10, 130, 40, Color.DARK_RED.rgba)
             Gui.drawRect(-5, -15, 120, 35, if (!colorStyle) Color.DARK_GRAY.rgba else it.clazz.color.rgba)
