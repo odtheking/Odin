@@ -213,11 +213,6 @@ object DungeonUtils {
         Archer("§6", Color.ORANGE, 0, 1),
 
         /**
-         * Mage class with formatting code "§5" (purple) and purple color.
-         */
-        Mage("§5", Color.PURPLE, 3, 1),
-
-        /**
          * Berserk class with formatting code "§4" (dark red) and dark red color.
          */
         Berserk("§4", Color.DARK_RED,1, 0),
@@ -226,6 +221,11 @@ object DungeonUtils {
          * Healer class with formatting code "§a" (green) and green color.
          */
         Healer("§a", Color.GREEN, 2, 1),
+
+        /**
+         * Mage class with formatting code "§5" (purple) and purple color.
+         */
+        Mage("§5", Color.PURPLE, 3, 1),
 
         /**
          * Tank class with formatting code "§2" (dark green) and dark green color.

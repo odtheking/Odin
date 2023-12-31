@@ -23,7 +23,7 @@ object ClickedChests : Module(
     tag = TagType.NEW
 ) {
 
-    val onlyDungeon: Boolean by BooleanSetting("Only in dungeon", true, description = "Toggles if it renders everywhere or only in dungeon")
+    private val onlyDungeon: Boolean by BooleanSetting("Only in dungeon", true, description = "Toggles if it renders everywhere or only in dungeon")
 
     private val chests = mutableSetOf<BlockPos>()
     private val color: Color by ColorSetting(
@@ -55,7 +55,7 @@ object ClickedChests : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (onlyDungeon && DungeonUtils.inDungeons) return
+        if (onlyDungeon && !DungeonUtils.inDungeons) return
         if (chests.isEmpty()) return
         chests.forEach {
             if (filled) {

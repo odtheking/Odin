@@ -101,8 +101,49 @@ object DioriteFucker : Module(
             BlockPos(48, 169, 63),
             BlockPos(45, 169, 62),
             BlockPos(46, 169, 62),
-            BlockPos(47, 169, 62)
-        )
+            BlockPos(47, 169, 62),
+
+            BlockPos(101, 169, 62),
+            BlockPos(100, 169, 62),
+            BlockPos(99, 169, 62),
+            BlockPos(98, 169, 63),
+            BlockPos(99, 169, 63),
+            BlockPos(100, 169, 63),
+            BlockPos(101, 169, 63),
+            BlockPos(102, 169, 63),
+            BlockPos(97, 169, 64),
+            BlockPos(98, 169, 64),
+            BlockPos(99, 169, 64),
+            BlockPos(100, 169, 64),
+            BlockPos(101, 169, 64),
+            BlockPos(102, 169, 64),
+            BlockPos(103, 169, 64),
+            BlockPos(97, 169, 65),
+            BlockPos(98, 169, 65),
+            BlockPos(99, 169, 65),
+            BlockPos(100, 169, 65),
+            BlockPos(101, 169, 65),
+            BlockPos(102, 169, 65),
+            BlockPos(103, 169, 65),
+            BlockPos(97, 169, 66),
+            BlockPos(98, 169, 66),
+            BlockPos(99, 169, 66),
+            BlockPos(100, 169, 66),
+            BlockPos(101, 169, 66),
+            BlockPos(102, 169, 66),
+            BlockPos(103, 169, 66),
+
+            BlockPos(98, 175, 67),
+            BlockPos(99, 175, 67),
+            BlockPos(100, 175, 67),
+            BlockPos(101, 175, 67),
+            BlockPos(102, 175, 67),
+
+            BlockPos(99, 175, 68),
+            BlockPos(100, 175, 68),
+            BlockPos(101, 175, 68),
+
+            )
         repeat(28) { height ->
             for (block in basePillars) {
                 add(block.add(0, height, 0))

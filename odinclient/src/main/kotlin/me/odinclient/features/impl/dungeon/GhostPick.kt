@@ -2,6 +2,7 @@ package me.odinclient.features.impl.dungeon
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.item.Item
@@ -13,14 +14,14 @@ object GhostPick : Module(
     category = Category.DUNGEON,
 ) {
     private val slot: Int by NumberSetting("Ghost pick slot", 1, 1.0, 9.0, 1.0)
-
-    private val item = ItemStack(Item.getItemById(278), 1).apply {
-        addEnchantment(Enchantment.getEnchantmentById(32), 10)
-        tagCompound?.setBoolean("Unbreakable", true)
-    }
+    private val level: Int by NumberSetting("Efficiency level", 10, 1.0, 100.0, 1.0)
 
     override fun onKeybind() {
         if (mc.thePlayer == null || mc.currentScreen != null) return
+        val item = ItemStack(Item.getItemById(278), 1).apply {
+            addEnchantment(Enchantment.getEnchantmentById(32), level)
+            tagCompound?.setBoolean("Unbreakable", true)
+        }
         if (enabled) mc.thePlayer?.inventory?.mainInventory?.set(slot - 1, item)
     }
 }
