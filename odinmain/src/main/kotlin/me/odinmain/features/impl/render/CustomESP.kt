@@ -1,7 +1,8 @@
 package me.odinmain.features.impl.render
 
-import me.odinmain.OdinMain
+import me.odinmain.OdinMain.onLegitVersion
 import me.odinmain.config.MiscConfig
+import me.odinmain.config.MiscConfig.espList
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.events.impl.RenderEntityModelEvent
 import me.odinmain.features.Category
@@ -23,30 +24,31 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object CustomESP : Module(
-    "Custom Esp",
+    name = "Custom ${if (onLegitVersion) "Highlight" else "ESP"}",
     category = Category.RENDER,
     tag = TagType.FPSTAX,
-    description = "Allows you to highlight selected mobs (/esp)"
+    description =
+    if (onLegitVersion) "Allows you to highlight selected mobs. (/odinhighlight)"
+    else "Allows you to see selected mobs through walls. (/odinesp)"
 ) {
-
     private val scanDelay: Long by NumberSetting("Scan Delay", 500L, 100L, 2000L, 100L)
-    val color: Color by ColorSetting("Color", Color(255, 0, 0), true)
+    val color: Color by ColorSetting("Color", Color.RED, true)
     val mode: Int by SelectorSetting("Mode", "Outline", arrayListOf("Outline", "Overlay", "Boxes"))
-    private val xray: Boolean by BooleanSetting("Through Walls", true).withDependency { !OdinMain.onLegitVersion }
-    val renderThrough: Boolean get() = if (OdinMain.onLegitVersion) false else xray
+
+    private val xray: Boolean by BooleanSetting("Through Walls", true).withDependency { !onLegitVersion }
     private val thickness: Float by NumberSetting("Outline Thickness", 5f, 5f, 20f, 0.5f).withDependency { mode != 1 }
     private val cancelHurt: Boolean by BooleanSetting("Cancel Hurt", true).withDependency { mode != 1 }
 
     private val addStar: () -> Unit by ActionSetting("Add Star") {
-        if (MiscConfig.espList.contains("✯")) return@ActionSetting
+        if (espList.contains("✯")) return@ActionSetting
         modMessage("Added ✯ to ESP list")
-        MiscConfig.espList.add("✯")
+        espList.add("✯")
         MiscConfig.saveAllConfigs()
     }
 
-    private inline val espList get() = MiscConfig.espList
+    val renderThrough: Boolean get() = if (onLegitVersion) false else xray
 
-    var currentEntities = mutableSetOf<Entity>()
+    var currentEntities = mutableListOf<Entity>()
 
     init {
         execute({ scanDelay }) {
@@ -104,7 +106,7 @@ object CustomESP : Module(
         if (entity !is EntityArmorStand || espList.none { entity.name.contains(it, true) } || entity in currentEntities) return
         currentEntities.add(
             mc.theWorld.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.expand(1.0, 5.0, 1.0))
-                .filter { it != null && it !is EntityArmorStand && it != mc.thePlayer && (it.isInvisible || it.name == "Shadow Assassin")}
+                .filter { it != null && it != mc.thePlayer && (it.isInvisible || it.name == "Shadow Assassin")}
                 .minByOrNull { noSqrt3DDistance(it, entity) }
                 .takeIf { !(it is EntityWither && it.isInvisible) } ?: return
         )
