@@ -12,7 +12,10 @@ import me.odinmain.features.impl.skyblock.*
 import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.clock.Executor
+import me.odinmain.utils.profile
 import me.odinmain.utils.render.gui.nvg.drawNVG
+import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.startProfile
 import net.minecraft.network.Packet
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -156,18 +159,22 @@ object ModuleManager {
     @SubscribeEvent
     fun onRenderOverlay(event: RenderGameOverlayEvent.Pre) {
         if (mc.currentScreen != null || event.type != RenderGameOverlayEvent.ElementType.ALL) return
+        mc.mcProfiler.startSection("Odin Hud")
         drawNVG {
             for (i in 0 until huds.size) {
                 huds[i].draw(this, false)
             }
         }
+        mc.mcProfiler.endSection()
     }
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        executors.removeAll {
-            if (!it.first.enabled && !it.first::class.hasAnnotation<AlwaysActive>()) return@removeAll false // pls test i cba
-            it.second.run()
+        profile("Executors") {
+            executors.removeAll {
+                if (!it.first.enabled && !it.first::class.hasAnnotation<AlwaysActive>()) return@removeAll false // pls test i cba
+                it.second.run()
+            }
         }
     }
 

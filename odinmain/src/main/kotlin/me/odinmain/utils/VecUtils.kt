@@ -53,11 +53,11 @@ fun getPositionEyes(pos: Vec3 = mc.thePlayer.positionVector): Vec3 {
  * @return A normalized vector of the player's look
  */
 fun getLook(yaw: Float = mc.thePlayer.rotationYaw, pitch: Float = mc.thePlayer.rotationPitch): Vec3 {
-    val f2 = -MathHelper.cos(-pitch * 0.017453292f).toDouble()
+    val f2 = -cos(-pitch * 0.017453292f).toDouble()
     return Vec3(
-        MathHelper.sin(-yaw * 0.017453292f - 3.1415927f) * f2,
-        MathHelper.sin(-pitch * 0.017453292f).toDouble(),
-        MathHelper.cos(-yaw * 0.017453292f - 3.1415927f) * f2
+        sin(-yaw * 0.017453292f - 3.1415927f) * f2,
+        sin(-pitch * 0.017453292f).toDouble(),
+        cos(-yaw * 0.017453292f - 3.1415927f) * f2
     )
 }
 
