@@ -31,7 +31,8 @@ object AutoDungeonRequeue : Module(
         }
         scope.launch {
             delay(delay * 1000L)
-            sendCommand(if (type) "instancerequeue" else "od ${LocationUtils.currentDungeon?.floor?.name?.lowercase()}", true)
+            if (type) sendCommand("instancerequeue")
+            else sendCommand("od ${LocationUtils.currentDungeon?.floor?.name?.lowercase()}", true)
         }
     }
 }

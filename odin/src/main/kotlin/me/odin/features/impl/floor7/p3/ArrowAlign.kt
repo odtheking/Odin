@@ -4,6 +4,7 @@ import me.odinmain.events.impl.ClickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
 import net.minecraft.entity.item.EntityItemFrame
@@ -23,6 +24,8 @@ object ArrowAlign : Module(
 ) {
     private val solver: Boolean by BooleanSetting("Solver")
     private val multipleScans: Boolean by BooleanSetting("Multiple Scans", true)
+    private val delay: Long by NumberSetting("Delay", 3000, 10.0, 10000.0, 10.0)
+
     private var scanned = false
 
     private val area = BlockPos.getAllInBox(BlockPos(-2, 125, 79), BlockPos(-2, 121, 75))
@@ -38,7 +41,7 @@ object ArrowAlign : Module(
     private val neededRotations = HashMap<Vec2, Frame>()
 
     init {
-        execute(3000) {
+        execute(delay) {
             if (mc.thePlayer.getDistanceSq(BlockPos(-2, 122, 76)) > 225 /*|| DungeonUtils.getPhase() != 3*/ || (scanned && !multipleScans)) return@execute
             calculate()
             scanned = true

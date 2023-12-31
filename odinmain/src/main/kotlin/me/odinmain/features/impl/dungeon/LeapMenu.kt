@@ -22,6 +22,7 @@ import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.ItemSkull
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import org.lwjgl.opengl.Display
 
 object LeapMenu : Module(
     name = "Leap Menu",
@@ -29,14 +30,14 @@ object LeapMenu : Module(
     category = Category.DUNGEON
 ) {
     private val type: Int by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("A-Z Class", "A-Z Name", "Odin Sorting"))
-    private val colorStyle: Boolean by DualSetting("Color Style", "Gray", "Color", default = true, description = "What Click to use")
+    private val colorStyle: Boolean by DualSetting("Color Style", "Gray", "Color", default = false, description = "What Click to use")
 
 
     private val EMPTY = DungeonPlayer("Empty", Classes.Archer, ResourceLocation("textures/entity/steve.png"))
     private var leapTeammates = mutableListOf<DungeonPlayer>()
 
 
-   /* private var teammates: List<DungeonPlayer> = listOf(
+    /*private var teammates: List<DungeonPlayer> = listOf(
         DungeonPlayer("Bonzi", Classes.Mage, ResourceLocation("textures/entity/steve.png")),
         DungeonPlayer("OdthekingABCDFEGH", Classes.Archer, ResourceLocation("textures/entity/steve.png")),
         DungeonPlayer("CEzar", Classes.Tank, ResourceLocation("textures/entity/steve.png")),
@@ -45,7 +46,7 @@ object LeapMenu : Module(
 
     @SubscribeEvent
     fun mouseClicked(event: GuiClickEvent) {
-        if (event.button != 0 || event.gui !is GuiChest || event.gui.inventorySlots !is ContainerChest || (event.gui.inventorySlots as ContainerChest).name != "Spirit Leap")  return
+        if (event.gui !is GuiChest || event.gui.inventorySlots !is ContainerChest || (event.gui.inventorySlots as ContainerChest).name != "Spirit Leap")  return
 
         val quadrant = getQuadrant(event.x, event.y)
 
@@ -111,6 +112,9 @@ object LeapMenu : Module(
             return
         }
 
+        val width = Display.getWidth() / 1920
+        val height = Display.getHeight() / 1080
+
         val sr = ScaledResolution(mc)
         leapTeammates.forEachIndexed { index, it ->
             if (it == EMPTY) return@forEachIndexed
@@ -118,9 +122,10 @@ object LeapMenu : Module(
             GlStateManager.enableAlpha()
             GlStateManager.scale(6.0 / sr.scaleFactor,  6.0 / sr.scaleFactor, 1.0)
             GlStateManager.color(255f, 255f, 255f, 255f)
-            GlStateManager.translate(30 + (index % 2 * 145f), if (index >= 2) 120f else 40f, 0f)
+            GlStateManager.translate(((30 + (index % 2 * 145f)) * width).toDouble(),
+                (if (index >= 2) 120f else 40f) * height.toDouble(), 0.0)
             mc.textureManager.bindTexture(it.locationSkin)
-
+            //if (it.highlight) Gui.drawRect(-10, -10, 130, 40, Color.DARK_RED.rgba)
             Gui.drawRect(-5, -15, 120, 35, if (!colorStyle) Color.DARK_GRAY.rgba else it.clazz.color.rgba)
 
             GlStateManager.color(255f, 255f, 255f, 255f)
