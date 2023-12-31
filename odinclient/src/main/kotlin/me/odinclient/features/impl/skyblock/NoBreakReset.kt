@@ -19,12 +19,15 @@ object NoBreakReset : Module(
 
 ) {
     @JvmStatic
-    fun isHittingPositionHook(pos: BlockPos, cir: CallbackInfoReturnable<Boolean>, itemHittingBlock: ItemStack, currentBlock: BlockPos) {
-        if (!enabled) return cir.setReturnValue(cir.returnValue)
-        val stack = mc.thePlayer.heldItem ?: return
-        val lore = stack.lore.toString()
-        if (lore.containsOneOf("GAUNTLET", "DRILL", "PICKAXE")) {
-            cir.setReturnValue(pos == currentBlock && (stack.item === itemHittingBlock.item))
+    fun isHittingPositionHook(pos: BlockPos, cir: CallbackInfoReturnable<Boolean>, currentItemHittingBlock: ItemStack, currentBlock: BlockPos) {
+        if (this.enabled) {
+            val stack = mc.thePlayer.heldItem
+            val lore = stack.lore.toString()
+            if (lore.containsOneOf("GAUNTLET", "DRILL", "PICKAXE")) {
+                cir.setReturnValue(pos == currentBlock && (stack.item === currentItemHittingBlock.item))
+            }
+        } else {
+            cir.setReturnValue(cir.returnValue)
         }
     }
 }
