@@ -30,6 +30,7 @@ object ArrowAlign : Module(
     private val triggerBot: Boolean by BooleanSetting("Trigger Bot")
     private val delay: Long by NumberSetting<Long>("Delay", 200, 70, 500).withDependency { triggerBot }
     private val multipleScans: Boolean by BooleanSetting("Multiple Scans", true)
+    private val delayScan: Long by NumberSetting("Scan Delay", 3000, 10.0, 10000.0, 10.0)
     private var scanned = false
 
     private val area = BlockPos.getAllInBox(BlockPos(-2, 125, 79), BlockPos(-2, 121, 75))
@@ -45,7 +46,7 @@ object ArrowAlign : Module(
     private val neededRotations = HashMap<Vec2, Frame>()
 
     init {
-        execute(3000) {
+        execute(delayScan) {
             if (mc.thePlayer.getDistanceSq(BlockPos(-2, 122, 76)) > 225 /*|| DungeonUtils.getPhase() != 3*/ || (scanned && !multipleScans)) return@execute
             calculate()
             scanned = true

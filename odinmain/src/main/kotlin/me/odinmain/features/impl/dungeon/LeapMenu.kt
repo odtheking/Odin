@@ -12,6 +12,7 @@ import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.Classes
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.DungeonPlayer
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.teammates
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
@@ -35,12 +36,12 @@ object LeapMenu : Module(
     private var leapTeammates = mutableListOf<DungeonPlayer>()
 
 
-    private var teammates: List<DungeonPlayer> = listOf(
+   /* private var teammates: List<DungeonPlayer> = listOf(
         DungeonPlayer("Bonzi", Classes.Mage, ResourceLocation("textures/entity/steve.png")),
         DungeonPlayer("OdthekingABCDFEGH", Classes.Archer, ResourceLocation("textures/entity/steve.png")),
         DungeonPlayer("CEzar", Classes.Tank, ResourceLocation("textures/entity/steve.png")),
         DungeonPlayer("Stiviaisd", Classes.Berserk, ResourceLocation("textures/entity/steve.png"))
-    )
+    )*/
 
     @SubscribeEvent
     fun mouseClicked(event: GuiClickEvent) {
@@ -95,7 +96,7 @@ object LeapMenu : Module(
         teammates = teammates.filter { playerHeads.any { head -> head.displayName.noControlCodes == it.name } }
 
         leapTeammates = when (type) {
-            0 -> teammates.sortedBy { it.clazz.ordinal }.toMutableList()
+            0 -> teammates.sortedWith(compareBy({ it.clazz.ordinal }, { it.name })).toMutableList()
             1 -> teammates.sortedBy { it.name }.toMutableList()
             else -> fillPlayerList(teammates).toMutableList()
         }
@@ -105,7 +106,8 @@ object LeapMenu : Module(
     fun onDrawScreen(event: DrawGuiScreenEvent) {
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
         if (chest !is ContainerChest || chest.name != "Spirit Leap") return
-        if (teammates.isEmpty()) {
+
+        if (leapTeammates.isEmpty()) {
             mc.currentScreen = null
             return
         }
@@ -113,7 +115,8 @@ object LeapMenu : Module(
         val width = mc.displayWidth / 1920.0
         val height = mc.displayHeight / 1080.0
         val sr = ScaledResolution(mc)
-        teammates.forEachIndexed { index, it ->
+
+        leapTeammates.forEachIndexed { index, it ->
             if (it == EMPTY) return@forEachIndexed
             GlStateManager.pushMatrix()
             GlStateManager.enableAlpha()
