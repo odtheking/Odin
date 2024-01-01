@@ -67,6 +67,7 @@ object Trajectories : Module(
                     this.setBowTrajectoryHeading(0f, false)
                 }
             } else {
+                if (mc.thePlayer?.itemInUseDuration == 0) return
                 this.setBowTrajectoryHeading(0f, true)
             }
             this.drawBowCollisionBoxes()
