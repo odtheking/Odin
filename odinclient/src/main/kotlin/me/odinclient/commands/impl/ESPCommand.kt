@@ -12,7 +12,7 @@ import me.odinmain.utils.skyblock.modMessage
 
 object ESPCommand : Commodore {
     override val command: CommandNode =
-        literal("odinesp") {
+        literal("esp") {
             requires {
                 !onLegitVersion
             }

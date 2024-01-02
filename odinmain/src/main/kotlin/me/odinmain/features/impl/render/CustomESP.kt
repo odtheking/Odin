@@ -106,7 +106,7 @@ object CustomESP : Module(
         if (entity !is EntityArmorStand || espList.none { entity.name.contains(it, true) } || entity in currentEntities) return
         currentEntities.add(
             mc.theWorld.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.expand(1.0, 5.0, 1.0))
-                .filter { it != null && it !is EntityArmorStand && it != mc.thePlayer && !(it.isInvisible && it.name !== "Shadow Assassin")}
+                .filter { it != null && it !is EntityArmorStand && it != mc.thePlayer}
                 .minByOrNull { noSqrt3DDistance(it, entity) }
                 .takeIf { !(it is EntityWither && it.isInvisible) } ?: return
         )
