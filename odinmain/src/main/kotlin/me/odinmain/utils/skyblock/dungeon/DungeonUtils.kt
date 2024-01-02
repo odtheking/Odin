@@ -263,13 +263,16 @@ object DungeonUtils {
     }
 
     private val tablistRegex = Regex("\\[(\\d+)] (?:\\[\\w+] )*(\\w+) (?:.)*?\\((\\w+)(?: (\\w+))*\\)")
+    private val tablistRegexDEAD = Regex("\\[(\\d+)] (?:\\[\\w+] )*(\\w+) (?:.)*?\\((\\w+)*\\)")
+
 
     private fun getDungeonTeammates(): List<DungeonPlayer> {
         val teammates = mutableListOf<DungeonPlayer>()
         val tabList = getDungeonTabList() ?: return emptyList()
 
         for ((networkPlayerInfo, line) in tabList) {
-            val (_, sbLevel, name, clazz, level) = tablistRegex.find(line.noControlCodes)?.groupValues ?: continue
+
+            val (_, sbLevel, name, clazz, clazzLevel) = tablistRegex.find(line.noControlCodes)?.groupValues ?: tablistRegexDEAD.find(line.noControlCodes)?.groupValues ?: continue
 
             Classes.entries.find { it.name == clazz }?.let { foundClass ->
                 mc.theWorld.getPlayerEntityByName(name)?.let { player ->
