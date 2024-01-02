@@ -32,7 +32,7 @@ object LeapMenu : Module(
 ) {
     private val type: Int by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("A-Z Class (BetterMap)", "A-Z Name", "Odin Sorting"))
     private val colorStyle: Boolean by DualSetting("Color Style", "Gray", "Color", default = false, description = "What Click to use")
-    private val leapHelperToggle: Boolean by BooleanSetting("Leap Helper")
+    private val leapHelperToggle: Boolean by BooleanSetting("Leap Helper", true)
     private val color: Color by ColorSetting("Leap Helper Color", default = Color.WHITE).withDependency { leapHelperToggle }
     private val delay: Int by NumberSetting("Delay", 30, 10.0, 120.0, 1.0)
 
