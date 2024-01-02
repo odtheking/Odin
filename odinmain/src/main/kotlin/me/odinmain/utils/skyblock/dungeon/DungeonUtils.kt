@@ -230,7 +230,9 @@ object DungeonUtils {
         /**
          * Tank class with formatting code "§2" (dark green) and dark green color.
          */
-        Tank("§2", Color.DARK_GREEN, 3, 1)
+        Tank("§2", Color.DARK_GREEN, 3, 1),
+
+        DEAD("§4", Color.DARK_RED, 3, -1)
     }
 
     /**
