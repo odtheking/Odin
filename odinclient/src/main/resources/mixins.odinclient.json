@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "accessors.IBlockAccessor",
+    "mixins.MixinBlockChest",
     "mixins.MixinBlock",
     "mixins.MixinBlockCocoa",
     "mixins.MixinBlockCrops",
