@@ -24,41 +24,36 @@ public class MixinBlockButton extends Block {
     {
         if (SecretHitboxes.INSTANCE.getEnabled() && SecretHitboxes.INSTANCE.getButton())
         {
-            SecretHitboxes.INSTANCE.getExpandedButtons().put(this, state);
+            EnumFacing enumfacing = state.getValue(BlockButton.FACING);
+            boolean flag = state.getValue(BlockButton.POWERED);
+            float f2 = (flag ? 1 : 2) / 16.0f;
 
-            if (SecretHitboxes.INSTANCE.getEnabled())
-            {
-                EnumFacing enumfacing = state.getValue(BlockButton.FACING);
-                boolean flag = state.getValue(BlockButton.POWERED);
-                float f2 = (flag ? 1 : 2) / 16.0f;
+            switch (enumfacing) {
+                case EAST:
+                    this.setBlockBounds(0.0f, 0.0f, 0.0f, f2, 1.0f, 1.0f);
+                    break;
 
-                switch (enumfacing) {
-                    case EAST:
-                        this.setBlockBounds(0.0f, 0.0f, 0.0f, f2, 1.0f, 1.0f);
-                        break;
+                case WEST:
+                    this.setBlockBounds(1.0f - f2, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+                    break;
 
-                    case WEST:
-                        this.setBlockBounds(1.0f - f2, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
-                        break;
+                case SOUTH:
+                    this.setBlockBounds(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, f2);
+                    break;
 
-                    case SOUTH:
-                        this.setBlockBounds(0.0f, 0.0f, 0.0f, 1.0f, 1.0f, f2);
-                        break;
+                case NORTH:
+                    this.setBlockBounds(0.0f, 0.0f, 1.0f - f2, 1.0f, 1.0f, 1.0f);
+                    break;
 
-                    case NORTH:
-                        this.setBlockBounds(0.0f, 0.0f, 1.0f - f2, 1.0f, 1.0f, 1.0f);
-                        break;
+                case UP:
+                    this.setBlockBounds(0.0f, 0.0f, 0.0f, 1.0f, 0.0f + f2, 1.0f);
+                    break;
 
-                    case UP:
-                        this.setBlockBounds(0.0f, 0.0f, 0.0f, 1.0f, 0.0f + f2, 1.0f);
-                        break;
-
-                    case DOWN:
-                        this.setBlockBounds(0.0f, 1.0f - f2, 0.0f, 1.0f, 1.0f, 1.0f);
-                        break;
-                }
-                ci.cancel();
+                case DOWN:
+                    this.setBlockBounds(0.0f, 1.0f - f2, 0.0f, 1.0f, 1.0f, 1.0f);
+                    break;
             }
+            ci.cancel();
         }
     }
 
