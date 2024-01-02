@@ -26,6 +26,7 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.fml.common.Loader
 import java.io.File
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -36,7 +37,8 @@ object OdinMain {
     val scope = CoroutineScope(EmptyCoroutineContext)
 
     var display: GuiScreen? = null
-    var onLegitVersion = true
+    val onLegitVersion: Boolean
+        get() = Loader.instance().activeModList.none { it.modId == "odclient" }
 
     object MapColors {
         var bloodColor = Color.WHITE

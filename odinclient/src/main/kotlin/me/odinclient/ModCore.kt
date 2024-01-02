@@ -32,12 +32,13 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
     clientSideOnly = true
 )
 class ModCore {
+
     @EventHandler
     fun init(event: FMLInitializationEvent) {
         ModuleManager.modules.addAll(modules)
 
         Window.init()
-        OdinMain.onLegitVersion = false
+
         OdinMain.init()
         MinecraftForge.EVENT_BUS.register(this)
 
