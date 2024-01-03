@@ -1,6 +1,9 @@
 package me.odinmain.features.impl.floor7.p3
 
-import me.odinmain.events.impl.*
+import me.odinmain.events.impl.ChatPacketEvent
+import me.odinmain.events.impl.DrawGuiScreenEvent
+import me.odinmain.events.impl.GuiLoadedEvent
+import me.odinmain.events.impl.TerminalOpenedEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.AlwaysActive
@@ -34,7 +37,7 @@ object TerminalSolver : Module(
 ) {
     private val customSizeToggle: Boolean by BooleanSetting("Custom Size Toggle", description = "Toggles custom size of the terminal")
     private val customSize: Int by NumberSetting("Custom Terminal Size", 3, 1.0, 4.0, 1.0, description = "Custom size of the terminal").withDependency { customSizeToggle }
-
+    private val defaultSize: Int by NumberSetting("Default Terminal Size", 2, 1.0, 4.0, 1.0, description = "Default size of the terminal").withDependency { customSizeToggle }
     private val type: Int by SelectorSetting("Rendering", "None", arrayListOf("None", "Behind Item", "Stop Rendering Wrong"))
 
     private val cancelToolTip: Boolean by BooleanSetting("Stop Tooltips", default = true, description = "Stops rendering tooltips in terminals")
@@ -51,9 +54,9 @@ object TerminalSolver : Module(
     private val startsWithColor: Color by ColorSetting("Starts With Color", Color(0, 170, 170), true)
     private val selectColor: Color by ColorSetting("Select Color", Color(0, 170, 170), true)
 
-    private val zLevel: Float get() = if (type == 1 && currentTerm != 1) 200f else 999f
+    private val zLevel: Float get() = if (type == 1 && currentTerm != 1 && currentTerm != 2) 200f else 999f
     var openedTerminalTime = 0L
-    private var lastGuiScale = mc.gameSettings.guiScale
+
 
     private val terminalNames = listOf(
         "Correct all the panes!",
@@ -64,6 +67,7 @@ object TerminalSolver : Module(
     )
     var currentTerm = -1
     var solution = listOf<Int>()
+
     init {
         onPacket(S2DPacketOpenWindow::class.java) {
             if (!enabled) return@onPacket
@@ -77,10 +81,7 @@ object TerminalSolver : Module(
                 windowName.startsWith(term)
             }
             .takeIf { it != -1 } ?: return
-        lastGuiScale = mc.gameSettings.guiScale
-        if (customSizeToggle && newTerm != currentTerm) mc.gameSettings.guiScale = customSize
-
-
+        if (customSizeToggle) mc.gameSettings.guiScale = customSize
     }
 
     @SubscribeEvent
@@ -106,10 +107,6 @@ object TerminalSolver : Module(
             }
         }
         MinecraftForge.EVENT_BUS.post(TerminalOpenedEvent(currentTerm, solution))
-    }
-    @SubscribeEvent
-    fun guiClose(event: GuiClosedEvent) {
-        if (customSizeToggle) mc.gameSettings.guiScale = lastGuiScale
     }
 
     @SubscribeEvent
@@ -173,11 +170,8 @@ object TerminalSolver : Module(
     fun onTick(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.END) return
         val isNull = mc.currentScreen == null
-        if (isNull && lastWasNull && currentTerm != -1) {
-            leftTerm()
-        }
+        if (isNull && lastWasNull && currentTerm != -1) leftTerm()
         lastWasNull = isNull
-
     }
 
     @SubscribeEvent
@@ -190,6 +184,7 @@ object TerminalSolver : Module(
     private fun leftTerm() {
         currentTerm = -1
         solution = emptyList()
+        if (customSizeToggle) mc.gameSettings.guiScale = defaultSize
     }
 
     private fun solvePanes(items: List<ItemStack?>) {

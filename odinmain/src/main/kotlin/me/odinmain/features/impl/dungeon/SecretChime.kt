@@ -23,11 +23,11 @@ object SecretChime : Module(
     category = Category.DUNGEON,
     description = "Plays a sound whenever you get a secret. Do not use the bat death sound or your game will freeze!"
 ){
-    private val defaultSounds = arrayListOf("mob.blaze.hit", "fire.ignite", "random.orb", "random.break", "mob.guardian.land.hit", "Custom")
+    private val defaultSounds = arrayListOf("mob.blaze.hit", "fire.ignite", "random.orb", "random.break", "mob.guardian.land.hit", "note.pling", "Custom")
     private val sound: Int by SelectorSetting("Sound", "mob.blaze.hit", defaultSounds, description = "Which sound to play when you get a secret.")
     private val customSound: String by StringSetting("Custom Sound", "mob.blaze.hit",
         description = "Name of a custom sound to play. This is used when Custom is selected in the Sound setting."
-    ).withDependency { sound == 5 }
+    ).withDependency { sound == defaultSounds.size - 1 }
     private val volume: Float by NumberSetting("Volume", 1f, 0, 1, .01f, description = "Volume of the sound.")
     private val pitch: Float by NumberSetting("Pitch", 2f, 0, 2, .01f, description = "Pitch of the sound.")
 
@@ -52,7 +52,7 @@ object SecretChime : Module(
      */
     @SubscribeEvent
     fun onInteract(event: PlayerInteractEvent) {
-        if (!DungeonUtils.inDungeons || event.pos == null) return
+        if (!(DungeonUtils.inDungeons && !DungeonUtils.inBoss) || event.pos != null) return
 
         if (DungeonUtils.isSecret(mc.theWorld?.getBlockState(event.pos) ?: return, event.pos)) {
             playSecretSound()
@@ -64,7 +64,7 @@ object SecretChime : Module(
      */
     @SubscribeEvent
     fun onRemoveEntity(event: EntityLeaveWorldEvent) {
-        if (!DungeonUtils.inDungeons || mc.thePlayer.getDistanceToEntity(event.entity) > 6) return
+        if (!(DungeonUtils.inDungeons && !DungeonUtils.inBoss) || mc.thePlayer.getDistanceToEntity(event.entity) > 6) return
 
         // Check the item name to filter for secrets.
         if ((event.entity is EntityItem && drops.any {
@@ -74,7 +74,7 @@ object SecretChime : Module(
 
     private fun playSecretSound() {
         if (System.currentTimeMillis() - lastPlayed > 10) {
-            val sound = if (sound == 5) {
+            val sound = if (sound == defaultSounds.size - 1) {
                 customSound
             } else defaultSounds[sound]
             PlayerUtils.playLoudSound(sound, volume, pitch)
