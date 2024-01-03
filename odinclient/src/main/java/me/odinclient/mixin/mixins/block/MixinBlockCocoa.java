@@ -1,4 +1,4 @@
-package me.odinclient.mixin.mixins;
+package me.odinclient.mixin.mixins.block;
 
 import me.odinclient.features.impl.skyblock.FarmingHitboxes;
 import net.minecraft.block.BlockCocoa;

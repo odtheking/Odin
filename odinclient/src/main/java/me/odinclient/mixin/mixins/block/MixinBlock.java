@@ -1,4 +1,4 @@
-package me.odinclient.mixin.mixins;
+package me.odinclient.mixin.mixins.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.util.AxisAlignedBB;

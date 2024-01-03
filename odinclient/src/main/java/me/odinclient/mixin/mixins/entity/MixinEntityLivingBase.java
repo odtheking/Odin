@@ -1,4 +1,4 @@
-package me.odinclient.mixin.mixins;
+package me.odinclient.mixin.mixins.entity;
 
 import me.odinmain.features.impl.render.Animations;
 import net.minecraft.entity.EntityLivingBase;
