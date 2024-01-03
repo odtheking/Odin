@@ -1,4 +1,4 @@
-package me.odinclient.mixin.mixins;
+package me.odinclient.mixin.mixins.entity;
 
 import me.odinmain.features.impl.render.Camera;
 import net.minecraft.client.renderer.EntityRenderer;
