@@ -53,7 +53,6 @@ object LeapMenu : Module(
         if (event.gui !is GuiChest || event.gui.inventorySlots !is ContainerChest || (event.gui.inventorySlots as ContainerChest).name != "Spirit Leap")  return
 
         val quadrant = getQuadrant(event.x, event.y)
-        modMessage(quadrant.toString())
 
         if (leapTeammates.isEmpty()) return
         if ((type == 1 || type == 0) && leapTeammates.size < quadrant ) return
@@ -99,12 +98,12 @@ object LeapMenu : Module(
         if (event.name != "Spirit Leap") return
 
         val playerHeads = event.gui.inventory?.subList(11, 16)?.filter { it?.item is ItemSkull } ?: emptyList()
-        teammates = teammates.filter { playerHeads.any { head -> head.displayName.noControlCodes == it.name } }
+        val teammatesNoSelf = teammates.filter { playerHeads.any { head -> head.displayName.noControlCodes == it.name } }
 
         leapTeammates = when (type) {
-            0 -> teammates.sortedWith(compareBy({ it.clazz.ordinal }, { it.name })).toMutableList()
-            1 -> teammates.sortedBy { it.name }.toMutableList()
-            else -> fillPlayerList(teammates).toMutableList()
+            0 -> teammatesNoSelf.sortedWith(compareBy({ it.clazz.ordinal }, { it.name })).toMutableList()
+            1 -> teammatesNoSelf.sortedBy { it.name }.toMutableList()
+            else -> fillPlayerList(teammatesNoSelf).toMutableList()
         }
     }
 
@@ -112,7 +111,7 @@ object LeapMenu : Module(
     fun onDrawScreen(event: DrawGuiScreenEvent) {
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
         if (chest !is ContainerChest || chest.name != "Spirit Leap") return
-        if (teammates.isEmpty()) return
+        if (teammates.size <= 1) return
 
         val width = mc.displayWidth / 1920.0
         val height = mc.displayHeight / 1080.0

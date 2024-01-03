@@ -52,7 +52,7 @@ object SecretChime : Module(
      */
     @SubscribeEvent
     fun onInteract(event: PlayerInteractEvent) {
-        if (!(DungeonUtils.inDungeons && !DungeonUtils.inBoss) || event.pos != null) return
+        if (!DungeonUtils.inDungeons || event.pos == null) return
 
         if (DungeonUtils.isSecret(mc.theWorld?.getBlockState(event.pos) ?: return, event.pos)) {
             playSecretSound()
@@ -64,7 +64,7 @@ object SecretChime : Module(
      */
     @SubscribeEvent
     fun onRemoveEntity(event: EntityLeaveWorldEvent) {
-        if (!(DungeonUtils.inDungeons && !DungeonUtils.inBoss) || mc.thePlayer.getDistanceToEntity(event.entity) > 6) return
+        if (!DungeonUtils.inDungeons || mc.thePlayer.getDistanceToEntity(event.entity) > 6) return
 
         // Check the item name to filter for secrets.
         if ((event.entity is EntityItem && drops.any {
