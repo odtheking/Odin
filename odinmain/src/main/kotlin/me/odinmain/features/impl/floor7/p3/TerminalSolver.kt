@@ -111,7 +111,7 @@ object TerminalSolver : Module(
     }
 
     @SubscribeEvent
-    fun onSlotRender(event: DrawGuiEvent) {
+    fun onSlotRender(event: DrawGuiScreenEvent) {
         if (currentTerm == -1 || !enabled || event.container !is ContainerChest) return
         if (currentTerm == 2 || removeWrong) {
             if (
@@ -120,13 +120,13 @@ object TerminalSolver : Module(
                 (currentTerm == 3 && removeWrongStartsWith) ||
                 (currentTerm == 4 && removeWrongSelect)
             ) {
-                GlStateManager.translate(0f, 0f, 999f)
+                GlStateManager.translate(event.guiLeft.toFloat(), event.guiTop.toFloat(), 999f)
                 Gui.drawRect(7, 16, event.xSize - 7, event.ySize - 96, wrongColor.rgba)
-                GlStateManager.translate(0f, 0f, -999f)
+                GlStateManager.translate(-event.guiLeft.toFloat(), -event.guiTop.toFloat(), -999f)
             }
         }
         GlStateManager.pushMatrix()
-        GlStateManager.translate(0f, 0f, zLevel)
+        GlStateManager.translate(event.guiLeft.toFloat(), event.guiTop.toFloat(), zLevel)
         solution.forEach { slotIndex ->
             val slot = event.container.inventorySlots[slotIndex]
             val x = slot.xDisplayPosition
