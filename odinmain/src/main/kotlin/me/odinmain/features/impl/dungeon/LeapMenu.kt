@@ -1,12 +1,14 @@
 package me.odinmain.features.impl.dungeon
 
+import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.events.impl.DrawGuiScreenEvent
 import me.odinmain.events.impl.GuiClickEvent
 import me.odinmain.events.impl.GuiLoadedEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.DualSetting
-import me.odinmain.features.settings.impl.SelectorSetting
+import me.odinmain.features.settings.Setting.Companion.withDependency
+import me.odinmain.features.settings.impl.*
+import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.name
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
@@ -28,12 +30,16 @@ object LeapMenu : Module(
     description = "Renders a custom leap menu when in the Spirit Leap gui.",
     category = Category.DUNGEON
 ) {
-    private val type: Int by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("A-Z Class", "A-Z Name", "Odin Sorting"))
+    private val type: Int by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("A-Z Class (BetterMap)", "A-Z Name", "Odin Sorting"))
     private val colorStyle: Boolean by DualSetting("Color Style", "Gray", "Color", default = false, description = "What Click to use")
+    private val leapHelperToggle: Boolean by BooleanSetting("Leap Helper", true)
+    private val color: Color by ColorSetting("Leap Helper Color", default = Color.WHITE).withDependency { leapHelperToggle }
+    private val delay: Int by NumberSetting("Delay", 30, 10.0, 120.0, 1.0)
 
 
     private val EMPTY = DungeonPlayer("Empty", Classes.Archer, ResourceLocation("textures/entity/steve.png"))
     private var leapTeammates = mutableListOf<DungeonPlayer>()
+    private var leapHelper: String = ""
 
 
    /* private var teammates: List<DungeonPlayer> = listOf(
@@ -58,7 +64,7 @@ object LeapMenu : Module(
             .indexOfFirst { it?.stack?.displayName?.noControlCodes == playerToLeap.name }
                 .takeIf { it != -1 } ?: return
         modMessage("Teleporting to ${playerToLeap.name}.")
-
+        if (playerToLeap.clazz == Classes.DEAD) return modMessage("This player is dead, can't leap.")
         mc.playerController.windowClick(event.gui.inventorySlots.windowId, 11 + index, 1, 2, mc.thePlayer)
         event.isCanceled = true
     }
@@ -106,11 +112,7 @@ object LeapMenu : Module(
     fun onDrawScreen(event: DrawGuiScreenEvent) {
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
         if (chest !is ContainerChest || chest.name != "Spirit Leap") return
-
-        if (leapTeammates.isEmpty()) {
-            mc.currentScreen = null
-            return
-        }
+        if (leapTeammates.isEmpty()) return
 
         val width = mc.displayWidth / 1920.0
         val height = mc.displayHeight / 1080.0
@@ -128,7 +130,7 @@ object LeapMenu : Module(
                 (if (index >= 2) 120.0 else 40.0),
                 0.0)
             mc.textureManager.bindTexture(it.locationSkin)
-            //if (it.highlight) Gui.drawRect(-10, -10, 130, 40, Color.DARK_RED.rgba)
+            if (it.name == leapHelper && leapHelperToggle) Gui.drawRect(-10, -20, 125, 40, color.rgba)
             Gui.drawRect(-5, -15, 120, 35, if (!colorStyle) Color.DARK_GRAY.rgba else it.clazz.color.rgba)
 
             GlStateManager.color(255f, 255f, 255f, 255f)
@@ -152,5 +154,15 @@ object LeapMenu : Module(
             mouseX >= mc.displayWidth / 4 -> if (mouseY >= screenY) 4 else 2
             else -> if (mouseY >= screenY) 3 else 1
         }
+    }
+
+    private val keyRegex = Regex("(?:\\[(?:\\w+)] )?(\\w+) opened a (?:WITHER|Blood) door!")
+    private val leapHelperClock = Clock(delay * 1000L)
+
+    @SubscribeEvent
+    fun onChat (event: ChatPacketEvent) {
+        if(leapHelperClock.hasTimePassed()) leapHelper = ""
+        leapHelper = keyRegex.find(event.message)?.groupValues?.get(1) ?: return
+        leapHelperClock.update()
     }
 }

@@ -7,8 +7,8 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
 import me.odinmain.features.impl.dungeon.PuzzleSolvers.showOrder
 import me.odinmain.utils.render.world.RenderUtils
-import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.Minecraft
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
@@ -91,7 +91,7 @@ object WaterSolver {
                     else "§a§lCLICK ME!"
 
                 }
-                RenderUtils.drawStringInWorld(displayText, Vec3(solution.key.leverPos).addVector(0.5, (i - solution.key.i) * 0.5 + 1.5, 0.5), 0, false, increase = false, depthTest = true, 0.04f)
+                RenderUtils.drawStringInWorld(displayText, Vec3(solution.key.leverPos).addVector(0.5, (i - solution.key.i) * 0.5 + 1.5, 0.5), 0, false, increase = false, depthTest = false, 0.04f)
             }
 
 
