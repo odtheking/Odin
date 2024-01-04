@@ -23,20 +23,19 @@ public class MixinGuiContainer {
 
     @Shadow protected int ySize;
 
+    @Shadow protected int guiLeft;
+
+    @Shadow protected int guiTop;
+
     @Inject(method = "drawSlot", at = @At("HEAD"), cancellable = true)
     private void onDrawSlot(Slot slotIn, CallbackInfo ci) {
         if (MinecraftForge.EVENT_BUS.post(new DrawSlotEvent(inventorySlots, gui, slotIn, slotIn.xDisplayPosition, slotIn.yDisplayPosition)))
             ci.cancel();
     }
 
-    @Inject(method = "drawScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/inventory/GuiContainer;drawGuiContainerForegroundLayer(II)V"))
-    private void onDrawScreen(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-        MinecraftForge.EVENT_BUS.post(new DrawGuiEvent(gui.inventorySlots, gui, this.xSize, this.ySize));
-    }
-
     @Inject(method = "drawScreen", at = @At(value = "HEAD"), cancellable = true)
     private void startDrawScreen(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-        if (MinecraftForge.EVENT_BUS.post(new DrawGuiScreenEvent(gui.inventorySlots, gui, this.xSize, this.ySize)))
+        if (MinecraftForge.EVENT_BUS.post(new DrawGuiScreenEvent(gui.inventorySlots, gui, this.xSize, this.ySize, guiLeft, guiTop)))
             ci.cancel();
     }
 

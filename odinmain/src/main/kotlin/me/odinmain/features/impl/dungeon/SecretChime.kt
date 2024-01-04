@@ -21,8 +21,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object SecretChime : Module(
     name = "Secret Chime",
     category = Category.DUNGEON,
-    description = "Plays a sound whenever you get a secret. Do not use the bat death sound or your game will freeze!",
-    tag = TagType.NEW
+    description = "Plays a sound whenever you get a secret. Do not use the bat death sound or your game will freeze!"
 ){
     private val defaultSounds = arrayListOf("mob.blaze.hit", "fire.ignite", "random.orb", "random.break", "mob.guardian.land.hit", "note.pling", "Custom")
     private val sound: Int by SelectorSetting("Sound", "mob.blaze.hit", defaultSounds, description = "Which sound to play when you get a secret.")
@@ -53,7 +52,7 @@ object SecretChime : Module(
      */
     @SubscribeEvent
     fun onInteract(event: PlayerInteractEvent) {
-        if (DungeonUtils.inBoss || event.pos == null) return
+        if (!DungeonUtils.inDungeons || event.pos == null) return
 
         if (DungeonUtils.isSecret(mc.theWorld?.getBlockState(event.pos) ?: return, event.pos)) {
             playSecretSound()
@@ -65,12 +64,12 @@ object SecretChime : Module(
      */
     @SubscribeEvent
     fun onRemoveEntity(event: EntityLeaveWorldEvent) {
-        if (DungeonUtils.inBoss || mc.thePlayer.getDistanceToEntity(event.entity) > 6) return
+        if (!DungeonUtils.inDungeons || mc.thePlayer.getDistanceToEntity(event.entity) > 6) return
 
         // Check the item name to filter for secrets.
         if ((event.entity is EntityItem && drops.any {
-            event.entity.entityItem.displayName.contains(it)
-        }) || event.entity is EntityBat) playSecretSound()
+                event.entity.entityItem.displayName.contains(it)
+            }) || event.entity is EntityBat) playSecretSound()
     }
 
     private fun playSecretSound() {

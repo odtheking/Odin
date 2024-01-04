@@ -1,4 +1,4 @@
-package me.odinclient.mixin.mixins;
+package me.odinclient.mixin.mixins.block;
 
 import me.odinclient.features.impl.dungeon.SecretHitboxes;
 import net.minecraft.block.Block;
@@ -10,8 +10,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import static net.minecraft.block.BlockLever.FACING;
 
 @Mixin(BlockLever.class)
 public class MixinBlockLever extends Block {
@@ -27,7 +25,6 @@ public class MixinBlockLever extends Block {
         if (SecretHitboxes.INSTANCE.getLever())
         {
             if (pos.getX() >= 58 && pos.getX() <= 62 && pos.getY() >= 133 && pos.getY() <= 136 && pos.getZ() == 142) { return; }
-            SecretHitboxes.INSTANCE.getExpandedLevers().put(this, worldIn.getBlockState(pos).getValue(FACING));
 
             if (SecretHitboxes.INSTANCE.getEnabled())
             {

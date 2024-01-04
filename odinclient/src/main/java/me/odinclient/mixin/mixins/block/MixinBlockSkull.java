@@ -1,4 +1,4 @@
-package me.odinclient.mixin.mixins;
+package me.odinclient.mixin.mixins.block;
 
 import me.odinclient.features.impl.dungeon.SecretHitboxes;
 import net.minecraft.block.Block;
@@ -28,15 +28,10 @@ public class MixinBlockSkull extends Block {
     @Inject(method = "setBlockBoundsBasedOnState", at = @At("HEAD"), cancellable = true)
     private void onSetBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos, CallbackInfo ci)
     {
-        if (SecretHitboxes.INSTANCE.addEssence(pos))
+        if (SecretHitboxes.INSTANCE.isEssence(pos) && SecretHitboxes.INSTANCE.getEnabled())
         {
-            SecretHitboxes.INSTANCE.getExpandedSkulls().put(this, worldIn.getBlockState(pos).getValue(FACING));
-
-            if (SecretHitboxes.INSTANCE.getEnabled())
-            {
-                this.setBlockBounds(0, 0, 0, 1, 1, 1);
-                ci.cancel();
-            }
+            this.setBlockBounds(0, 0, 0, 1, 1, 1);
+            ci.cancel();
         }
     }
 

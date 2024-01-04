@@ -14,8 +14,6 @@ import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.profile
 import me.odinmain.utils.render.gui.nvg.drawNVG
-import me.odinmain.utils.skyblock.modMessage
-import me.odinmain.utils.startProfile
 import net.minecraft.network.Packet
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -157,7 +155,7 @@ object ModuleManager {
     }
 
     @SubscribeEvent
-    fun onRenderOverlay(event: RenderGameOverlayEvent.Pre) {
+    fun onRenderOverlay(event: RenderGameOverlayEvent.Post) {
         if (mc.currentScreen != null || event.type != RenderGameOverlayEvent.ElementType.ALL) return
         mc.mcProfiler.startSection("Odin Hud")
         drawNVG {

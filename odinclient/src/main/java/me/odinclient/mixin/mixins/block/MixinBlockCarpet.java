@@ -1,4 +1,4 @@
-package me.odinclient.mixin.mixins;
+package me.odinclient.mixin.mixins.block;
 
 import me.odinclient.features.impl.render.NoCarpet;
 import net.minecraft.block.Block;
