@@ -86,7 +86,7 @@ class Panel(
     }
 
     fun handleScroll(amount: Int): Boolean {
-        if (isMouseOverExtended) {
+        if (isMouseOverExtended && currentSearch.isBlank()) {
             scrollTarget = (scrollTarget + amount).coerceIn(-length + scrollOffset + 72f, 0f)
             scrollAnimation.start(true)
             return true
