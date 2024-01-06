@@ -39,7 +39,7 @@ object SimonSays : Module(
     private val startClickDelay: Int by NumberSetting("Start Click Delay", 3, 1, 5).withDependency { start }
     private val triggerBot: Boolean by BooleanSetting("Triggerbot")
     private val delay: Long by NumberSetting<Long>("Delay", 200, 70, 500).withDependency { triggerBot }
-    private val blockWrong: Boolean by BooleanSetting("Block Wrong Clicks", false, description = "Blocks Any Wrong Clicks.")
+    private val blockWrong: Boolean by BooleanSetting("Block Wrong Clicks", false, description = "Blocks Any Wrong Clicks (sneak to disable).")
     private val clearAfter: Boolean by BooleanSetting("Clear After", false, description = "Clears the clicks when showing next, should work better with ss skip, but will be less consistent")
 
     private val triggerBotClock = Clock(delay)
@@ -146,10 +146,13 @@ object SimonSays : Module(
             event.pos == null ||
             event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK ||
             !blockWrong ||
-            event.pos?.z !in 92..95 || event.pos?.y !in 120..123 || event.pos?.x != 110 ||
-            event.pos.east() == clickInOrder[clickNeeded]
+            mc.thePlayer?.isSneaking == true
         ) return
-        event.isCanceled = true
+
+        if (
+            (event.pos?.z in 92..95 && event.pos?.y in 120..123 && event.pos?.x == 110 && event.pos.east() != clickInOrder.getOrNull(clickNeeded)) || // normal buttons
+            (event.pos == BlockPos(110, 121, 91) && clickInOrder.isNotEmpty()) // start button
+        ) event.isCanceled = true
     }
 
     @SubscribeEvent
