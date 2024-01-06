@@ -24,6 +24,7 @@ import net.minecraft.item.Item
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object SimonSays : Module(
@@ -38,7 +39,7 @@ object SimonSays : Module(
     private val startClickDelay: Int by NumberSetting("Start Click Delay", 3, 1, 5).withDependency { start }
     private val triggerBot: Boolean by BooleanSetting("Triggerbot")
     private val delay: Long by NumberSetting<Long>("Delay", 200, 70, 500).withDependency { triggerBot }
-    private val fullBlock: Boolean by BooleanSetting("Full Block (needs SBC)", false).withDependency { triggerBot }
+    private val blockWrong: Boolean by BooleanSetting("Block Wrong Clicks", false, description = "Blocks Any Wrong Clicks.")
     private val clearAfter: Boolean by BooleanSetting("Clear After", false, description = "Clears the clicks when showing next, should work better with ss skip, but will be less consistent")
 
     private val triggerBotClock = Clock(delay)
@@ -128,7 +129,7 @@ object SimonSays : Module(
     private fun triggerBot() {
         if (!triggerBotClock.hasTimePassed(delay) || clickInOrder.size == 0 || mc.currentScreen != null) return
         val pos = mc.objectMouseOver?.blockPos ?: return
-        if (clickInOrder[clickNeeded] != pos.east() && !(fullBlock && clickInOrder[clickNeeded] == pos)) return
+        if (clickInOrder[clickNeeded] != pos.east()) return
         if (clickNeeded == 0) { // Stops spamming the first button and breaking the puzzle.
             if (!firstClickClock.hasTimePassed()) return
             rightClick()
@@ -140,7 +141,18 @@ object SimonSays : Module(
     }
 
     @SubscribeEvent
+    fun onInteract(event: PlayerInteractEvent) {
+        if (
+            event.pos == null ||
+            event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK ||
+            !blockWrong ||
+            event.pos?.z !in 92..95 || event.pos?.y !in 120..123 || event.pos?.x != 110 ||
+            event.pos.east() == clickInOrder[clickNeeded]
+        ) return
+        event.isCanceled = true
+    }
 
+    @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (clickNeeded >= clickInOrder.size) return
 
