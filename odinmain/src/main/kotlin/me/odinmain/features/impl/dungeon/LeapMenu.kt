@@ -23,6 +23,7 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.ItemSkull
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object LeapMenu : Module(
@@ -99,6 +100,10 @@ object LeapMenu : Module(
             1 -> teammatesNoSelf.sortedBy { it.name }.toMutableList()
             else -> fillPlayerList(teammatesNoSelf).toMutableList()
         }
+    }
+    @SubscribeEvent
+    fun onWorldLoad(event: WorldEvent.Load) {
+        leapTeammates.clear()
     }
 
     @SubscribeEvent
