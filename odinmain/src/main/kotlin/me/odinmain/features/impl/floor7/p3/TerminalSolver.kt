@@ -48,15 +48,14 @@ object TerminalSolver : Module(
     private val textColor: Color by ColorSetting("Text Color", Color(220, 220, 220), true)
     private val rubixColor: Color by ColorSetting("Rubix Color", Color(0, 170, 170), true)
     private val oppositeRubixColor: Color by ColorSetting("Negative Rubix Color", Color(170, 85, 0), true)
-    private val orderColor: Color by ColorSetting("Order Color 1", Color(0, 170, 170, .7f), true)
-    private val orderColor2: Color by ColorSetting("Order Color 2", Color(0, 100, 100, .5f), true)
-    private val orderColor3: Color by ColorSetting("Order Color 3", Color(0, 65, 65, .45f), true)
+    private val orderColor: Color by ColorSetting("Order Color 1", Color(0, 170, 170, 1f), true)
+    private val orderColor2: Color by ColorSetting("Order Color 2", Color(0, 100, 100, 1f), true)
+    private val orderColor3: Color by ColorSetting("Order Color 3", Color(0, 65, 65, 1f), true)
     private val startsWithColor: Color by ColorSetting("Starts With Color", Color(0, 170, 170), true)
     private val selectColor: Color by ColorSetting("Select Color", Color(0, 170, 170), true)
 
     private val zLevel: Float get() = if (type == 1 && currentTerm != 1 && currentTerm != 2) 200f else 999f
     var openedTerminalTime = 0L
-
 
     private val terminalNames = listOf(
         "Correct all the panes!",
@@ -71,16 +70,11 @@ object TerminalSolver : Module(
     init {
         onPacket(S2DPacketOpenWindow::class.java) {
             if (!enabled) return@onPacket
-            handlePacket(it.windowTitle.siblings.firstOrNull()?.unformattedText ?: return@onPacket)
+            handlePacket()
         }
     }
 
-    fun handlePacket(windowName: String) {
-        val newTerm = terminalNames
-            .indexOfFirst { term ->
-                windowName.startsWith(term)
-            }
-            .takeIf { it != -1 } ?: return
+    fun handlePacket() {
         if (customSizeToggle) mc.gameSettings.guiScale = customSize
     }
 
@@ -109,20 +103,24 @@ object TerminalSolver : Module(
         MinecraftForge.EVENT_BUS.post(TerminalOpenedEvent(currentTerm, solution))
     }
 
+    fun getShouldBlockWrong(): Boolean {
+        if (type != 2) return false
+        return when (currentTerm) {
+            1 -> removeWrongRubix
+            2 -> true
+            3 -> removeWrongStartsWith
+            4 -> removeWrongSelect
+            else -> false
+        }
+    }
+
     @SubscribeEvent
     fun onSlotRender(event: DrawGuiScreenEvent) {
         if (currentTerm == -1 || !enabled || event.container !is ContainerChest) return
-        if (currentTerm == 2 || type == 2) {
-            if (
-                (currentTerm == 1 && removeWrongRubix) ||
-                (currentTerm == 2) ||
-                (currentTerm == 3 && removeWrongStartsWith) ||
-                (currentTerm == 4 && removeWrongSelect)
-            ) {
-                GlStateManager.translate(event.guiLeft.toFloat(), event.guiTop.toFloat(), 999f)
-                Gui.drawRect(7, 16, event.xSize - 7, event.ySize - 96, wrongColor.rgba)
-                GlStateManager.translate(-event.guiLeft.toFloat(), -event.guiTop.toFloat(), -999f)
-            }
+        if (getShouldBlockWrong()) {
+            GlStateManager.translate(event.guiLeft.toFloat(), event.guiTop.toFloat(), 999f)
+            Gui.drawRect(7, 16, event.xSize - 7, event.ySize - 96, wrongColor.rgba)
+            GlStateManager.translate(-event.guiLeft.toFloat(), -event.guiTop.toFloat(), -999f)
         }
         GlStateManager.pushMatrix()
         GlStateManager.translate(event.guiLeft.toFloat(), event.guiTop.toFloat(), zLevel)

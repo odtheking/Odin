@@ -25,6 +25,7 @@ open class TermSimGui(val name: String, val size: Int) : GuiChest(
     val blackPane = ItemStack(pane, 1, 15).apply { setStackDisplayName("") }
     private var startTime = 0L
     protected var ping = 0L
+    private var doesAcceptClick = true
 
     open fun create() {
         this.inventorySlots.inventorySlots.subList(0, size).forEach { it.putStack(blackPane) } // override
@@ -36,7 +37,7 @@ open class TermSimGui(val name: String, val size: Int) : GuiChest(
         display = this
         startTime = System.currentTimeMillis()
         TerminalSolver.onGuiLoad(GuiLoadedEvent(name, inventorySlots as ContainerChest))
-        TerminalSolver.handlePacket(name)
+        TerminalSolver.handlePacket()
     }
 
     fun solved(name: String, oldPb: NumberSetting<Double>) {
@@ -52,8 +53,11 @@ open class TermSimGui(val name: String, val size: Int) : GuiChest(
     open fun slotClick(slot: Slot, button: Int) {}
 
     fun delaySlotClick(slot: Slot, button: Int) {
+        if (!doesAcceptClick) return
+        slotClick(slot, button)
+        doesAcceptClick = false
         runIn((ping / 50).toInt()) {
-            slotClick(slot, button)
+            doesAcceptClick = true
         }
     }
 

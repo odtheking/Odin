@@ -15,6 +15,7 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.Classes
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.DungeonPlayer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.teammates
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.teammatesNoSelf
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
@@ -146,11 +147,11 @@ object LeapMenu : Module(
 
     }
     private fun getQuadrant(mouseX: Int, mouseY: Int): Int {
-        var guiSize = mc.gameSettings.guiScale
-        if (mc.gameSettings.guiScale == 0) guiSize = 5
+        var guiSize = mc.gameSettings.guiScale * 2
+        if (mc.gameSettings.guiScale == 0) guiSize = 10
 
-        val screenY = mc.displayHeight / (guiSize * 2)
-        val screenX = mc.displayWidth / (guiSize * 2)
+        val screenY = mc.displayHeight / guiSize
+        val screenX = mc.displayWidth / guiSize
 
         return when {
             mouseX >= screenX -> if (mouseY >= screenY) 4 else 2

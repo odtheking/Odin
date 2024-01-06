@@ -78,10 +78,8 @@ object StartGui : TermSimGui(
             13 -> terms[2].open(ping)
             14 -> terms[3].open(ping)
             15 -> terms[4].open(ping)
-            22 -> {
-                devMessage("a")
-                terms.getRandom().open(ping)
-            }
+            22 -> terms.getRandom().open(ping)
+
         }
     }
 }
