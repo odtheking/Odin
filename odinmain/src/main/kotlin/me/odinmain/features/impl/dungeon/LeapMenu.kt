@@ -22,7 +22,6 @@ import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest
-import net.minecraft.item.ItemSkull
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -42,55 +41,12 @@ object LeapMenu : Module(
     private var leapTeammates = mutableListOf<DungeonPlayer>()
     private var leapHelper: String = ""
 
-
    /*private var teammates: List<DungeonPlayer> = listOf(
         DungeonPlayer("Bonzi", Classes.Mage, ResourceLocation("textures/entity/steve.png")),
         DungeonPlayer("OdthekingABCDFEGH", Classes.Archer, ResourceLocation("textures/entity/steve.png")),
         DungeonPlayer("CEzar", Classes.Tank, ResourceLocation("textures/entity/steve.png")),
         DungeonPlayer("Stiviaisd", Classes.Berserk, ResourceLocation("textures/entity/steve.png"))
     )*/
-
-    @SubscribeEvent
-    fun mouseClicked(event: GuiClickEvent) {
-        if (event.gui !is GuiChest || event.gui.inventorySlots !is ContainerChest || (event.gui.inventorySlots as ContainerChest).name != "Spirit Leap")  return
-
-        val quadrant = getQuadrant(event.x, event.y)
-
-        if (leapTeammates.isEmpty()) return
-        if ((type == 1 || type == 0) && leapTeammates.size < quadrant ) return
-
-        val playerToLeap = leapTeammates[quadrant - 1]
-
-        val index = event.gui.inventorySlots.inventorySlots.subList(11, 16)
-            .indexOfFirst { it?.stack?.displayName?.noControlCodes == playerToLeap.name }
-                .takeIf { it != -1 } ?: return
-        modMessage("Teleporting to ${playerToLeap.name}.")
-        if (playerToLeap.clazz == Classes.DEAD) return modMessage("This player is dead, can't leap.")
-        mc.playerController.windowClick(event.gui.inventorySlots.windowId, 11 + index, 1, 2, mc.thePlayer)
-        event.isCanceled = true
-    }
-
-    private fun fillPlayerList(players: List<DungeonPlayer>): Array<DungeonPlayer> {
-        val sortedPlayers = players.sortedBy { it.clazz.prio }
-        val result = Array(4) { EMPTY }
-        val secondRound = mutableListOf<DungeonPlayer>()
-
-        for (player in sortedPlayers) {
-            if (result[player.clazz.defaultQuandrant] == EMPTY) result[player.clazz.defaultQuandrant] = player
-            else secondRound.add(player)
-        }
-
-        if (secondRound.isEmpty()) return result
-
-        result.forEachIndexed { index, _ ->
-            if (result[index] == EMPTY) {
-                result[index] = secondRound.removeAt(0)
-                if (secondRound.isEmpty()) return result
-            }
-        }
-        return result
-    }
-
 
     @SubscribeEvent
     fun onGuiLoad(event: GuiLoadedEvent) {
@@ -102,16 +58,11 @@ object LeapMenu : Module(
             else -> fillPlayerList(teammatesNoSelf).toMutableList()
         }
     }
-    @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Load) {
-        leapTeammates.clear()
-    }
 
     @SubscribeEvent
     fun onDrawScreen(event: DrawGuiScreenEvent) {
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
-        if (chest !is ContainerChest || chest.name != "Spirit Leap") return
-        if (teammates.size <= 1) return
+        if (chest !is ContainerChest || chest.name != "Spirit Leap" || teammates.size <= 1) return
 
         val width = mc.displayWidth / 1920.0
         val height = mc.displayHeight / 1080.0
@@ -144,8 +95,62 @@ object LeapMenu : Module(
             GlStateManager.popMatrix()
         }
         event.isCanceled = true
-
     }
+
+    @SubscribeEvent
+    fun mouseClicked(event: GuiClickEvent) {
+        if (event.gui !is GuiChest || event.gui.inventorySlots !is ContainerChest || (event.gui.inventorySlots as ContainerChest).name != "Spirit Leap")  return
+
+        val quadrant = getQuadrant(event.x, event.y)
+
+        if (leapTeammates.isEmpty()) return
+        if ((type == 1 || type == 0) && leapTeammates.size < quadrant) return
+
+        val playerToLeap = leapTeammates[quadrant - 1]
+
+        if (playerToLeap.clazz == Classes.DEAD) return modMessage("This player is dead, can't leap.")
+
+        val index = event.gui.inventorySlots.inventorySlots.subList(11, 16)
+            .indexOfFirst { it?.stack?.displayName?.noControlCodes == playerToLeap.name }
+                .takeIf { it != -1 } ?: return
+        modMessage("Teleporting to ${playerToLeap.name}.")
+
+        mc.playerController.windowClick(event.gui.inventorySlots.windowId, 11 + index, 1, 2, mc.thePlayer)
+        event.isCanceled = true
+    }
+
+
+
+    private fun fillPlayerList(players: List<DungeonPlayer>): Array<DungeonPlayer> {
+        val sortedPlayers = players.sortedBy { it.clazz.prio }
+        val result = Array(4) { EMPTY }
+        val secondRound = mutableListOf<DungeonPlayer>()
+
+        for (player in sortedPlayers) {
+            when {
+                result[player.clazz.defaultQuandrant] == EMPTY -> result[player.clazz.defaultQuandrant] = player
+                else -> secondRound.add(player)
+            }
+        }
+
+        if (secondRound.isEmpty()) return result
+
+        result.forEachIndexed { index, _ ->
+            when {
+                result[index] == EMPTY -> {
+                    result[index] = secondRound.removeAt(0)
+                    if (secondRound.isEmpty()) return result
+                }
+            }
+        }
+        return result
+    }
+
+    @SubscribeEvent
+    fun onWorldLoad(event: WorldEvent.Load) {
+        leapTeammates.clear()
+    }
+
     private fun getQuadrant(mouseX: Int, mouseY: Int): Int {
         var guiSize = mc.gameSettings.guiScale * 2
         if (mc.gameSettings.guiScale == 0) guiSize = 10

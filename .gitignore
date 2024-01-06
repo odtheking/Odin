@@ -11,3 +11,4 @@
 /odin/.gradle/
 /odin/build
 /**/run/
+/logs/

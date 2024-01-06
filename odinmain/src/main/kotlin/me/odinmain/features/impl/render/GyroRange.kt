@@ -8,8 +8,6 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.skyblock.heldItem
 import me.odinmain.utils.skyblock.itemID
-import net.minecraft.client.renderer.GlStateManager
-
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -25,7 +23,7 @@ object GyroRange : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        //if (heldItem?.itemID != "GYROKINETIC_WAND") return
+        if (heldItem?.itemID != "GYROKINETIC_WAND") return
         val pos = mc.thePlayer.rayTrace(25.0, event.partialTicks)?.blockPos ?: return
         val block = mc.theWorld?.getBlockState(pos)?.block ?: return
         if (block.isAir(mc.theWorld, pos)) return

@@ -70,11 +70,15 @@ object TerminalSolver : Module(
     init {
         onPacket(S2DPacketOpenWindow::class.java) {
             if (!enabled) return@onPacket
-            handlePacket()
+
+            handlePacket(it.windowTitle.siblings.firstOrNull()?.unformattedText ?: return@onPacket)
         }
     }
 
-    fun handlePacket() {
+    fun handlePacket(windowName: String) {
+        terminalNames.indexOfFirst { term ->
+            windowName.startsWith(term) }
+                .takeIf { it != -1 } ?: return
         if (customSizeToggle) mc.gameSettings.guiScale = customSize
     }
 

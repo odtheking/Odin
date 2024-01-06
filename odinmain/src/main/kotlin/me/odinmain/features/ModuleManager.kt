@@ -95,6 +95,7 @@ object ModuleManager {
         ArrowHit,
         InactiveWaypoints,
         Ragaxe,
+        DragonHealth
         //MobSpawn
     )
 
