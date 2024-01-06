@@ -37,7 +37,7 @@ open class TermSimGui(val name: String, val size: Int) : GuiChest(
         display = this
         startTime = System.currentTimeMillis()
         TerminalSolver.onGuiLoad(GuiLoadedEvent(name, inventorySlots as ContainerChest))
-        TerminalSolver.handlePacket()
+        TerminalSolver.handlePacket(name)
     }
 
     fun solved(name: String, oldPb: NumberSetting<Double>) {

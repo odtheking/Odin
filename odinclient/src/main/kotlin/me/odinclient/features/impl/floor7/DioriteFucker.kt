@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.floor7
 
-import com.sun.org.apache.xpath.internal.operations.Bool
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -137,16 +136,14 @@ object DioriteFucker : Module(
             BlockPos(101, 169, 66),
             BlockPos(102, 169, 66),
             BlockPos(103, 169, 66),
-
-            BlockPos(98, 175, 67),
-            BlockPos(99, 175, 67),
-            BlockPos(100, 175, 67),
-            BlockPos(101, 175, 67),
-            BlockPos(102, 175, 67),
-
-            BlockPos(99, 175, 68),
-            BlockPos(100, 175, 68),
-            BlockPos(101, 175, 68),
+            BlockPos(98, 169, 67),
+            BlockPos(99, 169, 67),
+            BlockPos(100, 169, 67),
+            BlockPos(101, 169, 67),
+            BlockPos(102, 169, 67),
+            BlockPos(99, 169, 68),
+            BlockPos(100, 169, 68),
+            BlockPos(101, 169, 68),
 
             )
         repeat(28) { height ->
