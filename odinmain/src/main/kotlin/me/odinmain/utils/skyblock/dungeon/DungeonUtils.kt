@@ -252,17 +252,21 @@ object DungeonUtils {
 
     val isGhost: Boolean get() = getItemSlot("Haunt", true) != null
     var teammates: List<DungeonPlayer> = emptyList()
-    val teammatesNoSelf = teammates.filter { it.name == mc.thePlayer.name}
+    var teammatesNoSelf: List<DungeonPlayer> = emptyList()
 
     init {
         Executor(1000) {
-            if (inDungeons) teammates = getDungeonTeammates()
+            if (inDungeons) {
+                teammates = getDungeonTeammates()
+                teammatesNoSelf = teammates.filter { it.name == mc.thePlayer.name}
+            }
         }.register()
     }
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
         teammates = emptyList()
+        teammatesNoSelf = emptyList()
     }
 
     private val tablistRegex = Regex("\\[(\\d+)] (?:\\[\\w+] )*(\\w+) (?:.)*?\\((\\w+)(?: (\\w+))*\\)")
