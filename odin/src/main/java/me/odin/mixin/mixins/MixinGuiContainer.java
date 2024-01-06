@@ -1,6 +1,7 @@
 package me.odin.mixin.mixins;
 
 import me.odinmain.events.impl.*;
+import me.odinmain.features.impl.floor7.p3.TerminalSolver;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
@@ -37,6 +38,13 @@ public class MixinGuiContainer {
     private void startDrawScreen(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
         if (MinecraftForge.EVENT_BUS.post(new DrawGuiScreenEvent(gui.inventorySlots, gui, this.xSize, this.ySize, guiLeft, guiTop)))
             ci.cancel();
+    }
+
+    @Inject(method = "drawSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/RenderItem;renderItemAndEffectIntoGUI(Lnet/minecraft/item/ItemStack;II)V"), cancellable = true)
+    private void size(Slot slotIn, CallbackInfo ci) {
+        if (TerminalSolver.INSTANCE.getShouldBlockWrong() && slotIn.slotNumber <= gui.inventorySlots.inventorySlots.size() - 37) {
+            ci.cancel();
+        }
     }
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
