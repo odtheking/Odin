@@ -1,7 +1,9 @@
 package me.odinclient.features.impl.floor7
 
+import com.sun.org.apache.xpath.internal.operations.Bool
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.init.Blocks
@@ -13,13 +15,16 @@ object DioriteFucker : Module(
     category = Category.FLOOR7,
 ) {
     private val delay: Long by NumberSetting("Delay", 80, 50, 1000, 10)
+    private val stainedGlass: Boolean by BooleanSetting("Stained glass", default = true)
+    private val color: Int by NumberSetting("Color", 0, 0.0, 15.0, 1.0 )
 
     init {
         execute(delay = { delay }) {
             if (mc.theWorld == null || DungeonUtils.getPhase() != 2 || !enabled) return@execute
             for (block in pillars) {
                 if (mc.theWorld.chunkProvider.provideChunk(block.x shr 4, block.z shr 4).getBlock(block) == Blocks.stone) {
-                    mc.theWorld.setBlockState(block, Blocks.glass.defaultState, 3)
+                    if (stainedGlass) mc.theWorld.setBlockState(block, Blocks.stained_glass.getStateFromMeta(color), 3)
+                    else mc.theWorld.setBlockState(block, Blocks.glass.defaultState, 3)
                 }
             }
         }

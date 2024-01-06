@@ -51,6 +51,7 @@ object ChatCommands : Module(
 
     private var dtPlayer: String? = null
     var disableReque: Boolean? = false
+    var dtReason = emptyList<String>()
     private var picture = getCatPic()
 
     private fun getCatPic(): String {
@@ -150,6 +151,8 @@ object ChatCommands : Module(
             "pt" -> if (pt && channel == "party") sendCommand("p transfer $name")
 
             "dt" -> if (dt && channel == "party") {
+                val reason = message.substringAfter("dt ")
+                dtReason.plus("$name needs dt for $reason")
                 modMessage("Reminder set for the end of the run!")
                 dtPlayer = name
                 disableReque = true
@@ -175,13 +178,12 @@ object ChatCommands : Module(
 
         GlobalScope.launch{
             delay(2500)
-            PlayerUtils.alert("§c$dtPlayer needs downtime")
-            partyMessage("$dtPlayer needs downtime")
+            PlayerUtils.alert("§c${dtReason.joinToString(separator = ", ")}")
+            partyMessage(dtReason.joinToString(separator = ", "))
             dtPlayer = null
+            dtReason = emptyList()
         }
     }
 
     fun isInBlacklist(name: String) : Boolean = MiscConfig.blacklist.contains(name.lowercase())
-
-
 }

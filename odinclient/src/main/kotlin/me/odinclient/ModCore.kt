@@ -54,7 +54,6 @@ class ModCore {
         AutoLeap,
         AutoMask,
         AutoSell,
-        AutoShield,
         AutoUlt,
         AutoWish,
         CancelInteract,

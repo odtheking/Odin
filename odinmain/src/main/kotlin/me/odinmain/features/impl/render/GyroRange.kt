@@ -16,7 +16,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object GyroRange : Module(
     "Gyro Range",
     description = "Renders a helpful circle to show the range of the Gyrokinetic Wand.",
-    category = Category.SKYBLOCK
+    category = Category.RENDER
 ) {
     private val color: Color by ColorSetting("Color", Color(192, 64, 192, 0.5f), allowAlpha = true)
     private val thickness: Float by NumberSetting("Thickness", 1f, 0, 10, 0.25)

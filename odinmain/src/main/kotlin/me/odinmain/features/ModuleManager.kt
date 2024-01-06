@@ -57,7 +57,7 @@ object ModuleManager {
         DragonBoxes,
         DragonDeathCheck,
         DragonTimer,
-        LeapHelper,
+        //LeapHelper,
         MelodyMessage,
         NecronDropTimer,
         RelicAnnouncer,
@@ -95,7 +95,7 @@ object ModuleManager {
         ArrowHit,
         InactiveWaypoints,
         Ragaxe,
-        MobSpawn
+        //MobSpawn
     )
 
 

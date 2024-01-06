@@ -252,6 +252,7 @@ object DungeonUtils {
 
     val isGhost: Boolean get() = getItemSlot("Haunt", true) != null
     var teammates: List<DungeonPlayer> = emptyList()
+    val teammatesNoSelf = teammates.filter { it.name == mc.thePlayer.name}
 
     init {
         Executor(1000) {

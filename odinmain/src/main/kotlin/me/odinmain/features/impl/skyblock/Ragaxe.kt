@@ -15,14 +15,10 @@ object Ragaxe : Module(
     @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
 
-        if (event.message.contains("CASTING") && heldItem?.displayName == "Ragnarock Axe")
+        if (event.message.contains("CASTING"))
             PlayerUtils.alert("Casting Rag Axe")
-
 
         if(event.message == "Ragnarock was cancelled due to being hit!")
             PlayerUtils.alert("Rag Axe Cancelled")
-
     }
-
-
 }

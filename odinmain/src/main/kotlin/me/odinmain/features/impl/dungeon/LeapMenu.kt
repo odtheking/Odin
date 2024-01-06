@@ -74,11 +74,8 @@ object LeapMenu : Module(
         val secondRound = mutableListOf<DungeonPlayer>()
 
         for (player in sortedPlayers) {
-            if (result[player.clazz.defaultQuandrant] == EMPTY) {
-                result[player.clazz.defaultQuandrant] = player
-            } else {
-                secondRound.add(player)
-            }
+            if (result[player.clazz.defaultQuandrant] == EMPTY) result[player.clazz.defaultQuandrant] = player
+            else secondRound.add(player)
         }
 
         if (secondRound.isEmpty()) return result
@@ -96,9 +93,6 @@ object LeapMenu : Module(
     @SubscribeEvent
     fun onGuiLoad(event: GuiLoadedEvent) {
         if (event.name != "Spirit Leap") return
-
-        val playerHeads = event.gui.inventory?.subList(11, 16)?.filter { it?.item is ItemSkull } ?: emptyList()
-        val teammatesNoSelf = teammates.filter { playerHeads.any { head -> head.displayName.noControlCodes == it.name } }
 
         leapTeammates = when (type) {
             0 -> teammatesNoSelf.sortedWith(compareBy({ it.clazz.ordinal }, { it.name })).toMutableList()
