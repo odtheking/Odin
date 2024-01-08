@@ -3,7 +3,6 @@ package me.odinmain.features.impl.dungeon
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.events.impl.DrawGuiScreenEvent
 import me.odinmain.events.impl.GuiClickEvent
-import me.odinmain.events.impl.GuiLoadedEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -13,8 +12,8 @@ import me.odinmain.utils.name
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.Classes
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils.DungeonPlayer
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils.teammates
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.EMPTY
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.leapTeammates
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.teammatesNoSelf
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.gui.Gui
@@ -22,8 +21,6 @@ import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest
-import net.minecraft.util.ResourceLocation
-import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object LeapMenu : Module(
@@ -31,38 +28,19 @@ object LeapMenu : Module(
     description = "Renders a custom leap menu when in the Spirit Leap gui.",
     category = Category.DUNGEON
 ) {
-    private val type: Int by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("A-Z Class (BetterMap)", "A-Z Name", "Odin Sorting"))
+    val type: Int by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("A-Z Class (BetterMap)", "A-Z Name", "Odin Sorting"))
     private val colorStyle: Boolean by DualSetting("Color Style", "Gray", "Color", default = false, description = "What Click to use")
     private val leapHelperToggle: Boolean by BooleanSetting("Leap Helper", true)
     private val color: Color by ColorSetting("Leap Helper Color", default = Color.WHITE).withDependency { leapHelperToggle }
     private val delay: Int by NumberSetting("Delay", 30, 10.0, 120.0, 1.0)
 
-    private val EMPTY = DungeonPlayer("Empty", Classes.Archer, ResourceLocation("textures/entity/steve.png"))
-    private var leapTeammates = mutableListOf<DungeonPlayer>()
     private var leapHelper: String = ""
 
-   /*private var teammates: List<DungeonPlayer> = listOf(
-        DungeonPlayer("Bonzi", Classes.Mage, ResourceLocation("textures/entity/steve.png")),
-        DungeonPlayer("OdthekingABCDFEGH", Classes.Archer, ResourceLocation("textures/entity/steve.png")),
-        DungeonPlayer("CEzar", Classes.Tank, ResourceLocation("textures/entity/steve.png")),
-        DungeonPlayer("Stiviaisd", Classes.Berserk, ResourceLocation("textures/entity/steve.png"))
-    )*/
-
-    @SubscribeEvent
-    fun onGuiLoad(event: GuiLoadedEvent) {
-        if (event.name != "Spirit Leap") return
-
-        leapTeammates = when (type) {
-            0 -> teammatesNoSelf.sortedWith(compareBy({ it.clazz.ordinal }, { it.name })).toMutableList()
-            1 -> teammatesNoSelf.sortedBy { it.name }.toMutableList()
-            else -> fillPlayerList(teammatesNoSelf).toMutableList()
-        }
-    }
 
     @SubscribeEvent
     fun onDrawScreen(event: DrawGuiScreenEvent) {
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
-        if (chest !is ContainerChest || chest.name != "Spirit Leap" || teammates.size <= 1) return
+        if (chest !is ContainerChest || chest.name != "Spirit Leap" || teammatesNoSelf.isEmpty()) return
 
         val width = mc.displayWidth / 1920.0
         val height = mc.displayHeight / 1080.0
@@ -86,9 +64,7 @@ object LeapMenu : Module(
             GlStateManager.color(255f, 255f, 255f, 255f)
             Gui.drawScaledCustomSizeModalRect(0, -10, 8f, 8f, 8, 8, 40, 40, 64f, 64f)
 
-            //if (it.name.length > 14) GlStateManager.scale(1.6 / sr.scaleFactor,  1.6 / sr.scaleFactor, 1.0)
             mc.fontRendererObj.drawString(it.name, if (it.name.length > 13) 52 else 42, 5, if (!colorStyle) it.clazz.color.rgba else Color.DARK_GRAY.rgba)
-
             mc.fontRendererObj.drawString(it.clazz.name, if (it.name.length > 13) 52 else 42, 16, Color.WHITE.rgba )
 
             GlStateManager.disableAlpha()
@@ -120,36 +96,6 @@ object LeapMenu : Module(
     }
 
 
-
-    private fun fillPlayerList(players: List<DungeonPlayer>): Array<DungeonPlayer> {
-        val sortedPlayers = players.sortedBy { it.clazz.prio }
-        val result = Array(4) { EMPTY }
-        val secondRound = mutableListOf<DungeonPlayer>()
-
-        for (player in sortedPlayers) {
-            when {
-                result[player.clazz.defaultQuandrant] == EMPTY -> result[player.clazz.defaultQuandrant] = player
-                else -> secondRound.add(player)
-            }
-        }
-
-        if (secondRound.isEmpty()) return result
-
-        result.forEachIndexed { index, _ ->
-            when {
-                result[index] == EMPTY -> {
-                    result[index] = secondRound.removeAt(0)
-                    if (secondRound.isEmpty()) return result
-                }
-            }
-        }
-        return result
-    }
-
-    @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Load) {
-        leapTeammates.clear()
-    }
 
     private fun getQuadrant(mouseX: Int, mouseY: Int): Int {
         var guiSize = mc.gameSettings.guiScale * 2

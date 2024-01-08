@@ -95,8 +95,8 @@ object ModuleManager {
         ArrowHit,
         InactiveWaypoints,
         Ragaxe,
-        DragonHealth
-        //MobSpawn
+        DragonHealth,
+        MobSpawn
     )
 
 
@@ -177,5 +177,5 @@ object ModuleManager {
         }
     }
 
-    inline fun getModuleByName(name: String): Module? = modules.firstOrNull { it.name.equals(name, true) }
+    fun getModuleByName(name: String): Module? = modules.firstOrNull { it.name.equals(name, true) }
 }
