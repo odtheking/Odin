@@ -54,6 +54,12 @@ object DevCommand : Commodore {
                 modMessage("""{"$string": "This is a test message"}""")
             }
 
+            literal("getteammates").runs {
+                modMessage("Teammates: ${DungeonUtils.teammates}")
+                modMessage("TeammatesNoSelf: ${DungeonUtils.teammatesNoSelf}")
+                modMessage("LeapTeammates: ${DungeonUtils.leapTeammates}")
+            }
+
             literal("simulate").runs { str: GreedyString ->
                 mc.thePlayer.addChatMessage(ChatComponentText(str.string))
                 MinecraftForge.EVENT_BUS.post(ChatPacketEvent(str.string))

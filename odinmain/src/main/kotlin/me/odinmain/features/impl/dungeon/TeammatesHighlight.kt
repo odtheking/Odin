@@ -16,7 +16,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.max
 
 object TeammatesHighlight : Module(
-    "Teammate Outline",
+    "Teammate Highlight ",
     category = Category.DUNGEON,
     description = "Enhances visibility of your dungeon teammates and their name tags."
 ) {

@@ -260,7 +260,7 @@ object DungeonUtils {
         Executor(1000) {
             if (inDungeons) {
                 teammates = getDungeonTeammates()
-                teammatesNoSelf = teammates.filter { it.name == mc.thePlayer.name}
+                teammatesNoSelf = teammates.filter { it.name != mc.thePlayer.name }
                 leapTeammates =
                     when (LeapMenu.type) {
                     0 -> teammatesNoSelf.sortedWith(compareBy({ it.clazz.ordinal }, { it.name })).toMutableList()
@@ -282,7 +282,7 @@ object DungeonUtils {
     private val tablistRegexDEAD = Regex("\\[(\\d+)] (?:\\[\\w+] )*(\\w+) (?:.)*?\\((\\w+)*\\)")
     val EMPTY = DungeonPlayer("Empty", Classes.Archer, ResourceLocation("textures/entity/steve.png"))
 
-    fun odinSorting(players: List<DungeonPlayer>): Array<DungeonPlayer> {
+    private fun odinSorting(players: List<DungeonPlayer>): Array<DungeonPlayer> {
         val result = Array(4) { EMPTY }
         val secondRound = mutableListOf<DungeonPlayer>()
 

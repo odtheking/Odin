@@ -36,7 +36,6 @@ object LeapMenu : Module(
 
     private var leapHelper: String = ""
 
-
     @SubscribeEvent
     fun onDrawScreen(event: DrawGuiScreenEvent) {
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
@@ -94,8 +93,6 @@ object LeapMenu : Module(
         mc.playerController.windowClick(event.gui.inventorySlots.windowId, 11 + index, 1, 2, mc.thePlayer)
         event.isCanceled = true
     }
-
-
 
     private fun getQuadrant(mouseX: Int, mouseY: Int): Int {
         var guiSize = mc.gameSettings.guiScale * 2
