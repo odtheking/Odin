@@ -611,6 +611,14 @@ object RenderUtils {
     fun drawCylinder(
         pos: Vec3, baseRadius: Float, topRadius: Float, height: Float,
         slices: Int, stacks: Int, rot1: Float, rot2: Float, rot3: Float,
+        color: Color, phase: Boolean = false, linemode: Boolean = false
+    ) {
+        drawCylinder(pos, baseRadius, topRadius, height, slices, stacks, rot1, rot2, rot3, color.r / 255f, color.g / 255f, color.b / 255f, color.alpha, linemode)
+    }
+
+    fun drawCylinder(
+        pos: Vec3, baseRadius: Float, topRadius: Float, height: Float,
+        slices: Int, stacks: Int, rot1: Float, rot2: Float, rot3: Float,
         r: Float, g: Float, b: Float, a: Float, phase: Boolean = false, linemode: Boolean = false
     ) {
         val renderPos = getRenderPos(pos)

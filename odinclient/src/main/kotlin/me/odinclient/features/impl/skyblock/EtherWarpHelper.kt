@@ -25,6 +25,7 @@ import me.odinmain.utils.skyblock.EtherWarpHelper.etherPos
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.extraAttributes
 import me.odinmain.utils.skyblock.holdingEtherWarp
+import me.odinmain.utils.smoothRotateTo
 import net.minecraft.util.MathHelper
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -48,7 +49,7 @@ object EtherWarpHelper : Module(
     private val etherWarpTriggerBot: Boolean by BooleanSetting("Trigger Bot", false, description = "Uses Dungeon Waypoints to trigger bot to the closest waypoint.").withDependency { notReady }
     private val etherWarpTBDelay: Long by NumberSetting("Trigger Bot Delay", 200L, 0, 1000, 10).withDependency { etherWarpTriggerBot }
     private val etherWarpHelper: Boolean by BooleanSetting("Ether Warp Helper", false, description = "Rotates you to the closest waypoint when you left click with aotv.").withDependency { etherWarpTriggerBot }
-    private val rotTime: Long by NumberSetting("Rotation Time", 100L, 10L, 300L, 1L).withDependency { etherWarpHelper }
+    private val rotTime: Long by NumberSetting("Rotation Time", 150L, 10L, 600L, 1L).withDependency { etherWarpHelper }
     private val maxRot: Float by NumberSetting("Max Rotation", 90f, 0f, 360f, 1f).withDependency { etherWarpHelper }
 
     private val notReady = false
@@ -115,16 +116,7 @@ object EtherWarpHelper : Module(
                 (yaw - MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw)).absoluteValue +
                 (pitch - MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationPitch)).absoluteValue < maxRot
             } ?: return
-            val (_, yaw, pitch) = wp
-            scope.launch {
-                val deltaYaw = yaw - MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw)
-                val deltaPitch = pitch - MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationPitch)
-                for (i in 0..rotTime) {
-                    mc.thePlayer.rotationYaw += deltaYaw / rotTime
-                    mc.thePlayer.rotationPitch += deltaPitch / rotTime
-                    Thread.sleep(1)
-                }
-            }
+            smoothRotateTo(wp.second, wp.third, rotTime)
         }
     }
 }

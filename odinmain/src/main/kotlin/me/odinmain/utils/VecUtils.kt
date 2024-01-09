@@ -1,6 +1,9 @@
 package me.odinmain.utils
 
+import kotlinx.coroutines.launch
+import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
+import me.odinmain.OdinMain.scope
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.Vec2
 import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
@@ -351,6 +354,13 @@ fun BlockPos.toVec3i(): Vec3i {
 }
 
 /**
+ * Turns a BlockPos into a Vec3.
+ */
+fun BlockPos.toVec3(): Vec3 {
+    return Vec3(x.toDouble(), y.toDouble(), z.toDouble())
+}
+
+/**
  * Turns a double array into a Vec3.
  */
 fun DoubleArray.toVec3(): Vec3 {
@@ -442,6 +452,18 @@ fun getDirection(x0: Double, y0: Double, z0: Double, x1: Double, y1: Double, z1:
 }
 
 /**
+ * Returns Triple(distance, yaw, pitch) in minecraft coordinate system to get from player's eyes to Vec3.
+ *
+ * @param pos Vec3 to get direction to.
+ *
+ * @return Triple of distance, yaw, pitch
+ * @author Bonsai
+ */
+fun getDirectionToVec3(pos: Vec3): Triple<Double, Float, Float> {
+    return getDirection(mc.thePlayer.posX, mc.thePlayer.posY + fastEyeHeight(), mc.thePlayer.posZ, pos.xCoord, pos.yCoord, pos.zCoord)
+}
+
+/**
  * Returns a triple of distance, yaw, pitch to rotate to the given position with etherwarp physics, or null if etherwarp is not possible.
  *
  * @param targetPos The position to rotate to.
@@ -507,4 +529,25 @@ fun etherwarpRotateTo(targetPos: BlockPos): Triple<Double, Float, Float>? {
         mc.thePlayer.posX, mc.thePlayer.posY + fastEyeHeight(), mc.thePlayer.posZ,
         target.xCoord, target.yCoord, target.zCoord
     )
+}
+
+/**
+ * Smoothly rotates the players head to the given yaw and pitch.
+ *
+ * @param yaw The yaw to rotate to
+ * @param pitch The pitch to rotate to
+ * @param rotTime how long the rotation should take. In milliseconds.
+ */
+fun smoothRotateTo(yaw: Float, pitch: Float, rotTime: Number, functionToRunWhenDone: () -> Unit = {}) {
+    scope.launch {
+        val deltaYaw = yaw - MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw)
+        val deltaPitch = pitch - MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationPitch)
+        for (i in 0..rotTime.toInt()) {
+            mc.thePlayer.rotationYaw += deltaYaw / rotTime.toInt()
+            mc.thePlayer.rotationPitch += deltaPitch / rotTime.toInt()
+            Thread.sleep(1)
+        }
+        Thread.sleep(15)
+        functionToRunWhenDone.invoke()
+    }
 }

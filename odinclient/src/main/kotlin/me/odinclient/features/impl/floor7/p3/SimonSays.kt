@@ -1,20 +1,23 @@
 package me.odinclient.features.impl.floor7.p3
 
+import me.odinclient.features.impl.skyblock.EtherWarpHelper
 import me.odinclient.utils.skyblock.PlayerUtils.rightClick
 import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.impl.render.GyroRange
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
-import me.odinmain.utils.floor
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
-import me.odinmain.utils.runIn
+import me.odinmain.utils.skyblock.WorldUtils
 import me.odinmain.utils.skyblock.devMessage
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.block.BlockButtonStone
 import net.minecraft.client.renderer.GlStateManager
@@ -23,6 +26,8 @@ import net.minecraft.init.Blocks
 import net.minecraft.item.Item
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
+import net.minecraft.util.Vec3
+import net.minecraft.world.World
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -38,12 +43,18 @@ object SimonSays : Module(
     private val startClicks: Int by NumberSetting("Start Clicks", 1, 1, 10).withDependency { start }
     private val startClickDelay: Int by NumberSetting("Start Click Delay", 3, 1, 5).withDependency { start }
     private val triggerBot: Boolean by BooleanSetting("Triggerbot")
-    private val delay: Long by NumberSetting<Long>("Delay", 200, 70, 500).withDependency { triggerBot }
+    private val triggerBotDelay: Long by NumberSetting<Long>("Triggerbot Delay", 200, 70, 500).withDependency { triggerBot }
+    private val autoSS: Boolean by BooleanSetting("Auto SS", false)
+    private val autoSSDelay: Long by NumberSetting<Long>("Delay Between Clicks", 200, 70, 500).withDependency { autoSS }
+    private val autoSSRotateTime: Int by NumberSetting("Rotate Time", 150, 50, 400).withDependency { autoSS }
     private val blockWrong: Boolean by BooleanSetting("Block Wrong Clicks", false, description = "Blocks Any Wrong Clicks (sneak to disable).")
     private val clearAfter: Boolean by BooleanSetting("Clear After", false, description = "Clears the clicks when showing next, should work better with ss skip, but will be less consistent")
 
-    private val triggerBotClock = Clock(delay)
+    private val triggerBotClock = Clock(triggerBotDelay)
     private val firstClickClock = Clock(800)
+    private val autoSSClock = Clock(autoSSDelay)
+    private var autoSSClickInQueue = false
+    private val autoSSLastClickClock = Clock(1000)
 
     private val firstButton = BlockPos(110, 121, 91)
     private val clickInOrder = ArrayList<BlockPos>()
@@ -127,7 +138,7 @@ object SimonSays : Module(
     }
 
     private fun triggerBot() {
-        if (!triggerBotClock.hasTimePassed(delay) || clickInOrder.size == 0 || mc.currentScreen != null) return
+        if (!triggerBotClock.hasTimePassed(triggerBotDelay) || clickInOrder.size == 0 || mc.currentScreen != null) return
         val pos = mc.objectMouseOver?.blockPos ?: return
         if (clickInOrder[clickNeeded] != pos.east()) return
         if (clickNeeded == 0) { // Stops spamming the first button and breaking the puzzle.
@@ -140,23 +151,56 @@ object SimonSays : Module(
         triggerBotClock.update()
     }
 
+    private fun autoSS() {
+        val isInSSRange = mc.thePlayer.getDistanceSqToCenter(BlockPos(108, 120, 93)) <= 1.45 * 1.45
+        RenderUtils.drawCylinder(
+            Vec3(108.5, 120.0, 93.5), 1.45f, 1.45f, .05f, 80,
+            1, 0f, 90f, 90f, if (isInSSRange) Color.GREEN else Color.ORANGE
+        )
+
+        if (
+            !isInSSRange ||
+            !autoSSClock.hasTimePassed(autoSSDelay) ||
+            clickInOrder.size == 0 ||
+            mc.currentScreen != null ||
+            autoSSClickInQueue ||
+            clickNeeded >= clickInOrder.size ||
+            !autoSSLastClickClock.hasTimePassed()
+        ) return
+        val buttonToClick = clickInOrder[clickNeeded]
+        if (WorldUtils.getBlockIdAt(buttonToClick.west()) != 77) return
+        val direction = getDirectionToVec3(buttonToClick.west().toVec3().addVec(x = .8, y = .5, z = .5))
+        autoSSClickInQueue = true
+        smoothRotateTo(direction.second, direction.third, autoSSRotateTime) {
+            if (clickNeeded == 4) {
+                autoSSLastClickClock.update()
+            }
+            rightClick()
+            autoSSClock.update()
+            autoSSClickInQueue = false
+        }
+    }
+
     @SubscribeEvent
     fun onInteract(event: PlayerInteractEvent) {
         if (
             event.pos == null ||
             event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK ||
+            event.world != mc.theWorld ||
             !blockWrong ||
-            mc.thePlayer?.isSneaking == true
+            mc.thePlayer?.isSneaking == true ||
+            event.pos.x != 110 || event.pos.y !in 120..123 || event.pos.z !in 91..95
         ) return
 
         if (
-            (event.pos?.z in 92..95 && event.pos?.y in 120..123 && event.pos?.x == 110 && event.pos.east() != clickInOrder.getOrNull(clickNeeded)) || // normal buttons
+            (event.pos.east() != clickInOrder.getOrNull(clickNeeded)) || // normal buttons
             (event.pos == BlockPos(110, 121, 91) && clickInOrder.isNotEmpty()) // start button
         ) event.isCanceled = true
     }
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
+        if (autoSS) autoSS()
         if (clickNeeded >= clickInOrder.size) return
 
         if (triggerBot) triggerBot()
