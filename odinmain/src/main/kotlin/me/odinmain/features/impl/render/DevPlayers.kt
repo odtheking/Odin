@@ -29,7 +29,7 @@ object DevPlayers {
 
     val devs = HashMap<String, Dev>()
 
-    private fun updateDevs() {
+    fun updateDevs() {
         val webhook: String = fetchURLData("https://pastebin.com/raw/9Lq8hKTQ")
 
         val keyValuePairs = webhook.split("?")

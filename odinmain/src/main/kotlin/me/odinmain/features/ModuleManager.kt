@@ -8,6 +8,7 @@ import me.odinmain.features.impl.floor7.p3.InactiveWaypoints
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalTimes
 import me.odinmain.features.impl.render.*
+import me.odinmain.features.impl.render.ClickGUIModule.hudChat
 import me.odinmain.features.impl.skyblock.*
 import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.ui.hud.HudElement
@@ -157,7 +158,7 @@ object ModuleManager {
 
     @SubscribeEvent
     fun onRenderOverlay(event: RenderGameOverlayEvent.Post) {
-        if (mc.currentScreen != null || event.type != RenderGameOverlayEvent.ElementType.ALL) return
+        if ((mc.currentScreen != null && !hudChat) || event.type != RenderGameOverlayEvent.ElementType.ALL) return
         mc.mcProfiler.startSection("Odin Hud")
         drawNVG {
             for (i in 0 until huds.size) {

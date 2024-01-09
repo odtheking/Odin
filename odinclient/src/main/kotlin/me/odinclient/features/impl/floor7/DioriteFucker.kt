@@ -2,6 +2,7 @@ package me.odinclient.features.impl.floor7
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -15,7 +16,7 @@ object DioriteFucker : Module(
 ) {
     private val delay: Long by NumberSetting("Delay", 80, 50, 1000, 10)
     private val stainedGlass: Boolean by BooleanSetting("Stained glass", default = true)
-    private val color: Int by NumberSetting("Color", 0, 0.0, 15.0, 1.0 )
+    private val color: Int by NumberSetting("Color", 0, 0.0, 15.0, 1.0).withDependency { stainedGlass }
 
     init {
         execute(delay = { delay }) {
