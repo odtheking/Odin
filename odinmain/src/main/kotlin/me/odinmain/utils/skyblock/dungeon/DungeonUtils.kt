@@ -7,6 +7,7 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.config.DungeonWaypointConfig
 import me.odinmain.features.impl.dungeon.DungeonWaypoints.DungeonWaypoint
 import me.odinmain.features.impl.dungeon.DungeonWaypoints.toVec3
+import me.odinmain.features.impl.dungeon.LeapMenu
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
@@ -253,12 +254,19 @@ object DungeonUtils {
     val isGhost: Boolean get() = getItemSlot("Haunt", true) != null
     var teammates: List<DungeonPlayer> = emptyList()
     var teammatesNoSelf: List<DungeonPlayer> = emptyList()
+    var leapTeammates = mutableListOf<DungeonPlayer>()
 
     init {
         Executor(1000) {
             if (inDungeons) {
                 teammates = getDungeonTeammates()
-                teammatesNoSelf = teammates.filter { it.name == mc.thePlayer.name}
+                teammatesNoSelf = teammates.filter { it.name != mc.thePlayer.name }
+                leapTeammates =
+                    when (LeapMenu.type) {
+                    0 -> teammatesNoSelf.sortedWith(compareBy({ it.clazz.ordinal }, { it.name })).toMutableList()
+                    1 -> teammatesNoSelf.sortedBy { it.name }.toMutableList()
+                    else -> odinSorting(teammatesNoSelf.sortedBy { it.clazz.prio }).toMutableList()
+                }
             }
         }.register()
     }
@@ -267,11 +275,36 @@ object DungeonUtils {
     fun onWorldLoad(event: WorldEvent.Load) {
         teammates = emptyList()
         teammatesNoSelf = emptyList()
+        leapTeammates.clear()
     }
 
     private val tablistRegex = Regex("\\[(\\d+)] (?:\\[\\w+] )*(\\w+) (?:.)*?\\((\\w+)(?: (\\w+))*\\)")
     private val tablistRegexDEAD = Regex("\\[(\\d+)] (?:\\[\\w+] )*(\\w+) (?:.)*?\\((\\w+)*\\)")
+    val EMPTY = DungeonPlayer("Empty", Classes.Archer, ResourceLocation("textures/entity/steve.png"))
 
+    private fun odinSorting(players: List<DungeonPlayer>): Array<DungeonPlayer> {
+        val result = Array(4) { EMPTY }
+        val secondRound = mutableListOf<DungeonPlayer>()
+
+        for (player in players) {
+            when {
+                result[player.clazz.defaultQuandrant] == EMPTY -> result[player.clazz.defaultQuandrant] = player
+                else -> secondRound.add(player)
+            }
+        }
+
+        if (secondRound.isEmpty()) return result
+
+        result.forEachIndexed { index, _ ->
+            when {
+                result[index] == EMPTY -> {
+                    result[index] = secondRound.removeAt(0)
+                    if (secondRound.isEmpty()) return result
+                }
+            }
+        }
+        return result
+    }
 
     private fun getDungeonTeammates(): List<DungeonPlayer> {
         val teammates = mutableListOf<DungeonPlayer>()

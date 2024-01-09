@@ -17,7 +17,6 @@ import org.lwjgl.opengl.GL11.GL_QUADS
 import org.lwjgl.util.glu.Cylinder
 import org.lwjgl.util.glu.GLU
 import java.awt.image.BufferedImage
-import java.nio.ByteBuffer
 import javax.imageio.ImageIO
 import kotlin.math.*
 
@@ -109,46 +108,6 @@ object RenderUtils {
 
     inline operator fun WorldRenderer.invoke(block: WorldRenderer.() -> Unit) {
         block.invoke(this)
-    }
-
-    fun drawTexturedModalRect(xPos: Number, yPos: Number, w: Number, h: Number) {
-        val (x, y, width, height) = arrayOf(xPos, yPos, w, h).map { it.toDouble() }
-        worldRenderer.begin(GL_QUADS, DefaultVertexFormats.POSITION_TEX)
-        worldRenderer.pos(x, y + height, 0.0).tex(.0, 1.0).endVertex()
-        worldRenderer.pos(x + width, (y + height), .0).tex(1.0, 1.0).endVertex()
-        worldRenderer.pos(x + width, y, 0.0).tex(1.0, .0).endVertex()
-        worldRenderer.pos(x, y, .0).tex(.0, .0).endVertex()
-        tessellator.draw()
-    }
-
-    fun drawImg(imageBuffer: ByteBuffer, x: Int, y: Int, width: Int, height: Int) {
-        GlStateManager.pushMatrix()
-        GlStateManager.disableLighting()
-        GlStateManager.disableTexture2D()
-        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
-        GlStateManager.enableBlend()
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-        GlStateManager.translate(x.toDouble(), y.toDouble(), 0.0)
-        GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, imageBuffer)
-        GlStateManager.popMatrix()
-    }
-
-    fun convertImageToByteBuffer(image: BufferedImage): ByteBuffer {
-        val pixels = IntArray(image.width * image.height)
-        image.getRGB(0, 0, image.width, image.height, pixels, 0, image.width)
-
-        val buffer = ByteBuffer.allocateDirect(image.width * image.height * 4)
-
-        for (pixel in pixels) {
-            buffer.put((pixel shr 16 and 0xFF).toByte()) // Red
-            buffer.put((pixel shr 8 and 0xFF).toByte())  // Green
-            buffer.put((pixel and 0xFF).toByte())         // Blue
-            buffer.put((pixel shr 24 and 0xFF).toByte()) // Alpha
-        }
-
-        buffer.flip()
-
-        return buffer
     }
 
     fun drawCustomBox(aabb: AxisAlignedBB, color: Color, thickness: Float = 3f, phase: Boolean) {
@@ -662,10 +621,6 @@ object RenderUtils {
         val resource = this::class.java.getResource(path)
             ?: return BufferedImage(8, 8, BufferedImage.TYPE_INT_ARGB) // poor fix for debug mode
         return ImageIO.read(resource)
-    }
-
-    private fun drawBufferedImage() {
-
     }
 
     fun drawRoundedRect(x: Double, y: Double, x2: Double, y2: Double, radius: Double, color: Color) {

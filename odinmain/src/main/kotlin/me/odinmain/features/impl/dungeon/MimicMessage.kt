@@ -2,6 +2,7 @@ package me.odinmain.features.impl.dungeon
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.settings.impl.ActionSetting
 import me.odinmain.features.settings.impl.StringSetting
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.partyMessage
@@ -16,8 +17,8 @@ object MimicMessage : Module(
     category = Category.DUNGEON,
     tag = TagType.NEW
 ) {
-    private val mimicMessage: String by StringSetting("Mimic Message", "Mimic Killed", 40, description = "Message sent when mimic is detected as killed")
-
+    private val mimicMessage: String by StringSetting("Mimic Message", "Mimic Killed", 128, description = "Message sent when mimic is detected as killed")
+    val reset: () -> Unit by ActionSetting("Send message", description = "Sends Mimic killed message in party chat.") { partyMessage(mimicMessage) }
     private var mimicKilled = false
 
     @SubscribeEvent
@@ -28,6 +29,10 @@ object MimicMessage : Module(
             mimicKilled = true
             partyMessage(mimicMessage)
         }
+    }
+
+    override fun onKeybind() {
+        reset()
     }
 
     @SubscribeEvent

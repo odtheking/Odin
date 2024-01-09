@@ -72,13 +72,11 @@ object OdinCommand : Commodore {
                  §3- /waypoint » §8Configure waypoints.
                  §3- /termsim » §8Simulates terminals so you can practice them.
                  §3- /rq » §8Requeues dungeon run.
-                 §3- /simulate » §8Simulates chat messages.
-                 §3- /set yaw » §8Sets your yaw.
-                 §3- /set pitch » §8Sets your pitch.
-                 §3- /set rotation » §8Sets your yaw and pitch.
-                 §3- /m? » §8Teleports you to a floor in master mode.
-                 §3- /f? » §8Teleports you to a floor in normal mode.
-                 §3- /dianareset §7» §8Resets all active diana waypoints.
+                 §3- /od set {yaw} {float} » §8Sets your yaw and pitch.
+                 §3- /od m? » §8Teleports you to a floor in master mode.
+                 §3- /od f? » §8Teleports you to a floor in normal mode.
+                 §3- /od dianareset §7» §8Resets all active diana waypoints.
+                 §3- /od sendcoords §7» §8Sends coords in patcher's format.
                 """.trimIndent()
                     )
                 } else
@@ -91,10 +89,10 @@ object OdinCommand : Commodore {
                  §3- /waypoint §7» §8Configure waypoints.
                  §3- /termsim §7» §8Simulates terminals so you can practice them.
                  §3- /rq §7» §8Requeues dungeon run.
-                 §3- /simulate §7» §8Simulates chat messages.
-                 §3- /m? §7» §8Teleports you to a floor in master mode.
-                 §3- /f? §7» §8Teleports you to a floor in normal mode.
-                 §3- /dianareset §7» §8Resets all active diana waypoints.
+                 §3- /od m? » §8Teleports you to a floor in master mode.
+                 §3- /od f? » §8Teleports you to a floor in normal mode.
+                 §3- /od dianareset §7» §8Resets all active diana waypoints.
+                 §3- /od sendcoords §7» §8Sends coords in patcher's format.
                  """.trimIndent()
                     )
             }

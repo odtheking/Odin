@@ -7,6 +7,8 @@ import me.odinmain.commands.Commodore
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.impl.dungeon.TPMaze
 import me.odinmain.features.impl.render.ClickGUIModule.isDev
+import me.odinmain.features.impl.render.DevPlayers
+import me.odinmain.features.impl.render.DevPlayers.updateDevs
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.ScanUtils
@@ -49,9 +51,20 @@ object DevCommand : Commodore {
                 sendCommand("give @p minecraft:diamond_shovel 1 0 {ExtraAttributes:{ethermerge:1b}}")
             }
 
+            literal("devlist").runs {
+                updateDevs()
+                modMessage("Devs: ${DevPlayers.devs.keys}")
+            }
+
             literal("sendmessage").runs { string: String ->
                 sendDataToServer("""{"$string": "This is a test message"}""")
                 modMessage("""{"$string": "This is a test message"}""")
+            }
+
+            literal("getteammates").runs {
+                modMessage("Teammates: ${DungeonUtils.teammates}")
+                modMessage("TeammatesNoSelf: ${DungeonUtils.teammatesNoSelf}")
+                modMessage("LeapTeammates: ${DungeonUtils.leapTeammates}")
             }
 
             literal("simulate").runs { str: GreedyString ->
