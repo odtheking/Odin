@@ -51,7 +51,8 @@ object ChatCommands : Module(
 
     private var dtPlayer: String? = null
     var disableReque: Boolean? = false
-    var dtReason = emptyList<String>()
+    private val dtReason = mutableListOf<Pair<String, String>>()
+
     private var picture = getCatPic()
 
     private fun getCatPic(): String {
@@ -152,8 +153,8 @@ object ChatCommands : Module(
 
             "dt" -> if (dt && channel == "party") {
                 val reason = message.substringAfter("dt ")
-                dtReason.plus("$name needs dt for $reason")
-                modMessage("Reminder set for the end of the run!")
+                dtReason.add(Pair(name, reason))
+                modMessage("§aReminder set for the end of the run!")
                 dtPlayer = name
                 disableReque = true
             }
@@ -178,10 +179,11 @@ object ChatCommands : Module(
 
         GlobalScope.launch{
             delay(2500)
-            PlayerUtils.alert("§c${dtReason.joinToString(separator = ", ")}")
-            partyMessage(dtReason.joinToString(separator = ", "))
+            PlayerUtils.alert("§cPlayers need DT")
+            partyMessage("Players need DT: ${dtReason.joinToString(separator = ", ") { (name, reason) ->
+                "$name: $reason" }}")
             dtPlayer = null
-            dtReason = emptyList()
+            dtReason.clear()
         }
     }
 
