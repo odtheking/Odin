@@ -31,7 +31,7 @@ object MobSpawn: Module(
             time.update()
 
             modMessage("§5$mobName has spawned!")
-            PlayerUtils.alert("§5$mobName has spawned!", soundOnly)
+            PlayerUtils.alert("§5$mobName has spawned!", !soundOnly)
 
 
         }
