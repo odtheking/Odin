@@ -644,8 +644,8 @@ object RenderUtils {
             var i = 0
             while (i <= 90) {
                 GL11.glVertex2d(
-                    x + radius + sin(i * 3.141592653589793 / 180.0) * (radius * -1.0),
-                    y + radius + cos(i * 3.141592653589793 / 180.0) * (radius * -1.0)
+                    x + radius + sin(i * 3.141592653589793 / 180.0) * -radius,
+                    y + radius + cos(i * 3.141592653589793 / 180.0) * -radius
                 )
                 i += 3
             }
@@ -654,8 +654,8 @@ object RenderUtils {
             var i = 90
             while (i <= 180) {
                 GL11.glVertex2d(
-                    x + radius + sin(i * 3.141592653589793 / 180.0) * (radius * -1.0),
-                    y2 - radius + cos(i * 3.141592653589793 / 180.0) * (radius * -1.0)
+                    x + radius + sin(i * 3.141592653589793 / 180.0) * -radius,
+                    y2 - radius + cos(i * 3.141592653589793 / 180.0) * -radius
                 )
                 i += 3
             }
