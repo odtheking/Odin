@@ -1,17 +1,12 @@
 package me.odinmain.ui.waypoint.elements
 
-import cc.polyfrost.oneconfig.renderer.font.Fonts
-import cc.polyfrost.oneconfig.utils.dsl.VG
-import cc.polyfrost.oneconfig.utils.dsl.drawRoundedRect
-import cc.polyfrost.oneconfig.utils.dsl.drawSVG
-import cc.polyfrost.oneconfig.utils.dsl.nanoVG
 import me.odinmain.features.impl.render.WaypointManager
 import me.odinmain.features.impl.render.WaypointManager.Waypoint
 import me.odinmain.ui.waypoint.WaypointGUI
 import me.odinmain.ui.waypoint.WaypointGUI.mouseHandler
 import me.odinmain.utils.noControlCodes
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.animations.impl.ColorAnimation
+import me.odinmain.utils.render.gui.nvg.Fonts
 
 class WaypointElement(val waypoint: Waypoint) {
     private val name get() = waypoint.name.noControlCodes
@@ -25,8 +20,8 @@ class WaypointElement(val waypoint: Waypoint) {
         WaypointInputField(waypoint.z, "z:", mouseHandler, 10f, Fonts.REGULAR),
     )
 
-    fun drawScreen(vg: VG): Int {
-        nanoVG(vg.instance) {
+    fun drawScreen(): Int {
+        /*nanoVG(vg.instance) {
             drawRoundedRect(15, y, 450, 30, 5f, Color(13, 14, 15).rgba)
 
             val color = colorAnimation.get(waypoint.color, Color(21, 22, 23), waypoint.shouldShow).rgba
@@ -41,6 +36,8 @@ class WaypointElement(val waypoint: Waypoint) {
                 currentX += i.draw(vg, currentX, y + 15, -1)
             }
         }
+
+         */
         return 40
     }
 

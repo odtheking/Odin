@@ -42,6 +42,14 @@ object DevCommand : Commodore {
                 )
             }
 
+            literal("particles").runs {
+                sendCommand("particle flame 84 18 95 1 1 1 1 100")
+                sendCommand("particle flame 57 18 125 1 1 1 1 100")
+                sendCommand("particle flame 26 18 95 1 1 1 1 100")
+                sendCommand("particle flame 27 18 60 1 1 1 1 100")
+                sendCommand("particle flame 84 18 56 1 1 1 1 100")
+            }
+
             literal("resettp").runs {
                 TPMaze.correctPortals = listOf()
                 TPMaze.portals = setOf()

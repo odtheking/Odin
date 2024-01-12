@@ -240,7 +240,9 @@ object Trajectories : Module(
     fun onRenderModel(event: RenderEntityModelEvent) {
         if (event.entity !in entityRenderQueue) return
         if (!mc.thePlayer.canEntityBeSeen(event.entity)) return
+        if (!bows || mc.thePlayer?.heldItem?.item !is ItemBow) return
         if(event.entity is EntityBlaze && DungeonUtils.inDungeons) return
+
         OutlineUtils.outlineEntity(
             event,
             thickness,

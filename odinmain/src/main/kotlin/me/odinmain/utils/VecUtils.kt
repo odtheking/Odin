@@ -1,7 +1,6 @@
 package me.odinmain.utils
 
 import kotlinx.coroutines.launch
-import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.Vec2
@@ -14,10 +13,10 @@ import kotlin.math.*
 /**
  * Gets the distance between two entities squared.
  */
-fun noSqrt3DDistance(entity: Entity, entity1: Entity): Double {
-    return (entity.posX - entity1.posX).pow(2.0) +
-            (entity.posY - entity1.posY).pow(2.0) +
-            (entity.posZ - entity1.posZ).pow(2.0)
+fun Entity.distanceSquaredTo(other: Entity): Double {
+    return (posX - other.posX).pow(2.0) +
+            (posY - other.posY).pow(2.0) +
+            (posZ - other.posZ).pow(2.0)
 }
 
 /**

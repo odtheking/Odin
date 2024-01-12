@@ -1,6 +1,5 @@
 package me.odinmain.ui.clickgui
 
-import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinmain.OdinMain.display
 import me.odinmain.config.Config
 import me.odinmain.features.Category
@@ -173,7 +172,7 @@ object ClickGUI : Screen() {
         fun render(nvg: NVG) {
             if (shouldRender) {
                 nvg {
-                    val area = wrappedTextBounds(text!!, 300f, 16f, Fonts.REGULAR)
+                    val area = listOf(100f, 100f, 100f, 100f) //wrappedTextBounds(text!!, 300f, 16f, Fonts.REGULAR)
                     rect(
                         x, y, area[2] - area[0] + 10, area[3] - area[1] + 8,
                         buttonColor.withAlpha((hoverHandler!!.percent() / 100f).coerceIn(0f, 0.8f)), 5f

@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.render
 
-import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinmain.events.impl.PacketSentEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -13,10 +12,7 @@ import me.odinmain.ui.clickgui.util.ColorUtil.brighter
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.animations.impl.EaseInOut
-import me.odinmain.utils.render.gui.nvg.TextAlign
-import me.odinmain.utils.render.gui.nvg.dropShadow
-import me.odinmain.utils.render.gui.nvg.rect
-import me.odinmain.utils.render.gui.nvg.text
+import me.odinmain.utils.render.gui.nvg.*
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 

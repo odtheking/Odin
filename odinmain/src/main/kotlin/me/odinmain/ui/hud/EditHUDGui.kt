@@ -1,6 +1,5 @@
 package me.odinmain.ui.hud
 
-import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinmain.config.Config
 import me.odinmain.features.ModuleManager.huds
 import me.odinmain.ui.Screen

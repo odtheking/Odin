@@ -1,6 +1,5 @@
 package me.odinmain.ui.clickgui.elements.menu
 
-import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.DummySetting
 import me.odinmain.ui.clickgui.elements.Element

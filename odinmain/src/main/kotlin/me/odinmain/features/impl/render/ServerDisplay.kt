@@ -1,11 +1,11 @@
 package me.odinmain.features.impl.render
 
-import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.ServerUtils
+import me.odinmain.utils.render.gui.nvg.Fonts
 import me.odinmain.utils.render.gui.nvg.getTextWidth
 import me.odinmain.utils.render.gui.nvg.textWithControlCodes
 import me.odinmain.utils.round

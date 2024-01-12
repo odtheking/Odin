@@ -1,6 +1,5 @@
 package me.odinmain.ui.clickgui.elements.menu
 
-import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.ui.clickgui.elements.Element
 import me.odinmain.ui.clickgui.elements.ElementType
@@ -69,7 +68,7 @@ class ElementSelector(parent: ModuleButton, setting: SelectorSetting) :
 
             rectOutline(x + w - 20f - width, y + 4f, width + 12f, 22f, clickGUIColor, 5f, 1.5f)
 
-            val scissor = scissor(x, y, w, h)
+            //val scissor = scissor(x, y, w, h)
 
             rect(x + 6, y + 37f, w - 12f, size * 32f, buttonColor, 5f)
             dropShadow(x + 6, y + 37f, w - 12f, size * 32f, 10f, 0.75f, 5f)
@@ -80,7 +79,7 @@ class ElementSelector(parent: ModuleButton, setting: SelectorSetting) :
                 text(setting.options[i].capitalizeFirst(), x + w / 2f, y + 16f, textColor, 16f, Fonts.REGULAR, TextAlign.Middle)
                 if (isSettingHovered(i)) rectOutline(x + 5, y - 1f, w - 11.5f, 32.5f, clickGUIColor.darker(), 4f, 1.5f)
             }
-            resetScissor(scissor)
+            //resetScissor(scissor)
         }
     }
 

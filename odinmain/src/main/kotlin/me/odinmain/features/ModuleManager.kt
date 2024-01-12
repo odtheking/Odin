@@ -3,12 +3,14 @@ package me.odinmain.features
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.*
 import me.odinmain.features.impl.dungeon.*
-import me.odinmain.features.impl.floor7.*
+import me.odinmain.features.impl.floor7.MelodyMessage
+import me.odinmain.features.impl.floor7.NecronDropTimer
+import me.odinmain.features.impl.floor7.RelicAnnouncer
+import me.odinmain.features.impl.floor7.WitherDragons
 import me.odinmain.features.impl.floor7.p3.InactiveWaypoints
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalTimes
 import me.odinmain.features.impl.render.*
-import me.odinmain.features.impl.render.ClickGUIModule.hudChat
 import me.odinmain.features.impl.skyblock.*
 import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.ui.hud.HudElement
@@ -55,9 +57,6 @@ object ModuleManager {
         WatcherBar,
         TerminalSolver,
         TerminalTimes,
-        DragonBoxes,
-        DragonDeathCheck,
-        DragonTimer,
         //LeapHelper,
         MelodyMessage,
         NecronDropTimer,
@@ -96,8 +95,8 @@ object ModuleManager {
         ArrowHit,
         InactiveWaypoints,
         Ragaxe,
-        DragonHealth,
-        MobSpawn
+        MobSpawn,
+        WitherDragons
     )
 
 
@@ -158,7 +157,8 @@ object ModuleManager {
 
     @SubscribeEvent
     fun onRenderOverlay(event: RenderGameOverlayEvent.Post) {
-        if ((mc.currentScreen != null && !hudChat) || event.type != RenderGameOverlayEvent.ElementType.ALL) return
+        if (mc.currentScreen != null || event.type != RenderGameOverlayEvent.ElementType.ALL) return
+
         mc.mcProfiler.startSection("Odin Hud")
         drawNVG {
             for (i in 0 until huds.size) {

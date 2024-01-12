@@ -53,7 +53,7 @@ object InactiveWaypoints : Module(
                     1 -> RenderUtils.drawCustomBox(it.renderBoundingBox, Color(color.r, color.g, color.b), 2f, phase = true)
                     2 -> RenderUtils.drawFilledBox(it.renderBoundingBox, Color(color.r, color.g, color.b, color.alpha), phase = true)
                 }
-                if (renderText) RenderUtils.drawStringInWorld(name, it.positionVector.add(Vec3(0.5, it.height + 0.5, 0.5)), depthTest = true, increase = true, scale = 0.25f)
+                if (renderText) RenderUtils.drawStringInWorld(name, it.positionVector.add(Vec3(1.0, 1.0, 1.0)), depthTest = true, increase = true, scale = 0.25f)
             }
         }
     }

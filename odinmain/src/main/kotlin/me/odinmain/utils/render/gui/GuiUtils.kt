@@ -1,12 +1,6 @@
 package me.odinmain.utils.render.gui
 
-import cc.polyfrost.oneconfig.renderer.font.Font
-import cc.polyfrost.oneconfig.renderer.font.Fonts
-import cc.polyfrost.oneconfig.renderer.scissor.ScissorHelper
-import cc.polyfrost.oneconfig.utils.dsl.*
-import me.odinmain.ui.clickgui.util.ColorUtil
-import me.odinmain.utils.minus
-import me.odinmain.utils.plus
+import me.odinmain.OdinMain.mc
 import net.minecraft.client.gui.ScaledResolution
 import java.util.*
 
@@ -16,11 +10,13 @@ import java.util.*
  */
 object GuiUtils {
 
-    val scaledWidth get() =
-        ScaledResolution(mc).scaledWidth
+    val scaledWidth
+        get() =
+            ScaledResolution(mc).scaledWidth
 
-    val scaledHeight get() =
-        ScaledResolution(mc).scaledHeight
+    val scaledHeight
+        get() =
+            ScaledResolution(mc).scaledHeight
 
     val scaleFactor: Float
         get() {
@@ -28,6 +24,7 @@ object GuiUtils {
             return (scale.coerceAtLeast(1f / 1280f).coerceAtLeast(1f / 800f)).coerceIn(0.05f, 1f)
         }
 
+    /*
     fun VG.translateWithMouse(mouseHandler: MouseHandler, x: Float, y: Float) { // bad name refactor later same with scale func
         this.translate(x, y)
         mouseHandler.translate(x, y)
@@ -37,6 +34,8 @@ object GuiUtils {
         this.scale(x, y)
         mouseHandler.scale(x, y)
     }
+
+
 
     @Deprecated("Use NVG.scissor")
     inline fun VG.scissor(x: Float, y: Float, width: Float, height: Float, action: () -> Unit) {
@@ -54,9 +53,9 @@ object GuiUtils {
         drawText(string, textWidth, y, color, size, font)
     }
 
-    fun String.capitalizeFirst(): String {
-        return substring(0, 1).uppercase(Locale.getDefault()) + substring(1, length).lowercase()
-    }
+
+
+
 
     /**
      * Fixed version of [drawHollowRoundedRect]
@@ -64,5 +63,11 @@ object GuiUtils {
      */
     fun VG.drawOutlineRoundedRect(x: Number, y: Number, w: Number, h: Number, radius: Number, color: Int, thickness: Number) {
         drawHollowRoundedRect(x - 1, y - 1, w + .5, h + .5, radius - 1, color, thickness)
+    }
+
+     */
+
+    fun String.capitalizeFirst(): String {
+        return substring(0, 1).uppercase(Locale.getDefault()) + substring(1, length).lowercase()
     }
 }

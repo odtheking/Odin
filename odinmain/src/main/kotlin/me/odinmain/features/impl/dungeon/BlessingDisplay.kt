@@ -1,12 +1,13 @@
 package me.odinmain.features.impl.dungeon
 
-import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.noControlCodes
+import me.odinmain.utils.render.gui.nvg.Fonts
 import me.odinmain.utils.render.gui.nvg.getTextWidth
 import me.odinmain.utils.render.gui.nvg.textWithControlCodes
 import net.minecraft.network.play.server.S47PacketPlayerListHeaderFooter
@@ -14,6 +15,7 @@ import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.max
 
+@AlwaysActive
 object BlessingDisplay : Module(
     name = "Blessing Display",
     description = "Displays the current blessings of the dungeon.",
@@ -43,7 +45,7 @@ object BlessingDisplay : Module(
         }
     }
 
-    private enum class Blessings(
+    enum class Blessings(
         var regex: Regex,
         val displayString: String,
         val enabled: () -> Boolean,

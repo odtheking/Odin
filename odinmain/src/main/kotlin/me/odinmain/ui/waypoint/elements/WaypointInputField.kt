@@ -1,12 +1,11 @@
 package me.odinmain.ui.waypoint.elements
 
-import cc.polyfrost.oneconfig.renderer.font.Font
-import cc.polyfrost.oneconfig.utils.dsl.*
+
 import me.odinmain.utils.render.gui.MouseHandler
 import me.odinmain.utils.render.gui.animations.impl.EaseInOut
 import me.odinmain.utils.render.gui.animations.impl.LinearAnimation
+import me.odinmain.utils.render.gui.nvg.Font
 import org.lwjgl.input.Keyboard
-import java.awt.Color
 
 class WaypointInputField(
     defaultText: Any,
@@ -31,8 +30,9 @@ class WaypointInputField(
     private val outlineAnimation = EaseInOut(250)
     private val inputAnimation = LinearAnimation<Float>(325)
 
-    fun draw(vg: VG, x: Float, y: Float, color: Int): Float {
-        nanoVG(vg.instance) {
+    fun draw(x: Float, y: Float, color: Int): Float {
+        /*nanoVG(vg.instance) {
+
             this@WaypointInputField.y = y
             this@WaypointInputField.width =
                 if (width == 0f) getTextWidth(display, size, font) + 12
@@ -43,6 +43,8 @@ class WaypointInputField(
             drawText(display, x + 6, y + 0.5, color, size, font)
 
         }
+
+         */
         return width + 10
     }
 

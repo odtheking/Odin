@@ -1,7 +1,5 @@
 package me.odinmain.ui.clickgui.elements
 
-import cc.polyfrost.oneconfig.renderer.NanoVGHelper
-import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinmain.features.Module
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.settings.impl.*
@@ -103,17 +101,23 @@ class ModuleButton(val module: Module, val panel: Panel) {
 
             if (textWidth > width - 80)// too long text, not drawing symbol
             else if (module.tag == Module.TagType.RISKY) {
-                NanoVGHelper.INSTANCE.drawSvg(this.context,
+                /*NanoVGHelper.INSTANCE.drawSvg(this.context,
                     "/assets/odinmain/ui/clickgui/bannableIcon.svg", x + width / 2 + textWidth / 2 + 10f, y + 4f, 25f, 25f, javaClass
                 )
+
+                 */
             } else if (module.tag == Module.TagType.FPSTAX) {
-                NanoVGHelper.INSTANCE.drawSvg(this.context,
+                /*NanoVGHelper.INSTANCE.drawSvg(this.context,
                     "/assets/odinmain/ui/clickgui/fpsHeavyIcon.svg", x + width / 2 + textWidth / 2 + 20f, y, 35f, 35f, javaClass
                 )
+
+                 */
             } else if (module.tag == Module.TagType.NEW && ClickGUIModule.firstTimeOnVersion) {
-                NanoVGHelper.INSTANCE.drawSvg(this.context,
+                /*NanoVGHelper.INSTANCE.drawSvg(this.context,
                     "/assets/odinmain/ui/clickgui/newFeatureIcon.svg", x + width / 2 + textWidth / 2 + 10f, y, 35f, 35f, javaClass
                 )
+
+                 */
             }
 
 
@@ -122,12 +126,12 @@ class ModuleButton(val module: Module, val panel: Panel) {
             var drawY = offs
             offs = height + floor(extendAnim.get(0f, getSettingHeight(), !extended))
 
-            val scissor = scissor(x, y, width, offs)
+            //val scissor = scissor(x, y, width, offs)
             for (i in 0 until menuElements.size) {
                 menuElements[i].y = drawY
                 drawY += menuElements[i].render(nvg)
             }
-            resetScissor(scissor)
+            //resetScissor(scissor)
         }
         return offs
     }

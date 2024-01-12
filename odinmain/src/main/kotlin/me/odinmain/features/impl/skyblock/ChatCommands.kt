@@ -152,7 +152,10 @@ object ChatCommands : Module(
             "pt" -> if (pt && channel == "party") sendCommand("p transfer $name")
 
             "dt" -> if (dt && channel == "party") {
-                val reason = message.substringAfter("dt ")
+                var reason = "No reason given"
+                if (message.substringAfter("dt ") != message)
+                    reason = message.substringAfter("dt ")
+
                 dtReason.add(Pair(name, reason))
                 modMessage("§aReminder set for the end of the run!")
                 dtPlayer = name

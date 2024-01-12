@@ -9,7 +9,6 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.noSqrt3DDistance
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.OutlineUtils
 import me.odinmain.utils.render.world.RenderUtils
@@ -36,7 +35,7 @@ object CustomESP : Module(
     val mode: Int by SelectorSetting("Mode", "Outline", arrayListOf("Outline", "Overlay", "Boxes"))
 
     private val xray: Boolean by BooleanSetting("Through Walls", true).withDependency { !onLegitVersion }
-    private val thickness: Float by NumberSetting("Outline Thickness", 5f, 5f, 20f, 0.5f).withDependency { mode != 1 }
+    private val thickness: Float by NumberSetting("Outline Thickness", 5f, 1f, 20f, 0.5f).withDependency { mode != 1 }
     private val cancelHurt: Boolean by BooleanSetting("Cancel Hurt", true).withDependency { mode != 1 }
 
     private val addStar: () -> Unit by ActionSetting("Add Star") {
@@ -105,9 +104,9 @@ object CustomESP : Module(
     private fun checkEntity(entity: Entity) {
         if (entity !is EntityArmorStand || espList.none { entity.name.contains(it, true) } || entity in currentEntities) return
         currentEntities.add(
-            mc.theWorld.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.expand(1.0, 5.0, 1.0))
+            mc.theWorld.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.expand(1.0, 4.0, 1.0))
                 .filter { it != null && it !is EntityArmorStand && it != mc.thePlayer}
-                .minByOrNull { noSqrt3DDistance(it, entity) }
+                .minByOrNull { entity.getDistanceToEntity(it) }
                 .takeIf { !(it is EntityWither && it.isInvisible) } ?: return
         )
     }

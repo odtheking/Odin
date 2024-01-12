@@ -1,6 +1,5 @@
 package me.odinmain.ui.clickgui.elements.menu
 
-import cc.polyfrost.oneconfig.renderer.font.Fonts.REGULAR
 import me.odinmain.features.settings.impl.StringSetting
 import me.odinmain.ui.clickgui.elements.Element
 import me.odinmain.ui.clickgui.elements.ElementType
@@ -13,6 +12,7 @@ import me.odinmain.ui.clickgui.util.HoverHandler
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.animations.impl.ColorAnimation
 import me.odinmain.utils.render.gui.nvg.*
+import me.odinmain.utils.render.gui.nvg.Fonts.REGULAR
 import org.lwjgl.input.Keyboard
 
 /**

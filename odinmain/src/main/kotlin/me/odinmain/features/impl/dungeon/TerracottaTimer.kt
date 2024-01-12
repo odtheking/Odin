@@ -1,6 +1,7 @@
 package me.odinmain.features.impl.dungeon
 
 import me.odinmain.events.impl.BlockChangeEvent
+import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -64,6 +65,11 @@ object TerracottaTimer : Module(
             time > 2.0 -> Color(255, 170, 0)
             else -> Color(170, 0, 0)
         }
+    }
+
+    fun onChat(event: ChatPacketEvent) {
+        if (!event.message.startsWith("[BOSS] Sadan: ENOUGH!")) return
+        terrasSpawning.clear()
     }
 
 }

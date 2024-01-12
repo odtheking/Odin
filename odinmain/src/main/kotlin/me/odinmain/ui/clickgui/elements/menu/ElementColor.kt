@@ -1,6 +1,5 @@
 package me.odinmain.ui.clickgui.elements.menu
 
-import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.ui.clickgui.elements.Element
 import me.odinmain.ui.clickgui.elements.ElementType
@@ -56,7 +55,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
 
             if (!extended && !anim.isAnimating()) return@nvg
 
-            val scissor = scissor(x, y, w, h + 1)
+            //val scissor = scissor(x, y, w, h + 1)
 
             // SATURATION AND BRIGHTNESS
             drawHSBBox(x + 10f, y + 38f, w - 20f, 170f, color.hsbMax())
@@ -98,7 +97,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
                 2 -> setting.alpha = (mouseX - (x + 10f)) / (w - 20f)
             }
 
-            resetScissor(scissor)
+            //resetScissor(scissor)
         }
     }
 

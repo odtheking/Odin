@@ -1,7 +1,5 @@
 package me.odinmain.ui.clickgui.elements.menu
 
-import cc.polyfrost.oneconfig.renderer.NanoVGHelper
-import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.clickgui.elements.Element
@@ -58,9 +56,11 @@ class ElementHud(parent: ModuleButton, setting: HudSetting) : Element<HudSetting
                 rectOutline(x + w - offset, y + 5f, 21f, 20f, clickGUIColor, 5f, 1.5f)
                 offset = 60f
             }
-            NanoVGHelper.INSTANCE.drawSvg(this.context,
+            /*NanoVGHelper.INSTANCE.drawSvg(this.context,
                 "/assets/odinmain/ui/clickgui/MovementIcon.svg", x + w - offset, y + 5f, 20f, 20f, 20f, javaClass
             )
+
+             */
         }
     }
 

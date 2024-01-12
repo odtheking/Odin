@@ -1,6 +1,5 @@
 package me.odinmain.ui.clickgui.elements.menu
 
-import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinmain.features.settings.impl.ActionSetting
 import me.odinmain.ui.clickgui.elements.Element
 import me.odinmain.ui.clickgui.elements.ElementType
@@ -9,10 +8,7 @@ import me.odinmain.ui.clickgui.util.ColorUtil.darker
 import me.odinmain.ui.clickgui.util.ColorUtil.elementBackground
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.utils.render.gui.MouseUtils
-import me.odinmain.utils.render.gui.nvg.NVG
-import me.odinmain.utils.render.gui.nvg.TextAlign
-import me.odinmain.utils.render.gui.nvg.rect
-import me.odinmain.utils.render.gui.nvg.text
+import me.odinmain.utils.render.gui.nvg.*
 
 /**
  * Renders all the modules.

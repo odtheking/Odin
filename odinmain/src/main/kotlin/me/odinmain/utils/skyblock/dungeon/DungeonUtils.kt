@@ -221,12 +221,12 @@ object DungeonUtils {
         /**
          * Healer class with formatting code "§a" (green) and green color.
          */
-        Healer("§a", Color.GREEN, 2, 1),
+        Healer("§d", Color.PINK, 2, 1),
 
         /**
          * Mage class with formatting code "§5" (purple) and purple color.
          */
-        Mage("§5", Color.PURPLE, 3, 1),
+        Mage("§b", Color.BLUE, 3, 1),
 
         /**
          * Tank class with formatting code "§2" (dark green) and dark green color.
