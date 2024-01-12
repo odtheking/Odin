@@ -54,9 +54,9 @@ object Trajectories : Module(
 
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
+        entityRenderQueue.clear()
+        lineRenderQueue.clear()
         if (bows && mc.thePlayer?.heldItem?.item is ItemBow) {
-            entityRenderQueue.clear()
-            lineRenderQueue.clear()
             if (mc.thePlayer?.heldItem?.isShortbow == true) {
                 if (mc.thePlayer?.heldItem?.itemID == "TERMINATOR") {
                     this.setBowTrajectoryHeading(-5f, false)
