@@ -5,6 +5,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import net.minecraft.tileentity.TileEntitySkull
 import net.minecraft.util.BlockPos
+import java.util.*
 
 object SecretHitboxes : Module(
     name = "Secret Hitboxes",
@@ -17,8 +18,10 @@ object SecretHitboxes : Module(
     val essence: Boolean by BooleanSetting("Essence", default = true)
     val chests: Boolean by BooleanSetting("Chests", default = true)
 
+    private val mostSignificantBits = UUID.fromString("26bb1a8d-7c66-31c6-82d5-a9c04c94fb02").mostSignificantBits
+
     fun isEssence(blockPos: BlockPos): Boolean {
-        return essence && (mc.theWorld.getTileEntity(blockPos) as? TileEntitySkull)?.playerProfile?.id?.toString() == "26bb1a8d-7c66-31c6-82d5-a9c04c94fb02"
+        return essence && (mc.theWorld.getTileEntity(blockPos) as? TileEntitySkull)?.playerProfile?.id?.mostSignificantBits == mostSignificantBits
     }
 
 }
