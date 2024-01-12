@@ -16,6 +16,7 @@ import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.features.impl.render.WaypointManager
 import me.odinmain.ui.clickgui.ClickGUI
+import me.odinmain.ui.util.RoundedRect
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.render.Color
@@ -79,6 +80,8 @@ object OdinMain {
             WaypointCommand,
             BlacklistCommand
         )
+
+        RoundedRect.initShaders()
     }
 
     fun postInit() = scope.launch(Dispatchers.IO) {

@@ -6,6 +6,7 @@ import gg.essential.elementa.font.FontRenderer
 import gg.essential.elementa.font.data.Font.Companion.fromResource
 import gg.essential.universal.UMatrixStack
 import me.odinmain.OdinMain.mc
+import me.odinmain.ui.util.RoundedRect
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.nvg.TextAlign.*
 import net.minecraft.client.gui.ScaledResolution
@@ -70,8 +71,8 @@ fun rect(
     GlStateManager.scale(1f / sr.scaleFactor, 1f / sr.scaleFactor, 1f)
     val matrix = UMatrixStack.Compat
     matrix.runLegacyMethod(matrix.get()) {
-        UIRoundedRectangle.drawRoundedRectangle(
-            matrix.get(), x.toFloat(), y.toFloat(), x.toFloat() + w.toFloat(), y.toFloat() + h.toFloat(), topL.toFloat(),
+        RoundedRect.drawRoundedRectangle(
+            matrix.get(), x.toFloat(), y.toFloat(), x.toFloat() + w.toFloat(), y.toFloat() + h.toFloat(), topL.toFloat(), topR.toFloat(), botL.toFloat(), botR.toFloat(),
             color.javaColor
         )
 
@@ -139,7 +140,7 @@ fun NVG.text(text: String, x: Float, y: Float, color: Color, size: Float, font: 
         Middle -> x - getTextWidth(text, size, font) / 2f
     }
 
-    FontRenderer(fromResource("/assets/odinmain/fonts/Roboto-Regular.ttf"))
+    //FontRenderer(fromResource("/assets/odinmain/fonts/Roboto-Regular.ttf"))
     val sr = ScaledResolution(mc)
     GlStateManager.scale(1f / sr.scaleFactor , 1f / sr.scaleFactor, 1f)
 

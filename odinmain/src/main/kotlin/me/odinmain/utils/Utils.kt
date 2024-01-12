@@ -2,6 +2,10 @@
 
 package me.odinmain.utils
 
+import gg.essential.elementa.components.Window
+import gg.essential.universal.shader.BlendState
+import gg.essential.universal.shader.UShader
+import gg.essential.universal.shader.UShader.Companion.fromLegacyShader
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.ModuleManager
@@ -280,3 +284,8 @@ fun startProfile(name: String) {
 fun endProfile() {
     mc.mcProfiler.endSection()
 }
+
+fun createLegacyShader(vertName: String, fragName: String, blendState: BlendState) =
+    fromLegacyShader(readShader(vertName, "vsh"), readShader(fragName, "fsh"), blendState)
+fun readShader(name: String, ext: String): String =
+    OdinMain::class.java.getResource("/shaders/$name.$ext")?.readText() ?: ""
