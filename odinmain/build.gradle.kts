@@ -42,8 +42,8 @@ dependencies {
     annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
     compileOnly("org.spongepowered:mixin:0.8.5")
 
-    compileOnly("cc.polyfrost:oneconfig-1.8.9-forge:0.2.2-alpha+")
-    shadowImpl("cc.polyfrost:oneconfig-wrapper-launchwrapper:1.0.0-beta+")
+    shadowImpl("gg.essential:loader-launchwrapper:1.1.3")
+    implementation("gg.essential:essential-1.8.9-forge:12132+g6e2bf4dc5")
 
     api("com.mojang:brigadier:1.0.18")
 

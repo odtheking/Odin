@@ -1,6 +1,5 @@
 package me.odinmain.ui.clickgui
 
-import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinmain.features.Category
 import me.odinmain.features.ModuleManager.modules
 import me.odinmain.features.impl.render.ClickGUIModule
@@ -69,7 +68,7 @@ class Panel(
             scrollOffset = scrollAnimation.get(scrollOffset, scrollTarget).round(0)
             var startY = scrollOffset + height
 
-            val s = scissor(x, y + height, width, 5000f)
+            //val s = scissor(x, y + height, width, 5000f)
             if (extended && moduleButtons.isNotEmpty()) {
                 for (button in moduleButtons.filter { it.module.name.contains(currentSearch, true) }) {
                     button.y = startY
@@ -78,8 +77,8 @@ class Panel(
                 length = startY + 5f
             }
 
-            rect(x, y + startY, width, 10f, moduleButtons.last().color, 0f, 0f, 5f, 5f)
-            resetScissor(s)
+            moduleButtons.lastOrNull()?.color?.let { rect(x, y + startY, width, 10f, it, 0f, 0f, 5f, 5f) }
+            //resetScissor(s)
 
             dropShadow(x, y, width, (startY + 10f).coerceAtLeast(height), 12.5f, 6f, 5f)
         }
