@@ -334,8 +334,9 @@ object RenderUtils {
         }
 
         val xMultiplier = if (mc.gameSettings.thirdPersonView == 2) -1 else 1
+        val col = Color(color)
 
-        GlStateManager.color(1f, 1f, 1f, 0.5f)
+        GlStateManager.color(col.r / 255f, col.g / 255f, col.b / 255f, col.a / 255f)
         GlStateManager.pushMatrix()
         GlStateManager.translate(renderPos.xCoord, renderPos.yCoord, renderPos.zCoord)
         GlStateManager.rotate(-renderManager.playerViewY, 0.0f, 1.0f, 0.0f)
