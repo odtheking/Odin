@@ -159,7 +159,7 @@ object ModuleManager {
 
     @SubscribeEvent
     fun onRenderOverlay(event: RenderGameOverlayEvent.Post) {
-        rect(100, 100, 200, 200, Color.WHITE, 5f, 5f, 10f, 10f)
+        rect(100, 100, 200, 200, Color.WHITE, 10f, 10f, 10f, 10f)
         if (mc.currentScreen != null || event.type != RenderGameOverlayEvent.ElementType.ALL) return
 
         mc.mcProfiler.startSection("Odin Hud")

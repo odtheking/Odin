@@ -62,7 +62,7 @@ class Panel(
         }
 
         nvg {
-            rect(x, y, width, height, ColorUtil.moduleButtonColor, 5f, 5f, 0f, 0f)
+            rect(x, y, width, height, ColorUtil.moduleButtonColor, 5f, 5f, 1f, 1f)
             text(if (displayName == "Floor7") "Floor 7" else displayName, x + width / 2f, y + height / 2f, ColorUtil.textColor, 22f, Fonts.SEMIBOLD, TextAlign.Middle)
 
             scrollOffset = scrollAnimation.get(scrollOffset, scrollTarget).round(0)

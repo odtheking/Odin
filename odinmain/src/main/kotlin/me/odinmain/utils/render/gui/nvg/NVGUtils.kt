@@ -72,7 +72,7 @@ fun rect(
     val matrix = UMatrixStack.Compat
     matrix.runLegacyMethod(matrix.get()) {
         RoundedRect.drawRoundedRectangle(
-            matrix.get(), x.toFloat(), y.toFloat(), x.toFloat() + w.toFloat(), y.toFloat() + h.toFloat(), topL.toFloat(), topR.toFloat(), botL.toFloat(), botR.toFloat(),
+            matrix.get(), x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(), topL.toFloat(), topR.toFloat(), botL.toFloat(), botR.toFloat(),
             color.javaColor
         )
 
