@@ -61,8 +61,8 @@ class Panel(
             y = floor(y2 + mouseY)
         }
 
+        rect2Corners(x, y, width, height, ColorUtil.moduleButtonColor, 15f, 2)
         nvg {
-            rect(x, y, width, height, ColorUtil.moduleButtonColor, 5f, 5f, 1f, 1f)
             text(if (displayName == "Floor7") "Floor 7" else displayName, x + width / 2f, y + height / 2f, ColorUtil.textColor, 22f, Fonts.SEMIBOLD, TextAlign.Middle)
 
             scrollOffset = scrollAnimation.get(scrollOffset, scrollTarget).round(0)
@@ -77,7 +77,7 @@ class Panel(
                 length = startY + 5f
             }
 
-            moduleButtons.lastOrNull()?.color?.let { rect(x, y + startY, width, 10f, it, 0f, 0f, 5f, 5f) }
+            moduleButtons.lastOrNull()?.color?.let { rect2Corners(x, y + startY, width, 10f, it, 10f, 4) }
             //resetScissor(s)
 
             dropShadow(x, y, width, (startY + 10f).coerceAtLeast(height), 12.5f, 6f, 5f)

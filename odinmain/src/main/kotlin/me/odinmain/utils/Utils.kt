@@ -288,4 +288,4 @@ fun endProfile() {
 fun createLegacyShader(vertName: String, fragName: String, blendState: BlendState) =
     fromLegacyShader(readShader(vertName, "vsh"), readShader(fragName, "fsh"), blendState)
 fun readShader(name: String, ext: String): String =
-    OdinMain::class.java.getResource("/shaders/$name.$ext")?.readText() ?: ""
+     OdinMain::class.java.getResource("/shaders/$name.$ext")?.readText() ?: ""

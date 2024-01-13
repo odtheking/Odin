@@ -13,6 +13,7 @@ import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.WorldRenderer
+import org.lwjgl.opengl.GL11
 import java.util.*
 
 class Font()
@@ -61,7 +62,18 @@ value class NVG(val context: Long) {
  */
 fun drawNVG(block: NVG.() -> Unit) = block(NVG(0L)) //nanoVGHelper.setupAndDraw(false) { block(NVG(it)) }
 
-
+fun rect2Corners(x: Number, y: Number, w: Number, h: Number, color: Color, radius: Float, cornerID: Int) {
+    if (color.isTransparent) return
+    val sr = ScaledResolution(mc)
+    GlStateManager.scale(1f / sr.scaleFactor, 1f / sr.scaleFactor, 1f)
+    val matrix = UMatrixStack.Compat
+    matrix.runLegacyMethod(matrix.get()) {
+        RoundedRect.drawRoundedRectangle2Corners(
+            matrix.get(), x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(), radius.toFloat(), color.javaColor, cornerID
+        )
+    }
+    GlStateManager.scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
+}
 
 fun rect(
     x: Number, y: Number, w: Number, h: Number, color: Color, topL: Number, topR: Number, botL: Number, botR: Number
@@ -72,7 +84,7 @@ fun rect(
     val matrix = UMatrixStack.Compat
     matrix.runLegacyMethod(matrix.get()) {
         RoundedRect.drawRoundedRectangle(
-            matrix.get(), x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(), topL.toFloat(), topR.toFloat(), botL.toFloat(), botR.toFloat(),
+            matrix.get(), x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(), topL.toFloat(),
             color.javaColor
         )
 

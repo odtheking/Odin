@@ -19,12 +19,14 @@ import me.odinmain.utils.profile
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.nvg.drawNVG
 import me.odinmain.utils.render.gui.nvg.rect
+import me.odinmain.utils.render.gui.nvg.rect2Corners
 import net.minecraft.network.Packet
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.lwjgl.opengl.GL45
 import kotlin.reflect.full.hasAnnotation
 
 /**
@@ -159,7 +161,6 @@ object ModuleManager {
 
     @SubscribeEvent
     fun onRenderOverlay(event: RenderGameOverlayEvent.Post) {
-        rect(100, 100, 200, 200, Color.WHITE, 10f, 10f, 10f, 10f)
         if (mc.currentScreen != null || event.type != RenderGameOverlayEvent.ElementType.ALL) return
 
         mc.mcProfiler.startSection("Odin Hud")
