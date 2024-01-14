@@ -62,7 +62,7 @@ class ElementSelector(parent: ModuleButton, setting: SelectorSetting) :
 
 
             text(name, x + 6f, y + 16f, textColor, 16f, Fonts.REGULAR)
-            text(display, x + w - 14f - width, y + 16f, textColor, 16f, Fonts.REGULAR)
+            text(display, x + w - 14f - width, y + 7f, textColor, 16f, Fonts.REGULAR)
 
             if (!extended && !settingAnim.isAnimating()) return@nvg
 
@@ -75,8 +75,8 @@ class ElementSelector(parent: ModuleButton, setting: SelectorSetting) :
 
             for (i in 0 until size) {
                 val y = y + 38 + 32 * i
-                text(setting.options[i].capitalizeFirst(), x + w / 2f, y + 16f, textColor, 16f, Fonts.REGULAR, TextAlign.Middle)
-                text(setting.options[i].capitalizeFirst(), x + w / 2f, y + 16f, textColor, 16f, Fonts.REGULAR, TextAlign.Middle)
+                text(setting.options[i].capitalizeFirst(), x + w / 2f, y + 7f, textColor, 16f, Fonts.REGULAR, TextAlign.Middle)
+                text(setting.options[i].capitalizeFirst(), x + w / 2f, y + 7f, textColor, 16f, Fonts.REGULAR, TextAlign.Middle)
                 if (isSettingHovered(i)) rectOutline(x + 5, y - 1f, w - 11.5f, 32.5f, clickGUIColor.darker(), 4f, 1.5f)
             }
             //resetScissor(scissor)

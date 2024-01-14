@@ -13,6 +13,7 @@ import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.animations.impl.EaseInOut
 import me.odinmain.utils.render.gui.nvg.*
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -29,8 +30,8 @@ object CPSDisplay : Module(
         val anim = if (button == 0) leftAnim else rightAnim
 
         if (button == 2) {
-            rect(0f, 0f, 50f, 36f, color.brighter(leftAnim.get(1f, 1.5f, leftAnim.getPercent() >= 50)), 9f, 0f, 9f, 0f)
-            rect(50f, 0f, 50f, 36f, color.brighter(rightAnim.get(1f, 1.5f, rightAnim.getPercent() >= 50)), 0f, 9f, 0f, 9f)
+            rect2Corners(0f, 0f, 50f, 36f, color.brighter(leftAnim.get(1f, 1.5f, leftAnim.getPercent() >= 50)), 9f, 1)
+            rect2Corners(50f, 0f, 50f, 36f, color.brighter(rightAnim.get(1f, 1.5f, rightAnim.getPercent() >= 50)), 9f, 3)
 
             if (outline) dropShadow(0f, 0f, 100f, 36f, 10f, 1f, 9f)
         } else {
@@ -40,20 +41,20 @@ object CPSDisplay : Module(
 
         if (mouseText) {
             if (button == 2) {
-                text("LMB", 25f, 8.5f, textColor, 10f, Fonts.MEDIUM, TextAlign.Middle)
-                text(leftClicks.size.toString(), 25f, 24.5f, textColor, 18.5f, Fonts.MEDIUM, TextAlign.Middle)
+                text("LMB", 25f, 2.5f, textColor, 10f, Fonts.MEDIUM, TextAlign.Middle)
+                text(leftClicks.size.toString(), 25f, 18.5f, textColor, 18.5f, Fonts.MEDIUM, TextAlign.Middle)
 
-                text("RMB", 75f, 8.5f, textColor, 10f, Fonts.MEDIUM, TextAlign.Middle)
-                text(rightClicks.size.toString(), 75f, 24.5f, textColor, 18.5f, Fonts.MEDIUM, TextAlign.Middle)
+                text("RMB", 75f, 2.5f, textColor, 10f, Fonts.MEDIUM, TextAlign.Middle)
+                text(rightClicks.size.toString(), 75f, 18.5f, textColor, 18.5f, Fonts.MEDIUM, TextAlign.Middle)
             } else {
                 val text = if (button == 0) "LMB" else "RMB"
-                text(text, 25f, 8.5f, textColor, 10f, Fonts.MEDIUM, TextAlign.Middle)
-                text(value, 25f, 24.5f, textColor, 18.5f, Fonts.MEDIUM, TextAlign.Middle)
+                text(text, 25f, 2.5f, textColor, 10f, Fonts.MEDIUM, TextAlign.Middle)
+                text(value, 25f, 18.5f, textColor, 18.5f, Fonts.MEDIUM, TextAlign.Middle)
             }
         } else {
             if (button == 2) {
-                text(leftClicks.size.toString(), 25f, 19f, textColor, 24f, Fonts.MEDIUM, TextAlign.Middle)
-                text(rightClicks.size.toString(), 75f, 19f, textColor, 24f, Fonts.MEDIUM, TextAlign.Middle)
+                text(leftClicks.size.toString(), 25f, 13f, textColor, 24f, Fonts.MEDIUM, TextAlign.Middle)
+                text(rightClicks.size.toString(), 75f, 13f, textColor, 24f, Fonts.MEDIUM, TextAlign.Middle)
             } else text(value, 25f, 19f, textColor, 24f, Fonts.MEDIUM, TextAlign.Middle)
         }
         if (button == 2) 100f to 38f else 50f to 38f

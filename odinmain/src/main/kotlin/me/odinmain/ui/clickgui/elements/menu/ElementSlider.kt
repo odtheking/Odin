@@ -62,7 +62,7 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
             text(name, x + 6f, y + h / 2f - 3f, textColor, 16f, Fonts.REGULAR)
             text(displayVal, x + w - 6f, y + h / 2f - 3f, textColor, 16f, Fonts.REGULAR, TextAlign.Right)
 
-            rect(x + 6f, y + 28f, w - 12f, 7f, sliderBGColor, 2.5f, 2.5f, 2.5f, 3f)
+            rect(x + 6f, y + 28f, w - 12f, 7f, sliderBGColor, 2.5f)
             dropShadow(x + 6f, y + 28f, w - 12f, 7f, 10f, 0.75f, 3f)
             if (x + percentage * (w - 12f) > x + 6) rect(x + 6f, y + 28f, sliderPercentage * (w - 12f), 7f, color, 3f)
         }

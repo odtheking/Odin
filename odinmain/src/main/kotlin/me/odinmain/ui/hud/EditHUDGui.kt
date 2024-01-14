@@ -59,7 +59,12 @@ object EditHUDGui : Screen() {
 
             text("Reset", 0f, 0f, textColor, 38f, Fonts.REGULAR, TextAlign.Middle)
             //rect(-75f, -25f, 150f, 50f, Color.WHITE) // make this good
-            resetTransform()
+
+            if (openAnim.isAnimating()) {
+                val animVal = openAnim.get(0f, 1f, !open)
+                scale(1 / animVal, 1 / animVal)
+            }
+            translate(-scaledWidth.toFloat(), -(scaledHeight * 1.75f))
 
             if (!open) return@drawNVG
             for (i in 0 until huds.size) {

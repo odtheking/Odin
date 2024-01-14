@@ -98,8 +98,7 @@ open class HudElement(
         xSetting.max = Display.getWidth()
         ySetting.max = Display.getHeight()
 
-        vg.translate(x, y)
-        vg.scale(scale, scale)
+
         GlStateManager.pushMatrix()
         val sr = ScaledResolution(mc)
         GlStateManager.scale(1.0 / sr.scaleFactor, 1.0 / sr.scaleFactor, 1.0)
@@ -125,7 +124,6 @@ open class HudElement(
                 thickness / (scale / 3)
             )
         }
-        vg.resetTransform()
         GlStateManager.popMatrix()
 
         this.width = width

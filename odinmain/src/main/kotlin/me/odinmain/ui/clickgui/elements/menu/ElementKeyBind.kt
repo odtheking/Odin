@@ -56,7 +56,7 @@ class ElementKeyBind(parent: ModuleButton, private val mod: Module) :
             }
 
             text(name,  x + 6f, y + h / 2, textColor, 16f, Fonts.REGULAR)
-            text(value, x + w - 14, y + 16f, textColor, 16f, Fonts.REGULAR, TextAlign.Right)
+            text(value, x + w - 14, y + 7f, textColor, 16f, Fonts.REGULAR, TextAlign.Right)
         }
     }
 

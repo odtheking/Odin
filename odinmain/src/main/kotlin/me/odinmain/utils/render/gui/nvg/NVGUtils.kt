@@ -2,10 +2,10 @@ package me.odinmain.utils.render.gui.nvg
 
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.components.UIText
-import gg.essential.elementa.font.FontRenderer
 import gg.essential.elementa.font.data.Font.Companion.fromResource
 import gg.essential.universal.UMatrixStack
 import me.odinmain.OdinMain.mc
+import me.odinmain.ui.util.FontRenderer
 import me.odinmain.ui.util.RoundedRect
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.nvg.TextAlign.*
@@ -16,11 +16,11 @@ import net.minecraft.client.renderer.WorldRenderer
 import org.lwjgl.opengl.GL11
 import java.util.*
 
-class Font()
+class Font(val fr: FontRenderer)
 object Fonts {
-    val REGULAR = Font()
-    val MEDIUM = Font()
-    val SEMIBOLD = Font()
+    val REGULAR = Font(FontRenderer("/fonts/Heebo.ttf", 30f))
+    val MEDIUM = Font(FontRenderer("/fonts/Heebo.ttf", 30f))
+    val SEMIBOLD = Font(FontRenderer("/fonts/Heebo.ttf", 30f))
 }
 
 /**
@@ -76,7 +76,7 @@ fun rect2Corners(x: Number, y: Number, w: Number, h: Number, color: Color, radiu
 }
 
 fun rect(
-    x: Number, y: Number, w: Number, h: Number, color: Color, topL: Number, topR: Number, botL: Number, botR: Number
+    x: Number, y: Number, w: Number, h: Number, color: Color, radius: Number
 ) {
     if (color.isTransparent) return
     val sr = ScaledResolution(mc)
@@ -84,7 +84,7 @@ fun rect(
     val matrix = UMatrixStack.Compat
     matrix.runLegacyMethod(matrix.get()) {
         RoundedRect.drawRoundedRectangle(
-            matrix.get(), x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(), topL.toFloat(),
+            matrix.get(), x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(), radius.toFloat(),
             color.javaColor
         )
 
@@ -94,8 +94,8 @@ fun rect(
 
 
 fun NVG.rect(
-    x: Float, y: Float, w: Float, h: Float, color: Color, radius: Float = 0f
-) = rect(x, y, w, h, color, radius, radius, radius, radius)
+    x: Float, y: Float, w: Float, h: Float, color: Color
+) = rect(x, y, w, h, color, 0f)
 
 fun NVG.rectOutline(x: Float, y: Float, w: Float, h: Float, color: Color, radius: Float = 0f, thickness: Float) {
     if (color.isTransparent) return
@@ -156,7 +156,7 @@ fun NVG.text(text: String, x: Float, y: Float, color: Color, size: Float, font: 
     val sr = ScaledResolution(mc)
     GlStateManager.scale(1f / sr.scaleFactor , 1f / sr.scaleFactor, 1f)
 
-    mc.fontRendererObj.drawString(text, drawX, y, color.rgba, false)
+    font.fr.drawString(text, drawX, y, color)
     GlStateManager.scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
 }
 
@@ -170,7 +170,7 @@ fun NVG.text(text: String, x: Float, y: Float, color: Color, size: Float, font: 
     text(text, x, drawY, color, size, font, align)
 }
 
-fun NVG.getTextWidth(text: String, size: Float, font: Font) = UIText().getTextWidth() //renderer.getStringWidth(context, text, size, font)
+fun NVG.getTextWidth(text: String, size: Float, font: Font) = font.fr.getWidth(text) //renderer.getStringWidth(context, text, size, font)
 
 fun NVG.dropShadow(x: Float, y: Float, w: Float, h: Float, blur: Float, spread: Float, radius: Float) = Unit
     //renderer.drawDropShadow(context, x, y, w, h, blur, spread, radius)
@@ -181,7 +181,7 @@ fun NVG.translate(x: Float, y: Float) = GlStateManager.translate(x, y, 0f)
 fun NVG.resetTransform() = GlStateManager.translate(0f, 0f, 0f)
     //renderer.resetTransform(context)
 
-fun NVG.scale(x: Float, y: Float) = GlStateManager.scale(x, y, 0f)
+fun NVG.scale(x: Float, y: Float) = GlStateManager.scale(x, y, 1f)
     //renderer.scale(context, x, y)
 
 fun NVG.setAlpha(alpha: Float) = Unit
