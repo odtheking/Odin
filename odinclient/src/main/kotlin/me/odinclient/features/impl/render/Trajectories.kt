@@ -9,7 +9,6 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.OutlineUtils
 import me.odinmain.utils.render.world.RenderUtils
-import me.odinmain.utils.render.world.RenderUtils.partialTicks
 import me.odinmain.utils.render.world.RenderUtils.renderX
 import me.odinmain.utils.render.world.RenderUtils.renderY
 import me.odinmain.utils.render.world.RenderUtils.renderZ
@@ -40,7 +39,6 @@ object Trajectories : Module(
     private val bows: Boolean by BooleanSetting("Bows", false, description = "Render trajectories of bow arrows")
     private val pearls: Boolean by BooleanSetting("Pearls", false, description = "Render trajectories of ender pearls")
 
-    private val line: Boolean by BooleanSetting("Render Line", false)
     private val range: Float by NumberSetting("Solver Range", 30f, 1f, 60f, 1f, description = "Performance impact scales with this")
     private val thickness: Float by NumberSetting("Line Width", 2f, 1.0, 5.0, 0.5)
     private val boxSize: Float by NumberSetting("Box Size", 0.5f, 0.5f, 3.0f, 0.1f)
@@ -71,7 +69,6 @@ object Trajectories : Module(
                 this.setBowTrajectoryHeading(0f, true)
             }
             this.drawBowCollisionBoxes()
-            this.drawLine()
         }
         if (pearls) {
             pearlImpactPos = null
@@ -164,7 +161,6 @@ object Trajectories : Module(
         var posVec = pV
         for (i in 0..range.toInt()) {
             if (hitResult) break
-            lineRenderQueue.add(posVec)
             val vec = motionVec.add(posVec)
             val rayTrace = mc.theWorld.rayTraceBlocks(posVec, vec, false, true, false)
             val aabb = AxisAlignedBB(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
@@ -187,15 +183,6 @@ object Trajectories : Module(
             posVec = posVec.add(motionVec)
             motionVec = Vec3(motionVec.xCoord * 0.99, motionVec.yCoord * 0.99 - 0.05, motionVec.zCoord * 0.99)
         }
-    }
-
-    private fun drawLine() {
-        if (lineRenderQueue.size == 0 || !line) return
-        lineRenderQueue.forEachIndexed { index, vec3 ->
-            if (index == (lineRenderQueue.size - 1)) return@forEachIndexed
-            RenderUtils.draw3DLine(vec3, lineRenderQueue[index + 1], color, 2, false, partialTicks)
-        }
-        lineRenderQueue.clear()
     }
 
     private fun drawPearlCollisionBox() {
