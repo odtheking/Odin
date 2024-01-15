@@ -21,15 +21,13 @@ object DragonDeathCheck {
         dragon.spawning = false
         dragon.dragonAlive = true
         dragon.timesSpawned += 1
-        dragon.entityID = event.entity.entityId
+        dragon.entity = event.entity
         if (sendSpawned) modMessage("§${dragon.colorCode}${dragon.name} §fdragon spawned. This is the §${dragon.colorCode}${dragon.timesSpawned}§f time it has spawned.")
     }
 
     fun dragonLeaveWorld(event: LivingDeathEvent) {
         if (event.entity !is EntityDragon) return
-        val dragon = WitherDragonsEnum.entries.find {it.entityID == event.entity.entityId} ?: return
-
-        WitherDragonsEnum.entries.find{ it.name == dragon.name }!!.lastDeathLocation = event.entity.position
+        val dragon = WitherDragonsEnum.entries.find {it.entity?.entityId == event.entity.entityId} ?: return
 
         if (sendTime) {
             val oldPB = dragon.dragonKillPBs.value

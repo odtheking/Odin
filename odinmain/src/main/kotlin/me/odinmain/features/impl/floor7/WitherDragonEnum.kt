@@ -11,6 +11,7 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.WorldUtils
 import me.odinmain.utils.skyblock.modMessage
+import net.minecraft.entity.Entity
 import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
@@ -32,8 +33,8 @@ enum class WitherDragonsEnum(
     var spawning: Boolean = false,
     var dragonAlive: Boolean = false,
     var timesSpawned: Int = 0,
-    var entityID: Int = 0,
-    var lastDeathLocation: BlockPos = BlockPos(0, 0, 0)
+    var entity: Entity? = null,
+    var lastDragonDeath: String = ""
 
 ) {
     Red('r', Vec3(27.0, 18.0, 60.0), AxisAlignedBB(14.5, 13.0, 45.5, 39.5, 28.0, 70.5),"c", Color.RED,

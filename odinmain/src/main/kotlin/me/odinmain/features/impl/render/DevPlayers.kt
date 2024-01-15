@@ -54,7 +54,7 @@ object DevPlayers {
     }
 
     init {
-        Executor(delay = 60000) {
+        Executor(delay = 1280000) {
             OdinMain.scope.launch { updateDevs() }
         }.register()
     }

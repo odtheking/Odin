@@ -11,10 +11,12 @@ import me.odinmain.features.impl.floor7.DragonDeathCheck.lastDragonDeath
 import me.odinmain.features.impl.floor7.DragonDeathCheck.onChatPacket
 import me.odinmain.features.impl.floor7.DragonHealth.renderHP
 import me.odinmain.features.impl.floor7.DragonPriority.firstDragonsSpawned
+import me.odinmain.features.impl.floor7.DragonPriority.renderTracerPrio
 import me.odinmain.features.impl.floor7.DragonTimer.renderTime
 import me.odinmain.features.impl.floor7.DragonTimer.updateTime
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.DualSetting
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
@@ -55,11 +57,13 @@ object WitherDragons : Module(
     private val dragonHealth: Boolean by BooleanSetting("Dragon Health", true, description = "Displays the health of M7 dragons.")
 
     val dragPrioSpawnToggle: Boolean by BooleanSetting("Dragon Priority Spawn", true, description = "Displays the priority of dragons spawning.")
-    val configPower: Double by NumberSetting("Config Power", 21.0, 10.0, 29.0, description = "Displays the power of the config.").withDependency { dragPrioSpawnToggle }
-    val configEasyPower: Double by NumberSetting("Config Power", 19.0, 10.0, 29.0, description = "Displays the power of the config.").withDependency { dragPrioSpawnToggle }
-    val configSoloDebuff: Double by NumberSetting("Config Solo Debuff", 2.0, 1.0, 2.0, description = "Displays the debuff of the config.").withDependency { dragPrioSpawnToggle }
-    val soloDebuffOnAll: Boolean by BooleanSetting("Solo Debuff On All", true, description = "Displays the debuff on all dragons.").withDependency { dragPrioSpawnToggle }
-    val paulBuff: Boolean by BooleanSetting("Paul Buff", false, description = "Should the mod calculate with paul's blessing buff?").withDependency { dragPrioSpawnToggle }
+    val configPower: Double by NumberSetting("Normal Power", 21.0, 10.0, 29.0, description = "Power needed to split.").withDependency { dragPrioSpawnToggle }
+    val configEasyPower: Double by NumberSetting("Easy Power", 19.0, 10.0, 29.0, description = "Power needed when its Purple and another dragon.").withDependency { dragPrioSpawnToggle }
+    val configSoloDebuff: Boolean by DualSetting("Purple Solo Debuff", "Tank", "Healer", true, description = "Displays the debuff of the config.The class that solo debuffs purple, the other class helps b/m.").withDependency { dragPrioSpawnToggle }
+    val soloDebuffOnAll: Boolean by BooleanSetting("Solo Debuff on All Splits", true, description = "Same as Purple Solo Debuff but for all dragons (A will only have 1 debuff).").withDependency { dragPrioSpawnToggle }
+    val paulBuff: Boolean by BooleanSetting("Paul Buff", false, description = "Multiplies the power in your run by 1.25").withDependency { dragPrioSpawnToggle }
+    private val tracer: Boolean by BooleanSetting("Tracer", default = false, description = "Draws a line from your position to the dragon")
+    private val tracerWidth: Int by NumberSetting("Tracer Width", default = 5, min = 1, max = 20).withDependency { tracer }
 
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, true) {
         if (it) {
@@ -121,6 +125,7 @@ object WitherDragons : Module(
         }
         if (dragonBoxes) renderBoxes()
         if (dragonHealth) renderHP()
+        if (tracer) renderTracerPrio(event, tracerWidth)
     }
 
     @SubscribeEvent

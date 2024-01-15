@@ -8,16 +8,22 @@ import me.odinmain.features.impl.floor7.WitherDragons.configSoloDebuff
 import me.odinmain.features.impl.floor7.WitherDragons.dragPrioSpawnToggle
 import me.odinmain.features.impl.floor7.WitherDragons.paulBuff
 import me.odinmain.features.impl.floor7.WitherDragons.soloDebuffOnAll
+import me.odinmain.utils.addVec
 import me.odinmain.utils.equalsOneOf
+import me.odinmain.utils.fastEyeHeight
+import me.odinmain.utils.render.world.RenderUtils
+import me.odinmain.utils.render.world.RenderUtils.renderVec
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.Classes
 import me.odinmain.utils.skyblock.modMessage
+import net.minecraftforge.client.event.RenderWorldLastEvent
 
 
 object DragonPriority {
 
     var firstDragonsSpawned = false
+    private var dragonTracer = ""
 
     fun dragPrioSpawn() {
         if (!dragPrioSpawnToggle || firstDragonsSpawned) return
@@ -29,23 +35,26 @@ object DragonPriority {
         val dragon = sortPrio(spawningDragons)
 
         PlayerUtils.alert("§${dragon.colorCode} ${dragon.name}")
+        dragonTracer = dragon.name
         firstDragonsSpawned = true
     }
 
     private fun sortPrio(spawningDragon: MutableList<WitherDragonsEnum>): WitherDragonsEnum {
-        var totalPower = BlessingDisplay.Blessings.POWER.current * if (paulBuff) 1.25 else 1.0
-        if (BlessingDisplay.Blessings.TIME.current > 0) totalPower += 2.5
-        val playerClass = DungeonUtils.teammates.find { it.name == mc.thePlayer.name }?.clazz ?: return modMessage("§cPlayer Class wasn't found!").let { WitherDragonsEnum.Purple }
+        val totalPower = BlessingDisplay.Blessings.POWER.current * if (paulBuff) 1.25 else 1.0 +
+                if (BlessingDisplay.Blessings.TIME.current > 0) 2.5 else 0.0
+
+        val playerClass = DungeonUtils.teammates.find { it.name == mc.thePlayer.name }?.clazz
+            ?: return modMessage("§cPlayer Class wasn't found!").let { WitherDragonsEnum.Purple }
 
         val prioList: List<Char> =
             if (totalPower >= configPower || (spawningDragon.any { it == WitherDragonsEnum.Purple } && totalPower >= configEasyPower)) {
                 if (playerClass.equalsOneOf(Classes.Berserk, Classes.Mage)) "ogrbp".toList() else "pbrgo".toList()
             } else "robpg".toList()
 
-        spawningDragon.sortByDescending { prioList.indexOf(it.firstLetter) }
+        spawningDragon.sortBy { prioList.indexOf(it.firstLetter) }
 
         if (totalPower >= configEasyPower) {
-            if (configSoloDebuff.toInt() == 1) {
+            if (configSoloDebuff) {
                 if ((playerClass == Classes.Tank && spawningDragon.any { it == WitherDragonsEnum.Purple }) || soloDebuffOnAll) {
                     spawningDragon.sortByDescending { prioList.indexOf(it.firstLetter) }
                 }
@@ -59,4 +68,19 @@ object DragonPriority {
 
         return spawningDragon[0]
     }
+
+
+    fun renderTracerPrio(event: RenderWorldLastEvent, tracerWidth: Int) {
+
+        val dragon = WitherDragonsEnum.entries.find { it.name == dragonTracer } ?: return
+
+        RenderUtils.draw3DLine(
+            mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), dragon.spawnPos.addVec(.5, .5, .5),
+            dragon.color,
+            tracerWidth, depth = true, event.partialTicks
+        )
+    }
+
+
+
 }
