@@ -183,7 +183,7 @@ object ChatCommands : Module(
         GlobalScope.launch{
             delay(2500)
             PlayerUtils.alert("§cPlayers need DT")
-            modMessage("Players need DT: ${dtReason.joinToString(separator = ", ") { (name, reason) ->
+            partyMessage("Players need DT: ${dtReason.joinToString(separator = ", ") { (name, reason) ->
                 "$name: $reason" }}")
             dtPlayer = null
             dtReason.clear()

@@ -1,8 +1,5 @@
 package me.odinmain.utils.render.gui.nvg
 
-import gg.essential.elementa.components.UIRoundedRectangle
-import gg.essential.elementa.components.UIText
-import gg.essential.elementa.font.data.Font.Companion.fromResource
 import gg.essential.universal.UMatrixStack
 import me.odinmain.OdinMain.mc
 import me.odinmain.ui.util.FontRenderer
@@ -13,7 +10,6 @@ import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.WorldRenderer
-import org.lwjgl.opengl.GL11
 import java.util.*
 
 class Font(val fr: FontRenderer)

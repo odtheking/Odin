@@ -8,6 +8,7 @@ import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.impl.dungeon.TPMaze
 import me.odinmain.features.impl.render.ClickGUIModule.isDev
 import me.odinmain.features.impl.render.DevPlayers
+import me.odinmain.features.impl.render.DevPlayers.devs
 import me.odinmain.features.impl.render.DevPlayers.updateDevs
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -25,7 +26,7 @@ object DevCommand : Commodore {
     override val command: CommandNode =
         literal("oddev") {
             requires {
-                devMode
+                devMode || devs.containsKey(mc.thePlayer.name)
             }
 
             literal("getdata").runs { str: String ->

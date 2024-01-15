@@ -69,7 +69,7 @@ object RenderOptimizer : Module(
         if (event.packet !is S2APacketParticles) return
 
         if (DungeonUtils.getPhase() == 5 && hideParticles &&
-            event.packet.particleType.name.containsOneOf("ENCHANTMENT TABLE", "FLAME", "FIREWORKS_SPARK"))
+            !event.packet.particleType.name.containsOneOf("ENCHANTMENT TABLE", "FLAME", "FIREWORKS_SPARK"))
             event.isCanceled = true
 
         if (hideHeartParticles && event.packet.particleType.name.containsOneOf("HEART"))
