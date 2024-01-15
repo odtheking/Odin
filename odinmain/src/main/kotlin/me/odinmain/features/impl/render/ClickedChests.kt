@@ -39,7 +39,8 @@ object ClickedChests : Module(
     fun onInteract(event: PlayerInteractEvent) {
         if (
             event.action != RIGHT_CLICK_BLOCK ||
-            !mc.theWorld.getBlockState(event.pos).block.equalsOneOf(Blocks.chest, Blocks.trapped_chest)
+            !mc.theWorld.getBlockState(event.pos).block.equalsOneOf(Blocks.chest, Blocks.trapped_chest) ||
+						chests.any { it.pos == event.pos }
         ) return
         chests.add(Chest(event.pos, System.currentTimeMillis()))
     }
