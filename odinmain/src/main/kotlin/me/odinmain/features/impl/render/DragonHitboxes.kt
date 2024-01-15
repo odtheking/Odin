@@ -66,6 +66,7 @@ object DragonHitboxes : Module(
         if (dragonRenderQueue.isEmpty() || (onlyM7 && !DungeonUtils.isFloor(7))) return
 
         for (dragon in dragonRenderQueue) {
+            if (dragon.health.toInt() == 0) return
             for (entity in dragon.dragonPartArray) {
                 val entityId = entity.entityId
                 if (entityId == PersonalDragon.dragon?.entityId) return

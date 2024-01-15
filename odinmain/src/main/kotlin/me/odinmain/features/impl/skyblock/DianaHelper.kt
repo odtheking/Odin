@@ -36,12 +36,12 @@ object DianaHelper : Module(
     category = Category.SKYBLOCK,
     tag = TagType.NEW
 ) {
-    private val guessColor: Color by ColorSetting("Guess Color", default = Color.WHITE)
-    private val tracerColor: Color by ColorSetting("Tracer Line Color", default = Color.WHITE, allowAlpha = true)
-    private val tracer: Boolean by BooleanSetting("Tracer", default = false)
-    private val tracerWidth: Int by NumberSetting("Tracer Width", default = 5, min = 1, max = 20)
-    private val sendInqMsg: Boolean by BooleanSetting("Send Inq Msg", default = true)
-    private val showWarpSettings: Boolean by BooleanSetting("Show Warp Settings", default = true)
+    private val guessColor: Color by ColorSetting("Guess Color", default = Color.WHITE, allowAlpha = true, description = "Color of the guess text")
+    private val tracer: Boolean by BooleanSetting("Tracer", default = false, description = "Draws a line from your position to the guess")
+    private val tracerWidth: Int by NumberSetting("Tracer Width", default = 5, min = 1, max = 20).withDependency { tracer }
+    private val tracerColor: Color by ColorSetting("Tracer Line Color", default = Color.WHITE, allowAlpha = true, description = "Color of the tracer line").withDependency { tracer }
+    private val sendInqMsg: Boolean by BooleanSetting("Send Inq Msg", default = true, description = "Sends a message to the party when you dig out an inquisitor")
+    private val showWarpSettings: Boolean by BooleanSetting("Show Warp Settings", default = true, description = "Shows the warp settings")
     private val castle: Boolean by BooleanSetting("Castle Warp").withDependency { showWarpSettings }
     private val crypt: Boolean by BooleanSetting("Crypt Warp").withDependency { showWarpSettings }
     private val darkAuction: Boolean by BooleanSetting("DA Warp").withDependency { showWarpSettings }

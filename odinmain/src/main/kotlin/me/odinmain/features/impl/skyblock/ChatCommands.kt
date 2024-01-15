@@ -153,7 +153,7 @@ object ChatCommands : Module(
 
             "dt" -> if (dt && channel == "party") {
                 var reason = "No reason given"
-                if (message.substringAfter("dt ") != message)
+                if (message.substringAfter("dt ") != message && !message.substringAfter("dt ").contains("!dt"))
                     reason = message.substringAfter("dt ")
 
                 dtReason.add(Pair(name, reason))
@@ -183,7 +183,7 @@ object ChatCommands : Module(
         GlobalScope.launch{
             delay(2500)
             PlayerUtils.alert("§cPlayers need DT")
-            partyMessage("Players need DT: ${dtReason.joinToString(separator = ", ") { (name, reason) ->
+            modMessage("Players need DT: ${dtReason.joinToString(separator = ", ") { (name, reason) ->
                 "$name: $reason" }}")
             dtPlayer = null
             dtReason.clear()

@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.render
 
+import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -25,11 +26,12 @@ object ClickedChests : Module(
     tag = TagType.NEW
 ) {
     private val color: Color by ColorSetting("Color", Color.ORANGE.withAlpha(.4f), allowAlpha = true, description = "The color of the box.")
-    private val style: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline"), description = "Whether or not the box should be filled.")
+    private val lockedColor: Color by ColorSetting("Locked Color", Color.RED.withAlpha(.4f), allowAlpha = true, description = "The color of the box when the chest is locked.")
+    private val style: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.")
     private val phase: Boolean by BooleanSetting("Phase", true, description = "Boxes show through walls.")
     private val timeToStay: Long by NumberSetting("Time To Stay (seconds)", 7L, 1L, 60L, 1L, description = "The time the chests should remain highlighted.")
 
-    private data class Chest(val pos: BlockPos, val timeAdded: Long)
+    private data class Chest(val pos: BlockPos, val timeAdded: Long, var Locked: Boolean = false)
     private val chests = mutableListOf<Chest>()
 
 
@@ -38,6 +40,7 @@ object ClickedChests : Module(
         if (!DungeonUtils.inDungeons || event.pos == null) return
 
         if (DungeonUtils.isSecret(mc.theWorld?.getBlockState(event.pos) ?: return, event.pos) || event.action != RIGHT_CLICK_BLOCK)
+            if (chests.any { it.pos == event.pos }) return
             chests.add(Chest(event.pos, System.currentTimeMillis()))
     }
 
@@ -51,16 +54,21 @@ object ClickedChests : Module(
                 val x = it.pos.x + .0625
                 val y = it.pos.y.toDouble()
                 val z = it.pos.z + .0625
-                RenderUtils.drawFilledBox(AABB(x, y, z, x + .875, y + 0.875, z + 0.875), color, phase)
-            } else {
+                RenderUtils.drawFilledBox(AABB(x, y, z, x + .875, y + 0.875, z + 0.875), if (it.Locked) lockedColor else color, phase)
+            } else if (style == 1){
                 RenderUtils.drawCustomBox(
                     it.pos.x + .0625, .875,
                     it.pos.y.toDouble(), .875,
                     it.pos.z + .0625, .875,
-                    color,
+                    if (it.Locked) lockedColor else color,
                     3f,
                     phase
                 )
+            } else if (style == 2) {
+                val x = it.pos.x + .0625
+                val y = it.pos.y.toDouble()
+                val z = it.pos.z + .0625
+                RenderUtils.drawBoxWithOutline(AABB(x, y, z, x + .875, y + 0.875, z + 0.875), if (it.Locked) lockedColor else color, phase)
             }
         }
     }
@@ -68,5 +76,12 @@ object ClickedChests : Module(
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
         chests.clear()
+    }
+
+    fun onChat(event: ChatPacketEvent) {
+        if (!event.message.contains("This chest is locked")) return
+        if (chests.isEmpty()) return
+
+        chests.forEach { if (it.pos == mc.objectMouseOver.blockPos) it.Locked = true }
     }
 }

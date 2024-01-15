@@ -21,7 +21,7 @@ object TeammatesHighlight : Module(
     category = Category.DUNGEON,
     description = "Enhances visibility of your dungeon teammates and their name tags."
 ) {
-    private val thickness: Float by NumberSetting("Line Width", 2f, 1.0, 8.0, 0.5)
+    private val thickness: Float by NumberSetting("Line Width", 4f, 1.0, 10.0, 0.5)
     private val whenVisible: Boolean by BooleanSetting("When Visible", true, description = "Highlights teammates only when they are visible.")
     private val inBoss: Boolean by BooleanSetting("In Boss", true, description = "Highlights teammates in boss rooms.")
     private val outline: Boolean by BooleanSetting("Outline", true, description = "Highlights teammates with an outline.")

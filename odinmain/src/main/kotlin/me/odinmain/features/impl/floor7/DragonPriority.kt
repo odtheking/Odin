@@ -7,6 +7,7 @@ import me.odinmain.features.impl.floor7.WitherDragons.configPower
 import me.odinmain.features.impl.floor7.WitherDragons.configSoloDebuff
 import me.odinmain.features.impl.floor7.WitherDragons.dragPrioSpawnToggle
 import me.odinmain.features.impl.floor7.WitherDragons.paulBuff
+import me.odinmain.features.impl.floor7.WitherDragons.soloDebuffOnAll
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -16,55 +17,47 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils.Classes
 object DragonPriority {
 
     var firstDragonsSpawned = false
-    private val spawningDragons = ArrayList<WitherDragonsEnum>()
 
     fun dragPrioSpawn() {
         if (!dragPrioSpawnToggle || firstDragonsSpawned) return
 
-        WitherDragonsEnum.entries.forEach { dragon ->
-            if (dragon.spawnTime() > 0) spawningDragons.add(dragon)
-        }
+
         //modMessage("§7Dragons spawning: §d${spawningDragons.size}§7.")
-        //modMessage(WitherDragonsEnum.entries.filter { it.spawnTime() > 0 }.size)
+        val spawningDragons = WitherDragonsEnum.entries.filter { it.spawning }.toMutableList()
+
         if (spawningDragons.size != 1) return
 
-        PlayerUtils.alert(sortPrio(spawningDragons.map { it.name }.toMutableList()), true)
+        val dragon = sortPrio(spawningDragons)
+
+        PlayerUtils.alert("${dragon.colorCode} ${dragon.name}")
         firstDragonsSpawned = true
-        spawningDragons.clear()
     }
 
-    private fun sortPrio(spawningDragons: MutableList<String>): String {
+    private fun sortPrio(spawningDragon: MutableList<WitherDragonsEnum>): WitherDragonsEnum {
         var totalPower = BlessingDisplay.Blessings.POWER.current * if (paulBuff) 1.25 else 1.0
         if (BlessingDisplay.Blessings.TIME.current > 0) totalPower += 2.5
-        val playerClass = DungeonUtils.teammates.find { it.name == mc.thePlayer.name }?.clazz ?: return "Failed to find player's class!"
+        val playerClass = DungeonUtils.teammates.find { it.name == mc.thePlayer.name }?.clazz ?: return spawningDragon[0]
 
-        val dragonTexts = WitherDragonsEnum.entries.associateBy({ it.name }, { it.textPos })
+        val prioList: List<Char> =
+            if (totalPower >= configPower || (spawningDragon.any { it == WitherDragonsEnum.Purple } && totalPower >= configEasyPower)) {
+                if (playerClass.equalsOneOf(Classes.Berserk, Classes.Mage)) "ogrbp".toList() else "pbrgo".toList()
+            } else "robpg".toList()
 
-        val prioList = if (totalPower >= configPower || (spawningDragons.contains("p") && totalPower >= configEasyPower)) {
-            if (playerClass.equalsOneOf(Classes.Berserk, Classes.Mage)) {
-                ArrayList(dragonTexts.keys)
-            } else {
-                ArrayList(dragonTexts.keys.reversed())
-            }
-        } else {
-            "robpg".split("").toMutableList()
-        }
-
-        spawningDragons.sortByDescending { prioList.indexOf(it) }
+        spawningDragon.sortByDescending { prioList.indexOf(it.firstLetter) }
 
         if (totalPower >= configEasyPower) {
             if (configSoloDebuff.toInt() == 1) {
-                if (playerClass == Classes.Tank && spawningDragons.contains("p")) {
-                    spawningDragons.sortWith(compareByDescending { prioList.indexOf(it) })
+                if ((playerClass == Classes.Tank && spawningDragon.any { it == WitherDragonsEnum.Purple }) || soloDebuffOnAll) {
+                    spawningDragon.sortByDescending { prioList.indexOf(it.firstLetter) }
                 }
 
             } else {
-                if (playerClass == Classes.Healer && spawningDragons.contains("p")) {
-                    spawningDragons.sortWith(compareByDescending { prioList.indexOf(it) })
+                if ((playerClass == Classes.Healer && spawningDragon.any { it == WitherDragonsEnum.Purple }) || soloDebuffOnAll) {
+                    spawningDragon.sortByDescending { prioList.indexOf(it.firstLetter) }
                 }
             }
         }
 
-        return spawningDragons.firstOrNull() ?: ""
+        return spawningDragon[0]
     }
 }

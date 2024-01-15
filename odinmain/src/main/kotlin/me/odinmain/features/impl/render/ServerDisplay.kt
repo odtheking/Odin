@@ -18,18 +18,18 @@ object ServerDisplay : Module(
 ) {
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {
-            textWithControlCodes("§6Ping §a60ms", 1f, 9f, 16f, Fonts.REGULAR)
-            textWithControlCodes("§3TPS §a20.0", 1f, 26f, 16f, Fonts.REGULAR)
+            textWithControlCodes("§6Ping: §a60ms", 1f, 9f, 16f, Fonts.REGULAR)
+            textWithControlCodes("§3TPS: §a20.0", 1f, 26f, 16f, Fonts.REGULAR)
             max(
-                getTextWidth("Ping 60ms", 16f, Fonts.REGULAR),
-                getTextWidth("TPS 20.0", 16f, Fonts.REGULAR)
+                getTextWidth("Ping: 60ms", 16f, Fonts.REGULAR),
+                getTextWidth("TPS: 20.0", 16f, Fonts.REGULAR)
             ) + 2f to 33f
         } else {
-            textWithControlCodes("§6Ping §a${colorizePing(ServerUtils.averagePing.toInt())}ms", 1f, 9f, 16f, Fonts.REGULAR)
-            textWithControlCodes("§3TPS §a${colorizeTps(ServerUtils.averageTps.round(1))}", 1f, 26f, 16f, Fonts.REGULAR)
+            textWithControlCodes("§6Ping: §a${colorizePing(ServerUtils.averagePing.toInt())}ms", 1f, 9f, 16f, Fonts.REGULAR)
+            textWithControlCodes("§3TPS: §a${colorizeTps(ServerUtils.averageTps.round(1))}", 1f, 26f, 16f, Fonts.REGULAR)
             max(
-                getTextWidth("§ePing ${colorizePing(ServerUtils.averagePing.toInt())}ms", 16f, Fonts.REGULAR),
-                getTextWidth("§ePing ${colorizePing(ServerUtils.averagePing.toInt())}ms", 16f, Fonts.REGULAR)
+                getTextWidth("§ePing: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 16f, Fonts.REGULAR),
+                getTextWidth("§ePing: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 16f, Fonts.REGULAR)
             ) + 2f to 33f
         }
     }

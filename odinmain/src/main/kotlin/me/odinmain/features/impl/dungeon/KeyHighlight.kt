@@ -22,7 +22,6 @@ object KeyHighlight : Module(
 ) {
     private var currentKey: Pair<Color, Entity>? = null
     private val thickness: Float by NumberSetting("Thickness", 5f, 3f, 20f, .1f)
-    private val renderThrough: Boolean get() = !OdinMain.onLegitVersion
 
     @SubscribeEvent
     fun postMetadata(event: PostEntityMetadata) {
@@ -52,7 +51,7 @@ object KeyHighlight : Module(
             pos.zCoord - 0.5, 1.0,
             color,
             thickness,
-            renderThrough
+            !OdinMain.onLegitVersion
         )
     }
 

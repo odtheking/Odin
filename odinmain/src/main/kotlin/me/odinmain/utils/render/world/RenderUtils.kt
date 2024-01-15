@@ -13,7 +13,6 @@ import net.minecraft.util.*
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.opengl.GL11
-import org.lwjgl.opengl.GL11.GL_QUADS
 import org.lwjgl.util.glu.Cylinder
 import org.lwjgl.util.glu.GLU
 import java.awt.image.BufferedImage
@@ -120,6 +119,23 @@ object RenderUtils {
             phase
         )
     }
+
+    fun drawBoxWithOutline(aabb: AxisAlignedBB, color: Color, phase: Boolean, thickness: Float = 3f) {
+        drawCustomBox(
+            aabb.minX, aabb.maxX - aabb.minX,
+            aabb.minY, aabb.maxY - aabb.minY,
+            aabb.minZ, aabb.maxZ - aabb.minZ,
+            color,
+            thickness,
+            phase
+        )
+        drawFilledBox(
+            aabb,
+            color,
+            phase
+        )
+    }
+
 
     /**
      * Draws a custom box in the 3D world space.
@@ -551,14 +567,6 @@ object RenderUtils {
         if (!depthCheck) GlStateManager.enableDepth()
     }
 
-    private fun drawModel(x: Int, y: Int, width: Int, height: Int) {
-        worldRenderer.begin(GL_QUADS, DefaultVertexFormats.POSITION_TEX)
-        worldRenderer.pos(x.toDouble(), (y + height).toDouble(), 0.0).tex(0.0, 1.0).endVertex()
-        worldRenderer.pos((x + width).toDouble(), (y + height).toDouble(), 0.0).tex(1.0, 1.0).endVertex()
-        worldRenderer.pos((x + width).toDouble(), y.toDouble(), 0.0).tex(1.0, 0.0).endVertex()
-        worldRenderer.pos(x.toDouble(), y.toDouble(), 0.0).tex(0.0, 0.0).endVertex()
-        tessellator.draw()
-    }
 
     private fun getRenderPos(vec: Vec3): Vec3 {
         val renderPosX = mc.renderManager.viewerPosX
@@ -622,134 +630,5 @@ object RenderUtils {
             ?: return BufferedImage(8, 8, BufferedImage.TYPE_INT_ARGB) // poor fix for debug mode
         return ImageIO.read(resource)
     }
-
-    fun drawRoundedRect(x: Double, y: Double, x2: Double, y2: Double, radius: Double, color: Color) {
-        var x = x
-        var y = y
-        var x2 = x2
-        var y2 = y2
-        GlStateManager.disableTexture2D()
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        GL11.glPushAttrib(0)
-        GL11.glScaled(0.25, 0.25, 0.25)
-        x *= 2.0
-        y *= 2.0
-        x2 *= 2.0
-        y2 *= 2.0
-        GL11.glDisable(3553)
-        GlStateManager.color(color.r / 255f, color.g / 255f, color.b / 255f, color.alpha)
-        GL11.glEnable(2848)
-        GL11.glBegin(9)
-        run {
-            var i = 0
-            while (i <= 90) {
-                GL11.glVertex2d(
-                    x + radius + sin(i * 3.141592653589793 / 180.0) * (radius * -1.0),
-                    y + radius + cos(i * 3.141592653589793 / 180.0) * (radius * -1.0)
-                )
-                i += 3
-            }
-        }
-        run {
-            var i = 90
-            while (i <= 180) {
-                GL11.glVertex2d(
-                    x + radius + sin(i * 3.141592653589793 / 180.0) * (radius * -1.0),
-                    y2 - radius + cos(i * 3.141592653589793 / 180.0) * (radius * -1.0)
-                )
-                i += 3
-            }
-        }
-        run {
-            var i = 0
-            while (i <= 90) {
-                GL11.glVertex2d(
-                    x2 - radius + sin(i * 3.141592653589793 / 180.0) * radius,
-                    y2 - radius + cos(i * 3.141592653589793 / 180.0) * radius
-                )
-                i += 3
-            }
-        }
-        var i = 90
-        while (i <= 180) {
-            GL11.glVertex2d(
-                x2 - radius + sin(i * 3.141592653589793 / 180.0) * radius,
-                y + radius + cos(i * 3.141592653589793 / 180.0) * radius
-            )
-            i += 3
-        }
-        GL11.glEnd()
-        GL11.glEnable(3553)
-        GL11.glDisable(2848)
-        GL11.glScaled(4.0, 4.0, 4.0)
-        GL11.glPopAttrib()
-        GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
-        GlStateManager.enableTexture2D()
-    }
-
-    fun drawRoundedRect2(x: Double, y: Double, width: Double, height: Double, radius: Double, color: Color) {
-        var x = x
-        var y = y
-        GlStateManager.disableTexture2D()
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        var x2 = x + width
-        var y2 = y + height
-        GL11.glPushAttrib(0)
-        GL11.glScaled(0.25, 0.25, 0.25)
-        x *= 2.0
-        y *= 2.0
-        x2 *= 2.0
-        y2 *= 2.0
-        GL11.glDisable(3553)
-        GlStateManager.color(color.r / 255f, color.g / 255f, color.b / 255f, color.alpha)
-        GL11.glEnable(2848)
-        GL11.glBegin(9)
-        run {
-            var i = 0
-            while (i <= 90) {
-                GL11.glVertex2d(
-                    x + radius + sin(i * 3.141592653589793 / 180.0) * (radius * -1.0),
-                    y + radius + cos(i * 3.141592653589793 / 180.0) * (radius * -1.0)
-                )
-                i += 3
-            }
-        }
-        run {
-            var i = 90
-            while (i <= 180) {
-                GL11.glVertex2d(
-                    x + radius + sin(i * 3.141592653589793 / 180.0) * (radius * -1.0),
-                    y2 - radius + cos(i * 3.141592653589793 / 180.0) * (radius * -1.0)
-                )
-                i += 3
-            }
-        }
-        run {
-            var i = 0
-            while (i <= 90) {
-                GL11.glVertex2d(
-                    x2 - radius + sin(i * 3.141592653589793 / 180.0) * radius,
-                    y2 - radius + cos(i * 3.141592653589793 / 180.0) * radius
-                )
-                i += 3
-            }
-        }
-        var i = 90
-        while (i <= 180) {
-            GL11.glVertex2d(
-                x2 - radius + sin(i * 3.141592653589793 / 180.0) * radius,
-                y + radius + cos(i * 3.141592653589793 / 180.0) * radius
-            )
-            i += 3
-        }
-        GL11.glEnd()
-        GL11.glEnable(3553)
-        GL11.glDisable(2848)
-        GL11.glScaled(4.0, 4.0, 4.0)
-        GL11.glPopAttrib()
-        GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
-        GlStateManager.enableTexture2D()
-    }
-
 
 }

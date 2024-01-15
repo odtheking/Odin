@@ -37,7 +37,7 @@ object GuiUtils {
 
 
 
-    @Deprecated("Use NVG.scissor")
+    @Deprecated("Use Render.scissor")
     inline fun VG.scissor(x: Float, y: Float, width: Float, height: Float, action: () -> Unit) {
         val scissor = ScissorHelper.INSTANCE.scissor(instance, x, y, width, height)
         action()
@@ -47,7 +47,7 @@ object GuiUtils {
     @Deprecated("Use drawNVG")
     fun VG.nanoVG(block: VG.() -> Unit) = nanoVG(this.instance, block)
 
-    @Deprecated("Use NVG.text instead")
+    @Deprecated("Use Render.text instead")
     fun VG.drawCustomCenteredText(string: String, x: Float, y: Float, size: Float, font: Font, color: Int = ColorUtil.textColor.rgba) {
         val textWidth = (x - getTextWidth(string, size, Fonts.MEDIUM) / 2f)
         drawText(string, textWidth, y, color, size, font)

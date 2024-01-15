@@ -1,28 +1,18 @@
-package me.odinmain.features.impl.floor7
+package me.odinmain.features.impl.dungeon
 
+import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.ChatPacketEvent
-import me.odinmain.events.impl.DrawSlotEvent
-import me.odinmain.features.Category
-import me.odinmain.features.Module
+import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.equal
 import me.odinmain.utils.noControlCodes
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import net.minecraft.client.gui.Gui
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
-import net.minecraftforge.event.world.WorldEvent
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
-object LeapHelper : Module(
-    name = "Leap Helper",
-    description = "Shows which player is the most practical to leap to in the M7 boss-fight.",
-    category = Category.FLOOR7,
-    tag = TagType.NEW
-) {
+object LeapHelper {
     private val NONE = Vec3(0.0, 0.0, 0.0)
     private val messageMap = mapOf(
         "" to NONE,
@@ -34,14 +24,16 @@ object LeapHelper : Module(
         "[BOSS] Necron: Let's make some space!" to Vec3(54.0, 4.0, 95.0)
     )
     private var currentPos = NONE
-    private var closestPlayer = ""
 
-    @SubscribeEvent
-    fun onTick(event: ClientTickEvent) {
+    private var leapHelperClear = ""
+    var leapHelperBoss = ""
+    var leapHelper: String = if (DungeonUtils.inBoss) leapHelperClear else leapHelperBoss
+
+    fun getPlayer(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.END || DungeonUtils.teammates.isEmpty()) return
         if (DungeonUtils.getPhase() == 3) scanGates()
         if (currentPos == NONE) return
-        closestPlayer = DungeonUtils.teammates
+        leapHelperBoss = DungeonUtils.teammates
             .filter {
                 it.entity != null && it.entity != mc.thePlayer &&
                         if (currentPos.equal(Vec3(54.0, 4.0, 95.0))) it.entity.positionVector.yCoord < 54.0 else true // To make sure the player is underneath necron's platform
@@ -66,24 +58,24 @@ object LeapHelper : Module(
         }
     }
 
-    @SubscribeEvent
-    fun onChatPacket(event: ChatPacketEvent) {
+    fun worldLoad() {
+        currentPos = NONE
+        leapHelperBoss = ""
+        leapHelperClear = ""
+    }
+
+    private val keyRegex = Regex("(?:\\[(?:\\w+)] )?(\\w+) opened a (?:WITHER|Blood) door!")
+    private val leapHelperClock = Clock(LeapMenu.delay * 1000L)
+
+    fun leapHelperClearChatEvent(event: ChatPacketEvent) {
+        if(leapHelperClock.hasTimePassed()) leapHelperClear = ""
+        leapHelperClear = keyRegex.find(event.message)?.groupValues?.get(1) ?: return
+        leapHelperClock.update()
+    }
+
+    fun leapHelperBossChatEvent(event: ChatPacketEvent) {
         if (event.message !in messageMap) return
         currentPos = messageMap[event.message] ?: NONE
-        closestPlayer = ""
-    }
-
-    @SubscribeEvent
-    fun onRenderSlot(event: DrawSlotEvent) {
-        if (closestPlayer == "") return
-        if (!DungeonUtils.inDungeons || event.slot.inventory?.name != "Spirit Leap") return
-        if (event.slot.stack?.displayName.noControlCodes != closestPlayer) return
-        Gui.drawRect(event.slot.xDisplayPosition, event.slot.yDisplayPosition, event.slot.xDisplayPosition + 16, event.slot.yDisplayPosition + 16, Color.RED.rgba)
-    }
-
-    @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Load) {
-        currentPos = NONE
-        closestPlayer = ""
+        leapHelperBoss = ""
     }
 }

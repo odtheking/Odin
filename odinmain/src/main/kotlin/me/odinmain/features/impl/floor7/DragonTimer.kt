@@ -11,17 +11,12 @@ object DragonTimer {
         toRender = ArrayList()
 
         WitherDragonsEnum.entries.forEachIndexed { index, dragon ->
-            if (dragon.particleSpawnTime == 0L || !dragon.alive) return@forEachIndexed
+            if (dragon.particleSpawnTime == 0L || !dragon.statueAlive) return@forEachIndexed
 
             when {
-                dragon.spawnTime() > 0 -> {
-                    toRender.add(
-                        Triple(
-                            "§${dragon.colorCode}${dragon} spawning in ${colorTime(dragon.spawnTime())}${dragon.spawnTime()} ms",
-                            index,
-                            dragon
-                        )
-                    )
+                dragon.spawning -> {
+                    toRender.add(Triple(
+                        "§${dragon.colorCode}${dragon} spawn: ${colorTime(dragon.spawnTime())} ms", index, dragon))
                 }
                 else -> dragon.particleSpawnTime = 0L
             }
@@ -33,20 +28,20 @@ object DragonTimer {
         toRender.forEach {
             RenderUtils.drawStringInWorld(
                 it.first,
-                it.third.textPos,
+                it.third.spawnPos,
                 depthTest = false,
-                increase = true,
-                renderBlackBox = true,
-                scale = textScale
+                increase = false,
+                renderBlackBox = false,
+                scale = textScale / 5
             )
         }
     }
 
     private fun colorTime(spawnTime: Long): String {
         return when {
-            spawnTime <= 1000 -> "§c"
-            spawnTime <= 3000 -> "§e"
-            else -> "§a"
+            spawnTime <= 1000 -> "§c$spawnTime"
+            spawnTime <= 3000 -> "§e$spawnTime"
+            else -> "§a$spawnTime"
         }
     }
 }

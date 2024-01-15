@@ -20,8 +20,7 @@ import net.minecraftforge.common.MinecraftForge
 
 object DevCommand : Commodore {
 
-    var devMode = false // add more usage maybe?
-        get() = field || isDev
+    var devMode = isDev // add more usage maybe?
 
     override val command: CommandNode =
         literal("oddev") {
@@ -70,9 +69,9 @@ object DevCommand : Commodore {
             }
 
             literal("getteammates").runs {
-                modMessage("Teammates: ${DungeonUtils.teammates}")
-                modMessage("TeammatesNoSelf: ${DungeonUtils.teammatesNoSelf}")
-                modMessage("LeapTeammates: ${DungeonUtils.leapTeammates}")
+                modMessage("Teammates: ${DungeonUtils.teammates.map { it.name }}")
+                modMessage("TeammatesNoSelf: ${DungeonUtils.teammatesNoSelf.map { it.name }}")
+                modMessage("LeapTeammates: ${DungeonUtils.leapTeammates.map { it.name }}")
             }
 
             literal("simulate").runs { str: GreedyString ->

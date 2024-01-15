@@ -69,7 +69,9 @@ object TerracottaTimer : Module(
 
     fun onChat(event: ChatPacketEvent) {
         if (!event.message.startsWith("[BOSS] Sadan: ENOUGH!")) return
-        terrasSpawning.clear()
+        terrasSpawning.removeAll {
+            it.time > 0
+        }
     }
 
 }

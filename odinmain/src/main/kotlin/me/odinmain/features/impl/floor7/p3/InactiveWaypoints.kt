@@ -35,7 +35,9 @@ object InactiveWaypoints : Module(
     init {
         execute(1000) {
             if (!enabled) return@execute
-            inactiveList = mc.theWorld?.loadedEntityList?.filter { it is EntityArmorStand && it.name.noControlCodes.contains("Inactive", true) || it.name.noControlCodes.contains("Not Activated", true) } ?: emptyList()
+            inactiveList = mc.theWorld?.loadedEntityList?.filter { it is EntityArmorStand &&
+                    (it.name.noControlCodes.contains("Inactive", true) ||
+                    it.name.noControlCodes.contains("Not Activated", true)) } ?: emptyList()
         }
     }
 
@@ -46,10 +48,7 @@ object InactiveWaypoints : Module(
             if ((name == "Inactive Terminal" && showTerminals) || (name == "Inactive" && showDevices) || (name == "Not Activated" && showLevers)) {
                 name = if (name == "Inactive Terminal") "Terminal" else if (name == "Inactive") "Device" else "Lever"
                 when (renderMode) {
-                    0 -> {
-                        RenderUtils.drawFilledBox(it.renderBoundingBox, Color(color.r, color.g, color.b, color.alpha), phase = true)
-                        RenderUtils.drawCustomBox(it.renderBoundingBox, Color(color.r, color.g, color.b), 2f, phase = true)
-                    }
+                    0 -> RenderUtils.drawBoxWithOutline(it.renderBoundingBox, Color(color.r, color.g, color.b, color.alpha), true, 2f)
                     1 -> RenderUtils.drawCustomBox(it.renderBoundingBox, Color(color.r, color.g, color.b), 2f, phase = true)
                     2 -> RenderUtils.drawFilledBox(it.renderBoundingBox, Color(color.r, color.g, color.b, color.alpha), phase = true)
                 }

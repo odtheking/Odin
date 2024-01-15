@@ -1,16 +1,11 @@
 package me.odinmain.features.impl.floor7
 
-import kotlinx.coroutines.launch
-import me.odinmain.OdinMain.scope
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.impl.floor7.WitherDragons.sendNotif
+import me.odinmain.features.impl.floor7.WitherDragons.sendSpawned
 import me.odinmain.features.impl.floor7.WitherDragons.sendTime
 import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.round
-import me.odinmain.utils.sendDataToServer
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.modMessage
-import me.odinmain.utils.toVec3
 import net.minecraft.entity.boss.EntityDragon
 import net.minecraft.util.Vec3
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
@@ -18,39 +13,37 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent
 
 object DragonDeathCheck {
 
-    var dragonMap: Map<Int, WitherDragonsEnum> = HashMap()
-    var deadDragonMap: Map<Vec3, WitherDragonsEnum> = HashMap()
-
+    var lastDragonDeath = ""
 
     fun dragonJoinWorld(event: EntityJoinWorldEvent) {
         if (event.entity !is EntityDragon) return
-
-        val color = WitherDragonsEnum.entries.find { color -> event.entity.positionVector.dragonCheck(color.pos.toVec3()) } ?: return
-
-        dragonMap = dragonMap.plus(Pair(event.entity.entityId, color))
+        val dragon = WitherDragonsEnum.entries.find { dragon -> event.entity.positionVector.dragonCheck(dragon.spawnPos) } ?: return
+        dragon.spawning = false
+        dragon.dragonAlive = true
+        dragon.timesSpawned += 1
+        dragon.entityID = event.entity.entityId
+        if (sendSpawned) modMessage("§${dragon.colorCode}${dragon.name} §fdragon spawned. This is the §${dragon.colorCode}${dragon.timesSpawned}§f time it has spawned.")
     }
-
 
     fun dragonLeaveWorld(event: LivingDeathEvent) {
         if (event.entity !is EntityDragon) return
-        val color = dragonMap[event.entity.entityId] ?: return
+        val dragon = WitherDragonsEnum.entries.find {it.entityID == event.entity.entityId} ?: return
 
-        deadDragonMap = deadDragonMap.plus(Pair(Vec3(event.entity.posX.round(1), event.entity.posY.round(1), event.entity.posZ.round(1)), color))
+        WitherDragonsEnum.entries.find{ it.name == dragon.name }!!.lastDeathLocation = event.entity.position
 
         if (sendTime) {
-            val dragon = WitherDragonsEnum.entries.find { color.name == it.name } ?: return
-            val oldPB = dragon.setting.value
+            val oldPB = dragon.dragonKillPBs.value
             val killTime = event.entity.ticksExisted / 20.0
-            if (killTime < oldPB)
-                dragon.setting.value = killTime
-            modMessage("§${dragon.colorCode}$color §fdragon was alive for ${printSecondsWithColor(killTime, 3.5, 7.5, down = false)}${if (killTime < oldPB) " §7(§dNew PB§7)" else ""}.")
+            if (dragon.dragonKillPBs.value < event.entity.ticksExisted / 20.0) dragon.dragonKillPBs.value = killTime
+
+            modMessage("§${dragon.colorCode}${dragon.name} §fdragon was alive for ${printSecondsWithColor(killTime, 3.5, 7.5, down = false)}${if (killTime < oldPB) " §7(§dNew PB§7)" else ""}.")
         }
-        dragonMap = dragonMap.minus(event.entity.entityId)
+        WitherDragonsEnum.entries.find{ dragon.name == it.name }?.dragonAlive = false
+        lastDragonDeath = dragon.name
     }
 
     fun onChatPacket(event: ChatPacketEvent) {
         if (
-            !DungeonUtils.inDungeons ||
             !event.message.equalsOneOf(
                 "[BOSS] Wither King: Oh, this one hurts!",
                 "[BOSS] Wither King: I have more of those",
@@ -58,16 +51,9 @@ object DragonDeathCheck {
             )
         ) return
 
-        val (vec, color) = deadDragonMap.entries.firstOrNull() ?: return
-        deadDragonMap = deadDragonMap.minus(deadDragonMap.keys.first())
+        val dragon = WitherDragonsEnum.entries.find { lastDragonDeath == it.name } ?: return
 
-        if (sendNotif) modMessage("§${WitherDragonsEnum.entries.find { color.name == it.name }?.colorCode}$color dragon counts.")
-
-        if (color == WitherDragonsEnum.Purple) return
-
-        scope.launch {
-            sendDataToServer("""{"dd": "$color\nx: ${vec.xCoord}\ny: ${vec.yCoord}\nz: ${vec.zCoord}"}""")
-        }
+        if (sendNotif) modMessage("§${dragon.colorCode}${dragon.name} dragon counts.")
     }
 
     private fun Vec3.dragonCheck(vec3: Vec3): Boolean {

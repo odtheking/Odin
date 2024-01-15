@@ -48,6 +48,8 @@ object DungeonUtils {
 
 
     private const val WITHER_ESSENCE_ID = "26bb1a8d-7c66-31c6-82d5-a9c04c94fb02"
+    private const val REDSTONE_KEY = "edb0155f-379c-395a-9c7d-1b6005987ac8"
+
     private const val ROOM_SIZE = 32
     private const val START_X = -185
     private const val START_Z = -185
@@ -206,7 +208,7 @@ object DungeonUtils {
         val code: String,
         val color: Color,
         val defaultQuandrant: Int,
-        val prio: Int
+        var prio: Int
     ) {
         /**
          * Archer class with formatting code "§6" (gold) and orange color.
@@ -233,7 +235,19 @@ object DungeonUtils {
          */
         Tank("§2", Color.DARK_GREEN, 3, 1),
 
-        DEAD("§4", Color.DARK_RED, 3, -1)
+        /**
+         * Dead class with formatting code "§4" (dark red) and dark red color.
+         */
+        DEAD("§4", Color.DARK_RED, 3, -1);
+
+
+        companion object {
+            fun setPriority(classToSetAsTwo: Classes) {
+                entries.forEach {
+                    it.prio = if (it == classToSetAsTwo) 0 else 1
+                }
+            }
+        }
     }
 
     /**
@@ -259,6 +273,7 @@ object DungeonUtils {
     init {
         Executor(1000) {
             if (inDungeons) {
+
                 teammates = getDungeonTeammates()
                 teammatesNoSelf = teammates.filter { it.name != mc.thePlayer.name }
                 leapTeammates =
@@ -267,6 +282,9 @@ object DungeonUtils {
                     1 -> teammatesNoSelf.sortedBy { it.name }.toMutableList()
                     else -> odinSorting(teammatesNoSelf.sortedBy { it.clazz.prio }).toMutableList()
                 }
+
+                Classes.entries.find { (it.name == arrayListOf("Archer", "Berserker", "Healer", "Mage", "Tank")[LeapMenu.priority]) }
+                    ?.let { it1 -> Classes.setPriority(it1) }
             }
         }.register()
     }
@@ -367,7 +385,7 @@ object DungeonUtils {
             // Check if the block is a player skull with a specific player profile ID
             val tile = mc.theWorld.getTileEntity(pos) ?: return false
             if (tile !is TileEntitySkull) return false
-            return tile.playerProfile?.id.toString() == WITHER_ESSENCE_ID
+            return tile.playerProfile?.id.toString().equalsOneOf(WITHER_ESSENCE_ID, REDSTONE_KEY)
         }
 
         // If none of the above conditions are met, it is not a secret location

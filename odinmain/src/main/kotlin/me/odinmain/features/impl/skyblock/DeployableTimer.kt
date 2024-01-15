@@ -10,6 +10,7 @@ import me.odinmain.utils.render.gui.nvg.Fonts
 import me.odinmain.utils.render.gui.nvg.getTextWidth
 import me.odinmain.utils.render.gui.nvg.image
 import me.odinmain.utils.render.gui.nvg.textWithControlCodes
+import me.odinmain.utils.skyblock.getSkullValue
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.event.world.WorldEvent
@@ -93,18 +94,6 @@ object DeployableTimer : Module(
             currentDeployables.sortByDescending { it.priority }
             resetLines()
         }
-
-    }
-
-    private fun getSkullValue(armorStand: EntityArmorStand): String? {
-        return armorStand.inventory
-            ?.get(4)
-            ?.tagCompound
-            ?.getCompoundTag("SkullOwner")
-            ?.getCompoundTag("Properties")
-            ?.getTagList("textures", 10)
-            ?.getCompoundTagAt(0)
-            ?.getString("Value")
     }
 
     @SubscribeEvent

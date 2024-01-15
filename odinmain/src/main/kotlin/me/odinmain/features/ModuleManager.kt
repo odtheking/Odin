@@ -16,17 +16,13 @@ import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.profile
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.nvg.drawNVG
-import me.odinmain.utils.render.gui.nvg.rect
-import me.odinmain.utils.render.gui.nvg.rect2Corners
 import net.minecraft.network.Packet
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.lwjgl.opengl.GL45
 import kotlin.reflect.full.hasAnnotation
 
 /**
@@ -61,7 +57,6 @@ object ModuleManager {
         WatcherBar,
         TerminalSolver,
         TerminalTimes,
-        //LeapHelper,
         MelodyMessage,
         NecronDropTimer,
         RelicAnnouncer,
@@ -93,7 +88,6 @@ object ModuleManager {
         EscrowFix,
         //DungeonWaypoints,
         SecretChime,
-        ShareCoords,
         LeapMenu,
         PuzzleSolvers,
         ArrowHit,

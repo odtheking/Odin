@@ -5,9 +5,13 @@ import me.odinmain.events.impl.DrawGuiScreenEvent
 import me.odinmain.events.impl.GuiClickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.impl.dungeon.LeapHelper.getPlayer
+import me.odinmain.features.impl.dungeon.LeapHelper.leapHelper
+import me.odinmain.features.impl.dungeon.LeapHelper.leapHelperBossChatEvent
+import me.odinmain.features.impl.dungeon.LeapHelper.leapHelperClearChatEvent
+import me.odinmain.features.impl.dungeon.LeapHelper.worldLoad
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.name
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
@@ -21,21 +25,21 @@ import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest
+import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object LeapMenu : Module(
     name = "Leap Menu",
     description = "Renders a custom leap menu when in the Spirit Leap gui.",
     category = Category.DUNGEON
 ) {
-    val type: Int by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("A-Z Class (BetterMap)", "A-Z Name", "Odin Sorting"))
-    private val colorStyle: Boolean by DualSetting("Color Style", "Gray", "Color", default = false, description = "What Click to use")
+    val type: Int by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("A-Z Class (BetterMap)", "A-Z Name", "Odin Sorting"), description = "How to sort the leap menu.")
+    private val colorStyle: Boolean by DualSetting("Color Style", "Gray", "Color", default = false, description = "Which color style to use")
     private val leapHelperToggle: Boolean by BooleanSetting("Leap Helper", true)
     private val color: Color by ColorSetting("Leap Helper Color", default = Color.WHITE).withDependency { leapHelperToggle }
-    private val delay: Int by NumberSetting("Delay", 30, 10.0, 120.0, 1.0)
-
-    private var leapHelper: String = ""
-
+    val delay: Int by NumberSetting("Reset Leap Helper Delay", 30, 10.0, 120.0, 1.0).withDependency { leapHelperToggle }
+    val priority: Int by SelectorSetting("Leap Helper Priority", "Berserker", arrayListOf("Archer", "Berserker", "Healer", "Mage", "Tank"), description = "Which player to prioritize in the leap helper.")
     @SubscribeEvent
     fun onDrawScreen(event: DrawGuiScreenEvent) {
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
@@ -107,13 +111,19 @@ object LeapMenu : Module(
         }
     }
 
-    private val keyRegex = Regex("(?:\\[(?:\\w+)] )?(\\w+) opened a (?:WITHER|Blood) door!")
-    private val leapHelperClock = Clock(delay * 1000L)
-
     @SubscribeEvent
-    fun onChat (event: ChatPacketEvent) {
-        if(leapHelperClock.hasTimePassed()) leapHelper = ""
-        leapHelper = keyRegex.find(event.message)?.groupValues?.get(1) ?: return
-        leapHelperClock.update()
+    fun onChatPacket(event: ChatPacketEvent) {
+        leapHelperClearChatEvent(event)
+        leapHelperBossChatEvent(event)
     }
+    @SubscribeEvent
+    fun onWorldLoad(event: WorldEvent.Load) {
+        worldLoad()
+    }
+    @SubscribeEvent
+    fun onTick(event: TickEvent.ClientTickEvent) {
+        getPlayer(event)
+    }
+
+
 }
