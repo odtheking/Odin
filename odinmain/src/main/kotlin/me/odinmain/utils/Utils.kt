@@ -1,8 +1,7 @@
-@file:Suppress("NOTHING_TO_INLINE", "FunctionName", "NAME_SHADOWING")
+@file:Suppress("NOTHING_TO_INLINE", "FunctionName")
 
 package me.odinmain.utils
 
-import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.ModuleManager
 import me.odinmain.utils.skyblock.modMessage
@@ -134,98 +133,6 @@ fun <T> Collection<T>.getRandom(): T {
  */
 inline fun <T>Pair<T, T>.minBy(selector: (T) -> Number): T {
     return if (selector(this.first) <= selector(this.second)) this.first else this.second
-}
-
-/**
- * Converts the HSB color to RGB Int.
- * @author PolyUI
- */
-fun HSBtoRGB(hue: Float, saturation: Float, brightness: Float): Int {
-    var r = 0
-    var g = 0
-    var b = 0
-    if (saturation == 0f) {
-        b = (brightness * 255.0f + 0.5f).toInt()
-        g = b
-        r = g
-    } else {
-        val h = (hue - floor(hue)) * 6.0f
-        val f = h - floor(h)
-        val p = brightness * (1f - saturation)
-        val q = brightness * (1f - saturation * f)
-        val t = brightness * (1f - saturation * (1f - f))
-        when (h.toInt()) {
-            0 -> {
-                r = (brightness * 255f + 0.5f).toInt()
-                g = (t * 255f + .5f).toInt()
-                b = (p * 255f + .5f).toInt()
-            }
-
-            1 -> {
-                r = (q * 255f + .5f).toInt()
-                g = (brightness * 255.0f + .5f).toInt()
-                b = (p * 255f + .5f).toInt()
-            }
-
-            2 -> {
-                r = (p * 255f + .5f).toInt()
-                g = (brightness * 255f + .5f).toInt()
-                b = (t * 255f + .5f).toInt()
-            }
-
-            3 -> {
-                r = (p * 255f + .5f).toInt()
-                g = (q * 255f + .5f).toInt()
-                b = (brightness * 255f + .5f).toInt()
-            }
-
-            4 -> {
-                r = (t * 255f + .5f).toInt()
-                g = (p * 255f + .5f).toInt()
-                b = (brightness * 255f + .5f).toInt()
-            }
-
-            5 -> {
-                r = (brightness * 255f + .5f).toInt()
-                g = (p * 255f + .5f).toInt()
-                b = (q * 255f + .5f).toInt()
-            }
-        }
-    }
-    return -0x1000000 or (r shl 16) or (g shl 8) or (b shl 0)
-}
-
-/**
- * Taken from PolyUI
- */
-fun RGBtoHSB(r: Int, g: Int, b: Int, out: FloatArray? = null): FloatArray {
-    var hue: Float
-    val saturation: Float
-    val brightness: Float
-
-    val out = out ?: FloatArray(3)
-
-    var cmax = if (r > g) r else g
-    if (b > cmax) cmax = b
-    var cmin = if (r < g) r else g
-    if (b < cmin) cmin = b
-
-    brightness = cmax.toFloat() / 255f
-    saturation = if (cmax != 0) (cmax - cmin).toFloat() / cmax.toFloat() else 0f
-    if (saturation == 0f) {
-        hue = 0f
-    } else {
-        val redc = (cmax - r).toFloat() / (cmax - cmin).toFloat()
-        val greenc = (cmax - g).toFloat() / (cmax - cmin).toFloat()
-        val bluec = (cmax - b).toFloat() / (cmax - cmin).toFloat()
-        hue = if (r == cmax) bluec - greenc else if (g == cmax) 2f + redc - bluec else 4f + greenc - redc
-        hue /= 6f
-        if (hue < 0) hue += 1f
-    }
-    out[0] = hue
-    out[1] = saturation
-    out[2] = brightness
-    return out
 }
 
 /**
