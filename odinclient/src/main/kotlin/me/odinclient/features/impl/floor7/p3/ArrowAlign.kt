@@ -62,7 +62,7 @@ object ArrowAlign : Module(
     fun onRightClick(event: ClickEvent.RightClickEvent) {
         if (mc.objectMouseOver?.entityHit !is EntityItemFrame) return
         val frame = neededRotations.values.find { it.entity == mc.objectMouseOver.entityHit as EntityItemFrame } ?: return
-        if (frame.rotations == 0 && blockWrong) {
+        if (frame.rotations == 0 && blockWrong && !mc.thePlayer.isSneaking) {
             event.isCanceled = true
             return
         }
@@ -90,7 +90,7 @@ object ArrowAlign : Module(
                 clicksNeeded < 5 -> Color(255, 170, 0).rgba
                 else -> Color(170, 0, 0).rgba
             }
-            RenderUtils.drawStringInWorld(clicksNeeded.toString(), Vec3(-1.8, 124.6 - place.key.y, 79.5 - place.key.x), color, renderBlackBox = false, increase = false, scale = .02f)
+            RenderUtils.drawStringInWorld(clicksNeeded.toString(), Vec3(-1.8, 124.6 - place.key.y, 79.5 - place.key.x), color, renderBlackBox = false, increase = false, scale = .05f)
         }
     }
 

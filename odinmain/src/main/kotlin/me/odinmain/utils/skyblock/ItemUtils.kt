@@ -120,8 +120,8 @@ fun getRarity(lore: List<String>): ItemRarity? {
     return null
 }
 
-fun getSkullValue(armorStand: EntityArmorStand): String? {
-    return armorStand.inventory
+fun getSkullValue(armorStand: EntityArmorStand?): String? {
+    return armorStand?.inventory
         ?.get(4)
         ?.tagCompound
         ?.getCompoundTag("SkullOwner")

@@ -10,6 +10,9 @@ import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.WorldRenderer
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.util.ResourceLocation
+import org.lwjgl.opengl.GL11
 import java.util.*
 
 class Font(val fr: FontRenderer)
@@ -133,19 +136,25 @@ fun NVG.textWithControlCodes(text: String?, x: Float, y: Float, size: Float, fon
             i += 2
             continue
         }
-        text(char.toString(), xPos, y, color, size, font)
+        text(char.toString(), xPos, y, color, size, font, Left, TextPos.Middle)
         xPos += getTextWidth(char.toString(), size, font)
         i++
     }
     return xPos
 }
 
-fun NVG.text(text: String, x: Float, y: Float, color: Color, size: Float, font: Font, align: TextAlign = Left) {
+fun NVG.text(text: String, x: Float, y: Float, color: Color, size: Float, font: Font, align: TextAlign = Left, verticalAlign: TextPos = TextPos.Middle) {
     if (color.isTransparent) return
     val drawX = when (align) {
         Left -> x
         Right -> x - getTextWidth(text, size, font)
         Middle -> x - getTextWidth(text, size, font) / 2f
+    }
+
+    val drawY = when (verticalAlign) {
+        TextPos.Top -> y + size / 2f
+        TextPos.Middle -> getTextHeight(text, size, font) / 2f
+        TextPos.Bottom -> y - size / 2f
     }
 
     //FontRenderer(fromResource("/assets/odinmain/fonts/Roboto-Regular.ttf"))
@@ -156,17 +165,11 @@ fun NVG.text(text: String, x: Float, y: Float, color: Color, size: Float, font: 
     GlStateManager.scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
 }
 
-// Temporary
-fun NVG.text(text: String, x: Float, y: Float, color: Color, size: Float, font: Font, align: TextAlign, verticalAlign: TextPos) {
-    val drawY = when (verticalAlign) {
-        TextPos.Top -> y + size / 2f
-        TextPos.Middle -> y
-        TextPos.Bottom -> y - size / 2f
-    }
-    text(text, x, drawY, color, size, font, align)
-}
 
-fun NVG.getTextWidth(text: String, size: Float, font: Font) = font.fr.getWidth(text) //renderer.getStringWidth(context, text, size, font)
+
+fun NVG.getTextWidth(text: String, size: Float, font: Font) = font.fr.getWidth(text)
+
+fun NVG.getTextHeight(text: String, size: Float, font: Font) = font.fr.getHeight(text)
 
 fun NVG.dropShadow(x: Float, y: Float, w: Float, h: Float, blur: Float, spread: Float, radius: Float) = Unit
     //renderer.drawDropShadow(context, x, y, w, h, blur, spread, radius)
@@ -194,8 +197,17 @@ fun NVG.resetScissor(scissor: Scissor) {
 
  */
 
-fun NVG.image(filePath: String, x: Float, y: Float, w: Float, h: Float, radius: Float, clazz: Class<*>) = Unit
-    //renderer.drawRoundImage(context, filePath, x, y, w, h, radius, clazz)
+fun NVG.image(filePath: String, x: Float, y: Float, w: Float, h: Float, radius: Float, clazz: Class<*>) {
+    mc.textureManager.bindTexture(ResourceLocation(filePath))
+    drawTexturedModalRect(x.toInt(), y.toInt(), w.toInt(), h.toInt())
+}
+
+fun drawSVG(filePath: String, x: Float, y: Float, w: Float, h: Float, color: Int, alpha: Float, clazz: Class<*>) {
+    mc.textureManager.bindTexture(ResourceLocation(filePath))
+    GlStateManager.color(1f, 1f, 1f, alpha)
+    drawTexturedModalRect(x.toInt(), y.toInt(), w.toInt(), h.toInt())
+}
+
 
 fun NVG.wrappedText(text: String, x: Float, y: Float, w: Float, h: Float, color: Color, size: Float, font: Font) {
     if (color.isTransparent) return
@@ -234,3 +246,12 @@ val colorCodes = arrayOf(
     Color(255, 255, 255),
     Color(255, 255, 255)
 )
+
+fun drawTexturedModalRect(x: Int, y: Int, width: Int, height: Int) {
+    worldRenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
+    worldRenderer.pos(x.toDouble(), (y + height).toDouble(), 0.0).tex(0.0, 1.0).endVertex()
+    worldRenderer.pos((x + width).toDouble(), (y + height).toDouble(), 0.0).tex(1.0, 1.0).endVertex()
+    worldRenderer.pos((x + width).toDouble(), y.toDouble(), 0.0).tex(1.0, 0.0).endVertex()
+    worldRenderer.pos(x.toDouble(), y.toDouble(), 0.0).tex(0.0, 0.0).endVertex()
+    tessellator.draw()
+}

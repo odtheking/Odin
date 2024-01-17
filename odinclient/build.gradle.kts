@@ -46,7 +46,7 @@ dependencies {
     compileOnly("org.spongepowered:mixin:0.8.5")
 
     shadowImpl("gg.essential:loader-launchwrapper:1.1.3")
-    implementation("gg.essential:essential-1.8.9-forge:12132+g6e2bf4dc5")
+    compileOnly("gg.essential:essential-1.8.9-forge:12132+g6e2bf4dc5")
 
     api("com.mojang:brigadier:1.0.18")
     shadowImpl("com.github.Stivais:Commodore:9342db41b1") {
@@ -84,7 +84,6 @@ tasks {
     jar {
         manifest.attributes(
             "FMLCorePluginContainsFMLMod" to true,
-            "FMLCorePlugin" to "odinclient.forge.FMLLoadingPlugin",
             "ForceLoadAsMod" to true,
             "MixinConfigs" to "mixins.odinclient.json",
             "ModSide" to "CLIENT",

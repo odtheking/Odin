@@ -46,22 +46,28 @@ object DragonPriority {
         val playerClass = DungeonUtils.teammates.find { it.name == mc.thePlayer.name }?.clazz
             ?: return modMessage("§cPlayer Class wasn't found!").let { WitherDragonsEnum.Purple }
 
-        val prioList: List<Char> =
+        val orange = WitherDragonsEnum.Orange
+        val blue = WitherDragonsEnum.Blue
+        val purple = WitherDragonsEnum.Purple
+        val green = WitherDragonsEnum.Green
+        val red = WitherDragonsEnum.Red
+        val dragonList = listOf(orange, green, red, blue, purple)
+        val prioList =
             if (totalPower >= configPower || (spawningDragon.any { it == WitherDragonsEnum.Purple } && totalPower >= configEasyPower)) {
-                if (playerClass.equalsOneOf(Classes.Berserk, Classes.Mage)) "ogrbp".toList() else "pbrgo".toList()
-            } else "robpg".toList()
+                if (playerClass.equalsOneOf(Classes.Berserk, Classes.Mage)) dragonList else dragonList.reversed()
+            } else listOf(red, orange, blue, purple, green)
 
-        spawningDragon.sortBy { prioList.indexOf(it.firstLetter) }
+        spawningDragon.sortBy { prioList.indexOf(it) }
 
         if (totalPower >= configEasyPower) {
             if (configSoloDebuff) {
                 if ((playerClass == Classes.Tank && spawningDragon.any { it == WitherDragonsEnum.Purple }) || soloDebuffOnAll) {
-                    spawningDragon.sortByDescending { prioList.indexOf(it.firstLetter) }
+                    spawningDragon.sortByDescending { prioList.indexOf(it) }
                 }
 
             } else {
                 if ((playerClass == Classes.Healer && spawningDragon.any { it == WitherDragonsEnum.Purple }) || soloDebuffOnAll) {
-                    spawningDragon.sortByDescending { prioList.indexOf(it.firstLetter) }
+                    spawningDragon.sortByDescending { prioList.indexOf(it) }
                 }
             }
         }

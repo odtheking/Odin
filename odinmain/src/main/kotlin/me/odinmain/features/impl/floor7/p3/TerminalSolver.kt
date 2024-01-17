@@ -183,6 +183,13 @@ object TerminalSolver : Module(
         leftTerm()
     }
 
+    @SubscribeEvent
+    fun onGateBroken(event: ChatPacketEvent) {
+        val match = Regex("(.+) (?:activated|completed) a (?:terminal|lever)! \\((\\d)/(\\d)\\)").find(event.message) ?: return
+        if (match.groups[2]?.value == "(7/7)" || match.groups[2]?.value == "(8/8)") return
+        leftTerm()
+    }
+
     private fun leftTerm() {
         currentTerm = -1
         solution = emptyList()

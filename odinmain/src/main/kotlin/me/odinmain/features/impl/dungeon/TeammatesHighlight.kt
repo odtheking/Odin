@@ -42,7 +42,7 @@ object TeammatesHighlight : Module(
         DungeonUtils.teammates.forEach { teammate ->
             if (teammate.entity?.let { shouldRender(it) } != true) return@forEach
             if (!whenVisible && mc.thePlayer.canEntityBeSeen(teammate.entity)) return@forEach
-            if (teammate.entity.distanceSquaredTo(mc.thePlayer) <= 333) return@forEach
+            if (teammate.entity.distanceSquaredTo(mc.thePlayer) >= 2333) return@forEach
 
             RenderUtils.drawStringInWorld(
                 "${teammate.clazz.code}${teammate.name}",

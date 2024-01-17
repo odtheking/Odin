@@ -27,6 +27,7 @@ import me.odinmain.utils.render.gui.nvg.Fonts
 import me.odinmain.utils.render.gui.nvg.getTextWidth
 import me.odinmain.utils.render.gui.nvg.rect
 import me.odinmain.utils.render.gui.nvg.textWithControlCodes
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.event.entity.living.LivingDeathEvent
@@ -95,13 +96,13 @@ object WitherDragons : Module(
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        //if (DungeonUtils.getPhase() != 5) return
+        if (DungeonUtils.getPhase() != 5) return
         WitherDragonsEnum.entries.forEach { it.checkAlive() }
     }
 
     @SubscribeEvent
     fun onReceivePacket(event: ReceivePacketEvent) {
-        //if (DungeonUtils.getPhase() != 5) return
+        if (DungeonUtils.getPhase() != 5) return
         handleSpawnPacket(event)
     }
     @SubscribeEvent
@@ -117,7 +118,7 @@ object WitherDragons : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        //if (DungeonUtils.getPhase() != 5) return
+        if (DungeonUtils.getPhase() != 5) return
 
         if (dragonTimer) {
             updateTime()
@@ -130,19 +131,19 @@ object WitherDragons : Module(
 
     @SubscribeEvent
     fun onEntityJoin(event: EntityJoinWorldEvent) {
-        //if (DungeonUtils.getPhase() != 5) return
+        if (DungeonUtils.getPhase() != 5) return
         dragonJoinWorld(event)
     }
 
     @SubscribeEvent
     fun onEntityLeave(event: LivingDeathEvent) {
-        //if (DungeonUtils.getPhase() != 5) return
+        if (DungeonUtils.getPhase() != 5) return
         dragonLeaveWorld(event)
     }
 
     @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
-        //if (DungeonUtils.getPhase() != 5) return
+        if (DungeonUtils.getPhase() != 5) return
         onChatPacket(event)
     }
 

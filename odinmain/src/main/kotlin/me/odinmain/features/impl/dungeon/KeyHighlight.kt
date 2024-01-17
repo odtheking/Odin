@@ -21,7 +21,7 @@ object KeyHighlight : Module(
     category = Category.DUNGEON,
 ) {
     private var currentKey: Pair<Color, Entity>? = null
-    private val thickness: Float by NumberSetting("Thickness", 5f, 3f, 20f, .1f)
+    private val thickness: Float by NumberSetting("Thickness", 5f, 1f, 20f, .1f)
 
     @SubscribeEvent
     fun postMetadata(event: PostEntityMetadata) {
