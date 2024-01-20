@@ -12,13 +12,7 @@ import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.Event
-import org.lwjgl.opengl.ARBFramebufferObject.glGenerateMipmap
-import org.lwjgl.opengl.GL11.*
 import java.awt.image.BufferedImage
-import java.io.File
-import java.io.IOException
-import java.nio.ByteBuffer
-import javax.imageio.ImageIO
 import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.math.round
@@ -300,9 +294,3 @@ fun readShader(name: String, ext: String): String =
 
 fun loadBufferedImage(path: String): BufferedImage =
     TextureUtil.readBufferedImage(OdinMain::class.java.getResourceAsStream(path))
-
-fun loadGLTextureFromBufferedImage(image: BufferedImage): Int {
-    val id = TextureUtil.glGenTextures()
-    TextureUtil.uploadTextureImageAllocate(id, image, false, false)
-    return id
-}

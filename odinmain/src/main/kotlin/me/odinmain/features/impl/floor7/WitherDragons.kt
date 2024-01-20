@@ -65,7 +65,7 @@ object WitherDragons : Module(
 
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, true) {
         if (it) {
-            if (timerBackground) rect(1f, 1f, getTextWidth("Purple spawning in 4500ms", 17f, Fonts.REGULAR), 35f, Color.DARK_GRAY.withAlpha(.75f), 5f)
+            if (timerBackground) rect(1f, 1f, getTextWidth("Purple spawning in 4500ms", 19f, Fonts.REGULAR), 35f, Color.DARK_GRAY.withAlpha(.75f), 5f)
 
             textWithControlCodes("§5Purple spawning in §a4500ms", 2f, 10f, 16f, Fonts.REGULAR)
             textWithControlCodes("§cRed spawning in §e1200ms", 2f, 26f, 16f, Fonts.REGULAR)

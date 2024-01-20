@@ -12,16 +12,12 @@ import me.odinmain.ui.clickgui.util.ColorUtil.hsbMax
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.clickgui.util.HoverHandler
-import me.odinmain.utils.loadBufferedImage
-import me.odinmain.utils.loadGLTextureFromBufferedImage
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinmain.utils.render.gui.MouseUtils.mouseX
 import me.odinmain.utils.render.gui.MouseUtils.mouseY
 import me.odinmain.utils.render.gui.animations.impl.EaseInOut
 import me.odinmain.utils.render.gui.nvg.*
-import me.odinmain.utils.skyblock.modMessage
-import net.minecraft.client.renderer.texture.DynamicTexture
 import kotlin.math.floor
 
 /**
@@ -43,9 +39,6 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
         get() = setting.value
 
     private val hover = HoverHandler(0, 150)
-
-    private val hueGradient = loadBufferedImage("/assets/clickgui/HueGradient.png")
-    private val dynamicTexture = DynamicTexture(hueGradient)
 
     // TODO: MAKE A BETTER DESIGN (FUNCTION IS ALL HERE P MUCH)
     override fun draw() {
@@ -75,7 +68,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
         // HUE
 
         dropShadow(x + 10f, y + 214f, w - 20f, 15f, 10f, 0.5f, 5f)
-        drawBufferedImage(dynamicTexture, x + 10f, y + 214f, w - 20f, 15f)
+        drawBufferedImage("/assets/clickgui/HueGradient.png", x + 10f, y + 214f, w - 20f, 15f)
         rectOutline(x + 10f, y + 214f, w - 20f, 15f, buttonColor, 5f, 1f)
 
         val hue = x + 10f + setting.hue * 221f to y + 221f
