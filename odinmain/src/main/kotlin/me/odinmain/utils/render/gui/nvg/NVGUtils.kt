@@ -6,16 +6,22 @@ import me.odinmain.ui.util.FontRenderer
 import me.odinmain.ui.util.RoundedRect
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.nvg.TextAlign.*
+import me.odinmain.utils.skyblock.modMessage
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.WorldRenderer
+import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
+import java.awt.image.BufferedImage
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
+
 
 class Font(val fr: FontRenderer)
 object Fonts {
@@ -65,6 +71,17 @@ fun rect(
 
 fun rectOutline(x: Float, y: Float, w: Float, h: Float, color: Color, radius: Float = 0f, thickness: Float) {
     if (color.isTransparent) return
+    val sr = ScaledResolution(mc)
+    GlStateManager.scale(1f / sr.scaleFactor, 1f / sr.scaleFactor, 1f)
+    val matrix = UMatrixStack.Compat
+    matrix.runLegacyMethod(matrix.get()) {
+        RoundedRect.drawRoundedRectangleOutline(
+            matrix.get(), x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(), radius.toFloat(),
+            color.javaColor, thickness
+        )
+    }
+    GlStateManager.scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
+
     /*renderer.drawHollowRoundRect(
         context, x - .95f, y - .95f, w + .5f, h + .5f, color.rgba, radius - .5f, thickness
     )*/
@@ -145,9 +162,9 @@ fun text(text: String, x: Float, y: Float, color: Color, size: Float, font: Font
     }
 
     val sr = ScaledResolution(mc)
-    GlStateManager.scale(1f / sr.scaleFactor , 1f / sr.scaleFactor, 1f)
+    scale(1f / sr.scaleFactor , 1f / sr.scaleFactor, 1f)
     font.fr.drawString(text, drawX, drawY, color)
-    GlStateManager.scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
+    scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
 }
 
 fun getTextWidth(text: String, size: Float, font: Font) = font.fr.getWidth(text)
@@ -179,6 +196,21 @@ fun resetScissor(scissor: Scissor) {
 fun image(filePath: String, x: Float, y: Float, w: Float, h: Float) {
     mc.textureManager.bindTexture(ResourceLocation("odinclient", filePath))
     drawTexturedModalRect(x.toInt(), y.toInt(), w.toInt(), h.toInt())
+}
+
+fun drawGLTexture(texture: Int, x: Number, y: Number, w: Number, h: Number) {
+    GlStateManager.bindTexture(texture)
+    drawTexturedModalRect(x.toInt(), y.toInt(), w.toInt(), h.toInt())
+}
+
+fun drawBufferedImage(dynamicTexture: DynamicTexture, x: Float, y: Float, w: Float, h: Float) {
+    dynamicTexture.updateDynamicTexture()
+    GlStateManager.bindTexture(dynamicTexture.glTextureId)
+    //mc.textureManager.bindTexture(mc.textureManager.getDynamicTextureLocation("temporary_stuff", dynamicTexture))
+    val sr = ScaledResolution(mc)
+    scale(1f / sr.scaleFactor , 1f / sr.scaleFactor, 1f)
+    drawTexturedModalRect(x.toInt(), y.toInt(), w.toInt(), h.toInt())
+    scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
 }
 
 fun wrappedText(text: String, x: Float, y: Float, w: Float, h: Float, color: Color, size: Float, font: Font) {
@@ -221,6 +253,7 @@ val colorCodes = arrayOf(
 )
 
 fun drawTexturedModalRect(x: Int, y: Int, width: Int, height: Int) {
+    GlStateManager.enableTexture2D()
     worldRenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
     worldRenderer.pos(x.toDouble(), (y + height).toDouble(), 0.0).tex(0.0, 1.0).endVertex()
     worldRenderer.pos((x + width).toDouble(), (y + height).toDouble(), 0.0).tex(1.0, 1.0).endVertex()

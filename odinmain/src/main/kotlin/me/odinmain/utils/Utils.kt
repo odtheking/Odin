@@ -2,20 +2,27 @@
 
 package me.odinmain.utils
 
-import gg.essential.elementa.components.Window
 import gg.essential.universal.shader.BlendState
-import gg.essential.universal.shader.UShader
 import gg.essential.universal.shader.UShader.Companion.fromLegacyShader
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.ModuleManager
 import me.odinmain.utils.skyblock.modMessage
+import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.Event
+import org.lwjgl.opengl.ARBFramebufferObject.glGenerateMipmap
+import org.lwjgl.opengl.GL11.*
+import java.awt.image.BufferedImage
+import java.io.File
+import java.io.IOException
+import java.nio.ByteBuffer
+import javax.imageio.ImageIO
 import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.math.round
+
 
 private val FORMATTING_CODE_PATTERN = Regex("§[0-9a-fk-or]", RegexOption.IGNORE_CASE)
 
@@ -289,3 +296,13 @@ fun createLegacyShader(vertName: String, fragName: String, blendState: BlendStat
     fromLegacyShader(readShader(vertName, "vsh"), readShader(fragName, "fsh"), blendState)
 fun readShader(name: String, ext: String): String =
      OdinMain::class.java.getResource("/shaders/$name.$ext")?.readText() ?: ""
+
+
+fun loadBufferedImage(path: String): BufferedImage =
+    TextureUtil.readBufferedImage(OdinMain::class.java.getResourceAsStream(path))
+
+fun loadGLTextureFromBufferedImage(image: BufferedImage): Int {
+    val id = TextureUtil.glGenTextures()
+    TextureUtil.uploadTextureImageAllocate(id, image, false, false)
+    return id
+}
