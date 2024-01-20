@@ -105,10 +105,5 @@ object OdinCommand : Commodore {
             literal("sendcoords").runs {
                 sendChatMessage("x: ${posX.toInt()}, y: ${posY.toInt()}, z: ${posZ.toInt()}")
             }
-
-            literal("devmode").runs {
-                DevCommand.devMode = !DevCommand.devMode
-                modMessage("${if (DevCommand.devMode) "Enabled" else "Disabled"} Developer mode")
-            }
         }
 }

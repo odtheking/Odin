@@ -5,7 +5,6 @@ import me.odinmain.features.settings.Setting
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.clickgui.util.HoverHandler
 import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
-import me.odinmain.utils.render.gui.nvg.NVG
 
 /**
  * Renders all the modules.
@@ -43,16 +42,16 @@ open class Element<S : Setting<*>>(val parent: ModuleButton, val setting: S, typ
 
     private val hoverHandler = HoverHandler(1250, 200)
 
-    open fun render(nvg: NVG): Float {
+    open fun render(): Float {
         hoverHandler.handle(x, y, w, h)
         if (hoverHandler.percent() > 0) {
             ClickGUI.setDescription(setting.description, x + w + 10f, y, hoverHandler)
         }
-        draw(nvg)
+        draw()
         return h
     }
 
-    protected open fun draw(nvg: NVG) {}
+    protected open fun draw() {}
 
     open fun mouseClicked(mouseButton: Int): Boolean = isAreaHovered(x, y, w, h)
     open fun mouseReleased(state: Int) {}

@@ -11,15 +11,10 @@ object DragonTimer {
         toRender = ArrayList()
 
         WitherDragonsEnum.entries.forEachIndexed { index, dragon ->
-            if (dragon.particleSpawnTime == 0L || !dragon.statueAlive) return@forEachIndexed
+            if (dragon.particleSpawnTime == 0L || !dragon.statueAlive || !dragon.spawning) return@forEachIndexed
 
-            when {
-                dragon.spawning -> {
-                    toRender.add(Triple(
-                        "§${dragon.colorCode}${dragon} spawn: ${colorTime(dragon.spawnTime())} ms", index, dragon))
-                }
-                else -> dragon.particleSpawnTime = 0L
-            }
+            toRender.add(Triple(
+                "§${dragon.colorCode}${dragon} spawn: ${colorTime(dragon.spawnTime())} ms", index, dragon))
         }
     }
 

@@ -24,12 +24,11 @@ object ChatCommands : Module(
     name = "Chat commands",
     category = Category.SKYBLOCK,
     description = "type !help in the corresponding channel for cmd list. Use /blacklist.",
-    tag = TagType.NEW
 ) {
-    private var party: Boolean by BooleanSetting(name = "Party cmds", default = true)
-    private var guild: Boolean by BooleanSetting(name = "Guild cmds", default = true)
-    private var private: Boolean by BooleanSetting(name = "Private cmds", default = true)
-    private var showSettings: Boolean by BooleanSetting(name = "Show Settings", default = false)
+    private var party: Boolean by BooleanSetting(name = "Party cmds", default = true, description = "Toggles chat commands in party chat")
+    private var guild: Boolean by BooleanSetting(name = "Guild cmds", default = true, description = "Toggles chat commands in guild chat")
+    private var private: Boolean by BooleanSetting(name = "Private cmds", default = true, description = "Toggles chat commands in private chat")
+    private var showSettings: Boolean by BooleanSetting(name = "Show Settings", default = false, description = "Shows the settings for chat commands")
 
     private var warp: Boolean by BooleanSetting(name = "Warp", default = true).withDependency { showSettings }
     private var warptransfer: Boolean by BooleanSetting(name = "Warp & pt (warptransfer)", default = true).withDependency { showSettings }
@@ -48,6 +47,7 @@ object ChatCommands : Module(
     private var inv: Boolean by BooleanSetting(name = "inv", default = true).withDependency { showSettings }
     private val invite: Boolean by BooleanSetting(name = "invite", default = true).withDependency { showSettings }
     private val racism: Boolean by BooleanSetting(name = "Racism", default = true).withDependency { showSettings }
+    private val queDungeons: Boolean by BooleanSetting(name = "Queue dungeons cmds", default = true).withDependency { showSettings }
 
     private var dtPlayer: String? = null
     var disableReque: Boolean? = false
@@ -117,7 +117,7 @@ object ChatCommands : Module(
     private suspend fun cmdsAll(message: String, name: String, channel: String) {
 
         val helpMessage = when (channel) {
-            "party" -> "Commands: coords, odin, boop, cf, 8ball, dice, cat, racism, ping, tps, warp, warptransfer, allinvite, pt, dt"
+            "party" -> "Commands: coords, odin, boop, cf, 8ball, dice, cat, racism, ping, tps, warp, warptransfer, allinvite, pt, dt, m(?), f(?)"
             "guild" -> "Commands: coords, odin, boop, cf, 8ball, dice, cat, racism, ping, tps"
             "private" -> "Commands: coords, odin, boop, cf, 8ball, dice, cat, racism, ping, tps, inv, invite"
             else -> ""
@@ -143,7 +143,7 @@ object ChatCommands : Module(
             // Party cmds only
 
             "warp" -> if (warp && channel == "party") sendCommand("p warp")
-            "warptransfer" -> { if (warptransfer && channel == "party")
+            "warptransfer" -> { if (warptransfer)
                 sendCommand("p warp")
                 delay(500)
                 sendCommand("p transfer $name")
@@ -160,6 +160,24 @@ object ChatCommands : Module(
                 modMessage("§aReminder set for the end of the run!")
                 dtPlayer = name
                 disableReque = true
+            }
+
+            "m" -> {
+                if (!queDungeons) return
+                val floor = message.substringAfter("m ")
+                if (message.substringAfter("m ") == message) return modMessage("§cPlease specify a floor.")
+                if (floor.toIntOrNull() == null) return modMessage("§cPlease specify a valid floor.")
+                modMessage("§aEntering master mode floor: $floor")
+                sendCommand("od m$floor", true)
+            }
+
+            "f" -> {
+                if (!queDungeons) return
+                val floor = message.substringAfter("f ")
+                if (message.substringAfter("f ") == message) return modMessage("§cPlease specify a floor.")
+                if (floor.toIntOrNull() == null) return modMessage("§cPlease specify a valid floor.")
+                modMessage("§aEntering floor: $floor")
+                sendCommand("od f$floor, true")
             }
 
             // Private cmds only

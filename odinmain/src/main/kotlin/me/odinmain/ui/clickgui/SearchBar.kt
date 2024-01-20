@@ -18,8 +18,7 @@ object SearchBar {
     private val isHovered get() = MouseUtils.isAreaHovered(mc.displayWidth / 2f - 200f, mc.displayHeight - 100f, 400f, 30f)
     private val colorAnim = ColorAnimation(100)
 
-    fun draw(nvg: NVG) {
-        nvg {
+    fun draw() {
             translate(mc.displayWidth / 2f, mc.displayHeight - 100f)
             rect(-200f, 0f, 400f, 30f, ColorUtil.moduleButtonColor, 9f)
             if (listening || colorAnim.isAnimating()) {
@@ -30,7 +29,7 @@ object SearchBar {
                 text("Search here...", 0f, 16f, Color.WHITE.withAlpha(0.5f), 20f, Fonts.REGULAR, TextAlign.Middle)
             } else text(currentSearch, 0f, 16f, Color.WHITE, 20f, Fonts.REGULAR, TextAlign.Middle)
             translate(-mc.displayWidth / 2f, -mc.displayHeight + 100f)
-        }
+
     }
 
     fun mouseClicked(mouseButton: Int): Boolean {

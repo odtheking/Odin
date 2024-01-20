@@ -41,19 +41,18 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
     private val hover = HoverHandler(0, 150)
 
     // TODO: MAKE A BETTER DESIGN (FUNCTION IS ALL HERE P MUCH)
-    override fun draw(nvg: NVG) {
+    override fun draw() {
         h = floor(anim.get(36f, if (setting.allowAlpha) 253f else 233f, !extended))
 
         hover.handle(x + w - 41, y + 5, 31.5f, 19f)
 
-        nvg {
             rect(x, y, w, h, elementBackground)
             text(name, x + 6f, y + 18f, textColor, 16f, Fonts.REGULAR)
             dropShadow(x + w - 40f, y + 5f, 31f, 19f, 10f, 0.75f, 5f)
             rect(x + w - 40f, y + 5f, 31f, 19f, color.brighter(1 + hover.percent() / 500f), 5f)
             rectOutline(x + w - 40f, y + 5f, 31f, 19f, color.darker().withAlpha(1f), 5f, 1.5f)
 
-            if (!extended && !anim.isAnimating()) return@nvg
+            if (!extended && !anim.isAnimating()) return
 
             //val scissor = scissor(x, y, w, h + 1)
 
@@ -69,7 +68,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
             // HUE
 
             dropShadow(x + 10f, y + 214f, w - 20f, 15f, 10f, 0.5f, 5f)
-            image("/assets/odinmain/ui/clickgui/HueGradient.png", x + 10f, y + 214f, w - 20f, 15f, 5f, javaClass)
+            image("clickgui/HueGradient.png", x + 10f, y + 214f, w - 20f, 15f)
             rectOutline(x + 10f, y + 214f, w - 20f, 15f, buttonColor, 5f, 1f)
 
             val hue = x + 10f + setting.hue * 221f to y + 221f
@@ -98,7 +97,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
             }
 
             //resetScissor(scissor)
-        }
+
     }
 
     override fun mouseClicked(mouseButton: Int): Boolean {

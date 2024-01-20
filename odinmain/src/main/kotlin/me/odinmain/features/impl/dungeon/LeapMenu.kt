@@ -3,6 +3,7 @@ package me.odinmain.features.impl.dungeon
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.events.impl.DrawGuiScreenEvent
 import me.odinmain.events.impl.GuiClickEvent
+import me.odinmain.events.impl.GuiClosedEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.LeapHelper.getPlayer
@@ -12,9 +13,13 @@ import me.odinmain.features.impl.dungeon.LeapHelper.leapHelperClearChatEvent
 import me.odinmain.features.impl.dungeon.LeapHelper.worldLoad
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
+import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.utils.name
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.gui.nvg.rect
+import me.odinmain.utils.render.gui.nvg.scale
+import me.odinmain.utils.render.gui.nvg.translate
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.Classes
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.EMPTY
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.leapTeammates
@@ -24,7 +29,10 @@ import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.OpenGlHelper
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.ContainerChest
+import net.minecraft.util.ResourceLocation
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -36,10 +44,13 @@ object LeapMenu : Module(
 ) {
     val type: Int by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("A-Z Class (BetterMap)", "A-Z Name", "Odin Sorting"), description = "How to sort the leap menu.")
     private val colorStyle: Boolean by DualSetting("Color Style", "Gray", "Color", default = false, description = "Which color style to use")
+    val blur: Boolean by BooleanSetting("Blur", false, description = "Toggles the background blur for the gui.")
+    val priority: Int by SelectorSetting("Leap Helper Priority", "Berserker", arrayListOf("Archer", "Berserker", "Healer", "Mage", "Tank"), description = "Which player to prioritize in the leap helper.")
+
     private val leapHelperToggle: Boolean by BooleanSetting("Leap Helper", true)
     private val color: Color by ColorSetting("Leap Helper Color", default = Color.WHITE).withDependency { leapHelperToggle }
     val delay: Int by NumberSetting("Reset Leap Helper Delay", 30, 10.0, 120.0, 1.0).withDependency { leapHelperToggle }
-    val priority: Int by SelectorSetting("Leap Helper Priority", "Berserker", arrayListOf("Archer", "Berserker", "Healer", "Mage", "Tank"), description = "Which player to prioritize in the leap helper.")
+
     @SubscribeEvent
     fun onDrawScreen(event: DrawGuiScreenEvent) {
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
@@ -54,26 +65,38 @@ object LeapMenu : Module(
             GlStateManager.pushMatrix()
             GlStateManager.enableAlpha()
             GlStateManager.scale(width, height, 0.0)
-            GlStateManager.scale(6.0 / sr.scaleFactor,  6.0 / sr.scaleFactor, 1.0)
+            scale(6f / sr.scaleFactor,  6f / sr.scaleFactor)
             GlStateManager.color(255f, 255f, 255f, 255f)
-            GlStateManager.translate(
-                (30.0 + (index % 2 * 145.0)),
-                (if (index >= 2) 120.0 else 40.0),
-                0.0)
+            translate(
+                (30f + (index % 2 * 145f)),
+                (if (index >= 2) 120f else 40f),
+                0f)
             mc.textureManager.bindTexture(it.locationSkin)
-            if (it.name == leapHelper && leapHelperToggle) Gui.drawRect(-10, -20, 125, 40, color.rgba)
-            Gui.drawRect(-5, -15, 120, 35, if (!colorStyle) Color.DARK_GRAY.rgba else it.clazz.color.rgba)
+            if (it.name == leapHelper && leapHelperToggle) rect(-5, -25, 230, 110, color, 9f)
+
+            //Gui.drawRect(-5, -15, 120, 35, if (!colorStyle) Color.DARK_GRAY.rgba else it.clazz.color.rgba)
+            rect(-10, -30, 250, 100, if (!colorStyle) Color.DARK_GRAY else it.clazz.color, 9f)
 
             GlStateManager.color(255f, 255f, 255f, 255f)
             Gui.drawScaledCustomSizeModalRect(0, -10, 8f, 8f, 8, 8, 40, 40, 64f, 64f)
 
-            mc.fontRendererObj.drawString(it.name, if (it.name.length > 13) 52 else 42, 5, if (!colorStyle) it.clazz.color.rgba else Color.DARK_GRAY.rgba)
-            mc.fontRendererObj.drawString(it.clazz.name, if (it.name.length > 13) 52 else 42, 16, Color.WHITE.rgba )
+            mc.fontRendererObj.drawString(it.name, 44, 2, if (!colorStyle) it.clazz.color.rgba else Color.DARK_GRAY.rgba)
+            mc.fontRendererObj.drawString(it.clazz.name, 44, 16, Color.WHITE.rgba )
 
             GlStateManager.disableAlpha()
             GlStateManager.popMatrix()
+
+        }
+        if (OpenGlHelper.shadersSupported && mc.renderViewEntity is EntityPlayer && blur) {
+            ClickGUI.mc.entityRenderer.stopUseShader()
+            ClickGUI.mc.entityRenderer.loadShader(ResourceLocation("shaders/post/blur.json"))
         }
         event.isCanceled = true
+    }
+    @SubscribeEvent
+    fun onGuiClose(event: GuiClosedEvent) {
+        modMessage(leapHelper)
+        mc.entityRenderer.stopUseShader()
     }
 
     @SubscribeEvent
@@ -124,6 +147,4 @@ object LeapMenu : Module(
     fun onTick(event: TickEvent.ClientTickEvent) {
         getPlayer(event)
     }
-
-
 }

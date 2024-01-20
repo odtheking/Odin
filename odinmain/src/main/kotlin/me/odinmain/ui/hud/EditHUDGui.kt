@@ -36,14 +36,14 @@ object EditHUDGui : Screen() {
     private val hoverHandler = HoverHandler(150) // for reset button
 
     /** Code is horrible ngl but it looks nice */
-    override fun draw(nvg: NVG) {
+    override fun draw() {
         mc.mcProfiler.startSection("Odin Example Hud")
         dragging?.let {
             it.x = MouseUtils.mouseX - startX
             it.y = MouseUtils.mouseY - startY
         }
 
-        drawNVG {
+
             translate(scaledWidth.toFloat(), scaledHeight * 1.75f)
 
             if (openAnim.isAnimating()) {
@@ -66,11 +66,11 @@ object EditHUDGui : Screen() {
             }
             translate(-scaledWidth.toFloat(), -(scaledHeight * 1.75f))
 
-            if (!open) return@drawNVG
+            if (!open) return
             for (i in 0 until huds.size) {
-                huds[i].draw(this, example = true)
+                huds[i].draw(example = true)
             }
-        }
+
         mc.mcProfiler.endSection()
     }
 

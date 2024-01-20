@@ -238,7 +238,7 @@ object DungeonUtils {
         /**
          * Dead class with formatting code "§4" (dark red) and dark red color.
          */
-        DEAD("§4", Color.DARK_RED, 3, -1);
+        DEAD("§c", Color.RED, 3, -1);
 
 
         companion object {

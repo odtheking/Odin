@@ -115,7 +115,7 @@ object CustomESP : Module(
     }
 
     private fun checkStarredMob(entity: Entity) {
-        if (!DungeonUtils.inBoss || entity !is EntityArmorStand || !entity.hasCustomName() || entity.alwaysRenderNameTag) return
+        if (!DungeonUtils.inBoss || entity !is EntityArmorStand || !entity.hasCustomName() || entity.alwaysRenderNameTag || entity in currentEntities) return
         val name = entity.name
         if (name.startsWith("§6✯ ") && name.endsWith("§c❤")) {
             getMob(entity)?.let {

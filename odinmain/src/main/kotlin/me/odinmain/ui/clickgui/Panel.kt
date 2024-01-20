@@ -47,32 +47,30 @@ class Panel(
     private val scrollAnimation = LinearAnimation<Float>(200)
 
     init {
-        drawNVG {
-            for (module in modules.sortedByDescending { getTextWidth(it.name, 18f, Fonts.MEDIUM) }) {
+            for (module in modules.sortedByDescending { getTextWidth(it.name, 18f, Fonts.REGULAR) }) {
                 if (module.category != this@Panel.category) continue
                 moduleButtons.add(ModuleButton(module, this@Panel))
             }
-        }
+
     }
 
-    fun draw(nvg: NVG) {
+    fun draw() {
         if (dragging) {
             x = floor(x2 + mouseX)
             y = floor(y2 + mouseY)
         }
 
         rect2Corners(x, y, width, height, ColorUtil.moduleButtonColor, 15f, 2)
-        nvg {
-            text(if (displayName == "Floor7") "Floor 7" else displayName, x + width / 2f, y + height / 2f, ColorUtil.textColor, 22f, Fonts.SEMIBOLD, TextAlign.Middle)
+        text(if (displayName == "Floor7") "Floor 7" else "§l${displayName}", x + width / 2f, y + height / 2f, ColorUtil.textColor, 22f, Fonts.SEMIBOLD, TextAlign.Middle)
 
-            scrollOffset = scrollAnimation.get(scrollOffset, scrollTarget).round(0)
-            var startY = scrollOffset + height
+        scrollOffset = scrollAnimation.get(scrollOffset, scrollTarget).round(0)
+        var startY = scrollOffset + height
 
-            //val s = scissor(x, y + height, width, 5000f)
-            if (extended && moduleButtons.isNotEmpty()) {
+        //val s = scissor(x, y + height, width, 5000f)
+        if (extended && moduleButtons.isNotEmpty()) {
                 for (button in moduleButtons.filter { it.module.name.contains(currentSearch, true) }) {
                     button.y = startY
-                    startY += button.draw(nvg)
+                    startY += button.draw()
                 }
                 length = startY + 5f
             }
@@ -81,7 +79,7 @@ class Panel(
             //resetScissor(s)
 
             dropShadow(x, y, width, (startY + 10f).coerceAtLeast(height), 12.5f, 6f, 5f)
-        }
+
     }
 
     fun handleScroll(amount: Int): Boolean {

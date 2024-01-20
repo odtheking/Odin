@@ -41,8 +41,7 @@ class ElementHud(parent: ModuleButton, setting: HudSetting) : Element<HudSetting
     private val colorAnim = ColorAnimation(250)
     private val hover = HoverHandler(0, 150)
 
-    override fun draw(nvg: NVG) {
-        nvg {
+    override fun draw() {
             rect(x, y, w, h, ColorUtil.elementBackground)
             text(name, x + 6f, y + 18f, textColor, 16f, Fonts.REGULAR)
 
@@ -61,7 +60,7 @@ class ElementHud(parent: ModuleButton, setting: HudSetting) : Element<HudSetting
             )
 
              */
-        }
+
     }
 
     override fun mouseClicked(mouseButton: Int): Boolean {

@@ -24,11 +24,10 @@ class ElementAction(parent: ModuleButton, setting: ActionSetting) : Element<Acti
         get() = MouseUtils.isAreaHovered(x + 20f, y, w - 40f, h - 10f)
 
 // todo: improve this
-    override fun draw(nvg: NVG) {
-        nvg {
+    override fun draw() {
             rect(x, y, w, h, elementBackground)
-            text(name, x + w / 2f, y + h / 2f, if (isHovered) textColor.darker() else textColor, 16f , Fonts.REGULAR, TextAlign.Middle)
-        }
+            text(name, x + w / 2f, y + h / 2f, if (isHovered) textColor.darker() else textColor, 16f , Fonts.REGULAR, TextAlign.Middle, TextPos.Middle)
+
     }
 
     override fun mouseClicked(mouseButton: Int): Boolean {

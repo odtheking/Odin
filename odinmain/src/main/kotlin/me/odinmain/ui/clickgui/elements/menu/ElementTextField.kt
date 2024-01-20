@@ -36,8 +36,7 @@ class ElementTextField(parent: ModuleButton, setting: StringSetting) :
     private val buttonColor: Color
         inline get() = ColorUtil.buttonColor.brighter(1 + hover.percent() / 500f)
 
-    override fun draw(nvg: NVG) {
-        nvg {
+    override fun draw() {
             rect(x, y, w, h, elementBackground)
 
             if (getTextWidth(display + "00" + name, 16f, REGULAR) <= w) {
@@ -67,7 +66,7 @@ class ElementTextField(parent: ModuleButton, setting: StringSetting) :
                 }
                 else text(name, x + w / 2f, y + h / 2f, textColor, 16f, REGULAR, TextAlign.Middle)
             }
-        }
+
     }
 
     override fun mouseClicked(mouseButton: Int): Boolean {

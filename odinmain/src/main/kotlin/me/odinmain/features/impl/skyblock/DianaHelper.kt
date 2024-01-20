@@ -8,10 +8,8 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.utils.addVec
+import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
-import me.odinmain.utils.fastEyeHeight
-import me.odinmain.utils.floor
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.render.world.RenderUtils.renderVec
@@ -19,7 +17,6 @@ import me.odinmain.utils.skyblock.DianaBurrowEstimate
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.partyMessage
 import me.odinmain.utils.skyblock.sendCommand
-import me.odinmain.utils.toVec3i
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S29PacketSoundEffect
@@ -40,6 +37,7 @@ object DianaHelper : Module(
     private val tracer: Boolean by BooleanSetting("Tracer", default = false, description = "Draws a line from your position to the guess")
     private val tracerWidth: Int by NumberSetting("Tracer Width", default = 5, min = 1, max = 20).withDependency { tracer }
     private val tracerColor: Color by ColorSetting("Tracer Line Color", default = Color.WHITE, allowAlpha = true, description = "Color of the tracer line").withDependency { tracer }
+    private val tracerBurrows: Boolean by BooleanSetting("Tracer Burrows", default = false, description = "Draws a line from your position to the burrows")
     private val sendInqMsg: Boolean by BooleanSetting("Send Inq Msg", default = true, description = "Sends a message to the party when you dig out an inquisitor")
     private val showWarpSettings: Boolean by BooleanSetting("Show Warp Settings", default = true, description = "Shows the warp settings")
     private val castle: Boolean by BooleanSetting("Castle Warp").withDependency { showWarpSettings }
@@ -85,8 +83,6 @@ object DianaHelper : Module(
 
         partyMessage("x: ${PlayerUtils.posX.floor().toInt()}, y: ${PlayerUtils.posY.floor().toInt()}, z: ${PlayerUtils.posZ.floor().toInt()}")
         PlayerUtils.alert("§6§lInquisitor!")
-
-
     }
 
     @SubscribeEvent
@@ -105,14 +101,15 @@ object DianaHelper : Module(
             }.takeIf { it.location.distanceTo(guess) + 30 < mc.thePlayer.positionVector.distanceTo(guess) }
 
             if (tracer)
-                RenderUtils.draw3DLine(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), guess.addVec(.5, .5, .5), tracerColor, tracerWidth, depth = true, event.partialTicks)
-
+                RenderUtils.draw3DLine(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), guess.addVec(.5, .5, .5), tracerColor, tracerWidth, depth = false, event.partialTicks)
+            if (guess.yCoord.toInt() == 110 && guess.distanceTo(mc.thePlayer.positionVector) < 40) findNearestGrassBlock(guess)
             RenderUtils.renderCustomBeacon("§6Guess${warpLocation?.displayName ?: ""}§r", guess, guessColor, event.partialTicks)
         }
 
-        val burrowsRenderCopy = HashMap(burrowsRender)
+        val burrowsRenderCopy = burrowsRender.toMap()
 
         burrowsRenderCopy.forEach { (location, type) ->
+            if (tracerBurrows) RenderUtils.draw3DLine(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), Vec3(location).addVec(.5, .5, .5), type.color, tracerWidth, depth = false, event.partialTicks)
             RenderUtils.renderCustomBeacon(type.text, Vec3(location), type.color, event.partialTicks)
         }
     }

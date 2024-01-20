@@ -36,12 +36,11 @@ class ElementKeyBind(parent: ModuleButton, private val mod: Module) :
     private val buttonColor: Color
         inline get() = ColorUtil.buttonColor.brighter(1 + hover.percent() / 500f)
 
-    override fun draw(nvg: NVG) {
+    override fun draw() {
         val value = if (mod.keyCode > 0) Keyboard.getKeyName(mod.keyCode) ?: "Err"
         else if (mod.keyCode < 0) Mouse.getButtonName(mod.keyCode + 100)
         else "None"
 
-        nvg {
             rect(x, y, w, h, elementBackground)
 
             val width = getTextWidth(value, 16f, Fonts.REGULAR)
@@ -56,8 +55,8 @@ class ElementKeyBind(parent: ModuleButton, private val mod: Module) :
             }
 
             text(name,  x + 6f, y + h / 2, textColor, 16f, Fonts.REGULAR)
-            text(value, x + w - 14, y + 7f, textColor, 16f, Fonts.REGULAR, TextAlign.Right)
-        }
+            text(value, x + w - 14, y + 4f, textColor, 16f, Fonts.REGULAR, TextAlign.Right, TextPos.Top)
+
     }
 
     override fun mouseClicked(mouseButton: Int): Boolean {

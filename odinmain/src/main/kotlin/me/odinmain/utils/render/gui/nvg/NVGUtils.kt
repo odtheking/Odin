@@ -13,53 +13,21 @@ import net.minecraft.client.renderer.WorldRenderer
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
-import java.util.*
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 
 class Font(val fr: FontRenderer)
 object Fonts {
-    val REGULAR = Font(FontRenderer("/fonts/Heebo.ttf", 30f))
-    val MEDIUM = Font(FontRenderer("/fonts/Heebo.ttf", 30f))
-    val SEMIBOLD = Font(FontRenderer("/fonts/Heebo.ttf", 30f))
+    val REGULAR = Font(FontRenderer("/fonts/Heebo.ttf", 32f))
+    val MEDIUM = Font(FontRenderer("/fonts/Heebo.ttf", 70f))
+    val SEMIBOLD = Font(FontRenderer("/fonts/Heebo.ttf", 50f))
 }
 
-/**
- * Makes it more understanding that [nanoVGHelper] is used for rendering and acts like a wrapper.
- */
-/*inline val renderer: NanoVGHelper
 
-
-get() = nanoVGHelper
-
- */
 
 private val tessellator: Tessellator = Tessellator.getInstance()
 private val worldRenderer: WorldRenderer = tessellator.worldRenderer
-
-/**
- * This classes acts like wrapper for nvg context.
- *
- * You can do:
- * ```
- *  NVG {
- *      rect(/*args*/)
- *  }
- *  // instead of:
- *
- *  VG.nanoVG {
- *      drawRect(/*args*/)
- *  }
- *  ```
- *  @author Stivais
- */
-@JvmInline
-value class NVG(val context: Long) {
-    inline operator fun invoke(block: NVG.() -> Unit) = block.invoke(this)
-}
-
-/**
- * Creates a new NVG context
- */
-fun drawNVG(block: NVG.() -> Unit) = block(NVG(0L)) //nanoVGHelper.setupAndDraw(false) { block(NVG(it)) }
 
 fun rect2Corners(x: Number, y: Number, w: Number, h: Number, color: Color, radius: Float, cornerID: Int) {
     if (color.isTransparent) return
@@ -86,43 +54,62 @@ fun rect(
             matrix.get(), x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(), radius.toFloat(),
             color.javaColor
         )
-
     }
     GlStateManager.scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
 }
 
 
-fun NVG.rect(
+fun rect(
     x: Float, y: Float, w: Float, h: Float, color: Color
 ) = rect(x, y, w, h, color, 0f)
 
-fun NVG.rectOutline(x: Float, y: Float, w: Float, h: Float, color: Color, radius: Float = 0f, thickness: Float) {
+fun rectOutline(x: Float, y: Float, w: Float, h: Float, color: Color, radius: Float = 0f, thickness: Float) {
     if (color.isTransparent) return
     /*renderer.drawHollowRoundRect(
         context, x - .95f, y - .95f, w + .5f, h + .5f, color.rgba, radius - .5f, thickness
-    )
-
-     */
+    )*/
 }
 
-fun NVG.gradientRect(x: Float, y: Float, w: Float, h: Float, color1: Color, color2: Color, radius: Float) {
+fun gradientRect(x: Float, y: Float, w: Float, h: Float, color1: Color, color2: Color, radius: Float) {
     if (color1.isTransparent && color2.isTransparent) return
     //renderer.drawGradientRoundedRect(context, x, y, w, h, color1.rgba, color2.rgba, radius, NanoVGHelper.GradientDirection.RIGHT)
 }
 
-fun NVG.drawHSBBox(x: Float, y: Float, w: Float, h: Float, color: Color) {
+fun drawHSBBox(x: Float, y: Float, w: Float, h: Float, color: Color) {
     /*nanoVGHelper.drawHSBBox(context, x, y, w, h, color.rgba)
     rectOutline(x, y, w, h, Color(38, 38, 38), 8f, 1f)
 
      */
 }
 
-fun NVG.circle(x: Float, y: Float, radius: Float, color: Color) {
-    if (color.isTransparent) return
-    //renderer.drawCircle(context, x, y, radius, color.rgba)
+fun drawCircle(x: Float, y: Float, radius: Float, steps: Int = 20) {
+    val theta = 2 * PI / steps
+    val cos = cos(theta).toFloat()
+    val sin = sin(theta).toFloat()
+
+    var xHolder: Float
+    var circleX = 1f
+    var circleY = 0f
+
+    GlStateManager.pushMatrix()
+    worldRenderer.begin(5, DefaultVertexFormats.POSITION)
+
+    for (i in 0..steps) {
+        worldRenderer.pos(x.toDouble(), y.toDouble(), 0.0).endVertex()
+        worldRenderer.pos((circleX * radius + x).toDouble(), (circleY * radius + y).toDouble(), 0.0).endVertex()
+        xHolder = circleX
+        circleX = cos * circleX - sin * circleY
+        circleY = sin * xHolder + cos * circleY
+        worldRenderer.pos((circleX * radius + x).toDouble(), (circleY * radius + y).toDouble(), 0.0).endVertex()
+    }
+
+    tessellator.draw()
+    GlStateManager.popMatrix()
 }
 
-fun NVG.textWithControlCodes(text: String?, x: Float, y: Float, size: Float, font: Font): Float {
+fun circle(x: Float, y: Float, radius: Float, color: Color) = Unit
+
+fun textWithControlCodes(text: String?, x: Float, y: Float, size: Float, font: Font): Float {
     if (text == null) return 0f
     var i = 0
     var color = Color.WHITE
@@ -143,7 +130,7 @@ fun NVG.textWithControlCodes(text: String?, x: Float, y: Float, size: Float, fon
     return xPos
 }
 
-fun NVG.text(text: String, x: Float, y: Float, color: Color, size: Float, font: Font, align: TextAlign = Left, verticalAlign: TextPos = TextPos.Middle) {
+fun text(text: String, x: Float, y: Float, color: Color, size: Float, font: Font, align: TextAlign = Left, verticalAlign: TextPos = TextPos.Middle) {
     if (color.isTransparent) return
     val drawX = when (align) {
         Left -> x
@@ -152,69 +139,55 @@ fun NVG.text(text: String, x: Float, y: Float, color: Color, size: Float, font: 
     }
 
     val drawY = when (verticalAlign) {
-        TextPos.Top -> y + size / 2f
-        TextPos.Middle -> getTextHeight(text, size, font) / 2f
-        TextPos.Bottom -> y - size / 2f
+        TextPos.Top -> y
+        TextPos.Middle -> y - getTextHeight(text, size, font) / 2f
+        TextPos.Bottom -> y - getTextHeight(text, size, font)
     }
 
-    //FontRenderer(fromResource("/assets/odinmain/fonts/Roboto-Regular.ttf"))
     val sr = ScaledResolution(mc)
     GlStateManager.scale(1f / sr.scaleFactor , 1f / sr.scaleFactor, 1f)
-
-    font.fr.drawString(text, drawX, y, color)
+    font.fr.drawString(text, drawX, drawY, color)
     GlStateManager.scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
 }
 
+fun getTextWidth(text: String, size: Float, font: Font) = font.fr.getWidth(text)
 
+fun getTextHeight(text: String, size: Float, font: Font) = font.fr.getHeight(text)
 
-fun NVG.getTextWidth(text: String, size: Float, font: Font) = font.fr.getWidth(text)
-
-fun NVG.getTextHeight(text: String, size: Float, font: Font) = font.fr.getHeight(text)
-
-fun NVG.dropShadow(x: Float, y: Float, w: Float, h: Float, blur: Float, spread: Float, radius: Float) = Unit
+fun dropShadow(x: Float, y: Float, w: Float, h: Float, blur: Float, spread: Float, radius: Float) = Unit
     //renderer.drawDropShadow(context, x, y, w, h, blur, spread, radius)
 
-fun NVG.translate(x: Float, y: Float) = GlStateManager.translate(x, y, 0f)
-    //renderer.translate(context, x, y)
+fun translate(x: Float, y: Float, z: Float = 0f) = GlStateManager.translate(x, y, z)
 
-fun NVG.resetTransform() = GlStateManager.translate(0f, 0f, 0f)
-    //renderer.resetTransform(context)
+fun scale(x: Float, y: Float, z: Float = 1f) = GlStateManager.scale(x, y, z)
 
-fun NVG.scale(x: Float, y: Float) = GlStateManager.scale(x, y, 1f)
-    //renderer.scale(context, x, y)
-
-fun NVG.setAlpha(alpha: Float) = Unit
+fun setAlpha(alpha: Float) = Unit
     //renderer.setAlpha(context, alpha)
 /*
-fun NVG.scissor(x: Float, y: Float, w: Float, h: Float): Any? {
+fun scissor(x: Float, y: Float, w: Float, h: Float): Any? {
+
     //return ScissorHelper.INSTANCE.scissor(context, x, y, w, h)
     return null
 }
 
-fun NVG.resetScissor(scissor: Scissor) {
+fun resetScissor(scissor: Scissor) {
     ScissorHelper.INSTANCE.resetScissor(context, scissor)
-}
+}*/
 
- */
 
-fun NVG.image(filePath: String, x: Float, y: Float, w: Float, h: Float, radius: Float, clazz: Class<*>) {
-    mc.textureManager.bindTexture(ResourceLocation(filePath))
+
+fun image(filePath: String, x: Float, y: Float, w: Float, h: Float) {
+    mc.textureManager.bindTexture(ResourceLocation("odinclient", filePath))
     drawTexturedModalRect(x.toInt(), y.toInt(), w.toInt(), h.toInt())
 }
 
-fun drawSVG(filePath: String, x: Float, y: Float, w: Float, h: Float, color: Int, alpha: Float, clazz: Class<*>) {
-    mc.textureManager.bindTexture(ResourceLocation(filePath))
-    GlStateManager.color(1f, 1f, 1f, alpha)
-    drawTexturedModalRect(x.toInt(), y.toInt(), w.toInt(), h.toInt())
-}
-
-
-fun NVG.wrappedText(text: String, x: Float, y: Float, w: Float, h: Float, color: Color, size: Float, font: Font) {
+fun wrappedText(text: String, x: Float, y: Float, w: Float, h: Float, color: Color, size: Float, font: Font) {
     if (color.isTransparent) return
+
     //renderer.drawWrappedString(context, text, x, y, w, color.rgba, size, h, font)
 }
 
-fun NVG.wrappedTextBounds(text: String, width: Float, size: Float, font: Font) = Unit
+fun wrappedTextBounds(text: String, width: Float, size: Float, font: Font) = Unit
     //renderer.getWrappedStringBounds(context, text, width, size, font)
 
 // TODO: Simplify

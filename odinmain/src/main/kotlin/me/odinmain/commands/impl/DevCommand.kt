@@ -6,7 +6,6 @@ import me.odinmain.commands.CommandNode
 import me.odinmain.commands.Commodore
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.impl.dungeon.TPMaze
-import me.odinmain.features.impl.render.ClickGUIModule.isDev
 import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.features.impl.render.DevPlayers.devs
 import me.odinmain.features.impl.render.DevPlayers.updateDevs
@@ -21,12 +20,11 @@ import net.minecraftforge.common.MinecraftForge
 
 object DevCommand : Commodore {
 
-    var devMode = isDev // add more usage maybe?
 
     override val command: CommandNode =
         literal("oddev") {
             requires {
-                devMode || devs.containsKey(mc.thePlayer.name)
+                devs.containsKey(mc.thePlayer.name)
             }
 
             literal("getdata").runs { str: String ->

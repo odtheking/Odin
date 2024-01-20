@@ -33,8 +33,7 @@ class ElementDual(parent: ModuleButton, setting: DualSetting) : Element<DualSett
     private val isLeftHovered: Boolean
         get() = MouseUtils.isAreaHovered(x + 5f, y + 2f, w / 2 - 10f, 30f)
 
-    override fun draw(nvg: NVG) {
-        nvg {
+    override fun draw() {
             rect(x, y, w, h, elementBackground)
             dropShadow(x + 7f, y + 3f, w - 14f, 28f, 10f, 3.75f, 5f)
             rect(x + 7f, y + 3f, w - 14f, 28f, buttonColor, 5f)
@@ -42,10 +41,10 @@ class ElementDual(parent: ModuleButton, setting: DualSetting) : Element<DualSett
             val pos = posAnim.get(8f, w / 2, !setting.enabled)
             rect(x + pos, y + 3f, w / 2 - 6f, 28f, clickGUIColor, 5f)
 
-            text(setting.left, x + w / 4 + 6f, y + 3f + h / 2,
+            text(setting.left, x + w / 4 + 6f, y + 1f + h / 2,
                 Color.WHITE.darkerIf(isLeftHovered), 16f, Fonts.REGULAR, TextAlign.Middle)
-            text(setting.right, x + w * 3 / 4 - 3f,y + 3f + h / 2, Color.WHITE.darkerIf(isRightHovered), 16f, Fonts.REGULAR, TextAlign.Middle)
-        }
+            text(setting.right, x + w * 3 / 4 - 3f,y + 1f + h / 2, Color.WHITE.darkerIf(isRightHovered), 16f, Fonts.REGULAR, TextAlign.Middle)
+
     }
 
     override fun mouseClicked(mouseButton: Int): Boolean {

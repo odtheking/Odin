@@ -5,11 +5,10 @@ import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.world.RenderUtils
 
 object DragonBoxes {
-
     fun renderBoxes() {
         WitherDragonsEnum.entries.forEach {
-            if (!it.statueAlive) return@forEach
-            RenderUtils.drawCustomBox(it.boxesDimentions, it.color.withAlpha(0.5f), lineThickness, phase = false)
+            if (it.entity == null) return@forEach
+            RenderUtils.drawCustomBox(it.boxesDimensions, it.color.withAlpha(0.5f), lineThickness, phase = false)
         }
     }
 }

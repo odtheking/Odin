@@ -45,7 +45,7 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
     private inline val color: Color
         get() = clickGUIColor.brighter(1 + handler.percent() / 200f)
 
-    override fun draw(nvg: NVG) {
+    override fun draw() {
         handler.handle(x, y, w - 12f, h)
         val percentage = ((setting.value - setting.min) / (setting.max - setting.min)).toFloat()
 
@@ -56,7 +56,7 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
             setting.valueAsDouble = newVal.toDouble()
         }
 
-        nvg {
+
             rect(x, y, w, h, elementBackground)
 
             text(name, x + 6f, y + h / 2f - 3f, textColor, 16f, Fonts.REGULAR)
@@ -65,7 +65,7 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
             rect(x + 6f, y + 28f, w - 12f, 7f, sliderBGColor, 2.5f)
             dropShadow(x + 6f, y + 28f, w - 12f, 7f, 10f, 0.75f, 3f)
             if (x + percentage * (w - 12f) > x + 6) rect(x + 6f, y + 28f, sliderPercentage * (w - 12f), 7f, color, 3f)
-        }
+
     }
 
     override fun mouseClicked(mouseButton: Int): Boolean {

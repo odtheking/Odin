@@ -83,7 +83,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
         }
     }
 
-    fun draw(nvg: NVG): Float {
+    fun draw(): Float {
         var offs = height
 
         hoverHandler.handle(x, y, width, height - 1)
@@ -93,11 +93,10 @@ class ModuleButton(val module: Module, val panel: Panel) {
             ClickGUI.setDescription(module.description, x + width + 10f, y, hoverHandler)
         }
 
-        nvg {
 
             rect(x, y, width, height, color)
-            text(module.name, x + width / 2, y + height / 2, textColor, 18f, Fonts.MEDIUM, TextAlign.Middle)
-            val textWidth = getTextWidth(module.name, 18f, Fonts.MEDIUM)
+            text(module.name, x + width / 2, y + height / 2, textColor, 18f, Fonts.REGULAR, TextAlign.Middle)
+            val textWidth = getTextWidth(module.name, 18f, Fonts.REGULAR)
 
             if (textWidth > width - 80)// too long text, not drawing symbol
             else if (module.tag == Module.TagType.RISKY) {
@@ -121,7 +120,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
             }
 
 
-            if (!extendAnim.isAnimating() && !extended || menuElements.isEmpty()) return@nvg
+            if (!extendAnim.isAnimating() && !extended || menuElements.isEmpty()) return offs
 
             var drawY = offs
             offs = height + floor(extendAnim.get(0f, getSettingHeight(), !extended))
@@ -129,10 +128,10 @@ class ModuleButton(val module: Module, val panel: Panel) {
             //val scissor = scissor(x, y, width, offs)
             for (i in 0 until menuElements.size) {
                 menuElements[i].y = drawY
-                drawY += menuElements[i].render(nvg)
+                drawY += menuElements[i].render()
             }
             //resetScissor(scissor)
-        }
+
         return offs
     }
 

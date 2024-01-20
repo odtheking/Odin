@@ -5,7 +5,6 @@ import me.odinmain.features.impl.dungeon.BlessingDisplay
 import me.odinmain.features.impl.floor7.WitherDragons.configEasyPower
 import me.odinmain.features.impl.floor7.WitherDragons.configPower
 import me.odinmain.features.impl.floor7.WitherDragons.configSoloDebuff
-import me.odinmain.features.impl.floor7.WitherDragons.dragPrioSpawnToggle
 import me.odinmain.features.impl.floor7.WitherDragons.paulBuff
 import me.odinmain.features.impl.floor7.WitherDragons.soloDebuffOnAll
 import me.odinmain.utils.addVec
@@ -22,24 +21,24 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 
 object DragonPriority {
 
-    var firstDragonsSpawned = false
     private var dragonTracer = ""
 
-    fun dragPrioSpawn() {
-        if (!dragPrioSpawnToggle || firstDragonsSpawned) return
-
+    fun dragonPrioritySpawn() {
         val spawningDragons = WitherDragonsEnum.entries.filter { it.spawning }.toMutableList()
 
-        if (spawningDragons.size != 1) return
+        if (spawningDragons.size > 0) {
+            val dragon = WitherDragonsEnum.entries.find { it.spawning } ?: return
+            PlayerUtils.alert("§${dragon.colorCode} ${dragon.name}")
+            return
+        }
 
-        val dragon = sortPrio(spawningDragons)
+        val dragon = sortPriority(spawningDragons)
 
         PlayerUtils.alert("§${dragon.colorCode} ${dragon.name}")
         dragonTracer = dragon.name
-        firstDragonsSpawned = true
     }
 
-    private fun sortPrio(spawningDragon: MutableList<WitherDragonsEnum>): WitherDragonsEnum {
+    private fun sortPriority(spawningDragon: MutableList<WitherDragonsEnum>): WitherDragonsEnum {
         val totalPower = BlessingDisplay.Blessings.POWER.current * if (paulBuff) 1.25 else 1.0 +
                 if (BlessingDisplay.Blessings.TIME.current > 0) 2.5 else 0.0
 
@@ -52,22 +51,22 @@ object DragonPriority {
         val green = WitherDragonsEnum.Green
         val red = WitherDragonsEnum.Red
         val dragonList = listOf(orange, green, red, blue, purple)
-        val prioList =
+        val priorityList =
             if (totalPower >= configPower || (spawningDragon.any { it == WitherDragonsEnum.Purple } && totalPower >= configEasyPower)) {
                 if (playerClass.equalsOneOf(Classes.Berserk, Classes.Mage)) dragonList else dragonList.reversed()
             } else listOf(red, orange, blue, purple, green)
 
-        spawningDragon.sortBy { prioList.indexOf(it) }
+        spawningDragon.sortBy { priorityList.indexOf(it) }
 
         if (totalPower >= configEasyPower) {
             if (configSoloDebuff) {
                 if ((playerClass == Classes.Tank && spawningDragon.any { it == WitherDragonsEnum.Purple }) || soloDebuffOnAll) {
-                    spawningDragon.sortByDescending { prioList.indexOf(it) }
+                    spawningDragon.sortByDescending { priorityList.indexOf(it) }
                 }
 
             } else {
                 if ((playerClass == Classes.Healer && spawningDragon.any { it == WitherDragonsEnum.Purple }) || soloDebuffOnAll) {
-                    spawningDragon.sortByDescending { prioList.indexOf(it) }
+                    spawningDragon.sortByDescending { priorityList.indexOf(it) }
                 }
             }
         }
@@ -75,18 +74,14 @@ object DragonPriority {
         return spawningDragon[0]
     }
 
+    fun renderTracerPriority(event: RenderWorldLastEvent, tracerWidth: Int) {
 
-    fun renderTracerPrio(event: RenderWorldLastEvent, tracerWidth: Int) {
-
-        val dragon = WitherDragonsEnum.entries.find { it.name == dragonTracer } ?: return
-
+        val dragon = sortPriority(WitherDragonsEnum.entries.filter { it.spawning }.toMutableList())
+        if (dragon.entity == null) return
         RenderUtils.draw3DLine(
-            mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), dragon.spawnPos.addVec(.5, .5, .5),
+            mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), dragon.entity!!.renderVec.addVec(.5, .5, .5),
             dragon.color,
             tracerWidth, depth = true, event.partialTicks
         )
     }
-
-
-
 }

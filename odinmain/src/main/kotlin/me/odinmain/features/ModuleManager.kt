@@ -16,7 +16,6 @@ import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.profile
-import me.odinmain.utils.render.gui.nvg.drawNVG
 import net.minecraft.network.Packet
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -158,11 +157,11 @@ object ModuleManager {
         if (mc.currentScreen != null || event.type != RenderGameOverlayEvent.ElementType.ALL) return
 
         mc.mcProfiler.startSection("Odin Hud")
-        drawNVG {
-            for (i in 0 until huds.size) {
-                huds[i].draw(this, false)
-            }
+
+        for (i in 0 until huds.size) {
+            huds[i].draw(false)
         }
+
         mc.mcProfiler.endSection()
     }
 

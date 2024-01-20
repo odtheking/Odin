@@ -45,20 +45,19 @@ object ClickGUI : Screen() {
         }
     }
 
-    override fun draw(nvg: NVG) {
-        nvg {
+    override fun draw() {
             if (anim.isAnimating()) {
                 translate(0f, floor(anim.get(-10f, 0f, !open)))
                 setAlpha(anim.get(0f, 1f, !open))
             }
 
             for (i in 0 until panels.size) {
-                panels[i].draw(this)
+                panels[i].draw()
             }
 
-            SearchBar.draw(this)
-            desc.render(this)
-        }
+            SearchBar.draw()
+            desc.render()
+
     }
 
     override fun onScroll(amount: Int) {
@@ -169,9 +168,8 @@ object ClickGUI : Screen() {
             get() = text != null && hoverHandler != null && text != ""
 
         /** Handles rendering, if it's not active then it won't render */
-        fun render(nvg: NVG) {
+        fun render() {
             if (shouldRender) {
-                nvg {
                     val area = listOf(100f, 100f, 100f, 100f) //wrappedTextBounds(text!!, 300f, 16f, Fonts.REGULAR)
                     rect(
                         x, y, area[2] - area[0] + 10, area[3] - area[1] + 8,
@@ -182,8 +180,8 @@ object ClickGUI : Screen() {
                         text = null
                         hoverHandler = null
                     }
-                }
             }
+
         }
     }
 }

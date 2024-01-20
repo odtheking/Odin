@@ -26,8 +26,8 @@ object LeapHelper {
     private var currentPos = NONE
 
     private var leapHelperClear = ""
-    var leapHelperBoss = ""
-    var leapHelper: String = if (DungeonUtils.inBoss) leapHelperClear else leapHelperBoss
+    private var leapHelperBoss = ""
+    var leapHelper: String = if (DungeonUtils.inBoss) leapHelperBoss else leapHelperClear
 
     fun getPlayer(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.END || DungeonUtils.teammates.isEmpty()) return

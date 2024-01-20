@@ -32,6 +32,19 @@ object RenderUtils {
         partialTicks = event.partialTicks
     }
 
+    fun preDraw() {
+        GlStateManager.enableAlpha()
+        GlStateManager.enableBlend()
+        GlStateManager.disableLighting()
+        GlStateManager.disableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+    }
+
+    fun postDraw() {
+        GlStateManager.disableBlend()
+        GlStateManager.enableTexture2D()
+    }
+
     /**
      * Gets the viewer's position as a triple of x, y, and z coordinates.
      *
@@ -430,10 +443,7 @@ object RenderUtils {
         GlStateManager.pushMatrix()
         color.bindColor()
         GlStateManager.translate(-realX, -realY, -realZ)
-        GlStateManager.disableTexture2D()
-        GlStateManager.enableBlend()
-        GlStateManager.disableAlpha()
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        preDraw()
 
         GL11.glLineWidth(lineWidth.toFloat())
         if (!depth) {
@@ -453,9 +463,7 @@ object RenderUtils {
             GlStateManager.depthMask(true)
         }
 
-        GlStateManager.disableBlend()
-        GlStateManager.enableAlpha()
-        GlStateManager.enableTexture2D()
+        postDraw()
         GlStateManager.resetColor()
         GlStateManager.popMatrix()
     }

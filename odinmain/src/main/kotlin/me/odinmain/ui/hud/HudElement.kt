@@ -12,7 +12,9 @@ import me.odinmain.utils.endProfile
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinmain.utils.render.gui.animations.impl.EaseInOut
-import me.odinmain.utils.render.gui.nvg.*
+import me.odinmain.utils.render.gui.nvg.rectOutline
+import me.odinmain.utils.render.gui.nvg.scale
+import me.odinmain.utils.render.gui.nvg.translate
 import me.odinmain.utils.startProfile
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
@@ -79,17 +81,11 @@ open class HudElement(
             if (value > .8f) scaleSetting.value = value
         }
 
-    /**
-     * Good practice to keep the example as similar to the actual hud.
-     */
-    open fun render(nvg: NVG, example: Boolean): Pair<Float, Float> {
-        return nvg.render(example)
-    }
 
     /**
      * Renders and positions the element and if it's rendering the example then draw a rect behind it.
      */
-    fun draw(vg: NVG, example: Boolean) {
+    fun draw(example: Boolean) {
         if (displayToggle) enabled = enabledSetting.value
         if (!isEnabled) return
 
@@ -101,11 +97,11 @@ open class HudElement(
 
         GlStateManager.pushMatrix()
         val sr = ScaledResolution(mc)
-        GlStateManager.scale(1.0 / sr.scaleFactor, 1.0 / sr.scaleFactor, 1.0)
-        GlStateManager.translate(x, y, 0f)
-        GlStateManager.scale(scale, scale, 1f)
+        scale(1f / sr.scaleFactor, 1f / sr.scaleFactor, 1f)
+        translate(x, y, 0f)
+        scale(scale, scale, 1f)
 
-        val (width, height) = render(vg, example)
+        val (width, height) = render(example)
 
         if (example) {
             hoverHandler.handle(x, y, width * scale, height * scale)
@@ -114,7 +110,7 @@ open class HudElement(
                 thickness += anim2.get(0f, .5f, dragging == null)
             }
 
-            vg.rectOutline(
+            rectOutline(
                 -1.5f,
                 -1.5f,
                 3f + width,
@@ -185,4 +181,4 @@ open class HudElement(
     }
 }
 
-typealias Render = NVG.(Boolean) -> Pair<Float, Float>
+typealias Render = (Boolean) -> Pair<Float, Float>

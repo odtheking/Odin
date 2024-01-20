@@ -40,8 +40,8 @@ class ElementCheckBox(parent: ModuleButton, setting: BooleanSetting) : Element<B
         if (!ClickGUIModule.switchType) isAreaHovered(x + w - 30f, y + 5f, 21f, 20f)
         else isAreaHovered(x + w - 43f, y + 4f, 34f, 20f)
 
-    override fun draw(nvg: NVG) {
-        nvg {
+    override fun draw() {
+
             rect(x, y, w, h, elementBackground)
             text(name, x + 6f, y + h / 2f, textColor, 16f, Fonts.REGULAR)
 
@@ -63,7 +63,7 @@ class ElementCheckBox(parent: ModuleButton, setting: BooleanSetting) : Element<B
                     Color(220, 220, 220).darkerIf(isHovered, 0.9f)
                 )
             }
-        }
+
     }
 
     override fun mouseClicked(mouseButton: Int): Boolean {
