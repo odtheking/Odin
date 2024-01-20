@@ -15,7 +15,6 @@ import net.minecraft.entity.Entity
 import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
-import net.minecraft.util.EnumParticleTypes
 import net.minecraft.util.Vec3
 
 
@@ -64,8 +63,7 @@ enum class WitherDragonsEnum(
 fun handleSpawnPacket(event: ReceivePacketEvent) {
     if (event.packet !is S2APacketParticles) return
     val particle = event.packet
-
-   if (
+    /*if (
         particle.particleCount != 20 ||
         particle.yCoordinate != 19.0 ||
         particle.particleType != EnumParticleTypes.FLAME ||
@@ -76,7 +74,7 @@ fun handleSpawnPacket(event: ReceivePacketEvent) {
         !particle.isLongDistance ||
         particle.xCoordinate % 1 != 0.0 ||
         particle.zCoordinate % 1 != 0.0
-    ) return
+    ) return*/
 
     WitherDragonsEnum.entries.forEach { dragon ->
         if (checkParticle(particle, dragon) && dragon.particleSpawnTime == 0L) {
@@ -85,7 +83,7 @@ fun handleSpawnPacket(event: ReceivePacketEvent) {
             dragon.particleSpawnTime = System.currentTimeMillis()
         }
     }
-    if (WitherDragons.dragPrioSpawnToggle) DragonPriority.dragonPrioritySpawn()
+    if (WitherDragons.dragonPriorityToggle) DragonPriority.dragonPrioritySpawn()
 }
 
 private fun checkParticle(event: S2APacketParticles, color: WitherDragonsEnum): Boolean {

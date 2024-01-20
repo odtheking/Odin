@@ -1,7 +1,7 @@
 package me.odinmain.features.impl.floor7
 
 import me.odinmain.events.impl.ChatPacketEvent
-import me.odinmain.features.impl.floor7.WitherDragons.sendNotif
+import me.odinmain.features.impl.floor7.WitherDragons.sendNotification
 import me.odinmain.features.impl.floor7.WitherDragons.sendSpawned
 import me.odinmain.features.impl.floor7.WitherDragons.sendTime
 import me.odinmain.utils.equalsOneOf
@@ -51,7 +51,7 @@ object DragonDeathCheck {
 
         val dragon = WitherDragonsEnum.entries.find { lastDragonDeath == it.name } ?: return
 
-        if (sendNotif) modMessage("§${dragon.colorCode}${dragon.name} dragon counts.")
+        if (sendNotification) modMessage("§${dragon.colorCode}${dragon.name} dragon counts.")
     }
 
     private fun Vec3.dragonCheck(vec3: Vec3): Boolean {
