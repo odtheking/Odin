@@ -28,7 +28,7 @@ object Waypoints : Module(
         onMessage(Regex("Party > (\\[.+])? (.{0,16}): x: (-?\\d+),? y: (-?\\d+),? z: (-?\\d+) "), { fromParty }) {
             val matchResult = Regex("Party > (\\[.+])? (.{0,16}): x: (-?\\d+),? y: (-?\\d+),? z: (-?\\d+) ").find(it) ?: return@onMessage
             val (rank, player) = matchResult.destructured
-            val (x, y, z) = matchResult.groupValues.drop(3).map { a -> a.toInt() }
+            val (x, y, z) = matchResult.groupValues.drop(3).map { a -> a.toIntOrNull() ?: return@onMessage }
             WaypointManager.addTempWaypoint(getColorFromRank(rank) + player, x, y, z)
         }
 
