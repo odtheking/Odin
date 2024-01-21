@@ -294,3 +294,8 @@ fun readShader(name: String, ext: String): String =
 
 fun loadBufferedImage(path: String): BufferedImage =
     TextureUtil.readBufferedImage(OdinMain::class.java.getResourceAsStream(path))
+
+
+fun max(vararg numbers: Number): Float {
+    return numbers.maxBy { it.toFloat() }.toFloat()
+}
