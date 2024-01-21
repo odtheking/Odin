@@ -13,11 +13,11 @@ import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.clickgui.util.HoverHandler
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.gui.*
 import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinmain.utils.render.gui.MouseUtils.mouseX
 import me.odinmain.utils.render.gui.MouseUtils.mouseY
 import me.odinmain.utils.render.gui.animations.impl.EaseInOut
-import me.odinmain.utils.render.gui.nvg.*
 import kotlin.math.floor
 
 /**
@@ -50,7 +50,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
         text(name, x + 6f, y + 18f, textColor, 16f, Fonts.REGULAR)
         dropShadow(x + w - 40f, y + 5f, 31f, 19f, 10f, 0.75f, 5f)
         rect(x + w - 40f, y + 5f, 31f, 19f, color.brighter(1 + hover.percent() / 500f), 5f)
-        rectOutline(x + w - 40f, y + 5f, 31f, 19f, color.darker().withAlpha(1f), 0f, .5f)
+        rectOutline(x + w - 40f, y + 5f, 31f, 19f, color.darker().withAlpha(1f), 5f, .5f)
 
         if (!extended && !anim.isAnimating()) return
 

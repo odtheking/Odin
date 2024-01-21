@@ -10,9 +10,9 @@ import me.odinmain.ui.clickgui.util.ColorUtil.elementBackground
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.HoverHandler
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.gui.*
+import me.odinmain.utils.render.gui.Fonts.REGULAR
 import me.odinmain.utils.render.gui.animations.impl.ColorAnimation
-import me.odinmain.utils.render.gui.nvg.*
-import me.odinmain.utils.render.gui.nvg.Fonts.REGULAR
 import org.lwjgl.input.Keyboard
 
 /**

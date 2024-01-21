@@ -6,9 +6,8 @@ import me.odinmain.ui.clickgui.util.ColorUtil
 import me.odinmain.ui.clickgui.util.ColorUtil.buttonColor
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.gui.MouseUtils
+import me.odinmain.utils.render.gui.*
 import me.odinmain.utils.render.gui.animations.impl.ColorAnimation
-import me.odinmain.utils.render.gui.nvg.*
 import org.lwjgl.input.Keyboard
 
 object SearchBar {

@@ -6,12 +6,12 @@ import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.ui.clickgui.SearchBar.currentSearch
 import me.odinmain.ui.clickgui.elements.ModuleButton
 import me.odinmain.ui.clickgui.util.ColorUtil
+import me.odinmain.utils.render.gui.*
 import me.odinmain.utils.render.gui.GuiUtils.capitalizeFirst
 import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinmain.utils.render.gui.MouseUtils.mouseX
 import me.odinmain.utils.render.gui.MouseUtils.mouseY
 import me.odinmain.utils.render.gui.animations.impl.LinearAnimation
-import me.odinmain.utils.render.gui.nvg.*
 import me.odinmain.utils.round
 import kotlin.math.floor
 
@@ -47,11 +47,10 @@ class Panel(
     private val scrollAnimation = LinearAnimation<Float>(200)
 
     init {
-            for (module in modules.sortedByDescending { getTextWidth(it.name, 18f, Fonts.REGULAR) }) {
-                if (module.category != this@Panel.category) continue
-                moduleButtons.add(ModuleButton(module, this@Panel))
-            }
-
+        for (module in modules.sortedByDescending { getTextWidth(it.name, 18f, Fonts.REGULAR) }) {
+            if (module.category != this@Panel.category) continue
+            moduleButtons.add(ModuleButton(module, this@Panel))
+        }
     }
 
     fun draw() {
@@ -60,7 +59,7 @@ class Panel(
             y = floor(y2 + mouseY)
         }
 
-        rect2Corners(x, y, width, height, ColorUtil.moduleButtonColor, 15f, 2)
+        roundedRectangle(x, y, width, height, ColorUtil.moduleButtonColor, ColorUtil.moduleButtonColor, ColorUtil.moduleButtonColor, 0f, 15f, 15f, 0f, 0f, 0f)
         text(if (displayName == "Floor7") "Floor 7" else "§l${displayName}", x + width / 2f, y + height / 2f, ColorUtil.textColor, 22f, Fonts.SEMIBOLD, TextAlign.Middle)
 
         scrollOffset = scrollAnimation.get(scrollOffset, scrollTarget).round(0)
@@ -75,7 +74,7 @@ class Panel(
                 length = startY + 5f
             }
 
-            moduleButtons.lastOrNull()?.color?.let { rect2Corners(x, y + startY, width, 10f, it, 10f, 4) }
+            moduleButtons.lastOrNull()?.color?.let { roundedRectangle(x, y + startY, width, 10f, it, it, it, 0f, 0f, 0f, 10f, 10f, 0f) }
             //resetScissor(s)
 
             dropShadow(x, y, width, (startY + 10f).coerceAtLeast(height), 12.5f, 6f, 5f)

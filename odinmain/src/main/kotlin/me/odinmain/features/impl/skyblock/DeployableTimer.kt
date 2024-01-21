@@ -6,10 +6,11 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.noControlCodes
-import me.odinmain.utils.render.gui.nvg.Fonts
-import me.odinmain.utils.render.gui.nvg.drawBufferedImage
-import me.odinmain.utils.render.gui.nvg.getTextWidth
-import me.odinmain.utils.render.gui.nvg.textWithControlCodes
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.gui.Fonts
+import me.odinmain.utils.render.gui.drawBufferedImage
+import me.odinmain.utils.render.gui.getTextWidth
+import me.odinmain.utils.render.gui.textWithControlCodes
 import me.odinmain.utils.skyblock.getSkullValue
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraftforge.client.event.RenderGameOverlayEvent
@@ -24,8 +25,8 @@ object DeployableTimer : Module(
 ) {
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {
-            textWithControlCodes("§5SOS Flare", 40f, 15f, 16f, Fonts.MEDIUM)
-            textWithControlCodes("§e179s", 40f, 32f, 16f, Fonts.MEDIUM)
+            textWithControlCodes("§5SOS Flare", 40f, 15f, Color.WHITE,16f, Fonts.MEDIUM)
+            textWithControlCodes("§e179s", 40f, 32f, Color.WHITE,16f, Fonts.MEDIUM)
 
             drawBufferedImage(
                 Deployables.SOS.imgPath, -5f, -2f, 50f, 50f
@@ -36,8 +37,8 @@ object DeployableTimer : Module(
                 getTextWidth("179s", 16f, Fonts.MEDIUM)
             ) + 42f to 48f
         } else if (toRender.name != "") {
-            textWithControlCodes(toRender.name, 40f, 15f, 16f, Fonts.MEDIUM)
-            textWithControlCodes(toRender.timeLeft, 40f, 32f, 16f, Fonts.MEDIUM)
+            textWithControlCodes(toRender.name, 40f, 15f, Color.WHITE,16f, Fonts.MEDIUM)
+            textWithControlCodes(toRender.timeLeft, 40f, 32f, Color.WHITE,16f, Fonts.MEDIUM)
 
             if (toRender.name.contains("Flare", true)) drawBufferedImage(toRender.imgPath, -5f, -2f, 50f, 50f)
             else drawBufferedImage(toRender.imgPath, 0f, 5f, 35f, 35f)

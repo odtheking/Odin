@@ -12,9 +12,10 @@ import me.odinmain.ui.clickgui.util.ColorUtil.clickGUIColor
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.HoverHandler
 import me.odinmain.ui.hud.EditHUDGui
+import me.odinmain.utils.render.gui.*
 import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinmain.utils.render.gui.animations.impl.ColorAnimation
-import me.odinmain.utils.render.gui.nvg.*
+
 
 /**
  * Renders all the modules.

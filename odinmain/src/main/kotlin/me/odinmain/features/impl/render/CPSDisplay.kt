@@ -11,9 +11,8 @@ import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.brighter
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.gui.*
 import me.odinmain.utils.render.gui.animations.impl.EaseInOut
-import me.odinmain.utils.render.gui.nvg.*
-import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -28,10 +27,10 @@ object CPSDisplay : Module(
 
         val value = if (button == 0) "${leftClicks.size}" else "${rightClicks.size}"
         val anim = if (button == 0) leftAnim else rightAnim
-
+        val color = color.brighter(leftAnim.get(1f, 1.5f, leftAnim.getPercent() >= 50))
         if (button == 2) {
-            rect2Corners(0f, 0f, 50f, 36f, color.brighter(leftAnim.get(1f, 1.5f, leftAnim.getPercent() >= 50)), 9f, 1)
-            rect2Corners(50f, 0f, 50f, 36f, color.brighter(rightAnim.get(1f, 1.5f, rightAnim.getPercent() >= 50)), 9f, 3)
+            roundedRectangle(0f, 0f, 50f, 36f, color, color, color, 0f , 9f, 0f, 9f, 0f, 0f)
+            roundedRectangle(50f, 0f, 50f, 36f, color, color, color, 0f , 9f, 9f, 0f, 9f, 0f)
 
             if (outline) dropShadow(0f, 0f, 100f, 36f, 10f, 1f, 9f)
         } else {
@@ -41,7 +40,7 @@ object CPSDisplay : Module(
 
         if (mouseText) {
             if (button == 2) {
-                text("LMB", 25f, 2.5f, textColor, 10f, Fonts.MEDIUM, TextAlign.Middle)
+                text("LMB", 25f, 2.5f, textColor, 20f, Fonts.MEDIUM, TextAlign.Middle)
                 text(leftClicks.size.toString(), 25f, 18.5f, textColor, 18.5f, Fonts.MEDIUM, TextAlign.Middle)
 
                 text("RMB", 75f, 2.5f, textColor, 10f, Fonts.MEDIUM, TextAlign.Middle)

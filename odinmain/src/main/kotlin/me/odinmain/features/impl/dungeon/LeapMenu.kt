@@ -18,9 +18,9 @@ import me.odinmain.utils.name
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.MouseUtils.getQuadrant
-import me.odinmain.utils.render.gui.nvg.rect
-import me.odinmain.utils.render.gui.nvg.scale
-import me.odinmain.utils.render.gui.nvg.translate
+import me.odinmain.utils.render.gui.rect
+import me.odinmain.utils.render.gui.scale
+import me.odinmain.utils.render.gui.translate
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.Classes
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.EMPTY
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.leapTeammates

@@ -21,10 +21,10 @@ import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.gui.nvg.Fonts
-import me.odinmain.utils.render.gui.nvg.getTextWidth
-import me.odinmain.utils.render.gui.nvg.rect
-import me.odinmain.utils.render.gui.nvg.textWithControlCodes
+import me.odinmain.utils.render.gui.Fonts
+import me.odinmain.utils.render.gui.getTextWidth
+import me.odinmain.utils.render.gui.rect
+import me.odinmain.utils.render.gui.textWithControlCodes
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
@@ -67,8 +67,8 @@ object WitherDragons : Module(
         if (it) {
             if (timerBackground) rect(1f, 1f, getTextWidth("Purple spawning in 4500ms", 19f, Fonts.REGULAR), 35f, Color.DARK_GRAY.withAlpha(.75f), 5f)
 
-            textWithControlCodes("§5Purple spawning in §a4500ms", 2f, 10f, 16f, Fonts.REGULAR)
-            textWithControlCodes("§cRed spawning in §e1200ms", 2f, 26f, 16f, Fonts.REGULAR)
+            textWithControlCodes("§5Purple spawning in §a4500ms", 2f, 10f, Color.WHITE, 16f, Fonts.REGULAR)
+            textWithControlCodes("§cRed spawning in §e1200ms", 2f, 26f, Color.WHITE,16f, Fonts.REGULAR)
 
             max(
                 getTextWidth("Purple spawning in 4500ms", 16f, Fonts.REGULAR),
@@ -77,7 +77,7 @@ object WitherDragons : Module(
         } else if (DragonTimer.toRender.size != 0) {
             var width = 0f
             DragonTimer.toRender.forEachIndexed { index, triple ->
-                textWithControlCodes(triple.first, 1f, 9f + index * 17f, 16f, Fonts.REGULAR)
+                textWithControlCodes(triple.first, 1f, 9f + index * 17f, Color.WHITE,16f, Fonts.REGULAR)
                 width = max(width, getTextWidth(triple.first.noControlCodes, 16f, Fonts.REGULAR))
             }
             rect(1f, 1f, width + 2f, DragonTimer.toRender.size * 17f + 1, Color.DARK_GRAY.withAlpha(.5f), 5f)

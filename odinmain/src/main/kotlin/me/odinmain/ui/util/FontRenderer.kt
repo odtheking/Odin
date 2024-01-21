@@ -2,6 +2,7 @@ package me.odinmain.ui.util
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.gui.scale
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.MathHelper
 import org.lwjgl.BufferUtils
@@ -156,7 +157,7 @@ class FontRenderer(path: String, size: Float) {
         var y = yPos
 
         GlStateManager.pushMatrix()
-        GlStateManager.scale(0.5, 0.5, 1.0)
+        scale(0.5f, 0.5f, 1.0f)
 
         x -= (MARGIN / 2).toFloat()
         y -= (MARGIN / 2).toFloat()

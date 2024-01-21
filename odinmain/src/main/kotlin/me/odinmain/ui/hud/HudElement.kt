@@ -12,9 +12,9 @@ import me.odinmain.utils.endProfile
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinmain.utils.render.gui.animations.impl.EaseInOut
-import me.odinmain.utils.render.gui.nvg.rectOutline
-import me.odinmain.utils.render.gui.nvg.scale
-import me.odinmain.utils.render.gui.nvg.translate
+import me.odinmain.utils.render.gui.rectOutline
+import me.odinmain.utils.render.gui.scale
+import me.odinmain.utils.render.gui.translate
 import me.odinmain.utils.startProfile
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager

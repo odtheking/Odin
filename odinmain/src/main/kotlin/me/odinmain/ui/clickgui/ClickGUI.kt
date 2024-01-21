@@ -12,8 +12,8 @@ import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.clickgui.util.HoverHandler
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
+import me.odinmain.utils.render.gui.*
 import me.odinmain.utils.render.gui.animations.impl.EaseInOut
-import me.odinmain.utils.render.gui.nvg.*
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.entity.player.EntityPlayer
@@ -35,7 +35,7 @@ object ClickGUI : Screen() {
 
     private val panels: ArrayList<Panel> = arrayListOf()
 
-    var anim = EaseInOut(400)
+    private var anim = EaseInOut(400)
     private var open = false
     private var desc: Description = Description(null, 0f, 0f, null)
 

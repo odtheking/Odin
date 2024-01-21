@@ -11,9 +11,9 @@ import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.HoverHandler
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.gui.*
 import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinmain.utils.render.gui.MouseUtils.mouseX
-import me.odinmain.utils.render.gui.nvg.*
 import org.lwjgl.input.Keyboard
 import kotlin.math.roundToInt
 
