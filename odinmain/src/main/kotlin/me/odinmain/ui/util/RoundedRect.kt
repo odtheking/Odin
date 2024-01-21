@@ -4,7 +4,7 @@ import gg.essential.elementa.components.UIBlock
 import gg.essential.universal.UMatrixStack
 import gg.essential.universal.shader.*
 import me.odinmain.utils.createLegacyShader
-import java.awt.Color
+import me.odinmain.utils.render.Color
 
 object RoundedRect {
 
@@ -12,6 +12,7 @@ object RoundedRect {
         Rect.initShader()
         Rect2Corners.initShader()
         RectOutline.initShader()
+        Testing.initShader()
     }
 
     /**
@@ -24,7 +25,7 @@ object RoundedRect {
         Rect.shaderRadiusUniform.setValue(radius)
         Rect.shaderInnerRectUniform.setValue(x + radius, y + radius, x + width - radius, y + height - radius)
 
-        UIBlock.drawBlockWithActiveShader(matrixStack, color, x.toDouble(), y.toDouble(), x.toDouble() + width.toDouble(), y.toDouble() + height.toDouble())
+        UIBlock.drawBlockWithActiveShader(matrixStack, color.javaColor, x.toDouble(), y.toDouble(), x.toDouble() + width.toDouble(), y.toDouble() + height.toDouble())
 
         Rect.shader.unbind()
     }
@@ -37,7 +38,7 @@ object RoundedRect {
         Rect2Corners.shaderInnerRectUniform.setValue(x + radius, y + radius, x + width - radius, y + height - radius)
         Rect2Corners.shaderCornerIDsUniform.setValue(cornerID)
 
-        UIBlock.drawBlockWithActiveShader(matrixStack, color, x.toDouble(), y.toDouble(), x.toDouble() + width.toDouble(), y.toDouble() + height.toDouble())
+        UIBlock.drawBlockWithActiveShader(matrixStack, color.javaColor, x.toDouble(), y.toDouble(), x.toDouble() + width.toDouble(), y.toDouble() + height.toDouble())
 
         Rect2Corners.shader.unbind()
     }
@@ -50,9 +51,27 @@ object RoundedRect {
         RectOutline.shaderInnerRectUniform.setValue(x + radius, y + radius, x + width - radius, y + height - radius)
         RectOutline.shaderOutlineThickness.setValue(thickness)
 
-        UIBlock.drawBlockWithActiveShader(matrixStack, color, x.toDouble(), y.toDouble(), x.toDouble() + width.toDouble(), y.toDouble() + height.toDouble())
+        UIBlock.drawBlockWithActiveShader(matrixStack, color.javaColor, x.toDouble(), y.toDouble(), x.toDouble() + width.toDouble(), y.toDouble() + height.toDouble())
 
         RectOutline.shader.unbind()
+    }
+
+    fun drawTest(matrixStack: UMatrixStack, x: Float, y: Float, width: Float, height: Float, color: Color, borderColor: Color, shadowColor: Color, borderThickness: Float, topL: Float, topR: Float, botL: Float, botR: Float, edgeSoftness: Float) {
+        if (!Testing.isInitialized() || !Testing.shader.usable) return
+
+        Testing.shader.bind()
+        Testing.shaderCenterUniform.setValue(x + (width / 2), y + (height / 2))
+        Testing.shaderSizeUniform.setValue(width, height)
+        Testing.shaderRadiusUniform.setValue(botR, topR, botL, topL)
+        Testing.shaderBorderThicknessUniform.setValue(borderThickness)
+        Testing.shaderEdgeSoftnessUniform.setValue(edgeSoftness)
+        Testing.shaderColorUniform.setValue(color.r / 255f, color.g / 255f, color.b / 255f, color.alpha)
+        Testing.shaderBorderColorUniform.setValue(borderColor.r / 255f, borderColor.g / 255f, borderColor.b / 255f, borderColor.alpha)
+        Testing.shaderShadowColorUniform.setValue(shadowColor.r / 255f, shadowColor.g / 255f, shadowColor.b / 255f, shadowColor.alpha)
+
+        UIBlock.drawBlockWithActiveShader(matrixStack, color.javaColor, x.toDouble(), y.toDouble(), x.toDouble() + width.toDouble(), y.toDouble() + height.toDouble())
+
+        Testing.shader.unbind()
     }
 
     object Rect {
@@ -120,6 +139,40 @@ object RoundedRect {
             shaderInnerRectUniform = shader.getFloat4Uniform("u_InnerRect")
             shaderOutlineThickness = shader.getFloatUniform("u_OutlineThickness")
             println("Loaded Odin rounded rectangle (outline) shader")
+        }
+    }
+
+    object Testing {
+        lateinit var shader: UShader
+        lateinit var shaderCenterUniform: Float2Uniform
+        lateinit var shaderSizeUniform: Float2Uniform
+        lateinit var shaderRadiusUniform: Float4Uniform
+        lateinit var shaderBorderThicknessUniform: FloatUniform
+        lateinit var shaderEdgeSoftnessUniform: FloatUniform
+        lateinit var shaderColorUniform: Float4Uniform
+        lateinit var shaderBorderColorUniform: Float4Uniform
+        lateinit var shaderShadowColorUniform: Float4Uniform
+
+        fun isInitialized() = ::shader.isInitialized
+
+        fun initShader() {
+            if (::shader.isInitialized) return
+
+            shader = createLegacyShader("rectangle", "testing", BlendState.NORMAL)
+            if (!shader.usable) {
+                println("Failed to load Odin rounded rectangle (test) shader")
+                return
+            }
+            shaderCenterUniform = shader.getFloat2Uniform("u_rectCenter")
+            shaderSizeUniform = shader.getFloat2Uniform("u_rectSize")
+            shaderRadiusUniform = shader.getFloat4Uniform("u_Radii")
+            shaderBorderThicknessUniform = shader.getFloatUniform("u_borderThickness")
+            shaderEdgeSoftnessUniform = shader.getFloatUniform("u_edgeSoftness")
+            shaderColorUniform = shader.getFloat4Uniform("u_colorRect")
+            shaderBorderColorUniform = shader.getFloat4Uniform("u_colorBorder")
+            shaderShadowColorUniform = shader.getFloat4Uniform("u_colorShadow")
+
+            println("Loaded Odin rounded rectangle (test) shader")
         }
     }
 }

@@ -20,6 +20,7 @@ import me.odinmain.utils.profile
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.nvg.drawBufferedImage
 import me.odinmain.utils.render.gui.nvg.rectOutline
+import me.odinmain.utils.render.gui.nvg.test
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.network.Packet
 import net.minecraftforge.client.event.RenderGameOverlayEvent
@@ -98,7 +99,8 @@ object ModuleManager {
         InactiveWaypoints,
         Ragaxe,
         MobSpawn,
-        WitherDragons
+        WitherDragons,
+        RoundedRectangleTesting
     )
 
 
@@ -159,7 +161,6 @@ object ModuleManager {
 
     @SubscribeEvent
     fun onRenderOverlay(event: RenderGameOverlayEvent.Post) {
-        rectOutline(100f, 100f, 200f, 200f, Color.WHITE, 5f, 5f)
         if (mc.currentScreen != null || event.type != RenderGameOverlayEvent.ElementType.ALL) return
 
         mc.mcProfiler.startSection("Odin Hud")

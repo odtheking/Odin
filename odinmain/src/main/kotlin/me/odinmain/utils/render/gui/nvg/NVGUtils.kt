@@ -42,7 +42,7 @@ fun rect2Corners(x: Number, y: Number, w: Number, h: Number, color: Color, radiu
     val matrix = UMatrixStack.Compat
     matrix.runLegacyMethod(matrix.get()) {
         RoundedRect.drawRoundedRectangle2Corners(
-            matrix.get(), x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(), radius.toFloat(), color.javaColor, cornerID
+            matrix.get(), x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(), radius.toFloat(), color, cornerID
         )
     }
     GlStateManager.scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
@@ -58,7 +58,7 @@ fun rect(
     matrix.runLegacyMethod(matrix.get()) {
         RoundedRect.drawRoundedRectangle(
             matrix.get(), x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(), radius.toFloat(),
-            color.javaColor
+            color
         )
     }
     GlStateManager.scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
@@ -77,7 +77,25 @@ fun rectOutline(x: Float, y: Float, w: Float, h: Float, color: Color, radius: Fl
     matrix.runLegacyMethod(matrix.get()) {
         RoundedRect.drawRoundedRectangleOutline(
             matrix.get(), x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(), radius.toFloat(),
-            color.javaColor, thickness
+            color, thickness
+        )
+    }
+    GlStateManager.scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
+
+    /*renderer.drawHollowRoundRect(
+        context, x - .95f, y - .95f, w + .5f, h + .5f, color.rgba, radius - .5f, thickness
+    )*/
+}
+
+fun test(x: Number, y: Number, w: Number, h: Number, color: Color, borderColor: Color, shadowColor: Color, borderThickness: Number, topL: Number, topR: Number, botL: Number, botR: Number, edgeSoftness: Number) {
+    if (color.isTransparent) return
+    val sr = ScaledResolution(mc)
+    GlStateManager.scale(1f / sr.scaleFactor, 1f / sr.scaleFactor, 1f)
+    val matrix = UMatrixStack.Compat
+    matrix.runLegacyMethod(matrix.get()) {
+        RoundedRect.drawTest(
+            matrix.get(), x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(),
+            color, borderColor, shadowColor, borderThickness.toFloat(), topL.toFloat(), topR.toFloat(), botL.toFloat(), botR.toFloat(), edgeSoftness.toFloat()
         )
     }
     GlStateManager.scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
