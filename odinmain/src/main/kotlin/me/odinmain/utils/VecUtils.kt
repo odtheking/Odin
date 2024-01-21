@@ -425,7 +425,7 @@ fun findNearestGrassBlock(pos: Vec3): Vec3 {
     if (!chunk.isLoaded) return pos.coerceYIn(50.0, 110.0)
 
     val blocks = List(70) { i -> BlockPos(pos.xCoord, i + 50.0, pos.zCoord) }.filter { chunk.getBlock(it) == Blocks.grass }
-    if (blocks.isEmpty()) return pos.coerceYIn(50.0, 110.0)
+    if (blocks.isEmpty()) return pos.coerceYIn(50.0, 109.0)
     return Vec3(blocks.minBy { abs(pos.yCoord - it.y) })
 }
 

@@ -17,6 +17,7 @@ import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.utils.name
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.gui.MouseUtils.getQuadrant
 import me.odinmain.utils.render.gui.nvg.rect
 import me.odinmain.utils.render.gui.nvg.scale
 import me.odinmain.utils.render.gui.nvg.translate
@@ -44,7 +45,8 @@ object LeapMenu : Module(
 ) {
     val type: Int by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("A-Z Class (BetterMap)", "A-Z Name", "Odin Sorting"), description = "How to sort the leap menu.")
     private val colorStyle: Boolean by DualSetting("Color Style", "Gray", "Color", default = false, description = "Which color style to use")
-    val blur: Boolean by BooleanSetting("Blur", false, description = "Toggles the background blur for the gui.")
+    private val blur: Boolean by BooleanSetting("Blur", false, description = "Toggles the background blur for the gui.")
+    private val roundedRect: Boolean by BooleanSetting("Rounded Rect", true, description = "Toggles the rounded rect for the gui.")
     val priority: Int by SelectorSetting("Leap Helper Priority", "Berserker", arrayListOf("Archer", "Berserker", "Healer", "Mage", "Tank"), description = "Which player to prioritize in the leap helper.")
 
     private val leapHelperToggle: Boolean by BooleanSetting("Leap Helper", true)
@@ -56,15 +58,15 @@ object LeapMenu : Module(
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
         if (chest !is ContainerChest || chest.name != "Spirit Leap" || teammatesNoSelf.isEmpty()) return
 
-        val width = mc.displayWidth / 1920.0
-        val height = mc.displayHeight / 1080.0
+        val width = mc.displayWidth / 1920f
+        val height = mc.displayHeight / 1080f
         val sr = ScaledResolution(mc)
 
         leapTeammates.forEachIndexed { index, it ->
             if (it == EMPTY) return@forEachIndexed
             GlStateManager.pushMatrix()
             GlStateManager.enableAlpha()
-            GlStateManager.scale(width, height, 0.0)
+            scale(width, height)
             scale(6f / sr.scaleFactor,  6f / sr.scaleFactor)
             GlStateManager.color(255f, 255f, 255f, 255f)
             translate(
@@ -75,7 +77,8 @@ object LeapMenu : Module(
             if (it.name == leapHelper && leapHelperToggle) rect(-5, -25, 230, 110, color, 9f)
 
             //Gui.drawRect(-5, -15, 120, 35, if (!colorStyle) Color.DARK_GRAY.rgba else it.clazz.color.rgba)
-            rect(-10, -30, 250, 100, if (!colorStyle) Color.DARK_GRAY else it.clazz.color, 9f)
+            if (roundedRect) rect(-10, -30, 250, 100, if (!colorStyle) Color.DARK_GRAY else it.clazz.color, 9f)
+            else rect(-10, -30, 250, 100, if (!colorStyle) Color.DARK_GRAY else it.clazz.color, 0f)
 
             GlStateManager.color(255f, 255f, 255f, 255f)
             Gui.drawScaledCustomSizeModalRect(0, -10, 8f, 8f, 8, 8, 40, 40, 64f, 64f)
@@ -95,7 +98,6 @@ object LeapMenu : Module(
     }
     @SubscribeEvent
     fun onGuiClose(event: GuiClosedEvent) {
-        modMessage(leapHelper)
         mc.entityRenderer.stopUseShader()
     }
 
@@ -119,19 +121,6 @@ object LeapMenu : Module(
 
         mc.playerController.windowClick(event.gui.inventorySlots.windowId, 11 + index, 1, 2, mc.thePlayer)
         event.isCanceled = true
-    }
-
-    private fun getQuadrant(mouseX: Int, mouseY: Int): Int {
-        var guiSize = mc.gameSettings.guiScale * 2
-        if (mc.gameSettings.guiScale == 0) guiSize = 10
-
-        val screenY = mc.displayHeight / guiSize
-        val screenX = mc.displayWidth / guiSize
-
-        return when {
-            mouseX >= screenX -> if (mouseY >= screenY) 4 else 2
-            else -> if (mouseY >= screenY) 3 else 1
-        }
     }
 
     @SubscribeEvent

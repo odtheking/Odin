@@ -4,11 +4,9 @@ import gg.essential.universal.UMatrixStack
 import me.odinmain.OdinMain.mc
 import me.odinmain.ui.util.FontRenderer
 import me.odinmain.ui.util.RoundedRect
+import me.odinmain.utils.loadBufferedImage
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.nvg.TextAlign.*
-import me.odinmain.utils.skyblock.modMessage
-import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
@@ -17,7 +15,6 @@ import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
-import java.awt.image.BufferedImage
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -216,15 +213,11 @@ fun image(filePath: String, x: Float, y: Float, w: Float, h: Float) {
     drawTexturedModalRect(x.toInt(), y.toInt(), w.toInt(), h.toInt())
 }
 
-fun drawGLTexture(texture: Int, x: Number, y: Number, w: Number, h: Number) {
-    GlStateManager.bindTexture(texture)
-    drawTexturedModalRect(x.toInt(), y.toInt(), w.toInt(), h.toInt())
-}
-
-fun drawBufferedImage(dynamicTexture: DynamicTexture, x: Float, y: Float, w: Float, h: Float) {
+fun drawBufferedImage(filePath: String, x: Float, y: Float, w: Float, h: Float) {
+    val image = loadBufferedImage(filePath)
+    val dynamicTexture = DynamicTexture(image)
     dynamicTexture.updateDynamicTexture()
     GlStateManager.bindTexture(dynamicTexture.glTextureId)
-    //mc.textureManager.bindTexture(mc.textureManager.getDynamicTextureLocation("temporary_stuff", dynamicTexture))
     val sr = ScaledResolution(mc)
     scale(1f / sr.scaleFactor , 1f / sr.scaleFactor, 1f)
     drawTexturedModalRect(x.toInt(), y.toInt(), w.toInt(), h.toInt())

@@ -7,8 +7,8 @@ import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.gui.nvg.Fonts
+import me.odinmain.utils.render.gui.nvg.drawBufferedImage
 import me.odinmain.utils.render.gui.nvg.getTextWidth
-import me.odinmain.utils.render.gui.nvg.image
 import me.odinmain.utils.render.gui.nvg.textWithControlCodes
 import me.odinmain.utils.skyblock.getSkullValue
 import net.minecraft.entity.item.EntityArmorStand
@@ -27,7 +27,7 @@ object DeployableTimer : Module(
             textWithControlCodes("§5SOS Flare", 40f, 15f, 16f, Fonts.MEDIUM)
             textWithControlCodes("§e179s", 40f, 32f, 16f, Fonts.MEDIUM)
 
-            image(
+            drawBufferedImage(
                 Deployables.SOS.imgPath, -5f, -2f, 50f, 50f
             )
 
@@ -39,8 +39,8 @@ object DeployableTimer : Module(
             textWithControlCodes(toRender.name, 40f, 15f, 16f, Fonts.MEDIUM)
             textWithControlCodes(toRender.timeLeft, 40f, 32f, 16f, Fonts.MEDIUM)
 
-            if (toRender.name.contains("Flare", true)) image(toRender.imgPath, -5f, -2f, 50f, 50f)
-            else image(toRender.imgPath, 0f, 5f, 35f, 35f)
+            if (toRender.name.contains("Flare", true)) drawBufferedImage(toRender.imgPath, -5f, -2f, 50f, 50f)
+            else drawBufferedImage(toRender.imgPath, 0f, 5f, 35f, 35f)
 
             max(
                 getTextWidth(toRender.name.noControlCodes, 16f, Fonts.MEDIUM),
@@ -50,19 +50,19 @@ object DeployableTimer : Module(
     }
 
     private enum class Deployables (val texture: String, val displayName: String, val renderName: String, val priority: Int, val duration: Int, val imgPath: String, val range: Float)  {
-        Warning("ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzMwNjIyMywKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjJlMmJmNmMxZWMzMzAyNDc5MjdiYTYzNDc5ZTU4NzJhYzY2YjA2OTAzYzg2YzgyYjUyZGFjOWYxYzk3MTQ1OCIKICAgIH0KICB9Cn0=", "Warning Flare", "§aWarning Flare", 3, 180000, "deployable/firework.png", 40f),
+        Warning("ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzMwNjIyMywKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjJlMmJmNmMxZWMzMzAyNDc5MjdiYTYzNDc5ZTU4NzJhYzY2YjA2OTAzYzg2YzgyYjUyZGFjOWYxYzk3MTQ1OCIKICAgIH0KICB9Cn0=", "Warning Flare", "§aWarning Flare", 3, 180000, "/assets/deployable/firework.png", 40f),
 
-        Alert("ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzMyNjQzMiwKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWQyYmY5ODY0NzIwZDg3ZmQwNmI4NGVmYTgwYjc5NWM0OGVkNTM5YjE2NTIzYzNiMWYxOTkwYjQwYzAwM2Y2YiIKICAgIH0KICB9Cn0=", "Alert Flare", "§9Alert Flare", 5, 180000, "deployable/firework.png", 40f),
+        Alert("ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzMyNjQzMiwKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWQyYmY5ODY0NzIwZDg3ZmQwNmI4NGVmYTgwYjc5NWM0OGVkNTM5YjE2NTIzYzNiMWYxOTkwYjQwYzAwM2Y2YiIKICAgIH0KICB9Cn0=", "Alert Flare", "§9Alert Flare", 5, 180000, "/assets/deployable/firework.png", 40f),
 
-        SOS("ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzM0NzQ4OSwKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzAwNjJjYzk4ZWJkYTcyYTZhNGI4OTc4M2FkY2VmMjgxNWI0ODNhMDFkNzNlYTg3YjNkZjc2MDcyYTg5ZDEzYiIKICAgIH0KICB9Cn0=", "SOS Flare", "§5SOS Flare", 7, 180000, "deployable/firework.png", 40f),
+        SOS("ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzM0NzQ4OSwKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzAwNjJjYzk4ZWJkYTcyYTZhNGI4OTc4M2FkY2VmMjgxNWI0ODNhMDFkNzNlYTg3YjNkZjc2MDcyYTg5ZDEzYiIKICAgIH0KICB9Cn0=", "SOS Flare", "§5SOS Flare", 7, 180000, "/assets/deployable/firework.png", 40f),
 
-        Radiant("RADIANTPLACEHOLDERTEXTURE", "Radiant", "§aRadiant Orb", 1, 30000, "deployable/RADIANTPOWERORB.png", 18f),
+        Radiant("RADIANTPLACEHOLDERTEXTURE", "Radiant", "§aRadiant Orb", 1, 30000, "/assets/deployable/RADIANTPOWERORB.png", 18f),
 
-        Mana("MANAFLUXPLACEHOLDERTEXTURE", "Mana" , "§9Mana Flux Orb", 2, 30000, "deployable/MANAFLUXPOWERORB.png", 18f),
+        Mana("MANAFLUXPLACEHOLDERTEXTURE", "Mana" , "§9Mana Flux Orb", 2, 30000, "/assets/deployable/MANAFLUXPOWERORB.png", 18f),
 
-        Overflux("OVERFLUXPLACEHOLDERTEXTURE", "Overflux", "§5Overflux Orb", 4, 30000, "deployable/OVERFLUXPOWERORB.png", 18f),
+        Overflux("OVERFLUXPLACEHOLDERTEXTURE", "Overflux", "§5Overflux Orb", 4, 30000, "/assets/deployable/OVERFLUXPOWERORB.png", 18f),
 
-        Plasma("PLASMAFLUXPLACEHOLDERTEXTURE", "Plasma", "§dPlasmaflux", 5, 60000, "deployable/PLASMAPOWERORB.png", 20f),
+        Plasma("PLASMAFLUXPLACEHOLDERTEXTURE", "Plasma", "§dPlasmaflux", 5, 60000, "/assets/deployable/PLASMAPOWERORB.png", 20f),
     }
 
     class Deployable(val priority: Int, val duration: Int, val entity: EntityArmorStand, val renderName: String, val imgPath: String, val range: Float, val timeAdded: Long = System.currentTimeMillis())

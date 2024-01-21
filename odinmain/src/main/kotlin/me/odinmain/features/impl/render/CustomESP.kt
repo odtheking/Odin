@@ -2,15 +2,13 @@ package me.odinmain.features.impl.render
 
 import me.odinmain.OdinMain.onLegitVersion
 import me.odinmain.config.MiscConfig.espList
+import me.odinmain.config.MiscConfig.saveAllConfigs
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.events.impl.RenderEntityModelEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.features.settings.impl.SelectorSetting
+import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.OutlineUtils
 import me.odinmain.utils.render.world.RenderUtils
@@ -19,6 +17,7 @@ import me.odinmain.utils.render.world.RenderUtils.renderY
 import me.odinmain.utils.render.world.RenderUtils.renderZ
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.teammates
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.entity.Entity
 import net.minecraft.entity.boss.EntityWither
 import net.minecraft.entity.item.EntityArmorStand
@@ -41,14 +40,14 @@ object CustomESP : Module(
     private val thickness: Float by NumberSetting("Outline Thickness", 5f, 1f, 20f, 0.5f).withDependency { mode != 1 }
     private val cancelHurt: Boolean by BooleanSetting("Cancel Hurt", true).withDependency { mode != 1 }
 
-    private val starredMobs: Boolean by BooleanSetting("Show all starred mobs", false, description = "Shows all starred mobs in boss rooms.")
+    //private val starredMobs: Boolean by BooleanSetting("Show all starred mobs", false, description = "Shows all starred mobs in boss rooms.")
 
-    /*private val addStar: () -> Unit by ActionSetting("Add Star") {
+    private val addStar: () -> Unit by ActionSetting("Add Star") {
         if (espList.contains("✯")) return@ActionSetting
         modMessage("Added ✯ to ESP list")
         espList.add("✯")
-        MiscConfig.saveAllConfigs()
-    }*/
+        saveAllConfigs()
+    }
 
     val renderThrough: Boolean get() = if (onLegitVersion) false else xray
 
@@ -100,7 +99,7 @@ object CustomESP : Module(
     @SubscribeEvent
     fun postMeta(event: PostEntityMetadata) {
         checkEntity(mc.theWorld.getEntityByID(event.packet.entityId) ?: return)
-        if (starredMobs) checkStarredMob(mc.theWorld.getEntityByID(event.packet.entityId) ?: return)
+        if (false) checkStarredMob(mc.theWorld.getEntityByID(event.packet.entityId) ?: return)
     }
 
     private fun getEntities() {

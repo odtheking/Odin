@@ -96,13 +96,18 @@ object DianaHelper : Module(
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
         renderPos?.let { guess ->
+
+            if (guess.yCoord == 110.0 && mc.thePlayer.positionVector.distanceTo(guess) < 64) {
+                renderPos = findNearestGrassBlock(guess)
+                return
+            }
             warpLocation = WarpPoint.entries.filter { it.unlocked() }.minBy { warp ->
                 warp.location.distanceTo(guess)
             }.takeIf { it.location.distanceTo(guess) + 30 < mc.thePlayer.positionVector.distanceTo(guess) }
 
             if (tracer)
                 RenderUtils.draw3DLine(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), guess.addVec(.5, .5, .5), tracerColor, tracerWidth, depth = false, event.partialTicks)
-            if (guess.yCoord.toInt() == 110 && guess.distanceTo(mc.thePlayer.positionVector) < 40) findNearestGrassBlock(guess)
+
             RenderUtils.renderCustomBeacon("§6Guess${warpLocation?.displayName ?: ""}§r", guess, guessColor, event.partialTicks)
         }
 

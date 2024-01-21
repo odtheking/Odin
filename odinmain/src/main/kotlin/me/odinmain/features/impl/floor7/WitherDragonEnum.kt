@@ -64,8 +64,7 @@ enum class WitherDragonsEnum(
 fun handleSpawnPacket(event: ReceivePacketEvent) {
     if (event.packet !is S2APacketParticles) return
     val particle = event.packet
-
-   if (
+    if (
         particle.particleCount != 20 ||
         particle.yCoordinate != 19.0 ||
         particle.particleType != EnumParticleTypes.FLAME ||
@@ -85,7 +84,7 @@ fun handleSpawnPacket(event: ReceivePacketEvent) {
             dragon.particleSpawnTime = System.currentTimeMillis()
         }
     }
-    if (WitherDragons.dragPrioSpawnToggle) DragonPriority.dragonPrioritySpawn()
+    if (WitherDragons.dragonPriorityToggle) DragonPriority.dragonPrioritySpawn()
 }
 
 private fun checkParticle(event: S2APacketParticles, color: WitherDragonsEnum): Boolean {
