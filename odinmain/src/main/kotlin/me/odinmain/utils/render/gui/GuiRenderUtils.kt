@@ -2,6 +2,7 @@ package me.odinmain.utils.render.gui
 
 import gg.essential.universal.UMatrixStack
 import me.odinmain.OdinMain.mc
+import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.util.FontRenderer
 import me.odinmain.ui.util.RoundedRect
 import me.odinmain.utils.loadBufferedImage
@@ -28,29 +29,8 @@ val matrix = UMatrixStack.Compat
 val sr = ScaledResolution(mc)
 
 
-fun rect(
-    x: Number, y: Number, w: Number, h: Number, color: Color, radius: Number
-) {
-    roundedRectangle(x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(), color, color, color, 0f, radius.toFloat(), radius.toFloat(), radius.toFloat(), radius.toFloat(), 0f)
-}
-
-fun rect(
-    x: Float, y: Float, w: Float, h: Float, color: Color
-) = rect(x, y, w, h, color, 0f)
-
-fun rectOutline(x: Float, y: Float, w: Float, h: Float, color: Color, radius: Float = 0f, thickness: Float) {
-    if (color.isTransparent) return
-    scale(1f / sr.scaleFactor, 1f / sr.scaleFactor, 1f)
-    matrix.runLegacyMethod(matrix.get()) {
-        RoundedRect.drawRoundedRectangleOutline(
-            matrix.get(), x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(), radius.toFloat(), color, thickness)
-    }
-    scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
-}
-
 fun roundedRectangle(x: Number, y: Number, w: Number, h: Number, color: Color, borderColor: Color, shadowColor: Color, borderThickness: Number, topL: Number, topR: Number, botL: Number, botR: Number, edgeSoftness: Number) {
     if (color.isTransparent) return
-    val sr = ScaledResolution(mc)
     scale(1f / sr.scaleFactor, 1f / sr.scaleFactor, 1f)
     matrix.runLegacyMethod(matrix.get()) {
         RoundedRect.drawRectangle(
@@ -60,6 +40,24 @@ fun roundedRectangle(x: Number, y: Number, w: Number, h: Number, color: Color, b
     }
     scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
 }
+
+fun roundedRectangle(x: Number, y: Number, w: Number, h: Number, color: Color, radius: Number = 0f) =
+    roundedRectangle(x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(), color, color, color,
+        0f, radius.toFloat(), radius.toFloat(), radius.toFloat(), radius.toFloat(), 0f)
+
+
+fun rectangleOutline(x: Float, y: Float, w: Float, h: Float, color: Color, radius: Float = 0f, thickness: Float) {
+    scale(1f / sr.scaleFactor, 1f / sr.scaleFactor, 1f)
+    matrix.runLegacyMethod(matrix.get()) {
+        RoundedRect.drawRectangle(
+            matrix.get(), x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(),
+            color.withAlpha(0.1f), color, Color.GRAY, thickness.toFloat(), radius, radius, radius, radius, 0f
+        )
+    }
+    scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
+}
+
+
 
 fun gradientRect(x: Float, y: Float, w: Float, h: Float, color1: Color, color2: Color, radius: Float) {
     if (color1.isTransparent && color2.isTransparent) return
@@ -89,7 +87,6 @@ fun text(text: String, x: Float, y: Float, color: Color, size: Float, font: Font
         TextPos.Bottom -> y - getTextHeight(text, size, font)
     }
 
-    val sr = ScaledResolution(mc)
     scale(1f / sr.scaleFactor , 1f / sr.scaleFactor, 1f)
     if (shadow) font.fr.drawStringWithShadow(text, drawX, drawY, color)
     else font.fr.drawString(text, drawX, drawY, color)
@@ -148,7 +145,6 @@ fun drawBufferedImage(filePath: String, x: Float, y: Float, w: Float, h: Float) 
     val dynamicTexture = DynamicTexture(image)
     dynamicTexture.updateDynamicTexture()
     GlStateManager.bindTexture(dynamicTexture.glTextureId)
-    val sr = ScaledResolution(mc)
     scale(1f / sr.scaleFactor , 1f / sr.scaleFactor, 1f)
     drawTexturedModalRect(x.toInt(), y.toInt(), w.toInt(), h.toInt())
     scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)

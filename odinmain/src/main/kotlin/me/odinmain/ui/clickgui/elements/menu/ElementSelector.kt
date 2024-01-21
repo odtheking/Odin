@@ -52,12 +52,12 @@ class ElementSelector(parent: ModuleButton, setting: SelectorSetting) :
     override fun draw() {
         h = settingAnim.get(32f, size * 36f + DEFAULT_HEIGHT, !extended)
 
-            rect(x, y, w, h, elementBackground)
+        roundedRectangle(x, y, w, h, elementBackground)
             val width = getTextWidth(display, 16f, Fonts.REGULAR)
 
             hover.handle(x + w - 20f - width, y + 4f, width + 12f, 22f)
             dropShadow(x + w - 20f - width, y + 4f, width + 12f, 22f, 10f, 0.75f, 5f)
-            rect(x + w - 20f - width, y + 4f, width + 12f, 22f, color, 5f)
+        roundedRectangle(x + w - 20f - width, y + 4f, width + 12f, 22f, color, 5f)
 
 
             text(name, x + 6f, y + 16f, textColor, 16f, Fonts.REGULAR)
@@ -65,17 +65,17 @@ class ElementSelector(parent: ModuleButton, setting: SelectorSetting) :
 
             if (!extended && !settingAnim.isAnimating()) return
 
-            rectOutline(x + w - 20f - width, y + 4f, width + 12f, 22f, clickGUIColor, 5f, 1.5f)
+            rectangleOutline(x + w - 20f - width, y + 4f, width + 12f, 22f, clickGUIColor, 5f, 1.5f)
 
             //val scissor = scissor(x, y, w, h)
 
-            rect(x + 6, y + 37f, w - 12f, size * 32f, buttonColor, 5f)
+        roundedRectangle(x + 6, y + 37f, w - 12f, size * 32f, buttonColor, 5f)
             dropShadow(x + 6, y + 37f, w - 12f, size * 32f, 10f, 0.75f, 5f)
 
             for (i in 0 until size) {
                 val y = y + 38 + 32 * i
                 text(setting.options[i].capitalizeFirst(), x + w / 2f, y + 3f, textColor, 16f, Fonts.REGULAR, TextAlign.Middle, TextPos.Top)
-                if (isSettingHovered(i)) rectOutline(x + 5, y - 1f, w - 11.5f, 32.5f, clickGUIColor.darker(), 4f, 1.5f)
+                if (isSettingHovered(i)) rectangleOutline(x + 5, y - 1f, w - 11.5f, 32.5f, clickGUIColor.darker(), 4f, 1.5f)
             }
             //resetScissor(scissor)
 

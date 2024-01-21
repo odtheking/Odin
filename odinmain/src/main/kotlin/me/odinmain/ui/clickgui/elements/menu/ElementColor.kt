@@ -46,11 +46,11 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
 
         hover.handle(x + w - 41, y + 5, 31.5f, 19f)
 
-        rect(x, y, w, h, elementBackground)
+        roundedRectangle(x, y, w, h, elementBackground)
         text(name, x + 6f, y + 18f, textColor, 16f, Fonts.REGULAR)
         dropShadow(x + w - 40f, y + 5f, 31f, 19f, 10f, 0.75f, 5f)
-        rect(x + w - 40f, y + 5f, 31f, 19f, color.brighter(1 + hover.percent() / 500f), 5f)
-        rectOutline(x + w - 40f, y + 5f, 31f, 19f, color.darker().withAlpha(1f), 5f, .5f)
+        roundedRectangle(x + w - 40f, y + 5f, 31f, 19f, color.brighter(1 + hover.percent() / 500f), 5f)
+        rectangleOutline(x + w - 40f, y + 5f, 31f, 19f, color.darker().withAlpha(1f), 5f, .5f)
 
         if (!extended && !anim.isAnimating()) return
 
@@ -69,7 +69,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
 
         dropShadow(x + 10f, y + 214f, w - 20f, 15f, 10f, 0.5f, 5f)
         drawBufferedImage("/assets/clickgui/HueGradient.png", x + 10f, y + 214f, w - 20f, 15f)
-        rectOutline(x + 10f, y + 214f, w - 20f, 15f, buttonColor, 5f, 1f)
+        rectangleOutline(x + 10f, y + 214f, w - 20f, 15f, buttonColor, 5f, 1f)
 
         val hue = x + 10f + setting.hue * 221f to y + 221f
         dropShadow(hue.first - 8.5f, hue.second - 8.5f, 17f, 17f, 2.5f, 2.5f, 9f)

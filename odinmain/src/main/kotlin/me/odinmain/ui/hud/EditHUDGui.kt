@@ -54,7 +54,7 @@ object EditHUDGui : Screen() {
             hoverHandler.handle(scaledWidth - 100f, (scaledHeight * 1.75f) - 25f, 200f, 50f)
 
             dropShadow(-100f, -25f, 200f, 50f, 10f, 1f, 9f)
-            rect(-100f, -25f, 200f, 50f, color, 9f)
+        roundedRectangle(-100f, -25f, 200f, 50f, color, 9f)
 
             text("Reset", 0f, 0f, textColor, 38f, Fonts.REGULAR, TextAlign.Middle)
             //rect(-75f, -25f, 150f, 50f, Color.WHITE) // make this good

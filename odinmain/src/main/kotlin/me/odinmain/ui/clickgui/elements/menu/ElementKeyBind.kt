@@ -41,17 +41,17 @@ class ElementKeyBind(parent: ModuleButton, private val mod: Module) :
         else if (mod.keyCode < 0) Mouse.getButtonName(mod.keyCode + 100)
         else "None"
 
-            rect(x, y, w, h, elementBackground)
+        roundedRectangle(x, y, w, h, elementBackground)
 
             val width = getTextWidth(value, 16f, Fonts.REGULAR)
             hover.handle(x + w - 20 - width, y + 4, width + 12f, 22f)
 
-            rect(x + w - 20 - width, y + 4, width + 12f, 22f, buttonColor, 5f)
+        roundedRectangle(x + w - 20 - width, y + 4, width + 12f, 22f, buttonColor, 5f)
             dropShadow(x + w - 20 - width, y + 4, width + 12f, 22f, 10f, 0.75f, 5f)
 
             if (listening || colorAnim.isAnimating()) {
                 val color = colorAnim.get(clickGUIColor, buttonColor, listening)
-                rectOutline(x + w - 21 - width, y + 3, width + 12.5f, 22.5f, color, 4f,1.5f)
+                rectangleOutline(x + w - 21 - width, y + 3, width + 12.5f, 22.5f, color, 4f,1.5f)
             }
 
             text(name,  x + 6f, y + h / 2, textColor, 16f, Fonts.REGULAR)

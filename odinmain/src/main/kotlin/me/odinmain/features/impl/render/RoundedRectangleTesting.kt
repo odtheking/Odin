@@ -5,6 +5,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.gui.rectangleOutline
 import me.odinmain.utils.render.gui.roundedRectangle
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -31,6 +32,7 @@ object RoundedRectangleTesting : Module(
     @SubscribeEvent
     fun onRenderGameOverlay(event: RenderGameOverlayEvent.Post) {
         if (event.type != RenderGameOverlayEvent.ElementType.ALL) return
-        roundedRectangle(x, y, w, h, color, borderColor, shadowColor, borderThickness, topL, topR, botL, botR, edgeSoftness)
+        roundedRectangle(x, y, w, h, color, borderColor, Color.GRAY, borderThickness, topL, topR, botL, botR, edgeSoftness)
+        rectangleOutline(x.toFloat() + 100, y.toFloat(), w.toFloat(), h.toFloat(), borderColor, topL, borderThickness)
     }
 }

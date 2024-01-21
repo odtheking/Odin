@@ -12,7 +12,7 @@ import me.odinmain.utils.endProfile
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinmain.utils.render.gui.animations.impl.EaseInOut
-import me.odinmain.utils.render.gui.rectOutline
+import me.odinmain.utils.render.gui.rectangleOutline
 import me.odinmain.utils.render.gui.scale
 import me.odinmain.utils.render.gui.translate
 import me.odinmain.utils.startProfile
@@ -110,7 +110,7 @@ open class HudElement(
                 thickness += anim2.get(0f, .5f, dragging == null)
             }
 
-            rectOutline(
+            rectangleOutline(
                 -1.5f,
                 -1.5f,
                 3f + width,

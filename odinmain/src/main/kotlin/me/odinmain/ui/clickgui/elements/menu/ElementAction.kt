@@ -24,7 +24,7 @@ class ElementAction(parent: ModuleButton, setting: ActionSetting) : Element<Acti
 
 // todo: improve this
     override fun draw() {
-            rect(x, y, w, h, elementBackground)
+    roundedRectangle(x, y, w, h, elementBackground)
             text(name, x + w / 2f, y + h / 2f, if (isHovered) textColor.darker() else textColor, 16f , Fonts.REGULAR, TextAlign.Middle, TextPos.Middle)
 
     }

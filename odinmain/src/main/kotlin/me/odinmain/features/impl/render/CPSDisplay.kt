@@ -34,7 +34,7 @@ object CPSDisplay : Module(
 
             if (outline) dropShadow(0f, 0f, 100f, 36f, 10f, 1f, 9f)
         } else {
-            rect(0f, 0f, 50f, 36f, color.brighter(anim.get(1f, 1.5f, anim.getPercent() >= 50)), 9f)
+            roundedRectangle(0f, 0f, 50f, 36f, color.brighter(anim.get(1f, 1.5f, anim.getPercent() >= 50)), 9f)
             if (outline) dropShadow(0f, 0f, 50f, 36f, 10f, 1f, 9f)
         }
 
