@@ -25,12 +25,12 @@ import me.odinmain.utils.render.gui.nvg.Fonts
 import me.odinmain.utils.render.gui.nvg.getTextWidth
 import me.odinmain.utils.render.gui.nvg.rect
 import me.odinmain.utils.render.gui.nvg.textWithControlCodes
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.event.entity.living.LivingDeathEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.max
 
 
@@ -91,12 +91,7 @@ object WitherDragons : Module(
     val bluePB = +NumberSetting("Melody PB", 1000.0, increment = 0.01, hidden = true)
     val purplePB = +NumberSetting("Starts With PB", 1000.0, increment = 0.01, hidden = true)
 
-    private val shouldWork = false //DungeonUtils.getPhase() != 5
-    @SubscribeEvent
-    fun onTick(event: TickEvent.ClientTickEvent) {
-        if (shouldWork) return
-        WitherDragonsEnum.entries.forEach { it.checkAlive() }
-    }
+    private val shouldWork = DungeonUtils.getPhase() != 5
 
     @SubscribeEvent
     fun onReceivePacket(event: ReceivePacketEvent) {

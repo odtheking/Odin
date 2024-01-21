@@ -7,7 +7,7 @@ import me.odinmain.utils.render.world.RenderUtils
 object DragonBoxes {
     fun renderBoxes() {
         WitherDragonsEnum.entries.forEach {
-            if (it.entity == null || it.entity?.isEntityAlive != true) return@forEach
+            if (it.entity?.isEntityAlive != true) return@forEach
             RenderUtils.drawCustomBox(it.boxesDimensions, it.color.withAlpha(0.5f), lineThickness, phase = false)
         }
     }
