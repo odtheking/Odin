@@ -54,7 +54,7 @@ fun String.containsOneOf(options: List<String>, ignoreCase: Boolean = false): Bo
  * @param options List of other objects to check.
  * @return `true` if the object is equal to one of the specified objects.
  */
-fun Any?.equalsOneOf(vararg options: Any): Boolean {
+fun Any?.equalsOneOf(vararg options: Any?): Boolean {
     return options.any { this == it }
 }
 
@@ -114,9 +114,9 @@ operator fun Number.compareTo(number: Number): Int {
 }
 
 fun Number.coerceInNumber(min: Number, max: Number): Number {
-    if (this < min) return min
-    if (this > max) return max
-    return this
+    return if (this < min) min
+    else if (this > max) max
+    else this
 }
 
 /**
@@ -286,16 +286,55 @@ fun endProfile() {
     mc.mcProfiler.endSection()
 }
 
+/**
+ * Creates a shader from a vertex shader, fragment shader, and a blend state
+ *
+ * @param vertName The name of the vertex shader's file.
+ * @param fragName The name of the fragment shader's file.
+ * @param blendState The blend state for the shader
+ */
 fun createLegacyShader(vertName: String, fragName: String, blendState: BlendState) =
     fromLegacyShader(readShader(vertName, "vsh"), readShader(fragName, "fsh"), blendState)
+
+/**
+ * Reads a shader file as a text file, and returns the contents
+ *
+ * @param name The name of the shader file
+ * @param ext The file extension of the shader file (usually fsh or vsh)
+ *
+ * @return The contents of the shader file at the given path.
+ */
 fun readShader(name: String, ext: String): String =
      OdinMain::class.java.getResource("/shaders/$name.$ext")?.readText() ?: ""
 
-
+/**
+ * Loads a BufferedImage from a path to a resource in the project
+ *
+ * @param path The path to the image file
+ *
+ * @returns The BufferedImage of that resource path.
+ */
 fun loadBufferedImage(path: String): BufferedImage =
     TextureUtil.readBufferedImage(OdinMain::class.java.getResourceAsStream(path))
 
-
+/**
+ * Returns the maximum value of the numbers you give in as a float
+ *
+ * @param numbers All the numbers you want to compare
+ *
+ * @returns The maximum value of the numbers, as a float
+ */
 fun max(vararg numbers: Number): Float {
     return numbers.maxBy { it.toFloat() }.toFloat()
+}
+
+/**
+ * Returns the minimum value of the numbers you give in as a float
+ *
+ * @param numbers All the numbers you want to compare
+ *
+ * @returns The minimum value of the numbers, as a float
+ */
+fun min(vararg numbers: Number): Float {
+    return numbers.minBy { it.toFloat() }.toFloat()
 }

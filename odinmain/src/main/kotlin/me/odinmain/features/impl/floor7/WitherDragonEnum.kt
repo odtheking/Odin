@@ -19,7 +19,7 @@ import net.minecraft.util.EnumParticleTypes
 import net.minecraft.util.Vec3
 
 
-enum class WitherDragonsEnum(
+enum class WitherDragonsEnum (
     val spawnPos: Vec3,
     val boxesDimensions: AxisAlignedBB,
     val colorCode: String,
@@ -34,8 +34,7 @@ enum class WitherDragonsEnum(
     var dragonAlive: Boolean = false,
     var timesSpawned: Int = 0,
     var entity: Entity? = null,
-
-    ) {
+) {
     Red(Vec3(27.0, 18.0, 60.0), AxisAlignedBB(14.5, 13.0, 45.5, 39.5, 28.0, 70.5),"c", Color.RED,
         24.0..30.0, 56.0..62.0, redPB, BlockPos(32, 22, 59)),
 
