@@ -8,7 +8,7 @@ uniform float u_borderThickness;
 uniform float u_edgeSoftness;
 uniform vec4 u_colorRect;
 uniform vec4 u_colorRect2; // Second color for gradient
-uniform int u_gradientAngle; // Direction of the gradient in degrees
+uniform vec2 u_gradientDirectionVector; // Direction of the gradient in degrees
 uniform vec4 u_colorBorder;
 uniform vec4 u_colorShadow;
 
@@ -30,24 +30,11 @@ float roundedBoxSDF(vec2 CenterPosition, vec2 Size, vec4 Radius) {
 
 void main() {
     vec2 uv = (f_Position - u_rectCenter) / u_rectSize;
+    vec2 strength = uv * u_gradientDirectionVector;
 
-    float strength = uv.x;
-    switch (u_gradientAngle) {
-        case 1:
-            strength = uv.y;
-            break;
-        case 2:
-            strength = -uv.x;
-            break;
-        case 3:
-            strength = -uv.y;
-            break;
-        default:
-            break;
-    }
 
     // Interpolate colors based on the distance
-    vec4 gradientColor = mix(u_colorRect, u_colorRect2, strength + 0.5);
+    vec4 gradientColor = mix(u_colorRect, u_colorRect2, (strength.x == 0.0) ? strength.x + 0.5 : strength.y + 0.5);
 
 
 
