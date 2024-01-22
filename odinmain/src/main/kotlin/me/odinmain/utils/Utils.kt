@@ -7,6 +7,8 @@ import gg.essential.universal.shader.UShader.Companion.fromLegacyShader
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.ModuleManager
+import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraft.inventory.ContainerChest
@@ -337,4 +339,10 @@ fun max(vararg numbers: Number): Float {
  */
 fun min(vararg numbers: Number): Float {
     return numbers.minBy { it.toFloat() }.toFloat()
+}
+
+fun Color.coerceAlpha(min: Float, max: Float): Color {
+    return if (this.alpha < min) this.withAlpha(min)
+    else if (this.alpha > max) this.withAlpha(max)
+    else this
 }

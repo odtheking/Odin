@@ -5,6 +5,7 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.util.FontRenderer
 import me.odinmain.ui.util.RoundedRect
+import me.odinmain.utils.coerceAlpha
 import me.odinmain.utils.loadBufferedImage
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.TextAlign.*
@@ -24,12 +25,17 @@ object Fonts {
 val matrix = UMatrixStack.Compat
 val sr = ScaledResolution(mc)
 
-fun roundedRectangle(x: Number, y: Number, w: Number, h: Number, color: Color, borderColor: Color, shadowColor: Color, borderThickness: Number, topL: Number, topR: Number, botL: Number, botR: Number, edgeSoftness: Number) {
+fun roundedRectangle(
+    x: Number, y: Number, w: Number, h: Number,
+    color: Color, borderColor: Color, shadowColor: Color,
+    borderThickness: Number, topL: Number, topR: Number, botL: Number, botR: Number, edgeSoftness: Number,
+    color2: Color = color, gradientDir: Int = 0
+) {
     scale(1f / sr.scaleFactor, 1f / sr.scaleFactor, 1f)
     matrix.runLegacyMethod(matrix.get()) {
         RoundedRect.drawRectangle(
             matrix.get(), x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(),
-            color, borderColor, shadowColor, borderThickness.toFloat(), topL.toFloat(), topR.toFloat(), botL.toFloat(), botR.toFloat(), edgeSoftness.toFloat()
+            color, borderColor, shadowColor, borderThickness.toFloat(), topL.toFloat(), topR.toFloat(), botL.toFloat(), botR.toFloat(), edgeSoftness.toFloat(), color2, gradientDir
         )
     }
     scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
@@ -44,11 +50,15 @@ fun rectangleOutline(x: Float, y: Float, w: Float, h: Float, color: Color, radiu
     roundedRectangle(x, y, w, h, Color.TRANSPARENT, color, Color.GRAY, thickness, radius, radius, radius, radius, 0f)
 }
 
+enum class GradientDirection {
+    Right, Down, Left, Up
+}
 
-
-fun gradientRect(x: Float, y: Float, w: Float, h: Float, color1: Color, color2: Color, radius: Float) {
+fun gradientRect(x: Float, y: Float, w: Float, h: Float, color1: Color, color2: Color, radius: Float, direction: GradientDirection = GradientDirection.Right) {
     if (color1.isTransparent && color2.isTransparent) return
-    //renderer.drawGradientRoundedRect(context, x, y, w, h, color1.rgba, color2.rgba, radius, NanoVGHelper.GradientDirection.RIGHT)
+    roundedRectangle(
+        x, y, w, h, color1.coerceAlpha(.1f, 1f), Color.TRANSPARENT, Color.TRANSPARENT, 0, radius, radius, radius, radius, 3, color2.coerceAlpha(.1f, 1f), direction.ordinal
+    )
 }
 
 fun drawHSBBox(x: Float, y: Float, w: Float, h: Float, color: Color) {

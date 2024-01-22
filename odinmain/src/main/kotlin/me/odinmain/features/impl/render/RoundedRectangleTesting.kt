@@ -20,6 +20,8 @@ object RoundedRectangleTesting : Module(
     private val w: Int by NumberSetting("width", 200, 10, 500)
     private val h: Int by NumberSetting("height", 200, 10, 500)
     private val color: Color by ColorSetting("Color", Color.WHITE, true)
+    private val color2: Color by ColorSetting("Color 2", Color.WHITE, true)
+    private val dir: Int by NumberSetting("Gradient Direction", 0, 0, 3)
     private val borderColor: Color by ColorSetting("Border Color", Color.GRAY, true)
     private val shadowColor: Color by ColorSetting("Shadow Color", Color.DARK_GRAY, true)
     private val borderThickness: Float by NumberSetting("Border Thickness", 1f, 0f, 10f)
@@ -33,7 +35,7 @@ object RoundedRectangleTesting : Module(
     @SubscribeEvent
     fun onRenderGameOverlay(event: RenderGameOverlayEvent.Post) {
         if (event.type != RenderGameOverlayEvent.ElementType.ALL) return
-        roundedRectangle(x, y, w, h, color, borderColor, Color.GRAY, borderThickness, topL, topR, botL, botR, edgeSoftness)
-        rectangleOutline(x.toFloat() + 100, y.toFloat(), w.toFloat(), h.toFloat(), borderColor, topL, borderThickness)
+        roundedRectangle(x, y, w, h, color, borderColor, Color.GRAY, borderThickness, topL, topR, botL, botR, edgeSoftness, color2, dir)
+        //rectangleOutline(x.toFloat() + 100, y.toFloat(), w.toFloat(), h.toFloat(), borderColor, topL, borderThickness)
     }
 }

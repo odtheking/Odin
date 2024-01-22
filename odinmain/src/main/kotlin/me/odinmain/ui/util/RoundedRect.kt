@@ -5,6 +5,10 @@ import gg.essential.universal.UMatrixStack
 import gg.essential.universal.shader.*
 import me.odinmain.utils.createLegacyShader
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.skyblock.modMessage
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 object RoundedRect {
 
@@ -56,7 +60,12 @@ object RoundedRect {
         RectOutline.shader.unbind()
     }
 
-    fun drawRectangle(matrixStack: UMatrixStack, x: Float, y: Float, width: Float, height: Float, color: Color, borderColor: Color, shadowColor: Color, borderThickness: Float, topL: Float, topR: Float, botL: Float, botR: Float, edgeSoftness: Float) {
+    fun drawRectangle(
+        matrixStack: UMatrixStack, x: Float, y: Float, width: Float, height: Float,
+        color: Color, borderColor: Color, shadowColor: Color,
+        borderThickness: Float, topL: Float, topR: Float, botL: Float, botR: Float, edgeSoftness: Float,
+        color2: Color, gradientDir: Int
+    ) {
         if (!Testing.isInitialized() || !Testing.shader.usable) return
 
         Testing.shader.bind()
@@ -66,6 +75,8 @@ object RoundedRect {
         Testing.shaderBorderThicknessUniform.setValue(borderThickness)
         Testing.shaderEdgeSoftnessUniform.setValue(edgeSoftness)
         Testing.shaderColorUniform.setValue(color.r / 255f, color.g / 255f, color.b / 255f, color.alpha)
+        Testing.shaderColor2Uniform.setValue(color2.r / 255f, color2.g / 255f, color2.b / 255f, color2.alpha)
+        Testing.shaderGradientDir.setValue(gradientDir)
         Testing.shaderBorderColorUniform.setValue(borderColor.r / 255f, borderColor.g / 255f, borderColor.b / 255f, borderColor.alpha)
         Testing.shaderShadowColorUniform.setValue(shadowColor.r / 255f, shadowColor.g / 255f, shadowColor.b / 255f, shadowColor.alpha)
 
@@ -73,6 +84,7 @@ object RoundedRect {
 
         Testing.shader.unbind()
     }
+
 
     object Rect {
         lateinit var shader: UShader
@@ -150,6 +162,8 @@ object RoundedRect {
         lateinit var shaderBorderThicknessUniform: FloatUniform
         lateinit var shaderEdgeSoftnessUniform: FloatUniform
         lateinit var shaderColorUniform: Float4Uniform
+        lateinit var shaderColor2Uniform: Float4Uniform
+        lateinit var shaderGradientDir: IntUniform
         lateinit var shaderBorderColorUniform: Float4Uniform
         lateinit var shaderShadowColorUniform: Float4Uniform
 
@@ -169,6 +183,8 @@ object RoundedRect {
             shaderBorderThicknessUniform = shader.getFloatUniform("u_borderThickness")
             shaderEdgeSoftnessUniform = shader.getFloatUniform("u_edgeSoftness")
             shaderColorUniform = shader.getFloat4Uniform("u_colorRect")
+            shaderColor2Uniform = shader.getFloat4Uniform("u_colorRect2")
+            shaderGradientDir = shader.getIntUniform("u_gradientAngle")
             shaderBorderColorUniform = shader.getFloat4Uniform("u_colorBorder")
             shaderShadowColorUniform = shader.getFloat4Uniform("u_colorShadow")
 
