@@ -36,7 +36,7 @@ void main() {
     vec2  u_shadowOffset   = vec2(0.0, 0.0); // The pixel-space shadow offset from rectangle center
 
     // Colors
-    vec4  u_colorBg     = vec4(1.0, 1.0, 1.0, 0.0); // The color of background
+    vec4  u_colorBg     = vec4(0.0); // The color of background
     // =========================================================================
 
     vec2 halfSize = (u_rectSize / 2.0); // Rectangle extents (half of the size)
@@ -48,12 +48,12 @@ void main() {
     float distance = roundedBoxSDF(f_Position.xy - u_rectCenter, halfSize, u_Radii);
 
     // Smooth the result (free antialiasing).
-    float smoothedAlpha = 1.0-smoothstep(0.0, u_edgeSoftness, distance);
+    float smoothedAlpha = 1.0 - smoothstep(0.0, u_edgeSoftness, distance);
 
     // -------------------------------------------------------------------------
     // Border.
 
-    float borderAlpha   = 1.0-smoothstep(u_borderThickness - u_borderSoftness, u_borderThickness, abs(distance));
+    float borderAlpha   = 1.0 - smoothstep(u_borderThickness - u_borderSoftness, u_borderThickness, abs(distance));
 
     // -------------------------------------------------------------------------
     // Apply a drop shadow effect.
@@ -63,7 +63,12 @@ void main() {
 
 
     // Blend background with shadow
-    vec4 res_shadow_color = mix(u_colorBg, vec4(u_colorShadow.rgb, shadowAlpha), shadowAlpha);
+    vec4 res_shadow_color =
+        mix(
+            u_colorBg,
+            vec4(u_colorShadow.rgb, shadowAlpha),
+            shadowAlpha
+        );
 
     // Blend (background+shadow) with rect
     //   Note:
@@ -82,12 +87,8 @@ void main() {
     //       to make border 'internal'
     //     - Used 'min(u_colorBorder.a, alpha)' instead of 'alpha' to enable
     //       border color transparency
-    vec4 res_shadow_with_rect_with_border =
-        mix(
-            res_shadow_with_rect_color,
-            u_colorBorder,
-            min(u_colorBorder.a, min(borderAlpha, smoothedAlpha))
-        );
+    vec4 combinedColor = mix(u_colorRect, u_colorBorder, borderAlpha);
+    vec4 finalColor = mix(res_shadow_color, combinedColor, smoothedAlpha);
 
-    gl_FragColor = res_shadow_with_rect_with_border;
+    gl_FragColor = finalColor;
 }

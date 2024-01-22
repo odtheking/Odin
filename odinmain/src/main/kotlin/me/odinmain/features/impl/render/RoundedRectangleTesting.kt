@@ -7,6 +7,7 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.rectangleOutline
 import me.odinmain.utils.render.gui.roundedRectangle
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 

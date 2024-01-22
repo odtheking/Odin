@@ -25,7 +25,6 @@ val matrix = UMatrixStack.Compat
 val sr = ScaledResolution(mc)
 
 fun roundedRectangle(x: Number, y: Number, w: Number, h: Number, color: Color, borderColor: Color, shadowColor: Color, borderThickness: Number, topL: Number, topR: Number, botL: Number, botR: Number, edgeSoftness: Number) {
-    if (color.isTransparent) return
     scale(1f / sr.scaleFactor, 1f / sr.scaleFactor, 1f)
     matrix.runLegacyMethod(matrix.get()) {
         RoundedRect.drawRectangle(
@@ -42,7 +41,7 @@ fun roundedRectangle(x: Number, y: Number, w: Number, h: Number, color: Color, r
 
 
 fun rectangleOutline(x: Float, y: Float, w: Float, h: Float, color: Color, radius: Float = 0f, thickness: Float) {
-    roundedRectangle(x, y, w, h, color.withAlpha(0.1f), color, Color.GRAY, thickness, radius, radius, radius, radius, 0f)
+    roundedRectangle(x, y, w, h, color.withAlpha(0f), color, Color.GRAY, thickness, radius, radius, radius, radius, 0f)
 }
 
 
