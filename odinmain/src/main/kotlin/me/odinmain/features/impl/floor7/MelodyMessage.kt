@@ -21,9 +21,7 @@ object MelodyMessage : Module(
     private var saidMelody = false
     @SubscribeEvent
     fun onGuiLoad(event: GuiLoadedEvent) {
-        if (!DungeonUtils.inDungeons) return
-        if (saidMelody) return
-        if (!event.name.startsWith("Click the button on time!")) return
+        if (!DungeonUtils.inDungeons || saidMelody || !event.name.startsWith("Click the button on time!")) return
 
         partyMessage(melodyMessage)
         saidMelody = true
