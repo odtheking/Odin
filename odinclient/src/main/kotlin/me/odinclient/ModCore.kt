@@ -2,6 +2,8 @@ package me.odinclient
 
 import me.odinclient.commands.impl.AutoSellCommand
 import me.odinclient.commands.impl.ESPCommand
+import me.odinclient.dungeonmap.features.Dungeon
+import me.odinclient.dungeonmap.features.MapRender
 import me.odinclient.dungeonmap.features.Window
 import me.odinclient.features.impl.dungeon.*
 import me.odinclient.features.impl.floor7.AutoEdrag
@@ -41,6 +43,11 @@ class ModCore {
 
         OdinMain.init()
         MinecraftForge.EVENT_BUS.register(this)
+
+        listOf(
+            Dungeon,
+            MapRender
+        ).forEach(MinecraftForge.EVENT_BUS::register)
 
         registerCommands(
             ESPCommand,

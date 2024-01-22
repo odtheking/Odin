@@ -59,11 +59,12 @@ public class MixinMinecraft {
         /*
         Taken from [Sk1erLLC's OldAnimations Mod](https://github.com/Sk1erLLC/OldAnimations) to enable block hitting
         */
-        if (Animations.INSTANCE.getBlockHit() &&
-                Minecraft.getMinecraft().playerController.getIsHittingBlock() &&
-                Minecraft.getMinecraft().thePlayer.getHeldItem() != null &&
-                (Minecraft.getMinecraft().thePlayer.getHeldItem().getItemUseAction() != EnumAction.NONE ||
-                Minecraft.getMinecraft().thePlayer.getHeldItem().getItem() instanceof ItemBlock)) {
+        if (
+            Animations.INSTANCE.getBlockHit() &&
+            Minecraft.getMinecraft().playerController.getIsHittingBlock() &&
+            Minecraft.getMinecraft().thePlayer.getHeldItem() != null &&
+            ( Minecraft.getMinecraft().thePlayer.getHeldItem().getItemUseAction() != EnumAction.NONE || Minecraft.getMinecraft().thePlayer.getHeldItem().getItem() instanceof ItemBlock )
+        ) {
             Minecraft.getMinecraft().playerController.resetBlockRemoving();
         }
     }
