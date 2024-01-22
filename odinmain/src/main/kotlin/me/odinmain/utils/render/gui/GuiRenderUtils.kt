@@ -41,7 +41,7 @@ fun roundedRectangle(x: Number, y: Number, w: Number, h: Number, color: Color, r
 
 
 fun rectangleOutline(x: Float, y: Float, w: Float, h: Float, color: Color, radius: Float = 0f, thickness: Float) {
-    roundedRectangle(x, y, w, h, color.withAlpha(0f), color, Color.GRAY, thickness, radius, radius, radius, radius, 0f)
+    roundedRectangle(x, y, w, h, Color.TRANSPARENT, color, Color.GRAY, thickness, radius, radius, radius, radius, 0f)
 }
 
 
