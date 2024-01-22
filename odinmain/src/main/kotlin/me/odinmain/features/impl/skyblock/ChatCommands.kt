@@ -25,9 +25,9 @@ object ChatCommands : Module(
     category = Category.SKYBLOCK,
     description = "type !help in the corresponding channel for cmd list. Use /blacklist.",
 ) {
-    private var party: Boolean by BooleanSetting(name = "Party cmds", default = true, description = "Toggles chat commands in party chat")
-    private var guild: Boolean by BooleanSetting(name = "Guild cmds", default = true, description = "Toggles chat commands in guild chat")
-    private var private: Boolean by BooleanSetting(name = "Private cmds", default = true, description = "Toggles chat commands in private chat")
+    private var party: Boolean by BooleanSetting(name = "Party commands", default = true, description = "Toggles chat commands in party chat")
+    private var guild: Boolean by BooleanSetting(name = "Guild commands", default = true, description = "Toggles chat commands in guild chat")
+    private var private: Boolean by BooleanSetting(name = "Private commands", default = true, description = "Toggles chat commands in private chat")
     private var showSettings: Boolean by BooleanSetting(name = "Show Settings", default = false, description = "Shows the settings for chat commands")
 
     private var warp: Boolean by BooleanSetting(name = "Warp", default = true).withDependency { showSettings }
@@ -50,7 +50,7 @@ object ChatCommands : Module(
     private val queDungeons: Boolean by BooleanSetting(name = "Queue dungeons cmds", default = true).withDependency { showSettings }
 
     private var dtPlayer: String? = null
-    var disableReque: Boolean? = false
+    var disableRequeue: Boolean? = false
     private val dtReason = mutableListOf<Pair<String, String>>()
 
     private var picture = getCatPic()
@@ -109,12 +109,12 @@ object ChatCommands : Module(
 
         GlobalScope.launch {
             delay(350)
-            cmdsAll(msg!!, ign, channel)
+            commandsall(msg!!, ign, channel)
         }
 
     }
 
-    private suspend fun cmdsAll(message: String, name: String, channel: String) {
+    private suspend fun commandsall(message: String, name: String, channel: String) {
 
         val helpMessage = when (channel) {
             "party" -> "Commands: coords, odin, boop, cf, 8ball, dice, cat, racism, ping, tps, warp, warptransfer, allinvite, pt, dt, m(?), f(?)"
@@ -159,7 +159,7 @@ object ChatCommands : Module(
                 dtReason.add(Pair(name, reason))
                 modMessage("§aReminder set for the end of the run!")
                 dtPlayer = name
-                disableReque = true
+                disableRequeue = true
             }
 
             "m" -> {

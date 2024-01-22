@@ -11,8 +11,6 @@ import me.odinmain.utils.render.gui.TextAlign.*
 import me.odinmain.utils.render.world.RenderUtils.drawTexturedModalRect
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.Tessellator
-import net.minecraft.client.renderer.WorldRenderer
 import net.minecraft.client.renderer.texture.DynamicTexture
 
 
@@ -23,11 +21,8 @@ object Fonts {
     val SEMIBOLD = Font(FontRenderer("/fonts/Heebo.ttf", 50f))
 }
 
-private val tessellator: Tessellator = Tessellator.getInstance()
-private val worldRenderer: WorldRenderer = tessellator.worldRenderer
 val matrix = UMatrixStack.Compat
 val sr = ScaledResolution(mc)
-
 
 fun roundedRectangle(x: Number, y: Number, w: Number, h: Number, color: Color, borderColor: Color, shadowColor: Color, borderThickness: Number, topL: Number, topR: Number, botL: Number, botR: Number, edgeSoftness: Number) {
     if (color.isTransparent) return
@@ -47,14 +42,7 @@ fun roundedRectangle(x: Number, y: Number, w: Number, h: Number, color: Color, r
 
 
 fun rectangleOutline(x: Float, y: Float, w: Float, h: Float, color: Color, radius: Float = 0f, thickness: Float) {
-    scale(1f / sr.scaleFactor, 1f / sr.scaleFactor, 1f)
-    matrix.runLegacyMethod(matrix.get()) {
-        RoundedRect.drawRectangle(
-            matrix.get(), x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(),
-            color.withAlpha(0.1f), color, Color.GRAY, thickness.toFloat(), radius, radius, radius, radius, 0f
-        )
-    }
-    scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
+    roundedRectangle(x, y, w, h, color.withAlpha(0.1f), color, Color.GRAY, thickness, radius, radius, radius, radius, 0f)
 }
 
 
@@ -113,8 +101,6 @@ fun textWithControlCodes(text: String?, x: Float, y: Float, color: Color = Color
     }
     return xPos
 }
-
-
 
 fun getTextWidth(text: String, size: Float, font: Font) = font.fr.getWidth(text)
 

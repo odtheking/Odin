@@ -81,7 +81,6 @@ object ModuleManager {
         DeployableTimer,
         DianaHelper,
         Reminders,
-        VanqNotifier,
         Animations,
         SpaceHelmet,
         EscrowFix,

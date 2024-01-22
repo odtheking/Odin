@@ -36,7 +36,7 @@ object BlessingDisplay : Module(
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {
             textWithControlCodes("Power: §a29", 1f, 9f, powerColor, 16f, Fonts.REGULAR, TextAlign.Left, TextPos.Middle, true)
-            textWithControlCodes("Time: §a5", 1f, 26f, timeColor,16f, Fonts.REGULAR, TextAlign.Left, TextPos.Middle, false)
+            textWithControlCodes("Time: §a5", 1f, 26f, timeColor,16f, Fonts.REGULAR, TextAlign.Left, TextPos.Middle, true)
             max(getTextWidth("Power: 29", 16f, Fonts.REGULAR), getTextWidth("Time 5", 16f, Fonts.REGULAR)) + 2f to 33f
         } else {
             var width = 0f

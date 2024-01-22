@@ -25,8 +25,8 @@ object AutoDungeonRequeue : Module(
     @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
         if (!DungeonUtils.inDungeons || event.message != "                             > EXTRA STATS <") return
-        if (ChatCommands.disableReque == true) {
-            ChatCommands.disableReque = false
+        if (ChatCommands.disableRequeue == true) {
+            ChatCommands.disableRequeue = false
             return
         }
         scope.launch {
