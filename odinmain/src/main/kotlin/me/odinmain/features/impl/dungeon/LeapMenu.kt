@@ -18,9 +18,9 @@ import me.odinmain.utils.name
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.MouseUtils.getQuadrant
-import me.odinmain.utils.render.gui.nvg.rect
-import me.odinmain.utils.render.gui.nvg.scale
-import me.odinmain.utils.render.gui.nvg.translate
+import me.odinmain.utils.render.gui.roundedRectangle
+import me.odinmain.utils.render.gui.scale
+import me.odinmain.utils.render.gui.translate
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.Classes
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.EMPTY
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.leapTeammates
@@ -74,11 +74,11 @@ object LeapMenu : Module(
                 (if (index >= 2) 120f else 40f),
                 0f)
             mc.textureManager.bindTexture(it.locationSkin)
-            if (it.name == leapHelper && leapHelperToggle) rect(-5, -25, 230, 110, color, 9f)
+            if (it.name == leapHelper && leapHelperToggle) roundedRectangle(-5, -25, 230, 110, color, 9f)
 
             //Gui.drawRect(-5, -15, 120, 35, if (!colorStyle) Color.DARK_GRAY.rgba else it.clazz.color.rgba)
-            if (roundedRect) rect(-10, -30, 250, 100, if (!colorStyle) Color.DARK_GRAY else it.clazz.color, 9f)
-            else rect(-10, -30, 250, 100, if (!colorStyle) Color.DARK_GRAY else it.clazz.color, 0f)
+            if (roundedRect) roundedRectangle(-10, -30, 250, 100, if (!colorStyle) Color.DARK_GRAY else it.clazz.color, 9f)
+            else roundedRectangle(-10, -30, 250, 100, if (!colorStyle) Color.DARK_GRAY else it.clazz.color, 0f)
 
             GlStateManager.color(255f, 255f, 255f, 255f)
             Gui.drawScaledCustomSizeModalRect(0, -10, 8f, 8f, 8, 8, 40, 40, 64f, 64f)

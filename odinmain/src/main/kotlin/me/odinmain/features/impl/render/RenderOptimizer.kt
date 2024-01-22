@@ -34,7 +34,7 @@ object RenderOptimizer : Module(
     private val hideSoulWeaver: Boolean by BooleanSetting(name = "Hide Soul Weaver", default = true, description = "Hides the soul weaver.")
     private val hideArcherBones: Boolean by BooleanSetting(name = "Hide Archer Bones", default = true, description = "Hides the archer bones.")
     private val hideWitherMinerName: Boolean by BooleanSetting(name = "Hide WitherMiner Name", default = true, description = "Hides the wither miner name.")
-    private val hideTerracotaName: Boolean by BooleanSetting(name = "Hide Terracota Name", default = true, description = "Hides the terracota name.")
+    private val hideTerracottaName: Boolean by BooleanSetting(name = "Hide Terracota Name", default = true, description = "Hides the terracota name.")
     private val hideNonStarredMobName: Boolean by BooleanSetting(name = "Hide Non-Starred Mob Name", default = true, description = "Hides the non-starred mob name.")
     private val removeArmorStands: Boolean by BooleanSetting(name = "Removes Useless ArmorStands", default = true, description = "Removes armor stands that are not necessary.")
 
@@ -82,7 +82,7 @@ object RenderOptimizer : Module(
     fun handleNames(event: RenderLivingEvent.Pre<*>) {
         if (hideNonStarredMobName) hideNonStarredMob(event.entity)
         if (hideWitherMinerName) handleWitherMiner(event.entity)
-        if (hideTerracotaName) handleTerracota(event.entity)
+        if (hideTerracottaName) handleTerracota(event.entity)
     }
 
     @SubscribeEvent

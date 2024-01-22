@@ -8,12 +8,11 @@ import me.odinmain.ui.clickgui.util.HoverHandler
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.gui.*
 import me.odinmain.utils.render.gui.GuiUtils.scaledHeight
 import me.odinmain.utils.render.gui.GuiUtils.scaledWidth
-import me.odinmain.utils.render.gui.MouseUtils
 import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinmain.utils.render.gui.animations.impl.EaseInOut
-import me.odinmain.utils.render.gui.nvg.*
 import kotlin.math.sign
 
 /**
@@ -55,7 +54,7 @@ object EditHUDGui : Screen() {
             hoverHandler.handle(scaledWidth - 100f, (scaledHeight * 1.75f) - 25f, 200f, 50f)
 
             dropShadow(-100f, -25f, 200f, 50f, 10f, 1f, 9f)
-            rect(-100f, -25f, 200f, 50f, color, 9f)
+        roundedRectangle(-100f, -25f, 200f, 50f, color, 9f)
 
             text("Reset", 0f, 0f, textColor, 38f, Fonts.REGULAR, TextAlign.Middle)
             //rect(-75f, -25f, 150f, 50f, Color.WHITE) // make this good

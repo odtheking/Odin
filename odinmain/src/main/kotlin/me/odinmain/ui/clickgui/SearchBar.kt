@@ -6,9 +6,8 @@ import me.odinmain.ui.clickgui.util.ColorUtil
 import me.odinmain.ui.clickgui.util.ColorUtil.buttonColor
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.gui.MouseUtils
+import me.odinmain.utils.render.gui.*
 import me.odinmain.utils.render.gui.animations.impl.ColorAnimation
-import me.odinmain.utils.render.gui.nvg.*
 import org.lwjgl.input.Keyboard
 
 object SearchBar {
@@ -20,10 +19,10 @@ object SearchBar {
 
     fun draw() {
             translate(mc.displayWidth / 2f, mc.displayHeight - 100f)
-            rect(-200f, 0f, 400f, 30f, ColorUtil.moduleButtonColor, 9f)
+        roundedRectangle(-200f, 0f, 400f, 30f, ColorUtil.moduleButtonColor, 9f)
             if (listening || colorAnim.isAnimating()) {
                 val color = colorAnim.get(ColorUtil.clickGUIColor, buttonColor, listening)
-                rectOutline(-202f, -1f, 404f, 32f, color, 9f,3f)
+                rectangleOutline(-202f, -1f, 404f, 32f, color, 9f,3f)
             }
             if (currentSearch.isEmpty()) {
                 text("Search here...", 0f, 16f, Color.WHITE.withAlpha(0.5f), 20f, Fonts.REGULAR, TextAlign.Middle)

@@ -11,9 +11,9 @@ import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.HoverHandler
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.gui.*
 import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinmain.utils.render.gui.MouseUtils.mouseX
-import me.odinmain.utils.render.gui.nvg.*
 import org.lwjgl.input.Keyboard
 import kotlin.math.roundToInt
 
@@ -57,14 +57,14 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
         }
 
 
-            rect(x, y, w, h, elementBackground)
+        roundedRectangle(x, y, w, h, elementBackground)
 
             text(name, x + 6f, y + h / 2f - 3f, textColor, 16f, Fonts.REGULAR)
             text(displayVal, x + w - 6f, y + h / 2f - 3f, textColor, 16f, Fonts.REGULAR, TextAlign.Right)
 
-            rect(x + 6f, y + 28f, w - 12f, 7f, sliderBGColor, 2.5f)
+        roundedRectangle(x + 6f, y + 28f, w - 12f, 7f, sliderBGColor, 2.5f)
             dropShadow(x + 6f, y + 28f, w - 12f, 7f, 10f, 0.75f, 3f)
-            if (x + percentage * (w - 12f) > x + 6) rect(x + 6f, y + 28f, sliderPercentage * (w - 12f), 7f, color, 3f)
+            if (x + percentage * (w - 12f) > x + 6) roundedRectangle(x + 6f, y + 28f, sliderPercentage * (w - 12f), 7f, color, 3f)
 
     }
 

@@ -1,3 +1,4 @@
+// shader gotten from https://www.shadertoy.com/view/fsdyzB
 #version 130
 
 uniform vec2 u_rectCenter;
@@ -11,7 +12,12 @@ uniform vec4 u_colorShadow;
 
 varying vec2 f_Position;
 
-// shader gotten from https://www.shadertoy.com/view/fsdyzB
+/**
+  * Signed Distance Function for a rounded rectangle
+  * @param CenterPosition Vec2 for the center of the rounded rectangle
+  * @param Size Vec2 containing the width and height of a rounded rectangle
+  * @param Radius Vec4 of all the radii in the rounded rectangle
+*/
 float roundedBoxSDF(vec2 CenterPosition, vec2 Size, vec4 Radius) {
     Radius.xy = (CenterPosition.x > 0.0) ? Radius.xy : Radius.zw;
     Radius.x  = (CenterPosition.y > 0.0) ? Radius.x  : Radius.y;
@@ -64,11 +70,11 @@ void main() {
     //     - Used 'min(u_colorRect.a, smoothedAlpha)' instead of 'smoothedAlpha'
     //       to enable rectangle color transparency
     vec4 res_shadow_with_rect_color =
-    mix(
-        res_shadow_color,
-        u_colorRect,
-        min(u_colorRect.a, smoothedAlpha)
-    );
+        mix(
+            res_shadow_color,
+            u_colorRect,
+            min(u_colorRect.a, smoothedAlpha)
+        );
 
     // Blend (background+shadow+rect) with border
     //   Note:
@@ -77,11 +83,11 @@ void main() {
     //     - Used 'min(u_colorBorder.a, alpha)' instead of 'alpha' to enable
     //       border color transparency
     vec4 res_shadow_with_rect_with_border =
-    mix(
-        res_shadow_with_rect_color,
-        u_colorBorder,
-        min(u_colorBorder.a, min(borderAlpha, smoothedAlpha))
-    );
+        mix(
+            res_shadow_with_rect_color,
+            u_colorBorder,
+            min(u_colorBorder.a, min(borderAlpha, smoothedAlpha))
+        );
 
     gl_FragColor = res_shadow_with_rect_with_border;
 }

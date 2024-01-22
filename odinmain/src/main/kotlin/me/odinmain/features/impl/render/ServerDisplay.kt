@@ -7,9 +7,10 @@ import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.max
-import me.odinmain.utils.render.gui.nvg.Fonts
-import me.odinmain.utils.render.gui.nvg.getTextWidth
-import me.odinmain.utils.render.gui.nvg.textWithControlCodes
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.gui.Fonts
+import me.odinmain.utils.render.gui.getTextWidth
+import me.odinmain.utils.render.gui.textWithControlCodes
 import me.odinmain.utils.round
 
 object ServerDisplay : Module(
@@ -24,18 +25,18 @@ object ServerDisplay : Module(
 
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {
-            if (ping) textWithControlCodes("§6Ping: §a60ms", 1f, 9f, 16f, Fonts.REGULAR)
-            if (tps) textWithControlCodes("§3TPS: §a20.0", 1f, 26f, 16f, Fonts.REGULAR)
-            if (fps) textWithControlCodes("§dFPS: §a240.0", 1f, 43f, 16f, Fonts.REGULAR)
+            if (ping) textWithControlCodes("§6Ping: §a60ms", 1f, 9f, Color.WHITE,16f, Fonts.REGULAR)
+            if (tps) textWithControlCodes("§3TPS: §a20.0", 1f, 26f, Color.WHITE,16f, Fonts.REGULAR)
+            if (fps) textWithControlCodes("§dFPS: §a240.0", 1f, 43f, Color.WHITE,16f, Fonts.REGULAR)
             max(
                 if (ping) getTextWidth("Ping: 60ms", 16f, Fonts.REGULAR) else 0f,
                 if (tps) getTextWidth("TPS: 20.0", 16f, Fonts.REGULAR) else 0f,
                 if (fps) getTextWidth("§dFPS: §a240.0", 16f, Fonts.REGULAR) else 0f
             ) + 2f to 33f
         } else {
-            if (ping) textWithControlCodes("§6Ping: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 1f, 9f, 16f, Fonts.REGULAR)
-            if (tps) textWithControlCodes("§3TPS: ${colorizeTps(ServerUtils.averageTps.round(1))}", 1f, 26f, 16f, Fonts.REGULAR)
-            if (fps) textWithControlCodes("§dFPS: ${colorizeFPS(mc.debug.split(" ")[0].toIntOrNull() ?: 0)}", 1f, 43f, 16f, Fonts.REGULAR)
+            if (ping) textWithControlCodes("§6Ping: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 1f, 9f, Color.WHITE,16f, Fonts.REGULAR)
+            if (tps) textWithControlCodes("§3TPS: ${colorizeTps(ServerUtils.averageTps.round(1))}", 1f, 26f, Color.WHITE,16f, Fonts.REGULAR)
+            if (fps) textWithControlCodes("§dFPS: ${colorizeFPS(mc.debug.split(" ")[0].toIntOrNull() ?: 0)}", 1f, 43f, Color.WHITE,16f, Fonts.REGULAR)
             max(
                 getTextWidth("§ePing: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 16f, Fonts.REGULAR),
                 getTextWidth("§ePing: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 16f, Fonts.REGULAR)

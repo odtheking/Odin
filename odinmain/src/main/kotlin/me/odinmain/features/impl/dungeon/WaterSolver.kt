@@ -37,7 +37,6 @@ object WaterSolver {
     private var solutions = mutableMapOf<LeverBlock, Array<Double>>()
     private var openedWater = -1L
 
-
     fun scan() {
         if (DungeonUtils.currentRoomName != "Water Board" || !PuzzleSolvers.waterSolver) return
         scope.launch {

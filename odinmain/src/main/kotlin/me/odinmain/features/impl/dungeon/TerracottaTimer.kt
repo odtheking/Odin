@@ -21,12 +21,12 @@ object TerracottaTimer : Module(
     category = Category.DUNGEON
 ) {
     private data class Terracotta(val pos: Vec3, var time: Double)
-    private var terrasSpawning = mutableListOf<Terracotta>()
+    private var terracottaSpawning = mutableListOf<Terracotta>()
 
     @SubscribeEvent
     fun onBlockPacket(event: BlockChangeEvent) {
         if (!DungeonUtils.isFloor(6) || !DungeonUtils.inBoss || !event.update.block.isFlowerPot) return
-        terrasSpawning.add(
+        terracottaSpawning.add(
             Terracotta(
                 Vec3(event.pos).addVec(.5, 1.5, .5),
                 if (LocationUtils.currentDungeon?.floor?.isInMM == true) 1200.0 else 1500.0
@@ -36,7 +36,7 @@ object TerracottaTimer : Module(
 
     @SubscribeEvent
     fun onServerTick(event: ServerTickEvent) {
-        terrasSpawning.removeAll {
+        terracottaSpawning.removeAll {
             it.time -= 5
             it.time <= 0
         }
@@ -44,7 +44,7 @@ object TerracottaTimer : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        val iterator = terrasSpawning.iterator()
+        val iterator = terracottaSpawning.iterator()
         while (iterator.hasNext()) {
             val it = iterator.next()
             RenderUtils.drawStringInWorld(
@@ -69,7 +69,7 @@ object TerracottaTimer : Module(
 
     fun onChat(event: ChatPacketEvent) {
         if (!event.message.startsWith("[BOSS] Sadan: ENOUGH!")) return
-        terrasSpawning.removeAll {
+        terracottaSpawning.removeAll {
             it.time > 0
         }
     }

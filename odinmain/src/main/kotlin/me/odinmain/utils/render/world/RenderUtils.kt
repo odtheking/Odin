@@ -639,4 +639,39 @@ object RenderUtils {
         return ImageIO.read(resource)
     }
 
+    fun drawCircle(x: Float, y: Float, radius: Float, steps: Int = 20) {
+        val theta = 2 * PI / steps
+        val cos = cos(theta).toFloat()
+        val sin = sin(theta).toFloat()
+
+        var xHolder: Float
+        var circleX = 1f
+        var circleY = 0f
+
+        GlStateManager.pushMatrix()
+        worldRenderer.begin(5, DefaultVertexFormats.POSITION)
+
+        for (i in 0..steps) {
+            worldRenderer.pos(x.toDouble(), y.toDouble(), 0.0).endVertex()
+            worldRenderer.pos((circleX * radius + x).toDouble(), (circleY * radius + y).toDouble(), 0.0).endVertex()
+            xHolder = circleX
+            circleX = cos * circleX - sin * circleY
+            circleY = sin * xHolder + cos * circleY
+            worldRenderer.pos((circleX * radius + x).toDouble(), (circleY * radius + y).toDouble(), 0.0).endVertex()
+        }
+
+        tessellator.draw()
+        GlStateManager.popMatrix()
+    }
+
+    fun drawTexturedModalRect(x: Int, y: Int, width: Int, height: Int) {
+        GlStateManager.enableTexture2D()
+        worldRenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
+        worldRenderer.pos(x.toDouble(), (y + height).toDouble(), 0.0).tex(0.0, 1.0).endVertex()
+        worldRenderer.pos((x + width).toDouble(), (y + height).toDouble(), 0.0).tex(1.0, 1.0).endVertex()
+        worldRenderer.pos((x + width).toDouble(), y.toDouble(), 0.0).tex(1.0, 0.0).endVertex()
+        worldRenderer.pos(x.toDouble(), y.toDouble(), 0.0).tex(0.0, 0.0).endVertex()
+        tessellator.draw()
+    }
+
 }

@@ -6,6 +6,9 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import net.minecraft.tileentity.TileEntitySkull
 import net.minecraft.util.BlockPos
 
+/**
+ * @see me.odinclient.mixin.mixins.block
+ */
 object SecretHitboxes : Module(
     name = "Secret Hitboxes",
     description = "Full block Secret hitboxes.",

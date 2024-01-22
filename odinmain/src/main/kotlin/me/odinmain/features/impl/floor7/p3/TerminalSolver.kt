@@ -225,7 +225,8 @@ object TerminalSolver : Module(
         return size
     }
 
-    private fun dist(pane: Int, most: Int): Int = if (pane > most) (most + colorOrder.size) - pane else most - pane
+    private fun dist(pane: Int, most: Int): Int =
+            if (pane > most) (most + colorOrder.size) - pane else most - pane
 
     private fun solveNumbers(items: List<ItemStack?>) {
         solution = items.filter { it?.metadata == 14 && Item.getIdFromItem(it.item) == 160 }.filterNotNull().sortedBy { it.stackSize }.map { items.indexOf(it) }

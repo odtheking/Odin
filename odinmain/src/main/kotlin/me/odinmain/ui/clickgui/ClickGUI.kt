@@ -12,8 +12,8 @@ import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.clickgui.util.HoverHandler
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
+import me.odinmain.utils.render.gui.*
 import me.odinmain.utils.render.gui.animations.impl.EaseInOut
-import me.odinmain.utils.render.gui.nvg.*
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.entity.player.EntityPlayer
@@ -35,7 +35,7 @@ object ClickGUI : Screen() {
 
     private val panels: ArrayList<Panel> = arrayListOf()
 
-    var anim = EaseInOut(400)
+    private var anim = EaseInOut(400)
     private var open = false
     private var desc: Description = Description(null, 0f, 0f, null)
 
@@ -171,10 +171,10 @@ object ClickGUI : Screen() {
         fun render() {
             if (shouldRender) {
                     val area = listOf(100f, 100f, 100f, 100f) //wrappedTextBounds(text!!, 300f, 16f, Fonts.REGULAR)
-                    rect(
-                        x, y, area[2] - area[0] + 10, area[3] - area[1] + 8,
-                        buttonColor.withAlpha((hoverHandler!!.percent() / 100f).coerceIn(0f, 0.8f)), 5f
-                    )
+                roundedRectangle(
+                    x, y, area[2] - area[0] + 10, area[3] - area[1] + 8,
+                    buttonColor.withAlpha((hoverHandler!!.percent() / 100f).coerceIn(0f, 0.8f)), 5f
+                )
                     wrappedText(text!!, x + 7f, y + 12f, 300f, 1f, textColor, 16f, Fonts.REGULAR)
                     if (hoverHandler!!.percent() == 0) {
                         text = null

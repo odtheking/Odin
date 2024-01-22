@@ -11,7 +11,6 @@ class Color(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f)
 
     constructor(hsb: FloatArray, alpha: Float = 1f) : this(hsb[0], hsb[1], hsb[2], alpha)
     constructor(r: Int, g: Int, b: Int, alpha: Float = 1f) : this(RGBtoHSB(r, g, b), alpha)
-
     constructor(rgba: Int) : this(rgba.red, rgba.green, rgba.blue, rgba.alpha / 255f)
     constructor(rgba: Int, alpha: Float) : this(rgba.red, rgba.green, rgba.blue, alpha)
 
@@ -160,6 +159,7 @@ class Color(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f)
         @JvmField
         val BLUE = Color(0,  170,170)
 
+        @JvmField
         val PINK = Color(255,20,147)
 
         /**

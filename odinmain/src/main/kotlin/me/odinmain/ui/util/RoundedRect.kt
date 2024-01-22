@@ -56,7 +56,7 @@ object RoundedRect {
         RectOutline.shader.unbind()
     }
 
-    fun drawTest(matrixStack: UMatrixStack, x: Float, y: Float, width: Float, height: Float, color: Color, borderColor: Color, shadowColor: Color, borderThickness: Float, topL: Float, topR: Float, botL: Float, botR: Float, edgeSoftness: Float) {
+    fun drawRectangle(matrixStack: UMatrixStack, x: Float, y: Float, width: Float, height: Float, color: Color, borderColor: Color, shadowColor: Color, borderThickness: Float, topL: Float, topR: Float, botL: Float, botR: Float, edgeSoftness: Float) {
         if (!Testing.isInitialized() || !Testing.shader.usable) return
 
         Testing.shader.bind()

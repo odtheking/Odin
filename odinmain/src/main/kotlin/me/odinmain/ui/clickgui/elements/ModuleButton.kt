@@ -12,10 +12,10 @@ import me.odinmain.ui.clickgui.util.ColorUtil.moduleButtonColor
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.HoverHandler
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.gui.*
 import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinmain.utils.render.gui.animations.impl.ColorAnimation
 import me.odinmain.utils.render.gui.animations.impl.EaseInOut
-import me.odinmain.utils.render.gui.nvg.*
 import kotlin.math.floor
 
 /**
@@ -94,7 +94,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
         }
 
 
-            rect(x, y, width, height, color)
+        roundedRectangle(x, y, width, height, color)
             text(module.name, x + width / 2, y + height / 2, textColor, 18f, Fonts.REGULAR, TextAlign.Middle)
             val textWidth = getTextWidth(module.name, 18f, Fonts.REGULAR)
 
