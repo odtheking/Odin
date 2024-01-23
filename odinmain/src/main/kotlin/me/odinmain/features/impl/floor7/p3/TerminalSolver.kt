@@ -40,6 +40,7 @@ object TerminalSolver : Module(
     private val defaultSize: Int by NumberSetting("Default Terminal Size", 2, 1.0, 4.0, 1.0, description = "Default size of the terminal").withDependency { customSizeToggle }
     private val type: Int by SelectorSetting("Rendering", "None", arrayListOf("None", "Behind Item", "Stop Rendering Wrong"))
 
+    private val lockRubixSolution: Boolean by BooleanSetting("Lock Rubix Solution", false, description = "Locks the 'correct' color of the rubix terminal to the one that was scanned first, should make the solver less 'jumpy'.")
     private val cancelToolTip: Boolean by BooleanSetting("Stop Tooltips", default = true, description = "Stops rendering tooltips in terminals")
     private val removeWrongRubix: Boolean by BooleanSetting("Stop Rubix", true).withDependency { type == 2 }
     private val removeWrongStartsWith: Boolean by BooleanSetting("Stop Starts With", true).withDependency { type == 2 }
@@ -56,6 +57,7 @@ object TerminalSolver : Module(
 
     private val zLevel: Float get() = if (type == 1 && currentTerm != 1 && currentTerm != 2) 200f else 999f
     var openedTerminalTime = 0L
+    private var lastRubixSolution: Int? = null
 
     private val terminalNames = listOf(
         "Correct all the panes!",
@@ -88,6 +90,7 @@ object TerminalSolver : Module(
         if (newTerm != currentTerm) {
             currentTerm = newTerm
             openedTerminalTime = System.currentTimeMillis()
+            lastRubixSolution = null
         }
         if (currentTerm == -1) return leftTerm()
         val items = event.gui.inventory.subList(0, event.gui.inventory.size - 37)
@@ -203,14 +206,25 @@ object TerminalSolver : Module(
     private fun solveColor(items: List<ItemStack?>) {
         val panes = items.filter { it?.metadata != 15 && Item.getIdFromItem(it?.item) == 160 }.filterNotNull()
         var temp = List(100) { i -> i }
-        for (color in colorOrder) {
-            val temp2 = panes.flatMap { pane ->
-                if (pane.metadata != color) {
-                    Array(dist(colorOrder.indexOf(pane.metadata), colorOrder.indexOf(color))) { pane }.toList()
+        if (lastRubixSolution != null && lockRubixSolution) {
+            modMessage("getting last solution")
+            temp = panes.flatMap { pane ->
+                if (pane.metadata != lastRubixSolution) {
+                    Array(dist(colorOrder.indexOf(pane.metadata), colorOrder.indexOf(lastRubixSolution))) { pane }.toList()
                 } else emptyList()
             }.map { items.indexOf(it) }
-            if (getRealSize(temp2) < getRealSize(temp)) {
-                temp = temp2
+        } else {
+            modMessage("getting best solution")
+            for (color in colorOrder) {
+                val temp2 = panes.flatMap { pane ->
+                    if (pane.metadata != color) {
+                        Array(dist(colorOrder.indexOf(pane.metadata), colorOrder.indexOf(color))) { pane }.toList()
+                    } else emptyList()
+                }.map { items.indexOf(it) }
+                if (getRealSize(temp2) < getRealSize(temp)) {
+                    temp = temp2
+                    lastRubixSolution = color
+                }
             }
         }
         solution = temp
