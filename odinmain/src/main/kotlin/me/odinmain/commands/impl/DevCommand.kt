@@ -1,7 +1,10 @@
 package me.odinmain.commands.impl
 
 import com.github.stivais.commodore.parsers.impl.GreedyString
+import gg.essential.api.utils.WebUtil
+import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
+import me.odinmain.OdinMain.scope
 import me.odinmain.commands.CommandNode
 import me.odinmain.commands.Commodore
 import me.odinmain.events.impl.ChatPacketEvent
@@ -63,7 +66,9 @@ object DevCommand : Commodore {
             }
 
             literal("sendmessage").runs { string: String ->
-                sendDataToServer("""{"$string": "This is a test message"}""")
+                scope.launch {
+                    sendDataToServer("""{"$string": "This is a test message"}""")
+                }
                 modMessage("""{"$string": "This is a test message"}""")
             }
 

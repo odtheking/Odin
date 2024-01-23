@@ -11,6 +11,7 @@ import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.passive.EntityBat
+import net.minecraftforge.client.event.sound.PlaySoundSourceEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -66,10 +67,17 @@ object SecretChime : Module(
     fun onRemoveEntity(event: EntityLeaveWorldEvent) {
         if (!DungeonUtils.inDungeons || mc.thePlayer.getDistanceToEntity(event.entity) > 6) return
 
-        // Check the item name to filter for secrets.
-        if ((event.entity is EntityItem && drops.any {
-                event.entity.entityItem.displayName.contains(it)
-            }) || event.entity is EntityBat) playSecretSound()
+        if (event.entity is EntityItem && drops.any { event.entity.entityItem.displayName.contains(it) })
+            playSecretSound()
+    }
+
+    /**
+     * For bat death detection
+     */
+    @SubscribeEvent
+    fun onSoundPlay(event: PlaySoundSourceEvent) {
+        if (!DungeonUtils.inDungeons || event.name != "mob.bat.death") return
+        playSecretSound()
     }
 
     private fun playSecretSound() {

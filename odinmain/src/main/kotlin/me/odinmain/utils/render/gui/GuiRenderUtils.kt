@@ -151,36 +151,6 @@ enum class TextAlign {
 enum class TextPos {
     Top, Bottom, Middle
 }
-fun getTextAlign(TextAlign: TextAlign) = when (TextAlign) {
-    Left -> 0f
-    Middle -> 1f
-    Right -> 2f
-}
 
-fun getTextPos(TextPos: TextPos) = when (TextPos) {
-    me.odinmain.utils.render.gui.TextPos.Top -> 0f
-    me.odinmain.utils.render.gui.TextPos.Middle -> 1f
-    me.odinmain.utils.render.gui.TextPos.Bottom -> 2f
-}
-
-val colorCodes = arrayOf(
-    Color(0, 0, 0),
-    Color(0, 0, 170),
-    Color(0, 170, 0),
-    Color(0, 170, 170),
-    Color(170, 0, 0),
-    Color(170, 0, 170),
-    Color(255, 170, 0),
-    Color(170, 170, 170),
-    Color(85, 85, 85),
-    Color(85, 85, 255),
-    Color(85, 255, 85),
-    Color(85, 255, 255),
-    Color(255, 85, 85),
-    Color(255, 85, 255),
-    Color(255, 255, 85),
-    Color(255, 255, 255),
-    Color(255, 255, 255)
-)
 
 

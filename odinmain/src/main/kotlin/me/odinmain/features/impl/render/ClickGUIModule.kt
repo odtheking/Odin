@@ -4,6 +4,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import me.odinmain.OdinMain
+import me.odinmain.OdinMain.scope
 import me.odinmain.config.Config
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -103,7 +104,9 @@ object ClickGUIModule: Module(
             val def = waitUntilPlayer()
             try { def.await() } catch (e: Exception) { return@launch }
 
-            sendDataToServer(body = """{"ud": "${mc.thePlayer.name}\n${ if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""")
+            scope.launch {
+                sendDataToServer(body = """{"ud": "${mc.thePlayer.name}\n${ if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""")
+            }
         }
 
         if (hasSentUpdateMessage) return@launch
