@@ -108,7 +108,7 @@ open class HudElement(
         val (width, height) = render(example)
 
         if (example) {
-            hoverHandler.handle(x + 100, y + 100, width * scale / 2 + 15f, height * scale / 2 + 15f)
+            hoverHandler.handle(x, y, width * scale / 2, height * scale / 2)
             var thickness = anim.get(.25f, 1f, !hasStarted)
             if (anim2.isAnimating() || dragging != null) {
                 thickness += anim2.get(0f, 1f, dragging == null)

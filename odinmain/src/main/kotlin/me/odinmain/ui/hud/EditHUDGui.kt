@@ -11,6 +11,8 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.*
 import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinmain.utils.render.gui.animations.impl.EaseInOut
+import net.minecraft.client.renderer.GlStateManager
+import org.lwjgl.opengl.Display
 import kotlin.math.sign
 
 /**
@@ -39,28 +41,27 @@ object EditHUDGui : Screen() {
             it.x = MouseUtils.mouseX - startX
             it.y = MouseUtils.mouseY - startY
         }
-
-        translate(scaledWidth.toFloat() + 50f, scaledHeight * 1.95f)
+        GlStateManager.pushMatrix()
+        //translate(scaledWidth.toFloat() + 50f, scaledHeight * 1.95f)
 
         if (openAnim.isAnimating()) {
             setAlpha(openAnim.get(0f, 1f, !open))
             val animVal = openAnim.get(0f, 1f, !open)
             scale(animVal, animVal)
         }
+        hoverHandler.handle(Display.getWidth() / 2 - 100f, Display.getHeight() * .875f - 25f, 200f, 50f)
 
-        hoverHandler.handle(scaledWidth.toFloat(), (scaledHeight * 1.75f) - 25f, 200f, 50f)
+        //dropShadow(-100f, -25f, 200f, 50f, 10f, 1f, 9f)
+        roundedRectangle(Display.getWidth() / 2 - 100f, Display.getHeight() * .875 - 25f, 200f, 50f, color, 9f)
 
-        dropShadow(-100f, -25f, 200f, 50f, 10f, 1f, 9f)
-        roundedRectangle(-100f, -25f, 200f, 50f, color, 9f)
-
-        text("Reset", 0f, 0f, textColor, 38f, Fonts.REGULAR, TextAlign.Middle)
+        text("Reset", Display.getWidth() / 2f, Display.getHeight() * .875f, textColor, 38f, Fonts.REGULAR, TextAlign.Middle)
         //rect(-75f, -25f, 150f, 50f, Color.WHITE) // make this good
 
         if (openAnim.isAnimating()) {
             val animVal = openAnim.get(0f, 1f, !open)
             scale(1 / animVal, 1 / animVal)
         }
-        translate(-scaledWidth.toFloat() + 50, -(scaledHeight * 1.95f))
+        GlStateManager.popMatrix()
 
         if (!open) return
         for (i in 0 until huds.size) {
@@ -85,7 +86,7 @@ object EditHUDGui : Screen() {
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        if (isAreaHovered(scaledWidth - 100f, (scaledHeight * 1.75f) - 25f, 200f, 50f)) {
+        if (isAreaHovered(Display.getWidth() / 2 - 100f, Display.getHeight() * .875f - 25f, 200f, 50f)) {
             resetHUDs()
             return
         }

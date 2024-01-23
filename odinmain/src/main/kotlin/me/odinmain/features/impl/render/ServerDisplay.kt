@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.render
 
+import gg.essential.api.utils.get
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -32,15 +33,16 @@ object ServerDisplay : Module(
                 if (ping) getTextWidth("Ping: 60ms", 16f, Fonts.REGULAR) else 0f,
                 if (tps) getTextWidth("TPS: 20.0", 16f, Fonts.REGULAR) else 0f,
                 if (fps) getTextWidth("§dFPS: §a240.0", 16f, Fonts.REGULAR) else 0f
-            ) + 2f to 33f
+            ) + 2f to 50f
         } else {
             if (ping) text("§6Ping: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 1f, 9f, Color.WHITE,16f, Fonts.REGULAR)
             if (tps) text("§3TPS: ${colorizeTps(ServerUtils.averageTps.round(1))}", 1f, 26f, Color.WHITE,16f, Fonts.REGULAR)
             if (fps) text("§dFPS: ${colorizeFPS(mc.debug.split(" ")[0].toIntOrNull() ?: 0)}", 1f, 43f, Color.WHITE,16f, Fonts.REGULAR)
             max(
-                getTextWidth("§ePing: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 16f, Fonts.REGULAR),
-                getTextWidth("§ePing: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 16f, Fonts.REGULAR)
-            ) + 2f to 33f
+                if (ping) getTextWidth("§ePing: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 16f, Fonts.REGULAR) else 0f,
+                if (tps) getTextWidth("§ePing: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 16f, Fonts.REGULAR) else 0f,
+                if (fps) getTextWidth("§dFPS: ${colorizeFPS(mc.debug.split(" ")[0].toIntOrNull() ?: 0)}", 16f, Fonts.REGULAR) else 0f
+            ) + 2f to 50f
         }
     }
 
