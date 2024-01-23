@@ -1,7 +1,9 @@
 package me.odinmain.utils.render.gui
 
 import me.odinmain.OdinMain.mc
+import me.odinmain.utils.skyblock.modMessage
 import org.lwjgl.input.Mouse
+import org.lwjgl.opengl.Display
 
 
 object MouseUtils {
@@ -20,16 +22,10 @@ object MouseUtils {
         return mouseX in x..x + w && mouseY >= y
     }
 
-    fun getQuadrant(mouseX: Int, mouseY: Int): Int {
-        var guiSize = mc.gameSettings.guiScale * 2
-        if (mc.gameSettings.guiScale == 0) guiSize = 10
-
-        val screenY = mc.displayHeight / guiSize
-        val screenX = mc.displayWidth / guiSize
-
+    fun getQuadrant(): Int {
         return when {
-            mouseX >= screenX -> if (mouseY >= screenY) 4 else 2
-            else -> if (mouseY >= screenY) 3 else 1
+            mouseX >= Display.getWidth() / 2 -> if (mouseY >= Display.getHeight() / 2) 4 else 2
+            else -> if (mouseY >= Display.getHeight() / 2) 3 else 1
         }
     }
 }

@@ -11,14 +11,19 @@ import me.odinmain.ui.hud.EditHUDGui.dragging
 import me.odinmain.utils.endProfile
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
+import me.odinmain.utils.render.gui.MouseUtils.mouseX
+import me.odinmain.utils.render.gui.MouseUtils.mouseY
 import me.odinmain.utils.render.gui.animations.impl.EaseInOut
 import me.odinmain.utils.render.gui.rectangleOutline
+import me.odinmain.utils.render.gui.roundedRectangle
 import me.odinmain.utils.render.gui.scale
 import me.odinmain.utils.render.gui.translate
+import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.startProfile
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.Display
+import kotlin.math.max
 
 /**
  * Class to render elements on hud
@@ -103,10 +108,10 @@ open class HudElement(
         val (width, height) = render(example)
 
         if (example) {
-            hoverHandler.handle(x, y, width * scale, height * scale)
+            hoverHandler.handle(x + 100, y + 100, width * scale / 2 + 15f, height * scale / 2 + 15f)
             var thickness = anim.get(.25f, 1f, !hasStarted)
             if (anim2.isAnimating() || dragging != null) {
-                thickness += anim2.get(0f, .5f, dragging == null)
+                thickness += anim2.get(0f, 1f, dragging == null)
             }
 
             rectangleOutline(
