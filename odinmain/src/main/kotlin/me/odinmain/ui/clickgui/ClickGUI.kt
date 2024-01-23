@@ -15,6 +15,7 @@ import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.render.gui.*
 import me.odinmain.utils.render.gui.animations.impl.EaseInOut
 import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
@@ -46,18 +47,19 @@ object ClickGUI : Screen() {
     }
 
     override fun draw() {
-            if (anim.isAnimating()) {
-                translate(0f, floor(anim.get(-10f, 0f, !open)))
-                setAlpha(anim.get(0f, 1f, !open))
-            }
+        if (anim.isAnimating()) {
+            GlStateManager.pushMatrix()
+            translate(0f, floor(anim.get(-10f, 0f, !open)))
+            setAlpha(anim.get(0f, 1f, !open))
+            GlStateManager.popMatrix()
+        }
 
-            for (i in 0 until panels.size) {
-                panels[i].draw()
-            }
+        for (i in 0 until panels.size) {
+            panels[i].draw()
+        }
 
-            SearchBar.draw()
-            desc.render()
-
+        SearchBar.draw()
+        desc.render()
     }
 
     override fun onScroll(amount: Int) {
@@ -133,12 +135,13 @@ object ClickGUI : Screen() {
         open = false
         anim.start(true)
         mc.entityRenderer.stopUseShader()
-
+        GlStateManager.pushMatrix()
         /** Used to render the closing animation */
         Executor(0) {
             if (!anim.isAnimating()) destroyExecutor()
             drawScreen(0, 0, 0f)
         }.register()
+        GlStateManager.popMatrix()
     }
 
     /**

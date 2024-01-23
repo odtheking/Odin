@@ -59,7 +59,7 @@ class ElementCheckBox(parent: ModuleButton, setting: BooleanSetting) : Element<B
             if (setting.enabled || linearAnimation.isAnimating()) roundedRectangle(x + w - 43f, y + 4f, linearAnimation.get(34f, 9f, setting.enabled), 20f, color, 9f)
 
             if (isHovered) rectangleOutline(x + w - 43f, y + 4f, 34f, 20f, color.darker(.85f), 9f, .5f)
-            circle(x + w - linearAnimation.get(33f, 17f, !setting.enabled), y + 14f, 6f,
+            circle(x + w - linearAnimation.get(38f, 25f, !setting.enabled), y + 8f, 6f,
                 Color(220, 220, 220).darkerIf(isHovered, 0.9f)
             )
         }

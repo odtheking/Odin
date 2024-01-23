@@ -65,7 +65,7 @@ class Panel(
         scrollOffset = scrollAnimation.get(scrollOffset, scrollTarget).round(0)
         var startY = scrollOffset + height
 
-        //val s = scissor(x, y + height, width, 5000f)
+        val s = scissor(x, y + height, width, 5000f)
         if (extended && moduleButtons.isNotEmpty()) {
                 for (button in moduleButtons.filter { it.module.name.contains(currentSearch, true) }) {
                     button.y = startY
@@ -75,7 +75,7 @@ class Panel(
             }
 
             moduleButtons.lastOrNull()?.color?.let { roundedRectangle(x, y + startY, width, 10f, it, it, it, 0f, 0f, 0f, 10f, 10f, 0f) }
-            //resetScissor(s)
+            resetScissor(s)
 
             dropShadow(x, y, width, (startY + 10f).coerceAtLeast(height), 12.5f, 6f, 5f)
 

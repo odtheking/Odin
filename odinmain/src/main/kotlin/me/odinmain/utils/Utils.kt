@@ -308,7 +308,7 @@ fun createLegacyShader(vertName: String, fragName: String, blendState: BlendStat
  * @return The contents of the shader file at the given path.
  */
 fun readShader(name: String, ext: String): String =
-     OdinMain::class.java.getResource("/shaders/$name.$ext")?.readText() ?: ""
+     OdinMain::class.java.getResource("/assets/odinmain/shaders/$name.$ext")?.readText() ?: ""
 
 /**
  * Loads a BufferedImage from a path to a resource in the project
