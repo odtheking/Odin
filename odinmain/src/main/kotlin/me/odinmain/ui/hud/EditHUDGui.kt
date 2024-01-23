@@ -60,7 +60,7 @@ object EditHUDGui : Screen() {
             val animVal = openAnim.get(0f, 1f, !open)
             scale(1 / animVal, 1 / animVal)
         }
-        translate(-scaledWidth.toFloat(), -(scaledHeight * 1.75f))
+        translate(-scaledWidth.toFloat() + 50, -(scaledHeight * 1.95f))
 
         if (!open) return
         for (i in 0 until huds.size) {

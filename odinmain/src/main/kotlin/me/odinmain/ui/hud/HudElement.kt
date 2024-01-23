@@ -121,7 +121,7 @@ open class HudElement(
                 3f + height,
                 Color.WHITE.withAlpha(percent / 100f),
                 5f,
-                thickness * (scale / 2.5f)
+                max(thickness * (scale / 2.5f), 2f)
             )
         }
         GlStateManager.popMatrix()
