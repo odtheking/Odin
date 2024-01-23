@@ -50,7 +50,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
         text(name, x + 6f, y + 18f, textColor, 16f, Fonts.REGULAR)
         dropShadow(x + w - 40f, y + 5f, 31f, 19f, 10f, 0.75f, 5f)
         roundedRectangle(x + w - 40f, y + 5f, 31f, 19f, color.brighter(1 + hover.percent() / 500f), 5f)
-        rectangleOutline(x + w - 40f, y + 5f, 31f, 19f, color.darker().withAlpha(1f), 5f, .5f)
+        rectangleOutline(x + w - 40f, y + 5f, 31f, 19f, color.darker().withAlpha(1f), 5f, 1.5f)
 
         if (!extended && !anim.isAnimating()) return
 

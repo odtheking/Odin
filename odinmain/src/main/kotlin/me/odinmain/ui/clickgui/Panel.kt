@@ -59,7 +59,7 @@ class Panel(
             y = floor(y2 + mouseY)
         }
 
-        roundedRectangle(x, y, width, height, ColorUtil.moduleButtonColor, ColorUtil.moduleButtonColor, ColorUtil.moduleButtonColor, 0f, 15f, 15f, 0f, 0f, 0f)
+        roundedRectangle(x, y, width, height, ColorUtil.moduleButtonColor, ColorUtil.moduleButtonColor, ColorUtil.moduleButtonColor, 0f, 15f, 15f, 0f, 0f, 5f)
         text(if (displayName == "Floor7") "Floor 7" else "§l${displayName}", x + width / 2f, y + height / 2f, ColorUtil.textColor, 22f, Fonts.SEMIBOLD, TextAlign.Middle)
 
         scrollOffset = scrollAnimation.get(scrollOffset, scrollTarget).round(0)
@@ -74,11 +74,10 @@ class Panel(
                 length = startY + 5f
             }
 
-            moduleButtons.lastOrNull()?.color?.let { roundedRectangle(x, y + startY, width, 10f, it, it, it, 0f, 0f, 0f, 10f, 10f, 0f) }
-            resetScissor(s)
+        moduleButtons.lastOrNull()?.color?.let { roundedRectangle(x, y + startY, width, 10f, it, it, it, 0f, 0f, 0f, 10f, 10f, 4f) }
+        resetScissor(s)
 
-            dropShadow(x, y, width, (startY + 10f).coerceAtLeast(height), 12.5f, 6f, 5f)
-
+        dropShadow(x, y, width, (startY + 10f).coerceAtLeast(height), 12.5f, 6f, 5f)
     }
 
     fun handleScroll(amount: Int): Boolean {

@@ -59,7 +59,7 @@ class ElementTextField(parent: ModuleButton, setting: StringSetting) :
 
                     if (listening || colorAnim.isAnimating()) {
                         val color = colorAnim.get(ColorUtil.clickGUIColor, buttonColor, listening)
-                        rectangleOutline(x + w / 2 - width / 2 - 7, y + 3, width + 12.5f, 22.5f, color, 4f,1.5f)
+                        rectangleOutline(x + w / 2 - width / 2 - 7, y + 3, width + 12.5f, 22.5f, color, 4f,3f)
                     }
 
                     text(display, x + w / 2f, y + h / 2f, textColor, 16f, REGULAR, TextAlign.Middle)

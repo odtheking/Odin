@@ -51,14 +51,14 @@ class ElementCheckBox(parent: ModuleButton, setting: BooleanSetting) : Element<B
         if (!ClickGUIModule.switchType) {
             dropShadow(x + w - 30f, y + 5f, 21f, 20f, 10f, 0.75f, 5f)
             roundedRectangle(x + w - 30f, y + 5f, 21f, 20f, color, 5f)
-            rectangleOutline(x + w - 30f, y + 5f, 21f, 20f, clickGUIColor, 5f, 1.5f)
+            rectangleOutline(x + w - 30f, y + 5f, 21f, 20f, clickGUIColor, 5f, 3f)
         } else {
             dropShadow(x + w - 43f, y + 4f, 34f, 20f, 10f, 0.75f, 9f)
 
             roundedRectangle(x + w - 43f, y + 4f, 34f, 20f, buttonColor, 9f)
             if (setting.enabled || linearAnimation.isAnimating()) roundedRectangle(x + w - 43f, y + 4f, linearAnimation.get(34f, 9f, setting.enabled), 20f, color, 9f)
 
-            if (isHovered) rectangleOutline(x + w - 43f, y + 4f, 34f, 20f, color.darker(.85f), 9f, .5f)
+            if (isHovered) rectangleOutline(x + w - 43f, y + 4f, 34f, 20f, color.darker(.85f), 9f, 3f)
             circle(x + w - linearAnimation.get(38f, 25f, !setting.enabled), y + 8f, 6f,
                 Color(220, 220, 220).darkerIf(isHovered, 0.9f)
             )
