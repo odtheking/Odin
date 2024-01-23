@@ -76,7 +76,8 @@ object RoundedRect {
         Testing.shaderEdgeSoftnessUniform.setValue(edgeSoftness)
         Testing.shaderColorUniform.setValue(color.r / 255f, color.g / 255f, color.b / 255f, color.alpha)
         Testing.shaderColor2Uniform.setValue(color2.r / 255f, color2.g / 255f, color2.b / 255f, color2.alpha)
-        Testing.shaderGradientDir.setValue(gradientDir)
+        val direction = Testing.directionVecs[gradientDir]
+        Testing.shaderGradientDir.setValue(direction.first, direction.second)
         Testing.shaderBorderColorUniform.setValue(borderColor.r / 255f, borderColor.g / 255f, borderColor.b / 255f, borderColor.alpha)
         Testing.shaderShadowColorUniform.setValue(shadowColor.r / 255f, shadowColor.g / 255f, shadowColor.b / 255f, shadowColor.alpha)
 
@@ -163,9 +164,10 @@ object RoundedRect {
         lateinit var shaderEdgeSoftnessUniform: FloatUniform
         lateinit var shaderColorUniform: Float4Uniform
         lateinit var shaderColor2Uniform: Float4Uniform
-        lateinit var shaderGradientDir: IntUniform
+        lateinit var shaderGradientDir: Float2Uniform
         lateinit var shaderBorderColorUniform: Float4Uniform
         lateinit var shaderShadowColorUniform: Float4Uniform
+        val directionVecs = listOf(Pair(1f, 0f), Pair(0f, 1f), Pair(-1f, 0f), Pair(0f, -1f))
 
         fun isInitialized() = ::shader.isInitialized
 
@@ -184,7 +186,7 @@ object RoundedRect {
             shaderEdgeSoftnessUniform = shader.getFloatUniform("u_edgeSoftness")
             shaderColorUniform = shader.getFloat4Uniform("u_colorRect")
             shaderColor2Uniform = shader.getFloat4Uniform("u_colorRect2")
-            shaderGradientDir = shader.getIntUniform("u_gradientAngle")
+            shaderGradientDir = shader.getFloat2Uniform("u_gradientDirectionVector")
             shaderBorderColorUniform = shader.getFloat4Uniform("u_colorBorder")
             shaderShadowColorUniform = shader.getFloat4Uniform("u_colorShadow")
 
