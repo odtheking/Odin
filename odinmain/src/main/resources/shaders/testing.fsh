@@ -8,9 +8,10 @@ uniform float u_borderThickness;
 uniform float u_edgeSoftness;
 uniform vec4 u_colorRect;
 uniform vec4 u_colorRect2; // Second color for gradient
-uniform vec2 u_gradientDirectionVector; // Direction of the gradient in degrees
+uniform vec2 u_gradientDirectionVector; // Direction of the gradient based on which variable to use, for example a gradient from left to right will use (1.0, 0.0) to use the positive x value of the length from the middle of the recangle
 uniform vec4 u_colorBorder;
 uniform vec4 u_colorShadow;
+uniform float u_shadowSoftness;
 
 varying vec2 f_Position;
 
@@ -30,19 +31,14 @@ float roundedBoxSDF(vec2 CenterPosition, vec2 Size, vec4 Radius) {
 
 void main() {
     vec2 uv = (f_Position - u_rectCenter) / u_rectSize;
-    vec2 strength = uv * u_gradientDirectionVector;
-
-
+    vec2 strength = vec2(uv.x * u_gradientDirectionVector.x, uv.y * u_gradientDirectionVector.y);
     // Interpolate colors based on the distance
-    vec4 gradientColor = mix(u_colorRect, u_colorRect2, (strength.x == 0.0) ? strength.x + 0.5 : strength.y + 0.5);
-
-
+    vec4 gradientColor = mix(u_colorRect, u_colorRect2, (strength.x == 0.0) ? strength.y + 0.5 : strength.x + 0.5);
 
     // Border
     float u_borderSoftness  = 2.0; // How soft the (internal) border should be (in pixels)
 
     // Shadow
-    float u_shadowSoftness = 0.0;            // The (half) shadow radius (in pixels)
     vec2  u_shadowOffset   = vec2(0.0, 0.0); // The pixel-space shadow offset from rectangle center
 
     // Colors

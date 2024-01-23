@@ -64,7 +64,7 @@ object RoundedRect {
         matrixStack: UMatrixStack, x: Float, y: Float, width: Float, height: Float,
         color: Color, borderColor: Color, shadowColor: Color,
         borderThickness: Float, topL: Float, topR: Float, botL: Float, botR: Float, edgeSoftness: Float,
-        color2: Color, gradientDir: Int
+        color2: Color, gradientDir: Int, shadowSoftness: Float = 0f
     ) {
         if (!Testing.isInitialized() || !Testing.shader.usable) return
 
@@ -80,6 +80,7 @@ object RoundedRect {
         Testing.shaderGradientDir.setValue(direction.first, direction.second)
         Testing.shaderBorderColorUniform.setValue(borderColor.r / 255f, borderColor.g / 255f, borderColor.b / 255f, borderColor.alpha)
         Testing.shaderShadowColorUniform.setValue(shadowColor.r / 255f, shadowColor.g / 255f, shadowColor.b / 255f, shadowColor.alpha)
+        Testing.shaderShadowSoftness.setValue(shadowSoftness)
 
         UIBlock.drawBlockWithActiveShader(matrixStack, color.javaColor, x.toDouble(), y.toDouble(), x.toDouble() + width.toDouble(), y.toDouble() + height.toDouble())
 
@@ -167,6 +168,7 @@ object RoundedRect {
         lateinit var shaderGradientDir: Float2Uniform
         lateinit var shaderBorderColorUniform: Float4Uniform
         lateinit var shaderShadowColorUniform: Float4Uniform
+        lateinit var shaderShadowSoftness: FloatUniform
         val directionVecs = listOf(Pair(1f, 0f), Pair(0f, 1f), Pair(-1f, 0f), Pair(0f, -1f))
 
         fun isInitialized() = ::shader.isInitialized
@@ -189,6 +191,7 @@ object RoundedRect {
             shaderGradientDir = shader.getFloat2Uniform("u_gradientDirectionVector")
             shaderBorderColorUniform = shader.getFloat4Uniform("u_colorBorder")
             shaderShadowColorUniform = shader.getFloat4Uniform("u_colorShadow")
+            shaderShadowSoftness = shader.getFloatUniform("u_shadowSoftness")
 
             println("Loaded Odin rounded rectangle (test) shader")
         }

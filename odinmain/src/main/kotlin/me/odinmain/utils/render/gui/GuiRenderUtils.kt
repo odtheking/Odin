@@ -29,13 +29,13 @@ fun roundedRectangle(
     x: Number, y: Number, w: Number, h: Number,
     color: Color, borderColor: Color, shadowColor: Color,
     borderThickness: Number, topL: Number, topR: Number, botL: Number, botR: Number, edgeSoftness: Number,
-    color2: Color = color, gradientDir: Int = 0
+    color2: Color = color, gradientDir: Int = 0, shadowSoftness: Float = 0f
 ) {
     scale(1f / sr.scaleFactor, 1f / sr.scaleFactor, 1f)
     matrix.runLegacyMethod(matrix.get()) {
         RoundedRect.drawRectangle(
             matrix.get(), x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(),
-            color, borderColor, shadowColor, borderThickness.toFloat(), topL.toFloat(), topR.toFloat(), botL.toFloat(), botR.toFloat(), edgeSoftness.toFloat(), color2, gradientDir
+            color, borderColor, shadowColor, borderThickness.toFloat(), topL.toFloat(), topR.toFloat(), botL.toFloat(), botR.toFloat(), edgeSoftness.toFloat(), color2, gradientDir, shadowSoftness
         )
     }
     scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)

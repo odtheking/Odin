@@ -30,12 +30,13 @@ object RoundedRectangleTesting : Module(
     private val botL: Float by NumberSetting("Bottom Left", 5f, 0f, 50f)
     private val botR: Float by NumberSetting("Bottom Right", 5f, 0f, 50f)
     private val edgeSoftness: Float by NumberSetting("Edge Softness", 3f, 0f, 50f)
+    private val shadowSoftness: Float by NumberSetting("Shadow Softness", 3f, 0f, 50f)
 
 
     @SubscribeEvent
     fun onRenderGameOverlay(event: RenderGameOverlayEvent.Post) {
         if (event.type != RenderGameOverlayEvent.ElementType.ALL) return
-        roundedRectangle(x, y, w, h, color, borderColor, Color.GRAY, borderThickness, topL, topR, botL, botR, edgeSoftness, color2, dir)
+        roundedRectangle(x, y, w, h, color, borderColor, Color.GRAY, borderThickness, topL, topR, botL, botR, edgeSoftness, color2, dir, shadowSoftness)
         //rectangleOutline(x.toFloat() + 100, y.toFloat(), w.toFloat(), h.toFloat(), borderColor, topL, borderThickness)
     }
 }
