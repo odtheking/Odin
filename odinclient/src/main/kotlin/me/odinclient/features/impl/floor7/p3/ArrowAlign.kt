@@ -28,6 +28,7 @@ object ArrowAlign : Module(
     private val solver: Boolean by BooleanSetting("Solver")
     private val blockWrong: Boolean by BooleanSetting("Block Wrong Clicks", false, description = "Blocks wrong clicks, shift will override this")
     private val triggerBot: Boolean by BooleanSetting("Trigger Bot")
+    private val sneakToDisableTriggerbot: Boolean by BooleanSetting("Sneak to disable", false, description = "Disables triggerbot when you are sneaking").withDependency { triggerBot }
     private val delay: Long by NumberSetting<Long>("Delay", 200, 70, 500).withDependency { triggerBot }
     private val multipleScans: Boolean by BooleanSetting("Multiple Scans", true)
     private val delayScan: Long by NumberSetting("Scan Delay", 3000, 10.0, 10000.0, 10.0)
@@ -71,7 +72,7 @@ object ArrowAlign : Module(
     }
 
     private fun triggerBot() {
-        if (!triggerBotClock.hasTimePassed(delay)) return
+        if (!triggerBotClock.hasTimePassed(delay) || ( sneakToDisableTriggerbot && mc.thePlayer.isSneaking )) return
         val rot = neededRotations.values.find { it.entity == mc.objectMouseOver?.entityHit } ?: return
         if (rot.rotations == 0) return
         PlayerUtils.rightClick()
