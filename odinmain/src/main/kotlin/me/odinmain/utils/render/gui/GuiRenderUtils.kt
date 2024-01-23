@@ -12,6 +12,7 @@ import me.odinmain.utils.render.world.RenderUtils.drawTexturedModalRect
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.texture.DynamicTexture
+import org.lwjgl.opengl.GL11
 import java.awt.image.BufferedImage
 
 
@@ -103,24 +104,29 @@ fun translate(x: Float, y: Float, z: Float = 0f) = GlStateManager.translate(x, y
 
 fun scale(x: Float, y: Float, z: Float = 1f) = GlStateManager.scale(x, y, z)
 
+data class Scissor(val x: Number, val y: Number, val w: Number, val h: Number, val context: Int)
+private val scissorList = mutableListOf<Scissor>(Scissor(0, 0, 4000, 4000, 0))
+
 fun setAlpha(alpha: Float) = Unit
     //renderer.setAlpha(context, alpha)
-/*
-fun scissor(x: Float, y: Float, w: Float, h: Float): Any? {
 
-    //return ScissorHelper.INSTANCE.scissor(context, x, y, w, h)
-    return null
+fun scissor(x: Number, y: Number, w: Number, h: Number): Scissor {
+    GL11.glScissor(x.toInt(), y.toInt(), w.toInt(), h.toInt())
+    val scissor = Scissor(x, y, w, h, scissorList.size)
+    scissorList.add(scissor)
+    return scissor
 }
 
 fun resetScissor(scissor: Scissor) {
-    ScissorHelper.INSTANCE.resetScissor(context, scissor)
-}*/
+    val nextScissor = scissorList[scissor.context - 1]
+    GL11.glScissor(nextScissor.x.toInt(), nextScissor.y.toInt(), nextScissor.w.toInt(), nextScissor.h.toInt())
+    scissorList.removeLast()
+}
 
 
 
 fun drawDynamicTexture(image: BufferedImage, x: Float, y: Float, w: Float, h: Float) {
     val dynamicTexture = DynamicTexture(image)
-
     dynamicTexture.updateDynamicTexture()
     GlStateManager.bindTexture(dynamicTexture.glTextureId)
     scale(1f / sr.scaleFactor , 1f / sr.scaleFactor, 1f)
