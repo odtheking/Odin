@@ -43,26 +43,26 @@ class ElementCheckBox(parent: ModuleButton, setting: BooleanSetting) : Element<B
     override fun draw() {
 
         roundedRectangle(x, y, w, h, elementBackground)
-            text(name, x + 6f, y + h / 2f, textColor, 16f, Fonts.REGULAR)
+        text(name, x + 6f, y + h / 2f, textColor, 16f, Fonts.REGULAR)
 
-            hover.handle(x + w - 43f, y + 4f, 34f, 20f)
-            val color = colorAnim.get(clickGUIColor, buttonColor, setting.enabled).brighter(1 + hover.percent() / 500f)
+        hover.handle(x + w - 43f, y + 4f, 34f, 20f)
+        val color = colorAnim.get(clickGUIColor, buttonColor, setting.enabled).brighter(1 + hover.percent() / 500f)
 
-            if (!ClickGUIModule.switchType) {
-                dropShadow(x + w - 30f, y + 5f, 21f, 20f, 10f, 0.75f, 5f)
-                roundedRectangle(x + w - 30f, y + 5f, 21f, 20f, color, 5f)
-                rectangleOutline(x + w - 30f, y + 5f, 21f, 20f, clickGUIColor, 5f, 1.5f)
-            } else {
-                dropShadow(x + w - 43f, y + 4f, 34f, 20f, 10f, 0.75f, 9f)
+        if (!ClickGUIModule.switchType) {
+            dropShadow(x + w - 30f, y + 5f, 21f, 20f, 10f, 0.75f, 5f)
+            roundedRectangle(x + w - 30f, y + 5f, 21f, 20f, color, 5f)
+            rectangleOutline(x + w - 30f, y + 5f, 21f, 20f, clickGUIColor, 5f, 1.5f)
+        } else {
+            dropShadow(x + w - 43f, y + 4f, 34f, 20f, 10f, 0.75f, 9f)
 
-                roundedRectangle(x + w - 43f, y + 4f, 34f, 20f, buttonColor, 9f)
-                if (setting.enabled || linearAnimation.isAnimating()) roundedRectangle(x + w - 43f, y + 4f, linearAnimation.get(34f, 9f, setting.enabled), 20f, color, 9f)
+            roundedRectangle(x + w - 43f, y + 4f, 34f, 20f, buttonColor, 9f)
+            if (setting.enabled || linearAnimation.isAnimating()) roundedRectangle(x + w - 43f, y + 4f, linearAnimation.get(34f, 9f, setting.enabled), 20f, color, 9f)
 
-                if (isHovered) rectangleOutline(x + w - 43f, y + 4f, 34f, 20f, color.darker(.85f), 9f, .5f)
-                circle(x + w - linearAnimation.get(33f, 17f, !setting.enabled), y + 14f, 6f,
-                    Color(220, 220, 220).darkerIf(isHovered, 0.9f)
-                )
-            }
+            if (isHovered) rectangleOutline(x + w - 43f, y + 4f, 34f, 20f, color.darker(.85f), 9f, .5f)
+            circle(x + w - linearAnimation.get(33f, 17f, !setting.enabled), y + 14f, 6f,
+                Color(220, 220, 220).darkerIf(isHovered, 0.9f)
+            )
+        }
 
     }
 

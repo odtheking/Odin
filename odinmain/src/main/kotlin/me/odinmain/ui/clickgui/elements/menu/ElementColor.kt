@@ -39,7 +39,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
         get() = setting.value
 
     private val hover = HoverHandler(0, 150)
-
+    private val hueGradiant = loadImage("/assets/clickgui/HueGradient.png")
     // TODO: MAKE A BETTER DESIGN (FUNCTION IS ALL HERE P MUCH)
     override fun draw() {
         h = floor(anim.get(36f, if (setting.allowAlpha) 253f else 233f, !extended))
@@ -68,7 +68,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
         // HUE
 
         dropShadow(x + 10f, y + 214f, w - 20f, 15f, 10f, 0.5f, 5f)
-        drawBufferedImage("/assets/clickgui/HueGradient.png", x + 10f, y + 214f, w - 20f, 15f)
+        drawDynamicTexture(hueGradiant, x + 10f, y + 214f, w - 20f, 15f)
         rectangleOutline(x + 10f, y + 214f, w - 20f, 15f, buttonColor, 5f, 1f)
 
         val hue = x + 10f + setting.hue * 221f to y + 221f

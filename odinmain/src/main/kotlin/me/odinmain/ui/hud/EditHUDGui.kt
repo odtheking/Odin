@@ -9,8 +9,6 @@ import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.*
-import me.odinmain.utils.render.gui.GuiUtils.scaledHeight
-import me.odinmain.utils.render.gui.GuiUtils.scaledWidth
 import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinmain.utils.render.gui.animations.impl.EaseInOut
 import kotlin.math.sign
@@ -42,33 +40,32 @@ object EditHUDGui : Screen() {
             it.y = MouseUtils.mouseY - startY
         }
 
+        translate(scaledWidth.toFloat() + 50f, scaledHeight * 1.95f)
 
-            translate(scaledWidth.toFloat(), scaledHeight * 1.75f)
+        if (openAnim.isAnimating()) {
+            setAlpha(openAnim.get(0f, 1f, !open))
+            val animVal = openAnim.get(0f, 1f, !open)
+            scale(animVal, animVal)
+        }
 
-            if (openAnim.isAnimating()) {
-                setAlpha(openAnim.get(0f, 1f, !open))
-                val animVal = openAnim.get(0f, 1f, !open)
-                scale(animVal, animVal)
-            }
+        hoverHandler.handle(scaledWidth.toFloat(), (scaledHeight * 1.75f) - 25f, 200f, 50f)
 
-            hoverHandler.handle(scaledWidth - 100f, (scaledHeight * 1.75f) - 25f, 200f, 50f)
-
-            dropShadow(-100f, -25f, 200f, 50f, 10f, 1f, 9f)
+        dropShadow(-100f, -25f, 200f, 50f, 10f, 1f, 9f)
         roundedRectangle(-100f, -25f, 200f, 50f, color, 9f)
 
-            text("Reset", 0f, 0f, textColor, 38f, Fonts.REGULAR, TextAlign.Middle)
-            //rect(-75f, -25f, 150f, 50f, Color.WHITE) // make this good
+        text("Reset", 0f, 0f, textColor, 38f, Fonts.REGULAR, TextAlign.Middle)
+        //rect(-75f, -25f, 150f, 50f, Color.WHITE) // make this good
 
-            if (openAnim.isAnimating()) {
-                val animVal = openAnim.get(0f, 1f, !open)
-                scale(1 / animVal, 1 / animVal)
-            }
-            translate(-scaledWidth.toFloat(), -(scaledHeight * 1.75f))
+        if (openAnim.isAnimating()) {
+            val animVal = openAnim.get(0f, 1f, !open)
+            scale(1 / animVal, 1 / animVal)
+        }
+        translate(-scaledWidth.toFloat(), -(scaledHeight * 1.75f))
 
-            if (!open) return
-            for (i in 0 until huds.size) {
-                huds[i].draw(example = true)
-            }
+        if (!open) return
+        for (i in 0 until huds.size) {
+            huds[i].draw(example = true)
+        }
 
         mc.mcProfiler.endSection()
     }

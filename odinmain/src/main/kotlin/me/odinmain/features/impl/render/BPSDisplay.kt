@@ -8,7 +8,7 @@ import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.Fonts
 import me.odinmain.utils.render.gui.getTextWidth
-import me.odinmain.utils.render.gui.textWithControlCodes
+import me.odinmain.utils.render.gui.text
 import me.odinmain.utils.round
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -28,10 +28,10 @@ object BPSDisplay : Module(
 
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 2f, false) {
         if (it) { // example
-            textWithControlCodes("§7BPS: §r17.8", 1f, 9f, Color.WHITE,16f, Fonts.REGULAR)
+            text("§7BPS: §r17.8", 1f, 9f, Color.WHITE,16f, Fonts.REGULAR)
             getTextWidth("BPS: 17.8", 16f, Fonts.REGULAR ) to 16f
         } else {
-            textWithControlCodes("§7BPS: §r${bps.round(1)}", 1f, 9f, Color.WHITE, 16f, Fonts.REGULAR)
+            text("§7BPS: §r${bps.round(1)}", 1f, 9f, Color.WHITE, 16f, Fonts.REGULAR)
             getTextWidth("BPS: ${bps.round(1)}", 16f, Fonts.REGULAR ) to 16f
         }
     }

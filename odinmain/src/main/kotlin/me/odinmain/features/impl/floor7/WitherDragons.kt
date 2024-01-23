@@ -24,7 +24,7 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.Fonts
 import me.odinmain.utils.render.gui.getTextWidth
 import me.odinmain.utils.render.gui.roundedRectangle
-import me.odinmain.utils.render.gui.textWithControlCodes
+import me.odinmain.utils.render.gui.text
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
@@ -65,10 +65,10 @@ object WitherDragons : Module(
 
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, true) {
         if (it) {
-            if (timerBackground) roundedRectangle(1f, 1f, getTextWidth("Purple spawning in 4500ms", 19f, Fonts.REGULAR), 35f, Color.DARK_GRAY.withAlpha(.75f), 5f)
+            if (timerBackground) roundedRectangle(1f, 1f, getTextWidth("Purple spawning in 4500ms", 19f, Fonts.REGULAR), 32f, Color.DARK_GRAY.withAlpha(.75f), 3f)
 
-            textWithControlCodes("§5Purple spawning in §a4500ms", 2f, 10f, Color.WHITE, 16f, Fonts.REGULAR)
-            textWithControlCodes("§cRed spawning in §e1200ms", 2f, 26f, Color.WHITE,16f, Fonts.REGULAR)
+            text("§5Purple spawning in §a4500ms", 2f, 10f, Color.WHITE, 16f, Fonts.REGULAR)
+            text("§cRed spawning in §e1200ms", 2f, 26f, Color.WHITE,16f, Fonts.REGULAR)
 
             max(
                 getTextWidth("Purple spawning in 4500ms", 16f, Fonts.REGULAR),
@@ -77,10 +77,10 @@ object WitherDragons : Module(
         } else if (DragonTimer.toRender.size != 0) {
             var width = 0f
             DragonTimer.toRender.forEachIndexed { index, triple ->
-                textWithControlCodes(triple.first, 1f, 9f + index * 17f, Color.WHITE,16f, Fonts.REGULAR)
-                width = max(width, getTextWidth(triple.first.noControlCodes, 16f, Fonts.REGULAR))
+                text(triple.first, 1f, 9f + index * 17f, Color.WHITE,16f, Fonts.REGULAR)
+                width = max(width, getTextWidth(triple.first.noControlCodes, 19f, Fonts.REGULAR))
             }
-            roundedRectangle(1f, 1f, width + 2f, DragonTimer.toRender.size * 17f + 1, Color.DARK_GRAY.withAlpha(.5f), 5f)
+            roundedRectangle(1f, 1f, width + 2f, DragonTimer.toRender.size * 16f, Color.DARK_GRAY.withAlpha(.75f), 4f)
             width to DragonTimer.toRender.size * 17f
         } else 0f to 0f
     }

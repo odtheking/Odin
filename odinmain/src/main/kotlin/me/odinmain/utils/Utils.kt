@@ -15,6 +15,7 @@ import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.Event
 import java.awt.image.BufferedImage
+import java.util.*
 import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.math.round
@@ -339,6 +340,17 @@ fun max(vararg numbers: Number): Float {
  */
 fun min(vararg numbers: Number): Float {
     return numbers.minBy { it.toFloat() }.toFloat()
+}
+
+/**
+ * Returns the String with the first letter capitalized
+ *
+ * @param String The String to capitalize
+ *
+ * @return The String with the first letter capitalized
+ */
+fun String.capitalizeFirst(): String {
+    return substring(0, 1).uppercase(Locale.getDefault()) + substring(1, length).lowercase()
 }
 
 fun Color.coerceAlpha(min: Float, max: Float): Color {

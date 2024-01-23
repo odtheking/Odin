@@ -50,6 +50,9 @@ class ModuleButton(val module: Module, val panel: Panel) {
     private val extendAnim = EaseInOut(250)
     private val hoverHandler = HoverHandler(1000, 200)
     private val hover = HoverHandler(250)
+    private val bannableIcon = loadImage("/assets/clickgui/bannableIcon.png")
+    private val fpsHeavyIcon = loadImage("/assets/clickgui/fpsHeavyIcon.png")
+    private val newFeatureIcon = loadImage("/assets/clickgui/newFeatureIcon.png")
 
     init {
         updateElements()
@@ -95,42 +98,41 @@ class ModuleButton(val module: Module, val panel: Panel) {
 
 
         roundedRectangle(x, y, width, height, color)
-            text(module.name, x + width / 2, y + height / 2, textColor, 18f, Fonts.REGULAR, TextAlign.Middle)
-            val textWidth = getTextWidth(module.name, 18f, Fonts.REGULAR)
+        text(module.name, x + width / 2, y + height / 2, textColor, 18f, Fonts.REGULAR, TextAlign.Middle)
+        val textWidth = getTextWidth(module.name, 18f, Fonts.REGULAR)
 
-            if (textWidth > width - 80)// too long text, not drawing symbol
+        if (textWidth > width - 80)// too long text, not drawing symbol
+
             else if (module.tag == Module.TagType.RISKY) {
-                /*NanoVGHelper.INSTANCE.drawSvg(this.context,
-                    "/assets/odinmain/ui/clickgui/bannableIcon.svg", x + width / 2 + textWidth / 2 + 10f, y + 4f, 25f, 25f, javaClass
+                drawDynamicTexture(
+                    bannableIcon, x + width / 2 + textWidth / 2 + 10f, y + 4f, 25f, 25f,
                 )
 
-                 */
+
             } else if (module.tag == Module.TagType.FPSTAX) {
-                /*NanoVGHelper.INSTANCE.drawSvg(this.context,
-                    "/assets/odinmain/ui/clickgui/fpsHeavyIcon.svg", x + width / 2 + textWidth / 2 + 20f, y, 35f, 35f, javaClass
+                drawDynamicTexture(
+                    fpsHeavyIcon, x + width / 2 + textWidth / 2 + 20f, y, 35f, 35f,
                 )
 
-                 */
+
             } else if (module.tag == Module.TagType.NEW && ClickGUIModule.firstTimeOnVersion) {
-                /*NanoVGHelper.INSTANCE.drawSvg(this.context,
-                    "/assets/odinmain/ui/clickgui/newFeatureIcon.svg", x + width / 2 + textWidth / 2 + 10f, y, 35f, 35f, javaClass
+                drawDynamicTexture(
+                    newFeatureIcon, x + width / 2 + textWidth / 2 + 10f, y, 35f, 35f
                 )
-
-                 */
             }
 
 
-            if (!extendAnim.isAnimating() && !extended || menuElements.isEmpty()) return offs
+        if (!extendAnim.isAnimating() && !extended || menuElements.isEmpty()) return offs
 
-            var drawY = offs
-            offs = height + floor(extendAnim.get(0f, getSettingHeight(), !extended))
+        var drawY = offs
+        offs = height + floor(extendAnim.get(0f, getSettingHeight(), !extended))
 
-            //val scissor = scissor(x, y, width, offs)
-            for (i in 0 until menuElements.size) {
-                menuElements[i].y = drawY
-                drawY += menuElements[i].render()
-            }
-            //resetScissor(scissor)
+        //val scissor = scissor(x, y, width, offs)
+        for (i in 0 until menuElements.size) {
+            menuElements[i].y = drawY
+            drawY += menuElements[i].render()
+        }
+        //resetScissor(scissor)
 
         return offs
     }

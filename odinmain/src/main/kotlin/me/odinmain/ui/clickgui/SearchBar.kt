@@ -8,6 +8,7 @@ import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.*
 import me.odinmain.utils.render.gui.animations.impl.ColorAnimation
+import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.input.Keyboard
 
 object SearchBar {
@@ -18,17 +19,18 @@ object SearchBar {
     private val colorAnim = ColorAnimation(100)
 
     fun draw() {
-            translate(mc.displayWidth / 2f, mc.displayHeight - 100f)
+        GlStateManager.pushMatrix()
+        translate(mc.displayWidth / 4f, mc.displayHeight / 2f - 50f)
         roundedRectangle(-200f, 0f, 400f, 30f, ColorUtil.moduleButtonColor, 9f)
-            if (listening || colorAnim.isAnimating()) {
-                val color = colorAnim.get(ColorUtil.clickGUIColor, buttonColor, listening)
-                rectangleOutline(-202f, -1f, 404f, 32f, color, 9f,3f)
-            }
-            if (currentSearch.isEmpty()) {
-                text("Search here...", 0f, 16f, Color.WHITE.withAlpha(0.5f), 20f, Fonts.REGULAR, TextAlign.Middle)
-            } else text(currentSearch, 0f, 16f, Color.WHITE, 20f, Fonts.REGULAR, TextAlign.Middle)
-            translate(-mc.displayWidth / 2f, -mc.displayHeight + 100f)
-
+        if (listening || colorAnim.isAnimating()) {
+            val color = colorAnim.get(ColorUtil.clickGUIColor, buttonColor, listening)
+            rectangleOutline(-202f, -1f, 404f, 32f, color, 9f,3f)
+        }
+        if (currentSearch.isEmpty()) {
+            text("Search here...", 0f, 16f, Color.WHITE.withAlpha(0.5f), 20f, Fonts.REGULAR, TextAlign.Middle)
+        } else text(currentSearch, 0f, 16f, Color.WHITE, 20f, Fonts.REGULAR, TextAlign.Middle)
+        translate(-mc.displayWidth / 4f, -mc.displayHeight / 4f + 200f)
+        GlStateManager.popMatrix()
     }
 
     fun mouseClicked(mouseButton: Int): Boolean {

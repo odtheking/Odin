@@ -6,8 +6,8 @@ import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.ui.clickgui.SearchBar.currentSearch
 import me.odinmain.ui.clickgui.elements.ModuleButton
 import me.odinmain.ui.clickgui.util.ColorUtil
+import me.odinmain.utils.capitalizeFirst
 import me.odinmain.utils.render.gui.*
-import me.odinmain.utils.render.gui.GuiUtils.capitalizeFirst
 import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinmain.utils.render.gui.MouseUtils.mouseX
 import me.odinmain.utils.render.gui.MouseUtils.mouseY

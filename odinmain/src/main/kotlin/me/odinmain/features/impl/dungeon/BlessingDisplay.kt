@@ -35,15 +35,15 @@ object BlessingDisplay : Module(
 
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {
-            textWithControlCodes("Power: §a29", 1f, 9f, powerColor, 16f, Fonts.REGULAR, TextAlign.Left, TextPos.Middle, true)
-            textWithControlCodes("Time: §a5", 1f, 26f, timeColor,16f, Fonts.REGULAR, TextAlign.Left, TextPos.Middle, true)
+            text("Power: §a29", 1f, 9f, powerColor, 16f, Fonts.REGULAR, TextAlign.Left, TextPos.Middle, true)
+            text("Time: §a5", 1f, 26f, timeColor,16f, Fonts.REGULAR, TextAlign.Left, TextPos.Middle, true)
             max(getTextWidth("Power: 29", 16f, Fonts.REGULAR), getTextWidth("Time 5", 16f, Fonts.REGULAR)) + 2f to 33f
         } else {
             var width = 0f
             var height = 0f
             Blessings.entries.forEach { blessing ->
                 if (blessing.current == 0 || !blessing.enabled.invoke()) return@forEach
-                textWithControlCodes("${blessing.displayString} §a${blessing.current}", 1f, 9f + height, blessing.color,16f, Fonts.REGULAR, TextAlign.Left, TextPos.Middle, true)
+                text("${blessing.displayString} §a${blessing.current}", 1f, 9f + height, blessing.color,16f, Fonts.REGULAR, TextAlign.Left, TextPos.Middle, true)
                 width = max(width, getTextWidth("${blessing.displayString} §a${blessing.current}".noControlCodes, 16f, Fonts.REGULAR))
                 height += 17f
             }

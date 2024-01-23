@@ -94,7 +94,6 @@ open class HudElement(
         xSetting.max = Display.getWidth()
         ySetting.max = Display.getHeight()
 
-
         GlStateManager.pushMatrix()
         val sr = ScaledResolution(mc)
         scale(1f / sr.scaleFactor, 1f / sr.scaleFactor, 1f)
@@ -117,7 +116,7 @@ open class HudElement(
                 3f + height,
                 Color.WHITE.withAlpha(percent / 100f),
                 5f,
-                thickness / (scale / 3)
+                thickness * (scale / 2.5f)
             )
         }
         GlStateManager.popMatrix()

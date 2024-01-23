@@ -10,7 +10,7 @@ import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.Fonts
 import me.odinmain.utils.render.gui.getTextWidth
-import me.odinmain.utils.render.gui.textWithControlCodes
+import me.odinmain.utils.render.gui.text
 import net.minecraft.network.play.server.S29PacketSoundEffect
 
 object ArrowHit : Module(
@@ -26,10 +26,10 @@ object ArrowHit : Module(
 
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 2f, false) {
         if (it) {
-            textWithControlCodes("17.8", 1f, 9f, Color.WHITE,16f, Fonts.REGULAR)
+            text("17.8", 1f, 9f, Color.WHITE,16f, Fonts.REGULAR)
             getTextWidth("17.8", 16f, Fonts.REGULAR ) to 16f
         } else {
-            textWithControlCodes("$arrowCount", 1f, 9f, Color.WHITE,16f, Fonts.REGULAR)
+            text("$arrowCount", 1f, 9f, Color.WHITE,16f, Fonts.REGULAR)
             getTextWidth("$arrowCount", 16f, Fonts.REGULAR ) to 16f
         }
     }

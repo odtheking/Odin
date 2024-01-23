@@ -2,7 +2,6 @@ package me.odinmain.utils.render.gui
 
 import gg.essential.universal.UMatrixStack
 import me.odinmain.OdinMain.mc
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.util.FontRenderer
 import me.odinmain.ui.util.RoundedRect
 import me.odinmain.utils.coerceAlpha
@@ -13,17 +12,20 @@ import me.odinmain.utils.render.world.RenderUtils.drawTexturedModalRect
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.texture.DynamicTexture
+import java.awt.image.BufferedImage
 
 
 class Font(val fr: FontRenderer)
 object Fonts {
     val REGULAR = Font(FontRenderer("/fonts/Heebo.ttf", 32f))
-    val MEDIUM = Font(FontRenderer("/fonts/Heebo.ttf", 70f))
+    val MEDIUM = Font(FontRenderer("/fonts/Heebo.ttf", 50f))
     val SEMIBOLD = Font(FontRenderer("/fonts/Heebo.ttf", 50f))
 }
 
 val matrix = UMatrixStack.Compat
 val sr = ScaledResolution(mc)
+val scaledWidth get() = sr.scaledWidth
+val scaledHeight get() = sr.scaledHeight
 
 fun roundedRectangle(
     x: Number, y: Number, w: Number, h: Number,
@@ -68,6 +70,9 @@ fun drawHSBBox(x: Float, y: Float, w: Float, h: Float, color: Color) {
      */
 }
 
+fun dropShadow(x: Float, y: Float, w: Float, h: Float, blur: Float, spread: Float, radius: Float) = Unit
+//renderer.drawDropShadow(context, x, y, w, h, blur, spread, radius)
+
 fun circle(x: Float, y: Float, radius: Float, color: Color) = Unit
 
 fun text(text: String, x: Float, y: Float, color: Color, size: Float, font: Font, align: TextAlign = Left, verticalAlign: TextPos = TextPos.Middle, shadow: Boolean = false) {
@@ -90,33 +95,9 @@ fun text(text: String, x: Float, y: Float, color: Color, size: Float, font: Font
     scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
 }
 
-fun textWithControlCodes(text: String?, x: Float, y: Float, color: Color = Color.WHITE, size: Float, font: Font, align: TextAlign = Left, verticalAlign: TextPos = TextPos.Middle, shadow: Boolean = false): Float {
-    if (text == null) return 0f
-    var i = 0
-    var textColor = color
-    var xPos = x
-    while (i < text.length) {
-        val char = text[i]
-        if (char == '\u00a7' && i + 1 < text.length) {
-            val colorCode = "0123456789abcdefr".indexOf(text.lowercase()[i + 1])
-            textColor = colorCodes[colorCode]
-
-            i += 2
-            continue
-        }
-        text(char.toString(), xPos, y, textColor, size, font, align, verticalAlign, shadow)
-        xPos += getTextWidth(char.toString(), size, font)
-        i++
-    }
-    return xPos
-}
-
 fun getTextWidth(text: String, size: Float, font: Font) = font.fr.getWidth(text)
 
 fun getTextHeight(text: String, size: Float, font: Font) = font.fr.getHeight(text)
-
-fun dropShadow(x: Float, y: Float, w: Float, h: Float, blur: Float, spread: Float, radius: Float) = Unit
-    //renderer.drawDropShadow(context, x, y, w, h, blur, spread, radius)
 
 fun translate(x: Float, y: Float, z: Float = 0f) = GlStateManager.translate(x, y, z)
 
@@ -135,14 +116,21 @@ fun resetScissor(scissor: Scissor) {
     ScissorHelper.INSTANCE.resetScissor(context, scissor)
 }*/
 
-fun drawBufferedImage(filePath: String, x: Float, y: Float, w: Float, h: Float) {
-    val image = loadBufferedImage(filePath)
+
+
+fun drawDynamicTexture(image: BufferedImage, x: Float, y: Float, w: Float, h: Float) {
     val dynamicTexture = DynamicTexture(image)
+
     dynamicTexture.updateDynamicTexture()
     GlStateManager.bindTexture(dynamicTexture.glTextureId)
     scale(1f / sr.scaleFactor , 1f / sr.scaleFactor, 1f)
     drawTexturedModalRect(x.toInt(), y.toInt(), w.toInt(), h.toInt())
     scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
+}
+
+fun loadImage(filePath: String): BufferedImage {
+    val image = loadBufferedImage(filePath)
+    return image
 }
 
 fun wrappedText(text: String, x: Float, y: Float, w: Float, h: Float, color: Color, size: Float, font: Font) {
@@ -162,6 +150,17 @@ enum class TextAlign {
 // TODO: Simplify
 enum class TextPos {
     Top, Bottom, Middle
+}
+fun getTextAlign(TextAlign: TextAlign) = when (TextAlign) {
+    Left -> 0f
+    Middle -> 1f
+    Right -> 2f
+}
+
+fun getTextPos(TextPos: TextPos) = when (TextPos) {
+    me.odinmain.utils.render.gui.TextPos.Top -> 0f
+    me.odinmain.utils.render.gui.TextPos.Middle -> 1f
+    me.odinmain.utils.render.gui.TextPos.Bottom -> 2f
 }
 
 val colorCodes = arrayOf(
