@@ -18,9 +18,9 @@ import java.awt.image.BufferedImage
 
 class Font(val fr: FontRenderer)
 object Fonts {
-    val REGULAR = Font(FontRenderer("/assets/odinmain/fonts/Heebo.ttf", 32f))
-    val MEDIUM = Font(FontRenderer("/assets/odinmain/fonts/Heebo.ttf", 50f))
-    val SEMIBOLD = Font(FontRenderer("/assets/odinmain/fonts/Heebo.ttf", 50f))
+    val REGULAR = Font(FontRenderer("/assets/odinmain/fonts/Regular.ttf", 32f))
+    val MEDIUM = Font(FontRenderer("/assets/odinmain/fonts/Medium.ttf", 50f))
+    val SEMIBOLD = Font(FontRenderer("/assets/odinmain/fonts/SemiBold.ttf", 50f))
 }
 
 val matrix = UMatrixStack.Compat
