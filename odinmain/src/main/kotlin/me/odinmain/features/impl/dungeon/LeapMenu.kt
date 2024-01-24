@@ -103,7 +103,6 @@ object LeapMenu : Module(
 
     @SubscribeEvent
     fun mouseClicked(event: GuiClickEvent) {
-        modMessage(getQuadrant())
         if (event.gui !is GuiChest || event.gui.inventorySlots !is ContainerChest || (event.gui.inventorySlots as ContainerChest).name != "Spirit Leap")  return
 
         val quadrant = getQuadrant()

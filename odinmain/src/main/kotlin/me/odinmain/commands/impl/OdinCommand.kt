@@ -80,8 +80,8 @@ object OdinCommand : Commodore {
                  §3- /od f? » §8Teleports you to a floor in normal mode.
                  §3- /od dianareset §7» §8Resets all active diana waypoints.
                  §3- /od sendcoords §7» §8Sends coords in patcher's format.
-                 §3- /od ping §7» §8Sends coords in patcher's format.
-
+                 §3- /od ping §7» §8Sends your ping in chat.
+                 §3- /od tps §7» §8Sends the server's tps in chat.
                 """.trimIndent()
                     )
                 } else
@@ -97,7 +97,9 @@ object OdinCommand : Commodore {
                  §3- /od m? » §8Teleports you to a floor in master mode.
                  §3- /od f? » §8Teleports you to a floor in normal mode.
                  §3- /od dianareset §7» §8Resets all active diana waypoints.
-                 §3- /od sendcoords §7» §8Sends coords in patcher's format.
+                 §3- /od sendcoords §7» §8Sends coords in patcher's format.\
+                 §3- /od ping §7» §8Sends your ping in chat.
+                 §3- /od tps §7» §8Sends the server's tps in chat.
                  """.trimIndent()
                     )
             }
