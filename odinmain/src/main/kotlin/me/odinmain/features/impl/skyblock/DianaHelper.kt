@@ -1,6 +1,8 @@
 package me.odinmain.features.impl.skyblock
 
+import me.odinmain.OdinMain
 import me.odinmain.events.impl.ChatPacketEvent
+import me.odinmain.events.impl.ClickEvent
 import me.odinmain.events.impl.PacketSentEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -13,10 +15,7 @@ import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.render.world.RenderUtils.renderVec
-import me.odinmain.utils.skyblock.DianaBurrowEstimate
-import me.odinmain.utils.skyblock.PlayerUtils
-import me.odinmain.utils.skyblock.partyMessage
-import me.odinmain.utils.skyblock.sendCommand
+import me.odinmain.utils.skyblock.*
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S29PacketSoundEffect
@@ -45,6 +44,7 @@ object DianaHelper : Module(
     private val darkAuction: Boolean by BooleanSetting("DA Warp").withDependency { showWarpSettings }
     private val museum: Boolean by BooleanSetting("Museum Warp").withDependency { showWarpSettings }
     private val wizard: Boolean by BooleanSetting("Wizard Warp").withDependency { showWarpSettings }
+    private val autoWarp: Boolean by BooleanSetting("Auto Warp", description = "Automatically warps you to the nearest warp location 2 seconds after you activate the spade ability.").withDependency { !OdinMain.onLegitVersion }
     private var warpLocation: WarpPoint? = null
 
     private val cmdCooldown = Clock(3_000)
@@ -116,6 +116,14 @@ object DianaHelper : Module(
         burrowsRenderCopy.forEach { (location, type) ->
             if (tracerBurrows) RenderUtils.draw3DLine(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), Vec3(location).addVec(.5, .5, .5), type.color, tracerWidth, depth = false, event.partialTicks)
             RenderUtils.renderCustomBeacon(type.text, Vec3(location), type.color, event.partialTicks)
+        }
+    }
+
+    @SubscribeEvent
+    fun onRightClick(event: ClickEvent.RightClickEvent) {
+        if (!isHolding("ANCESTRAL_SPADE") || !autoWarp || OdinMain.onLegitVersion) return
+        runIn(40) {
+            onKeybind()
         }
     }
 
