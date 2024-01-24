@@ -50,9 +50,9 @@ class ModuleButton(val module: Module, val panel: Panel) {
     private val extendAnim = EaseInOut(250)
     private val hoverHandler = HoverHandler(1000, 200)
     private val hover = HoverHandler(250)
-    private val bannableIcon = loadImage("/assets/clickgui/bannableIcon.png")
-    private val fpsHeavyIcon = loadImage("/assets/clickgui/fpsHeavyIcon.png")
-    private val newFeatureIcon = loadImage("/assets/clickgui/newFeatureIcon.png")
+    private val bannableIcon = loadImage("/assets/odinmain/clickgui/bannableIcon.png")
+    private val fpsHeavyIcon = loadImage("/assets/odinmain/clickgui/fpsHeavyIcon.png")
+    private val newFeatureIcon = loadImage("/assets/odinmain/clickgui/newFeatureIcon.png")
 
     init {
         updateElements()
@@ -127,12 +127,12 @@ class ModuleButton(val module: Module, val panel: Panel) {
         var drawY = offs
         offs = height + floor(extendAnim.get(0f, getSettingHeight(), !extended))
 
-        //val scissor = scissor(x, y, width, offs)
+        val scissor = scissor(x, y, width, offs)
         for (i in 0 until menuElements.size) {
             menuElements[i].y = drawY
             drawY += menuElements[i].render()
         }
-        //resetScissor(scissor)
+        resetScissor(scissor)
 
         return offs
     }

@@ -20,11 +20,12 @@ object DeployableTimer : Module(
     name = "Deployable Timer",
     description = "Shows the time left on deployables.",
     category = Category.SKYBLOCK
-) { private val firework = loadImage("/assets/deployable/firework.png")
-    private val radiantimage = loadImage("/assets/deployable/RADIANTPOWERORB.png")
-    private val manaimage = loadImage("/assets/deployable/MANAFLUXPOWERORB.png")
-    private val overfluximage = loadImage("/assets/deployable/OVERFLUXPOWERORB.png")
-    private val plasmaimage = loadImage("/assets/deployable/PLASMAPOWERORB.png")
+) {
+    private val firework = loadImage("/assets/odinmain/deployable/firework.png")
+    private val radiantimage = loadImage("/assets/odinmain/deployable/RADIANTPOWERORB.png")
+    private val manaimage = loadImage("/assets/odinmain/deployable/MANAFLUXPOWERORB.png")
+    private val overfluximage = loadImage("/assets/odinmain/deployable/OVERFLUXPOWERORB.png")
+    private val plasmaimage = loadImage("/assets/odinmain/deployable/PLASMAPOWERORB.png")
 
     
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {

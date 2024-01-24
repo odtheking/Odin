@@ -39,7 +39,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
         get() = setting.value
 
     private val hover = HoverHandler(0, 150)
-    private val hueGradiant = loadImage("/assets/clickgui/HueGradient.png")
+    private val hueGradiant = loadImage("/assets/odinmain/clickgui/HueGradient.png")
     // TODO: MAKE A BETTER DESIGN (FUNCTION IS ALL HERE P MUCH)
     override fun draw() {
         h = floor(anim.get(36f, if (setting.allowAlpha) 253f else 233f, !extended))
@@ -50,11 +50,11 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
         text(name, x + 6f, y + 18f, textColor, 16f, Fonts.REGULAR)
         dropShadow(x + w - 40f, y + 5f, 31f, 19f, 10f, 0.75f, 5f)
         roundedRectangle(x + w - 40f, y + 5f, 31f, 19f, color.brighter(1 + hover.percent() / 500f), 5f)
-        rectangleOutline(x + w - 40f, y + 5f, 31f, 19f, color.darker().withAlpha(1f), 5f, .5f)
+        rectangleOutline(x + w - 40f, y + 5f, 31f, 19f, color.darker().withAlpha(1f), 5f, 1.5f)
 
         if (!extended && !anim.isAnimating()) return
 
-        //val scissor = scissor(x, y, w, h + 1)
+        val scissor = scissor(x, y, w, h + 1)
 
         // SATURATION AND BRIGHTNESS
         drawHSBBox(x + 10f, y + 38f, w - 20f, 170f, color.hsbMax())
@@ -96,7 +96,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
             2 -> setting.alpha = (mouseX - (x + 10f)) / (w - 20f)
         }
 
-    //resetScissor(scissor)
+        resetScissor(scissor)
 
     }
 

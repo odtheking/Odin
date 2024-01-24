@@ -18,9 +18,9 @@ import java.awt.image.BufferedImage
 
 class Font(val fr: FontRenderer)
 object Fonts {
-    val REGULAR = Font(FontRenderer("/fonts/Heebo.ttf", 32f))
-    val MEDIUM = Font(FontRenderer("/fonts/Heebo.ttf", 50f))
-    val SEMIBOLD = Font(FontRenderer("/fonts/Heebo.ttf", 50f))
+    val REGULAR = Font(FontRenderer("/assets/odinmain/fonts/Regular.ttf", 32f))
+    val MEDIUM = Font(FontRenderer("/assets/odinmain/fonts/Medium.ttf", 50f))
+    val SEMIBOLD = Font(FontRenderer("/assets/odinmain/fonts/SemiBold.ttf", 50f))
 }
 
 val matrix = UMatrixStack.Compat
@@ -44,9 +44,9 @@ fun roundedRectangle(
     scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
 }
 
-fun roundedRectangle(x: Number, y: Number, w: Number, h: Number, color: Color, radius: Number = 0f) =
+fun roundedRectangle(x: Number, y: Number, w: Number, h: Number, color: Color, radius: Number = 0f, edgeSoftness: Number = 0.5f) =
     roundedRectangle(x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(), color, color, color,
-        0f, radius.toFloat(), radius.toFloat(), radius.toFloat(), radius.toFloat(), 0f)
+        0f, radius.toFloat(), radius.toFloat(), radius.toFloat(), radius.toFloat(), edgeSoftness)
 
 
 fun rectangleOutline(x: Float, y: Float, w: Float, h: Float, color: Color, radius: Float = 0f, thickness: Float) {
@@ -74,7 +74,7 @@ fun drawHSBBox(x: Float, y: Float, w: Float, h: Float, color: Color) {
 fun dropShadow(x: Float, y: Float, w: Float, h: Float, blur: Float, spread: Float, radius: Float) = Unit
 //renderer.drawDropShadow(context, x, y, w, h, blur, spread, radius)
 
-fun circle(x: Float, y: Float, radius: Float, color: Color) = Unit
+fun circle(x: Float, y: Float, radius: Float, color: Color) = roundedRectangle(x, y, radius * 2, radius * 2, color, radius, 0.2f)
 
 fun text(text: String, x: Float, y: Float, color: Color, size: Float, font: Font, align: TextAlign = Left, verticalAlign: TextPos = TextPos.Middle, shadow: Boolean = false) {
     if (color.isTransparent) return
@@ -148,12 +148,10 @@ fun wrappedText(text: String, x: Float, y: Float, w: Float, h: Float, color: Col
 fun wrappedTextBounds(text: String, width: Float, size: Float, font: Font) = Unit
     //renderer.getWrappedStringBounds(context, text, width, size, font)
 
-// TODO: Simplify
+
 enum class TextAlign {
     Left, Middle, Right
 }
-
-// TODO: Simplify
 enum class TextPos {
     Top, Bottom, Middle
 }
