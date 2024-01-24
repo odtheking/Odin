@@ -6,7 +6,6 @@ import me.odinclient.dungeonmap.features.Dungeon
 import me.odinclient.dungeonmap.features.MapRender
 import me.odinclient.dungeonmap.features.Window
 import me.odinclient.features.impl.dungeon.*
-import me.odinclient.features.impl.floor7.AutoEdrag
 import me.odinclient.features.impl.floor7.DioriteFucker
 import me.odinclient.features.impl.floor7.FreezeGame
 import me.odinclient.features.impl.floor7.RelicAura
@@ -78,7 +77,6 @@ class ModCore {
         LeversTriggerbot,
         SimonSays,
 
-        AutoEdrag,
         DioriteFucker,
         RelicAura,
         //RelicPlacer,
@@ -91,7 +89,6 @@ class ModCore {
         CookieClicker,
         AutoExperiments,
         FarmingHitboxes,
-        LimboLeave,
         NoBlock,
         TermAC,
         Triggerbot,

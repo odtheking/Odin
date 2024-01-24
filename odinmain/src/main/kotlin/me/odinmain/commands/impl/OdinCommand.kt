@@ -6,9 +6,12 @@ import me.odinmain.OdinMain.onLegitVersion
 import me.odinmain.commands.CommandNode
 import me.odinmain.commands.Commodore
 import me.odinmain.features.impl.render.ClickGUIModule
+import me.odinmain.features.impl.render.ServerDisplay.colorizePing
+import me.odinmain.features.impl.render.ServerDisplay.colorizeTps
 import me.odinmain.features.impl.skyblock.DianaHelper
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.hud.EditHUDGui
+import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.skyblock.PlayerUtils.posX
 import me.odinmain.utils.skyblock.PlayerUtils.posY
@@ -77,6 +80,8 @@ object OdinCommand : Commodore {
                  §3- /od f? » §8Teleports you to a floor in normal mode.
                  §3- /od dianareset §7» §8Resets all active diana waypoints.
                  §3- /od sendcoords §7» §8Sends coords in patcher's format.
+                 §3- /od ping §7» §8Sends coords in patcher's format.
+
                 """.trimIndent()
                     )
                 } else
@@ -104,6 +109,14 @@ object OdinCommand : Commodore {
 
             literal("sendcoords").runs {
                 sendChatMessage("x: ${posX.toInt()}, y: ${posY.toInt()}, z: ${posZ.toInt()}")
+            }
+
+            literal("ping").runs {
+                modMessage("${colorizePing(ServerUtils.averagePing.toInt())}ms")
+            }
+
+            literal("tps").runs {
+                modMessage("${colorizeTps(ServerUtils.averageTps)}ms")
             }
         }
 }

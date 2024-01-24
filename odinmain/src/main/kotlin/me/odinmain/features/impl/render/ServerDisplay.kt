@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.render
 
-import gg.essential.api.utils.get
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -46,7 +45,7 @@ object ServerDisplay : Module(
         }
     }
 
-    private fun colorizePing(ping: Int): String {
+    fun colorizePing(ping: Int): String {
         return when {
             ping < 150 -> "§a$ping"
             ping < 200 -> "§e$ping"
@@ -55,7 +54,7 @@ object ServerDisplay : Module(
         }
     }
 
-    private fun colorizeTps(tps: Double): String {
+    fun colorizeTps(tps: Double): String {
         return when {
             tps > 18.0 -> "§a$tps"
             tps > 15.0 -> "§e$tps"
@@ -64,7 +63,7 @@ object ServerDisplay : Module(
         }
     }
 
-    private fun colorizeFPS(fps: Int): String {
+    fun colorizeFPS(fps: Int): String {
         return when {
             fps > 200 -> "§a$fps"
             fps > 100.0 -> "§e$fps"

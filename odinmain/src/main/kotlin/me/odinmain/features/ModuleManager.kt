@@ -73,7 +73,6 @@ object ModuleManager {
         RenderOptimizer,
         ServerDisplay,
         Waypoints,
-        AutoRenewCrystalHollows,
         AutoSprint,
         BlazeAttunement,
         CanClip,
