@@ -207,13 +207,13 @@ object DungeonUtils {
     enum class Classes(
         val code: String,
         val color: Color,
-        val defaultQuandrant: Int,
+        val defaultQuadrant: Int,
         var prio: Int
     ) {
         /**
          * Archer class with formatting code "§6" (gold) and orange color.
          */
-        Archer("§6", Color.ORANGE, 0, 1),
+        Archer("§6", Color.ORANGE, 0, 2),
 
         /**
          * Berserk class with formatting code "§4" (dark red) and dark red color.
@@ -223,12 +223,12 @@ object DungeonUtils {
         /**
          * Healer class with formatting code "§a" (green) and green color.
          */
-        Healer("§d", Color.PINK, 2, 1),
+        Healer("§d", Color.PINK, 2, 2),
 
         /**
          * Mage class with formatting code "§5" (purple) and purple color.
          */
-        Mage("§b", Color.BLUE, 3, 1),
+        Mage("§b", Color.BLUE, 3, 2),
 
         /**
          * Tank class with formatting code "§2" (dark green) and dark green color.
@@ -273,8 +273,8 @@ object DungeonUtils {
     init {
         Executor(1000) {
             if (inDungeons) {
-                Classes.entries.find { (it.name == arrayListOf("Archer", "Berserker", "Healer", "Mage", "Tank")[LeapMenu.priority]) }
-                    ?.let { it1 -> Classes.setPriority(it1) }
+                //Classes.entries.find { (it.name == arrayListOf("Archer", "Berserker", "Healer", "Mage", "Tank")[LeapMenu.priority]) }
+                    //?.let { it1 -> Classes.setPriority(it1) }
 
                 teammates = getDungeonTeammates()
                 teammatesNoSelf = teammates.filter { it.name != mc.thePlayer.name }
@@ -305,7 +305,7 @@ object DungeonUtils {
 
         for (player in players) {
             when {
-                result[player.clazz.defaultQuandrant] == EMPTY -> result[player.clazz.defaultQuandrant] = player
+                result[player.clazz.defaultQuadrant] == EMPTY -> result[player.clazz.defaultQuadrant] = player
                 else -> secondRound.add(player)
             }
         }

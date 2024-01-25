@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.texture.DynamicTexture
 import org.lwjgl.opengl.GL11
 import java.awt.image.BufferedImage
+import kotlin.math.max
 
 
 class Font(val fr: FontRenderer)
@@ -25,8 +26,6 @@ object Fonts {
 
 val matrix = UMatrixStack.Compat
 val sr = ScaledResolution(mc)
-val scaledWidth get() = sr.scaledWidth
-val scaledHeight get() = sr.scaledHeight
 
 fun roundedRectangle(
     x: Number, y: Number, w: Number, h: Number,
@@ -71,7 +70,7 @@ fun drawHSBBox(x: Float, y: Float, w: Float, h: Float, color: Color) {
     rectangleOutline(x-1, y-1, w+2, h+2, Color(38, 38, 38), 3f, 2f)
 }
 
-fun drawCircle(x: Float, y: Float, radius: Float, color: Color) {
+fun circle(x: Float, y: Float, radius: Float, color: Color) {
     scale(1f / sr.scaleFactor, 1f / sr.scaleFactor, 1f)
     matrix.runLegacyMethod(matrix.get()) { RoundedRect.drawCircle(matrix.get(), x.toFloat(), y.toFloat(), radius, color) }
     scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
@@ -79,8 +78,6 @@ fun drawCircle(x: Float, y: Float, radius: Float, color: Color) {
 
 fun dropShadow(x: Float, y: Float, w: Float, h: Float, blur: Float, spread: Float, radius: Float) = Unit
 //renderer.drawDropShadow(context, x, y, w, h, blur, spread, radius)
-
-fun circle(x: Float, y: Float, radius: Float, color: Color) = roundedRectangle(x, y, radius * 2, radius * 2, color, radius, 0.2f)
 
 fun text(text: String, x: Float, y: Float, color: Color, size: Float, font: Font, align: TextAlign = Left, verticalAlign: TextPos = TextPos.Middle, shadow: Boolean = false) {
     if (color.isTransparent) return
@@ -129,8 +126,6 @@ fun resetScissor(scissor: Scissor) {
     scissorList.removeLast()
 }
 
-
-
 fun drawDynamicTexture(dynamicTexture: DynamicTexture, x: Float, y: Float, w: Float, h: Float) {
     dynamicTexture.updateDynamicTexture()
     GlStateManager.bindTexture(dynamicTexture.glTextureId)
@@ -147,12 +142,41 @@ fun loadImage(filePath: String): BufferedImage {
 fun wrappedText(text: String, x: Float, y: Float, w: Float, h: Float, color: Color, size: Float, font: Font) {
     if (color.isTransparent) return
 
-    //renderer.drawWrappedString(context, text, x, y, w, color.rgba, size, h, font)
+    val words = text.split(" ")
+    var line = ""
+    var currentHeight = y
+
+    for (word in words) {
+        if (font.fr.getWidth(line + word) > w) {
+            text(line, x, currentHeight, color, size, font)
+            line = "$word "
+            currentHeight += font.fr.getHeight(line)
+        }
+        else line += "$word "
+
+    }
+    text(line, x, currentHeight, color, size, font)
 }
 
-fun wrappedTextBounds(text: String, width: Float, size: Float, font: Font) = Unit
-    //renderer.getWrappedStringBounds(context, text, width, size, font)
+fun wrappedTextBounds(text: String, width: Float, size: Float, font: Font): Pair<Float, Float> {
+    val words = text.split(" ")
+    var line = ""
+    var lines = 1
+    var maxWidth = 0f
 
+    for (word in words) {
+        if (font.fr.getWidth(line + word) > width) {
+            maxWidth = max(maxWidth, font.fr.getWidth(line))
+            line = "$word "
+            lines++
+        }
+        else line += "$word "
+
+    }
+    maxWidth = max(maxWidth, font.fr.getWidth(line))
+
+    return Pair(maxWidth, lines * font.fr.getHeight(line))
+}
 
 enum class TextAlign {
     Left, Middle, Right
@@ -160,6 +184,3 @@ enum class TextAlign {
 enum class TextPos {
     Top, Bottom, Middle
 }
-
-
-

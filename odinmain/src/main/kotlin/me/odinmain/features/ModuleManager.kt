@@ -14,11 +14,8 @@ import me.odinmain.features.impl.render.*
 import me.odinmain.features.impl.skyblock.*
 import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.ui.util.RoundedRect
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.profile
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.gui.drawCircle
 import net.minecraft.network.Packet
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -156,7 +153,6 @@ object ModuleManager {
 
     @SubscribeEvent
     fun onRenderOverlay(event: RenderGameOverlayEvent.Post) {
-        drawCircle(100f, 100f, 30f, Color.ORANGE)
         if (mc.currentScreen != null || event.type != RenderGameOverlayEvent.ElementType.ALL) return
 
         mc.mcProfiler.startSection("Odin Hud")

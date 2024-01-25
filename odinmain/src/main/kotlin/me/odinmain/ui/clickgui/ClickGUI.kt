@@ -171,16 +171,16 @@ object ClickGUI : Screen() {
         /** Handles rendering, if it's not active then it won't render */
         fun render() {
             if (shouldRender) {
-                    val area = listOf(100f, 100f, 100f, 100f) //wrappedTextBounds(text!!, 300f, 16f, Fonts.REGULAR)
+                val area = wrappedTextBounds(text!!, 300f, 16f, Fonts.REGULAR)
                 roundedRectangle(
-                    x, y, area[2] - area[0] + 10, area[3] - area[1] + 8,
+                    x, y, area.first + 7, area.second + 9,
                     buttonColor.withAlpha((hoverHandler!!.percent() / 100f).coerceIn(0f, 0.8f)), 5f
                 )
-                    wrappedText(text!!, x + 7f, y + 12f, 300f, 1f, textColor, 16f, Fonts.REGULAR)
-                    if (hoverHandler!!.percent() == 0) {
-                        text = null
-                        hoverHandler = null
-                    }
+                wrappedText(text!!, x + 7f, y + 12f, 300f, 1f, textColor, 16f, Fonts.REGULAR)
+                if (hoverHandler!!.percent() == 0) {
+                    text = null
+                    hoverHandler = null
+                }
             }
 
         }
