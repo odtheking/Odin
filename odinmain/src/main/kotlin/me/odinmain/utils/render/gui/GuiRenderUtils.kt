@@ -125,8 +125,7 @@ fun resetScissor(scissor: Scissor) {
 
 
 
-fun drawDynamicTexture(image: BufferedImage, x: Float, y: Float, w: Float, h: Float) {
-    val dynamicTexture = DynamicTexture(image)
+fun drawDynamicTexture(dynamicTexture: DynamicTexture, x: Float, y: Float, w: Float, h: Float) {
     dynamicTexture.updateDynamicTexture()
     GlStateManager.bindTexture(dynamicTexture.glTextureId)
     scale(1f / sr.scaleFactor , 1f / sr.scaleFactor, 1f)

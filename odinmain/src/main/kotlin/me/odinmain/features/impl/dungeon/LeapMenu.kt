@@ -13,7 +13,6 @@ import me.odinmain.features.impl.dungeon.LeapHelper.leapHelperClearChatEvent
 import me.odinmain.features.impl.dungeon.LeapHelper.worldLoad
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.utils.name
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
@@ -76,7 +75,6 @@ object LeapMenu : Module(
             mc.textureManager.bindTexture(it.locationSkin)
             if (it.name == leapHelper && leapHelperToggle) roundedRectangle(-5, -25, 230, 110, color, 9f)
 
-            //Gui.drawRect(-5, -15, 120, 35, if (!colorStyle) Color.DARK_GRAY.rgba else it.clazz.color.rgba)
             if (roundedRect) roundedRectangle(-10, -30, 250, 100, if (!colorStyle) Color.DARK_GRAY else it.clazz.color, 9f)
             else roundedRectangle(-10, -30, 250, 100, if (!colorStyle) Color.DARK_GRAY else it.clazz.color, 0f)
 
@@ -88,17 +86,16 @@ object LeapMenu : Module(
 
             GlStateManager.disableAlpha()
             GlStateManager.popMatrix()
-
         }
         if (OpenGlHelper.shadersSupported && mc.renderViewEntity is EntityPlayer && blur) {
-            ClickGUI.mc.entityRenderer.stopUseShader()
-            ClickGUI.mc.entityRenderer.loadShader(ResourceLocation("shaders/post/blur.json"))
+            mc.entityRenderer.stopUseShader()
+            mc.entityRenderer.loadShader(ResourceLocation("shaders/post/blur.json"))
         }
         event.isCanceled = true
     }
     @SubscribeEvent
     fun onGuiClose(event: GuiClosedEvent) {
-        mc.entityRenderer.stopUseShader()
+        if (blur) mc.entityRenderer.stopUseShader()
     }
 
     @SubscribeEvent

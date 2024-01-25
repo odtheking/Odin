@@ -16,6 +16,7 @@ import me.odinmain.utils.render.gui.*
 import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinmain.utils.render.gui.animations.impl.ColorAnimation
 import me.odinmain.utils.render.gui.animations.impl.EaseInOut
+import net.minecraft.client.renderer.texture.DynamicTexture
 import kotlin.math.floor
 
 /**
@@ -50,9 +51,9 @@ class ModuleButton(val module: Module, val panel: Panel) {
     private val extendAnim = EaseInOut(250)
     private val hoverHandler = HoverHandler(1000, 200)
     private val hover = HoverHandler(250)
-    private val bannableIcon = loadImage("/assets/odinmain/clickgui/bannableIcon.png")
-    private val fpsHeavyIcon = loadImage("/assets/odinmain/clickgui/fpsHeavyIcon.png")
-    private val newFeatureIcon = loadImage("/assets/odinmain/clickgui/newFeatureIcon.png")
+    private val bannableIcon = DynamicTexture(loadImage("/assets/odinmain/clickgui/bannableIcon.png"))
+    private val fpsHeavyIcon = DynamicTexture(loadImage("/assets/odinmain/clickgui/fpsHeavyIcon.png"))
+    private val newFeatureIcon = DynamicTexture(loadImage("/assets/odinmain/clickgui/newFeatureIcon.png"))
 
     init {
         updateElements()

@@ -9,11 +9,11 @@ import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.*
 import me.odinmain.utils.skyblock.getSkullValue
+import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.awt.image.BufferedImage
 import kotlin.math.max
 
 object DeployableTimer : Module(
@@ -21,11 +21,11 @@ object DeployableTimer : Module(
     description = "Shows the time left on deployables.",
     category = Category.SKYBLOCK
 ) {
-    private val firework = loadImage("/assets/odinmain/deployable/firework.png")
-    private val radiantimage = loadImage("/assets/odinmain/deployable/RADIANTPOWERORB.png")
-    private val manaimage = loadImage("/assets/odinmain/deployable/MANAFLUXPOWERORB.png")
-    private val overfluximage = loadImage("/assets/odinmain/deployable/OVERFLUXPOWERORB.png")
-    private val plasmaimage = loadImage("/assets/odinmain/deployable/PLASMAPOWERORB.png")
+    private val firework = DynamicTexture(loadImage("/assets/odinmain/deployable/firework.png"))
+    private val radiantimage = DynamicTexture(loadImage("/assets/odinmain/deployable/RADIANTPOWERORB.png"))
+    private val manaimage = DynamicTexture(loadImage("/assets/odinmain/deployable/MANAFLUXPOWERORB.png"))
+    private val overfluximage = DynamicTexture(loadImage("/assets/odinmain/deployable/OVERFLUXPOWERORB.png"))
+    private val plasmaimage = DynamicTexture(loadImage("/assets/odinmain/deployable/PLASMAPOWERORB.png"))
 
     
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
@@ -61,7 +61,7 @@ object DeployableTimer : Module(
         val renderName: String,
         val priority: Int,
         val duration: Int,
-        val dynamicTexture: BufferedImage,
+        val dynamicTexture: DynamicTexture,
         val range: Float)  {
         Warning("ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzMwNjIyMywKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjJlMmJmNmMxZWMzMzAyNDc5MjdiYTYzNDc5ZTU4NzJhYzY2YjA2OTAzYzg2YzgyYjUyZGFjOWYxYzk3MTQ1OCIKICAgIH0KICB9Cn0=",
             "Warning Flare", "§aWarning Flare", 3, 180000, firework, 40f),
@@ -81,8 +81,8 @@ object DeployableTimer : Module(
         Plasma("PLASMAFLUXPLACEHOLDERTEXTURE", "Plasma", "§dPlasmaflux", 5, 60000, plasmaimage, 20f),
     }
 
-    class Deployable(val priority: Int, val duration: Int, val entity: EntityArmorStand, val renderName: String, val image: BufferedImage, val range: Float, val timeAdded: Long = System.currentTimeMillis())
-    private data class RenderableDeployable(val name: String, val timeLeft: String, val image: BufferedImage)
+    class Deployable(val priority: Int, val duration: Int, val entity: EntityArmorStand, val renderName: String, val image: DynamicTexture, val range: Float, val timeAdded: Long = System.currentTimeMillis())
+    private data class RenderableDeployable(val name: String, val timeLeft: String, val image: DynamicTexture)
 
     private val currentDeployables = mutableListOf<Deployable>()
     private val orbRegex = Regex("(.+) (\\d+)s")

@@ -273,6 +273,8 @@ object DungeonUtils {
     init {
         Executor(1000) {
             if (inDungeons) {
+                Classes.entries.find { (it.name == arrayListOf("Archer", "Berserker", "Healer", "Mage", "Tank")[LeapMenu.priority]) }
+                    ?.let { it1 -> Classes.setPriority(it1) }
 
                 teammates = getDungeonTeammates()
                 teammatesNoSelf = teammates.filter { it.name != mc.thePlayer.name }
@@ -282,9 +284,6 @@ object DungeonUtils {
                     1 -> teammatesNoSelf.sortedBy { it.name }.toMutableList()
                     else -> odinSorting(teammatesNoSelf.sortedBy { it.clazz.prio }).toMutableList()
                 }
-
-                Classes.entries.find { (it.name == arrayListOf("Archer", "Berserker", "Healer", "Mage", "Tank")[LeapMenu.priority]) }
-                    ?.let { it1 -> Classes.setPriority(it1) }
             }
         }.register()
     }

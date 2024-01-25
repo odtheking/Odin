@@ -15,6 +15,7 @@ import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.utils.render.gui.*
 import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinmain.utils.render.gui.animations.impl.ColorAnimation
+import net.minecraft.client.renderer.texture.DynamicTexture
 
 
 /**
@@ -38,7 +39,7 @@ class ElementHud(parent: ModuleButton, setting: HudSetting) : Element<HudSetting
             else isAreaHovered(x + w - 30f, y + 5f, 21f, 20f)
         }
 
-    private val movementIcon = loadImage("/assets/odinmain/clickgui/MovementIcon.png")
+    private val movementIcon = DynamicTexture(loadImage("/assets/odinmain/clickgui/MovementIcon.png"))
     private val colorAnim = ColorAnimation(250)
     private val hover = HoverHandler(0, 150)
 

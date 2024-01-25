@@ -48,10 +48,8 @@ object ClickGUI : Screen() {
 
     override fun draw() {
         if (anim.isAnimating()) {
-            GlStateManager.pushMatrix()
             translate(0f, floor(anim.get(-10f, 0f, !open)))
             setAlpha(anim.get(0f, 1f, !open))
-            GlStateManager.popMatrix()
         }
 
         for (i in 0 until panels.size) {
