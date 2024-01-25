@@ -133,7 +133,7 @@ open class HudElement(
     }
 
     fun accept(): Boolean {
-        return isAreaHovered(x, y, width * scale, height * scale)
+        return isAreaHovered(x, y, width * scale / 2, height * scale / 2)
     }
 
     /**

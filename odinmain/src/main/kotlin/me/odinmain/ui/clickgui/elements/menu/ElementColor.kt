@@ -4,6 +4,7 @@ import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.ui.clickgui.elements.Element
 import me.odinmain.ui.clickgui.elements.ElementType
 import me.odinmain.ui.clickgui.elements.ModuleButton
+import me.odinmain.ui.clickgui.util.ColorUtil
 import me.odinmain.ui.clickgui.util.ColorUtil.brighter
 import me.odinmain.ui.clickgui.util.ColorUtil.buttonColor
 import me.odinmain.ui.clickgui.util.ColorUtil.darker
@@ -12,14 +13,18 @@ import me.odinmain.ui.clickgui.util.ColorUtil.hsbMax
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.clickgui.util.HoverHandler
+import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.*
 import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinmain.utils.render.gui.MouseUtils.mouseX
 import me.odinmain.utils.render.gui.MouseUtils.mouseY
+import me.odinmain.utils.render.gui.animations.impl.ColorAnimation
 import me.odinmain.utils.render.gui.animations.impl.EaseInOut
-import me.odinmain.utils.render.world.RenderUtils.loadBufferedImage
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.renderer.texture.DynamicTexture
+import org.apache.logging.log4j.core.helpers.Integers.parseInt
+import org.lwjgl.input.Keyboard
 import kotlin.math.floor
 
 /**
@@ -41,10 +46,17 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
         get() = setting.value
 
     private val hover = HoverHandler(0, 150)
-    private val hueGradiant = DynamicTexture(loadBufferedImage("/assets/odinmain/clickgui/HueGradient.png"))
+    private val hueGradiant = DynamicTexture(loadImage("/assets/odinmain/clickgui/HueGradient.png"))
+
+    private var hexString = "#FFFFFFFF"
+    private var stringBefore = hexString
+    private val colorAnim = ColorAnimation(100)
+    private var listeningForString = false
+
     // TODO: MAKE A BETTER DESIGN (FUNCTION IS ALL HERE P MUCH)
+    @OptIn(ExperimentalStdlibApi::class)
     override fun draw() {
-        h = floor(anim.get(36f, if (setting.allowAlpha) 253f else 233f, !extended))
+        h = floor(anim.get(36f, if (setting.allowAlpha) 280f else 250f, !extended))
 
         hover.handle(x + w - 41, y + 5, 31.5f, 19f)
 
@@ -98,8 +110,56 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
             2 -> setting.alpha = (mouseX - (x + 10f)) / (w - 20f)
         }
 
-        resetScissor(scissor)
+        if (dragging != null) {
+            hexString = "#" + with(setting.value.rgba.toHexString(HexFormat.UpperCase)) {
+                return@with substring(2) + substring(0, 2)
+            }
+            stringBefore = hexString
+        }
 
+        val stringWidth = getTextWidth(hexString, 16f, Fonts.REGULAR)
+        roundedRectangle(x + w / 2 - stringWidth / 2 - 12, y + 255, stringWidth + 24, 22f, buttonColor, 5f)
+        text(hexString, x + w / 2, y + 266, Color.WHITE, 16f, Fonts.REGULAR, TextAlign.Middle, TextPos.Middle)
+
+        if (listeningForString || colorAnim.isAnimating()) {
+            val color = colorAnim.get(ColorUtil.clickGUIColor, buttonColor, listeningForString)
+            //modMessage(color)
+            rectangleOutline(x + w / 2 - stringWidth / 2 - 13 , y + 254, stringWidth + 25f, 23f, color, 5f,2f)
+        }
+
+        resetScissor(scissor)
+    }
+
+    private fun completeHexString() {
+        if (colorAnim.isAnimating()) return
+        if (colorAnim.start()) listeningForString = false
+        val stringWithoutHash = hexString.substring(1)
+        if (stringWithoutHash.length.equalsOneOf(6, 8)) {
+            try {
+                val alpha = if (stringWithoutHash.length == 8) stringWithoutHash.substring(6).toInt(16) / 255f else 1f
+                val red = stringWithoutHash.substring(0, 2).toInt(16)
+                val green = stringWithoutHash.substring(2, 4).toInt(16)
+                val blue = stringWithoutHash.substring(4, 6).toInt(16)
+                setting.value = Color(red, green, blue, alpha)
+                stringBefore = hexString
+            } catch (_: Exception) {
+                hexString = stringBefore
+                return
+            }
+        } else hexString = stringBefore
+    }
+
+    override fun keyTyped(typedChar: Char, keyCode: Int): Boolean {
+        if (listeningForString) {
+            when (keyCode) {
+                Keyboard.KEY_ESCAPE, Keyboard.KEY_NUMPADENTER, Keyboard.KEY_RETURN -> completeHexString()
+                Keyboard.KEY_BACK -> hexString = hexString.dropLast(1)
+                !in ElementTextField.keyBlackList -> hexString += typedChar.toString()
+            }
+            hexString = hexString.uppercase()
+            return true
+        }
+        return false
     }
 
     override fun mouseClicked(mouseButton: Int): Boolean {
@@ -116,6 +176,13 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
                 isAreaHovered(x + 10f, y + 235f, w - 20f, 15f) && setting.allowAlpha -> 2 // alpha
                 else -> null
             }
+
+            if (isAreaHovered(x + 10f, y + 250f, w, y + 278f)) {
+                if (!colorAnim.isAnimating()) {
+                    if (listeningForString) completeHexString()
+                    else listeningForString = true
+                }
+            } else if (listeningForString) listeningForString = false
 
         } else if (mouseButton == 1) {
             if (isHovered) {
