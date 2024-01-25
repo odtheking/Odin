@@ -3,7 +3,6 @@ package me.odinmain.features.impl.dungeon
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.ClickEvent
 import me.odinmain.features.impl.dungeon.PuzzleSolvers.blockWrongClicks
-import me.odinmain.utils.toAABB
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.currentRoomName
@@ -153,15 +152,14 @@ object TicTacToe {
 
 
     fun tttRender() {
-        if (!inDungeons || !PuzzleSolvers.tttSolver) return
-        if (bestMove != null) {
-            RenderUtils.drawCustomBox(
-                bestMove!!.toAABB(),
-                Color.GREEN,
-                thickness = 2f,
-                phase = true
-            )
-        }
+        if (!inDungeons || !PuzzleSolvers.tttSolver || bestMove == null) return
+        RenderUtils.drawBoxOutline(
+            bestMove!!.x , bestMove!!.y , bestMove!!.z,
+            1,
+            Color.GREEN,
+            thickness = 2f,
+            phase = true
+        )
     }
 
     fun tttRightClick(event: ClickEvent.RightClickEvent) {

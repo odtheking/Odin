@@ -2,19 +2,14 @@
 
 package me.odinmain.utils
 
-import gg.essential.universal.shader.BlendState
-import gg.essential.universal.shader.UShader.Companion.fromLegacyShader
-import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.ModuleManager
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.modMessage
-import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.Event
-import java.awt.image.BufferedImage
 import java.util.*
 import kotlin.math.floor
 import kotlin.math.pow
@@ -288,37 +283,6 @@ fun startProfile(name: String) {
 fun endProfile() {
     mc.mcProfiler.endSection()
 }
-
-/**
- * Creates a shader from a vertex shader, fragment shader, and a blend state
- *
- * @param vertName The name of the vertex shader's file.
- * @param fragName The name of the fragment shader's file.
- * @param blendState The blend state for the shader
- */
-fun createLegacyShader(vertName: String, fragName: String, blendState: BlendState) =
-    fromLegacyShader(readShader(vertName, "vsh"), readShader(fragName, "fsh"), blendState)
-
-/**
- * Reads a shader file as a text file, and returns the contents
- *
- * @param name The name of the shader file
- * @param ext The file extension of the shader file (usually fsh or vsh)
- *
- * @return The contents of the shader file at the given path.
- */
-fun readShader(name: String, ext: String): String =
-     OdinMain::class.java.getResource("/assets/odinmain/shaders/$name.$ext")?.readText() ?: ""
-
-/**
- * Loads a BufferedImage from a path to a resource in the project
- *
- * @param path The path to the image file
- *
- * @returns The BufferedImage of that resource path.
- */
-fun loadBufferedImage(path: String): BufferedImage =
-    TextureUtil.readBufferedImage(OdinMain::class.java.getResourceAsStream(path))
 
 /**
  * Returns the maximum value of the numbers you give in as a float

@@ -45,7 +45,7 @@ object KeyHighlight : Module(
         }
 
         val pos = entity.positionVector
-        RenderUtils.drawCustomBox(
+        RenderUtils.drawBoxOutline(
             pos.xCoord - 0.5, 1.0,
             pos.yCoord + 1.15, 1.0,
             pos.zCoord - 0.5, 1.0,

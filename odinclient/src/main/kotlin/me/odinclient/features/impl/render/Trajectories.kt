@@ -200,7 +200,7 @@ object Trajectories : Module(
 
     private fun drawPearlCollisionBox() {
         if (pearlImpactPos == null) return
-        RenderUtils.drawCustomBox(
+        RenderUtils.drawBoxOutline(
             pearlImpactPos!!.first.xCoord, pearlImpactPos!!.second.x,
             pearlImpactPos!!.first.yCoord, pearlImpactPos!!.second.y,
             pearlImpactPos!!.first.zCoord, pearlImpactPos!!.second.x,
@@ -224,7 +224,7 @@ object Trajectories : Module(
                 boxRenderQueue.clear()
                 return
             }
-            RenderUtils.drawCustomBox(
+            RenderUtils.drawBoxOutline(
                 b.first.xCoord, b.second.x,
                 b.first.yCoord, b.second.y,
                 b.first.zCoord, b.second.x,

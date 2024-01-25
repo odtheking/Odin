@@ -5,7 +5,6 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.ui.util.FontRenderer
 import me.odinmain.ui.util.RoundedRect
 import me.odinmain.utils.coerceAlpha
-import me.odinmain.utils.loadBufferedImage
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.TextAlign.*
 import me.odinmain.utils.render.world.RenderUtils.drawTexturedModalRect
@@ -13,7 +12,6 @@ import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.texture.DynamicTexture
 import org.lwjgl.opengl.GL11
-import java.awt.image.BufferedImage
 import kotlin.math.max
 
 
@@ -132,11 +130,6 @@ fun drawDynamicTexture(dynamicTexture: DynamicTexture, x: Float, y: Float, w: Fl
     scale(1f / sr.scaleFactor , 1f / sr.scaleFactor, 1f)
     drawTexturedModalRect(x.toInt(), y.toInt(), w.toInt(), h.toInt())
     scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
-}
-
-fun loadImage(filePath: String): BufferedImage {
-    val image = loadBufferedImage(filePath)
-    return image
 }
 
 fun wrappedText(text: String, x: Float, y: Float, w: Float, h: Float, color: Color, size: Float, font: Font) {

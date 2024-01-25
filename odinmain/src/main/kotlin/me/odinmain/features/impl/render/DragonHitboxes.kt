@@ -84,7 +84,7 @@ object DragonHitboxes : Module(
                     val w = entity.width
                     val h = entity.height
 
-                    RenderUtils.drawCustomBox(dX - w / 2, dY, dZ - w / 2, w.toDouble(), h.toDouble(), color, lineWidth, !OdinMain.onLegitVersion)
+                    RenderUtils.drawBoxOutline(dX - w / 2, w.toDouble() ,dY, h.toDouble(), dZ - w / 2, w.toDouble(), color, lineWidth, !OdinMain.onLegitVersion)
                 }
             }
         }

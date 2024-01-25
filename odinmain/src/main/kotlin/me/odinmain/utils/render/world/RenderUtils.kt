@@ -1,5 +1,8 @@
 package me.odinmain.utils.render.world
 
+import gg.essential.universal.shader.BlendState
+import gg.essential.universal.shader.UShader
+import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
@@ -7,6 +10,7 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.WorldRenderer
 import net.minecraft.client.renderer.entity.RenderManager
+import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.Entity
 import net.minecraft.util.*
@@ -122,19 +126,20 @@ object RenderUtils {
         block.invoke(this)
     }
 
-    fun drawCustomBox(aabb: AxisAlignedBB, color: Color, thickness: Float = 3f, phase: Boolean) {
-        drawCustomBox(
-            aabb.minX, aabb.maxX - aabb.minX,
-            aabb.minY, aabb.maxY - aabb.minY,
-            aabb.minZ, aabb.maxZ - aabb.minZ,
-            color,
-            thickness,
-            phase
-        )
-    }
-
+    /**
+     * Draws a custom box in the 3D world space.
+     *
+     * @param x X-coordinate of the box.
+     * @param y Y-coordinate of the box.
+     * @param z Z-coordinate of the box.
+     * @param scale The scale of the box.
+     * @param color The color of the box (must be in the range of 0-255).
+     * @param phase If `true`, disables depth testing for the box. Default is `false`.
+     * @param thickness The thickness of the lines forming the box. Default is 3f.
+     *
+     */
     fun drawBoxWithOutline(aabb: AxisAlignedBB, color: Color, phase: Boolean, thickness: Float = 3f) {
-        drawCustomBox(
+        drawBoxOutline(
             aabb.minX, aabb.maxX - aabb.minX,
             aabb.minY, aabb.maxY - aabb.minY,
             aabb.minZ, aabb.maxZ - aabb.minZ,
@@ -149,6 +154,25 @@ object RenderUtils {
         )
     }
 
+    /**
+     * Draws a custom box in the 3D world space.
+     *
+     * @param aabb The `AxisAlignedBB` representing the box.
+     * @param color The color of the box (must be in the range of 0-255).
+     * @param thickness The thickness of the lines forming the box. Default is 3f.
+     * @param phase If `true`, disables depth testing for the box. Default is `false`.
+     */
+    fun drawBoxOutline(aabb: AxisAlignedBB, color: Color, thickness: Float = 3f, phase: Boolean) {
+        drawBoxOutline(
+            aabb.minX, aabb.maxX - aabb.minX,
+            aabb.minY, aabb.maxY - aabb.minY,
+            aabb.minZ, aabb.maxZ - aabb.minZ,
+            color,
+            thickness,
+            phase
+        )
+    }
+
 
     /**
      * Draws a custom box in the 3D world space.
@@ -161,51 +185,8 @@ object RenderUtils {
      * @param thickness The thickness of the lines forming the box. Default is 3f.
      * @param phase If `true`, disables depth testing for the box. Default is `false`.
      */
-    fun drawCustomBox(x: Double, y: Double, z: Double, scale: Double, color: Color, thickness: Float = 3f, phase: Boolean = false) {
-        drawCustomBox(x, scale, y, scale, z, scale, color, thickness, phase)
-    }
-
-    /**
-     * Draws a custom box in the 3D world space using block coordinates.
-     *
-     * @param pos The block position of the box.
-     * @param color The color of the box (must be in the range of 0-255).
-     * @param thickness The thickness of the lines forming the box. Default is 3f.
-     * @param phase If `true`, disables depth testing for the box. Default is `false`.
-     */
-    fun drawCustomBox(pos: BlockPos, color: Color, thickness: Float = 3f, phase: Boolean = false) {
-        drawCustomBox(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble(), 1.0, color, thickness, phase)
-    }
-
-    /**
-     * Draws a custom box in the 3D world space.
-     *
-     * @param x X-coordinate of the box.
-     * @param y Y-coordinate of the box.
-     * @param z Z-coordinate of the box.
-     * @param width The width of the box.
-     * @param height The height of the box.
-     * @param color The color of the box (must be in the range of 0-255).
-     * @param thickness The thickness of the lines forming the box. Default is 3f.
-     * @param phase If `true`, disables depth testing for the box. Default is `false`.
-     */
-    fun drawCustomBox(x: Double, y: Double, z: Double, width: Double, height: Double, color: Color, thickness: Float = 3f, phase: Boolean = false) {
-        drawCustomBox(x, width, y, height, z, width, color, thickness, phase)
-    }
-
-    /**
-     * Draws a custom box in the 3D world space.
-     *
-     * @param x X-coordinate of the box.
-     * @param y Y-coordinate of the box.
-     * @param z Z-coordinate of the box.
-     * @param scale The scale of the box.
-     * @param color The color of the box (must be in the range of 0-255).
-     * @param thickness The thickness of the lines forming the box. Default is 3f.
-     * @param phase If `true`, disables depth testing for the box. Default is `false`.
-     */
-    fun drawCustomBox(x: Number, y: Number, z: Number, scale: Number, color: Color, thickness: Number = 3f, phase: Boolean = false) {
-        drawCustomBox(x.toDouble(), scale.toDouble(), y.toDouble(), scale.toDouble(), z.toDouble(), scale.toDouble(), color, thickness.toFloat(), phase)
+    fun drawBoxOutline(x: Number, y: Number, z: Number, scale: Number, color: Color, thickness: Number = 3f, phase: Boolean = false) {
+        drawBoxOutline(x.toDouble(), scale.toDouble(), y.toDouble(), scale.toDouble(), z.toDouble(), scale.toDouble(), color, thickness.toFloat(), phase)
     }
 
     /**
@@ -221,7 +202,7 @@ object RenderUtils {
      * @param thickness The thickness of the lines forming the box. Default is 3f.
      * @param phase If `true`, disables depth testing for the box. Default is `false`.
      */
-    fun drawCustomBox(x: Double, xWidth: Double, y: Double, yWidth: Double, z: Double, zWidth: Double, color: Color, thickness: Float = 3f, phase: Boolean) {
+    fun drawBoxOutline(x: Double, xWidth: Double, y: Double, yWidth: Double, z: Double, zWidth: Double, color: Color, thickness: Float = 3f, phase: Boolean) {
         GlStateManager.pushMatrix()
         color.bindColor()
         GlStateManager.translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
@@ -265,17 +246,6 @@ object RenderUtils {
         GlStateManager.enableDepth()
         GlStateManager.resetColor()
         GlStateManager.popMatrix()
-    }
-
-    /**
-     * Draws a filled box in the 3D world space using block coordinates.
-     *
-     * @param pos The block position of the box.
-     * @param color The color of the box.
-     * @param phase If `true`, disables depth testing for the box. Default is `false`.
-     */
-    fun drawFilledBox(pos: BlockPos, color: Color, phase: Boolean = false) {
-        drawFilledBox(AxisAlignedBB(pos, pos.add(1, 1, 1)).expand(0.001, 0.001, 0.001), color, phase)
     }
 
     /**
@@ -413,7 +383,7 @@ object RenderUtils {
         val distZ = z - mc.renderManager.viewerPosZ
         val dist = sqrt(distX * distX + distY * distY + distZ * distZ)
 
-        drawCustomBox(floor(x), floor(y), floor(z), 1.0, color.withAlpha(1f), 3f, true)
+        drawBoxOutline(floor(x), floor(y), floor(z), 1.0, color.withAlpha(1f), 3f, true)
 
         drawStringInWorld(
             "$title §r§f(§3${dist.toInt()}m§f)",
@@ -633,12 +603,6 @@ object RenderUtils {
         GlStateManager.popMatrix()
     }
 
-    fun loadImage(path: String): BufferedImage {
-        val resource = this::class.java.getResource(path)
-            ?: return BufferedImage(8, 8, BufferedImage.TYPE_INT_ARGB) // poor fix for debug mode
-        return ImageIO.read(resource)
-    }
-
     fun drawTexturedModalRect(x: Int, y: Int, width: Int, height: Int) {
         GlStateManager.enableTexture2D()
         worldRenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
@@ -649,4 +613,40 @@ object RenderUtils {
         tessellator.draw()
     }
 
+    /**
+     * Creates a shader from a vertex shader, fragment shader, and a blend state
+     *
+     * @param vertName The name of the vertex shader's file.
+     * @param fragName The name of the fragment shader's file.
+     * @param blendState The blend state for the shader
+     */
+    fun createLegacyShader(vertName: String, fragName: String, blendState: BlendState) =
+        UShader.fromLegacyShader(readShader(vertName, "vsh"), readShader(fragName, "fsh"), blendState)
+
+    /**
+     * Reads a shader file as a text file, and returns the contents
+     *
+     * @param name The name of the shader file
+     * @param ext The file extension of the shader file (usually fsh or vsh)
+     *
+     * @return The contents of the shader file at the given path.
+     */
+    fun readShader(name: String, ext: String): String =
+        OdinMain::class.java.getResource("/shaders/$name.$ext")?.readText() ?: ""
+
+    /**
+     * Loads a BufferedImage from a path to a resource in the project
+     *
+     * @param path The path to the image file
+     *
+     * @returns The BufferedImage of that resource path.
+     */
+    fun loadBufferedImage(path: String): BufferedImage =
+        TextureUtil.readBufferedImage(OdinMain::class.java.getResourceAsStream(path))
+
+    fun loadImage(path: String): BufferedImage {
+        val resource = this::class.java.getResource(path)
+            ?: return BufferedImage(8, 8, BufferedImage.TYPE_INT_ARGB) // poor fix for debug mode
+        return ImageIO.read(resource)
+    }
 }

@@ -9,6 +9,7 @@ import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
+import me.odinmain.utils.toAABB
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.util.AxisAlignedBB
@@ -49,8 +50,8 @@ object InactiveWaypoints : Module(
                 name = if (name == "Inactive Terminal") "Terminal" else if (name == "Inactive") "Device" else "Lever"
                 when (renderMode) {
                     0 -> RenderUtils.drawBoxWithOutline(AxisAlignedBB(it.position, it.position.add(1, 1, 1)).expand(0.001, 0.001, 0.001), Color(color.r, color.g, color.b, color.alpha), true, 2f)
-                    1 -> RenderUtils.drawCustomBox(it.position, Color(color.r, color.g, color.b), 2f, phase = true)
-                    2 -> RenderUtils.drawFilledBox(it.position, Color(color.r, color.g, color.b, color.alpha), phase = true)
+                    1 -> RenderUtils.drawBoxOutline(it.position.toAABB(), Color(color.r, color.g, color.b), 2f, phase = true)
+                    2 -> RenderUtils.drawFilledBox(it.position.toAABB(), Color(color.r, color.g, color.b, color.alpha), phase = true)
                 }
                 if (renderText) {
                     RenderUtils.drawStringInWorld(name, it.positionVector.add(Vec3(0.0, 2.0, 0.0)), depthTest = true, increase = true, scale = 3f)

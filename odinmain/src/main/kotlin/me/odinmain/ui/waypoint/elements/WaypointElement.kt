@@ -9,8 +9,8 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.Fonts
 import me.odinmain.utils.render.gui.animations.impl.ColorAnimation
 import me.odinmain.utils.render.gui.drawDynamicTexture
-import me.odinmain.utils.render.gui.loadImage
 import me.odinmain.utils.render.gui.roundedRectangle
+import me.odinmain.utils.render.world.RenderUtils.loadBufferedImage
 import net.minecraft.client.renderer.texture.DynamicTexture
 
 class WaypointElement(val waypoint: Waypoint) {
@@ -24,7 +24,7 @@ class WaypointElement(val waypoint: Waypoint) {
         WaypointInputField(waypoint.y, "y:", mouseHandler, 10f, Fonts.REGULAR),
         WaypointInputField(waypoint.z, "z:", mouseHandler, 10f, Fonts.REGULAR),
     )
-    private val trash = DynamicTexture(loadImage("/assets/odinmain/waypoint/trash.png"))
+    private val trash = DynamicTexture(loadBufferedImage("/assets/odinmain/waypoint/trash.png"))
 
     fun drawScreen(): Int {
         roundedRectangle(15, y, 450, 30, Color(13, 14, 15), 5f)

@@ -14,6 +14,7 @@ import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.skyblock.EtherWarpHelper
 import me.odinmain.utils.skyblock.EtherWarpHelper.etherPos
 import me.odinmain.utils.skyblock.extraAttributes
+import me.odinmain.utils.toAABB
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -37,9 +38,10 @@ object EtherWarpHelper : Module(
             val pos = etherPos.pos ?: return
 
             if (filled)
-                RenderUtils.drawFilledBox(pos, color, phase = phase)
+                RenderUtils.drawFilledBox(pos.toAABB(), color, phase = phase)
             else
-                RenderUtils.drawCustomBox(pos, color, thickness = thickness, phase = phase)
+                RenderUtils.drawBoxOutline(pos.toAABB()
+                    , color, thickness = thickness, phase = phase)
         }
     }
 

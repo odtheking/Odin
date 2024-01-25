@@ -85,7 +85,7 @@ object CustomESP : Module(
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         if (mode != 2) return
         currentEntities.forEach {
-            RenderUtils.drawCustomBox(
+            RenderUtils.drawBoxOutline(
                 it.renderX - it.width / 2, it.width.toDouble(),
                 it.renderY, it.height.toDouble(),
                 it.renderZ - it.width / 2, it.width.toDouble(),

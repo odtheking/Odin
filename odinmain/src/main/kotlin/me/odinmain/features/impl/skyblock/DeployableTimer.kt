@@ -7,7 +7,11 @@ import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.gui.*
+import me.odinmain.utils.render.gui.Fonts
+import me.odinmain.utils.render.gui.drawDynamicTexture
+import me.odinmain.utils.render.gui.getTextWidth
+import me.odinmain.utils.render.gui.text
+import me.odinmain.utils.render.world.RenderUtils.loadBufferedImage
 import me.odinmain.utils.skyblock.getSkullValue
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.entity.item.EntityArmorStand
@@ -21,21 +25,19 @@ object DeployableTimer : Module(
     description = "Shows the time left on deployables.",
     category = Category.SKYBLOCK
 ) {
-    private val firework = DynamicTexture(loadImage("/assets/odinmain/deployable/firework.png"))
-    private val radiantimage = DynamicTexture(loadImage("/assets/odinmain/deployable/RADIANTPOWERORB.png"))
-    private val manaimage = DynamicTexture(loadImage("/assets/odinmain/deployable/MANAFLUXPOWERORB.png"))
-    private val overfluximage = DynamicTexture(loadImage("/assets/odinmain/deployable/OVERFLUXPOWERORB.png"))
-    private val plasmaimage = DynamicTexture(loadImage("/assets/odinmain/deployable/PLASMAPOWERORB.png"))
+    private val firework = DynamicTexture(loadBufferedImage("/assets/odinmain/deployable/firework.png"))
+    private val radiantimage = DynamicTexture(loadBufferedImage("/assets/odinmain/deployable/RADIANTPOWERORB.png"))
+    private val manaimage = DynamicTexture(loadBufferedImage("/assets/odinmain/deployable/MANAFLUXPOWERORB.png"))
+    private val overfluximage = DynamicTexture(loadBufferedImage("/assets/odinmain/deployable/OVERFLUXPOWERORB.png"))
+    private val plasmaimage = DynamicTexture(loadBufferedImage("/assets/odinmain/deployable/PLASMAPOWERORB.png"))
 
-    
+
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {
             text("§5SOS Flare", 40f, 15f, Color.WHITE,16f, Fonts.MEDIUM)
             text("§e179s", 40f, 32f, Color.WHITE,16f, Fonts.MEDIUM)
 
-            drawDynamicTexture(
-                firework, -5f, -2f, 50f, 50f
-            )
+            drawDynamicTexture(firework, -5f, -2f, 50f, 50f)
 
             max(
                 getTextWidth("SOS Flare", 16f, Fonts.MEDIUM),

@@ -58,7 +58,7 @@ object ClickedChests : Module(
                     RenderUtils.drawFilledBox(AABB(x, y, z, x + .875, y + 0.875, z + 0.875), if (it.Locked) lockedColor else color, phase)
                 }
                 1 -> {
-                    RenderUtils.drawCustomBox(
+                    RenderUtils.drawBoxOutline(
                         it.pos.x + .0625, .875,
                         it.pos.y.toDouble(), .875,
                         it.pos.z + .0625, .875,

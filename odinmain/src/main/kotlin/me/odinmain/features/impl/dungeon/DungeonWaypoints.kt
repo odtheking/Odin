@@ -11,9 +11,9 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.rotateToNorth
 import me.odinmain.utils.skyblock.devMessage
-import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.RoomType
+import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.subtractVec
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
@@ -43,12 +43,12 @@ object DungeonWaypoints : Module(
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
         DungeonUtils.currentRoom?.waypoints?.forEach {
-            RenderUtils.drawCustomBox(it.x, it.y, it.z, 1.0, it.color, 3f, true)
+            RenderUtils.drawBoxOutline(it.x, it.y, it.z, 1.0, it.color, 3f, true)
         }
 
         if (debugWaypoint) {
             val room = DungeonUtils.currentRoom?.room ?: return
-            RenderUtils.drawCustomBox(room.x, 70, room.z - 4, 1, Color.GREEN, 3, true)
+            RenderUtils.drawBoxOutline(room.x, 70, room.z - 4, 1, Color.GREEN, 3, true)
         }
     }
 

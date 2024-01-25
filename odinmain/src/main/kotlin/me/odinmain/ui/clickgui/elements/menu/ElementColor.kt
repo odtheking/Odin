@@ -18,6 +18,7 @@ import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinmain.utils.render.gui.MouseUtils.mouseX
 import me.odinmain.utils.render.gui.MouseUtils.mouseY
 import me.odinmain.utils.render.gui.animations.impl.EaseInOut
+import me.odinmain.utils.render.world.RenderUtils.loadBufferedImage
 import net.minecraft.client.renderer.texture.DynamicTexture
 import kotlin.math.floor
 
@@ -40,7 +41,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
         get() = setting.value
 
     private val hover = HoverHandler(0, 150)
-    private val hueGradiant = DynamicTexture(loadImage("/assets/odinmain/clickgui/HueGradient.png"))
+    private val hueGradiant = DynamicTexture(loadBufferedImage("/assets/odinmain/clickgui/HueGradient.png"))
     // TODO: MAKE A BETTER DESIGN (FUNCTION IS ALL HERE P MUCH)
     override fun draw() {
         h = floor(anim.get(36f, if (setting.allowAlpha) 253f else 233f, !extended))

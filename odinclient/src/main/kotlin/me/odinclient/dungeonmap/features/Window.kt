@@ -301,12 +301,12 @@ object Window: JFrame() {
         }
     }
 
-    private val defaultWhite = RenderUtils.loadImage("/assets/odinclient/map/default/white_check.png")
-    private val defaultGreen = RenderUtils.loadImage("/assets/odinclient/map/default/green_check.png")
-    private val defaultCross = RenderUtils.loadImage("/assets/odinclient/map/default/cross.png")
-    private val neuWhite = RenderUtils.loadImage("/assets/odinclient/map/neu/white_check.png")
-    private val neuGreen = RenderUtils.loadImage("/assets/odinclient/map/neu/green_check.png")
-    private val neuCross = RenderUtils.loadImage("/assets/odinclient/map/neu/cross.png")
+    private val defaultWhite = RenderUtils.loadBufferedImage("/assets/odinclient/map/default/white_check.png")
+    private val defaultGreen = RenderUtils.loadBufferedImage("/assets/odinclient/map/default/green_check.png")
+    private val defaultCross = RenderUtils.loadBufferedImage("/assets/odinclient/map/default/cross.png")
+    private val neuWhite = RenderUtils.loadBufferedImage("/assets/odinclient/map/neu/white_check.png")
+    private val neuGreen = RenderUtils.loadBufferedImage("/assets/odinclient/map/neu/green_check.png")
+    private val neuCross = RenderUtils.loadBufferedImage("/assets/odinclient/map/neu/cross.png")
 
 
 }

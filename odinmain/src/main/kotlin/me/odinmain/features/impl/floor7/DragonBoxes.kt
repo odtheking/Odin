@@ -8,7 +8,7 @@ object DragonBoxes {
     fun renderBoxes() {
         WitherDragonsEnum.entries.forEach {
             if (it.entity?.isEntityAlive != true) return@forEach
-            RenderUtils.drawCustomBox(it.boxesDimensions, it.color.withAlpha(0.5f), lineThickness, phase = false)
+            RenderUtils.drawBoxOutline(it.boxesDimensions, it.color.withAlpha(0.5f), lineThickness, phase = false)
         }
     }
 }
