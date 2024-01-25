@@ -39,33 +39,33 @@ class ElementTextField(parent: ModuleButton, setting: StringSetting) :
     override fun draw() {
         roundedRectangle(x, y, w, h, elementBackground)
 
-            if (getTextWidth(display + "00" + name, 16f, REGULAR) <= w) {
+        if (getTextWidth(display + "00" + name, 16f, REGULAR) <= w) {
+            val width = getTextWidth(display, 16f, REGULAR)
+            hover.handle(x + w - 15 - width, y + 4, width + 12f, 22f)
+            roundedRectangle(x + w - 15 - width, y + 4, width + 12f, 22f, buttonColor, 5f)
+
+            if (listening || colorAnim.isAnimating()) {
+                val color = colorAnim.get(ColorUtil.clickGUIColor, buttonColor, listening)
+                rectangleOutline(x + w - 16 - width, y + 3, width + 12.5f, 22.5f, color, 4f,1.5f)
+            }
+
+            text(display, x + w - 10, y + 16f, textColor, 16f, REGULAR, TextAlign.Right)
+            text(name,  x + 6f, y + h / 2, textColor, 16f, REGULAR)
+        } else {
+            if (isHovered || listening) {
                 val width = getTextWidth(display, 16f, REGULAR)
                 hover.handle(x + w - 15 - width, y + 4, width + 12f, 22f)
-                roundedRectangle(x + w - 15 - width, y + 4, width + 12f, 22f, buttonColor, 5f)
+                roundedRectangle(x + w / 2 - width / 2 - 6, y + 4, width + 12f, 22f, buttonColor, 5f)
 
                 if (listening || colorAnim.isAnimating()) {
                     val color = colorAnim.get(ColorUtil.clickGUIColor, buttonColor, listening)
-                    rectangleOutline(x + w - 16 - width, y + 3, width + 12.5f, 22.5f, color, 4f,1.5f)
+                    rectangleOutline(x + w / 2 - width / 2 - 7, y + 3, width + 12.5f, 22.5f, color, 4f,3f)
                 }
 
-                text(display, x + w - 10, y + 16f, textColor, 16f, REGULAR, TextAlign.Right)
-                text(name,  x + 6f, y + h / 2, textColor, 16f, REGULAR)
-            } else {
-                if (isHovered || listening) {
-                    val width = getTextWidth(display, 16f, REGULAR)
-                    hover.handle(x + w - 15 - width, y + 4, width + 12f, 22f)
-                    roundedRectangle(x + w / 2 - width / 2 - 6, y + 4, width + 12f, 22f, buttonColor, 5f)
-
-                    if (listening || colorAnim.isAnimating()) {
-                        val color = colorAnim.get(ColorUtil.clickGUIColor, buttonColor, listening)
-                        rectangleOutline(x + w / 2 - width / 2 - 7, y + 3, width + 12.5f, 22.5f, color, 4f,3f)
-                    }
-
-                    text(display, x + w / 2f, y + h / 2f, textColor, 16f, REGULAR, TextAlign.Middle)
-                }
-                else text(name, x + w / 2f, y + h / 2f, textColor, 16f, REGULAR, TextAlign.Middle)
+                text(display, x + w / 2f, y + h / 2f, textColor, 16f, REGULAR, TextAlign.Middle)
             }
+            else text(name, x + w / 2f, y + h / 2f, textColor, 16f, REGULAR, TextAlign.Middle)
+        }
 
     }
 
