@@ -65,10 +65,16 @@ fun gradientRect(x: Float, y: Float, w: Float, h: Float, color1: Color, color2: 
 }
 
 fun drawHSBBox(x: Float, y: Float, w: Float, h: Float, color: Color) {
-    /*nanoVGHelper.drawHSBBox(context, x, y, w, h, color.rgba)
-    rectOutline(x, y, w, h, Color(38, 38, 38), 8f, 1f)
+    scale(1f / sr.scaleFactor, 1f / sr.scaleFactor, 1f)
+    matrix.runLegacyMethod(matrix.get()) { RoundedRect.drawHSBBox(matrix.get(), x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(), color,) }
+    scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
+    rectangleOutline(x-1, y-1, w+2, h+2, Color(38, 38, 38), 3f, 2f)
+}
 
-     */
+fun drawCircle(x: Float, y: Float, radius: Float, color: Color) {
+    scale(1f / sr.scaleFactor, 1f / sr.scaleFactor, 1f)
+    matrix.runLegacyMethod(matrix.get()) { RoundedRect.drawCircle(matrix.get(), x.toFloat(), y.toFloat(), radius, color) }
+    scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
 }
 
 fun dropShadow(x: Float, y: Float, w: Float, h: Float, blur: Float, spread: Float, radius: Float) = Unit

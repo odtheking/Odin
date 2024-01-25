@@ -17,6 +17,8 @@ object RoundedRect {
         Rect2Corners.initShader()
         RectOutline.initShader()
         Testing.initShader()
+        HSBBox.initShader()
+        Circle.initShader()
     }
 
     /**
@@ -85,6 +87,32 @@ object RoundedRect {
         UIBlock.drawBlockWithActiveShader(matrixStack, color.javaColor, x.toDouble(), y.toDouble(), x.toDouble() + width.toDouble(), y.toDouble() + height.toDouble())
 
         Testing.shader.unbind()
+    }
+
+    fun drawHSBBox(matrixStack: UMatrixStack, x: Float, y: Float, width: Float, height: Float, color: Color) {
+        if (!HSBBox.isInitialized() || !HSBBox.shader.usable) return
+
+        HSBBox.shader.bind()
+        HSBBox.shaderCenterUniform.setValue(x + (width / 2), y + (height / 2))
+        HSBBox.shaderSizeUniform.setValue(width, height)
+        HSBBox.shaderColorUniform.setValue(color.r / 255f, color.g / 255f, color.b / 255f, color.alpha)
+
+        UIBlock.drawBlockWithActiveShader(matrixStack, color.javaColor, x.toDouble(), y.toDouble(), x.toDouble() + width.toDouble(), y.toDouble() + height.toDouble())
+
+        HSBBox.shader.unbind()
+    }
+
+    fun drawCircle(matrixStack: UMatrixStack, x: Float, y: Float, radius: Float, color: Color) {
+        if (!Circle.isInitialized() || !Circle.shader.usable) return
+
+        Circle.shader.bind()
+        Circle.shaderCenterUniform.setValue(x, y)
+        Circle.shaderRadiusUniform.setValue(radius)
+        Circle.shaderColorUniform.setValue(color.r / 255f, color.g / 255f, color.b / 255f, color.alpha)
+
+        UIBlock.drawBlockWithActiveShader(matrixStack, color.javaColor, x.toDouble() - radius, y.toDouble() - radius, x.toDouble() + radius, y.toDouble() + radius)
+
+        Circle.shader.unbind()
     }
 
 
@@ -194,6 +222,54 @@ object RoundedRect {
             shaderShadowSoftness = shader.getFloatUniform("u_shadowSoftness")
 
             println("Loaded Odin rounded rectangle (test) shader")
+        }
+    }
+
+    object HSBBox {
+        lateinit var shader: UShader
+        lateinit var shaderCenterUniform: Float2Uniform
+        lateinit var shaderSizeUniform: Float2Uniform
+        lateinit var shaderColorUniform: Float4Uniform
+
+        fun isInitialized() = ::shader.isInitialized
+
+        fun initShader() {
+            if (::shader.isInitialized) return
+
+            shader = createLegacyShader("rectangle", "hsbbox", BlendState.NORMAL)
+            if (!shader.usable) {
+                println("Failed to load Odin rounded rectangle (test) shader")
+                return
+            }
+            shaderCenterUniform = shader.getFloat2Uniform("u_rectCenter")
+            shaderSizeUniform = shader.getFloat2Uniform("u_rectSize")
+            shaderColorUniform = shader.getFloat4Uniform("u_colorRect")
+
+            println("Loaded Odin rounded rectangle (test) shader")
+        }
+    }
+
+    object Circle {
+        lateinit var shader: UShader
+        lateinit var shaderCenterUniform: Float2Uniform
+        lateinit var shaderRadiusUniform: FloatUniform
+        lateinit var shaderColorUniform: Float4Uniform
+
+        fun isInitialized() = ::shader.isInitialized
+
+        fun initShader() {
+            if (::shader.isInitialized) return
+
+            shader = createLegacyShader("rectangle", "circle", BlendState.NORMAL)
+            if (!shader.usable) {
+                println("Failed to load Odin circle shader")
+                return
+            }
+            shaderCenterUniform = shader.getFloat2Uniform("u_circleCenter")
+            shaderRadiusUniform = shader.getFloatUniform("u_circleRadius")
+            shaderColorUniform = shader.getFloat4Uniform("u_colorCircle")
+
+            println("Loaded Odin circle shader")
         }
     }
 }
