@@ -77,7 +77,7 @@ object ModuleManager {
         BlazeAttunement,
         CanClip,
         ChatCommands,
-        DeployableTimer,
+        //DeployableTimer,
         DianaHelper,
         Reminders,
         Animations,

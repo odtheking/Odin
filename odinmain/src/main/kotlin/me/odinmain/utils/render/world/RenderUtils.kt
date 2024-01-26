@@ -20,7 +20,6 @@ import org.lwjgl.opengl.GL11
 import org.lwjgl.util.glu.Cylinder
 import org.lwjgl.util.glu.GLU
 import java.awt.image.BufferedImage
-import javax.imageio.ImageIO
 import kotlin.math.*
 
 object RenderUtils {
@@ -631,7 +630,7 @@ object RenderUtils {
      *
      * @return The contents of the shader file at the given path.
      */
-    fun readShader(name: String, ext: String): String =
+    private fun readShader(name: String, ext: String): String =
         OdinMain::class.java.getResource("/shaders/$name.$ext")?.readText() ?: ""
 
     /**
@@ -643,10 +642,4 @@ object RenderUtils {
      */
     fun loadBufferedImage(path: String): BufferedImage =
         TextureUtil.readBufferedImage(OdinMain::class.java.getResourceAsStream(path))
-
-    fun loadImage(path: String): BufferedImage {
-        val resource = this::class.java.getResource(path)
-            ?: return BufferedImage(8, 8, BufferedImage.TYPE_INT_ARGB) // poor fix for debug mode
-        return ImageIO.read(resource)
-    }
 }

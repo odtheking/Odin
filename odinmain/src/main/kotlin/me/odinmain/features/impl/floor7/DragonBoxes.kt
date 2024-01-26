@@ -7,8 +7,8 @@ import me.odinmain.utils.render.world.RenderUtils
 object DragonBoxes {
     fun renderBoxes() {
         WitherDragonsEnum.entries.forEach {
-            if (it.entity?.isEntityAlive != true) return@forEach
-            RenderUtils.drawBoxOutline(it.boxesDimensions, it.color.withAlpha(0.5f), lineThickness, phase = false)
+            if (it.entity?.isEntityAlive == true)
+                RenderUtils.drawBoxOutline(it.boxesDimensions, it.color.withAlpha(0.5f), lineThickness, phase = false)
         }
     }
 }
