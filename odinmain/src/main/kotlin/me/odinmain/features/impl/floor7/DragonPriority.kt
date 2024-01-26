@@ -31,7 +31,6 @@ object DragonPriority {
         val dragon = sortPriority(spawningDragons)
 
         PlayerUtils.alert("§${dragon.colorCode} ${dragon.name}")
-        dragonTracer = dragon.name
     }
 
     private fun sortPriority(spawningDragon: MutableList<WitherDragonsEnum>): WitherDragonsEnum {
