@@ -36,7 +36,7 @@ object RoundedRect {
         RoundedRectangle.shaderShadowColorUniform.setValue(shadowColor.r / 255f, shadowColor.g / 255f, shadowColor.b / 255f, shadowColor.alpha)
         RoundedRectangle.shaderShadowSoftness.setValue(shadowSoftness)
 
-        UIBlock.drawBlockWithActiveShader(matrixStack, color.javaColor, x.toDouble(), y.toDouble(), x.toDouble() + width.toDouble(), y.toDouble() + height.toDouble())
+        UIBlock.drawBlockWithActiveShader(matrixStack, color.javaColor, x.toDouble() - edgeSoftness, y.toDouble() - edgeSoftness, x.toDouble() + width.toDouble() + edgeSoftness, y.toDouble() + height.toDouble() + edgeSoftness)
 
         RoundedRectangle.shader.unbind()
     }

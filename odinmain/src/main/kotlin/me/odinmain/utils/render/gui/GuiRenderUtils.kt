@@ -47,7 +47,7 @@ fun roundedRectangle(x: Number, y: Number, w: Number, h: Number, color: Color, r
 
 
 fun rectangleOutline(x: Float, y: Float, w: Float, h: Float, color: Color, radius: Float = 0f, thickness: Float) {
-    roundedRectangle(x, y, w, h, Color.TRANSPARENT, color, Color.GRAY, thickness, radius, radius, radius, radius, 1f)
+    roundedRectangle(x, y, w, h, Color.TRANSPARENT, color, Color.TRANSPARENT, thickness, radius, radius, radius, radius, 1f)
 }
 
 enum class GradientDirection {
@@ -74,7 +74,7 @@ fun circle(x: Number, y: Number, radius: Number, color: Color, borderColor: Colo
     scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
 }
 
-fun dropShadow(x: Float, y: Float, w: Float, h: Float, blur: Float, spread: Float, radius: Float) = Unit
+fun dropShadow(x: Float, y: Float, w: Float, h: Float, blur: Float, spread: Float, radius: Float) = Unit//roundedRectangle(x, y, w, h, Color.DARK_GRAY, radius, spread)
 //renderer.drawDropShadow(context, x, y, w, h, blur, spread, radius)
 
 fun text(text: String, x: Float, y: Float, color: Color, size: Float, font: Font, align: TextAlign = Left, verticalAlign: TextPos = TextPos.Middle, shadow: Boolean = false) {

@@ -36,7 +36,7 @@ object RoundedRectangleTesting : Module(
     @SubscribeEvent
     fun onRenderGameOverlay(event: RenderGameOverlayEvent.Post) {
         if (event.type != RenderGameOverlayEvent.ElementType.ALL) return
-        roundedRectangle(x, y, w, h, color, borderColor, Color.GRAY, borderThickness, topL, topR, botL, botR, edgeSoftness, color2, dir, shadowSoftness)
+        roundedRectangle(x, y, w, h, color, borderColor, shadowColor, borderThickness, topL, topR, botL, botR, edgeSoftness, color2, dir, shadowSoftness)
         //rectangleOutline(x.toFloat() + 100, y.toFloat(), w.toFloat(), h.toFloat(), borderColor, topL, borderThickness)
     }
 }
