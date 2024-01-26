@@ -19,8 +19,8 @@ vec4 circle(vec2 frag, vec2 pos, float rad, vec4 color) {
 }
 
 void main() {
-    vec4 color = circle(f_Position, u_circleCenter, u_circleRadius, u_colorBorder);
-    vec4 colorMixedWithBorder = mix(color, u_colorCircle, step(distance(f_Position, u_circleCenter), u_circleRadius - u_borderThickness));
+    vec4 color = circle(f_Position, u_circleCenter, u_circleRadius, u_colorBorder); // makes an entire circle in border color
+    vec4 colorMixedWithBorder = mix(color, u_colorCircle, step(distance(f_Position, u_circleCenter), u_circleRadius - u_borderThickness)); // mixes circle color with border color based on distance from middle
 
     gl_FragColor = mix(vec4(0.0), colorMixedWithBorder, color.a);
 }

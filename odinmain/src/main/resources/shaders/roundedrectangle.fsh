@@ -1,17 +1,17 @@
 // shader gotten from https://www.shadertoy.com/view/fsdyzB
 #version 130
 
-uniform vec2 u_rectCenter;
-uniform vec2 u_rectSize;
-uniform vec4 u_Radii;
-uniform float u_borderThickness;
-uniform float u_edgeSoftness;
-uniform vec4 u_colorRect;
+uniform vec2 u_rectCenter; // center of rectangle, (x, y)
+uniform vec2 u_rectSize; // size of rectangle, (width, height)
+uniform vec4 u_Radii; // The radius of each corner, (r1, r2, r3, r4)
+uniform float u_borderThickness; // Thickness of border color, in pixels
+uniform float u_edgeSoftness; // Softness of edges, free antialiasing, but breaks rounded corners over certain values.
+uniform vec4 u_colorRect; // First color of gradient
 uniform vec4 u_colorRect2; // Second color for gradient
 uniform vec2 u_gradientDirectionVector; // Direction of the gradient based on which variable to use, for example a gradient from left to right will use (1.0, 0.0) to use the positive x value of the length from the middle of the recangle
-uniform vec4 u_colorBorder;
-uniform vec4 u_colorShadow;
-uniform float u_shadowSoftness;
+uniform vec4 u_colorBorder; // Color of the rectangle's border.
+uniform vec4 u_colorShadow; // Color of the shadow.
+uniform float u_shadowSoftness; // Softness of shadow. At 0 this will make shadow invisible.
 
 varying vec2 f_Position;
 
@@ -35,33 +35,19 @@ void main() {
     // Interpolate colors based on the distance
     vec4 gradientColor = mix(u_colorRect, u_colorRect2, (strength.x == 0.0) ? strength.y + 0.5 : strength.x + 0.5);
 
-    // Border
     float u_borderSoftness  = 2.0; // How soft the (internal) border should be (in pixels)
-
-    // Shadow
     vec2  u_shadowOffset   = vec2(0.0, 0.0); // The pixel-space shadow offset from rectangle center
-
-    // Colors
     vec4  u_colorBg     = vec4(0.0); // The color of background
-    // =========================================================================
-
     vec2 halfSize = (u_rectSize / 2.0); // Rectangle extents (half of the size)
 
 
-    // -------------------------------------------------------------------------
-
     // Calculate distance to edge.
     float distance = roundedBoxSDF(f_Position.xy - u_rectCenter, halfSize, u_Radii);
-
     // Smooth the result (free antialiasing).
     float smoothedAlpha = 1.0 - smoothstep(0.0, u_edgeSoftness, distance);
 
-    // -------------------------------------------------------------------------
-    // Border.
-
     float borderAlpha   = 1.0 - smoothstep(u_borderThickness - u_borderSoftness, u_borderThickness, abs(distance));
 
-    // -------------------------------------------------------------------------
     // Apply a drop shadow effect.
 
     float shadowDistance  = roundedBoxSDF(f_Position.xy - u_rectCenter + u_shadowOffset, halfSize, u_Radii);

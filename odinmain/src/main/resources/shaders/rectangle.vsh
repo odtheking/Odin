@@ -1,5 +1,9 @@
 #version 130
 
+/*
+Very simple vertex shader to use in various fragment shaders
+*/
+
 varying vec2 f_Position;
 
 void main() {
