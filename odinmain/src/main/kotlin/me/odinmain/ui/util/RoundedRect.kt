@@ -54,13 +54,15 @@ object RoundedRect {
         HSBBox.shader.unbind()
     }
 
-    fun drawCircle(matrixStack: UMatrixStack, x: Float, y: Float, radius: Float, color: Color) {
+    fun drawCircle(matrixStack: UMatrixStack, x: Float, y: Float, radius: Float, color: Color, borderColor: Color, borderThickness: Float) {
         if (!Circle.isInitialized() || !Circle.shader.usable) return
 
         Circle.shader.bind()
         Circle.shaderCenterUniform.setValue(x, y)
         Circle.shaderRadiusUniform.setValue(radius)
         Circle.shaderColorUniform.setValue(color.r / 255f, color.g / 255f, color.b / 255f, color.alpha)
+        Circle.shaderBorderColorUniform.setValue(borderColor.r / 255f, borderColor.g / 255f, borderColor.b / 255f, borderColor.alpha)
+        Circle.shaderBorderThicknessUniform.setValue(borderThickness)
 
         UIBlock.drawBlockWithActiveShader(matrixStack, color.javaColor, x.toDouble() - radius, y.toDouble() - radius, x.toDouble() + radius, y.toDouble() + radius)
 
@@ -138,13 +140,15 @@ object RoundedRect {
         lateinit var shaderCenterUniform: Float2Uniform
         lateinit var shaderRadiusUniform: FloatUniform
         lateinit var shaderColorUniform: Float4Uniform
+        lateinit var shaderBorderColorUniform: Float4Uniform
+        lateinit var shaderBorderThicknessUniform: FloatUniform
 
         fun isInitialized() = ::shader.isInitialized
 
         fun initShader() {
             if (::shader.isInitialized) return
 
-            shader = createLegacyShader("rectangle", "circle", BlendState.NORMAL)
+            shader = createLegacyShader("rectangle", "circleFragment", BlendState.NORMAL)
             if (!shader.usable) {
                 println("Failed to load Odin circle shader")
                 return
@@ -152,6 +156,8 @@ object RoundedRect {
             shaderCenterUniform = shader.getFloat2Uniform("u_circleCenter")
             shaderRadiusUniform = shader.getFloatUniform("u_circleRadius")
             shaderColorUniform = shader.getFloat4Uniform("u_colorCircle")
+            shaderBorderColorUniform = shader.getFloat4Uniform("u_colorBorder")
+            shaderBorderThicknessUniform = shader.getFloatUniform("u_borderThickness")
 
             println("Loaded Odin circle shader")
         }

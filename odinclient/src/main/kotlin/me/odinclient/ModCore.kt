@@ -36,8 +36,6 @@ class ModCore {
 
     @EventHandler
     fun init(event: FMLInitializationEvent) {
-        ModuleManager.modules.addAll(modules)
-
         Window.init()
 
         OdinMain.init()
@@ -54,55 +52,6 @@ class ModCore {
         )
     }
 
-    private val modules: ArrayList<Module> = arrayListOf(
-        AutoGFS,
-        AutoIceFill,
-        AutoLeap,
-        AutoMask,
-        AutoSell,
-        AutoUlt,
-        AutoWish,
-        CancelInteract,
-        CancelChestOpen,
-        GhostPick,
-        MapModule,
-        SecretHitboxes,
-        SuperBoom,
-        SwapStonk,
-
-        Arrows,
-        ArrowAlign,
-        CancelWrongTerms,
-        HoverTerms,
-        LeversTriggerbot,
-        SimonSays,
-
-        DioriteFucker,
-        RelicAura,
-        //RelicPlacer,
-
-        Trajectories,
-        Ghosts,
-        NoCarpet,
-        NoDebuff,
-
-        CookieClicker,
-        AutoExperiments,
-        FarmingHitboxes,
-        NoBlock,
-        TermAC,
-        Triggerbot,
-        GhostBlock,
-        FreezeGame,
-        AbilityKeybind,
-        TerminalTriggerbot,
-        EtherWarpHelper,
-        ChestEsp,
-        NoBreakReset,
-        //AutoTerms,
-        LockCursor
-    )
-
     @EventHandler
     fun postInit(event: FMLPostInitializationEvent) {
         OdinMain.postInit()
@@ -110,6 +59,14 @@ class ModCore {
 
     @EventHandler
     fun loadComplete(event: FMLLoadCompleteEvent) {
+        val modules: ArrayList<Module> = arrayListOf(
+            AutoGFS, AutoIceFill, AutoLeap, AutoMask, AutoSell, AutoUlt, AutoWish, CancelInteract, CancelChestOpen, GhostPick, MapModule, SecretHitboxes, SuperBoom, SwapStonk,
+            Arrows, ArrowAlign, CancelWrongTerms, HoverTerms, LeversTriggerbot, SimonSays,
+            DioriteFucker, RelicAura, /*RelicPlacer,*/ Trajectories, Ghosts, NoCarpet, NoDebuff, LockCursor,
+            CookieClicker, AutoExperiments, FarmingHitboxes, NoBlock, TermAC, Triggerbot, GhostBlock, FreezeGame, AbilityKeybind, TerminalTriggerbot, EtherWarpHelper, ChestEsp, NoBreakReset,
+            /*AutoTerms,*/
+        )
+        ModuleManager.modules.addAll(modules)
         OdinMain.loadComplete()
     }
 

@@ -68,9 +68,9 @@ fun drawHSBBox(x: Float, y: Float, w: Float, h: Float, color: Color) {
     rectangleOutline(x-1, y-1, w+2, h+2, Color(38, 38, 38), 3f, 2f)
 }
 
-fun circle(x: Float, y: Float, radius: Float, color: Color) {
+fun circle(x: Number, y: Number, radius: Number, color: Color, borderColor: Color = color, borderThickness: Number = 0f) {
     scale(1f / sr.scaleFactor, 1f / sr.scaleFactor, 1f)
-    matrix.runLegacyMethod(matrix.get()) { RoundedRect.drawCircle(matrix.get(), x.toFloat(), y.toFloat(), radius, color) }
+    matrix.runLegacyMethod(matrix.get()) { RoundedRect.drawCircle(matrix.get(), x.toFloat(), y.toFloat(), radius.toFloat(), color, borderColor, borderThickness.toFloat()) }
     scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
 }
 

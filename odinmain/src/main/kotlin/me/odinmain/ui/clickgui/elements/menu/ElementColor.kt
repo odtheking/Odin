@@ -21,6 +21,7 @@ import me.odinmain.utils.render.gui.MouseUtils.mouseX
 import me.odinmain.utils.render.gui.MouseUtils.mouseY
 import me.odinmain.utils.render.gui.animations.impl.ColorAnimation
 import me.odinmain.utils.render.gui.animations.impl.EaseInOut
+import me.odinmain.utils.render.world.RenderUtils.loadImage
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.renderer.texture.DynamicTexture
 import org.apache.logging.log4j.core.helpers.Integers.parseInt
@@ -56,7 +57,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
     // TODO: MAKE A BETTER DESIGN (FUNCTION IS ALL HERE P MUCH)
     @OptIn(ExperimentalStdlibApi::class)
     override fun draw() {
-        h = floor(anim.get(36f, if (setting.allowAlpha) 280f else 250f, !extended))
+        h = floor(anim.get(36f, if (setting.allowAlpha) 285f else 255f, !extended))
 
         hover.handle(x + w - 41, y + 5, 31.5f, 19f)
 
@@ -76,8 +77,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
 
         val sbPointer = Pair((x + 10f + setting.saturation * 220), (y + 38f + (1 - setting.brightness) * 170))
         dropShadow(sbPointer.first - 8.5f, sbPointer.second - 8.5f, 17f, 17f, 2.5f, 2.5f, 9f)
-        circle(sbPointer.first, sbPointer.second, 9f, color.darker(0.5f))
-        circle(sbPointer.first, sbPointer.second, 7f, color)
+        circle(sbPointer.first, sbPointer.second, 9f, Color.TRANSPARENT, color.darker(.5f).withAlpha(1f), 3f)
 
         // HUE
 
@@ -87,8 +87,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
 
         val hue = x + 10f + setting.hue * 221f to y + 221f
         dropShadow(hue.first - 8.5f, hue.second - 8.5f, 17f, 17f, 2.5f, 2.5f, 9f)
-        circle(hue.first, hue.second, 9f, color.hsbMax().darker(0.5f))
-        circle(hue.first, hue.second, 7f, color.hsbMax())
+        circle(hue.first, hue.second, 9f, color.hsbMax(), color.hsbMax().darker(.5f), 2f)
 
         // ALPHA
         if (setting.allowAlpha) {
@@ -97,8 +96,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
 
             val alpha = Pair((x + 10f + setting.alpha * 220f), y + 243f)
             dropShadow(alpha.first - 8.5f, alpha.second - 8.5f, 17f, 17f, 2.5f, 2.5f, 9f)
-            circle(alpha.first, alpha.second, 9f, Color.WHITE.withAlpha(setting.alpha).darker(.5f))
-            circle(alpha.first, alpha.second, 7f, Color.WHITE.withAlpha(setting.alpha))
+            circle(alpha.first, alpha.second, 9f, Color.WHITE.withAlpha(setting.alpha), Color.GRAY, 2f)
         }
 
         when (dragging) {
@@ -118,13 +116,12 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
         }
 
         val stringWidth = getTextWidth(hexString, 16f, Fonts.REGULAR)
-        roundedRectangle(x + w / 2 - stringWidth / 2 - 12, y + 255, stringWidth + 24, 22f, buttonColor, 5f)
-        text(hexString, x + w / 2, y + 266, Color.WHITE, 16f, Fonts.REGULAR, TextAlign.Middle, TextPos.Middle)
+        roundedRectangle(x + w / 2 - stringWidth / 2 - 12, y + 260, stringWidth + 24, 22f, buttonColor, 5f)
+        text(hexString, x + w / 2, y + 271, Color.WHITE, 16f, Fonts.REGULAR, TextAlign.Middle, TextPos.Middle)
 
         if (listeningForString || colorAnim.isAnimating()) {
             val color = colorAnim.get(ColorUtil.clickGUIColor, buttonColor, listeningForString)
-            //modMessage(color)
-            rectangleOutline(x + w / 2 - stringWidth / 2 - 13 , y + 254, stringWidth + 25f, 23f, color, 5f,2f)
+            rectangleOutline(x + w / 2 - stringWidth / 2 - 13 , y + 259, stringWidth + 25f, 23f, color, 5f,2f)
         }
 
         resetScissor(scissor)
@@ -177,7 +174,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
                 else -> null
             }
 
-            if (isAreaHovered(x + 10f, y + 250f, w, y + 278f)) {
+            if (isAreaHovered(x + 10f, y + 255f, w, y + 278f)) {
                 if (!colorAnim.isAnimating()) {
                     if (listeningForString) completeHexString()
                     else listeningForString = true

@@ -3,6 +3,8 @@
 uniform vec2 u_circleCenter;
 uniform float u_circleRadius;
 uniform vec4 u_colorCircle;
+uniform vec4 u_colorBorder;
+uniform float u_borderThickness;
 
 varying vec2 f_Position;
 
@@ -17,7 +19,8 @@ vec4 circle(vec2 frag, vec2 pos, float rad, vec4 color) {
 }
 
 void main() {
-    vec4 color = circle(f_Position, u_circleCenter, u_circleRadius, u_colorCircle);
+    vec4 color = circle(f_Position, u_circleCenter, u_circleRadius, u_colorBorder);
+    vec4 colorMixedWithBorder = mix(color, u_colorCircle, step(distance(f_Position, u_circleCenter), u_circleRadius - u_borderThickness));
 
-    gl_FragColor = mix(vec4(0.0), color, color.a);
+    gl_FragColor = mix(vec4(0.0), colorMixedWithBorder, color.a);
 }

@@ -631,7 +631,7 @@ object RenderUtils {
      *
      * @return The contents of the shader file at the given path.
      */
-    fun readShader(name: String, ext: String): String =
+    private fun readShader(name: String, ext: String): String =
         OdinMain::class.java.getResource("/shaders/$name.$ext")?.readText() ?: ""
 
     /**

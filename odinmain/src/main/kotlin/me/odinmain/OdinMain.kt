@@ -80,8 +80,6 @@ object OdinMain {
             WaypointCommand,
             BlacklistCommand
         )
-
-        RoundedRect.initShaders()
     }
 
     fun postInit() = scope.launch(Dispatchers.IO) {
@@ -105,6 +103,7 @@ object OdinMain {
             }
         }
         ClickGUI.init()
+        RoundedRect.initShaders()
     }
 
     fun onTick() {
