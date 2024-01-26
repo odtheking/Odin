@@ -21,7 +21,7 @@ import me.odinmain.utils.render.gui.MouseUtils.mouseX
 import me.odinmain.utils.render.gui.MouseUtils.mouseY
 import me.odinmain.utils.render.gui.animations.impl.ColorAnimation
 import me.odinmain.utils.render.gui.animations.impl.EaseInOut
-import me.odinmain.utils.render.world.RenderUtils.loadImage
+import me.odinmain.utils.render.world.RenderUtils.loadBufferedImage
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.renderer.texture.DynamicTexture
 import org.apache.logging.log4j.core.helpers.Integers.parseInt
@@ -47,7 +47,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
         get() = setting.value
 
     private val hover = HoverHandler(0, 150)
-    private val hueGradiant = DynamicTexture(loadImage("/assets/odinmain/clickgui/HueGradient.png"))
+    private val hueGradiant = DynamicTexture(loadBufferedImage("/assets/odinmain/clickgui/HueGradient.png"))
 
     private var hexString = "#FFFFFFFF"
     private var stringBefore = hexString
