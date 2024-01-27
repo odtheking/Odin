@@ -58,7 +58,7 @@ void main() {
     vec4 res_shadow_color =
         mix(
             u_colorBg,
-            vec4(u_colorShadow.rgb, min(u_colorShadow.a, shadowAlpha)),
+            vec4(u_colorShadow.rgb, shadowAlpha),
             shadowAlpha
         );
 
@@ -73,20 +73,8 @@ void main() {
             min(gradientColor.a, smoothedAlpha)
         );
 
-    // Blend (background+shadow+rect) with border
-    //   Note:
-    //     - Used 'min(borderAlpha, smoothedAlpha)' instead of 'borderAlpha'
-    //       to make border 'internal'
-    //     - Used 'min(u_colorBorder.a, alpha)' instead of 'alpha' to enable
-    //       border color transparency
-    vec4 res_shadow_with_rect_with_border =
-        mix(
-            res_shadow_with_rect_color,
-            u_colorBorder,
-            min(u_colorBorder.a, min(borderAlpha, smoothedAlpha))
-        );
-    //vec4 combinedColor = mix(gradientColor, u_colorBorder, borderAlpha);
-    //vec4 finalColor = mix(res_shadow_color, combinedColor, smoothedAlpha);
+    vec4 combinedColor = mix(gradientColor, u_colorBorder, borderAlpha);
+    vec4 finalColor = mix(res_shadow_color, combinedColor, smoothedAlpha);
 
-    gl_FragColor = res_shadow_with_rect_with_border;
+    gl_FragColor = finalColor;
 }

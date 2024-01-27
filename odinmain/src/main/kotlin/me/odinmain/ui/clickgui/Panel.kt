@@ -7,12 +7,14 @@ import me.odinmain.ui.clickgui.SearchBar.currentSearch
 import me.odinmain.ui.clickgui.elements.ModuleButton
 import me.odinmain.ui.clickgui.util.ColorUtil
 import me.odinmain.utils.capitalizeFirst
+import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.*
 import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
 import me.odinmain.utils.render.gui.MouseUtils.mouseX
 import me.odinmain.utils.render.gui.MouseUtils.mouseY
 import me.odinmain.utils.render.gui.animations.impl.LinearAnimation
 import me.odinmain.utils.round
+import me.odinmain.utils.skyblock.modMessage
 import kotlin.math.floor
 
 /**
@@ -59,11 +61,13 @@ class Panel(
             y = floor(y2 + mouseY)
         }
 
-        roundedRectangle(x, y, width, height, ColorUtil.moduleButtonColor, ColorUtil.moduleButtonColor, ColorUtil.moduleButtonColor, 0f, 15f, 15f, 0f, 0f, 5f)
-        text(if (displayName == "Floor7") "Floor 7" else "§l${displayName}", x + width / 2f, y + height / 2f, ColorUtil.textColor, 22f, Fonts.SEMIBOLD, TextAlign.Middle)
-
         scrollOffset = scrollAnimation.get(scrollOffset, scrollTarget).round(0)
         var startY = scrollOffset + height
+
+        roundedRectangle(x, y, width, height, ColorUtil.moduleButtonColor, ColorUtil.moduleButtonColor, ColorUtil.moduleButtonColor, 0f, 15f, 15f, 0f, 0f, 0f)
+        text(if (displayName == "Floor7") "Floor 7" else "§l${displayName}", x + width / 2f, y + height / 2f, ColorUtil.textColor, 22f, Fonts.SEMIBOLD, TextAlign.Middle)
+
+
 
         val s = scissor(x, y + height, width, 5000f)
         if (extended && moduleButtons.isNotEmpty()) {
@@ -76,8 +80,7 @@ class Panel(
 
         moduleButtons.lastOrNull()?.color?.let { roundedRectangle(x, y + startY, width, 10f, it, it, it, 0f, 0f, 0f, 10f, 10f, 4f) }
         resetScissor(s)
-
-        dropShadow(x, y, width, (startY + 10f).coerceAtLeast(height), 12.5f, 6f, 5f)
+        dropShadow(x, y, width, (startY + 10f).coerceAtLeast(height), ColorUtil.moduleButtonColor, 15f, 10f, 10f, 10f, 10f)
     }
 
     fun handleScroll(amount: Int): Boolean {

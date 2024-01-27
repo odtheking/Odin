@@ -45,7 +45,7 @@ object EditHUDGui : Screen() {
         //translate(scaledWidth.toFloat() + 50f, scaledHeight * 1.95f)
 
         if (openAnim.isAnimating()) {
-            setAlpha(openAnim.get(0f, 1f, !open))
+            //setAlpha(openAnim.get(0f, 1f, !open))
             val animVal = openAnim.get(0f, 1f, !open)
             scale(animVal, animVal)
         }

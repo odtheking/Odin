@@ -5,6 +5,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.gui.dropShadow
 import me.odinmain.utils.render.gui.rectangleOutline
 import me.odinmain.utils.render.gui.roundedRectangle
 import me.odinmain.utils.skyblock.modMessage
@@ -36,7 +37,8 @@ object RoundedRectangleTesting : Module(
     @SubscribeEvent
     fun onRenderGameOverlay(event: RenderGameOverlayEvent.Post) {
         if (event.type != RenderGameOverlayEvent.ElementType.ALL) return
-        roundedRectangle(x, y, w, h, color, borderColor, shadowColor, borderThickness, topL, topR, botL, botR, edgeSoftness, color2, dir, shadowSoftness)
+        //roundedRectangle(x, y, w, h, color, borderColor, shadowColor, borderThickness, topL, topR, botL, botR, edgeSoftness, color2, dir, shadowSoftness)
+        dropShadow(x, y, w, h, shadowColor, shadowSoftness, topL, topR, botL, botR)
         //rectangleOutline(x.toFloat() + 100, y.toFloat(), w.toFloat(), h.toFloat(), borderColor, topL, borderThickness)
     }
 }

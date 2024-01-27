@@ -5,6 +5,9 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.ui.util.FontRenderer
 import me.odinmain.ui.util.RoundedRect
 import me.odinmain.utils.coerceAlpha
+import me.odinmain.utils.div
+import me.odinmain.utils.minus
+import me.odinmain.utils.plus
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.gui.TextAlign.*
 import me.odinmain.utils.render.world.RenderUtils.drawTexturedModalRect
@@ -103,11 +106,19 @@ fun translate(x: Float, y: Float, z: Float = 0f) = GlStateManager.translate(x, y
 
 fun scale(x: Float, y: Float, z: Float = 1f) = GlStateManager.scale(x, y, z)
 
-fun dropShadow(x: Float, y: Float, w: Float, h: Float, blur: Float, spread: Float, radius: Float) = Unit//roundedRectangle(x, y, w, h, Color.DARK_GRAY, radius, spread)
-//renderer.drawDropShadow(context, x, y, w, h, blur, spread, radius)
+fun dropShadow(x: Float, y: Float, w: Float, h: Float, blur: Float, spread: Float, idek: Float) = Unit
 
-fun setAlpha(alpha: Float) = Unit
-//renderer.setAlpha(context, alpha)
+fun dropShadow(x: Number, y: Number, w: Number, h: Number, shadowColor: Color, shadowSoftness: Number, topL: Number, topR: Number, botL: Number, botR: Number) {
+    scale(1f / sr.scaleFactor, 1f / sr.scaleFactor, 1f)
+    translate(0f, 0f, -100f)
+    matrix.runLegacyMethod(matrix.get()) {
+        RoundedRect.drawDropShadow(
+            matrix.get(), (x - shadowSoftness / 2).toFloat(), (y - shadowSoftness / 2).toFloat(), (w + shadowSoftness).toFloat(), (h + shadowSoftness).toFloat(), shadowColor, topL.toFloat(), topR.toFloat(), botL.toFloat(), botR.toFloat(), shadowSoftness.toFloat()
+        )
+    }
+    translate(0f, 0f, 100f)
+    scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
+}
 
 data class Scissor(val x: Number, val y: Number, val w: Number, val h: Number, val context: Int)
 private val scissorList = mutableListOf<Scissor>(Scissor(0, 0, 4000, 4000, 0))

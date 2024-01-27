@@ -12,6 +12,7 @@ object RoundedRect {
         RoundedRectangle.initShader()
         HSBBox.initShader()
         Circle.initShader()
+        DropShadow.initShader()
     }
 
     fun drawRectangle(
@@ -36,7 +37,7 @@ object RoundedRect {
         RoundedRectangle.shaderShadowColorUniform.setValue(shadowColor.r / 255f, shadowColor.g / 255f, shadowColor.b / 255f, shadowColor.alpha)
         RoundedRectangle.shaderShadowSoftness.setValue(shadowSoftness)
 
-        UIBlock.drawBlockWithActiveShader(matrixStack, color.javaColor, x.toDouble() - edgeSoftness, y.toDouble() - edgeSoftness, x.toDouble() + width.toDouble() + edgeSoftness, y.toDouble() + height.toDouble() + edgeSoftness)
+        UIBlock.drawBlockWithActiveShader(matrixStack, color.javaColor, x.toDouble(), y.toDouble(), x.toDouble() + width.toDouble(), y.toDouble() + height.toDouble())
 
         RoundedRectangle.shader.unbind()
     }
@@ -67,6 +68,23 @@ object RoundedRect {
         UIBlock.drawBlockWithActiveShader(matrixStack, color.javaColor, x.toDouble() - radius, y.toDouble() - radius, x.toDouble() + radius, y.toDouble() + radius)
 
         Circle.shader.unbind()
+    }
+
+    fun drawDropShadow(
+        matrixStack: UMatrixStack, x: Float, y: Float, width: Float, height: Float, shadowColor: Color, topL: Float, topR: Float, botL: Float, botR: Float, shadowSoftness: Float
+    ) {
+        if (!DropShadow.isInitialized() || !DropShadow.shader.usable) return
+
+        DropShadow.shader.bind()
+        DropShadow.shaderCenterUniform.setValue(x + (width / 2), y + (height / 2))
+        DropShadow.shaderSizeUniform.setValue(width, height)
+        DropShadow.shaderRadiusUniform.setValue(botR, topR, botL, topL)
+        DropShadow.shaderShadowColorUniform.setValue(shadowColor.r / 255f, shadowColor.g / 255f, shadowColor.b / 255f, shadowColor.alpha)
+        DropShadow.shaderShadowSoftness.setValue(shadowSoftness)
+
+        UIBlock.drawBlockWithActiveShader(matrixStack, Color.WHITE.javaColor, x.toDouble() - shadowSoftness, y.toDouble() - shadowSoftness, x.toDouble() + width.toDouble() + shadowSoftness * 2, y.toDouble() + height.toDouble() + shadowSoftness * 2)
+
+        DropShadow.shader.unbind()
     }
 
 
@@ -160,6 +178,34 @@ object RoundedRect {
             shaderBorderThicknessUniform = shader.getFloatUniform("u_borderThickness")
 
             println("Loaded Odin circle shader")
+        }
+    }
+
+    object DropShadow {
+        lateinit var shader: UShader
+        lateinit var shaderCenterUniform: Float2Uniform
+        lateinit var shaderSizeUniform: Float2Uniform
+        lateinit var shaderRadiusUniform: Float4Uniform
+        lateinit var shaderShadowColorUniform: Float4Uniform
+        lateinit var shaderShadowSoftness: FloatUniform
+
+        fun isInitialized() = ::shader.isInitialized
+
+        fun initShader() {
+            if (::shader.isInitialized) return
+
+            shader = createLegacyShader("rectangle", "dropShadow", BlendState.NORMAL)
+            if (!shader.usable) {
+                println("Failed to load Odin drop shadow shader")
+                return
+            }
+            shaderCenterUniform = shader.getFloat2Uniform("u_rectCenter")
+            shaderSizeUniform = shader.getFloat2Uniform("u_rectSize")
+            shaderRadiusUniform = shader.getFloat4Uniform("u_Radii")
+            shaderShadowColorUniform = shader.getFloat4Uniform("u_colorShadow")
+            shaderShadowSoftness = shader.getFloatUniform("u_shadowSoftness")
+
+            println("Loaded Odin drop shadow shader")
         }
     }
 }
