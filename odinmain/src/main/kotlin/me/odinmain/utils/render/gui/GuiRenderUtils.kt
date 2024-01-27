@@ -74,8 +74,6 @@ fun circle(x: Number, y: Number, radius: Number, color: Color, borderColor: Colo
     scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
 }
 
-fun dropShadow(x: Float, y: Float, w: Float, h: Float, blur: Float, spread: Float, radius: Float) = Unit//roundedRectangle(x, y, w, h, Color.DARK_GRAY, radius, spread)
-//renderer.drawDropShadow(context, x, y, w, h, blur, spread, radius)
 
 fun text(text: String, x: Float, y: Float, color: Color, size: Float, font: Font, align: TextAlign = Left, verticalAlign: TextPos = TextPos.Middle, shadow: Boolean = false) {
     if (color.isTransparent) return
@@ -105,11 +103,14 @@ fun translate(x: Float, y: Float, z: Float = 0f) = GlStateManager.translate(x, y
 
 fun scale(x: Float, y: Float, z: Float = 1f) = GlStateManager.scale(x, y, z)
 
-data class Scissor(val x: Number, val y: Number, val w: Number, val h: Number, val context: Int)
-private val scissorList = mutableListOf<Scissor>(Scissor(0, 0, 4000, 4000, 0))
+fun dropShadow(x: Float, y: Float, w: Float, h: Float, blur: Float, spread: Float, radius: Float) = Unit//roundedRectangle(x, y, w, h, Color.DARK_GRAY, radius, spread)
+//renderer.drawDropShadow(context, x, y, w, h, blur, spread, radius)
 
 fun setAlpha(alpha: Float) = Unit
-    //renderer.setAlpha(context, alpha)
+//renderer.setAlpha(context, alpha)
+
+data class Scissor(val x: Number, val y: Number, val w: Number, val h: Number, val context: Int)
+private val scissorList = mutableListOf<Scissor>(Scissor(0, 0, 4000, 4000, 0))
 
 fun scissor(x: Number, y: Number, w: Number, h: Number): Scissor {
     GL11.glScissor(x.toInt(), y.toInt(), w.toInt(), h.toInt())

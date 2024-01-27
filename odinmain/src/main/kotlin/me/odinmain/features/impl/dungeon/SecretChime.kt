@@ -4,13 +4,14 @@ import me.odinmain.events.impl.EntityLeaveWorldEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
+import me.odinmain.features.settings.impl.ActionSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.features.settings.impl.StringSetting
+import me.odinmain.utils.distanceSquaredTo
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.item.EntityItem
-import net.minecraft.entity.passive.EntityBat
 import net.minecraftforge.client.event.sound.PlaySoundSourceEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -31,6 +32,9 @@ object SecretChime : Module(
     ).withDependency { sound == defaultSounds.size - 1 }
     private val volume: Float by NumberSetting("Volume", 1f, 0, 1, .01f, description = "Volume of the sound.")
     private val pitch: Float by NumberSetting("Pitch", 2f, 0, 2, .01f, description = "Pitch of the sound.")
+    val reset: () -> Unit by ActionSetting("Play sound") {
+        playSecretSound()
+    }
 
     private var lastPlayed = System.currentTimeMillis()
     private val drops = listOf(
@@ -65,7 +69,7 @@ object SecretChime : Module(
      */
     @SubscribeEvent
     fun onRemoveEntity(event: EntityLeaveWorldEvent) {
-        if (!DungeonUtils.inDungeons || mc.thePlayer.getDistanceToEntity(event.entity) > 6) return
+        if (!DungeonUtils.inDungeons || mc.thePlayer.distanceSquaredTo(event.entity) > 36) return
 
         if (event.entity is EntityItem && drops.any { event.entity.entityItem.displayName.contains(it) })
             playSecretSound()

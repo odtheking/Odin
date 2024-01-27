@@ -5,10 +5,10 @@ import me.odinmain.events.impl.ReceivePacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.DragonBoxes.renderBoxes
-import me.odinmain.features.impl.floor7.DragonDeathCheck.dragonJoinWorld
-import me.odinmain.features.impl.floor7.DragonDeathCheck.dragonLeaveWorld
-import me.odinmain.features.impl.floor7.DragonDeathCheck.lastDragonDeath
-import me.odinmain.features.impl.floor7.DragonDeathCheck.onChatPacket
+import me.odinmain.features.impl.floor7.DragonCheck.dragonJoinWorld
+import me.odinmain.features.impl.floor7.DragonCheck.dragonLeaveWorld
+import me.odinmain.features.impl.floor7.DragonCheck.lastDragonDeath
+import me.odinmain.features.impl.floor7.DragonCheck.onChatPacket
 import me.odinmain.features.impl.floor7.DragonHealth.renderHP
 import me.odinmain.features.impl.floor7.DragonTimer.renderTime
 import me.odinmain.features.impl.floor7.DragonTimer.updateTime
@@ -75,6 +75,7 @@ object WitherDragons : Module(
                 getTextWidth("Red spawning in 1200ms", 16f, Fonts.REGULAR)
             ) + 2f to 33f
         } else if (DragonTimer.toRender.size != 0) {
+            if (!dragonTimer) return@HudSetting 0f to 0f
             var width = 0f
             DragonTimer.toRender.forEachIndexed { index, triple ->
                 text(triple.first, 1f, 9f + index * 17f, Color.WHITE,16f, Fonts.REGULAR)
@@ -91,11 +92,10 @@ object WitherDragons : Module(
     val bluePB = +NumberSetting("Melody PB", 1000.0, increment = 0.01, hidden = true)
     val purplePB = +NumberSetting("Starts With PB", 1000.0, increment = 0.01, hidden = true)
 
-    private val shouldWork = DungeonUtils.getPhase() != 5
 
     @SubscribeEvent
     fun onReceivePacket(event: ReceivePacketEvent) {
-        if (shouldWork) return
+        if (DungeonUtils.getPhase() != 5) return
         handleSpawnPacket(event)
     }
     @SubscribeEvent
@@ -103,14 +103,18 @@ object WitherDragons : Module(
         WitherDragonsEnum.entries.forEach {
             it.particleSpawnTime = 0L
             it.timesSpawned = 0
+            it.spawning = false
+            it.entity = null
+            it.spawnTime()
         }
         DragonTimer.toRender = ArrayList()
         lastDragonDeath = ""
+        DragonPriority.firstOnce = false
     }
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (shouldWork) return
+        if (DungeonUtils.getPhase() != 5) return
 
         if (dragonTimer) {
             updateTime()
@@ -123,19 +127,19 @@ object WitherDragons : Module(
 
     @SubscribeEvent
     fun onEntityJoin(event: EntityJoinWorldEvent) {
-        if (shouldWork) return
+        if (DungeonUtils.getPhase() != 5) return
         dragonJoinWorld(event)
     }
 
     @SubscribeEvent
     fun onEntityLeave(event: LivingDeathEvent) {
-        if (shouldWork) return
+        if (DungeonUtils.getPhase() != 5) return
         dragonLeaveWorld(event)
     }
 
     @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
-        if (shouldWork) return
+        if (DungeonUtils.getPhase() != 5) return
         onChatPacket(event)
     }
 

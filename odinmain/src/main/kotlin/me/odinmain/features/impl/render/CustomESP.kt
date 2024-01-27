@@ -29,8 +29,8 @@ object CustomESP : Module(
     category = Category.RENDER,
     tag = TagType.FPSTAX,
     description =
-    if (onLegitVersion) "Allows you to highlight selected mobs. (/odinhighlight)"
-    else "Allows you to see selected mobs through walls. (/odinesp)"
+    if (onLegitVersion) "Allows you to highlight selected mobs. (/highlight)"
+    else "Allows you to see selected mobs through walls. (/esp)"
 ) {
     private val scanDelay: Long by NumberSetting("Scan Delay", 500L, 100L, 2000L, 100L)
     val color: Color by ColorSetting("Color", Color.RED, true)

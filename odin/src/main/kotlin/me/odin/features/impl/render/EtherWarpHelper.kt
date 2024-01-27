@@ -25,7 +25,9 @@ object EtherWarpHelper : Module(
     category = Category.RENDER
 ) {
 
-    private val color: Color by ColorSetting("Color", Color.ORANGE.withAlpha(.5f), allowAlpha = true)
+    private val renderColor: Color by ColorSetting("Color", Color.ORANGE.withAlpha(.5f), allowAlpha = true)
+    private val renderFail: Boolean by BooleanSetting("Show when failed", true)
+    private val wrongColor: Color by ColorSetting("Wrong Color", Color.RED.withAlpha(.5f), allowAlpha = true).withDependency { renderFail }
     private val filled: Boolean by DualSetting("Type", "Outline", "Filled", default = false)
     private val thickness: Float by NumberSetting("Thickness", 3f, 1f, 10f, .1f).withDependency { !filled }
     private val phase: Boolean by BooleanSetting("Phase", false)
@@ -36,6 +38,7 @@ object EtherWarpHelper : Module(
         etherPos = EtherWarpHelper.getEtherPos(Vec3(player.lastReportedPosX, player.lastReportedPosY, player.lastReportedPosZ), yaw = player.lastReportedYaw, pitch = player.lastReportedPitch)
         if (etherPos.succeeded && mc.thePlayer.isSneaking && mc.thePlayer.heldItem.extraAttributes?.getBoolean("ethermerge") == true) {
             val pos = etherPos.pos ?: return
+            val color = if (etherPos.succeeded) renderColor else wrongColor
 
             if (filled)
                 RenderUtils.drawFilledBox(pos.toAABB(), color, phase = phase)

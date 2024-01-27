@@ -3,7 +3,6 @@ package me.odinmain.features.impl.dungeon
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.events.impl.DrawGuiScreenEvent
 import me.odinmain.events.impl.GuiClickEvent
-import me.odinmain.events.impl.GuiClosedEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.LeapHelper.getPlayer
@@ -29,10 +28,7 @@ import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.OpenGlHelper
-import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.ContainerChest
-import net.minecraft.util.ResourceLocation
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -44,7 +40,6 @@ object LeapMenu : Module(
 ) {
     val type: Int by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("A-Z Class (BetterMap)", "A-Z Name", "Odin Sorting"), description = "How to sort the leap menu.")
     private val colorStyle: Boolean by DualSetting("Color Style", "Gray", "Color", default = false, description = "Which color style to use")
-    private val blur: Boolean by BooleanSetting("Blur", false, description = "Toggles the background blur for the gui.")
     private val roundedRect: Boolean by BooleanSetting("Rounded Rect", true, description = "Toggles the rounded rect for the gui.")
     //val priority: Int by SelectorSetting("Leap Helper Priority", "Berserker", arrayListOf("Archer", "Berserker", "Healer", "Mage", "Tank"), description = "Which player to prioritize in the leap helper.")
 
@@ -87,15 +82,8 @@ object LeapMenu : Module(
             GlStateManager.disableAlpha()
             GlStateManager.popMatrix()
         }
-        if (OpenGlHelper.shadersSupported && mc.renderViewEntity is EntityPlayer && blur) {
-            mc.entityRenderer.stopUseShader()
-            mc.entityRenderer.loadShader(ResourceLocation("shaders/post/blur.json"))
-        }
+
         event.isCanceled = true
-    }
-    @SubscribeEvent
-    fun onGuiClose(event: GuiClosedEvent) {
-        if (blur) mc.entityRenderer.stopUseShader()
     }
 
     @SubscribeEvent
@@ -116,7 +104,7 @@ object LeapMenu : Module(
                 .takeIf { it != -1 } ?: return
         modMessage("Teleporting to ${playerToLeap.name}.")
 
-        mc.playerController.windowClick(event.gui.inventorySlots.windowId, 11 + index, 1, 2, mc.thePlayer)
+        mc.playerController.windowClick(event.gui.inventorySlots.windowId, 11 + index, 2, 3, mc.thePlayer)
         event.isCanceled = true
     }
 

@@ -214,7 +214,6 @@ object TerminalSolver : Module(
                 } else emptyList()
             }.map { items.indexOf(it) }
         } else {
-            modMessage("getting best solution")
             for (color in colorOrder) {
                 val temp2 = panes.flatMap { pane ->
                     if (pane.metadata != color) {

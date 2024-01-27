@@ -34,7 +34,6 @@ object ClickedChests : Module(
     private data class Chest(val pos: BlockPos, val timeAdded: Long, var Locked: Boolean = false)
     private val chests = mutableListOf<Chest>()
 
-
     @SubscribeEvent
     fun onInteract(event: PlayerInteractEvent) {
         if (!DungeonUtils.inDungeons || event.pos == null) return
@@ -86,7 +85,6 @@ object ClickedChests : Module(
     fun onChat(event: ChatPacketEvent) {
         if (!event.message.contains("This chest is locked")) return
         if (chests.isEmpty()) return
-
-        chests.forEach { if (it.pos == mc.objectMouseOver.blockPos) it.Locked = true }
+        chests.lastOrNull()?.let { it.Locked = true }
     }
 }

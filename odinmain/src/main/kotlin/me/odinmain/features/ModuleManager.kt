@@ -11,14 +11,12 @@ import me.odinmain.features.impl.floor7.p3.InactiveWaypoints
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalTimes
 import me.odinmain.features.impl.render.*
+import me.odinmain.features.impl.render.ClickGUIModule.hudChat
 import me.odinmain.features.impl.skyblock.*
 import me.odinmain.features.settings.AlwaysActive
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.profile
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.gui.circle
 import net.minecraft.network.Packet
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -156,7 +154,7 @@ object ModuleManager {
 
     @SubscribeEvent
     fun onRenderOverlay(event: RenderGameOverlayEvent.Post) {
-        if (mc.currentScreen != null || event.type != RenderGameOverlayEvent.ElementType.ALL) return
+        if ((mc.currentScreen != null && !hudChat) || event.type != RenderGameOverlayEvent.ElementType.ALL) return
 
         mc.mcProfiler.startSection("Odin Hud")
 

@@ -11,7 +11,7 @@ import net.minecraft.util.Vec3
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.event.entity.living.LivingDeathEvent
 
-object DragonDeathCheck {
+object DragonCheck {
 
     var lastDragonDeath = ""
 
@@ -19,7 +19,7 @@ object DragonDeathCheck {
         if (event.entity !is EntityDragon) return
         val dragon = WitherDragonsEnum.entries.find { dragon -> event.entity.positionVector.dragonCheck(dragon.spawnPos) } ?: return
         dragon.spawning = false
-        dragon.dragonAlive = true
+        dragon.particleSpawnTime = 0L
         dragon.timesSpawned += 1
         dragon.entity = event.entity
         if (sendSpawned) modMessage("§${dragon.colorCode}${dragon.name} §fdragon spawned. This is the §${dragon.colorCode}${dragon.timesSpawned}§f time it has spawned.")
@@ -36,7 +36,6 @@ object DragonDeathCheck {
 
             modMessage("§${dragon.colorCode}${dragon.name} §fdragon was alive for ${printSecondsWithColor(killTime, 3.5, 7.5, down = false)}${if (killTime < oldPB) " §7(§dNew PB§7)" else ""}.")
         }
-        WitherDragonsEnum.entries.find{ dragon.name == it.name }?.dragonAlive = false
         lastDragonDeath = dragon.name
     }
 
