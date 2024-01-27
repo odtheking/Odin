@@ -1,4 +1,4 @@
-package me.odinmain.utils.render.gui.animations
+package me.odinmain.ui.clickgui.animations
 
 import me.odinmain.utils.clock.Clock
 

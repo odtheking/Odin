@@ -4,17 +4,15 @@ import me.odinmain.features.Category
 import me.odinmain.features.ModuleManager.modules
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.ui.clickgui.SearchBar.currentSearch
+import me.odinmain.ui.clickgui.animations.impl.LinearAnimation
 import me.odinmain.ui.clickgui.elements.ModuleButton
 import me.odinmain.ui.clickgui.util.ColorUtil
+import me.odinmain.ui.util.*
+import me.odinmain.ui.util.MouseUtils.isAreaHovered
+import me.odinmain.ui.util.MouseUtils.mouseX
+import me.odinmain.ui.util.MouseUtils.mouseY
 import me.odinmain.utils.capitalizeFirst
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.gui.*
-import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
-import me.odinmain.utils.render.gui.MouseUtils.mouseX
-import me.odinmain.utils.render.gui.MouseUtils.mouseY
-import me.odinmain.utils.render.gui.animations.impl.LinearAnimation
 import me.odinmain.utils.round
-import me.odinmain.utils.skyblock.modMessage
 import kotlin.math.floor
 
 /**
@@ -68,8 +66,7 @@ class Panel(
         text(if (displayName == "Floor7") "Floor 7" else "§l${displayName}", x + width / 2f, y + height / 2f, ColorUtil.textColor, 22f, Fonts.SEMIBOLD, TextAlign.Middle)
 
 
-
-        val s = scissor(x, y + height, width, 5000f)
+        val s = scissor(x, y + height, width, 8000f)
         if (extended && moduleButtons.isNotEmpty()) {
                 for (button in moduleButtons.filter { it.module.name.contains(currentSearch, true) }) {
                     button.y = startY

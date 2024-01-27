@@ -1,6 +1,7 @@
 package me.odinmain.ui.clickgui.elements.menu
 
 import me.odinmain.features.settings.impl.SelectorSetting
+import me.odinmain.ui.clickgui.animations.impl.EaseInOut
 import me.odinmain.ui.clickgui.elements.Element
 import me.odinmain.ui.clickgui.elements.ElementType
 import me.odinmain.ui.clickgui.elements.ModuleButton
@@ -11,11 +12,10 @@ import me.odinmain.ui.clickgui.util.ColorUtil.darker
 import me.odinmain.ui.clickgui.util.ColorUtil.elementBackground
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.HoverHandler
+import me.odinmain.ui.util.*
+import me.odinmain.ui.util.MouseUtils.isAreaHovered
 import me.odinmain.utils.capitalizeFirst
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.gui.*
-import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
-import me.odinmain.utils.render.gui.animations.impl.EaseInOut
 
 /**
  * Renders all the modules.

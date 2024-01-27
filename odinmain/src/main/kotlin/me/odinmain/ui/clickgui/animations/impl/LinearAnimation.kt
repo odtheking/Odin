@@ -1,8 +1,8 @@
-package me.odinmain.utils.render.gui.animations.impl
+package me.odinmain.ui.clickgui.animations.impl
 
+import me.odinmain.ui.clickgui.animations.Animation
 import me.odinmain.utils.minus
 import me.odinmain.utils.plus
-import me.odinmain.utils.render.gui.animations.Animation
 import me.odinmain.utils.times
 
 class LinearAnimation<E>(duration: Long): Animation<E>(duration) where E : Number, E: Comparable<E> {

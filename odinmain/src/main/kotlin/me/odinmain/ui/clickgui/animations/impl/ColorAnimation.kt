@@ -1,4 +1,4 @@
-package me.odinmain.utils.render.gui.animations.impl
+package me.odinmain.ui.clickgui.animations.impl
 
 import me.odinmain.utils.render.Color
 

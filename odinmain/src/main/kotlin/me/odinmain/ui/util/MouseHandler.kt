@@ -1,4 +1,4 @@
-package me.odinmain.utils.render.gui
+package me.odinmain.ui.util
 
 /**
  * Edited verison of OneConfig InputHandler to have a translation option cuz why not

@@ -2,7 +2,6 @@ package me.odinmain.ui.util
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.gui.scale
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.MathHelper
 import org.lwjgl.BufferUtils

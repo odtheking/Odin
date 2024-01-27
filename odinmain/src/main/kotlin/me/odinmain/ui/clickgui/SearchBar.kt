@@ -1,13 +1,13 @@
 package me.odinmain.ui.clickgui
 
 import me.odinmain.OdinMain.mc
+import me.odinmain.ui.clickgui.animations.impl.ColorAnimation
 import me.odinmain.ui.clickgui.elements.menu.ElementTextField
 import me.odinmain.ui.clickgui.util.ColorUtil
 import me.odinmain.ui.clickgui.util.ColorUtil.buttonColor
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinmain.ui.util.*
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.gui.*
-import me.odinmain.utils.render.gui.animations.impl.ColorAnimation
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.input.Keyboard
 

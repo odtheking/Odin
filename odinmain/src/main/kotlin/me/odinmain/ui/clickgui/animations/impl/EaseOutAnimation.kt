@@ -1,6 +1,6 @@
-package me.odinmain.utils.render.gui.animations.impl
+package me.odinmain.ui.clickgui.animations.impl
 
-import me.odinmain.utils.render.gui.animations.Animation
+import me.odinmain.ui.clickgui.animations.Animation
 
 class EaseOutAnimation(duration: Long): Animation<Float>(duration) {
 

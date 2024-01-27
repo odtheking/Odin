@@ -5,10 +5,10 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.ui.hud.HudElement
+import me.odinmain.ui.util.Fonts
+import me.odinmain.ui.util.getTextWidth
+import me.odinmain.ui.util.text
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.gui.Fonts
-import me.odinmain.utils.render.gui.getTextWidth
-import me.odinmain.utils.render.gui.text
 import me.odinmain.utils.round
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent

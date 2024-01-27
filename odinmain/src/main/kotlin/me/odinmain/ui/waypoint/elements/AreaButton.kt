@@ -1,6 +1,6 @@
 package me.odinmain.ui.waypoint.elements
 
-import me.odinmain.utils.render.gui.MouseHandler
+import me.odinmain.ui.util.MouseHandler
 
 class AreaButton(
     val area: String,

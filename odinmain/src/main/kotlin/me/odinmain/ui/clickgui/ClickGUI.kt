@@ -1,31 +1,27 @@
 package me.odinmain.ui.clickgui
 
-import gg.essential.elementa.components.UIBlock
-import gg.essential.universal.UMatrixStack
 import me.odinmain.OdinMain.display
 import me.odinmain.config.Config
 import me.odinmain.features.Category
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.ui.Screen
+import me.odinmain.ui.clickgui.animations.impl.EaseInOut
 import me.odinmain.ui.clickgui.elements.menu.ElementColor
 import me.odinmain.ui.clickgui.util.ColorUtil
 import me.odinmain.ui.clickgui.util.ColorUtil.buttonColor
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.clickgui.util.HoverHandler
-import me.odinmain.ui.util.RoundedRect
+import me.odinmain.ui.util.*
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.gui.*
-import me.odinmain.utils.render.gui.animations.impl.EaseInOut
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Mouse
-import org.lwjgl.opengl.GL11
 import kotlin.math.floor
 import kotlin.math.sign
 
@@ -53,6 +49,7 @@ object ClickGUI : Screen() {
     }
 
     override fun draw() {
+        GlStateManager.pushMatrix()
         if (anim.isAnimating()) {
             translate(0f, floor(anim.get(-10f, 0f, !open)))
             val alpha = anim.get(0.7f, 1f, !open)
@@ -73,6 +70,7 @@ object ClickGUI : Screen() {
             ColorUtil.clickGUIColor.alpha = 1f
             Color.WHITE.alpha = 1f
         }
+        GlStateManager.popMatrix()
     }
 
     override fun onScroll(amount: Int) {

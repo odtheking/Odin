@@ -7,7 +7,7 @@ import me.odinmain.ui.clickgui.elements.ModuleButton
 import me.odinmain.ui.clickgui.util.ColorUtil.darker
 import me.odinmain.ui.clickgui.util.ColorUtil.elementBackground
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
-import me.odinmain.utils.render.gui.*
+import me.odinmain.ui.util.*
 
 /**
  * Renders all the modules.

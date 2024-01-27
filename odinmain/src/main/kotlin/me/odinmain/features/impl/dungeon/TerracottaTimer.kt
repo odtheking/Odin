@@ -66,7 +66,7 @@ object TerracottaTimer : Module(
             else -> Color(170, 0, 0)
         }
     }
-
+    @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
         if (!event.message.startsWith("[BOSS] Sadan: ENOUGH!")) return
         terracottaSpawning.removeAll {

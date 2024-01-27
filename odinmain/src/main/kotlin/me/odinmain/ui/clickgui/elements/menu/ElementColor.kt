@@ -1,6 +1,8 @@
 package me.odinmain.ui.clickgui.elements.menu
 
 import me.odinmain.features.settings.impl.ColorSetting
+import me.odinmain.ui.clickgui.animations.impl.ColorAnimation
+import me.odinmain.ui.clickgui.animations.impl.EaseInOut
 import me.odinmain.ui.clickgui.elements.Element
 import me.odinmain.ui.clickgui.elements.ElementType
 import me.odinmain.ui.clickgui.elements.ModuleButton
@@ -13,18 +15,14 @@ import me.odinmain.ui.clickgui.util.ColorUtil.hsbMax
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.clickgui.util.HoverHandler
+import me.odinmain.ui.util.*
+import me.odinmain.ui.util.MouseUtils.isAreaHovered
+import me.odinmain.ui.util.MouseUtils.mouseX
+import me.odinmain.ui.util.MouseUtils.mouseY
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.gui.*
-import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
-import me.odinmain.utils.render.gui.MouseUtils.mouseX
-import me.odinmain.utils.render.gui.MouseUtils.mouseY
-import me.odinmain.utils.render.gui.animations.impl.ColorAnimation
-import me.odinmain.utils.render.gui.animations.impl.EaseInOut
 import me.odinmain.utils.render.world.RenderUtils.loadBufferedImage
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.renderer.texture.DynamicTexture
-import org.apache.logging.log4j.core.helpers.Integers.parseInt
 import org.lwjgl.input.Keyboard
 import kotlin.math.floor
 

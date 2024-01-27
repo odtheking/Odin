@@ -19,12 +19,12 @@ import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.hud.HudElement
+import me.odinmain.ui.util.Fonts
+import me.odinmain.ui.util.getTextWidth
+import me.odinmain.ui.util.roundedRectangle
+import me.odinmain.ui.util.text
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.gui.Fonts
-import me.odinmain.utils.render.gui.getTextWidth
-import me.odinmain.utils.render.gui.roundedRectangle
-import me.odinmain.utils.render.gui.text
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.EntityJoinWorldEvent

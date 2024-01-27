@@ -2,14 +2,14 @@ package me.odinmain.ui.waypoint.elements
 
 import me.odinmain.features.impl.render.WaypointManager
 import me.odinmain.features.impl.render.WaypointManager.Waypoint
+import me.odinmain.ui.clickgui.animations.impl.ColorAnimation
+import me.odinmain.ui.util.Fonts
+import me.odinmain.ui.util.drawDynamicTexture
+import me.odinmain.ui.util.roundedRectangle
 import me.odinmain.ui.waypoint.WaypointGUI
 import me.odinmain.ui.waypoint.WaypointGUI.mouseHandler
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.gui.Fonts
-import me.odinmain.utils.render.gui.animations.impl.ColorAnimation
-import me.odinmain.utils.render.gui.drawDynamicTexture
-import me.odinmain.utils.render.gui.roundedRectangle
 import me.odinmain.utils.render.world.RenderUtils.loadBufferedImage
 import net.minecraft.client.renderer.texture.DynamicTexture
 

@@ -1,15 +1,13 @@
-package me.odinmain.utils.render.gui
+package me.odinmain.ui.util
 
 import gg.essential.universal.UMatrixStack
 import me.odinmain.OdinMain.mc
-import me.odinmain.ui.util.FontRenderer
-import me.odinmain.ui.util.RoundedRect
+import me.odinmain.ui.util.TextAlign.*
 import me.odinmain.utils.coerceAlpha
 import me.odinmain.utils.div
 import me.odinmain.utils.minus
 import me.odinmain.utils.plus
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.gui.TextAlign.*
 import me.odinmain.utils.render.world.RenderUtils.drawTexturedModalRect
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
@@ -121,7 +119,7 @@ fun dropShadow(x: Number, y: Number, w: Number, h: Number, shadowColor: Color, s
 }
 
 data class Scissor(val x: Number, val y: Number, val w: Number, val h: Number, val context: Int)
-private val scissorList = mutableListOf<Scissor>(Scissor(0, 0, 4000, 4000, 0))
+private val scissorList = mutableListOf<Scissor>(Scissor(0, 0, 16000, 16000, 0))
 
 fun scissor(x: Number, y: Number, w: Number, h: Number): Scissor {
     GL11.glScissor(x.toInt(), y.toInt(), w.toInt(), h.toInt())

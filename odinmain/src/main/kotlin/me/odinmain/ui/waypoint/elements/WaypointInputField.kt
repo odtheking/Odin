@@ -1,10 +1,10 @@
 package me.odinmain.ui.waypoint.elements
 
 
-import me.odinmain.utils.render.gui.Font
-import me.odinmain.utils.render.gui.MouseHandler
-import me.odinmain.utils.render.gui.animations.impl.EaseInOut
-import me.odinmain.utils.render.gui.animations.impl.LinearAnimation
+import me.odinmain.ui.clickgui.animations.impl.EaseInOut
+import me.odinmain.ui.clickgui.animations.impl.LinearAnimation
+import me.odinmain.ui.util.Font
+import me.odinmain.ui.util.MouseHandler
 import org.lwjgl.input.Keyboard
 
 class WaypointInputField(

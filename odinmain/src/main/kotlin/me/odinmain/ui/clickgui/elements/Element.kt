@@ -4,7 +4,7 @@ package me.odinmain.ui.clickgui.elements
 import me.odinmain.features.settings.Setting
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.clickgui.util.HoverHandler
-import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
+import me.odinmain.ui.util.MouseUtils.isAreaHovered
 
 /**
  * Renders all the modules.

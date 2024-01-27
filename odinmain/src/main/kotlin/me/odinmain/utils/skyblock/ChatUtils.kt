@@ -158,7 +158,6 @@ fun createClickStyle(action: ClickEvent.Action?, value: String): ChatStyle {
     return style
 }
 
-
 private val responses = arrayOf(
     "It is certain",
     "It is decidedly so",

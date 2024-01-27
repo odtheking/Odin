@@ -1,7 +1,6 @@
-package me.odinmain.utils.render.gui
+package me.odinmain.ui.util
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.utils.skyblock.modMessage
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.Display
 
