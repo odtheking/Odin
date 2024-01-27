@@ -2,11 +2,9 @@ package me.odinmain.features.impl.dungeon
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.impl.floor7.WitherDragons
 import me.odinmain.features.settings.impl.ActionSetting
 import me.odinmain.features.settings.impl.StringSetting
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.partyMessage
 import net.minecraft.entity.monster.EntityZombie
 import net.minecraftforge.event.entity.living.LivingDeathEvent
@@ -22,8 +20,6 @@ object MimicMessage : Module(
     private val mimicMessage: String by StringSetting("Mimic Message", "Mimic Killed!", 128, description = "Message sent when mimic is detected as killed")
     val reset: () -> Unit by ActionSetting("Send message", description = "Sends Mimic killed message in party chat.") {
         partyMessage(mimicMessage)
-        modMessage(BlessingDisplay.Blessings.POWER.current * if (WitherDragons.paulBuff) 1.25 else 1.0 +
-                if (BlessingDisplay.Blessings.TIME.current > 0) 2.5 else 0.0)
     }
     private var mimicKilled = false
 

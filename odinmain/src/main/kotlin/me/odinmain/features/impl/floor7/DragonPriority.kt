@@ -26,9 +26,9 @@ object DragonPriority {
     fun dragonPrioritySpawn() {
         val spawningDragons = WitherDragonsEnum.entries.filter { it.spawning }.toMutableList()
 
-        if (spawningDragons.size != 2 && !firstOnce) return
+        if (spawningDragons.size != 2 || firstOnce) return
         firstOnce = true
-        modMessage("§cSpawning Dragons: §f${spawningDragons.map { it.name }}")
+
         val dragon = sortPriority(spawningDragons)
 
         PlayerUtils.alert("§${dragon.colorCode} ${dragon.name}")
@@ -37,25 +37,24 @@ object DragonPriority {
     private fun sortPriority(spawningDragon: MutableList<WitherDragonsEnum>): WitherDragonsEnum {
         val totalPower = BlessingDisplay.Blessings.POWER.current * if (paulBuff) 1.25 else 1.0 +
                 if (BlessingDisplay.Blessings.TIME.current > 0) 2.5 else 0.0
-        modMessage("§cTotal Power: §f$totalPower")
+
         val playerClass = DungeonUtils.teammates.find { it.name == mc.thePlayer.name }?.clazz
             ?: return modMessage("§cPlayer Class wasn't found!").let { WitherDragonsEnum.Purple }
-        modMessage("§cPlayer Class: §f${playerClass.name}")
+
         val dragonList = listOf(WitherDragonsEnum.Orange, WitherDragonsEnum.Green, WitherDragonsEnum.Red, WitherDragonsEnum.Blue, WitherDragonsEnum.Purple)
         val priorityList =
             if (totalPower >= configPower || (spawningDragon.any { it == WitherDragonsEnum.Purple } && totalPower >= configEasyPower))
                 if (playerClass.equalsOneOf(Classes.Berserk, Classes.Mage)) dragonList else dragonList.reversed()
             else listOf(WitherDragonsEnum.Red, WitherDragonsEnum.Orange, WitherDragonsEnum.Blue, WitherDragonsEnum.Purple, WitherDragonsEnum.Green)
-        modMessage("§cPriority List: §f$priorityList")
+
         spawningDragon.sortBy { priorityList.indexOf(it) }
-        modMessage("doing total power >= configEasyPower: ${totalPower >= configEasyPower}")
+
         if (totalPower >= configEasyPower) {
             if ((configSoloDebuff && playerClass == Classes.Tank && spawningDragon.any { it == WitherDragonsEnum.Purple }) || soloDebuffOnAll)
                 spawningDragon.sortByDescending { priorityList.indexOf(it) }
             else if ((playerClass == Classes.Healer && spawningDragon.any { it == WitherDragonsEnum.Purple }) || soloDebuffOnAll)
                 spawningDragon.sortByDescending { priorityList.indexOf(it) }
         }
-
         return spawningDragon[0]
     }
 
