@@ -60,16 +60,15 @@ object AutoIceFill: Module(
         if (currentPatterns.size == 0 || rPos.size == 0) return
 
         val color = getRainbowColor()
-        val pt = event.partialTicks
 
         for (i in currentPatterns.indices) {
             val pattern = currentPatterns[i]
             val pos = rPos[i]
-            RenderUtils.draw3DLine(pos, pos + transformTo(pattern[0], renderRotation!!), color, 10, true, pt)
+            RenderUtils.draw3DLine(pos, pos + transformTo(pattern[0], renderRotation!!), color, 10, true)
 
             for (j in 1 until pattern.size) {
                 RenderUtils.draw3DLine(
-                    pos + transformTo(pattern[j - 1], renderRotation!!), pos + transformTo(pattern[j], renderRotation!!), color, 10, true, pt
+                    pos + transformTo(pattern[j - 1], renderRotation!!), pos + transformTo(pattern[j], renderRotation!!), color, 10, true
                 )
             }
         }

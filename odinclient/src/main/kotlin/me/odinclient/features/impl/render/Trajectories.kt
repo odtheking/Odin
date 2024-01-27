@@ -9,7 +9,6 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.OutlineUtils
 import me.odinmain.utils.render.world.RenderUtils
-import me.odinmain.utils.render.world.RenderUtils.partialTicks
 import me.odinmain.utils.render.world.RenderUtils.renderX
 import me.odinmain.utils.render.world.RenderUtils.renderY
 import me.odinmain.utils.render.world.RenderUtils.renderZ
@@ -193,7 +192,7 @@ object Trajectories : Module(
         if (lineRenderQueue.size == 0 || !line) return
         lineRenderQueue.forEachIndexed { index, vec3 ->
             if (index == (lineRenderQueue.size - 1)) return@forEachIndexed
-            RenderUtils.draw3DLine(vec3, lineRenderQueue[index + 1], color, 2, false, partialTicks)
+            RenderUtils.draw3DLine(vec3, lineRenderQueue[index + 1], color, 2, false)
         }
         lineRenderQueue.clear()
     }

@@ -402,7 +402,7 @@ object RenderUtils {
     }
 
 
-    fun draw3DLine(pos1: Vec3, pos2: Vec3, color: Color, lineWidth: Int, depth: Boolean, partialTicks: Float) {
+    fun draw3DLine(pos1: Vec3, pos2: Vec3, color: Color, lineWidth: Int, depth: Boolean) {
         val render: Entity = mc.renderViewEntity
 
         val realX: Double = render.lastTickPosX + (render.posX - render.lastTickPosX) * partialTicks
