@@ -83,7 +83,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
 
         dropShadow(x + 10f, y + 214f, w - 20f, 15f, 10f, 0.5f, 5f)
         drawDynamicTexture(hueGradiant, x + 10f, y + 214f, w - 20f, 15f)
-        rectangleOutline(x + 10f, y + 214f, w - 20f, 15f, buttonColor, 5f, 1f)
+        rectangleOutline(x + 10f, y + 214f, w - 20f, 15f, buttonColor, 1f, 2.5f)
 
         val hue = x + 10f + setting.hue * 221f to y + 221f
         dropShadow(hue.first - 8.5f, hue.second - 8.5f, 17f, 17f, 2.5f, 2.5f, 9f)
@@ -92,7 +92,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
         // ALPHA
         if (setting.allowAlpha) {
             dropShadow(x + 10f, y + 235f, w - 20f, 15f, 10f, 0.5f, 5f)
-            gradientRect(x + 10f, y + 235f, w - 20f, 15f, Color.TRANSPARENT, color.withAlpha(1f), 5f)
+            gradientRect(x + 10f, y + 235f, w - 20f, 15f, Color.TRANSPARENT, color.withAlpha(1f), 5f, GradientDirection.Right, Color.DARK_GRAY, 2.5f)
 
             val alpha = Pair((x + 10f + setting.alpha * 220f), y + 243f)
             dropShadow(alpha.first - 8.5f, alpha.second - 8.5f, 17f, 17f, 2.5f, 2.5f, 9f)

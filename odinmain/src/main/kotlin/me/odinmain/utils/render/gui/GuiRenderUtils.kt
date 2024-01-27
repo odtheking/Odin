@@ -57,10 +57,10 @@ enum class GradientDirection {
     Right, Down, Left, Up
 }
 
-fun gradientRect(x: Float, y: Float, w: Float, h: Float, color1: Color, color2: Color, radius: Float, direction: GradientDirection = GradientDirection.Right) {
+fun gradientRect(x: Float, y: Float, w: Float, h: Float, color1: Color, color2: Color, radius: Float, direction: GradientDirection = GradientDirection.Right, borderColor: Color = Color.TRANSPARENT, borderThickness: Number = 0f) {
     if (color1.isTransparent && color2.isTransparent) return
     roundedRectangle(
-        x, y, w, h, color1.coerceAlpha(.1f, 1f), Color.TRANSPARENT, Color.TRANSPARENT, 0, radius, radius, radius, radius, 3, color2.coerceAlpha(.1f, 1f), direction.ordinal
+        x, y, w, h, color1.coerceAlpha(.1f, 1f), borderColor, Color.TRANSPARENT, borderThickness, radius, radius, radius, radius, 3, color2.coerceAlpha(.1f, 1f), direction.ordinal
     )
 }
 
