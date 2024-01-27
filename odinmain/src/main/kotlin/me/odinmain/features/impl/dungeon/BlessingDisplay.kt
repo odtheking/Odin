@@ -81,7 +81,7 @@ object BlessingDisplay : Module(
     }
 
     init {
-        onPacket(S47PacketPlayerListHeaderFooter::class.java, { true }) {
+        onPacket(S47PacketPlayerListHeaderFooter::class.java) {
             Blessings.entries.forEach { blessing ->
                 blessing.regex.find(it.footer.unformattedText.noControlCodes)?.let { match ->
                     blessing.current = romanToInt(match.groupValues[1])
