@@ -12,6 +12,7 @@ import me.odinmain.ui.util.MouseUtils.isAreaHovered
 import me.odinmain.ui.util.MouseUtils.mouseX
 import me.odinmain.ui.util.MouseUtils.mouseY
 import me.odinmain.utils.capitalizeFirst
+import me.odinmain.utils.render.Color
 import me.odinmain.utils.round
 import kotlin.math.floor
 
@@ -65,8 +66,7 @@ class Panel(
         roundedRectangle(x, y, width, height, ColorUtil.moduleButtonColor, ColorUtil.moduleButtonColor, ColorUtil.moduleButtonColor, 0f, 15f, 15f, 0f, 0f, 0f)
         text(if (displayName == "Floor7") "Floor 7" else "§l${displayName}", x + width / 2f, y + height / 2f, ColorUtil.textColor, 22f, Fonts.SEMIBOLD, TextAlign.Middle)
 
-
-        val s = scissor(x, y + height, width, 8000f)
+        val s = scissor(x, y + height, width, 5000f)
         if (extended && moduleButtons.isNotEmpty()) {
                 for (button in moduleButtons.filter { it.module.name.contains(currentSearch, true) }) {
                     button.y = startY
@@ -76,6 +76,7 @@ class Panel(
             }
 
         moduleButtons.lastOrNull()?.color?.let { roundedRectangle(x, y + startY, width, 10f, it, it, it, 0f, 0f, 0f, 10f, 10f, 4f) }
+
         resetScissor(s)
         dropShadow(x, y, width, (startY + 10f).coerceAtLeast(height), ColorUtil.moduleButtonColor, 15f, 10f, 10f, 10f, 10f)
     }

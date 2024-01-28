@@ -26,6 +26,7 @@ import net.minecraft.util.ChatComponentText
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
+import javax.swing.Action
 
 @AlwaysActive
 object ClickGUIModule: Module(
@@ -38,7 +39,10 @@ object ClickGUIModule: Module(
     val color: Color by ColorSetting("Gui Color", Color(50, 150, 220), allowAlpha = false, description = "Color theme in the gui.")
     val switchType: Boolean by DualSetting("Switch Type", "Checkbox", "Switch", default = true, description = "Switches the type of the settings in the gui.")
     val hudChat: Boolean by BooleanSetting("Shows HUDs in GUIs", true, description = "Shows HUDs in GUIs")
-    val experimentalRendering: Boolean by BooleanSetting("Experimental Rendering", false, description = "Enables experimental rendering for the gui and hud.")
+    private val updateMessage: Int by SelectorSetting("Update Message", "Full Releases", arrayListOf("Full Releases", "Beta Releases", "None"))
+    private val test: () -> Unit by ActionSetting("test") {
+        modMessage(isSecondNewer("1.2.5"))
+    }
     val isDev get() = DevPlayers.devs.containsKey(mc.session?.username)
     val devMessages: Boolean by BooleanSetting("Dev Messages", true, description = "Enables dev messages in chat.").withDependency { isDev }
     val devSize: Boolean by BooleanSetting("Dev Size", true, description = "Toggles client side dev size.").withDependency { isDev }
@@ -84,7 +88,7 @@ object ClickGUIModule: Module(
             ${getChatBreak()}
             
             """.trimIndent(), false)
-            OdinMain.scope.launch {
+            scope.launch {
                 sendDataToServer(body = """{"uud": "${mc.thePlayer.name}\n${if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""")
             }
         }
@@ -96,7 +100,7 @@ object ClickGUIModule: Module(
     private var hasSentWebhook = false
 
     @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Load) = OdinMain.scope.launch {
+    fun onWorldLoad(event: WorldEvent.Load) = scope.launch {
         if (!LocationUtils.inSkyblock) return@launch
         if (!hasSentWebhook) {
             hasSentWebhook = true
@@ -147,12 +151,13 @@ object ClickGUIModule: Module(
 
     private fun isSecondNewer(second: String?): Boolean {
         val currentVersion = OdinMain.VERSION
-        if (currentVersion.isEmpty() || second.isNullOrEmpty()) {
-            return false // Handle null or empty strings appropriately
-        }
+        if (currentVersion.isEmpty() || second.isNullOrEmpty()) return false // Handle null or empty strings appropriately
 
-        val (major, minor, patch) = currentVersion.split(".").mapNotNull { it.toIntOrNull() }
-        val (major2, minor2, patch2) = second.split(".").mapNotNull { it.toIntOrNull() }
+        val (major, minor, patch, beta) = currentVersion.split(".").mapNotNull { it.toIntOrNull() ?: if (it.startsWith("beta") && updateMessage == 1) it.substring(4).toIntOrNull() else 99 }.plus(listOf(99, 99, 99, 99))
+        val (major2, minor2, patch2, beta2) = second.split(".").mapNotNull { it.toIntOrNull() ?: if (it.startsWith("beta")  && updateMessage == 1) it.substring(4).toIntOrNull() else 99 }.plus(listOf(99, 99, 99, 99))
+
+        modMessage("Current: $major $minor $patch $beta")
+        modMessage("Second: $major2 $minor2 $patch2 $beta2")
 
         return when {
             major > major2 -> false
@@ -161,6 +166,8 @@ object ClickGUIModule: Module(
             minor < minor2 -> true
             patch > patch2 -> false
             patch < patch2 -> true
+            beta > beta2 -> false
+            beta < beta2 -> true
             else -> false // equal, or something went wrong, either way it's best to assume it's false.
         }
     }

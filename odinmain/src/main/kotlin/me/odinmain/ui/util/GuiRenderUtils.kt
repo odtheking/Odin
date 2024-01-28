@@ -12,6 +12,7 @@ import me.odinmain.utils.render.world.RenderUtils.drawTexturedModalRect
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.texture.DynamicTexture
+import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.GL11
 import kotlin.math.max
 
@@ -119,10 +120,11 @@ fun dropShadow(x: Number, y: Number, w: Number, h: Number, shadowColor: Color, s
 }
 
 data class Scissor(val x: Number, val y: Number, val w: Number, val h: Number, val context: Int)
-private val scissorList = mutableListOf<Scissor>(Scissor(0, 0, 16000, 16000, 0))
+private val scissorList = mutableListOf(Scissor(0, 0, 16000, 16000, 0))
 
 fun scissor(x: Number, y: Number, w: Number, h: Number): Scissor {
-    GL11.glScissor(x.toInt(), y.toInt(), w.toInt(), h.toInt())
+    GL11.glEnable(GL11.GL_SCISSOR_TEST)
+    GL11.glScissor(x.toInt(), Display.getHeight() - y.toInt() - h.toInt(), w.toInt(), h.toInt())
     val scissor = Scissor(x, y, w, h, scissorList.size)
     scissorList.add(scissor)
     return scissor
@@ -131,6 +133,7 @@ fun scissor(x: Number, y: Number, w: Number, h: Number): Scissor {
 fun resetScissor(scissor: Scissor) {
     val nextScissor = scissorList[scissor.context - 1]
     GL11.glScissor(nextScissor.x.toInt(), nextScissor.y.toInt(), nextScissor.w.toInt(), nextScissor.h.toInt())
+    GL11.glDisable(GL11.GL_SCISSOR_TEST)
     scissorList.removeLast()
 }
 

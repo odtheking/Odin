@@ -50,6 +50,7 @@ object ClickGUI : Screen() {
 
     override fun draw() {
         GlStateManager.pushMatrix()
+        translate(0f, 0f, 200f)
         if (anim.isAnimating()) {
             translate(0f, floor(anim.get(-10f, 0f, !open)))
             val alpha = anim.get(0.7f, 1f, !open)
@@ -70,6 +71,7 @@ object ClickGUI : Screen() {
             ColorUtil.clickGUIColor.alpha = 1f
             Color.WHITE.alpha = 1f
         }
+        translate(0f, 0f, -200f)
         GlStateManager.popMatrix()
     }
 
