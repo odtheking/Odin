@@ -35,15 +35,14 @@ object Trajectories : Module(
     category = Category.RENDER,
     tag = TagType.NEW
 ) {
-
     private val bows: Boolean by BooleanSetting("Bows", false, description = "Render trajectories of bow arrows")
     private val pearls: Boolean by BooleanSetting("Pearls", false, description = "Render trajectories of ender pearls")
 
     private val line: Boolean by BooleanSetting("Render Line", false)
-    private val range: Float by NumberSetting("Solver Range", 30f, 1f, 60f, 1f, description = "Performance impact scales with this")
-    private val thickness: Float by NumberSetting("Line Width", 2f, 1.0, 5.0, 0.5)
-    private val boxSize: Float by NumberSetting("Box Size", 0.5f, 0.5f, 3.0f, 0.1f)
-    private val color: Color by ColorSetting("Color", Color(170, 170, 0), true)
+    private val range: Float by NumberSetting("Solver Range", 30f, 1f, 120f, 1f, description = "Performance impact scales with this")
+    private val thickness: Float by NumberSetting("Line Width", 2f, 1.0, 5.0, 0.5, description = "Width of the lines")
+    private val boxSize: Float by NumberSetting("Box Size", 0.5f, 0.5f, 3.0f, 0.1f, description = "Size of the box")
+    private val color: Color by ColorSetting("Color", Color(170, 170, 0), true, description = "Color of the box")
 
     private var boxRenderQueue: MutableList<Pair<Vec3, Vector2d>> = mutableListOf()
     private var entityRenderQueue = mutableListOf<Entity>()

@@ -13,8 +13,8 @@ object DragonHealth{
         mc.theWorld.loadedEntityList.filterIsInstance<EntityDragon>().forEach { dragon ->
             val percentage = dragon.health / dragon.maxHealth
             if (percentage <= 0) return@forEach
-            val color = Color(((1 - percentage) * 255).toInt(), (percentage * 255).toInt(), 0, 1f)
-            RenderUtils.drawStringInWorld(formatHealth(dragon.health.toInt()), dragon.renderVec.addVec(y = .5), color.rgba, false, false, false, 0.2f, true)
+            val color = Color((percentage * 255).toInt(), ((1 - percentage) * 255).toInt(), 0, 1f)
+            RenderUtils.drawStringInWorld(formatHealth(dragon.health.toInt()), dragon.renderVec.addVec(y = .5), color.javaColor.rgb, false, false, false, 0.2f, true)
         }
     }
 

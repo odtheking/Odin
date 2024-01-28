@@ -6,19 +6,17 @@ import me.odinmain.events.impl.GuiClickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.LeapHelper.getPlayer
-import me.odinmain.features.impl.dungeon.LeapHelper.leapHelper
 import me.odinmain.features.impl.dungeon.LeapHelper.leapHelperBossChatEvent
 import me.odinmain.features.impl.dungeon.LeapHelper.leapHelperClearChatEvent
 import me.odinmain.features.impl.dungeon.LeapHelper.worldLoad
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
+import me.odinmain.ui.util.*
 import me.odinmain.ui.util.MouseUtils.getQuadrant
-import me.odinmain.ui.util.roundedRectangle
-import me.odinmain.ui.util.scale
-import me.odinmain.ui.util.translate
 import me.odinmain.utils.name
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.Classes
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.EMPTY
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.leapTeammates
@@ -52,15 +50,13 @@ object LeapMenu : Module(
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
         if (chest !is ContainerChest || chest.name != "Spirit Leap" || teammatesNoSelf.isEmpty()) return
 
-        val width = mc.displayWidth / 1920f
-        val height = mc.displayHeight / 1080f
         val sr = ScaledResolution(mc)
 
         leapTeammates.forEachIndexed { index, it ->
             if (it == EMPTY) return@forEachIndexed
             GlStateManager.pushMatrix()
             GlStateManager.enableAlpha()
-            scale(width, height)
+            scale(mc.displayWidth / 1920f, mc.displayHeight / 1080f)
             scale(6f / sr.scaleFactor,  6f / sr.scaleFactor)
             GlStateManager.color(255f, 255f, 255f, 255f)
             translate(
@@ -68,16 +64,16 @@ object LeapMenu : Module(
                 (if (index >= 2) 120f else 40f),
                 0f)
             mc.textureManager.bindTexture(it.locationSkin)
+            val leapHelper = if (DungeonUtils.inBoss) LeapHelper.leapHelperBoss else LeapHelper.leapHelperClear
             if (it.name == leapHelper && leapHelperToggle) roundedRectangle(-5, -25, 230, 110, color, 9f)
 
-            if (roundedRect) roundedRectangle(-10, -30, 250, 100, if (!colorStyle) Color.DARK_GRAY else it.clazz.color, 9f)
-            else roundedRectangle(-10, -30, 250, 100, if (!colorStyle) Color.DARK_GRAY else it.clazz.color, 0f)
+            roundedRectangle(-10, -30, 250, 100, if (!colorStyle) Color.DARK_GRAY else it.clazz.color, if (roundedRect) 9f else 0f)
 
             GlStateManager.color(255f, 255f, 255f, 255f)
             Gui.drawScaledCustomSizeModalRect(0, -10, 8f, 8f, 8, 8, 40, 40, 64f, 64f)
 
-            mc.fontRendererObj.drawString(it.name, 44, 2, if (!colorStyle) it.clazz.color.rgba else Color.DARK_GRAY.rgba)
-            mc.fontRendererObj.drawString(it.clazz.name, 44, 16, Color.WHITE.rgba )
+            text(it.name, 44f, 2f, if (!colorStyle) it.clazz.color else Color.DARK_GRAY, 16f, Fonts.REGULAR)
+            text(it.clazz.name, 44f, 16f, Color.WHITE, 16f, Fonts.REGULAR)
 
             GlStateManager.disableAlpha()
             GlStateManager.popMatrix()

@@ -40,21 +40,21 @@ object CPSDisplay : Module(
 
         if (mouseText) {
             if (button == 2) {
-                text("LMB", 25f, 2.5f, textColor, 20f, Fonts.MEDIUM, TextAlign.Middle)
-                text(leftClicks.size.toString(), 25f, 18.5f, textColor, 18.5f, Fonts.MEDIUM, TextAlign.Middle)
+                text("LMB", 25f, 2.5f, textColor, 20f, Fonts.SEMIBOLD, TextAlign.Middle)
+                text(leftClicks.size.toString(), 25f, 18.5f, textColor, 18.5f, Fonts.SEMIBOLD, TextAlign.Middle)
 
-                text("RMB", 75f, 2.5f, textColor, 10f, Fonts.MEDIUM, TextAlign.Middle)
-                text(rightClicks.size.toString(), 75f, 18.5f, textColor, 18.5f, Fonts.MEDIUM, TextAlign.Middle)
+                text("RMB", 75f, 2.5f, textColor, 10f, Fonts.SEMIBOLD, TextAlign.Middle)
+                text(rightClicks.size.toString(), 75f, 18.5f, textColor, 18.5f, Fonts.SEMIBOLD, TextAlign.Middle)
             } else {
                 val text = if (button == 0) "LMB" else "RMB"
-                text(text, 25f, 2.5f, textColor, 10f, Fonts.MEDIUM, TextAlign.Middle)
-                text(value, 25f, 18.5f, textColor, 18.5f, Fonts.MEDIUM, TextAlign.Middle)
+                text(text, 25f, 2.5f, textColor, 10f, Fonts.SEMIBOLD, TextAlign.Middle)
+                text(value, 25f, 18.5f, textColor, 18.5f, Fonts.SEMIBOLD, TextAlign.Middle)
             }
         } else {
             if (button == 2) {
-                text(leftClicks.size.toString(), 25f, 13f, textColor, 24f, Fonts.MEDIUM, TextAlign.Middle)
-                text(rightClicks.size.toString(), 75f, 13f, textColor, 24f, Fonts.MEDIUM, TextAlign.Middle)
-            } else text(value, 25f, 19f, textColor, 24f, Fonts.MEDIUM, TextAlign.Middle)
+                text(leftClicks.size.toString(), 25f, 13f, textColor, 24f, Fonts.SEMIBOLD, TextAlign.Middle)
+                text(rightClicks.size.toString(), 75f, 13f, textColor, 24f, Fonts.SEMIBOLD, TextAlign.Middle)
+            } else text(value, 25f, 19f, textColor, 24f, Fonts.SEMIBOLD, TextAlign.Middle)
         }
         if (button == 2) 100f to 38f else 50f to 38f
     }

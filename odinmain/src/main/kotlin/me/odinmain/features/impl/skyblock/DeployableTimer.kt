@@ -34,25 +34,25 @@ object DeployableTimer : Module(
 
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {
-            text("§5SOS Flare", 40f, 15f, Color.WHITE,16f, Fonts.MEDIUM)
-            text("§e179s", 40f, 32f, Color.WHITE,16f, Fonts.MEDIUM)
+            text("§5SOS Flare", 40f, 15f, Color.WHITE,16f, Fonts.SEMIBOLD)
+            text("§e179s", 40f, 32f, Color.WHITE,16f, Fonts.SEMIBOLD)
 
             drawDynamicTexture(firework, -5f, -2f, 50f, 50f)
 
             max(
-                getTextWidth("SOS Flare", 16f, Fonts.MEDIUM),
-                getTextWidth("179s", 16f, Fonts.MEDIUM)
+                getTextWidth("SOS Flare", 16f, Fonts.SEMIBOLD),
+                getTextWidth("179s", 16f, Fonts.SEMIBOLD)
             ) + 42f to 48f
         } else if (toRender.name != "") {
-            text(toRender.name, 40f, 15f, Color.WHITE,16f, Fonts.MEDIUM)
-            text(toRender.timeLeft, 40f, 32f, Color.WHITE,16f, Fonts.MEDIUM)
+            text(toRender.name, 40f, 15f, Color.WHITE,16f, Fonts.SEMIBOLD)
+            text(toRender.timeLeft, 40f, 32f, Color.WHITE,16f, Fonts.SEMIBOLD)
 
             if (toRender.name.contains("Flare", true)) drawDynamicTexture(toRender.image, -5f, -2f, 50f, 50f)
             else drawDynamicTexture(toRender.image, 0f, 5f, 35f, 35f)
 
             max(
-                getTextWidth(toRender.name.noControlCodes, 16f, Fonts.MEDIUM),
-                getTextWidth(toRender.timeLeft.noControlCodes, 16f, Fonts.MEDIUM)
+                getTextWidth(toRender.name.noControlCodes, 16f, Fonts.SEMIBOLD),
+                getTextWidth(toRender.timeLeft.noControlCodes, 16f, Fonts.SEMIBOLD)
             ) + 42f to 48f
         } else 0f to 0f
     }

@@ -7,27 +7,21 @@ import me.odinmain.features.impl.floor7.WitherDragons.configPower
 import me.odinmain.features.impl.floor7.WitherDragons.configSoloDebuff
 import me.odinmain.features.impl.floor7.WitherDragons.paulBuff
 import me.odinmain.features.impl.floor7.WitherDragons.soloDebuffOnAll
-import me.odinmain.utils.addVec
 import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.fastEyeHeight
-import me.odinmain.utils.render.world.RenderUtils
-import me.odinmain.utils.render.world.RenderUtils.renderVec
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.Classes
 import me.odinmain.utils.skyblock.modMessage
-import net.minecraftforge.client.event.RenderWorldLastEvent
 
 
 object DragonPriority {
 
-    private var dragonTracer = ""
-    var firstOnce = false
+    var firstDragons = false
     fun dragonPrioritySpawn() {
         val spawningDragons = WitherDragonsEnum.entries.filter { it.spawning }.toMutableList()
 
-        if (spawningDragons.size != 2 || firstOnce) return
-        firstOnce = true
+        if (spawningDragons.size != 2 || firstDragons) return
+        firstDragons = true
 
         val dragon = sortPriority(spawningDragons)
 
@@ -56,16 +50,5 @@ object DragonPriority {
                 spawningDragon.sortByDescending { priorityList.indexOf(it) }
         }
         return spawningDragon[0]
-    }
-
-    fun renderTracerPriority(event: RenderWorldLastEvent, tracerWidth: Int) {
-
-        val dragon = sortPriority(WitherDragonsEnum.entries.filter { it.spawning }.toMutableList())
-        if (dragon.entity == null) return
-        RenderUtils.draw3DLine(
-            mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), dragon.entity!!.renderVec.addVec(.5, .5, .5),
-            dragon.color,
-            tracerWidth, depth = true
-        )
     }
 }

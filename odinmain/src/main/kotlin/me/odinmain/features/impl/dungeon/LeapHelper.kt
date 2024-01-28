@@ -25,8 +25,8 @@ object LeapHelper {
     )
     private var currentPos = NONE
 
-    private var leapHelperClear = ""
-    private var leapHelperBoss = ""
+    var leapHelperClear = ""
+    var leapHelperBoss = ""
     var leapHelper: String = if (DungeonUtils.inBoss) leapHelperBoss else leapHelperClear
 
     fun getPlayer(event: ClientTickEvent) {
