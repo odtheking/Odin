@@ -47,9 +47,7 @@ function onClick() {
 
             var image = document.getElementById('cat');
             image.src = imageUrl;
-            
-
-
+    
             // Now you can use the imageUrl variable in your code as needed.
             } else {
             console.error('No cat images found in the response');
@@ -211,7 +209,9 @@ function submitForm() {
     fetch('https://ginkwsma75wud3rylqlqms5n240xyomv.lambda-url.eu-north-1.on.aws/', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Access-Control-Allow-Origin': '*',
         },
         body: jsonData
     })
@@ -222,9 +222,9 @@ function submitForm() {
 
         // You can check the response and take appropriate actions
         if (data.success) {
-            // Login successful, do something
+            console.log('Login successful');
         } else {
-            // Login failed, display an error message or take other actions
+            console.log('Login failed');
         }
     })
     .catch(error => {
