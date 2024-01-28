@@ -26,7 +26,6 @@ import net.minecraft.util.ChatComponentText
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
-import javax.swing.Action
 
 @AlwaysActive
 object ClickGUIModule: Module(
@@ -40,9 +39,6 @@ object ClickGUIModule: Module(
     val switchType: Boolean by DualSetting("Switch Type", "Checkbox", "Switch", default = true, description = "Switches the type of the settings in the gui.")
     val hudChat: Boolean by BooleanSetting("Shows HUDs in GUIs", true, description = "Shows HUDs in GUIs")
     private val updateMessage: Int by SelectorSetting("Update Message", "Full Releases", arrayListOf("Full Releases", "Beta Releases", "None"))
-    private val test: () -> Unit by ActionSetting("test") {
-        modMessage(isSecondNewer("1.2.5"))
-    }
     val isDev get() = DevPlayers.devs.containsKey(mc.session?.username)
     val devMessages: Boolean by BooleanSetting("Dev Messages", true, description = "Enables dev messages in chat.").withDependency { isDev }
     val devSize: Boolean by BooleanSetting("Dev Size", true, description = "Toggles client side dev size.").withDependency { isDev }
@@ -128,8 +124,6 @@ object ClickGUIModule: Module(
             val def = waitUntilPlayer()
             try { def.await() } catch (e: Exception) { return@launch }
 
-
-
             modMessage("""
             ${getChatBreak()}
             §d§kOdinClientOnTopWeLoveOdinClientLiterallyTheBestMod
@@ -155,9 +149,6 @@ object ClickGUIModule: Module(
 
         val (major, minor, patch, beta) = currentVersion.split(".").mapNotNull { it.toIntOrNull() ?: if (it.startsWith("beta") && updateMessage == 1) it.substring(4).toIntOrNull() else 99 }.plus(listOf(99, 99, 99, 99))
         val (major2, minor2, patch2, beta2) = second.split(".").mapNotNull { it.toIntOrNull() ?: if (it.startsWith("beta")  && updateMessage == 1) it.substring(4).toIntOrNull() else 99 }.plus(listOf(99, 99, 99, 99))
-
-        modMessage("Current: $major $minor $patch $beta")
-        modMessage("Second: $major2 $minor2 $patch2 $beta2")
 
         return when {
             major > major2 -> false

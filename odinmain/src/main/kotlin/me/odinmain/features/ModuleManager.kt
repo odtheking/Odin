@@ -14,6 +14,7 @@ import me.odinmain.features.impl.render.*
 import me.odinmain.features.impl.render.ClickGUIModule.hudChat
 import me.odinmain.features.impl.skyblock.*
 import me.odinmain.features.settings.AlwaysActive
+import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.profile
@@ -153,7 +154,7 @@ object ModuleManager {
 
     @SubscribeEvent
     fun onRenderOverlay(event: RenderGameOverlayEvent.Post) {
-        if ((mc.currentScreen != null && !hudChat) || event.type != RenderGameOverlayEvent.ElementType.ALL) return
+        if ((mc.currentScreen != null && !hudChat) || event.type != RenderGameOverlayEvent.ElementType.ALL || mc.currentScreen == EditHUDGui) return
 
         mc.mcProfiler.startSection("Odin Hud")
 
