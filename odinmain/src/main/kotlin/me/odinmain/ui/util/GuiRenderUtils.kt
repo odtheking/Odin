@@ -24,7 +24,6 @@ object Fonts {
 }
 
 val matrix = UMatrixStack.Compat
-val sr = ScaledResolution(mc)
 
 fun roundedRectangle(
     x: Number, y: Number, w: Number, h: Number,
@@ -32,6 +31,7 @@ fun roundedRectangle(
     borderThickness: Number, topL: Number, topR: Number, botL: Number, botR: Number, edgeSoftness: Number,
     color2: Color = color, gradientDir: Int = 0, shadowSoftness: Float = 0f
 ) {
+    val sr = ScaledResolution(mc)
     scale(1f / sr.scaleFactor, 1f / sr.scaleFactor, 1f)
     matrix.runLegacyMethod(matrix.get()) {
         RoundedRect.drawRectangle(
@@ -63,6 +63,7 @@ fun gradientRect(x: Float, y: Float, w: Float, h: Float, color1: Color, color2: 
 }
 
 fun drawHSBBox(x: Float, y: Float, w: Float, h: Float, color: Color) {
+    val sr = ScaledResolution(mc)
     scale(1f / sr.scaleFactor, 1f / sr.scaleFactor, 1f)
     matrix.runLegacyMethod(matrix.get()) { RoundedRect.drawHSBBox(matrix.get(), x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(), color,) }
     scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
@@ -70,6 +71,7 @@ fun drawHSBBox(x: Float, y: Float, w: Float, h: Float, color: Color) {
 }
 
 fun circle(x: Number, y: Number, radius: Number, color: Color, borderColor: Color = color, borderThickness: Number = 0f) {
+    val sr = ScaledResolution(mc)
     scale(1f / sr.scaleFactor, 1f / sr.scaleFactor, 1f)
     matrix.runLegacyMethod(matrix.get()) { RoundedRect.drawCircle(matrix.get(), x.toFloat(), y.toFloat(), radius.toFloat(), color, borderColor, borderThickness.toFloat()) }
     scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
@@ -89,7 +91,7 @@ fun text(text: String, x: Float, y: Float, color: Color, size: Float, font: Font
         TextPos.Middle -> y - getTextHeight(text, size, font) / 2f
         TextPos.Bottom -> y - getTextHeight(text, size, font)
     }
-
+    val sr = ScaledResolution(mc)
     scale(1f / sr.scaleFactor , 1f / sr.scaleFactor, 1f)
     if (shadow) font.fr.drawStringWithShadow(text, drawX, drawY, color)
     else font.fr.drawString(text, drawX, drawY, color)
@@ -107,6 +109,7 @@ fun scale(x: Float, y: Float, z: Float = 1f) = GlStateManager.scale(x, y, z)
 fun dropShadow(x: Float, y: Float, w: Float, h: Float, blur: Float, spread: Float, idek: Float) = Unit
 
 fun dropShadow(x: Number, y: Number, w: Number, h: Number, shadowColor: Color, shadowSoftness: Number, topL: Number, topR: Number, botL: Number, botR: Number) {
+    val sr = ScaledResolution(mc)
     scale(1f / sr.scaleFactor, 1f / sr.scaleFactor, 1f)
     translate(0f, 0f, -100f)
     matrix.runLegacyMethod(matrix.get()) {
@@ -139,6 +142,7 @@ fun resetScissor(scissor: Scissor) {
 fun drawDynamicTexture(dynamicTexture: DynamicTexture, x: Float, y: Float, w: Float, h: Float) {
     dynamicTexture.updateDynamicTexture()
     GlStateManager.bindTexture(dynamicTexture.glTextureId)
+    val sr = ScaledResolution(mc)
     scale(1f / sr.scaleFactor , 1f / sr.scaleFactor, 1f)
     drawTexturedModalRect(x.toInt(), y.toInt(), w.toInt(), h.toInt())
     scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)

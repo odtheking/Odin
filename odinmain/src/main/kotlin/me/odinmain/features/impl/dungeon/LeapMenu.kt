@@ -11,8 +11,10 @@ import me.odinmain.features.impl.dungeon.LeapHelper.leapHelperClearChatEvent
 import me.odinmain.features.impl.dungeon.LeapHelper.worldLoad
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.util.*
 import me.odinmain.ui.util.MouseUtils.getQuadrant
+import me.odinmain.ui.util.roundedRectangle
+import me.odinmain.ui.util.scale
+import me.odinmain.ui.util.translate
 import me.odinmain.utils.name
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
@@ -27,6 +29,7 @@ import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest
+import net.minecraft.util.ResourceLocation
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -44,7 +47,12 @@ object LeapMenu : Module(
     private val leapHelperToggle: Boolean by BooleanSetting("Leap Helper", true)
     private val color: Color by ColorSetting("Leap Helper Color", default = Color.WHITE).withDependency { leapHelperToggle }
     val delay: Int by NumberSetting("Reset Leap Helper Delay", 30, 10.0, 120.0, 1.0).withDependency { leapHelperToggle }
-
+    private val testPlayers: MutableList<DungeonUtils.DungeonPlayer> = mutableListOf(
+        DungeonUtils.DungeonPlayer("Stiviaisd", Classes.Healer, ResourceLocation("textures/entity/steve.png")),
+        DungeonUtils.DungeonPlayer("Odtheking", Classes.Archer, ResourceLocation("textures/entity/steve.png")),
+        DungeonUtils.DungeonPlayer("Bonzi", Classes.Mage, ResourceLocation("textures/entity/steve.png")),
+        DungeonUtils.DungeonPlayer("Cezar", Classes.Tank, ResourceLocation("textures/entity/steve.png"))
+    )
     @SubscribeEvent
     fun onDrawScreen(event: DrawGuiScreenEvent) {
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
@@ -52,7 +60,7 @@ object LeapMenu : Module(
 
         val sr = ScaledResolution(mc)
 
-        leapTeammates.forEachIndexed { index, it ->
+        testPlayers.forEachIndexed { index, it ->
             if (it == EMPTY) return@forEachIndexed
             GlStateManager.pushMatrix()
             GlStateManager.enableAlpha()
@@ -64,16 +72,16 @@ object LeapMenu : Module(
                 (if (index >= 2) 120f else 40f),
                 0f)
             mc.textureManager.bindTexture(it.locationSkin)
-            val leapHelper = if (DungeonUtils.inBoss) LeapHelper.leapHelperBoss else LeapHelper.leapHelperClear
-            if (it.name == leapHelper && leapHelperToggle) roundedRectangle(-5, -25, 230, 110, color, 9f)
+            if ((it.name == if (DungeonUtils.inBoss) LeapHelper.leapHelperBoss else LeapHelper.leapHelperClear) && leapHelperToggle)
+                roundedRectangle(-5, -25, 230, 110, color, 9f)
 
             roundedRectangle(-10, -30, 250, 100, if (!colorStyle) Color.DARK_GRAY else it.clazz.color, if (roundedRect) 9f else 0f)
 
             GlStateManager.color(255f, 255f, 255f, 255f)
             Gui.drawScaledCustomSizeModalRect(0, -10, 8f, 8f, 8, 8, 40, 40, 64f, 64f)
 
-            text(it.name, 44f, 2f, if (!colorStyle) it.clazz.color else Color.DARK_GRAY, 16f, Fonts.REGULAR)
-            text(it.clazz.name, 44f, 16f, Color.WHITE, 16f, Fonts.REGULAR)
+            mc.fontRendererObj.drawString(it.name, 44, 2, if (!colorStyle) it.clazz.color.rgba else Color.DARK_GRAY.rgba)
+            mc.fontRendererObj.drawString(it.clazz.name, 44, 16, Color.WHITE.rgba )
 
             GlStateManager.disableAlpha()
             GlStateManager.popMatrix()
