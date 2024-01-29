@@ -49,19 +49,20 @@ object ClickedChests : Module(
         chests.removeAll { System.currentTimeMillis() - it.timeAdded >= timeToStay * 1000 }
 
         for (it in chests) {
+            val finalColor = if (it.Locked) lockedColor else color
             when (style) {
                 0 -> {
                     val x = it.pos.x + .0625
                     val y = it.pos.y.toDouble()
                     val z = it.pos.z + .0625
-                    RenderUtils.drawFilledBox(AABB(x, y, z, x + .875, y + 0.875, z + 0.875), if (it.Locked) lockedColor else color, phase)
+                    RenderUtils.drawFilledBox(AABB(x, y, z, x + .875, y + 0.875, z + 0.875), finalColor, phase)
                 }
                 1 -> {
                     RenderUtils.drawBoxOutline(
                         it.pos.x + .0625, .875,
                         it.pos.y.toDouble(), .875,
                         it.pos.z + .0625, .875,
-                        if (it.Locked) lockedColor else color,
+                        finalColor,
                         3f,
                         phase
                     )
@@ -70,7 +71,7 @@ object ClickedChests : Module(
                     val x = it.pos.x + .0625
                     val y = it.pos.y.toDouble()
                     val z = it.pos.z + .0625
-                    RenderUtils.drawBoxWithOutline(AABB(x, y, z, x + .875, y + 0.875, z + 0.875), if (it.Locked) lockedColor else color, phase)
+                    RenderUtils.drawBoxWithOutline(AABB(x, y, z, x + .875, y + 0.875, z + 0.875), finalColor, phase)
                 }
             }
 
@@ -81,7 +82,7 @@ object ClickedChests : Module(
     fun onWorldLoad(event: WorldEvent.Load) {
         chests.clear()
     }
-
+    @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
         if (!event.message.contains("This chest is locked")) return
         if (chests.isEmpty()) return
