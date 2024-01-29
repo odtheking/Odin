@@ -2,7 +2,8 @@ package me.odinmain.ui.util
 
 import gg.essential.universal.UMatrixStack
 import me.odinmain.OdinMain.mc
-import me.odinmain.ui.util.TextAlign.*
+import me.odinmain.font.OdinFont
+import me.odinmain.ui.util.TextAlign.Left
 import me.odinmain.utils.coerceAlpha
 import me.odinmain.utils.div
 import me.odinmain.utils.minus
@@ -14,14 +15,9 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.texture.DynamicTexture
 import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.GL11
-import kotlin.math.max
 
 
-class Font(val fr: FontRenderer)
-object Fonts {
-    val REGULAR = Font(FontRenderer("/assets/odinmain/fonts/Regular.ttf", 32f))
-    val SEMIBOLD = Font(FontRenderer("/assets/odinmain/fonts/SemiBold.ttf", 50f))
-}
+
 
 val matrix = UMatrixStack.Compat
 val sr = ScaledResolution(mc)
@@ -64,7 +60,8 @@ fun gradientRect(x: Float, y: Float, w: Float, h: Float, color1: Color, color2: 
 
 fun drawHSBBox(x: Float, y: Float, w: Float, h: Float, color: Color) {
     scale(1f / sr.scaleFactor, 1f / sr.scaleFactor, 1f)
-    matrix.runLegacyMethod(matrix.get()) { RoundedRect.drawHSBBox(matrix.get(), x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(), color,) }
+    matrix.runLegacyMethod(matrix.get()) { RoundedRect.drawHSBBox(matrix.get(),
+        x, y, w, h, color,) }
     scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
     rectangleOutline(x-1, y-1, w+2, h+2, Color(38, 38, 38), 3f, 2f)
 }
@@ -76,29 +73,13 @@ fun circle(x: Number, y: Number, radius: Number, color: Color, borderColor: Colo
 }
 
 
-fun text(text: String, x: Float, y: Float, color: Color, size: Float, font: Font, align: TextAlign = Left, verticalAlign: TextPos = TextPos.Middle, shadow: Boolean = false) {
-    if (color.isTransparent) return
-    val drawX = when (align) {
-        Left -> x
-        Right -> x - getTextWidth(text, size, font)
-        Middle -> x - getTextWidth(text, size, font) / 2f
-    }
-
-    val drawY = when (verticalAlign) {
-        TextPos.Top -> y
-        TextPos.Middle -> y - getTextHeight(text, size, font) / 2f
-        TextPos.Bottom -> y - getTextHeight(text, size, font)
-    }
-
-    scale(1f / sr.scaleFactor , 1f / sr.scaleFactor, 1f)
-    if (shadow) font.fr.drawStringWithShadow(text, drawX, drawY, color)
-    else font.fr.drawString(text, drawX, drawY, color)
-    scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
+fun text(text: String, x: Float, y: Float, color: Color, size: Float, align: TextAlign = Left, verticalAlign: TextPos = TextPos.Middle, shadow: Boolean = false, type: Int = OdinFont.REGULAR) {
+    OdinFont.text(text, x, y, color, size, align, verticalAlign, shadow, type)
 }
 
-fun getTextWidth(text: String, size: Float, font: Font) = font.fr.getWidth(text)
+fun getTextWidth(text: String, size: Float) = OdinFont.getTextWidth(text, size)
 
-fun getTextHeight(text: String, size: Float, font: Font) = font.fr.getHeight(text)
+fun getTextHeight(text: String, size: Float) = OdinFont.getTextHeight(text, size)
 
 fun translate(x: Float, y: Float, z: Float = 0f) = GlStateManager.translate(x, y, z)
 
@@ -144,43 +125,12 @@ fun drawDynamicTexture(dynamicTexture: DynamicTexture, x: Float, y: Float, w: Fl
     scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
 }
 
-fun wrappedText(text: String, x: Float, y: Float, w: Float, h: Float, color: Color, size: Float, font: Font) {
-    if (color.isTransparent) return
-
-    val words = text.split(" ")
-    var line = ""
-    var currentHeight = y
-
-    for (word in words) {
-        if (font.fr.getWidth(line + word) > w) {
-            text(line, x, currentHeight, color, size, font)
-            line = "$word "
-            currentHeight += font.fr.getHeight(line)
-        }
-        else line += "$word "
-
-    }
-    text(line, x, currentHeight, color, size, font)
+fun wrappedText(text: String, x: Float, y: Float, w: Float, h: Float, color: Color, size: Float, type: Int = OdinFont.REGULAR) {
+    OdinFont.wrappedText(text, x, y, w, h, color, size, type)
 }
 
-fun wrappedTextBounds(text: String, width: Float, size: Float, font: Font): Pair<Float, Float> {
-    val words = text.split(" ")
-    var line = ""
-    var lines = 1
-    var maxWidth = 0f
-
-    for (word in words) {
-        if (font.fr.getWidth(line + word) > width) {
-            maxWidth = max(maxWidth, font.fr.getWidth(line))
-            line = "$word "
-            lines++
-        }
-        else line += "$word "
-
-    }
-    maxWidth = max(maxWidth, font.fr.getWidth(line))
-
-    return Pair(maxWidth, lines * font.fr.getHeight(line))
+fun wrappedTextBounds(text: String, width: Float, size: Float): Pair<Float, Float> {
+    return OdinFont.wrappedTextBounds(text, width, size)
 }
 
 enum class TextAlign {

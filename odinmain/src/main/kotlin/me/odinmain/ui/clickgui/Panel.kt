@@ -3,6 +3,7 @@ package me.odinmain.ui.clickgui
 import me.odinmain.features.Category
 import me.odinmain.features.ModuleManager.modules
 import me.odinmain.features.impl.render.ClickGUIModule
+import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.SearchBar.currentSearch
 import me.odinmain.ui.clickgui.animations.impl.LinearAnimation
 import me.odinmain.ui.clickgui.elements.ModuleButton
@@ -12,7 +13,6 @@ import me.odinmain.ui.util.MouseUtils.isAreaHovered
 import me.odinmain.ui.util.MouseUtils.mouseX
 import me.odinmain.ui.util.MouseUtils.mouseY
 import me.odinmain.utils.capitalizeFirst
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.round
 import kotlin.math.floor
 
@@ -48,7 +48,7 @@ class Panel(
     private val scrollAnimation = LinearAnimation<Float>(200)
 
     init {
-        for (module in modules.sortedByDescending { getTextWidth(it.name, 18f, Fonts.REGULAR) }) {
+        for (module in modules.sortedByDescending { getTextWidth(it.name, 18f) }) {
             if (module.category != this@Panel.category) continue
             moduleButtons.add(ModuleButton(module, this@Panel))
         }
@@ -64,7 +64,7 @@ class Panel(
         var startY = scrollOffset + height
 
         roundedRectangle(x, y, width, height, ColorUtil.moduleButtonColor, ColorUtil.moduleButtonColor, ColorUtil.moduleButtonColor, 0f, 15f, 15f, 0f, 0f, 0f)
-        text(if (displayName == "Floor7") "Floor 7" else "§l${displayName}", x + width / 2f, y + height / 2f, ColorUtil.textColor, 22f, Fonts.SEMIBOLD, TextAlign.Middle)
+        text(if (displayName == Category.FLOOR7.name) "Floor 7" else displayName, x + width / 2f, y + height / 2f, ColorUtil.textColor, 22f, TextAlign.Middle, type = OdinFont.BOLD)
 
         val s = scissor(x, y + height, width, 5000f)
         if (extended && moduleButtons.isNotEmpty()) {

@@ -4,6 +4,7 @@ import me.odinmain.OdinMain.display
 import me.odinmain.config.Config
 import me.odinmain.features.Category
 import me.odinmain.features.impl.render.ClickGUIModule
+import me.odinmain.font.OdinFont
 import me.odinmain.ui.Screen
 import me.odinmain.ui.clickgui.animations.impl.EaseInOut
 import me.odinmain.ui.clickgui.elements.menu.ElementColor
@@ -186,12 +187,12 @@ object ClickGUI : Screen() {
         /** Handles rendering, if it's not active then it won't render */
         fun render() {
             if (shouldRender) {
-                val area = wrappedTextBounds(text!!, 300f, 16f, Fonts.REGULAR)
+                val area = wrappedTextBounds(text!!, 300f, 16f)
                 roundedRectangle(
                     x, y, area.first + 7, area.second + 9,
                     buttonColor.withAlpha((hoverHandler!!.percent() / 100f).coerceIn(0f, 0.8f)), 5f
                 )
-                wrappedText(text!!, x + 7f, y + 12f, 300f, 1f, textColor, 16f, Fonts.REGULAR)
+                wrappedText(text!!, x + 7f, y + 12f, 300f, 1f, textColor, 16f, OdinFont.REGULAR)
                 if (hoverHandler!!.percent() == 0) {
                     text = null
                     hoverHandler = null
