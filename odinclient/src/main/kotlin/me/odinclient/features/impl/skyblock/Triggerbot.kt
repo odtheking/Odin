@@ -17,6 +17,7 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.init.Blocks
+import net.minecraft.tileentity.TileEntityChest
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
@@ -83,11 +84,14 @@ object Triggerbot : Module(
 
             val pos = mc.objectMouseOver?.blockPos ?: return@execute
             val state = mc.theWorld.getBlockState(pos) ?: return@execute
+            val tileEntity = mc.theWorld.getTileEntity(pos) ?: null
             clickedPositions = clickedPositions.filter { it.value + 1000L > System.currentTimeMillis() }
             if (
                 (pos.x in 58..62 && pos.y in 133..136 && pos.z == 142) || // looking at lights device
                 clickedPositions.containsKey(pos) // already clicked
             ) return@execute
+
+            if (tileEntity is TileEntityChest && tileEntity.numPlayersUsing >= 1) return@execute
 
             if (stbCH && LocationUtils.currentArea == "Crystal Hollows" && state.block == Blocks.chest) {
                 PlayerUtils.rightClick()
@@ -100,6 +104,7 @@ object Triggerbot : Module(
 
             PlayerUtils.rightClick()
             triggerBotClock.update()
+            if (tileEntity is TileEntityChest) return@execute
             clickedPositions = clickedPositions.plus(pos to System.currentTimeMillis())
         }
     }

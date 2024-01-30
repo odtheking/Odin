@@ -39,6 +39,7 @@ object InactiveWaypoints : Module(
             inactiveList = mc.theWorld?.loadedEntityList?.filter { it is EntityArmorStand &&
                     (it.name.noControlCodes.contains("Inactive", true) ||
                     it.name.noControlCodes.contains("Not Activated", true)) } ?: emptyList()
+
         }
     }
 

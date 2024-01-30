@@ -38,11 +38,10 @@ object Trajectories : Module(
     private val bows: Boolean by BooleanSetting("Bows", false, description = "Render trajectories of bow arrows")
     private val pearls: Boolean by BooleanSetting("Pearls", false, description = "Render trajectories of ender pearls")
 
-    private val line: Boolean by BooleanSetting("Render Line", false)
-    private val range: Float by NumberSetting("Solver Range", 30f, 1f, 120f, 1f, description = "Performance impact scales with this")
-    private val thickness: Float by NumberSetting("Line Width", 2f, 1.0, 5.0, 0.5, description = "Width of the lines")
-    private val boxSize: Float by NumberSetting("Box Size", 0.5f, 0.5f, 3.0f, 0.1f, description = "Size of the box")
-    private val color: Color by ColorSetting("Color", Color(170, 170, 0), true, description = "Color of the box")
+    private val range: Float by NumberSetting("Solver Range", 30f, 1f, 60f, 1f, description = "Performance impact scales with this")
+    private val thickness: Float by NumberSetting("Line Width", 2f, 1.0, 5.0, 0.5)
+    private val boxSize: Float by NumberSetting("Box Size", 0.5f, 0.5f, 3.0f, 0.1f)
+    private val color: Color by ColorSetting("Color", Color(170, 170, 0), true)
 
     private var boxRenderQueue: MutableList<Pair<Vec3, Vector2d>> = mutableListOf()
     private var entityRenderQueue = mutableListOf<Entity>()
@@ -52,9 +51,9 @@ object Trajectories : Module(
 
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
+        entityRenderQueue.clear()
+        lineRenderQueue.clear()
         if (bows && mc.thePlayer?.heldItem?.item is ItemBow) {
-            entityRenderQueue.clear()
-            lineRenderQueue.clear()
             if (mc.thePlayer?.heldItem?.isShortbow == true) {
                 if (mc.thePlayer?.heldItem?.itemID == "TERMINATOR") {
                     this.setBowTrajectoryHeading(-5f, false)
@@ -69,7 +68,6 @@ object Trajectories : Module(
                 this.setBowTrajectoryHeading(0f, true)
             }
             this.drawBowCollisionBoxes()
-            this.drawLine()
         }
         if (pearls) {
             pearlImpactPos = null
@@ -162,7 +160,6 @@ object Trajectories : Module(
         var posVec = pV
         for (i in 0..range.toInt()) {
             if (hitResult) break
-            lineRenderQueue.add(posVec)
             val vec = motionVec.add(posVec)
             val rayTrace = mc.theWorld.rayTraceBlocks(posVec, vec, false, true, false)
             val aabb = AxisAlignedBB(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
@@ -185,15 +182,6 @@ object Trajectories : Module(
             posVec = posVec.add(motionVec)
             motionVec = Vec3(motionVec.xCoord * 0.99, motionVec.yCoord * 0.99 - 0.05, motionVec.zCoord * 0.99)
         }
-    }
-
-    private fun drawLine() {
-        if (lineRenderQueue.size == 0 || !line) return
-        lineRenderQueue.forEachIndexed { index, vec3 ->
-            if (index == (lineRenderQueue.size - 1)) return@forEachIndexed
-            RenderUtils.draw3DLine(vec3, lineRenderQueue[index + 1], color, 2, false)
-        }
-        lineRenderQueue.clear()
     }
 
     private fun drawPearlCollisionBox() {

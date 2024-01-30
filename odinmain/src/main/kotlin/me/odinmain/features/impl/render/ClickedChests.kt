@@ -36,10 +36,12 @@ object ClickedChests : Module(
 
     @SubscribeEvent
     fun onInteract(event: PlayerInteractEvent) {
+
         if (!DungeonUtils.inDungeons || event.pos == null) return
 
         if (!DungeonUtils.isSecret(mc.theWorld?.getBlockState(event.pos) ?: return, event.pos) ||
             event.action != RIGHT_CLICK_BLOCK || chests.any { it.pos == event.pos }) return
+     
         chests.add(Chest(event.pos, System.currentTimeMillis()))
     }
 

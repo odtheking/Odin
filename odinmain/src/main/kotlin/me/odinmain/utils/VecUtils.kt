@@ -191,12 +191,7 @@ private fun isInterceptable(aabb: AxisAlignedBB, range: Float, yaw: Float, pitch
     val player = mc.thePlayer ?: return false
     val position = Vec3(player.posX, player.posY + fastEyeHeight(), player.posZ)
 
-    val f2: Float = -cos(-pitch * 0.017453292f)
-    val look = Vec3(
-        sin(-yaw * Math.toRadians(1.0) - Math.PI) * f2,
-        sin(-pitch * Math.toRadians(1.0)),
-        cos(-yaw * Math.toRadians(1.0) - Math.PI) * f2
-    )
+    val look = getLook(yaw, pitch)
 
     return isInterceptable3(
         position,

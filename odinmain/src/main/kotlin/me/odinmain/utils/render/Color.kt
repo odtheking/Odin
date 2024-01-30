@@ -1,17 +1,20 @@
 package me.odinmain.utils.render
 
-import me.odinmain.utils.HSBtoRGB
-import me.odinmain.utils.RGBtoHSB
+import java.awt.Color.HSBtoRGB
+import java.awt.Color.RGBtoHSB
+import java.awt.Color as JavaColor
 
-// TODO: Clean up all color related stuff etc
 /**
+ * HSB based color class.
  * Based on [PolyUI](https://github.com/Polyfrost/polyui-jvm/blob/master/src/main/kotlin/cc/polyfrost/polyui/color/Color.kt)
  */
 class Color(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f) {
 
     constructor(hsb: FloatArray, alpha: Float = 1f) : this(hsb[0], hsb[1], hsb[2], alpha)
+
     constructor(r: Int, g: Int, b: Int, alpha: Float = 1f) : this(RGBtoHSB(r, g, b), alpha)
     constructor(rgba: Int) : this(rgba.red, rgba.green, rgba.blue, rgba.alpha / 255f)
+
     constructor(rgba: Int, alpha: Float) : this(rgba.red, rgba.green, rgba.blue, alpha)
 
     var hue = hue
@@ -39,7 +42,7 @@ class Color(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f)
         }
 
     // Only used in Window, because that rendering needs java.awt.Color
-    val javaColor get() = java.awt.Color(r, g, b, a)
+    val javaColor get() = JavaColor(r, g, b, a)
 
     /**
      * Used to tell the [rgba] value to update when the HSBA values are changed.
@@ -68,42 +71,19 @@ class Color(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f)
             }
         }
 
-    /**
-     * Returns red from [rgba] value
-     */
-    inline val r
-        get() = rgba.red
-
-    /**
-     * Returns green from [rgba] value
-     */
-    inline val g
-        get() = rgba.green
-
-    /**
-     * Returns blue from [rgba] value
-     */
-    inline val b
-        get() = rgba.blue
-
-    /**
-     * Returns opacity from [rgba] value
-     */
-    inline val a
-        get() = rgba.alpha
+    inline val r get() = rgba.red
+    inline val g get() = rgba.green
+    inline val b get() = rgba.blue
+    inline val a get() = rgba.alpha
 
     /**
      * Checks if color isn't visible.
-     * Used for rendering to not waste resources rendering something when its invisible.
+     * Main use is to prevent rendering when the color is invisible.
      */
-    val isTransparent: Boolean
+    inline val isTransparent: Boolean
         get() = alpha == 0f
 
-    /**
-     * Prints Color's RGBA values.
-     */
-    override fun toString(): String =
-        "Color(red=$r,green=$g,blue=$b,alpha=$a)"
+    override fun toString(): String = "Color(red=$r,green=$g,blue=$b,alpha=$a)"
 
     override fun hashCode(): Int {
         var result = hue.toInt()
@@ -156,25 +136,18 @@ class Color(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f)
         @JvmField
         val DARK_GRAY = Color(35, 35, 35)
 
+
         @JvmField
         val BLUE = Color(0,  170,170)
 
         @JvmField
         val PINK = Color(255,20,147)
 
-        /**
-         * Performs bit-shift thingy
-         */
-        inline val Int.red
-            get() = this shr 16 and 0xFF
+       
+        inline val Int.red get() = this shr 16 and 0xFF
+        inline val Int.green get() = this shr 8 and 0xFF
+        inline val Int.blue get() = this and 0xFF
+        inline val Int.alpha get() = this shr 24 and 0xFF
 
-        inline val Int.green
-            get() = this shr 8 and 0xFF
-
-        inline val Int.blue
-            get() = this and 0xFF
-
-        inline val Int.alpha
-            get() = this shr 24 and 0xFF
     }
 }

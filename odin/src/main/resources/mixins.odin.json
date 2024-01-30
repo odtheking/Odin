@@ -8,7 +8,8 @@
     "mixins.MixinEntityLivingBase",
     "mixins.MixinNetworkManager",
     "mixins.MixinS1CPacketEntityMetadata",
-    "mixins.MixinWorld"
+    "mixins.MixinWorld",
+    "mixins.other.MixinNEURenderListener"
   ],
   "client": [
     "accessors.IEntityPlayerSPAccessor",

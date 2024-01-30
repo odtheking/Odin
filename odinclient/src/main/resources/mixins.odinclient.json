@@ -5,26 +5,24 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "accessors.IBlockAccessor",
-    "mixins.block.MixinBlockChest",
+    "mixins.MixinChunk",
+    "mixins.MixinNetworkManager",
+    "mixins.MixinS1CPacketEntityMetadata",
+    "mixins.MixinWorld",
     "mixins.block.MixinBlock",
+    "mixins.block.MixinBlockChest",
     "mixins.block.MixinBlockCocoa",
     "mixins.block.MixinBlockCrops",
     "mixins.block.MixinBlockLever",
     "mixins.block.MixinBlockMushroom",
     "mixins.block.MixinBlockNetherWart",
     "mixins.block.MixinBlockSkull",
-    "mixins.MixinChunk",
     "mixins.entity.MixinEntityLivingBase",
-    "mixins.MixinNetworkManager",
-    "mixins.MixinS1CPacketEntityMetadata",
-    "mixins.MixinWorld"
+    "mixins.other.MixinNEURenderListener"
   ],
   "client": [
     "accessors.IEntityPlayerSPAccessor",
     "accessors.IMinecraftAccessor",
-    "mixins.block.MixinBlockButton",
-    "mixins.block.MixinBlockCarpet",
-    "mixins.entity.MixinEntityRenderer",
     "mixins.MixinFontRenderer",
     "mixins.MixinGuiContainer",
     "mixins.MixinItemRenderer",
@@ -40,6 +38,9 @@
     "mixins.MixinRenderPlayer",
     "mixins.MixinSoundManager",
     "mixins.MixinTileEntityChestRenderer",
+    "mixins.block.MixinBlockButton",
+    "mixins.block.MixinBlockCarpet",
+    "mixins.entity.MixinEntityRenderer",
     "mixins.entity.MixinModelBiped",
     "mixins.entity.MixinModelBlaze"
   ]
