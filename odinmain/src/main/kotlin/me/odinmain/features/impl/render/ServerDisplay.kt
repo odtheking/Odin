@@ -6,8 +6,6 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.ui.util.getTextWidth
-import me.odinmain.ui.util.scale
-import me.odinmain.ui.util.scaleFactor
 import me.odinmain.ui.util.text
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.max
@@ -24,12 +22,10 @@ object ServerDisplay : Module(
     private val fps: Boolean by BooleanSetting("FPS", false)
 
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
-        scale(1f / scaleFactor, 1f / scaleFactor, 1f)
         if (it) {
             if (ping) text("§6Ping: §a60ms", 1f, 9f, Color.WHITE,12f)
             if (tps) text("§3TPS: §a20.0", 1f, 26f, Color.WHITE,12f)
             if (fps) text("§dFPS: §a240.0", 1f, 43f, Color.WHITE,12f)
-            scale(scaleFactor, scaleFactor, 1f)
             max(
                 if (ping) getTextWidth("Ping: 60ms", 12f) else 0f,
                 if (tps) getTextWidth("TPS: 20.0", 12f) else 0f,
@@ -39,7 +35,6 @@ object ServerDisplay : Module(
             if (ping) text("§6Ping: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 1f, 9f, Color.WHITE,12f)
             if (tps) text("§3TPS: ${colorizeTps(ServerUtils.averageTps.round(1))}", 1f, 26f, Color.WHITE,12f)
             if (fps) text("§dFPS: ${colorizeFPS(mc.debug.split(" ")[0].toIntOrNull() ?: 0)}", 1f, 43f, Color.WHITE,12f)
-            scale(scaleFactor, scaleFactor, 1f)
             max(
                 if (ping) getTextWidth("§ePing: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 12f) else 0f,
                 if (tps) getTextWidth("§ePing: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 12f) else 0f,

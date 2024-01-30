@@ -12,7 +12,10 @@ import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.animations.impl.EaseInOut
 import me.odinmain.ui.clickgui.util.ColorUtil.brighter
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.ui.util.*
+import me.odinmain.ui.util.TextAlign
+import me.odinmain.ui.util.dropShadow
+import me.odinmain.ui.util.roundedRectangle
+import me.odinmain.ui.util.text
 import me.odinmain.utils.render.Color
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -29,7 +32,6 @@ object CPSDisplay : Module(
         val value = if (button == 0) "${leftClicks.size}" else "${rightClicks.size}"
         val anim = if (button == 0) leftAnim else rightAnim
         val color = color.brighter(leftAnim.get(1f, 1.5f, leftAnim.getPercent() >= 50))
-        scale(1f / scaleFactor, 1f / scaleFactor, 1f)
         if (button == 2) {
             roundedRectangle(0f, 0f, 50f, 38f, color, color, color, 0f , 9f, 0f, 9f, 0f, 0f)
             roundedRectangle(50f, 0f, 50f, 38f, color, color, color, 0f , 0f, 9f, 0f, 9f, 0f)
@@ -58,7 +60,6 @@ object CPSDisplay : Module(
                 text(rightClicks.size.toString(), 75f, 13f, textColor, 24f, OdinFont.BOLD, TextAlign.Middle)
             } else text(value, 25f, 19f, textColor, 24f, OdinFont.BOLD, TextAlign.Middle)
         }
-        scale(scaleFactor, scaleFactor, 1f)
         if (button == 2) 100f to 38f else 50f to 38f
 
     }

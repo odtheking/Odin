@@ -104,7 +104,7 @@ open class HudElement(
         val (width, height) = render(example)
 
         if (example) {
-            hoverHandler.handle(x, y, width * scale / 2, height * scale / 2)
+            hoverHandler.handle(x, y, width * scale, height * scale)
             var thickness = anim.get(.25f, 1f, !hasStarted)
             if (anim2.isAnimating() || dragging != null) {
                 thickness += anim2.get(0f, 1f, dragging == null)
@@ -129,7 +129,7 @@ open class HudElement(
     }
 
     fun accept(): Boolean {
-        return isAreaHovered(x, y, width * scale / 2, height * scale / 2)
+        return isAreaHovered(x, y, width * scale, height * scale)
     }
 
     /**
