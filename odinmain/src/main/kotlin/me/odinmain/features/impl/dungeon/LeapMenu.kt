@@ -20,6 +20,7 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.Classes
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.EMPTY
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.leapTeammates
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.teammatesNoSelf
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.inventory.GuiChest
@@ -52,9 +53,9 @@ object LeapMenu : Module(
     @SubscribeEvent
     fun onDrawScreen(event: DrawGuiScreenEvent) {
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
-        if (chest !is ContainerChest || chest.name != "Spirit Leap" /*|| teammatesNoSelf.isEmpty()*/) return
+        if (chest !is ContainerChest || chest.name != "Spirit Leap" || teammatesNoSelf.isEmpty()) return
 
-        testPlayers.forEachIndexed { index, it ->
+        leapTeammates.forEachIndexed { index, it ->
             if (it == EMPTY) return@forEachIndexed
             GlStateManager.pushMatrix()
             GlStateManager.enableAlpha()
@@ -85,15 +86,13 @@ object LeapMenu : Module(
 
     @SubscribeEvent
     fun mouseClicked(event: GuiClickEvent) {
-        if (event.gui !is GuiChest || event.gui.inventorySlots !is ContainerChest || (event.gui.inventorySlots as ContainerChest).name != "Spirit Leap")  return
+        if (event.gui !is GuiChest || event.gui.inventorySlots !is ContainerChest ||
+            (event.gui.inventorySlots as ContainerChest).name != "Spirit Leap" || leapTeammates.isEmpty())  return
 
         val quadrant = getQuadrant()
-
-        if (leapTeammates.isEmpty()) return
         if ((type == 1 || type == 0) && leapTeammates.size < quadrant) return
 
         val playerToLeap = leapTeammates[quadrant - 1]
-
         if (playerToLeap.clazz == Classes.DEAD) return modMessage("This player is dead, can't leap.")
 
         val index = event.gui.inventorySlots.inventorySlots.subList(11, 16)

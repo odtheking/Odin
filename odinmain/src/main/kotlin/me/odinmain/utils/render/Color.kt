@@ -9,12 +9,9 @@ import java.awt.Color as JavaColor
  * Based on [PolyUI](https://github.com/Polyfrost/polyui-jvm/blob/master/src/main/kotlin/cc/polyfrost/polyui/color/Color.kt)
  */
 class Color(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f) {
-
     constructor(hsb: FloatArray, alpha: Float = 1f) : this(hsb[0], hsb[1], hsb[2], alpha)
-
-    constructor(r: Int, g: Int, b: Int, alpha: Float = 1f) : this(RGBtoHSB(r, g, b), alpha)
-    constructor(rgba: Int) : this(rgba.red, rgba.green, rgba.blue, rgba.alpha / 255f)
-
+    constructor(r: Int, g: Int, b: Int, alpha: Float = 1f) : this(RGBtoHSB(r, g, b, FloatArray(size = 3)), alpha)
+    constructor(rgba: Int) : this(rgba.red, rgba.green, rgba.blue, alpha = rgba.alpha / 255f)
     constructor(rgba: Int, alpha: Float) : this(rgba.red, rgba.green, rgba.blue, alpha)
 
     var hue = hue
