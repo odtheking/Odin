@@ -12,7 +12,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 object Camera : Module(
     "Camera",
     category = Category.RENDER,
-    description = "Allows you to disable front cam and change distance."
+    description = "Allows you to change qualities about third person view."
 ) {
     private val frontCamera: Boolean by BooleanSetting("No Front Camera")
     private val cameraClip: Boolean by BooleanSetting("Camera Clip").withDependency { !OdinMain.onLegitVersion }

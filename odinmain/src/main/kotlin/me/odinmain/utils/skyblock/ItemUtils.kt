@@ -3,6 +3,7 @@ package me.odinmain.utils.skyblock
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.noControlCodes
 import net.minecraft.client.entity.EntityPlayerSP
+import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
@@ -117,4 +118,15 @@ fun getRarity(lore: List<String>): ItemRarity? {
         return ItemRarity.entries.find { currentLine.noControlCodes.startsWith(it.loreName) }
     }
     return null
+}
+
+fun getSkullValue(armorStand: EntityArmorStand?): String? {
+    return armorStand?.inventory
+        ?.get(4)
+        ?.tagCompound
+        ?.getCompoundTag("SkullOwner")
+        ?.getCompoundTag("Properties")
+        ?.getTagList("textures", 10)
+        ?.getCompoundTagAt(0)
+        ?.getString("Value")
 }

@@ -18,7 +18,7 @@ import net.minecraft.util.Vec3
 object TPMaze {
     var portals = setOf<BlockPos>()
     var correctPortals = listOf<BlockPos>()
-    var visited = mutableSetOf<BlockPos>()
+    private var visited = mutableSetOf<BlockPos>()
 
     fun scan() {
         if (!tpMaze || portals.size >= 30 || DungeonUtils.currentRoomName != "Teleport Maze") return

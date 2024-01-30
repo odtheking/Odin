@@ -16,14 +16,12 @@ object MelodyMessage : Module(
     category = Category.FLOOR7,
     tag = TagType.NEW
 ) {
-    private val melodyMessage: String by StringSetting("Melody Message", "Melody Terminal start!", 40, description = "Message sent when the melody terminal opens")
+    private val melodyMessage: String by StringSetting("Melody Message", "Melody Terminal start!", 128, description = "Message sent when the melody terminal opens")
 
     private var saidMelody = false
     @SubscribeEvent
     fun onGuiLoad(event: GuiLoadedEvent) {
-        if (!DungeonUtils.inDungeons) return
-        if (saidMelody) return
-        if (!event.name.startsWith("Click the button on time!")) return
+        if (!DungeonUtils.inDungeons || saidMelody || !event.name.startsWith("Click the button on time!")) return
 
         partyMessage(melodyMessage)
         saidMelody = true

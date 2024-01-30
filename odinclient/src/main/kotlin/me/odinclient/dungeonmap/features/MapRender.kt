@@ -8,6 +8,7 @@ import me.odinclient.utils.skyblock.dungeon.map.MapUtils.mapRoomSize
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.world.RenderUtils.drawTexturedModalRect
 import me.odinmain.utils.skyblock.dungeon.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import net.minecraft.client.renderer.GlStateManager
@@ -140,7 +141,7 @@ object MapRender {
                             GlStateManager.color(255f, 255f, 255f, 255f)
                             mc.textureManager.bindTexture(it)
 
-                            MapRenderUtils.drawTexturedModalRect(
+                            drawTexturedModalRect(
                                 xOffset + (mapRoomSize - checkmarkSize) / 2,
                                 yOffset + (mapRoomSize - checkmarkSize) / 2,
                                 checkmarkSize,

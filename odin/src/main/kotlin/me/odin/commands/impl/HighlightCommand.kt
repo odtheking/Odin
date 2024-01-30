@@ -9,7 +9,7 @@ import me.odinmain.utils.skyblock.modMessage
 
 object HighlightCommand : Commodore {
     override val command: CommandNode =
-        literal("odinhighlight") {
+        literal("highlight") {
             requires {
                 onLegitVersion
             }

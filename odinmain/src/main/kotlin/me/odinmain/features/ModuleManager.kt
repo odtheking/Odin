@@ -3,7 +3,10 @@ package me.odinmain.features
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.*
 import me.odinmain.features.impl.dungeon.*
-import me.odinmain.features.impl.floor7.*
+import me.odinmain.features.impl.floor7.MelodyMessage
+import me.odinmain.features.impl.floor7.NecronDropTimer
+import me.odinmain.features.impl.floor7.RelicAnnouncer
+import me.odinmain.features.impl.floor7.WitherDragons
 import me.odinmain.features.impl.floor7.p3.InactiveWaypoints
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalTimes
@@ -11,10 +14,10 @@ import me.odinmain.features.impl.render.*
 import me.odinmain.features.impl.render.ClickGUIModule.hudChat
 import me.odinmain.features.impl.skyblock.*
 import me.odinmain.features.settings.AlwaysActive
+import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.profile
-import me.odinmain.utils.render.gui.nvg.drawNVG
 import net.minecraft.network.Packet
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -55,10 +58,6 @@ object ModuleManager {
         WatcherBar,
         TerminalSolver,
         TerminalTimes,
-        DragonBoxes,
-        DragonDeathCheck,
-        DragonTimer,
-        //LeapHelper,
         MelodyMessage,
         NecronDropTimer,
         RelicAnnouncer,
@@ -76,7 +75,6 @@ object ModuleManager {
         RenderOptimizer,
         ServerDisplay,
         Waypoints,
-        AutoRenewCrystalHollows,
         AutoSprint,
         BlazeAttunement,
         CanClip,
@@ -84,20 +82,18 @@ object ModuleManager {
         DeployableTimer,
         DianaHelper,
         Reminders,
-        VanqNotifier,
         Animations,
         SpaceHelmet,
         EscrowFix,
         //DungeonWaypoints,
         SecretChime,
-        ShareCoords,
         LeapMenu,
         PuzzleSolvers,
         ArrowHit,
         InactiveWaypoints,
         Ragaxe,
-        DragonHealth,
-        MobSpawn
+        MobSpawn,
+        WitherDragons
     )
 
 
@@ -158,13 +154,14 @@ object ModuleManager {
 
     @SubscribeEvent
     fun onRenderOverlay(event: RenderGameOverlayEvent.Post) {
-        if ((mc.currentScreen != null && !hudChat) || event.type != RenderGameOverlayEvent.ElementType.ALL) return
+        if ((mc.currentScreen != null && !hudChat) || event.type != RenderGameOverlayEvent.ElementType.ALL || mc.currentScreen == EditHUDGui) return
+
         mc.mcProfiler.startSection("Odin Hud")
-        drawNVG {
-            for (i in 0 until huds.size) {
-                huds[i].draw(this, false)
-            }
+
+        for (i in 0 until huds.size) {
+            huds[i].draw(false)
         }
+
         mc.mcProfiler.endSection()
     }
 

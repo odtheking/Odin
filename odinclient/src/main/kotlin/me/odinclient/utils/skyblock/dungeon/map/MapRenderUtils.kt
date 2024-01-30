@@ -91,15 +91,6 @@ object MapRenderUtils {
         GlStateManager.popMatrix()
     }
 
-    fun drawTexturedModalRect(x: Int, y: Int, width: Int, height: Int) {
-        worldRenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
-        worldRenderer.pos(x.toDouble(), (y + height).toDouble(), 0.0).tex(0.0, 1.0).endVertex()
-        worldRenderer.pos((x + width).toDouble(), (y + height).toDouble(), 0.0).tex(1.0, 1.0).endVertex()
-        worldRenderer.pos((x + width).toDouble(), y.toDouble(), 0.0).tex(1.0, 0.0).endVertex()
-        worldRenderer.pos(x.toDouble(), y.toDouble(), 0.0).tex(0.0, 0.0).endVertex()
-        tessellator.draw()
-    }
-
     fun drawPlayerHead(name: String, player: DungeonPlayer) {
         GlStateManager.pushMatrix()
         try {

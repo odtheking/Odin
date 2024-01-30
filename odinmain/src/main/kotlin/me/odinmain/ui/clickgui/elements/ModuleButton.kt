@@ -1,23 +1,24 @@
 package me.odinmain.ui.clickgui.elements
 
-import cc.polyfrost.oneconfig.renderer.NanoVGHelper
-import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinmain.features.Module
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.settings.impl.*
+import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.clickgui.Panel
+import me.odinmain.ui.clickgui.animations.impl.ColorAnimation
+import me.odinmain.ui.clickgui.animations.impl.EaseInOut
 import me.odinmain.ui.clickgui.elements.menu.*
 import me.odinmain.ui.clickgui.util.ColorUtil.brighter
 import me.odinmain.ui.clickgui.util.ColorUtil.clickGUIColor
 import me.odinmain.ui.clickgui.util.ColorUtil.moduleButtonColor
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.HoverHandler
+import me.odinmain.ui.util.*
+import me.odinmain.ui.util.MouseUtils.isAreaHovered
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
-import me.odinmain.utils.render.gui.animations.impl.ColorAnimation
-import me.odinmain.utils.render.gui.animations.impl.EaseInOut
-import me.odinmain.utils.render.gui.nvg.*
+import me.odinmain.utils.render.world.RenderUtils.loadBufferedImage
+import net.minecraft.client.renderer.texture.DynamicTexture
 import kotlin.math.floor
 
 /**
@@ -52,6 +53,10 @@ class ModuleButton(val module: Module, val panel: Panel) {
     private val extendAnim = EaseInOut(250)
     private val hoverHandler = HoverHandler(1000, 200)
     private val hover = HoverHandler(250)
+    private val bannableIcon = DynamicTexture(loadBufferedImage("/assets/odinmain/clickgui/bannableIcon.png"))
+    private val fpsHeavyIcon = DynamicTexture(loadBufferedImage("/assets/odinmain/clickgui/fpsHeavyIcon.png"))
+    private val newFeatureIcon = DynamicTexture(loadBufferedImage("/assets/odinmain/clickgui/newFeatureIcon.png"))
+
 
     init {
         updateElements()
@@ -85,7 +90,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
         }
     }
 
-    fun draw(nvg: NVG): Float {
+    fun draw(): Float {
         var offs = height
 
         hoverHandler.handle(x, y, width, height - 1)
@@ -95,40 +100,32 @@ class ModuleButton(val module: Module, val panel: Panel) {
             ClickGUI.setDescription(module.description, x + width + 10f, y, hoverHandler)
         }
 
-        nvg {
+        roundedRectangle(x, y, width, height, color)
+        text(module.name, x + width / 2, y + height / 2, textColor, 14f, OdinFont.REGULAR, TextAlign.Middle)
+        val textWidth = getTextWidth(module.name, 18f)
 
-            rect(x, y, width, height, color)
-            text(module.name, x + width / 2, y + height / 2, textColor, 18f, Fonts.MEDIUM, TextAlign.Middle)
-            val textWidth = getTextWidth(module.name, 18f, Fonts.MEDIUM)
-
-            if (textWidth > width - 80)// too long text, not drawing symbol
-            else if (module.tag == Module.TagType.RISKY) {
-                NanoVGHelper.INSTANCE.drawSvg(this.context,
-                    "/assets/odinmain/ui/clickgui/bannableIcon.svg", x + width / 2 + textWidth / 2 + 10f, y + 4f, 25f, 25f, javaClass
-                )
-            } else if (module.tag == Module.TagType.FPSTAX) {
-                NanoVGHelper.INSTANCE.drawSvg(this.context,
-                    "/assets/odinmain/ui/clickgui/fpsHeavyIcon.svg", x + width / 2 + textWidth / 2 + 20f, y, 35f, 35f, javaClass
-                )
-            } else if (module.tag == Module.TagType.NEW && ClickGUIModule.firstTimeOnVersion) {
-                NanoVGHelper.INSTANCE.drawSvg(this.context,
-                    "/assets/odinmain/ui/clickgui/newFeatureIcon.svg", x + width / 2 + textWidth / 2 + 10f, y, 35f, 35f, javaClass
-                )
-            }
-
-
-            if (!extendAnim.isAnimating() && !extended || menuElements.isEmpty()) return@nvg
-
-            var drawY = offs
-            offs = height + floor(extendAnim.get(0f, getSettingHeight(), !extended))
-
-            val scissor = scissor(x, y, width, offs)
-            for (i in 0 until menuElements.size) {
-                menuElements[i].y = drawY
-                drawY += menuElements[i].render(nvg)
-            }
-            resetScissor(scissor)
+        if (textWidth > width - 80)// too long text, not drawing symbol
+        else if (module.tag == Module.TagType.RISKY) {
+            drawDynamicTexture(bannableIcon, x + width / 2 + textWidth / 2 + 10f, y + 4f, 25f, 25f,)
+        } else if (module.tag == Module.TagType.FPSTAX) {
+            drawDynamicTexture(fpsHeavyIcon, x + width / 2 + textWidth / 2 + 20f, y, 35f, 35f,)
+        } else if (module.tag == Module.TagType.NEW && ClickGUIModule.firstTimeOnVersion) {
+            drawDynamicTexture(newFeatureIcon, x + width / 2 + textWidth / 2 + 10f, y, 35f, 35f)
         }
+
+
+        if (!extendAnim.isAnimating() && !extended || menuElements.isEmpty()) return offs
+
+        var drawY = offs
+        offs = height + floor(extendAnim.get(0f, getSettingHeight(), !extended))
+
+        val scissor = scissor(x, y, width, offs)
+        for (i in 0 until menuElements.size) {
+            menuElements[i].y = drawY
+            drawY += menuElements[i].render()
+        }
+        resetScissor(scissor)
+
         return offs
     }
 

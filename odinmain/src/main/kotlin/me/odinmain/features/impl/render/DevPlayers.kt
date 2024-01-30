@@ -5,8 +5,6 @@ import kotlinx.coroutines.launch
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.render.ClickGUIModule.devSize
-import me.odinmain.utils.clock.Executor
-import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.fetchURLData
 import me.odinmain.utils.render.Color
 import net.minecraft.client.entity.AbstractClientPlayer
@@ -24,8 +22,7 @@ import kotlin.math.sin
 object DevPlayers {
 
     data class Dev(val xScale: Float = 1f, val yScale: Float = 1f, val zScale: Float = 1f,
-                   val wings: Boolean = false, val wingsColor: Color = Color(255, 255, 255)
-    )
+                   val wings: Boolean = false, val wingsColor: Color = Color(255, 255, 255))
 
     val devs = HashMap<String, Dev>()
 
@@ -54,9 +51,7 @@ object DevPlayers {
     }
 
     init {
-        Executor(delay = 60000) {
-            OdinMain.scope.launch { updateDevs() }
-        }.register()
+        OdinMain.scope.launch { updateDevs() }
     }
 
     fun preRenderCallbackScaleHook(entityLivingBaseIn: AbstractClientPlayer ) {

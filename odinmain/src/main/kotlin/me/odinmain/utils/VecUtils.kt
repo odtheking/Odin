@@ -13,10 +13,10 @@ import kotlin.math.*
 /**
  * Gets the distance between two entities squared.
  */
-fun noSqrt3DDistance(entity: Entity, entity1: Entity): Double {
-    return (entity.posX - entity1.posX).pow(2.0) +
-            (entity.posY - entity1.posY).pow(2.0) +
-            (entity.posZ - entity1.posZ).pow(2.0)
+fun Entity.distanceSquaredTo(other: Entity): Double {
+    return (posX - other.posX).pow(2.0) +
+            (posY - other.posY).pow(2.0) +
+            (posZ - other.posZ).pow(2.0)
 }
 
 /**
@@ -417,10 +417,10 @@ val S29PacketSoundEffect.pos: Vec3
  */
 fun findNearestGrassBlock(pos: Vec3): Vec3 {
     val chunk = mc.theWorld.getChunkFromBlockCoords(BlockPos(pos))
-    if (!chunk.isLoaded) return pos.coerceYIn(50.0, 90.0)
+    if (!chunk.isLoaded) return pos.coerceYIn(50.0, 110.0)
 
     val blocks = List(70) { i -> BlockPos(pos.xCoord, i + 50.0, pos.zCoord) }.filter { chunk.getBlock(it) == Blocks.grass }
-    if (blocks.isEmpty()) return pos.coerceYIn(50.0, 90.0)
+    if (blocks.isEmpty()) return pos.coerceYIn(50.0, 109.0)
     return Vec3(blocks.minBy { abs(pos.yCoord - it.y) })
 }
 

@@ -22,7 +22,7 @@ object GhostBlock : Module(
         .withDependency { ghostBlockKey }
     private val ghostBlockSkulls: Boolean by BooleanSetting("Ghost Skulls", true, description = "If enabled skulls will also be turned into ghost blocks.")
         .withDependency { ghostBlockKey }
-    private val ghostBlockRange: Double by NumberSetting("Range", 8.0, 4.5, 60.0, 0.5, description = "Maximum range at which ghost blocks will be created.")
+    private val ghostBlockRange: Double by NumberSetting("Range", 8.0, 4.5, 80.0, 0.5, description = "Maximum range at which ghost blocks will be created.")
         .withDependency { ghostBlockKey }
     private val onlyDungeon: Boolean by BooleanSetting("Only In Dungeon", false, description = "Will only work inside of a dungeon.")
         .withDependency { ghostBlockKey }

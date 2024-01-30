@@ -32,11 +32,11 @@ object PlayerUtils {
      * @author Odtheking, Bonsai
      */
     fun alert(title: String, playSound: Boolean = true) {
-        if (playSound) mc.thePlayer.playSound("note.pling", 100f, 1f)
+        if (playSound) playLoudSound("note.pling", 100f, 1f)
         mc.ingameGUI.run {
-            displayTitle(title, null, 10, 100, 10)
-            displayTitle(null, "", 10, 100, 10)
-            displayTitle(null, null, 10, 100, 10)
+            displayTitle(title, null, 5, 50, 5)
+            displayTitle(null, "", 5, 50, 5)
+            displayTitle(null, null, 5, 500, 5)
         }
     }
     fun getFlooredPlayerCoords(): Vec3i = mc.thePlayer.positionVector.floored()

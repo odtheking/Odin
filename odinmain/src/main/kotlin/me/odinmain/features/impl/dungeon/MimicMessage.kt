@@ -17,8 +17,10 @@ object MimicMessage : Module(
     category = Category.DUNGEON,
     tag = TagType.NEW
 ) {
-    private val mimicMessage: String by StringSetting("Mimic Message", "Mimic Killed", 128, description = "Message sent when mimic is detected as killed")
-    val reset: () -> Unit by ActionSetting("Send message", description = "Sends Mimic killed message in party chat.") { partyMessage(mimicMessage) }
+    private val mimicMessage: String by StringSetting("Mimic Message", "Mimic Killed!", 128, description = "Message sent when mimic is detected as killed")
+    val reset: () -> Unit by ActionSetting("Send message", description = "Sends Mimic killed message in party chat.") {
+        partyMessage(mimicMessage)
+    }
     private var mimicKilled = false
 
     @SubscribeEvent

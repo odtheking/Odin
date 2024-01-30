@@ -3,6 +3,8 @@ package me.odinclient.features.impl.dungeon
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.DualSetting
+import me.odinmain.utils.containsOneOf
+import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.network.play.client.C09PacketHeldItemChange
 import net.minecraftforge.client.event.MouseEvent
@@ -33,9 +35,7 @@ object SuperBoom : Module(
         val block = blockState.block
         if (
             block.damageDropped(blockState) != 2 &&
-            !block.localizedName.contains("Stone Brick Stairs") &&
-            !block.localizedName.contains("Stone Slab") &&
-            !block.localizedName.contains("Barrier")
+            !block.localizedName.containsOneOf("Stone Brick Stair", "Stone Slab", "Barrier")
         ) return
         val superboomIndex = mc.thePlayer?.inventory?.mainInventory?.indexOfFirst { it?.displayName?.contains("TNT") == true } ?: return
 
@@ -55,8 +55,10 @@ object SuperBoom : Module(
             mc.netHandler.addToSendQueue(C09PacketHeldItemChange(superboomIndex))
             mc.thePlayer.inventory.currentItem = superboomIndex
             mc.playerController.clickBlock(lookingAt.blockPos, sideHit)
-            mc.netHandler.addToSendQueue(C09PacketHeldItemChange(previousItemIndex))
-            mc.thePlayer.inventory.currentItem = previousItemIndex
+            runIn(1) {
+                mc.netHandler.addToSendQueue(C09PacketHeldItemChange(previousItemIndex))
+                mc.thePlayer.inventory.currentItem = previousItemIndex
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }

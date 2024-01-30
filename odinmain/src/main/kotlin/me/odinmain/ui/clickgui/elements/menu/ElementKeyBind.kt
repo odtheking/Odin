@@ -1,8 +1,9 @@
 package me.odinmain.ui.clickgui.elements.menu
 
-import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.DummySetting
+import me.odinmain.font.OdinFont
+import me.odinmain.ui.clickgui.animations.impl.ColorAnimation
 import me.odinmain.ui.clickgui.elements.Element
 import me.odinmain.ui.clickgui.elements.ElementType
 import me.odinmain.ui.clickgui.elements.ModuleButton
@@ -12,9 +13,8 @@ import me.odinmain.ui.clickgui.util.ColorUtil.clickGUIColor
 import me.odinmain.ui.clickgui.util.ColorUtil.elementBackground
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.HoverHandler
+import me.odinmain.ui.util.*
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.gui.animations.impl.ColorAnimation
-import me.odinmain.utils.render.gui.nvg.*
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 
@@ -37,28 +37,26 @@ class ElementKeyBind(parent: ModuleButton, private val mod: Module) :
     private val buttonColor: Color
         inline get() = ColorUtil.buttonColor.brighter(1 + hover.percent() / 500f)
 
-    override fun draw(nvg: NVG) {
+    override fun draw() {
         val value = if (mod.keyCode > 0) Keyboard.getKeyName(mod.keyCode) ?: "Err"
         else if (mod.keyCode < 0) Mouse.getButtonName(mod.keyCode + 100)
         else "None"
 
-        nvg {
-            rect(x, y, w, h, elementBackground)
+        roundedRectangle(x, y, w, h, elementBackground)
 
-            val width = getTextWidth(value, 16f, Fonts.REGULAR)
+            val width = getTextWidth(value, 12f)
             hover.handle(x + w - 20 - width, y + 4, width + 12f, 22f)
 
-            rect(x + w - 20 - width, y + 4, width + 12f, 22f, buttonColor, 5f)
-            dropShadow(x + w - 20 - width, y + 4, width + 12f, 22f, 10f, 0.75f, 5f)
+        roundedRectangle(x + w - 20 - width, y + 4, width + 12f, 22f, buttonColor, 5f)
+        dropShadow(x + w - 20 - width, y + 4, width + 12f, 22f, 10f, 0.75f, 5f)
 
-            if (listening || colorAnim.isAnimating()) {
-                val color = colorAnim.get(clickGUIColor, buttonColor, listening)
-                rectOutline(x + w - 21 - width, y + 3, width + 12.5f, 22.5f, color, 4f,1.5f)
-            }
-
-            text(name,  x + 6f, y + h / 2, textColor, 16f, Fonts.REGULAR)
-            text(value, x + w - 14, y + 16f, textColor, 16f, Fonts.REGULAR, TextAlign.Right)
+        if (listening || colorAnim.isAnimating()) {
+            val color = colorAnim.get(clickGUIColor, buttonColor, listening)
+            rectangleOutline(x + w - 21 - width, y + 3, width + 12.5f, 22.5f, color, 4f,1.5f)
         }
+
+        text(name,  x + 6f, y + h / 2, textColor, 12f, OdinFont.REGULAR)
+        text(value, x + w - 14, y + 8f, textColor, 12f, OdinFont.REGULAR, TextAlign.Right, TextPos.Top)
     }
 
     override fun mouseClicked(mouseButton: Int): Boolean {

@@ -11,9 +11,10 @@ import java.awt.Color as JavaColor
 class Color(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f) {
 
     constructor(hsb: FloatArray, alpha: Float = 1f) : this(hsb[0], hsb[1], hsb[2], alpha)
-    constructor(r: Int, g: Int, b: Int, alpha: Float = 1f) : this(RGBtoHSB(r, g, b, FloatArray(size = 3)), alpha)
 
-    constructor(rgba: Int) : this(rgba.red, rgba.green, rgba.blue, alpha = rgba.alpha / 255f)
+    constructor(r: Int, g: Int, b: Int, alpha: Float = 1f) : this(RGBtoHSB(r, g, b), alpha)
+    constructor(rgba: Int) : this(rgba.red, rgba.green, rgba.blue, rgba.alpha / 255f)
+
     constructor(rgba: Int, alpha: Float) : this(rgba.red, rgba.green, rgba.blue, alpha)
 
     var hue = hue
@@ -135,9 +136,18 @@ class Color(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f)
         @JvmField
         val DARK_GRAY = Color(35, 35, 35)
 
+
+        @JvmField
+        val BLUE = Color(0,  170,170)
+
+        @JvmField
+        val PINK = Color(255,20,147)
+
+       
         inline val Int.red get() = this shr 16 and 0xFF
         inline val Int.green get() = this shr 8 and 0xFF
         inline val Int.blue get() = this and 0xFF
         inline val Int.alpha get() = this shr 24 and 0xFF
+
     }
 }

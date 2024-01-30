@@ -6,12 +6,12 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.SelectorSetting
-import me.odinmain.utils.toAABB
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.toAABB
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.init.Blocks
 import net.minecraft.tileentity.TileEntityChest
@@ -79,7 +79,7 @@ object ChestEsp : Module(
         val chests = mc.theWorld.loadedTileEntityList.filterIsInstance(TileEntityChest::class.java)
         chests.forEach {
             if (hideClicked && this.chests.contains(it.pos)) return
-            RenderUtils.drawCustomBox(it.pos.toAABB(), color, 2f, phase = true)
+            RenderUtils.drawBoxOutline(it.pos.toAABB(), color, 2f, phase = true)
         }
     }
 

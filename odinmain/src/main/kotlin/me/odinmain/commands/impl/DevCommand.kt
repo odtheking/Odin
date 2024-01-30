@@ -1,13 +1,16 @@
 package me.odinmain.commands.impl
 
 import com.github.stivais.commodore.parsers.impl.GreedyString
+import gg.essential.api.utils.WebUtil
+import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
+import me.odinmain.OdinMain.scope
 import me.odinmain.commands.CommandNode
 import me.odinmain.commands.Commodore
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.impl.dungeon.TPMaze
-import me.odinmain.features.impl.render.ClickGUIModule.isDev
 import me.odinmain.features.impl.render.DevPlayers
+import me.odinmain.features.impl.render.DevPlayers.devs
 import me.odinmain.features.impl.render.DevPlayers.updateDevs
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -20,13 +23,11 @@ import net.minecraftforge.common.MinecraftForge
 
 object DevCommand : Commodore {
 
-    var devMode = false // add more usage maybe?
-        get() = field || isDev
 
     override val command: CommandNode =
         literal("oddev") {
             requires {
-                devMode
+                devs.containsKey(mc.thePlayer.name)
             }
 
             literal("getdata").runs { str: String ->
@@ -40,6 +41,14 @@ object DevCommand : Commodore {
                     mc.thePlayer.rotationYaw,
                     mc.thePlayer.rotationPitch
                 )
+            }
+
+            literal("particles").runs {
+                sendCommand("particle flame 84 18 95 1 1 1 1 100")
+                sendCommand("particle flame 57 18 125 1 1 1 1 100")
+                sendCommand("particle flame 26 18 95 1 1 1 1 100")
+                sendCommand("particle flame 27 18 60 1 1 1 1 100")
+                sendCommand("particle flame 84 18 56 1 1 1 1 100")
             }
 
             literal("resettp").runs {
@@ -57,14 +66,16 @@ object DevCommand : Commodore {
             }
 
             literal("sendmessage").runs { string: String ->
-                sendDataToServer("""{"$string": "This is a test message"}""")
+                scope.launch {
+                    sendDataToServer("""{"$string": "This is a test message"}""")
+                }
                 modMessage("""{"$string": "This is a test message"}""")
             }
 
             literal("getteammates").runs {
-                modMessage("Teammates: ${DungeonUtils.teammates}")
-                modMessage("TeammatesNoSelf: ${DungeonUtils.teammatesNoSelf}")
-                modMessage("LeapTeammates: ${DungeonUtils.leapTeammates}")
+                modMessage("Teammates: ${DungeonUtils.teammates.map { it.name }}")
+                modMessage("TeammatesNoSelf: ${DungeonUtils.teammatesNoSelf.map { it.name }}")
+                modMessage("LeapTeammates: ${DungeonUtils.leapTeammates.map { it.name }}")
             }
 
             literal("simulate").runs { str: GreedyString ->

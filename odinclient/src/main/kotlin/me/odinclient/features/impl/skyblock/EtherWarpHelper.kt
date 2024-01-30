@@ -1,9 +1,7 @@
 package me.odinclient.features.impl.skyblock
 
-import kotlinx.coroutines.launch
 import me.odinclient.mixin.accessors.IEntityPlayerSPAccessor
 import me.odinclient.utils.skyblock.PlayerUtils
-import me.odinmain.OdinMain.scope
 import me.odinmain.events.impl.ClickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -26,6 +24,7 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.extraAttributes
 import me.odinmain.utils.skyblock.holdingEtherWarp
 import me.odinmain.utils.smoothRotateTo
+import me.odinmain.utils.toAABB
 import net.minecraft.util.MathHelper
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -76,9 +75,9 @@ object EtherWarpHelper : Module(
             val color = if (etherPos.succeeded) renderColor else wrongColor
 
             if (filled)
-                RenderUtils.drawFilledBox(pos, color, phase = phase)
+                RenderUtils.drawFilledBox(pos.toAABB(), color, phase = phase)
             else
-                RenderUtils.drawCustomBox(pos, color, thickness = thickness, phase = phase)
+                RenderUtils.drawBoxOutline(pos.toAABB(), color, thickness = thickness, phase = phase)
         }
     }
 

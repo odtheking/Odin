@@ -9,11 +9,9 @@ object NoCarpet : Module(
     category = Category.RENDER,
     description = "Removes nearby carpet hitboxes"
 ) {
-
     fun noCarpetHook(carpet: BlockCarpet): Boolean {
         if (!enabled) return false
         carpet.setBlockBounds(0f, 0f, 0f, 1f, 0f, 1f)
         return true
     }
-
 }

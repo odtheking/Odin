@@ -8,13 +8,12 @@ import me.odinclient.utils.skyblock.dungeon.map.MapUtils
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
 import me.odinmain.events.impl.ChatPacketEvent
-import me.odinmain.utils.skyblock.devMessage
-import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import me.odinmain.utils.skyblock.dungeon.Room
 import me.odinmain.utils.skyblock.dungeon.Tile
 import me.odinmain.utils.skyblock.dungeon.Unknown
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -30,7 +29,6 @@ object Dungeon {
         if (event.phase != TickEvent.Phase.START || !inDungeons) return
 
         if (DungeonScan.shouldScan) {
-            devMessage("§7Scanning dungeon...")
             scope.launch { DungeonScan.scan() }
         }
 

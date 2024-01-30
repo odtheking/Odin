@@ -6,6 +6,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.addVec
+import me.odinmain.utils.distanceSquaredTo
 import me.odinmain.utils.render.world.OutlineUtils
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.render.world.RenderUtils.renderVec
@@ -20,7 +21,7 @@ object TeammatesHighlight : Module(
     category = Category.DUNGEON,
     description = "Enhances visibility of your dungeon teammates and their name tags."
 ) {
-    private val thickness: Float by NumberSetting("Line Width", 2f, 1.0, 5.0, 0.5)
+    private val thickness: Float by NumberSetting("Line Width", 4f, 1.0, 10.0, 0.5)
     private val whenVisible: Boolean by BooleanSetting("When Visible", true, description = "Highlights teammates only when they are visible.")
     private val inBoss: Boolean by BooleanSetting("In Boss", true, description = "Highlights teammates in boss rooms.")
     private val outline: Boolean by BooleanSetting("Outline", true, description = "Highlights teammates with an outline.")
@@ -41,7 +42,7 @@ object TeammatesHighlight : Module(
         DungeonUtils.teammates.forEach { teammate ->
             if (teammate.entity?.let { shouldRender(it) } != true) return@forEach
             if (!whenVisible && mc.thePlayer.canEntityBeSeen(teammate.entity)) return@forEach
-            if (mc.thePlayer.getDistanceToEntity(teammate.entity) > 40) return@forEach
+            if (teammate.entity.distanceSquaredTo(mc.thePlayer) >= 2333) return@forEach
 
             RenderUtils.drawStringInWorld(
                 "${teammate.clazz.code}${teammate.name}",

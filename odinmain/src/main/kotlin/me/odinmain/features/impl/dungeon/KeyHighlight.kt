@@ -21,8 +21,7 @@ object KeyHighlight : Module(
     category = Category.DUNGEON,
 ) {
     private var currentKey: Pair<Color, Entity>? = null
-    private val thickness: Float by NumberSetting("Thickness", 5f, 3f, 20f, .1f)
-    private val renderThrough: Boolean get() = !OdinMain.onLegitVersion
+    private val thickness: Float by NumberSetting("Thickness", 5f, 1f, 20f, .1f)
 
     @SubscribeEvent
     fun postMetadata(event: PostEntityMetadata) {
@@ -46,13 +45,13 @@ object KeyHighlight : Module(
         }
 
         val pos = entity.positionVector
-        RenderUtils.drawCustomBox(
+        RenderUtils.drawBoxOutline(
             pos.xCoord - 0.5, 1.0,
             pos.yCoord + 1.15, 1.0,
             pos.zCoord - 0.5, 1.0,
             color,
             thickness,
-            renderThrough
+            !OdinMain.onLegitVersion
         )
     }
 

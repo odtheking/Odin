@@ -48,6 +48,8 @@ object DungeonUtils {
 
 
     private const val WITHER_ESSENCE_ID = "26bb1a8d-7c66-31c6-82d5-a9c04c94fb02"
+    private const val REDSTONE_KEY = "edb0155f-379c-395a-9c7d-1b6005987ac8"
+
     private const val ROOM_SIZE = 32
     private const val START_X = -185
     private const val START_Z = -185
@@ -99,7 +101,7 @@ object DungeonUtils {
 
     @SubscribeEvent
     fun onMove(event: LivingEvent.LivingUpdateEvent) {
-        if (mc.theWorld == null/* || !inDungeons ||  inBoss */|| !event.entity.equals(mc.thePlayer)) return
+        if (mc.theWorld == null || !inDungeons ||  inBoss || !event.entity.equals(mc.thePlayer)) return
         val xPos = START_X + ((mc.thePlayer.posX + 200) / 32).toInt() * ROOM_SIZE
         val zPos = START_Z + ((mc.thePlayer.posZ + 200) / 32).toInt() * ROOM_SIZE
         if (lastRoomPos.equal(xPos, zPos) && currentRoom != null) return
@@ -205,13 +207,13 @@ object DungeonUtils {
     enum class Classes(
         val code: String,
         val color: Color,
-        val defaultQuandrant: Int,
-        val prio: Int
+        val defaultQuadrant: Int,
+        var prio: Int
     ) {
         /**
          * Archer class with formatting code "§6" (gold) and orange color.
          */
-        Archer("§6", Color.ORANGE, 0, 1),
+        Archer("§6", Color.ORANGE, 0, 2),
 
         /**
          * Berserk class with formatting code "§4" (dark red) and dark red color.
@@ -221,19 +223,31 @@ object DungeonUtils {
         /**
          * Healer class with formatting code "§a" (green) and green color.
          */
-        Healer("§a", Color.GREEN, 2, 1),
+        Healer("§d", Color.PINK, 2, 2),
 
         /**
          * Mage class with formatting code "§5" (purple) and purple color.
          */
-        Mage("§5", Color.PURPLE, 3, 1),
+        Mage("§b", Color.BLUE, 3, 2),
 
         /**
          * Tank class with formatting code "§2" (dark green) and dark green color.
          */
         Tank("§2", Color.DARK_GREEN, 3, 1),
 
-        DEAD("§4", Color.DARK_RED, 3, -1)
+        /**
+         * Dead class with formatting code "§4" (dark red) and dark red color.
+         */
+        DEAD("§c", Color.RED, 3, -1);
+
+
+        companion object {
+            fun setPriority(classToSetAsTwo: Classes) {
+                entries.forEach {
+                    it.prio = if (it == classToSetAsTwo) 0 else 1
+                }
+            }
+        }
     }
 
     /**
@@ -259,6 +273,9 @@ object DungeonUtils {
     init {
         Executor(1000) {
             if (inDungeons) {
+                //Classes.entries.find { (it.name == arrayListOf("Archer", "Berserker", "Healer", "Mage", "Tank")[LeapMenu.priority]) }
+                    //?.let { it1 -> Classes.setPriority(it1) }
+
                 teammates = getDungeonTeammates()
                 teammatesNoSelf = teammates.filter { it.name != mc.thePlayer.name }
                 leapTeammates =
@@ -288,7 +305,7 @@ object DungeonUtils {
 
         for (player in players) {
             when {
-                result[player.clazz.defaultQuandrant] == EMPTY -> result[player.clazz.defaultQuandrant] = player
+                result[player.clazz.defaultQuadrant] == EMPTY -> result[player.clazz.defaultQuadrant] = player
                 else -> secondRound.add(player)
             }
         }
@@ -367,7 +384,7 @@ object DungeonUtils {
             // Check if the block is a player skull with a specific player profile ID
             val tile = mc.theWorld.getTileEntity(pos) ?: return false
             if (tile !is TileEntitySkull) return false
-            return tile.playerProfile?.id.toString() == WITHER_ESSENCE_ID
+            return tile.playerProfile?.id.toString().equalsOneOf(WITHER_ESSENCE_ID, REDSTONE_KEY)
         }
 
         // If none of the above conditions are met, it is not a secret location

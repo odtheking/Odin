@@ -1,18 +1,18 @@
 package me.odinmain.ui.clickgui
 
-import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinmain.features.Category
 import me.odinmain.features.ModuleManager.modules
 import me.odinmain.features.impl.render.ClickGUIModule
+import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.SearchBar.currentSearch
+import me.odinmain.ui.clickgui.animations.impl.LinearAnimation
 import me.odinmain.ui.clickgui.elements.ModuleButton
 import me.odinmain.ui.clickgui.util.ColorUtil
-import me.odinmain.utils.render.gui.GuiUtils.capitalizeFirst
-import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
-import me.odinmain.utils.render.gui.MouseUtils.mouseX
-import me.odinmain.utils.render.gui.MouseUtils.mouseY
-import me.odinmain.utils.render.gui.animations.impl.LinearAnimation
-import me.odinmain.utils.render.gui.nvg.*
+import me.odinmain.ui.util.*
+import me.odinmain.ui.util.MouseUtils.isAreaHovered
+import me.odinmain.ui.util.MouseUtils.mouseX
+import me.odinmain.ui.util.MouseUtils.mouseY
+import me.odinmain.utils.capitalizeFirst
 import me.odinmain.utils.round
 import kotlin.math.floor
 
@@ -48,41 +48,39 @@ class Panel(
     private val scrollAnimation = LinearAnimation<Float>(200)
 
     init {
-        drawNVG {
-            for (module in modules.sortedByDescending { getTextWidth(it.name, 18f, Fonts.MEDIUM) }) {
-                if (module.category != this@Panel.category) continue
-                moduleButtons.add(ModuleButton(module, this@Panel))
-            }
+        for (module in modules.sortedByDescending { getTextWidth(it.name, 18f) }) {
+            if (module.category != this@Panel.category) continue
+            moduleButtons.add(ModuleButton(module, this@Panel))
         }
     }
 
-    fun draw(nvg: NVG) {
+    fun draw() {
         if (dragging) {
             x = floor(x2 + mouseX)
             y = floor(y2 + mouseY)
         }
 
-        nvg {
-            rect(x, y, width, height, ColorUtil.moduleButtonColor, 5f, 5f, 0f, 0f)
-            text(if (displayName == "Floor7") "Floor 7" else displayName, x + width / 2f, y + height / 2f, ColorUtil.textColor, 22f, Fonts.SEMIBOLD, TextAlign.Middle)
+        scrollOffset = scrollAnimation.get(scrollOffset, scrollTarget).round(0)
+        var startY = scrollOffset + height
+        scale(1f / scaleFactor, 1f / scaleFactor, 1f)
+        roundedRectangle(x, y, width, height, ColorUtil.moduleButtonColor, ColorUtil.moduleButtonColor, ColorUtil.moduleButtonColor, 0f, 15f, 15f, 0f, 0f, 0f)
 
-            scrollOffset = scrollAnimation.get(scrollOffset, scrollTarget).round(0)
-            var startY = scrollOffset + height
+        text(if (displayName == "Floor7") "Floor 7" else displayName, x + width / 2f, y + height / 2f, ColorUtil.textColor, 20f, type = OdinFont.BOLD, TextAlign.Middle)
 
-            val s = scissor(x, y + height, width, 5000f)
-            if (extended && moduleButtons.isNotEmpty()) {
-                for (button in moduleButtons.filter { it.module.name.contains(currentSearch, true) }) {
-                    button.y = startY
-                    startY += button.draw(nvg)
-                }
-                length = startY + 5f
+        val s = scissor(x, y + height, width, 5000f)
+        if (extended && moduleButtons.isNotEmpty()) {
+            for (button in moduleButtons.filter { it.module.name.contains(currentSearch, true) }) {
+                button.y = startY
+                startY += button.draw()
             }
-
-            rect(x, y + startY, width, 10f, moduleButtons.last().color, 0f, 0f, 5f, 5f)
-            resetScissor(s)
-
-            dropShadow(x, y, width, (startY + 10f).coerceAtLeast(height), 12.5f, 6f, 5f)
+            length = startY + 5f
         }
+
+        moduleButtons.lastOrNull()?.color?.let { roundedRectangle(x, y + startY, width, 10f, it, it, it, 0f, 0f, 0f, 10f, 10f, 4f) }
+
+        resetScissor(s)
+        dropShadow(x, y, width, (startY + 10f).coerceAtLeast(height), ColorUtil.moduleButtonColor, 15f, 10f, 10f, 10f, 10f)
+        scale(scaleFactor, scaleFactor, 1f)
     }
 
     fun handleScroll(amount: Int): Boolean {

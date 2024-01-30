@@ -27,7 +27,6 @@ class ModCore {
 
     @EventHandler
     fun init(event: FMLInitializationEvent) {
-        ModuleManager.modules.addAll(modules)
         OdinMain.init()
         MinecraftForge.EVENT_BUS.register(this)
 
@@ -35,12 +34,6 @@ class ModCore {
             HighlightCommand
         )
     }
-
-    private val modules = arrayListOf(
-        ArrowAlign,
-        SimonSays,
-        EtherWarpHelper,
-    )
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
@@ -55,6 +48,13 @@ class ModCore {
 
     @EventHandler
     fun loadComplete(event: FMLLoadCompleteEvent) {
+        val modules = arrayListOf(
+            ArrowAlign,
+            SimonSays,
+            EtherWarpHelper,
+        )
+
+        ModuleManager.modules.addAll(modules)
         OdinMain.loadComplete()
     }
 
