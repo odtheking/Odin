@@ -91,9 +91,9 @@ object Trajectories : Module(
         var posX = mc.thePlayer.renderX
         var posY = mc.thePlayer.renderY + mc.thePlayer.eyeHeight
         var posZ = mc.thePlayer.renderZ
-        posX -= (MathHelper.cos(mc.thePlayer.rotationYaw / 180.0f * Math.PI.toFloat()) * 0.12f).toDouble()
+        posX -= (MathHelper.cos(mc.thePlayer.rotationYaw / 180.0f * Math.PI.toFloat()) * 0.16f).toDouble()
         posY -= 0.1f
-        posZ -= (MathHelper.sin(mc.thePlayer.rotationYaw / 180.0f * Math.PI.toFloat()) * 0.12f).toDouble()
+        posZ -= (MathHelper.sin(mc.thePlayer.rotationYaw / 180.0f * Math.PI.toFloat()) * 0.16f).toDouble()
         val f = MathHelper.sqrt_double(motionX * motionX + motionY * motionY + motionZ * motionZ)
         motionX /= f
         motionY /= f
@@ -140,9 +140,9 @@ object Trajectories : Module(
         var posX = mc.thePlayer.renderX
         var posY = mc.thePlayer.renderY + mc.thePlayer.eyeHeight
         var posZ = mc.thePlayer.renderZ
-        posX -= (MathHelper.cos(mc.thePlayer.rotationYaw / 180.0f * Math.PI.toFloat()) * 0.12f).toDouble()
+        posX -= (MathHelper.cos(mc.thePlayer.rotationYaw / 180.0f * Math.PI.toFloat()) * 0.16f).toDouble()
         posY -= 0.1
-        posZ -= (MathHelper.sin(mc.thePlayer.rotationYaw / 180.0f * Math.PI.toFloat()) * 0.12f).toDouble()
+        posZ -= (MathHelper.sin(mc.thePlayer.rotationYaw / 180.0f * Math.PI.toFloat()) * 0.16f).toDouble()
 
         var motionX = (-MathHelper.sin(yawRadians) * MathHelper.cos(pitchRadians)).toDouble()
         var motionY = -MathHelper.sin(pitchRadians).toDouble()
