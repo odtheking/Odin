@@ -172,7 +172,7 @@ open class HudElement(
     private val yHud = NumberSetting("yHud", default = y, hidden = true, min = 0f, max = Float.MAX_VALUE)
 
     init {
-        val scaleHud = NumberSetting("scaleHud", defaultScale, 3f, 8.0f, 0.01f, hidden = true)
+        val scaleHud = NumberSetting("scaleHud", defaultScale, 1f, 8.0f, 0.01f, hidden = true)
 
         this.xSetting = xHud
         this.ySetting = yHud

@@ -117,7 +117,7 @@ object ChatCommands : Module(
     private suspend fun commandsall(message: String, name: String, channel: String) {
 
         val helpMessage = when (channel) {
-            "party" -> "Commands: coords, odin, boop, cf, 8ball, dice, cat, racism, ping, tps, warp, warptransfer, allinvite, pt, dt, m(?), f(?)"
+            "party" -> "Commands: coords, odin, boop, cf, 8ball, dice, cat, racism, ping, tps, warp, warptransfer, allinvite, pt, dt, m (?), f (?)"
             "guild" -> "Commands: coords, odin, boop, cf, 8ball, dice, cat, racism, ping, tps"
             "private" -> "Commands: coords, odin, boop, cf, 8ball, dice, cat, racism, ping, tps, inv, invite"
             else -> ""

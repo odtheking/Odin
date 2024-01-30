@@ -53,9 +53,9 @@ object EditHUDGui : Screen() {
         hoverHandler.handle(Display.getWidth() / 2 - 100f, Display.getHeight() * .875f - 25f, 200f, 50f)
 
         //dropShadow(-100f, -25f, 200f, 50f, 10f, 1f, 9f)
-        roundedRectangle(Display.getWidth() / 2 - 100f, Display.getHeight() * .875 - 25f, 200f, 50f, color, 9f)
+        roundedRectangle(Display.getWidth() / 4 - 50, Display.getHeight() / 2 - 65, 100f, 25f, color, 9f)
 
-        text("Reset", Display.getWidth() / 2f, Display.getHeight() * .875f, textColor, 32f, OdinFont.REGULAR, TextAlign.Middle)
+        text("Reset", Display.getWidth() / 4f, Display.getHeight() / 2f - 50, textColor, 16f, OdinFont.REGULAR, TextAlign.Middle)
         //rect(-75f, -25f, 150f, 50f, Color.WHITE) // make this good
 
         if (openAnim.isAnimating()) {

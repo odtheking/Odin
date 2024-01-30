@@ -36,7 +36,7 @@ import kotlin.math.max
 
 object WitherDragons : Module(
     "Wither Dragons",
-    description = "Displays a timer for when M7 dragons spawn.",
+    description = "Various features for Wither dragons (boxes, timer, HP, priority and more).",
     category = Category.FLOOR7
 ) {
 

@@ -19,6 +19,7 @@ import me.odinmain.utils.skyblock.PlayerUtils.posZ
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.sendChatMessage
 import me.odinmain.utils.skyblock.sendCommand
+import kotlin.math.round
 
 object OdinCommand : Commodore {
 
@@ -118,7 +119,7 @@ object OdinCommand : Commodore {
             }
 
             literal("tps").runs {
-                modMessage("${colorizeTps(ServerUtils.averageTps)}ms")
+                modMessage("${colorizeTps(round(ServerUtils.averageTps))}ms")
             }
         }
 }
