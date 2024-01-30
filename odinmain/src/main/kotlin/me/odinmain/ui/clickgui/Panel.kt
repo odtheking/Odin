@@ -62,9 +62,10 @@ class Panel(
 
         scrollOffset = scrollAnimation.get(scrollOffset, scrollTarget).round(0)
         var startY = scrollOffset + height
-
+        scale(1f / scaleFactor, 1f / scaleFactor, 1f)
         roundedRectangle(x, y, width, height, ColorUtil.moduleButtonColor, ColorUtil.moduleButtonColor, ColorUtil.moduleButtonColor, 0f, 15f, 15f, 0f, 0f, 0f)
-        text(if (displayName == Category.FLOOR7.name) "Floor 7" else displayName, x + width / 2f, y + height / 2f, ColorUtil.textColor, 20f, type = OdinFont.BOLD, TextAlign.Middle)
+
+        text(if (displayName == "Floor7") "Floor 7" else displayName, x + width / 2f, y + height / 2f, ColorUtil.textColor, 20f, type = OdinFont.BOLD, TextAlign.Middle)
 
         val s = scissor(x, y + height, width, 5000f)
         if (extended && moduleButtons.isNotEmpty()) {
@@ -79,6 +80,7 @@ class Panel(
 
         resetScissor(s)
         dropShadow(x, y, width, (startY + 10f).coerceAtLeast(height), ColorUtil.moduleButtonColor, 15f, 10f, 10f, 10f, 10f)
+        scale(scaleFactor, scaleFactor, 1f)
     }
 
     fun handleScroll(amount: Int): Boolean {

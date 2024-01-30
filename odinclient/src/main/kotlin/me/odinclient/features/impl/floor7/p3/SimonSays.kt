@@ -1,12 +1,10 @@
 package me.odinclient.features.impl.floor7.p3
 
-import me.odinclient.features.impl.skyblock.EtherWarpHelper
 import me.odinclient.utils.skyblock.PlayerUtils.rightClick
 import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.impl.render.GyroRange
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
@@ -17,7 +15,6 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.skyblock.WorldUtils
 import me.odinmain.utils.skyblock.devMessage
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.block.BlockButtonStone
 import net.minecraft.client.renderer.GlStateManager
@@ -27,7 +24,6 @@ import net.minecraft.item.Item
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
-import net.minecraft.world.World
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -40,7 +36,7 @@ object SimonSays : Module(
 ) {
     private val solver: Boolean by BooleanSetting("Solver")
     private val start: Boolean by BooleanSetting("Start", default = true, description = "Starts the device when it can be started.")
-    private val startClicks: Int by NumberSetting("Start Clicks", 1, 1, 10).withDependency { start }
+    private val startClicks: Int by NumberSetting("Start Clicks", 3, 1, 10).withDependency { start }
     private val startClickDelay: Int by NumberSetting("Start Click Delay", 3, 1, 5).withDependency { start }
     private val triggerBot: Boolean by BooleanSetting("Triggerbot")
     private val triggerBotDelay: Long by NumberSetting<Long>("Triggerbot Delay", 200, 70, 500).withDependency { triggerBot }

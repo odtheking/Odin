@@ -42,7 +42,6 @@ class ElementCheckBox(parent: ModuleButton, setting: BooleanSetting) : Element<B
         else isAreaHovered(x + w - 43f, y + 4f, 34f, 20f)
 
     override fun draw() {
-
         roundedRectangle(x, y, w, h, elementBackground)
         text(name, x + 6f, y + h / 2f, textColor, 12f, OdinFont.REGULAR)
 
@@ -64,7 +63,6 @@ class ElementCheckBox(parent: ModuleButton, setting: BooleanSetting) : Element<B
                 Color(220, 220, 220).darkerIf(isHovered, 0.9f)
             )
         }
-
     }
 
     override fun mouseClicked(mouseButton: Int): Boolean {

@@ -3,12 +3,9 @@ package me.odinmain.font
 import gg.essential.elementa.font.FontRenderer
 import gg.essential.elementa.font.data.Font
 import gg.essential.universal.UMatrixStack
-import me.odinmain.OdinMain
 import me.odinmain.ui.util.TextAlign
 import me.odinmain.ui.util.TextPos
-import me.odinmain.ui.util.scale
 import me.odinmain.utils.render.Color
-import net.minecraft.client.gui.ScaledResolution
 import kotlin.math.max
 
 object OdinFont {
@@ -38,10 +35,7 @@ object OdinFont {
 
         val typeText = if (type == BOLD) "§l$text" else text
 
-        val sr = ScaledResolution(OdinMain.mc)
-        scale(1f / sr.scaleFactor , 1f / sr.scaleFactor, 1f)
         fontRenderer.drawString(UMatrixStack.Compat.get(), typeText, color.javaColor, drawX, drawY, 1f, scale, shadow)
-        scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
     }
 
     fun getTextWidth(text: String, size: Float): Float {

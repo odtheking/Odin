@@ -7,6 +7,8 @@ import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.ui.util.getTextWidth
+import me.odinmain.ui.util.scale
+import me.odinmain.ui.util.scaleFactor
 import me.odinmain.ui.util.text
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.round
@@ -26,13 +28,14 @@ object BPSDisplay : Module(
     private var bps: Double = 0.0
 
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 2f, false) {
+        scale(1f / scaleFactor, 1f / scaleFactor, 1f)
         if (it) { // example
             text("§7BPS: §r17.8", 1f, 7f, Color.WHITE,10f)
-            getTextWidth("BPS: 17.87", 9f) to 12f
         } else {
             text("§7BPS: §r${bps.round(1)}", 1f, 7f, Color.WHITE, 10f, OdinFont.REGULAR)
-            getTextWidth("BPS: ${bps.round(1)}", 9f) to 12f
         }
+        scale(scaleFactor, scaleFactor, 1f)
+        getTextWidth("BPS: 17.5", 9f) to 12f
     }
 
     @SubscribeEvent

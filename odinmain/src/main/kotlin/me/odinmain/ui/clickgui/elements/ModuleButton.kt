@@ -100,7 +100,6 @@ class ModuleButton(val module: Module, val panel: Panel) {
             ClickGUI.setDescription(module.description, x + width + 10f, y, hoverHandler)
         }
 
-
         roundedRectangle(x, y, width, height, color)
         text(module.name, x + width / 2, y + height / 2, textColor, 14f, OdinFont.REGULAR, TextAlign.Middle)
         val textWidth = getTextWidth(module.name, 18f)

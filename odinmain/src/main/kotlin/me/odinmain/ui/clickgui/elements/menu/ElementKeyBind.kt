@@ -48,16 +48,15 @@ class ElementKeyBind(parent: ModuleButton, private val mod: Module) :
             hover.handle(x + w - 20 - width, y + 4, width + 12f, 22f)
 
         roundedRectangle(x + w - 20 - width, y + 4, width + 12f, 22f, buttonColor, 5f)
-            dropShadow(x + w - 20 - width, y + 4, width + 12f, 22f, 10f, 0.75f, 5f)
+        dropShadow(x + w - 20 - width, y + 4, width + 12f, 22f, 10f, 0.75f, 5f)
 
-            if (listening || colorAnim.isAnimating()) {
-                val color = colorAnim.get(clickGUIColor, buttonColor, listening)
-                rectangleOutline(x + w - 21 - width, y + 3, width + 12.5f, 22.5f, color, 4f,1.5f)
-            }
+        if (listening || colorAnim.isAnimating()) {
+            val color = colorAnim.get(clickGUIColor, buttonColor, listening)
+            rectangleOutline(x + w - 21 - width, y + 3, width + 12.5f, 22.5f, color, 4f,1.5f)
+        }
 
-            text(name,  x + 6f, y + h / 2, textColor, 12f, OdinFont.REGULAR)
-            text(value, x + w - 14, y + 4f, textColor, 12f, OdinFont.REGULAR, TextAlign.Right, TextPos.Top)
-
+        text(name,  x + 6f, y + h / 2, textColor, 12f, OdinFont.REGULAR)
+        text(value, x + w - 14, y + 8f, textColor, 12f, OdinFont.REGULAR, TextAlign.Right, TextPos.Top)
     }
 
     override fun mouseClicked(mouseButton: Int): Boolean {

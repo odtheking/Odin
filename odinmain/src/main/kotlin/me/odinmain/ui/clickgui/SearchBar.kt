@@ -21,16 +21,19 @@ object SearchBar {
 
     fun draw() {
         GlStateManager.pushMatrix()
-        translate(mc.displayWidth / 4f, mc.displayHeight / 2f - 50f)
+        scale(1f / scaleFactor, 1f / scaleFactor, 1f)
+
+        translate(mc.displayWidth / 2f, mc.displayHeight - 100f)
         roundedRectangle(-200f, 0f, 400f, 30f, ColorUtil.moduleButtonColor, 9f)
         if (listening || colorAnim.isAnimating()) {
             val color = colorAnim.get(ColorUtil.clickGUIColor, buttonColor, listening)
             rectangleOutline(-202f, -1f, 404f, 32f, color, 9f,3f)
         }
         if (currentSearch.isEmpty()) {
-            text("Search here...", 0f, 12f, Color.WHITE.withAlpha(0.5f), 20f, OdinFont.REGULAR, TextAlign.Middle)
+            text("Search here...", 0f, 18f, Color.WHITE.withAlpha(0.5f), 20f, OdinFont.REGULAR, TextAlign.Middle)
         } else text(currentSearch, 0f, 12f, Color.WHITE, 20f, OdinFont.REGULAR, TextAlign.Middle)
         translate(-mc.displayWidth / 4f, -mc.displayHeight / 4f + 200f)
+        scale(scaleFactor, scaleFactor, 1f)
         GlStateManager.popMatrix()
     }
 

@@ -4,14 +4,11 @@ import me.odinmain.features.impl.render.WaypointManager
 import me.odinmain.features.impl.render.WaypointManager.Waypoint
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.animations.impl.ColorAnimation
-import me.odinmain.ui.util.drawDynamicTexture
 import me.odinmain.ui.util.roundedRectangle
 import me.odinmain.ui.waypoint.WaypointGUI
 import me.odinmain.ui.waypoint.WaypointGUI.mouseHandler
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.world.RenderUtils.loadBufferedImage
-import net.minecraft.client.renderer.texture.DynamicTexture
 
 class WaypointElement(val waypoint: Waypoint) {
     private val name get() = waypoint.name.noControlCodes
@@ -24,7 +21,7 @@ class WaypointElement(val waypoint: Waypoint) {
         WaypointInputField(waypoint.y, "y:", mouseHandler, 10f, OdinFont.REGULAR),
         WaypointInputField(waypoint.z, "z:", mouseHandler, 10f, OdinFont.REGULAR),
     )
-    private val trash = DynamicTexture(loadBufferedImage("/assets/odinmain/waypoint/trash.png"))
+    //private val trash = DynamicTexture(loadBufferedImage("/assets/odinmain/waypoint/trash.png"))
 
     fun drawScreen(): Int {
         roundedRectangle(15, y, 450, 30, Color(13, 14, 15), 5f)
@@ -33,7 +30,7 @@ class WaypointElement(val waypoint: Waypoint) {
         roundedRectangle(20, y + 6, 18, 18, color, 5f)
 
         val trashColor = if (mouseHandler.isAreaHovered(442f, y + 6, 18f, 18f)) Color(192, 192, 192).rgba else -1
-        drawDynamicTexture(trash, 442f, y + 6, 18f, 18f) // get better svg it looks so pixelated
+        //drawDynamicTexture(trash, 442f, y + 6, 18f, 18f) // get better svg it looks so pixelated
 
         var currentX = 40f
         for (i in inputFields) {

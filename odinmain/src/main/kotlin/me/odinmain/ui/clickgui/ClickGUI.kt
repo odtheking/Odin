@@ -13,10 +13,7 @@ import me.odinmain.ui.clickgui.util.ColorUtil.buttonColor
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.clickgui.util.HoverHandler
-import me.odinmain.ui.util.roundedRectangle
-import me.odinmain.ui.util.translate
-import me.odinmain.ui.util.wrappedText
-import me.odinmain.ui.util.wrappedTextBounds
+import me.odinmain.ui.util.*
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.render.Color
@@ -190,6 +187,7 @@ object ClickGUI : Screen() {
         fun render() {
             if (shouldRender) {
                 val area = wrappedTextBounds(text!!, 300f, 12f)
+                scale(1f / scaleFactor, 1f / scaleFactor, 1f)
                 roundedRectangle(
                     x, y, area.first + 7, area.second + 9,
                     buttonColor.withAlpha((hoverHandler!!.percent() / 100f).coerceIn(0f, 0.8f)), 5f
@@ -199,6 +197,7 @@ object ClickGUI : Screen() {
                     text = null
                     hoverHandler = null
                 }
+                scale(scaleFactor, scaleFactor, 1f)
             }
 
         }

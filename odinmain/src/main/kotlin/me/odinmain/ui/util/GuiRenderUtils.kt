@@ -17,22 +17,19 @@ import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.GL11
 
 val matrix = UMatrixStack.Compat
-
+val scaleFactor get() = ScaledResolution(mc).scaleFactor.toFloat()
 fun roundedRectangle(
     x: Number, y: Number, w: Number, h: Number,
     color: Color, borderColor: Color, shadowColor: Color,
     borderThickness: Number, topL: Number, topR: Number, botL: Number, botR: Number, edgeSoftness: Number,
     color2: Color = color, gradientDir: Int = 0, shadowSoftness: Float = 0f
 ) {
-    val sr = ScaledResolution(mc)
-    scale(1f / sr.scaleFactor, 1f / sr.scaleFactor, 1f)
     matrix.runLegacyMethod(matrix.get()) {
         RoundedRect.drawRectangle(
             matrix.get(), x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(),
             color, borderColor, shadowColor, borderThickness.toFloat(), topL.toFloat(), topR.toFloat(), botL.toFloat(), botR.toFloat(), edgeSoftness.toFloat(), color2, gradientDir, shadowSoftness
         )
     }
-    scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
 }
 
 fun roundedRectangle(x: Number, y: Number, w: Number, h: Number, color: Color, radius: Number = 0f, edgeSoftness: Number = 0.5f) =
@@ -56,18 +53,12 @@ fun gradientRect(x: Float, y: Float, w: Float, h: Float, color1: Color, color2: 
 }
 
 fun drawHSBBox(x: Float, y: Float, w: Float, h: Float, color: Color) {
-    val sr = ScaledResolution(mc)
-    scale(1f / sr.scaleFactor, 1f / sr.scaleFactor, 1f)
     matrix.runLegacyMethod(matrix.get()) { RoundedRect.drawHSBBox(matrix.get(), x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(), color,) }
-    scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
     rectangleOutline(x-1, y-1, w+2, h+2, Color(38, 38, 38), 3f, 2f)
 }
 
 fun circle(x: Number, y: Number, radius: Number, color: Color, borderColor: Color = color, borderThickness: Number = 0f) {
-    val sr = ScaledResolution(mc)
-    scale(1f / sr.scaleFactor, 1f / sr.scaleFactor, 1f)
     matrix.runLegacyMethod(matrix.get()) { RoundedRect.drawCircle(matrix.get(), x.toFloat(), y.toFloat(), radius.toFloat(), color, borderColor, borderThickness.toFloat()) }
-    scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
 }
 
 fun text(text: String, x: Float, y: Float, color: Color, size: Float, type: Int = OdinFont.REGULAR, align: TextAlign = Left, verticalAlign: TextPos = TextPos.Middle, shadow: Boolean = false) {
@@ -85,8 +76,6 @@ fun scale(x: Float, y: Float, z: Float = 1f) = GlStateManager.scale(x, y, z)
 fun dropShadow(x: Float, y: Float, w: Float, h: Float, blur: Float, spread: Float, idek: Float) = Unit
 
 fun dropShadow(x: Number, y: Number, w: Number, h: Number, shadowColor: Color, shadowSoftness: Number, topL: Number, topR: Number, botL: Number, botR: Number) {
-    val sr = ScaledResolution(mc)
-    scale(1f / sr.scaleFactor, 1f / sr.scaleFactor, 1f)
     translate(0f, 0f, -100f)
     matrix.runLegacyMethod(matrix.get()) {
         RoundedRect.drawDropShadow(
@@ -94,7 +83,6 @@ fun dropShadow(x: Number, y: Number, w: Number, h: Number, shadowColor: Color, s
         )
     }
     translate(0f, 0f, 100f)
-    scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
 }
 
 data class Scissor(val x: Number, val y: Number, val w: Number, val h: Number, val context: Int)
@@ -118,10 +106,7 @@ fun resetScissor(scissor: Scissor) {
 fun drawDynamicTexture(dynamicTexture: DynamicTexture, x: Float, y: Float, w: Float, h: Float) {
     dynamicTexture.updateDynamicTexture()
     GlStateManager.bindTexture(dynamicTexture.glTextureId)
-    val sr = ScaledResolution(mc)
-    scale(1f / sr.scaleFactor , 1f / sr.scaleFactor, 1f)
     drawTexturedModalRect(x.toInt(), y.toInt(), w.toInt(), h.toInt())
-    scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
 }
 
 fun wrappedText(text: String, x: Float, y: Float, w: Float, h: Float, color: Color, size: Float, type: Int = OdinFont.REGULAR) {
@@ -138,9 +123,3 @@ enum class TextAlign {
 enum class TextPos {
     Top, Bottom, Middle
 }
-
-val scaledWidth get() =
-    ScaledResolution(mc).scaledWidth
-
-val scaledHeight get() =
-    ScaledResolution(mc).scaledHeight

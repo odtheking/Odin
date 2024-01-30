@@ -59,17 +59,14 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
             val newVal = setting.min + ((mouseX - (x + 6f)) / (w - 12f)).coerceInNumber(0, 1) * diff
             setting.valueAsDouble = newVal.toDouble()
         }
-
-
         roundedRectangle(x, y, w, h, elementBackground)
 
-            text(name, x + 6f, y + h / 2f - 3f, textColor, 12f, OdinFont.REGULAR)
-            text(displayVal, x + w - 6f, y + h / 2f - 3f, textColor, 12f, OdinFont.REGULAR, TextAlign.Right)
+        text(name, x + 6f, y + h / 2f - 3f, textColor, 12f, OdinFont.REGULAR)
+        text(displayVal, x + w - 6f, y + h / 2f - 3f, textColor, 12f, OdinFont.REGULAR, TextAlign.Right)
 
         roundedRectangle(x + 6f, y + 28f, w - 12f, 7f, sliderBGColor, 2.5f)
-            dropShadow(x + 6f, y + 28f, w - 12f, 7f, 10f, 0.75f, 3f)
-            if (x + percentage * (w - 12f) > x + 6) roundedRectangle(x + 6f, y + 28f, sliderPercentage * (w - 12f), 7f, color, 3f)
-
+        dropShadow(x + 6f, y + 28f, w - 12f, 7f, 10f, 0.75f, 3f)
+        if (x + percentage * (w - 12f) > x + 6) roundedRectangle(x + 6f, y + 28f, sliderPercentage * (w - 12f), 7f, color, 3f)
     }
 
     override fun mouseClicked(mouseButton: Int): Boolean {

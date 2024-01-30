@@ -38,7 +38,6 @@ class ElementTextField(parent: ModuleButton, setting: StringSetting) :
 
     override fun draw() {
         roundedRectangle(x, y, w, h, elementBackground)
-
         if (getTextWidth(display + "00" + name, 12f) <= w) {
             val width = getTextWidth(display, 12f)
             hover.handle(x + w - 15 - width, y + 4, width + 12f, 22f)
@@ -66,7 +65,6 @@ class ElementTextField(parent: ModuleButton, setting: StringSetting) :
             }
             else text(name, x + w / 2f, y + h / 2f, textColor, 12f, OdinFont.REGULAR, TextAlign.Middle)
         }
-
     }
 
     override fun mouseClicked(mouseButton: Int): Boolean {
