@@ -1,6 +1,7 @@
 package me.odinmain.ui.clickgui.elements.menu
 
 import me.odinmain.features.settings.impl.ActionSetting
+import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.elements.Element
 import me.odinmain.ui.clickgui.elements.ElementType
 import me.odinmain.ui.clickgui.elements.ModuleButton
@@ -24,9 +25,8 @@ class ElementAction(parent: ModuleButton, setting: ActionSetting) : Element<Acti
 
 // todo: improve this
     override fun draw() {
-    roundedRectangle(x, y, w, h, elementBackground)
-            text(name, x + w / 2f, y + h / 2f, if (isHovered) textColor.darker() else textColor, 16f , Fonts.REGULAR, TextAlign.Middle, TextPos.Middle)
-
+        roundedRectangle(x, y, w, h, elementBackground)
+        text(name, x + w / 2f, y + h / 2f, if (isHovered) textColor.darker() else textColor, 12f , OdinFont.REGULAR, TextAlign.Middle, TextPos.Middle)
     }
 
     override fun mouseClicked(mouseButton: Int): Boolean {

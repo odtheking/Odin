@@ -5,7 +5,6 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.ui.util.Fonts
 import me.odinmain.ui.util.getTextWidth
 import me.odinmain.ui.util.text
 import me.odinmain.utils.ServerUtils
@@ -22,26 +21,25 @@ object ServerDisplay : Module(
     private val tps: Boolean by BooleanSetting("TPS", true)
     private val fps: Boolean by BooleanSetting("FPS", false)
 
-
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {
-            if (ping) text("§6Ping: §a60ms", 1f, 9f, Color.WHITE,16f, Fonts.REGULAR)
-            if (tps) text("§3TPS: §a20.0", 1f, 26f, Color.WHITE,16f, Fonts.REGULAR)
-            if (fps) text("§dFPS: §a240.0", 1f, 43f, Color.WHITE,16f, Fonts.REGULAR)
+            if (ping) text("§6Ping: §a60ms", 1f, 9f, Color.WHITE,12f)
+            if (tps) text("§3TPS: §a20.0", 1f, 26f, Color.WHITE,12f)
+            if (fps) text("§dFPS: §a240.0", 1f, 43f, Color.WHITE,12f)
             max(
-                if (ping) getTextWidth("Ping: 60ms", 16f, Fonts.REGULAR) else 0f,
-                if (tps) getTextWidth("TPS: 20.0", 16f, Fonts.REGULAR) else 0f,
-                if (fps) getTextWidth("§dFPS: §a240.0", 16f, Fonts.REGULAR) else 0f
-            ) + 2f to 50f
+                if (ping) getTextWidth("Ping: 60ms", 12f) else 0f,
+                if (tps) getTextWidth("TPS: 20.0", 12f) else 0f,
+                if (fps) getTextWidth("§dFPS: §a240.0", 12f) else 0f
+            ) + 2f to if (ping && tps && fps) 50f else if (ping && tps || ping && fps || tps && fps) 35f else 20f
         } else {
-            if (ping) text("§6Ping: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 1f, 9f, Color.WHITE,16f, Fonts.REGULAR)
-            if (tps) text("§3TPS: ${colorizeTps(ServerUtils.averageTps.round(1))}", 1f, 26f, Color.WHITE,16f, Fonts.REGULAR)
-            if (fps) text("§dFPS: ${colorizeFPS(mc.debug.split(" ")[0].toIntOrNull() ?: 0)}", 1f, 43f, Color.WHITE,16f, Fonts.REGULAR)
+            if (ping) text("§6Ping: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 1f, 9f, Color.WHITE,12f)
+            if (tps) text("§3TPS: ${colorizeTps(ServerUtils.averageTps.round(1))}", 1f, 26f, Color.WHITE,12f)
+            if (fps) text("§dFPS: ${colorizeFPS(mc.debug.split(" ")[0].toIntOrNull() ?: 0)}", 1f, 43f, Color.WHITE,12f)
             max(
-                if (ping) getTextWidth("§ePing: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 16f, Fonts.REGULAR) else 0f,
-                if (tps) getTextWidth("§ePing: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 16f, Fonts.REGULAR) else 0f,
-                if (fps) getTextWidth("§dFPS: ${colorizeFPS(mc.debug.split(" ")[0].toIntOrNull() ?: 0)}", 16f, Fonts.REGULAR) else 0f
-            ) + 2f to 50f
+                if (ping) getTextWidth("§ePing: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 12f) else 0f,
+                if (tps) getTextWidth("§ePing: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 12f) else 0f,
+                if (fps) getTextWidth("§dFPS: ${colorizeFPS(mc.debug.split(" ")[0].toIntOrNull() ?: 0)}", 12f) else 0f
+            ) + 2f to if (ping && tps && fps) 50f else if (ping && tps || ping && fps || tps && fps) 35f else 20f
         }
     }
 

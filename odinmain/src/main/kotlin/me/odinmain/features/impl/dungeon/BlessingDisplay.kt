@@ -7,8 +7,12 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.HudSetting
+import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.ui.util.*
+import me.odinmain.ui.util.TextAlign
+import me.odinmain.ui.util.TextPos
+import me.odinmain.ui.util.getTextWidth
+import me.odinmain.ui.util.text
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import net.minecraft.network.play.server.S47PacketPlayerListHeaderFooter
@@ -35,16 +39,16 @@ object BlessingDisplay : Module(
 
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {
-            text("Power: §a29", 1f, 9f, powerColor, 16f, Fonts.REGULAR, TextAlign.Left, TextPos.Middle, true)
-            text("Time: §a5", 1f, 26f, timeColor,16f, Fonts.REGULAR, TextAlign.Left, TextPos.Middle, true)
-            max(getTextWidth("Power: 29", 16f, Fonts.REGULAR), getTextWidth("Time 5", 16f, Fonts.REGULAR)) + 2f to 33f
+            text("Power: §a29", 1f, 9f, powerColor, 12f, OdinFont.REGULAR, TextAlign.Left, TextPos.Middle, true)
+            text("Time: §a5", 1f, 26f, timeColor,12f, OdinFont.REGULAR, TextAlign.Left, TextPos.Middle, true)
+            max(getTextWidth("Power: 29", 12f), getTextWidth("Time 5", 12f)) + 2f to 33f
         } else {
             var width = 0f
             var height = 0f
             Blessings.entries.forEach { blessing ->
                 if (blessing.current == 0 || !blessing.enabled.invoke()) return@forEach
-                text("${blessing.displayString} §a${blessing.current}", 1f, 9f + height, blessing.color,16f, Fonts.REGULAR, TextAlign.Left, TextPos.Middle, true)
-                width = max(width, getTextWidth("${blessing.displayString} §a${blessing.current}".noControlCodes, 16f, Fonts.REGULAR))
+                text("${blessing.displayString} §a${blessing.current}", 1f, 9f + height, blessing.color,12f, OdinFont.REGULAR, TextAlign.Left, TextPos.Middle, true)
+                width = max(width, getTextWidth("${blessing.displayString} §a${blessing.current}".noControlCodes, 12f))
                 height += 17f
             }
             width to height

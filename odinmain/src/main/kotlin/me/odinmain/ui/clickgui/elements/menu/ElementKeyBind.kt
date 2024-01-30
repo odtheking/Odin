@@ -2,6 +2,7 @@ package me.odinmain.ui.clickgui.elements.menu
 
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.DummySetting
+import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.animations.impl.ColorAnimation
 import me.odinmain.ui.clickgui.elements.Element
 import me.odinmain.ui.clickgui.elements.ElementType
@@ -43,7 +44,7 @@ class ElementKeyBind(parent: ModuleButton, private val mod: Module) :
 
         roundedRectangle(x, y, w, h, elementBackground)
 
-            val width = getTextWidth(value, 16f, Fonts.REGULAR)
+            val width = getTextWidth(value, 12f)
             hover.handle(x + w - 20 - width, y + 4, width + 12f, 22f)
 
         roundedRectangle(x + w - 20 - width, y + 4, width + 12f, 22f, buttonColor, 5f)
@@ -54,8 +55,8 @@ class ElementKeyBind(parent: ModuleButton, private val mod: Module) :
                 rectangleOutline(x + w - 21 - width, y + 3, width + 12.5f, 22.5f, color, 4f,1.5f)
             }
 
-            text(name,  x + 6f, y + h / 2, textColor, 16f, Fonts.REGULAR)
-            text(value, x + w - 14, y + 4f, textColor, 16f, Fonts.REGULAR, TextAlign.Right, TextPos.Top)
+            text(name,  x + 6f, y + h / 2, textColor, 12f, OdinFont.REGULAR)
+            text(value, x + w - 14, y + 4f, textColor, 12f, OdinFont.REGULAR, TextAlign.Right, TextPos.Top)
 
     }
 

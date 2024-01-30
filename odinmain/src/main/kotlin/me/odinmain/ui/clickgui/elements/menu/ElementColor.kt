@@ -1,6 +1,7 @@
 package me.odinmain.ui.clickgui.elements.menu
 
 import me.odinmain.features.settings.impl.ColorSetting
+import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.animations.impl.ColorAnimation
 import me.odinmain.ui.clickgui.animations.impl.EaseInOut
 import me.odinmain.ui.clickgui.elements.Element
@@ -60,7 +61,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
         hover.handle(x + w - 41, y + 5, 31.5f, 19f)
 
         roundedRectangle(x, y, w, h, elementBackground)
-        text(name, x + 6f, y + 18f, textColor, 16f, Fonts.REGULAR)
+        text(name, x + 6f, y + 18f, textColor, 12f, OdinFont.REGULAR)
         dropShadow(x + w - 40f, y + 5f, 31f, 19f, 10f, 0.75f, 5f)
         roundedRectangle(x + w - 40f, y + 5f, 31f, 19f, color.brighter(1 + hover.percent() / 500f), 5f)
         rectangleOutline(x + w - 40f, y + 5f, 31f, 19f, color.darker().withAlpha(1f), 5f, 1.5f)
@@ -113,9 +114,9 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
             stringBefore = hexString
         }
 
-        val stringWidth = getTextWidth(hexString, 16f, Fonts.REGULAR)
+        val stringWidth = getTextWidth(hexString, 12f)
         roundedRectangle(x + w / 2 - stringWidth / 2 - 12, y + 260, stringWidth + 24, 22f, buttonColor, 5f)
-        text(hexString, x + w / 2, y + 271, Color.WHITE, 16f, Fonts.REGULAR, TextAlign.Middle, TextPos.Middle)
+        text(hexString, x + w / 2, y + 271, Color.WHITE, 12f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Middle)
 
         if (listeningForString || colorAnim.isAnimating()) {
             val color = colorAnim.get(ColorUtil.clickGUIColor, buttonColor, listeningForString)

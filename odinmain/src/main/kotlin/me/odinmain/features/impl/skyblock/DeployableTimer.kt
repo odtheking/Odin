@@ -4,8 +4,8 @@ import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.HudSetting
+import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.ui.util.Fonts
 import me.odinmain.ui.util.drawDynamicTexture
 import me.odinmain.ui.util.getTextWidth
 import me.odinmain.ui.util.text
@@ -34,25 +34,25 @@ object DeployableTimer : Module(
 
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {
-            text("§5SOS Flare", 40f, 15f, Color.WHITE,16f, Fonts.SEMIBOLD)
-            text("§e179s", 40f, 32f, Color.WHITE,16f, Fonts.SEMIBOLD)
+            text("§5SOS Flare", 40f, 15f, Color.WHITE,12f, OdinFont.BOLD)
+            text("§e179s", 40f, 32f, Color.WHITE,12f, OdinFont.BOLD)
 
             drawDynamicTexture(firework, -5f, -2f, 50f, 50f)
 
             max(
-                getTextWidth("SOS Flare", 16f, Fonts.SEMIBOLD),
-                getTextWidth("179s", 16f, Fonts.SEMIBOLD)
+                getTextWidth("SOS Flare", 12f),
+                getTextWidth("179s", 12f)
             ) + 42f to 48f
         } else if (toRender.name != "") {
-            text(toRender.name, 40f, 15f, Color.WHITE,16f, Fonts.SEMIBOLD)
-            text(toRender.timeLeft, 40f, 32f, Color.WHITE,16f, Fonts.SEMIBOLD)
+            text(toRender.name, 40f, 15f, Color.WHITE,12f, OdinFont.BOLD)
+            text(toRender.timeLeft, 40f, 32f, Color.WHITE,12f, OdinFont.BOLD)
 
             if (toRender.name.contains("Flare", true)) drawDynamicTexture(toRender.image, -5f, -2f, 50f, 50f)
             else drawDynamicTexture(toRender.image, 0f, 5f, 35f, 35f)
 
             max(
-                getTextWidth(toRender.name.noControlCodes, 16f, Fonts.SEMIBOLD),
-                getTextWidth(toRender.timeLeft.noControlCodes, 16f, Fonts.SEMIBOLD)
+                getTextWidth(toRender.name.noControlCodes, 12f),
+                getTextWidth(toRender.timeLeft.noControlCodes, 12f)
             ) + 42f to 48f
         } else 0f to 0f
     }

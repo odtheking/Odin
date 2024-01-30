@@ -3,7 +3,7 @@ package me.odinmain.ui.util
 import gg.essential.universal.UMatrixStack
 import me.odinmain.OdinMain.mc
 import me.odinmain.font.OdinFont
-import me.odinmain.ui.util.TextAlign.*
+import me.odinmain.ui.util.TextAlign.Left
 import me.odinmain.utils.coerceAlpha
 import me.odinmain.utils.div
 import me.odinmain.utils.minus
@@ -15,9 +15,6 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.texture.DynamicTexture
 import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.GL11
-
-
-
 
 val matrix = UMatrixStack.Compat
 
@@ -73,8 +70,7 @@ fun circle(x: Number, y: Number, radius: Number, color: Color, borderColor: Colo
     scale(sr.scaleFactor.toFloat(), sr.scaleFactor.toFloat(), 1f)
 }
 
-
-fun text(text: String, x: Float, y: Float, color: Color, size: Float, align: TextAlign = Left, verticalAlign: TextPos = TextPos.Middle, shadow: Boolean = false, type: Int = OdinFont.REGULAR) {
+fun text(text: String, x: Float, y: Float, color: Color, size: Float, type: Int = OdinFont.REGULAR, align: TextAlign = Left, verticalAlign: TextPos = TextPos.Middle, shadow: Boolean = false) {
     OdinFont.text(text, x, y, color, size, align, verticalAlign, shadow, type)
 }
 
@@ -142,3 +138,9 @@ enum class TextAlign {
 enum class TextPos {
     Top, Bottom, Middle
 }
+
+val scaledWidth get() =
+    ScaledResolution(mc).scaledWidth
+
+val scaledHeight get() =
+    ScaledResolution(mc).scaledHeight

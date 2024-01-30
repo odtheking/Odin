@@ -89,7 +89,7 @@ object WaypointGUI : GuiScreen() {
             drawRoundedRectVaried(0, 0,  480, 25, Color(21, 22, 23).rgba, 10, 10, 0, 0)
             drawLine(0, 25, 480, 25, 1.5, Color(30, 32, 34).rgba)
 
-            drawText("Add Waypoint", 16, 13.25, Color(192, 192, 192).rgba, 10, Fonts.REGULAR)
+            drawText("Add Waypoint", 16, 13.25, Color(192, 192, 192).rgba, 10, OdinFont.REGULAR)
             val buttonColor = if (mouseHandler.isAreaHovered(10f, 5f, 78.5f, 15f)) Color(38, 40, 42) else Color(30, 32, 34)
             drawHollowRoundedRect(10, 5, 78, 15, 5, buttonColor.rgba, 0.75)
 

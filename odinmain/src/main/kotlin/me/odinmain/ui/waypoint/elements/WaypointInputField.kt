@@ -3,7 +3,6 @@ package me.odinmain.ui.waypoint.elements
 
 import me.odinmain.ui.clickgui.animations.impl.EaseInOut
 import me.odinmain.ui.clickgui.animations.impl.LinearAnimation
-import me.odinmain.ui.util.Font
 import me.odinmain.ui.util.MouseHandler
 import org.lwjgl.input.Keyboard
 
@@ -13,11 +12,11 @@ class WaypointInputField(
     private val onlyNumbers: Boolean,
     private val mouseHandler: MouseHandler,
     private val size: Float,
-    private val font: Font
+    private val font: Int
 ) {
-    constructor(defaultText: String, mouseHandler: MouseHandler, size: Float, font: Font) : this(defaultText, null, false, mouseHandler, size, font)
+    constructor(defaultText: String, mouseHandler: MouseHandler, size: Float, font: Int) : this(defaultText, null, false, mouseHandler, size, font)
 
-    constructor(defaultText: Int, prefix: String, mouseHandler: MouseHandler, size: Float, font: Font) : this(defaultText, prefix, true, mouseHandler, size, font)
+    constructor(defaultText: Int, prefix: String, mouseHandler: MouseHandler, size: Float, font: Int) : this(defaultText, prefix, true, mouseHandler, size, font)
 
     private inline val display get() = (if (prefix != null) "$prefix " else "") + text
     var text: String = defaultText.toString()

@@ -2,6 +2,7 @@ package me.odinmain.ui.hud
 
 import me.odinmain.config.Config
 import me.odinmain.features.ModuleManager.huds
+import me.odinmain.font.OdinFont
 import me.odinmain.ui.Screen
 import me.odinmain.ui.clickgui.animations.impl.EaseInOut
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
@@ -54,7 +55,7 @@ object EditHUDGui : Screen() {
         //dropShadow(-100f, -25f, 200f, 50f, 10f, 1f, 9f)
         roundedRectangle(Display.getWidth() / 2 - 100f, Display.getHeight() * .875 - 25f, 200f, 50f, color, 9f)
 
-        text("Reset", Display.getWidth() / 2f, Display.getHeight() * .875f, textColor, 38f, Fonts.REGULAR, TextAlign.Middle)
+        text("Reset", Display.getWidth() / 2f, Display.getHeight() * .875f, textColor, 32f, OdinFont.REGULAR, TextAlign.Middle)
         //rect(-75f, -25f, 150f, 50f, Color.WHITE) // make this good
 
         if (openAnim.isAnimating()) {

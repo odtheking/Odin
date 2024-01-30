@@ -1,6 +1,7 @@
 package me.odinmain.ui.clickgui
 
 import me.odinmain.OdinMain.mc
+import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.animations.impl.ColorAnimation
 import me.odinmain.ui.clickgui.elements.menu.ElementTextField
 import me.odinmain.ui.clickgui.util.ColorUtil
@@ -27,8 +28,8 @@ object SearchBar {
             rectangleOutline(-202f, -1f, 404f, 32f, color, 9f,3f)
         }
         if (currentSearch.isEmpty()) {
-            text("Search here...", 0f, 16f, Color.WHITE.withAlpha(0.5f), 20f, Fonts.REGULAR, TextAlign.Middle)
-        } else text(currentSearch, 0f, 16f, Color.WHITE, 20f, Fonts.REGULAR, TextAlign.Middle)
+            text("Search here...", 0f, 12f, Color.WHITE.withAlpha(0.5f), 20f, OdinFont.REGULAR, TextAlign.Middle)
+        } else text(currentSearch, 0f, 12f, Color.WHITE, 20f, OdinFont.REGULAR, TextAlign.Middle)
         translate(-mc.displayWidth / 4f, -mc.displayHeight / 4f + 200f)
         GlStateManager.popMatrix()
     }

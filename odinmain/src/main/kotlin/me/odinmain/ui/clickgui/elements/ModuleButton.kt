@@ -3,6 +3,7 @@ package me.odinmain.ui.clickgui.elements
 import me.odinmain.features.Module
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.settings.impl.*
+import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.clickgui.Panel
 import me.odinmain.ui.clickgui.animations.impl.ColorAnimation
@@ -101,8 +102,8 @@ class ModuleButton(val module: Module, val panel: Panel) {
 
 
         roundedRectangle(x, y, width, height, color)
-        text(module.name, x + width / 2, y + height / 2, textColor, 18f, Fonts.REGULAR, TextAlign.Middle)
-        val textWidth = getTextWidth(module.name, 18f, Fonts.REGULAR)
+        text(module.name, x + width / 2, y + height / 2, textColor, 14f, OdinFont.REGULAR, TextAlign.Middle)
+        val textWidth = getTextWidth(module.name, 18f)
 
         if (textWidth > width - 80)// too long text, not drawing symbol
         else if (module.tag == Module.TagType.RISKY) {

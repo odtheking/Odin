@@ -64,16 +64,16 @@ class Panel(
         var startY = scrollOffset + height
 
         roundedRectangle(x, y, width, height, ColorUtil.moduleButtonColor, ColorUtil.moduleButtonColor, ColorUtil.moduleButtonColor, 0f, 15f, 15f, 0f, 0f, 0f)
-        text(if (displayName == Category.FLOOR7.name) "Floor 7" else displayName, x + width / 2f, y + height / 2f, ColorUtil.textColor, 22f, TextAlign.Middle, type = OdinFont.BOLD)
+        text(if (displayName == Category.FLOOR7.name) "Floor 7" else displayName, x + width / 2f, y + height / 2f, ColorUtil.textColor, 20f, type = OdinFont.BOLD, TextAlign.Middle)
 
         val s = scissor(x, y + height, width, 5000f)
         if (extended && moduleButtons.isNotEmpty()) {
-                for (button in moduleButtons.filter { it.module.name.contains(currentSearch, true) }) {
-                    button.y = startY
-                    startY += button.draw()
-                }
-                length = startY + 5f
+            for (button in moduleButtons.filter { it.module.name.contains(currentSearch, true) }) {
+                button.y = startY
+                startY += button.draw()
             }
+            length = startY + 5f
+        }
 
         moduleButtons.lastOrNull()?.color?.let { roundedRectangle(x, y + startY, width, 10f, it, it, it, 0f, 0f, 0f, 10f, 10f, 4f) }
 

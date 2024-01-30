@@ -207,7 +207,6 @@ object TerminalSolver : Module(
         val panes = items.filter { it?.metadata != 15 && Item.getIdFromItem(it?.item) == 160 }.filterNotNull()
         var temp = List(100) { i -> i }
         if (lastRubixSolution != null && lockRubixSolution) {
-            modMessage("getting last solution")
             temp = panes.flatMap { pane ->
                 if (pane.metadata != lastRubixSolution) {
                     Array(dist(colorOrder.indexOf(pane.metadata), colorOrder.indexOf(lastRubixSolution))) { pane }.toList()

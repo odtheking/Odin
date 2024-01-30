@@ -17,9 +17,9 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.DualSetting
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.ui.util.Fonts
 import me.odinmain.ui.util.getTextWidth
 import me.odinmain.ui.util.roundedRectangle
 import me.odinmain.ui.util.text
@@ -45,23 +45,22 @@ object WitherDragons : Module(
     private val timerBackground: Boolean by BooleanSetting("HUD Timer Background", true, description = "Displays a background for the timer.").withDependency { dragonTimer && hud.displayToggle }
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, true) {
         if (it) {
-            if (timerBackground) roundedRectangle(1f, 1f, getTextWidth("Purple spawning in 4500ms", 19f, Fonts.REGULAR), 32f, Color.DARK_GRAY.withAlpha(.75f), 3f)
+            if (timerBackground) roundedRectangle(1f, 1f, getTextWidth("Purple spawning in 4500ms", 12f) + 1f, 32f, Color.DARK_GRAY.withAlpha(.75f), 3f)
 
-            text("§5Purple spawning in §a4500ms", 2f, 10f, Color.WHITE, 16f, Fonts.REGULAR)
-            text("§cRed spawning in §e1200ms", 2f, 26f, Color.WHITE,16f, Fonts.REGULAR)
-
+            text("§5Purple spawning in §a4500ms", 2f, 10f, Color.WHITE, 12f, OdinFont.REGULAR)
+            text("§cRed spawning in §e1200ms", 2f, 26f, Color.WHITE,12f, OdinFont.REGULAR)
             max(
-                getTextWidth("Purple spawning in 4500ms", 16f, Fonts.REGULAR),
-                getTextWidth("Red spawning in 1200ms", 16f, Fonts.REGULAR)
+                getTextWidth("Purple spawning in 4500ms", 12f),
+                getTextWidth("Red spawning in 1200ms", 12f)
             ) + 2f to 33f
         } else if (DragonTimer.toRender.size != 0) {
             if (!dragonTimer) return@HudSetting 0f to 0f
             var width = 0f
             DragonTimer.toRender.forEachIndexed { index, triple ->
-                text(triple.first, 1f, 9f + index * 17f, Color.WHITE,16f, Fonts.REGULAR)
-                width = max(width, getTextWidth(triple.first.noControlCodes, 19f, Fonts.REGULAR))
+                text(triple.first, 1f, 9f + index * 17f, Color.WHITE,12f, OdinFont.REGULAR)
+                width = max(width, getTextWidth(triple.first.noControlCodes, 19f))
             }
-            roundedRectangle(1f, 1f, width + 2f, DragonTimer.toRender.size * 16f, Color.DARK_GRAY.withAlpha(.75f), 4f)
+            roundedRectangle(1f, 1f, width + 2f, DragonTimer.toRender.size * 12f, Color.DARK_GRAY.withAlpha(.75f), 4f)
             width to DragonTimer.toRender.size * 17f
         } else 0f to 0f
     }

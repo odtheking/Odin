@@ -3,9 +3,9 @@ package me.odinmain.features.impl.skyblock
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.HudSetting
+import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.animations.impl.EaseInOut
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.ui.util.Fonts
 import me.odinmain.ui.util.getTextWidth
 import me.odinmain.ui.util.text
 import me.odinmain.utils.render.Color
@@ -21,11 +21,11 @@ object CanClip : Module(
 ) {
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {
-            text("Can Clip", 1f, 9f, Color.WHITE, 16f, Fonts.REGULAR)
-            getTextWidth("Can Clip", 16f, Fonts.REGULAR) to 16f
+            text("Can Clip", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR)
+            getTextWidth("Can Clip", 12f) to 12f
         } else {
-            text("Can Clip", 1f, 9f, Color(0, 255, 0, animation.get(0f, 1f, !canClip)), 16f, Fonts.REGULAR)
-            getTextWidth("Can Clip", 16f, Fonts.REGULAR) to 16f
+            text("Can Clip", 1f, 9f, Color(0, 255, 0, animation.get(0f, 1f, !canClip)), 12f, OdinFont.REGULAR)
+            getTextWidth("Can Clip", 12f) to 12f
         }
     }
 

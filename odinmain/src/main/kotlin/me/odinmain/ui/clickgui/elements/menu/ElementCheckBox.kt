@@ -2,6 +2,7 @@ package me.odinmain.ui.clickgui.elements.menu
 
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.animations.impl.ColorAnimation
 import me.odinmain.ui.clickgui.animations.impl.LinearAnimation
 import me.odinmain.ui.clickgui.elements.Element
@@ -43,7 +44,7 @@ class ElementCheckBox(parent: ModuleButton, setting: BooleanSetting) : Element<B
     override fun draw() {
 
         roundedRectangle(x, y, w, h, elementBackground)
-        text(name, x + 6f, y + h / 2f, textColor, 16f, Fonts.REGULAR)
+        text(name, x + 6f, y + h / 2f, textColor, 12f, OdinFont.REGULAR)
 
         hover.handle(x + w - 43f, y + 4f, 34f, 20f)
         val color = colorAnim.get(clickGUIColor, buttonColor, setting.enabled).brighter(1 + hover.percent() / 500f)

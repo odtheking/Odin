@@ -13,7 +13,10 @@ import me.odinmain.ui.clickgui.util.ColorUtil.buttonColor
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.clickgui.util.HoverHandler
-import me.odinmain.ui.util.*
+import me.odinmain.ui.util.roundedRectangle
+import me.odinmain.ui.util.translate
+import me.odinmain.ui.util.wrappedText
+import me.odinmain.ui.util.wrappedTextBounds
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.render.Color
@@ -48,7 +51,6 @@ object ClickGUI : Screen() {
             panels.add(Panel(category))
         }
     }
-
     override fun draw() {
         GlStateManager.pushMatrix()
         translate(0f, 0f, 200f)
@@ -187,12 +189,12 @@ object ClickGUI : Screen() {
         /** Handles rendering, if it's not active then it won't render */
         fun render() {
             if (shouldRender) {
-                val area = wrappedTextBounds(text!!, 300f, 16f)
+                val area = wrappedTextBounds(text!!, 300f, 12f)
                 roundedRectangle(
                     x, y, area.first + 7, area.second + 9,
                     buttonColor.withAlpha((hoverHandler!!.percent() / 100f).coerceIn(0f, 0.8f)), 5f
                 )
-                wrappedText(text!!, x + 7f, y + 12f, 300f, 1f, textColor, 16f, OdinFont.REGULAR)
+                wrappedText(text!!, x + 7f, y + 12f, 300f, 1f, textColor, 12f, OdinFont.REGULAR)
                 if (hoverHandler!!.percent() == 0) {
                     text = null
                     hoverHandler = null

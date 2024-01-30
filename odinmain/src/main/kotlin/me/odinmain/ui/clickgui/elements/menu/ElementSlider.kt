@@ -1,6 +1,7 @@
 package me.odinmain.ui.clickgui.elements.menu
 
 import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.elements.Element
 import me.odinmain.ui.clickgui.elements.ElementType
 import me.odinmain.ui.clickgui.elements.ModuleButton
@@ -9,9 +10,12 @@ import me.odinmain.ui.clickgui.util.ColorUtil.clickGUIColor
 import me.odinmain.ui.clickgui.util.ColorUtil.elementBackground
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.HoverHandler
-import me.odinmain.ui.util.*
 import me.odinmain.ui.util.MouseUtils.isAreaHovered
 import me.odinmain.ui.util.MouseUtils.mouseX
+import me.odinmain.ui.util.TextAlign
+import me.odinmain.ui.util.dropShadow
+import me.odinmain.ui.util.roundedRectangle
+import me.odinmain.ui.util.text
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
 import org.lwjgl.input.Keyboard
@@ -59,8 +63,8 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
 
         roundedRectangle(x, y, w, h, elementBackground)
 
-            text(name, x + 6f, y + h / 2f - 3f, textColor, 16f, Fonts.REGULAR)
-            text(displayVal, x + w - 6f, y + h / 2f - 3f, textColor, 16f, Fonts.REGULAR, TextAlign.Right)
+            text(name, x + 6f, y + h / 2f - 3f, textColor, 12f, OdinFont.REGULAR)
+            text(displayVal, x + w - 6f, y + h / 2f - 3f, textColor, 12f, OdinFont.REGULAR, TextAlign.Right)
 
         roundedRectangle(x + 6f, y + 28f, w - 12f, 7f, sliderBGColor, 2.5f)
             dropShadow(x + 6f, y + 28f, w - 12f, 7f, 10f, 0.75f, 3f)

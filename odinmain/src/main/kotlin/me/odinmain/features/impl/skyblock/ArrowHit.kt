@@ -7,8 +7,8 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.StringSetting
+import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.ui.util.Fonts
 import me.odinmain.ui.util.getTextWidth
 import me.odinmain.ui.util.text
 import me.odinmain.utils.clock.Clock
@@ -31,11 +31,11 @@ object ArrowHit : Module(
 
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 2f, false) {
         if (it) {
-            text("17.8", 1f, 9f, Color.WHITE,16f, Fonts.REGULAR)
-            getTextWidth("17.8", 16f, Fonts.REGULAR ) to 16f
+            text("17.8", 1f, 9f, Color.WHITE,12f, OdinFont.REGULAR)
+            getTextWidth("17.8", 12f) to 12f
         } else {
-            text("$arrowCount", 1f, 9f, Color.WHITE,16f, Fonts.REGULAR)
-            getTextWidth("$arrowCount", 16f, Fonts.REGULAR ) to 16f
+            text("$arrowCount", 1f, 9f, Color.WHITE,12f, OdinFont.REGULAR)
+            getTextWidth("$arrowCount", 12f) to 12f
         }
     }
 
