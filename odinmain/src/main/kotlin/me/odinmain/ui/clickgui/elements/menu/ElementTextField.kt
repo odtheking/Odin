@@ -48,7 +48,7 @@ class ElementTextField(parent: ModuleButton, setting: StringSetting) :
                 rectangleOutline(x + w - 16 - width, y + 3, width + 12.5f, 22.5f, color, 4f,1.5f)
             }
 
-            text(display, x + w - 10, y + 12f, textColor, 12f, OdinFont.REGULAR, TextAlign.Right)
+            text(display, x + w - 10, y + 16f, textColor, 12f, OdinFont.REGULAR, TextAlign.Right)
             text(name,  x + 6f, y + h / 2, textColor, 12f)
         } else {
             if (isHovered || listening) {

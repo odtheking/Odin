@@ -192,7 +192,7 @@ object ClickGUI : Screen() {
                     x, y, area.first + 7, area.second + 9,
                     buttonColor.withAlpha((hoverHandler!!.percent() / 100f).coerceIn(0f, 0.8f)), 5f
                 )
-                wrappedText(text!!, x + 7f, y + 12f, 300f, 1f, textColor, 12f, OdinFont.REGULAR)
+                wrappedText(text!!, x + 7f, y + 12f, 300f, textColor, 12f, OdinFont.REGULAR)
                 if (hoverHandler!!.percent() == 0) {
                     text = null
                     hoverHandler = null
