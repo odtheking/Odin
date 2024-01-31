@@ -37,8 +37,8 @@ fun roundedRectangle(x: Number, y: Number, w: Number, h: Number, color: Color, r
         0f, radius.toFloat(), radius.toFloat(), radius.toFloat(), radius.toFloat(), edgeSoftness)
 
 
-fun rectangleOutline(x: Float, y: Float, w: Float, h: Float, color: Color, radius: Float = 0f, thickness: Float) {
-    roundedRectangle(x, y, w, h, Color.TRANSPARENT, color, Color.TRANSPARENT, thickness, radius, radius, radius, radius, 1f)
+fun rectangleOutline(x: Number, y: Number, w: Number, h: Number, color: Color, radius: Number = 0f, thickness: Number, edgeSoftness: Number = 1f) {
+    roundedRectangle(x, y, w, h, Color.TRANSPARENT, color, Color.TRANSPARENT, thickness, radius, radius, radius, radius, edgeSoftness)
 }
 
 enum class GradientDirection {

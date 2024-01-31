@@ -226,7 +226,7 @@ object DungeonUtils {
         Healer("§d", Color.PINK, 2, 2),
 
         /**
-         * Mage class with formatting code "§5" (purple) and purple color.
+         * Mage class with formatting code "§b" (purple) and purple color.
          */
         Mage("§b", Color.BLUE, 3, 2),
 

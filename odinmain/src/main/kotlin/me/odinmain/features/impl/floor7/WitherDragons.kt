@@ -76,9 +76,9 @@ object WitherDragons : Module(
     private val dragonHealth: Boolean by BooleanSetting("Dragon Health", true, description = "Displays the health of M7 dragons.")
 
     val dragonPriorityToggle: Boolean by BooleanSetting("Dragon Priority", false, description = "Displays the priority of dragons spawning.")
-    val configPower: Double by NumberSetting("Normal Power", 21.0, 10.0, 29.0, description = "Power needed to split.").withDependency { dragonPriorityToggle }
-    val configEasyPower: Double by NumberSetting("Easy Power", 19.0, 10.0, 29.0, description = "Power needed when its Purple and another dragon.").withDependency { dragonPriorityToggle }
-    val configSoloDebuff: Boolean by DualSetting("Purple Solo Debuff", "Tank", "Healer", false, description = "Displays the debuff of the config.The class that solo debuffs purple, the other class helps b/m.").withDependency { dragonPriorityToggle }
+    val normalPower: Double by NumberSetting("Normal Power", 10.0, 10.0, 29.0, description = "Power needed to split.").withDependency { dragonPriorityToggle }
+    val easyPower: Double by NumberSetting("Easy Power", 10.0, 10.0, 29.0, description = "Power needed when its Purple and another dragon.").withDependency { dragonPriorityToggle }
+    val soloDebuff: Boolean by DualSetting("Purple Solo Debuff", "Tank", "Healer", false, description = "Displays the debuff of the config.The class that solo debuffs purple, the other class helps b/m.").withDependency { dragonPriorityToggle }
     val soloDebuffOnAll: Boolean by BooleanSetting("Solo Debuff on All Splits", false, description = "Same as Purple Solo Debuff but for all dragons (A will only have 1 debuff).").withDependency { dragonPriorityToggle }
     val paulBuff: Boolean by BooleanSetting("Paul Buff", false, description = "Multiplies the power in your run by 1.25").withDependency { dragonPriorityToggle }
 
@@ -87,7 +87,6 @@ object WitherDragons : Module(
     val greenPB = +NumberSetting("Numbers PB", 1000.0, increment = 0.01, hidden = true)
     val bluePB = +NumberSetting("Melody PB", 1000.0, increment = 0.01, hidden = true)
     val purplePB = +NumberSetting("Starts With PB", 1000.0, increment = 0.01, hidden = true)
-
 
     @SubscribeEvent
     fun onReceivePacket(event: ReceivePacketEvent) {
@@ -137,5 +136,4 @@ object WitherDragons : Module(
         if (DungeonUtils.getPhase() != 5) return
         onChatPacket(event)
     }
-
 }

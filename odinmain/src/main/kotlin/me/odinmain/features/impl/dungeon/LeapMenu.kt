@@ -11,6 +11,7 @@ import me.odinmain.features.impl.dungeon.LeapHelper.leapHelperClearChatEvent
 import me.odinmain.features.impl.dungeon.LeapHelper.worldLoad
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
+import me.odinmain.ui.clickgui.util.ColorUtil
 import me.odinmain.ui.util.*
 import me.odinmain.ui.util.MouseUtils.getQuadrant
 import me.odinmain.utils.name
@@ -59,28 +60,30 @@ object LeapMenu : Module(
             if (it == EMPTY) return@forEachIndexed
             GlStateManager.pushMatrix()
             GlStateManager.enableAlpha()
-            scale(6f / scaleFactor,  6f / scaleFactor)
+            scale(mc.displayWidth / 1920f, mc.displayHeight / 1080f)
+            scale(1f / scaleFactor,  1f / scaleFactor)
             GlStateManager.color(255f, 255f, 255f, 255f)
             translate(
-                (30f + (index % 2 * 155f)),
-                (if (index >= 2) 120f else 40f),
+                (120f + (index % 2 * 910f)),
+                (if (index >= 2) 615f else 165f),
                 0f)
             mc.textureManager.bindTexture(it.locationSkin)
-            if ((it.name == if (DungeonUtils.inBoss) LeapHelper.leapHelperBoss else LeapHelper.leapHelperClear) && leapHelperToggle)
-                roundedRectangle(-5, -25, 230, 110, color, 9f)
 
-            roundedRectangle(-10, -15, 130, 50, if (!colorStyle) Color.DARK_GRAY else it.clazz.color, if (roundedRect) 9f else 0f)
+            if ((it.name == if (DungeonUtils.inBoss) LeapHelper.leapHelperBoss else LeapHelper.leapHelperClear) && leapHelperToggle)
+                roundedRectangle(-90, -120, 840, 360, color, if (roundedRect) 12f else 0f)
+            dropShadow(0, 0, 780, 300, ColorUtil.moduleButtonColor, 15f, 10f, 10f, 10f, 10f)
+            roundedRectangle(0, 0, 780, 300, if (!colorStyle) Color.DARK_GRAY else it.clazz.color, if (roundedRect) 12f else 0f)
 
             GlStateManager.color(255f, 255f, 255f, 255f)
-            Gui.drawScaledCustomSizeModalRect(-5, -10, 8f, 8f, 8, 8, 40, 40, 64f, 64f)
+            Gui.drawScaledCustomSizeModalRect(30, 30, 8f, 8f, 8, 8, 240, 240, 64f, 64f)
 
-            text(it.name, 34f, 11f, if (!colorStyle) it.clazz.color else Color.DARK_GRAY, 8f)
-            text(it.clazz.name, 35f, 20f, Color.WHITE, 5f)
+            text(it.name, 265f, 155f, if (!colorStyle) it.clazz.color else Color.DARK_GRAY, 48f)
+            text(it.clazz.name, 270f, 210f, Color.WHITE, 30f)
+            rectangleOutline(30, 30, 240, 240, Color.DARK_GRAY , 25f, 15f, 100f)
 
             GlStateManager.disableAlpha()
             GlStateManager.popMatrix()
         }
-
         event.isCanceled = true
     }
 

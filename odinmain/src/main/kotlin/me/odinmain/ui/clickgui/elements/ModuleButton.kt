@@ -106,11 +106,11 @@ class ModuleButton(val module: Module, val panel: Panel) {
 
         if (textWidth > width - 80)// too long text, not drawing symbol
         else if (module.tag == Module.TagType.RISKY) {
-            drawDynamicTexture(bannableIcon, x + width / 2 + textWidth / 2 + 10f, y + 4f, 25f, 25f,)
+            drawDynamicTexture(bannableIcon, x + width / 2 + textWidth / 2, y + 2f, 25f, 25f)
         } else if (module.tag == Module.TagType.FPSTAX) {
-            drawDynamicTexture(fpsHeavyIcon, x + width / 2 + textWidth / 2 + 20f, y, 35f, 35f,)
+            drawDynamicTexture(fpsHeavyIcon, x + width / 2 + textWidth / 2, y, 35f, 35f)
         } else if (module.tag == Module.TagType.NEW && ClickGUIModule.firstTimeOnVersion) {
-            drawDynamicTexture(newFeatureIcon, x + width / 2 + textWidth / 2 + 10f, y, 35f, 35f)
+            drawDynamicTexture(newFeatureIcon, x + width / 2 + textWidth / 2, y, 35f, 35f)
         }
 
 
