@@ -43,20 +43,17 @@ object EditHUDGui : Screen() {
             it.y = MouseUtils.mouseY - startY
         }
         GlStateManager.pushMatrix()
-        //translate(scaledWidth.toFloat() + 50f, scaledHeight * 1.95f)
 
         if (openAnim.isAnimating()) {
-            //setAlpha(openAnim.get(0f, 1f, !open))
             val animVal = openAnim.get(0f, 1f, !open)
             scale(animVal, animVal)
         }
-        hoverHandler.handle(Display.getWidth() / 2 - 100f, Display.getHeight() * .875f - 25f, 200f, 50f)
+        hoverHandler.handle(Display.getWidth() / 2 - 100f, Display.getHeight() * .875f, 200f, 50f)
 
-        //dropShadow(-100f, -25f, 200f, 50f, 10f, 1f, 9f)
-        roundedRectangle(Display.getWidth() / 4 - 50, Display.getHeight() / 2 - 65, 100f, 25f, color, 9f)
+        dropShadow(-100f, -25f, 200f, 50f, 10f, 1f)
+        roundedRectangle(Display.getWidth() / 4 - 50, Display.getHeight() / 2 * .875f, 100f, 25f, color, 9f)
 
-        text("Reset", Display.getWidth() / 4f, Display.getHeight() / 2f - 50, textColor, 16f, OdinFont.REGULAR, TextAlign.Middle)
-        //rect(-75f, -25f, 150f, 50f, Color.WHITE) // make this good
+        text("Reset", Display.getWidth() / 4f, Display.getHeight() / 2 * .875f + 20, textColor, 12f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Bottom)
 
         if (openAnim.isAnimating()) {
             val animVal = openAnim.get(0f, 1f, !open)

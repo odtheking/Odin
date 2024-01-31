@@ -35,7 +35,7 @@ class ElementDual(parent: ModuleButton, setting: DualSetting) : Element<DualSett
 
     override fun draw() {
         roundedRectangle(x, y, w, h, elementBackground)
-        dropShadow(x + 7f, y + 3f, w - 14f, 28f, 10f, 3.75f, 5f)
+        dropShadow(x + 7f, y + 3f, w - 14f, 28f, 10f, 3.75f)
         roundedRectangle(x + 7f, y + 3f, w - 14f, 28f, buttonColor, 5f)
 
         val pos = posAnim.get(8f, w / 2, !setting.enabled)

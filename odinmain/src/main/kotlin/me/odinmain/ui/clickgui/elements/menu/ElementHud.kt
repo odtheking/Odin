@@ -54,7 +54,7 @@ class ElementHud(parent: ModuleButton, setting: HudSetting) : Element<HudSetting
             hover.handle(x + w - 30f, y + 5f, 21f, 20f)
             val color = colorAnim.get(clickGUIColor, buttonColor, setting.enabled).brighter(1 + hover.percent() / 500f)
 
-            dropShadow(x + w - offset, y + 5f, 21f, 20f, 10f, 0.75f, 5f)
+            dropShadow(x + w - offset, y + 5f, 21f, 20f, 10f, 0.75f)
             roundedRectangle(x + w - offset, y + 5f, 21f, 20f, color, 5f)
             rectangleOutline(x + w - offset, y + 5f, 21f, 20f, clickGUIColor, 5f, 3f)
             offset = 60f

@@ -3,6 +3,7 @@ package me.odinmain.ui.util
 import gg.essential.universal.UMatrixStack
 import me.odinmain.OdinMain.mc
 import me.odinmain.font.OdinFont
+import me.odinmain.ui.clickgui.util.ColorUtil
 import me.odinmain.ui.util.TextAlign.Left
 import me.odinmain.utils.coerceAlpha
 import me.odinmain.utils.div
@@ -41,10 +42,6 @@ fun rectangleOutline(x: Number, y: Number, w: Number, h: Number, color: Color, r
     roundedRectangle(x, y, w, h, Color.TRANSPARENT, color, Color.TRANSPARENT, thickness, radius, radius, radius, radius, edgeSoftness)
 }
 
-enum class GradientDirection {
-    Right, Down, Left, Up
-}
-
 fun gradientRect(x: Float, y: Float, w: Float, h: Float, color1: Color, color2: Color, radius: Float, direction: GradientDirection = GradientDirection.Right, borderColor: Color = Color.TRANSPARENT, borderThickness: Number = 0f) {
     if (color1.isTransparent && color2.isTransparent) return
     roundedRectangle(
@@ -73,8 +70,6 @@ fun translate(x: Float, y: Float, z: Float = 0f) = GlStateManager.translate(x, y
 
 fun scale(x: Float, y: Float, z: Float = 1f) = GlStateManager.scale(x, y, z)
 
-fun dropShadow(x: Float, y: Float, w: Float, h: Float, blur: Float, spread: Float, idek: Float) = Unit
-
 fun dropShadow(x: Number, y: Number, w: Number, h: Number, shadowColor: Color, shadowSoftness: Number, topL: Number, topR: Number, botL: Number, botR: Number) {
     translate(0f, 0f, -100f)
     matrix.runLegacyMethod(matrix.get()) {
@@ -83,6 +78,10 @@ fun dropShadow(x: Number, y: Number, w: Number, h: Number, shadowColor: Color, s
         )
     }
     translate(0f, 0f, 100f)
+}
+
+fun dropShadow(x: Number, y: Number, w: Number, h: Number,  radius: Number, shadowSoftness: Number = 1f, shadowColor: Color = ColorUtil.moduleButtonColor) {
+    dropShadow(x, y, w, h, shadowColor, shadowSoftness, radius, radius, radius, radius)
 }
 
 data class Scissor(val x: Number, val y: Number, val w: Number, val h: Number, val context: Int)
@@ -122,4 +121,8 @@ enum class TextAlign {
 }
 enum class TextPos {
     Top, Bottom, Middle
+}
+
+enum class GradientDirection {
+    Right, Down, Left, Up
 }

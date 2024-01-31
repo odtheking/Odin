@@ -62,7 +62,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
 
         roundedRectangle(x, y, w, h, elementBackground)
         text(name, x + 6f, y + 18f, textColor, 12f, OdinFont.REGULAR)
-        dropShadow(x + w - 40f, y + 5f, 31f, 19f, 10f, 0.75f, 5f)
+        dropShadow(x + w - 40f, y + 5f, 31f, 19f, 10f, 0.75f)
         roundedRectangle(x + w - 40f, y + 5f, 31f, 19f, color.brighter(1 + hover.percent() / 500f), 5f)
         rectangleOutline(x + w - 40f, y + 5f, 31f, 19f, color.darker().withAlpha(1f), 5f, 1.5f)
 
@@ -72,29 +72,29 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
 
         // SATURATION AND BRIGHTNESS
         drawHSBBox(x + 10f, y + 38f, w - 20f, 170f, color.hsbMax())
-        dropShadow(x + 10f, y + 38f, w - 20f, 170f, 10f, 0.5f, 8f)
+        dropShadow(x + 10f, y + 38f, w - 20f, 170f, 10f, 0.5f)
 
         val sbPointer = Pair((x + 10f + setting.saturation * 220), (y + 38f + (1 - setting.brightness) * 170))
-        dropShadow(sbPointer.first - 8.5f, sbPointer.second - 8.5f, 17f, 17f, 2.5f, 2.5f, 9f)
+        dropShadow(sbPointer.first - 8.5f, sbPointer.second - 8.5f, 17f, 17f, 2.5f, 2.5f)
         circle(sbPointer.first, sbPointer.second, 9f, Color.TRANSPARENT, color.darker(.5f).withAlpha(1f), 3f)
 
         // HUE
 
-        dropShadow(x + 10f, y + 214f, w - 20f, 15f, 10f, 0.5f, 5f)
+        dropShadow(x + 10f, y + 214f, w - 20f, 15f, 10f, 0.5f)
         drawDynamicTexture(hueGradiant, x + 10f, y + 214f, w - 20f, 15f)
         rectangleOutline(x + 10f, y + 214f, w - 20f, 15f, buttonColor, 1f, 2.5f)
 
         val hue = x + 10f + setting.hue * 221f to y + 221f
-        dropShadow(hue.first - 8.5f, hue.second - 8.5f, 17f, 17f, 2.5f, 2.5f, 9f)
+        dropShadow(hue.first - 8.5f, hue.second - 8.5f, 17f, 17f, 2.5f, 2.5f)
         circle(hue.first, hue.second, 9f, color.hsbMax(), color.hsbMax().darker(.5f), 2f)
 
         // ALPHA
         if (setting.allowAlpha) {
-            dropShadow(x + 10f, y + 235f, w - 20f, 15f, 10f, 0.5f, 5f)
+            dropShadow(x + 10f, y + 235f, w - 20f, 15f, 10f, 0.5f)
             gradientRect(x + 10f, y + 235f, w - 20f, 15f, Color.TRANSPARENT, color.withAlpha(1f), 5f, GradientDirection.Right, Color.DARK_GRAY, 2.5f)
 
             val alpha = Pair((x + 10f + setting.alpha * 220f), y + 243f)
-            dropShadow(alpha.first - 8.5f, alpha.second - 8.5f, 17f, 17f, 2.5f, 2.5f, 9f)
+            dropShadow(alpha.first - 8.5f, alpha.second - 8.5f, 17f, 17f, 2.5f, 2.5f)
             circle(alpha.first, alpha.second, 9f, Color.WHITE.withAlpha(setting.alpha), Color.GRAY, 2f)
         }
 

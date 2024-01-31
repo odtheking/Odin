@@ -49,11 +49,11 @@ class ElementCheckBox(parent: ModuleButton, setting: BooleanSetting) : Element<B
         val color = colorAnim.get(clickGUIColor, buttonColor, setting.enabled).brighter(1 + hover.percent() / 500f)
 
         if (!ClickGUIModule.switchType) {
-            dropShadow(x + w - 30f, y + 5f, 21f, 20f, 10f, 0.75f, 5f)
+            dropShadow(x + w - 30f, y + 5f, 21f, 20f, 10f, 0.75f)
             roundedRectangle(x + w - 30f, y + 5f, 21f, 20f, color, 5f)
             rectangleOutline(x + w - 30f, y + 5f, 21f, 20f, clickGUIColor, 5f, 3f)
         } else {
-            dropShadow(x + w - 43f, y + 4f, 34f, 20f, 10f, 0.75f, 9f)
+            dropShadow(x + w - 43f, y + 4f, 34f, 20f, 10f, 0.75f)
 
             roundedRectangle(x + w - 43f, y + 4f, 34f, 20f, buttonColor, 9f)
             if (setting.enabled || linearAnimation.isAnimating()) roundedRectangle(x + w - 43f, y + 4f, linearAnimation.get(34f, 9f, setting.enabled), 20f, color, 9f)

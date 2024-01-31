@@ -65,7 +65,7 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
         text(displayVal, x + w - 6f, y + h / 2f - 3f, textColor, 12f, OdinFont.REGULAR, TextAlign.Right)
 
         roundedRectangle(x + 6f, y + 28f, w - 12f, 7f, sliderBGColor, 2.5f)
-        dropShadow(x + 6f, y + 28f, w - 12f, 7f, 10f, 0.75f, 3f)
+        dropShadow(x + 6f, y + 28f, w - 12f, 7f, 10f, 0.75f)
         if (x + percentage * (w - 12f) > x + 6) roundedRectangle(x + 6f, y + 28f, sliderPercentage * (w - 12f), 7f, color, 3f)
     }
 

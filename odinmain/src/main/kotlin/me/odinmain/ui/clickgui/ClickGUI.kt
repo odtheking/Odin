@@ -14,8 +14,6 @@ import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.clickgui.util.HoverHandler
 import me.odinmain.ui.util.*
-import me.odinmain.utils.clock.Executor
-import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.render.Color
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
@@ -146,22 +144,14 @@ object ClickGUI : Screen() {
         Config.saveConfig()
 
         open = false
-        anim.start(true)
         mc.entityRenderer.stopUseShader()
-        GlStateManager.pushMatrix()
-        /** Used to render the closing animation */
-        Executor(0) {
-            if (!anim.isAnimating()) destroyExecutor()
-            drawScreen(0, 0, 0f)
-        }.register()
-        GlStateManager.popMatrix()
     }
 
     /**
      * Used to smooth transition between screens.
      */
     fun swapScreens(other: Screen) {
-        // TODO: ACTUALLY MAKLE THIS WORK
+        // TODO: ACTUALLY MAKE THIS WORK
         display = other
     }
 

@@ -57,7 +57,7 @@ class ElementSelector(parent: ModuleButton, setting: SelectorSetting) :
         val width = getTextWidth(display, 12f)
 
         hover.handle(x + w - 20f - width, y + 4f, width + 12f, 22f)
-        dropShadow(x + w - 20f - width, y + 4f, width + 12f, 22f, 10f, 0.75f, 5f)
+        dropShadow(x + w - 20f - width, y + 4f, width + 12f, 22f, 10f, 0.75f)
         roundedRectangle(x + w - 20f - width, y + 4f, width + 12f, 22f, color, 5f)
 
         text(name, x + 6f, y + 16f, textColor, 12f, OdinFont.REGULAR)
@@ -70,7 +70,7 @@ class ElementSelector(parent: ModuleButton, setting: SelectorSetting) :
         val scissor = scissor(x, y, w, h)
 
         roundedRectangle(x + 6, y + 37f, w - 12f, size * 32f, buttonColor, 5f)
-        dropShadow(x + 6, y + 37f, w - 12f, size * 32f, 10f, 0.75f, 5f)
+        dropShadow(x + 6, y + 37f, w - 12f, size * 32f, 10f, 0.75f)
 
         for (i in 0 until size) {
             val y = y + 38 + 32 * i

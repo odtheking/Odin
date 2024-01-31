@@ -36,10 +36,10 @@ object CPSDisplay : Module(
             roundedRectangle(0f, 0f, 50f, 38f, color, color, color, 0f , 9f, 0f, 9f, 0f, 0f)
             roundedRectangle(50f, 0f, 50f, 38f, color, color, color, 0f , 0f, 9f, 0f, 9f, 0f)
 
-            if (outline) dropShadow(0f, 0f, 100f, 36f, 10f, 1f, 9f)
+            if (outline) dropShadow(0f, 0f, 100f, 36f, 10f)
         } else {
             roundedRectangle(0f, 0f, 50f, 36f, color.brighter(anim.get(1f, 1.5f, anim.getPercent() >= 50)), 9f)
-            if (outline) dropShadow(0f, 0f, 50f, 36f, 10f, 1f, 9f)
+            if (outline) dropShadow(0f, 0f, 50f, 36f, 10f)
         }
 
         if (mouseText) {
