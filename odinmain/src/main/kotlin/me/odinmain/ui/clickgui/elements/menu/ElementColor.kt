@@ -129,6 +129,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
     private fun completeHexString() {
         if (colorAnim.isAnimating()) return
         if (colorAnim.start()) listeningForString = false
+        if (hexString.isEmpty()) return
         val stringWithoutHash = hexString.substring(1)
         if (stringWithoutHash.length.equalsOneOf(6, 8)) {
             try {
