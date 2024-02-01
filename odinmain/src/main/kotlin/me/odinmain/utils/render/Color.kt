@@ -139,6 +139,8 @@ class Color(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f)
         @JvmField
         val PINK = Color(255,85,255)
 
+        @JvmField
+        val YELLOW = Color(255, 255, 85)
        
         inline val Int.red get() = this shr 16 and 0xFF
         inline val Int.green get() = this shr 8 and 0xFF
