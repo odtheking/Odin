@@ -36,7 +36,7 @@ object MobSpawn: Module(
             time.update()
 
             modMessage("§5$mobName has spawned!")
-            PlayerUtils.alert("§5$mobName has spawned!", !soundOnly)
+            PlayerUtils.alert("§5$mobName has spawned!", playSound = !soundOnly)
             if (ac) sendChatMessage("$mobName spawned at: x: ${PlayerUtils.posX.floor()}, y: ${PlayerUtils.posY.floor()}, z: ${PlayerUtils.posZ.floor()}")
             if (pc) partyMessage("$mobName spawned at: x: ${PlayerUtils.posX.floor()}, y: ${PlayerUtils.posY.floor()}, z: ${PlayerUtils.posZ.floor()}")
         }

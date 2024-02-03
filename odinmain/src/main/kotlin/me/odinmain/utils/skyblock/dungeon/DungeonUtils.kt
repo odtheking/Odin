@@ -334,7 +334,7 @@ object DungeonUtils {
             Classes.entries.find { it.name == clazz }?.let { foundClass ->
                 mc.theWorld.getPlayerEntityByName(name)?.let { player ->
                     teammates.add(DungeonPlayer(name, foundClass, networkPlayerInfo.locationSkin, player))
-                } ?: teammates.add(DungeonPlayer(name, foundClass, networkPlayerInfo.locationSkin))
+                } ?: teammates.add(DungeonPlayer(name, foundClass, networkPlayerInfo.locationSkin, null))
             }
 
         }

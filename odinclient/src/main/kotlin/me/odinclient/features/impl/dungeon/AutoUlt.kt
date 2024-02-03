@@ -5,7 +5,7 @@ import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.SelectorSetting
-import me.odinmain.utils.noControlCodes
+import me.odinmain.utils.skyblock.PlayerUtils.alert
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -26,13 +26,12 @@ object AutoUlt : Module(
 
     @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
-        when (event.message.noControlCodes) {
-            "[BOSS] Maxor: YOU TRICKED ME!", "[BOSS] Maxor: THAT BEAM! IT HURTS! IT HURTS!!" -> {
-                if (firstLaser) return
+        when (event.message) {
+            "⚠ Maxor is enraged! ⚠" -> {
 
                 if (mode == 0) {
                     modMessage("§3Use ult!")
-                    PlayerUtils.alert("§3Use ult!")
+                    alert("§3Use ult!")
                     return
                 }
 
@@ -44,7 +43,7 @@ object AutoUlt : Module(
             "[BOSS] Goldor: You have done it, you destroyed the factory…" -> {
                 if (mode == 0) {
                     modMessage("§3Use ult!")
-                    PlayerUtils.alert("§3Use ult!")
+                    alert("§3Use ult!")
                     return
                 }
                 modMessage("§eGoldor time zzz")
@@ -54,7 +53,7 @@ object AutoUlt : Module(
             "[BOSS] Sadan: My giants! Unleashed!" -> {
                 if (mode == 0) {
                     modMessage("§3Use ult!")
-                    PlayerUtils.alert("§3Use ult!")
+                    alert("§3Use ult!")
                     return
                 }
                 execute(3000, 0) {

@@ -40,4 +40,14 @@ object ColorUtil {
     fun Color.hsbMax(): Color {
         return Color(hue, 1f, 1f)
     }
+
+    /**
+     * Replaces the easier to type '&' color codes with proper color codes in a string.
+     *
+     * @param message The string to add color codes to
+     * @return the formatted message
+     */
+    fun addColor(message: String?): String {
+        return message.toString().replace("(?<!\\\\)&(?![^0-9a-fk-or]|$)".toRegex(), "\u00a7")
+    }
 }

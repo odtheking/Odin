@@ -46,7 +46,7 @@ object TeammatesHighlight : Module(
 
             RenderUtils.drawStringInWorld(
                 "${teammate.clazz.code}${teammate.name}",
-                teammate.entity.renderVec.addVec(y = 2.7),
+                teammate.entity.renderVec.addVec(y = 2.6),
                 depthTest = false,
                 increase = false,
                 renderBlackBox = false,

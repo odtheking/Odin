@@ -85,7 +85,6 @@ Category: Dungeons
 - Key ESP: Draws a box around the key.
 
 Category: Floor 7
-- Terminal Triggerbot: Triggerbot to open inactive terminals.
 - Necron Drop Timer: Shows a timer for when Necron drops you down.
 - Inactive Waypoints: Shows inactive terminals, devices and levers
 - Stop Wrong Clicks: Stops you from clicking wrong items in terminal.

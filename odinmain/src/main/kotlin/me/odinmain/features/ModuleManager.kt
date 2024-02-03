@@ -93,7 +93,8 @@ object ModuleManager {
         InactiveWaypoints,
         Ragaxe,
         MobSpawn,
-        WitherDragons
+        WitherDragons,
+        Kuudra
     )
 
 

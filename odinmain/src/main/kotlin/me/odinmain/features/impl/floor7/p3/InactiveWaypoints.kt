@@ -24,12 +24,12 @@ object InactiveWaypoints : Module(
     description = "Shows inactive terminals, devices and levers"
 ) {
 
-    private val showTerminals: Boolean by BooleanSetting(name = "Show Terminals")
-    private val showDevices: Boolean by BooleanSetting(name = "Show Devices")
-    private val showLevers: Boolean by BooleanSetting(name = "Show Levers")
-    private val renderText: Boolean by BooleanSetting(name = "Render Text")
-    private val renderMode: Int by SelectorSetting("Render", "Both", arrayListOf("Both", "Outline", "Filled"))
-    private val color: Color by ColorSetting("Color", Color.RED.withAlpha(.5f), true)
+    private val showTerminals: Boolean by BooleanSetting(name = "Show Terminals", default = true, description = "Shows inactive terminals")
+    private val showDevices: Boolean by BooleanSetting(name = "Show Devices", default = true, description = "Shows inactive devices")
+    private val showLevers: Boolean by BooleanSetting(name = "Show Levers", default = true, description = "Shows inactive levers")
+    private val renderText: Boolean by BooleanSetting(name = "Render Text", default = true, description = "Renders the name of the inactive waypoint")
+    private val renderMode: Int by SelectorSetting("Render", "Both", arrayListOf("Both", "Outline", "Filled"), description = "How to render the inactive waypoints")
+    private val color: Color by ColorSetting("Color", Color.RED.withAlpha(.5f), true, description = "The color of the inactive waypoints")
 
     private var inactiveList = listOf<Entity>()
 
@@ -55,7 +55,7 @@ object InactiveWaypoints : Module(
                     2 -> RenderUtils.drawFilledBox(it.position.toAABB(), Color(color.r, color.g, color.b, color.alpha), phase = true)
                 }
                 if (renderText) {
-                    RenderUtils.drawStringInWorld(name, it.positionVector.add(Vec3(0.0, 2.0, 0.0)), depthTest = true, increase = true, scale = 3f)
+                    RenderUtils.drawStringInWorld(name, it.positionVector.add(Vec3(0.0, 2.0, 0.0)), depthTest = true, scale = 3f)
                 }
             }
         }

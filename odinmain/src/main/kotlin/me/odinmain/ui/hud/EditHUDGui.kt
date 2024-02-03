@@ -50,7 +50,7 @@ object EditHUDGui : Screen() {
         }
         hoverHandler.handle(Display.getWidth() / 2 - 100f, Display.getHeight() * .875f, 200f, 50f)
 
-        dropShadow(-100f, -25f, 200f, 50f, 10f, 1f)
+        //dropShadow(-100f, -25f, 200f, 50f, 10f, 1f)
         roundedRectangle(Display.getWidth() / 4 - 50, Display.getHeight() / 2 * .875f, 100f, 25f, color, 9f)
 
         text("Reset", Display.getWidth() / 4f, Display.getHeight() / 2 * .875f + 20, textColor, 12f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Bottom)

@@ -125,7 +125,7 @@ object ChatCommands : Module(
         if (!message.startsWith("!")) return
         when (message.split(" ")[0].drop(1)) {
             "help" -> channelMessage(helpMessage, name, channel)
-            "coords" -> if (coords) channelMessage("x: ${PlayerUtils.getFlooredPlayerCoords().x}, y: ${PlayerUtils.getFlooredPlayerCoords().y}, z: ${PlayerUtils.getFlooredPlayerCoords().z}", name, channel)
+            "coords" -> if (coords) channelMessage("x: ${PlayerUtils.posX.toInt()}, y: ${PlayerUtils.posY.toInt()}, z: ${PlayerUtils.posZ.toInt()}", name, channel)
             "odin" -> if (odin) channelMessage("Odin! https://discord.gg/2nCbC9hkxT", name, channel)
             "boop" -> {
                 if (boop) {
@@ -155,7 +155,7 @@ object ChatCommands : Module(
                 var reason = "No reason given"
                 if (message.substringAfter("dt ") != message && !message.substringAfter("dt ").contains("!dt"))
                     reason = message.substringAfter("dt ")
-
+                if (dtReason.any { it.first == name }) return modMessage("§cThat player already has a reminder!")
                 dtReason.add(Pair(name, reason))
                 modMessage("§aReminder set for the end of the run!")
                 dtPlayer = name

@@ -130,6 +130,7 @@ object DianaHelper : Module(
     override fun onKeybind() {
         if (!cmdCooldown.hasTimePassed()) return
         sendCommand("warp ${warpLocation?.name ?: return}")
+        warpLocation = null
     }
 
     private enum class WarpPoint(

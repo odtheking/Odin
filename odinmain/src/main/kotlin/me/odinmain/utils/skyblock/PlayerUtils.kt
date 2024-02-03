@@ -1,8 +1,7 @@
 package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.utils.floored
-import net.minecraft.util.Vec3i
+import me.odinmain.ui.clickgui.util.ColorUtil.addColor
 
 
 object PlayerUtils {
@@ -31,15 +30,17 @@ object PlayerUtils {
      *
      * @author Odtheking, Bonsai
      */
-    fun alert(title: String, playSound: Boolean = true) {
+    fun alert(title: String, subtitle: String = "", fadeIn: Int= 10, time: Int = 40, fadeOut: Int = 10, playSound: Boolean = true) {
         if (playSound) playLoudSound("note.pling", 100f, 1f)
-        mc.ingameGUI.run {
-            displayTitle(title, null, 5, 50, 5)
-            displayTitle(null, "", 5, 50, 5)
-            displayTitle(null, null, 5, 500, 5)
-        }
+        showTitle(title, subtitle, fadeIn, time, fadeOut)
     }
-    fun getFlooredPlayerCoords(): Vec3i = mc.thePlayer.positionVector.floored()
+
+    fun showTitle(title: String, subtitle: String, fadeIn: Int, time: Int, fadeOut: Int) {
+        val gui = mc.ingameGUI
+        gui.displayTitle(addColor(title), null, fadeIn, time, fadeOut)
+        gui.displayTitle(null, addColor(subtitle), fadeIn, time, fadeOut)
+        gui.displayTitle(null, null, fadeIn, time, fadeOut)
+    }
 
     inline val posX get() = mc.thePlayer.posX
     inline val posY get() = mc.thePlayer.posY

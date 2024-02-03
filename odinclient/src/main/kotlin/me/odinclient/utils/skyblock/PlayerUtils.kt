@@ -1,26 +1,18 @@
 package me.odinclient.utils.skyblock
 
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.floor7.p3.termsim.TermSimGui
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.floored
-import me.odinmain.utils.skyblock.modMessage
-import me.odinmain.utils.skyblock.getItemIndexInContainerChest
 import me.odinmain.utils.skyblock.getItemSlot
 import me.odinmain.utils.skyblock.itemID
-import me.odinmain.utils.waitUntilLastItem
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.entity.EntityPlayerSP
-import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.ItemStack
-import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
-import net.minecraftforge.client.event.GuiOpenEvent
 
 
 object PlayerUtils {
@@ -56,15 +48,6 @@ object PlayerUtils {
         inventory.currentItem = index
         rightClick()
         if (swapBack) inventory.currentItem = prevItem
-    }
-
-    fun hitWithItemFromInv(itemIndex: Int, blockPos: BlockPos) {
-        if (itemIndex < 8) return
-        val currentHeldItemStack = mc.thePlayer.inventory.getStackInSlot(mc.thePlayer.inventory.currentItem)
-        middleClickWindow(itemIndex)
-        mc.playerController?.clickBlock(blockPos, mc.objectMouseOver.sideHit)
-        middleClickWindow(itemIndex)
-        mc.thePlayer.inventory.mainInventory[mc.thePlayer.inventory.currentItem] = currentHeldItemStack
     }
 
     fun swapToItem(name: String, contains: Boolean = false) {
@@ -143,73 +126,6 @@ object PlayerUtils {
 
     fun shiftClickWindow(index : Int) {
         windowClick(index, 0, 1)
-    }
-
-    @OptIn(DelicateCoroutinesApi::class)
-    fun clickItemInContainer(containerName: String, itemName: String, event: GuiOpenEvent, contains: Boolean = true) {
-        if (event.gui !is GuiChest) return
-
-        val container = (event.gui as GuiChest).inventorySlots
-        if (container !is ContainerChest) return
-
-        val chestName = container.lowerChestInventory.displayName.unformattedText
-        if (!chestName.contains(containerName)) return
-
-        GlobalScope.launch {
-            val deferred = waitUntilLastItem(container)
-            try {
-                deferred.await()
-            } catch (e: Exception) {
-                return@launch
-            }
-
-            val index = getItemIndexInContainerChest(container, itemName, contains)
-                ?: return@launch modMessage("§cCouldn't find §f$itemName!")
-
-            windowClick(index, 2, 3)
-            mc.thePlayer.closeScreen()
-        }
-    }
-
-    @OptIn(DelicateCoroutinesApi::class)
-    fun clickItemInInventory(containerName: String, itemName: String, event: GuiOpenEvent, contains: Boolean = true) {
-        if (event.gui !is GuiChest) return
-        val container = (event.gui as GuiChest).inventorySlots
-        if (container !is ContainerChest) return
-        val chestName = container.lowerChestInventory.displayName.unformattedText
-        if (!chestName.contains(containerName)) return
-
-        GlobalScope.launch{
-            val deferred = waitUntilLastItem(container)
-            try {
-                deferred.await()
-            } catch (e: Exception) {
-                println("Promise rejected")
-                return@launch
-            }
-
-            println("last item loaded!")
-
-            val index = getItemSlot(itemName, contains) ?: return@launch modMessage("§cCouldn't find §f$itemName!")
-
-            println("found item at index $index, clicking...")
-
-            windowClick(
-                index,
-                2,
-                3
-            )
-            mc.thePlayer.closeScreen()
-        }
-    }
-
-    fun alert(title: String, playSound: Boolean = true) {
-        if (playSound) mc.thePlayer.playSound("note.pling", 100f, 1f)
-        mc.ingameGUI.run {
-            displayTitle(title, null, 10, 250, 10)
-            displayTitle(null, "", 10, 250, 10)
-            displayTitle(null, null, 10, 250, 10)
-        }
     }
 
     fun EntityPlayerSP?.isHolding(vararg names: String, ignoreCase: Boolean = false, mode: Int = 0): Boolean {

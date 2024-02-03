@@ -2,6 +2,7 @@ package me.odinmain.utils
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.ReceivePacketEvent
+import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.network.Packet
 import net.minecraft.network.play.client.C16PacketClientStatus
 import net.minecraft.network.play.server.S01PacketJoinGame
@@ -72,5 +73,9 @@ object ServerUtils {
         pingStartTime = System.nanoTime()
         isPinging = true
         sendPacketNoEvent(C16PacketClientStatus(C16PacketClientStatus.EnumState.REQUEST_STATS))
+    }
+
+    fun EntityOtherPlayerMP.getPing(): Int {
+        return mc.netHandler.getPlayerInfo(this.uniqueID)?.responseTime ?: -1
     }
 }

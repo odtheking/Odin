@@ -43,7 +43,7 @@ object LeapMenu : Module(
     //val priority: Int by SelectorSetting("Leap Helper Priority", "Berserker", arrayListOf("Archer", "Berserker", "Healer", "Mage", "Tank"), description = "Which player to prioritize in the leap helper.")
 
     private val leapHelperToggle: Boolean by BooleanSetting("Leap Helper", true)
-    private val color: Color by ColorSetting("Leap Helper Color", default = Color.WHITE).withDependency { leapHelperToggle }
+    private val leapHelperColor: Color by ColorSetting("Leap Helper Color", default = Color.WHITE).withDependency { leapHelperToggle }
     val delay: Int by NumberSetting("Reset Leap Helper Delay", 30, 10.0, 120.0, 1.0).withDependency { leapHelperToggle }
     private val testPlayers: MutableList<DungeonUtils.DungeonPlayer> = mutableListOf(
         DungeonUtils.DungeonPlayer("Stiviaisd", Classes.Healer, ResourceLocation("textures/entity/steve.png")),
@@ -68,18 +68,18 @@ object LeapMenu : Module(
                 (if (index >= 2) 615f else 165f),
                 0f)
             mc.textureManager.bindTexture(it.locationSkin)
-
+            val color = if (!colorStyle) it.clazz.color else Color.DARK_GRAY
             if ((it.name == if (DungeonUtils.inBoss) LeapHelper.leapHelperBoss else LeapHelper.leapHelperClear) && leapHelperToggle)
-                roundedRectangle(-90, -120, 840, 360, color, if (roundedRect) 12f else 0f)
+                roundedRectangle(-5, -5, 840, 360, leapHelperColor, if (roundedRect) 12f else 0f)
             dropShadow(0, 0, 780, 300, ColorUtil.moduleButtonColor, 15f, 10f, 10f, 10f, 10f)
-            roundedRectangle(0, 0, 780, 300, if (!colorStyle) Color.DARK_GRAY else it.clazz.color, if (roundedRect) 12f else 0f)
+            roundedRectangle(0, 0, 780, 300, color, if (roundedRect) 12f else 0f)
 
             GlStateManager.color(255f, 255f, 255f, 255f)
             Gui.drawScaledCustomSizeModalRect(30, 30, 8f, 8f, 8, 8, 240, 240, 64f, 64f)
 
-            text(it.name, 265f, 155f, if (!colorStyle) it.clazz.color else Color.DARK_GRAY, 48f)
+            text(it.name, 265f, 155f, color, 48f)
             text(it.clazz.name, 270f, 210f, Color.WHITE, 30f)
-            rectangleOutline(30, 30, 240, 240, Color.DARK_GRAY , 25f, 15f, 100f)
+            rectangleOutline(30, 30, 240, 240, color, 25f, 15f, 100f)
 
             GlStateManager.disableAlpha()
             GlStateManager.popMatrix()
