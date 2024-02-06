@@ -1,12 +1,10 @@
 package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.events.impl.EntityLeaveWorldEvent
 import me.odinmain.features.impl.skyblock.Kuudra
 import me.odinmain.features.impl.skyblock.Kuudra.highlightFreshColor
 import me.odinmain.features.impl.skyblock.Kuudra.outlineColor
 import me.odinmain.features.impl.skyblock.Kuudra.supplyWaypointColor
-import me.odinmain.utils.ServerUtils.getPing
 import me.odinmain.utils.addVec
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
@@ -14,7 +12,6 @@ import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.render.world.RenderUtils.renderBoundingBox
 import me.odinmain.utils.render.world.RenderUtils.renderCustomBeacon
 import me.odinmain.utils.render.world.RenderUtils.renderVec
-import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.monster.EntityGiantZombie
 import net.minecraft.entity.monster.EntityMagmaCube
@@ -84,12 +81,6 @@ object KuudraUtils {
             giantZombies.add(event.entity as EntityGiantZombie)
     }
 
-    fun addKuudraTeammate(event: EntityJoinWorldEvent) {
-        if (event.entity is EntityOtherPlayerMP && (event.entity as EntityOtherPlayerMP).getPing() == 1 &&
-            !event.entity.isInvisible || kuudraTeammates.any{ it.entity == event.entity })
-            kuudraTeammates.add(KuddraPlayer(event.entity.name, false, 0L, event.entity as EntityPlayer))
-    }
-
     fun handleArmorStand(event: EntityJoinWorldEvent) {
         if (event.entity is EntityArmorStand && Kuudra.phase == 1 && !event.entity.name.contains("Lv") && !event.entity.toString().contains("name=Armor Stand")) {
             if (event.entity.name.contains("SUPPLIES RECEIVED")) {
@@ -116,11 +107,6 @@ object KuudraUtils {
         val entity = event.entity as EntityMagmaCube
         if (entity.maxHealth == 10000f)
             kuudraEntity = event.entity as EntityMagmaCube
-    }
-
-    fun leaveWorldEvent(event: EntityLeaveWorldEvent) {
-        if (kuudraTeammates.any { it.playerName == event.entity.name })
-            kuudraTeammates.filter { it.entity == event.entity }.forEach { kuudraTeammates.remove(it) }
     }
 
     fun renderTeammatesNames() {
@@ -152,4 +138,5 @@ object KuudraUtils {
     fun highlightKuudra() {
         kuudraEntity?.renderBoundingBox?.let { RenderUtils.drawBoxOutline(it, Color(255, 0, 0), 3f, true) }
     }
+
 }

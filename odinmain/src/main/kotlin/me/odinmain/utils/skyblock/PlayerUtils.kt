@@ -30,7 +30,7 @@ object PlayerUtils {
      *
      * @author Odtheking, Bonsai
      */
-    fun alert(title: String, subtitle: String = "", fadeIn: Int= 10, time: Int = 40, fadeOut: Int = 10, playSound: Boolean = true) {
+    fun alert(title: String, subtitle: String = "", fadeIn: Int= 10, time: Int = 20, fadeOut: Int = 10, playSound: Boolean = true) {
         if (playSound) playLoudSound("note.pling", 100f, 1f)
         showTitle(title, subtitle, fadeIn, time, fadeOut)
     }

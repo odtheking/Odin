@@ -68,16 +68,17 @@ object LeapMenu : Module(
                 (if (index >= 2) 615f else 165f),
                 0f)
             mc.textureManager.bindTexture(it.locationSkin)
-            val color = if (!colorStyle) it.clazz.color else Color.DARK_GRAY
+            val color = if (colorStyle) it.clazz.color else Color.DARK_GRAY
             if ((it.name == if (DungeonUtils.inBoss) LeapHelper.leapHelperBoss else LeapHelper.leapHelperClear) && leapHelperToggle)
                 roundedRectangle(-5, -5, 840, 360, leapHelperColor, if (roundedRect) 12f else 0f)
-            dropShadow(0, 0, 780, 300, ColorUtil.moduleButtonColor, 15f, 10f, 10f, 10f, 10f)
+
+            dropShadow(0, 0, 780, 300, if (getQuadrant() - 1 != index) ColorUtil.moduleButtonColor else Color.WHITE, 15f, 10f, 10f, 10f, 10f)
             roundedRectangle(0, 0, 780, 300, color, if (roundedRect) 12f else 0f)
 
             GlStateManager.color(255f, 255f, 255f, 255f)
             Gui.drawScaledCustomSizeModalRect(30, 30, 8f, 8f, 8, 8, 240, 240, 64f, 64f)
 
-            text(it.name, 265f, 155f, color, 48f)
+            text(it.name, 265f, 155f, if (!colorStyle) it.clazz.color else Color.DARK_GRAY, 48f)
             text(it.clazz.name, 270f, 210f, Color.WHITE, 30f)
             rectangleOutline(30, 30, 240, 240, color, 25f, 15f, 100f)
 

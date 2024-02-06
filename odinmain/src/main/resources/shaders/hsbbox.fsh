@@ -1,4 +1,4 @@
-#version 130
+#version 120
 
 uniform vec2 u_rectCenter; // center of rectangle, (x, y)
 uniform vec2 u_rectSize; // size of rectangle, (width, height)

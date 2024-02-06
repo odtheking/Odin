@@ -43,6 +43,11 @@ object BlessingDisplay : Module(
             text("Time: §a5", 1f, 26f, timeColor,12f, OdinFont.REGULAR, TextAlign.Left, TextPos.Middle, true)
             max(getTextWidth("Power: 29", 12f), getTextWidth("Time 5", 12f)) + 2f to 33f
         } else {
+            Blessings.TIME.color = timeColor
+            Blessings.POWER.color = powerColor
+            Blessings.STONE.color = stoneColor
+            Blessings.LIFE.color = lifeColor
+            Blessings.WISDOM.color = wisdomColor
             var width = 0f
             var height = 0f
             Blessings.entries.forEach { blessing ->
@@ -54,6 +59,7 @@ object BlessingDisplay : Module(
             width to height
         }
     }
+
 
     enum class Blessings(
         var regex: Regex,

@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.skyblock
 
 import me.odinmain.events.impl.DrawSlotEvent
-import me.odinmain.events.impl.EntityLeaveWorldEvent
 import me.odinmain.events.impl.GuiClickEvent
 import me.odinmain.events.impl.RenderEntityModelEvent
 import me.odinmain.features.Category
@@ -14,6 +13,7 @@ import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.ui.util.getTextWidth
 import me.odinmain.ui.util.text
+import me.odinmain.utils.ServerUtils.getPing
 import me.odinmain.utils.containsOneOf
 import me.odinmain.utils.name
 import me.odinmain.utils.noControlCodes
@@ -21,7 +21,6 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.OutlineUtils
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.KuudraUtils.addGiantZombie
-import me.odinmain.utils.skyblock.KuudraUtils.addKuudraTeammate
 import me.odinmain.utils.skyblock.KuudraUtils.cancelArmorStandEvent
 import me.odinmain.utils.skyblock.KuudraUtils.getKuudra
 import me.odinmain.utils.skyblock.KuudraUtils.handleArmorStand
@@ -33,6 +32,7 @@ import me.odinmain.utils.skyblock.KuudraUtils.renderTeammatesNames
 import me.odinmain.utils.skyblock.KuudraUtils.supplies
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.partyMessage
+import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -104,26 +104,31 @@ object Kuudra : Module(
                     kuddraPlayer.eatFresh = false
                 }
             }
+            kuudraTeammates.find { it.playerName == mc.thePlayer.name }?.eatFreshTime?.minus(System.currentTimeMillis())
+                ?.let { it1 -> modMessage(it1) }
             partyMessage("FRESH")
         }
         onMessage(Regex("^Party > ?(?:\\[.+])? (.{0,16}): FRESH")) {
-            val (_, playerName) = Regex("^Party > ?(?:\\[.+])? (.{0,16}): FRESH").find(it)?.destructured ?: return@onMessage
+            val (playerName) = Regex("^Party > ?(?:\\[.+])? (.{0,16}): FRESH").find(it)?.destructured ?: return@onMessage
+            modMessage("$playerName has fresh tools")
             kuudraTeammates.forEach { kuddraPlayer ->
                 if (kuddraPlayer.playerName == playerName) kuddraPlayer.eatFresh = true
             }
         }
+
+        execute(1000) {
+            kuudraTeammates = mc.theWorld.loadedEntityList.filter { it is EntityOtherPlayerMP && it.getPing() == 1 && !it.isInvisible }
+                .map { KuudraUtils.KuddraPlayer((it as EntityOtherPlayerMP).name, false, 0, it) } as ArrayList<KuudraUtils.KuddraPlayer>
+
+        }
     }
+
     @SubscribeEvent
     fun joinWorldEvent(event: EntityJoinWorldEvent) {
         addGiantZombie(event)
-        addKuudraTeammate(event)
         handleArmorStand(event)
         getKuudra(event)
         if (renderNameTags) cancelArmorStandEvent(event)
-    }
-    @SubscribeEvent
-    fun leaveWorldEvent(event: EntityLeaveWorldEvent) {
-        KuudraUtils.leaveWorldEvent(event)
     }
 
     @SubscribeEvent
@@ -142,8 +147,8 @@ object Kuudra : Module(
     }
     @SubscribeEvent
     fun renderSlot(event: DrawSlotEvent) {
-        if (!removePerks || !event.slot.toString().contains("ContainerLocalMenu: Perk Menu")) return
-        val slotName = event.slot.stack.displayName.noControlCodes
+        if (event.gui !is GuiChest || event.gui.inventorySlots !is ContainerChest || !removePerks || (event.gui.inventorySlots as ContainerChest).name != "Perk Menu") return
+        val slotName = event.slot.stack?.displayName.noControlCodes
         if (slotName.containsOneOf("Steady Hands", "Bomberman") || slotName == "Elle's Lava Rod" || slotName == "Elle's Pickaxe" ||
             slotName == "Auto Revive" || (renderStun && slotName.containsOneOf("Mining Frenzy", "Human Cannonball")))
             event.isCanceled = true
@@ -151,7 +156,7 @@ object Kuudra : Module(
     @SubscribeEvent
     fun guiMouseClick(event: GuiClickEvent) {
         if (event.gui !is GuiChest || event.gui.inventorySlots !is ContainerChest || !removePerks || (event.gui.inventorySlots as ContainerChest).name != "Perk Menu") return
-        val slot = event.gui.slotUnderMouse.stack.displayName.noControlCodes
+        val slot = event.gui.slotUnderMouse?.stack?.displayName.noControlCodes
         if (slot.containsOneOf("Steady Hands", "Bomberman") || slot == "Elle's Lava Rod" || slot == "Elle's Pickaxe" ||
             slot == "Auto Revive" || (renderStun && slot.containsOneOf("Mining Frenzy", "Human Cannonball")))
             event.isCanceled = true

@@ -1,4 +1,4 @@
-#version 130
+#version 120
 
 uniform vec2 u_circleCenter;
 uniform float u_circleRadius;

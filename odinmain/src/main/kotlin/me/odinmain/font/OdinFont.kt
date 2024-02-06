@@ -51,13 +51,13 @@ object OdinFont {
 
         val words = text.split(" ")
         var line = ""
-        var currentHeight = y + 1
+        var currentHeight = y + 2
 
         for (word in words) {
             if (getTextWidth(line + word, size) > w) {
                 text(line, x, currentHeight, color, size, type = type)
                 line = "$word "
-                currentHeight += getTextHeight(line, size)
+                currentHeight += getTextHeight(line, size + 6)
             }
             else line += "$word "
 
@@ -82,7 +82,7 @@ object OdinFont {
         }
         maxWidth = max(maxWidth, getTextWidth(line, size))
 
-        return Pair(maxWidth, lines * getTextHeight(line, size))
+        return Pair(maxWidth, lines * getTextHeight(line, size + 3))
     }
 
 }

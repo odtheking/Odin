@@ -1,4 +1,4 @@
-#version 130
+#version 120
 
 /*
 Very simple vertex shader to use in various fragment shaders
