@@ -43,16 +43,16 @@ function onClick() {
         .then(data => {
             // Assuming data is an array with a single object
             if (Array.isArray(data) && data.length > 0) {
-            const imageUrl = data[0].url;
+                const imageUrl = data[0].url;
 
-            var image = document.getElementById('cat');
-            image.src = imageUrl;
-    
-            // Now you can use the imageUrl variable in your code as needed.
+                var image = document.getElementById('cat');
+                image.src = imageUrl;
+
+                // Now you can use the imageUrl variable in your code as needed.
             } else {
-            console.error('No cat images found in the response');
+                console.error('No cat images found in the response');
             }
-        }).catch(error => console.error('Error:', error)
+        }).catch(error => console.error('Error:', error.toString())
     );
     
 }
@@ -192,45 +192,34 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 function submitForm() {
-    // Get the values from the input fields
-    var username = document.getElementById("username").value;
-    var password = document.getElementById("password").value;
-
-    // Create an object with the data
-    var data = {
-        username: username,
-        pw: password
-    };
-
-    // Convert the data to JSON
-    var jsonData = JSON.stringify(data);
+    const jsonData = JSON.stringify({
+        username: document.getElementById("username").value,
+        pw: document.getElementById("password").value
+    })
+    console.log(jsonData)
 
     // Make an HTTP POST request to the AWS Lambda function
     fetch('https://ginkwsma75wud3rylqlqms5n240xyomv.lambda-url.eu-north-1.on.aws/', {
         method: 'POST',
+        mode: 'no-cors',
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'Access-Control-Allow-Origin': '*',
         },
-        body: jsonData
+        body: btoa(jsonData)
     })
-    .then(response => response.json())
     .then(data => {
         // Handle the response from the server
-        console.log(data);
+        console.log(data)
 
         // You can check the response and take appropriate actions
-        if (data.success) {
+        if (data?.success) {
             console.log('Login successful');
         } else {
             console.log('Login failed');
         }
     })
-    .catch(error => {
-        // Handle errors during the fetch
-        console.error('Error:', error);
-    });
+    .catch(error => console.log('Encountered error:', error))
 }
 
 
