@@ -5,10 +5,7 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.util.ColorUtil
 import me.odinmain.ui.util.TextAlign.Left
-import me.odinmain.utils.coerceAlpha
-import me.odinmain.utils.div
-import me.odinmain.utils.minus
-import me.odinmain.utils.plus
+import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils.drawTexturedModalRect
 import net.minecraft.client.gui.ScaledResolution
@@ -19,6 +16,9 @@ import org.lwjgl.opengl.GL11
 
 val matrix = UMatrixStack.Compat
 val scaleFactor get() = ScaledResolution(mc).scaleFactor.toFloat()
+
+data class Box(var x: Number, var y: Number, var w: Number, var h: Number)
+fun Box.expand(factor: Number): Box = Box(this.x - factor, this.y - factor, this.w + factor * 2, this.h + factor * 2)
 fun roundedRectangle(
     x: Number, y: Number, w: Number, h: Number,
     color: Color, borderColor: Color, shadowColor: Color,
@@ -36,6 +36,9 @@ fun roundedRectangle(
 fun roundedRectangle(x: Number, y: Number, w: Number, h: Number, color: Color, radius: Number = 0f, edgeSoftness: Number = 0.5f) =
     roundedRectangle(x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(), color, color, color,
         0f, radius.toFloat(), radius.toFloat(), radius.toFloat(), radius.toFloat(), edgeSoftness)
+
+fun roundedRectangle(box: Box, color: Color, radius: Number = 0f, edgeSoftness: Number = .5f) =
+    roundedRectangle(box.x, box.y, box.w, box.h, color, radius, edgeSoftness)
 
 
 fun rectangleOutline(x: Number, y: Number, w: Number, h: Number, color: Color, radius: Number = 0f, thickness: Number, edgeSoftness: Number = 1f) {
@@ -83,6 +86,9 @@ fun dropShadow(x: Number, y: Number, w: Number, h: Number, shadowColor: Color, s
 fun dropShadow(x: Number, y: Number, w: Number, h: Number,  radius: Number, shadowSoftness: Number = 1f, shadowColor: Color = ColorUtil.moduleButtonColor) {
     dropShadow(x, y, w, h, shadowColor, shadowSoftness, radius, radius, radius, radius)
 }
+
+fun dropShadow(box: Box, radius: Number, shadowSoftness: Number = 1f, shadowColor: Color = ColorUtil.moduleButtonColor) =
+    dropShadow(box.x, box.y, box.w, box.h, radius, shadowSoftness, shadowColor)
 
 data class Scissor(val x: Number, val y: Number, val w: Number, val h: Number, val context: Int)
 private val scissorList = mutableListOf(Scissor(0, 0, 16000, 16000, 0))

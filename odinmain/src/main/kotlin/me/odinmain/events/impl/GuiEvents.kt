@@ -13,3 +13,6 @@ class GuiLoadedEvent(val name: String, val gui: ContainerChest) : Event()
 
 @Cancelable
 class GuiClickEvent(val container: Container, val gui: GuiContainer, val x: Int, val y: Int, val button: Int) : Event()
+
+@Cancelable
+class GuiKeyPressEvent(val container: Container, val gui: GuiContainer, val keyCode: Int) : Event()
