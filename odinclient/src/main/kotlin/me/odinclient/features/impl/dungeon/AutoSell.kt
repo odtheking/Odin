@@ -52,6 +52,6 @@ object AutoSell : Module(
         "Skeletor", "Super Heavy", "Heavy", "Sniper Helmet", "Dreadlord", "Earth Shard", "Zombie Commander Whip",
         "Machine Gun", "Sniper Bow", "Soulstealer Bow", "Silent Death", "Training Weight", "Health Potion VIII",
         "Health Potion 8", "Beating Heart", "Premium Flesh", "Mimic Fragment", "Enchanted Rotten Flesh", "Sign",
-        "Enchanted Bone", "Defuse Kit", "Optic Lens", "Tripwire Hook", "Button", "Carpet", "Lever", "Diamond Atom"
+        "Enchanted Bone", "Defuse Kit", "Optical Lens", "Tripwire Hook", "Button", "Carpet", "Lever", "Diamond Atom"
     )
 }
