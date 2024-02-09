@@ -1,8 +1,6 @@
 package me.odinmain.utils.skyblock.dungeon
 
 import com.google.common.collect.ComparisonChain
-import kotlinx.coroutines.launch
-import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.config.DungeonWaypointConfig
 import me.odinmain.features.impl.dungeon.DungeonWaypoints.DungeonWaypoint
@@ -128,7 +126,7 @@ object DungeonUtils {
         }
         val positions = room?.let { findRoomTilesRecursively(it.x, it.z, it, mutableSetOf(), sendRotCores) } ?: emptyList()
         currentRoom = room?.let { FullRoom(it, positions, emptyList()) }
-        if (rotCoresToSend.isNotEmpty()) OdinMain.scope.launch { sendDataToServer("""{"rd": "$rotCoresToSend"}""") }
+        //if (rotCoresToSend.isNotEmpty()) OdinMain.scope.launch { sendDataToServer("""{"rd": "$rotCoresToSend"}""") }
 
         rotCoresToSend.clear()
         setWaypoints()

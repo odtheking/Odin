@@ -24,7 +24,7 @@ private var IMGUR_KEYS = arrayOf(
  *
  * @returns The response code from the server (can be used as a bad get request)
  */
-suspend fun sendDataToServer(body: String, url: String = "https://ginkwsma75wud3rylqlqms5n240xyomv.lambda-url.eu-north-1.on.aws/"): String {
+suspend fun sendDataToServer(body: String, url: String = "https://gi2wsqbyse6tnfhqakbnq6f2su0vujgz.lambda-url.eu-north-1.on.aws/"): String {
     return try {
         val connection = withContext(Dispatchers.IO) {
             URL(url).openConnection()
@@ -52,6 +52,7 @@ suspend fun sendDataToServer(body: String, url: String = "https://ginkwsma75wud3
         response
     } catch (_: Exception) { "" }
 }
+
 
 /**
  * Fetches data from a specified URL and returns it as a string.

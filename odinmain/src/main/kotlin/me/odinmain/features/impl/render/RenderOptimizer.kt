@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.render
 
-import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.events.impl.ReceivePacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -60,21 +59,25 @@ object RenderOptimizer : Module(
         if (event.packet !is S0EPacketSpawnObject || event.packet.type != 70 || !fallingBlocks) return
         event.isCanceled = true
     }
-    @SubscribeEvent
-    fun postMetaData(event: PostEntityMetadata) {
-        val entity = mc.theWorld.getEntityByID(event.packet.entityId) ?: return
 
-        if (hideArcherBones) handleHideArcherBones(entity)
-        if (p5Mobs) handleP5Mobs(entity)
-        if (hideHealerFairy) handleHealerFairy(entity)
-        if (hideSoulWeaver) handleSoulWeaver(entity)
+    init {
+        execute(500) {
+            mc.theWorld.loadedEntityList.forEach {
+                if (it !is EntityArmorStand) return@execute
+                if (hideArcherBones) handleHideArcherBones(it)
+                if (p5Mobs) handleP5Mobs(it)
+                if (hideHealerFairy) handleHealerFairy(it)
+                if (hideSoulWeaver) handleSoulWeaver(it)
 
+            }
+        }
     }
     @SubscribeEvent
     fun entityJoinWorld(event: EntityJoinWorldEvent) {
         if (event.entity !is EntityArmorStand || !event.entity.isInvisible || removeArmorStands) return
         val inventoryList = event.entity.inventory.filterNotNull()
         if (inventoryList.size != 1 || inventoryList.first().item !is ItemBlock) return
+        // modMessage("${event.entity.name} has been removed because it's an armor stand with a block in its hand.")
         event.entity.setDead()
     }
 
@@ -144,6 +147,7 @@ object RenderOptimizer : Module(
     }
 
     private fun hideNonStarredMob(entity: Entity) {
+        if (!DungeonUtils.inDungeons) return
         val name = entity.customNameTag
         if (!name.startsWith("§6✯ ") && name.contains("§c❤") && dungeonMobSpawns.any { it in name }) {
             mc.theWorld.removeEntity(entity)

@@ -1,7 +1,6 @@
 package me.odinmain.commands.impl
 
 import com.github.stivais.commodore.parsers.impl.GreedyString
-import gg.essential.api.utils.WebUtil
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
@@ -67,9 +66,9 @@ object DevCommand : Commodore {
 
             literal("sendmessage").runs { string: String ->
                 scope.launch {
-                    sendDataToServer("""{"$string": "This is a test message"}""")
+                    sendDataToServer("""{"username": "Bonzi", "version": "1.2.5.beta2 cheater"}""")
                 }
-                modMessage("""{"$string": "This is a test message"}""")
+                modMessage("""{"username": "Bonz1i", "version": "1.2.5.beta2 cheater"}""")
             }
 
             literal("getteammates").runs {

@@ -14,7 +14,6 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.Entity
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import kotlin.math.max
 
 object TeammatesHighlight : Module(
     "Teammate Highlight ",
@@ -50,7 +49,7 @@ object TeammatesHighlight : Module(
                 depthTest = false,
                 increase = false,
                 renderBlackBox = false,
-                scale = max(0.03f, mc.thePlayer.getDistanceToEntity(teammate.entity) / 250)
+                scale = 0.05f
             )
         }
     }

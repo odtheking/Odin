@@ -14,8 +14,8 @@ object DioriteFucker : Module(
     description = "Replaces the pillars in the F7 & M7 boss-fight with glass.",
     category = Category.FLOOR7,
 ) {
-    private val delay: Long by NumberSetting("Delay", 80, 50, 1000, 10)
-    private val stainedGlass: Boolean by BooleanSetting("Stained glass", default = true)
+    private val delay: Long by NumberSetting("Delay", 80, 50, 1000, 10, description = "Delay between times of swapping diorite with glass")
+    private val stainedGlass: Boolean by BooleanSetting("Stained glass", default = false, description = "Swaps the diorite with stained glass" )
     private val color: Int by NumberSetting("Color", 0, 0.0, 15.0, 1.0).withDependency { stainedGlass }
 
     init {

@@ -26,6 +26,7 @@ import me.odinmain.ui.util.text
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import net.minecraftforge.client.event.RenderLivingEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.event.entity.living.LivingDeathEvent
@@ -40,15 +41,36 @@ object WitherDragons : Module(
     category = Category.FLOOR7
 ) {
 
-    private val dragonTimer: Boolean by BooleanSetting("Dragon Timer", true, description = "Displays a timer for when M7 dragons spawn.")
-    val textScale: Float by NumberSetting(name = "Text Scale", default = 0.8f, min = 0.1f, max = 5f, increment = 0.1f).withDependency { dragonTimer}
-    private val timerBackground: Boolean by BooleanSetting("HUD Timer Background", true, description = "Displays a background for the timer.").withDependency { dragonTimer && hud.displayToggle }
+    private val dragonTimer: Boolean by BooleanSetting(
+        "Dragon Timer",
+        true,
+        description = "Displays a timer for when M7 dragons spawn."
+    )
+    val textScale: Float by NumberSetting(
+        name = "Text Scale",
+        default = 0.8f,
+        min = 0.1f,
+        max = 5f,
+        increment = 0.1f
+    ).withDependency { dragonTimer }
+    private val timerBackground: Boolean by BooleanSetting(
+        "HUD Timer Background",
+        true,
+        description = "Displays a background for the timer."
+    ).withDependency { dragonTimer && hud.displayToggle }
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, true) {
         if (it) {
-            if (timerBackground) roundedRectangle(1f, 1f, getTextWidth("Purple spawning in 4500ms", 12f) + 1f, 32f, Color.DARK_GRAY.withAlpha(.75f), 3f)
+            if (timerBackground) roundedRectangle(
+                1f,
+                1f,
+                getTextWidth("Purple spawning in 4500ms", 12f) + 1f,
+                32f,
+                Color.DARK_GRAY.withAlpha(.75f),
+                3f
+            )
 
             text("§5Purple spawning in §a4500ms", 2f, 10f, Color.WHITE, 12f, OdinFont.REGULAR)
-            text("§cRed spawning in §e1200ms", 2f, 26f, Color.WHITE,12f, OdinFont.REGULAR)
+            text("§cRed spawning in §e1200ms", 2f, 26f, Color.WHITE, 12f, OdinFont.REGULAR)
             max(
                 getTextWidth("Purple spawning in 4500ms", 12f),
                 getTextWidth("Red spawning in 1200ms", 12f)
@@ -57,7 +79,7 @@ object WitherDragons : Module(
             if (!dragonTimer) return@HudSetting 0f to 0f
             var width = 0f
             DragonTimer.toRender.forEachIndexed { index, triple ->
-                text(triple.first, 1f, 9f + index * 17f, Color.WHITE,12f, OdinFont.REGULAR)
+                text(triple.first, 1f, 9f + index * 17f, Color.WHITE, 12f, OdinFont.REGULAR)
                 width = max(width, getTextWidth(triple.first.noControlCodes, 19f))
             }
             roundedRectangle(1f, 1f, width + 2f, DragonTimer.toRender.size * 12f, Color.DARK_GRAY.withAlpha(.75f), 4f)
@@ -65,22 +87,76 @@ object WitherDragons : Module(
         } else 0f to 0f
     }
 
-    private val dragonBoxes: Boolean by BooleanSetting("Dragon Boxes", true, description = "Displays boxes for where M7 dragons spawn.")
+    private val dragonBoxes: Boolean by BooleanSetting(
+        "Dragon Boxes",
+        true,
+        description = "Displays boxes for where M7 dragons spawn."
+    )
     val lineThickness: Float by NumberSetting("Line Width", 2f, 1.0, 5.0, 0.5).withDependency { dragonBoxes }
 
-    val sendNotification: Boolean by BooleanSetting("Send Dragon Confirmation", true, description = "Sends a confirmation message when a dragon dies.")
-    val sendTime: Boolean by BooleanSetting("Send Dragon Time Alive", true, description = "Sends a message when a dragon dies with the time it was alive.")
-    val sendSpawning: Boolean by BooleanSetting("Send Dragon Spawning", true, description = "Sends a message when a dragon is spawning.")
-    val sendSpawned: Boolean by BooleanSetting("Send Dragon Spawned", true, description = "Sends a message when a dragon has spawned.")
+    val sendNotification: Boolean by BooleanSetting(
+        "Send Dragon Confirmation",
+        true,
+        description = "Sends a confirmation message when a dragon dies."
+    )
+    val sendTime: Boolean by BooleanSetting(
+        "Send Dragon Time Alive",
+        true,
+        description = "Sends a message when a dragon dies with the time it was alive."
+    )
+    val sendSpawning: Boolean by BooleanSetting(
+        "Send Dragon Spawning",
+        true,
+        description = "Sends a message when a dragon is spawning."
+    )
+    val sendSpawned: Boolean by BooleanSetting(
+        "Send Dragon Spawned",
+        true,
+        description = "Sends a message when a dragon has spawned."
+    )
 
-    private val dragonHealth: Boolean by BooleanSetting("Dragon Health", true, description = "Displays the health of M7 dragons.")
+    private val dragonHealth: Boolean by BooleanSetting(
+        "Dragon Health",
+        true,
+        description = "Displays the health of M7 dragons."
+    )
 
-    val dragonPriorityToggle: Boolean by BooleanSetting("Dragon Priority", false, description = "Displays the priority of dragons spawning.")
-    val normalPower: Double by NumberSetting("Normal Power", 10.0, 10.0, 29.0, description = "Power needed to split.").withDependency { dragonPriorityToggle }
-    val easyPower: Double by NumberSetting("Easy Power", 10.0, 10.0, 29.0, description = "Power needed when its Purple and another dragon.").withDependency { dragonPriorityToggle }
-    val soloDebuff: Boolean by DualSetting("Purple Solo Debuff", "Tank", "Healer", false, description = "Displays the debuff of the config.The class that solo debuffs purple, the other class helps b/m.").withDependency { dragonPriorityToggle }
-    val soloDebuffOnAll: Boolean by BooleanSetting("Solo Debuff on All Splits", false, description = "Same as Purple Solo Debuff but for all dragons (A will only have 1 debuff).").withDependency { dragonPriorityToggle }
-    val paulBuff: Boolean by BooleanSetting("Paul Buff", false, description = "Multiplies the power in your run by 1.25").withDependency { dragonPriorityToggle }
+    val dragonPriorityToggle: Boolean by BooleanSetting(
+        "Dragon Priority",
+        false,
+        description = "Displays the priority of dragons spawning."
+    )
+    val normalPower: Double by NumberSetting(
+        "Normal Power",
+        10.0,
+        10.0,
+        29.0,
+        description = "Power needed to split."
+    ).withDependency { dragonPriorityToggle }
+    val easyPower: Double by NumberSetting(
+        "Easy Power",
+        10.0,
+        10.0,
+        29.0,
+        description = "Power needed when its Purple and another dragon."
+    ).withDependency { dragonPriorityToggle }
+    val soloDebuff: Boolean by DualSetting(
+        "Purple Solo Debuff",
+        "Tank",
+        "Healer",
+        false,
+        description = "Displays the debuff of the config.The class that solo debuffs purple, the other class helps b/m."
+    ).withDependency { dragonPriorityToggle }
+    val soloDebuffOnAll: Boolean by BooleanSetting(
+        "Solo Debuff on All Splits",
+        false,
+        description = "Same as Purple Solo Debuff but for all dragons (A will only have 1 debuff)."
+    ).withDependency { dragonPriorityToggle }
+    val paulBuff: Boolean by BooleanSetting(
+        "Paul Buff",
+        false,
+        description = "Multiplies the power in your run by 1.25"
+    ).withDependency { dragonPriorityToggle }
 
     val redPB = +NumberSetting("Panes PB", 1000.0, increment = 0.01, hidden = true)
     val orangePB = +NumberSetting("Color PB", 1000.0, increment = 0.01, hidden = true)
@@ -93,6 +169,7 @@ object WitherDragons : Module(
         if (DungeonUtils.getPhase() != 5) return
         handleSpawnPacket(event)
     }
+
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
         WitherDragonsEnum.entries.forEach {
@@ -116,7 +193,6 @@ object WitherDragons : Module(
             renderTime()
         }
         if (dragonBoxes) renderBoxes()
-        if (dragonHealth) renderHP()
     }
 
     @SubscribeEvent
@@ -135,5 +211,10 @@ object WitherDragons : Module(
     fun onChat(event: ChatPacketEvent) {
         if (DungeonUtils.getPhase() != 5) return
         onChatPacket(event)
+    }
+
+    @SubscribeEvent
+    fun onRenderLivingPost(event: RenderLivingEvent.Post<*>) {
+        if (dragonHealth) renderHP(event)
     }
 }

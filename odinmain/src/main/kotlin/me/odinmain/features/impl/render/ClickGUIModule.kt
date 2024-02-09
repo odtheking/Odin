@@ -84,9 +84,7 @@ object ClickGUIModule: Module(
             ${getChatBreak()}
             
             """.trimIndent(), false)
-            scope.launch {
-                sendDataToServer(body = """{"uud": "${mc.thePlayer.name}\n${if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""")
-            }
+
         }
 
         resetPositions()
@@ -98,17 +96,9 @@ object ClickGUIModule: Module(
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) = scope.launch {
         if (!LocationUtils.inSkyblock) return@launch
-        if (!hasSentWebhook) {
-            hasSentWebhook = true
-
-            val def = waitUntilPlayer()
-            try { def.await() } catch (e: Exception) { return@launch }
-
-            scope.launch {
-                sendDataToServer(body = """{"ud": "${mc.thePlayer.name}\n${ if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""")
-            }
+        scope.launch {
+            sendDataToServer(body = """{"username": "${OdinMain.mc.thePlayer.name}", "version": "${if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""")
         }
-
         if (hasSentUpdateMessage) return@launch
 
         val newestVersion = try {

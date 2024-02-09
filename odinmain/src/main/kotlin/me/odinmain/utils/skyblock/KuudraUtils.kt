@@ -3,7 +3,7 @@ package me.odinmain.utils.skyblock
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.skyblock.Kuudra
 import me.odinmain.features.impl.skyblock.Kuudra.highlightFreshColor
-import me.odinmain.features.impl.skyblock.Kuudra.outlineColor
+import me.odinmain.features.impl.skyblock.Kuudra.nameColor
 import me.odinmain.features.impl.skyblock.Kuudra.supplyWaypointColor
 import me.odinmain.utils.addVec
 import me.odinmain.utils.noControlCodes
@@ -12,13 +12,13 @@ import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.render.world.RenderUtils.renderBoundingBox
 import me.odinmain.utils.render.world.RenderUtils.renderCustomBeacon
 import me.odinmain.utils.render.world.RenderUtils.renderVec
+import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.monster.EntityGiantZombie
 import net.minecraft.entity.monster.EntityMagmaCube
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import kotlin.math.cos
-import kotlin.math.max
 import kotlin.math.sin
 import net.minecraft.util.AxisAlignedBB as AABB
 
@@ -76,10 +76,6 @@ object KuudraUtils {
         BoxParameters(-112.5, 76.5, -68.5, Color(0, 0, 255), 0.0, 1.0, false)
     )
 
-    fun addGiantZombie(event: EntityJoinWorldEvent) {
-        if (event.entity is EntityGiantZombie && (event.entity as EntityGiantZombie).heldItem?.toString() == "1xitem.skull@3")
-            giantZombies.add(event.entity as EntityGiantZombie)
-    }
 
     fun handleArmorStand(event: EntityJoinWorldEvent) {
         if (event.entity is EntityArmorStand && Kuudra.phase == 1 && !event.entity.name.contains("Lv") && !event.entity.toString().contains("name=Armor Stand")) {
@@ -97,25 +93,20 @@ object KuudraUtils {
         }
     }
 
-    fun cancelArmorStandEvent(event: EntityJoinWorldEvent) {
-        if (event.entity is EntityArmorStand && event.entity.toString().noControlCodes.contains("[\"[Lv\"]"))
-            event.isCanceled = true
+    fun cancelArmorStandEvent(event: EntityLivingBase) {
+        if (event is EntityArmorStand && event.toString().noControlCodes.contains("[\"[Lv\"]"))
+            mc.theWorld.removeEntity(event)
+
     }
 
-    fun getKuudra(event: EntityJoinWorldEvent) {
-        if (event.entity !is EntityMagmaCube) return
-        val entity = event.entity as EntityMagmaCube
-        if (entity.maxHealth == 10000f)
-            kuudraEntity = event.entity as EntityMagmaCube
-    }
 
     fun renderTeammatesNames() {
         kuudraTeammates.forEach { teammate ->
             val player = teammate.entity ?: return@forEach
             RenderUtils.drawStringInWorld(player.name, teammate.entity.renderVec.addVec(y = 2.6),
-                if (teammate.eatFresh) highlightFreshColor.rgba else outlineColor.rgba,
+                if (teammate.eatFresh) highlightFreshColor.rgba else nameColor.rgba,
                 depthTest = false, increase = false, renderBlackBox = false,
-                scale = max(0.03f, mc.thePlayer.getDistanceToEntity(teammate.entity) / 300)
+                scale = 0.05f
             )
         }
     }
