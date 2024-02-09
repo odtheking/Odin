@@ -55,6 +55,12 @@ public class MixinGuiContainer {
             ci.cancel();
     }
 
+    @Inject(method = "keyTyped", at = @At("HEAD"), cancellable = true)
+    private void keyTyped(char typedChar, int keyCode, CallbackInfo ci) {
+        if (MinecraftForge.EVENT_BUS.post(new GuiKeyPressEvent(gui.inventorySlots, gui, keyCode)))
+            ci.cancel();
+    }
+
     @Inject(method = "onGuiClosed", at = @At("HEAD"))
     private void onGuiClosed(CallbackInfo ci) {
         MinecraftForge.EVENT_BUS.post(new GuiClosedEvent(gui));
