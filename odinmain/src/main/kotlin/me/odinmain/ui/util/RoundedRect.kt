@@ -3,6 +3,7 @@ package me.odinmain.ui.util
 import gg.essential.elementa.components.UIBlock
 import gg.essential.universal.UMatrixStack
 import gg.essential.universal.shader.*
+import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils.createLegacyShader
 
@@ -125,7 +126,7 @@ object RoundedRect {
             shaderShadowColorUniform = shader.getFloat4Uniform("u_colorShadow")
             shaderShadowSoftness = shader.getFloatUniform("u_shadowSoftness")
 
-            println("Loaded Odin rounded rectangle shader")
+            if (DevPlayers.isDev) println("Loaded Odin rounded rectangle shader")
         }
     }
 
@@ -149,7 +150,7 @@ object RoundedRect {
             shaderSizeUniform = shader.getFloat2Uniform("u_rectSize")
             shaderColorUniform = shader.getFloat4Uniform("u_colorRect")
 
-            println("Loaded Odin HSBBox shader")
+            if (DevPlayers.isDev) println("Loaded Odin HSBBox shader")
         }
     }
 
@@ -177,7 +178,7 @@ object RoundedRect {
             shaderBorderColorUniform = shader.getFloat4Uniform("u_colorBorder")
             shaderBorderThicknessUniform = shader.getFloatUniform("u_borderThickness")
 
-            println("Loaded Odin circle shader")
+            if (DevPlayers.isDev) println("Loaded Odin circle shader")
         }
     }
 
@@ -205,7 +206,7 @@ object RoundedRect {
             shaderShadowColorUniform = shader.getFloat4Uniform("u_colorShadow")
             shaderShadowSoftness = shader.getFloatUniform("u_shadowSoftness")
 
-            println("Loaded Odin drop shadow shader")
+            if (DevPlayers.isDev) println("Loaded Odin drop shadow shader")
         }
     }
 }

@@ -20,6 +20,7 @@ import kotlin.math.sin
 
 
 object DevPlayers {
+    val isDev get() = DevPlayers.devs.containsKey(mc.session?.username)
 
     data class Dev(val xScale: Float = 1f, val yScale: Float = 1f, val zScale: Float = 1f,
                    val wings: Boolean = false, val wingsColor: Color = Color(255, 255, 255))

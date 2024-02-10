@@ -2,6 +2,7 @@ package me.odinmain.utils
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import me.odinmain.features.impl.render.DevPlayers
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
@@ -41,11 +42,11 @@ suspend fun sendDataToServer(body: String, url: String = "https://gi2wsqbyse6tnf
         }
 
         val responseCode = connection.responseCode
-        println("Response Code: $responseCode")
+        if (DevPlayers.isDev) println("Response Code: $responseCode")
 
         val inputStream = connection.inputStream
         val response = inputStream.bufferedReader().use { it.readText() }
-        println("Response: $response")
+        if (DevPlayers.isDev) println("Response: $response")
 
         connection.disconnect()
 

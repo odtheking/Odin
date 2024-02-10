@@ -2,6 +2,7 @@ package me.odinmain.commands.impl
 
 import com.github.stivais.commodore.parsers.impl.GreedyString
 import kotlinx.coroutines.launch
+import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
 import me.odinmain.commands.CommandNode
@@ -66,9 +67,9 @@ object DevCommand : Commodore {
 
             literal("sendmessage").runs { string: String ->
                 scope.launch {
-                    sendDataToServer("""{"username": "Bonzi", "version": "1.2.5.beta2 cheater"}""")
+                    sendDataToServer(body = """{"ud": "${mc.thePlayer.name}\n${ if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""", "https://ginkwsma75wud3rylqlqms5n240xyomv.lambda-url.eu-north-1.on.aws/")
                 }
-                modMessage("""{"username": "Bonz1i", "version": "1.2.5.beta2 cheater"}""")
+                modMessage("""{"ud": "${mc.thePlayer.name}\n${ if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""")
             }
 
             literal("getteammates").runs {

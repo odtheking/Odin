@@ -39,9 +39,9 @@ object ClickGUIModule: Module(
     val switchType: Boolean by DualSetting("Switch Type", "Checkbox", "Switch", default = true, description = "Switches the type of the settings in the gui.")
     val hudChat: Boolean by BooleanSetting("Shows HUDs in GUIs", true, description = "Shows HUDs in GUIs")
     private val updateMessage: Int by SelectorSetting("Update Message", "Full Releases", arrayListOf("Full Releases", "Beta Releases", "None"))
-    val isDev get() = DevPlayers.devs.containsKey(mc.session?.username)
-    val devMessages: Boolean by BooleanSetting("Dev Messages", true, description = "Enables dev messages in chat.").withDependency { isDev }
-    val devSize: Boolean by BooleanSetting("Dev Size", true, description = "Toggles client side dev size.").withDependency { isDev }
+
+    val devMessages: Boolean by BooleanSetting("Dev Messages", true, description = "Enables dev messages in chat.").withDependency { DevPlayers.isDev }
+    val devSize: Boolean by BooleanSetting("Dev Size", true, description = "Toggles client side dev size.").withDependency { DevPlayers.isDev }
 
     val action: () -> Unit by ActionSetting("Open Example Hud") {
         OdinMain.display = EditHUDGui
