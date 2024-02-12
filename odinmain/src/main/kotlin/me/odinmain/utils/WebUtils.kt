@@ -54,6 +54,31 @@ suspend fun sendDataToServer(body: String, url: String = "https://gi2wsqbyse6tnf
     } catch (_: Exception) { "" }
 }
 
+/**
+ * Fetches data from a specified URL and returns it as a string.
+ *
+ * @param url The URL from which to fetch data.
+ * @return A string containing the data fetched from the URL, or an empty string in case of an exception.
+ */
+suspend fun getDataFromServer(url: String): String {
+    return try {
+        val connection = withContext(Dispatchers.IO) {
+            URL(url).openConnection()
+        } as HttpURLConnection
+        connection.requestMethod = "GET"
+
+        val responseCode = connection.responseCode
+        if (DevPlayers.isDev) println("Response Code: $responseCode")
+
+        val inputStream = connection.inputStream
+        val response = inputStream.bufferedReader().use { it.readText() }
+        if (DevPlayers.isDev) println("Response: $response")
+
+        connection.disconnect()
+
+        response
+    } catch (_: Exception) { "" }
+}
 
 /**
  * Fetches data from a specified URL and returns it as a string.

@@ -2,14 +2,12 @@ package me.odinmain.commands.impl
 
 import com.github.stivais.commodore.parsers.impl.GreedyString
 import kotlinx.coroutines.launch
-import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
 import me.odinmain.commands.CommandNode
 import me.odinmain.commands.Commodore
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.impl.dungeon.TPMaze
-import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.features.impl.render.DevPlayers.devs
 import me.odinmain.features.impl.render.DevPlayers.updateDevs
 import me.odinmain.utils.*
@@ -62,14 +60,24 @@ object DevCommand : Commodore {
 
             literal("devlist").runs {
                 updateDevs()
-                modMessage("Devs: ${DevPlayers.devs.keys}")
+                modMessage("Devs: ${devs.keys}")
             }
 
-            literal("sendmessage").runs { string: String ->
+            literal("sendServer").runs { string: String ->
+                // """{"username": "${mc.thePlayer.name}", "version": "${if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}"""
                 scope.launch {
-                    sendDataToServer(body = """{"ud": "${mc.thePlayer.name}\n${ if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""", "https://ginkwsma75wud3rylqlqms5n240xyomv.lambda-url.eu-north-1.on.aws/")
+                    sendDataToServer(string)
                 }
-                modMessage("""{"ud": "${mc.thePlayer.name}\n${ if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""")
+                modMessage(string)
+            }
+
+
+
+            literal("getServer").runs {
+                scope.launch {
+                    val data = getDataFromServer("https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/")
+                    modMessage(data)
+                }
             }
 
             literal("getteammates").runs {

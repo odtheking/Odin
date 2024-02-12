@@ -6,13 +6,12 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.addVec
-import me.odinmain.utils.distanceSquaredTo
 import me.odinmain.utils.render.world.OutlineUtils
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.render.world.RenderUtils.renderVec
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.Entity
-import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.client.event.RenderLivingEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object TeammatesHighlight : Module(
@@ -37,21 +36,21 @@ object TeammatesHighlight : Module(
     }
 
     @SubscribeEvent
-    fun onRenderWorld(event: RenderWorldLastEvent) {
-        DungeonUtils.teammates.forEach { teammate ->
-            if (teammate.entity?.let { shouldRender(it) } != true) return@forEach
-            if (!whenVisible && mc.thePlayer.canEntityBeSeen(teammate.entity)) return@forEach
-            if (teammate.entity.distanceSquaredTo(mc.thePlayer) >= 2333) return@forEach
+    fun handleNames(event: RenderLivingEvent.Pre<*>) {
+        if (!shouldRender(event.entity)) return
 
-            RenderUtils.drawStringInWorld(
-                "${teammate.clazz.code}${teammate.name}",
-                teammate.entity.renderVec.addVec(y = 2.6),
-                depthTest = false,
-                increase = false,
-                renderBlackBox = false,
-                scale = 0.05f
-            )
-        }
+        val teammate = DungeonUtils.teammates.find { it.entity == event.entity } ?: return
+
+        if (!whenVisible && mc.thePlayer.canEntityBeSeen(teammate.entity)) return
+
+        RenderUtils.drawStringInWorld(
+            "${teammate.clazz.code}${teammate.name}",
+            event.entity.renderVec.addVec(y = 2.6),
+            depthTest = false,
+            increase = false,
+            renderBlackBox = false,
+            scale = 0.05f
+        )
     }
 
     private fun shouldRender(teammate: Entity): Boolean {

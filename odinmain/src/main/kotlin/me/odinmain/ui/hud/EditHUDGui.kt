@@ -43,22 +43,26 @@ object EditHUDGui : Screen() {
             it.y = MouseUtils.mouseY - startY
         }
         GlStateManager.pushMatrix()
+        scale(mc.displayWidth / 1920f, mc.displayHeight / 1080f)
+        scale(1f / scaleFactor, 1f / scaleFactor, 1f)
 
         if (openAnim.isAnimating()) {
             val animVal = openAnim.get(0f, 1f, !open)
             scale(animVal, animVal)
         }
-        hoverHandler.handle(Display.getWidth() / 2 - 100f, Display.getHeight() * .875f, 200f, 50f)
+        hoverHandler.handle(Display.getWidth() / 2 - 75f, Display.getHeight() * .86f - 30, 150f, 40f)
 
         //dropShadow(-100f, -25f, 200f, 50f, 10f, 1f)
-        roundedRectangle(Display.getWidth() / 4 - 50, Display.getHeight() / 2 * .875f, 100f, 25f, color, 9f)
+        roundedRectangle(Display.getWidth() / 2 - 75, Display.getHeight() * .86f - 30, 150f, 40f, color, 9f)
 
-        text("Reset", Display.getWidth() / 4f, Display.getHeight() / 2 * .875f + 20, textColor, 12f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Bottom)
+        text("Reset", Display.getWidth() / 2f, Display.getHeight() * .86f, textColor, 18f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Bottom)
 
         if (openAnim.isAnimating()) {
             val animVal = openAnim.get(0f, 1f, !open)
             scale(1 / animVal, 1 / animVal)
         }
+        scale(scaleFactor, scaleFactor, 1f)
+
         GlStateManager.popMatrix()
 
         if (!open) return

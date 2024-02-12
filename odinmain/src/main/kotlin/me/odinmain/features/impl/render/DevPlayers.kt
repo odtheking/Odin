@@ -5,8 +5,9 @@ import kotlinx.coroutines.launch
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.render.ClickGUIModule.devSize
-import me.odinmain.utils.fetchURLData
+import me.odinmain.utils.getDataFromServer
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.model.ModelBase
 import net.minecraft.client.model.ModelRenderer
@@ -20,34 +21,34 @@ import kotlin.math.sin
 
 
 object DevPlayers {
-    val isDev get() = DevPlayers.devs.containsKey(mc.session?.username)
+    val isDev get() = devs.containsKey(mc.session?.username)
 
     data class Dev(val xScale: Float = 1f, val yScale: Float = 1f, val zScale: Float = 1f,
                    val wings: Boolean = false, val wingsColor: Color = Color(255, 255, 255))
 
     val devs = HashMap<String, Dev>()
 
+    private fun convertDecimalToInt(s: String): String {
+        // Define the regular expression pattern
+        val pattern = Regex("""Decimal\('(\d+)'\)""")
+
+        // Replace each occurrence of Decimal('x') with x
+        return s.replace(pattern) { match ->
+            match.groupValues[1] // Extract the number part and return
+        }
+    }
+
     fun updateDevs() {
-        val webhook: String = fetchURLData("https://pastebin.com/raw/9Lq8hKTQ")
+        OdinMain.scope.launch {
+            val data = convertDecimalToInt(getDataFromServer("https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
+            modMessage(data)
+            val regex = Regex("""\[\{'DevName': '(\w+)', 'WingsColor': \{(\d+), (\d+), (\d+)\}, 'Size': \{(\d+), (\d+), (\d+)\}, 'Wings': (True|False)\}\]""")
+            val match = regex.find(data) ?: return@launch modMessage("No match found")
 
-        val keyValuePairs = webhook.split("?")
-        for (keyValuePair in keyValuePairs) {
-            val parts = keyValuePair.split(" to ")
+            val (name, r, g, b, x, y, z, wings) = match.destructured
+            val dev = Dev(x.toFloat(), y.toFloat(), z.toFloat(), wings.toBoolean(), Color(r.toInt(), g.toInt(), b.toInt()))
 
-            if (parts.size == 2) {
-
-                val key = parts[0].trim(' ', '"')
-                val valueString = parts[1].trim()
-
-                val regex = Regex("""Dev\((\d+\.*\d*), (\d+\.*\d*), (\d+\.*\d*)\), (\w+), Color\((\d+), (\d+), (\d+)\)\)""")
-                val match = regex.find(valueString) ?: return
-
-                val (x, y, z, wings, wingRed, wingGreen, wingBlue) = match.destructured
-                val dev = Dev(x.toFloat(), y.toFloat(), z.toFloat(), wings.toBoolean(), Color(wingRed.toInt(), wingGreen.toInt(), wingBlue.toInt()))
-
-                devs[key] = dev
-
-            }
+            devs[name] = dev
         }
     }
 

@@ -97,7 +97,7 @@ object ClickGUIModule: Module(
     fun onWorldLoad(event: WorldEvent.Load) = scope.launch {
         if (!LocationUtils.inSkyblock) return@launch
         scope.launch {
-            sendDataToServer(body = """{"username": "${OdinMain.mc.thePlayer.name}", "version": "${if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""")
+            sendDataToServer(body = """{"username": "${mc.thePlayer.name}", "version": "${if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""")
         }
         if (hasSentUpdateMessage) return@launch
 

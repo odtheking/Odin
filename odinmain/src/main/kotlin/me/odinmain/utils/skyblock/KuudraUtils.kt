@@ -3,6 +3,7 @@ package me.odinmain.utils.skyblock
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.skyblock.Kuudra
 import me.odinmain.features.impl.skyblock.Kuudra.highlightFreshColor
+import me.odinmain.features.impl.skyblock.Kuudra.kuudraColor
 import me.odinmain.features.impl.skyblock.Kuudra.nameColor
 import me.odinmain.features.impl.skyblock.Kuudra.supplyWaypointColor
 import me.odinmain.utils.addVec
@@ -12,6 +13,7 @@ import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.render.world.RenderUtils.renderBoundingBox
 import me.odinmain.utils.render.world.RenderUtils.renderCustomBeacon
 import me.odinmain.utils.render.world.RenderUtils.renderVec
+import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.monster.EntityGiantZombie
@@ -23,7 +25,7 @@ import kotlin.math.sin
 import net.minecraft.util.AxisAlignedBB as AABB
 
 object KuudraUtils {
-    var kuudraTeammates = ArrayList<KuddraPlayer>()
+    var kuudraTeammates = ArrayList<kuudraPlayer>()
     var giantZombies: MutableList<EntityGiantZombie> = mutableListOf()
     var supplies = BooleanArray(6) { true }
     var kuudraEntity: EntityMagmaCube? = null
@@ -37,7 +39,7 @@ object KuudraUtils {
         val isInnerBox: Boolean
     )
 
-    data class KuddraPlayer(
+    data class kuudraPlayer(
         val playerName: String,
         var eatFresh: Boolean = false,
         var eatFreshTime: Long = 0,
@@ -49,7 +51,7 @@ object KuudraUtils {
         BoxParameters(-97.0, 157.0, -112.0, Color(0, 0, 255), Kuudra.pearlBox, 1.0, true),
         BoxParameters(-70.5, 79.0, -134.5, Color(0, 0, 255), 2.0, 1.0, false),
         BoxParameters(-85.5, 78.0, -128.5, Color(0, 0, 255), 2.0, 1.0, false),
-
+        // above y 85 full block
         // Box 2
         BoxParameters(-95.5, 161.0, -105.5, Color(0, 0, 255), Kuudra.pearlBox, 1.0, true),
         BoxParameters(-67.5, 77.0, -122.5, Color(0, 255, 0), 2.0, 1.0, false),
@@ -93,27 +95,26 @@ object KuudraUtils {
         }
     }
 
+
     fun cancelArmorStandEvent(event: EntityLivingBase) {
         if (event is EntityArmorStand && event.toString().noControlCodes.contains("[\"[Lv\"]"))
             mc.theWorld.removeEntity(event)
-
     }
 
+    fun renderTeammatesNames(event: Entity) {
+        if (event == mc.thePlayer) return
+        val teammate = kuudraTeammates.find { it.entity == event } ?: return
 
-    fun renderTeammatesNames() {
-        kuudraTeammates.forEach { teammate ->
-            val player = teammate.entity ?: return@forEach
-            RenderUtils.drawStringInWorld(player.name, teammate.entity.renderVec.addVec(y = 2.6),
-                if (teammate.eatFresh) highlightFreshColor.rgba else nameColor.rgba,
-                depthTest = false, increase = false, renderBlackBox = false,
-                scale = 0.05f
-            )
-        }
+        RenderUtils.drawStringInWorld(event.name, event.renderVec.addVec(y = 2.6),
+            if (teammate.eatFresh) highlightFreshColor.rgba else nameColor.rgba,
+            depthTest = false, increase = false, renderBlackBox = false,
+            scale = 0.05f
+        )
     }
 
     fun renderPearlBoxes() {
         for (box in boxParametersList) {
-            if (box.isInnerBox) RenderUtils.drawBoxOutline(box.x, box.y, box.z, box.scale, box.color, 3f, true)
+            if (!box.isInnerBox) RenderUtils.drawBoxOutline(box.x, box.y, box.z, box.scale, box.color, 3f, true)
             else RenderUtils.drawFilledBox(AABB(box.x, box.y, box.z, box.x + 1, box.y + 1, box.z + 1), box.color, true)
         }
     }
@@ -127,7 +128,7 @@ object KuudraUtils {
     }
 
     fun highlightKuudra() {
-        kuudraEntity?.renderBoundingBox?.let { RenderUtils.drawBoxOutline(it, Color(255, 0, 0), 3f, true) }
+        kuudraEntity?.renderBoundingBox?.let { RenderUtils.drawBoxOutline(it, kuudraColor, 3f, true) }
     }
 
 }
