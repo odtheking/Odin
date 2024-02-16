@@ -29,26 +29,31 @@ object DevPlayers {
     val devs = HashMap<String, Dev>()
 
     private fun convertDecimalToInt(s: String): String {
-        // Define the regular expression pattern
-        val pattern = Regex("""Decimal\('(\d+)'\)""")
+        // Define the regular expression pattern to match both integer and decimal numbers
+        val pattern = Regex("""Decimal\('(\d+(?:\.\d+)?)'\)""")
 
-        // Replace each occurrence of Decimal('x') with x
+        // Replace each occurrence of Decimal('x') or x with x
         return s.replace(pattern) { match ->
             match.groupValues[1] // Extract the number part and return
         }
     }
 
+
     fun updateDevs() {
         OdinMain.scope.launch {
             val data = convertDecimalToInt(getDataFromServer("https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
-            modMessage(data)
-            val regex = Regex("""\[\{'DevName': '(\w+)', 'WingsColor': \{(\d+), (\d+), (\d+)\}, 'Size': \{(\d+), (\d+), (\d+)\}, 'Wings': (True|False)\}\]""")
-            val match = regex.find(data) ?: return@launch modMessage("No match found")
+            //val jsonData = JsonArray(data)
+            val jsonObjects = data.split("}, {")
+            // Iterate over each JSON object
+            jsonObjects.forEach { jsonObj ->
+                modMessage(jsonObj)
+                val match = Regex("""\{'DevName': '(\w+)', 'WingsColor': \{(\d+), (\d+), (\d+)\}, 'Size': \{(\d+), (\d+), (\d+)\}, 'Wings': (True|False)\}""").find(jsonObj + "}") ?: return@forEach
 
-            val (name, r, g, b, x, y, z, wings) = match.destructured
-            val dev = Dev(x.toFloat(), y.toFloat(), z.toFloat(), wings.toBoolean(), Color(r.toInt(), g.toInt(), b.toInt()))
-
-            devs[name] = dev
+                val (name, r, g, b, x, y, z, wings) = match.destructured
+                val dev = Dev(x.toFloat(), y.toFloat(), z.toFloat(), wings.toBoolean(), Color(r.toInt(), g.toInt(), b.toInt()))
+                modMessage("Dev: $name")
+                devs[name] = dev
+            }
         }
     }
 

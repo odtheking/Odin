@@ -40,6 +40,7 @@ object LocationUtils {
             }
 
             currentDungeon?.setBoss()
+
         }.register()
     }
 
@@ -100,5 +101,26 @@ object LocationUtils {
             if (areaText.contains("Owner:")) extraInfo = areaText.substringAfter("Owner:")
         }
         return if (area == null) null else area + (extraInfo ?: "")
+    }
+
+    enum class Island(val displayName: String) {
+        PrivateIsland("Private Island"),
+        Garden("The Garden"),
+        SpiderDen("Spider's Den"),
+        CrimsonIsle("Crimson Isle"),
+        TheEnd("The End"),
+        GoldMine("Gold Mine"),
+        DeepCaverns("Deep Caverns"),
+        DwarvenMines("Dwarven Mines"),
+        CrystalHollows("Crystal Hollows"),
+        FarmingIsland("The Farming Islands"),
+        ThePark("The Park"),
+        Dungeon("Catacombs"),
+        DungeonHub("Dungeon Hub"),
+        Hub("Hub"),
+        DarkAuction("Dark Auction"),
+        JerryWorkshop("Jerry's Workshop"),
+        Kuudra("Kuudra"),
+        Unknown("(Unknown)");
     }
 }

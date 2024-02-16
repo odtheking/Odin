@@ -4,6 +4,7 @@ import me.odinmain.utils.addVec
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.render.world.RenderUtils.renderVec
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.entity.SharedMonsterAttributes
 import net.minecraft.entity.boss.EntityDragon
 import net.minecraftforge.client.event.RenderLivingEvent
@@ -14,6 +15,7 @@ object DragonHealth{
         if (event.entity !is EntityDragon) return
         val dragon = event.entity as EntityDragon
         val percentage = event.entity.health / event.entity.getEntityAttribute(SharedMonsterAttributes.maxHealth).baseValue
+        modMessage(percentage.toString())
         if (percentage <= 0) return
         val color = when {
             dragon.health >= 0.75 -> Color.GREEN

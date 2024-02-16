@@ -22,6 +22,7 @@ import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
+import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -66,6 +67,7 @@ object OdinMain {
             PlayerUtils,
             RenderUtils,
             DungeonUtils,
+            KuudraUtils,
             EventDispatcher,
             Executor,
             ModuleManager,

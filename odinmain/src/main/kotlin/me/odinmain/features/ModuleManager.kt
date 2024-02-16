@@ -10,6 +10,7 @@ import me.odinmain.features.impl.floor7.WitherDragons
 import me.odinmain.features.impl.floor7.p3.InactiveWaypoints
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalTimes
+import me.odinmain.features.impl.kuudra.*
 import me.odinmain.features.impl.render.*
 import me.odinmain.features.impl.render.ClickGUIModule.hudChat
 import me.odinmain.features.impl.skyblock.*
@@ -94,7 +95,15 @@ object ModuleManager {
         Ragaxe,
         MobSpawn,
         WitherDragons,
-        Kuudra
+        BuildHelper,
+        FreshTimer,
+        KuudraHighlight,
+        NoPre,
+        PearlWaypoints,
+        RemovePerks,
+        SupplyWaypoints,
+        TeammatesHighlight,
+        VanqNotifier
     )
 
 

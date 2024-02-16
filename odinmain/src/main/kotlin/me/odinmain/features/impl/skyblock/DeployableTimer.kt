@@ -34,7 +34,7 @@ object DeployableTimer : Module(
 
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {
-            text("§5SOS Flare", 40f, 15f, Color.WHITE,12f, OdinFont.BOLD)
+            text("§l§5SOS Flare", 40f, 15f, Color.WHITE,12f, OdinFont.BOLD)
             text("§e179s", 40f, 32f, Color.WHITE,12f, OdinFont.BOLD)
 
             drawDynamicTexture(firework, -5f, -2f, 50f, 50f)
@@ -72,7 +72,7 @@ object DeployableTimer : Module(
             "Alert Flare", "§9Alert Flare", 5, 180000, firework, 40f),
 
         SOS("ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzM0NzQ4OSwKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzAwNjJjYzk4ZWJkYTcyYTZhNGI4OTc4M2FkY2VmMjgxNWI0ODNhMDFkNzNlYTg3YjNkZjc2MDcyYTg5ZDEzYiIKICAgIH0KICB9Cn0=",
-            "SOS Flare", "§5SOS Flare", 7, 180000, firework, 40f),
+            "SOS Flare", "§l§5SOS Flare", 7, 180000, firework, 40f),
 
         Radiant("RADIANTPLACEHOLDERTEXTURE", "Radiant", "§aRadiant Orb", 1, 30000, radiantimage, 18f),
 

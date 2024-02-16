@@ -1,134 +1,105 @@
 package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.features.impl.skyblock.Kuudra
-import me.odinmain.features.impl.skyblock.Kuudra.highlightFreshColor
-import me.odinmain.features.impl.skyblock.Kuudra.kuudraColor
-import me.odinmain.features.impl.skyblock.Kuudra.nameColor
-import me.odinmain.features.impl.skyblock.Kuudra.supplyWaypointColor
-import me.odinmain.utils.addVec
+import me.odinmain.events.impl.ChatPacketEvent
+import me.odinmain.events.impl.PostEntityMetadata
+import me.odinmain.features.impl.kuudra.FreshTimer
+import me.odinmain.utils.ServerUtils.getPing
+import me.odinmain.utils.clock.Executor
+import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.noControlCodes
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.world.RenderUtils
-import me.odinmain.utils.render.world.RenderUtils.renderBoundingBox
-import me.odinmain.utils.render.world.RenderUtils.renderCustomBeacon
-import me.odinmain.utils.render.world.RenderUtils.renderVec
-import net.minecraft.entity.Entity
-import net.minecraft.entity.EntityLivingBase
-import net.minecraft.entity.item.EntityArmorStand
+import me.odinmain.utils.runIn
+import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.monster.EntityGiantZombie
 import net.minecraft.entity.monster.EntityMagmaCube
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
-import kotlin.math.cos
-import kotlin.math.sin
-import net.minecraft.util.AxisAlignedBB as AABB
+import net.minecraftforge.event.world.WorldEvent
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object KuudraUtils {
     var kuudraTeammates = ArrayList<kuudraPlayer>()
     var giantZombies: MutableList<EntityGiantZombie> = mutableListOf()
     var supplies = BooleanArray(6) { true }
-    var kuudraEntity: EntityMagmaCube? = null
-    data class BoxParameters(
-        val x: Double,
-        val y: Double,
-        val z: Double,
-        val color: Color,
-        val scale: Double,
-        val depth: Double,
-        val isInnerBox: Boolean
-    )
+    var kuudraEntity: EntityMagmaCube = EntityMagmaCube(mc.theWorld)
+    var builders = 0
+    var build = 0
+    var phase = 0
+    var preSpot = ""
+    var missing = ""
 
-    data class kuudraPlayer(
-        val playerName: String,
-        var eatFresh: Boolean = false,
-        var eatFreshTime: Long = 0,
-        val entity: EntityPlayer? = null
-    )
+    data class kuudraPlayer(val playerName: String, var eatFresh: Boolean = false, var eatFreshTime: Long = 0, val entity: EntityPlayer? = null)
+    @SubscribeEvent
+    fun onWorldLoad(event: WorldEvent.Load) {
+        phase = 0
+        kuudraTeammates = ArrayList()
+        supplies = BooleanArray(6) { true }
+        giantZombies = mutableListOf()
+        kuudraEntity = EntityMagmaCube(mc.theWorld)
+    }
 
-    private val boxParametersList = listOf(
-        // Box 1
-        BoxParameters(-97.0, 157.0, -112.0, Color(0, 0, 255), Kuudra.pearlBox, 1.0, true),
-        BoxParameters(-70.5, 79.0, -134.5, Color(0, 0, 255), 2.0, 1.0, false),
-        BoxParameters(-85.5, 78.0, -128.5, Color(0, 0, 255), 2.0, 1.0, false),
-        // above y 85 full block
-        // Box 2
-        BoxParameters(-95.5, 161.0, -105.5, Color(0, 0, 255), Kuudra.pearlBox, 1.0, true),
-        BoxParameters(-67.5, 77.0, -122.5, Color(0, 255, 0), 2.0, 1.0, false),
+    @SubscribeEvent
+    fun onChat(event: ChatPacketEvent) {
+        val message = event.message
 
-        // Box 3 (X)
-        BoxParameters(-103.0, 160.0, -109.0, Color(0, 0, 255), Kuudra.pearlBox, 1.0, true),
-        BoxParameters(-134.5, 77.0, -138.5, Color(255, 255, 255), 1.0, 1.0, false),
-        BoxParameters(-130.5, 79.0, -113.5, Color(150, 15, 255), 1.0, 1.0, false),
-        BoxParameters(-110.0, 155.0, -106.0, Color(0, 0, 255), Kuudra.pearlBox, 1.0, true),
-
-        // Box 4 (Square)
-        BoxParameters(-43.5, 120.0, -149.5, Color(0, 0, 255), Kuudra.pearlBox, 1.0, true),
-        BoxParameters(-45.5, 135.0, -138.5, Color(0, 0, 255), Kuudra.pearlBox, 1.0, true),
-        BoxParameters(-35.5, 138.0, -124.5, Color(0, 0, 255), Kuudra.pearlBox, 1.0, true),
-        BoxParameters(-26.5, 126.0, -111.5, Color(0, 0, 255), Kuudra.pearlBox, 1.0, true),
-        BoxParameters(-140.5, 78.0, -90.5, Color(255, 0, 0), 0.0, 1.0, false),
-
-        // Box 5 (=)
-        BoxParameters(-106.0, 165.0, -101.0, Color(0, 0, 255), Kuudra.pearlBox, 1.0, true),
-        BoxParameters(-65.5, 76.0, -87.5, Color(0, 255, 0), 0.0, 1.0, false),
-
-        // Box 6 (/)
-        BoxParameters(-105.0, 157.0, -98.0, Color(0, 0, 255), Kuudra.pearlBox, 1.0, true),
-        BoxParameters(-112.5, 76.5, -68.5, Color(0, 0, 255), 0.0, 1.0, false)
-    )
-
-
-    fun handleArmorStand(event: EntityJoinWorldEvent) {
-        if (event.entity is EntityArmorStand && Kuudra.phase == 1 && !event.entity.name.contains("Lv") && !event.entity.toString().contains("name=Armor Stand")) {
-            if (event.entity.name.contains("SUPPLIES RECEIVED")) {
-                val x = event.entity.posX.toInt()
-                val z = event.entity.posZ.toInt()
-
-                if (x == -98 && z == -112) supplies[0] = false
-                if (x == -98 && z == -99) supplies[1] = false
-                if (x == -110 && z == -106) supplies[2] = false
-                if (x == -106 && z == -112) supplies[3] = false
-                if (x == -94 && z == -106) supplies[4] = false
-                if (x == -106 && z == -99) supplies[5] = false
+        if (message.matches("^Party > ?(?:\\[.+])? (.{0,16}): FRESH".toRegex())) {
+            val (playerName) = Regex("^Party > ?(?:\\[.+])? (.{0,16}): FRESH").find(message)?.destructured ?: return
+            if (FreshTimer.notifyOtherFresh) modMessage("$playerName has fresh tools")
+            kuudraTeammates.forEach { kuudraPlayer ->
+                if (kuudraPlayer.playerName !== playerName) return@forEach
+                kuudraPlayer.eatFresh = true
+                runIn(200) {
+                    if (FreshTimer.notifyOtherFresh) modMessage("${kuudraPlayer.playerName} Fresh tools has expired")
+                    kuudraPlayer.eatFresh = false
+                }
             }
         }
-    }
 
+        when (message)
+        {
+            "[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!" -> {
+                phase = 1
 
-    fun cancelArmorStandEvent(event: EntityLivingBase) {
-        if (event is EntityArmorStand && event.toString().noControlCodes.contains("[\"[Lv\"]"))
-            mc.theWorld.removeEntity(event)
-    }
+                kuudraTeammates = mc.theWorld.getLoadedEntityList().filter { it is EntityOtherPlayerMP && it.getPing() == 1 && !it.isInvisible }
+                    .map { KuudraUtils.kuudraPlayer((it as EntityOtherPlayerMP).name, false, 0, it) } as ArrayList<KuudraUtils.kuudraPlayer>
+                kuudraTeammates.add(KuudraUtils.kuudraPlayer(mc.thePlayer.name, false, 0, mc.thePlayer))
+            }
 
-    fun renderTeammatesNames(event: Entity) {
-        if (event == mc.thePlayer) return
-        val teammate = kuudraTeammates.find { it.entity == event } ?: return
+            "[NPC] Elle: OMG! Great work collecting my supplies!" -> phase = 2
 
-        RenderUtils.drawStringInWorld(event.name, event.renderVec.addVec(y = 2.6),
-            if (teammate.eatFresh) highlightFreshColor.rgba else nameColor.rgba,
-            depthTest = false, increase = false, renderBlackBox = false,
-            scale = 0.05f
-        )
-    }
+            "[NPC] Elle: Phew! The Ballista is finally ready! It should be strong enough to tank Kuudra's blows now!" -> phase = 3
 
-    fun renderPearlBoxes() {
-        for (box in boxParametersList) {
-            if (!box.isInnerBox) RenderUtils.drawBoxOutline(box.x, box.y, box.z, box.scale, box.color, 3f, true)
-            else RenderUtils.drawFilledBox(AABB(box.x, box.y, box.z, box.x + 1, box.y + 1, box.z + 1), box.color, true)
+            "[NPC] Elle: POW! SURELY THAT'S IT! I don't think he has any more in him!" -> phase = 4
         }
     }
 
-    fun renderGiantZombies() {
-        giantZombies.forEach {
-            val yaw = it.rotationYaw
-            renderCustomBeacon("Supply", x = it.posX + (3.7 * cos((yaw + 130) * (Math.PI / 180))),
-                y = 72.0, it.posZ + (3.7 * sin((yaw + 130) * (Math.PI / 180))), supplyWaypointColor, true)
+
+    init {
+        Executor(500) {
+            if (phase == 1) {
+                val entities = mc.theWorld.loadedEntityList
+                giantZombies = entities.filter { it is EntityGiantZombie && it.heldItem.toString() == "1xitem.skull@3" } as MutableList<EntityGiantZombie>
+            }
+        }.register()
+    }
+    @SubscribeEvent
+    fun postMetaData(event: PostEntityMetadata) {
+        val entity = mc.theWorld.getEntityByID(event.packet.entityId) ?: return
+        if (entity.name.contains("Lv") || entity.toString().contains("name=Armor Stand")) return
+        val name = entity.name.noControlCodes
+        if (name.contains("Building Progress")) {
+            builders = name.substring(name.indexOf("(") + 1, name.indexOf("(") +2).toIntOrNull() ?: 0
+            val regex = Regex("\\D")
+            build = name.substring(0, name.indexOf("%")).replace(regex, "").toIntOrNull() ?: 0
         }
     }
 
-    fun highlightKuudra() {
-        kuudraEntity?.renderBoundingBox?.let { RenderUtils.drawBoxOutline(it, kuudraColor, 3f, true) }
-    }
+    @SubscribeEvent
+    fun worldJoinEvent(event: EntityJoinWorldEvent) {
+        if (event.entity is EntityMagmaCube && (event.entity as EntityMagmaCube).slimeSize == 30 && (event.entity as EntityMagmaCube).health <= 100000)
+            kuudraEntity = event.entity as EntityMagmaCube
 
+        if (event.entity is EntityOtherPlayerMP && event.entity.getPing() == 1 && !event.entity.isInvisible)
+            kuudraTeammates.add(KuudraUtils.kuudraPlayer((event.entity as EntityOtherPlayerMP).name, false, 0, event.entity as EntityOtherPlayerMP))
+    }
 }

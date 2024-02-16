@@ -35,6 +35,8 @@ object RenderUtils {
         partialTicks = event.partialTicks
     }
 
+
+
     fun preDraw() {
         GlStateManager.enableAlpha()
         GlStateManager.enableBlend()
@@ -98,6 +100,30 @@ object RenderUtils {
      */
     val Entity.renderVec: Vec3
         get() = Vec3(renderX, renderY, renderZ)
+
+
+    /**
+     * Gets the rendered position of an entity as a `Vec3d`.
+     * @receiver The entity for which to retrieve the rendered position.
+     * @return The rendered position as a `Vec3d`.
+     */
+    fun Entity.getInterpolatedPosition(partialTicks: Float): Triple<Double, Double, Double> {
+        return Triple(
+            this.lastTickPosX + (this.posX - this.lastTickPosX) * partialTicks,
+            this.lastTickPosY + (this.posY - this.lastTickPosY) * partialTicks,
+            this.lastTickPosZ + (this.posZ - this.lastTickPosZ) * partialTicks
+        )
+    }
+
+    fun preRender(partialTicks: Float) {
+        val (x, y, z) = mc.renderViewEntity.getInterpolatedPosition(partialTicks)
+        GlStateManager.translate(-x, -y, -z)
+    }
+
+    fun postRender(partialTicks: Float) {
+        val (x, y, z) = mc.renderViewEntity.getInterpolatedPosition(partialTicks)
+        GlStateManager.translate(x, y, z)
+    }
 
     /**
      * Gets the rendered bounding box of an entity based on its last tick and current tick positions.
@@ -310,8 +336,8 @@ object RenderUtils {
         text: String,
         vec3: Vec3,
         color: Int = 0xffffffff.toInt(),
-        renderBlackBox: Boolean = true,
-        increase: Boolean = true,
+        renderBlackBox: Boolean = false,
+        increase: Boolean = false,
         depthTest: Boolean = true,
         scale: Float = 1f,
         shadow: Boolean = true
