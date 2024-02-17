@@ -26,35 +26,33 @@ object FreshTimer : Module(
     private val notifyFresh: Boolean by BooleanSetting("Notify Fresh", true, description = "Notifies your party when you get fresh tools")
     val highlightFresh: Boolean by BooleanSetting("Highlight Fresh", true, description = "Highlights fresh tools users")
     val highlightFreshColor: Color by ColorSetting("Highlight Fresh Color", Color.YELLOW, true).withDependency { highlightFresh }
-    val notifyOtherFresh: Boolean by BooleanSetting("Notify Other Fresh", true, description = "Notifies you when someone else gets fresh tools")
+    private val freshTimerHUDColor: Color by ColorSetting("Fresh Timer Color", Color.ORANGE, true)
     private val hud: HudElement by HudSetting("Fresh tools timer", 10f, 10f, 1f, true) {
         if (it) {
-            text("§4Fresh Tools§f: 1000ms", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR)
-            getTextWidth("Fresh Tools: 1000ms", 12f) + 2f to 16f
+            text("Fresh Tools§f: 9s", 1f, 9f, freshTimerHUDColor, 12f, OdinFont.REGULAR)
+            getTextWidth("Fresh Tools: 10§8ms", 12f) + 2f to 16f
         } else {
-            val player = KuudraUtils.kuudraTeammates.find { it.playerName == mc.thePlayer.name } ?: return@HudSetting 0f to 0f
-
+            val player = KuudraUtils.kuudraTeammates.find { teammate -> teammate.playerName == mc.thePlayer.name } ?: return@HudSetting 0f to 0f
+            val timeLeft = 10000L - (System.currentTimeMillis() - player.eatFreshTime)
+            if (timeLeft <= 0) return@HudSetting 0f to 0f
             if (player.eatFresh)
-                text("§4Fresh Tools§f: ${10000L - (System.currentTimeMillis() - player.eatFreshTime)}ms", 1f, 9f, Color.WHITE,12f, OdinFont.REGULAR)
+                text("Fresh Tools§f: ${timeLeft / 1000.0}s", 1f, 9f, freshTimerHUDColor,12f, OdinFont.REGULAR)
 
-            getTextWidth("Fresh Tools: 1000ms", 12f) + 2f to 12f
+            getTextWidth("Fresh Tools: 10s", 12f) + 2f to 12f
         }
     }
 
     @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
-        when (event.message) {
-            "Your Fresh Tools Perk bonus doubles your building speed for the next 10 seconds!" -> {
-                val teammate = KuudraUtils.kuudraTeammates.find { it.playerName == mc.thePlayer.name } ?: return
-                teammate.eatFresh = true
-                teammate.eatFreshTime = System.currentTimeMillis()
-                if (notifyFresh) modMessage("Fresh tools has been activated")
-                runIn(200) {
-                    if (notifyFresh) modMessage("Fresh tools has expired")
-                    teammate.eatFresh = false
-                }
-                if (notifyFresh) partyMessage("FRESH")
-            }
+        if (event.message != "Your Fresh Tools Perk bonus doubles your building speed for the next 10 seconds!") return
+        val teammate = KuudraUtils.kuudraTeammates.find { it.playerName == mc.thePlayer.name } ?: return
+        teammate.eatFresh = true
+        teammate.eatFreshTime = System.currentTimeMillis()
+        if (notifyFresh) modMessage("Fresh tools has been activated")
+        runIn(200) {
+            if (notifyFresh) modMessage("Fresh tools has expired")
+            teammate.eatFresh = false
         }
+        if (notifyFresh) partyMessage("FRESH")
     }
 }

@@ -10,6 +10,8 @@ import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.runIn
 import net.minecraft.client.entity.EntityOtherPlayerMP
+import net.minecraft.entity.SharedMonsterAttributes
+import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.monster.EntityGiantZombie
 import net.minecraft.entity.monster.EntityMagmaCube
 import net.minecraft.entity.player.EntityPlayer
@@ -18,7 +20,7 @@ import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object KuudraUtils {
-    var kuudraTeammates = ArrayList<kuudraPlayer>()
+    var kuudraTeammates = ArrayList<KuudraPlayer>()
     var giantZombies: MutableList<EntityGiantZombie> = mutableListOf()
     var supplies = BooleanArray(6) { true }
     var kuudraEntity: EntityMagmaCube = EntityMagmaCube(mc.theWorld)
@@ -28,7 +30,7 @@ object KuudraUtils {
     var preSpot = ""
     var missing = ""
 
-    data class kuudraPlayer(val playerName: String, var eatFresh: Boolean = false, var eatFreshTime: Long = 0, val entity: EntityPlayer? = null)
+    data class KuudraPlayer(val playerName: String, var eatFresh: Boolean = false, var eatFreshTime: Long = 0, val entity: EntityPlayer? = null)
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
         phase = 0
@@ -44,25 +46,20 @@ object KuudraUtils {
 
         if (message.matches("^Party > ?(?:\\[.+])? (.{0,16}): FRESH".toRegex())) {
             val (playerName) = Regex("^Party > ?(?:\\[.+])? (.{0,16}): FRESH").find(message)?.destructured ?: return
-            if (FreshTimer.notifyOtherFresh) modMessage("$playerName has fresh tools")
+            if (playerName == mc.thePlayer.name) return
             kuudraTeammates.forEach { kuudraPlayer ->
-                if (kuudraPlayer.playerName !== playerName) return@forEach
+                if (kuudraPlayer.playerName != playerName) return@forEach
                 kuudraPlayer.eatFresh = true
                 runIn(200) {
-                    if (FreshTimer.notifyOtherFresh) modMessage("${kuudraPlayer.playerName} Fresh tools has expired")
                     kuudraPlayer.eatFresh = false
                 }
             }
         }
 
-        when (message)
-        {
+        when (message) {
             "[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!" -> {
+                kuudraTeammates.add(KuudraPlayer(mc.thePlayer.name, false, 0, mc.thePlayer))
                 phase = 1
-
-                kuudraTeammates = mc.theWorld.getLoadedEntityList().filter { it is EntityOtherPlayerMP && it.getPing() == 1 && !it.isInvisible }
-                    .map { KuudraUtils.kuudraPlayer((it as EntityOtherPlayerMP).name, false, 0, it) } as ArrayList<KuudraUtils.kuudraPlayer>
-                kuudraTeammates.add(KuudraUtils.kuudraPlayer(mc.thePlayer.name, false, 0, mc.thePlayer))
             }
 
             "[NPC] Elle: OMG! Great work collecting my supplies!" -> phase = 2
@@ -75,31 +72,38 @@ object KuudraUtils {
 
 
     init {
-        Executor(500) {
-            if (phase == 1) {
-                val entities = mc.theWorld.loadedEntityList
-                giantZombies = entities.filter { it is EntityGiantZombie && it.heldItem.toString() == "1xitem.skull@3" } as MutableList<EntityGiantZombie>
+        Executor(1000) {
+            val entities = mc.theWorld.loadedEntityList
+            giantZombies = entities.filter { it is EntityGiantZombie && it.heldItem.toString() == "1xitem.skull@3" } as MutableList<EntityGiantZombie>
+            kuudraEntity = entities.filter { it is EntityMagmaCube && it.slimeSize == 30 && it.getEntityAttribute(SharedMonsterAttributes.maxHealth).baseValue.toFloat() == 100000f }[0] as EntityMagmaCube
+            entities.forEach {
+                if (it.name.contains("Lv") || it.toString().contains("name=Armor Stand")) return@forEach
+                val name = it.name.noControlCodes
+                if (name.contains("Building Progress")) {
+                    builders = name.substring(name.indexOf("(") + 1, name.indexOf("(") +2).toIntOrNull() ?: 0
+                    val regex = Regex("\\D")
+                    build = name.substring(0, name.indexOf("%")).replace(regex, "").toIntOrNull() ?: 0
+                }
             }
+            entities.forEach {
+                if (it !is EntityArmorStand || phase != 1 || it.name.contains("Lv") || it.toString().contains("name=Armor Stand")) return@forEach
+                if (!it.name.contains("SUPPLIES RECEIVED")) return@forEach
+                val x = it.posX.toInt()
+                val z = it.posZ.toInt()
+                if (x == -98 && z == -112) supplies[0] = false
+                if (x == -98 && z == -99) supplies[1] = false
+                if (x == -110 && z == -106) supplies[2] = false
+                if (x == -106 && z == -112) supplies[3] = false
+                if (x == -94 && z == -106) supplies[4] = false
+                if (x == -106 && z == -99) supplies[5] = false
+            }
+
         }.register()
-    }
-    @SubscribeEvent
-    fun postMetaData(event: PostEntityMetadata) {
-        val entity = mc.theWorld.getEntityByID(event.packet.entityId) ?: return
-        if (entity.name.contains("Lv") || entity.toString().contains("name=Armor Stand")) return
-        val name = entity.name.noControlCodes
-        if (name.contains("Building Progress")) {
-            builders = name.substring(name.indexOf("(") + 1, name.indexOf("(") +2).toIntOrNull() ?: 0
-            val regex = Regex("\\D")
-            build = name.substring(0, name.indexOf("%")).replace(regex, "").toIntOrNull() ?: 0
-        }
     }
 
     @SubscribeEvent
     fun worldJoinEvent(event: EntityJoinWorldEvent) {
-        if (event.entity is EntityMagmaCube && (event.entity as EntityMagmaCube).slimeSize == 30 && (event.entity as EntityMagmaCube).health <= 100000)
-            kuudraEntity = event.entity as EntityMagmaCube
-
         if (event.entity is EntityOtherPlayerMP && event.entity.getPing() == 1 && !event.entity.isInvisible)
-            kuudraTeammates.add(KuudraUtils.kuudraPlayer((event.entity as EntityOtherPlayerMP).name, false, 0, event.entity as EntityOtherPlayerMP))
+            kuudraTeammates.add(KuudraPlayer((event.entity as EntityOtherPlayerMP).name, false, 0, event.entity as EntityOtherPlayerMP))
     }
 }

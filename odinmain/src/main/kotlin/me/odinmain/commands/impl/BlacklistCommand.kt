@@ -9,6 +9,10 @@ object BlacklistCommand : Commodore {
     override val command: CommandNode =
         literal("blacklist") {
 
+            runs {
+                modMessage("Usage: /blacklist <add/remove/clear/list> <name>")
+            }
+
             literal("add").runs { name: String ->
                 val lowercase = name.lowercase()
                 if (lowercase in MiscConfig.blacklist) return@runs modMessage("$name is already in the Blacklist.")

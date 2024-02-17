@@ -59,7 +59,7 @@ object LeapMenu : Module(
     @SubscribeEvent
     fun onDrawScreen(event: DrawGuiScreenEvent) {
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
-        if (chest !is ContainerChest || chest.name != "Spirit Leap" || teammatesNoSelf.isEmpty()) return
+        if (chest !is ContainerChest || chest.name != "Spirit Leap" || leapTeammates.isEmpty()) return
         hoveredQuadrant = getQuadrant()
         if (hoveredQuadrant != previouslyHoveredQuadrant && previouslyHoveredQuadrant != -1) {
             hoveredAnims[hoveredQuadrant - 1].start()
@@ -81,7 +81,7 @@ object LeapMenu : Module(
             mc.textureManager.bindTexture(it.locationSkin)
             val color = if (colorStyle) it.clazz.color else Color.DARK_GRAY
             if (it.name == (if (DungeonUtils.inBoss) LeapHelper.leapHelperBoss else LeapHelper.leapHelperClear) && leapHelperToggle)
-                roundedRectangle(-5, -5, 840, 360, leapHelperColor, if (roundedRect) 12f else 0f)
+                roundedRectangle(-25, -25, 830, 350, leapHelperColor, if (roundedRect) 12f else 0f)
             val box = Box(0, 0, 780, 300).expand(hoveredAnims[index].get(0f, 15f, hoveredQuadrant - 1 != index))
             dropShadow(box, 10f, 15f, if (getQuadrant() - 1 != index) ColorUtil.moduleButtonColor else Color.WHITE)
             roundedRectangle(box, color, if (roundedRect) 12f else 0f)
@@ -136,7 +136,7 @@ object LeapMenu : Module(
         val index = containerChest.inventorySlots.subList(11, 16)
             .indexOfFirst { it?.stack?.displayName?.noControlCodes == name }
             .takeIf { it != -1 } ?: return modMessage("Cant find player $name. This shouldn't be possible!")
-        modMessage("Teleporting to ${name}.")
+        modMessage("Teleporting to $name.")
         mc.playerController.windowClick(containerChest.windowId, 11 + index, 2, 3, mc.thePlayer)
     }
 

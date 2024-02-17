@@ -97,13 +97,14 @@ object ModuleManager {
         WitherDragons,
         BuildHelper,
         FreshTimer,
-        KuudraHighlight,
+        KuudraDisplay,
         NoPre,
         PearlWaypoints,
         RemovePerks,
         SupplyWaypoints,
-        TeammatesHighlight,
-        VanqNotifier
+        TeamHighlight,
+        VanqNotifier,
+        KuudraReminders
     )
 
 

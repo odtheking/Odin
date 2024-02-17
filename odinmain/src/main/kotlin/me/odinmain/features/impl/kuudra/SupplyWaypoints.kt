@@ -10,6 +10,7 @@ import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraftforge.client.event.RenderWorldEvent
+import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.cos
 import kotlin.math.sin
@@ -23,10 +24,9 @@ object SupplyWaypoints : Module(
     private val supplyWaypointColor: Color by ColorSetting("Supply Waypoint Color", Color.YELLOW, true, description = "Color of the supply waypoints").withDependency { suppliesWaypoints }
     private val supplyDropWaypoints: Boolean by BooleanSetting("Supply Drop Waypoints", true, description = "Renders the supply drop waypoints")
     @SubscribeEvent
-    fun onWorldRender(event: RenderWorldEvent) {
-        modMessage("Supply Waypoints: ${KuudraUtils.supplies.size}")
-        if (supplyDropWaypoints) renderSupplyDrop()
-        if (suppliesWaypoints) renderGiantZombies()
+    fun onWorldRender(event: RenderWorldLastEvent) {
+        if (supplyDropWaypoints && KuudraUtils.phase == 1) renderSupplyDrop()
+        if (suppliesWaypoints && KuudraUtils.phase == 1) renderGiantZombies()
     }
 
     private fun renderGiantZombies() {
@@ -37,7 +37,6 @@ object SupplyWaypoints : Module(
                 y = 72.0, it.posZ + (3.7 * sin((yaw + 130) * (Math.PI / 180))), supplyWaypointColor, true
             )
         }
-        modMessage("Giant Zombies: ${KuudraUtils.giantZombies.size}")
     }
 
     private fun renderSupplyDrop() {

@@ -399,7 +399,7 @@ object RenderUtils {
     }
 
 
-    fun renderCustomBeacon(title: String, pos: Vec3, color: Color, partialTicks: Float = this.partialTicks) {
+    fun renderCustomBeacon(title: String, pos: Vec3, color: Color) {
         renderCustomBeacon(title, pos.xCoord, pos.yCoord, pos.zCoord, color)
     }
 
@@ -421,7 +421,7 @@ object RenderUtils {
             0.05f
         )
         val a = min(1f, max(0f, dist.toFloat()) / 60f)
-        if (beacon) renderBeaconBeam(floor(x), .0, floor(z), color, a, true, partialTicks)
+        if (beacon) renderBeaconBeam(floor(x), .0, floor(z), color, a, true)
     }
 
     fun WorldRenderer.color(color: Color) { // local function is used to simplify this.
@@ -466,7 +466,7 @@ object RenderUtils {
 
     private val beaconBeam = ResourceLocation("textures/entity/beacon_beam.png")
 
-    private fun renderBeaconBeam(x: Double, y: Double, z: Double, color: Color, a: Float, depthCheck: Boolean, partialTicks: Float) {
+    private fun renderBeaconBeam(x: Double, y: Double, z: Double, color: Color, a: Float, depthCheck: Boolean) {
         val height = 300
         val bottomOffset = 0
         val topOffset = bottomOffset + height

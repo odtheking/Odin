@@ -19,6 +19,10 @@ object WaypointCommand : Commodore {
     override val command: CommandNode =
         literal("waypoint") {
 
+            runs {
+                 modMessage("Usage: /waypoint <gui/share/add> [name] [x] [y] [z]")
+            }
+
             literal("help").runs {
                 modMessage(
                     """

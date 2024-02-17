@@ -14,6 +14,10 @@ object HighlightCommand : Commodore {
                 onLegitVersion
             }
 
+            runs {
+                modMessage("Usage: /highlight <add/remove/clear/list> <name>")
+            }
+
             literal("add").runs { mob: GreedyString ->
                 val lowercase = mob.string.lowercase()
                 if (lowercase in MiscConfig.espList) return@runs modMessage("$mob is already in the Highlight list.")

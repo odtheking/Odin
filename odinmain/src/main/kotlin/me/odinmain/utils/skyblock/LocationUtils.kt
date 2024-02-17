@@ -17,6 +17,7 @@ object LocationUtils {
 
     var currentDungeon: Dungeon? = null
     var currentArea: String? = null
+    var kuudraTier: Int = 0
 
 
     init {
@@ -40,6 +41,15 @@ object LocationUtils {
             }
 
             currentDungeon?.setBoss()
+
+            if (currentArea == "Kuudra" && kuudraTier == 0) {
+                getLines().find {
+                    cleanLine(it).contains("Kuudra's Hollow (")
+                }?.let {
+                    val line = it.substringBefore(")")
+                    kuudraTier = line.lastOrNull()?.digitToIntOrNull() ?: 0
+                }
+            }
 
         }.register()
     }

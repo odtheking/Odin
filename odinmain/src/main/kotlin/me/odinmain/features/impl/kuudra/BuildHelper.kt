@@ -13,10 +13,13 @@ import me.odinmain.ui.util.getTextWidth
 import me.odinmain.ui.util.text
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
+import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.PlayerUtils
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldEvent
+import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object BuildHelper : Module(
@@ -26,7 +29,7 @@ object BuildHelper : Module(
 ) {
     private val buildHelperDraw: Boolean by BooleanSetting("Build Helper Draw", false, description = "Draws the build helper")
     private val buildHelperColor: Color by ColorSetting("Build Helper Color", Color.ORANGE, description = "Color of the build helper")
-    private val buildHud: HudElement by HudSetting("Build helper", 10f, 10f, 1f, true) {
+    private val hud: HudElement by HudSetting("Build helper", 10f, 10f, 1f, true) {
         if (it) {
             text("Build §c50§8%", 1f, 9f, buildHelperColor, 12f, OdinFont.REGULAR)
             text("Builders §e2", 1f, 24f, buildHelperColor, 12f, OdinFont.REGULAR)
@@ -42,11 +45,20 @@ object BuildHelper : Module(
     }
     private val stunNotification: Boolean by BooleanSetting("Stun Notification", true, description = "Notifies you when to go to stun")
     private val stunNotificationNumber: Int by NumberSetting("Stun Notification Number", 93, 0.0, 100.0, description = "The number of builders to notify you at").withDependency { stunNotification }
+
+    private var stunAlert = true
     @SubscribeEvent
-    fun renderWorldEvent(event: RenderWorldEvent) {
-        if (stunNotification && KuudraUtils.build == stunNotificationNumber) PlayerUtils.alert("Go to stun")
-        if (buildHelperDraw) RenderUtils.drawStringInWorld("Build ${KuudraUtils.build}%", Vec3(0.0, 0.5, 0.0), buildHelperColor.rgba, false, false, scale = 0.3f)
-        if (buildHelperDraw) RenderUtils.drawStringInWorld("${KuudraUtils.builders} builders", Vec3(0.0, 0.0, 0.0), buildHelperColor.rgba, false, false, scale = 0.5f)
+    fun renderWorldEvent(event: RenderWorldLastEvent) {
+        if (KuudraUtils.phase != 2) return
+        if (stunNotification && KuudraUtils.build == stunNotificationNumber && stunAlert)  {
+            stunAlert = false
+            PlayerUtils.alert("Go to stun")
+            runIn(1000) {
+                stunAlert = true
+            }
+        }
+        if (buildHelperDraw) RenderUtils.drawStringInWorld("Build ${KuudraUtils.build}%", Vec3(102.5, 85.0, -106.5), buildHelperColor.rgba, false, false, scale = 0.2f)
+        if (buildHelperDraw) RenderUtils.drawStringInWorld("${KuudraUtils.builders} builders", Vec3(102.5, 80.0, -106.5), buildHelperColor.rgba, false, false, scale = 0.3f)
     }
 
     private fun colorBuild(build: Int): String {

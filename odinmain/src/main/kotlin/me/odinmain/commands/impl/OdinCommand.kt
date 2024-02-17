@@ -23,20 +23,25 @@ import kotlin.math.round
 
 object OdinCommand : Commodore {
 
-    private val map = mapOf(
+    private val floors = mapOf(
         '1' to "one", '2' to "two", '3' to "three", '4' to "four", '5' to "five", '6' to "six", '7' to "seven"
     )
 
+    private val tiers = mapOf(
+        '1' to "basic", '2' to "hot", '3' to "burning", '4' to "fiery", '5' to "infernal"
+    )
     override val command: CommandNode =
         literal("od") {
             runs {
                 display = ClickGUI
             }
+
             runs { str: String ->
-                if (str.length != 2 || !str[0].equalsOneOf('f', 'm') || str[1] !in '1'..'7') {
-                    return@runs modMessage("§cInvalid floor.")
+                if (str.length != 2 || !str[0].equalsOneOf('f', 'm', 't') || str[1] !in '1'..'7') {
+                    return@runs modMessage("Invalid command. Use /od help for a list of commands.")
                 }
-                sendCommand("joininstance ${if (str[0] == 'm') "master_" else ""}catacombs_floor_${map[str[1]]}")
+                if (str[0] == 't') sendCommand("joininstance kuudra_${tiers[str[1]]}")
+                else if (str[0] == 'f' || str[0] == 'm') sendCommand("joininstance ${if (str[0] == 'm') "master_" else ""}catacombs_floor_${floors[str[1]]}")
             }
 
             literal("reset") {
@@ -79,6 +84,7 @@ object OdinCommand : Commodore {
                  §3- /od set {yaw} {float} » §8Sets your yaw and pitch.
                  §3- /od m? » §8Teleports you to a floor in master mode.
                  §3- /od f? » §8Teleports you to a floor in normal mode.
+                 §3- /od t? » §8Teleports you to a kuudra run.
                  §3- /od dianareset §7» §8Resets all active diana waypoints.
                  §3- /od sendcoords §7» §8Sends coords in patcher's format.
                  §3- /od ping §7» §8Sends your ping in chat.
@@ -97,6 +103,7 @@ object OdinCommand : Commodore {
                  §3- /rq §7» §8Requeues dungeon run.
                  §3- /od m? » §8Teleports you to a floor in master mode.
                  §3- /od f? » §8Teleports you to a floor in normal mode.
+                 §3- /od t? » §8Teleports you to a kuudra run.
                  §3- /od dianareset §7» §8Resets all active diana waypoints.
                  §3- /od sendcoords §7» §8Sends coords in patcher's format.\
                  §3- /od ping §7» §8Sends your ping in chat.

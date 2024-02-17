@@ -10,7 +10,6 @@ import me.odinmain.utils.render.world.OutlineUtils
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.render.world.RenderUtils.renderVec
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import net.minecraft.entity.Entity
 import net.minecraftforge.client.event.RenderLivingEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -26,9 +25,9 @@ object TeammatesHighlight : Module(
 
     @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
-        if (!shouldRender(event.entity) || !outline) return
+        if (!DungeonUtils.inDungeons || (inBoss && !DungeonUtils.inBoss) || !outline) return
 
-        val teammate = DungeonUtils.teammates.find { it.entity == event.entity } ?: return
+        val teammate = DungeonUtils.teammatesNoSelf.find { it.entity == event.entity } ?: return
 
         if (!whenVisible && mc.thePlayer.canEntityBeSeen(teammate.entity)) return
 
@@ -37,9 +36,9 @@ object TeammatesHighlight : Module(
 
     @SubscribeEvent
     fun handleNames(event: RenderLivingEvent.Pre<*>) {
-        if (!shouldRender(event.entity)) return
+        if (!DungeonUtils.inDungeons || (inBoss && !DungeonUtils.inBoss)) return
 
-        val teammate = DungeonUtils.teammates.find { it.entity == event.entity } ?: return
+        val teammate = DungeonUtils.teammatesNoSelf.find { it.entity == event.entity } ?: return
 
         if (!whenVisible && mc.thePlayer.canEntityBeSeen(teammate.entity)) return
 
@@ -51,11 +50,5 @@ object TeammatesHighlight : Module(
             renderBlackBox = false,
             scale = 0.05f
         )
-    }
-
-    private fun shouldRender(teammate: Entity): Boolean {
-        return (inBoss || !DungeonUtils.inBoss) // boss
-                && teammate != mc.thePlayer // self
-                && DungeonUtils.inDungeons // in dungeon
     }
 }

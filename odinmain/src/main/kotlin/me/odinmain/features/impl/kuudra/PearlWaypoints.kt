@@ -6,6 +6,7 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.render.world.RenderUtils.drawBoxOutline
+import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.toAABB
 import net.minecraft.util.BlockPos
@@ -67,7 +68,7 @@ object PearlWaypoints : Module(
 
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
-        if (LocationUtils.currentArea != "Kuudra") return
+        if (KuudraUtils.phase != 1) return
 
         var closest = true
         getOrderedLineups(mc.thePlayer.position).forEach { (lineup, color) ->

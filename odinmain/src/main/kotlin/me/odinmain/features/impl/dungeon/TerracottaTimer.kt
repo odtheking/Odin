@@ -12,6 +12,7 @@ import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.*
 
@@ -22,7 +23,7 @@ object TerracottaTimer : Module(
 ) {
     private data class Terracotta(val pos: Vec3, var time: Double)
     private var terracottaSpawning = mutableListOf<Terracotta>()
-
+    var done = false
     @SubscribeEvent
     fun onBlockPacket(event: BlockChangeEvent) {
         if (!DungeonUtils.isFloor(6) || !DungeonUtils.inBoss || !event.update.block.isFlowerPot) return
@@ -47,6 +48,7 @@ object TerracottaTimer : Module(
         val iterator = terracottaSpawning.iterator()
         while (iterator.hasNext()) {
             val it = iterator.next()
+            if (done) return
             RenderUtils.drawStringInWorld(
                 "${String.format(Locale.US, "%.2f",it.time / 100.0)}s",
                 it.pos,
@@ -69,9 +71,12 @@ object TerracottaTimer : Module(
     @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
         if (!event.message.startsWith("[BOSS] Sadan: ENOUGH!")) return
-        terracottaSpawning.removeAll {
-            it.time > 0
-        }
+        done = true
+    }
+    @SubscribeEvent
+    fun worldLoad(event: WorldEvent.Load) {
+        terracottaSpawning.clear()
+        done = false
     }
 
 }

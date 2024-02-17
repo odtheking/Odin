@@ -42,6 +42,7 @@ object DevPlayers {
     fun updateDevs() {
         OdinMain.scope.launch {
             val data = convertDecimalToInt(getDataFromServer("https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
+            modMessage(data)
             //val jsonData = JsonArray(data)
             val jsonObjects = data.split("}, {")
             // Iterate over each JSON object
