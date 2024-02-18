@@ -36,6 +36,7 @@ object NoPre : Module(
                     player.getDistanceSq(-113.5, 77.0, -68.5) < 15 -> "Slash"
                     else -> ""
                 }
+                modMessage("distance to triangle: ${player.getDistanceSq(-67.5, 77.0, -122.5)}, distance to x: ${player.getDistanceSq(-142.5, 77.0, -151.0)}, distance to equals: ${player.getDistanceSq(-65.5, 76.0, -87.5)}, distance to slash: ${player.getDistanceSq(-113.5, 77.0, -68.5)}")
                 modMessage(KuudraUtils.preSpot)
             }
             message.contains("[NPC] Elle: Not again!") -> {
@@ -62,8 +63,10 @@ object NoPre : Module(
                 }
                 if (second && pre) return
                 if (!pre && KuudraUtils.preSpot.isNotEmpty()) {
+                    modMessage("No Pre!")
                     msg = "No ${KuudraUtils.preSpot}!"
                 } else if (!second) {
+                    modMessage("No Second!")
                     val location = when (KuudraUtils.preSpot) {
                         "Triangle" -> "Shop"
                         "X" -> "X Cannon"

@@ -69,7 +69,7 @@ suspend fun getDataFromServer(url: String): String {
 
         val responseCode = connection.responseCode
         if (DevPlayers.isDev) println("Response Code: $responseCode")
-
+        if (responseCode != 200) return ""
         val inputStream = connection.inputStream
         val response = inputStream.bufferedReader().use { it.readText() }
         if (DevPlayers.isDev) println("Response: $response")

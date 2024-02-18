@@ -20,7 +20,7 @@ object VanqNotifier: Module(
     private val pc: Boolean by BooleanSetting("Party Chat", true, description = "Sends the message to party chat")
 
     fun onChat(event: ChatPacketEvent) {
-        if (event.message !== "A Vanquisher is spawning nearby!") return
+        if (event.message != "A Vanquisher is spawning nearby!") return
         modMessage("Vanquisher has spawned!")
         PlayerUtils.alert("§5Vanquisher has spawned!", playSound = playSound)
 

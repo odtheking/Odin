@@ -1,10 +1,15 @@
 package me.odinmain.features.impl.render
 
 
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
 import kotlinx.coroutines.launch
-import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
+import me.odinmain.OdinMain.scope
 import me.odinmain.features.impl.render.ClickGUIModule.devSize
+import me.odinmain.ui.util.scale
 import me.odinmain.utils.getDataFromServer
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.modMessage
@@ -18,55 +23,78 @@ import net.minecraftforge.client.event.RenderPlayerEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.cos
 import kotlin.math.sin
+import java.lang.reflect.Type
 
 
 object DevPlayers {
+    var devs: HashMap<String, DevPlayer> = HashMap()
     val isDev get() = devs.containsKey(mc.session?.username)
 
-    data class Dev(val xScale: Float = 1f, val yScale: Float = 1f, val zScale: Float = 1f,
-                   val wings: Boolean = false, val wingsColor: Color = Color(255, 255, 255))
+    data class DevPlayer(val xScale: Float = 1f, val yScale: Float = 1f, val zScale: Float = 1f,
+                         val wings: Boolean = false, val wingsColor: Color = Color(255, 255, 255))
+    data class DevData(val DevName: String, val WingsColor: Triple<Int, Int, Int>, val Size: Triple<Float, Float, Float>, val Wings: Boolean)
+    class DevDeserializer : JsonDeserializer<DevData> {
+        override fun deserialize(
+            json: JsonElement?,
+            typeOfT: Type?,
+            context: JsonDeserializationContext?
+        ): DevData {
+            val jsonObject = json?.asJsonObject
+            val devName = jsonObject?.get("DevName")?.asString
+            val wingsColorJsonArray = jsonObject?.get("WingsColor")?.asJsonArray
+            val wingsColorTriple = Triple(
+                wingsColorJsonArray?.get(0)?.asInt ?: 0,
+                wingsColorJsonArray?.get(1)?.asInt ?: 0,
+                wingsColorJsonArray?.get(2)?.asInt ?: 0
+            )
+            val sizeJsonArray = jsonObject?.get("Size")?.asJsonArray
+            val sizeTriple = Triple(
+                sizeJsonArray?.get(0)?.asFloat ?: 0,
+                sizeJsonArray?.get(1)?.asFloat ?: 0,
+                sizeJsonArray?.get(2)?.asFloat ?: 0
+            )
+            val wings = jsonObject?.get("Wings")?.asBoolean ?: false
 
-    val devs = HashMap<String, Dev>()
-
-    private fun convertDecimalToInt(s: String): String {
-        // Define the regular expression pattern to match both integer and decimal numbers
-        val pattern = Regex("""Decimal\('(\d+(?:\.\d+)?)'\)""")
-
-        // Replace each occurrence of Decimal('x') or x with x
-        return s.replace(pattern) { match ->
-            match.groupValues[1] // Extract the number part and return
+            return DevData(devName ?: "", wingsColorTriple, sizeTriple as Triple<Float, Float, Float>, wings)
         }
     }
 
+    private fun convertDecimalToNumber(s: String): String {
+        val pattern = Regex("""Decimal\('(\d+(?:\.\d+)?)'\)""")
+
+        return s.replace(pattern) { match -> match.groupValues[1] }
+    }
 
     fun updateDevs() {
-        OdinMain.scope.launch {
-            val data = convertDecimalToInt(getDataFromServer("https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
-            modMessage(data)
-            //val jsonData = JsonArray(data)
-            val jsonObjects = data.split("}, {")
-            // Iterate over each JSON object
-            jsonObjects.forEach { jsonObj ->
-                modMessage(jsonObj)
-                val match = Regex("""\{'DevName': '(\w+)', 'WingsColor': \{(\d+), (\d+), (\d+)\}, 'Size': \{(\d+), (\d+), (\d+)\}, 'Wings': (True|False)\}""").find(jsonObj + "}") ?: return@forEach
-
-                val (name, r, g, b, x, y, z, wings) = match.destructured
-                val dev = Dev(x.toFloat(), y.toFloat(), z.toFloat(), wings.toBoolean(), Color(r.toInt(), g.toInt(), b.toInt()))
-                modMessage("Dev: $name")
-                devs[name] = dev
+        scope.launch {
+            val data = convertDecimalToNumber(getDataFromServer("https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
+            val gson = GsonBuilder()
+                .registerTypeAdapter(DevData::class.java, DevDeserializer())
+                .create()
+            gson.fromJson(data, Array<DevData>::class.java).forEach {
+                devs[it.DevName] = DevPlayer(it.Size.first, it.Size.second, it.Size.third, it.Wings, Color(it.WingsColor.first, it.WingsColor.second, it.WingsColor.third))
             }
         }
     }
 
     init {
-        OdinMain.scope.launch { updateDevs() }
+        updateDevs()
     }
 
     fun preRenderCallbackScaleHook(entityLivingBaseIn: AbstractClientPlayer ) {
         if (!devs.containsKey(entityLivingBaseIn.name)) return
         if (!devSize && entityLivingBaseIn.name == mc.thePlayer.name) return
         val dev = devs[entityLivingBaseIn.name]
-        if (dev != null) { GlStateManager.scale(dev.xScale, dev.yScale, dev.zScale) }
+        if (dev != null) { scale(dev.xScale, dev.yScale, dev.zScale) }
+    }
+
+    @SubscribeEvent
+    fun onRenderPlayer(event: RenderPlayerEvent.Post) {
+        if (!devs.containsKey(event.entity.name)) return
+        if (!devSize && event.entity.name == mc.thePlayer.name) return
+        val dev = devs[event.entity.name] ?: return
+        if (!dev.wings) return
+        DragonWings.renderWings(event.entityPlayer, event.partialRenderTick, dev)
     }
 
     private val dragonWingTextureLocation = ResourceLocation("textures/entity/enderdragon/dragon.png")
@@ -95,7 +123,7 @@ object DevPlayers {
             wing.addChild(wingTip)
         }
 
-        fun renderWings(player: EntityPlayer, partialTicks: Float, dev: Dev) {
+        fun renderWings(player: EntityPlayer, partialTicks: Float, dev: DevPlayer) {
             val rotation = this.interpolate(player.prevRenderYawOffset, player.renderYawOffset, partialTicks)
 
             GlStateManager.pushMatrix()
@@ -145,14 +173,4 @@ object DevPlayers {
         }
 
     }
-
-    @SubscribeEvent
-    fun onRenderPlayer(event: RenderPlayerEvent.Post) {
-        if (!devs.containsKey(event.entity.name)) return
-        if (!devSize && event.entity.name == mc.thePlayer.name) return
-        val dev = devs[event.entity.name] ?: return
-        if (!dev.wings) return
-        DragonWings.renderWings(event.entityPlayer, event.partialRenderTick, dev)
-    }
-
 }

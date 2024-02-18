@@ -53,7 +53,7 @@ object BuildHelper : Module(
         if (stunNotification && KuudraUtils.build == stunNotificationNumber && stunAlert)  {
             stunAlert = false
             PlayerUtils.alert("Go to stun")
-            runIn(1000) {
+            runIn(50) {
                 stunAlert = true
             }
         }

@@ -8,7 +8,9 @@ import me.odinmain.commands.CommandNode
 import me.odinmain.commands.Commodore
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.impl.dungeon.TPMaze
+import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.features.impl.render.DevPlayers.devs
+import me.odinmain.features.impl.render.DevPlayers.isDev
 import me.odinmain.features.impl.render.DevPlayers.updateDevs
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -25,7 +27,7 @@ object DevCommand : Commodore {
     override val command: CommandNode =
         literal("oddev") {
             requires {
-                devs.containsKey(mc.thePlayer.name)
+                isDev
             }
 
             literal("getdata").runs { str: String ->
@@ -60,7 +62,6 @@ object DevCommand : Commodore {
 
             literal("devlist").runs {
                 updateDevs()
-                modMessage("Devs: ${devs.keys}")
             }
 
             literal("sendServer").runs { string: String ->
@@ -69,6 +70,13 @@ object DevCommand : Commodore {
                     sendDataToServer(string)
                 }
                 modMessage(string)
+            }
+
+            literal("addDev").runs { string: String ->
+                scope.launch {
+                    sendDataToServer("$string, [1,2,3], [1,2,3], false", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/")
+                }
+                modMessage("$string, [1,2,3], [1,2,3], false")
             }
 
 

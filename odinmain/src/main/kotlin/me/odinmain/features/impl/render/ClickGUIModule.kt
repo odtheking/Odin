@@ -42,6 +42,21 @@ object ClickGUIModule: Module(
 
     val devMessages: Boolean by BooleanSetting("Dev Messages", true, description = "Enables dev messages in chat.").withDependency { DevPlayers.isDev }
     val devSize: Boolean by BooleanSetting("Dev Size", true, description = "Toggles client side dev size.").withDependency { DevPlayers.isDev }
+    private val devWings: Boolean by BooleanSetting("Dev Wings", false, description = "Toggles client side dev wings.").withDependency { DevPlayers.isDev }
+    private val devWingsColor: Color by ColorSetting("Dev Wings Color", Color(255, 255, 255), description = "Color of the dev wings.").withDependency { DevPlayers.isDev }
+    private val devSizeX: Float by NumberSetting("Dev Size X", 1f, 0.1f, 1.5f, 0.1, description = "X scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
+    private val devSizeY: Float by NumberSetting("Dev Size Y", 1f, 0.1f, 1.5f, 0.1, description = "Y scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
+    private val devSizeZ: Float by NumberSetting("Dev Size Z", 1f, 0.1f, 1.5f, 0.1, description = "Z scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
+
+    val reset: () -> Unit by ActionSetting("Send Dev Data") {
+        scope.launch {
+            sendDataToServer(body = "${mc.thePlayer.name}, [${devWingsColor.r},${devWingsColor.g},${devWingsColor.b}], [$devSizeX,$devSizeY,$devSizeZ], $devWings", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/")
+            modMessage("Sent dev data to server.")
+            DevPlayers.updateDevs()
+            modMessage("Updated devs.")
+        }
+
+    }.withDependency { DevPlayers.isDev }
 
     val action: () -> Unit by ActionSetting("Open Example Hud") {
         OdinMain.display = EditHUDGui
