@@ -68,9 +68,7 @@ object DevPlayers {
     fun updateDevs() {
         scope.launch {
             val data = convertDecimalToNumber(getDataFromServer("https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
-            val gson = GsonBuilder()
-                .registerTypeAdapter(DevData::class.java, DevDeserializer())
-                .create()
+            val gson = GsonBuilder().registerTypeAdapter(DevData::class.java, DevDeserializer()).create()
             gson.fromJson(data, Array<DevData>::class.java).forEach {
                 devs[it.DevName] = DevPlayer(it.Size.first, it.Size.second, it.Size.third, it.Wings, Color(it.WingsColor.first, it.WingsColor.second, it.WingsColor.third))
             }

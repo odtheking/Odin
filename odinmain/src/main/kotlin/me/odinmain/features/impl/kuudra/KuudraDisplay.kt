@@ -13,6 +13,7 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.render.world.RenderUtils.drawBoxOutline
 import me.odinmain.utils.render.world.RenderUtils.renderBoundingBox
+import me.odinmain.utils.round
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.KuudraUtils.kuudraEntity
 import me.odinmain.utils.skyblock.LocationUtils
@@ -39,12 +40,12 @@ object KuudraDisplay : Module(
     private val scaledHealth: Boolean by BooleanSetting("Use Scaled", true, description = "Use scaled health display").withDependency { kuudraHPDisplay }
     private val hud: HudElement by HudSetting("Health Display", 10f, 10f, 1f, true) {
         if (it) {
-            text("§a99.975k/100k", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR)
+            text("§a99.975k/100k", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
 
             getTextWidth("99.975k/100k", 12f) + 2f to 22f
         } else {
             if (LocationUtils.currentArea != "Kuudra") return@HudSetting 0f to 0f
-            text(getCurrentHealthDisplay(), 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR)
+            text(getCurrentHealthDisplay(), 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
 
             getTextWidth("99.975k/100k", 12f) + 2f to 22f
         }
@@ -77,7 +78,7 @@ object KuudraDisplay : Module(
                 kuudraPos.zCoord < -132 -> "BACK"
                 else -> null
             }?.let {
-                PlayerUtils.alert(it)
+                PlayerUtils.alert(it, playSound = false)
             }
         }
     }
@@ -96,7 +97,7 @@ object KuudraDisplay : Module(
 
         return when {
             // Scaled
-            useScaled -> "$color${health * 12}M§7/§a300M §c❤"
+            useScaled -> "$color${(health * 12).round(2)}M§7/§a300M §c❤"
             // Percentage
             healthFormat -> "$color${health}§a% §c❤"
             // Exact

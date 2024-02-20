@@ -4,8 +4,14 @@ import gg.essential.universal.shader.BlendState
 import gg.essential.universal.shader.UShader
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
+import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinmain.ui.hud.EditHUDGui
+import me.odinmain.ui.util.scale
+import me.odinmain.ui.util.scaleFactor
+import me.odinmain.ui.util.text
 import me.odinmain.utils.render.Color
+import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.WorldRenderer
@@ -14,8 +20,12 @@ import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.Entity
 import net.minecraft.util.*
+import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.glu.Cylinder
 import org.lwjgl.util.glu.GLU
@@ -35,7 +45,42 @@ object RenderUtils {
         partialTicks = event.partialTicks
     }
 
+    private var displayTitle = ""
+    private var titleTicks = 0
+    private var displayColor = Color.WHITE
 
+    fun displayTitle(title: String, ticks: Int, color: Color = Color.WHITE) {
+        displayTitle = title
+        titleTicks = ticks
+        displayColor = color
+    }
+
+    fun clearTitle() {
+        displayTitle = ""
+        titleTicks = 0
+    }
+
+    @SubscribeEvent
+    fun onOverlay(event: RenderGameOverlayEvent.Pre) {
+        if (event.type != RenderGameOverlayEvent.ElementType.ALL) return
+        mc.entityRenderer.setupOverlayRendering()
+
+        scale(1f / scaleFactor, 1f / scaleFactor, 1f)
+
+        if (titleTicks < 0) return
+        text(text = displayTitle, x = Display.getWidth() / 2f - (OdinFont.getTextWidth(displayTitle, 50f) /2f), y = Display.getHeight() / 2f, color = displayColor, size = 50f, shadow = true)
+        scale(scaleFactor, scaleFactor, 1f)
+    }
+
+    @SubscribeEvent
+    fun onTick(event: TickEvent.ClientTickEvent) {
+        if (event.phase != TickEvent.Phase.START) return
+        titleTicks--
+    }
+    @SubscribeEvent
+    fun worldLoad(event: WorldEvent.Load) {
+        clearTitle()
+    }
 
     fun preDraw() {
         GlStateManager.enableAlpha()

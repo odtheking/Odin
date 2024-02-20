@@ -6,6 +6,7 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.KuudraUtils
+import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.partyMessage
 import net.minecraft.entity.item.EntityArmorStand
@@ -23,21 +24,31 @@ object NoPre : Module(
     private val shop = Vec3(-81.0, 76.0, -143.0)
     private val xCannon = Vec3(-143.0, 76.0, -125.0)
     private val square = Vec3(-143.0, 76.0, -80.0)
+    private var preSpot = ""
+    var missing = ""
+    private var preLoc = Vec3(0.0, 0.0, 0.0)
+
     @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
         val message = event.message
         when {
             message.contains("[NPC] Elle: Head over to the main platform, I will join you when I get a bite!") -> {
                 val player = mc.thePlayer
-                KuudraUtils.preSpot = when {
-                    player.getDistanceSq(-67.5, 77.0, -122.5) < 15 -> "Triangle"
-                    player.getDistanceSq(-142.5, 77.0, -151.0) < 30 -> "X"
-                    player.getDistanceSq(-65.5, 76.0, -87.5) < 15 -> "Equals"
-                    player.getDistanceSq(-113.5, 77.0, -68.5) < 15 -> "Slash"
+                preSpot = when {
+                    player.getDistance(-67.5, 77.0, -122.5) < 15 -> "Triangle"
+                    player.getDistance(-142.5, 77.0, -151.0) < 30 -> "X"
+                    player.getDistance(-65.5, 76.0, -87.5) < 15 -> "Equals"
+                    player.getDistance(-113.5, 77.0, -68.5) < 15 -> "Slash"
                     else -> ""
                 }
-                modMessage("distance to triangle: ${player.getDistanceSq(-67.5, 77.0, -122.5)}, distance to x: ${player.getDistanceSq(-142.5, 77.0, -151.0)}, distance to equals: ${player.getDistanceSq(-65.5, 76.0, -87.5)}, distance to slash: ${player.getDistanceSq(-113.5, 77.0, -68.5)}")
-                modMessage(KuudraUtils.preSpot)
+
+                preLoc = when (preSpot) {
+                    "Triangle" -> Vec3(-67.5, 77.0, -122.5)
+                    "X" -> Vec3(-142.5, 77.0, -151.0)
+                    "Equals" -> Vec3(-65.5, 76.0, -87.5)
+                    "Slash" -> Vec3(-113.5, 77.0, -68.5)
+                    else -> Vec3(0.0, 0.0, 0.0)
+                }
             }
             message.contains("[NPC] Elle: Not again!") -> {
                 val xs = mutableListOf<Double>()
@@ -53,21 +64,19 @@ object NoPre : Module(
                     zs.add(z)
                 }
                 xs.forEachIndexed { index, supply ->
-                    val preLoc = Vec3(supply, 76.0, zs[index])
+                    val supplyLoc = Vec3(supply, 76.0, zs[index])
                     when {
-                        preLoc.distanceTo(preLoc) < 18 -> pre = true
-                        KuudraUtils.preSpot == "Triangle" && shop.distanceTo(preLoc) < 18 -> second = true
-                        KuudraUtils.preSpot == "X" && xCannon.distanceTo(preLoc) < 16 -> second = true
-                        KuudraUtils.preSpot == "Slash" && square.distanceTo(preLoc) < 20 -> second = true
+                        preLoc.distanceTo(supplyLoc) < 18 -> pre = true
+                        preSpot == "Triangle" && shop.distanceTo(supplyLoc) < 18 -> second = true
+                        preSpot == "X" && xCannon.distanceTo(supplyLoc) < 16 -> second = true
+                        preSpot == "Slash" && square.distanceTo(supplyLoc) < 20 -> second = true
                     }
                 }
                 if (second && pre) return
-                if (!pre && KuudraUtils.preSpot.isNotEmpty()) {
-                    modMessage("No Pre!")
-                    msg = "No ${KuudraUtils.preSpot}!"
+                if (!pre && preSpot.isNotEmpty()) {
+                    msg = "No ${preSpot}!"
                 } else if (!second) {
-                    modMessage("No Second!")
-                    val location = when (KuudraUtils.preSpot) {
+                    val location = when (preSpot) {
                         "Triangle" -> "Shop"
                         "X" -> "X Cannon"
                         "Slash" -> "Square"
@@ -76,9 +85,10 @@ object NoPre : Module(
                     msg = "No $location!"
                 }
                 partyMessage(msg)
+                PlayerUtils.alert(msg)
             }
             message.startsWith("Party >") && message.contains(": No")  -> {
-                KuudraUtils.missing = message.split("No ")[1].split("!")[0]
+                missing = message.split("No ")[1].split("!")[0]
             }
         }
     }

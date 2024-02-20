@@ -8,6 +8,7 @@ import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.render.world.RenderUtils.drawBoxOutline
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.LocationUtils
+import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.toAABB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3i
@@ -20,7 +21,7 @@ object PearlWaypoints : Module(
     description = "Renders waypoints for pearls in Kuudra.",
     category = Category.KUUDRA
 ) {
-    private val hideFarWaypoints: Boolean by BooleanSetting("Hide Far Waypoints", true, description = "Hides the waypoints that are far away")
+    private val hideFarWaypoints: Boolean by BooleanSetting("Hide Far Waypoints", false, description = "Hides the waypoints that are far away")
 
     private val pearlLineups: Map<Lineup, Color> = mapOf(
         // Triangle
@@ -46,12 +47,12 @@ object PearlWaypoints : Module(
         Lineup(
             startPos = setOf(BlockPos(-141, 78, -91)),
             lineups = setOf(
-                BlockPos(-110, 155, -106),
-                BlockPos(-46, 120, -150),
-                BlockPos(-46, 135, -139),
-                BlockPos(-37, 139, -125),
-                BlockPos(-28, 128, -112),
-                BlockPos(-106, 157, -99)
+                BlockPos(-110, 155, -106), // cannon
+                BlockPos(-46, 120, -150), // X
+                BlockPos(-46, 135, -139), // shop
+                BlockPos(-37, 139, -125), // triangle
+                BlockPos(-28, 128, -112), // equals
+                BlockPos(-106, 157, -99) // slash
             )
         ) to Color(0, 255, 255),
         // equals
@@ -66,6 +67,16 @@ object PearlWaypoints : Module(
         ) to Color(0, 0, 255)
     )
 
+    val blockNameMap = hashMapOf(
+        "Cannon" to BlockPos(-110, 155, -106),
+        "X" to BlockPos(-46, 120, -150),
+        "Shop" to BlockPos(-46, 135, -139),
+        "Triangle" to BlockPos(-37, 139, -125),
+        "Equals" to BlockPos(-28, 128, -112),
+        "Slash" to BlockPos(-106, 157, -99)
+    )
+
+
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
         if (KuudraUtils.phase != 1) return
@@ -78,6 +89,9 @@ object PearlWaypoints : Module(
 
             lineup.lineups.forEach {
                 if (!closest && hideFarWaypoints) return@forEach
+
+                if (lineup.startPos == setOf(BlockPos(-141, 78, -91)) && blockNameMap[NoPre.missing] != it) return@forEach
+
                 RenderUtils.drawFilledBox(it.toAABB(), color, true)
             }
             closest = false

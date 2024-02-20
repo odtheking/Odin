@@ -31,32 +31,25 @@ object BuildHelper : Module(
     private val buildHelperColor: Color by ColorSetting("Build Helper Color", Color.ORANGE, description = "Color of the build helper")
     private val hud: HudElement by HudSetting("Build helper", 10f, 10f, 1f, true) {
         if (it) {
-            text("Build §c50§8%", 1f, 9f, buildHelperColor, 12f, OdinFont.REGULAR)
-            text("Builders §e2", 1f, 24f, buildHelperColor, 12f, OdinFont.REGULAR)
+            text("Build §c50§8%", 1f, 9f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
+            text("Builders §e2", 1f, 24f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
 
             getTextWidth("4Build 50%", 12f) + 2f to 34f
         } else {
             if (KuudraUtils.phase != 2) return@HudSetting 0f to 0f
-            text("Build ${colorBuild(KuudraUtils.build)}§8%", 1f, 9f, buildHelperColor, 12f, OdinFont.REGULAR)
-            text("Builders ${colorBuilders(KuudraUtils.builders)}", 1f,  24f, buildHelperColor, 12f, OdinFont.REGULAR)
+            text("Build ${colorBuild(KuudraUtils.build)}§8%", 1f, 9f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
+            text("Builders ${colorBuilders(KuudraUtils.builders)}", 1f,  24f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
 
             getTextWidth("4Build 50%", 12f) + 2f to 34f
         }
     }
     private val stunNotification: Boolean by BooleanSetting("Stun Notification", true, description = "Notifies you when to go to stun")
-    private val stunNotificationNumber: Int by NumberSetting("Stun Notification Number", 93, 0.0, 100.0, description = "The number of builders to notify you at").withDependency { stunNotification }
+    private val stunNotificationNumber: Int by NumberSetting("Stun Notification Number", 93, 0.0, 100.0, description = "The build % to notify at").withDependency { stunNotification }
 
-    private var stunAlert = true
     @SubscribeEvent
     fun renderWorldEvent(event: RenderWorldLastEvent) {
         if (KuudraUtils.phase != 2) return
-        if (stunNotification && KuudraUtils.build == stunNotificationNumber && stunAlert)  {
-            stunAlert = false
-            PlayerUtils.alert("Go to stun")
-            runIn(50) {
-                stunAlert = true
-            }
-        }
+        if (stunNotification && KuudraUtils.build > stunNotificationNumber) PlayerUtils.alert("Go to stun", playSound = false)
         if (buildHelperDraw) RenderUtils.drawStringInWorld("Build ${KuudraUtils.build}%", Vec3(102.5, 85.0, -106.5), buildHelperColor.rgba, false, false, scale = 0.2f)
         if (buildHelperDraw) RenderUtils.drawStringInWorld("${KuudraUtils.builders} builders", Vec3(102.5, 80.0, -106.5), buildHelperColor.rgba, false, false, scale = 0.3f)
     }

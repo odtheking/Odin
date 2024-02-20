@@ -13,6 +13,7 @@ import me.odinmain.features.impl.render.DevPlayers.devs
 import me.odinmain.features.impl.render.DevPlayers.isDev
 import me.odinmain.features.impl.render.DevPlayers.updateDevs
 import me.odinmain.utils.*
+import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.ScanUtils
 import me.odinmain.utils.skyblock.getChatBreak
@@ -77,13 +78,13 @@ object DevCommand : Commodore {
                     sendDataToServer("$string, [1,2,3], [1,2,3], false", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/")
                 }
                 modMessage("$string, [1,2,3], [1,2,3], false")
+                modMessage("Added $string to devs as a dev (rs game for update).")
             }
 
 
-
-            literal("getServer").runs {
+            literal("getServer").runs { string: String ->
                 scope.launch {
-                    val data = getDataFromServer("https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/")
+                    val data = getDataFromServer(string)
                     modMessage(data)
                 }
             }
@@ -132,5 +133,12 @@ object DevCommand : Commodore {
                 val core = ScanUtils.getCore(mc.thePlayer.posX.floor().toInt(), mc.thePlayer.posZ.floor().toInt())
                 writeToClipboard(core.toString(), "Copied $core to clipboard!")
             }
+
+            literal("test").runs {
+                modMessage("Test")
+                PlayerUtils.alert("Test")
+            }
+
+
         }
 }

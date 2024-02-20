@@ -199,11 +199,12 @@ object DungeonUtils {
      * Each class is associated with a specific code and color used for formatting in the game. The classes include Archer,
      * Mage, Berserk, Healer, and Tank.
      *
-     * @property code The formatting code used in-game for the class.
      * @property color The color associated with the class.
+     * @property defaultQuadrant The default quadrant for the class.
+     * @property prio The priority of the class.
+     *
      */
     enum class Classes(
-        val code: String,
         val color: Color,
         val defaultQuadrant: Int,
         var prio: Int
@@ -211,32 +212,32 @@ object DungeonUtils {
         /**
          * Archer class with formatting code "§6" (gold) and orange color.
          */
-        Archer("§6", Color.ORANGE, 0, 2),
+        Archer(Color.ORANGE, 0, 2),
 
         /**
          * Berserk class with formatting code "§4" (dark red) and dark red color.
          */
-        Berserk("§4", Color.DARK_RED,1, 0),
+        Berserk(Color.DARK_RED,1, 0),
 
         /**
          * Healer class with formatting code "§a" (green) and green color.
          */
-        Healer("§d", Color.PINK, 2, 2),
+        Healer(Color.PINK, 2, 2),
 
         /**
          * Mage class with formatting code "§b" (purple) and purple color.
          */
-        Mage("§b", Color.BLUE, 3, 2),
+        Mage(Color.BLUE, 3, 2),
 
         /**
          * Tank class with formatting code "§2" (dark green) and dark green color.
          */
-        Tank("§2", Color.DARK_GREEN, 3, 1),
+        Tank(Color.DARK_GREEN, 3, 1),
 
         /**
          * Dead class with formatting code "§4" (dark red) and dark red color.
          */
-        DEAD("§c", Color.RED, 3, -1);
+        DEAD(Color.RED, 3, -1);
 
 
         companion object {

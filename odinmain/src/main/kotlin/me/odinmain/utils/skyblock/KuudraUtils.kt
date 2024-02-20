@@ -27,8 +27,6 @@ object KuudraUtils {
     var builders = 0
     var build = 0
     var phase = 0
-    var preSpot = ""
-    var missing = ""
 
     data class KuudraPlayer(val playerName: String, var eatFresh: Boolean = false, var eatFreshTime: Long = 0, val entity: EntityPlayer? = null)
     @SubscribeEvent

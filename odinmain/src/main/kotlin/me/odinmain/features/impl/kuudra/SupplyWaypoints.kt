@@ -2,6 +2,7 @@ package me.odinmain.features.impl.kuudra
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.impl.kuudra.NoPre.missing
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
@@ -41,21 +42,21 @@ object SupplyWaypoints : Module(
 
     private fun renderSupplyDrop() {
         if (KuudraUtils.supplies[0])
-            RenderUtils.renderCustomBeacon("", -98.0, 78.0, -112.0, if (KuudraUtils.missing == "Shop") Color.GREEN else Color.RED) // shop
+            RenderUtils.renderCustomBeacon("", -98.0, 78.0, -112.0, if (missing == "Shop") Color.GREEN else Color.RED) // shop
 
         if (KuudraUtils.supplies[1])
-            RenderUtils.renderCustomBeacon("", -98.0, 78.0, -99.0, if (KuudraUtils.missing == "Equals") Color.GREEN else Color.RED) // equals
+            RenderUtils.renderCustomBeacon("", -98.0, 78.0, -99.0, if (missing == "Equals") Color.GREEN else Color.RED) // equals
 
         if (KuudraUtils.supplies[2])
-            RenderUtils.renderCustomBeacon("", -110.0, 78.0, -106.0, if (KuudraUtils.missing == "X Cannon") Color.GREEN else Color.RED) // cannon
+            RenderUtils.renderCustomBeacon("", -110.0, 78.0, -106.0, if (missing == "X Cannon") Color.GREEN else Color.RED) // cannon
 
         if (KuudraUtils.supplies[3])
-            RenderUtils.renderCustomBeacon("", -106.0, 78.0, -112.0, if (KuudraUtils.missing == "X") Color.GREEN else Color.RED) // x
+            RenderUtils.renderCustomBeacon("", -106.0, 78.0, -112.0, if (missing == "X") Color.GREEN else Color.RED) // x
 
         if (KuudraUtils.supplies[4])
-            RenderUtils.renderCustomBeacon("", -94.0, 78.0, -106.0, if (KuudraUtils.missing == "Triangle") Color.GREEN else Color.RED) // tri
+            RenderUtils.renderCustomBeacon("", -94.0, 78.0, -106.0, if (missing == "Triangle") Color.GREEN else Color.RED) // tri
 
         if (KuudraUtils.supplies[5])
-            RenderUtils.renderCustomBeacon("", -106.0, 78.0, -99.0, if (KuudraUtils.missing == "Slash") Color.GREEN else Color.RED) // slash
+            RenderUtils.renderCustomBeacon("", -106.0, 78.0, -99.0, if (missing == "Slash") Color.GREEN else Color.RED) // slash
     }
 }

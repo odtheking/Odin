@@ -6,6 +6,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.containsOneOf
 import me.odinmain.utils.noControlCodes
+import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.getSkullValue
 import net.minecraft.entity.Entity
@@ -26,7 +27,7 @@ object RenderOptimizer : Module(
 ) {
 
     private val fallingBlocks: Boolean by BooleanSetting(name = "Remove Falling Blocks", default = true, description = "Removes falling blocks that are not necessary.")
-    private val p5Mobs: Boolean by BooleanSetting(name = "Remove P5 Armor Stands", default = true, description = "Removes armor stands that are not necessary.")
+    private val removeTentacles: Boolean by BooleanSetting(name = "Remove P5 Tentacles", default = true, description = "Removes armorstands of tentacles which are not necessary.")
     private val hideParticles: Boolean by BooleanSetting(name = "Hide P5 Particles", default = true, description = "Hides particles that are not necessary.")
     private val hideHeartParticles: Boolean by BooleanSetting(name = "Hide Heart Particles", default = true, description = "Hides heart particles.")
     private val hideHealerFairy: Boolean by BooleanSetting(name = "Hide Healer Fairy", default = true, description = "Hides the healer fairy.")
@@ -65,7 +66,7 @@ object RenderOptimizer : Module(
             mc.theWorld.loadedEntityList.forEach {
                 if (it !is EntityArmorStand) return@execute
                 if (hideArcherBones) handleHideArcherBones(it)
-                if (p5Mobs) handleP5Mobs(it)
+                if (removeTentacles) removeTentacles(it)
                 if (hideHealerFairy) handleHealerFairy(it)
                 if (hideSoulWeaver) handleSoulWeaver(it)
 
@@ -109,11 +110,10 @@ object RenderOptimizer : Module(
         }
     }
 
-    private fun handleP5Mobs(entity: Entity) {
+    private fun removeTentacles(entity: Entity) {
         val armorStand = entity as? EntityArmorStand
-        if (DungeonUtils.getPhase() == 5 && getSkullValue(armorStand) == (TENTACLE_TEXTURE) ) {
-            armorStand?.setDead()
-        }
+        if (DungeonUtils.getPhase() == 5 && getSkullValue(armorStand)?.contains(TENTACLE_TEXTURE) == true)
+            armorStand?.setDead(); devMessage("Removed tentacle")
     }
 
     private fun handleHealerFairy(entity: Entity) {

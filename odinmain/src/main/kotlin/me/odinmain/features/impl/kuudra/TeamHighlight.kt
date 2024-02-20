@@ -39,15 +39,11 @@ object TeamHighlight : Module(
     }
 
     @SubscribeEvent
-    fun handleNames(event: RenderLivingEvent.Pre<*>) {
-        if (highlightName && LocationUtils.currentArea == "Kuudra") renderTeammatesNames(event.entity)
-    }
-
-    private fun renderTeammatesNames(event: Entity) {
-        if (event == mc.thePlayer) return
+    fun handleNames(event: RenderLivingEvent.Post<*>) {
+        if (!highlightName || LocationUtils.currentArea != "Kuudra" || event == mc.thePlayer) return
         val teammate = KuudraUtils.kuudraTeammates.find { it.entity == event } ?: return
 
-        RenderUtils.drawStringInWorld(event.name, event.renderVec.addVec(y = 2.6),
+        RenderUtils.drawStringInWorld(event.entity.name, event.entity.renderVec.addVec(y = 2.6),
             if (teammate.eatFresh) highlightFreshColor.rgba else nameColor.rgba,
             depthTest = false, increase = false, renderBlackBox = false,
             scale = 0.05f

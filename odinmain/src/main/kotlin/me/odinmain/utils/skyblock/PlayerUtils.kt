@@ -2,6 +2,8 @@ package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.ui.clickgui.util.ColorUtil.addColor
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.world.RenderUtils
 
 
 object PlayerUtils {
@@ -30,9 +32,9 @@ object PlayerUtils {
      *
      * @author Odtheking, Bonsai
      */
-    fun alert(title: String, subtitle: String = "", fadeIn: Int= 10, time: Int = 20, fadeOut: Int = 10, playSound: Boolean = true) {
+    fun alert(title: String, time: Int = 60, color: Color = Color.WHITE, playSound: Boolean = true, displayText: Boolean = true) {
         if (playSound) playLoudSound("note.pling", 100f, 1f)
-        showTitle(title, subtitle, fadeIn, time, fadeOut)
+        RenderUtils.displayTitle(if(displayText) title else "", time, color = color)
     }
 
     fun showTitle(title: String, subtitle: String, fadeIn: Int, time: Int, fadeOut: Int) {

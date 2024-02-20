@@ -105,8 +105,6 @@ private fun prettyPrintNBT(nbt: NBTBase): String {
     var stringBuilder = java.lang.StringBuilder()
 
     // Determine which type of tag it is.
-
-    // Determine which type of tag it is.
     when (tagID) {
         Constants.NBT.TAG_END -> {
             stringBuilder.append('}')
