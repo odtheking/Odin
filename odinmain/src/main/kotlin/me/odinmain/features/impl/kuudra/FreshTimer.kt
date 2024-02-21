@@ -21,7 +21,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object FreshTimer : Module(
     name = "Fresh Timer",
-    description = "Shows the time until fresh tools",
+    description = "Shows the time until fresh tools.",
     category = Category.KUUDRA
 ){
     private val notifyFresh: Boolean by BooleanSetting("Notify Fresh", true, description = "Notifies your party when you get fresh tools")

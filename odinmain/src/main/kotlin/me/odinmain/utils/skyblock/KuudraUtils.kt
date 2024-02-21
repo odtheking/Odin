@@ -98,7 +98,7 @@ object KuudraUtils {
                 if (x == -106 && z == -99) supplies[5] = false
             }
 
-            buildingPiles = mc.theWorld.loadedEntityList.filter { it is EntityArmorStand && it.name.contains("PUNCH") }.map { it.positionVector } as MutableList<Vec3>
+            buildingPiles = entities.filter { it is EntityArmorStand && it.name.contains("PUNCH") }.map { it.positionVector } as MutableList<Vec3>
 
         }.register()
     }

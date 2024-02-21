@@ -27,7 +27,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object KuudraDisplay : Module(
     name = "Kuudra Display",
-    description = "Displays kuudra information in Kuudra.",
+    description = "Displays information about Kuudra.",
     category = Category.KUUDRA
 ) {
     private val highlightKuudra: Boolean by BooleanSetting("Highlight Kuudra", true, description = "Highlights the kuudra entity")

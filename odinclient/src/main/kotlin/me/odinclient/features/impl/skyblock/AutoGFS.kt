@@ -13,8 +13,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 object AutoGFS : Module(
     name = "Auto Gfs",
     description = "Automatically gets pearls from sacks if your inventory doesn't have any.",
-    category = Category.DUNGEON,
-    tag = TagType.NEW
+    category = Category.DUNGEON
 ) {
     private val sackCooldown = Clock(4000)
 

@@ -29,8 +29,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object DianaHelper : Module(
     name = "Diana Helper",
     description = "Helps with Diana's event.",
-    category = Category.SKYBLOCK,
-    tag = TagType.NEW
+    category = Category.SKYBLOCK
 ) {
     private val guessColor: Color by ColorSetting("Guess Color", default = Color.WHITE, allowAlpha = true, description = "Color of the guess text")
     private val tracer: Boolean by BooleanSetting("Tracer", default = false, description = "Draws a line from your position to the guess")

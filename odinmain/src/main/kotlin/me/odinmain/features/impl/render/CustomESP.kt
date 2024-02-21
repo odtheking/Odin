@@ -29,10 +29,11 @@
         category = Category.RENDER,
         tag = TagType.FPSTAX,
         description =
-        if (onLegitVersion) "Allows you to highlight selected mobs. (/odinhighlight)"
-        else "Allows you to see selected mobs through walls. (/odinesp)"
+        if (onLegitVersion) "Allows you to highlight selected mobs. (/highlight)"
+        else "Allows you to see selected mobs through walls. (/esp)"
     ) {
         private val scanDelay: Long by NumberSetting("Scan Delay", 500L, 10L, 2000L, 100L)
+        private val starredMobESP: Boolean by BooleanSetting("Starred Mob ESP", true, description = "Highlights mobs with a star in their name (remove star from the separate list).")
         val color: Color by ColorSetting("Color", Color.RED, true)
         val mode: Int by SelectorSetting("Mode", "Outline", arrayListOf("Outline", "Overlay", "Boxes"))
 
@@ -40,12 +41,7 @@
         private val thickness: Float by NumberSetting("Outline Thickness", 5f, 1f, 20f, 0.5f).withDependency { mode != 1 }
         private val cancelHurt: Boolean by BooleanSetting("Cancel Hurt", true).withDependency { mode != 1 }
 
-        private val addStar: () -> Unit by ActionSetting("Add Star") {
-            if (espList.contains("✯")) return@ActionSetting
-            modMessage("Added ✯ to ESP list")
-            espList.add("✯")
-            MiscConfig.saveAllConfigs()
-        }
+
 
         val renderThrough: Boolean get() = if (onLegitVersion) false else xray
 
@@ -94,22 +90,49 @@
 
         @SubscribeEvent
         fun postMeta(event: PostEntityMetadata) {
-            checkEntity(mc.theWorld.getEntityByID(event.packet.entityId) ?: return)
+            val entity = mc.theWorld.getEntityByID(event.packet.entityId) ?: return
+            checkEntity(entity)
+            if (starredMobESP) checkStarred(entity)
         }
 
         private fun getEntities() {
-            mc.theWorld?.loadedEntityList?.forEach(::checkEntity)
+            mc.theWorld?.loadedEntityList?.forEach {
+                checkEntity(it)
+                if (starredMobESP) checkStarred(it)
+            }
         }
 
         private fun checkEntity(entity: Entity) {
             if (entity !is EntityArmorStand || espList.none { entity.name.contains(it, true) } || entity in currentEntities) return
-            currentEntities.add(
-                mc.theWorld.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.expand(0.0, 1.0, 0.0))
-                    .filter { it != null && it !is EntityArmorStand && it.getPing() != 1}
-                    .minByOrNull { entity.getDistanceToEntity(it) }
-                    .takeIf { !(it is EntityWither && it.isInvisible) } ?: return
-            )
+            currentEntities.add(getMobEntity(entity) ?: return)
         }
+
+        private fun checkStarred(entity: Entity) {
+            if (entity !is EntityArmorStand || !entity.name.startsWith("§6✯ ") || !entity.name.endsWith("§c❤") || entity in currentEntities) return
+            currentEntities.add(getMobEntity(entity) ?: return)
+
+        }
+
+        private fun getMobEntity(entity: Entity): Entity? {
+            return mc.theWorld.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.expand(0.0, 1.0, 0.0))
+                .filter { it != null && it !is EntityArmorStand && it.getPing() != 1 }
+                .minByOrNull { entity.getDistanceToEntity(it) }
+                .takeIf { !(it is EntityWither && it.isInvisible) }
+        }
+
+        private val dungeonMobSpawns = setOf(
+            "Lurker",
+            "Dreadlord",
+            "Souleater",
+            "Zombie",
+            "Skeleton",
+            "Skeletor",
+            "Sniper",
+            "Super Archer",
+            "Spider",
+            "Fels",
+            "Withermancer"
+        )
     }
 
 

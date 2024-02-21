@@ -19,7 +19,7 @@ import kotlin.math.sin
 
 object NoPre : Module(
     name = "Pre-Spot Alert",
-    description = "Alerts the party about the pre spot",
+    description = "Alerts the party about the state of a pre spot",
     category = Category.KUUDRA
 ) {
     private val shop = Vec3(-81.0, 76.0, -143.0)

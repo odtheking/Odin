@@ -10,8 +10,7 @@ import net.minecraft.item.ItemStack
 object SpaceHelmet : Module(
     name = "Space Helmet",
     category = Category.RENDER,
-    description = "Equips you with a space helmet.",
-    tag = TagType.NEW
+    description = "Equips you with a space helmet."
 ) {
     private val speed: Long by NumberSetting("Speed", 250, 100, 1000, 10, description = "The speed at which the color changes.")
 

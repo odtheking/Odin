@@ -15,6 +15,7 @@ import me.odinmain.utils.render.world.RenderUtils.renderZ
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.isShortbow
 import me.odinmain.utils.skyblock.itemID
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.monster.EntityBlaze
@@ -32,8 +33,7 @@ import kotlin.math.sqrt
 object Trajectories : Module(
     "Trajectories",
     description = "Displays the trajectory of certain items",
-    category = Category.RENDER,
-    tag = TagType.NEW
+    category = Category.RENDER
 ) {
     private val bows: Boolean by BooleanSetting("Bows", false, description = "Render trajectories of bow arrows")
     private val pearls: Boolean by BooleanSetting("Pearls", false, description = "Render trajectories of ender pearls")

@@ -27,7 +27,7 @@ object TeammatesHighlight : Module(
 
     @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
-        if (!DungeonUtils.inDungeons || (inBoss && DungeonUtils.inBoss) || !outline) return
+        if (!DungeonUtils.inDungeons || (!inBoss && DungeonUtils.inBoss) || !outline) return
 
         val teammate = DungeonUtils.teammatesNoSelf.find { it.entity == event.entity } ?: return
 
@@ -38,7 +38,7 @@ object TeammatesHighlight : Module(
 
     @SubscribeEvent
     fun handleNames(event: RenderLivingEvent.Post<*>) {
-        if (!DungeonUtils.inDungeons || (inBoss && DungeonUtils.inBoss)) return
+        if (!DungeonUtils.inDungeons || (!inBoss && DungeonUtils.inBoss)) return
         val teammate = DungeonUtils.teammatesNoSelf.find { it.entity == event.entity } ?: return
 
         if (!whenVisible && mc.thePlayer.canEntityBeSeen(teammate.entity)) return

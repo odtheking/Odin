@@ -23,6 +23,19 @@ Category: Floor 7
 - Simon Says: Different features for the Simon Says puzzle in f7/m7.
 - Arrow Align: Different features for the arrow alignment device.
 
+Category: Kuudra
+- Kuudra Reminders: Displays reminders about Kuudra.
+- Supply Waypoints: Renders waypoints for supplys in Kuudra.
+- Pearl Waypoints: Renders waypoints for pearls in Kuudra.
+- Team Highlight: Highlights your teammates in Kuudra.
+- Kuudra Display: Displays information about Kuudra.
+- Pre-Spot Alert: Alerts the party about the state of a pre spot.
+- Remove Perks: Removes certain perks from the perk menu.
+- Vanq Notifier: Notifies you when a vanquisher is nearby.
+- Build Helper: Helps you to build the ballista in Kuudra.
+- Fresh Timer: Shows the time until fresh tools.
+- Splits: Splits for phases of Kuudra.
+
 Category: Render
 - Ether Warp Helper: Shows you where your etherwarp will teleport you.
 - Render Optimizer: Disables certain render function when they are not necessary.
@@ -101,6 +114,19 @@ Category: Floor 7
 - Simon Says: Different features for the Simon Says puzzle in f7/m7.
 - Arrow Align: Different features for the arrow alignment device.
 - Relic Aura: Automatically picks relics in the Witherking boss-fight.
+
+Category: Kuudra
+- Kuudra Reminders: Displays reminders about Kuudra.
+- Supply Waypoints: Renders waypoints for supplys in Kuudra.
+- Pearl Waypoints: Renders waypoints for pearls in Kuudra.
+- Team Highlight: Highlights your teammates in Kuudra.
+- Kuudra Display: Displays information about Kuudra.
+- Pre-Spot Alert: Alerts the party about the state of a pre spot.
+- Remove Perks: Removes certain perks from the perk menu.
+- Vanq Notifier: Notifies you when a vanquisher is nearby.
+- Build Helper: Helps you to build the ballista in Kuudra.
+- Fresh Timer: Shows the time until fresh tools.
+- Splits: Splits for phases of Kuudra.
 
 Category: Render
 - Ether Warp Helper: Shows you where your etherwarp will teleport you.

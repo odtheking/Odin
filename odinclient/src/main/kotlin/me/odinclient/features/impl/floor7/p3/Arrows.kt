@@ -20,8 +20,7 @@ import kotlin.math.sqrt
 object Arrows : Module(
     name = "Arrows Triggerbot",
     description = "Trigger bot for 4th device.",
-    category = Category.FLOOR7,
-    tag = TagType.NEW
+    category = Category.FLOOR7
 )  {
     private val triggerBotDelay: Long by NumberSetting("Delay", 250L, 50L, 1000L, 10L)
     private val triggerBotClock = Clock(triggerBotDelay)

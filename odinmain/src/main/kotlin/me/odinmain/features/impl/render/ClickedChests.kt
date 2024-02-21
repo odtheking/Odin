@@ -22,8 +22,7 @@ import net.minecraft.util.AxisAlignedBB as AABB
 object ClickedChests : Module(
     name = "Clicked Chests",
     category = Category.RENDER,
-    description = "Draws a box around all the chests you have clicked.",
-    tag = TagType.NEW
+    description = "Draws a box around all the chests you have clicked."
 ) {
     private val color: Color by ColorSetting("Color", Color.ORANGE.withAlpha(.4f), allowAlpha = true, description = "The color of the box.")
     private val lockedColor: Color by ColorSetting("Locked Color", Color.RED.withAlpha(.4f), allowAlpha = true, description = "The color of the box when the chest is locked.")

@@ -10,7 +10,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object KuudraReminders : Module(
     name = "Kuudra Reminders",
-    description = "Displays kuudra information in Kuudra.",
+    description = "Displays reminders about Kuudra.",
     category = Category.KUUDRA
 ) {
     private val displayText: Boolean by BooleanSetting("Display Text", true, description = "Displays kuudra information in chat")

@@ -55,7 +55,7 @@ object InactiveWaypoints : Module(
                     2 -> RenderUtils.drawFilledBox(it.position.toAABB(), Color(color.r, color.g, color.b, color.alpha), phase = true)
                 }
                 if (renderText) {
-                    RenderUtils.drawStringInWorld(name, it.positionVector.add(Vec3(0.0, 2.0, 0.0)), depthTest = true, scale = 3f)
+                    RenderUtils.drawStringInWorld(name, it.positionVector.add(Vec3(0.0, 2.0, 0.0)), depthTest = true, scale = 0.03f)
                 }
             }
         }

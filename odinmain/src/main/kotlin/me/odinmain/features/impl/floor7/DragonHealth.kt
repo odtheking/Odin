@@ -12,18 +12,18 @@ import net.minecraftforge.client.event.RenderLivingEvent
 object DragonHealth{
 
     fun renderHP(event: RenderLivingEvent.Post<*>) {
-        if (event.entity !is EntityDragon) return
-        val dragon = event.entity as EntityDragon
-        val percentage = event.entity.health / event.entity.getEntityAttribute(SharedMonsterAttributes.maxHealth).baseValue
-        modMessage(percentage.toString())
-        if (percentage <= 0) return
-        val color = when {
-            dragon.health >= 0.75 -> Color.GREEN
-            dragon.health >= 0.5 -> Color.YELLOW
-            percentage >= 0.25 -> Color.ORANGE
-            else -> Color.RED
+        if (event.entity !is EntityDragon || event.entity.health <= 0) return
+        RenderUtils.drawStringInWorld(colorHealth(event.entity.health.toInt()), event.entity.renderVec.addVec(y = 1.5), Color.WHITE.rgba,
+            false, false, false, 0.2f, true)
+    }
+
+    private fun colorHealth(health: Int): String {
+        return when {
+            health >= 0.75 -> "§a${formatHealth(health)}"
+            health >= 0.5 -> "§e${formatHealth(health)}"
+            health >= 0.25 -> "§6${formatHealth(health)}"
+            else -> "§c${formatHealth(health)}"
         }
-        RenderUtils.drawStringInWorld(formatHealth(dragon.health.toInt()), dragon.renderVec.addVec(y = 1.5), color.rgba, false, false, false, 0.2f, true)
     }
 
     private fun formatHealth(health: Int): String {

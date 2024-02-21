@@ -9,8 +9,7 @@ import me.odinmain.utils.runIn
 object SwapStonk : Module(
     name = "Swap Stonk",
     description = "Does a swap stonk when you press the keybind.",
-    category = Category.DUNGEON,
-    tag = TagType.NEW
+    category = Category.DUNGEON
 ) {
     private val useStonk: Boolean by DualSetting("Type", "Pickaxe", "Stonk", default = false)
 

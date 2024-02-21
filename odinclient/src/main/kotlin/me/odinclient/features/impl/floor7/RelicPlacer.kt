@@ -10,8 +10,7 @@ import net.minecraft.util.BlockPos
 object RelicPlacer : Module(
     name = "Relic Placer (WIP)",
     description = "Places the relic if you hover over the correct cauldron",
-    category = Category.FLOOR7,
-    tag = TagType.NEW
+    category = Category.FLOOR7
 ) {
     private val relicMap: Map<String, BlockPos> = mapOf(
         "Green" to BlockPos(45, 169, 44),

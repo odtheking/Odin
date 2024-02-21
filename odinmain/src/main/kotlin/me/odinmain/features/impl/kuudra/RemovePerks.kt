@@ -15,7 +15,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object RemovePerks : Module(
     name = "Remove Perks",
-    description = "Various kuudra utilities",
+    description = "Removes certain perks from the perk menu.",
     category = Category.KUUDRA
 ) {
     private val renderStun: Boolean by BooleanSetting("Render Stun", false, description = "Renders the stun perk")

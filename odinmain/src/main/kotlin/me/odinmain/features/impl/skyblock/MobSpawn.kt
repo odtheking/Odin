@@ -17,8 +17,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object MobSpawn: Module(
     "Mob Spawn",
     category = Category.SKYBLOCK,
-    description = "Sends a message whenever a mob spawns",
-    tag = TagType.NEW
+    description = "Sends a message whenever a mob spawns"
 ) {
     private val mobName: String by StringSetting("Mob Name", "MobName", 40, description = "Message sent when mob is detected as spawned")
     private val soundOnly: Boolean by BooleanSetting("Sound Only", false, description = "Only plays sound when mob spawns")

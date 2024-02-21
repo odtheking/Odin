@@ -9,6 +9,7 @@ import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.getSkullValue
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.item.EntityItem
@@ -64,12 +65,11 @@ object RenderOptimizer : Module(
     init {
         execute(500) {
             mc.theWorld.loadedEntityList.forEach {
-                if (it !is EntityArmorStand) return@execute
+                if (it !is EntityArmorStand) return@forEach
                 if (hideArcherBones) handleHideArcherBones(it)
                 if (removeTentacles) removeTentacles(it)
                 if (hideHealerFairy) handleHealerFairy(it)
                 if (hideSoulWeaver) handleSoulWeaver(it)
-
             }
         }
     }
@@ -112,8 +112,7 @@ object RenderOptimizer : Module(
 
     private fun removeTentacles(entity: Entity) {
         val armorStand = entity as? EntityArmorStand
-        if (DungeonUtils.getPhase() == 5 && getSkullValue(armorStand)?.contains(TENTACLE_TEXTURE) == true)
-            armorStand?.setDead(); devMessage("Removed tentacle")
+        if (DungeonUtils.getPhase() == 5 && getSkullValue(armorStand)?.contains(TENTACLE_TEXTURE) == true) armorStand?.setDead();
     }
 
     private fun handleHealerFairy(entity: Entity) {
@@ -127,9 +126,7 @@ object RenderOptimizer : Module(
 
     private fun handleSoulWeaver(entity: Entity) {
         val armorStand = entity as? EntityArmorStand
-        if (DungeonUtils.inDungeons && getSkullValue(armorStand)?.contains(SOUL_WEAVER_TEXTURE) == true) {
-            armorStand?.setDead()
-        }
+        if (DungeonUtils.inDungeons && getSkullValue(armorStand)?.contains(SOUL_WEAVER_TEXTURE) == true) armorStand?.setDead()
     }
 
     private fun handleWitherMiner(entity: Entity) {

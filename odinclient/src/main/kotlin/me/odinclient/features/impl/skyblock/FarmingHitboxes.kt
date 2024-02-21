@@ -8,8 +8,7 @@ import net.minecraft.block.Block
 object FarmingHitboxes : Module(
     name = "Farming Hitboxes",
     category = Category.SKYBLOCK,
-    description = "Expands the hitbox of some crops to a full block.",
-    tag = TagType.NEW
+    description = "Expands the hitbox of some crops to a full block."
 ) {
 
     fun setFullBlock(block: Block) {

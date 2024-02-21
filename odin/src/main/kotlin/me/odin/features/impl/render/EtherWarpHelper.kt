@@ -24,7 +24,7 @@ object EtherWarpHelper : Module(
     description = "Shows you where your etherwarp will teleport you.",
     category = Category.RENDER
 ) {
-
+    private val render: Boolean by BooleanSetting("Show Etherwarp Guess", true)
     private val renderColor: Color by ColorSetting("Color", Color.ORANGE.withAlpha(.5f), allowAlpha = true)
     private val renderFail: Boolean by BooleanSetting("Show when failed", true)
     private val wrongColor: Color by ColorSetting("Wrong Color", Color.RED.withAlpha(.5f), allowAlpha = true).withDependency { renderFail }
@@ -36,7 +36,7 @@ object EtherWarpHelper : Module(
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         val player = mc.thePlayer as? IEntityPlayerSPAccessor ?: return
         etherPos = EtherWarpHelper.getEtherPos(Vec3(player.lastReportedPosX, player.lastReportedPosY, player.lastReportedPosZ), yaw = player.lastReportedYaw, pitch = player.lastReportedPitch)
-        if (etherPos.succeeded && mc.thePlayer.isSneaking && mc.thePlayer.heldItem.extraAttributes?.getBoolean("ethermerge") == true) {
+        if (render && mc.thePlayer.isSneaking && mc.thePlayer.heldItem.extraAttributes?.getBoolean("ethermerge") == true && (etherPos.succeeded || renderFail)) {
             val pos = etherPos.pos ?: return
             val color = if (etherPos.succeeded) renderColor else wrongColor
 

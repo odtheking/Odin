@@ -34,8 +34,7 @@ import kotlin.math.absoluteValue
 object EtherWarpHelper : Module(
     name = "Ether Warp Helper",
     description = "Shows you where your etherwarp will teleport you.",
-    category = Category.RENDER,
-    tag = TagType.NEW
+    category = Category.RENDER
 ) {
     private val zeroPing: Boolean by BooleanSetting("Zero Ping", false)
     private val render: Boolean by BooleanSetting("Show Etherwarp Guess", true)
