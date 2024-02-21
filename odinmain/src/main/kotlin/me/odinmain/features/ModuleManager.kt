@@ -104,7 +104,8 @@ object ModuleManager {
         SupplyWaypoints,
         TeamHighlight,
         VanqNotifier,
-        KuudraReminders
+        KuudraReminders,
+        Splits
     )
 
 

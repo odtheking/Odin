@@ -114,8 +114,8 @@ fun drawDynamicTexture(dynamicTexture: DynamicTexture, x: Float, y: Float, w: Fl
     drawTexturedModalRect(x.toInt(), y.toInt(), w.toInt(), h.toInt())
 }
 
-fun wrappedText(text: String, x: Float, y: Float, w: Float, color: Color, size: Float, type: Int = OdinFont.REGULAR) {
-    OdinFont.wrappedText(text, x, y, w, color, size, type)
+fun wrappedText(text: String, x: Float, y: Float, w: Float, color: Color, size: Float, type: Int = OdinFont.REGULAR, shadow: Boolean = false) {
+    OdinFont.wrappedText(text, x, y, w, color, size, type, shadow = shadow)
 }
 
 fun wrappedTextBounds(text: String, width: Float, size: Float): Pair<Float, Float> {

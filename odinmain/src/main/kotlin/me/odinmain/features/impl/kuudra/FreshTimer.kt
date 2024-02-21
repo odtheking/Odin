@@ -31,7 +31,7 @@ object FreshTimer : Module(
     private val hud: HudElement by HudSetting("Fresh tools timer", 10f, 10f, 1f, true) {
         if (it) {
             text("Fresh Tools§f: 9s", 1f, 9f, freshTimerHUDColor, 12f, OdinFont.REGULAR, shadow = true)
-            getTextWidth("Fresh Tools: 10§8ms", 12f) + 2f to 16f
+            getTextWidth("Fresh Tools: 10s", 12f) + 2f to 16f
         } else {
             val player = KuudraUtils.kuudraTeammates.find { teammate -> teammate.playerName == mc.thePlayer.name } ?: return@HudSetting 0f to 0f
             val timeLeft = 10000L - (System.currentTimeMillis() - player.eatFreshTime)

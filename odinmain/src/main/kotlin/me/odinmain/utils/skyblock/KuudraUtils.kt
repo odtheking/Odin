@@ -15,6 +15,7 @@ import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.monster.EntityGiantZombie
 import net.minecraft.entity.monster.EntityMagmaCube
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.util.Vec3
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -27,6 +28,7 @@ object KuudraUtils {
     var builders = 0
     var build = 0
     var phase = 0
+    var buildingPiles = mutableListOf<Vec3>()
 
     data class KuudraPlayer(val playerName: String, var eatFresh: Boolean = false, var eatFreshTime: Long = 0, val entity: EntityPlayer? = null)
     @SubscribeEvent
@@ -95,6 +97,8 @@ object KuudraUtils {
                 if (x == -94 && z == -106) supplies[4] = false
                 if (x == -106 && z == -99) supplies[5] = false
             }
+
+            buildingPiles = mc.theWorld.loadedEntityList.filter { it is EntityArmorStand && it.name.contains("PUNCH") }.map { it.positionVector } as MutableList<Vec3>
 
         }.register()
     }

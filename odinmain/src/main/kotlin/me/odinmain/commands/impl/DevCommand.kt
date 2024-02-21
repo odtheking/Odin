@@ -136,9 +136,8 @@ object DevCommand : Commodore {
 
             literal("test").runs {
                 modMessage("Test")
-                PlayerUtils.alert("Test")
+                //test
             }
-
 
         }
 }

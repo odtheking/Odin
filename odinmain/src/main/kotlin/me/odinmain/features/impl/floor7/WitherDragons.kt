@@ -48,8 +48,8 @@ object WitherDragons : Module(
         if (it) {
             if (timerBackground) roundedRectangle(1f, 1f, getTextWidth("Purple spawning in 4500ms", 12f) + 1f, 32f, Color.DARK_GRAY.withAlpha(.75f), 3f)
 
-            text("§5Purple spawning in §a4500ms", 2f, 10f, Color.WHITE, 12f, OdinFont.REGULAR)
-            text("§cRed spawning in §e1200ms", 2f, 26f, Color.WHITE, 12f, OdinFont.REGULAR)
+            text("§5Purple spawning in §a4500ms", 2f, 10f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
+            text("§cRed spawning in §e1200ms", 2f, 26f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
             max(
                 getTextWidth("Purple spawning in 4500ms", 12f),
                 getTextWidth("Red spawning in 1200ms", 12f)
@@ -58,7 +58,7 @@ object WitherDragons : Module(
             if (!dragonTimer) return@HudSetting 0f to 0f
             var width = 0f
             DragonTimer.toRender.forEachIndexed { index, triple ->
-                text(triple.first, 1f, 9f + index * 17f, Color.WHITE, 12f, OdinFont.REGULAR)
+                text(triple.first, 1f, 9f + index * 17f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
                 width = max(width, getTextWidth(triple.first.noControlCodes, 19f))
             }
             roundedRectangle(1f, 1f, width + 2f, DragonTimer.toRender.size * 12f, Color.DARK_GRAY.withAlpha(.75f), 4f)

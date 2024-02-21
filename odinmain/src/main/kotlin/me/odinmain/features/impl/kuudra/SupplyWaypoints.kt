@@ -9,8 +9,6 @@ import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.skyblock.KuudraUtils
-import me.odinmain.utils.skyblock.modMessage
-import net.minecraftforge.client.event.RenderWorldEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.cos
@@ -24,13 +22,15 @@ object SupplyWaypoints : Module(
     private val suppliesWaypoints: Boolean by BooleanSetting("Supplies Waypoints", true, description = "Renders the supply waypoints")
     private val supplyWaypointColor: Color by ColorSetting("Supply Waypoint Color", Color.YELLOW, true, description = "Color of the supply waypoints").withDependency { suppliesWaypoints }
     private val supplyDropWaypoints: Boolean by BooleanSetting("Supply Drop Waypoints", true, description = "Renders the supply drop waypoints")
+    private val unfinishedWaypoints: Boolean by BooleanSetting("Unfinished Waypoints", true, description = "Renders the unfinished piles waypoints")
     @SubscribeEvent
     fun onWorldRender(event: RenderWorldLastEvent) {
-        if (supplyDropWaypoints && KuudraUtils.phase == 1) renderSupplyDrop()
-        if (suppliesWaypoints && KuudraUtils.phase == 1) renderGiantZombies()
+        if (supplyDropWaypoints && KuudraUtils.phase == 1) renderDropLocations()
+        if (suppliesWaypoints && KuudraUtils.phase == 1) renderSupplyWaypoints()
+        if (unfinishedWaypoints) renderUnfinishedWaypoints()
     }
 
-    private fun renderGiantZombies() {
+    private fun renderSupplyWaypoints() {
         KuudraUtils.giantZombies.forEach {
             val yaw = it.rotationYaw
             RenderUtils.renderCustomBeacon(
@@ -40,7 +40,7 @@ object SupplyWaypoints : Module(
         }
     }
 
-    private fun renderSupplyDrop() {
+    private fun renderDropLocations() {
         if (KuudraUtils.supplies[0])
             RenderUtils.renderCustomBeacon("", -98.0, 78.0, -112.0, if (missing == "Shop") Color.GREEN else Color.RED) // shop
 
@@ -58,5 +58,11 @@ object SupplyWaypoints : Module(
 
         if (KuudraUtils.supplies[5])
             RenderUtils.renderCustomBeacon("", -106.0, 78.0, -99.0, if (missing == "Slash") Color.GREEN else Color.RED) // slash
+    }
+
+    private fun renderUnfinishedWaypoints() {
+        KuudraUtils.buildingPiles.forEach {
+            RenderUtils.renderCustomBeacon("Unfinished", it.xCoord.toDouble(), it.yCoord.toDouble(), it.zCoord.toDouble(), Color.RED, true)
+        }
     }
 }

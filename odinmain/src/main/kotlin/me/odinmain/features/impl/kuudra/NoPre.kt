@@ -6,6 +6,7 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.KuudraUtils
+import me.odinmain.utils.skyblock.KuudraUtils.giantZombies
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.partyMessage
@@ -51,20 +52,11 @@ object NoPre : Module(
                 }
             }
             message.contains("[NPC] Elle: Not again!") -> {
-                val xs = mutableListOf<Double>()
-                val zs = mutableListOf<Double>()
                 var pre = false
                 var second = false
                 var msg = ""
-                KuudraUtils.giantZombies.forEach { giant ->
-                    val yaw = giant.rotationYaw
-                    val x = giant.posX + (3.7 * cos((yaw + 130) * (Math.PI / 180)))
-                    val z = giant.posZ + (3.7 * sin((yaw + 130) * (Math.PI / 180)))
-                    xs.add(x)
-                    zs.add(z)
-                }
-                xs.forEachIndexed { index, supply ->
-                    val supplyLoc = Vec3(supply, 76.0, zs[index])
+                giantZombies.forEach { supply ->
+                    val supplyLoc = Vec3(supply.posX, 76.0, supply.posZ)
                     when {
                         preLoc.distanceTo(supplyLoc) < 18 -> pre = true
                         preSpot == "Triangle" && shop.distanceTo(supplyLoc) < 18 -> second = true

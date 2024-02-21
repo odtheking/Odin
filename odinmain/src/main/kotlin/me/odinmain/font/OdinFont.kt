@@ -46,7 +46,7 @@ object OdinFont {
         return fontRenderer.getStringHeight(text, size)
     }
 
-    fun wrappedText(text: String, x: Float, y: Float, w: Float, color: Color, size: Float, type: Int = REGULAR) {
+    fun wrappedText(text: String, x: Float, y: Float, w: Float, color: Color, size: Float, type: Int = REGULAR, shadow: Boolean = false) {
         if (color.isTransparent) return
 
         val words = text.split(" ")
@@ -55,14 +55,14 @@ object OdinFont {
 
         for (word in words) {
             if (getTextWidth(line + word, size) > w) {
-                text(line, x, currentHeight, color, size, type = type)
+                text(line, x, currentHeight, color, size, type = type, shadow = shadow)
                 line = "$word "
-                currentHeight += getTextHeight(line, size + 6)
+                currentHeight += getTextHeight(line, size + 7)
             }
             else line += "$word "
 
         }
-        text(line, x, currentHeight , color, size, type = type)
+        text(line, x, currentHeight , color, size, type = type, shadow = shadow)
     }
 
     fun wrappedTextBounds(text: String, width: Float, size: Float): Pair<Float, Float> {

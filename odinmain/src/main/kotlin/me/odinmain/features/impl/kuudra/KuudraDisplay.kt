@@ -72,10 +72,10 @@ object KuudraDisplay : Module(
         val kuudraPos = kuudraEntity.positionVector
         if (kuudraSpawnAlert && kuudraHP in 24900f..25000f) {
             when {
-                kuudraPos.xCoord < -128 -> "RIGHT"
-                kuudraPos.xCoord > -72 -> "LEFT"
-                kuudraPos.zCoord > -84 -> "FRONT"
-                kuudraPos.zCoord < -132 -> "BACK"
+                kuudraPos.xCoord < -128 -> "§c§lRIGHT"
+                kuudraPos.xCoord > -72 -> "§2§lFRONT"
+                kuudraPos.zCoord > -84 -> "§a§lLEFT"
+                kuudraPos.zCoord < -132 -> "§4§lBACK"
                 else -> null
             }?.let {
                 PlayerUtils.alert(it, playSound = false)
