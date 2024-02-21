@@ -45,7 +45,7 @@ function onClick() {
             if (Array.isArray(data) && data.length > 0) {
                 const imageUrl = data[0].url;
 
-                var image = document.getElementById('cat');
+                const image = document.getElementById('cat');
                 image.src = imageUrl;
 
                 // Now you can use the imageUrl variable in your code as needed.
@@ -75,7 +75,7 @@ function parseReadmeContent(content) {
     for (const line of lines) {
         if (line.startsWith('Category')) {
             // Extract the category name and store it
-            if (currentCategory == 'Skyblock' && line == 'Category: Dungeons') {
+            if (currentCategory === 'Skyblock' && line === 'Category: Dungeons') {
                 isCheaterCategory = true;
             }
             currentCategory = line.replace('Category: ', '');

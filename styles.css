@@ -379,18 +379,16 @@ color: #8b8b8b; /* Darken the font color */
 
 .module-list-legit {
   display: grid;
-  grid-template-columns: repeat(5, minmax(20%, 0.1fr)); /* Adjust the percentage as needed */
+  grid-template-columns: repeat(5, minmax(15%, 0.1fr)); /* Adjust the percentage as needed */
   justify-content: center;
   padding: 1em;
   gap: 2em;
   margin-bottom: 200px;
 }
 
-
-
 .module-list-cheater {
   display: grid;
-  grid-template-columns: repeat(5, minmax(20%, 0.1fr)); /* Adjust the percentage as needed */
+  grid-template-columns: repeat(5, minmax(15%, 0.1fr)); /* Adjust the percentage as needed */
   justify-content: center;
   padding: 1em;
   gap: 2em;
