@@ -1,12 +1,12 @@
-var currentPage = window.location.href.split('/').pop();
-var legitElement = document.getElementById('legit');
-var cheaterElement = document.getElementById('cheater');
+let currentPage = window.location.href.split('/').pop();
+let legitElement = document.getElementById('legit');
+let cheaterElement = document.getElementById('cheater');
 
 
 document.addEventListener("DOMContentLoaded", function () {
-    var currentPage = window.location.href.split('/').pop();
-    var legitElement = document.getElementById('legit');
-    var cheaterElement = document.getElementById('cheater');
+    let currentPage = window.location.href.split('/').pop();
+    let legitElement = document.getElementById('legit');
+    let cheaterElement = document.getElementById('cheater');
     if (legitElement) {
         legitElement.addEventListener('click', function() {
             if (currentPage === 'cheater' || currentPage === 'legit') {
