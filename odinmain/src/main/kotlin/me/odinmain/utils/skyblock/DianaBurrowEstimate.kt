@@ -52,7 +52,6 @@ object DianaBurrowEstimate {
 
         DianaHelper.burrowsRender[burrow.location] = burrow.getType()
         burrow.found = true
-
     }
 
 

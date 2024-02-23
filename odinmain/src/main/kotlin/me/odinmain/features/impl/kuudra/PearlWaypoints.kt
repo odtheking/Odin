@@ -90,7 +90,7 @@ object PearlWaypoints : Module(
             lineup.lineups.forEach {
                 if (!closest && hideFarWaypoints) return@forEach
 
-                if (lineup.startPos == setOf(BlockPos(-141, 78, -91)) && blockNameMap[NoPre.missing] != it) return@forEach
+                if (lineup.startPos == setOf(BlockPos(-141, 78, -91)) && NoPre.missing != "" && blockNameMap[NoPre.missing] != it) return@forEach
 
                 RenderUtils.drawFilledBox(it.toAABB(), color, true)
             }

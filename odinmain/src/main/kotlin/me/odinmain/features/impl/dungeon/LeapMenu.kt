@@ -90,7 +90,7 @@ object LeapMenu : Module(
             Gui.drawScaledCustomSizeModalRect(30, 30, 8f, 8f, 8, 8, 240, 240, 64f, 64f)
 
             text(it.name, 265f, 155f, if (!colorStyle) it.clazz.color else Color.DARK_GRAY, 48f)
-            text(it.clazz.name, 270f, 210f, Color.WHITE, 30f)
+            text(it.clazz.name, 270f, 210f, Color.WHITE, 30f, shadow = true)
             rectangleOutline(30, 30, 240, 240, color, 25f, 15f, 100f)
 
             GlStateManager.disableAlpha()

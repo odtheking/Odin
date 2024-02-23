@@ -4,6 +4,7 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.impl.kuudra.FreshTimer
+import me.odinmain.features.impl.kuudra.NoPre
 import me.odinmain.utils.ServerUtils.getPing
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
@@ -38,6 +39,7 @@ object KuudraUtils {
         supplies = BooleanArray(6) { true }
         giantZombies = mutableListOf()
         kuudraEntity = EntityMagmaCube(mc.theWorld)
+        NoPre.missing = ""
     }
 
     @SubscribeEvent
@@ -72,7 +74,7 @@ object KuudraUtils {
 
 
     init {
-        Executor(1000) {
+        Executor(333) {
             val entities = mc.theWorld.loadedEntityList
             giantZombies = entities.filter { it is EntityGiantZombie && it.heldItem.toString() == "1xitem.skull@3" } as MutableList<EntityGiantZombie>
             kuudraEntity = entities.filter { it is EntityMagmaCube && it.slimeSize == 30 && it.getEntityAttribute(SharedMonsterAttributes.maxHealth).baseValue.toFloat() == 100000f }[0] as EntityMagmaCube

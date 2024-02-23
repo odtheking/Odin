@@ -82,7 +82,7 @@ object OdinMain {
             TermsimCommand,
             WaypointCommand,
             BlacklistCommand,
-            Soopy
+            SoopyCommand
         )
 
         OdinFont.init()

@@ -298,6 +298,13 @@ fun Vec3.subtractVec(x: Number = .0, y: Number = .0, z: Number = .0): Vec3 {
     return this.addVector(-x.toDouble(), -y.toDouble(), -z.toDouble())
 }
 
+/**
+ * Adds the given coordinates to the Vec3.
+ */
+fun Vec3i.addVec(x: Number = .0, y: Number = .0, z: Number = .0): Vec3i {
+    return this.addVec(x.toDouble(), y.toDouble(), z.toDouble())
+}
+
 
 /**
  * Floors every coordinate of a Vec3 and turns it into a Vec3i.

@@ -78,7 +78,7 @@ object DianaHelper : Module(
     fun onChat(event: ChatPacketEvent) {
         DianaBurrowEstimate.chat(event)
 
-        if(!event.message.contains("You dug out ") || !event.message.contains("Inquis") || !enabled || !sendInqMsg) return
+        if(!event.message.endsWith("Minos Inquisitor!") || !enabled || !sendInqMsg) return
 
         partyMessage("x: ${PlayerUtils.posX.floor().toInt()}, y: ${PlayerUtils.posY.floor().toInt()}, z: ${PlayerUtils.posZ.floor().toInt()}")
         PlayerUtils.alert("§6§lInquisitor!")
@@ -107,7 +107,7 @@ object DianaHelper : Module(
             if (tracer)
                 RenderUtils.draw3DLine(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), guess.addVec(.5, .5, .5), tracerColor, tracerWidth, depth = false)
 
-            RenderUtils.renderCustomBeacon("§6Guess${warpLocation?.displayName ?: ""}§r", guess, guessColor)
+            RenderUtils.renderCustomBeacon("§6Guess${warpLocation?.displayName ?: ""}§r", guess, guessColor, increase = true)
         }
 
         val burrowsRenderCopy = burrowsRender.toMap()

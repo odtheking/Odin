@@ -35,20 +35,23 @@ object NoPre : Module(
         when {
             message.contains("[NPC] Elle: Head over to the main platform, I will join you when I get a bite!") -> {
                 val player = mc.thePlayer
-                preSpot = when {
-                    player.getDistance(-67.5, 77.0, -122.5) < 15 -> "Triangle"
-                    player.getDistance(-142.5, 77.0, -151.0) < 30 -> "X"
-                    player.getDistance(-65.5, 76.0, -87.5) < 15 -> "Equals"
-                    player.getDistance(-113.5, 77.0, -68.5) < 15 -> "Slash"
-                    else -> ""
-                }
-
-                preLoc = when (preSpot) {
-                    "Triangle" -> Vec3(-67.5, 77.0, -122.5)
-                    "X" -> Vec3(-142.5, 77.0, -151.0)
-                    "Equals" -> Vec3(-65.5, 76.0, -87.5)
-                    "Slash" -> Vec3(-113.5, 77.0, -68.5)
-                    else -> Vec3(0.0, 0.0, 0.0)
+                when {
+                    player.getDistance(-67.5, 77.0, -122.5) < 15 -> {
+                        preSpot = "Triangle"
+                        preLoc = Vec3(-67.5, 77.0, -122.5)
+                    }
+                    player.getDistance(-142.5, 77.0, -151.0) < 15 -> {
+                        preSpot = "X"
+                        preLoc = Vec3(-142.5, 77.0, -151.0)
+                    }
+                    player.getDistance(-65.5, 76.0, -87.5) < 15 -> {
+                        preSpot = "Equals"
+                        preLoc = Vec3(-65.5, 76.0, -87.5)
+                    }
+                    player.getDistance(-113.5, 77.0, -68.5) < 15 -> {
+                        preSpot = "Slash"
+                        preLoc = Vec3(-113.5, 77.0, -68.5)
+                    }
                 }
             }
             message.contains("[NPC] Elle: Not again!") -> {

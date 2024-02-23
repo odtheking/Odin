@@ -29,11 +29,11 @@ object Splits : Module(
     description = "Splits for phases of Kuudra.",
     category = Category.KUUDRA
 ) {
-    private val t1PB = +NumberSetting("T1 PB", 99.0, increment = 0.01, hidden = true)
-    private val t2PB = +NumberSetting("T2 PB", 99.0, increment = 0.01, hidden = true)
-    private val t3sPB = +NumberSetting("T3 PB", 99.0, increment = 0.01, hidden = true)
-    private val t4PB = +NumberSetting("T4 PB", 99.0, increment = 0.01, hidden = true)
-    private val t5PB = +NumberSetting("T5 PB", 99.0, increment = 0.01, hidden = true)
+    private val t1PB = +NumberSetting("T1 PB", 999.0, increment = 0.01, hidden = true)
+    private val t2PB = +NumberSetting("T2 PB", 999.0, increment = 0.01, hidden = true)
+    private val t3sPB = +NumberSetting("T3 PB", 999.0, increment = 0.01, hidden = true)
+    private val t4PB = +NumberSetting("T4 PB", 999.0, increment = 0.01, hidden = true)
+    private val t5PB = +NumberSetting("T5 PB", 999.0, increment = 0.01, hidden = true)
     private val sendPB: Boolean by BooleanSetting("Send PB", true, description = "Sends a message when a new PB is achieved")
     private val splitsColor: Color by ColorSetting("Splits Color", Color.CYAN)
 
@@ -70,7 +70,6 @@ object Splits : Module(
         }
     }
 
-
     private val splits = longArrayOf(0L, 0L, 0L, 0L, 0L)
 
     private fun getSplitTimes(): Pair<List<Long>, Int> {
@@ -90,12 +89,15 @@ object Splits : Module(
         return times to current
     }
 
-    enum class KuudraTiers(val value: NumberSetting<Double>) {
-        T1(t1PB),
-        T2(t2PB),
-        T3s(t3sPB),
-        T4(t4PB),
-        T5(t5PB)
+    enum class KuudraTiers(
+        val pbTime: NumberSetting<Double>,
+        val tierName: String
+    ) {
+        T1(t1PB, "T1"),
+        T2(t2PB, "T2"),
+        T3s(t3sPB, "T3s"),
+        T4(t4PB, "T4"),
+        T5(t5PB, "T5")
     }
 
     @SubscribeEvent
@@ -113,11 +115,11 @@ object Splits : Module(
             else -> {
                 if (event.message.contains("KUUDRA DOWN!")) {
                     splits[4] = System.currentTimeMillis()
-                    val oldPB = KuudraTiers.valueOf("T${LocationUtils.kuudraTier}").value.value
+                    val oldPB = KuudraTiers.entries.find { it.tierName == "T${LocationUtils.kuudraTier}" }?.pbTime?.value ?: 999.0
                     val time = (splits[4] - splits[0]) / 1000.0
                     if (time < oldPB) {
                         if(sendPB) modMessage("§fNew best time for §6T${LocationUtils.kuudraTier} Kuudra §fis §a${time}s, §fold best time was §a${oldPB}s")
-                        KuudraTiers.valueOf("T${LocationUtils.kuudraTier}").value.value = time.round(2)
+                        KuudraTiers.entries.find { it.tierName == "T${LocationUtils.kuudraTier}" }?.pbTime?.value = time.round(2)
                         Config.saveConfig()
                     }
                 }
