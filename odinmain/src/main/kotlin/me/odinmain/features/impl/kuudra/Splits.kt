@@ -5,12 +5,12 @@ import me.odinmain.config.Config
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.impl.dungeon.PuzzleSolvers
+import me.odinmain.features.impl.dungeon.WaterSolver
 import me.odinmain.features.impl.floor7.p3.TerminalTimes
 import me.odinmain.features.impl.floor7.p3.TerminalTimes.unaryPlus
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.HudSetting
-import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.features.settings.Setting.Companion.withDependency
+import me.odinmain.features.settings.impl.*
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.ui.util.getTextWidth
@@ -31,11 +31,14 @@ object Splits : Module(
 ) {
     private val t1PB = +NumberSetting("T1 PB", 999.0, increment = 0.01, hidden = true)
     private val t2PB = +NumberSetting("T2 PB", 999.0, increment = 0.01, hidden = true)
-    private val t3sPB = +NumberSetting("T3 PB", 999.0, increment = 0.01, hidden = true)
+    private val t3PB = +NumberSetting("T3 PB", 999.0, increment = 0.01, hidden = true)
     private val t4PB = +NumberSetting("T4 PB", 999.0, increment = 0.01, hidden = true)
     private val t5PB = +NumberSetting("T5 PB", 999.0, increment = 0.01, hidden = true)
     private val sendPB: Boolean by BooleanSetting("Send PB", true, description = "Sends a message when a new PB is achieved")
     private val splitsColor: Color by ColorSetting("Splits Color", Color.CYAN)
+    val reset: () -> Unit by ActionSetting("Send PBs", description = "Sends your current PBs.") {
+        modMessage("§fT1: §a${t1PB.value}s §fT2: §a${t2PB.value}s §fT3s: §a${t3PB.value}s §fT4: §a${t4PB.value}s §fT5: §a${t5PB.value}s")
+    }
 
     private val lines = listOf(
         "Supplies§f: ",
@@ -95,7 +98,7 @@ object Splits : Module(
     ) {
         T1(t1PB, "T1"),
         T2(t2PB, "T2"),
-        T3s(t3sPB, "T3s"),
+        T3s(t3PB, "T3s"),
         T4(t4PB, "T4"),
         T5(t5PB, "T5")
     }
@@ -116,10 +119,16 @@ object Splits : Module(
                 if (event.message.contains("KUUDRA DOWN!")) {
                     splits[4] = System.currentTimeMillis()
                     val oldPB = KuudraTiers.entries.find { it.tierName == "T${LocationUtils.kuudraTier}" }?.pbTime?.value ?: 999.0
-                    val time = (splits[4] - splits[0]) / 1000.0
-                    if (time < oldPB) {
-                        if(sendPB) modMessage("§fNew best time for §6T${LocationUtils.kuudraTier} Kuudra §fis §a${time}s, §fold best time was §a${oldPB}s")
-                        KuudraTiers.entries.find { it.tierName == "T${LocationUtils.kuudraTier}" }?.pbTime?.value = time.round(2)
+                    val (times, current) = getSplitTimes()
+                    for (i in 0..4) {
+                        val duration = formatTime(times[i])
+                        modMessage("§8${lines[i]}§7$duration")
+                    }
+                    val totalTime = times[4]
+
+                    if (totalTime < oldPB) {
+                        if(sendPB) modMessage("§fNew best time for §6T${LocationUtils.kuudraTier} Kuudra §fis §a${totalTime}s, §fold best time was §a${oldPB}s")
+                        KuudraTiers.entries.find { it.tierName == "T${LocationUtils.kuudraTier}" }?.pbTime?.value = totalTime.toDouble().round(2)
                         Config.saveConfig()
                     }
                 }
@@ -145,7 +154,7 @@ object Splits : Module(
             if (it > 0) "${it}m " else ""
         }
         val seconds = (remaining / 1000f).let {
-            "%.1fs".format(it)
+            "%.2fs".format(it)
         }
         return "$hours$minutes$seconds"
     }

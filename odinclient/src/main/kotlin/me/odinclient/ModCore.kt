@@ -60,9 +60,9 @@ class ModCore {
     @EventHandler
     fun loadComplete(event: FMLLoadCompleteEvent) {
         val modules: ArrayList<Module> = arrayListOf(
-            AutoGFS, AutoIceFill, AutoLeap, AutoMask, AutoSell, AutoUlt, AutoWish, CancelInteract, CancelChestOpen, GhostPick, MapModule, SecretHitboxes, SwapStonk,
+            AutoGFS, AutoIceFill, AutoSell, CancelInteract, CancelChestOpen, GhostPick, MapModule, SecretHitboxes, SwapStonk,
             Arrows, ArrowAlign, CancelWrongTerms, HoverTerms, LeversTriggerbot, SimonSays,
-            DioriteFucker, RelicAura, /*RelicPlacer,*/ Trajectories, Ghosts, NoCarpet, NoDebuff, LockCursor,
+            DioriteFucker, RelicAura, Trajectories, Ghosts, NoCarpet, NoDebuff, LockCursor,
             CookieClicker, AutoExperiments, FarmingHitboxes, NoBlock, TermAC, Triggerbot, GhostBlock, FreezeGame, AbilityKeybind, EtherWarpHelper, ChestEsp, NoBreakReset,
             /*AutoTerms,*/
         )

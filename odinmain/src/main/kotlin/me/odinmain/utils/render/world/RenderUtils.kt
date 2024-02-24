@@ -448,7 +448,7 @@ object RenderUtils {
         renderCustomBeacon(title, pos.xCoord, pos.yCoord, pos.zCoord, color, increase = increase)
     }
 
-    fun renderCustomBeacon(title: String, x: Double, y: Double, z: Double, color: Color, beacon: Boolean = true, increase: Boolean = false) {
+    fun renderCustomBeacon(title: String, x: Double, y: Double, z: Double, color: Color, beacon: Boolean = true, increase: Boolean = true, noFade: Boolean = false) {
         val distX = x - mc.renderManager.viewerPosX
         val distY = y - mc.renderManager.viewerPosY - mc.renderViewEntity.eyeHeight
         val distZ = z - mc.renderManager.viewerPosZ
@@ -465,7 +465,7 @@ object RenderUtils {
             depthTest = false,
             if(increase) 5f else 0.05f
         )
-        val a = min(1f, max(0f, dist.toFloat()) / 60f)
+        val a = if (noFade) 255f else min(1f, max(0f, dist.toFloat()) / 60f)
         if (beacon) renderBeaconBeam(floor(x), .0, floor(z), color, a, true)
     }
 

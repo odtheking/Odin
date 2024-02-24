@@ -39,7 +39,6 @@ object KuudraUtils {
         supplies = BooleanArray(6) { true }
         giantZombies = mutableListOf()
         kuudraEntity = EntityMagmaCube(mc.theWorld)
-        NoPre.missing = ""
     }
 
     @SubscribeEvent
@@ -74,7 +73,7 @@ object KuudraUtils {
 
 
     init {
-        Executor(333) {
+        Executor(100) {
             val entities = mc.theWorld.loadedEntityList
             giantZombies = entities.filter { it is EntityGiantZombie && it.heldItem.toString() == "1xitem.skull@3" } as MutableList<EntityGiantZombie>
             kuudraEntity = entities.filter { it is EntityMagmaCube && it.slimeSize == 30 && it.getEntityAttribute(SharedMonsterAttributes.maxHealth).baseValue.toFloat() == 100000f }[0] as EntityMagmaCube

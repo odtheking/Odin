@@ -73,8 +73,8 @@ object KuudraDisplay : Module(
         if (kuudraSpawnAlert && kuudraHP in 24900f..25000f) {
             when {
                 kuudraPos.xCoord < -128 -> "§c§lRIGHT"
-                kuudraPos.xCoord > -72 -> "§2§lFRONT"
-                kuudraPos.zCoord > -84 -> "§a§lLEFT"
+                kuudraPos.xCoord > -72 -> "§2§lLEFT"
+                kuudraPos.zCoord > -84 -> "§a§lFRONT"
                 kuudraPos.zCoord < -132 -> "§4§lBACK"
                 else -> null
             }?.let {

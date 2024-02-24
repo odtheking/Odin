@@ -25,6 +25,10 @@ object NoPre : Module(
     private val shop = Vec3(-81.0, 76.0, -143.0)
     private val xCannon = Vec3(-143.0, 76.0, -125.0)
     private val square = Vec3(-143.0, 76.0, -80.0)
+    private val triangle = Vec3(-67.5, 77.0, -122.5)
+    private val X = Vec3(-142.5, 77.0, -151.0)
+    private val equals = Vec3(-65.5, 76.0, -87.5)
+    private val slash = Vec3(-113.5, 77.0, -68.5)
     private var preSpot = ""
     var missing = ""
     private var preLoc = Vec3(0.0, 0.0, 0.0)
@@ -34,25 +38,26 @@ object NoPre : Module(
         val message = event.message
         when {
             message.contains("[NPC] Elle: Head over to the main platform, I will join you when I get a bite!") -> {
-                val player = mc.thePlayer
+                val playerLocation = mc.thePlayer.positionVector
                 when {
-                    player.getDistance(-67.5, 77.0, -122.5) < 15 -> {
+                    triangle.distanceTo(playerLocation) < 15 -> {
                         preSpot = "Triangle"
-                        preLoc = Vec3(-67.5, 77.0, -122.5)
+                        preLoc = triangle
                     }
-                    player.getDistance(-142.5, 77.0, -151.0) < 15 -> {
+                    X.distanceTo(playerLocation) < 30 -> {
                         preSpot = "X"
-                        preLoc = Vec3(-142.5, 77.0, -151.0)
+                        preLoc = X
                     }
-                    player.getDistance(-65.5, 76.0, -87.5) < 15 -> {
+                    equals.distanceTo(playerLocation) < 15 -> {
                         preSpot = "Equals"
-                        preLoc = Vec3(-65.5, 76.0, -87.5)
+                        preLoc = equals
                     }
-                    player.getDistance(-113.5, 77.0, -68.5) < 15 -> {
+                    slash.distanceTo(playerLocation) < 15 -> {
                         preSpot = "Slash"
-                        preLoc = Vec3(-113.5, 77.0, -68.5)
+                        preLoc = slash
                     }
                 }
+                modMessage("Pre-spot: $preSpot at ${preLoc.xCoord.toInt()}, ${preLoc.zCoord.toInt()}")
             }
             message.contains("[NPC] Elle: Not again!") -> {
                 var pre = false
@@ -80,7 +85,7 @@ object NoPre : Module(
                     msg = "No $location!"
                 }
                 partyMessage(msg)
-                PlayerUtils.alert(msg)
+                PlayerUtils.alert(msg, time = 30)
             }
             message.startsWith("Party >") && message.contains(": No")  -> {
                 missing = message.split("No ")[1].split("!")[0]

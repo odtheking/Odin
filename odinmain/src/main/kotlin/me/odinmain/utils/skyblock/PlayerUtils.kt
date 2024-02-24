@@ -44,6 +44,10 @@ object PlayerUtils {
         gui.displayTitle(null, null, fadeIn, time, fadeOut)
     }
 
+    fun dropItem() {
+        mc.thePlayer.dropOneItem(false)
+    }
+
     inline val posX get() = mc.thePlayer.posX
     inline val posY get() = mc.thePlayer.posY
     inline val posZ get() = mc.thePlayer.posZ

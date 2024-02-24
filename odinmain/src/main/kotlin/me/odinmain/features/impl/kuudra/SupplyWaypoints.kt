@@ -35,34 +35,34 @@ object SupplyWaypoints : Module(
             val yaw = it.rotationYaw
             RenderUtils.renderCustomBeacon(
                 "Supply", x = it.posX + (3.7 * cos((yaw + 130) * (Math.PI / 180))),
-                y = 72.0, it.posZ + (3.7 * sin((yaw + 130) * (Math.PI / 180))), supplyWaypointColor, true
+                y = 72.0, it.posZ + (3.7 * sin((yaw + 130) * (Math.PI / 180))), supplyWaypointColor, true, increase = false
             )
         }
     }
 
     private fun renderDropLocations() {
         if (KuudraUtils.supplies[0])
-            RenderUtils.renderCustomBeacon("", -98.0, 78.0, -112.0, if (missing == "Shop") Color.GREEN else Color.RED) // shop
+            RenderUtils.renderCustomBeacon("", -98.0, 78.0, -112.0, if (missing == "Shop") Color.GREEN else Color.RED, increase = false) // shop
 
         if (KuudraUtils.supplies[1])
-            RenderUtils.renderCustomBeacon("", -98.0, 78.0, -99.0, if (missing == "Equals") Color.GREEN else Color.RED) // equals
+            RenderUtils.renderCustomBeacon("", -98.0, 78.0, -99.0, if (missing == "Equals") Color.GREEN else Color.RED, increase = false) // equals
 
         if (KuudraUtils.supplies[2])
-            RenderUtils.renderCustomBeacon("", -110.0, 78.0, -106.0, if (missing == "X Cannon") Color.GREEN else Color.RED) // cannon
+            RenderUtils.renderCustomBeacon("", -110.0, 78.0, -106.0, if (missing == "X Cannon") Color.GREEN else Color.RED, increase = false) // cannon
 
         if (KuudraUtils.supplies[3])
-            RenderUtils.renderCustomBeacon("", -106.0, 78.0, -112.0, if (missing == "X") Color.GREEN else Color.RED) // x
+            RenderUtils.renderCustomBeacon("", -106.0, 78.0, -112.0, if (missing == "X") Color.GREEN else Color.RED, increase = false) // x
 
         if (KuudraUtils.supplies[4])
-            RenderUtils.renderCustomBeacon("", -94.0, 78.0, -106.0, if (missing == "Triangle") Color.GREEN else Color.RED) // tri
+            RenderUtils.renderCustomBeacon("", -94.0, 78.0, -106.0, if (missing == "Triangle") Color.GREEN else Color.RED, increase = false) // tri
 
         if (KuudraUtils.supplies[5])
-            RenderUtils.renderCustomBeacon("", -106.0, 78.0, -99.0, if (missing == "Slash") Color.GREEN else Color.RED) // slash
+            RenderUtils.renderCustomBeacon("", -106.0, 78.0, -99.0, if (missing == "Slash") Color.GREEN else Color.RED, increase = false) // slash
     }
 
     private fun renderUnfinishedWaypoints() {
         KuudraUtils.buildingPiles.forEach {
-            RenderUtils.renderCustomBeacon("Unfinished", it.xCoord.toDouble(), it.yCoord.toDouble(), it.zCoord.toDouble(), Color.RED, true)
+            RenderUtils.renderCustomBeacon("Unfinished", it.xCoord.toDouble(), it.yCoord.toDouble(), it.zCoord.toDouble(), Color.RED, true, noFade = true, increase = false)
         }
     }
 }

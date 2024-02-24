@@ -31,7 +31,8 @@ import org.lwjgl.input.Keyboard
 object ClickGUIModule: Module(
     "Click Gui",
     Keyboard.KEY_RSHIFT,
-    category = Category.RENDER
+    category = Category.RENDER,
+    description = "Allows you to customize the GUI."
 ) {
     val blur: Boolean by BooleanSetting("Blur", false, description = "Toggles the background blur for the gui.")
     val enableNotification: Boolean by BooleanSetting("Enable notifications", true, description = "Shows you a notification in chat when you toggle an option with a keybind")

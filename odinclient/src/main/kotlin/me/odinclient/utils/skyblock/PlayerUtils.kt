@@ -31,10 +31,6 @@ object PlayerUtils {
         KeyBinding.onTick(mc.gameSettings.keyBindAttack.keyCode) // Simple way of making completely sure the left-clicks are sent at the same time as vanilla ones.
     }
 
-    fun dropItem() {
-        mc.thePlayer.dropOneItem(false)
-    }
-
     fun dropAll() {
         mc.thePlayer.dropOneItem(true)
     }

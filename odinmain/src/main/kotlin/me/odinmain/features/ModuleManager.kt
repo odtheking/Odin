@@ -17,6 +17,8 @@ import me.odinmain.features.impl.skyblock.*
 import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.ui.hud.HudElement
+import me.odinmain.ui.util.getTextWidth
+import me.odinmain.utils.capitalizeFirst
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.profile
 import net.minecraft.network.Packet
@@ -188,4 +190,20 @@ object ModuleManager {
     }
 
     fun getModuleByName(name: String): Module? = modules.firstOrNull { it.name.equals(name, true) }
+
+    fun generateReadme(): String {
+        val moduleList = modules.sortedByDescending { getTextWidth(it.name, 18f) }
+        val categories = moduleList.groupBy { it.category }
+        val readme = StringBuilder()
+
+        for ((category, modulesInCategory) in categories) {
+            val displayName = category.name.capitalizeFirst()
+            readme.appendLine("Category: ${if (displayName == "Floor7") "Floor 7" else displayName}")
+            for (module in modulesInCategory) {
+                readme.appendLine("- ${module.name}: ${module.description}")
+            }
+            readme.appendLine()
+        }
+        return readme.toString()
+    }
 }

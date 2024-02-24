@@ -46,8 +46,6 @@
         private val thickness: Float by NumberSetting("Outline Thickness", 5f, 1f, 20f, 0.5f).withDependency { mode != 1 }
         private val cancelHurt: Boolean by BooleanSetting("Cancel Hurt", true).withDependency { mode != 1 }
 
-
-
         val renderThrough: Boolean get() = if (onLegitVersion) false else xray
 
         var currentEntities = mutableSetOf<Entity>()
@@ -118,7 +116,6 @@
         private fun checkStarred(entity: Entity) {
             if (entity !is EntityArmorStand || !entity.name.startsWith("§6✯ ") || !entity.name.endsWith("§c❤") || entity in currentEntities) return
             currentEntities.add(getMobEntity(entity) ?: return)
-
         }
 
         private fun getMobEntity(entity: Entity): Entity? {
@@ -127,20 +124,6 @@
                 .minByOrNull { entity.getDistanceToEntity(it) }
                 .takeIf { !(it is EntityWither && it.isInvisible) }
         }
-
-        private val dungeonMobSpawns = setOf(
-            "Lurker",
-            "Dreadlord",
-            "Souleater",
-            "Zombie",
-            "Skeleton",
-            "Skeletor",
-            "Sniper",
-            "Super Archer",
-            "Spider",
-            "Fels",
-            "Withermancer"
-        )
     }
 
 

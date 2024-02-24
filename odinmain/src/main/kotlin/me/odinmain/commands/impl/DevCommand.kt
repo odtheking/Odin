@@ -7,7 +7,10 @@ import me.odinmain.OdinMain.scope
 import me.odinmain.commands.CommandNode
 import me.odinmain.commands.Commodore
 import me.odinmain.events.impl.ChatPacketEvent
+import me.odinmain.features.ModuleManager
+import me.odinmain.features.ModuleManager.generateReadme
 import me.odinmain.features.impl.dungeon.TPMaze
+import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.features.impl.render.DevPlayers.devs
 import me.odinmain.features.impl.render.DevPlayers.isDev
@@ -21,6 +24,8 @@ import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.sendCommand
 import net.minecraft.util.ChatComponentText
 import net.minecraftforge.common.MinecraftForge
+import java.awt.Toolkit
+import java.awt.datatransfer.StringSelection
 
 object DevCommand : Commodore {
 
@@ -134,10 +139,18 @@ object DevCommand : Commodore {
                 writeToClipboard(core.toString(), "Copied $core to clipboard!")
             }
 
-            literal("test").runs {
-                modMessage("Test")
-                //test
+            literal("generatereadme").runs {
+                val readmeContent = generateReadme()
+
+                val clipboard = Toolkit.getDefaultToolkit().systemClipboard
+                val stringSelection = StringSelection(readmeContent)
+                clipboard.setContents(stringSelection, null)
+                modMessage("§aCopied readme to clipboard!")
+                println("Copied readme to clipboard!")
             }
 
+            literal("test").runs {
+                modMessage("Test")
+            }
         }
 }

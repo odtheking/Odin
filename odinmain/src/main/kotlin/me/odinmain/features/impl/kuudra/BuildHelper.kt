@@ -49,9 +49,9 @@ object BuildHelper : Module(
     @SubscribeEvent
     fun renderWorldEvent(event: RenderWorldLastEvent) {
         if (KuudraUtils.phase != 2) return
-        if (stunNotification && KuudraUtils.build > stunNotificationNumber) PlayerUtils.alert("Go to stun", playSound = false)
-        if (buildHelperDraw) RenderUtils.drawStringInWorld("Build ${KuudraUtils.build}%", Vec3(102.5, 85.0, -106.5), buildHelperColor.rgba, false, false, scale = 0.2f)
-        if (buildHelperDraw) RenderUtils.drawStringInWorld("${KuudraUtils.builders} builders", Vec3(102.5, 80.0, -106.5), buildHelperColor.rgba, false, false, scale = 0.3f)
+        if (stunNotification && KuudraUtils.build > stunNotificationNumber) PlayerUtils.alert("§lGo to stun", playSound = false, color = Color.CYAN)
+        if (buildHelperDraw) RenderUtils.drawStringInWorld("Build ${colorBuild(KuudraUtils.build)}%", Vec3(102.5, 85.0, -106.5), buildHelperColor.rgba, false, false, scale = 0.2f)
+        if (buildHelperDraw) RenderUtils.drawStringInWorld("Builders ${colorBuild(KuudraUtils.build)}", Vec3(102.5, 80.0, -106.5), buildHelperColor.rgba, false, false, scale = 0.3f)
     }
 
     private fun colorBuild(build: Int): String {
