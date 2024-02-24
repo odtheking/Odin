@@ -14,7 +14,7 @@ import net.minecraftforge.client.event.RenderLivingEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object TeammatesHighlight : Module(
-    "Teammate Highlight ",
+    "Teammate Highlight",
     category = Category.DUNGEON,
     description = "Enhances visibility of your dungeon teammates and their name tags."
 ) {

@@ -24,7 +24,7 @@ import org.lwjgl.opengl.GL11
 object ChestEsp : Module(
     name = "Chest Esp",
     category = Category.RENDER,
-    description = "Renders chams or the bounding box for all chests"
+    description = "Renders chams or the bounding box for all chests."
 ) {
 
     private val onlyDungeon: Boolean by BooleanSetting(name = "Only Dungeon")

@@ -20,12 +20,12 @@ import net.minecraft.util.BlockPos
 object CancelInteract : Module(
     name = "Cancel Interact",
     category = Category.SKYBLOCK,
-    description = "Cancels the interaction with certain blocks, so that the item can be used instead. " +
+    description = "Cancels the interaction with certain blocks, so that the item can be used instead. " /*+
             "The following rules will be followed in that priority: " +
             "Will never cancel interaction with chests, levers, buttons. " +
             "Will always cancel interactions with pearls. " +
             "Will cancel interaction with blacklisted blocks. This can be limited to only take place when holding an " +
-            "item with ability."
+            "item with ability."*/
 ){
     private val onlyWithAbility: Boolean by BooleanSetting("Only Ability", false, description = "Check whether the item has an ability before cancelling interactions.")
 

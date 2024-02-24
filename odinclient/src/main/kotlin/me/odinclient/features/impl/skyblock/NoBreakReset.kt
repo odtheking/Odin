@@ -13,7 +13,7 @@ import net.minecraft.util.BlockPos
 object NoBreakReset : Module(
     name = "No Break Reset",
     category = Category.SKYBLOCK,
-    description = "Prevents lore updates from resetting your breaking progress"
+    description = "Prevents lore updates from resetting your breaking progress."
 
 ) {
     @JvmStatic

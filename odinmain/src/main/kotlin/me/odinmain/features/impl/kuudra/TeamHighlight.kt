@@ -20,7 +20,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object TeamHighlight : Module(
     name = "Team Highlight",
-    description = "Highlights your teammates in Kuudra",
+    description = "Highlights your teammates in Kuudra.",
     category = Category.KUUDRA
 ) {
     private val playerOutline: Boolean by BooleanSetting("Player Outline", true, description = "Outlines the player")

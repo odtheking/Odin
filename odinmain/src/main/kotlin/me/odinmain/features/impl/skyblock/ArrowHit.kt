@@ -18,7 +18,7 @@ import net.minecraft.network.play.server.S29PacketSoundEffect
 object ArrowHit : Module(
     name = "Arrow hit",
     category = Category.SKYBLOCK,
-    description = "Counts how many arrows you hit in certain time periods",
+    description = "Counts how many arrows you hit in certain time periods.",
 ) {
     private val resetOnNumber: Boolean by BooleanSetting("Reset on number", false, description = "Reset the arrow count after a certain number of arrows")
     private val resetCount: String by StringSetting("Reset count", 999999.toString(), 16).withDependency { resetOnNumber }

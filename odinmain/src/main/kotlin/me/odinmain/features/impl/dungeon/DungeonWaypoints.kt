@@ -27,7 +27,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
  */
 object DungeonWaypoints : Module(
     name = "Dungeon Waypoints",
-    description = "Shows waypoints for dungeons",
+    description = "Shows waypoints for dungeons.",
     category = Category.DUNGEON,
     tag = TagType.NEW
 ) {

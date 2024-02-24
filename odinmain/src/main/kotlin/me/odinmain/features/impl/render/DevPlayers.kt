@@ -26,7 +26,7 @@ import kotlin.math.sin
 
 
 object DevPlayers {
-    var devs: HashMap<String, DevPlayer> = HashMap()
+    private var devs: HashMap<String, DevPlayer> = HashMap()
     val isDev get() = devs.containsKey(mc.session?.username)
 
     data class DevPlayer(val xScale: Float = 1f, val yScale: Float = 1f, val zScale: Float = 1f,

@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object VanqNotifier: Module(
     name = "Vanq Notifier",
-    description = "Notifies you when a vanquisher is nearby",
+    description = "Notifies you when a vanquisher is nearby.",
     category = Category.KUUDRA
 ) {
     private val playSound: Boolean by BooleanSetting("Play Sound", true, description = "Plays a sound when a vanquisher spawns")
