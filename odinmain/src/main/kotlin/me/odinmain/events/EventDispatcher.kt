@@ -2,7 +2,10 @@ package me.odinmain.events
 
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.scope
-import me.odinmain.events.impl.*
+import me.odinmain.events.impl.ChatPacketEvent
+import me.odinmain.events.impl.GuiLoadedEvent
+import me.odinmain.events.impl.ReceivePacketEvent
+import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.noControlCodes

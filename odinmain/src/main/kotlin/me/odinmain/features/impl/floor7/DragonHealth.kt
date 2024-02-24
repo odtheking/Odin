@@ -4,8 +4,6 @@ import me.odinmain.utils.addVec
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.render.world.RenderUtils.renderVec
-import me.odinmain.utils.skyblock.modMessage
-import net.minecraft.entity.SharedMonsterAttributes
 import net.minecraft.entity.boss.EntityDragon
 import net.minecraftforge.client.event.RenderLivingEvent
 

@@ -13,7 +13,6 @@ import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.fetchURLData
 import me.odinmain.utils.skyblock.PlayerUtils.posX
 import me.odinmain.utils.skyblock.PlayerUtils.posY
 import me.odinmain.utils.skyblock.PlayerUtils.posZ

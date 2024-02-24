@@ -1,21 +1,14 @@
 package me.odinmain.features.impl.kuudra
 
-import me.odinmain.OdinMain
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.utils.noControlCodes
-import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.KuudraUtils.giantZombies
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.partyMessage
-import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.util.Vec3
-import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import kotlin.math.cos
-import kotlin.math.sin
 
 object NoPre : Module(
     name = "Pre-Spot Alert",

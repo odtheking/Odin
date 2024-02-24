@@ -14,13 +14,9 @@ import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.render.world.RenderUtils.drawBoxOutline
 import me.odinmain.utils.render.world.RenderUtils.renderBoundingBox
 import me.odinmain.utils.round
-import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.KuudraUtils.kuudraEntity
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.PlayerUtils
-import me.odinmain.utils.skyblock.modMessage
-import net.minecraft.entity.SharedMonsterAttributes
-import net.minecraftforge.client.event.RenderWorldEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent

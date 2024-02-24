@@ -2,16 +2,17 @@
     package me.odinmain.features.impl.render
 
     import me.odinmain.OdinMain.onLegitVersion
-    import me.odinmain.config.MiscConfig
     import me.odinmain.config.MiscConfig.espList
     import me.odinmain.events.impl.PostEntityMetadata
     import me.odinmain.events.impl.RenderEntityModelEvent
     import me.odinmain.features.Category
     import me.odinmain.features.Module
     import me.odinmain.features.settings.Setting.Companion.withDependency
-    import me.odinmain.features.settings.impl.*
+    import me.odinmain.features.settings.impl.BooleanSetting
+    import me.odinmain.features.settings.impl.ColorSetting
+    import me.odinmain.features.settings.impl.NumberSetting
+    import me.odinmain.features.settings.impl.SelectorSetting
     import me.odinmain.utils.ServerUtils.getPing
-    import me.odinmain.utils.getLook
     import me.odinmain.utils.getPositionEyes
     import me.odinmain.utils.render.Color
     import me.odinmain.utils.render.world.OutlineUtils
@@ -20,8 +21,6 @@
     import me.odinmain.utils.render.world.RenderUtils.renderX
     import me.odinmain.utils.render.world.RenderUtils.renderY
     import me.odinmain.utils.render.world.RenderUtils.renderZ
-    import me.odinmain.utils.skyblock.devMessage
-    import me.odinmain.utils.skyblock.modMessage
     import net.minecraft.entity.Entity
     import net.minecraft.entity.boss.EntityWither
     import net.minecraft.entity.item.EntityArmorStand
