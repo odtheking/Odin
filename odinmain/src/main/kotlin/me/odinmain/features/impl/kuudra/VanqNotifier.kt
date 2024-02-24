@@ -17,13 +17,14 @@ object VanqNotifier: Module(
     category = Category.KUUDRA
 ) {
     private val playSound: Boolean by BooleanSetting("Play Sound", true, description = "Plays a sound when a vanquisher spawns")
+    private val showText: Boolean by BooleanSetting("Show Text", true, description = "Shows a message when a vanquisher spawns")
     private val ac: Boolean by BooleanSetting("All Chat", false, description = "Sends the message to all chat")
     private val pc: Boolean by BooleanSetting("Party Chat", true, description = "Sends the message to party chat")
     @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
         if (event.message != "A Vanquisher is spawning nearby!") return
         modMessage("Vanquisher has spawned!")
-        PlayerUtils.alert("§5Vanquisher has spawned!", playSound = playSound)
+        PlayerUtils.alert("§5Vanquisher", playSound = playSound, displayText = showText)
 
         if (ac) allMessage("x: ${PlayerUtils.posX.floor()}, y: ${PlayerUtils.posY.floor()}, z: ${PlayerUtils.posZ.floor()}")
         if (pc) partyMessage("x: ${PlayerUtils.posX.floor()}, y: ${PlayerUtils.posY.floor()}, z: ${PlayerUtils.posZ.floor()}")

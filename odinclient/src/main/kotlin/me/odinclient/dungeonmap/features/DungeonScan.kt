@@ -5,10 +5,10 @@ import me.odinclient.features.impl.dungeon.MapModule
 import me.odinclient.utils.skyblock.dungeon.map.ScanUtils.getCore
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.dungeon.*
 import me.odinmain.utils.skyblock.dungeon.ScanUtils.getRoomData
 import me.odinmain.utils.skyblock.getChatBreak
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
 

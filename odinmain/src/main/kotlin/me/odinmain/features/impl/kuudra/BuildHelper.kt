@@ -30,14 +30,16 @@ object BuildHelper : Module(
         if (it) {
             text("Build §c50§8%", 1f, 9f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
             text("Builders §e2", 1f, 24f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
+            text("Freshers: §e1", 1f, 39f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
 
-            getTextWidth("4Build 50%", 12f) + 2f to 34f
+            getTextWidth("4Build 50%", 12f) + 2f to 42f
         } else {
             if (KuudraUtils.phase != 2) return@HudSetting 0f to 0f
             text("Build ${colorBuild(KuudraUtils.build)}§8%", 1f, 9f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
             text("Builders ${colorBuilders(KuudraUtils.builders)}", 1f,  24f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
+            text("Freshers: ${colorBuilders(KuudraUtils.kuudraTeammates.filter { it.eatFresh }.size)}", 1f, 39f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
 
-            getTextWidth("4Build 50%", 12f) + 2f to 34f
+            getTextWidth("4Build 50%", 12f) + 2f to 42f
         }
     }
     private val stunNotification: Boolean by BooleanSetting("Stun Notification", true, description = "Notifies you when to go to stun")
