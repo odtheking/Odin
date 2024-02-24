@@ -395,7 +395,7 @@ color: #8b8b8b; /* Darken the font color */
 }
 
 /* Style for category headers */
-.category-Dungeons {
+.category-Dungeon {
   font-size: 30px; /* Change the font size as needed */
   font-weight: bold; /* You can set font weight as needed */
   color: #0066cc; /* Change the color as needed */
@@ -403,6 +403,7 @@ color: #8b8b8b; /* Darken the font color */
   user-select: none;
   text-align: center;
   justify-content: center;
+  font-family: "Inter Semi Bold", serif;
 }
 
 .category-Floor7 {
@@ -412,6 +413,7 @@ color: #8b8b8b; /* Darken the font color */
   position: relative;
   user-select: none;
   text-align: center;
+  font-family: "Inter Semi Bold", serif;
 }
 
 .category-Kuudra {
@@ -421,6 +423,7 @@ color: #8b8b8b; /* Darken the font color */
     position: relative;
     user-select: none;
     text-align: center;
+  font-family: "Inter Semi Bold", serif;
 }
 
 .category-Render {
@@ -430,6 +433,7 @@ color: #8b8b8b; /* Darken the font color */
   position: relative;
   user-select: none;
   text-align: center;
+  font-family: "Inter Semi Bold", serif;
 }
 
 .category-Skyblock {
@@ -439,8 +443,7 @@ color: #8b8b8b; /* Darken the font color */
   position: relative;
   user-select: none;
   text-align: center;
-
-
+  font-family: "Inter Semi Bold", serif
 }
 
 /* Style for module names */
@@ -449,6 +452,7 @@ color: #8b8b8b; /* Darken the font color */
   font-weight: bold; /* You can set font weight as needed */
   color: #ffffff; /* Change the color as needed */
   transition: font-size 0.2s ease; /* Add a smooth transition effect */
+  font-family: Inter, serif;
 
   /* Add other font-related properties if necessary */
 }
@@ -463,7 +467,7 @@ color: #8b8b8b; /* Darken the font color */
   font-size: 17px; /* Change the font size as needed */
   font-weight: lighter; /* You can set font weight as needed */
   color: #ffffff9a; /* Change the color as needed */
-  
+  font-family: Inter, serif;
 }
 
 
