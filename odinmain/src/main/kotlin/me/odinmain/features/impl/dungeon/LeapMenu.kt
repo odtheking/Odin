@@ -145,10 +145,12 @@ object LeapMenu : Module(
         leapHelperClearChatEvent(event)
         leapHelperBossChatEvent(event)
     }
+
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
         worldLoad()
     }
+
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
         getPlayer(event)
