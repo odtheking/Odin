@@ -107,7 +107,8 @@ object ModuleManager {
         TeamHighlight,
         VanqNotifier,
         KuudraReminders,
-        Splits
+        Splits,
+        OutlineItemEntity
     )
 
 

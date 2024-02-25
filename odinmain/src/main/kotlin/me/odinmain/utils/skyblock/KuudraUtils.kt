@@ -2,6 +2,7 @@ package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.ChatPacketEvent
+import me.odinmain.features.impl.kuudra.NoPre
 import me.odinmain.utils.ServerUtils.getPing
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
@@ -19,7 +20,7 @@ import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object KuudraUtils {
-    var kuudraTeammates = ArrayList<KuudraPlayer>()
+    var kuudraTeammates = mutableSetOf<KuudraPlayer>()
     var giantZombies: MutableList<EntityGiantZombie> = mutableListOf()
     var supplies = BooleanArray(6) { true }
     var kuudraEntity: EntityMagmaCube = EntityMagmaCube(mc.theWorld)
@@ -28,14 +29,15 @@ object KuudraUtils {
     var phase = 0
     var buildingPiles = mutableListOf<Vec3>()
 
-    data class KuudraPlayer(val playerName: String, var eatFresh: Boolean = false, var eatFreshTime: Long = 0, val entity: EntityPlayer? = null)
+    data class KuudraPlayer(val playerName: String, var eatFresh: Boolean = false, var eatFreshTime: Long = 0, var entity: EntityPlayer? = null)
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
         phase = 0
-        kuudraTeammates = ArrayList()
+        kuudraTeammates = mutableSetOf()
         supplies = BooleanArray(6) { true }
         giantZombies = mutableListOf()
         kuudraEntity = EntityMagmaCube(mc.theWorld)
+        NoPre.missing = ""
     }
 
     @SubscribeEvent
@@ -98,12 +100,15 @@ object KuudraUtils {
 
             buildingPiles = entities.filter { it is EntityArmorStand && it.name.contains("PUNCH") }.map { it.positionVector } as MutableList<Vec3>
 
+            kuudraTeammates.forEach {
+                it.entity = mc.theWorld.getPlayerEntityByName(it.playerName)
+            }
         }.register()
     }
 
     @SubscribeEvent
     fun worldJoinEvent(event: EntityJoinWorldEvent) {
-        if (event.entity is EntityOtherPlayerMP && event.entity.getPing() == 1 && !event.entity.isInvisible)
+        if (event.entity is EntityOtherPlayerMP && event.entity.getPing() == 1 && !event.entity.isInvisible && !kuudraTeammates.any{ it.playerName == event.entity.name })
             kuudraTeammates.add(KuudraPlayer((event.entity as EntityOtherPlayerMP).name, false, 0, event.entity as EntityOtherPlayerMP))
     }
 }

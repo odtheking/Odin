@@ -2,12 +2,12 @@ package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.noControlCodes
+import me.odinmain.utils.render.Color
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import java.awt.Color
 
 /**
  * Returns the ExtraAttribute Compound

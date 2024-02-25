@@ -4,7 +4,7 @@
     import me.odinmain.OdinMain.onLegitVersion
     import me.odinmain.config.MiscConfig.espList
     import me.odinmain.events.impl.PostEntityMetadata
-    import me.odinmain.events.impl.RenderEntityModelEvent
+    import me.odinmain.events.impl.RenderEntityOutlineEvent
     import me.odinmain.features.Category
     import me.odinmain.features.Module
     import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -15,7 +15,6 @@
     import me.odinmain.utils.ServerUtils.getPing
     import me.odinmain.utils.getPositionEyes
     import me.odinmain.utils.render.Color
-    import me.odinmain.utils.render.world.OutlineUtils
     import me.odinmain.utils.render.world.RenderUtils
     import me.odinmain.utils.render.world.RenderUtils.renderVec
     import me.odinmain.utils.render.world.RenderUtils.renderX
@@ -64,18 +63,18 @@
         }
 
         @SubscribeEvent
-        fun onRenderEntityModel(event: RenderEntityModelEvent) {
+        fun onRenderEntityModel(event: RenderEntityOutlineEvent) {
             if (mode != 0) return
-            if (event.entity !in currentEntities) return
-            if (!mc.thePlayer.canEntityBeSeen(event.entity) && !renderThrough) return
 
-            OutlineUtils.outlineEntity(
-                event,
-                thickness,
-                color,
-                cancelHurt
-            )
+            if (event.type !== RenderEntityOutlineEvent.Type.XRAY) return
+            event.queueEntitiesToOutline { getMob(it) }
         }
+
+        private fun getMob(entity: Entity): Int? {
+            if (entity !in currentEntities) return null
+            return color.rgba
+        }
+
 
         @SubscribeEvent
         fun onRenderWorldLast(event: RenderWorldLastEvent) {

@@ -1,13 +1,12 @@
 package me.odinclient.features.impl.render
 
-import me.odinmain.events.impl.RenderEntityModelEvent
+import me.odinmain.events.impl.RenderEntityOutlineEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.world.OutlineUtils
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.render.world.RenderUtils.renderX
 import me.odinmain.utils.render.world.RenderUtils.renderY
@@ -222,18 +221,17 @@ object Trajectories : Module(
     }
 
     @SubscribeEvent
-    fun onRenderModel(event: RenderEntityModelEvent) {
-        if (event.entity !in entityRenderQueue) return
-        if (!mc.thePlayer.canEntityBeSeen(event.entity)) return
-        if (!bows || mc.thePlayer?.heldItem?.item !is ItemBow) return
-        if(event.entity is EntityBlaze && DungeonUtils.inDungeons) return
+    fun onRenderModel(event: RenderEntityOutlineEvent) {
+        if (event.type !== RenderEntityOutlineEvent.Type.XRAY) return
 
-        OutlineUtils.outlineEntity(
-            event,
-            thickness,
-            color,
-            false
-        )
+        event.queueEntitiesToOutline { entity -> getMob(entity) }
+    }
+
+    private fun getMob(entity: Entity): Int? {
+        if (entity !in entityRenderQueue) return null
+        if (!bows || mc.thePlayer?.heldItem?.item !is ItemBow) return null
+        if (entity is EntityBlaze && DungeonUtils.inDungeons) return null
+        return color.rgba
     }
 
     private fun hypot(x: Double, y: Double, d: Double): Double = sqrt(x * x + y * y + d * d)

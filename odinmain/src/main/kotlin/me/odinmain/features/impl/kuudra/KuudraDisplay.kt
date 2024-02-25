@@ -90,7 +90,7 @@ object KuudraDisplay : Module(
         }
         val health = kuudraHP / 1000
         val useScaled = kuudraHP <= 25000 && scaledHealth && LocationUtils.kuudraTier == 5
-
+        //modMessage(LocationUtils.kuudraTier)
         return when {
             // Scaled
             useScaled -> "$color${(health * 12).round(2)}M§7/§a300M §c❤"

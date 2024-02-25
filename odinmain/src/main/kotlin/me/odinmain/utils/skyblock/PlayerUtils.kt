@@ -34,7 +34,7 @@ object PlayerUtils {
      */
     fun alert(title: String, time: Int = 60, color: Color = Color.WHITE, playSound: Boolean = true, displayText: Boolean = true) {
         if (playSound) playLoudSound("note.pling", 100f, 1f)
-        RenderUtils.displayTitle(if(displayText) title else "", time, color = color)
+        if (displayText) RenderUtils.displayTitle(title , time, color = color)
     }
 
     fun showTitle(title: String, subtitle: String, fadeIn: Int, time: Int, fadeOut: Int) {

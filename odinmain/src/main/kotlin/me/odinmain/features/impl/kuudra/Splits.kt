@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.kuudra
 
-import me.odinmain.config.Config
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -31,15 +30,7 @@ object Splits : Module(
     val reset: () -> Unit by ActionSetting("Send PBs", description = "Sends your current PBs.") {
         modMessage("§fT1: §a${t1PB.value}s §fT2: §a${t2PB.value}s §fT3s: §a${t3PB.value}s §fT4: §a${t4PB.value}s §fT5: §a${t5PB.value}s")
     }
-    val action: () -> Unit by ActionSetting("Reset PBs", description = "Resets your PBs.") {
-        t1PB.value = 999.0
-        t2PB.value = 999.0
-        t3PB.value = 999.0
-        t4PB.value = 999.0
-        t5PB.value = 999.0
-        modMessage("§fT1: §a999s §fT2: §a999s §fT3s: §a999s §fT4: §a999s §fT5: §a999s")
-        Config.saveConfig()
-    }
+
 
     private val lines = listOf(
         "Supplies§f: ",
@@ -125,12 +116,12 @@ object Splits : Module(
                         val duration = formatTime(times[i])
                         modMessage("§8${lines[i]}§7$duration")
                     }
-                    val totalTime = times[4]
+                    val totalTime = times[4] / 1000.0
+
                     if (totalTime < 1) return
                     if (totalTime < oldPB) {
                         if(sendPB) modMessage("§fNew best time for §6T${LocationUtils.kuudraTier} Kuudra §fis §a${totalTime}s, §fold best time was §a${oldPB}s")
                         KuudraTiers.entries.find { it.tierName == "T${LocationUtils.kuudraTier}" }?.pbTime?.value = totalTime.toDouble().round(2)
-                        Config.saveConfig()
                     }
                 }
                 else if (event.message.contains("DEFEAT")) splits[4] = System.currentTimeMillis()

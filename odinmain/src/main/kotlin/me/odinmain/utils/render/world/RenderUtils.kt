@@ -144,6 +144,13 @@ object RenderUtils {
     val Entity.renderVec: Vec3
         get() = Vec3(renderX, renderY, renderZ)
 
+    fun exactLocation(entity: Entity, partialTicks: Float): Vec3 {
+        val x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks
+        val y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks
+        val z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks
+        return Vec3(x, y, z)
+    }
+
 
     /**
      * Gets the rendered position of an entity as a `Vec3d`.

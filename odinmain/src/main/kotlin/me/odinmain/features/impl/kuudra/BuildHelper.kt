@@ -32,13 +32,12 @@ object BuildHelper : Module(
             text("Builders §e2", 1f, 24f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
             text("Freshers: §e1", 1f, 39f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
 
-            getTextWidth("4Build 50%", 12f) + 2f to 42f
+            getTextWidth("4Build 50%", 12f) + 2f to 48f
         } else {
             if (KuudraUtils.phase != 2) return@HudSetting 0f to 0f
             text("Build ${colorBuild(KuudraUtils.build)}§8%", 1f, 9f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
             text("Builders ${colorBuilders(KuudraUtils.builders)}", 1f,  24f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
-            text("Freshers: ${colorBuilders(KuudraUtils.kuudraTeammates.filter { it.eatFresh }.size)}", 1f, 39f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
-
+            text("Freshers: ${colorBuilders(KuudraUtils.kuudraTeammates.filter { teammate -> teammate.eatFresh }.size)}", 1f, 39f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
             getTextWidth("4Build 50%", 12f) + 2f to 42f
         }
     }
@@ -49,8 +48,8 @@ object BuildHelper : Module(
     fun renderWorldEvent(event: RenderWorldLastEvent) {
         if (KuudraUtils.phase != 2) return
         if (stunNotification && KuudraUtils.build > stunNotificationNumber) PlayerUtils.alert("§lGo to stun", playSound = false, color = Color.CYAN)
-        if (buildHelperDraw) RenderUtils.drawStringInWorld("Build ${colorBuild(KuudraUtils.build)}%", Vec3(102.5, 85.0, -106.5), buildHelperColor.rgba, false, false, scale = 0.2f)
-        if (buildHelperDraw) RenderUtils.drawStringInWorld("Builders ${colorBuild(KuudraUtils.build)}", Vec3(102.5, 80.0, -106.5), buildHelperColor.rgba, false, false, scale = 0.3f)
+        if (buildHelperDraw) RenderUtils.drawStringInWorld("Build ${colorBuild(KuudraUtils.build)}%", Vec3(-101.5, 84.0, -105.5), buildHelperColor.rgba, false, false, scale = 0.15f, depthTest = false)
+        if (buildHelperDraw) RenderUtils.drawStringInWorld("Builders ${colorBuild(KuudraUtils.build)}", Vec3(-101.5, 81.0, -105.5), buildHelperColor.rgba, false, false, scale = 0.2f, depthTest = false)
     }
 
     private fun colorBuild(build: Int): String {

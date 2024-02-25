@@ -50,7 +50,7 @@ object NoPre : Module(
                         preLoc = slash
                     }
                 }
-                modMessage("Pre-spot: $preSpot at ${preLoc.xCoord.toInt()}, ${preLoc.zCoord.toInt()}")
+                modMessage("Pre-spot: $preSpot at ${preLoc.xCoord}, ${preLoc.yCoord}, ${preLoc.zCoord}")
             }
             message.contains("[NPC] Elle: Not again!") -> {
                 var pre = false

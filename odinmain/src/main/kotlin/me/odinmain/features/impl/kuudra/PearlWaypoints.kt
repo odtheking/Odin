@@ -4,8 +4,8 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.render.world.RenderUtils.drawBoxOutline
+import me.odinmain.utils.render.world.RenderUtils.drawFilledBox
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.toAABB
 import net.minecraft.util.BlockPos
@@ -65,7 +65,7 @@ object PearlWaypoints : Module(
         ) to Color(0, 0, 255)
     )
 
-    val blockNameMap = hashMapOf(
+    private val blockNameMap = hashMapOf(
         "Cannon" to BlockPos(-110, 155, -106),
         "X" to BlockPos(-46, 120, -150),
         "Shop" to BlockPos(-46, 135, -139),
@@ -87,10 +87,10 @@ object PearlWaypoints : Module(
 
             lineup.lineups.forEach {
                 if (!closest && hideFarWaypoints) return@forEach
+                if (NoPre.missing == "") return@forEach drawFilledBox(it.toAABB(), color, true)
+                if (lineup.startPos == setOf(BlockPos(-141, 78, -91)) && blockNameMap[NoPre.missing] != it) return@forEach
 
-                if (lineup.startPos == setOf(BlockPos(-141, 78, -91)) && NoPre.missing != "" && blockNameMap[NoPre.missing] != it) return@forEach
-
-                RenderUtils.drawFilledBox(it.toAABB(), color, true)
+                drawFilledBox(it.toAABB(), color, true)
             }
             closest = false
         }
