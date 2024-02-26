@@ -27,7 +27,7 @@ object SupplyWaypoints : Module(
     fun onWorldRender(event: RenderWorldLastEvent) {
         if (supplyDropWaypoints && KuudraUtils.phase == 1) renderDropLocations()
         if (suppliesWaypoints && KuudraUtils.phase == 1) renderSupplyWaypoints()
-        if (unfinishedWaypoints) renderUnfinishedWaypoints()
+        if (unfinishedWaypoints && KuudraUtils.phase == 2) renderUnfinishedWaypoints()
     }
 
     private fun renderSupplyWaypoints() {

@@ -24,7 +24,7 @@ object BuildHelper : Module(
     description = "Helps you to build the ballista in Kuudra.",
     category = Category.KUUDRA
 ) {
-    private val buildHelperDraw: Boolean by BooleanSetting("Build Helper Draw", false, description = "Draws the build helper")
+    private val buildHelperDraw: Boolean by BooleanSetting("Render on Ballista", false, description = "Draws the build helper")
     private val buildHelperColor: Color by ColorSetting("Build Helper Color", Color.ORANGE, description = "Color of the build helper")
     private val hud: HudElement by HudSetting("Build helper", 10f, 10f, 1f, true) {
         if (it) {
@@ -42,7 +42,7 @@ object BuildHelper : Module(
         }
     }
     private val stunNotification: Boolean by BooleanSetting("Stun Notification", true, description = "Notifies you when to go to stun")
-    private val stunNotificationNumber: Int by NumberSetting("Stun Notification Number", 93, 0.0, 100.0, description = "The build % to notify at").withDependency { stunNotification }
+    private val stunNotificationNumber: Int by NumberSetting("Stun Notification %", 93, 0.0, 100.0, description = "The build % to notify at").withDependency { stunNotification }
 
     @SubscribeEvent
     fun renderWorldEvent(event: RenderWorldLastEvent) {

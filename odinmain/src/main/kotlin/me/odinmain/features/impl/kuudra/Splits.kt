@@ -1,6 +1,8 @@
 package me.odinmain.features.impl.kuudra
 
+import me.odinmain.config.Config
 import me.odinmain.events.impl.ChatPacketEvent
+import me.odinmain.events.impl.ReceivePacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
@@ -8,10 +10,12 @@ import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.ui.util.getTextWidth
 import me.odinmain.ui.util.text
+import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.round
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.modMessage
+import net.minecraft.network.play.server.S02PacketChat
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -30,9 +34,24 @@ object Splits : Module(
     private val t5StunPB = +NumberSetting("T5 Stun PB", 999.0, increment = 0.01, hidden = true)
     private val t5KillPB = +NumberSetting("T5 Kill PB", 999.0, increment = 0.01, hidden = true)
     private val sendPB: Boolean by BooleanSetting("Send PB", true, description = "Sends a message when a new PB is achieved")
+    private val sendSupplyTime: Boolean by BooleanSetting("Send Supply Time", true, description = "Sends a message when a supply is collected")
     private val splitsColor: Color by ColorSetting("Splits Color", Color.CYAN)
     val reset: () -> Unit by ActionSetting("Send PBs", description = "Sends your current PBs.") {
-        modMessage("§fT1: §a${t1PB.value}s §fT2: §a${t2PB.value}s §fT3s: §a${t3PB.value}s §fT4: §a${t4PB.value}s §fT5: §a${t5PB.value}s")
+           modMessage(
+               """§8List of PBs:
+        §fT1: §a${t1PB.value.round(2)}s
+        §fT2: §a${t2PB.value.round(2)}s 
+        §fT3s: §a${t3PB.value.round(2)}s
+        §fT4: §a${t4PB.value.round(2)}s
+            """.trimMargin())
+           modMessage(
+               """§8List of T5 PBs:
+        §fSupplies: §a${t5SupplyPB.value.round(2)}s
+        §fBuild: §a${t5BuildPB.value.round(2)}s
+        §fStun: §a${t5StunPB.value.round(2)}s
+        §fKill: §a${t5KillPB.value.round(2)}s
+        §fTotal: §a${t5PB.value.round(2)}s
+            """.trimMargin())
     }
 
 
@@ -115,51 +134,70 @@ object Splits : Module(
         when (event.message) {
             "[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!" -> {
                 splits[0] = System.currentTimeMillis()
-
             }
 
             "[NPC] Elle: OMG! Great work collecting my supplies!" -> {
                 splits[1] = System.currentTimeMillis()
+                if (LocationUtils.kuudraTier != 5) return
 
                 val oldPB = t5PBs.entries.find { it.splitName == "Supplies" }?.pbTime?.value ?: 999.0
                 val timeP1 = splits[1] - splits[0]
-                if (timeP1 < 1) return
-                if (timeP1 < oldPB)
-                    if (sendPB) modMessage("§8Supplies§7: §a${formatTime(splits[1] - splits[0])}")
+                modMessage("§6Supplies Took§7: §a${formatTime(timeP1)}")
+                if (timeP1 / 1000 < 1) return
+                if (timeP1 / 1000 < oldPB) {
+                    if (sendPB) modMessage("New best time for §6T5 Supplies §fis §a${formatTime(timeP1)}, §fold best time was §a${oldPB}s")
+                    t5PBs.entries.find { it.splitName == "Supplies" }?.pbTime?.value = timeP1 / 1000.0
+                    Config.saveConfig()
+                }
             }
 
             "[NPC] Elle: Phew! The Ballista is finally ready! It should be strong enough to tank Kuudra's blows now!" -> {
                 splits[2] = System.currentTimeMillis()
+                if (LocationUtils.kuudraTier != 5) return
 
                 val oldPB = t5PBs.entries.find { it.splitName == "Build" }?.pbTime?.value ?: 999.0
                 val timeP2 = splits[2] - splits[1]
-                if (timeP2 < 1) return
-                if (timeP2 < oldPB)
-                    if (sendPB) modMessage("§8Build§7: §a${formatTime(splits[2] - splits[1])}")
+                modMessage("§6Build Took§7: §a${formatTime(timeP2)}")
+                if (timeP2 / 1000 < 1) return
+                if (timeP2 / 1000 < oldPB){
+                    if (sendPB) modMessage("New best time for §6T5 Build §fis §a${formatTime(timeP2)}, §fold best time was §a${oldPB}s")
+                    t5PBs.entries.find { it.splitName == "Build" }?.pbTime?.value = timeP2 / 1000.0
+                    Config.saveConfig()
+                }
             }
 
             "[NPC] Elle: POW! SURELY THAT'S IT! I don't think he has any more in him!" -> {
                 splits[3] = System.currentTimeMillis()
+                if (LocationUtils.kuudraTier != 5) return
 
                 val oldPB = t5PBs.entries.find { it.splitName == "Stun" }?.pbTime?.value ?: 999.0
                 val timeP3 = splits[3] - splits[2]
-                if (timeP3 < 1) return
-                if (timeP3 < oldPB)
-                    if (sendPB) modMessage("§8Fuel/Stun§7: §a${formatTime(splits[3] - splits[2])}")
+                modMessage("§6Fuel/Stun Took§7: §a${formatTime(timeP3)}")
+                if (timeP3 / 1000 < 1) return
+                if (timeP3 / 1000 < oldPB){
+                    if (sendPB) modMessage("New best time for §6T5 Stun §fis §a${formatTime(timeP3)}, §fold best time was §a${oldPB}s")
+                    t5PBs.entries.find { it.splitName == "Stun" }?.pbTime?.value = timeP3 / 1000.0
+                    Config.saveConfig()
+                }
             }
 
             else -> {
                 if (event.message.contains("KUUDRA DOWN!")) {
-
-                    val oldKillPB = t5PBs.entries.find { it.splitName == "Kill" }?.pbTime?.value ?: 999.0
-                    val timeP4 = System.currentTimeMillis() - splits[3]
-                    if (timeP4 < 1) return
-                    if (timeP4 < oldKillPB)
-                        if (sendPB) modMessage("§8Kill§7: §a${formatTime(timeP4)}")
+                    if (LocationUtils.kuudraTier == 5) {
+                        val oldKillPB = t5PBs.entries.find { it.splitName == "Kill" }?.pbTime?.value ?: 999.0
+                        val timeP4 = System.currentTimeMillis() - splits[3]
+                        modMessage("§6Kill Took§7: §a${formatTime(timeP4)}")
+                        if (timeP4 / 1000 < 1) return
+                        if (timeP4 / 1000 < oldKillPB) {
+                            if (sendPB) modMessage("New best time for §6T5 Kill §fis §a${formatTime(timeP4)}, §fold best time was §a${oldKillPB}s")
+                            t5PBs.entries.find { it.splitName == "Kill" }?.pbTime?.value = timeP4 / 1000.0
+                            Config.saveConfig()
+                        }
+                    }
 
                     splits[4] = System.currentTimeMillis()
                     val oldPB = KuudraTiers.entries.find { it.tierName == "T${LocationUtils.kuudraTier}" }?.pbTime?.value ?: 999.0
-                    val (times, current) = getSplitTimes()
+                    val (times, _) = getSplitTimes()
                     for (i in 0..4) {
                         val duration = formatTime(times[i])
                         modMessage("§8${lines[i]}§7$duration")
@@ -169,13 +207,27 @@ object Splits : Module(
                     if (totalTime < 1) return
                     if (totalTime < oldPB) {
                         if(sendPB) modMessage("§fNew best time for §6T${LocationUtils.kuudraTier} Kuudra §fis §a${totalTime}s, §fold best time was §a${oldPB}s")
-                        KuudraTiers.entries.find { it.tierName == "T${LocationUtils.kuudraTier}" }?.pbTime?.value = totalTime.toDouble().round(2)
+                        KuudraTiers.entries.find { it.tierName == "T${LocationUtils.kuudraTier}" }?.pbTime?.value = totalTime.round(2)
+                        Config.saveConfig()
                     }
                 }
                 else if (event.message.contains("DEFEAT")) splits[4] = System.currentTimeMillis()
             }
         }
-        if (event.message.contains("recovered one of Elle's supplies")) modMessage("§8Supplies§7: §a${formatTime(splits[1] - splits[0])}")
+
+
+    }
+    @SubscribeEvent
+    fun onPacket(event: ReceivePacketEvent) {
+        if (event.packet !is S02PacketChat)  return
+        val message = event.packet.chatComponent.unformattedText.noControlCodes
+        if (message.matches(Regex("(\\[.+])? (\\w+) recovered one of Elle's supplies! \\((\\d/\\d)\\)"))) {
+            if (!sendSupplyTime) return
+            val matchResult = Regex("(\\[.+])? (\\w+) recovered one of Elle's supplies! \\((\\d/\\d)\\)").find(message) ?: return
+            event.isCanceled = true
+            modMessage("§6${matchResult.groupValues[2]}§a took ${formatTime((System.currentTimeMillis() - splits[0]))} for a single supply.")
+        }
+
     }
 
     @SubscribeEvent

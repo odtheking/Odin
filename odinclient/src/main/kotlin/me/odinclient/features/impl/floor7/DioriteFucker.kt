@@ -63,7 +63,6 @@ object DioriteFucker : Module(
             replaceDiorite()
     }
 
-
     fun replaceDiorite() {
         pillars.forEach { (x, y, z) ->
             val coordinates = (-3..3).flatMap { dx ->
@@ -75,7 +74,6 @@ object DioriteFucker : Module(
                 .forEach { (cx, cy, cz) -> setGlass(BlockPos(cx, cy, cz)) }
         }
     }
-
 
     private val pillars = listOf(
         listOf(46, 168, 41),
@@ -98,7 +96,6 @@ object DioriteFucker : Module(
         return abs(x1 - x0) + abs(y1 - y0)
     }
 
-
     private fun setGlass(pos: BlockPos) {
         val blockPos = BlockPos(pos.x, pos.y, pos.z)
         if (stainedGlass) mc.theWorld.setBlockState(blockPos, Blocks.stained_glass.getStateFromMeta(color), 3)
@@ -109,5 +106,4 @@ object DioriteFucker : Module(
         val block = mc.theWorld.chunkProvider.provideChunk(x shr 4, z shr 4).getBlock(x, y, z)
         return block == Blocks.stone
     }
-
 }

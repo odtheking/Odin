@@ -45,9 +45,9 @@ object ClickGUIModule: Module(
     val devSize: Boolean by BooleanSetting("Dev Size", true, description = "Toggles client side dev size.").withDependency { DevPlayers.isDev }
     private val devWings: Boolean by BooleanSetting("Dev Wings", false, description = "Toggles client side dev wings.").withDependency { DevPlayers.isDev }
     private val devWingsColor: Color by ColorSetting("Dev Wings Color", Color(255, 255, 255), description = "Color of the dev wings.").withDependency { DevPlayers.isDev }
-    private val devSizeX: Float by NumberSetting("Dev Size X", 1f, 0.1f, 1.5f, 0.1, description = "X scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
-    private val devSizeY: Float by NumberSetting("Dev Size Y", 1f, 0.1f, 1.5f, 0.1, description = "Y scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
-    private val devSizeZ: Float by NumberSetting("Dev Size Z", 1f, 0.1f, 1.5f, 0.1, description = "Z scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
+    private val devSizeX: Float by NumberSetting("Dev Size X", 1f, 0.1f, 2f, 0.1, description = "X scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
+    private val devSizeY: Float by NumberSetting("Dev Size Y", 1f, 0.1f, 2f, 0.1, description = "Y scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
+    private val devSizeZ: Float by NumberSetting("Dev Size Z", 1f, 0.1f, 2f, 0.1, description = "Z scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
 
     val reset: () -> Unit by ActionSetting("Send Dev Data") {
         scope.launch {

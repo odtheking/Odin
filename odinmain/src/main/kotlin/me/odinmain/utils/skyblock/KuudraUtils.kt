@@ -2,6 +2,7 @@ package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.ChatPacketEvent
+import me.odinmain.events.impl.EntityLeaveWorldEvent
 import me.odinmain.features.impl.kuudra.NoPre
 import me.odinmain.utils.ServerUtils.getPing
 import me.odinmain.utils.clock.Executor
@@ -110,5 +111,10 @@ object KuudraUtils {
     fun worldJoinEvent(event: EntityJoinWorldEvent) {
         if (event.entity is EntityOtherPlayerMP && event.entity.getPing() == 1 && !event.entity.isInvisible && !kuudraTeammates.any{ it.playerName == event.entity.name })
             kuudraTeammates.add(KuudraPlayer((event.entity as EntityOtherPlayerMP).name, false, 0, event.entity as EntityOtherPlayerMP))
+    }
+    @SubscribeEvent
+    fun worldLeaveEvent(event: EntityLeaveWorldEvent) {
+        if (event.entity is EntityOtherPlayerMP)
+            kuudraTeammates.removeIf { it.playerName == event.entity.name }
     }
 }

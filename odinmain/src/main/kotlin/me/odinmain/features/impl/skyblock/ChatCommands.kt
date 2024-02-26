@@ -48,6 +48,7 @@ object ChatCommands : Module(
     private val invite: Boolean by BooleanSetting(name = "invite", default = true).withDependency { showSettings }
     private val racism: Boolean by BooleanSetting(name = "Racism", default = true).withDependency { showSettings }
     private val queDungeons: Boolean by BooleanSetting(name = "Queue dungeons cmds", default = true).withDependency { showSettings }
+    private val queKuudra: Boolean by BooleanSetting(name = "Queue kuudra cmds", default = true).withDependency { showSettings }
 
     private var dtPlayer: String? = null
     var disableRequeue: Boolean? = false
@@ -178,6 +179,15 @@ object ChatCommands : Module(
                 if (floor.toIntOrNull() == null) return modMessage("§cPlease specify a valid floor.")
                 modMessage("§aEntering floor: $floor")
                 sendCommand("od f$floor, true")
+            }
+
+            "t" -> {
+                if(!queKuudra) return
+                val tier = message.substringAfter("t ")
+                if (message.substringAfter("t ") == message) return modMessage("§cPlease specify a tier.")
+                if (tier.toIntOrNull() == null) return modMessage("§cPlease specify a valid tier.")
+                modMessage("§aEntering kuudra run: $tier")
+                sendCommand("od t$tier", true)
             }
 
             // Private cmds only
