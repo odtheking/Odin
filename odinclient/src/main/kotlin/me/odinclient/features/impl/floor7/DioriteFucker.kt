@@ -29,17 +29,14 @@ object DioriteFucker : Module(
         if (event.packet is S23PacketBlockChange) {
             if (DungeonUtils.getPhase() != 2) return
             val blockPos = BlockPos((event.packet as S23PacketBlockChange).blockPosition)
-            val x = blockPos.x
-            val y = blockPos.y
-            val z = blockPos.z
-            if (!isWithinPillar(x, y, z)) return
+            if (!isWithinPillar(blockPos)) return
 
             val blockState = (event.packet as S23PacketBlockChange).blockState
             val block = blockState.block
             if (!block.equalsOneOf(Blocks.stone, Blocks.piston, Blocks.piston_extension, Blocks.piston_head)) return
 
             event.isCanceled = true
-            setGlass(x, y, z)
+            setGlass(blockPos)
         } else if (event.packet is S22PacketMultiBlockChange) {
             if (DungeonUtils.getPhase() != 2) return
             event.isCanceled = true
@@ -47,11 +44,7 @@ object DioriteFucker : Module(
             var replaced = false
             changed.forEach {
                 if (replaced) return
-                val blockPos = it.pos
-                val x = blockPos.x
-                val y = blockPos.y
-                val z = blockPos.z
-                if (!isWithinPillar(x, y, z)) return
+                if (!isWithinPillar(it.pos)) return
 
                 val blockState = it.blockState
                 val block = blockState.block
@@ -59,7 +52,7 @@ object DioriteFucker : Module(
                 replaced = true
 
                 event.isCanceled = true
-                setGlass(x, y, z)
+                setGlass(it.pos)
                 replaceDiorite()
             }
         }
@@ -79,7 +72,7 @@ object DioriteFucker : Module(
                 }
             }
             coordinates.filter { (cx, cy, cz) -> isDiorite(cx, cy, cz) }
-                .forEach { (cx, cy, cz) -> setGlass(cx, cy, cz) }
+                .forEach { (cx, cy, cz) -> setGlass(BlockPos(cx, cy, cz)) }
         }
     }
 
@@ -91,11 +84,11 @@ object DioriteFucker : Module(
         listOf(100, 179, 41)
     )
 
-    private fun isWithinPillar(x: Int, y: Int, z: Int): Boolean {
+    private fun isWithinPillar(pos: BlockPos): Boolean {
         for (pillar in pillars) {
             val (x0, y0, z0) = pillar
-            if (manhattanDistance(x0, z0, x, z) > 4) continue
-            if (y > y0 && y > 205) continue
+            if (manhattanDistance(x0, z0, pos.x, pos.z) > 4) continue
+            if (pos.y > y0 && pos.y > 205) continue
             return true
         }
         return false
@@ -106,8 +99,8 @@ object DioriteFucker : Module(
     }
 
 
-    private fun setGlass(x: Int, y: Int, z: Int) {
-        val blockPos = BlockPos(x, y, z)
+    private fun setGlass(pos: BlockPos) {
+        val blockPos = BlockPos(pos.x, pos.y, pos.z)
         if (stainedGlass) mc.theWorld.setBlockState(blockPos, Blocks.stained_glass.getStateFromMeta(color), 3)
         else mc.theWorld.setBlockState(blockPos, Blocks.glass.defaultState, 3)
     }

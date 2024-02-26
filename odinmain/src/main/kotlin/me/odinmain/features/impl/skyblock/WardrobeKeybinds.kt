@@ -12,7 +12,7 @@ object WardrobeKeybinds : Module(
     description = "Helpful reminders for dungeons.",
     category = Category.SKYBLOCK
 ) {
-
+    // TODO: add multiple keybind options to clickgui
     // unequip keybind
     // next page keybind
     // previous page keybind

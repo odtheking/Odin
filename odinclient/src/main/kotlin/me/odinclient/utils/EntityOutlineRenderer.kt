@@ -1,9 +1,13 @@
 package me.odinclient.utils
 
+import me.odinclient.features.impl.render.Trajectories
 import me.odinclient.mixin.transformers.CustomRenderGlobal
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.RenderEntityOutlineEvent
 import me.odinmain.features.impl.dungeon.TeammatesHighlight
+import me.odinmain.features.impl.kuudra.TeamHighlight
+import me.odinmain.features.impl.render.CustomESP
+import me.odinmain.features.impl.skyblock.BlazeAttunement
 import me.odinmain.utils.postAndCatch
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
@@ -266,6 +270,10 @@ object EntityOutlineRenderer {
     private fun isEnabled(): Boolean {
         if (isMissingMixin) return false
         if (TeammatesHighlight.enabled) return true
+        if (CustomESP.enabled) return true
+        if (TeamHighlight.enabled) return true
+        if (Trajectories.enabled) return true
+        if (BlazeAttunement.enabled) return true
 
         return false
     }
