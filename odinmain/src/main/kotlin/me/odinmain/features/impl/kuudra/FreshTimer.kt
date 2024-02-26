@@ -28,7 +28,7 @@ object FreshTimer : Module(
     val highlightFresh: Boolean by BooleanSetting("Highlight Fresh", true, description = "Highlights fresh timer users")
     val highlightFreshColor: Color by ColorSetting("Highlight Fresh Color", Color.YELLOW, true).withDependency { highlightFresh }
     private val freshTimerHUDColor: Color by ColorSetting("Fresh Timer Color", Color.ORANGE, true)
-    private val hud: HudElement by HudSetting("Fresh timer timer", 10f, 10f, 1f, true) {
+    private val hud: HudElement by HudSetting("Fresh timer HUD", 10f, 10f, 1f, true) {
         if (it) {
             text("Fresh§f: 9s", 1f, 9f, freshTimerHUDColor, 12f, OdinFont.REGULAR, shadow = true)
             getTextWidth("Fresh: 10s", 12f) + 2f to 16f

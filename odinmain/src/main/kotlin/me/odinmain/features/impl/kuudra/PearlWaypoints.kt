@@ -19,7 +19,7 @@ object PearlWaypoints : Module(
     description = "Renders waypoints for pearls in Kuudra.",
     category = Category.KUUDRA
 ) {
-    private val hideFarWaypoints: Boolean by BooleanSetting("Hide Far Waypoints", false, description = "Hides the waypoints that are far away")
+    private val hideFarWaypoints: Boolean by BooleanSetting("Hide Far Waypoints", true, description = "Hides the waypoints that are far away")
 
     private val pearlLineups: Map<Lineup, Color> = mapOf(
         // Triangle

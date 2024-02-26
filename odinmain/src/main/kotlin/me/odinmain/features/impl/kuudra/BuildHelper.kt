@@ -26,7 +26,7 @@ object BuildHelper : Module(
 ) {
     private val buildHelperDraw: Boolean by BooleanSetting("Render on Ballista", false, description = "Draws the build helper")
     private val buildHelperColor: Color by ColorSetting("Build Helper Color", Color.ORANGE, description = "Color of the build helper")
-    private val hud: HudElement by HudSetting("Build helper", 10f, 10f, 1f, true) {
+    private val hud: HudElement by HudSetting("Build helper HUD", 10f, 10f, 1f, true) {
         if (it) {
             text("Build §c50§8%", 1f, 9f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
             text("Builders §e2", 1f, 24f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)

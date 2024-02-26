@@ -1,5 +1,5 @@
 package me.odinmain.features
 
 enum class Category {
-    DUNGEON, FLOOR7, KUUDRA, RENDER, SKYBLOCK
+    DUNGEON, FLOOR7, RENDER, SKYBLOCK, KUUDRA
 }

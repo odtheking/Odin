@@ -62,7 +62,7 @@ object Splits : Module(
         "Kill§f: ",
         "Total§f: "
     )
-    private val hud: HudElement by HudSetting("Splits Display", 10f, 10f, 1f, true) {
+    private val hud: HudElement by HudSetting("Splits Display HUD", 10f, 10f, 1f, true) {
         if (it) {
             for (i in 0..4) {
                 text(lines[i], 1f, 9f + i * OdinFont.getTextHeight("12", 13f), splitsColor, 12f, shadow = true)
