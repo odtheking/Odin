@@ -10,8 +10,8 @@ import net.minecraft.entity.item.EntityItem
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object OutlineItemEntity : Module(
-    "Outline Item Entity",
-    description = "Makes your cursor stop resetting between guis.",
+    "Outline Items",
+    description = "Outlines dropped item entities.",
     category = Category.RENDER
 ) {
 
@@ -24,13 +24,10 @@ object OutlineItemEntity : Module(
 
     private fun getEntityOutlineColor(entity: Entity): Int? {
         val item = entity as? EntityItem ?: return null
-        //if (shouldHideShowcaseItem(entity)) return null
 
         val entityItem = item.entityItem
-
         val internalName = entityItem.lore
-        //val isSprayItem = LorenzUtils.enumValueOfOrNull<SprayType>(internalName.asString()) != null
-        //if (isSprayItem) return null
+
         val rarity = getRarity(internalName)
         return rarity?.color?.rgba
     }

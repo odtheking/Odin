@@ -4,6 +4,7 @@ import me.odin.commands.impl.HighlightCommand
 import me.odin.features.impl.floor7.p3.ArrowAlign
 import me.odin.features.impl.floor7.p3.SimonSays
 import me.odin.features.impl.render.EtherWarpHelper
+import me.odin.utils.EntityOutlineRenderer
 import me.odinmain.OdinMain
 import me.odinmain.commands.Commodore.Companion.registerCommands
 import me.odinmain.features.ModuleManager
@@ -29,6 +30,9 @@ class ModCore {
     fun init(event: FMLInitializationEvent) {
         OdinMain.init()
         MinecraftForge.EVENT_BUS.register(this)
+        listOf(
+            EntityOutlineRenderer
+        ).forEach(MinecraftForge.EVENT_BUS::register)
 
         registerCommands(
             HighlightCommand

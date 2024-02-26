@@ -1,13 +1,12 @@
 package me.odin.utils
 
 import me.odin.mixin.transformers.CustomRenderGlobal
+import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.RenderEntityOutlineEvent
 import me.odinmain.features.impl.dungeon.TeammatesHighlight
 import me.odinmain.features.impl.kuudra.TeamHighlight
 import me.odinmain.features.impl.render.CustomESP
 import me.odinmain.utils.postAndCatch
-import me.odinmain.utils.skyblock.modMessage
-import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.renderer.RenderHelper
@@ -45,7 +44,6 @@ object EntityOutlineRenderer {
     private var isAntialiasing: Method? = null
     private var emptyLastTick = false
     private val swapBuffer by lazy { initSwapBuffer() }
-    private val mc get() = Minecraft.getMinecraft()
     private val BUF_FLOAT_4: java.nio.FloatBuffer = org.lwjgl.BufferUtils.createFloatBuffer(4)
 
     private val CustomRenderGlobal.frameBuffer get() = entityOutlineFramebuffer
@@ -201,7 +199,7 @@ object EntityOutlineRenderer {
         GlStateManager.enableColorMaterial()
         GlStateManager.enableDepth()
         GlStateManager.enableAlpha()
-        println("Rendered entity outlines.")
+
         return !shouldRenderOutlines
     }
 
@@ -270,9 +268,8 @@ object EntityOutlineRenderer {
     private fun isEnabled(): Boolean {
         if (isMissingMixin) return false
         if (TeammatesHighlight.enabled) return true
-        if (TeamHighlight.enabled) return true
         if (CustomESP.enabled) return true
-        //if (Trajectories.enabled) return true
+        if (TeamHighlight.enabled) return true
         return false
     }
 
@@ -316,7 +313,7 @@ object EntityOutlineRenderer {
      *
      *
      * The major use of this function is to copy the depth-buffer portion of the world framebuffer to the entity outline framebuffer.
-     * This enables us to perform no-xray outlining on entities, as we can use the world framebuffer's depth testing on the outline frame buffer
+     * This enables us to perform no-xray outlining on entities, as we can use the world frame buffer's depth testing on the outline frame buffer
      *
      * @param frameToCopy   the framebuffer from which we are copying data
      * @param frameToPaste  the framebuffer onto which we are copying the data
@@ -365,7 +362,7 @@ object EntityOutlineRenderer {
             isMissingMixin = true
             return
         }
-        modMessage("onTick")
+
         if (mc.theWorld != null && shouldRenderEntityOutlines()) {
             // These events need to be called in this specific order for the xray to have priority over the no xray
             // Get all entities to render xray outlines
@@ -381,7 +378,6 @@ object EntityOutlineRenderer {
             entityRenderCache.xrayCache = xrayOutlineEvent.entitiesToOutline
             entityRenderCache.noXrayCache = noxrayOutlineEvent.entitiesToOutline
             entityRenderCache.noOutlineCache = noxrayOutlineEvent.entitiesToChooseFrom
-            modMessage("${entityRenderCache.xrayCache}")
             emptyLastTick = if (isCacheEmpty()) {
                 if (!emptyLastTick) {
                     renderGlobal.frameBuffer.framebufferClear()

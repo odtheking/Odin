@@ -1,4 +1,4 @@
-package me.odinclient.hooks
+package me.odin.hooks
 
 import me.odin.utils.EntityOutlineRenderer
 import net.minecraft.client.renderer.GlStateManager

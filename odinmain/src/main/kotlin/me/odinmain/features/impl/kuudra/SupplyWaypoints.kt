@@ -62,7 +62,7 @@ object SupplyWaypoints : Module(
 
     private fun renderUnfinishedWaypoints() {
         KuudraUtils.buildingPiles.forEach {
-            RenderUtils.renderCustomBeacon("Unfinished", it.xCoord.toDouble(), it.yCoord.toDouble(), it.zCoord.toDouble(), Color.RED, true, noFade = true, increase = false)
+            RenderUtils.renderCustomBeacon("UNFINISHED", it.xCoord, it.yCoord, it.zCoord, Color.RED, true, noFade = true, increase = false)
         }
     }
 }

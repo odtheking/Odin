@@ -24,7 +24,7 @@ object VanqNotifier: Module(
     fun onChat(event: ChatPacketEvent) {
         if (event.message != "A Vanquisher is spawning nearby!") return
         modMessage("Vanquisher has spawned!")
-        PlayerUtils.alert("§5Vanquisher", playSound = playSound)
+        PlayerUtils.alert("§5Vanquisher", playSound = playSound, displayText = showText)
 
         if (ac) allMessage("x: ${PlayerUtils.posX.floor()}, y: ${PlayerUtils.posY.floor()}, z: ${PlayerUtils.posZ.floor()}")
         if (pc) partyMessage("x: ${PlayerUtils.posX.floor()}, y: ${PlayerUtils.posY.floor()}, z: ${PlayerUtils.posZ.floor()}")

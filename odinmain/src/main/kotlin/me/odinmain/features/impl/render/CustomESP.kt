@@ -42,7 +42,6 @@
 
         private val xray: Boolean by BooleanSetting("Through Walls", true).withDependency { !onLegitVersion }
         private val thickness: Float by NumberSetting("Outline Thickness", 5f, 1f, 20f, 0.5f).withDependency { mode != 1 }
-        private val cancelHurt: Boolean by BooleanSetting("Cancel Hurt", true).withDependency { mode != 1 }
 
         val renderThrough: Boolean get() = if (onLegitVersion) false else xray
 
@@ -66,8 +65,11 @@
         fun onRenderEntityModel(event: RenderEntityOutlineEvent) {
             if (mode != 0) return
 
-            if (event.type !== RenderEntityOutlineEvent.Type.XRAY) return
-            event.queueEntitiesToOutline { getMob(it) }
+            if (event.type === RenderEntityOutlineEvent.Type.NO_XRAY && !renderThrough) {
+                event.queueEntitiesToOutline { getMob(it) }
+            } else if (event.type === RenderEntityOutlineEvent.Type.XRAY && renderThrough) {
+                event.queueEntitiesToOutline { getMob(it) }
+            }
         }
 
         private fun getMob(entity: Entity): Int? {

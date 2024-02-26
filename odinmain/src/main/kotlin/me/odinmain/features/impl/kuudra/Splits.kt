@@ -25,6 +25,10 @@ object Splits : Module(
     private val t3PB = +NumberSetting("T3 PB", 999.0, increment = 0.01, hidden = true)
     private val t4PB = +NumberSetting("T4 PB", 999.0, increment = 0.01, hidden = true)
     private val t5PB = +NumberSetting("T5 PB", 999.0, increment = 0.01, hidden = true)
+    private val t5SupplyPB = +NumberSetting("T5 Supply PB", 999.0, increment = 0.01, hidden = true)
+    private val t5BuildPB = +NumberSetting("T5 Build PB", 999.0, increment = 0.01, hidden = true)
+    private val t5StunPB = +NumberSetting("T5 Stun PB", 999.0, increment = 0.01, hidden = true)
+    private val t5KillPB = +NumberSetting("T5 Kill PB", 999.0, increment = 0.01, hidden = true)
     private val sendPB: Boolean by BooleanSetting("Send PB", true, description = "Sends a message when a new PB is achieved")
     private val splitsColor: Color by ColorSetting("Splits Color", Color.CYAN)
     val reset: () -> Unit by ActionSetting("Send PBs", description = "Sends your current PBs.") {
@@ -95,20 +99,64 @@ object Splits : Module(
         T5(t5PB, "T5")
     }
 
+    enum class t5PBs(
+        val pbTime: NumberSetting<Double>,
+        val splitName: String
+    ) {
+        Supplies(t5SupplyPB, "Supplies"),
+        Build(t5BuildPB, "Build"),
+        Stun(t5StunPB, "Stun"),
+        Kill(t5KillPB, "Kill")
+    }
+
     @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
         if (LocationUtils.currentArea != "Kuudra") return
         when (event.message) {
-            "[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!" -> splits[0] = System.currentTimeMillis()
+            "[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!" -> {
+                splits[0] = System.currentTimeMillis()
 
-            "[NPC] Elle: OMG! Great work collecting my supplies!" -> splits[1] = System.currentTimeMillis()
+            }
 
-            "[NPC] Elle: Phew! The Ballista is finally ready! It should be strong enough to tank Kuudra's blows now!" -> splits[2] = System.currentTimeMillis()
+            "[NPC] Elle: OMG! Great work collecting my supplies!" -> {
+                splits[1] = System.currentTimeMillis()
 
-            "[NPC] Elle: POW! SURELY THAT'S IT! I don't think he has any more in him!" -> splits[3] = System.currentTimeMillis()
+                val oldPB = t5PBs.entries.find { it.splitName == "Supplies" }?.pbTime?.value ?: 999.0
+                val timeP1 = splits[1] - splits[0]
+                if (timeP1 < 1) return
+                if (timeP1 < oldPB)
+                    if (sendPB) modMessage("§8Supplies§7: §a${formatTime(splits[1] - splits[0])}")
+            }
+
+            "[NPC] Elle: Phew! The Ballista is finally ready! It should be strong enough to tank Kuudra's blows now!" -> {
+                splits[2] = System.currentTimeMillis()
+
+                val oldPB = t5PBs.entries.find { it.splitName == "Build" }?.pbTime?.value ?: 999.0
+                val timeP2 = splits[2] - splits[1]
+                if (timeP2 < 1) return
+                if (timeP2 < oldPB)
+                    if (sendPB) modMessage("§8Build§7: §a${formatTime(splits[2] - splits[1])}")
+            }
+
+            "[NPC] Elle: POW! SURELY THAT'S IT! I don't think he has any more in him!" -> {
+                splits[3] = System.currentTimeMillis()
+
+                val oldPB = t5PBs.entries.find { it.splitName == "Stun" }?.pbTime?.value ?: 999.0
+                val timeP3 = splits[3] - splits[2]
+                if (timeP3 < 1) return
+                if (timeP3 < oldPB)
+                    if (sendPB) modMessage("§8Fuel/Stun§7: §a${formatTime(splits[3] - splits[2])}")
+            }
 
             else -> {
                 if (event.message.contains("KUUDRA DOWN!")) {
+
+                    val oldKillPB = t5PBs.entries.find { it.splitName == "Kill" }?.pbTime?.value ?: 999.0
+                    val timeP4 = System.currentTimeMillis() - splits[3]
+                    if (timeP4 < 1) return
+                    if (timeP4 < oldKillPB)
+                        if (sendPB) modMessage("§8Kill§7: §a${formatTime(timeP4)}")
+
                     splits[4] = System.currentTimeMillis()
                     val oldPB = KuudraTiers.entries.find { it.tierName == "T${LocationUtils.kuudraTier}" }?.pbTime?.value ?: 999.0
                     val (times, current) = getSplitTimes()
@@ -127,6 +175,7 @@ object Splits : Module(
                 else if (event.message.contains("DEFEAT")) splits[4] = System.currentTimeMillis()
             }
         }
+        if (event.message.contains("recovered one of Elle's supplies")) modMessage("§8Supplies§7: §a${formatTime(splits[1] - splits[0])}")
     }
 
     @SubscribeEvent

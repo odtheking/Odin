@@ -23,7 +23,7 @@ object TerracottaTimer : Module(
 ) {
     private data class Terracotta(val pos: Vec3, var time: Double)
     private var terracottaSpawning = mutableListOf<Terracotta>()
-    var done = false
+    private var done = false
     @SubscribeEvent
     fun onBlockPacket(event: BlockChangeEvent) {
         if (!DungeonUtils.isFloor(6) || !DungeonUtils.inBoss || !event.update.block.isFlowerPot) return
