@@ -3,6 +3,7 @@ package me.odinmain.features.impl.kuudra
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.skyblock.KuudraUtils.giantZombies
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.modMessage
@@ -15,6 +16,8 @@ object NoPre : Module(
     description = "Alerts the party about the state of a pre spot.",
     category = Category.KUUDRA
 ) {
+    private val showAlert: Boolean by BooleanSetting("Show Alert", true, description = "Shows the alert")
+
     private val shop = Vec3(-81.0, 76.0, -143.0)
     private val xCannon = Vec3(-143.0, 76.0, -125.0)
     private val square = Vec3(-143.0, 76.0, -80.0)
@@ -50,7 +53,7 @@ object NoPre : Module(
                         preLoc = slash
                     }
                 }
-                modMessage("Pre-spot: $preSpot")
+                modMessage("Pre-spot: ${if (preSpot.isEmpty()) "You didn't get to your pre spot in time" else preSpot}")
             }
             message.contains("[NPC] Elle: Not again!") -> {
                 var pre = false
@@ -78,7 +81,7 @@ object NoPre : Module(
                     msg = "No $location!"
                 }
                 partyMessage(msg)
-                PlayerUtils.alert(msg, time = 30)
+                if (showAlert) PlayerUtils.alert(msg, time = 10)
             }
             message.startsWith("Party >") && message.contains(": No")  -> {
                 missing = message.split("No ")[1].split("!")[0]

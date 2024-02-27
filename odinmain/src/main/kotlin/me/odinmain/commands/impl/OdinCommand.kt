@@ -40,6 +40,7 @@ object OdinCommand : Commodore {
                 if (str.length != 2 || !str[0].equalsOneOf('f', 'm', 't') || str[1] !in '1'..'7') {
                     return@runs modMessage("Invalid command. Use /od help for a list of commands.")
                 }
+                if (str[0] == 't' && str[1] == '1') modMessage("Kuudra doesnt have an option to use a command to join this instance.")
                 if (str[0] == 't') sendCommand("joininstance kuudra_${tiers[str[1]]}")
                 else if (str[0] == 'f' || str[0] == 'm') sendCommand("joininstance ${if (str[0] == 'm') "master_" else ""}catacombs_floor_${floors[str[1]]}")
             }

@@ -22,12 +22,11 @@ object SupplyWaypoints : Module(
     private val suppliesWaypoints: Boolean by BooleanSetting("Supplies Waypoints", true, description = "Renders the supply waypoints")
     private val supplyWaypointColor: Color by ColorSetting("Supply Waypoint Color", Color.YELLOW, true, description = "Color of the supply waypoints").withDependency { suppliesWaypoints }
     private val supplyDropWaypoints: Boolean by BooleanSetting("Supply Drop Waypoints", true, description = "Renders the supply drop waypoints")
-    private val unfinishedWaypoints: Boolean by BooleanSetting("Unfinished Waypoints", true, description = "Renders the unfinished piles waypoints")
+
     @SubscribeEvent
     fun onWorldRender(event: RenderWorldLastEvent) {
         if (supplyDropWaypoints && KuudraUtils.phase == 1) renderDropLocations()
         if (suppliesWaypoints && KuudraUtils.phase == 1) renderSupplyWaypoints()
-        if (unfinishedWaypoints && KuudraUtils.phase == 2) renderUnfinishedWaypoints()
     }
 
     private fun renderSupplyWaypoints() {
@@ -58,11 +57,5 @@ object SupplyWaypoints : Module(
 
         if (KuudraUtils.supplies[5])
             RenderUtils.renderCustomBeacon("", -106.0, 78.0, -99.0, if (missing == "Slash") Color.GREEN else Color.RED, increase = false) // slash
-    }
-
-    private fun renderUnfinishedWaypoints() {
-        KuudraUtils.buildingPiles.forEach {
-            RenderUtils.renderCustomBeacon("UNFINISHED", it.xCoord, it.yCoord, it.zCoord, Color.RED, true, noFade = true, increase = false)
-        }
     }
 }

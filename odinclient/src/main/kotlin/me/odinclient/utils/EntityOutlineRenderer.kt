@@ -271,7 +271,7 @@ object EntityOutlineRenderer {
     private fun isEnabled(): Boolean {
         if (isMissingMixin) return false
         if (TeammatesHighlight.enabled) return true
-        if (CustomESP.enabled) return true
+        if (CustomESP.enabled && CustomESP.mode == 0) return true
         if (TeamHighlight.enabled) return true
         if (Trajectories.enabled) return true
         if (BlazeAttunement.enabled) return true

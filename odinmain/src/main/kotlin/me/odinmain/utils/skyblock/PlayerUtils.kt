@@ -32,7 +32,7 @@ object PlayerUtils {
      *
      * @author Odtheking, Bonsai
      */
-    fun alert(title: String, time: Int = 60, color: Color = Color.WHITE, playSound: Boolean = true, displayText: Boolean = true) {
+    fun alert(title: String, time: Int = 20, color: Color = Color.WHITE, playSound: Boolean = true, displayText: Boolean = true) {
         if (playSound) playLoudSound("note.pling", 100f, 1f)
         if (displayText) RenderUtils.displayTitle(title , time, color = color)
     }

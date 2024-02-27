@@ -12,11 +12,14 @@ import me.odinmain.ui.hud.HudElement
 import me.odinmain.ui.util.getTextWidth
 import me.odinmain.ui.util.text
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.world.RenderUtils
+import me.odinmain.utils.render.world.RenderUtils.renderBoundingBox
 import me.odinmain.utils.round
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.partyMessage
+import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object FreshTimer : Module(
@@ -27,6 +30,7 @@ object FreshTimer : Module(
     private val notifyFresh: Boolean by BooleanSetting("Notify Fresh", true, description = "Notifies your party when you get fresh timer")
     val highlightFresh: Boolean by BooleanSetting("Highlight Fresh", true, description = "Highlights fresh timer users")
     val highlightFreshColor: Color by ColorSetting("Highlight Fresh Color", Color.YELLOW, true).withDependency { highlightFresh }
+    private val boxFreshPlayers: Boolean by BooleanSetting("Box Fresh Players", true, description = "Boxes fresh timer users")
     private val freshTimerHUDColor: Color by ColorSetting("Fresh Timer Color", Color.ORANGE, true)
     private val hud: HudElement by HudSetting("Fresh timer HUD", 10f, 10f, 1f, true) {
         if (it) {
@@ -55,5 +59,14 @@ object FreshTimer : Module(
             teammate.eatFresh = false
         }
         if (notifyFresh) partyMessage("FRESH")
+    }
+    @SubscribeEvent
+    fun renderWorldLast(event: RenderWorldLastEvent) {
+        if (!boxFreshPlayers) return
+        KuudraUtils.kuudraTeammates.forEach {
+            if (it.entity == null || it.playerName == mc.thePlayer.name) return@forEach
+            if (!it.eatFresh) return@forEach
+            RenderUtils.drawFilledBox(it.entity?.renderBoundingBox ?: return@forEach, color = highlightFreshColor, false)
+        }
     }
 }

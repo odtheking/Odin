@@ -25,6 +25,8 @@ object BuildHelper : Module(
     category = Category.KUUDRA
 ) {
     private val buildHelperDraw: Boolean by BooleanSetting("Render on Ballista", false, description = "Draws the build helper")
+    private val unfinishedWaypoints: Boolean by BooleanSetting("Unfinished Waypoints", true, description = "Renders the unfinished piles waypoints")
+    private val fadeWaypoints: Boolean by BooleanSetting("Fade Waypoints", true, description = "Fades the waypoints when close to them")
     private val buildHelperColor: Color by ColorSetting("Build Helper Color", Color.ORANGE, description = "Color of the build helper")
     private val hud: HudElement by HudSetting("Build helper HUD", 10f, 10f, 1f, true) {
         if (it) {
@@ -35,6 +37,7 @@ object BuildHelper : Module(
             getTextWidth("4Build 50%", 12f) + 2f to 48f
         } else {
             if (KuudraUtils.phase != 2) return@HudSetting 0f to 0f
+
             text("Build ${colorBuild(KuudraUtils.build)}§8%", 1f, 9f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
             text("Builders ${colorBuilders(KuudraUtils.builders)}", 1f,  24f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
             text("Freshers: ${colorBuilders(KuudraUtils.kuudraTeammates.filter { teammate -> teammate.eatFresh }.size)}", 1f, 39f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
@@ -50,6 +53,14 @@ object BuildHelper : Module(
         if (stunNotification && KuudraUtils.build > stunNotificationNumber) PlayerUtils.alert("§lGo to stun", playSound = false, color = Color.CYAN)
         if (buildHelperDraw) RenderUtils.drawStringInWorld("Build ${colorBuild(KuudraUtils.build)}%", Vec3(-101.5, 84.0, -105.5), buildHelperColor.rgba, false, false, scale = 0.15f, depthTest = false)
         if (buildHelperDraw) RenderUtils.drawStringInWorld("Builders ${colorBuild(KuudraUtils.build)}", Vec3(-101.5, 81.0, -105.5), buildHelperColor.rgba, false, false, scale = 0.2f, depthTest = false)
+        if (unfinishedWaypoints && KuudraUtils.phase == 2) renderUnfinishedWaypoints()
+
+    }
+
+    private fun renderUnfinishedWaypoints() {
+        KuudraUtils.buildingPiles.forEach {
+            RenderUtils.renderCustomBeacon(it.name, it.posX, it.posY + 0.5, it.posZ, Color.DARK_RED, true, increase = false, noFade = !fadeWaypoints, distance = false)
+        }
     }
 
     private fun colorBuild(build: Int): String {

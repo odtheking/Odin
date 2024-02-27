@@ -38,7 +38,7 @@ object TeamHighlight : Module(
 
     @SubscribeEvent
     fun handleNames(event: RenderWorldLastEvent) {
-        if (!highlightName || LocationUtils.currentArea != "Kuudra") return
+        if (!highlightName || LocationUtils.currentArea != "Kuudra" || KuudraUtils.phase < 1) return
         KuudraUtils.kuudraTeammates.forEach {
              if (it.entity == null || it.playerName == mc.thePlayer.name) return@forEach
             if ((it.entity?.distanceSquaredTo(mc.thePlayer) ?: return@forEach) >= 2333) return@forEach

@@ -225,7 +225,7 @@ object Splits : Module(
             if (!sendSupplyTime) return
             val matchResult = Regex("(\\[.+])? (\\w+) recovered one of Elle's supplies! \\((\\d/\\d)\\)").find(message) ?: return
             event.isCanceled = true
-            modMessage("§6${matchResult.groupValues[2]}§a took ${formatTime((System.currentTimeMillis() - splits[0]))} for a single supply.")
+            modMessage("§6${matchResult.groupValues[2]}§a took ${formatTime((System.currentTimeMillis() - splits[0]))} to recover supply §8(${matchResult.groupValues[3]})!", false)
         }
 
     }

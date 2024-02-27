@@ -453,7 +453,7 @@ object RenderUtils {
         renderCustomBeacon(title, pos.xCoord, pos.yCoord, pos.zCoord, color, increase = increase)
     }
 
-    fun renderCustomBeacon(title: String, x: Double, y: Double, z: Double, color: Color, beacon: Boolean = true, increase: Boolean = true, noFade: Boolean = false) {
+    fun renderCustomBeacon(title: String, x: Double, y: Double, z: Double, color: Color, beacon: Boolean = true, increase: Boolean = true, noFade: Boolean = false, distance: Boolean = true) {
         val distX = x - mc.renderManager.viewerPosX
         val distY = y - mc.renderManager.viewerPosY - mc.renderViewEntity.eyeHeight
         val distZ = z - mc.renderManager.viewerPosZ
@@ -462,7 +462,7 @@ object RenderUtils {
         drawBoxOutline(floor(x), floor(y), floor(z), 1.0, color.withAlpha(1f), 3f, true)
 
         drawStringInWorld(
-            "$title §r§f(§3${dist.toInt()}m§f)",
+            if (distance) "$title §r§f(§3${dist.toInt()}m§f)" else title,
             Vec3(floor(x) + .5, floor(y) + 1.7 + dist / 30, floor(z) + .5),
             color.rgba,
             renderBlackBox = true,
