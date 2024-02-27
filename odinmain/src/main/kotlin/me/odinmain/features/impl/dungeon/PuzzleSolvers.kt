@@ -50,7 +50,6 @@ object PuzzleSolvers : Module(
             TPMaze.tpPacket(it)
         }
 
-
         onWorldLoad {
             WaterSolver.reset()
             TPMaze.portals = setOf()

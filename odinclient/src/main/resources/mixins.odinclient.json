@@ -7,6 +7,8 @@
     "accessors.IBlockAccessor",
     "mixins.MixinChunk",
     "mixins.MixinNetworkManager",
+    "mixins.MixinRendererLivingEntity",
+    "mixins.MixinRenderGlobal",
     "mixins.MixinS1CPacketEntityMetadata",
     "mixins.MixinWorld",
     "mixins.block.MixinBlock",
@@ -34,7 +36,6 @@
     "mixins.MixinPlayerControllerMP",
     "mixins.MixinRender",
     "mixins.MixinRenderDragon",
-    "mixins.MixinRendererLivingEntity",
     "mixins.MixinRenderPlayer",
     "mixins.MixinSoundManager",
     "mixins.MixinTileEntityChestRenderer",
@@ -42,6 +43,7 @@
     "mixins.block.MixinBlockCarpet",
     "mixins.entity.MixinEntityRenderer",
     "mixins.entity.MixinModelBiped",
-    "mixins.entity.MixinModelBlaze"
+    "mixins.entity.MixinModelBlaze",
+    "transformers.CustomRenderGlobal"
   ]
 }

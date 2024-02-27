@@ -81,9 +81,19 @@ fun modMessage(message: Any, prefix: Boolean = true) {
  * @param prefix If `true`, adds a prefix to the message.
  */
 fun devMessage(message: Any?, prefix: Boolean = true) {
-    if (!DevPlayers.devs.containsKey(mc.thePlayer?.name) || !devMessages || mc.thePlayer == null) return
+    if (!devMessages || mc.thePlayer == null || !DevPlayers.isDev) return
     val msg = if (prefix) "§3Odin§bDev §8»§r $message" else message.toString()
     mc.thePlayer?.addChatMessage(ChatComponentText(msg))
+}
+
+/**
+ * Sends a message in all chat on Hypixel.
+ *
+ * @param message Message to be sent.
+ * @param name Person to send to.
+ */
+fun allMessage(message: Any) {
+    sendCommand("ac $message")
 }
 
 /**
@@ -157,7 +167,6 @@ fun createClickStyle(action: ClickEvent.Action?, value: String): ChatStyle {
     )
     return style
 }
-
 
 private val responses = arrayOf(
     "It is certain",

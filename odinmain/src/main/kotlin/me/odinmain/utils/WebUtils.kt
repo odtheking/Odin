@@ -1,7 +1,8 @@
 package me.odinmain.utils
 
-import kotlinx.coroutines.launch
-import me.odinmain.OdinMain.scope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import me.odinmain.features.impl.render.DevPlayers
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
@@ -21,28 +22,62 @@ private var IMGUR_KEYS = arrayOf(
  *
  * @param body The content of the request body to be sent to the server.
  * @param url The URL of the server to which the request will be sent. Defaults to a predefined URL.
+ *
+ * @returns The response code from the server (can be used as a bad get request)
  */
-fun sendDataToServer(body: String, url: String = "https://ginkwsma75wud3rylqlqms5n240xyomv.lambda-url.eu-north-1.on.aws/") {
-    scope.launch {
-        try {
-            val connection = URL(url).openConnection() as HttpURLConnection
-            connection.requestMethod = "POST"
-            connection.doOutput = true
+suspend fun sendDataToServer(body: String, url: String = "https://gi2wsqbyse6tnfhqakbnq6f2su0vujgz.lambda-url.eu-north-1.on.aws/"): String {
+    return try {
+        val connection = withContext(Dispatchers.IO) {
+            URL(url).openConnection()
+        } as HttpURLConnection
+        connection.requestMethod = "POST"
+        connection.doOutput = true
 
-            val writer = OutputStreamWriter(connection.outputStream)
+        val writer = OutputStreamWriter(connection.outputStream)
+        withContext(Dispatchers.IO) {
             writer.write(body)
+        }
+        withContext(Dispatchers.IO) {
             writer.flush()
+        }
 
-            val responseCode = connection.responseCode
-            println("Response Code: $responseCode")
+        val responseCode = connection.responseCode
+        if (DevPlayers.isDev) println("Response Code: $responseCode")
 
-            val inputStream = connection.inputStream
-            val response = inputStream.bufferedReader().use { it.readText() }
-            println("Response: $response")
+        val inputStream = connection.inputStream
+        val response = inputStream.bufferedReader().use { it.readText() }
+        if (DevPlayers.isDev) println("Response: $response")
 
-            connection.disconnect()
-        } catch (_: Exception) { }
-    }
+        connection.disconnect()
+
+        response
+    } catch (_: Exception) { "" }
+}
+
+/**
+ * Fetches data from a specified URL and returns it as a string.
+ *
+ * @param url The URL from which to fetch data.
+ * @return A string containing the data fetched from the URL, or an empty string in case of an exception.
+ */
+suspend fun getDataFromServer(url: String): String {
+    return try {
+        val connection = withContext(Dispatchers.IO) {
+            URL(url).openConnection()
+        } as HttpURLConnection
+        connection.requestMethod = "GET"
+
+        val responseCode = connection.responseCode
+        if (DevPlayers.isDev) println("Response Code: $responseCode")
+        if (responseCode != 200) return ""
+        val inputStream = connection.inputStream
+        val response = inputStream.bufferedReader().use { it.readText() }
+        if (DevPlayers.isDev) println("Response: $response")
+
+        connection.disconnect()
+
+        response
+    } catch (_: Exception) { "" }
 }
 
 /**

@@ -80,12 +80,12 @@ object WaypointManager {
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         if (!Waypoints.enabled || currentArea == null) return
         temporaryWaypoints.removeAll {
-            it.first.renderBeacon(event.partialTicks)
+            it.first.renderBeacon()
             it.second.hasTimePassed()
         }
 
         waypoints[currentArea]?.forEach {
-            if (it.shouldShow) it.renderBeacon(event.partialTicks)
+            if (it.shouldShow) it.renderBeacon()
         }
     }
 
@@ -109,6 +109,6 @@ object WaypointManager {
     ) {
         constructor(name: String, vec3: Vec3i, color: Color) : this(name, vec3.x, vec3.y, vec3.z, color, true)
 
-        fun renderBeacon(partialTicks: Float) = RenderUtils.renderCustomBeacon(name, x + .5, y + .5, z + .5, color, partialTicks, !Waypoints.onlyBox)
+        fun renderBeacon() = RenderUtils.renderCustomBeacon(name, x + .5, y + .5, z + .5, color, !Waypoints.onlyBox)
     }
 }

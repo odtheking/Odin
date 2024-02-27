@@ -4,13 +4,17 @@ package me.odinmain.utils
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.ModuleManager
+import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.Event
+import java.util.*
 import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.math.round
+
 
 private val FORMATTING_CODE_PATTERN = Regex("§[0-9a-fk-or]", RegexOption.IGNORE_CASE)
 
@@ -48,7 +52,7 @@ fun String.containsOneOf(options: List<String>, ignoreCase: Boolean = false): Bo
  * @param options List of other objects to check.
  * @return `true` if the object is equal to one of the specified objects.
  */
-fun Any?.equalsOneOf(vararg options: Any): Boolean {
+fun Any?.equalsOneOf(vararg options: Any?): Boolean {
     return options.any { this == it }
 }
 
@@ -108,9 +112,9 @@ operator fun Number.compareTo(number: Number): Int {
 }
 
 fun Number.coerceInNumber(min: Number, max: Number): Number {
-    if (this < min) return min
-    if (this > max) return max
-    return this
+    return if (this < min) min
+    else if (this > max) max
+    else this
 }
 
 /**
@@ -187,3 +191,43 @@ fun startProfile(name: String) {
 fun endProfile() {
     mc.mcProfiler.endSection()
 }
+
+/**
+ * Returns the maximum value of the numbers you give in as a float
+ *
+ * @param numbers All the numbers you want to compare
+ *
+ * @returns The maximum value of the numbers, as a float
+ */
+fun max(vararg numbers: Number): Float {
+    return numbers.maxBy { it.toFloat() }.toFloat()
+}
+
+/**
+ * Returns the minimum value of the numbers you give in as a float
+ *
+ * @param numbers All the numbers you want to compare
+ *
+ * @returns The minimum value of the numbers, as a float
+ */
+fun min(vararg numbers: Number): Float {
+    return numbers.minBy { it.toFloat() }.toFloat()
+}
+
+/**
+ * Returns the String with the first letter capitalized
+ *
+ * @param String The String to capitalize
+ *
+ * @return The String with the first letter capitalized
+ */
+fun String.capitalizeFirst(): String {
+    return substring(0, 1).uppercase(Locale.getDefault()) + substring(1, length).lowercase()
+}
+
+fun Color.coerceAlpha(min: Float, max: Float): Color {
+    return if (this.alpha < min) this.withAlpha(min)
+    else if (this.alpha > max) this.withAlpha(max)
+    else this
+}
+

@@ -1,24 +1,18 @@
 package me.odinmain.ui
 
-import me.odinmain.utils.render.gui.nvg.NVG
-import me.odinmain.utils.render.gui.nvg.drawNVG
+
 import net.minecraft.client.gui.GuiScreen
 import org.lwjgl.input.Mouse
 
-/**
- * Simple class that automatically passes a nanovg context
- * @see NVG
- */
+
 abstract class Screen : GuiScreen() {
 
-    abstract fun draw(nvg: NVG)
+    abstract fun draw()
 
     open fun onScroll(amount: Int) {}
 
     final override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        drawNVG {
-            draw(this)
-        }
+        draw()
     }
 
     final override fun handleMouseInput() {

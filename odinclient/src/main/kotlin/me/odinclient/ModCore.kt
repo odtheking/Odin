@@ -2,15 +2,17 @@ package me.odinclient
 
 import me.odinclient.commands.impl.AutoSellCommand
 import me.odinclient.commands.impl.ESPCommand
+import me.odinclient.dungeonmap.features.Dungeon
+import me.odinclient.dungeonmap.features.MapRender
 import me.odinclient.dungeonmap.features.Window
 import me.odinclient.features.impl.dungeon.*
-import me.odinclient.features.impl.floor7.AutoEdrag
 import me.odinclient.features.impl.floor7.DioriteFucker
 import me.odinclient.features.impl.floor7.FreezeGame
 import me.odinclient.features.impl.floor7.RelicAura
 import me.odinclient.features.impl.floor7.p3.*
 import me.odinclient.features.impl.render.*
 import me.odinclient.features.impl.skyblock.*
+import me.odinclient.utils.EntityOutlineRenderer
 import me.odinmain.OdinMain
 import me.odinmain.commands.Commodore.Companion.registerCommands
 import me.odinmain.features.Module
@@ -35,69 +37,22 @@ class ModCore {
 
     @EventHandler
     fun init(event: FMLInitializationEvent) {
-        ModuleManager.modules.addAll(modules)
-
         Window.init()
 
         OdinMain.init()
         MinecraftForge.EVENT_BUS.register(this)
+
+        listOf(
+            Dungeon,
+            MapRender,
+            EntityOutlineRenderer
+        ).forEach(MinecraftForge.EVENT_BUS::register)
 
         registerCommands(
             ESPCommand,
             AutoSellCommand,
         )
     }
-
-    private val modules: ArrayList<Module> = arrayListOf(
-        AutoGFS,
-        AutoIceFill,
-        AutoLeap,
-        AutoMask,
-        AutoSell,
-        AutoUlt,
-        AutoWish,
-        CancelInteract,
-        CancelChestOpen,
-        GhostPick,
-        MapModule,
-        SecretHitboxes,
-        SuperBoom,
-        SwapStonk,
-
-        Arrows,
-        ArrowAlign,
-        CancelWrongTerms,
-        HoverTerms,
-        LeversTriggerbot,
-        SimonSays,
-
-        AutoEdrag,
-        DioriteFucker,
-        RelicAura,
-        //RelicPlacer,
-
-        Trajectories,
-        Ghosts,
-        NoCarpet,
-        NoDebuff,
-
-        CookieClicker,
-        AutoExperiments,
-        FarmingHitboxes,
-        LimboLeave,
-        NoBlock,
-        TermAC,
-        Triggerbot,
-        GhostBlock,
-        FreezeGame,
-        AbilityKeybind,
-        TerminalTriggerbot,
-        EtherWarpHelper,
-        ChestEsp,
-        NoBreakReset,
-        //AutoTerms,
-        LockCursor
-    )
 
     @EventHandler
     fun postInit(event: FMLPostInitializationEvent) {
@@ -106,6 +61,14 @@ class ModCore {
 
     @EventHandler
     fun loadComplete(event: FMLLoadCompleteEvent) {
+        val modules: ArrayList<Module> = arrayListOf(
+            AutoGFS, AutoIceFill, AutoSell, CancelInteract, CancelChestOpen, GhostPick, MapModule, SecretHitboxes, SwapStonk,
+            Arrows, ArrowAlign, CancelWrongTerms, HoverTerms, LeversTriggerbot, SimonSays,
+            DioriteFucker, RelicAura, Trajectories, Ghosts, NoCarpet, NoDebuff, LockCursor,
+            CookieClicker, AutoExperiments, FarmingHitboxes, NoBlock, TermAC, Triggerbot, GhostBlock, FreezeGame, AbilityKeybind, EtherWarpHelper, ChestEsp, NoBreakReset,
+            /*AutoTerms,*/
+        )
+        ModuleManager.modules.addAll(modules)
         OdinMain.loadComplete()
     }
 

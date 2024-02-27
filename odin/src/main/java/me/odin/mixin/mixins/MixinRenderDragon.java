@@ -14,7 +14,7 @@ public class MixinRenderDragon {
 
     @Inject(method = "doRender(Lnet/minecraft/entity/boss/EntityDragon;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/RenderLiving;doRender(Lnet/minecraft/entity/EntityLiving;DDDFF)V"))
     private void onDoRender(EntityDragon entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo ci) {
-        if (!PersonalDragon.INSTANCE.getEnabled()) return;
+        if (!PersonalDragon.INSTANCE.getEnabled() || PersonalDragon.INSTANCE.getDragon() == null) return;
         if (entity.getEntityId() == PersonalDragon.INSTANCE.getDragon().getEntityId()) {
             BossStatus.bossName = null;
             BossStatus.statusBarTime = 0;

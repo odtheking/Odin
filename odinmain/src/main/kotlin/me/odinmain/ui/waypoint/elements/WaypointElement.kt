@@ -1,17 +1,14 @@
 package me.odinmain.ui.waypoint.elements
 
-import cc.polyfrost.oneconfig.renderer.font.Fonts
-import cc.polyfrost.oneconfig.utils.dsl.VG
-import cc.polyfrost.oneconfig.utils.dsl.drawRoundedRect
-import cc.polyfrost.oneconfig.utils.dsl.drawSVG
-import cc.polyfrost.oneconfig.utils.dsl.nanoVG
 import me.odinmain.features.impl.render.WaypointManager
 import me.odinmain.features.impl.render.WaypointManager.Waypoint
+import me.odinmain.font.OdinFont
+import me.odinmain.ui.clickgui.animations.impl.ColorAnimation
+import me.odinmain.ui.util.roundedRectangle
 import me.odinmain.ui.waypoint.WaypointGUI
 import me.odinmain.ui.waypoint.WaypointGUI.mouseHandler
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.gui.animations.impl.ColorAnimation
 
 class WaypointElement(val waypoint: Waypoint) {
     private val name get() = waypoint.name.noControlCodes
@@ -19,27 +16,26 @@ class WaypointElement(val waypoint: Waypoint) {
     var y = 0f
 
     private val inputFields = arrayOf(
-        WaypointInputField(name, mouseHandler, 12f, Fonts.REGULAR),
-        WaypointInputField(waypoint.x, "x:", mouseHandler, 10f, Fonts.REGULAR),
-        WaypointInputField(waypoint.y, "y:", mouseHandler, 10f, Fonts.REGULAR),
-        WaypointInputField(waypoint.z, "z:", mouseHandler, 10f, Fonts.REGULAR),
+        WaypointInputField(name, mouseHandler, 12f, OdinFont.REGULAR),
+        WaypointInputField(waypoint.x, "x:", mouseHandler, 10f, OdinFont.REGULAR),
+        WaypointInputField(waypoint.y, "y:", mouseHandler, 10f, OdinFont.REGULAR),
+        WaypointInputField(waypoint.z, "z:", mouseHandler, 10f, OdinFont.REGULAR),
     )
+    //private val trash = DynamicTexture(loadBufferedImage("/assets/odinmain/waypoint/trash.png"))
 
-    fun drawScreen(vg: VG): Int {
-        nanoVG(vg.instance) {
-            drawRoundedRect(15, y, 450, 30, 5f, Color(13, 14, 15).rgba)
+    fun drawScreen(): Int {
+        roundedRectangle(15, y, 450, 30, Color(13, 14, 15), 5f)
 
-            val color = colorAnimation.get(waypoint.color, Color(21, 22, 23), waypoint.shouldShow).rgba
-            drawRoundedRect(20, y + 6, 18, 18, 5f, color)
+        val color = colorAnimation.get(waypoint.color, Color(21, 22, 23), waypoint.shouldShow)
+        roundedRectangle(20, y + 6, 18, 18, color, 5f)
 
-            val trashColor = if (mouseHandler.isAreaHovered(442f, y + 6, 18f, 18f)) Color(192, 192, 192).rgba else -1
-            drawSVG("/assets/odinmain/ui/waypoint/trash.svg", 442, y + 6, 18, 18, trashColor, 100, javaClass) // get better svg it looks so pixelated
+        val trashColor = if (mouseHandler.isAreaHovered(442f, y + 6, 18f, 18f)) Color(192, 192, 192).rgba else -1
+        //drawDynamicTexture(trash, 442f, y + 6, 18f, 18f) // get better svg it looks so pixelated
 
-            var currentX = 40f
-            for (i in inputFields) {
-                i.x = currentX
-                currentX += i.draw(vg, currentX, y + 15, -1)
-            }
+        var currentX = 40f
+        for (i in inputFields) {
+            i.x = currentX
+            currentX += i.draw(currentX, y + 15, -1)
         }
         return 40
     }

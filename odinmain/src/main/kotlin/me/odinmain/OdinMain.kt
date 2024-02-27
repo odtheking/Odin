@@ -15,11 +15,14 @@ import me.odinmain.features.ModuleManager
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.features.impl.render.WaypointManager
+import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.ClickGUI
+import me.odinmain.ui.util.RoundedRect
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
+import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -64,6 +67,7 @@ object OdinMain {
             PlayerUtils,
             RenderUtils,
             DungeonUtils,
+            KuudraUtils,
             EventDispatcher,
             Executor,
             ModuleManager,
@@ -77,8 +81,11 @@ object OdinMain {
             OdinCommand,
             TermsimCommand,
             WaypointCommand,
-            BlacklistCommand
+            BlacklistCommand,
+            SoopyCommand
         )
+
+        OdinFont.init()
     }
 
     fun postInit() = scope.launch(Dispatchers.IO) {
@@ -102,6 +109,7 @@ object OdinMain {
             }
         }
         ClickGUI.init()
+        RoundedRect.initShaders()
     }
 
     fun onTick() {

@@ -1,6 +1,7 @@
 package me.odinclient.commands.impl
 
 import com.github.stivais.commodore.parsers.impl.GreedyString
+import me.odinclient.features.impl.floor7.DioriteFucker
 import me.odinclient.mixin.accessors.IMinecraftAccessor
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.onLegitVersion
@@ -16,6 +17,8 @@ object ESPCommand : Commodore {
             requires {
                 !onLegitVersion
             }
+
+            runs { modMessage("Usage: /esp <add/remove/clear/list> <name>")}
 
             literal("add").runs { mob: GreedyString ->
                 val lowercase = mob.string.lowercase()
@@ -50,6 +53,10 @@ object ESPCommand : Commodore {
 
             literal("profile").runs { key: Int ->
                 (mc as IMinecraftAccessor).invokeUpdateDebugProfilerName(key)
+            }
+
+            literal("diorite").runs {
+                DioriteFucker.replaceDiorite()
             }
         }
 }

@@ -9,9 +9,13 @@ import me.odinmain.utils.skyblock.modMessage
 
 object HighlightCommand : Commodore {
     override val command: CommandNode =
-        literal("odinhighlight") {
+        literal("highlight") {
             requires {
                 onLegitVersion
+            }
+
+            runs {
+                modMessage("Usage: /highlight <add/remove/clear/list> <name>")
             }
 
             literal("add").runs { mob: GreedyString ->

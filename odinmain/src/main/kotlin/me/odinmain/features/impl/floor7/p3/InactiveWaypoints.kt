@@ -9,9 +9,10 @@ import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
-import me.odinmain.utils.render.world.RenderUtils.renderBoundingBox
+import me.odinmain.utils.toAABB
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
+import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -23,19 +24,22 @@ object InactiveWaypoints : Module(
     description = "Shows inactive terminals, devices and levers"
 ) {
 
-    private val showTerminals: Boolean by BooleanSetting(name = "Show Terminals")
-    private val showDevices: Boolean by BooleanSetting(name = "Show Devices")
-    private val showLevers: Boolean by BooleanSetting(name = "Show Levers")
-    private val renderText: Boolean by BooleanSetting(name = "Render Text")
-    private val renderMode: Int by SelectorSetting("Render", "Both", arrayListOf("Both", "Outline", "Filled"))
-    private val color: Color by ColorSetting("Color", Color.RED.withAlpha(.5f), true)
+    private val showTerminals: Boolean by BooleanSetting(name = "Show Terminals", default = true, description = "Shows inactive terminals")
+    private val showDevices: Boolean by BooleanSetting(name = "Show Devices", default = true, description = "Shows inactive devices")
+    private val showLevers: Boolean by BooleanSetting(name = "Show Levers", default = true, description = "Shows inactive levers")
+    private val renderText: Boolean by BooleanSetting(name = "Render Text", default = true, description = "Renders the name of the inactive waypoint")
+    private val renderMode: Int by SelectorSetting("Render", "Both", arrayListOf("Both", "Outline", "Filled"), description = "How to render the inactive waypoints")
+    private val color: Color by ColorSetting("Color", Color.RED.withAlpha(.5f), true, description = "The color of the inactive waypoints")
 
     private var inactiveList = listOf<Entity>()
 
     init {
         execute(1000) {
             if (!enabled) return@execute
-            inactiveList = mc.theWorld?.loadedEntityList?.filter { it is EntityArmorStand && (it.name.noControlCodes.contains("Inactive", true) || it.name.noControlCodes.contains("Not ", true)) } ?: emptyList()
+            inactiveList = mc.theWorld?.loadedEntityList?.filter { it is EntityArmorStand &&
+                    (it.name.noControlCodes.contains("Inactive", true) ||
+                    it.name.noControlCodes.contains("Not Activated", true)) } ?: emptyList()
+
         }
     }
 
@@ -46,14 +50,13 @@ object InactiveWaypoints : Module(
             if ((name == "Inactive Terminal" && showTerminals) || (name == "Inactive" && showDevices) || (name == "Not Activated" && showLevers)) {
                 name = if (name == "Inactive Terminal") "Terminal" else if (name == "Inactive") "Device" else "Lever"
                 when (renderMode) {
-                    0 -> {
-                        RenderUtils.drawFilledBox(it.renderBoundingBox, Color(color.r, color.g, color.b, color.alpha), phase = true)
-                        RenderUtils.drawCustomBox(it.renderBoundingBox, Color(color.r, color.g, color.b), 2f, phase = true)
-                    }
-                    1 -> RenderUtils.drawCustomBox(it.renderBoundingBox, Color(color.r, color.g, color.b), 2f, phase = true)
-                    2 -> RenderUtils.drawFilledBox(it.renderBoundingBox, Color(color.r, color.g, color.b, color.alpha), phase = true)
+                    0 -> RenderUtils.drawBoxWithOutline(AxisAlignedBB(it.position, it.position.add(1, 1, 1)).expand(0.001, 0.001, 0.001), Color(color.r, color.g, color.b, color.alpha), true, 2f)
+                    1 -> RenderUtils.drawBoxOutline(it.position.toAABB(), Color(color.r, color.g, color.b), 2f, phase = true)
+                    2 -> RenderUtils.drawFilledBox(it.position.toAABB(), Color(color.r, color.g, color.b, color.alpha), phase = true)
                 }
-                if (renderText) RenderUtils.drawStringInWorld(name, it.positionVector.add(Vec3(0.5, it.height + 0.5, 0.5)), depthTest = true, increase = true, scale = 0.25f)
+                if (renderText) {
+                    RenderUtils.drawStringInWorld(name, it.positionVector.add(Vec3(0.0, 2.0, 0.0)), depthTest = true, scale = 0.03f)
+                }
             }
         }
     }

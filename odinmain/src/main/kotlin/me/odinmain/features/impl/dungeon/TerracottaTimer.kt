@@ -1,6 +1,7 @@
 package me.odinmain.features.impl.dungeon
 
 import me.odinmain.events.impl.BlockChangeEvent
+import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -11,6 +12,7 @@ import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.*
 
@@ -20,12 +22,12 @@ object TerracottaTimer : Module(
     category = Category.DUNGEON
 ) {
     private data class Terracotta(val pos: Vec3, var time: Double)
-    private var terrasSpawning = mutableListOf<Terracotta>()
-
+    private var terracottaSpawning = mutableListOf<Terracotta>()
+    private var done = false
     @SubscribeEvent
     fun onBlockPacket(event: BlockChangeEvent) {
         if (!DungeonUtils.isFloor(6) || !DungeonUtils.inBoss || !event.update.block.isFlowerPot) return
-        terrasSpawning.add(
+        terracottaSpawning.add(
             Terracotta(
                 Vec3(event.pos).addVec(.5, 1.5, .5),
                 if (LocationUtils.currentDungeon?.floor?.isInMM == true) 1200.0 else 1500.0
@@ -35,7 +37,7 @@ object TerracottaTimer : Module(
 
     @SubscribeEvent
     fun onServerTick(event: ServerTickEvent) {
-        terrasSpawning.removeAll {
+        terracottaSpawning.removeAll {
             it.time -= 5
             it.time <= 0
         }
@@ -43,9 +45,10 @@ object TerracottaTimer : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        val iterator = terrasSpawning.iterator()
+        val iterator = terracottaSpawning.iterator()
         while (iterator.hasNext()) {
             val it = iterator.next()
+            if (done) return
             RenderUtils.drawStringInWorld(
                 "${String.format(Locale.US, "%.2f",it.time / 100.0)}s",
                 it.pos,
@@ -64,6 +67,16 @@ object TerracottaTimer : Module(
             time > 2.0 -> Color(255, 170, 0)
             else -> Color(170, 0, 0)
         }
+    }
+    @SubscribeEvent
+    fun onChat(event: ChatPacketEvent) {
+        if (!event.message.startsWith("[BOSS] Sadan: ENOUGH!")) return
+        done = true
+    }
+    @SubscribeEvent
+    fun worldLoad(event: WorldEvent.Load) {
+        terracottaSpawning.clear()
+        done = false
     }
 
 }

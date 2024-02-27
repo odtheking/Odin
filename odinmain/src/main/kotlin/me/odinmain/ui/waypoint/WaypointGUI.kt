@@ -1,25 +1,15 @@
 package me.odinmain.ui.waypoint
 
-import cc.polyfrost.oneconfig.renderer.NanoVGHelper
-import cc.polyfrost.oneconfig.renderer.font.Fonts
-import cc.polyfrost.oneconfig.utils.dsl.*
 import me.odinmain.config.WaypointConfig
 import me.odinmain.features.impl.render.WaypointManager
 import me.odinmain.features.impl.render.WaypointManager.randomColor
 import me.odinmain.features.impl.render.Waypoints
+import me.odinmain.ui.clickgui.animations.impl.EaseInOut
+import me.odinmain.ui.clickgui.animations.impl.LinearAnimation
+import me.odinmain.ui.util.MouseHandler
 import me.odinmain.ui.waypoint.elements.AreaButton
 import me.odinmain.ui.waypoint.elements.WaypointElement
 import me.odinmain.utils.floored
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.gui.GuiUtils.scaleFactor
-import me.odinmain.utils.render.gui.GuiUtils.scaleWithMouse
-import me.odinmain.utils.render.gui.GuiUtils.scaledHeight
-import me.odinmain.utils.render.gui.GuiUtils.scaledWidth
-import me.odinmain.utils.render.gui.GuiUtils.scissor
-import me.odinmain.utils.render.gui.GuiUtils.translateWithMouse
-import me.odinmain.utils.render.gui.MouseHandler
-import me.odinmain.utils.render.gui.animations.impl.EaseInOut
-import me.odinmain.utils.render.gui.animations.impl.LinearAnimation
 import me.odinmain.utils.skyblock.LocationUtils.currentArea
 import net.minecraft.client.gui.GuiScreen
 import org.lwjgl.input.Mouse
@@ -59,7 +49,8 @@ object WaypointGUI : GuiScreen() {
     private var drawingAreas = false
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        nanoVG {
+        /*nanoVG {
+
             translateWithMouse(mouseHandler, scaledWidth / 2f, scaledHeight / 2f)
             scaleWithMouse(mouseHandler, scaleFactor * 2f, scaleFactor * 2f)
 
@@ -98,7 +89,7 @@ object WaypointGUI : GuiScreen() {
             drawRoundedRectVaried(0, 0,  480, 25, Color(21, 22, 23).rgba, 10, 10, 0, 0)
             drawLine(0, 25, 480, 25, 1.5, Color(30, 32, 34).rgba)
 
-            drawText("Add Waypoint", 16, 13.25, Color(192, 192, 192).rgba, 10, Fonts.REGULAR)
+            drawText("Add Waypoint", 16, 13.25, Color(192, 192, 192).rgba, 10, OdinFont.REGULAR)
             val buttonColor = if (mouseHandler.isAreaHovered(10f, 5f, 78.5f, 15f)) Color(38, 40, 42) else Color(30, 32, 34)
             drawHollowRoundedRect(10, 5, 78, 15, 5, buttonColor.rgba, 0.75)
 
@@ -108,6 +99,8 @@ object WaypointGUI : GuiScreen() {
             translate(-462.5f, -12.5f)
             drawSVG("/assets/odinmain/ui/waypoint/Settings.svg", 455, 5, 15, 15, color, 36, javaClass)
         }
+
+         */
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 

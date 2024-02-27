@@ -1,13 +1,14 @@
 package me.odinmain.features.impl.render
 
-import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinmain.events.impl.PacketSentEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.HudSetting
+import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.utils.render.gui.nvg.getTextWidth
-import me.odinmain.utils.render.gui.nvg.textWithControlCodes
+import me.odinmain.ui.util.getTextWidth
+import me.odinmain.ui.util.text
+import me.odinmain.utils.render.Color
 import me.odinmain.utils.round
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -18,7 +19,6 @@ object BPSDisplay : Module(
     category = Category.RENDER,
     description = "Displays how many blocks per second you're breaking."
 ) {
-
     private var startTime: Long = 0
     private var isBreaking: Boolean = false
     private var blocksBroken: Int = 0
@@ -27,12 +27,11 @@ object BPSDisplay : Module(
 
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 2f, false) {
         if (it) { // example
-            textWithControlCodes("§7BPS: §r17.8", 1f, 9f, 16f, Fonts.REGULAR)
-            getTextWidth("BPS: 17.8", 16f, Fonts.REGULAR ) to 16f
+            text("§7BPS: §r17.8", 1f, 7f, Color.WHITE,10f)
         } else {
-            textWithControlCodes("§7BPS: §r${bps.round(1)}", 1f, 9f, 16f, Fonts.REGULAR)
-            getTextWidth("BPS: ${bps.round(1)}", 16f, Fonts.REGULAR ) to 16f
+            text("§7BPS: §r${bps.round(1)}", 1f, 7f, Color.WHITE, 10f, OdinFont.REGULAR)
         }
+        getTextWidth("BPS: 17.55", 9f) to 12f
     }
 
     @SubscribeEvent

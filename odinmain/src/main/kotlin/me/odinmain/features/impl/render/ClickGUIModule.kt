@@ -4,6 +4,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import me.odinmain.OdinMain
+import me.odinmain.OdinMain.scope
 import me.odinmain.config.Config
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -30,17 +31,33 @@ import org.lwjgl.input.Keyboard
 object ClickGUIModule: Module(
     "Click Gui",
     Keyboard.KEY_RSHIFT,
-    category = Category.RENDER
+    category = Category.RENDER,
+    description = "Allows you to customize the GUI."
 ) {
     val blur: Boolean by BooleanSetting("Blur", false, description = "Toggles the background blur for the gui.")
     val enableNotification: Boolean by BooleanSetting("Enable notifications", true, description = "Shows you a notification in chat when you toggle an option with a keybind")
     val color: Color by ColorSetting("Gui Color", Color(50, 150, 220), allowAlpha = false, description = "Color theme in the gui.")
-    val switchType: Boolean by DualSetting("Switch Type", "Checkbox", "Switch")
+    val switchType: Boolean by DualSetting("Switch Type", "Checkbox", "Switch", default = true, description = "Switches the type of the settings in the gui.")
     val hudChat: Boolean by BooleanSetting("Shows HUDs in GUIs", true, description = "Shows HUDs in GUIs")
-    val experimentalRendering: Boolean by BooleanSetting("Experimental Rendering", false, description = "Enables experimental rendering for the gui and hud.")
-    val isDev get() = DevPlayers.devs.containsKey(mc.session?.username)
-    val devMessages: Boolean by BooleanSetting("Dev Messages", true, description = "Enables dev messages in chat.").withDependency { isDev }
-    val devSize: Boolean by BooleanSetting("Dev Size", true, description = "Toggles client side dev size.").withDependency { isDev }
+    private val updateMessage: Int by SelectorSetting("Update Message", "Full Releases", arrayListOf("Full Releases", "Beta Releases", "None"))
+
+    val devMessages: Boolean by BooleanSetting("Dev Messages", true, description = "Enables dev messages in chat.").withDependency { DevPlayers.isDev }
+    val devSize: Boolean by BooleanSetting("Dev Size", true, description = "Toggles client side dev size.").withDependency { DevPlayers.isDev }
+    private val devWings: Boolean by BooleanSetting("Dev Wings", false, description = "Toggles client side dev wings.").withDependency { DevPlayers.isDev }
+    private val devWingsColor: Color by ColorSetting("Dev Wings Color", Color(255, 255, 255), description = "Color of the dev wings.").withDependency { DevPlayers.isDev }
+    private val devSizeX: Float by NumberSetting("Dev Size X", 1f, 0.1f, 2f, 0.1, description = "X scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
+    private val devSizeY: Float by NumberSetting("Dev Size Y", 1f, 0.1f, 2f, 0.1, description = "Y scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
+    private val devSizeZ: Float by NumberSetting("Dev Size Z", 1f, 0.1f, 2f, 0.1, description = "Z scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
+
+    val reset: () -> Unit by ActionSetting("Send Dev Data") {
+        scope.launch {
+            sendDataToServer(body = "${mc.thePlayer.name}, [${devWingsColor.r},${devWingsColor.g},${devWingsColor.b}], [$devSizeX,$devSizeY,$devSizeZ], $devWings", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/")
+            modMessage("Sent dev data to server.")
+            DevPlayers.updateDevs()
+            modMessage("Updated devs.")
+        }
+
+    }.withDependency { DevPlayers.isDev }
 
     val action: () -> Unit by ActionSetting("Open Example Hud") {
         OdinMain.display = EditHUDGui
@@ -83,9 +100,7 @@ object ClickGUIModule: Module(
             ${getChatBreak()}
             
             """.trimIndent(), false)
-            OdinMain.scope.launch {
-                sendDataToServer(body = """{"uud": "${mc.thePlayer.name}\n${if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""")
-            }
+
         }
 
         resetPositions()
@@ -95,17 +110,13 @@ object ClickGUIModule: Module(
     private var hasSentWebhook = false
 
     @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Load) = OdinMain.scope.launch {
+    fun onWorldLoad(event: WorldEvent.Load) = scope.launch {
         if (!LocationUtils.inSkyblock) return@launch
+
         if (!hasSentWebhook) {
             hasSentWebhook = true
-
-            val def = waitUntilPlayer()
-            try { def.await() } catch (e: Exception) { return@launch }
-
-            sendDataToServer(body = """{"ud": "${mc.thePlayer.name}\n${ if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""")
+            sendDataToServer(body = """{"username": "${mc.thePlayer.name}", "version": "${if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""")
         }
-
         if (hasSentUpdateMessage) return@launch
 
         val newestVersion = try {
@@ -120,8 +131,6 @@ object ClickGUIModule: Module(
 
             val def = waitUntilPlayer()
             try { def.await() } catch (e: Exception) { return@launch }
-
-
 
             modMessage("""
             ${getChatBreak()}
@@ -144,12 +153,10 @@ object ClickGUIModule: Module(
 
     private fun isSecondNewer(second: String?): Boolean {
         val currentVersion = OdinMain.VERSION
-        if (currentVersion.isEmpty() || second.isNullOrEmpty()) {
-            return false // Handle null or empty strings appropriately
-        }
+        if (currentVersion.isEmpty() || second.isNullOrEmpty()) return false // Handle null or empty strings appropriately
 
-        val (major, minor, patch) = currentVersion.split(".").mapNotNull { it.toIntOrNull() }
-        val (major2, minor2, patch2) = second.split(".").mapNotNull { it.toIntOrNull() }
+        val (major, minor, patch, beta) = currentVersion.split(".").mapNotNull { it.toIntOrNull() ?: if (it.startsWith("beta") && updateMessage == 1) it.substring(4).toIntOrNull() else 99 }.plus(listOf(99, 99, 99, 99))
+        val (major2, minor2, patch2, beta2) = second.split(".").mapNotNull { it.toIntOrNull() ?: if (it.startsWith("beta")  && updateMessage == 1) it.substring(4).toIntOrNull() else 99 }.plus(listOf(99, 99, 99, 99))
 
         return when {
             major > major2 -> false
@@ -158,6 +165,8 @@ object ClickGUIModule: Module(
             minor < minor2 -> true
             patch > patch2 -> false
             patch < patch2 -> true
+            beta > beta2 -> false
+            beta < beta2 -> true
             else -> false // equal, or something went wrong, either way it's best to assume it's false.
         }
     }

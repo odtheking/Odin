@@ -14,6 +14,7 @@ import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.skyblock.EtherWarpHelper
 import me.odinmain.utils.skyblock.EtherWarpHelper.etherPos
 import me.odinmain.utils.skyblock.extraAttributes
+import me.odinmain.utils.toAABB
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -23,8 +24,10 @@ object EtherWarpHelper : Module(
     description = "Shows you where your etherwarp will teleport you.",
     category = Category.RENDER
 ) {
-
-    private val color: Color by ColorSetting("Color", Color.ORANGE.withAlpha(.5f), allowAlpha = true)
+    private val render: Boolean by BooleanSetting("Show Etherwarp Guess", true)
+    private val renderColor: Color by ColorSetting("Color", Color.ORANGE.withAlpha(.5f), allowAlpha = true)
+    private val renderFail: Boolean by BooleanSetting("Show when failed", true)
+    private val wrongColor: Color by ColorSetting("Wrong Color", Color.RED.withAlpha(.5f), allowAlpha = true).withDependency { renderFail }
     private val filled: Boolean by DualSetting("Type", "Outline", "Filled", default = false)
     private val thickness: Float by NumberSetting("Thickness", 3f, 1f, 10f, .1f).withDependency { !filled }
     private val phase: Boolean by BooleanSetting("Phase", false)
@@ -33,13 +36,15 @@ object EtherWarpHelper : Module(
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         val player = mc.thePlayer as? IEntityPlayerSPAccessor ?: return
         etherPos = EtherWarpHelper.getEtherPos(Vec3(player.lastReportedPosX, player.lastReportedPosY, player.lastReportedPosZ), yaw = player.lastReportedYaw, pitch = player.lastReportedPitch)
-        if (etherPos.succeeded && mc.thePlayer.isSneaking && mc.thePlayer.heldItem.extraAttributes?.getBoolean("ethermerge") == true) {
+        if (render && mc.thePlayer.isSneaking && mc.thePlayer.heldItem.extraAttributes?.getBoolean("ethermerge") == true && (etherPos.succeeded || renderFail)) {
             val pos = etherPos.pos ?: return
+            val color = if (etherPos.succeeded) renderColor else wrongColor
 
             if (filled)
-                RenderUtils.drawFilledBox(pos, color, phase = phase)
+                RenderUtils.drawFilledBox(pos.toAABB(), color, phase = phase)
             else
-                RenderUtils.drawCustomBox(pos, color, thickness = thickness, phase = phase)
+                RenderUtils.drawBoxOutline(pos.toAABB()
+                    , color, thickness = thickness, phase = phase)
         }
     }
 

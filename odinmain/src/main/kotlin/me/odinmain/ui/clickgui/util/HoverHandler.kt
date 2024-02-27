@@ -1,8 +1,8 @@
 package me.odinmain.ui.clickgui.util
 
 
-import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
-import me.odinmain.utils.render.gui.animations.impl.LinearAnimation
+import me.odinmain.ui.clickgui.animations.impl.LinearAnimation
+import me.odinmain.ui.util.MouseUtils.isAreaHovered
 
 class HoverHandler(private val startDelay: Long, delay: Long) {
 

@@ -1,23 +1,33 @@
 package me.odinmain.utils.render.world
 
+import gg.essential.universal.shader.BlendState
+import gg.essential.universal.shader.UShader
+import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
+import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinmain.ui.util.scale
+import me.odinmain.ui.util.scaleFactor
+import me.odinmain.ui.util.text
 import me.odinmain.utils.render.Color
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.WorldRenderer
 import net.minecraft.client.renderer.entity.RenderManager
+import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.Entity
 import net.minecraft.util.*
+import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.GL11
-import org.lwjgl.opengl.GL11.GL_QUADS
 import org.lwjgl.util.glu.Cylinder
 import org.lwjgl.util.glu.GLU
 import java.awt.image.BufferedImage
-import javax.imageio.ImageIO
 import kotlin.math.*
 
 object RenderUtils {
@@ -31,6 +41,56 @@ object RenderUtils {
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
         partialTicks = event.partialTicks
+    }
+
+    private var displayTitle = ""
+    private var titleTicks = 0
+    private var displayColor = Color.WHITE
+
+    fun displayTitle(title: String, ticks: Int, color: Color = Color.WHITE) {
+        displayTitle = title
+        titleTicks = ticks
+        displayColor = color
+    }
+
+    fun clearTitle() {
+        displayTitle = ""
+        titleTicks = 0
+    }
+
+    @SubscribeEvent
+    fun onOverlay(event: RenderGameOverlayEvent.Pre) {
+        if (event.type != RenderGameOverlayEvent.ElementType.ALL) return
+        mc.entityRenderer.setupOverlayRendering()
+
+        scale(1f / scaleFactor, 1f / scaleFactor, 1f)
+
+        if (titleTicks < 0) return
+        text(text = displayTitle, x = Display.getWidth() / 2f - (OdinFont.getTextWidth(displayTitle, 50f) /2f), y = Display.getHeight() / 2f, color = displayColor, size = 50f, shadow = true)
+        scale(scaleFactor, scaleFactor, 1f)
+    }
+
+    @SubscribeEvent
+    fun onTick(event: TickEvent.ClientTickEvent) {
+        if (event.phase != TickEvent.Phase.START) return
+        titleTicks--
+    }
+    @SubscribeEvent
+    fun worldLoad(event: WorldEvent.Load) {
+        clearTitle()
+    }
+
+    fun preDraw() {
+        GlStateManager.enableAlpha()
+        GlStateManager.enableBlend()
+        GlStateManager.disableLighting()
+        GlStateManager.disableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+    }
+
+    fun postDraw() {
+        GlStateManager.disableBlend()
+        GlStateManager.enableTexture2D()
     }
 
     /**
@@ -84,6 +144,37 @@ object RenderUtils {
     val Entity.renderVec: Vec3
         get() = Vec3(renderX, renderY, renderZ)
 
+    fun exactLocation(entity: Entity, partialTicks: Float): Vec3 {
+        val x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks
+        val y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks
+        val z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks
+        return Vec3(x, y, z)
+    }
+
+
+    /**
+     * Gets the rendered position of an entity as a `Vec3d`.
+     * @receiver The entity for which to retrieve the rendered position.
+     * @return The rendered position as a `Vec3d`.
+     */
+    fun Entity.getInterpolatedPosition(partialTicks: Float): Triple<Double, Double, Double> {
+        return Triple(
+            this.lastTickPosX + (this.posX - this.lastTickPosX) * partialTicks,
+            this.lastTickPosY + (this.posY - this.lastTickPosY) * partialTicks,
+            this.lastTickPosZ + (this.posZ - this.lastTickPosZ) * partialTicks
+        )
+    }
+
+    fun preRender(partialTicks: Float) {
+        val (x, y, z) = mc.renderViewEntity.getInterpolatedPosition(partialTicks)
+        GlStateManager.translate(-x, -y, -z)
+    }
+
+    fun postRender(partialTicks: Float) {
+        val (x, y, z) = mc.renderViewEntity.getInterpolatedPosition(partialTicks)
+        GlStateManager.translate(x, y, z)
+    }
+
     /**
      * Gets the rendered bounding box of an entity based on its last tick and current tick positions.
      *
@@ -110,8 +201,44 @@ object RenderUtils {
         block.invoke(this)
     }
 
-    fun drawCustomBox(aabb: AxisAlignedBB, color: Color, thickness: Float = 3f, phase: Boolean) {
-        drawCustomBox(
+    /**
+     * Draws a custom box in the 3D world space.
+     *
+     * @param x X-coordinate of the box.
+     * @param y Y-coordinate of the box.
+     * @param z Z-coordinate of the box.
+     * @param scale The scale of the box.
+     * @param color The color of the box (must be in the range of 0-255).
+     * @param phase If `true`, disables depth testing for the box. Default is `false`.
+     * @param thickness The thickness of the lines forming the box. Default is 3f.
+     *
+     */
+    fun drawBoxWithOutline(aabb: AxisAlignedBB, color: Color, phase: Boolean, thickness: Float = 3f) {
+        drawBoxOutline(
+            aabb.minX, aabb.maxX - aabb.minX,
+            aabb.minY, aabb.maxY - aabb.minY,
+            aabb.minZ, aabb.maxZ - aabb.minZ,
+            color,
+            thickness,
+            phase
+        )
+        drawFilledBox(
+            aabb,
+            color,
+            phase
+        )
+    }
+
+    /**
+     * Draws a custom box in the 3D world space.
+     *
+     * @param aabb The `AxisAlignedBB` representing the box.
+     * @param color The color of the box (must be in the range of 0-255).
+     * @param thickness The thickness of the lines forming the box. Default is 3f.
+     * @param phase If `true`, disables depth testing for the box. Default is `false`.
+     */
+    fun drawBoxOutline(aabb: AxisAlignedBB, color: Color, thickness: Float = 3f, phase: Boolean) {
+        drawBoxOutline(
             aabb.minX, aabb.maxX - aabb.minX,
             aabb.minY, aabb.maxY - aabb.minY,
             aabb.minZ, aabb.maxZ - aabb.minZ,
@@ -121,48 +248,6 @@ object RenderUtils {
         )
     }
 
-    /**
-     * Draws a custom box in the 3D world space.
-     *
-     * @param x X-coordinate of the box.
-     * @param y Y-coordinate of the box.
-     * @param z Z-coordinate of the box.
-     * @param scale The scale of the box.
-     * @param color The color of the box (must be in the range of 0-255).
-     * @param thickness The thickness of the lines forming the box. Default is 3f.
-     * @param phase If `true`, disables depth testing for the box. Default is `false`.
-     */
-    fun drawCustomBox(x: Double, y: Double, z: Double, scale: Double, color: Color, thickness: Float = 3f, phase: Boolean = false) {
-        drawCustomBox(x, scale, y, scale, z, scale, color, thickness, phase)
-    }
-
-    /**
-     * Draws a custom box in the 3D world space using block coordinates.
-     *
-     * @param pos The block position of the box.
-     * @param color The color of the box (must be in the range of 0-255).
-     * @param thickness The thickness of the lines forming the box. Default is 3f.
-     * @param phase If `true`, disables depth testing for the box. Default is `false`.
-     */
-    fun drawCustomBox(pos: BlockPos, color: Color, thickness: Float = 3f, phase: Boolean = false) {
-        drawCustomBox(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble(), 1.0, color, thickness, phase)
-    }
-
-    /**
-     * Draws a custom box in the 3D world space.
-     *
-     * @param x X-coordinate of the box.
-     * @param y Y-coordinate of the box.
-     * @param z Z-coordinate of the box.
-     * @param width The width of the box.
-     * @param height The height of the box.
-     * @param color The color of the box (must be in the range of 0-255).
-     * @param thickness The thickness of the lines forming the box. Default is 3f.
-     * @param phase If `true`, disables depth testing for the box. Default is `false`.
-     */
-    fun drawCustomBox(x: Double, y: Double, z: Double, width: Double, height: Double, color: Color, thickness: Float = 3f, phase: Boolean = false) {
-        drawCustomBox(x, width, y, height, z, width, color, thickness, phase)
-    }
 
     /**
      * Draws a custom box in the 3D world space.
@@ -175,8 +260,8 @@ object RenderUtils {
      * @param thickness The thickness of the lines forming the box. Default is 3f.
      * @param phase If `true`, disables depth testing for the box. Default is `false`.
      */
-    fun drawCustomBox(x: Number, y: Number, z: Number, scale: Number, color: Color, thickness: Number = 3f, phase: Boolean = false) {
-        drawCustomBox(x.toDouble(), scale.toDouble(), y.toDouble(), scale.toDouble(), z.toDouble(), scale.toDouble(), color, thickness.toFloat(), phase)
+    fun drawBoxOutline(x: Number, y: Number, z: Number, scale: Number, color: Color, thickness: Number = 3f, phase: Boolean = false) {
+        drawBoxOutline(x.toDouble(), scale.toDouble(), y.toDouble(), scale.toDouble(), z.toDouble(), scale.toDouble(), color, thickness.toFloat(), phase)
     }
 
     /**
@@ -192,7 +277,7 @@ object RenderUtils {
      * @param thickness The thickness of the lines forming the box. Default is 3f.
      * @param phase If `true`, disables depth testing for the box. Default is `false`.
      */
-    fun drawCustomBox(x: Double, xWidth: Double, y: Double, yWidth: Double, z: Double, zWidth: Double, color: Color, thickness: Float = 3f, phase: Boolean) {
+    fun drawBoxOutline(x: Double, xWidth: Double, y: Double, yWidth: Double, z: Double, zWidth: Double, color: Color, thickness: Float = 3f, phase: Boolean) {
         GlStateManager.pushMatrix()
         color.bindColor()
         GlStateManager.translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
@@ -236,17 +321,6 @@ object RenderUtils {
         GlStateManager.enableDepth()
         GlStateManager.resetColor()
         GlStateManager.popMatrix()
-    }
-
-    /**
-     * Draws a filled box in the 3D world space using block coordinates.
-     *
-     * @param pos The block position of the box.
-     * @param color The color of the box.
-     * @param phase If `true`, disables depth testing for the box. Default is `false`.
-     */
-    fun drawFilledBox(pos: BlockPos, color: Color, phase: Boolean = false) {
-        drawFilledBox(AxisAlignedBB(pos, pos.add(1, 1, 1)).expand(0.001, 0.001, 0.001), color, phase)
     }
 
     /**
@@ -312,8 +386,8 @@ object RenderUtils {
         text: String,
         vec3: Vec3,
         color: Int = 0xffffffff.toInt(),
-        renderBlackBox: Boolean = true,
-        increase: Boolean = true,
+        renderBlackBox: Boolean = false,
+        increase: Boolean = false,
         depthTest: Boolean = true,
         scale: Float = 1f,
         shadow: Boolean = true
@@ -375,29 +449,29 @@ object RenderUtils {
     }
 
 
-    fun renderCustomBeacon(title: String, pos: Vec3, color: Color, partialTicks: Float = this.partialTicks) {
-        renderCustomBeacon(title, pos.xCoord, pos.yCoord, pos.zCoord, color, partialTicks)
+    fun renderCustomBeacon(title: String, pos: Vec3, color: Color, increase: Boolean = false) {
+        renderCustomBeacon(title, pos.xCoord, pos.yCoord, pos.zCoord, color, increase = increase)
     }
 
-    fun renderCustomBeacon(title: String, x: Double, y: Double, z: Double, color: Color, partialTicks: Float, beacon: Boolean = true) {
+    fun renderCustomBeacon(title: String, x: Double, y: Double, z: Double, color: Color, beacon: Boolean = true, increase: Boolean = true, noFade: Boolean = false, distance: Boolean = true) {
         val distX = x - mc.renderManager.viewerPosX
         val distY = y - mc.renderManager.viewerPosY - mc.renderViewEntity.eyeHeight
         val distZ = z - mc.renderManager.viewerPosZ
         val dist = sqrt(distX * distX + distY * distY + distZ * distZ)
 
-        drawCustomBox(floor(x), floor(y), floor(z), 1.0, color.withAlpha(1f), 3f, true)
+        drawBoxOutline(floor(x), floor(y), floor(z), 1.0, color.withAlpha(1f), 3f, true)
 
         drawStringInWorld(
-            "$title §r§f(§3${dist.toInt()}m§f)",
+            if (distance) "$title §r§f(§3${dist.toInt()}m§f)" else title,
             Vec3(floor(x) + .5, floor(y) + 1.7 + dist / 30, floor(z) + .5),
             color.rgba,
             renderBlackBox = true,
-            increase = false,
+            increase = increase,
             depthTest = false,
-            max(0.03, dist / 180.0).toFloat()
+            if(increase) 5f else 0.05f
         )
-        val a = min(1f, max(0f, dist.toFloat()) / 60f)
-        if (beacon) renderBeaconBeam(floor(x), .0, floor(z), color, a, true, partialTicks)
+        val a = if (noFade) 255f else min(1f, max(0f, dist.toFloat()) / 60f)
+        if (beacon) renderBeaconBeam(floor(x), .0, floor(z), color, a, true)
     }
 
     fun WorldRenderer.color(color: Color) { // local function is used to simplify this.
@@ -405,7 +479,7 @@ object RenderUtils {
     }
 
 
-    fun draw3DLine(pos1: Vec3, pos2: Vec3, color: Color, lineWidth: Int, depth: Boolean, partialTicks: Float) {
+    fun draw3DLine(pos1: Vec3, pos2: Vec3, color: Color, lineWidth: Int, depth: Boolean) {
         val render: Entity = mc.renderViewEntity
 
         val realX: Double = render.lastTickPosX + (render.posX - render.lastTickPosX) * partialTicks
@@ -415,10 +489,7 @@ object RenderUtils {
         GlStateManager.pushMatrix()
         color.bindColor()
         GlStateManager.translate(-realX, -realY, -realZ)
-        GlStateManager.disableTexture2D()
-        GlStateManager.enableBlend()
-        GlStateManager.disableAlpha()
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        preDraw()
 
         GL11.glLineWidth(lineWidth.toFloat())
         if (!depth) {
@@ -438,16 +509,14 @@ object RenderUtils {
             GlStateManager.depthMask(true)
         }
 
-        GlStateManager.disableBlend()
-        GlStateManager.enableAlpha()
-        GlStateManager.enableTexture2D()
+        postDraw()
         GlStateManager.resetColor()
         GlStateManager.popMatrix()
     }
 
     private val beaconBeam = ResourceLocation("textures/entity/beacon_beam.png")
 
-    private fun renderBeaconBeam(x: Double, y: Double, z: Double, color: Color, a: Float, depthCheck: Boolean, partialTicks: Float) {
+    private fun renderBeaconBeam(x: Double, y: Double, z: Double, color: Color, a: Float, depthCheck: Boolean) {
         val height = 300
         val bottomOffset = 0
         val topOffset = bottomOffset + height
@@ -552,14 +621,6 @@ object RenderUtils {
         if (!depthCheck) GlStateManager.enableDepth()
     }
 
-    private fun drawModel(x: Int, y: Int, width: Int, height: Int) {
-        worldRenderer.begin(GL_QUADS, DefaultVertexFormats.POSITION_TEX)
-        worldRenderer.pos(x.toDouble(), (y + height).toDouble(), 0.0).tex(0.0, 1.0).endVertex()
-        worldRenderer.pos((x + width).toDouble(), (y + height).toDouble(), 0.0).tex(1.0, 1.0).endVertex()
-        worldRenderer.pos((x + width).toDouble(), y.toDouble(), 0.0).tex(1.0, 0.0).endVertex()
-        worldRenderer.pos(x.toDouble(), y.toDouble(), 0.0).tex(0.0, 0.0).endVertex()
-        tessellator.draw()
-    }
 
     private fun getRenderPos(vec: Vec3): Vec3 {
         val renderPosX = mc.renderManager.viewerPosX
@@ -618,139 +679,43 @@ object RenderUtils {
         GlStateManager.popMatrix()
     }
 
-    fun loadImage(path: String): BufferedImage {
-        val resource = this::class.java.getResource(path)
-            ?: return BufferedImage(8, 8, BufferedImage.TYPE_INT_ARGB) // poor fix for debug mode
-        return ImageIO.read(resource)
+    fun drawTexturedModalRect(x: Int, y: Int, width: Int, height: Int) {
+        worldRenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
+        worldRenderer.pos(x.toDouble(), (y + height).toDouble(), 0.0).tex(0.0, 1.0).endVertex()
+        worldRenderer.pos((x + width).toDouble(), (y + height).toDouble(), 0.0).tex(1.0, 1.0).endVertex()
+        worldRenderer.pos((x + width).toDouble(), y.toDouble(), 0.0).tex(1.0, 0.0).endVertex()
+        worldRenderer.pos(x.toDouble(), y.toDouble(), 0.0).tex(0.0, 0.0).endVertex()
+        tessellator.draw()
     }
 
-    fun drawRoundedRect(x: Double, y: Double, x2: Double, y2: Double, radius: Double, color: Color) {
-        var x = x
-        var y = y
-        var x2 = x2
-        var y2 = y2
-        GlStateManager.disableTexture2D()
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        GL11.glPushAttrib(0)
-        GL11.glScaled(0.25, 0.25, 0.25)
-        x *= 2.0
-        y *= 2.0
-        x2 *= 2.0
-        y2 *= 2.0
-        GL11.glDisable(3553)
-        GlStateManager.color(color.r / 255f, color.g / 255f, color.b / 255f, color.alpha)
-        GL11.glEnable(2848)
-        GL11.glBegin(9)
-        run {
-            var i = 0
-            while (i <= 90) {
-                GL11.glVertex2d(
-                    x + radius + sin(i * 3.141592653589793 / 180.0) * -radius,
-                    y + radius + cos(i * 3.141592653589793 / 180.0) * -radius
-                )
-                i += 3
-            }
-        }
-        run {
-            var i = 90
-            while (i <= 180) {
-                GL11.glVertex2d(
-                    x + radius + sin(i * 3.141592653589793 / 180.0) * -radius,
-                    y2 - radius + cos(i * 3.141592653589793 / 180.0) * -radius
-                )
-                i += 3
-            }
-        }
-        run {
-            var i = 0
-            while (i <= 90) {
-                GL11.glVertex2d(
-                    x2 - radius + sin(i * 3.141592653589793 / 180.0) * radius,
-                    y2 - radius + cos(i * 3.141592653589793 / 180.0) * radius
-                )
-                i += 3
-            }
-        }
-        var i = 90
-        while (i <= 180) {
-            GL11.glVertex2d(
-                x2 - radius + sin(i * 3.141592653589793 / 180.0) * radius,
-                y + radius + cos(i * 3.141592653589793 / 180.0) * radius
-            )
-            i += 3
-        }
-        GL11.glEnd()
-        GL11.glEnable(3553)
-        GL11.glDisable(2848)
-        GL11.glScaled(4.0, 4.0, 4.0)
-        GL11.glPopAttrib()
-        GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
-        GlStateManager.enableTexture2D()
-    }
+    /**
+     * Creates a shader from a vertex shader, fragment shader, and a blend state
+     *
+     * @param vertName The name of the vertex shader's file.
+     * @param fragName The name of the fragment shader's file.
+     * @param blendState The blend state for the shader
+     */
+    fun createLegacyShader(vertName: String, fragName: String, blendState: BlendState) =
+        UShader.fromLegacyShader(readShader(vertName, "vsh"), readShader(fragName, "fsh"), blendState)
 
-    fun drawRoundedRect2(x: Double, y: Double, width: Double, height: Double, radius: Double, color: Color) {
-        var x = x
-        var y = y
-        GlStateManager.disableTexture2D()
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        var x2 = x + width
-        var y2 = y + height
-        GL11.glPushAttrib(0)
-        GL11.glScaled(0.25, 0.25, 0.25)
-        x *= 2.0
-        y *= 2.0
-        x2 *= 2.0
-        y2 *= 2.0
-        GL11.glDisable(3553)
-        GlStateManager.color(color.r / 255f, color.g / 255f, color.b / 255f, color.alpha)
-        GL11.glEnable(2848)
-        GL11.glBegin(9)
-        run {
-            var i = 0
-            while (i <= 90) {
-                GL11.glVertex2d(
-                    x + radius + sin(i * 3.141592653589793 / 180.0) * (radius * -1.0),
-                    y + radius + cos(i * 3.141592653589793 / 180.0) * (radius * -1.0)
-                )
-                i += 3
-            }
-        }
-        run {
-            var i = 90
-            while (i <= 180) {
-                GL11.glVertex2d(
-                    x + radius + sin(i * 3.141592653589793 / 180.0) * (radius * -1.0),
-                    y2 - radius + cos(i * 3.141592653589793 / 180.0) * (radius * -1.0)
-                )
-                i += 3
-            }
-        }
-        run {
-            var i = 0
-            while (i <= 90) {
-                GL11.glVertex2d(
-                    x2 - radius + sin(i * 3.141592653589793 / 180.0) * radius,
-                    y2 - radius + cos(i * 3.141592653589793 / 180.0) * radius
-                )
-                i += 3
-            }
-        }
-        var i = 90
-        while (i <= 180) {
-            GL11.glVertex2d(
-                x2 - radius + sin(i * 3.141592653589793 / 180.0) * radius,
-                y + radius + cos(i * 3.141592653589793 / 180.0) * radius
-            )
-            i += 3
-        }
-        GL11.glEnd()
-        GL11.glEnable(3553)
-        GL11.glDisable(2848)
-        GL11.glScaled(4.0, 4.0, 4.0)
-        GL11.glPopAttrib()
-        GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
-        GlStateManager.enableTexture2D()
-    }
+    /**
+     * Reads a shader file as a text file, and returns the contents
+     *
+     * @param name The name of the shader file
+     * @param ext The file extension of the shader file (usually fsh or vsh)
+     *
+     * @return The contents of the shader file at the given path.
+     */
+    private fun readShader(name: String, ext: String): String =
+        OdinMain::class.java.getResource("/shaders/$name.$ext")?.readText() ?: ""
 
-
+    /**
+     * Loads a BufferedImage from a path to a resource in the project
+     *
+     * @param path The path to the image file
+     *
+     * @returns The BufferedImage of that resource path.
+     */
+    fun loadBufferedImage(path: String): BufferedImage =
+        TextureUtil.readBufferedImage(OdinMain::class.java.getResourceAsStream(path))
 }

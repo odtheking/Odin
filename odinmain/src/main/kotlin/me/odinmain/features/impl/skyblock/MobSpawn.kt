@@ -7,19 +7,23 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.StringSetting
 import me.odinmain.utils.clock.Clock
+import me.odinmain.utils.floor
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.skyblock.partyMessage
+import me.odinmain.utils.skyblock.sendChatMessage
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object MobSpawn: Module(
     "Mob Spawn",
     category = Category.SKYBLOCK,
-    description = "Sends a message whenever a mob spawns",
-    tag = TagType.NEW
+    description = "Sends a message whenever a mob spawns."
 ) {
     private val mobName: String by StringSetting("Mob Name", "MobName", 40, description = "Message sent when mob is detected as spawned")
     private val soundOnly: Boolean by BooleanSetting("Sound Only", false, description = "Only plays sound when mob spawns")
-    private val delay: Long by NumberSetting("Time between alerts", 3000, 10.0, 10000.0, 10.0)
+    private val delay: Long by NumberSetting("Time between alerts", 3000, 10.0, 10000.0, 10.0, description = "Time between alerts in milliseconds")
+    private val ac: Boolean by BooleanSetting("All Chat", false , description = "Send message in all chat")
+    private val pc: Boolean by BooleanSetting("Party Chat", false, description = "Send message in party chat")
 
     private val time = Clock(delay)
 
@@ -31,9 +35,9 @@ object MobSpawn: Module(
             time.update()
 
             modMessage("§5$mobName has spawned!")
-            PlayerUtils.alert("§5$mobName has spawned!", !soundOnly)
-
-
+            PlayerUtils.alert("§5$mobName has spawned!", playSound = !soundOnly)
+            if (ac) sendChatMessage("$mobName spawned at: x: ${PlayerUtils.posX.floor()}, y: ${PlayerUtils.posY.floor()}, z: ${PlayerUtils.posZ.floor()}")
+            if (pc) partyMessage("$mobName spawned at: x: ${PlayerUtils.posX.floor()}, y: ${PlayerUtils.posY.floor()}, z: ${PlayerUtils.posZ.floor()}")
         }
     }
 }

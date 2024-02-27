@@ -9,7 +9,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object CancelWrongTerms : Module(
     name = "Stop Wrong Clicks",
-    description = "Stops you from clicking wrong items in terminals",
+    description = "Stops you from clicking wrong items in terminals.",
     category = Category.FLOOR7
 ) {
     @SubscribeEvent

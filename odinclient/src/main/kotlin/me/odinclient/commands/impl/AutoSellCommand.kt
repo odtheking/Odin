@@ -14,6 +14,8 @@ object AutoSellCommand : Commodore {
                 !OdinMain.onLegitVersion
             }
 
+            runs { modMessage("Usage: /autosell <add/remove/clear/list> <name>")}
+
             literal("add").runs { item: GreedyString ->
                 val lowercase = item.string.lowercase()
                 if (lowercase in MiscConfig.autoSell) return@runs modMessage("$item is already in the Auto sell list.")

@@ -24,12 +24,11 @@ object ChatCommands : Module(
     name = "Chat commands",
     category = Category.SKYBLOCK,
     description = "type !help in the corresponding channel for cmd list. Use /blacklist.",
-    tag = TagType.NEW
 ) {
-    private var party: Boolean by BooleanSetting(name = "Party cmds", default = true)
-    private var guild: Boolean by BooleanSetting(name = "Guild cmds", default = true)
-    private var private: Boolean by BooleanSetting(name = "Private cmds", default = true)
-    private var showSettings: Boolean by BooleanSetting(name = "Show Settings", default = false)
+    private var party: Boolean by BooleanSetting(name = "Party commands", default = true, description = "Toggles chat commands in party chat")
+    private var guild: Boolean by BooleanSetting(name = "Guild commands", default = true, description = "Toggles chat commands in guild chat")
+    private var private: Boolean by BooleanSetting(name = "Private commands", default = true, description = "Toggles chat commands in private chat")
+    private var showSettings: Boolean by BooleanSetting(name = "Show Settings", default = false, description = "Shows the settings for chat commands")
 
     private var warp: Boolean by BooleanSetting(name = "Warp", default = true).withDependency { showSettings }
     private var warptransfer: Boolean by BooleanSetting(name = "Warp & pt (warptransfer)", default = true).withDependency { showSettings }
@@ -48,9 +47,11 @@ object ChatCommands : Module(
     private var inv: Boolean by BooleanSetting(name = "inv", default = true).withDependency { showSettings }
     private val invite: Boolean by BooleanSetting(name = "invite", default = true).withDependency { showSettings }
     private val racism: Boolean by BooleanSetting(name = "Racism", default = true).withDependency { showSettings }
+    private val queDungeons: Boolean by BooleanSetting(name = "Queue dungeons cmds", default = true).withDependency { showSettings }
+    private val queKuudra: Boolean by BooleanSetting(name = "Queue kuudra cmds", default = true).withDependency { showSettings }
 
     private var dtPlayer: String? = null
-    var disableReque: Boolean? = false
+    var disableRequeue: Boolean? = false
     private val dtReason = mutableListOf<Pair<String, String>>()
 
     private var picture = getCatPic()
@@ -109,15 +110,15 @@ object ChatCommands : Module(
 
         GlobalScope.launch {
             delay(350)
-            cmdsAll(msg!!, ign, channel)
+            commandsall(msg!!, ign, channel)
         }
 
     }
 
-    private suspend fun cmdsAll(message: String, name: String, channel: String) {
+    private suspend fun commandsall(message: String, name: String, channel: String) {
 
         val helpMessage = when (channel) {
-            "party" -> "Commands: coords, odin, boop, cf, 8ball, dice, cat, racism, ping, tps, warp, warptransfer, allinvite, pt, dt"
+            "party" -> "Commands: coords, odin, boop, cf, 8ball, dice, cat, racism, ping, tps, warp, warptransfer, allinvite, pt, dt, m (?), f (?)"
             "guild" -> "Commands: coords, odin, boop, cf, 8ball, dice, cat, racism, ping, tps"
             "private" -> "Commands: coords, odin, boop, cf, 8ball, dice, cat, racism, ping, tps, inv, invite"
             else -> ""
@@ -125,7 +126,7 @@ object ChatCommands : Module(
         if (!message.startsWith("!")) return
         when (message.split(" ")[0].drop(1)) {
             "help" -> channelMessage(helpMessage, name, channel)
-            "coords" -> if (coords) channelMessage("x: ${PlayerUtils.getFlooredPlayerCoords().x}, y: ${PlayerUtils.getFlooredPlayerCoords().y}, z: ${PlayerUtils.getFlooredPlayerCoords().z}", name, channel)
+            "coords" -> if (coords) channelMessage("x: ${PlayerUtils.posX.toInt()}, y: ${PlayerUtils.posY.toInt()}, z: ${PlayerUtils.posZ.toInt()}", name, channel)
             "odin" -> if (odin) channelMessage("Odin! https://discord.gg/2nCbC9hkxT", name, channel)
             "boop" -> {
                 if (boop) {
@@ -143,7 +144,7 @@ object ChatCommands : Module(
             // Party cmds only
 
             "warp" -> if (warp && channel == "party") sendCommand("p warp")
-            "warptransfer" -> { if (warptransfer && channel == "party")
+            "warptransfer" -> { if (warptransfer)
                 sendCommand("p warp")
                 delay(500)
                 sendCommand("p transfer $name")
@@ -152,11 +153,41 @@ object ChatCommands : Module(
             "pt" -> if (pt && channel == "party") sendCommand("p transfer $name")
 
             "dt" -> if (dt && channel == "party") {
-                val reason = message.substringAfter("dt ")
+                var reason = "No reason given"
+                if (message.substringAfter("dt ") != message && !message.substringAfter("dt ").contains("!dt"))
+                    reason = message.substringAfter("dt ")
+                if (dtReason.any { it.first == name }) return modMessage("§cThat player already has a reminder!")
                 dtReason.add(Pair(name, reason))
                 modMessage("§aReminder set for the end of the run!")
                 dtPlayer = name
-                disableReque = true
+                disableRequeue = true
+            }
+
+            "m" -> {
+                if (!queDungeons) return
+                val floor = message.substringAfter("m ")
+                if (message.substringAfter("m ") == message) return modMessage("§cPlease specify a floor.")
+                if (floor.toIntOrNull() == null) return modMessage("§cPlease specify a valid floor.")
+                modMessage("§aEntering master mode floor: $floor")
+                sendCommand("od m$floor", true)
+            }
+
+            "f" -> {
+                if (!queDungeons) return
+                val floor = message.substringAfter("f ")
+                if (message.substringAfter("f ") == message) return modMessage("§cPlease specify a floor.")
+                if (floor.toIntOrNull() == null) return modMessage("§cPlease specify a valid floor.")
+                modMessage("§aEntering floor: $floor")
+                sendCommand("od f$floor, true")
+            }
+
+            "t" -> {
+                if(!queKuudra) return
+                val tier = message.substringAfter("t ")
+                if (message.substringAfter("t ") == message) return modMessage("§cPlease specify a tier.")
+                if (tier.toIntOrNull() == null) return modMessage("§cPlease specify a valid tier.")
+                modMessage("§aEntering kuudra run: $tier")
+                sendCommand("od t$tier", true)
             }
 
             // Private cmds only

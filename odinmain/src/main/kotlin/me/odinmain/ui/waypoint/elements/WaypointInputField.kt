@@ -1,12 +1,10 @@
 package me.odinmain.ui.waypoint.elements
 
-import cc.polyfrost.oneconfig.renderer.font.Font
-import cc.polyfrost.oneconfig.utils.dsl.*
-import me.odinmain.utils.render.gui.MouseHandler
-import me.odinmain.utils.render.gui.animations.impl.EaseInOut
-import me.odinmain.utils.render.gui.animations.impl.LinearAnimation
+
+import me.odinmain.ui.clickgui.animations.impl.EaseInOut
+import me.odinmain.ui.clickgui.animations.impl.LinearAnimation
+import me.odinmain.ui.util.MouseHandler
 import org.lwjgl.input.Keyboard
-import java.awt.Color
 
 class WaypointInputField(
     defaultText: Any,
@@ -14,11 +12,11 @@ class WaypointInputField(
     private val onlyNumbers: Boolean,
     private val mouseHandler: MouseHandler,
     private val size: Float,
-    private val font: Font
+    private val font: Int
 ) {
-    constructor(defaultText: String, mouseHandler: MouseHandler, size: Float, font: Font) : this(defaultText, null, false, mouseHandler, size, font)
+    constructor(defaultText: String, mouseHandler: MouseHandler, size: Float, font: Int) : this(defaultText, null, false, mouseHandler, size, font)
 
-    constructor(defaultText: Int, prefix: String, mouseHandler: MouseHandler, size: Float, font: Font) : this(defaultText, prefix, true, mouseHandler, size, font)
+    constructor(defaultText: Int, prefix: String, mouseHandler: MouseHandler, size: Float, font: Int) : this(defaultText, prefix, true, mouseHandler, size, font)
 
     private inline val display get() = (if (prefix != null) "$prefix " else "") + text
     var text: String = defaultText.toString()
@@ -31,8 +29,9 @@ class WaypointInputField(
     private val outlineAnimation = EaseInOut(250)
     private val inputAnimation = LinearAnimation<Float>(325)
 
-    fun draw(vg: VG, x: Float, y: Float, color: Int): Float {
-        nanoVG(vg.instance) {
+    fun draw(x: Float, y: Float, color: Int): Float {
+        /*nanoVG(vg.instance) {
+
             this@WaypointInputField.y = y
             this@WaypointInputField.width =
                 if (width == 0f) getTextWidth(display, size, font) + 12
@@ -43,6 +42,8 @@ class WaypointInputField(
             drawText(display, x + 6, y + 0.5, color, size, font)
 
         }
+
+         */
         return width + 10
     }
 

@@ -1,13 +1,16 @@
 package me.odinmain.features.impl.render
 
 
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
 import kotlinx.coroutines.launch
-import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
+import me.odinmain.OdinMain.scope
 import me.odinmain.features.impl.render.ClickGUIModule.devSize
-import me.odinmain.utils.clock.Executor
-import me.odinmain.utils.clock.Executor.Companion.register
-import me.odinmain.utils.fetchURLData
+import me.odinmain.ui.util.scale
+import me.odinmain.utils.getDataFromServer
 import me.odinmain.utils.render.Color
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.model.ModelBase
@@ -17,53 +20,78 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.RenderPlayerEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import java.lang.reflect.Type
 import kotlin.math.cos
 import kotlin.math.sin
 
 
 object DevPlayers {
+    private var devs: HashMap<String, DevPlayer> = HashMap()
+    val isDev get() = devs.containsKey(mc.session?.username)
 
-    data class Dev(val xScale: Float = 1f, val yScale: Float = 1f, val zScale: Float = 1f,
-                   val wings: Boolean = false, val wingsColor: Color = Color(255, 255, 255)
-    )
+    data class DevPlayer(val xScale: Float = 1f, val yScale: Float = 1f, val zScale: Float = 1f,
+                         val wings: Boolean = false, val wingsColor: Color = Color(255, 255, 255))
+    data class DevData(val DevName: String, val WingsColor: Triple<Int, Int, Int>, val Size: Triple<Float, Float, Float>, val Wings: Boolean)
+    class DevDeserializer : JsonDeserializer<DevData> {
+        override fun deserialize(
+            json: JsonElement?,
+            typeOfT: Type?,
+            context: JsonDeserializationContext?
+        ): DevData {
+            val jsonObject = json?.asJsonObject
+            val devName = jsonObject?.get("DevName")?.asString
+            val wingsColorJsonArray = jsonObject?.get("WingsColor")?.asJsonArray
+            val wingsColorTriple = Triple(
+                wingsColorJsonArray?.get(0)?.asInt ?: 0,
+                wingsColorJsonArray?.get(1)?.asInt ?: 0,
+                wingsColorJsonArray?.get(2)?.asInt ?: 0
+            )
+            val sizeJsonArray = jsonObject?.get("Size")?.asJsonArray
+            val sizeTriple = Triple(
+                sizeJsonArray?.get(0)?.asFloat ?: 0,
+                sizeJsonArray?.get(1)?.asFloat ?: 0,
+                sizeJsonArray?.get(2)?.asFloat ?: 0
+            )
+            val wings = jsonObject?.get("Wings")?.asBoolean ?: false
 
-    val devs = HashMap<String, Dev>()
+            return DevData(devName ?: "", wingsColorTriple, sizeTriple as Triple<Float, Float, Float>, wings)
+        }
+    }
+
+    private fun convertDecimalToNumber(s: String): String {
+        val pattern = Regex("""Decimal\('(\d+(?:\.\d+)?)'\)""")
+
+        return s.replace(pattern) { match -> match.groupValues[1] }
+    }
 
     fun updateDevs() {
-        val webhook: String = fetchURLData("https://pastebin.com/raw/9Lq8hKTQ")
-
-        val keyValuePairs = webhook.split("?")
-        for (keyValuePair in keyValuePairs) {
-            val parts = keyValuePair.split(" to ")
-
-            if (parts.size == 2) {
-
-                val key = parts[0].trim(' ', '"')
-                val valueString = parts[1].trim()
-
-                val regex = Regex("""Dev\((\d+\.*\d*), (\d+\.*\d*), (\d+\.*\d*)\), (\w+), Color\((\d+), (\d+), (\d+)\)\)""")
-                val match = regex.find(valueString) ?: return
-
-                val (x, y, z, wings, wingRed, wingGreen, wingBlue) = match.destructured
-                val dev = Dev(x.toFloat(), y.toFloat(), z.toFloat(), wings.toBoolean(), Color(wingRed.toInt(), wingGreen.toInt(), wingBlue.toInt()))
-
-                devs[key] = dev
-
+        scope.launch {
+            val data = convertDecimalToNumber(getDataFromServer("https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
+            val gson = GsonBuilder().registerTypeAdapter(DevData::class.java, DevDeserializer()).create()
+            gson.fromJson(data, Array<DevData>::class.java).forEach {
+                devs[it.DevName] = DevPlayer(it.Size.first, it.Size.second, it.Size.third, it.Wings, Color(it.WingsColor.first, it.WingsColor.second, it.WingsColor.third))
             }
         }
     }
 
     init {
-        Executor(delay = 60000) {
-            OdinMain.scope.launch { updateDevs() }
-        }.register()
+        updateDevs()
     }
 
     fun preRenderCallbackScaleHook(entityLivingBaseIn: AbstractClientPlayer ) {
         if (!devs.containsKey(entityLivingBaseIn.name)) return
         if (!devSize && entityLivingBaseIn.name == mc.thePlayer.name) return
         val dev = devs[entityLivingBaseIn.name]
-        if (dev != null) { GlStateManager.scale(dev.xScale, dev.yScale, dev.zScale) }
+        if (dev != null) { scale(dev.xScale, dev.yScale, dev.zScale) }
+    }
+
+    @SubscribeEvent
+    fun onRenderPlayer(event: RenderPlayerEvent.Post) {
+        if (!devs.containsKey(event.entity.name)) return
+        if (!devSize && event.entity.name == mc.thePlayer.name) return
+        val dev = devs[event.entity.name] ?: return
+        if (!dev.wings) return
+        DragonWings.renderWings(event.entityPlayer, event.partialRenderTick, dev)
     }
 
     private val dragonWingTextureLocation = ResourceLocation("textures/entity/enderdragon/dragon.png")
@@ -92,7 +120,7 @@ object DevPlayers {
             wing.addChild(wingTip)
         }
 
-        fun renderWings(player: EntityPlayer, partialTicks: Float, dev: Dev) {
+        fun renderWings(player: EntityPlayer, partialTicks: Float, dev: DevPlayer) {
             val rotation = this.interpolate(player.prevRenderYawOffset, player.renderYawOffset, partialTicks)
 
             GlStateManager.pushMatrix()
@@ -142,14 +170,4 @@ object DevPlayers {
         }
 
     }
-
-    @SubscribeEvent
-    fun onRenderPlayer(event: RenderPlayerEvent.Post) {
-        if (!devs.containsKey(event.entity.name)) return
-        if (!devSize && event.entity.name == mc.thePlayer.name) return
-        val dev = devs[event.entity.name] ?: return
-        if (!dev.wings) return
-        DragonWings.renderWings(event.entityPlayer, event.partialRenderTick, dev)
-    }
-
 }

@@ -7,6 +7,8 @@
     "mixins.MixinChunk",
     "mixins.MixinEntityLivingBase",
     "mixins.MixinNetworkManager",
+    "mixins.MixinRendererLivingEntity",
+    "mixins.MixinRenderGlobal",
     "mixins.MixinS1CPacketEntityMetadata",
     "mixins.MixinWorld",
     "mixins.other.MixinNEURenderListener"
@@ -29,6 +31,7 @@
     "mixins.MixinRenderPlayer",
     "mixins.MixinSoundManager",
     "mixins.model.MixinModelBiped",
-    "mixins.model.MixinModelBlaze"
+    "mixins.model.MixinModelBlaze",
+    "transformers.CustomRenderGlobal"
   ]
 }

@@ -10,17 +10,16 @@ import net.minecraft.item.ItemStack
 object SpaceHelmet : Module(
     name = "Space Helmet",
     category = Category.RENDER,
-    description = "Equips you with a space helmet.",
-    tag = TagType.NEW
+    description = "Equips you with a space helmet."
 ) {
+    private val speed: Long by NumberSetting("Speed", 250, 100, 1000, 10, description = "The speed at which the color changes.")
+
     private val values = listOf(14, 1, 4, 5, 13, 9, 11, 10, 6) // Define the values you want to cycle through
     private var currentIndex = 0 // Initialize the counter
-    private val speed: Long by NumberSetting("Speed", 250, 100, 1000, 10)
 
     init {
         execute({ speed }) {
             if (mc.thePlayer == null || mc.currentScreen !== null) return@execute
-
 
             val color = values[currentIndex]
             currentIndex = (currentIndex + 1) % values.size
@@ -29,7 +28,6 @@ object SpaceHelmet : Module(
             }
 
             mc.thePlayer?.inventory?.armorInventory?.set(3, item)
-
         }
     }
 }

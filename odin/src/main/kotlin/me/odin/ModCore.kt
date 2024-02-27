@@ -4,6 +4,7 @@ import me.odin.commands.impl.HighlightCommand
 import me.odin.features.impl.floor7.p3.ArrowAlign
 import me.odin.features.impl.floor7.p3.SimonSays
 import me.odin.features.impl.render.EtherWarpHelper
+import me.odin.utils.EntityOutlineRenderer
 import me.odinmain.OdinMain
 import me.odinmain.commands.Commodore.Companion.registerCommands
 import me.odinmain.features.ModuleManager
@@ -27,20 +28,16 @@ class ModCore {
 
     @EventHandler
     fun init(event: FMLInitializationEvent) {
-        ModuleManager.modules.addAll(modules)
         OdinMain.init()
         MinecraftForge.EVENT_BUS.register(this)
+        listOf(
+            EntityOutlineRenderer
+        ).forEach(MinecraftForge.EVENT_BUS::register)
 
         registerCommands(
             HighlightCommand
         )
     }
-
-    private val modules = arrayListOf(
-        ArrowAlign,
-        SimonSays,
-        EtherWarpHelper,
-    )
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
@@ -55,6 +52,13 @@ class ModCore {
 
     @EventHandler
     fun loadComplete(event: FMLLoadCompleteEvent) {
+        val modules = arrayListOf(
+            ArrowAlign,
+            SimonSays,
+            EtherWarpHelper,
+        )
+
+        ModuleManager.modules.addAll(modules)
         OdinMain.loadComplete()
     }
 

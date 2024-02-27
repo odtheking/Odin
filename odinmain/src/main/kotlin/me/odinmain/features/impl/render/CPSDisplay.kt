@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.render
 
-import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinmain.events.impl.PacketSentEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -9,14 +8,15 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.features.settings.impl.SelectorSetting
+import me.odinmain.font.OdinFont
+import me.odinmain.ui.clickgui.animations.impl.EaseInOut
 import me.odinmain.ui.clickgui.util.ColorUtil.brighter
 import me.odinmain.ui.hud.HudElement
+import me.odinmain.ui.util.TextAlign
+import me.odinmain.ui.util.dropShadow
+import me.odinmain.ui.util.roundedRectangle
+import me.odinmain.ui.util.text
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.gui.animations.impl.EaseInOut
-import me.odinmain.utils.render.gui.nvg.TextAlign
-import me.odinmain.utils.render.gui.nvg.dropShadow
-import me.odinmain.utils.render.gui.nvg.rect
-import me.odinmain.utils.render.gui.nvg.text
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -31,36 +31,37 @@ object CPSDisplay : Module(
 
         val value = if (button == 0) "${leftClicks.size}" else "${rightClicks.size}"
         val anim = if (button == 0) leftAnim else rightAnim
-
+        val color = color.brighter(leftAnim.get(1f, 1.5f, leftAnim.getPercent() >= 50))
         if (button == 2) {
-            rect(0f, 0f, 50f, 36f, color.brighter(leftAnim.get(1f, 1.5f, leftAnim.getPercent() >= 50)), 9f, 0f, 9f, 0f)
-            rect(50f, 0f, 50f, 36f, color.brighter(rightAnim.get(1f, 1.5f, rightAnim.getPercent() >= 50)), 0f, 9f, 0f, 9f)
+            roundedRectangle(0f, 0f, 50f, 38f, color, color, color, 0f , 9f, 0f, 9f, 0f, 0f)
+            roundedRectangle(50f, 0f, 50f, 38f, color, color, color, 0f , 0f, 9f, 0f, 9f, 0f)
 
-            if (outline) dropShadow(0f, 0f, 100f, 36f, 10f, 1f, 9f)
+            if (outline) dropShadow(0f, 0f, 100f, 36f, 10f)
         } else {
-            rect(0f, 0f, 50f, 36f, color.brighter(anim.get(1f, 1.5f, anim.getPercent() >= 50)), 9f)
-            if (outline) dropShadow(0f, 0f, 50f, 36f, 10f, 1f, 9f)
+            roundedRectangle(0f, 0f, 50f, 36f, color.brighter(anim.get(1f, 1.5f, anim.getPercent() >= 50)), 9f)
+            if (outline) dropShadow(0f, 0f, 50f, 36f, 10f)
         }
 
         if (mouseText) {
             if (button == 2) {
-                text("LMB", 25f, 8.5f, textColor, 10f, Fonts.MEDIUM, TextAlign.Middle)
-                text(leftClicks.size.toString(), 25f, 24.5f, textColor, 18.5f, Fonts.MEDIUM, TextAlign.Middle)
+                text("LMB", 25f, 9f, textColor, 10f, OdinFont.BOLD, TextAlign.Middle)
+                text(leftClicks.size.toString(), 25f, 30f, textColor, 18.5f, OdinFont.BOLD, TextAlign.Middle)
 
-                text("RMB", 75f, 8.5f, textColor, 10f, Fonts.MEDIUM, TextAlign.Middle)
-                text(rightClicks.size.toString(), 75f, 24.5f, textColor, 18.5f, Fonts.MEDIUM, TextAlign.Middle)
+                text("RMB", 75f, 9f, textColor, 10f, OdinFont.BOLD, TextAlign.Middle)
+                text(rightClicks.size.toString(), 75f, 30f, textColor, 18.5f, OdinFont.BOLD, TextAlign.Middle)
             } else {
                 val text = if (button == 0) "LMB" else "RMB"
-                text(text, 25f, 8.5f, textColor, 10f, Fonts.MEDIUM, TextAlign.Middle)
-                text(value, 25f, 24.5f, textColor, 18.5f, Fonts.MEDIUM, TextAlign.Middle)
+                text(text, 25f, 9f, textColor, 10f, OdinFont.BOLD, TextAlign.Middle)
+                text(value, 25f, 20f, textColor, 28f, OdinFont.BOLD, TextAlign.Middle)
             }
         } else {
             if (button == 2) {
-                text(leftClicks.size.toString(), 25f, 19f, textColor, 24f, Fonts.MEDIUM, TextAlign.Middle)
-                text(rightClicks.size.toString(), 75f, 19f, textColor, 24f, Fonts.MEDIUM, TextAlign.Middle)
-            } else text(value, 25f, 19f, textColor, 24f, Fonts.MEDIUM, TextAlign.Middle)
+                text(leftClicks.size.toString(), 25f, 13f, textColor, 24f, OdinFont.BOLD, TextAlign.Middle)
+                text(rightClicks.size.toString(), 75f, 13f, textColor, 24f, OdinFont.BOLD, TextAlign.Middle)
+            } else text(value, 25f, 19f, textColor, 24f, OdinFont.BOLD, TextAlign.Middle)
         }
         if (button == 2) 100f to 38f else 50f to 38f
+
     }
 
     private val countPackets: Boolean by BooleanSetting("Count Packets", false, description = "Counts packets sent outside of the rightclickmouse method, this will be better at detecting other mods' autoclickers, but might show innacurate values.")

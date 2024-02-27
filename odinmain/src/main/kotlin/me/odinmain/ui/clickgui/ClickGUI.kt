@@ -1,21 +1,22 @@
 package me.odinmain.ui.clickgui
 
-import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinmain.OdinMain.display
 import me.odinmain.config.Config
 import me.odinmain.features.Category
 import me.odinmain.features.impl.render.ClickGUIModule
+import me.odinmain.font.OdinFont
 import me.odinmain.ui.Screen
+import me.odinmain.ui.clickgui.animations.impl.EaseInOut
 import me.odinmain.ui.clickgui.elements.menu.ElementColor
+import me.odinmain.ui.clickgui.util.ColorUtil
 import me.odinmain.ui.clickgui.util.ColorUtil.buttonColor
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.clickgui.util.HoverHandler
-import me.odinmain.utils.clock.Executor
-import me.odinmain.utils.clock.Executor.Companion.register
-import me.odinmain.utils.render.gui.animations.impl.EaseInOut
-import me.odinmain.utils.render.gui.nvg.*
+import me.odinmain.ui.util.*
+import me.odinmain.utils.render.Color
 import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
@@ -36,7 +37,7 @@ object ClickGUI : Screen() {
 
     private val panels: ArrayList<Panel> = arrayListOf()
 
-    var anim = EaseInOut(400)
+    private var anim = EaseInOut(400)
     private var open = false
     private var desc: Description = Description(null, 0f, 0f, null)
 
@@ -45,21 +46,31 @@ object ClickGUI : Screen() {
             panels.add(Panel(category))
         }
     }
-
-    override fun draw(nvg: NVG) {
-        nvg {
-            if (anim.isAnimating()) {
-                translate(0f, floor(anim.get(-10f, 0f, !open)))
-                setAlpha(anim.get(0f, 1f, !open))
-            }
-
-            for (i in 0 until panels.size) {
-                panels[i].draw(this)
-            }
-
-            SearchBar.draw(this)
-            desc.render(this)
+    override fun draw() {
+        GlStateManager.pushMatrix()
+        translate(0f, 0f, 200f)
+        if (anim.isAnimating()) {
+            translate(0f, floor(anim.get(-10f, 0f, !open)))
+            val alpha = anim.get(0.7f, 1f, !open)
+            ColorUtil.moduleButtonColor.alpha = alpha
+            ColorUtil.clickGUIColor.alpha = alpha
+            Color.WHITE.alpha = alpha
         }
+
+        for (i in 0 until panels.size) {
+            panels[i].draw()
+        }
+
+        SearchBar.draw()
+        desc.render()
+
+        if (anim.isAnimating()) {
+            ColorUtil.moduleButtonColor.alpha = 1f
+            ColorUtil.clickGUIColor.alpha = 1f
+            Color.WHITE.alpha = 1f
+        }
+        translate(0f, 0f, -200f)
+        GlStateManager.popMatrix()
     }
 
     override fun onScroll(amount: Int) {
@@ -133,21 +144,14 @@ object ClickGUI : Screen() {
         Config.saveConfig()
 
         open = false
-        anim.start(true)
         mc.entityRenderer.stopUseShader()
-
-        /** Used to render the closing animation */
-        Executor(0) {
-            if (!anim.isAnimating()) destroyExecutor()
-            drawScreen(0, 0, 0f)
-        }.register()
     }
 
     /**
      * Used to smooth transition between screens.
      */
     fun swapScreens(other: Screen) {
-        // TODO: ACTUALLY MAKLE THIS WORK
+        // TODO: ACTUALLY MAKE THIS WORK
         display = other
     }
 
@@ -170,21 +174,22 @@ object ClickGUI : Screen() {
             get() = text != null && hoverHandler != null && text != ""
 
         /** Handles rendering, if it's not active then it won't render */
-        fun render(nvg: NVG) {
+        fun render() {
             if (shouldRender) {
-                nvg {
-                    val area = wrappedTextBounds(text!!, 300f, 16f, Fonts.REGULAR)
-                    rect(
-                        x, y, area[2] - area[0] + 10, area[3] - area[1] + 8,
-                        buttonColor.withAlpha((hoverHandler!!.percent() / 100f).coerceIn(0f, 0.8f)), 5f
-                    )
-                    wrappedText(text!!, x + 7f, y + 12f, 300f, 1f, textColor, 16f, Fonts.REGULAR)
-                    if (hoverHandler!!.percent() == 0) {
-                        text = null
-                        hoverHandler = null
-                    }
+                val area = wrappedTextBounds(text!!, 300f, 12f)
+                scale(1f / scaleFactor, 1f / scaleFactor, 1f)
+                roundedRectangle(
+                    x, y, area.first + 7, area.second + 9,
+                    buttonColor.withAlpha((hoverHandler!!.percent() / 100f).coerceIn(0f, 0.8f)), 5f
+                )
+                wrappedText(text!!, x + 7f, y + 12f, 300f, textColor, 12f, OdinFont.REGULAR)
+                if (hoverHandler!!.percent() == 0) {
+                    text = null
+                    hoverHandler = null
                 }
+                scale(scaleFactor, scaleFactor, 1f)
             }
+
         }
     }
 }

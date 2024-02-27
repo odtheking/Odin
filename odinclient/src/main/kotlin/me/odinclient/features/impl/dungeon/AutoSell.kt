@@ -20,11 +20,9 @@ object AutoSell : Module(
 ) {
     private val delay: Long by NumberSetting("Delay", 100, 30.0, 300.0, 5.0)
     private val addDefaults: () -> Unit by ActionSetting("Add defaults") {
-        defaultItems.forEach {
-            if (it !in MiscConfig.autoSell) {
-                MiscConfig.autoSell.add(it)
-            }
-        }
+        MiscConfig.autoSell.addAll(
+            defaultItems.filter { it !in MiscConfig.autoSell }
+        )
         modMessage("Added default items to auto sell list")
         MiscConfig.saveAllConfigs()
     }
@@ -54,6 +52,6 @@ object AutoSell : Module(
         "Skeletor", "Super Heavy", "Heavy", "Sniper Helmet", "Dreadlord", "Earth Shard", "Zombie Commander Whip",
         "Machine Gun", "Sniper Bow", "Soulstealer Bow", "Silent Death", "Training Weight", "Health Potion VIII",
         "Health Potion 8", "Beating Heart", "Premium Flesh", "Mimic Fragment", "Enchanted Rotten Flesh", "Sign",
-        "Enchanted Bone", "Defuse Kit", "Optic Lens", "Tripwire Hook", "Button", "Carpet", "Lever", "Diamond Atom"
+        "Enchanted Bone", "Defuse Kit", "Optical Lens", "Tripwire Hook", "Button", "Carpet", "Lever", "Diamond Atom"
     )
 }

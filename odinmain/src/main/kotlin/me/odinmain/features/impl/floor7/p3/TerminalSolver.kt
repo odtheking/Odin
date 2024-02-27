@@ -12,6 +12,8 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.SelectorSetting
+import me.odinmain.font.OdinFont
+import me.odinmain.font.OdinFont.text
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.unformattedName
@@ -32,20 +34,21 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 object TerminalSolver : Module(
     name = "Terminal Solver",
     description = "Renders solution of terminals in f7/m7",
-    category = Category.FLOOR7,
-    tag = TagType.NEW
+    category = Category.FLOOR7
 ) {
     private val customSizeToggle: Boolean by BooleanSetting("Custom Size Toggle", description = "Toggles custom size of the terminal")
     private val customSize: Int by NumberSetting("Custom Terminal Size", 3, 1.0, 4.0, 1.0, description = "Custom size of the terminal").withDependency { customSizeToggle }
     private val defaultSize: Int by NumberSetting("Default Terminal Size", 2, 1.0, 4.0, 1.0, description = "Default size of the terminal").withDependency { customSizeToggle }
     private val type: Int by SelectorSetting("Rendering", "None", arrayListOf("None", "Behind Item", "Stop Rendering Wrong"))
 
+    private val lockRubixSolution: Boolean by BooleanSetting("Lock Rubix Solution", false, description = "Locks the 'correct' color of the rubix terminal to the one that was scanned first, should make the solver less 'jumpy'.")
     private val cancelToolTip: Boolean by BooleanSetting("Stop Tooltips", default = true, description = "Stops rendering tooltips in terminals")
     private val removeWrongRubix: Boolean by BooleanSetting("Stop Rubix", true).withDependency { type == 2 }
     private val removeWrongStartsWith: Boolean by BooleanSetting("Stop Starts With", true).withDependency { type == 2 }
     private val removeWrongSelect: Boolean by BooleanSetting("Stop Select", true).withDependency { type == 2 }
     private val wrongColor: Color by ColorSetting("Wrong Color", Color(45, 45, 45), true).withDependency { type == 2 }
     private val textColor: Color by ColorSetting("Text Color", Color(220, 220, 220), true)
+    private val textShadow: Boolean by BooleanSetting("Shadow", true, description = "Adds a shadow to the text")
     private val rubixColor: Color by ColorSetting("Rubix Color", Color(0, 170, 170), true)
     private val oppositeRubixColor: Color by ColorSetting("Negative Rubix Color", Color(170, 85, 0), true)
     private val orderColor: Color by ColorSetting("Order Color 1", Color(0, 170, 170, 1f), true)
@@ -56,6 +59,7 @@ object TerminalSolver : Module(
 
     private val zLevel: Float get() = if (type == 1 && currentTerm != 1 && currentTerm != 2) 200f else 999f
     var openedTerminalTime = 0L
+    private var lastRubixSolution: Int? = null
 
     private val terminalNames = listOf(
         "Correct all the panes!",
@@ -88,6 +92,7 @@ object TerminalSolver : Module(
         if (newTerm != currentTerm) {
             currentTerm = newTerm
             openedTerminalTime = System.currentTimeMillis()
+            lastRubixSolution = null
         }
         if (currentTerm == -1) return leftTerm()
         val items = event.gui.inventory.subList(0, event.gui.inventory.size - 37)
@@ -137,7 +142,7 @@ object TerminalSolver : Module(
                     val needed = solution.count { it == slot.slotIndex }
                     val text = if (needed < 3) needed.toString() else (needed - 5).toString()
                     if (type == 2 && removeWrongRubix) Gui.drawRect(x, y, x + 16, y + 16, if (needed < 3) rubixColor.rgba else oppositeRubixColor.rgba)
-                    mc.fontRendererObj.drawString(text, x + 9 - mc.fontRendererObj.getStringWidth(text) / 2, y + 5, textColor.rgba)
+                    text(text, x + 8f - OdinFont.getTextWidth(text, 8f) / 2, y + 8f, textColor, 8f, shadow = textShadow)
                 }
                 2 -> {
                     val index = solution.indexOf(slot.slotIndex)
@@ -149,9 +154,8 @@ object TerminalSolver : Module(
                         }.rgba
                         Gui.drawRect(x, y, x + 16, y + 16, color)
                     }
-
                     val amount = slot.stack?.stackSize ?: 0
-                    mc.fontRendererObj.drawString(amount.toString(), x + 9 - mc.fontRendererObj.getStringWidth(amount.toString()) / 2, y + 5, textColor.rgba)
+                    text(amount.toString(), x + 8f - OdinFont.getTextWidth(amount.toString(), 8f) / 2, y + 8f, textColor, 8f, shadow = textShadow)
                 }
                 3 -> Gui.drawRect(x, y, x + 16, y + 16, startsWithColor.rgba)
                 4 -> Gui.drawRect(x, y, x + 16, y + 16, selectColor.rgba)
@@ -183,6 +187,12 @@ object TerminalSolver : Module(
         leftTerm()
     }
 
+    @SubscribeEvent
+    fun onGateBroken(event: ChatPacketEvent) {
+        val match = Regex("(.+) (?:activated|completed) a (?:terminal|lever)! \\((\\d)/(\\d)\\)").find(event.message) ?: return
+        if (match.groups[2]?.value == "(7/7)" || match.groups[2]?.value == "(8/8)") leftTerm()
+    }
+
     private fun leftTerm() {
         currentTerm = -1
         solution = emptyList()
@@ -197,14 +207,23 @@ object TerminalSolver : Module(
     private fun solveColor(items: List<ItemStack?>) {
         val panes = items.filter { it?.metadata != 15 && Item.getIdFromItem(it?.item) == 160 }.filterNotNull()
         var temp = List(100) { i -> i }
-        for (color in colorOrder) {
-            val temp2 = panes.flatMap { pane ->
-                if (pane.metadata != color) {
-                    Array(dist(colorOrder.indexOf(pane.metadata), colorOrder.indexOf(color))) { pane }.toList()
+        if (lastRubixSolution != null && lockRubixSolution) {
+            temp = panes.flatMap { pane ->
+                if (pane.metadata != lastRubixSolution) {
+                    Array(dist(colorOrder.indexOf(pane.metadata), colorOrder.indexOf(lastRubixSolution))) { pane }.toList()
                 } else emptyList()
             }.map { items.indexOf(it) }
-            if (getRealSize(temp2) < getRealSize(temp)) {
-                temp = temp2
+        } else {
+            for (color in colorOrder) {
+                val temp2 = panes.flatMap { pane ->
+                    if (pane.metadata != color) {
+                        Array(dist(colorOrder.indexOf(pane.metadata), colorOrder.indexOf(color))) { pane }.toList()
+                    } else emptyList()
+                }.map { items.indexOf(it) }
+                if (getRealSize(temp2) < getRealSize(temp)) {
+                    temp = temp2
+                    lastRubixSolution = color
+                }
             }
         }
         solution = temp
@@ -219,7 +238,8 @@ object TerminalSolver : Module(
         return size
     }
 
-    private fun dist(pane: Int, most: Int): Int = if (pane > most) (most + colorOrder.size) - pane else most - pane
+    private fun dist(pane: Int, most: Int): Int =
+            if (pane > most) (most + colorOrder.size) - pane else most - pane
 
     private fun solveNumbers(items: List<ItemStack?>) {
         solution = items.filter { it?.metadata == 14 && Item.getIdFromItem(it.item) == 160 }.filterNotNull().sortedBy { it.stackSize }.map { items.indexOf(it) }

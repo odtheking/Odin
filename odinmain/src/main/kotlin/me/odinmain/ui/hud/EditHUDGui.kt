@@ -1,20 +1,19 @@
 package me.odinmain.ui.hud
 
-import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinmain.config.Config
 import me.odinmain.features.ModuleManager.huds
+import me.odinmain.font.OdinFont
 import me.odinmain.ui.Screen
+import me.odinmain.ui.clickgui.animations.impl.EaseInOut
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.HoverHandler
+import me.odinmain.ui.util.*
+import me.odinmain.ui.util.MouseUtils.isAreaHovered
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.gui.GuiUtils.scaledHeight
-import me.odinmain.utils.render.gui.GuiUtils.scaledWidth
-import me.odinmain.utils.render.gui.MouseUtils
-import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
-import me.odinmain.utils.render.gui.animations.impl.EaseInOut
-import me.odinmain.utils.render.gui.nvg.*
+import net.minecraft.client.renderer.GlStateManager
+import org.lwjgl.opengl.Display
 import kotlin.math.sign
 
 /**
@@ -37,36 +36,40 @@ object EditHUDGui : Screen() {
     private val hoverHandler = HoverHandler(150) // for reset button
 
     /** Code is horrible ngl but it looks nice */
-    override fun draw(nvg: NVG) {
+    override fun draw() {
         mc.mcProfiler.startSection("Odin Example Hud")
         dragging?.let {
             it.x = MouseUtils.mouseX - startX
             it.y = MouseUtils.mouseY - startY
         }
+        GlStateManager.pushMatrix()
+        scale(mc.displayWidth / 1920f, mc.displayHeight / 1080f)
+        scale(1f / scaleFactor, 1f / scaleFactor, 1f)
 
-        drawNVG {
-            translate(scaledWidth.toFloat(), scaledHeight * 1.75f)
-
-            if (openAnim.isAnimating()) {
-                setAlpha(openAnim.get(0f, 1f, !open))
-                val animVal = openAnim.get(0f, 1f, !open)
-                scale(animVal, animVal)
-            }
-
-            hoverHandler.handle(scaledWidth - 100f, (scaledHeight * 1.75f) - 25f, 200f, 50f)
-
-            dropShadow(-100f, -25f, 200f, 50f, 10f, 1f, 9f)
-            rect(-100f, -25f, 200f, 50f, color, 9f)
-
-            text("Reset", 0f, 0f, textColor, 38f, Fonts.REGULAR, TextAlign.Middle)
-            //rect(-75f, -25f, 150f, 50f, Color.WHITE) // make this good
-            resetTransform()
-
-            if (!open) return@drawNVG
-            for (i in 0 until huds.size) {
-                huds[i].draw(this, example = true)
-            }
+        if (openAnim.isAnimating()) {
+            val animVal = openAnim.get(0f, 1f, !open)
+            scale(animVal, animVal)
         }
+        hoverHandler.handle(Display.getWidth() / 2 - 75f, Display.getHeight() * .86f - 30, 150f, 40f)
+
+        //dropShadow(-100f, -25f, 200f, 50f, 10f, 1f)
+        roundedRectangle(Display.getWidth() / 2 - 75, Display.getHeight() * .86f - 30, 150f, 40f, color, 9f)
+
+        text("Reset", Display.getWidth() / 2f, Display.getHeight() * .86f, textColor, 18f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Bottom)
+
+        if (openAnim.isAnimating()) {
+            val animVal = openAnim.get(0f, 1f, !open)
+            scale(1 / animVal, 1 / animVal)
+        }
+        scale(scaleFactor, scaleFactor, 1f)
+
+        GlStateManager.popMatrix()
+
+        if (!open) return
+        for (i in 0 until huds.size) {
+            huds[i].draw(example = true)
+        }
+
         mc.mcProfiler.endSection()
     }
 
@@ -85,7 +88,7 @@ object EditHUDGui : Screen() {
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        if (isAreaHovered(scaledWidth - 100f, (scaledHeight * 1.75f) - 25f, 200f, 50f)) {
+        if (isAreaHovered(Display.getWidth() / 2 - 100f, Display.getHeight() * .875f - 25f, 200f, 50f)) {
             resetHUDs()
             return
         }

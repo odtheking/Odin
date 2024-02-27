@@ -16,8 +16,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object HoverTerms : Module(
     name = "Hover Terms",
     description = "Clicks the hovered item in a terminal if it is correct.",
-    category = Category.FLOOR7,
-    tag = TagType.NEW
+    category = Category.FLOOR7
 ) {
     private val triggerDelay: Long by NumberSetting("Delay", 200L, 50, 800)
     private val firstClickDelay: Long by NumberSetting("First Click Delay", 200L, 50, 500)

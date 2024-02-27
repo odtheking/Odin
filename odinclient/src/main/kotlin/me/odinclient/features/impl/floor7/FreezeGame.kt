@@ -8,8 +8,7 @@ import me.odinmain.utils.skyblock.modMessage
 object FreezeGame : Module(
     name = "Freeze Game",
     description = "Freezes the game when you press the keybind.",
-    category = Category.FLOOR7,
-    tag = TagType.NEW
+    category = Category.FLOOR7
 ) {
     private val freezeTime: Long by NumberSetting("Freeze Time", 8000L, 100L, 12000L)
 

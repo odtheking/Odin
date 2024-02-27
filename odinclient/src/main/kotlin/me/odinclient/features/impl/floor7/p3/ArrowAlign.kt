@@ -28,6 +28,7 @@ object ArrowAlign : Module(
     private val solver: Boolean by BooleanSetting("Solver")
     private val blockWrong: Boolean by BooleanSetting("Block Wrong Clicks", false, description = "Blocks wrong clicks, shift will override this")
     private val triggerBot: Boolean by BooleanSetting("Trigger Bot")
+    private val sneakToDisableTriggerbot: Boolean by BooleanSetting("Sneak to disable", false, description = "Disables triggerbot when you are sneaking").withDependency { triggerBot }
     private val delay: Long by NumberSetting<Long>("Delay", 200, 70, 500).withDependency { triggerBot }
     private val multipleScans: Boolean by BooleanSetting("Multiple Scans", true)
     private val delayScan: Long by NumberSetting("Scan Delay", 3000, 10.0, 10000.0, 10.0)
@@ -62,7 +63,7 @@ object ArrowAlign : Module(
     fun onRightClick(event: ClickEvent.RightClickEvent) {
         if (mc.objectMouseOver?.entityHit !is EntityItemFrame) return
         val frame = neededRotations.values.find { it.entity == mc.objectMouseOver.entityHit as EntityItemFrame } ?: return
-        if (frame.rotations == 0 && blockWrong) {
+        if (frame.rotations == 0 && blockWrong && !mc.thePlayer.isSneaking) {
             event.isCanceled = true
             return
         }
@@ -71,7 +72,7 @@ object ArrowAlign : Module(
     }
 
     private fun triggerBot() {
-        if (!triggerBotClock.hasTimePassed(delay)) return
+        if (!triggerBotClock.hasTimePassed(delay) || ( sneakToDisableTriggerbot && mc.thePlayer.isSneaking )) return
         val rot = neededRotations.values.find { it.entity == mc.objectMouseOver?.entityHit } ?: return
         if (rot.rotations == 0) return
         PlayerUtils.rightClick()
@@ -90,7 +91,7 @@ object ArrowAlign : Module(
                 clicksNeeded < 5 -> Color(255, 170, 0).rgba
                 else -> Color(170, 0, 0).rgba
             }
-            RenderUtils.drawStringInWorld(clicksNeeded.toString(), Vec3(-1.8, 124.6 - place.key.y, 79.5 - place.key.x), color, renderBlackBox = false, increase = false, scale = .02f)
+            RenderUtils.drawStringInWorld(clicksNeeded.toString(), Vec3(-1.8, 124.6 - place.key.y, 79.5 - place.key.x), color, renderBlackBox = false, increase = false, scale = .05f)
         }
     }
 

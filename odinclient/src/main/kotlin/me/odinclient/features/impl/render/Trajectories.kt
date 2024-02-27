@@ -1,13 +1,12 @@
 package me.odinclient.features.impl.render
 
-import me.odinmain.events.impl.RenderEntityModelEvent
+import me.odinmain.events.impl.RenderEntityOutlineEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.world.OutlineUtils
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.render.world.RenderUtils.renderX
 import me.odinmain.utils.render.world.RenderUtils.renderY
@@ -31,11 +30,9 @@ import kotlin.math.sqrt
 
 object Trajectories : Module(
     "Trajectories",
-    description = "Displays the trajectory of certain items",
-    category = Category.RENDER,
-    tag = TagType.NEW
+    description = "Displays the trajectory of certain items.",
+    category = Category.RENDER
 ) {
-
     private val bows: Boolean by BooleanSetting("Bows", false, description = "Render trajectories of bow arrows")
     private val pearls: Boolean by BooleanSetting("Pearls", false, description = "Render trajectories of ender pearls")
 
@@ -187,7 +184,7 @@ object Trajectories : Module(
 
     private fun drawPearlCollisionBox() {
         if (pearlImpactPos == null) return
-        RenderUtils.drawCustomBox(
+        RenderUtils.drawBoxOutline(
             pearlImpactPos!!.first.xCoord, pearlImpactPos!!.second.x,
             pearlImpactPos!!.first.yCoord, pearlImpactPos!!.second.y,
             pearlImpactPos!!.first.zCoord, pearlImpactPos!!.second.x,
@@ -211,7 +208,7 @@ object Trajectories : Module(
                 boxRenderQueue.clear()
                 return
             }
-            RenderUtils.drawCustomBox(
+            RenderUtils.drawBoxOutline(
                 b.first.xCoord, b.second.x,
                 b.first.yCoord, b.second.y,
                 b.first.zCoord, b.second.x,
@@ -224,16 +221,17 @@ object Trajectories : Module(
     }
 
     @SubscribeEvent
-    fun onRenderModel(event: RenderEntityModelEvent) {
-        if (event.entity !in entityRenderQueue) return
-        if (!mc.thePlayer.canEntityBeSeen(event.entity)) return
-        if(event.entity is EntityBlaze && DungeonUtils.inDungeons) return
-        OutlineUtils.outlineEntity(
-            event,
-            thickness,
-            color,
-            false
-        )
+    fun onRenderModel(event: RenderEntityOutlineEvent) {
+        if (event.type !== RenderEntityOutlineEvent.Type.XRAY) return
+
+        event.queueEntitiesToOutline { entity -> getMob(entity) }
+    }
+
+    private fun getMob(entity: Entity): Int? {
+        if (entity !in entityRenderQueue) return null
+        if (!bows || mc.thePlayer?.heldItem?.item !is ItemBow) return null
+        if (entity is EntityBlaze && DungeonUtils.inDungeons) return null
+        return color.rgba
     }
 
     private fun hypot(x: Double, y: Double, d: Double): Double = sqrt(x * x + y * y + d * d)

@@ -19,8 +19,21 @@ object WaypointCommand : Commodore {
     override val command: CommandNode =
         literal("waypoint") {
 
+            runs {
+                 modMessage("Usage: /waypoint <gui/share/add> [name] [x] [y] [z]")
+            }
+
             literal("help").runs {
-                modMessage("Waypoint command help:\n") // some1 make good pls thanks
+                modMessage(
+                    """
+                 Waypoint command help:
+                 §3- /waypoint » §8Main command.
+                 §3- /waypoint gui » §8Used to open the GUI.
+                 §3- /waypoint share » §8Used to send your location in party chat.
+                 §3- /waypoint add temp» §8Used to add temporary waypoints.
+                 §3- /waypoint add perm» §8Used to add permanent waypoints.
+                """.trimIndent()
+                )
             }
 
             literal("gui").runs {

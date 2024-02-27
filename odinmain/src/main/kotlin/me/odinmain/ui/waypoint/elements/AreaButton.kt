@@ -1,12 +1,6 @@
 package me.odinmain.ui.waypoint.elements
 
-import cc.polyfrost.oneconfig.renderer.font.Fonts
-import cc.polyfrost.oneconfig.utils.dsl.*
-import me.odinmain.ui.waypoint.WaypointGUI
-import me.odinmain.utils.render.gui.GuiUtils.nanoVG
-import me.odinmain.utils.render.gui.GuiUtils.scissor
-import me.odinmain.utils.render.gui.MouseHandler
-import java.awt.Color
+import me.odinmain.ui.util.MouseHandler
 
 class AreaButton(
     val area: String,
@@ -17,15 +11,17 @@ class AreaButton(
     private var y = 0f
     var width = 0f
 
-    fun draw(vg: VG): Float {
-        vg.nanoVG {
-            width = getTextWidth(area, 10f, Fonts.REGULAR)
+    fun draw(): Float {
+        /*vg.nanoVG {
+            width = getTextWidth(area, 10f, OdinFont.REGULAR)
             scissor(0f, 25f, 480f, 25f) {
                 if (area == WaypointGUI.displayArea) drawRoundedRect(x - 3, y - 10, width + 7, 18f, 5f, Color(32, 32, 32).rgb)
-                drawText(area, x, y, Color.WHITE.rgb, 10, Fonts.REGULAR)
+                drawText(area, x, y, Color.WHITE.rgb, 10, OdinFont.REGULAR)
                 drawLine(x - 5, y - 7, x - 5, y + 7, 0.7, Color.WHITE.rgb)
             }
         }
+
+         */
         return width + 10
     }
 

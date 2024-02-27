@@ -1,7 +1,8 @@
 package me.odinmain.ui.clickgui.elements.menu
 
-import cc.polyfrost.oneconfig.renderer.font.Fonts
 import me.odinmain.features.settings.impl.SelectorSetting
+import me.odinmain.font.OdinFont
+import me.odinmain.ui.clickgui.animations.impl.EaseInOut
 import me.odinmain.ui.clickgui.elements.Element
 import me.odinmain.ui.clickgui.elements.ElementType
 import me.odinmain.ui.clickgui.elements.ModuleButton
@@ -12,11 +13,10 @@ import me.odinmain.ui.clickgui.util.ColorUtil.darker
 import me.odinmain.ui.clickgui.util.ColorUtil.elementBackground
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.HoverHandler
+import me.odinmain.ui.util.*
+import me.odinmain.ui.util.MouseUtils.isAreaHovered
+import me.odinmain.utils.capitalizeFirst
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.gui.GuiUtils.capitalizeFirst
-import me.odinmain.utils.render.gui.MouseUtils.isAreaHovered
-import me.odinmain.utils.render.gui.animations.impl.EaseInOut
-import me.odinmain.utils.render.gui.nvg.*
 
 /**
  * Renders all the modules.
@@ -50,38 +50,34 @@ class ElementSelector(parent: ModuleButton, setting: SelectorSetting) :
     private val color: Color
         get() = buttonColor.brighter(1 + hover.percent() / 500f)
 
-    override fun draw(nvg: NVG) {
+    override fun draw() {
         h = settingAnim.get(32f, size * 36f + DEFAULT_HEIGHT, !extended)
 
-        nvg {
-            rect(x, y, w, h, elementBackground)
-            val width = getTextWidth(display, 16f, Fonts.REGULAR)
+        roundedRectangle(x, y, w, h, elementBackground)
+        val width = getTextWidth(display, 12f)
 
-            hover.handle(x + w - 20f - width, y + 4f, width + 12f, 22f)
-            dropShadow(x + w - 20f - width, y + 4f, width + 12f, 22f, 10f, 0.75f, 5f)
-            rect(x + w - 20f - width, y + 4f, width + 12f, 22f, color, 5f)
+        hover.handle(x + w - 20f - width, y + 4f, width + 12f, 22f)
+        dropShadow(x + w - 20f - width, y + 4f, width + 12f, 22f, 10f, 0.75f)
+        roundedRectangle(x + w - 20f - width, y + 4f, width + 12f, 22f, color, 5f)
 
+        text(name, x + 6f, y + 16f, textColor, 12f, OdinFont.REGULAR)
+        text(display, x + w - 14f - width, y + 8f, textColor, 12f, OdinFont.REGULAR, TextAlign.Left, TextPos.Top)
 
-            text(name, x + 6f, y + 16f, textColor, 16f, Fonts.REGULAR)
-            text(display, x + w - 14f - width, y + 16f, textColor, 16f, Fonts.REGULAR)
+        if (!extended && !settingAnim.isAnimating()) return
 
-            if (!extended && !settingAnim.isAnimating()) return@nvg
+        rectangleOutline(x + w - 20f - width, y + 4f, width + 12f, 22f, clickGUIColor, 5f, 1.5f)
 
-            rectOutline(x + w - 20f - width, y + 4f, width + 12f, 22f, clickGUIColor, 5f, 1.5f)
+        val scissor = scissor(x, y, w, h)
 
-            val scissor = scissor(x, y, w, h)
+        roundedRectangle(x + 6, y + 37f, w - 12f, size * 32f, buttonColor, 5f)
+        dropShadow(x + 6, y + 37f, w - 12f, size * 32f, 10f, 0.75f)
 
-            rect(x + 6, y + 37f, w - 12f, size * 32f, buttonColor, 5f)
-            dropShadow(x + 6, y + 37f, w - 12f, size * 32f, 10f, 0.75f, 5f)
-
-            for (i in 0 until size) {
-                val y = y + 38 + 32 * i
-                text(setting.options[i].capitalizeFirst(), x + w / 2f, y + 16f, textColor, 16f, Fonts.REGULAR, TextAlign.Middle)
-                text(setting.options[i].capitalizeFirst(), x + w / 2f, y + 16f, textColor, 16f, Fonts.REGULAR, TextAlign.Middle)
-                if (isSettingHovered(i)) rectOutline(x + 5, y - 1f, w - 11.5f, 32.5f, clickGUIColor.darker(), 4f, 1.5f)
-            }
-            resetScissor(scissor)
+        for (i in 0 until size) {
+            val y = y + 38 + 32 * i
+            text(setting.options[i].capitalizeFirst(), x + w / 2f, y + 6f, textColor, 12f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Top)
+            if (isSettingHovered(i)) rectangleOutline(x + 5, y - 1f, w - 11.5f, 32.5f, clickGUIColor.darker(), 4f, 3f)
         }
+        resetScissor(scissor)
     }
 
     override fun mouseClicked(mouseButton: Int): Boolean {
