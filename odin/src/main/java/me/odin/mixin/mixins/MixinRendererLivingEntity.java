@@ -98,6 +98,14 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> {
         }
     }
 
+    @Inject(method = "doRender(Lnet/minecraft/entity/EntityLivingBase;DDDFF)V", at = @At("RETURN"))
+    private <T extends EntityLivingBase> void injectChamsPost(T entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo callbackInfo) {
+        if (CustomESP.INSTANCE.getCurrentEntities().contains(entity) && CustomESP.INSTANCE.getMode() == 1 && CustomESP.INSTANCE.getRenderThrough()) {
+            glPolygonOffset(1f, 1000000F);
+            glDisable(GL_POLYGON_OFFSET_FILL);
+        }
+    }
+
     @Inject(method = "renderLayers", at = @At("TAIL"), cancellable = true)
     private void onRenderLayers(T entitylivingbaseIn, float p_177093_2_, float p_177093_3_, float partialTicks, float p_177093_5_, float p_177093_6_, float p_177093_7_, float p_177093_8_, CallbackInfo ci) {
         if (MinecraftForge.EVENT_BUS.post(new RenderEntityModelEvent(
