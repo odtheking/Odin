@@ -9,6 +9,7 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.utils.addVec
+import me.odinmain.utils.distanceSquaredTo
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.world.RenderUtils
 import me.odinmain.utils.render.world.RenderUtils.renderVec
@@ -40,6 +41,8 @@ object TeamHighlight : Module(
         if (!highlightName || LocationUtils.currentArea != "Kuudra") return
         KuudraUtils.kuudraTeammates.forEach {
              if (it.entity == null || it.playerName == mc.thePlayer.name) return@forEach
+            if ((it.entity?.distanceSquaredTo(mc.thePlayer) ?: return@forEach) >= 2333) return@forEach
+
             RenderUtils.drawStringInWorld(it.entity?.name ?: return@forEach, it.entity?.renderVec?.addVec(y = 2.6) ?: return@forEach,
                 if (it.eatFresh) highlightFreshColor.rgba else nameColor.rgba,
                 depthTest = false, increase = false, renderBlackBox = false,

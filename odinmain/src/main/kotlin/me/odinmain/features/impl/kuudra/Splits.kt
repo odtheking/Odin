@@ -41,7 +41,7 @@ object Splits : Module(
                """§8List of PBs:
         §fT1: §a${t1PB.value.round(2)}s
         §fT2: §a${t2PB.value.round(2)}s 
-        §fT3s: §a${t3PB.value.round(2)}s
+        §fT3: §a${t3PB.value.round(2)}s
         §fT4: §a${t4PB.value.round(2)}s
             """.trimMargin())
            modMessage(

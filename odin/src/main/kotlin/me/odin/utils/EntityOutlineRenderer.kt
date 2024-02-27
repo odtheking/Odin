@@ -6,6 +6,7 @@ import me.odinmain.events.impl.RenderEntityOutlineEvent
 import me.odinmain.features.impl.dungeon.TeammatesHighlight
 import me.odinmain.features.impl.kuudra.TeamHighlight
 import me.odinmain.features.impl.render.CustomESP
+import me.odinmain.features.impl.render.OutlineItemEntity
 import me.odinmain.features.impl.skyblock.BlazeAttunement
 import me.odinmain.utils.postAndCatch
 import net.minecraft.client.renderer.GlStateManager
@@ -272,6 +273,7 @@ object EntityOutlineRenderer {
         if (CustomESP.enabled) return true
         if (TeamHighlight.enabled) return true
         if (BlazeAttunement.enabled) return true
+        if (OutlineItemEntity.enabled) return true
 
         return false
     }
