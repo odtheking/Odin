@@ -98,9 +98,7 @@ object KuudraUtils {
                 if (x == -106 && z == -99) supplies[5] = false
             }
 
-            buildingPiles = entities
-                .filter { it is EntityArmorStand && it.name.contains("PROGRESS:") && it.name.contains("%") }
-                .map { it as EntityArmorStand } as MutableList<EntityArmorStand>
+            buildingPiles = entities.filter { it is EntityArmorStand && it.name.contains("PROGRESS:") && it.name.contains("%") }.map { it as EntityArmorStand } as MutableList<EntityArmorStand>
 
             kuudraTeammates.forEach {
                 it.entity = mc.theWorld.getPlayerEntityByName(it.playerName)

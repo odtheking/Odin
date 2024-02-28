@@ -43,7 +43,8 @@ object TeamHighlight : Module(
              if (it.entity == null || it.playerName == mc.thePlayer.name) return@forEach
             if ((it.entity?.distanceSquaredTo(mc.thePlayer) ?: return@forEach) >= 2333) return@forEach
 
-            RenderUtils.drawStringInWorld(it.entity?.name ?: return@forEach, it.entity?.renderVec?.addVec(y = 2.6) ?: return@forEach,
+            RenderUtils.drawStringInWorld(
+                it.playerName, it.entity?.renderVec?.addVec(y = 2.6) ?: return@forEach,
                 if (it.eatFresh) highlightFreshColor.rgba else nameColor.rgba,
                 depthTest = false, increase = false, renderBlackBox = false,
                 scale = 0.05f
