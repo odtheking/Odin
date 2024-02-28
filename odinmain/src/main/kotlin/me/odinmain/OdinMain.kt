@@ -78,13 +78,14 @@ object OdinMain {
 
         registerCommands(
             DevCommand,
-            OdinCommand,
             TermsimCommand,
             WaypointCommand,
             BlacklistCommand,
             SoopyCommand
         )
-
+        me.odinmain.commands.registerCommands(
+            mainCommand
+        )
         OdinFont.init()
     }
 
