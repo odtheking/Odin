@@ -7,7 +7,7 @@ import me.odinmain.ui.hud.Render
 /**
  * @author Stivais, Bonsai
  */
-class HudSetting(
+class HudSetting( // todo redo
     name: String,
     hud: HudElement,
     val displayToggle: Boolean = false,
@@ -24,6 +24,10 @@ class HudSetting(
      * Not intended to be used.
      */
     override var value: HudElement = default
+
+    override fun update(configSetting: Setting<*>) {
+        // doesn't save
+    }
 
     inline var enabled: Boolean
         get() = value.enabled

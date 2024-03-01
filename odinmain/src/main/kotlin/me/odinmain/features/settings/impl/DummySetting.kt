@@ -25,4 +25,8 @@ class DummySetting(
     override var value: Any?
         get() = null
         set(_) {}
+
+    override fun update(configSetting: Setting<*>) {
+        // doesn't save
+    }
 }

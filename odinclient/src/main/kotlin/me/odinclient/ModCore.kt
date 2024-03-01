@@ -15,7 +15,6 @@ import me.odinclient.features.impl.skyblock.*
 import me.odinclient.utils.EntityOutlineRenderer
 import me.odinmain.OdinMain
 import me.odinmain.commands.Commodore.Companion.registerCommands
-import me.odinmain.features.Module
 import me.odinmain.features.ModuleManager
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.Mod
@@ -61,14 +60,13 @@ class ModCore {
 
     @EventHandler
     fun loadComplete(event: FMLLoadCompleteEvent) {
-        val modules: ArrayList<Module> = arrayListOf(
-            AutoGFS, AutoIceFill, AutoSell, CancelInteract, CancelChestOpen, GhostPick, MapModule, SecretHitboxes, SwapStonk,
-            Arrows, ArrowAlign, CancelWrongTerms, HoverTerms, LeversTriggerbot, SimonSays,
+        ModuleManager.addModules(
+            AutoGFS, AutoIceFill, AutoSell, CancelInteract, CancelChestOpen, GhostPick, MapModule, SecretHitboxes,
+            SwapStonk, Arrows, ArrowAlign, CancelWrongTerms, HoverTerms, LeversTriggerbot, SimonSays,
             DioriteFucker, RelicAura, Trajectories, Ghosts, NoCarpet, NoDebuff, LockCursor,
-            CookieClicker, AutoExperiments, FarmingHitboxes, NoBlock, TermAC, Triggerbot, GhostBlock, FreezeGame, AbilityKeybind, EtherWarpHelper, ChestEsp, NoBreakReset,
-            /*AutoTerms,*/
+            CookieClicker, AutoExperiments, FarmingHitboxes, NoBlock, TermAC, Triggerbot, GhostBlock, FreezeGame,
+            AbilityKeybind, EtherWarpHelper, ChestEsp, NoBreakReset,
         )
-        ModuleManager.modules.addAll(modules)
         OdinMain.loadComplete()
     }
 

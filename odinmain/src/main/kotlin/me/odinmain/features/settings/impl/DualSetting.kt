@@ -16,9 +16,10 @@ class DualSetting (
 ): Setting<Boolean>(name, hidden, description) {
 
     override var value: Boolean = default
-        set (value) {
-            field = processInput(value)
-        }
+
+    override fun update(configSetting: Setting<*>) {
+        value = (configSetting as BooleanSetting).enabled
+    }
 
     var enabled: Boolean by this::value
 }

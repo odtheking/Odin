@@ -1,7 +1,6 @@
 package me.odinmain.ui.clickgui.elements.menu
 
-import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.DummySetting
+import me.odinmain.features.settings.impl.KeybindSetting
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.animations.impl.ColorAnimation
 import me.odinmain.ui.clickgui.elements.Element
@@ -27,8 +26,8 @@ import org.lwjgl.input.Mouse
  * @author Stivais, Aton
  * @see [Element]
  */
-class ElementKeyBind(parent: ModuleButton, private val mod: Module) :
-    Element<DummySetting>(parent, DummySetting("Keybind"), ElementType.KEY_BIND) {
+class ElementKeyBind(parent: ModuleButton, setting: KeybindSetting) :
+    Element<KeybindSetting>(parent, setting, ElementType.KEY_BIND) {
 
     private val colorAnim = ColorAnimation(100)
 
@@ -38,8 +37,9 @@ class ElementKeyBind(parent: ModuleButton, private val mod: Module) :
         inline get() = ColorUtil.buttonColor.brighter(1 + hover.percent() / 500f)
 
     override fun draw() {
-        val value = if (mod.keyCode > 0) Keyboard.getKeyName(mod.keyCode) ?: "Err"
-        else if (mod.keyCode < 0) Mouse.getButtonName(mod.keyCode + 100)
+        val key = setting.value.key
+        val value = if (key > 0) Keyboard.getKeyName(key) ?: "Err"
+        else if (key < 0) Mouse.getButtonName(key + 100)
         else "None"
 
         roundedRectangle(x, y, w, h, elementBackground)
@@ -64,7 +64,7 @@ class ElementKeyBind(parent: ModuleButton, private val mod: Module) :
             if (colorAnim.start()) listening = !listening
             return true
         } else if (listening) {
-            mod.keyCode = -100 + mouseButton
+            setting.value.key = -100 + mouseButton
             if (colorAnim.start()) listening = false
         }
         return false
@@ -73,12 +73,12 @@ class ElementKeyBind(parent: ModuleButton, private val mod: Module) :
     override fun keyTyped(typedChar: Char, keyCode: Int): Boolean {
         if (listening) {
             if (keyCode == Keyboard.KEY_ESCAPE || keyCode == Keyboard.KEY_BACK) {
-                mod.keyCode = Keyboard.KEY_NONE
+                setting.value.key = Keyboard.KEY_NONE
                 if (colorAnim.start()) listening = false
             } else if (keyCode == Keyboard.KEY_NUMPADENTER || keyCode == Keyboard.KEY_RETURN) {
                 if (colorAnim.start()) listening = false
             } else {
-                mod.keyCode = keyCode
+                setting.value.key = keyCode
                 if (colorAnim.start()) listening = false
             }
             return true

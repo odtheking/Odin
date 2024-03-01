@@ -60,7 +60,6 @@ class ModuleButton(val module: Module, val panel: Panel) {
 
     init {
         updateElements()
-        if (module.keyCode != -999) menuElements.add(ElementKeyBind(this, module))
     }
 
     private fun updateElements() {
@@ -79,6 +78,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
                     is ActionSetting -> ElementAction(this, setting)
                     is DualSetting -> ElementDual(this, setting)
                     is HudSetting -> ElementHud(this, setting)
+                    is KeybindSetting -> ElementKeyBind(this, setting)
                     else -> return@addElement
                 }
                 menuElements.add(position, newElement)
@@ -104,13 +104,14 @@ class ModuleButton(val module: Module, val panel: Panel) {
         text(module.name, x + width / 2, y + height / 2, textColor, 14f, OdinFont.REGULAR, TextAlign.Middle)
         val textWidth = getTextWidth(module.name, 18f)
 
-        if (textWidth > width - 80)// too long text, not drawing symbol
-        else if (module.tag == Module.TagType.RISKY) {
-            drawDynamicTexture(bannableIcon, x + width / 2 + textWidth / 2, y + 2f, 25f, 25f)
-        } else if (module.tag == Module.TagType.FPSTAX) {
-            drawDynamicTexture(fpsHeavyIcon, x + width / 2 + textWidth / 2, y, 35f, 35f)
-        } else if (module.tag == Module.TagType.NEW && ClickGUIModule.firstTimeOnVersion) {
-            drawDynamicTexture(newFeatureIcon, x + width / 2 + textWidth / 2, y, 35f, 35f)
+        if (textWidth < width - 80) {// too long text, not drawing symbol
+            if (module.tag == Module.TagType.RISKY) {
+                drawDynamicTexture(bannableIcon, x + width / 2 + textWidth / 2, y + 2f, 25f, 25f)
+            } else if (module.tag == Module.TagType.FPSTAX) {
+                drawDynamicTexture(fpsHeavyIcon, x + width / 2 + textWidth / 2, y, 35f, 35f)
+            } else if (module.tag == Module.TagType.NEW && ClickGUIModule.firstTimeOnVersion) {
+                drawDynamicTexture(newFeatureIcon, x + width / 2 + textWidth / 2, y, 35f, 35f)
+            }
         }
 
 

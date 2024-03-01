@@ -10,8 +10,6 @@ import me.odinmain.config.utils.SettingSerializer
 import me.odinmain.features.ConfigModule
 import me.odinmain.features.ModuleManager
 import me.odinmain.features.settings.Setting
-import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.render.Color
 import java.io.File
 import java.io.IOException
 
@@ -23,7 +21,6 @@ object Config {
     private val gson = GsonBuilder()
         .registerTypeAdapter(object : TypeToken<Setting<*>>(){}.type, SettingSerializer())
         .registerTypeAdapter(object : TypeToken<Setting<*>>(){}.type, SettingDeserializer())
-        .excludeFieldsWithoutExposeAnnotation()
         .setPrettyPrinting().create()
 
     private val configFile = File(mc.mcDataDir, "config/odin/odin-config.json").apply {
@@ -39,35 +36,17 @@ object Config {
             val configModules: ArrayList<ConfigModule>
             with(configFile.bufferedReader().use { it.readText() }) {
                 if (this == "") return
-                configModules = gson.fromJson(
-                    this,
-                    object : TypeToken<ArrayList<ConfigModule>>() {}.type
-                )
+                configModules = gson.fromJson(this, object : TypeToken<ArrayList<ConfigModule>>() {}.type)
             }
-            configModules.forEach { configModule ->
-                ModuleManager.getModuleByName(configModule.name).run updateModule@{
-                    val module = this ?: return@updateModule
-                    if (module.enabled != configModule.enabled) module.toggle()
-                    module.keyCode = configModule.keyCode
+            for (configModule in configModules) {
+                val module = ModuleManager.getModuleByName(configModule.name) ?: continue
+                if (module.enabled != configModule.enabled) module.toggle()
 
-                    for (configSetting in configModule.settings) {
-                        @Suppress("SENSELESS_COMPARISON")
-                        if (configSetting == null) continue
-
-                        val setting = module.getSettingByName(configSetting.name)
-                        if (setting == null) {
-                            println("Setting ${configSetting.name} not found in module ${module.name}, if this is an ActionSetting, ignore this message.")
-                            continue
-                        }
-                        when (setting) {
-                            is BooleanSetting -> setting.enabled = (configSetting as BooleanSetting).enabled
-                            is DualSetting -> setting.enabled = (configSetting as BooleanSetting).enabled
-                            is NumberSetting -> setting.valueAsDouble = (configSetting as NumberSetting).valueAsDouble
-                            is ColorSetting -> setting.value = Color((configSetting as NumberSetting).valueAsDouble.toInt())
-                            is SelectorSetting -> setting.selected = (configSetting as StringSetting).text
-                            is StringSetting -> setting.text = (configSetting as StringSetting).text
-                        }
-                    }
+                for (configSetting in configModule.settings) {
+                    @Suppress("SENSELESS_COMPARISON")
+                    if (configSetting == null) continue
+                    val setting = module.getSettingByName(configSetting.name) ?: continue
+                    setting.update(configSetting)
                 }
             }
         } catch (e: JsonSyntaxException) {

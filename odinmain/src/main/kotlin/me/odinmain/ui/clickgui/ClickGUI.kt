@@ -101,7 +101,7 @@ object ClickGUI : Screen() {
             if (panels[i].keyTyped(typedChar, keyCode)) return
         }
 
-        if (keyCode == ClickGUIModule.keyCode && !anim.isAnimating()) {
+        if (keyCode == ClickGUIModule.settings.last().value && !anim.isAnimating()) {
             mc.displayGuiScreen(null as GuiScreen?)
             if (mc.currentScreen == null) {
                 mc.setIngameFocus()

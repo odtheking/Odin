@@ -56,16 +56,11 @@ class Color(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f)
      */
     var rgba: Int = 0
         get() {
-            return if (needsUpdate) {
-                HSBtoRGB(hue, saturation, brightness).let { rgb ->
-                    (rgb and 0x00FFFFFF) or ((alpha * 255).toInt() shl 24)
-                }.also {
-                    needsUpdate = false
-                    field = it
-                }
-            } else {
-                field
+            if (needsUpdate) {
+                field = (HSBtoRGB(hue, saturation, brightness) and 0X00FFFFFF) or ((alpha * 255).toInt() shl 24)
+                needsUpdate = false
             }
+            return field
         }
 
     inline val r get() = rgba.red

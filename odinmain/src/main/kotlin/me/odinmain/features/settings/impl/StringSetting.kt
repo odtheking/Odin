@@ -16,10 +16,13 @@ class StringSetting(
 ) : Setting<String>(name, hidden, description) {
 
     override var value: String = default
-        set(newStr) {
-            val tempStr = processInput(newStr)
-            field = if (tempStr.length <= length) tempStr else return
+        set(value) {
+            field = if (value.length <= length) value else return
         }
+
+    override fun update(configSetting: Setting<*>) {
+        value = (configSetting as StringSetting).text
+    }
 
     var text: String by this::value
 }

@@ -14,7 +14,7 @@ import me.odinmain.features.impl.kuudra.*
 import me.odinmain.features.impl.render.*
 import me.odinmain.features.impl.render.ClickGUIModule.hudChat
 import me.odinmain.features.impl.skyblock.*
-import me.odinmain.features.settings.AlwaysActive
+import me.odinmain.features.settings.impl.KeybindSetting
 import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.ui.util.getTextWidth
@@ -27,7 +27,6 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import kotlin.reflect.full.hasAnnotation
 
 /**
  * Class that contains all Modules and huds
@@ -111,6 +110,20 @@ object ModuleManager {
         OutlineItemEntity
     )
 
+    init {
+        for (module in modules) {
+            module.register(KeybindSetting("Keybind", module.key, "Toggles the module").onPress {
+                module.onKeybind()
+            })
+        }
+    }
+
+    fun addModules(vararg module: Module) {
+        for (i in module) {
+            modules.add(i)
+            i.register(KeybindSetting("Keybind", i.key, "Toggles the module").onPress { i.onKeybind() })
+        }
+    }
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
@@ -155,16 +168,24 @@ object ModuleManager {
 
     @SubscribeEvent
     fun activateModuleKeyBinds(event: PreKeyInputEvent) {
-        modules
-            .filter { it.keyCode == event.keycode }
-            .forEach { it.onKeybind() }
+        for (module in modules) {
+            for (setting in module.settings) {
+                if (setting is KeybindSetting && setting.value.key == event.keycode) {
+                    setting.value.onPress?.invoke()
+                }
+            }
+        }
     }
 
     @SubscribeEvent
     fun activateModuleMouseBinds(event: PreMouseInputEvent) {
-        modules
-            .filter { it.keyCode + 100 == event.button }
-            .forEach { it.onKeybind() }
+        for (module in modules) {
+            for (setting in module.settings) {
+                if (setting is KeybindSetting && setting.value.key + 100 == event.button) {
+                    setting.value.onPress?.invoke()
+                }
+            }
+        }
     }
 
     @SubscribeEvent
@@ -184,7 +205,7 @@ object ModuleManager {
     fun onRenderWorld(event: RenderWorldLastEvent) {
         profile("Executors") {
             executors.removeAll {
-                if (!it.first.enabled && !it.first::class.hasAnnotation<AlwaysActive>()) return@removeAll false // pls test i cba
+                if (!it.first.enabled && !it.first.alwaysActive) return@removeAll false // pls test i cba
                 it.second.run()
             }
         }

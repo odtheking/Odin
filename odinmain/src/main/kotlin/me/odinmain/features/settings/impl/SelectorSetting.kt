@@ -23,10 +23,13 @@ class SelectorSetting(
             index = value
         }
 
+    override fun update(configSetting: Setting<*>) {
+        selected = (configSetting as StringSetting).text
+    }
+
     var index: Int = optionIndex(defaultSelected)
         set(value) {
-            val newVal = processInput(value)
-            field = if (newVal > options.size - 1) 0 else if (newVal < 0) options.size - 1 else newVal
+            field = if (value > options.size - 1) 0 else if (value < 0) options.size - 1 else value
         }
 
     var selected: String

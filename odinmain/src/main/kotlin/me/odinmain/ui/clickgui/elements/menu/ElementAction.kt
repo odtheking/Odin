@@ -31,7 +31,7 @@ class ElementAction(parent: ModuleButton, setting: ActionSetting) : Element<Acti
 
     override fun mouseClicked(mouseButton: Int): Boolean {
         if (mouseButton == 0 && isHovered) {
-            setting.doAction()
+            setting.action()
             return true
         }
         return false

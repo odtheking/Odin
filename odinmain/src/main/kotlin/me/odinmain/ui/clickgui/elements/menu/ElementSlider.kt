@@ -34,7 +34,7 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
     Element<NumberSetting<*>>(parent, setting, ElementType.SLIDER) {
 
     private val displayVal: String
-        get() = "${(setting.valueAsDouble * 100.0).roundToInt() / 100.0}"
+        get() = "${(setting.valueDouble * 100.0).roundToInt() / 100.0}"
 
     override val isHovered: Boolean
         get() = isAreaHovered(x, y, w - 12f, h)
@@ -57,7 +57,7 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
             sliderPercentage = ((mouseX - (x + 6f)) / (w - 12f)).coerceIn(0f, 1f)
             val diff = setting.max - setting.min
             val newVal = setting.min + ((mouseX - (x + 6f)) / (w - 12f)).coerceInNumber(0, 1) * diff
-            setting.valueAsDouble = newVal.toDouble()
+            setting.valueDouble = newVal.toDouble()
         }
         roundedRectangle(x, y, w, h, elementBackground)
 
@@ -88,7 +88,7 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
                 Keyboard.KEY_LEFT -> -setting.increment.toDouble()
                 else -> return false
             }
-            setting.valueAsDouble += amount
+            setting.valueDouble += amount
             return true
         }
         return false

@@ -2,7 +2,6 @@ package me.odinmain.features.settings.impl
 
 
 import me.odinmain.features.settings.Setting
-import me.odinmain.utils.coerceInNumber
 import me.odinmain.utils.div
 import kotlin.math.round
 
@@ -22,20 +21,24 @@ class NumberSetting<E>(
 ) : Setting<E>(name, hidden, description) where E : Number, E : Comparable<E> {
 
     override var value: E = default
-        set (newVal) {
-            field = roundToIncrement(processInput(newVal)).coerceInNumber(min, max) as E
+        set(value) {
+            field = roundToIncrement(value).coerceIn(min.toDouble(), max.toDouble()) as E
         }
 
+    override fun update(configSetting: Setting<*>) {
+        valueDouble = (configSetting as NumberSetting).valueDouble
+    }
+
     /**
-     * way for config to save due to errors.
+     * Way for config to save due to errors.
      */
-    var valueAsDouble
+    var valueDouble
         get() = value.toDouble()
         set(value) {
             this.value = value as E
         }
 
-    private fun roundToIncrement(x: Number): Number {
+    private fun roundToIncrement(x: Number): Double {
         return round((x / increment).toDouble()) * increment.toDouble()
     }
 }

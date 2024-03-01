@@ -14,21 +14,37 @@ abstract class Setting<T> (
     var hidden: Boolean = false,
     var description: String = "",
 ) : ReadWriteProperty<Module, T>, PropertyDelegateProvider<Module, ReadWriteProperty<Module, T>> {
-    protected var visibilityDependency: () -> Boolean = { true }
 
+    /**
+     * Default value of the setting
+     */
     abstract val default: T
 
+    /**
+     * Value of the setting
+     */
     abstract var value: T
 
-    var processInput: (T) -> T = { input: T -> input }
+    /**
+     * Dependency for if it should be shown in the [click gui][me.odinmain.ui.clickgui.elements.ModuleButton].
+     */
+    protected var visibilityDependency: (() -> Boolean)? = null
 
+    /**
+     * Resets the setting to the default value
+     */
     open fun reset() {
         value = default
     }
 
+    /**
+     * Updates setting from the config
+     */
+    abstract fun update(configSetting: Setting<*>)
+
     val shouldBeVisible: Boolean
         get() {
-            return visibilityDependency() && !hidden
+            return (visibilityDependency?.invoke() ?: true) && !hidden
         }
 
     override operator fun provideDelegate(thisRef: Module, property: KProperty<*>): ReadWriteProperty<Module, T> {

@@ -2,8 +2,9 @@ package me.odinclient.features.impl.dungeon
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.KeybindSetting
+import me.odinmain.features.settings.impl.Keybinding
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getPhase
@@ -11,26 +12,22 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import net.minecraft.init.Blocks
 import net.minecraft.tileentity.TileEntitySkull
 import net.minecraft.util.BlockPos
+import org.lwjgl.input.Keyboard
 
 object GhostBlock : Module(
     name = "Ghost Blocks",
     description = "Creates ghost blocks on key press, and in specific locations.",
     category = Category.DUNGEON,
 ) {
-    private val ghostBlockKey: Boolean by BooleanSetting("GKey", true)
+    // gkey
+    private val ghostBlockKey: Keybinding by KeybindSetting("Ghost block Keybind", Keyboard.KEY_NONE, "Makes blocks you're looking at disappear.")
     private val ghostBlockSpeed: Long by NumberSetting("Speed", 50L, 0.0, 300.0, 10.0)
-        .withDependency { ghostBlockKey }
     private val ghostBlockSkulls: Boolean by BooleanSetting("Ghost Skulls", true, description = "If enabled skulls will also be turned into ghost blocks.")
-        .withDependency { ghostBlockKey }
     private val ghostBlockRange: Double by NumberSetting("Range", 8.0, 4.5, 80.0, 0.5, description = "Maximum range at which ghost blocks will be created.")
-        .withDependency { ghostBlockKey }
     private val onlyDungeon: Boolean by BooleanSetting("Only In Dungeon", false, description = "Will only work inside of a dungeon.")
-        .withDependency { ghostBlockKey }
-    private val preGhostBlock: Boolean by BooleanSetting("F7 Ghost blocks")
 
-    override fun onKeybind() {
-        if (!ghostBlockKey) super.onKeybind()
-    }
+    // pre blocks
+    private val preGhostBlock: Boolean by BooleanSetting("F7 Ghost blocks")
 
     private val blacklist = arrayOf(
         Blocks.stone_button,
@@ -41,14 +38,14 @@ object GhostBlock : Module(
 
     init {
         execute({ ghostBlockSpeed }) {
-            if (!ghostBlockKey || !enabled || mc.currentScreen != null || (onlyDungeon && !inDungeons)) return@execute
-            if (!isKeybindDown()) return@execute
+            if (!enabled || mc.currentScreen != null || (onlyDungeon && !inDungeons)) return@execute
+            if (!ghostBlockKey.isDown()) return@execute
 
             val lookingAt = mc.thePlayer?.rayTrace(ghostBlockRange, 1f)
             toAir(lookingAt?.blockPos)
         }
 
-        execute(500) {
+        execute(1000) {
             if (!DungeonUtils.isFloor(7) || !DungeonUtils.inBoss || !preGhostBlock || !enabled) return@execute
             val phase = getPhase()
             for (i in blocks[phase] ?: return@execute) {
@@ -81,7 +78,6 @@ object GhostBlock : Module(
             BlockPos(77, 221, 34),
             BlockPos(77, 221, 33),
         ),
-
         2 to arrayOf(
             BlockPos(101, 169, 46),
             BlockPos(100, 169, 46),
@@ -94,7 +90,6 @@ object GhostBlock : Module(
             BlockPos(77, 221, 36),
             BlockPos(78, 221, 36),
         ),
-
         2 to arrayOf(
             BlockPos(102, 169, 47),
         )
@@ -116,7 +111,6 @@ object GhostBlock : Module(
             BlockPos(77, 220, 35),
             BlockPos(78, 220, 35)
         ),
-
         2 to arrayOf(
             BlockPos(88, 167, 41),
             BlockPos(89, 167, 41),
@@ -173,7 +167,6 @@ object GhostBlock : Module(
             BlockPos(101, 167, 46),
             BlockPos(101, 166, 46),
         ),
-
         3 to arrayOf(
             BlockPos(51, 114, 52),
             BlockPos(51, 114, 53),
@@ -190,7 +183,6 @@ object GhostBlock : Module(
             BlockPos(51, 115, 57),
             BlockPos(51, 115, 58),
         ),
-
         4 to arrayOf(
             BlockPos(54, 64, 72),
             BlockPos(54, 64, 73),

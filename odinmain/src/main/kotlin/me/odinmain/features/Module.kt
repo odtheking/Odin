@@ -1,7 +1,5 @@
 package me.odinmain.features
 
-import com.google.gson.annotations.Expose
-import com.google.gson.annotations.SerializedName
 import me.odinmain.OdinMain
 import me.odinmain.features.ModuleManager.executors
 import me.odinmain.features.impl.render.ClickGUIModule
@@ -14,7 +12,6 @@ import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.Packet
 import net.minecraftforge.common.MinecraftForge
 import org.lwjgl.input.Keyboard
-import org.lwjgl.input.Mouse
 
 import kotlin.reflect.full.hasAnnotation
 
@@ -23,68 +20,60 @@ import kotlin.reflect.full.hasAnnotation
  * @author Aton
  */
 abstract class Module(
-    name: String,
-    keyCode: Int = Keyboard.KEY_NONE,
-    category: Category = Category.RENDER,
+    val name: String,
+    val key: Int = Keyboard.KEY_NONE,
+    @Transient val category: Category = Category.RENDER,
+    @Transient var description: String = "",
+    @Transient val tag: Int = TagType.NONE,
     toggled: Boolean = false,
-    settings: ArrayList<Setting<*>> = ArrayList(),
-    description: String = "",
-    val tag: Int = TagType.NONE
 ) {
-    object TagType {
-        const val NONE = 0
-        const val NEW = 1
-        const val RISKY = 2
-        const val FPSTAX = 3
-    }
 
-    @Expose
-    @SerializedName("name")
-    val name: String
-
-    @Expose
-    @SerializedName("key")
-    var keyCode: Int
-    val category: Category
-
-    @Expose
-    @SerializedName("enabled")
     var enabled: Boolean = toggled
         private set
 
-    @Expose
-    @SerializedName("settings")
-    val settings: ArrayList<Setting<*>>
-
-    var description: String
+    /**
+     * Settings for the module
+     */
+    val settings: ArrayList<Setting<*>> = ArrayList()
 
     protected inline val mc get() = OdinMain.mc
 
-    init {
-        this.name = name
-        this.keyCode = keyCode
-        this.category = category
-        this.settings = settings
-        this.description = description
+    /**
+     * Indicates if the module has the annotation [AlwaysActive],
+     * which keeps the module registered to the eventbus, even if disabled
+     */
+    @Transient
+    val alwaysActive = this::class.hasAnnotation<AlwaysActive>()
 
-        if (this::class.hasAnnotation<AlwaysActive>()) {
+    init {
+        if (alwaysActive) {
             MinecraftForge.EVENT_BUS.register(this)
         }
     }
 
+    /**
+     * Gets toggled when module is enabled
+     */
     open fun onEnable() {
-        MinecraftForge.EVENT_BUS.register(this)
+        if (!alwaysActive) {
+            MinecraftForge.EVENT_BUS.register(this)
+        }
     }
 
+    /**
+     * Gets toggled when module is disabled
+     */
     open fun onDisable() {
-        if (!this::class.hasAnnotation<AlwaysActive>()) {
+        if (!alwaysActive) {
             MinecraftForge.EVENT_BUS.unregister(this)
         }
     }
 
     open fun onKeybind() {
         toggle()
-        if (ClickGUIModule.enableNotification) modMessage("$name ${if (enabled) "§aenabled" else "§cdisabled"}.")
+        if (ClickGUIModule.enableNotification) {
+            modMessage("$name ${if (enabled) "§aenabled" else "§cdisabled"}.")
+        }
     }
 
     fun toggle() {
@@ -102,22 +91,20 @@ abstract class Module(
     }
 
     fun register(vararg setting: Setting<*>) {
-        settings.addAll(setting)
+        for (i in setting) {
+            register(i)
+        }
     }
 
     operator fun <K : Setting<*>> K.unaryPlus(): K = register(this)
 
     fun getSettingByName(name: String): Setting<*>? {
-        for (set in settings) {
-            if (set.name.equals(name, ignoreCase = true)) {
-                return set
+        for (setting in settings) {
+            if (setting.name.equals(name, ignoreCase = true)) {
+                return setting
             }
         }
         return null
-    }
-
-    fun isKeybindDown(): Boolean {
-        return keyCode != 0 && (Keyboard.isKeyDown(keyCode) || Mouse.isButtonDown(keyCode + 100))
     }
 
     /**
@@ -152,5 +139,13 @@ abstract class Module(
 
     fun execute(delay: () -> Long, profileName: String = this.name, func: Executable) {
         executors.add(this to Executor(delay, profileName, func))
+    }
+
+    // todo change this to enum
+    object TagType {
+        const val NONE = 0
+        const val NEW = 1
+        const val RISKY = 2
+        const val FPSTAX = 3
     }
 }

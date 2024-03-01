@@ -16,9 +16,10 @@ class ColorSetting(
 ) : Setting<Color>(name, hidden, description){
 
     override var value: Color = default
-        set(value) {
-            field = processInput(value)
-        }
+
+    override fun update(configSetting: Setting<*>) {
+        value = Color((configSetting as NumberSetting).valueDouble.toInt())
+    }
 
     var hue: Float
         get() = value.hue
