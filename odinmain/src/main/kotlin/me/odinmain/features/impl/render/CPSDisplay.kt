@@ -4,10 +4,7 @@ import me.odinmain.events.impl.PacketSentEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.HudSetting
-import me.odinmain.features.settings.impl.SelectorSetting
+import me.odinmain.features.settings.impl.*
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.animations.impl.EaseInOut
 import me.odinmain.ui.clickgui.util.ColorUtil.brighter
@@ -64,9 +61,9 @@ object CPSDisplay : Module(
 
     }
 
-    private val countPackets: Boolean by BooleanSetting("Count Packets", false, description = "Counts packets sent outside of the rightclickmouse method, this will be better at detecting other mods' autoclickers, but might show innacurate values.")
+    private val countPackets: Boolean by BooleanSetting("Count Packets", false, description = "Counts packets sent outside of the rightclickmouse method, this will be better at detecting other mods' auto clickers, but might show inaccurate values.")
 
-    private val advanced: Boolean by BooleanSetting("Settings", false)
+    private val advanced: Boolean by DropdownSetting("Show Settings", false)
 
     private val button: Int by SelectorSetting("Button", "Both", arrayListOf("Left", "Right", "Both"))
         .withDependency { advanced }
