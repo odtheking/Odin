@@ -34,15 +34,13 @@ object TeammatesHighlight : Module(
         teammatesNoSelf.forEach {
             if (it.entity == null || it.name == mc.thePlayer.name) return@forEach
             RenderUtils.drawStringInWorld(
-                it.entity.name, it.entity.renderVec.addVec(y = 2.6),
+                it.name, it.entity.renderVec.addVec(y = 2.6),
                 color = it.clazz.color.rgba,
                 depthTest = false, increase = false, renderBlackBox = false,
                 scale = 0.05f
             )
         }
     }
-
-
 
     private fun getTeammates(entity: Entity): Int? {
         val teammate = teammatesNoSelf.find { it.entity == entity } ?: return null

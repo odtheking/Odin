@@ -130,7 +130,6 @@ object Splits : Module(
 
     @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
-        if (LocationUtils.currentArea != "Kuudra") return
         when (event.message) {
             "[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!" -> {
                 splits[0] = System.currentTimeMillis()
@@ -214,8 +213,6 @@ object Splits : Module(
                 else if (event.message.contains("DEFEAT")) splits[4] = System.currentTimeMillis()
             }
         }
-
-
     }
     @SubscribeEvent
     fun onPacket(event: ReceivePacketEvent) {

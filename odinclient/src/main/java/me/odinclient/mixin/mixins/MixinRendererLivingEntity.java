@@ -117,5 +117,13 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> {
             ci.cancel();
         }
     }
+
+    @Inject(method = "doRender(Lnet/minecraft/entity/EntityLivingBase;DDDFF)V", at = @At("RETURN"))
+    private <T extends EntityLivingBase> void injectChamsPost(T entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo callbackInfo) {
+        if (CustomESP.INSTANCE.getCurrentEntities().contains(entity) && CustomESP.INSTANCE.getMode() == 1 && CustomESP.INSTANCE.getRenderThrough()) {
+            glPolygonOffset(1f, 1000000F);
+            glDisable(GL_POLYGON_OFFSET_FILL);
+        }
+    }
 }
 
