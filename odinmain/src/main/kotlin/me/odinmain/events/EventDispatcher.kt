@@ -10,6 +10,7 @@ import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.waitUntilLastItem
+import me.odinmain.utils.postAndCatch
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.network.play.server.S02PacketChat
@@ -29,9 +30,8 @@ object EventDispatcher {
      */
     @SubscribeEvent
     fun onPacket(event: ReceivePacketEvent) {
-        if (event.packet is S02PacketChat) {
-            post(ChatPacketEvent(event.packet.chatComponent.unformattedText.noControlCodes))
-        }
+        if (event.packet !is S02PacketChat || !ChatPacketEvent(event.packet.chatComponent.unformattedText.noControlCodes).postAndCatch()) return
+        event.isCanceled = true
     }
 
     private val nextTime = Clock()
