@@ -71,7 +71,7 @@ object ModuleManager {
         CPSDisplay,
         DragonHitboxes,
         GyroRange,
-        NickHider,
+        NameChanger,
         NoCursorReset,
         PersonalDragon,
         RenderOptimizer,
