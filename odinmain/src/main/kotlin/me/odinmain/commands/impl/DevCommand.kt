@@ -62,6 +62,9 @@ object DevCommand : Commodore {
             }
 
             literal("devlist").runs {
+                val regex = ".*${Regex.escape("[BOSS] Storm: hi!")}.*".toRegex()
+                modMessage(regex)
+                modMessage("aaaaa [BOSS] Storm: hi! aaaaa" matches regex)
                 updateDevs()
             }
 
