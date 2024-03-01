@@ -103,20 +103,6 @@ operator fun Number.plus(number: Number): Number {
     return this.toDouble() + number.toDouble()
 }
 
-operator fun Number.unaryMinus(): Number {
-    return -this.toDouble()
-}
-
-operator fun Number.compareTo(number: Number): Int {
-    return this.toDouble().compareTo(number.toDouble())
-}
-
-fun Number.coerceInNumber(min: Number, max: Number): Number {
-    return if (this < min) min
-    else if (this > max) max
-    else this
-}
-
 /**
  * Returns a random number between the specified range.
  */
@@ -129,14 +115,6 @@ fun IntRange.getRandom(): Int {
  */
 fun <T> Collection<T>.getRandom(): T {
     return this.elementAt((Math.random() * this.size).floor().toInt())
-}
-
-/**
- * Returns the value of the pair which gives the lowest value when passed to the selector function.
- * If both values are equal, the first value is returned.
- */
-inline fun <T>Pair<T, T>.minBy(selector: (T) -> Number): T {
-    return if (selector(this.first) <= selector(this.second)) this.first else this.second
 }
 
 /**

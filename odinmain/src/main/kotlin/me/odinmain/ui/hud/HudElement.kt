@@ -92,8 +92,8 @@ open class HudElement(
 
         startProfile(this.parentModule?.name + " Hud")
 
-        xSetting.max = Display.getWidth()
-        ySetting.max = Display.getHeight()
+        xSetting.max = Display.getWidth().toDouble()
+        ySetting.max = Display.getHeight().toDouble()
 
         GlStateManager.pushMatrix()
         val sr = ScaledResolution(mc)
