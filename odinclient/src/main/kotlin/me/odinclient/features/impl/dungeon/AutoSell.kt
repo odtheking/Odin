@@ -1,11 +1,11 @@
 package me.odinclient.features.impl.dungeon
 
-import me.odinclient.utils.skyblock.PlayerUtils.shiftClickWindow
+import me.odinclient.utils.skyblock.PlayerUtils.ClickType
+import me.odinclient.utils.skyblock.PlayerUtils.windowClick
 import me.odinmain.config.MiscConfig
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.ActionSetting
-import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.containsOneOf
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.name
@@ -19,6 +19,7 @@ object AutoSell : Module(
     category = Category.DUNGEON
 ) {
     private val delay: Long by NumberSetting("Delay", 100, 30.0, 300.0, 5.0)
+    private val clickType: Int by SelectorSetting("Click Type", "Shift", arrayListOf("Shift", "Middle", "Left"))
     private val addDefaults: () -> Unit by ActionSetting("Add defaults") {
         MiscConfig.autoSell.addAll(
             defaultItems.filter { it !in MiscConfig.autoSell }
@@ -35,9 +36,12 @@ object AutoSell : Module(
 
             val chestName = container.name
             if (chestName.equalsOneOf("Trades", "Booster Cookie", "Farm Merchant")) {
-                shiftClickWindow(
-                    container.inventorySlots.subList(54, 90).firstOrNull { doSell(it) }?.slotNumber ?: return@execute
-                )
+                val index = container.inventorySlots.subList(54, 90).firstOrNull { doSell(it) }?.slotNumber ?: return@execute
+                when (clickType) {
+                    0 -> windowClick(index, ClickType.Shift)
+                    1 -> windowClick(index, ClickType.Middle)
+                    2 -> windowClick(index, ClickType.Left)
+                }
             }
         }
     }

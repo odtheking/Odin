@@ -68,6 +68,7 @@ object PlayerUtils {
         data object Left : ClickType()
         data object Right : ClickType()
         data object Middle : ClickType()
+        data object Shift : ClickType()
     }
 
     private data class WindowClick(val slotId: Int, val button: Int, val mode: Int)
@@ -117,11 +118,8 @@ object PlayerUtils {
             is ClickType.Left -> windowClick(slotId, 0, 0)
             is ClickType.Right -> windowClick(slotId, 1, 0)
             is ClickType.Middle -> windowClick(slotId, 2, 3)
+            is ClickType.Shift -> windowClick(slotId, 0, 1)
         }
-    }
-
-    fun shiftClickWindow(index : Int) {
-        windowClick(index, 0, 1)
     }
 
     fun EntityPlayerSP?.isHolding(vararg names: String, ignoreCase: Boolean = false, mode: Int = 0): Boolean {
