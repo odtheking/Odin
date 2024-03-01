@@ -37,7 +37,7 @@ object ClickGUI : Screen() {
 
     private val panels: ArrayList<Panel> = arrayListOf()
 
-    private var anim = EaseInOut(400)
+    private var anim = EaseInOut(700)
     private var open = false
     private var desc: Description = Description(null, 0f, 0f, null)
 
@@ -50,7 +50,7 @@ object ClickGUI : Screen() {
         GlStateManager.pushMatrix()
         translate(0f, 0f, 200f)
         if (anim.isAnimating()) {
-            translate(0f, floor(anim.get(-10f, 0f, !open)))
+            //translate(0f, floor(anim.get(-10f, 0f, !open)))
             val alpha = anim.get(0.7f, 1f, !open)
             ColorUtil.moduleButtonColor.alpha = alpha
             ColorUtil.clickGUIColor.alpha = alpha
@@ -127,17 +127,13 @@ object ClickGUI : Screen() {
     }
 
     override fun onGuiClosed() {
-        for (panel in panels.reversed()) {
-            if (panel.extended) {
-                for (moduleButton in panel.moduleButtons) {
-                    if (moduleButton.extended) {
-                        for (element in moduleButton.menuElements) {
-                            if (element is ElementColor) {
-                                element.dragging = null
-                            }
-                            element.listening = false
-                        }
+        for (panel in panels.filter { it.extended }.reversed()) {
+            for (moduleButton in panel.moduleButtons.filter { it.extended }) {
+                for (element in moduleButton.menuElements) {
+                    if (element is ElementColor) {
+                        element.dragging = null
                     }
+                    element.listening = false
                 }
             }
         }
@@ -175,21 +171,19 @@ object ClickGUI : Screen() {
 
         /** Handles rendering, if it's not active then it won't render */
         fun render() {
-            if (shouldRender) {
-                val area = wrappedTextBounds(text!!, 300f, 12f)
-                scale(1f / scaleFactor, 1f / scaleFactor, 1f)
-                roundedRectangle(
-                    x, y, area.first + 7, area.second + 9,
-                    buttonColor.withAlpha((hoverHandler!!.percent() / 100f).coerceIn(0f, 0.8f)), 5f
-                )
-                wrappedText(text!!, x + 7f, y + 12f, 300f, textColor, 12f, OdinFont.REGULAR)
-                if (hoverHandler!!.percent() == 0) {
-                    text = null
-                    hoverHandler = null
-                }
-                scale(scaleFactor, scaleFactor, 1f)
+            if (!shouldRender) return
+            val area = wrappedTextBounds(text!!, 300f, 12f)
+            scale(1f / scaleFactor, 1f / scaleFactor, 1f)
+            roundedRectangle(
+                x, y, area.first + 7, area.second + 9,
+                buttonColor.withAlpha((hoverHandler!!.percent() / 100f).coerceIn(0f, 0.8f)), 5f
+            )
+            wrappedText(text!!, x + 7f, y + 12f, 300f, textColor, 12f, OdinFont.REGULAR)
+            if (hoverHandler!!.percent() == 0) {
+                text = null
+                hoverHandler = null
             }
-
+            scale(scaleFactor, scaleFactor, 1f)
         }
     }
 }

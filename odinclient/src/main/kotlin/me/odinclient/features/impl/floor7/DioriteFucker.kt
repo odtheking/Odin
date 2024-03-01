@@ -1,7 +1,6 @@
 package me.odinclient.features.impl.floor7
 
-import me.odinmain.events.impl.ChatPacketEvent
-import me.odinmain.events.impl.ReceivePacketEvent
+import me.odinmain.events.impl.*
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -9,6 +8,7 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S22PacketMultiBlockChange
 import net.minecraft.network.play.server.S23PacketBlockChange
@@ -25,38 +25,12 @@ object DioriteFucker : Module(
     private val color: Int by NumberSetting("Color", 0, 0.0, 15.0, 1.0).withDependency { stainedGlass }
 
     @SubscribeEvent
-    fun onPacket(event: ReceivePacketEvent) {
-        if (event.packet is S23PacketBlockChange) {
-            if (DungeonUtils.getPhase() != 2) return
-            val blockPos = BlockPos((event.packet as S23PacketBlockChange).blockPosition)
-            if (!isWithinPillar(blockPos)) return
-
-            val blockState = (event.packet as S23PacketBlockChange).blockState
-            val block = blockState.block
-            if (!block.equalsOneOf(Blocks.stone, Blocks.piston, Blocks.piston_extension, Blocks.piston_head)) return
-
-            event.isCanceled = true
-            setGlass(blockPos)
-        } else if (event.packet is S22PacketMultiBlockChange) {
-            if (DungeonUtils.getPhase() != 2) return
-            event.isCanceled = true
-            val changed = (event.packet as S22PacketMultiBlockChange).changedBlocks
-            var replaced = false
-            changed.forEach {
-                if (replaced) return
-                if (!isWithinPillar(it.pos)) return
-
-                val blockState = it.blockState
-                val block = blockState.block
-                if (!block.equalsOneOf(Blocks.stone, Blocks.piston, Blocks.piston_extension, Blocks.piston_head)) return
-                replaced = true
-
-                event.isCanceled = true
-                setGlass(it.pos)
-                replaceDiorite()
-            }
-        }
+    fun onBlockChange(event: BlockChangeEvent) {
+        if (!isWithinPillar(event.pos) || event.update.block.equalsOneOf(Blocks.glass, Blocks.stained_glass, Blocks.air) || event.world != mc.theWorld) return
+        event.isCanceled = true
+        setGlass(event.pos)
     }
+
     @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
         if (event.message == "[BOSS] Storm: I'd be happy to show you what that's like!")
@@ -76,9 +50,9 @@ object DioriteFucker : Module(
     }
 
     private val pillars = listOf(
-        listOf(46, 168, 41),
-        listOf(46, 168, 65),
-        listOf(100, 168, 65),
+        listOf(46, 169, 41),
+        listOf(46, 169, 65),
+        listOf(100, 169, 65),
         listOf(100, 179, 41)
     )
 
@@ -86,7 +60,7 @@ object DioriteFucker : Module(
         for (pillar in pillars) {
             val (x0, y0, z0) = pillar
             if (manhattanDistance(x0, z0, pos.x, pos.z) > 4) continue
-            if (pos.y > y0 && pos.y > 205) continue
+            if (pos.y > 205 || pos.y < y0) continue
             return true
         }
         return false
@@ -97,9 +71,8 @@ object DioriteFucker : Module(
     }
 
     private fun setGlass(pos: BlockPos) {
-        val blockPos = BlockPos(pos.x, pos.y, pos.z)
-        if (stainedGlass) mc.theWorld.setBlockState(blockPos, Blocks.stained_glass.getStateFromMeta(color), 3)
-        else mc.theWorld.setBlockState(blockPos, Blocks.glass.defaultState, 3)
+        if (stainedGlass) mc.theWorld.setBlockState(pos, Blocks.stained_glass.getStateFromMeta(color), 3)
+        else mc.theWorld.setBlockState(pos, Blocks.glass.defaultState, 3)
     }
 
     private fun isDiorite(x: Int, y: Int, z: Int): Boolean {
