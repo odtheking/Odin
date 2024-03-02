@@ -142,7 +142,7 @@ object TerminalSolver : Module(
                     val needed = solution.count { it == slot.slotIndex }
                     val text = if (needed < 3) needed.toString() else (needed - 5).toString()
                     if (type == 2 && removeWrongRubix) Gui.drawRect(x, y, x + 16, y + 16, if (needed < 3) rubixColor.rgba else oppositeRubixColor.rgba)
-                    text(text, x + 8f - OdinFont.getTextWidth(text, 8f) / 2, y + 8f, textColor, 8f, shadow = textShadow)
+                    text(text, x + 8f - OdinFont.getTextWidth(text, 8f) / 2, y + 9f, textColor, 8f, shadow = textShadow)
                 }
                 2 -> {
                     val index = solution.indexOf(slot.slotIndex)
@@ -155,7 +155,7 @@ object TerminalSolver : Module(
                         Gui.drawRect(x, y, x + 16, y + 16, color)
                     }
                     val amount = slot.stack?.stackSize ?: 0
-                    text(amount.toString(), x + 8f - OdinFont.getTextWidth(amount.toString(), 8f) / 2, y + 8f, textColor, 8f, shadow = textShadow)
+                    text(amount.toString(), x + 8f - OdinFont.getTextWidth(amount.toString(), 8f) / 2, y + 9f, textColor, 8f, shadow = textShadow)
                 }
                 3 -> Gui.drawRect(x, y, x + 16, y + 16, startsWithColor.rgba)
                 4 -> Gui.drawRect(x, y, x + 16, y + 16, selectColor.rgba)

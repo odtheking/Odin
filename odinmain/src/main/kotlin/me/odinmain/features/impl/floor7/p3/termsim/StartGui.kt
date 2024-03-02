@@ -65,6 +65,9 @@ object StartGui : TermSimGui(
             StartsWith(StartsWith.letters.shuffled().first()),
             SelectAll(EnumDyeColor.entries.getRandom().name.replace("_", " ").uppercase())
         )
+        if (slot.slotIndex in listOf(4, 11, 12, 13, 14, 15, 22)) {
+            resetInv()
+        }
         when (slot.slotIndex) {
             4 -> {
                 pbTimes.forEach { it.value = 99.0 }
@@ -78,7 +81,6 @@ object StartGui : TermSimGui(
             14 -> terms[3].open(ping)
             15 -> terms[4].open(ping)
             22 -> terms.getRandom().open(ping)
-
         }
     }
 }

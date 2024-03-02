@@ -2,7 +2,6 @@ package me.odinmain.features.impl.floor7.p3.termsim
 
 
 import me.odinmain.OdinMain.display
-import me.odinmain.OdinMain.mc
 import me.odinmain.config.Config
 import me.odinmain.events.impl.GuiLoadedEvent
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
@@ -10,22 +9,23 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.round
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.modMessage
+import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiChest
-import net.minecraft.inventory.ContainerChest
-import net.minecraft.inventory.InventoryBasic
-import net.minecraft.inventory.Slot
+import net.minecraft.inventory.*
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 
-open class TermSimGui(val name: String, val size: Int) : GuiChest(
-    mc.thePlayer.inventory,
-    InventoryBasic(name, true, size)
+open class TermSimGui(val name: String, val size: Int, private val inv: InventoryBasic = InventoryBasic(name, true, size)) : GuiChest(
+    Minecraft.getMinecraft().thePlayer.inventory,
+    inv
 ) {
     val pane: Item = Item.getItemById(160)
     val blackPane = ItemStack(pane, 1, 15).apply { setStackDisplayName("") }
+    private var inventoryBefore = arrayOf<ItemStack>()
     private var startTime = 0L
     protected var ping = 0L
     private var doesAcceptClick = true
+    private val minecraft get() = Minecraft.getMinecraft() // this is needed here for some fucking reason and I have no clue but the OdinMain one is sometimes (but not always) null when open() runs ???? (this took like 30 minutes to figure out)
 
     open fun create() {
         this.inventorySlots.inventorySlots.subList(0, size).forEach { it.putStack(blackPane) } // override
@@ -33,6 +33,12 @@ open class TermSimGui(val name: String, val size: Int) : GuiChest(
 
     fun open(ping: Long = 0L) {
         create()
+        minecraft.thePlayer?.inventory?.mainInventory?.let {
+            inventoryBefore = it.clone()
+        }
+        for (i in minecraft.thePlayer?.inventory?.mainInventory?.indices ?: 0..0) {
+            minecraft.thePlayer?.inventory?.mainInventory?.set(i, null)
+        }
         this.ping = ping
         display = this
         startTime = System.currentTimeMillis()
@@ -47,13 +53,25 @@ open class TermSimGui(val name: String, val size: Int) : GuiChest(
             oldPb.value = time
             Config.saveConfig()
         } else modMessage("§a$name solved in §6${time}s §a!")
+        resetInv()
         StartGui.open(ping)
     }
 
     open fun slotClick(slot: Slot, button: Int) {}
 
+    override fun onGuiClosed() {
+        resetInv()
+        super.onGuiClosed()
+    }
+
+    protected fun resetInv() {
+        if (inventoryBefore.isNotEmpty())
+            minecraft.thePlayer.inventory.mainInventory = inventoryBefore
+        inventoryBefore = arrayOf()
+    }
+
     fun delaySlotClick(slot: Slot, button: Int) {
-        if (!doesAcceptClick) return
+        if (!doesAcceptClick || slot.inventory != this.inv) return
         slotClick(slot, button)
         doesAcceptClick = false
         runIn((ping / 50).toInt()) {
