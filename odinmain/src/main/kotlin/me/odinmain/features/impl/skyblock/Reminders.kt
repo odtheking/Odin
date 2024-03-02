@@ -34,18 +34,18 @@ object Reminders : Module(
         when (event.message) {
             "[BOSS] Wither King: You.. again?" -> if (!dragReminder) return else PlayerUtils.alert("§3Swap to edrag!")
 
-            "⚠ Maxor is enraged! ⚠" -> if (!ultReminder) return else {
-                PlayerUtils.alert("§3Use ult!")
+            "⚠ Maxor is enraged! ⚠" -> {
+                if (ultReminder) PlayerUtils.alert("§3Use ult!")
                 if (autoUlt && !OdinMain.onLegitVersion) PlayerUtils.dropItem()
             }
 
-            "[BOSS] Goldor: You have done it, you destroyed the factory…" -> if (!ultReminder) return else {
-                PlayerUtils.alert("§3Use ult!")
+            "[BOSS] Goldor: You have done it, you destroyed the factory…" -> {
+                if (ultReminder) PlayerUtils.alert("§3Use ult!")
                 if (autoUlt && !OdinMain.onLegitVersion) PlayerUtils.dropItem()
             }
 
-            "[BOSS] Sadan: My giants! Unleashed!" -> if (!ultReminder) return else {
-                PlayerUtils.alert("§3Use ult!")
+            "[BOSS] Sadan: My giants! Unleashed!" -> {
+                if (ultReminder) PlayerUtils.alert("§3Use ult!")
                 if (autoUlt && !OdinMain.onLegitVersion) PlayerUtils.dropItem()
             }
 
@@ -58,7 +58,7 @@ object Reminders : Module(
             }
 
             else -> {
-                if (maskAlert && Regex("^(Second Wind Activated!)? ?Your (.+) saved your life!\$").matches(event.message)) {
+                if (maskAlert && event.message matches Regex("^(Second Wind Activated!)? ?Your (.+) saved your life!\$")) {
                     PlayerUtils.alert("Mask used!")
                     modMessage("Mask used!")
                 }
@@ -68,14 +68,18 @@ object Reminders : Module(
 
     @SubscribeEvent
     fun onClientTick(event: TickEvent.ClientTickEvent) {
-        if (!wishAlert || DungeonUtils.inBoss || !DungeonUtils.inDungeons || !canWish) return
+        if (DungeonUtils.inBoss || !DungeonUtils.inDungeons || !canWish) return
         DungeonUtils.teammates.forEach { entityPlayer ->
             val currentHp = entityPlayer.entity?.health ?: 40f
             if (currentHp < 40 * (healthPercentage / 100) && !DungeonUtils.isGhost) {
-                modMessage("§7${entityPlayer.name}§a is at less than §c$healthPercentage% §aHP!")
-                PlayerUtils.alert("USE WISH")
-                if (autoWish && !OdinMain.onLegitVersion) PlayerUtils.dropItem()
-                canWish = false
+                if (wishAlert) {
+                    modMessage("§7${entityPlayer.name}§a is at less than §c$healthPercentage% §aHP!")
+                    PlayerUtils.alert("USE WISH")
+                }
+                if (autoWish && !OdinMain.onLegitVersion) {
+                    PlayerUtils.dropItem()
+                    canWish = false
+                }
             }
         }
     }
