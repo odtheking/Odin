@@ -6,9 +6,9 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.world.RenderUtils.renderX
-import me.odinmain.utils.render.world.RenderUtils.renderY
-import me.odinmain.utils.render.world.RenderUtils.renderZ
+import me.odinmain.utils.render.RenderUtils.renderX
+import me.odinmain.utils.render.RenderUtils.renderY
+import me.odinmain.utils.render.RenderUtils.renderZ
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.boss.EntityDragon
 import net.minecraftforge.client.event.RenderLivingEvent

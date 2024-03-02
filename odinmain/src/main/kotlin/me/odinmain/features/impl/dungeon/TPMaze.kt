@@ -6,7 +6,7 @@ import me.odinmain.features.impl.dungeon.PuzzleSolvers.mazeColorOne
 import me.odinmain.features.impl.dungeon.PuzzleSolvers.mazeColorVisited
 import me.odinmain.features.impl.dungeon.PuzzleSolvers.tpMaze
 import me.odinmain.utils.isXZInterceptable
-import me.odinmain.utils.render.world.RenderUtils
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.toAABB
 import net.minecraft.init.Blocks

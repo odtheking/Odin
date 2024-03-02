@@ -13,10 +13,9 @@ import me.odinmain.ui.clickgui.util.ColorUtil.darker
 import me.odinmain.ui.clickgui.util.ColorUtil.elementBackground
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.HoverHandler
-import me.odinmain.ui.util.*
 import me.odinmain.ui.util.MouseUtils.isAreaHovered
 import me.odinmain.utils.capitalizeFirst
-import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.*
 
 /**
  * Renders all the modules.

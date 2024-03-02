@@ -15,11 +15,11 @@
     import me.odinmain.utils.ServerUtils.getPing
     import me.odinmain.utils.getPositionEyes
     import me.odinmain.utils.render.Color
-    import me.odinmain.utils.render.world.RenderUtils
-    import me.odinmain.utils.render.world.RenderUtils.renderVec
-    import me.odinmain.utils.render.world.RenderUtils.renderX
-    import me.odinmain.utils.render.world.RenderUtils.renderY
-    import me.odinmain.utils.render.world.RenderUtils.renderZ
+    import me.odinmain.utils.render.RenderUtils
+    import me.odinmain.utils.render.RenderUtils.renderVec
+    import me.odinmain.utils.render.RenderUtils.renderX
+    import me.odinmain.utils.render.RenderUtils.renderY
+    import me.odinmain.utils.render.RenderUtils.renderZ
     import net.minecraft.entity.Entity
     import net.minecraft.entity.boss.EntityWither
     import net.minecraft.entity.item.EntityArmorStand

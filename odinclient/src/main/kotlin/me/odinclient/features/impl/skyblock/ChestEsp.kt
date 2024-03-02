@@ -8,7 +8,7 @@ import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.world.RenderUtils
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.toAABB

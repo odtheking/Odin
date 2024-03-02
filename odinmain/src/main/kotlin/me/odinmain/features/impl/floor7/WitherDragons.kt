@@ -20,9 +20,9 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.ui.util.getTextWidth
-import me.odinmain.ui.util.roundedRectangle
-import me.odinmain.ui.util.text
+import me.odinmain.utils.render.getTextWidth
+import me.odinmain.utils.render.roundedRectangle
+import me.odinmain.utils.render.text
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils

@@ -8,11 +8,11 @@ import me.odinmain.ui.clickgui.SearchBar.currentSearch
 import me.odinmain.ui.clickgui.animations.impl.LinearAnimation
 import me.odinmain.ui.clickgui.elements.ModuleButton
 import me.odinmain.ui.clickgui.util.ColorUtil
-import me.odinmain.ui.util.*
 import me.odinmain.ui.util.MouseUtils.isAreaHovered
 import me.odinmain.ui.util.MouseUtils.mouseX
 import me.odinmain.ui.util.MouseUtils.mouseY
 import me.odinmain.utils.capitalizeFirst
+import me.odinmain.utils.render.*
 import me.odinmain.utils.round
 import kotlin.math.floor
 
@@ -63,6 +63,7 @@ class Panel(
         scrollOffset = scrollAnimation.get(scrollOffset, scrollTarget).round(0)
         var startY = scrollOffset + height
         scale(1f / scaleFactor, 1f / scaleFactor, 1f)
+        dropShadow(x, y, width, (length + 5f).coerceAtLeast(height), ColorUtil.moduleButtonColor, 15f, 10f, 10f, 10f, 10f)
         roundedRectangle(x, y, width, height, ColorUtil.moduleButtonColor, ColorUtil.moduleButtonColor, ColorUtil.moduleButtonColor, 0f, 15f, 15f, 0f, 0f, 0f)
 
         text(if (displayName == "Floor7") "Floor 7" else displayName, x + width / 2f, y + height / 2f, ColorUtil.textColor, 20f, type = OdinFont.BOLD, TextAlign.Middle)
@@ -79,7 +80,6 @@ class Panel(
         moduleButtons.lastOrNull()?.color?.let { roundedRectangle(x, y + startY, width, 10f, it, it, it, 0f, 0f, 0f, 10f, 10f, 4f) }
 
         resetScissor(s)
-        dropShadow(x, y, width, (startY + 10f).coerceAtLeast(height), ColorUtil.moduleButtonColor, 15f, 10f, 10f, 10f, 10f)
         scale(scaleFactor, scaleFactor, 1f)
     }
 

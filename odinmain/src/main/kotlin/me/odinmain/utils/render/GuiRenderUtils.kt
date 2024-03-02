@@ -1,13 +1,13 @@
-package me.odinmain.ui.util
+package me.odinmain.utils.render
 
 import gg.essential.universal.UMatrixStack
 import me.odinmain.OdinMain.mc
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.util.ColorUtil
-import me.odinmain.ui.util.TextAlign.Left
+import me.odinmain.ui.util.RoundedRect
+import me.odinmain.utils.render.TextAlign.Left
 import me.odinmain.utils.*
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.world.RenderUtils.drawTexturedModalRect
+import me.odinmain.utils.render.RenderUtils.drawTexturedModalRect
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.texture.DynamicTexture
@@ -27,8 +27,23 @@ fun roundedRectangle(
 ) {
     matrix.runLegacyMethod(matrix.get()) {
         RoundedRect.drawRectangle(
-            matrix.get(), x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(),
-            color, borderColor, shadowColor, borderThickness.toFloat(), topL.toFloat(), topR.toFloat(), botL.toFloat(), botR.toFloat(), edgeSoftness.toFloat(), color2, gradientDir, shadowSoftness
+            matrix.get(),
+            x.toFloat(),
+            y.toFloat(),
+            w.toFloat(),
+            h.toFloat(),
+            color,
+            borderColor,
+            shadowColor,
+            borderThickness.toFloat(),
+            topL.toFloat(),
+            topR.toFloat(),
+            botL.toFloat(),
+            botR.toFloat(),
+            edgeSoftness.toFloat(),
+            color2,
+            gradientDir,
+            shadowSoftness
         )
     }
 }
@@ -53,12 +68,31 @@ fun gradientRect(x: Float, y: Float, w: Float, h: Float, color1: Color, color2: 
 }
 
 fun drawHSBBox(x: Float, y: Float, w: Float, h: Float, color: Color) {
-    matrix.runLegacyMethod(matrix.get()) { RoundedRect.drawHSBBox(matrix.get(), x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(), color,) }
+    matrix.runLegacyMethod(matrix.get()) {
+        RoundedRect.drawHSBBox(
+            matrix.get(),
+            x.toFloat(),
+            y.toFloat(),
+            w.toFloat(),
+            h.toFloat(),
+            color,
+        )
+    }
     rectangleOutline(x-1, y-1, w+2, h+2, Color(38, 38, 38), 3f, 2f)
 }
 
 fun circle(x: Number, y: Number, radius: Number, color: Color, borderColor: Color = color, borderThickness: Number = 0f) {
-    matrix.runLegacyMethod(matrix.get()) { RoundedRect.drawCircle(matrix.get(), x.toFloat(), y.toFloat(), radius.toFloat(), color, borderColor, borderThickness.toFloat()) }
+    matrix.runLegacyMethod(matrix.get()) {
+        RoundedRect.drawCircle(
+            matrix.get(),
+            x.toFloat(),
+            y.toFloat(),
+            radius.toFloat(),
+            color,
+            borderColor,
+            borderThickness.toFloat()
+        )
+    }
 }
 
 fun text(text: String, x: Float, y: Float, color: Color, size: Float, type: Int = OdinFont.REGULAR, align: TextAlign = Left, verticalAlign: TextPos = TextPos.Middle, shadow: Boolean = false) {
@@ -81,11 +115,23 @@ fun scale(x: Float, y: Float, z: Float = 1f) = GlStateManager.scale(x, y, z)
 
 fun dropShadow(x: Number, y: Number, w: Number, h: Number, shadowColor: Color, shadowSoftness: Number, topL: Number, topR: Number, botL: Number, botR: Number) {
     translate(0f, 0f, -100f)
+
     matrix.runLegacyMethod(matrix.get()) {
         RoundedRect.drawDropShadow(
-            matrix.get(), (x - shadowSoftness / 2).toFloat(), (y - shadowSoftness / 2).toFloat(), (w + shadowSoftness).toFloat(), (h + shadowSoftness).toFloat(), shadowColor, topL.toFloat(), topR.toFloat(), botL.toFloat(), botR.toFloat(), shadowSoftness.toFloat()
+            matrix.get(),
+            (x - shadowSoftness / 2).toFloat(),
+            (y - shadowSoftness / 2).toFloat(),
+            (w + shadowSoftness).toFloat(),
+            (h + shadowSoftness).toFloat(),
+            shadowColor,
+            topL.toFloat(),
+            topR.toFloat(),
+            botL.toFloat(),
+            botR.toFloat(),
+            shadowSoftness.toFloat()
         )
     }
+
     translate(0f, 0f, 100f)
 }
 

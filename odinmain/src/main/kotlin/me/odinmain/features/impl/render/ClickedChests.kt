@@ -9,7 +9,7 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.world.RenderUtils
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.util.BlockPos
 import net.minecraftforge.client.event.RenderWorldLastEvent

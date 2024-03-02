@@ -14,7 +14,7 @@ import me.odinmain.features.Module
 import me.odinmain.utils.floored
 import me.odinmain.utils.plus
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.world.RenderUtils
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.skyblock.WorldUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.modMessage

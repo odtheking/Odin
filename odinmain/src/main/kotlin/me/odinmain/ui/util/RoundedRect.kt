@@ -5,7 +5,7 @@ import gg.essential.universal.UMatrixStack
 import gg.essential.universal.shader.*
 import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.world.RenderUtils.createLegacyShader
+import me.odinmain.utils.render.RenderUtils.createLegacyShader
 
 object RoundedRect {
 

@@ -5,9 +5,9 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.clock.Clock
-import me.odinmain.utils.render.world.RenderUtils.renderX
-import me.odinmain.utils.render.world.RenderUtils.renderY
-import me.odinmain.utils.render.world.RenderUtils.renderZ
+import me.odinmain.utils.render.RenderUtils.renderX
+import me.odinmain.utils.render.RenderUtils.renderY
+import me.odinmain.utils.render.RenderUtils.renderZ
 import me.odinmain.utils.skyblock.WorldUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.isShortbow

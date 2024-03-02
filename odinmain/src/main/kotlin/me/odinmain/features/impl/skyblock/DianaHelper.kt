@@ -13,8 +13,8 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.world.RenderUtils
-import me.odinmain.utils.render.world.RenderUtils.renderVec
+import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.skyblock.*
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement

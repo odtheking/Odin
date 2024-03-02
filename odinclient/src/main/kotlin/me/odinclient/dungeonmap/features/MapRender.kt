@@ -8,7 +8,7 @@ import me.odinclient.utils.skyblock.dungeon.map.MapUtils.mapRoomSize
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.world.RenderUtils.drawTexturedModalRect
+import me.odinmain.utils.render.RenderUtils.drawTexturedModalRect
 import me.odinmain.utils.skyblock.dungeon.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import net.minecraft.client.renderer.GlStateManager

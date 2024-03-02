@@ -17,7 +17,7 @@ import me.odinmain.features.impl.skyblock.*
 import me.odinmain.features.settings.impl.KeybindSetting
 import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.ui.util.getTextWidth
+import me.odinmain.utils.render.getTextWidth
 import me.odinmain.utils.capitalizeFirst
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.profile

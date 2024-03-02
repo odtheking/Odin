@@ -9,8 +9,8 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.StringSetting
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.ui.util.getTextWidth
-import me.odinmain.ui.util.text
+import me.odinmain.utils.render.getTextWidth
+import me.odinmain.utils.render.text
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.Color
 import net.minecraft.network.play.server.S29PacketSoundEffect

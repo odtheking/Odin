@@ -11,8 +11,7 @@ import me.odinmain.ui.clickgui.util.ColorUtil.brighter
 import me.odinmain.ui.clickgui.util.ColorUtil.elementBackground
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.HoverHandler
-import me.odinmain.ui.util.*
-import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.*
 import org.lwjgl.input.Keyboard
 
 /**

@@ -17,7 +17,7 @@ import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.equal
 import me.odinmain.utils.etherwarpRotateTo
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.world.RenderUtils
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.skyblock.EtherWarpHelper
 import me.odinmain.utils.skyblock.EtherWarpHelper.etherPos
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils

@@ -1,4 +1,4 @@
-package me.odinmain.utils.render.world
+package me.odinmain.utils.render
 
 import gg.essential.universal.shader.BlendState
 import gg.essential.universal.shader.UShader
@@ -6,10 +6,7 @@ import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinmain.ui.util.scale
-import me.odinmain.ui.util.scaleFactor
-import me.odinmain.ui.util.text
-import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.scale
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.WorldRenderer

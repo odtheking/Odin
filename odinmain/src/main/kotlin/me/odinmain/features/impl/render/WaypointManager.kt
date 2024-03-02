@@ -9,7 +9,7 @@ import me.odinmain.ui.waypoint.WaypointGUI
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.world.RenderUtils
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.skyblock.LocationUtils.currentArea
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.util.Vec3i

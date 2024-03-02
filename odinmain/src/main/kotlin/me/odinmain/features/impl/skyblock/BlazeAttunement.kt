@@ -8,7 +8,7 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.world.RenderUtils.bindColor
+import me.odinmain.utils.render.RenderUtils.bindColor
 import me.odinmain.utils.xzDistance
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity

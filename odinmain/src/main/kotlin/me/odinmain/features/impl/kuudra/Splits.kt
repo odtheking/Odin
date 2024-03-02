@@ -8,8 +8,8 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.ui.util.getTextWidth
-import me.odinmain.ui.util.text
+import me.odinmain.utils.render.getTextWidth
+import me.odinmain.utils.render.text
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.LocationUtils

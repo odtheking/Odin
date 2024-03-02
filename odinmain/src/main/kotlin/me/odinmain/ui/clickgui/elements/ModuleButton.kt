@@ -16,8 +16,8 @@ import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.HoverHandler
 import me.odinmain.ui.util.*
 import me.odinmain.ui.util.MouseUtils.isAreaHovered
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.world.RenderUtils.loadBufferedImage
+import me.odinmain.utils.render.*
+import me.odinmain.utils.render.RenderUtils.loadBufferedImage
 import net.minecraft.client.renderer.texture.DynamicTexture
 import kotlin.math.floor
 

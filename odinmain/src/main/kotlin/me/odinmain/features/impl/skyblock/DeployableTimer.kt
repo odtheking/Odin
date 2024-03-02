@@ -6,12 +6,12 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.ui.util.drawDynamicTexture
-import me.odinmain.ui.util.getTextWidth
-import me.odinmain.ui.util.text
+import me.odinmain.utils.render.drawDynamicTexture
+import me.odinmain.utils.render.getTextWidth
+import me.odinmain.utils.render.text
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.world.RenderUtils.loadBufferedImage
+import me.odinmain.utils.render.RenderUtils.loadBufferedImage
 import me.odinmain.utils.skyblock.getSkullValue
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.entity.item.EntityArmorStand

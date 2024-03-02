@@ -9,10 +9,10 @@ import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.ui.util.getTextWidth
-import me.odinmain.ui.util.text
+import me.odinmain.utils.render.getTextWidth
+import me.odinmain.utils.render.text
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.world.RenderUtils
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.PlayerUtils
 import net.minecraft.util.Vec3

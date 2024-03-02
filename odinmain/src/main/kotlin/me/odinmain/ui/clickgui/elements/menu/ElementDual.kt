@@ -11,7 +11,7 @@ import me.odinmain.ui.clickgui.util.ColorUtil.clickGUIColor
 import me.odinmain.ui.clickgui.util.ColorUtil.darkerIf
 import me.odinmain.ui.clickgui.util.ColorUtil.elementBackground
 import me.odinmain.ui.util.*
-import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.*
 
 /**
  * Renders all the modules.

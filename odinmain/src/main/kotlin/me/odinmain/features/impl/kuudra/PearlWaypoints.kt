@@ -4,8 +4,8 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.world.RenderUtils.drawBoxOutline
-import me.odinmain.utils.render.world.RenderUtils.drawFilledBox
+import me.odinmain.utils.render.RenderUtils.drawBoxOutline
+import me.odinmain.utils.render.RenderUtils.drawFilledBox
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.toAABB
 import net.minecraft.util.BlockPos

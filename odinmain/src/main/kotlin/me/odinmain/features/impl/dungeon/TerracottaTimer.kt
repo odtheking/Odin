@@ -7,7 +7,7 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.addVec
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.world.RenderUtils
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.util.Vec3

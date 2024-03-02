@@ -5,7 +5,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.world.RenderUtils
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.skyblock.heldItem
 import me.odinmain.utils.skyblock.itemID
 import net.minecraft.util.Vec3

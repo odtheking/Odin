@@ -2,7 +2,7 @@ package me.odinmain.features.impl.floor7
 
 import me.odinmain.features.impl.floor7.WitherDragons.lineThickness
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinmain.utils.render.world.RenderUtils
+import me.odinmain.utils.render.RenderUtils
 
 object DragonBoxes {
     fun renderBoxes() {

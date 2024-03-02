@@ -11,7 +11,7 @@ import me.odinmain.ui.util.*
 import me.odinmain.ui.util.MouseUtils.isAreaHovered
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
-import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.*
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.Display
 import kotlin.math.sign

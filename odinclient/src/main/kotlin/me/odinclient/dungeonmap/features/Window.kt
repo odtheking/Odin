@@ -7,7 +7,7 @@ import me.odinclient.utils.skyblock.dungeon.map.MapUtils
 import me.odinclient.utils.skyblock.dungeon.map.MapUtils.mapRoomSize
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.render.world.RenderUtils
+import me.odinmain.utils.render.RenderUtils
 
 import me.odinmain.utils.skyblock.dungeon.*
 import me.odinmain.utils.skyblock.itemID

@@ -12,10 +12,10 @@ import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.HoverHandler
 import me.odinmain.ui.util.MouseUtils.isAreaHovered
 import me.odinmain.ui.util.MouseUtils.mouseX
-import me.odinmain.ui.util.TextAlign
-import me.odinmain.ui.util.dropShadow
-import me.odinmain.ui.util.roundedRectangle
-import me.odinmain.ui.util.text
+import me.odinmain.utils.render.TextAlign
+import me.odinmain.utils.render.dropShadow
+import me.odinmain.utils.render.roundedRectangle
+import me.odinmain.utils.render.text
 import me.odinmain.utils.floor
 import me.odinmain.utils.render.Color
 import org.lwjgl.input.Keyboard

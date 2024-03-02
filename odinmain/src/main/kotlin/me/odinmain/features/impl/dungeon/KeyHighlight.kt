@@ -7,7 +7,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.world.RenderUtils
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand

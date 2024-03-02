@@ -21,8 +21,8 @@ import me.odinmain.ui.util.MouseUtils.isAreaHovered
 import me.odinmain.ui.util.MouseUtils.mouseX
 import me.odinmain.ui.util.MouseUtils.mouseY
 import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.world.RenderUtils.loadBufferedImage
+import me.odinmain.utils.render.*
+import me.odinmain.utils.render.RenderUtils.loadBufferedImage
 import net.minecraft.client.renderer.texture.DynamicTexture
 import org.lwjgl.input.Keyboard
 import kotlin.math.floor

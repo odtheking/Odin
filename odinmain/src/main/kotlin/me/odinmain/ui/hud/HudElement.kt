@@ -10,9 +10,9 @@ import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.clickgui.util.HoverHandler
 import me.odinmain.ui.hud.EditHUDGui.dragging
 import me.odinmain.ui.util.MouseUtils.isAreaHovered
-import me.odinmain.ui.util.rectangleOutline
-import me.odinmain.ui.util.scale
-import me.odinmain.ui.util.translate
+import me.odinmain.utils.render.rectangleOutline
+import me.odinmain.utils.render.scale
+import me.odinmain.utils.render.translate
 import me.odinmain.utils.endProfile
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.startProfile

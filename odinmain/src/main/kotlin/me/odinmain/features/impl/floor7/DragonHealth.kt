@@ -2,8 +2,8 @@ package me.odinmain.features.impl.floor7
 
 import me.odinmain.utils.addVec
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.world.RenderUtils
-import me.odinmain.utils.render.world.RenderUtils.renderVec
+import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.RenderUtils.renderVec
 import net.minecraft.entity.boss.EntityDragon
 import net.minecraftforge.client.event.RenderLivingEvent
 

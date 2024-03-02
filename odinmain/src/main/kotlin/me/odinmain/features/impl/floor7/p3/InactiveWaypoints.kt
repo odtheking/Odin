@@ -8,7 +8,7 @@ import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.world.RenderUtils
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.toAABB
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand

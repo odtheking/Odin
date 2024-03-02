@@ -4,8 +4,8 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.addVec
-import me.odinmain.utils.render.world.RenderUtils
-import me.odinmain.utils.render.world.RenderUtils.renderVec
+import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.RenderUtils.renderVec
 import net.minecraft.entity.SharedMonsterAttributes
 import net.minecraft.entity.monster.EntityCreeper
 import net.minecraftforge.client.event.RenderWorldLastEvent

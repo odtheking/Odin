@@ -1,28 +1,16 @@
 package me.odinmain.ui.clickgui.elements.menu
 
-import me.odinmain.features.impl.render.ClickGUIModule
-import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.DropdownSetting
 import me.odinmain.font.OdinFont
-import me.odinmain.ui.clickgui.animations.impl.ColorAnimation
 import me.odinmain.ui.clickgui.animations.impl.LinearAnimation
 import me.odinmain.ui.clickgui.elements.Element
 import me.odinmain.ui.clickgui.elements.ElementType
 import me.odinmain.ui.clickgui.elements.ModuleButton
-import me.odinmain.ui.clickgui.util.ColorUtil.brighter
-import me.odinmain.ui.clickgui.util.ColorUtil.buttonColor
-import me.odinmain.ui.clickgui.util.ColorUtil.clickGUIColor
-import me.odinmain.ui.clickgui.util.ColorUtil.darker
-import me.odinmain.ui.clickgui.util.ColorUtil.darkerIf
 import me.odinmain.ui.clickgui.util.ColorUtil.elementBackground
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.HoverHandler
-import me.odinmain.ui.util.*
 import me.odinmain.ui.util.MouseUtils.isAreaHovered
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.world.RenderUtils
-import me.odinmain.utils.skyblock.modMessage
-import net.minecraft.client.renderer.GlStateManager
+import me.odinmain.utils.render.*
 import net.minecraft.client.renderer.texture.DynamicTexture
 
 /**

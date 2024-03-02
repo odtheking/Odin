@@ -11,8 +11,8 @@ import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.utils.addVec
 import me.odinmain.utils.distanceSquaredTo
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.world.RenderUtils
-import me.odinmain.utils.render.world.RenderUtils.renderVec
+import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.LocationUtils
 import net.minecraft.entity.Entity

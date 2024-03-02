@@ -3,8 +3,8 @@ package me.odinmain.font
 import gg.essential.elementa.font.FontRenderer
 import gg.essential.elementa.font.data.Font
 import gg.essential.universal.UMatrixStack
-import me.odinmain.ui.util.TextAlign
-import me.odinmain.ui.util.TextPos
+import me.odinmain.utils.render.TextAlign
+import me.odinmain.utils.render.TextPos
 import me.odinmain.utils.render.Color
 import kotlin.math.max
 
@@ -22,13 +22,13 @@ object OdinFont {
     fun text(text: String, x: Float, y: Float, color: Color, scale: Float, align: TextAlign = TextAlign.Left, verticalAlign: TextPos = TextPos.Middle, shadow: Boolean = false, type: Int = REGULAR) {
         if (color.isTransparent) return
         val drawX = when (align) {
-            TextAlign.Left -> x
-            TextAlign.Right -> x - getTextWidth(text, scale)
+            TextAlign.Left   -> x
+            TextAlign.Right  -> x - getTextWidth(text, scale)
             TextAlign.Middle -> x - getTextWidth(text, scale) / 2f
         }
 
         val drawY = when (verticalAlign) {
-            TextPos.Top -> y
+            TextPos.Top    -> y
             TextPos.Middle -> y - getTextHeight(text, scale) / 2f
             TextPos.Bottom -> y - getTextHeight(text, scale)
         }
