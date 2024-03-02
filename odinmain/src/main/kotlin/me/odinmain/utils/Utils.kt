@@ -209,3 +209,10 @@ fun Color.coerceAlpha(min: Float, max: Float): Color {
     else this
 }
 
+fun <T> Collection<T>.getSafe(index: Int?): T? {
+    return try {
+        this.toList()[index ?: return null]
+    } catch (_: Exception) {
+        null
+    }
+}

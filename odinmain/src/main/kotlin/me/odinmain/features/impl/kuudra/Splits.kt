@@ -10,9 +10,8 @@ import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.ui.util.getTextWidth
 import me.odinmain.ui.util.text
-import me.odinmain.utils.noControlCodes
+import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.round
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.play.server.S02PacketChat
@@ -206,7 +205,7 @@ object Splits : Module(
                     if (totalTime < 1) return
                     if (totalTime < oldPB) {
                         if(sendPB) modMessage("§fNew best time for §6T${LocationUtils.kuudraTier} Kuudra §fis §a${totalTime}s, §fold best time was §a${oldPB}s")
-                        KuudraTiers.entries.find { it.tierName == "T${LocationUtils.kuudraTier}" }?.pbTime?.value = totalTime.round(2)
+                        KuudraTiers.entries.getSafe(LocationUtils.kuudraTier)?.pbTime?.value = totalTime.round(2)
                         Config.saveConfig()
                     }
                 }
