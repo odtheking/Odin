@@ -7,6 +7,7 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.equalsOneOf
+import me.odinmain.utils.profile
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.init.Blocks
@@ -14,6 +15,8 @@ import net.minecraft.network.play.server.S22PacketMultiBlockChange
 import net.minecraft.network.play.server.S23PacketBlockChange
 import net.minecraft.util.BlockPos
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 import kotlin.math.abs
 
 object DioriteFucker : Module(
@@ -23,12 +26,24 @@ object DioriteFucker : Module(
 ) {
     private val stainedGlass: Boolean by BooleanSetting("Stained glass", default = false, description = "Swaps the diorite with stained glass" )
     private val color: Int by NumberSetting("Color", 0, 0.0, 15.0, 1.0).withDependency { stainedGlass }
+    private val pillars = listOf(listOf(46, 169, 41), listOf(46, 169, 65), listOf(100, 169, 65), listOf(100, 179, 41))
+    private val coordinates: MutableList<BlockPos> = mutableListOf<BlockPos>().apply {
+        pillars.forEach { (x, y, z) ->
+            (-3..3).forEach { dx ->
+                (0..37).forEach { dy ->
+                    (-3..3).forEach { dz ->
+                        add(BlockPos(x + dx, y + dy, z + dz))
+                    }
+                }
+            }
+        }
+    }
 
     @SubscribeEvent
-    fun onBlockChange(event: BlockChangeEvent) {
-        if (!isWithinPillar(event.pos) || event.update.block.equalsOneOf(Blocks.glass, Blocks.stained_glass, Blocks.air) || event.world != mc.theWorld) return
-        event.isCanceled = true
-        setGlass(event.pos)
+    fun onTick(event: ClientTickEvent) {
+        profile("Diorite Fucker") {
+            if (DungeonUtils.getPhase() != 2 && event.phase == TickEvent.Phase.END && mc.theWorld != null) replaceDiorite()
+        }
     }
 
     @SubscribeEvent
@@ -38,45 +53,29 @@ object DioriteFucker : Module(
     }
 
     fun replaceDiorite() {
-        pillars.forEach { (x, y, z) ->
-            val coordinates = (-3..3).flatMap { dx ->
-                (0..37).flatMap { dy ->
-                    (-3..3).map { dz -> Triple(x + dx, y + dy, z + dz) }
-                }
-            }
-            coordinates.filter { (cx, cy, cz) -> isDiorite(cx, cy, cz) }
-                .forEach { (cx, cy, cz) -> setGlass(BlockPos(cx, cy, cz)) }
+        coordinates.forEach {
+            if (isDiorite(it))
+                setGlass(it)
         }
     }
-
-    private val pillars = listOf(
-        listOf(46, 169, 41),
-        listOf(46, 169, 65),
-        listOf(100, 169, 65),
-        listOf(100, 179, 41)
-    )
 
     private fun isWithinPillar(pos: BlockPos): Boolean {
         for (pillar in pillars) {
             val (x0, y0, z0) = pillar
-            if (manhattanDistance(x0, z0, pos.x, pos.z) > 4) continue
-            if (pos.y > 205 || pos.y < y0) continue
+            if (manhattanDistance(x0, z0, pos.x, pos.z) > 4 || pos.y > 205 || pos.y < y0) continue
             return true
         }
         return false
     }
 
-    private fun manhattanDistance(x0: Int, y0: Int, x1: Int, y1: Int): Int {
-        return abs(x1 - x0) + abs(y1 - y0)
-    }
+    private fun manhattanDistance(x0: Int, y0: Int, x1: Int, y1: Int): Int =
+        abs(x1 - x0) + abs(y1 - y0)
 
     private fun setGlass(pos: BlockPos) {
         if (stainedGlass) mc.theWorld.setBlockState(pos, Blocks.stained_glass.getStateFromMeta(color), 3)
         else mc.theWorld.setBlockState(pos, Blocks.glass.defaultState, 3)
     }
 
-    private fun isDiorite(x: Int, y: Int, z: Int): Boolean {
-        val block = mc.theWorld.chunkProvider.provideChunk(x shr 4, z shr 4).getBlock(x, y, z)
-        return block == Blocks.stone
-    }
+    private fun isDiorite(pos: BlockPos): Boolean =
+        mc.theWorld?.chunkProvider?.provideChunk(pos.x shr 4, pos.z shr 4)?.getBlock(pos) == Blocks.stone
 }
