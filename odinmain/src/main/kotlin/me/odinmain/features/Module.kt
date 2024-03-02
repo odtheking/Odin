@@ -114,7 +114,7 @@ abstract class Module(
      * @param shouldRun Get whether the function should run (Will in most cases be used with the "enabled" value)
      * @param func The function to run when the packet is received.
      */
-    fun <T : Packet<*>> onPacket(type: Class<T>, shouldRun: () -> Boolean = { this::class.hasAnnotation<AlwaysActive>() || enabled }, func: (T) -> Unit) {
+    fun <T : Packet<*>> onPacket(type: Class<T>, shouldRun: () -> Boolean = { alwaysActive || enabled }, func: (T) -> Unit) {
         @Suppress("UNCHECKED_CAST")
         ModuleManager.packetFunctions.add(
             ModuleManager.PacketFunction(type, func, shouldRun) as ModuleManager.PacketFunction<Packet<*>>
@@ -130,7 +130,7 @@ abstract class Module(
      *
      * @author Bonsai
      */
-    fun onMessage(filter: Regex, shouldRun: () -> Boolean = { this::class.hasAnnotation<AlwaysActive>() || enabled }, func: (String) -> Unit) {
+    fun onMessage(filter: Regex, shouldRun: () -> Boolean = { alwaysActive || enabled }, func: (String) -> Unit) {
         ModuleManager.messageFunctions.add(ModuleManager.MessageFunction(filter, shouldRun, func))
     }
 
@@ -144,7 +144,7 @@ abstract class Module(
      *
      * @author Bonsai
      */
-    fun onMessage(text: String, contains: Boolean, shouldRun: () -> Boolean = { this::class.hasAnnotation<AlwaysActive>() || enabled }, func: (String) -> Unit) {
+    fun onMessage(text: String, contains: Boolean, shouldRun: () -> Boolean = { alwaysActive || enabled }, func: (String) -> Unit) {
         val regex =
             if (contains)
                 ".*${Regex.escape(text)}.*".toRegex()
