@@ -14,6 +14,7 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.font.OdinFont
 import me.odinmain.font.OdinFont.text
+import me.odinmain.ui.util.translate
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.unformattedName
@@ -127,12 +128,12 @@ object TerminalSolver : Module(
     fun onSlotRender(event: DrawGuiScreenEvent) {
         if (currentTerm == -1 || !enabled || event.container !is ContainerChest) return
         if (getShouldBlockWrong()) {
-            GlStateManager.translate(event.guiLeft.toFloat(), event.guiTop.toFloat(), 999f)
+            translate(event.guiLeft.toFloat(), event.guiTop.toFloat(), 999f)
             Gui.drawRect(7, 16, event.xSize - 7, event.ySize - 96, wrongColor.rgba)
-            GlStateManager.translate(-event.guiLeft.toFloat(), -event.guiTop.toFloat(), -999f)
+            translate(-event.guiLeft.toFloat(), -event.guiTop.toFloat(), -999f)
         }
         GlStateManager.pushMatrix()
-        GlStateManager.translate(event.guiLeft.toFloat(), event.guiTop.toFloat(), zLevel)
+        translate(event.guiLeft.toFloat(), event.guiTop.toFloat(), zLevel)
         solution.forEach { slotIndex ->
             val slot = event.container.inventorySlots[slotIndex]
             val x = slot.xDisplayPosition
@@ -161,7 +162,7 @@ object TerminalSolver : Module(
                 4 -> Gui.drawRect(x, y, x + 16, y + 16, selectColor.rgba)
             }
         }
-        GlStateManager.translate(0f, 0f, -zLevel)
+        translate(0f, 0f, -zLevel)
         GlStateManager.popMatrix()
     }
 

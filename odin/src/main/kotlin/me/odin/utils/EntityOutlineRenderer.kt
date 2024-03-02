@@ -1,6 +1,6 @@
 package me.odin.utils
 
-import me.odin.mixin.transformers.CustomRenderGlobal
+import me.odin.mixin.accessors.CustomRenderGlobal
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.RenderEntityOutlineEvent
 import me.odinmain.features.impl.dungeon.TeammatesHighlight

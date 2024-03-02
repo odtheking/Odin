@@ -1,4 +1,4 @@
-package me.odin.mixin.transformers;
+package me.odin.mixin.accessors;
 
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.client.shader.Framebuffer;
