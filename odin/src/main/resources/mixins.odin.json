@@ -16,6 +16,7 @@
   "client": [
     "accessors.IEntityPlayerSPAccessor",
     "accessors.IMinecraftAccessor",
+    "accessors.CustomRenderGlobal",
     "mixins.MixinEntityRenderer",
     "mixins.MixinFontRenderer",
     "mixins.MixinGuiContainer",
@@ -31,7 +32,6 @@
     "mixins.MixinRenderPlayer",
     "mixins.MixinSoundManager",
     "mixins.model.MixinModelBiped",
-    "mixins.model.MixinModelBlaze",
-    "accessors.CustomRenderGlobal"
+    "mixins.model.MixinModelBlaze"
   ]
 }
