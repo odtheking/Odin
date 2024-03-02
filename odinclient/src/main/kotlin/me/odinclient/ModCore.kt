@@ -62,7 +62,7 @@ class ModCore {
     fun loadComplete(event: FMLLoadCompleteEvent) {
         ModuleManager.addModules(
             AutoGFS, AutoIceFill, AutoSell, CancelInteract, CancelChestOpen, GhostPick, MapModule, SecretHitboxes,
-            SwapStonk, Arrows, ArrowAlign, CancelWrongTerms, HoverTerms, LeversTriggerbot, SimonSays,
+            SwapStonk, Arrows, ArrowAlign, CancelWrongTerms, HoverTerms, LightsDevice, SimonSays,
             DioriteFucker, RelicAura, Trajectories, Ghosts, NoCarpet, NoDebuff, LockCursor,
             CookieClicker, AutoExperiments, FarmingHitboxes, NoBlock, TermAC, Triggerbot, GhostBlock, FreezeGame,
             AbilityKeybind, EtherWarpHelper, ChestEsp, NoBreakReset,

@@ -1,6 +1,7 @@
 package me.odinclient.mixin.mixins.block;
 
 import me.odinclient.features.impl.dungeon.SecretHitboxes;
+import me.odinclient.features.impl.floor7.p3.LightsDevice;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLever;
 import net.minecraft.block.material.Material;
@@ -22,16 +23,15 @@ public class MixinBlockLever extends Block {
     @Inject(method = "setBlockBoundsBasedOnState", at = @At("HEAD"), cancellable = true)
     private void onSetBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos, CallbackInfo ci)
     {
-        if (SecretHitboxes.INSTANCE.getLever())
-        {
-            if (pos.getX() >= 58 && pos.getX() <= 62 && pos.getY() >= 133 && pos.getY() <= 136 && pos.getZ() == 142) { return; }
+        if (SecretHitboxes.INSTANCE.getLever() && SecretHitboxes.INSTANCE.getEnabled()) {
+            if (pos.getX() >= 58 && pos.getX() <= 62 && pos.getY() >= 133 && pos.getY() <= 136 && pos.getZ() == 142) return;
 
-            if (SecretHitboxes.INSTANCE.getEnabled())
-            {
-                this.setBlockBounds(0, 0, 0, 1, 1, 1);
-                ci.cancel();
-            }
+            this.setBlockBounds(0, 0, 0, 1, 1, 1);
+            ci.cancel();
+        }
+        if (LightsDevice.INSTANCE.getEnabled() && LightsDevice.INSTANCE.getBigLevers() && LightsDevice.INSTANCE.getLevers().contains(pos)) {
+            this.setBlockBounds(0, 0, 0, 1, 1, 1);
+            ci.cancel();
         }
     }
-
 }
