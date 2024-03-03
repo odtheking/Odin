@@ -104,7 +104,7 @@ object OdinMain {
         runBlocking {
             launch {
                 Config.load()
-
+                Config.save() // so changes from MiscConfig get saved
                 ClickGUIModule.firstTimeOnVersion = ClickGUIModule.lastSeenVersion != VERSION
                 ClickGUIModule.lastSeenVersion = VERSION
             }
