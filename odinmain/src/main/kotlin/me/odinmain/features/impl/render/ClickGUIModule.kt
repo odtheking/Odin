@@ -76,7 +76,7 @@ object ClickGUIModule: Module(
             if (joined) destroyExecutor()
             if (!LocationUtils.inSkyblock) return@execute
             joined = true
-            Config.saveConfig()
+            Config.save()
 
             modMessage("""
             ${getChatBreak()}

@@ -45,7 +45,7 @@ class ElementDropdown(parent: ModuleButton, setting: DropdownSetting) : Element<
     override fun mouseClicked(mouseButton: Int): Boolean {
         if (mouseButton == 0 && isHovered) {
             if (linearAnimation.start()) {
-                setting.toggle()
+                setting.enabled = !setting.enabled
                 parent.updateElements()
                 return true
             }

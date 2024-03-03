@@ -11,7 +11,9 @@ import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiChest
-import net.minecraft.inventory.*
+import net.minecraft.inventory.ContainerChest
+import net.minecraft.inventory.InventoryBasic
+import net.minecraft.inventory.Slot
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 
@@ -51,7 +53,7 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
         if (time < oldPb.value) {
             modMessage("§a$name §7solved in §6$time §7(§d§lNew PB§r§7)! Old PB was §8${oldPb.value.round(2)}s§7.")
             oldPb.value = time
-            Config.saveConfig()
+            Config.save()
         } else modMessage("§a$name solved in §6${time}s §a!")
         resetInv()
         StartGui.open(ping)

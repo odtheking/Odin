@@ -103,7 +103,7 @@ object OdinMain {
     fun loadComplete() = runBlocking {
         runBlocking {
             launch {
-                Config.loadConfig()
+                Config.load()
 
                 ClickGUIModule.firstTimeOnVersion = ClickGUIModule.lastSeenVersion != VERSION
                 ClickGUIModule.lastSeenVersion = VERSION

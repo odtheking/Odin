@@ -12,12 +12,8 @@ import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.HoverHandler
 import me.odinmain.ui.util.MouseUtils.isAreaHovered
 import me.odinmain.ui.util.MouseUtils.mouseX
-import me.odinmain.utils.render.TextAlign
-import me.odinmain.utils.render.dropShadow
-import me.odinmain.utils.render.roundedRectangle
-import me.odinmain.utils.render.text
 import me.odinmain.utils.floor
-import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.*
 import org.lwjgl.input.Keyboard
 import kotlin.math.roundToInt
 
@@ -46,9 +42,9 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
 
     fun getDisplay(): String {
         return if (setting.valueDouble - setting.valueDouble.floor() == 0.0) {
-            "${(setting.valueInt * 100.0).roundToInt() / 100}${setting.suffix}"
+            "${(setting.valueInt * 100.0).roundToInt() / 100}${setting.unit}"
         } else {
-            "${(setting.valueDouble * 100.0).roundToInt() / 100.0}${setting.suffix}"
+            "${(setting.valueDouble * 100.0).roundToInt() / 100.0}${setting.unit}"
         }
     }
 

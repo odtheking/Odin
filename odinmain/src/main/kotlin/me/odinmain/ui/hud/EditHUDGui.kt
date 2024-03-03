@@ -7,7 +7,7 @@ import me.odinmain.ui.Screen
 import me.odinmain.ui.clickgui.animations.impl.EaseInOut
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.HoverHandler
-import me.odinmain.ui.util.*
+import me.odinmain.ui.util.MouseUtils
 import me.odinmain.ui.util.MouseUtils.isAreaHovered
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
@@ -128,7 +128,7 @@ object EditHUDGui : Screen() {
         for (i in 0 until huds.size) {
             huds[i].hoverHandler.reset()
         }
-        Config.saveConfig()
+        Config.save()
     }
 
     /**
@@ -143,7 +143,7 @@ object EditHUDGui : Screen() {
             }
             Executor(0) {
                 if (!resetAnim.isAnimating()) {
-                    Config.saveConfig()
+                    Config.save()
                     destroyExecutor()
                 }
                 for (hud in huds) {

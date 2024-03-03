@@ -21,7 +21,7 @@ import kotlin.reflect.full.hasAnnotation
  */
 abstract class Module(
     val name: String,
-    val key: Int = Keyboard.KEY_NONE,
+    @Transient val key: Int = Keyboard.KEY_NONE,
     @Transient val category: Category = Category.RENDER,
     @Transient var description: String = "",
     @Transient val tag: Int = TagType.NONE,
@@ -98,7 +98,7 @@ abstract class Module(
 
     operator fun <K : Setting<*>> K.unaryPlus(): K = register(this)
 
-    fun getSettingByName(name: String): Setting<*>? {
+    fun getSettingByName(name: String?): Setting<*>? {
         for (setting in settings) {
             if (setting.name.equals(name, ignoreCase = true)) {
                 return setting

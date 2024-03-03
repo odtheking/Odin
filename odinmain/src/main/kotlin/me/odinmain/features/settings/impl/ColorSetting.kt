@@ -1,10 +1,14 @@
 package me.odinmain.features.settings.impl
 
+import com.google.gson.JsonElement
+import com.google.gson.JsonPrimitive
+import me.odinmain.features.settings.Saving
 import me.odinmain.features.settings.Setting
 import me.odinmain.utils.render.Color
 
 /**
- * Setting that has hsba values.
+ * Setting that represents a [Color].
+ *
  * @author Stivais
  */
 class ColorSetting(
@@ -13,13 +17,9 @@ class ColorSetting(
     var allowAlpha: Boolean = false,
     hidden: Boolean = false,
     description: String = "",
-) : Setting<Color>(name, hidden, description){
+) : Setting<Color>(name, hidden, description), Saving {
 
     override var value: Color = default
-
-    override fun update(configSetting: Setting<*>) {
-        value = Color((configSetting as NumberSetting).valueDouble.toInt())
-    }
 
     var hue: Float
         get() = value.hue
@@ -44,4 +44,14 @@ class ColorSetting(
         set(value) {
             this.value.alpha = value.coerceIn(0f, 1f)
         }
+
+    override fun read(element: JsonElement?) {
+        element?.asInt?.let {
+            value = Color(it)
+        }
+    }
+
+    override fun write(): JsonElement {
+        return JsonPrimitive(value.rgba)
+    }
 }

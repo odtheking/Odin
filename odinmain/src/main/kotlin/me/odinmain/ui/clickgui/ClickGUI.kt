@@ -135,7 +135,7 @@ object ClickGUI : Screen() {
                 }
             }
         }
-        Config.saveConfig()
+        Config.save()
 
         open = false
         mc.entityRenderer.stopUseShader()

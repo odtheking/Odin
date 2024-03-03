@@ -4,6 +4,7 @@ import me.odinmain.features.settings.Setting
 
 /**
  * Setting that gets ran when clicked.
+ *
  * @author Aton
  */
 class ActionSetting(
@@ -14,7 +15,6 @@ class ActionSetting(
 ) : Setting<() -> Unit>(name, hidden, description) {
 
     override var value: () -> Unit = default
-    override fun update(configSetting: Setting<*>) { /* no - op */ }
 
     var action: () -> Unit by this::value
 }

@@ -8,10 +8,12 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
+import me.odinmain.utils.getSafe
+import me.odinmain.utils.noControlCodes
+import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.getTextWidth
 import me.odinmain.utils.render.text
-import me.odinmain.utils.*
-import me.odinmain.utils.render.Color
+import me.odinmain.utils.round
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.play.server.S02PacketChat
@@ -145,7 +147,7 @@ object Splits : Module(
                 if (timeP1 / 1000 < oldPB) {
                     if (sendPB) modMessage("New best time for §6T5 Supplies §fis §a${formatTime(timeP1)}, §fold best time was §a${oldPB}s")
                     t5PBs.entries.find { it.splitName == "Supplies" }?.pbTime?.value = timeP1 / 1000.0
-                    Config.saveConfig()
+                    Config.save()
                 }
             }
 
@@ -160,7 +162,7 @@ object Splits : Module(
                 if (timeP2 / 1000 < oldPB){
                     if (sendPB) modMessage("New best time for §6T5 Build §fis §a${formatTime(timeP2)}, §fold best time was §a${oldPB}s")
                     t5PBs.entries.find { it.splitName == "Build" }?.pbTime?.value = timeP2 / 1000.0
-                    Config.saveConfig()
+                    Config.save()
                 }
             }
 
@@ -175,7 +177,7 @@ object Splits : Module(
                 if (timeP3 / 1000 < oldPB){
                     if (sendPB) modMessage("New best time for §6T5 Stun §fis §a${formatTime(timeP3)}, §fold best time was §a${oldPB}s")
                     t5PBs.entries.find { it.splitName == "Stun" }?.pbTime?.value = timeP3 / 1000.0
-                    Config.saveConfig()
+                    Config.save()
                 }
             }
 
@@ -189,7 +191,7 @@ object Splits : Module(
                         if (timeP4 / 1000 < oldKillPB) {
                             if (sendPB) modMessage("New best time for §6T5 Kill §fis §a${formatTime(timeP4)}, §fold best time was §a${oldKillPB}s")
                             t5PBs.entries.find { it.splitName == "Kill" }?.pbTime?.value = timeP4 / 1000.0
-                            Config.saveConfig()
+                            Config.save()
                         }
                     }
 
@@ -206,7 +208,7 @@ object Splits : Module(
                     if (totalTime < oldPB) {
                         if(sendPB) modMessage("§fNew best time for §6T${LocationUtils.kuudraTier} Kuudra §fis §a${totalTime}s, §fold best time was §a${oldPB}s")
                         KuudraTiers.entries.getSafe(LocationUtils.kuudraTier)?.pbTime?.value = totalTime.round(2)
-                        Config.saveConfig()
+                        Config.save()
                     }
                 }
                 else if (event.message.contains("DEFEAT")) splits[4] = System.currentTimeMillis()

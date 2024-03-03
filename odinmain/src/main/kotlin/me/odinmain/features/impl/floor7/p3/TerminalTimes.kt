@@ -82,7 +82,7 @@ object TerminalTimes : Module(
         if (time < previousTime) {
             modMessage("§fNew best time for §6${currentTerminal?.name} §fis §a${time}s, §fold best time was §a${previousTime}s")
             currentTerminal?.setting?.value = time.round(2)
-            Config.saveConfig()
+            Config.save()
         }
         currentTerminal = null
     }
