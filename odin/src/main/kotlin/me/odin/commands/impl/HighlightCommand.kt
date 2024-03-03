@@ -4,7 +4,8 @@ import com.github.stivais.commodore.parsers.impl.GreedyString
 import me.odinmain.OdinMain.onLegitVersion
 import me.odinmain.commands.CommandNode
 import me.odinmain.commands.Commodore
-import me.odinmain.config.MiscConfig
+import me.odinmain.config.Config
+import me.odinmain.features.impl.render.CustomESP.espList
 import me.odinmain.utils.skyblock.modMessage
 
 object HighlightCommand : Commodore {
@@ -20,31 +21,31 @@ object HighlightCommand : Commodore {
 
             literal("add").runs { mob: GreedyString ->
                 val lowercase = mob.string.lowercase()
-                if (lowercase in MiscConfig.espList) return@runs modMessage("$mob is already in the Highlight list.")
+                if (lowercase in espList) return@runs modMessage("$mob is already in the Highlight list.")
 
                 modMessage("Added $mob to the Highlight list.")
-                MiscConfig.espList.add(lowercase)
-                MiscConfig.saveAllConfigs()
+                espList.add(lowercase)
+                Config.save()
             }
 
             literal("remove").runs { mob: GreedyString ->
                 val lowercase = mob.string.lowercase()
-                if (lowercase !in MiscConfig.espList) return@runs modMessage("$mob isn't in the Highlight list.")
+                if (lowercase !in espList) return@runs modMessage("$mob isn't in the Highlight list.")
 
                 modMessage("Removed $mob from the Highlight list.")
-                MiscConfig.espList.remove(lowercase)
-                MiscConfig.saveAllConfigs()
+                espList.remove(lowercase)
+                Config.save()
             }
 
             literal("clear").runs {
                 modMessage("Highlight list cleared.")
-                MiscConfig.espList.clear()
-                MiscConfig.saveAllConfigs()
+                espList.clear()
+                Config.save()
             }
 
             literal("list").runs {
-                if (MiscConfig.espList.size == 0) return@runs modMessage("Highlight list is empty")
-                modMessage("Highlight list:\n${MiscConfig.espList.joinToString("\n")}")
+                if (espList.size == 0) return@runs modMessage("Highlight list is empty")
+                modMessage("Highlight list:\n${espList.joinToString("\n")}")
             }
         }
 }

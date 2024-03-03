@@ -10,12 +10,11 @@ import me.odinmain.features.settings.Setting
  *
  * @author Stivais
  */
-class ListSetting<E, T : MutableList<E>>(
+class ListSetting<E, T : MutableCollection<E>>(
     name: String,
     override val default: T,
-    description: String,
-    hidden: Boolean = false
-) : Setting<T>(name, hidden, description), Saving {
+    description: String = "",
+) : Setting<T>(name, true, description), Saving {
 
     override var value: T = default
 

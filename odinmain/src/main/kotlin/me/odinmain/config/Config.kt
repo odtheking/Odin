@@ -20,7 +20,8 @@ object Config {
         try {
             createNewFile()
         } catch (e: Exception) {
-            println("Error initializing module config")
+            println("Error initializing module config\n${e.message}")
+            e.printStackTrace()
         }
     }
 
@@ -30,21 +31,20 @@ object Config {
             if (json == "") return
 
             val jsonArray = parser.parse(json).asJsonArray ?: return
-            for (modules in jsonArray.asJsonArray) {
+            for (modules in jsonArray) {
 
-                val jsonObj = modules?.asJsonObject ?: continue
-                val module = ModuleManager.getModuleByName(jsonObj.get("name").asString) ?: continue
-                if (jsonObj.get("enabled").asBoolean != module.enabled) module.toggle()
+                val moduleObj = modules?.asJsonObject ?: continue
+                val module = ModuleManager.getModuleByName(moduleObj.get("name").asString) ?: continue
+                if (moduleObj.get("enabled").asBoolean != module.enabled) module.toggle()
 
-                for (j in jsonObj.get("settings").asJsonArray) {
+                for (j in moduleObj.get("settings").asJsonArray) {
                     val settingObj = j?.asJsonObject?.entrySet() ?: continue
                     val setting = module.getSettingByName(settingObj.firstOrNull()?.key) ?: continue
                     if (setting is Saving) setting.read(settingObj.first().value)
                 }
             }
         } catch (e: Exception) {
-            println("Config Error.")
-            println(e.message)
+            println("Error loading config.\n${e.message}")
             e.printStackTrace()
         }
     }
@@ -71,7 +71,8 @@ object Config {
             }
             configFile.bufferedWriter().use { it.write(gson.toJson(jsonArray)) }
         } catch (e: Exception) {
-            println("Error saving config.")
+            println("Error saving config.\n${e.message}")
+            e.printStackTrace()
         }
     }
 }

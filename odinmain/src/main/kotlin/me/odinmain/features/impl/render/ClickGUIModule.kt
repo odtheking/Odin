@@ -59,6 +59,9 @@ object ClickGUIModule: Module(
 
     }.withDependency { DevPlayers.isDev }
 
+    // putting here since idk where else to put it
+    val blacklist: MutableList<String> by ListSetting("Blacklist", mutableListOf())
+
     val action: () -> Unit by ActionSetting("Open Example Hud") {
         OdinMain.display = EditHUDGui
     }

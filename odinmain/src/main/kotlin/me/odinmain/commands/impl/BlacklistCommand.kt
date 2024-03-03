@@ -2,7 +2,8 @@ package me.odinmain.commands.impl
 
 import me.odinmain.commands.CommandNode
 import me.odinmain.commands.Commodore
-import me.odinmain.config.MiscConfig
+import me.odinmain.config.Config
+import me.odinmain.features.impl.render.ClickGUIModule.blacklist
 import me.odinmain.utils.skyblock.modMessage
 
 object BlacklistCommand : Commodore {
@@ -15,31 +16,31 @@ object BlacklistCommand : Commodore {
 
             literal("add").runs { name: String ->
                 val lowercase = name.lowercase()
-                if (lowercase in MiscConfig.blacklist) return@runs modMessage("$name is already in the Blacklist.")
+                if (lowercase in blacklist) return@runs modMessage("$name is already in the Blacklist.")
 
                 modMessage("Added $name to Blacklist.")
-                MiscConfig.blacklist.add(lowercase)
-                MiscConfig.saveAllConfigs()
+                blacklist.add(lowercase)
+                Config.save()
             }
 
             literal("remove").runs { name: String ->
                 val lowercase = name.lowercase()
-                if (lowercase !in MiscConfig.blacklist) return@runs modMessage("$name isn't in the Blacklist.")
+                if (lowercase !in blacklist) return@runs modMessage("$name isn't in the Blacklist.")
 
                 modMessage("Removed $name from Blacklist.")
-                MiscConfig.blacklist.remove(lowercase)
-                MiscConfig.saveAllConfigs()
+                blacklist.remove(lowercase)
+                Config.save()
             }
 
             literal("clear").runs {
                 modMessage("Blacklist cleared.")
-                MiscConfig.blacklist.clear()
-                MiscConfig.saveAllConfigs()
+                blacklist.clear()
+                Config.save()
             }
 
             literal("list").runs {
-                if (MiscConfig.blacklist.size == 0) return@runs modMessage("Blacklist is empty")
-                modMessage("Blacklist:\n${MiscConfig.blacklist.joinToString("\n")}")
+                if (blacklist.size == 0) return@runs modMessage("Blacklist is empty")
+                modMessage("Blacklist:\n${blacklist.joinToString("\n")}")
             }
         }
 }
