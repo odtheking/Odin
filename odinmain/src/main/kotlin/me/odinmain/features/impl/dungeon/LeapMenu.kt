@@ -19,7 +19,6 @@ import me.odinmain.utils.name
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils.Classes
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.EMPTY
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.leapTeammates
 import me.odinmain.utils.skyblock.modMessage
@@ -36,7 +35,7 @@ object LeapMenu : Module(
     description = "Renders a custom leap menu when in the Spirit Leap gui.",
     category = Category.DUNGEON
 ) {
-    val type: Int by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("A-Z Class (BetterMap)", "A-Z Name", "Odin Sorting"), description = "How to sort the leap menu.")
+    val type: Int by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("Odin Sorting", "A-Z Class (BetterMap)", "A-Z Name", "No Sorting"), description = "How to sort the leap menu.")
     private val colorStyle: Boolean by DualSetting("Color Style", "Gray", "Color", default = false, description = "Which color style to use")
     private val roundedRect: Boolean by BooleanSetting("Rounded Rect", true, description = "Toggles the rounded rect for the gui.")
     //val priority: Int by SelectorSetting("Leap Helper Priority", "Berserker", arrayListOf("Archer", "Berserker", "Healer", "Mage", "Tank"), description = "Which player to prioritize in the leap helper.")
@@ -106,7 +105,7 @@ object LeapMenu : Module(
         if ((type == 1 || type == 0) && leapTeammates.size < quadrant) return
 
         val playerToLeap = leapTeammates[quadrant - 1]
-        if (playerToLeap.clazz == Classes.DEAD) return modMessage("This player is dead, can't leap.")
+        if (playerToLeap.clazz.isDead) return modMessage("This player is dead, can't leap.")
 
         leapTo(playerToLeap.name, event.container)
 
@@ -124,7 +123,7 @@ object LeapMenu : Module(
         ) return
         val playerToLeap = if (event.keyCode - 1 > leapTeammates.size) return else leapTeammates[event.keyCode - 2]
 
-        if (playerToLeap.clazz == Classes.DEAD) return modMessage("This player is dead, can't leap.")
+        if (playerToLeap.clazz.isDead) return modMessage("This player is dead, can't leap.")
 
         leapTo(playerToLeap.name, event.container)
 

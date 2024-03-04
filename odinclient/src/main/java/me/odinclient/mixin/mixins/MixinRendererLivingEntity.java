@@ -1,6 +1,5 @@
 package me.odinclient.mixin.mixins;
 
-import me.odinclient.hooks.RendererLivingEntityHook;
 import me.odinmain.events.impl.RenderEntityModelEvent;
 import me.odinmain.features.impl.render.CustomESP;
 import me.odinmain.utils.render.Color;
@@ -15,10 +14,8 @@ import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -28,14 +25,6 @@ import static org.lwjgl.opengl.GL11.*;
 
 @Mixin(RendererLivingEntity.class)
 public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> {
-
-    @Unique
-    private final RendererLivingEntityHook odin$hook = new RendererLivingEntityHook();
-
-    @Redirect(method = "setScoreTeamColor", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;color(FFFF)V"))
-    public void setOutlineColor(float colorRed, float colorGreen, float colorBlue, float colorAlpha, EntityLivingBase entity) {
-        odin$hook.setOutlineColor(colorRed, colorGreen, colorBlue, colorAlpha, entity);
-    }
 
     @Shadow
     protected ModelBase mainModel;

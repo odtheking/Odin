@@ -87,6 +87,8 @@ val mainCommand = commodore("od", "odinclient", "odin") {
                  §3- /od sendcoords §7» §8Sends coords in patcher's format.
                  §3- /od ping §7» §8Sends your ping in chat.
                  §3- /od tps §7» §8Sends the server's tps in chat.
+                 §3- /spcmd §7» §8Use /spcmd cmds for command list.
+
                 """.trimIndent()
             )
         } else
@@ -103,9 +105,11 @@ val mainCommand = commodore("od", "odinclient", "odin") {
                  §3- /od f? » §8Teleports you to a floor in normal mode.
                  §3- /od t? » §8Teleports you to a kuudra run.
                  §3- /od dianareset §7» §8Resets all active diana waypoints.
-                 §3- /od sendcoords §7» §8Sends coords in patcher's format.\
+                 §3- /od sendcoords §7» §8Sends coords in patcher's format.
                  §3- /od ping §7» §8Sends your ping in chat.
                  §3- /od tps §7» §8Sends the server's tps in chat.
+                 §3- /spcmd §7» §8Use /spcmd cmds for command list.
+
                  """.trimIndent()
             )
     }

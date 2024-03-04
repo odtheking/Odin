@@ -1,23 +1,18 @@
 package me.odinclient.features.impl.floor7
 
-import me.odinmain.events.impl.*
+import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.profile
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.init.Blocks
-import net.minecraft.network.play.server.S22PacketMultiBlockChange
-import net.minecraft.network.play.server.S23PacketBlockChange
 import net.minecraft.util.BlockPos
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
-import kotlin.math.abs
 
 object DioriteFucker : Module(
     "Fuck Diorite",
@@ -54,26 +49,13 @@ object DioriteFucker : Module(
 
     fun replaceDiorite() {
         coordinates.forEach {
-            if (isDiorite(it))
-                setGlass(it)
+            if (isDiorite(it)) setGlass(it)
         }
     }
-
-    private fun isWithinPillar(pos: BlockPos): Boolean {
-        for (pillar in pillars) {
-            val (x0, y0, z0) = pillar
-            if (manhattanDistance(x0, z0, pos.x, pos.z) > 4 || pos.y > 205 || pos.y < y0) continue
-            return true
-        }
-        return false
-    }
-
-    private fun manhattanDistance(x0: Int, y0: Int, x1: Int, y1: Int): Int =
-        abs(x1 - x0) + abs(y1 - y0)
 
     private fun setGlass(pos: BlockPos) {
-        if (stainedGlass) mc.theWorld.setBlockState(pos, Blocks.stained_glass.getStateFromMeta(color), 3)
-        else mc.theWorld.setBlockState(pos, Blocks.glass.defaultState, 3)
+        if (stainedGlass)
+            mc.theWorld.setBlockState(pos, if (stainedGlass) Blocks.stained_glass.getStateFromMeta(color) else Blocks.glass.defaultState, 3)
     }
 
     private fun isDiorite(pos: BlockPos): Boolean =

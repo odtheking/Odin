@@ -9,10 +9,10 @@ import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.utils.render.getTextWidth
-import me.odinmain.utils.render.text
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.getTextWidth
+import me.odinmain.utils.render.text
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.PlayerUtils
 import net.minecraft.util.Vec3
@@ -62,7 +62,6 @@ object BuildHelper : Module(
             RenderUtils.renderCustomBeacon(it.name, it.posX, it.posY + 0.5, it.posZ, Color.DARK_RED, true, increase = false, noFade = !fadeWaypoints, distance = false)
         }
     }
-
     private fun colorBuild(build: Int): String {
         return when {
             build >= 75 -> "§a$build"

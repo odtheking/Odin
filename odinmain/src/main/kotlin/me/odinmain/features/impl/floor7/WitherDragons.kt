@@ -20,11 +20,11 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.hud.HudElement
+import me.odinmain.utils.noControlCodes
+import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.getTextWidth
 import me.odinmain.utils.render.roundedRectangle
 import me.odinmain.utils.render.text
-import me.odinmain.utils.noControlCodes
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraftforge.client.event.RenderLivingEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -61,7 +61,7 @@ object WitherDragons : Module(
                 text(triple.first, 1f, 9f + index * 17f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
                 width = max(width, getTextWidth(triple.first.noControlCodes, 19f))
             }
-            roundedRectangle(1f, 1f, width + 2f, DragonTimer.toRender.size * 12f, Color.DARK_GRAY.withAlpha(.75f), 4f)
+            if (timerBackground) roundedRectangle(1f, 1f, width + 2f, DragonTimer.toRender.size * 12f, Color.DARK_GRAY.withAlpha(.75f), 4f)
             width to DragonTimer.toRender.size * 17f
         } else 0f to 0f
     }

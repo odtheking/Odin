@@ -17,10 +17,10 @@ import me.odinmain.features.impl.skyblock.*
 import me.odinmain.features.settings.impl.KeybindSetting
 import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.utils.render.getTextWidth
 import me.odinmain.utils.capitalizeFirst
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.profile
+import me.odinmain.utils.render.getTextWidth
 import net.minecraft.network.Packet
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -107,7 +107,7 @@ object ModuleManager {
         VanqNotifier,
         KuudraReminders,
         Splits,
-        OutlineItemEntity
+        WardrobeKeybinds
     )
 
     init {

@@ -4,7 +4,7 @@
     import me.odinmain.OdinMain.onLegitVersion
     import me.odinmain.config.MiscConfig.espList
     import me.odinmain.events.impl.PostEntityMetadata
-    import me.odinmain.events.impl.RenderEntityOutlineEvent
+    import me.odinmain.events.impl.RenderEntityModelEvent
     import me.odinmain.features.Category
     import me.odinmain.features.Module
     import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -15,6 +15,7 @@
     import me.odinmain.utils.ServerUtils.getPing
     import me.odinmain.utils.getPositionEyes
     import me.odinmain.utils.render.Color
+    import me.odinmain.utils.render.OutlineUtils
     import me.odinmain.utils.render.RenderUtils
     import me.odinmain.utils.render.RenderUtils.renderVec
     import me.odinmain.utils.render.RenderUtils.renderX
@@ -42,6 +43,7 @@
 
         private val xray: Boolean by BooleanSetting("Through Walls", true).withDependency { !onLegitVersion }
         private val thickness: Float by NumberSetting("Outline Thickness", 5f, 1f, 20f, 0.5f).withDependency { mode != 1 }
+        private val cancelHurt: Boolean by BooleanSetting("Cancel Hurt", true).withDependency { mode != 1 }
 
         val renderThrough: Boolean get() = if (onLegitVersion) false else xray
 
@@ -62,19 +64,18 @@
         }
 
         @SubscribeEvent
-        fun onRenderEntityModel(event: RenderEntityOutlineEvent) {
+        fun onRenderEntityModel(event: RenderEntityModelEvent) {
             if (mode != 0) return
 
-            if (event.type === RenderEntityOutlineEvent.Type.NO_XRAY && !renderThrough) {
-                event.queueEntitiesToOutline { getMob(it) }
-            } else if (event.type === RenderEntityOutlineEvent.Type.XRAY && renderThrough) {
-                event.queueEntitiesToOutline { getMob(it) }
-            }
-        }
+            if (event.entity !in currentEntities) return
+            if (!mc.thePlayer.canEntityBeSeen(event.entity) && !renderThrough) return
 
-        private fun getMob(entity: Entity): Int? {
-            if (entity !in currentEntities) return null
-            return color.rgba
+            OutlineUtils.outlineEntity(
+                event,
+                thickness,
+                color,
+                cancelHurt
+            )
         }
 
 
@@ -119,7 +120,7 @@
         }
 
         private fun getMobEntity(entity: Entity): Entity? {
-            return mc.theWorld.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.expand(0.0, 1.0, 0.0))
+            return mc.theWorld.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.offset(0.0, -1.0, 0.0))
                 .filter { it != null && it !is EntityArmorStand && it.getPing() != 1 }
                 .minByOrNull { entity.getDistanceToEntity(it) }
                 .takeIf { !(it is EntityWither && it.isInvisible) }

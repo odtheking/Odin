@@ -22,7 +22,7 @@ import java.awt.image.BufferedImage
 
 object Dungeon {
 
-    val dungeonTeammates = mutableMapOf<String, DungeonPlayer>()
+    val dungeonTeammatesFmap = mutableMapOf<String, DungeonPlayer>()
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
@@ -75,7 +75,7 @@ object Dungeon {
     fun onRender(event: RenderWorldLastEvent) {
         if (!inDungeons || !MapModule.enabled || hasCreatedImages) return
         playerImage = MapRenderUtils.createBufferedImageFromTexture(mc.textureManager.getTexture(mc.thePlayer.locationSkin).glTextureId)
-        dungeonTeammates.forEach { (_, player) ->
+        dungeonTeammatesFmap.forEach { (_, player) ->
             player.bufferedImage = MapRenderUtils.createBufferedImageFromTexture(mc.textureManager.getTexture(player.skin).glTextureId)
         }
         hasCreatedImages = true
@@ -83,7 +83,7 @@ object Dungeon {
 
     fun reset() {
         Info.reset()
-        dungeonTeammates.clear()
+        dungeonTeammatesFmap.clear()
         MapUtils.calibrated = false
         DungeonScan.hasScanned = false
     }

@@ -12,7 +12,6 @@ import me.odinclient.features.impl.floor7.RelicAura
 import me.odinclient.features.impl.floor7.p3.*
 import me.odinclient.features.impl.render.*
 import me.odinclient.features.impl.skyblock.*
-import me.odinclient.utils.EntityOutlineRenderer
 import me.odinmain.OdinMain
 import me.odinmain.commands.Commodore.Companion.registerCommands
 import me.odinmain.features.ModuleManager
@@ -43,8 +42,7 @@ class ModCore {
 
         listOf(
             Dungeon,
-            MapRender,
-            EntityOutlineRenderer
+            MapRender
         ).forEach(MinecraftForge.EVENT_BUS::register)
 
         registerCommands(

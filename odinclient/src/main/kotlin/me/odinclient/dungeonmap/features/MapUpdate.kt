@@ -24,13 +24,13 @@ object MapUpdate {
 
     fun getPlayers() {
         val tabEntries = MapUtils.getDungeonTabList() ?: return
-        Dungeon.dungeonTeammates.clear()
+        Dungeon.dungeonTeammatesFmap.clear()
         var iconNum = 0
         for (i in listOf(5, 9, 13, 17, 1)) {
             with(tabEntries[i]) {
                 val name = second.noControlCodes.trim().substringAfterLast("] ").split(" ")[0]
                 if (name != "") {
-                    Dungeon.dungeonTeammates[name] = DungeonPlayer(first.locationSkin).apply {
+                    Dungeon.dungeonTeammatesFmap[name] = DungeonPlayer(first.locationSkin).apply {
                         mc.theWorld.getPlayerEntityByName(name)?.let { setData(it) }
                         colorPrefix = second.substringBefore(name, "f").last()
                         this.name = name
@@ -43,14 +43,14 @@ object MapUpdate {
     }
 
     fun updatePlayers(tabEntries: List<Pair<NetworkPlayerInfo, String>>) {
-        if (Dungeon.dungeonTeammates.isEmpty()) return
+        if (Dungeon.dungeonTeammatesFmap.isEmpty()) return
         // Update map icons
         var iconNum = 0
         for (i in listOf(5, 9, 13, 17, 1)) {
             val tabText = tabEntries[i].second.noControlCodes.trim()
             val name = tabText.substringAfterLast("] ").split(" ")[0]
             if (name == "") continue
-            Dungeon.dungeonTeammates[name]?.run {
+            Dungeon.dungeonTeammatesFmap[name]?.run {
                 dead = tabText.contains("(DEAD)")
                 if (dead) {
                     icon = ""
@@ -65,7 +65,7 @@ object MapUpdate {
         }
 
         val decor = MapUtils.getMapData()?.mapDecorations ?: return
-        Dungeon.dungeonTeammates.forEach { (name, player) ->
+        Dungeon.dungeonTeammatesFmap.forEach { (name, player) ->
             if (name == mc.thePlayer.name) {
                 player.yaw = mc.thePlayer.rotationYawHead
                 player.mapX =

@@ -141,12 +141,12 @@ object Window: JFrame() {
     }
 
     private fun renderPlayerHeads(g2d: Graphics2D) {
-        if (Dungeon.dungeonTeammates.isEmpty()) { // only draw the player, as the dungeon hasn't started, so we can't be sure about the teammates
+        if (Dungeon.dungeonTeammatesFmap.isEmpty()) { // only draw the player, as the dungeon hasn't started, so we can't be sure about the teammates
             drawPlayerHead(mc.thePlayer.name, DungeonPlayer(mc.thePlayer.locationSkin).apply {
                 yaw = mc.thePlayer.rotationYawHead
             }, g2d)
         } else {
-            Dungeon.dungeonTeammates.forEach { (name, teammate) ->
+            Dungeon.dungeonTeammatesFmap.forEach { (name, teammate) ->
                 if (teammate.dead) return@forEach
                 drawPlayerHead(name, teammate, g2d)
             }
