@@ -69,11 +69,6 @@ object BlazeAttunement : Module(
         )
     }
 
-    private fun getMob(entity: Entity): Int? {
-        val color = currentBlazes[entity] ?: return null
-        return color.rgba
-    }
-
     fun changeBlazeColor(entity: Entity, p_78088_2_: Float, p_78088_3_: Float, p_78088_4_: Float, p_78088_5_: Float, p_78088_6_: Float, scale: Float, ci: CallbackInfo) {
         if (currentBlazes.size == 0 || !overlay) return
         val color = currentBlazes[entity] ?: return

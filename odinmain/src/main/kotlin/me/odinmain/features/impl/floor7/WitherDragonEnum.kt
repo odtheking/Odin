@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.floor7
 
-import me.odinmain.events.impl.ReceivePacketEvent
 import me.odinmain.features.impl.floor7.WitherDragons.bluePB
 import me.odinmain.features.impl.floor7.WitherDragons.greenPB
 import me.odinmain.features.impl.floor7.WitherDragons.orangePB
@@ -50,9 +49,7 @@ enum class WitherDragonsEnum (
     }
 }
 
-fun handleSpawnPacket(event: ReceivePacketEvent) {
-    if (event.packet !is S2APacketParticles) return
-    val particle = event.packet
+fun handleSpawnPacket(particle: S2APacketParticles) {
 
     if (
         particle.particleCount != 20 ||

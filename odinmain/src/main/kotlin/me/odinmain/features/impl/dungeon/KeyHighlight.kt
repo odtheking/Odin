@@ -12,7 +12,6 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraftforge.client.event.RenderWorldLastEvent
-import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object KeyHighlight : Module(
@@ -55,8 +54,9 @@ object KeyHighlight : Module(
         )
     }
 
-    @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Load) {
-        currentKey = null
+    init {
+        onWorldLoad{
+            currentKey = null
+        }
     }
 }

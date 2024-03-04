@@ -11,7 +11,6 @@ import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.dungeonTeammatesNoSelf
-import net.minecraft.entity.Entity
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -28,7 +27,7 @@ object TeammatesHighlight : Module(
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
         if (!DungeonUtils.inDungeons || (!inBoss && DungeonUtils.inBoss) || !outline) return
 
-        val teammate = DungeonUtils.dungeonTeammatesNoSelf.find { it.entity == event.entity } ?: return
+        val teammate = dungeonTeammatesNoSelf.find { it.entity == event.entity } ?: return
 
         if (!whenVisible && mc.thePlayer.canEntityBeSeen(teammate.entity)) return
 
@@ -50,9 +49,4 @@ object TeammatesHighlight : Module(
         }
     }
 
-    private fun getTeammates(entity: Entity): Int? {
-        val teammate = dungeonTeammatesNoSelf.find { it.entity == entity } ?: return null
-
-        return teammate.clazz.color.rgba
-    }
 }

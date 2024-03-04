@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.floor7
 
 import me.odinmain.events.impl.ChatPacketEvent
-import me.odinmain.events.impl.ReceivePacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.DragonBoxes.renderBoxes
@@ -26,11 +25,11 @@ import me.odinmain.utils.render.getTextWidth
 import me.odinmain.utils.render.roundedRectangle
 import me.odinmain.utils.render.text
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraftforge.client.event.RenderLivingEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.event.entity.living.LivingDeathEvent
-import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.max
 
@@ -89,24 +88,26 @@ object WitherDragons : Module(
     val bluePB = +NumberSetting("Melody PB", 1000.0, increment = 0.01, hidden = true)
     val purplePB = +NumberSetting("Starts With PB", 1000.0, increment = 0.01, hidden = true)
 
-    @SubscribeEvent
-    fun onReceivePacket(event: ReceivePacketEvent) {
-        if (DungeonUtils.getPhase() != 5) return
-        handleSpawnPacket(event)
-    }
+    
 
-    @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Load) {
-        WitherDragonsEnum.entries.forEach {
-            it.particleSpawnTime = 0L
-            it.timesSpawned = 0
-            it.spawning = false
-            it.entity = null
-            it.spawnTime()
+    init {
+        onWorldLoad {
+            WitherDragonsEnum.entries.forEach {
+                it.particleSpawnTime = 0L
+                it.timesSpawned = 0
+                it.spawning = false
+                it.entity = null
+                it.spawnTime()
+            }
+            DragonTimer.toRender = ArrayList()
+            lastDragonDeath = ""
+            DragonPriority.firstDragons = false
         }
-        DragonTimer.toRender = ArrayList()
-        lastDragonDeath = ""
-        DragonPriority.firstDragons = false
+        
+        onPacket(S2APacketParticles::class.java) {
+            if (DungeonUtils.getPhase() != 5) return@onPacket
+            handleSpawnPacket(it)
+        }
     }
 
     @SubscribeEvent

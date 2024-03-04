@@ -57,7 +57,6 @@ object DianaHelper : Module(
         UNKNOWN("§fUnknown?!", Color.WHITE),
     }
 
-
     init {
         onPacket(S29PacketSoundEffect::class.java) { DianaBurrowEstimate.handleSoundPacket(it) }
 

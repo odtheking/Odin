@@ -1,3 +1,12 @@
+Odin is a forge mod for Hypixel Skyblock for the minecraft version 1.8.9 
+The mod contains 2 versions which are 2 separate builds meaning each version has its own separate code (Using Gradle MultiProject)
+
+To open the main menu use '/od', '/odin' or '/odinclient' in chat.
+For extensive command help use '/od help' in chat.
+
+Suggestions and bug reports are welcome, please use the [Discord](https://discord.gg/2nCbC9hkxT) for that.
+For an organized feature list check the website [here](https://odtheking.github.io/OdinClient/)
+
 Category: Dungeon
 - Teammate Highlight: Enhances visibility of your dungeon teammates and their name tags.
 - Terracotta Timer: Displays the time until the terracotta spawns.
@@ -12,15 +21,15 @@ Category: Dungeon
 - Key Esp: Draws a box around the key.
 
 Category: Floor 7
-- Necron Drop Timer: Shows a timer for when Necron drops you down.
 - Inactive Waypoints: Shows inactive terminals, devices and levers
+- Necron Drop Timer: Shows a timer for when Necron drops you down.
 - Melody Message: Sends a message whenever you open the melody terminal.
 - Relic Announcer: Automatically announce your relic to the rest of the party.
-- Terminal Solver: Renders solution of terminals in f7/m7
 - Wither Dragons: Various features for Wither dragons (boxes, timer, HP, priority and more).
+- Terminal Solver: Renders solution of terminals in f7/m7
 - Terminal Times: Keeps track of how long you took to complete a terminal.
-- Simon Says: Different features for the Simon Says puzzle in f7/m7.
 - Arrow Align: Different features for the arrow alignment device.
+- Simon Says: Different features for the Simon Says puzzle in f7/m7.
 
 Category: Kuudra
 - Kuudra Reminders: Displays reminders about Kuudra.
@@ -32,7 +41,7 @@ Category: Kuudra
 - Remove Perks: Removes certain perks from the perk menu.
 - Vanq Notifier: Notifies you when a vanquisher is nearby.
 - Build Helper: Helps you to build the ballista in Kuudra.
-- Fresh Timer: Shows the time until fresh tools.
+- Fresh Timer: Shows the time until fresh timer.
 - Splits: Splits for phases of Kuudra.
 
 Category: Render
@@ -43,18 +52,19 @@ Category: Render
 - Personal Dragon: Renders your own personal dragon.
 - No Cursor Reset: Makes your cursor stop resetting between guis.
 - Clicked Chests: Draws a box around all the chests you have clicked.
+- Name Changer: Replaces your name with the given nick, color codes work (&).
 - Space Helmet: Equips you with a space helmet.
 - Cps Display: Displays your CPS.
-- Gyro Range: Renders a helpful circle to show the range of the Gyrokinetic Wand.
 - Bps Display: Displays how many blocks per second you're breaking.
-- Server Hud: Displays your current ping and the server's TPS.
+- Gyro Range: Renders a helpful circle to show the range of the Gyrokinetic Wand.
 - Animations: Changes the appearance of the first-person view model.
+- Server Hud: Displays your current ping and the server's TPS.
 - Waypoints: Custom Waypoints! /wp gui.
-- Nick Hider: Replace your name, color codes work.
 - Click Gui: Allows you to customize the GUI.
 - Camera: Allows you to change qualities about third person view.
 
 Category: Skyblock
+- Wardrobe Keybinds: Helpful reminders for dungeons.
 - Blaze Attunement: Displays what attunement a blaze boss currently needs.
 - Deployable Timer: Shows the time left on deployables.
 - Chat commands: type !help in the corresponding channel for cmd list. Use /blacklist.
@@ -66,7 +76,7 @@ Category: Skyblock
 - Arrow hit: Counts how many arrows you hit in certain time periods.
 - Can Clip: Tells you if you are currently able to clip through a stair under you.
 - Rag Axe: Tracks rag axe cooldowns.
-
+- 
 Category: Dungeon
 - Teammate Highlight: Enhances visibility of your dungeon teammates and their name tags.
 - Cancel Chest Open: Cancels the opening of chests in dungeons.
@@ -96,12 +106,12 @@ Category: Floor 7
 - Necron Drop Timer: Shows a timer for when Necron drops you down.
 - Stop Wrong Clicks: Stops you from clicking wrong items in terminals.
 - Arrows Triggerbot: Trigger bot for 4th device.
-- Levers Triggerbot: Triggerbot for the levers device.
 - Melody Message: Sends a message whenever you open the melody terminal.
 - Relic Announcer: Automatically announce your relic to the rest of the party.
 - Wither Dragons: Various features for Wither dragons (boxes, timer, HP, priority and more).
 - Terminal Solver: Renders solution of terminals in f7/m7
 - Terminal Times: Keeps track of how long you took to complete a terminal.
+- Lights Device: Features to help with the lights device (2nd device).
 - Freeze Game: Freezes the game when you press the keybind.
 - Hover Terms: Clicks the hovered item in a terminal if it is correct.
 - Fuck Diorite: Replaces the pillars in the F7 & M7 boss-fight with glass.
@@ -119,7 +129,7 @@ Category: Kuudra
 - Remove Perks: Removes certain perks from the perk menu.
 - Vanq Notifier: Notifies you when a vanquisher is nearby.
 - Build Helper: Helps you to build the ballista in Kuudra.
-- Fresh Timer: Shows the time until fresh tools.
+- Fresh Timer: Shows the time until fresh timer.
 - Splits: Splits for phases of Kuudra.
 
 Category: Render
@@ -129,6 +139,7 @@ Category: Render
 - Personal Dragon: Renders your own personal dragon.
 - No Cursor Reset: Makes your cursor stop resetting between guis.
 - Clicked Chests: Draws a box around all the chests you have clicked.
+- Name Changer: Replaces your name with the given nick, color codes work (&).
 - Space Helmet: Equips you with a space helmet.
 - Custom ESP: Allows you to see selected mobs through walls. (/esp)
 - Lock Cursor: Makes you completely unable to move your camera.
@@ -139,7 +150,6 @@ Category: Render
 - Animations: Changes the appearance of the first-person view model.
 - Server Hud: Displays your current ping and the server's TPS.
 - Waypoints: Custom Waypoints! /wp gui.
-- Nick Hider: Replace your name, color codes work.
 - No Carpet: Removes nearby carpet hitboxes.
 - Chest Esp: Renders chams or the bounding box for all chests.
 - No Debuff: Disables certain debuffs.
@@ -147,6 +157,7 @@ Category: Render
 - Camera: Allows you to change qualities about third person view.
 
 Category: Skyblock
+- Wardrobe Keybinds: Helpful reminders for dungeons.
 - Blaze Attunement: Displays what attunement a blaze boss currently needs.
 - Auto Experiments: Automatically click on the Chronomatron and Ultrasequencer experiments.
 - Farming Hitboxes: Expands the hitbox of some crops to a full block.

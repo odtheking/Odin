@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.render
 
-import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -15,7 +14,6 @@ import net.minecraft.util.BlockPos
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK
-import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraft.util.AxisAlignedBB as AABB
 
@@ -79,14 +77,13 @@ object ClickedChests : Module(
         }
     }
 
-    @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Load) {
-        chests.clear()
-    }
-    @SubscribeEvent
-    fun onChat(event: ChatPacketEvent) {
-        if (!event.message.contains("This chest is locked")) return
-        if (chests.isEmpty()) return
-        chests.lastOrNull()?.let { it.Locked = true }
+    init {
+        onWorldLoad {
+            chests.clear()
+        }
+        onMessage("This chest is locked", true) {
+            if (chests.isEmpty()) return@onMessage
+            chests.lastOrNull()?.let { it.Locked = true }
+        }
     }
 }

@@ -6,17 +6,16 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.utils.render.drawDynamicTexture
-import me.odinmain.utils.render.getTextWidth
-import me.odinmain.utils.render.text
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.loadBufferedImage
+import me.odinmain.utils.render.drawDynamicTexture
+import me.odinmain.utils.render.getTextWidth
+import me.odinmain.utils.render.text
 import me.odinmain.utils.skyblock.getSkullValue
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraftforge.client.event.RenderGameOverlayEvent
-import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.max
 
@@ -114,10 +113,11 @@ object DeployableTimer : Module(
         }
     }
 
-    @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Load) {
-        currentDeployables.clear()
-        resetLines()
+    init {
+        onWorldLoad{
+            currentDeployables.clear()
+            resetLines()
+        }
     }
 
     @SubscribeEvent

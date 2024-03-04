@@ -79,5 +79,4 @@ object PuzzleSolvers : Module(
     fun onRightClick(event: ClickEvent.RightClickEvent) {
         TicTacToe.tttRightClick(event)
     }
-
 }

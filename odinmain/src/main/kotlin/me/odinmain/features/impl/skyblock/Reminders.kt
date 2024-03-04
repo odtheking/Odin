@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.skyblock
 
 import me.odinmain.OdinMain
-import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -28,41 +27,37 @@ object Reminders : Module(
 
     private var canWish = true
 
-    @SubscribeEvent
-    fun onChat(event: ChatPacketEvent) {
+    init {
+        onMessage("[BOSS] Wither King: You.. again?", dragReminder) {
+            PlayerUtils.alert("§3Swap to edrag!")
+        }
 
-        when (event.message) {
-            "[BOSS] Wither King: You.. again?" -> if (!dragReminder) return else PlayerUtils.alert("§3Swap to edrag!")
+        onMessage("⚠ Maxor is enraged! ⚠", false) {
+            if (ultReminder) PlayerUtils.alert("§3Use ult!")
+            if (autoUlt && !OdinMain.onLegitVersion) PlayerUtils.dropItem()
+        }
 
-            "⚠ Maxor is enraged! ⚠" -> {
-                if (ultReminder) PlayerUtils.alert("§3Use ult!")
-                if (autoUlt && !OdinMain.onLegitVersion) PlayerUtils.dropItem()
-            }
+        onMessage("[BOSS] Goldor: You have done it, you destroyed the factory…", false) {
+            if (ultReminder) PlayerUtils.alert("§3Use ult!")
+            if (autoUlt && !OdinMain.onLegitVersion) PlayerUtils.dropItem()
+        }
 
-            "[BOSS] Goldor: You have done it, you destroyed the factory…" -> {
-                if (ultReminder) PlayerUtils.alert("§3Use ult!")
-                if (autoUlt && !OdinMain.onLegitVersion) PlayerUtils.dropItem()
-            }
+        onMessage("[BOSS] Sadan: My giants! Unleashed!", false) {
+            if (ultReminder) PlayerUtils.alert("§3Use ult")
+            if (autoUlt && !OdinMain.onLegitVersion) PlayerUtils.dropItem()
+        }
 
-            "[BOSS] Sadan: My giants! Unleashed!" -> {
-                if (ultReminder) PlayerUtils.alert("§3Use ult!")
-                if (autoUlt && !OdinMain.onLegitVersion) PlayerUtils.dropItem()
-            }
+        onMessage("Wish is ready to use!", false) {
+            if (!DungeonUtils.inBoss && !DungeonUtils.isGhost) canWish = true else if (DungeonUtils.inBoss && canWish && !DungeonUtils.isGhost) canWish = false
+        }
 
-            "Wish is ready to use!" -> {
-                if (!DungeonUtils.inBoss && !DungeonUtils.isGhost) canWish = true else if (DungeonUtils.inBoss && canWish && !DungeonUtils.isGhost) canWish = false
-            }
+        onMessage("Your Healer ULTIMATE wish is now available!", false) {
+            if (!DungeonUtils.inBoss && !DungeonUtils.isGhost) canWish = true else if (DungeonUtils.inBoss && canWish && !DungeonUtils.isGhost) canWish = false
+        }
 
-            "Your Healer ULTIMATE wish is now available!" -> {
-                if (!DungeonUtils.inBoss && !DungeonUtils.isGhost) canWish = true else if (DungeonUtils.inBoss && canWish && !DungeonUtils.isGhost) canWish = false
-            }
-
-            else -> {
-                if (maskAlert && event.message matches Regex("^(Second Wind Activated!)? ?Your (.+) saved your life!\$")) {
-                    PlayerUtils.alert("Mask used!")
-                    modMessage("Mask used!")
-                }
-            }
+        onMessage("^(Second Wind Activated!)? ?Your (.+) saved your life!\$", maskAlert) {
+            PlayerUtils.alert("Mask used!")
+            modMessage("Mask used!")
         }
     }
 

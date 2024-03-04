@@ -1,7 +1,6 @@
 package me.odin.commands.impl
 
 import com.github.stivais.commodore.parsers.impl.GreedyString
-import me.odinmain.OdinMain.onLegitVersion
 import me.odinmain.commands.CommandNode
 import me.odinmain.commands.Commodore
 import me.odinmain.config.Config
@@ -11,10 +10,6 @@ import me.odinmain.utils.skyblock.modMessage
 object HighlightCommand : Commodore {
     override val command: CommandNode =
         literal("highlight") {
-            requires {
-                onLegitVersion
-            }
-
             runs {
                 modMessage("Usage: /highlight <add/remove/clear/list> <name>")
             }

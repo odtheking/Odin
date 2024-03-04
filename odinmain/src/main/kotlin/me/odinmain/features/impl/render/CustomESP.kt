@@ -2,16 +2,12 @@
     package me.odinmain.features.impl.render
 
     import me.odinmain.OdinMain.onLegitVersion
-    import me.odinmain.config.MiscConfig.espList
     import me.odinmain.events.impl.PostEntityMetadata
     import me.odinmain.events.impl.RenderEntityModelEvent
     import me.odinmain.features.Category
     import me.odinmain.features.Module
     import me.odinmain.features.settings.Setting.Companion.withDependency
-    import me.odinmain.features.settings.impl.BooleanSetting
-    import me.odinmain.features.settings.impl.ColorSetting
-    import me.odinmain.features.settings.impl.NumberSetting
-    import me.odinmain.features.settings.impl.SelectorSetting
+    import me.odinmain.features.settings.impl.*
     import me.odinmain.utils.ServerUtils.getPing
     import me.odinmain.utils.getPositionEyes
     import me.odinmain.utils.render.Color
@@ -44,6 +40,8 @@
         private val xray: Boolean by BooleanSetting("Through Walls", true).withDependency { !onLegitVersion }
         private val thickness: Float by NumberSetting("Outline Thickness", 5f, 1f, 20f, 0.5f).withDependency { mode != 1 }
         private val cancelHurt: Boolean by BooleanSetting("Cancel Hurt", true).withDependency { mode != 1 }
+
+        val espList: MutableList<String> by ListSetting("List", mutableListOf())
 
         val renderThrough: Boolean get() = if (onLegitVersion) false else xray
 

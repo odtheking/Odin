@@ -1,14 +1,13 @@
 package me.odinmain.features.impl.render
 
-import me.odinmain.events.impl.PacketSentEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
+import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.getTextWidth
 import me.odinmain.utils.render.text
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.round
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -34,13 +33,14 @@ object BPSDisplay : Module(
         getTextWidth("BPS: 17.55", 9f) to 12f
     }
 
-    @SubscribeEvent
-    fun packet(event: PacketSentEvent) {
-        if (event.packet !is C07PacketPlayerDigging || event.packet.status != C07PacketPlayerDigging.Action.START_DESTROY_BLOCK) return
-        if (startTime == 0L) startTime = System.currentTimeMillis()
-        isBreaking = true
-        blocksBroken++
-        lastBrokenBlock = System.currentTimeMillis()
+    init {
+        onPacket(C07PacketPlayerDigging::class.java) {
+            if (it.status != C07PacketPlayerDigging.Action.START_DESTROY_BLOCK) return@onPacket
+            if (startTime == 0L) startTime = System.currentTimeMillis()
+            isBreaking = true
+            blocksBroken++
+            lastBrokenBlock = System.currentTimeMillis()
+        }
     }
 
     @SubscribeEvent
