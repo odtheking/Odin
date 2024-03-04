@@ -72,7 +72,7 @@ object Splits : Module(
 
             getTextWidth("Fuel/Stun: 0h 00m 00s", 12f) + 2f to 80f
         } else {
-            //if (LocationUtils.currentArea != "Kuudra") return@HudSetting 0f to 0f
+            if (LocationUtils.currentArea != "Kuudra") return@HudSetting 0f to 0f
             var y = 0f
             val (times, current) = getSplitTimes()
 
@@ -148,7 +148,7 @@ object Splits : Module(
                 if (timeP1 < oldPB && timeP1 > 1L) {
                     if (sendPB) modMessage("New best time for §6T5 Supplies §fis §a$timeP1, §fold best time was §a${oldPB}s")
                     t5PBs.entries.find { it.splitName == "Supplies" }?.pbTime?.value = timeP1
-                    Config.saveConfig()
+                    Config.save()
                 }
             }
 
@@ -162,7 +162,7 @@ object Splits : Module(
                 if (timeP2 < oldPB && timeP2 > 1L){
                     if (sendPB) modMessage("New best time for §6T5 Build §fis §a$timeP2, §fold best time was §a${oldPB}s")
                     t5PBs.entries.find { it.splitName == "Build" }?.pbTime?.value = timeP2
-                    Config.saveConfig()
+                    Config.save()
                 }
             }
 
@@ -176,7 +176,7 @@ object Splits : Module(
                 if (timeP3 / 1000 < oldPB && timeP3 > 1L){
                     if (sendPB) modMessage("New best time for §6T5 Stun §fis §a$timeP3, §fold best time was §a${oldPB}s")
                     t5PBs.entries.find { it.splitName == "Stun" }?.pbTime?.value = timeP3
-                    Config.saveConfig()
+                    Config.save()
                 }
             }
 
@@ -191,7 +191,7 @@ object Splits : Module(
                         if (timeP4 < oldKillPB && timeP4 > 1L) {
                             if (sendPB) modMessage("New best time for §6T5 Kill §fis §a$timeP4, §fold best time was §a${oldKillPB}s")
                             t5PBs.entries.find { it.splitName == "Kill" }?.pbTime?.value = timeP4
-                            Config.saveConfig()
+                            Config.save()
                         }
                     }
 
@@ -206,7 +206,7 @@ object Splits : Module(
                     if (totalTime < oldPB && totalTime > 1L) {
                         if (sendPB) modMessage("§fNew best time for §6T${LocationUtils.kuudraTier} Kuudra §fis §a${totalTime}s, §fold best time was §a${oldPB}s")
                         KuudraTiers.entries.getSafe(LocationUtils.kuudraTier)?.pbTime?.value = totalTime.round(2)
-                        Config.saveConfig()
+                        Config.save()
                     }
                 }
                 else if (event.message.contains("DEFEAT")) splits[4] = System.currentTimeMillis()
