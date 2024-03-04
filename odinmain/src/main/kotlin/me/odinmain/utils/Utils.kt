@@ -42,7 +42,7 @@ fun String.containsOneOf(vararg options: String, ignoreCase: Boolean = false): B
  * @param ignoreCase If comparison should be case-sensitive or not.
  * @return `true` if the string contains at least one of the specified options, otherwise `false`.
  */
-fun String.containsOneOf(options: List<String>, ignoreCase: Boolean = false): Boolean {
+fun String.containsOneOf(options: Collection<String>, ignoreCase: Boolean = false): Boolean {
     return options.any { this.contains(it, ignoreCase) }
 }
 

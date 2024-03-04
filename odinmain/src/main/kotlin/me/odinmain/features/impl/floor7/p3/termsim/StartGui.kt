@@ -71,7 +71,7 @@ object StartGui : TermSimGui(
         when (slot.slotIndex) {
             4 -> {
                 pbTimes.forEach { it.value = 99.0 }
-                Config.saveConfig()
+                Config.save()
                 modMessage("§cPBs reset!")
                 StartGui.open(ping)
             }

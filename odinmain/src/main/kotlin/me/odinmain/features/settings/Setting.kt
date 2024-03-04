@@ -1,5 +1,7 @@
 package me.odinmain.features.settings
 
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import me.odinmain.features.Module
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadWriteProperty
@@ -37,11 +39,6 @@ abstract class Setting<T> (
         value = default
     }
 
-    /**
-     * Updates setting from the config
-     */
-    abstract fun update(configSetting: Setting<*>)
-
     val shouldBeVisible: Boolean
         get() {
             return (visibilityDependency?.invoke() ?: true) && !hidden
@@ -60,6 +57,9 @@ abstract class Setting<T> (
     }
 
     companion object {
+
+        val gson: Gson = GsonBuilder().setPrettyPrinting().create()
+
         fun <K : Setting<T>, T> K.withDependency(dependency: () -> Boolean): K {
             visibilityDependency = dependency
             return this

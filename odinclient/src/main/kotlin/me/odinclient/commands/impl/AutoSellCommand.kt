@@ -1,10 +1,11 @@
 package me.odinclient.commands.impl
 
 import com.github.stivais.commodore.parsers.impl.GreedyString
+import me.odinclient.features.impl.dungeon.AutoSell.sellList
 import me.odinmain.OdinMain
 import me.odinmain.commands.CommandNode
 import me.odinmain.commands.Commodore
-import me.odinmain.config.MiscConfig
+import me.odinmain.config.Config
 import me.odinmain.utils.skyblock.modMessage
 
 object AutoSellCommand : Commodore {
@@ -18,31 +19,31 @@ object AutoSellCommand : Commodore {
 
             literal("add").runs { item: GreedyString ->
                 val lowercase = item.string.lowercase()
-                if (lowercase in MiscConfig.autoSell) return@runs modMessage("$item is already in the Auto sell list.")
+                if (lowercase in sellList) return@runs modMessage("$item is already in the Auto sell list.")
 
                 modMessage("Added $item to the Auto sell list.")
-                MiscConfig.autoSell.add(lowercase)
-                MiscConfig.saveAllConfigs()
+                sellList.add(lowercase)
+                Config.save()
             }
 
             literal("remove").runs { item: GreedyString ->
                 val lowercase = item.string.lowercase()
-                if (lowercase !in MiscConfig.autoSell) return@runs modMessage("$item isn't in the Auto sell list.")
+                if (lowercase !in sellList) return@runs modMessage("$item isn't in the Auto sell list.")
 
                 modMessage("Removed $item from the Auto sell list.")
-                MiscConfig.autoSell.remove(lowercase)
-                MiscConfig.saveAllConfigs()
+                sellList.remove(lowercase)
+                Config.save()
             }
 
             literal("clear").runs {
                 modMessage("Auto sell list cleared.")
-                MiscConfig.autoSell.clear()
-                MiscConfig.saveAllConfigs()
+                sellList.clear()
+                Config.save()
             }
 
             literal("list").runs {
-                if (MiscConfig.autoSell.size == 0) return@runs modMessage("Auto sell list is empty")
-                modMessage("Auto sell list:\n${MiscConfig.autoSell.joinToString("\n")}")
+                if (sellList.size == 0) return@runs modMessage("Auto sell list is empty")
+                modMessage("Auto sell list:\n${sellList.joinToString("\n")}")
             }
         }
 }

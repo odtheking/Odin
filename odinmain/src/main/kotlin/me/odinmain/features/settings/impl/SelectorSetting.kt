@@ -1,11 +1,14 @@
 package me.odinmain.features.settings.impl
 
+import com.google.gson.JsonElement
+import com.google.gson.JsonPrimitive
+import me.odinmain.features.settings.Saving
 import me.odinmain.features.settings.Setting
 
 
 /**
  * Setting that lets you pick between an array of strings.
- * @author Aton
+ * @author Aton, Stivais
  */
 class SelectorSetting(
     name: String,
@@ -13,7 +16,7 @@ class SelectorSetting(
     var options: ArrayList<String>,
     hidden: Boolean = false,
     description: String = "",
-) : Setting<Int>(name, hidden, description) {
+) : Setting<Int>(name, hidden, description), Saving {
 
     override val default: Int = optionIndex(defaultSelected)
 
@@ -23,24 +26,28 @@ class SelectorSetting(
             index = value
         }
 
-    override fun update(configSetting: Setting<*>) {
-        selected = (configSetting as StringSetting).text
-    }
-
     var index: Int = optionIndex(defaultSelected)
         set(value) {
             field = if (value > options.size - 1) 0 else if (value < 0) options.size - 1 else value
         }
 
     var selected: String
+        get() = options[index]
         set(value) {
             index = optionIndex(value)
         }
-        get() {
-            return options[index]
+
+    override fun write(): JsonElement {
+        return JsonPrimitive(selected)
+    }
+
+    override fun read(element: JsonElement?) {
+        element?.asString?.let {
+            selected = it
         }
+    }
 
-    private fun optionIndex(string: String): Int =
-        options.map { it.lowercase() }.indexOf(string.lowercase()).coerceIn(0, options.size - 1)
-
+    private fun optionIndex(string: String): Int {
+        return options.map { it.lowercase() }.indexOf(string.lowercase()).coerceIn(0, options.size - 1)
+    }
 }

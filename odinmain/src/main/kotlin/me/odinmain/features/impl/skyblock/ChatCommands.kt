@@ -4,10 +4,10 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import me.odinmain.config.MiscConfig
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.impl.render.ClickGUIModule.blacklist
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.ServerUtils
@@ -218,5 +218,5 @@ object ChatCommands : Module(
         }
     }
 
-    fun isInBlacklist(name: String) : Boolean = MiscConfig.blacklist.contains(name.lowercase())
+    fun isInBlacklist(name: String) : Boolean = blacklist.contains(name.lowercase())
 }

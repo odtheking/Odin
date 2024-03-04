@@ -21,7 +21,7 @@ object GhostBlock : Module(
 ) {
     // gkey
     private val ghostBlockKey: Keybinding by KeybindSetting("Ghost block Keybind", Keyboard.KEY_NONE, "Makes blocks you're looking at disappear.")
-    private val ghostBlockSpeed: Long by NumberSetting("Speed", 50L, 0.0, 300.0, 10.0, suffix = "ms")
+    private val ghostBlockSpeed: Long by NumberSetting("Speed", 50L, 0.0, 300.0, 10.0, unit = "ms")
     private val ghostBlockSkulls: Boolean by BooleanSetting("Ghost Skulls", true, description = "If enabled skulls will also be turned into ghost blocks.")
     private val ghostBlockRange: Double by NumberSetting("Range", 8.0, 4.5, 80.0, 0.5, description = "Maximum range at which ghost blocks will be created.")
     private val onlyDungeon: Boolean by BooleanSetting("Only In Dungeon", false, description = "Will only work inside of a dungeon.")

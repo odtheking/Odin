@@ -2,10 +2,13 @@ package me.odinclient.features.impl.dungeon
 
 import me.odinclient.utils.skyblock.PlayerUtils.ClickType
 import me.odinclient.utils.skyblock.PlayerUtils.windowClick
-import me.odinmain.config.MiscConfig
+import me.odinmain.config.Config
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.*
+import me.odinmain.features.settings.impl.ActionSetting
+import me.odinmain.features.settings.impl.ListSetting
+import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.utils.containsOneOf
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.name
@@ -18,14 +21,13 @@ object AutoSell : Module(
     description = "Automatically sell items in trades and cookie menus.",
     category = Category.DUNGEON
 ) {
+    val sellList: MutableSet<String> by ListSetting("Sell list", mutableSetOf())
     private val delay: Long by NumberSetting("Delay", 100, 30.0, 300.0, 5.0)
     private val clickType: Int by SelectorSetting("Click Type", "Shift", arrayListOf("Shift", "Middle", "Left"))
     private val addDefaults: () -> Unit by ActionSetting("Add defaults") {
-        MiscConfig.autoSell.addAll(
-            defaultItems.filter { it !in MiscConfig.autoSell }
-        )
+        sellList.addAll(defaultItems)
         modMessage("Added default items to auto sell list")
-        MiscConfig.saveAllConfigs()
+        Config.save()
     }
 
     init {
@@ -47,7 +49,7 @@ object AutoSell : Module(
     }
 
     private fun doSell(slot: Slot): Boolean {
-        return slot.stack?.displayName?.containsOneOf(MiscConfig.autoSell, true) == true
+        return slot.stack?.displayName?.containsOneOf(sellList, true) == true
     }
 
     private val defaultItems = arrayOf(

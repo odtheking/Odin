@@ -3,7 +3,8 @@ package me.odinmain.features.settings.impl
 import me.odinmain.features.settings.Setting
 
 /**
- * A setting used to show or hide other settings.
+ * A setting intended to show or hide other settings in the GUI.
+ *
  * @author Bonsai
  */
 class DropdownSetting (
@@ -13,13 +14,5 @@ class DropdownSetting (
 
     override var value: Boolean = default
 
-    override fun update(configSetting: Setting<*>) {
-        value = (configSetting as BooleanSetting).enabled
-    }
-
     var enabled: Boolean by this::value
-
-    fun toggle() {
-        enabled = !enabled
-    }
 }

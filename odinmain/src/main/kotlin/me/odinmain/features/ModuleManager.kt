@@ -211,7 +211,7 @@ object ModuleManager {
         }
     }
 
-    fun getModuleByName(name: String): Module? = modules.firstOrNull { it.name.equals(name, true) }
+    fun getModuleByName(name: String?): Module? = modules.firstOrNull { it.name.equals(name, true) }
 
     fun generateReadme(): String {
         val moduleList = modules.sortedByDescending { getTextWidth(it.name, 18f) }

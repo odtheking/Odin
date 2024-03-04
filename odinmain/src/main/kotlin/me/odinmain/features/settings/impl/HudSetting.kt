@@ -25,10 +25,6 @@ class HudSetting( // todo redo
      */
     override var value: HudElement = default
 
-    override fun update(configSetting: Setting<*>) {
-        // doesn't save
-    }
-
     inline var enabled: Boolean
         get() = value.enabled
         set(value) {

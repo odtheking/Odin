@@ -68,7 +68,7 @@ class ElementCheckBox(parent: ModuleButton, setting: BooleanSetting) : Element<B
         if (mouseButton == 0 && isHovered) {
             if (colorAnim.start()) {
                 linearAnimation.start()
-                setting.toggle()
+                setting.enabled = !setting.enabled
             }
             return true
         }

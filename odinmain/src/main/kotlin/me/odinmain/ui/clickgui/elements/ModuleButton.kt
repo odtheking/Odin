@@ -14,7 +14,6 @@ import me.odinmain.ui.clickgui.util.ColorUtil.clickGUIColor
 import me.odinmain.ui.clickgui.util.ColorUtil.moduleButtonColor
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.HoverHandler
-import me.odinmain.ui.util.*
 import me.odinmain.ui.util.MouseUtils.isAreaHovered
 import me.odinmain.utils.render.*
 import me.odinmain.utils.render.RenderUtils.loadBufferedImage
@@ -80,7 +79,10 @@ class ModuleButton(val module: Module, val panel: Panel) {
                     is HudSetting -> ElementHud(this, setting)
                     is KeybindSetting -> ElementKeyBind(this, setting)
                     is DropdownSetting -> ElementDropdown(this, setting)
-                    else -> return@addElement
+                    else -> {
+                        position--
+                        return@addElement
+                    }
                 }
                 menuElements.add(position, newElement)
             } else {

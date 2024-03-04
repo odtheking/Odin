@@ -1,11 +1,14 @@
 package me.odinmain.features.settings.impl
 
+import com.google.gson.JsonElement
+import com.google.gson.JsonPrimitive
+import me.odinmain.features.settings.Saving
 import me.odinmain.features.settings.Setting
 
 
 /**
  * Setting that lets you type a string.
- * @author Aton
+ * @author Aton, Stivais
  */
 class StringSetting(
     name: String,
@@ -13,16 +16,22 @@ class StringSetting(
     var length: Int = 20,
     hidden: Boolean = false,
     description: String = "",
-) : Setting<String>(name, hidden, description) {
+) : Setting<String>(name, hidden, description), Saving {
 
     override var value: String = default
         set(value) {
             field = if (value.length <= length) value else return
         }
 
-    override fun update(configSetting: Setting<*>) {
-        value = (configSetting as StringSetting).text
+    var text: String by this::value
+
+    override fun write(): JsonElement {
+        return JsonPrimitive(value)
     }
 
-    var text: String by this::value
+    override fun read(element: JsonElement?) {
+        element?.asString?.let {
+            value = it
+        }
+    }
 }
