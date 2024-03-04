@@ -1,9 +1,5 @@
 package me.odinmain.features.impl.skyblock
 
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -13,6 +9,7 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.floor
 import me.odinmain.utils.imgurID
+import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.*
 import net.minecraft.event.ClickEvent
 import net.minecraft.util.ChatComponentText
@@ -74,7 +71,6 @@ object ChatCommands : Module(
     private val guildRegex = Regex("Guild > (\\[.+])? ?(.+) ?(\\[.+])?: ?(.+)")
     private val fromRegex = Regex("From (\\[.+])? ?(.+): (.+)")
 
-    @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
     fun chatCommands(event: ChatPacketEvent) {
         val message = event.message
@@ -108,14 +104,12 @@ object ChatCommands : Module(
             else -> return // Handle unknown channels, or adjust as needed
         }
 
-        GlobalScope.launch {
-            delay(350)
-            commandsall(msg!!, ign, channel)
+        runIn(6) {
+            handleChatCommands(msg!!, ign, channel)
         }
-
     }
 
-    private suspend fun commandsall(message: String, name: String, channel: String) {
+    private fun handleChatCommands(message: String, name: String, channel: String) {
 
         val helpMessage = when (channel) {
             "party" -> "Commands: coords, odin, boop, cf, 8ball, dice, cat, racism, ping, tps, warp, warptransfer, allinvite, pt, dt, m (?), f (?)"
@@ -146,8 +140,9 @@ object ChatCommands : Module(
             "warp" -> if (warp && channel == "party") sendCommand("p warp")
             "warptransfer" -> { if (warptransfer)
                 sendCommand("p warp")
-                delay(500)
-                sendCommand("p transfer $name")
+                runIn(12) {
+                    sendCommand("p transfer $name")
+                }
             }
             "allinvite" -> if (allinvite && channel == "party") sendCommand("p settings allinvite")
             "pt" -> if (pt && channel == "party") sendCommand("p transfer $name")
@@ -203,13 +198,11 @@ object ChatCommands : Module(
         }
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
     fun dt(event: ChatPacketEvent) {
         if (!event.message.contains("EXTRA STATS") || dtPlayer == null) return
 
-        GlobalScope.launch{
-            delay(2500)
+        runIn(30) {
             PlayerUtils.alert("§cPlayers need DT")
             partyMessage("Players need DT: ${dtReason.joinToString(separator = ", ") { (name, reason) ->
                 "$name: $reason" }}")
@@ -218,5 +211,5 @@ object ChatCommands : Module(
         }
     }
 
-    fun isInBlacklist(name: String) : Boolean = blacklist.contains(name.lowercase())
+    private fun isInBlacklist(name: String) : Boolean = blacklist.contains(name.lowercase())
 }

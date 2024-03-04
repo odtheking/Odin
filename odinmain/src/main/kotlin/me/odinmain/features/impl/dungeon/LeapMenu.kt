@@ -20,7 +20,6 @@ import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.EMPTY
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils.leapTeammates
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.inventory.GuiChest
@@ -43,12 +42,12 @@ object LeapMenu : Module(
     private val leapHelperToggle: Boolean by BooleanSetting("Leap Helper", true)
     private val leapHelperColor: Color by ColorSetting("Leap Helper Color", default = Color.WHITE).withDependency { leapHelperToggle }
     val delay: Int by NumberSetting("Reset Leap Helper Delay", 30, 10.0, 120.0, 1.0).withDependency { leapHelperToggle }
-    /*private val leapTeammates: MutableList<DungeonUtils.DungeonPlayer> = mutableListOf(
-        DungeonUtils.DungeonPlayer("Stiviaisd", Classes.Healer),
-        DungeonUtils.DungeonPlayer("Odtheking", Classes.Archer),
-        DungeonUtils.DungeonPlayer("Bonzi", Classes.Mage),
-        DungeonUtils.DungeonPlayer("Cezar", Classes.Tank)
-    )*/
+    private val leapTeammates: MutableList<DungeonUtils.DungeonPlayer> = mutableListOf(
+        DungeonUtils.DungeonPlayer("Stiviaisd", DungeonUtils.Classes.Healer),
+        DungeonUtils.DungeonPlayer("Odtheking", DungeonUtils.Classes.Archer),
+        DungeonUtils.DungeonPlayer("Bonzi", DungeonUtils.Classes.Mage),
+        DungeonUtils.DungeonPlayer("Cezar", DungeonUtils.Classes.Tank)
+    )
     private val hoveredAnims = List(4) { EaseInOut(200L) }
     private var hoveredQuadrant = -1
     private var previouslyHoveredQuadrant = -1
@@ -69,7 +68,16 @@ object LeapMenu : Module(
             if (it == EMPTY) return@forEachIndexed
             GlStateManager.pushMatrix()
             GlStateManager.enableAlpha()
-            scale(mc.displayWidth / 1920f, mc.displayHeight / 1080f)
+            val currentRatio = 1920f / 1080f
+            val newRatio = mc.displayWidth.toFloat() / mc.displayHeight.toFloat()
+
+            if (currentRatio > newRatio) {
+                val scaleFactor = mc.displayHeight.toFloat() / 1080f
+                scale(scaleFactor, scaleFactor)
+            } else {
+                val scaleFactor = mc.displayWidth.toFloat() / 1920f
+                scale(scaleFactor, scaleFactor)
+            }
             scale(1f / scaleFactor,  1f / scaleFactor)
             GlStateManager.color(255f, 255f, 255f, 255f)
             translate(
