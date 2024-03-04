@@ -22,7 +22,6 @@ object PuzzleSolvers : Module(
     category = Category.DUNGEON,
     description = "Dungeon puzzle solvers."
 ) {
-
     val waterSolver: Boolean by BooleanSetting("Water Board", true, description = "Shows you the solution to the water puzzle.")
     val showOrder: Boolean by BooleanSetting("Show Order", true, description = "Shows the order of the levers to click.").withDependency { waterSolver }
     val reset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
@@ -30,9 +29,9 @@ object PuzzleSolvers : Module(
     }.withDependency { waterSolver }
 
     val tpMaze: Boolean by BooleanSetting("Teleport Maze", true, description = "Shows you the solution for the TP maze puzzle")
-    val mazeColorOne: Color by ColorSetting("Color for 1 solution", Color.GREEN.withAlpha(.5f), true).withDependency { tpMaze }
-    val mazeColorMultiple: Color by ColorSetting("Color for multiple solutions", Color.ORANGE.withAlpha(.5f), true).withDependency { tpMaze }
-    val mazeColorVisited: Color by ColorSetting("Color for visited", Color.RED.withAlpha(.5f), true).withDependency { tpMaze }
+    val mazeColorOne: Color by ColorSetting("Color for 1 solution", Color.GREEN.withAlpha(.5f), true, description = "Color for when there is a single solution").withDependency { tpMaze }
+    val mazeColorMultiple: Color by ColorSetting("Color for multiple solutions", Color.ORANGE.withAlpha(.5f), true, description = "Color for when there are multiple solutions").withDependency { tpMaze }
+    val mazeColorVisited: Color by ColorSetting("Color for visited", Color.RED.withAlpha(.5f), true, description = "Color for the already used TP pads").withDependency { tpMaze }
 
     val tttSolver: Boolean by BooleanSetting("Tic Tac Toe", true, description = "Shows you the solution for the TTT puzzle")
     val blockWrongClicks: Boolean by BooleanSetting(name = "Block Wrong Clicks").withDependency { tttSolver && !OdinMain.onLegitVersion }

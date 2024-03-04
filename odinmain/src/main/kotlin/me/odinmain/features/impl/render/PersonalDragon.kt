@@ -25,7 +25,6 @@ object PersonalDragon : Module(
     category = Category.RENDER,
     description = "Renders your own personal dragon."
 ) {
-
     private val onlyF5: Boolean by BooleanSetting(name = "Only F5", default = true)
     private val scale: Float by NumberSetting(name = "Scale", 0.5f, 0.0f, 1.0f, 0.01f)
     private val horizontal: Float by NumberSetting(name = "Horizontal", 0.0f, -10.0f, 10.0f, 0.1f)

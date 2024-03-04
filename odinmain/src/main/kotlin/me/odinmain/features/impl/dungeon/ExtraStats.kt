@@ -10,8 +10,6 @@ object ExtraStats : Module(
     description = "Automatically clicks the Extra Stats at the end of a dungeon.",
     category = Category.DUNGEON,
 ) {
-
-
     init {
         onMessage("                             > EXTRA STATS <", false) {
             if (inDungeons) {

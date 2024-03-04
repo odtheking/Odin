@@ -15,7 +15,6 @@ import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.EnumParticleTypes
 import net.minecraft.util.Vec3
 
-
 enum class WitherDragonsEnum (
     val spawnPos: Vec3,
     val boxesDimensions: AxisAlignedBB,
@@ -50,7 +49,6 @@ enum class WitherDragonsEnum (
 }
 
 fun handleSpawnPacket(particle: S2APacketParticles) {
-
     if (
         particle.particleCount != 20 ||
         particle.yCoordinate != 19.0 ||

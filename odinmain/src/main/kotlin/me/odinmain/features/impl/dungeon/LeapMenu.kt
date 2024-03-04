@@ -20,6 +20,7 @@ import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.EMPTY
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.leapTeammates
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.inventory.GuiChest
@@ -40,14 +41,14 @@ object LeapMenu : Module(
     //val priority: Int by SelectorSetting("Leap Helper Priority", "Berserker", arrayListOf("Archer", "Berserker", "Healer", "Mage", "Tank"), description = "Which player to prioritize in the leap helper.")
     private val useNumberKeys: Boolean by BooleanSetting("Use Number Keys", false, description = "Use number keys 1-4 to leap to the player you want, going from left to right, top to bottom.")
     private val leapHelperToggle: Boolean by BooleanSetting("Leap Helper", true)
-    private val leapHelperColor: Color by ColorSetting("Leap Helper Color", default = Color.WHITE).withDependency { leapHelperToggle }
-    val delay: Int by NumberSetting("Reset Leap Helper Delay", 30, 10.0, 120.0, 1.0).withDependency { leapHelperToggle }
-    private val leapTeammates: MutableList<DungeonUtils.DungeonPlayer> = mutableListOf(
+    private val leapHelperColor: Color by ColorSetting("Leap Helper Color", default = Color.WHITE, description = "Color of the Leap Helper highlight").withDependency { leapHelperToggle }
+    val delay: Int by NumberSetting("Reset Leap Helper Delay", 30, 10.0, 120.0, 1.0, description = "Delay for clearing the leap helper highlight").withDependency { leapHelperToggle }
+    /*private val leapTeammates: MutableList<DungeonUtils.DungeonPlayer> = mutableListOf(
         DungeonUtils.DungeonPlayer("Stiviaisd", DungeonUtils.Classes.Healer),
         DungeonUtils.DungeonPlayer("Odtheking", DungeonUtils.Classes.Archer),
         DungeonUtils.DungeonPlayer("Bonzi", DungeonUtils.Classes.Mage),
         DungeonUtils.DungeonPlayer("Cezar", DungeonUtils.Classes.Tank)
-    )
+    )*/
     private val hoveredAnims = List(4) { EaseInOut(200L) }
     private var hoveredQuadrant = -1
     private var previouslyHoveredQuadrant = -1

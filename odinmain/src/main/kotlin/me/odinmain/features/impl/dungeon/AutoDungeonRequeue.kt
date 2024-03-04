@@ -15,7 +15,7 @@ object AutoDungeonRequeue : Module(
     category = Category.DUNGEON
 ) {
     private val delay: Int by NumberSetting("Delay", 10, 0, 30, 1, description = "The delay in seconds before requeuing.")
-    private val type: Boolean by DualSetting("Type", "Normal", "Requeue", default = true)
+    private val type: Boolean by DualSetting("Type", "Normal", "Requeue", default = true, description = "The type of command to execute to fulfill the requeue request.")
 
     init {
         onMessage("                             > EXTRA STATS <", false) {

@@ -35,7 +35,7 @@ object Splits : Module(
     private val t5KillPB = +NumberSetting("T5 Kill PB", 999.0, increment = 0.001, hidden = true)
     private val sendPB: Boolean by BooleanSetting("Send PB", true, description = "Sends a message when a new PB is achieved")
     private val sendSupplyTime: Boolean by BooleanSetting("Send Supply Time", true, description = "Sends a message when a supply is collected")
-    private val splitsColor: Color by ColorSetting("Splits Color", Color.CYAN)
+    private val splitsColor: Color by ColorSetting("Splits Color", Color.CYAN, description = "Color of the splits display")
     val reset: () -> Unit by ActionSetting("Send PBs", description = "Sends your current PBs.") {
            modMessage(
                """§8List of PBs:

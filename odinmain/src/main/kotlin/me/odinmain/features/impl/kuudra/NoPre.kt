@@ -28,7 +28,6 @@ object NoPre : Module(
     private var preLoc = Vec3(0.0, 0.0, 0.0)
 
     init {
-
         onMessage("[NPC] Elle: Head over to the main platform, I will join you when I get a bite!", false) {
             val playerLocation = mc.thePlayer.positionVector
             when {

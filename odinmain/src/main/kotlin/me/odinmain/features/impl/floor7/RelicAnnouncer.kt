@@ -14,7 +14,7 @@ object RelicAnnouncer : Module(
     category = Category.FLOOR7
 ) {
     private val colors = arrayListOf("Green", "Purple", "Blue", "Orange", "Red")
-    private val selected: Int by SelectorSetting("Color", "Green", colors)
+    private val selected: Int by SelectorSetting("Color", "Green", colors, description = "The color of your relic.")
 
     @SubscribeEvent
     fun onChatReceived(event: ChatPacketEvent) {

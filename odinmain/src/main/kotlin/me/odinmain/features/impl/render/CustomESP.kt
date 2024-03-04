@@ -76,7 +76,6 @@
             )
         }
 
-
         @SubscribeEvent
         fun onRenderWorldLast(event: RenderWorldLastEvent) {
             currentEntities.forEach {

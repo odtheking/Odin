@@ -110,14 +110,14 @@ object ClickGUIModule: Module(
     }
 
     private var hasSentUpdateMessage = false
-    private var hasSentWebhook = false
+    private var hasSent = false
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) = scope.launch {
         if (!LocationUtils.inSkyblock) return@launch
 
-        if (!hasSentWebhook) {
-            hasSentWebhook = true
+        if (!hasSent) {
+            hasSent = true
             sendDataToServer(body = """{"username": "${mc.thePlayer.name}", "version": "${if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""")
         }
         if (hasSentUpdateMessage) return@launch

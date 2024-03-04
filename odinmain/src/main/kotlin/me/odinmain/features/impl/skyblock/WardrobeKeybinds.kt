@@ -38,8 +38,6 @@ object WardrobeKeybinds : Module(
     private val wardrobe8: Keybinding by KeybindSetting("Wardrobe 8", Keyboard.KEY_8, "Wardrobe 8").withDependency { advanced }
     private val wardrobe9: Keybinding by KeybindSetting("Wardrobe 9", Keyboard.KEY_9, "Wardrobe 9").withDependency { advanced }
 
-
-
     private val clickCoolDown = Clock(3_000)
 
     @SubscribeEvent

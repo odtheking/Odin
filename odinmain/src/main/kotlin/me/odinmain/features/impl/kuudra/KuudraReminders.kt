@@ -1,11 +1,9 @@
 package me.odinmain.features.impl.kuudra
 
-import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.skyblock.PlayerUtils
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object KuudraReminders : Module(
     name = "Kuudra Reminders",
@@ -35,22 +33,6 @@ object KuudraReminders : Module(
         }
         onMessage("Your Fresh Tools Perk bonus doubles your building speed for the next 10 seconds!", false) {
             if (freshTools) PlayerUtils.alert("Fresh Tools", displayText = displayText, playSound = playSound)
-        }
-    }
-
-    @SubscribeEvent
-    fun onChat(event: ChatPacketEvent) {
-        when (event.message) {
-            "WARNING: You do not have a key for this tier in your inventory, you will not be able to claim rewards." -> if (keyReminder)
-                PlayerUtils.alert("No key in inventory", displayText = displayText, playSound = playSound)
-            "[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!" -> if (buyUpgrades)
-                PlayerUtils.alert("Buy Upgrades", displayText = displayText, playSound = playSound)
-            "[NPC] Elle: Not again!" -> if (pickUpSupplies)
-                PlayerUtils.alert("PickUP supplies", displayText = displayText, playSound = playSound)
-            "[NPC] Elle: It's time to build the Ballista again! Cover me!" -> if (buildBallista)
-                PlayerUtils.alert("Build Ballista", displayText = displayText, playSound = playSound)
-            "Your Fresh Tools Perk bonus doubles your building speed for the next 10 seconds!" -> if (freshTools)
-                PlayerUtils.alert("Fresh Tools", displayText = displayText, playSound = playSound)
         }
     }
 }
