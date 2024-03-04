@@ -28,6 +28,11 @@ class KeybindSetting(
         }
     }
 
+    /**
+     * Action to do, when keybinding is pressed
+     *
+     * Note: Action is always invoked, even if module isn't enabled.
+     */
     fun onPress(block: () -> Unit): KeybindSetting {
         value.onPress = block
         return this

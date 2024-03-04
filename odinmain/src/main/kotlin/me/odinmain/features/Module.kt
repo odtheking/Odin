@@ -6,6 +6,7 @@ import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.features.settings.Setting
 import me.odinmain.features.settings.impl.HudSetting
+import me.odinmain.features.settings.impl.Keybinding
 import me.odinmain.utils.clock.Executable
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.skyblock.modMessage
@@ -21,7 +22,7 @@ import kotlin.reflect.full.hasAnnotation
  */
 abstract class Module(
     val name: String,
-    @Transient val key: Int = Keyboard.KEY_NONE,
+    key: Int? = Keyboard.KEY_NONE,
     @Transient val category: Category = Category.RENDER,
     @Transient var description: String = "",
     @Transient val tag: Int = TagType.NONE,
@@ -35,6 +36,11 @@ abstract class Module(
      * Settings for the module
      */
     val settings: ArrayList<Setting<*>> = ArrayList()
+
+    /**
+     * Main keybinding of the module
+     */
+    val keybinding: Keybinding? = key?.let { Keybinding(it).apply { onPress = ::onKeybind } }
 
     protected inline val mc get() = OdinMain.mc
 

@@ -10,11 +10,11 @@ import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.clickgui.util.HoverHandler
 import me.odinmain.ui.hud.EditHUDGui.dragging
 import me.odinmain.ui.util.MouseUtils.isAreaHovered
+import me.odinmain.utils.endProfile
+import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.rectangleOutline
 import me.odinmain.utils.render.scale
 import me.odinmain.utils.render.translate
-import me.odinmain.utils.endProfile
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.startProfile
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
@@ -58,7 +58,6 @@ open class HudElement(
             ySetting,
             scaleSetting,
             enabledSetting,
-            enabledSetting
         )
 
         huds.add(this)
