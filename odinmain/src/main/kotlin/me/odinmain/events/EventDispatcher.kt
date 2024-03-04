@@ -9,8 +9,8 @@ import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.noControlCodes
-import me.odinmain.utils.waitUntilLastItem
 import me.odinmain.utils.postAndCatch
+import me.odinmain.utils.waitUntilLastItem
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.network.play.server.S02PacketChat

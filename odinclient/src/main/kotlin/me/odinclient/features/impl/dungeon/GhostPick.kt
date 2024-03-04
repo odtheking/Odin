@@ -2,7 +2,9 @@ package me.odinclient.features.impl.dungeon
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.*
+import me.odinmain.features.settings.impl.KeybindSetting
+import me.odinmain.features.settings.impl.Keybinding
+import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.runIn
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.item.Item

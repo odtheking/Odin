@@ -13,11 +13,21 @@ import me.odinmain.utils.skyblock.modMessage
 object SoopyCommand : Commodore {
     override val command: CommandNode =
         literal("spcmd") {
+
+            runs {
+                modMessage("Usage: /spcmd <command> [player] || /spcmd cmds")
+            }
+
             runs { str: GreedyString ->
                 val message = str.string.split(" ")
                 var url = ""
                 if (message[0].lowercase().equalsOneOf("cmds", "commands", "cmd", "command"))
-                    return@runs modMessage("Commands: kuudra, auctions, skills, skillaverage, dojo, overflowskills, overflowskillaverage, bestiary, faction, nucleus, guildof, essence, secrets, bank, pet, whatdoing, dungeon, currdungeon, sblvl, classaverage, rtca, nw, ")
+                    return@runs modMessage("""Available commands:
+                        | kuudra, auctions, skills, skillaverage, dojo, 
+                        | overflowskills, overflowskillaverage, bestiary, 
+                        | faction, nucleus, guildof, essence, secrets, bank, 
+                        | pet, whatdoing, dungeon, currdungeon, sblvl, classaverage, 
+                        | rtca, nw.""".trimMargin())
 
                 when (message.size) {
                     1 -> {
@@ -36,6 +46,4 @@ object SoopyCommand : Commodore {
                 scope.launch { modMessage(fetchURLData(url)) }
             }
         }
-
-
 }

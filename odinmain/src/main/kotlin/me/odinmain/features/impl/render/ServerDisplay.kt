@@ -5,11 +5,11 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.utils.render.getTextWidth
-import me.odinmain.utils.render.text
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.max
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.getTextWidth
+import me.odinmain.utils.render.text
 import me.odinmain.utils.round
 
 object ServerDisplay : Module(

@@ -10,7 +10,7 @@ import me.odinmain.ui.clickgui.util.ColorUtil.buttonColor
 import me.odinmain.ui.clickgui.util.ColorUtil.clickGUIColor
 import me.odinmain.ui.clickgui.util.ColorUtil.darkerIf
 import me.odinmain.ui.clickgui.util.ColorUtil.elementBackground
-import me.odinmain.ui.util.*
+import me.odinmain.ui.util.MouseUtils
 import me.odinmain.utils.render.*
 
 /**

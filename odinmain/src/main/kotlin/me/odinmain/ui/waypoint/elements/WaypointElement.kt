@@ -4,11 +4,11 @@ import me.odinmain.features.impl.render.WaypointManager
 import me.odinmain.features.impl.render.WaypointManager.Waypoint
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.animations.impl.ColorAnimation
-import me.odinmain.utils.render.roundedRectangle
 import me.odinmain.ui.waypoint.WaypointGUI
 import me.odinmain.ui.waypoint.WaypointGUI.mouseHandler
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.roundedRectangle
 
 class WaypointElement(val waypoint: Waypoint) {
     private val name get() = waypoint.name.noControlCodes

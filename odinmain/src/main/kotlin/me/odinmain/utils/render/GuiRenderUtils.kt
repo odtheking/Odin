@@ -5,9 +5,9 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.util.ColorUtil
 import me.odinmain.ui.util.RoundedRect
-import me.odinmain.utils.render.TextAlign.Left
 import me.odinmain.utils.*
 import me.odinmain.utils.render.RenderUtils.drawTexturedModalRect
+import me.odinmain.utils.render.TextAlign.Left
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.texture.DynamicTexture

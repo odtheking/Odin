@@ -6,13 +6,13 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.utils.render.getTextWidth
-import me.odinmain.utils.render.text
 import me.odinmain.utils.addVec
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.RenderUtils.drawBoxOutline
 import me.odinmain.utils.render.RenderUtils.renderBoundingBox
+import me.odinmain.utils.render.getTextWidth
+import me.odinmain.utils.render.text
 import me.odinmain.utils.round
 import me.odinmain.utils.skyblock.KuudraUtils.kuudraEntity
 import me.odinmain.utils.skyblock.LocationUtils
