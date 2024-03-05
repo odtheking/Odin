@@ -187,6 +187,7 @@ object WaterSolver {
         solutions.clear()
         openedWater = -1L
         LeverBlock.entries.forEach { it.i = 0 }
+        scan()
     }
 
     enum class WoolColor {

@@ -19,9 +19,7 @@ import me.odinmain.utils.name
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils.Classes
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.EMPTY
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils.leapTeammates
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.inventory.GuiChest
@@ -36,20 +34,20 @@ object LeapMenu : Module(
     description = "Renders a custom leap menu when in the Spirit Leap gui.",
     category = Category.DUNGEON
 ) {
-    val type: Int by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("A-Z Class (BetterMap)", "A-Z Name", "Odin Sorting"), description = "How to sort the leap menu.")
+    val type: Int by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("Odin Sorting", "A-Z Class (BetterMap)", "A-Z Name", "No Sorting"), description = "How to sort the leap menu.")
     private val colorStyle: Boolean by DualSetting("Color Style", "Gray", "Color", default = false, description = "Which color style to use")
     private val roundedRect: Boolean by BooleanSetting("Rounded Rect", true, description = "Toggles the rounded rect for the gui.")
     //val priority: Int by SelectorSetting("Leap Helper Priority", "Berserker", arrayListOf("Archer", "Berserker", "Healer", "Mage", "Tank"), description = "Which player to prioritize in the leap helper.")
     private val useNumberKeys: Boolean by BooleanSetting("Use Number Keys", false, description = "Use number keys 1-4 to leap to the player you want, going from left to right, top to bottom.")
     private val leapHelperToggle: Boolean by BooleanSetting("Leap Helper", true)
-    private val leapHelperColor: Color by ColorSetting("Leap Helper Color", default = Color.WHITE).withDependency { leapHelperToggle }
-    val delay: Int by NumberSetting("Reset Leap Helper Delay", 30, 10.0, 120.0, 1.0).withDependency { leapHelperToggle }
-    /*private val leapTeammates: MutableList<DungeonUtils.DungeonPlayer> = mutableListOf(
-        DungeonUtils.DungeonPlayer("Stiviaisd", Classes.Healer),
-        DungeonUtils.DungeonPlayer("Odtheking", Classes.Archer),
-        DungeonUtils.DungeonPlayer("Bonzi", Classes.Mage),
-        DungeonUtils.DungeonPlayer("Cezar", Classes.Tank)
-    )*/
+    private val leapHelperColor: Color by ColorSetting("Leap Helper Color", default = Color.WHITE, description = "Color of the Leap Helper highlight").withDependency { leapHelperToggle }
+    val delay: Int by NumberSetting("Reset Leap Helper Delay", 30, 10.0, 120.0, 1.0, description = "Delay for clearing the leap helper highlight").withDependency { leapHelperToggle }
+    private val leapTeammates: MutableList<DungeonUtils.DungeonPlayer> = mutableListOf(
+        DungeonUtils.DungeonPlayer("Stiviaisd", DungeonUtils.Classes.Healer),
+        DungeonUtils.DungeonPlayer("Odtheking", DungeonUtils.Classes.Archer),
+        DungeonUtils.DungeonPlayer("Bonzi", DungeonUtils.Classes.Mage),
+        DungeonUtils.DungeonPlayer("Cezar", DungeonUtils.Classes.Tank)
+    )
     private val hoveredAnims = List(4) { EaseInOut(200L) }
     private var hoveredQuadrant = -1
     private var previouslyHoveredQuadrant = -1
@@ -70,7 +68,22 @@ object LeapMenu : Module(
             if (it == EMPTY) return@forEachIndexed
             GlStateManager.pushMatrix()
             GlStateManager.enableAlpha()
-            scale(mc.displayWidth / 1920f, mc.displayHeight / 1080f)
+            val currentRatio = 1920f / 1080f
+            val newRatio = mc.displayWidth.toFloat() / mc.displayHeight.toFloat()
+
+            if (currentRatio > newRatio) {
+                val scaleFactor = mc.displayHeight.toFloat() / 1080f
+                val scaledWidth = 1920f * scaleFactor
+                val xOffset = (mc.displayWidth.toFloat() - scaledWidth) / 2
+                scale(scaleFactor, scaleFactor)
+                translate(xOffset, 0f)
+            } else {
+                val scaleFactor = mc.displayWidth.toFloat() / 1920f
+                val scaledHeight = 1080f * scaleFactor
+                val yOffset = (mc.displayHeight.toFloat() - scaledHeight) / 2
+                scale(scaleFactor, scaleFactor)
+                translate(0f, yOffset)
+            }
             scale(1f / scaleFactor,  1f / scaleFactor)
             GlStateManager.color(255f, 255f, 255f, 255f)
             translate(
@@ -106,7 +119,7 @@ object LeapMenu : Module(
         if ((type == 1 || type == 0) && leapTeammates.size < quadrant) return
 
         val playerToLeap = leapTeammates[quadrant - 1]
-        if (playerToLeap.clazz == Classes.DEAD) return modMessage("This player is dead, can't leap.")
+        if (playerToLeap.clazz.isDead) return modMessage("This player is dead, can't leap.")
 
         leapTo(playerToLeap.name, event.container)
 
@@ -124,7 +137,7 @@ object LeapMenu : Module(
         ) return
         val playerToLeap = if (event.keyCode - 1 > leapTeammates.size) return else leapTeammates[event.keyCode - 2]
 
-        if (playerToLeap.clazz == Classes.DEAD) return modMessage("This player is dead, can't leap.")
+        if (playerToLeap.clazz.isDead) return modMessage("This player is dead, can't leap.")
 
         leapTo(playerToLeap.name, event.container)
 

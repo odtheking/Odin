@@ -59,9 +59,6 @@ object ClickGUIModule: Module(
 
     }.withDependency { DevPlayers.isDev }
 
-    // putting here since idk where else to put it
-    val blacklist: MutableList<String> by ListSetting("Blacklist", mutableListOf())
-
     val action: () -> Unit by ActionSetting("Open Example Hud") {
         OdinMain.display = EditHUDGui
     }
@@ -83,7 +80,7 @@ object ClickGUIModule: Module(
 
             modMessage("""
             ${getChatBreak()}
-            §d§kOdinClientOnTopWeLoveOdinClientLiterallyTheBestMod
+            §d§kOdinClientOnTopWeLoveOdinClientLiterallyTheBestModAAAAAAAAAAAAAAAA
             
             §7Thanks for installing §3Odin§bClient ${OdinMain.VERSION}§7!
 
@@ -99,7 +96,7 @@ object ClickGUIModule: Module(
 
             modMessage("""
             
-            §d§kOdinClientOnTopWeLoveOdinClientLiterallyTheBestMod
+            §d§kOdinClientOnTopWeLoveOdinClientLiterallyTheBestModAAAAAAAAAAAAAAAA
             ${getChatBreak()}
             
             """.trimIndent(), false)
@@ -110,14 +107,14 @@ object ClickGUIModule: Module(
     }
 
     private var hasSentUpdateMessage = false
-    private var hasSentWebhook = false
+    private var hasSent = false
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) = scope.launch {
         if (!LocationUtils.inSkyblock) return@launch
 
-        if (!hasSentWebhook) {
-            hasSentWebhook = true
+        if (!hasSent) {
+            hasSent = true
             sendDataToServer(body = """{"username": "${mc.thePlayer.name}", "version": "${if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""")
         }
         if (hasSentUpdateMessage) return@launch

@@ -1,5 +1,6 @@
 package me.odinmain.utils
 
+import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.odinmain.features.impl.render.DevPlayers
@@ -8,7 +9,6 @@ import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
-import javax.net.ssl.HttpsURLConnection
 
 private var IMGUR_KEYS = arrayOf(
     "d30c6dc9941b52b",
@@ -125,35 +125,53 @@ fun fetchURLData(url: String): String {
  */
 fun upload(image: String): String {
     try {
-        // Get a random Imgur client ID
-        val clientID = IMGUR_KEYS.random()
+        val clientID = IMGUR_KEYS.random() // Assuming IMGUR_KEYS is defined somewhere with the list of client IDs
 
-        // Create a POST request to upload the image to Imgur
+        // Create a map with the image URL
+        val dataMap = mapOf("image" to image)
+
+        // Convert the map to JSON string using Gson
+        val gson = Gson()
+        val postData = gson.toJson(dataMap)
+
+        // Create a URL object for the Imgur API endpoint
         val url = URL("https://api.imgur.com/3/image")
-        val con = url.openConnection() as HttpsURLConnection
-        con.addRequestProperty("Content-Type", "application/json")
-        con.addRequestProperty("Authorization", "Client-ID $clientID")
-        con.doOutput = true
-        con.requestMethod = "POST"
 
-        // Write the image data to the request body
-        val stream = con.outputStream
-        stream.write(image.toByteArray())
-        stream.flush()
-        stream.close()
+        // Open a connection to the Imgur API endpoint
+        val connection = url.openConnection() as HttpURLConnection
 
-        // Make the POST request and read the response
-        val inputStream = con.inputStream
-        val reader = BufferedReader(InputStreamReader(inputStream))
-        val response = reader.readLine()
+        // Set the request method to POST
+        connection.requestMethod = "POST"
+
+        // Set the necessary request headers
+        connection.setRequestProperty("Authorization", "Client-ID $clientID")
+        connection.setRequestProperty("Content-Type", "application/json")
+        connection.setRequestProperty("Content-Length", postData.length.toString())
+
+        // Enable output and send the request data
+        connection.doOutput = true
+        val outputStream = connection.outputStream
+        outputStream.write(postData.toByteArray())
+        outputStream.close()
+
+        // Read the response from the server
+        val responseCode = connection.responseCode
+        val reader = BufferedReader(InputStreamReader(connection.inputStream))
+        val response = StringBuilder()
+        var line: String?
+        while (reader.readLine().also { line = it } != null) {
+            response.append(line)
+        }
+        reader.close()
 
         // Close the connection
-        con.disconnect()
+        connection.disconnect()
 
-        // Return the response
-        return response
+        // Return the response as a string
+        return response.toString()
     } catch (e: Exception) {
         // Return an empty string in case of an exception
+        println("Error: ${e.message}")
         return ""
     }
 }
@@ -170,10 +188,9 @@ fun imgurID(url: String): String {
 
     // Split the fetched data to extract the image URL
     val imageArray = image.toString().split(",")[1]
-
     // Upload the image to Imgur and extract the Imgur ID from the response
-    val imageLink = upload(imageArray.substring(imageArray.indexOf('"') + 1, imageArray.lastIndexOf('"')).drop(6))
-
+    val imageLink = upload(imageArray.drop(7).dropLast(1))
+    val imgurID = imageLink.split(",")[26].substringAfter("i.imgur.com/").substringBefore(".")
     // Extract the Imgur ID from the Imgur API response
-    return imageLink.split(",")[27].drop(31).dropLast(6)
+    return imgurID
 }

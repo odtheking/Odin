@@ -10,10 +10,10 @@ object Waypoints : Module(
     category = Category.RENDER,
     description = "Custom Waypoints! /wp gui."
 ) {
-    private val fromParty: Boolean by BooleanSetting("From Party Chat", false)
-    private val fromAll: Boolean by BooleanSetting("From All Chat", false)
-    val onlyBox: Boolean by BooleanSetting("Only shows the box", false)
-    val onlyDistance: Boolean by BooleanSetting("Only shows the distance as name", false)
+    private val fromParty: Boolean by BooleanSetting("From Party Chat", false, description = "Adds waypoints from party chat.")
+    private val fromAll: Boolean by BooleanSetting("From All Chat", false, description = "Adds waypoints from all chat.")
+    val onlyBox: Boolean by BooleanSetting("Only shows the box", false, description = "Only shows the box, not the name")
+    val onlyDistance: Boolean by BooleanSetting("Only shows the distance as name", false, description = "Only shows the distance as name")
 
 
     init {

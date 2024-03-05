@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.kuudra
 
-import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -9,15 +8,14 @@ import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
+import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.getTextWidth
 import me.odinmain.utils.render.text
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.round
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.partyMessage
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object FreshTimer : Module(
     name = "Fresh Timer",
@@ -44,19 +42,21 @@ object FreshTimer : Module(
         }
     }
 
-    @SubscribeEvent
-    fun onChat(event: ChatPacketEvent) {
-        if (event.message != "Your Fresh Tools Perk bonus doubles your building speed for the next 10 seconds!") return
-        val teammate = KuudraUtils.kuudraTeammates.find { it.playerName == mc.thePlayer.name } ?: return
-        teammate.eatFresh = true
-        teammate.eatFreshTime = System.currentTimeMillis()
-        if (notifyFresh) modMessage("Fresh tools has been activated")
-        runIn(200) {
-            if (notifyFresh) modMessage("Fresh tools has expired")
-            teammate.eatFresh = false
+    init {
+        onMessage("Your Fresh Tools Perk bonus doubles your building speed for the next 10 seconds!", false) {
+            val teammate = KuudraUtils.kuudraTeammates.find { it.playerName == mc.thePlayer.name } ?: return@onMessage
+            teammate.eatFresh = true
+            teammate.eatFreshTime = System.currentTimeMillis()
+            if (notifyFresh) modMessage("Fresh tools has been activated")
+            runIn(200) {
+                if (notifyFresh) modMessage("Fresh tools has expired")
+                teammate.eatFresh = false
+            }
+            if (notifyFresh) partyMessage("FRESH")
+
         }
-        if (notifyFresh) partyMessage("FRESH")
     }
+
     /*@SubscribeEvent
     fun renderWorldLast(event: RenderWorldLastEvent) {
         if (!boxFreshPlayers) return

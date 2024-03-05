@@ -1,15 +1,13 @@
 package me.odinmain.features.impl.render
 
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import me.odinmain.config.WaypointConfig
 import me.odinmain.ui.waypoint.WaypointGUI
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.LocationUtils.currentArea
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.util.Vec3i
@@ -93,9 +91,9 @@ object WaypointManager {
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
         temporaryWaypoints.clear()
-        GlobalScope.launch {
-            delay(4000)
+        runIn(80) {
             if (currentArea != null) WaypointGUI.updateElements(currentArea!!)
+
         }
     }
 

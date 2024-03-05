@@ -16,7 +16,6 @@ import me.odinmain.ui.clickgui.util.ColorUtil.hsbMax
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.clickgui.util.HoverHandler
-import me.odinmain.ui.util.*
 import me.odinmain.ui.util.MouseUtils.isAreaHovered
 import me.odinmain.ui.util.MouseUtils.mouseX
 import me.odinmain.ui.util.MouseUtils.mouseY

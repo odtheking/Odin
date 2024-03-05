@@ -1,9 +1,8 @@
 package me.odin.mixin.mixins;
 
 
-import me.odin.hooks.RendererLivingEntityHook;
 import me.odinmain.events.impl.RenderEntityModelEvent;
-import me.odinmain.features.impl.render.CustomESP;
+import me.odinmain.features.impl.render.CustomHighlight;
 import me.odinmain.utils.render.Color;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
@@ -16,10 +15,8 @@ import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -29,14 +26,6 @@ import static org.lwjgl.opengl.GL11.*;
 
 @Mixin(RendererLivingEntity.class)
 public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> {
-
-    @Unique
-    private final RendererLivingEntityHook odin$hook = new RendererLivingEntityHook();
-
-    @Redirect(method = "setScoreTeamColor", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;color(FFFF)V"))
-    public void setOutlineColor(float colorRed, float colorGreen, float colorBlue, float colorAlpha, EntityLivingBase entity) {
-        odin$hook.setOutlineColor(colorRed, colorGreen, colorBlue, colorAlpha, entity);
-    }
 
     @Shadow
     protected ModelBase mainModel;
@@ -50,7 +39,7 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> {
 
     @Inject(method = "setBrightness", at = @At(value = "HEAD"), cancellable = true)
     private  <T extends EntityLivingBase> void setBrightness(T entity, float partialTicks, boolean combineTextures, CallbackInfoReturnable<Boolean> cir) {
-        if (CustomESP.INSTANCE.getCurrentEntities().contains(entity) && CustomESP.INSTANCE.getMode() == 1) {
+        if (CustomHighlight.INSTANCE.getCurrentEntities().contains(entity) && CustomHighlight.INSTANCE.getMode() == 1) {
             GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
             GlStateManager.enableTexture2D();
             GL11.glTexEnvi(8960, 8704, OpenGlHelper.GL_COMBINE);
@@ -76,7 +65,7 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> {
             GL11.glTexEnvi(8960, OpenGlHelper.GL_SOURCE0_ALPHA, OpenGlHelper.GL_PREVIOUS);
             GL11.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_ALPHA, 770);
             this.brightnessBuffer.position(0);
-            Color color = CustomESP.INSTANCE.getColor();
+            Color color = CustomHighlight.INSTANCE.getColor();
             brightnessBuffer.put(color.getR() / 255f);
             brightnessBuffer.put(color.getG() / 255f);
             brightnessBuffer.put(color.getB() / 255f);
@@ -104,7 +93,7 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> {
 
     @Inject(method = "doRender(Lnet/minecraft/entity/EntityLivingBase;DDDFF)V", at = @At("HEAD"))
     private <T extends EntityLivingBase> void injectChamsPre(T entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo callbackInfo) {
-        if (CustomESP.INSTANCE.getCurrentEntities().contains(entity) && CustomESP.INSTANCE.getMode() == 1 && CustomESP.INSTANCE.getRenderThrough()) {
+        if (CustomHighlight.INSTANCE.getCurrentEntities().contains(entity) && CustomHighlight.INSTANCE.getMode() == 1 && CustomHighlight.INSTANCE.getRenderThrough()) {
             glEnable(GL_POLYGON_OFFSET_FILL);
             glPolygonOffset(1f, -1000000F);
         }
@@ -112,7 +101,7 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> {
 
     @Inject(method = "doRender(Lnet/minecraft/entity/EntityLivingBase;DDDFF)V", at = @At("RETURN"))
     private <T extends EntityLivingBase> void injectChamsPost(T entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo callbackInfo) {
-        if (CustomESP.INSTANCE.getCurrentEntities().contains(entity) && CustomESP.INSTANCE.getMode() == 1 && CustomESP.INSTANCE.getRenderThrough()) {
+        if (CustomHighlight.INSTANCE.getCurrentEntities().contains(entity) && CustomHighlight.INSTANCE.getMode() == 1 && CustomHighlight.INSTANCE.getRenderThrough()) {
             glPolygonOffset(1f, 1000000F);
             glDisable(GL_POLYGON_OFFSET_FILL);
         }

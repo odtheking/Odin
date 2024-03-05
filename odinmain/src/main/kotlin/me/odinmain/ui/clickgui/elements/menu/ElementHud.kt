@@ -14,7 +14,6 @@ import me.odinmain.ui.clickgui.util.ColorUtil.clickGUIColor
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.HoverHandler
 import me.odinmain.ui.hud.EditHUDGui
-import me.odinmain.ui.util.*
 import me.odinmain.ui.util.MouseUtils.isAreaHovered
 import me.odinmain.utils.render.*
 import me.odinmain.utils.render.RenderUtils.loadBufferedImage

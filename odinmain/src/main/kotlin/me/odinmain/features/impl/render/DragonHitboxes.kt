@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.render
 
-import me.odinmain.OdinMain
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -21,7 +20,6 @@ object DragonHitboxes : Module(
     category = Category.RENDER,
     description = "Renders real dragon hitboxes."
 ) {
-
     private val onlyM7: Boolean by BooleanSetting(name = "Only M7")
     private val color: Color by ColorSetting(name = "Hitbox Color", default = Color(0, 255, 255))
     private val lineWidth: Float by NumberSetting(name = "Line Thickness", default = 3f, min = 0f, max = 10f, increment = 0.1f)
@@ -84,7 +82,7 @@ object DragonHitboxes : Module(
                     val w = entity.width
                     val h = entity.height
 
-                    RenderUtils.drawBoxOutline(dX - w / 2, w.toDouble() ,dY, h.toDouble(), dZ - w / 2, w.toDouble(), color, lineWidth, !OdinMain.onLegitVersion)
+                    RenderUtils.drawBoxOutline(dX - w / 2, w.toDouble() ,dY, h.toDouble(), dZ - w / 2, w.toDouble(), color, lineWidth, false)
                 }
             }
         }

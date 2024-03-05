@@ -8,7 +8,6 @@
     "mixins.MixinChunk",
     "mixins.MixinNetworkManager",
     "mixins.MixinRendererLivingEntity",
-    "mixins.MixinRenderGlobal",
     "mixins.MixinS1CPacketEntityMetadata",
     "mixins.MixinWorld",
     "mixins.block.MixinBlock",
@@ -43,7 +42,6 @@
     "mixins.block.MixinBlockCarpet",
     "mixins.entity.MixinEntityRenderer",
     "mixins.entity.MixinModelBiped",
-    "mixins.entity.MixinModelBlaze",
-    "transformers.CustomRenderGlobal"
+    "mixins.entity.MixinModelBlaze"
   ]
 }

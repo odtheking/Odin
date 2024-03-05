@@ -15,7 +15,6 @@ object SecretHitboxes : Module(
     description = "Full block Secret hitboxes.",
     category = Category.DUNGEON
 ) {
-
     val lever: Boolean by BooleanSetting("Lever", default = true)
     val button: Boolean by BooleanSetting("Button", default = true)
     val essence: Boolean by BooleanSetting("Essence", default = true)

@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.floor7
 
-import me.odinmain.events.impl.ReceivePacketEvent
 import me.odinmain.features.impl.floor7.WitherDragons.bluePB
 import me.odinmain.features.impl.floor7.WitherDragons.greenPB
 import me.odinmain.features.impl.floor7.WitherDragons.orangePB
@@ -15,7 +14,6 @@ import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.EnumParticleTypes
 import net.minecraft.util.Vec3
-
 
 enum class WitherDragonsEnum (
     val spawnPos: Vec3,
@@ -50,10 +48,7 @@ enum class WitherDragonsEnum (
     }
 }
 
-fun handleSpawnPacket(event: ReceivePacketEvent) {
-    if (event.packet !is S2APacketParticles) return
-    val particle = event.packet
-
+fun handleSpawnPacket(particle: S2APacketParticles) {
     if (
         particle.particleCount != 20 ||
         particle.yCoordinate != 19.0 ||

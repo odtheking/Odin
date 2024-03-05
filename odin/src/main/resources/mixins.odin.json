@@ -8,15 +8,14 @@
     "mixins.MixinEntityLivingBase",
     "mixins.MixinNetworkManager",
     "mixins.MixinRendererLivingEntity",
-    "mixins.MixinRenderGlobal",
     "mixins.MixinS1CPacketEntityMetadata",
     "mixins.MixinWorld",
     "mixins.other.MixinNEURenderListener"
   ],
   "client": [
+    "accessors.CustomRenderGlobal",
     "accessors.IEntityPlayerSPAccessor",
     "accessors.IMinecraftAccessor",
-    "accessors.CustomRenderGlobal",
     "mixins.MixinEntityRenderer",
     "mixins.MixinFontRenderer",
     "mixins.MixinGuiContainer",

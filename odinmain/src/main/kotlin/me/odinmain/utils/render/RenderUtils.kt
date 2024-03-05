@@ -7,6 +7,7 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.scale
+import me.odinmain.utils.runIn
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.WorldRenderer
@@ -19,7 +20,6 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.glu.Cylinder
@@ -48,9 +48,14 @@ object RenderUtils {
         displayTitle = title
         titleTicks = ticks
         displayColor = color
+
+        runIn(ticks) {
+            displayTitle = ""
+            titleTicks = 0
+        }
     }
 
-    fun clearTitle() {
+    private fun clearTitle() {
         displayTitle = ""
         titleTicks = 0
     }
@@ -62,16 +67,10 @@ object RenderUtils {
 
         scale(1f / scaleFactor, 1f / scaleFactor, 1f)
 
-        if (titleTicks < 0) return
-        text(text = displayTitle, x = Display.getWidth() / 2f - (OdinFont.getTextWidth(displayTitle, 50f) /2f), y = Display.getHeight() / 2f, color = displayColor, size = 50f, shadow = true)
+        text(text = displayTitle, x = (Display.getWidth() / 2f) - (OdinFont.getTextWidth(displayTitle, 50f) /2f), y = Display.getHeight() / 2f, color = displayColor, size = 50f, shadow = true)
         scale(scaleFactor, scaleFactor, 1f)
     }
 
-    @SubscribeEvent
-    fun onTick(event: TickEvent.ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.START) return
-        titleTicks--
-    }
     @SubscribeEvent
     fun worldLoad(event: WorldEvent.Load) {
         clearTitle()
@@ -140,14 +139,6 @@ object RenderUtils {
      */
     val Entity.renderVec: Vec3
         get() = Vec3(renderX, renderY, renderZ)
-
-    fun exactLocation(entity: Entity, partialTicks: Float): Vec3 {
-        val x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks
-        val y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks
-        val z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks
-        return Vec3(x, y, z)
-    }
-
 
     /**
      * Gets the rendered position of an entity as a `Vec3d`.

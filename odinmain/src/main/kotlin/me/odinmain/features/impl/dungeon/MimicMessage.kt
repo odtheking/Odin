@@ -8,7 +8,6 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.partyMessage
 import net.minecraft.entity.monster.EntityZombie
 import net.minecraftforge.event.entity.living.LivingDeathEvent
-import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object MimicMessage : Module(
@@ -35,9 +34,9 @@ object MimicMessage : Module(
     override fun onKeybind() {
         reset()
     }
-
-    @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Load?) {
-        mimicKilled = false
+    init {
+        onWorldLoad {
+            mimicKilled = false
+        }
     }
 }

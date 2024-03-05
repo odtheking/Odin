@@ -67,7 +67,7 @@ object ModuleManager {
         Camera,
         ClickedChests,
         ClickGUIModule,
-        CustomESP,
+        CustomHighlight,
         CPSDisplay,
         DragonHitboxes,
         GyroRange,
@@ -86,7 +86,6 @@ object ModuleManager {
         Reminders,
         Animations,
         SpaceHelmet,
-        EscrowFix,
         //DungeonWaypoints,
         SecretChime,
         LeapMenu,
@@ -107,7 +106,7 @@ object ModuleManager {
         VanqNotifier,
         KuudraReminders,
         Splits,
-        OutlineItemEntity
+        WardrobeKeybinds
     )
 
     init {

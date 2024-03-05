@@ -1,4 +1,4 @@
-package me.odinmain.features.impl.skyblock
+package me.odinclient.features.impl.skyblock
 
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category

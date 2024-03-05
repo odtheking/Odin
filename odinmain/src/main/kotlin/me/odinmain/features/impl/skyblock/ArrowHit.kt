@@ -9,10 +9,10 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.StringSetting
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.utils.render.getTextWidth
-import me.odinmain.utils.render.text
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.getTextWidth
+import me.odinmain.utils.render.text
 import net.minecraft.network.play.server.S29PacketSoundEffect
 
 object ArrowHit : Module(
@@ -43,7 +43,7 @@ object ArrowHit : Module(
         onPacket(S29PacketSoundEffect::class.java) {
             if (it.soundName != "random.successful_hit") return@onPacket
             arrowCount += 1
-            if (arrowCount >= resetCount.toInt() && resetOnNumber) arrowCount = 0
+            if (arrowCount >= (resetCount.toIntOrNull() ?: 9999) && resetOnNumber) arrowCount = 0
             if(resetArrowClock.hasTimePassed() && resetOnTime) arrowCount = 0
             resetArrowClock.update()
         }

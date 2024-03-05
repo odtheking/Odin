@@ -7,7 +7,7 @@ import me.odinmain.ui.clickgui.elements.menu.ElementTextField
 import me.odinmain.ui.clickgui.util.ColorUtil
 import me.odinmain.ui.clickgui.util.ColorUtil.buttonColor
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinmain.ui.util.*
+import me.odinmain.ui.util.MouseUtils
 import me.odinmain.utils.render.*
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.input.Keyboard

@@ -8,8 +8,11 @@ import me.odinmain.ui.clickgui.elements.ModuleButton
 import me.odinmain.ui.clickgui.util.ColorUtil.darker
 import me.odinmain.ui.clickgui.util.ColorUtil.elementBackground
 import me.odinmain.ui.clickgui.util.ColorUtil.textColor
-import me.odinmain.ui.util.*
-import me.odinmain.utils.render.*
+import me.odinmain.ui.util.MouseUtils
+import me.odinmain.utils.render.TextAlign
+import me.odinmain.utils.render.TextPos
+import me.odinmain.utils.render.roundedRectangle
+import me.odinmain.utils.render.text
 
 /**
  * Renders all the modules.

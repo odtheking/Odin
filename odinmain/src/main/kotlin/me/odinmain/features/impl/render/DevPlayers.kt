@@ -9,9 +9,9 @@ import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
 import me.odinmain.features.impl.render.ClickGUIModule.devSize
-import me.odinmain.utils.render.scale
 import me.odinmain.utils.getDataFromServer
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.scale
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.model.ModelBase
 import net.minecraft.client.model.ModelRenderer

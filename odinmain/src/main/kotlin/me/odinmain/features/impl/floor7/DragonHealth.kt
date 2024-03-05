@@ -8,7 +8,6 @@ import net.minecraft.entity.boss.EntityDragon
 import net.minecraftforge.client.event.RenderLivingEvent
 
 object DragonHealth{
-
     fun renderHP(event: RenderLivingEvent.Post<*>) {
         if (event.entity !is EntityDragon || event.entity.health <= 0) return
         RenderUtils.drawStringInWorld(colorHealth(event.entity.health.toInt()), event.entity.renderVec.addVec(y = 1.5), Color.WHITE.rgba,

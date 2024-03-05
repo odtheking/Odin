@@ -94,7 +94,7 @@ object DevCommand : Commodore {
 
             literal("getteammates").runs {
                 modMessage("Teammates: ${DungeonUtils.teammates.map { it.name }}")
-                modMessage("TeammatesNoSelf: ${DungeonUtils.teammatesNoSelf.map { it.name }}")
+                modMessage("TeammatesNoSelf: ${DungeonUtils.dungeonTeammatesNoSelf.map { it.name }}")
                 modMessage("LeapTeammates: ${DungeonUtils.leapTeammates.map { it.name }}")
             }
 

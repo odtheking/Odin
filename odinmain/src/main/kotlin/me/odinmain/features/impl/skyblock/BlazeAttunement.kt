@@ -1,6 +1,6 @@
 package me.odinmain.features.impl.skyblock
 
-import me.odinmain.events.impl.RenderEntityOutlineEvent
+import me.odinmain.events.impl.RenderEntityModelEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -8,6 +8,7 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.OutlineUtils
 import me.odinmain.utils.render.RenderUtils.bindColor
 import me.odinmain.utils.xzDistance
 import net.minecraft.client.renderer.GlStateManager
@@ -56,15 +57,16 @@ object BlazeAttunement : Module(
     }
 
     @SubscribeEvent
-    fun onRenderEntityModel(event: RenderEntityOutlineEvent) {
-        if (event.type !== RenderEntityOutlineEvent.Type.XRAY) return
+    fun onRenderEntityModel(event: RenderEntityModelEvent) {
+        if (event.entity !in currentBlazes) return
+        val color = currentBlazes[event.entity] ?: return
 
-        event.queueEntitiesToOutline { entity -> getMob(entity) }
-    }
-
-    private fun getMob(entity: Entity): Int? {
-        val color = currentBlazes[entity] ?: return null
-        return color.rgba
+        OutlineUtils.outlineEntity(
+            event,
+            thickness,
+            color,
+            cancelHurt
+        )
     }
 
     fun changeBlazeColor(entity: Entity, p_78088_2_: Float, p_78088_3_: Float, p_78088_4_: Float, p_78088_5_: Float, p_78088_6_: Float, scale: Float, ci: CallbackInfo) {

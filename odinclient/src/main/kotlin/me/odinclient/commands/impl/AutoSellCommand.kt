@@ -2,7 +2,6 @@ package me.odinclient.commands.impl
 
 import com.github.stivais.commodore.parsers.impl.GreedyString
 import me.odinclient.features.impl.dungeon.AutoSell.sellList
-import me.odinmain.OdinMain
 import me.odinmain.commands.CommandNode
 import me.odinmain.commands.Commodore
 import me.odinmain.config.Config
@@ -11,10 +10,6 @@ import me.odinmain.utils.skyblock.modMessage
 object AutoSellCommand : Commodore {
     override val command: CommandNode =
         literal("autosell") {
-            requires {
-                !OdinMain.onLegitVersion
-            }
-
             runs { modMessage("Usage: /autosell <add/remove/clear/list> <name>")}
 
             literal("add").runs { item: GreedyString ->

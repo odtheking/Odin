@@ -6,27 +6,44 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
 import me.odinmain.commands.CommandNode
 import me.odinmain.commands.Commodore
+import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.fetchURLData
 import me.odinmain.utils.skyblock.modMessage
 
 object SoopyCommand : Commodore {
     override val command: CommandNode =
-        literal("soopy") {
+        literal("spcmd") {
+
+            runs {
+                modMessage("Usage: /spcmd <command> [player] || /spcmd cmds")
+            }
+
             runs { str: GreedyString ->
                 val message = str.string.split(" ")
-                var output = ""
-                scope.launch {
-                    modMessage("Running command...")
-                    when (message.size) {
-                        1 -> output = fetchURLData("https://soopy.dev/api/guildBot/runCommand?user=${mc.thePlayer.name}&cmd=${message[0]}")
-                        2 -> output = fetchURLData("https://soopy.dev/api/guildBot/runCommand?user=${message[1]}&cmd=${message[0]}")
-                        else -> modMessage("Invalid command.")
-                    }
-                    if (!output.substringAfter("success\":").substringBefore(",").toBoolean())
-                        modMessage("Failed $output")
+                var url = ""
+                if (message[0].lowercase().equalsOneOf("cmds", "commands", "cmd", "command"))
+                    return@runs modMessage("""Available commands:
+                        | kuudra, auctions, skills, skillaverage, dojo, 
+                        | overflowskills, overflowskillaverage, bestiary, 
+                        | faction, nucleus, guildof, essence, secrets, bank, 
+                        | pet, whatdoing, dungeon, currdungeon, sblvl, classaverage, 
+                        | rtca, nw.""".trimMargin())
 
-                    modMessage(output.substringAfter("raw\":\"").substringBefore("\""))
+                when (message.size) {
+                    1 -> {
+                        val playerName = mc.thePlayer.name
+                        val command = message[0]
+                        url = "https://soopy.dev/api/soopyv2/botcommand?m=$command&u=$playerName"
+                    }
+                    2 -> {
+                        val targetUser = message[1]
+                        val command = message[0]
+                        url = "https://soopy.dev/api/soopyv2/botcommand?m=$command&u=$targetUser"
+                    }
                 }
+                modMessage("Running command...")
+
+                scope.launch { modMessage(fetchURLData(url)) }
             }
         }
 }

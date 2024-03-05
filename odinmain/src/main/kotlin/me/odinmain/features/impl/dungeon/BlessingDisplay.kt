@@ -9,15 +9,9 @@ import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.utils.render.TextAlign
-import me.odinmain.utils.render.TextPos
-import me.odinmain.utils.render.getTextWidth
-import me.odinmain.utils.render.text
 import me.odinmain.utils.noControlCodes
-import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.*
 import net.minecraft.network.play.server.S47PacketPlayerListHeaderFooter
-import net.minecraftforge.event.world.WorldEvent
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.max
 
 @AlwaysActive
@@ -98,10 +92,9 @@ object BlessingDisplay : Module(
                 }
             }
         }
-    }
 
-    @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Load) {
-        Blessings.entries.forEach { it.reset() }
+        onWorldLoad {
+            Blessings.entries.forEach { it.reset() }
+        }
     }
 }

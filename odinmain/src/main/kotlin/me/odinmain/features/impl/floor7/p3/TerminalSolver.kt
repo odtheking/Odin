@@ -14,8 +14,8 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.font.OdinFont
 import me.odinmain.font.OdinFont.text
-import me.odinmain.utils.render.translate
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.translate
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.unformattedName
 import net.minecraft.client.gui.Gui

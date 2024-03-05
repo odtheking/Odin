@@ -12,16 +12,15 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraftforge.client.event.RenderWorldLastEvent
-import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object KeyHighlight : Module(
-    name = "Key Esp",
+    name = "Key Highlight",
     description = "Draws a box around the key.",
     category = Category.DUNGEON,
 ) {
     private var currentKey: Pair<Color, Entity>? = null
-    private val thickness: Float by NumberSetting("Thickness", 5f, 1f, 20f, .1f)
+    private val thickness: Float by NumberSetting("Thickness", 5f, 1f, 20f, .1f, description = "The thickness of the box.")
 
     @SubscribeEvent
     fun postMetadata(event: PostEntityMetadata) {
@@ -55,8 +54,9 @@ object KeyHighlight : Module(
         )
     }
 
-    @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Load) {
-        currentKey = null
+    init {
+        onWorldLoad{
+            currentKey = null
+        }
     }
 }

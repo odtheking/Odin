@@ -3,7 +3,6 @@ package me.odinclient
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import me.odinclient.commands.impl.AutoSellCommand
-import me.odinclient.commands.impl.ESPCommand
 import me.odinclient.dungeonmap.features.Dungeon
 import me.odinclient.dungeonmap.features.MapRender
 import me.odinclient.dungeonmap.features.Window
@@ -15,7 +14,6 @@ import me.odinclient.features.impl.floor7.RelicAura
 import me.odinclient.features.impl.floor7.p3.*
 import me.odinclient.features.impl.render.*
 import me.odinclient.features.impl.skyblock.*
-import me.odinclient.utils.EntityOutlineRenderer
 import me.odinmain.OdinMain
 import me.odinmain.commands.Commodore.Companion.registerCommands
 import me.odinmain.config.utils.ConfigFile
@@ -47,13 +45,11 @@ class ModCore {
 
         listOf(
             Dungeon,
-            MapRender,
-            EntityOutlineRenderer
+            MapRender
         ).forEach(MinecraftForge.EVENT_BUS::register)
 
         registerCommands(
-            ESPCommand,
-            AutoSellCommand,
+            AutoSellCommand
         )
     }
 
@@ -80,7 +76,7 @@ class ModCore {
             SwapStonk, Arrows, ArrowAlign, CancelWrongTerms, HoverTerms, LightsDevice, SimonSays,
             DioriteFucker, RelicAura, Trajectories, Ghosts, NoCarpet, NoDebuff, LockCursor,
             CookieClicker, AutoExperiments, FarmingHitboxes, NoBlock, TermAC, Triggerbot, GhostBlock, FreezeGame,
-            AbilityKeybind, EtherWarpHelper, ChestEsp, NoBreakReset,
+            AbilityKeybind, EtherWarpHelper, ChestEsp, NoBreakReset, EscrowFix
         )
         OdinMain.loadComplete()
     }

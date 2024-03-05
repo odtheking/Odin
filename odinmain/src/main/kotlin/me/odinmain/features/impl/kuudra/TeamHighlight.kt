@@ -1,6 +1,6 @@
 package me.odinmain.features.impl.kuudra
 
-import me.odinmain.events.impl.RenderEntityOutlineEvent
+import me.odinmain.events.impl.RenderEntityModelEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.kuudra.FreshTimer.highlightFresh
@@ -11,9 +11,11 @@ import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.utils.addVec
 import me.odinmain.utils.distanceSquaredTo
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.OutlineUtils
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.skyblock.KuudraUtils
+import me.odinmain.utils.skyblock.KuudraUtils.kuudraTeammates
 import me.odinmain.utils.skyblock.LocationUtils
 import net.minecraft.entity.Entity
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -30,10 +32,11 @@ object TeamHighlight : Module(
     private val nameColor: Color by ColorSetting("Name Color", Color.PINK, true, description = "Color of the name highlight").withDependency { highlightName }
 
     @SubscribeEvent
-    fun onRenderEntityModel(event: RenderEntityOutlineEvent) {
-        if (event.type !== RenderEntityOutlineEvent.Type.XRAY || !playerOutline || LocationUtils.currentArea != "Kuudra") return
+    fun onRenderEntityModel(event: RenderEntityModelEvent) {
+        if (event.entity == mc.thePlayer || !playerOutline || LocationUtils.currentArea != "Kuudra") return
+        val teammate = kuudraTeammates.find { it.entity == event.entity } ?: return
 
-        event.queueEntitiesToOutline { entity -> getTeammates(entity) }
+        OutlineUtils.outlineEntity(event, 5f, if (teammate.eatFresh && highlightFresh) highlightFreshColor else outlineColor, true)
     }
 
     @SubscribeEvent

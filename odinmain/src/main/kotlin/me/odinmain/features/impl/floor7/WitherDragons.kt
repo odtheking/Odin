@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.floor7
 
 import me.odinmain.events.impl.ChatPacketEvent
-import me.odinmain.events.impl.ReceivePacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.DragonBoxes.renderBoxes
@@ -20,17 +19,17 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.hud.HudElement
+import me.odinmain.utils.noControlCodes
+import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.getTextWidth
 import me.odinmain.utils.render.roundedRectangle
 import me.odinmain.utils.render.text
-import me.odinmain.utils.noControlCodes
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraftforge.client.event.RenderLivingEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.event.entity.living.LivingDeathEvent
-import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.max
 
@@ -44,7 +43,7 @@ object WitherDragons : Module(
     private val dragonTimer: Boolean by BooleanSetting("Dragon Timer", true, description = "Displays a timer for when M7 dragons spawn.")
     val textScale: Float by NumberSetting(name = "Text Scale", default = 0.8f, min = 0.1f, max = 5f, increment = 0.1f).withDependency { dragonTimer }
     private val timerBackground: Boolean by BooleanSetting("HUD Timer Background", true, description = "Displays a background for the timer.").withDependency { dragonTimer && hud.displayToggle }
-    private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, true) {
+    private val hud: HudElement by HudSetting("Dragon Timer HUD", 10f, 10f, 1f, true) {
         if (it) {
             if (timerBackground) roundedRectangle(1f, 1f, getTextWidth("Purple spawning in 4500ms", 12f) + 1f, 32f, Color.DARK_GRAY.withAlpha(.75f), 3f)
 
@@ -61,7 +60,7 @@ object WitherDragons : Module(
                 text(triple.first, 1f, 9f + index * 17f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
                 width = max(width, getTextWidth(triple.first.noControlCodes, 19f))
             }
-            roundedRectangle(1f, 1f, width + 2f, DragonTimer.toRender.size * 12f, Color.DARK_GRAY.withAlpha(.75f), 4f)
+            if (timerBackground) roundedRectangle(1f, 1f, getTextWidth("Purple spawning in 4500ms", 12f) + 1f, 32f, Color.DARK_GRAY.withAlpha(.75f), 3f)
             width to DragonTimer.toRender.size * 17f
         } else 0f to 0f
     }
@@ -89,24 +88,25 @@ object WitherDragons : Module(
     val bluePB = +NumberSetting("Melody PB", 1000.0, increment = 0.01, hidden = true)
     val purplePB = +NumberSetting("Starts With PB", 1000.0, increment = 0.01, hidden = true)
 
-    @SubscribeEvent
-    fun onReceivePacket(event: ReceivePacketEvent) {
-        if (DungeonUtils.getPhase() != 5) return
-        handleSpawnPacket(event)
-    }
+    
 
-    @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Load) {
-        WitherDragonsEnum.entries.forEach {
-            it.particleSpawnTime = 0L
-            it.timesSpawned = 0
-            it.spawning = false
-            it.entity = null
-            it.spawnTime()
+    init {
+        onWorldLoad {
+            WitherDragonsEnum.entries.forEach {
+                it.particleSpawnTime = 0L
+                it.timesSpawned = 0
+                it.spawning = false
+                it.entity = null
+                it.spawnTime()
+            }
+            DragonTimer.toRender = ArrayList()
+            lastDragonDeath = ""
+            DragonPriority.firstDragons = false
         }
-        DragonTimer.toRender = ArrayList()
-        lastDragonDeath = ""
-        DragonPriority.firstDragons = false
+        
+        onPacket(S2APacketParticles::class.java, { DungeonUtils.getPhase() == 5 }) {
+            handleSpawnPacket(it)
+        }
     }
 
     @SubscribeEvent

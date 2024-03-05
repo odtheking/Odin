@@ -3,8 +3,8 @@ package me.odinmain.config
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import me.odinmain.config.utils.ConfigFile
-import me.odinmain.features.impl.render.ClickGUIModule.blacklist
-import me.odinmain.features.impl.render.CustomESP.espList
+import me.odinmain.features.impl.render.CustomHighlight.highlightList
+import me.odinmain.features.impl.skyblock.ChatCommands.blacklist
 
 @Deprecated("Use settings under modules instead.", level = DeprecationLevel.WARNING)
 object MiscConfig {
@@ -22,7 +22,7 @@ object MiscConfig {
                 with(espConfigFile.bufferedReader().use { it.readText() }) {
                     if (this != "") {
                         val temp = gson.fromJson<MutableList<String>>(this, object : TypeToken<MutableList<String>>() {}.type)
-                        espList.addAll(temp)
+                        highlightList.addAll(temp)
                     }
                     espConfigFile.delete()
                 }

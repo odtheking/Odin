@@ -6,9 +6,9 @@ import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.animations.impl.EaseInOut
 import me.odinmain.ui.hud.HudElement
+import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.getTextWidth
 import me.odinmain.utils.render.text
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent

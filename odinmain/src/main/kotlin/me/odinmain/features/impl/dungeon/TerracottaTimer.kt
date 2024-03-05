@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.dungeon
 
 import me.odinmain.events.impl.BlockChangeEvent
-import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -12,7 +11,6 @@ import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
-import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.*
 
@@ -68,15 +66,14 @@ object TerracottaTimer : Module(
             else -> Color(170, 0, 0)
         }
     }
-    @SubscribeEvent
-    fun onChat(event: ChatPacketEvent) {
-        if (!event.message.startsWith("[BOSS] Sadan: ENOUGH!")) return
-        done = true
-    }
-    @SubscribeEvent
-    fun worldLoad(event: WorldEvent.Load) {
-        terracottaSpawning.clear()
-        done = false
-    }
 
+    init {
+        onWorldLoad {
+            terracottaSpawning.clear()
+            done = false
+        }
+        onMessage("[BOSS] Sadan: ENOUGH!", true) {
+            done = true
+        }
+    }
 }

@@ -207,46 +207,14 @@ object DungeonUtils {
     enum class Classes(
         val color: Color,
         val defaultQuadrant: Int,
-        var prio: Int
+        var prio: Int,
+        var isDead: Boolean = false
     ) {
-        /**
-         * Archer class with formatting code "§6" (gold) and orange color.
-         */
         Archer(Color.ORANGE, 0, 2),
-
-        /**
-         * Berserk class with formatting code "§4" (dark red) and dark red color.
-         */
         Berserk(Color.DARK_RED,1, 0),
-
-        /**
-         * Healer class with formatting code "§a" (green) and green color.
-         */
         Healer(Color.PINK, 2, 2),
-
-        /**
-         * Mage class with formatting code "§b" (purple) and purple color.
-         */
         Mage(Color.BLUE, 3, 2),
-
-        /**
-         * Tank class with formatting code "§2" (dark green) and dark green color.
-         */
         Tank(Color.DARK_GREEN, 3, 1),
-
-        /**
-         * Dead class with formatting code "§4" (dark red) and dark red color.
-         */
-        DEAD(Color.RED, 3, -1);
-
-
-        companion object {
-            fun setPriority(classToSetAsTwo: Classes) {
-                entries.forEach {
-                    it.prio = if (it == classToSetAsTwo) 0 else 1
-                }
-            }
-        }
     }
 
     /**
@@ -259,29 +227,32 @@ object DungeonUtils {
      */
     data class DungeonPlayer(
         val name: String,
-        val clazz: Classes,
+        var clazz: Classes,
         val locationSkin: ResourceLocation = ResourceLocation("textures/entity/steve.png"),
         val entity: EntityPlayer? = null
     )
 
     val isGhost: Boolean get() = getItemSlot("Haunt", true) != null
     var teammates: List<DungeonPlayer> = emptyList()
-    var teammatesNoSelf: List<DungeonPlayer> = emptyList()
+    var dungeonTeammatesNoSelf: List<DungeonPlayer> = emptyList()
     var leapTeammates = mutableListOf<DungeonPlayer>()
 
     init {
         Executor(1000) {
             if (inDungeons) {
-                //Classes.entries.find { (it.name == arrayListOf("Archer", "Berserker", "Healer", "Mage", "Tank")[LeapMenu.priority]) }
-                    //?.let { it1 -> Classes.setPriority(it1) }
-
                 teammates = getDungeonTeammates()
-                teammatesNoSelf = teammates.filter { it.name != mc.thePlayer.name }
+                dungeonTeammatesNoSelf = teammates.filter { it.name != mc.thePlayer.name }
+
+                val odinSortLeap = odinSorting(dungeonTeammatesNoSelf.sortedBy { it.clazz.prio })
+                val classNameSort = dungeonTeammatesNoSelf.sortedWith(compareBy({ it.clazz.ordinal }, { it.name }))
+                val nameSort = dungeonTeammatesNoSelf.sortedBy { it.name }
+
                 leapTeammates =
                     when (LeapMenu.type) {
-                    0 -> teammatesNoSelf.sortedWith(compareBy({ it.clazz.ordinal }, { it.name })).toMutableList()
-                    1 -> teammatesNoSelf.sortedBy { it.name }.toMutableList()
-                    else -> odinSorting(teammatesNoSelf.sortedBy { it.clazz.prio }).toMutableList()
+                    0 -> odinSortLeap.toMutableList()
+                    1 -> classNameSort.toMutableList()
+                    2 -> nameSort.toMutableList()
+                    else -> dungeonTeammatesNoSelf.toMutableList()
                 }
             }
         }.register()
@@ -290,7 +261,7 @@ object DungeonUtils {
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
         teammates = emptyList()
-        teammatesNoSelf = emptyList()
+        dungeonTeammatesNoSelf = emptyList()
         leapTeammates.clear()
     }
 
@@ -298,6 +269,15 @@ object DungeonUtils {
     private val tablistRegexDEAD = Regex("\\[(\\d+)] (?:\\[\\w+] )*(\\w+) (?:.)*?\\((\\w+)*\\)")
     val EMPTY = DungeonPlayer("Empty", Classes.Archer, ResourceLocation("textures/entity/steve.png"))
 
+    /**
+     * Sorts the list of players based on their default quadrant and class priority.
+     * The function first tries to place each player in their default quadrant. If the quadrant is already occupied,
+     * the player is added to a second round list. After all players have been processed, the function fills the remaining
+     * empty quadrants with the players from the second round list.
+     *
+     * @param players The list of players to be sorted.
+     * @return An array of sorted players.
+     */
     private fun odinSorting(players: List<DungeonPlayer>): Array<DungeonPlayer> {
         val result = Array(4) { EMPTY }
         val secondRound = mutableListOf<DungeonPlayer>()
@@ -334,6 +314,11 @@ object DungeonUtils {
                 mc.theWorld.getPlayerEntityByName(name)?.let { player ->
                     teammates.add(DungeonPlayer(name, foundClass, networkPlayerInfo.locationSkin, player))
                 } ?: teammates.add(DungeonPlayer(name, foundClass, networkPlayerInfo.locationSkin, null))
+            }
+
+            if (clazz == "DEAD") {
+                val deadPlayer = teammates.find { it.name == name } ?: continue
+                deadPlayer.clazz.isDead = true
             }
 
         }
