@@ -1,8 +1,6 @@
 package me.odinmain.commands.impl
 
 import me.odinmain.OdinMain.display
-import me.odinmain.OdinMain.mc
-import me.odinmain.OdinMain.onLegitVersion
 import me.odinmain.commands.commodore
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.impl.render.ServerDisplay.colorizePing
@@ -53,47 +51,14 @@ val mainCommand = commodore("od", "odinclient", "odin") {
         }
     }
 
-    if (!onLegitVersion) {
-        literal("set") {
-            runs { yaw: Float, pitch: Float ->
-                mc.thePlayer.rotationYaw = yaw.coerceIn(minimumValue = -180f, maximumValue = 180f)
-                mc.thePlayer.rotationPitch = pitch.coerceIn(minimumValue = -90f, maximumValue = 90f)
-            }
-        }
-    }
-
     literal("rq").runs {
         sendCommand("instancerequeue")
         modMessage("requeing dungeon run")
     }
 
     literal("help").runs {
-        if (!onLegitVersion) {
-            modMessage(
-                    """
-                 List of commands:
-                 §3- /od » §8Main command.
-                 §3- /autosell » §8Used to configure what items are automatically sold with Auto Sell.
-                 §3- /blacklist » §8Used to configure your blacklist.
-                 §3- /esp » §8Used to configure ESP list.
-                 §3- /waypoint » §8Configure waypoints.
-                 §3- /termsim » §8Simulates terminals so you can practice them.
-                 §3- /rq » §8Requeues dungeon run.
-                 §3- /od set {yaw} {float} » §8Sets your yaw and pitch.
-                 §3- /od m? » §8Teleports you to a floor in master mode.
-                 §3- /od f? » §8Teleports you to a floor in normal mode.
-                 §3- /od t? » §8Teleports you to a kuudra run.
-                 §3- /od dianareset §7» §8Resets all active diana waypoints.
-                 §3- /od sendcoords §7» §8Sends coords in patcher's format.
-                 §3- /od ping §7» §8Sends your ping in chat.
-                 §3- /od tps §7» §8Sends the server's tps in chat.
-                 §3- /spcmd §7» §8Use /spcmd cmds for command list.
-
-                """.trimIndent()
-            )
-        } else
-            modMessage(
-                    """
+        modMessage(
+            """
                  List of commands:
                  §3- /od §7» §8Main command.
                  §3- /blacklist §7» §8Used to configure your blacklist.
@@ -111,7 +76,7 @@ val mainCommand = commodore("od", "odinclient", "odin") {
                  §3- /spcmd §7» §8Use /spcmd cmds for command list.
 
                  """.trimIndent()
-            )
+        )
     }
 
     literal("dianareset").runs {

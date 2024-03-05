@@ -1,11 +1,13 @@
 package me.odinmain.features.impl.skyblock
 
+import kotlinx.coroutines.launch
+import me.odinmain.OdinMain
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.impl.render.ClickGUIModule.blacklist
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.ListSetting
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.floor
 import me.odinmain.utils.imgurID
@@ -50,21 +52,15 @@ object ChatCommands : Module(
     private var dtPlayer: String? = null
     var disableRequeue: Boolean? = false
     private val dtReason = mutableListOf<Pair<String, String>>()
-
-    private var picture = getCatPic()
+    private val blacklist: MutableList<String> by ListSetting("Blacklist", mutableListOf())
 
     private fun getCatPic(): String {
         return try {
             "https://i.imgur.com/${imgurID("https://api.thecatapi.com/v1/images/search")}.png"
-        } catch (e: Exception) {
-            "Failed to get a cat pic"
-        }
-    }
 
-    private fun useCatPic(): String {
-        val temp = picture
-        picture = getCatPic()
-        return temp
+        } catch (e: Exception) {
+            "imgurID Failed ${e.message}"
+        }
     }
 
     private val partyRegex = Regex("Party > (\\[.+])? ?(.+): (.+)")
@@ -130,7 +126,12 @@ object ChatCommands : Module(
             "cf" -> if (cf) channelMessage(flipCoin(), name, channel)
             "8ball" -> if (eightball) channelMessage(eightBall(), name, channel)
             "dice" -> if (dice) channelMessage(rollDice(), name, channel)
-            "cat" -> if (cat) channelMessage(useCatPic(), name, channel)
+            "cat" -> if (cat) {
+                modMessage("§aFetching cat picture...")
+                OdinMain.scope.launch {
+                    channelMessage(getCatPic(), name, channel)
+                }
+            }
             "racism" -> if (racism) channelMessage("$name is ${Random.nextInt(1, 101)}% racist. Racism is not allowed!", name, channel)
             "ping" -> if (ping) channelMessage("Current Ping: ${floor(ServerUtils.averagePing).toInt()}ms", name, channel)
             "tps" -> if (tps) channelMessage("Current TPS: ${floor(ServerUtils.averageTps.floor())}", name, channel)
@@ -187,15 +188,17 @@ object ChatCommands : Module(
 
             // Private cmds only
 
-            "inv" -> if (inv && channel == "private") sendCommand("party invite $name")
-            "invite" -> if (invite && channel == "private") {
-                mc.thePlayer.playSound("note.pling", 100f, 1f)
-                mc.thePlayer.addChatMessage(
-                    ChatComponentText("§3Odin§bClient §8»§r Click on this message to invite $name to your party!")
-                        .setChatStyle(createClickStyle(ClickEvent.Action.RUN_COMMAND,"/party invite $name"))
-                )
-            }
+            "inv" -> if (inv && channel == "private") inviteCommand(name)
+            "invite" -> if (invite && channel == "private") inviteCommand(name)
         }
+    }
+
+    private fun inviteCommand(name: String) {
+        mc.thePlayer.playSound("note.pling", 100f, 1f)
+        mc.thePlayer.addChatMessage(
+            ChatComponentText("§3Odin§bClient §8»§r Click on this message to invite $name to your party!")
+                .setChatStyle(createClickStyle(ClickEvent.Action.RUN_COMMAND,"/party invite $name"))
+        )
     }
 
     @SubscribeEvent

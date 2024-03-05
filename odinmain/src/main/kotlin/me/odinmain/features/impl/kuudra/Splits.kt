@@ -35,7 +35,11 @@ object Splits : Module(
     private val t5KillPB = +NumberSetting("T5 Kill PB", 999.0, increment = 0.001, hidden = true)
     private val sendPB: Boolean by BooleanSetting("Send PB", true, description = "Sends a message when a new PB is achieved")
     private val sendSupplyTime: Boolean by BooleanSetting("Send Supply Time", true, description = "Sends a message when a supply is collected")
-    private val splitsColor: Color by ColorSetting("Splits Color", Color.CYAN, description = "Color of the splits display")
+    private val splitsLine1: Color by ColorSetting("Splits Line 1", Color.GREEN, description = "Color of the first line of the splits display")
+    private val splitsLine2: Color by ColorSetting("Splits Line 2", Color.ORANGE, description = "Color of the second line of the splits display")
+    private val splitsLine3: Color by ColorSetting("Splits Line 3", Color.CYAN, description = "Color of the third line of the splits display")
+    private val splitsLine4: Color by ColorSetting("Splits Line 4", Color.PURPLE, description = "Color of the fourth line of the splits display")
+    private val splitsLine5: Color by ColorSetting("Splits Line 5", Color.RED, description = "Color of the fifth line of the splits display")
     val reset: () -> Unit by ActionSetting("Send PBs", description = "Sends your current PBs.") {
            modMessage(
                """§8List of PBs:
@@ -65,20 +69,37 @@ object Splits : Module(
     private val hud: HudElement by HudSetting("Splits Display HUD", 10f, 10f, 1f, true) {
         if (it) {
             for (i in 0..4) {
-                text(lines[i], 1f, 9f + i * OdinFont.getTextHeight("12", 13f), splitsColor, 12f, shadow = true)
+                val lineColor = when (i) {
+                    0 -> splitsLine1
+                    1 -> splitsLine2
+                    2 -> splitsLine3
+                    3 -> splitsLine4
+                    4 -> splitsLine5
+                    else -> Color.WHITE
+                }
+                text(lines[i], 1f, 9f + i * OdinFont.getTextHeight("12", 13f), lineColor, 12f, shadow = true)
                 text("0s", OdinFont.getTextWidth("Fuel/Stun: 0h 00m 00s", 12f) - OdinFont.getTextWidth("0s", 12f), 9f + i * OdinFont.getTextHeight("12", 13f), Color.WHITE, 12f, shadow = true)
             }
 
             getTextWidth("Fuel/Stun: 0h 00m 00s", 12f) + 2f to 80f
         } else {
-            if (LocationUtils.currentArea != "Kuudra") return@HudSetting 0f to 0f
+            //if (LocationUtils.currentArea != "Kuudra") return@HudSetting 0f to 0f
             var y = 0f
             val (times, current) = getSplitTimes()
 
             for (i in 0..4) {
                 var time = times[i]
                 time = time / 10 * 10
-                text(lines[i], 1f, y, splitsColor, 12f, shadow = true)
+                val lineColor = when (i) {
+                    0 -> splitsLine1
+                    1 -> splitsLine2
+                    2 -> splitsLine3
+                    3 -> splitsLine4
+                    4 -> splitsLine5
+                    else -> Color.WHITE
+                }
+                text(lines[i], 1f, 9f + i * OdinFont.getTextHeight("12", 13f), lineColor, 12f, shadow = true)
+
                 val duration = formatTime(time)
                 text(duration, OdinFont.getTextWidth("Fuel/Stun: 0h 00m 00s", 12f) - OdinFont.getTextWidth(duration, 12f), y, Color.WHITE, 12f, shadow = true)
                 y += OdinFont.getTextHeight("12", 13f)

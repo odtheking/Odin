@@ -84,8 +84,9 @@ object NoPre : Module(
         }
 
         onMessage(Regex("Party > (\\[.+])? ?(.+): No ?(.*)")) {
-            missing = it.split("No ")[1].split("!")[0]
+            val match = Regex("Party > (\\[.+])? ?(.+): No ?(.*)").find(it) ?: return@onMessage
+            val (rank, name, spot) = match.destructured
+            missing = spot
         }
-
     }
 }

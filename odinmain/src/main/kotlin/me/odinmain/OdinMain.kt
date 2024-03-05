@@ -81,7 +81,8 @@ object OdinMain {
             TermsimCommand,
             WaypointCommand,
             BlacklistCommand,
-            SoopyCommand
+            SoopyCommand,
+            HighlightCommand
         )
         me.odinmain.commands.registerCommands(
             mainCommand

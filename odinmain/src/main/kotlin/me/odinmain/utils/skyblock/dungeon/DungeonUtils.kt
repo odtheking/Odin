@@ -210,31 +210,11 @@ object DungeonUtils {
         var prio: Int,
         var isDead: Boolean = false
     ) {
-        /**
-         * Archer class with formatting code "§6" (gold) and orange color.
-         */
         Archer(Color.ORANGE, 0, 2),
-
-        /**
-         * Berserk class with formatting code "§4" (dark red) and dark red color.
-         */
         Berserk(Color.DARK_RED,1, 0),
-
-        /**
-         * Healer class with formatting code "§a" (green) and green color.
-         */
         Healer(Color.PINK, 2, 2),
-
-        /**
-         * Mage class with formatting code "§b" (purple) and purple color.
-         */
         Mage(Color.BLUE, 3, 2),
-
-        /**
-         * Tank class with formatting code "§2" (dark green) and dark green color.
-         */
         Tank(Color.DARK_GREEN, 3, 1),
-
     }
 
     /**

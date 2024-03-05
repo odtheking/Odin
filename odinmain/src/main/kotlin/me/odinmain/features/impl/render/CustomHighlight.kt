@@ -23,13 +23,12 @@
     import net.minecraftforge.client.event.RenderWorldLastEvent
     import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-    object CustomESP : Module(
-        name = "Custom ${if (onLegitVersion) "Highlight" else "ESP"}",
+    object CustomHighlight : Module(
+        name = "Custom Highlight",
         category = Category.RENDER,
         tag = TagType.FPSTAX,
-        description =
-        if (onLegitVersion) "Allows you to highlight selected mobs. (/highlight)"
-        else "Allows you to see selected mobs through walls. (/esp)"
+        description = "Allows you to highlight selected mobs. (/highlight)"
+
     ) {
         private val scanDelay: Long by NumberSetting("Scan Delay", 500L, 10L, 2000L, 100L)
         private val starredMobESP: Boolean by BooleanSetting("Starred Mob ESP", true, description = "Highlights mobs with a star in their name (remove star from the separate list).")
@@ -41,7 +40,7 @@
         private val thickness: Float by NumberSetting("Outline Thickness", 5f, 1f, 20f, 0.5f).withDependency { mode != 1 }
         private val cancelHurt: Boolean by BooleanSetting("Cancel Hurt", true).withDependency { mode != 1 }
 
-        val espList: MutableList<String> by ListSetting("List", mutableListOf())
+        val highlightList: MutableList<String> by ListSetting("List", mutableListOf())
 
         val renderThrough: Boolean get() = if (onLegitVersion) false else xray
 
@@ -107,7 +106,7 @@
         }
 
         private fun checkEntity(entity: Entity) {
-            if (entity !is EntityArmorStand || espList.none { entity.name.contains(it, true) } || entity in currentEntities) return
+            if (entity !is EntityArmorStand || highlightList.none { entity.name.contains(it, true) } || entity in currentEntities) return
             currentEntities.add(getMobEntity(entity) ?: return)
         }
 

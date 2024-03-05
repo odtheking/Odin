@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.render
 
-import me.odinmain.OdinMain
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -83,7 +82,7 @@ object DragonHitboxes : Module(
                     val w = entity.width
                     val h = entity.height
 
-                    RenderUtils.drawBoxOutline(dX - w / 2, w.toDouble() ,dY, h.toDouble(), dZ - w / 2, w.toDouble(), color, lineWidth, !OdinMain.onLegitVersion)
+                    RenderUtils.drawBoxOutline(dX - w / 2, w.toDouble() ,dY, h.toDouble(), dZ - w / 2, w.toDouble(), color, lineWidth, false)
                 }
             }
         }
