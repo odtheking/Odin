@@ -3,7 +3,7 @@ package me.odinmain.commands.impl
 import me.odinmain.commands.CommandNode
 import me.odinmain.commands.Commodore
 import me.odinmain.config.Config
-import me.odinmain.features.impl.render.ClickGUIModule.blacklist
+import me.odinmain.features.impl.skyblock.ChatCommands.blacklist
 import me.odinmain.utils.skyblock.modMessage
 
 object BlacklistCommand : Commodore {

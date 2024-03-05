@@ -31,10 +31,10 @@
 
     ) {
         private val scanDelay: Long by NumberSetting("Scan Delay", 500L, 10L, 2000L, 100L)
-        private val starredMobESP: Boolean by BooleanSetting("Starred Mob ESP", true, description = "Highlights mobs with a star in their name (remove star from the separate list).")
+        private val starredMobESP: Boolean by BooleanSetting("Starred Mob Highlight", true, description = "Highlights mobs with a star in their name (remove star from the separate list).")
         val color: Color by ColorSetting("Color", Color.RED, true)
         val mode: Int by SelectorSetting("Mode", "Outline", arrayListOf("Outline", "Overlay", "Boxes"))
-        private val tracerLimit: Int by NumberSetting("Tracer Limit", 0, 0, 15, description = "ESP will draw tracer to all mobs when you have under this amount of mobs marked, set to 0 to disable. Helpful for finding lost mobs.")
+        private val tracerLimit: Int by NumberSetting("Tracer Limit", 0, 0, 15, description = "Highlight will draw tracer to all mobs when you have under this amount of mobs marked, set to 0 to disable. Helpful for finding lost mobs.")
 
         private val xray: Boolean by BooleanSetting("Through Walls", true).withDependency { !onLegitVersion }
         private val thickness: Float by NumberSetting("Outline Thickness", 5f, 1f, 20f, 0.5f).withDependency { mode != 1 }

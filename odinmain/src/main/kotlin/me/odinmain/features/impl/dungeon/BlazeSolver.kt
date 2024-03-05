@@ -51,8 +51,8 @@ object BlazeSolver {
 
             RenderUtils.drawBoxOutline(entity.posX, entity.posY - 2, entity.posZ, 0.5, color,)
 
-            // Drawing lines between the blazes
-            //if (Config.blazeSolverNextLine && i > 0 && i <= Config.blazeSolverLines) {
+            // tracer
+
 
             RenderUtils.draw3DLine(blazes[i - 1].positionVector, entity.positionVector, color, 1, false)
 

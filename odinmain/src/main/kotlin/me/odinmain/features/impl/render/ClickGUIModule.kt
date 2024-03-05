@@ -80,7 +80,7 @@ object ClickGUIModule: Module(
 
             modMessage("""
             ${getChatBreak()}
-            §d§kOdinClientOnTopWeLoveOdinClientLiterallyTheBestMod
+            §d§kOdinClientOnTopWeLoveOdinClientLiterallyTheBestModAAAAAAAAAAAAAAAA
             
             §7Thanks for installing §3Odin§bClient ${OdinMain.VERSION}§7!
 
@@ -96,7 +96,7 @@ object ClickGUIModule: Module(
 
             modMessage("""
             
-            §d§kOdinClientOnTopWeLoveOdinClientLiterallyTheBestMod
+            §d§kOdinClientOnTopWeLoveOdinClientLiterallyTheBestModAAAAAAAAAAAAAAAA
             ${getChatBreak()}
             
             """.trimIndent(), false)

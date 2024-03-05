@@ -86,7 +86,6 @@ object ModuleManager {
         Reminders,
         Animations,
         SpaceHelmet,
-        EscrowFix,
         //DungeonWaypoints,
         SecretChime,
         LeapMenu,

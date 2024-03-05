@@ -83,7 +83,7 @@ object Splits : Module(
 
             getTextWidth("Fuel/Stun: 0h 00m 00s", 12f) + 2f to 80f
         } else {
-            //if (LocationUtils.currentArea != "Kuudra") return@HudSetting 0f to 0f
+            if (LocationUtils.currentArea != "Kuudra") return@HudSetting 0f to 0f
             var y = 0f
             val (times, current) = getSplitTimes()
 

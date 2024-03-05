@@ -3,8 +3,8 @@ package me.odinmain.config
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import me.odinmain.config.utils.ConfigFile
-import me.odinmain.features.impl.render.ClickGUIModule.blacklist
 import me.odinmain.features.impl.render.CustomHighlight.highlightList
+import me.odinmain.features.impl.skyblock.ChatCommands.blacklist
 
 @Deprecated("Use settings under modules instead.", level = DeprecationLevel.WARNING)
 object MiscConfig {

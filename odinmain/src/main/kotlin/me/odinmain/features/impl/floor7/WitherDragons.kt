@@ -104,8 +104,7 @@ object WitherDragons : Module(
             DragonPriority.firstDragons = false
         }
         
-        onPacket(S2APacketParticles::class.java) {
-            if (DungeonUtils.getPhase() != 5) return@onPacket
+        onPacket(S2APacketParticles::class.java, { DungeonUtils.getPhase() == 5 }) {
             handleSpawnPacket(it)
         }
     }

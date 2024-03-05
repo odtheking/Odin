@@ -52,7 +52,7 @@ object ChatCommands : Module(
     private var dtPlayer: String? = null
     var disableRequeue: Boolean? = false
     private val dtReason = mutableListOf<Pair<String, String>>()
-    private val blacklist: MutableList<String> by ListSetting("Blacklist", mutableListOf())
+    val blacklist: MutableList<String> by ListSetting("Blacklist", mutableListOf())
 
     private fun getCatPic(): String {
         return try {

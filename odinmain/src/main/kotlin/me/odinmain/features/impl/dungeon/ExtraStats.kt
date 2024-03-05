@@ -11,10 +11,8 @@ object ExtraStats : Module(
     category = Category.DUNGEON,
 ) {
     init {
-        onMessage("                             > EXTRA STATS <", false) {
-            if (inDungeons) {
-                sendCommand("showextrastats")
-            }
+        onMessage("                             > EXTRA STATS <", false, { inDungeons }) {
+            sendCommand("showextrastats")
         }
     }
 }
