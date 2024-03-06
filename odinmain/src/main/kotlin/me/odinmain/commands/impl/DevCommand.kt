@@ -76,12 +76,11 @@ object DevCommand : Commodore {
                 modMessage(string)
             }
 
-            literal("addDev").runs { string: String ->
+            literal("adddev").runs { name: String, password: String ->
+                modMessage("Sending data...")
                 scope.launch {
-                    sendDataToServer("$string, [1,2,3], [1,2,3], false", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/")
+                    modMessage(sendDataToServer("$name, [1,2,3], [1,2,3], false, $password", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
                 }
-                modMessage("$string, [1,2,3], [1,2,3], false")
-                modMessage("Added $string to devs as a dev (rs game for update).")
             }
 
 

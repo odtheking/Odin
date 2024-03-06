@@ -48,10 +48,13 @@ object ClickGUIModule: Module(
     private val devSizeX: Float by NumberSetting("Dev Size X", 1f, 0.1f, 2f, 0.1, description = "X scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
     private val devSizeY: Float by NumberSetting("Dev Size Y", 1f, 0.1f, 2f, 0.1, description = "Y scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
     private val devSizeZ: Float by NumberSetting("Dev Size Z", 1f, 0.1f, 2f, 0.1, description = "Z scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
+    private var showHidden: Boolean by DropdownSetting("Show Hidden", false)
+    private val passcode: String by StringSetting("Passcode", "odin", description = "Passcode for dev features.").withDependency { DevPlayers.isDev && showHidden }
 
     val reset: () -> Unit by ActionSetting("Send Dev Data") {
+        showHidden = false
         scope.launch {
-            sendDataToServer(body = "${mc.thePlayer.name}, [${devWingsColor.r},${devWingsColor.g},${devWingsColor.b}], [$devSizeX,$devSizeY,$devSizeZ], $devWings", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/")
+            modMessage(sendDataToServer(body = "${mc.thePlayer.name}, [${devWingsColor.r},${devWingsColor.g},${devWingsColor.b}], [$devSizeX,$devSizeY,$devSizeZ], $devWings, $passcode", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
             modMessage("Sent dev data to server.")
             DevPlayers.updateDevs()
             modMessage("Updated devs.")

@@ -11,9 +11,11 @@ import me.odinmain.utils.render.RenderUtils.postDraw
 import me.odinmain.utils.render.RenderUtils.preDraw
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.RenderUtils.tessellator
+import me.odinmain.utils.render.RenderUtils.worldRenderer
 import me.odinmain.utils.runIn
 import me.odinmain.utils.toAABB
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderGameOverlayEvent
@@ -50,8 +52,9 @@ object Renderer {
             GL11.glDisable(GL11.GL_DEPTH_TEST)
             GlStateManager.depthMask(false)
         }
-
-
+        worldRenderer.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
+        worldRenderer.pos(pos1.xCoord, pos1.yCoord, pos1.zCoord).endVertex()
+        worldRenderer.pos(pos2.xCoord, pos2.yCoord, pos2.zCoord).endVertex()
 
         tessellator.draw()
 
@@ -112,8 +115,7 @@ object Renderer {
         displayColor = color
 
         runIn(ticks) {
-            displayTitle = ""
-            titleTicks = 0
+            clearTitle()
         }
     }
 
@@ -137,5 +139,4 @@ object Renderer {
     fun worldLoad(event: WorldEvent.Load) {
         clearTitle()
     }
-
 }

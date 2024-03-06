@@ -1,5 +1,8 @@
 package me.odinmain.commands.impl
 
+import com.github.stivais.commodore.parsers.impl.GreedyString
+import kotlinx.coroutines.launch
+import me.odinmain.OdinMain
 import me.odinmain.OdinMain.display
 import me.odinmain.commands.commodore
 import me.odinmain.features.impl.render.ClickGUIModule
@@ -10,6 +13,7 @@ import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.equalsOneOf
+import me.odinmain.utils.fetchURLData
 import me.odinmain.utils.skyblock.PlayerUtils.posX
 import me.odinmain.utils.skyblock.PlayerUtils.posY
 import me.odinmain.utils.skyblock.PlayerUtils.posZ
@@ -29,15 +33,6 @@ private val tiers = mapOf(
 val mainCommand = commodore("od", "odinclient", "odin") {
     runs {
         display = ClickGUI
-    }
-
-    runs { str: String ->
-        if (str.length != 2 || !str[0].equalsOneOf('f', 'm', 't') || str[1] !in '1'..'7') {
-            return@runs modMessage("Invalid command. Use /od help for a list of commands.")
-        }
-        if (str[0] == 't' && str[1] == '1') modMessage("Kuudra doesnt have an option to use a command to join this instance.")
-        if (str[0] == 't') sendCommand("joininstance kuudra_${tiers[str[1]]}")
-        else if (str[0] == 'f' || str[0] == 'm') sendCommand("joininstance ${if (str[0] == 'm') "master_" else ""}catacombs_floor_${floors[str[1]]}")
     }
 
     literal("reset") {
@@ -74,7 +69,6 @@ val mainCommand = commodore("od", "odinclient", "odin") {
                  §3- /od ping §7» §8Sends your ping in chat.
                  §3- /od tps §7» §8Sends the server's tps in chat.
                  §3- /spcmd §7» §8Use /spcmd cmds for command list.
-
                  """.trimIndent()
         )
     }
@@ -94,5 +88,43 @@ val mainCommand = commodore("od", "odinclient", "odin") {
 
     literal("tps").runs {
         modMessage("${colorizeTps(round(ServerUtils.averageTps))}ms")
+    }
+
+    runs { commandString: GreedyString ->
+        if (commandString.string.startsWith("-")) {
+            val message = commandString.string.replace("-", "").split(" ")
+            if (message.size > 2 || message.isEmpty()) return@runs modMessage("Usage: /od -<command> [player] || /spcmd cmds")
+
+            if (message[0].lowercase().equalsOneOf("cmds", "commands", "cmd", "command"))
+                return@runs modMessage("""Available commands:
+                        | kuudra, auctions, skills, skillaverage, dojo, 
+                        | overflowskills, overflowskillaverage, bestiary, 
+                        | faction, nucleus, guildof, essence, secrets, bank, 
+                        | pet, whatdoing, dungeon, currdungeon, sblvl, classaverage, 
+                        | rtca, nw.""".trimMargin())
+            var url = ""
+            when (message.size) {
+                1 -> {
+                    val playerName = OdinMain.mc.thePlayer.name
+                    val command = message[0]
+                    url = "https://soopy.dev/api/soopyv2/botcommand?m=$command&u=$playerName"
+                }
+                2 -> {
+                    val targetUser = message[1]
+                    val command = message[0]
+                    url = "https://soopy.dev/api/soopyv2/botcommand?m=$command&u=$targetUser"
+                }
+            }
+            modMessage("Running command...")
+            OdinMain.scope.launch { modMessage(fetchURLData(url)) }
+        } else {
+            if (commandString.string.length != 2) return@runs modMessage("Invalid command. Use /od help for a list of commands.")
+            val instanceType = commandString.string[0]
+            val instanceNumber = commandString.string[1]
+            if (!instanceType.equalsOneOf('f', 'm', 't') || instanceNumber !in '1'..'7') return@runs modMessage("Invalid command. Use /od help for a list of commands.")
+            if (instanceType == 't' && instanceNumber == '1') modMessage("Kuudra doesnt have an option to use a command to join this instance.")
+            if (instanceType == 't') sendCommand("joininstance kuudra_${tiers[instanceNumber]}")
+            else if (instanceType == 'f' || instanceType == 'm') sendCommand("joininstance ${if (instanceType == 'm') "master_" else ""}catacombs_floor_${floors[instanceNumber]}")
+        }
     }
 }
