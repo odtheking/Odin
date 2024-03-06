@@ -150,7 +150,7 @@ fun runIn(ticks: Int, func: () -> Unit) {
  * @param name The name of the profile section.
  * @param func The code to profile.
  */
-fun profile(name: String, func: () -> Unit) {
+inline fun profile(name: String, func: () -> Unit) {
     startProfile(name)
     func()
     endProfile()
