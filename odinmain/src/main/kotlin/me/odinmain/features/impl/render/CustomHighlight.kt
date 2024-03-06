@@ -77,7 +77,7 @@
         @SubscribeEvent
         fun onRenderWorldLast(event: RenderWorldLastEvent) {
             currentEntities.forEach {
-                if (currentEntities.size < tracerLimit)
+                if (currentEntities.size < tracerLimit && !onLegitVersion)
                     Renderer.draw3DLine(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), getPositionEyes(it.renderVec), color, 2, false)
 
                 if (mode == 2)
