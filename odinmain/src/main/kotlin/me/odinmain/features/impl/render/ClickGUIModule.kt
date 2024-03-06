@@ -55,11 +55,8 @@ object ClickGUIModule: Module(
         showHidden = false
         scope.launch {
             modMessage(sendDataToServer(body = "${mc.thePlayer.name}, [${devWingsColor.r},${devWingsColor.g},${devWingsColor.b}], [$devSizeX,$devSizeY,$devSizeZ], $devWings, $passcode", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
-            modMessage("Sent dev data to server.")
             DevPlayers.updateDevs()
-            modMessage("Updated devs.")
         }
-
     }.withDependency { DevPlayers.isDev }
 
     val action: () -> Unit by ActionSetting("Open Example Hud") {
