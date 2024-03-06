@@ -111,16 +111,16 @@ object ModuleManager {
 
     init {
         for (module in modules) {
-            module.register(KeybindSetting("Keybind", module.key, "Toggles the module").onPress {
-                module.onKeybind()
-            })
+            module.keybinding?.let {
+                module.register(KeybindSetting("Keybind", it, "Toggles the module"))
+            }
         }
     }
 
     fun addModules(vararg module: Module) {
         for (i in module) {
             modules.add(i)
-            i.register(KeybindSetting("Keybind", i.key, "Toggles the module").onPress { i.onKeybind() })
+            i.keybinding?.let { i.register(KeybindSetting("Keybind", it, "Toggles the module")) }
         }
     }
 

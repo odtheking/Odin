@@ -58,7 +58,6 @@ open class HudElement(
             ySetting,
             scaleSetting,
             enabledSetting,
-            enabledSetting
         )
 
         huds.add(this)
