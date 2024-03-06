@@ -8,7 +8,7 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.util.BlockPos
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -49,31 +49,13 @@ object ClickedChests : Module(
 
         for (it in chests) {
             val finalColor = if (it.Locked) lockedColor else color
+            val aabb = AABB(it.pos.x + .0625, it.pos.y.toDouble(), it.pos.z + .0625, it.pos.x + .875, it.pos.y + 0.875, it.pos.z + 0.875)
             when (style) {
-                0 -> {
-                    val x = it.pos.x + .0625
-                    val y = it.pos.y.toDouble()
-                    val z = it.pos.z + .0625
-                    RenderUtils.drawFilledBox(AABB(x, y, z, x + .875, y + 0.875, z + 0.875), finalColor, phase)
-                }
-                1 -> {
-                    RenderUtils.drawBoxOutline(
-                        it.pos.x + .0625, .875,
-                        it.pos.y.toDouble(), .875,
-                        it.pos.z + .0625, .875,
-                        finalColor,
-                        3f,
-                        phase
-                    )
-                }
-                2 -> {
-                    val x = it.pos.x + .0625
-                    val y = it.pos.y.toDouble()
-                    val z = it.pos.z + .0625
-                    RenderUtils.drawBoxWithOutline(AABB(x, y, z, x + .875, y + 0.875, z + 0.875), finalColor, phase)
-                }
-            }
+                0 -> Renderer.drawBox(aabb, finalColor, depth = phase, outlineAlpha = 0)
+                1 -> Renderer.drawBox(aabb, finalColor, 0f, depth = phase)
+                2 -> Renderer.drawBox(aabb, finalColor, depth = phase)
 
+            }
         }
     }
 

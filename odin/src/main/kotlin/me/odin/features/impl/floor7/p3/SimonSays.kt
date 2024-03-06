@@ -9,7 +9,7 @@ import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.floor
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.block.BlockButtonStone
@@ -114,7 +114,7 @@ object SimonSays : Module(
                 clickNeeded + 1 -> Color(255, 170, 0)
                 else -> Color(170, 0, 0)
             }.withAlpha(.5f)
-            RenderUtils.drawFilledBox(AxisAlignedBB(x, y, z, x + .1875, y + .375, z + .5), color)
+            Renderer.drawBox(AxisAlignedBB(x, y, z, x + .25, y + .375, z + .5), color, 1f, depth = true, outlineAlpha = 0)
         }
         GlStateManager.enableCull()
     }

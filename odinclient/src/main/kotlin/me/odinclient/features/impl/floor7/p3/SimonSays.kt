@@ -12,7 +12,7 @@ import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.WorldUtils
 import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.modMessage
@@ -148,7 +148,7 @@ object SimonSays : Module(
 
     private fun autoSS() {
         val isInSSRange = mc.thePlayer.getDistanceSqToCenter(BlockPos(108, 120, 93)) <= 1.45 * 1.45
-        RenderUtils.drawCylinder(
+        Renderer.drawCylinder(
             Vec3(108.5, 120.0, 93.5), 1.45f, 1.45f, .05f, 80,
             1, 0f, 90f, 90f, if (isInSSRange) Color.GREEN else Color.ORANGE
         )
@@ -213,7 +213,7 @@ object SimonSays : Module(
                 clickNeeded + 1 -> Color(255, 170, 0)
                 else -> Color(170, 0, 0)
             }.withAlpha(.5f)
-            RenderUtils.drawFilledBox(AxisAlignedBB(x, y, z, x + .1875, y + .375, z + .5), color)
+            Renderer.drawBox(AxisAlignedBB(x, y, z, x + .25, y + .375, z + .5), color, outlineAlpha = 0)
         }
         GlStateManager.enableCull()
     }

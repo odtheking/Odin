@@ -9,7 +9,7 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.Renderer
 import net.minecraft.entity.item.EntityItemFrame
 import net.minecraft.init.Blocks
 import net.minecraft.init.Items
@@ -87,11 +87,11 @@ object ArrowAlign : Module(
             val clicksNeeded = place.value.rotations
             val color = when {
                 clicksNeeded == 0 -> continue
-                clicksNeeded < 3 -> Color(85, 255, 85).rgba
-                clicksNeeded < 5 -> Color(255, 170, 0).rgba
-                else -> Color(170, 0, 0).rgba
+                clicksNeeded < 3 -> Color(85, 255, 85)
+                clicksNeeded < 5 -> Color(255, 170, 0)
+                else -> Color(170, 0, 0)
             }
-            RenderUtils.drawStringInWorld(clicksNeeded.toString(), Vec3(-1.8, 124.6 - place.key.y, 79.5 - place.key.x), color, renderBlackBox = false, increase = false, scale = .05f)
+            Renderer.drawStringInWorld(clicksNeeded.toString(), Vec3(-1.8, 124.6 - place.key.y, 79.5 - place.key.x), color, renderBlackBox = false, scale = .05f)
         }
     }
 

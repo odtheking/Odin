@@ -8,10 +8,10 @@ import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.OutlineUtils
-import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.RenderUtils.renderX
 import me.odinmain.utils.render.RenderUtils.renderY
 import me.odinmain.utils.render.RenderUtils.renderZ
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.isShortbow
 import me.odinmain.utils.skyblock.itemID
@@ -185,14 +185,10 @@ object Trajectories : Module(
 
     private fun drawPearlCollisionBox() {
         if (pearlImpactPos == null) return
-        RenderUtils.drawBoxOutline(
-            pearlImpactPos!!.first.xCoord, pearlImpactPos!!.second.x,
-            pearlImpactPos!!.first.yCoord, pearlImpactPos!!.second.y,
-            pearlImpactPos!!.first.zCoord, pearlImpactPos!!.second.x,
-            color,
-            thickness / 3,
-            phase = true
-        )
+
+        Renderer.drawBox(AxisAlignedBB(pearlImpactPos!!.first.xCoord, pearlImpactPos!!.first.yCoord, pearlImpactPos!!.first.zCoord, pearlImpactPos!!.second.x, pearlImpactPos!!.second.y, pearlImpactPos!!.first.zCoord),
+            color, thickness / 3, depth = true)
+
         pearlImpactPos = null
     }
 
@@ -209,14 +205,8 @@ object Trajectories : Module(
                 boxRenderQueue.clear()
                 return
             }
-            RenderUtils.drawBoxOutline(
-                b.first.xCoord, b.second.x,
-                b.first.yCoord, b.second.y,
-                b.first.zCoord, b.second.x,
-                color,
-                thickness / 3,
-                phase = true
-            )
+            Renderer.drawBox(AxisAlignedBB(b.first.xCoord, b.first.yCoord, b.first.zCoord, b.second.x, b.second.y, b.first.zCoord),
+                color, thickness / 3, depth = true, fillAlpha = 0)
         }
         boxRenderQueue.clear()
     }

@@ -6,10 +6,11 @@ import me.odinmain.ui.waypoint.WaypointGUI
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.LocationUtils.currentArea
 import me.odinmain.utils.skyblock.modMessage
+import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
@@ -107,6 +108,6 @@ object WaypointManager {
     ) {
         constructor(name: String, vec3: Vec3i, color: Color) : this(name, vec3.x, vec3.y, vec3.z, color, true)
 
-        fun renderBeacon() = RenderUtils.renderCustomBeacon(name, x + .5, y + .5, z + .5, color, !Waypoints.onlyBox)
+        fun renderBeacon() = Renderer.drawCustomBeacon(name, Vec3(x + .5, y + .5, z + .5), color, !Waypoints.onlyBox)
     }
 }

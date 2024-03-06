@@ -13,8 +13,8 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.RenderUtils.renderVec
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.*
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
@@ -104,16 +104,16 @@ object DianaHelper : Module(
             }.takeIf { it.location.distanceTo(guess) + 30 < mc.thePlayer.positionVector.distanceTo(guess) }
 
             if (tracer)
-                RenderUtils.draw3DLine(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), guess.addVec(.5, .5, .5), tracerColor, tracerWidth, depth = false)
+                Renderer.draw3DLine(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), guess.addVec(.5, .5, .5), tracerColor, tracerWidth, depth = false)
 
-            RenderUtils.renderCustomBeacon("§6Guess${warpLocation?.displayName ?: ""}§r", guess, guessColor, increase = true)
+            Renderer.drawCustomBeacon("§6Guess${warpLocation?.displayName ?: ""}§r", guess, guessColor, increase = true)
         }
 
         val burrowsRenderCopy = burrowsRender.toMap()
 
         burrowsRenderCopy.forEach { (location, type) ->
-            if (tracerBurrows) RenderUtils.draw3DLine(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), Vec3(location).addVec(.5, .5, .5), type.color, tracerWidth, depth = false)
-            RenderUtils.renderCustomBeacon(type.text, Vec3(location), type.color)
+            if (tracerBurrows) Renderer.draw3DLine(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), Vec3(location).addVec(.5, .5, .5), type.color, tracerWidth, depth = false)
+            Renderer.drawCustomBeacon(type.text, Vec3(location), type.color)
         }
     }
 

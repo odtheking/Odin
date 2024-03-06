@@ -45,7 +45,6 @@ object ArrowHit : Module(
             arrowCount += 1
             if (arrowCount >= (resetCount.toIntOrNull() ?: 9999) && resetOnNumber) arrowCount = 0
             if(resetArrowClock.hasTimePassed() && resetOnTime) arrowCount = 0
-            resetArrowClock.update()
         }
 
         onWorldLoad { if (resetOnWorldLoad) arrowCount = 0  }

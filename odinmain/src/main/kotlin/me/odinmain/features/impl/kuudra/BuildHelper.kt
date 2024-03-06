@@ -9,8 +9,9 @@ import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
+import me.odinmain.utils.addVec
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.render.getTextWidth
 import me.odinmain.utils.render.text
 import me.odinmain.utils.skyblock.KuudraUtils
@@ -51,15 +52,18 @@ object BuildHelper : Module(
     fun renderWorldEvent(event: RenderWorldLastEvent) {
         if (KuudraUtils.phase != 2) return
         if (stunNotification && KuudraUtils.build > stunNotificationNumber) PlayerUtils.alert("§lGo to stun", playSound = false, color = Color.CYAN)
-        if (buildHelperDraw) RenderUtils.drawStringInWorld("Build ${colorBuild(KuudraUtils.build)}%", Vec3(-101.5, 84.0, -105.5), buildHelperColor.rgba, false, false, scale = 0.15f, depthTest = false)
-        if (buildHelperDraw) RenderUtils.drawStringInWorld("Builders ${colorBuild(KuudraUtils.build)}", Vec3(-101.5, 81.0, -105.5), buildHelperColor.rgba, false, false, scale = 0.2f, depthTest = false)
-        if (unfinishedWaypoints && KuudraUtils.phase == 2) renderUnfinishedWaypoints()
+        if (buildHelperDraw)
+            Renderer.drawStringInWorld("Build ${colorBuild(KuudraUtils.build)}%", Vec3(-101.5, 84.0, -105.5), buildHelperColor, depth = false, scale = 0.15f)
 
+        if (buildHelperDraw)
+            Renderer.drawStringInWorld("Builders ${colorBuilders(KuudraUtils.builders)}", Vec3(-101.5, 81.0, -105.5), buildHelperColor, depth = false, scale = 0.15f)
+
+        if (unfinishedWaypoints && KuudraUtils.phase == 2) renderUnfinishedWaypoints()
     }
 
     private fun renderUnfinishedWaypoints() {
         KuudraUtils.buildingPiles.forEach {
-            RenderUtils.renderCustomBeacon(it.name, it.posX, it.posY + 0.5, it.posZ, Color.DARK_RED, true, increase = false, noFade = !fadeWaypoints, distance = false)
+            Renderer.drawCustomBeacon(it.name, it.positionVector.addVec(0.5), Color.DARK_RED, true, increase = false, noFade = !fadeWaypoints, distance = false)
         }
     }
     private fun colorBuild(build: Int): String {

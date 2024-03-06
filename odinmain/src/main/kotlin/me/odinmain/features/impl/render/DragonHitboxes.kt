@@ -6,9 +6,10 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.boss.EntityDragon
+import net.minecraft.util.AxisAlignedBB
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -81,8 +82,7 @@ object DragonHitboxes : Module(
                     val dZ = lastZ + (z - lastZ) * event.partialTicks
                     val w = entity.width
                     val h = entity.height
-
-                    RenderUtils.drawBoxOutline(dX - w / 2, w.toDouble() ,dY, h.toDouble(), dZ - w / 2, w.toDouble(), color, lineWidth, false)
+                    Renderer.drawBox(AxisAlignedBB(dX - w / 2, dY, dZ - w / 2, dX + w / 2, dY + h, dZ + w / 2), color, 0)
                 }
             }
         }

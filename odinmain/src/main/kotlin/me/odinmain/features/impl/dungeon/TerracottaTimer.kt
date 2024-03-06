@@ -6,7 +6,7 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.addVec
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.util.Vec3
@@ -47,14 +47,12 @@ object TerracottaTimer : Module(
         while (iterator.hasNext()) {
             val it = iterator.next()
             if (done) return
-            RenderUtils.drawStringInWorld(
+            Renderer.drawStringInWorld(
                 "${String.format(Locale.US, "%.2f",it.time / 100.0)}s",
                 it.pos,
-                getColor(it.time / 100.0).rgba,
-                renderBlackBox = false,
-                increase = false,
-                depthTest = false,
-                .03f
+                getColor(it.time / 100.0),
+                depth = false,
+                scale = 0.03f
             )
         }
     }

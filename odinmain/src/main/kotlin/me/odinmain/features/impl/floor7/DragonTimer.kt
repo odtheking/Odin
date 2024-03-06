@@ -1,7 +1,8 @@
 package me.odinmain.features.impl.floor7
 
 import me.odinmain.features.impl.floor7.WitherDragons.textScale
-import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.Renderer
 
 object DragonTimer {
 
@@ -19,12 +20,11 @@ object DragonTimer {
     fun renderTime() {
         if (toRender.size == 0) return
         toRender.forEach {
-            RenderUtils.drawStringInWorld(
+            Renderer.drawStringInWorld(
                 it.first,
                 it.third.spawnPos,
-                depthTest = false,
-                increase = false,
-                renderBlackBox = false,
+                color = Color.WHITE,
+                depth = false,
                 scale = textScale / 5
             )
         }

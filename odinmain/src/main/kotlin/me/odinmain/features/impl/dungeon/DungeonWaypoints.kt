@@ -8,13 +8,14 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.equal
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.rotateToNorth
 import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.RoomType
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.subtractVec
+import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -43,12 +44,12 @@ object DungeonWaypoints : Module(
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
         DungeonUtils.currentRoom?.waypoints?.forEach {
-            RenderUtils.drawBoxOutline(it.x, it.y, it.z, 1.0, it.color, 3f, true)
+            Renderer.drawBox(it.toAABB(), it.color, fillAlpha = 0f)
         }
 
         if (debugWaypoint) {
             val room = DungeonUtils.currentRoom?.room ?: return
-            RenderUtils.drawBoxOutline(room.x, 70, room.z - 4, 1, Color.GREEN, 3, true)
+            Renderer.drawBox(AxisAlignedBB(room.x - 0.5, 70.0, room.z - 0.5, room.x + 0.5, 70.0, room.z + 0.5), Color.GREEN, fillAlpha = 0f)
         }
     }
 
@@ -80,4 +81,6 @@ object DungeonWaypoints : Module(
 
     fun DungeonWaypoint.toVec3() = Vec3(x, y, z)
     fun DungeonWaypoint.toBlockPos() = BlockPos(x, y, z)
+
+    fun DungeonWaypoint.toAABB() = AxisAlignedBB(x - 0.5, y, z - 0.5, x + 0.5, y + 1.0, z + 0.5)
 }

@@ -14,7 +14,7 @@ import me.odinmain.features.Module
 import me.odinmain.utils.floored
 import me.odinmain.utils.plus
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.WorldUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.modMessage
@@ -64,10 +64,10 @@ object AutoIceFill: Module(
         for (i in currentPatterns.indices) {
             val pattern = currentPatterns[i]
             val pos = rPos[i]
-            RenderUtils.draw3DLine(pos, pos + transformTo(pattern[0], renderRotation!!), color, 10, true)
+            Renderer.draw3DLine(pos, pos + transformTo(pattern[0], renderRotation!!), color, 10, true)
 
             for (j in 1 until pattern.size) {
-                RenderUtils.draw3DLine(
+                Renderer.draw3DLine(
                     pos + transformTo(pattern[j - 1], renderRotation!!), pos + transformTo(pattern[j], renderRotation!!), color, 10, true
                 )
             }

@@ -12,12 +12,11 @@ import me.odinmain.utils.addVec
 import me.odinmain.utils.distanceSquaredTo
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.OutlineUtils
-import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.RenderUtils.renderVec
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.KuudraUtils.kuudraTeammates
 import me.odinmain.utils.skyblock.LocationUtils
-import net.minecraft.entity.Entity
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -46,19 +45,12 @@ object TeamHighlight : Module(
              if (it.entity == null || it.playerName == mc.thePlayer.name) return@forEach
             if ((it.entity?.distanceSquaredTo(mc.thePlayer) ?: return@forEach) >= 2333) return@forEach
 
-            RenderUtils.drawStringInWorld(
+            Renderer.drawStringInWorld(
                 it.playerName, it.entity?.renderVec?.addVec(y = 2.6) ?: return@forEach,
-                if (it.eatFresh) highlightFreshColor.rgba else nameColor.rgba,
-                depthTest = false, increase = false, renderBlackBox = false,
+                if (it.eatFresh) highlightFreshColor else nameColor,
+                depth = false, renderBlackBox = false,
                 scale = 0.05f
             )
         }
-    }
-
-    private fun getTeammates(entity: Entity): Int? {
-        val teammates = KuudraUtils.kuudraTeammates.filter { it.playerName != mc.thePlayer.name }
-        val teammate = teammates.find { it.entity == entity } ?: return null
-
-        return if (teammate.eatFresh && highlightFresh) highlightFreshColor.rgba else outlineColor.rgba
     }
 }

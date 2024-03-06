@@ -3,7 +3,8 @@ package me.odinmain.features.impl.dungeon
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.RenderUtils.renderBoundingBox
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.item.EntityArmorStand
 
@@ -49,12 +50,12 @@ object BlazeSolver {
                 else -> Color(1, 1, 1)
             }
 
-            RenderUtils.drawBoxOutline(entity.posX, entity.posY - 2, entity.posZ, 0.5, color,)
+            Renderer.drawBox(entity.renderBoundingBox.addCoord(0.0, -2.0, 0.0), color, fillAlpha = 0f)
 
             // tracer
 
 
-            RenderUtils.draw3DLine(blazes[i - 1].positionVector, entity.positionVector, color, 1, false)
+            Renderer.draw3DLine(blazes[i - 1].positionVector, entity.positionVector, color, 1, false)
 
         }
     }

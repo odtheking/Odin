@@ -8,9 +8,8 @@ import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.addVec
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils
-import me.odinmain.utils.render.RenderUtils.drawBoxOutline
 import me.odinmain.utils.render.RenderUtils.renderBoundingBox
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.render.getTextWidth
 import me.odinmain.utils.render.text
 import me.odinmain.utils.round
@@ -53,10 +52,10 @@ object KuudraDisplay : Module(
         if (LocationUtils.currentArea != "Kuudra") return
 
         if (highlightKuudra)
-            drawBoxOutline(kuudraEntity.renderBoundingBox, kuudraColor, thickness, true)
+            Renderer.drawBox(kuudraEntity.renderBoundingBox, kuudraColor, depth = true, fillAlpha = 0)
 
         if (kuudraHPDisplay)
-            RenderUtils.drawStringInWorld(getCurrentHealthDisplay(), kuudraEntity.positionVector.addVec(y = 10), increase = false, depthTest = false, renderBlackBox = false, scale = healthSize, shadow = true)
+            Renderer.drawStringInWorld(getCurrentHealthDisplay(), kuudraEntity.positionVector.addVec(y = 10), Color.WHITE, depth = false, renderBlackBox = false, scale = healthSize, shadow = true)
     }
 
 

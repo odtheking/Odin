@@ -6,7 +6,7 @@ import me.odinmain.features.impl.dungeon.PuzzleSolvers.mazeColorOne
 import me.odinmain.features.impl.dungeon.PuzzleSolvers.mazeColorVisited
 import me.odinmain.features.impl.dungeon.PuzzleSolvers.tpMaze
 import me.odinmain.utils.isXZInterceptable
-import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.toAABB
 import net.minecraft.init.Blocks
@@ -62,10 +62,10 @@ object TPMaze {
         if (DungeonUtils.currentRoomName != "Teleport Maze" || !tpMaze) return
         val color = if (correctPortals.size == 1) mazeColorOne else mazeColorMultiple
         correctPortals.forEach {
-            RenderUtils.drawFilledBox(it.toAABB(), color, phase = true)
+            Renderer.drawBox(it.toAABB(), color, depth = true, outlineAlpha = 0)
         }
         visited.forEach {
-            RenderUtils.drawFilledBox(it.toAABB(), mazeColorVisited, phase = true)
+            Renderer.drawBox(it.toAABB(), mazeColorVisited, depth = true, outlineAlpha = 0)
         }
     }
 }

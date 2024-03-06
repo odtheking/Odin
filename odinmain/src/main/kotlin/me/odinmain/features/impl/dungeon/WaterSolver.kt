@@ -6,7 +6,8 @@ import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
 import me.odinmain.features.impl.dungeon.PuzzleSolvers.showOrder
-import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.Minecraft
@@ -77,7 +78,9 @@ object WaterSolver {
                 orderText = if (it == 0.0) orderText.plus("0")
                 else orderText.plus("${if (orderText.isEmpty()) "" else ", "}${sortedSolutions.indexOf(it) + 1}")
             }
-            if (PuzzleSolvers.waterSolver && showOrder) RenderUtils.drawStringInWorld(orderText, Vec3(solution.key.leverPos).addVector(.5, .5, .5), -1, false, increase = false, depthTest = false, 0.035f)
+            if (PuzzleSolvers.waterSolver && showOrder)
+                Renderer.drawStringInWorld(orderText, Vec3(solution.key.leverPos).addVector(.5, .5, .5),
+                    Color.WHITE, false, scale = .035f)
 
             for (i in solution.key.i until solution.value.size) {
                 val time = solution.value[i]
@@ -90,10 +93,9 @@ object WaterSolver {
                     else "§a§lCLICK ME!"
 
                 }
-                RenderUtils.drawStringInWorld(displayText, Vec3(solution.key.leverPos).addVector(0.5, (i - solution.key.i) * 0.5 + 1.5, 0.5), 0, false, increase = false, depthTest = false, 0.04f)
+
+                Renderer.drawStringInWorld(displayText, Vec3(solution.key.leverPos).addVector(0.5, (i - solution.key.i) * 0.5 + 1.5, 0.5), Color.WHITE, false, depth = false, scale = 0.04f)
             }
-
-
         }
     }
 

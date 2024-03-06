@@ -9,7 +9,7 @@ import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.OutlineUtils
-import me.odinmain.utils.render.RenderUtils.bindColor
+import me.odinmain.utils.render.RenderUtils.bind
 import me.odinmain.utils.xzDistance
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
@@ -75,7 +75,7 @@ object BlazeAttunement : Module(
         GlStateManager.disableTexture2D()
         GlStateManager.enableBlend()
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        color.bindColor()
+        color.bind()
     }
 
     fun renderModelBlazePost(entityIn: Entity, p_78088_2_: Float, p_78088_3_: Float, p_78088_4_: Float, p_78088_5_: Float, p_78088_6_: Float, scale: Float, ci: CallbackInfo) {
@@ -90,7 +90,7 @@ object BlazeAttunement : Module(
         GlStateManager.disableTexture2D()
         GlStateManager.enableBlend()
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        color.bindColor()
+        color.bind()
     }
 
     fun renderModelBipedPost(entityIn: Entity, p_78088_2_: Float, p_78088_3_: Float, p_78088_4_: Float, p_78088_5_: Float, p_78088_6_: Float, scale: Float, ci: CallbackInfo) {

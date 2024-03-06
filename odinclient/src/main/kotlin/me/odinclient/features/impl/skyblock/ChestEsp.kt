@@ -8,7 +8,7 @@ import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.toAABB
@@ -26,7 +26,6 @@ object ChestEsp : Module(
     category = Category.RENDER,
     description = "Renders chams or the bounding box for all chests."
 ) {
-
     private val onlyDungeon: Boolean by BooleanSetting(name = "Only Dungeon")
     private val onlyCH: Boolean by BooleanSetting(name = "Only Crystal Hollows")
     private val hideClicked: Boolean by BooleanSetting(name = "Hide Clicked")
@@ -76,11 +75,10 @@ object ChestEsp : Module(
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (renderMode != 1 || (onlyDungeon && !DungeonUtils.inDungeons) && !(onlyCH && LocationUtils.currentArea !== "Crystal Hollows")) return
-        val chests = mc.theWorld.loadedTileEntityList.filterIsInstance(TileEntityChest::class.java)
+        val chests = mc.theWorld.loadedTileEntityList.filterIsInstance<TileEntityChest>()
         chests.forEach {
             if (hideClicked && this.chests.contains(it.pos)) return
-            RenderUtils.drawBoxOutline(it.pos.toAABB(), color, 2f, phase = true)
+            Renderer.drawBox(it.pos.toAABB(), color, 1f, depth = true, fillAlpha = 0)
         }
     }
-
 }

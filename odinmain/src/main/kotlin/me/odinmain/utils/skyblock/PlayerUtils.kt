@@ -2,7 +2,7 @@ package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.Renderer
 
 
 object PlayerUtils {
@@ -33,7 +33,7 @@ object PlayerUtils {
      */
     fun alert(title: String, time: Int = 20, color: Color = Color.WHITE, playSound: Boolean = true, displayText: Boolean = true) {
         if (playSound) playLoudSound("note.pling", 100f, 1f)
-        if (displayText) RenderUtils.displayTitle(title , time, color = color)
+        if (displayText) Renderer.displayTitle(title , time, color = color)
     }
 
     fun dropItem() {

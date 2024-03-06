@@ -103,7 +103,7 @@ fun getTextWidth(text: String, size: Float) = OdinFont.getTextWidth(text, size)
 
 fun getTextHeight(text: String, size: Float) = OdinFont.getTextHeight(text, size)
 
-fun translate(x: Float, y: Float, z: Float = 0f) = GlStateManager.translate(x, y, z)
+fun translate(x: Number, y: Number, z: Number = 0f) = GlStateManager.translate(x.toDouble(), y.toDouble(), z.toDouble())
 
 fun rotate(degrees: Float, xPos: Float, yPos: Float, zPos: Float, xAxis: Float, yAxis: Float, zAxis: Float) {
     translate(xPos, yPos, zPos)

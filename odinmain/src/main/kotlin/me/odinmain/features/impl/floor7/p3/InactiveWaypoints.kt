@@ -8,11 +8,10 @@ import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.toAABB
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
-import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -49,14 +48,10 @@ object InactiveWaypoints : Module(
             var name = it.name.noControlCodes
             if ((name == "Inactive Terminal" && showTerminals) || (name == "Inactive" && showDevices) || (name == "Not Activated" && showLevers)) {
                 name = if (name == "Inactive Terminal") "Terminal" else if (name == "Inactive") "Device" else "Lever"
-                when (renderMode) {
-                    0 -> RenderUtils.drawBoxWithOutline(AxisAlignedBB(it.position, it.position.add(1, 1, 1)).expand(0.001, 0.001, 0.001), Color(color.r, color.g, color.b, color.alpha), true, 2f)
-                    1 -> RenderUtils.drawBoxOutline(it.position.toAABB(), Color(color.r, color.g, color.b), 2f, phase = true)
-                    2 -> RenderUtils.drawFilledBox(it.position.toAABB(), Color(color.r, color.g, color.b, color.alpha), phase = true)
-                }
-                if (renderText) {
-                    RenderUtils.drawStringInWorld(name, it.positionVector.add(Vec3(0.0, 2.0, 0.0)), depthTest = true, scale = 0.03f)
-                }
+                Renderer.drawBox(it.position.toAABB(), color, 2f, depth = true, fillAlpha = if (renderMode == 2) color.alpha else 0f, outlineAlpha = if (renderMode == 1) color.alpha else 0f)
+                if (renderText)
+                    Renderer.drawStringInWorld(name, it.positionVector.add(Vec3(0.0, 2.0, 0.0)), depth = true, color = color, scale = 0.03f)
+
             }
         }
     }

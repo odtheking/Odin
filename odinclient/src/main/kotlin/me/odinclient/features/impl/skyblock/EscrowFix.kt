@@ -11,7 +11,6 @@ object EscrowFix : Module(
     description = "Automatically reopens the ah/bz when it gets closed by escrow.",
     category = Category.SKYBLOCK
 ) {
-
     private val messages = hashMapOf(
         "There was an error with the auction house! (AUCTION_EXPIRED_OR_NOT_FOUND)" to "ah",
         "There was an error with the auction house! (INVALID_BID)" to "ah",

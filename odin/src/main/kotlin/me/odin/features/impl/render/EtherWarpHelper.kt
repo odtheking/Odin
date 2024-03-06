@@ -10,7 +10,7 @@ import me.odinmain.features.settings.impl.DualSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.EtherWarpHelper
 import me.odinmain.utils.skyblock.EtherWarpHelper.etherPos
 import me.odinmain.utils.skyblock.extraAttributes
@@ -41,10 +41,9 @@ object EtherWarpHelper : Module(
             val color = if (etherPos.succeeded) renderColor else wrongColor
 
             if (filled)
-                RenderUtils.drawFilledBox(pos.toAABB(), color, phase = phase)
+                Renderer.drawBox(pos.toAABB(), color, depth = phase, outlineAlpha = 0)
             else
-                RenderUtils.drawBoxOutline(pos.toAABB()
-                    , color, thickness = thickness, phase = phase)
+                Renderer.drawBox(pos.toAABB(), color, outlineWidth = thickness, depth = phase, fillAlpha = 0)
         }
     }
 

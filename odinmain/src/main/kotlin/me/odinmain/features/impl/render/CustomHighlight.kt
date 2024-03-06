@@ -9,14 +9,13 @@
     import me.odinmain.features.settings.Setting.Companion.withDependency
     import me.odinmain.features.settings.impl.*
     import me.odinmain.utils.ServerUtils.getPing
+    import me.odinmain.utils.addVec
+    import me.odinmain.utils.fastEyeHeight
     import me.odinmain.utils.getPositionEyes
     import me.odinmain.utils.render.Color
     import me.odinmain.utils.render.OutlineUtils
-    import me.odinmain.utils.render.RenderUtils
     import me.odinmain.utils.render.RenderUtils.renderVec
-    import me.odinmain.utils.render.RenderUtils.renderX
-    import me.odinmain.utils.render.RenderUtils.renderY
-    import me.odinmain.utils.render.RenderUtils.renderZ
+    import me.odinmain.utils.render.Renderer
     import net.minecraft.entity.Entity
     import net.minecraft.entity.boss.EntityWither
     import net.minecraft.entity.item.EntityArmorStand
@@ -34,7 +33,7 @@
         private val starredMobESP: Boolean by BooleanSetting("Starred Mob Highlight", true, description = "Highlights mobs with a star in their name (remove star from the separate list).")
         val color: Color by ColorSetting("Color", Color.RED, true)
         val mode: Int by SelectorSetting("Mode", "Outline", arrayListOf("Outline", "Overlay", "Boxes"))
-        private val tracerLimit: Int by NumberSetting("Tracer Limit", 0, 0, 15, description = "Highlight will draw tracer to all mobs when you have under this amount of mobs marked, set to 0 to disable. Helpful for finding lost mobs.")
+        private val tracerLimit: Int by NumberSetting("Tracer Limit", 0, 0, 15, description = "Highlight will draw tracer to all mobs when you have under this amount of mobs marked, set to 0 to disable. Helpful for finding lost mobs.").withDependency { !onLegitVersion }
 
         private val xray: Boolean by BooleanSetting("Through Walls", true).withDependency { !onLegitVersion }
         private val thickness: Float by NumberSetting("Outline Thickness", 5f, 1f, 20f, 0.5f).withDependency { mode != 1 }
@@ -79,15 +78,10 @@
         fun onRenderWorldLast(event: RenderWorldLastEvent) {
             currentEntities.forEach {
                 if (currentEntities.size < tracerLimit)
-                    RenderUtils.draw3DLine(getPositionEyes(mc.thePlayer.renderVec), getPositionEyes(it.renderVec), color, 2, false)
+                    Renderer.draw3DLine(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), getPositionEyes(it.renderVec), color, 2, false)
 
                 if (mode == 2)
-                    RenderUtils.drawBoxOutline(
-                        it.renderX - it.width / 2, it.width.toDouble(),
-                        it.renderY, it.height.toDouble(),
-                        it.renderZ - it.width / 2, it.width.toDouble(),
-                        color, thickness / 5f, renderThrough
-                    )
+                    Renderer.drawBox(it.entityBoundingBox, color, thickness, depth = renderThrough, fillAlpha = 0)
             }
         }
 

@@ -4,8 +4,7 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils.drawBoxOutline
-import me.odinmain.utils.render.RenderUtils.drawFilledBox
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.toAABB
 import net.minecraft.util.BlockPos
@@ -82,15 +81,15 @@ object PearlWaypoints : Module(
         var closest = true
         getOrderedLineups(mc.thePlayer.position).forEach { (lineup, color) ->
             lineup.startPos.forEach {
-                drawBoxOutline(it.toAABB(), color, if (!closest && hideFarWaypoints) 1f else 3f, phase = true)
+                Renderer.drawBox(it.toAABB(), color, if (!closest && hideFarWaypoints) 1f else 3f, depth = true)
             }
 
             lineup.lineups.forEach {
                 if (!closest && hideFarWaypoints) return@forEach
-                if (NoPre.missing == "") return@forEach drawFilledBox(it.toAABB(), color, true)
+                if (NoPre.missing == "") return@forEach Renderer.drawBox(it.toAABB(), color, outlineWidth = 0f, depth = true)
                 if (lineup.startPos == setOf(BlockPos(-141, 78, -91)) && blockNameMap[NoPre.missing] != it) return@forEach
 
-                drawFilledBox(it.toAABB(), color, true)
+                Renderer.drawBox(it.toAABB(), color, outlineWidth = 0f, depth = true)
             }
             closest = false
         }

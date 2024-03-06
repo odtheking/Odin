@@ -7,10 +7,11 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
+import net.minecraft.util.AxisAlignedBB
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -44,14 +45,8 @@ object KeyHighlight : Module(
         }
 
         val pos = entity.positionVector
-        RenderUtils.drawBoxOutline(
-            pos.xCoord - 0.5, 1.0,
-            pos.yCoord + 1.15, 1.0,
-            pos.zCoord - 0.5, 1.0,
-            color,
-            thickness,
-            !OdinMain.onLegitVersion
-        )
+        Renderer.drawBox(AxisAlignedBB(pos.xCoord - 0.5, pos.yCoord, pos.zCoord - 0.5, pos.xCoord + 0.5, pos.yCoord + 1.15, pos.zCoord + 0.5),
+            color, fillAlpha = 0f, depth = !OdinMain.onLegitVersion)
     }
 
     init {

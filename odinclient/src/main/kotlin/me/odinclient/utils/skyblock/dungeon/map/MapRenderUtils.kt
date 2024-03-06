@@ -7,7 +7,7 @@ import me.odinclient.utils.skyblock.dungeon.map.MapUtils.coordMultiplier
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils.bindColor
+import me.odinmain.utils.render.RenderUtils.bind
 import me.odinmain.utils.skyblock.itemID
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
@@ -30,7 +30,7 @@ object MapRenderUtils {
         GlStateManager.disableTexture2D()
         GlStateManager.enableAlpha()
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        color.bindColor()
+        color.bind()
 
         worldRenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION)
         addQuadVertices(x, y, w, h)
@@ -46,7 +46,7 @@ object MapRenderUtils {
         GlStateManager.enableBlend()
         GlStateManager.disableTexture2D()
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        color.bindColor()
+        color.bind()
 
         worldRenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION)
         GlStateManager.shadeModel(GL11.GL_FLAT)

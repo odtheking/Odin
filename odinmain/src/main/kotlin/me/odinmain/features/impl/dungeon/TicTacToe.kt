@@ -4,12 +4,13 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.ClickEvent
 import me.odinmain.features.impl.dungeon.PuzzleSolvers.blockWrongClicks
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.currentRoomName
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import net.minecraft.entity.item.EntityItemFrame
 import net.minecraft.init.Blocks
 import net.minecraft.init.Items
+import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.MovingObjectPosition
@@ -153,12 +154,13 @@ object TicTacToe {
 
     fun tttRender() {
         if (!inDungeons || !PuzzleSolvers.tttSolver || bestMove == null) return
-        RenderUtils.drawBoxOutline(
-            bestMove!!.x , bestMove!!.y , bestMove!!.z,
-            1,
+        Renderer.drawBox(
+            AxisAlignedBB(
+                bestMove!!.x - 0.5, bestMove!!.y.toDouble(), bestMove!!.z - 0.5,
+                bestMove!!.x + 0.5, bestMove!!.y + 1.15, bestMove!!.z + 0.5),
             Color.GREEN,
-            thickness = 2f,
-            phase = true
+            fillAlpha = 0,
+            depth = true
         )
     }
 

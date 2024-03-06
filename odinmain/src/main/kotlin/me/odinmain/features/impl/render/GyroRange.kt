@@ -5,7 +5,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.heldItem
 import me.odinmain.utils.skyblock.itemID
 import net.minecraft.util.Vec3
@@ -28,15 +28,14 @@ object GyroRange : Module(
         val block = mc.theWorld?.getBlockState(pos)?.block ?: return
         if (block.isAir(mc.theWorld, pos)) return
 
-        RenderUtils.drawCylinder(
+
+
+        Renderer.drawCylinder(
             Vec3(pos).addVector(0.5, 1.0, 0.5),
             10f, 10f - thickness, 0.2f,
             steps, 1,
             0f, 90f, 90f,
-            color.r / 255f,
-            color.g / 255f,
-            color.b / 255f,
-            color.alpha
+            color
         )
     }
 }
