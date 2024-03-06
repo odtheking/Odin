@@ -74,7 +74,7 @@ fun registerCommands(vararg command: CommandBase) {
 
 
 
-@Deprecated("don't use, im just to lazy to convert atm", level = DeprecationLevel.WARNING)
+@Deprecated("don't use, use commodore() function instead (has aliases and cleaner)", level = DeprecationLevel.WARNING)
 interface Commodore : ICommodore {
     override val command: CommandNode
 
