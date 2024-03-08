@@ -2,7 +2,7 @@ package me.odinclient
 
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import me.odinclient.commands.impl.AutoSellCommand
+import me.odinclient.commands.impl.autoSellCommand
 import me.odinclient.dungeonmap.features.Dungeon
 import me.odinclient.dungeonmap.features.MapRender
 import me.odinclient.dungeonmap.features.Window
@@ -15,7 +15,7 @@ import me.odinclient.features.impl.floor7.p3.*
 import me.odinclient.features.impl.render.*
 import me.odinclient.features.impl.skyblock.*
 import me.odinmain.OdinMain
-import me.odinmain.commands.Commodore.Companion.registerCommands
+import me.odinmain.commands.registerCommands
 import me.odinmain.config.utils.ConfigFile
 import me.odinmain.features.ModuleManager
 import net.minecraftforge.common.MinecraftForge
@@ -49,7 +49,7 @@ class ModCore {
         ).forEach(MinecraftForge.EVENT_BUS::register)
 
         registerCommands(
-            AutoSellCommand
+            autoSellCommand
         )
     }
 

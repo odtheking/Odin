@@ -47,7 +47,7 @@ dependencies {
 
     api("com.mojang:brigadier:1.0.18")
 
-    shadowImpl("com.github.Stivais:Commodore:9342db41b1") {
+    shadowImpl("com.github.Stivais:Commodore:30a041f9da") {
         exclude(module = "kotlin-stdlib-jdk8")
         exclude(module = "kotlin-reflect")
     }

@@ -1,16 +1,39 @@
 package me.odinmain.commands.impl
 
-import com.github.stivais.commodore.parsers.impl.GreedyString
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
-import me.odinmain.commands.CommandNode
-import me.odinmain.commands.Commodore
-import me.odinmain.utils.equalsOneOf
+import me.odinmain.commands.commodore
 import me.odinmain.utils.fetchURLData
 import me.odinmain.utils.skyblock.modMessage
 
-object SoopyCommand : Commodore {
+val commands = listOf(
+    "nw", "bank", "auctions", "sblvl", "skills", "skillaverage", "overflowskills", "overflowskillaverage", "bestiary",
+    "kuudra", "dojo", "faction", "guildof", "dungeon", "currdungeon", "classaverage", "secrets", "essence", "rtca",
+    "whatdoing", "pet", "nucleus"
+)
+
+val soopyCommand = commodore("soopycmd", "spcmd") {
+    literal("help").runs {
+        modMessage("Available commands for /spcmd:\n ${commands.joinToString()}")
+    }
+
+    runs {
+        modMessage("Usage:\n /spcmd <command> <player>\n /spcmd help")
+    }
+
+    runs { command: String, user: String? ->
+        if (!commands.contains(command)) return@runs modMessage("Invalid Usage. Usage:\n /spcmd <command> <player>\n /spcmd help")
+        val targetUser = user ?: mc.thePlayer.name
+        val url = "https://soopy.dev/api/soopyv2/botcommand?m=$command&u=$targetUser"
+
+        modMessage("Running command...")
+        scope.launch { modMessage(fetchURLData(url)) }
+    }.suggests("command", commands)
+}
+
+
+/*object SoopyCommand : Commodore {
     override val command: CommandNode =
         literal("spcmd") {
 
@@ -46,4 +69,4 @@ object SoopyCommand : Commodore {
                 scope.launch { modMessage(fetchURLData(url)) }
             }
         }
-}
+}*/
