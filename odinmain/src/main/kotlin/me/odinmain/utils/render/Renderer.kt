@@ -5,86 +5,96 @@ import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.addVec
 import me.odinmain.utils.min
-import me.odinmain.utils.render.RenderUtils.bind
 import me.odinmain.utils.render.RenderUtils.drawBeaconBeam
-import me.odinmain.utils.render.RenderUtils.postDraw
-import me.odinmain.utils.render.RenderUtils.preDraw
-import me.odinmain.utils.render.RenderUtils.renderVec
-import me.odinmain.utils.render.RenderUtils.tessellator
-import me.odinmain.utils.render.RenderUtils.worldRenderer
 import me.odinmain.utils.runIn
+import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.toAABB
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.opengl.Display
-import org.lwjgl.opengl.GL11
 import kotlin.math.max
 
 object Renderer {
+
+    /**
+     * Draws a box in the world with the specified axis-aligned bounding box (AABB), color, and optional parameters.
+     *
+     * @param aabb         The axis-aligned bounding box defining the box.
+     * @param color        The color of the box.
+     * @param outlineWidth The width of the outline (default is 3).
+     * @param outlineAlpha The alpha value of the outline (default is 1).
+     * @param fillAlpha    The alpha value of the fill (default is 1).
+     * @param depth        Indicates whether to draw with depth (default is true).
+     */
     fun drawBox(
         aabb: AxisAlignedBB,
         color: Color,
         outlineWidth: Number = 3,
         outlineAlpha: Number = 1,
         fillAlpha: Number = 1,
-        depth: Boolean = true
+        depth: Boolean = false
     ) {
         RenderUtils.drawOutlinedAABB(aabb, color.withAlpha(outlineAlpha.toFloat()), depth = depth)
 
         RenderUtils.drawFilledAABB(aabb, color.withAlpha(fillAlpha.toFloat()), depth = depth, outlineWidth = outlineWidth)
     }
 
+    /**
+     * Draws a 3D line between two specified points in the world.
+     *
+     * @param pos1      The starting position of the line.
+     * @param pos2      The ending position of the line.
+     * @param color     The color of the line.
+     * @param lineWidth The width of the line (default is 3).
+     * @param depth     Indicates whether to draw with depth (default is false).
+     */
     fun draw3DLine(pos1: Vec3, pos2: Vec3, color: Color, lineWidth: Int = 3, depth: Boolean = false) {
-        val renderVec = mc.renderViewEntity.renderVec
-
-        GlStateManager.pushMatrix()
-        color.bind()
-        translate(-renderVec.xCoord, -renderVec.yCoord, -renderVec.zCoord)
-        preDraw()
-
-        GL11.glLineWidth(lineWidth.toFloat())
-        if (!depth) {
-            GL11.glDisable(GL11.GL_DEPTH_TEST)
-            GlStateManager.depthMask(false)
-        }
-        worldRenderer.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
-        worldRenderer.pos(pos1.xCoord, pos1.yCoord, pos1.zCoord).endVertex()
-        worldRenderer.pos(pos2.xCoord, pos2.yCoord, pos2.zCoord).endVertex()
-
-        tessellator.draw()
-
-        translate(renderVec.xCoord, renderVec.yCoord, renderVec.zCoord)
-        if (!depth) {
-            GL11.glEnable(GL11.GL_DEPTH_TEST)
-            GlStateManager.depthMask(true)
-        }
-
-        postDraw()
-        GlStateManager.resetColor()
-        GlStateManager.popMatrix()
+        RenderUtils.draw3DLine(pos1, pos2, color, lineWidth, depth)
     }
 
+    /**
+     * Draws a custom beacon with specified title, position, color, and optional parameters.
+     *
+     * @param title    The title of the beacon.
+     * @param vec3     The position of the beacon.
+     * @param color    The color of the beacon.
+     * @param beacon   Indicates whether to draw the beacon (default is true).
+     * @param increase Indicates whether to increase the scale based on distance (default is true).
+     * @param noFade   Indicates whether the beacon should not fade based on distance (default is false).
+     * @param distance Indicates whether to display the distance in the title (default is true).
+     */
     fun drawCustomBeacon(title: String, vec3: Vec3, color: Color, beacon: Boolean = true, increase: Boolean = true, noFade: Boolean = false, distance: Boolean = true) {
         val dist = vec3.distanceTo(mc.thePlayer.positionVector)
-        drawBox(aabb = vec3.toAABB(), color = color, fillAlpha = 0f)
+        drawBox(aabb = vec3.toAABB(), color = color, fillAlpha = 0f, depth = false)
 
         RenderUtils.drawStringInWorld(
             if (distance) "$title §r§f(§3${dist.toInt()}m§f)" else title,
             vec3.addVec(0.5, 1.7 + dist / 30, 0.5),
             color = color,
             shadow = true,
-            scale = if (increase) max(0.03, dist / 200.0).toFloat() else 0.06f
+            scale = if (increase) max(0.03, dist / 200.0).toFloat() else 0.06f,
+            depthTest = false
         )
 
-        val alpha = if (noFade) 255f else min(1f, max(0f, dist.toFloat()) / 60f)
-        if (beacon) drawBeaconBeam(vec3, color.withAlpha(alpha))
+        val alpha = if (noFade) 1f else min(1f, max(0f, dist.toFloat()) / 60f)
+        modMessage("Alpha: $alpha, noFade: $noFade")
+        if (beacon) drawBeaconBeam(vec3, color.withAlpha(alpha), depth = false)
     }
 
+    /**
+     * Draws text in the world at the specified position with the specified color and optional parameters.
+     *
+     * @param text            The text to be drawn.
+     * @param vec3            The position to draw the text.
+     * @param color           The color of the text.
+     * @param renderBlackBox  Indicates whether to render a black box behind the text (default is false).
+     * @param depth           Indicates whether to draw with depth (default is true).
+     * @param scale           The scale of the text (default is 0.03).
+     * @param shadow          Indicates whether to render a shadow for the text (default is true).
+     */
     fun drawStringInWorld(
         text: String,
         vec3: Vec3,
@@ -97,12 +107,28 @@ object Renderer {
         RenderUtils.drawStringInWorld(text, vec3, color, renderBlackBox, depth, scale, shadow)
     }
 
+    /**
+     * Draws a cylinder in the world with the specified parameters.
+     *
+     * @param pos         The position of the cylinder.
+     * @param baseRadius  The radius of the base of the cylinder.
+     * @param topRadius   The radius of the top of the cylinder.
+     * @param height      The height of the cylinder.
+     * @param slices      The number of slices for the cylinder.
+     * @param stacks      The number of stacks for the cylinder.
+     * @param rot1        Rotation parameter.
+     * @param rot2        Rotation parameter.
+     * @param rot3        Rotation parameter.
+     * @param color       The color of the cylinder.
+     * @param phase       Indicates whether to phase the cylinder (default is false).
+     * @param linemode    Indicates whether to draw the cylinder in line mode (default is false).
+     */
     fun drawCylinder(
         pos: Vec3, baseRadius: Float, topRadius: Float, height: Float,
         slices: Int, stacks: Int, rot1: Float, rot2: Float, rot3: Float,
         color: Color, phase: Boolean = false, linemode: Boolean = false
     ) {
-        drawCylinder(pos, baseRadius, topRadius, height, slices, stacks, rot1, rot2, rot3, color, linemode, phase)
+        RenderUtils.drawCylinder(pos, baseRadius, topRadius, height, slices, stacks, rot1, rot2, rot3, color, linemode, phase)
     }
 
     private var displayTitle = ""

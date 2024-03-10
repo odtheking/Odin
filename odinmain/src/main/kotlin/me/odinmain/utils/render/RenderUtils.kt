@@ -85,6 +85,7 @@ object RenderUtils {
             renderZ + this.width / 2
         )
 
+
     inline operator fun WorldRenderer.invoke(block: WorldRenderer.() -> Unit) {
         block.invoke(this)
     }
@@ -115,16 +116,24 @@ object RenderUtils {
         return Vec3(vec.xCoord - renderPosX, vec.yCoord - renderPosY, vec.zCoord - renderPosZ)
     }
 
+    /**
+     * Draws a filled Axis Aligned Bounding Box (AABB).
+     *
+     * @param aabb The bounding box to draw.
+     * @param color The color to use for drawing.
+     * @param depth Whether to enable depth testing.
+     * @param outlineWidth The width of the outline.
+     */
     fun drawFilledAABB(aabb: AxisAlignedBB, color: Color, depth: Boolean = false, outlineWidth: Number = 3) {
         if (color.isTransparent) return
         GlStateManager.pushMatrix()
+        color.bind()
+        GlStateManager.translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-        if (depth) GlStateManager.disableDepth()
+        if (!depth) GlStateManager.disableDepth()
         GlStateManager.disableTexture2D()
         GlStateManager.disableLighting()
         GlStateManager.enableBlend()
-        GL11.glLineWidth(outlineWidth.toFloat())
-        color.bind()
 
         worldRenderer {
             begin(7, DefaultVertexFormats.POSITION_NORMAL)
@@ -162,13 +171,21 @@ object RenderUtils {
     }
 
 
+    /**
+     * Draws an outlined Axis Aligned Bounding Box (AABB).
+     *
+     * @param aabb The bounding box to draw.
+     * @param color The color to use for drawing.
+     * @param thickness The thickness of the outline.
+     * @param depth Whether to enable depth testing.
+     */
     fun drawOutlinedAABB(aabb: AxisAlignedBB, color: Color, thickness: Number = 3f, depth: Boolean = false) {
         if (color.isTransparent) return
         GlStateManager.pushMatrix()
         color.bind()
         GlStateManager.translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-        if (depth) GlStateManager.disableDepth()
+        if (!depth) GlStateManager.disableDepth()
         GlStateManager.disableTexture2D()
         GlStateManager.disableLighting()
         GlStateManager.enableBlend()
@@ -204,11 +221,19 @@ object RenderUtils {
         GlStateManager.popMatrix()
     }
 
-    fun drawBeaconBeam(vec3: Vec3, color: Color) {
+    /**
+     * Draws a beacon beam at the specified position.
+     * @param vec3 The position at which to draw the beacon beam.
+     * @param color The color of the beacon beam.
+     * @param depth Whether to enable depth testing.
+     */
+    fun drawBeaconBeam(vec3: Vec3, color: Color, depth: Boolean = false) {
         if (color.isTransparent) return
         val height = 300
         val bottomOffset = 0
         val topOffset = bottomOffset + height
+
+        if (!depth) GlStateManager.disableDepth()
 
         mc.textureManager.bindTexture(beaconBeam)
 
@@ -306,8 +331,59 @@ object RenderUtils {
         GlStateManager.disableBlend()
         GlStateManager.popMatrix()
         GlStateManager.enableTexture2D()
+        if (!depth) GlStateManager.enableDepth()
     }
 
+    /**
+     * Draws a 3D line between two specified points in the world.
+     *
+     * @param pos1      The starting position of the line.
+     * @param pos2      The ending position of the line.
+     * @param color     The color of the line.
+     * @param lineWidth The width of the line (default is 3).
+     * @param depth     Indicates whether to draw with depth (default is false).
+     */
+    fun draw3DLine(pos1: Vec3, pos2: Vec3, color: Color, lineWidth: Int = 3, depth: Boolean = false) {
+        val renderVec = mc.renderViewEntity.renderVec
+
+        GlStateManager.pushMatrix()
+        color.bind()
+        translate(-renderVec.xCoord, -renderVec.yCoord, -renderVec.zCoord)
+        preDraw()
+
+        GL11.glLineWidth(lineWidth.toFloat())
+        if (!depth) {
+            GL11.glDisable(GL11.GL_DEPTH_TEST)
+            GlStateManager.depthMask(false)
+        }
+        worldRenderer.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
+        worldRenderer.pos(pos1.xCoord, pos1.yCoord, pos1.zCoord).endVertex()
+        worldRenderer.pos(pos2.xCoord, pos2.yCoord, pos2.zCoord).endVertex()
+
+        tessellator.draw()
+
+        translate(renderVec.xCoord, renderVec.yCoord, renderVec.zCoord)
+        if (!depth) {
+            GL11.glEnable(GL11.GL_DEPTH_TEST)
+            GlStateManager.depthMask(true)
+        }
+
+        postDraw()
+        GlStateManager.resetColor()
+        GlStateManager.popMatrix()
+    }
+
+    /**
+     * Draws text in the world at the specified position with the specified color and optional parameters.
+     *
+     * @param text            The text to be drawn.
+     * @param vec3            The position to draw the text.
+     * @param color           The color of the text.
+     * @param renderBlackBox  Indicates whether to render a black box behind the text (default is false).
+     * @param depth           Indicates whether to draw with depth (default is true).
+     * @param scale           The scale of the text (default is 0.03).
+     * @param shadow          Indicates whether to render a shadow for the text (default is true).
+     */
     fun drawStringInWorld(
         text: String,
         vec3: Vec3,
@@ -315,7 +391,7 @@ object RenderUtils {
         renderBlackBox: Boolean = false,
         depthTest: Boolean = true,
         scale: Float = 0.3f,
-        shadow: Boolean = true
+        shadow: Boolean = false
     ) {
         val renderPos = getRenderPos(vec3)
 
@@ -366,6 +442,22 @@ object RenderUtils {
         GlStateManager.popMatrix()
     }
 
+    /**
+     * Draws a cylinder in the world with the specified parameters.
+     *
+     * @param pos         The position of the cylinder.
+     * @param baseRadius  The radius of the base of the cylinder.
+     * @param topRadius   The radius of the top of the cylinder.
+     * @param height      The height of the cylinder.
+     * @param slices      The number of slices for the cylinder.
+     * @param stacks      The number of stacks for the cylinder.
+     * @param rot1        Rotation parameter.
+     * @param rot2        Rotation parameter.
+     * @param rot3        Rotation parameter.
+     * @param color       The color of the cylinder.
+     * @param phase       Indicates whether to phase the cylinder (default is false).
+     * @param linemode    Indicates whether to draw the cylinder in line mode (default is false).
+     */
     fun drawCylinder(
         pos: Vec3, baseRadius: Number, topRadius: Number, height: Number,
         slices: Number, stacks: Number, rot1: Number, rot2: Number, rot3: Number,
@@ -405,13 +497,20 @@ object RenderUtils {
         GlStateManager.popMatrix()
     }
 
+    /**
+     * Draws a Texture modal rectangle at the specified position.
+     * @param x The x-coordinate of the rectangle.
+     * @param y The y-coordinate of the rectangle.
+     * @param width The width of the rectangle.
+     * @param height The height of the rectangle.
+     */
     fun drawTexturedModalRect(x: Int, y: Int, width: Int, height: Int) {
         worldRenderer {
             begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
-            worldRenderer.pos(x.toDouble(), (y + height).toDouble(), 0.0).tex(0.0, 1.0).endVertex()
-            worldRenderer.pos((x + width).toDouble(), (y + height).toDouble(), 0.0).tex(1.0, 1.0).endVertex()
-            worldRenderer.pos((x + width).toDouble(), y.toDouble(), 0.0).tex(1.0, 0.0).endVertex()
-            worldRenderer.pos(x.toDouble(), y.toDouble(), 0.0).tex(0.0, 0.0).endVertex()
+            pos(x.toDouble(), (y + height).toDouble(), 0.0).tex(0.0, 1.0).endVertex()
+            pos((x + width).toDouble(), (y + height).toDouble(), 0.0).tex(1.0, 1.0).endVertex()
+            pos((x + width).toDouble(), y.toDouble(), 0.0).tex(1.0, 0.0).endVertex()
+            pos(x.toDouble(), y.toDouble(), 0.0).tex(0.0, 0.0).endVertex()
         }
         tessellator.draw()
     }

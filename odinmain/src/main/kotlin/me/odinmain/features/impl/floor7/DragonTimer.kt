@@ -18,7 +18,8 @@ object DragonTimer {
     }
 
     fun renderTime() {
-        if (toRender.size == 0) return
+        updateTime()
+        if (toRender.isEmpty()) return
         toRender.forEach {
             Renderer.drawStringInWorld(
                 it.first,

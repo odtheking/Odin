@@ -7,6 +7,7 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.DropdownSetting
 import me.odinmain.features.settings.impl.KeybindSetting
 import me.odinmain.features.settings.impl.Keybinding
+import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.name
@@ -24,6 +25,7 @@ object WardrobeKeybinds : Module(
     private val unequipKeybind: Keybinding by KeybindSetting("Unequip Keybind", Keyboard.KEY_NONE, "Unequips the current armor.")
     private val nextPageKeybind: Keybinding by KeybindSetting("Next Page Keybind", Keyboard.KEY_NONE, "Goes to the next page.")
     private val previousPageKeybind: Keybinding by KeybindSetting("Previous Page Keybind", Keyboard.KEY_NONE, "Goes to the previous page.")
+    private val delay: Long by NumberSetting("Delay", 1500, 0.0, 10000.0, 10.0, description = "The delay between each click .")
 
     private val advanced: Boolean by DropdownSetting("Show Settings", false)
 
@@ -37,13 +39,12 @@ object WardrobeKeybinds : Module(
     private val wardrobe8: Keybinding by KeybindSetting("Wardrobe 8", Keyboard.KEY_8, "Wardrobe 8").withDependency { advanced }
     private val wardrobe9: Keybinding by KeybindSetting("Wardrobe 9", Keyboard.KEY_9, "Wardrobe 9").withDependency { advanced }
 
-    private val clickCoolDown = Clock(3_000)
+    private val clickCoolDown = Clock(delay)
 
     @SubscribeEvent
     fun keyTyped(event: GuiKeyPressEvent) {
         if (
             event.container !is ContainerChest ||
-            !event.container.name.startsWith("Wardrobe") ||
             !event.keyCode.equalsOneOf(
                 unequipKeybind.key, nextPageKeybind.key, previousPageKeybind.key,
                 wardrobe1.key, wardrobe2.key, wardrobe3.key,
@@ -52,18 +53,37 @@ object WardrobeKeybinds : Module(
             )
         ) return
 
+        val matchResult = Regex("Wardrobe \\((\\d)/(\\d)\\)").find(event.container.name) ?: return modMessage("Invalid container name.")
+        val (current, total) = matchResult.destructured
+
         val index = when {
-            nextPageKeybind.isDown() -> 53
-            previousPageKeybind.isDown() -> 45
+            nextPageKeybind.isDown() -> if (current.toInt() < total.toInt()) 53 else return modMessage("You are already on the last page.")
+            previousPageKeybind.isDown() -> if (current.toInt() > 1) 45 else return modMessage("You are already on the first page.")
             unequipKeybind.isDown() -> {
                 event.container.inventorySlots.subList(36, 44)
                     .indexOfFirst { it?.stack?.displayName?.noControlCodes?.contains("Equipped") ?: false }
                     .takeIf { it != -1 } ?: return modMessage("Couldn't find equipped armor.")
             }
-            else ->  event.keyCode + 34
+            else -> {
+                when (event.keyCode) {
+                    wardrobe1.key -> 36
+                    wardrobe2.key -> 37
+                    wardrobe3.key -> 38
+                    wardrobe4.key -> 39
+                    wardrobe5.key -> 40
+                    wardrobe6.key -> 41
+                    wardrobe7.key -> 42
+                    wardrobe8.key -> 43
+                    wardrobe9.key -> 44
+                    else -> return modMessage("Invalid keybind.")
+                }
+            }
         }
-        if (clickCoolDown.hasTimePassed())
-            mc.playerController.windowClick(event.container.windowId, index, 2, 3, mc.thePlayer)
+        if (clickCoolDown.hasTimePassed()) {
+            if (index > event.container.lowerChestInventory.sizeInventory - 1 || index < 1) return modMessage("Invalid index. $index, ${event.keyCode}")
+            mc.playerController.windowClick(event.container.windowId, index, 0, 0, mc.thePlayer)
+            clickCoolDown.update()
+        }
 
         event.isCanceled = true
     }
