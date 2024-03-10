@@ -1,8 +1,5 @@
 package me.odinmain.commands.impl
 
-import com.github.stivais.commodore.parsers.impl.GreedyString
-import kotlinx.coroutines.launch
-import me.odinmain.OdinMain
 import me.odinmain.OdinMain.display
 import me.odinmain.commands.commodore
 import me.odinmain.features.impl.render.ClickGUIModule
@@ -13,7 +10,6 @@ import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.fetchURLData
 import me.odinmain.utils.skyblock.PlayerUtils.posX
 import me.odinmain.utils.skyblock.PlayerUtils.posY
 import me.odinmain.utils.skyblock.PlayerUtils.posZ
@@ -22,15 +18,7 @@ import me.odinmain.utils.skyblock.sendChatMessage
 import me.odinmain.utils.skyblock.sendCommand
 import kotlin.math.round
 
-private val floors = mapOf(
-    '1' to "one", '2' to "two", '3' to "three", '4' to "four", '5' to "five", '6' to "six", '7' to "seven"
-)
-
-private val tiers = mapOf(
-    '1' to "basic", '2' to "hot", '3' to "burning", '4' to "fiery", '5' to "infernal"
-)
-
-val mainCommand = commodore("od", "odinclient", "odin") {
+val mainCommand = commodore("od", "odin", "odinclient") {
     runs {
         display = ClickGUI
     }
@@ -54,22 +42,22 @@ val mainCommand = commodore("od", "odinclient", "odin") {
     literal("help").runs {
         modMessage(
             """
-                 List of commands:
-                 §3- /od §7» §8Main command.
-                 §3- /blacklist §7» §8Used to configure your blacklist.
-                 §3- /highlight §7» §8Used to configure Highlight list.
-                 §3- /waypoint §7» §8Configure waypoints.
-                 §3- /termsim §7» §8Simulates terminals so you can practice them.
-                 §3- /rq §7» §8Requeues dungeon run.
-                 §3- /od m? » §8Teleports you to a floor in master mode.
-                 §3- /od f? » §8Teleports you to a floor in normal mode.
-                 §3- /od t? » §8Teleports you to a kuudra run.
-                 §3- /od dianareset §7» §8Resets all active diana waypoints.
-                 §3- /od sendcoords §7» §8Sends coords in patcher's format.
-                 §3- /od ping §7» §8Sends your ping in chat.
-                 §3- /od tps §7» §8Sends the server's tps in chat.
-                 §3- /spcmd §7» §8Use /spcmd cmds for command list.
-                 """.trimIndent()
+             List of commands:
+             §3- /od §7» §8Main command.
+             §3- /blacklist §7» §8Used to configure your blacklist.
+             §3- /highlight §7» §8Used to configure Highlight list.
+             §3- /waypoint §7» §8Configure waypoints.
+             §3- /termsim §7» §8Simulates terminals so you can practice them.
+             §3- /rq §7» §8Requeues dungeon run.
+             §3- /od m? » §8Teleports you to a floor in master mode.
+             §3- /od f? » §8Teleports you to a floor in normal mode.
+             §3- /od t? » §8Teleports you to a kuudra run.
+             §3- /od dianareset §7» §8Resets all active diana waypoints.
+             §3- /od sendcoords §7» §8Sends coords in patcher's format.
+             §3- /od ping §7» §8Sends your ping in chat.
+             §3- /od tps §7» §8Sends the server's tps in chat.
+             §3- /spcmd §7» §8Use /spcmd cmds for command list.
+             """.trimIndent()
         )
     }
 
@@ -90,6 +78,16 @@ val mainCommand = commodore("od", "odinclient", "odin") {
         modMessage("${colorizeTps(round(ServerUtils.averageTps))}ms")
     }
 
+    runs { str: String ->
+        if (str.length != 2) return@runs modMessage("Invalid command. Use /od help for a list of commands.")
+        val type = str[0]
+        val number = str[1]
+        if (!type.equalsOneOf('f', 'm', 't') || number !in '1'..'7') return@runs modMessage("Invalid command. Use /od help for a list of commands.")
+        if (type == 't' && number == '1') modMessage("Kuudra doesnt have an option to use a command to join this instance.")
+        if (type == 't') sendCommand("joininstance kuudra_${tiers[number]}")
+        else if (type == 'f' || type == 'm') sendCommand("joininstance ${if (type == 'm') "master_" else ""}catacombs_floor_${floors[number]}")
+    }
+/* someone else can do this
     runs { commandString: GreedyString ->
         if (commandString.string.startsWith("-")) {
             val message = commandString.string.replace("-", "").split(" ")
@@ -126,5 +124,13 @@ val mainCommand = commodore("od", "odinclient", "odin") {
             if (instanceType == 't') sendCommand("joininstance kuudra_${tiers[instanceNumber]}")
             else if (instanceType == 'f' || instanceType == 'm') sendCommand("joininstance ${if (instanceType == 'm') "master_" else ""}catacombs_floor_${floors[instanceNumber]}")
         }
-    }
+    }*/
 }
+
+private val floors = mapOf(
+    '1' to "one", '2' to "two", '3' to "three", '4' to "four", '5' to "five", '6' to "six", '7' to "seven"
+)
+
+private val tiers = mapOf(
+    '1' to "basic", '2' to "hot", '3' to "burning", '4' to "fiery", '5' to "infernal"
+)

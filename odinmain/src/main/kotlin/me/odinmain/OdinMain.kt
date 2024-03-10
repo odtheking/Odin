@@ -4,7 +4,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import me.odinmain.commands.Commodore.Companion.registerCommands
 import me.odinmain.commands.impl.*
 import me.odinmain.config.Config
 import me.odinmain.config.DungeonWaypointConfig
@@ -78,16 +77,14 @@ object OdinMain {
             this
         ).forEach { MinecraftForge.EVENT_BUS.register(it) }
 
-        registerCommands(
-            DevCommand,
-            TermsimCommand,
-            WaypointCommand,
-            BlacklistCommand,
-            SoopyCommand,
-            HighlightCommand
-        )
         me.odinmain.commands.registerCommands(
-            mainCommand
+            mainCommand,
+            soopyCommand,
+            termSimCommand,
+            blacklistCommand,
+            devCommand,
+            highlightCommand,
+            waypointCommand
         )
         OdinFont.init()
     }
