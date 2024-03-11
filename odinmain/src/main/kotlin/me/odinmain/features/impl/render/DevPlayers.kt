@@ -64,7 +64,7 @@ object DevPlayers {
         return s.replace(pattern) { match -> match.groupValues[1] }
     }
 
-    fun updateDevs() {
+    fun updateDevs(): HashMap<String, DevPlayer> {
         scope.launch {
             val data = convertDecimalToNumber(getDataFromServer("https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
             val gson = GsonBuilder().registerTypeAdapter(DevData::class.java, DevDeserializer()).create()
@@ -72,6 +72,7 @@ object DevPlayers {
                 devs[it.DevName] = DevPlayer(it.Size.first, it.Size.second, it.Size.third, it.Wings, Color(it.WingsColor.first, it.WingsColor.second, it.WingsColor.third))
             }
         }
+        return devs
     }
 
     init {
