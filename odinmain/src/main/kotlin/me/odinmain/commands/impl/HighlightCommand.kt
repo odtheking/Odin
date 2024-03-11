@@ -7,10 +7,6 @@ import me.odinmain.features.impl.render.CustomHighlight.highlightList
 import me.odinmain.utils.skyblock.modMessage
 
 val highlightCommand = commodore("highlight") {
-    runs {
-        modMessage("Usage: /highlight\n /blacklist <add/remove> <name>\n /blacklist <clear/list>")
-    }
-
     literal("add").runs { mob: GreedyString ->
         val lowercase = mob.string.lowercase()
         if (lowercase in highlightList) return@runs modMessage("$mob is already in the highlight list.")

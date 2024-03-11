@@ -1,5 +1,6 @@
 package me.odinmain.commands.impl
 
+import com.github.stivais.commodore.utils.SyntaxException
 import me.odinmain.OdinMain.display
 import me.odinmain.commands.commodore
 import me.odinmain.features.impl.render.ClickGUIModule
@@ -78,53 +79,15 @@ val mainCommand = commodore("od", "odin", "odinclient") {
         modMessage("${colorizeTps(round(ServerUtils.averageTps))}ms")
     }
 
-    runs { str: String ->
-        if (str.length != 2) return@runs modMessage("Invalid command. Use /od help for a list of commands.")
-        val type = str[0]
-        val number = str[1]
-        if (!type.equalsOneOf('f', 'm', 't') || number !in '1'..'7') return@runs modMessage("Invalid command. Use /od help for a list of commands.")
-        if (type == 't' && number == '1') modMessage("Kuudra doesnt have an option to use a command to join this instance.")
-        if (type == 't') sendCommand("joininstance kuudra_${tiers[number]}")
-        else if (type == 'f' || type == 'm') sendCommand("joininstance ${if (type == 'm') "master_" else ""}catacombs_floor_${floors[number]}")
-    }
-/* someone else can do this
-    runs { commandString: GreedyString ->
-        if (commandString.string.startsWith("-")) {
-            val message = commandString.string.replace("-", "").split(" ")
-            if (message.size > 2 || message.isEmpty()) return@runs modMessage("Usage: /od -<command> [player] || /spcmd cmds")
+    runs { floor: String -> // floor and kuudra split for better error handling
+        if (floor.length != 2 || !floor[0].equalsOneOf('f', 'm') || floor[1] !in '1'..'7') throw SyntaxException()
+        sendCommand("joininstance ${if (floor[0] == 'm') "master_" else ""}catacombs_floor_${floors[floor[1]]}")
+    } suggests { floors.keys.map { "m$it" } }
 
-            if (message[0].lowercase().equalsOneOf("cmds", "commands", "cmd", "command"))
-                return@runs modMessage("""Available commands:
-                        | kuudra, auctions, skills, skillaverage, dojo, 
-                        | overflowskills, overflowskillaverage, bestiary, 
-                        | faction, nucleus, guildof, essence, secrets, bank, 
-                        | pet, whatdoing, dungeon, currdungeon, sblvl, classaverage, 
-                        | rtca, nw.""".trimMargin())
-            var url = ""
-            when (message.size) {
-                1 -> {
-                    val playerName = OdinMain.mc.thePlayer.name
-                    val command = message[0]
-                    url = "https://soopy.dev/api/soopyv2/botcommand?m=$command&u=$playerName"
-                }
-                2 -> {
-                    val targetUser = message[1]
-                    val command = message[0]
-                    url = "https://soopy.dev/api/soopyv2/botcommand?m=$command&u=$targetUser"
-                }
-            }
-            modMessage("Running command...")
-            OdinMain.scope.launch { modMessage(fetchURLData(url)) }
-        } else {
-            if (commandString.string.length != 2) return@runs modMessage("Invalid command. Use /od help for a list of commands.")
-            val instanceType = commandString.string[0]
-            val instanceNumber = commandString.string[1]
-            if (!instanceType.equalsOneOf('f', 'm', 't') || instanceNumber !in '1'..'7') return@runs modMessage("Invalid command. Use /od help for a list of commands.")
-            if (instanceType == 't' && instanceNumber == '1') modMessage("Kuudra doesnt have an option to use a command to join this instance.")
-            if (instanceType == 't') sendCommand("joininstance kuudra_${tiers[instanceNumber]}")
-            else if (instanceType == 'f' || instanceType == 'm') sendCommand("joininstance ${if (instanceType == 'm') "master_" else ""}catacombs_floor_${floors[instanceNumber]}")
-        }
-    }*/
+    runs { tier: String ->
+        if (tier.length != 2 || tier[0] != 't' || tier[1] !in '1'..'5') throw SyntaxException()
+        sendCommand("joininstance kuudra_${tiers[tier[1]]}")
+    } suggests { tiers.keys.map { it.toString() } }
 }
 
 private val floors = mapOf(
