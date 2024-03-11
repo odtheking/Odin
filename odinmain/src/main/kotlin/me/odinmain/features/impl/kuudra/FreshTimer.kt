@@ -35,7 +35,7 @@ object FreshTimer : Module(
             val player = KuudraUtils.kuudraTeammates.find { teammate -> teammate.playerName == mc.thePlayer.name } ?: return@HudSetting 0f to 0f
             val timeLeft = 10000L - (System.currentTimeMillis() - player.eatFreshTime)
             if (timeLeft <= 0) return@HudSetting 0f to 0f
-            if (player.eatFresh)
+            if (player.eatFresh && KuudraUtils.phase == 2)
                 text("Fresh§f: ${(timeLeft / 1000.0).round(2)}s", 1f, 9f, freshTimerHUDColor,12f, OdinFont.REGULAR, shadow = true)
 
             getTextWidth("Fresh: 10s", 12f) + 2f to 12f

@@ -9,11 +9,10 @@
     import me.odinmain.features.settings.Setting.Companion.withDependency
     import me.odinmain.features.settings.impl.*
     import me.odinmain.utils.ServerUtils.getPing
-    import me.odinmain.utils.addVec
-    import me.odinmain.utils.fastEyeHeight
     import me.odinmain.utils.getPositionEyes
     import me.odinmain.utils.render.Color
     import me.odinmain.utils.render.OutlineUtils
+    import me.odinmain.utils.render.RenderUtils
     import me.odinmain.utils.render.RenderUtils.renderVec
     import me.odinmain.utils.render.Renderer
     import net.minecraft.entity.Entity
@@ -78,7 +77,7 @@
         fun onRenderWorldLast(event: RenderWorldLastEvent) {
             currentEntities.forEach {
                 if (currentEntities.size < tracerLimit && !onLegitVersion)
-                    Renderer.draw3DLine(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), getPositionEyes(it.renderVec), color, 2, false)
+                    RenderUtils.draw3DLine(getPositionEyes(mc.thePlayer.renderVec), getPositionEyes(it.renderVec), color, 2, false)
 
                 if (mode == 2)
                     Renderer.drawBox(it.entityBoundingBox, color, thickness, depth = renderThrough, fillAlpha = 0)

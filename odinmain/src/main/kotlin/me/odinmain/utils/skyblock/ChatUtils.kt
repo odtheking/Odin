@@ -71,7 +71,11 @@ fun sendChatMessage(message: Any) {
 fun modMessage(message: Any, prefix: Boolean = true) {
     if (mc.thePlayer == null) return
     val msg = if (prefix) "§3Odin §8»§r $message" else message.toString()
-    mc.thePlayer?.addChatMessage(ChatComponentText(msg))
+    try {
+        mc.thePlayer?.addChatMessage(ChatComponentText(msg))
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
 }
 
 /**

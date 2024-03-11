@@ -16,6 +16,7 @@ import me.odinmain.utils.round
 import me.odinmain.utils.skyblock.KuudraUtils.kuudraEntity
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.PlayerUtils
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -89,7 +90,7 @@ object KuudraDisplay : Module(
         }
         val health = kuudraHP / 1000
         val useScaled = kuudraHP <= 25000 && scaledHealth && LocationUtils.kuudraTier == 5
-        //modMessage(LocationUtils.kuudraTier)
+        modMessage(LocationUtils.kuudraTier)
         return when {
             // Scaled
             useScaled -> "$color${(health * 12).round(2)}M§7/§a300M §c❤"

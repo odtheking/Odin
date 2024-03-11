@@ -10,7 +10,6 @@ import me.odinmain.features.impl.floor7.DragonCheck.lastDragonDeath
 import me.odinmain.features.impl.floor7.DragonCheck.onChatPacket
 import me.odinmain.features.impl.floor7.DragonHealth.renderHP
 import me.odinmain.features.impl.floor7.DragonTimer.renderTime
-import me.odinmain.features.impl.floor7.DragonTimer.updateTime
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.DualSetting
@@ -39,7 +38,6 @@ object WitherDragons : Module(
     description = "Various features for Wither dragons (boxes, timer, HP, priority and more).",
     category = Category.FLOOR7
 ) {
-
     private val dragonTimer: Boolean by BooleanSetting("Dragon Timer", true, description = "Displays a timer for when M7 dragons spawn.")
     val textScale: Float by NumberSetting(name = "Text Scale", default = 0.8f, min = 0.1f, max = 5f, increment = 0.1f).withDependency { dragonTimer }
     private val timerBackground: Boolean by BooleanSetting("HUD Timer Background", true, description = "Displays a background for the timer.").withDependency { dragonTimer && hud.displayToggle }
@@ -88,7 +86,6 @@ object WitherDragons : Module(
     val bluePB = +NumberSetting("Melody PB", 1000.0, increment = 0.01, hidden = true)
     val purplePB = +NumberSetting("Starts With PB", 1000.0, increment = 0.01, hidden = true)
 
-    
 
     init {
         onWorldLoad {
@@ -113,10 +110,7 @@ object WitherDragons : Module(
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (DungeonUtils.getPhase() != 5) return
 
-        if (dragonTimer) {
-            updateTime()
-            renderTime()
-        }
+        if (dragonTimer) renderTime()
         if (dragonBoxes) renderBoxes()
     }
 

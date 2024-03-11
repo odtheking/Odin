@@ -81,15 +81,20 @@ object PearlWaypoints : Module(
         var closest = true
         getOrderedLineups(mc.thePlayer.position).forEach { (lineup, color) ->
             lineup.startPos.forEach {
-                Renderer.drawBox(it.toAABB(), color, if (!closest && hideFarWaypoints) 1f else 3f, depth = true)
+                Renderer.drawBox(
+                    aabb = it.toAABB(),
+                    color = color,
+                    outlineWidth = if (!closest && hideFarWaypoints) 1f else 3f,
+                    outlineAlpha = if (!closest && hideFarWaypoints) 0.25f else 1f,
+                    fillAlpha = 0f,
+                    depth = false
+                )
             }
-
             lineup.lineups.forEach {
-                if (!closest && hideFarWaypoints) return@forEach
-                if (NoPre.missing == "") return@forEach Renderer.drawBox(it.toAABB(), color, outlineWidth = 0f, depth = true)
+                if (NoPre.missing == "" || NoPre.missing == "Square") return@forEach Renderer.drawBox(aabb = it.toAABB(), color = color, outlineAlpha = 0f, fillAlpha = if (!closest && hideFarWaypoints) 0f else 1f, depth = true)
                 if (lineup.startPos == setOf(BlockPos(-141, 78, -91)) && blockNameMap[NoPre.missing] != it) return@forEach
 
-                Renderer.drawBox(it.toAABB(), color, outlineWidth = 0f, depth = true)
+                Renderer.drawBox(aabb = it.toAABB(), color = color, outlineAlpha = 0f, fillAlpha = if (!closest && hideFarWaypoints) 0f else 1f, depth = true)
             }
             closest = false
         }

@@ -117,7 +117,7 @@ object LeapMenu : Module(
         if (event.gui !is GuiChest || event.container !is ContainerChest || event.container.name != "Spirit Leap" || leapTeammates.isEmpty())  return
 
         val quadrant = getQuadrant()
-        if ((type == 1 || type == 0) && leapTeammates.size < quadrant) return
+        if ((type == 1 || type == 2 || type == 3) && leapTeammates.size < quadrant) return
 
         val playerToLeap = leapTeammates[quadrant - 1]
         if (playerToLeap.clazz.isDead) return modMessage("This player is dead, can't leap.")
