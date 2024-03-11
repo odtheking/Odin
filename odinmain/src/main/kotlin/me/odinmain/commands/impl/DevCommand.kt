@@ -22,7 +22,7 @@ import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 
 val devCommand = commodore("oddev") {
-    if (!isDev) return@commodore // i forgot to add require to recode lol
+    //if (!isDev) return@commodore // i forgot to add require to recode lol
 
     literal("getdata") {
         literal("entity").runs { copyEntityData() }
@@ -55,10 +55,7 @@ val devCommand = commodore("oddev") {
     }
 
     literal("devlist").runs {
-        val regex = ".*${Regex.escape("[BOSS] Storm: hi!")}.*".toRegex()
-        modMessage(regex)
-        modMessage("aaaaa [BOSS] Storm: hi! aaaaa" matches regex)
-        updateDevs()
+        modMessage(updateDevs().entries.joinToString("\n\n"))
     }
 
     literal("sendServer").runs { string: String ->

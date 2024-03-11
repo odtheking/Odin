@@ -70,11 +70,10 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
         val scissor = scissor(x, y, w, h + 1)
 
         // SATURATION AND BRIGHTNESS
-        drawHSBBox(x + 10f, y + 38f, w - 20f, 170f, color.hsbMax())
         dropShadow(x + 10f, y + 38f, w - 20f, 170f, 10f, 0.5f)
+        drawHSBBox(x + 10f, y + 38f, w - 20f, 170f, color.hsbMax())
 
         val sbPointer = Pair((x + 10f + setting.saturation * 220), (y + 38f + (1 - setting.brightness) * 170))
-        dropShadow(sbPointer.first - 8.5f, sbPointer.second - 8.5f, 17f, 17f, 2.5f, 2.5f)
         circle(sbPointer.first, sbPointer.second, 9f, Color.TRANSPARENT, color.darker(.5f).withAlpha(1f), 3f)
 
         // HUE
