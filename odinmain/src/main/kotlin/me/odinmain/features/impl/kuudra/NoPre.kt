@@ -85,7 +85,6 @@ object NoPre : Module(
 
         onMessage(Regex("Party > (\\[.+])? ?(.+): No ?(.*)!")) {
             val match = Regex("Party > (\\[.+])? ?(.+): No ?(.*)").find(it) ?: return@onMessage
-            modMessage("No ${match.groupValues[3].replace("!", "")}! DEV MESSAGE SEND TO ME PLEASE TY")
             val (rank, name, spot) = match.destructured
             missing = spot.replace("!", "")
         }

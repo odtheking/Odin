@@ -58,7 +58,6 @@ object ChestEsp : Module(
             GlStateManager.enablePolygonOffset()
             GlStateManager.doPolygonOffset(1f, -1000000f)
         }
-
     }
 
     @SubscribeEvent

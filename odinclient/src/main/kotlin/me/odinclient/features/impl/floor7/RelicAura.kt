@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.floor7
 
-import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -8,7 +7,6 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.util.Vec3
-import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
@@ -18,25 +16,14 @@ object RelicAura : Module(
     description = "Automatically picks up relics in the Wither King boss-fight.",
     tag = TagType.RISKY
 ){
-    private var disabler = false
-
-    @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Load) {
-        disabler = false
-    }
-
-    @SubscribeEvent
-    fun onChat(event: ChatPacketEvent) {
-        if (event.message == "[BOSS] Wither King: You.. again?") disabler = true
-    }
-
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        if (disabler || !DungeonUtils.inDungeons) return
-        val armorStands = mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>() ?: return
-        for (armorStand in armorStands) {
-            if (armorStand.inventory?.get(4)?.displayName?.contains("Relic") != true || mc.thePlayer.getDistanceToEntity(armorStand) > 4) continue
-            interactWithEntity(armorStand)
+        if (DungeonUtils.getPhase() != 5) return
+        val armorStands = mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()
+            ?.filter { it.inventory?.get(4)?.displayName?.contains("Relic") == true } ?: return
+        armorStands.forEach {
+            if (mc.thePlayer.getDistanceToEntity(it) > 4) return@forEach
+            interactWithEntity(it)
         }
     }
 

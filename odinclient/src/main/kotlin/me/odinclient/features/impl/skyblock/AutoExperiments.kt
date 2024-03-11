@@ -19,7 +19,6 @@ object AutoExperiments : Module(
     category = Category.SKYBLOCK,
     description = "Automatically click on the Chronomatron and Ultrasequencer experiments."
 ){
-
     private val delay: Long by NumberSetting("Click Delay", 200, 0, 1000, 10, description = "Time in ms between automatic test clicks.")
 
     private var currentType = Type.NONE

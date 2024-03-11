@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.floor7
 
-import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -34,6 +33,12 @@ object DioriteFucker : Module(
         }
     }
 
+    init {
+        onMessage("[BOSS] Storm: I'd be happy to show you what that's like!", false) {
+            replaceDiorite()
+        }
+    }
+
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         profile("Diorite Fucker") {
@@ -41,22 +46,15 @@ object DioriteFucker : Module(
         }
     }
 
-    @SubscribeEvent
-    fun onChat(event: ChatPacketEvent) {
-        if (event.message == "[BOSS] Storm: I'd be happy to show you what that's like!")
-            replaceDiorite()
-    }
-
-    fun replaceDiorite() {
+    private fun replaceDiorite() {
         coordinates.forEach {
             if (isDiorite(it)) setGlass(it)
         }
     }
 
-    private fun setGlass(pos: BlockPos) {
-        if (stainedGlass)
-            mc.theWorld.setBlockState(pos, if (stainedGlass) Blocks.stained_glass.getStateFromMeta(color) else Blocks.glass.defaultState, 3)
-    }
+    private fun setGlass(pos: BlockPos) =
+        mc.theWorld.setBlockState(pos, if (stainedGlass) Blocks.stained_glass.getStateFromMeta(color) else Blocks.glass.defaultState, 3)
+
 
     private fun isDiorite(pos: BlockPos): Boolean =
         mc.theWorld?.chunkProvider?.provideChunk(pos.x shr 4, pos.z shr 4)?.getBlock(pos) == Blocks.stone

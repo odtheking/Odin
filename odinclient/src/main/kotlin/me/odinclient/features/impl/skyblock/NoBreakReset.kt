@@ -36,5 +36,4 @@ object NoBreakReset : Module(
         }
         return blockPos == currentBlock && flag
     }
-
 }

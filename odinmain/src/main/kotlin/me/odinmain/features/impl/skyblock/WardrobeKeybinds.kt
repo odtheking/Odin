@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.skyblock
 
-import me.odinmain.events.impl.GuiKeyPressEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -9,11 +8,12 @@ import me.odinmain.features.settings.impl.KeybindSetting
 import me.odinmain.features.settings.impl.Keybinding
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.clock.Clock
-import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.name
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.modMessage
+import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
+import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
 
@@ -39,49 +39,32 @@ object WardrobeKeybinds : Module(
     private val wardrobe8: Keybinding by KeybindSetting("Wardrobe 8", Keyboard.KEY_8, "Wardrobe 8").withDependency { advanced }
     private val wardrobe9: Keybinding by KeybindSetting("Wardrobe 9", Keyboard.KEY_9, "Wardrobe 9").withDependency { advanced }
 
+    private val wardrobes = arrayOf(wardrobe1, wardrobe2, wardrobe3, wardrobe4, wardrobe5, wardrobe6, wardrobe7, wardrobe8, wardrobe9)
     private val clickCoolDown = Clock(delay)
-
     @SubscribeEvent
-    fun keyTyped(event: GuiKeyPressEvent) {
-        if (
-            event.container !is ContainerChest ||
-            !event.keyCode.equalsOneOf(
-                unequipKeybind.key, nextPageKeybind.key, previousPageKeybind.key,
-                wardrobe1.key, wardrobe2.key, wardrobe3.key,
-                wardrobe4.key, wardrobe5.key, wardrobe6.key,
-                wardrobe7.key, wardrobe8.key, wardrobe9.key
-            )
-        ) return
+    fun checkKeybinds(event: GuiScreenEvent.KeyboardInputEvent.Pre) {
+        val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
+        if (chest !is ContainerChest) return
 
-        val matchResult = Regex("Wardrobe \\((\\d)/(\\d)\\)").find(event.container.name) ?: return modMessage("Invalid container name.")
+        val matchResult = Regex("Wardrobe \\((\\d)/(\\d)\\)").find(chest.name) ?: return
         val (current, total) = matchResult.destructured
 
         val index = when {
             nextPageKeybind.isDown() -> if (current.toInt() < total.toInt()) 53 else return modMessage("You are already on the last page.")
             previousPageKeybind.isDown() -> if (current.toInt() > 1) 45 else return modMessage("You are already on the first page.")
             unequipKeybind.isDown() -> {
-                event.container.inventorySlots.subList(36, 44)
+                chest.inventorySlots.subList(36, 44)
                     .indexOfFirst { it?.stack?.displayName?.noControlCodes?.contains("Equipped") ?: false }
                     .takeIf { it != -1 } ?: return modMessage("Couldn't find equipped armor.")
             }
             else -> {
-                when (event.keyCode) {
-                    wardrobe1.key -> 36
-                    wardrobe2.key -> 37
-                    wardrobe3.key -> 38
-                    wardrobe4.key -> 39
-                    wardrobe5.key -> 40
-                    wardrobe6.key -> 41
-                    wardrobe7.key -> 42
-                    wardrobe8.key -> 43
-                    wardrobe9.key -> 44
-                    else -> return modMessage("Invalid keybind.")
-                }
+                val index = wardrobes.indexOfFirst { it.isDown() }.takeIf { it != -1 } ?: return
+                index + 36
             }
         }
         if (clickCoolDown.hasTimePassed()) {
-            if (index > event.container.lowerChestInventory.sizeInventory - 1 || index < 1) return modMessage("Invalid index. $index, ${event.keyCode}")
-            mc.playerController.windowClick(event.container.windowId, index, 0, 0, mc.thePlayer)
+            if (index > chest.lowerChestInventory.sizeInventory - 1 || index < 1) return modMessage("Invalid index. $index, ${chest.name}")
+            mc.playerController.windowClick(chest.windowId, index, 0, 0, mc.thePlayer)
             clickCoolDown.update()
         }
 

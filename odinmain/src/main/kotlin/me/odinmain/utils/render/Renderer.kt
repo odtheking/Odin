@@ -7,7 +7,6 @@ import me.odinmain.utils.addVec
 import me.odinmain.utils.min
 import me.odinmain.utils.render.RenderUtils.drawBeaconBeam
 import me.odinmain.utils.runIn
-import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.toAABB
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
@@ -80,7 +79,6 @@ object Renderer {
         )
 
         val alpha = if (noFade) 1f else min(1f, max(0f, dist.toFloat()) / 60f)
-        modMessage("Alpha: $alpha, noFade: $noFade")
         if (beacon) drawBeaconBeam(vec3, color.withAlpha(alpha), depth = false)
     }
 
@@ -100,7 +98,7 @@ object Renderer {
         vec3: Vec3,
         color: Color,
         renderBlackBox: Boolean = false,
-        depth: Boolean = true,
+        depth: Boolean = false,
         scale: Float = 0.03f,
         shadow: Boolean = true
         ) {

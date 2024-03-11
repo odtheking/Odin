@@ -15,6 +15,7 @@ import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.animations.impl.EaseInOut
 import me.odinmain.ui.clickgui.util.ColorUtil
 import me.odinmain.ui.util.MouseUtils.getQuadrant
+import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.name
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.*
@@ -29,6 +30,7 @@ import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.lwjgl.input.Keyboard
 
 object LeapMenu : Module(
     name = "Leap Menu",
@@ -38,17 +40,15 @@ object LeapMenu : Module(
     val type: Int by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("Odin Sorting", "A-Z Class (BetterMap)", "A-Z Name", "No Sorting"), description = "How to sort the leap menu.")
     private val colorStyle: Boolean by DualSetting("Color Style", "Gray", "Color", default = false, description = "Which color style to use")
     private val roundedRect: Boolean by BooleanSetting("Rounded Rect", true, description = "Toggles the rounded rect for the gui.")
-    //val priority: Int by SelectorSetting("Leap Helper Priority", "Berserker", arrayListOf("Archer", "Berserker", "Healer", "Mage", "Tank"), description = "Which player to prioritize in the leap helper.")
-    private val useNumberKeys: Boolean by BooleanSetting("Use Number Keys", false, description = "Use number keys 1-4 to leap to the player you want, going from left to right, top to bottom.")
+    private val useNumberKeys: Boolean by BooleanSetting("Use Number Keys", false, description = "Use keyboard keys to leap to the player you want, going from left to right, top to bottom.")
+    private val topLeftKeybind: Keybinding by KeybindSetting("Top Left", Keyboard.KEY_1, "Used to click on the first person in the leap menu.").withDependency { useNumberKeys }
+    private val topRightKeybind: Keybinding by KeybindSetting("Top Right", Keyboard.KEY_2, "Used to click on the second person in the leap menu.").withDependency { useNumberKeys }
+    private val bottomLeftKeybind: Keybinding by KeybindSetting("Bottom Left", Keyboard.KEY_3, "Used to click on the third person in the leap menu.").withDependency { useNumberKeys }
+    private val bottomRightKeybind: Keybinding by KeybindSetting("Bottom right", Keyboard.KEY_4, "Used to click on the fourth person in the leap menu.").withDependency { useNumberKeys }
     private val leapHelperToggle: Boolean by BooleanSetting("Leap Helper", true)
     private val leapHelperColor: Color by ColorSetting("Leap Helper Color", default = Color.WHITE, description = "Color of the Leap Helper highlight").withDependency { leapHelperToggle }
     val delay: Int by NumberSetting("Reset Leap Helper Delay", 30, 10.0, 120.0, 1.0, description = "Delay for clearing the leap helper highlight").withDependency { leapHelperToggle }
-    /*private val leapTeammates: MutableList<DungeonUtils.DungeonPlayer> = mutableListOf(
-        DungeonUtils.DungeonPlayer("Stiviaisd", DungeonUtils.Classes.Healer),
-        DungeonUtils.DungeonPlayer("Odtheking", DungeonUtils.Classes.Archer),
-        DungeonUtils.DungeonPlayer("Bonzi", DungeonUtils.Classes.Mage),
-        DungeonUtils.DungeonPlayer("Cezar", DungeonUtils.Classes.Tank)
-    )*/
+
     private val hoveredAnims = List(4) { EaseInOut(200L) }
     private var hoveredQuadrant = -1
     private var previouslyHoveredQuadrant = -1
@@ -132,11 +132,19 @@ object LeapMenu : Module(
         if (
             event.container !is ContainerChest ||
             event.container.name != "Spirit Leap" ||
-            event.keyCode !in listOf(2, 3, 4, 5)||
+            !event.keyCode.equalsOneOf(topLeftKeybind.key, topRightKeybind.key,
+                bottomLeftKeybind.key, bottomRightKeybind.key) ||
             leapTeammates.isEmpty() ||
             !useNumberKeys
         ) return
-        val playerToLeap = if (event.keyCode - 1 > leapTeammates.size) return else leapTeammates[event.keyCode - 2]
+        val keyCodeNumber = when (event.keyCode) {
+            topLeftKeybind.key -> 1
+            topRightKeybind.key -> 2
+            bottomLeftKeybind.key -> 3
+            bottomRightKeybind.key -> 4
+            else -> return
+        }
+        val playerToLeap = if (keyCodeNumber - 1 > leapTeammates.size) return else leapTeammates[keyCodeNumber - 2]
 
         if (playerToLeap.clazz.isDead) return modMessage("This player is dead, can't leap.")
 
@@ -168,4 +176,11 @@ object LeapMenu : Module(
     fun onTick(event: TickEvent.ClientTickEvent) {
         getPlayer(event)
     }
+
+    /*private val leapTeammates: MutableList<DungeonUtils.DungeonPlayer> = mutableListOf(
+        DungeonUtils.DungeonPlayer("Stiviaisd", DungeonUtils.Classes.Healer),
+        DungeonUtils.DungeonPlayer("Odtheking", DungeonUtils.Classes.Archer),
+        DungeonUtils.DungeonPlayer("Bonzi", DungeonUtils.Classes.Mage),
+        DungeonUtils.DungeonPlayer("Cezar", DungeonUtils.Classes.Tank)
+    )*/
 }
