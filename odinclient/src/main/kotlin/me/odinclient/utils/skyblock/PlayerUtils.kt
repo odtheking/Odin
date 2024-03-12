@@ -4,14 +4,8 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.floor7.p3.termsim.TermSimGui
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
-import me.odinmain.utils.floored
-import me.odinmain.utils.skyblock.getItemSlot
-import me.odinmain.utils.skyblock.itemID
-import me.odinmain.utils.skyblock.modMessage
-import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.inventory.ContainerChest
-import net.minecraft.item.ItemStack
 import net.minecraft.util.Vec3
 
 
@@ -33,23 +27,6 @@ object PlayerUtils {
 
     fun dropAll() {
         mc.thePlayer.dropOneItem(true)
-    }
-
-    fun useItem(item: String, swapBack: Boolean = true) {
-        val inventory = mc.thePlayer.inventory
-        val index = getItemSlot(item) ?: return modMessage("Couldn't find $item")
-        if (index !in 0..8) return modMessage("Couldn't find $item")
-
-        val prevItem = inventory.currentItem
-        inventory.currentItem = index
-        rightClick()
-        if (swapBack) inventory.currentItem = prevItem
-    }
-
-    fun swapToItem(name: String, contains: Boolean = false) {
-        val index = getItemSlot(name, contains) ?: return modMessage("Couldn't find $name")
-        if (index !in 0..8) return modMessage("Couldn't find $name")
-        swapToIndex(index)
     }
 
     fun swapToIndex(index: Int) {
@@ -121,28 +98,4 @@ object PlayerUtils {
             is ClickType.Shift -> windowClick(slotId, 0, 1)
         }
     }
-
-    fun EntityPlayerSP?.isHolding(vararg names: String, ignoreCase: Boolean = false, mode: Int = 0): Boolean {
-        val regex = Regex("${if (ignoreCase) "(?i)" else ""}${names.joinToString("|")}")
-        return this.isHolding(regex, mode)
-    }
-
-    fun EntityPlayerSP?.isHolding(regex: Regex, mode: Int = 0): Boolean {
-        return this.isHolding { it?.run {
-            when (mode) {
-                0 -> displayName.contains(regex) || itemID.matches(regex)
-                1 -> displayName.contains(regex)
-                2 -> itemID.matches(regex)
-                else -> false
-            } } == true
-        }
-    }
-
-    private fun EntityPlayerSP?.isHolding(predicate: (ItemStack?) -> Boolean): Boolean {
-        if (this == null) return false
-        return predicate(this.heldItem)
-    }
-
-    val posFloored
-        get() = mc.thePlayer.positionVector.floored()
 }

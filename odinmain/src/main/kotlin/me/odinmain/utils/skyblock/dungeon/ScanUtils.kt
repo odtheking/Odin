@@ -6,6 +6,8 @@ import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.equalsOneOf
+import me.odinmain.utils.skyblock.dungeon.tiles.RoomData
+import me.odinmain.utils.skyblock.dungeon.tiles.RoomDataDeserializer
 import net.minecraft.block.Block
 import net.minecraft.util.BlockPos
 import java.io.FileNotFoundException
@@ -37,9 +39,6 @@ object ScanUtils {
 
     fun getRoomData(hash: Int): RoomData? =
         roomList.find { it.cores.any { core -> hash == core } }
-
-    fun getRoomDataFromRotationCore(rotationCore: Int): RoomData? =
-        roomList.find { it.rotationCores.any { roomCore -> rotationCore == roomCore } }
 
     fun getCore(pos: DungeonUtils.Vec2): Int = getCore(pos.x, pos.z)
 

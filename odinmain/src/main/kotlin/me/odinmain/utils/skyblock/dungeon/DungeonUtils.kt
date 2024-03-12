@@ -6,6 +6,7 @@ import me.odinmain.config.DungeonWaypointConfig
 import me.odinmain.features.impl.dungeon.DungeonWaypoints.DungeonWaypoint
 import me.odinmain.features.impl.dungeon.DungeonWaypoints.toVec3
 import me.odinmain.features.impl.dungeon.LeapMenu
+import me.odinmain.features.impl.dungeon.LeapMenu.odinSorting
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
@@ -13,8 +14,8 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.LocationUtils.currentDungeon
 import me.odinmain.utils.skyblock.PlayerUtils.posY
-import me.odinmain.utils.skyblock.WorldUtils.getBlockIdAt
-import me.odinmain.utils.skyblock.WorldUtils.isAir
+import me.odinmain.utils.skyblock.dungeon.tiles.Room
+import me.odinmain.utils.skyblock.dungeon.tiles.Rotations
 import net.minecraft.block.BlockSkull
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.network.NetworkPlayerInfo
@@ -77,16 +78,16 @@ object DungeonUtils {
      * - Phase 4: posY > 45
      * - Phase 5: posY <= 45
      */
-    fun getPhase(): Int? {
+    fun getPhase(): Island? {
         if (!isFloor(7) || !inBoss) {
             return null
         }
         return when {
-            posY > 210 -> 1
-            posY > 155 -> 2
-            posY > 100 -> 3
-            posY > 45 -> 4
-            else -> 5
+            posY > 210 -> Island.M7P1
+            posY > 155 -> Island.M7P2
+            posY > 100 -> Island.M7P3
+            posY > 45 -> Island.M7P4
+            else -> Island.M7P5
         }
     }
 
@@ -247,40 +248,8 @@ object DungeonUtils {
 
     private val tablistRegex = Regex("\\[(\\d+)] (?:\\[\\w+] )*(\\w+) (?:.)*?\\((\\w+)(?: (\\w+))*\\)")
     private val tablistRegexDEAD = Regex("\\[(\\d+)] (?:\\[\\w+] )*(\\w+) (?:.)*?\\((\\w+)*\\)")
-    val EMPTY = DungeonPlayer("Empty", Classes.Archer, ResourceLocation("textures/entity/steve.png"))
 
-    /**
-     * Sorts the list of players based on their default quadrant and class priority.
-     * The function first tries to place each player in their default quadrant. If the quadrant is already occupied,
-     * the player is added to a second round list. After all players have been processed, the function fills the remaining
-     * empty quadrants with the players from the second round list.
-     *
-     * @param players The list of players to be sorted.
-     * @return An array of sorted players.
-     */
-    private fun odinSorting(players: List<DungeonPlayer>): Array<DungeonPlayer> {
-        val result = Array(4) { EMPTY }
-        val secondRound = mutableListOf<DungeonPlayer>()
 
-        for (player in players) {
-            when {
-                result[player.clazz.defaultQuadrant] == EMPTY -> result[player.clazz.defaultQuadrant] = player
-                else -> secondRound.add(player)
-            }
-        }
-
-        if (secondRound.isEmpty()) return result
-
-        result.forEachIndexed { index, _ ->
-            when {
-                result[index] == EMPTY -> {
-                    result[index] = secondRound.removeAt(0)
-                    if (secondRound.isEmpty()) return result
-                }
-            }
-        }
-        return result
-    }
 
     private fun getDungeonTeammates(): List<DungeonPlayer> {
         val teammates = mutableListOf<DungeonPlayer>()
@@ -305,15 +274,6 @@ object DungeonUtils {
         return teammates
     }
 
-
-    private fun getDungeonTabList(): List<Pair<NetworkPlayerInfo, String>>? {
-        val tabEntries = tabList
-        if (tabEntries.size < 18 || !tabEntries[0].second.contains("§r§b§lParty §r§f(")) {
-            return null
-        }
-        return tabEntries
-    }
-
     private val tabListOrder = Comparator<NetworkPlayerInfo> { o1, o2 ->
         if (o1 == null) return@Comparator -1
         if (o2 == null) return@Comparator 0
@@ -329,6 +289,10 @@ object DungeonUtils {
     private val tabList: List<Pair<NetworkPlayerInfo, String>>
         get() = (mc.thePlayer?.sendQueue?.playerInfoMap?.sortedWith(tabListOrder) ?: emptyList())
             .map { Pair(it, mc.ingameGUI.tabList.getPlayerName(it)) }
+
+    fun getDungeonTabList(): List<Pair<NetworkPlayerInfo, String>>? {
+        return tabList.let { if (it.size > 18 && it[0].second.contains("§r§b§lParty §r§f(")) it else null }
+    }
 
     /**
      * Determines whether a given block state and position represent a secret location.
@@ -354,5 +318,4 @@ object DungeonUtils {
         // If none of the above conditions are met, it is not a secret location
         return false
     }
-
 }

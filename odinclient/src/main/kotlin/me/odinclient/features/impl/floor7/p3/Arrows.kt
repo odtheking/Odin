@@ -8,8 +8,9 @@ import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.RenderUtils.renderX
 import me.odinmain.utils.render.RenderUtils.renderY
 import me.odinmain.utils.render.RenderUtils.renderZ
-import me.odinmain.utils.skyblock.WorldUtils
+import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.getBlockIdAt
 import me.odinmain.utils.skyblock.isShortbow
 import me.odinmain.utils.skyblock.itemID
 import net.minecraft.util.MathHelper
@@ -27,7 +28,7 @@ object Arrows : Module(
 
     init {
         execute(10) {
-            if (!triggerBotClock.hasTimePassed(triggerBotDelay) || mc.thePlayer?.heldItem?.isShortbow == false || DungeonUtils.getPhase() != 3) return@execute
+            if (!triggerBotClock.hasTimePassed(triggerBotDelay) || mc.thePlayer?.heldItem?.isShortbow == false || DungeonUtils.getPhase() != Island.M7P3) return@execute
             setBowTrajectoryHeading(0f)
             if (mc.thePlayer?.heldItem?.itemID == "TERMINATOR") {
                 setBowTrajectoryHeading(-5f)
@@ -66,7 +67,7 @@ object Arrows : Module(
             val vec = motionVec.add(posVec)
             val rayTrace = mc.theWorld.rayTraceBlocks(posVec, vec, false, true, false)
             if (rayTrace?.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-                if (WorldUtils.getBlockIdAt(rayTrace.blockPos) == 133) {
+                if (getBlockIdAt(rayTrace.blockPos) == 133) {
                     if (rayTrace.blockPos.x !in 64..68 || rayTrace.blockPos.y !in 126..130) return // not on device
                     PlayerUtils.rightClick()
                     triggerBotClock.update()

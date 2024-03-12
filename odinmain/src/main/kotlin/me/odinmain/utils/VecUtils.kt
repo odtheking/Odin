@@ -4,7 +4,7 @@ import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.Vec2
-import me.odinmain.utils.skyblock.dungeon.Rotations
+import me.odinmain.utils.skyblock.dungeon.tiles.Rotations
 import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S29PacketSoundEffect
@@ -213,12 +213,12 @@ private fun isInterceptable3(start: Vec3, goal: Vec3, aabb: AxisAlignedBB): Bool
     return try {
         (
                 isVecInYZ(start.getIntermediateWithXValue(goal, aabb.minX), aabb) ||
-                        isVecInYZ(start.getIntermediateWithXValue(goal, aabb.maxX), aabb) ||
-                        isVecInXZ(start.getIntermediateWithYValue(goal, aabb.minY), aabb) ||
-                        isVecInXZ(start.getIntermediateWithYValue(goal, aabb.maxY), aabb) ||
-                        isVecInXY(start.getIntermediateWithZValue(goal, aabb.minZ), aabb) ||
-                        isVecInXY(start.getIntermediateWithZValue(goal, aabb.maxZ), aabb)
-                )
+                isVecInYZ(start.getIntermediateWithXValue(goal, aabb.maxX), aabb) ||
+                isVecInXZ(start.getIntermediateWithYValue(goal, aabb.minY), aabb) ||
+                isVecInXZ(start.getIntermediateWithYValue(goal, aabb.maxY), aabb) ||
+                isVecInXY(start.getIntermediateWithZValue(goal, aabb.minZ), aabb) ||
+                isVecInXY(start.getIntermediateWithZValue(goal, aabb.maxZ), aabb)
+        )
     } catch (e: Exception) {
         false
     }

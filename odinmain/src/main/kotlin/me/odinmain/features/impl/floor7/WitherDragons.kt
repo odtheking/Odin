@@ -23,6 +23,7 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.getTextWidth
 import me.odinmain.utils.render.roundedRectangle
 import me.odinmain.utils.render.text
+import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraftforge.client.event.RenderLivingEvent
@@ -101,14 +102,14 @@ object WitherDragons : Module(
             DragonPriority.firstDragons = false
         }
         
-        onPacket(S2APacketParticles::class.java, { DungeonUtils.getPhase() == 5 }) {
+        onPacket(S2APacketParticles::class.java, { DungeonUtils.getPhase() == Island.M7P5 }) {
             handleSpawnPacket(it)
         }
     }
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (DungeonUtils.getPhase() != 5) return
+        if (DungeonUtils.getPhase() != Island.M7P5) return
 
         if (dragonTimer) renderTime()
         if (dragonBoxes) renderBoxes()
@@ -116,24 +117,25 @@ object WitherDragons : Module(
 
     @SubscribeEvent
     fun onEntityJoin(event: EntityJoinWorldEvent) {
-        if (DungeonUtils.getPhase() != 5) return
+        if (DungeonUtils.getPhase() != Island.M7P5) return
         dragonJoinWorld(event)
     }
 
     @SubscribeEvent
     fun onEntityLeave(event: LivingDeathEvent) {
-        if (DungeonUtils.getPhase() != 5) return
+        if (DungeonUtils.getPhase() != Island.M7P5) return
         dragonLeaveWorld(event)
     }
 
     @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
-        if (DungeonUtils.getPhase() != 5) return
+        if (DungeonUtils.getPhase() != Island.M7P5) return
         onChatPacket(event)
     }
 
     @SubscribeEvent
     fun onRenderLivingPost(event: RenderLivingEvent.Post<*>) {
+        if (DungeonUtils.getPhase() != Island.M7P5) return
         if (dragonHealth) renderHP(event)
     }
 }

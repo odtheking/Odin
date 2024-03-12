@@ -1,8 +1,7 @@
-package me.odinmain.utils.skyblock.dungeon
+package me.odinmain.utils.skyblock.dungeon.tiles
 
 import me.odinmain.OdinMain.MapColors
 import me.odinmain.utils.render.Color
-import net.minecraft.util.EnumFacing
 
 class Room(override val x: Int, override val z: Int, var data: RoomData) : Tile {
     var core = 0

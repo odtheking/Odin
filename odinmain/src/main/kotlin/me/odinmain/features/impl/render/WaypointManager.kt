@@ -32,13 +32,13 @@ object WaypointManager {
     fun addWaypoint(name: String = "§fWaypoint", vec3: Vec3i, color: Color = randomColor()) =
         addWaypoint(Waypoint(if (Waypoints.onlyDistance) "" else name, vec3.x, vec3.y, vec3.z, color))
 
-    fun addWaypoint(waypoint: Waypoint, area: String = currentArea!!) {
+    fun addWaypoint(waypoint: Waypoint, area: String = currentArea?.displayName!!) {
         waypoints.getOrPut(area) { mutableListOf() }.add(waypoint)
         WaypointConfig.saveConfig()
     }
 
     fun removeWaypoint(name: String) {
-        val matchingWaypoint = waypoints[currentArea]?.find { it.name.noControlCodes.lowercase() == name } ?: return
+        val matchingWaypoint = waypoints[currentArea?.displayName]?.find { it.name.noControlCodes.lowercase() == name } ?: return
         removeWaypoint(matchingWaypoint)
     }
 
@@ -48,7 +48,7 @@ object WaypointManager {
     }
 
     fun clearWaypoints() {
-        waypoints[currentArea]?.clear()
+        waypoints[currentArea?.displayName]?.clear()
         WaypointConfig.saveConfig()
     }
 
@@ -83,7 +83,7 @@ object WaypointManager {
             it.second.hasTimePassed()
         }
 
-        waypoints[currentArea]?.forEach {
+        waypoints[currentArea?.displayName]?.forEach {
             if (it.shouldShow) it.renderBeacon()
         }
     }
@@ -93,7 +93,7 @@ object WaypointManager {
     fun onWorldLoad(event: WorldEvent.Load) {
         temporaryWaypoints.clear()
         runIn(80) {
-            if (currentArea != null) WaypointGUI.updateElements(currentArea!!)
+            if (currentArea != null) WaypointGUI.updateElements(currentArea?.displayName!!)
 
         }
     }

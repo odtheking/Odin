@@ -9,6 +9,7 @@ import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.toAABB
@@ -52,7 +53,7 @@ object ChestEsp : Module(
     fun onRenderChest(event: RenderChestEvent.Pre) {
         if (renderMode != 0 || event.chest != mc.theWorld.getTileEntity(event.chest.pos)) return
         if (hideClicked && chests.contains(event.chest.pos)) return
-        if ((onlyDungeon && DungeonUtils.inDungeons) || (onlyCH && LocationUtils.currentArea == "Crystal Hollows") || (!onlyDungeon && !onlyCH)) {
+        if ((onlyDungeon && DungeonUtils.inDungeons) || (onlyCH && LocationUtils.currentArea == Island.CrystalHollows) || (!onlyDungeon && !onlyCH)) {
             GL11.glEnable(GL11.GL_POLYGON_OFFSET_FILL)
             GlStateManager.color(1f, 1f, 1f, color.alpha)
             GlStateManager.enablePolygonOffset()
@@ -64,7 +65,7 @@ object ChestEsp : Module(
     fun onRenderChest(event: RenderChestEvent.Post) {
         if (renderMode != 0 || event.chest != mc.theWorld.getTileEntity(event.chest.pos)) return
         if (hideClicked && chests.contains(event.chest.pos)) return
-        if ((onlyDungeon && DungeonUtils.inDungeons) || (onlyCH && LocationUtils.currentArea == "Crystal Hollows") || (!onlyDungeon && !onlyCH)) {
+        if ((onlyDungeon && DungeonUtils.inDungeons) || (onlyCH && LocationUtils.currentArea == Island.CrystalHollows) || (!onlyDungeon && !onlyCH)) {
             GL11.glDisable(GL11.GL_POLYGON_OFFSET_FILL)
             GlStateManager.doPolygonOffset(1f, 1000000f)
             GlStateManager.disablePolygonOffset()
@@ -73,7 +74,7 @@ object ChestEsp : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (renderMode != 1 || (onlyDungeon && !DungeonUtils.inDungeons) && !(onlyCH && LocationUtils.currentArea !== "Crystal Hollows")) return
+        if (renderMode != 1 || (onlyDungeon && !DungeonUtils.inDungeons) && !(onlyCH && LocationUtils.currentArea !== Island.CrystalHollows)) return
         val chests = mc.theWorld.loadedTileEntityList.filterIsInstance<TileEntityChest>()
         chests.forEach {
             if (hideClicked && this.chests.contains(it.pos)) return

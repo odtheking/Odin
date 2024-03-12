@@ -47,7 +47,7 @@ object GhostBlock : Module(
 
         execute(1000) {
             if (!DungeonUtils.isFloor(7) || !DungeonUtils.inBoss || !preGhostBlock || !enabled) return@execute
-            val phase = getPhase()
+            val phase = getPhase()?.displayName?.toIntOrNull() ?: return@execute
             for (i in blocks[phase] ?: return@execute) {
                 mc.theWorld?.setBlockToAir(i)
             }

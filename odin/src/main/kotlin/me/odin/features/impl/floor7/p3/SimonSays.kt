@@ -10,6 +10,7 @@ import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.floor
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.block.BlockButtonStone
@@ -46,7 +47,7 @@ object SimonSays : Module(
 
     @SubscribeEvent
     fun onBlockChange(event: BlockChangeEvent) {
-        if (DungeonUtils.getPhase() != 3) return
+        if (DungeonUtils.getPhase() != Island.M7P3) return
         val pos = event.pos
         val old = event.old
         val state = event.update

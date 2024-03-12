@@ -12,7 +12,7 @@ import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.rotateToNorth
 import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.dungeon.RoomType
+import me.odinmain.utils.skyblock.dungeon.tiles.RoomType
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.subtractVec
 import net.minecraft.util.AxisAlignedBB

@@ -14,6 +14,7 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.OutlineUtils
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.KuudraUtils.kuudraTeammates
 import me.odinmain.utils.skyblock.LocationUtils
@@ -32,7 +33,7 @@ object TeamHighlight : Module(
 
     @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
-        if (event.entity == mc.thePlayer || !playerOutline || LocationUtils.currentArea != "Kuudra") return
+        if (event.entity == mc.thePlayer || !playerOutline || LocationUtils.currentArea != Island.Kuudra) return
         val teammate = kuudraTeammates.find { it.entity == event.entity } ?: return
 
         OutlineUtils.outlineEntity(event, 5f, if (teammate.eatFresh && highlightFresh) highlightFreshColor else outlineColor, true)
@@ -40,8 +41,8 @@ object TeamHighlight : Module(
 
     @SubscribeEvent
     fun handleNames(event: RenderWorldLastEvent) {
-        if (!highlightName || LocationUtils.currentArea != "Kuudra" || KuudraUtils.phase < 1) return
-        KuudraUtils.kuudraTeammates.forEach {
+        if (!highlightName || LocationUtils.currentArea != Island.Kuudra || KuudraUtils.phase < 1) return
+        kuudraTeammates.forEach {
              if (it.entity == null || it.playerName == mc.thePlayer.name) return@forEach
             if ((it.entity?.distanceSquaredTo(mc.thePlayer) ?: return@forEach) >= 2333) return@forEach
 

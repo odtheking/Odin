@@ -20,13 +20,13 @@ import me.odinmain.utils.name
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils.EMPTY
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.leapTeammates
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest
+import net.minecraft.util.ResourceLocation
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -183,4 +183,39 @@ object LeapMenu : Module(
         DungeonUtils.DungeonPlayer("Bonzi", DungeonUtils.Classes.Mage),
         DungeonUtils.DungeonPlayer("Cezar", DungeonUtils.Classes.Tank)
     )*/
+
+    private val EMPTY = DungeonUtils.DungeonPlayer("Empty", DungeonUtils.Classes.Archer, ResourceLocation("textures/entity/steve.png"))
+
+    /**
+     * Sorts the list of players based on their default quadrant and class priority.
+     * The function first tries to place each player in their default quadrant. If the quadrant is already occupied,
+     * the player is added to a second round list. After all players have been processed, the function fills the remaining
+     * empty quadrants with the players from the second round list.
+     *
+     * @param players The list of players to be sorted.
+     * @return An array of sorted players.
+     */
+    fun odinSorting(players: List<DungeonUtils.DungeonPlayer>): Array<DungeonUtils.DungeonPlayer> {
+        val result = Array(4) { EMPTY }
+        val secondRound = mutableListOf<DungeonUtils.DungeonPlayer>()
+
+        for (player in players) {
+            when {
+                result[player.clazz.defaultQuadrant] == EMPTY -> result[player.clazz.defaultQuadrant] = player
+                else -> secondRound.add(player)
+            }
+        }
+
+        if (secondRound.isEmpty()) return result
+
+        result.forEachIndexed { index, _ ->
+            when {
+                result[index] == EMPTY -> {
+                    result[index] = secondRound.removeAt(0)
+                    if (secondRound.isEmpty()) return result
+                }
+            }
+        }
+        return result
+    }
 }

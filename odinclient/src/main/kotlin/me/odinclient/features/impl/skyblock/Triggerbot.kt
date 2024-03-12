@@ -12,6 +12,7 @@ import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.isFacingAABB
 import me.odinmain.utils.noControlCodes
+import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.client.entity.EntityOtherPlayerMP
@@ -66,7 +67,7 @@ object Triggerbot : Module(
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        if (!DungeonUtils.inBoss || DungeonUtils.getPhase() != 1 || !clickClock.hasTimePassed() || mc.objectMouseOver == null || !crystal) return
+        if (!DungeonUtils.inBoss || DungeonUtils.getPhase() != Island.M7P1 || !clickClock.hasTimePassed() || mc.objectMouseOver == null || !crystal) return
         if ((take && mc.objectMouseOver.entityHit is EntityEnderCrystal) || (place && mc.objectMouseOver.entityHit?.name?.noControlCodes == "Energy Crystal Missing" && mc.thePlayer.heldItem.displayName.noControlCodes == "Energy Crystal")) {
             PlayerUtils.rightClick()
             clickClock.update()
@@ -93,7 +94,7 @@ object Triggerbot : Module(
 
             if (tileEntity is TileEntityChest && tileEntity.numPlayersUsing >= 1) return@execute
 
-            if (stbCH && LocationUtils.currentArea == "Crystal Hollows" && state.block == Blocks.chest) {
+            if (stbCH && LocationUtils.currentArea == Island.CrystalHollows && state.block == Blocks.chest) {
                 PlayerUtils.rightClick()
                 triggerBotClock.update()
                 clickedPositions = clickedPositions.plus(pos to System.currentTimeMillis())

@@ -4,9 +4,15 @@ import me.odinmain.events.impl.GuiClosedEvent
 import me.odinmain.events.impl.GuiLoadedEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.StringSetting
+import me.odinmain.utils.clock.Executor
+import me.odinmain.utils.clock.Executor.Companion.register
+import me.odinmain.utils.name
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.partyMessage
+import me.odinmain.utils.skyblock.sendCommand
+import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -16,7 +22,7 @@ object MelodyMessage : Module(
     category = Category.FLOOR7
 ) {
     private val melodyMessage: String by StringSetting("Melody Message", "Melody Terminal start!", 128, description = "Message sent when the melody terminal opens")
-
+    private val melodyProgress: Boolean by BooleanSetting("Melody Progress", false, description = "Tells the party about melody terminal progress.")
     private var saidMelody = false
     @SubscribeEvent
     fun onGuiLoad(event: GuiLoadedEvent) {
@@ -36,4 +42,22 @@ object MelodyMessage : Module(
         saidMelody = false
     }
 
+    private val claySlots = hashMapOf(
+        25 to "pc message 1/4",
+        34 to "pc message 2/4",
+        43 to "pc message 3/4"
+    )
+
+    init {
+        Executor(50){
+            val containerChest = mc.thePlayer.openContainer as? ContainerChest ?: return@Executor
+            if (containerChest.name != "Click the button on time!" || melodyProgress) return@Executor
+
+            val greenClayIndices = claySlots.keys.filter { index -> containerChest.getSlot(index)?.stack?.metadata == 5 }
+            if (greenClayIndices.isEmpty()) return@Executor
+
+            sendCommand(claySlots[greenClayIndices.last()] ?: return@Executor)
+            greenClayIndices.forEach { claySlots.remove(it) }
+        }.register()
+    }
 }

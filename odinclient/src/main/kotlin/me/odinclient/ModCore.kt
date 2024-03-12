@@ -3,9 +3,7 @@ package me.odinclient
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import me.odinclient.commands.impl.autoSellCommand
-import me.odinclient.dungeonmap.features.Dungeon
-import me.odinclient.dungeonmap.features.MapRender
-import me.odinclient.dungeonmap.features.Window
+
 import me.odinclient.features.impl.dungeon.*
 import me.odinclient.features.impl.dungeon.AutoSell.sellList
 import me.odinclient.features.impl.floor7.DioriteFucker
@@ -38,15 +36,8 @@ class ModCore {
 
     @EventHandler
     fun init(event: FMLInitializationEvent) {
-        Window.init()
-
         OdinMain.init()
         MinecraftForge.EVENT_BUS.register(this)
-
-        listOf(
-            Dungeon,
-            MapRender
-        ).forEach(MinecraftForge.EVENT_BUS::register)
 
         registerCommands(
             autoSellCommand
@@ -72,7 +63,7 @@ class ModCore {
     @EventHandler
     fun loadComplete(event: FMLLoadCompleteEvent) {
         ModuleManager.addModules(
-            AutoGFS, AutoIceFill, AutoSell, CancelInteract, CancelChestOpen, GhostPick, MapModule, SecretHitboxes,
+            AutoGFS, AutoIceFill, AutoSell, CancelInteract, CancelChestOpen, GhostPick, SecretHitboxes,
             SwapStonk, Arrows, ArrowAlign, CancelWrongTerms, HoverTerms, LightsDevice, SimonSays,
             DioriteFucker, RelicAura, Trajectories, Ghosts, NoCarpet, NoDebuff, LockCursor,
             CookieClicker, AutoExperiments, FarmingHitboxes, NoBlock, TermAC, Triggerbot, GhostBlock, FreezeGame,
@@ -84,7 +75,6 @@ class ModCore {
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START) return
-        if (Window.isVisible != Window.shouldShow) Window.isVisible = Window.shouldShow
         OdinMain.onTick()
     }
 

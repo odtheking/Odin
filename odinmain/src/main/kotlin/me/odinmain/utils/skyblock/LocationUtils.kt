@@ -2,8 +2,12 @@ package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.render.ClickGUIModule
+import me.odinmain.utils.cleanLine
+import me.odinmain.utils.cleanSB
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
+import me.odinmain.utils.getLines
+import me.odinmain.utils.sidebarLines
 import me.odinmain.utils.skyblock.dungeon.Dungeon
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getPhase
 import net.minecraft.client.network.NetHandlerPlayClient
@@ -17,9 +21,8 @@ object LocationUtils {
     var inSkyblock: Boolean = false
 
     var currentDungeon: Dungeon? = null
-    var currentArea: String? = null
+    var currentArea: Island? = null
     var kuudraTier: Int = 0
-
 
     init {
         Executor(500) {
@@ -41,9 +44,7 @@ object LocationUtils {
                 currentArea = getArea()
             }
 
-            currentDungeon?.setBoss()
-
-            if (currentArea == "Kuudra" && kuudraTier == 0) {
+            if (currentArea == Island.Kuudra && kuudraTier == 0) {
                 getLines().find {
                     cleanLine(it).contains("Kuudra's Hollow (")
                 }?.let {
@@ -94,14 +95,14 @@ object LocationUtils {
      *
      * @author Aton
      */
-    private fun getArea(): String? {
-        if (mc.isSingleplayer) return "Singleplayer" // debugging
+    private fun getArea(): Island? {
+        if (mc.isSingleplayer) return Island.SinglePlayer // debugging
         if (!inSkyblock) return null
         val netHandlerPlayClient: NetHandlerPlayClient = mc.thePlayer?.sendQueue ?: return null
         val list = netHandlerPlayClient.playerInfoMap ?: return null
 
         if (currentDungeon != null)
-            return if (getPhase() != null) "P${getPhase()}" else if (currentDungeon!!.inBoss) "Dungeon Boss" else "Catacombs"
+            return if (getPhase() != null) getPhase() else if (currentDungeon!!.inBoss) Island.DungeonBoss else Island.Dungeon
 
         var area: String? = null
         var extraInfo: String? = null
@@ -115,27 +116,6 @@ object LocationUtils {
             }
             if (areaText.contains("Owner:")) extraInfo = areaText.substringAfter("Owner:")
         }
-        return if (area == null) null else area + (extraInfo ?: "")
-    }
-
-    enum class Island(val displayName: String) {
-        PrivateIsland("Private Island"),
-        Garden("The Garden"),
-        SpiderDen("Spider's Den"),
-        CrimsonIsle("Crimson Isle"),
-        TheEnd("The End"),
-        GoldMine("Gold Mine"),
-        DeepCaverns("Deep Caverns"),
-        DwarvenMines("Dwarven Mines"),
-        CrystalHollows("Crystal Hollows"),
-        FarmingIsland("The Farming Islands"),
-        ThePark("The Park"),
-        Dungeon("Catacombs"),
-        DungeonHub("Dungeon Hub"),
-        Hub("Hub"),
-        DarkAuction("Dark Auction"),
-        JerryWorkshop("Jerry's Workshop"),
-        Kuudra("Kuudra"),
-        Unknown("(Unknown)");
+        return if (area == null) null else Island.entries.firstOrNull { area.contains(it.displayName) } ?: Island.Unknown.also { println("Unknown area: $area") }
     }
 }

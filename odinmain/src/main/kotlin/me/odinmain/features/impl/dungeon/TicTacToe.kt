@@ -34,7 +34,6 @@ object TicTacToe {
      *
      * Taken from Skytils.
      */
-
     fun tttTick(event: TickEvent.ClientTickEvent) {
         if (!inDungeons) return
         if (event.phase != TickEvent.Phase.START || mc.thePlayer == null || mc.theWorld == null) return

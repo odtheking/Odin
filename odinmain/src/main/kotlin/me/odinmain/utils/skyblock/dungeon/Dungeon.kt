@@ -1,32 +1,25 @@
 package me.odinmain.utils.skyblock.dungeon
 
+import me.odinmain.utils.cleanSB
+import me.odinmain.utils.clock.Executor
+import me.odinmain.utils.sidebarLines
 import me.odinmain.utils.skyblock.PlayerUtils.posX
 import me.odinmain.utils.skyblock.PlayerUtils.posZ
-import me.odinmain.utils.skyblock.cleanSB
 import me.odinmain.utils.skyblock.modMessage
-import me.odinmain.utils.skyblock.sidebarLines
+import net.minecraft.client.network.NetworkPlayerInfo
 
 // In future maybe add stats about the dungeon like time elapsed, deaths, total secrets etc.
 // could add some system to look back at previous runs.
 class Dungeon {
 
     lateinit var floor: Floor
-    var inBoss = false
-    /**
-     * Sets the value of the `inBoss` variable based on the current dungeon floor and player position.
-     *
-     * This function determines whether the player is currently in a boss area by evaluating the player's position (`posX` and `posZ`)
-     * in relation to specific coordinates for different dungeon floors. It updates the `inBoss` variable accordingly.
-     *
-     * The boss area criteria for each floor are as follows:
-     * - Floor 1: `posX > -71 && posZ > -39`
-     * - Floors 2, 3, 4: `posX > -39 && posZ > -39`
-     * - Floors 5, 6: `posX > -39 && posZ > -7`
-     * - Floor 7: `posX > -7 && posZ > -7`
-     * - Other floors: `false`
-     */
-    fun setBoss() {
-        inBoss = when (floor.floorNumber) {
+    val inBoss: Boolean get() = getBoss()
+    var deathCount = 0
+    var secretCount = 0
+    var cryptsCount = 0
+
+    private fun getBoss(): Boolean {
+        return when (floor.floorNumber) {
             1 -> posX > -71 && posZ > -39
             in 2..4 -> posX > -39 && posZ > -39
             in 5..6 -> posX > -39 && posZ > -7
@@ -38,6 +31,9 @@ class Dungeon {
 
     init {
         getCurrentFloor()
+        Executor(500) {
+            DungeonUtils.getDungeonTabList()?.let { updateRunInformation(it) }
+        }
     }
 
     private fun getCurrentFloor() {
@@ -96,6 +92,32 @@ class Dungeon {
                     M1, M2, M3, M4, M5, M6, M7 -> true
                 }
             }
+    }
+
+
+
+    private val deathsPattern = Regex("§r§a§lDeaths: §r§f\\((?<deaths>\\d+)\\)§r")
+    private val secretsFoundPattern = Regex("§r Secrets Found: §r§b(?<secrets>\\d+)§r")
+    private val cryptsPattern = Regex("§r Crypts: §r§6(?<crypts>\\d+)§r")
+
+    private fun updateRunInformation(tabEntries: List<Pair<NetworkPlayerInfo, String>>) {
+        tabEntries.forEach {
+            val text = it.second
+            when {
+                text.contains("Deaths: ") -> {
+                    val matcher = deathsPattern.find(text) ?: return@forEach
+                    deathCount = matcher.groups["deaths"]?.value?.toIntOrNull() ?: deathCount
+                }
+                text.contains("Secrets Found: ") && !text.contains("%") -> {
+                    val matcher = secretsFoundPattern.find(text) ?: return@forEach
+                    secretCount = matcher.groups["secrets"]?.value?.toIntOrNull() ?: secretCount
+                }
+                text.contains("Crypts: ") -> {
+                    val matcher = cryptsPattern.find(text) ?: return@forEach
+                    cryptsCount = matcher.groups["crypts"]?.value?.toIntOrNull() ?: cryptsCount
+                }
+            }
+        }
     }
 
 }

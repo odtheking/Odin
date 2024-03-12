@@ -5,6 +5,7 @@ import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.equal
 import me.odinmain.utils.noControlCodes
+import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
@@ -31,7 +32,7 @@ object LeapHelper {
 
     fun getPlayer(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.END || DungeonUtils.teammates.isEmpty()) return
-        if (DungeonUtils.getPhase() == 3) scanGates()
+        if (DungeonUtils.getPhase() == Island.M7P3) scanGates()
         if (currentPos == NONE) return
         leapHelperBoss = DungeonUtils.teammates
             .filter {

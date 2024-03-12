@@ -10,7 +10,6 @@ object FarmingHitboxes : Module(
     category = Category.SKYBLOCK,
     description = "Expands the hitbox of some crops to a full block."
 ) {
-
     fun setFullBlock(block: Block) {
         val accessor = (block as IBlockAccessor)
         accessor.setMinX(0.0)
@@ -20,5 +19,4 @@ object FarmingHitboxes : Module(
         accessor.setMaxY(1.0)
         accessor.setMaxZ(1.0)
     }
-
 }

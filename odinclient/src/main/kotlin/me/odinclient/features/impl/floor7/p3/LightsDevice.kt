@@ -7,6 +7,7 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.clock.Clock
+import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.block.BlockLever
 import net.minecraft.util.BlockPos
@@ -34,7 +35,7 @@ object LightsDevice : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (!triggerBotClock.hasTimePassed(delay) || DungeonUtils.getPhase() != 3 || !triggerBot) return
+        if (!triggerBotClock.hasTimePassed(delay) || DungeonUtils.getPhase() != Island.M7P3 || !triggerBot) return
         val pos = mc.objectMouseOver?.blockPos ?: return
         if (pos !in levers || mc.theWorld.getBlockState(pos).getValue(BlockLever.POWERED)) return
         rightClick()

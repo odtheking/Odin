@@ -13,10 +13,10 @@ import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.render.getTextWidth
 import me.odinmain.utils.render.text
 import me.odinmain.utils.round
+import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.KuudraUtils.kuudraEntity
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.PlayerUtils
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -40,7 +40,7 @@ object KuudraDisplay : Module(
 
             getTextWidth("99.975k/100k", 12f) + 2f to 22f
         } else {
-            if (LocationUtils.currentArea != "Kuudra") return@HudSetting 0f to 0f
+            if (LocationUtils.currentArea != Island.Kuudra) return@HudSetting 0f to 0f
             text(getCurrentHealthDisplay(), 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
 
             getTextWidth("99.975k/100k", 12f) + 2f to 22f
@@ -50,7 +50,7 @@ object KuudraDisplay : Module(
     private var kuudraHP = 100000f
     @SubscribeEvent
     fun renderWorldEvent(event: RenderWorldLastEvent) {
-        if (LocationUtils.currentArea != "Kuudra") return
+        if (LocationUtils.currentArea != Island.Kuudra) return
 
         if (highlightKuudra)
             Renderer.drawBox(kuudraEntity.renderBoundingBox, kuudraColor, depth = true, fillAlpha = 0)
@@ -62,7 +62,7 @@ object KuudraDisplay : Module(
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.START || LocationUtils.currentArea != LocationUtils.Island.Kuudra.name) return
+        if (event.phase != TickEvent.Phase.START || LocationUtils.currentArea != Island.Kuudra) return
 
         kuudraHP = kuudraEntity.health
         val kuudraPos = kuudraEntity.positionVector
@@ -90,7 +90,7 @@ object KuudraDisplay : Module(
         }
         val health = kuudraHP / 1000
         val useScaled = kuudraHP <= 25000 && scaledHealth && LocationUtils.kuudraTier == 5
-        modMessage(LocationUtils.kuudraTier)
+
         return when {
             // Scaled
             useScaled -> "$color${(health * 12).round(2)}M§7/§a300M §c❤"

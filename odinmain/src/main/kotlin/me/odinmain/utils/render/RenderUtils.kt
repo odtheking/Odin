@@ -28,8 +28,8 @@ import kotlin.math.sin
 
 object RenderUtils {
 
-    val tessellator: Tessellator = Tessellator.getInstance()
-    val worldRenderer = tessellator.worldRenderer
+    private val tessellator: Tessellator = Tessellator.getInstance()
+    private val worldRenderer: WorldRenderer = tessellator.worldRenderer
     private val beaconBeam = ResourceLocation("textures/entity/beacon_beam.png")
     private val renderManager: RenderManager = mc.renderManager
 

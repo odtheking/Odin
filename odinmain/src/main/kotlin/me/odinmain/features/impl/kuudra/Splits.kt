@@ -13,6 +13,7 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.getTextWidth
 import me.odinmain.utils.render.text
 import me.odinmain.utils.round
+import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.play.server.S02PacketChat
@@ -83,7 +84,7 @@ object Splits : Module(
 
             getTextWidth("Fuel/Stun: 0h 00m 00s", 12f) + 2f to 80f
         } else {
-            if (LocationUtils.currentArea != "Kuudra") return@HudSetting 0f to 0f
+            if (LocationUtils.currentArea != Island.Kuudra) return@HudSetting 0f to 0f
             var y = 0f
             val (times, current) = getSplitTimes()
 

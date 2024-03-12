@@ -8,9 +8,9 @@ import me.odinmain.commands.commodore
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.ModuleManager.generateReadme
 import me.odinmain.features.impl.dungeon.TPMaze
-import me.odinmain.features.impl.render.DevPlayers.isDev
 import me.odinmain.features.impl.render.DevPlayers.updateDevs
 import me.odinmain.utils.*
+import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.ScanUtils
 import me.odinmain.utils.skyblock.getChatBreak
@@ -85,6 +85,11 @@ val devCommand = commodore("oddev") {
         modMessage("Teammates: ${DungeonUtils.teammates.map { it.name }}")
         modMessage("TeammatesNoSelf: ${DungeonUtils.dungeonTeammatesNoSelf.map { it.name }}")
         modMessage("LeapTeammates: ${DungeonUtils.leapTeammates.map { it.name }}")
+    }
+
+    literal("getlocation").runs {
+        modMessage("currentarea: ${LocationUtils.currentArea}, currentroom: ${DungeonUtils.currentRoom},currentdungeon ${LocationUtils.currentDungeon}, kuudratier ${LocationUtils.kuudraTier}")
+
     }
 
     literal("simulate").runs { str: GreedyString ->

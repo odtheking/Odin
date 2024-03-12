@@ -32,7 +32,6 @@ object DianaBurrowEstimate {
 
     private var estimatedBurrowDistance: Double? = null
 
-
     fun handleBurrow(it: S2APacketParticles) {
         val particleType = ParticleType.getParticleType(it) ?: return
         val location = Vec3i(it.xCoordinate, it.yCoordinate - 1, it.zCoordinate)
@@ -71,7 +70,7 @@ object DianaBurrowEstimate {
     }
 
     fun handleSoundPacket(it: S29PacketSoundEffect) {
-        if (it.soundName != "note.harp" || LocationUtils.currentArea != "Hub") return
+        if (it.soundName != "note.harp" || LocationUtils.currentArea != Island.Hub) return
 
         if (lastDingTime == 0L) firstPitch = it.pitch
 

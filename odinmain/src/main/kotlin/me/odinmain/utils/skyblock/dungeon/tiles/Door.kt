@@ -1,4 +1,4 @@
-package me.odinmain.utils.skyblock.dungeon
+package me.odinmain.utils.skyblock.dungeon.tiles
 
 import me.odinmain.OdinMain
 import me.odinmain.utils.render.Color

@@ -2,6 +2,7 @@ package me.odinclient.features.impl.floor7
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
@@ -18,7 +19,7 @@ object RelicAura : Module(
 ){
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        if (DungeonUtils.getPhase() != 5) return
+        if (DungeonUtils.getPhase() != Island.M7P5) return
         val armorStands = mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()
             ?.filter { it.inventory?.get(4)?.displayName?.contains("Relic") == true } ?: return
         armorStands.forEach {

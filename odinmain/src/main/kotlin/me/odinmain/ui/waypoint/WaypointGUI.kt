@@ -35,7 +35,7 @@ object WaypointGUI : GuiScreen() {
     var mouseHandler = MouseHandler()
 
     override fun initGui() {
-        displayArea = currentArea
+        displayArea = currentArea?.displayName
         displayArea?.let { updateElements(it) }
         scrollTarget = 0f
         scrollOffset = 0f
@@ -149,7 +149,7 @@ object WaypointGUI : GuiScreen() {
         }
     }
 
-    fun updateElements(area: String = currentArea ?: "") {
+    fun updateElements(area: String = currentArea?.displayName ?: "") {
         list = WaypointConfig.waypoints[area]?.map { WaypointElement(it) }?.toMutableList() ?: mutableListOf()
     }
 

@@ -6,6 +6,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.containsOneOf
 import me.odinmain.utils.noControlCodes
+import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.getSkullValue
 import net.minecraft.entity.Entity
@@ -91,7 +92,7 @@ object RenderOptimizer : Module(
     fun onPacket(event: ReceivePacketEvent) {
         if (event.packet !is S2APacketParticles) return
 
-        if (DungeonUtils.getPhase() == 5 && hideParticles &&
+        if (DungeonUtils.getPhase() == Island.M7P5 && hideParticles &&
             !event.packet.particleType.name.containsOneOf("ENCHANTMENT TABLE", "FLAME", "FIREWORKS_SPARK"))
             event.isCanceled = true
 
@@ -110,7 +111,7 @@ object RenderOptimizer : Module(
 
     private fun removeTentacles(entity: Entity) {
         val armorStand = entity as? EntityArmorStand
-        if (DungeonUtils.getPhase() == 5 && getSkullValue(armorStand)?.contains(TENTACLE_TEXTURE) == true) armorStand?.setDead();
+        if (DungeonUtils.getPhase() == Island.M7P5 && getSkullValue(armorStand)?.contains(TENTACLE_TEXTURE) == true) armorStand?.setDead();
     }
 
     private fun handleHealerFairy(entity: Entity) {

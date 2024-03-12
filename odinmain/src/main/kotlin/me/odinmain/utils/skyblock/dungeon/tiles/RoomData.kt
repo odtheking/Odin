@@ -1,4 +1,4 @@
-package me.odinmain.utils.skyblock.dungeon
+package me.odinmain.utils.skyblock.dungeon.tiles
 
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer

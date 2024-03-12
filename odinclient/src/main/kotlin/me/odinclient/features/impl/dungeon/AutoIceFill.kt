@@ -4,19 +4,20 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import me.odinclient.utils.AsyncUtils.waitUntilPacked
 import me.odinclient.utils.skyblock.IceFillFloors.floors
 import me.odinclient.utils.skyblock.IceFillFloors.representativeFloors
 import me.odinclient.utils.skyblock.PlayerUtils.clipTo
-import me.odinclient.utils.skyblock.PlayerUtils.posFloored
+import me.odinclient.utils.waitUntilPacked
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.floored
 import me.odinmain.utils.plus
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.skyblock.WorldUtils
+import me.odinmain.utils.skyblock.PlayerUtils.posFloored
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.getBlockIdAt
+import me.odinmain.utils.skyblock.isAir
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
@@ -82,7 +83,7 @@ object AutoIceFill: Module(
         if (
             scanned ||
             !DungeonUtils.inDungeons ||
-            WorldUtils.getBlockIdAt(BlockPos(pos.x, pos.y - 1, pos.z )) != 79 ||
+            getBlockIdAt(BlockPos(pos.x, pos.y - 1, pos.z )) != 79 ||
             pos.y != 70
         ) return
         scanned = true
@@ -101,8 +102,8 @@ object AutoIceFill: Module(
 
         for (index in floorHeight.indices) {
             if (
-                WorldUtils.isAir(bPos.add(transform(floorHeight[index].first, rotation))) &&
-                !WorldUtils.isAir(bPos.add(transform(floorHeight[index].second, rotation)))
+                isAir(bPos.add(transform(floorHeight[index].first, rotation))) &&
+                !isAir(bPos.add(transform(floorHeight[index].second, rotation)))
             ) {
                 val scanTime: Double = (System.nanoTime() - startTime) / 1000000.0
                 modMessage("Scan took $scanTime ms")
@@ -203,10 +204,10 @@ object AutoIceFill: Module(
 
     private fun checkRotation(pos: Vec3i, floor: Int): Rotation? {
         val a = (floor+1)*2+2
-        if      (WorldUtils.getBlockIdAt(pos.x + a, pos.y, pos.z) == 109) return Rotation.EAST
-        else if (WorldUtils.getBlockIdAt(pos.x - a, pos.y, pos.z) == 109) return Rotation.WEST
-        else if (WorldUtils.getBlockIdAt(pos.x, pos.y, pos.z + a) == 109) return Rotation.SOUTH
-        else if (WorldUtils.getBlockIdAt(pos.x, pos.y, pos.z - a) == 109) return Rotation.NORTH
+        if      (getBlockIdAt(pos.x + a, pos.y, pos.z) == 109) return Rotation.EAST
+        else if (getBlockIdAt(pos.x - a, pos.y, pos.z) == 109) return Rotation.WEST
+        else if (getBlockIdAt(pos.x, pos.y, pos.z + a) == 109) return Rotation.SOUTH
+        else if (getBlockIdAt(pos.x, pos.y, pos.z - a) == 109) return Rotation.NORTH
         return null
     }
 

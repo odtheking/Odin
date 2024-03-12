@@ -13,8 +13,8 @@ import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.skyblock.WorldUtils
 import me.odinmain.utils.skyblock.devMessage
+import me.odinmain.utils.skyblock.getBlockIdAt
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.block.BlockButtonStone
 import net.minecraft.client.renderer.GlStateManager
@@ -163,7 +163,7 @@ object SimonSays : Module(
             !autoSSLastClickClock.hasTimePassed()
         ) return
         val buttonToClick = clickInOrder[clickNeeded]
-        if (WorldUtils.getBlockIdAt(buttonToClick.west()) != 77) return
+        if (getBlockIdAt(buttonToClick.west()) != 77) return
         val direction = getDirectionToVec3(buttonToClick.west().toVec3().addVec(x = .8, y = .5, z = .5))
         autoSSClickInQueue = true
         smoothRotateTo(direction.second, direction.third, autoSSRotateTime) {

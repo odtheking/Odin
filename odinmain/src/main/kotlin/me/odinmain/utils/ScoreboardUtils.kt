@@ -1,7 +1,6 @@
-package me.odinmain.utils.skyblock
+package me.odinmain.utils
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.utils.noControlCodes
 import net.minecraft.scoreboard.ScorePlayerTeam
 
 

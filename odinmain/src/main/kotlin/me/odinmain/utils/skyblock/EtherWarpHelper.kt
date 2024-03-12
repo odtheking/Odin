@@ -52,7 +52,7 @@ object EtherWarpHelper {
             iters++
 
             val pos = BlockPos(currentPos[0].toInt(), currentPos[1].toInt(), currentPos[2].toInt())
-            val currentBlock = WorldUtils.getBlockIdAt(pos)
+            val currentBlock = getBlockIdAt(pos)
 
             if (currentBlock != 0) {
                 return EtherPos(isValidEtherWarpBlock(pos), pos)
