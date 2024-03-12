@@ -43,8 +43,6 @@ object DungeonUtils {
     private var lastRoomPos: Pair<Int, Int> = Pair(0, 0)
     var currentRoom: FullRoom? = null
     val currentRoomName get() = currentRoom?.room?.data?.name ?: "Unknown"
-    val rotCoresToSend = mutableListOf<String>()
-
 
     private const val WITHER_ESSENCE_ID = "26bb1a8d-7c66-31c6-82d5-a9c04c94fb02"
     private const val REDSTONE_KEY = "edb0155f-379c-395a-9c7d-1b6005987ac8"
@@ -63,12 +61,7 @@ object DungeonUtils {
      * @return `true` if the current dungeon floor matches any of the specified options, otherwise `false`.
      */
     fun isFloor(vararg options: Int): Boolean {
-        for (option in options) {
-            if (currentDungeon?.floor?.floorNumber == option) {
-                return true
-            }
-        }
-        return false
+        return currentDungeon?.floor?.floorNumber.equalsOneOf(options)
     }
 
     /**
@@ -99,7 +92,7 @@ object DungeonUtils {
 
     @SubscribeEvent
     fun onMove(event: LivingEvent.LivingUpdateEvent) {
-        if (mc.theWorld == null || /*!inDungeons || */ inBoss || !event.entity.equals(mc.thePlayer)) return
+        if (mc.theWorld == null || !inDungeons || inBoss || !event.entity.equals(mc.thePlayer)) return
         val xPos = START_X + ((mc.thePlayer.posX + 200) / 32).toInt() * ROOM_SIZE
         val zPos = START_Z + ((mc.thePlayer.posZ + 200) / 32).toInt() * ROOM_SIZE
         if (lastRoomPos.equal(xPos, zPos) && currentRoom != null) return
@@ -117,7 +110,6 @@ object DungeonUtils {
             } ?: Rotations.NONE
             devMessage("Found rotation ${it.room.rotation}")
         }
-
         setWaypoints()
     }
 
@@ -166,6 +158,13 @@ object DungeonUtils {
         }
     }
 
+    /**
+     * Gets the top layer of blocks in a room (the roof) for finding the rotation of the room.
+     * This could be made recursive, but it's only a slightly cleaner implementation so idk
+     * @param x The x of the room to scan
+     * @param z The z of the room to scan
+     * @return The y-value of the roof, this is the y-value of the blocks.
+     */
     private fun getTopLayerOfRoom(x: Int, z: Int): Int {
         var currentHeight = 130
         while (isAir(x, currentHeight, z) && currentHeight > 70) {
