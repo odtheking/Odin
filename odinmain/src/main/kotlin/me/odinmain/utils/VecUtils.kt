@@ -4,6 +4,7 @@ import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.Vec2
+import me.odinmain.utils.skyblock.dungeon.Rotations
 import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S29PacketSoundEffect
@@ -140,12 +141,12 @@ fun Vec3.get(index: Int): Double {
  * @param rotation The rotation to rotate around
  * @return The rotated Vec3
  */
-fun Vec3.rotateAroundNorth(rotation: EnumFacing): Vec3 {
+fun Vec3.rotateAroundNorth(rotation: Rotations): Vec3 {
     return when (rotation) {
-        EnumFacing.NORTH -> this
-        EnumFacing.EAST -> Vec3(-this.zCoord, this.yCoord, this.xCoord)
-        EnumFacing.SOUTH -> Vec3(-this.xCoord, this.yCoord, -this.zCoord)
-        EnumFacing.WEST -> Vec3(this.zCoord, this.yCoord, -this.xCoord)
+        Rotations.NORTH -> this
+        Rotations.EAST -> Vec3(-this.zCoord, this.yCoord, this.xCoord)
+        Rotations.SOUTH -> Vec3(-this.xCoord, this.yCoord, -this.zCoord)
+        Rotations.WEST -> Vec3(this.zCoord, this.yCoord, -this.xCoord)
         else -> this
     }
 }
@@ -155,12 +156,12 @@ fun Vec3.rotateAroundNorth(rotation: EnumFacing): Vec3 {
  * @param rotation The rotation to rotate to
  * @return The rotated Vec3
  */
-fun Vec3.rotateToNorth(rotation: EnumFacing): Vec3 {
+fun Vec3.rotateToNorth(rotation: Rotations): Vec3 {
     return when (rotation) {
-        EnumFacing.NORTH -> this
-        EnumFacing.EAST -> Vec3(this.zCoord, this.yCoord, -this.xCoord)
-        EnumFacing.SOUTH -> Vec3(-this.xCoord, this.yCoord, -this.zCoord)
-        EnumFacing.WEST -> Vec3(-this.zCoord, this.yCoord, this.xCoord)
+        Rotations.NORTH -> this
+        Rotations.EAST -> Vec3(this.zCoord, this.yCoord, -this.xCoord)
+        Rotations.SOUTH -> Vec3(-this.xCoord, this.yCoord, -this.zCoord)
+        Rotations.WEST -> Vec3(-this.zCoord, this.yCoord, this.xCoord)
         else -> this
     }
 }

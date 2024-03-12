@@ -10,10 +10,11 @@ import me.odinmain.utils.*
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.skyblock.LocationUtils
+import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.LocationUtils.currentDungeon
 import me.odinmain.utils.skyblock.PlayerUtils.posY
-import me.odinmain.utils.skyblock.getItemSlot
+import me.odinmain.utils.skyblock.WorldUtils.getBlockIdAt
+import me.odinmain.utils.skyblock.WorldUtils.isAir
 import net.minecraft.block.BlockSkull
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.network.NetworkPlayerInfo
@@ -96,39 +97,27 @@ object DungeonUtils {
         }
     }
 
-
     @SubscribeEvent
     fun onMove(event: LivingEvent.LivingUpdateEvent) {
-        if (mc.theWorld == null || !inDungeons ||  inBoss || !event.entity.equals(mc.thePlayer)) return
+        if (mc.theWorld == null || /*!inDungeons || */ inBoss || !event.entity.equals(mc.thePlayer)) return
         val xPos = START_X + ((mc.thePlayer.posX + 200) / 32).toInt() * ROOM_SIZE
         val zPos = START_Z + ((mc.thePlayer.posZ + 200) / 32).toInt() * ROOM_SIZE
         if (lastRoomPos.equal(xPos, zPos) && currentRoom != null) return
         lastRoomPos = Pair(xPos, zPos)
 
-        var sendRotCores = false
-        val room = scanRoom(xPos, zPos)?.apply {
-            rotation = EnumFacing.HORIZONTALS.find {
-                val core = ScanUtils.getCore(xPos + it.frontOffsetX * 4, zPos + it.frontOffsetZ * 4)
-                return@find if (data.rotationCores.any { c -> core == c }) {
-                    rotationCore = core
-                    true
-                } else
-                    false
-            }.let {
-                if (it == null) {
-                    rotationCore = ScanUtils.getCore(xPos, zPos - 4)
-                    rotCoresToSend.add("Rotation core for ${this.data.name} not found! Sending $rotationCore instead.")
-                    sendRotCores = true
-                    EnumFacing.NORTH
-                }
-                else it
-            }
-        }
-        val positions = room?.let { findRoomTilesRecursively(it.x, it.z, it, mutableSetOf(), sendRotCores) } ?: emptyList()
+        val room = scanRoom(xPos, zPos)
+        val positions = room?.let { findRoomTilesRecursively(it.x, it.z, it, mutableSetOf()) } ?: emptyList()
         currentRoom = room?.let { FullRoom(it, positions, emptyList()) }
-        //if (rotCoresToSend.isNotEmpty()) OdinMain.scope.launch { sendDataToServer("""{"rd": "$rotCoresToSend"}""") }
+        currentRoom?.let {
+            val topLayer = getTopLayerOfRoom(it.positions.first().x, it.positions.first().z)
+            it.room.rotation = Rotations.entries.dropLast(1).find { rotation ->
+                it.positions.any { pos ->
+                    getBlockIdAt(pos.x + rotation.x, topLayer, pos.z + rotation.z) == 159
+                }
+            } ?: Rotations.NONE
+            devMessage("Found rotation ${it.room.rotation}")
+        }
 
-        rotCoresToSend.clear()
         setWaypoints()
     }
 
@@ -155,7 +144,7 @@ object DungeonUtils {
         }
     }
 
-    private fun findRoomTilesRecursively(x: Int, z: Int, room: Room, visited: MutableSet<Vec2>, sendRotCores: Boolean = false): List<ExtraRoom> {
+    private fun findRoomTilesRecursively(x: Int, z: Int, room: Room, visited: MutableSet<Vec2>): List<ExtraRoom> {
         val tiles = mutableListOf<ExtraRoom>()
         val pos = Vec2(x, z)
         if (visited.contains(pos)) return tiles
@@ -163,9 +152,8 @@ object DungeonUtils {
         val core = ScanUtils.getCore(x, z)
         if (room.data.cores.any { core == it }) {
             tiles.add(ExtraRoom(x, z, core))
-            if (sendRotCores) rotCoresToSend.add("Rotation core for ${room.data.name} not found! Sending ${ScanUtils.getCore(x, z - 4)} instead.")
             EnumFacing.HORIZONTALS.forEach {
-                tiles.addAll(findRoomTilesRecursively(x + it.frontOffsetX * ROOM_SIZE, z + it.frontOffsetZ * ROOM_SIZE, room, visited, sendRotCores))
+                tiles.addAll(findRoomTilesRecursively(x + it.frontOffsetX * ROOM_SIZE, z + it.frontOffsetZ * ROOM_SIZE, room, visited))
             }
         }
         return tiles
@@ -176,21 +164,14 @@ object DungeonUtils {
         return Room(x, z, ScanUtils.getRoomData(roomCore) ?: return null).apply {
             core = roomCore
         }
+    }
 
-
-        /*return EnumFacing.HORIZONTALS.firstNotNullOfOrNull {
-            val rotCore = ScanUtils.getCore(x + it.frontOffsetX * 4, z + it.frontOffsetZ * 4)
-            Room(
-                x, z,
-                data = ScanUtils.getRoomDataFromRotationCore(rotCore) ?: return@firstNotNullOfOrNull null
-            ).apply {
-                rotationCore = rotCore
-                rotation = it
-                core = ScanUtils.getCore(x, z)
-            }
+    private fun getTopLayerOfRoom(x: Int, z: Int): Int {
+        var currentHeight = 130
+        while (isAir(x, currentHeight, z) && currentHeight > 70) {
+            currentHeight--
         }
-
-         */
+        return currentHeight
     }
 
     /**

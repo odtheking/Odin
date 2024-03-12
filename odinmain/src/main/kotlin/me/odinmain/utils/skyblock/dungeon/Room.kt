@@ -8,7 +8,7 @@ class Room(override val x: Int, override val z: Int, var data: RoomData) : Tile 
     var core = 0
     var hasMimic = false
     var isSeparator = false
-    var rotation = EnumFacing.NORTH
+    var rotation = Rotations.NONE
     var rotationCore: Int? = null
     override var state: RoomState = RoomState.UNDISCOVERED
     override val color: Color

@@ -28,6 +28,18 @@ object WorldUtils {
     }
 
     /**
+     * Checks if the block at the specified `BlockPos` is considered "air" in the Minecraft world.
+     *
+     * @param x The x-coordinate of the position to query.
+     * @param y The y-coordinate of the position to query.
+     * @param z The z-coordinate of the position to query.
+     * @return `true` if the block at the given position is air, `false` otherwise.
+     */
+    fun isAir(x: Int, y: Int, z: Int): Boolean {
+        return getIdFromBlock(mc.theWorld?.getBlockState(BlockPos(x, y, z))?.block) == 0
+    }
+
+    /**
      * Retrieves the block ID at the specified coordinates in the Minecraft world.
      *
      * @param x The x-coordinate of the position to query.
