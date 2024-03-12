@@ -232,7 +232,6 @@ object RenderUtils {
         val height = 300
         val bottomOffset = 0
         val topOffset = bottomOffset + height
-
         if (!depth) GlStateManager.disableDepth()
 
         mc.textureManager.bindTexture(beaconBeam)
@@ -344,9 +343,8 @@ object RenderUtils {
      * @param depth     Indicates whether to draw with depth (default is false).
      */
     fun draw3DLine(vec1: Vec3, vec2: Vec3, color: Color, lineWidth: Int, depth: Boolean) {
-        color.bind()
-
         GlStateManager.pushMatrix()
+        color.bind()
         preDraw()
         GlStateManager.depthMask(depth)
 
