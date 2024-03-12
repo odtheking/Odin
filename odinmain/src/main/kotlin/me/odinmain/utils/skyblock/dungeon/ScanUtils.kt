@@ -20,21 +20,18 @@ object ScanUtils {
                 (ScanUtils::class.java.getResourceAsStream("/rooms.json") ?: throw FileNotFoundException()).bufferedReader(),
                 object : TypeToken<Set<RoomData>>() {}.type
             )
-    } catch (e: JsonSyntaxException) {
-        println("Error parsing room data.")
-        setOf()
-    } catch (e: JsonIOException) {
-        println("Error reading room data.")
-        setOf()
-    } catch (e: FileNotFoundException) {
-        println("Room data not found. You are either in developer environment, or something went wrong. Please report this!")
-        setOf()
     } catch (e: Exception) {
-        println("Unknown error while reading room data.")
-        e.printStackTrace()
-        println(e.message)
+        when (e) {
+            is JsonSyntaxException -> println("Error parsing room data.")
+            is JsonIOException -> println("Error reading room data.")
+            is FileNotFoundException -> println("Room data not found, something went wrong! Please report this!")
+            else -> {
+                println("Unknown error while reading room data.")
+                e.printStackTrace()
+                println(e.message)
+            }
+        }
         setOf()
-
     }
 
     fun getRoomData(hash: Int): RoomData? =

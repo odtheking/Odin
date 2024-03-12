@@ -24,7 +24,7 @@ object BlazeSolver {
         val entities = mc.theWorld.loadedEntityList.filterIsInstance<EntityArmorStand>()
         entities.forEach { e ->
             val name = e.name.noControlCodes
-            val regex = Regex("""^\[Lv15\] Blaze [\d,]+/([\d,]+)❤$""")
+            val regex = Regex("""^\[Lv15] Blaze [\d,]+/([\d,]+)❤$""")
             val matchResult = regex.find(name)
             if (matchResult != null) {
                 val (_, health) = matchResult.destructured
@@ -43,9 +43,9 @@ object BlazeSolver {
     }
 
     fun renderBlazes() {
-        blazes.forEachIndexed { i, entity ->
-            val color = when (i) {
-                0 -> Color(0, 1, 0)
+        blazes.forEachIndexed { index, entity ->
+            val color = when (index) {
+                0 -> Color(0, 1, 0) // Maybe slightly dark colors here?????
                 1 -> Color(1, 5, 0)
                 else -> Color(1, 1, 1)
             }
@@ -55,7 +55,7 @@ object BlazeSolver {
             // tracer
 
 
-            Renderer.draw3DLine(blazes[i - 1].positionVector, entity.positionVector, color, 1, false)
+            Renderer.draw3DLine(blazes[index - 1].positionVector, entity.positionVector, color, 1, false)
 
         }
     }

@@ -94,7 +94,7 @@ object DungeonUtils {
 
     @SubscribeEvent
     fun onMove(event: LivingEvent.LivingUpdateEvent) {
-        if (mc.theWorld == null || !inDungeons || inBoss || !event.entity.equals(mc.thePlayer)) return
+        if (mc.theWorld == null /*|| !inDungeons */|| inBoss || !event.entity.equals(mc.thePlayer)) return
         val xPos = START_X + ((mc.thePlayer.posX + 200) / 32).toInt() * ROOM_SIZE
         val zPos = START_Z + ((mc.thePlayer.posZ + 200) / 32).toInt() * ROOM_SIZE
         if (lastRoomPos.equal(xPos, zPos) && currentRoom != null) return

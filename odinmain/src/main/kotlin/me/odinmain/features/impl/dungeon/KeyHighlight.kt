@@ -26,13 +26,11 @@ object KeyHighlight : Module(
     @SubscribeEvent
     fun postMetadata(event: PostEntityMetadata) {
         if (mc.theWorld.getEntityByID(event.packet.entityId) !is EntityArmorStand || !DungeonUtils.inDungeons || DungeonUtils.inBoss) return
-
         val entity = mc.theWorld.getEntityByID(event.packet.entityId) as EntityArmorStand
-        val name = entity.name.noControlCodes
-        if (name == "Wither Key") {
-            currentKey = Color.BLACK to entity
-        } else if (name == "Blood Key") {
-            currentKey = Color(255, 0, 0) to entity
+        currentKey = when (entity.name.noControlCodes) {
+            "Wither Key" -> Color.BLACK to entity
+            "Blood Key" -> Color.RED to entity
+            else -> return
         }
     }
 
@@ -50,7 +48,7 @@ object KeyHighlight : Module(
     }
 
     init {
-        onWorldLoad{
+        onWorldLoad {
             currentKey = null
         }
     }

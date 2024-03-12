@@ -86,7 +86,7 @@ object ModuleManager {
         Reminders,
         Animations,
         SpaceHelmet,
-        //DungeonWaypoints,
+        DungeonWaypoints,
         SecretChime,
         LeapMenu,
         PuzzleSolvers,
