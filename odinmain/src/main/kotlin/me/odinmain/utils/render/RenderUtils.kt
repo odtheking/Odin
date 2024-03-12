@@ -343,33 +343,25 @@ object RenderUtils {
      * @param lineWidth The width of the line (default is 3).
      * @param depth     Indicates whether to draw with depth (default is false).
      */
-    fun draw3DLine(pos1: Vec3, pos2: Vec3, color: Color, lineWidth: Int = 3, depth: Boolean = false) {
-        val renderVec = mc.renderViewEntity.renderVec
+    fun draw3DLine(vec1: Vec3, vec2: Vec3, color: Color, lineWidth: Int, depth: Boolean) {
+        color.bind()
 
         GlStateManager.pushMatrix()
-        color.bind()
-        translate(-renderVec.xCoord, -renderVec.yCoord, -renderVec.zCoord)
         preDraw()
+        GlStateManager.depthMask(depth)
 
+        GL11.glEnable(GL11.GL_LINE_SMOOTH)
         GL11.glLineWidth(lineWidth.toFloat())
-        if (!depth) {
-            GL11.glDisable(GL11.GL_DEPTH_TEST)
-            GlStateManager.depthMask(false)
-        }
-        worldRenderer.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
-        worldRenderer.pos(pos1.xCoord, pos1.yCoord, pos1.zCoord).endVertex()
-        worldRenderer.pos(pos2.xCoord, pos2.yCoord, pos2.zCoord).endVertex()
 
+        worldRenderer {
+            begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
+            pos(vec1.xCoord, vec1.yCoord, vec1.zCoord).endVertex()
+            pos(vec2.xCoord, vec2.yCoord, vec2.zCoord).endVertex()
+        }
         tessellator.draw()
 
-        translate(renderVec.xCoord, renderVec.yCoord, renderVec.zCoord)
-        if (!depth) {
-            GL11.glEnable(GL11.GL_DEPTH_TEST)
-            GlStateManager.depthMask(true)
-        }
-
+        GL11.glDepthMask(true)
         postDraw()
-        GlStateManager.resetColor()
         GlStateManager.popMatrix()
     }
 

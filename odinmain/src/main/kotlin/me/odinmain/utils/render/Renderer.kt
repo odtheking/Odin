@@ -96,7 +96,7 @@ object Renderer {
     fun drawStringInWorld(
         text: String,
         vec3: Vec3,
-        color: Color,
+        color: Color = Color.WHITE,
         renderBlackBox: Boolean = false,
         depth: Boolean = false,
         scale: Float = 0.03f,

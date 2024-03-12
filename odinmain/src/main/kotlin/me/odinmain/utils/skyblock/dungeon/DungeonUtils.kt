@@ -3,6 +3,7 @@ package me.odinmain.utils.skyblock.dungeon
 import com.google.common.collect.ComparisonChain
 import me.odinmain.OdinMain.mc
 import me.odinmain.config.DungeonWaypointConfig
+import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.impl.dungeon.DungeonWaypoints.DungeonWaypoint
 import me.odinmain.features.impl.dungeon.DungeonWaypoints.toVec3
 import me.odinmain.features.impl.dungeon.LeapMenu
@@ -221,7 +222,7 @@ object DungeonUtils {
     init {
         Executor(1000) {
             if (inDungeons) {
-                teammates = getDungeonTeammates()
+                updateDungeonTeammates()
                 dungeonTeammatesNoSelf = teammates.filter { it.name != mc.thePlayer.name }
 
                 val odinSortLeap = odinSorting(dungeonTeammatesNoSelf.sortedBy { it.clazz.prio })
@@ -249,7 +250,15 @@ object DungeonUtils {
     private val tablistRegex = Regex("\\[(\\d+)] (?:\\[\\w+] )*(\\w+) (?:.)*?\\((\\w+)(?: (\\w+))*\\)")
     private val tablistRegexDEAD = Regex("\\[(\\d+)] (?:\\[\\w+] )*(\\w+) (?:.)*?\\((\\w+)*\\)")
 
+    private fun updateDungeonTeammates() {
+        val tabList = getDungeonTabList() ?: return
 
+        for ((networkPlayerInfo, line) in tabList) {
+
+            val (_, sbLevel, name, clazz, clazzLevel) = tablistRegex.find(line.noControlCodes)?.groupValues ?: tablistRegexDEAD.find(line.noControlCodes)?.groupValues ?: continue
+            teammates.find { it.name == name }?.clazz?.isDead = clazz == "DEAD"
+        }
+    }
 
     private fun getDungeonTeammates(): List<DungeonPlayer> {
         val teammates = mutableListOf<DungeonPlayer>()
@@ -257,21 +266,22 @@ object DungeonUtils {
 
         for ((networkPlayerInfo, line) in tabList) {
 
-            val (_, sbLevel, name, clazz, clazzLevel) = tablistRegex.find(line.noControlCodes)?.groupValues ?: tablistRegexDEAD.find(line.noControlCodes)?.groupValues ?: continue
+            val (_, sbLevel, name, clazz, clazzLevel) = tablistRegex.find(line.noControlCodes)?.groupValues ?: continue
 
             Classes.entries.find { it.name == clazz }?.let { foundClass ->
                 mc.theWorld.getPlayerEntityByName(name)?.let { player ->
                     teammates.add(DungeonPlayer(name, foundClass, networkPlayerInfo.locationSkin, player))
                 } ?: teammates.add(DungeonPlayer(name, foundClass, networkPlayerInfo.locationSkin, null))
             }
-
-            if (clazz == "DEAD") {
-                val deadPlayer = teammates.find { it.name == name } ?: continue
-                deadPlayer.clazz.isDead = true
-            }
-
         }
         return teammates
+    }
+    @SubscribeEvent
+    fun onChat(event: ChatPacketEvent) {
+        if (event.message.noControlCodes == "[NPC] Mort: Here, I found this map when I first entered the dungeon.") {
+            teammates = getDungeonTeammates()
+            dungeonTeammatesNoSelf = teammates.filter { it.name != mc.thePlayer.name }
+        }
     }
 
     private val tabListOrder = Comparator<NetworkPlayerInfo> { o1, o2 ->
