@@ -9,7 +9,6 @@ data class RoomData(
     val name: String,
     val type: RoomType,
     val cores: List<Int>,
-    val rotationCores: List<Int>,
     val crypts: Int,
     val secrets: Int,
     val trappedChests: Int,
@@ -24,8 +23,7 @@ class RoomDataDeserializer : JsonDeserializer<RoomData> {
         val crypts = jsonObject?.get("crypts")?.asInt ?: 0
         val secrets = jsonObject?.get("secrets")?.asInt ?: 0
         val trappedChests = jsonObject?.get("trappedChests")?.asInt ?: 0
-        val rotationCores = context?.deserialize(jsonObject?.get("rotationCores"), List::class.java) as? List<Int> ?: emptyList()
 
-        return RoomData(name, type, cores, rotationCores, crypts, secrets, trappedChests)
+        return RoomData(name, type, cores, crypts, secrets, trappedChests)
     }
 }

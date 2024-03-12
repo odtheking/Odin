@@ -1629,5 +1629,14 @@
     ],
     "crypts": 8,
     "secrets": 4
+  },
+  {
+    "name": "uuughhhh idk what to call it",
+    "type": "NORMAL",
+    "cores": [
+      105458531
+    ],
+    "crypts": 1,
+    "secrets": 1
   }
 ]
