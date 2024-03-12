@@ -427,8 +427,6 @@ object RenderUtils {
         }
 
         GlStateManager.resetColor()
-        GlStateManager.depthMask(true)
-        GlStateManager.enableDepth()
         GlStateManager.popMatrix()
     }
 
