@@ -44,13 +44,11 @@ object EtherWarpHelper : Module(
     private val filled: Boolean by DualSetting("Type", "Outline", "Filled", default = false).withDependency { render }
     private val thickness: Float by NumberSetting("Thickness", 3f, 1f, 10f, .1f).withDependency { !filled && render }
     private val phase: Boolean by BooleanSetting("Phase", false).withDependency { render }
-    private val etherWarpTriggerBot: Boolean by BooleanSetting("Trigger Bot", false, description = "Uses Dungeon Waypoints to trigger bot to the closest waypoint.").withDependency { notReady }
+    private val etherWarpTriggerBot: Boolean by BooleanSetting("Trigger Bot", false, description = "Uses Dungeon Waypoints to trigger bot to the closest waypoint.")
     private val etherWarpTBDelay: Long by NumberSetting("Trigger Bot Delay", 200L, 0, 1000, 10).withDependency { etherWarpTriggerBot }
-    private val etherWarpHelper: Boolean by BooleanSetting("Ether Warp Helper", false, description = "Rotates you to the closest waypoint when you left click with aotv.").withDependency { etherWarpTriggerBot }
+    private val etherWarpHelper: Boolean by BooleanSetting("Ether Warp Helper", false, description = "Rotates you to the closest waypoint when you left click with aotv.")
     private val rotTime: Long by NumberSetting("Rotation Time", 150L, 10L, 600L, 1L).withDependency { etherWarpHelper }
     private val maxRot: Float by NumberSetting("Max Rotation", 90f, 0f, 360f, 1f).withDependency { etherWarpHelper }
-
-    private val notReady = false
 
     private val tbClock = Clock(etherWarpTBDelay)
 

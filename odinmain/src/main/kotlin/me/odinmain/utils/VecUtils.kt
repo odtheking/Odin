@@ -549,6 +549,8 @@ fun smoothRotateTo(yaw: Float, pitch: Float, rotTime: Number, functionToRunWhenD
             mc.thePlayer.rotationPitch += deltaPitch / rotTime.toInt()
             Thread.sleep(1)
         }
+        mc.thePlayer.rotationYaw = yaw
+        mc.thePlayer.rotationPitch = pitch
         Thread.sleep(15)
         functionToRunWhenDone.invoke()
     }
