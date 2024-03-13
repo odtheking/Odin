@@ -25,7 +25,7 @@ abstract class Module(
     key: Int? = Keyboard.KEY_NONE,
     @Transient val category: Category = Category.RENDER,
     @Transient var description: String = "",
-    @Transient val tag: Int = TagType.NONE,
+    @Transient val tag: TagType = TagType.NONE,
     toggled: Boolean = false,
 ) {
 
@@ -176,11 +176,7 @@ abstract class Module(
         executors.add(this to Executor(delay, profileName, func))
     }
 
-    // todo change this to enum
-    object TagType {
-        const val NONE = 0
-        const val NEW = 1
-        const val RISKY = 2
-        const val FPSTAX = 3
+    enum class TagType {
+        NONE, NEW, RISKY, FPSTAX
     }
 }

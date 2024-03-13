@@ -106,7 +106,8 @@ object ModuleManager {
         VanqNotifier,
         KuudraReminders,
         Splits,
-        WardrobeKeybinds
+        WardrobeKeybinds,
+        InvincibilityTimer
     )
 
     init {

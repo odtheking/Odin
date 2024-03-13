@@ -8,6 +8,7 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.profile
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -35,7 +36,8 @@ object DioriteFucker : Module(
     }
 
     init {
-        onMessage("[BOSS] Maxor: I’LL MAKE YOU REMEMBER MY DEATH!!", false) {
+        onMessage("[BOSS] Storm: Pathetic Maxor, just like expected.", false) {
+            modMessage("Fucking Diorite")
             replaceDiorite()
         }
     }

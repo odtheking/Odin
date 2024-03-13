@@ -92,7 +92,7 @@ val devCommand = commodore("oddev") {
     }
 
     literal("getlocation").runs {
-        modMessage("currentarea: ${LocationUtils.currentArea}, currentroom: ${DungeonUtils.currentRoom},currentdungeon ${LocationUtils.currentDungeon}, kuudratier ${LocationUtils.kuudraTier}")
+        modMessage("currentarea: ${LocationUtils.currentArea}, currentroom: ${DungeonUtils.currentRoom}, currentdungeon ${LocationUtils.currentDungeon}, kuudratier ${LocationUtils.kuudraTier}, phase ${DungeonUtils.getPhase()?.displayName}")
 
     }
 

@@ -10,6 +10,8 @@ import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.Event
+import java.time.Month
+import java.time.format.TextStyle
 import java.util.*
 import kotlin.math.floor
 import kotlin.math.pow
@@ -215,4 +217,9 @@ fun <T> Collection<T>.getSafe(index: Int?): T? {
     } catch (_: Exception) {
         null
     }
+}
+
+fun getCurrentMonthName(): String {
+    val currentMonth = Month.entries[java.time.LocalDateTime.now().monthValue - 1]
+    return currentMonth.getDisplayName(TextStyle.FULL, Locale.getDefault())
 }

@@ -8,6 +8,8 @@ import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.nbt.NBTTagList
+import net.minecraft.nbt.NBTTagString
 
 /**
  * Returns the ExtraAttribute Compound
@@ -129,4 +131,13 @@ fun getSkullValue(armorStand: EntityArmorStand?): String? {
         ?.getTagList("textures", 10)
         ?.getCompoundTagAt(0)
         ?.getString("Value")
+}
+
+fun ItemStack.setLore(lines: List<String>): ItemStack {
+    setTagInfo("display", getSubCompound("display", true).apply {
+        setTag("Lore", NBTTagList().apply {
+            for (line in lines) appendTag(NBTTagString(line))
+        })
+    })
+    return this
 }
