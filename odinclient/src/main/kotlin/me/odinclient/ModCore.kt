@@ -6,9 +6,7 @@ import me.odinclient.commands.impl.autoSellCommand
 
 import me.odinclient.features.impl.dungeon.*
 import me.odinclient.features.impl.dungeon.AutoSell.sellList
-import me.odinclient.features.impl.floor7.DioriteFucker
-import me.odinclient.features.impl.floor7.FreezeGame
-import me.odinclient.features.impl.floor7.RelicAura
+import me.odinclient.features.impl.floor7.*
 import me.odinclient.features.impl.floor7.p3.*
 import me.odinclient.features.impl.render.*
 import me.odinclient.features.impl.skyblock.*
@@ -67,7 +65,7 @@ class ModCore {
             SwapStonk, Arrows, ArrowAlign, CancelWrongTerms, HoverTerms, LightsDevice, SimonSays,
             DioriteFucker, RelicAura, Trajectories, Ghosts, NoCarpet, NoDebuff, LockCursor,
             CookieClicker, AutoExperiments, FarmingHitboxes, NoBlock, TermAC, Triggerbot, GhostBlock, FreezeGame,
-            AbilityKeybind, EtherWarpHelper, ChestEsp, NoBreakReset, EscrowFix
+            AbilityKeybind, EtherWarpHelper, ChestEsp, NoBreakReset, EscrowFix, Relics
         )
         OdinMain.loadComplete()
     }
