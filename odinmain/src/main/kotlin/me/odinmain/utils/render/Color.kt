@@ -93,6 +93,8 @@ class Color(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f)
         return false
     }
 
+    fun copy(): Color = Color(this.rgba)
+
     companion object {
 
         @JvmField

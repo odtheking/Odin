@@ -129,7 +129,7 @@ object DungeonUtils {
             DungeonWaypointConfig.waypoints[room.data.name]?.let { waypoints ->
                 addAll(waypoints.map { waypoint ->
                     val vec = waypoint.toVec3().rotateAroundNorth(room.rotation).addVec(x = room.x, z = room.z)
-                    DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, waypoint.color,  waypoint.filled, waypoint.depth, waypoint.size)
+                    DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, waypoint.color, waypoint.filled, waypoint.depth, waypoint.size)
                 })
             }
             curRoom.positions.forEach { pos ->

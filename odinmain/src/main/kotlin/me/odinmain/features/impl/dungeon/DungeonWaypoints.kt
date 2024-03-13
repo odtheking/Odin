@@ -12,6 +12,7 @@ import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.tiles.RoomType
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
@@ -30,7 +31,7 @@ object DungeonWaypoints : Module(
     tag = TagType.NEW
 ) {
     private var allowEdits: Boolean by BooleanSetting("Allow Edits", false)
-    private val color: Color by ColorSetting("Color", default = Color.GREEN, description = "The color of the next waypoint you place.")
+    private val color: Color by ColorSetting("Color", default = Color.GREEN, description = "The color of the next waypoint you place.", allowAlpha = true)
     private val filled: Boolean by BooleanSetting("Filled", false, description = "If the next waypoint you place should be 'filled'.")
     private val throughWalls: Boolean by BooleanSetting("Through walls", false, description = "If the next waypoint you place should be visible through walls.")
     private val size: Double by NumberSetting<Double>("Size", 1.0, .125, 1.0, increment = 0.125, description = "The size of the next waypoint you place.")
@@ -69,7 +70,7 @@ object DungeonWaypoints : Module(
                 DungeonWaypointConfig.waypoints.getOrPut(room.core.toString()) { mutableListOf() }
 
         if (!waypoints.any { it.toVec3().equal(vec) }) {
-            waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color, filled, !throughWalls, size))
+            waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, size))
             devMessage("Added waypoint at $vec")
         } else {
             waypoints.removeIf { it.toVec3().equal(vec) }
