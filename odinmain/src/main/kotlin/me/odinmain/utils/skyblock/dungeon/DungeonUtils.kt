@@ -3,7 +3,6 @@ package me.odinmain.utils.skyblock.dungeon
 import com.google.common.collect.ComparisonChain
 import me.odinmain.OdinMain.mc
 import me.odinmain.config.DungeonWaypointConfig
-import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.impl.dungeon.DungeonWaypoints.DungeonWaypoint
 import me.odinmain.features.impl.dungeon.DungeonWaypoints.toVec3
 import me.odinmain.features.impl.dungeon.LeapMenu
@@ -94,7 +93,7 @@ object DungeonUtils {
 
     @SubscribeEvent
     fun onMove(event: LivingEvent.LivingUpdateEvent) {
-        if (mc.theWorld == null /*|| !inDungeons */|| inBoss || !event.entity.equals(mc.thePlayer)) return
+        if (mc.theWorld == null || !inDungeons || inBoss || !event.entity.equals(mc.thePlayer)) return
         val xPos = START_X + ((mc.thePlayer.posX + 200) / 32).toInt() * ROOM_SIZE
         val zPos = START_Z + ((mc.thePlayer.posZ + 200) / 32).toInt() * ROOM_SIZE
         if (lastRoomPos.equal(xPos, zPos) && currentRoom != null) return
@@ -190,7 +189,6 @@ object DungeonUtils {
         val color: Color,
         val defaultQuadrant: Int,
         var prio: Int,
-        var isDead: Boolean = false
     ) {
         Archer(Color.ORANGE, 0, 2),
         Berserk(Color.DARK_RED,1, 0),
@@ -211,38 +209,35 @@ object DungeonUtils {
         val name: String,
         var clazz: Classes,
         val locationSkin: ResourceLocation = ResourceLocation("textures/entity/steve.png"),
-        val entity: EntityPlayer? = null
+        val entity: EntityPlayer? = null,
+        var isDead: Boolean = false
     )
 
     val isGhost: Boolean get() = getItemSlot("Haunt", true) != null
-    var teammates: List<DungeonPlayer> = emptyList()
+    var dungeonTeammates: List<DungeonPlayer> = emptyList()
     var dungeonTeammatesNoSelf: List<DungeonPlayer> = emptyList()
     var leapTeammates = mutableListOf<DungeonPlayer>()
 
     init {
-        Executor(1000) {
-            if (inDungeons) {
-                updateDungeonTeammates()
-                dungeonTeammatesNoSelf = teammates.filter { it.name != mc.thePlayer.name }
+        Executor(500) {
+            if (!inDungeons) return@Executor
+            dungeonTeammates = getDungeonTeammates(dungeonTeammates)
+            dungeonTeammatesNoSelf = dungeonTeammates.filter { it.name != mc.thePlayer.name }
 
-                val odinSortLeap = odinSorting(dungeonTeammatesNoSelf.sortedBy { it.clazz.prio })
-                val classNameSort = dungeonTeammatesNoSelf.sortedWith(compareBy({ it.clazz.ordinal }, { it.name }))
-                val nameSort = dungeonTeammatesNoSelf.sortedBy { it.name }
-
-                leapTeammates =
-                    when (LeapMenu.type) {
-                    0 -> odinSortLeap.toMutableList()
-                    1 -> classNameSort.toMutableList()
-                    2 -> nameSort.toMutableList()
+            leapTeammates =
+                when (LeapMenu.type) {
+                    0 -> odinSorting(dungeonTeammatesNoSelf.sortedBy { it.clazz.prio }).toMutableList()
+                    1 -> dungeonTeammatesNoSelf.sortedWith(compareBy({ it.clazz.ordinal }, { it.name })).toMutableList()
+                    2 -> dungeonTeammatesNoSelf.sortedBy { it.name }.toMutableList()
                     else -> dungeonTeammatesNoSelf.toMutableList()
                 }
-            }
+
         }.register()
     }
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
-        teammates = emptyList()
+        dungeonTeammates = emptyList()
         dungeonTeammatesNoSelf = emptyList()
         leapTeammates.clear()
     }
@@ -250,38 +245,38 @@ object DungeonUtils {
     private val tablistRegex = Regex("\\[(\\d+)] (?:\\[\\w+] )*(\\w+) (?:.)*?\\((\\w+)(?: (\\w+))*\\)")
     private val tablistRegexDEAD = Regex("\\[(\\d+)] (?:\\[\\w+] )*(\\w+) (?:.)*?\\((\\w+)*\\)")
 
-    private fun updateDungeonTeammates() {
-        val tabList = getDungeonTabList() ?: return
-
-        for ((networkPlayerInfo, line) in tabList) {
-
-            val (_, sbLevel, name, clazz, clazzLevel) = tablistRegex.find(line.noControlCodes)?.groupValues ?: tablistRegexDEAD.find(line.noControlCodes)?.groupValues ?: continue
-            teammates.find { it.name == name }?.clazz?.isDead = clazz == "DEAD"
-        }
-    }
-
-    private fun getDungeonTeammates(): List<DungeonPlayer> {
+    private fun getDungeonTeammates(previousTeammates: List<DungeonPlayer>): List<DungeonPlayer> {
         val teammates = mutableListOf<DungeonPlayer>()
         val tabList = getDungeonTabList() ?: return emptyList()
 
         for ((networkPlayerInfo, line) in tabList) {
 
-            val (_, sbLevel, name, clazz, clazzLevel) = tablistRegex.find(line.noControlCodes)?.groupValues ?: continue
+            val (_, sbLevel, name, clazz, clazzLevel) = tablistRegex.find(line.noControlCodes)?.groupValues ?: tablistRegexDEAD.find(line.noControlCodes)?.groupValues ?: continue
 
-            Classes.entries.find { it.name == clazz }?.let { foundClass ->
-                mc.theWorld.getPlayerEntityByName(name)?.let { player ->
-                    teammates.add(DungeonPlayer(name, foundClass, networkPlayerInfo.locationSkin, player))
-                } ?: teammates.add(DungeonPlayer(name, foundClass, networkPlayerInfo.locationSkin, null))
+            addTeammate(name, clazz, teammates, networkPlayerInfo)
+            if (clazz == "DEAD") {
+                val previousClass = previousTeammates.find { it.name == name }?.clazz ?: continue
+                addTeammate(name, previousClass.name, teammates, networkPlayerInfo)
             }
+            teammates.find { it.name == name }?.isDead = clazz == "DEAD"
         }
         return teammates
     }
-    @SubscribeEvent
-    fun onChat(event: ChatPacketEvent) {
-        if (event.message.noControlCodes == "[NPC] Mort: Here, I found this map when I first entered the dungeon.") {
-            teammates = getDungeonTeammates()
-            dungeonTeammatesNoSelf = teammates.filter { it.name != mc.thePlayer.name }
+
+    private fun addTeammate(name: String, clazz: String, teammates: MutableList<DungeonPlayer>, networkPlayerInfo: NetworkPlayerInfo) {
+        Classes.entries.find { it.name == clazz }?.let { foundClass ->
+            mc.theWorld.getPlayerEntityByName(name)?.let { player ->
+                teammates.add(DungeonPlayer(name, foundClass, networkPlayerInfo.locationSkin, player))
+            } ?: teammates.add(DungeonPlayer(name, foundClass, networkPlayerInfo.locationSkin, null))
         }
+    }
+
+    fun getDungeonTabList(): List<Pair<NetworkPlayerInfo, String>>? {
+        val tabEntries = tabList
+        if (tabEntries.size < 18 || !tabEntries[0].second.contains("§r§b§lParty §r§f(")) {
+            return null
+        }
+        return tabEntries
     }
 
     private val tabListOrder = Comparator<NetworkPlayerInfo> { o1, o2 ->
@@ -299,10 +294,6 @@ object DungeonUtils {
     private val tabList: List<Pair<NetworkPlayerInfo, String>>
         get() = (mc.thePlayer?.sendQueue?.playerInfoMap?.sortedWith(tabListOrder) ?: emptyList())
             .map { Pair(it, mc.ingameGUI.tabList.getPlayerName(it)) }
-
-    fun getDungeonTabList(): List<Pair<NetworkPlayerInfo, String>>? {
-        return tabList.let { if (it.size > 18 && it[0].second.contains("§r§b§lParty §r§f(")) it else null }
-    }
 
     /**
      * Determines whether a given block state and position represent a secret location.
@@ -328,4 +319,5 @@ object DungeonUtils {
         // If none of the above conditions are met, it is not a secret location
         return false
     }
+
 }

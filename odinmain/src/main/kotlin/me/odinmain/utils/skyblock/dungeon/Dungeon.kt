@@ -33,6 +33,7 @@ class Dungeon {
         getCurrentFloor()
         Executor(500) {
             DungeonUtils.getDungeonTabList()?.let { updateRunInformation(it) }
+            modMessage("Deaths: $deathCount, Secrets: $secretCount, Crypts: $cryptsCount")
         }
     }
 

@@ -7,6 +7,7 @@ import me.odinmain.utils.equal
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
@@ -31,13 +32,13 @@ object LeapHelper {
     var leapHelper: String = if (DungeonUtils.inBoss) leapHelperBoss else leapHelperClear
 
     fun getPlayer(event: ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.END || DungeonUtils.teammates.isEmpty()) return
+        if (event.phase != TickEvent.Phase.END || DungeonUtils.dungeonTeammates.isEmpty()) return
         if (DungeonUtils.getPhase() == Island.M7P3) scanGates()
         if (currentPos == NONE) return
-        leapHelperBoss = DungeonUtils.teammates
+        leapHelperBoss = DungeonUtils.dungeonTeammates
             .filter {
                 it.entity != null && it.entity != mc.thePlayer &&
-                        if (currentPos.equal(Vec3(54.0, 4.0, 95.0))) it.entity.positionVector.yCoord < 54.0 else true // To make sure the player is underneath necron's platform
+                        if (currentPos.equal(Vec3(54.0, 4.0, 95.0))) (it.entity as EntityPlayer).positionVector.yCoord < 54.0 else true // To make sure the player is underneath necron's platform
             }
             .minByOrNull { it.entity?.positionVector?.distanceTo(currentPos) ?: 10000.0 }
             ?.entity

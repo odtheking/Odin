@@ -35,7 +35,7 @@ object DioriteFucker : Module(
     }
 
     init {
-        onMessage("[BOSS] Storm: I'd be happy to show you what that's like!", false) {
+        onMessage("[BOSS] Maxor: I’LL MAKE YOU REMEMBER MY DEATH!!", false) {
             replaceDiorite()
         }
     }

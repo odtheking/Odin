@@ -6,8 +6,6 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.StringSetting
-import me.odinmain.utils.clock.Executor
-import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.name
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.partyMessage
@@ -43,21 +41,21 @@ object MelodyMessage : Module(
     }
 
     private val claySlots = hashMapOf(
-        25 to "pc message 1/4",
-        34 to "pc message 2/4",
-        43 to "pc message 3/4"
+        25 to "pc is at 1/4",
+        34 to "pc is at 2/4",
+        43 to "pc is at 3/4"
     )
 
     init {
-        Executor(50){
-            val containerChest = mc.thePlayer.openContainer as? ContainerChest ?: return@Executor
-            if (containerChest.name != "Click the button on time!" || melodyProgress) return@Executor
+        execute(50){
+            val containerChest = mc.thePlayer.openContainer as? ContainerChest ?: return@execute
+            if (containerChest.name != "Click the button on time!" || melodyProgress) return@execute
 
             val greenClayIndices = claySlots.keys.filter { index -> containerChest.getSlot(index)?.stack?.metadata == 5 }
-            if (greenClayIndices.isEmpty()) return@Executor
+            if (greenClayIndices.isEmpty()) return@execute
 
-            sendCommand(claySlots[greenClayIndices.last()] ?: return@Executor)
+            sendCommand(claySlots[greenClayIndices.last()] ?: return@execute)
             greenClayIndices.forEach { claySlots.remove(it) }
-        }.register()
+        }
     }
 }

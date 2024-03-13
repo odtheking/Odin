@@ -25,13 +25,11 @@ object BlazeSolver {
         entities.forEach { e ->
             val name = e.name.noControlCodes
             val regex = Regex("""^\[Lv15] Blaze [\d,]+/([\d,]+)❤$""")
-            val matchResult = regex.find(name)
-            if (matchResult != null) {
-                val (_, health) = matchResult.destructured
-                val hp = health.replace(",", "").toInt()
-                hpMap[e] = hp
-                blazes.add(e)
-            }
+            val matchResult = regex.find(name) ?: return@forEach
+            val (_, health) = matchResult.destructured
+            val hp = health.replace(",", "").toInt()
+            hpMap[e] = hp
+            blazes.add(e)
         }
         if (blazes.isEmpty()) return
 

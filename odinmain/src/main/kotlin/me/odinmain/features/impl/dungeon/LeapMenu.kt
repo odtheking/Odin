@@ -31,6 +31,7 @@ import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.input.Keyboard
+import org.lwjgl.opengl.Display
 
 object LeapMenu : Module(
     name = "Leap Menu",
@@ -49,15 +50,16 @@ object LeapMenu : Module(
     private val leapHelperColor: Color by ColorSetting("Leap Helper Color", default = Color.WHITE, description = "Color of the Leap Helper highlight").withDependency { leapHelperToggle }
     val delay: Int by NumberSetting("Reset Leap Helper Delay", 30, 10.0, 120.0, 1.0, description = "Delay for clearing the leap helper highlight").withDependency { leapHelperToggle }
 
-    private val hoveredAnims = List(4) { EaseInOut(200L) }
+    private val hoveredAnims = List(4) { EaseInOut(300L) }
     private var hoveredQuadrant = -1
     private var previouslyHoveredQuadrant = -1
 
+    private val EMPTY = DungeonUtils.DungeonPlayer("Empty", DungeonUtils.Classes.Archer, ResourceLocation("textures/entity/steve.png"))
 
     @SubscribeEvent
     fun onDrawScreen(event: DrawGuiScreenEvent) {
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
-        if (chest !is ContainerChest || chest.name != "Spirit Leap" || leapTeammates.isEmpty()) return
+        if (chest !is ContainerChest || chest.name != "Spirit Leap" || leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return
         hoveredQuadrant = getQuadrant()
         if (hoveredQuadrant != previouslyHoveredQuadrant && previouslyHoveredQuadrant != -1) {
             hoveredAnims[hoveredQuadrant - 1].start()
@@ -69,42 +71,34 @@ object LeapMenu : Module(
             if (it == EMPTY) return@forEachIndexed
             GlStateManager.pushMatrix()
             GlStateManager.enableAlpha()
-            val currentRatio = 1920f / 1080f
-            val newRatio = mc.displayWidth.toFloat() / mc.displayHeight.toFloat()
 
-            if (currentRatio > newRatio) {
-                val scaleFactor = mc.displayHeight.toFloat() / 1080f
-                val scaledWidth = 1920f * scaleFactor
-                val xOffset = (mc.displayWidth.toFloat() - scaledWidth) / 2
-                scale(scaleFactor, scaleFactor)
-                translate(xOffset, 0f)
-            } else {
-                val scaleFactor = mc.displayWidth.toFloat() / 1920f
-                val scaledHeight = 1080f * scaleFactor
-                val yOffset = (mc.displayHeight.toFloat() - scaledHeight) / 2
-                scale(scaleFactor, scaleFactor)
-                translate(0f, yOffset)
-            }
             scale(1f / scaleFactor,  1f / scaleFactor)
-            GlStateManager.color(255f, 255f, 255f, 255f)
-            translate(
-                (120f + (index % 2 * 910f)),
-                (if (index >= 2) 615f else 165f),
-                0f)
+            val displayWidth = Display.getWidth()
+            val displayHeight = Display.getHeight()
+            translate(displayWidth / 2, displayHeight / 2)
+            val boxWidth = 800
+            val boxHeight = 300
+            val x = when (index) {
+                0, 2 -> -((displayWidth - (boxWidth * 2)) / 6 + boxWidth)
+                else -> ((displayWidth - (boxWidth * 2)) / 6)
+            }
+            val y = when (index) {
+                0, 1 -> -((displayHeight - (boxHeight * 2)) / 8 + boxHeight)
+                else -> ((displayHeight - (boxHeight * 2)) / 8)
+            }
             mc.textureManager.bindTexture(it.locationSkin)
             val color = if (colorStyle) it.clazz.color else Color.DARK_GRAY
             if (it.name == (if (DungeonUtils.inBoss) LeapHelper.leapHelperBoss else LeapHelper.leapHelperClear) && leapHelperToggle)
-                roundedRectangle(-25, -25, 830, 350, leapHelperColor, if (roundedRect) 12f else 0f)
-            val box = Box(0, 0, 780, 300).expand(hoveredAnims[index].get(0f, 15f, hoveredQuadrant - 1 != index))
+                roundedRectangle(-25, -25, boxWidth + 30, boxHeight + 50, if (it.isDead) Color.RED else leapHelperColor, if (roundedRect) 12f else 0f)
+            val box = Box(x, y, boxWidth, boxHeight).expand(hoveredAnims[index].get(0f, 15f, hoveredQuadrant - 1 != index))
             dropShadow(box, 10f, 15f, if (getQuadrant() - 1 != index) ColorUtil.moduleButtonColor else Color.WHITE)
             roundedRectangle(box, color, if (roundedRect) 12f else 0f)
 
-            GlStateManager.color(255f, 255f, 255f, 255f)
-            Gui.drawScaledCustomSizeModalRect(30, 30, 8f, 8f, 8, 8, 240, 240, 64f, 64f)
+            Gui.drawScaledCustomSizeModalRect(x + 30, y + 30, 8f, 8f, 8, 8, 240, 240, 64f, 64f)
 
-            text(it.name, 265f, 155f, if (!colorStyle) it.clazz.color else Color.DARK_GRAY, 48f)
-            text(if (it.clazz.isDead) "§cDEAD" else it.clazz.name, 270f, 210f, Color.WHITE, 30f, shadow = true)
-            rectangleOutline(30, 30, 240, 240, color, 25f, 15f, 100f)
+            text(it.name, x + 265f, y + 155f, if (!colorStyle) it.clazz.color else Color.DARK_GRAY, 48f)
+            text(if (it.isDead) "§cDEAD" else it.clazz.name, x + 270f, y + 210f, Color.WHITE, 30f, shadow = true)
+            rectangleOutline(x + 30, y + 30, 240, 240, color, 25f, 15f, 100f)
 
             GlStateManager.disableAlpha()
             GlStateManager.popMatrix()
@@ -120,7 +114,8 @@ object LeapMenu : Module(
         if ((type == 1 || type == 2 || type == 3) && leapTeammates.size < quadrant) return
 
         val playerToLeap = leapTeammates[quadrant - 1]
-        if (playerToLeap.clazz.isDead) return modMessage("This player is dead, can't leap.")
+        if (playerToLeap == EMPTY) return
+        if (playerToLeap.isDead) return modMessage("This player is dead, can't leap.")
 
         leapTo(playerToLeap.name, event.container)
 
@@ -144,9 +139,9 @@ object LeapMenu : Module(
             bottomRightKeybind.key -> 4
             else -> return
         }
-        val playerToLeap = if (keyCodeNumber - 1 > leapTeammates.size) return else leapTeammates[keyCodeNumber - 2]
+        val playerToLeap = if (keyCodeNumber > leapTeammates.size) return else leapTeammates[keyCodeNumber - 1]
 
-        if (playerToLeap.clazz.isDead) return modMessage("This player is dead, can't leap.")
+        if (playerToLeap.isDead) return modMessage("This player is dead, can't leap.")
 
         leapTo(playerToLeap.name, event.container)
 
@@ -184,7 +179,6 @@ object LeapMenu : Module(
         DungeonUtils.DungeonPlayer("Cezar", DungeonUtils.Classes.Tank)
     )*/
 
-    private val EMPTY = DungeonUtils.DungeonPlayer("Empty", DungeonUtils.Classes.Archer, ResourceLocation("textures/entity/steve.png"))
 
     /**
      * Sorts the list of players based on their default quadrant and class priority.

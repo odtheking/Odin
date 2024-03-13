@@ -82,7 +82,7 @@ val devCommand = commodore("oddev") {
     }
 
     literal("getteammates").runs {
-        modMessage("Teammates: ${DungeonUtils.teammates.map { it.name }}")
+        modMessage("Teammates: ${DungeonUtils.dungeonTeammates.joinToString { "${it.name} (${it.clazz})" }}")
         modMessage("TeammatesNoSelf: ${DungeonUtils.dungeonTeammatesNoSelf.map { it.name }}")
         modMessage("LeapTeammates: ${DungeonUtils.leapTeammates.map { it.name }}")
     }
