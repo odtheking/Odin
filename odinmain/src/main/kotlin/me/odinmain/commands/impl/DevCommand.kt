@@ -12,6 +12,9 @@ import me.odinmain.features.impl.render.DevPlayers.updateDevs
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.cryptsCount
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.deathCount
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.secretCount
 import me.odinmain.utils.skyblock.dungeon.ScanUtils
 import me.odinmain.utils.skyblock.getChatBreak
 import me.odinmain.utils.skyblock.modMessage
@@ -85,6 +88,7 @@ val devCommand = commodore("oddev") {
         modMessage("Teammates: ${DungeonUtils.dungeonTeammates.joinToString { "${it.name} (${it.clazz})" }}")
         modMessage("TeammatesNoSelf: ${DungeonUtils.dungeonTeammatesNoSelf.map { it.name }}")
         modMessage("LeapTeammates: ${DungeonUtils.leapTeammates.map { it.name }}")
+        modMessage("Deaths: $deathCount, Secrets: $secretCount, Crypts: $cryptsCount")
     }
 
     literal("getlocation").runs {

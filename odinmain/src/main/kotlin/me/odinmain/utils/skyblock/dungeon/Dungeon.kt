@@ -2,6 +2,7 @@ package me.odinmain.utils.skyblock.dungeon
 
 import me.odinmain.utils.cleanSB
 import me.odinmain.utils.clock.Executor
+import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.sidebarLines
 import me.odinmain.utils.skyblock.PlayerUtils.posX
 import me.odinmain.utils.skyblock.PlayerUtils.posZ
@@ -33,8 +34,7 @@ class Dungeon {
         getCurrentFloor()
         Executor(500) {
             DungeonUtils.getDungeonTabList()?.let { updateRunInformation(it) }
-            modMessage("Deaths: $deathCount, Secrets: $secretCount, Crypts: $cryptsCount")
-        }
+        }.register()
     }
 
     private fun getCurrentFloor() {

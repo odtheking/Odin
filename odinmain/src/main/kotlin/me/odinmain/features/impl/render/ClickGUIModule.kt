@@ -81,9 +81,9 @@ object ClickGUIModule: Module(
 
             modMessage("""
             ${getChatBreak()}
-            §d§kOdinClientOnTopWeLoveOdinClientLiterallyTheBestModAAAAAAAAAAAAAAAA
+            §d§kOdinOnTopWeLoveOdinLiterallyTheBestModAAAAAAAAAAAAAAAA
             
-            §7Thanks for installing §3Odin§bClient ${OdinMain.VERSION}§7!
+            §7Thanks for installing §3Odin ${OdinMain.VERSION}§7!
 
             §7Use §d§l/od §r§7to access GUI settings.
             §7Use §d§l/od help §r§7for all of of the commands.
@@ -97,7 +97,7 @@ object ClickGUIModule: Module(
 
             modMessage("""
             
-            §d§kOdinClientOnTopWeLoveOdinClientLiterallyTheBestModAAAAAAAAAAAAAAAA
+            §d§kOdinOnTopWeLoveOdinLiterallyTheBestModAAAAAAAAAAAAAAAA
             ${getChatBreak()}
             
             """.trimIndent(), false)

@@ -38,6 +38,10 @@ object DungeonUtils {
     inline val inBoss get() =
         currentDungeon?.inBoss ?: false
 
+    inline val secretCount get() = currentDungeon?.secretCount ?: 0
+    inline val cryptsCount get() = currentDungeon?.cryptsCount ?: 0
+    inline val deathCount get() = currentDungeon?.deathCount ?: 0
+
     data class Vec2(val x: Int, val z: Int)
     data class FullRoom(val room: Room, val positions: List<ExtraRoom>, var waypoints: List<DungeonWaypoint>)
     data class ExtraRoom(val x: Int, val z: Int, val core: Int)
