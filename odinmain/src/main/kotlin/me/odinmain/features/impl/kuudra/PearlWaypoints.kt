@@ -60,12 +60,12 @@ object PearlWaypoints : Module(
         // slash
         Lineup(
             startPos = setOf(BlockPos(-114, 77, -69)),
-            lineups = setOf(BlockPos(-106, 157, -99))
+            lineups = setOf(BlockPos(-106, 157, -99), BlockPos(-138, 145, -88))
         ) to Color(0, 0, 255)
     )
 
     private val blockNameMap = hashMapOf(
-        "Cannon" to BlockPos(-110, 155, -106),
+        "X Cannon" to BlockPos(-110, 155, -106),
         "X" to BlockPos(-46, 120, -150),
         "Shop" to BlockPos(-46, 135, -139),
         "Triangle" to BlockPos(-37, 139, -125),

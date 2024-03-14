@@ -85,7 +85,6 @@ object Splits : Module(
             getTextWidth("Fuel/Stun: 0h 00m 00s", 12f) + 2f to 80f
         } else {
             if (LocationUtils.currentArea != Island.Kuudra) return@HudSetting 0f to 0f
-            var y = 0f
             val (times, current) = getSplitTimes()
 
             for (i in 0..4) {
@@ -102,8 +101,7 @@ object Splits : Module(
                 text(lines[i], 1f, 9f + i * OdinFont.getTextHeight("12", 13f), lineColor, 12f, shadow = true)
 
                 val duration = formatTime(time)
-                text(duration, OdinFont.getTextWidth("Fuel/Stun: 0h 00m 00s", 12f) - OdinFont.getTextWidth(duration, 12f), y, Color.WHITE, 12f, shadow = true)
-                y += OdinFont.getTextHeight("12", 13f)
+                text(duration, OdinFont.getTextWidth("Fuel/Stun: 0h 00m 00s", 12f) - OdinFont.getTextWidth(duration, 12f), 9f + i * OdinFont.getTextHeight("12", 13f), Color.WHITE, 12f, shadow = true)
             }
 
             getTextWidth("Fuel/Stun: 0h 00m 00s", 12f) + 2f to 80f
@@ -191,7 +189,7 @@ object Splits : Module(
             val oldPB = t5PBs.entries.find { it.splitName == "Stun" }?.pbTime?.value ?: 999.0
             val timeP3 = (splits[3] - splits[2]) / 1000.0
             modMessage("§6Fuel/Stun Took§7: §a$timeP3")
-            if (timeP3 / 1000 < oldPB && timeP3 > 1L){
+            if (timeP3 < oldPB && timeP3 > 1L){
                 if (sendPB) modMessage("New best time for §6T5 Stun §fis §a$timeP3, §fold best time was §a${oldPB}s")
                 t5PBs.entries.find { it.splitName == "Stun" }?.pbTime?.value = timeP3
                 Config.save()

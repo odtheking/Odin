@@ -40,7 +40,7 @@ object Trajectories : Module(
     private val range: Float by NumberSetting("Solver Range", 30f, 1f, 60f, 1f, description = "Performance impact scales with this")
     private val thickness: Float by NumberSetting("Line Width", 2f, 1.0, 5.0, 0.5)
     private val boxSize: Float by NumberSetting("Box Size", 0.5f, 0.5f, 3.0f, 0.1f)
-    private val color: Color by ColorSetting("Color", Color(170, 170, 0), true)
+    private val color: Color by ColorSetting("Color", Color.YELLOW, true)
 
     private var boxRenderQueue: MutableList<Pair<Vec3, Vector2d>> = mutableListOf()
     private var entityRenderQueue = mutableListOf<Entity>()
@@ -185,9 +185,15 @@ object Trajectories : Module(
 
     private fun drawPearlCollisionBox() {
         if (pearlImpactPos == null) return
-
-        Renderer.drawBox(AxisAlignedBB(pearlImpactPos!!.first.xCoord, pearlImpactPos!!.first.yCoord, pearlImpactPos!!.first.zCoord, pearlImpactPos!!.second.x, pearlImpactPos!!.second.y, pearlImpactPos!!.first.zCoord),
-            color, thickness / 3, depth = true)
+        val pos = pearlImpactPos!!
+        val minX = pos.first.xCoord - pos.second.x / 2
+        val maxX = pos.first.xCoord + pos.second.x / 2
+        val minY = pos.first.yCoord - pos.second.y / 2
+        val maxY = pos.first.yCoord + pos.second.y / 2
+        val minZ = pos.first.zCoord - pos.second.x / 2
+        val maxZ = pos.first.zCoord + pos.second.x / 2
+        Renderer.drawBox(AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ),
+            color, thickness / 3, depth = false, fillAlpha = 0)
 
         pearlImpactPos = null
     }
@@ -205,12 +211,18 @@ object Trajectories : Module(
                 boxRenderQueue.clear()
                 return
             }
-            Renderer.drawBox(AxisAlignedBB(b.first.xCoord, b.first.yCoord, b.first.zCoord, b.second.x, b.second.y, b.first.zCoord),
+            val minX = b.first.xCoord - b.second.x / 2
+            val maxX = b.first.xCoord + b.second.x / 2
+            val minY = b.first.yCoord - b.second.y / 2
+            val maxY = b.first.yCoord + b.second.y / 2
+            val minZ = b.first.zCoord - b.second.x / 2
+            val maxZ = b.first.zCoord + b.second.x / 2
+            Renderer.drawBox(AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ),
                 color, thickness / 3, depth = true, fillAlpha = 0)
         }
         boxRenderQueue.clear()
     }
-
+    @SubscribeEvent
     fun onRenderModel(event: RenderEntityModelEvent) {
         if (event.entity !in entityRenderQueue) return
         if (!mc.thePlayer.canEntityBeSeen(event.entity)) return

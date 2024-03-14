@@ -41,14 +41,13 @@ object TeamHighlight : Module(
     @SubscribeEvent
     fun handleNames(event: RenderLivingEvent.Pre<*>) {
         if (!highlightName || LocationUtils.currentArea != Island.Kuudra || KuudraUtils.phase < 1) return
-        val teammate = kuudraTeammates.find { it.entity == mc.thePlayer } ?: return
-
+        val teammate = kuudraTeammates.find { it.entity == event.entity } ?: return
+        if (event.entity == mc.thePlayer) return
         Renderer.drawStringInWorld(
             teammate.playerName, event.entity?.renderVec?.addVec(y = 2.6) ?: return,
             if (teammate.eatFresh) highlightFreshColor else nameColor,
             depth = false, renderBlackBox = false,
             scale = 0.05f
         )
-
     }
 }

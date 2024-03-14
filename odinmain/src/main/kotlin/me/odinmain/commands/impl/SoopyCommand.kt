@@ -10,10 +10,10 @@ import me.odinmain.utils.skyblock.modMessage
 val commands = listOf(
     "nw", "bank", "auctions", "sblvl", "skills", "skillaverage", "overflowskills", "overflowskillaverage", "bestiary",
     "kuudra", "dojo", "faction", "guildof", "dungeon", "currdungeon", "classaverage", "secrets", "essence", "rtca",
-    "whatdoing", "pet", "nucleus"
+    "pet", "nucleus"
 )
 
-val soopyCommand = commodore("soopycmd", "spcmd") {
+val soopyCommand = commodore("soopycmd", "spcmd", "spc") {
     literal("help").runs {
         modMessage("Available commands for /spcmd:\n ${commands.joinToString()}")
     }
