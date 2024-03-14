@@ -5,6 +5,7 @@ import gg.essential.universal.shader.UShader
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
+import net.minecraft.block.Block
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.WorldRenderer
@@ -12,10 +13,7 @@ import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.Entity
-import net.minecraft.util.AxisAlignedBB
-import net.minecraft.util.MathHelper
-import net.minecraft.util.ResourceLocation
-import net.minecraft.util.Vec3
+import net.minecraft.util.*
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.opengl.GL11
@@ -85,6 +83,15 @@ object RenderUtils {
             renderZ + this.width / 2
         )
 
+    fun getBlockAABB(block: Block, pos: BlockPos): AxisAlignedBB {
+        val minX = pos.x.toDouble() + block.blockBoundsMinX
+        val minY = pos.y.toDouble() + block.blockBoundsMinY
+        val minZ = pos.z.toDouble() + block.blockBoundsMinZ
+        val maxX = pos.x.toDouble() + block.blockBoundsMaxX
+        val maxY = pos.y.toDouble() + block.blockBoundsMaxY
+        val maxZ = pos.z.toDouble() + block.blockBoundsMaxZ
+        return AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ)
+    }
 
     inline operator fun WorldRenderer.invoke(block: WorldRenderer.() -> Unit) {
         block.invoke(this)

@@ -1,6 +1,7 @@
 package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain
+import me.odinmain.OdinMain.mc
 import net.minecraft.block.Block
 import net.minecraft.util.BlockPos
 
@@ -11,7 +12,7 @@ import net.minecraft.util.BlockPos
  * @return The block ID as an `Int`, or `null` if the block at the given position is not present.
  */
 fun getBlockIdAt(blockpos: BlockPos): Int? {
-    return if (OdinMain.mc.theWorld?.getBlockState(blockpos)?.block == null) null
+    return if (mc.theWorld?.getBlockState(blockpos)?.block == null) null
     else Block.getIdFromBlock(OdinMain.mc.theWorld?.getBlockState(blockpos)?.block)
 }
 
@@ -22,7 +23,7 @@ fun getBlockIdAt(blockpos: BlockPos): Int? {
  * @return `true` if the block at the given position is air, `false` otherwise.
  */
 fun isAir(blockPos: BlockPos): Boolean {
-    return Block.getIdFromBlock(OdinMain.mc.theWorld?.getBlockState(blockPos)?.block) == 0
+    return Block.getIdFromBlock(mc.theWorld?.getBlockState(blockPos)?.block) == 0
 }
 
 /**
@@ -34,7 +35,7 @@ fun isAir(blockPos: BlockPos): Boolean {
  * @return `true` if the block at the given position is air, `false` otherwise.
  */
 fun isAir(x: Int, y: Int, z: Int): Boolean {
-    return Block.getIdFromBlock(OdinMain.mc.theWorld?.getBlockState(BlockPos(x, y, z))?.block) == 0
+    return Block.getIdFromBlock(mc.theWorld?.getBlockState(BlockPos(x, y, z))?.block) == 0
 }
 
 /**
@@ -46,7 +47,7 @@ fun isAir(x: Int, y: Int, z: Int): Boolean {
  * @return The block ID as an `Int`.
  */
 fun getBlockIdAt(x: Double, y: Double, z: Double): Int {
-    return Block.getIdFromBlock(OdinMain.mc.theWorld.getBlockState(BlockPos(x, y, z)).block)
+    return Block.getIdFromBlock(mc.theWorld.getBlockState(BlockPos(x, y, z)).block)
 }
 
 /**
@@ -58,5 +59,5 @@ fun getBlockIdAt(x: Double, y: Double, z: Double): Int {
  * @return The block ID as an `Int`.
  */
 fun getBlockIdAt(x: Int, y: Int, z: Int): Int {
-    return Block.getIdFromBlock(OdinMain.mc.theWorld.getBlockState(BlockPos(x, y, z)).block)
+    return Block.getIdFromBlock(mc.theWorld.getBlockState(BlockPos(x, y, z)).block)
 }
