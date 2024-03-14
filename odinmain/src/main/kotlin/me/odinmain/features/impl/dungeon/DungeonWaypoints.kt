@@ -19,6 +19,7 @@ import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import scala.Mutable
 
 /**
  * Custom Waypoints for Dungeons
@@ -35,6 +36,22 @@ object DungeonWaypoints : Module(
     private val filled: Boolean by BooleanSetting("Filled", false, description = "If the next waypoint you place should be 'filled'.")
     private val throughWalls: Boolean by BooleanSetting("Through walls", false, description = "If the next waypoint you place should be visible through walls.")
     private val size: Double by NumberSetting<Double>("Size", 1.0, .125, 1.0, increment = 0.125, description = "The size of the next waypoint you place.")
+    private val resetButton: () -> Unit by ActionSetting("Reset Current Room") {
+        val room = DungeonUtils.currentRoom ?: return@ActionSetting modMessage("Room not found!!!")
+
+        if (room.room.data.type != RoomType.NORMAL) {
+            val waypoints = DungeonWaypointConfig.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
+            if (!waypoints.removeAll { true }) return@ActionSetting modMessage("Current room does not have any waypoints!")
+        } else {
+            room.positions.forEach {
+                val waypoints = DungeonWaypointConfig.waypoints.getOrPut(it.core.toString()) { mutableListOf() }
+                if (!waypoints.removeAll { true }) return@ActionSetting modMessage("Current room does not have any waypoints!")
+            }
+        }
+        DungeonWaypointConfig.saveConfig()
+        DungeonUtils.setWaypoints()
+        modMessage("Successfully reset current room!")
+    }
     private val debugWaypoint: Boolean by BooleanSetting("Debug Waypoint", false).withDependency { DevPlayers.isDev }
 
     data class DungeonWaypoint(val x: Double, val y: Double, val z: Double, val color: Color, val filled: Boolean, val depth: Boolean, val size: Double)

@@ -97,7 +97,7 @@ object DungeonUtils {
 
     @SubscribeEvent
     fun onMove(event: LivingEvent.LivingUpdateEvent) {
-        if (mc.theWorld == null || !inDungeons ||inBoss || !event.entity.equals(mc.thePlayer)) return
+        if (mc.theWorld == null /*|| !inDungeons */||inBoss || !event.entity.equals(mc.thePlayer)) return
         val xPos = START_X + ((mc.thePlayer.posX + 200) / 32).toInt() * ROOM_SIZE
         val zPos = START_Z + ((mc.thePlayer.posZ + 200) / 32).toInt() * ROOM_SIZE
         if (lastRoomPos.equal(xPos, zPos) && currentRoom != null) return
@@ -110,7 +110,8 @@ object DungeonUtils {
             val topLayer = getTopLayerOfRoom(it.positions.first().x, it.positions.first().z)
             it.room.rotation = Rotations.entries.dropLast(1).find { rotation ->
                 it.positions.any { pos ->
-                    getBlockIdAt(pos.x + rotation.x, topLayer, pos.z + rotation.z) == 159
+                    getBlockIdAt(pos.x + rotation.x, topLayer, pos.z + rotation.z) == 159 &&
+                            EnumFacing.HORIZONTALS.all { facing -> getBlockIdAt(pos.x + rotation.x + facing.frontOffsetX, topLayer, pos.z + rotation.z + facing.frontOffsetZ).equalsOneOf(159, 0) }
                 }
             } ?: Rotations.NONE
             devMessage("Found rotation ${it.room.rotation}")

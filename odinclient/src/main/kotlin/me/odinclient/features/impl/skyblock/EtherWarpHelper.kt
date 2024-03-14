@@ -46,7 +46,7 @@ object EtherWarpHelper : Module(
     private val phase: Boolean by BooleanSetting("Phase", false).withDependency { render }
     private val etherWarpTriggerBot: Boolean by BooleanSetting("Trigger Bot", false, description = "Uses Dungeon Waypoints to trigger bot to the closest waypoint.")
     private val etherWarpTBDelay: Long by NumberSetting("Trigger Bot Delay", 200L, 0, 1000, 10).withDependency { etherWarpTriggerBot }
-    private val etherWarpHelper: Boolean by BooleanSetting("Ether Warp Helper", false, description = "Rotates you to the closest waypoint when you left click with aotv.")
+    private val etherWarpHelper: Boolean by BooleanSetting("(MIGHT BAN) Rotator", false, description = "Rotates you to the closest waypoint when you left click with aotv.")
     private val rotTime: Long by NumberSetting("Rotation Time", 150L, 10L, 600L, 1L).withDependency { etherWarpHelper }
     private val maxRot: Float by NumberSetting("Max Rotation", 90f, 0f, 360f, 1f).withDependency { etherWarpHelper }
 
