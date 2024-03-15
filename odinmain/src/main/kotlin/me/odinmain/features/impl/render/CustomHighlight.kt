@@ -15,9 +15,12 @@
     import me.odinmain.utils.render.RenderUtils
     import me.odinmain.utils.render.RenderUtils.renderVec
     import me.odinmain.utils.render.Renderer
+    import me.odinmain.utils.skyblock.Island
+    import me.odinmain.utils.skyblock.dungeon.DungeonUtils
     import net.minecraft.entity.Entity
     import net.minecraft.entity.boss.EntityWither
     import net.minecraft.entity.item.EntityArmorStand
+    import net.minecraftforge.client.event.RenderLivingEvent
     import net.minecraftforge.client.event.RenderWorldLastEvent
     import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -37,7 +40,7 @@
         private val xray: Boolean by BooleanSetting("Through Walls", true).withDependency { !onLegitVersion }
         private val thickness: Float by NumberSetting("Outline Thickness", 5f, 1f, 20f, 0.5f).withDependency { mode != 1 }
         private val cancelHurt: Boolean by BooleanSetting("Cancel Hurt", true).withDependency { mode != 1 }
-
+        private val goldorHighlight: Boolean by BooleanSetting("adds Goldor Highlight", false, description = "Highlights Goldor.")
         val highlightList: MutableList<String> by ListSetting("List", mutableListOf())
 
         val renderThrough: Boolean get() = if (onLegitVersion) false else xray
@@ -113,6 +116,12 @@
                 .filter { it != null && it !is EntityArmorStand && it.getPing() != 1 }
                 .minByOrNull { entity.getDistanceToEntity(it) }
                 .takeIf { !(it is EntityWither && it.isInvisible) }
+        }
+
+        @SubscribeEvent
+        fun onRender(event: RenderLivingEvent.Pre<*>) {
+            if (!goldorHighlight || event.entity !is EntityWither || DungeonUtils.getPhase() != Island.M7P3) return
+            currentEntities.add(event.entity)
         }
     }
 
