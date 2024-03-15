@@ -53,7 +53,7 @@ object KuudraDisplay : Module(
         if (LocationUtils.currentArea != Island.Kuudra) return
 
         if (highlightKuudra)
-            Renderer.drawBox(kuudraEntity.renderBoundingBox, kuudraColor, depth = true, fillAlpha = 0)
+            Renderer.drawBox(kuudraEntity.renderBoundingBox, kuudraColor, depth = false, fillAlpha = 0)
 
         if (kuudraHPDisplay)
             Renderer.drawStringInWorld(getCurrentHealthDisplay(), kuudraEntity.positionVector.addVec(y = 10), Color.WHITE, depth = false, renderBlackBox = false, scale = healthSize, shadow = true)

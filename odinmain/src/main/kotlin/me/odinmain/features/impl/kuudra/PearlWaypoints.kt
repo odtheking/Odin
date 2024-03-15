@@ -91,10 +91,10 @@ object PearlWaypoints : Module(
                 )
             }
             lineup.lineups.forEach {
-                if (NoPre.missing == "" || NoPre.missing == "Square") return@forEach Renderer.drawBox(aabb = it.toAABB(), color = color, outlineAlpha = 0f, fillAlpha = if (!closest && hideFarWaypoints) 0f else 1f, depth = true)
+                if (NoPre.missing == "" || NoPre.missing == "Square") return@forEach Renderer.drawBox(aabb = it.toAABB(), color = color, outlineAlpha = 0f, fillAlpha = if (!closest && hideFarWaypoints) 0f else 1f, depth = false)
                 if (lineup.startPos == setOf(BlockPos(-141, 78, -91)) && blockNameMap[NoPre.missing] != it) return@forEach
 
-                Renderer.drawBox(aabb = it.toAABB(), color = color, outlineAlpha = 0f, fillAlpha = if (!closest && hideFarWaypoints) 0f else 1f, depth = true)
+                Renderer.drawBox(aabb = it.toAABB(), color = color, outlineAlpha = 0f, fillAlpha = if (!closest && hideFarWaypoints) 0f else 1f, depth = false)
             }
             closest = false
         }
