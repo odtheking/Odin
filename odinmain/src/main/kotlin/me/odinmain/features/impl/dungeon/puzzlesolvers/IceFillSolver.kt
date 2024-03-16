@@ -21,7 +21,7 @@ import kotlin.math.sin
 
 object IceFillSolver {
     var scanned = BooleanArray(3) { false }
-    private var currentPatterns: MutableList<List<Vec3i>> = ArrayList()
+    var currentPatterns: MutableList<List<Vec3i>> = ArrayList()
     private var renderRotation: Rotation? = null
     private var rPos: MutableList<Vec3> = ArrayList()
     enum class Rotation {

@@ -8,6 +8,7 @@ import me.odinclient.utils.skyblock.PlayerUtils.clipTo
 import me.odinclient.utils.waitUntilPacked
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.impl.dungeon.puzzlesolvers.IceFillSolver
 import me.odinmain.utils.plus
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
@@ -23,10 +24,13 @@ object AutoIceFill: Module(
         EAST, WEST, SOUTH, NORTH
     }
 
-    private suspend fun move(pos: Vec3, pattern: List<Vec3i>, rotation: Rotation, floorIndex: Int) {
-        val x = pos.xCoord
-        val y = pos.yCoord
-        val z = pos.zCoord
+    private suspend fun move( rotation: Rotation) {
+        val x = mc.thePlayer.posX
+        val y = mc.thePlayer.posY
+        val z = mc.thePlayer.posZ
+        val pos = mc.thePlayer.positionVector
+        val floorIndex = y % 70
+        val pattern = IceFillSolver.currentPatterns[floorIndex.toInt()]
         val deferred1 = waitUntilPacked(x, y, z)
         try {
             deferred1.await()
@@ -48,7 +52,7 @@ object AutoIceFill: Module(
                 pos + transformTo(pattern[i + 1], rotation).addVector(0.0, 1.0, 0.0)
             )
         }
-        if (floorIndex == 2) return
+        if (floorIndex.toInt() == 2) return
         val (bx2, bz2) = transform(pattern[pattern.size - 1].x, pattern[pattern.size - 1].z, rotation)
         val deferred = waitUntilPacked(x + bx2, y, z + bz2)
         try {
@@ -56,11 +60,11 @@ object AutoIceFill: Module(
         } catch (e: Exception) {
             return
         }
-        clipToNext(pos, rotation, bx2, bz2, floorIndex)
+        clipToNext(pos, rotation, bx2, bz2)
     }
 
     @OptIn(DelicateCoroutinesApi::class)
-    private fun clipToNext(pos: Vec3, rotation: Rotation, bx: Int, bz: Int, floorIndex: Int) {
+    private fun clipToNext(pos: Vec3, rotation: Rotation, bx: Int, bz: Int) {
         val x = pos.xCoord
         val y = pos.yCoord
         val z = pos.zCoord
@@ -76,15 +80,6 @@ object AutoIceFill: Module(
             clipTo(x + bx + nx * 2, y + 2, z + bz + ny * 2)
             delay(100)
             clipTo(x + bx + nx * 4, y + 2, z + bz + ny * 4)
-        }
-    }
-
-    private fun transform(vec: Vec3i, rotation: Rotation): Vec3i {
-        return when (rotation) {
-            Rotation.EAST -> Vec3i(vec.x, vec.y, vec.z)
-            Rotation.WEST -> Vec3i(-vec.x, vec.y, -vec.z)
-            Rotation.SOUTH -> Vec3i(vec.z, vec.y, vec.x)
-            else -> Vec3i(vec.z, vec.y, -vec.x)
         }
     }
 

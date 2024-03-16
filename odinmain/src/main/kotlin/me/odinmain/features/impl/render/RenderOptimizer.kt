@@ -25,7 +25,6 @@ object RenderOptimizer : Module(
     category = Category.RENDER,
     description = "Disables certain render function when they are not necessary."
 ) {
-
     private val fallingBlocks: Boolean by BooleanSetting(name = "Remove Falling Blocks", default = true, description = "Removes falling blocks that are not necessary.")
     private val removeTentacles: Boolean by BooleanSetting(name = "Remove P5 Tentacles", default = true, description = "Removes armorstands of tentacles which are not necessary.")
     private val hideParticles: Boolean by BooleanSetting(name = "Hide P5 Particles", default = true, description = "Hides particles that are not necessary.")
@@ -102,11 +101,9 @@ object RenderOptimizer : Module(
 
     private fun handleHideArcherBones(entity: Entity) {
         val itemEntity = entity as? EntityItem
-        if (itemEntity != null && DungeonUtils.inDungeons
-            && itemEntity.entityItem.itemDamage == 15
-            && itemEntity.entityItem.item === Items.dye) {
+        if (itemEntity != null && DungeonUtils.inDungeons && itemEntity.entityItem.itemDamage == 15 && itemEntity.entityItem.item === Items.dye)
             entity.setDead()
-        }
+
     }
 
     private fun removeTentacles(entity: Entity) {
@@ -163,6 +160,4 @@ object RenderOptimizer : Module(
             ?.getCompoundTagAt(0)
             ?.getString("Value")
     }
-
-
 }

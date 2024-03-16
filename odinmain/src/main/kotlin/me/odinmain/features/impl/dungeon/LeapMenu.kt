@@ -89,7 +89,7 @@ object LeapMenu : Module(
             mc.textureManager.bindTexture(it.locationSkin)
             val color = if (colorStyle) it.clazz.color else Color.DARK_GRAY
             if (it.name == (if (DungeonUtils.inBoss) LeapHelper.leapHelperBoss else LeapHelper.leapHelperClear) && leapHelperToggle)
-                roundedRectangle(x - 25, x - 25, boxWidth + 30, boxHeight + 50, leapHelperColor, if (roundedRect) 12f else 0f)
+                roundedRectangle(x - 25, y - 25, boxWidth + 50, boxHeight + 50, leapHelperColor, if (roundedRect) 12f else 0f)
 
             val box = Box(x, y, boxWidth, boxHeight).expand(hoveredAnims[index].get(0f, 15f, hoveredQuadrant - 1 != index))
             dropShadow(box, 10f, 15f, if (getQuadrant() - 1 != index) ColorUtil.moduleButtonColor else Color.WHITE)

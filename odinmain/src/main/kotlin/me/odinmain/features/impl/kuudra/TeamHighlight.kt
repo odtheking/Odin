@@ -39,7 +39,7 @@ object TeamHighlight : Module(
     }
 
     @SubscribeEvent
-    fun handleNames(event: RenderLivingEvent.Pre<*>) {
+    fun handleNames(event: RenderLivingEvent.Post<*>) {
         if (!highlightName || LocationUtils.currentArea != Island.Kuudra || KuudraUtils.phase < 1) return
         val teammate = kuudraTeammates.find { it.entity == event.entity } ?: return
         if (event.entity == mc.thePlayer) return

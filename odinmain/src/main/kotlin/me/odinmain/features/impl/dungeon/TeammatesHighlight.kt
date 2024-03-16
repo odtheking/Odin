@@ -36,7 +36,7 @@ object TeammatesHighlight : Module(
     }
 
     @SubscribeEvent
-    fun handleNames(event: RenderLivingEvent.Pre<*>) {
+    fun handleNames(event: RenderLivingEvent.Post<*>) {
         if (!DungeonUtils.inDungeons) return
         val teammate = dungeonTeammatesNoSelf.find { it.entity == event.entity } ?: return
 
