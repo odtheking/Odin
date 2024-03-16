@@ -1,6 +1,5 @@
 package me.odinmain.utils.skyblock
 
-import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import net.minecraft.block.Block
 import net.minecraft.util.BlockPos
@@ -13,7 +12,7 @@ import net.minecraft.util.BlockPos
  */
 fun getBlockIdAt(blockpos: BlockPos): Int? {
     return if (mc.theWorld?.getBlockState(blockpos)?.block == null) null
-    else Block.getIdFromBlock(OdinMain.mc.theWorld?.getBlockState(blockpos)?.block)
+    else Block.getIdFromBlock(mc.theWorld?.getBlockState(blockpos)?.block)
 }
 
 /**
@@ -47,7 +46,7 @@ fun isAir(x: Int, y: Int, z: Int): Boolean {
  * @return The block ID as an `Int`.
  */
 fun getBlockIdAt(x: Double, y: Double, z: Double): Int {
-    return Block.getIdFromBlock(mc.theWorld.getBlockState(BlockPos(x, y, z)).block)
+    return Block.getIdFromBlock(mc.theWorld?.getBlockState(BlockPos(x, y, z))?.block)
 }
 
 /**
@@ -59,5 +58,5 @@ fun getBlockIdAt(x: Double, y: Double, z: Double): Int {
  * @return The block ID as an `Int`.
  */
 fun getBlockIdAt(x: Int, y: Int, z: Int): Int {
-    return Block.getIdFromBlock(mc.theWorld.getBlockState(BlockPos(x, y, z)).block)
+    return Block.getIdFromBlock(mc.theWorld?.getBlockState(BlockPos(x, y, z))?.block)
 }

@@ -5,13 +5,14 @@ import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.utils.addVec
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.toAABB
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
-import net.minecraft.util.AxisAlignedBB
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -42,9 +43,9 @@ object KeyHighlight : Module(
             return
         }
 
-        val pos = entity.positionVector
-        Renderer.drawBox(AxisAlignedBB(pos.xCoord - 0.5, pos.yCoord, pos.zCoord - 0.5, pos.xCoord + 0.5, pos.yCoord + 1.15, pos.zCoord + 0.5),
-            color, fillAlpha = 0f, depth = !OdinMain.onLegitVersion)
+        val pos = entity.positionVector.addVec(-0.5, 1, -0.5)
+        Renderer.drawBox(pos.toAABB(),
+            color, fillAlpha = 0f, outlineWidth = thickness, depth = OdinMain.onLegitVersion)
     }
 
     init {

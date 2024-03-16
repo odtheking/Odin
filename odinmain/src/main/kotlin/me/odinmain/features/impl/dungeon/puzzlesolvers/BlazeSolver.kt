@@ -1,4 +1,4 @@
-package me.odinmain.features.impl.dungeon
+package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.noControlCodes

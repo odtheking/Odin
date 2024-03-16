@@ -7,7 +7,7 @@ import me.odinmain.OdinMain.scope
 import me.odinmain.commands.commodore
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.ModuleManager.generateReadme
-import me.odinmain.features.impl.dungeon.TPMaze
+import me.odinmain.features.impl.dungeon.puzzlesolvers.TPMaze
 import me.odinmain.features.impl.render.DevPlayers.updateDevs
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.LocationUtils

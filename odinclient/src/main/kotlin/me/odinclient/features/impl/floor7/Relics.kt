@@ -6,11 +6,9 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.skyblock.*
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.Vec2
+import me.odinmain.utils.skyblock.itemID
 import net.minecraft.entity.item.EntityArmorStand
-import net.minecraft.util.BlockPos
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent

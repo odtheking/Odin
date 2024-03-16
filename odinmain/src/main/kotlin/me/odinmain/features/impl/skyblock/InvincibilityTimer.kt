@@ -16,7 +16,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object InvincibilityTimer : Module(
     name = "Invincibility Timer",
-    description = ".",
+    description = "Timer to show how long you have left Invincible.",
     category = Category.SKYBLOCK
 )  {
     private val invincibilityAnnounce: Boolean by BooleanSetting("Announce Invincibility", default = true, description = "Announces when you get invincibility")

@@ -37,9 +37,8 @@ object ClickedChests : Module(
         chests.removeAll { System.currentTimeMillis() - it.timeAdded >= timeToStay * 1000 }
 
         chests.forEach {
-            val finalColor = if (it.locked) lockedColor else color
-            val aabb = RenderUtils.getBlockAABB(it.block, it.pos)
-            Renderer.drawBox(aabb, finalColor, depth = phase, outlineAlpha = if (style == 0) 0 else 1, fillAlpha = if (style == 0) 1 else 0)
+            Renderer.drawBox(RenderUtils.getBlockAABB(it.block, it.pos), if (it.locked) lockedColor else color, depth = phase,
+                outlineAlpha = if (style == 1) color.alpha else 0, fillAlpha = if (style == 1) 0 else color.alpha)
         }
     }
 

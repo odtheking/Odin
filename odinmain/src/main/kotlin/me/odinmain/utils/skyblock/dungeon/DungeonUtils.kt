@@ -83,9 +83,8 @@ object DungeonUtils {
      * - Phase 5: posY <= 45
      */
     fun getPhase(): Island? {
-        if (!isFloor(7) || !inBoss) {
-            return null
-        }
+        if (!isFloor(7) || !inBoss) return null
+
         return when {
             posY > 210 -> Island.M7P1
             posY > 155 -> Island.M7P2

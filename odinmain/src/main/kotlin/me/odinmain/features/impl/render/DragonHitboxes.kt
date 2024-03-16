@@ -82,7 +82,7 @@ object DragonHitboxes : Module(
                     val dZ = lastZ + (z - lastZ) * event.partialTicks
                     val w = entity.width
                     val h = entity.height
-                    Renderer.drawBox(AxisAlignedBB(dX - w / 2, dY, dZ - w / 2, dX + w / 2, dY + h, dZ + w / 2), color, 0)
+                    Renderer.drawBox(AxisAlignedBB(dX - w / 2, dY, dZ - w / 2, dX + w / 2, dY + h, dZ + w / 2), color, lineWidth, depth = true, fillAlpha = 0)
                 }
             }
         }

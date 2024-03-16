@@ -3,10 +3,12 @@ package me.odinclient
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import me.odinclient.commands.impl.autoSellCommand
-
 import me.odinclient.features.impl.dungeon.*
 import me.odinclient.features.impl.dungeon.AutoSell.sellList
-import me.odinclient.features.impl.floor7.*
+import me.odinclient.features.impl.floor7.DioriteFucker
+import me.odinclient.features.impl.floor7.FreezeGame
+import me.odinclient.features.impl.floor7.RelicAura
+import me.odinclient.features.impl.floor7.Relics
 import me.odinclient.features.impl.floor7.p3.*
 import me.odinclient.features.impl.render.*
 import me.odinclient.features.impl.skyblock.*

@@ -1,21 +1,21 @@
-package me.odinmain.features.impl.dungeon
+package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
-import me.odinmain.features.impl.dungeon.PuzzleSolvers.showOrder
+import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.showOrder
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.Minecraft
 import net.minecraft.init.Blocks
+import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
-import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 
@@ -39,7 +39,7 @@ object WaterSolver {
     private var openedWater = -1L
 
     fun scan() {
-        if (DungeonUtils.currentRoomName != "Water Board" || !PuzzleSolvers.waterSolver) return
+        if (DungeonUtils.currentRoomName != "Water Board") return
         scope.launch {
             prevInWaterRoom = inWaterRoom
             inWaterRoom = false
@@ -62,7 +62,6 @@ object WaterSolver {
 
 
     fun waterRender() {
-        if (!PuzzleSolvers.waterSolver) return
         val sortedSolutions = mutableListOf<Double>().apply {
             solutions.forEach { (lever, times) ->
                 times.drop(lever.i).filter { it != 0.0 }.forEach { time ->
@@ -78,7 +77,7 @@ object WaterSolver {
                 orderText = if (it == 0.0) orderText.plus("0")
                 else orderText.plus("${if (orderText.isEmpty()) "" else ", "}${sortedSolutions.indexOf(it) + 1}")
             }
-            if (PuzzleSolvers.waterSolver && showOrder)
+            if (showOrder)
                 Renderer.drawStringInWorld(orderText, Vec3(solution.key.leverPos).addVector(.5, .5, .5),
                     Color.WHITE, false, scale = .035f)
 
@@ -99,9 +98,9 @@ object WaterSolver {
         }
     }
 
-    fun waterInteract(event: PlayerInteractEvent) {
-        if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || solutions.isEmpty() || event.world != mc.theWorld) return
-        LeverBlock.entries.find { it.leverPos == event.pos }?.let {
+    fun waterInteract(event: C08PacketPlayerBlockPlacement) {
+        if (solutions.isEmpty()) return
+        LeverBlock.entries.find { it.leverPos == event.position }?.let {
             it.i++
             if (it != LeverBlock.WATER || openedWater != -1L) return
             openedWater = System.currentTimeMillis()

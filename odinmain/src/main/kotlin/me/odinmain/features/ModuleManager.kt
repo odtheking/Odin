@@ -3,6 +3,7 @@ package me.odinmain.features
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.*
 import me.odinmain.features.impl.dungeon.*
+import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers
 import me.odinmain.features.impl.floor7.MelodyMessage
 import me.odinmain.features.impl.floor7.NecronDropTimer
 import me.odinmain.features.impl.floor7.RelicAnnouncer

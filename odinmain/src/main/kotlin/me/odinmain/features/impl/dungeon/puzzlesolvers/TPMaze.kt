@@ -1,10 +1,9 @@
-package me.odinmain.features.impl.dungeon
+package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.features.impl.dungeon.PuzzleSolvers.mazeColorMultiple
-import me.odinmain.features.impl.dungeon.PuzzleSolvers.mazeColorOne
-import me.odinmain.features.impl.dungeon.PuzzleSolvers.mazeColorVisited
-import me.odinmain.features.impl.dungeon.PuzzleSolvers.tpMaze
+import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.mazeColorMultiple
+import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.mazeColorOne
+import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.mazeColorVisited
 import me.odinmain.utils.isXZInterceptable
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -21,7 +20,7 @@ object TPMaze {
     private var visited = mutableSetOf<BlockPos>()
 
     fun scan() {
-        if (!tpMaze || portals.size >= 30 || DungeonUtils.currentRoomName != "Teleport Maze") return
+        if (portals.size >= 30 || DungeonUtils.currentRoomName != "Teleport Maze") return
         val pos = mc.thePlayer?.position ?: return
         portals = portals.plus(
             BlockPos.getAllInBox(
@@ -59,7 +58,7 @@ object TPMaze {
 
 
     fun tpRender() {
-        if (DungeonUtils.currentRoomName != "Teleport Maze" || !tpMaze) return
+        if (DungeonUtils.currentRoomName != "Teleport Maze") return
         val color = if (correctPortals.size == 1) mazeColorOne else mazeColorMultiple
         correctPortals.forEach {
             Renderer.drawBox(it.toAABB(), color, depth = true, outlineAlpha = 0)
