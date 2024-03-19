@@ -3,6 +3,7 @@ package me.odinmain.commands.impl
 import com.github.stivais.commodore.utils.SyntaxException
 import me.odinmain.OdinMain.display
 import me.odinmain.commands.commodore
+import me.odinmain.features.impl.dungeon.DungeonWaypoints
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.impl.render.ServerDisplay.colorizePing
 import me.odinmain.features.impl.render.ServerDisplay.colorizeTps
@@ -77,6 +78,10 @@ val mainCommand = commodore("od", "odin", "odinclient") {
 
     literal("tps").runs {
         modMessage("${colorizeTps(round(ServerUtils.averageTps))}ms")
+    }
+
+    literal("dwp").runs {
+        DungeonWaypoints.onKeybind()
     }
 
     runs { floor: String -> // floor and kuudra split for better error handling

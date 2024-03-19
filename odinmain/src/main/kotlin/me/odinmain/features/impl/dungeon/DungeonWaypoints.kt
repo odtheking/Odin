@@ -48,10 +48,11 @@ object DungeonWaypoints : Module(
             val waypoints = DungeonWaypointConfig.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
             if (!waypoints.removeAll { true }) return@ActionSetting modMessage("Current room does not have any waypoints!")
         } else {
+            var changedWaypoints = false
             room.positions.forEach {
-                val waypoints = DungeonWaypointConfig.waypoints.getOrPut(it.core.toString()) { mutableListOf() }
-                if (!waypoints.removeAll { true }) return@ActionSetting modMessage("Current room does not have any waypoints!")
+                if (DungeonWaypointConfig.waypoints[it.core.toString()]?.removeAll { true } == true) changedWaypoints = true
             }
+            if (!changedWaypoints) return@ActionSetting modMessage("Current room does not have any waypoints!")
         }
         DungeonWaypointConfig.saveConfig()
         DungeonUtils.setWaypoints()
@@ -63,6 +64,7 @@ object DungeonWaypoints : Module(
 
     override fun onKeybind() {
         allowEdits = !allowEdits
+        modMessage("Dungeon Waypoint editing ${if (allowEdits) "§aenabled" else "§cdisabled"}§r!")
     }
 
     @SubscribeEvent
