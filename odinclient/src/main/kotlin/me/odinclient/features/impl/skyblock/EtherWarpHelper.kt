@@ -99,7 +99,7 @@ object EtherWarpHelper : Module(
             mc.thePlayer.holdingEtherWarp &&
             mc.thePlayer.isSneaking
         ) {
-            val waypoints = DungeonUtils.currentRoom?.waypoints?.takeIf { it.isNotEmpty() } ?: return
+            val waypoints = DungeonUtils.currentRoom?.waypoints ?: return
             val wp = waypoints.mapNotNull {
                 etherwarpRotateTo(it.toBlockPos()) ?: return@mapNotNull null
             }.minByOrNull {
@@ -107,12 +107,13 @@ object EtherWarpHelper : Module(
 
                 (yaw - MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw)).absoluteValue +
                 (pitch - MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationPitch)).absoluteValue
-            }?.takeIf {
-                val (_, yaw, pitch) = it
-                (yaw - MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw)).absoluteValue +
-                (pitch - MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationPitch)).absoluteValue < maxRot
             } ?: return
-            smoothRotateTo(wp.second, wp.third, rotTime)
+            val (_, yaw, pitch) = wp
+            if (
+                (yaw - MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw)).absoluteValue +
+                (pitch - MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationPitch)).absoluteValue > maxRot
+            ) return
+            smoothRotateTo(yaw, pitch, rotTime)
         }
     }
 }
