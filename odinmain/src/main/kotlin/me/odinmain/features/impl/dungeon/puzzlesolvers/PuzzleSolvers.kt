@@ -39,7 +39,7 @@ object PuzzleSolvers : Module(
     private val iceFillSolver: Boolean by BooleanSetting("Ice Fill Solver", true, description = "Solver for the ice fill puzzle")
     private val iceFillColor: Color by ColorSetting("Ice Fill Color", Color.PINK, true, description = "Color for the ice fill solver").withDependency { iceFillSolver }
     val action: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
-        IceFillSolver.scanned = BooleanArray(3) { false }
+        IceFillSolver.onWorldLoad()
     }.withDependency { iceFillSolver }
     init {
         execute(500) {

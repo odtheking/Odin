@@ -37,7 +37,7 @@ object TerminalSolver : Module(
     description = "Renders solution of terminals in f7/m7",
     category = Category.FLOOR7
 ) {
-    private val customSizeToggle: Boolean by BooleanSetting("Custom Size Toggle", description = "Toggles custom size of the terminal")
+    private val customSizeToggle: Boolean by BooleanSetting("Custom Size Toggle", false ,description = "Toggles custom size of the terminal")
     private val customSize: Int by NumberSetting("Custom Terminal Size", 3, 1.0, 4.0, 1.0, description = "Custom size of the terminal").withDependency { customSizeToggle }
     private val defaultSize: Int by NumberSetting("Default Terminal Size", 2, 1.0, 4.0, 1.0, description = "Default size of the terminal").withDependency { customSizeToggle }
     private val type: Int by SelectorSetting("Rendering", "None", arrayListOf("None", "Behind Item", "Stop Rendering Wrong"))

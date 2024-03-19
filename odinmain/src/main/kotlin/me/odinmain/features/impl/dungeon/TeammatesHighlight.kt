@@ -48,5 +48,4 @@ object TeammatesHighlight : Module(
             scale = 0.05f
         )
     }
-
 }

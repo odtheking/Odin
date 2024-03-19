@@ -51,7 +51,7 @@ object NoPre : Module(
                     preLoc = slash
                 }
             }
-            modMessage("Pre-spot: ${if (preSpot.isEmpty()) "You didn't get to your pre spot in time" else preSpot}")
+            modMessage("Pre-spot: ${preSpot.ifEmpty { "You didn't get to your pre spot in time" }}")
         }
 
         onMessage("[NPC] Elle: Not again!", false) {
@@ -79,6 +79,7 @@ object NoPre : Module(
                 }
                 msg = "No $location!"
             }
+            if (msg.isEmpty()) return@onMessage modMessage("You didn't get to your pre spot in time")
             partyMessage(msg)
             if (showAlert) PlayerUtils.alert(msg, time = 10)
         }

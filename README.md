@@ -18,7 +18,7 @@ Category: Dungeon
 - Secret Chime: Plays a sound whenever you get a secret. Do not use the bat death sound or your game will freeze!
 - Watcher Bar: Shows the watcher's health.
 - Leap Menu: Renders a custom leap menu when in the Spirit Leap gui.
-- Key Esp: Draws a box around the key.
+- Key Highlight: Draws a box around the key.
 
 Category: Floor 7
 - Inactive Waypoints: Shows inactive terminals, devices and levers

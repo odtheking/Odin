@@ -19,19 +19,19 @@ object KuudraReminders : Module(
     private val freshTools: Boolean by BooleanSetting("Fresh Tools", true, description = "Reminds you to use fresh tools")
 
     init {
-        onMessage("WARNING: You do not have a key for this tier in your inventory, you will not be able to claim rewards.", false, { keyReminder }) {
+        onMessage("WARNING: You do not have a key for this tier in your inventory, you will not be able to claim rewards.", false, { keyReminder && enabled }) {
             PlayerUtils.alert("No key in inventory", displayText = displayText, playSound = playSound)
         }
-        onMessage("[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!", false, { buyUpgrades }) {
+        onMessage("[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!", false, { buyUpgrades && enabled }) {
             PlayerUtils.alert("Buy Upgrades", displayText = displayText, playSound = playSound)
         }
         onMessage("[NPC] Elle: Not again!", false, { pickUpSupplies }) {
             PlayerUtils.alert("PickUP supplies", displayText = displayText, playSound = playSound)
         }
-        onMessage("[NPC] Elle: It's time to build the Ballista again! Cover me!", false, { buildBallista }) {
+        onMessage("[NPC] Elle: It's time to build the Ballista again! Cover me!", false, { buildBallista && enabled }) {
             PlayerUtils.alert("Build Ballista", displayText = displayText, playSound = playSound)
         }
-        onMessage("Your Fresh Tools Perk bonus doubles your building speed for the next 10 seconds!", false, { freshTools }) {
+        onMessage("Your Fresh Tools Perk bonus doubles your building speed for the next 10 seconds!", false, { freshTools && enabled }) {
             PlayerUtils.alert("Fresh Tools", displayText = displayText, playSound = playSound)
         }
     }

@@ -22,11 +22,9 @@ import kotlin.math.sin
 object IceFillSolver {
     var scanned = BooleanArray(3) { false }
     var currentPatterns: MutableList<List<Vec3i>> = ArrayList()
-    private var renderRotation: Rotation? = null
-    private var rPos: MutableList<Vec3> = ArrayList()
-    enum class Rotation {
-        EAST, WEST, SOUTH, NORTH
-    }
+    var renderRotation: Rotation? = null
+    var rPos: MutableList<Vec3> = ArrayList()
+
 
     private fun renderPattern(pos: Vec3i, rotation: Rotation) {
         renderRotation = rotation
@@ -43,7 +41,7 @@ object IceFillSolver {
     }
 
     fun onRenderWorldLast(color: Color) {
-        if (currentPatterns.size == 0 || rPos.size == 0 || DungeonUtils.currentRoomName != "Ice Fill") return
+        if (currentPatterns.size == 0 || rPos.size == 0 /*|| DungeonUtils.currentRoomName != "Ice Fill"*/) return
 
         for (i in currentPatterns.indices) {
             val pattern = currentPatterns[i]
@@ -59,23 +57,20 @@ object IceFillSolver {
         }
     }
 
-
     fun onClientTick(event: TickEvent.ClientTickEvent) {
         if (event.phase != TickEvent.Phase.END || mc.thePlayer == null || !DungeonUtils.inDungeons || DungeonUtils.currentRoomName != "Ice Fill") return
         val pos = posFloored
         if (getBlockIdAt(BlockPos(pos.x, pos.y - 1, pos.z )) != 79) return
         val floorIndex = pos.y % 70
-        if (floorIndex > scanned.size) return
-        if (scanned[floorIndex]) return
-        scanned[floorIndex] = true
-
+        if (floorIndex !in scanned.indices || scanned[floorIndex]) return
         scope.launch {
-            scan(pos, floorIndex)
+            if (scan(pos, floorIndex))
+                scanned[floorIndex] = true
         }
     }
 
-    private fun scan(pos: Vec3i, floorIndex: Int) {
-        val rotation = checkRotation(pos, floorIndex) ?: return
+    private fun scan(pos: Vec3i, floorIndex: Int): Boolean {
+        val rotation = checkRotation(pos, floorIndex) ?: return false
 
         val bPos = BlockPos(pos)
 
@@ -92,12 +87,13 @@ object IceFillSolver {
 
                 renderPattern(pos, rotation)
                 currentPatterns.add(floors[floorIndex][index].toMutableList())
-                return
+                return true
             }
         }
+        return false
     }
 
-    private fun transform(vec: Vec3i, rotation: Rotation): Vec3i {
+    fun transform(vec: Vec3i, rotation: Rotation): Vec3i {
         return when (rotation) {
             Rotation.EAST -> Vec3i(vec.x, vec.y, vec.z)
             Rotation.WEST -> Vec3i(-vec.x, vec.y, -vec.z)
@@ -106,7 +102,16 @@ object IceFillSolver {
         }
     }
 
-    private fun transformTo(vec: Vec3i, rotation: Rotation): Vec3 {
+    fun transform(x: Int, z: Int, rotation: Rotation): Pair<Int, Int> {
+        return when (rotation) {
+            Rotation.EAST -> Pair(x, z)
+            Rotation.WEST -> Pair(-x, -z)
+            Rotation.SOUTH -> Pair(z, x)
+            else -> Pair(z, -x)
+        }
+    }
+
+    fun transformTo(vec: Vec3i, rotation: Rotation): Vec3 {
         return when (rotation) {
             Rotation.EAST -> Vec3(vec.x.toDouble(), vec.y.toDouble(), vec.z.toDouble())
             Rotation.WEST -> Vec3(-vec.x.toDouble(), vec.y.toDouble(), -vec.z.toDouble())
@@ -115,7 +120,7 @@ object IceFillSolver {
         }
     }
 
-    private fun checkRotation(pos: Vec3i, floor: Int): Rotation? {
+    fun checkRotation(pos: Vec3i, floor: Int): Rotation? {
         val a = (floor+1)*2+2
         if      (getBlockIdAt(pos.x + a, pos.y, pos.z) == 109) return Rotation.EAST
         else if (getBlockIdAt(pos.x - a, pos.y, pos.z) == 109) return Rotation.WEST
@@ -131,4 +136,7 @@ object IceFillSolver {
         renderRotation = null
         rPos = ArrayList()
     }
+}
+enum class Rotation {
+    EAST, WEST, SOUTH, NORTH
 }

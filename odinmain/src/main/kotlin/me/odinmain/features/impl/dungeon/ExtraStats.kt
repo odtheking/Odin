@@ -2,7 +2,6 @@ package me.odinmain.features.impl.dungeon
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import me.odinmain.utils.skyblock.sendCommand
 
 object ExtraStats : Module(
@@ -11,7 +10,7 @@ object ExtraStats : Module(
     category = Category.DUNGEON,
 ) {
     init {
-        onMessage("                             > EXTRA STATS <", false, { inDungeons }) {
+        onMessage("                             > EXTRA STATS <", false) {
             sendCommand("showextrastats")
         }
     }
