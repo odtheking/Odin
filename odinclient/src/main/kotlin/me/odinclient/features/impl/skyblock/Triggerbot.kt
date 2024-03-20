@@ -10,6 +10,7 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.DualSetting
 import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.utils.Vec2
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.isFacingAABB
@@ -91,7 +92,7 @@ object Triggerbot : Module(
         }
 
         if (
-            DungeonUtils.Vec2(obj.blockPos?.x ?: 0, obj.blockPos?.z ?: 0) != Relic.cauldronMap[currentRelic] ||
+            Vec2(obj.blockPos?.x ?: 0, obj.blockPos?.z ?: 0) != Relic.cauldronMap[currentRelic] ||
             !obj.blockPos?.y.equalsOneOf(6, 7)
         ) return
         PlayerUtils.rightClick()

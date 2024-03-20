@@ -34,7 +34,7 @@ object ArrowHit : Module(
             text("17.8", 1f, 9f, Color.WHITE,12f, OdinFont.REGULAR)
             getTextWidth("17.8", 12f) to 12f
         } else {
-            text("$arrowCount", 1f, 9f, Color.WHITE,12f, OdinFont.REGULAR)
+            text(arrowCount.toString(), 1f, 9f, Color.WHITE,12f, OdinFont.REGULAR)
             getTextWidth("$arrowCount", 12f) to 12f
         }
     }

@@ -42,7 +42,6 @@ object DungeonUtils {
     inline val cryptsCount get() = currentDungeon?.cryptsCount ?: 0
     inline val deathCount get() = currentDungeon?.deathCount ?: 0
 
-    data class Vec2(val x: Int, val z: Int)
     data class FullRoom(val room: Room, val positions: List<ExtraRoom>, var waypoints: List<DungeonWaypoint>)
     data class ExtraRoom(val x: Int, val z: Int, val core: Int)
     private var lastRoomPos: Pair<Int, Int> = Pair(0, 0)

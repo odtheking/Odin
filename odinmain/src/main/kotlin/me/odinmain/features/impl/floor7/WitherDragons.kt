@@ -86,6 +86,7 @@ object WitherDragons : Module(
     private val relics: Boolean by DropdownSetting("Relics")
     private val relicAnnounce: Boolean by BooleanSetting("Relic Announce", true, description = "Announce your relic to the rest of the party.").withDependency { relics }
     val selected: Int by SelectorSetting("Color", "Green", colors, description = "The color of your relic.").withDependency { relicAnnounce && relics}
+    val relicAnnounceTime: Boolean by BooleanSetting("Relic Time", true, description = "Sends how long it took you to get that relic").withDependency { relicAnnounce && relics }
 
     val redPB = +NumberSetting("Panes PB", 1000.0, increment = 0.01, hidden = true)
     val orangePB = +NumberSetting("Color PB", 1000.0, increment = 0.01, hidden = true)

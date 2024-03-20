@@ -3,13 +3,14 @@ package me.odinmain.features.impl.floor7
 import me.odinmain.OdinMain.mc
 import me.odinmain.config.Config
 import me.odinmain.features.impl.floor7.WitherDragons.colors
+import me.odinmain.features.impl.floor7.WitherDragons.relicAnnounceTime
 import me.odinmain.features.impl.floor7.WitherDragons.selected
 import me.odinmain.features.impl.kuudra.Splits.unaryPlus
 import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.utils.Vec2
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.round
 import me.odinmain.utils.skyblock.createClickStyle
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.itemID
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.partyMessage
@@ -26,11 +27,11 @@ object Relic {
 
     val currentRelic get() = mc.thePlayer.heldItem.itemID
     val cauldronMap = mapOf(
-        "GREEN_KING_RELIC" to DungeonUtils.Vec2(49, 44),
-        "Red_KING_RELIC" to DungeonUtils.Vec2(51, 42),
-        "PURPLE_KING_RELIC" to DungeonUtils.Vec2(54, 41),
-        "ORANGE_KING_RELIC" to DungeonUtils.Vec2(57, 42),
-        "BLUE_KING_RELIC" to DungeonUtils.Vec2(59, 44)
+        "GREEN_KING_RELIC" to Vec2(49, 44),
+        "Red_KING_RELIC" to Vec2(51, 42),
+        "PURPLE_KING_RELIC" to Vec2(54, 41),
+        "ORANGE_KING_RELIC" to Vec2(57, 42),
+        "BLUE_KING_RELIC" to Vec2(59, 44)
     )
 
     enum class Relics (
@@ -46,7 +47,6 @@ object Relic {
     }
 
     private var timer = 0L
-    private var lastRelic = ""
 
     fun relicsOnMessage(){
         partyMessage("${colors[selected]} Relic")
@@ -61,7 +61,7 @@ object Relic {
         val hasPassed = (System.currentTimeMillis() - timer) / 1000.0
         if (hasPassed < relic.pbTime.value) relic.pbTime.value = hasPassed
 
-        modMessage("${relic.colorCode}${relic.name}§f took ${hasPassed}s ${if (hasPassed < relic.pbTime.value) "(§dNew PB)" else ""}",
+        if (relicAnnounceTime) modMessage("${relic.colorCode}${relic.name}§f took ${hasPassed}s ${if (hasPassed < relic.pbTime.value) "(§dNew PB)" else ""}",
             chatStyle = createClickStyle(ClickEvent.Action.SUGGEST_COMMAND, Relics.entries.joinToString { "${it.colorCode}${it.name}§f ${it.pbTime.value.round(3)}" }))
         timer = 0L
         Config.save()

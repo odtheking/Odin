@@ -3,13 +3,15 @@ package me.odinmain.utils
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils.Vec2
 import me.odinmain.utils.skyblock.dungeon.tiles.Rotations
 import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.util.*
 import kotlin.math.*
+
+
+data class Vec2(val x: Int, val z: Int)
 
 /**
  * Gets the distance between two entities squared.
