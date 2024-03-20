@@ -29,7 +29,6 @@ object GyroRange : Module(
         if (block.isAir(mc.theWorld, pos)) return
 
 
-
         Renderer.drawCylinder(
             Vec3(pos).addVector(0.5, 1.0, 0.5),
             10f, 10f - thickness, 0.2f,

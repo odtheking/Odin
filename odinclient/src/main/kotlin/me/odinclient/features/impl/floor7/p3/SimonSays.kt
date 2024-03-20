@@ -40,8 +40,8 @@ object SimonSays : Module(
     private val triggerBot: Boolean by BooleanSetting("Triggerbot")
     private val triggerBotDelay: Long by NumberSetting<Long>("Triggerbot Delay", 200, 70, 500).withDependency { triggerBot }
     private val autoSS: Boolean by BooleanSetting("Auto SS", false)
-    private val autoSSDelay: Long by NumberSetting<Long>("Delay Between Clicks", 200, 70, 500).withDependency { autoSS }
-    private val autoSSRotateTime: Int by NumberSetting("Rotate Time", 150, 50, 400).withDependency { autoSS }
+    private val autoSSDelay: Long by NumberSetting<Long>("Delay Between Clicks", 200, 50, 500).withDependency { autoSS }
+    private val autoSSRotateTime: Int by NumberSetting("Rotate Time", 150, 0, 400).withDependency { autoSS }
     private val blockWrong: Boolean by BooleanSetting("Block Wrong Clicks", false, description = "Blocks Any Wrong Clicks (sneak to disable).")
     private val clearAfter: Boolean by BooleanSetting("Clear After", false, description = "Clears the clicks when showing next, should work better with ss skip, but will be less consistent")
 
@@ -149,8 +149,8 @@ object SimonSays : Module(
     private fun autoSS() {
         val isInSSRange = mc.thePlayer.getDistanceSqToCenter(BlockPos(108, 120, 93)) <= 1.45 * 1.45
         Renderer.drawCylinder(
-            Vec3(108.5, 120.0, 93.5), 1.45f, 1.45f, .05f, 80,
-            1, 0f, 90f, 90f, if (isInSSRange) Color.GREEN else Color.ORANGE
+            Vec3(108.5, 120.0, 93.5), 1.45f, 1.45f, .6f, 35,
+            1, 0f, 90f, 90f, (if (isInSSRange) Color.GREEN else Color.ORANGE).withAlpha(.5f)
         )
 
         if (
@@ -162,11 +162,12 @@ object SimonSays : Module(
             clickNeeded >= clickInOrder.size ||
             !autoSSLastClickClock.hasTimePassed()
         ) return
+
         val buttonToClick = clickInOrder[clickNeeded]
         if (getBlockIdAt(buttonToClick.west()) != 77) return
-        val direction = getDirectionToVec3(buttonToClick.west().toVec3().addVec(x = .8, y = .5, z = .5))
+        val (_, yaw, pitch) = getDirectionToVec3(buttonToClick.toVec3().addVec(x = -0.1, y = .5, z = .5))
         autoSSClickInQueue = true
-        smoothRotateTo(direction.second, direction.third, autoSSRotateTime) {
+        smoothRotateTo(yaw, pitch, autoSSRotateTime) {
             if (clickNeeded == 4) {
                 autoSSLastClickClock.update()
             }
@@ -213,7 +214,7 @@ object SimonSays : Module(
                 clickNeeded + 1 -> Color(255, 170, 0)
                 else -> Color(170, 0, 0)
             }.withAlpha(.5f)
-            Renderer.drawBox(AxisAlignedBB(x, y, z, x + .25, y + .375, z + .5), color, outlineAlpha = 0)
+            Renderer.drawBox(AxisAlignedBB(x, y, z, x + .25, y + .375, z + .5), color, outlineAlpha = 1f, fillAlpha = 0.6f)
         }
         GlStateManager.enableCull()
     }

@@ -121,6 +121,7 @@ object ClickGUI : Screen() {
             panel.x = ClickGUIModule.panelX[panel.category]!!.value
             panel.y = ClickGUIModule.panelY[panel.category]!!.value
             panel.extended = ClickGUIModule.panelExtended[panel.category]!!.enabled
+            panel.moduleButtons.forEach { it.updateElements() }
         }
     }
 
