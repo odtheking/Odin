@@ -3,20 +3,13 @@ package me.odinmain.utils.skyblock
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.render.ClickGUIModule.devMessages
 import me.odinmain.features.impl.render.DevPlayers
-import me.odinmain.utils.noControlCodes
 import net.minecraft.event.ClickEvent
 import net.minecraft.event.HoverEvent
 import net.minecraft.util.ChatComponentText
 import net.minecraft.util.ChatStyle
 import net.minecraft.util.EnumChatFormatting
 import net.minecraftforge.client.ClientCommandHandler
-import net.minecraftforge.client.event.ClientChatReceivedEvent
 
-/**
- * Provides the unformatted text content of a `ClientChatReceivedEvent`.
- */
-inline val ClientChatReceivedEvent.unformattedText
-    get() = this.message.unformattedText.noControlCodes
 
 /**
  * Generates a random response from an eight-ball simulation.
@@ -67,16 +60,16 @@ fun sendChatMessage(message: Any) {
  *
  * @param message Message to be sent.
  * @param prefix If `true`, adds a prefix to the message.
+ * @param chatStyle Optional chat style to be applied to the message.
  */
-fun modMessage(message: Any, prefix: Boolean = true) {
+fun modMessage(message: Any, prefix: Boolean = true, chatStyle: ChatStyle? = null) {
     if (mc.thePlayer == null) return
-    val msg = if (prefix) "§3Odin §8»§r $message" else message.toString()
-    try {
-        mc.thePlayer?.addChatMessage(ChatComponentText(msg))
-    } catch (e: Exception) {
-        e.printStackTrace()
-    }
+    val chatComponent = ChatComponentText(if (prefix) "§3Odin §8»§r $message" else message.toString())
+    chatStyle?.let { chatComponent.setChatStyle(it) } // Set chat style using setChatStyle method
+    try { mc.thePlayer?.addChatMessage(chatComponent) }
+    catch (e: Exception) { e.printStackTrace() }
 }
+
 
 /**
  * Sends a client-side message for developers only.

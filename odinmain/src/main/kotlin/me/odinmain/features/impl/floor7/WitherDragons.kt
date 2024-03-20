@@ -10,11 +10,10 @@ import me.odinmain.features.impl.floor7.DragonCheck.lastDragonDeath
 import me.odinmain.features.impl.floor7.DragonCheck.onChatPacket
 import me.odinmain.features.impl.floor7.DragonHealth.renderHP
 import me.odinmain.features.impl.floor7.DragonTimer.renderTime
+import me.odinmain.features.impl.floor7.Relic.relicsBlockPlace
+import me.odinmain.features.impl.floor7.Relic.relicsOnMessage
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.DualSetting
-import me.odinmain.features.settings.impl.HudSetting
-import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.features.settings.impl.*
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.hud.HudElement
@@ -25,6 +24,7 @@ import me.odinmain.utils.render.roundedRectangle
 import me.odinmain.utils.render.text
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraftforge.client.event.RenderLivingEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -67,10 +67,11 @@ object WitherDragons : Module(
     private val dragonBoxes: Boolean by BooleanSetting("Dragon Boxes", true, description = "Displays boxes for where M7 dragons spawn.")
     val lineThickness: Float by NumberSetting("Line Width", 2f, 1.0, 5.0, 0.5).withDependency { dragonBoxes }
 
-    val sendNotification: Boolean by BooleanSetting("Send Dragon Confirmation", true, description = "Sends a confirmation message when a dragon dies.")
-    val sendTime: Boolean by BooleanSetting("Send Dragon Time Alive", true, description = "Sends a message when a dragon dies with the time it was alive.")
-    val sendSpawning: Boolean by BooleanSetting("Send Dragon Spawning", true, description = "Sends a message when a dragon is spawning.")
-    val sendSpawned: Boolean by BooleanSetting("Send Dragon Spawned", true, description = "Sends a message when a dragon has spawned.")
+    private val dragonAlerts: Boolean by DropdownSetting("Dragon Alerts")
+    val sendNotification: Boolean by BooleanSetting("Send Dragon Confirmation", true, description = "Sends a confirmation message when a dragon dies.").withDependency { dragonAlerts }
+    val sendTime: Boolean by BooleanSetting("Send Dragon Time Alive", true, description = "Sends a message when a dragon dies with the time it was alive.").withDependency { dragonAlerts }
+    val sendSpawning: Boolean by BooleanSetting("Send Dragon Spawning", true, description = "Sends a message when a dragon is spawning.").withDependency { dragonAlerts }
+    val sendSpawned: Boolean by BooleanSetting("Send Dragon Spawned", true, description = "Sends a message when a dragon has spawned.").withDependency { dragonAlerts }
 
     private val dragonHealth: Boolean by BooleanSetting("Dragon Health", true, description = "Displays the health of M7 dragons.")
 
@@ -80,6 +81,11 @@ object WitherDragons : Module(
     val soloDebuff: Boolean by DualSetting("Purple Solo Debuff", "Tank", "Healer", false, description = "Displays the debuff of the config.The class that solo debuffs purple, the other class helps b/m.").withDependency { dragonPriorityToggle }
     val soloDebuffOnAll: Boolean by BooleanSetting("Solo Debuff on All Splits", false, description = "Same as Purple Solo Debuff but for all dragons (A will only have 1 debuff).").withDependency { dragonPriorityToggle }
     val paulBuff: Boolean by BooleanSetting("Paul Buff", false, description = "Multiplies the power in your run by 1.25").withDependency { dragonPriorityToggle }
+
+    val colors = arrayListOf("Green", "Purple", "Blue", "Orange", "Red")
+    private val relics: Boolean by DropdownSetting("Relics")
+    private val relicAnnounce: Boolean by BooleanSetting("Relic Announce", true, description = "Announce your relic to the rest of the party.").withDependency { relics }
+    val selected: Int by SelectorSetting("Color", "Green", colors, description = "The color of your relic.").withDependency { relicAnnounce && relics}
 
     val redPB = +NumberSetting("Panes PB", 1000.0, increment = 0.01, hidden = true)
     val orangePB = +NumberSetting("Color PB", 1000.0, increment = 0.01, hidden = true)
@@ -104,6 +110,14 @@ object WitherDragons : Module(
         
         onPacket(S2APacketParticles::class.java, { DungeonUtils.getPhase() == Island.M7P5 }) {
             handleSpawnPacket(it)
+        }
+
+        onPacket(C08PacketPlayerBlockPlacement::class.java) {
+            relicsBlockPlace(it)
+        }
+
+        onMessage("[BOSS] Necron: All this, for nothing...", false) {
+            relicsOnMessage()
         }
     }
 

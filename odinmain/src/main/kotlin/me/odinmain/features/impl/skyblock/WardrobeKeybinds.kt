@@ -9,7 +9,7 @@ import me.odinmain.features.settings.impl.Keybinding
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.name
-import me.odinmain.utils.noControlCodes
+import me.odinmain.utils.skyblock.getItemIndexInContainerChest
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
@@ -52,21 +52,13 @@ object WardrobeKeybinds : Module(
         val index = when {
             nextPageKeybind.isDown() -> if (current.toInt() < total.toInt()) 53 else return modMessage("You are already on the last page.")
             previousPageKeybind.isDown() -> if (current.toInt() > 1) 45 else return modMessage("You are already on the first page.")
-            unequipKeybind.isDown() -> {
-                chest.inventorySlots.subList(36, 44)
-                    .indexOfFirst { it?.stack?.displayName?.noControlCodes?.contains("Equipped") ?: false }
-                    .takeIf { it != -1 } ?: return modMessage("Couldn't find equipped armor.")
-            }
-            else -> {
-                val index = wardrobes.indexOfFirst { it.isDown() }.takeIf { it != -1 } ?: return
-                index + 36
-            }
+            unequipKeybind.isDown() -> getItemIndexInContainerChest(chest, "Equipped", 36..40) ?: return modMessage("Couldn't find equipped armor.")
+            else -> (wardrobes.indexOfFirst { it.isDown() }.takeIf { it != -1 } ?: return) + 36
         }
-        if (clickCoolDown.hasTimePassed()) {
-            if (index > chest.lowerChestInventory.sizeInventory - 1 || index < 1) return modMessage("Invalid index. $index, ${chest.name}")
-            mc.playerController.windowClick(chest.windowId, index, 0, 0, mc.thePlayer)
-            clickCoolDown.update()
-        }
+        if (!clickCoolDown.hasTimePassed()) return
+        if (index > chest.lowerChestInventory.sizeInventory - 1 || index < 1) return modMessage("Invalid index. $index, ${chest.name}")
+        mc.playerController.windowClick(chest.windowId, index, 0, 0, mc.thePlayer)
+        clickCoolDown.update()
 
         event.isCanceled = true
     }

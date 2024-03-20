@@ -4,6 +4,8 @@ import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinclient.utils.skyblock.PlayerUtils.leftClick
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.impl.floor7.Relic
+import me.odinmain.features.impl.floor7.Relic.currentRelic
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.DualSetting
@@ -15,7 +17,9 @@ import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.itemID
 import net.minecraft.client.entity.EntityOtherPlayerMP
+import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.init.Blocks
 import net.minecraft.tileentity.TileEntityChest
@@ -51,6 +55,9 @@ object Triggerbot : Module(
         "Flamer", "Skull", "Mr.Dead", "Vader", "Frost", "Freak", "Bonzo", "Scarf", "Livid", "Psycho", "Reaper",
     )
 
+    private val relicTriggerBot: Boolean by BooleanSetting("Triggerbot", false, description = "Automatically clicks the correct relic in the cauldron.")
+    private val tbClock = Clock(1000)
+
     @SubscribeEvent
     fun onEntityJoin(event: EntityJoinWorldEvent) {
         if (event.entity !is EntityOtherPlayerMP || mc.currentScreen != null || !DungeonUtils.inDungeons) return
@@ -72,6 +79,23 @@ object Triggerbot : Module(
             PlayerUtils.rightClick()
             clickClock.update()
         }
+    }
+
+    @SubscribeEvent
+    fun onClientTickEvent(event: TickEvent.ClientTickEvent) {
+        if (!relicTriggerBot || !tbClock.hasTimePassed()) return
+        val obj = mc.objectMouseOver ?: return
+        if (obj.entityHit is EntityArmorStand && obj.entityHit?.inventory?.get(4)?.itemID in Relic.cauldronMap.keys) {
+            PlayerUtils.rightClick()
+            tbClock.update()
+        }
+
+        if (
+            DungeonUtils.Vec2(obj.blockPos?.x ?: 0, obj.blockPos?.z ?: 0) != Relic.cauldronMap[currentRelic] ||
+            !obj.blockPos?.y.equalsOneOf(6, 7)
+        ) return
+        PlayerUtils.rightClick()
+        tbClock.update()
     }
 
     init {

@@ -81,13 +81,13 @@ fun getItemSlot(item: String, ignoreCase: Boolean = true): Int? =
 /**
  * Gets index of an item in a chest.
  * @return null if not found.
- * @return null
  */
-fun getItemIndexInContainerChest(container: ContainerChest, item: String, ignoreCase: Boolean): Int? {
-    return container.inventorySlots.subList(0, container.inventory.size - 36).firstOrNull {
+fun getItemIndexInContainerChest(container: ContainerChest, item: String, subList: IntRange = 0..container.inventory.size - 36, ignoreCase: Boolean = false): Int? {
+    return container.inventorySlots.subList(subList.first, subList.last + 1).firstOrNull {
         it.stack?.unformattedName?.contains(item, ignoreCase) == true
     }?.slotNumber
 }
+
 
 enum class ItemRarity(
     val loreName: String,

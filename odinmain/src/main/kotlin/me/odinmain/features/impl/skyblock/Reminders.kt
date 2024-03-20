@@ -28,7 +28,7 @@ object Reminders : Module(
     private var canWish = true
 
     init {
-        onMessage("[BOSS] Wither King: You.. again?", dragReminder) {
+        onMessage("[BOSS] Wither King: You.. again?", dragReminder && enabled) {
             PlayerUtils.alert("§3Swap to edrag!")
         }
 
@@ -55,7 +55,7 @@ object Reminders : Module(
             if (!DungeonUtils.inBoss && !DungeonUtils.isGhost) canWish = true else if (DungeonUtils.inBoss && canWish && !DungeonUtils.isGhost) canWish = false
         }
 
-        onMessage("^(Second Wind Activated!)? ?Your (.+) saved your life!\$", maskAlert) {
+        onMessage("^(Second Wind Activated!)? ?Your (.+) saved your life!\$", maskAlert && enabled) {
             PlayerUtils.alert("Mask used!")
             modMessage("Mask used!")
         }

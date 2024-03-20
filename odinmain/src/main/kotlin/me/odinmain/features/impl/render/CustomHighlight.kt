@@ -27,7 +27,6 @@
         category = Category.RENDER,
         tag = TagType.FPSTAX,
         description = "Allows you to highlight selected mobs. (/highlight)"
-
     ) {
         private val scanDelay: Long by NumberSetting("Scan Delay", 500L, 10L, 2000L, 100L)
         private val starredMobESP: Boolean by BooleanSetting("Starred Mob Highlight", true, description = "Highlights mobs with a star in their name (remove star from the separate list).")

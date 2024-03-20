@@ -24,7 +24,6 @@ object RemovePerks : Module(
         if (event.gui !is GuiChest || event.gui.inventorySlots !is ContainerChest || (event.gui.inventorySlots as ContainerChest).name != "Perk Menu") return
         val slot = event.slot.stack?.displayName.noControlCodes
         if (slotCheck(slot)) event.isCanceled = true
-
     }
     @SubscribeEvent
     fun guiMouseClick(event: GuiClickEvent) {

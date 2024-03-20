@@ -138,7 +138,7 @@ object Splits : Module(
         T5(t5PB, "T5")
     }
 
-    enum class t5PBs(
+    enum class T5PBs(
         val pbTime: NumberSetting<Double>,
         val splitName: String
     ) {
@@ -157,13 +157,13 @@ object Splits : Module(
             splits[1] = System.currentTimeMillis()
             if (LocationUtils.kuudraTier != 5) return@onMessage
 
-            val oldPB = t5PBs.entries.find { it.splitName == "Supplies" }?.pbTime?.value ?: 999.0
+            val oldPB = T5PBs.entries.find { it.splitName == "Supplies" }?.pbTime?.value ?: 999.0
             val timeP1 = (splits[1] - splits[0]) / 1000.0
             modMessage("§6Supplies Took§7: §a$timeP1")
 
             if (timeP1 < oldPB && timeP1 > 1L) {
                 if (sendPB) modMessage("New best time for §6T5 Supplies §fis §a$timeP1, §fold best time was §a${oldPB}s")
-                t5PBs.entries.find { it.splitName == "Supplies" }?.pbTime?.value = timeP1
+                T5PBs.entries.find { it.splitName == "Supplies" }?.pbTime?.value = timeP1
                 Config.save()
             }
         }
@@ -172,12 +172,12 @@ object Splits : Module(
             splits[2] = System.currentTimeMillis()
             if (LocationUtils.kuudraTier != 5) return@onMessage
 
-            val oldPB = t5PBs.entries.find { it.splitName == "Build" }?.pbTime?.value ?: 999.0
+            val oldPB = T5PBs.entries.find { it.splitName == "Build" }?.pbTime?.value ?: 999.0
             val timeP2 = (splits[2] - splits[1]) / 1000.0
             modMessage("§6Build Took§7: §a$timeP2")
             if (timeP2 < oldPB && timeP2 > 1L){
                 if (sendPB) modMessage("New best time for §6T5 Build §fis §a$timeP2, §fold best time was §a${oldPB}s")
-                t5PBs.entries.find { it.splitName == "Build" }?.pbTime?.value = timeP2
+                T5PBs.entries.find { it.splitName == "Build" }?.pbTime?.value = timeP2
                 Config.save()
             }
         }
@@ -186,12 +186,12 @@ object Splits : Module(
             splits[3] = System.currentTimeMillis()
             if (LocationUtils.kuudraTier != 5) return@onMessage
 
-            val oldPB = t5PBs.entries.find { it.splitName == "Stun" }?.pbTime?.value ?: 999.0
+            val oldPB = T5PBs.entries.find { it.splitName == "Stun" }?.pbTime?.value ?: 999.0
             val timeP3 = (splits[3] - splits[2]) / 1000.0
             modMessage("§6Fuel/Stun Took§7: §a$timeP3")
             if (timeP3 < oldPB && timeP3 > 1L){
                 if (sendPB) modMessage("New best time for §6T5 Stun §fis §a$timeP3, §fold best time was §a${oldPB}s")
-                t5PBs.entries.find { it.splitName == "Stun" }?.pbTime?.value = timeP3
+                T5PBs.entries.find { it.splitName == "Stun" }?.pbTime?.value = timeP3
                 Config.save()
             }
         }
@@ -200,12 +200,12 @@ object Splits : Module(
             splits[4] = System.currentTimeMillis()
 
             if (LocationUtils.kuudraTier == 5) {
-                val oldKillPB = t5PBs.entries.find { it.splitName == "Kill" }?.pbTime?.value ?: 999.0
+                val oldKillPB = T5PBs.entries.find { it.splitName == "Kill" }?.pbTime?.value ?: 999.0
                 val timeP4 = (splits[4] - splits[3]) / 1000.0
                 modMessage("§6Kill Took§7: §a$timeP4")
                 if (timeP4 < oldKillPB && timeP4 > 1L) {
                     if (sendPB) modMessage("New best time for §6T5 Kill §fis §a$timeP4, §fold best time was §a${oldKillPB}s")
-                    t5PBs.entries.find { it.splitName == "Kill" }?.pbTime?.value = timeP4
+                    T5PBs.entries.find { it.splitName == "Kill" }?.pbTime?.value = timeP4
                     Config.save()
                 }
             }

@@ -51,8 +51,7 @@ object InvincibilityTimer : Module(
     }
     @SubscribeEvent
     fun onServerTick(event: ServerTickEvent) {
-        if (invincibilityTime.first > 0) {
+        if (invincibilityTime.first > 0)
             invincibilityTime = Pair(invincibilityTime.first - 1, invincibilityTime.second)
-        }
     }
 }
