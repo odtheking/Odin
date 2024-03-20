@@ -5,10 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import me.odinmain.commands.impl.*
-import me.odinmain.config.Config
-import me.odinmain.config.DungeonWaypointConfig
-import me.odinmain.config.MiscConfig
-import me.odinmain.config.WaypointConfig
+import me.odinmain.config.*
 import me.odinmain.events.EventDispatcher
 import me.odinmain.features.ModuleManager
 import me.odinmain.features.impl.render.ClickGUIModule
@@ -98,6 +95,7 @@ object OdinMain {
         launch { MiscConfig.loadConfig() }
         launch { WaypointConfig.loadConfig() }
         launch { DungeonWaypointConfig.loadConfig() }
+        launch { PBConfig.loadConfig() }
     }
 
     fun loadComplete() = runBlocking {
