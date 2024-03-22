@@ -2,16 +2,22 @@ package me.odinmain.features.impl.floor7
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.dungeon.BlessingDisplay
+import me.odinmain.features.impl.floor7.DragonTimer
 import me.odinmain.features.impl.floor7.WitherDragons.easyPower
 import me.odinmain.features.impl.floor7.WitherDragons.normalPower
 import me.odinmain.features.impl.floor7.WitherDragons.paulBuff
 import me.odinmain.features.impl.floor7.WitherDragons.soloDebuff
 import me.odinmain.features.impl.floor7.WitherDragons.soloDebuffOnAll
+import me.odinmain.utils.addVec
 import me.odinmain.utils.equalsOneOf
+import me.odinmain.utils.fastEyeHeight
+import me.odinmain.utils.render.RenderUtils.renderVec
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.Classes
 import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.toAABB
 
 
 object DragonPriority {
@@ -28,7 +34,19 @@ object DragonPriority {
         PlayerUtils.alert("§${dragon.colorCode} ${dragon.name}")
     }
 
-    private fun sortPriority(spawningDragon: MutableList<WitherDragonsEnum>): WitherDragonsEnum {
+    /** fun tracerDragonPriority() {
+        val spawningDragons = WitherDragonsEnum.entries.filter { it.spawning }.toMutableList()
+        if (spawningDragons.isEmpty()) return
+
+        val dragon = sortPriority(spawningDragons)
+
+        WitherDragonsEnum.entries.forEachIndexed { index, dragon ->
+            if (dragon.spawning && dragon.spawnTime() > 0)
+                Renderer.draw3DLine(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), dragon.spawnPos.addVec(0.5, 3.5, 0.5), dragon.color)
+        }
+    } */
+
+    fun sortPriority(spawningDragon: MutableList<WitherDragonsEnum>): WitherDragonsEnum {
         val totalPower = BlessingDisplay.Blessings.POWER.current * if (paulBuff) 1.25 else 1.0 +
                 if (BlessingDisplay.Blessings.TIME.current > 0) 2.5 else 0.0
 

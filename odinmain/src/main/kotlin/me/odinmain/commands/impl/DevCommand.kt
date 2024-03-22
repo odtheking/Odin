@@ -101,7 +101,8 @@ val devCommand = commodore("oddev") {
         MinecraftForge.EVENT_BUS.post(ChatPacketEvent(str.string))
     }
 
-    literal("roomdata").runs {
+    /**
+	literal("roomdata").runs {
         val room = DungeonUtils.currentRoom //?: return@does modMessage("§cYou are not in a dungeon!")
         val x = ((mc.thePlayer.posX + 200) / 32).toInt()
         val z = ((mc.thePlayer.posZ + 200) / 32).toInt()
@@ -128,7 +129,7 @@ val devCommand = commodore("oddev") {
                     """.trimIndent(), false
         )
         writeToClipboard(northCores.toString(), "Copied $northCores to clipboard!")
-    }
+    }*/
 
     literal("getCore").runs {
         val core = ScanUtils.getCore(mc.thePlayer.posX.floor().toInt(), mc.thePlayer.posZ.floor().toInt())

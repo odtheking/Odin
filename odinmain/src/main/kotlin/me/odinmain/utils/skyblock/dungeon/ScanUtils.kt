@@ -8,6 +8,7 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.skyblock.dungeon.tiles.RoomData
 import me.odinmain.utils.skyblock.dungeon.tiles.RoomDataDeserializer
+import me.odinmain.utils.Vec2
 import net.minecraft.block.Block
 import net.minecraft.util.BlockPos
 import java.io.FileNotFoundException
@@ -37,7 +38,7 @@ object ScanUtils {
     fun getRoomData(hash: Int): RoomData? =
         roomList.find { it.cores.any { core -> hash == core } }
 
-    fun getCore(pos: DungeonUtils.Vec2): Int = getCore(pos.x, pos.z)
+    fun getCore(pos: Vec2): Int = getCore(pos.x, pos.z)
 
     fun getCore(x: Int, z: Int): Int {
         val blocks = arrayListOf<Int>()
