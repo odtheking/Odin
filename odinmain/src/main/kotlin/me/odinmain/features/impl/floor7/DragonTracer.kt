@@ -9,18 +9,10 @@ import me.odinmain.utils.render.Renderer
 
 object DragonTracer {
     fun renderTracers() {
-        val spawningDragons = WitherDragonsEnum.entries.filter { it.spawning }.toMutableList()
+        val spawningDragons = WitherDragonsEnum.entries.filter { it.spawning && it.spawnTime() > 0}.toMutableList()
         if (spawningDragons.isEmpty()) return
 
-        WitherDragonsEnum.entries.forEachIndexed { index, dragon ->
-            if (dragon.spawning && dragon.spawnTime() > 0) {
-                val dragon = DragonPriority.sortPriority(spawningDragons)
-                Renderer.draw3DLine(
-                    OdinMain.mc.thePlayer.renderVec.addVec(y = fastEyeHeight()),
-                    dragon.spawnPos.addVec(0.5, 3.5, 0.5),
-                    dragon.color
-                )
-            }
-        }
+        val dragon = DragonPriority.sortPriority(spawningDragons)
+        Renderer.draw3DLine(OdinMain.mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), dragon.spawnPos.addVec(0.5, 3.5, 0.5), dragon.color)
     }
 }
