@@ -101,7 +101,6 @@ val devCommand = commodore("oddev") {
         MinecraftForge.EVENT_BUS.post(ChatPacketEvent(str.string))
     }
 
-    /**
 	literal("roomdata").runs {
         val room = DungeonUtils.currentRoom //?: return@does modMessage("§cYou are not in a dungeon!")
         val x = ((mc.thePlayer.posX + 200) / 32).toInt()
@@ -109,7 +108,7 @@ val devCommand = commodore("oddev") {
         val xPos = -185 + x * 32
         val zPos = -185 + z * 32
         val core = ScanUtils.getCore(xPos, zPos)
-        val northPos = DungeonUtils.Vec2(xPos, zPos - 4)
+        val northPos = Vec2(xPos, zPos - 4)
         val northCores = room?.positions?.map {
             modMessage("Scanning ${it.x}, ${it.z - 4}: ${ScanUtils.getCore(it.x, it.z - 4)}")
             ScanUtils.getCore(it.x, it.z - 4)
@@ -129,7 +128,7 @@ val devCommand = commodore("oddev") {
                     """.trimIndent(), false
         )
         writeToClipboard(northCores.toString(), "Copied $northCores to clipboard!")
-    }*/
+    }
 
     literal("getCore").runs {
         val core = ScanUtils.getCore(mc.thePlayer.posX.floor().toInt(), mc.thePlayer.posZ.floor().toInt())

@@ -1,11 +1,7 @@
 package me.odinmain.features.impl.floor7
 
-import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.floor7.WitherDragons.textScale
-import me.odinmain.utils.addVec
-import me.odinmain.utils.fastEyeHeight
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
 
 object DragonTimer {
