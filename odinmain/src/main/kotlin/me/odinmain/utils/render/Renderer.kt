@@ -102,9 +102,8 @@ object Renderer {
         scale: Float = 0.03f,
         shadow: Boolean = true
         ) {
-        RenderUtils.drawStringInWorld(text.replace("null"," "), vec3, color, renderBlackBox, depth, scale, shadow)
+        RenderUtils.drawStringInWorld(text, vec3, color, renderBlackBox, depth, scale, shadow)
     }
-    //Edited to make null value not crash the game, as if config doesn't have a title it will crash game otherwise.
     /**
      * Draws a cylinder in the world with the specified parameters.
      *

@@ -71,7 +71,7 @@ object DungeonWaypoints : Module(
     fun onRender(event: RenderWorldLastEvent) {
         DungeonUtils.currentRoom?.waypoints?.forEach {
             Renderer.drawBox(it.toAABB(it.size), it.color, fillAlpha = if (it.filled) .8 else 0, depth = it.depth)
-            Renderer.drawStringInWorld(it.title.toString(), Vec3(it.x+0.5,it.y+0.5,it.z+0.5))
+            Renderer.drawStringInWorld(it.title ?: "", Vec3(it.x+0.5,it.y+0.5,it.z+0.5))
         }
 
         if (debugWaypoint) {

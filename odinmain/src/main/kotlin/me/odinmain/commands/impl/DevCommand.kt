@@ -108,7 +108,6 @@ val devCommand = commodore("oddev") {
         val xPos = -185 + x * 32
         val zPos = -185 + z * 32
         val core = ScanUtils.getCore(xPos, zPos)
-        val northPos = Vec2(xPos, zPos - 4)
         val northCores = room?.positions?.map {
             modMessage("Scanning ${it.x}, ${it.z - 4}: ${ScanUtils.getCore(it.x, it.z - 4)}")
             ScanUtils.getCore(it.x, it.z - 4)
@@ -121,7 +120,6 @@ val devCommand = commodore("oddev") {
                     Room: ${room?.room?.data?.name}
                     Core: $core
                     North Core: $northCores
-                    North Pos: ${northPos.x}, ${northPos.z}
                     Rotation: ${room?.room?.rotation}
                     Positions: ${room?.positions}
                     ${getChatBreak()}
