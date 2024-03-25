@@ -60,7 +60,7 @@ object DungeonWaypoints : Module(
     }
     private val debugWaypoint: Boolean by BooleanSetting("Debug Waypoint", false).withDependency { DevPlayers.isDev }
 
-    data class DungeonWaypoint(val x: Double, val y: Double, val z: Double, val color: Color, val filled: Boolean, val depth: Boolean, val size: Double)
+    data class DungeonWaypoint(val x: Double, val y: Double, val z: Double, val color: Color, val filled: Boolean, val depth: Boolean, val size: Double, val title: String?)
 
     override fun onKeybind() {
         allowEdits = !allowEdits
@@ -71,6 +71,7 @@ object DungeonWaypoints : Module(
     fun onRender(event: RenderWorldLastEvent) {
         DungeonUtils.currentRoom?.waypoints?.forEach {
             Renderer.drawBox(it.toAABB(it.size), it.color, fillAlpha = if (it.filled) .8 else 0, depth = it.depth)
+            Renderer.drawStringInWorld(it.title.toString(), Vec3(it.x+0.5,it.y+0.5,it.z+0.5))
         }
 
         if (debugWaypoint) {
@@ -94,7 +95,7 @@ object DungeonWaypoints : Module(
                 DungeonWaypointConfig.waypoints.getOrPut(room.core.toString()) { mutableListOf() }
 
         if (!waypoints.any { it.toVec3().equal(vec) }) {
-            waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, size))
+            waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, size, " "))
             devMessage("Added waypoint at $vec")
         } else {
             waypoints.removeIf { it.toVec3().equal(vec) }
