@@ -42,28 +42,16 @@ object DungeonWaypoints : Module(
 ) {
     private var allowEdits: Boolean by BooleanSetting("Allow Edits", false)
     private val color: Color by ColorSetting(
-        "Color",
-        default = Color.GREEN,
-        description = "The color of the next waypoint you place.",
-        allowAlpha = true
+        "Color", default = Color.GREEN, description = "The color of the next waypoint you place.", allowAlpha = true
     )
     private val filled: Boolean by BooleanSetting(
-        "Filled",
-        false,
-        description = "If the next waypoint you place should be 'filled'."
+        "Filled", false, description = "If the next waypoint you place should be 'filled'."
     )
     private val throughWalls: Boolean by BooleanSetting(
-        "Through walls",
-        false,
-        description = "If the next waypoint you place should be visible through walls."
+        "Through walls", false, description = "If the next waypoint you place should be visible through walls."
     )
     private val size: Double by NumberSetting<Double>(
-        "Size",
-        1.0,
-        .125,
-        1.0,
-        increment = 0.125,
-        description = "The size of the next waypoint you place."
+        "Size", 1.0, .125, 1.0, increment = 0.125, description = "The size of the next waypoint you place."
     )
     private val resetButton: () -> Unit by ActionSetting("Reset Current Room") {
         val room = DungeonUtils.currentRoom ?: return@ActionSetting modMessage("Room not found!!!")
@@ -96,7 +84,7 @@ object DungeonWaypoints : Module(
         val title: String?
     )
 
-    class GuiSign : GuiScreen() {
+    object GuiSign : GuiScreen() {
 
         private lateinit var textField: GuiTextField
         private var callback: (String) -> Unit = {} // Initialize with no-op function
@@ -170,49 +158,29 @@ object DungeonWaypoints : Module(
     fun onInteract(event: PlayerInteractEvent) {
         if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || event.world != mc.theWorld || !allowEdits) return
         val room = DungeonUtils.currentRoom?.room ?: return
-        val vec = Vec3(event.pos)
-            .subtractVec(x = room.x, z = room.z)
-            .rotateToNorth(room.rotation)
+        val vec = Vec3(event.pos).subtractVec(x = room.x, z = room.z).rotateToNorth(room.rotation)
 
         val waypoints =
-            if (room.data.type != RoomType.NORMAL)
-                DungeonWaypointConfig.waypoints.getOrPut(room.data.name) { mutableListOf() }
-            else
-                DungeonWaypointConfig.waypoints.getOrPut(room.core.toString()) { mutableListOf() }
+            if (room.data.type != RoomType.NORMAL) DungeonWaypointConfig.waypoints.getOrPut(room.data.name) { mutableListOf() }
+            else DungeonWaypointConfig.waypoints.getOrPut(room.core.toString()) { mutableListOf() }
         if (mc.thePlayer.isSneaking) {
-            val gui = GuiSign()
-            gui.setCallback { enteredText ->
-                waypoints.removeIf { it.toVec3().equal(vec) }
+            val callback: (String) -> Unit = { enteredText ->
+            waypoints.removeIf { it.toVec3().equal(vec) }
                 waypoints.add(
                     DungeonWaypoint(
-                        vec.xCoord,
-                        vec.yCoord,
-                        vec.zCoord,
-                        color.copy(),
-                        filled,
-                        !throughWalls,
-                        size,
-                        enteredText
+                        vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, size, enteredText
                     )
                 )
                 DungeonWaypointConfig.saveConfig()
                 DungeonUtils.setWaypoints()
             }
-            mc.displayGuiScreen(gui)
+            GuiSign.setCallback(callback)
+            mc.displayGuiScreen(GuiSign)
         } else if (waypoints.removeIf { it.toVec3().equal(vec) }) {
             devMessage("Removed waypoint at $vec")
         } else {
             waypoints.add(
-                DungeonWaypoint(
-                    vec.xCoord,
-                    vec.yCoord,
-                    vec.zCoord,
-                    color.copy(),
-                    filled,
-                    !throughWalls,
-                    size,
-                    " "
-                )
+                DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, size, " ")
             )
             devMessage("Added waypoint at $vec")
         }
