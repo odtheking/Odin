@@ -91,10 +91,10 @@ object Animations : Module(
      */
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.END) return
+        if (!blockHit || event.phase != TickEvent.Phase.END) return
         val player = mc.thePlayer ?: return
 
-        if (this.blockHit && mc.gameSettings.keyBindAttack.isKeyDown && mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit === MovingObjectPosition.MovingObjectType.BLOCK) {
+        if (mc.gameSettings.keyBindAttack.isKeyDown && mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit === MovingObjectPosition.MovingObjectType.BLOCK) {
             if (!player.isSwingInProgress || player.swingProgressInt >= getArmSwingAnimationEnd(player) / 2 || player.swingProgressInt < 0) {
                 player.isSwingInProgress = true
                 player.swingProgressInt = -1

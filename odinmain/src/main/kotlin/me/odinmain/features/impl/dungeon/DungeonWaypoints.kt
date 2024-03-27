@@ -16,6 +16,7 @@ import me.odinmain.utils.rotateToNorth
 import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.tiles.RoomType
+import me.odinmain.utils.skyblock.dungeon.tiles.Rotations
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.subtractVec
 import me.odinmain.utils.toAABB
@@ -32,7 +33,7 @@ import net.minecraft.client.gui.GuiTextField
 
 /**
  * Custom Waypoints for Dungeons
- * @author Bonsai
+ * @author Bonsai, Azael
  */
 object DungeonWaypoints : Module(
     name = "Dungeon Waypoints",
