@@ -104,7 +104,6 @@ object Renderer {
         ) {
         RenderUtils.drawStringInWorld(text, vec3, color, renderBlackBox, depth, scale, shadow)
     }
-
     /**
      * Draws a cylinder in the world with the specified parameters.
      *

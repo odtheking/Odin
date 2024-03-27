@@ -5,6 +5,7 @@ import com.google.gson.JsonIOException
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import me.odinmain.OdinMain.mc
+import me.odinmain.utils.Vec2
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.skyblock.dungeon.tiles.RoomData
 import me.odinmain.utils.skyblock.dungeon.tiles.RoomDataDeserializer
