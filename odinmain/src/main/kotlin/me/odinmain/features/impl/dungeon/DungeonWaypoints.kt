@@ -159,19 +159,17 @@ object DungeonWaypoints : Module(
     fun onInteract(event: PlayerInteractEvent) {
         if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || event.world != mc.theWorld || !allowEdits) return
         val room = DungeonUtils.currentRoom?.room ?: return
+        val distinct = DungeonUtils.currentRoom?.positions?.distinctBy { it.core }?.firstOrNull() ?: return
         val vec = Vec3(event.pos).subtractVec(x = room.x, z = room.z).rotateToNorth(room.rotation)
 
         val waypoints =
             if (room.data.type != RoomType.NORMAL) DungeonWaypointConfig.waypoints.getOrPut(room.data.name) { mutableListOf() }
-            else DungeonWaypointConfig.waypoints.getOrPut(room.core.toString()) { mutableListOf() }
+            else DungeonWaypointConfig.waypoints.getOrPut(distinct.toString()) { mutableListOf() }
+
         if (mc.thePlayer.isSneaking) {
             val callback: (String) -> Unit = { enteredText ->
-            waypoints.removeIf { it.toVec3().equal(vec) }
-                waypoints.add(
-                    DungeonWaypoint(
-                        vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, size, enteredText
-                    )
-                )
+                waypoints.removeIf { it.toVec3().equal(vec) }
+                waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, size, enteredText))
                 DungeonWaypointConfig.saveConfig()
                 DungeonUtils.setWaypoints()
             }
@@ -180,11 +178,10 @@ object DungeonWaypoints : Module(
         } else if (waypoints.removeIf { it.toVec3().equal(vec) }) {
             devMessage("Removed waypoint at $vec")
         } else {
-            waypoints.add(
-                DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, size, " ")
-            )
+            waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, size, ""))
             devMessage("Added waypoint at $vec")
         }
+
         DungeonWaypointConfig.saveConfig()
         DungeonUtils.setWaypoints()
     }
