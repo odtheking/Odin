@@ -25,6 +25,10 @@ import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.GuiButton
+import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.gui.GuiTextField
 
 /**
  * Custom Waypoints for Dungeons
@@ -61,6 +65,57 @@ object DungeonWaypoints : Module(
     private val debugWaypoint: Boolean by BooleanSetting("Debug Waypoint", false).withDependency { DevPlayers.isDev }
 
     data class DungeonWaypoint(val x: Double, val y: Double, val z: Double, val color: Color, val filled: Boolean, val depth: Boolean, val size: Double, val title: String?)
+    class GuiSign : GuiScreen() {
+
+        private lateinit var textField: GuiTextField
+        private var callback: (String) -> Unit = {} // Initialize with no-op function
+
+        override fun initGui() {
+            super.initGui()
+            // Initialize GUI components
+            textField = GuiTextField(0, fontRendererObj, width / 2 - 50, height / 2 - 10, 100, 20)
+            textField.text = "Enter text"
+            textField.isFocused = true // Set the text field to be focused initially
+            textField.maxStringLength = 50 // Maximum characters allowed
+            buttonList.add(GuiButton(0, width / 2 - 50, height / 2 + 20, 100, 20, "Submit"))
+        }
+
+        override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+            super.drawScreen(mouseX, mouseY, partialTicks)
+            // Render GUI components
+            textField.drawTextBox()
+        }
+
+        override fun keyTyped(typedChar: Char, keyCode: Int) {
+            super.keyTyped(typedChar, keyCode)
+            // Handle keyboard input
+            textField.textboxKeyTyped(typedChar, keyCode)
+        }
+
+        override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+            super.mouseClicked(mouseX, mouseY, mouseButton)
+            // Handle mouse click events
+            textField.mouseClicked(mouseX, mouseY, mouseButton)
+        }
+
+        override fun actionPerformed(button: GuiButton) {
+            super.actionPerformed(button)
+            // Handle button clicks
+            if (button.id == 0) {
+                // Submit button clicked, call the callback function with the entered text
+                val enteredText = textField.text
+                callback.invoke(enteredText)
+                // Close the GUI
+                mc.displayGuiScreen(null)
+            }
+        }
+
+        // Method to set the callback function
+        fun setCallback(callback: (String) -> Unit) {
+            this.callback = callback
+        }
+    }
+
 
     override fun onKeybind() {
         allowEdits = !allowEdits
@@ -82,29 +137,53 @@ object DungeonWaypoints : Module(
 
     @SubscribeEvent
     fun onInteract(event: PlayerInteractEvent) {
-        if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || event.world != mc.theWorld || !allowEdits) return
-        val room = DungeonUtils.currentRoom?.room ?: return
-        val vec = Vec3(event.pos)
-            .subtractVec(x = room.x, z = room.z)
-            .rotateToNorth(room.rotation)
+        if (event.world != mc.theWorld || !allowEdits) return
+        if(event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK && !Minecraft.getMinecraft().thePlayer.isSneaking) {
+            val room = DungeonUtils.currentRoom?.room ?: return
+            val vec = Vec3(event.pos)
+                .subtractVec(x = room.x, z = room.z)
+                .rotateToNorth(room.rotation)
 
-        val waypoints =
-            if (room.data.type != RoomType.NORMAL)
-                DungeonWaypointConfig.waypoints.getOrPut(room.data.name) { mutableListOf() }
-            else
-                DungeonWaypointConfig.waypoints.getOrPut(room.core.toString()) { mutableListOf() }
+            val waypoints =
+                if (room.data.type != RoomType.NORMAL)
+                    DungeonWaypointConfig.waypoints.getOrPut(room.data.name) { mutableListOf() }
+                else
+                    DungeonWaypointConfig.waypoints.getOrPut(room.core.toString()) { mutableListOf() }
 
-        if (!waypoints.any { it.toVec3().equal(vec) }) {
-            waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, size, " "))
-            devMessage("Added waypoint at $vec")
-        } else {
-            waypoints.removeIf { it.toVec3().equal(vec) }
-            devMessage("Removed waypoint at $vec")
+            if (!waypoints.any { it.toVec3().equal(vec) }) {
+                waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, size, " "))
+                devMessage("Added waypoint at $vec")
+            } else {
+                waypoints.removeIf { it.toVec3().equal(vec) }
+                devMessage("Removed waypoint at $vec")
+            }
         }
+        if(event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK && Minecraft.getMinecraft().thePlayer.isSneaking) {
+            val room = DungeonUtils.currentRoom?.room ?: return
+            val vec = Vec3(event.pos)
+                .subtractVec(x = room.x, z = room.z)
+                .rotateToNorth(room.rotation)
+
+            val waypoints =
+                if (room.data.type != RoomType.NORMAL)
+                    DungeonWaypointConfig.waypoints.getOrPut(room.data.name) { mutableListOf() }
+                else
+                    DungeonWaypointConfig.waypoints.getOrPut(room.core.toString()) { mutableListOf() }
+            waypoints.removeIf { it.toVec3().equal(vec) }
+
+
+            val gui = GuiSign()
+            gui.setCallback { enteredText ->
+                waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, size, enteredText))
+                DungeonWaypointConfig.saveConfig()
+                DungeonUtils.setWaypoints()
+            }
+            Minecraft.getMinecraft().displayGuiScreen(gui)
+        }
+
         DungeonWaypointConfig.saveConfig()
         DungeonUtils.setWaypoints()
     }
-
     fun DungeonWaypoint.toVec3() = Vec3(x, y, z)
     fun DungeonWaypoint.toBlockPos() = BlockPos(x, y, z)
 
