@@ -41,10 +41,30 @@ object DungeonWaypoints : Module(
     tag = TagType.NEW
 ) {
     private var allowEdits: Boolean by BooleanSetting("Allow Edits", false)
-    private val color: Color by ColorSetting("Color", default = Color.GREEN, description = "The color of the next waypoint you place.", allowAlpha = true)
-    private val filled: Boolean by BooleanSetting("Filled", false, description = "If the next waypoint you place should be 'filled'.")
-    private val throughWalls: Boolean by BooleanSetting("Through walls", false, description = "If the next waypoint you place should be visible through walls.")
-    private val size: Double by NumberSetting<Double>("Size", 1.0, .125, 1.0, increment = 0.125, description = "The size of the next waypoint you place.")
+    private val color: Color by ColorSetting(
+        "Color",
+        default = Color.GREEN,
+        description = "The color of the next waypoint you place.",
+        allowAlpha = true
+    )
+    private val filled: Boolean by BooleanSetting(
+        "Filled",
+        false,
+        description = "If the next waypoint you place should be 'filled'."
+    )
+    private val throughWalls: Boolean by BooleanSetting(
+        "Through walls",
+        false,
+        description = "If the next waypoint you place should be visible through walls."
+    )
+    private val size: Double by NumberSetting<Double>(
+        "Size",
+        1.0,
+        .125,
+        1.0,
+        increment = 0.125,
+        description = "The size of the next waypoint you place."
+    )
     private val resetButton: () -> Unit by ActionSetting("Reset Current Room") {
         val room = DungeonUtils.currentRoom ?: return@ActionSetting modMessage("Room not found!!!")
 
@@ -54,7 +74,8 @@ object DungeonWaypoints : Module(
         } else {
             var changedWaypoints = false
             room.positions.forEach {
-                if (DungeonWaypointConfig.waypoints[it.core.toString()]?.removeAll { true } == true) changedWaypoints = true
+                if (DungeonWaypointConfig.waypoints[it.core.toString()]?.removeAll { true } == true) changedWaypoints =
+                    true
             }
             if (!changedWaypoints) return@ActionSetting modMessage("Current room does not have any waypoints!")
         }
@@ -64,7 +85,17 @@ object DungeonWaypoints : Module(
     }
     private val debugWaypoint: Boolean by BooleanSetting("Debug Waypoint", false).withDependency { DevPlayers.isDev }
 
-    data class DungeonWaypoint(val x: Double, val y: Double, val z: Double, val color: Color, val filled: Boolean, val depth: Boolean, val size: Double, val title: String?)
+    data class DungeonWaypoint(
+        val x: Double,
+        val y: Double,
+        val z: Double,
+        val color: Color,
+        val filled: Boolean,
+        val depth: Boolean,
+        val size: Double,
+        val title: String?
+    )
+
     class GuiSign : GuiScreen() {
 
         private lateinit var textField: GuiTextField
@@ -126,7 +157,7 @@ object DungeonWaypoints : Module(
     fun onRender(event: RenderWorldLastEvent) {
         DungeonUtils.currentRoom?.waypoints?.forEach {
             Renderer.drawBox(it.toAABB(it.size), it.color, fillAlpha = if (it.filled) .8 else 0, depth = it.depth)
-            Renderer.drawStringInWorld(it.title ?: "", Vec3(it.x+0.5,it.y+0.5,it.z+0.5))
+            Renderer.drawStringInWorld(it.title ?: "", Vec3(it.x + 0.5, it.y + 0.5, it.z + 0.5))
         }
 
         if (debugWaypoint) {
@@ -137,55 +168,67 @@ object DungeonWaypoints : Module(
 
     @SubscribeEvent
     fun onInteract(event: PlayerInteractEvent) {
-        if (event.world != mc.theWorld || !allowEdits) return
-        if(event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK && !Minecraft.getMinecraft().thePlayer.isSneaking) {
-            val room = DungeonUtils.currentRoom?.room ?: return
-            val vec = Vec3(event.pos)
-                .subtractVec(x = room.x, z = room.z)
-                .rotateToNorth(room.rotation)
+        if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || event.world != mc.theWorld || !allowEdits) return
+        val room = DungeonUtils.currentRoom?.room ?: return
+        val vec = Vec3(event.pos)
+            .subtractVec(x = room.x, z = room.z)
+            .rotateToNorth(room.rotation)
 
-            val waypoints =
-                if (room.data.type != RoomType.NORMAL)
-                    DungeonWaypointConfig.waypoints.getOrPut(room.data.name) { mutableListOf() }
-                else
-                    DungeonWaypointConfig.waypoints.getOrPut(room.core.toString()) { mutableListOf() }
-
-            if (!waypoints.any { it.toVec3().equal(vec) }) {
-                waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, size, " "))
-                devMessage("Added waypoint at $vec")
-            } else {
-                waypoints.removeIf { it.toVec3().equal(vec) }
-                devMessage("Removed waypoint at $vec")
-            }
-        }
-        if(event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK && Minecraft.getMinecraft().thePlayer.isSneaking) {
-            val room = DungeonUtils.currentRoom?.room ?: return
-            val vec = Vec3(event.pos)
-                .subtractVec(x = room.x, z = room.z)
-                .rotateToNorth(room.rotation)
-
-            val waypoints =
-                if (room.data.type != RoomType.NORMAL)
-                    DungeonWaypointConfig.waypoints.getOrPut(room.data.name) { mutableListOf() }
-                else
-                    DungeonWaypointConfig.waypoints.getOrPut(room.core.toString()) { mutableListOf() }
-            waypoints.removeIf { it.toVec3().equal(vec) }
-
-
+        val waypoints =
+            if (room.data.type != RoomType.NORMAL)
+                DungeonWaypointConfig.waypoints.getOrPut(room.data.name) { mutableListOf() }
+            else
+                DungeonWaypointConfig.waypoints.getOrPut(room.core.toString()) { mutableListOf() }
+        if (mc.thePlayer.isSneaking) {
             val gui = GuiSign()
             gui.setCallback { enteredText ->
-                waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, size, enteredText))
+                waypoints.removeIf { it.toVec3().equal(vec) }
+                waypoints.add(
+                    DungeonWaypoint(
+                        vec.xCoord,
+                        vec.yCoord,
+                        vec.zCoord,
+                        color.copy(),
+                        filled,
+                        !throughWalls,
+                        size,
+                        enteredText
+                    )
+                )
                 DungeonWaypointConfig.saveConfig()
                 DungeonUtils.setWaypoints()
             }
-            Minecraft.getMinecraft().displayGuiScreen(gui)
+            mc.displayGuiScreen(gui)
+        } else if (waypoints.removeIf { it.toVec3().equal(vec) }) {
+            devMessage("Removed waypoint at $vec")
+        } else {
+            waypoints.add(
+                DungeonWaypoint(
+                    vec.xCoord,
+                    vec.yCoord,
+                    vec.zCoord,
+                    color.copy(),
+                    filled,
+                    !throughWalls,
+                    size,
+                    " "
+                )
+            )
+            devMessage("Added waypoint at $vec")
         }
-
         DungeonWaypointConfig.saveConfig()
         DungeonUtils.setWaypoints()
     }
+
     fun DungeonWaypoint.toVec3() = Vec3(x, y, z)
     fun DungeonWaypoint.toBlockPos() = BlockPos(x, y, z)
 
-    fun DungeonWaypoint.toAABB(size: Double) = AxisAlignedBB(x + .5 - (size/2), y + .5 - (size/2), z + .5 - (size/2), x + .5 + (size/2), y + .5 + (size/2), z + .5 + (size/2)).expand(.01, .01, .01)
+    fun DungeonWaypoint.toAABB(size: Double) = AxisAlignedBB(
+        x + .5 - (size / 2),
+        y + .5 - (size / 2),
+        z + .5 - (size / 2),
+        x + .5 + (size / 2),
+        y + .5 + (size / 2),
+        z + .5 + (size / 2)
+    ).expand(.01, .01, .01)
 }
