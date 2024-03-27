@@ -2,7 +2,6 @@ package me.odinmain.features.impl.floor7
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.dungeon.BlessingDisplay
-import me.odinmain.features.impl.floor7.DragonTimer
 import me.odinmain.features.impl.floor7.WitherDragons.easyPower
 import me.odinmain.features.impl.floor7.WitherDragons.normalPower
 import me.odinmain.features.impl.floor7.WitherDragons.paulBuff
@@ -15,7 +14,6 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils.Classes
 import me.odinmain.utils.skyblock.modMessage
 
 object DragonPriority {
-
     var firstDragons = false
     fun dragonPrioritySpawn() {
         val spawningDragons = WitherDragonsEnum.entries.filter { it.spawning }.toMutableList()

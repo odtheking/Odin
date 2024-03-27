@@ -112,6 +112,7 @@ object WitherDragons : Module(
             lastDragonDeath = ""
             DragonPriority.firstDragons = false
         }
+
         onPacket(S2APacketParticles::class.java, { DungeonUtils.getPhase() == Island.M7P5 }) {
             handleSpawnPacket(it)
         }
