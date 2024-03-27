@@ -16,6 +16,7 @@ import me.odinmain.utils.rotateToNorth
 import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.tiles.RoomType
+import me.odinmain.utils.skyblock.dungeon.tiles.Rotations
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.subtractVec
 import me.odinmain.utils.toAABB
@@ -83,6 +84,7 @@ object DungeonWaypoints : Module(
     fun onInteract(event: PlayerInteractEvent) {
         if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || event.world != mc.theWorld || !allowEdits) return
         val room = DungeonUtils.currentRoom?.room ?: return
+        val distinct = DungeonUtils.currentRoom?.positions?.distinctBy { it.core }?.firstOrNull() ?: return
         val vec = Vec3(event.pos)
             .subtractVec(x = room.x, z = room.z)
             .rotateToNorth(room.rotation)
@@ -91,7 +93,7 @@ object DungeonWaypoints : Module(
             if (room.data.type != RoomType.NORMAL)
                 DungeonWaypointConfig.waypoints.getOrPut(room.data.name) { mutableListOf() }
             else
-                DungeonWaypointConfig.waypoints.getOrPut(room.core.toString()) { mutableListOf() }
+                DungeonWaypointConfig.waypoints.getOrPut(distinct.core.toString()) { mutableListOf() }
 
         if (!waypoints.any { it.toVec3().equal(vec) }) {
             waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, size))
