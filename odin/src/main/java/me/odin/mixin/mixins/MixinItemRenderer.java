@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(value = ItemRenderer.class, priority = 1)
+@Mixin(value = ItemRenderer.class, priority = 9999)
 public abstract class MixinItemRenderer {
 
     @Final
