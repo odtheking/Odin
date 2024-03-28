@@ -114,6 +114,7 @@ object DungeonUtils {
             } ?: Rotations.NONE
             devMessage("Found rotation ${it.room.rotation}")
         }
+        modMessage(currentRoomName)
         setWaypoints()
     }
 

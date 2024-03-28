@@ -1,17 +1,21 @@
 package me.odinmain.features.impl.dungeon
 
+import com.sun.org.apache.xpath.internal.operations.Bool
+import me.odinmain.OdinMain
 import me.odinmain.config.DungeonWaypointConfig
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.ActionSetting
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.utils.*
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.tiles.RoomType
@@ -27,6 +31,8 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.GuiTextField
+import net.minecraft.client.gui.ScaledResolution
+import net.minecraftforge.client.event.RenderGameOverlayEvent
 
 /**
  * Custom Waypoints for Dungeons
@@ -39,18 +45,11 @@ object DungeonWaypoints : Module(
     tag = TagType.NEW
 ) {
     private var allowEdits: Boolean by BooleanSetting("Allow Edits", false)
-    private val color: Color by ColorSetting(
-        "Color", default = Color.GREEN, description = "The color of the next waypoint you place.", allowAlpha = true
-    )
-    private val filled: Boolean by BooleanSetting(
-        "Filled", false, description = "If the next waypoint you place should be 'filled'."
-    )
-    private val throughWalls: Boolean by BooleanSetting(
-        "Through walls", false, description = "If the next waypoint you place should be visible through walls."
-    )
-    private val size: Double by NumberSetting<Double>(
-        "Size", 1.0, .125, 1.0, increment = 0.125, description = "The size of the next waypoint you place."
-    )
+    private val editText: Boolean by BooleanSetting("Edit Text", false, description = "Displays text under your crosshair telling you when you are editing waypoints.")
+    private val color: Color by ColorSetting("Color", default = Color.GREEN, description = "The color of the next waypoint you place.", allowAlpha = true)
+    private val filled: Boolean by BooleanSetting("Filled", false, description = "If the next waypoint you place should be 'filled'.")
+    private val throughWalls: Boolean by BooleanSetting("Through walls", false, description = "If the next waypoint you place should be visible through walls.")
+    private val size: Double by NumberSetting("Size", 1.0, .125, 1.0, increment = 0.01, description = "The size of the next waypoint you place.")
     private val resetButton: () -> Unit by ActionSetting("Reset Current Room") {
         val room = DungeonUtils.currentRoom ?: return@ActionSetting modMessage("Room not found!!!")
 
@@ -155,10 +154,20 @@ object DungeonWaypoints : Module(
     }
 
     @SubscribeEvent
+    fun onRenderOverlay(event: RenderGameOverlayEvent.Post) {
+        if (mc.currentScreen != null || event.type != RenderGameOverlayEvent.ElementType.ALL || !allowEdits || !editText) return
+        val sr = ScaledResolution(mc)
+        scale(2f / sr.scaleFactor, 2f / sr.scaleFactor, 1f)
+        mc.fontRendererObj.drawString("Editing Waypoints", mc.displayWidth / 4 - mc.fontRendererObj.getStringWidth("Editing Waypoints") / 2, mc.displayHeight / 4 + 10, Color.WHITE.withAlpha(.5f).rgba)
+        scale(sr.scaleFactor / 2f, sr.scaleFactor / 2f, 1f)
+    }
+
+    @SubscribeEvent
     fun onInteract(event: PlayerInteractEvent) {
         if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || event.world != mc.theWorld || !allowEdits) return
         val room = DungeonUtils.currentRoom?.room ?: return
-        val distinct = DungeonUtils.currentRoom?.positions?.distinctBy { it.core }?.firstOrNull() ?: return
+        val distinct = DungeonUtils.currentRoom?.positions?.distinctBy { it.core }?.firstOrNull()?.core ?: return
+        modMessage(distinct)
         val vec = Vec3(event.pos).subtractVec(x = room.x, z = room.z).rotateToNorth(room.rotation)
 
         val waypoints =
