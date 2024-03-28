@@ -116,6 +116,11 @@ object RenderUtils {
         translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
     }
 
+    fun depth(depth: Boolean) {
+        if (depth) GlStateManager.enableDepth() else GlStateManager.disableDepth()
+        GlStateManager.depthMask(depth)
+    }
+
     fun postDraw() {
         GlStateManager.disableBlend()
         GlStateManager.enableTexture2D()
@@ -551,15 +556,8 @@ object RenderUtils {
             box = BoxWithClass(min(screenPos.x, box.x), min(screenPos.y, box.y), max(screenPos.x, box.w), max(screenPos.y, box.h))
         }
 
-        if ((box.x > 0f && box.y > 0f && box.x <= mc.displayWidth && box.y <= mc.displayHeight) || (box.w > 0 && box.h > 0 && box.w <= mc.displayWidth && box.h <= mc.displayHeight)) {
-            color.bind()
-            GL11.glBegin(2)
-            GL11.glVertex2f(box.x, box.y)
-            GL11.glVertex2f(box.x, box.h)
-            GL11.glVertex2f(box.w, box.h)
-            GL11.glVertex2f(box.w, box.y)
-            GL11.glEnd()
-        }
+        if ((box.x > 0f && box.y > 0f && box.x <= mc.displayWidth && box.y <= mc.displayHeight) || (box.w > 0 && box.h > 0 && box.w <= mc.displayWidth && box.h <= mc.displayHeight))
+            rectangleOutline(box.x, box.y, box.w - box.x, box.h - box.y, color, 1f, lineWidth)
 
         GL11.glEnable(GL11.GL_DEPTH_TEST)
         GL11.glMatrixMode(GL11.GL_PROJECTION)
