@@ -72,7 +72,7 @@
 
                 if (mode == 2)
                     Renderer.drawBox(it.entityBoundingBox, color, thickness, depth = !renderThrough, fillAlpha = 0)
-                else if (mode == 3)
+                else if (mode == 3 && (mc.thePlayer.canEntityBeSeen(it) || renderThrough))
                     Renderer.draw2DEntity(it, thickness, color)
             }}
         }
