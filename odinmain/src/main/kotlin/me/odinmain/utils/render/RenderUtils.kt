@@ -559,6 +559,7 @@ object RenderUtils {
         if ((box.x > 0f && box.y > 0f && box.x <= mc.displayWidth && box.y <= mc.displayHeight) || (box.w > 0 && box.h > 0 && box.w <= mc.displayWidth && box.h <= mc.displayHeight))
             rectangleOutline(box.x, box.y, box.w - box.x, box.h - box.y, color, 1f, lineWidth)
 
+        GlStateManager.disableBlend()
         GL11.glEnable(GL11.GL_DEPTH_TEST)
         GL11.glMatrixMode(GL11.GL_PROJECTION)
         GlStateManager.popMatrix()

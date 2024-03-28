@@ -41,19 +41,7 @@ object RenderOptimizer : Module(
     private const val HEALER_FAIRY_TEXTURE = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTZjM2UzMWNmYzY2NzMzMjc1YzQyZmNmYjVkOWE0NDM0MmQ2NDNiNTVjZDE0YzljNzdkMjczYTIzNTIifX19"
     private const val SOUL_WEAVER_TEXTURE = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmYyNGVkNjg3NTMwNGZhNGExZjBjNzg1YjJjYjZhNmE3MjU2M2U5ZjNlMjRlYTU1ZTE4MTc4NDUyMTE5YWE2NiJ9fX0="
 
-    private val dungeonMobSpawns = setOf(
-        "Lurker",
-        "Dreadlord",
-        "Souleater",
-        "Zombie",
-        "Skeleton",
-        "Skeletor",
-        "Sniper",
-        "Super Archer",
-        "Spider",
-        "Fels",
-        "Withermancer"
-    )
+    private val dungeonMobSpawns = setOf("Lurker", "Dreadlord", "Souleater", "Zombie", "Skeleton", "Skeletor", "Sniper", "Super Archer", "Spider", "Fels", "Withermancer")
     @SubscribeEvent
     fun spawnObject(event: ReceivePacketEvent) {
         if (event.packet !is S0EPacketSpawnObject || event.packet.type != 70 || !fallingBlocks) return
@@ -76,7 +64,6 @@ object RenderOptimizer : Module(
         if (event.entity !is EntityArmorStand || !event.entity.isInvisible || removeArmorStands) return
         val inventoryList = event.entity.inventory.filterNotNull()
         if (inventoryList.size != 1 || inventoryList.first().item !is ItemBlock) return
-        // modMessage("${event.entity.name} has been removed because it's an armor stand with a block in its hand.")
         event.entity.setDead()
     }
 
@@ -112,12 +99,12 @@ object RenderOptimizer : Module(
     }
 
     private fun handleHealerFairy(entity: Entity) {
-        val armorStand = entity as? EntityArmorStand
-        if (armorStand?.heldItem == null) return
-        if (DungeonUtils.inDungeons && armorStand.heldItem?.item == Items.skull
-            && getHealerFairyTextureValue(armorStand) == (HEALER_FAIRY_TEXTURE)) {
-            armorStand.setDead()
-        }
+        val armorStand = entity as? EntityArmorStand ?: return
+        if (armorStand.heldItem == null) return
+        if (
+            DungeonUtils.inDungeons && armorStand.heldItem?.item == Items.skull
+            && getHealerFairyTextureValue(armorStand) == (HEALER_FAIRY_TEXTURE)
+        ) armorStand.setDead()
     }
 
     private fun handleSoulWeaver(entity: Entity) {
