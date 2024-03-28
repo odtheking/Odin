@@ -44,13 +44,8 @@ object CanClip : Module(
 
         val x = abs(mc.thePlayer.posX % 1)
         val z = abs(mc.thePlayer.posZ % 1)
-
-        canClip = if (x in 0.235..0.265 || x in 0.735..0.765 || z in 0.235..0.265 || z in 0.735..0.765) {
-            if (!canClip) animation.start()
-            true
-        } else {
-            if (canClip) animation.start()
-            false
-        }
+        val prev = canClip
+        canClip = x in 0.235..0.265 || x in 0.735..0.765 || z in 0.235..0.265 || z in 0.735..0.765
+        if (prev != canClip) animation.start()
     }
 }

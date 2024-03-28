@@ -29,15 +29,12 @@ object MobSpawn: Module(
 
     @SubscribeEvent
     fun postMeta(event: PostEntityMetadata) {
-        if (mc.theWorld.getEntityByID(event.packet.entityId).name.contains(mobName)) {
-            if (!time.hasTimePassed()) return
+        if (!mc.theWorld.getEntityByID(event.packet.entityId).name.contains(mobName) || !time.hasTimePassed()) return
+        time.update()
 
-            time.update()
-
-            modMessage("§5$mobName has spawned!")
-            PlayerUtils.alert("§5$mobName has spawned!", playSound = !soundOnly)
-            if (ac) sendChatMessage("$mobName spawned at: x: ${PlayerUtils.posX.floor()}, y: ${PlayerUtils.posY.floor()}, z: ${PlayerUtils.posZ.floor()}")
-            if (pc) partyMessage("$mobName spawned at: x: ${PlayerUtils.posX.floor()}, y: ${PlayerUtils.posY.floor()}, z: ${PlayerUtils.posZ.floor()}")
-        }
+        modMessage("§5$mobName has spawned!")
+        PlayerUtils.alert("§5$mobName has spawned!", playSound = !soundOnly)
+        if (ac) sendChatMessage("$mobName spawned at: x: ${PlayerUtils.posX.floor()}, y: ${PlayerUtils.posY.floor()}, z: ${PlayerUtils.posZ.floor()}")
+        if (pc) partyMessage("$mobName spawned at: x: ${PlayerUtils.posX.floor()}, y: ${PlayerUtils.posY.floor()}, z: ${PlayerUtils.posZ.floor()}")
     }
 }

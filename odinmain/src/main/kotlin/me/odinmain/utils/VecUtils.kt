@@ -12,7 +12,7 @@ import kotlin.math.*
 
 
 data class Vec2(val x: Int, val z: Int)
-data class Vec2f(val x: Float, val y: Float)
+data class Vec2f(var x: Float, var y: Float)
 data class Vec3f(val x: Float, val y: Float, val z: Float)
 data class Vec4f(val x: Float, val y: Float, val z: Float, val w: Float)
 

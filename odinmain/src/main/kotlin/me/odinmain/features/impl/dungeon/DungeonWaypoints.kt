@@ -9,17 +9,14 @@ import me.odinmain.features.settings.impl.ActionSetting
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.utils.equal
+import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.rotateToNorth
 import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.tiles.RoomType
 import me.odinmain.utils.skyblock.dungeon.tiles.Rotations
 import me.odinmain.utils.skyblock.modMessage
-import me.odinmain.utils.subtractVec
-import me.odinmain.utils.toAABB
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
@@ -144,6 +141,7 @@ object DungeonWaypoints : Module(
 
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
+        startProfile("Dungeon Waypoints")
         DungeonUtils.currentRoom?.waypoints?.forEach {
             Renderer.drawBox(it.toAABB(it.size), it.color, fillAlpha = if (it.filled) .8 else 0, depth = it.depth)
             Renderer.drawStringInWorld(it.title ?: "", Vec3(it.x + 0.5, it.y + 0.5, it.z + 0.5))
@@ -153,6 +151,7 @@ object DungeonWaypoints : Module(
             val room = DungeonUtils.currentRoom?.room ?: return
             Renderer.drawBox(Vec3(room.x.toDouble(), 70.0, room.z.toDouble()).toAABB(), Color.GREEN, fillAlpha = 0)
         }
+        endProfile()
     }
 
     @SubscribeEvent

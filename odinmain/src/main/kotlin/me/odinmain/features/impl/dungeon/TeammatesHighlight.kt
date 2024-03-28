@@ -6,6 +6,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.addVec
+import me.odinmain.utils.profile
 import me.odinmain.utils.render.OutlineUtils
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
@@ -24,6 +25,7 @@ object TeammatesHighlight : Module(
     private val thickness: Float by NumberSetting("Line Width", 4f, 1.0, 10.0, 0.5, description = "The thickness of the outline.")
     private val whenVisible: Boolean by BooleanSetting("When Visible", true, description = "Highlights teammates only when they are visible.")
     private val inBoss: Boolean by BooleanSetting("In Boss", true, description = "Highlights teammates in boss rooms.")
+
     @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
         if (!DungeonUtils.inDungeons || (!inBoss && DungeonUtils.inBoss) || !outline) return
@@ -32,7 +34,7 @@ object TeammatesHighlight : Module(
 
         if (!whenVisible && mc.thePlayer.canEntityBeSeen(teammate.entity)) return
 
-        OutlineUtils.outlineEntity(event, thickness, teammate.clazz.color, true)
+        profile("Highlight Dungeon Teammates") { OutlineUtils.outlineEntity(event, thickness, teammate.clazz.color, true) }
     }
 
     @SubscribeEvent

@@ -42,12 +42,16 @@ object ArrowHit : Module(
     fun onSound(event: SoundSourceEvent) {
         if (event.name != "random.successful_hit") return
         arrowCount += 1
-        if (arrowCount >= (resetCount.toIntOrNull() ?: 9999) && resetOnNumber) arrowCount = 0
-        if (resetArrowClock.hasTimePassed() && resetOnTime) arrowCount = 0
+        if (
+            (arrowCount >= (resetCount.toIntOrNull() ?: 9999) && resetOnNumber) ||
+            (resetArrowClock.hasTimePassed() && resetOnTime)
+        ) arrowCount = 0
     }
 
     init {
-        onWorldLoad { if (resetOnWorldLoad) arrowCount = 0  }
+        onWorldLoad {
+            if (resetOnWorldLoad) arrowCount = 0
+        }
     }
 
     override fun onKeybind() {

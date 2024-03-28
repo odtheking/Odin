@@ -35,13 +35,12 @@ object TicTacToe {
      * Taken from Skytils.
      */
     fun tttTick(event: TickEvent.ClientTickEvent) {
-        if (!inDungeons) return
-        if (event.phase != TickEvent.Phase.START || mc.thePlayer == null || mc.theWorld == null) return
+        if (!inDungeons || event.phase != TickEvent.Phase.START || mc.thePlayer == null || mc.theWorld == null) return
+
         if (!currentRoomName.contains("Tic Tac Toe")) {
             bestMove = null
             return
         }
-
 
         val frames = mc.theWorld.loadedEntityList.filter {
             if (it !is EntityItemFrame) return@filter false
@@ -53,8 +52,7 @@ object TicTacToe {
             val colorInt: Int = (mapData.colors[8256] and 255.toByte()).toInt()
             if (colorInt != 114 && colorInt != 33) return@filter false
             val blockBehind = realPos.offset(it.facingDirection.opposite, 1)
-            if (mc.theWorld.getBlockState(blockBehind).block != Blocks.iron_block) return@filter false
-            return@filter true
+            return@filter mc.theWorld.getBlockState(blockBehind).block == Blocks.iron_block
         }
         try {
             if (topLeft == null || roomFacing == null || board == null) {
@@ -152,20 +150,14 @@ object TicTacToe {
 
 
     fun tttRender() {
-        if (!inDungeons || bestMove == null) return
+        if (!inDungeons) return
 
-        Renderer.drawBox(
-            bestMove!!.toAABB(),
-            Color.GREEN,
-            fillAlpha = 0,
-            depth = true
-        )
+        Renderer.drawBox(bestMove?.toAABB() ?: return, Color.GREEN, fillAlpha = 0, depth = true)
     }
 
     fun tttRightClick(event: ClickEvent.RightClickEvent) {
         if (!currentRoomName.contains("Tic Tac Toe") || !blockWrongClicks || mc.objectMouseOver.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK || mc.theWorld.getBlockState(mc.objectMouseOver.blockPos).block != Blocks.stone_button) return
-        if (bestMove != null && !mc.objectMouseOver.blockPos.equals(bestMove)) event.isCanceled = true
-        if (bestMove == null) event.isCanceled = true
+        if (bestMove == null || mc.objectMouseOver.blockPos != bestMove) event.isCanceled = true
     }
 
     /**
@@ -181,19 +173,19 @@ object TicTacToe {
 
         /**
          * Check to see who's turn it is.
-         * @return          the player who's turn it is
+         * @return the player who's turn it is
          */
         var turn: State = State.X
 
         /**
          * Check to see who won.
-         * @return          the player who won (or Blank if the game is a draw)
+         * @return the player who won (or Blank if the game is a draw)
          */
         var winner: State? = null
 
         /**
          * Get the indexes of all the positions on the board that are empty.
-         * @return          the empty cells
+         * @return the empty cells
          */
         var availableMoves: HashSet<Int>
             private set
@@ -201,7 +193,7 @@ object TicTacToe {
 
         /**
          * Check to see if the game is over (if there is a winner or a draw).
-         * @return          true if the game is over
+         * @return true if the game is over
          */
         var isGameOver = false
             private set

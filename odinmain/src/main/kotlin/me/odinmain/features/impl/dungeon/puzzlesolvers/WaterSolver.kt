@@ -78,8 +78,7 @@ object WaterSolver {
                 else orderText.plus("${if (orderText.isEmpty()) "" else ", "}${sortedSolutions.indexOf(it) + 1}")
             }
             if (showOrder)
-                Renderer.drawStringInWorld(orderText, Vec3(solution.key.leverPos).addVector(.5, .5, .5),
-                    Color.WHITE, false, scale = .035f)
+                Renderer.drawStringInWorld(orderText, Vec3(solution.key.leverPos).addVector(.5, .5, .5), Color.WHITE, false, scale = .035f)
 
             for (i in solution.key.i until solution.value.size) {
                 val time = solution.value[i]
@@ -90,7 +89,6 @@ object WaterSolver {
                     val remainingTime = openedWater + time * 1000L - System.currentTimeMillis()
                     if (remainingTime > 0) "§e${remainingTime / 1000}s"
                     else "§a§lCLICK ME!"
-
                 }
 
                 Renderer.drawStringInWorld(displayText, Vec3(solution.key.leverPos).addVector(0.5, (i - solution.key.i) * 0.5 + 1.5, 0.5), Color.WHITE, false, depth = false, scale = 0.04f)
@@ -111,7 +109,6 @@ object WaterSolver {
         // Find the piston head block.
         val pistonHeadPos = chestPos!!.offset(roomFacing, 5).up(26)
         if (mc.theWorld.getBlockState(pistonHeadPos).block !== Blocks.piston_head) return
-
 
         // If the piston head block is found, then we are in the water room.
         inWaterRoom = true
@@ -195,8 +192,11 @@ object WaterSolver {
         PURPLE, ORANGE, BLUE, GREEN, RED;
 
         val isExtended: Boolean
-            get() = if (chestPos == null || roomFacing == null) false else Minecraft.getMinecraft().theWorld.getBlockState(
-                chestPos!!.offset(roomFacing!!.opposite, 3 + ordinal)).block === Blocks.wool
+            get() =
+                if (chestPos == null || roomFacing == null)
+                    false
+                else
+                    mc.theWorld.getBlockState(chestPos?.offset(roomFacing!!.opposite, 3 + ordinal) ?: BlockPos(0,0,0)).block === Blocks.wool
     }
 
     enum class LeverBlock(var i: Int = 0) {
@@ -208,10 +208,10 @@ object WaterSolver {
                 return if (this == WATER) {
                     chestPos!!.offset(roomFacing!!.opposite, 17).up(4)
                 } else {
+                    val facing = roomFacing ?: return null
                     val shiftBy = ordinal % 3 * 5
-                    val leverSide = if (ordinal < 3) roomFacing!!.rotateY() else roomFacing!!.rotateYCCW()
-                    chestPos!!.up(5).offset(leverSide.opposite, 6).offset(roomFacing!!.opposite, 2 + shiftBy)
-                        .offset(leverSide)
+                    val leverSide = if (ordinal < 3) facing.rotateY() else facing.rotateYCCW()
+                    chestPos?.up(5)?.offset(leverSide.opposite, 6)?.offset(facing.opposite, 2 + shiftBy)?.offset(leverSide)
                 }
             }
     }

@@ -16,11 +16,12 @@ object Ragaxe : Module(
     private val alertCancelled: Boolean by BooleanSetting("Alert Cancelled", true, description = "Alerts you when your rag axe is cancelled.")
     @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
-
-        if (event.message.endsWith("CASTING") && alert)
-            PlayerUtils.alert("Casting Rag Axe")
-
-        if(event.message == "Ragnarock was cancelled due to being hit!" && alertCancelled)
-            PlayerUtils.alert("Rag Axe Cancelled")
+        PlayerUtils.alert(
+            when {
+                event.message.endsWith("CASTING") && alert -> "Casting Rag Axe"
+                event.message == "Ragnarock was cancelled due to being hit!" && alertCancelled -> "Rag Axe Cancelled"
+                else -> return
+            }
+        )
     }
 }

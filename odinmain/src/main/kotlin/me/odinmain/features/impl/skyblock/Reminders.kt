@@ -28,7 +28,7 @@ object Reminders : Module(
     private var canWish = true
 
     init {
-        onMessage("[BOSS] Wither King: You.. again?", dragReminder && enabled) {
+        onMessage("[BOSS] Wither King: You.. again?", false, { dragReminder && enabled }) {
             PlayerUtils.alert("§3Swap to edrag!")
         }
 
@@ -55,7 +55,7 @@ object Reminders : Module(
             if (!DungeonUtils.inBoss && !DungeonUtils.isGhost) canWish = true else if (DungeonUtils.inBoss && canWish && !DungeonUtils.isGhost) canWish = false
         }
 
-        onMessage("^(Second Wind Activated!)? ?Your (.+) saved your life!\$", maskAlert && enabled) {
+        onMessage("^(Second Wind Activated!)? ?Your (.+) saved your life!\$", false, { maskAlert && enabled }) {
             PlayerUtils.alert("Mask used!")
             modMessage("Mask used!")
         }
@@ -66,15 +66,16 @@ object Reminders : Module(
         if (DungeonUtils.inBoss || !DungeonUtils.inDungeons || !canWish) return
         DungeonUtils.dungeonTeammates.forEach { entityPlayer ->
             val currentHp = entityPlayer.entity?.health ?: 40f
-            if (currentHp < 40 * (healthPercentage / 100) && !DungeonUtils.isGhost) {
-                if (wishAlert) {
-                    modMessage("§7${entityPlayer.name}§a is at less than §c$healthPercentage% §aHP!")
-                    PlayerUtils.alert("USE WISH")
-                }
-                if (autoWish && !OdinMain.onLegitVersion) {
-                    PlayerUtils.dropItem()
-                    canWish = false
-                }
+
+            if (currentHp > 40 * (healthPercentage / 100) || DungeonUtils.isGhost) return@forEach
+
+            if (wishAlert) {
+                modMessage("§7${entityPlayer.name}§a is at less than §c$healthPercentage% §aHP!")
+                PlayerUtils.alert("USE WISH")
+            }
+            if (autoWish && !OdinMain.onLegitVersion) {
+                PlayerUtils.dropItem()
+                canWish = false
             }
         }
     }
