@@ -431,6 +431,17 @@ fun Vec3.coerceZIn(min: Double, max: Double): Vec3 {
 val S29PacketSoundEffect.pos: Vec3
     get() = Vec3(this.x, this.y, this.z)
 
+val AxisAlignedBB.corners: List<Vec3>
+    get() = listOf(
+        Vec3(minX, minY, minZ), Vec3(minX, maxY, minZ), Vec3(maxX, maxY, minZ), Vec3(maxX, minY, minZ),
+        Vec3(minX, minY, maxZ), Vec3(minX, maxY, maxZ), Vec3(maxX, maxY, maxZ), Vec3(maxX, minY, maxZ)
+    )
+
+operator fun Vec3.unaryMinus(): Vec3 = Vec3(-xCoord, -yCoord, -zCoord)
+
+fun AxisAlignedBB.offset(vec: Vec3) = AxisAlignedBB(
+    this.minX + vec.xCoord, this.minY + vec.yCoord, this.minZ + vec.zCoord, this.maxX + vec.xCoord, this.maxY + vec.yCoord, this.maxZ + vec.zCoord
+)
 
 /**
  * Finds the nearest grass block to the given position.

@@ -1,11 +1,13 @@
 package me.odinmain.utils.render
 
+import gg.essential.universal.UGraphics.GL
 import gg.essential.universal.shader.BlendState
 import gg.essential.universal.shader.UShader
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.*
 import net.minecraft.client.renderer.entity.RenderManager
@@ -67,6 +69,13 @@ object RenderUtils {
      */
     val Entity.renderVec: Vec3
         get() = Vec3(renderX, renderY, renderZ)
+
+    private val viewerVec: Vec3
+        get() = Vec3(renderManager.viewerPosX, renderManager.viewerPosY, renderManager.viewerPosZ)
+
+    fun blendFactor() {
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+    }
 
     /**
      * Gets the rendered bounding box of an entity based on its last tick and current tick positions.
@@ -137,7 +146,7 @@ object RenderUtils {
         GlStateManager.pushMatrix()
         color.bind()
         GlStateManager.translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+        blendFactor()
         if (!depth) GlStateManager.disableDepth()
         GlStateManager.disableTexture2D()
         GlStateManager.disableLighting()
@@ -192,7 +201,7 @@ object RenderUtils {
         GlStateManager.pushMatrix()
         color.bind()
         GlStateManager.translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+        blendFactor()
         if (!depth) GlStateManager.disableDepth()
         GlStateManager.disableTexture2D()
         GlStateManager.disableLighting()
@@ -408,7 +417,7 @@ object RenderUtils {
         scale(-scale, -scale, scale)
         GlStateManager.disableLighting()
         GlStateManager.enableBlend()
-        GlStateManager.blendFunc(770, 771)
+        blendFactor()
 
         val textWidth = mc.fontRendererObj.getStringWidth(text)
 
@@ -469,7 +478,7 @@ object RenderUtils {
         GlStateManager.disableCull()
         GlStateManager.enableBlend()
         GlStateManager.disableLighting()
-        GlStateManager.blendFunc(770, 771)
+        blendFactor()
         GlStateManager.disableTexture2D()
 
         if (phase) GlStateManager.disableDepth()
@@ -514,52 +523,36 @@ object RenderUtils {
     fun draw2D(entity: Entity, lineWidth: Float, color: Color) {
         val mvMatrix = getMatrix(2982)
         val projectionMatrix = getMatrix(2983)
-        GL11.glPushAttrib(8192)
-        GL11.glEnable(3042)
-        GL11.glDisable(3553)
-        GL11.glDisable(2929)
-        GL11.glMatrixMode(5889)
+        val bb = entity.entityBoundingBox.offset(-entity.positionVector).offset(entity.renderVec).offset(-viewerVec)
+        var box = BoxWithClass(Float.MAX_VALUE, Float.MAX_VALUE, -1f,  -1f)
+
+        GL11.glPushAttrib(GL11.GL_S)
+        GL11.glEnable(GL11.GL_BLEND)
+        GL11.glDisable(GL11.GL_TEXTURE_2D)
+        GL11.glDisable(GL11.GL_DEPTH_TEST)
+        GL11.glMatrixMode(GL11.GL_PROJECTION)
         GlStateManager.pushMatrix()
         GL11.glLoadIdentity()
         GL11.glOrtho(0.0, mc.displayWidth.toDouble(), mc.displayHeight.toDouble(), .0, -1.0, 1.0)
-        GL11.glMatrixMode(5888)
+        GL11.glMatrixMode(GL11.GL_MODELVIEW)
         GlStateManager.pushMatrix()
         GL11.glLoadIdentity()
-        GL11.glDisable(2929)
-        GL11.glBlendFunc(770, 771)
+        GL11.glDisable(GL11.GL_DEPTH_TEST)
+        blendFactor()
         GlStateManager.enableTexture2D()
         GlStateManager.depthMask(true)
         GL11.glLineWidth(lineWidth)
-        val renderManager = mc.renderManager
-        val bb = entity.entityBoundingBox
-            .offset(-entity.posX, -entity.posY, -entity.posZ)
-            .offset(entity.renderX, entity.renderY, entity.renderZ
-            ).offset(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
 
-        color.bind()
-        val boxVertices = arrayOf(
-            doubleArrayOf(bb.minX, bb.minY, bb.minZ),
-            doubleArrayOf(bb.minX, bb.maxY, bb.minZ),
-            doubleArrayOf(bb.maxX, bb.maxY, bb.minZ),
-            doubleArrayOf(bb.maxX, bb.minY, bb.minZ),
-            doubleArrayOf(bb.minX, bb.minY, bb.maxZ),
-            doubleArrayOf(bb.minX, bb.maxY, bb.maxZ),
-            doubleArrayOf(bb.maxX, bb.maxY, bb.maxZ),
-            doubleArrayOf(bb.maxX, bb.minY, bb.maxZ)
-        )
-        val box = BoxWithClass(Float.MAX_VALUE, Float.MAX_VALUE, -1f,  -1f)
-        for (boxVertex in boxVertices) {
+        for (boxVertex in bb.corners) {
             val screenPos = worldToScreen(
-                Vec3f(boxVertex[0].toFloat(), boxVertex[1].toFloat(), boxVertex[2].toFloat()),
+                Vec3f(boxVertex.xCoord.toFloat(), boxVertex.yCoord.toFloat(), boxVertex.zCoord.toFloat()),
                 mvMatrix, projectionMatrix, mc.displayWidth, mc.displayHeight
             ) ?: continue
-            box.x = min(screenPos.x, box.x)
-            box.y = min(screenPos.y, box.y)
-            box.w = max(screenPos.x, box.w)
-            box.h = max(screenPos.y, box.h)
+            box = BoxWithClass(min(screenPos.x, box.x), min(screenPos.y, box.y), max(screenPos.x, box.w), max(screenPos.y, box.h))
         }
-        if (box.x > -.1f || box.y > -.1f || box.w <= mc.displayWidth || box.h <= mc.displayHeight) {
-            color.withAlpha(1f).bind()
+
+        if ((box.x > 0f && box.y > 0f && box.x <= mc.displayWidth && box.y <= mc.displayHeight) || (box.w > 0 && box.h > 0 && box.w <= mc.displayWidth && box.h <= mc.displayHeight)) {
+            color.bind()
             GL11.glBegin(2)
             GL11.glVertex2f(box.x, box.y)
             GL11.glVertex2f(box.x, box.h)
@@ -567,10 +560,11 @@ object RenderUtils {
             GL11.glVertex2f(box.w, box.y)
             GL11.glEnd()
         }
-        GL11.glEnable(2929)
-        GL11.glMatrixMode(5889)
+
+        GL11.glEnable(GL11.GL_DEPTH_TEST)
+        GL11.glMatrixMode(GL11.GL_PROJECTION)
         GlStateManager.popMatrix()
-        GL11.glMatrixMode(5888)
+        GL11.glMatrixMode(GL11.GL_MODELVIEW)
         GlStateManager.popMatrix()
         GL11.glPopAttrib()
     }
