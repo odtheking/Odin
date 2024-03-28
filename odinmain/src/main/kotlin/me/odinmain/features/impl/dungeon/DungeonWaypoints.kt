@@ -167,7 +167,6 @@ object DungeonWaypoints : Module(
         if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || event.world != mc.theWorld || !allowEdits) return
         val room = DungeonUtils.currentRoom?.room ?: return
         val distinct = DungeonUtils.currentRoom?.positions?.distinctBy { it.core }?.firstOrNull()?.core ?: return
-        modMessage(distinct)
         val vec = Vec3(event.pos).subtractVec(x = room.x, z = room.z).rotateToNorth(room.rotation)
 
         val waypoints =
