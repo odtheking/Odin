@@ -9,7 +9,6 @@ import me.odinmain.utils.Vec2
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.skyblock.dungeon.tiles.RoomData
 import me.odinmain.utils.skyblock.dungeon.tiles.RoomDataDeserializer
-import me.odinmain.utils.Vec2
 import net.minecraft.block.Block
 import net.minecraft.util.BlockPos
 import java.io.FileNotFoundException
