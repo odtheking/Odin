@@ -16,6 +16,7 @@ data class Vec2f(var x: Float, var y: Float)
 data class Vec3f(val x: Float, val y: Float, val z: Float)
 data class Vec4f(val x: Float, val y: Float, val z: Float, val w: Float)
 
+data class PositionLook(val pos: Vec3, val yaw: Float, val pitch: Float)
 
 operator fun Vec4f.times(mat: Matrix4f): Vec4f {
     return Vec4f(

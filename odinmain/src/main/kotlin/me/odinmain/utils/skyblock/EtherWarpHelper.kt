@@ -34,6 +34,10 @@ object EtherWarpHelper {
         return traverseVoxels(startPos, endPos)
     }
 
+    fun getEtherPos(positionLook: PositionLook): EtherPos {
+        return getEtherPos(positionLook.pos, positionLook.yaw, positionLook.pitch)
+    }
+
     /**
      * Traverses voxels from start to end and returns the first non-air block it hits.
      * @author Bloom

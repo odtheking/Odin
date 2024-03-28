@@ -109,12 +109,11 @@ object DungeonUtils {
             it.room.rotation = Rotations.entries.dropLast(1).find { rotation ->
                 it.positions.any { pos ->
                     getBlockIdAt(pos.x + rotation.x, topLayer, pos.z + rotation.z) == 159 &&
-                            EnumFacing.HORIZONTALS.all { facing -> getBlockIdAt(pos.x + rotation.x + facing.frontOffsetX, topLayer, pos.z + rotation.z + facing.frontOffsetZ).equalsOneOf(159, 0) }
+                    EnumFacing.HORIZONTALS.all { facing -> getBlockIdAt(pos.x + rotation.x + facing.frontOffsetX, topLayer, pos.z + rotation.z + facing.frontOffsetZ).equalsOneOf(159, 0) }
                 }
             } ?: Rotations.NONE
             devMessage("Found rotation ${it.room.rotation}")
         }
-        modMessage(currentRoomName)
         setWaypoints()
     }
 
