@@ -25,17 +25,18 @@ object InvincibilityTimer : Module(
             text("§bBonzo§f: 59t", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
             getTextWidth("Bonzo: 59t", 12f) + 2f to 16f
         } else {
-            if (invincibilityTime.first <= 0) return@HudSetting 0f to 0f
-            if (invincibilityTime.second == "Bonzo") {
-                text("§bBonzo§f: ${invincibilityTime.first }t", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
-            } else if (invincibilityTime.second == "Phoenix") {
-                text("§6Phoenix§f: ${invincibilityTime.first}t", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
+            if (invincibilityTime.time <= 0) return@HudSetting 0f to 0f
+            if (invincibilityTime.type == "Bonzo") {
+                text("§bBonzo§f: ${invincibilityTime.time }t", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
+            } else if (invincibilityTime.type == "Phoenix") {
+                text("§6Phoenix§f: ${invincibilityTime.time}t", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
             }
 
             getTextWidth("Bonzo: 59t", 12f) + 2f to 12f
         }
     }
-    private var invincibilityTime = Pair(0, "")
+    data class Timer(var time: Int, var type: String)
+    private var invincibilityTime = Timer(0, "")
     private val bonzoMaskRegex = Regex("^Your (?:. )?Bonzo's Mask saved your life!$")
     private val phoenixPetRegex = Regex("^Your Phoenix Pet saved you from certain death!$")
     @SubscribeEvent
@@ -43,15 +44,12 @@ object InvincibilityTimer : Module(
         val msg = event.message
         if (!msg.matches(bonzoMaskRegex) && !msg.matches(phoenixPetRegex)) return
 
-        val invincibilityType =
-            if (msg.contains("Bonzo's Mask")) "Bonzo"
-            else "Phoenix"
+        val invincibilityType = if (msg.contains("Bonzo's Mask")) "Bonzo" else "Phoenix"
         if (invincibilityAnnounce) partyMessage("pc $invincibilityType Procced (3s) ")
-        invincibilityTime = Pair(60, invincibilityType)
+        invincibilityTime = Timer(60, invincibilityType)
     }
     @SubscribeEvent
     fun onServerTick(event: ServerTickEvent) {
-        if (invincibilityTime.first > 0)
-            invincibilityTime = Pair(invincibilityTime.first - 1, invincibilityTime.second)
+        invincibilityTime.time--
     }
 }

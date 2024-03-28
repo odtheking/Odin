@@ -7,14 +7,12 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinmain.utils.addVec
-import me.odinmain.utils.noControlCodes
+import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.toAABB
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.util.Vec3
@@ -41,9 +39,9 @@ object InactiveWaypoints : Module(
     init {
         execute(500) {
             if (DungeonUtils.getPhase() != Island.M7P3) return@execute
-            inactiveList = mc.theWorld?.loadedEntityList?.filter { it is EntityArmorStand &&
-                    (it.name.noControlCodes.contains("Inactive", true) ||
-                    it.name.noControlCodes.contains("Not Activated", true)) } ?: emptyList()
+            inactiveList = mc.theWorld?.loadedEntityList?.filter {
+                it is EntityArmorStand && it.name.noControlCodes.containsOneOf("Inactive", "Not Activated", ignoreCase = true)
+            } ?: emptyList()
 
         }
     }
@@ -51,7 +49,7 @@ object InactiveWaypoints : Module(
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (inactiveList.isEmpty()) return
-        inactiveList.forEach {
+        profile("Inactive Waypoints") { inactiveList.forEach {
             var name = it.name.noControlCodes
             if ((name == "Inactive Terminal" && showTerminals) || (name == "Inactive" && showDevices) || (name == "Not Activated" && showLevers)) {
                 name = if (name == "Inactive Terminal") "Terminal" else if (name == "Inactive") "Device" else "Lever"
@@ -62,6 +60,6 @@ object InactiveWaypoints : Module(
                 if (renderBeacon)
                     RenderUtils.drawBeaconBeam(it.positionVector.addVec(-0.5, z = -0.5), color, false)
             }
-        }
+        }}
     }
 }

@@ -31,15 +31,6 @@ object IceFillSolver {
         rPos.add(Vec3(pos.x + 0.5, pos.y + 0.1, pos.z + 0.5))
     }
 
-    private fun getRainbowColor(): Color {
-        val time = System.currentTimeMillis() / 1000.0
-        val frequency = 0.001
-        val r = sin(frequency * time + 0) * 127 + 128
-        val g = sin(frequency * time + 2) * 127 + 128
-        val b = sin(frequency * time + 4) * 127 + 128
-        return Color((r / 255).toFloat(), (g / 255).toFloat(), (b / 255).toFloat())
-    }
-
     fun onRenderWorldLast(color: Color) {
         if (currentPatterns.size == 0 || rPos.size == 0 /*|| DungeonUtils.currentRoomName != "Ice Fill"*/) return
 
@@ -121,7 +112,7 @@ object IceFillSolver {
     }
 
     fun checkRotation(pos: Vec3i, floor: Int): Rotation? {
-        val a = (floor+1)*2+2
+        val a = ((floor + 1) * 2) + 2
         if      (getBlockIdAt(pos.x + a, pos.y, pos.z) == 109) return Rotation.EAST
         else if (getBlockIdAt(pos.x - a, pos.y, pos.z) == 109) return Rotation.WEST
         else if (getBlockIdAt(pos.x, pos.y, pos.z + a) == 109) return Rotation.SOUTH
@@ -137,6 +128,4 @@ object IceFillSolver {
         rPos = ArrayList()
     }
 }
-enum class Rotation {
-    EAST, WEST, SOUTH, NORTH
-}
+enum class Rotation { EAST, WEST, SOUTH, NORTH }

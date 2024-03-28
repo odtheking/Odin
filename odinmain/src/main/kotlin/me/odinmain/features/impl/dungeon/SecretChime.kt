@@ -38,30 +38,15 @@ object SecretChime : Module(
 
     private var lastPlayed = System.currentTimeMillis()
     private val drops = listOf(
-        "Health Potion VIII Splash Potion", //"§5Health Potion VIII Splash Potion"
-        "Healing Potion 8 Splash Potion",
-        "Healing Potion VIII Splash Potion",
-        "Decoy", //"§aDecoy"
-        "Inflatable Jerry", //  "§fInflatable Jerry"
-        "Spirit Leap", // "§9Spirit Leap"
-        "Trap", // "§aTrap"
-        "Training Weights", // "§aTraining Weights"
-        "Defuse Kit", // "§aDefuse Kit"
-        "Dungeon Chest Key", // "§9Dungeon Chest Key"
-        "Treasure Talisman", // Name: "§9Treasure Talisman"
-        "Revive Stone",
+        "Health Potion VIII Splash Potion", "Healing Potion 8 Splash Potion", "Healing Potion VIII Splash Potion",
+        "Decoy", "Inflatable Jerry", "Spirit Leap", "Trap", "Training Weights", "Defuse Kit", "Dungeon Chest Key", "Treasure Talisman", "Revive Stone",
     )
 
-    /**
-     * Registers right-clicking a secret.
-     */
     @SubscribeEvent
     fun onInteract(event: PlayerInteractEvent) {
-        if (!DungeonUtils.inDungeons || event.pos == null) return
+        if (!DungeonUtils.inDungeons || event.pos == null || !DungeonUtils.isSecret(mc.theWorld?.getBlockState(event.pos) ?: return, event.pos)) return
 
-        if (DungeonUtils.isSecret(mc.theWorld?.getBlockState(event.pos) ?: return, event.pos)) {
-            playSecretSound()
-        }
+        playSecretSound()
     }
 
     /**
@@ -85,12 +70,9 @@ object SecretChime : Module(
     }
 
     private fun playSecretSound() {
-        if (System.currentTimeMillis() - lastPlayed > 10) {
-            val sound = if (sound == defaultSounds.size - 1) {
-                customSound
-            } else defaultSounds[sound]
-            PlayerUtils.playLoudSound(sound, volume, pitch)
-            lastPlayed = System.currentTimeMillis()
-        }
+        if (System.currentTimeMillis() - lastPlayed <= 10) return
+        val sound = if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound]
+        PlayerUtils.playLoudSound(sound, volume, pitch)
+        lastPlayed = System.currentTimeMillis()
     }
 }

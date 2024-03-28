@@ -10,6 +10,7 @@ import me.odinmain.features.settings.impl.ActionSetting
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinmain.utils.profile
 import me.odinmain.utils.render.Color
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
@@ -66,10 +67,12 @@ object PuzzleSolvers : Module(
 
     @SubscribeEvent
     fun onWorldRender(event: RenderWorldLastEvent) {
-        if (waterSolver) WaterSolver.waterRender()
-        if (tpMaze) TPMaze.tpRender()
-        if (tttSolver) TicTacToe.tttRender()
-        if (iceFillSolver) IceFillSolver.onRenderWorldLast(iceFillColor)
+        profile("Puzzle Solvers") {
+            if (waterSolver) WaterSolver.waterRender()
+            if (tpMaze) TPMaze.tpRender()
+            if (tttSolver) TicTacToe.tttRender()
+            if (iceFillSolver) IceFillSolver.onRenderWorldLast(iceFillColor)
+        }
     }
 
     @SubscribeEvent

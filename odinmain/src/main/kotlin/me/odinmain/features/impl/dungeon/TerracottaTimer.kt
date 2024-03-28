@@ -26,10 +26,7 @@ object TerracottaTimer : Module(
     fun onBlockPacket(event: BlockChangeEvent) {
         if (!DungeonUtils.isFloor(6) || !DungeonUtils.inBoss || !event.update.block.isFlowerPot) return
         terracottaSpawning.add(
-            Terracotta(
-                Vec3(event.pos).addVec(.5, 1.5, .5),
-                if (LocationUtils.currentDungeon?.floor?.isInMM == true) 1200.0 else 1500.0
-            )
+            Terracotta(Vec3(event.pos).addVec(.5, 1.5, .5), if (LocationUtils.currentDungeon?.floor?.isInMM == true) 1200.0 else 1500.0)
         )
     }
 

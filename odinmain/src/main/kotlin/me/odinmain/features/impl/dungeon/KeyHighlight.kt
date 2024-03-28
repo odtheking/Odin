@@ -44,8 +44,7 @@ object KeyHighlight : Module(
         }
 
         val pos = entity.positionVector.addVec(-0.5, 1, -0.5)
-        Renderer.drawBox(pos.toAABB(),
-            color, fillAlpha = 0f, outlineWidth = thickness, depth = OdinMain.onLegitVersion)
+        Renderer.drawBox(pos.toAABB(), color, fillAlpha = 0f, outlineWidth = thickness, depth = OdinMain.onLegitVersion)
     }
 
     init {

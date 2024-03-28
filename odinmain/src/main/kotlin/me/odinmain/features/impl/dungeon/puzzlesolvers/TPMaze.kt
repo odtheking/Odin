@@ -23,12 +23,9 @@ object TPMaze {
         if (portals.size >= 30 || DungeonUtils.currentRoomName != "Teleport Maze") return
         val pos = mc.thePlayer?.position ?: return
         portals = portals.plus(
-            BlockPos.getAllInBox(
-                BlockPos(pos.x + 22, 70, pos.z + 22),
-                BlockPos(pos.x - 22, 69, pos.z - 22)
-            ).filter {
-                mc.theWorld.getBlockState(it).block == Blocks.end_portal_frame
-            })
+            BlockPos.getAllInBox(BlockPos(pos.x + 22, 70, pos.z + 22), BlockPos(pos.x - 22, 69, pos.z - 22))
+                .filter { mc.theWorld.getBlockState(it).block == Blocks.end_portal_frame }
+        )
     }
 
     fun tpPacket(event: S08PacketPlayerPosLook) {
@@ -48,10 +45,7 @@ object TPMaze {
         correctPortals = correctPortals.filter {
             isXZInterceptable(
                 AxisAlignedBB(it.x.toDouble(), it.y.toDouble(), it.z.toDouble(), it.x + 1.0, it.y + 4.0, it.z + 1.0).expand(0.75, 0.0, 0.75),
-                60f,
-                pos,
-                yaw,
-                pitch
+                60f, pos, yaw, pitch
             ) && !it.toAABB().expand(.5, .0, .5).isVecInside(mc.thePlayer.positionVector)
         }
     }

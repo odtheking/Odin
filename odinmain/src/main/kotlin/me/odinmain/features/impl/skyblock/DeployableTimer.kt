@@ -63,7 +63,8 @@ object DeployableTimer : Module(
         val priority: Int,
         val duration: Int,
         val dynamicTexture: DynamicTexture,
-        val range: Float)  {
+        val range: Float
+    ) {
         Warning("ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzMwNjIyMywKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjJlMmJmNmMxZWMzMzAyNDc5MjdiYTYzNDc5ZTU4NzJhYzY2YjA2OTAzYzg2YzgyYjUyZGFjOWYxYzk3MTQ1OCIKICAgIH0KICB9Cn0=",
             "Warning Flare", "§aWarning Flare", 3, 180000, firework, 40f),
 
@@ -73,13 +74,13 @@ object DeployableTimer : Module(
         SOS("ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzM0NzQ4OSwKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzAwNjJjYzk4ZWJkYTcyYTZhNGI4OTc4M2FkY2VmMjgxNWI0ODNhMDFkNzNlYTg3YjNkZjc2MDcyYTg5ZDEzYiIKICAgIH0KICB9Cn0=",
             "SOS Flare", "§l§5SOS Flare", 7, 180000, firework, 40f),
 
-        Radiant("RADIANTPLACEHOLDERTEXTURE", "Radiant", "§aRadiant Orb", 1, 30000, radiantimage, 18f),
+        Radiant("placeholder", "Radiant", "§aRadiant Orb", 1, 30000, radiantimage, 18f),
 
-        Mana("MANAFLUXPLACEHOLDERTEXTURE", "Mana" , "§9Mana Flux Orb", 2, 30000, manaimage, 18f),
+        Mana("placeholder", "Mana" , "§9Mana Flux Orb", 2, 30000, manaimage, 18f),
 
-        Overflux("OVERFLUXPLACEHOLDERTEXTURE", "Overflux", "§5Overflux Orb", 4, 30000, overfluximage, 18f),
+        Overflux("placeholder", "Overflux", "§5Overflux Orb", 4, 30000, overfluximage, 18f),
 
-        Plasma("PLASMAFLUXPLACEHOLDERTEXTURE", "Plasma", "§dPlasmaflux", 5, 60000, plasmaimage, 20f),
+        Plasma("placeholder", "Plasma", "§dPlasmaflux", 5, 60000, plasmaimage, 20f),
     }
 
     class Deployable(val priority: Int, val duration: Int, val entity: EntityArmorStand, val renderName: String, val image: DynamicTexture, val range: Float, val timeAdded: Long = System.currentTimeMillis())
@@ -98,16 +99,14 @@ object DeployableTimer : Module(
         if (currentDeployables.any { it.entity == entity }) return
         val name = entity.name.noControlCodes
         val texture = getSkullValue(entity)
-
-        if (Deployables.entries.any { it.texture == texture }) {
-            val flare = Deployables.entries.first { it.texture == texture }
-            currentDeployables.add(Deployable(flare.priority, flare.duration, entity, flare.renderName, flare.dynamicTexture, flare.range))
+        val deployable = Deployables.entries.firstOrNull { it.texture == texture || name.startsWith(it.displayName)} ?: return
+        if (deployable.texture != "placeholder") {
+            currentDeployables.add(Deployable(deployable.priority, deployable.duration, entity, deployable.renderName, deployable.dynamicTexture, deployable.range))
             currentDeployables.sortByDescending { it.priority }
             resetLines()
-        } else if (Deployables.entries.any { name.startsWith(it.displayName)}) {
-            val orb = Deployables.entries.first { name.startsWith(it.displayName)}
+        } else {
             val time = orbRegex.find(name)?.groupValues?.get(2)?.toInt() ?: return
-            currentDeployables.add(Deployable(orb.priority, time * 1000, entity, orb.renderName, orb.dynamicTexture, orb.range))
+            currentDeployables.add(Deployable(deployable.priority, time * 1000, entity, deployable.renderName, deployable.dynamicTexture, deployable.range))
             currentDeployables.sortByDescending { it.priority }
             resetLines()
         }

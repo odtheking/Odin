@@ -8,9 +8,8 @@
     import me.odinmain.features.Module
     import me.odinmain.features.settings.Setting.Companion.withDependency
     import me.odinmain.features.settings.impl.*
+    import me.odinmain.utils.*
     import me.odinmain.utils.ServerUtils.getPing
-    import me.odinmain.utils.equalsOneOf
-    import me.odinmain.utils.getPositionEyes
     import me.odinmain.utils.render.Color
     import me.odinmain.utils.render.OutlineUtils
     import me.odinmain.utils.render.RenderUtils
@@ -62,12 +61,12 @@
         @SubscribeEvent
         fun onRenderEntityModel(event: RenderEntityModelEvent) {
             if (mode != 0 || event.entity !in currentEntities || (!mc.thePlayer.canEntityBeSeen(event.entity) && !renderThrough)) return
-            OutlineUtils.outlineEntity(event, thickness, color, cancelHurt)
+            profile("Outline Esp") { OutlineUtils.outlineEntity(event, thickness, color, cancelHurt) }
         }
 
         @SubscribeEvent
         fun onRenderWorldLast(event: RenderWorldLastEvent) {
-            currentEntities.forEach {
+            profile("ESP") { currentEntities.forEach {
                 if (currentEntities.size < tracerLimit && !onLegitVersion)
                     RenderUtils.draw3DLine(getPositionEyes(mc.thePlayer.renderVec), getPositionEyes(it.renderVec), color, 2, false)
 
@@ -75,7 +74,7 @@
                     Renderer.drawBox(it.entityBoundingBox, color, thickness, depth = !renderThrough, fillAlpha = 0)
                 else if (mode == 3)
                     Renderer.draw2DEntity(it, thickness, color)
-            }
+            }}
         }
 
         @SubscribeEvent

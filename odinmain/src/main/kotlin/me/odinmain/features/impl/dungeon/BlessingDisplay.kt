@@ -9,6 +9,7 @@ import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
+import me.odinmain.utils.Vec2f
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.*
 import net.minecraft.network.play.server.S47PacketPlayerListHeaderFooter
@@ -42,15 +43,14 @@ object BlessingDisplay : Module(
             Blessings.STONE.color = stoneColor
             Blessings.LIFE.color = lifeColor
             Blessings.WISDOM.color = wisdomColor
-            var width = 0f
-            var height = 0f
+            val size = Vec2f(0f, 0f)
             Blessings.entries.forEach { blessing ->
                 if (blessing.current == 0 || !blessing.enabled.invoke()) return@forEach
-                text("${blessing.displayString} §a${blessing.current}", 1f, 9f + height, blessing.color,12f, OdinFont.REGULAR, TextAlign.Left, TextPos.Middle, true)
-                width = max(width, getTextWidth("${blessing.displayString} §a${blessing.current}".noControlCodes, 12f))
-                height += 17f
+                text("${blessing.displayString} §a${blessing.current}", 1f, 9f + size.y, blessing.color,12f, OdinFont.REGULAR, TextAlign.Left, TextPos.Middle, true)
+                size.x = max(size.x, getTextWidth("${blessing.displayString} §a${blessing.current}".noControlCodes, 12f))
+                size.y += 17f
             }
-            width to height
+            size.x to size.y
         }
     }
 
@@ -73,7 +73,7 @@ object BlessingDisplay : Module(
         }
     }
 
-    private val romanMap = hashMapOf('I' to 1, 'V' to 5, 'X' to 10)
+    private val romanMap = mapOf('I' to 1, 'V' to 5, 'X' to 10)
     private fun romanToInt(s: String): Int {
         var result = 0
         for (i in 0 until s.length - 1) {

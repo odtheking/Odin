@@ -58,18 +58,12 @@ object BlazeAttunement : Module(
 
     @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
-        if (event.entity !in currentBlazes) return
         val color = currentBlazes[event.entity] ?: return
 
-        OutlineUtils.outlineEntity(
-            event,
-            thickness,
-            color,
-            cancelHurt
-        )
+        OutlineUtils.outlineEntity(event, thickness, color, cancelHurt)
     }
 
-    fun changeBlazeColor(entity: Entity, p_78088_2_: Float, p_78088_3_: Float, p_78088_4_: Float, p_78088_5_: Float, p_78088_6_: Float, scale: Float, ci: CallbackInfo) {
+    fun changeBlazeColor(entity: Entity) {
         if (currentBlazes.size == 0 || !overlay) return
         val color = currentBlazes[entity] ?: return
         GlStateManager.disableTexture2D()
@@ -78,13 +72,13 @@ object BlazeAttunement : Module(
         color.bind()
     }
 
-    fun renderModelBlazePost(entityIn: Entity, p_78088_2_: Float, p_78088_3_: Float, p_78088_4_: Float, p_78088_5_: Float, p_78088_6_: Float, scale: Float, ci: CallbackInfo) {
+    fun renderModelBlazePost() {
         if (currentBlazes.size == 0 || !overlay) return
         GlStateManager.disableBlend()
         GlStateManager.enableTexture2D()
     }
 
-    fun changeBipedColor(entity: Entity, p_78088_2_: Float, p_78088_3_: Float, p_78088_4_: Float, p_78088_5_: Float, p_78088_6_: Float, scale: Float, ci: CallbackInfo) {
+    fun changeBipedColor(entity: Entity) {
         if (currentBlazes.size == 0 || !overlay) return
         val color = currentBlazes[entity] ?: return
         GlStateManager.disableTexture2D()
@@ -93,7 +87,7 @@ object BlazeAttunement : Module(
         color.bind()
     }
 
-    fun renderModelBipedPost(entityIn: Entity, p_78088_2_: Float, p_78088_3_: Float, p_78088_4_: Float, p_78088_5_: Float, p_78088_6_: Float, scale: Float, ci: CallbackInfo) {
+    fun renderModelBipedPost() {
         if (currentBlazes.size == 0 || !overlay) return
         GlStateManager.disableBlend()
         GlStateManager.enableTexture2D()

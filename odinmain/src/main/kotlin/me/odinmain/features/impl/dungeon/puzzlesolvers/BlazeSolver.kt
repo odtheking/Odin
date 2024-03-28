@@ -21,15 +21,12 @@ object BlazeSolver {
     }
 
     private fun getBlazes() {
-        val entities = mc.theWorld.loadedEntityList.filterIsInstance<EntityArmorStand>()
-        entities.forEach { e ->
-            val name = e.name.noControlCodes
-            val regex = Regex("""^\[Lv15] Blaze [\d,]+/([\d,]+)❤$""")
-            val matchResult = regex.find(name) ?: return@forEach
+        mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()?.forEach { entity ->
+            val matchResult = Regex("""^\[Lv15] Blaze [\d,]+/([\d,]+)❤$""").find(entity.name.noControlCodes) ?: return@forEach
             val (_, health) = matchResult.destructured
             val hp = health.replace(",", "").toInt()
-            hpMap[e] = hp
-            blazes.add(e)
+            hpMap[entity] = hp
+            blazes.add(entity)
         }
         if (blazes.isEmpty()) return
 
@@ -43,18 +40,13 @@ object BlazeSolver {
     fun renderBlazes() {
         blazes.forEachIndexed { index, entity ->
             val color = when (index) {
-                0 -> Color(0, 1, 0) // Maybe slightly dark colors here?????
-                1 -> Color(1, 5, 0)
-                else -> Color(1, 1, 1)
+                0 -> Color.GREEN
+                1 -> Color.ORANGE
+                else -> Color.WHITE
             }
-
             Renderer.drawBox(entity.renderBoundingBox.addCoord(0.0, -2.0, 0.0), color, fillAlpha = 0f)
-
-            // tracer
-
-
+            // TODO: Make sure the index - 1 doesn't crash because of indexing to -1
             Renderer.draw3DLine(blazes[index - 1].positionVector, entity.positionVector, color, 1, false)
-
         }
     }
 

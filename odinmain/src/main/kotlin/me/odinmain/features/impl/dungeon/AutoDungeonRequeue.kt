@@ -24,8 +24,7 @@ object AutoDungeonRequeue : Module(
                 return@onMessage
             }
             runIn(delay * 20) {
-                if (type) sendCommand("instancerequeue")
-                else sendCommand("od ${LocationUtils.currentDungeon?.floor?.name?.lowercase()}", true)
+                sendCommand(if (type) "instancerequeue" else "od ${LocationUtils.currentDungeon?.floor?.name?.lowercase()}", clientSide = !type)
             }
         }
     }
