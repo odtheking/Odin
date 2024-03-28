@@ -13,9 +13,7 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.Classes
 import me.odinmain.utils.skyblock.modMessage
 
-
 object DragonPriority {
-
     var firstDragons = false
     fun dragonPrioritySpawn() {
         val spawningDragons = WitherDragonsEnum.entries.filter { it.spawning }.toMutableList()
@@ -28,7 +26,7 @@ object DragonPriority {
         PlayerUtils.alert("§${dragon.colorCode} ${dragon.name}")
     }
 
-    private fun sortPriority(spawningDragon: MutableList<WitherDragonsEnum>): WitherDragonsEnum {
+    fun sortPriority(spawningDragon: MutableList<WitherDragonsEnum>): WitherDragonsEnum {
         val totalPower = BlessingDisplay.Blessings.POWER.current * if (paulBuff) 1.25 else 1.0 +
                 if (BlessingDisplay.Blessings.TIME.current > 0) 2.5 else 0.0
 
