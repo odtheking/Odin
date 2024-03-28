@@ -8,6 +8,7 @@ import me.odinmain.utils.min
 import me.odinmain.utils.render.RenderUtils.drawBeaconBeam
 import me.odinmain.utils.runIn
 import me.odinmain.utils.toAABB
+import net.minecraft.entity.Entity
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderGameOverlayEvent
@@ -126,6 +127,10 @@ object Renderer {
         color: Color, phase: Boolean = false, linemode: Boolean = false
     ) {
         RenderUtils.drawCylinder(pos, baseRadius, topRadius, height, slices, stacks, rot1, rot2, rot3, color, linemode, phase)
+    }
+
+    fun draw2DEntity(entity: Entity, lineWidth: Float, color: Color) {
+        RenderUtils.draw2D(entity, lineWidth, color)
     }
 
     private var displayTitle = ""

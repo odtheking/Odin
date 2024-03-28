@@ -12,6 +12,19 @@ import kotlin.math.*
 
 
 data class Vec2(val x: Int, val z: Int)
+data class Vec2f(val x: Float, val y: Float)
+data class Vec3f(val x: Float, val y: Float, val z: Float)
+data class Vec4f(val x: Float, val y: Float, val z: Float, val w: Float)
+
+
+operator fun Vec4f.times(mat: Matrix4f): Vec4f {
+    return Vec4f(
+        x * mat.m00 + y * mat.m10 + z * mat.m20 + w * mat.m30,
+        x * mat.m01 + y * mat.m11 + z * mat.m21 + w * mat.m31,
+        x * mat.m02 + y * mat.m12 + z * mat.m22 + w * mat.m32,
+        x * mat.m03 + y * mat.m13 + z * mat.m23 + w * mat.m33
+    )
+}
 
 /**
  * Gets the distance between two entities squared.
@@ -418,6 +431,17 @@ fun Vec3.coerceZIn(min: Double, max: Double): Vec3 {
 val S29PacketSoundEffect.pos: Vec3
     get() = Vec3(this.x, this.y, this.z)
 
+val AxisAlignedBB.corners: List<Vec3>
+    get() = listOf(
+        Vec3(minX, minY, minZ), Vec3(minX, maxY, minZ), Vec3(maxX, maxY, minZ), Vec3(maxX, minY, minZ),
+        Vec3(minX, minY, maxZ), Vec3(minX, maxY, maxZ), Vec3(maxX, maxY, maxZ), Vec3(maxX, minY, maxZ)
+    )
+
+operator fun Vec3.unaryMinus(): Vec3 = Vec3(-xCoord, -yCoord, -zCoord)
+
+fun AxisAlignedBB.offset(vec: Vec3) = AxisAlignedBB(
+    this.minX + vec.xCoord, this.minY + vec.yCoord, this.minZ + vec.zCoord, this.maxX + vec.xCoord, this.maxY + vec.yCoord, this.maxZ + vec.zCoord
+)
 
 /**
  * Finds the nearest grass block to the given position.

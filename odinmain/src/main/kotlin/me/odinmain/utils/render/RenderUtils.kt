@@ -1,14 +1,15 @@
 package me.odinmain.utils.render
 
+import gg.essential.universal.UGraphics.GL
 import gg.essential.universal.shader.BlendState
 import gg.essential.universal.shader.UShader
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinmain.utils.*
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.block.Block
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.Tessellator
-import net.minecraft.client.renderer.WorldRenderer
+import net.minecraft.client.renderer.*
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -16,13 +17,15 @@ import net.minecraft.entity.Entity
 import net.minecraft.util.*
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.glu.Cylinder
 import org.lwjgl.util.glu.GLU
+import org.lwjgl.util.vector.Vector3f
+import org.lwjgl.util.vector.Vector4f
 import java.awt.image.BufferedImage
-import kotlin.math.cos
-import kotlin.math.floor
-import kotlin.math.sin
+import kotlin.math.*
+
 
 object RenderUtils {
 
@@ -66,6 +69,13 @@ object RenderUtils {
      */
     val Entity.renderVec: Vec3
         get() = Vec3(renderX, renderY, renderZ)
+
+    private val viewerVec: Vec3
+        get() = Vec3(renderManager.viewerPosX, renderManager.viewerPosY, renderManager.viewerPosZ)
+
+    fun blendFactor() {
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+    }
 
     /**
      * Gets the rendered bounding box of an entity based on its last tick and current tick positions.
@@ -136,7 +146,7 @@ object RenderUtils {
         GlStateManager.pushMatrix()
         color.bind()
         GlStateManager.translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+        blendFactor()
         if (!depth) GlStateManager.disableDepth()
         GlStateManager.disableTexture2D()
         GlStateManager.disableLighting()
@@ -191,7 +201,7 @@ object RenderUtils {
         GlStateManager.pushMatrix()
         color.bind()
         GlStateManager.translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+        blendFactor()
         if (!depth) GlStateManager.disableDepth()
         GlStateManager.disableTexture2D()
         GlStateManager.disableLighting()
@@ -407,7 +417,7 @@ object RenderUtils {
         scale(-scale, -scale, scale)
         GlStateManager.disableLighting()
         GlStateManager.enableBlend()
-        GlStateManager.blendFunc(770, 771)
+        blendFactor()
 
         val textWidth = mc.fontRendererObj.getStringWidth(text)
 
@@ -468,7 +478,7 @@ object RenderUtils {
         GlStateManager.disableCull()
         GlStateManager.enableBlend()
         GlStateManager.disableLighting()
-        GlStateManager.blendFunc(770, 771)
+        blendFactor()
         GlStateManager.disableTexture2D()
 
         if (phase) GlStateManager.disableDepth()
@@ -508,6 +518,76 @@ object RenderUtils {
             pos(x.toDouble(), y.toDouble(), 0.0).tex(0.0, 0.0).endVertex()
         }
         tessellator.draw()
+    }
+
+    fun draw2D(entity: Entity, lineWidth: Float, color: Color) {
+        val mvMatrix = getMatrix(2982)
+        val projectionMatrix = getMatrix(2983)
+        val bb = entity.entityBoundingBox.offset(-entity.positionVector).offset(entity.renderVec).offset(-viewerVec)
+        var box = BoxWithClass(Float.MAX_VALUE, Float.MAX_VALUE, -1f,  -1f)
+
+        GL11.glPushAttrib(GL11.GL_S)
+        GL11.glEnable(GL11.GL_BLEND)
+        GL11.glDisable(GL11.GL_TEXTURE_2D)
+        GL11.glDisable(GL11.GL_DEPTH_TEST)
+        GL11.glMatrixMode(GL11.GL_PROJECTION)
+        GlStateManager.pushMatrix()
+        GL11.glLoadIdentity()
+        GL11.glOrtho(0.0, mc.displayWidth.toDouble(), mc.displayHeight.toDouble(), .0, -1.0, 1.0)
+        GL11.glMatrixMode(GL11.GL_MODELVIEW)
+        GlStateManager.pushMatrix()
+        GL11.glLoadIdentity()
+        GL11.glDisable(GL11.GL_DEPTH_TEST)
+        blendFactor()
+        GlStateManager.enableTexture2D()
+        GlStateManager.depthMask(true)
+        GL11.glLineWidth(lineWidth)
+
+        for (boxVertex in bb.corners) {
+            val screenPos = worldToScreen(
+                Vec3f(boxVertex.xCoord.toFloat(), boxVertex.yCoord.toFloat(), boxVertex.zCoord.toFloat()),
+                mvMatrix, projectionMatrix, mc.displayWidth, mc.displayHeight
+            ) ?: continue
+            box = BoxWithClass(min(screenPos.x, box.x), min(screenPos.y, box.y), max(screenPos.x, box.w), max(screenPos.y, box.h))
+        }
+
+        if ((box.x > 0f && box.y > 0f && box.x <= mc.displayWidth && box.y <= mc.displayHeight) || (box.w > 0 && box.h > 0 && box.w <= mc.displayWidth && box.h <= mc.displayHeight)) {
+            color.bind()
+            GL11.glBegin(2)
+            GL11.glVertex2f(box.x, box.y)
+            GL11.glVertex2f(box.x, box.h)
+            GL11.glVertex2f(box.w, box.h)
+            GL11.glVertex2f(box.w, box.y)
+            GL11.glEnd()
+        }
+
+        GL11.glEnable(GL11.GL_DEPTH_TEST)
+        GL11.glMatrixMode(GL11.GL_PROJECTION)
+        GlStateManager.popMatrix()
+        GL11.glMatrixMode(GL11.GL_MODELVIEW)
+        GlStateManager.popMatrix()
+        GL11.glPopAttrib()
+    }
+
+    private fun getMatrix(matrix: Int): Matrix4f {
+        val floatBuffer = BufferUtils.createFloatBuffer(16)
+        GL11.glGetFloat(matrix, floatBuffer)
+        return Matrix4f().load(floatBuffer) as Matrix4f
+    }
+
+    fun worldToScreen(pointInWorld: Vec3f, screenWidth: Int, screenHeight: Int): Vec2f? =
+        worldToScreen(pointInWorld, getMatrix(2982), getMatrix(2983), screenWidth, screenHeight)
+
+
+    private fun worldToScreen(pointInWorld: Vec3f, view: Matrix4f, projection: Matrix4f, screenWidth: Int, screenHeight: Int): Vec2f? {
+        val clipSpacePos = (Vec4f(pointInWorld.x, pointInWorld.y, pointInWorld.z, 1.0f) * view) * projection
+        val ndcSpacePos = Vector3f(clipSpacePos.x / clipSpacePos.w, clipSpacePos.y / clipSpacePos.w, clipSpacePos.z / clipSpacePos.w)
+        val screenX: Float = (ndcSpacePos.x + 1.0f) / 2.0f * screenWidth
+        val screenY: Float = (1.0f - ndcSpacePos.y) / 2.0f * screenHeight
+        if (ndcSpacePos.z < -1.0 || ndcSpacePos.z > 1.0) {
+            return null
+        }
+        return Vec2f(screenX, screenY)
     }
 
     /**
