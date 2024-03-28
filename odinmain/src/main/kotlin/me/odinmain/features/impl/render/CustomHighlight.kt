@@ -9,6 +9,7 @@
     import me.odinmain.features.settings.Setting.Companion.withDependency
     import me.odinmain.features.settings.impl.*
     import me.odinmain.utils.ServerUtils.getPing
+    import me.odinmain.utils.equalsOneOf
     import me.odinmain.utils.getPositionEyes
     import me.odinmain.utils.render.Color
     import me.odinmain.utils.render.OutlineUtils
@@ -31,11 +32,11 @@
         private val scanDelay: Long by NumberSetting("Scan Delay", 500L, 10L, 2000L, 100L)
         private val starredMobESP: Boolean by BooleanSetting("Starred Mob Highlight", true, description = "Highlights mobs with a star in their name (remove star from the separate list).")
         val color: Color by ColorSetting("Color", Color.RED, true)
-        val mode: Int by SelectorSetting("Mode", "Outline", arrayListOf("Outline", "Overlay", "Boxes"))
+        val mode: Int by SelectorSetting("Mode", "Outline", arrayListOf("Outline", "Overlay", "Boxes", "2D"))
+        val thickness: Float by NumberSetting("Line Width", 5f, .5f, 20f, .1f, description = "The line width of Outline/ Boxes/ 2D Boxes").withDependency { mode.equalsOneOf(0, 2, 3) }
         private val tracerLimit: Int by NumberSetting("Tracer Limit", 0, 0, 15, description = "Highlight will draw tracer to all mobs when you have under this amount of mobs marked, set to 0 to disable. Helpful for finding lost mobs.").withDependency { !onLegitVersion }
 
         private val xray: Boolean by BooleanSetting("Through Walls", true).withDependency { !onLegitVersion }
-        private val thickness: Float by NumberSetting("Outline Thickness", 5f, 1f, 20f, 0.5f).withDependency { mode != 1 }
         private val cancelHurt: Boolean by BooleanSetting("Cancel Hurt", true).withDependency { mode != 1 }
         private val witherHighlight: Boolean by BooleanSetting("Highlights Withers", false, description = "Highlights Goldor.")
         val highlightList: MutableList<String> by ListSetting("List", mutableListOf())
@@ -60,17 +61,8 @@
 
         @SubscribeEvent
         fun onRenderEntityModel(event: RenderEntityModelEvent) {
-            if (mode != 0) return
-
-            if (event.entity !in currentEntities) return
-            if (!mc.thePlayer.canEntityBeSeen(event.entity) && !renderThrough) return
-
-            OutlineUtils.outlineEntity(
-                event,
-                thickness,
-                color,
-                cancelHurt
-            )
+            if (mode != 0 || event.entity !in currentEntities || (!mc.thePlayer.canEntityBeSeen(event.entity) && !renderThrough)) return
+            OutlineUtils.outlineEntity(event, thickness, color, cancelHurt)
         }
 
         @SubscribeEvent
@@ -81,6 +73,8 @@
 
                 if (mode == 2)
                     Renderer.drawBox(it.entityBoundingBox, color, thickness, depth = !renderThrough, fillAlpha = 0)
+                else if (mode == 3)
+                    Renderer.draw2DEntity(it, thickness, color)
             }
         }
 

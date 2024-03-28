@@ -12,6 +12,19 @@ import kotlin.math.*
 
 
 data class Vec2(val x: Int, val z: Int)
+data class Vec2f(val x: Float, val y: Float)
+data class Vec3f(val x: Float, val y: Float, val z: Float)
+data class Vec4f(val x: Float, val y: Float, val z: Float, val w: Float)
+
+
+operator fun Vec4f.times(mat: Matrix4f): Vec4f {
+    return Vec4f(
+        x * mat.m00 + y * mat.m10 + z * mat.m20 + w * mat.m30,
+        x * mat.m01 + y * mat.m11 + z * mat.m21 + w * mat.m31,
+        x * mat.m02 + y * mat.m12 + z * mat.m22 + w * mat.m32,
+        x * mat.m03 + y * mat.m13 + z * mat.m23 + w * mat.m33
+    )
+}
 
 /**
  * Gets the distance between two entities squared.

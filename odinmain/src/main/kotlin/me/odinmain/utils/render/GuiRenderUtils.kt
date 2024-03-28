@@ -18,6 +18,7 @@ val matrix = UMatrixStack.Compat
 val scaleFactor get() = ScaledResolution(mc).scaleFactor.toFloat()
 
 data class Box(var x: Number, var y: Number, var w: Number, var h: Number)
+data class BoxWithClass<T : Number>(var x: T, var y: T, var w: T, var h: T)
 fun Box.expand(factor: Number): Box = Box(this.x - factor, this.y - factor, this.w + factor * 2, this.h + factor * 2)
 fun roundedRectangle(
     x: Number, y: Number, w: Number, h: Number,

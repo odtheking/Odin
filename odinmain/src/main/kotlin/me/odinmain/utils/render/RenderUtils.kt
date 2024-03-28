@@ -5,10 +5,9 @@ import gg.essential.universal.shader.UShader
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinmain.utils.*
 import net.minecraft.block.Block
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.Tessellator
-import net.minecraft.client.renderer.WorldRenderer
+import net.minecraft.client.renderer.*
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -16,13 +15,15 @@ import net.minecraft.entity.Entity
 import net.minecraft.util.*
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.glu.Cylinder
 import org.lwjgl.util.glu.GLU
+import org.lwjgl.util.vector.Vector3f
+import org.lwjgl.util.vector.Vector4f
 import java.awt.image.BufferedImage
-import kotlin.math.cos
-import kotlin.math.floor
-import kotlin.math.sin
+import kotlin.math.*
+
 
 object RenderUtils {
 
@@ -508,6 +509,91 @@ object RenderUtils {
             pos(x.toDouble(), y.toDouble(), 0.0).tex(0.0, 0.0).endVertex()
         }
         tessellator.draw()
+    }
+
+    fun draw2D(entity: Entity, lineWidth: Float, color: Color) {
+        val mvMatrix = getMatrix(2982)
+        val projectionMatrix = getMatrix(2983)
+        GL11.glPushAttrib(8192)
+        GL11.glEnable(3042)
+        GL11.glDisable(3553)
+        GL11.glDisable(2929)
+        GL11.glMatrixMode(5889)
+        GlStateManager.pushMatrix()
+        GL11.glLoadIdentity()
+        GL11.glOrtho(0.0, mc.displayWidth.toDouble(), mc.displayHeight.toDouble(), .0, -1.0, 1.0)
+        GL11.glMatrixMode(5888)
+        GlStateManager.pushMatrix()
+        GL11.glLoadIdentity()
+        GL11.glDisable(2929)
+        GL11.glBlendFunc(770, 771)
+        GlStateManager.enableTexture2D()
+        GlStateManager.depthMask(true)
+        GL11.glLineWidth(lineWidth)
+        val renderManager = mc.renderManager
+        val bb = entity.entityBoundingBox
+            .offset(-entity.posX, -entity.posY, -entity.posZ)
+            .offset(entity.renderX, entity.renderY, entity.renderZ
+            ).offset(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
+
+        color.bind()
+        val boxVertices = arrayOf(
+            doubleArrayOf(bb.minX, bb.minY, bb.minZ),
+            doubleArrayOf(bb.minX, bb.maxY, bb.minZ),
+            doubleArrayOf(bb.maxX, bb.maxY, bb.minZ),
+            doubleArrayOf(bb.maxX, bb.minY, bb.minZ),
+            doubleArrayOf(bb.minX, bb.minY, bb.maxZ),
+            doubleArrayOf(bb.minX, bb.maxY, bb.maxZ),
+            doubleArrayOf(bb.maxX, bb.maxY, bb.maxZ),
+            doubleArrayOf(bb.maxX, bb.minY, bb.maxZ)
+        )
+        val box = BoxWithClass(Float.MAX_VALUE, Float.MAX_VALUE, -1f,  -1f)
+        for (boxVertex in boxVertices) {
+            val screenPos = worldToScreen(
+                Vec3f(boxVertex[0].toFloat(), boxVertex[1].toFloat(), boxVertex[2].toFloat()),
+                mvMatrix, projectionMatrix, mc.displayWidth, mc.displayHeight
+            ) ?: continue
+            box.x = min(screenPos.x, box.x)
+            box.y = min(screenPos.y, box.y)
+            box.w = max(screenPos.x, box.w)
+            box.h = max(screenPos.y, box.h)
+        }
+        if (box.x > -.1f || box.y > -.1f || box.w <= mc.displayWidth || box.h <= mc.displayHeight) {
+            color.withAlpha(1f).bind()
+            GL11.glBegin(2)
+            GL11.glVertex2f(box.x, box.y)
+            GL11.glVertex2f(box.x, box.h)
+            GL11.glVertex2f(box.w, box.h)
+            GL11.glVertex2f(box.w, box.y)
+            GL11.glEnd()
+        }
+        GL11.glEnable(2929)
+        GL11.glMatrixMode(5889)
+        GlStateManager.popMatrix()
+        GL11.glMatrixMode(5888)
+        GlStateManager.popMatrix()
+        GL11.glPopAttrib()
+    }
+
+    private fun getMatrix(matrix: Int): Matrix4f {
+        val floatBuffer = BufferUtils.createFloatBuffer(16)
+        GL11.glGetFloat(matrix, floatBuffer)
+        return Matrix4f().load(floatBuffer) as Matrix4f
+    }
+
+    fun worldToScreen(pointInWorld: Vec3f, screenWidth: Int, screenHeight: Int): Vec2f? =
+        worldToScreen(pointInWorld, getMatrix(2982), getMatrix(2983), screenWidth, screenHeight)
+
+
+    private fun worldToScreen(pointInWorld: Vec3f, view: Matrix4f, projection: Matrix4f, screenWidth: Int, screenHeight: Int): Vec2f? {
+        val clipSpacePos = (Vec4f(pointInWorld.x, pointInWorld.y, pointInWorld.z, 1.0f) * view) * projection
+        val ndcSpacePos = Vector3f(clipSpacePos.x / clipSpacePos.w, clipSpacePos.y / clipSpacePos.w, clipSpacePos.z / clipSpacePos.w)
+        val screenX: Float = (ndcSpacePos.x + 1.0f) / 2.0f * screenWidth
+        val screenY: Float = (1.0f - ndcSpacePos.y) / 2.0f * screenHeight
+        if (ndcSpacePos.z < -1.0 || ndcSpacePos.z > 1.0) {
+            return null
+        }
+        return Vec2f(screenX, screenY)
     }
 
     /**
