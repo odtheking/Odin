@@ -17,6 +17,7 @@
     import me.odinmain.utils.render.RenderUtils
     import me.odinmain.utils.render.RenderUtils.renderVec
     import me.odinmain.utils.render.Renderer
+    import me.odinmain.utils.skyblock.modMessage
     import net.minecraft.entity.Entity
     import net.minecraft.entity.boss.EntityWither
     import net.minecraft.entity.item.EntityArmorStand
@@ -104,10 +105,17 @@
         }
 
         private fun getMobEntity(entity: Entity): Entity? {
-            return mc.theWorld.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.offset(0.0, -1.0, 0.0))
-                .filter { it != null && it !is EntityArmorStand && it.getPing() != 1 }
-                .minByOrNull { entity.getDistanceToEntity(it) }
-                .takeIf { !(it is EntityWither && it.isInvisible) }
+            if (renderThrough) {
+                return mc.theWorld.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.offset(0.0, -1.0, 0.0))
+                    .filter { it != null && it !is EntityArmorStand && it.getPing() != 1}
+                    .minByOrNull { entity.getDistanceToEntity(it) }
+                    .takeIf { !(it is EntityWither && it.isInvisible) }
+            } else {
+                return mc.theWorld.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.offset(0.0, -1.0, 0.0))
+                    .filter { it != null && it !is EntityArmorStand && it.getPing() != 1 && !it.isInvisible}
+                    .minByOrNull { entity.getDistanceToEntity(it) }
+                    .takeIf { !(it is EntityWither && it.isInvisible) }
+            }
         }
 
         @SubscribeEvent
