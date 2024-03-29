@@ -67,9 +67,7 @@ object DungeonWaypoints : Module(
     private val debugWaypoint: Boolean by BooleanSetting("Debug Waypoint", false).withDependency { DevPlayers.isDev }
 
     data class DungeonWaypoint(
-        val x: Double,
-        val y: Double,
-        val z: Double,
+        val x: Double, val y: Double, val z: Double,
         val color: Color,
         val filled: Boolean,
         val depth: Boolean,
@@ -77,56 +75,7 @@ object DungeonWaypoints : Module(
         val title: String?
     )
 
-    object GuiSign : GuiScreen() {
 
-        private lateinit var textField: GuiTextField
-        private var callback: (String) -> Unit = {} // Initialize with no-op function
-
-        override fun initGui() {
-            super.initGui()
-            // Initialize GUI components
-            textField = GuiTextField(0, fontRendererObj, width / 2 - 50, height / 2 - 10, 100, 20)
-            textField.text = "Enter text"
-            textField.isFocused = true // Set the text field to be focused initially
-            textField.maxStringLength = 50 // Maximum characters allowed
-            buttonList.add(GuiButton(0, width / 2 - 50, height / 2 + 20, 100, 20, "Submit"))
-        }
-
-        override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-            super.drawScreen(mouseX, mouseY, partialTicks)
-            // Render GUI components
-            textField.drawTextBox()
-        }
-
-        override fun keyTyped(typedChar: Char, keyCode: Int) {
-            super.keyTyped(typedChar, keyCode)
-            // Handle keyboard input
-            textField.textboxKeyTyped(typedChar, keyCode)
-        }
-
-        override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-            super.mouseClicked(mouseX, mouseY, mouseButton)
-            // Handle mouse click events
-            textField.mouseClicked(mouseX, mouseY, mouseButton)
-        }
-
-        override fun actionPerformed(button: GuiButton) {
-            super.actionPerformed(button)
-            // Handle button clicks
-            if (button.id == 0) {
-                // Submit button clicked, call the callback function with the entered text
-                val enteredText = textField.text
-                callback.invoke(enteredText)
-                // Close the GUI
-                mc.displayGuiScreen(null)
-            }
-        }
-
-        // Method to set the callback function
-        fun setCallback(callback: (String) -> Unit) {
-            this.callback = callback
-        }
-    }
 
 
     override fun onKeybind() {
@@ -136,9 +85,10 @@ object DungeonWaypoints : Module(
 
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
+        if (DungeonUtils.inBoss) return
         startProfile("Dungeon Waypoints")
         DungeonUtils.currentRoom?.waypoints?.forEach {
-            Renderer.drawBox(it.toAABB(it.size), it.color, fillAlpha = if (it.filled) .8 else 0, depth = it.depth)
+            Renderer.drawBox(it.toAABB(it.size), it.color, outlineAlpha = color.alpha, fillAlpha = if (it.filled) color.alpha.coerceAtMost(.8f) else 0, depth = it.depth)
             Renderer.drawStringInWorld(it.title ?: "", Vec3(it.x + 0.5, it.y + 0.5, it.z + 0.5))
         }
 
@@ -162,7 +112,7 @@ object DungeonWaypoints : Module(
     fun onInteract(event: PlayerInteractEvent) {
         if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || event.world != mc.theWorld || !allowEdits) return
         val room = DungeonUtils.currentRoom?.room ?: return
-        val distinct = DungeonUtils.currentRoom?.positions?.distinctBy { it.core }?.firstOrNull()?.core ?: return
+        val distinct = DungeonUtils.currentRoom?.positions?.map { it.core }?.distinct()?.minOrNull() ?: return
         val vec = Vec3(event.pos).subtractVec(x = room.x, z = room.z).rotateToNorth(room.rotation)
 
         val waypoints =
@@ -170,13 +120,12 @@ object DungeonWaypoints : Module(
             else DungeonWaypointConfig.waypoints.getOrPut(distinct.toString()) { mutableListOf() }
 
         if (mc.thePlayer.isSneaking) {
-            val callback: (String) -> Unit = { enteredText ->
+            GuiSign.setCallback { enteredText ->
                 waypoints.removeIf { it.toVec3().equal(vec) }
                 waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, size, enteredText))
                 DungeonWaypointConfig.saveConfig()
                 DungeonUtils.setWaypoints()
             }
-            GuiSign.setCallback(callback)
             mc.displayGuiScreen(GuiSign)
         } else if (waypoints.removeIf { it.toVec3().equal(vec) }) {
             devMessage("Removed waypoint at $vec")
@@ -200,4 +149,47 @@ object DungeonWaypoints : Module(
         y + .5 + (size / 2),
         z + .5 + (size / 2)
     ).expand(.01, .01, .01)
+}
+
+
+object GuiSign : GuiScreen() {
+    private lateinit var textField: GuiTextField
+    private var callback: (String) -> Unit = {}
+
+    override fun initGui() {
+        super.initGui()
+        textField = GuiTextField(0, fontRendererObj, width / 2 - 50, height / 2 - 10, 100, 20)
+        textField.text = "Enter text"
+        textField.isFocused = true // Set the text field to be focused initially
+        textField.maxStringLength = 50 // Maximum characters allowed
+        buttonList.add(GuiButton(0, width / 2 - 50, height / 2 + 20, 100, 20, "Submit"))
+    }
+
+    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        super.drawScreen(mouseX, mouseY, partialTicks)
+        textField.drawTextBox()
+    }
+
+    override fun keyTyped(typedChar: Char, keyCode: Int) {
+        super.keyTyped(typedChar, keyCode)
+        textField.textboxKeyTyped(typedChar, keyCode)
+    }
+
+    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+        super.mouseClicked(mouseX, mouseY, mouseButton)
+        textField.mouseClicked(mouseX, mouseY, mouseButton)
+    }
+
+    override fun actionPerformed(button: GuiButton) {
+        super.actionPerformed(button)
+        if (button.id != 0) return
+        val enteredText = textField.text
+        callback.invoke(enteredText)
+        mc.displayGuiScreen(null)
+    }
+
+    // Method to set the callback function
+    fun setCallback(callback: (String) -> Unit) {
+        this.callback = callback
+    }
 }
