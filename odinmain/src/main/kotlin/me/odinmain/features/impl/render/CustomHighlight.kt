@@ -94,27 +94,20 @@
         }
 
         private fun checkEntity(entity: Entity) {
-            if (entity !is EntityArmorStand || highlightList.none { entity.name.contains(it, true) } || entity in currentEntities) return
+            if (entity !is EntityArmorStand || highlightList.none { entity.name.contains(it, true) } || entity in currentEntities || !entity.alwaysRenderNameTag && !renderThrough) return
             currentEntities.add(getMobEntity(entity) ?: return)
         }
 
         private fun checkStarred(entity: Entity) {
-            if (entity !is EntityArmorStand || !entity.name.startsWith("§6✯ ") || !entity.name.endsWith("§c❤") || entity in currentEntities) return
+            if (entity !is EntityArmorStand || !entity.name.startsWith("§6✯ ") || !entity.name.endsWith("§c❤") || entity in currentEntities || !entity.alwaysRenderNameTag && !renderThrough) return
             currentEntities.add(getMobEntity(entity) ?: return)
         }
 
         private fun getMobEntity(entity: Entity): Entity? {
-            if (renderThrough) {
-                return mc.theWorld.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.offset(0.0, -1.0, 0.0))
-                    .filter { it != null && it !is EntityArmorStand && it.getPing() != 1}
-                    .minByOrNull { entity.getDistanceToEntity(it) }
-                    .takeIf { !(it is EntityWither && it.isInvisible) }
-            } else {
-                return mc.theWorld.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.offset(0.0, -1.0, 0.0))
-                    .filter { it != null && it !is EntityArmorStand && it.getPing() != 1 && !it.isInvisible}
-                    .minByOrNull { entity.getDistanceToEntity(it) }
-                    .takeIf { !(it is EntityWither && it.isInvisible) }
-            }
+            return mc.theWorld.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.offset(0.0, -1.0, 0.0))
+                .filter { it != null && it !is EntityArmorStand && it.getPing() != 1}
+                .minByOrNull { entity.getDistanceToEntity(it) }
+                .takeIf { !(it is EntityWither && it.isInvisible) }
         }
 
         @SubscribeEvent
