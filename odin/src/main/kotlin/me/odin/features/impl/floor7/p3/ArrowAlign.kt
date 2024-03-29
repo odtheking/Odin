@@ -24,7 +24,7 @@ object ArrowAlign : Module(
 ) {
     private val solver: Boolean by BooleanSetting("Solver")
     private val multipleScans: Boolean by BooleanSetting("Multiple Scans", true)
-    private val delay: Long by NumberSetting("Delay", 3000, 10.0, 10000.0, 10.0)
+    private val delay: Long by NumberSetting("Delay", 3000, 10.0, 10000.0, 10.0, unit = "ms")
 
     private var scanned = false
 

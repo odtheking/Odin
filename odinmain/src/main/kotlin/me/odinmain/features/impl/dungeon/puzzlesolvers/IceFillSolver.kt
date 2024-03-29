@@ -17,7 +17,6 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import kotlin.math.sin
 
 object IceFillSolver {
     var scanned = BooleanArray(3) { false }

@@ -46,11 +46,11 @@ object LeapMenu : Module(
     private val topRightKeybind: Keybinding by KeybindSetting("Top Right", Keyboard.KEY_2, "Used to click on the second person in the leap menu.").withDependency { useNumberKeys }
     private val bottomLeftKeybind: Keybinding by KeybindSetting("Bottom Left", Keyboard.KEY_3, "Used to click on the third person in the leap menu.").withDependency { useNumberKeys }
     private val bottomRightKeybind: Keybinding by KeybindSetting("Bottom right", Keyboard.KEY_4, "Used to click on the fourth person in the leap menu.").withDependency { useNumberKeys }
-    private val leapHelperToggle: Boolean by BooleanSetting("Leap Helper", true)
+    private val leapHelperToggle: Boolean by BooleanSetting("Leap Helper", true, description = "Highlights the leap helper player in the leap menu.")
     private val leapHelperColor: Color by ColorSetting("Leap Helper Color", default = Color.WHITE, description = "Color of the Leap Helper highlight").withDependency { leapHelperToggle }
     val delay: Int by NumberSetting("Reset Leap Helper Delay", 30, 10.0, 120.0, 1.0, description = "Delay for clearing the leap helper highlight").withDependency { leapHelperToggle }
 
-    private val hoveredAnims = List(4) { EaseInOut(300L) }
+    private val hoveredAnims = List(4) { EaseInOut(200L) }
     private var hoveredQuadrant = -1
     private var previouslyHoveredQuadrant = -1
 
@@ -115,7 +115,7 @@ object LeapMenu : Module(
         if ((type.equalsOneOf(1,2,3)) && leapTeammates.size < quadrant) return
 
         val playerToLeap = leapTeammates[quadrant - 1]
-        if (playerToLeap == EMPTY) return modMessage("Player is empty?!?!?")
+        if (playerToLeap == EMPTY) return
         if (playerToLeap.isDead) return modMessage("This player is dead, can't leap.")
 
         leapTo(playerToLeap.name, event.container)
@@ -140,7 +140,7 @@ object LeapMenu : Module(
             else -> return
         }
         val playerToLeap = if (keyCodeNumber > leapTeammates.size) return else leapTeammates[keyCodeNumber - 1]
-
+        if (playerToLeap == EMPTY) return
         if (playerToLeap.isDead) return modMessage("This player is dead, can't leap.")
 
         leapTo(playerToLeap.name, event.container)

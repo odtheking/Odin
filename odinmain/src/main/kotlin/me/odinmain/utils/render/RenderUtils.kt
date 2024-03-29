@@ -1,13 +1,11 @@
 package me.odinmain.utils.render
 
-import gg.essential.universal.UGraphics.GL
 import gg.essential.universal.shader.BlendState
 import gg.essential.universal.shader.UShader
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.*
 import net.minecraft.client.renderer.entity.RenderManager
@@ -22,7 +20,6 @@ import org.lwjgl.opengl.GL11
 import org.lwjgl.util.glu.Cylinder
 import org.lwjgl.util.glu.GLU
 import org.lwjgl.util.vector.Vector3f
-import org.lwjgl.util.vector.Vector4f
 import java.awt.image.BufferedImage
 import kotlin.math.*
 

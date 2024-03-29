@@ -18,7 +18,6 @@ import net.minecraft.entity.monster.EntityBlaze
 import net.minecraft.entity.monster.EntityPigZombie
 import net.minecraft.entity.monster.EntitySkeleton
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 
 object BlazeAttunement : Module(
     "Blaze Attunement",

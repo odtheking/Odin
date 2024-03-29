@@ -50,7 +50,7 @@ object ModuleManager {
     val executors = ArrayList<Pair<Module, Executor>>()
 
     val modules: ArrayList<Module> = arrayListOf(
-        AutoDungeonRequeue,
+        DungeonRequeue,
         BlessingDisplay,
         ExtraStats,
         KeyHighlight,
@@ -106,7 +106,8 @@ object ModuleManager {
         KuudraReminders,
         Splits,
         WardrobeKeybinds,
-        InvincibilityTimer
+        InvincibilityTimer,
+        KuudraRequeue
     )
 
     init {

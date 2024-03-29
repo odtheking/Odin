@@ -52,7 +52,7 @@ object WardrobeKeybinds : Module(
         val index = when {
             nextPageKeybind.isDown() -> if (current.toInt() < total.toInt()) 53 else return modMessage("You are already on the last page.")
             previousPageKeybind.isDown() -> if (current.toInt() > 1) 45 else return modMessage("You are already on the first page.")
-            unequipKeybind.isDown() -> getItemIndexInContainerChest(chest, "Equipped", 36..40) ?: return modMessage("Couldn't find equipped armor.")
+            unequipKeybind.isDown() -> getItemIndexInContainerChest(chest, "Equipped", 36..44) ?: return modMessage("Couldn't find equipped armor.")
             else -> (wardrobes.indexOfFirst { it.isDown() }.takeIf { it != -1 } ?: return) + 36
         }
         if (!clickCoolDown.hasTimePassed()) return

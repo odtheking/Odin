@@ -1,15 +1,11 @@
 package me.odinmain.config
 
 import com.google.gson.GsonBuilder
-import com.google.gson.JsonIOException
-import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain
-import me.odinmain.features.impl.render.WaypointManager
 import java.io.File
-import java.io.IOException
 
 object PBConfig {
     private val gson = GsonBuilder().setPrettyPrinting().create()

@@ -3,7 +3,6 @@ package me.odinmain.features.impl.skyblock
 import me.odinmain.OdinMain
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.events.impl.ClickEvent
-import me.odinmain.events.impl.PacketSentEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -60,9 +59,14 @@ object DianaHelper : Module(
     init {
         onPacket(S29PacketSoundEffect::class.java) { DianaBurrowEstimate.handleSoundPacket(it) }
 
-        onPacket(S2APacketParticles::class.java) { DianaBurrowEstimate.handleParticlePacket(it) }
+        onPacket(S2APacketParticles::class.java) {
+            DianaBurrowEstimate.handleParticlePacket(it)
+            DianaBurrowEstimate.handleBurrow(it)
+        }
 
-        onPacket(S2APacketParticles::class.java) { DianaBurrowEstimate.handleBurrow(it) }
+        onPacket(C08PacketPlayerBlockPlacement::class.java) { DianaBurrowEstimate.blockEvent(it.position.toVec3i()) }
+
+        onPacket(C07PacketPlayerDigging::class.java) { DianaBurrowEstimate.blockEvent(it.position.toVec3i()) }
 
         onWorldLoad {
             DianaBurrowEstimate.reset()
@@ -81,14 +85,6 @@ object DianaHelper : Module(
 
         partyMessage("x: ${PlayerUtils.posX.floor().toInt()}, y: ${PlayerUtils.posY.floor().toInt()}, z: ${PlayerUtils.posZ.floor().toInt()}")
         PlayerUtils.alert("§6§lInquisitor!")
-    }
-
-    @SubscribeEvent
-    fun onInteract(event: PacketSentEvent) {
-        if (event.packet is C08PacketPlayerBlockPlacement)
-            DianaBurrowEstimate.blockEvent(event.packet.position.toVec3i())
-        else if (event.packet is C07PacketPlayerDigging)
-            DianaBurrowEstimate.blockEvent(event.packet.position.toVec3i())
     }
 
     @SubscribeEvent

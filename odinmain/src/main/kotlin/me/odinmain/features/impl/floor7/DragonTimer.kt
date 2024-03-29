@@ -8,7 +8,7 @@ object DragonTimer {
 
     var toRender: MutableList<Triple<String, Int, WitherDragonsEnum>> = ArrayList()
 
-    fun updateTime() {
+    private fun updateTime() {
         toRender = ArrayList()
 
         WitherDragonsEnum.entries.forEachIndexed { index, dragon ->

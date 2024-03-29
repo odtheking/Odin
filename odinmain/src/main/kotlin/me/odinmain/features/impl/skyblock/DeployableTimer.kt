@@ -96,6 +96,7 @@ object DeployableTimer : Module(
         if (mc.theWorld.getEntityByID(event.packet.entityId) !is EntityArmorStand) return
 
         val entity = mc.theWorld.getEntityByID(event.packet.entityId) as EntityArmorStand
+
         if (currentDeployables.any { it.entity == entity }) return
         val name = entity.name.noControlCodes
         val texture = getSkullValue(entity)

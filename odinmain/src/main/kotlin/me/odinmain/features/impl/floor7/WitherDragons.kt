@@ -3,7 +3,6 @@ package me.odinmain.features.impl.floor7
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.impl.floor7.DragonTracer.renderTracers
 import me.odinmain.features.impl.floor7.DragonBoxes.renderBoxes
 import me.odinmain.features.impl.floor7.DragonCheck.dragonJoinWorld
 import me.odinmain.features.impl.floor7.DragonCheck.dragonLeaveWorld
@@ -11,6 +10,7 @@ import me.odinmain.features.impl.floor7.DragonCheck.lastDragonDeath
 import me.odinmain.features.impl.floor7.DragonCheck.onChatPacket
 import me.odinmain.features.impl.floor7.DragonHealth.renderHP
 import me.odinmain.features.impl.floor7.DragonTimer.renderTime
+import me.odinmain.features.impl.floor7.DragonTracer.renderTracers
 import me.odinmain.features.impl.floor7.Relic.relicsBlockPlace
 import me.odinmain.features.impl.floor7.Relic.relicsOnMessage
 import me.odinmain.features.settings.Setting.Companion.withDependency

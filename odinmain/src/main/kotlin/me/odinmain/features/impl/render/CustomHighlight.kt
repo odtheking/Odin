@@ -8,8 +8,10 @@
     import me.odinmain.features.Module
     import me.odinmain.features.settings.Setting.Companion.withDependency
     import me.odinmain.features.settings.impl.*
-    import me.odinmain.utils.*
     import me.odinmain.utils.ServerUtils.getPing
+    import me.odinmain.utils.equalsOneOf
+    import me.odinmain.utils.getPositionEyes
+    import me.odinmain.utils.profile
     import me.odinmain.utils.render.Color
     import me.odinmain.utils.render.OutlineUtils
     import me.odinmain.utils.render.RenderUtils

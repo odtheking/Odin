@@ -5,11 +5,11 @@ import me.odinmain.events.impl.ReceivePacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
-import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.getSafe
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.getTextHeight
 import me.odinmain.utils.render.getTextWidth
 import me.odinmain.utils.render.text
 import me.odinmain.utils.round
@@ -17,7 +17,6 @@ import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.play.server.S02PacketChat
-import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object Splits : Module(
@@ -78,8 +77,8 @@ object Splits : Module(
                     4 -> splitsLine5
                     else -> Color.WHITE
                 }
-                text(lines[i], 1f, 9f + i * OdinFont.getTextHeight("12", 13f), lineColor, 12f, shadow = true)
-                text("0s", OdinFont.getTextWidth("Fuel/Stun: 0h 00m 00s", 12f) - OdinFont.getTextWidth("0s", 12f), 9f + i * OdinFont.getTextHeight("12", 13f), Color.WHITE, 12f, shadow = true)
+                text(lines[i], 1f, 9f + i * getTextHeight("12", 13f), lineColor, 12f, shadow = true)
+                text("0s", getTextWidth("Fuel/Stun: 0h 00m 00s", 12f) - getTextWidth("0s", 12f), 9f + i * getTextHeight("12", 13f), Color.WHITE, 12f, shadow = true)
             }
 
             getTextWidth("Fuel/Stun: 0h 00m 00s", 12f) + 2f to 80f
@@ -98,10 +97,10 @@ object Splits : Module(
                     4 -> splitsLine5
                     else -> Color.WHITE
                 }
-                text(lines[i], 1f, 9f + i * OdinFont.getTextHeight("12", 13f), lineColor, 12f, shadow = true)
+                text(lines[i], 1f, 9f + i * getTextHeight("12", 13f), lineColor, 12f, shadow = true)
 
                 val duration = formatTime(time)
-                text(duration, OdinFont.getTextWidth("Fuel/Stun: 0h 00m 00s", 12f) - OdinFont.getTextWidth(duration, 12f), 9f + i * OdinFont.getTextHeight("12", 13f), Color.WHITE, 12f, shadow = true)
+                text(duration, getTextWidth("Fuel/Stun: 0h 00m 00s", 12f) - getTextWidth(duration, 12f), 9f + i * getTextHeight("12", 13f), Color.WHITE, 12f, shadow = true)
             }
 
             getTextWidth("Fuel/Stun: 0h 00m 00s", 12f) + 2f to 80f
@@ -236,7 +235,7 @@ object Splits : Module(
             // it.isCanceled = true
         }*/
 
-
+        onWorldLoad { splits.fill(0L) }
     }
 
     @SubscribeEvent
@@ -249,14 +248,8 @@ object Splits : Module(
             event.isCanceled = true
             modMessage("§6${matchResult.groupValues[2]}§a §btook ${formatTime((System.currentTimeMillis() - splits[0]))}§a to recover supply §8(${matchResult.groupValues[3]})!", false)
         }
-
     }
-
-    @SubscribeEvent
-    fun onWorldUnload(event: WorldEvent.Unload) {
-        splits.fill(0L)
-    }
-
+    
     private fun formatTime(time: Long): String {
         if (time == 0L) return "0s"
         var remaining = time

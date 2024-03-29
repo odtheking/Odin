@@ -7,7 +7,6 @@ import me.odinmain.utils.equal
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
