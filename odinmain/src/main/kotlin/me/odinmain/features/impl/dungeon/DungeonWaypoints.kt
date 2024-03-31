@@ -12,9 +12,7 @@ import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.render.scale
+import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.tiles.RoomType
@@ -45,21 +43,14 @@ object DungeonWaypoints : Module(
     private val color: Color by ColorSetting("Color", default = Color.GREEN, description = "The color of the next waypoint you place.", allowAlpha = true)
     private val filled: Boolean by BooleanSetting("Filled", false, description = "If the next waypoint you place should be 'filled'.")
     private val throughWalls: Boolean by BooleanSetting("Through walls", false, description = "If the next waypoint you place should be visible through walls.")
-    private val size: Double by NumberSetting("Size", 1.0, .125, 1.0, increment = 0.01, description = "The size of the next waypoint you place.")
+    private val useBlockSize: Boolean by BooleanSetting("Use block size", false, description = "Use the size of the block you click for waypoint size.")
+    private val size: Double by NumberSetting("Size", 1.0, .125, 1.0, increment = 0.01, description = "The size of the next waypoint you place.").withDependency { !useBlockSize }
     private val resetButton: () -> Unit by ActionSetting("Reset Current Room") {
         val room = DungeonUtils.currentRoom ?: return@ActionSetting modMessage("Room not found!!!")
 
-        if (room.room.data.type != RoomType.NORMAL) {
-            val waypoints = DungeonWaypointConfig.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
-            if (!waypoints.removeAll { true }) return@ActionSetting modMessage("Current room does not have any waypoints!")
-        } else {
-            var changedWaypoints = false
-            room.positions.forEach {
-                if (DungeonWaypointConfig.waypoints[it.core.toString()]?.removeAll { true } == true) changedWaypoints =
-                    true
-            }
-            if (!changedWaypoints) return@ActionSetting modMessage("Current room does not have any waypoints!")
-        }
+        val waypoints = DungeonWaypointConfig.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
+        if (!waypoints.removeAll { true }) return@ActionSetting modMessage("Current room does not have any waypoints!")
+
         DungeonWaypointConfig.saveConfig()
         DungeonUtils.setWaypoints()
         modMessage("Successfully reset current room!")
@@ -71,7 +62,7 @@ object DungeonWaypoints : Module(
         val color: Color,
         val filled: Boolean,
         val depth: Boolean,
-        val size: Double,
+        val aabb: AxisAlignedBB,
         val title: String?
     )
 
@@ -83,14 +74,14 @@ object DungeonWaypoints : Module(
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
         if (DungeonUtils.inBoss) return
+        val room = DungeonUtils.currentRoom ?: return
         startProfile("Dungeon Waypoints")
-        DungeonUtils.currentRoom?.waypoints?.forEach {
-            Renderer.drawBox(it.toAABB(it.size), it.color, outlineAlpha = color.alpha, fillAlpha = if (it.filled) color.alpha.coerceAtMost(.8f) else 0, depth = it.depth)
+        room.waypoints.forEach {
+            Renderer.drawBox(it.aabb.offset(it.x, it.y, it.z), it.color, outlineAlpha = it.color.alpha, fillAlpha = if (it.filled) it.color.alpha.coerceAtMost(.8f) else 0, depth = it.depth)
             Renderer.drawStringInWorld(it.title ?: "", Vec3(it.x + 0.5, it.y + 0.5, it.z + 0.5))
         }
 
         if (debugWaypoint) {
-            val room = DungeonUtils.currentRoom ?: return
             val distinct = room.positions.distinct().minByOrNull { it.core } ?: return
             Renderer.drawBox(Vec3(distinct.x.toDouble(), 70.0, distinct.z.toDouble()).toAABB(), Color.GREEN, fillAlpha = 0)
         }
@@ -113,13 +104,15 @@ object DungeonWaypoints : Module(
         val room = DungeonUtils.currentRoom ?: return
         val distinct = room.positions.distinct().minByOrNull { it.core } ?: return
         val vec = Vec3(pos).subtractVec(x = distinct.x, z = distinct.z).rotateToNorth(room.room.rotation)
-
+        val aabb =
+            if (useBlockSize) getBlockAt(pos).getSelectedBoundingBox(mc.theWorld, BlockPos(0, 0, 0))
+            else AxisAlignedBB(.5 - (size / 2), .5 - (size / 2), .5 - (size / 2), .5 + (size / 2), .5 + (size / 2), .5 + (size / 2))
         val waypoints = DungeonWaypointConfig.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
 
         if (mc.thePlayer.isSneaking) {
             GuiSign.setCallback { enteredText ->
                 waypoints.removeIf { it.toVec3().equal(vec) }
-                waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, size, enteredText))
+                waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, aabb, enteredText))
                 DungeonWaypointConfig.saveConfig()
                 DungeonUtils.setWaypoints()
             }
@@ -127,7 +120,7 @@ object DungeonWaypoints : Module(
         } else if (waypoints.removeIf { it.toVec3().equal(vec) }) {
             devMessage("Removed waypoint at $vec")
         } else {
-            waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, size, ""))
+            waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, aabb, ""))
             devMessage("Added waypoint at $vec")
         }
 

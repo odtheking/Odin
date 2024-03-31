@@ -106,9 +106,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
         }
 
         if (dragging != null) {
-            hexString = "#" + with(setting.value.rgba.toHexString(HexFormat.UpperCase)) {
-                return@with substring(2) + substring(0, 2)
-            }
+            hexString = "#${color.hex}"
             stringBefore = hexString
         }
 

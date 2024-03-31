@@ -9,12 +9,13 @@ import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
 import me.odinmain.features.impl.dungeon.DungeonWaypoints.DungeonWaypoint
+import me.odinmain.utils.render.Color
 import java.io.File
 import java.io.IOException
 
 object DungeonWaypointConfig {
 
-    private val gson = GsonBuilder().setPrettyPrinting().create()
+    private val gson = GsonBuilder().registerTypeAdapter(Color::class.java, Color.ColorSerializer()).setPrettyPrinting().create()
 
     var waypoints: MutableMap<String, MutableList<DungeonWaypoint>> = mutableMapOf()
 
