@@ -223,3 +223,6 @@ fun getCurrentMonthName(): String {
     val currentMonth = Month.entries[java.time.LocalDateTime.now().monthValue - 1]
     return currentMonth.getDisplayName(TextStyle.FULL, Locale.getDefault())
 }
+
+val Char.isHexaDecimal
+    get() = isDigit() || equalsOneOf("a","b","c","d","e","f","A","B","C","D","E","F")
