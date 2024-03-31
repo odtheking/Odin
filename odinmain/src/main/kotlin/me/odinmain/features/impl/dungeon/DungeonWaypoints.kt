@@ -1,6 +1,7 @@
 package me.odinmain.features.impl.dungeon
 
 import me.odinmain.config.DungeonWaypointConfig
+import me.odinmain.events.impl.ClickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.render.DevPlayers
@@ -14,10 +15,9 @@ import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.render.scale
-import me.odinmain.utils.skyblock.devMessage
+import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.tiles.RoomType
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.GuiTextField
@@ -106,11 +106,12 @@ object DungeonWaypoints : Module(
     }
 
     @SubscribeEvent
-    fun onInteract(event: PlayerInteractEvent) {
-        if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || event.world != mc.theWorld || !allowEdits) return
+    fun onInteract(event: ClickEvent.RightClickEvent) {
+        val pos = mc.objectMouseOver?.blockPos ?: return
+        if (!allowEdits || isAir(pos)) return
         val room = DungeonUtils.currentRoom?.room ?: return
         val distinct = DungeonUtils.currentRoom?.positions?.map { it.core }?.distinct()?.minOrNull() ?: return
-        val vec = Vec3(event.pos).subtractVec(x = room.x, z = room.z).rotateToNorth(room.rotation)
+        val vec = Vec3(pos).subtractVec(x = room.x, z = room.z).rotateToNorth(room.rotation)
 
         val waypoints =
             if (room.data.type != RoomType.NORMAL) DungeonWaypointConfig.waypoints.getOrPut(room.data.name) { mutableListOf() }
