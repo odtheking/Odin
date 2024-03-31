@@ -90,8 +90,9 @@ object DungeonWaypoints : Module(
         }
 
         if (debugWaypoint) {
-            val room = DungeonUtils.currentRoom?.room ?: return
-            Renderer.drawBox(Vec3(room.x.toDouble(), 70.0, room.z.toDouble()).toAABB(), Color.GREEN, fillAlpha = 0)
+            val room = DungeonUtils.currentRoom ?: return
+            val distinct = room.positions.distinct().minByOrNull { it.core } ?: return
+            Renderer.drawBox(Vec3(distinct.x.toDouble(), 70.0, distinct.z.toDouble()).toAABB(), Color.GREEN, fillAlpha = 0)
         }
         endProfile()
     }
@@ -109,13 +110,11 @@ object DungeonWaypoints : Module(
     fun onInteract(event: ClickEvent.RightClickEvent) {
         val pos = mc.objectMouseOver?.blockPos ?: return
         if (!allowEdits || isAir(pos)) return
-        val room = DungeonUtils.currentRoom?.room ?: return
-        val distinct = DungeonUtils.currentRoom?.positions?.map { it.core }?.distinct()?.minOrNull() ?: return
-        val vec = Vec3(pos).subtractVec(x = room.x, z = room.z).rotateToNorth(room.rotation)
+        val room = DungeonUtils.currentRoom ?: return
+        val distinct = room.positions.distinct().minByOrNull { it.core } ?: return
+        val vec = Vec3(pos).subtractVec(x = distinct.x, z = distinct.z).rotateToNorth(room.room.rotation)
 
-        val waypoints =
-            if (room.data.type != RoomType.NORMAL) DungeonWaypointConfig.waypoints.getOrPut(room.data.name) { mutableListOf() }
-            else DungeonWaypointConfig.waypoints.getOrPut(distinct.toString()) { mutableListOf() }
+        val waypoints = DungeonWaypointConfig.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
 
         if (mc.thePlayer.isSneaking) {
             GuiSign.setCallback { enteredText ->

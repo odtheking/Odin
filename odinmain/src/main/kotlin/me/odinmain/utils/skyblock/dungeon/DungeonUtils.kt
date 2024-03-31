@@ -124,18 +124,13 @@ object DungeonUtils {
     fun setWaypoints() {
         val curRoom = currentRoom ?: return
         val room = curRoom.room
+        val distinct = curRoom.positions.distinct().minByOrNull { it.core } ?: return
         curRoom.waypoints = mutableListOf<DungeonWaypoint>().apply {
             DungeonWaypointConfig.waypoints[room.data.name]?.let { waypoints ->
                 addAll(waypoints.map { waypoint ->
-                    val vec = waypoint.toVec3().rotateAroundNorth(room.rotation).addVec(x = room.x, z = room.z)
+                    val vec = waypoint.toVec3().rotateAroundNorth(room.rotation).addVec(x = distinct.x, z = distinct.z)
                     DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, waypoint.color, waypoint.filled, waypoint.depth, waypoint.size, waypoint.title)
                 })
-            }
-            curRoom.positions.forEach { pos ->
-                addAll(DungeonWaypointConfig.waypoints[pos.core.toString()]?.map { waypoint ->
-                    val vec = waypoint.toVec3().rotateAroundNorth(room.rotation).addVec(x = pos.x, z = pos.z)
-                    DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, waypoint.color, waypoint.filled, waypoint.depth, waypoint.size, waypoint.title)
-                } ?: emptyList())
             }
         }
     }
