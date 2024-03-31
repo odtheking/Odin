@@ -75,9 +75,6 @@ object DungeonWaypoints : Module(
         val title: String?
     )
 
-
-
-
     override fun onKeybind() {
         allowEdits = !allowEdits
         modMessage("Dungeon Waypoint editing ${if (allowEdits) "§aenabled" else "§cdisabled"}§r!")

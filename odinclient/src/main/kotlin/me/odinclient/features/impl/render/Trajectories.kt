@@ -35,6 +35,7 @@ object Trajectories : Module(
     category = Category.RENDER
 ) {
     private val bows: Boolean by BooleanSetting("Bows", false, description = "Render trajectories of bow arrows")
+    private val boxes: Boolean by BooleanSetting("Show Boxes for bows", true, description = "Shows boxes displaying where arrows will hit, if this is disabled it will only highlight entities your arrows will hit.")
     private val pearls: Boolean by BooleanSetting("Pearls", false, description = "Render trajectories of ender pearls")
 
     private val range: Float by NumberSetting("Solver Range", 30f, 1f, 60f, 1f, description = "Performance impact scales with this")
@@ -54,19 +55,16 @@ object Trajectories : Module(
         lineRenderQueue.clear()
         if (bows && mc.thePlayer?.heldItem?.item is ItemBow) {
             if (mc.thePlayer?.heldItem?.isShortbow == true) {
+                this.setBowTrajectoryHeading(0f, false)
                 if (mc.thePlayer?.heldItem?.itemID == "TERMINATOR") {
                     this.setBowTrajectoryHeading(-5f, false)
-                    this.setBowTrajectoryHeading(0f, false)
                     this.setBowTrajectoryHeading(5f, false)
-                }
-                else {
-                    this.setBowTrajectoryHeading(0f, false)
                 }
             } else {
                 if (mc.thePlayer?.itemInUseDuration == 0) return
                 this.setBowTrajectoryHeading(0f, true)
             }
-            this.drawBowCollisionBoxes()
+            if (boxes) this.drawBowCollisionBoxes()
         }
         if (pearls) {
             pearlImpactPos = null
@@ -211,14 +209,15 @@ object Trajectories : Module(
                 boxRenderQueue.clear()
                 return
             }
-            val minX = b.first.xCoord - b.second.x / 2
-            val maxX = b.first.xCoord + b.second.x / 2
-            val minY = b.first.yCoord - b.second.y / 2
-            val maxY = b.first.yCoord + b.second.y / 2
-            val minZ = b.first.zCoord - b.second.x / 2
-            val maxZ = b.first.zCoord + b.second.x / 2
-            Renderer.drawBox(AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ),
-                color, thickness / 3, depth = true, fillAlpha = 0)
+            val aabb = AxisAlignedBB(
+                b.first.xCoord - b.second.x / 2,
+                b.first.yCoord - b.second.y / 2,
+                b.first.zCoord - b.second.x / 2,
+                b.first.xCoord + b.second.x / 2,
+                b.first.yCoord + b.second.y / 2,
+                b.first.zCoord + b.second.x / 2
+            )
+            Renderer.drawBox(aabb, color, thickness / 3, depth = true, fillAlpha = 0)
         }
         boxRenderQueue.clear()
     }
