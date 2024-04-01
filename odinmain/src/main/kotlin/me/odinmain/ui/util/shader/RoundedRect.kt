@@ -1,4 +1,4 @@
-package me.odinmain.ui.util
+package me.odinmain.ui.util.shader
 
 import gg.essential.elementa.components.UIBlock
 import gg.essential.universal.UMatrixStack
@@ -104,10 +104,10 @@ object RoundedRect {
         lateinit var shaderShadowSoftness: FloatUniform
         val directionVecs = listOf(Pair(1f, 0f), Pair(0f, 1f), Pair(-1f, 0f), Pair(0f, -1f))
 
-        fun isInitialized() = ::shader.isInitialized
+        fun isInitialized() = RoundedRectangle::shader.isInitialized
 
         fun initShader() {
-            if (::shader.isInitialized) return
+            if (RoundedRectangle::shader.isInitialized) return
 
             shader = createLegacyShader("rectangle", "roundedrectangle", BlendState.NORMAL)
             if (!shader.usable) {
@@ -136,10 +136,10 @@ object RoundedRect {
         lateinit var shaderSizeUniform: Float2Uniform
         lateinit var shaderColorUniform: Float4Uniform
 
-        fun isInitialized() = ::shader.isInitialized
+        fun isInitialized() = HSBBox::shader.isInitialized
 
         fun initShader() {
-            if (::shader.isInitialized) return
+            if (HSBBox::shader.isInitialized) return
 
             shader = createLegacyShader("rectangle", "hsbbox", BlendState.NORMAL)
             if (!shader.usable) {
@@ -162,10 +162,10 @@ object RoundedRect {
         lateinit var shaderBorderColorUniform: Float4Uniform
         lateinit var shaderBorderThicknessUniform: FloatUniform
 
-        fun isInitialized() = ::shader.isInitialized
+        fun isInitialized() = Circle::shader.isInitialized
 
         fun initShader() {
-            if (::shader.isInitialized) return
+            if (Circle::shader.isInitialized) return
 
             shader = createLegacyShader("rectangle", "circleFragment", BlendState.NORMAL)
             if (!shader.usable) {
@@ -190,10 +190,10 @@ object RoundedRect {
         lateinit var shaderShadowColorUniform: Float4Uniform
         lateinit var shaderShadowSoftness: FloatUniform
 
-        fun isInitialized() = ::shader.isInitialized
+        fun isInitialized() = DropShadow::shader.isInitialized
 
         fun initShader() {
-            if (::shader.isInitialized) return
+            if (DropShadow::shader.isInitialized) return
 
             shader = createLegacyShader("rectangle", "dropShadow", BlendState.NORMAL)
             if (!shader.usable) {

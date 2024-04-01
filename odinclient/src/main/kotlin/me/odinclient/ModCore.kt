@@ -11,10 +11,14 @@ import me.odinclient.features.impl.floor7.RelicAura
 import me.odinclient.features.impl.floor7.p3.*
 import me.odinclient.features.impl.render.*
 import me.odinclient.features.impl.skyblock.*
+import me.odinclient.mixin.accessors.EntityRendererAccessor
 import me.odinmain.OdinMain
+import me.odinmain.OdinMain.mc
 import me.odinmain.commands.registerCommands
 import me.odinmain.config.utils.ConfigFile
 import me.odinmain.features.ModuleManager
+import me.odinmain.ui.util.shader.FramebufferShader
+import me.odinmain.utils.render.RenderUtils
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.Mod.EventHandler
@@ -41,6 +45,8 @@ class ModCore {
         registerCommands(
             autoSellCommand
         )
+        FramebufferShader.setupCameraTransform =
+            { (mc.entityRenderer as? EntityRendererAccessor)?.invokeSetupCameraTransform(RenderUtils.partialTicks, 0) }
     }
 
     @EventHandler

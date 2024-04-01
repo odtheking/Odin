@@ -31,6 +31,7 @@
     "mixins.MixinRenderPlayer",
     "mixins.MixinSoundManager",
     "mixins.model.MixinModelBiped",
-    "mixins.model.MixinModelBlaze"
+    "mixins.model.MixinModelBlaze",
+    "accessors.EntityRendererAccessor"
   ]
 }

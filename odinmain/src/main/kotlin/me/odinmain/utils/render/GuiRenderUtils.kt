@@ -4,7 +4,7 @@ import gg.essential.universal.UMatrixStack
 import me.odinmain.OdinMain.mc
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.util.ColorUtil
-import me.odinmain.ui.util.RoundedRect
+import me.odinmain.ui.util.shader.RoundedRect
 import me.odinmain.utils.*
 import me.odinmain.utils.render.RenderUtils.drawTexturedModalRect
 import me.odinmain.utils.render.TextAlign.Left
