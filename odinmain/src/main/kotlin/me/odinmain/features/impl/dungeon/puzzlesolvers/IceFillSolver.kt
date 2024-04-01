@@ -3,6 +3,7 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
+import me.odinmain.utils.addVec
 import me.odinmain.utils.plus
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
@@ -32,7 +33,7 @@ object IceFillSolver {
 
     fun onRenderWorldLast(color: Color) {
         if (currentPatterns.size == 0 || rPos.size == 0 /*|| DungeonUtils.currentRoomName != "Ice Fill"*/) return
-
+        val rotation = renderRotation ?: return
         for (i in currentPatterns.indices) {
             val pattern = currentPatterns[i]
             val pos = rPos[i]
@@ -48,14 +49,24 @@ object IceFillSolver {
     }
 
     fun onClientTick(event: TickEvent.ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.END || mc.thePlayer == null || !DungeonUtils.inDungeons || DungeonUtils.currentRoomName != "Ice Fill") return
+        if (event.phase != TickEvent.Phase.END || mc.thePlayer == null/* || !DungeonUtils.inDungeons || DungeonUtils.currentRoomName != "Ice Fill"*/) return
         val pos = posFloored
         if (getBlockIdAt(BlockPos(pos.x, pos.y - 1, pos.z )) != 79) return
         val floorIndex = pos.y % 70
         if (floorIndex !in scanned.indices || scanned[floorIndex]) return
         scope.launch {
-            if (scan(pos, floorIndex))
-                scanned[floorIndex] = true
+            val rotation = checkRotation(pos, floorIndex) ?: return@launch
+            if (!scan(pos, floorIndex)) return@launch
+
+            scanned[floorIndex] = true
+            if (floorIndex == 2) return@launch
+            val a = transform(Vec3i(if (floorIndex == 0) 5 else 7, 1, 0), rotation)
+            if (!scan(pos.addVec(a.x, a.y, a.z), floorIndex + 1)) return@launch
+
+            scanned[floorIndex + 1] = true
+            if (floorIndex == 1) return@launch
+            val b = transform(Vec3i(12, 2, 0), rotation)
+            scanned[2] = scan(pos.addVec(b.x, b.y, b.z), 2)
         }
     }
 

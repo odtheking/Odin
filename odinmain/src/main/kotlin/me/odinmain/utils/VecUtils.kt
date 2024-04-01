@@ -319,7 +319,7 @@ fun Vec3.subtractVec(x: Number = .0, y: Number = .0, z: Number = .0): Vec3 {
  * Adds the given coordinates to the Vec3.
  */
 fun Vec3i.addVec(x: Number = .0, y: Number = .0, z: Number = .0): Vec3i {
-    return this.addVec(x.toDouble(), y.toDouble(), z.toDouble())
+    return Vec3i(this.x + x.toInt(), this.y + y.toInt(), this.z + z.toInt())
 }
 
 
