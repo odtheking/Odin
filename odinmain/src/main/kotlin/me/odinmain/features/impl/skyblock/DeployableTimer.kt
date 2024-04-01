@@ -6,6 +6,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
+import me.odinmain.utils.FlareTextures
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.loadBufferedImage
@@ -25,12 +26,6 @@ object DeployableTimer : Module(
     category = Category.SKYBLOCK
 ) {
     private val firework = DynamicTexture(loadBufferedImage("/assets/odinmain/deployable/firework.png"))
-    private val radiantimage = DynamicTexture(loadBufferedImage("/assets/odinmain/deployable/RADIANTPOWERORB.png"))
-    private val manaimage = DynamicTexture(loadBufferedImage("/assets/odinmain/deployable/MANAFLUXPOWERORB.png"))
-    private val overfluximage = DynamicTexture(loadBufferedImage("/assets/odinmain/deployable/OVERFLUXPOWERORB.png"))
-    private val plasmaimage = DynamicTexture(loadBufferedImage("/assets/odinmain/deployable/PLASMAPOWERORB.png"))
-
-
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {
             text("§l§5SOS Flare", 40f, 15f, Color.WHITE,12f, OdinFont.BOLD)
@@ -38,49 +33,42 @@ object DeployableTimer : Module(
 
             drawDynamicTexture(firework, -5f, -2f, 50f, 50f)
 
-            max(
-                getTextWidth("SOS Flare", 12f),
-                getTextWidth("179s", 12f)
-            ) + 42f to 48f
-        } else if (toRender.name != "") {
+            max(getTextWidth("SOS Flare", 12f), getTextWidth("179s", 12f)) + 42f to 48f
+        } else {
+            val currentMillis = System.currentTimeMillis()
+            val d = currentDeployables.firstOrNull { dep -> mc.thePlayer.getDistanceToEntity(dep.entity) <= dep.range }
+
+            if (d == null) {
+                resetLines()
+                return@HudSetting 0f to 0f
+            }
+            val timeLeft = (d.timeAdded + d.duration - currentMillis) / 1000
+            if (timeLeft <= 0 || d.entity.isDead) {
+                currentDeployables.remove(d)
+                currentDeployables.sortByDescending { dep -> dep.priority }
+                resetLines()
+                return@HudSetting 0f to 0f
+            }
+            toRender = RenderableDeployable(d.renderName, "§e${timeLeft}s", d.image)
             text(toRender.name, 40f, 15f, Color.WHITE,12f, OdinFont.BOLD)
             text(toRender.timeLeft, 40f, 32f, Color.WHITE,12f, OdinFont.BOLD)
-
-            if (toRender.name.contains("Flare", true)) drawDynamicTexture(toRender.image, -5f, -2f, 50f, 50f)
-            else drawDynamicTexture(toRender.image, 0f, 5f, 35f, 35f)
-
-            max(
-                getTextWidth(toRender.name.noControlCodes, 12f),
-                getTextWidth(toRender.timeLeft.noControlCodes, 12f)
-            ) + 42f to 48f
-        } else 0f to 0f
+            val isFlare = toRender.name.contains("Flare")
+            drawDynamicTexture(toRender.image, if (isFlare) -5f else 0f, if (isFlare) -2f else 5f, 35f, 35f)
+            max(getTextWidth(toRender.name.noControlCodes, 12f), getTextWidth(toRender.timeLeft.noControlCodes, 12f)) + 42f to 48f
+        }
+        0f to 0f
     }
 
     private enum class Deployables (
-        val texture: String,
-        val displayName: String,
-        val renderName: String,
-        val priority: Int,
-        val duration: Int,
-        val dynamicTexture: DynamicTexture,
-        val range: Float
+        val texture: String, val displayName: String, val renderName: String, val priority: Int, val duration: Int, val dynamicTexture: DynamicTexture, val range: Float
     ) {
-        Warning("ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzMwNjIyMywKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjJlMmJmNmMxZWMzMzAyNDc5MjdiYTYzNDc5ZTU4NzJhYzY2YjA2OTAzYzg2YzgyYjUyZGFjOWYxYzk3MTQ1OCIKICAgIH0KICB9Cn0=",
-            "Warning Flare", "§aWarning Flare", 3, 180000, firework, 40f),
-
-        Alert("ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzMyNjQzMiwKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWQyYmY5ODY0NzIwZDg3ZmQwNmI4NGVmYTgwYjc5NWM0OGVkNTM5YjE2NTIzYzNiMWYxOTkwYjQwYzAwM2Y2YiIKICAgIH0KICB9Cn0=",
-            "Alert Flare", "§9Alert Flare", 5, 180000, firework, 40f),
-
-        SOS("ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzM0NzQ4OSwKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzAwNjJjYzk4ZWJkYTcyYTZhNGI4OTc4M2FkY2VmMjgxNWI0ODNhMDFkNzNlYTg3YjNkZjc2MDcyYTg5ZDEzYiIKICAgIH0KICB9Cn0=",
-            "SOS Flare", "§l§5SOS Flare", 7, 180000, firework, 40f),
-
-        Radiant("placeholder", "Radiant", "§aRadiant Orb", 1, 30000, radiantimage, 18f),
-
-        Mana("placeholder", "Mana" , "§9Mana Flux Orb", 2, 30000, manaimage, 18f),
-
-        Overflux("placeholder", "Overflux", "§5Overflux Orb", 4, 30000, overfluximage, 18f),
-
-        Plasma("placeholder", "Plasma", "§dPlasmaflux", 5, 60000, plasmaimage, 20f),
+        Warning (FlareTextures.warningFlareTexture, "Warning Flare", "§aWarning Flare", 3, 180000, firework, 40f),
+        Alert   (FlareTextures.alertFlareTexture,   "Alert Flare",   "§9Alert Flare",   5, 180000, firework, 40f),
+        SOS     (FlareTextures.sosFlareTexture,     "SOS Flare",     "§l§5SOS Flare",   7, 180000, firework, 40f),
+        Radiant ("placeholder", "Radiant",  "§aRadiant Orb",    1, 30000, DynamicTexture(loadBufferedImage("/assets/odinmain/deployable/RADIANTPOWERORB.png")),  18f),
+        Mana    ("placeholder", "Mana" ,    "§9Mana Flux Orb",  2, 30000, DynamicTexture(loadBufferedImage("/assets/odinmain/deployable/MANAFLUXPOWERORB.png")), 18f),
+        Overflux("placeholder", "Overflux", "§5Overflux Orb",   4, 30000, DynamicTexture(loadBufferedImage("/assets/odinmain/deployable/OVERFLUXPOWERORB.png")), 18f),
+        Plasma  ("placeholder", "Plasma",   "§dPlasmaflux",     5, 60000, DynamicTexture(loadBufferedImage("/assets/odinmain/deployable/PLASMAPOWERORB.png")),   20f),
     }
 
     class Deployable(val priority: Int, val duration: Int, val entity: EntityArmorStand, val renderName: String, val image: DynamicTexture, val range: Float, val timeAdded: Long = System.currentTimeMillis())
@@ -88,7 +76,6 @@ object DeployableTimer : Module(
 
     private val currentDeployables = mutableListOf<Deployable>()
     private val orbRegex = Regex("(.+) (\\d+)s")
-
     private var toRender = RenderableDeployable("", "", firework)
 
     @SubscribeEvent
@@ -101,16 +88,15 @@ object DeployableTimer : Module(
         val name = entity.name.noControlCodes
         val texture = getSkullValue(entity)
         val deployable = Deployables.entries.firstOrNull { it.texture == texture || name.startsWith(it.displayName)} ?: return
-        if (deployable.texture != "placeholder") {
-            currentDeployables.add(Deployable(deployable.priority, deployable.duration, entity, deployable.renderName, deployable.dynamicTexture, deployable.range))
-            currentDeployables.sortByDescending { it.priority }
-            resetLines()
-        } else {
-            val time = orbRegex.find(name)?.groupValues?.get(2)?.toInt() ?: return
-            currentDeployables.add(Deployable(deployable.priority, time * 1000, entity, deployable.renderName, deployable.dynamicTexture, deployable.range))
-            currentDeployables.sortByDescending { it.priority }
-            resetLines()
-        }
+        val duration =
+            if (deployable.texture == "placeholder")
+                    (orbRegex.find(name)?.groupValues?.get(2)?.toInt() ?: return) * 1000
+            else
+                deployable.duration
+
+        currentDeployables.add(Deployable(deployable.priority, duration, entity, deployable.renderName, deployable.dynamicTexture, deployable.range))
+        currentDeployables.sortByDescending { it.priority }
+        resetLines()
     }
 
     init {
@@ -118,26 +104,6 @@ object DeployableTimer : Module(
             currentDeployables.clear()
             resetLines()
         }
-    }
-
-    @SubscribeEvent
-    fun onRenderOverlay(event: RenderGameOverlayEvent) {
-        if (event.type != RenderGameOverlayEvent.ElementType.TEXT || currentDeployables.size == 0) return
-        val currentMillis = System.currentTimeMillis()
-        val d = currentDeployables.firstOrNull { mc.thePlayer.getDistanceToEntity(it.entity) <= it.range }
-
-        if (d == null) {
-            resetLines()
-            return
-        }
-        val timeLeft = (d.timeAdded + d.duration - currentMillis) / 1000
-        if (timeLeft <= 0 || d.entity.isDead) {
-            currentDeployables.remove(d)
-            currentDeployables.sortByDescending { it.priority }
-            resetLines()
-            return
-        }
-        toRender = RenderableDeployable(d.renderName, "§e${timeLeft}s", d.image)
     }
 
     private fun resetLines() {
