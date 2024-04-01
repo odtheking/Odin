@@ -3,6 +3,7 @@ package me.odinmain.utils.skyblock.dungeon
 import com.google.common.collect.ComparisonChain
 import me.odinmain.OdinMain.mc
 import me.odinmain.config.DungeonWaypointConfig
+import me.odinmain.events.impl.EnteredDungeonRoomEvent
 import me.odinmain.features.impl.dungeon.DungeonWaypoints.DungeonWaypoint
 import me.odinmain.features.impl.dungeon.DungeonWaypoints.toVec3
 import me.odinmain.features.impl.dungeon.LeapMenu
@@ -26,6 +27,7 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.ResourceLocation
 import net.minecraft.world.WorldSettings
+import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.entity.living.LivingEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -101,9 +103,9 @@ object DungeonUtils {
         if (lastRoomPos.equal(xPos, zPos) && currentRoom != null) return
         lastRoomPos = Pair(xPos, zPos)
 
-        val room = scanRoom(xPos, zPos)
-        val positions = room?.let { findRoomTilesRecursively(it.x, it.z, it, mutableSetOf()) } ?: emptyList()
-        currentRoom = room?.let { FullRoom(it, positions, emptyList()) }
+        val room = scanRoom(xPos, zPos) ?: return
+        val positions = room.let { findRoomTilesRecursively(it.x, it.z, it, mutableSetOf()) }
+        currentRoom = FullRoom(room, positions, emptyList())
         currentRoom?.let {
             val topLayer = getTopLayerOfRoom(it.positions.first().x, it.positions.first().z)
             it.room.rotation = Rotations.entries.dropLast(1).find { rotation ->
@@ -115,6 +117,7 @@ object DungeonUtils {
             devMessage("Found rotation ${it.room.rotation}")
         }
         setWaypoints()
+        MinecraftForge.EVENT_BUS.post(EnteredDungeonRoomEvent())
     }
 
     /**
