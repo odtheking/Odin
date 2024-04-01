@@ -2,6 +2,7 @@ package me.odinmain.features.impl.dungeon
 
 import me.odinmain.config.DungeonWaypointConfig
 import me.odinmain.events.impl.ClickEvent
+import me.odinmain.events.impl.EnteredDungeonRoomEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.render.DevPlayers
@@ -57,9 +58,11 @@ object DungeonWaypoints : Module(
 
         DungeonWaypointConfig.saveConfig()
         DungeonUtils.setWaypoints()
+        glList = -1
         modMessage("Successfully reset current room!")
     }
     private val debugWaypoint: Boolean by BooleanSetting("Debug Waypoint", false).withDependency { DevPlayers.isDev }
+    private var glList = -1
 
     data class DungeonWaypoint(
         val x: Double, val y: Double, val z: Double,
@@ -130,6 +133,12 @@ object DungeonWaypoints : Module(
         }
         DungeonWaypointConfig.saveConfig()
         DungeonUtils.setWaypoints()
+        glList = -1
+    }
+
+    @SubscribeEvent
+    fun onNewRoom(event: EnteredDungeonRoomEvent) {
+        glList = -1
     }
 
     fun DungeonWaypoint.toVec3() = Vec3(x, y, z)
@@ -152,6 +161,19 @@ object DungeonWaypoints : Module(
         GlStateManager.disableLighting()
         GlStateManager.enableBlend()
         GL11.glLineWidth(3f)
+        if (glList != -1) {
+            GL11.glCallList(glList)
+            GlStateManager.enableTexture2D()
+            GlStateManager.disableBlend()
+            GlStateManager.enableDepth()
+            GlStateManager.resetColor()
+            GlStateManager.popMatrix()
+            return
+        } else {
+            glList = GL11.glGenLists(1)
+            GL11.glNewList(glList, GL11.GL_COMPILE)
+        }
+
 
 
         for (box in boxes) {
@@ -215,6 +237,7 @@ object DungeonWaypoints : Module(
                 RenderUtils.tessellator.draw()
             }
         }
+        GL11.glEndList()
         GlStateManager.enableTexture2D()
         GlStateManager.disableBlend()
         GlStateManager.enableDepth()
