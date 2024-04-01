@@ -21,29 +21,17 @@ object Ghosts : Module(
     private var showGhosts: Boolean by BooleanSetting(name = "Hide Ghosts")
     private var hideChargedLayer: Boolean by BooleanSetting(name = "Hide Charged Layer")
 
-    @SubscribeEvent
-    fun onRenderWorldLast(event: RenderWorldLastEvent)
-    {
-        val creepers = mc.theWorld.loadedEntityList.filterIsInstance<EntityCreeper>().filter { entityCreeper -> entityCreeper.getEntityAttribute(SharedMonsterAttributes.maxHealth).baseValue >= 1000000 }
+    init {
+        execute(500) {
+            mc.theWorld.loadedEntityList
+                .filterIsInstance<EntityCreeper>()
+                .filter { entityCreeper -> entityCreeper.getEntityAttribute(SharedMonsterAttributes.maxHealth).baseValue >= 1000000 }
+                .forEach { creeper ->
+                    creeper.isInvisible = showGhosts
+                    creeper.dataWatcher.updateObject(17, (if (hideChargedLayer) 0 else 1).toByte())
 
-        for (creeper in creepers)
-        {
-            creeper.isInvisible = showGhosts
-
-            val chargedGhostLayerWatcher: Byte = creeper.dataWatcher.getWatchableObjectByte(17)
-            if (hideChargedLayer)
-            {
-                if (chargedGhostLayerWatcher == 1.toByte()) creeper.dataWatcher.updateObject(17, 0.toByte())
-            }
-            else
-            {
-                if (chargedGhostLayerWatcher == 0.toByte()) creeper.dataWatcher.updateObject(17, 1.toByte())
-            }
-
-            if (showGhostNametag)
-            {
-                drawGhostNameTag(creeper)
-            }
+                    if (showGhostNametag) drawGhostNameTag(creeper)
+                }
         }
     }
 
@@ -78,5 +66,4 @@ object Ghosts : Module(
         }
         return result
     }
-
 }
