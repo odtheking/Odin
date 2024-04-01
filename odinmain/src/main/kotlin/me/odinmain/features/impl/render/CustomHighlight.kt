@@ -3,22 +3,31 @@
 
     import me.odinmain.OdinMain.onLegitVersion
     import me.odinmain.events.impl.PostEntityMetadata
-    import me.odinmain.events.impl.RenderEntityModelEvent
     import me.odinmain.features.Category
     import me.odinmain.features.Module
     import me.odinmain.features.settings.Setting.Companion.withDependency
     import me.odinmain.features.settings.impl.*
-    import me.odinmain.ui.util.shader.*
-    import me.odinmain.utils.*
+    import me.odinmain.ui.util.shader.FramebufferShader
+    import me.odinmain.ui.util.shader.OutlineShader
     import me.odinmain.utils.ServerUtils.getPing
-    import me.odinmain.utils.render.*
+    import me.odinmain.utils.equalsOneOf
+    import me.odinmain.utils.getPositionEyes
+    import me.odinmain.utils.profile
+    import me.odinmain.utils.render.Color
+    import me.odinmain.utils.render.RenderUtils
     import me.odinmain.utils.render.RenderUtils.renderVec
-    import me.odinmain.utils.skyblock.modMessage
+    import me.odinmain.utils.render.Renderer
+    import net.minecraft.client.renderer.GlStateManager
+    import net.minecraft.client.renderer.RenderHelper
+    import net.minecraft.client.shader.ShaderGroup
     import net.minecraft.entity.Entity
     import net.minecraft.entity.boss.EntityWither
     import net.minecraft.entity.item.EntityArmorStand
-    import net.minecraftforge.client.event.*
+    import net.minecraftforge.client.event.RenderGameOverlayEvent
+    import net.minecraftforge.client.event.RenderLivingEvent
+    import net.minecraftforge.client.event.RenderWorldLastEvent
     import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+    import org.lwjgl.opengl.GL11
 
 
     object CustomHighlight : Module(
@@ -42,6 +51,8 @@
         val renderThrough: Boolean get() = if (onLegitVersion) false else xray
 
         var currentEntities = mutableSetOf<Entity>()
+        var clearAndBindFrameBufferShader: () -> Unit = {}
+        var entityOutlineShader: ShaderGroup? = null
 
         init {
             execute({ scanDelay }) {
@@ -73,15 +84,48 @@
         @SubscribeEvent
         fun on2d(event: RenderGameOverlayEvent.Pre) {
             if (event.type != RenderGameOverlayEvent.ElementType.HOTBAR || !mode.equalsOneOf(0, 4)) return
-            val shader = if (mode == 0) OutlineShader else GlowShader
+            val entityShadows = mc.gameSettings.entityShadows
+            if (mode == 0) OutlineShader.startDraw(RenderUtils.partialTicks)
+            else {
+                GlStateManager.enableAlpha()
 
-            shader.startDraw(RenderUtils.partialTicks)
+                GlStateManager.pushMatrix()
+                GlStateManager.pushAttrib()
+                GlStateManager.depthFunc(519)
+                GlStateManager.disableFog()
+                clearAndBindFrameBufferShader.invoke()
+                RenderHelper.disableStandardItemLighting()
+                mc.renderManager.setRenderOutlines(true)
+
+                mc.gameSettings.entityShadows = false
+                FramebufferShader.setupCameraTransform.invoke()
+            }
 
             currentEntities.forEach {
                 mc.renderManager.renderEntityStatic(it, RenderUtils.partialTicks, true)
             }
 
-            shader.stopDraw(color, thickness, 1f)
+            if (mode == 0) OutlineShader.stopDraw(color, thickness, 1f)
+            else {
+                mc.gameSettings.entityShadows = entityShadows
+                GL11.glEnable(GL11.GL_BLEND)
+                GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+                mc.renderManager.setRenderOutlines(false)
+                RenderHelper.enableStandardItemLighting()
+                GlStateManager.depthMask(false)
+                entityOutlineShader?.loadShaderGroup(RenderUtils.partialTicks)
+                GlStateManager.enableLighting()
+                GlStateManager.depthMask(true)
+                mc.framebuffer.bindFramebuffer(false)
+                GlStateManager.enableFog()
+                GlStateManager.enableBlend()
+                GlStateManager.enableColorMaterial()
+                GlStateManager.depthFunc(515)
+                GlStateManager.enableDepth()
+                GlStateManager.enableAlpha()
+                GlStateManager.popAttrib()
+                GlStateManager.popMatrix()
+            }
         }
 
         @SubscribeEvent

@@ -28,8 +28,8 @@ abstract class FramebufferShader(fragmentShader: String) : Shader(fragmentShader
         GlStateManager.pushAttrib()
 
         framebuffer = setupFrameBuffer(framebuffer)
-        framebuffer!!.framebufferClear()
-        framebuffer!!.bindFramebuffer(true)
+        framebuffer?.framebufferClear()
+        framebuffer?.bindFramebuffer(true)
         entityShadows = mc.gameSettings.entityShadows
         mc.gameSettings.entityShadows = false
         setupCameraTransform.invoke()

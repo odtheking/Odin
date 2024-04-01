@@ -4,8 +4,11 @@ import me.odin.features.impl.floor7.p3.ArrowAlign
 import me.odin.features.impl.floor7.p3.SimonSays
 import me.odin.features.impl.render.EtherWarpHelper
 import me.odin.mixin.accessors.EntityRendererAccessor
+import me.odin.mixin.accessors.RenderGlobalAccessor
 import me.odinmain.OdinMain
+import me.odinmain.OdinMain.mc
 import me.odinmain.features.ModuleManager
+import me.odinmain.features.impl.render.CustomHighlight
 import me.odinmain.ui.util.shader.FramebufferShader
 import me.odinmain.utils.render.RenderUtils
 import net.minecraftforge.common.MinecraftForge
@@ -33,6 +36,16 @@ class ModCore {
 
         FramebufferShader.setupCameraTransform =
             { (OdinMain.mc.entityRenderer as? EntityRendererAccessor)?.invokeSetupCameraTransform(RenderUtils.partialTicks, 0) }
+        CustomHighlight.entityOutlineShader = (mc.renderGlobal as? RenderGlobalAccessor)?.entityOutlineShader
+        CustomHighlight.clearAndBindFrameBufferShader = {
+            (mc.renderGlobal as? RenderGlobalAccessor)?.let {
+                it.entityOutlineFramebuffer.framebufferClear()
+                it.entityOutlineFramebuffer.bindFramebuffer(true)
+            }
+        }
+
+
+
     }
 
     @SubscribeEvent
