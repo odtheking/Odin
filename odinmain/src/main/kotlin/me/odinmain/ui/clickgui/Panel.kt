@@ -119,8 +119,8 @@ class Panel(
         ClickGUIModule.panelExtended[category]!!.enabled = extended
 
         if (extended) {
-            for (i in moduleButtons.size - 1 downTo 0) {
-                moduleButtons[i].mouseReleased(state)
+            moduleButtons.filter { it.module.name.contains(currentSearch, true) }.reversed().forEach {
+                it.mouseReleased(state)
             }
         }
     }
