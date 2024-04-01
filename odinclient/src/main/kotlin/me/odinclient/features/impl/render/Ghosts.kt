@@ -39,18 +39,11 @@ object Ghosts : Module(
         val currentHealth = creeper.health
         val maxHealth = creeper.getEntityAttribute(SharedMonsterAttributes.maxHealth).baseValue
         val isRunic = maxHealth == 4000000.0
-        var bracketsColor = "&8"
-        var lvlColor = "&7"
-        var nameColor = "&c"
-        var currentHealthColor = if (currentHealth < maxHealth / 2) "&e" else "&a"
-        var maxHealthColor = "&a"
-        if (isRunic) {
-            bracketsColor = "&5"
-            lvlColor = "&d"
-            nameColor = "&5"
-            currentHealthColor = "&d"
-            maxHealthColor = "&5"
-        }
+        val bracketsColor = if (isRunic) "&5" else "&8"
+        val lvlColor = if (isRunic) "&d" else "&7"
+        val nameColor = if (isRunic) "&5" else "&c"
+        val currentHealthColor = if (isRunic) "&d" else if (currentHealth < maxHealth / 2) "&e" else "&a"
+        val maxHealthColor = if (isRunic) "&5" else "&a"
         val name = "${bracketsColor}[${lvlColor}Lv250${bracketsColor}] ${nameColor + if (isRunic) "Runic " else ""}Ghost ${currentHealthColor + transformToSuffixedNumber(currentHealth.toDouble()) + "&f"}/${maxHealthColor + transformToSuffixedNumber(maxHealth) + "&c" + "❤"}".replace("&", "§")
 
         Renderer.drawStringInWorld(name, creeper.renderVec.addVec(y = creeper.height + 0.5), Color.WHITE, depth = false)
