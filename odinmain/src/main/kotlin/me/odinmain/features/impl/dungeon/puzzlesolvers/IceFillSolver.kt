@@ -6,18 +6,23 @@ import me.odinmain.OdinMain.scope
 import me.odinmain.utils.addVec
 import me.odinmain.utils.plus
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.RenderUtils.bind
+import me.odinmain.utils.render.RenderUtils.worldRenderer
 import me.odinmain.utils.skyblock.IceFillFloors.floors
 import me.odinmain.utils.skyblock.IceFillFloors.representativeFloors
 import me.odinmain.utils.skyblock.PlayerUtils.posFloored
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.getBlockIdAt
 import me.odinmain.utils.skyblock.isAir
-import me.odinmain.utils.skyblock.modMessage
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.Tessellator
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.lwjgl.opengl.GL11
 
 object IceFillSolver {
     var scanned = BooleanArray(3) { false }
@@ -32,24 +37,37 @@ object IceFillSolver {
     }
 
     fun onRenderWorldLast(color: Color) {
-        if (currentPatterns.size == 0 || rPos.size == 0 /*|| DungeonUtils.currentRoomName != "Ice Fill"*/) return
+        if (currentPatterns.size == 0 || rPos.size == 0 || DungeonUtils.currentRoomName != "Ice Fill") return
         val rotation = renderRotation ?: return
+
+        GlStateManager.pushMatrix()
+        color.bind()
+        RenderUtils.preDraw()
+        GlStateManager.depthMask(true)
+        GL11.glEnable(GL11.GL_LINE_SMOOTH)
+        GL11.glLineWidth(3f)
+
+        worldRenderer.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
         for (i in currentPatterns.indices) {
             val pattern = currentPatterns[i]
-            val pos = rPos[i]
-            //val color = getRainbowColor()
-            Renderer.draw3DLine(pos, pos + transformTo(pattern[0], renderRotation!!), color, 10, true)
-
-            for (j in 1 until pattern.size) {
-                Renderer.draw3DLine(
-                    pos + transformTo(pattern[j - 1], renderRotation!!), pos + transformTo(pattern[j], renderRotation!!), color, 10, true
-                )
+            val startPos = rPos[i]
+            worldRenderer.pos(startPos.xCoord, startPos.yCoord, startPos.zCoord).endVertex()
+            for (point in pattern) {
+                val pos = startPos + transformTo(point, rotation)
+                worldRenderer.pos(pos.xCoord, pos.yCoord, pos.zCoord).endVertex()
             }
+            val stairPos = startPos + transformTo(pattern.last().addVec(1, 1), rotation)
+            worldRenderer.pos(stairPos.xCoord, stairPos.yCoord, stairPos.zCoord).endVertex()
         }
+
+        Tessellator.getInstance().draw()
+        GlStateManager.depthMask(true)
+        RenderUtils.postDraw()
+        GlStateManager.popMatrix()
     }
 
     fun onClientTick(event: TickEvent.ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.END || mc.thePlayer == null/* || !DungeonUtils.inDungeons || DungeonUtils.currentRoomName != "Ice Fill"*/) return
+        if (event.phase != TickEvent.Phase.END || mc.thePlayer == null || !DungeonUtils.inDungeons || DungeonUtils.currentRoomName != "Ice Fill") return
         val pos = posFloored
         if (getBlockIdAt(BlockPos(pos.x, pos.y - 1, pos.z )) != 79) return
         val floorIndex = pos.y % 70
@@ -76,15 +94,15 @@ object IceFillSolver {
         val bPos = BlockPos(pos)
 
         val floorHeight = representativeFloors[floorIndex]
-        val startTime = System.nanoTime()
+        //val startTime = System.nanoTime()
 
         for (index in floorHeight.indices) {
             if (
                 isAir(bPos.add(transform(floorHeight[index].first, rotation))) &&
                 !isAir(bPos.add(transform(floorHeight[index].second, rotation)))
             ) {
-                val scanTime: Double = (System.nanoTime() - startTime) / 1000000.0
-                modMessage("Scan took $scanTime ms")
+                //val scanTime: Double = (System.nanoTime() - startTime) / 1000000.0
+                //modMessage("Scan took $scanTime ms")
 
                 renderPattern(pos, rotation)
                 currentPatterns.add(floors[floorIndex][index].toMutableList())
