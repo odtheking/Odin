@@ -104,10 +104,8 @@ class Panel(
                 return true
             }
         } else if (isMouseOverExtended) {
-            for (i in moduleButtons.size - 1 downTo 0) {
-                if (moduleButtons[i].mouseClicked(mouseButton)) {
-                    return true
-                }
+            return moduleButtons.filter { it.module.name.contains(currentSearch, true) }.reversed().any {
+                it.mouseClicked(mouseButton)
             }
         }
         return false
@@ -128,12 +126,11 @@ class Panel(
     }
 
     fun keyTyped(typedChar: Char, keyCode: Int): Boolean {
-        if (extended) {
-            for (i in moduleButtons.size - 1 downTo 0) {
-                if (moduleButtons[i].keyTyped(typedChar, keyCode)) return true
+        return if (extended) {
+            moduleButtons.filter { it.module.name.contains(currentSearch, true) }.reversed().any {
+                it.keyTyped(typedChar, keyCode)
             }
-        }
-        return false
+        } else false
     }
 
     private val isHovered
