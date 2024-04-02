@@ -23,13 +23,14 @@ public class MixinBlockLever extends Block {
     @Inject(method = "setBlockBoundsBasedOnState", at = @At("HEAD"), cancellable = true)
     private void onSetBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos, CallbackInfo ci)
     {
+        if (LightsDevice.INSTANCE.getEnabled() && LightsDevice.INSTANCE.getBigLevers() && LightsDevice.INSTANCE.getLevers().contains(pos)) {
+            this.setBlockBounds(0, 0, 0, 1, 1, 1);
+            ci.cancel();
+            return;
+        }
         if (SecretHitboxes.INSTANCE.getLever() && SecretHitboxes.INSTANCE.getEnabled()) {
             if (pos.getX() >= 58 && pos.getX() <= 62 && pos.getY() >= 133 && pos.getY() <= 136 && pos.getZ() == 142) return;
 
-            this.setBlockBounds(0, 0, 0, 1, 1, 1);
-            ci.cancel();
-        }
-        if (LightsDevice.INSTANCE.getEnabled() && LightsDevice.INSTANCE.getBigLevers() && LightsDevice.INSTANCE.getLevers().contains(pos)) {
             this.setBlockBounds(0, 0, 0, 1, 1, 1);
             ci.cancel();
         }
