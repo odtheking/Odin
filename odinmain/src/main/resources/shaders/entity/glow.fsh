@@ -4,12 +4,8 @@ uniform sampler2D texture;
 uniform vec2 texelSize;
 
 uniform vec3 color;
-
 uniform float radius;
-uniform float divider;
-uniform float maxSample;
-uniform float glow_intensity = 1;
-uniform float glow_threshold = .5;
+uniform float glow_intensity = 2;
 
 void main() {
     vec4 centerCol = texture2D(texture, gl_TexCoord[0].xy);
