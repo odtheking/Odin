@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.skyblock
 
 import me.odinmain.OdinMain
-import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.events.impl.ClickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -76,15 +75,11 @@ object DianaHelper : Module(
         }
     }
 
-
-    @SubscribeEvent
-    fun onChat(event: ChatPacketEvent) {
-        DianaBurrowEstimate.chat(event)
-
-        if(!event.message.endsWith("Minos Inquisitor!") || !enabled || !sendInqMsg) return
-
-        partyMessage("x: ${PlayerUtils.posX.floor().toInt()}, y: ${PlayerUtils.posY.floor().toInt()}, z: ${PlayerUtils.posZ.floor().toInt()}")
-        PlayerUtils.alert("§6§lInquisitor!")
+    init {
+        onMessage(Regex("^(Uh oh!|Woah!|Yikes!|Oi!|Danger!|Good Grief!|Oh!) You dug out a Minos Inquisitor!\$")) {
+            if (sendInqMsg) partyMessage("x: ${PlayerUtils.posX.floor().toInt()}, y: ${PlayerUtils.posY.floor().toInt()}, z: ${PlayerUtils.posZ.floor().toInt()}")
+            PlayerUtils.alert("§6§lInquisitor!")
+        }
     }
 
     @SubscribeEvent

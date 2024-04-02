@@ -158,8 +158,7 @@ object Renderer {
         mc.entityRenderer.setupOverlayRendering()
         if (displayTitle.isEmpty()) return
         scale(1f / scaleFactor, 1f / scaleFactor, 1f)
-
-        text(text = displayTitle, x = (Display.getWidth() / 2f) - (OdinFont.getTextWidth(displayTitle, 50f) / 2), y = Display.getHeight() * 0.44f, color = displayColor, size = 50f, shadow = true)
+        text(text = displayTitle, x = (Display.getWidth() / 2f) - (OdinFont.getTextWidth(displayTitle, 50f) / 1.5f), y = Display.getHeight() * 0.44f, color = displayColor, size = 50f, shadow = true)
         scale(scaleFactor, scaleFactor, 1f)
     }
 
