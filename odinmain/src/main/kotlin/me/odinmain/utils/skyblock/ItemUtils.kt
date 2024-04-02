@@ -85,7 +85,7 @@ fun getItemSlot(item: String, ignoreCase: Boolean = true): Int? =
 fun getItemIndexInContainerChest(container: ContainerChest, item: String, subList: IntRange = 0..container.inventory.size - 36, ignoreCase: Boolean = false): Int? {
     return container.inventorySlots.subList(subList.first, subList.last + 1).firstOrNull {
         it.stack?.unformattedName?.contains(item, ignoreCase) == true
-    }?.slotNumber
+    }?.slotIndex
 }
 
 

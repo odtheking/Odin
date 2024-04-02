@@ -224,6 +224,23 @@ fun getCurrentMonthName(): String {
     return currentMonth.getDisplayName(TextStyle.FULL, Locale.getDefault())
 }
 
+fun formatTime(time: Long): String {
+    if (time == 0L) return "0s"
+    var remaining = time
+    val hours = (remaining / 3600000).toInt().let {
+        remaining -= it * 3600000
+        if (it > 0) "${it}h " else ""
+    }
+    val minutes = (remaining / 60000).toInt().let {
+        remaining -= it * 60000
+        if (it > 0) "${it}m " else ""
+    }
+    val seconds = (remaining / 1000f).let {
+        "%.2f".format(it)
+    }
+    return "$hours$minutes${seconds}s"
+}
+
 val Char.isHexaDecimal
     get() = isDigit() || equalsOneOf("a","b","c","d","e","f","A","B","C","D","E","F")
 

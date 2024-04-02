@@ -104,6 +104,7 @@ object ModuleManager {
         TeamHighlight,
         VanqNotifier,
         KuudraReminders,
+        KuudraSplits,
         Splits,
         WardrobeKeybinds,
         InvincibilityTimer,

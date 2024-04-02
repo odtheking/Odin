@@ -24,6 +24,7 @@ object DragonPriority {
         val dragon = sortPriority(spawningDragons)
 
         PlayerUtils.alert("§${dragon.colorCode}${dragon.name}")
+        modMessage("§${dragon.colorCode}${dragon.name} §7is your priority dragon!")
     }
 
     fun sortPriority(spawningDragon: MutableList<WitherDragonsEnum>): WitherDragonsEnum {

@@ -19,8 +19,8 @@ import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-object Splits : Module(
-    name = "Splits",
+object KuudraSplits : Module(
+    name = "Kuudra Splits",
     description = "Splits for phases of Kuudra.",
     category = Category.KUUDRA
 ) {
