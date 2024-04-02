@@ -1,4 +1,4 @@
-#version 120
+#version 130
 
 uniform sampler2D texture;
 uniform vec2 texelSize;
@@ -8,24 +8,37 @@ uniform vec3 color;
 uniform float radius;
 uniform float divider;
 uniform float maxSample;
+uniform float glow_intensity = 1;
+uniform float glow_threshold = .5;
 
 void main() {
     vec4 centerCol = texture2D(texture, gl_TexCoord[0].xy);
 
-    if(centerCol.a != 0) {
-        gl_FragColor = vec4(centerCol.rgb, 0);
+    if (centerCol.a != 0) {
+        // If the center pixel is not transparent, it's part of the entity; Apply no color to it
+        gl_FragColor = vec4(0);
     } else {
+        ivec2 size = textureSize(texture, 0);
 
-        float alpha = 0;
+        float uv_x = gl_TexCoord[0].x * size.x;
+        float uv_y = gl_TexCoord[0].y * size.y;
 
-        for (float x = -radius; x < radius; x++) {
-            for (float y = -radius; y < radius; y++) {
-                vec4 currentColor = texture2D(texture, gl_TexCoord[0].xy + vec2(texelSize.x * x, texelSize.y * y));
-
-                if (currentColor.a != 0)
-                alpha += divider > 0 ? max(0, (maxSample - distance(vec2(x, y), vec2(0))) / divider) : 1;
-            }
+        float sum = 0.0;
+        for (int n = 0; n < 9; ++n) {
+            uv_y = (gl_TexCoord[0].y * size.y) + (radius * float(n - 4.5));
+            float h_sum = 0.0;
+            h_sum += texelFetch(texture, ivec2(uv_x - (4.0 * radius), uv_y), 0).a;
+            h_sum += texelFetch(texture, ivec2(uv_x - (3.0 * radius), uv_y), 0).a;
+            h_sum += texelFetch(texture, ivec2(uv_x - (2.0 * radius), uv_y), 0).a;
+            h_sum += texelFetch(texture, ivec2(uv_x - radius, uv_y), 0).a;
+            h_sum += texelFetch(texture, ivec2(uv_x, uv_y), 0).a;
+            h_sum += texelFetch(texture, ivec2(uv_x + radius, uv_y), 0).a;
+            h_sum += texelFetch(texture, ivec2(uv_x + (2.0 * radius), uv_y), 0).a;
+            h_sum += texelFetch(texture, ivec2(uv_x + (3.0 * radius), uv_y), 0).a;
+            h_sum += texelFetch(texture, ivec2(uv_x + (4.0 * radius), uv_y), 0).a;
+            sum += h_sum / 9.0;
         }
-        gl_FragColor = vec4(color, alpha);
+
+        gl_FragColor = vec4(color, (sum / 9.0) * glow_intensity);
     }
 }

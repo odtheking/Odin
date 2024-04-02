@@ -37,7 +37,7 @@ object Renderer {
         fillAlpha: Number = 1,
         depth: Boolean = false
     ) {
-        RenderUtils.drawOutlinedAABB(aabb, color.withAlpha(outlineAlpha.toFloat()), depth = depth)
+        RenderUtils.drawOutlinedAABB(aabb, color.withAlpha(outlineAlpha.toFloat()), thickness = outlineWidth, depth = depth)
 
         RenderUtils.drawFilledAABB(aabb, color.withAlpha(fillAlpha.toFloat()), depth = depth, outlineWidth = outlineWidth)
     }

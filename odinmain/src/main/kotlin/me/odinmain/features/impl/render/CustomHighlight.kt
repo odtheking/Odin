@@ -7,15 +7,15 @@
     import me.odinmain.features.Module
     import me.odinmain.features.settings.Setting.Companion.withDependency
     import me.odinmain.features.settings.impl.*
-    import me.odinmain.ui.util.shader.OutlineShader
+    import me.odinmain.ui.util.shader.*
+    import me.odinmain.utils.*
     import me.odinmain.utils.ServerUtils.getPing
-    import me.odinmain.utils.equalsOneOf
-    import me.odinmain.utils.getPositionEyes
-    import me.odinmain.utils.profile
     import me.odinmain.utils.render.Color
     import me.odinmain.utils.render.RenderUtils
+    import me.odinmain.utils.render.RenderUtils.renderBoundingBox
     import me.odinmain.utils.render.RenderUtils.renderVec
     import me.odinmain.utils.render.Renderer
+    import me.odinmain.utils.skyblock.modMessage
     import net.minecraft.client.renderer.GlStateManager
     import net.minecraft.client.renderer.RenderHelper
     import net.minecraft.client.shader.ShaderGroup
@@ -69,12 +69,13 @@
 
         @SubscribeEvent
         fun onRenderWorldLast(event: RenderWorldLastEvent) {
+            if (!mode.equalsOneOf(2,3) && tracerLimit == 0) return
             profile("ESP") { currentEntities.forEach {
                 if (currentEntities.size < tracerLimit && !onLegitVersion)
                     RenderUtils.draw3DLine(getPositionEyes(mc.thePlayer.renderVec), getPositionEyes(it.renderVec), color, 2, false)
 
                 if (mode == 2)
-                    Renderer.drawBox(it.entityBoundingBox, color, thickness, depth = !renderThrough, fillAlpha = 0)
+                    Renderer.drawBox(it.renderBoundingBox, color, thickness, depth = !renderThrough, fillAlpha = 0)
                 else if (mode == 3 && (mc.thePlayer.canEntityBeSeen(it) || renderThrough))
                     Renderer.draw2DEntity(it, thickness, color)
             }}
@@ -83,48 +84,15 @@
         @SubscribeEvent
         fun on2d(event: RenderGameOverlayEvent.Pre) {
             if (event.type != RenderGameOverlayEvent.ElementType.HOTBAR || !mode.equalsOneOf(0, 4)) return
-            val entityShadows = mc.gameSettings.entityShadows
             if (mode == 0) OutlineShader.startDraw(RenderUtils.partialTicks)
-            else {
-                GlStateManager.enableAlpha()
-
-                GlStateManager.pushMatrix()
-                GlStateManager.pushAttrib()
-                GlStateManager.depthFunc(519)
-                GlStateManager.disableFog()
-                clearAndBindFrameBufferShader.invoke()
-                RenderHelper.disableStandardItemLighting()
-                mc.renderManager.setRenderOutlines(true)
-
-                mc.gameSettings.entityShadows = false
-                //FramebufferShader.setupCameraTransform.invoke()
-            }
+            else GlowShader.startDraw(RenderUtils.partialTicks)
 
             currentEntities.forEach {
                 mc.renderManager.renderEntityStatic(it, RenderUtils.partialTicks, true)
             }
 
-            if (mode == 0) OutlineShader.stopDraw(color, thickness, 1f)
-            else {
-                mc.gameSettings.entityShadows = entityShadows
-                GL11.glEnable(GL11.GL_BLEND)
-                GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-                mc.renderManager.setRenderOutlines(false)
-                RenderHelper.enableStandardItemLighting()
-                GlStateManager.depthMask(false)
-                entityOutlineShader?.loadShaderGroup(RenderUtils.partialTicks)
-                GlStateManager.enableLighting()
-                GlStateManager.depthMask(true)
-                mc.framebuffer.bindFramebuffer(false)
-                GlStateManager.enableFog()
-                GlStateManager.enableBlend()
-                GlStateManager.enableColorMaterial()
-                GlStateManager.depthFunc(515)
-                GlStateManager.enableDepth()
-                GlStateManager.enableAlpha()
-                GlStateManager.popAttrib()
-                GlStateManager.popMatrix()
-            }
+            if (mode == 0) OutlineShader.stopDraw(color, thickness / 3f, 1f)
+            else GlowShader.stopDraw(color, thickness, 1f)
         }
 
         @SubscribeEvent
