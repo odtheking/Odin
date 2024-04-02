@@ -1,6 +1,7 @@
 package me.odinmain.features
 
 import me.odinmain.OdinMain
+import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.ModuleManager.executors
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.settings.AlwaysActive
@@ -158,6 +159,10 @@ abstract class Module(
                 Regex.escape(text).toRegex()
 
         ModuleManager.messageFunctions.add(ModuleManager.MessageFunction(regex, shouldRun, func))
+    }
+
+    fun onMessageCancellable(filter: Regex, shouldRun: () -> Boolean = { alwaysActive || enabled }, func: (ChatPacketEvent) -> Unit) {
+        ModuleManager.cancellableMessageFunctions.add(ModuleManager.MessageFunctionCancellable(filter, shouldRun, func))
     }
 
     fun onWorldLoad(func: () -> Unit) {

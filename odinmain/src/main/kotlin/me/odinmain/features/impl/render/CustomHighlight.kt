@@ -7,7 +7,6 @@
     import me.odinmain.features.Module
     import me.odinmain.features.settings.Setting.Companion.withDependency
     import me.odinmain.features.settings.impl.*
-    import me.odinmain.ui.util.shader.FramebufferShader
     import me.odinmain.ui.util.shader.OutlineShader
     import me.odinmain.utils.ServerUtils.getPing
     import me.odinmain.utils.equalsOneOf
@@ -98,7 +97,7 @@
                 mc.renderManager.setRenderOutlines(true)
 
                 mc.gameSettings.entityShadows = false
-                FramebufferShader.setupCameraTransform.invoke()
+                //FramebufferShader.setupCameraTransform.invoke()
             }
 
             currentEntities.forEach {

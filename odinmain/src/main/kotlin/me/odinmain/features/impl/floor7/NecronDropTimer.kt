@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.floor7
 
-import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -43,9 +42,9 @@ object NecronDropTimer : Module(
             timer--
         }
     }
-
-    @SubscribeEvent
-    fun onChatPacket(event: ChatPacketEvent) {
-        if (event.message == "[BOSS] Necron: I'm afraid, your journey ends now.") timer = 60
+    init {
+        onMessage("[BOSS] Necron: I'm afraid, your journey ends now.", false) {
+            timer = 60
+        }
     }
 }

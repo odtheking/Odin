@@ -1,13 +1,11 @@
 package me.odinmain.features.impl.kuudra
 
 import me.odinmain.config.Config
-import me.odinmain.events.impl.ReceivePacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.getSafe
-import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.getTextHeight
 import me.odinmain.utils.render.getTextWidth
@@ -16,8 +14,6 @@ import me.odinmain.utils.round
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.modMessage
-import net.minecraft.network.play.server.S02PacketChat
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object KuudraSplits : Module(
     name = "Kuudra Splits",
@@ -228,26 +224,14 @@ object KuudraSplits : Module(
             splits[4] = System.currentTimeMillis()
         }
 
-        /*onMessage(Regex("(\\[.+])? (\\w+) recovered one of Elle's supplies! \\((\\d/\\d)\\)")) {
-            if (!sendSupplyTime) return@onMessage
-            val matchResult = Regex("(\\[.+])? (\\w+) recovered one of Elle's supplies! \\((\\d/\\d)\\)").find(it) ?: return@onMessage
+        onMessageCancellable(Regex("(\\[.+])? (\\w+) recovered one of Elle's supplies! \\((\\d/\\d)\\)")) {
+            if (!sendSupplyTime) return@onMessageCancellable
+            val matchResult = Regex("(\\[.+])? (\\w+) recovered one of Elle's supplies! \\((\\d/\\d)\\)").find(it.message) ?: return@onMessageCancellable
             modMessage("§6${matchResult.groupValues[2]}§a took ${formatTime((System.currentTimeMillis() - splits[0]))} to recover supply §8(${matchResult.groupValues[3]})!", false)
-            // it.isCanceled = true
-        }*/
+            it.isCanceled = true
+        }
 
         onWorldLoad { splits.fill(0L) }
-    }
-
-    @SubscribeEvent
-    fun onPacket(event: ReceivePacketEvent) {
-        if (event.packet !is S02PacketChat)  return
-        val message = event.packet.chatComponent.unformattedText.noControlCodes
-        if (message.matches(Regex("(\\[.+])? (\\w+) recovered one of Elle's supplies! \\((\\d/\\d)\\)"))) {
-            if (!sendSupplyTime) return
-            val matchResult = Regex("(\\[.+])? (\\w+) recovered one of Elle's supplies! \\((\\d/\\d)\\)").find(message) ?: return
-            event.isCanceled = true
-            modMessage("§6${matchResult.groupValues[2]}§a §btook ${formatTime((System.currentTimeMillis() - splits[0]))}§a to recover supply §8(${matchResult.groupValues[3]})!", false)
-        }
     }
     
     private fun formatTime(time: Long): String {

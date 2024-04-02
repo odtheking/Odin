@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.floor7
 
-import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.DragonBoxes.renderBoxes
@@ -122,7 +121,12 @@ object WitherDragons : Module(
         }
 
         onMessage("[BOSS] Necron: All this, for nothing...", false) {
-            if (WitherDragons.relicAnnounce) relicsOnMessage()
+            if (relicAnnounce) relicsOnMessage()
+        }
+
+        onMessage(Regex(".*")) {
+            if (DungeonUtils.getPhase() != Island.M7P5) return@onMessage
+            onChatPacket(it)
         }
     }
 
@@ -145,12 +149,6 @@ object WitherDragons : Module(
     fun onEntityLeave(event: LivingDeathEvent) {
         if (DungeonUtils.getPhase() != Island.M7P5) return
         dragonLeaveWorld(event)
-    }
-
-    @SubscribeEvent
-    fun onChat(event: ChatPacketEvent) {
-        if (DungeonUtils.getPhase() != Island.M7P5) return
-        onChatPacket(event)
     }
 
     @SubscribeEvent

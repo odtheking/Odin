@@ -1,6 +1,5 @@
 package me.odinmain.utils.skyblock
 
-import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.impl.skyblock.DianaHelper
 import me.odinmain.utils.*
 import net.minecraft.network.play.server.S29PacketSoundEffect
@@ -59,8 +58,8 @@ object DianaBurrowEstimate {
         lastBurrow = pos
     }
 
-    fun chat(event: ChatPacketEvent) {
-        if (!event.message.startsWith("You dug out a Griffin Burrow!") && event.message != "You finished the Griffin burrow chain! (4/4)") return
+    fun chat(message: String) {
+        if (!message.startsWith("You dug out a Griffin Burrow!") && message != "You finished the Griffin burrow chain! (4/4)") return
         lastBurrow?.let {
             recentBurrows.add(it)
             burrows.remove(it)

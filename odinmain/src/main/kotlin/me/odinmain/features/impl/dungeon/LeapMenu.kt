@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.dungeon
 
-import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.events.impl.DrawGuiScreenEvent
 import me.odinmain.events.impl.GuiClickEvent
 import me.odinmain.events.impl.GuiKeyPressEvent
@@ -27,9 +26,7 @@ import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.util.ResourceLocation
-import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.Display
 
@@ -154,21 +151,19 @@ object LeapMenu : Module(
         mc.playerController.windowClick(containerChest.windowId, 11 + index, 2, 3, mc.thePlayer)
     }
 
-    @SubscribeEvent
-    fun onChatPacket(event: ChatPacketEvent) {
-        leapHelperClearChatEvent(event)
-        leapHelperBossChatEvent(event)
+    init {
+        onMessage(Regex(".*")) {
+            leapHelperClearChatEvent(it)
+            leapHelperBossChatEvent(it)
+        }
+
+        onWorldLoad { worldLoad() }
+
+        execute(100) {
+            getPlayer()
+        }
     }
 
-    @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Load) {
-        worldLoad()
-    }
-
-    @SubscribeEvent
-    fun onTick(event: TickEvent.ClientTickEvent) {
-        getPlayer(event)
-    }
 
     /*private val leapTeammates: MutableList<DungeonUtils.DungeonPlayer> = mutableListOf(
         DungeonUtils.DungeonPlayer("Stiviaisd", DungeonUtils.Classes.Healer),

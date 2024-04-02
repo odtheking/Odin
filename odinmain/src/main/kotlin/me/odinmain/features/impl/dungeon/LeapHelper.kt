@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.dungeon
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.equal
 import me.odinmain.utils.noControlCodes
@@ -10,8 +9,6 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
-import net.minecraftforge.fml.common.gameevent.TickEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object LeapHelper {
     private val NONE = Vec3(0.0, 0.0, 0.0)
@@ -30,8 +27,8 @@ object LeapHelper {
     var leapHelperBoss = ""
     var leapHelper: String = if (DungeonUtils.inBoss) leapHelperBoss else leapHelperClear
 
-    fun getPlayer(event: ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.END || DungeonUtils.dungeonTeammates.isEmpty()) return
+    fun getPlayer() {
+        if (DungeonUtils.dungeonTeammates.isEmpty()) return
         if (DungeonUtils.getPhase() == Island.M7P3) scanGates()
         if (currentPos == NONE) return
         leapHelperBoss = DungeonUtils.dungeonTeammates
@@ -68,15 +65,15 @@ object LeapHelper {
     private val keyRegex = Regex("(?:\\[(?:\\w+)] )?(\\w+) opened a (?:WITHER|Blood) door!")
     private val leapHelperClock = Clock(LeapMenu.delay * 1000L)
 
-    fun leapHelperClearChatEvent(event: ChatPacketEvent) {
+    fun leapHelperClearChatEvent(message: String) {
         if(leapHelperClock.hasTimePassed()) leapHelperClear = ""
-        leapHelperClear = keyRegex.find(event.message)?.groupValues?.get(1) ?: return
+        leapHelperClear = keyRegex.find(message)?.groupValues?.get(1) ?: return
         leapHelperClock.update()
     }
 
-    fun leapHelperBossChatEvent(event: ChatPacketEvent) {
-        if (event.message !in messageMap) return
-        currentPos = messageMap[event.message] ?: NONE
+    fun leapHelperBossChatEvent(message: String) {
+        if (message !in messageMap) return
+        currentPos = messageMap[message] ?: NONE
         leapHelperBoss = ""
     }
 }

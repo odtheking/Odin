@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.floor7
 
-import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.impl.floor7.WitherDragons.sendNotification
 import me.odinmain.features.impl.floor7.WitherDragons.sendSpawned
 import me.odinmain.features.impl.floor7.WitherDragons.sendTime
@@ -40,9 +39,9 @@ object DragonCheck {
         lastDragonDeath = dragon.name
     }
 
-    fun onChatPacket(event: ChatPacketEvent) {
+    fun onChatPacket(message: String) {
         if (
-            !event.message.equalsOneOf(
+            !message.equalsOneOf(
                 "[BOSS] Wither King: Oh, this one hurts!",
                 "[BOSS] Wither King: I have more of those",
                 "[BOSS] Wither King: My soul is disposable."

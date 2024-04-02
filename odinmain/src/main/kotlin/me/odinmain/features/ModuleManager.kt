@@ -40,10 +40,13 @@ object ModuleManager {
     )
 
     data class MessageFunction(val filter: Regex, val shouldRun: () -> Boolean, val function: (String) -> Unit)
+    data class MessageFunctionCancellable(val filter: Regex, val shouldRun: () -> Boolean, val function: (ChatPacketEvent) -> Unit)
+
     data class TickTask(var ticksLeft: Int, val function: () -> Unit)
 
     val packetFunctions = mutableListOf<PacketFunction<Packet<*>>>()
     val messageFunctions = mutableListOf<MessageFunction>()
+    val cancellableMessageFunctions = mutableListOf<MessageFunctionCancellable>()
     val worldLoadFunctions = mutableListOf<() -> Unit>()
     val tickTasks = mutableListOf<TickTask>()
     val huds = arrayListOf<HudElement>()
@@ -159,6 +162,10 @@ object ModuleManager {
         messageFunctions
             .filter { event.message matches it.filter && it.shouldRun() }
             .forEach { it.function(event.message) }
+
+        cancellableMessageFunctions
+            .filter { event.message matches it.filter && it.shouldRun() }
+            .forEach { it.function(event) }
     }
 
     @SubscribeEvent
