@@ -63,40 +63,48 @@ object Trajectories : Module(
         planePos = null
         if (mc.thePlayer == null || mc.thePlayer.heldItem == null) return
         if (bows && mc.thePlayer.heldItem.item is ItemBow) {
-            val line1: ArrayList<Vec3>
-            var line2 = arrayListOf<Vec3>()
-            var line3 = arrayListOf<Vec3>()
+            val pair1: Pair<ArrayList<Vec3>, MovingObjectPosition?>
+            var pair2: Pair<ArrayList<Vec3>, MovingObjectPosition?>
+            var pair3: Pair<ArrayList<Vec3>, MovingObjectPosition?>
             if (mc.thePlayer.heldItem?.isShortbow == true) {
-                line1 = this.setBowTrajectoryHeading(0f, false)
+                pair1 = this.setBowTrajectoryHeading(0f, false)
+                pair2 = Pair(arrayListOf(Vec3(0.0, 0.0, 0.0)), null)
+                pair3 = Pair(arrayListOf(Vec3(0.0, 0.0, 0.0)), null)
                 if (mc.thePlayer.heldItem?.itemID == "TERMINATOR") {
-                    line2 = this.setBowTrajectoryHeading(-5f, false)
-                    line3 = this.setBowTrajectoryHeading(5f, false)
+                    pair2 = this.setBowTrajectoryHeading(-5f, false)
+                    pair3 = this.setBowTrajectoryHeading(5f, false)
                 }
             } else {
                 if (mc.thePlayer.itemInUseDuration == 0) return
-                line1 = this.setBowTrajectoryHeading(0f, true)
+                pair1 = this.setBowTrajectoryHeading(0f, true)
+                pair2 = Pair(arrayListOf(Vec3(0.0, 0.0, 0.0)), null)
+                pair3 = Pair(arrayListOf(Vec3(0.0, 0.0, 0.0)), null)
             }
             if (boxes) this.drawBowCollisionBoxes()
-            if (plane) this.drawPlaneCollision()
+            if (plane) {
+                this.drawPlaneCollision(pair1.second)
+                this.drawPlaneCollision(pair2.second)
+                this.drawPlaneCollision(pair3.second)
+            }
             if (lines) {
-                this.drawLine(line1)
-                this.drawLine(line2)
-                this.drawLine(line3)
+                this.drawLine(pair1.first)
+                this.drawLine(pair2.first)
+                this.drawLine(pair3.first)
             }
         }
         if (pearls) {
             pearlImpactPos = null
             val itemStack = mc.thePlayer.heldItem
             if (itemStack?.item is ItemEnderPearl && !itemStack.displayName.contains("leap", ignoreCase = true)) {
-                val line = this.setPearlTrajectoryHeading()
+                val pair = this.setPearlTrajectoryHeading()
                 if (boxes) this.drawPearlCollisionBox()
-                if (plane) this.drawPlaneCollision()
-                if (lines) this.drawLine(line)
+                if (plane) this.drawPlaneCollision(pair.second)
+                if (lines) this.drawLine(pair.first)
             }
         }
     }
 
-    private fun setPearlTrajectoryHeading(): ArrayList<Vec3> {
+    private fun setPearlTrajectoryHeading(): Pair<ArrayList<Vec3>, MovingObjectPosition?> {
         var motionX =
             (-MathHelper.sin(mc.thePlayer.rotationYaw / 180.0f * Math.PI.toFloat()) * MathHelper.cos(mc.thePlayer.rotationPitch / 180.0f * Math.PI.toFloat()) * 0.4)
         var motionZ =
@@ -120,18 +128,20 @@ object Trajectories : Module(
         return calculatePearlTrajectory(Vec3(motionX, motionY, motionZ), Vec3(posX, posY, posZ))
     }
 
-    private fun calculatePearlTrajectory(mV: Vec3,pV: Vec3): ArrayList<Vec3> {
+    private fun calculatePearlTrajectory(mV: Vec3,pV: Vec3): Pair<ArrayList<Vec3>, MovingObjectPosition?> {
         var hitResult = false
         var motionVec = mV
         var posVec = pV
         val lines = arrayListOf<Vec3>()
+        var rayTraceHit: MovingObjectPosition? = null
         for (i in 0..range.toInt()) {
             if (hitResult) break
             lines.add(posVec)
             val vec = motionVec.add(posVec)
             val rayTrace = mc.theWorld.rayTraceBlocks(posVec, vec, false, true, false)
             if (rayTrace != null) {
-                if (rayTrace.sideHit != null) planePos = rayTrace
+                rayTraceHit = rayTrace
+                lines.add(rayTrace.hitVec)
                 pearlImpactPos =
                     Pair(
                         rayTrace.hitVec.addVector(-0.15 * boxSize, -0.15 * boxSize, -0.15 * boxSize),
@@ -142,10 +152,10 @@ object Trajectories : Module(
             posVec = posVec.add(motionVec)
             motionVec = Vec3(motionVec.xCoord * 0.99, motionVec.yCoord * 0.99 - 0.03, motionVec.zCoord * 0.99)
         }
-        return lines
+        return Pair(lines, rayTraceHit)
     }
 
-    private fun setBowTrajectoryHeading(yawOffset: Float, bowCharge: Boolean): ArrayList<Vec3> {
+    private fun setBowTrajectoryHeading(yawOffset: Float, bowCharge: Boolean): Pair<ArrayList<Vec3>, MovingObjectPosition?> {
         var charge = 2f
         if (bowCharge) {
             charge = (72000 - mc.thePlayer.itemInUseCount) / 20f
@@ -175,11 +185,12 @@ object Trajectories : Module(
         return calculateBowTrajectory(Vec3(motionX, motionY, motionZ), Vec3(posX, posY, posZ))
     }
 
-    private fun calculateBowTrajectory(mV: Vec3,pV: Vec3): ArrayList<Vec3> {
+    private fun calculateBowTrajectory(mV: Vec3,pV: Vec3): Pair<ArrayList<Vec3>, MovingObjectPosition?> {
         var hitResult = false
         var motionVec = mV
         var posVec = pV
         val lines = arrayListOf<Vec3>()
+        var rayTraceHit: MovingObjectPosition? = null
         for (i in 0..range.toInt()) {
             if (hitResult) break
             lines.add(posVec)
@@ -194,7 +205,8 @@ object Trajectories : Module(
                 hitResult = true
                 entityRenderQueue.addAll(entityHit)
             } else if (rayTrace != null) {
-                if (rayTrace.sideHit != null) planePos = rayTrace
+                rayTraceHit = rayTrace
+                lines.add(rayTrace.hitVec)
                 boxRenderQueue.add(
                     Pair(
                         rayTrace.hitVec.addVector(-0.15 * boxSize, -0.15 * boxSize, -0.15 * boxSize),
@@ -206,24 +218,24 @@ object Trajectories : Module(
             posVec = posVec.add(motionVec)
             motionVec = Vec3(motionVec.xCoord * 0.99, motionVec.yCoord * 0.99 - 0.05, motionVec.zCoord * 0.99)
         }
-        return lines
+        return Pair(lines, rayTraceHit)
     }
 
-    private fun drawPlaneCollision() {
+    private fun drawPlaneCollision(rayTrace: MovingObjectPosition?) {
         val vec1: Vec3
         val vec2: Vec3
-        when (planePos?.sideHit) {
+        when (rayTrace?.sideHit) {
             EnumFacing.DOWN, EnumFacing.UP -> {
-                vec1 = planePos?.hitVec?.addVec(-0.15 * planeSize, -0.02, -0.15 * planeSize)!!
-                vec2 = planePos?.hitVec?.addVec(0.15 * planeSize, 0.02, 0.15 * planeSize)!!
+                vec1 = rayTrace.hitVec.addVec(-0.15 * planeSize, -0.02, -0.15 * planeSize)
+                vec2 = rayTrace.hitVec.addVec(0.15 * planeSize, 0.02, 0.15 * planeSize)
             }
             EnumFacing.NORTH, EnumFacing.SOUTH -> {
-                vec1 = planePos?.hitVec?.addVec(-0.15 * planeSize, -0.15 * planeSize, -0.02)!!
-                vec2 = planePos?.hitVec?.addVec(0.15 * planeSize, 0.15 * planeSize, 0.02)!!
+                vec1 = rayTrace.hitVec.addVec(-0.15 * planeSize, -0.15 * planeSize, -0.02)
+                vec2 = rayTrace.hitVec.addVec(0.15 * planeSize, 0.15 * planeSize, 0.02)
             }
             EnumFacing.WEST, EnumFacing.EAST -> {
-                vec1 = planePos?.hitVec?.addVec(-0.02, -0.15 * planeSize, -0.15 * planeSize)!!
-                vec2 = planePos?.hitVec?.addVec(0.02, 0.15 * planeSize, 0.15 * planeSize)!!
+                vec1 = rayTrace.hitVec.addVec(-0.02, -0.15 * planeSize, -0.15 * planeSize)
+                vec2 = rayTrace.hitVec.addVec(0.02, 0.15 * planeSize, 0.15 * planeSize)
             }
             null -> return
         }
@@ -245,7 +257,6 @@ object Trajectories : Module(
         for (line in lines) {
             worldRenderer.pos(line.xCoord, line.yCoord, line.zCoord).endVertex()
         }
-        if (planePos != null && planePos?.hitVec != null) worldRenderer.pos(planePos!!.hitVec.xCoord, planePos!!.hitVec.yCoord, planePos!!.hitVec.zCoord).endVertex()
 
         Tessellator.getInstance().draw()
         GlStateManager.depthMask(true)
