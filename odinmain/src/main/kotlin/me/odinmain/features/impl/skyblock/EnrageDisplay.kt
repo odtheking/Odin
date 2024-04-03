@@ -24,17 +24,13 @@ object EnrageDisplay : Module (
             text("§4Enrage: §a119t", 1f, 9f, Color.RED, 12f, OdinFont.REGULAR, shadow = true)
             getTextWidth("Enrage: 119t", 12f) + 2f to 16f
         } else {
-            if (enrageTime.time >= 60) {
-                text("§4Enrage: §a${enrageTime.time}t", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
+            val colorCode = when {
+                enrageTime.time >= 60 -> "§a"
+                enrageTime.time in 30..60 -> "§e"
+                enrageTime.time in 0..30 -> "§c"
+                else -> return@HudSetting 0f to 0f
             }
-            if (enrageTime.time in 30..60) {
-                text("§4Enrage: §e${enrageTime.time}t", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
-            }
-            if (enrageTime.time in 0..30) {
-                text("§4Enrage: §c${enrageTime.time}t", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
-            }
-
-
+            text("§4Enrage: ${colorCode}${enrageTime.time}t", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
             getTextWidth("Enrage: 119t", 12f) + 2f to 12f
         }
     }
