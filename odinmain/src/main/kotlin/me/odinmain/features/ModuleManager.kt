@@ -111,7 +111,8 @@ object ModuleManager {
         Splits,
         WardrobeKeybinds,
         InvincibilityTimer,
-        KuudraRequeue
+        KuudraRequeue,
+        EnrageDisplay
     )
 
     init {
