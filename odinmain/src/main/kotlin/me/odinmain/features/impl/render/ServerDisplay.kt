@@ -22,23 +22,23 @@ object ServerDisplay : Module(
     private val ping: Boolean by BooleanSetting("Ping", true)
     private val tps: Boolean by BooleanSetting("TPS", true)
     private val fps: Boolean by BooleanSetting("FPS", false)
-    private val style: Int by SelectorSetting("Style", "Odin", arrayListOf("Odin", "Gringo Client"))
+    private val style: Int by SelectorSetting("Style", "Gringo Client", arrayListOf("Gringo Client", "Odin"))
 
     val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {
             if (style == 1) {
                 var width = 0f
                 if (tps) {
-                    width += getTextWidth("§rTPS: §f20.0", 14f) * 1.5f
-                    text("§rTPS: §f20.0", 1f, 10f, ClickGUIModule.color, 14f)
+                    width += getTextWidth("§rTPS: §f20", 14f) * 1.5f
+                    text("§rTPS: §f20.0", 1f, 10f, ClickGUIModule.color, 14f, shadow = true)
                 }
                 if (fps) {
                     width += getTextWidth("§rFPS: §f240", 14f) * 1.5f
-                    text("§rFPS: §f240", 1f + if (tps) getTextWidth("§rTPS: §f20.0", 14f) * 1.5f else 0f, 10f, ClickGUIModule.color, 14f)
+                    text("§rFPS: §f240", 1f + if (tps) getTextWidth("§rTPS: §f20", 14f) * 1.5f else 0f, 10f, ClickGUIModule.color, 14f, shadow = true)
                 }
                 if (ping) {
                     width += getTextWidth("§rPing: §f60", 12f) * 1.5f
-                    text("§rPing: §f60", 1f + (if (tps) getTextWidth("§rTPS: §f20.0", 14f) * 1.5f else 0f) + (if (fps) getTextWidth("§rFPS: §f240", 14f) * 1.5f else 0f), 10f, ClickGUIModule.color, 14f)
+                    text("§rPing: §f60", 1f + (if (tps) getTextWidth("§rTPS: §f20", 14f) * 1.5f else 0f) + (if (fps) getTextWidth("§rFPS: §f240", 14f) * 1.5f else 0f), 10f, ClickGUIModule.color, 14f, shadow = true)
                 }
                 width + 2f to if (ping || tps || fps) getTextHeight("A", 14f) + 6f else 0f
             } else {
@@ -55,16 +55,16 @@ object ServerDisplay : Module(
             if (style == 1) {
                 val fpsText = "§rFPS: §f${mc.debug.split(" ")[0].toIntOrNull() ?: 0}"
                 val pingText = "§rPing: §f${ServerUtils.averagePing.toInt()}"
-                val tpsText = "§rTPS: §f${ServerUtils.averageTps.round(1)}"
+                val tpsText = "§rTPS: §f${if (ServerUtils.averageTps > 19.3) 20 else ServerUtils.averageTps.toInt()}"
                 var width = 0f
                 if (tps)
-                    text(tpsText, 1f, 10f, ClickGUIModule.color, 14f)
+                    text(tpsText, 1f, 10f, ClickGUIModule.color, 14f, shadow = true)
                     width += getTextWidth(tpsText, 14f) * 1.5f
                 if (fps)
-                    text(fpsText, 1f + (if (tps) getTextWidth(tpsText, 14f) * 1.5f else 0f), 10f, ClickGUIModule.color, 14f)
+                    text(fpsText, 1f + (if (tps) getTextWidth(tpsText, 14f) * 1.5f else 0f), 10f, ClickGUIModule.color, 14f, shadow = true)
                     width += getTextWidth(fpsText, 14f) * 1.5f
                 if (ping)
-                    text(pingText, 1f + (if (tps) getTextWidth(tpsText, 14f) * 1.5f else 0f) + (if (fps) getTextWidth(fpsText, 14f) * 1.5f else 0f), 10f, ClickGUIModule.color, 14f)
+                    text(pingText, 1f + (if (tps) getTextWidth(tpsText, 14f) * 1.5f else 0f) + (if (fps) getTextWidth(fpsText, 14f) * 1.5f else 0f), 10f, ClickGUIModule.color, 14f, shadow = true)
                     width += getTextWidth(pingText, 14f) * 1.5f
                 width + 2f to if (ping || tps || fps) getTextHeight("A", 14f) + 6f else 0f
             } else {

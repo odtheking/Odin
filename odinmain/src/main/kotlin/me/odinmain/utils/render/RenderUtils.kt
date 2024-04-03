@@ -106,10 +106,10 @@ object RenderUtils {
 
     fun preDraw() {
         GlStateManager.enableAlpha()
-        GlStateManager.enableBlend()
+        //GlStateManager.enableBlend()
         GlStateManager.disableLighting()
         GlStateManager.disableTexture2D()
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        //GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
         translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
     }
 
@@ -141,9 +141,8 @@ object RenderUtils {
      * @param aabb The bounding box to draw.
      * @param color The color to use for drawing.
      * @param depth Whether to enable depth testing.
-     * @param outlineWidth The width of the outline.
      */
-    fun drawFilledAABB(aabb: AxisAlignedBB, color: Color, depth: Boolean = false, outlineWidth: Number = 3) {
+    fun drawFilledAABB(aabb: AxisAlignedBB, color: Color, depth: Boolean = false) {
         if (color.isTransparent) return
         GlStateManager.pushMatrix()
         color.bind()
@@ -355,23 +354,23 @@ object RenderUtils {
     /**
      * Draws a 3D line between two specified points in the world.
      *
-     * @param pos1      The starting position of the line.
-     * @param pos2      The ending position of the line.
+     * @param vec1      The starting position of the line.
+     * @param vec2      The ending position of the line.
      * @param color     The color of the line.
      * @param lineWidth The width of the line (default is 3).
      * @param depth     Indicates whether to draw with depth (default is false).
      */
-    fun draw3DLine(vec1: Vec3, vec2: Vec3, color: Color, lineWidth: Int, depth: Boolean) {
+    fun draw3DLine(vec1: Vec3, vec2: Vec3, color: Color, lineWidth: Float, depth: Boolean) {
         GlStateManager.pushMatrix()
         color.bind()
         preDraw()
         GlStateManager.depthMask(depth)
 
         GL11.glEnable(GL11.GL_LINE_SMOOTH)
-        GL11.glLineWidth(lineWidth.toFloat())
+        GL11.glLineWidth(lineWidth)
 
         worldRenderer {
-            begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
+            begin(GL11.GL_LINES, DefaultVertexFormats.POSITION)
             pos(vec1.xCoord, vec1.yCoord, vec1.zCoord).endVertex()
             pos(vec2.xCoord, vec2.yCoord, vec2.zCoord).endVertex()
         }
@@ -389,7 +388,7 @@ object RenderUtils {
      * @param vec3            The position to draw the text.
      * @param color           The color of the text.
      * @param renderBlackBox  Indicates whether to render a black box behind the text (default is false).
-     * @param depth           Indicates whether to draw with depth (default is true).
+     * @param depthTest       Indicates whether to draw with depth (default is true).
      * @param scale           The scale of the text (default is 0.03).
      * @param shadow          Indicates whether to render a shadow for the text (default is true).
      */

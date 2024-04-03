@@ -67,7 +67,7 @@ object CustomHighlight : Module(
         if (!mode.equalsOneOf(2,3) && tracerLimit == 0) return
         profile("ESP") { currentEntities.forEach {
             if (currentEntities.size < tracerLimit && !onLegitVersion)
-                RenderUtils.draw3DLine(getPositionEyes(mc.thePlayer.renderVec), getPositionEyes(it.renderVec), color, 2, false)
+                RenderUtils.draw3DLine(getPositionEyes(mc.thePlayer.renderVec), getPositionEyes(it.renderVec), color, 2f, false)
 
             if (mode == 2)
                 Renderer.drawBox(it.renderBoundingBox, color, thickness, depth = !renderThrough, fillAlpha = 0)

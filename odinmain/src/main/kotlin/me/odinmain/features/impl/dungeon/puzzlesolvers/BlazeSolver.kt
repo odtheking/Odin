@@ -46,7 +46,7 @@ object BlazeSolver {
             }
             Renderer.drawBox(entity.renderBoundingBox.addCoord(0.0, -2.0, 0.0), color, fillAlpha = 0f)
             // TODO: Make sure the index - 1 doesn't crash because of indexing to -1
-            Renderer.draw3DLine(blazes[index - 1].positionVector, entity.positionVector, color, 1, false)
+            Renderer.draw3DLine(blazes[index - 1].positionVector, entity.positionVector, color, 1f, false)
         }
     }
 

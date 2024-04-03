@@ -39,7 +39,7 @@ object Renderer {
     ) {
         RenderUtils.drawOutlinedAABB(aabb, color.withAlpha(outlineAlpha.toFloat()), thickness = outlineWidth, depth = depth)
 
-        RenderUtils.drawFilledAABB(aabb, color.withAlpha(fillAlpha.toFloat()), depth = depth, outlineWidth = outlineWidth)
+        RenderUtils.drawFilledAABB(aabb, color.withAlpha(fillAlpha.toFloat()), depth = depth)
     }
 
     /**
@@ -51,7 +51,7 @@ object Renderer {
      * @param lineWidth The width of the line (default is 3).
      * @param depth     Indicates whether to draw with depth (default is false).
      */
-    fun draw3DLine(pos1: Vec3, pos2: Vec3, color: Color, lineWidth: Int = 3, depth: Boolean = false) {
+    fun draw3DLine(pos1: Vec3, pos2: Vec3, color: Color, lineWidth: Float = 3f, depth: Boolean = false) {
         RenderUtils.draw3DLine(pos1, pos2, color, lineWidth, depth)
     }
 
