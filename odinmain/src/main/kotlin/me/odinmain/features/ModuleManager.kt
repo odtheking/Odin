@@ -112,7 +112,8 @@ object ModuleManager {
         WardrobeKeybinds,
         InvincibilityTimer,
         KuudraRequeue,
-        EnrageDisplay
+        EnrageDisplay,
+        BlockOverlay
     )
 
     init {
