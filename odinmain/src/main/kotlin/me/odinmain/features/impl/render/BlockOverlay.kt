@@ -2,6 +2,7 @@ package me.odinmain.features.impl.render
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.settings.impl.ActionSetting
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
@@ -24,12 +25,20 @@ object BlockOverlay : Module(
     description = "Lets you customize the vanilla block overlay",
 ) {
 
-    private val fullBlock: Boolean by BooleanSetting("Full Block", false)
-    private val disableDepth: Boolean by BooleanSetting("Disable Depth", false)
-    private val lineSmoothing: Boolean by BooleanSetting("Line Smoothing", false)
-    private val lineWidth: Float by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f)
-    private val expand: Float by NumberSetting("Expand", 0f, 0f, 100f, 0.1f)
-    private val color: Color by ColorSetting("Color", Color(0, 0, 0, 0.4f), allowAlpha = true)
+    private var fullBlock: Boolean by BooleanSetting("Full Block", false)
+    private var disableDepth: Boolean by BooleanSetting("Disable Depth", false)
+    private var lineSmoothing: Boolean by BooleanSetting("Line Smoothing", false)
+    private var lineWidth: Float by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f)
+    private var expand: Float by NumberSetting("Expand", 0f, 0f, 100f, 1f)
+    private var color: Color by ColorSetting("Color", Color(0, 0, 0, 0.4f), allowAlpha = true)
+    private val reset: () -> Unit by ActionSetting("Reset") {
+        fullBlock = false
+        disableDepth = false
+        lineSmoothing = false
+        lineWidth = 2f
+        expand = 0f
+        color = Color(0, 0, 0, 0.4f)
+    }
 
     @SubscribeEvent
     fun onRenderBlockOverlay(event: DrawBlockHighlightEvent) {
