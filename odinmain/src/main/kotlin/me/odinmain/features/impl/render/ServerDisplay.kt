@@ -22,11 +22,11 @@ object ServerDisplay : Module(
     private val ping: Boolean by BooleanSetting("Ping", true)
     private val tps: Boolean by BooleanSetting("TPS", true)
     private val fps: Boolean by BooleanSetting("FPS", false)
-    private val style: Int by SelectorSetting("Style", "Gringo Client", arrayListOf("Gringo Client", "Odin"))
+    private val style: Int by SelectorSetting("Style", "Row", arrayListOf("Row", "Stacked"))
 
     val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {
-            if (style == 1) {
+            if (style == 0) {
                 var width = 0f
                 if (tps) {
                     width += getTextWidth("§rTPS: §f20", 14f) * 1.5f
@@ -52,7 +52,7 @@ object ServerDisplay : Module(
                 ) + 2f to if (ping && tps && fps) 50f else if (ping && tps || ping && fps || tps && fps) 35f else 20f
             }
         } else {
-            if (style == 1) {
+            if (style == 0) {
                 val fpsText = "§rFPS: §f${mc.debug.split(" ")[0].toIntOrNull() ?: 0}"
                 val pingText = "§rPing: §f${ServerUtils.averagePing.toInt()}"
                 val tpsText = "§rTPS: §f${if (ServerUtils.averageTps > 19.3) 20 else ServerUtils.averageTps.toInt()}"

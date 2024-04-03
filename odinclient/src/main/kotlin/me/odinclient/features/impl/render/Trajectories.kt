@@ -12,13 +12,18 @@ import me.odinmain.utils.addVec
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.OutlineUtils
 import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.RenderUtils.bind
 import me.odinmain.utils.render.RenderUtils.renderX
 import me.odinmain.utils.render.RenderUtils.renderY
 import me.odinmain.utils.render.RenderUtils.renderZ
+import me.odinmain.utils.render.RenderUtils.worldRenderer
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.isShortbow
 import me.odinmain.utils.skyblock.itemID
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.Tessellator
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.monster.EntityBlaze
@@ -28,6 +33,7 @@ import net.minecraft.item.ItemEnderPearl
 import net.minecraft.util.*
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import org.lwjgl.opengl.GL11
 import kotlin.math.sqrt
 
 object Trajectories : Module(
@@ -41,7 +47,7 @@ object Trajectories : Module(
     private val boxes: Boolean by BooleanSetting("Show Boxes", true, description = "Shows boxes displaying where arrows or pearls will hit, if this is disabled it will only highlight entities your arrows will hit.")
     private val lines: Boolean by BooleanSetting("Show Lines", true, description = "Shows the trajectory as a line.")
     private val range: Float by NumberSetting("Solver Range", 30f, 1f, 60f, 1f, description = "How many ticks are simulated, performance impact scales with this")
-    private val thickness: Float by NumberSetting("Line Width", 1f, 0.1f, 5.0, 0.1f)
+    private val width: Float by NumberSetting("Line Width", 1f, 0.1f, 5.0, 0.1f)
     private val planeSize: Float by NumberSetting("Plane Size", 2f, 0.1f, 5.0, 0.1f).withDependency { plane }
     private val boxSize: Float by NumberSetting("Box Size", 0.5f, 0.5f, 3.0f, 0.1f).withDependency { boxes }
     private val color: Color by ColorSetting("Color", Color.CYAN, true)
@@ -54,6 +60,7 @@ object Trajectories : Module(
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         entityRenderQueue.clear()
+        planePos = null
         if (mc.thePlayer == null || mc.thePlayer.heldItem == null) return
         if (bows && mc.thePlayer.heldItem.item is ItemBow) {
             val line1: ArrayList<Vec3>
@@ -226,9 +233,24 @@ object Trajectories : Module(
 
     private fun drawLine(lines: ArrayList<Vec3>) {
         if (lines.size == 0) return
-        for (i in 1 until lines.size) {
-            RenderUtils.draw3DLine(lines[i - 1], lines[i], color, thickness, false)
+
+        GlStateManager.pushMatrix()
+        color.bind()
+        RenderUtils.preDraw()
+        GlStateManager.depthMask(false)
+        GL11.glEnable(GL11.GL_LINE_SMOOTH)
+        GL11.glLineWidth(width)
+
+        worldRenderer.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
+        for (line in lines) {
+            worldRenderer.pos(line.xCoord, line.yCoord, line.zCoord).endVertex()
         }
+        if (planePos != null && planePos?.hitVec != null) worldRenderer.pos(planePos!!.hitVec.xCoord, planePos!!.hitVec.yCoord, planePos!!.hitVec.zCoord).endVertex()
+
+        Tessellator.getInstance().draw()
+        GlStateManager.depthMask(true)
+        RenderUtils.postDraw()
+        GlStateManager.popMatrix()
     }
 
 
@@ -240,7 +262,7 @@ object Trajectories : Module(
             pos.second.xCoord, pos.second.yCoord, pos.second.zCoord
         )
         Renderer.drawBox(aabb,
-            color, thickness, depth = false, fillAlpha = 0)
+            color, width, depth = false, fillAlpha = 0)
 
         pearlImpactPos = null
     }
@@ -262,7 +284,7 @@ object Trajectories : Module(
                 b.first.xCoord, b.first.yCoord, b.first.zCoord,
                 b.second.xCoord, b.second.yCoord, b.second.zCoord
             )
-            Renderer.drawBox(aabb, color, thickness, depth = true, fillAlpha = 0)
+            Renderer.drawBox(aabb, color, width, depth = true, fillAlpha = 0)
         }
         boxRenderQueue.clear()
     }
@@ -276,7 +298,7 @@ object Trajectories : Module(
 
         OutlineUtils.outlineEntity(
             event,
-            thickness,
+            width,
             color,
             false
         )
