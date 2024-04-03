@@ -10,6 +10,7 @@ import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.getTextWidth
 import me.odinmain.utils.render.text
+import me.odinmain.utils.skyblock.itemID
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraftforge.client.event.sound.PlaySoundEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -43,9 +44,7 @@ object EnrageDisplay : Module (
 
     @SubscribeEvent
     fun onSound(event:PlaySoundEvent) {
-        if (event.name != "mob.zombie.remedy") return
-        if (event.sound.pitch != 1.0f) return
-        if (event.sound.volume != .5f) return
+        if (event.name != "mob.zombie.remedy" || event.sound.pitch != 1.0f || event.sound.volume != .5f || mc.thePlayer?.getCurrentArmor(0)?.itemID != "REAPER_BOOTS" || mc.thePlayer?.getCurrentArmor(1)?.itemID != "REAPER_LEGGINGS" || mc.thePlayer?.getCurrentArmor(2)?.itemID != "REAPER_CHESTPLATE") return
         enrageTime = Timer(120)
     }
     @SubscribeEvent
