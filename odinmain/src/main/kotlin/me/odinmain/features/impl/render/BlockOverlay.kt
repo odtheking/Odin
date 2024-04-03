@@ -25,8 +25,8 @@ object BlockOverlay : Module(
 ) {
 
     private val fullBlock: Boolean by BooleanSetting("Full Block", false)
-    private val disableBlend: Boolean by BooleanSetting("Disable Blending", false)
     private val disableDepth: Boolean by BooleanSetting("Disable Depth", false)
+    private val lineSmoothing: Boolean by BooleanSetting("Line Smoothing", false)
     private val lineWidth: Float by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f)
     private val expand: Float by NumberSetting("Expand", 0f, 0f, 100f, 0.1f)
     private val color: Color by ColorSetting("Color", Color(0, 0, 0, 0.4f), allowAlpha = true)
@@ -39,14 +39,20 @@ object BlockOverlay : Module(
         color.bind()
         GL11.glLineWidth(lineWidth)
         GlStateManager.disableTexture2D()
-        if (!disableBlend) {
-            GlStateManager.enableBlend()
-            GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        GlStateManager.enableBlend()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        if (lineSmoothing) {
+            GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST)
+            GL11.glEnable(GL11.GL_LINE_SMOOTH)
+        } else {
+            GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_DONT_CARE)
+            GL11.glDisable(GL11.GL_LINE_SMOOTH)
         }
         if (disableDepth) {
             GlStateManager.depthMask(false)
             GlStateManager.disableDepth()
         }
+
         val blockPos: BlockPos = event.target.blockPos
         val block: Block = mc.theWorld.getBlockState(blockPos).block
         if (block.material !== Material.air && mc.theWorld.worldBorder.contains(blockPos)) {
@@ -57,13 +63,12 @@ object BlockOverlay : Module(
             val aabb = if (fullBlock) blockPos.toAABB().expand(-0.008 + expand / 1000.0, -0.008 + expand / 1000.0, -0.008 + expand / 1000.0).offset(-d0, -d1, -d2) else block.getSelectedBoundingBox(mc.theWorld, blockPos).expand(0.002 + expand / 1000f, 0.002 + expand / 1000f, 0.002 + expand / 1000f).offset(-d0, -d1, -d2)
             RenderGlobal.drawSelectionBoundingBox(aabb)
         }
+
         if (disableDepth) {
             GlStateManager.depthMask(true)
             GlStateManager.enableDepth()
         }
-        if (!disableBlend) {
-            GlStateManager.disableBlend()
-        }
+        GlStateManager.disableBlend()
         GlStateManager.enableTexture2D()
     }
 
