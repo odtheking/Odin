@@ -30,7 +30,7 @@ object ServerDisplay : Module(
                 var width = 0f
                 if (tps) {
                     width += getTextWidth("§rTPS: §f20", 14f) * 1.5f
-                    text("§rTPS: §f20.0", 1f, 10f, ClickGUIModule.color, 14f, shadow = true)
+                    text("§rTPS: §f20", 1f, 10f, ClickGUIModule.color, 14f, shadow = true)
                 }
                 if (fps) {
                     width += getTextWidth("§rFPS: §f240", 14f) * 1.5f
@@ -40,7 +40,7 @@ object ServerDisplay : Module(
                     width += getTextWidth("§rPing: §f60", 12f) * 1.5f
                     text("§rPing: §f60", 1f + (if (tps) getTextWidth("§rTPS: §f20", 14f) * 1.5f else 0f) + (if (fps) getTextWidth("§rFPS: §f240", 14f) * 1.5f else 0f), 10f, ClickGUIModule.color, 14f, shadow = true)
                 }
-                width + 2f to if (ping || tps || fps) getTextHeight("A", 14f) + 6f else 0f
+                width + 6f to if (ping || tps || fps) getTextHeight("A", 14f) + 6f else 0f
             } else {
                 if (ping) text("§6Ping: §a60ms", 1f, 9f, Color.WHITE,12f)
                 if (tps) text("§3TPS: §a20.0", 1f, 26f, Color.WHITE,12f)

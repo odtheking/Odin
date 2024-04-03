@@ -20,16 +20,16 @@ object InvincibilityTimer : Module(
     category = Category.SKYBLOCK
 )  {
     private val invincibilityAnnounce: Boolean by BooleanSetting("Announce Invincibility", default = true, description = "Announces when you get invincibility")
-    private val hud: HudElement by HudSetting("Invincibility timer HUD", 10f, 10f, 1f, true) {
+    private val hud: HudElement by HudSetting("Timer Hud", 10f, 10f, 1f, true) {
         if (it) {
-            text("§bBonzo§f: 59t", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
+            text("§bBonzo§f: 59t", 1f, 7f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
             getTextWidth("Bonzo: 59t", 12f) + 2f to 16f
         } else {
             if (invincibilityTime.time <= 0) return@HudSetting 0f to 0f
             if (invincibilityTime.type == "Bonzo") {
-                text("§bBonzo§f: ${invincibilityTime.time }t", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
+                text("§bBonzo§f: ${invincibilityTime.time }t", 1f, 7f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
             } else if (invincibilityTime.type == "Phoenix") {
-                text("§6Phoenix§f: ${invincibilityTime.time}t", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
+                text("§6Phoenix§f: ${invincibilityTime.time}t", 1f, 7f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
             }
 
             getTextWidth("Bonzo: 59t", 12f) + 2f to 12f
