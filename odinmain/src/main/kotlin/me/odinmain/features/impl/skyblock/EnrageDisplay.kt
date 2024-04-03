@@ -43,14 +43,15 @@ object EnrageDisplay : Module (
 
     init {
         onPacket(S29PacketSoundEffect::class.java) {
-            handleSoundPacket(it)
+            if ( mc.thePlayer?.getCurrentArmor(0)?.itemID == "REAPER_BOOTS" || mc.thePlayer?.getCurrentArmor(1)?.itemID == "REAPER_LEGGINGS" || mc.thePlayer?.getCurrentArmor(2)?.itemID == "REAPER_CHESTPLATE") {
+                handleSoundPacket(it)
+            }
         }
     }
 
     private fun handleSoundPacket(it: S29PacketSoundEffect) {
         if (it.soundName != "mob.zombie.remedy" || it.pitch != 1.0f || it.volume != 0.5f) return
         enrageTime = Timer(120)
-        modMessage("lol")
     }
 
     @SubscribeEvent
