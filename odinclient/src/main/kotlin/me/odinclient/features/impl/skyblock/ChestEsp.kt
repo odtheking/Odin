@@ -78,7 +78,7 @@ object ChestEsp : Module(
         val chests = mc.theWorld.loadedTileEntityList.filterIsInstance<TileEntityChest>()
         chests.forEach {
             if (hideClicked && this.chests.contains(it.pos)) return
-            Renderer.drawBox(it.pos.toAABB(), color, 1f, depth = true, fillAlpha = 0)
+            Renderer.drawBox(it.pos.toAABB(), color, 1f, depth = false, fillAlpha = 0)
         }
     }
 }
