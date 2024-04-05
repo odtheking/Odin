@@ -27,24 +27,23 @@ object GoldorTickTimer : Module(
             text("§7Tick: §a59t", 1f, 9f, Color.RED, 12f, OdinFont.REGULAR, shadow = true)
             getTextWidth("Tick: 119t", 12f) + 2f to 16f
         } else {
+            val displayTimer = if(startTime.time >= 0) { startTime.time } else { tickTime.time }
             val colorCode = when {
-                tickTime.time >= 40 -> "§a"
-                tickTime.time in 20..40 -> "§6"
-                tickTime.time in 0..20 -> "§c"
+                displayTimer >= 40 -> "§a"
+                displayTimer in 20..40 -> "§6"
+                displayTimer in 0..20 -> "§c"
                 else -> return@HudSetting 0f to 0f
             }
-            val text = if(isStarting)
-                "§aStart"
-            else "§8Tick"
+            val text = if(startTime.time >= 0) "§aStart" else "§8Tick"
 
-            text("${text}: ${colorCode}${tickTime.time}t", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
+            text("${text}: ${colorCode}${displayTimer}t", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
             getTextWidth("Start: 119t", 12f) + 2f to 12f
         }
     }
 
     data class Timer(var time: Int)
-    private var tickTime = Timer(0)
-    private var isStarting = false
+    private val tickTime = Timer(0)
+    private val startTime = Timer(0)
     private var shouldLoad = false
     private val preStartRegex = Regex("\\[BOSS] Storm: I should have known that I stood no chance\\.")
     private val startRegex = Regex("\\[BOSS] Goldor: Who dares trespass into my domain\\?")
@@ -54,32 +53,35 @@ object GoldorTickTimer : Module(
     fun onChat(event: ChatPacketEvent) {
         val msg = event.message
         if (!msg.matches(preStartRegex) && !msg.matches(startRegex) && !msg.matches(endRegex) || msg.contains("Storm") && !startTimer) return
-        isStarting = msg.contains("Storm")
         shouldLoad = !msg.contains("Core")
         if (!shouldLoad) return
 
-
-        tickTime = if (isStarting)
-            Timer(104)
-        else Timer(60)
+        if (msg.contains("Storm")) {
+            startTime.time = 104
+        } else {
+            tickTime.time = 60
+        }
     }
     @SubscribeEvent
     fun onServerTick(event: RealServerTick) {
-        if(!shouldLoad) {
-            tickTime = Timer(-1)
+        if (!shouldLoad) {
+            tickTime.time = -2
+            startTime.time = -2
             return
         }
+        startTime.time--
         tickTime.time--
 
-        if (!isStarting && tickTime.time <= 0) {
-            tickTime = Timer(60)
+        if (tickTime.time in -1..0 && startTime.time <= 0) {
+            tickTime.time = 60
         }
     }
 
     init {
         onWorldLoad {
             shouldLoad = false
-            tickTime = Timer(-1)
+            tickTime.time = -2
+            startTime.time = -2
         }
     }
 
