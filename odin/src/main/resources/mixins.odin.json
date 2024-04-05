@@ -13,7 +13,6 @@
     "mixins.other.MixinNEURenderListener"
   ],
   "client": [
-    "accessors.CustomRenderGlobal",
     "accessors.IEntityPlayerSPAccessor",
     "accessors.IMinecraftAccessor",
     "mixins.MixinEntityRenderer",

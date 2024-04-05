@@ -12,10 +12,7 @@ import org.lwjgl.opengl.GL20.glUseProgram
 
 
 abstract class FramebufferShader(fragmentShader: String) : Shader(fragmentShader) {
-    protected var red: Float = 0f
-    protected var green: Float = 0f
-    protected var blue: Float = 0f
-    protected var alpha: Float = 1f
+    protected var color = Color.WHITE
     protected var radius: Float = 2f
     protected var quality: Float = 1f
 
@@ -28,7 +25,6 @@ abstract class FramebufferShader(fragmentShader: String) : Shader(fragmentShader
         GlStateManager.pushAttrib()
 
         framebuffer = setupFrameBuffer(framebuffer)
-        framebuffer?.framebufferClear()
         framebuffer?.bindFramebuffer(true)
         entityShadows = mc.gameSettings.entityShadows
         mc.gameSettings.entityShadows = false
@@ -40,11 +36,7 @@ abstract class FramebufferShader(fragmentShader: String) : Shader(fragmentShader
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         mc.framebuffer.bindFramebuffer(true)
-
-        red = color.r / 255f
-        green = color.g / 255f
-        blue = color.b / 255f
-        alpha = color.alpha
+        this.color = color
         this.radius = radius
         this.quality = quality
 
@@ -67,13 +59,13 @@ abstract class FramebufferShader(fragmentShader: String) : Shader(fragmentShader
      * @return frameBuffer
      * @author TheSlowly
      */
-    fun setupFrameBuffer(frameBuffer: Framebuffer?): Framebuffer {
-        var frameBuffer1 = frameBuffer
-        frameBuffer1?.deleteFramebuffer()
-
-        frameBuffer1 = Framebuffer(mc.displayWidth, mc.displayHeight, true)
-
-        return frameBuffer1
+    private fun setupFrameBuffer(frameBuffer: Framebuffer?): Framebuffer {
+        return if (frameBuffer == null) {
+            Framebuffer(mc.displayWidth, mc.displayHeight, true)
+        } else {
+            frameBuffer.framebufferClear()
+            frameBuffer
+        }
     }
 
     /**

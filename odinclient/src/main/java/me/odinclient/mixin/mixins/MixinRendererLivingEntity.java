@@ -3,6 +3,7 @@ package me.odinclient.mixin.mixins;
 import me.odinmain.events.impl.RenderEntityModelEvent;
 import me.odinmain.features.impl.render.CustomHighlight;
 import me.odinmain.utils.render.Color;
+import me.odinmain.utils.render.RenderUtils;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -112,6 +113,17 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> {
         if (CustomHighlight.INSTANCE.getCurrentEntities().contains(entity) && CustomHighlight.INSTANCE.getMode() == 1 && CustomHighlight.INSTANCE.getRenderThrough()) {
             glPolygonOffset(1f, 1000000F);
             glDisable(GL_POLYGON_OFFSET_FILL);
+        }
+    }
+
+    @Inject(method = "setScoreTeamColor", at = @At("HEAD"), cancellable = true)
+    private void setScoreTeamColor(T entityLivingBaseIn, CallbackInfoReturnable<Boolean> cir) {
+        if (RenderUtils.INSTANCE.isRenderingOutlinedEntities()) {
+            GlStateManager.disableLighting();
+            GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+            GlStateManager.disableTexture2D();
+            GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
+            cir.setReturnValue(true);
         }
     }
 }

@@ -14,12 +14,12 @@ abstract class Shader(fragmentShader: String) {
         var fragmentShaderID: Int = 0
 
         try {
-            val vertexStream = javaClass.getResourceAsStream("/shaders/entity/vertex.vsh")
+            val vertexStream = javaClass.getResourceAsStream("/shaders/source/entity/vertex.vsh")
             vertexShaderID = createShader(IOUtils.toString(vertexStream), ARBVertexShader.GL_VERTEX_SHADER_ARB)
             IOUtils.closeQuietly(vertexStream)
 
             val fragmentStream =
-                javaClass.getResourceAsStream("/shaders/entity/$fragmentShader")
+                javaClass.getResourceAsStream("/shaders/source/entity/$fragmentShader")
             fragmentShaderID = createShader(IOUtils.toString(fragmentStream), ARBFragmentShader.GL_FRAGMENT_SHADER_ARB)
             IOUtils.closeQuietly(fragmentStream)
         } catch (e: Exception) {

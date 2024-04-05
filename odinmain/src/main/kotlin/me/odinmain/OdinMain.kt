@@ -16,9 +16,7 @@ import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.util.shader.RoundedRect
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.clock.Executor
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils
-import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.PlayerUtils
@@ -71,6 +69,7 @@ object OdinMain {
             ModuleManager,
             WaypointManager,
             DevPlayers,
+            HighlightRenderer,
             this
         ).forEach { MinecraftForge.EVENT_BUS.register(it) }
 

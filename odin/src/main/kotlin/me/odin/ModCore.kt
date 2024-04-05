@@ -36,16 +36,6 @@ class ModCore {
 
         FramebufferShader.setupCameraTransform =
             { (OdinMain.mc.entityRenderer as? EntityRendererAccessor)?.invokeSetupCameraTransform(RenderUtils.partialTicks, 0) }
-        CustomHighlight.entityOutlineShader = (mc.renderGlobal as? RenderGlobalAccessor)?.entityOutlineShader
-        CustomHighlight.clearAndBindFrameBufferShader = {
-            (mc.renderGlobal as? RenderGlobalAccessor)?.let {
-                it.entityOutlineFramebuffer.framebufferClear()
-                it.entityOutlineFramebuffer.bindFramebuffer(true)
-            }
-        }
-
-
-
     }
 
     @SubscribeEvent

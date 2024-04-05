@@ -12,3 +12,6 @@
 /odin/build
 /**/run/
 /logs/
+/odinmain/src/main/resources/shaders/glslopt.exe
+/odinmain/src/main/resources/shaders/output/
+/odinmain/src/main/resources/shaders/optimize.bat

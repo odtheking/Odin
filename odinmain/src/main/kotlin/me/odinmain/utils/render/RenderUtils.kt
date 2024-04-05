@@ -14,9 +14,11 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.Entity
 import net.minecraft.util.*
 import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL13
 import org.lwjgl.util.glu.Cylinder
 import org.lwjgl.util.glu.GLU
 import org.lwjgl.util.vector.Vector3f
@@ -585,6 +587,39 @@ object RenderUtils {
         return Vec2f(screenX, screenY)
     }
 
+    private val BUF_FLOAT_4 = BufferUtils.createFloatBuffer(4)
+    var isRenderingOutlinedEntities = false
+        private set
+
+    fun enableOutlineMode() {
+        isRenderingOutlinedEntities = true
+        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL13.GL_COMBINE)
+        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_RGB, GL11.GL_REPLACE)
+        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE0_RGB, GL13.GL_CONSTANT)
+        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND0_RGB, GL11.GL_SRC_COLOR)
+        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_ALPHA, GL11.GL_REPLACE)
+        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE0_ALPHA, GL11.GL_TEXTURE)
+        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND0_ALPHA, GL11.GL_SRC_ALPHA)
+    }
+    fun outlineColor(color: Color) {
+        BUF_FLOAT_4.put(0, color.redFloat)
+        BUF_FLOAT_4.put(1, color.greenFloat)
+        BUF_FLOAT_4.put(2, color.blueFloat)
+        BUF_FLOAT_4.put(3, color.alphaFloat)
+        GL11.glTexEnv(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_COLOR, BUF_FLOAT_4)
+    }
+
+    fun disableOutlineMode() {
+        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_MODULATE)
+        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_RGB, GL11.GL_MODULATE)
+        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE0_RGB, GL11.GL_TEXTURE)
+        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND0_RGB, GL11.GL_SRC_COLOR)
+        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_ALPHA, GL11.GL_MODULATE)
+        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE0_ALPHA, GL11.GL_TEXTURE)
+        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND0_ALPHA, GL11.GL_SRC_ALPHA)
+        isRenderingOutlinedEntities = false
+    }
+
     /**
      * Creates a shader from a vertex shader, fragment shader, and a blend state
      *
@@ -604,7 +639,7 @@ object RenderUtils {
      * @return The contents of the shader file at the given path.
      */
     private fun readShader(name: String, ext: String): String =
-        OdinMain::class.java.getResource("/shaders/$name.$ext")?.readText() ?: ""
+        OdinMain::class.java.getResource("/shaders/source/$name.$ext")?.readText() ?: ""
 
     /**
      * Loads a BufferedImage from a path to a resource in the project
@@ -619,8 +654,8 @@ object RenderUtils {
 
     var partialTicks = 0f
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        partialTicks = event.partialTicks
+        this.partialTicks = event.partialTicks
     }
 }

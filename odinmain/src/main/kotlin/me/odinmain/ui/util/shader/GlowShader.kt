@@ -22,13 +22,25 @@ object GlowShader : FramebufferShader("glow.fsh") {
             1f / mc.displayWidth * radius,
             1f / mc.displayHeight * radius
         )
-        GL20.glUniform3f(getUniform("color"), red, green, blue)
-        GL20.glUniform1f(getUniform("radius"), radius)
-        GL20.glUniform1f(getUniform("glow_intensity"), glowIntensity)
+        updateColor(this.color)
+        updateThickness(this.radius)
+        updateGlowIntensity(this.glowIntensity)
     }
 
     fun endDraw(color: Color, radius: Float, glowInt: Float) {
         glowIntensity = glowInt
         stopDraw(color, radius, 1f)
+    }
+
+    private fun updateColor(color: Color) {
+        GL20.glUniform4f(getUniform("color"), color.r / 255f, color.g / 255f, color.b / 255f, color.alpha)
+    }
+
+    private fun updateThickness(thickness: Float) {
+        GL20.glUniform1f(getUniform("radius"), thickness)
+    }
+
+    private fun updateGlowIntensity(glowIntensity: Float) {
+        GL20.glUniform1f(getUniform("glow_intensity"), GlowShader.glowIntensity)
     }
 }
