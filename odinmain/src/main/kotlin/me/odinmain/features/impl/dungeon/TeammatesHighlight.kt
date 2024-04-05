@@ -13,6 +13,7 @@ import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.dungeonTeammatesNoSelf
 import net.minecraftforge.client.event.RenderLivingEvent
+import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object TeammatesHighlight : Module(
@@ -38,16 +39,19 @@ object TeammatesHighlight : Module(
     }
 
     @SubscribeEvent
-    fun handleNames(event: RenderLivingEvent.Post<*>) {
-        if (!DungeonUtils.inDungeons) return
-        val teammate = dungeonTeammatesNoSelf.find { it.entity == event.entity } ?: return
-
-        Renderer.drawStringInWorld(
-            if (showClass) "${teammate.name} §e[${teammate.clazz.name[0]}]" else teammate.name,
-            event.entity.renderVec.addVec(y = 2.6),
-            color = teammate.clazz.color,
-            depth = false, renderBlackBox = false,
-            scale = 0.05f
-        )
+    fun onRenderWorldLast(event: RenderWorldLastEvent) {
+        profile("handleNames") {
+            dungeonTeammatesNoSelf.forEach {
+                it.entity?.let { it1 ->
+                    Renderer.drawStringInWorld(
+                        if (showClass) "${it1.name} §e[${it.clazz.name[0]}]" else it1.name,
+                        it.entity.renderVec.addVec(y = 2.6),
+                        color = it.clazz.color,
+                        depth = false, renderBlackBox = false,
+                        scale = 0.05f
+                    )
+                }
+            }
+        }
     }
 }
