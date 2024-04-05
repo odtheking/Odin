@@ -27,14 +27,14 @@ object GoldorTickTimer : Module(
             text("§7Tick: §a59t", 1f, 9f, Color.RED, 12f, OdinFont.REGULAR, shadow = true)
             getTextWidth("Tick: 119t", 12f) + 2f to 16f
         } else {
-            val displayTimer = if(startTime.time >= 0) { startTime.time } else { tickTime.time }
+            val displayTimer = if (startTime.time >= 0) { startTime.time } else { tickTime.time }
             val colorCode = when {
                 displayTimer >= 40 -> "§a"
                 displayTimer in 20..40 -> "§6"
                 displayTimer in 0..20 -> "§c"
                 else -> return@HudSetting 0f to 0f
             }
-            val text = if(startTime.time >= 0) "§aStart" else "§8Tick"
+            val text = if (startTime.time >= 0) "§aStart" else "§8Tick"
 
             text("${text}: ${colorCode}${displayTimer}t", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
             getTextWidth("Start: 119t", 12f) + 2f to 12f
