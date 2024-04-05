@@ -2,7 +2,6 @@ package me.odinmain.features.impl.floor7.p3
 
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.events.impl.RealServerTick
-import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -12,12 +11,10 @@ import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.getTextWidth
 import me.odinmain.utils.render.text
-import me.odinmain.utils.skyblock.modMessage
-import net.minecraft.world.World
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-object GoldorTickTimer : Module(
-    name = "Goldor Tick Timer",
+object GoldorTimer : Module(
+    name = "Goldor Timer",
     category = Category.FLOOR7,
     description = "Tick Timer for when goldor kills players"
 ) {
