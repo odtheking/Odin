@@ -25,6 +25,11 @@ object MelodyMessage : Module(
         if (!DungeonUtils.inDungeons || saidMelody || !event.name.startsWith("Click the button on time!")) return
 
         partyMessage(melodyMessage)
+        claySlots = hashMapOf(
+            25 to "Melody terminal is at 25%",
+            34 to "Melody terminal is at 50%",
+            43 to "Melody terminal is at 75%",
+        )
         saidMelody = true
     }
 
@@ -37,7 +42,7 @@ object MelodyMessage : Module(
         onWorldLoad { saidMelody = false }
     }
 
-    private val claySlots = hashMapOf(
+    private var claySlots = hashMapOf(
         25 to "Melody terminal is at 25%",
         34 to "Melody terminal is at 50%",
         43 to "Melody terminal is at 75%",
