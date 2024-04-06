@@ -2,10 +2,7 @@ package me.odinmain.events
 
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.scope
-import me.odinmain.events.impl.ChatPacketEvent
-import me.odinmain.events.impl.GuiLoadedEvent
-import me.odinmain.events.impl.ReceivePacketEvent
-import me.odinmain.events.impl.ServerTickEvent
+import me.odinmain.events.impl.*
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.noControlCodes
@@ -14,6 +11,7 @@ import me.odinmain.utils.waitUntilLastItem
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.network.play.server.S02PacketChat
+import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.common.MinecraftForge
@@ -30,6 +28,10 @@ object EventDispatcher {
      */
     @SubscribeEvent
     fun onPacket(event: ReceivePacketEvent) {
+        if (event.packet is S32PacketConfirmTransaction) {
+            RealServerTick().postAndCatch()
+        }
+
         if (event.packet !is S02PacketChat || !ChatPacketEvent(event.packet.chatComponent.unformattedText.noControlCodes).postAndCatch()) return
         event.isCanceled = true
     }
