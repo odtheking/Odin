@@ -77,8 +77,10 @@ class Panel(
             length = startY + 5f
         }
 
-        moduleButtons.lastOrNull()?.color?.let { roundedRectangle(x, y + startY, width, 10f, it, it, it, 0f, 0f, 0f, 10f, 10f, 4f) }
-
+        val lastColor =
+            if (extended) moduleButtons.lastOrNull()?.color ?: ColorUtil.moduleButtonColor
+            else ColorUtil.moduleButtonColor
+        roundedRectangle(x, y + startY, width, 10f, lastColor, lastColor, lastColor, 0f, 0f, 0f, 10f, 10f, 4f)
         resetScissor(s)
         scale(scaleFactor, scaleFactor, 1f)
     }
