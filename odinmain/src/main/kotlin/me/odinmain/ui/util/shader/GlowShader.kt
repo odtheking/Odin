@@ -33,7 +33,7 @@ object GlowShader : FramebufferShader("glow.fsh") {
     }
 
     private fun updateColor(color: Color) {
-        GL20.glUniform4f(getUniform("color"), color.r / 255f, color.g / 255f, color.b / 255f, color.alpha)
+        GL20.glUniform3f(getUniform("color"), color.r / 255f, color.g / 255f, color.b / 255f)
     }
 
     private fun updateThickness(thickness: Float) {

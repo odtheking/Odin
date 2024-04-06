@@ -6,12 +6,16 @@ import me.odinmain.ui.util.shader.OutlineShader
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.render.RenderUtils.renderBoundingBox
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.entity.Entity
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL43.glDebugMessageCallback
+import org.lwjgl.util.glu.GLU
 
 object HighlightRenderer {
     enum class HighlightType {
@@ -55,7 +59,7 @@ object HighlightRenderer {
 
     @SubscribeEvent
     fun on2d(event: RenderGameOverlayEvent.Pre) {
-        if (event.type != RenderGameOverlayEvent.ElementType.HOTBAR) return
+        if (event.type != RenderGameOverlayEvent.ElementType.ALL) return
         RenderHelper.disableStandardItemLighting()
         mc.renderManager.setRenderOutlines(true)
         RenderUtils.enableOutlineMode()
@@ -63,7 +67,6 @@ object HighlightRenderer {
             OutlineShader.startDraw(event.partialTicks)
             entities[HighlightType.Outline]?.forEach {
                 RenderUtils.outlineColor(it.color)
-
                 mc.renderManager.renderEntityStatic(it.entity, event.partialTicks, true)
             }
             OutlineShader.stopDraw(Color.RED, entities[HighlightType.Outline]?.firstOrNull()?.thickness ?: 1f, 1f)
@@ -75,7 +78,7 @@ object HighlightRenderer {
                 mc.renderManager.renderEntityStatic(it.entity, event.partialTicks, true)
             }
             GlowShader.endDraw(
-                entities[HighlightType.Glow]?.firstOrNull()?.color ?: Color.WHITE,
+                Color.WHITE,
                 entities[HighlightType.Glow]?.firstOrNull()?.thickness ?: 1f,
                 entities[HighlightType.Glow]?.firstOrNull()?.glowIntensity ?: 1f
             )

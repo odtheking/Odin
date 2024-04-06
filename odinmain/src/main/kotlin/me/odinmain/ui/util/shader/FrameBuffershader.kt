@@ -44,7 +44,7 @@ abstract class FramebufferShader(fragmentShader: String) : Shader(fragmentShader
 
         startShader()
         mc.entityRenderer.setupOverlayRendering()
-        drawFramebuffer(framebuffer)
+        framebuffer?.let { drawFramebuffer(it) }
         stopShader()
 
         mc.entityRenderer.disableLightmap()
@@ -70,9 +70,9 @@ abstract class FramebufferShader(fragmentShader: String) : Shader(fragmentShader
     /**
      * @author TheSlowly
      */
-    fun drawFramebuffer(framebuffer: Framebuffer?) {
+    fun drawFramebuffer(framebuffer: Framebuffer) {
         val scaledResolution = ScaledResolution(mc)
-        glBindTexture(GL_TEXTURE_2D, framebuffer!!.framebufferTexture)
+        glBindTexture(GL_TEXTURE_2D, framebuffer.framebufferTexture)
         glBegin(GL_QUADS)
         glTexCoord2d(0.0, 1.0)
         glVertex2d(0.0, 0.0)
