@@ -24,13 +24,11 @@ object EventDispatcher {
     fun post(event: Event) = MinecraftForge.EVENT_BUS.post(event)
 
     /**
-     * Dispatches [ChatPacketEvent].
+     * Dispatches [ChatPacketEvent] and [RealServerTick].
      */
     @SubscribeEvent
     fun onPacket(event: ReceivePacketEvent) {
-        if (event.packet is S32PacketConfirmTransaction) {
-            RealServerTick().postAndCatch()
-        }
+        if (event.packet is S32PacketConfirmTransaction) RealServerTick().postAndCatch()
 
         if (event.packet !is S02PacketChat || !ChatPacketEvent(event.packet.chatComponent.unformattedText.noControlCodes).postAndCatch()) return
         event.isCanceled = true
@@ -44,7 +42,7 @@ object EventDispatcher {
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (nextTime.hasTimePassed((1000L / ServerUtils.averageTps).toLong(), setTime = true)) {
-            post(ServerTickEvent())
+            ServerTickEvent().postAndCatch()
         }
     }
 
@@ -54,7 +52,6 @@ object EventDispatcher {
     @SubscribeEvent
     fun onGuiOpen(event: GuiOpenEvent) = scope.launch {
         if (event.gui !is GuiChest) return@launch
-
         val container = (event.gui as GuiChest).inventorySlots
 
         if (container !is ContainerChest) return@launch
@@ -63,6 +60,6 @@ object EventDispatcher {
         val deferred = waitUntilLastItem(container)
         try { deferred.await() } catch (e: Exception) { return@launch } // Wait until the last item in the chest isn't null
 
-        MinecraftForge.EVENT_BUS.post(GuiLoadedEvent(chestName, container))
+        GuiLoadedEvent(chestName, container).postAndCatch()
     }
 }

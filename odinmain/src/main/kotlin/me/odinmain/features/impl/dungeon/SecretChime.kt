@@ -8,12 +8,14 @@ import me.odinmain.features.settings.impl.ActionSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.features.settings.impl.StringSetting
-import me.odinmain.utils.*
+import me.odinmain.utils.containsOneOf
+import me.odinmain.utils.distanceSquaredTo
+import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.item.EntityItem
-import net.minecraftforge.client.event.sound.PlaySoundSourceEvent
-import net.minecraftforge.event.entity.player.PlayerInteractEvent
+import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
+import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 /**
@@ -42,12 +44,6 @@ object SecretChime : Module(
         "Decoy", "Inflatable Jerry", "Spirit Leap", "Trap", "Training Weights", "Defuse Kit", "Dungeon Chest Key", "Treasure Talisman", "Revive Stone",
     )
 
-    @SubscribeEvent
-    fun onInteract(event: PlayerInteractEvent) {
-        if (!DungeonUtils.inDungeons || event.pos == null || !DungeonUtils.isSecret(mc.theWorld?.getBlockState(event.pos) ?: return, event.pos)) return
-
-        playSecretSound()
-    }
 
     /**
      * For item pickup detection. The forge event for item pickups cant be used, because item pickups are handled server side.
@@ -60,13 +56,17 @@ object SecretChime : Module(
             playSecretSound()
     }
 
-    /**
-     * For bat death detection
-     */
-    @SubscribeEvent
-    fun onSoundPlay(event: PlaySoundSourceEvent) {
-        if (!DungeonUtils.inDungeons || event.name != "mob.bat.death") return
-        playSecretSound()
+    init {
+        onPacket(S29PacketSoundEffect::class.java) {
+            if (it.soundName == "mob.bat.death") playSecretSound()
+        }
+
+        onPacket(C08PacketPlayerBlockPlacement::class.java) { packet ->
+            if (!DungeonUtils.inDungeons || packet.position == null ||
+                !DungeonUtils.isSecret(mc.theWorld?.getBlockState(packet.position) ?: return@onPacket, packet.position)) return@onPacket
+
+            playSecretSound()
+        }
     }
 
     private fun playSecretSound() {

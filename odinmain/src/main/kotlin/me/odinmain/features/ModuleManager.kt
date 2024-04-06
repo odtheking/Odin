@@ -4,13 +4,9 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.*
 import me.odinmain.features.impl.dungeon.*
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers
-import me.odinmain.features.impl.floor7.MelodyMessage
 import me.odinmain.features.impl.floor7.NecronDropTimer
 import me.odinmain.features.impl.floor7.WitherDragons
-import me.odinmain.features.impl.floor7.p3.GoldorTimer
-import me.odinmain.features.impl.floor7.p3.InactiveWaypoints
-import me.odinmain.features.impl.floor7.p3.TerminalSolver
-import me.odinmain.features.impl.floor7.p3.TerminalTimes
+import me.odinmain.features.impl.floor7.p3.*
 import me.odinmain.features.impl.kuudra.*
 import me.odinmain.features.impl.render.*
 import me.odinmain.features.impl.render.ClickGUIModule.hudChat

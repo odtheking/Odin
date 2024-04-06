@@ -1,4 +1,4 @@
-package me.odinmain.features.impl.floor7
+package me.odinmain.features.impl.floor7.p3
 
 import me.odinmain.events.impl.GuiClosedEvent
 import me.odinmain.events.impl.GuiLoadedEvent
@@ -11,7 +11,6 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.partyMessage
 import me.odinmain.utils.skyblock.sendCommand
 import net.minecraft.inventory.ContainerChest
-import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object MelodyMessage : Module(
@@ -35,21 +34,20 @@ object MelodyMessage : Module(
         saidMelody = false
     }
 
-    @SubscribeEvent
-    fun onWorldUnload(event: WorldEvent.Unload){
-        saidMelody = false
+    init {
+        onWorldLoad { saidMelody = false }
     }
 
     private val claySlots = hashMapOf(
-        25 to "pc is at 1/4",
-        34 to "pc is at 2/4",
-        43 to "pc is at 3/4"
+        25 to "pc Melody terminal is at 25%",
+        34 to "pc Melody terminal is at 50%",
+        43 to "pc Melody terminal is at 75%",
     )
 
     init {
         execute(50){
             val containerChest = mc.thePlayer.openContainer as? ContainerChest ?: return@execute
-            if (containerChest.name != "Click the button on time!" || melodyProgress) return@execute
+            if (containerChest.name != "Click the button on time!" || !melodyProgress) return@execute
 
             val greenClayIndices = claySlots.keys.filter { index -> containerChest.getSlot(index)?.stack?.metadata == 5 }
             if (greenClayIndices.isEmpty()) return@execute

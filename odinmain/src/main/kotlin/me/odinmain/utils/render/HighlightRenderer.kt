@@ -6,16 +6,11 @@ import me.odinmain.ui.util.shader.OutlineShader
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.render.RenderUtils.renderBoundingBox
-import me.odinmain.utils.skyblock.modMessage
-import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.entity.Entity
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import org.lwjgl.opengl.GL11
-import org.lwjgl.opengl.GL43.glDebugMessageCallback
-import org.lwjgl.util.glu.GLU
 
 object HighlightRenderer {
     enum class HighlightType {
@@ -24,6 +19,7 @@ object HighlightRenderer {
     data class HighlightEntity(val entity: Entity, val color: Color, val thickness: Float, val depth: Boolean, val glowIntensity: Float = 1f)
     const val highlightModeDefault = "Outline"
     val highlightModeList = arrayListOf("Outline", "Overlay", "Boxes", "Box 2D", "Glow")
+    val highlightModeList2 = arrayListOf("Outline", "Boxes", "Box 2D", "Glow")
 
     private val entityGetters: MutableList<Pair<() -> HighlightType, () -> Collection<HighlightEntity>>> = mutableListOf()
     private val entities = mapOf<HighlightType, MutableList<HighlightEntity>>(

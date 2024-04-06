@@ -1,9 +1,7 @@
-package me.odinmain.features.impl.skyblock
+package me.odinmain.utils
 
 import me.odinmain.config.Config
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.utils.formatTime
-import me.odinmain.utils.round
 import me.odinmain.utils.skyblock.createClickStyle
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.event.ClickEvent

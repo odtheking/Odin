@@ -12,8 +12,7 @@ import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.getTextWidth
 import me.odinmain.utils.render.text
-import net.minecraftforge.client.event.sound.SoundEvent.SoundSourceEvent
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraft.network.play.server.S29PacketSoundEffect
 
 object ArrowHit : Module(
     name = "Arrow hit",
@@ -38,14 +37,15 @@ object ArrowHit : Module(
             getTextWidth("$arrowCount", 12f) to 12f
         }
     }
-    @SubscribeEvent
-    fun onSound(event: SoundSourceEvent) {
-        if (event.name != "random.successful_hit") return
-        arrowCount += 1
-        if (
-            (arrowCount >= (resetCount.toIntOrNull() ?: 9999) && resetOnNumber) ||
-            (resetArrowClock.hasTimePassed() && resetOnTime)
-        ) arrowCount = 0
+    init {
+        onPacket(S29PacketSoundEffect::class.java) {
+            if (it.soundName != "random.successful_hit") return@onPacket
+            arrowCount += 1
+            if (arrowCount >= (resetCount.toIntOrNull() ?: 9999) && resetOnNumber) arrowCount = 0
+            if(resetArrowClock.hasTimePassed() && resetOnTime) arrowCount = 0
+        }
+
+        onWorldLoad { if (resetOnWorldLoad) arrowCount = 0  }
     }
 
     init {
