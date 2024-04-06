@@ -93,7 +93,6 @@ object DungeonWaypoints : Module(
             Renderer.drawStringInWorld(it.title ?: "", Vec3(it.x + 0.5, it.y + 0.5, it.z + 0.5))
         }
 
-
         if (debugWaypoint) {
             val distinct = room.positions.distinct().minByOrNull { it.core } ?: return
             Renderer.drawBox(Vec3(distinct.x.toDouble(), 70.0, distinct.z.toDouble()).toAABB(), Color.GREEN, fillAlpha = 0)

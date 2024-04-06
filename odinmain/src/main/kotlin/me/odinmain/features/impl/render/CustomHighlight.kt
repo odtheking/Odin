@@ -51,8 +51,8 @@ object CustomHighlight : Module(
         onWorldLoad { currentEntities.clear() }
 
         HighlightRenderer.addEntityGetter({ HighlightRenderer.HighlightType.entries[mode]}) {
-            if (!enabled) emptyList<HighlightRenderer.HighlightEntity>()
-            currentEntities.map { HighlightRenderer.HighlightEntity(it, color, thickness, !renderThrough, glowIntensity) }
+            if (!enabled) emptyList()
+            else currentEntities.map { HighlightRenderer.HighlightEntity(it, color, thickness, !renderThrough, glowIntensity) }
         }
     }
 

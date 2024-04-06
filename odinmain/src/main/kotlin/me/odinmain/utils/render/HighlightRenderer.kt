@@ -6,6 +6,8 @@ import me.odinmain.ui.util.shader.OutlineShader
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.render.RenderUtils.renderBoundingBox
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.entity.Entity
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -54,12 +56,14 @@ object HighlightRenderer {
     @SubscribeEvent
     fun on2d(event: RenderGameOverlayEvent.Pre) {
         if (event.type != RenderGameOverlayEvent.ElementType.HOTBAR) return
+        RenderHelper.disableStandardItemLighting()
         mc.renderManager.setRenderOutlines(true)
         RenderUtils.enableOutlineMode()
         if (entities[HighlightType.Outline]?.isNotEmpty() == true) {
             OutlineShader.startDraw(event.partialTicks)
             entities[HighlightType.Outline]?.forEach {
                 RenderUtils.outlineColor(it.color)
+
                 mc.renderManager.renderEntityStatic(it.entity, event.partialTicks, true)
             }
             OutlineShader.stopDraw(Color.RED, entities[HighlightType.Outline]?.firstOrNull()?.thickness ?: 1f, 1f)
@@ -78,5 +82,6 @@ object HighlightRenderer {
         }
         RenderUtils.disableOutlineMode()
         mc.renderManager.setRenderOutlines(false)
+        RenderHelper.enableStandardItemLighting()
     }
 }
