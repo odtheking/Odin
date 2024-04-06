@@ -20,8 +20,8 @@ object ItemsHighlight : Module(
 
     init {
         HighlightRenderer.addEntityGetter({ HighlightRenderer.HighlightType.entries[mode]}) {
-            if (!enabled) emptyList<HighlightRenderer.HighlightEntity>()
-            mc.theWorld.loadedEntityList.filterIsInstance<EntityItem>().map { HighlightRenderer.HighlightEntity(it, getEntityOutlineColor(it as EntityItem), thickness, !renderThrough, 2f) }
+            if (!enabled) emptyList()
+            else mc.theWorld.loadedEntityList.filterIsInstance<EntityItem>().map { HighlightRenderer.HighlightEntity(it, getEntityOutlineColor(it as EntityItem), thickness, !renderThrough, 2f) }
         }
     }
 
