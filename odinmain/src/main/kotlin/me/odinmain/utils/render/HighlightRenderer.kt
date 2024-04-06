@@ -54,24 +54,23 @@ object HighlightRenderer {
     @SubscribeEvent
     fun on2d(event: RenderGameOverlayEvent.Pre) {
         if (event.type != RenderGameOverlayEvent.ElementType.HOTBAR) return
-        //GlStateManager.disableLighting()
         mc.renderManager.setRenderOutlines(true)
         RenderUtils.enableOutlineMode()
         if (entities[HighlightType.Outline]?.isNotEmpty() == true) {
-            OutlineShader.startDraw(RenderUtils.partialTicks)
+            OutlineShader.startDraw(event.partialTicks)
             entities[HighlightType.Outline]?.forEach {
                 RenderUtils.outlineColor(it.color)
-                mc.renderManager.renderEntityStatic(it.entity, RenderUtils.partialTicks, true)
+                mc.renderManager.renderEntityStatic(it.entity, event.partialTicks, true)
             }
             OutlineShader.stopDraw(Color.RED, entities[HighlightType.Outline]?.firstOrNull()?.thickness ?: 1f, 1f)
         }
         if (entities[HighlightType.Glow]?.isNotEmpty() == true) {
-            GlowShader.startDraw(RenderUtils.partialTicks)
+            GlowShader.startDraw(event.partialTicks)
             entities[HighlightType.Glow]?.forEach {
                 RenderUtils.outlineColor(it.color)
-                mc.renderManager.renderEntityStatic(it.entity, RenderUtils.partialTicks, true)
+                mc.renderManager.renderEntityStatic(it.entity, event.partialTicks, true)
             }
-            GlowShader.stopDraw(
+            GlowShader.endDraw(
                 entities[HighlightType.Glow]?.firstOrNull()?.color ?: Color.WHITE,
                 entities[HighlightType.Glow]?.firstOrNull()?.thickness ?: 1f,
                 entities[HighlightType.Glow]?.firstOrNull()?.glowIntensity ?: 1f
@@ -79,6 +78,5 @@ object HighlightRenderer {
         }
         RenderUtils.disableOutlineMode()
         mc.renderManager.setRenderOutlines(false)
-        //GlStateManager.enableLighting()
     }
 }

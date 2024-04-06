@@ -59,7 +59,7 @@ abstract class FramebufferShader(fragmentShader: String) : Shader(fragmentShader
      * @author TheSlowly
      */
     private fun setupFrameBuffer(frameBuffer: Framebuffer?): Framebuffer {
-        return if (frameBuffer == null) {
+        return if (frameBuffer == null || frameBuffer.framebufferWidth != mc.displayWidth || frameBuffer.framebufferHeight  != mc.displayHeight) {
             Framebuffer(mc.displayWidth, mc.displayHeight, true)
         } else {
             frameBuffer.framebufferClear()

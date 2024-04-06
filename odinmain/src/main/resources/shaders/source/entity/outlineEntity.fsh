@@ -18,21 +18,14 @@ void main(void) {
         float uv_y = gl_TexCoord[0].y * size.y;
         vec4 foundColor = color;
 
-        float sum = 0.0;
-        for (int n = 0; n < 9; ++n) {
-            uv_y = (gl_TexCoord[0].y * size.y) + (radius * float(n - 4.5));
-            float h_sum = 0.0;
+        for (int n = -4; n < 5; ++n) {
+            uv_y = (gl_TexCoord[0].y * size.y) + (radius * float(n - 0.5));
             for (int m = -4; m < 5; ++m) {
                 vec4 fetchedColor = texelFetch(texture, ivec2(uv_x - (m * radius), uv_y), 0);
                 if (fetchedColor.a > 0) {
-                    foundColor = fetchedColor;
-                    h_sum += fetchedColor.a;
+                    gl_FragColor = fetchedColor;
                 }
             }
-            sum += h_sum / 9.0;
-        }
-        if (sum >= 0.0001) {
-            gl_FragColor = foundColor;
         }
     }
 }

@@ -8,7 +8,7 @@ import me.odinmain.features.settings.impl.ActionSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.features.settings.impl.StringSetting
-import me.odinmain.utils.distanceSquaredTo
+import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.item.EntityItem
@@ -54,9 +54,9 @@ object SecretChime : Module(
      */
     @SubscribeEvent
     fun onRemoveEntity(event: EntityLeaveWorldEvent) {
-        if (!DungeonUtils.inDungeons || mc.thePlayer.distanceSquaredTo(event.entity) > 36) return
+        if (!DungeonUtils.inDungeons || event.entity !is EntityItem || mc.thePlayer.distanceSquaredTo(event.entity) > 36) return
 
-        if (event.entity is EntityItem && drops.any { event.entity.entityItem.displayName.contains(it) })
+        if (event.entity.entityItem.displayName.noControlCodes.containsOneOf(drops, ignoreCase = true))
             playSecretSound()
     }
 

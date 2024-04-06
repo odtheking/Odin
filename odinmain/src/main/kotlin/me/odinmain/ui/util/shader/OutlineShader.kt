@@ -4,7 +4,7 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.utils.render.Color
 import org.lwjgl.opengl.GL20
 
-object OutlineShader : FramebufferShader("outline.fsh") {
+object OutlineShader : FramebufferShader("outlineEntity.fsh") {
     override fun setupUniforms() {
         setupUniform("texture")
         setupUniform("texelSize")
