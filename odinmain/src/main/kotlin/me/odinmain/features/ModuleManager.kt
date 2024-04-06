@@ -7,6 +7,7 @@ import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers
 import me.odinmain.features.impl.floor7.MelodyMessage
 import me.odinmain.features.impl.floor7.NecronDropTimer
 import me.odinmain.features.impl.floor7.WitherDragons
+import me.odinmain.features.impl.floor7.p3.GoldorTimer
 import me.odinmain.features.impl.floor7.p3.InactiveWaypoints
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalTimes
@@ -114,7 +115,8 @@ object ModuleManager {
         KuudraRequeue,
         EnrageDisplay,
         BlockOverlay,
-        ItemsHighlight
+        ItemsHighlight,
+        GoldorTimer
     )
 
     init {
