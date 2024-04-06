@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.floor7.p3
 
-import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.events.impl.RealServerTick
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -27,7 +26,7 @@ object GoldorTimer : Module(
             text("§7Tick: §a59t", 1f, 9f, Color.RED, 12f, OdinFont.REGULAR, shadow = true)
             getTextWidth("Tick: 59t", 12f) + 2f to 16f
         } else {
-            val displayType = if (startTime.time >= 0) { startTime.time } else { tickTime.time }
+            val displayType = if (startTime >= 0) { startTime } else { tickTime }
             val colorCode = when {
                 displayType >= 40 -> "§a"
                 displayType in 20..40 -> "§6"
@@ -36,7 +35,7 @@ object GoldorTimer : Module(
             }
             val text = when {
                 (!displayText) -> ""
-                (startTime.time >= 0)  -> "§aStart: "
+                (startTime >= 0)  -> "§aStart: "
                 else -> "§8Tick: "
             }
             val displayTimer = if (!displayInTicks) { String.format("%.2f", displayType.toFloat() / 20) } else displayType
@@ -51,46 +50,41 @@ object GoldorTimer : Module(
         }
     }
 
-    data class Timer(var time: Int)
-    private val tickTime = Timer(0)
-    private val startTime = Timer(0)
+    private var tickTime = 0
+    private var startTime = 0
     private var shouldLoad = false
     private val preStartRegex = Regex("\\[BOSS] Storm: I should have known that I stood no chance\\.")
     private val startRegex = Regex("\\[BOSS] Goldor: Who dares trespass into my domain\\?")
     private val endRegex = Regex("The Core entrance is opening!")
 
     @SubscribeEvent
-    fun onChat(event: ChatPacketEvent) {
-        val msg = event.message
-        if (!msg.matches(preStartRegex) && !msg.matches(startRegex) && !msg.matches(endRegex) || msg.contains("Storm") && !startTimer) return
-        shouldLoad = !msg.contains("Core")
-        if (!shouldLoad) return
-
-        if (msg.contains("Storm")) {
-            startTime.time = 104
-        } else {
-            tickTime.time = 60
-        }
-    }
-    @SubscribeEvent
     fun onServerTick(event: RealServerTick) {
         if (!shouldLoad) {
-            tickTime.time = -2
-            startTime.time = -2
+            tickTime = -2
+            startTime = -2
             return
         }
-        startTime.time--
-        tickTime.time--
+        startTime--
+        tickTime--
 
-        if (tickTime.time in -1..0 && startTime.time <= 0) { tickTime.time = 60 }
+        if (tickTime in -1..0 && startTime <= 0) { tickTime = 60 }
     }
 
     init {
         onWorldLoad {
             shouldLoad = false
-            tickTime.time = -2
-            startTime.time = -2
+            tickTime = -2
+            startTime = -2
+        }
+
+        onMessage(Regex(".*")) {
+            if (!it.matches(preStartRegex) && !it.matches(startRegex) && !it.matches(endRegex) || it.contains("Storm") && !startTimer) return@onMessage
+            if (it.contains("Core")) return@onMessage
+
+            if (it.contains("Storm"))
+                startTime = 104
+            else
+                tickTime = 60
         }
     }
-
 }
