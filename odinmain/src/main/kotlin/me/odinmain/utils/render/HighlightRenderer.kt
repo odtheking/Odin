@@ -1,17 +1,11 @@
 package me.odinmain.utils.render
 
-import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
-import me.odinmain.features.impl.render.CustomHighlight
 import me.odinmain.ui.util.shader.GlowShader
 import me.odinmain.ui.util.shader.OutlineShader
-import me.odinmain.utils.*
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.render.RenderUtils.renderBoundingBox
-import me.odinmain.utils.render.RenderUtils.renderVec
-import me.odinmain.utils.skyblock.modMessage
-import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent

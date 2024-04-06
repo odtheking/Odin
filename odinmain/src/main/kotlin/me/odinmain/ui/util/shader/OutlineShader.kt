@@ -3,7 +3,6 @@ package me.odinmain.ui.util.shader
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.render.Color
 import org.lwjgl.opengl.GL20
-import java.awt.Color.*
 
 object OutlineShader : FramebufferShader("outline.fsh") {
     override fun setupUniforms() {

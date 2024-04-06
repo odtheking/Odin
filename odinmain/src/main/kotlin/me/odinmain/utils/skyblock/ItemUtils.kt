@@ -4,6 +4,8 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import net.minecraft.client.entity.EntityPlayerSP
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.ItemStack
@@ -140,4 +142,19 @@ fun ItemStack.setLore(lines: List<String>): ItemStack {
         })
     })
     return this
+}
+
+
+fun ItemStack.drawItem(x: Float = 0f, y: Float = 0f, scale: Float = 1f, z: Float = 200f) {
+    GlStateManager.pushMatrix()
+    GlStateManager.scale(scale, scale, 1f)
+    GlStateManager.translate(x / scale, y / scale, 0f)
+    GlStateManager.color(1f, 1f, 1f, 1f)
+
+    RenderHelper.enableStandardItemLighting()
+    RenderHelper.enableGUIStandardItemLighting()
+
+    mc.renderItem.zLevel = z
+    mc.renderItem.renderItemIntoGUI(this, 0, 0)
+    GlStateManager.popMatrix()
 }

@@ -39,13 +39,14 @@ object InvincibilityTimer : Module(
     private var invincibilityTime = Timer(0, "")
     private val bonzoMaskRegex = Regex("^Your (?:. )?Bonzo's Mask saved your life!$")
     private val phoenixPetRegex = Regex("^Your Phoenix Pet saved you from certain death!$")
+
     @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
         val msg = event.message
         if (!msg.matches(bonzoMaskRegex) && !msg.matches(phoenixPetRegex)) return
 
         val invincibilityType = if (msg.contains("Bonzo's Mask")) "Bonzo" else "Phoenix"
-        if (invincibilityAnnounce) partyMessage("pc $invincibilityType Procced (3s) ")
+        if (invincibilityAnnounce) partyMessage("pc $invincibilityType Procced")
         invincibilityTime = Timer(60, invincibilityType)
     }
     @SubscribeEvent

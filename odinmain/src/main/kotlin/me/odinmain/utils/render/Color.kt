@@ -1,9 +1,9 @@
 package me.odinmain.utils.render
 
 import com.google.gson.*
-import java.lang.reflect.Type
 import java.awt.Color.HSBtoRGB
 import java.awt.Color.RGBtoHSB
+import java.lang.reflect.Type
 import java.awt.Color as JavaColor
 
 /**

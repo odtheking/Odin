@@ -9,8 +9,6 @@ import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
 import net.minecraft.entity.SharedMonsterAttributes
 import net.minecraft.entity.monster.EntityCreeper
-import net.minecraftforge.client.event.RenderWorldLastEvent
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object Ghosts : Module(
     name = "Ghosts",

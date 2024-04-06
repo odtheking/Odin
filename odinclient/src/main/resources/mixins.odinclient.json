@@ -22,6 +22,7 @@
     "mixins.other.MixinNEURenderListener"
   ],
   "client": [
+    "accessors.EntityRendererAccessor",
     "accessors.IEntityPlayerSPAccessor",
     "accessors.IMinecraftAccessor",
     "mixins.MixinFontRenderer",
@@ -42,7 +43,6 @@
     "mixins.block.MixinBlockCarpet",
     "mixins.entity.MixinEntityRenderer",
     "mixins.entity.MixinModelBiped",
-    "mixins.entity.MixinModelBlaze",
-    "accessors.EntityRendererAccessor"
+    "mixins.entity.MixinModelBlaze"
   ]
 }
