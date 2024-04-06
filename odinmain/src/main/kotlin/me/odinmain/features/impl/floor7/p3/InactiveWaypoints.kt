@@ -53,7 +53,7 @@ object InactiveWaypoints : Module(
             if ((name == "Inactive Terminal" && showTerminals) || (name == "Inactive" && showDevices) || (name == "Not Activated" && showLevers)) {
                 name = if (name == "Inactive Terminal") "Terminal" else if (name == "Inactive") "Device" else "Lever"
                 if (renderBox)
-                    Renderer.drawBox(it.position.toAABB(), color, 2f, depth = false, outlineAlpha = if (style == 1) color.alpha else 0, fillAlpha = if (style == 1) 0 else color.alpha)
+                    Renderer.drawBox(it.position.toAABB(), color, 2f, depth = false, outlineAlpha = if (style == 0) 0 else color.alpha, fillAlpha = if (style == 1) 0 else color.alpha)
                 if (renderText)
                     Renderer.drawStringInWorld(name, it.positionVector.add(Vec3(0.0, 2.0, 0.0)), depth = false, color = color, scale = 0.03f)
                 if (renderBeacon)

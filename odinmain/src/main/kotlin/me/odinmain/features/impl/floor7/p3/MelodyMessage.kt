@@ -9,7 +9,6 @@ import me.odinmain.features.settings.impl.StringSetting
 import me.odinmain.utils.name
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.partyMessage
-import me.odinmain.utils.skyblock.sendCommand
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -39,9 +38,9 @@ object MelodyMessage : Module(
     }
 
     private val claySlots = hashMapOf(
-        25 to "pc Melody terminal is at 25%",
-        34 to "pc Melody terminal is at 50%",
-        43 to "pc Melody terminal is at 75%",
+        25 to "Melody terminal is at 25%",
+        34 to "Melody terminal is at 50%",
+        43 to "Melody terminal is at 75%",
     )
 
     init {
@@ -52,7 +51,7 @@ object MelodyMessage : Module(
             val greenClayIndices = claySlots.keys.filter { index -> containerChest.getSlot(index)?.stack?.metadata == 5 }
             if (greenClayIndices.isEmpty()) return@execute
 
-            sendCommand(claySlots[greenClayIndices.last()] ?: return@execute)
+            partyMessage(claySlots[greenClayIndices.last()] ?: return@execute)
             greenClayIndices.forEach { claySlots.remove(it) }
         }
     }

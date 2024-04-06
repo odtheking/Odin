@@ -249,9 +249,8 @@ object RenderUtils {
      * @param color The color of the beacon beam.
      * @param depth Whether to enable depth testing.
      */
-    fun drawBeaconBeam(vec3: Vec3, color: Color, depth: Boolean = false) {
+    fun drawBeaconBeam(vec3: Vec3, color: Color, depth: Boolean = false, height: Int = 300) {
         if (color.isTransparent) return
-        val height = 300
         val bottomOffset = 0
         val topOffset = bottomOffset + height
         if (!depth) GlStateManager.disableDepth()

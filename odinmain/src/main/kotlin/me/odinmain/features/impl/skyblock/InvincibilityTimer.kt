@@ -47,7 +47,7 @@ object InvincibilityTimer : Module(
         if (!msg.matches(bonzoMaskRegex) && !msg.matches(phoenixPetRegex) && !msg.matches(spiritPetRegex)) return
 
         val invincibilityType = if (msg.contains("Bonzo's Mask")) "Bonzo" else if (msg.contains("Phoenix")) "Phoenix" else "Spirit"
-        if (invincibilityAnnounce) partyMessage("pc $invincibilityType Procced")
+        if (invincibilityAnnounce) partyMessage("$invincibilityType Procced")
         invincibilityTime = Timer(60, invincibilityType)
     }
     @SubscribeEvent
