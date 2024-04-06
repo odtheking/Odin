@@ -55,6 +55,7 @@ object WardrobeKeybinds : Module(
             unequipKeybind.isDown() -> getItemIndexInContainerChest(chest, "Equipped", 36..44) ?: return modMessage("Couldn't find equipped armor.")
             else -> (wardrobes.indexOfFirst { it.isDown() }.takeIf { it != -1 } ?: return) + 36
         }
+        modMessage("Index: $index")
         if (!clickCoolDown.hasTimePassed()) return
         if (index > chest.lowerChestInventory.sizeInventory - 1 || index < 1) return modMessage("Invalid index. $index, ${chest.name}")
         mc.playerController.windowClick(chest.windowId, index, 0, 0, mc.thePlayer)

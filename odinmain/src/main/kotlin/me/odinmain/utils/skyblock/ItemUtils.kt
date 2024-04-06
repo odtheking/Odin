@@ -101,7 +101,7 @@ enum class ItemRarity(
     RARE("RARE", "§9", Color.BLUE),
     EPIC("EPIC", "§5", Color.MAGENTA),
     LEGENDARY("LEGENDARY", "§6", Color.ORANGE),
-    MYTHIC("MYTHIC", "§d", Color.PINK),
+    MYTHIC("MYTHIC", "§d", Color.MAGENTA),
     DIVINE("DIVINE", "§b", Color.CYAN),
     SPECIAL("SPECIAL", "§c", Color.RED),
     VERY_SPECIAL("VERY SPECIAL", "§c", Color.RED);
@@ -112,6 +112,7 @@ private val rarityRegex: Regex = Regex("§l(?<rarity>[A-Z]+) ?(?<type>[A-Z ]+)?(
 /**
  * Gets the rarity of an item
  * @param lore Lore of an item
+ * @return ItemRarity or null if not found
  */
 fun getRarity(lore: List<String>): ItemRarity? {
     // Start from the end since the rarity is usually the last line or one of the last.
@@ -119,7 +120,7 @@ fun getRarity(lore: List<String>): ItemRarity? {
         val currentLine = lore[i]
         val match = rarityRegex.find(currentLine) ?: continue
         val rarity: String = match.groups["rarity"]?.value ?: continue
-        return ItemRarity.entries.find { currentLine.noControlCodes.startsWith(it.loreName) }
+        return ItemRarity.entries.find { it.loreName == rarity }
     }
     return null
 }

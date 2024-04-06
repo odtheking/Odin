@@ -38,7 +38,7 @@ object ClickedChests : Module(
 
         chests.forEach {
             Renderer.drawBox(RenderUtils.getBlockAABB(it.block, it.pos), if (it.locked) lockedColor else color, depth = phase,
-                outlineAlpha = if (style == 1) color.alpha else 0, fillAlpha = if (style == 1) 0 else color.alpha)
+                outlineAlpha = if (style == 0) 0 else color.alpha, fillAlpha = if (style == 1) 0 else color.alpha)
         }
     }
 
@@ -55,7 +55,7 @@ object ClickedChests : Module(
             val pos = packet.position
             val blockState = mc.theWorld?.getBlockState(pos)
             val block = blockState?.block ?: return@onPacket
-            if (!DungeonUtils.isSecret(blockState, pos) || chests.any { it.block == packet }) return@onPacket
+            if (!DungeonUtils.isSecret(blockState, pos) || chests.any { it.block == block }) return@onPacket
 
             chests.add(Chest(block, pos, System.currentTimeMillis()))
         }

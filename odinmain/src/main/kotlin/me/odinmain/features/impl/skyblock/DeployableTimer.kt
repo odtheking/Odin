@@ -17,7 +17,6 @@ import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import kotlin.math.max
 
 object DeployableTimer : Module(
     name = "Deployable Timer",
@@ -27,32 +26,24 @@ object DeployableTimer : Module(
     private val firework = Item.getByNameOrId("minecraft:fireworks")
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {
-            text("§l§5SOS Flare", 60f, 22f, Color.WHITE,12f, OdinFont.BOLD)
-            text("§e179s", 60f, 40f, Color.WHITE,12f, OdinFont.BOLD)
-            ItemStack(firework).drawItem(scale = 4f)
-            max(getTextWidth("SOS Flare", 12f), getTextWidth("179s", 12f)) + 42f to 48f
+            text("§l§5SOS Flare", 45f, 17f, Color.WHITE,12f, OdinFont.BOLD)
+            text("§e179s", 45f, 35f, Color.WHITE,12f, OdinFont.BOLD)
+            ItemStack(firework).drawItem(x= -12f, y= -8f, scale = 4f)
+            getTextWidth("SOS Flare", 12f) + 45f to 52f
         } else {
-            val currentMillis = System.currentTimeMillis()
-            val d = currentDeployables.firstOrNull { dep -> mc.thePlayer.getDistanceToEntity(dep.entity) <= dep.range }
+            val d = currentDeployables.firstOrNull { dep -> mc.thePlayer.getDistanceToEntity(dep.entity) <= dep.range } ?: return@HudSetting 0f to 0f
 
-            if (d == null) {
-                resetLines()
-                return@HudSetting 0f to 0f
-            }
-            val timeLeft = (d.timeAdded + d.duration - currentMillis) / 1000
+            val timeLeft = (d.timeAdded + d.duration - System.currentTimeMillis()) / 1000
             if (timeLeft <= 0 || d.entity.isDead) {
                 currentDeployables.remove(d)
                 currentDeployables.sortByDescending { dep -> dep.priority }
-                resetLines()
                 return@HudSetting 0f to 0f
             }
-            toRender = RenderableDeployable(d.renderName, "§e${timeLeft}s")
-            text(toRender.name, 60f, 22f, Color.WHITE,12f, OdinFont.BOLD)
-            text(toRender.timeLeft, 60f, 44f, Color.WHITE,12f, OdinFont.BOLD)
-            d.entity.inventory?.get(4)?.drawItem(scale = 4f)
-            max(getTextWidth(toRender.name.noControlCodes, 12f), getTextWidth(toRender.timeLeft.noControlCodes, 12f)) + 42f to 48f
+            text(d.renderName, 45f, 17f, Color.WHITE,12f, OdinFont.BOLD)
+            text("§e${timeLeft}s", 45f, 35f, Color.WHITE,12f, OdinFont.BOLD)
+            d.entity.inventory?.get(4)?.drawItem(x= -12f, y= -8f, scale = 4f)
+            getTextWidth(d.renderName.noControlCodes, 12f) + 45f to 52f
         }
-        0f to 0f
     }
 
     private enum class Deployables (
@@ -68,12 +59,10 @@ object DeployableTimer : Module(
         Plasma  ("placeholder", "Plasma",   "§d§lPlasmaflux",   5, 60000,  20f),
     }
 
-    class Deployable(val priority: Int, val duration: Int, val entity: EntityArmorStand, val renderName: String, val range: Float, val timeAdded: Long = System.currentTimeMillis())
-    private data class RenderableDeployable(val name: String, val timeLeft: String)
+    data class Deployable(val priority: Int, val duration: Int, val entity: EntityArmorStand, val renderName: String, val range: Float, val timeAdded: Long = System.currentTimeMillis())
 
     private val currentDeployables = mutableListOf<Deployable>()
     private val orbRegex = Regex("(.+) (\\d+)s")
-    private var toRender = RenderableDeployable("", "")
 
     @SubscribeEvent
     fun postMetadata(event: PostEntityMetadata) {
@@ -95,17 +84,11 @@ object DeployableTimer : Module(
 
         currentDeployables.add(Deployable(deployable.priority, duration, entity, deployable.renderName, deployable.range))
         currentDeployables.sortByDescending { it.priority }
-        resetLines()
     }
 
     init {
         onWorldLoad{
             currentDeployables.clear()
-            resetLines()
         }
-    }
-
-    private fun resetLines() {
-        toRender = RenderableDeployable("", "")
     }
 }

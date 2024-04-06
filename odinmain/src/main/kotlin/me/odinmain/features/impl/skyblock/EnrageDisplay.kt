@@ -24,29 +24,29 @@ object EnrageDisplay : Module (
             getTextWidth("Enrage: 119t", 12f) + 2f to 16f
         } else {
             val colorCode = when {
-                enrageTime.time >= 60 -> "§a"
-                enrageTime.time in 30..60 -> "§e"
-                enrageTime.time in 0..30 -> "§c"
+                enrageTimer >= 60 -> "§a"
+                enrageTimer in 30..60 -> "§e"
+                enrageTimer in 0..30 -> "§c"
                 else -> return@HudSetting 0f to 0f
             }
-            text("§4Enrage: ${colorCode}${enrageTime.time}t", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
+            text("§4Enrage: ${colorCode}${enrageTimer}t", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
             getTextWidth("Enrage: 119t", 12f) + 2f to 12f
         }
     }
-    data class Timer(var time: Int)
-    private var enrageTime = Timer(0)
+
+    private var enrageTimer = 0
 
     init {
         onPacket(S29PacketSoundEffect::class.java) {
             if (it.soundName == "mob.zombie.remedy" && it.pitch == 1.0f && it.volume == 0.5f && mc.thePlayer?.getCurrentArmor(0)?.itemID == "REAPER_BOOTS" && mc.thePlayer?.getCurrentArmor(1)?.itemID == "REAPER_LEGGINGS" && mc.thePlayer?.getCurrentArmor(2)?.itemID == "REAPER_CHESTPLATE") {
-                enrageTime = Timer(120)
+                enrageTimer = 120
             }
         }
     }
 
     @SubscribeEvent
     fun onServerTick(event: ServerTickEvent) {
-        enrageTime.time--
+        enrageTimer--
     }
 
 }

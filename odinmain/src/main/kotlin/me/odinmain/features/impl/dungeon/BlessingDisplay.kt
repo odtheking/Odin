@@ -34,9 +34,9 @@ object BlessingDisplay : Module(
 
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {
-            text("Power: §a29", 1f, 9f, powerColor, 12f, OdinFont.REGULAR, TextAlign.Left, TextPos.Middle, true)
-            text("Time: §a5", 1f, 26f, timeColor,12f, OdinFont.REGULAR, TextAlign.Left, TextPos.Middle, true)
-            max(getTextWidth("Power: 29", 12f), getTextWidth("Time 5", 12f)) + 2f to 33f
+            text("Power §a29", 1f, 9f, powerColor, 12f, OdinFont.REGULAR, TextAlign.Left, TextPos.Middle, true)
+            text("Time §a5", 1f, 26f, timeColor,12f, OdinFont.REGULAR, TextAlign.Left, TextPos.Middle, true)
+            getTextWidth("Power: 29", 12f) + 2f to 33f
         } else {
             Blessings.TIME.color = timeColor
             Blessings.POWER.color = powerColor

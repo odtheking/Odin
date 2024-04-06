@@ -52,14 +52,13 @@ object CustomHighlight : Module(
 
         HighlightRenderer.addEntityGetter({ HighlightRenderer.HighlightType.entries[mode]}) {
             if (!enabled) emptyList<HighlightRenderer.HighlightEntity>()
-            currentEntities.map { HighlightRenderer.HighlightEntity(it, if (currentEntities.indexOf(it) > 3) Color.WHITE else color, thickness, !renderThrough, glowIntensity) }
+            currentEntities.map { HighlightRenderer.HighlightEntity(it, color, thickness, !renderThrough, glowIntensity) }
         }
     }
 
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         if (tracerLimit == 0) return
-
     }
 
     @SubscribeEvent

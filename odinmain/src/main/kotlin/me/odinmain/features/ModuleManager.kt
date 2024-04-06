@@ -108,12 +108,13 @@ object ModuleManager {
         VanqNotifier,
         KuudraReminders,
         KuudraSplits,
-        Splits,
+        //Splits,
         WardrobeKeybinds,
         InvincibilityTimer,
         KuudraRequeue,
         EnrageDisplay,
-        BlockOverlay
+        BlockOverlay,
+        ItemsHighlight
     )
 
     init {
