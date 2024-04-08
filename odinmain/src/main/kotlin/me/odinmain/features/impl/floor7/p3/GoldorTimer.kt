@@ -52,38 +52,33 @@ object GoldorTimer : Module(
 
     private var tickTime = 0
     private var startTime = 0
-    private var shouldLoad = false
     private val preStartRegex = Regex("\\[BOSS] Storm: I should have known that I stood no chance\\.")
     private val startRegex = Regex("\\[BOSS] Goldor: Who dares trespass into my domain\\?")
     private val endRegex = Regex("The Core entrance is opening!")
 
     @SubscribeEvent
     fun onServerTick(event: RealServerTick) {
-        if (!shouldLoad) {
-            tickTime = -2
-            startTime = -2
-            return
-        }
-        startTime--
-        tickTime--
+        if (tickTime >= -1) tickTime--
+        if (startTime >= -1) startTime--
 
         if (tickTime in -1..0 && startTime <= 0) { tickTime = 60 }
     }
 
     init {
         onWorldLoad {
-            shouldLoad = false
             tickTime = -2
             startTime = -2
         }
 
         onMessage(Regex(".*")) {
             if (!it.matches(preStartRegex) && !it.matches(startRegex) && !it.matches(endRegex) || it.contains("Storm") && !startTimer) return@onMessage
-            if (it.contains("Core")) return@onMessage
 
             if (it.contains("Storm"))
                 startTime = 104
-            else
+            else if (it.contains("Core")) {
+                tickTime = -2
+                startTime = -2
+            } else
                 tickTime = 60
         }
     }
