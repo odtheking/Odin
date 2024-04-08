@@ -1,5 +1,8 @@
 package me.odinmain.features.impl.floor7
 
+import me.odinmain.events.impl.PacketEntityEquipment
+import me.odinmain.events.impl.ReceivePacketEvent
+import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.DragonBoxes.renderBoxes
@@ -24,7 +27,13 @@ import me.odinmain.utils.render.roundedRectangle
 import me.odinmain.utils.render.text
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.modMessage
+import net.minecraft.entity.item.EntityArmorStand
+import net.minecraft.entity.item.EntityItem
+import net.minecraft.init.Blocks
+import net.minecraft.item.Item
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
+import net.minecraft.network.play.server.S04PacketEntityEquipment
 import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraftforge.client.event.RenderLivingEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -72,6 +81,8 @@ object WitherDragons : Module(
     val sendTime: Boolean by BooleanSetting("Send Dragon Time Alive", true, description = "Sends a message when a dragon dies with the time it was alive.").withDependency { dragonAlerts }
     val sendSpawning: Boolean by BooleanSetting("Send Dragon Spawning", true, description = "Sends a message when a dragon is spawning.").withDependency { dragonAlerts }
     val sendSpawned: Boolean by BooleanSetting("Send Dragon Spawned", true, description = "Sends a message when a dragon has spawned.").withDependency { dragonAlerts }
+    val sendSpray: Boolean by BooleanSetting("Send Ice Sprayed", true, description = "Sends a message when a dragon has been ice sprayed").withDependency { dragonAlerts }
+
 
     private val dragonHealth: Boolean by BooleanSetting("Dragon Health", true, description = "Displays the health of M7 dragons.")
 
@@ -141,6 +152,17 @@ object WitherDragons : Module(
     fun onEntityJoin(event: EntityJoinWorldEvent) {
         if (DungeonUtils.getPhase() != Island.M7P5) return
         dragonJoinWorld(event)
+    }
+
+
+    @SubscribeEvent
+    fun checkForSpray(event: PacketEntityEquipment) {
+        val itemStack = event.packet.itemStack
+        if (itemStack?.item != Item.getItemFromBlock(Blocks.packed_ice)) return
+
+        val entityId = event.packet.entityID
+        val sprayedEntity = mc.theWorld.getEntityByID(entityId) as? EntityArmorStand ?: return
+        modMessage("cry")
     }
 
     @SubscribeEvent

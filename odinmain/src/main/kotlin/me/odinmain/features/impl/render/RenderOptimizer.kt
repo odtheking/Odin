@@ -9,6 +9,7 @@ import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.getSkullValue
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.item.EntityItem
@@ -61,6 +62,7 @@ object RenderOptimizer : Module(
     }
     @SubscribeEvent
     fun entityJoinWorld(event: EntityJoinWorldEvent) {
+        modMessage(event.entity.name)
         if (event.entity !is EntityArmorStand || !event.entity.isInvisible || removeArmorStands) return
         val inventoryList = event.entity.inventory.filterNotNull()
         if (inventoryList.size != 1 || inventoryList.first().item !is ItemBlock) return
