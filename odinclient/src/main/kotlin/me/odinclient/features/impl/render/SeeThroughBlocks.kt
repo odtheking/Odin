@@ -8,7 +8,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object SeeThroughBlocks : Module(
     name = "SeeThroughBlocks",
     category = Category.RENDER,
-    description = "Allows you to see through blocks when you're in them"
+    description = "Allows to see through blocks when you're in them"
 ) {
     @SubscribeEvent
     fun onRenderBlockOverlay(event: RenderBlockOverlayEvent) {
