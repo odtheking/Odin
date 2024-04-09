@@ -13,10 +13,9 @@ import me.odinmain.utils.render.*
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiMainMenu
 import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.texture.DynamicTexture
-import net.minecraft.event.ClickEvent
-import net.minecraft.util.ChatComponentText
 import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.opengl.GL11
@@ -27,16 +26,15 @@ import java.lang.management.ManagementFactory
 object OdinUpdater: GuiScreen() {
 
     private val logoTexture = DynamicTexture(RenderUtils.loadBufferedImage("/assets/odinmain/logo.png"))
-    private val javaRuntime = "\"${System.getProperty("java.home")}${File.separatorChar}bin${File.separatorChar}javaw${if (System.getProperty("os.name").lowercase().contains("win")) ".exe" else ""}\""
+    private val javaRuntime = "\"${System.getProperty("java.home")}${File.separatorChar}bin${File.separatorChar}javaw${if (System.getProperty("os.name").contains("win")) ".exe" else ""}\""
 
-    private var link = ""
     private var tag = ""
     private var isNewer = false
-    private val seeChangelog: ChatComponentText = ChatComponentText("See Changelog")
+    private var scaleFactor = 1
 
     @SubscribeEvent()
     fun onGuiOpen(event: GuiOpenEvent) {
-        if (event.gui !is GuiMainMenu || isNewer) return
+        if (event.gui !is GuiMainMenu /*|| isNewer*/) return
 
         val tags = try {
             Json.parseToJsonElement(fetchURLData("https://api.github.com/repos/odtheking/OdinClient/tags"))
@@ -44,40 +42,32 @@ object OdinUpdater: GuiScreen() {
             return
         }
         tag = tags.jsonArray[0].jsonObject["name"].toString().replace("\"", "")
-        link = "https://github.com/odtheking/OdinClient/releases/tag/$tag"
-
-        seeChangelog.chatStyle.chatClickEvent = ClickEvent(ClickEvent.Action.OPEN_URL, link)
 
         isNewer = this.isSecondNewer(tag)
 
         //if (isNewer)
-            //OdinMain.display = this@OdinUpdater
+            OdinMain.display = this@OdinUpdater
     }
 
     override fun initGui() {
         // add discord link also maybe
-        this.buttonList.add(OdinGuiButton(0, width / 2 - 40, height - 50, 80, 20, "Later", 10f))
-        this.buttonList.add(OdinGuiButton(1, width / 2 - 60, height - 130, 120, 20, "Update", 10f))
+        // add link to / or changelog maybe
+        // add some sort of toggle for auto restart
+        this.scaleFactor = ScaledResolution(mc).scaleFactor
+        this.buttonList.add(OdinGuiButton(0, mc.displayWidth / 2 - 60, mc.displayHeight - 100, 120, 50, "Later", 10f))
+        this.buttonList.add(OdinGuiButton(1, mc.displayWidth / 2 - 100, mc.displayHeight - 300, 200, 70, "Update", 12f))
         super.initGui()
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         this.drawBackground(0)
+        GlStateManager.pushMatrix()
+        GlStateManager.scale(1f / scaleFactor, 1f / scaleFactor, 1f)
         this.drawLogo()
-        text("A new version of ${if (OdinMain.onLegitVersion) "Odin" else "OdinClient"} is available!", width / 2f, 250f, Color.WHITE, 14f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Middle, false)
-        text("§fNewest: §r$tag   §fCurrent: §r${OdinMain.VERSION}", width / 2f - getTextWidth("Newest: $tag   Current: ${OdinMain.VERSION}", 14f) / 2, 300f, ClickGUIModule.color, 14f, OdinFont.REGULAR, TextAlign.Left, TextPos.Middle, false)
-        text(seeChangelog.chatComponentText_TextValue, width / 2f, 355f, Color.WHITE, 12f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Middle, false)
-        this.drawHorizontalLine(width / 2 - getTextWidth(seeChangelog.chatComponentText_TextValue, 12f).toInt() / 2 - 2, width / 2 + getTextWidth(seeChangelog.chatComponentText_TextValue, 12f).toInt() / 2, 363, Color.WHITE.rgba)
+        text("A new version of ${if (OdinMain.onLegitVersion) "Odin" else "OdinClient"} is available!", mc.displayWidth / 2f, 450f, Color.WHITE, 18f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Middle, false)
+        text("§fNewest: §r$tag   §fCurrent: §r${OdinMain.VERSION}", mc.displayWidth / 2f - getTextWidth("Newest: $tag   Current: ${OdinMain.VERSION}", 18f) / 2, 500f, ClickGUIModule.color, 18f, OdinFont.REGULAR, TextAlign.Left, TextPos.Middle, false)
+        GlStateManager.popMatrix()
         super.drawScreen(mouseX, mouseY, partialTicks)
-    }
-
-    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        val onChangeLogX = mouseX in (width / 2 - getTextWidth(seeChangelog.unformattedText, 12f).toInt() / 2) .. (width / 2 + getTextWidth(seeChangelog.unformattedText, 12f).toInt() / 2)
-        val onChangeLogY = mouseY in 340 .. 350 + getTextHeight(seeChangelog.chatComponentText_TextValue, 12f).toInt()
-        if (onChangeLogX && onChangeLogY) {
-            this.handleComponentClick(seeChangelog)
-        }
-        super.mouseClicked(mouseX, mouseY, mouseButton)
     }
 
     override fun actionPerformed(button: GuiButton?) {
@@ -126,8 +116,8 @@ object OdinUpdater: GuiScreen() {
         GlStateManager.pushMatrix()
         GlStateManager.enableBlend()
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-        GlStateManager.translate(width / 2f - 192, 25f, 0f)
-        GlStateManager.scale(0.2f, 0.2f, 1f)
+        GlStateManager.translate(mc.displayWidth / 2f - 384, 0f, 0f)
+        GlStateManager.scale(0.4f, 0.4f, 1f)
         drawDynamicTexture(logoTexture, 0f, 0f, 1920f, 1080f)
         GlStateManager.disableBlend()
         GlStateManager.popMatrix()
