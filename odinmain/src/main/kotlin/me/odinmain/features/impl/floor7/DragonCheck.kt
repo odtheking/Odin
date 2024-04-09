@@ -1,11 +1,17 @@
 package me.odinmain.features.impl.floor7
 
+import me.odinmain.OdinMain.mc
+import me.odinmain.events.impl.ReceivePacketEvent
 import me.odinmain.features.impl.floor7.WitherDragons.sendNotification
 import me.odinmain.features.impl.floor7.WitherDragons.sendSpawned
 import me.odinmain.features.impl.floor7.WitherDragons.sendTime
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.entity.boss.EntityDragon
+import net.minecraft.entity.item.EntityArmorStand
+import net.minecraft.init.Blocks
+import net.minecraft.item.Item
+import net.minecraft.network.play.server.S04PacketEntityEquipment
 import net.minecraft.util.Vec3
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.event.entity.living.LivingDeathEvent
@@ -22,6 +28,7 @@ object DragonCheck {
         dragon.particleSpawnTime = 0L
         dragon.timesSpawned += 1
         dragon.entity = event.entity
+        dragon.spawnedTime = System.currentTimeMillis()
         if (sendSpawned) modMessage("§${dragon.colorCode}${dragon.name} §fdragon spawned. This is the §${dragon.colorCode}${dragon.timesSpawned}§f time it has spawned.")
     }
 
@@ -37,6 +44,30 @@ object DragonCheck {
             modMessage("§${dragon.colorCode}${dragon.name} §fdragon was alive for ${printSecondsWithColor(killTime, 3.5, 7.5, down = false)}${if (killTime < oldPB) " §7(§dNew PB§7)" else ""}.")
         }
         lastDragonDeath = dragon.name
+    }
+
+    fun dragonSprayed(event: ReceivePacketEvent) {
+        if (event.packet !is S04PacketEntityEquipment) return
+        if (event.packet.itemStack?.item != Item.getItemFromBlock(Blocks.packed_ice)) return
+        modMessage("ice spray hit something no way")
+
+        val sprayedEntity = mc.theWorld.getEntityByID(event.packet.entityID) as? EntityArmorStand ?: return
+        modMessage("${sprayedEntity} spray detected!")
+
+        WitherDragonsEnum.entries.forEach {
+            if (it.entity?.isEntityAlive == true) {
+                modMessage("dragon alive!")
+                val distanceToDragon = sprayedEntity.getDistanceToEntity(it.entity)
+                modMessage("$distanceToDragon distance to dragon")
+                if (sprayedEntity.getDistanceToEntity(it.entity) <= 3) {
+                    modMessage("sprayed!")
+                    if(it.isSprayed) return
+                    val sprayedIn = (System.currentTimeMillis() - it.spawnedTime)
+                    modMessage("§${it.colorCode}${it.name} §fdragon was sprayed in §c${sprayedIn}§fms ")
+                    it.isSprayed = true
+                }
+            }
+        }
     }
 
     fun onChatPacket(message: String) {

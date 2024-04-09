@@ -29,7 +29,6 @@ object EventDispatcher {
      */
     @SubscribeEvent
     fun onPacket(event: ReceivePacketEvent) {
-        if (event.packet is S04PacketEntityEquipment) PacketEntityEquipment(packet = S04PacketEntityEquipment()).postAndCatch()
         if (event.packet is S32PacketConfirmTransaction) RealServerTick().postAndCatch()
 
         if (event.packet !is S02PacketChat || !ChatPacketEvent(event.packet.chatComponent.unformattedText.noControlCodes).postAndCatch()) return

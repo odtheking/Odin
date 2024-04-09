@@ -62,7 +62,6 @@ object RenderOptimizer : Module(
     }
     @SubscribeEvent
     fun entityJoinWorld(event: EntityJoinWorldEvent) {
-        modMessage(event.entity.name)
         if (event.entity !is EntityArmorStand || !event.entity.isInvisible || removeArmorStands) return
         val inventoryList = event.entity.inventory.filterNotNull()
         if (inventoryList.size != 1 || inventoryList.first().item !is ItemBlock) return

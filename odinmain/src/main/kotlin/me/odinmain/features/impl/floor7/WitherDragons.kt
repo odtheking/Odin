@@ -1,13 +1,12 @@
 package me.odinmain.features.impl.floor7
 
-import me.odinmain.events.impl.PacketEntityEquipment
 import me.odinmain.events.impl.ReceivePacketEvent
-import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.DragonBoxes.renderBoxes
 import me.odinmain.features.impl.floor7.DragonCheck.dragonJoinWorld
 import me.odinmain.features.impl.floor7.DragonCheck.dragonLeaveWorld
+import me.odinmain.features.impl.floor7.DragonCheck.dragonSprayed
 import me.odinmain.features.impl.floor7.DragonCheck.lastDragonDeath
 import me.odinmain.features.impl.floor7.DragonCheck.onChatPacket
 import me.odinmain.features.impl.floor7.DragonHealth.renderHP
@@ -21,15 +20,11 @@ import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.noControlCodes
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.getTextWidth
-import me.odinmain.utils.render.roundedRectangle
-import me.odinmain.utils.render.text
+import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.entity.item.EntityArmorStand
-import net.minecraft.entity.item.EntityItem
 import net.minecraft.init.Blocks
 import net.minecraft.item.Item
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
@@ -154,15 +149,10 @@ object WitherDragons : Module(
         dragonJoinWorld(event)
     }
 
-
     @SubscribeEvent
-    fun checkForSpray(event: PacketEntityEquipment) {
-        val itemStack = event.packet.itemStack
-        if (itemStack?.item != Item.getItemFromBlock(Blocks.packed_ice)) return
-
-        val entityId = event.packet.entityID
-        val sprayedEntity = mc.theWorld.getEntityByID(entityId) as? EntityArmorStand ?: return
-        modMessage("cry")
+    fun onPacket(event: ReceivePacketEvent) {
+        if (DungeonUtils.getPhase() != Island.M7P5) return
+        dragonSprayed(event)
     }
 
     @SubscribeEvent
