@@ -54,8 +54,8 @@ object OdinUpdater: GuiScreen() {
         // add link to / or changelog maybe
         // add some sort of toggle for auto restart
         this.scaleFactor = ScaledResolution(mc).scaleFactor
-        this.buttonList.add(OdinGuiButton(0, mc.displayWidth / 2 - 60, mc.displayHeight - 100, 120, 50, "Later", 10f))
-        this.buttonList.add(OdinGuiButton(1, mc.displayWidth / 2 - 100, mc.displayHeight - 300, 200, 70, "Update", 12f))
+        this.buttonList.add(OdinGuiButton(0, mc.displayWidth / 2 - 60, mc.displayHeight - 100, 120, 50, "Later", 20f))
+        this.buttonList.add(OdinGuiButton(1, mc.displayWidth / 2 - 100, mc.displayHeight - 300, 200, 70, "Update", 24f))
         super.initGui()
     }
 
