@@ -59,7 +59,7 @@ object DragonCheck {
                 modMessage("dragon alive!")
                 val distanceToDragon = sprayedEntity.getDistanceToEntity(it.entity)
                 modMessage("$distanceToDragon distance to dragon")
-                if (sprayedEntity.getDistanceToEntity(it.entity) <= 3) {
+                if (sprayedEntity.getDistanceToEntity(it.entity) <= 8) {
                     modMessage("sprayed!")
                     if(it.isSprayed) return
                     val sprayedIn = (System.currentTimeMillis() - it.spawnedTime)
