@@ -32,6 +32,7 @@ object DragonCheck {
         dragon.timesSpawned += 1
         dragon.entity = event.entity
         dragon.spawnedTime = System.currentTimeMillis()
+        dragon.isSprayed = false
 
         if (resetOnDragons) onDragonSpawn()
         if (sendSpawned) modMessage("§${dragon.colorCode}${dragon.name} §fdragon spawned. This is the §${dragon.colorCode}${dragon.timesSpawned}§f time it has spawned.")
