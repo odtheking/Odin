@@ -4,9 +4,7 @@ import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.odinmain.features.impl.render.DevPlayers
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.io.OutputStreamWriter
+import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -115,6 +113,25 @@ fun fetchURLData(url: String): String {
         e.printStackTrace()
         return ""
     }
+}
+
+fun downloadFile(url: String, outputPath: String) {
+    val url = URL(url)
+    val connection = url.openConnection()
+    connection.connect()
+
+    val inputStream = connection.getInputStream()
+    val outputStream = FileOutputStream(outputPath)
+
+    val buffer = ByteArray(1024)
+    var bytesRead: Int
+
+    while (inputStream.read(buffer).also { bytesRead = it } != -1) {
+        outputStream.write(buffer, 0, bytesRead)
+    }
+
+    outputStream.close()
+    inputStream.close()
 }
 
 /**

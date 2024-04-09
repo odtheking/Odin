@@ -46,12 +46,14 @@ class ColorSetting(
         }
 
     override fun read(element: JsonElement?) {
-        element?.asInt?.let {
+        if (element?.asString?.startsWith("#") == true) {
+            value = Color(element.asString.drop(1))
+        } else element?.asInt?.let {
             value = Color(it)
         }
     }
 
     override fun write(): JsonElement {
-        return JsonPrimitive(value.rgba)
+        return JsonPrimitive("#${this.value.hex}")
     }
 }

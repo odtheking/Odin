@@ -29,7 +29,7 @@ object BlockOverlay : Module(
     private var disableDepth: Boolean by BooleanSetting("Disable Depth", false)
     private var lineSmoothing: Boolean by BooleanSetting("Line Smoothing", false)
     private var lineWidth: Float by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f)
-    private var expand: Float by NumberSetting("Expand", 0f, 0f, 100f, 1f)
+    private var expand: Float by NumberSetting("Expand", 0f, 0f, 10f, 0.1f)
     private var color: Color by ColorSetting("Color", Color(0, 0, 0, 0.4f), allowAlpha = true)
     private val reset: () -> Unit by ActionSetting("Reset") {
         fullBlock = false

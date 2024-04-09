@@ -73,6 +73,7 @@ object OdinMain {
             WaypointManager,
             DevPlayers,
             HighlightRenderer,
+            OdinUpdater,
             this
         ).forEach { MinecraftForge.EVENT_BUS.register(it) }
 
