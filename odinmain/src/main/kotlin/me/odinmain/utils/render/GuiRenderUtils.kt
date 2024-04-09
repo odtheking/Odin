@@ -100,6 +100,11 @@ fun text(text: String, x: Float, y: Float, color: Color, size: Float, type: Int 
     OdinFont.text(text, x, y, color, size, align, verticalAlign, shadow, type)
 }
 
+fun textAndWidth(text: String, x: Float, y: Float, color: Color, size: Float, type: Int = OdinFont.REGULAR, align: TextAlign = Left, verticalAlign: TextPos = TextPos.Middle, shadow: Boolean = false): Float {
+    text(text, x, y, color, size, type, align, verticalAlign, shadow)
+    return getTextWidth(text, size)
+}
+
 fun mcText(text: String, x: Float, y: Float, color: Color, shadow: Boolean) {
     mc.fontRendererObj.drawString(text, x, y, color.rgba, shadow)
 }

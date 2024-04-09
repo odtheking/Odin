@@ -8,10 +8,7 @@ import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.max
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.getTextHeight
-import me.odinmain.utils.render.getTextWidth
-import me.odinmain.utils.render.text
+import me.odinmain.utils.render.*
 import me.odinmain.utils.round
 
 object ServerDisplay : Module(
@@ -58,14 +55,11 @@ object ServerDisplay : Module(
                 val tpsText = "§rTPS: §f${if (ServerUtils.averageTps > 19.3) 20 else ServerUtils.averageTps.toInt()}"
                 var width = 0f
                 if (tps)
-                    text(tpsText, 1f, 10f, ClickGUIModule.color, 14f, shadow = true)
-                    width += getTextWidth(tpsText, 14f) * 1.5f
+                    width += textAndWidth(tpsText, 1f, 10f, ClickGUIModule.color, 14f, shadow = true) * 1.5f
                 if (fps)
-                    text(fpsText, 1f + (if (tps) getTextWidth(tpsText, 14f) * 1.5f else 0f), 10f, ClickGUIModule.color, 14f, shadow = true)
-                    width += getTextWidth(fpsText, 14f) * 1.5f
+                    width += textAndWidth(fpsText, 1f + (if (tps) getTextWidth(tpsText, 14f) * 1.5f else 0f), 10f, ClickGUIModule.color, 14f, shadow = true) * 1.5f
                 if (ping)
-                    text(pingText, 1f + (if (tps) getTextWidth(tpsText, 14f) * 1.5f else 0f) + (if (fps) getTextWidth(fpsText, 14f) * 1.5f else 0f), 10f, ClickGUIModule.color, 14f, shadow = true)
-                    width += getTextWidth(pingText, 14f) * 1.5f
+                    width += textAndWidth(pingText, 1f + (if (tps) getTextWidth(tpsText, 14f) * 1.5f else 0f) + (if (fps) getTextWidth(fpsText, 14f) * 1.5f else 0f), 10f, ClickGUIModule.color, 14f, shadow = true) * 1.5f
                 width + 2f to if (ping || tps || fps) getTextHeight("A", 14f) + 6f else 0f
             } else {
                 if (ping) text("§6Ping: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 1f, 9f, Color.WHITE,12f)

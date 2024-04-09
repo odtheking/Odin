@@ -65,7 +65,7 @@ object HighlightRenderer {
                 RenderUtils.outlineColor(it.color)
                 mc.renderManager.renderEntityStatic(it.entity, event.partialTicks, true)
             }
-            OutlineShader.stopDraw(Color.RED, entities[HighlightType.Outline]?.firstOrNull()?.thickness ?: 1f, 1f)
+            OutlineShader.stopDraw(Color.RED, (entities[HighlightType.Outline]?.firstOrNull()?.thickness ?: 1f) / 3f, 1f)
         }
         if (entities[HighlightType.Glow]?.isNotEmpty() == true) {
             GlowShader.startDraw(event.partialTicks)
