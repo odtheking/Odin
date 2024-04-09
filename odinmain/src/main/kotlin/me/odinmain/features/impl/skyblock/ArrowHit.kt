@@ -24,6 +24,7 @@ object ArrowHit : Module(
     private val resetOnTime: Boolean by BooleanSetting("Reset on time", true, description = "Reset the arrow count after a certain amount of time")
     private val resetCountClock: String by StringSetting("Reset count clock", 128.toString(), 16).withDependency { resetOnTime}
     private val resetOnWorldLoad by BooleanSetting("Reset on world load", true, description = "Reset the arrow count when you join a world")
+    val resetOnDragons by BooleanSetting("Reset on next dragon spawn", true, description = "Reset the arrow count when a m7 dragon has spawned")
 
     private val resetArrowClock = Clock(resetCountClock.toIntOrNull()?.times(1000L) ?: 9999)
     private var arrowCount = 0
@@ -52,6 +53,10 @@ object ArrowHit : Module(
         onWorldLoad {
             if (resetOnWorldLoad) arrowCount = 0
         }
+    }
+
+    fun onDragonSpawn() {
+        arrowCount = 0
     }
 
     override fun onKeybind() {

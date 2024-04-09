@@ -4,7 +4,10 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.ReceivePacketEvent
 import me.odinmain.features.impl.floor7.WitherDragons.sendNotification
 import me.odinmain.features.impl.floor7.WitherDragons.sendSpawned
+import me.odinmain.features.impl.floor7.WitherDragons.sendSpray
 import me.odinmain.features.impl.floor7.WitherDragons.sendTime
+import me.odinmain.features.impl.skyblock.ArrowHit.onDragonSpawn
+import me.odinmain.features.impl.skyblock.ArrowHit.resetOnDragons
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.entity.boss.EntityDragon
@@ -29,6 +32,8 @@ object DragonCheck {
         dragon.timesSpawned += 1
         dragon.entity = event.entity
         dragon.spawnedTime = System.currentTimeMillis()
+
+        if (resetOnDragons) onDragonSpawn()
         if (sendSpawned) modMessage("§${dragon.colorCode}${dragon.name} §fdragon spawned. This is the §${dragon.colorCode}${dragon.timesSpawned}§f time it has spawned.")
     }
 
@@ -49,21 +54,16 @@ object DragonCheck {
     fun dragonSprayed(event: ReceivePacketEvent) {
         if (event.packet !is S04PacketEntityEquipment) return
         if (event.packet.itemStack?.item != Item.getItemFromBlock(Blocks.packed_ice)) return
-        modMessage("ice spray hit something no way")
 
         val sprayedEntity = mc.theWorld.getEntityByID(event.packet.entityID) as? EntityArmorStand ?: return
-        modMessage("${sprayedEntity} spray detected!")
+
 
         WitherDragonsEnum.entries.forEach {
             if (it.entity?.isEntityAlive == true) {
-                modMessage("dragon alive!")
-                val distanceToDragon = sprayedEntity.getDistanceToEntity(it.entity)
-                modMessage("$distanceToDragon distance to dragon")
                 if (sprayedEntity.getDistanceToEntity(it.entity) <= 8) {
-                    modMessage("sprayed!")
-                    if(it.isSprayed) return
+                    if (it.isSprayed) return
                     val sprayedIn = (System.currentTimeMillis() - it.spawnedTime)
-                    modMessage("§${it.colorCode}${it.name} §fdragon was sprayed in §c${sprayedIn}§fms ")
+                    if (sendSpray) modMessage("§${it.colorCode}${it.name} §fdragon was sprayed in §c${sprayedIn}§fms ")
                     it.isSprayed = true
                 }
             }
