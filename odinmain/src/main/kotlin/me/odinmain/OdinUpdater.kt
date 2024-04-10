@@ -16,6 +16,9 @@ import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.texture.DynamicTexture
+import net.minecraft.event.ClickEvent
+import net.minecraft.util.ChatComponentText
+import net.minecraft.util.ChatStyle
 import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.opengl.GL11
@@ -27,14 +30,22 @@ object OdinUpdater: GuiScreen() {
 
     private val logoTexture = DynamicTexture(RenderUtils.loadBufferedImage("/assets/odinmain/logo.png"))
     private val javaRuntime = "\"${System.getProperty("java.home")}${File.separatorChar}bin${File.separatorChar}javaw${if (System.getProperty("os.name").contains("win")) ".exe" else ""}\""
+    private val javaUpdateGuide = ChatComponentText(null).setChatStyle(ChatStyle().setChatClickEvent(ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/ChatTriggers/ChatTriggers/wiki/Fixing-broken-imports")))
 
     private var tag = ""
     private var isNewer = false
+    private var isOutdatedJava = false
     private var scaleFactor = 1
 
     @SubscribeEvent()
     fun onGuiOpen(event: GuiOpenEvent) {
         if (event.gui !is GuiMainMenu /*|| isNewer*/) return
+
+        // To prevent this in the future do the TrustManager thing and add a X509 cert to access github in jre 51
+        val javaVersion = System.getProperty("java.version")
+        if (javaVersion == "1.8.0_51") {
+            isOutdatedJava = true
+        }
 
         val tags = try {
             Json.parseToJsonElement(fetchURLData("https://api.github.com/repos/odtheking/OdinClient/tags"))
@@ -43,19 +54,24 @@ object OdinUpdater: GuiScreen() {
         }
         tag = tags.jsonArray[0].jsonObject["name"].toString().replace("\"", "")
 
-        isNewer = this.isSecondNewer(tag)
+        isNewer = !this.isSecondNewer(tag)
 
-        //if (isNewer)
+        if (isNewer)
             OdinMain.display = this@OdinUpdater
     }
 
     override fun initGui() {
         // add discord link also maybe
         // add link to / or changelog maybe
-        // add some sort of toggle for auto restart
+        // add a warning that updating will restart the game
         this.scaleFactor = ScaledResolution(mc).scaleFactor
-        this.buttonList.add(OdinGuiButton(0, mc.displayWidth / 2 - 60, mc.displayHeight - 100, 120, 50, "Later", 20f))
-        this.buttonList.add(OdinGuiButton(1, mc.displayWidth / 2 - 100, mc.displayHeight - 300, 200, 70, "Update", 24f))
+        if (isOutdatedJava) {
+            this.buttonList.add(OdinGuiButton(2, mc.displayWidth / 2 - 175, mc.displayHeight - 500, 350, 80, "Update Java Guide", 24f))
+            this.buttonList.add(OdinGuiButton(0, mc.displayWidth / 2 - 60, mc.displayHeight - 100, 120, 50, "Close", 20f))
+        } else {
+            this.buttonList.add(OdinGuiButton(0, mc.displayWidth / 2 - 60, mc.displayHeight - 100, 120, 50, "Later", 20f))
+            this.buttonList.add(OdinGuiButton(1, mc.displayWidth / 2 - 100, mc.displayHeight - 300, 200, 70, "Update", 24f))
+        }
         super.initGui()
     }
 
@@ -64,8 +80,12 @@ object OdinUpdater: GuiScreen() {
         GlStateManager.pushMatrix()
         GlStateManager.scale(1f / scaleFactor, 1f / scaleFactor, 1f)
         this.drawLogo()
-        text("A new version of ${if (OdinMain.onLegitVersion) "Odin" else "OdinClient"} is available!", mc.displayWidth / 2f, 450f, Color.WHITE, 18f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Middle, false)
-        text("§fNewest: §r$tag   §fCurrent: §r${OdinMain.VERSION}", mc.displayWidth / 2f - getTextWidth("Newest: $tag   Current: ${OdinMain.VERSION}", 18f) / 2, 500f, ClickGUIModule.color, 18f, OdinFont.REGULAR, TextAlign.Left, TextPos.Middle, false)
+        if (isOutdatedJava) {
+            text("You are using an outdated version of java (${System.getProperty("java.version")}) which does not allow the auto updater to work properly", mc.displayWidth / 2f, 500f, Color.RED, 18f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Middle, false)
+        } else {
+            text("A new version of ${if (OdinMain.onLegitVersion) "Odin" else "OdinClient"} is available!", mc.displayWidth / 2f, 450f, Color.WHITE, 18f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Middle, false)
+            text("§fNewest: §r$tag   §fCurrent: §r${OdinMain.VERSION}", mc.displayWidth / 2f - getTextWidth("Newest: $tag   Current: ${OdinMain.VERSION}", 18f) / 2, 500f, ClickGUIModule.color, 18f, OdinFont.REGULAR, TextAlign.Left, TextPos.Middle, false)
+        }
         GlStateManager.popMatrix()
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
@@ -93,11 +113,14 @@ object OdinUpdater: GuiScreen() {
                     val relaunchCommandDir = "${System.getProperty("java.io.tmpdir")}${File.separatorChar}odinRelaunchCommand.txt"
                     val relaunchCommandFile = File(relaunchCommandDir)
                     if (!relaunchCommandFile.exists()) relaunchCommandFile.createNewFile()
-                    relaunchCommandFile.writeText(relaunchCommand)
+                    relaunchCommandFile.writeText(relaunchCommand, charset("UTF-8"))
 
                     Runtime.getRuntime().exec("$javaRuntime -jar $updaterPath \"$currentJarPath\" \"${relaunchCommandDir}\"")
                 })
                 mc.shutdown()
+            }
+            2 -> {
+                this.handleComponentClick(javaUpdateGuide)
             }
         }
         super.actionPerformed(button)
