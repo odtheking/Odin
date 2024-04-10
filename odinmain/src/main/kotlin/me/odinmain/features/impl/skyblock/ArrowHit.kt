@@ -43,7 +43,7 @@ object ArrowHit : Module(
             if (it.soundName != "random.successful_hit") return@onPacket
             arrowCount += 1
             if (arrowCount >= (resetCount.toIntOrNull() ?: 9999) && resetOnNumber) arrowCount = 0
-            if(resetArrowClock.hasTimePassed() && resetOnTime) arrowCount = 0
+            if (resetArrowClock.hasTimePassed() && resetOnTime) arrowCount = 0
         }
 
         onWorldLoad { if (resetOnWorldLoad) arrowCount = 0  }
