@@ -14,7 +14,7 @@ import net.minecraft.tileentity.TileEntitySkull
 import net.minecraft.util.BlockPos
 import org.lwjgl.input.Keyboard
 
-object GhostBlock : Module(
+object GhostBlocks : Module(
     name = "Ghost Blocks",
     description = "Creates ghost blocks on key press, and in specific locations.",
     category = Category.DUNGEON,
@@ -55,7 +55,7 @@ object GhostBlock : Module(
                 mc.theWorld?.setBlockState(i, Blocks.ender_chest.defaultState)
             }
             for (i in glass[phase] ?: return@execute) {
-                mc.theWorld?.setBlockState(i, Blocks.glass.defaultState)
+                mc.theWorld?.setBlockState(i, Blocks.stained_glass.defaultState)
             }
         }
     }
@@ -76,22 +76,29 @@ object GhostBlock : Module(
         1 to arrayOf(
             BlockPos(77, 221, 35),
             BlockPos(77, 221, 34),
-            BlockPos(77, 221, 33),
+            BlockPos(77, 221, 33)
         ),
         2 to arrayOf(
             BlockPos(101, 169, 46),
             BlockPos(100, 169, 46),
             BlockPos(99, 169, 46)
+        ),
+        3 to arrayOf(
+            BlockPos(56, 114, 111)
         )
     )
 
     private val glass = mapOf(
         1 to arrayOf(
             BlockPos(77, 221, 36),
-            BlockPos(78, 221, 36),
+            BlockPos(78, 221, 36)
         ),
         2 to arrayOf(
-            BlockPos(102, 169, 47),
+            BlockPos(102, 169, 47)
+        ),
+        3 to arrayOf(
+            BlockPos(55, 114, 110),
+            BlockPos(55, 114, 111)
         )
     )
 
@@ -165,7 +172,7 @@ object GhostBlock : Module(
             BlockPos(101, 167, 47),
             BlockPos(101, 166, 47),
             BlockPos(101, 167, 46),
-            BlockPos(101, 166, 46),
+            BlockPos(101, 166, 46)
         ),
         3 to arrayOf(
             BlockPos(51, 114, 52),
@@ -182,6 +189,10 @@ object GhostBlock : Module(
             BlockPos(51, 115, 56),
             BlockPos(51, 115, 57),
             BlockPos(51, 115, 58),
+            BlockPos(56, 113, 111),
+            BlockPos(56, 112, 110),
+            BlockPos(56, 112, 110),
+            BlockPos(56, 111, 110)
         ),
         4 to arrayOf(
             BlockPos(54, 64, 72),

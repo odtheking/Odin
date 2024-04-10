@@ -2,6 +2,7 @@ package me.odinmain.ui
 
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.font.OdinFont
+import me.odinmain.ui.clickgui.util.ColorUtil.darker
 import me.odinmain.utils.render.*
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiButton
@@ -29,7 +30,7 @@ class OdinGuiButton(
         GlStateManager.enableBlend()
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
         GlStateManager.blendFunc(770, 771)
-        roundedRectangle(this.xPosition, this.yPosition, this.width, this.height, ClickGUIModule.color, if (hoverState == 2) Color.WHITE else ClickGUIModule.color, Color.BLACK, 2f, 4f, 4f, 4f, 4f, 1f)
+        roundedRectangle(this.xPosition, this.yPosition, this.width, this.height, ClickGUIModule.color, if (hoverState == 2) Color.WHITE else ClickGUIModule.color.darker(0.3f), Color.BLACK, 2f, 4f, 4f, 4f, 4f, 1f)
         text(this.displayString, this.xPosition + this.width / 2f, this.yPosition + height / 2f, Color.WHITE, textSize / scaleFactor, OdinFont.REGULAR, TextAlign.Middle, TextPos.Middle, true)
     }
 

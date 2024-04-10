@@ -71,7 +71,7 @@ class ModCore {
             AutoGFS, AutoIceFill, AutoSell, CancelInteract, CancelChestOpen, GhostPick, SecretHitboxes,
             SwapStonk, Arrows, ArrowAlign, CancelWrongTerms, HoverTerms, LightsDevice, SimonSays,
             DioriteFucker, RelicAura, Trajectories, Ghosts, NoCarpet, NoDebuff, LockCursor,
-            CookieClicker, AutoExperiments, FarmingHitboxes, NoBlock, TermAC, Triggerbot, GhostBlock, FreezeGame,
+            CookieClicker, AutoExperiments, FarmingHitboxes, NoBlock, TermAC, Triggerbot, GhostBlocks, FreezeGame,
             AbilityKeybind, EtherWarpHelper, ChestEsp, NoBreakReset, EscrowFix
         )
         OdinMain.loadComplete()
