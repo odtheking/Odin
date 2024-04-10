@@ -27,6 +27,8 @@ enum class WitherDragonsEnum (
     var spawning: Boolean = false,
     var timesSpawned: Int = 0,
     var entity: Entity? = null,
+    var isSprayed: Boolean = false,
+    var spawnedTime: Long = 0
 ) {
     Red(Vec3(27.0, 14.0, 59.0), AxisAlignedBB(14.5, 13.0, 45.5, 39.5, 28.0, 70.5),"c", Color.RED,
         24.0..30.0, 56.0..62.0, redPB),

@@ -1,10 +1,12 @@
 package me.odinmain.features.impl.floor7
 
+import me.odinmain.events.impl.ReceivePacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.DragonBoxes.renderBoxes
 import me.odinmain.features.impl.floor7.DragonCheck.dragonJoinWorld
 import me.odinmain.features.impl.floor7.DragonCheck.dragonLeaveWorld
+import me.odinmain.features.impl.floor7.DragonCheck.dragonSprayed
 import me.odinmain.features.impl.floor7.DragonCheck.lastDragonDeath
 import me.odinmain.features.impl.floor7.DragonCheck.onChatPacket
 import me.odinmain.features.impl.floor7.DragonHealth.renderHP
@@ -18,13 +20,15 @@ import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.noControlCodes
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.getTextWidth
-import me.odinmain.utils.render.roundedRectangle
-import me.odinmain.utils.render.text
+import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.modMessage
+import net.minecraft.entity.item.EntityArmorStand
+import net.minecraft.init.Blocks
+import net.minecraft.item.Item
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
+import net.minecraft.network.play.server.S04PacketEntityEquipment
 import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraftforge.client.event.RenderLivingEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -72,6 +76,8 @@ object WitherDragons : Module(
     val sendTime: Boolean by BooleanSetting("Send Dragon Time Alive", true, description = "Sends a message when a dragon dies with the time it was alive.").withDependency { dragonAlerts }
     val sendSpawning: Boolean by BooleanSetting("Send Dragon Spawning", true, description = "Sends a message when a dragon is spawning.").withDependency { dragonAlerts }
     val sendSpawned: Boolean by BooleanSetting("Send Dragon Spawned", true, description = "Sends a message when a dragon has spawned.").withDependency { dragonAlerts }
+    val sendSpray: Boolean by BooleanSetting("Send Ice Sprayed", true, description = "Sends a message when a dragon has been ice sprayed").withDependency { dragonAlerts }
+
 
     private val dragonHealth: Boolean by BooleanSetting("Dragon Health", true, description = "Displays the health of M7 dragons.")
 
@@ -141,6 +147,12 @@ object WitherDragons : Module(
     fun onEntityJoin(event: EntityJoinWorldEvent) {
         if (DungeonUtils.getPhase() != Island.M7P5) return
         dragonJoinWorld(event)
+    }
+
+    @SubscribeEvent
+    fun onPacket(event: ReceivePacketEvent) {
+        if (DungeonUtils.getPhase() != Island.M7P5) return
+        dragonSprayed(event)
     }
 
     @SubscribeEvent

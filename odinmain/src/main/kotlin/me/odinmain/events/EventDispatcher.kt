@@ -11,6 +11,7 @@ import me.odinmain.utils.waitUntilLastItem
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.network.play.server.S02PacketChat
+import net.minecraft.network.play.server.S04PacketEntityEquipment
 import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
