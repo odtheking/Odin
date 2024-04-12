@@ -56,8 +56,8 @@ object OdinUpdater: GuiScreen() {
 
         isNewer = !this.isSecondNewer(tag)
 
-        //if (isNewer)
-            //OdinMain.display = this@OdinUpdater
+        if (isNewer)
+            OdinMain.display = this@OdinUpdater
     }
 
     override fun initGui() {

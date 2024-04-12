@@ -37,7 +37,6 @@ object WarpCooldown : Module (
         onMessage(Regex("(?s).+")) {
             if (!it.contains(warpRegex)) return@onMessage
                 warpTimer.updateCD()
-                modMessage("grrr")
         }
     }
 }
