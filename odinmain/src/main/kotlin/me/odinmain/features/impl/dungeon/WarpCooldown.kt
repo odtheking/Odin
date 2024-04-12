@@ -11,6 +11,8 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.getTextWidth
 import me.odinmain.utils.render.text
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import me.odinmain.utils.clock.Clock
+import me.odinmain.utils.skyblock.modMessage
 
 object WarpCooldown : Module (
     name = "Warp Cooldown",
@@ -22,26 +24,20 @@ object WarpCooldown : Module (
             text("§eWarp: §a30s", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
             getTextWidth("Warp: 30s", 12f) + 2f to 16f
         } else {
-            if (warpTimer <= 0) return@HudSetting 0f to 0f
-            text("§eWarp: §a${String.format("%.2f", warpTimer.toFloat() / 20)}s", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
+            if (warpTimer.timeLeft() <= 0) return@HudSetting 0f to 0f
+            text("§eWarp: §a${String.format("%.2f", warpTimer.timeLeft().toFloat() / 1000)}s", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
             getTextWidth("§eWarp: §a30s", 12f) + 2f to 12f
         }
     }
 
-    private var warpTimer = 0
+    private var warpTimer = Clock(30000)
     private val warpRegex = Regex("\\[[^]]+] (\\w+) entered \\w+ Catacombs, Floor (\\w+)!")
 
-    @SubscribeEvent
-    fun onChat(event: ChatPacketEvent) {
-        val msg = event.message
-        if (msg.contains(warpRegex)) {
-            warpTimer = 600
+    init {
+        onMessage(Regex("(?s).+")) {
+            if (!it.contains(warpRegex)) return@onMessage
+                warpTimer.updateCD()
+                modMessage("grrr")
         }
     }
-
-    @SubscribeEvent
-    fun onServerTick(event: ServerTickEvent) {
-        warpTimer--
-    }
-
 }
