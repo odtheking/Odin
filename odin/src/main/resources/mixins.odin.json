@@ -25,7 +25,6 @@
     "mixins.MixinModList",
     "mixins.MixinMouseHelper",
     "mixins.MixinNetworkManager",
-    "mixins.MixinRender",
     "mixins.MixinRenderDragon",
     "mixins.MixinRendererLivingEntity",
     "mixins.MixinRenderPlayer",
