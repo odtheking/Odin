@@ -112,7 +112,8 @@ object ModuleManager {
         EnrageDisplay,
         BlockOverlay,
         ItemsHighlight,
-        GoldorTimer
+        GoldorTimer,
+        VisualWords
     )
 
     init {
