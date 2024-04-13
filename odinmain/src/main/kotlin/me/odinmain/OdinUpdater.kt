@@ -39,7 +39,7 @@ object OdinUpdater: GuiScreen() {
 
     @SubscribeEvent()
     fun onGuiOpen(event: GuiOpenEvent) {
-        if (event.gui !is GuiMainMenu /*|| isNewer*/) return
+        if (event.gui !is GuiMainMenu || isNewer) return
 
         // To prevent this in the future do the TrustManager thing and add a X509 cert to access github in jre 51
         val javaVersion = System.getProperty("java.version")
@@ -54,7 +54,7 @@ object OdinUpdater: GuiScreen() {
         }
         tag = tags.jsonArray[0].jsonObject["name"].toString().replace("\"", "")
 
-        isNewer = !this.isSecondNewer(tag)
+        isNewer = this.isSecondNewer(tag)
 
         if (isNewer)
             OdinMain.display = this@OdinUpdater
