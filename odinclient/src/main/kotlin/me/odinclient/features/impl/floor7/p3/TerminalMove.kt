@@ -30,8 +30,8 @@ object TerminalMove : Module(
     @SubscribeEvent
     fun onDrawContainerGui(event: DrawGuiContainerScreenEvent) {
         if (event.container !is ContainerChest) return
-        val containerName = (event.container as ContainerChest).lowerChestInventory.name
-        if (!TerminalSolver.terminalNames.contains((containerName))) return
+        val containerName = (event.container as ContainerChest).lowerChestInventory.name.replace("[\\[\\]:!]".toRegex(), "")
+        if (!TerminalSolver.terminalNames.any { containerName.startsWith(it) }) return
         for (keyBinding in keyBindingList) {
             if (((keyBinding == mc.gameSettings.keyBindJump) && !allowJump) || ((keyBinding == mc.gameSettings.keyBindSneak) && !allowSneak)) continue
             KeyBinding.setKeyBindState(keyBinding.keyCode, Keyboard.isKeyDown(keyBinding.keyCode))
