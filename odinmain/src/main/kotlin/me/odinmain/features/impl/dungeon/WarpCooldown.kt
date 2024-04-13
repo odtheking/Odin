@@ -31,11 +31,9 @@ object WarpCooldown : Module (
     }
 
     private var warpTimer = Clock(30000)
-    private val warpRegex = Regex("\\[[^]]+] (\\w+) entered \\w+ Catacombs, Floor (\\w+)!")
 
     init {
-        onMessage(Regex("(?s).+")) {
-            if (!it.contains(warpRegex)) return@onMessage
+        onMessage(Regex("(?s)^.*\\[[^]]+] (\\w+) entered \\w+ Catacombs, Floor (\\w+)!.*\$")) {
                 warpTimer.updateCD()
         }
     }
