@@ -8,6 +8,7 @@ import net.minecraft.inventory.Slot;
 import net.minecraftforge.common.MinecraftForge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -15,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(value = GuiContainer.class, priority = 1)
 public class MixinGuiContainer {
 
+    @Unique
     private final GuiContainer gui = (GuiContainer) (Object) this;
 
     @Shadow
@@ -37,7 +39,7 @@ public class MixinGuiContainer {
 
     @Inject(method = "drawScreen", at = @At(value = "HEAD"), cancellable = true)
     private void startDrawScreen(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-        DrawGuiScreenEvent event = new DrawGuiScreenEvent(gui.inventorySlots, gui, this.xSize, this.ySize, guiLeft, guiTop);
+        DrawGuiContainerScreenEvent event = new DrawGuiContainerScreenEvent(gui.inventorySlots, gui, this.xSize, this.ySize, guiLeft, guiTop);
         if (MinecraftForge.EVENT_BUS.post(event))
             ci.cancel();
     }

@@ -1,7 +1,7 @@
 package me.odinmain.features.impl.floor7.p3
 
 import me.odinmain.events.impl.ChatPacketEvent
-import me.odinmain.events.impl.DrawGuiScreenEvent
+import me.odinmain.events.impl.DrawGuiContainerScreenEvent
 import me.odinmain.events.impl.GuiLoadedEvent
 import me.odinmain.events.impl.TerminalOpenedEvent
 import me.odinmain.features.Category
@@ -61,7 +61,7 @@ object TerminalSolver : Module(
     var openedTerminalTime = 0L
     private var lastRubixSolution: Int? = null
 
-    private val terminalNames = listOf(
+    val terminalNames = listOf(
         "Correct all the panes!",
         "Change all to same color!",
         "Click in order!",
@@ -124,7 +124,7 @@ object TerminalSolver : Module(
     }
 
     @SubscribeEvent
-    fun onSlotRender(event: DrawGuiScreenEvent) {
+    fun onSlotRender(event: DrawGuiContainerScreenEvent) {
         if (currentTerm == -1 || !enabled || event.container !is ContainerChest) return
         if (getShouldBlockWrong()) {
             translate(event.guiLeft.toFloat(), event.guiTop.toFloat(), 999f)

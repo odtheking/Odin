@@ -34,7 +34,6 @@
     "mixins.MixinMouseHelper",
     "mixins.MixinNetworkManager",
     "mixins.MixinPlayerControllerMP",
-    "mixins.MixinRender",
     "mixins.MixinRenderDragon",
     "mixins.MixinRenderPlayer",
     "mixins.MixinSoundManager",
