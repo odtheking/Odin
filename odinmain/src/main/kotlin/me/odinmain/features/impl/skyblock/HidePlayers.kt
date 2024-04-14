@@ -23,7 +23,6 @@ object HidePlayers : Module(
     @SubscribeEvent
     fun onRenderEntity(event: RenderPlayerEvent.Pre) {
         if (event.entity.getPing() != 1 || clickThrough || event.entity == mc.thePlayer) return
-        if (hideAll && event.entity != mc.thePlayer) { event.isCanceled = true }
         val distanceTo = event.entity.getDistanceToEntity(mc.thePlayer)
         if (distanceTo <= distance || hideAll) { event.isCanceled = true }
     }
