@@ -22,7 +22,7 @@ object HidePlayers : Module(
 
     @SubscribeEvent
     fun onRenderEntity(event: RenderPlayerEvent.Pre) {
-        if (event.entity.getPing() != 1 || !clickThrough) return
+        if (event.entity.getPing() != 1 || clickThrough || event.entity == mc.thePlayer) return
         if (hideAll && event.entity != mc.thePlayer) { event.isCanceled = true }
         val distanceTo = event.entity.getDistanceToEntity(mc.thePlayer)
         if (distanceTo <= distance && event.entity != mc.thePlayer || hideAll && event.entity != mc.thePlayer ) { event.isCanceled = true }
@@ -30,7 +30,7 @@ object HidePlayers : Module(
 
     @SubscribeEvent
     fun onPosUpdate(event: LivingEvent.LivingUpdateEvent) {
-        if (event.entity.getPing() != 1 || !clickThrough) return
+        if (event.entity.getPing() != 1 || !clickThrough || event.entity == mc.thePlayer) return
         val distanceTo = event.entity.getDistanceToEntity(mc.thePlayer)
         if (distanceTo <= distance && event.entity != mc.thePlayer || hideAll && event.entity != mc.thePlayer ) {
             event.entity.posX = 9999999.0
