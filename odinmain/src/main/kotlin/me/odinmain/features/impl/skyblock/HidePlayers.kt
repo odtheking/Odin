@@ -17,7 +17,6 @@ object HidePlayers : Module(
 ) {
     private val hideAll: Boolean by BooleanSetting("Hide all", default = false, false, "Hides all players, regardless of distance")
     private val distance: Double by NumberSetting("distance", 3.0, 0.0, 32.0, .5, false, "The number of blocks away to hide players.").withDependency { !hideAll }
-    private val clickThrough: Boolean by BooleanSetting("Click Through", default = false, false, "Allows clicking through the entity").withDependency { !onLegitVersion }
 
     @SubscribeEvent
     fun onRenderEntity(event: RenderPlayerEvent.Pre) {
