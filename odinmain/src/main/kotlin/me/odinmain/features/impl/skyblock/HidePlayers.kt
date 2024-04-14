@@ -19,10 +19,6 @@ object HidePlayers : Module(
     private val hideAll: Boolean by BooleanSetting("Hide all", default = false, false, "Hides all players, regardless of distance")
     private val distance: Double by NumberSetting("distance", 3.0, 0.0, 32.0, .5, false, "The number of blocks away to hide players.").withDependency { !hideAll }
     private val clickThrough: Boolean by BooleanSetting("Click Through", default = false, false, "Allows clicking through players.").withDependency { !onLegitVersion }
-    private val onlyOnSS: Boolean by BooleanSetting("Only on SS", default = false, false, "Only hides players when at ss")
-    private val onlyOn4: Boolean by BooleanSetting("Only on 4 Dev", default = false, false, "Only hides players when at fourth device.")
-
-    val standingSS = distance
 
     @SubscribeEvent
     fun onRenderEntity(event: RenderPlayerEvent.Pre) {
