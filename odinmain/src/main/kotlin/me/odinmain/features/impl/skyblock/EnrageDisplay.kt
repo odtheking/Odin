@@ -18,7 +18,7 @@ object EnrageDisplay : Module (
     description = "Timer for cooldown of reaper armor enrage",
     category = Category.SKYBLOCK
 ) {
-    private val hud: HudElement by HudSetting("Enrage Timer Hud", 10f, 10f, 1f, true) {
+    private val hud: HudElement by HudSetting("Enrage Timer Hud", 10f, 10f, 1f, false) {
         if (it) {
             text("§4Enrage: §a119t", 1f, 9f, Color.RED, 12f, OdinFont.REGULAR, shadow = true)
             getTextWidth("Enrage: 119t", 12f) + 2f to 16f

@@ -113,8 +113,9 @@ object ModuleManager {
         BlockOverlay,
         ItemsHighlight,
         GoldorTimer,
-        WarpCooldown,
-        VisualWords
+        VisualWords,
+        HidePlayers,
+        WarpCooldown
     )
 
     init {

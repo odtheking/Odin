@@ -21,7 +21,7 @@ object GoldorTimer : Module(
     private val displayText: Boolean by BooleanSetting("Display Text", default = true, description = "Displays \"Start\"/\"Tick\" before the count")
     private val displayInTicks: Boolean by BooleanSetting("Display in Ticks", default = false, description = "Displays the timer in game ticks rather than ms")
     private val symbolDisplay: Boolean by BooleanSetting("Display Symbol", default = true, description = "Displays s or t after the time")
-    private val hud: HudElement by HudSetting("Timer Hud", 10f, 10f, 1f, true) {
+    private val hud: HudElement by HudSetting("Timer Hud", 10f, 10f, 1f, false) {
         if (it) {
             text("§7Tick: §a59t", 1f, 9f, Color.RED, 12f, OdinFont.REGULAR, shadow = true)
             getTextWidth("Tick: 59t", 12f) + 2f to 16f
