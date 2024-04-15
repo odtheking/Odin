@@ -65,10 +65,9 @@ object DragonHitboxes : Module(
         if (dragonRenderQueue.isEmpty() || (onlyM7 && !DungeonUtils.isFloor(7))) return
 
         for (dragon in dragonRenderQueue) {
-            if (dragon.health.toInt() == 0) return
+            if (dragon.health.toInt() == 0 || dragon.entityId == PersonalDragon.dragon?.entityId) return
             for (entity in dragon.dragonPartArray) {
                 val entityId = entity.entityId
-                if (entityId == PersonalDragon.dragon?.entityId) return
                 entityPositions[entityId]?.apply {
                     val lastX = this[0]
                     val lastY = this[1]

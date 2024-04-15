@@ -5,6 +5,7 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.hud.HudElement
+import me.odinmain.utils.formatTime
 import me.odinmain.utils.getSafe
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.getTextHeight
@@ -232,22 +233,5 @@ object KuudraSplits : Module(
         }
 
         onWorldLoad { splits.fill(0L) }
-    }
-    
-    private fun formatTime(time: Long): String {
-        if (time == 0L) return "0s"
-        var remaining = time
-        val hours = (remaining / 3600000).toInt().let {
-            remaining -= it * 3600000
-            if (it > 0) "${it}h " else ""
-        }
-        val minutes = (remaining / 60000).toInt().let {
-            remaining -= it * 60000
-            if (it > 0) "${it}m " else ""
-        }
-        val seconds = (remaining / 1000f).let {
-            "%.2fs".format(it)
-        }
-        return "$hours$minutes$seconds"
     }
 }

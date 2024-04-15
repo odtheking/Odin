@@ -29,7 +29,7 @@ class DualSetting (
 
     override fun read(element: JsonElement?) {
         if (element?.asBoolean != enabled) {
-            enabled != enabled
+            enabled = !enabled
         }
     }
 }

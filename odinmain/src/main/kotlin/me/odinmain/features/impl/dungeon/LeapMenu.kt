@@ -1,6 +1,6 @@
 package me.odinmain.features.impl.dungeon
 
-import me.odinmain.events.impl.DrawGuiScreenEvent
+import me.odinmain.events.impl.DrawGuiContainerScreenEvent
 import me.odinmain.events.impl.GuiClickEvent
 import me.odinmain.events.impl.GuiKeyPressEvent
 import me.odinmain.features.Category
@@ -54,7 +54,7 @@ object LeapMenu : Module(
     private val EMPTY = DungeonUtils.DungeonPlayer("Empty", DungeonUtils.Classes.Archer, ResourceLocation("textures/entity/steve.png"))
 
     @SubscribeEvent
-    fun onDrawScreen(event: DrawGuiScreenEvent) {
+    fun onDrawScreen(event: DrawGuiContainerScreenEvent) {
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
         if (chest !is ContainerChest || chest.name != "Spirit Leap" || leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return
         hoveredQuadrant = getQuadrant()

@@ -73,6 +73,7 @@ object OdinMain {
             WaypointManager,
             DevPlayers,
             HighlightRenderer,
+            OdinUpdater,
             this
         ).forEach { MinecraftForge.EVENT_BUS.register(it) }
 
@@ -84,7 +85,8 @@ object OdinMain {
             devCommand,
             highlightCommand,
             waypointCommand,
-            dungeonWaypointsCommand
+            dungeonWaypointsCommand,
+            visualWordsCommand
         )
         OdinFont.init()
     }

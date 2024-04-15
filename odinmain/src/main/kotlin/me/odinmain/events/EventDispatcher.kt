@@ -1,7 +1,8 @@
 package me.odinmain.events
 
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import me.odinmain.OdinMain.scope
 import me.odinmain.events.impl.*
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.clock.Clock
@@ -49,8 +50,9 @@ object EventDispatcher {
     /**
      * Dispatches [GuiLoadedEvent]
      */
+    @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
-    fun onGuiOpen(event: GuiOpenEvent) = scope.launch {
+    fun onGuiOpen(event: GuiOpenEvent) = GlobalScope.launch {
         if (event.gui !is GuiChest) return@launch
         val container = (event.gui as GuiChest).inventorySlots
 
@@ -62,4 +64,5 @@ object EventDispatcher {
 
         GuiLoadedEvent(chestName, container).postAndCatch()
     }
+
 }

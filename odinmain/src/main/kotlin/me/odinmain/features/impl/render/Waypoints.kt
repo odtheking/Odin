@@ -16,25 +16,18 @@ object Waypoints : Module(
     val onlyDistance: Boolean by BooleanSetting("Only shows the distance as name", false, description = "Only shows the distance as name")
 
     init {
-        onMessage(Regex("Party > (\\[.+])? (.{0,16}): x: (-?\\d+),? y: (-?\\d+),? z: (-?\\d+) "), { fromParty && enabled }) {
+        onMessage(Regex("Party > ?(\\[.+])? (.{0,16}): x: (-?\\d+),? y: (-?\\d+),? z: (-?\\d+) ?(.*)"), { fromParty && enabled }) {
             val matchResult = Regex("Party > (\\[.+])? (.{0,16}): x: (-?\\d+),? y: (-?\\d+),? z: (-?\\d+) ").find(it) ?: return@onMessage
-            val (rank, player) = matchResult.destructured
+            val (rank, name) = matchResult.destructured
             val (x, y, z) = matchResult.groupValues.drop(3).map { a -> a.toIntOrNull() ?: return@onMessage }
-            WaypointManager.addTempWaypoint(getColorFromRank(rank) + player, x, y, z)
+            WaypointManager.addTempWaypoint(getColorFromRank(rank) + name, x, y, z)
         }
 
         onMessage(Regex("(?:\\[\\d+])? ?(\\[.+])? (.{0,16}): x: (-?\\d+),? y: (-?\\d+),? z: (-?\\d+)"), { fromAll && enabled }) { // greatest regex of all time!
             val matchResult = Regex("(?:\\[\\d+])? ?(\\[.+])? (.{0,16}): x: (-?\\d+),? y: (-?\\d+),? z: (-?\\d+)").find(it) ?: return@onMessage
-            val (rank, player) = matchResult.destructured
+            val (rank, name) = matchResult.destructured
             val (x, y, z) = matchResult.groupValues.drop(3).map { a -> a.toIntOrNull() ?: return@onMessage }
-            WaypointManager.addTempWaypoint(getColorFromRank(rank) + player, x, y, z)
-        }
-
-        onMessage(Regex("Party > (\\[.+])? (.{0,16}): x: (-?\\d+),? y: (-?\\d+),? z: (-?\\d+)"), { fromParty && enabled }) {
-            val matchResult = Regex("Party > (\\[.+])? (.{0,16}): x: (-?\\d+),? y: (-?\\d+),? z: (-?\\d+)").find(it) ?: return@onMessage
-            val (rank, player) = matchResult.destructured
-            val (x, y, z) = matchResult.groupValues.drop(3).map { a -> a.toIntOrNull() ?: return@onMessage }
-            WaypointManager.addTempWaypoint(getColorFromRank(rank) + player, x, y, z)
+            WaypointManager.addTempWaypoint(getColorFromRank(rank) + name, x, y, z)
         }
     }
 
