@@ -223,7 +223,7 @@ object DungeonUtils {
         Executor(500) {
             if (!inDungeons) return@Executor
             dungeonTeammates = getDungeonTeammates(dungeonTeammates)
-            dungeonTeammatesNoSelf = dungeonTeammates.filter { it.name != mc.thePlayer.name }
+            dungeonTeammatesNoSelf = dungeonTeammates.filter { it.entity != mc.thePlayer }
 
             leapTeammates =
                 when (LeapMenu.type) {
@@ -319,5 +319,4 @@ object DungeonUtils {
         // If none of the above conditions are met, it is not a secret location
         return false
     }
-
 }

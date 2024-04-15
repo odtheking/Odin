@@ -49,12 +49,6 @@ object ArrowHit : Module(
         onWorldLoad { if (resetOnWorldLoad) arrowCount = 0  }
     }
 
-    init {
-        onWorldLoad {
-            if (resetOnWorldLoad) arrowCount = 0
-        }
-    }
-
     fun onDragonSpawn() {
         arrowCount = 0
     }

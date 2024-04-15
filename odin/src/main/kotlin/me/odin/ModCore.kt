@@ -3,11 +3,8 @@ package me.odin
 import me.odin.features.impl.floor7.p3.ArrowAlign
 import me.odin.features.impl.floor7.p3.SimonSays
 import me.odin.features.impl.render.EtherWarpHelper
-import me.odin.mixin.accessors.EntityRendererAccessor
 import me.odinmain.OdinMain
 import me.odinmain.features.ModuleManager
-import me.odinmain.ui.util.shader.FramebufferShader
-import me.odinmain.utils.render.RenderUtils
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.Mod.EventHandler
@@ -30,9 +27,6 @@ class ModCore {
     fun init(event: FMLInitializationEvent) {
         OdinMain.init()
         MinecraftForge.EVENT_BUS.register(this)
-
-        FramebufferShader.setupCameraTransform =
-            { (OdinMain.mc.entityRenderer as? EntityRendererAccessor)?.invokeSetupCameraTransform(RenderUtils.partialTicks, 0) }
     }
 
     @SubscribeEvent

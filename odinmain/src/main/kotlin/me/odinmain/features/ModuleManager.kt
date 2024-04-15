@@ -114,7 +114,8 @@ object ModuleManager {
         ItemsHighlight,
         GoldorTimer,
         VisualWords,
-        HidePlayers
+        HidePlayers,
+        WarpCooldown
     )
 
     init {

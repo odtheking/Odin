@@ -18,9 +18,9 @@ object NoCursorReset : Module(
     private var wasNotNull = false
 
     @SubscribeEvent
-    fun onGuiOpen(e: GuiOpenEvent) {
+    fun onGuiOpen(event: GuiOpenEvent) {
         val oldGuiScreen = mc.currentScreen
-        if (e.gui is GuiChest && (oldGuiScreen is GuiContainer || oldGuiScreen == null)) {
+        if (event.gui is GuiChest && (oldGuiScreen is GuiContainer || oldGuiScreen == null)) {
             clock.update()
         }
     }
