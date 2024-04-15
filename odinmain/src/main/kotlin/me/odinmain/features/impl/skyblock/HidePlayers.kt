@@ -23,15 +23,13 @@ object HidePlayers : Module(
     @SubscribeEvent
     fun onRenderEntity(event: RenderPlayerEvent.Pre) {
         if (event.entity.getPing() != 1 || clickThrough || event.entity == mc.thePlayer) return
-        val distanceTo = event.entity.getDistanceToEntity(mc.thePlayer)
-        if (distanceTo <= distance || hideAll) { event.isCanceled = true }
+        if (event.entity.getDistanceToEntity(mc.thePlayer) <= distance || hideAll) event.isCanceled = true
     }
 
     @SubscribeEvent
     fun onPosUpdate(event: LivingEvent.LivingUpdateEvent) {
         if (event.entity.getPing() != 1 || !clickThrough || event.entity == mc.thePlayer) return
-        val distanceTo = event.entity.getDistanceToEntity(mc.thePlayer)
-        if (distanceTo <= distance || hideAll) {
+        if (event.entity.getDistanceToEntity(mc.thePlayer) <= distance || hideAll) {
             event.entity.posX = 9999999.0
             event.isCanceled = true
         }
