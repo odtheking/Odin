@@ -113,6 +113,7 @@ object ModuleManager {
         BlockOverlay,
         ItemsHighlight,
         GoldorTimer,
+        WarpCooldown,
         VisualWords
     )
 

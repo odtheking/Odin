@@ -27,6 +27,10 @@ class Clock(val delay: Long = 0L) {
         lastTime = System.currentTimeMillis()
     }
 
+    inline fun updateCD() {
+        lastTime = System.currentTimeMillis() + delay
+    }
+
     /**
      * @param setTime sets lastTime if time has passed
      */
@@ -37,6 +41,11 @@ class Clock(val delay: Long = 0L) {
         }
         return false
     }
+
+    inline fun timeLeft(): Long {
+        return lastTime - System.currentTimeMillis()
+    }
+
 
     /**
      * @param delay the delay to check if it has passed since lastTime
