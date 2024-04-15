@@ -28,14 +28,14 @@ object HidePlayers : Module(
 
     @SubscribeEvent
     fun onRenderEntity(event: RenderPlayerEvent.Pre) {
-        val atDevs =  if (mc.thePlayer != null && (mc.thePlayer.getDistance(108.63, 120.0, 94.0) <= 1.8 || mc.thePlayer.getDistance(63.5, 127.0, 35.5) <= 1.8) && DungeonUtils.getPhase() != Island.M7P3) true else false
+        val atDevs = mc.thePlayer != null && (mc.thePlayer.getDistance(108.63, 120.0, 94.0) <= 1.8 || mc.thePlayer.getDistance(63.5, 127.0, 35.5) <= 1.8) && DungeonUtils.getPhase() != Island.M7P3
         if (event.entity.getPing() != 1 || clickThrough || event.entity == mc.thePlayer || (!atDevs && onlyDevs)) return
         if (event.entity.getDistanceToEntity(mc.thePlayer) <= distance || hideAll) event.isCanceled = true
     }
 
     @SubscribeEvent
     fun onPosUpdate(event: LivingEvent.LivingUpdateEvent) {
-        val atDevs =  if (mc.thePlayer != null && (mc.thePlayer.getDistance(108.63, 120.0, 94.0) <= 1.8 || mc.thePlayer.getDistance(63.5, 127.0, 35.5) <= 1.8) && DungeonUtils.getPhase() != Island.M7P3) true else false
+        val atDevs = mc.thePlayer != null && (mc.thePlayer.getDistance(108.63, 120.0, 94.0) <= 1.8 || mc.thePlayer.getDistance(63.5, 127.0, 35.5) <= 1.8) && DungeonUtils.getPhase() != Island.M7P3
         if (event.entity.getPing() != 1 || !clickThrough || event.entity == mc.thePlayer || (!atDevs && onlyDevs)) return
         if (event.entity.getDistanceToEntity(mc.thePlayer) <= distance || hideAll) {
             event.entity.posX = 9999999.0
