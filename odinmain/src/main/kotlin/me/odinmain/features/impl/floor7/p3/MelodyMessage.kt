@@ -4,6 +4,7 @@ import me.odinmain.events.impl.GuiClosedEvent
 import me.odinmain.events.impl.GuiLoadedEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.StringSetting
 import me.odinmain.utils.name
@@ -14,22 +15,26 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object MelodyMessage : Module(
     name = "Melody Message",
-    description = "Sends a message whenever you open the melody terminal.",
+    description = "Sends a message when the melody terminal opens and tells the party about melody terminal progress.",
     category = Category.FLOOR7
 ) {
-    private val melodyMessage: String by StringSetting("Melody Message", "Melody Terminal start!", 128, description = "Message sent when the melody terminal opens")
+    private val sendMelodyMessage: Boolean by BooleanSetting("Send Melody Message", true, description = "Sends a message when the melody terminal opens.")
+    private val melodyMessage: String by StringSetting("Melody Message", "Melody Terminal start!", 128, description = "Message sent when the melody terminal opens").withDependency { sendMelodyMessage }
     private val melodyProgress: Boolean by BooleanSetting("Melody Progress", false, description = "Tells the party about melody terminal progress.")
+
     private var saidMelody = false
+    private var claySlots = hashMapOf(
+        25 to "Melody terminal is at 25%",
+        34 to "Melody terminal is at 50%",
+        43 to "Melody terminal is at 75%",
+    )
+
     @SubscribeEvent
     fun onGuiLoad(event: GuiLoadedEvent) {
-        if (!DungeonUtils.inDungeons || saidMelody || !event.name.startsWith("Click the button on time!")) return
+        if (!DungeonUtils.inDungeons || !saidMelody || !event.name.startsWith("Click the button on time!")) return
+        if (sendMelodyMessage) partyMessage(melodyMessage)
 
-        partyMessage(melodyMessage)
-        claySlots = hashMapOf(
-            25 to "Melody terminal is at 25%",
-            34 to "Melody terminal is at 50%",
-            43 to "Melody terminal is at 75%",
-        )
+        claySlots = hashMapOf(25 to "Melody terminal is at 25%", 34 to "Melody terminal is at 50%", 43 to "Melody terminal is at 75%",)
         saidMelody = true
     }
 
@@ -41,12 +46,6 @@ object MelodyMessage : Module(
     init {
         onWorldLoad { saidMelody = false }
     }
-
-    private var claySlots = hashMapOf(
-        25 to "Melody terminal is at 25%",
-        34 to "Melody terminal is at 50%",
-        43 to "Melody terminal is at 75%",
-    )
 
     init {
         execute(50){
