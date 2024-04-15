@@ -44,7 +44,7 @@ object Triggerbot : Module(
     private val place: Boolean by BooleanSetting("Place", default = true).withDependency { crystal }
 
     private val secretTriggerbot: Boolean by BooleanSetting("Secret Triggerbot", default = false)
-    private val stbDelay: Long by NumberSetting("Delay", 200L, 70, 1000).withDependency { secretTriggerbot }
+    private val stbDelay: Long by NumberSetting("Delay", 200L, 0, 1000).withDependency { secretTriggerbot }
     private val stbCH: Boolean by BooleanSetting("Crystal Hollows Chests", true, description = "Opens chests in crystal hollows when looking at them").withDependency { secretTriggerbot }
     private val secretTBInBoss: Boolean by BooleanSetting("In Boss", true, description = "Makes the triggerbot work in dungeon boss aswell.").withDependency { secretTriggerbot }
 

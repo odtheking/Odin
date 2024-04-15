@@ -12,7 +12,9 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.SelectorSetting
+import me.odinmain.font.OdinFont
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.text
 import me.odinmain.utils.render.translate
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.unformattedName
@@ -144,8 +146,8 @@ object TerminalSolver : Module(
                     if (type == 2 && removeWrongRubix) Gui.drawRect(x, y, x + 16, y + 16, if (needed < 3) rubixColor.rgba else oppositeRubixColor.rgba)
                     if (fontType == 1)
                         mc.fontRendererObj.drawString(text, x + 8.5f - mc.fontRendererObj.getStringWidth(text) / 2, y + 4.5f, textColor.rgba, textShadow)
-                    /*else
-                        text(text, x + 8f - OdinFont.getTextWidth(text, 8f) / 2, y + 9f, textColor, 8f, shadow = textShadow)*/
+                    else
+                        text(text, x + 8f - OdinFont.getTextWidth(text, 8f) / 2, y + 9f, textColor, 8f, shadow = textShadow)
                 }
                 2 -> {
                     val index = solution.indexOf(slot.slotIndex)
@@ -160,8 +162,8 @@ object TerminalSolver : Module(
                     val amount = slot.stack?.stackSize ?: 0
                     if (fontType == 1)
                         mc.fontRendererObj.drawString(amount.toString(), x + 8.5f - mc.fontRendererObj.getStringWidth(amount.toString()) / 2, y + 4.5f, textColor.rgba, textShadow)
-                    /*else
-                        text(amount.toString(), x + 8f - OdinFont.getTextWidth(amount.toString(), 8f) / 2, y + 9f, textColor, 8f, shadow = textShadow)*/
+                    else
+                        text(amount.toString(), x + 8f - OdinFont.getTextWidth(amount.toString(), 8f) / 2, y + 9f, textColor, 8f, shadow = textShadow)
                 }
                 3 -> Gui.drawRect(x, y, x + 16, y + 16, startsWithColor.rgba)
                 4 -> Gui.drawRect(x, y, x + 16, y + 16, selectColor.rgba)

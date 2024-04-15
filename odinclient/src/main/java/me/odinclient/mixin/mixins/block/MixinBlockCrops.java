@@ -26,5 +26,4 @@ public abstract class MixinBlockCrops extends MixinBlock {
             FarmingHitboxes.INSTANCE.setFullBlock(worldIn.getBlockState(pos).getBlock());
         }
     }
-
 }
