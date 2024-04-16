@@ -1,16 +1,19 @@
 package me.odinclient.features.impl.skyblock
 
+import me.odinmain.events.impl.GuiLoadedEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.utils.skyblock.Island
+import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.LocationUtils.inSkyblock
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.init.Blocks
 import net.minecraft.init.Items
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.Slot
-import net.minecraft.item.ItemBlock
-import net.minecraftforge.client.event.GuiOpenEvent
+import net.minecraft.item.Item
 import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -20,104 +23,102 @@ object AutoExperiments : Module(
     description = "Automatically click on the Chronomatron and Ultrasequencer experiments."
 ){
     private val delay: Long by NumberSetting("Click Delay", 200, 0, 1000, 10, description = "Time in ms between automatic test clicks.")
+    private val autoClose: Boolean by BooleanSetting("Auto Close", true, description = "Automatically close the GUI after completing the experiment.")
 
-    private var currentType = Type.NONE
+    private var currentExperiment = ExperimentType.NONE
+    private var hasAdded = false
+    private var clicks = 0
+    private var lastClickTime: Long = 0
+    private val chronomatronOrder = ArrayList<Pair<Int, String>>(28)
     private var lastAdded = 0
-    private var lastClick = 0L
+    private var ultrasequencerOrder = HashMap<Int, Int>()
 
-    private val clickOrder: MutableList<Slot> = mutableListOf()
-    private var listenTime = 0L
-    private var listening = false
-        set(value) {
-            if (!field && value) {
-                clickOrder.clear()
-            }
-            field = value
-            if (value){
-                listenTime = System.currentTimeMillis() + 30
-            }
-        }
-        get() {
-            return field || System.currentTimeMillis() < listenTime
-        }
 
-    private val chronoIndices = listOf(
-        19, 20, 21, 22, 23, 24, 25,
-        37, 38, 39, 40, 41, 42, 43
-    )
+    private fun reset() {
+        currentExperiment = ExperimentType.NONE
+        hasAdded = false
+        chronomatronOrder.clear()
+        lastAdded = 0
+        ultrasequencerOrder.clear()
+    }
 
     @SubscribeEvent
-    fun onGuiOpen(event: GuiOpenEvent) {
-        if (event.gui !is GuiChest || !inSkyblock) return
+    fun onGuiOpen(event: GuiLoadedEvent) {
+        reset()
+        if (LocationUtils.currentArea != Island.PrivateIsland) return
+        val chestName = event.name
+
+        currentExperiment = when {
+            chestName.startsWith("Chronomatron") -> ExperimentType.CHRONOMATRON
+            chestName.startsWith("Ultrasequencer") -> ExperimentType.ULTRASEQUENCER
+            else -> ExperimentType.NONE
+        }
+    }
+
+    /**
+     * Taken from [SBC](https://github.com/Harry282/Skyblock-Client/blob/main/src/main/kotlin/skyblockclient/features/EnchantingExperiments.kt)
+     *
+     * @author Harry282
+     */
+    @SubscribeEvent
+    fun onGuiDraw(event: GuiScreenEvent.BackgroundDrawnEvent) {
+        if (!inSkyblock || event.gui !is GuiChest) return
         val container = (event.gui as GuiChest).inventorySlots
-        if (container is ContainerChest) {
-            val chestName = container.lowerChestInventory.displayName.unformattedText
-            if (chestName.startsWith("Chronomatron (")) {
-                currentType = Type.CHRONO
-                lastAdded = 0
-                clickOrder.clear()
-            } else if(chestName.startsWith("Ultrasequencer (")) {
-                currentType = Type.SEQUENCE
-                lastAdded = 0
-                clickOrder.clear()
-            }
-        }
-    }
-
-    @SubscribeEvent
-    fun onTick(event: GuiScreenEvent.BackgroundDrawnEvent) {
-        if (currentType == Type.NONE || mc.thePlayer == null) return
-        val container = mc.thePlayer.openContainer ?: return
         if (container !is ContainerChest) return
-        val inventoryName = container.inventorySlots?.get(0)?.inventory?.name
-        if (inventoryName == null || !inventoryName.startsWith(if (currentType == Type.CHRONO)"Chronomatron (" else "Ultrasequencer (")) {
-            currentType = Type.NONE
-            return
-        }
-
-        listening = (container.inventorySlots[49].stack?.item as? ItemBlock)?.block === Blocks.glowstone
-        if (listening) {
-            if (currentType == Type.CHRONO) {
-                if (lastAdded > 0) {
-                    if ((container.inventorySlots[lastAdded].stack?.item as? ItemBlock)?.block === Blocks.stained_hardened_clay)
-                        return
-                    else
-                        lastAdded = 0
-                }
-                for (ii in chronoIndices) {
-                    val slot = container.inventorySlots[ii]
-                    if ((slot.stack?.item as? ItemBlock)?.block === Blocks.stained_hardened_clay) {
-                        clickOrder.add(slot)
-                        lastAdded = slot.slotNumber
-                        break
-                    }
-                }
-            } else if (currentType == Type.SEQUENCE && clickOrder.isEmpty()) {
-                clickOrder.addAll(
-                    container.inventorySlots.subList(9,45)
-                        .filter { it.stack?.item == Items.dye }
-                        .sortedBy { it.stack.stackSize }
-                )
-            }
-        } else {
-            if (System.currentTimeMillis() < lastClick + delay) return
-            val slot = clickOrder.firstOrNull() ?: return
-            lastAdded = slot.slotIndex
-            mc.playerController.windowClick(
-                container.windowId,
-                slot.slotNumber,
-                2,
-                3,
-                mc.thePlayer
-            )
-            clickOrder.removeAt(0)
-            lastClick = System.currentTimeMillis()
+        val invSlots = container.inventorySlots
+        when (currentExperiment) {
+            ExperimentType.CHRONOMATRON -> solveChronomatron(invSlots)
+            ExperimentType.ULTRASEQUENCER -> solveUltraSequencer(invSlots)
+            else -> return
         }
     }
 
-    private enum class Type {
-        NONE,
-        CHRONO,
-        SEQUENCE
+    private fun solveChronomatron(invSlots: List<Slot>) {
+        if (invSlots[49].stack?.item == Item.getItemFromBlock(Blocks.glowstone) && invSlots[lastAdded].stack?.isItemEnchanted == false) {
+            hasAdded = false
+            if (chronomatronOrder.size > 11 && autoClose) mc.thePlayer.closeScreen()
+        }
+        if (!hasAdded && invSlots[49].stack?.item == Items.clock) {
+            invSlots.filter { it.slotNumber in 10..43 }.find { it.stack?.isItemEnchanted == true }?.let {
+                chronomatronOrder.add(Pair(it.slotNumber, it.stack.displayName))
+                lastAdded = it.slotNumber
+                hasAdded = true
+                clicks = 0
+            }
+        }
+        if (hasAdded && invSlots[49].stack?.item == Items.clock && chronomatronOrder.size > clicks && System.currentTimeMillis() - lastClickTime > delay) {
+            mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, chronomatronOrder[clicks].first, 2, 3, mc.thePlayer)
+            lastClickTime = System.currentTimeMillis()
+            clicks++
+        }
+    }
+
+    private fun solveUltraSequencer(invSlots: List<Slot>) {
+        if (invSlots[49].stack?.item == Items.clock) hasAdded = false
+
+        if (!hasAdded && invSlots[49].stack?.item == Item.getItemFromBlock(Blocks.glowstone)) {
+            if (!invSlots[44].hasStack) return
+            ultrasequencerOrder.clear()
+            invSlots.filter { it.slotNumber in 9..44 }.forEach {
+                if (it.stack?.item == Items.dye)
+                    ultrasequencerOrder[it.stack.stackSize - 1] = it.slotNumber
+            }
+            hasAdded = true
+            clicks = 0
+            if (ultrasequencerOrder.size > 9 && autoClose) mc.thePlayer.closeScreen()
+        }
+        if (invSlots[49].stack?.item == Items.clock && ultrasequencerOrder.contains(clicks)
+            && System.currentTimeMillis() - lastClickTime > delay
+        ) {
+            ultrasequencerOrder[clicks]?.let { mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, it, 2, 3, mc.thePlayer) }
+            lastClickTime = System.currentTimeMillis()
+            clicks++
+        }
+    }
+
+    private enum class ExperimentType {
+        CHRONOMATRON,
+        ULTRASEQUENCER,
+        NONE
     }
 }
