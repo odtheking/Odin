@@ -19,5 +19,5 @@ pluginManagement {
     }
 }
 
-rootProject.name = "OdinClient"
+rootProject.name = "OdinMod"
 include("odinmain", "odinclient", "odin")

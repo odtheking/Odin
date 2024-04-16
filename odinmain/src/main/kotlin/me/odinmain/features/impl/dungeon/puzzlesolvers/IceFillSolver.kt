@@ -100,7 +100,7 @@ object IceFillSolver {
                 !isAir(bPos.add(transform(floorHeight[index].second, rotation)))
             ) {
                 val scanTime: Double = (System.nanoTime() - startTime) / 1000000.0
-                modMessage("$floorIndex scan took ${scanTime}ms")
+                modMessage("Floor ${floorIndex + 1} scan took ${scanTime}ms")
 
                 renderPattern(pos, rotation)
                 currentPatterns.add(floors[floorIndex][index].toMutableList())
