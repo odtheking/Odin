@@ -50,7 +50,6 @@ object InactiveWaypoints : Module(
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (inactiveList.isEmpty()) return
         profile("Inactive Waypoints") { inactiveList.forEach {
-            if (hideDefault) it.alwaysRenderNameTag = false
             var name = it.name.noControlCodes
             if ((name == "Inactive Terminal" && showTerminals) || (name == "Inactive" && showDevices) || (name == "Not Activated" && showLevers)) {
                 name = if (name == "Inactive Terminal") "Terminal" else if (name == "Inactive") "Device" else "Lever"
@@ -61,6 +60,7 @@ object InactiveWaypoints : Module(
                 if (renderBeacon)
                     RenderUtils.drawBeaconBeam(it.positionVector.addVec(-0.5, z = -0.5), color, false)
             }
+            it.alwaysRenderNameTag = !hideDefault
         }}
     }
 }
