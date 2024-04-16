@@ -54,6 +54,6 @@ class Keybinding(var key: Int) {
      * @return `true` if [key] is held down.
      */
     fun isDown(): Boolean {
-        return key != 0 && (Keyboard.isKeyDown(key) || Mouse.isButtonDown(key + 100))
+        return if (key == 0) false else (if (key < 0) Mouse.isButtonDown(key + 100) else Keyboard.isKeyDown(key))
     }
 }
