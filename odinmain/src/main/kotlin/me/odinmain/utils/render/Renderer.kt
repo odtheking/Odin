@@ -1,20 +1,19 @@
 package me.odinmain.utils.render
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.addVec
 import me.odinmain.utils.min
 import me.odinmain.utils.render.RenderUtils.drawBeaconBeam
-import me.odinmain.utils.runIn
 import me.odinmain.utils.toAABB
+import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.entity.Entity
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import org.lwjgl.opengl.Display
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.max
 
 object Renderer {
@@ -141,10 +140,6 @@ object Renderer {
         displayTitle = title
         titleTicks = ticks
         displayColor = color
-
-        runIn(ticks) {
-            clearTitle()
-        }
     }
 
     private fun clearTitle() {
@@ -154,12 +149,21 @@ object Renderer {
 
     @SubscribeEvent
     fun onOverlay(event: RenderGameOverlayEvent.Pre) {
-        if (event.type != RenderGameOverlayEvent.ElementType.ALL) return
+        if (event.type != RenderGameOverlayEvent.ElementType.ALL || titleTicks <= 0) return
         mc.entityRenderer.setupOverlayRendering()
-        if (displayTitle.isEmpty()) return
-        scale(1f / scaleFactor, 1f / scaleFactor, 1f)
-        text(text = displayTitle, x = (Display.getWidth() / 2f) - (OdinFont.getTextWidth(displayTitle, 50f) / 1.5f), y = Display.getHeight() * 0.44f, color = displayColor, size = 50f, shadow = true)
-        scale(scaleFactor, scaleFactor, 1f)
+        val sr = ScaledResolution(mc)
+
+        mcText(
+            text = displayTitle, x = sr.scaledWidth / 2f,
+            y = sr.scaledHeight / 2.5f, scale = 4.0,
+            color = displayColor, center = true
+        )
+    }
+
+    @SubscribeEvent
+    fun onTick(event: TickEvent.ClientTickEvent) {
+        if (event.phase != TickEvent.Phase.START) return
+        titleTicks--
     }
 
     @SubscribeEvent

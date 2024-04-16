@@ -7,7 +7,6 @@ import me.odinmain.features.impl.floor7.WitherDragons.relicAnnounceTime
 import me.odinmain.features.impl.floor7.WitherDragons.selected
 import me.odinmain.features.impl.kuudra.KuudraSplits.unaryPlus
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.utils.Vec2
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.round
 import me.odinmain.utils.skyblock.createClickStyle
@@ -26,13 +25,7 @@ object Relic {
     private val redPB = +NumberSetting("Red PB", 999.0, increment = 0.001, hidden = true)
 
     val currentRelic get() = mc.thePlayer.heldItem.itemID
-    val cauldronMap = mapOf(
-        "GREEN_KING_RELIC" to Vec2(49, 44),
-        "Red_KING_RELIC" to Vec2(51, 42),
-        "PURPLE_KING_RELIC" to Vec2(54, 41),
-        "ORANGE_KING_RELIC" to Vec2(57, 42),
-        "BLUE_KING_RELIC" to Vec2(59, 44)
-    )
+
 
     enum class Relics (
         val id: String,

@@ -10,15 +10,12 @@ import me.odinmain.features.ModuleManager.generateReadme
 import me.odinmain.features.impl.dungeon.puzzlesolvers.TPMaze
 import me.odinmain.features.impl.render.DevPlayers.updateDevs
 import me.odinmain.utils.*
-import me.odinmain.utils.skyblock.LocationUtils
+import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.cryptsCount
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.deathCount
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.secretCount
 import me.odinmain.utils.skyblock.dungeon.ScanUtils
-import me.odinmain.utils.skyblock.getChatBreak
-import me.odinmain.utils.skyblock.modMessage
-import me.odinmain.utils.skyblock.sendCommand
 import net.minecraft.util.ChatComponentText
 import net.minecraftforge.common.MinecraftForge
 import java.awt.Toolkit
@@ -137,6 +134,10 @@ val devCommand = commodore("oddev") {
 
     literal("test").runs {
         modMessage("Test")
+    }
+
+    literal("alert").runs {string: String ->
+        PlayerUtils.alert(string)
     }
 }
 

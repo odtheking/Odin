@@ -12,7 +12,6 @@ import me.odinmain.utils.render.HighlightRenderer
 import net.minecraft.entity.Entity
 import net.minecraft.entity.boss.EntityWither
 import net.minecraft.entity.item.EntityArmorStand
-import net.minecraftforge.client.event.RenderLivingEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -32,7 +31,6 @@ object CustomHighlight : Module(
     private val tracerLimit: Int by NumberSetting("Tracer Limit", 0, 0, 15, description = "Highlight will draw tracer to all mobs when you have under this amount of mobs marked, set to 0 to disable. Helpful for finding lost mobs.").withDependency { !onLegitVersion }
 
     private val xray: Boolean by BooleanSetting("Through Walls", true).withDependency { !onLegitVersion }
-    private val witherHighlight: Boolean by BooleanSetting("Highlights Withers", false, description = "Highlights Goldor.")
     val highlightList: MutableList<String> by ListSetting("List", mutableListOf())
     val renderThrough: Boolean get() = if (onLegitVersion) false else xray
     var currentEntities = mutableSetOf<Entity>()
@@ -90,11 +88,5 @@ object CustomHighlight : Module(
             .filter { it != null && it !is EntityArmorStand && it.getPing() != 1 && it != mc.thePlayer}
             .minByOrNull { entity.getDistanceToEntity(it) }
             .takeIf { !(it is EntityWither && it.isInvisible) }
-    }
-
-    @SubscribeEvent
-    fun onRender(event: RenderLivingEvent.Pre<*>) {
-        if (!witherHighlight || event.entity !is EntityWither || event.entity.isInvisible) return
-        currentEntities.add(event.entity)
     }
 }
