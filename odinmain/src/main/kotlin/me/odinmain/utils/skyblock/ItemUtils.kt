@@ -145,6 +145,30 @@ fun ItemStack.setLore(lines: List<String>): ItemStack {
     return this
 }
 
+fun ItemStack.setLoreWidth(lines: List<String>, width: Int): ItemStack {
+    setTagInfo("display", getSubCompound("display", true).apply {
+        setTag("Lore", NBTTagList().apply {
+            for (line in lines) {
+                val words = line.split(" ")
+                var currentLine = ""
+                for (word in words) {
+                    if ((currentLine + word).length <= width) {
+                        currentLine += if (currentLine.isNotEmpty()) " $word" else word
+                    } else {
+                        appendTag(NBTTagString(currentLine))
+                        currentLine = word
+                    }
+                }
+                if (currentLine.isNotEmpty()) {
+                    appendTag(NBTTagString(currentLine))
+                }
+            }
+        })
+    })
+    return this
+}
+
+
 
 fun ItemStack.drawItem(x: Float = 0f, y: Float = 0f, scale: Float = 1f, z: Float = 200f) {
     GlStateManager.pushMatrix()

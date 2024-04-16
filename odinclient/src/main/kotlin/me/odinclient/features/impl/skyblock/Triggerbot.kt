@@ -4,7 +4,6 @@ import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinclient.utils.skyblock.PlayerUtils.leftClick
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.impl.floor7.Relic
 import me.odinmain.features.impl.floor7.Relic.currentRelic
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -44,7 +43,7 @@ object Triggerbot : Module(
     private val place: Boolean by BooleanSetting("Place", default = true).withDependency { crystal }
 
     private val secretTriggerbot: Boolean by BooleanSetting("Secret Triggerbot", default = false)
-    private val stbDelay: Long by NumberSetting("Delay", 200L, 70, 1000).withDependency { secretTriggerbot }
+    private val stbDelay: Long by NumberSetting("Delay", 200L, 0, 1000).withDependency { secretTriggerbot }
     private val stbCH: Boolean by BooleanSetting("Crystal Hollows Chests", true, description = "Opens chests in crystal hollows when looking at them").withDependency { secretTriggerbot }
     private val secretTBInBoss: Boolean by BooleanSetting("In Boss", true, description = "Makes the triggerbot work in dungeon boss aswell.").withDependency { secretTriggerbot }
 
@@ -54,6 +53,13 @@ object Triggerbot : Module(
     private val bloodMobs = setOf(
         "Revoker", "Tear", "Ooze", "Cannibal", "Walker", "Putrid", "Mute", "Parasite", "WanderingSoul", "Leech",
         "Flamer", "Skull", "Mr.Dead", "Vader", "Frost", "Freak", "Bonzo", "Scarf", "Livid", "Psycho", "Reaper",
+    )
+    val cauldronMap = mapOf(
+        "GREEN_KING_RELIC" to Vec2(49, 44),
+        "Red_KING_RELIC" to Vec2(51, 42),
+        "PURPLE_KING_RELIC" to Vec2(54, 41),
+        "ORANGE_KING_RELIC" to Vec2(57, 42),
+        "BLUE_KING_RELIC" to Vec2(59, 44)
     )
 
     private val relicTriggerBot: Boolean by BooleanSetting("Triggerbot", false, description = "Automatically clicks the correct relic in the cauldron.")
@@ -86,13 +92,13 @@ object Triggerbot : Module(
     fun onClientTickEvent(event: TickEvent.ClientTickEvent) {
         if (!relicTriggerBot || !tbClock.hasTimePassed()) return
         val obj = mc.objectMouseOver ?: return
-        if (obj.entityHit is EntityArmorStand && obj.entityHit?.inventory?.get(4)?.itemID in Relic.cauldronMap.keys) {
+        if (obj.entityHit is EntityArmorStand && obj.entityHit?.inventory?.get(4)?.itemID in cauldronMap.keys) {
             PlayerUtils.rightClick()
             tbClock.update()
         }
 
         if (
-            Vec2(obj.blockPos?.x ?: 0, obj.blockPos?.z ?: 0) != Relic.cauldronMap[currentRelic] ||
+            Vec2(obj.blockPos?.x ?: 0, obj.blockPos?.z ?: 0) != cauldronMap[currentRelic] ||
             !obj.blockPos?.y.equalsOneOf(6, 7)
         ) return
         PlayerUtils.rightClick()

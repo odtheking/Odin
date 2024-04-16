@@ -96,14 +96,20 @@ fun circle(x: Number, y: Number, radius: Number, color: Color, borderColor: Colo
     }
 }
 
-fun text(text: String, x: Float, y: Float, color: Color, size: Float, type: Int = OdinFont.REGULAR, align: TextAlign = Left, verticalAlign: TextPos = TextPos.Middle, shadow: Boolean = false) {
-    OdinFont.text(text, x, y, color, size, align, verticalAlign, shadow, type)
+fun text(text: String, x: Number, y: Number, color: Color, size: Number, type: Int = OdinFont.REGULAR, align: TextAlign = Left, verticalAlign: TextPos = TextPos.Middle, shadow: Boolean = false) {
+    OdinFont.text(text, x.toFloat(), y.toFloat(), color, size.toFloat(), align, verticalAlign, shadow, type)
+}
+
+fun mcText(text: String, x: Number, y: Number, scale: Number, color: Color, shadow: Boolean = true, center: Boolean = true) {
+    RenderUtils.drawText(text, x.toFloat(), y.toFloat(), scale.toDouble(), color, shadow, center)
 }
 
 fun textAndWidth(text: String, x: Float, y: Float, color: Color, size: Float, type: Int = OdinFont.REGULAR, align: TextAlign = Left, verticalAlign: TextPos = TextPos.Middle, shadow: Boolean = false): Float {
     text(text, x, y, color, size, type, align, verticalAlign, shadow)
     return getTextWidth(text, size)
 }
+
+fun getMCTextWidth(text: String) = mc.fontRendererObj.getStringWidth(text)
 
 fun getTextWidth(text: String, size: Float) = OdinFont.getTextWidth(text, size)
 
@@ -117,7 +123,7 @@ fun rotate(degrees: Float, xPos: Float, yPos: Float, zPos: Float, xAxis: Float, 
     translate(-xPos, -yPos, -zPos)
 }
 
-fun scale(x: Float, y: Float, z: Float = 1f) = GlStateManager.scale(x, y, z)
+fun scale(x: Number, y: Number, z: Number = 1f) = GlStateManager.scale(x.toDouble(), y.toDouble(), z.toDouble())
 
 fun dropShadow(x: Number, y: Number, w: Number, h: Number, shadowColor: Color, shadowSoftness: Number, topL: Number, topR: Number, botL: Number, botR: Number) {
     translate(0f, 0f, -100f)

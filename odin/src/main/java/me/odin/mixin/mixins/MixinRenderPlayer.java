@@ -15,5 +15,4 @@ public class MixinRenderPlayer {
     private void onPreRenderCallback(AbstractClientPlayer entitylivingbaseIn, float partialTickTime, CallbackInfo ci) {
         DevPlayers.INSTANCE.preRenderCallbackScaleHook(entitylivingbaseIn);
     }
-
 }

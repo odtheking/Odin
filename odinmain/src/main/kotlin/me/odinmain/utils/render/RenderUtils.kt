@@ -188,6 +188,7 @@ object RenderUtils {
         GlStateManager.enableTexture2D()
         GlStateManager.disableBlend()
         GlStateManager.enableDepth()
+        GlStateManager.enableLighting()
         GlStateManager.resetColor()
         GlStateManager.popMatrix()
     }
@@ -238,6 +239,7 @@ object RenderUtils {
         tessellator.draw()
         GlStateManager.enableTexture2D()
         GlStateManager.disableBlend()
+        GlStateManager.enableLighting()
         GlStateManager.enableDepth()
         GlStateManager.resetColor()
         GlStateManager.popMatrix()
@@ -351,6 +353,7 @@ object RenderUtils {
         GlStateManager.disableBlend()
         GlStateManager.popMatrix()
         GlStateManager.enableTexture2D()
+        GlStateManager.enableLighting()
         if (!depth) GlStateManager.enableDepth()
     }
 
@@ -446,7 +449,7 @@ object RenderUtils {
             GlStateManager.enableDepth()
             GlStateManager.depthMask(true)
         }
-
+        GlStateManager.enableLighting()
         GlStateManager.resetColor()
         GlStateManager.popMatrix()
     }
@@ -502,6 +505,7 @@ object RenderUtils {
         GlStateManager.disableBlend()
         GlStateManager.enableTexture2D()
         GlStateManager.resetColor()
+        GlStateManager.enableLighting()
         if (phase) GlStateManager.enableDepth()
         GlStateManager.popMatrix()
     }
@@ -658,5 +662,29 @@ object RenderUtils {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onRenderWorld(event: RenderWorldLastEvent) {
         this.partialTicks = event.partialTicks
+    }
+
+    fun drawText(
+        text: String,
+        x: Float,
+        y: Float,
+        scale: Double = 1.0,
+        color: Color = Color.WHITE,
+        shadow: Boolean = true,
+        center: Boolean = false
+    ) {
+        GlStateManager.pushMatrix()
+        GlStateManager.enableBlend()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        GlStateManager.translate(x, y, 0f)
+        GlStateManager.scale(scale, scale, scale)
+        var yOffset = y - mc.fontRendererObj.FONT_HEIGHT
+        text.split("\n").forEach {
+            yOffset += mc.fontRendererObj.FONT_HEIGHT
+            val xOffset = if (center) mc.fontRendererObj.getStringWidth(it) / -2f else 0f
+            mc.fontRendererObj.drawString(it, xOffset, 0f, color.rgba, shadow)
+        }
+        GlStateManager.disableBlend()
+        GlStateManager.popMatrix()
     }
 }

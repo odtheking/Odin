@@ -1,5 +1,7 @@
 package me.odinclient.features.impl.dungeon
 
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.odinclient.utils.skyblock.PlayerUtils.clipTo
@@ -13,9 +15,9 @@ import me.odinmain.features.impl.dungeon.puzzlesolvers.IceFillSolver.currentPatt
 import me.odinmain.features.impl.dungeon.puzzlesolvers.IceFillSolver.transform
 import me.odinmain.features.impl.dungeon.puzzlesolvers.IceFillSolver.transformTo
 import me.odinmain.features.impl.dungeon.puzzlesolvers.Rotation
+import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.plus
 import me.odinmain.utils.skyblock.PlayerUtils.posFloored
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.getBlockIdAt
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
@@ -29,17 +31,15 @@ object AutoIceFill: Module(
     category = Category.DUNGEON,
     tag = TagType.RISKY
 ) {
+    @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
     fun onClientTick(event: TickEvent.ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.END || mc.thePlayer == null || !DungeonUtils.inDungeons || DungeonUtils.currentRoomName != "Ice Fill") return
+        if (!IceFillSolver.scanned) return
         val pos = posFloored
-        if (getBlockIdAt(BlockPos(pos.x, pos.y - 1, pos.z )) != 79) return
+        if (!pos.y.equalsOneOf(70, 71, 72) || getBlockIdAt(BlockPos(pos.x, pos.y - 1, pos.z )) != 79) return
         val floorIndex = pos.y % 70
-        if (floorIndex !in IceFillSolver.scanned.indices) return
-        if (!IceFillSolver.scanned[floorIndex]) return
         val rotation = checkRotation(pos, floorIndex) ?: return
-        if (floorIndex !in currentPatterns.indices) return
-        scope.launch {
+        GlobalScope.launch {
             move(Vec3(pos.x.toDouble(), pos.y - 1.0, pos.z.toDouble()), currentPatterns[floorIndex], rotation, floorIndex)
         }
     }
@@ -95,10 +95,10 @@ object AutoIceFill: Module(
         scope.launch {
             delay(100)
             clipTo(x + bx + nx * 2, y + 2, z + bz + ny * 2)
-            delay(100)
+            delay(150)
             clipTo(x + bx + nx * 4, y + 2, z + bz + ny * 4)
             delay(150)
-            move(pos + transformTo(Vec3i(bx, 0, bz), rotation), IceFillSolver.currentPatterns[floorIndex], rotation, floorIndex)
+            move(pos + transformTo(Vec3i(bx, 0, bz), rotation), currentPatterns[floorIndex], rotation, floorIndex)
         }
     }
 }

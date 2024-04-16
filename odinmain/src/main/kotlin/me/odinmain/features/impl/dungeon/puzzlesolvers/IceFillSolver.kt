@@ -1,8 +1,9 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
-import me.odinmain.OdinMain.scope
 import me.odinmain.utils.addVec
 import me.odinmain.utils.plus
 import me.odinmain.utils.render.Color
@@ -15,6 +16,7 @@ import me.odinmain.utils.skyblock.PlayerUtils.posFloored
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.getBlockIdAt
 import me.odinmain.utils.skyblock.isAir
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -25,10 +27,10 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.opengl.GL11
 
 object IceFillSolver {
-    var scanned = BooleanArray(3) { false }
+    var scanned = false
     var currentPatterns: MutableList<List<Vec3i>> = ArrayList()
-    var renderRotation: Rotation? = null
-    var rPos: MutableList<Vec3> = ArrayList()
+    private var renderRotation: Rotation? = null
+    private var rPos: MutableList<Vec3> = ArrayList()
 
 
     private fun renderPattern(pos: Vec3i, rotation: Rotation) {
@@ -66,25 +68,21 @@ object IceFillSolver {
         GlStateManager.popMatrix()
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     fun onClientTick(event: TickEvent.ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.END || mc.thePlayer == null || !DungeonUtils.inDungeons || DungeonUtils.currentRoomName != "Ice Fill") return
+        if (event.phase != TickEvent.Phase.END || mc.thePlayer == null || scanned || !DungeonUtils.inDungeons || DungeonUtils.currentRoomName != "Ice Fill") return
         val pos = posFloored
-        if (getBlockIdAt(BlockPos(pos.x, pos.y - 1, pos.z )) != 79) return
-        val floorIndex = pos.y % 70
-        if (floorIndex !in scanned.indices || scanned[floorIndex]) return
-        scope.launch {
-            val rotation = checkRotation(pos, floorIndex) ?: return@launch
-            if (!scan(pos, floorIndex)) return@launch
+        if (pos.y != 70 || getBlockIdAt(BlockPos(pos.x, pos.y - 1, pos.z )) != 79) return
+        GlobalScope.launch {
+            val rotation = checkRotation(pos, 0) ?: return@launch
+            if (!scan(pos, 0)) return@launch modMessage("Failed to scan floor 0")
 
-            scanned[floorIndex] = true
-            if (floorIndex == 2) return@launch
-            val a = transform(Vec3i(if (floorIndex == 0) 5 else 7, 1, 0), rotation)
-            if (!scan(pos.addVec(a.x, a.y, a.z), floorIndex + 1)) return@launch
+            val a = transform(Vec3i(5, 1, 0), rotation)
+            if (!scan(pos.addVec(a.x, a.y, a.z), 1)) return@launch modMessage("Failed to scan floor 1")
 
-            scanned[floorIndex + 1] = true
-            if (floorIndex == 1) return@launch
             val b = transform(Vec3i(12, 2, 0), rotation)
-            scanned[2] = scan(pos.addVec(b.x, b.y, b.z), 2)
+            if (!scan(pos.addVec(b.x, b.y, b.z), 2)) return@launch modMessage("Failed to scan floor 2")
+            scanned = true
         }
     }
 
@@ -94,15 +92,15 @@ object IceFillSolver {
         val bPos = BlockPos(pos)
 
         val floorHeight = representativeFloors[floorIndex]
-        //val startTime = System.nanoTime()
+        val startTime = System.nanoTime()
 
         for (index in floorHeight.indices) {
             if (
                 isAir(bPos.add(transform(floorHeight[index].first, rotation))) &&
                 !isAir(bPos.add(transform(floorHeight[index].second, rotation)))
             ) {
-                //val scanTime: Double = (System.nanoTime() - startTime) / 1000000.0
-                //modMessage("Scan took $scanTime ms")
+                val scanTime: Double = (System.nanoTime() - startTime) / 1000000.0
+                modMessage("Floor ${floorIndex + 1} scan took ${scanTime}ms")
 
                 renderPattern(pos, rotation)
                 currentPatterns.add(floors[floorIndex][index].toMutableList())
@@ -148,10 +146,9 @@ object IceFillSolver {
         return null
     }
 
-
     fun onWorldLoad() {
         currentPatterns = ArrayList()
-        scanned = BooleanArray(3) { false }
+        scanned = false
         renderRotation = null
         rPos = ArrayList()
     }

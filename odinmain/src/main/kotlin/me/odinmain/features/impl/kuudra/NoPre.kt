@@ -84,9 +84,9 @@ object NoPre : Module(
             if (showAlert) PlayerUtils.alert(msg, time = 10)
         }
 
-        onMessage(Regex("Party > (\\[.+])? ?(.+): No ?(.*)!")) {
+        onMessage(Regex("Party > ?(\\[.+])? ?(.+): No ?(.*)!")) {
             val match = Regex("Party > (\\[.+])? ?(.+): No ?(.*)").find(it) ?: return@onMessage
-            val (rank, name, spot) = match.destructured
+            val spot = match.groupValues.last()
             missing = spot.replace("!", "")
         }
     }
