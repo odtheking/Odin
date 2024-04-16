@@ -71,7 +71,7 @@ fun handleSpawnPacket(particle: S2APacketParticles) {
             dragon.spawning = true
         }
     }
-    if (WitherDragons.dragonTitle) DragonPriority.dragonPrioritySpawn()
+    if (WitherDragons.dragonPriorityToggle) DragonPriority.dragonPrioritySpawn()
 }
 
 private fun checkParticle(event: S2APacketParticles, color: WitherDragonsEnum): Boolean {

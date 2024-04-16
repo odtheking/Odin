@@ -188,6 +188,7 @@ object RenderUtils {
         GlStateManager.enableTexture2D()
         GlStateManager.disableBlend()
         GlStateManager.enableDepth()
+        GlStateManager.enableLighting()
         GlStateManager.resetColor()
         GlStateManager.popMatrix()
     }
@@ -238,6 +239,7 @@ object RenderUtils {
         tessellator.draw()
         GlStateManager.enableTexture2D()
         GlStateManager.disableBlend()
+        GlStateManager.enableLighting()
         GlStateManager.enableDepth()
         GlStateManager.resetColor()
         GlStateManager.popMatrix()
@@ -351,6 +353,7 @@ object RenderUtils {
         GlStateManager.disableBlend()
         GlStateManager.popMatrix()
         GlStateManager.enableTexture2D()
+        GlStateManager.enableLighting()
         if (!depth) GlStateManager.enableDepth()
     }
 
@@ -446,7 +449,7 @@ object RenderUtils {
             GlStateManager.enableDepth()
             GlStateManager.depthMask(true)
         }
-
+        GlStateManager.enableLighting()
         GlStateManager.resetColor()
         GlStateManager.popMatrix()
     }
@@ -502,6 +505,7 @@ object RenderUtils {
         GlStateManager.disableBlend()
         GlStateManager.enableTexture2D()
         GlStateManager.resetColor()
+        GlStateManager.enableLighting()
         if (phase) GlStateManager.enableDepth()
         GlStateManager.popMatrix()
     }
