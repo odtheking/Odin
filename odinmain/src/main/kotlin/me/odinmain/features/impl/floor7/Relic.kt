@@ -42,7 +42,7 @@ object Relic {
     private var timer = 0L
 
     fun relicsOnMessage(){
-        partyMessage("${colors[selected]} Relic")
+        if (WitherDragons.relicAnnounce) partyMessage("${colors[selected]} Relic")
         timer = System.currentTimeMillis()
     }
 

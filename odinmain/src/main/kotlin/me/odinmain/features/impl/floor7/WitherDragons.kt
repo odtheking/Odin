@@ -90,7 +90,7 @@ object WitherDragons : Module(
 
     val colors = arrayListOf("Green", "Purple", "Blue", "Orange", "Red")
     private val relics: Boolean by DropdownSetting("Relics")
-    private val relicAnnounce: Boolean by BooleanSetting("Relic Announce", false, description = "Announce your relic to the rest of the party.").withDependency { relics }
+    val relicAnnounce: Boolean by BooleanSetting("Relic Announce", false, description = "Announce your relic to the rest of the party.").withDependency { relics }
     val selected: Int by SelectorSetting("Color", "Green", colors, description = "The color of your relic.").withDependency { relicAnnounce && relics}
     val relicAnnounceTime: Boolean by BooleanSetting("Relic Time", true, description = "Sends how long it took you to get that relic").withDependency { relics }
 
@@ -119,11 +119,11 @@ object WitherDragons : Module(
         }
 
         onPacket(C08PacketPlayerBlockPlacement::class.java) {
-            relicsBlockPlace(it)
+            if (relicAnnounce || relicAnnounceTime) relicsBlockPlace(it)
         }
 
         onMessage("[BOSS] Necron: All this, for nothing...", false) {
-            if (relicAnnounce) relicsOnMessage()
+            if (relicAnnounce || relicAnnounceTime) relicsOnMessage()
         }
 
         onMessage(Regex(".*")) {
