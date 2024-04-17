@@ -69,7 +69,7 @@ object ModuleManager {
         CustomHighlight,
         CPSDisplay,
         DragonHitboxes,
-        GyroRange,
+        GyroWand,
         NameChanger,
         NoCursorReset,
         PersonalDragon,

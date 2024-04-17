@@ -1,5 +1,6 @@
-package me.odinmain.features.impl.render
+package me.odinmain.features.impl.skyblock
 
+import me.odinmain.events.impl.ClickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -15,16 +16,17 @@ import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-object GyroRange : Module(
-    "Gyro Range",
-    description = "Renders a helpful circle to show the range of the Gyrokinetic Wand.",
-    category = Category.RENDER
+object GyroWand : Module(
+    "Gyro Wand",
+    description = "Helpful features for the Gyrokinetic Wand",
+    category = Category.SKYBLOCK
 ) {
     private val color: Color by ColorSetting("Color", Color.MAGENTA.withAlpha(0.5f), allowAlpha = true)
     private val thickness: Float by NumberSetting("Thickness", 0.4f, 0, 3, 0.05)
     private val steps: Int by NumberSetting("Smoothness", 40, 20, 80, 1)
     private val showCooldown: Boolean by BooleanSetting("Show Cooldown", true, description = "Shows the cooldown of the Gyrokinetic Wand.")
     private val cooldownColor: Color by ColorSetting("Cooldown Color", Color.RED, allowAlpha = true)
+    private val blockWrongClicks: Boolean by BooleanSetting("Block aligning", true, description = "Blocks using the right click ability on Gyrokinetic Wand")
 
     private val gyroCooldown = Clock(30_000)
 
@@ -43,6 +45,11 @@ object GyroRange : Module(
             0f, 90f, 90f,
             finalColor
         )
+    }
+
+    @SubscribeEvent
+    fun onRightClick(event: ClickEvent.RightClickEvent) {
+        if (heldItem?.itemID == "GYROKINETIC_WAND" && blockWrongClicks) event.isCanceled = true
     }
 
     init {
