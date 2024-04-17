@@ -27,6 +27,8 @@ import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import kotlinx.coroutines.launch
+import me.odinclient.config.ExtrasConfig
 
 @Suppress("UNUSED_PARAMETER")
 @Mod(
@@ -63,6 +65,7 @@ class ModCore {
         }
 
         OdinMain.postInit()
+        ExtrasConfig.loadConfig()
     }
 
     @EventHandler
