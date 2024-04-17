@@ -53,7 +53,6 @@ object GyroWand : Module(
     @SubscribeEvent
     fun onRightClick(event: ClickEvent.RightClickEvent) {
         if (heldItem?.itemID != "GYROKINETIC_WAND" || !blockWrongClicks) return
-        modMessage(gyroCooldown.hasTimePassed())
         event.isCanceled = true
     }
 
