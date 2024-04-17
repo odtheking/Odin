@@ -56,7 +56,7 @@ object GyroWand : Module(
     }
 
     init {
-        onMessage(Regex("-\\d+ Mana \\(Gravity Storm\\)")) {
+        onMessage(Regex("(?s)(.*(-\\d+ Mana \\(Gravity Storm\\)).*)")) {
             gyroCooldown.update()
         }
     }
