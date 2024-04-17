@@ -13,7 +13,6 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.heldItem
 import me.odinmain.utils.skyblock.itemID
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -28,7 +27,7 @@ object GyroWand : Module(
     private val thickness: Float by NumberSetting("Thickness", 0.4f, 0, 3, 0.05).withDependency { gyroRange }
     private val steps: Int by NumberSetting("Smoothness", 40, 20, 80, 1).withDependency { gyroRange }
     private val showCooldown: Boolean by BooleanSetting("Show Cooldown", true, description = "Shows the cooldown of the Gyrokinetic Wand.").withDependency { gyroRange }
-    private val cooldownColor: Color by ColorSetting("Cooldown Color", Color.RED, allowAlpha = true).withDependency { showCooldown && gyroRange}
+    private val cooldownColor: Color by ColorSetting("Cooldown Color", Color.RED, allowAlpha = true).withDependency { showCooldown && gyroRange }
     private val blockWrongClicks: Boolean by BooleanSetting("Block aligning", true, description = "Blocks using the right click ability on Gyrokinetic Wand.")
 
     private val gyroCooldown = Clock(30_000)
