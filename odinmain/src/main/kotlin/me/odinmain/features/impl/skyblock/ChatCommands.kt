@@ -109,59 +109,17 @@ object ChatCommands : Module(
 
         val helpMessage = when (channel) {
             "party" -> {
-                val commandsMap = mapOf(
-                    "coords" to coords,
-                    "odin" to odin,
-                    "boop" to boop,
-                    "cf" to cf,
-                    "8ball" to eightball,
-                    "dice" to dice,
-                    "cat" to cat,
-                    "racism" to racism,
-                    "ping" to ping,
-                    "tps" to tps,
-                    "warp" to warp,
-                    "warptransfer" to warptransfer,
-                    "allinvite" to allinvite,
-                    "pt" to pt,
-                    "dt" to dt,
-                    "m" to queDungeons,
-                    "f" to queDungeons
-                )
+                val commandsMap = mapOf("coords" to coords, "odin" to odin, "boop" to boop, "cf" to cf, "8ball" to eightball, "dice" to dice, "cat" to cat, "racism" to racism, "tps" to tps, "warp" to warp, "warptransfer" to warptransfer, "allinvite" to allinvite, "pt" to pt, "dt" to dt, "m" to queDungeons, "f" to queDungeons)
                 val enabledCommands = commandsMap.filterValues { it }.keys.joinToString(", ")
                 "Commands: $enabledCommands"
             }
             "guild" -> {
-                val commandsMap = mapOf(
-                    "coords" to coords,
-                    "odin" to odin,
-                    "boop" to boop,
-                    "cf" to cf,
-                    "8ball" to eightball,
-                    "dice" to dice,
-                    "cat" to cat,
-                    "racism" to racism,
-                    "ping" to ping,
-                    "tps" to tps
-                )
+                val commandsMap = mapOf("coords" to coords, "odin" to odin, "boop" to boop, "cf" to cf, "8ball" to eightball, "dice" to dice, "cat" to cat, "racism" to racism, "ping" to ping, "tps" to tps)
                 val enabledCommands = commandsMap.filterValues { it }.keys.joinToString(", ")
                 "Commands: $enabledCommands"
             }
             "private" -> {
-                val commandsMap = mapOf(
-                    "coords" to coords,
-                    "odin" to odin,
-                    "boop" to boop,
-                    "cf" to cf,
-                    "8ball" to eightball,
-                    "dice" to dice,
-                    "cat" to cat,
-                    "racism" to racism,
-                    "ping" to ping,
-                    "tps" to tps,
-                    "inv" to inv,
-                    "invite" to invite
-                )
+                val commandsMap = mapOf("coords" to coords, "odin" to odin, "boop" to boop, "cf" to cf, "8ball" to eightball, "dice" to dice, "cat" to cat, "racism" to racism, "ping" to ping, "tps" to tps, "inv" to inv, "invite" to invite)
                 val enabledCommands = commandsMap.filterValues { it }.keys.joinToString(", ")
                 "Commands: $enabledCommands"
             }
