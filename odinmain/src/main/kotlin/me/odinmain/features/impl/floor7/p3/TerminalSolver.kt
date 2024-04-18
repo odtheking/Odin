@@ -11,7 +11,7 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.font.OdinFont
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.text
+import me.odinmain.utils.render.mcText
 import me.odinmain.utils.render.translate
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.unformattedName
@@ -45,7 +45,6 @@ object TerminalSolver : Module(
     private val removeWrongStartsWith: Boolean by BooleanSetting("Stop Starts With", true).withDependency { type == 2 }
     private val removeWrongSelect: Boolean by BooleanSetting("Stop Select", true).withDependency { type == 2 }
     private val textShadow: Boolean by BooleanSetting("Shadow", true, description = "Adds a shadow to the text")
-    private val fontType: Int by SelectorSetting("Font", "Smooth", arrayListOf("Smooth", "Minecraft"), description = "The font to use")
     private val wrongColor: Color by ColorSetting("Wrong Color", Color(45, 45, 45), true).withDependency { type == 2 }
     private val textColor: Color by ColorSetting("Text Color", Color(220, 220, 220), true)
     private val rubixColor: Color by ColorSetting("Rubix Color", Color(0, 170, 170), true)
@@ -141,10 +140,7 @@ object TerminalSolver : Module(
                     val needed = solution.count { it == slot.slotIndex }
                     val text = if (needed < 3) needed.toString() else (needed - 5).toString()
                     if (type == 2 && removeWrongRubix) Gui.drawRect(x, y, x + 16, y + 16, if (needed < 3) rubixColor.rgba else oppositeRubixColor.rgba)
-                    if (fontType == 1)
-                        mc.fontRendererObj.drawString(text, x + 8.5f - mc.fontRendererObj.getStringWidth(text) / 2, y + 4.5f, textColor.rgba, textShadow)
-                    else
-                        text(text, x + 8f - OdinFont.getTextWidth(text, 8f) / 2, y + 9f, textColor, 8f, shadow = textShadow)
+                    mcText(text, x + 8f - OdinFont.getTextWidth(text, 8f) / 2, y + 9f, 1, textColor, shadow = textShadow, false)
                 }
                 2 -> {
                     val index = solution.indexOf(slot.slotIndex)
@@ -157,10 +153,8 @@ object TerminalSolver : Module(
                         Gui.drawRect(x, y, x + 16, y + 16, color)
                     }
                     val amount = slot.stack?.stackSize ?: 0
-                    if (fontType == 1)
-                        mc.fontRendererObj.drawString(amount.toString(), x + 8.5f - mc.fontRendererObj.getStringWidth(amount.toString()) / 2, y + 4.5f, textColor.rgba, textShadow)
-                    else
-                        text(amount.toString(), x + 8f - OdinFont.getTextWidth(amount.toString(), 8f) / 2, y + 9f, textColor, 8f, shadow = textShadow)
+                    mcText(amount.toString(), x + 8.5f - mc.fontRendererObj.getStringWidth(amount.toString()) / 2, y + 4.5f, 1, textColor, shadow = textShadow, false)
+
                 }
                 3 -> Gui.drawRect(x, y, x + 16, y + 16, startsWithColor.rgba)
                 4 -> Gui.drawRect(x, y, x + 16, y + 16, selectColor.rgba)
@@ -178,7 +172,7 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun itemStack(event: DrawSlotOverlayEvent) {
-        if (type != 2 || currentTerm == -1 || !enabled) return
+        if (type == 2 || currentTerm == -1 || !enabled) return
         event.isCanceled = true
     }
 
