@@ -108,11 +108,66 @@ object ChatCommands : Module(
     private fun handleChatCommands(message: String, name: String, channel: String) {
 
         val helpMessage = when (channel) {
-            "party" -> "Commands: coords, odin, boop, cf, 8ball, dice, cat, racism, ping, tps, warp, warptransfer, allinvite, pt, dt, m (?), f (?)"
-            "guild" -> "Commands: coords, odin, boop, cf, 8ball, dice, cat, racism, ping, tps"
-            "private" -> "Commands: coords, odin, boop, cf, 8ball, dice, cat, racism, ping, tps, inv, invite"
+            "party" -> {
+                val commandsMap = mapOf(
+                    "coords" to coords,
+                    "odin" to odin,
+                    "boop" to boop,
+                    "cf" to cf,
+                    "8ball" to eightball,
+                    "dice" to dice,
+                    "cat" to cat,
+                    "racism" to racism,
+                    "ping" to ping,
+                    "tps" to tps,
+                    "warp" to warp,
+                    "warptransfer" to warptransfer,
+                    "allinvite" to allinvite,
+                    "pt" to pt,
+                    "dt" to dt,
+                    "m" to queDungeons,
+                    "f" to queDungeons
+                )
+                val enabledCommands = commandsMap.filterValues { it }.keys.joinToString(", ")
+                "Commands: $enabledCommands"
+            }
+            "guild" -> {
+                val commandsMap = mapOf(
+                    "coords" to coords,
+                    "odin" to odin,
+                    "boop" to boop,
+                    "cf" to cf,
+                    "8ball" to eightball,
+                    "dice" to dice,
+                    "cat" to cat,
+                    "racism" to racism,
+                    "ping" to ping,
+                    "tps" to tps
+                )
+                val enabledCommands = commandsMap.filterValues { it }.keys.joinToString(", ")
+                "Commands: $enabledCommands"
+            }
+            "private" -> {
+                val commandsMap = mapOf(
+                    "coords" to coords,
+                    "odin" to odin,
+                    "boop" to boop,
+                    "cf" to cf,
+                    "8ball" to eightball,
+                    "dice" to dice,
+                    "cat" to cat,
+                    "racism" to racism,
+                    "ping" to ping,
+                    "tps" to tps,
+                    "inv" to inv,
+                    "invite" to invite
+                )
+                val enabledCommands = commandsMap.filterValues { it }.keys.joinToString(", ")
+                "Commands: $enabledCommands"
+            }
             else -> ""
         }
+
         if (!message.startsWith("!")) return
         when (message.split(" ")[0].drop(1)) {
             "help" -> channelMessage(helpMessage, name, channel)
