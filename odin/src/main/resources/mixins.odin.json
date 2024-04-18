@@ -27,6 +27,7 @@
     "mixins.MixinNetworkManager",
     "mixins.MixinRenderDragon",
     "mixins.MixinRendererLivingEntity",
+    "mixins.MixinRenderItem",
     "mixins.MixinRenderPlayer",
     "mixins.MixinSoundManager",
     "mixins.model.MixinModelBiped",

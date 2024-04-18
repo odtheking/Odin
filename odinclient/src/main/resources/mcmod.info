@@ -2,11 +2,11 @@
   {
 	"modid": "odclient",
 	"name": "OdinClient",
-	"description": "OdinClient is a versatile Forge mod tailored specifically for Hypixel Skyblock, offering a host of features designed to enhance your gameplay. You can access the GUI via the /od command.",
+	"description": "OdinClient is a Forge mod for Hypixel Skyblock, offering features designed to enhance your gameplay.",
 	"version": "${version}",
 	"mcversion": "1.8.9",
-	"url": "https://odtheking.github.io/OdinClient/",
-	"updateUrl": "https://api.github.com/repos/odtheking/OdinClient/releases/latest",
+	"url": "https://odtheking.github.io/Odin/",
+	"updateUrl": "https://api.github.com/repos/odtheking/Odin/releases/latest",
 	"authorList": [
 	  "Odtheking", "Cezar", "Stivais", "Bonsai", "Ilmars"
 	],

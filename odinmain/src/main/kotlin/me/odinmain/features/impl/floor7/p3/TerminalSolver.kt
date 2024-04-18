@@ -1,9 +1,6 @@
 package me.odinmain.features.impl.floor7.p3
 
-import me.odinmain.events.impl.ChatPacketEvent
-import me.odinmain.events.impl.DrawGuiContainerScreenEvent
-import me.odinmain.events.impl.GuiLoadedEvent
-import me.odinmain.events.impl.TerminalOpenedEvent
+import me.odinmain.events.impl.*
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.AlwaysActive
@@ -175,8 +172,14 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun onTooltip(event: ItemTooltipEvent) {
-        if (!cancelToolTip || currentTerm == -1) return
+        if (!cancelToolTip || currentTerm == -1 || !enabled) return
         event.toolTip.clear()
+    }
+
+    @SubscribeEvent
+    fun itemStack(event: DrawSlotOverlayEvent) {
+        if (type != 2 || currentTerm == -1 || !enabled) return
+        event.isCanceled = true
     }
 
     private var lastWasNull = false

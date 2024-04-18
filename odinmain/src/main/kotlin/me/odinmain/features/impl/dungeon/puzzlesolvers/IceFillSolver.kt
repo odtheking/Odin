@@ -5,6 +5,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.addVec
+import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.plus
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils
@@ -72,7 +73,7 @@ object IceFillSolver {
     fun onClientTick(event: TickEvent.ClientTickEvent) {
         if (event.phase != TickEvent.Phase.END || mc.thePlayer == null || scanned || !DungeonUtils.inDungeons || DungeonUtils.currentRoomName != "Ice Fill") return
         val pos = posFloored
-        if (pos.y != 70 || getBlockIdAt(BlockPos(pos.x, pos.y - 1, pos.z )) != 79) return
+        if (pos.y.equalsOneOf(70, 71, 72) || getBlockIdAt(BlockPos(pos.x, pos.y - 1, pos.z )) != 79) return
         GlobalScope.launch {
             val rotation = checkRotation(pos, 0) ?: return@launch
             if (!scan(pos, 0)) return@launch modMessage("Failed to scan floor 0")

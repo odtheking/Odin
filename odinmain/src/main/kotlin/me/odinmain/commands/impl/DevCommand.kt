@@ -1,6 +1,7 @@
 package me.odinmain.commands.impl
 
 import com.github.stivais.commodore.utils.GreedyString
+import io.netty.buffer.Unpooled
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
@@ -16,10 +17,13 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils.cryptsCount
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.deathCount
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.secretCount
 import me.odinmain.utils.skyblock.dungeon.ScanUtils
+import net.minecraft.network.PacketBuffer
+import net.minecraft.network.play.client.C17PacketCustomPayload
 import net.minecraft.util.ChatComponentText
 import net.minecraftforge.common.MinecraftForge
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
+
 
 val devCommand = commodore("oddev") {
     //if (!isDev) return@commodore // i forgot to add require to recode lol
@@ -132,8 +136,12 @@ val devCommand = commodore("oddev") {
         println("Copied readme to clipboard!")
     }
 
+    val one: PacketBuffer = PacketBuffer(Unpooled.buffer().writeByte(1))
+
     literal("test").runs {
         modMessage("Test")
+        mc.netHandler.addToSendQueue(C17PacketCustomPayload("hypixel:ping", one))
+
     }
 
     literal("alert").runs {string: String ->

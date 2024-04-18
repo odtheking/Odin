@@ -59,7 +59,7 @@ val mainCommand = commodore("od", "odin", "odinclient") {
              §3- /od ping §7» §8Sends your ping in chat.
              §3- /od tps §7» §8Sends the server's tps in chat.
              §3- /spcmd §7» §8Use /spcmd cmds for command list.
-             §3- /visualwords §7» §8Command to replace words in the game..
+             §3- /visualwords §7» §8Command to replace words in the game.
              """.trimIndent()
         )
     }
@@ -93,7 +93,7 @@ val mainCommand = commodore("od", "odin", "odinclient") {
     runs { tier: String ->
         if (tier.length != 2 || tier[0] != 't' || tier[1] !in '1'..'5') throw SyntaxException()
         sendCommand("joininstance kuudra_${tiers[tier[1]]}")
-    } suggests { tiers.keys.map { it.toString() } }
+    } suggests { tiers.keys.map { "t$it" } }
 }
 
 private val floors = mapOf(

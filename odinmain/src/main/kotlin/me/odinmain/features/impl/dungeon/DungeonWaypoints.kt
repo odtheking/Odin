@@ -117,8 +117,9 @@ object DungeonWaypoints : Module(
         val distinct = room.positions.distinct().minByOrNull { it.core } ?: return
         val vec = Vec3(pos).subtractVec(x = distinct.x, z = distinct.z).rotateToNorth(room.room.rotation)
         val aabb =
-            if (useBlockSize) getBlockAt(pos).getSelectedBoundingBox(mc.theWorld, BlockPos(0, 0, 0))
-            else AxisAlignedBB(.5 - (size / 2), .5 - (size / 2), .5 - (size / 2), .5 + (size / 2), .5 + (size / 2), .5 + (size / 2))
+            if (useBlockSize) getBlockAt(pos).getSelectedBoundingBox(mc.theWorld, BlockPos(0, 0, 0)).expand(0.002, 0.002, 0.002)
+            else AxisAlignedBB(.5 - (size / 2), .5 - (size / 2), .5 - (size / 2), .5 + (size / 2), .5 + (size / 2), .5 + (size / 2)).expand(0.002, 0.002, 0.002)
+
         val waypoints = DungeonWaypointConfig.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
 
         if (mc.thePlayer.isSneaking) {
@@ -177,8 +178,6 @@ object DungeonWaypoints : Module(
             glList = GL11.glGenLists(1)
             GL11.glNewList(glList, GL11.GL_COMPILE)
         }
-
-
 
         for (box in boxes) {
             if (!box.depth) GlStateManager.disableDepth()
