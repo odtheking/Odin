@@ -115,7 +115,8 @@ object ModuleManager {
         GoldorTimer,
         VisualWords,
         HidePlayers,
-        WarpCooldown
+        WarpCooldown,
+        PetKeybinds
     )
 
     init {

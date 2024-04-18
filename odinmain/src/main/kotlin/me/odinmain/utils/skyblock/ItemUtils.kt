@@ -41,9 +41,16 @@ val ItemStack.lore: List<String>
 val ItemStack?.itemID: String
     get() = this?.extraAttributes?.getString("id") ?: ""
 
+/**
+ * Returns uuid for an Item
+ */
+val ItemStack?.uuid: String
+    get() = this?.extraAttributes?.getString("uuid") ?: ""
 
 inline val heldItem: ItemStack?
     get() = mc.thePlayer?.heldItem
+
+
 
 
  /**
@@ -89,6 +96,19 @@ fun getItemIndexInContainerChest(container: ContainerChest, item: String, subLis
         it.stack?.unformattedName?.contains(item, ignoreCase) == true
     }?.slotIndex
 }
+
+fun getItemIndexInContainerChestByUUID(container: ContainerChest, uuid: String, subList: IntRange = 0..container.inventory.size - 36, ignoreCase: Boolean = false): Int? {
+    return container.inventorySlots.subList(subList.first, subList.last + 1).firstOrNull {
+        it.stack?.uuid?.contains(uuid) == true
+    }?.slotIndex
+}
+
+fun getItemIndexInContainerChestByLore(container: ContainerChest, lore: String, subList: IntRange = 0..container.inventory.size - 36, ignoreCase: Boolean = false): Int? {
+    return container.inventorySlots.subList(subList.first, subList.last + 1).firstOrNull {
+        it.stack?.lore?.contains(lore) == true
+    }?.slotIndex
+}
+
 
 
 enum class ItemRarity(
