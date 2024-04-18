@@ -50,9 +50,6 @@ val ItemStack?.uuid: String
 inline val heldItem: ItemStack?
     get() = mc.thePlayer?.heldItem
 
-
-
-
  /**
  * Returns if an item has an ability
  */
@@ -97,12 +94,20 @@ fun getItemIndexInContainerChest(container: ContainerChest, item: String, subLis
     }?.slotIndex
 }
 
+/**
+ * Gets index of an item in a chest using its uuid.
+ * @return null if not found.
+ */
 fun getItemIndexInContainerChestByUUID(container: ContainerChest, uuid: String, subList: IntRange = 0..container.inventory.size - 36, ignoreCase: Boolean = false): Int? {
     return container.inventorySlots.subList(subList.first, subList.last + 1).firstOrNull {
         it.stack?.uuid?.contains(uuid) == true
     }?.slotIndex
 }
 
+/**
+ * Gets index of an item in a chest using its lore.
+ * @return null if not found.
+ */
 fun getItemIndexInContainerChestByLore(container: ContainerChest, lore: String, subList: IntRange = 0..container.inventory.size - 36, ignoreCase: Boolean = false): Int? {
     return container.inventorySlots.subList(subList.first, subList.last + 1).firstOrNull {
         it.stack?.lore?.contains(lore) == true
