@@ -28,7 +28,7 @@ object GyroWand : Module(
     private val steps: Int by NumberSetting("Smoothness", 40, 20, 80, 1).withDependency { gyroRange }
     private val showCooldown: Boolean by BooleanSetting("Show Cooldown", true, description = "Shows the cooldown of the Gyrokinetic Wand.").withDependency { gyroRange }
     private val cooldownColor: Color by ColorSetting("Cooldown Color", Color.RED, allowAlpha = true).withDependency { showCooldown && gyroRange }
-    private val blockWrongClicks: Boolean by BooleanSetting("Block aligning", true, description = "Blocks using the right click ability on Gyrokinetic Wand.")
+    private val blockWrongClicks: Boolean by BooleanSetting("Block aligning", false, description = "Blocks using the right click ability on Gyrokinetic Wand.").withDependency { !onLegitVersion }
 
     private val gyroCooldown = Clock(30_000)
 
