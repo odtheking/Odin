@@ -181,5 +181,7 @@ fun ItemStack.drawItem(x: Float = 0f, y: Float = 0f, scale: Float = 1f, z: Float
 
     mc.renderItem.zLevel = z
     mc.renderItem.renderItemIntoGUI(this, 0, 0)
+    RenderHelper.disableStandardItemLighting()
+    RenderHelper.disableStandardItemLighting()
     GlStateManager.popMatrix()
 }

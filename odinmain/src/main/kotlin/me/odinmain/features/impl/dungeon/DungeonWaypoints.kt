@@ -117,7 +117,7 @@ object DungeonWaypoints : Module(
         val distinct = room.positions.distinct().minByOrNull { it.core } ?: return
         val vec = Vec3(pos).subtractVec(x = distinct.x, z = distinct.z).rotateToNorth(room.room.rotation)
         val aabb =
-            if (useBlockSize) getBlockAt(pos).getSelectedBoundingBox(mc.theWorld, BlockPos(0, 0, 0)).expand(0.002, 0.002, 0.002)
+            if (useBlockSize) getBlockAt(pos).getSelectedBoundingBox(mc.theWorld, BlockPos(0, 0, 0)).expand(0.002, 0.002, 0.002) ?: return
             else AxisAlignedBB(.5 - (size / 2), .5 - (size / 2), .5 - (size / 2), .5 + (size / 2), .5 + (size / 2), .5 + (size / 2)).expand(0.002, 0.002, 0.002)
 
         val waypoints = DungeonWaypointConfig.waypoints.getOrPut(room.room.data.name) { mutableListOf() }

@@ -33,7 +33,7 @@ object ClickedChests : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (!DungeonUtils.inDungeons || chests.isEmpty()) return
+        if (!DungeonUtils.inDungeons || chests.isEmpty() || DungeonUtils.inBoss) return
         chests.removeAll { System.currentTimeMillis() - it.timeAdded >= timeToStay * 1000 }
 
         chests.forEach {

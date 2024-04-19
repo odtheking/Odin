@@ -187,7 +187,7 @@ object ChatCommands : Module(
                 if (message.substringAfter("f ") == message) return modMessage("§cPlease specify a floor.")
                 if (floor.toIntOrNull() == null) return modMessage("§cPlease specify a valid floor.")
                 modMessage("§aEntering floor: $floor")
-                sendCommand("od f$floor, true")
+                sendCommand("od f$floor", true)
             }
 
             "t" -> {
