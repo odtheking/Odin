@@ -40,7 +40,7 @@ object BlessingDisplay : Module(
         } else {
             Blessings.entries.forEachIndexed { index, blessing ->
                 if (blessing.current == 0 || !blessing.enabled.invoke()) return@forEachIndexed
-                mcText("${blessing.displayString} §a${blessing.current}", 25f, 5f + 15 * index, 1, blessing.color)
+                mcText("${blessing.displayString} §a${blessing.current}", 25f - 5 * index, 5f + 15 * (index - 1), 1, blessing.color)
             }
             getMCTextWidth("Power: 29") + 2f to 20f + 15 * max(Blessings.entries.count { it.current > 0 }, 1)
         }

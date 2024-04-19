@@ -57,7 +57,7 @@ object WitherDragons : Module(
             if (!dragonTimer) return@HudSetting 0f to 0f
             var width = 0f
             DragonTimer.toRender.forEachIndexed { index, triple ->
-                mcText(triple.first, 70f, 5f + index * 15f, textScale, Color.WHITE)
+                mcText(triple.first, 70f - 5 * index, 5f + (index - 1) * 15f, textScale, Color.WHITE)
                 width = max(width, getMCTextWidth(triple.first.noControlCodes))
             }
             if (timerBackground) roundedRectangle(1f, 1f, getMCTextWidth("Purple spawning in 4500ms") + 1f, 32f, Color.DARK_GRAY.withAlpha(.75f), 3f)

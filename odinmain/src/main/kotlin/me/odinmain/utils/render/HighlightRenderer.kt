@@ -56,7 +56,7 @@ object HighlightRenderer {
 
     @SubscribeEvent
     fun on2d(event: RenderGameOverlayEvent.Pre) {
-        if (event.type != RenderGameOverlayEvent.ElementType.AIR) return
+        if (event.type != RenderGameOverlayEvent.ElementType.ALL) return
         GlStateManager.pushMatrix()
         RenderHelper.disableStandardItemLighting()
         mc.renderManager.setRenderOutlines(true)

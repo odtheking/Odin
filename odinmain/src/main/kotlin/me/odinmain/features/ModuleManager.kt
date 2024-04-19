@@ -111,7 +111,7 @@ object ModuleManager {
         KuudraRequeue,
         EnrageDisplay,
         BlockOverlay,
-        ItemsHighlight,
+        //ItemsHighlight,
         GoldorTimer,
         VisualWords,
         HidePlayers,
