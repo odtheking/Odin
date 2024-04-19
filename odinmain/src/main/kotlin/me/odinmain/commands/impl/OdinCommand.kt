@@ -85,15 +85,18 @@ val mainCommand = commodore("od", "odin", "odinclient") {
         DungeonWaypoints.onKeybind()
     }
 
-    runs { floor: String -> // floor and kuudra split for better error handling
-        if (floor.length != 2 || !floor[0].equalsOneOf('f', 'm') || floor[1] !in '1'..'7') throw SyntaxException()
-        sendCommand("joininstance ${if (floor[0] == 'm') "master_" else ""}catacombs_floor_${floors[floor[1]]}")
-    } suggests { floors.keys.map { "m$it" } }
-
     runs { tier: String ->
-        if (tier.length != 2 || tier[0] != 't' || tier[1] !in '1'..'5') throw SyntaxException()
-        sendCommand("joininstance kuudra_${tiers[tier[1]]}")
-    } suggests { tiers.keys.map { "t$it" } }
+        if(tier[0].equalsOneOf('f', 'm')) {
+            if (tier.length != 2 || tier[1] !in '1'..'7') throw SyntaxException()
+            sendCommand("joininstance ${if (tier[0] == 'm') "master_" else ""}catacombs_floor_${floors[tier[1]]}")
+        }
+        else if (!tier[0].equals('t')){
+            if (tier.length != 2 || tier[1] !in '1'..'5') throw SyntaxException()
+            sendCommand("joininstance kuudra_${tiers[tier[1]]}")
+        }
+    } suggests {
+        (tiers.keys.map { "t$it" } + floors.keys.map { "m$it" } + floors.keys.map { "f$it" }).toList()
+    }
 }
 
 private val floors = mapOf(
