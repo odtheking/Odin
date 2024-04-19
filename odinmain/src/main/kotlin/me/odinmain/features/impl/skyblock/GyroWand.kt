@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.skyblock
 
+import me.odinmain.OdinMain.onLegitVersion
 import me.odinmain.events.impl.ClickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -51,7 +52,7 @@ object GyroWand : Module(
 
     @SubscribeEvent
     fun onRightClick(event: ClickEvent.RightClickEvent) {
-        if (heldItem?.itemID != "GYROKINETIC_WAND" || !blockWrongClicks) return
+        if (heldItem?.itemID != "GYROKINETIC_WAND" || !blockWrongClicks || onLegitVersion) return
         event.isCanceled = true
     }
 

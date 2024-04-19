@@ -18,9 +18,9 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 object TerminalAura : Module(
     name = "Terminal Aura",
     category = Category.FLOOR7,
-    description = ""
+    description = "Automatically interacts with inactive terminals in M7P3.",
+    tag = TagType.RISKY
 ) {
-
     private val onGround: Boolean by BooleanSetting("On Ground", true)
 
     private val clickClock = Clock(1000)
@@ -36,5 +36,4 @@ object TerminalAura : Module(
         mc.thePlayer.sendQueue.addToSendQueue(C02PacketUseEntity(terminal, C02PacketUseEntity.Action.INTERACT))
         clickClock.update()
     }
-
 }

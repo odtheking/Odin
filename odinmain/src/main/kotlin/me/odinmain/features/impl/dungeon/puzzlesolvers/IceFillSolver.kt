@@ -75,7 +75,6 @@ object IceFillSolver {
         val pos = posFloored
         if (!pos.y.equalsOneOf(70, 71, 72) || !getBlockIdAt(BlockPos(pos.x, pos.y - 1, pos.z)).equalsOneOf(79, 174)) return
         GlobalScope.launch {
-            if (scanned) return@launch
             val floorIndex = pos.y - 70
             val rotation = checkRotation(pos, floorIndex) ?: return@launch
 

@@ -7,11 +7,11 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.HudSetting
-import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.utils.Vec2f
 import me.odinmain.utils.noControlCodes
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.getMCTextWidth
+import me.odinmain.utils.render.mcText
 import net.minecraft.network.play.server.S47PacketPlayerListHeaderFooter
 import kotlin.math.max
 
@@ -34,23 +34,15 @@ object BlessingDisplay : Module(
 
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {
-            text("Power §a29", 1f, 9f, powerColor, 12f, OdinFont.REGULAR, TextAlign.Left, TextPos.Middle, true)
-            text("Time §a5", 1f, 26f, timeColor,12f, OdinFont.REGULAR, TextAlign.Left, TextPos.Middle, true)
-            getTextWidth("Power: 29", 12f) + 2f to 33f
+            mcText("Power §a29", 25f, 5f, 1, powerColor)
+            mcText("Life §a29", 20f, 20f, 1, lifeColor)
+            getMCTextWidth("Power: 29") + 2f to 33f
         } else {
-            Blessings.TIME.color = timeColor
-            Blessings.POWER.color = powerColor
-            Blessings.STONE.color = stoneColor
-            Blessings.LIFE.color = lifeColor
-            Blessings.WISDOM.color = wisdomColor
-            val size = Vec2f(0f, 0f)
-            Blessings.entries.forEach { blessing ->
-                if (blessing.current == 0 || !blessing.enabled.invoke()) return@forEach
-                text("${blessing.displayString} §a${blessing.current}", 1f, 9f + size.y, blessing.color,12f, OdinFont.REGULAR, TextAlign.Left, TextPos.Middle, true)
-                size.x = max(size.x, getTextWidth("${blessing.displayString} §a${blessing.current}".noControlCodes, 12f))
-                size.y += 17f
+            Blessings.entries.forEachIndexed { index, blessing ->
+                if (blessing.current == 0 || !blessing.enabled.invoke()) return@forEachIndexed
+                mcText("${blessing.displayString} §a${blessing.current}", 1f, 5f + 15 * index, 1, blessing.color)
             }
-            size.x to size.y
+            getMCTextWidth("Power: 29") + 2f to 20f + 15 * max(Blessings.entries.count { it.current > 0 }, 1)
         }
     }
 
@@ -91,6 +83,11 @@ object BlessingDisplay : Module(
                     blessing.current = romanToInt(match.groupValues[1])
                 }
             }
+            Blessings.TIME.color = timeColor
+            Blessings.POWER.color = powerColor
+            Blessings.STONE.color = stoneColor
+            Blessings.LIFE.color = lifeColor
+            Blessings.WISDOM.color = wisdomColor
         }
 
         onWorldLoad {

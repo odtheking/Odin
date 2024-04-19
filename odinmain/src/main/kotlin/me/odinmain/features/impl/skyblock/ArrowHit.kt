@@ -6,12 +6,11 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.features.settings.impl.StringSetting
-import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.getTextWidth
-import me.odinmain.utils.render.text
+import me.odinmain.utils.render.getMCTextWidth
+import me.odinmain.utils.render.mcText
 import net.minecraft.network.play.server.S29PacketSoundEffect
 
 object ArrowHit : Module(
@@ -31,11 +30,11 @@ object ArrowHit : Module(
 
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 2f, false) {
         if (it) {
-            text("17.8", 1f, 9f, Color.WHITE,12f, OdinFont.REGULAR)
-            getTextWidth("17.8", 12f) to 12f
+            mcText("Arrows hit", 1f, 1f, 1f, Color.WHITE)
+            getMCTextWidth("17.8").toFloat() to 12f
         } else {
-            text(arrowCount.toString(), 1f, 9f, Color.WHITE,12f, OdinFont.REGULAR)
-            getTextWidth("$arrowCount", 12f) to 12f
+            mcText("Arrows hit", 1f, 1f, 1f, Color.WHITE)
+            getMCTextWidth("$arrowCount").toFloat() to 12f
         }
     }
     init {

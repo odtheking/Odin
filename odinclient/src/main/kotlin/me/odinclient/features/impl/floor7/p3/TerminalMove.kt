@@ -19,7 +19,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
 object TerminalMove : Module(
     name = "Terminal Move",
     category = Category.FLOOR7,
-    description = ""
+    description = "Move in terminals without GUI hotbar keys",
+    tag = TagType.RISKY
 ) {
 
     private val keyBindingList: ArrayList<KeyBinding> = arrayListOf(mc.gameSettings.keyBindForward, mc.gameSettings.keyBindBack, mc.gameSettings.keyBindLeft, mc.gameSettings.keyBindRight, mc.gameSettings.keyBindSneak, mc.gameSettings.keyBindJump, mc.gameSettings.keyBindSprint)
