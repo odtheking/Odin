@@ -187,7 +187,7 @@ object ChatCommands : Module(
                 if (message.substringAfter("f ") == message) return modMessage("§cPlease specify a floor.")
                 if (floor.toIntOrNull() == null) return modMessage("§cPlease specify a valid floor.")
                 modMessage("§aEntering floor: $floor")
-                sendCommand("od f$floor, true")
+                sendCommand("od f$floor", true)
             }
 
             "t" -> {
@@ -216,14 +216,15 @@ object ChatCommands : Module(
 
     @SubscribeEvent
     fun dt(event: ChatPacketEvent) {
-        if (!event.message.contains("EXTRA STATS") || dtPlayer == null) return
-
-        runIn(30) {
-            PlayerUtils.alert("§cPlayers need DT")
-            partyMessage("Players need DT: ${dtReason.joinToString(separator = ", ") { (name, reason) ->
-                "$name: $reason" }}")
-            dtPlayer = null
-            dtReason.clear()
+        if (dtPlayer == null) return
+        if (event.message.contains("EXTRA STATS") || event.message.contains("KUUDRA DOWN!")) {
+            runIn(30) {
+                PlayerUtils.alert("§cPlayers need DT")
+                partyMessage("Players need DT: ${dtReason.joinToString(separator = ", ") { (name, reason) ->
+                    "$name: $reason" }}")
+                dtPlayer = null
+                dtReason.clear()
+            }
         }
     }
 

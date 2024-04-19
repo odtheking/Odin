@@ -55,6 +55,7 @@ object DungeonWaypoints : Module(
     var throughWalls: Boolean by BooleanSetting("Through walls", false, description = "If the next waypoint you place should be visible through walls.")
     var useBlockSize: Boolean by BooleanSetting("Use block size", false, description = "Use the size of the block you click for waypoint size.")
     var size: Double by NumberSetting("Size", 1.0, .125, 1.0, increment = 0.01, description = "The size of the next waypoint you place.").withDependency { !useBlockSize }
+    private val disableDepth: Boolean by BooleanSetting("Disable Depth", false, description = "Disables depth testing for waypoints.")
     private val resetButton: () -> Unit by ActionSetting("Reset Current Room") {
         val room = DungeonUtils.currentRoom ?: return@ActionSetting modMessage("Room not found!!!")
 
@@ -85,7 +86,7 @@ object DungeonWaypoints : Module(
 
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
-        if (DungeonUtils.inBoss) return
+        if (DungeonUtils.inBoss || !DungeonUtils.inDungeons) return
         val room = DungeonUtils.currentRoom ?: return
         startProfile("Dungeon Waypoints")
         drawBoxes(room.waypoints)
@@ -117,7 +118,7 @@ object DungeonWaypoints : Module(
         val distinct = room.positions.distinct().minByOrNull { it.core } ?: return
         val vec = Vec3(pos).subtractVec(x = distinct.x, z = distinct.z).rotateToNorth(room.room.rotation)
         val aabb =
-            if (useBlockSize) getBlockAt(pos).getSelectedBoundingBox(mc.theWorld, BlockPos(0, 0, 0)).expand(0.002, 0.002, 0.002)
+            if (useBlockSize) getBlockAt(pos).getSelectedBoundingBox(mc.theWorld, BlockPos(0, 0, 0)).expand(0.002, 0.002, 0.002) ?: return
             else AxisAlignedBB(.5 - (size / 2), .5 - (size / 2), .5 - (size / 2), .5 + (size / 2), .5 + (size / 2), .5 + (size / 2)).expand(0.002, 0.002, 0.002)
 
         val waypoints = DungeonWaypointConfig.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
@@ -158,7 +159,7 @@ object DungeonWaypoints : Module(
         z + .5 + (size / 2)
     ).expand(.01, .01, .01)
 
-    private fun drawBoxes(boxes: Collection<DungeonWaypoint>) {
+    private fun drawBoxes(boxes: Collection<DungeonWaypoint>, depth: Boolean = disableDepth) {
         GlStateManager.pushMatrix()
         GlStateManager.translate(-RenderUtils.renderManager.viewerPosX, -RenderUtils.renderManager.viewerPosY, -RenderUtils.renderManager.viewerPosZ)
         RenderUtils.blendFactor()
@@ -180,7 +181,7 @@ object DungeonWaypoints : Module(
         }
 
         for (box in boxes) {
-            if (!box.depth) GlStateManager.disableDepth()
+            if (!box.depth || disableDepth) GlStateManager.disableDepth()
             else GlStateManager.enableDepth()
             box.color.bind()
             val aabb = box.aabb.offset(box.x, box.y, box.z)

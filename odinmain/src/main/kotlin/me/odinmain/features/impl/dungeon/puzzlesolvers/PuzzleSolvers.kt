@@ -40,7 +40,7 @@ object PuzzleSolvers : Module(
     private val iceFillSolver: Boolean by BooleanSetting("Ice Fill Solver", true, description = "Solver for the ice fill puzzle")
     private val iceFillColor: Color by ColorSetting("Ice Fill Color", Color.PINK, true, description = "Color for the ice fill solver").withDependency { iceFillSolver }
     val action: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
-        IceFillSolver.onWorldLoad()
+        IceFillSolver.reset()
     }.withDependency { iceFillSolver }
     init {
         execute(500) {
@@ -61,7 +61,7 @@ object PuzzleSolvers : Module(
             TPMaze.portals = setOf()
             TPMaze.correctPortals = listOf()
             TicTacToe.reset()
-            IceFillSolver.onWorldLoad()
+            IceFillSolver.reset()
         }
     }
 

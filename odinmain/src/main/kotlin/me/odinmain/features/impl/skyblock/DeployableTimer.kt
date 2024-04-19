@@ -4,13 +4,12 @@ import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.HudSetting
-import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.FlareTextures
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.getTextWidth
-import me.odinmain.utils.render.text
+import me.odinmain.utils.render.getMCTextWidth
+import me.odinmain.utils.render.mcText
 import me.odinmain.utils.skyblock.drawItem
 import me.odinmain.utils.skyblock.getSkullValue
 import net.minecraft.entity.item.EntityArmorStand
@@ -26,10 +25,10 @@ object DeployableTimer : Module(
     private val firework = Item.getByNameOrId("minecraft:fireworks")
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {
-            text("§l§5SOS Flare", 45f, 17f, Color.WHITE,12f, OdinFont.BOLD)
-            text("§e179s", 45f, 35f, Color.WHITE,12f, OdinFont.BOLD)
-            ItemStack(firework).drawItem(x= -12f, y= -8f, scale = 4f)
-            getTextWidth("SOS Flare", 12f) + 45f to 52f
+            mcText("§l§5SOS Flare", 65f, 15f, 1.2 ,Color.WHITE)
+            mcText("§e179s", 60f, 30f, 1.2 ,Color.WHITE)
+            ItemStack(firework).drawItem(x= -20f, y= -8f, scale = 4f)
+            getMCTextWidth("SOS Flare") + 45f to 52f
         } else {
             val d = currentDeployables.firstOrNull { dep -> mc.thePlayer.getDistanceToEntity(dep.entity) <= dep.range } ?: return@HudSetting 0f to 0f
 
@@ -39,10 +38,10 @@ object DeployableTimer : Module(
                 currentDeployables.sortByDescending { dep -> dep.priority }
                 return@HudSetting 0f to 0f
             }
-            text(d.renderName, 45f, 17f, Color.WHITE,12f, OdinFont.BOLD)
-            text("§e${timeLeft}s", 45f, 35f, Color.WHITE,12f, OdinFont.BOLD)
+            mcText(d.renderName, 65f, 15f, 1.2 ,Color.WHITE)
+            mcText("§e${timeLeft}s", 60f, 30f, 1.2 ,Color.WHITE)
             d.entity.inventory?.get(4)?.drawItem(x= -12f, y= -8f, scale = 4f)
-            getTextWidth(d.renderName.noControlCodes, 12f) + 45f to 52f
+            getMCTextWidth(d.renderName.noControlCodes) + 45f to 52f
         }
     }
 

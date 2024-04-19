@@ -73,23 +73,38 @@ object IceFillSolver {
     fun onClientTick(event: TickEvent.ClientTickEvent) {
         if (event.phase != TickEvent.Phase.END || mc.thePlayer == null || scanned || !DungeonUtils.inDungeons || DungeonUtils.currentRoomName != "Ice Fill") return
         val pos = posFloored
-        if (pos.y.equalsOneOf(70, 71, 72) || getBlockIdAt(BlockPos(pos.x, pos.y - 1, pos.z )) != 79) return
+        if (!pos.y.equalsOneOf(70, 71, 72) || !getBlockIdAt(BlockPos(pos.x, pos.y - 1, pos.z)).equalsOneOf(79, 174)) return
         GlobalScope.launch {
-            val rotation = checkRotation(pos, 0) ?: return@launch
-            if (!scan(pos, 0)) return@launch modMessage("Failed to scan floor 0")
+            val floorIndex = pos.y - 70
+            val rotation = checkRotation(pos, floorIndex) ?: return@launch
 
-            val a = transform(Vec3i(5, 1, 0), rotation)
-            if (!scan(pos.addVec(a.x, a.y, a.z), 1)) return@launch modMessage("Failed to scan floor 1")
-
-            val b = transform(Vec3i(12, 2, 0), rotation)
-            if (!scan(pos.addVec(b.x, b.y, b.z), 2)) return@launch modMessage("Failed to scan floor 2")
+            when (floorIndex) {
+                0 -> scanAllFloors(pos, rotation)
+                1 -> {
+                    val a = transform(Vec3i(-5, -1, 0), rotation)
+                    scanAllFloors(pos.addVec(a.x, a.y, a.z), rotation)
+                }
+                2 -> {
+                    val a = transform(Vec3i(-12, -2, 0), rotation)
+                    scanAllFloors(pos.addVec(a.x, a.y, a.z), rotation)
+                }
+            }
             scanned = true
         }
     }
 
+    private fun scanAllFloors(pos: Vec3i, rotation: Rotation) {
+        if (!scan(pos, pos.y - 70)) return modMessage("§cFailed to scan floor 0")
+
+        val a = transform(Vec3i(5, 1, 0), rotation)
+        if (!scan(pos.addVec(a.x, a.y, a.z), 1)) return modMessage("§cFailed to scan floor 1")
+
+        val b = transform(Vec3i(12, 2, 0), rotation)
+        if (!scan(pos.addVec(b.x, b.y, b.z), 2)) return modMessage("§cFailed to scan floor 2")
+    }
+
     private fun scan(pos: Vec3i, floorIndex: Int): Boolean {
         val rotation = checkRotation(pos, floorIndex) ?: return false
-
         val bPos = BlockPos(pos)
 
         val floorHeight = representativeFloors[floorIndex]
@@ -147,7 +162,7 @@ object IceFillSolver {
         return null
     }
 
-    fun onWorldLoad() {
+    fun reset() {
         currentPatterns = ArrayList()
         scanned = false
         renderRotation = null
