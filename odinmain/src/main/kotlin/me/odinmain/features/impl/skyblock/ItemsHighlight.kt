@@ -4,6 +4,8 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.render.CustomHighlight.renderThrough
 import me.odinmain.features.impl.render.CustomHighlight.thickness
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.DualSetting
 import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.HighlightRenderer
@@ -17,6 +19,7 @@ object ItemsHighlight : Module(
     category = Category.RENDER
 ) {
     val mode: Int by SelectorSetting("Mode", HighlightRenderer.highlightModeDefault, HighlightRenderer.highlightModeList)
+    private val colorStyle: Boolean by DualSetting("Color Style", "Rarity", "Distance", default = false, description = "Which color style to use")
 
     init {
         HighlightRenderer.addEntityGetter({ HighlightRenderer.HighlightType.entries[mode]}) {
@@ -28,6 +31,11 @@ object ItemsHighlight : Module(
     }
 
     private fun getEntityOutlineColor(entity: EntityItem): Color {
-        return getRarity(entity.entityItem.lore)?.color ?: Color.WHITE
+        return if (!colorStyle) getRarity(entity.entityItem.lore)?.color ?: Color.WHITE
+        else if (entity.getDistanceToEntity(mc.thePlayer) <= 3.5) {
+            Color.GREEN
+        } else {
+            Color.RED
+        }
     }
 }

@@ -49,7 +49,6 @@ object PetKeybinds : Module(
         val matchResult = Regex("Pets \\((\\d)/(\\d)\\)").find(chest.name) ?: return
         val (current, total) = matchResult.destructured
 
-
         val index = when {
             nextPageKeybind.isDown() -> if (current.toInt() < total.toInt()) 53 else return modMessage("You are already on the last page.")
             previousPageKeybind.isDown() -> if (current.toInt() > 1) 45 else return modMessage("You are already on the first page.")
