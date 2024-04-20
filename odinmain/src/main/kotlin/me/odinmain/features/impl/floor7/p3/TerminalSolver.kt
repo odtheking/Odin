@@ -18,6 +18,7 @@ import me.odinmain.utils.skyblock.unformattedName
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest
+import net.minecraft.inventory.ContainerPlayer
 import net.minecraft.item.EnumDyeColor
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
@@ -56,8 +57,9 @@ object TerminalSolver : Module(
     private val selectColor: Color by ColorSetting("Select Color", Color(0, 170, 170), true)
 
     private val zLevel: Float get() = if (type == 1 && currentTerm != 1 && currentTerm != 2) 200f else 999f
-    var openedTerminalTime = 0L
     private var lastRubixSolution: Int? = null
+    var openedTerminalTime = 0L
+    var clicksNeeded = -1
 
     val terminalNames = listOf(
         "Correct all the panes!",
@@ -107,6 +109,7 @@ object TerminalSolver : Module(
                 solveSelect(items, colorNeeded.lowercase())
             }
         }
+        clicksNeeded = solution.size
         MinecraftForge.EVENT_BUS.post(TerminalOpenedEvent(currentTerm, solution))
     }
 
@@ -180,9 +183,7 @@ object TerminalSolver : Module(
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.END) return
-        val isNull = mc.currentScreen == null
-        if (isNull && lastWasNull && currentTerm != -1) leftTerm()
-        lastWasNull = isNull
+        if (mc.thePlayer?.openContainer is ContainerPlayer || currentTerm == -1) leftTerm()
     }
 
     @SubscribeEvent

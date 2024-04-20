@@ -22,8 +22,8 @@
     "mixins.other.MixinNEURenderListener"
   ],
   "client": [
-    "accessors.EntityRendererAccessor",
     "accessors.IEntityPlayerSPAccessor",
+    "accessors.IEntityRendererAccessor",
     "accessors.IMinecraftAccessor",
     "mixins.MixinFontRenderer",
     "mixins.MixinGuiContainer",

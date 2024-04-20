@@ -11,7 +11,7 @@ import me.odinclient.features.impl.floor7.RelicAura
 import me.odinclient.features.impl.floor7.p3.*
 import me.odinclient.features.impl.render.*
 import me.odinclient.features.impl.skyblock.*
-import me.odinclient.mixin.accessors.EntityRendererAccessor
+import me.odinclient.mixin.accessors.IEntityRendererAccessor
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.commands.registerCommands
@@ -46,7 +46,7 @@ class ModCore {
             autoSellCommand
         )
         FramebufferShader.setupCameraTransform =
-            { (mc.entityRenderer as? EntityRendererAccessor)?.invokeSetupCameraTransform(RenderUtils.partialTicks, 0) }
+            { (mc.entityRenderer as? IEntityRendererAccessor)?.invokeSetupCameraTransform(RenderUtils.partialTicks, 0) }
     }
 
     @EventHandler

@@ -1,5 +1,6 @@
 package me.odinclient.features.impl.floor7.p3
 
+import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -24,15 +25,29 @@ object TerminalAura : Module(
     private val onGround: Boolean by BooleanSetting("On Ground", true)
 
     private val clickClock = Clock(1000)
+    private val terminalEntityList = mutableListOf<EntityArmorStand>()
+
+    init {
+        onWorldLoad {
+            terminalEntityList.clear()
+        }
+    }
+
+    @SubscribeEvent
+    fun onEntityLoaded(event: PostEntityMetadata) {
+        if (DungeonUtils.getPhase() != Island.M7P3) return
+        val entity = (mc.theWorld.getEntityByID(event.packet.entityId))
+        if (entity !is EntityArmorStand || entity.name.noControlCodes != "Inactive Terminal") return
+        terminalEntityList.add(entity)
+    }
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         if (DungeonUtils.getPhase() != Island.M7P3 || mc.thePlayer.openContainer !is ContainerPlayer || (!mc.thePlayer.onGround && onGround) || !clickClock.hasTimePassed()) return
-        val terminal = mc.theWorld.loadedEntityList.filterIsInstance<EntityArmorStand>()
-            .filter { it.name.noControlCodes == "Inactive Terminal" }.firstOrNull {
-                mc.thePlayer.positionVector.addVec(y = mc.thePlayer.getEyeHeight())
-                    .distanceTo(Vec3(it.posX, it.posY + it.height / 2, it.posZ)) < 3.5
-            } ?: return
+        val terminal = terminalEntityList.firstOrNull {
+            mc.thePlayer.positionVector.addVec(y = mc.thePlayer.getEyeHeight())
+                .distanceTo(Vec3(it.posX, it.posY + it.height / 2, it.posZ)) < 3.5
+        } ?: return
         mc.thePlayer.sendQueue.addToSendQueue(C02PacketUseEntity(terminal, C02PacketUseEntity.Action.INTERACT))
         clickClock.update()
     }

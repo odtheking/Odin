@@ -1,6 +1,5 @@
 package me.odinclient.mixin.mixins;
 
-import me.odinclient.features.impl.floor7.p3.TerminalMove;
 import me.odinmain.events.impl.*;
 import me.odinmain.features.impl.floor7.p3.TerminalSolver;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -13,7 +12,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = GuiContainer.class, priority = 1)
 public class MixinGuiContainer {
@@ -68,11 +66,6 @@ public class MixinGuiContainer {
     @Inject(method = "onGuiClosed", at = @At("HEAD"))
     private void onGuiClosed(CallbackInfo ci) {
         MinecraftForge.EVENT_BUS.post(new GuiClosedEvent(gui));
-    }
-
-    @Inject(method = "checkHotbarKeys", at = @At("HEAD"), cancellable = true)
-    private void onCheckHotbarKeys(int keyCode, CallbackInfoReturnable<Boolean> cir) {
-        TerminalMove.INSTANCE.disableGuiHotbarKeysHook(cir);
     }
 
 }

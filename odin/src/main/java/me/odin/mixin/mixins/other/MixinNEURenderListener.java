@@ -23,7 +23,7 @@ public class MixinNEURenderListener {
     private void neuInvButtons(GuiScreenEvent.DrawScreenEvent.Pre event, CallbackInfo ci) {
         if (LeapMenu.INSTANCE.getEnabled() && mc.currentScreen instanceof GuiChest && ((GuiChest) mc.currentScreen).inventorySlots instanceof ContainerChest) {
             String guiName = ((ContainerChest) ((GuiChest) mc.currentScreen).inventorySlots).getLowerChestInventory().getDisplayName().getUnformattedText();
-            if (guiName .equals("Spirit Leap")) {
+            if (guiName.equals("Spirit Leap")) {
                 ci.cancel();
             }
         }
