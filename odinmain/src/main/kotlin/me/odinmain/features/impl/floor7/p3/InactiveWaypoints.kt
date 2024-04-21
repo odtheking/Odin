@@ -44,6 +44,10 @@ object InactiveWaypoints : Module(
                 it is EntityArmorStand && it.name.noControlCodes.containsOneOf("Inactive", "Not Activated", "CLICK HERE", ignoreCase = true)
             } ?: emptyList()
         }
+
+        onWorldLoad {
+            inactiveList = emptyList()
+        }
     }
 
     @SubscribeEvent

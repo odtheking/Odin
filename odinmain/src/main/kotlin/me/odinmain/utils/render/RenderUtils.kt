@@ -124,7 +124,6 @@ object RenderUtils {
 
     fun postDraw() {
         GlStateManager.disableBlend()
-        GlStateManager.enableLighting()
         GlStateManager.enableTexture2D()
     }
 

@@ -115,7 +115,8 @@ object ModuleManager {
         GoldorTimer,
         VisualWords,
         HidePlayers,
-        WarpCooldown
+        WarpCooldown,
+        CopyChat
     )
 
     init {
@@ -157,7 +158,7 @@ object ModuleManager {
     @SubscribeEvent
     fun onSendPacket(event: PacketSentEvent) {
         packetFunctions
-            .filter { it.type.isInstance(event.packet) }
+            .filter { it.type.isInstance(event.packet) && it.shouldRun.invoke() }
             .forEach { it.function(event.packet) }
     }
 

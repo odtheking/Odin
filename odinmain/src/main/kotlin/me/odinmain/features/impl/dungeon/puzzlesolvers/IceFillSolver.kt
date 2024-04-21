@@ -14,7 +14,6 @@ import me.odinmain.utils.render.RenderUtils.worldRenderer
 import me.odinmain.utils.skyblock.IceFillFloors.floors
 import me.odinmain.utils.skyblock.IceFillFloors.representativeFloors
 import me.odinmain.utils.skyblock.PlayerUtils.posFloored
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.getBlockIdAt
 import me.odinmain.utils.skyblock.isAir
 import me.odinmain.utils.skyblock.modMessage
@@ -40,7 +39,7 @@ object IceFillSolver {
     }
 
     fun onRenderWorldLast(color: Color) {
-        if (currentPatterns.size == 0 || rPos.size == 0 || DungeonUtils.currentRoomName != "Ice Fill") return
+        if (currentPatterns.size == 0 || rPos.size == 0 /*|| DungeonUtils.currentRoomName != "Ice Fill"*/) return
         val rotation = renderRotation ?: return
 
         GlStateManager.pushMatrix()
@@ -71,7 +70,7 @@ object IceFillSolver {
 
     @OptIn(DelicateCoroutinesApi::class)
     fun onClientTick(event: TickEvent.ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.END || mc.thePlayer == null || scanned || !DungeonUtils.inDungeons || DungeonUtils.currentRoomName != "Ice Fill") return
+        if (event.phase != TickEvent.Phase.END || mc.thePlayer == null || scanned /*|| !DungeonUtils.inDungeons || DungeonUtils.currentRoomName != "Ice Fill"*/) return
         val pos = posFloored
         if (!pos.y.equalsOneOf(70, 71, 72) || !getBlockIdAt(BlockPos(pos.x, pos.y - 1, pos.z)).equalsOneOf(79, 174)) return
         GlobalScope.launch {
@@ -81,12 +80,12 @@ object IceFillSolver {
             when (floorIndex) {
                 0 -> scanAllFloors(pos, rotation)
                 1 -> {
-                    val a = transform(Vec3i(-5, -1, 0), rotation)
-                    scanAllFloors(pos.addVec(a.x, a.y, a.z), rotation)
+                    if (!scan(pos, 1)) modMessage("§cFailed to scan floor 2 main")
+                    val a = transform(Vec3i(7, 1, 0), rotation)
+                    if (!scan(pos.addVec(a.x, a.y, a.z), 2)) modMessage("§cFailed to scan floor 3 main")
                 }
                 2 -> {
-                    val a = transform(Vec3i(-12, -2, 0), rotation)
-                    scanAllFloors(pos.addVec(a.x, a.y, a.z), rotation)
+                    if (!scan(pos, 2)) modMessage("§cFailed to scan floor 3 main")
                 }
             }
             scanned = true
@@ -94,13 +93,13 @@ object IceFillSolver {
     }
 
     private fun scanAllFloors(pos: Vec3i, rotation: Rotation) {
-        if (!scan(pos, pos.y - 70)) return modMessage("§cFailed to scan floor 0")
+        if (!scan(pos, pos.y - 70))  modMessage("§cFailed to scan floor 1")
 
         val a = transform(Vec3i(5, 1, 0), rotation)
-        if (!scan(pos.addVec(a.x, a.y, a.z), 1)) return modMessage("§cFailed to scan floor 1")
+        if (!scan(pos.addVec(a.x, a.y, a.z), 1)) modMessage("§cFailed to scan floor 2")
 
         val b = transform(Vec3i(12, 2, 0), rotation)
-        if (!scan(pos.addVec(b.x, b.y, b.z), 2)) return modMessage("§cFailed to scan floor 2")
+        if (!scan(pos.addVec(b.x, b.y, b.z), 2))  modMessage("§cFailed to scan floor 3")
     }
 
     private fun scan(pos: Vec3i, floorIndex: Int): Boolean {
@@ -130,7 +129,7 @@ object IceFillSolver {
         return when (rotation) {
             Rotation.EAST -> Vec3i(vec.x, vec.y, vec.z)
             Rotation.WEST -> Vec3i(-vec.x, vec.y, -vec.z)
-            Rotation.SOUTH -> Vec3i(vec.z, vec.y, vec.x)
+            Rotation.SOUTH -> Vec3i(-vec.z, vec.y, vec.x)
             else -> Vec3i(vec.z, vec.y, -vec.x)
         }
     }
@@ -148,7 +147,7 @@ object IceFillSolver {
         return when (rotation) {
             Rotation.EAST -> Vec3(vec.x.toDouble(), vec.y.toDouble(), vec.z.toDouble())
             Rotation.WEST -> Vec3(-vec.x.toDouble(), vec.y.toDouble(), -vec.z.toDouble())
-            Rotation.SOUTH -> Vec3(vec.z.toDouble(), vec.y.toDouble(), vec.x.toDouble())
+            Rotation.SOUTH -> Vec3(-vec.z.toDouble(), vec.y.toDouble(), vec.x.toDouble())
             else -> Vec3(vec.z.toDouble(), vec.y.toDouble(), -vec.x.toDouble())
         }
     }

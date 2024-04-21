@@ -44,6 +44,10 @@ object PuzzleSolvers : Module(
     val action: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
         IceFillSolver.reset()
     }.withDependency { iceFillSolver }
+
+    override fun onKeybind() {
+        IceFillSolver.reset()
+    }
     init {
         execute(500) {
             if (waterSolver) WaterSolver.scan()

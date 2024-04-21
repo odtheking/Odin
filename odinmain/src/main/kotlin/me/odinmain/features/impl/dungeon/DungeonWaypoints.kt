@@ -7,10 +7,7 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.ActionSetting
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
@@ -44,7 +41,7 @@ import org.lwjgl.opengl.GL11
  */
 object DungeonWaypoints : Module(
     name = "Dungeon Waypoints",
-    description = "Shows waypoints for dungeons.",
+    description = "Shows waypoints for dungeons. Currently it's quite buggy and doesn't work well with some rooms.",
     category = Category.DUNGEON,
     tag = TagType.NEW
 ) {
@@ -56,6 +53,7 @@ object DungeonWaypoints : Module(
     var useBlockSize: Boolean by BooleanSetting("Use block size", false, description = "Use the size of the block you click for waypoint size.")
     var size: Double by NumberSetting("Size", 1.0, .125, 1.0, increment = 0.01, description = "The size of the next waypoint you place.").withDependency { !useBlockSize }
     private val disableDepth: Boolean by BooleanSetting("Disable Depth", false, description = "Disables depth testing for waypoints.")
+    private val colorPallet: Int by SelectorSetting("Color pallet", "None", arrayListOf("None", "Aqua", "Magenta", "Yellow", "Lime"))
     private val resetButton: () -> Unit by ActionSetting("Reset Current Room") {
         val room = DungeonUtils.currentRoom ?: return@ActionSetting modMessage("Room not found!!!")
 
@@ -122,6 +120,15 @@ object DungeonWaypoints : Module(
             else AxisAlignedBB(.5 - (size / 2), .5 - (size / 2), .5 - (size / 2), .5 + (size / 2), .5 + (size / 2), .5 + (size / 2)).expand(0.002, 0.002, 0.002)
 
         val waypoints = DungeonWaypointConfig.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
+
+        val color = when (colorPallet) {
+            0 -> color
+            1 -> Color.CYAN
+            2 -> Color.MAGENTA
+            3 -> Color.YELLOW
+            4 -> Color.GREEN
+            else -> color
+        }
 
         if (mc.thePlayer.isSneaking) {
             GuiSign.setCallback { enteredText ->

@@ -27,6 +27,7 @@
     "accessors.IMinecraftAccessor",
     "mixins.MixinFontRenderer",
     "mixins.MixinGuiContainer",
+    "mixins.MixinGuiScreen",
     "mixins.MixinItemRenderer",
     "mixins.MixinLayerCape",
     "mixins.MixinMinecraft",
