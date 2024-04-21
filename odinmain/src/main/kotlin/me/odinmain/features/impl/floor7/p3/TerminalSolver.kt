@@ -10,6 +10,7 @@ import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.font.OdinFont
+import me.odinmain.utils.postAndCatch
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.mcText
 import me.odinmain.utils.render.translate
@@ -23,7 +24,6 @@ import net.minecraft.item.EnumDyeColor
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.server.S2DPacketOpenWindow
-import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -110,10 +110,10 @@ object TerminalSolver : Module(
             }
         }
         clicksNeeded = solution.size
-        MinecraftForge.EVENT_BUS.post(TerminalOpenedEvent(currentTerm, solution))
+        TerminalOpenedEvent(currentTerm, solution).postAndCatch()
     }
 
-    fun getShouldBlockWrong(): Boolean {
+    private fun getShouldBlockWrong(): Boolean {
         if (type != 2) return false
         return when (currentTerm) {
             1 -> removeWrongRubix
@@ -143,7 +143,7 @@ object TerminalSolver : Module(
                     val needed = solution.count { it == slot.slotIndex }
                     val text = if (needed < 3) needed.toString() else (needed - 5).toString()
                     if (type == 2 && removeWrongRubix) Gui.drawRect(x, y, x + 16, y + 16, if (needed < 3) rubixColor.rgba else oppositeRubixColor.rgba)
-                    mcText(text, x + 8f - OdinFont.getTextWidth(text, 8f) / 2, y + 9f, 1, textColor, shadow = textShadow, false)
+                    mcText(text, x + 8f - OdinFont.getTextWidth(text, 8f) / 2, y + 4.5, 1, textColor, shadow = textShadow, false)
                 }
                 2 -> {
                     val index = solution.indexOf(slot.slotIndex)
@@ -168,6 +168,12 @@ object TerminalSolver : Module(
     }
 
     @SubscribeEvent
+    fun drawSlot(event: DrawSlotEvent) {
+        if (getShouldBlockWrong() && enabled)
+            event.isCanceled = true
+    }
+
+    @SubscribeEvent
     fun onTooltip(event: ItemTooltipEvent) {
         if (!cancelToolTip || currentTerm == -1 || !enabled) return
         event.toolTip.clear()
@@ -175,7 +181,7 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun itemStack(event: DrawSlotOverlayEvent) {
-        if (type == 2 || currentTerm == -1 || !enabled) return
+        if (currentTerm == -1 || !enabled) return
         event.isCanceled = true
     }
 

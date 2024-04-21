@@ -1,6 +1,6 @@
 package me.odinmain.features.impl.floor7
 
-import me.odinmain.events.impl.ServerTickEvent
+import me.odinmain.events.impl.RealServerTick
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.HudSetting
@@ -36,10 +36,8 @@ object NecronDropTimer : Module(
     private var timer: Byte = 0
 
     @SubscribeEvent
-    fun onServerTick(event: ServerTickEvent) {
-        if (timer > 0) {
-            timer--
-        }
+    fun onServerTick(event: RealServerTick) {
+        if (timer > 0) timer--
     }
     init {
         onMessage("[BOSS] Necron: I'm afraid, your journey ends now.", false) {
