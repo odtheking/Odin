@@ -42,6 +42,7 @@ object TerminalSolver : Module(
 
     private val lockRubixSolution: Boolean by BooleanSetting("Lock Rubix Solution", false, description = "Locks the 'correct' color of the rubix terminal to the one that was scanned first, should make the solver less 'jumpy'.")
     private val cancelToolTip: Boolean by BooleanSetting("Stop Tooltips", default = true, description = "Stops rendering tooltips in terminals")
+    private val removeWrongPanes: Boolean by BooleanSetting("Stop Panes", true).withDependency { type == 2 }
     private val removeWrongRubix: Boolean by BooleanSetting("Stop Rubix", true).withDependency { type == 2 }
     private val removeWrongStartsWith: Boolean by BooleanSetting("Stop Starts With", true).withDependency { type == 2 }
     private val removeWrongSelect: Boolean by BooleanSetting("Stop Select", true).withDependency { type == 2 }
@@ -117,6 +118,7 @@ object TerminalSolver : Module(
     private fun getShouldBlockWrong(): Boolean {
         if (type != 2) return false
         return when (currentTerm) {
+            0 -> removeWrongPanes
             1 -> removeWrongRubix
             2 -> true
             3 -> removeWrongStartsWith
