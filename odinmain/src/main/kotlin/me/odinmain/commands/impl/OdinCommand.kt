@@ -78,9 +78,9 @@ val mainCommand = commodore("od", "odin", "odinclient") {
              §3- /od sendcoords §7» §8Sends coords in patcher's format.
              §3- /od ping §7» §8Sends your ping in chat.
              §3- /od tps §7» §8Sends the server's tps in chat.
-             §3- /od ep §7» §8Refills ender pearls up to 16
-             §3- /od ij §7» §8Refills inflatable jerrys up to 64
-             §3- /od sl §7» §8Refills spirit leaps up to 16
+             §3- /od ep §7» §8Refills ender pearls up to 16.
+             §3- /od ij §7» §8Refills inflatable Jerry's up to 64.
+             §3- /od sl §7» §8Refills spirit leaps up to 16.
              §3- /spcmd §7» §8Use /spcmd cmds for command list.
              §3- /visualwords §7» §8Command to replace words in the game.
              """.trimIndent()
