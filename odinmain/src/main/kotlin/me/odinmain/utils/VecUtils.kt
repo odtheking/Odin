@@ -341,14 +341,14 @@ fun Vec3.flooredVec(): Vec3 {
  * @param add Will determine the maximum bounds
  */
 fun BlockPos.toAABB(add: Double = 1.0): AxisAlignedBB {
-    return AxisAlignedBB(this.x.toDouble(), this.y.toDouble(), this.z.toDouble(), this.x + add, this.y + add, this.z + add).expand(0.01, 0.01, 0.01)
+    return AxisAlignedBB(this.x.toDouble(), this.y.toDouble(), this.z.toDouble(), this.x + add, this.y + add, this.z + add).expand(0.002, 0.002, 0.002)
 }
 
 /**
  * @param add Will determine the maximum bounds
  */
 fun Vec3.toAABB(add: Double = 1.0): AxisAlignedBB {
-    return AxisAlignedBB(this.xCoord, this.yCoord, this.zCoord, this.xCoord + add, this.yCoord + add, this.zCoord + add).expand(0.01, 0.01, 0.01)
+    return AxisAlignedBB(this.xCoord, this.yCoord, this.zCoord, this.xCoord + add, this.yCoord + add, this.zCoord + add).expand(0.002, 0.002, 0.002)
 }
 
 

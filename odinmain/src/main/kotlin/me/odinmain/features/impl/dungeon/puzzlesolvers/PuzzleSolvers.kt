@@ -59,8 +59,7 @@ object PuzzleSolvers : Module(
 
         onWorldLoad {
             WaterSolver.reset()
-            TPMaze.portals = setOf()
-            TPMaze.correctPortals = listOf()
+            TPMaze.reset()
             TicTacToe.reset()
             IceFillSolver.reset()
         }
