@@ -1,7 +1,6 @@
 package me.odinclient.mixin.mixins;
 
 import me.odinmain.events.impl.*;
-import me.odinmain.features.impl.floor7.p3.TerminalSolver;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
@@ -52,13 +51,6 @@ public abstract class MixinGuiContainer {
                 if (!this.isMouseOverSlot(slot, mouseX, mouseY) || !slot.canBeHovered()) continue;
                 this.theSlot = slot;
             }
-        }
-    }
-
-    @Inject(method = "drawSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/RenderItem;renderItemAndEffectIntoGUI(Lnet/minecraft/item/ItemStack;II)V"), cancellable = true)
-    private void size(Slot slotIn, CallbackInfo ci) {
-        if (TerminalSolver.INSTANCE.getShouldBlockWrong() && slotIn.slotNumber <= gui.inventorySlots.inventorySlots.size() - 37) {
-            ci.cancel();
         }
     }
 

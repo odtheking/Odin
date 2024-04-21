@@ -9,8 +9,9 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.SelectorSetting
-import me.odinmain.font.OdinFont
+import me.odinmain.utils.postAndCatch
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.getMCTextWidth
 import me.odinmain.utils.render.mcText
 import me.odinmain.utils.render.translate
 import me.odinmain.utils.skyblock.modMessage
@@ -23,7 +24,6 @@ import net.minecraft.item.EnumDyeColor
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.server.S2DPacketOpenWindow
-import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -44,12 +44,14 @@ object TerminalSolver : Module(
 
     private val lockRubixSolution: Boolean by BooleanSetting("Lock Rubix Solution", false, description = "Locks the 'correct' color of the rubix terminal to the one that was scanned first, should make the solver less 'jumpy'.")
     private val cancelToolTip: Boolean by BooleanSetting("Stop Tooltips", default = true, description = "Stops rendering tooltips in terminals")
+    private val removeWrongPanes: Boolean by BooleanSetting("Stop Panes", true).withDependency { type == 2 }
     private val removeWrongRubix: Boolean by BooleanSetting("Stop Rubix", true).withDependency { type == 2 }
     private val removeWrongStartsWith: Boolean by BooleanSetting("Stop Starts With", true).withDependency { type == 2 }
     private val removeWrongSelect: Boolean by BooleanSetting("Stop Select", true).withDependency { type == 2 }
     private val textShadow: Boolean by BooleanSetting("Shadow", true, description = "Adds a shadow to the text")
     private val wrongColor: Color by ColorSetting("Wrong Color", Color(45, 45, 45), true).withDependency { type == 2 }
     private val textColor: Color by ColorSetting("Text Color", Color(220, 220, 220), true)
+    private val panesColor: Color by ColorSetting("Panes Color", Color(0, 170, 170), true)
     private val rubixColor: Color by ColorSetting("Rubix Color", Color(0, 170, 170), true)
     private val oppositeRubixColor: Color by ColorSetting("Negative Rubix Color", Color(170, 85, 0), true)
     private val orderColor: Color by ColorSetting("Order Color 1", Color(0, 170, 170, 1f), true)
@@ -112,12 +114,13 @@ object TerminalSolver : Module(
             }
         }
         clicksNeeded = solution.size
-        MinecraftForge.EVENT_BUS.post(TerminalOpenedEvent(currentTerm, solution))
+        TerminalOpenedEvent(currentTerm, solution).postAndCatch()
     }
 
-    fun getShouldBlockWrong(): Boolean {
+    private fun getShouldBlockWrong(): Boolean {
         if (type != 2) return false
         return when (currentTerm) {
+            0 -> removeWrongPanes
             1 -> removeWrongRubix
             2 -> true
             3 -> removeWrongStartsWith
@@ -141,11 +144,12 @@ object TerminalSolver : Module(
             val x = slot.xDisplayPosition
             val y = slot.yDisplayPosition
             when (currentTerm) {
+                0 -> Gui.drawRect(x, y, x + 16, y + 16, panesColor.rgba)
                 1 -> {
                     val needed = solution.count { it == slot.slotIndex }
                     val text = if (needed < 3) needed.toString() else (needed - 5).toString()
                     if (type == 2 && removeWrongRubix) Gui.drawRect(x, y, x + 16, y + 16, if (needed < 3) rubixColor.rgba else oppositeRubixColor.rgba)
-                    mcText(text, x + 8f - OdinFont.getTextWidth(text, 8f) / 2, y + 9f, 1, textColor, shadow = textShadow, false)
+                    mcText(text, x + 8f - getMCTextWidth(text) / 2, y + 4.5, 1, textColor, shadow = textShadow, false)
                 }
                 2 -> {
                     val index = solution.indexOf(slot.slotIndex)
@@ -158,7 +162,7 @@ object TerminalSolver : Module(
                         Gui.drawRect(x, y, x + 16, y + 16, color)
                     }
                     val amount = slot.stack?.stackSize ?: 0
-                    mcText(amount.toString(), x + 8.5f - mc.fontRendererObj.getStringWidth(amount.toString()) / 2, y + 4.5f, 1, textColor, shadow = textShadow, false)
+                    mcText(amount.toString(), x + 8.5f - getMCTextWidth(amount.toString()) / 2, y + 4.5f, 1, textColor, shadow = textShadow, false)
 
                 }
                 3 -> Gui.drawRect(x, y, x + 16, y + 16, startsWithColor.rgba)
@@ -171,6 +175,12 @@ object TerminalSolver : Module(
     }
 
     @SubscribeEvent
+    fun drawSlot(event: DrawSlotEvent) {
+        if (getShouldBlockWrong() && enabled)
+            event.isCanceled = true
+    }
+
+    @SubscribeEvent
     fun onTooltip(event: ItemTooltipEvent) {
         if (!cancelToolTip || currentTerm == -1 || !enabled) return
         event.toolTip.clear()
@@ -178,7 +188,7 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun itemStack(event: DrawSlotOverlayEvent) {
-        if (type == 2 || currentTerm == -1 || !enabled) return
+        if (currentTerm == -1 || !enabled) return
         event.isCanceled = true
     }
 

@@ -17,6 +17,7 @@ import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.itemID
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.item.EntityEnderCrystal
@@ -91,7 +92,7 @@ object Triggerbot : Module(
     fun onClientTickEvent(event: TickEvent.ClientTickEvent) {
         if (!relicTriggerBot || !tbClock.hasTimePassed()) return
         val obj = mc.objectMouseOver ?: return
-        if (obj.entityHit is EntityArmorStand && obj.entityHit?.inventory?.get(4)?.displayName in cauldronMap.keys) {
+        if (obj.entityHit is EntityArmorStand && obj.entityHit?.inventory?.get(4)?.itemID in cauldronMap.keys) {
             PlayerUtils.rightClick()
             tbClock.update()
         }

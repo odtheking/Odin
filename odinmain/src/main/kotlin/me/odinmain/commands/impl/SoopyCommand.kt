@@ -1,8 +1,9 @@
 package me.odinmain.commands.impl
 
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
-import me.odinmain.OdinMain.scope
 import me.odinmain.commands.commodore
 import me.odinmain.utils.fetchURLData
 import me.odinmain.utils.skyblock.modMessage
@@ -13,6 +14,7 @@ val commands = listOf(
     "pet", "nucleus"
 )
 
+@OptIn(DelicateCoroutinesApi::class)
 val soopyCommand = commodore("soopycmd", "spcmd", "spc") {
     literal("help").runs {
         modMessage("Available commands for /spcmd:\n ${commands.joinToString()}")
@@ -28,7 +30,7 @@ val soopyCommand = commodore("soopycmd", "spcmd", "spc") {
         val url = "https://soopy.dev/api/soopyv2/botcommand?m=$command&u=$targetUser"
 
         modMessage("Running command...")
-        scope.launch { modMessage(fetchURLData(url)) }
+        GlobalScope.launch { modMessage(fetchURLData(url)) }
     }.suggests("command", commands)
 }
 
