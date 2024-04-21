@@ -35,6 +35,8 @@ object TerminalSolver : Module(
     description = "Renders solution of terminals in f7/m7",
     category = Category.FLOOR7
 ) {
+
+    private val customGui: Boolean by BooleanSetting("Custom Gui", false, description = "Cancels rendering of the original terminal gui and renders a custom one")
     private val customSizeToggle: Boolean by BooleanSetting("Custom Size Toggle", false ,description = "Toggles custom size of the terminal")
     private val customSize: Int by NumberSetting("Custom Terminal Size", 3, 1.0, 4.0, 1.0, description = "Custom size of the terminal").withDependency { customSizeToggle }
     private val defaultSize: Int by NumberSetting("Default Terminal Size", 2, 1.0, 4.0, 1.0, description = "Default size of the terminal").withDependency { customSizeToggle }
@@ -165,6 +167,7 @@ object TerminalSolver : Module(
         }
         translate(0f, 0f, -zLevel)
         GlStateManager.popMatrix()
+        if (customGui) event.isCanceled = true
     }
 
     @SubscribeEvent

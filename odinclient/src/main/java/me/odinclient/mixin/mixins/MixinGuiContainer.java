@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = GuiContainer.class, priority = 1)
-public class MixinGuiContainer {
+public abstract class MixinGuiContainer {
 
     @Unique
     private final GuiContainer gui = (GuiContainer) (Object) this;
@@ -30,6 +30,9 @@ public class MixinGuiContainer {
 
     @Shadow protected int guiTop;
 
+    @Shadow private Slot theSlot;
+
+    @Shadow protected abstract boolean isMouseOverSlot(Slot slotIn, int mouseX, int mouseY);
 
     @Inject(method = "drawSlot", at = @At("HEAD"), cancellable = true)
     private void onDrawSlot(Slot slotIn, CallbackInfo ci) {
@@ -40,8 +43,16 @@ public class MixinGuiContainer {
     @Inject(method = "drawScreen", at = @At(value = "HEAD"), cancellable = true)
     private void startDrawScreen(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
         DrawGuiContainerScreenEvent event = new DrawGuiContainerScreenEvent(gui.inventorySlots, gui, this.xSize, this.ySize, guiLeft, guiTop);
-        if (MinecraftForge.EVENT_BUS.post(event))
+        if (MinecraftForge.EVENT_BUS.post(event)) {
             ci.cancel();
+
+            this.theSlot = null;
+            for (int i = 0; i < this.inventorySlots.inventorySlots.size(); ++i) {
+                Slot slot = this.inventorySlots.inventorySlots.get(i);
+                if (!this.isMouseOverSlot(slot, mouseX, mouseY) || !slot.canBeHovered()) continue;
+                this.theSlot = slot;
+            }
+        }
     }
 
     @Inject(method = "drawSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/RenderItem;renderItemAndEffectIntoGUI(Lnet/minecraft/item/ItemStack;II)V"), cancellable = true)
