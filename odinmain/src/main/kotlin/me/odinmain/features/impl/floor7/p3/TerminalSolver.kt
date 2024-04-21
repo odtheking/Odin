@@ -9,9 +9,9 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.SelectorSetting
-import me.odinmain.font.OdinFont
 import me.odinmain.utils.postAndCatch
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.getMCTextWidth
 import me.odinmain.utils.render.mcText
 import me.odinmain.utils.render.translate
 import me.odinmain.utils.skyblock.modMessage
@@ -48,6 +48,7 @@ object TerminalSolver : Module(
     private val textShadow: Boolean by BooleanSetting("Shadow", true, description = "Adds a shadow to the text")
     private val wrongColor: Color by ColorSetting("Wrong Color", Color(45, 45, 45), true).withDependency { type == 2 }
     private val textColor: Color by ColorSetting("Text Color", Color(220, 220, 220), true)
+    private val panesColor: Color by ColorSetting("Panes Color", Color(0, 170, 170), true)
     private val rubixColor: Color by ColorSetting("Rubix Color", Color(0, 170, 170), true)
     private val oppositeRubixColor: Color by ColorSetting("Negative Rubix Color", Color(170, 85, 0), true)
     private val orderColor: Color by ColorSetting("Order Color 1", Color(0, 170, 170, 1f), true)
@@ -139,11 +140,12 @@ object TerminalSolver : Module(
             val x = slot.xDisplayPosition
             val y = slot.yDisplayPosition
             when (currentTerm) {
+                0 -> Gui.drawRect(x, y, x + 16, y + 16, panesColor.rgba)
                 1 -> {
                     val needed = solution.count { it == slot.slotIndex }
                     val text = if (needed < 3) needed.toString() else (needed - 5).toString()
                     if (type == 2 && removeWrongRubix) Gui.drawRect(x, y, x + 16, y + 16, if (needed < 3) rubixColor.rgba else oppositeRubixColor.rgba)
-                    mcText(text, x + 8f - OdinFont.getTextWidth(text, 8f) / 2, y + 4.5, 1, textColor, shadow = textShadow, false)
+                    mcText(text, x + 8f - getMCTextWidth(text) / 2, y + 4.5, 1, textColor, shadow = textShadow, false)
                 }
                 2 -> {
                     val index = solution.indexOf(slot.slotIndex)
@@ -156,7 +158,7 @@ object TerminalSolver : Module(
                         Gui.drawRect(x, y, x + 16, y + 16, color)
                     }
                     val amount = slot.stack?.stackSize ?: 0
-                    mcText(amount.toString(), x + 8.5f - mc.fontRendererObj.getStringWidth(amount.toString()) / 2, y + 4.5f, 1, textColor, shadow = textShadow, false)
+                    mcText(amount.toString(), x + 8.5f - getMCTextWidth(amount.toString()) / 2, y + 4.5f, 1, textColor, shadow = textShadow, false)
 
                 }
                 3 -> Gui.drawRect(x, y, x + 16, y + 16, startsWithColor.rgba)
