@@ -4,11 +4,10 @@ import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.HudSetting
-import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.getTextWidth
-import me.odinmain.utils.render.text
+import me.odinmain.utils.render.getMCTextWidth
+import me.odinmain.utils.render.mcText
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object NecronDropTimer : Module(
@@ -18,11 +17,11 @@ object NecronDropTimer : Module(
 ) {
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {
-            text("§4Necron dropping in §a65", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
-            getTextWidth("Necron dropping in 65", 12f) + 2f to 16f
+            mcText("Necron dropping in §a65", 1f, 1f, 2, Color.DARK_RED, shadow = true ,center = false)
+            getMCTextWidth("Necron dropping in 65") * 2 + 2f to 16f
         } else if (timer > 0) {
-            text("§4Necron dropping in ${colorizeTime(timer)}$timer", 1f, 9f, Color.WHITE,12f, OdinFont.REGULAR, shadow = true)
-            getTextWidth("Necron dropping in $timer", 12f) + 2f to 12f
+            mcText("§4Necron dropping in ${colorizeTime(timer)}$timer", 1f, 1f, 2, Color.DARK_RED, shadow = true ,center = false)
+            getMCTextWidth("Necron dropping in 65") * 2 + 2f to 16f
         } else 0f to 0f
     }
 

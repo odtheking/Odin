@@ -25,8 +25,8 @@ object DeployableTimer : Module(
     private val firework = Item.getByNameOrId("minecraft:fireworks")
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {
-            mcText("§l§5SOS Flare", 65f, 15f, 1.2 ,Color.WHITE)
-            mcText("§e179s", 60f, 30f, 1.2 ,Color.WHITE)
+            mcText("§l§5SOS Flare", 30, 15, 1.2 ,Color.WHITE, center = false)
+            mcText("§e179s", 30, 30, 1.2 ,Color.WHITE, center = false)
             ItemStack(firework).drawItem(x= -20f, y= -8f, scale = 4f)
             getMCTextWidth("SOS Flare") + 45f to 52f
         } else {
@@ -38,8 +38,8 @@ object DeployableTimer : Module(
                 currentDeployables.sortByDescending { dep -> dep.priority }
                 return@HudSetting 0f to 0f
             }
-            mcText(d.renderName, 65f, 15f, 1.2 ,Color.WHITE)
-            mcText("§e${timeLeft}s", 60f, 30f, 1.2 ,Color.WHITE)
+            mcText(d.renderName, 30, 15f, 1.2 ,Color.WHITE, center = false)
+            mcText("§e${timeLeft}s", 30, 30f, 1.2 ,Color.WHITE, center = false)
             d.entity.inventory?.get(4)?.drawItem(x= -12f, y= -8f, scale = 4f)
             getMCTextWidth(d.renderName.noControlCodes) + 45f to 52f
         }

@@ -34,13 +34,13 @@ object BlessingDisplay : Module(
 
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {
-            mcText("Power §a29", 25f, 5f, 1, powerColor)
-            mcText("Life §a29", 20f, 20f, 1, lifeColor)
-            getMCTextWidth("Power: 29") + 2f to 33f
+            mcText("Power §a29", 0f, 0f, 1, powerColor, center = false)
+            mcText("Life §a29", 0f, 10f, 1, lifeColor, center = false)
+            getMCTextWidth("Power: 29").toFloat() to 18f
         } else {
             Blessings.entries.forEachIndexed { index, blessing ->
                 if (blessing.current == 0 || !blessing.enabled.invoke()) return@forEachIndexed
-                mcText("${blessing.displayString} §a${blessing.current}", 25f - 5 * index, 5f + 15 * (index - 1), 1, blessing.color)
+                mcText("${blessing.displayString} §a${blessing.current}", 0f, 5f + 10 * (index - 1), 1, blessing.color, center = false)
             }
             getMCTextWidth("Power: 29") + 2f to 20f + 15 * max(Blessings.entries.count { it.current > 0 }, 1)
         }

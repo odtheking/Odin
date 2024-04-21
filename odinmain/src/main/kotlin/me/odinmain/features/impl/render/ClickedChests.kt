@@ -55,7 +55,7 @@ object ClickedChests : Module(
             val pos = packet.position
             val blockState = mc.theWorld?.getBlockState(pos)
             val block = blockState?.block ?: return@onPacket
-            if (!DungeonUtils.isSecret(blockState, pos) || chests.any { it.block == block }) return@onPacket
+            if (!DungeonUtils.isSecret(blockState, pos) || chests.any{ it.pos == pos }) return@onPacket
 
             chests.add(Chest(block, pos, System.currentTimeMillis()))
         }

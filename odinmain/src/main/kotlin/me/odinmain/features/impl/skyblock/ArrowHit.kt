@@ -30,10 +30,10 @@ object ArrowHit : Module(
 
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 2f, false) {
         if (it) {
-            mcText("156", 1f, 1f, 1f, Color.WHITE)
+            mcText("156", 0f, 2f, 1f, Color.WHITE, center = false)
             getMCTextWidth("156").toFloat() to 12f
         } else {
-            mcText("$arrowCount", 1f, 1f, 1f, Color.WHITE)
+            mcText("$arrowCount", 0f, 2f, 1f, Color.WHITE, center = false)
             getMCTextWidth("$arrowCount").toFloat() to 12f
         }
     }

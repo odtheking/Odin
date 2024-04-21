@@ -2,6 +2,7 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import me.odinmain.OdinMain
 import me.odinmain.events.impl.ClickEvent
+import me.odinmain.events.impl.EnteredDungeonRoomEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.puzzlesolvers.WaterSolver.waterInteract
@@ -84,5 +85,9 @@ object PuzzleSolvers : Module(
     @SubscribeEvent
     fun onRightClick(event: ClickEvent.RightClickEvent) {
         if (tttSolver) TicTacToe.tttRightClick(event)
+    }
+
+    fun onRoomEnter(event: EnteredDungeonRoomEvent) {
+        BlazeSolver.getRoomType()
     }
 }

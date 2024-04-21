@@ -109,9 +109,16 @@ fun textAndWidth(text: String, x: Float, y: Float, color: Color, size: Float, ty
     return getTextWidth(text, size)
 }
 
+fun mcTextAndWidth(text: String, x: Number, y: Number, scale: Number, color: Color, shadow: Boolean = true, center: Boolean = true): Float {
+    mcText(text, x, y, scale, color, shadow, center)
+    return getMCTextWidth(text).toFloat()
+}
+
 fun getMCTextWidth(text: String) = mc.fontRendererObj.getStringWidth(text)
 
 fun getTextWidth(text: String, size: Float) = OdinFont.getTextWidth(text, size)
+
+fun getMCTextHeight() = mc.fontRendererObj.FONT_HEIGHT
 
 fun getTextHeight(text: String, size: Float) = OdinFont.getTextHeight(text, size)
 

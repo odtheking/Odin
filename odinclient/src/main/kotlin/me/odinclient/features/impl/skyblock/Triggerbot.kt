@@ -17,7 +17,6 @@ import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.itemID
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.item.EntityEnderCrystal
@@ -62,7 +61,7 @@ object Triggerbot : Module(
         "BLUE_KING_RELIC" to Vec2(59, 44)
     )
 
-    private val relicTriggerBot: Boolean by BooleanSetting("Triggerbot", false, description = "Automatically clicks the correct relic in the cauldron.")
+    private val relicTriggerBot: Boolean by BooleanSetting("Relic triggerbot", false, description = "Automatically clicks the correct relic in the cauldron.")
     private val tbClock = Clock(1000)
 
     @SubscribeEvent
@@ -92,7 +91,7 @@ object Triggerbot : Module(
     fun onClientTickEvent(event: TickEvent.ClientTickEvent) {
         if (!relicTriggerBot || !tbClock.hasTimePassed()) return
         val obj = mc.objectMouseOver ?: return
-        if (obj.entityHit is EntityArmorStand && obj.entityHit?.inventory?.get(4)?.itemID in cauldronMap.keys) {
+        if (obj.entityHit is EntityArmorStand && obj.entityHit?.inventory?.get(4)?.displayName in cauldronMap.keys) {
             PlayerUtils.rightClick()
             tbClock.update()
         }

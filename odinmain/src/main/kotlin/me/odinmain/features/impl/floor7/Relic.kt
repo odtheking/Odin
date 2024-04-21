@@ -24,7 +24,7 @@ object Relic {
     private val orangePB = +NumberSetting("Orange PB", 999.0, increment = 0.001, hidden = true)
     private val redPB = +NumberSetting("Red PB", 999.0, increment = 0.001, hidden = true)
 
-    val currentRelic get() = mc.thePlayer.heldItem.itemID
+    val currentRelic get() = mc.thePlayer?.heldItem?.itemID ?: ""
 
 
     enum class Relics (
