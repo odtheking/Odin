@@ -1,9 +1,11 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
+import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.mazeColorMultiple
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.mazeColorOne
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.mazeColorVisited
+import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.solutionThroughWalls
 import me.odinmain.utils.isXZInterceptable
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.Renderer
@@ -57,7 +59,7 @@ object TPMaze {
         val color = if (correctPortals.size == 1) mazeColorOne else mazeColorMultiple
         correctPortals.forEach {
             if (visited.contains(it) && correctPortals.size != 1) return@forEach
-            Renderer.drawBox(RenderUtils.getBlockAABB(Blocks.end_portal_frame, it).expand(0.002, 0.002, 0.002), color, outlineAlpha = 0, fillAlpha = color.alpha, depth = true)
+            Renderer.drawBox(RenderUtils.getBlockAABB(Blocks.end_portal_frame, it).expand(0.002, 0.002, 0.002), color, outlineAlpha = 0, fillAlpha = color.alpha, depth = !(solutionThroughWalls && correctPortals.size == 1 && !OdinMain.onLegitVersion))
         }
         visited.forEach {
             Renderer.drawBox(RenderUtils.getBlockAABB(Blocks.end_portal_frame, it).expand(0.002, 0.002, 0.002), mazeColorVisited, outlineAlpha = 0, fillAlpha = mazeColorVisited.alpha, depth = true)
