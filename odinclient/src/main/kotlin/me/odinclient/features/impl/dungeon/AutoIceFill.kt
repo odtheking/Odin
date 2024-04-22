@@ -6,7 +6,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.odinclient.utils.skyblock.PlayerUtils.clipTo
 import me.odinclient.utils.waitUntilPacked
-import me.odinmain.OdinMain.scope
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.puzzlesolvers.IceFillSolver
@@ -81,6 +80,7 @@ object AutoIceFill: Module(
         clipToNext(pos, rotation, bx2, bz2, floorIndex + 1)
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     private fun clipToNext(pos: Vec3, rotation: Rotation, bx: Int, bz: Int, floorIndex: Int) {
         val x = pos.xCoord
         val y = pos.yCoord
@@ -92,7 +92,7 @@ object AutoIceFill: Module(
             else -> Pair(0f, -0.5f)
         }
         clipTo(x + bx + nx, y + 1.5, z + bz + ny)
-        scope.launch {
+        GlobalScope.launch {
             delay(100)
             clipTo(x + bx + nx * 2, y + 2, z + bz + ny * 2)
             delay(150)

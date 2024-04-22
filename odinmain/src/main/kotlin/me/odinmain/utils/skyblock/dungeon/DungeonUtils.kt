@@ -27,7 +27,6 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.ResourceLocation
 import net.minecraft.world.WorldSettings
-import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.entity.living.LivingEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -117,7 +116,7 @@ object DungeonUtils {
             devMessage("Found rotation ${it.room.rotation}")
         }
         setWaypoints()
-        MinecraftForge.EVENT_BUS.post(EnteredDungeonRoomEvent())
+        EnteredDungeonRoomEvent().postAndCatch()
     }
 
     /**

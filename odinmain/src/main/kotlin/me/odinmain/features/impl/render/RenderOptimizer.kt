@@ -115,23 +115,20 @@ object RenderOptimizer : Module(
     private fun handleWitherMiner(entity: Entity) {
         val customName = entity.customNameTag.noControlCodes
         if (entity !is EntityArmorStand || !customName.hasWitherMinerName()) return
-
-        mc.theWorld.removeEntity(entity)
+        entity.alwaysRenderNameTag = false
     }
 
     private fun handleTerracota(entity: Entity) {
         val customName = entity.customNameTag.noControlCodes
-        if (customName.contains("Terracotta ")) {
-            mc.theWorld.removeEntity(entity)
-        }
+        if (customName.contains("Terracotta "))
+            entity.alwaysRenderNameTag = false
     }
 
     private fun hideNonStarredMob(entity: Entity) {
         if (!DungeonUtils.inDungeons) return
         val name = entity.customNameTag
-        if (!name.startsWith("§6✯ ") && name.contains("§c❤") && dungeonMobSpawns.any { it in name }) {
-            mc.theWorld.removeEntity(entity)
-        }
+        if (!name.startsWith("§6✯ ") && name.contains("§c❤") && dungeonMobSpawns.any { it in name })
+            entity.alwaysRenderNameTag = false
     }
 
     private fun String.hasWitherMinerName(): Boolean {

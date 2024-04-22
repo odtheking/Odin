@@ -69,7 +69,7 @@ object ModuleManager {
         CustomHighlight,
         CPSDisplay,
         DragonHitboxes,
-        GyroRange,
+        GyroWand,
         NameChanger,
         NoCursorReset,
         PersonalDragon,
@@ -111,12 +111,13 @@ object ModuleManager {
         KuudraRequeue,
         EnrageDisplay,
         BlockOverlay,
-        ItemsHighlight,
+        //ItemsHighlight,
         GoldorTimer,
         VisualWords,
         HidePlayers,
         WarpCooldown,
-        PetKeybinds
+        PetKeybinds,
+        CopyChat
     )
 
     init {
@@ -158,7 +159,7 @@ object ModuleManager {
     @SubscribeEvent
     fun onSendPacket(event: PacketSentEvent) {
         packetFunctions
-            .filter { it.type.isInstance(event.packet) }
+            .filter { it.type.isInstance(event.packet) && it.shouldRun.invoke() }
             .forEach { it.function(event.packet) }
     }
 

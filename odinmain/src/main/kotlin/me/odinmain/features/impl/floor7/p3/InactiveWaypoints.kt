@@ -41,8 +41,12 @@ object InactiveWaypoints : Module(
         execute(500) {
             if (DungeonUtils.getPhase() != Island.M7P3) return@execute
             inactiveList = mc.theWorld?.loadedEntityList?.filter {
-                it is EntityArmorStand && it.name.noControlCodes.containsOneOf("Inactive", "Not Activated", ignoreCase = true)
+                it is EntityArmorStand && it.name.noControlCodes.containsOneOf("Inactive", "Not Activated", "CLICK HERE", ignoreCase = true)
             } ?: emptyList()
+        }
+
+        onWorldLoad {
+            inactiveList = emptyList()
         }
     }
 

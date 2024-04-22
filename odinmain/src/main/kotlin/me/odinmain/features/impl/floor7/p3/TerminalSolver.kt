@@ -1,9 +1,6 @@
 package me.odinmain.features.impl.floor7.p3
 
-import me.odinmain.events.impl.ChatPacketEvent
-import me.odinmain.events.impl.DrawGuiContainerScreenEvent
-import me.odinmain.events.impl.GuiLoadedEvent
-import me.odinmain.events.impl.TerminalOpenedEvent
+import me.odinmain.events.impl.*
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.AlwaysActive
@@ -12,20 +9,21 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.SelectorSetting
-import me.odinmain.font.OdinFont
+import me.odinmain.utils.postAndCatch
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.text
+import me.odinmain.utils.render.getMCTextWidth
+import me.odinmain.utils.render.mcText
 import me.odinmain.utils.render.translate
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.unformattedName
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest
+import net.minecraft.inventory.ContainerPlayer
 import net.minecraft.item.EnumDyeColor
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.server.S2DPacketOpenWindow
-import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -37,6 +35,8 @@ object TerminalSolver : Module(
     description = "Renders solution of terminals in f7/m7",
     category = Category.FLOOR7
 ) {
+
+    private val customGui: Boolean by BooleanSetting("Custom Gui", false, description = "Cancels rendering of the original terminal gui and renders a custom one")
     private val customSizeToggle: Boolean by BooleanSetting("Custom Size Toggle", false ,description = "Toggles custom size of the terminal")
     private val customSize: Int by NumberSetting("Custom Terminal Size", 3, 1.0, 4.0, 1.0, description = "Custom size of the terminal").withDependency { customSizeToggle }
     private val defaultSize: Int by NumberSetting("Default Terminal Size", 2, 1.0, 4.0, 1.0, description = "Default size of the terminal").withDependency { customSizeToggle }
@@ -44,13 +44,14 @@ object TerminalSolver : Module(
 
     private val lockRubixSolution: Boolean by BooleanSetting("Lock Rubix Solution", false, description = "Locks the 'correct' color of the rubix terminal to the one that was scanned first, should make the solver less 'jumpy'.")
     private val cancelToolTip: Boolean by BooleanSetting("Stop Tooltips", default = true, description = "Stops rendering tooltips in terminals")
+    private val removeWrongPanes: Boolean by BooleanSetting("Stop Panes", true).withDependency { type == 2 }
     private val removeWrongRubix: Boolean by BooleanSetting("Stop Rubix", true).withDependency { type == 2 }
     private val removeWrongStartsWith: Boolean by BooleanSetting("Stop Starts With", true).withDependency { type == 2 }
     private val removeWrongSelect: Boolean by BooleanSetting("Stop Select", true).withDependency { type == 2 }
     private val textShadow: Boolean by BooleanSetting("Shadow", true, description = "Adds a shadow to the text")
-    private val fontType: Int by SelectorSetting("Font", "Smooth", arrayListOf("Smooth", "Minecraft"), description = "The font to use")
     private val wrongColor: Color by ColorSetting("Wrong Color", Color(45, 45, 45), true).withDependency { type == 2 }
     private val textColor: Color by ColorSetting("Text Color", Color(220, 220, 220), true)
+    private val panesColor: Color by ColorSetting("Panes Color", Color(0, 170, 170), true)
     private val rubixColor: Color by ColorSetting("Rubix Color", Color(0, 170, 170), true)
     private val oppositeRubixColor: Color by ColorSetting("Negative Rubix Color", Color(170, 85, 0), true)
     private val orderColor: Color by ColorSetting("Order Color 1", Color(0, 170, 170, 1f), true)
@@ -60,8 +61,9 @@ object TerminalSolver : Module(
     private val selectColor: Color by ColorSetting("Select Color", Color(0, 170, 170), true)
 
     private val zLevel: Float get() = if (type == 1 && currentTerm != 1 && currentTerm != 2) 200f else 999f
-    var openedTerminalTime = 0L
     private var lastRubixSolution: Int? = null
+    var openedTerminalTime = 0L
+    var clicksNeeded = -1
 
     val terminalNames = listOf(
         "Correct all the panes!",
@@ -111,12 +113,14 @@ object TerminalSolver : Module(
                 solveSelect(items, colorNeeded.lowercase())
             }
         }
-        MinecraftForge.EVENT_BUS.post(TerminalOpenedEvent(currentTerm, solution))
+        clicksNeeded = solution.size
+        TerminalOpenedEvent(currentTerm, solution).postAndCatch()
     }
 
-    fun getShouldBlockWrong(): Boolean {
+    private fun getShouldBlockWrong(): Boolean {
         if (type != 2) return false
         return when (currentTerm) {
+            0 -> removeWrongPanes
             1 -> removeWrongRubix
             2 -> true
             3 -> removeWrongStartsWith
@@ -140,14 +144,12 @@ object TerminalSolver : Module(
             val x = slot.xDisplayPosition
             val y = slot.yDisplayPosition
             when (currentTerm) {
+                0 -> Gui.drawRect(x, y, x + 16, y + 16, panesColor.rgba)
                 1 -> {
                     val needed = solution.count { it == slot.slotIndex }
                     val text = if (needed < 3) needed.toString() else (needed - 5).toString()
                     if (type == 2 && removeWrongRubix) Gui.drawRect(x, y, x + 16, y + 16, if (needed < 3) rubixColor.rgba else oppositeRubixColor.rgba)
-                    if (fontType == 1)
-                        mc.fontRendererObj.drawString(text, x + 8.5f - mc.fontRendererObj.getStringWidth(text) / 2, y + 4.5f, textColor.rgba, textShadow)
-                    else
-                        text(text, x + 8f - OdinFont.getTextWidth(text, 8f) / 2, y + 9f, textColor, 8f, shadow = textShadow)
+                    mcText(text, x + 8f - getMCTextWidth(text) / 2, y + 4.5, 1, textColor, shadow = textShadow, false)
                 }
                 2 -> {
                     val index = solution.indexOf(slot.slotIndex)
@@ -160,10 +162,8 @@ object TerminalSolver : Module(
                         Gui.drawRect(x, y, x + 16, y + 16, color)
                     }
                     val amount = slot.stack?.stackSize ?: 0
-                    if (fontType == 1)
-                        mc.fontRendererObj.drawString(amount.toString(), x + 8.5f - mc.fontRendererObj.getStringWidth(amount.toString()) / 2, y + 4.5f, textColor.rgba, textShadow)
-                    else
-                        text(amount.toString(), x + 8f - OdinFont.getTextWidth(amount.toString(), 8f) / 2, y + 9f, textColor, 8f, shadow = textShadow)
+                    mcText(amount.toString(), x + 8.5f - getMCTextWidth(amount.toString()) / 2, y + 4.5f, 1, textColor, shadow = textShadow, false)
+
                 }
                 3 -> Gui.drawRect(x, y, x + 16, y + 16, startsWithColor.rgba)
                 4 -> Gui.drawRect(x, y, x + 16, y + 16, selectColor.rgba)
@@ -171,21 +171,32 @@ object TerminalSolver : Module(
         }
         translate(0f, 0f, -zLevel)
         GlStateManager.popMatrix()
+        if (customGui) event.isCanceled = true
+    }
+
+    @SubscribeEvent
+    fun drawSlot(event: DrawSlotEvent) {
+        if (getShouldBlockWrong() && enabled)
+            event.isCanceled = true
     }
 
     @SubscribeEvent
     fun onTooltip(event: ItemTooltipEvent) {
-        if (!cancelToolTip || currentTerm == -1) return
+        if (!cancelToolTip || currentTerm == -1 || !enabled) return
         event.toolTip.clear()
+    }
+
+    @SubscribeEvent
+    fun itemStack(event: DrawSlotOverlayEvent) {
+        if (currentTerm == -1 || !enabled) return
+        event.isCanceled = true
     }
 
     private var lastWasNull = false
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.END) return
-        val isNull = mc.currentScreen == null
-        if (isNull && lastWasNull && currentTerm != -1) leftTerm()
-        lastWasNull = isNull
+        if (mc.thePlayer?.openContainer is ContainerPlayer || currentTerm == -1) leftTerm()
     }
 
     @SubscribeEvent

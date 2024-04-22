@@ -16,14 +16,14 @@ import me.odinmain.features.impl.floor7.Relic.relicsBlockPlace
 import me.odinmain.features.impl.floor7.Relic.relicsOnMessage
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.hud.HudElement
+import me.odinmain.utils.max
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.getTextWidth
+import me.odinmain.utils.render.getMCTextWidth
+import me.odinmain.utils.render.mcText
 import me.odinmain.utils.render.roundedRectangle
-import me.odinmain.utils.render.text
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
@@ -46,22 +46,21 @@ object WitherDragons : Module(
     private val timerBackground: Boolean by BooleanSetting("HUD Timer Background", false, description = "Displays a background for the timer.").withDependency { dragonTimer && hud.displayToggle }
     private val hud: HudElement by HudSetting("Dragon Timer HUD", 10f, 10f, 1f, true) {
         if (it) {
-            if (timerBackground) roundedRectangle(1f, 1f, getTextWidth("Purple spawning in 4500ms", 12f) + 1f, 32f, Color.DARK_GRAY.withAlpha(.75f), 3f)
-
-            text("§5Purple spawning in §a4500ms", 2f, 10f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
-            text("§cRed spawning in §e1200ms", 2f, 26f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
+            if (timerBackground) roundedRectangle(1f, 1f, getMCTextWidth("Purple spawning in 4500ms") + 1f, 32f, Color.DARK_GRAY.withAlpha(.75f), 3f)
+            mcText("§5Purple spawning in §a4500ms", 2f, 5f, 1, Color.WHITE, center = false)
+            mcText("§cRed spawning in §e1200ms", 2f, 20f, 1, Color.WHITE, center = false)
             max(
-                getTextWidth("Purple spawning in 4500ms", 12f),
-                getTextWidth("Red spawning in 1200ms", 12f)
+                getMCTextWidth("Purple spawning in 4500ms"),
+                getMCTextWidth("Red spawning in 1200ms")
             ) + 2f to 33f
         } else if (DragonTimer.toRender.size != 0) {
             if (!dragonTimer) return@HudSetting 0f to 0f
             var width = 0f
             DragonTimer.toRender.forEachIndexed { index, triple ->
-                text(triple.first, 1f, 9f + index * 17f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
-                width = max(width, getTextWidth(triple.first.noControlCodes, 19f))
+                mcText(triple.first, 2, 5f + (index - 1) * 15f, 1, Color.WHITE, center = false)
+                width = max(width, getMCTextWidth(triple.first.noControlCodes))
             }
-            if (timerBackground) roundedRectangle(1f, 1f, getTextWidth("Purple spawning in 4500ms", 12f) + 1f, 32f, Color.DARK_GRAY.withAlpha(.75f), 3f)
+            if (timerBackground) roundedRectangle(1f, 1f, getMCTextWidth("Purple spawning in 4500ms") + 1f, 32f, Color.DARK_GRAY.withAlpha(.75f), 3f)
             width to DragonTimer.toRender.size * 17f
         } else 0f to 0f
     }
@@ -80,7 +79,6 @@ object WitherDragons : Module(
     private val dragonHealth: Boolean by BooleanSetting("Dragon Health", true, description = "Displays the health of M7 dragons.")
 
     val dragonPriorityToggle: Boolean by BooleanSetting("Dragon Priority", false, description = "Displays the priority of dragons spawning.")
-    val dragonTitle: Boolean by BooleanSetting("Dragon Title", true, description = "Displays a title for the correct spawning dragon according to priority. Only for first dragons.").withDependency { dragonPriorityToggle }
     val normalPower: Double by NumberSetting("Normal Power", 10.0, 0.0, 29.0, description = "Power needed to split.").withDependency { dragonPriorityToggle }
     val easyPower: Double by NumberSetting("Easy Power", 10.0, 0.0, 29.0, description = "Power needed when its Purple and another dragon.").withDependency { dragonPriorityToggle }
     val soloDebuff: Boolean by DualSetting("Purple Solo Debuff", "Tank", "Healer", false, description = "Displays the debuff of the config.The class that solo debuffs purple, the other class helps b/m.").withDependency { dragonPriorityToggle }

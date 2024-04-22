@@ -22,11 +22,12 @@
     "mixins.other.MixinNEURenderListener"
   ],
   "client": [
-    "accessors.EntityRendererAccessor",
     "accessors.IEntityPlayerSPAccessor",
+    "accessors.IEntityRendererAccessor",
     "accessors.IMinecraftAccessor",
     "mixins.MixinFontRenderer",
     "mixins.MixinGuiContainer",
+    "mixins.MixinGuiScreen",
     "mixins.MixinItemRenderer",
     "mixins.MixinLayerCape",
     "mixins.MixinMinecraft",
@@ -35,6 +36,7 @@
     "mixins.MixinNetworkManager",
     "mixins.MixinPlayerControllerMP",
     "mixins.MixinRenderDragon",
+    "mixins.MixinRenderItem",
     "mixins.MixinRenderPlayer",
     "mixins.MixinSoundManager",
     "mixins.MixinTileEntityChestRenderer",

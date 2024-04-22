@@ -47,7 +47,8 @@ abstract class FramebufferShader(fragmentShader: String) : Shader(fragmentShader
         framebuffer?.let { drawFramebuffer(it) }
         stopShader()
 
-        mc.entityRenderer.disableLightmap()
+        mc.entityRenderer.enableLightmap()
+        RenderHelper.enableStandardItemLighting()
 
         GlStateManager.popMatrix()
         GlStateManager.popAttrib()

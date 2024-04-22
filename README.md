@@ -6,7 +6,7 @@ To open the main menu use `/od`, `/odin` or `/odinclient` in chat.
 For extensive command help use `/od help` in chat.
 
 Suggestions and bug reports are welcome, please use the [Discord](https://discord.gg/2nCbC9hkxT) for that.
-For an organized feature list check the website [here](https://odtheking.github.io/OdinClient/feature_list_legit).
+For an organized feature list check the website [here](https://odtheking.github.io/Odin/feature_list_legit).
 
 Category: Dungeon
 - Teammate Highlight: Enhances visibility of your dungeon teammates and their name tags.

@@ -1,10 +1,10 @@
 package me.odin.mixin.mixins;
 
 import me.odinmain.events.impl.*;
-import me.odinmain.features.impl.floor7.p3.TerminalSolver;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -36,17 +36,16 @@ public class MixinGuiContainer {
             ci.cancel();
     }
 
+    @Inject(method = "drawItemStack", at = @At("HEAD"), cancellable = true)
+    private void onDrawItemStack(ItemStack stack, int x, int y, String altText, CallbackInfo ci) {
+        if (MinecraftForge.EVENT_BUS.post(new DrawItemStackEvent(inventorySlots, gui, stack, x, y)))
+            ci.cancel();
+    }
+
     @Inject(method = "drawScreen", at = @At(value = "HEAD"), cancellable = true)
     private void startDrawScreen(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
         if (MinecraftForge.EVENT_BUS.post(new DrawGuiContainerScreenEvent(gui.inventorySlots, gui, this.xSize, this.ySize, guiLeft, guiTop)))
             ci.cancel();
-    }
-
-    @Inject(method = "drawSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/RenderItem;renderItemAndEffectIntoGUI(Lnet/minecraft/item/ItemStack;II)V"), cancellable = true)
-    private void size(Slot slotIn, CallbackInfo ci) {
-        if (TerminalSolver.INSTANCE.getShouldBlockWrong() && slotIn.slotNumber <= gui.inventorySlots.inventorySlots.size() - 37) {
-            ci.cancel();
-        }
     }
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)

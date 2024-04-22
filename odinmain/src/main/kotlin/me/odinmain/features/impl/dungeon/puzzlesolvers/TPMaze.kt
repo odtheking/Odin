@@ -1,10 +1,13 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
+import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.mazeColorMultiple
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.mazeColorOne
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.mazeColorVisited
+import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.solutionThroughWalls
 import me.odinmain.utils.isXZInterceptable
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.toAABB
@@ -13,11 +16,12 @@ import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
+import java.util.concurrent.CopyOnWriteArraySet
 
 object TPMaze {
     var portals = setOf<BlockPos>()
     var correctPortals = listOf<BlockPos>()
-    private var visited = mutableSetOf<BlockPos>()
+    private var visited = CopyOnWriteArraySet<BlockPos>()
 
     fun scan() {
         if (portals.size >= 30 || DungeonUtils.currentRoomName != "Teleport Maze") return
@@ -30,11 +34,10 @@ object TPMaze {
 
     fun tpPacket(event: S08PacketPlayerPosLook) {
         if (DungeonUtils.currentRoomName != "Teleport Maze") return
+        val eventBlockPos = BlockPos(event.x, event.y, event.z).toAABB().expand(0.5, 0.0, 0.5)
+        val playerBlockPos = mc.thePlayer.position.toAABB().expand(0.5, 0.0, 0.5)
         visited.addAll(
-            listOfNotNull(
-                portals.find { it.x == mc.thePlayer.posX.toInt() && it.z == mc.thePlayer.posZ.toInt() },
-                portals.find { it.x == event.x.toInt() && it.z == event.z.toInt() && it !in visited }
-            )
+            portals.filter { eventBlockPos.intersectsWith(it.toAABB()) || playerBlockPos.intersectsWith(it.toAABB()) }
         )
         getCorrectPortals(Vec3(event.x, event.y, event.z), event.yaw, event.pitch)
     }
@@ -55,10 +58,18 @@ object TPMaze {
         if (DungeonUtils.currentRoomName != "Teleport Maze") return
         val color = if (correctPortals.size == 1) mazeColorOne else mazeColorMultiple
         correctPortals.forEach {
-            Renderer.drawBox(it.toAABB(), color, depth = true, outlineAlpha = 0)
+            if (visited.contains(it) && correctPortals.size != 1) return@forEach
+            Renderer.drawBox(RenderUtils.getBlockAABB(Blocks.end_portal_frame, it).expand(0.002, 0.002, 0.002), color, outlineAlpha = 0, fillAlpha = color.alpha, depth = !(solutionThroughWalls && correctPortals.size == 1 && !OdinMain.onLegitVersion))
         }
         visited.forEach {
-            Renderer.drawBox(it.toAABB(), mazeColorVisited, depth = true, outlineAlpha = 0)
+            Renderer.drawBox(RenderUtils.getBlockAABB(Blocks.end_portal_frame, it).expand(0.002, 0.002, 0.002), mazeColorVisited, outlineAlpha = 0, fillAlpha = mazeColorVisited.alpha, depth = true)
         }
     }
+
+    fun reset() {
+        portals = setOf()
+        correctPortals = listOf()
+        visited = CopyOnWriteArraySet<BlockPos>()
+    }
+
 }
