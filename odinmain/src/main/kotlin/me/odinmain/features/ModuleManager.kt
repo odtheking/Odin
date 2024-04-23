@@ -64,7 +64,7 @@ object ModuleManager {
         NecronDropTimer,
         BPSDisplay,
         Camera,
-        ClickedChests,
+        ClickedSecrets,
         ClickGUIModule,
         CustomHighlight,
         CPSDisplay,

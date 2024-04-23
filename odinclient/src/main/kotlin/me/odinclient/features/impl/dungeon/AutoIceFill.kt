@@ -9,14 +9,13 @@ import me.odinclient.utils.waitUntilPacked
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.puzzlesolvers.IceFillSolver
-import me.odinmain.features.impl.dungeon.puzzlesolvers.IceFillSolver.checkRotation
 import me.odinmain.features.impl.dungeon.puzzlesolvers.IceFillSolver.currentPatterns
 import me.odinmain.features.impl.dungeon.puzzlesolvers.IceFillSolver.transform
 import me.odinmain.features.impl.dungeon.puzzlesolvers.IceFillSolver.transformTo
-import me.odinmain.features.impl.dungeon.puzzlesolvers.Rotation
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.plus
 import me.odinmain.utils.skyblock.PlayerUtils.posFloored
+import me.odinmain.utils.skyblock.dungeon.tiles.Rotations
 import me.odinmain.utils.skyblock.getBlockIdAt
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
@@ -37,13 +36,12 @@ object AutoIceFill: Module(
         val pos = posFloored
         if (!pos.y.equalsOneOf(70, 71, 72) || getBlockIdAt(BlockPos(pos.x, pos.y - 1, pos.z )) != 79) return
         val floorIndex = pos.y % 70
-        val rotation = checkRotation(pos, floorIndex) ?: return
         GlobalScope.launch {
-            move(Vec3(pos.x.toDouble(), pos.y - 1.0, pos.z.toDouble()), currentPatterns[floorIndex], rotation, floorIndex)
+            //move(Vec3(pos.x.toDouble(), pos.y - 1.0, pos.z.toDouble()), currentPatterns[floorIndex], rotation, floorIndex)
         }
     }
 
-    private suspend fun move(pos: Vec3, pattern: List<Vec3i>, rotation: Rotation, floorIndex: Int) {
+    private suspend fun move(pos: Vec3, pattern: List<Vec3i>, rotation: Rotations, floorIndex: Int) {
         val x = mc.thePlayer.posX
         val y = mc.thePlayer.posY - 1
         val z = mc.thePlayer.posZ
@@ -81,14 +79,14 @@ object AutoIceFill: Module(
     }
 
     @OptIn(DelicateCoroutinesApi::class)
-    private fun clipToNext(pos: Vec3, rotation: Rotation, bx: Int, bz: Int, floorIndex: Int) {
+    private fun clipToNext(pos: Vec3, rotation: Rotations, bx: Int, bz: Int, floorIndex: Int) {
         val x = pos.xCoord
         val y = pos.yCoord
         val z = pos.zCoord
         val (nx, ny) = when (rotation) {
-            Rotation.EAST -> Pair(0.5f, 0f)
-            Rotation.WEST -> Pair(-0.5f, 0f)
-            Rotation.SOUTH -> Pair(0f, 0.5f)
+            Rotations.EAST -> Pair(0.5f, 0f)
+            Rotations.WEST -> Pair(-0.5f, 0f)
+            Rotations.SOUTH -> Pair(0f, 0.5f)
             else -> Pair(0f, -0.5f)
         }
         clipTo(x + bx + nx, y + 1.5, z + bz + ny)
