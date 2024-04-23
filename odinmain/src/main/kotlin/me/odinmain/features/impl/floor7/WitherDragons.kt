@@ -67,9 +67,10 @@ object WitherDragons : Module(
     }
 
     private val dragonBoxes: Boolean by BooleanSetting("Dragon Boxes", true, description = "Displays boxes for where M7 dragons spawn.")
-    val dragonTitle: Boolean by BooleanSetting("Dragon Title", true, description = "Displays a title for spawning dragons.")
-    private val dragonTracers: Boolean by BooleanSetting("Dragon Tracer", false, description = "draws a line to spawning dragons").withDependency { dragonPriorityToggle }
     val lineThickness: Float by NumberSetting("Line Width", 2f, 1.0, 5.0, 0.5).withDependency { dragonBoxes }
+    val dragonTitle: Boolean by BooleanSetting("Dragon Title", true, description = "Displays a title for spawning dragons.")
+    private val dragonTracers: Boolean by BooleanSetting("Dragon Tracer", false, description = "draws a line to spawning dragons")
+    val tracerThickness: Float by NumberSetting("Tracer Width", 5f, 1f, 20f).withDependency { dragonTracers }
 
     private val dragonAlerts: Boolean by DropdownSetting("Dragon Alerts")
     val sendNotification: Boolean by BooleanSetting("Send Dragon Confirmation", true, description = "Sends a confirmation message when a dragon dies.").withDependency { dragonAlerts }
