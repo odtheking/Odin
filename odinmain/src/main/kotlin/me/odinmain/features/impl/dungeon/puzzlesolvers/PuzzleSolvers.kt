@@ -82,8 +82,7 @@ object PuzzleSolvers : Module(
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        if (tttSolver)TicTacToe.tttTick(event)
-        //if (iceFillSolver) IceFillSolver.onClientTick(event)
+        if (tttSolver) TicTacToe.tttTick(event)
     }
 
     @SubscribeEvent
@@ -94,6 +93,6 @@ object PuzzleSolvers : Module(
     @SubscribeEvent
     fun onRoomEnter(event: EnteredDungeonRoomEvent) {
         IceFillSolver.enterDungeonRoom(event)
-        BlazeSolver.getRoomType()
+        //BlazeSolver.getRoomType()
     }
 }

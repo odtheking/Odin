@@ -6,7 +6,8 @@ import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.getTextWidth
+import me.odinmain.utils.render.getMCTextWidth
+import me.odinmain.utils.render.mcText
 import me.odinmain.utils.render.text
 import me.odinmain.utils.round
 import net.minecraft.network.play.client.C07PacketPlayerDigging
@@ -26,11 +27,12 @@ object BPSDisplay : Module(
 
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 2f, false) {
         if (it) { // example
-            text("§7BPS: §r17.8", 1f, 7f, Color.WHITE,10f)
+            mcText("§7BPS: §r17.8", 1f, 1f, 1, Color.WHITE, center = false)
         } else {
+            mcText("§7BPS: §r17.8", 1f, 1f, 1, Color.WHITE, center = false)
             text("§7BPS: §r${bps.round(1)}", 1f, 7f, Color.WHITE, 10f, OdinFont.REGULAR)
         }
-        getTextWidth("BPS: 17.55", 9f) to 12f
+        getMCTextWidth("BPS: 17.5") + 2f to 10f
     }
 
     init {
