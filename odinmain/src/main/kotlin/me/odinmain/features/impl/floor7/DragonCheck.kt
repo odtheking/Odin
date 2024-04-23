@@ -1,7 +1,9 @@
 package me.odinmain.features.impl.floor7
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.events.impl.ReceivePacketEvent
+import me.odinmain.config.Config
+import me.odinmain.features.impl.floor7.WitherDragons.arrowsHit
+import me.odinmain.features.impl.floor7.WitherDragons.sendArrowHit
 import me.odinmain.features.impl.floor7.WitherDragons.sendNotification
 import me.odinmain.features.impl.floor7.WitherDragons.sendSpawned
 import me.odinmain.features.impl.floor7.WitherDragons.sendSpray
@@ -38,7 +40,7 @@ object DragonCheck {
         if (sendSpawned) modMessage("§${dragon.colorCode}${dragon.name} §fdragon spawned. This is the §${dragon.colorCode}${dragon.timesSpawned}§f time it has spawned.")
     }
 
-    fun dragonLeaveWorld(event: LivingDeathEvent) {
+    fun dragonLeaveWorld(event: LivingDeathEvent, priorityDragon: WitherDragonsEnum) {
         if (event.entity !is EntityDragon) return
         val dragon = WitherDragonsEnum.entries.find {it.entity?.entityId == event.entity.entityId} ?: return
 
@@ -46,17 +48,23 @@ object DragonCheck {
             val oldPB = dragon.dragonKillPBs.value
             val killTime = event.entity.ticksExisted / 20.0
             if (dragon.dragonKillPBs.value < event.entity.ticksExisted / 20.0) dragon.dragonKillPBs.value = killTime
-
+            Config.save()
             modMessage("§${dragon.colorCode}${dragon.name} §fdragon was alive for ${printSecondsWithColor(killTime, 3.5, 7.5, down = false)}${if (killTime < oldPB) " §7(§dNew PB§7)" else ""}.")
+        }
+
+        if (event.entity == priorityDragon.entity && sendArrowHit) {
+            if (arrowsHit > 0) {
+                modMessage("${priorityDragon.colorCode}${priorityDragon.name} has been hit with $arrowsHit")
+                arrowsHit = 0
+            }
         }
         lastDragonDeath = dragon.name
     }
 
-    fun dragonSprayed(event: ReceivePacketEvent) {
-        if (event.packet !is S04PacketEntityEquipment) return
-        if (event.packet.itemStack?.item != Item.getItemFromBlock(Blocks.packed_ice)) return
+    fun dragonSprayed(packet: S04PacketEntityEquipment) {
+        if (packet.itemStack?.item != Item.getItemFromBlock(Blocks.packed_ice)) return
 
-        val sprayedEntity = mc.theWorld.getEntityByID(event.packet.entityID) as? EntityArmorStand ?: return
+        val sprayedEntity = mc.theWorld.getEntityByID(packet.entityID) as? EntityArmorStand ?: return
 
 
         WitherDragonsEnum.entries.forEach {

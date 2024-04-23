@@ -1,13 +1,18 @@
 package me.odinmain.features.impl.floor7
 
+import me.odinmain.features.impl.floor7.DragonPriority.sortPriority
 import me.odinmain.features.impl.floor7.WitherDragons.bluePB
+import me.odinmain.features.impl.floor7.WitherDragons.dragonPriorityToggle
+import me.odinmain.features.impl.floor7.WitherDragons.dragonTitle
 import me.odinmain.features.impl.floor7.WitherDragons.greenPB
 import me.odinmain.features.impl.floor7.WitherDragons.orangePB
+import me.odinmain.features.impl.floor7.WitherDragons.priorityDragon
 import me.odinmain.features.impl.floor7.WitherDragons.purplePB
 import me.odinmain.features.impl.floor7.WitherDragons.redPB
 import me.odinmain.features.impl.floor7.WitherDragons.sendSpawning
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.entity.Entity
 import net.minecraft.network.play.server.S2APacketParticles
@@ -71,7 +76,8 @@ fun handleSpawnPacket(particle: S2APacketParticles) {
             dragon.spawning = true
         }
     }
-    if (WitherDragons.dragonPriorityToggle) DragonPriority.dragonPrioritySpawn()
+    priorityDragon = sortPriority(WitherDragonsEnum.entries.filter { it.spawning }.toMutableList())
+    if (!priorityDragon.spawning && priorityDragon.spawnTime() <= 0 && dragonPriorityToggle) DragonPriority.dragonPrioritySpawn(priorityDragon)
 }
 
 private fun checkParticle(event: S2APacketParticles, color: WitherDragonsEnum): Boolean {

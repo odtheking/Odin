@@ -2,6 +2,7 @@ package me.odinmain.features.impl.floor7
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.dungeon.BlessingDisplay
+import me.odinmain.features.impl.floor7.WitherDragons.dragonPriorityToggle
 import me.odinmain.features.impl.floor7.WitherDragons.easyPower
 import me.odinmain.features.impl.floor7.WitherDragons.normalPower
 import me.odinmain.features.impl.floor7.WitherDragons.paulBuff
@@ -14,15 +15,8 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils.Classes
 import me.odinmain.utils.skyblock.modMessage
 
 object DragonPriority {
-    var firstDragons = false
-    fun dragonPrioritySpawn() {
-        val spawningDragons = WitherDragonsEnum.entries.filter { it.spawning }.toMutableList()
 
-        if (spawningDragons.size != 2 || firstDragons) return
-        firstDragons = true
-
-        val dragon = sortPriority(spawningDragons)
-
+    fun dragonPrioritySpawn(dragon: WitherDragonsEnum) {
         PlayerUtils.alert("§${dragon.colorCode}${dragon.name}")
         modMessage("§${dragon.colorCode}${dragon.name} §7is your priority dragon!")
     }
@@ -32,17 +26,17 @@ object DragonPriority {
                 if (BlessingDisplay.Blessings.TIME.current > 0) 2.5 else 0.0
 
         val playerClass = DungeonUtils.dungeonTeammates.find { it.name == mc.thePlayer.name }?.clazz
-            ?: return modMessage("§cPlayer Class wasn't found! please report this").let { WitherDragonsEnum.Purple }
+        if (playerClass == null) modMessage("Player class not found, Please report this! ${if (dragonPriorityToggle) "Defaulting to normal priority." else ""}")
 
         val dragonList = listOf(WitherDragonsEnum.Orange, WitherDragonsEnum.Green, WitherDragonsEnum.Red, WitherDragonsEnum.Blue, WitherDragonsEnum.Purple)
         val priorityList =
-            if (totalPower >= normalPower || (spawningDragon.any { it == WitherDragonsEnum.Purple } && totalPower >= easyPower))
+            if (totalPower >= normalPower || (spawningDragon.any { it == WitherDragonsEnum.Purple } && totalPower >= easyPower) && dragonPriorityToggle && playerClass != null)
                 if (playerClass.equalsOneOf(Classes.Berserk, Classes.Mage)) dragonList else dragonList.reversed()
             else listOf(WitherDragonsEnum.Red, WitherDragonsEnum.Orange, WitherDragonsEnum.Blue, WitherDragonsEnum.Purple, WitherDragonsEnum.Green)
 
         spawningDragon.sortBy { priorityList.indexOf(it) }
 
-        if (totalPower >= easyPower) {
+        if (totalPower >= easyPower && dragonPriorityToggle && playerClass != null) {
             if ((soloDebuff && playerClass == Classes.Tank && spawningDragon.any { it == WitherDragonsEnum.Purple }) || soloDebuffOnAll)
                 spawningDragon.sortByDescending { priorityList.indexOf(it) }
             else if ((playerClass == Classes.Healer && spawningDragon.any { it == WitherDragonsEnum.Purple }) || soloDebuffOnAll)
