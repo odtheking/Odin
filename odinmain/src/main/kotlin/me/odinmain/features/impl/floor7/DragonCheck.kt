@@ -83,7 +83,7 @@ object DragonCheck {
         if (
             !message.equalsOneOf(
                 "[BOSS] Wither King: Oh, this one hurts!",
-                "[BOSS] Wither King: I have more of those",
+                "[BOSS] Wither King: I have more of those.",
                 "[BOSS] Wither King: My soul is disposable."
             )
         ) return
