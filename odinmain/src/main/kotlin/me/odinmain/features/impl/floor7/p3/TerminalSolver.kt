@@ -3,6 +3,7 @@ package me.odinmain.features.impl.floor7.p3
 import me.odinmain.events.impl.*
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.impl.floor7.p3.termGUI.CustomTermGui
 import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
@@ -38,8 +39,9 @@ object TerminalSolver : Module(
     private val lockRubixSolution: Boolean by BooleanSetting("Lock Rubix Solution", false, description = "Locks the 'correct' color of the rubix terminal to the one that was scanned first, should make the solver less 'jumpy'.")
     private val cancelToolTip: Boolean by BooleanSetting("Stop Tooltips", default = true, description = "Stops rendering tooltips in terminals")
     private val renderType: Int by SelectorSetting("Mode", "Odin", arrayListOf("Odin", "Skytils", "SBE", "Custom GUI"))
-
+    val customScale: Float by NumberSetting("Custom Scale", 1f, .8f, 2.5f, .1f, description = "Size of the Custom Terminal Gui").withDependency { renderType == 3 }
     private val textShadow: Boolean by BooleanSetting("Shadow", true, description = "Adds a shadow to the text")
+
 
     private val showRemoveWrongSettings: Boolean by DropdownSetting("Render Wrong Settings").withDependency { renderType.equalsOneOf(1,2) }
     private val removeWrong: Boolean by BooleanSetting("Stop Rendering Wrong").withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings }
@@ -51,14 +53,14 @@ object TerminalSolver : Module(
     private val showColors: Boolean by DropdownSetting("Color Settings")
     private val wrongColor: Color by ColorSetting("Wrong Color", Color(45, 45, 45), true).withDependency { renderType == 0 && showColors }
     private val textColor: Color by ColorSetting("Text Color", Color(220, 220, 220), true).withDependency { showColors }
-    private val panesColor: Color by ColorSetting("Panes Color", Color(0, 170, 170), true).withDependency { showColors }
-    private val rubixColor: Color by ColorSetting("Rubix Color", Color(0, 170, 170), true).withDependency { showColors }
-    private val oppositeRubixColor: Color by ColorSetting("Negative Rubix Color", Color(170, 85, 0), true).withDependency { showColors }
-    private val orderColor: Color by ColorSetting("Order Color 1", Color(0, 170, 170, 1f), true).withDependency { showColors }
-    private val orderColor2: Color by ColorSetting("Order Color 2", Color(0, 100, 100, 1f), true).withDependency { showColors }
-    private val orderColor3: Color by ColorSetting("Order Color 3", Color(0, 65, 65, 1f), true).withDependency { showColors }
-    private val startsWithColor: Color by ColorSetting("Starts With Color", Color(0, 170, 170), true).withDependency { showColors }
-    private val selectColor: Color by ColorSetting("Select Color", Color(0, 170, 170), true).withDependency { showColors }
+    val panesColor: Color by ColorSetting("Panes Color", Color(0, 170, 170), true).withDependency { showColors }
+    val rubixColor: Color by ColorSetting("Rubix Color", Color(0, 170, 170), true).withDependency { showColors }
+    val oppositeRubixColor: Color by ColorSetting("Negative Rubix Color", Color(170, 85, 0), true).withDependency { showColors }
+    val orderColor: Color by ColorSetting("Order Color 1", Color(0, 170, 170, 1f), true).withDependency { showColors }
+    val orderColor2: Color by ColorSetting("Order Color 2", Color(0, 100, 100, 1f), true).withDependency { showColors }
+    val orderColor3: Color by ColorSetting("Order Color 3", Color(0, 65, 65, 1f), true).withDependency { showColors }
+    val startsWithColor: Color by ColorSetting("Starts With Color", Color(0, 170, 170), true).withDependency { showColors }
+    val selectColor: Color by ColorSetting("Select Color", Color(0, 170, 170), true).withDependency { showColors }
 
     private var lastRubixSolution: Int? = null
     private val zLevel get() = if (renderType == 1 && currentTerm.equalsOneOf(3,4)) 100f else 400f
@@ -118,7 +120,12 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun onGuiRender(event: DrawGuiContainerScreenEvent) {
-        if (currentTerm == -1 || !enabled || renderType != 0 || event.container !is ContainerChest) return
+        if (currentTerm == -1 || !enabled || !renderType.equalsOneOf(0,3) || event.container !is ContainerChest) return
+        if (renderType == 3) {
+            CustomTermGui.render()
+            event.isCanceled = true
+            return
+        }
         translate(event.guiLeft.toFloat(), event.guiTop.toFloat(), 999f)
         Gui.drawRect(7, 16, event.xSize - 7, event.ySize - 96, wrongColor.rgba)
         translate(-event.guiLeft.toFloat(), -event.guiTop.toFloat(), -999f)
@@ -188,7 +195,14 @@ object TerminalSolver : Module(
             }
             2 -> {
                 val index = solution.indexOf(event.slot.slotIndex)
-                if (index < 3) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, orderColor.withAlpha(2f / (index + 3)).rgba)
+                if (index < 3) {
+                    val color = when (index) {
+                        0 -> orderColor
+                        1 -> orderColor2
+                        else -> orderColor3
+                    }.rgba
+                    Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, color)
+                }
                 val amount = event.slot.stack?.stackSize ?: 0
                 mcText(amount.toString(), event.x + 8.5f - getMCTextWidth(amount.toString()) / 2, event.y + 4.5f, 1, textColor, shadow = textShadow, false)
             }
