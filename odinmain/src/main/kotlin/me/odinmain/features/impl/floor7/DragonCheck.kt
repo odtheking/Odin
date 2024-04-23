@@ -54,7 +54,7 @@ object DragonCheck {
 
         if (event.entity == priorityDragon.entity && sendArrowHit) {
             if (arrowsHit > 0) {
-                modMessage("${priorityDragon.colorCode}${priorityDragon.name} has been hit with $arrowsHit")
+                modMessage("You have hit §c$arrowsHit §rArrows on §${priorityDragon.colorCode}${priorityDragon.name}")
                 arrowsHit = 0
             }
         }

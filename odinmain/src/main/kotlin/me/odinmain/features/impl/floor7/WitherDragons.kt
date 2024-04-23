@@ -125,8 +125,8 @@ object WitherDragons : Module(
         }
 
         onPacket(S29PacketSoundEffect::class.java, { DungeonUtils.getPhase() == Island.M7P5 }) {
-            if (it.soundName != "random.successful_hit" && sendArrowHit && priorityDragon.entity?.isEntityAlive == true) return@onPacket
-            arrowsHit++
+            if (it.soundName != "random.successful_hit" && sendArrowHit) return@onPacket
+            if (::priorityDragon.isInitialized && priorityDragon.entity?.isEntityAlive == true) arrowsHit++
         }
 
         onPacket(S04PacketEntityEquipment::class.java, { DungeonUtils.getPhase() == Island.M7P5 }) {
