@@ -116,7 +116,7 @@ object DungeonUtils {
             devMessage("Found rotation ${it.room.rotation}")
         }
         setWaypoints()
-        EnteredDungeonRoomEvent().postAndCatch()
+        EnteredDungeonRoomEvent(currentRoom).postAndCatch()
     }
 
     /**
