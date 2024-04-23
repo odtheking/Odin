@@ -176,7 +176,7 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun drawSlot(event: DrawSlotEvent) {
-        if (getShouldBlockWrong() && enabled)
+        if (getShouldBlockWrong() && enabled && event.slot.slotIndex <= mc.thePlayer.getInventory().size - 37)
             event.isCanceled = true
     }
 
@@ -188,11 +188,11 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun itemStack(event: DrawSlotOverlayEvent) {
-        if (currentTerm == -1 || !enabled) return
+        val stack = event.stack?.item?.registryName ?: return
+        if (currentTerm != 2 || !enabled || stack != "minecraft:stained_glass_pane") return
         event.isCanceled = true
     }
 
-    private var lastWasNull = false
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.END) return
