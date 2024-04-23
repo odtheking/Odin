@@ -3,6 +3,7 @@ package me.odinmain.features.impl.floor7
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.dungeon.BlessingDisplay
 import me.odinmain.features.impl.floor7.WitherDragons.dragonPriorityToggle
+import me.odinmain.features.impl.floor7.WitherDragons.dragonTitle
 import me.odinmain.features.impl.floor7.WitherDragons.easyPower
 import me.odinmain.features.impl.floor7.WitherDragons.normalPower
 import me.odinmain.features.impl.floor7.WitherDragons.paulBuff
@@ -17,8 +18,8 @@ import me.odinmain.utils.skyblock.modMessage
 object DragonPriority {
 
     fun dragonPrioritySpawn(dragon: WitherDragonsEnum) {
-        PlayerUtils.alert("§${dragon.colorCode}${dragon.name}")
-        modMessage("§${dragon.colorCode}${dragon.name} §7is your priority dragon!")
+        if (dragonTitle) PlayerUtils.alert("§${dragon.colorCode}${dragon.name} is spawning!")
+        if (dragonPriorityToggle) modMessage("§${dragon.colorCode}${dragon.name} §7is your priority dragon!")
     }
 
     fun sortPriority(spawningDragon: MutableList<WitherDragonsEnum>): WitherDragonsEnum {

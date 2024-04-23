@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.floor7
 
+import me.odinmain.features.impl.floor7.DragonPriority.dragonPrioritySpawn
 import me.odinmain.features.impl.floor7.DragonPriority.sortPriority
 import me.odinmain.features.impl.floor7.WitherDragons.bluePB
 import me.odinmain.features.impl.floor7.WitherDragons.dragonPriorityToggle
@@ -33,8 +34,10 @@ enum class WitherDragonsEnum (
     var timesSpawned: Int = 0,
     var entity: Entity? = null,
     var isSprayed: Boolean = false,
-    var spawnedTime: Long = 0
+    var spawnedTime: Long = 0,
+    //var shownTitle: Boolean = false
 ) {
+
     Red(Vec3(27.0, 14.0, 59.0), AxisAlignedBB(14.5, 13.0, 45.5, 39.5, 28.0, 70.5),"c", Color.RED,
         24.0..30.0, 56.0..62.0, redPB),
 
@@ -77,7 +80,7 @@ fun handleSpawnPacket(particle: S2APacketParticles) {
         }
     }
     priorityDragon = sortPriority(WitherDragonsEnum.entries.filter { it.spawning }.toMutableList())
-    if (!priorityDragon.spawning && priorityDragon.spawnTime() <= 0 && dragonPriorityToggle) DragonPriority.dragonPrioritySpawn(priorityDragon)
+    if (priorityDragon.particleSpawnTime == System.currentTimeMillis()) dragonPrioritySpawn(priorityDragon)
 }
 
 private fun checkParticle(event: S2APacketParticles, color: WitherDragonsEnum): Boolean {
