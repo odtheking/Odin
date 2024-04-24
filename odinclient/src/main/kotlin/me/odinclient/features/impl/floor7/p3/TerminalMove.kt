@@ -3,7 +3,7 @@ package me.odinclient.features.impl.floor7.p3
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
-import me.odinmain.features.impl.floor7.p3.TerminalSolver.terminalNames
+import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.font.OdinFont
 import me.odinmain.utils.render.TextAlign
@@ -40,7 +40,7 @@ object TerminalMove : Module(
 
     private fun isInTerminal(): Boolean {
         if (mc.thePlayer == null || mc.thePlayer.openContainer !is ContainerChest) return false
-        return terminalNames.stream().anyMatch { prefix: String? -> (mc.thePlayer.openContainer as ContainerChest).lowerChestInventory.name.startsWith(prefix!!) }
+        return TerminalTypes.entries.stream().anyMatch { prefix: TerminalTypes? -> (mc.thePlayer.openContainer as ContainerChest).lowerChestInventory.name.startsWith(prefix?.guiName!!) }
     }
 
 }
