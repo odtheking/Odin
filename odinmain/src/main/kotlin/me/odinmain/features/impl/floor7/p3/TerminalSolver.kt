@@ -7,18 +7,21 @@ import me.odinmain.features.impl.floor7.p3.termGUI.CustomTermGui
 import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.util.MouseUtils
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.postAndCatch
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.getMCTextWidth
+import me.odinmain.utils.render.mcText
+import me.odinmain.utils.render.translate
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.unformattedName
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.ContainerPlayer
-import net.minecraft.item.*
-import net.minecraft.network.play.server.S2DPacketOpenWindow
+import net.minecraft.item.EnumDyeColor
+import net.minecraft.item.Item
+import net.minecraft.item.ItemStack
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -62,14 +65,8 @@ object TerminalSolver : Module(
     var openedTerminalTime = 0L
     var clicksNeeded = -1
 
-    val terminalNames = listOf(
-        "Correct all the panes!",
-        "Change all to same color!",
-        "Click in order!",
-        "What starts with:",
-        "Select all the",
-    )
-    var currentTerm = -1
+
+    var currentTerm = TerminalTypes.NONE
     var solution = listOf<Int>()
 
     init {
@@ -115,7 +112,7 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun onGuiRender(event: DrawGuiContainerScreenEvent) {
-        if (currentTerm == -1 || !enabled || !renderType.equalsOneOf(0,3) || event.container !is ContainerChest) return
+        if (currentTerm == TerminalTypes.NONE || !enabled || !renderType.equalsOneOf(0,3) || event.container !is ContainerChest) return
         if (renderType == 3) {
             CustomTermGui.render()
             event.isCanceled = true
@@ -131,14 +128,14 @@ object TerminalSolver : Module(
             val x = slot.xDisplayPosition
             val y = slot.yDisplayPosition
             when (currentTerm) {
-                0 -> Gui.drawRect(x, y, x + 16, y + 16, panesColor.rgba)
-                1 -> {
+                TerminalTypes.PANES -> Gui.drawRect(x, y, x + 16, y + 16, panesColor.rgba)
+                TerminalTypes.COLOR -> {
                     val needed = solution.count { it == slot.slotIndex }
                     val text = if (needed < 3) needed.toString() else (needed - 5).toString()
                     Gui.drawRect(x, y, x + 16, y + 16, if (needed < 3) rubixColor.rgba else oppositeRubixColor.rgba)
                     mcText(text, x + 8f - getMCTextWidth(text) / 2, y + 4.5, 1, textColor, shadow = textShadow, false)
                 }
-                2 -> {
+                TerminalTypes.ORDER -> {
                     val index = solution.indexOf(slot.slotIndex)
                     if (index < 3) {
                         val color = when (index) {
@@ -152,8 +149,9 @@ object TerminalSolver : Module(
                     mcText(amount.toString(), x + 8.5f - getMCTextWidth(amount.toString()) / 2, y + 4.5f, 1, textColor, shadow = textShadow, false)
 
                 }
-                3 -> Gui.drawRect(x, y, x + 16, y + 16, startsWithColor.rgba)
-                4 -> Gui.drawRect(x, y, x + 16, y + 16, selectColor.rgba)
+                TerminalTypes.STARTS_WITH -> Gui.drawRect(x, y, x + 16, y + 16, startsWithColor.rgba)
+                TerminalTypes.SELECT -> Gui.drawRect(x, y, x + 16, y + 16, selectColor.rgba)
+                TerminalTypes.NONE -> return@forEach
             }
         }
         translate(0f, 0f, -999)
@@ -163,11 +161,11 @@ object TerminalSolver : Module(
     private fun getShouldBlockWrong(): Boolean {
         if (!removeWrong) return false
         return when (currentTerm) {
-            0 -> removeWrongPanes
-            1 -> removeWrongRubix
-            2 -> true
-            3 -> removeWrongStartsWith
-            4 -> removeWrongSelect
+            TerminalTypes.PANES -> removeWrongPanes
+            TerminalTypes.COLOR -> removeWrongRubix
+            TerminalTypes.ORDER -> true
+            TerminalTypes.STARTS_WITH -> removeWrongStartsWith
+            TerminalTypes.SELECT -> removeWrongSelect
             else -> false
         }
     }
@@ -181,15 +179,14 @@ object TerminalSolver : Module(
         if (event.slot.slotIndex !in solution || event.slot.inventory == mc.thePlayer.inventory || !enabled || !renderType.equalsOneOf(1,2)) return
         translate(0f, 0f, zLevel)
         GlStateManager.disableLighting()
-        GlStateManager.disableBlend()
         GlStateManager.enableDepth()
         when (currentTerm) {
-            1 -> {
+            TerminalTypes.COLOR -> {
                 val needed = solution.count { it == event.slot.slotIndex }
                 val text = if (needed < 3) needed.toString() else (needed - 5).toString()
                 mcText(text, event.x + 8f - getMCTextWidth(text) / 2, event.y + 4.5, 1, textColor, shadow = textShadow, false)
             }
-            2 -> {
+            TerminalTypes.ORDER -> {
                 val index = solution.indexOf(event.slot.slotIndex)
                 if (index < 3) {
                     val color = when (index) {
@@ -203,8 +200,9 @@ object TerminalSolver : Module(
                 val amount = event.slot.stack?.stackSize ?: 0
                 mcText(amount.toString(), event.x + 8.5f - getMCTextWidth(amount.toString()) / 2, event.y + 4.5f, 1, textColor, shadow = textShadow, false)
             }
-            3 -> Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, startsWithColor.rgba)
-            4 -> Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, selectColor.rgba)
+            TerminalTypes.STARTS_WITH -> Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, startsWithColor.rgba)
+            TerminalTypes.SELECT -> Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, selectColor.rgba)
+            TerminalTypes.NONE -> {}
         }
         GlStateManager.enableLighting()
         translate(0f, 0f, -zLevel)
@@ -212,7 +210,7 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun onTooltip(event: ItemTooltipEvent) {
-        if (!cancelToolTip || currentTerm == -1 || !enabled) return
+        if (!cancelToolTip || currentTerm == TerminalTypes.NONE || !enabled) return
         event.toolTip.clear()
     }
 
@@ -226,14 +224,14 @@ object TerminalSolver : Module(
     @SubscribeEvent
     fun itemStack(event: DrawSlotOverlayEvent) {
         val stack = event.stack?.item?.registryName ?: return
-        if (currentTerm != 2 || !enabled || stack != "minecraft:stained_glass_pane") return
+        if (currentTerm != TerminalTypes.ORDER || !enabled || stack != "minecraft:stained_glass_pane") return
         event.isCanceled = true
     }
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.END) return
-        if (mc.thePlayer?.openContainer is ContainerPlayer || currentTerm == -1) leftTerm()
+        if (mc.thePlayer?.openContainer is ContainerPlayer || currentTerm == TerminalTypes.NONE) leftTerm()
     }
 
     @SubscribeEvent
@@ -250,7 +248,8 @@ object TerminalSolver : Module(
     }
 
     private fun leftTerm() {
-        currentTerm = -1
+        TerminalClosedEvent(currentTerm).postAndCatch()
+        currentTerm = TerminalTypes.NONE
         solution = emptyList()
     }
 
@@ -312,4 +311,13 @@ object TerminalSolver : Module(
             Item.getIdFromItem(it.item) != 160
         }.map { items.indexOf(it) }
     }
+}
+
+enum class TerminalTypes(val guiName: String) {
+    PANES("Correct all the panes!"),
+    COLOR("Change all to same color!"),
+    ORDER("Click in order!"),
+    STARTS_WITH("What starts with:"),
+    SELECT("Select all the"),
+    NONE("None")
 }

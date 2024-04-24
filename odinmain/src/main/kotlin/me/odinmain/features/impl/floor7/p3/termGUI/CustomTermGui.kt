@@ -3,6 +3,7 @@ package me.odinmain.features.impl.floor7.p3.termGUI
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.currentTerm
+import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.utils.render.*
 import net.minecraft.client.gui.ScaledResolution
 
@@ -16,11 +17,12 @@ open class CustomTermGui {
             translate(mc.displayWidth / 2, mc.displayHeight / 2)
             scale(TerminalSolver.customScale, TerminalSolver.customScale)
             when (currentTerm) {
-                0 -> PanesGui.render()
-                1 -> RubixGui.render()
-                2 -> OrderGui.render()
-                3 -> StartsWithGui.render()
-                4 -> SelectAllGui.render()
+                TerminalTypes.PANES -> PanesGui.render()
+                TerminalTypes.COLOR -> RubixGui.render()
+                TerminalTypes.ORDER -> OrderGui.render()
+                TerminalTypes.STARTS_WITH -> StartsWithGui.render()
+                TerminalTypes.SELECT -> SelectAllGui.render()
+                TerminalTypes.NONE -> {}
             }
             scale(1f / TerminalSolver.customScale, 1f / TerminalSolver.customScale)
             translate(-mc.displayWidth / 2, -mc.displayHeight / 2)
@@ -29,18 +31,17 @@ open class CustomTermGui {
 
         fun mouseClicked(x: Int, y: Int) {
             when (currentTerm) {
-                0 -> PanesGui.mouseClicked(x, y)
-                1 -> RubixGui.mouseClicked(x, y)
-                2 -> OrderGui.mouseClicked(x, y)
-                3 -> StartsWithGui.mouseClicked(x, y)
-                4 -> SelectAllGui.mouseClicked(x, y)
+                TerminalTypes.PANES -> PanesGui.mouseClicked(x, y)
+                TerminalTypes.COLOR -> RubixGui.mouseClicked(x, y)
+                TerminalTypes.ORDER -> OrderGui.mouseClicked(x, y)
+                TerminalTypes.STARTS_WITH -> StartsWithGui.mouseClicked(x, y)
+                TerminalTypes.SELECT -> SelectAllGui.mouseClicked(x, y)
+                TerminalTypes.NONE -> return
             }
         }
     }
 }
 
 interface TermGui {
-    val itemIndexMap: MutableMap<Int, Box>
     fun render()
-    fun mouseClicked(x: Int, y: Int): Boolean
 }
