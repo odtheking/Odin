@@ -28,7 +28,7 @@ object DragonHealth{
             health >= 1_000_000_000 -> "${String.format("%.2f", health / 1_000_000_000)}b"
             health >= 1_000_000 -> "${(health.toInt() / 1_000_000)}m"
             health >= 1_000 -> "${(health.toInt() / 1_000)}k"
-            else -> "$health"
+            else -> "${health.toInt()}"
         }
     }
 }
