@@ -8,18 +8,7 @@ import me.odinmain.ui.clickgui.util.ColorUtil
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.*
 
-object PanesGui : TermGui {
-    override val itemIndexMap: MutableMap<Int, Box> = mutableMapOf()
-
-    override fun mouseClicked(x: Int, y: Int): Boolean {
-        return itemIndexMap.entries.find {
-            it.value.isPointWithin(x, y)
-        }?.let {
-            mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, it.key, 2, 3, mc.thePlayer)
-            return@let true
-        } ?: false
-    }
-
+object PanesGui : TermGui() {
     override fun render() {
         itemIndexMap.clear()
         roundedRectangle(-300, -150, 600, 300, ColorUtil.moduleButtonColor.withAlpha(.8f), 10f, 1f)
