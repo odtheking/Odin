@@ -8,9 +8,9 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.getBlockAt
 import me.odinmain.utils.toAABB
 import net.minecraft.block.Block
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
@@ -39,7 +39,7 @@ object ClickedSecrets : Module(
         secrets.removeAll { System.currentTimeMillis() - it.timeAdded >= timeToStay * 1000 }
 
         secrets.forEach {
-            val size = if (useRealSize) getBlockAt(it.pos).getSelectedBoundingBox(mc.theWorld, it.pos) else it.pos.toAABB()
+            val size = if (useRealSize) RenderUtils.getBlockAABB(it.block, it.pos) else it.pos.toAABB()
             Renderer.drawBox(size, if (it.locked) lockedColor else color, depth = phase,
                 outlineAlpha = if (style == 0) 0 else color.alpha, fillAlpha = if (style == 1) 0 else color.alpha)
         }
@@ -59,7 +59,7 @@ object ClickedSecrets : Module(
             val pos = packet.position
             val blockState = mc.theWorld?.getBlockState(pos)
             val block = blockState?.block ?: return@onPacket
-            if (!DungeonUtils.isSecret(blockState, pos)) return@onPacket
+            if (!DungeonUtils.isSecret(blockState, pos) || secrets.any{ it.pos == pos }) return@onPacket
 
             secrets.add(Chest(block, pos, System.currentTimeMillis()))
         }

@@ -95,7 +95,6 @@ object PuzzleSolvers : Module(
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
         if (tttSolver) TicTacToe.tttTick(event)
-        //if (iceFillSolver) IceFillSolver.onClientTick(event)
     }
 
     @SubscribeEvent

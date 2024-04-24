@@ -7,10 +7,7 @@ import me.odinmain.utils.round
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.setLoreWidth
 import net.minecraft.inventory.Slot
-import net.minecraft.item.EnumDyeColor
-import net.minecraft.item.Item
-import net.minecraft.item.ItemStack
-import net.minecraftforge.common.MinecraftForge
+import net.minecraft.item.*
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -37,11 +34,6 @@ object StartGui : TermSimGui(
         TerminalTimes.simSelectAllPB
     )
 
-
-    init {
-        MinecraftForge.EVENT_BUS.register(this)
-    }
-
     override fun create() {
         this.inventorySlots.inventorySlots.subList(0, 27).forEachIndexed { index, it ->
             when (index) {
@@ -62,29 +54,23 @@ object StartGui : TermSimGui(
     }
 
     override fun slotClick(slot: Slot, button: Int) {
-        val terms = listOf(
-            CorrectPanes,
-            SameColor,
-            InOrder,
-            StartsWith(StartsWith.letters.shuffled().first()),
-            SelectAll(EnumDyeColor.entries.getRandom().name.replace("_", " ").uppercase())
-        )
         if (slot.slotIndex in listOf(4, 11, 12, 13, 14, 15, 22)) {
             resetInv()
         }
-        when (slot.slotIndex) {
+        val index = if (slot.slotIndex == 22) listOf(11,12,13,14,15).getRandom() else slot.slotIndex
+
+        when (index) {
             4 -> {
                 pbTimes.forEach { it.value = 99.0 }
                 Config.save()
                 modMessage("§cPBs reset!")
                 StartGui.open(ping)
             }
-            11 -> terms[0].open(ping)
-            12 -> terms[1].open(ping)
-            13 -> terms[2].open(ping)
-            14 -> terms[3].open(ping)
-            15 -> terms[4].open(ping)
-            22 -> terms.getRandom().open(ping)
+            11 -> CorrectPanes.open(ping)
+            12 -> SameColor.open(ping)
+            13 -> InOrder.open(ping)
+            14 -> StartsWith(StartsWith.letters.shuffled().first()).open(ping)
+            15 -> SelectAll(EnumDyeColor.entries.getRandom().name.replace("_", " ").uppercase()).open(ping)
         }
     }
 }

@@ -6,11 +6,10 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.HudSetting
-import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.getTextWidth
-import me.odinmain.utils.render.text
+import me.odinmain.utils.render.getMCTextWidth
+import me.odinmain.utils.render.mcText
 import me.odinmain.utils.skyblock.partyMessage
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -20,21 +19,20 @@ object InvincibilityTimer : Module(
     category = Category.SKYBLOCK
 )  {
     private val invincibilityAnnounce: Boolean by BooleanSetting("Announce Invincibility", default = true, description = "Announces when you get invincibility")
+    private val showPrefix: Boolean by BooleanSetting("Show Prefix", default = true, description = "Shows the prefix of the timer")
     private val hud: HudElement by HudSetting("Timer Hud", 10f, 10f, 1f, true) {
         if (it) {
-            text("§bBonzo§f: 59t", 1f, 7f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
-            getTextWidth("Bonzo: 59t", 12f) + 2f to 16f
+            mcText("§bBonzo§f: 59t", 1f, 1f, 1, Color.WHITE, center = false)
+            getMCTextWidth("Bonzo: 59t") + 2f to 10f
         } else {
             if (invincibilityTime.time <= 0) return@HudSetting 0f to 0f
-            if (invincibilityTime.type == "Bonzo") {
-                text("§bBonzo§f: ${invincibilityTime.time }t", 1f, 7f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
-            } else if (invincibilityTime.type == "Phoenix") {
-                text("§6Phoenix§f: ${invincibilityTime.time}t", 1f, 7f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
-            }
+            val invincibilityType = if (invincibilityTime.type == "Bonzo") "§bBonzo§f:" else if (invincibilityTime.type == "Phoenix") "§6Phoenix§f:" else "§5Spirit§f:"
 
-            getTextWidth("Bonzo: 59t", 12f) + 2f to 12f
+            mcText("${if (showPrefix) invincibilityType else ""} ${invincibilityTime.time}t", 1f, 1f, 1, Color.WHITE, center = false)
+            getMCTextWidth("Bonzo: 59t") + 2f to 1f
         }
     }
+
     data class Timer(var time: Int, var type: String)
     private var invincibilityTime = Timer(0, "")
     private val bonzoMaskRegex = Regex("^Your (?:. )?Bonzo's Mask saved your life!$")
