@@ -7,22 +7,17 @@ import me.odinmain.features.impl.floor7.p3.termGUI.CustomTermGui
 import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinmain.ui.util.MouseUtils
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.postAndCatch
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.getMCTextWidth
-import me.odinmain.utils.render.mcText
-import me.odinmain.utils.render.translate
+import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.unformattedName
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.ContainerPlayer
-import net.minecraft.item.EnumDyeColor
-import net.minecraft.item.Item
-import net.minecraft.item.ItemStack
+import net.minecraft.item.*
 import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -163,7 +158,6 @@ object TerminalSolver : Module(
         }
         translate(0f, 0f, -999)
         GlStateManager.popMatrix()
-        //if (customGui) event.isCanceled = true
     }
 
     private fun getShouldBlockWrong(): Boolean {
@@ -187,6 +181,8 @@ object TerminalSolver : Module(
         if (event.slot.slotIndex !in solution || event.slot.inventory == mc.thePlayer.inventory || !enabled || !renderType.equalsOneOf(1,2)) return
         translate(0f, 0f, zLevel)
         GlStateManager.disableLighting()
+        GlStateManager.disableBlend()
+        GlStateManager.enableDepth()
         when (currentTerm) {
             1 -> {
                 val needed = solution.count { it == event.slot.slotIndex }
@@ -202,6 +198,7 @@ object TerminalSolver : Module(
                         else -> orderColor3
                     }.rgba
                     Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, color)
+                    event.isCanceled = true
                 }
                 val amount = event.slot.stack?.stackSize ?: 0
                 mcText(amount.toString(), event.x + 8.5f - getMCTextWidth(amount.toString()) / 2, event.y + 4.5f, 1, textColor, shadow = textShadow, false)
@@ -217,6 +214,13 @@ object TerminalSolver : Module(
     fun onTooltip(event: ItemTooltipEvent) {
         if (!cancelToolTip || currentTerm == -1 || !enabled) return
         event.toolTip.clear()
+    }
+
+    @SubscribeEvent
+    fun guiClick(event: PreGuiClickEvent) {
+        if (renderType != 3 || currentTerm == -1 || !enabled) return
+        CustomTermGui.mouseClicked(MouseUtils.mouseX.toInt(), MouseUtils.mouseY.toInt())
+        event.isCanceled = true
     }
 
     @SubscribeEvent
