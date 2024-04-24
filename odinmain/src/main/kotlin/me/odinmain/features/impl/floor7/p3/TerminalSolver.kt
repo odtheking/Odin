@@ -7,21 +7,17 @@ import me.odinmain.features.impl.floor7.p3.termGUI.CustomTermGui
 import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
+import me.odinmain.ui.util.MouseUtils
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.postAndCatch
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.getMCTextWidth
-import me.odinmain.utils.render.mcText
-import me.odinmain.utils.render.translate
+import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.unformattedName
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.ContainerPlayer
-import net.minecraft.item.EnumDyeColor
-import net.minecraft.item.Item
-import net.minecraft.item.ItemStack
+import net.minecraft.item.*
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -69,42 +65,29 @@ object TerminalSolver : Module(
     var currentTerm = TerminalTypes.NONE
     var solution = listOf<Int>()
 
-    init {
-        onPacket(S2DPacketOpenWindow::class.java) {
-            if (!enabled) return@onPacket
-
-            handlePacket(it.windowTitle.siblings.firstOrNull()?.unformattedText ?: return@onPacket)
-        }
-    }
-
-    fun handlePacket(windowName: String) {
-        terminalNames.indexOfFirst { term ->
-            windowName.startsWith(term) }
-                .takeIf { it != -1 } ?: return
-    }
-
     @SubscribeEvent
     fun onGuiLoad(event: GuiLoadedEvent) {
-        val newTerm = terminalNames.indexOfFirst { event.name.startsWith(it) }
+        val newTerm = TerminalTypes.entries.find { event.name.startsWith(it.guiName) } ?: TerminalTypes.NONE
         if (newTerm != currentTerm) {
             currentTerm = newTerm
             openedTerminalTime = System.currentTimeMillis()
             lastRubixSolution = null
         }
-        if (currentTerm == -1) return leftTerm()
+        if (currentTerm == TerminalTypes.NONE) return leftTerm()
         val items = event.gui.inventory.subList(0, event.gui.inventory.size - 37)
         when (currentTerm) {
-            0 -> solvePanes(items)
-            1 -> solveColor(items)
-            2 -> solveNumbers(items)
-            3 -> {
+            TerminalTypes.PANES -> solvePanes(items)
+            TerminalTypes.COLOR -> solveColor(items)
+            TerminalTypes.ORDER -> solveNumbers(items)
+            TerminalTypes.STARTS_WITH -> {
                 val letter = Regex("What starts with: '(\\w+)'?").find(event.name)?.groupValues?.get(1) ?: return modMessage("Failed to find letter, please report this!")
                 solveStartsWith(items, letter)
             }
-            4 -> {
+            TerminalTypes.SELECT -> {
                 val colorNeeded = EnumDyeColor.entries.find { event.name.contains(it.getName().replace("_", " ").uppercase()) }?.unlocalizedName ?: return modMessage("Failed to find color, please report this!")
                 solveSelect(items, colorNeeded.lowercase())
             }
+            else -> return
         }
         clicksNeeded = solution.size
         TerminalOpenedEvent(currentTerm, solution).postAndCatch()
@@ -202,7 +185,7 @@ object TerminalSolver : Module(
             }
             TerminalTypes.STARTS_WITH -> Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, startsWithColor.rgba)
             TerminalTypes.SELECT -> Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, selectColor.rgba)
-            TerminalTypes.NONE -> {}
+            else -> {}
         }
         GlStateManager.enableLighting()
         translate(0f, 0f, -zLevel)
@@ -216,7 +199,7 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun guiClick(event: PreGuiClickEvent) {
-        if (renderType != 3 || currentTerm == -1 || !enabled) return
+        if (renderType != 3 || currentTerm == TerminalTypes.NONE || !enabled) return
         CustomTermGui.mouseClicked(MouseUtils.mouseX.toInt(), MouseUtils.mouseY.toInt())
         event.isCanceled = true
     }
