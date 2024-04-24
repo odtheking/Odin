@@ -268,7 +268,7 @@ private fun isVecInYZ(vec: Vec3, aabb: AxisAlignedBB): Boolean =
  * @param aabb The axis-aligned bounding box.
  * @return `true` if the Vec3 is within the XZ bounds, `false` otherwise.
  */
-private fun isVecInXZ(vec: Vec3, aabb: AxisAlignedBB): Boolean =
+fun isVecInXZ(vec: Vec3, aabb: AxisAlignedBB): Boolean =
     vec.xCoord in aabb.minX..aabb.maxX && vec.zCoord in aabb.minZ..aabb.maxZ
 
 /**

@@ -4,6 +4,7 @@ import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
+import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.features.settings.impl.DualSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.clock.Clock
@@ -38,13 +39,13 @@ object AutoTerms : Module(
 
         val item = TerminalSolver.solution.getRandom()
 
-        if (TerminalSolver.currentTerm == 1) {
+        if (TerminalSolver.currentTerm == TerminalTypes.COLOR) {
             val needed = TerminalSolver.solution.count { it == item }
             if (needed >= 3) {
                 PlayerUtils.windowClick(item, PlayerUtils.ClickType.Right)
                 return
             }
-        } else if (TerminalSolver.currentTerm == 2) {
+        } else if (TerminalSolver.currentTerm == TerminalTypes.ORDER) {
             PlayerUtils.windowClick(
                 TerminalSolver.solution.first(),
                 if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left

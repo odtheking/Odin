@@ -15,7 +15,7 @@ import kotlin.math.floor
 object CopyChat : Module(
     name = "Copy Chat",
     category = Category.SKYBLOCK,
-    description = "type !help in the corresponding channel for cmd list. Use /blacklist.",
+    description = "Allows you to right click messages in chat to copy them.",
 ) {
     @SubscribeEvent
     fun mouseClicked(event: PreMouseInputEvent) {
@@ -25,8 +25,6 @@ object CopyChat : Module(
         val my = Mouse.getY()
 
         val chatGui = mc.ingameGUI?.chatGUI ?: return
-        val chatComponent = chatGui.getChatComponent(mx, my) ?: return
-
         val maxChatWidth = floor(scaleFactor * 280 + 320).toInt()
         val components = mutableSetOf<String>()
 

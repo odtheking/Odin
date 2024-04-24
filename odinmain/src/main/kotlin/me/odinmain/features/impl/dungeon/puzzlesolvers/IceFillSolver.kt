@@ -11,6 +11,7 @@ import me.odinmain.utils.render.RenderUtils.bind
 import me.odinmain.utils.render.RenderUtils.worldRenderer
 import me.odinmain.utils.skyblock.IceFillFloors.floors
 import me.odinmain.utils.skyblock.IceFillFloors.representativeFloors
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.tiles.Rotations
 import me.odinmain.utils.skyblock.getBlockIdAt
 import me.odinmain.utils.skyblock.isAir
@@ -29,14 +30,13 @@ object IceFillSolver {
     private var renderRotation: Rotations? = null
     private var rPos: MutableList<Vec3> = ArrayList()
 
-
     private fun renderPattern(pos: Vec3, rotation: Rotations) {
         renderRotation = rotation
         rPos.add(Vec3(pos.xCoord + 0.5, pos.yCoord + 0.1, pos.zCoord + 0.5))
     }
 
     fun onRenderWorldLast(color: Color) {
-        if (currentPatterns.size == 0 || rPos.size == 0 /*|| DungeonUtils.currentRoomName != "Ice Fill"*/) return
+        if (currentPatterns.size == 0 || rPos.size == 0 || DungeonUtils.currentRoomName != "Ice Fill") return
         val rotation = renderRotation ?: return
 
         GlStateManager.pushMatrix()

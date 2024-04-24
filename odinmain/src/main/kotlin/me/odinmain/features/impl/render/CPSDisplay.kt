@@ -5,11 +5,13 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.animations.impl.EaseInOut
 import me.odinmain.ui.clickgui.util.ColorUtil.brighter
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.dropShadow
+import me.odinmain.utils.render.mcText
+import me.odinmain.utils.render.roundedRectangle
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -18,6 +20,13 @@ object CPSDisplay : Module(
     description = "Displays your CPS.",
     category = Category.RENDER
 ) {
+    private val countPackets: Boolean by BooleanSetting("Count Packets", false, description = "Counts packets sent outside of the rightclickmouse method, this will be better at detecting other mods' auto clickers, but might show inaccurate values.")
+    private val advanced: Boolean by DropdownSetting("Show Settings", false)
+    private val button: Int by SelectorSetting("Button", "Both", arrayListOf("Left", "Right", "Both")).withDependency { advanced }
+    private val mouseText: Boolean by BooleanSetting("Show Button", true).withDependency { advanced }
+    private val color: Color by ColorSetting("Color", Color(21, 22, 23, 0.5f), allowAlpha = true).withDependency { advanced }
+    private val textColor: Color by ColorSetting("Text Color", Color(239, 239, 239, 1f), allowAlpha = true).withDependency { advanced }
+    private val outline: Boolean by BooleanSetting("Outline", true).withDependency { advanced }
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 2f, false) {
         leftClicks.removeAll { System.currentTimeMillis() - it > 1000 }
         rightClicks.removeAll { System.currentTimeMillis() - it > 1000 }
@@ -37,44 +46,26 @@ object CPSDisplay : Module(
 
         if (mouseText) {
             if (button == 2) {
-                text("LMB", 25f, 9f, textColor, 10f, OdinFont.BOLD, TextAlign.Middle)
-                text(leftClicks.size.toString(), 25f, 30f, textColor, 18.5f, OdinFont.BOLD, TextAlign.Middle)
+                mcText("LMB", 15f, 1f, 1, textColor, center = false)
+                mcText(leftClicks.size.toString(), 20f, 15f, 2, textColor, center = false)
 
-                text("RMB", 75f, 9f, textColor, 10f, OdinFont.BOLD, TextAlign.Middle)
-                text(rightClicks.size.toString(), 75f, 30f, textColor, 18.5f, OdinFont.BOLD, TextAlign.Middle)
+                mcText("RMB", 65f, 1f, 1, textColor, center = false)
+                mcText(rightClicks.size.toString(), 70f, 15f, 2, textColor, center = false)
             } else {
                 val text = if (button == 0) "LMB" else "RMB"
-                text(text, 25f, 9f, textColor, 10f, OdinFont.BOLD, TextAlign.Middle)
-                text(value, 25f, 20f, textColor, 28f, OdinFont.BOLD, TextAlign.Middle)
+                mcText(text, 15f, 1f, 1, textColor, center = false)
+                mcText(value, 20f, 15f, 2, textColor, center = false)
             }
         } else {
             if (button == 2) {
-                text(leftClicks.size.toString(), 25f, 13f, textColor, 24f, OdinFont.BOLD, TextAlign.Middle)
-                text(rightClicks.size.toString(), 75f, 13f, textColor, 24f, OdinFont.BOLD, TextAlign.Middle)
-            } else text(value, 25f, 19f, textColor, 24f, OdinFont.BOLD, TextAlign.Middle)
+                mcText(leftClicks.size.toString(), 15f, 10f, 2, textColor, center = false)
+                mcText(rightClicks.size.toString(), 65f, 10f, 2, textColor, center = false)
+            } else mcText(value, 20f, 10f, 2, textColor, center = false)
         }
         if (button == 2) 100f to 38f else 50f to 38f
-
     }
 
-    private val countPackets: Boolean by BooleanSetting("Count Packets", false, description = "Counts packets sent outside of the rightclickmouse method, this will be better at detecting other mods' auto clickers, but might show inaccurate values.")
 
-    private val advanced: Boolean by DropdownSetting("Show Settings", false)
-
-    private val button: Int by SelectorSetting("Button", "Both", arrayListOf("Left", "Right", "Both"))
-        .withDependency { advanced }
-
-    private val mouseText: Boolean by BooleanSetting("Show Button", true)
-        .withDependency { advanced }
-
-    private val color: Color by ColorSetting("Color", Color(21, 22, 23, 0.25f), allowAlpha = true)
-        .withDependency { advanced }
-
-    private val textColor: Color by ColorSetting("Text Color", Color(239, 239, 239, 1f), allowAlpha = true)
-        .withDependency { advanced }
-
-    private val outline: Boolean by BooleanSetting("Outline", true)
-        .withDependency { advanced }
 
     private val leftAnim = EaseInOut(300)
     private val rightAnim = EaseInOut(300)
