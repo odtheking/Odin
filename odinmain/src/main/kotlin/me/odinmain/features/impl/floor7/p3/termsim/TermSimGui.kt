@@ -12,7 +12,9 @@ import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiChest
-import net.minecraft.inventory.*
+import net.minecraft.inventory.ContainerChest
+import net.minecraft.inventory.InventoryBasic
+import net.minecraft.inventory.Slot
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.C0EPacketClickWindow
@@ -73,9 +75,10 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
 
     @SubscribeEvent
     fun onPacketSend(event: PacketSentEvent) {
-        if (event.packet !is C0EPacketClickWindow || mc.currentScreen != this) return
+        val packet = event.packet
+        if (packet !is C0EPacketClickWindow || mc.currentScreen != this) return
         event.isCanceled = true
-        delaySlotClick(this.inventorySlots.inventorySlots[event.packet.slotId], event.packet.usedButton)
+        delaySlotClick(this.inventorySlots.inventorySlots[packet.slotId], packet.usedButton)
     }
 
     protected fun resetInv() {
