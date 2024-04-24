@@ -1,7 +1,7 @@
 package me.odinmain.features.impl.floor7
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.events.impl.ReceivePacketEvent
+import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.features.impl.floor7.WitherDragons.sendNotification
 import me.odinmain.features.impl.floor7.WitherDragons.sendSpawned
 import me.odinmain.features.impl.floor7.WitherDragons.sendSpray
@@ -53,7 +53,7 @@ object DragonCheck {
         lastDragonDeath = dragon.name
     }
 
-    fun dragonSprayed(event: ReceivePacketEvent) {
+    fun dragonSprayed(event: PacketReceivedEvent) {
         if (event.packet !is S04PacketEntityEquipment) return
         if (event.packet.itemStack?.item != Item.getItemFromBlock(Blocks.packed_ice)) return
 

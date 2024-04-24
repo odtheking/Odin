@@ -1,6 +1,6 @@
 package me.odinmain.features.impl.floor7
 
-import me.odinmain.events.impl.ReceivePacketEvent
+import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.DragonBoxes.renderBoxes
@@ -146,7 +146,7 @@ object WitherDragons : Module(
     }
 
     @SubscribeEvent
-    fun onPacket(event: ReceivePacketEvent) {
+    fun onPacket(event: PacketReceivedEvent) {
         if (DungeonUtils.getPhase() != Island.M7P5) return
         dragonSprayed(event)
     }
