@@ -79,7 +79,9 @@ fun handleSpawnPacket(particle: S2APacketParticles) {
             dragon.spawning = true
         }
     }
-    priorityDragon = sortPriority(WitherDragonsEnum.entries.filter { it.spawning }.toMutableList())
+    val spawningDragons = WitherDragonsEnum.entries.filter { it.spawning }.toMutableList()
+    if (spawningDragons.isEmpty()) return
+    priorityDragon = sortPriority(spawningDragons)
     if (priorityDragon.particleSpawnTime == System.currentTimeMillis()) dragonPrioritySpawn(priorityDragon)
 }
 

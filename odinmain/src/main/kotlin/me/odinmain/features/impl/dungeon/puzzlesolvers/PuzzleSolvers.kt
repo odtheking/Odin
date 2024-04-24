@@ -3,19 +3,28 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 import me.odinmain.OdinMain
 import me.odinmain.events.impl.ClickEvent
 import me.odinmain.events.impl.EnteredDungeonRoomEvent
+import me.odinmain.events.impl.RenderEntityModelEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.impl.dungeon.puzzlesolvers.BlazeSolver.blazes
+import me.odinmain.features.impl.dungeon.puzzlesolvers.BlazeSolver.removeBlaze
+import me.odinmain.features.impl.dungeon.puzzlesolvers.BlazeSolver.resetBlazes
 import me.odinmain.features.impl.dungeon.puzzlesolvers.WaterSolver.waterInteract
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.ActionSetting
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.profile
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.modMessage
+import net.minecraft.entity.monster.EntityBlaze
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.event.entity.living.LivingDeathEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
@@ -44,6 +53,8 @@ object PuzzleSolvers : Module(
     val action: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
         IceFillSolver.reset()
     }.withDependency { iceFillSolver }
+
+    //val blazeSolver: Boolean by BooleanSetting("Blaze Solver", true, description = "Solver for the blaze puzzle")
 
     override fun onKeybind() {
         IceFillSolver.reset()
@@ -77,12 +88,13 @@ object PuzzleSolvers : Module(
             if (tpMaze) TPMaze.tpRender()
             if (tttSolver) TicTacToe.tttRender()
             if (iceFillSolver) IceFillSolver.onRenderWorldLast(iceFillColor)
+            //if (blazeSolver) BlazeSolver.renderBlazes()
         }
     }
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        if (tttSolver)TicTacToe.tttTick(event)
+        if (tttSolver) TicTacToe.tttTick(event)
         //if (iceFillSolver) IceFillSolver.onClientTick(event)
     }
 
@@ -93,7 +105,23 @@ object PuzzleSolvers : Module(
 
     @SubscribeEvent
     fun onRoomEnter(event: EnteredDungeonRoomEvent) {
-        IceFillSolver.enterDungeonRoom(event)
-        BlazeSolver.getRoomType()
+        if (iceFillSolver) IceFillSolver.enterDungeonRoom(event)
+        //if (blazeSolver) BlazeSolver.getRoomType()
     }
+
+    /**
+    @SubscribeEvent
+    fun onBlazeDeath(event: LivingDeathEvent) {
+        if (event.entity is EntityBlaze && blazeSolver && blazes.isNotEmpty()) {
+            removeBlaze()
+        }
+    }
+
+    init {
+        onMessage(Regex("^PUZZLE FAIL! (.*) killed a Blaze in the wrong order! Yikes!")) {
+            modMessage("lol")
+            if (blazeSolver) resetBlazes()
+        }
+    }
+    */
 }

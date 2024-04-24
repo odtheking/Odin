@@ -7,6 +7,8 @@ import me.odinmain.OdinMain.scope
 import me.odinmain.commands.commodore
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.ModuleManager.generateReadme
+import me.odinmain.features.impl.dungeon.puzzlesolvers.BlazeSolver.blazes
+import me.odinmain.features.impl.dungeon.puzzlesolvers.BlazeSolver.getRoomType
 import me.odinmain.features.impl.dungeon.puzzlesolvers.TPMaze
 import me.odinmain.features.impl.render.DevPlayers.updateDevs
 import me.odinmain.utils.*
@@ -28,6 +30,15 @@ val devCommand = commodore("oddev") {
     literal("getdata") {
         literal("entity").runs { copyEntityData() }
         literal("block").runs { copyBlockData() }
+    }
+
+    literal("getblazes").runs {
+        blazes.clear()
+        getRoomType()
+    }
+
+    literal("sayblazes").runs {
+        modMessage(blazes)
     }
 
     literal("testtp").runs {
