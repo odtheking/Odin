@@ -14,4 +14,4 @@ class ReceivePacketEvent(val packet: Packet<*>) : Event()
  * @see me.odinmain.mixin.MixinNetworkManager.onSendPacket
  */
 @Cancelable
-class PacketSentEvent(val packet: Packet<*>) : Event()
+class PacketSentEvent(var packet: Packet<*>) : Event()
