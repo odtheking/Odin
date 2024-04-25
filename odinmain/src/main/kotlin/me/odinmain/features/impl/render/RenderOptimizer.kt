@@ -1,6 +1,6 @@
 package me.odinmain.features.impl.render
 
-import me.odinmain.events.impl.ReceivePacketEvent
+import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -43,7 +43,7 @@ object RenderOptimizer : Module(
 
     private val dungeonMobSpawns = setOf("Lurker", "Dreadlord", "Souleater", "Zombie", "Skeleton", "Skeletor", "Sniper", "Super Archer", "Spider", "Fels", "Withermancer")
     @SubscribeEvent
-    fun spawnObject(event: ReceivePacketEvent) {
+    fun spawnObject(event: PacketReceivedEvent) {
         if (event.packet !is S0EPacketSpawnObject || event.packet.type != 70 || !fallingBlocks) return
         event.isCanceled = true
     }
@@ -75,7 +75,7 @@ object RenderOptimizer : Module(
     }
 
     @SubscribeEvent
-    fun onPacket(event: ReceivePacketEvent) {
+    fun onPacket(event: PacketReceivedEvent) {
         if (event.packet !is S2APacketParticles) return
 
         if (DungeonUtils.getPhase() == Island.M7P5 && hideParticles &&

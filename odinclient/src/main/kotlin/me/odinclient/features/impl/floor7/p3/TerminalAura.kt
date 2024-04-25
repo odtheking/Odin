@@ -1,5 +1,7 @@
 package me.odinclient.features.impl.floor7.p3
 
+import me.odinmain.events.impl.PacketReceivedEvent
+import me.odinmain.events.impl.PacketSentEvent
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -12,6 +14,7 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.inventory.ContainerPlayer
 import net.minecraft.network.play.client.C02PacketUseEntity
+import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraft.util.Vec3
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
@@ -22,15 +25,37 @@ object TerminalAura : Module(
     description = "Automatically interacts with inactive terminals in M7P3.",
     tag = TagType.RISKY
 ) {
+
+    private val throttleInteract: Boolean by BooleanSetting("Throttle Interact", true)
     private val onGround: Boolean by BooleanSetting("On Ground", true)
 
     private val clickClock = Clock(1000)
+    private val interactClock = Clock(500)
     private val terminalEntityList = mutableListOf<EntityArmorStand>()
 
     init {
         onWorldLoad {
             terminalEntityList.clear()
         }
+
+        onMessage(Regex("This Terminal doesn't seem to be responsive at the moment.")) {
+            interactClock.update()
+        }
+    }
+
+    @SubscribeEvent
+    fun onPacketSent(event: PacketSentEvent) {
+        val packet = event.packet
+        if (packet !is C02PacketUseEntity) return
+        if (!throttleInteract || packet.getEntityFromWorld(mc.theWorld).name.noControlCodes != "Inactive Terminal") return
+        if (!interactClock.hasTimePassed()) event.isCanceled = true else interactClock.update()
+    }
+
+    @SubscribeEvent
+    fun onPacketReceived(event: PacketReceivedEvent) {
+        if (event.packet !is S2DPacketOpenWindow) return
+        val title = (event.packet as S2DPacketOpenWindow).windowTitle.formattedText.noControlCodes
+        if (title == "Click the button on time!") interactClock.update()
     }
 
     @SubscribeEvent
