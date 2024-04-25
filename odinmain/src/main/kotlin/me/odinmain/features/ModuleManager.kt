@@ -150,7 +150,7 @@ object ModuleManager {
     }
 
     @SubscribeEvent
-    fun onReceivePacket(event: ReceivePacketEvent) {
+    fun onReceivePacket(event: PacketReceivedEvent) {
         packetFunctions
             .filter { it.type.isInstance(event.packet) && it.shouldRun.invoke() }
             .forEach { it.function(event.packet) }

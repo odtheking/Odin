@@ -28,7 +28,7 @@ object EventDispatcher {
      * Dispatches [ChatPacketEvent] and [RealServerTick].
      */
     @SubscribeEvent
-    fun onPacket(event: ReceivePacketEvent) {
+    fun onPacket(event: PacketReceivedEvent) {
         if (event.packet is S32PacketConfirmTransaction) RealServerTick().postAndCatch()
 
         if (event.packet !is S02PacketChat || !ChatPacketEvent(event.packet.chatComponent.unformattedText.noControlCodes).postAndCatch()) return
