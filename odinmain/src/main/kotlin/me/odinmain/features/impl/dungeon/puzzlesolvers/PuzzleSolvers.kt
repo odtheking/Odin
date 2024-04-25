@@ -45,9 +45,6 @@ object PuzzleSolvers : Module(
         IceFillSolver.reset()
     }.withDependency { iceFillSolver }
 
-    override fun onKeybind() {
-        IceFillSolver.reset()
-    }
     init {
         execute(500) {
             if (waterSolver) WaterSolver.scan()
