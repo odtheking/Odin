@@ -10,8 +10,13 @@ object SelectAllGui : TermGui() {
     override fun render() {
         itemIndexMap.clear()
         roundedRectangle(-300, -175, 600, 350, TerminalSolver.customGuiColor, 10f, 1f)
-        text("Select all the  \"*\" items!", -295, -163, Color.WHITE, 20, verticalAlign = TextPos.Top)
-        roundedRectangle(-298, -135, getTextWidth("Select all the  \"*\" items!", 20f), 3, Color.WHITE, radius = 5f)
+        if (TerminalSolver.customGuiText == 0) {
+            text("Select All the \"*\" Items!", -295, -163, Color.WHITE, 20, verticalAlign = TextPos.Top)
+            roundedRectangle(-298, -135, getTextWidth("Select All the \"*\" Items!", 20f), 3, Color.WHITE, radius = 5f)
+        } else if (TerminalSolver.customGuiText == 1) {
+            text("Select All the \"*\" Items!", 0, -163, Color.WHITE, 20, align = TextAlign.Middle, verticalAlign = TextPos.Top)
+            roundedRectangle(-getTextWidth("Select All the \"*\" Items!", 20f) / 2, -135, getTextWidth("Select All the \"*\" Items!", 20f), 3, Color.WHITE, radius = 5f)
+        }
         solution.forEach { pane ->
             val row = pane / 9 - 1
             val col = pane % 9 - 2

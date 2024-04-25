@@ -10,8 +10,13 @@ object StartsWithGui : TermGui() {
     override fun render() {
         itemIndexMap.clear()
         roundedRectangle(-300, -175, 600, 350, TerminalSolver.customGuiColor, 10f, 1f)
-        text("What starts with: \"*\"?", -295, -163, Color.WHITE, 20, verticalAlign = TextPos.Top)
-        roundedRectangle(-298, -135, getTextWidth("What starts with: \"*\"?", 20f), 3, Color.WHITE, radius = 5f)
+        if (TerminalSolver.customGuiText == 0) {
+            text("What Starts With \"*\"?", -295, -163, Color.WHITE, 20, verticalAlign = TextPos.Top)
+            roundedRectangle(-298, -135, getTextWidth("What Starts With \"*\"?", 20f), 3, Color.WHITE, radius = 5f)
+        } else if (TerminalSolver.customGuiText == 1) {
+            text("What Starts With \"*\"?", 0, -163, Color.WHITE, 20, align = TextAlign.Middle, verticalAlign = TextPos.Top)
+            roundedRectangle(-getTextWidth("What Starts With \"*\"?", 20f) / 2, -135, getTextWidth("What Starts With \"*\"?", 20f), 3, Color.WHITE, radius = 5f)
+        }
         solution.forEach { pane ->
             val row = pane / 9 - 1
             val col = pane % 9 - 2

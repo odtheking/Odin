@@ -10,8 +10,13 @@ object PanesGui : TermGui() {
     override fun render() {
         itemIndexMap.clear()
         roundedRectangle(-300, -150, 600, 300, TerminalSolver.customGuiColor, 10f, 1f)
-        text("Select All the Panes", -295, -138, Color.WHITE, 20, verticalAlign = TextPos.Top)
-        roundedRectangle(-298, -110, getTextWidth("Select All the Panes", 20f), 3, Color.WHITE, radius = 5f)
+        if (TerminalSolver.customGuiText == 0) {
+            text("Correct All the Panes", -295, -138, Color.WHITE, 20, verticalAlign = TextPos.Top)
+            roundedRectangle(-298, -110, getTextWidth("Correct All the Panes", 20f), 3, Color.WHITE, radius = 5f)
+        } else if (TerminalSolver.customGuiText == 1) {
+            text("Correct All the Panes", 0, -138, Color.WHITE, 20, align = TextAlign.Middle, verticalAlign = TextPos.Top)
+            roundedRectangle(-getTextWidth("Correct All the Panes", 20f) / 2, -110, getTextWidth("Correct All the Panes", 20f), 3, Color.WHITE, radius = 5f)
+        }
         solution.forEach { pane ->
             val row = pane / 9 - 1
             val col = pane % 9 - 2

@@ -12,19 +12,14 @@ import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.util.MouseUtils
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.postAndCatch
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.getMCTextWidth
-import me.odinmain.utils.render.mcText
-import me.odinmain.utils.render.translate
+import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.unformattedName
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.ContainerPlayer
-import net.minecraft.item.EnumDyeColor
-import net.minecraft.item.Item
-import net.minecraft.item.ItemStack
+import net.minecraft.item.*
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -39,8 +34,10 @@ object TerminalSolver : Module(
     private val lockRubixSolution: Boolean by BooleanSetting("Lock Rubix Solution", false, description = "Locks the 'correct' color of the rubix terminal to the one that was scanned first, should make the solver less 'jumpy'.")
     private val cancelToolTip: Boolean by BooleanSetting("Stop Tooltips", default = true, description = "Stops rendering tooltips in terminals")
     private val renderType: Int by SelectorSetting("Mode", "Odin", arrayListOf("Odin", "Skytils", "SBE", "Custom GUI"))
+    val customGuiText: Int by SelectorSetting("Custom Gui Title", "Top Left", arrayListOf("Top Left", "Middle", "Disabled")).withDependency { renderType == 3 }
     val customScale: Float by NumberSetting("Custom Scale", 1f, .8f, 2.5f, .1f, description = "Size of the Custom Terminal Gui").withDependency { renderType == 3 }
     val textShadow: Boolean by BooleanSetting("Shadow", true, description = "Adds a shadow to the text")
+    val renderOrderNumbers: Boolean by BooleanSetting("Render Order Numbers", true)
 
     private val showRemoveWrongSettings: Boolean by DropdownSetting("Render Wrong Settings").withDependency { renderType.equalsOneOf(1,2) }
     private val removeWrong: Boolean by BooleanSetting("Stop Rendering Wrong").withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings }
@@ -151,8 +148,10 @@ object TerminalSolver : Module(
                     Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, color)
                     event.isCanceled = true
                 }
-                val amount = event.slot.stack?.stackSize ?: 0
-                mcText(amount.toString(), event.x + 8.5f - getMCTextWidth(amount.toString()) / 2, event.y + 4.5f, 1, textColor, shadow = textShadow, false)
+                if (renderOrderNumbers) {
+                    val amount = event.slot.stack?.stackSize ?: 0
+                    mcText(amount.toString(), event.x + 8.5f - getMCTextWidth(amount.toString()) / 2, event.y + 4.5f, 1, textColor, shadow = textShadow, false)
+                }
             }
             TerminalTypes.STARTS_WITH -> if (renderType != 1) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, startsWithColor.rgba)
             TerminalTypes.SELECT -> if (renderType != 1) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, selectColor.rgba)
