@@ -125,7 +125,7 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun drawSlot(event: DrawSlotEvent) {
-        if ((removeWrong) && enabled && getShouldBlockWrong() && event.slot.slotIndex <= event.container.inventorySlots.size - 37 && event.slot.slotIndex !in solution)  event.isCanceled = true
+        if ((removeWrong || renderType == 0) && enabled && getShouldBlockWrong() && event.slot.slotIndex <= event.container.inventorySlots.size - 37 && event.slot.slotIndex !in solution) event.isCanceled = true
         if (event.slot.slotIndex !in solution || event.slot.inventory == mc.thePlayer.inventory || !enabled || renderType == 3) return
 
         translate(0f, 0f, zLevel)
