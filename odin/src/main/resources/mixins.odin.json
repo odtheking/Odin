@@ -21,6 +21,7 @@
     "mixins.MixinFontRenderer",
     "mixins.MixinGuiContainer",
     "mixins.MixinGuiScreen",
+    "mixins.MixinItem",
     "mixins.MixinItemRenderer",
     "mixins.MixinLayerCape",
     "mixins.MixinMinecraft",
@@ -33,7 +34,6 @@
     "mixins.MixinRenderPlayer",
     "mixins.MixinSoundManager",
     "mixins.model.MixinModelBiped",
-    "mixins.model.MixinModelBlaze",
-    "mixins.MixinItem"
+    "mixins.model.MixinModelBlaze"
   ]
 }

@@ -116,8 +116,7 @@ object ModuleManager {
         VisualWords,
         HidePlayers,
         WarpCooldown,
-        CopyChat,
-        PartyNote
+        CopyChat
     )
 
     init {
