@@ -10,14 +10,19 @@ import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.util.MouseUtils
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.postAndCatch
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.getMCTextWidth
+import me.odinmain.utils.render.mcText
+import me.odinmain.utils.render.translate
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.unformattedName
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.ContainerPlayer
-import net.minecraft.item.*
+import net.minecraft.item.EnumDyeColor
+import net.minecraft.item.Item
+import net.minecraft.item.ItemStack
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -57,7 +62,7 @@ object TerminalSolver : Module(
     val selectColor: Color by ColorSetting("Select Color", Color(0, 170, 170), true).withDependency { showColors }
 
     private var lastRubixSolution: Int? = null
-    private val zLevel get() = if (renderType == 1 && currentTerm.equalsOneOf(3,4)) 100f else 400f
+    private val zLevel get() = if (renderType == 1 && currentTerm.equalsOneOf(TerminalTypes.STARTS_WITH, TerminalTypes.SELECT)) 100f else 400f
     var openedTerminalTime = 0L
     var clicksNeeded = -1
 

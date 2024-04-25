@@ -33,13 +33,13 @@ object BlessingDisplay : Module(
     private val wisdomColor: Color by ColorSetting("Wisdom Color", Color.BLUE, true, description = "The color of the wisdom blessing.").withDependency { wisdom }
 
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
-        val activeBlessings = Blessings.entries.filter { blessings ->  blessings.current > 0 || blessings.enabled.invoke() }
+        val activeBlessings = Blessings.entries.filter { blessings -> blessings.enabled.invoke() }
         if (it) {
             activeBlessings.forEachIndexed { index, blessing ->
                 mcText("${blessing.displayString} §a29§r", 0f, 10f * index, 1, blessing.color, center = false)
             }
         } else {
-            activeBlessings.forEachIndexed { index, blessing ->
+            activeBlessings.filter { blessing -> blessing.current > 0 }.forEachIndexed { index, blessing ->
                 mcText("${blessing.displayString} §a${blessing.current}§r", 0f, 5f + 10 * (index - 1), 1, blessing.color, center = false)
             }
         }
