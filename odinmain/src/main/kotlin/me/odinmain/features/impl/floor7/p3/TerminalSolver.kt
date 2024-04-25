@@ -40,7 +40,7 @@ object TerminalSolver : Module(
     private val cancelToolTip: Boolean by BooleanSetting("Stop Tooltips", default = true, description = "Stops rendering tooltips in terminals")
     private val renderType: Int by SelectorSetting("Mode", "Odin", arrayListOf("Odin", "Skytils", "SBE", "Custom GUI"))
     val customScale: Float by NumberSetting("Custom Scale", 1f, .8f, 2.5f, .1f, description = "Size of the Custom Terminal Gui").withDependency { renderType == 3 }
-    private val textShadow: Boolean by BooleanSetting("Shadow", true, description = "Adds a shadow to the text")
+    val textShadow: Boolean by BooleanSetting("Shadow", true, description = "Adds a shadow to the text")
 
     private val showRemoveWrongSettings: Boolean by DropdownSetting("Render Wrong Settings").withDependency { renderType.equalsOneOf(1,2) }
     private val removeWrong: Boolean by BooleanSetting("Stop Rendering Wrong").withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings }
@@ -51,7 +51,7 @@ object TerminalSolver : Module(
 
     private val showColors: Boolean by DropdownSetting("Color Settings")
     private val wrongColor: Color by ColorSetting("Wrong Color", Color(45, 45, 45), true).withDependency { renderType == 0 && showColors }
-    private val textColor: Color by ColorSetting("Text Color", Color(220, 220, 220), true).withDependency { showColors }
+    val textColor: Color by ColorSetting("Text Color", Color(220, 220, 220), true).withDependency { showColors }
     val panesColor: Color by ColorSetting("Panes Color", Color(0, 170, 170), true).withDependency { showColors }
     val rubixColor: Color by ColorSetting("Rubix Color", Color(0, 170, 170), true).withDependency { showColors }
     val oppositeRubixColor: Color by ColorSetting("Negative Rubix Color", Color(170, 85, 0), true).withDependency { showColors }
@@ -171,7 +171,7 @@ object TerminalSolver : Module(
     @SubscribeEvent
     fun guiClick(event: PreGuiClickEvent) {
         if (renderType != 3 || currentTerm == TerminalTypes.NONE || !enabled) return
-        CustomTermGui.mouseClicked(MouseUtils.mouseX.toInt(), MouseUtils.mouseY.toInt())
+        CustomTermGui.mouseClicked(MouseUtils.mouseX.toInt(), MouseUtils.mouseY.toInt(), event.button)
         event.isCanceled = true
     }
 
