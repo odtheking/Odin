@@ -1,7 +1,7 @@
 package me.odinmain.features.impl.floor7
 
 import me.odinmain.features.impl.floor7.DragonPriority.dragonPrioritySpawn
-import me.odinmain.features.impl.floor7.DragonPriority.sortPriority
+import me.odinmain.features.impl.floor7.DragonPriority.findPriority
 import me.odinmain.features.impl.floor7.WitherDragons.bluePB
 import me.odinmain.features.impl.floor7.WitherDragons.greenPB
 import me.odinmain.features.impl.floor7.WitherDragons.orangePB
@@ -79,8 +79,8 @@ fun handleSpawnPacket(particle: S2APacketParticles) {
     }
     val spawningDragons = WitherDragonsEnum.entries.filter { it.spawning }.toMutableList()
     if (spawningDragons.isEmpty()) return
-    priorityDragon = sortPriority(spawningDragons)
-    if (priorityDragon.particleSpawnTime == System.currentTimeMillis()) dragonPrioritySpawn(priorityDragon)
+    priorityDragon = findPriority(spawningDragons)
+    if (priorityDragon.particleSpawnTime == System.currentTimeMillis() +- 100) dragonPrioritySpawn(priorityDragon)
 }
 
 private fun checkParticle(event: S2APacketParticles, color: WitherDragonsEnum): Boolean {
