@@ -106,44 +106,9 @@ object TerminalSolver : Module(
             event.isCanceled = true
             return
         }
-        translate(event.guiLeft.toFloat(), event.guiTop.toFloat(), 999f)
+        translate(event.guiLeft.toFloat(), event.guiTop.toFloat(), 399f)
         Gui.drawRect(7, 16, event.xSize - 7, event.ySize - 96, wrongColor.rgba)
-        translate(-event.guiLeft.toFloat(), -event.guiTop.toFloat(), -999f)
-        GlStateManager.pushMatrix()
-        translate(event.guiLeft.toFloat(), event.guiTop.toFloat(), 999)
-        solution.forEach { slotIndex ->
-            val slot = event.container.inventorySlots[slotIndex]
-            val x = slot.xDisplayPosition
-            val y = slot.yDisplayPosition
-            when (currentTerm) {
-                TerminalTypes.PANES -> Gui.drawRect(x, y, x + 16, y + 16, panesColor.rgba)
-                TerminalTypes.COLOR -> {
-                    val needed = solution.count { it == slot.slotIndex }
-                    val text = if (needed < 3) needed.toString() else (needed - 5).toString()
-                    Gui.drawRect(x, y, x + 16, y + 16, if (needed < 3) rubixColor.rgba else oppositeRubixColor.rgba)
-                    mcText(text, x + 8f - getMCTextWidth(text) / 2, y + 4.5, 1, textColor, shadow = textShadow, false)
-                }
-                TerminalTypes.ORDER -> {
-                    val index = solution.indexOf(slot.slotIndex)
-                    if (index < 3) {
-                        val color = when (index) {
-                            0 -> orderColor
-                            1 -> orderColor2
-                            else -> orderColor3
-                        }.rgba
-                        Gui.drawRect(x, y, x + 16, y + 16, color)
-                    }
-                    val amount = slot.stack?.stackSize ?: 0
-                    mcText(amount.toString(), x + 8.5f - getMCTextWidth(amount.toString()) / 2, y + 4.5f, 1, textColor, shadow = textShadow, false)
-
-                }
-                TerminalTypes.STARTS_WITH -> Gui.drawRect(x, y, x + 16, y + 16, startsWithColor.rgba)
-                TerminalTypes.SELECT -> Gui.drawRect(x, y, x + 16, y + 16, selectColor.rgba)
-                TerminalTypes.NONE -> return@forEach
-            }
-        }
-        translate(0f, 0f, -999)
-        GlStateManager.popMatrix()
+        translate(-event.guiLeft.toFloat(), -event.guiTop.toFloat(), -399f)
     }
 
     private fun getShouldBlockWrong(): Boolean {
@@ -160,18 +125,18 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun drawSlot(event: DrawSlotEvent) {
-        if ((removeWrong || renderType == 0) && enabled && getShouldBlockWrong() && event.slot.slotIndex <= event.container.inventorySlots.size - 37 && event.slot.slotIndex !in solution)  {
-            event.isCanceled = true
-            return
-        }
-        if (event.slot.slotIndex !in solution || event.slot.inventory == mc.thePlayer.inventory || !enabled || !renderType.equalsOneOf(1,2)) return
+        if ((removeWrong) && enabled && getShouldBlockWrong() && event.slot.slotIndex <= event.container.inventorySlots.size - 37 && event.slot.slotIndex !in solution)  event.isCanceled = true
+        if (event.slot.slotIndex !in solution || event.slot.inventory == mc.thePlayer.inventory || !enabled || renderType == 3) return
+
         translate(0f, 0f, zLevel)
         GlStateManager.disableLighting()
-        GlStateManager.enableDepth()
         when (currentTerm) {
+            TerminalTypes.PANES -> Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, panesColor.rgba)
+
             TerminalTypes.COLOR -> {
                 val needed = solution.count { it == event.slot.slotIndex }
                 val text = if (needed < 3) needed.toString() else (needed - 5).toString()
+                Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, if (needed < 3) rubixColor.rgba else oppositeRubixColor.rgba)
                 mcText(text, event.x + 8f - getMCTextWidth(text) / 2, event.y + 4.5, 1, textColor, shadow = textShadow, false)
             }
             TerminalTypes.ORDER -> {
@@ -188,8 +153,8 @@ object TerminalSolver : Module(
                 val amount = event.slot.stack?.stackSize ?: 0
                 mcText(amount.toString(), event.x + 8.5f - getMCTextWidth(amount.toString()) / 2, event.y + 4.5f, 1, textColor, shadow = textShadow, false)
             }
-            TerminalTypes.STARTS_WITH -> Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, startsWithColor.rgba)
-            TerminalTypes.SELECT -> Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, selectColor.rgba)
+            TerminalTypes.STARTS_WITH -> if (renderType != 1) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, startsWithColor.rgba)
+            TerminalTypes.SELECT -> if (renderType != 1) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, selectColor.rgba)
             else -> {}
         }
         GlStateManager.enableLighting()
@@ -224,15 +189,11 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
-        val match = Regex("(.+) (?:activated|completed) a terminal! \\((\\d)/(\\d)\\)").find(event.message) ?: return
-        if (match.groups[1]?.value != mc.thePlayer.name) return
-        leftTerm()
-    }
-
-    @SubscribeEvent
-    fun onGateBroken(event: ChatPacketEvent) {
         val match = Regex("(.+) (?:activated|completed) a (?:terminal|lever)! \\((\\d)/(\\d)\\)").find(event.message) ?: return
-        if (match.groups[2]?.value == "(7/7)" || match.groups[2]?.value == "(8/8)") leftTerm()
+        val playerName = match.groups[1]?.value
+        val completionStatus = match.groups[2]?.value
+        if (playerName != mc.thePlayer.name) return
+        if (completionStatus == "(7/7)" || completionStatus == "(8/8)") leftTerm()
     }
 
     private fun leftTerm() {
