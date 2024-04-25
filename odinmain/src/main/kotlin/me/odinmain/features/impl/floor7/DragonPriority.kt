@@ -19,7 +19,7 @@ object DragonPriority {
 
     fun dragonPrioritySpawn(dragon: WitherDragonsEnum) {
         if (dragonTitle) PlayerUtils.alert("§${dragon.colorCode}${dragon.name} is spawning!")
-        if (dragonPriorityToggle) modMessage("§${dragon.colorCode}${dragon.name} §7is your priority dragon!")
+        if (dragonPriorityToggle && WitherDragonsEnum.entries.filter { it.spawning }.toMutableList().size == 2) modMessage("§${dragon.colorCode}${dragon.name} §7is your priority dragon!")
     }
 
     fun sortPriority(spawningDragon: MutableList<WitherDragonsEnum>): WitherDragonsEnum {

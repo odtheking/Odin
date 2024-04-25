@@ -2,7 +2,8 @@ package me.odinmain.features.impl.floor7
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.config.Config
-import me.odinmain.features.impl.floor7.WitherDragons.arrowsHit
+import me.odinmain.features.impl.floor7.WitherDragons.arrowDeath
+import me.odinmain.features.impl.floor7.WitherDragons.arrowSpawn
 import me.odinmain.features.impl.floor7.WitherDragons.sendArrowHit
 import me.odinmain.features.impl.floor7.WitherDragons.sendNotification
 import me.odinmain.features.impl.floor7.WitherDragons.sendSpawned
@@ -11,7 +12,6 @@ import me.odinmain.features.impl.floor7.WitherDragons.sendTime
 import me.odinmain.features.impl.skyblock.ArrowHit.onDragonSpawn
 import me.odinmain.features.impl.skyblock.ArrowHit.resetOnDragons
 import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.isVecInXZ
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.entity.boss.EntityDragon
 import net.minecraft.entity.item.EntityArmorStand
@@ -28,7 +28,7 @@ object DragonCheck {
 
     fun dragonJoinWorld(event: EntityJoinWorldEvent) {
         if (event.entity !is EntityDragon) return
-        val dragon = WitherDragonsEnum.entries.find { isVecInXZ(event.entity.positionVector, it.boxesDimensions) } ?: return
+        val dragon = WitherDragonsEnum.entries.find { event.entity.positionVector.dragonCheck(it.spawnPos) } ?: return
 
         dragon.spawning = false
         dragon.particleSpawnTime = 0L
@@ -37,11 +37,20 @@ object DragonCheck {
         dragon.spawnedTime = System.currentTimeMillis()
         dragon.isSprayed = false
 
+        if (sendArrowHit) arrowSpawn(dragon)
         if (resetOnDragons) onDragonSpawn()
-        if (sendSpawned) modMessage("§${dragon.colorCode}${dragon.name} §fdragon spawned. This is the §${dragon.colorCode}${dragon.timesSpawned}§f time it has spawned.")
+        if (sendSpawned) {
+            val numberSuffix = when (dragon.timesSpawned) {
+                1 -> "st"
+                2 -> "nd"
+                3 -> "rd"
+                else -> "th"
+            }
+            modMessage("§${dragon.colorCode}${dragon.name} §fdragon spawned. This is the §${dragon.colorCode}${dragon.timesSpawned}${numberSuffix}§f time it has spawned.")
+        }
     }
 
-    fun dragonLeaveWorld(event: LivingDeathEvent, priorityDragon: WitherDragonsEnum) {
+    fun dragonLeaveWorld(event: LivingDeathEvent) {
         if (event.entity !is EntityDragon) return
         val dragon = WitherDragonsEnum.entries.find {it.entity?.entityId == event.entity.entityId} ?: return
 
@@ -53,12 +62,7 @@ object DragonCheck {
             modMessage("§${dragon.colorCode}${dragon.name} §fdragon was alive for ${printSecondsWithColor(killTime, 3.5, 7.5, down = false)}${if (killTime < oldPB) " §7(§dNew PB§7)" else ""}.")
         }
 
-        if (event.entity == priorityDragon.entity && sendArrowHit) {
-            if (arrowsHit > 0) {
-                modMessage("§fYou have hit §c$arrowsHit §fArrows on §${priorityDragon.colorCode}${priorityDragon.name}")
-                arrowsHit = 0
-            }
-        }
+        if (sendArrowHit) arrowDeath(dragon)
         lastDragonDeath = dragon.name
     }
 
@@ -90,7 +94,6 @@ object DragonCheck {
         ) return
 
         val dragon = WitherDragonsEnum.entries.find { lastDragonDeath == it.name } ?: return
-
         if (sendNotification) modMessage("§${dragon.colorCode}${dragon.name} dragon counts.")
     }
 
