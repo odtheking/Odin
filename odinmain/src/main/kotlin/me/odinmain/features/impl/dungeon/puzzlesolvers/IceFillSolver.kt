@@ -66,11 +66,12 @@ object IceFillSolver {
     }
 
     fun enterDungeonRoom(event: EnteredDungeonRoomEvent) {
-        if (event.room?.room?.data?.name != "Ice Fill") return
+        if (event.room?.room?.data?.name != "Ice Fill" || scanned) return
         val rotation = event.room.room.rotation
 
         val centerPos = Vec2(event.room.room.x, event.room.room.z).addRotationCoords(rotation, 8)
         scanAllFloors(Vec3(centerPos.x.toDouble(), 70.0, centerPos.z.toDouble()), rotation)
+        scanned = true
     }
 
     private fun scanAllFloors(pos: Vec3, rotation: Rotations) {
@@ -83,7 +84,7 @@ object IceFillSolver {
         scan(pos.addVec(b.x, b.y, b.z), 2, rotation)
     }
 
-    private fun scan(pos: Vec3, floorIndex: Int, rotation: Rotations): Boolean {
+    private fun scan(pos: Vec3, floorIndex: Int, rotation: Rotations) {
         val bPos = BlockPos(pos)
 
         val floorHeight = representativeFloors[floorIndex]
@@ -95,15 +96,14 @@ object IceFillSolver {
                 !isAir(bPos.add(transform(floorHeight[index].second, rotation)))
             ) {
                 val scanTime: Double = (System.nanoTime() - startTime) / 1000000.0
-                modMessage("Floor ${floorIndex + 1} scan took ${scanTime}ms")
+                modMessage("Section ${floorIndex + 1} scan took ${scanTime}ms pattern: ${index + 1}")
 
                 renderPattern(pos, rotation)
                 currentPatterns.add(floors[floorIndex][index].toMutableList())
-                return true
+                return
             }
         }
         modMessage("§cFailed to scan floor ${floorIndex + 1}")
-        return false
     }
 
     fun transform(vec: Vec3i, rotation: Rotations): Vec3i {

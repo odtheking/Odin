@@ -71,5 +71,4 @@ object TPMaze {
         correctPortals = listOf()
         visited = CopyOnWriteArraySet<BlockPos>()
     }
-
 }

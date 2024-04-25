@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinNetworkManager {
 
     @Unique
-    private boolean isCancelled;
+    private boolean odinClient$isCancelled;
 
     @Inject(method = "channelRead0*", at = @At("HEAD"), cancellable = true)
     private void onReceivePacket(ChannelHandlerContext context, Packet<?> packet, CallbackInfo ci) {
@@ -29,14 +29,17 @@ public class MixinNetworkManager {
     @Inject(method = {"sendPacket(Lnet/minecraft/network/Packet;)V"}, at = {@At("HEAD")}, cancellable = true)
     private void onSendPacket(Packet<?> packet, CallbackInfo ci) {
         if (!ServerUtils.INSTANCE.handleSendPacket(packet)) {
-            if (isCancelled) ci.cancel();
+            if (odinClient$isCancelled) {
+                odinClient$isCancelled = false;
+                ci.cancel();
+            }
         }
     }
 
     @ModifyVariable(method = "sendPacket(Lnet/minecraft/network/Packet;)V", at = @At("HEAD"), argsOnly = true)
     private Packet<?> onSendPacket(Packet<?> packet) {
         PacketSentEvent event = new PacketSentEvent(packet);
-        isCancelled = MinecraftForge.EVENT_BUS.post(event);
+        odinClient$isCancelled = MinecraftForge.EVENT_BUS.post(event);
         return event.getPacket();
     }
 

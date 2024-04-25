@@ -33,17 +33,17 @@ object BlessingDisplay : Module(
     private val wisdomColor: Color by ColorSetting("Wisdom Color", Color.BLUE, true, description = "The color of the wisdom blessing.").withDependency { wisdom }
 
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
+        val activeBlessings = Blessings.entries.filter { blessings -> blessings.enabled.invoke() }
         if (it) {
-            mcText("Power §a29", 0f, 0f, 1, powerColor, center = false)
-            mcText("Life §a29", 0f, 10f, 1, lifeColor, center = false)
-            getMCTextWidth("Power: 29").toFloat() to 18f
-        } else {
-            Blessings.entries.forEachIndexed { index, blessing ->
-                if (blessing.current == 0 || !blessing.enabled.invoke()) return@forEachIndexed
-                mcText("${blessing.displayString} §a${blessing.current}", 0f, 5f + 10 * (index - 1), 1, blessing.color, center = false)
+            activeBlessings.forEachIndexed { index, blessing ->
+                mcText("${blessing.displayString} §a29§r", 0f, 10f * index, 1, blessing.color, center = false)
             }
-            getMCTextWidth("Power: 29") + 2f to 20f + 15 * max(Blessings.entries.count { it.current > 0 }, 1)
+        } else {
+            activeBlessings.filter { blessing -> blessing.current > 0 }.forEachIndexed { index, blessing ->
+                mcText("${blessing.displayString} §a${blessing.current}§r", 0f, 5f + 10 * (index - 1), 1, blessing.color, center = false)
+            }
         }
+        getMCTextWidth("Power: 29").toFloat() to 10f * max(activeBlessings.count(), 1)
     }
 
 
@@ -51,7 +51,7 @@ object BlessingDisplay : Module(
         var regex: Regex,
         val displayString: String,
         var color: Color,
-        val enabled: () -> Boolean,
+        var enabled: () -> Boolean,
         var current: Int = 0
     ) {
         POWER(Regex("Blessing of Power (X{0,3}(IX|IV|V?I{0,3}))"), "Power", powerColor, { power }),
@@ -88,6 +88,12 @@ object BlessingDisplay : Module(
             Blessings.STONE.color = stoneColor
             Blessings.LIFE.color = lifeColor
             Blessings.WISDOM.color = wisdomColor
+
+            Blessings.TIME.enabled = { time }
+            Blessings.POWER.enabled = { power }
+            Blessings.STONE.enabled = { stone }
+            Blessings.LIFE.enabled = { life }
+            Blessings.WISDOM.enabled = { wisdom }
         }
 
         onWorldLoad {

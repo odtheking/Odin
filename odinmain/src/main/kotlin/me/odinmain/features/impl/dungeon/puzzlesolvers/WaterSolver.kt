@@ -2,9 +2,10 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
-import me.odinmain.OdinMain.scope
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.showOrder
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
@@ -37,9 +38,10 @@ object WaterSolver {
     private var solutions = mutableMapOf<LeverBlock, Array<Double>>()
     private var openedWater = -1L
 
+    @OptIn(DelicateCoroutinesApi::class)
     fun scan() {
         if (DungeonUtils.currentRoomName != "Water Board") return
-        scope.launch {
+        GlobalScope.launch {
             prevInWaterRoom = inWaterRoom
             inWaterRoom = false
 
