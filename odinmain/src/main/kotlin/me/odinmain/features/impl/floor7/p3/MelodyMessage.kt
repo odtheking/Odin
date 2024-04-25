@@ -27,7 +27,7 @@ object MelodyMessage : Module(
 
     @SubscribeEvent
     fun onGuiLoad(event: GuiLoadedEvent) {
-        if (!DungeonUtils.inDungeons || !saidMelody || !event.name.startsWith("Click the button on time!")) return
+        if (!DungeonUtils.inDungeons || saidMelody || !event.name.startsWith("Click the button on time!")) return
         if (sendMelodyMessage) partyMessage(melodyMessage)
 
         claySlots = hashMapOf(25 to "Melody terminal is at 25%", 34 to "Melody terminal is at 50%", 43 to "Melody terminal is at 75%",)

@@ -1,6 +1,6 @@
 package me.odinclient.features.impl.render
 
-import me.odinmain.events.impl.ReceivePacketEvent
+import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -41,7 +41,7 @@ object NoDebuff : Module(
     }
 
     @SubscribeEvent
-    fun onPacket(event: ReceivePacketEvent) {
+    fun onPacket(event: PacketReceivedEvent) {
         if (!noShieldParticles || event.packet !is S2APacketParticles) return
         val packet = event.packet as S2APacketParticles
         if (packet.particleType.equalsOneOf(EnumParticleTypes.SPELL_WITCH, EnumParticleTypes.HEART)) {

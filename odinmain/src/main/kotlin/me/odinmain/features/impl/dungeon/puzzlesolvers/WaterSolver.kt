@@ -77,7 +77,7 @@ object WaterSolver {
                 else orderText.plus("${if (orderText.isEmpty()) "" else ", "}${sortedSolutions.indexOf(it) + 1}")
             }
             if (showOrder)
-                Renderer.drawStringInWorld(orderText, Vec3(solution.key.leverPos).addVector(.5, .5, .5), Color.WHITE, false, scale = .035f)
+                Renderer.drawStringInWorld(orderText, Vec3(solution.key.leverPos).addVector(.5, .5, .5), Color.WHITE, false, scale = .035f, depth = true)
 
             for (i in solution.key.i until solution.value.size) {
                 val time = solution.value[i]
@@ -90,7 +90,7 @@ object WaterSolver {
                     else "§a§lCLICK ME!"
                 }
 
-                Renderer.drawStringInWorld(displayText, Vec3(solution.key.leverPos).addVector(0.5, (i - solution.key.i) * 0.5 + 1.5, 0.5), Color.WHITE, false, depth = false, scale = 0.04f)
+                Renderer.drawStringInWorld(displayText, Vec3(solution.key.leverPos).addVector(0.5, (i - solution.key.i) * 0.5 + 1.5, 0.5), Color.WHITE, false, depth = true, scale = 0.04f)
             }
         }
     }

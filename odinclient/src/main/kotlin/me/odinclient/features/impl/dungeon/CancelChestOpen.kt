@@ -1,6 +1,6 @@
 package me.odinclient.features.impl.dungeon
 
-import me.odinmain.events.impl.ReceivePacketEvent
+import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.DualSetting
@@ -22,7 +22,7 @@ object CancelChestOpen : Module(
     private val mode: Boolean by DualSetting("Mode", "Auto", "Any Key", description = "The mode to use, auto will automatically close the chest, any key will make any key input close the chest.")
 
     @SubscribeEvent
-    fun onOpenWindow(event: ReceivePacketEvent) {
+    fun onOpenWindow(event: PacketReceivedEvent) {
         if (!inDungeons || event.packet !is S2DPacketOpenWindow || !(event.packet as S2DPacketOpenWindow).windowTitle.unformattedText.equalsOneOf("Chest", "Large Chest") || mode) return
         mc.netHandler.networkManager.sendPacket(C0DPacketCloseWindow((event.packet as S2DPacketOpenWindow).windowId))
         event.isCanceled = true

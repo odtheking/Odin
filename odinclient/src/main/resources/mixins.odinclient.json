@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "accessors.IBlockAccessor",
+    "mixins.MixinChatAllowedCharacters",
     "mixins.MixinChunk",
     "mixins.MixinNetworkManager",
     "mixins.MixinRendererLivingEntity",
@@ -45,6 +46,7 @@
     "mixins.entity.MixinEntityPlayerSP",
     "mixins.entity.MixinEntityRenderer",
     "mixins.entity.MixinModelBiped",
-    "mixins.entity.MixinModelBlaze"
+    "mixins.entity.MixinModelBlaze",
+    "mixins.MixinItem"
   ]
 }

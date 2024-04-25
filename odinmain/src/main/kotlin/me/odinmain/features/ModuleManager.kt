@@ -33,7 +33,7 @@ object ModuleManager {
     data class PacketFunction<T : Packet<*>>(
         val type: Class<T>,
         val function: (T) -> Unit,
-        val shouldRun: () -> Boolean
+        val shouldRun: () -> Boolean,
     )
 
     data class MessageFunction(val filter: Regex, val shouldRun: () -> Boolean, val function: (String) -> Unit)
@@ -64,7 +64,7 @@ object ModuleManager {
         NecronDropTimer,
         BPSDisplay,
         Camera,
-        ClickedChests,
+        ClickedSecrets,
         ClickGUIModule,
         CustomHighlight,
         CPSDisplay,
@@ -117,7 +117,8 @@ object ModuleManager {
         HidePlayers,
         WarpCooldown,
         PetKeybinds,
-        CopyChat
+        CopyChat,
+        PartyNote
     )
 
     init {
@@ -150,7 +151,7 @@ object ModuleManager {
     }
 
     @SubscribeEvent
-    fun onReceivePacket(event: ReceivePacketEvent) {
+    fun onReceivePacket(event: PacketReceivedEvent) {
         packetFunctions
             .filter { it.type.isInstance(event.packet) && it.shouldRun.invoke() }
             .forEach { it.function(event.packet) }

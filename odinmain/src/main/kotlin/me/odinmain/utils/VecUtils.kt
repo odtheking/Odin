@@ -182,6 +182,17 @@ fun Vec3.rotateToNorth(rotation: Rotations): Vec3 {
     }
 }
 
+
+fun Vec2.addRotationCoords(rotation: Rotations, dist: Int = 4): Vec2 {
+    return when (rotation) {
+        Rotations.NORTH -> Vec2(x, z + dist)
+        Rotations.EAST -> Vec2(x + dist, z)
+        Rotations.SOUTH -> Vec2(x, z - dist)
+        Rotations.WEST -> Vec2(x - dist, z)
+        Rotations.NONE -> this
+    }
+}
+
 /**
  * Displaces a Vec2 by the given rotation, and distance.
  * @param rotation The rotation to offset with
@@ -257,7 +268,7 @@ private fun isVecInYZ(vec: Vec3, aabb: AxisAlignedBB): Boolean =
  * @param aabb The axis-aligned bounding box.
  * @return `true` if the Vec3 is within the XZ bounds, `false` otherwise.
  */
-private fun isVecInXZ(vec: Vec3, aabb: AxisAlignedBB): Boolean =
+fun isVecInXZ(vec: Vec3, aabb: AxisAlignedBB): Boolean =
     vec.xCoord in aabb.minX..aabb.maxX && vec.zCoord in aabb.minZ..aabb.maxZ
 
 /**

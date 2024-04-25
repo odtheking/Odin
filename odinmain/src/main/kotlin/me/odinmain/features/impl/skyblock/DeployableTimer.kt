@@ -25,23 +25,23 @@ object DeployableTimer : Module(
     private val firework = Item.getByNameOrId("minecraft:fireworks")
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {
-            mcText("§l§5SOS Flare", 30, 15, 1.2 ,Color.WHITE, center = false)
-            mcText("§e179s", 30, 30, 1.2 ,Color.WHITE, center = false)
-            ItemStack(firework).drawItem(x= -20f, y= -8f, scale = 4f)
+            mcText("§l§5SOS Flare", 40, 15, 1 ,Color.WHITE, center = false)
+            mcText("§e179s", 40, 30, 1 ,Color.WHITE, center = false)
+            ItemStack(firework).drawItem(x= -10f, y= -4f, scale = 3.5f)
             getMCTextWidth("SOS Flare") + 45f to 52f
         } else {
-            val d = currentDeployables.firstOrNull { dep -> mc.thePlayer.getDistanceToEntity(dep.entity) <= dep.range } ?: return@HudSetting 0f to 0f
+            val activeDeployable = currentDeployables.firstOrNull { dep -> mc.thePlayer.getDistanceToEntity(dep.entity) <= dep.range } ?: return@HudSetting 0f to 0f
 
-            val timeLeft = (d.timeAdded + d.duration - System.currentTimeMillis()) / 1000
-            if (timeLeft <= 0 || d.entity.isDead) {
-                currentDeployables.remove(d)
+            val timeLeft = (activeDeployable.timeAdded + activeDeployable.duration - System.currentTimeMillis()) / 1000
+            if (timeLeft <= 0 || activeDeployable.entity.isDead) {
+                currentDeployables.remove(activeDeployable)
                 currentDeployables.sortByDescending { dep -> dep.priority }
                 return@HudSetting 0f to 0f
             }
-            mcText(d.renderName, 30, 15f, 1.2 ,Color.WHITE, center = false)
-            mcText("§e${timeLeft}s", 30, 30f, 1.2 ,Color.WHITE, center = false)
-            d.entity.inventory?.get(4)?.drawItem(x= -12f, y= -8f, scale = 4f)
-            getMCTextWidth(d.renderName.noControlCodes) + 45f to 52f
+            mcText(activeDeployable.renderName, 40, 15f, 1 ,Color.WHITE, center = false)
+            mcText("§e${timeLeft}s", 40, 30f, 1 ,Color.WHITE, center = false)
+            activeDeployable.entity.inventory?.get(4)?.drawItem(x= -10f, y= -4f, scale = 3.5f)
+            getMCTextWidth(activeDeployable.renderName.noControlCodes) + 45f to 52f
         }
     }
 

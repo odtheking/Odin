@@ -4,6 +4,7 @@
   "minVersion": "0.7",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "mixins.MixinChatAllowedCharacters",
     "mixins.MixinChunk",
     "mixins.MixinEntityLivingBase",
     "mixins.MixinNetworkManager",
@@ -32,6 +33,7 @@
     "mixins.MixinRenderPlayer",
     "mixins.MixinSoundManager",
     "mixins.model.MixinModelBiped",
-    "mixins.model.MixinModelBlaze"
+    "mixins.model.MixinModelBlaze",
+    "mixins.MixinItem"
   ]
 }
