@@ -1,9 +1,8 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import me.odinmain.OdinMain.mc
+import me.odinmain.events.impl.EnteredDungeonRoomEvent
+import me.odinmain.utils.Vec2
+import me.odinmain.utils.addRotationCoords
 import me.odinmain.utils.addVec
 import me.odinmain.utils.plus
 import me.odinmain.utils.render.Color
@@ -12,8 +11,8 @@ import me.odinmain.utils.render.RenderUtils.bind
 import me.odinmain.utils.render.RenderUtils.worldRenderer
 import me.odinmain.utils.skyblock.IceFillFloors.floors
 import me.odinmain.utils.skyblock.IceFillFloors.representativeFloors
-import me.odinmain.utils.skyblock.PlayerUtils.posFloored
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.tiles.Rotations
 import me.odinmain.utils.skyblock.getBlockIdAt
 import me.odinmain.utils.skyblock.isAir
 import me.odinmain.utils.skyblock.modMessage
@@ -23,19 +22,17 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.opengl.GL11
 
 object IceFillSolver {
     var scanned = false
     var currentPatterns: MutableList<List<Vec3i>> = ArrayList()
-    private var renderRotation: Rotation? = null
+    private var renderRotation: Rotations? = null
     private var rPos: MutableList<Vec3> = ArrayList()
 
-
-    private fun renderPattern(pos: Vec3i, rotation: Rotation) {
+    private fun renderPattern(pos: Vec3, rotation: Rotations) {
         renderRotation = rotation
-        rPos.add(Vec3(pos.x + 0.5, pos.y + 0.1, pos.z + 0.5))
+        rPos.add(Vec3(pos.xCoord + 0.5, pos.yCoord + 0.1, pos.zCoord + 0.5))
     }
 
     fun onRenderWorldLast(color: Color) {
@@ -68,27 +65,26 @@ object IceFillSolver {
         GlStateManager.popMatrix()
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
-    fun onClientTick(event: TickEvent.ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.END || mc.thePlayer == null || scanned || !DungeonUtils.inDungeons || DungeonUtils.currentRoomName != "Ice Fill") return
-        val pos = posFloored
-        if (pos.y != 70 || getBlockIdAt(BlockPos(pos.x, pos.y - 1, pos.z )) != 79) return
-        GlobalScope.launch {
-            val rotation = checkRotation(pos, 0) ?: return@launch
-            if (!scan(pos, 0)) return@launch modMessage("Failed to scan floor 0")
+    fun enterDungeonRoom(event: EnteredDungeonRoomEvent) {
+        if (event.room?.room?.data?.name != "Ice Fill" || scanned) return
+        val rotation = event.room.room.rotation
 
-            val a = transform(Vec3i(5, 1, 0), rotation)
-            if (!scan(pos.addVec(a.x, a.y, a.z), 1)) return@launch modMessage("Failed to scan floor 1")
-
-            val b = transform(Vec3i(12, 2, 0), rotation)
-            if (!scan(pos.addVec(b.x, b.y, b.z), 2)) return@launch modMessage("Failed to scan floor 2")
-            scanned = true
-        }
+        val centerPos = Vec2(event.room.room.x, event.room.room.z).addRotationCoords(rotation, 8)
+        scanAllFloors(Vec3(centerPos.x.toDouble(), 70.0, centerPos.z.toDouble()), rotation)
+        scanned = true
     }
 
-    private fun scan(pos: Vec3i, floorIndex: Int): Boolean {
-        val rotation = checkRotation(pos, floorIndex) ?: return false
+    private fun scanAllFloors(pos: Vec3, rotation: Rotations) {
+        scan(pos, 0, rotation)
 
+        val a = transform(Vec3i(5, 1, 0), rotation)
+        scan(pos.addVec(a.x, a.y, a.z), 1, rotation)
+
+        val b = transform(Vec3i(12, 2, 0), rotation)
+        scan(pos.addVec(b.x, b.y, b.z), 2, rotation)
+    }
+
+    private fun scan(pos: Vec3, floorIndex: Int, rotation: Rotations) {
         val bPos = BlockPos(pos)
 
         val floorHeight = representativeFloors[floorIndex]
@@ -100,40 +96,43 @@ object IceFillSolver {
                 !isAir(bPos.add(transform(floorHeight[index].second, rotation)))
             ) {
                 val scanTime: Double = (System.nanoTime() - startTime) / 1000000.0
-                modMessage("Floor ${floorIndex + 1} scan took ${scanTime}ms")
+                modMessage("Section ${floorIndex + 1} scan took ${scanTime}ms pattern: ${index + 1}")
 
                 renderPattern(pos, rotation)
                 currentPatterns.add(floors[floorIndex][index].toMutableList())
-                return true
+                return
             }
         }
-        return false
+        modMessage("§cFailed to scan floor ${floorIndex + 1}")
     }
 
-    fun transform(vec: Vec3i, rotation: Rotation): Vec3i {
+    fun transform(vec: Vec3i, rotation: Rotations): Vec3i {
         return when (rotation) {
-            Rotation.EAST -> Vec3i(vec.x, vec.y, vec.z)
-            Rotation.WEST -> Vec3i(-vec.x, vec.y, -vec.z)
-            Rotation.SOUTH -> Vec3i(vec.z, vec.y, vec.x)
-            else -> Vec3i(vec.z, vec.y, -vec.x)
+            Rotations.EAST -> Vec3i(-vec.x, vec.y, -vec.z)
+            Rotations.WEST -> Vec3i(vec.x, vec.y, vec.z) // east WORKING
+            Rotations.SOUTH -> Vec3i(-vec.z, vec.y, vec.x) // south WORKING
+            Rotations.NORTH -> Vec3i(vec.z, vec.y, -vec.x) // north working
+            else -> vec
         }
     }
 
-    fun transform(x: Int, z: Int, rotation: Rotation): Pair<Int, Int> {
+    fun transformTo(vec: Vec3i, rotation: Rotations): Vec3 {
         return when (rotation) {
-            Rotation.EAST -> Pair(x, z)
-            Rotation.WEST -> Pair(-x, -z)
-            Rotation.SOUTH -> Pair(z, x)
+            Rotations.EAST -> Vec3(-vec.x.toDouble(), vec.y.toDouble(), -vec.z.toDouble())
+            Rotations.WEST -> Vec3(vec.x.toDouble(), vec.y.toDouble(), vec.z.toDouble())
+            Rotations.SOUTH -> Vec3(-vec.z.toDouble(), vec.y.toDouble(), vec.x.toDouble())
+            Rotations.NORTH -> Vec3(vec.z.toDouble(), vec.y.toDouble(), -vec.x.toDouble())
+            else -> Vec3(vec.x.toDouble(), vec.y.toDouble(), vec.z.toDouble())
+        }
+    }
+
+
+    fun transform(x: Int, z: Int, rotation: Rotations): Pair<Int, Int> {
+        return when (rotation) {
+            Rotations.EAST -> Pair(x, z)
+            Rotations.WEST -> Pair(-x, -z)
+            Rotations.SOUTH -> Pair(z, x)
             else -> Pair(z, -x)
-        }
-    }
-
-    fun transformTo(vec: Vec3i, rotation: Rotation): Vec3 {
-        return when (rotation) {
-            Rotation.EAST -> Vec3(vec.x.toDouble(), vec.y.toDouble(), vec.z.toDouble())
-            Rotation.WEST -> Vec3(-vec.x.toDouble(), vec.y.toDouble(), -vec.z.toDouble())
-            Rotation.SOUTH -> Vec3(vec.z.toDouble(), vec.y.toDouble(), vec.x.toDouble())
-            else -> Vec3(vec.z.toDouble(), vec.y.toDouble(), -vec.x.toDouble())
         }
     }
 
@@ -146,7 +145,7 @@ object IceFillSolver {
         return null
     }
 
-    fun onWorldLoad() {
+    fun reset() {
         currentPatterns = ArrayList()
         scanned = false
         renderRotation = null

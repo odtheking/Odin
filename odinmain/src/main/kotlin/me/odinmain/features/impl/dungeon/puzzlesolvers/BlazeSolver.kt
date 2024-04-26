@@ -1,6 +1,7 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import me.odinmain.OdinMain.mc
+import me.odinmain.events.impl.EntityLeaveWorldEvent
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderBoundingBox
@@ -15,17 +16,13 @@ object BlazeSolver {
 
     fun getRoomType() {
         getBlazes()
-        if (DungeonUtils.currentRoomName == "Lower Blaze") {
-            blazes.reverse()
-        }
+        if (DungeonUtils.currentRoomName == "Lower Blaze") blazes.reverse()
     }
 
     private fun getBlazes() {
         mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()?.forEach { entity ->
             val matchResult = Regex("""^\[Lv15] Blaze [\d,]+/([\d,]+)❤$""").find(entity.name.noControlCodes) ?: return@forEach
-            val (_, health) = matchResult.destructured
-            val hp = health.replace(",", "").toInt()
-            hpMap[entity] = hp
+            hpMap[entity] = matchResult.groups[1]?.value?.replace(",", "")?.toIntOrNull() ?: return@forEach
             blazes.add(entity)
         }
         if (blazes.isEmpty()) return
@@ -33,11 +30,8 @@ object BlazeSolver {
         blazes.sortBy { hpMap[it] }
     }
 
-    fun resetBlazes() {
-        blazes.clear()
-    }
-
     fun renderBlazes() {
+        if (blazes.isEmpty()) return
         blazes.forEachIndexed { index, entity ->
             val color = when (index) {
                 0 -> Color.GREEN
@@ -50,4 +44,7 @@ object BlazeSolver {
         }
     }
 
+    fun onEntityLeave(event: EntityLeaveWorldEvent) {
+        blazes.remove(event.entity as? EntityArmorStand ?: return)
+    }
 }

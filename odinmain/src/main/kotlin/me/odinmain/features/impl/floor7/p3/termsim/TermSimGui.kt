@@ -4,18 +4,18 @@ package me.odinmain.features.impl.floor7.p3.termsim
 import me.odinmain.OdinMain.display
 import me.odinmain.config.Config
 import me.odinmain.events.impl.GuiLoadedEvent
-import me.odinmain.features.impl.floor7.p3.TerminalSolver
+import me.odinmain.events.impl.PacketSentEvent
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.utils.round
-import me.odinmain.utils.runIn
+import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiChest
-import net.minecraft.inventory.ContainerChest
-import net.minecraft.inventory.InventoryBasic
-import net.minecraft.inventory.Slot
+import net.minecraft.inventory.*
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
+import net.minecraft.network.play.client.C0EPacketClickWindow
+import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 open class TermSimGui(val name: String, val size: Int, private val inv: InventoryBasic = InventoryBasic(name, true, size)) : GuiChest(
     Minecraft.getMinecraft().thePlayer.inventory,
@@ -44,8 +44,7 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
         this.ping = ping
         display = this
         startTime = System.currentTimeMillis()
-        TerminalSolver.onGuiLoad(GuiLoadedEvent(name, inventorySlots as ContainerChest))
-        TerminalSolver.handlePacket(name)
+        GuiLoadedEvent(name, inventorySlots as ContainerChest).postAndCatch()
     }
 
     fun solved(name: String, oldPb: NumberSetting<Double>) {
@@ -64,6 +63,18 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
     override fun onGuiClosed() {
         resetInv()
         super.onGuiClosed()
+    }
+
+    init {
+        MinecraftForge.EVENT_BUS.register(this)
+    }
+
+    @SubscribeEvent
+    fun onPacketSend(event: PacketSentEvent) {
+        val packet = event.packet
+        if (packet !is C0EPacketClickWindow || mc.currentScreen != this) return
+        delaySlotClick(this.inventorySlots.inventorySlots[packet.slotId], packet.usedButton)
+        event.isCanceled = true
     }
 
     protected fun resetInv() {

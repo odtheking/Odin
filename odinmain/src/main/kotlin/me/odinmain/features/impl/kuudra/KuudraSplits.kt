@@ -8,9 +8,9 @@ import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.formatTime
 import me.odinmain.utils.getSafe
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.getTextHeight
-import me.odinmain.utils.render.getTextWidth
-import me.odinmain.utils.render.text
+import me.odinmain.utils.render.getMCTextHeight
+import me.odinmain.utils.render.getMCTextWidth
+import me.odinmain.utils.render.mcText
 import me.odinmain.utils.round
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.LocationUtils
@@ -74,11 +74,10 @@ object KuudraSplits : Module(
                     4 -> splitsLine5
                     else -> Color.WHITE
                 }
-                text(lines[i], 1f, 9f + i * getTextHeight("12", 13f), lineColor, 12f, shadow = true)
-                text("0s", getTextWidth("Fuel/Stun: 0h 00m 00s", 12f) - getTextWidth("0s", 12f), 9f + i * getTextHeight("12", 13f), Color.WHITE, 12f, shadow = true)
+                mcText(lines[i], 1f, 1f + i * getMCTextHeight(), 1, lineColor, center = false)
+                mcText("0s", getMCTextWidth("Fuel/Stun: 0h 00m 00s") - getMCTextWidth("0s"), 1f + i * getMCTextHeight(), 1, Color.WHITE, center = false)
             }
-
-            getTextWidth("Fuel/Stun: 0h 00m 00s", 12f) + 2f to 80f
+            getMCTextWidth("Fuel/Stun: 0h 00m 00s") + 2f to 44f
         } else {
             if (LocationUtils.currentArea != Island.Kuudra) return@HudSetting 0f to 0f
             val (times, current) = getSplitTimes()
@@ -94,13 +93,13 @@ object KuudraSplits : Module(
                     4 -> splitsLine5
                     else -> Color.WHITE
                 }
-                text(lines[i], 1f, 9f + i * getTextHeight("12", 13f), lineColor, 12f, shadow = true)
+                mcText(lines[i], 1f, 9f + i * getMCTextHeight(), 1, lineColor, center = false)
 
                 val duration = formatTime(time)
-                text(duration, getTextWidth("Fuel/Stun: 0h 00m 00s", 12f) - getTextWidth(duration, 12f), 9f + i * getTextHeight("12", 13f), Color.WHITE, 12f, shadow = true)
+                mcText(duration, getMCTextWidth("Fuel/Stun: 0h 00m 00s") - getMCTextWidth(duration), 9f + i * getMCTextHeight(), 1, Color.WHITE, center = false)
             }
 
-            getTextWidth("Fuel/Stun: 0h 00m 00s", 12f) + 2f to 80f
+            getMCTextWidth("Fuel/Stun: 0h 00m 00s") + 2f to 44f
         }
     }
 

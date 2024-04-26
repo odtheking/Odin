@@ -1,7 +1,7 @@
 package me.odinmain.features.impl.floor7
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.events.impl.ReceivePacketEvent
+import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.features.impl.floor7.WitherDragons.sendNotification
 import me.odinmain.features.impl.floor7.WitherDragons.sendSpawned
 import me.odinmain.features.impl.floor7.WitherDragons.sendSpray
@@ -9,6 +9,7 @@ import me.odinmain.features.impl.floor7.WitherDragons.sendTime
 import me.odinmain.features.impl.skyblock.ArrowHit.onDragonSpawn
 import me.odinmain.features.impl.skyblock.ArrowHit.resetOnDragons
 import me.odinmain.utils.equalsOneOf
+import me.odinmain.utils.isVecInXZ
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.entity.boss.EntityDragon
 import net.minecraft.entity.item.EntityArmorStand
@@ -25,7 +26,7 @@ object DragonCheck {
 
     fun dragonJoinWorld(event: EntityJoinWorldEvent) {
         if (event.entity !is EntityDragon) return
-        val dragon = WitherDragonsEnum.entries.find { event.entity.positionVector.dragonCheck(it.spawnPos) } ?: return
+        val dragon = WitherDragonsEnum.entries.find { isVecInXZ(event.entity.positionVector, it.boxesDimensions) } ?: return
 
         dragon.spawning = false
         dragon.particleSpawnTime = 0L
@@ -52,7 +53,7 @@ object DragonCheck {
         lastDragonDeath = dragon.name
     }
 
-    fun dragonSprayed(event: ReceivePacketEvent) {
+    fun dragonSprayed(event: PacketReceivedEvent) {
         if (event.packet !is S04PacketEntityEquipment) return
         if (event.packet.itemStack?.item != Item.getItemFromBlock(Blocks.packed_ice)) return
 

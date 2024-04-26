@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "accessors.IBlockAccessor",
+    "mixins.MixinChatAllowedCharacters",
     "mixins.MixinChunk",
     "mixins.MixinNetworkManager",
     "mixins.MixinRendererLivingEntity",
@@ -22,11 +23,13 @@
     "mixins.other.MixinNEURenderListener"
   ],
   "client": [
-    "accessors.EntityRendererAccessor",
     "accessors.IEntityPlayerSPAccessor",
+    "accessors.IEntityRendererAccessor",
     "accessors.IMinecraftAccessor",
     "mixins.MixinFontRenderer",
     "mixins.MixinGuiContainer",
+    "mixins.MixinGuiScreen",
+    "mixins.MixinItem",
     "mixins.MixinItemRenderer",
     "mixins.MixinLayerCape",
     "mixins.MixinMinecraft",
@@ -35,6 +38,7 @@
     "mixins.MixinNetworkManager",
     "mixins.MixinPlayerControllerMP",
     "mixins.MixinRenderDragon",
+    "mixins.MixinRenderItem",
     "mixins.MixinRenderPlayer",
     "mixins.MixinSoundManager",
     "mixins.MixinTileEntityChestRenderer",

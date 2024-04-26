@@ -42,7 +42,7 @@ object RenderUtils {
      * @return The rendered x-coordinate.
      */
     val Entity.renderX: Double
-        get() = lastTickPosX + (posX - lastTickPosX) * RenderUtils.partialTicks
+        get() = lastTickPosX + (posX - lastTickPosX) * partialTicks
 
     /**
      * Gets the rendered y-coordinate of an entity based on its last tick and current tick positions.
@@ -60,7 +60,7 @@ object RenderUtils {
      * @return The rendered z-coordinate.
      */
     val Entity.renderZ: Double
-        get() = lastTickPosZ + (posZ - lastTickPosZ) * RenderUtils.partialTicks
+        get() = lastTickPosZ + (posZ - lastTickPosZ) * partialTicks
 
     /**
      * Gets the rendered position of an entity as a `Vec3`.
@@ -269,7 +269,7 @@ object RenderUtils {
         GlStateManager.enableBlend()
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
 
-        val time: Double = mc.theWorld.worldTime.toDouble() + RenderUtils.partialTicks
+        val time: Double = mc.theWorld.worldTime.toDouble() + partialTicks
         val x = vec3.xCoord
         val y = vec3.yCoord
         val z = vec3.zCoord
@@ -518,6 +518,7 @@ object RenderUtils {
      * @param height The height of the rectangle.
      */
     fun drawTexturedModalRect(x: Int, y: Int, width: Int, height: Int) {
+        Color.WHITE.bind()
         worldRenderer {
             begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
             pos(x.toDouble(), (y + height).toDouble(), 0.0).tex(0.0, 1.0).endVertex()
@@ -527,6 +528,7 @@ object RenderUtils {
         }
         tessellator.draw()
     }
+
 
     fun draw2D(entity: Entity, lineWidth: Float, color: Color) {
         val mvMatrix = getMatrix(2982)

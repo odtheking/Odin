@@ -21,10 +21,10 @@ class MouseHandler {
         tY = y
     }
 
-    private val mouseX get() =
+    val mouseX get() =
         (MouseUtils.mouseX - tX) / scaleX
 
-    private val mouseY get() =
+    val mouseY get() =
         (MouseUtils.mouseY - tY) / scaleY
 
     fun isAreaHovered(x: Float, y: Float, width: Float, height: Float): Boolean =

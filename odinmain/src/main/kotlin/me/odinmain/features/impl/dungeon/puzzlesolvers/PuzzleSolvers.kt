@@ -2,6 +2,7 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import me.odinmain.OdinMain
 import me.odinmain.events.impl.ClickEvent
+import me.odinmain.events.impl.EnteredDungeonRoomEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.puzzlesolvers.WaterSolver.waterInteract
@@ -30,7 +31,8 @@ object PuzzleSolvers : Module(
     }.withDependency { waterSolver }
 
     private val tpMaze: Boolean by BooleanSetting("Teleport Maze", true, description = "Shows you the solution for the TP maze puzzle")
-    val mazeColorOne: Color by ColorSetting("Color for 1 solution", Color.GREEN.withAlpha(.5f), true, description = "Color for when there is a single solution").withDependency { tpMaze }
+    val solutionThroughWalls: Boolean by BooleanSetting("Solution through walls", false, description = "Renders the final solution through walls").withDependency { tpMaze && !OdinMain.onLegitVersion }
+    val mazeColorOne: Color by ColorSetting("Color for one solution", Color.GREEN.withAlpha(.5f), true, description = "Color for when there is a single solution").withDependency { tpMaze }
     val mazeColorMultiple: Color by ColorSetting("Color for multiple solutions", Color.ORANGE.withAlpha(.5f), true, description = "Color for when there are multiple solutions").withDependency { tpMaze }
     val mazeColorVisited: Color by ColorSetting("Color for visited", Color.RED.withAlpha(.5f), true, description = "Color for the already used TP pads").withDependency { tpMaze }
 
@@ -40,8 +42,9 @@ object PuzzleSolvers : Module(
     private val iceFillSolver: Boolean by BooleanSetting("Ice Fill Solver", true, description = "Solver for the ice fill puzzle")
     private val iceFillColor: Color by ColorSetting("Ice Fill Color", Color.PINK, true, description = "Color for the ice fill solver").withDependency { iceFillSolver }
     val action: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
-        IceFillSolver.onWorldLoad()
+        IceFillSolver.reset()
     }.withDependency { iceFillSolver }
+
     init {
         execute(500) {
             if (waterSolver) WaterSolver.scan()
@@ -58,10 +61,9 @@ object PuzzleSolvers : Module(
 
         onWorldLoad {
             WaterSolver.reset()
-            TPMaze.portals = setOf()
-            TPMaze.correctPortals = listOf()
+            TPMaze.reset()
             TicTacToe.reset()
-            IceFillSolver.onWorldLoad()
+            IceFillSolver.reset()
         }
     }
 
@@ -77,12 +79,17 @@ object PuzzleSolvers : Module(
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        if (tttSolver)TicTacToe.tttTick(event)
-        if (iceFillSolver) IceFillSolver.onClientTick(event)
+        if (tttSolver) TicTacToe.tttTick(event)
     }
 
     @SubscribeEvent
     fun onRightClick(event: ClickEvent.RightClickEvent) {
         if (tttSolver) TicTacToe.tttRightClick(event)
+    }
+
+    @SubscribeEvent
+    fun onRoomEnter(event: EnteredDungeonRoomEvent) {
+        IceFillSolver.enterDungeonRoom(event)
+        //BlazeSolver.getRoomType()
     }
 }

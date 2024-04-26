@@ -1,45 +1,46 @@
 package me.odinclient.features.impl.floor7.p3
 
-import me.odinmain.events.impl.DrawGuiContainerScreenEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
+import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.features.impl.render.ClickGUIModule
-import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.font.OdinFont
 import me.odinmain.utils.render.TextAlign
 import me.odinmain.utils.render.TextPos
 import me.odinmain.utils.render.scaleFactor
 import me.odinmain.utils.render.text
-import net.minecraft.client.settings.KeyBinding
+import me.odinmain.utils.skyblock.Island
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.inventory.ContainerChest
+import net.minecraftforge.client.event.RenderGameOverlayEvent
+import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import org.lwjgl.input.Keyboard
 
 object TerminalMove : Module(
     name = "Terminal Move",
     category = Category.FLOOR7,
-    description = ""
+    description = "Move in terminals without GUI hotbar keys",
+    tag = TagType.RISKY
 ) {
 
-    private val allowJump: Boolean by BooleanSetting("Allow Jumping", false)
-    private val allowSneak: Boolean by BooleanSetting("Allow Sneaking", false)
-
-    private val keyBindingList = arrayListOf(mc.gameSettings.keyBindForward, mc.gameSettings.keyBindBack, mc.gameSettings.keyBindLeft, mc.gameSettings.keyBindRight, mc.gameSettings.keyBindSneak, mc.gameSettings.keyBindJump)
+    @SubscribeEvent
+    fun onDrawOverlay(event: RenderGameOverlayEvent.Post) {
+        if (DungeonUtils.getPhase() != Island.M7P3 || !isInTerminal() || event.type != RenderGameOverlayEvent.ElementType.ALL) return
+        val containerName = (mc.thePlayer.openContainer as ContainerChest).lowerChestInventory.name
+        text(containerName, mc.displayWidth / 2 / scaleFactor, (mc.displayHeight / 2 + 32) / scaleFactor, ClickGUIModule.color, 8f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Middle, true)
+        text("Clicks left: ${TerminalSolver.clicksNeeded}", mc.displayWidth / 2 / scaleFactor, (mc.displayHeight / 2 + 64) / scaleFactor, ClickGUIModule.color, 8f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Middle, true)
+    }
 
     @SubscribeEvent
-    fun onDrawContainerGui(event: DrawGuiContainerScreenEvent) {
-        if (event.container !is ContainerChest) return
-        val containerName = (event.container as ContainerChest).lowerChestInventory.name.replace("[\\[\\]:!]".toRegex(), "")
-        if (!TerminalSolver.terminalNames.any { containerName.startsWith(it) }) return
-        for (keyBinding in keyBindingList) {
-            if (((keyBinding == mc.gameSettings.keyBindJump) && !allowJump) || ((keyBinding == mc.gameSettings.keyBindSneak) && !allowSneak)) continue
-            KeyBinding.setKeyBindState(keyBinding.keyCode, Keyboard.isKeyDown(keyBinding.keyCode))
-        }
-        mc.inGameHasFocus = true
-        mc.mouseHelper.grabMouseCursor()
-        text("In ${(event.container as ContainerChest).lowerChestInventory.name} Terminal", mc.displayWidth / 2 / scaleFactor, (mc.displayHeight / 2 - 24) / scaleFactor, ClickGUIModule.color, 8f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Middle, true)
-        event.isCanceled = true
+    fun onRenderWorldLast(event: RenderWorldLastEvent) {
+        if (DungeonUtils.getPhase() != Island.M7P3 || !isInTerminal()) return
+        mc.displayGuiScreen(null)
+    }
+
+    private fun isInTerminal(): Boolean {
+        if (mc.thePlayer == null || mc.thePlayer.openContainer !is ContainerChest) return false
+        return TerminalTypes.entries.stream().anyMatch { prefix: TerminalTypes? -> (mc.thePlayer.openContainer as ContainerChest).lowerChestInventory.name.startsWith(prefix?.guiName!!) }
     }
 
 }

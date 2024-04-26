@@ -5,11 +5,10 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.HudSetting
-import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.getTextWidth
-import me.odinmain.utils.render.text
+import me.odinmain.utils.render.getMCTextWidth
+import me.odinmain.utils.render.mcText
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object GoldorTimer : Module(
@@ -21,10 +20,11 @@ object GoldorTimer : Module(
     private val displayText: Boolean by BooleanSetting("Display Text", default = true, description = "Displays \"Start\"/\"Tick\" before the count")
     private val displayInTicks: Boolean by BooleanSetting("Display in Ticks", default = false, description = "Displays the timer in game ticks rather than ms")
     private val symbolDisplay: Boolean by BooleanSetting("Display Symbol", default = true, description = "Displays s or t after the time")
+    private val showPrefix: Boolean by BooleanSetting("Show Prefix", default = true, description = "Shows the prefix of the timer")
     private val hud: HudElement by HudSetting("Timer Hud", 10f, 10f, 1f, false) {
         if (it) {
-            text("§7Tick: §a59t", 1f, 9f, Color.RED, 12f, OdinFont.REGULAR, shadow = true)
-            getTextWidth("Tick: 59t", 12f) + 2f to 16f
+            mcText("§7Tick: §a59t", 1f, 1f, 1, Color.WHITE, center = false)
+            getMCTextWidth("Tick: 59t") + 2f to 10f
         } else {
             val displayType = if (startTime >= 0) { startTime } else { tickTime }
             val colorCode = when {
@@ -45,8 +45,8 @@ object GoldorTimer : Module(
                 else -> ""
             }
 
-            text("${text}${colorCode}${displayTimer}${displaySymbol}", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
-            getTextWidth("${text}${colorCode}${displayTimer}${displaySymbol}", 12f) + 2f to 12f
+            mcText("${if (showPrefix) text else ""}${colorCode}${displayTimer}${displaySymbol}", 1f, 1f, 1, Color.WHITE, center = false)
+            getMCTextWidth("${text}${colorCode}${displayTimer}${displaySymbol}") + 2f to 10f
         }
     }
 

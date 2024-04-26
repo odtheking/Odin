@@ -5,9 +5,10 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
-import me.odinmain.OdinMain.scope
 import me.odinmain.features.impl.render.ClickGUIModule.devSize
 import me.odinmain.utils.getDataFromServer
 import me.odinmain.utils.render.Color
@@ -31,7 +32,7 @@ object DevPlayers {
 
     data class DevPlayer(val xScale: Float = 1f, val yScale: Float = 1f, val zScale: Float = 1f,
                          val wings: Boolean = false, val wingsColor: Color = Color(255, 255, 255))
-    data class DevData(val DevName: String, val WingsColor: Triple<Int, Int, Int>, val Size: Triple<Float, Float, Float>, val Wings: Boolean)
+    data class DevData(val devName: String, val wingsColor: Triple<Int, Int, Int>, val size: Triple<Float, Float, Float>, val wings: Boolean)
     class DevDeserializer : JsonDeserializer<DevData> {
         override fun deserialize(
             json: JsonElement?,
@@ -64,12 +65,13 @@ object DevPlayers {
         return s.replace(pattern) { match -> match.groupValues[1] }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     fun updateDevs(): HashMap<String, DevPlayer> {
-        scope.launch {
+        GlobalScope.launch {
             val data = convertDecimalToNumber(getDataFromServer("https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
             val gson = GsonBuilder().registerTypeAdapter(DevData::class.java, DevDeserializer()).create()
             gson.fromJson(data, Array<DevData>::class.java).forEach {
-                devs[it.DevName] = DevPlayer(it.Size.first, it.Size.second, it.Size.third, it.Wings, Color(it.WingsColor.first, it.WingsColor.second, it.WingsColor.third))
+                devs[it.devName] = DevPlayer(it.size.first, it.size.second, it.size.third, it.wings, Color(it.wingsColor.first, it.wingsColor.second, it.wingsColor.third))
             }
         }
         return devs

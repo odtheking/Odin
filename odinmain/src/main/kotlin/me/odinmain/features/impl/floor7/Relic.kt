@@ -24,7 +24,7 @@ object Relic {
     private val orangePB = +NumberSetting("Orange PB", 999.0, increment = 0.001, hidden = true)
     private val redPB = +NumberSetting("Red PB", 999.0, increment = 0.001, hidden = true)
 
-    val currentRelic get() = mc.thePlayer.heldItem.itemID
+    val currentRelic get() = mc.thePlayer?.heldItem?.itemID ?: ""
 
 
     enum class Relics (
@@ -42,7 +42,7 @@ object Relic {
     private var timer = 0L
 
     fun relicsOnMessage(){
-        partyMessage("${colors[selected]} Relic")
+        if (WitherDragons.relicAnnounce) partyMessage("${colors[selected]} Relic")
         timer = System.currentTimeMillis()
     }
 
@@ -52,10 +52,11 @@ object Relic {
         if (!block.equalsOneOf(Blocks.cauldron, Blocks.anvil) || !currentRelic.equalsOneOf("GREEN_KING_RELIC", "PURPLE_KING_RELIC", "BLUE_KING_RELIC", "ORANGE_KING_RELIC", "RED_KING_RELIC")) return
         val relic = Relics.entries.find { it.id == currentRelic } ?: return modMessage("Relic not found")
         val hasPassed = (System.currentTimeMillis() - timer) / 1000.0
-        if (hasPassed < relic.pbTime.value) relic.pbTime.value = hasPassed
 
         if (relicAnnounceTime) modMessage("${relic.colorCode}${relic.name}§f took ${hasPassed}s ${if (hasPassed < relic.pbTime.value) "(§dNew PB)" else ""}",
             chatStyle = createClickStyle(ClickEvent.Action.SUGGEST_COMMAND, Relics.entries.joinToString { "${it.colorCode}${it.name}§f ${it.pbTime.value.round(3)}" }))
+
+        if (hasPassed < relic.pbTime.value) relic.pbTime.value = hasPassed
         timer = 0L
         Config.save()
     }

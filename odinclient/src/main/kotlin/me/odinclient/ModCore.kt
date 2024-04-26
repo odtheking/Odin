@@ -5,13 +5,11 @@ import com.google.gson.reflect.TypeToken
 import me.odinclient.commands.impl.autoSellCommand
 import me.odinclient.features.impl.dungeon.*
 import me.odinclient.features.impl.dungeon.AutoSell.sellList
-import me.odinclient.features.impl.floor7.DioriteFucker
-import me.odinclient.features.impl.floor7.FreezeGame
-import me.odinclient.features.impl.floor7.RelicAura
+import me.odinclient.features.impl.floor7.*
 import me.odinclient.features.impl.floor7.p3.*
 import me.odinclient.features.impl.render.*
 import me.odinclient.features.impl.skyblock.*
-import me.odinclient.mixin.accessors.EntityRendererAccessor
+import me.odinclient.mixin.accessors.IEntityRendererAccessor
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.commands.registerCommands
@@ -22,9 +20,7 @@ import me.odinmain.utils.render.RenderUtils
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.Mod.EventHandler
-import net.minecraftforge.fml.common.event.FMLInitializationEvent
-import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
+import net.minecraftforge.fml.common.event.*
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
@@ -46,7 +42,7 @@ class ModCore {
             autoSellCommand
         )
         FramebufferShader.setupCameraTransform =
-            { (mc.entityRenderer as? EntityRendererAccessor)?.invokeSetupCameraTransform(RenderUtils.partialTicks, 0) }
+            { (mc.entityRenderer as? IEntityRendererAccessor)?.invokeSetupCameraTransform(RenderUtils.partialTicks, 0) }
     }
 
     @EventHandler
@@ -68,12 +64,12 @@ class ModCore {
     @EventHandler
     fun loadComplete(event: FMLLoadCompleteEvent) {
         ModuleManager.addModules(
-            AutoGFS, AutoIceFill, AutoSell, CancelInteract, CancelChestOpen, GhostPick, SecretHitboxes,
+            AutoGFS, /*AutoIceFill,*/ AutoSell, CancelInteract, CancelChestOpen, GhostPick, SecretHitboxes,
             SwapStonk, Arrows, ArrowAlign, CancelWrongTerms, HoverTerms, LightsDevice, SimonSays,
             DioriteFucker, RelicAura, Trajectories, Ghosts, NoCarpet, NoDebuff, LockCursor,
             CookieClicker, AutoExperiments, FarmingHitboxes, NoBlock, TermAC, Triggerbot, GhostBlocks, FreezeGame,
-            AbilityKeybind, EtherWarpHelper, ChestEsp, NoBreakReset, EscrowFix, TerminalMove, NoPush, SeeThroughBlocks
-
+            AbilityKeybind, EtherWarpHelper, ChestEsp, NoBreakReset, EscrowFix, TerminalMove, NoPush, SeeThroughBlocks,
+            TerminalAura, AutoTerms
         )
         OdinMain.loadComplete()
     }

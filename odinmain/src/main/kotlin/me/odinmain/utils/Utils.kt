@@ -12,6 +12,8 @@ import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.Event
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.glu.GLU
+import java.awt.Toolkit
+import java.awt.datatransfer.StringSelection
 import java.time.Month
 import java.time.format.TextStyle
 import java.util.*
@@ -258,4 +260,10 @@ fun checkGLError(message: String) {
         println("@ $message")
         println("$i: $s")
     }
+}
+
+fun copyToClipboard(text: String) {
+    val clipboard = Toolkit.getDefaultToolkit().systemClipboard
+    val stringSelection = StringSelection(text)
+    clipboard.setContents(stringSelection, null)
 }
