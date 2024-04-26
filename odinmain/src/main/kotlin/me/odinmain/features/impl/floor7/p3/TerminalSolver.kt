@@ -58,6 +58,8 @@ object TerminalSolver : Module(
     val startsWithColor: Color by ColorSetting("Starts With Color", Color(0, 170, 170), true).withDependency { showColors }
     val selectColor: Color by ColorSetting("Select Color", Color(0, 170, 170), true).withDependency { showColors }
     val customGuiColor: Color by ColorSetting("Custom Gui Color", ColorUtil.moduleButtonColor.withAlpha(.8f), true).withDependency { showColors }
+    val gap: Int by NumberSetting("Gap", 20, 0, 20, 1, false, "gap between items").withDependency { renderType == 3 }
+    val textScale: Int by NumberSetting("Text Scale", 1, 1, 3, increment = 1, description = "Text scale").withDependency { renderType == 3 }
 
     private var lastRubixSolution: Int? = null
     private val zLevel get() = if (renderType == 1 && currentTerm.equalsOneOf(TerminalTypes.STARTS_WITH, TerminalTypes.SELECT)) 100f else 400f

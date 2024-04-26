@@ -3,6 +3,7 @@ package me.odinmain.features.impl.floor7.p3.termGUI
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.customScale
+import me.odinmain.features.impl.floor7.p3.TerminalSolver.gap
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.solution
 import me.odinmain.utils.render.*
 
@@ -20,7 +21,7 @@ object PanesGui : TermGui() {
         solution.forEach { pane ->
             val row = pane / 9 - 1
             val col = pane % 9 - 2
-            val box = BoxWithClass(-170 + col * 290 / 4, -85 + row * 70, 50, 50)
+            val box = BoxWithClass((-168 + ((gap - 20).unaryPlus() * 0.5)) + col * 70, -85 + row * 70, 70 - gap, 70 - gap)
             roundedRectangle(box, TerminalSolver.panesColor)
             itemIndexMap[pane] = Box(
                 box.x.toFloat() * customScale + mc.displayWidth / 2,
