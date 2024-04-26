@@ -35,7 +35,7 @@ object OrderGui : TermGui() {
                     1    -> orderColor2
                     else -> orderColor3
                 }
-                val box = BoxWithClass((-168 + ((gap-20).unaryPlus() * 0.5)) + col * 70, -60 + row * 70, 70 - gap, 70 - gap)
+                val box = BoxWithClass((-163 + ((gap-20).unaryPlus() * 0.5)) + col * 70, -60 + row * 70, 70 - gap, 70 - gap)
                 roundedRectangle(box, color)
                 itemIndexMap[pane] = Box(
                     box.x.toFloat() * customScale + mc.displayWidth / 2,
@@ -45,7 +45,7 @@ object OrderGui : TermGui() {
                 )
             }
             if (renderOrderNumbers)
-                mcText(amount.toString(), (-167) + col * 70 + 25f , -57 + row * 70 + 10, 2 + textScale, TerminalSolver.textColor, shadow = TerminalSolver.textShadow)
+                mcText(amount.toString(), -163 + col * 70 + 26f , -60 + row * 70 + (27f - (textScale*3) - (gap * 0.5)), 2 + textScale, TerminalSolver.textColor, shadow = TerminalSolver.textShadow)
         }
     }
 }
