@@ -65,7 +65,6 @@ class ModCore {
         }
 
         OdinMain.postInit()
-        ExtrasConfig.loadConfig()
     }
 
     @EventHandler
