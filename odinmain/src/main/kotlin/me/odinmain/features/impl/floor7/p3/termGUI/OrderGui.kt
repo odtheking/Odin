@@ -45,7 +45,7 @@ object OrderGui : TermGui() {
                 )
             }
             if (renderOrderNumbers)
-                mcText(amount.toString(), (-167) + col * 290 / 4 + 25f , -57 + row * 70 + 10, 2 + textScale, TerminalSolver.textColor, shadow = TerminalSolver.textShadow)
+                mcText(amount.toString(), (-167) + col * 70 + 25f , -57 + row * 70 + 10, 2 + textScale, TerminalSolver.textColor, shadow = TerminalSolver.textShadow)
         }
     }
 }
