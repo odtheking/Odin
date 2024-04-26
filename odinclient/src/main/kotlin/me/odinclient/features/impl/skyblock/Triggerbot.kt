@@ -62,7 +62,7 @@ object Triggerbot : Module(
         "BLUE_KING_RELIC" to Vec2(59, 44)
     )
 
-    private val relicTriggerBot: Boolean by BooleanSetting("Triggerbot", false, description = "Automatically clicks the correct relic in the cauldron.")
+    private val relicTriggerBot: Boolean by BooleanSetting("Relic triggerbot", false, description = "Automatically clicks the correct relic in the cauldron.")
     private val tbClock = Clock(1000)
 
     @SubscribeEvent

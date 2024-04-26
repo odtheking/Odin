@@ -8,10 +8,10 @@ import net.minecraftforge.fml.common.eventhandler.Event
  * @see me.odinmain.mixin.MixinNetworkManager.onReceivePacket
  */
 @Cancelable
-class ReceivePacketEvent(val packet: Packet<*>) : Event()
+class PacketReceivedEvent(val packet: Packet<*>) : Event()
 
 /**
  * @see me.odinmain.mixin.MixinNetworkManager.onSendPacket
  */
 @Cancelable
-class PacketSentEvent(val packet: Packet<*>) : Event()
+class PacketSentEvent(var packet: Packet<*>) : Event()

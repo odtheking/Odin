@@ -20,6 +20,13 @@ val scaleFactor get() = ScaledResolution(mc).scaleFactor.toFloat()
 data class Box(var x: Number, var y: Number, var w: Number, var h: Number)
 data class BoxWithClass<T : Number>(var x: T, var y: T, var w: T, var h: T)
 fun Box.expand(factor: Number): Box = Box(this.x - factor, this.y - factor, this.w + factor * 2, this.h + factor * 2)
+fun Box.isPointWithin(x: Number, y: Number): Boolean {
+    return x.toDouble() >= this.x.toDouble() &&
+            y.toDouble() >= this.y.toDouble() &&
+            x.toDouble() <= (this.x.toDouble() + this.w.toDouble()) &&
+            y.toDouble() <= (this.y.toDouble() + this.h.toDouble())
+}
+
 fun roundedRectangle(
     x: Number, y: Number, w: Number, h: Number,
     color: Color, borderColor: Color, shadowColor: Color,
@@ -54,6 +61,9 @@ fun roundedRectangle(x: Number, y: Number, w: Number, h: Number, color: Color, r
         0f, radius.toFloat(), radius.toFloat(), radius.toFloat(), radius.toFloat(), edgeSoftness)
 
 fun roundedRectangle(box: Box, color: Color, radius: Number = 0f, edgeSoftness: Number = .5f) =
+    roundedRectangle(box.x, box.y, box.w, box.h, color, radius, edgeSoftness)
+
+fun <T: Number> roundedRectangle(box: BoxWithClass<T>, color: Color, radius: Number = 0f, edgeSoftness: Number = .5f) =
     roundedRectangle(box.x, box.y, box.w, box.h, color, radius, edgeSoftness)
 
 
@@ -109,9 +119,16 @@ fun textAndWidth(text: String, x: Float, y: Float, color: Color, size: Float, ty
     return getTextWidth(text, size)
 }
 
+fun mcTextAndWidth(text: String, x: Number, y: Number, scale: Number, color: Color, shadow: Boolean = true, center: Boolean = true): Float {
+    mcText(text, x, y, scale, color, shadow, center)
+    return getMCTextWidth(text).toFloat()
+}
+
 fun getMCTextWidth(text: String) = mc.fontRendererObj.getStringWidth(text)
 
 fun getTextWidth(text: String, size: Float) = OdinFont.getTextWidth(text, size)
+
+fun getMCTextHeight() = mc.fontRendererObj.FONT_HEIGHT
 
 fun getTextHeight(text: String, size: Float) = OdinFont.getTextHeight(text, size)
 

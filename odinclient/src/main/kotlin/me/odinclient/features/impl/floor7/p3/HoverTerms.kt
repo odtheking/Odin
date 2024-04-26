@@ -5,6 +5,7 @@ import me.odinclient.utils.skyblock.PlayerUtils.windowClick
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
+import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.features.settings.impl.DualSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.clock.Clock
@@ -16,7 +17,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object HoverTerms : Module(
     name = "Hover Terms",
     description = "Clicks the hovered item in a terminal if it is correct.",
-    category = Category.FLOOR7
+    category = Category.FLOOR7,
+    tag = TagType.RISKY
 ) {
     private val triggerDelay: Long by NumberSetting("Delay", 200L, 50, 800)
     private val firstClickDelay: Long by NumberSetting("First Click Delay", 200L, 50, 500)
@@ -37,14 +39,14 @@ object HoverTerms : Module(
         val hoveredItem = gui.slotUnderMouse?.slotIndex ?: return
         if (hoveredItem !in TerminalSolver.solution) return
 
-        if (TerminalSolver.currentTerm == 1) {
+        if (TerminalSolver.currentTerm == TerminalTypes.COLOR) {
             val needed = TerminalSolver.solution.count { it == hoveredItem }
             if (needed >= 3) {
                 windowClick(hoveredItem, ClickType.Right)
                 triggerBotClock.update()
                 return
             }
-        } else if (TerminalSolver.currentTerm == 2) {
+        } else if (TerminalSolver.currentTerm == TerminalTypes.ORDER) {
             if (TerminalSolver.solution.first() == hoveredItem) {
                 windowClick(hoveredItem, if (middleClick) ClickType.Middle else ClickType.Left)
                 triggerBotClock.update()

@@ -16,7 +16,7 @@ import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.EtherWarpHelper
 import me.odinmain.utils.skyblock.EtherWarpHelper.etherPos
 import me.odinmain.utils.skyblock.extraAttributes
-import me.odinmain.utils.toAABB
+import me.odinmain.utils.skyblock.getBlockAt
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -48,11 +48,11 @@ object EtherWarpHelper : Module(
         if (render && mc.thePlayer.isSneaking && mc.thePlayer.heldItem.extraAttributes?.getBoolean("ethermerge") == true && (etherPos.succeeded || renderFail)) {
             val pos = etherPos.pos ?: return
             val color = if (etherPos.succeeded) renderColor else wrongColor
-
+            val aabb = getBlockAt(pos).getSelectedBoundingBox(mc.theWorld, pos) ?: return
             if (filled)
-                Renderer.drawBox(pos.toAABB(), color, depth = phase, outlineAlpha = 0)
+                Renderer.drawBox(aabb, color, depth = phase, outlineAlpha = 0)
             else
-                Renderer.drawBox(pos.toAABB(), color, outlineWidth = thickness, depth = phase, fillAlpha = 0)
+                Renderer.drawBox(aabb, color, outlineWidth = thickness, depth = phase, fillAlpha = 0)
         }
     }
 

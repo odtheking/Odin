@@ -1,7 +1,7 @@
 package me.odinmain.utils
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.events.impl.ReceivePacketEvent
+import me.odinmain.events.impl.PacketReceivedEvent
 import net.minecraft.entity.Entity
 import net.minecraft.network.Packet
 import net.minecraft.network.play.client.C16PacketClientStatus
@@ -17,11 +17,7 @@ object ServerUtils {
     private val packets = ArrayList<Packet<*>>()
 
     fun handleSendPacket(packet: Packet<*>): Boolean {
-        if (packet in packets) {
-            packets.remove(packet)
-            return true
-        }
-        return false
+        return packets.remove(packet)
     }
 
     private fun sendPacketNoEvent(packet: Packet<*>) {
@@ -51,7 +47,7 @@ object ServerUtils {
     }
 
     @SubscribeEvent
-    fun onPacket(event: ReceivePacketEvent) {
+    fun onPacket(event: PacketReceivedEvent) {
         when (event.packet) {
             is S37PacketStatistics -> averagePing = (System.nanoTime() - pingStartTime) / 1e6 * 0.4 + averagePing * 0.6
 
@@ -68,6 +64,7 @@ object ServerUtils {
         }
         isPinging = false
     }
+
     private fun sendPing() {
         if (isPinging || mc.thePlayer == null) return
         pingStartTime = System.nanoTime()

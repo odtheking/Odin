@@ -124,7 +124,6 @@ object RenderUtils {
 
     fun postDraw() {
         GlStateManager.disableBlend()
-        GlStateManager.enableLighting()
         GlStateManager.enableTexture2D()
     }
 
@@ -519,6 +518,7 @@ object RenderUtils {
      * @param height The height of the rectangle.
      */
     fun drawTexturedModalRect(x: Int, y: Int, width: Int, height: Int) {
+        Color.WHITE.bind()
         worldRenderer {
             begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
             pos(x.toDouble(), (y + height).toDouble(), 0.0).tex(0.0, 1.0).endVertex()
@@ -528,6 +528,7 @@ object RenderUtils {
         }
         tessellator.draw()
     }
+
 
     fun draw2D(entity: Entity, lineWidth: Float, color: Color) {
         val mvMatrix = getMatrix(2982)
