@@ -35,7 +35,7 @@ object OrderGui : TermGui() {
                     1    -> orderColor2
                     else -> orderColor3
                 }
-                val box = BoxWithClass((-168 + ((gap-20).unaryPlus() * 0.5)) + col * 290 / 4, -60 + row * 70, 70 - gap, 70 - gap)
+                val box = BoxWithClass((-168 + ((gap-20).unaryPlus() * 0.5)) + col * 70, -60 + row * 70, 70 - gap, 70 - gap)
                 roundedRectangle(box, color)
                 itemIndexMap[pane] = Box(
                     box.x.toFloat() * customScale + mc.displayWidth / 2,

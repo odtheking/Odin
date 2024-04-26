@@ -21,7 +21,7 @@ object SelectAllGui : TermGui() {
         solution.forEach { pane ->
             val row = pane / 9 - 1
             val col = pane % 9 - 2
-            val box = BoxWithClass((-168 + ((gap -20).unaryPlus() * 0.5)) + col * 290 / 4, -115 + row * 70, 70 - gap, 70 - gap)
+            val box = BoxWithClass((-168 + ((gap -20).unaryPlus() * 0.5)) + col * 70, -115 + row * 70, 70 - gap, 70 - gap)
             roundedRectangle(box, TerminalSolver.selectColor)
             itemIndexMap[pane] = Box(
                 box.x.toFloat() * customScale + mc.displayWidth / 2,

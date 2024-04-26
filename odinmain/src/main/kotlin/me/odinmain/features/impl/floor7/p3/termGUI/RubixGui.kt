@@ -27,9 +27,9 @@ object RubixGui : TermGui() {
 
             val row = pane / 9 - 1
             val col = pane % 9 - 2
-            val box = BoxWithClass((-168 + ((gap -20).unaryPlus() * 0.5)) + col * 290 / 4, -110 + row * 70, 70 - gap, 70 - gap)
+            val box = BoxWithClass((-168 + ((gap -20).unaryPlus() * 0.5)) + col * 70, -110 + row * 70, 70 - gap, 70 - gap)
             roundedRectangle(box, if (needed < 3) TerminalSolver.rubixColor else TerminalSolver.oppositeRubixColor)
-            mcText(text, (-167) + col * 290 / 4 + 25f , -103 + row * 70 + 10, 2 + textScale, TerminalSolver.textColor, shadow = TerminalSolver.textShadow)
+            mcText(text, (-167) + col * 70 + 25f , -103 + row * 70 + 10, 2 + textScale, TerminalSolver.textColor, shadow = TerminalSolver.textShadow)
             itemIndexMap[pane] = Box(
                 box.x.toFloat() * customScale + mc.displayWidth / 2,
                 box.y.toFloat() * customScale + mc.displayHeight / 2,
