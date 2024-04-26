@@ -9,6 +9,7 @@ import me.odinmain.features.impl.floor7.p3.TerminalSolver.orderColor2
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.orderColor3
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.renderOrderNumbers
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.solution
+import me.odinmain.features.impl.floor7.p3.TerminalSolver.textScale
 import me.odinmain.utils.render.*
 
 object OrderGui : TermGui() {
@@ -44,7 +45,7 @@ object OrderGui : TermGui() {
                 )
             }
             if (renderOrderNumbers)
-                mcText(amount.toString(), (-167) + col * 290 / 4 + 25f , -57 + row * 70 + 10, 3 - ((gap-20).unaryPlus() / 10), TerminalSolver.textColor, shadow = TerminalSolver.textShadow)
+                mcText(amount.toString(), (-167) + col * 290 / 4 + 25f , -57 + row * 70 + 10, 2 + textScale, TerminalSolver.textColor, shadow = TerminalSolver.textShadow)
         }
     }
 }
