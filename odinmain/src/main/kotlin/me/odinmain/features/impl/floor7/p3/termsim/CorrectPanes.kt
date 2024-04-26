@@ -1,8 +1,8 @@
 package me.odinmain.features.impl.floor7.p3.termsim
 
 import me.odinmain.events.impl.GuiLoadedEvent
-import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalTimes
+import me.odinmain.utils.postAndCatch
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.Slot
 import net.minecraft.item.ItemStack
@@ -29,7 +29,7 @@ object CorrectPanes : TermSimGui(
     override fun slotClick(slot: Slot, button: Int) {
         if (slot.stack?.metadata == 14) slot.putStack(greenPane) else slot.putStack(redPane)
         mc.thePlayer.playSound("random.orb", 1f, 1f)
-        TerminalSolver.onGuiLoad(GuiLoadedEvent(name, inventorySlots as ContainerChest))
+        GuiLoadedEvent(name, inventorySlots as ContainerChest).postAndCatch()
         if (inventorySlots.inventorySlots.subList(0, 45).none { it?.stack?.metadata == 14 }) {
             solved(this.name, TerminalTimes.simPanesPB)
         }

@@ -4,14 +4,10 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.HudSetting
+import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.noControlCodes
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.getMCTextWidth
-import me.odinmain.utils.render.mcText
+import me.odinmain.utils.render.*
 import net.minecraft.network.play.server.S47PacketPlayerListHeaderFooter
 import kotlin.math.max
 
@@ -33,7 +29,7 @@ object BlessingDisplay : Module(
     private val wisdomColor: Color by ColorSetting("Wisdom Color", Color.BLUE, true, description = "The color of the wisdom blessing.").withDependency { wisdom }
 
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
-        val activeBlessings = Blessings.entries.filter { blessings -> blessings.enabled.invoke() }
+        val activeBlessings = Blessings.entries.filter { a -> a.enabled }
         if (it) {
             activeBlessings.forEachIndexed { index, blessing ->
                 mcText("${blessing.displayString} §a29§r", 0f, 10f * index, 1, blessing.color, center = false)
@@ -51,14 +47,14 @@ object BlessingDisplay : Module(
         var regex: Regex,
         val displayString: String,
         var color: Color,
-        var enabled: () -> Boolean,
+        var enabled: Boolean,
         var current: Int = 0
     ) {
-        POWER(Regex("Blessing of Power (X{0,3}(IX|IV|V?I{0,3}))"), "Power", powerColor, { power }),
-        LIFE(Regex("Blessing of Life (X{0,3}(IX|IV|V?I{0,3}))"), "Life", lifeColor, { life }),
-        WISDOM(Regex("Blessing of Wisdom (X{0,3}(IX|IV|V?I{0,3}))"), "Wisdom", wisdomColor,{ wisdom }),
-        STONE(Regex("Blessing of Stone (X{0,3}(IX|IV|V?I{0,3}))"), "Stone", stoneColor, { stone }),
-        TIME(Regex("Blessing of Time (V)"), "Time", timeColor, { time });
+        POWER(Regex("Blessing of Power (X{0,3}(IX|IV|V?I{0,3}))"), "Power", powerColor, power),
+        LIFE(Regex("Blessing of Life (X{0,3}(IX|IV|V?I{0,3}))"), "Life", lifeColor, life),
+        WISDOM(Regex("Blessing of Wisdom (X{0,3}(IX|IV|V?I{0,3}))"), "Wisdom", wisdomColor, wisdom),
+        STONE(Regex("Blessing of Stone (X{0,3}(IX|IV|V?I{0,3}))"), "Stone", stoneColor, stone),
+        TIME(Regex("Blessing of Time (V)"), "Time", timeColor, time);
 
         fun reset() {
             current = 0
@@ -89,11 +85,11 @@ object BlessingDisplay : Module(
             Blessings.LIFE.color = lifeColor
             Blessings.WISDOM.color = wisdomColor
 
-            Blessings.TIME.enabled = { time }
-            Blessings.POWER.enabled = { power }
-            Blessings.STONE.enabled = { stone }
-            Blessings.LIFE.enabled = { life }
-            Blessings.WISDOM.enabled = { wisdom }
+            Blessings.TIME.enabled = time
+            Blessings.POWER.enabled = power
+            Blessings.STONE.enabled = stone
+            Blessings.LIFE.enabled = life
+            Blessings.WISDOM.enabled = wisdom
         }
 
         onWorldLoad {

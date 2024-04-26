@@ -128,6 +128,7 @@ object TerminalSolver : Module(
 
         translate(0f, 0f, zLevel)
         GlStateManager.disableLighting()
+        GlStateManager.enableDepth()
         when (currentTerm) {
             TerminalTypes.PANES -> Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, panesColor.rgba)
 
@@ -256,7 +257,7 @@ object TerminalSolver : Module(
         solution = items.filter {
             it?.isItemEnchanted == false &&
             it.unlocalizedName?.contains(color, true) == true &&
-            (color == "LIGHT BLUE" || it.unlocalizedName?.contains("Light Blue", true) == false) && // color BLUE should not accept light blue items.
+            (color == "lightblue" || it.unlocalizedName?.contains("lightBlue", true) == false) && // color BLUE should not accept light blue items.
             Item.getIdFromItem(it.item) != 160
         }.map { items.indexOf(it) }
     }

@@ -5,10 +5,8 @@ import me.odinmain.OdinMain.display
 import me.odinmain.config.Config
 import me.odinmain.events.impl.GuiLoadedEvent
 import me.odinmain.events.impl.PacketSentEvent
-import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.utils.round
-import me.odinmain.utils.runIn
+import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiChest
@@ -46,7 +44,7 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
         this.ping = ping
         display = this
         startTime = System.currentTimeMillis()
-        TerminalSolver.onGuiLoad(GuiLoadedEvent(name, inventorySlots as ContainerChest))
+        GuiLoadedEvent(name, inventorySlots as ContainerChest).postAndCatch()
     }
 
     fun solved(name: String, oldPb: NumberSetting<Double>) {
