@@ -4,14 +4,13 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.addVec
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderBoundingBox
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.render.getTextWidth
-import me.odinmain.utils.render.text
+import me.odinmain.utils.render.getMCTextWidth
+import me.odinmain.utils.render.mcText
 import me.odinmain.utils.round
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.KuudraUtils.kuudraEntity
@@ -36,14 +35,13 @@ object KuudraDisplay : Module(
     private val scaledHealth: Boolean by BooleanSetting("Use Scaled", true, description = "Use scaled health display").withDependency { kuudraHPDisplay }
     private val hud: HudElement by HudSetting("Health Display", 10f, 10f, 1f, true) {
         if (it) {
-            text("§a99.975k/100k", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
-
-            getTextWidth("99.975k/100k", 12f) + 2f to 22f
+            mcText("§a99.975M/300M", 1f, 1f, 1, Color.WHITE, center = false)
+            getMCTextWidth("99.975k/100k") + 2f to 10f
         } else {
             if (LocationUtils.currentArea != Island.Kuudra) return@HudSetting 0f to 0f
-            text(getCurrentHealthDisplay(), 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
 
-            getTextWidth("99.975k/100k", 12f) + 2f to 22f
+            mcText(getCurrentHealthDisplay(), 1f, 1f, 1, Color.WHITE, center = false)
+            getMCTextWidth("99.975k/100k") + 2f to 10f
         }
     }
 

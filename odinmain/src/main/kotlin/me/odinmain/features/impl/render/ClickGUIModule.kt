@@ -1,8 +1,9 @@
 package me.odinmain.features.impl.render
 
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain
-import me.odinmain.OdinMain.scope
 import me.odinmain.config.Config
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -46,9 +47,10 @@ object ClickGUIModule: Module(
     private var showHidden: Boolean by DropdownSetting("Show Hidden", false)
     private val passcode: String by StringSetting("Passcode", "odin", description = "Passcode for dev features.").withDependency { DevPlayers.isDev && showHidden }
 
+    @OptIn(DelicateCoroutinesApi::class)
     val reset: () -> Unit by ActionSetting("Send Dev Data") {
         showHidden = false
-        scope.launch {
+        GlobalScope.launch {
             modMessage(sendDataToServer(body = "${mc.thePlayer.name}, [${devWingsColor.r},${devWingsColor.g},${devWingsColor.b}], [$devSizeX,$devSizeY,$devSizeZ], $devWings, $passcode", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
             DevPlayers.updateDevs()
         }

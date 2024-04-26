@@ -27,8 +27,8 @@ object InOrder : TermSimGui(
         if (
             inventorySlots.inventorySlots
                 .subList(0, size)
-                .filter { it.stack.metadata == 14 }
-                .minByOrNull { it.stack.stackSize } != slot
+                .filter { it.stack?.metadata == 14 }
+                .minByOrNull { it.stack?.stackSize ?: 999 } != slot
         ) return
         slot.putStack(ItemStack(pane, slot.stack.stackSize, 5).apply { setStackDisplayName("") })
         mc.thePlayer.playSound("random.orb", 1f, 1f)

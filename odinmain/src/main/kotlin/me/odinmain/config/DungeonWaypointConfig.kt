@@ -4,10 +4,11 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonIOException
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
-import me.odinmain.OdinMain.scope
 import me.odinmain.features.impl.dungeon.DungeonWaypoints.DungeonWaypoint
 import me.odinmain.utils.render.Color
 import java.io.File
@@ -46,8 +47,9 @@ object DungeonWaypointConfig {
         }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     fun saveConfig() {
-        scope.launch(Dispatchers.IO) {
+        GlobalScope.launch(Dispatchers.IO) {
             try {
                 configFile.bufferedWriter().use {
                     it.write(gson.toJson(waypoints))

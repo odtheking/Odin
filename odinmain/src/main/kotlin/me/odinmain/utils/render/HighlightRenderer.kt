@@ -6,6 +6,7 @@ import me.odinmain.ui.util.shader.OutlineShader
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.render.RenderUtils.renderBoundingBox
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.entity.Entity
 import net.minecraftforge.client.event.RenderGameOverlayEvent
@@ -56,6 +57,7 @@ object HighlightRenderer {
     @SubscribeEvent
     fun on2d(event: RenderGameOverlayEvent.Pre) {
         if (event.type != RenderGameOverlayEvent.ElementType.ALL) return
+        GlStateManager.pushMatrix()
         RenderHelper.disableStandardItemLighting()
         mc.renderManager.setRenderOutlines(true)
         RenderUtils.enableOutlineMode()
@@ -82,5 +84,6 @@ object HighlightRenderer {
         RenderUtils.disableOutlineMode()
         mc.renderManager.setRenderOutlines(false)
         RenderHelper.enableStandardItemLighting()
+        GlStateManager.popMatrix()
     }
 }

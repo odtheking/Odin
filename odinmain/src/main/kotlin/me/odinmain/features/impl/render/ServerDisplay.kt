@@ -26,22 +26,22 @@ object ServerDisplay : Module(
             if (style == 0) {
                 var width = 0f
                 if (tps) {
-                    width += getTextWidth("§rTPS: §f20", 14f) * 1.5f
-                    text("§rTPS: §f20", 1f, 10f, ClickGUIModule.color, 14f, shadow = true)
+                    width += getMCTextWidth("§rTPS: §f20") * 1.5f
+                    mcText("§rTPS: §f20", 1f, 5f, 2, ClickGUIModule.color, shadow = true, center = false)
                 }
                 if (fps) {
-                    width += getTextWidth("§rFPS: §f240", 14f) * 1.5f
-                    text("§rFPS: §f240", 1f + if (tps) getTextWidth("§rTPS: §f20", 14f) * 1.5f else 0f, 10f, ClickGUIModule.color, 14f, shadow = true)
+                    width += getMCTextWidth("§rFPS: §f240") * 1.5f
+                    mcText("§rFPS: §f240", 5f + if (tps) getMCTextWidth("§rTPS: §f20") * 2f else 0f, 5f, 2, ClickGUIModule.color, shadow = true, center = false)
                 }
                 if (ping) {
-                    width += getTextWidth("§rPing: §f60", 12f) * 1.5f
-                    text("§rPing: §f60", 1f + (if (tps) getTextWidth("§rTPS: §f20", 14f) * 1.5f else 0f) + (if (fps) getTextWidth("§rFPS: §f240", 14f) * 1.5f else 0f), 10f, ClickGUIModule.color, 14f, shadow = true)
+                    width += getMCTextWidth("§rPing: §f60") * 1.5f
+                    mcText("§rPing: §f60", 5f + if (tps) getMCTextWidth("§rTPS: §f20") * 4.5f else 0f + if (fps) getMCTextWidth("§rFPS: §f240") * 3f + 5f else 0f, 5f, 2, ClickGUIModule.color, shadow = true, center = false)
                 }
-                width + 6f to if (ping || tps || fps) getTextHeight("A", 14f) + 6f else 0f
+                width + 6f to if (ping || tps || fps) getMCTextHeight() * 2 + 6f else 0f
             } else {
-                if (ping) text("§6Ping: §a60ms", 1f, 9f, Color.WHITE,12f)
-                if (tps) text("§3TPS: §a20.0", 1f, 26f, Color.WHITE,12f)
-                if (fps) text("§dFPS: §a240.0", 1f, 43f, Color.WHITE,12f)
+                if (ping) mcText("§6Ping: §a60ms", 1f, 9f, 2, Color.WHITE, shadow = true, center = false)
+                if (tps) mcText("§3TPS: §a20.0", 1f, 26f, 2, Color.WHITE, shadow = true, center = false)
+                if (fps) mcText("§dFPS: §a240", 1f, 43f, 2, Color.WHITE, shadow = true, center = false)
                 max(
                     if (ping) getTextWidth("Ping: 60ms", 12f) else 0f,
                     if (tps) getTextWidth("TPS: 20.0", 12f) else 0f,
@@ -55,16 +55,16 @@ object ServerDisplay : Module(
                 val tpsText = "§rTPS: §f${if (ServerUtils.averageTps > 19.3) 20 else ServerUtils.averageTps.toInt()}"
                 var width = 0f
                 if (tps)
-                    width += textAndWidth(tpsText, 1f, 10f, ClickGUIModule.color, 14f, shadow = true) * 1.5f
+                    width += mcTextAndWidth(tpsText, 1f, 5f, 2, ClickGUIModule.color, shadow = true, center = false) * 1.5f
                 if (fps)
-                    width += textAndWidth(fpsText, 1f + (if (tps) getTextWidth(tpsText, 14f) * 1.5f else 0f), 10f, ClickGUIModule.color, 14f, shadow = true) * 1.5f
+                    width += mcTextAndWidth(fpsText, 5f + (if (tps) getMCTextWidth(tpsText) * 2f else 0f), 5f, 2, ClickGUIModule.color, shadow = true, center = false) * 1.5f
                 if (ping)
-                    width += textAndWidth(pingText, 1f + (if (tps) getTextWidth(tpsText, 14f) * 1.5f else 0f) + (if (fps) getTextWidth(fpsText, 14f) * 1.5f else 0f), 10f, ClickGUIModule.color, 14f, shadow = true) * 1.5f
-                width + 2f to if (ping || tps || fps) getTextHeight("A", 14f) + 6f else 0f
+                    width += mcTextAndWidth(pingText, 5f + (if (tps) getMCTextWidth(tpsText) * 2f else 0f) + (if (fps) getMCTextWidth(fpsText) * 2f + 5f else 0f), 5f, 2, ClickGUIModule.color, shadow = true, center = false) * 1.5f
+                width + 2f to if (ping || tps || fps) getMCTextWidth("A") + 6f else 0f
             } else {
-                if (ping) text("§6Ping: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 1f, 9f, Color.WHITE,12f)
-                if (tps) text("§3TPS: ${colorizeTps(ServerUtils.averageTps.round(1))}", 1f, 26f, Color.WHITE,12f)
-                if (fps) text("§dFPS: ${colorizeFPS(mc.debug.split(" ")[0].toIntOrNull() ?: 0)}", 1f, 43f, Color.WHITE,12f)
+                if (ping) mcText("§6Ping: §a${ServerUtils.averagePing.toInt()}ms", 1f, 9f, 2, Color.WHITE, shadow = true, center = false)
+                if (tps) mcText("§3TPS: §a${ServerUtils.averageTps.round(1)}", 1f, 26f, 2, Color.WHITE, shadow = true, center = false)
+                if (fps) mcText("§dFPS: §a${mc.debug.split(" ")[0].toIntOrNull() ?: 0}", 1f, 43f, 2, Color.WHITE, shadow = true, center = false)
                 max(
                     if (ping) getTextWidth("§ePing: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 12f) else 0f,
                     if (tps) getTextWidth("§ePing: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 12f) else 0f,
@@ -92,7 +92,7 @@ object ServerDisplay : Module(
         }
     }
 
-    fun colorizeFPS(fps: Int): String {
+    private fun colorizeFPS(fps: Int): String {
         return when {
             fps > 200 -> "§a$fps"
             fps > 100.0 -> "§e$fps"

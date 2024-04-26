@@ -1,8 +1,6 @@
 package me.odinclient.mixin.mixins;
 
-import me.odinclient.features.impl.floor7.p3.TerminalMove;
 import me.odinmain.events.impl.*;
-import me.odinmain.features.impl.floor7.p3.TerminalSolver;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
@@ -13,10 +11,9 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = GuiContainer.class, priority = 1)
-public class MixinGuiContainer {
+public abstract class MixinGuiContainer {
 
     @Unique
     private final GuiContainer gui = (GuiContainer) (Object) this;
@@ -32,6 +29,9 @@ public class MixinGuiContainer {
 
     @Shadow protected int guiTop;
 
+    @Shadow private Slot theSlot;
+
+    @Shadow protected abstract boolean isMouseOverSlot(Slot slotIn, int mouseX, int mouseY);
 
     @Inject(method = "drawSlot", at = @At("HEAD"), cancellable = true)
     private void onDrawSlot(Slot slotIn, CallbackInfo ci) {
@@ -42,14 +42,15 @@ public class MixinGuiContainer {
     @Inject(method = "drawScreen", at = @At(value = "HEAD"), cancellable = true)
     private void startDrawScreen(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
         DrawGuiContainerScreenEvent event = new DrawGuiContainerScreenEvent(gui.inventorySlots, gui, this.xSize, this.ySize, guiLeft, guiTop);
-        if (MinecraftForge.EVENT_BUS.post(event))
+        if (MinecraftForge.EVENT_BUS.post(event)) {
             ci.cancel();
-    }
 
-    @Inject(method = "drawSlot", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/RenderItem;renderItemAndEffectIntoGUI(Lnet/minecraft/item/ItemStack;II)V"), cancellable = true)
-    private void size(Slot slotIn, CallbackInfo ci) {
-        if (TerminalSolver.INSTANCE.getShouldBlockWrong() && slotIn.slotNumber <= gui.inventorySlots.inventorySlots.size() - 37) {
-            ci.cancel();
+            this.theSlot = null;
+            for (int i = 0; i < this.inventorySlots.inventorySlots.size(); ++i) {
+                Slot slot = this.inventorySlots.inventorySlots.get(i);
+                if (!this.isMouseOverSlot(slot, mouseX, mouseY) || !slot.canBeHovered()) continue;
+                this.theSlot = slot;
+            }
         }
     }
 
@@ -68,11 +69,6 @@ public class MixinGuiContainer {
     @Inject(method = "onGuiClosed", at = @At("HEAD"))
     private void onGuiClosed(CallbackInfo ci) {
         MinecraftForge.EVENT_BUS.post(new GuiClosedEvent(gui));
-    }
-
-    @Inject(method = "checkHotbarKeys", at = @At("HEAD"), cancellable = true)
-    private void onCheckHotbarKeys(int keyCode, CallbackInfoReturnable<Boolean> cir) {
-        TerminalMove.INSTANCE.disableGuiHotbarKeysHook(cir);
     }
 
 }
