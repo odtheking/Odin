@@ -20,6 +20,7 @@
     "mixins.MixinEntityRenderer",
     "mixins.MixinFontRenderer",
     "mixins.MixinGuiContainer",
+    "mixins.MixinGuiIngame",
     "mixins.MixinGuiScreen",
     "mixins.MixinItem",
     "mixins.MixinItemRenderer",
