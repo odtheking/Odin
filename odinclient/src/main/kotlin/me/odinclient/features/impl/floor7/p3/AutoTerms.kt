@@ -1,7 +1,7 @@
 package me.odinclient.features.impl.floor7.p3
 
 import me.odinclient.utils.skyblock.PlayerUtils
-import me.odinmain.events.impl.GuiLoadedEvent
+import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
@@ -30,7 +30,7 @@ object AutoTerms : Module(
 
 
     @SubscribeEvent
-    fun onGuiOpen(event: GuiLoadedEvent) {
+    fun onGuiOpen(event: GuiEvent.GuiLoadedEvent) {
         clickedThisWindow = false
     }
 
@@ -55,7 +55,7 @@ object AutoTerms : Module(
         clock.update()
         breakClock.update()
         when (TerminalSolver.currentTerm) {
-            TerminalTypes.COLOR ->  PlayerUtils.windowClick(
+            TerminalTypes.RUBIX ->  PlayerUtils.windowClick(
                                         item,
                                         if (TerminalSolver.solution.count { it == item } >= 3) PlayerUtils.ClickType.Right else if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left
                                     )

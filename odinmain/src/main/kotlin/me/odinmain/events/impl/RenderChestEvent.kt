@@ -8,5 +8,4 @@ open class RenderChestEvent(var chest: TileEntityChest, var x: Double, var y: Do
     class Pre(tileEntity: TileEntityChest, x: Double, y: Double, z: Double, partialTicks: Float) : RenderChestEvent(tileEntity, x, y, z, partialTicks)
 
     class Post(tileEntity: TileEntityChest, x: Double, y: Double, z: Double, partialTicks: Float) : RenderChestEvent(tileEntity, x, y, z, partialTicks)
-
 }

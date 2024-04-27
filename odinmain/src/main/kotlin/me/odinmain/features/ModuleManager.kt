@@ -116,7 +116,9 @@ object ModuleManager {
         VisualWords,
         HidePlayers,
         WarpCooldown,
-        CopyChat
+        CopyChat,
+        DVD,
+        PlayerDisplay
     )
 
     init {

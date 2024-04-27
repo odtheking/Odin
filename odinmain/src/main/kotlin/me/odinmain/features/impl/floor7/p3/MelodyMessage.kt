@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.floor7.p3
 
-import me.odinmain.events.impl.GuiClosedEvent
-import me.odinmain.events.impl.GuiLoadedEvent
+import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -26,7 +25,7 @@ object MelodyMessage : Module(
     private var claySlots = hashMapOf(25 to "Melody terminal is at 25%", 34 to "Melody terminal is at 50%", 43 to "Melody terminal is at 75%",)
 
     @SubscribeEvent
-    fun onGuiLoad(event: GuiLoadedEvent) {
+    fun onGuiLoad(event: GuiEvent.GuiLoadedEvent) {
         if (!DungeonUtils.inDungeons || saidMelody || !event.name.startsWith("Click the button on time!")) return
         if (sendMelodyMessage) partyMessage(melodyMessage)
 
@@ -35,7 +34,7 @@ object MelodyMessage : Module(
     }
 
     @SubscribeEvent
-    fun onGuiClose(event: GuiClosedEvent) {
+    fun onGuiClose(event: GuiEvent.GuiClosedEvent) {
         saidMelody = false
     }
 
