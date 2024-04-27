@@ -13,6 +13,8 @@ import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import org.lwjgl.opengl.Display
+import java.awt.Color.getHSBColor
 
 object DVD : Module(
     name = "DVD",
@@ -27,17 +29,17 @@ object DVD : Module(
 
     private val speed: Long by NumberSetting("Speed", 10, 1, 20, 1, description = "Speed of the DVD box.")
 
-    private var x = 0
-    private var y = 0
+    private var x = Display.getWidth() / 2
+    private var y = Display.getHeight() / 2
     private var dx = 1
     private var dy = 1
-    var color = Color.MAGENTA
+    var color = Color.WHITE
 
-    private fun randomColor() {
-        val r = (Math.random() * 56 + 200).toInt()
-        val g = (Math.random() * 56 + 200).toInt()
-        val b = (Math.random() * 56 + 200).toInt()
-        color = Color(r, g, b)
+    private fun getDVDColor() {
+        val hue = (Math.random() * 360).toFloat()
+
+        val javaColor = getHSBColor(hue, 1.0f, 0.5f)
+        color = Color(javaColor.red, javaColor.green, javaColor.blue)
     }
 
     @SubscribeEvent
@@ -58,11 +60,11 @@ object DVD : Module(
 
             // Check collision with screen edges
             if (x <= 0 || x + boxWidth >= screenWidth) {
-                randomColor()
+                getDVDColor()
                 dx = -dx // Reverse horizontal direction
             }
             if (y <= 0 || y + boxHeight >= screenHeight) {
-                randomColor()
+                getDVDColor()
                 dy = -dy // Reverse vertical direction
             }
 
