@@ -11,32 +11,6 @@ import com.github.stivais.ui.events.onMouseEnterExit
 import com.github.stivais.ui.utils.animate
 import com.github.stivais.ui.utils.seconds
 
-fun Element.button(
-    constraints: Constraints? = null,
-    offColor: Color = Color.RGB(38, 38, 38),
-    onColor: Color = Color.RGB(50, 150, 220),
-    on: Boolean = false,
-    radii: FloatArray? = null,
-    dsl: Block.() -> Unit
-): Block {
-    val mainColor = Color.Animated(offColor, onColor, on)
-    val hoverColor = Color.Animated(Color.TRANSPARENT, Color.RGB(255, 255, 255, 0.05f))
-
-    return block(constraints, mainColor, radii) {
-        block(copyParent(), color = hoverColor, radius = radii) {
-            onMouseEnterExit {
-                hoverColor.animate(0.25.seconds)
-                true
-            }
-        }
-        onClick(0) {
-            mainColor.animate(0.15.seconds)
-            false
-        }
-        dsl()
-    }
-}
-
 fun Element.column(constraints: Constraints? = null, block: Column.() -> Unit = {}): Column {
     val column = Column(constraints)
     addElement(column)
@@ -75,4 +49,34 @@ fun Element.group(constraints: Constraints? = null, block: Group.() -> Unit = {}
     addElement(column)
     column.block()
     return column
+}
+
+fun Element.button(
+    constraints: Constraints? = null,
+    offColor: Color,
+    onColor: Color,
+    on: Boolean = false,
+    radii: FloatArray? = null,
+    dsl: Block.() -> Unit
+): Block {
+    val buttonColor = Color.Animated(offColor, onColor, on)
+    val hoverColor = Color.Animated(Color.TRANSPARENT, Color.RGB(255, 255, 255, 0.05f))
+
+    return block(
+        constraints = constraints,
+        color = buttonColor,
+        radius = radii
+    ) {
+        block(constraints = copyParent(), color = hoverColor, radius = radii) {
+            onMouseEnterExit {
+                hoverColor.animate(0.25.seconds)
+                true
+            }
+        }
+        onClick(0) {
+            buttonColor.animate(0.15.seconds)
+            false
+        }
+        dsl()
+    }
 }

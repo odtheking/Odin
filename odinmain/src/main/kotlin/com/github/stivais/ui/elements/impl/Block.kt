@@ -23,7 +23,7 @@ open class Block(constraints: Constraints?, color: Color) : Element(constraints?
 //            renderer.rect(x, y, width, height, color!!.rgba)
         }
         if (outlineColor != null && outlineColor!!.rgba.alpha != 0) {
-            rectangleOutline(x, y, width, height, me.odinmain.utils.render.Color(outlineColor!!.rgba), 0f, 1f)
+            rectangleOutline(x, y, width, height, me.odinmain.utils.render.Color(outlineColor!!.rgba), 0f, 3f)
 //            renderer.border(x, y, width, height, 1f, null, outlineColor!!.rgba)
         }
     }
@@ -44,24 +44,23 @@ class RoundedBlock(constraints: Constraints?, color: Color, private val radii: F
     override fun draw() {
         if (color!!.rgba.alpha != 0) {
             val clr = me.odinmain.utils.render.Color(color!!.rgba)
+            val outline = outlineColor?.rgba?.let { me.odinmain.utils.render.Color(it) }
+//            val outline = me.odinmain.utils.render.Color((outlineColor ?: Color.TRANSPARENT).rgba)
             roundedRectangle(
                 x = x,
                 y = y,
                 w = width,
                 h = height,
                 color = clr,
-                borderColor = clr,
+                borderColor = outline ?: clr,
                 shadowColor = clr,
-                borderThickness = 0f,
+                borderThickness = 2f,
                 topL = radii[0],
                 topR = radii[3],
                 botL = radii[1],
                 botR = radii[2],
                 edgeSoftness = 0.5f
             )
-        }
-        if (outlineColor != null && outlineColor!!.rgba.alpha != 0) {
-            rectangleOutline(x, y, width, height, me.odinmain.utils.render.Color(outlineColor!!.rgba), 0f, 1f)
         }
     }
 }
