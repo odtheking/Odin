@@ -11,6 +11,7 @@ import com.github.stivais.ui.constraints.positions.Center
 import com.github.stivais.ui.events.Event
 import com.github.stivais.ui.events.Mouse
 import com.github.stivais.ui.utils.forLoop
+import me.odinmain.utils.render.rectangleOutline
 
 
 // Positioning (X or Y) should be: defined with a measurement or aligned by left/top, center, right/bottom (with some padding)
@@ -106,6 +107,7 @@ abstract class Element(constraints: Constraints?) {
     }
 
     fun render() {
+        rectangleOutline(x, y, width, height, me.odinmain.utils.render.Color.WHITE, 0f, 2f)
         if (!renders) return
         draw()
         elements?.forLoop { element ->

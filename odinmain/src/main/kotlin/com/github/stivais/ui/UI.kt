@@ -6,8 +6,11 @@ import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.elements.impl.Group
 import com.github.stivais.ui.events.EventManager
 import me.odinmain.utils.render.TextAlign
+import me.odinmain.utils.render.TextPos
 import me.odinmain.utils.render.Color as OdinColor
 import me.odinmain.utils.render.text
+import me.odinmain.utils.render.translate
+import net.minecraft.client.renderer.GlStateManager
 import java.util.logging.Logger
 
 // TODO: When finished with dsl and inputs, bring to its own window instead of inside of minecraft for benchmarking and reduce all memory usage
@@ -44,11 +47,17 @@ class UI(
 
     fun render() {
         val start = System.nanoTime()
+
+        GlStateManager.pushMatrix()
+        GlStateManager.scale(0.5f, 0.5f, 0.5f)
+        translate(0f, 0f, 0f)
+
+
 //        renderer.beginFrame()
         main.position()
         main.render()
         if (settings.frameMetrics) {
-            text(performance, main.width, main.height, OdinColor.WHITE, 16f, align = TextAlign.Right)
+            text(performance, main.width, main.height, OdinColor.WHITE, 12f, align = TextAlign.Right, verticalAlign = TextPos.Bottom)
         }
 //        renderer.endFrame()
         if (settings.frameMetrics) {
@@ -65,6 +74,7 @@ class UI(
         }
         frames++
         frameTime += System.nanoTime() - start
+        GlStateManager.popMatrix()
     }
 
     fun getElementAmount(element: Element, onlyRender: Boolean): Int {

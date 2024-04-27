@@ -39,7 +39,7 @@ class UIScreen(val ui: UI) : GuiScreen() {
     override fun handleMouseInput() {
         ui.eventManager?.apply {
             val mx = Mouse.getX().toFloat()
-            val my = Mouse.getY().toFloat()
+            val my = mc.displayHeight - Mouse.getY() - 1f
 
             if (mouseX != mx || mouseY != my) {
                 onMouseMove(mx, my)

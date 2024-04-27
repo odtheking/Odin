@@ -1,7 +1,10 @@
 package me.odinmain.commands.impl
 
 import com.github.stivais.commodore.utils.GreedyString
+import com.github.stivais.ui.UIScreen
+import com.github.stivais.ui.basic
 import kotlinx.coroutines.launch
+import me.odinmain.OdinMain.display
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
 import me.odinmain.commands.commodore
@@ -24,6 +27,13 @@ import java.awt.datatransfer.StringSelection
 
 val devCommand = commodore("oddev") {
     //if (!isDev) return@commodore // i forgot to add require to recode lol
+
+    literal("ui") {
+        literal("basic").runs { display = UIScreen(basic()) }
+    }
+
+
+
 
     literal("getdata") {
         literal("entity").runs { copyEntityData() }
