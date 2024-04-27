@@ -682,6 +682,7 @@ object RenderUtils {
             val xOffset = if (center) mc.fontRendererObj.getStringWidth(it) / -2f else 0f
             mc.fontRendererObj.drawString(it, xOffset, 0f, color.rgba, shadow)
         }
+        Color.WHITE.bind()
         GlStateManager.disableBlend()
         GlStateManager.popMatrix()
     }
