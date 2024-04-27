@@ -79,12 +79,10 @@ object EtherWarpHelper : Module(
         if (render && mc.thePlayer.isSneaking && mc.thePlayer.heldItem.extraAttributes?.getBoolean("ethermerge") == true && (etherPos.succeeded || renderFail)) {
             val pos = etherPos.pos ?: return
             val color = if (etherPos.succeeded) renderColor else wrongColor
+            getBlockAt(pos).setBlockBoundsBasedOnState(mc.theWorld, pos)
             val aabb = getBlockAt(pos).getSelectedBoundingBox(mc.theWorld, pos) ?: return
 
-            if (filled)
-                Renderer.drawBox(aabb, color, depth = phase, outlineAlpha = 0)
-            else
-                Renderer.drawBox(aabb, color, outlineWidth = thickness, depth = phase, fillAlpha = 0)
+            Renderer.drawBox(aabb, color, outlineWidth = thickness, depth = phase, outlineAlpha = if (filled) 0 else 1, fillAlpha = if (filled) 1 else 0)
         }
     }
 
