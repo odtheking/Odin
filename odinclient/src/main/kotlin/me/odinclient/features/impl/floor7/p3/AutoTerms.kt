@@ -55,7 +55,7 @@ object AutoTerms : Module(
         clock.update()
         breakClock.update()
         when (TerminalSolver.currentTerm) {
-            TerminalTypes.COLOR ->  PlayerUtils.windowClick(
+            TerminalTypes.RUBIX ->  PlayerUtils.windowClick(
                                         item,
                                         if (TerminalSolver.solution.count { it == item } >= 3) PlayerUtils.ClickType.Right else if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left
                                     )

@@ -39,7 +39,7 @@ object HoverTerms : Module(
         val hoveredItem = gui.slotUnderMouse?.slotIndex ?: return
         if (hoveredItem !in TerminalSolver.solution) return
 
-        if (TerminalSolver.currentTerm == TerminalTypes.COLOR) {
+        if (TerminalSolver.currentTerm == TerminalTypes.RUBIX) {
             val needed = TerminalSolver.solution.count { it == hoveredItem }
             if (needed >= 3) {
                 windowClick(hoveredItem, ClickType.Right)
