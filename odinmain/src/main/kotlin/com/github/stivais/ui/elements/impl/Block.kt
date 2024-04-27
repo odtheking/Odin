@@ -44,7 +44,21 @@ class RoundedBlock(constraints: Constraints?, color: Color, private val radii: F
     override fun draw() {
         if (color!!.rgba.alpha != 0) {
             val clr = me.odinmain.utils.render.Color(color!!.rgba)
-            roundedRectangle(x, y, width, height, clr, clr, clr, 0f, radii[0], radii[1], radii[2], radii[3], 0.5f)
+            roundedRectangle(
+                x = x,
+                y = y,
+                w = width,
+                h = height,
+                color = clr,
+                borderColor = clr,
+                shadowColor = clr,
+                borderThickness = 0f,
+                topL = radii[0],
+                topR = radii[3],
+                botL = radii[1],
+                botR = radii[2],
+                edgeSoftness = 0.5f
+            )
         }
         if (outlineColor != null && outlineColor!!.rgba.alpha != 0) {
             rectangleOutline(x, y, width, height, me.odinmain.utils.render.Color(outlineColor!!.rgba), 0f, 1f)

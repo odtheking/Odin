@@ -12,6 +12,7 @@ import me.odinmain.utils.render.TextAlign
 import me.odinmain.utils.render.TextPos
 import kotlin.reflect.KProperty
 
+// todo: Text width doesn't update when height updates
 class Text(
     text: String,
     textColor: Color,

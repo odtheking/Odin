@@ -3,6 +3,7 @@ package me.odinmain.commands.impl
 import com.github.stivais.commodore.utils.GreedyString
 import com.github.stivais.ui.UIScreen
 import com.github.stivais.ui.basic
+import com.github.stivais.ui.clickGUI
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.display
 import me.odinmain.OdinMain.mc
@@ -30,10 +31,8 @@ val devCommand = commodore("oddev") {
 
     literal("ui") {
         literal("basic").runs { display = UIScreen(basic()) }
+        literal("clickgui").runs { display = UIScreen(clickGUI()) }
     }
-
-
-
 
     literal("getdata") {
         literal("entity").runs { copyEntityData() }
