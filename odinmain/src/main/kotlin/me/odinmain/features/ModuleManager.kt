@@ -117,6 +117,7 @@ object ModuleManager {
         HidePlayers,
         WarpCooldown,
         CopyChat,
+        DVD,
         PlayerDisplay
     )
 

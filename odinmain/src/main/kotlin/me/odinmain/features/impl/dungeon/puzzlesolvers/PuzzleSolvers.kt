@@ -26,6 +26,9 @@ object PuzzleSolvers : Module(
 ) {
     private val waterSolver: Boolean by BooleanSetting("Water Board", true, description = "Shows you the solution to the water puzzle.")
     val showOrder: Boolean by BooleanSetting("Show Order", true, description = "Shows the order of the levers to click.").withDependency { waterSolver }
+    val showTracer: Boolean by BooleanSetting("Show Tracer", true, description = "Shows a tracer to the next lever.").withDependency { waterSolver }
+    val tracerColorFirst: Color by ColorSetting("Tracer Color First", Color.GREEN, true, description = "Color for the first tracer").withDependency { showTracer }
+    val tracerColorSecond: Color by ColorSetting("Tracer Color Second", Color.ORANGE, true, description = "Color for the second tracer").withDependency { showTracer }
     val reset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
         WaterSolver.reset()
     }.withDependency { waterSolver }
@@ -47,7 +50,6 @@ object PuzzleSolvers : Module(
 
     init {
         execute(500) {
-            if (waterSolver) WaterSolver.scan()
             if (tpMaze) TPMaze.scan()
         }
 
@@ -89,6 +91,8 @@ object PuzzleSolvers : Module(
 
     @SubscribeEvent
     fun onRoomEnter(event: EnteredDungeonRoomEvent) {
+        WaterSolver.scan(event)
+
         IceFillSolver.enterDungeonRoom(event)
         //BlazeSolver.getRoomType()
     }

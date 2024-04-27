@@ -95,12 +95,12 @@ tasks {
     }
 
     remapJar {
-        archiveBaseName = "odinclient"
+        archiveBaseName = "OdinClient"
         input = shadowJar.get().archiveFile
     }
 
     shadowJar {
-        archiveBaseName = "odinclient"
+        archiveBaseName = "OdinClient"
         archiveClassifier = "dev"
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         configurations = listOf(shadowImpl)

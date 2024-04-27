@@ -1,6 +1,6 @@
 package me.odinclient.features.impl.skyblock
 
-import me.odinmain.events.impl.GuiLoadedEvent
+import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -43,7 +43,7 @@ object AutoExperiments : Module(
     }
 
     @SubscribeEvent
-    fun onGuiOpen(event: GuiLoadedEvent) {
+    fun onGuiOpen(event: GuiEvent.GuiLoadedEvent) {
         reset()
         if (LocationUtils.currentArea != Island.PrivateIsland) return
         val chestName = event.name

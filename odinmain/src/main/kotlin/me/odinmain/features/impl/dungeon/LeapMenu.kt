@@ -1,8 +1,6 @@
 package me.odinmain.features.impl.dungeon
 
-import me.odinmain.events.impl.DrawGuiContainerScreenEvent
-import me.odinmain.events.impl.GuiClickEvent
-import me.odinmain.events.impl.GuiKeyPressEvent
+import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.LeapHelper.getPlayer
@@ -54,7 +52,7 @@ object LeapMenu : Module(
     private val EMPTY = DungeonUtils.DungeonPlayer("Empty", DungeonUtils.Classes.Archer, ResourceLocation("textures/entity/steve.png"))
 
     @SubscribeEvent
-    fun onDrawScreen(event: DrawGuiContainerScreenEvent) {
+    fun onDrawScreen(event: GuiEvent.DrawGuiContainerScreenEvent) {
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
         if (chest !is ContainerChest || chest.name != "Spirit Leap" || leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return
         hoveredQuadrant = getQuadrant()
@@ -105,8 +103,9 @@ object LeapMenu : Module(
     }
 
     @SubscribeEvent
-    fun mouseClicked(event: GuiClickEvent) {
-        if (event.gui !is GuiChest || event.container !is ContainerChest || event.container.name != "Spirit Leap" || leapTeammates.isEmpty())  return
+    fun mouseClicked(event: GuiEvent.GuiMouseClickEvent) {
+        val gui = event.gui as? GuiChest ?: return
+        if (event.gui.inventorySlots !is ContainerChest || gui.inventorySlots.name != "Spirit Leap" || leapTeammates.isEmpty())  return
 
         val quadrant = getQuadrant()
         if ((type.equalsOneOf(1,2,3)) && leapTeammates.size < quadrant) return
@@ -115,13 +114,13 @@ object LeapMenu : Module(
         if (playerToLeap == EMPTY) return
         if (playerToLeap.isDead) return modMessage("This player is dead, can't leap.")
 
-        leapTo(playerToLeap.name, event.container)
+        leapTo(playerToLeap.name, gui.inventorySlots as? ContainerChest ?: return)
 
         event.isCanceled = true
     }
 
     @SubscribeEvent
-    fun keyTyped(event: GuiKeyPressEvent) {
+    fun keyTyped(event: GuiEvent.GuiKeyPressEvent) {
         if (
             event.container !is ContainerChest ||
             event.container.name != "Spirit Leap" ||

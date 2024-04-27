@@ -1,8 +1,6 @@
 package me.odinmain.features.impl.skyblock
 
-import com.sun.org.apache.xpath.internal.operations.Bool
 import me.odinmain.OdinMain.onLegitVersion
-import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -11,7 +9,6 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.ServerUtils.getPing
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraftforge.client.event.RenderPlayerEvent
 import net.minecraftforge.event.entity.living.LivingEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
