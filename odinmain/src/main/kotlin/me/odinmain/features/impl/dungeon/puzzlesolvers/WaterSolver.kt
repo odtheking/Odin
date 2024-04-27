@@ -91,7 +91,7 @@ object WaterSolver {
 
         extendedSlots = ""
         WoolColor.entries.filter { it.isExtended }.forEach { extendedSlots += it.ordinal.toString() }
-        modMessage(extendedSlots)
+
         // If the extendedSlots length is not 3, then retry.
         if (extendedSlots.length != 3) {
             extendedSlots = ""
