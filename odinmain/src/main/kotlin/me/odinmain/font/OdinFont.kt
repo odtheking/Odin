@@ -10,7 +10,7 @@ import kotlin.math.max
 
 object OdinFont {
 
-    private lateinit var fontRenderer: FontRenderer
+    lateinit var fontRenderer: FontRenderer
 
     const val REGULAR = 1
     const val BOLD = 2
