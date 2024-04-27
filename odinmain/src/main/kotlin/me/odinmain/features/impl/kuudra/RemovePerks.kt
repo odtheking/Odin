@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.kuudra
 
-import me.odinmain.events.impl.DrawSlotEvent
-import me.odinmain.events.impl.GuiClickEvent
+import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -20,13 +19,13 @@ object RemovePerks : Module(
 ) {
     private val renderStun: Boolean by BooleanSetting("Render Stun", false, description = "Renders the stun perk")
     @SubscribeEvent
-    fun renderSlot(event: DrawSlotEvent) {
+    fun renderSlot(event: GuiEvent.DrawSlotEvent) {
         if (event.gui !is GuiChest || event.gui.inventorySlots !is ContainerChest || (event.gui.inventorySlots as ContainerChest).name != "Perk Menu") return
         val slot = event.slot.stack?.displayName.noControlCodes
         if (slotCheck(slot)) event.isCanceled = true
     }
     @SubscribeEvent
-    fun guiMouseClick(event: GuiClickEvent) {
+    fun guiMouseClick(event: GuiEvent.GuiMouseClickEvent) {
         if (event.gui !is GuiChest || event.gui.inventorySlots !is ContainerChest || (event.gui.inventorySlots as ContainerChest).name != "Perk Menu") return
         val slot = event.gui.slotUnderMouse?.stack?.displayName.noControlCodes
         if (slotCheck(slot)) event.isCanceled = true

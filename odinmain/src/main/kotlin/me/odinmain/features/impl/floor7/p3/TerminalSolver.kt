@@ -1,6 +1,9 @@
 package me.odinmain.features.impl.floor7.p3
 
-import me.odinmain.events.impl.*
+import me.odinmain.events.impl.ChatPacketEvent
+import me.odinmain.events.impl.GuiEvent
+import me.odinmain.events.impl.TerminalClosedEvent
+import me.odinmain.events.impl.TerminalOpenedEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.termGUI.CustomTermGui
@@ -76,7 +79,7 @@ object TerminalSolver : Module(
     var solution = listOf<Int>()
 
     @SubscribeEvent
-    fun onGuiLoad(event: GuiLoadedEvent) {
+    fun onGuiLoad(event: GuiEvent.GuiLoadedEvent) {
         val newTerm = TerminalTypes.entries.find { event.name.startsWith(it.guiName) } ?: TerminalTypes.NONE
         if (newTerm != currentTerm) {
             currentTerm = newTerm
@@ -104,7 +107,7 @@ object TerminalSolver : Module(
     }
 
     @SubscribeEvent
-    fun onGuiRender(event: DrawGuiContainerScreenEvent) {
+    fun onGuiRender(event: GuiEvent.DrawGuiContainerScreenEvent) {
         if (currentTerm == TerminalTypes.NONE || !enabled || !renderType.equalsOneOf(0,3) || event.container !is ContainerChest) return
         if (renderType == 3) {
             CustomTermGui.render()
@@ -129,7 +132,7 @@ object TerminalSolver : Module(
     }
 
     @SubscribeEvent
-    fun drawSlot(event: DrawSlotEvent) {
+    fun drawSlot(event: GuiEvent.DrawSlotEvent) {
         if ((removeWrong || renderType == 0) && enabled && getShouldBlockWrong() && event.slot.slotIndex <= event.container.inventorySlots.size - 37 && event.slot.slotIndex !in solution) event.isCanceled = true
         if (event.slot.slotIndex !in solution || event.slot.slotIndex > event.container.inventorySlots.size - 37 || event.slot.inventory == mc.thePlayer.inventory || !enabled || renderType == 3) return
         val stack = event.slot.stack?.item?.registryName ?: return
@@ -182,14 +185,14 @@ object TerminalSolver : Module(
     }
 
     @SubscribeEvent
-    fun guiClick(event: PreGuiClickEvent) {
+    fun guiClick(event: GuiEvent.GuiMouseClickEvent) {
         if (renderType != 3 || currentTerm == TerminalTypes.NONE || !enabled) return
         CustomTermGui.mouseClicked(MouseUtils.mouseX.toInt(), MouseUtils.mouseY.toInt(), event.button)
         event.isCanceled = true
     }
 
     @SubscribeEvent
-    fun itemStack(event: DrawSlotOverlayEvent) {
+    fun itemStack(event: GuiEvent.DrawSlotOverlayEvent) {
         val stack = event.stack?.item?.registryName ?: return
         if (currentTerm != TerminalTypes.ORDER || !enabled || stack != "minecraft:stained_glass_pane") return
         event.isCanceled = true

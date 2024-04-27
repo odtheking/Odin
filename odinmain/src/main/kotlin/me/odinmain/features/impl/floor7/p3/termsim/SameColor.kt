@@ -1,6 +1,6 @@
 package me.odinmain.features.impl.floor7.p3.termsim
 
-import me.odinmain.events.impl.GuiLoadedEvent
+import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.impl.floor7.p3.TerminalTimes
 import me.odinmain.utils.postAndCatch
 import net.minecraft.inventory.ContainerChest
@@ -34,7 +34,7 @@ object SameColor : TermSimGui(
             else -> return
         }
         mc.thePlayer.playSound("random.orb", 1f, 1f)
-        GuiLoadedEvent(name, inventorySlots as ContainerChest).postAndCatch()
+        GuiEvent.GuiLoadedEvent(name, inventorySlots as ContainerChest).postAndCatch()
         if (grid.all { it?.stack?.metadata == grid.firstOrNull()?.stack?.metadata }) {
             solved(this.name, TerminalTimes.simColorPB)
         }

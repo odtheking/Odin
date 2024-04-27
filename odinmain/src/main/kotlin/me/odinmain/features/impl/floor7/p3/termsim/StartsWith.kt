@@ -1,6 +1,6 @@
 package me.odinmain.features.impl.floor7.p3.termsim
 
-import me.odinmain.events.impl.GuiLoadedEvent
+import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.impl.floor7.p3.TerminalTimes
 import me.odinmain.utils.getRandom
 import me.odinmain.utils.postAndCatch
@@ -44,7 +44,7 @@ class StartsWith(private val letter: String) : TermSimGui(
 
         slot.stack.addEnchantment(Enchantment.infinity, 1)
         mc.thePlayer.playSound("random.orb", 1f, 1f)
-        GuiLoadedEvent(name, inventorySlots as ContainerChest).postAndCatch()
+        GuiEvent.GuiLoadedEvent(name, inventorySlots as ContainerChest).postAndCatch()
         if (inventorySlots.inventorySlots.subList(0, size).none { it.stack.displayName.startsWith(letter, true) && !it.stack.isItemEnchanted }) {
             solved(this.name, TerminalTimes.simStartsWithPB)
         }

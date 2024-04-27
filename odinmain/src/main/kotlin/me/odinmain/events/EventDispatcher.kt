@@ -15,14 +15,9 @@ import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
-import net.minecraftforge.common.MinecraftForge
-import net.minecraftforge.fml.common.eventhandler.Event
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object EventDispatcher {
-
-    /** Used to make code simpler. */
-    fun post(event: Event) = MinecraftForge.EVENT_BUS.post(event)
 
     /**
      * Dispatches [ChatPacketEvent] and [RealServerTick].
@@ -62,7 +57,7 @@ object EventDispatcher {
         val deferred = waitUntilLastItem(container)
         try { deferred.await() } catch (e: Exception) { return@launch } // Wait until the last item in the chest isn't null
 
-        GuiLoadedEvent(chestName, container).postAndCatch()
+        GuiEvent.GuiLoadedEvent(chestName, container).postAndCatch()
     }
 
 }
