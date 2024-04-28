@@ -8,7 +8,7 @@ import net.minecraft.inventory.Slot
 import net.minecraft.item.ItemStack
 import kotlin.math.floor
 
-object SameColor : TermSimGui(
+object Rubix : TermSimGui(
     "Change all to same color!",
     45
 ) {
