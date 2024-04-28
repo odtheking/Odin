@@ -14,6 +14,19 @@ class UIScreen(val ui: UI) : GuiScreen() {
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        ui.eventManager?.apply {
+            val mx = Mouse.getX().toFloat()
+            val my = mc.displayHeight - Mouse.getY() - 1f
+
+            if (this.mouseX != mx || this.mouseY != my) {
+                onMouseMove(mx, my)
+            }
+
+            val scroll = Mouse.getEventDWheel()
+            if (scroll != 0) {
+                onMouseScroll(scroll.toFloat())
+            }
+        }
         val w = mc.framebuffer.framebufferWidth
         val h = mc.framebuffer.framebufferHeight
         if (w != previousWidth || h != previousHeight) {
@@ -30,27 +43,6 @@ class UIScreen(val ui: UI) : GuiScreen() {
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, button: Int) {
         ui.eventManager?.onMouseRelease(button)
-    }
-
-    fun mouseMoved(mx: Float, my: Float) {
-        ui.eventManager?.onMouseMove(mx, my)
-    }
-
-    override fun handleMouseInput() {
-        ui.eventManager?.apply {
-            val mx = Mouse.getX().toFloat()
-            val my = mc.displayHeight - Mouse.getY() - 1f
-
-            if (mouseX != mx || mouseY != my) {
-                onMouseMove(mx, my)
-            }
-
-            val scroll = Mouse.getEventDWheel()
-            if (scroll != 0) {
-                onMouseScroll(scroll.toFloat())
-            }
-        }
-        super.handleMouseInput()
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
