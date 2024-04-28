@@ -14,6 +14,7 @@ import me.odinmain.utils.addRotationCoords
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.tiles.Rotations
 import me.odinmain.utils.skyblock.getBlockAt
@@ -54,8 +55,9 @@ object WaterSolver {
             val centerPos = Vec2(x, z).addRotationCoords(rotation, 4)
 
             chestPosition = centerPos.addRotationCoords(rotation, -11)
+
             roomFacing = rotation
-            delay(150)
+            delay(200)
             solve()
         }
     }
@@ -96,7 +98,9 @@ object WaterSolver {
         if (extendedSlots.length != 3) {
             extendedSlots = ""
             variant = -1
-            solve()
+            runIn(10) {
+                solve()
+            }
             return
         }
 
