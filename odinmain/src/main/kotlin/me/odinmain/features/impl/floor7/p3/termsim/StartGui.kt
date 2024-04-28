@@ -69,7 +69,7 @@ object StartGui : TermSimGui(
                 StartGui.open(ping)
             }
             11 -> CorrectPanes.open(ping)
-            12 -> SameColor.open(ping)
+            12 -> Rubix.open(ping)
             13 -> InOrder.open(ping)
             14 -> StartsWith(StartsWith.letters.shuffled().first()).open(ping)
             15 -> SelectAll(EnumDyeColor.entries.getRandom().name.replace("_", " ").uppercase()).open(ping)
