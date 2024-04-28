@@ -29,6 +29,7 @@ import net.minecraft.util.ResourceLocation
 import net.minecraft.world.WorldSettings
 import net.minecraftforge.event.entity.living.LivingEvent
 import net.minecraftforge.event.world.WorldEvent
+import net.minecraftforge.event.world.WorldEvent.Load
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object DungeonUtils {
@@ -240,6 +241,8 @@ object DungeonUtils {
         dungeonTeammates = emptyList()
         dungeonTeammatesNoSelf = emptyList()
         leapTeammates.clear()
+        currentRoom = null
+        lastRoomPos = 0 to 0
     }
 
     private val tablistRegex = Regex("^\\[(\\d+)\\] (?:\\[\\w+\\] )*(\\w+) (?:.)*?\\((\\w+)(?: (\\w+))*\\)\$")
