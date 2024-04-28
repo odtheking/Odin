@@ -120,6 +120,7 @@ object OdinMain {
     }
 
     fun onTick() {
+        this.display = LWJGLTest()
         if (display != null) {
             mc.displayGuiScreen(display)
             display = null
