@@ -83,6 +83,7 @@ tasks {
 
     jar {
         manifest.attributes(
+            "FMLCorePlugin" to "me.odinmain.lwjgl.plugin.LWJGLLoadingPlugin",
             "FMLCorePluginContainsFMLMod" to true,
             "ForceLoadAsMod" to true,
             "MixinConfigs" to "mixins.odinclient.json",

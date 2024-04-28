@@ -13,6 +13,7 @@ import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.features.impl.render.WaypointManager
 import me.odinmain.features.impl.skyblock.PartyNote
 import me.odinmain.font.OdinFont
+import me.odinmain.lwjgl.LWJGLTest
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.util.shader.RoundedRect
 import me.odinmain.utils.ServerUtils
@@ -73,6 +74,7 @@ object OdinMain {
             WaypointManager,
             DevPlayers,
             PartyNote,
+            LWJGLTest::class,
             //HighlightRenderer,
             //OdinUpdater,
             this
