@@ -181,7 +181,7 @@ object DungeonUtils {
      * @return The y-value of the roof, this is the y-value of the blocks.
      */
     private fun getTopLayerOfRoom(x: Int, z: Int): Int {
-        var currentHeight = 130
+        var currentHeight = 170
         while (isAir(x, currentHeight, z) && currentHeight > 70) {
             currentHeight--
         }

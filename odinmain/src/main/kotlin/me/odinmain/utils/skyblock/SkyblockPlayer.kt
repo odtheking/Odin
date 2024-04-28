@@ -37,13 +37,5 @@ object SkyblockPlayer {
         maxMana = mMana.replace(",", "").toIntOrNull() ?: return
 
         currentDefense = Regex("([\\d|,]+)❈ Defense").find(middleRegion)?.groupValues?.get(1)?.replace(",", "")?.toIntOrNull() ?: return
-
-        devMessage("""
-            current Health = $currentHealth
-            maxHealth = $maxHealth
-            currentMana = $currentMana
-            maxMana = $maxMana
-            currentDefense = $currentDefense
-        """.trimIndent())
     }
 }
