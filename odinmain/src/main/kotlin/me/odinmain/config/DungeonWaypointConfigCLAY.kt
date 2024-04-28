@@ -9,14 +9,12 @@ import me.odinmain.utils.render.Color
 import java.io.File
 import java.io.IOException
 
-@Deprecated("DEPRECATED CONFIG, ONLY USED FOR MIGRATION, REMOVE AT A LATER DATE!")
-object DungeonWaypointConfig {
-
+object DungeonWaypointConfigCLAY {
     private val gson = GsonBuilder().registerTypeAdapter(Color::class.java, Color.ColorSerializer()).setPrettyPrinting().create()
 
     var waypoints: MutableMap<String, MutableList<DungeonWaypoint>> = mutableMapOf()
 
-    private val configFile = File(mc.mcDataDir, "config/odin/dungeon-waypoint-config.json").apply {
+    private val configFile = File(mc.mcDataDir, "config/odin/dungeon-waypoint-config-CLAY.json").apply {
         try {
             createNewFile()
         } catch (e: Exception) {

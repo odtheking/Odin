@@ -3,6 +3,7 @@ package me.odinmain.utils.skyblock.dungeon
 import com.google.common.collect.ComparisonChain
 import me.odinmain.OdinMain.mc
 import me.odinmain.config.DungeonWaypointConfig
+import me.odinmain.config.DungeonWaypointConfigCLAY
 import me.odinmain.events.impl.EnteredDungeonRoomEvent
 import me.odinmain.features.impl.dungeon.DungeonWaypoints.DungeonWaypoint
 import me.odinmain.features.impl.dungeon.DungeonWaypoints.toVec3
@@ -23,13 +24,10 @@ import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
 import net.minecraft.tileentity.TileEntitySkull
-import net.minecraft.util.BlockPos
-import net.minecraft.util.EnumFacing
-import net.minecraft.util.ResourceLocation
+import net.minecraft.util.*
 import net.minecraft.world.WorldSettings
 import net.minecraftforge.event.entity.living.LivingEvent
 import net.minecraftforge.event.world.WorldEvent
-import net.minecraftforge.event.world.WorldEvent.Load
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object DungeonUtils {
@@ -44,7 +42,7 @@ object DungeonUtils {
     inline val cryptsCount get() = currentDungeon?.cryptsCount ?: 0
     inline val deathCount get() = currentDungeon?.deathCount ?: 0
 
-    data class FullRoom(val room: Room, val positions: List<ExtraRoom>, var waypoints: List<DungeonWaypoint>)
+    data class FullRoom(val room: Room, var clayPos: BlockPos, val positions: List<ExtraRoom>, var waypoints: List<DungeonWaypoint>)
     data class ExtraRoom(val x: Int, val z: Int, val core: Int)
     private var lastRoomPos: Pair<Int, Int> = Pair(0, 0)
     var currentRoom: FullRoom? = null
@@ -105,33 +103,48 @@ object DungeonUtils {
 
         val room = scanRoom(xPos, zPos) ?: return
         val positions = room.let { findRoomTilesRecursively(it.x, it.z, it, mutableSetOf()) }
-        currentRoom = FullRoom(room, positions, emptyList())
+        currentRoom = FullRoom(room, BlockPos(0,0,0), positions, emptyList())
         currentRoom?.let {
             val topLayer = getTopLayerOfRoom(it.positions.first().x, it.positions.first().z)
             it.room.rotation = Rotations.entries.dropLast(1).find { rotation ->
                 it.positions.any { pos ->
-                    getBlockIdAt(pos.x + rotation.x, topLayer, pos.z + rotation.z) == 159 &&
-                    EnumFacing.HORIZONTALS.all { facing -> getBlockIdAt(pos.x + rotation.x + facing.frontOffsetX, topLayer, pos.z + rotation.z + facing.frontOffsetZ).equalsOneOf(159, 0) }
+                    val blockPos = BlockPos(pos.x + rotation.x, topLayer, pos.z + rotation.z)
+                    val isCorrectClay = getBlockIdAt(blockPos) == 159 &&
+                        EnumFacing.HORIZONTALS.all { facing -> getBlockIdAt(blockPos.add(facing.frontOffsetX, 0, facing.frontOffsetZ)).equalsOneOf(159, 0) }
+                    if (isCorrectClay) it.clayPos = blockPos
+                    return@any isCorrectClay
                 }
             } ?: Rotations.NONE
-            devMessage("Found rotation ${it.room.rotation}")
+            devMessage("Found rotation ${it.room.rotation}, clay pos: ${it.clayPos}")
+            setWaypoints(it)
+            EnteredDungeonRoomEvent(it).postAndCatch()
         }
-        setWaypoints()
-        EnteredDungeonRoomEvent(currentRoom).postAndCatch()
     }
 
     /**
      * Sets the waypoints for the current room.
-     * this code is way too much list manipulation, but it works
      */
-    fun setWaypoints() {
-        val curRoom = currentRoom ?: return
+    fun setWaypoints(curRoom: FullRoom) {
         val room = curRoom.room
-        val distinct = curRoom.positions.distinct().minByOrNull { it.core } ?: return
         curRoom.waypoints = mutableListOf<DungeonWaypoint>().apply {
+            // THIS IS FOR MIGRATION FROM CONFIGS ON "ALPHA" RELEASES (VERSIONS GOTTEN FROM GITHUB AFTER 1.2.5.BETA4
             DungeonWaypointConfig.waypoints[room.data.name]?.let { waypoints ->
+                val distinct = curRoom.positions.distinct().minByOrNull { it.core } ?: return
+                waypoints.forEach { waypoint ->
+                    val vecBasedOnClay = waypoint.toVec3().rotateToNorth(room.rotation).addVec(x = distinct.x, z = distinct.z).subtractVec(x = curRoom.clayPos.x, z = curRoom.clayPos.z).rotateAroundNorth(room.rotation)
+                    modMessage(vecBasedOnClay)
+                    DungeonWaypointConfigCLAY.waypoints.getOrPut(room.data.name) { mutableListOf() }.add(
+                        DungeonWaypoint(vecBasedOnClay.xCoord, vecBasedOnClay.yCoord, vecBasedOnClay.zCoord, waypoint.color, waypoint.filled, waypoint.depth, waypoint.aabb, waypoint.title)
+                    )
+                    DungeonWaypointConfigCLAY.saveConfig()
+                    DungeonWaypointConfig.saveConfig()
+                }
+            }
+            DungeonWaypointConfig.waypoints[room.data.name]?.clear()
+
+            DungeonWaypointConfigCLAY.waypoints[room.data.name]?.let { waypoints ->
                 addAll(waypoints.map { waypoint ->
-                    val vec = waypoint.toVec3().rotateAroundNorth(room.rotation).addVec(x = distinct.x, z = distinct.z)
+                    val vec = waypoint.toVec3().rotateAroundNorth(room.rotation).addVec(x = curRoom.clayPos.x, z = curRoom.clayPos.z)
                     DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, waypoint.color, waypoint.filled, waypoint.depth, waypoint.aabb, waypoint.title)
                 })
             }
