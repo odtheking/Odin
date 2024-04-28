@@ -14,21 +14,22 @@ group = "me.odinmain"
 blossom {
     replaceToken("@VER@", version)
 }
-sourceSets.main {
-    java.srcDir(file("$projectDir/src/main/kotlin"))
-    output.setResourcesDir(sourceSets.main.flatMap { it.java.classesDirectory })
-}
 
 val lwjgl: Configuration by configurations.creating
 val lwjglNative: Configuration by configurations.creating {
     isTransitive =true
 }
 
+sourceSets.main {
+    java.srcDir(file("$projectDir/src/main/kotlin"))
+    output.setResourcesDir(sourceSets.main.flatMap { it.java.classesDirectory })
+    runtimeClasspath += configurations.getByName("lwjglNative")
+}
+
 val lwjglJar = tasks.create<ShadowJar>("lwjglJar") {
     group = "shadow"
     archiveClassifier.set("lwjgl")
     configurations = listOf(lwjgl)
-    exclude("META-INF/versions/**")
     exclude("**/module-info.class")
     exclude("**/package-info.class")
     relocate("org.lwjgl", "org.lwjgl3") {
@@ -92,7 +93,7 @@ dependencies {
     lwjgl("org.lwjgl:lwjgl-nanovg:${lwjglVersion}")
     lwjglNative("org.lwjgl:lwjgl:${lwjglVersion}:${lwjglNatives}")
     lwjglNative("org.lwjgl:lwjgl-nanovg:${lwjglVersion}:${lwjglNatives}")
-    implementation(lwjglJar.outputs.files)
+    shadowImpl(lwjglJar.outputs.files)
 }
 
 tasks {
@@ -109,7 +110,8 @@ tasks {
         archiveBaseName = "odinmain"
         archiveClassifier = "dev"
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        configurations = listOf(shadowImpl)
+        configurations = listOf(shadowImpl, lwjglNative)
+        exclude("META-INF/versions/**")
         mergeServiceFiles()
     }
     withType<JavaCompile> {
