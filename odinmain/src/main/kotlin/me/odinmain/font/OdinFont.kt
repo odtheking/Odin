@@ -35,7 +35,7 @@ object OdinFont {
 
         val typeText = if (type == BOLD) "§l$text" else text
 
-        fontRenderer.drawString(UMatrixStack.Compat.get(), typeText, color.javaColor, drawX, drawY, 1f, scale, shadow)
+        fontRenderer.drawString(UMatrixStack.Compat.get(), typeText, color.javaColor, drawX, drawY, 10f, scale, shadow)
     }
 
     fun getTextWidth(text: String, size: Float): Float {
