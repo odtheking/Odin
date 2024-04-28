@@ -94,6 +94,7 @@ object OdinMain {
         launch { WaypointConfig.loadConfig() }
         launch { DungeonWaypointConfig.loadConfig() }
         launch { PBConfig.loadConfig() }
+        launch { DungeonWaypointConfigCLAY }
     }
 
     fun loadComplete() = runBlocking {
