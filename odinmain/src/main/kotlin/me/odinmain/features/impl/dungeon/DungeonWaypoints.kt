@@ -73,7 +73,7 @@ object DungeonWaypoints : Module(
 
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
-        //if (DungeonUtils.inBoss || !DungeonUtils.inDungeons) return
+        if ((DungeonUtils.inBoss || !DungeonUtils.inDungeons) && !mc.theWorld.isRemote) return
         val room = DungeonUtils.currentRoom ?: return
         startProfile("Dungeon Waypoints")
         drawBoxes(room.waypoints)
