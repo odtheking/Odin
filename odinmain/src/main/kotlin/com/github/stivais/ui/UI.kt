@@ -10,7 +10,6 @@ import me.odinmain.utils.render.TextAlign
 import me.odinmain.utils.render.TextPos
 import me.odinmain.utils.render.Color as OdinColor
 import me.odinmain.utils.render.text
-import net.minecraft.client.renderer.GlStateManager
 import java.util.logging.Logger
 
 class UI(
