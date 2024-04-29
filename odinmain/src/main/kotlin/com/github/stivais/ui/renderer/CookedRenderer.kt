@@ -9,7 +9,7 @@ import me.odinmain.utils.render.roundedRectangle
 // maybe isn't as fair comparsion as i cba to make it use new colors since im gonig to replace it soon
 object CookedRenderer : Renderer {
 
-    override fun beginFrame() {
+    override fun beginFrame(width: Float, height: Float) {
     }
 
     override fun endFrame() {
@@ -37,11 +37,14 @@ object CookedRenderer : Renderer {
         tr: Float
     ) {
         val stupidColor = Color(color)
-        roundedRectangle(x, y, w, h, Color.TRANSPARENT, stupidColor, Color.TRANSPARENT, 1f, tl, tr, bl, br, 1f)
+        roundedRectangle(x, y, w, h, Color.TRANSPARENT, stupidColor, Color.TRANSPARENT, thickness, tl, tr, bl, br, 1f)
     }
 
     override fun text(text: String, x: Float, y: Float, size: Float, color: Int) {
-        OdinFont.text(text, x, y, Color(color), size, verticalAlign = TextPos.Top
-        )
+        OdinFont.text(text, x, y, Color(color), size, verticalAlign = TextPos.Top)
+    }
+
+    override fun textWidth(text: String, size: Float): Float {
+        return OdinFont.getTextWidth(text, size)
     }
 }

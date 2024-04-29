@@ -6,13 +6,13 @@ import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.elements.impl.Group
 import com.github.stivais.ui.events.EventManager
-import com.github.stivais.ui.renderer.CookedRenderer
+import com.github.stivais.ui.renderer.NVGRenderer
 import com.github.stivais.ui.renderer.Renderer
 import com.github.stivais.ui.utils.forLoop
 import java.util.logging.Logger
 
 class UI(
-    val renderer: Renderer = CookedRenderer,
+    val renderer: Renderer = NVGRenderer,
     settings: UISettings? = null
 ) {
 
@@ -49,11 +49,11 @@ class UI(
     fun render() {
         val start = System.nanoTime()
 
-        renderer.beginFrame()
+        renderer.beginFrame(main.width, main.height)
         main.position()
         main.render()
         if (settings.frameMetrics) {
-            renderer.text(performance, main.width, main.height, 12f, Color.WHITE.rgba)
+            renderer.text(performance, main.width - renderer.textWidth(performance, 12f), main.height - 12f, 12f, Color.WHITE.rgba)
         }
         renderer.endFrame()
 

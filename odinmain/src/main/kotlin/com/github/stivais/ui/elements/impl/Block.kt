@@ -41,5 +41,8 @@ class RoundedBlock(constraints: Constraints?, color: Color, private val radii: F
         if (color!!.rgba.alpha != 0) {
             renderer.rect(x, y, width, height, color!!.rgba, radii[0], radii[1], radii[2], radii[3])
         }
+        if (outlineColor != null && outlineColor!!.rgba.alpha != 0) {
+            renderer.hollowRect(x, y, width, height, 3f, outlineColor!!.rgba, radii[0], radii[1], radii[2], radii[3])
+        }
     }
 }

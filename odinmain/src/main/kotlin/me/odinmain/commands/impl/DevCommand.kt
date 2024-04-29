@@ -13,6 +13,7 @@ import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.ModuleManager.generateReadme
 import me.odinmain.features.impl.dungeon.puzzlesolvers.TPMaze
 import me.odinmain.features.impl.render.DevPlayers.updateDevs
+import me.odinmain.lwjgl.LWJGLTest
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -32,6 +33,7 @@ val devCommand = commodore("oddev") {
     literal("ui") {
         literal("basic").runs { display = UIScreen(basic()) }
         literal("clickgui").runs { display = UIScreen(clickGUI()) }
+        literal("lwjgltest").runs { display = LWJGLTest() }
     }
 
     literal("getdata") {

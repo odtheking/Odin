@@ -2,7 +2,7 @@ package com.github.stivais.ui.renderer
 
 interface Renderer {
 
-    fun beginFrame()
+    fun beginFrame(width: Float, height: Float)
 
     fun endFrame()
 
@@ -20,5 +20,9 @@ interface Renderer {
         hollowRect(x, y, w, h, thickness, color, radius, radius, radius, radius)
     }
 
+    // todo: add fonts
+
     fun text(text: String, x: Float, y: Float, size: Float, color: Int)
+
+    fun textWidth(text: String, size: Float): Float
 }

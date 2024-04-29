@@ -31,7 +31,7 @@ class Text(
         onInitialization {
             // needs size to be set
             parent?.position()
-            val width = OdinFont.getTextWidth(text, height)
+            val width = renderer.textWidth(text, height)
 //            val width = renderer.textWidth(text, height)
             (this.constraints.width as Pixel).pixels = width
             this.width = width
