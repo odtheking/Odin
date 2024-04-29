@@ -16,9 +16,9 @@ object DragonHealth{
 
     private fun colorHealth(health: Float): String {
         return when {
-            health >= 0.75 -> "§a${formatHealth(health)}"
-            health >= 0.5 -> "§e${formatHealth(health)}"
-            health >= 0.25 -> "§6${formatHealth(health)}"
+            health >= 750_000_000 -> "§a${formatHealth(health)}"
+            health >= 500_000_000 -> "§e${formatHealth(health)}"
+            health >= 250_000_000 -> "§6${formatHealth(health)}"
             else -> "§c${formatHealth(health)}"
         }
     }
