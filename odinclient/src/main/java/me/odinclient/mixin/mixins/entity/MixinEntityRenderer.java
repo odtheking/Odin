@@ -1,6 +1,6 @@
 package me.odinclient.mixin.mixins.entity;
 
-import me.odinmain.features.impl.render.Camera;
+import me.odinclient.features.impl.render.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.EntityRenderer;

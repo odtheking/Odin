@@ -98,7 +98,7 @@ object WaterSolver {
             extendedSlots = ""
             variant = -1
             runIn(10) {
-                solve(room)
+                solve(DungeonUtils.currentRoom?.room ?: return@runIn)
             }
             return
         }
