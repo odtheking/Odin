@@ -95,12 +95,14 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
 
     fun delaySlotClick(slot: Slot, button: Int) {
         if (!doesAcceptClick || slot.inventory != this.inv) return
-        slotClick(slot, button)
         doesAcceptClick = false
         runIn((ping / 50).toInt()) {
+            slotClick(slot, button)
             doesAcceptClick = true
         }
     }
+
+
 
     final override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         val slot = slotUnderMouse ?: return

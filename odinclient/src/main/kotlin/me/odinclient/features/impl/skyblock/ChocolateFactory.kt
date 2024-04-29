@@ -85,7 +85,6 @@ object ChocolateFactory : Module(
         if (event.name == "Chocolate Factory") findWorker(event.gui)
     }
 
-
     @SubscribeEvent
     fun onSoundPlay(event: PlaySoundEvent) {
         if (!cancelSound) return
@@ -96,6 +95,4 @@ object ChocolateFactory : Module(
 
         if (event.name == "random.eat") event.result = null // This should cancel the sound event
     }
-
-
 }

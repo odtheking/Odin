@@ -2,6 +2,7 @@ package me.odinmain.events.impl
 
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.inventory.GuiContainer
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.Container
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.Slot
@@ -31,6 +32,9 @@ abstract class GuiEvent : Event() {
 
 
     class GuiClosedEvent(val gui: GuiContainer) : GuiEvent()
+
+    @Cancelable
+    class GuiWindowClickEvent(val windowId: Int, val slotId: Int, val mouseButtonClicked: Int, val mode: Int, val playerIn: EntityPlayer) : GuiEvent()
 }
 
 
