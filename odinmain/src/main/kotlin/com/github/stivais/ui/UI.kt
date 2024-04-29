@@ -73,7 +73,6 @@ class UI(
         }
         frames++
         frameTime += System.nanoTime() - start
-        GlStateManager.popMatrix()
     }
 
     private fun getStats(element: Element, onlyRender: Boolean): Int {
