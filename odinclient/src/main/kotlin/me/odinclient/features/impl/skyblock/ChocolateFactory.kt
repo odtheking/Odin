@@ -63,17 +63,19 @@ object ChocolateFactory : Module(
         for (i in 29 until 34) {
             workers.add(items[i]?.lore ?: return)
         }
-
-        var maxValue = 0
+        var found = false
+        var maxValue = 0;
         for (i in 0 until 5) {
             val worker = workers[i]
+            if (worker.contains("climbed as far")) continue
             val index = worker.indexOfFirst { it?.contains("Cost") == true }.takeIf { it != -1} ?: continue
             val cost = worker[index + 1]?.noControlCodes?.replace(Regex("\\D"), "")?.toIntOrNull() ?: continue
-            val value = (i + 1).toFloat() / cost
-            if (value > maxValue) {
+            val value = cost / (i + 1).toFloat()
+            if (value < maxValue || !found){
                 bestWorker = 29 + i
                 maxValue = value.toInt()
                 bestCost = cost
+                found = true
             }
         }
     }

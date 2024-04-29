@@ -21,7 +21,7 @@ object RubixGui : TermGui() {
             roundedRectangle(-getTextWidth("Change all to same color!", 20f) / 2, -135, getTextWidth("Change all to same color!", 20f), 3, Color.WHITE, radius = 5f)
         }
         solution.forEach { pane ->
-            val slot = mc.thePlayer.inventoryContainer.inventorySlots[pane]
+            val slot = mc.thePlayer?.inventoryContainer?.inventorySlots?.get(pane) ?: return@forEach
             val needed = solution.count() {it == slot.slotIndex}
             val text = if (needed < 3) needed.toString() else (needed - 5).toString()
 

@@ -30,5 +30,4 @@ abstract public class MixinEntityRenderer implements IResourceManagerReloadListe
     public int cameraClip(int constant) {
         return Camera.INSTANCE.getCameraClipEnabled() ? 0: constant;
     }
-
 }

@@ -1,6 +1,6 @@
 package me.odinmain.features.impl.skyblock
 
-import me.odinmain.OdinMain.onLegitVersion
+import me.odinmain.OdinMain.isLegitVersion
 import me.odinmain.events.impl.ClickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -29,7 +29,7 @@ object GyroWand : Module(
     private val steps: Int by NumberSetting("Smoothness", 40, 20, 80, 1).withDependency { gyroRange }
     private val showCooldown: Boolean by BooleanSetting("Show Cooldown", true, description = "Shows the cooldown of the Gyrokinetic Wand.").withDependency { gyroRange }
     private val cooldownColor: Color by ColorSetting("Cooldown Color", Color.RED, allowAlpha = true).withDependency { showCooldown && gyroRange }
-    private val blockWrongClicks: Boolean by BooleanSetting("Block aligning", false, description = "Blocks using the right click ability on Gyrokinetic Wand.").withDependency { !onLegitVersion }
+    private val blockWrongClicks: Boolean by BooleanSetting("Block aligning", false, description = "Blocks using the right click ability on Gyrokinetic Wand.").withDependency { !isLegitVersion }
 
     private val gyroCooldown = Clock(30_000)
 
@@ -52,7 +52,7 @@ object GyroWand : Module(
 
     @SubscribeEvent
     fun onRightClick(event: ClickEvent.RightClickEvent) {
-        if (heldItem?.itemID != "GYROKINETIC_WAND" || !blockWrongClicks || onLegitVersion) return
+        if (heldItem?.itemID != "GYROKINETIC_WAND" || !blockWrongClicks || isLegitVersion) return
         event.isCanceled = true
     }
 
