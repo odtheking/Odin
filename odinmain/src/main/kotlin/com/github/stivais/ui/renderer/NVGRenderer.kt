@@ -25,7 +25,7 @@ object NVGRenderer : Renderer {
     init {
         vg = nvgCreate(NVG_ANTIALIAS)
         require(vg != -1L) { "Failed to initialize NanoVG" }
-        tempFont = NVGFont("Regular", "/assets/odinmain/fonts/Regular.ttf")
+        tempFont = NVGFont("Regular", "/assets/odinmain/fonts/Regular.otf")
     }
 
     override fun beginFrame(width: Float, height: Float) {
@@ -83,7 +83,7 @@ object NVGRenderer : Renderer {
     override fun text(text: String, x: Float, y: Float, size: Float, color: Int) {
         nvgBeginPath(vg)
         nvgFontSize(vg, size)
-        nvgFontFaceId(vg, tempFont.id)
+        nvgFontFace(vg, tempFont.name)
         nvgTextAlign(vg, NVG_ALIGN_LEFT or NVG_ALIGN_TOP)
         val nvgColor = color(color)
         nvgFillColor(vg, nvgColor)
@@ -92,8 +92,10 @@ object NVGRenderer : Renderer {
     }
 
     override fun textWidth(text: String, size: Float): Float {
-        //
-        return 0f
+        val bounds = FloatArray(4)
+        nvgFontSize(vg, size)
+        nvgFontFace(vg, tempFont.name)
+        return nvgTextBounds(vg, 0f, 0f, text, bounds)
     }
 
     fun color(color: Int): NVGColor {
@@ -109,10 +111,11 @@ object NVGRenderer : Renderer {
         init {
             val stream = this::class.java.getResourceAsStream(path) ?: throw FileNotFoundException(path)
             val bytes =  IOUtils.toByteArray(stream)
-            stream.close()
             val data = ByteBuffer.allocateDirect(bytes.size).order(ByteOrder.nativeOrder()).put(bytes)
             data.flip()
             id = nvgCreateFontMem(vg, name, data, false)
+            println("!!! $id font id")
+            stream.close()
         }
     }
 }
