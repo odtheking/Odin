@@ -28,7 +28,9 @@ sourceSets.main {
 
 val lwjglJar = tasks.create<ShadowJar>("lwjglJar") {
     group = "shadow"
+    archiveClassifier.set("lwjgl")
     configurations = listOf(lwjgl)
+    exclude("META-INF/versions/**")
     exclude("**/module-info.class")
     exclude("**/package-info.class")
     relocate("org.lwjgl", "org.lwjgl3") {
@@ -108,6 +110,7 @@ loom {
     log4jConfigs.from(file("log4j2.xml"))
     runConfigs {
         getByName("client") {
+            property("fml.coreMods.load", "me.odinmain.lwjgl.plugin.LWJGLLoadingPlugin")
             programArgs("--tweakClass", "gg.essential.loader.stage0.EssentialSetupTweaker")
             programArgs("--mixin", "mixins.odinclient.json")
             isIdeConfigGenerated = true

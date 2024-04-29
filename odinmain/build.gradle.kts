@@ -30,6 +30,7 @@ val lwjglJar = tasks.create<ShadowJar>("lwjglJar") {
     group = "shadow"
     archiveClassifier.set("lwjgl")
     configurations = listOf(lwjgl)
+    exclude("META-INF/versions/**")
     exclude("**/module-info.class")
     exclude("**/package-info.class")
     relocate("org.lwjgl", "org.lwjgl3") {
