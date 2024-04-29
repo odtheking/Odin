@@ -136,7 +136,6 @@ object TerminalSolver : Module(
     fun drawSlot(event: GuiEvent.DrawSlotEvent) {
         if ((removeWrong || renderType == 0) && enabled && getShouldBlockWrong() && event.slot.slotIndex <= event.container.inventorySlots.size - 37 && event.slot.slotIndex !in solution && event.slot.inventory !is InventoryPlayer) event.isCanceled = true
         if (event.slot.slotIndex !in solution || event.slot.slotIndex > event.container.inventorySlots.size - 37 || !enabled || renderType == 3 || event.slot.inventory is InventoryPlayer) return
-        val stack = event.slot.stack?.item?.registryName ?: return
 
         translate(0f, 0f, zLevel)
         GlStateManager.disableLighting()
@@ -165,7 +164,6 @@ object TerminalSolver : Module(
                     val amount = event.slot.stack?.stackSize ?: 0
                     mcText(amount.toString(), event.x + 8.5f - getMCTextWidth(amount.toString()) / 2, event.y + 4.5f, 1, textColor, shadow = textShadow, false)
                 }
-                if (stack != "minecraft:stained_glass_pane") event.isCanceled = true
             }
             TerminalTypes.STARTS_WITH ->
                 if (renderType != 1 || (renderType == 1 && !removeWrong)) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, startsWithColor.rgba)

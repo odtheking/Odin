@@ -3,9 +3,10 @@ package me.odinmain.features.impl.render
 import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.utils.containsOneOf
-import me.odinmain.utils.noControlCodes
+import me.odinmain.features.settings.impl.DropdownSetting
+import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.getSkullValue
@@ -16,6 +17,7 @@ import net.minecraft.init.Items
 import net.minecraft.item.ItemBlock
 import net.minecraft.network.play.server.S0EPacketSpawnObject
 import net.minecraft.network.play.server.S2APacketParticles
+import net.minecraft.util.EnumParticleTypes
 import net.minecraftforge.client.event.RenderLivingEvent
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -36,6 +38,9 @@ object RenderOptimizer : Module(
     private val hideTerracottaName: Boolean by BooleanSetting(name = "Hide Terracota Name", default = true, description = "Hides the terracota name.")
     private val hideNonStarredMobName: Boolean by BooleanSetting(name = "Hide Non-Starred Mob Name", default = true, description = "Hides the non-starred mob name.")
     private val removeArmorStands: Boolean by BooleanSetting(name = "Removes Useless ArmorStands", default = true, description = "Removes armor stands that are not necessary.")
+
+    private val showParticleOptions: Boolean by DropdownSetting("Show Particles Options")
+    private val removeExplosion: Boolean by BooleanSetting("Remove Explosion").withDependency { showParticleOptions }
 
     private const val TENTACLE_TEXTURE = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzM3MjIzZDAxOTA2YWI2M2FmMWExNTk4ODM0M2I4NjM3ZTg1OTMwYjkwNWMzNTEyNWI1NDViMzk4YzU5ZTFjNSJ9fX0="
     private const val HEALER_FAIRY_TEXTURE = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTZjM2UzMWNmYzY2NzMzMjc1YzQyZmNmYjVkOWE0NDM0MmQ2NDNiNTVjZDE0YzljNzdkMjczYTIzNTIifX19"
@@ -59,6 +64,7 @@ object RenderOptimizer : Module(
             }
         }
     }
+
     @SubscribeEvent
     fun entityJoinWorld(event: EntityJoinWorldEvent) {
         if (event.entity !is EntityArmorStand || !event.entity.isInvisible || removeArmorStands) return
@@ -77,6 +83,10 @@ object RenderOptimizer : Module(
     @SubscribeEvent
     fun onPacket(event: PacketReceivedEvent) {
         if (event.packet !is S2APacketParticles) return
+
+        if (event.packet.particleType.equalsOneOf(EnumParticleTypes.EXPLOSION_NORMAL, EnumParticleTypes.EXPLOSION_LARGE, EnumParticleTypes.EXPLOSION_HUGE) && removeExplosion)
+            event.isCanceled = true
+
 
         if (DungeonUtils.getPhase() == Island.M7P5 && hideParticles &&
             !event.packet.particleType.name.containsOneOf("ENCHANTMENT TABLE", "FLAME", "FIREWORKS_SPARK"))

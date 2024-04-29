@@ -1,6 +1,6 @@
 package me.odinmain.features.impl.skyblock
 
-import me.odinmain.OdinMain.onLegitVersion
+import me.odinmain.OdinMain.isLegitVersion
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -20,7 +20,7 @@ object HidePlayers : Module(
 ) {
     private val hideAll: Boolean by BooleanSetting("Hide all", default = false, false, "Hides all players, regardless of distance")
     private val distance: Double by NumberSetting("distance", 3.0, 0.0, 32.0, .5, false, "The number of blocks away to hide players.").withDependency { !hideAll }
-    private val clickThrough: Boolean by BooleanSetting("Click Through", default = false, false, "Allows clicking through players.").withDependency { !onLegitVersion }
+    private val clickThrough: Boolean by BooleanSetting("Click Through", default = false, false, "Allows clicking through players.").withDependency { !isLegitVersion }
     private val onlyDevs: Boolean by BooleanSetting("only at Devs", default = false, false, "Only hides players when standing at ss or fourth device")
 
     @SubscribeEvent

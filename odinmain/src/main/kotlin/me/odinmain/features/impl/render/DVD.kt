@@ -2,9 +2,13 @@ package me.odinmain.features.impl.render
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.StringSetting
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.getMCTextHeight
+import me.odinmain.utils.render.mcText
+import me.odinmain.utils.render.roundedRectangle
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.gui.ScaledResolution
@@ -20,8 +24,9 @@ object DVD : Module(
 ) {
     private val boxWidth: Int by NumberSetting("Box Width", 50, 0, 150, 1, description = "Width of the DVD box.")
     private val boxHeight: Int by NumberSetting("Box Height", 50, 0, 150, 1, description = "Height of the DVD box.")
+    private val roundedCorners: Boolean by BooleanSetting("Rounded Corners", true, description = "Whether the DVD box should have rounded corners.")
 
-    private val text: String by StringSetting("Text", "DVD", description = "Text to display on the DVD box.")
+    private val text: String by StringSetting("Text", "ODVD", description = "Text to display on the DVD box.")
     private val textScale: Float by NumberSetting("Text Scale", 1.5f, 0.1f, 2f, 0.1f, description = "Scale of the text.")
 
     private val speed: Long by NumberSetting("Speed", 10, 1, 20, 1, description = "Speed of the DVD box.")
@@ -42,7 +47,7 @@ object DVD : Module(
     @SubscribeEvent
     fun onRenderOverlay(event: RenderGameOverlayEvent.Post) {
         if (event.type != RenderGameOverlayEvent.ElementType.ALL) return
-        roundedRectangle(x, y, boxWidth, boxHeight, color, 9f)
+        roundedRectangle(x, y, boxWidth, boxHeight, color, if (roundedCorners) 12f else 0f)
         mcText(text, x + boxWidth / 2, y + boxHeight / 2 - getMCTextHeight() * textScale / 2 , textScale, color, true)
     }
 
@@ -67,7 +72,7 @@ object DVD : Module(
             }
 
             if ((x <= 0 || x + boxWidth >= screenWidth) && (y <= 0 || y + boxHeight >= screenHeight)) {
-                modMessage("DVD hit a corner!")
+                modMessage("$text hit a corner!")
                 PlayerUtils.playLoudSound("note.pling", 100f, 1f)
             }
         }

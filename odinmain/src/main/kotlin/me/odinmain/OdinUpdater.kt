@@ -83,7 +83,7 @@ object OdinUpdater: GuiScreen() {
         if (isOutdatedJava) {
             text("You are using an outdated version of java (${System.getProperty("java.version")}) which does not allow the auto updater to work properly", mc.displayWidth / 2f, 500f, Color.RED, 18f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Middle, false)
         } else {
-            text("A new version of ${if (OdinMain.onLegitVersion) "Odin" else "OdinClient"} is available!", mc.displayWidth / 2f, 450f, Color.WHITE, 18f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Middle, false)
+            text("A new version of ${if (OdinMain.isLegitVersion) "Odin" else "OdinClient"} is available!", mc.displayWidth / 2f, 450f, Color.WHITE, 18f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Middle, false)
             text("§fNewest: §r$tag   §fCurrent: §r${OdinMain.VERSION}", mc.displayWidth / 2f - getTextWidth("Newest: $tag   Current: ${OdinMain.VERSION}", 18f) / 2, 500f, ClickGUIModule.color, 18f, OdinFont.REGULAR, TextAlign.Left, TextPos.Middle, false)
         }
         GlStateManager.popMatrix()
@@ -99,12 +99,12 @@ object OdinUpdater: GuiScreen() {
             }
             1 -> {
                 Runtime.getRuntime().addShutdownHook(Thread {
-                    val newJar = "${if (OdinMain.onLegitVersion) "odin" else "odinclient"}-$tag.jar"
+                    val newJar = "${if (OdinMain.isLegitVersion) "odin" else "odinclient"}-$tag.jar"
                     val newDownloadUrl = "https://github.com/odtheking/OdinClient/releases/download/$tag/$newJar"
                     val newVersionPath = "${mc.mcDataDir}${File.separatorChar}mods${File.separatorChar}$newJar"
                     downloadFile(newDownloadUrl, newVersionPath)
 
-                    val currentJarPath = "${mc.mcDataDir}${File.separatorChar}mods${File.separatorChar}${if (OdinMain.onLegitVersion) "odin" else "odinclient"}-${OdinMain.VERSION}.jar"
+                    val currentJarPath = "${mc.mcDataDir}${File.separatorChar}mods${File.separatorChar}${if (OdinMain.isLegitVersion) "odin" else "odinclient"}-${OdinMain.VERSION}.jar"
                     val updaterUrl = "https://github.com/odtheking/OdinUpdater/releases/download/OdinUpdater/OdinUpdater.jar"
                     val updaterPath = "${System.getProperty("java.io.tmpdir")}${File.separatorChar}OdinUpdater.jar"
                     downloadFile(updaterUrl, updaterPath)
