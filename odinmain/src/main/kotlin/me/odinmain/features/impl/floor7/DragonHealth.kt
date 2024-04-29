@@ -6,7 +6,6 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
 import net.minecraft.entity.boss.EntityDragon
-import net.minecraftforge.client.event.RenderLivingEvent
 
 object DragonHealth{
     fun renderHP() {
