@@ -28,11 +28,11 @@ import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S2APacketParticles
-import net.minecraftforge.client.event.RenderLivingEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.event.entity.living.LivingDeathEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import kotlin.collections.ArrayList
 import kotlin.math.max
 
 
@@ -134,6 +134,7 @@ object WitherDragons : Module(
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (DungeonUtils.getPhase() != Island.M7P5) return
 
+        if (dragonHealth) renderHP()
         if (dragonTimer) renderTime()
         if (dragonBoxes) renderBoxes()
         if (dragonTracers) renderTracers()
@@ -155,11 +156,5 @@ object WitherDragons : Module(
     fun onEntityLeave(event: LivingDeathEvent) {
         if (DungeonUtils.getPhase() != Island.M7P5) return
         dragonLeaveWorld(event)
-    }
-
-    @SubscribeEvent
-    fun onRenderLivingPost(event: RenderLivingEvent.Post<*>) {
-        if (DungeonUtils.getPhase() != Island.M7P5) return
-        if (dragonHealth) renderHP(event)
     }
 }
