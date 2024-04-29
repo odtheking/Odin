@@ -1,14 +1,17 @@
 package com.github.stivais.ui.elements
 
+import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.color.Color
-import com.github.stivais.ui.constraints.Constraints
-import com.github.stivais.ui.constraints.Measurement
-import com.github.stivais.ui.constraints.copyParent
-import com.github.stivais.ui.constraints.percent
+import com.github.stivais.ui.constraints.*
+import com.github.stivais.ui.constraints.measurements.Animatable
+import com.github.stivais.ui.constraints.sizes.Copying
 import com.github.stivais.ui.elements.impl.*
 import com.github.stivais.ui.events.onClick
 import com.github.stivais.ui.events.onMouseEnterExit
+import com.github.stivais.ui.events.onMouseMove
+import com.github.stivais.ui.events.onRelease
 import com.github.stivais.ui.utils.animate
+import com.github.stivais.ui.utils.radii
 import com.github.stivais.ui.utils.seconds
 
 fun Element.column(constraints: Constraints? = null, block: Column.() -> Unit = {}): Column {
@@ -78,5 +81,47 @@ fun Element.button(
             false
         }
         dsl()
+    }
+}
+
+fun Element.slider(
+    constraints: Constraints?,
+    value: Double,
+    min: Double,
+    max: Double,
+    onChange: (percent: Float) -> Unit
+): Block {
+    var dragging = false
+    return block(constraints, Color.RGB(-0xefeff0), radii(3)) {
+        val sliderAnim = Animatable.Raw(0f)
+        // color is temp i cba to put in params yet
+        val color = Color.Animated(Color.RGB(50, 150, 220), Color.RGB(75, 175, 245))
+        afterInitialization {
+            sliderAnim.to(((value - min) / (max - min) * width).toFloat())
+        }
+        block(constrain(0.px, 0.px, sliderAnim, Copying), color = color, radii(all = 3f))
+
+        onClick(0) {
+            val pos = (ui.eventManager!!.mouseX - x).coerceIn(0f, width)
+            sliderAnim.animate(to = pos, 0.75.seconds, Animations.EaseOutQuint)
+            onChange(pos / width)
+            dragging = true
+            true
+        }
+        onMouseMove {
+            if (dragging) {
+                val pos = (ui.eventManager!!.mouseX - x).coerceIn(0f, width)
+                sliderAnim.to(pos)
+                onChange(pos / width)
+            }
+            true
+        }
+        onRelease(0) {
+            dragging = false
+        }
+        onMouseEnterExit {
+            color.animate(0.25.seconds)
+            true
+        }
     }
 }

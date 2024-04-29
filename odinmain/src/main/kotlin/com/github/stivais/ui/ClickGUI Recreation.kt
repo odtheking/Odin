@@ -17,11 +17,14 @@ import me.odinmain.features.Module
 import me.odinmain.features.ModuleManager.modules
 import me.odinmain.features.impl.render.ClickGUIModule.color
 import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.capitalizeFirst
+import kotlin.math.roundToInt
 
 @JvmField
 val mainColor = Color { color.rgba }
 
+// note: currently settings that have a dependency don't hide
 fun clickGUI() = UI {
     for (panel in Category.entries) {
         column(at(x = panel.x.px, y = panel.y.px)) {
@@ -80,27 +83,49 @@ private fun Element.module(module: Module) {
             if (setting.hidden) continue
             // temp
             when (setting) {
-                is BooleanSetting -> {
-                    group(size(w = 240.px, h = 40.px)) {
-                        text(
-                            text = setting.name,
-                            at = at(6.px, Center),
-                            size = 12.px
-                        )
-                        button(
-                            constraints = constrain(x = -10.px, y = Center, w = 20.px, h = 20.px),
-                            offColor = Color.RGB(38, 38, 38),
-                            onColor = mainColor,
-                            on = setting.enabled,
-                            radii = radii(all = 5)
-                        ) {
-                            onClick(0) {
-                                setting.enabled = !setting.enabled
-                                true
-                            }
-                            outline(color = mainColor)
+                is BooleanSetting -> group(size(w = 240.px, h = 40.px)) {
+                    text(
+                        text = setting.name,
+                        at = at(6.px, Center),
+                        size = 12.px
+                    )
+                    button(
+                        constraints = constrain(x = -10.px, y = Center, w = 20.px, h = 20.px),
+                        offColor = Color.RGB(38, 38, 38),
+                        onColor = mainColor,
+                        on = setting.enabled,
+                        radii = radii(all = 5)
+                    ) {
+                        onClick(0) {
+                            setting.enabled = !setting.enabled
+                            true
                         }
+                        outline(color = mainColor)
                     }
+                }
+
+                is NumberSetting -> group(size(240.px, 40.px)) {
+                    text(
+                        text = setting.name,
+                        at(x = 6.px, y = Center - 3.px),
+                        size = 16.px
+                    )
+                    val display = text(
+                        text = "${(setting.valueDouble * 100.0).roundToInt() / 100.0}",
+                        at(x = -6.px, y = Center - 3.px),
+                        size = 16.px
+                    )
+                    val slider = slider(
+                        constraints = constrain(6.px, -5.px, 228.px, 7.px),
+                        value = setting.valueDouble,
+                        min = setting.min,
+                        max =  setting.max,
+                        onChange = { percent ->
+                            setting.valueDouble = percent * (setting.max - setting.min) + setting.min
+                            display.text = "${(setting.valueDouble * 100.0).roundToInt() / 100.0}"
+                        }
+                    )
+                    takeEvents(from = slider)
                 }
             }
         }

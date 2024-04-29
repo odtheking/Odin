@@ -2,6 +2,7 @@ package com.github.stivais.ui
 
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.input.Mouse
 
 class UIScreen(val ui: UI) : GuiScreen() {
@@ -34,7 +35,12 @@ class UIScreen(val ui: UI) : GuiScreen() {
             previousWidth = w
             previousHeight = h
         }
+
+        GlStateManager.pushMatrix()
+        GlStateManager.scale(0.5f, 0.5f, 0.5f)
+        GlStateManager.translate(0f, 0f, 0f)
         ui.render()
+        GlStateManager.popMatrix()
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, button: Int) {

@@ -208,6 +208,11 @@ abstract class Element(constraints: Constraints?) {
         return { target.accept(this) }
     }
 
+    fun afterInitialization(block: () -> Unit) {
+        if (ui.afterInit == null) ui.afterInit = arrayListOf()
+        ui.afterInit!!.add(block)
+    }
+
     fun takeEvents(from: Element) {
         if (from.events == null) return logger.warning("Tried to take event from an element that doesn't have events")
         if (events != null) {
