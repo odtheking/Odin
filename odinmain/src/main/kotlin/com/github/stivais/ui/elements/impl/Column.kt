@@ -10,15 +10,13 @@ import com.github.stivais.ui.constraints.positions.Linked
 import com.github.stivais.ui.constraints.sizes.Bounding
 import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.utils.replaceUndefined
-import me.odinmain.utils.render.roundedRectangle
 
 // todo: rework it so it works horiziontally, and if a width is defined, it wraps etc
 class Column(constraints: Constraints?, var padding: Float = 0f) : Element(constraints.replaceUndefined(w = Bounding, h = Bounding)) {
 
     override fun draw() {
         if (color != null && color!!.rgba.alpha != 0) {
-            roundedRectangle(x, y, width, height, me.odinmain.utils.render.Color(color!!.rgba))
-//            renderer.rect(x, y, width, height, color!!.rgba)
+            renderer.rect(x, y, width, height, color!!.rgba)
         }
     }
 

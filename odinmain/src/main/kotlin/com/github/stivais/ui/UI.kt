@@ -1,19 +1,18 @@
 package com.github.stivais.ui
 
+import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.constraints.Constraints
 import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.elements.impl.Group
 import com.github.stivais.ui.events.EventManager
+import com.github.stivais.ui.renderer.CookedRenderer
+import com.github.stivais.ui.renderer.Renderer
 import com.github.stivais.ui.utils.forLoop
-import me.odinmain.utils.render.TextAlign
-import me.odinmain.utils.render.TextPos
-import me.odinmain.utils.render.Color as OdinColor
-import me.odinmain.utils.render.text
 import java.util.logging.Logger
 
 class UI(
-    //val renderer: Renderer2D,
+    val renderer: Renderer = CookedRenderer,
     settings: UISettings? = null
 ) {
 
@@ -50,13 +49,13 @@ class UI(
     fun render() {
         val start = System.nanoTime()
 
-//        renderer.beginFrame()
+        renderer.beginFrame()
         main.position()
         main.render()
         if (settings.frameMetrics) {
-            text(performance, main.width, main.height, OdinColor.WHITE, 12f, align = TextAlign.Right, verticalAlign = TextPos.Bottom)
+            renderer.text(performance, main.width, main.height, 12f, Color.WHITE.rgba)
         }
-//        renderer.endFrame()
+        renderer.endFrame()
 
         if (settings.frameMetrics) {
             frames++

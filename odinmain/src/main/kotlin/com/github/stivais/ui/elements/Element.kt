@@ -42,7 +42,7 @@ abstract class Element(constraints: Constraints?) {
 
     lateinit var ui: UI
 
-//    val renderer get() = ui.renderer
+    val renderer get() = ui.renderer
 
     var parent: Element? = null
 

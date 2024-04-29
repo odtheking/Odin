@@ -8,9 +8,6 @@ import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.utils.replaceUndefined
 import me.odinmain.font.OdinFont
-import me.odinmain.utils.render.TextAlign
-import me.odinmain.utils.render.TextPos
-import kotlin.reflect.KProperty
 
 // todo: Text width doesn't update when height updates
 class Text(
@@ -42,15 +39,6 @@ class Text(
     }
 
     override fun draw() {
-        OdinFont.text(text, x, y, me.odinmain.utils.render.Color(color!!.rgba), height, align = TextAlign.Left, verticalAlign = TextPos.Top)
-//        renderer.text(text, x, y, color!!.rgba, height)
-    }
-
-    operator fun getValue(thisRef: Any?, property: KProperty<*>): String {
-        return text
-    }
-
-    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: String) {
-        text = value
+        renderer.text(text, x, y, height, color!!.rgba)
     }
 }
