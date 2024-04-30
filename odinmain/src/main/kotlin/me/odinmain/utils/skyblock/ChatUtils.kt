@@ -5,9 +5,7 @@ import me.odinmain.features.impl.render.ClickGUIModule.devMessages
 import me.odinmain.features.impl.render.DevPlayers
 import net.minecraft.event.ClickEvent
 import net.minecraft.event.HoverEvent
-import net.minecraft.util.ChatComponentText
-import net.minecraft.util.ChatStyle
-import net.minecraft.util.EnumChatFormatting
+import net.minecraft.util.*
 import net.minecraftforge.client.ClientCommandHandler
 
 
@@ -62,7 +60,7 @@ fun sendChatMessage(message: Any) {
  * @param prefix If `true`, adds a prefix to the message.
  * @param chatStyle Optional chat style to be applied to the message.
  */
-fun modMessage(message: Any, prefix: Boolean = true, chatStyle: ChatStyle? = null) {
+fun modMessage(message: Any?, prefix: Boolean = true, chatStyle: ChatStyle? = null) {
     if (mc.thePlayer == null) return
     val chatComponent = ChatComponentText(if (prefix) "§3Odin §8»§r $message" else message.toString())
     chatStyle?.let { chatComponent.setChatStyle(it) } // Set chat style using setChatStyle method

@@ -24,7 +24,6 @@ object BlockOverlay : Module(
     category = Category.RENDER,
     description = "Lets you customize the vanilla block overlay",
 ) {
-
     private var fullBlock: Boolean by BooleanSetting("Full Block", false)
     private var disableDepth: Boolean by BooleanSetting("Disable Depth", false)
     private var lineSmoothing: Boolean by BooleanSetting("Line Smoothing", false)

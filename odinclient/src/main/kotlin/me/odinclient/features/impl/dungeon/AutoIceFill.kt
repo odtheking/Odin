@@ -84,8 +84,8 @@ object AutoIceFill: Module(
         val y = pos.yCoord
         val z = pos.zCoord
         val (nx, ny) = when (rotation) {
-            Rotations.EAST -> Pair(0.5f, 0f)
-            Rotations.WEST -> Pair(-0.5f, 0f)
+            Rotations.WEST -> Pair(0.5f, 0f)
+            Rotations.EAST -> Pair(-0.5f, 0f)
             Rotations.SOUTH -> Pair(0f, 0.5f)
             else -> Pair(0f, -0.5f)
         }

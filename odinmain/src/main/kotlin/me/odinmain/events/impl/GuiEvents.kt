@@ -1,34 +1,45 @@
 package me.odinmain.events.impl
 
+import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.inventory.GuiContainer
-import net.minecraft.inventory.*
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.inventory.Container
+import net.minecraft.inventory.ContainerChest
+import net.minecraft.inventory.Slot
 import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.eventhandler.Cancelable
 import net.minecraftforge.fml.common.eventhandler.Event
 
-@Cancelable
-class DrawGuiContainerScreenEvent(val container: Container, val gui: GuiContainer, val xSize: Int, val ySize: Int, val guiLeft: Int, val guiTop: Int) : Event()
 
-class GuiLoadedEvent(val name: String, val gui: ContainerChest) : Event()
+abstract class GuiEvent : Event() {
 
-@Cancelable
-class GuiClickEvent(val container: Container, val gui: GuiContainer, val x: Int, val y: Int, val button: Int) : Event()
+    data class GuiLoadedEvent(val name: String, val gui: ContainerChest) : GuiEvent()
 
-@Cancelable
-class PreGuiClickEvent(val button: Int) : Event()
+    @Cancelable
+    data class DrawGuiContainerScreenEvent(val container: Container, val gui: GuiContainer, val xSize: Int, val ySize: Int, val guiLeft: Int, val guiTop: Int) : GuiEvent()
 
-@Cancelable
-class GuiKeyPressEvent(val container: Container, val gui: GuiContainer, val keyCode: Int) : Event()
+    @Cancelable
+    class DrawSlotEvent(val container: Container, val gui: GuiContainer, var slot: Slot, val x: Int, val y: Int) : GuiEvent()
 
-@Cancelable
-class GuiClosedEvent(val gui: GuiContainer) : Event()
+    @Cancelable
+    class DrawSlotOverlayEvent(val stack: ItemStack?, val x: Int?, val y: Int?, val text: String?) : GuiEvent()
 
-@Cancelable
-class DrawSlotOverlayEvent(val stack: ItemStack?, val x: Int?, val y: Int?, val text: String?) : Event()
+    @Cancelable
+    data class GuiMouseClickEvent(val gui: GuiScreen, val button: Int, val x: Int, val y: Int) : GuiEvent()
 
-@Cancelable
-class DrawSlotEvent(val container: Container, val gui: GuiContainer, var slot: Slot, val x: Int, val y: Int) : Event()
+    @Cancelable
+    class GuiKeyPressEvent(val container: Container, val gui: GuiContainer, val keyCode: Int) : Event()
 
-@Cancelable
-class DrawItemStackEvent(val container: Container, val gui: GuiContainer, val stack: ItemStack, val x: Int, val y: Int) : Event()
+
+    class GuiClosedEvent(val gui: GuiContainer) : GuiEvent()
+
+    @Cancelable
+    class GuiWindowClickEvent(val windowId: Int, val slotId: Int, val mouseButtonClicked: Int, val mode: Int, val playerIn: EntityPlayer) : GuiEvent()
+}
+
+
+
+
+
+
 

@@ -160,9 +160,9 @@ fun Vec3.get(index: Int): Double {
 fun Vec3.rotateAroundNorth(rotation: Rotations): Vec3 {
     return when (rotation) {
         Rotations.NORTH -> Vec3(-this.xCoord, this.yCoord, -this.zCoord)
-        Rotations.EAST -> Vec3(-this.zCoord, this.yCoord, this.xCoord)
+        Rotations.WEST -> Vec3(-this.zCoord, this.yCoord, this.xCoord)
         Rotations.SOUTH -> Vec3(this.xCoord, this.yCoord, this.zCoord)
-        Rotations.WEST -> Vec3(this.zCoord, this.yCoord, -this.xCoord)
+        Rotations.EAST -> Vec3(this.zCoord, this.yCoord, -this.xCoord)
         else -> this
     }
 }
@@ -175,20 +175,35 @@ fun Vec3.rotateAroundNorth(rotation: Rotations): Vec3 {
 fun Vec3.rotateToNorth(rotation: Rotations): Vec3 {
     return when (rotation) {
         Rotations.NORTH -> Vec3(-this.xCoord, this.yCoord, -this.zCoord)
-        Rotations.EAST -> Vec3(this.zCoord, this.yCoord, -this.xCoord)
+        Rotations.WEST -> Vec3(this.zCoord, this.yCoord, -this.xCoord)
         Rotations.SOUTH -> Vec3(this.xCoord, this.yCoord, this.zCoord)
-        Rotations.WEST -> Vec3(-this.zCoord, this.yCoord, this.xCoord)
+        Rotations.EAST -> Vec3(-this.zCoord, this.yCoord, this.xCoord)
         else -> this
     }
 }
 
 
+/**
+ * Rotates a Vec2 to the given rotation.
+ * @param rotation The rotation to rotate to
+ * @return The rotated Vec2
+ */
 fun Vec2.addRotationCoords(rotation: Rotations, dist: Int = 4): Vec2 {
     return when (rotation) {
         Rotations.NORTH -> Vec2(x, z + dist)
-        Rotations.EAST -> Vec2(x + dist, z)
+        Rotations.WEST -> Vec2(x + dist, z)
         Rotations.SOUTH -> Vec2(x, z - dist)
-        Rotations.WEST -> Vec2(x - dist, z)
+        Rotations.EAST -> Vec2(x - dist, z)
+        Rotations.NONE -> this
+    }
+}
+
+fun Vec2.addRotationCoords(rotation: Rotations, x: Number = 0, y: Number = 0){
+    when(rotation){
+        Rotations.NORTH -> Vec2(this.x + x.toInt(), this.z + y.toInt())
+        Rotations.WEST -> Vec2(this.x + y.toInt(), this.z - x.toInt())
+        Rotations.SOUTH -> Vec2(this.x - x.toInt(), this.z - y.toInt())
+        Rotations.EAST -> Vec2(this.x - y.toInt(), this.z + x.toInt())
         Rotations.NONE -> this
     }
 }
@@ -204,6 +219,10 @@ fun Vec2.addRotationCoords(rotation: EnumFacing, dist: Int = 4): Vec2 {
         x + rotation.frontOffsetX * dist,
         z + rotation.frontOffsetZ * dist
     )
+}
+
+fun Vec2.offset(rotation: Rotations, n: Int): Vec2 {
+    return if (n == 0) this else Vec2(this.x + rotation.x * n, this.z + rotation.z * n)
 }
 
 /**

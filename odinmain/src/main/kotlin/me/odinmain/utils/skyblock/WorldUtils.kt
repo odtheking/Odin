@@ -70,7 +70,7 @@ fun getBlockIdAt(x: Int, y: Int, z: Int): Int {
  * @return The block as a `Block`.
  */
 fun getBlockAt(pos: BlockPos): Block =
-    mc.theWorld.getBlockState(pos)?.block ?: Blocks.air
+    mc.theWorld?.getBlockState(pos)?.block ?: Blocks.air
 
 /**
  * Retrieves the block object at the specified integer coordinates.

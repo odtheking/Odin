@@ -23,6 +23,7 @@ import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.PlayerUtils
+import me.odinmain.utils.skyblock.SkyblockPlayer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
@@ -38,7 +39,7 @@ object OdinMain {
     val scope = CoroutineScope(EmptyCoroutineContext)
 
     var display: GuiScreen? = null
-    val onLegitVersion: Boolean
+    val isLegitVersion: Boolean
         get() = Loader.instance().activeModList.none { it.modId == "odclient" }
 
     object MapColors {
@@ -73,6 +74,7 @@ object OdinMain {
             WaypointManager,
             DevPlayers,
             PartyNote,
+            SkyblockPlayer,
             //HighlightRenderer,
             //OdinUpdater,
             this
@@ -102,6 +104,7 @@ object OdinMain {
         launch { WaypointConfig.loadConfig() }
         launch { DungeonWaypointConfig.loadConfig() }
         launch { PBConfig.loadConfig() }
+        launch { DungeonWaypointConfigCLAY }
     }
 
     fun loadComplete() = runBlocking {

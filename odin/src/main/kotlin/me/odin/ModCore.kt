@@ -2,6 +2,7 @@ package me.odin
 
 import me.odin.features.impl.floor7.p3.ArrowAlign
 import me.odin.features.impl.floor7.p3.SimonSays
+import me.odin.features.impl.render.Camera
 import me.odin.features.impl.render.EtherWarpHelper
 import me.odinmain.OdinMain
 import me.odinmain.features.ModuleManager
@@ -46,6 +47,7 @@ class ModCore {
             ArrowAlign,
             SimonSays,
             EtherWarpHelper,
+            Camera
         )
 
         ModuleManager.modules.addAll(modules)

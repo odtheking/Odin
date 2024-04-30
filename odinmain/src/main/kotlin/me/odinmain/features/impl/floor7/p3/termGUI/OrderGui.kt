@@ -3,11 +3,13 @@ package me.odinmain.features.impl.floor7.p3.termGUI
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.customScale
+import me.odinmain.features.impl.floor7.p3.TerminalSolver.gap
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.orderColor
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.orderColor2
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.orderColor3
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.renderOrderNumbers
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.solution
+import me.odinmain.features.impl.floor7.p3.TerminalSolver.textScale
 import me.odinmain.utils.render.*
 
 object OrderGui : TermGui() {
@@ -33,7 +35,7 @@ object OrderGui : TermGui() {
                     1    -> orderColor2
                     else -> orderColor3
                 }
-                val box = BoxWithClass(-170 + col * 290 / 4, -60 + row * 70, 50, 50)
+                val box = BoxWithClass((-163 + ((gap-20).unaryPlus() * 0.5)) + col * 70, -60 + row * 70, 70 - gap, 70 - gap)
                 roundedRectangle(box, color)
                 itemIndexMap[pane] = Box(
                     box.x.toFloat() * customScale + mc.displayWidth / 2,
@@ -43,7 +45,7 @@ object OrderGui : TermGui() {
                 )
             }
             if (renderOrderNumbers)
-                mcText(amount.toString(), -169 + col * 290 / 4 + 25f , -57 + row * 70 + 10, 3, TerminalSolver.textColor, shadow = TerminalSolver.textShadow)
+                mcText(amount.toString(), -163 + col * 70 + 26f , -60 + row * 70 + (27f - (textScale*3) - (gap * 0.5)), 2 + textScale, TerminalSolver.textColor, shadow = TerminalSolver.textShadow)
         }
     }
 }

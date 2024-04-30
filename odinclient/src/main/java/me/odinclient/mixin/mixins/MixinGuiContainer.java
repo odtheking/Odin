@@ -1,6 +1,6 @@
 package me.odinclient.mixin.mixins;
 
-import me.odinmain.events.impl.*;
+import me.odinmain.events.impl.GuiEvent;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
@@ -35,13 +35,13 @@ public abstract class MixinGuiContainer {
 
     @Inject(method = "drawSlot", at = @At("HEAD"), cancellable = true)
     private void onDrawSlot(Slot slotIn, CallbackInfo ci) {
-        if (MinecraftForge.EVENT_BUS.post(new DrawSlotEvent(inventorySlots, gui, slotIn, slotIn.xDisplayPosition, slotIn.yDisplayPosition)))
+        if (MinecraftForge.EVENT_BUS.post(new GuiEvent.DrawSlotEvent(inventorySlots, gui, slotIn, slotIn.xDisplayPosition, slotIn.yDisplayPosition)))
             ci.cancel();
     }
 
     @Inject(method = "drawScreen", at = @At(value = "HEAD"), cancellable = true)
     private void startDrawScreen(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-        DrawGuiContainerScreenEvent event = new DrawGuiContainerScreenEvent(gui.inventorySlots, gui, this.xSize, this.ySize, guiLeft, guiTop);
+        GuiEvent.DrawGuiContainerScreenEvent event = new GuiEvent.DrawGuiContainerScreenEvent(gui.inventorySlots, gui, this.xSize, this.ySize, guiLeft, guiTop);
         if (MinecraftForge.EVENT_BUS.post(event)) {
             ci.cancel();
 
@@ -54,21 +54,14 @@ public abstract class MixinGuiContainer {
         }
     }
 
-    @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
-    private void onMouseClicked(int mouseX, int mouseY, int mouseButton, CallbackInfo ci) {
-        if (MinecraftForge.EVENT_BUS.post(new GuiClickEvent(gui.inventorySlots, gui, mouseX, mouseY, mouseButton)))
-            ci.cancel();
-    }
-
     @Inject(method = "keyTyped", at = @At("HEAD"), cancellable = true)
     private void keyTyped(char typedChar, int keyCode, CallbackInfo ci) {
-        if (MinecraftForge.EVENT_BUS.post(new GuiKeyPressEvent(gui.inventorySlots, gui, keyCode)))
+        if (MinecraftForge.EVENT_BUS.post(new GuiEvent.GuiKeyPressEvent(gui.inventorySlots, gui, keyCode)))
             ci.cancel();
     }
 
     @Inject(method = "onGuiClosed", at = @At("HEAD"))
     private void onGuiClosed(CallbackInfo ci) {
-        MinecraftForge.EVENT_BUS.post(new GuiClosedEvent(gui));
+        MinecraftForge.EVENT_BUS.post(new GuiEvent.GuiClosedEvent(gui));
     }
-
 }
