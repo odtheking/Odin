@@ -1,14 +1,14 @@
 package me.odinmain.features.impl.floor7.p3.termsim
 
-import me.odinmain.events.impl.GuiLoadedEvent
-import me.odinmain.features.impl.floor7.p3.TerminalSolver
+import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.impl.floor7.p3.TerminalTimes
+import me.odinmain.utils.postAndCatch
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.Slot
 import net.minecraft.item.ItemStack
 import kotlin.math.floor
 
-object SameColor : TermSimGui(
+object Rubix : TermSimGui(
     "Change all to same color!",
     45
 ) {
@@ -34,7 +34,7 @@ object SameColor : TermSimGui(
             else -> return
         }
         mc.thePlayer.playSound("random.orb", 1f, 1f)
-        TerminalSolver.onGuiLoad(GuiLoadedEvent(name, inventorySlots as ContainerChest))
+        GuiEvent.GuiLoadedEvent(name, inventorySlots as ContainerChest).postAndCatch()
         if (grid.all { it?.stack?.metadata == grid.firstOrNull()?.stack?.metadata }) {
             solved(this.name, TerminalTimes.simColorPB)
         }

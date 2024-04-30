@@ -21,5 +21,4 @@ object PartyNote {
             .replace(Regex("§([0-9a-fklmnor])")) { "§§${it.groupValues[1]}${it.groupValues[1]}" }
         packet.clickedItem.setStackDisplayName(itemName)
     }
-
 }

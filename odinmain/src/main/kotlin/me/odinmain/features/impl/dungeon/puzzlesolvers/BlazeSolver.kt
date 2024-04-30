@@ -22,18 +22,12 @@ object BlazeSolver {
     private fun getBlazes() {
         mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()?.forEach { entity ->
             val matchResult = Regex("""^\[Lv15] Blaze [\d,]+/([\d,]+)❤$""").find(entity.name.noControlCodes) ?: return@forEach
-            val (_, health) = matchResult.destructured
-            val hp = health.replace(",", "").toIntOrNull() ?: return@forEach
-            hpMap[entity] = hp
+            hpMap[entity] = matchResult.groups[1]?.value?.replace(",", "")?.toIntOrNull() ?: return@forEach
             blazes.add(entity)
         }
         if (blazes.isEmpty()) return
 
         blazes.sortBy { hpMap[it] }
-    }
-
-    fun resetBlazes() {
-        blazes.clear()
     }
 
     fun renderBlazes() {

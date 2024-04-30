@@ -7,6 +7,7 @@ import me.odinmain.features.ModuleManager
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.modMessage
+import net.minecraft.inventory.Container
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.Event
@@ -90,6 +91,9 @@ fun Float.round(decimals: Int): Float {
 
 val ContainerChest.name: String
     get() = this.lowerChestInventory.displayName.unformattedText
+
+val Container.name: String
+    get() = (this as? ContainerChest)?.name ?: "Undefined Container"
 
 operator fun Number.div(number: Number): Number {
     return this.toDouble() / number.toDouble()

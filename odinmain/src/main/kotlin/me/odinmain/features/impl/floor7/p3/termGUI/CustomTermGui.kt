@@ -4,7 +4,10 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.currentTerm
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.Box
+import me.odinmain.utils.render.isPointWithin
+import me.odinmain.utils.render.scale
+import me.odinmain.utils.render.translate
 import net.minecraft.client.gui.ScaledResolution
 
 object CustomTermGui {
@@ -15,7 +18,7 @@ object CustomTermGui {
         scale(TerminalSolver.customScale, TerminalSolver.customScale)
         when (currentTerm) {
             TerminalTypes.PANES -> PanesGui.render()
-            TerminalTypes.COLOR -> RubixGui.render()
+            TerminalTypes.RUBIX -> RubixGui.render()
             TerminalTypes.ORDER -> OrderGui.render()
             TerminalTypes.STARTS_WITH -> StartsWithGui.render()
             TerminalTypes.SELECT -> SelectAllGui.render()
@@ -29,7 +32,7 @@ object CustomTermGui {
     fun mouseClicked(x: Int, y: Int, button: Int) {
         when (currentTerm) {
             TerminalTypes.PANES -> PanesGui.mouseClicked(x, y, button)
-            TerminalTypes.COLOR -> RubixGui.mouseClicked(x, y, button)
+            TerminalTypes.RUBIX -> RubixGui.mouseClicked(x, y, button)
             TerminalTypes.ORDER -> OrderGui.mouseClicked(x, y, button)
             TerminalTypes.STARTS_WITH -> StartsWithGui.mouseClicked(x, y, button)
             TerminalTypes.SELECT -> SelectAllGui.mouseClicked(x, y, button)
