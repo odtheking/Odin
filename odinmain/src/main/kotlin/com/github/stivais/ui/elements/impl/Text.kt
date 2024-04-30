@@ -20,23 +20,30 @@ class Text(
         set(value) {
             if (field == value) return
             field = value
-            (constraints.width as Pixel).pixels = renderer.textWidth(value, height)
-
+            needsUpdate = true
+//            (constraints.width as Pixel).pixels = renderer.textWidth(value, height)
         }
+
+    private var needsUpdate = true
 
     init {
         this.color = textColor
 
         onInitialization {
-            // needs size to be set
-            parent?.position()
-            val width = renderer.textWidth(text, height)
-            (this.constraints.width as Pixel).pixels = width
-            this.width = width
+//            // needs size to be set
+//            parent?.position()
+//            val width = renderer.textWidth(text, height)
+//            (this.constraints.width as Pixel).pixels = width
+//            this.width = width
         }
     }
 
     override fun draw() {
+        if (needsUpdate) {
+            parent?.position() // sub optimal
+            (constraints.width as Pixel).pixels = renderer.textWidth(text, height)
+            needsUpdate = false
+        }
         renderer.text(text, x, y, height, color!!.rgba)
     }
 }

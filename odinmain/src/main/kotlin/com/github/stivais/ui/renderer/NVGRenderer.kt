@@ -4,6 +4,7 @@ import com.github.stivais.ui.color.alpha
 import com.github.stivais.ui.color.blue
 import com.github.stivais.ui.color.green
 import com.github.stivais.ui.color.red
+import net.minecraft.client.renderer.GlStateManager
 import org.apache.commons.io.IOUtils
 import org.lwjgl.nanovg.NVGColor
 import org.lwjgl.nanovg.NanoVG.*
@@ -31,6 +32,7 @@ object NVGRenderer : Renderer {
     override fun beginFrame(width: Float, height: Float) {
         if (drawing) throw IllegalStateException("Already drawing, but called NVGRenderer beginFrame")
         drawing = true
+        GlStateManager.disableCull()
         nvgBeginFrame(vg, width, height, 1f)
     }
 
@@ -38,6 +40,7 @@ object NVGRenderer : Renderer {
         if (!drawing) throw IllegalStateException("Not drawing, but called NVGRenderer endFrame")
         nvgEndFrame(vg)
         drawing = false
+        GlStateManager.enableCull()
     }
 
     override fun rect(x: Float, y: Float, w: Float, h: Float, color: Int) {
@@ -83,18 +86,19 @@ object NVGRenderer : Renderer {
     override fun text(text: String, x: Float, y: Float, size: Float, color: Int) {
         nvgBeginPath(vg)
         nvgFontSize(vg, size)
-        nvgFontFace(vg, tempFont.name)
+        nvgFontFaceId(vg, tempFont.id)
         nvgTextAlign(vg, NVG_ALIGN_LEFT or NVG_ALIGN_TOP)
         val nvgColor = color(color)
         nvgFillColor(vg, nvgColor)
         nvgText(vg, x, y, text)
+        nvgClosePath(vg)
         nvgColor.free()
     }
 
     override fun textWidth(text: String, size: Float): Float {
         val bounds = FloatArray(4)
         nvgFontSize(vg, size)
-        nvgFontFace(vg, tempFont.name)
+        nvgFontFaceId(vg, tempFont.id)
         return nvgTextBounds(vg, 0f, 0f, text, bounds)
     }
 
@@ -106,16 +110,17 @@ object NVGRenderer : Renderer {
 
     class NVGFont(val name: String, path: String) {
 
-        val id: Int
+        var id: Int = -1
 
         init {
             val stream = this::class.java.getResourceAsStream(path) ?: throw FileNotFoundException(path)
             val bytes =  IOUtils.toByteArray(stream)
+            stream.close()
             val data = ByteBuffer.allocateDirect(bytes.size).order(ByteOrder.nativeOrder()).put(bytes)
             data.flip()
             id = nvgCreateFontMem(vg, name, data, false)
+            require(id != -1) { "Font failed to initialize" }
             println("!!! $id font id")
-            stream.close()
         }
     }
 }
