@@ -4,7 +4,6 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.input.Mouse
-import org.lwjgl.opengl.GL11
 
 class UIScreen(val ui: UI) : GuiScreen() {
 
@@ -38,13 +37,7 @@ class UIScreen(val ui: UI) : GuiScreen() {
         }
 
         GlStateManager.pushMatrix()
-//        GlStateManager.scale(0.5f, 0.5f, 0.5f)
-//        GlStateManager.translate(0f, 0f, 0f)
-
-        if (!mc.framebuffer.isStencilEnabled) mc.framebuffer.enableStencil()
-        GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS)
         ui.render()
-        GL11.glPopAttrib()
         GlStateManager.popMatrix()
     }
 

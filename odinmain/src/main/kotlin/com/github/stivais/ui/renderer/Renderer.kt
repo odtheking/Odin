@@ -16,7 +16,7 @@ interface Renderer {
 
     fun hollowRect(x: Float, y: Float, w: Float, h: Float, thickness: Float, color: Int, tl: Float, bl: Float, br: Float, tr: Float)
 
-    fun hollowRect(x: Float, y: Float, w: Float, h: Float, thickness: Float, color: Int, radius: Float) {
+    fun hollowRect(x: Float, y: Float, w: Float, h: Float, thickness: Float, color: Int, radius: Float = 0f) {
         hollowRect(x, y, w, h, thickness, color, radius, radius, radius, radius)
     }
 
@@ -25,4 +25,8 @@ interface Renderer {
     fun text(text: String, x: Float, y: Float, size: Float, color: Int)
 
     fun textWidth(text: String, size: Float): Float
+
+    fun pushScissor(x: Float, y: Float, w: Float, h: Float)
+
+    fun popScissor()
 }

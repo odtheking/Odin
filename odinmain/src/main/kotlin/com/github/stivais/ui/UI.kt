@@ -6,13 +6,14 @@ import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.elements.impl.Group
 import com.github.stivais.ui.events.EventManager
+import com.github.stivais.ui.renderer.CookedRenderer
 import com.github.stivais.ui.renderer.NVGRenderer
 import com.github.stivais.ui.renderer.Renderer
 import com.github.stivais.ui.utils.forLoop
 import java.util.logging.Logger
 
 class UI(
-    val renderer: Renderer = NVGRenderer,
+    val renderer: Renderer = CookedRenderer,
     settings: UISettings? = null
 ) {
 

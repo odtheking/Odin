@@ -4,12 +4,14 @@ import com.github.stivais.ui.color.alpha
 import com.github.stivais.ui.color.blue
 import com.github.stivais.ui.color.green
 import com.github.stivais.ui.color.red
+import me.odinmain.OdinMain.mc
 import net.minecraft.client.renderer.GlStateManager
 import org.apache.commons.io.IOUtils
 import org.lwjgl.nanovg.NVGColor
 import org.lwjgl.nanovg.NanoVG.*
 import org.lwjgl.nanovg.NanoVGGL2.NVG_ANTIALIAS
 import org.lwjgl.nanovg.NanoVGGL2.nvgCreate
+import org.lwjgl.opengl.GL11
 import java.io.FileNotFoundException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -32,6 +34,8 @@ object NVGRenderer : Renderer {
     override fun beginFrame(width: Float, height: Float) {
         if (drawing) throw IllegalStateException("Already drawing, but called NVGRenderer beginFrame")
         drawing = true
+        if (!mc.framebuffer.isStencilEnabled) mc.framebuffer.enableStencil()
+        GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS)
         GlStateManager.disableCull()
         nvgBeginFrame(vg, width, height, 1f)
     }
@@ -39,8 +43,9 @@ object NVGRenderer : Renderer {
     override fun endFrame() {
         if (!drawing) throw IllegalStateException("Not drawing, but called NVGRenderer endFrame")
         nvgEndFrame(vg)
-        drawing = false
+        GL11.glPopAttrib()
         GlStateManager.enableCull()
+        drawing = false
     }
 
     override fun rect(x: Float, y: Float, w: Float, h: Float, color: Int) {
@@ -100,6 +105,14 @@ object NVGRenderer : Renderer {
         nvgFontSize(vg, size)
         nvgFontFaceId(vg, tempFont.id)
         return nvgTextBounds(vg, 0f, 0f, text, bounds)
+    }
+
+    override fun pushScissor(x: Float, y: Float, w: Float, h: Float) {
+        //
+    }
+
+    override fun popScissor() {
+        //
     }
 
     fun color(color: Int): NVGColor {

@@ -83,6 +83,8 @@ abstract class Element(constraints: Constraints?) {
 
     var enabled: Boolean = true
 
+    var scissors: Boolean = false
+
     var renders: Boolean = true
         get() = enabled && field
 
@@ -108,9 +110,11 @@ abstract class Element(constraints: Constraints?) {
     fun render() {
         if (!renders) return
         draw()
+        if (scissors) renderer.pushScissor(x, y, width, height)
         elements?.forLoop { element ->
             element.render()
         }
+        if (scissors) renderer.popScissor()
     }
 
     open fun accept(event: Event): Boolean {
@@ -187,6 +191,10 @@ abstract class Element(constraints: Constraints?) {
     // todo: dsl, maybe move out of this class?
     fun height(): Constraint {
         return constraints.height
+    }
+
+    fun scissors() {
+        scissors = true
     }
 
     // todo: dsl, maybe move out of this class?

@@ -1,15 +1,23 @@
 package com.github.stivais.ui.renderer
 
+import me.odinmain.OdinMain.mc
 import me.odinmain.font.OdinFont
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.TextPos
 import me.odinmain.utils.render.roundedRectangle
+import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.renderer.GlStateManager
+import org.lwjgl.opengl.Display
+import org.lwjgl.opengl.GL11.*
 
 // op renderer odin client
 // maybe isn't as fair comparsion as i cba to make it use new colors since im gonig to replace it soon
 object CookedRenderer : Renderer {
 
     override fun beginFrame(width: Float, height: Float) {
+        val scaleFactor = ScaledResolution(mc).scaleFactor.toFloat()
+        GlStateManager.scale(1f / scaleFactor, 1f / scaleFactor, 1f)
+        GlStateManager.translate(0f, 0f, 0f)
     }
 
     override fun endFrame() {
@@ -46,5 +54,21 @@ object CookedRenderer : Renderer {
 
     override fun textWidth(text: String, size: Float): Float {
         return OdinFont.getTextWidth(text, size)
+    }
+
+    private val scissors: ArrayList<IntArray> = arrayListOf()
+
+    override fun pushScissor(x: Float, y: Float, w: Float, h: Float) {
+        val height = h.toInt() + 1
+        val array = intArrayOf(x.toInt(), Display.getHeight() - y.toInt() - height, w.toInt(), height)
+        scissors.add(array)
+        glEnable(GL_SCISSOR_TEST)
+        glScissor(array[0], array[1], array[2], array[3])
+    }
+
+    override fun popScissor() {
+        if (scissors.size == 0) throw IllegalStateException("Can't pop scissor, if no scissor is active")
+        scissors.removeAt(scissors.size - 1)
+        scissors.lastOrNull()?.let { glScissor(it[0], it[1], it[2], it[3]) } ?: glDisable(GL_SCISSOR_TEST)
     }
 }

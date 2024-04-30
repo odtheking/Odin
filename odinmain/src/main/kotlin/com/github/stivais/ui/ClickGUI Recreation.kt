@@ -25,6 +25,7 @@ import kotlin.math.roundToInt
 val mainColor = Color { color.rgba }
 
 // note: currently settings that have a dependency don't hide
+// note: scissoring isn't complete
 fun clickGUI() = UI {
     for (panel in Category.entries) {
         column(at(x = panel.x.px, y = panel.y.px)) {
@@ -48,6 +49,7 @@ fun clickGUI() = UI {
                     if (module.category != panel) continue
                     module(module)
                 }
+                background(color = Color.RGB(38, 38, 38, 0.7f))
             }
             block(
                 constraints = size(240.px, 10.px),
@@ -60,6 +62,7 @@ fun clickGUI() = UI {
 
 private fun Element.module(module: Module) {
     column(height(Animatable(from = 32.px, to = Bounding))) {
+        scissors()
         button(
             constraints = size(w = 240.px, h = 32.px),
             offColor = Color.RGB(26, 26, 26),
@@ -108,12 +111,12 @@ private fun Element.module(module: Module) {
                     text(
                         text = setting.name,
                         at(x = 6.px, y = Center - 3.px),
-                        size = 16.px
+                        size = 12.px
                     )
                     val display = text(
                         text = "${(setting.valueDouble * 100.0).roundToInt() / 100.0}",
                         at(x = -6.px, y = Center - 3.px),
-                        size = 16.px
+                        size = 12.px
                     )
                     val slider = slider(
                         constraints = constrain(6.px, -5.px, 228.px, 7.px),
@@ -129,6 +132,5 @@ private fun Element.module(module: Module) {
                 }
             }
         }
-        background(color = Color.RGB(38, 38, 38, 0.7f))
     }
 }
