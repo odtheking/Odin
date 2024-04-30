@@ -167,6 +167,7 @@ object WitherDragons : Module(
 
     @SubscribeEvent
     fun onEntityLeave(event: LivingDeathEvent) {
+        if (DungeonUtils.getPhase() != Island.M7P5) return
         dragonLeaveWorld(event)
     }
 
