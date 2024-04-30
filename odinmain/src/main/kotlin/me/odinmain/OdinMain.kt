@@ -1,19 +1,29 @@
 package me.odinmain
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import me.odinmain.commands.impl.*
 import me.odinmain.config.*
 import me.odinmain.events.EventDispatcher
 import me.odinmain.features.ModuleManager
-import me.odinmain.features.impl.render.*
+import me.odinmain.features.impl.render.ClickGUIModule
+import me.odinmain.features.impl.render.DevPlayers
+import me.odinmain.features.impl.render.WaypointManager
 import me.odinmain.features.impl.skyblock.PartyNote
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.util.shader.RoundedRect
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.clock.Executor
-import me.odinmain.utils.render.*
-import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.skyblock.KuudraUtils
+import me.odinmain.utils.skyblock.LocationUtils
+import me.odinmain.utils.skyblock.PlayerUtils
+import me.odinmain.utils.skyblock.SkyblockPlayer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
@@ -29,7 +39,7 @@ object OdinMain {
     val scope = CoroutineScope(EmptyCoroutineContext)
 
     var display: GuiScreen? = null
-    val onLegitVersion: Boolean
+    val isLegitVersion: Boolean
         get() = Loader.instance().activeModList.none { it.modId == "odclient" }
 
     object MapColors {
@@ -94,6 +104,7 @@ object OdinMain {
         launch { WaypointConfig.loadConfig() }
         launch { DungeonWaypointConfig.loadConfig() }
         launch { PBConfig.loadConfig() }
+        launch { DungeonWaypointConfigCLAY }
     }
 
     fun loadComplete() = runBlocking {

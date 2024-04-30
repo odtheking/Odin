@@ -4,7 +4,6 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.EnteredDungeonRoomEvent
@@ -14,7 +13,9 @@ import me.odinmain.utils.addRotationCoords
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.tiles.Room
 import me.odinmain.utils.skyblock.dungeon.tiles.Rotations
 import me.odinmain.utils.skyblock.getBlockAt
 import me.odinmain.utils.skyblock.modMessage
@@ -45,22 +46,22 @@ object WaterSolver {
     @OptIn(DelicateCoroutinesApi::class)
     fun scan(event: EnteredDungeonRoomEvent) {
         val room = event.room?.room ?: return
-        if (room.data.name != "Water Board") return
+
         GlobalScope.launch {
-            val x = room.x
-            val z = room.z
-            val rotation = room.rotation
-
-            val centerPos = Vec2(x, z).addRotationCoords(rotation, 4)
-
-            chestPosition = centerPos.addRotationCoords(rotation, -11)
-            roomFacing = rotation
-            delay(150)
-            solve()
+            solve(room)
         }
     }
 
-    private fun solve() {
+    private fun solve(room: Room) {
+        if (room.data.name != "Water Board") return
+        val x = room.x
+        val z = room.z
+        val rotation = room.rotation
+
+        val centerPos = Vec2(x, z).addRotationCoords(rotation, 4)
+        chestPosition = centerPos.addRotationCoords(rotation, -11)
+        roomFacing = rotation
+
         val pistonHeadPosition = chestPosition.addRotationCoords(roomFacing, -5)
         val pistonHeadPos = BlockPos(pistonHeadPosition.x, 82, pistonHeadPosition.z)
 
@@ -96,7 +97,9 @@ object WaterSolver {
         if (extendedSlots.length != 3) {
             extendedSlots = ""
             variant = -1
-            solve()
+            runIn(10) {
+                solve(DungeonUtils.currentRoom?.room ?: return@runIn)
+            }
             return
         }
 

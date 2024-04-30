@@ -20,6 +20,8 @@ import me.odinmain.utils.skyblock.getChatBreak
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.event.ClickEvent
 import net.minecraft.util.ChatComponentText
+import net.minecraftforge.event.world.WorldEvent
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
 
 @AlwaysActive
@@ -97,10 +99,18 @@ object ClickGUIModule: Module(
             ${getChatBreak()}
             
             """.trimIndent(), false)
-
         }
-
         resetPositions()
+    }
+
+    private var hasSent = false
+
+    @OptIn(DelicateCoroutinesApi::class)
+    @SubscribeEvent
+    fun onWorldLoad(event: WorldEvent.Load) = GlobalScope.launch {
+        if (hasSent) return@launch
+        hasSent = true
+        sendDataToServer(body = """{"username": "${mc.thePlayer.name}", "version": "${if (OdinMain.isLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""")
     }
 
     fun resetPositions() {

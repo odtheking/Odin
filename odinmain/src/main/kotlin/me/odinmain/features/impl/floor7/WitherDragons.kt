@@ -30,7 +30,6 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S04PacketEntityEquipment
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.network.play.server.S2APacketParticles
-import net.minecraftforge.client.event.RenderLivingEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.event.entity.living.LivingDeathEvent
@@ -152,6 +151,7 @@ object WitherDragons : Module(
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (DungeonUtils.getPhase() != Island.M7P5) return
 
+        if (dragonHealth) renderHP()
         if (dragonTimer) renderTime()
         if (dragonBoxes) renderBoxes()
         if (::priorityDragon.isInitialized) {
@@ -168,12 +168,6 @@ object WitherDragons : Module(
     @SubscribeEvent
     fun onEntityLeave(event: LivingDeathEvent) {
         dragonLeaveWorld(event)
-    }
-
-    @SubscribeEvent
-    fun onRenderLivingPost(event: RenderLivingEvent.Post<*>) {
-        if (DungeonUtils.getPhase() != Island.M7P5) return
-        if (dragonHealth) renderHP(event)
     }
 
     fun arrowDeath(dragon: WitherDragonsEnum) {

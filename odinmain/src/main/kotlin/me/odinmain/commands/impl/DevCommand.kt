@@ -60,7 +60,6 @@ val devCommand = commodore("oddev") {
     }
 
     literal("sendServer").runs { string: String ->
-        // """{"username": "${mc.thePlayer.name}", "version": "${if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}"""
         scope.launch {
             sendDataToServer(string)
         }

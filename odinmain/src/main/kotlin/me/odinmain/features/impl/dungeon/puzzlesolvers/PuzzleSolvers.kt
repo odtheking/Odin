@@ -1,7 +1,5 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
-import me.odinmain.OdinMain
-import me.odinmain.events.impl.ClickEvent
 import me.odinmain.events.impl.EnteredDungeonRoomEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -34,13 +32,12 @@ object PuzzleSolvers : Module(
     }.withDependency { waterSolver }
 
     private val tpMaze: Boolean by BooleanSetting("Teleport Maze", true, description = "Shows you the solution for the TP maze puzzle")
-    val solutionThroughWalls: Boolean by BooleanSetting("Solution through walls", false, description = "Renders the final solution through walls").withDependency { tpMaze && !OdinMain.onLegitVersion }
+    val solutionThroughWalls: Boolean by BooleanSetting("Solution through walls", false, description = "Renders the final solution through walls").withDependency { tpMaze }
     val mazeColorOne: Color by ColorSetting("Color for one solution", Color.GREEN.withAlpha(.5f), true, description = "Color for when there is a single solution").withDependency { tpMaze }
     val mazeColorMultiple: Color by ColorSetting("Color for multiple solutions", Color.ORANGE.withAlpha(.5f), true, description = "Color for when there are multiple solutions").withDependency { tpMaze }
     val mazeColorVisited: Color by ColorSetting("Color for visited", Color.RED.withAlpha(.5f), true, description = "Color for the already used TP pads").withDependency { tpMaze }
 
     private val tttSolver: Boolean by BooleanSetting("Tic Tac Toe", true, description = "Shows you the solution for the TTT puzzle")
-    val blockWrongClicks: Boolean by BooleanSetting(name = "Block Wrong Clicks").withDependency { tttSolver && !OdinMain.onLegitVersion }
 
     private val iceFillSolver: Boolean by BooleanSetting("Ice Fill Solver", true, description = "Solver for the ice fill puzzle")
     private val iceFillColor: Color by ColorSetting("Ice Fill Color", Color.PINK, true, description = "Color for the ice fill solver").withDependency { iceFillSolver }
@@ -82,11 +79,6 @@ object PuzzleSolvers : Module(
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
         if (tttSolver) TicTacToe.tttTick(event)
-    }
-
-    @SubscribeEvent
-    fun onRightClick(event: ClickEvent.RightClickEvent) {
-        if (tttSolver) TicTacToe.tttRightClick(event)
     }
 
     @SubscribeEvent

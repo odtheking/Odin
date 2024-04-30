@@ -5,6 +5,7 @@ import me.odinmain.events.impl.*
 import me.odinmain.features.impl.dungeon.*
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers
 import me.odinmain.features.impl.floor7.NecronDropTimer
+import me.odinmain.features.impl.floor7.TerminalSimulator
 import me.odinmain.features.impl.floor7.WitherDragons
 import me.odinmain.features.impl.floor7.p3.*
 import me.odinmain.features.impl.kuudra.*
@@ -63,7 +64,6 @@ object ModuleManager {
         MelodyMessage,
         NecronDropTimer,
         BPSDisplay,
-        Camera,
         ClickedSecrets,
         ClickGUIModule,
         CustomHighlight,
@@ -82,7 +82,6 @@ object ModuleManager {
         ChatCommands,
         DeployableTimer,
         DianaHelper,
-        Reminders,
         Animations,
         SpaceHelmet,
         DungeonWaypoints,
@@ -118,7 +117,8 @@ object ModuleManager {
         WarpCooldown,
         CopyChat,
         DVD,
-        PlayerDisplay
+        PlayerDisplay,
+        TerminalSimulator
     )
 
     init {

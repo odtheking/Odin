@@ -1,6 +1,6 @@
 package me.odinclient.mixin.mixins.entity;
 
-import me.odinmain.features.impl.render.Camera;
+import me.odinclient.features.impl.render.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.EntityRenderer;
@@ -28,7 +28,7 @@ abstract public class MixinEntityRenderer implements IResourceManagerReloadListe
 
     @Inject(method = "updateCameraAndRender", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;setAngles(FF)V", ordinal = 1), locals = LocalCapture.CAPTURE_FAILEXCEPTION)
     private void updateCameraAndRender(float partialTicks, long nanoTime, CallbackInfo ci, boolean flag, float f, float f1, float f2, float f3, int i) {
-        Camera.INSTANCE.updateCameraAndRender(f2, f3);
+        if (Camera.INSTANCE.getEnabled()) Camera.INSTANCE.updateCameraAndRender(f2, f3);
     }
 
     @Shadow private Minecraft mc;

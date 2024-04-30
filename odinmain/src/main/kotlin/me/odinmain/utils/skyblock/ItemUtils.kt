@@ -35,6 +35,11 @@ val ItemStack.lore: List<String>
         List(it.tagCount()) { i -> it.getStringTagAt(i) }
     } ?: emptyList()
 
+val ItemStack.getLore: List<String>
+    get() = this.getTooltip(mc.thePlayer, false)
+
+
+
 /**
  * Returns Item ID for an Item
  */

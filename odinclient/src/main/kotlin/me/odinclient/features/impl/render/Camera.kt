@@ -1,6 +1,5 @@
-package me.odinmain.features.impl.render
+package me.odinclient.features.impl.render
 
-import me.odinmain.OdinMain
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -20,18 +19,16 @@ object Camera : Module(
     description = "Allows you to change qualities about third person view."
 ) {
     private val frontCamera: Boolean by BooleanSetting("No Front Camera")
-    private val cameraClip: Boolean by BooleanSetting("Camera Clip").withDependency { !OdinMain.onLegitVersion }
-    private val cameraDist: Float by NumberSetting("Distance", 4f, 3.0, 12.0, 0.1).withDependency { !OdinMain.onLegitVersion }
-    private val freelookDropdown: Boolean by DropdownSetting("Freelook").withDependency { !OdinMain.onLegitVersion }
-    private val toggle: Boolean by DualSetting("Type", "Hold", "Toggle", false).withDependency { freelookDropdown && !OdinMain.onLegitVersion }
+    private val cameraClip: Boolean by BooleanSetting("Camera Clip")
+    private val cameraDist: Float by NumberSetting("Distance", 4f, 3.0, 12.0, 0.1)
+    private val freelookDropdown: Boolean by DropdownSetting("Freelook")
+    private val toggle: Boolean by DualSetting("Type", "Hold", "Toggle", false).withDependency { freelookDropdown }
     private val freelookKeybind: Keybinding by KeybindSetting("Freelook Key", Keyboard.KEY_NONE, description = "Keybind to toggle/ hold for freelook.")
-        .withDependency { freelookDropdown && !OdinMain.onLegitVersion }
+        .withDependency { freelookDropdown }
         .onPress {
-            if (!freelookToggled && enabled) {
-                enable()
-            } else if ((toggle || !enabled) && freelookToggled) {
-                disable()
-            }
+            if (!freelookToggled && enabled) enable()
+            else if ((toggle || !enabled) && freelookToggled) disable()
+
     }
     var freelookToggled = false
     private var cameraYaw = 0f
@@ -40,11 +37,11 @@ object Camera : Module(
 
 
     fun getCameraDistance(): Float {
-        return if (enabled && !OdinMain.onLegitVersion) cameraDist else 4f
+        return if (enabled) cameraDist else 4f
     }
 
     fun getCameraClipEnabled(): Boolean {
-        return if (enabled && !OdinMain.onLegitVersion) cameraClip else false
+        return if (enabled) cameraClip else false
     }
 
     @SubscribeEvent
@@ -103,13 +100,13 @@ object Camera : Module(
             f3 *= .1f
             f4 *= .1f
             f5 *= .1f
-            val movingobjectposition = mc.theWorld.rayTraceBlocks(
+            val movingObjectPosition = mc.theWorld.rayTraceBlocks(
                 Vec3(d0 + f3.toDouble(), d1 + f4.toDouble(), d2 + f5.toDouble()),
                 Vec3(d0 - d4 + f3.toDouble() + f5.toDouble(), d1 - d6 + f4.toDouble(), d2 - d5 + f5.toDouble())
             )
 
-            if (movingobjectposition != null) {
-                val d7 = movingobjectposition.hitVec.distanceTo(Vec3(d0, d1, d2))
+            if (movingObjectPosition != null) {
+                val d7 = movingObjectPosition.hitVec.distanceTo(Vec3(d0, d1, d2))
 
                 if (d7 < dist) {
                     dist = d7
