@@ -190,7 +190,7 @@ object WitherDragons : Module(
             arrowsHit = 0
             Timer().schedule(dragon.skipKillTime) {
                 if (dragon.entity?.isEntityAlive == true || arrowsHit > 0) {
-                    modMessage("§fYou hit §6${arrowsHit} §fon §${dragon.colorCode}${dragon.name}${if (dragon.entity?.isEntityAlive == true) "§fin §c${String.format("%.2f", dragon.skipKillTime.toFloat()/1000)} §fSeconds." else "."}")
+                    modMessage("§fYou hit §6${arrowsHit} §fon §${dragon.colorCode}${dragon.name}${if (dragon.entity?.isEntityAlive == true) " §fin §c${String.format("%.2f", dragon.skipKillTime.toFloat()/1000)} §fSeconds." else "."}")
                     arrowsHit = 0
                 }
             }
