@@ -11,7 +11,7 @@ object DragonHealth{
     fun renderHP() {
         mc.theWorld.loadedEntityList.forEach {
             if (it !is EntityDragon || it.health <= 0) return@forEach
-            Renderer.drawStringInWorld(colorHealth(it.health.toInt()), it.renderVec.addVec(y = 1.5), Color.WHITE, depth = false, scale = 0.2f, shadow = true)
+            Renderer.drawStringInWorld(colorHealth(it.health), it.renderVec.addVec(y = 1.5), Color.WHITE, depth = false, scale = 0.2f, shadow = true)
         }
     }
 
