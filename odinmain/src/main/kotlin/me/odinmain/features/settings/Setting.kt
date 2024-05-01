@@ -1,5 +1,13 @@
 package me.odinmain.features.settings
 
+import com.github.stivais.ui.animation.Animations
+import com.github.stivais.ui.constraints.Size
+import com.github.stivais.ui.constraints.measurements.Animatable
+import com.github.stivais.ui.constraints.px
+import com.github.stivais.ui.constraints.size
+import com.github.stivais.ui.elements.Element
+import com.github.stivais.ui.utils.animate
+import com.github.stivais.ui.utils.seconds
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import me.odinmain.features.Module
@@ -54,6 +62,37 @@ abstract class Setting<T> (
 
     override operator fun setValue(thisRef: Module, property: KProperty<*>, value: T) {
         this.value = value
+    }
+
+    // todo: cleanup
+    /**
+     * You NEED to use [setting] for stuff to be properly initialized
+     */
+    open fun getUIElement(parent: Element): SettingElement? = null
+
+    inline fun Element.setting(height: Size, block: SettingElement.() -> Unit): SettingElement {
+        val element = SettingElement(height)
+        addElement(element)
+        element.block()
+        return element
+    }
+
+    // todo: improve animation
+    inner class SettingElement(height: Size) : Element(size(240.px, Animatable(from = height, to = 0.px))) {
+
+        private var visible: Boolean = visibilityDependency?.invoke() ?: true
+
+        init {
+            if (!visible) (height() as Animatable).swap()
+            scissors = true
+        }
+
+        override fun draw() {
+            if ((visibilityDependency?.invoke() != false) != visible) {
+                visible = !visible
+                height().animate(0.2.seconds, Animations.EaseInOutQuint)
+            }
+        }
     }
 
     companion object {

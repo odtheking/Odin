@@ -2,6 +2,7 @@ package com.github.stivais.ui.elements
 
 import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.color.Color
+import com.github.stivais.ui.color.brighter
 import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.sizes.Copying
@@ -60,21 +61,18 @@ fun Element.button(
     onColor: Color,
     on: Boolean = false,
     radii: FloatArray? = null,
-    dsl: Block.() -> Unit
+    dsl: Block.() -> Unit = {}
 ): Block {
     val buttonColor = Color.Animated(offColor, onColor, on)
-    val hoverColor = Color.Animated(Color.TRANSPARENT, Color.RGB(255, 255, 255, 0.05f))
-
+    val hoverColor = Color.Animated(buttonColor, Color { buttonColor.rgba.brighter() })
     return block(
         constraints = constraints,
-        color = buttonColor,
+        color = hoverColor,
         radius = radii
     ) {
-        block(constraints = copyParent(), color = hoverColor, radius = radii) {
-            onMouseEnterExit {
-                hoverColor.animate(0.25.seconds)
-                true
-            }
+        onMouseEnterExit {
+            hoverColor.animate(0.25.seconds)
+            true
         }
         onClick(0) {
             buttonColor.animate(0.15.seconds)

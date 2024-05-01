@@ -7,6 +7,7 @@ import com.github.stivais.ui.constraints.measurements.Undefined
 import com.github.stivais.ui.constraints.operational.Additive
 import com.github.stivais.ui.constraints.operational.Subtractive
 import com.github.stivais.ui.constraints.positions.Center
+import com.github.stivais.ui.constraints.sizes.Copying
 
 // A lot of options depending on preferences
 
@@ -53,8 +54,10 @@ val Number.percent: Percent
 
 fun center(): Constraints = Constraints(Center, Center, Undefined, Undefined)
 
-// todo: check if indent is 0 and make it uses copying() and also make it an object to reduce amount of initialized classes
 fun copyParent(indent: Number = 0f): Constraints {
+    if (indent == 0f) {
+        return Constraints(0.px, 0.px, Copying, Copying)
+    }
     val px = indent.px
     return Constraints(px, px, -px, -px)
 }

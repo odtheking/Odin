@@ -1,61 +1,87 @@
 package me.odinmain.features.settings.impl
 
 
+import com.github.stivais.ui.constraints.at
+import com.github.stivais.ui.constraints.constrain
+import com.github.stivais.ui.constraints.minus
+import com.github.stivais.ui.constraints.positions.Center
+import com.github.stivais.ui.constraints.px
+import com.github.stivais.ui.elements.Element
+import com.github.stivais.ui.elements.slider
+import com.github.stivais.ui.elements.text
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import me.odinmain.features.settings.Saving
 import me.odinmain.features.settings.Setting
+import me.odinmain.utils.floor
+import me.odinmain.utils.round
 import kotlin.math.round
 
 /**
- * Setting that lets you pick a number between a range.
- * @author Stivais, Aton
+ * Setting that lets you pick a value between a range
+ *
+ * @param min The minimum a value can be
+ * @param max The maximum a value can be
+ * @param increment The increment for the setting
+ * @param unit The suffix for value in the UI (It is recommended to set this for better user experience)
  */
 @Suppress("UNCHECKED_CAST")
 class NumberSetting<E>(
-        name: String,
-        override val default: E = 1.0 as E, // hey it works
-        min: Number = -10000,
-        max: Number = 10000,
-        increment: Number = 1,
-        hidden: Boolean = false,
-        description: String = "",
-        val unit: String = "",
+    name: String,
+    override val default: E = 1.0 as E, // hey it works
+    min: Number = -10000,
+    max: Number = 10000,
+    increment: Number = 1,
+    hidden: Boolean = false,
+    description: String = "",
+    val unit: String = "",
 ) : Setting<E>(name, hidden, description), Saving where E : Number, E : Comparable<E> {
 
     override var value: E = default
-        set(value) {
-            field = roundToIncrement(value).coerceIn(min, max) as E
-        }
+
+    fun set(new: Number) {
+        value = roundToIncrement(new).coerceIn(min, max) as E
+    }
 
     /**
      * The amount a setting should increment.
      */
     val increment = increment.toDouble()
 
-    /**
-     * The minimum a setting can be.
-     */
+    /** The minimum a setting can be */
     val min = min.toDouble()
 
-    /**
-     * The maximum a setting can be.
-     */
+    /** The maximum a setting can be */
     var max = max.toDouble()
 
-    /** Used for GUI Rendering as using [value] as Number is really inconvenient for maths */
-    var valueDouble
-        get() = value.toDouble()
-        set(value) {
-            this.value = value as E
+    private val text: String
+        get() {
+            val double = value.toDouble()
+            val number = if (double - double.floor() == 0.0) value.toInt() else double.round(2)
+            return "$number$unit"
         }
 
-    /** Used for GUI Rendering as using [value] as Number is really inconvenient for maths */
-    var valueInt
-        get() = value.toInt()
-        set(value) {
-            this.value = value as E
-        }
+    override fun getUIElement(parent: Element): SettingElement = parent.setting(40.px) {
+        text(
+            text = name,
+            at(x = 6.px, y = Center - 3.px),
+            size = 12.px
+        )
+        val display = text(
+            text = text,
+            at(x = -6.px, y = Center - 3.px),
+            size = 12.px
+        )
+        val slider = slider(
+            constraints = constrain(6.px, -5.px, 228.px, 7.px),
+            value = value.toDouble(), min = min, max =  max,
+            onChange = { percent ->
+                set(percent * (max - min) + min)
+                display.text = text
+            }
+        )
+        takeEvents(from = slider)
+    }
 
     override fun write(): JsonElement {
         return JsonPrimitive(value)
@@ -67,7 +93,5 @@ class NumberSetting<E>(
         }
     }
 
-    private fun roundToIncrement(x: Number): Double {
-        return round((x.toDouble() / increment)) * increment
-    }
+    private fun roundToIncrement(x: Number): Double = round((x.toDouble() / increment)) * increment
 }

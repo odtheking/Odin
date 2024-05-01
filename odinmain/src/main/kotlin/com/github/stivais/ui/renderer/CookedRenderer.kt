@@ -12,6 +12,7 @@ import org.lwjgl.opengl.GL11.*
 
 // op renderer odin client
 // maybe isn't as fair comparsion as i cba to make it use new colors since im gonig to replace it soon
+// note: text size isn't same as nvg
 object CookedRenderer : Renderer {
 
     override fun beginFrame(width: Float, height: Float) {

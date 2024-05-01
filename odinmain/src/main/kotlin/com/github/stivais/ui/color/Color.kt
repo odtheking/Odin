@@ -3,6 +3,7 @@ package com.github.stivais.ui.color
 import com.github.stivais.ui.animation.Animation
 import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.utils.getRGBA
+import kotlin.math.roundToInt
 import java.awt.Color as JColor
 
 fun Color.toHSB(): Color.HSB {
@@ -42,7 +43,7 @@ interface Color {
 
     @JvmInline
     value class RGB(override val rgba: Int) : Color {
-        constructor(red: Int, green: Int, blue: Int, alpha: Float = 1f) : this(getRGBA(red, green, blue, (alpha * 255).toInt()))
+        constructor(red: Int, green: Int, blue: Int, alpha: Float = 1f) : this(getRGBA(red, green, blue, (alpha * 255).roundToInt()))
     }
 
     open class HSB(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f) : Color {
@@ -145,6 +146,7 @@ interface Color {
     }
 
     companion object {
+        // todo: add more
         @JvmField
         val TRANSPARENT = RGB(0, 0, 0, 0f)
 
@@ -155,6 +157,8 @@ interface Color {
         val BLACK = RGB(0, 0, 0)
     }
 }
+
+// util:
 
 inline val Int.red
     get() = this shr 16 and 0xFF
@@ -167,3 +171,12 @@ inline val Int.blue
 
 inline val Int.alpha
     get() = this shr 24 and 0xFF
+
+fun Int.brighter(amount: Double = 1.2): Int {
+    return getRGBA(
+        (red * amount).roundToInt().coerceIn(0, 255),
+        (green * amount).roundToInt().coerceIn(0, 255),
+        (blue * amount).roundToInt().coerceIn(0, 255),
+        (alpha * amount).roundToInt().coerceIn(0, 255)
+    )
+}

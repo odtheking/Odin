@@ -51,7 +51,7 @@ class Animatable(var from: Constraint, var to: Constraint): Measurement {
         }
     }
 
-    private fun swap() {
+    fun swap() {
         val temp = to
         to = from
         from = temp

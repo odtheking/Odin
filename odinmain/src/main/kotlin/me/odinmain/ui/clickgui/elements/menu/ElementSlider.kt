@@ -35,28 +35,34 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
     private val handler = HoverHandler(0, 150)
 
     /** Used to make slider smoother and not jittery (doesn't change value.) */
-    private var sliderPercentage: Float = ((setting.valueDouble - setting.min) / (setting.max - setting.min)).toFloat()
+    private var sliderPercentage: Float = ((valueDouble - setting.min) / (setting.max - setting.min)).toFloat()
+
+    var valueDouble
+        get() = setting.value.toDouble()
+        set(value) {
+            setting.set(value)
+        }
 
     private inline val color: Color
         get() = clickGUIColor.brighter(1 + handler.percent() / 200f)
 
     fun getDisplay(): String {
-        return if (setting.valueDouble - setting.valueDouble.floor() == 0.0) {
-            "${(setting.valueInt * 100.0).roundToInt() / 100}${setting.unit}"
+        return if (valueDouble - valueDouble.floor() == 0.0) {
+            "${(setting.value.toInt() * 100.0).roundToInt() / 100}${setting.unit}"
         } else {
-            "${(setting.valueDouble * 100.0).roundToInt() / 100.0}${setting.unit}"
+            "${(valueDouble * 100.0).roundToInt() / 100.0}${setting.unit}"
         }
     }
 
     override fun draw() {
         handler.handle(x, y, w - 12f, h)
-        val percentage = ((setting.valueDouble - setting.min) / (setting.max - setting.min)).toFloat()
+        val percentage = ((valueDouble - setting.min) / (setting.max - setting.min)).toFloat()
 
         if (listening) {
             sliderPercentage = ((mouseX - (x + 6f)) / (w - 12f)).coerceIn(0f, 1f)
             val diff = setting.max - setting.min
             val newVal = setting.min + ((mouseX - (x + 6f)) / (w - 12f)).coerceIn(0f, 1f) * diff
-            setting.valueDouble = newVal
+            valueDouble = newVal
         }
         roundedRectangle(x, y, w, h, elementBackground)
 
@@ -87,7 +93,7 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
                 Keyboard.KEY_LEFT -> -setting.increment
                 else -> return false
             }
-            setting.valueDouble += amount
+            valueDouble += amount
             return true
         }
         return false

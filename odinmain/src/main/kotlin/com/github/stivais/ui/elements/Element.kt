@@ -109,11 +109,14 @@ abstract class Element(constraints: Constraints?) {
     fun render() {
         if (!renders) return
         draw()
-        if (scissors) renderer.pushScissor(x, y, width, height)
-        elements?.forLoop { element ->
-            element.render()
+        // check if size is valid
+        if (width != 0f && height != 0f) {
+            if (scissors) renderer.pushScissor(x, y, width, height)
+            elements?.forLoop { element ->
+                element.render()
+            }
+            if (scissors) renderer.popScissor()
         }
-        if (scissors) renderer.popScissor()
     }
 
     open fun accept(event: Event): Boolean {
