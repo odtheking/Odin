@@ -11,11 +11,16 @@ import com.github.stivais.ui.constraints.sizes.Copying
 
 // A lot of options depending on preferences
 
-fun constrain(x: Position, y: Position, w: Size, h: Size) = Constraints(x, y, w, h)
+fun constrain(
+    x: Position = Undefined,
+    y: Position = Undefined,
+    w: Size = Undefined,
+    h: Size = Undefined
+) = Constraints(x, y, w, h)
 
 fun c(x: Position, y: Position, w: Size, h: Size) = Constraints(x, y, w, h)
 
-fun at(x: Position, y: Position) = Constraints(x, y, Undefined, Undefined)
+fun at(x: Position = Undefined, y: Position = Undefined) = Constraints(x, y, Undefined, Undefined)
 
 fun size(w: Size, h: Size) = Constraints(Undefined, Undefined, w, h)
 

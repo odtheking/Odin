@@ -49,7 +49,7 @@ class BooleanSetting (
             size = 12.px
         )
         button(
-            constraints = constrain(x = -10.px, y = Center, w = 20.px, h = 20.px),
+            constraints = constrain(x = -6.px, y = Center, w = 20.px, h = 20.px),
             offColor = Color.RGB(38, 38, 38),
             onColor = mainColor,
             on = value,

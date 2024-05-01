@@ -14,7 +14,7 @@ internal interface Saving {
     fun read(element: JsonElement?)
 
     /**
-     * Used to create the json.
+     * Used to create a json element for saving settings.
      */
     fun write(): JsonElement
 }

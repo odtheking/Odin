@@ -7,7 +7,8 @@ import me.odinmain.ui.hud.Render
 /**
  * @author Stivais, Bonsai
  */
-class HudSetting( // todo redo
+// Todo: make huds use UI system
+class HudSetting(
     name: String,
     hud: HudElement,
     val displayToggle: Boolean = false,
