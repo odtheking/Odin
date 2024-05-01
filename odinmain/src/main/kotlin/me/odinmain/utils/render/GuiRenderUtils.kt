@@ -14,6 +14,8 @@ import net.minecraft.client.renderer.texture.DynamicTexture
 import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.GL11
 
+// todo: get rid of this and make it use CookedRenderer
+
 val matrix = UMatrixStack.Compat
 val scaleFactor get() = ScaledResolution(mc).scaleFactor.toFloat()
 

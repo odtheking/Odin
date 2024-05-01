@@ -1,5 +1,6 @@
 package com.github.stivais.ui
 
+import me.odinmain.OdinMain.display
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
@@ -69,4 +70,10 @@ class UIScreen(val ui: UI) : GuiScreen() {
     }
 
     override fun doesGuiPauseGame(): Boolean = false
+
+    companion object {
+        fun open(ui: UI) {
+            display = UIScreen(ui)
+        }
+    }
 }

@@ -1,11 +1,7 @@
 package me.odinmain.commands.impl
 
 import com.github.stivais.commodore.utils.GreedyString
-import com.github.stivais.ui.UIScreen
-import com.github.stivais.ui.basic
-import com.github.stivais.ui.clickGUI
 import kotlinx.coroutines.launch
-import me.odinmain.OdinMain.display
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
 import me.odinmain.commands.commodore
@@ -13,7 +9,6 @@ import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.ModuleManager.generateReadme
 import me.odinmain.features.impl.dungeon.puzzlesolvers.TPMaze
 import me.odinmain.features.impl.render.DevPlayers.updateDevs
-import me.odinmain.lwjgl.LWJGLTest
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -29,12 +24,6 @@ import java.awt.datatransfer.StringSelection
 
 val devCommand = commodore("oddev") {
     //if (!isDev) return@commodore // i forgot to add require to recode lol
-
-    literal("ui") {
-        literal("basic").runs { display = UIScreen(basic()) }
-        literal("clickgui").runs { display = UIScreen(clickGUI()) }
-        literal("lwjgltest").runs { display = LWJGLTest() }
-    }
 
     literal("getdata") {
         literal("entity").runs { copyEntityData() }

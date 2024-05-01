@@ -15,12 +15,14 @@ import org.lwjgl.opengl.GL11
 import java.io.FileNotFoundException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import kotlin.math.round
 
 
 object NVGRenderer : Renderer {
 
     private var vg: Long = -1
 
+    // this will be used later for fixing bugs caused by nvg i think
     var drawing: Boolean = false
 
     private var tempFont: NVGFont
@@ -32,7 +34,7 @@ object NVGRenderer : Renderer {
     }
 
     override fun beginFrame(width: Float, height: Float) {
-        if (drawing) throw IllegalStateException("Already drawing, but called NVGRenderer beginFrame")
+        if (drawing) throw IllegalStateException("[NVGRenderer] Already drawing, but called beginFrame")
         drawing = true
         if (!mc.framebuffer.isStencilEnabled) mc.framebuffer.enableStencil()
         GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS)
@@ -41,7 +43,7 @@ object NVGRenderer : Renderer {
     }
 
     override fun endFrame() {
-        if (!drawing) throw IllegalStateException("Not drawing, but called NVGRenderer endFrame")
+        if (!drawing) throw IllegalStateException("[NVGRenderer] Not drawing, but called endFrame")
         nvgEndFrame(vg)
         GL11.glPopAttrib()
         GlStateManager.enableCull()
@@ -50,7 +52,7 @@ object NVGRenderer : Renderer {
 
     override fun rect(x: Float, y: Float, w: Float, h: Float, color: Int) {
         nvgBeginPath(vg)
-        nvgRect(vg, x, y, w, h)
+        nvgRect(vg, round(x), round(y), round(w), round(h))
         val nvgColor = color(color)
         nvgFillColor(vg, nvgColor)
         nvgFill(vg)
@@ -108,11 +110,11 @@ object NVGRenderer : Renderer {
     }
 
     override fun pushScissor(x: Float, y: Float, w: Float, h: Float) {
-        //
+        nvgScissor(vg, x, y, w, h)
     }
 
     override fun popScissor() {
-        //
+        nvgResetScissor(vg)
     }
 
     fun color(color: Int): NVGColor {
@@ -124,16 +126,16 @@ object NVGRenderer : Renderer {
     class NVGFont(val name: String, path: String) {
 
         var id: Int = -1
+        private val buffer: ByteBuffer
 
         init {
             val stream = this::class.java.getResourceAsStream(path) ?: throw FileNotFoundException(path)
             val bytes =  IOUtils.toByteArray(stream)
             stream.close()
-            val data = ByteBuffer.allocateDirect(bytes.size).order(ByteOrder.nativeOrder()).put(bytes)
-            data.flip()
-            id = nvgCreateFontMem(vg, name, data, false)
+            buffer = ByteBuffer.allocateDirect(bytes.size).order(ByteOrder.nativeOrder()).put(bytes)
+            buffer.flip()
+            id = nvgCreateFontMem(vg, name, buffer, false)
             require(id != -1) { "Font failed to initialize" }
-            println("!!! $id font id")
         }
     }
 }

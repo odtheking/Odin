@@ -40,8 +40,9 @@ class Text(
 
     override fun draw() {
         if (needsUpdate) {
-            parent?.position() // sub optimal
+            parent?.position() // suboptimal
             (constraints.width as Pixel).pixels = renderer.textWidth(text, height)
+            position() // really suboptimal, however rarely happens so for now it is fine
             needsUpdate = false
         }
         renderer.text(text, x, y, height, color!!.rgba)

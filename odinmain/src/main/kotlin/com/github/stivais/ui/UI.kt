@@ -6,25 +6,25 @@ import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.elements.impl.Group
 import com.github.stivais.ui.events.EventManager
-import com.github.stivais.ui.renderer.CookedRenderer
 import com.github.stivais.ui.renderer.NVGRenderer
 import com.github.stivais.ui.renderer.Renderer
 import com.github.stivais.ui.utils.forLoop
+import org.lwjgl.opengl.Display
 import java.util.logging.Logger
 
 class UI(
-    val renderer: Renderer = CookedRenderer,
+    val renderer: Renderer = NVGRenderer,
     settings: UISettings? = null
 ) {
 
     val settings: UISettings = settings ?: UISettings()
 
-    val main: Group = Group(Constraints(0.px, 0.px, 1920.px, 1080.px)).also {
+    // temp
+    val main: Group = Group(Constraints(0.px, 0.px, Display.getWidth().px, Display.getHeight().px)).also {
         it.initialize(this)
-        it.position()
     }
 
-    constructor(block: Group.() -> Unit) : this() {
+    constructor(renderer: Renderer = NVGRenderer, block: Group.() -> Unit) : this(renderer) {
         main.block()
     }
 
@@ -104,6 +104,8 @@ class UI(
     }
 
     companion object {
-        val logger: Logger = Logger.getLogger("UI")
+        // temp name
+        // future: maybe make a logging class, so you can get an element's "errors" and details
+        val logger: Logger = Logger.getLogger("Odin/UI")
     }
 }

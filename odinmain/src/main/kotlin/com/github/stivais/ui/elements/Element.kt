@@ -98,7 +98,6 @@ abstract class Element(constraints: Constraints?) {
         if (!constraints.height.reliesOnChild()) height = constraints.height.get(this, Type.H)
         internalX = constraints.x.get(this, Type.X)
         internalY = constraints.y.get(this, Type.Y)
-
         elements?.forLoop { element ->
             element.position()
             element.renders = element.intersects(this.x, this.y, width, height)

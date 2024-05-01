@@ -1,5 +1,6 @@
-package com.github.stivais.ui
+package com.github.stivais.ui.testing
 
+import com.github.stivais.ui.UI
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.constraints.size
@@ -7,9 +8,10 @@ import com.github.stivais.ui.elements.block
 import com.github.stivais.ui.elements.column
 import com.github.stivais.ui.elements.text
 import com.github.stivais.ui.events.onClick
+import com.github.stivais.ui.renderer.Renderer
 import me.odinmain.utils.skyblock.modMessage
 
-fun basic() = UI {
+fun basic(renderer: Renderer) = UI(renderer) {
     column {
         repeat(5) {
             block(

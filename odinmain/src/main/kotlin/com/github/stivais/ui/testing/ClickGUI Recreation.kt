@@ -1,5 +1,6 @@
-package com.github.stivais.ui
+package com.github.stivais.ui.testing
 
+import com.github.stivais.ui.UI
 import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.constraints.*
@@ -8,6 +9,7 @@ import com.github.stivais.ui.constraints.positions.Center
 import com.github.stivais.ui.constraints.sizes.Bounding
 import com.github.stivais.ui.elements.*
 import com.github.stivais.ui.events.onClick
+import com.github.stivais.ui.renderer.Renderer
 import com.github.stivais.ui.utils.animate
 import com.github.stivais.ui.utils.draggable
 import com.github.stivais.ui.utils.radii
@@ -26,7 +28,7 @@ val mainColor = Color { color.rgba }
 
 // note: currently settings that have a dependency don't hide
 // note: scissoring isn't complete
-fun clickGUI() = UI {
+fun clickGUI(renderer: Renderer) = UI(renderer) {
     for (panel in Category.entries) {
         column(at(x = panel.x.px, y = panel.y.px)) {
             block(

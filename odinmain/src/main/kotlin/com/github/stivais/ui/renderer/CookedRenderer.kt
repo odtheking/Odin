@@ -59,8 +59,9 @@ object CookedRenderer : Renderer {
     private val scissors: ArrayList<IntArray> = arrayListOf()
 
     override fun pushScissor(x: Float, y: Float, w: Float, h: Float) {
+        val width = w.toInt() + 1
         val height = h.toInt() + 1
-        val array = intArrayOf(x.toInt(), Display.getHeight() - y.toInt() - height, w.toInt(), height)
+        val array = intArrayOf(x.toInt(), Display.getHeight() - y.toInt() - height, width, height)
         scissors.add(array)
         glEnable(GL_SCISSOR_TEST)
         glScissor(array[0], array[1], array[2], array[3])

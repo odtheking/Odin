@@ -1,12 +1,12 @@
 package com.github.stivais.ui.utils
 
-import com.github.stivais.ui.UI
 import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.constraints.Constraint
 import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.measurements.Pixel
 import com.github.stivais.ui.constraints.minus
+import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.events.Mouse
 import com.github.stivais.ui.events.onClick
@@ -50,29 +50,14 @@ val Number.seconds
 
 // todo: cleanup
 fun <E : Element> E.draggable(acceptsEvent: Boolean = true, target: Element = this): E {
-    var px: Pixel
-    var py: Pixel
-    target.constraints.apply {
-        px = when (x) {
-            is Pixel -> x as Pixel
-            else -> {
-                UI.logger.warning(
-                    "Draggable ${this@draggable::class.java} original X constraint wasn't Pixel, " +
-                         "instead it was ${this::class.simpleName}, this usually leads to unexpected behaviour"
-                )
-                Pixel(0f)
-            }
-        }
-        py = when (y) {
-            is Pixel -> y as Pixel
-            else -> {
-                UI.logger.warning(
-                    "Draggable ${this@draggable::class.java} original Y constraint wasn't Pixel, " +
-                         "instead it was ${this::class.simpleName}, this usually leads to unexpected behaviour"
-                )
-                Pixel(0f)
-            }
-        }
+    val px: Pixel = 0.px
+    val py: Pixel = 0.px
+    // note: if parent is Bounding, it can cause issues
+    afterInitialization {
+        px.pixels = target.internalX
+        py.pixels = target.internalY
+        target.constraints.x = px
+        target.constraints.y = py
     }
     var pressed = false
     var x = 0f
