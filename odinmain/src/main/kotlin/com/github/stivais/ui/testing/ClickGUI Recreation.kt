@@ -86,32 +86,6 @@ private fun Element.module(module: Module) {
         for (setting in module.settings) {
             if (setting.hidden) continue
             setting.getUIElement(this)
-
-//
-//                is NumberSetting -> group(size(240.px, 40.px)) {
-//                    text(
-//                        text = setting.name,
-//                        at(x = 6.px, y = Center - 3.px),
-//                        size = 12.px
-//                    )
-//                    val display = text(
-//                        text = "${(setting.valueDouble * 100.0).roundToInt() / 100.0}",
-//                        at(x = -6.px, y = Center - 3.px),
-//                        size = 12.px
-//                    )
-//                    val slider = slider(
-//                        constraints = constrain(6.px, -5.px, 228.px, 7.px),
-//                        value = setting.valueDouble,
-//                        min = setting.min,
-//                        max =  setting.max,
-//                        onChange = { percent ->
-//                            setting.valueDouble = percent * (setting.max - setting.min) + setting.min
-//                            display.text = "${(setting.valueDouble * 100.0).roundToInt() / 100.0}"
-//                        }
-//                    )
-//                    takeEvents(from = slider)
-//                }
-//            }
         }
     }
 }

@@ -40,6 +40,7 @@ object NVGRenderer : Renderer {
         GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS)
         GlStateManager.disableCull()
         nvgBeginFrame(vg, width, height, 1f)
+        nvgTextAlign(vg, NVG_ALIGN_LEFT or NVG_ALIGN_TOP)
     }
 
     override fun endFrame() {
@@ -94,7 +95,6 @@ object NVGRenderer : Renderer {
         nvgBeginPath(vg)
         nvgFontSize(vg, size)
         nvgFontFaceId(vg, tempFont.id)
-        nvgTextAlign(vg, NVG_ALIGN_LEFT or NVG_ALIGN_TOP)
         val nvgColor = color(color)
         nvgFillColor(vg, nvgColor)
         nvgText(vg, x, y, text)

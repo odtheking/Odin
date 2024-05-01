@@ -63,7 +63,7 @@ class UI(
             frameTime += System.nanoTime() - start
             if (frames > 100) {
                 performance =
-                    "elements: ${getStats(main, false)}, " +
+                    "total elements: ${getStats(main, false)}, " +
                     "elements rendering: ${getStats(main, true)}," +
                     "frametime avg: ${(frameTime / frames) / 1_000_000.0}ms"
                 frames = 0

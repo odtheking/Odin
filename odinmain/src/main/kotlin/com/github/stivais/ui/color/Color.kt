@@ -131,10 +131,11 @@ interface Color {
                 if (animation != null) {
                     swap()
                     animation = Animation(duration * animation!!.get(), type)
+                    from = current
                 } else {
                     animation = Animation(duration, type)
+                    from = color1.rgba
                 }
-                from = current
             }
         }
 

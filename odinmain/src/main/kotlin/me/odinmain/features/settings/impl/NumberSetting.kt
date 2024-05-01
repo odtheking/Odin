@@ -74,7 +74,7 @@ class NumberSetting<E>(
         )
         val slider = slider(
             constraints = constrain(6.px, -5.px, 228.px, 7.px),
-            value = value.toDouble(), min = min, max =  max,
+            value = value.toDouble(), min = min, max = max,
             onChange = { percent ->
                 set(percent * (max - min) + min)
                 display.text = text

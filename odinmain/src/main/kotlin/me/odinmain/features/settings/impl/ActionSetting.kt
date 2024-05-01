@@ -6,7 +6,9 @@ import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.constraints.size
 import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.elements.button
+import com.github.stivais.ui.elements.text
 import com.github.stivais.ui.events.onClick
+import com.github.stivais.ui.testing.mainColor
 import com.github.stivais.ui.utils.radii
 import me.odinmain.features.settings.Setting
 
@@ -17,10 +19,11 @@ import me.odinmain.features.settings.Setting
  */
 class ActionSetting(
     name: String,
-    hidden: Boolean = false,
     description: String = "",
-    override val default: () -> Unit = {}
-) : Setting<() -> Unit>(name, hidden, description) {
+    action: () -> Unit = {}
+) : Setting<() -> Unit>(name, false, description) {
+
+    override val default: () -> Unit = action
 
     override var value: () -> Unit = default
 
@@ -28,16 +31,20 @@ class ActionSetting(
 
     override fun getUIElement(parent: Element): SettingElement = parent.setting(40.px) {
         button(
-            constraints = size(80.percent, 80.percent),
+            constraints = size(95.percent, 75.percent),
             // only use for hover effect so color isn't important
             offColor = Color.RGB(38, 38, 38),
             onColor = Color.RGB(38, 38, 38),
             radii = radii(all = 5)
         ) {
+            text(
+                text = name,
+            )
             onClick(0) {
                 action.invoke()
                 true
             }
+            outline(mainColor)
         }
     }
 }
