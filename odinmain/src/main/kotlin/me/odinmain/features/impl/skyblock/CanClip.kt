@@ -9,7 +9,6 @@ import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.getTextWidth
 import me.odinmain.utils.render.text
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 import kotlin.math.abs
@@ -34,7 +33,7 @@ object CanClip : Module(
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (mc.thePlayer == null || !mc.thePlayer.isSneaking ) {
+        if (mc.thePlayer == null || !mc.thePlayer.isSneaking) {
             if (canClip) {
                 animation.start()
                 canClip = false
@@ -46,7 +45,6 @@ object CanClip : Module(
         val z = abs(mc.thePlayer.posZ % 1)
         val prev = canClip
         canClip = x in 0.235..0.265 || x in 0.735..0.765 || z in 0.235..0.265 || z in 0.735..0.765
-        modMessage(canClip.toString())
         if (prev != canClip) animation.start()
     }
 }
