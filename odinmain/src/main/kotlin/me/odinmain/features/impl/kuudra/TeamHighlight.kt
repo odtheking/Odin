@@ -18,7 +18,7 @@ import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.KuudraUtils.kuudraTeammates
 import me.odinmain.utils.skyblock.LocationUtils
-import net.minecraftforge.client.event.RenderLivingEvent
+import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object TeamHighlight : Module(
@@ -40,7 +40,7 @@ object TeamHighlight : Module(
     }
 
     @SubscribeEvent
-    fun handleNames(event: RenderLivingEvent.Post<*>) {
+    fun handleNames(event: RenderWorldLastEvent) {
         if (!highlightName || LocationUtils.currentArea != Island.Kuudra || KuudraUtils.phase < 1) return
 
         kuudraTeammates.forEach{ teammate ->
@@ -48,7 +48,7 @@ object TeamHighlight : Module(
             if (teammate.entity?.let { mc.thePlayer.distanceSquaredTo(it) >= 2333 } == true) return@forEach
 
             Renderer.drawStringInWorld(
-                teammate.playerName, event.entity?.renderVec?.addVec(y = 2.6) ?: return,
+                teammate.playerName, teammate.entity?.renderVec?.addVec(y = 2.6) ?: return,
                 if (teammate.eatFresh) highlightFreshColor else nameColor,
                 depth = false, renderBlackBox = false,
                 scale = 0.05f
