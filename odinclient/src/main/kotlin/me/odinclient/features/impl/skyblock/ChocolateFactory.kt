@@ -92,11 +92,6 @@ object ChocolateFactory : Module(
     @SubscribeEvent
     fun onSoundPlay(event: PlaySoundEvent) {
         if (!cancelSound) return
-
-        val container = mc.thePlayer?.openContainer as? ContainerChest ?: return
-
-        if (container.name == "Chocolate Factory") windowClick(13, 1,0)
-
         if (event.name == "random.eat") event.result = null // This should cancel the sound event
     }
 }
