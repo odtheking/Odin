@@ -110,14 +110,10 @@ function populateModuleList(moduleListId, type) {
     let currentCategory = ''; // Store the current category
     let currentCat
     // Fetch the README content from the GitHub API and handle it in the promise chain
-    fetch("https://api.github.com/repos/odtheking/odinclient/contents/README.md")
-        .then(response => response.json())
+    fetch("https://pastebin.com/raw/ceX5fFig")
         .then(data => {
-            // The content is base64 encoded, so you need to decode it
-            const decodedContent = atob(data.content);
-
             // Parse the README content and get module pairs
-            const modulePairs = parseReadmeContent(decodedContent);
+            const modulePairs = parseReadmeContent(data);
 
             // Iterate over the module pairs and create the module list
             modulePairs.forEach((module, index) => {
