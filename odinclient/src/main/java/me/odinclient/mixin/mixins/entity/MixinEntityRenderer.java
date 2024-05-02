@@ -1,11 +1,13 @@
 package me.odinclient.mixin.mixins.entity;
 
+import me.odinmain.events.impl.RenderOverlayHudCaching;
 import me.odinmain.features.impl.render.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
+import net.minecraftforge.common.MinecraftForge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.*;
@@ -62,4 +64,8 @@ abstract public class MixinEntityRenderer implements IResourceManagerReloadListe
         return Camera.INSTANCE.getCameraClipEnabled() ? 0: constant;
     }
 
+    @Inject(method = "updateCameraAndRender", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiIngame;renderGameOverlay(F)V", shift = At.Shift.AFTER))
+    private void drawHud(float partialTicks, long nanoTime, CallbackInfo ci) {
+        MinecraftForge.EVENT_BUS.post(new RenderOverlayHudCaching());
+    }
 }
