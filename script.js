@@ -1,4 +1,6 @@
 let currentPage = window.location.href.split('/').pop();
+let legitElement = document.getElementById('legit');
+let cheaterElement = document.getElementById('cheater');
 
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -62,20 +64,18 @@ window.onload = function() {
 
 // JavaScript
 
-function parseGistContent(content) {
+function parseReadmeContent(content) {
     const lines = content.split('\n');
     const modulePairs = [];
     let currentCategory = ''; // Store the current category
-    let isCheaterCategory = false; // Initialize as false
-    let currentMainCategory = ''; // Store the current category
-
+    let isLegitCategory = true; // Store the current category
 
     for (const line of lines) {
         if (line.startsWith('Category')) {
             // Extract the category name and store it
-            if (currentCategory === 'Skyblock' && line === 'Category: Dungeon') {
-                isCheaterCategory = true;
-            }
+            if (currentCategory === 'Skyblock' && line === 'Category: Dungeon')
+                isLegitCategory = false;
+
             currentCategory = line.replace('Category: ', '');
         } else if (line.startsWith('- ')) {
             // Extract the module name and description
@@ -83,14 +83,9 @@ function parseGistContent(content) {
             if (match) {
                 const moduleName = match[1];
                 const moduleDescription = match[2];
-                // Create an object with category, module name, and module description
-                if (isCheaterCategory) {
-                    currentMainCategory = "cheater"
-                } else {
-                    currentMainCategory = "legit"
-                }
+
                 const module = {
-                    currentMainCategory: currentMainCategory,
+                    isLegitCategory: isLegitCategory,
                     category: currentCategory,
                     name: moduleName,
                     description: moduleDescription
@@ -99,32 +94,25 @@ function parseGistContent(content) {
             }
         }
     }
-
+    console.log(modulePairs)
     return modulePairs;
 }
 
 function populateModuleList(moduleListId, type) {
     const moduleList = document.getElementById(moduleListId);
     let currentCategory = ''; // Store the current category
-    let currentCat;
-
-    // Separate lists for cheater and legit categories
-    const cheaterModulesList = document.createElement("div");
-    cheaterModulesList.classList.add("cheater-modules");
-
-    const legitModulesList = document.createElement("div");
-    legitModulesList.classList.add("legit-modules");
-
-    // Fetch the Gist content and handle it in the promise chain
+    let currentCat
+    // Fetch the README content from the GitHub API and handle it in the promise chain
     fetch("https://gist.githubusercontent.com/odtheking/3b457272673e0937885e8c6a6b65ff5f/raw/f2b49ffd7c4ce643d4b611ccf92a20a8387c5492/OdinFeatureListBoth.txt")
-        .then(response => response.text()) // Parse response as text
+        .then(response => response.text())
         .then(data => {
-            const modulePairs = parseGistContent(data);
+            // Parse the README content and get module pairs
+            const modulePairs = parseReadmeContent(data);
 
             // Iterate over the module pairs and create the module list
-            modulePairs.forEach((module) => {
-                if (module.currentMainCategory !== type) return;
+            modulePairs.forEach((module, index) => {
 
+                if (module.isLegitCategory !== type) return;
                 // Check if the category has changed
                 if (module.category !== currentCategory) {
                     // Create a category header without "Category:" prefix
@@ -141,9 +129,6 @@ function populateModuleList(moduleListId, type) {
                     // Update the current category
                     currentCategory = module.category;
                 }
-
-                // Determine which list to append the module to based on its category
-                const moduleListToAppend = module.currentMainCategory === "cheater" ? cheaterModulesList : legitModulesList;
 
                 // Create a module item
                 const moduleItem = document.createElement("div");
@@ -169,17 +154,15 @@ function populateModuleList(moduleListId, type) {
                     }
                 });
 
+
                 // Append module name and description to the module item
                 moduleItem.appendChild(moduleName);
                 moduleItem.appendChild(moduleDescription);
 
-                // Append the module item to the appropriate list
-                moduleListToAppend.appendChild(moduleItem);
-            });
+                // Append the module item to the module list
+                currentCat.appendChild(moduleItem);
 
-            // Append the separate lists to the module list container
-            moduleList.appendChild(cheaterModulesList);
-            moduleList.appendChild(legitModulesList);
+            });
         })
         .catch(error => {
             console.error('Error:', error);
@@ -190,9 +173,9 @@ function populateModuleList(moduleListId, type) {
 document.addEventListener("DOMContentLoaded", function () {
 
     // Populate the "CHEATER" list
-    if (currentPage === "feature_list_cheater") populateModuleList("module-list-cheater", "cheater")
+    if (currentPage === "feature_list_cheater") populateModuleList("module-list-cheater", false)
 
-    if (currentPage === "feature_list_legit") populateModuleList("module-list-legit", "legit")
+    if (currentPage === "feature_list_legit") populateModuleList("module-list-legit", true)
 
 });
 
