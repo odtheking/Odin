@@ -47,7 +47,6 @@ object QueueTerms : Module(
 
     @SubscribeEvent
     fun onMouseClick(event: GuiEvent.GuiMouseClickEvent) {
-        modMessage("nigger")
         if (TerminalSolver.currentTerm == TerminalTypes.NONE ) return
         if (!clickedThisWindow) {
             clickedThisWindow = true
