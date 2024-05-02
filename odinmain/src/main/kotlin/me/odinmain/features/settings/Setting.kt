@@ -16,8 +16,15 @@ import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 /**
- * Superclass of Settings.
- * @author Aton
+ * Superclass for settings
+ *
+ * If you want to implement saving/loading for your setting, you need to also use the [Saving] interface
+ *
+ * @param name Name of the setting
+ * @param hidden If setting shouldn't ever appear in the UI
+ * @param description Description for the setting
+ *
+ * @author Stivais, Aton
  */
 abstract class Setting<T> (
     val name: String,
@@ -36,9 +43,11 @@ abstract class Setting<T> (
     abstract var value: T
 
     /**
-     * Dependency for if it should be shown in the [click gui][me.odinmain.ui.clickgui.elements.ModuleButton].
+     * Dependency for if it should be shown in the UI
+     *
+     * @see SettingElement
      */
-    protected var visibilityDependency: (() -> Boolean)? = null
+    var visibilityDependency: (() -> Boolean)? = null
 
     /**
      * Resets the setting to the default value
@@ -47,15 +56,13 @@ abstract class Setting<T> (
         value = default
     }
 
-    val shouldBeVisible: Boolean
-        get() {
-            return (visibilityDependency?.invoke() ?: true) && !hidden
-        }
-
     override operator fun provideDelegate(thisRef: Module, property: KProperty<*>): ReadWriteProperty<Module, T> {
         return thisRef.register(this)
     }
 
+    /**
+     * Provides
+     */
     override operator fun getValue(thisRef: Module, property: KProperty<*>): T {
         return value
     }
@@ -64,12 +71,16 @@ abstract class Setting<T> (
         this.value = value
     }
 
-    // todo: cleanup
     /**
-     * You NEED to use [setting] for stuff to be properly initialized
+     * Generates elements for rendering the setting to the ClickGUI.
+     *
+     * Note: It is required to use [setting] to set the element properly
      */
-    open fun getUIElement(parent: Element): SettingElement? = null
+    open fun getElement(parent: Element): SettingElement? = null
 
+    /**
+     * Creates a [SettingElement] and sets it up
+     */
     inline fun Element.setting(height: Size, block: SettingElement.() -> Unit): SettingElement {
         val element = SettingElement(height)
         addElement(element)
@@ -77,6 +88,25 @@ abstract class Setting<T> (
         return element
     }
 
+    companion object {
+
+        /**
+         * [Gson] for saving and loading settings
+         */
+        val gson: Gson = GsonBuilder().setPrettyPrinting().create()
+
+        /**
+         * Adds a dependency for a setting, for it to only be rendered if it matches true
+         *
+         * @see SettingElement
+         */
+        fun <K : Setting<T>, T> K.withDependency(dependency: () -> Boolean): K {
+            visibilityDependency = dependency
+            return this
+        }
+    }
+
+    // todo: cleanup
     // todo: improve animation
     inner class SettingElement(height: Size) : Element(size(240.px, Animatable(from = height, to = 0.px))) {
 
@@ -84,7 +114,7 @@ abstract class Setting<T> (
 
         init {
             if (!visible) (height() as Animatable).swap()
-            scissors = true
+            scissors()
         }
 
         override fun draw() {
@@ -92,16 +122,6 @@ abstract class Setting<T> (
                 visible = !visible
                 height().animate(0.2.seconds, Animations.EaseInOutQuint)
             }
-        }
-    }
-
-    companion object {
-
-        val gson: Gson = GsonBuilder().setPrettyPrinting().create()
-
-        fun <K : Setting<T>, T> K.withDependency(dependency: () -> Boolean): K {
-            visibilityDependency = dependency
-            return this
         }
     }
 }

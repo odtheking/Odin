@@ -1,4 +1,4 @@
-package com.github.stivais.ui.testing
+package com.github.stivais.ui.impl
 
 import com.github.stivais.ui.UI
 import com.github.stivais.ui.color.Color

@@ -139,7 +139,7 @@ interface Color {
             }
         }
 
-        private fun swap() {
+        fun swap() {
             val temp = color2
             color2 = color1
             color1 = temp

@@ -11,7 +11,7 @@ import com.github.stivais.ui.events.onClick
 import com.github.stivais.ui.events.onFocusGain
 import com.github.stivais.ui.events.onFocusLost
 import com.github.stivais.ui.events.onKeycodePressed
-import com.github.stivais.ui.testing.mainColor
+import com.github.stivais.ui.impl.mainColor
 import com.github.stivais.ui.utils.animate
 import com.github.stivais.ui.utils.focuses
 import com.github.stivais.ui.utils.radii
@@ -64,10 +64,10 @@ class KeybindSetting(
             }
         }
 
-    override fun getUIElement(parent: Element): SettingElement = parent.setting(40.px) {
+    override fun getElement(parent: Element): SettingElement = parent.setting(40.px) {
         text(
             text = name,
-            at = at(x = 6.px),
+            pos = at(x = 6.px),
             size = 40.percent
         )
         button(

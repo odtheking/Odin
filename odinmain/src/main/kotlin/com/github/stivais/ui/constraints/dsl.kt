@@ -9,8 +9,6 @@ import com.github.stivais.ui.constraints.operational.Subtractive
 import com.github.stivais.ui.constraints.positions.Center
 import com.github.stivais.ui.constraints.sizes.Copying
 
-// A lot of options depending on preferences
-
 fun constrain(
     x: Position = Undefined,
     y: Position = Undefined,
@@ -18,32 +16,9 @@ fun constrain(
     h: Size = Undefined
 ) = Constraints(x, y, w, h)
 
-fun c(x: Position, y: Position, w: Size, h: Size) = Constraints(x, y, w, h)
-
 fun at(x: Position = Undefined, y: Position = Undefined) = Constraints(x, y, Undefined, Undefined)
 
-fun size(w: Size, h: Size) = Constraints(Undefined, Undefined, w, h)
-
-fun x(x: Position) = at(x, Undefined)
-
-fun Position.toX() = x(this)
-
-fun y(y: Position) = at(Undefined, y)
-
-fun Position.toY() = y(this)
-
-fun width(w: Size) = size(w, Undefined)
-
-fun w(w: Size) = width(w)
-
-fun Size.toWidth() = width(this)
-
-fun height(h: Size) = size(Undefined, h)
-
-fun h(h: Size) = height(h)
-
-fun Size.toHeight() = height(this)
-
+fun size(w: Size = Undefined, h: Size = Undefined) = Constraints(Undefined, Undefined, w, h)
 
 val Number.px: Pixel
     get() {
@@ -57,7 +32,7 @@ val Number.percent: Percent
         return Percent(value)
     }
 
-fun center(): Constraints = Constraints(Center, Center, Undefined, Undefined)
+fun center(): Constraints = at(Center, Center)
 
 fun copyParent(indent: Number = 0f): Constraints {
     if (indent == 0f) {

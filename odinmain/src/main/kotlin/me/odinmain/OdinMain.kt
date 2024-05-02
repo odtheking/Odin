@@ -1,6 +1,6 @@
 package me.odinmain
 
-import com.github.stivais.ui.testing.`ui command`
+import com.github.stivais.ui.impl.`ui command`
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

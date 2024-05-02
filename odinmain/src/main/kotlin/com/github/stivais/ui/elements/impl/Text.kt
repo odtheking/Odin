@@ -3,6 +3,7 @@ package com.github.stivais.ui.elements.impl
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.constraints.Constraints
 import com.github.stivais.ui.constraints.Measurement
+import com.github.stivais.ui.constraints.measurements.Percent
 import com.github.stivais.ui.constraints.measurements.Pixel
 import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.elements.Element
@@ -13,7 +14,7 @@ class Text(
     text: String,
     textColor: Color,
     constraints: Constraints?,
-    val size: Measurement
+    size: Measurement
 ) : Element(constraints.replaceUndefined(w = 0.px, h = size)) {
 
     var text: String = text
@@ -39,12 +40,12 @@ class Text(
     }
 
     override fun draw() {
-        if (needsUpdate) {
+        if (needsUpdate || constraints.height is Percent /* temporary */) {
             parent?.position() // suboptimal
             (constraints.width as Pixel).pixels = renderer.textWidth(text, height)
             position() // really suboptimal, however rarely happens so for now it is fine
             needsUpdate = false
         }
-        renderer.text(text, x, y, height, color!!.rgba)
+        renderer.text(text, x, y + 1, height, color!!.rgba)
     }
 }

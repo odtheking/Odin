@@ -37,12 +37,12 @@ fun Element.block(
 
 fun Element.text(
     text: String,
-    at: Constraints? = null,
+    pos: Constraints? = null,
     size: Measurement = 50.percent,
     color: Color = Color.WHITE,
     block: Text.() -> Unit = {}
 ): Text {
-    val text = Text(text, color, at, size)
+    val text = Text(text, color, pos, size)
     addElement(text)
     text.block()
     return text
@@ -55,16 +55,15 @@ fun Element.group(constraints: Constraints? = null, block: Group.() -> Unit = {}
     return column
 }
 
-fun Element.button(
+inline fun Element.button(
     constraints: Constraints? = null,
-    offColor: Color,
-    onColor: Color,
+    color: Color.Animated,
     on: Boolean = false,
     radii: FloatArray? = null,
-    dsl: Block.() -> Unit = {}
+    crossinline dsl: Block.() -> Unit = {}
 ): Block {
-    val buttonColor = Color.Animated(offColor, onColor, on)
-    val hoverColor = Color.Animated(buttonColor, Color { buttonColor.rgba.brighter() })
+    if (on) color.swap()
+    val hoverColor = Color.Animated(color, Color { color.rgba.brighter() })
     return block(
         constraints = constraints,
         color = hoverColor,
@@ -75,41 +74,53 @@ fun Element.button(
             true
         }
         onClick(0) {
-            buttonColor.animate(0.15.seconds)
+            color.animate(0.15.seconds)
             false
         }
         dsl()
     }
 }
 
+inline fun Element.button(
+    constraints: Constraints? = null,
+    offColor: Color,
+    onColor: Color,
+    on: Boolean = false,
+    radii: FloatArray? = null,
+    crossinline dsl: Block.() -> Unit = {}
+): Block = button(constraints, Color.Animated(offColor, onColor), on, radii, dsl)
+
 fun Element.slider(
     constraints: Constraints?,
+    color: Color,
     value: Double,
     min: Double,
     max: Double,
     onChange: (percent: Float) -> Unit
 ): Block {
     var dragging = false
-    return block(constraints, Color.RGB(-0xefeff0), radii(3)) {
-        val sliderAnim = Animatable.Raw(0f)
-        // color is temp i cba to put in params yet
-        val color = Color.Animated(Color.RGB(50, 150, 220), Color.RGB(75, 175, 245))
-        afterInitialization {
-            sliderAnim.to(((value - min) / (max - min) * width).toFloat())
-        }
-        block(constrain(0.px, 0.px, sliderAnim, Copying), color = color, radii(all = 3f))
+    return block(constraints, Color.RGB(26, 26, 26), radii(3)) {
+//        outline(color, 0.75.px)
 
+        val sliderPosition = Animatable.Raw(0f)
+        val animated = Color.Animated(from = color, Color { color.rgba.brighter() })
+
+        block(
+            constraints = constrain(0.px, 0.px, sliderPosition, Copying),
+            color = animated,
+            radius = radii(all = 4)
+        )
         onClick(0) {
-            val pos = (ui.eventManager!!.mouseX - x).coerceIn(0f, width)
-            sliderAnim.animate(to = pos, 0.75.seconds, Animations.EaseOutQuint)
+            val pos = (ui.mx - x).coerceIn(0f, width)
+            sliderPosition.animate(to = pos, 0.75.seconds, Animations.EaseOutQuint)
             onChange(pos / width)
             dragging = true
             true
         }
         onMouseMove {
             if (dragging) {
-                val pos = (ui.eventManager!!.mouseX - x).coerceIn(0f, width)
-                sliderAnim.to(pos)
+                val pos = (ui.mx - x).coerceIn(0f, width)
+                sliderPosition.to(pos)
                 onChange(pos / width)
             }
             true
@@ -118,8 +129,11 @@ fun Element.slider(
             dragging = false
         }
         onMouseEnterExit {
-            color.animate(0.25.seconds)
+            animated.animate(0.25.seconds)
             true
+        }
+        afterInitialization {
+            sliderPosition.to(((value - min) / (max - min) * width).toFloat())
         }
     }
 }

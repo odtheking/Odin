@@ -1,14 +1,12 @@
 package me.odinmain.features.settings.impl
 
 
-import com.github.stivais.ui.constraints.at
-import com.github.stivais.ui.constraints.constrain
-import com.github.stivais.ui.constraints.minus
+import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.positions.Center
-import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.elements.slider
 import com.github.stivais.ui.elements.text
+import com.github.stivais.ui.impl.mainColor
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import me.odinmain.features.settings.Saving
@@ -28,7 +26,7 @@ import kotlin.math.round
 @Suppress("UNCHECKED_CAST")
 class NumberSetting<E>(
     name: String,
-    override val default: E = 1.0 as E, // hey it works
+    override val default: E = 1.0 as E,
     min: Number = -10000,
     max: Number = 10000,
     increment: Number = 1,
@@ -38,10 +36,6 @@ class NumberSetting<E>(
 ) : Setting<E>(name, hidden, description), Saving where E : Number, E : Comparable<E> {
 
     override var value: E = default
-
-    fun set(new: Number) {
-        value = roundToIncrement(new).coerceIn(min, max) as E
-    }
 
     /**
      * The amount a setting should increment.
@@ -61,19 +55,20 @@ class NumberSetting<E>(
             return "$number$unit"
         }
 
-    override fun getUIElement(parent: Element): SettingElement = parent.setting(40.px) {
+    override fun getElement(parent: Element): SettingElement = parent.setting(40.px) {
         text(
             text = name,
-            at(x = 6.px, y = Center - 3.px),
-            size = 12.px
+            pos = at(x = 6.px, y = Center - 3.px),
+            size = 35.percent
         )
         val display = text(
             text = text,
-            at(x = -6.px, y = Center - 3.px),
-            size = 12.px
+            pos = at(x = -(6.px), y = Center - 3.px),
+            size = 35.percent
         )
         val slider = slider(
-            constraints = constrain(6.px, -5.px, 228.px, 7.px),
+            constraints = constrain(y = 80.percent, w = 95.percent, h = 20.percent),
+            color = mainColor,
             value = value.toDouble(), min = min, max = max,
             onChange = { percent ->
                 set(percent * (max - min) + min)
@@ -91,6 +86,10 @@ class NumberSetting<E>(
         element?.asNumber?.let {
             value = it as E
         }
+    }
+
+    internal fun set(new: Number) {
+        value = roundToIncrement(new).coerceIn(min, max) as E
     }
 
     private fun roundToIncrement(x: Number): Double = round((x.toDouble() / increment)) * increment

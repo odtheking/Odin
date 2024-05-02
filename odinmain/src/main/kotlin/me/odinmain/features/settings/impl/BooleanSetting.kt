@@ -3,13 +3,14 @@ package me.odinmain.features.settings.impl
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.constraints.at
 import com.github.stivais.ui.constraints.constrain
-import com.github.stivais.ui.constraints.positions.Center
+import com.github.stivais.ui.constraints.percent
 import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.elements.button
 import com.github.stivais.ui.elements.text
 import com.github.stivais.ui.events.onClick
-import com.github.stivais.ui.testing.mainColor
+import com.github.stivais.ui.impl.mainColor
+import com.github.stivais.ui.utils.color
 import com.github.stivais.ui.utils.radii
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
@@ -42,16 +43,15 @@ class BooleanSetting (
         }
     }
 
-    override fun getUIElement(parent: Element): SettingElement = parent.setting(40.px) {
+    override fun getElement(parent: Element): SettingElement = parent.setting(40.px) {
         text(
             text = name,
-            at = at(6.px, Center),
-            size = 12.px
+            pos = at(x = 6.px),
+            size = 40.percent
         )
         button(
-            constraints = constrain(x = -6.px, y = Center, w = 20.px, h = 20.px),
-            offColor = Color.RGB(38, 38, 38),
-            onColor = mainColor,
+            constraints = constrain(x = -6.px, w = 20.px, h = 50.percent),
+            color = color(from = Color.RGB(38, 38, 38), to = mainColor),
             on = value,
             radii = radii(all = 5)
         ) {

@@ -8,7 +8,7 @@ import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.elements.button
 import com.github.stivais.ui.elements.text
 import com.github.stivais.ui.events.onClick
-import com.github.stivais.ui.testing.mainColor
+import com.github.stivais.ui.impl.mainColor
 import com.github.stivais.ui.utils.radii
 import me.odinmain.features.settings.Setting
 
@@ -29,7 +29,7 @@ class ActionSetting(
 
     var action: () -> Unit by this::value
 
-    override fun getUIElement(parent: Element): SettingElement = parent.setting(40.px) {
+    override fun getElement(parent: Element): SettingElement = parent.setting(40.px) {
         button(
             constraints = size(95.percent, 75.percent),
             // only use for hover effect so color isn't important

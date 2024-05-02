@@ -1,10 +1,9 @@
-package com.github.stivais.ui.testing
+package com.github.stivais.ui.impl
 
 import com.github.stivais.ui.UI
 import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.constraints.at
-import com.github.stivais.ui.constraints.height
 import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.constraints.size
@@ -12,10 +11,7 @@ import com.github.stivais.ui.constraints.sizes.Bounding
 import com.github.stivais.ui.elements.*
 import com.github.stivais.ui.events.onClick
 import com.github.stivais.ui.renderer.Renderer
-import com.github.stivais.ui.utils.animate
-import com.github.stivais.ui.utils.draggable
-import com.github.stivais.ui.utils.radii
-import com.github.stivais.ui.utils.seconds
+import com.github.stivais.ui.utils.*
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.ModuleManager.modules
@@ -25,7 +21,6 @@ import me.odinmain.utils.capitalizeFirst
 @JvmField
 val mainColor = Color { color.rgba }
 
-// note: currently settings that have a dependency don't hide
 // note: scissoring isn't complete
 fun clickGUI(renderer: Renderer) = UI(renderer) {
     for (panel in Category.entries) {
@@ -45,7 +40,7 @@ fun clickGUI(renderer: Renderer) = UI(renderer) {
                 }
                 draggable(target = parent!!)
             }
-            column(height(Animatable(from = Bounding, to = 0.px, swapIf = !panel.extended))) {
+            column(size(h = Animatable(from = Bounding, to = 0.px, swapIf = !panel.extended))) {
                 for (module in modules) {
                     if (module.category != panel) continue
                     module(module)
@@ -62,17 +57,15 @@ fun clickGUI(renderer: Renderer) = UI(renderer) {
 }
 
 private fun Element.module(module: Module) {
-    column(height(Animatable(from = 32.px, to = Bounding))) {
+    column(size(h = Animatable(from = 32.px, to = Bounding))) {
         scissors()
         button(
             constraints = size(w = 240.px, h = 32.px),
-            offColor = Color.RGB(26, 26, 26),
-            onColor = mainColor,
+            color = color(from = Color.RGB(26, 26, 26), to = mainColor),
             on = module.enabled
         ) {
             text(
                 text = module.name,
-                size = 14.px
             )
             onClick(0) {
                 module.toggle()
@@ -85,7 +78,7 @@ private fun Element.module(module: Module) {
         }
         for (setting in module.settings) {
             if (setting.hidden) continue
-            setting.getUIElement(this)
+            setting.getElement(this)
         }
     }
 }
