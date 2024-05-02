@@ -73,7 +73,7 @@ function parseReadmeContent(content) {
     for (const line of lines) {
         if (line.startsWith('Category')) {
             // Extract the category name and store it
-            if (currentCategory === 'Skyblock' && line === 'Category: Dungeon')
+            if (currentCategory === 'Kuudra' && line === 'Category: Dungeon')
                 isLegitCategory = false;
 
             currentCategory = line.replace('Category: ', '');
