@@ -112,7 +112,7 @@ function populateModuleList(moduleListId, type) {
     // Fetch the README content from the GitHub API and handle it in the promise chain
     fetch("https://pastebin.com/raw/ceX5fFig")
         .then(data => {
-            // Parse the README content and get module pairs
+            console.log(data)
             const modulePairs = parseReadmeContent(data);
 
             // Iterate over the module pairs and create the module list
