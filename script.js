@@ -103,7 +103,7 @@ function populateModuleList(moduleListId, type) {
     let currentCategory = ''; // Store the current category
     let currentCat
     // Fetch the README content from the GitHub API and handle it in the promise chain
-    fetch("https://gist.githubusercontent.com/odtheking/3b457272673e0937885e8c6a6b65ff5f/raw/f2b49ffd7c4ce643d4b611ccf92a20a8387c5492/OdinFeatureListBoth.txt")
+    fetch("https://gist.githubusercontent.com/odtheking/3b457272673e0937885e8c6a6b65ff5f/raw/bc5f18951bae2b09e872ea05a16d4dbf22056686/OdinFeatureListBoth.txt")
         .then(response => response.text())
         .then(data => {
             // Parse the README content and get module pairs
