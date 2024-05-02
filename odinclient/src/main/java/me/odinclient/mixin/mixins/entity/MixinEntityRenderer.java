@@ -26,7 +26,7 @@ abstract public class MixinEntityRenderer implements IResourceManagerReloadListe
         }
     }
 
-    @Inject(method = "updateCameraAndRender", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;setAngles(FF)V", ordinal = 1), locals = LocalCapture.CAPTURE_FAILEXCEPTION)
+    @Inject(method = "updateCameraAndRender", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;setAngles(FF)V", ordinal = 1), locals = LocalCapture.PRINT)
     private void updateCameraAndRender(float partialTicks, long nanoTime, CallbackInfo ci, boolean flag, float f, float f1, float f2, float f3, int i) {
         if (Camera.INSTANCE.getEnabled()) Camera.INSTANCE.updateCameraAndRender(f2, f3);
     }

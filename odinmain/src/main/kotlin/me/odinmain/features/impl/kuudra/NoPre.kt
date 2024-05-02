@@ -85,9 +85,9 @@ object NoPre : Module(
         }
 
         onMessage(Regex("Party > ?(\\[.+])? ?(.+): No ?(.*)!")) {
-            val match = Regex("Party > (\\[.+])? ?(.+): No ?(.*)").find(it) ?: return@onMessage
-            val spot = match.groupValues.last()
-            missing = spot.replace("!", "")
+            val match = Regex("Party > ?(\\[.+])? ?(.+): No ?(.*)!").find(it) ?: return@onMessage
+            val spot = match.groupValues.lastOrNull()?.replace("!", "") ?: return@onMessage
+            missing = spot
         }
     }
 }
