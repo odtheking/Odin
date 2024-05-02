@@ -64,13 +64,12 @@ window.onload = function() {
 
 // JavaScript
 
-function parseReadmeContent(content) {
+function parseGistContent(content) {
     const lines = content.split('\n');
     const modulePairs = [];
     let currentCategory = ''; // Store the current category
     let isCheaterCategory = false; // Initialize as false
     let currentMainCategory = ''; // Store the current category
-
 
     for (const line of lines) {
         if (line.startsWith('Category')) {
@@ -106,72 +105,67 @@ function parseReadmeContent(content) {
 }
 
 function populateModuleList(moduleListId, type) {
-    const moduleList = document.getElementById(moduleListId); 
+    const moduleList = document.getElementById(moduleListId);
     let currentCategory = ''; // Store the current category
-    let currentCat
-    // Fetch the README content from the GitHub API and handle it in the promise chain
-    fetch("https://api.github.com/repos/odtheking/odinclient/contents/README.md")
-        .then(response => response.json())
-        .then(data => {
-            // The content is base64 encoded, so you need to decode it
-            const decodedContent = atob(data.content);
+    let currentCat;
 
-            // Parse the README content and get module pairs
-            const modulePairs = parseReadmeContent(decodedContent);
+    // Fetch the Gist content and handle it in the promise chain
+    fetch("https://gist.githubusercontent.com/odtheking/3b457272673e0937885e8c6a6b65ff5f/raw/f2b49ffd7c4ce643d4b611ccf92a20a8387c5492/OdinFeatureListBoth.txt")
+        .then(response => response.text()) // Parse response as text
+        .then(data => {
+            const modulePairs = parseGistContent(data);
 
             // Iterate over the module pairs and create the module list
             modulePairs.forEach((module, index) => {
-                
                 if (module.currentMainCategory !== type) return;
-                    // Check if the category has changed
-                    if (module.category !== currentCategory) {
-                        // Create a category header without "Category:" prefix
-                        const category = document.createElement("div");
-                        const categoryHeader = document.createElement("div");
 
-                        category.classList.add("category-" + module.category.replaceAll(" ", ""));
-                        categoryHeader.classList.add("category-header")
-                        categoryHeader.textContent = module.category.replace('Category: ', '');
-                        moduleList.appendChild(category);
-                        category.appendChild(categoryHeader)
-                        currentCat = category
+                // Check if the category has changed
+                if (module.category !== currentCategory) {
+                    // Create a category header without "Category:" prefix
+                    const category = document.createElement("div");
+                    const categoryHeader = document.createElement("div");
 
-                        // Update the current category
-                        currentCategory = module.category;
+                    category.classList.add("category-" + module.category.replaceAll(" ", ""));
+                    categoryHeader.classList.add("category-header")
+                    categoryHeader.textContent = module.category.replace('Category: ', '');
+                    moduleList.appendChild(category);
+                    category.appendChild(categoryHeader)
+                    currentCat = category
+
+                    // Update the current category
+                    currentCategory = module.category;
+                }
+
+                // Create a module item
+                const moduleItem = document.createElement("div");
+                moduleItem.classList.add("module-item");
+
+                // Create a clickable module name
+                const moduleName = document.createElement("div");
+                moduleName.classList.add("module-name");
+                moduleName.textContent = module.name;
+
+                // Create a description dropdown
+                const moduleDescription = document.createElement("div");
+                moduleDescription.classList.add("module-description");
+                moduleDescription.textContent = module.description;
+                moduleDescription.style.display = "none";
+
+                // Toggle the display of the description when clicking the module name
+                moduleName.addEventListener("click", () => {
+                    if (moduleDescription.style.display === "block") {
+                        moduleDescription.style.display = "none";
+                    } else {
+                        moduleDescription.style.display = "block";
                     }
+                });
 
-                    // Create a module item
-                    const moduleItem = document.createElement("div");
-                    moduleItem.classList.add("module-item");
+                // Append module name and description to the module item
+                moduleItem.appendChild(moduleName);
+                moduleItem.appendChild(moduleDescription);
 
-                    // Create a clickable module name
-                    const moduleName = document.createElement("div");
-                    moduleName.classList.add("module-name");
-                    moduleName.textContent = module.name;
-
-                    // Create a description dropdown
-                    const moduleDescription = document.createElement("div");
-                    moduleDescription.classList.add("module-description");
-                    moduleDescription.textContent = module.description;
-                    moduleDescription.style.display = "none";
-
-                    // Toggle the display of the description when clicking the module name
-                    moduleName.addEventListener("click", () => {
-                        if (moduleDescription.style.display === "block") {
-                            moduleDescription.style.display = "none";
-                        } else {
-                            moduleDescription.style.display = "block";
-                        }
-                    });
-                    
-
-                    // Append module name and description to the module item
-                    moduleItem.appendChild(moduleName);
-                    moduleItem.appendChild(moduleDescription);
-
-                    // Append the module item to the module list
-                    currentCat.appendChild(moduleItem);
-                
+                // Append the module item to the module list
+                currentCat.appendChild(moduleItem);
             });
         })
         .catch(error => {
@@ -184,9 +178,9 @@ function populateModuleList(moduleListId, type) {
 document.addEventListener("DOMContentLoaded", function () {
 
     // Populate the "CHEATER" list
-    if (currentPage === "feature_list_cheater") populateModuleList("module-list-cheater", "cheater") 
+    if (currentPage === "feature_list_cheater" || currentPage === "feature_list_cheater.html") populateModuleList("module-list-cheater", "cheater")
 
-    if (currentPage === "feature_list_legit") populateModuleList("module-list-legit", "legit") 
+    if (currentPage === "feature_list_legit" || currentPage === "feature_list_legit.html") populateModuleList("module-list-legit", "legit")
 
 });
 
