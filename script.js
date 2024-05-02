@@ -10,9 +10,9 @@ document.addEventListener("DOMContentLoaded", function () {
     if (legitElement) {
         legitElement.addEventListener('click', function() {
             if (currentPage === 'cheater' || currentPage === 'legit') {
-                window.location.href = 'legit'; 
+                window.location.href = 'legit';
             } else if (currentPage === 'feature_list_legit' || currentPage === 'feature_list_cheater') {
-                window.location.href = 'feature_list_legit'; 
+                window.location.href = 'feature_list_legit';
             }
         });
     }
@@ -20,9 +20,9 @@ document.addEventListener("DOMContentLoaded", function () {
     if (cheaterElement) {
         cheaterElement.addEventListener('click', function() {
             if (currentPage === 'cheater' || currentPage === 'legit') {
-                window.location.href = 'cheater'; 
+                window.location.href = 'cheater';
             } else if (currentPage === 'feature_list_legit' || currentPage === 'feature_list_cheater') {
-                window.location.href = 'feature_list_cheater'; 
+                window.location.href = 'feature_list_cheater';
             }
         });
     }
@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 function onClick() {
-    
+
     fetch('https://api.thecatapi.com/v1/images/search')
         .then(response => response.json())
         .then(data => {
@@ -54,7 +54,7 @@ function onClick() {
             }
         }).catch(error => console.error('Error:', error.toString())
     );
-    
+
 }
 
 window.onload = function() {
@@ -64,12 +64,13 @@ window.onload = function() {
 
 // JavaScript
 
-function parseGistContent(content) {
+function parseReadmeContent(content) {
     const lines = content.split('\n');
     const modulePairs = [];
     let currentCategory = ''; // Store the current category
     let isCheaterCategory = false; // Initialize as false
     let currentMainCategory = ''; // Store the current category
+
 
     for (const line of lines) {
         if (line.startsWith('Category')) {
@@ -107,18 +108,18 @@ function parseGistContent(content) {
 function populateModuleList(moduleListId, type) {
     const moduleList = document.getElementById(moduleListId);
     let currentCategory = ''; // Store the current category
-    let currentCat;
-
-    // Fetch the Gist content and handle it in the promise chain
+    let currentCat
+    // Fetch the README content from the GitHub API and handle it in the promise chain
     fetch("https://gist.githubusercontent.com/odtheking/3b457272673e0937885e8c6a6b65ff5f/raw/f2b49ffd7c4ce643d4b611ccf92a20a8387c5492/OdinFeatureListBoth.txt")
-        .then(response => response.text()) // Parse response as text
+        .then(response => response.text())
         .then(data => {
-            const modulePairs = parseGistContent(data);
+            // Parse the README content and get module pairs
+            const modulePairs = parseReadmeContent(data);
 
             // Iterate over the module pairs and create the module list
             modulePairs.forEach((module, index) => {
-                if (module.currentMainCategory !== type) return;
 
+                if (module.currentMainCategory !== type) return;
                 // Check if the category has changed
                 if (module.category !== currentCategory) {
                     // Create a category header without "Category:" prefix
@@ -160,12 +161,14 @@ function populateModuleList(moduleListId, type) {
                     }
                 });
 
+
                 // Append module name and description to the module item
                 moduleItem.appendChild(moduleName);
                 moduleItem.appendChild(moduleDescription);
 
                 // Append the module item to the module list
                 currentCat.appendChild(moduleItem);
+
             });
         })
         .catch(error => {
@@ -178,9 +181,9 @@ function populateModuleList(moduleListId, type) {
 document.addEventListener("DOMContentLoaded", function () {
 
     // Populate the "CHEATER" list
-    if (currentPage === "feature_list_cheater" || currentPage === "feature_list_cheater.html") populateModuleList("module-list-cheater", "cheater")
+    if (currentPage === "feature_list_cheater") populateModuleList("module-list-cheater", "cheater")
 
-    if (currentPage === "feature_list_legit" || currentPage === "feature_list_legit.html") populateModuleList("module-list-legit", "legit")
+    if (currentPage === "feature_list_legit") populateModuleList("module-list-legit", "legit")
 
 });
 
@@ -202,18 +205,16 @@ function submitForm() {
         },
         body: btoa(jsonData)
     })
-    .then(data => {
-        // Handle the response from the server
-        console.log(data)
+        .then(data => {
+            // Handle the response from the server
+            console.log(data)
 
-        // You can check the response and take appropriate actions
-        if (data?.success) {
-            console.log('Login successful');
-        } else {
-            console.log('Login failed');
-        }
-    })
-    .catch(error => console.log('Encountered error:', error))
+            // You can check the response and take appropriate actions
+            if (data?.success) {
+                console.log('Login successful');
+            } else {
+                console.log('Login failed');
+            }
+        })
+        .catch(error => console.log('Encountered error:', error))
 }
-
-
