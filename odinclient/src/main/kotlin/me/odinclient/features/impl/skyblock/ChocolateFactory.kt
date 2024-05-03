@@ -25,7 +25,7 @@ object ChocolateFactory : Module(
     private val delay: Long by NumberSetting("Delay", 150, 50, 300, 5)
     private val upgradeDelay: Long by NumberSetting("Upgrade delay", 500, 300, 2000, 100)
     private val cancelSound: Boolean by BooleanSetting("Cancel Sound")
-
+    private val upgradeMessage: Boolean by BooleanSetting("Odin Upgrade Message", false, description = "Prints a message when upgrading.")
     private var chocolate = 0
     private var chocoProduction = 0f
 
@@ -52,7 +52,7 @@ object ChocolateFactory : Module(
             if(!found) return@execute
             if (chocolate > bestCost && autoUpgrade) {
                 windowClick(bestWorker, 2, 3)
-                modMessage("Trying to upgrade: Rabbit " + indexToName[bestWorker] + " with " + bestCost + " chocolate.")
+                if(upgradeMessage) modMessage("Trying to upgrade: Rabbit " + indexToName[bestWorker] + " with " + bestCost + " chocolate.")
             }
         }
     }
