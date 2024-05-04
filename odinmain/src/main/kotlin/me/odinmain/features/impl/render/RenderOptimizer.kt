@@ -107,7 +107,7 @@ object RenderOptimizer : Module(
 
     private fun removeTentacles(entity: Entity) {
         val armorStand = entity as? EntityArmorStand
-        if (DungeonUtils.getPhase() == Island.M7P5 && getSkullValue(armorStand)?.contains(TENTACLE_TEXTURE) == true) armorStand?.setDead();
+        if (DungeonUtils.getPhase() == Island.M7P5 && getSkullValue(armorStand)?.contains(TENTACLE_TEXTURE) == true) armorStand?.setDead()
     }
 
     private fun handleHealerFairy(entity: Entity) {

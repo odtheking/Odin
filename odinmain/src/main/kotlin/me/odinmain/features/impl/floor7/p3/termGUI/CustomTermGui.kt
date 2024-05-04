@@ -50,9 +50,7 @@ abstract class TermGui {
         itemIndexMap.entries.find {
             it.value.isPointWithin(x, y)
         }?.let {
-
             windowClick(it.key, if (button == 0) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Right)
-            //mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, it.key, button, 3, mc.thePlayer)
         }
     }
 
