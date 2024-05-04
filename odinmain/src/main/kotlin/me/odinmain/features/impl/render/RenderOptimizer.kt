@@ -1,12 +1,15 @@
 package me.odinmain.features.impl.render
 
 import me.odinmain.events.impl.PacketReceivedEvent
+import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.DropdownSetting
-import me.odinmain.utils.*
+import me.odinmain.utils.containsOneOf
+import me.odinmain.utils.equalsOneOf
+import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.getSkullValue
@@ -18,7 +21,6 @@ import net.minecraft.item.ItemBlock
 import net.minecraft.network.play.server.S0EPacketSpawnObject
 import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraft.util.EnumParticleTypes
-import net.minecraftforge.client.event.RenderLivingEvent
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -49,12 +51,11 @@ object RenderOptimizer : Module(
     private val dungeonMobSpawns = setOf("Lurker", "Dreadlord", "Souleater", "Zombie", "Skeleton", "Skeletor", "Sniper", "Super Archer", "Spider", "Fels", "Withermancer")
     @SubscribeEvent
     fun spawnObject(event: PacketReceivedEvent) {
-        if (event.packet !is S0EPacketSpawnObject || event.packet.type != 70 || !fallingBlocks) return
-        event.isCanceled = true
+
     }
 
     init {
-        execute(500) {
+        execute(1000) {
             mc.theWorld.loadedEntityList.forEach {
                 if (it !is EntityArmorStand) return@forEach
                 if (hideArcherBones) handleHideArcherBones(it)
@@ -74,14 +75,19 @@ object RenderOptimizer : Module(
     }
 
     @SubscribeEvent
-    fun handleNames(event: RenderLivingEvent.Pre<*>) {
-        if (hideNonStarredMobName) hideNonStarredMob(event.entity)
-        if (hideWitherMinerName) handleWitherMiner(event.entity)
-        if (hideTerracottaName) handleTerracota(event.entity)
+    fun onMetaData(event: PostEntityMetadata) {
+        val entity = mc.theWorld.getEntityByID(event.packet.entityId) ?: return
+        if (entity !is EntityArmorStand || !DungeonUtils.inDungeons) return
+
+        if (hideNonStarredMobName) hideNonStarredMob(entity)
+        if (hideWitherMinerName) handleWitherMiner(entity)
+        if (hideTerracottaName) handleTerracota(entity)
     }
 
     @SubscribeEvent
     fun onPacket(event: PacketReceivedEvent) {
+        if (event.packet is S0EPacketSpawnObject && event.packet.type == 70 && fallingBlocks) event.isCanceled = true
+
         if (event.packet !is S2APacketParticles) return
 
         if (event.packet.particleType.equalsOneOf(EnumParticleTypes.EXPLOSION_NORMAL, EnumParticleTypes.EXPLOSION_LARGE, EnumParticleTypes.EXPLOSION_HUGE) && removeExplosion)
@@ -100,7 +106,6 @@ object RenderOptimizer : Module(
         val itemEntity = entity as? EntityItem
         if (itemEntity != null && DungeonUtils.inDungeons && itemEntity.entityItem.itemDamage == 15 && itemEntity.entityItem.item === Items.dye)
             entity.setDead()
-
     }
 
     private fun removeTentacles(entity: Entity) {
@@ -123,19 +128,16 @@ object RenderOptimizer : Module(
     }
 
     private fun handleWitherMiner(entity: Entity) {
-        val customName = entity.customNameTag.noControlCodes
-        if (entity !is EntityArmorStand || !customName.hasWitherMinerName()) return
+        if (entity !is EntityArmorStand || !entity.customNameTag.noControlCodes.hasWitherMinerName()) return
         entity.alwaysRenderNameTag = false
     }
 
     private fun handleTerracota(entity: Entity) {
-        val customName = entity.customNameTag.noControlCodes
-        if (customName.contains("Terracotta "))
+        if (entity.customNameTag.noControlCodes.contains("Terracotta "))
             entity.alwaysRenderNameTag = false
     }
 
     private fun hideNonStarredMob(entity: Entity) {
-        if (!DungeonUtils.inDungeons) return
         val name = entity.customNameTag
         if (!name.startsWith("§6✯ ") && name.contains("§c❤") && dungeonMobSpawns.any { it in name })
             entity.alwaysRenderNameTag = false
