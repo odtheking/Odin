@@ -30,8 +30,8 @@ object CustomHighlight : Module(
     private val scanDelay: Long by NumberSetting("Scan Delay", 500L, 10L, 2000L, 100L)
     private val starredMobESP: Boolean by BooleanSetting("Starred Mob Highlight", true, description = "Highlights mobs with a star in their name (remove star from the separate list).")
     val color: Color by ColorSetting("Color", Color.RED, true)
-    //val mode: Int by SelectorSetting("Mode", HighlightRenderer.highlightModeDefault, HighlightRenderer.highlightModeList)
-    val mode: Int by SelectorSetting("Mode", "Outline", arrayListOf("Outline", "Overlay", "Boxes", "2D"))
+    val mode: Int by SelectorSetting("Mode", HighlightRenderer.highlightModeDefault, HighlightRenderer.highlightModeList)
+    //val mode: Int by SelectorSetting("Mode", "Outline", arrayListOf("Outline", "Overlay", "Boxes", "2D"))
     val thickness: Float by NumberSetting("Line Width", 5f, .1f, 20f, .1f, description = "The line width of Outline/ Boxes/ 2D Boxes").withDependency { mode != HighlightRenderer.HighlightType.Overlay.ordinal }
     private val glowIntensity: Float by NumberSetting("Glow Intensity", 2f, .5f, 5f, .1f, description = "The intensity of the glow effect.").withDependency { mode == HighlightRenderer.HighlightType.Glow.ordinal }
     private val tracerLimit: Int by NumberSetting("Tracer Limit", 0, 0, 15, description = "Highlight will draw tracer to all mobs when you have under this amount of mobs marked, set to 0 to disable. Helpful for finding lost mobs.").withDependency { !isLegitVersion }
@@ -54,16 +54,16 @@ object CustomHighlight : Module(
 
         onWorldLoad { currentEntities.clear() }
 
-        /*HighlightRenderer.addEntityGetter({ HighlightRenderer.HighlightType.entries[mode]}) {
+        HighlightRenderer.addEntityGetter({ HighlightRenderer.HighlightType.entries[mode]}) {
             if (!enabled) emptyList()
             else currentEntities.map { HighlightRenderer.HighlightEntity(it, color, thickness, !renderThrough, glowIntensity) }
-        }*/
+        }
     }
 
     @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
         if (mode != 0 || event.entity !in currentEntities || (!mc.thePlayer.canEntityBeSeen(event.entity) && !renderThrough)) return
-        profile("Outline Esp") { OutlineUtils.outlineEntity(event, thickness, color, true) }
+        //profile("Outline Esp") { OutlineUtils.outlineEntity(event, thickness, color, true) }
     }
 
     @SubscribeEvent

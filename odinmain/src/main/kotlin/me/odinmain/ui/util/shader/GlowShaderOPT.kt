@@ -4,7 +4,7 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.utils.render.Color
 import org.lwjgl.opengl.GL20
 
-object GlowShader : FramebufferShader("source/entity/glow.fsh") {
+object GlowShaderOPT : FramebufferShader("optimized/entity/glowOPT.fsh") {
     private var glowIntensity = 2f
 
     override fun setupUniforms() {
@@ -41,6 +41,6 @@ object GlowShader : FramebufferShader("source/entity/glow.fsh") {
     }
 
     private fun updateGlowIntensity(glowIntensity: Float) {
-        GL20.glUniform1f(getUniform("glow_intensity"), GlowShader.glowIntensity)
+        GL20.glUniform1f(getUniform("glow_intensity"), GlowShaderOPT.glowIntensity)
     }
 }

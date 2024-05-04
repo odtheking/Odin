@@ -19,7 +19,7 @@ abstract class Shader(fragmentShader: String) {
             IOUtils.closeQuietly(vertexStream)
 
             val fragmentStream =
-                javaClass.getResourceAsStream("/shaders/source/entity/$fragmentShader")
+                javaClass.getResourceAsStream("/shaders/$fragmentShader")
             fragmentShaderID = createShader(IOUtils.toString(fragmentStream), ARBFragmentShader.GL_FRAGMENT_SHADER_ARB)
             IOUtils.closeQuietly(fragmentStream)
         } catch (e: Exception) {
