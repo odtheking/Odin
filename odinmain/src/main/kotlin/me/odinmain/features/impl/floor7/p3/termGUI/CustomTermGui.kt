@@ -8,6 +8,8 @@ import me.odinmain.utils.render.Box
 import me.odinmain.utils.render.isPointWithin
 import me.odinmain.utils.render.scale
 import me.odinmain.utils.render.translate
+import me.odinmain.utils.skyblock.PlayerUtils
+import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import net.minecraft.client.gui.ScaledResolution
 
 object CustomTermGui {
@@ -48,7 +50,9 @@ abstract class TermGui {
         itemIndexMap.entries.find {
             it.value.isPointWithin(x, y)
         }?.let {
-            mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, it.key, button, 3, mc.thePlayer)
+
+            windowClick(it.key, if (button == 0) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Right)
+            //mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, it.key, button, 3, mc.thePlayer)
         }
     }
 

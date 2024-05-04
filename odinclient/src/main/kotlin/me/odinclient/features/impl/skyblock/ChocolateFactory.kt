@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.skyblock
 
-import me.odinclient.utils.skyblock.PlayerUtils.windowClick
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -8,6 +7,7 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.name
 import me.odinmain.utils.noControlCodes
+import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import me.odinmain.utils.skyblock.lore
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.inventory.Container
