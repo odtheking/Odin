@@ -8,6 +8,7 @@ import me.odinmain.OdinMain.mc
 import net.minecraft.client.renderer.GlStateManager
 import org.apache.commons.io.IOUtils
 import org.lwjgl.nanovg.NVGColor
+import org.lwjgl.nanovg.NVGPaint
 import org.lwjgl.nanovg.NanoVG.*
 import org.lwjgl.nanovg.NanoVGGL2.NVG_ANTIALIAS
 import org.lwjgl.nanovg.NanoVGGL2.nvgCreate
@@ -19,6 +20,10 @@ import kotlin.math.round
 
 
 object NVGRenderer : Renderer {
+
+    private val nvgPaint: NVGPaint = NVGPaint.malloc()
+    private val nvgColor: NVGColor = NVGColor.malloc()
+    private val nvgColor2: NVGColor = NVGColor.malloc()
 
     private var vg: Long = -1
 
@@ -51,22 +56,28 @@ object NVGRenderer : Renderer {
         drawing = false
     }
 
+    override fun push() = nvgSave(vg)
+
+    override fun pop() = nvgRestore(vg)
+
+    override fun scale(x: Float, y: Float) = nvgScale(vg, x, y)
+
+    override fun translate(x: Float, y: Float) = nvgTranslate(vg, x, y)
+
     override fun rect(x: Float, y: Float, w: Float, h: Float, color: Int) {
         nvgBeginPath(vg)
         nvgRect(vg, round(x), round(y), round(w), round(h))
-        val nvgColor = color(color)
+        color(color)
         nvgFillColor(vg, nvgColor)
         nvgFill(vg)
-        nvgColor.free()
     }
 
     override fun rect(x: Float, y: Float, w: Float, h: Float, color: Int, tl: Float, bl: Float, br: Float, tr: Float) {
         nvgBeginPath(vg)
         nvgRoundedRectVarying(vg, x, y, w, h, tl, tr, br, bl)
-        val nvgColor = color(color)
+        color(color)
         nvgFillColor(vg, nvgColor)
         nvgFill(vg)
-        nvgColor.free()
     }
 
     override fun hollowRect(
@@ -85,21 +96,61 @@ object NVGRenderer : Renderer {
         nvgRoundedRectVarying(vg, x, y, w, h, tl, tr, br, bl)
         nvgStrokeWidth(vg, thickness)
         nvgPathWinding(vg, NVG_HOLE)
-        val nvgColor = color(color)
+        color(color)
         nvgStrokeColor(vg, nvgColor)
         nvgStroke(vg)
-        nvgColor.free()
+    }
+
+    override fun gradientRect(
+        x: Float,
+        y: Float,
+        w: Float,
+        h: Float,
+        color1: Int,
+        color2: Int,
+        direction: GradientDirection
+    ) {
+        nvgBeginPath(vg)
+        nvgRect(vg, x, y, w, h)
+        color(color1, color2)
+        gradient(x, y, w, h, direction)
+        nvgFillPaint(vg, nvgPaint)
+        nvgFill(vg)
+    }
+
+    override fun gradientRect(
+        x: Float,
+        y: Float,
+        w: Float,
+        h: Float,
+        color1: Int,
+        color2: Int,
+        radius: Float,
+        direction: GradientDirection
+    ) {
+        nvgBeginPath(vg)
+        nvgRoundedRect(vg, x, y, w, h, radius)
+        color(color1, color2)
+        gradient(x, y, w, h, direction)
+        nvgFillPaint(vg, nvgPaint)
+        nvgFill(vg)
+    }
+
+    private fun gradient(x: Float, y: Float, w: Float, h: Float, direction: GradientDirection) {
+        when (direction) {
+            GradientDirection.LeftToRight -> nvgLinearGradient(vg, x, y, x + w, y, nvgColor, nvgColor2, nvgPaint)
+            GradientDirection.TopToBottom -> nvgLinearGradient(vg, x, y, x, y + h, nvgColor, nvgColor2, nvgPaint)
+        }
     }
 
     override fun text(text: String, x: Float, y: Float, size: Float, color: Int) {
         nvgBeginPath(vg)
         nvgFontSize(vg, size)
         nvgFontFaceId(vg, tempFont.id)
-        val nvgColor = color(color)
+        color(color)
         nvgFillColor(vg, nvgColor)
         nvgText(vg, x, y, text)
         nvgClosePath(vg)
-        nvgColor.free()
     }
 
     override fun textWidth(text: String, size: Float): Float {
@@ -117,10 +168,13 @@ object NVGRenderer : Renderer {
         nvgResetScissor(vg)
     }
 
-    fun color(color: Int): NVGColor {
-        val nvgColor = NVGColor.calloc()
+    fun color(color: Int) {
         nvgRGBA(color.red.toByte(), color.green.toByte(), color.blue.toByte(), color.alpha.toByte(), nvgColor)
-        return nvgColor
+    }
+
+    fun color(color1: Int, color2: Int) {
+        nvgRGBA(color1.red.toByte(), color1.green.toByte(), color1.blue.toByte(), color1.alpha.toByte(), nvgColor)
+        nvgRGBA(color2.red.toByte(), color2.green.toByte(), color2.blue.toByte(), color2.alpha.toByte(), nvgColor2)
     }
 
     class NVGFont(val name: String, path: String) {

@@ -6,6 +6,7 @@ import com.github.stivais.ui.constraints.Constraints
 import com.github.stivais.ui.constraints.Type
 import com.github.stivais.ui.constraints.measurements.Pixel
 import com.github.stivais.ui.constraints.measurements.Undefined
+import com.github.stivais.ui.constraints.positions.Center
 import com.github.stivais.ui.constraints.positions.Linked
 import com.github.stivais.ui.constraints.sizes.Bounding
 import com.github.stivais.ui.elements.Element
@@ -21,7 +22,9 @@ class Column(constraints: Constraints?, var padding: Float = 0f) : Element(const
     }
 
     override fun onElementAdded(element: Element) {
-        if (element.constraints.x is Undefined) element.constraints.x = Pixel(0f)
+        if (element.constraints.x is Undefined) {
+            element.constraints.x = if (constraints.width !is Bounding) Center else Pixel(0f)
+        }
         if (element.constraints.y is Undefined) {
             val last = elements?.lastOrNull { it.constraints.y is Linked }
             element.constraints.y = Linked(last)

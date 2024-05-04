@@ -15,7 +15,7 @@ class Animatable(var from: Constraint, var to: Constraint): Measurement {
         }
     }
 
-    private var animation: Animation? = null
+    var animation: Animation? = null
 
     var current: Float = 0f
 

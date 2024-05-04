@@ -83,7 +83,7 @@ abstract class Element(constraints: Constraints?) {
 
     var enabled: Boolean = true
 
-    var scissors: Boolean = false
+    private var scissors: Boolean = false
 
     var renders: Boolean = true
         get() = enabled && field
@@ -108,6 +108,7 @@ abstract class Element(constraints: Constraints?) {
 
     fun render() {
         if (!renders) return
+//        renderer.push()
         draw()
         // check if size is valid
         if (width != 0f && height != 0f) {
@@ -117,6 +118,7 @@ abstract class Element(constraints: Constraints?) {
             }
             if (scissors) renderer.popScissor()
         }
+//        renderer.pop()
     }
 
     open fun accept(event: Event): Boolean {

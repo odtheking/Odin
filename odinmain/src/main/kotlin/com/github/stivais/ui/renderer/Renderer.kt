@@ -6,6 +6,14 @@ interface Renderer {
 
     fun endFrame()
 
+    fun push()
+
+    fun pop()
+
+    fun scale(x: Float, y: Float)
+
+    fun translate(x: Float, y: Float)
+
     fun rect(x: Float, y: Float, w: Float, h: Float, color: Int)
 
     fun rect(x: Float, y: Float, w: Float, h: Float, color: Int, tl: Float, bl: Float, br: Float, tr: Float)
@@ -20,6 +28,10 @@ interface Renderer {
         hollowRect(x, y, w, h, thickness, color, radius, radius, radius, radius)
     }
 
+    fun gradientRect(x: Float, y: Float, w: Float, h: Float, color1: Int, color2: Int, direction: GradientDirection)
+
+    fun gradientRect(x: Float, y: Float, w: Float, h: Float, color1: Int, color2: Int, radius: Float, direction: GradientDirection)
+
     // todo: add fonts
 
     fun text(text: String, x: Float, y: Float, size: Float, color: Int)
@@ -29,4 +41,5 @@ interface Renderer {
     fun pushScissor(x: Float, y: Float, w: Float, h: Float)
 
     fun popScissor()
+
 }

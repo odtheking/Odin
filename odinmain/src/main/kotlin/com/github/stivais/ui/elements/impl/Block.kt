@@ -8,6 +8,7 @@ import com.github.stivais.ui.constraints.Type
 import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.constraints.sizes.Copying
 import com.github.stivais.ui.elements.Element
+import com.github.stivais.ui.renderer.GradientDirection
 import com.github.stivais.ui.utils.replaceUndefined
 
 open class Block(constraints: Constraints?, color: Color) : Element(constraints?.replaceUndefined(w = Copying, h = Copying)) {
@@ -51,5 +52,30 @@ class RoundedBlock(constraints: Constraints?, color: Color, private val radii: F
             val thickness = outline!!.get(this, Type.W)
             renderer.hollowRect(x, y, width, height, thickness, outlineColor!!.rgba, radii[0], radii[1], radii[2], radii[3])
         }
+    }
+}
+
+class GradientBlock(
+    constraints: Constraints?,
+    color1: Color,
+    var color2: Color,
+    val radius: Float = 0f,
+    val direction: GradientDirection
+//    private val radii: FloatArray
+) : Block(constraints, color1) {
+
+    init {
+//        require(radii.size == 4) { "Radii FloatArray for RoundedBlock must only have 4 values." }
+    }
+
+    override fun draw() {
+        if (color!!.rgba.alpha != 0) {
+            renderer.gradientRect(x, y, width, height, color!!.rgba, color2.rgba, radius, direction)
+        }
+        if (outlineColor != null && outlineColor!!.rgba.alpha != 0) {
+            val thickness = outline!!.get(this, Type.W)
+            renderer.hollowRect(x, y, width, height, thickness, outlineColor!!.rgba, radius)
+        }
+//        renderer.hollowRect(x, y, width, height, 1f, Color.WHITE.rgba)
     }
 }

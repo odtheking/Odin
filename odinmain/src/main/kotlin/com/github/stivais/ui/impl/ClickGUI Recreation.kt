@@ -21,8 +21,13 @@ import me.odinmain.utils.capitalizeFirst
 @JvmField
 val mainColor = Color { color.rgba }
 
-// note: scissoring isn't complete
+// todo: scissoring isn't complete
 fun clickGUI(renderer: Renderer) = UI(renderer) {
+    text(
+        text = "odin-client ui-branch", // maybe put odin version in here
+        pos = at(x = 1.px, y = -0.px),
+        size = 12.px
+    )
     for (panel in Category.entries) {
         column(at(x = panel.x.px, y = panel.y.px)) {
             block(

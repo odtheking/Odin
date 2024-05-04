@@ -1,12 +1,12 @@
 package me.odinmain.features.settings
 
 import com.github.stivais.ui.animation.Animations
-import com.github.stivais.ui.constraints.Size
+import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Animatable
-import com.github.stivais.ui.constraints.px
-import com.github.stivais.ui.constraints.size
+import com.github.stivais.ui.constraints.measurements.Pixel
 import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.utils.animate
+import com.github.stivais.ui.utils.forLoop
 import com.github.stivais.ui.utils.seconds
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -60,9 +60,6 @@ abstract class Setting<T> (
         return thisRef.register(this)
     }
 
-    /**
-     * Provides
-     */
     override operator fun getValue(thisRef: Module, property: KProperty<*>): T {
         return value
     }
@@ -75,13 +72,16 @@ abstract class Setting<T> (
      * Generates elements for rendering the setting to the ClickGUI.
      *
      * Note: It is required to use [setting] to set the element properly
+     *
+     * Design note: It is recommended for all height constraints to be percent-based
+     * to make animation look nice (It does lead to bad code unfortunately)
      */
-    open fun getElement(parent: Element): SettingElement? = null
+    internal open fun getElement(parent: Element): SettingElement? = null
 
     /**
      * Creates a [SettingElement] and sets it up
      */
-    inline fun Element.setting(height: Size, block: SettingElement.() -> Unit): SettingElement {
+    internal fun Element.setting(height: Size, block: SettingElement.() -> Unit): SettingElement {
         val element = SettingElement(height)
         addElement(element)
         element.block()
@@ -108,19 +108,42 @@ abstract class Setting<T> (
 
     // todo: cleanup
     // todo: improve animation
-    inner class SettingElement(height: Size) : Element(size(240.px, Animatable(from = height, to = 0.px))) {
+    internal inner class SettingElement(height: Size) : Element(size(240.px, Animatable(from = height, to = 0.px))) {
 
         private var visible: Boolean = visibilityDependency?.invoke() ?: true
 
         init {
             if (!visible) (height() as Animatable).swap()
             scissors()
+            onInitialization {
+                afterInitialization {
+                    elements?.forLoop {
+                        pxToPercent(it)
+                    }
+                }
+            }
         }
 
         override fun draw() {
             if ((visibilityDependency?.invoke() != false) != visible) {
                 visible = !visible
-                height().animate(0.2.seconds, Animations.EaseInOutQuint)
+                height().animate(0.25.seconds, Animations.EaseInOutQuint)
+            }
+        }
+
+        override fun onElementAdded(element: Element) {
+            super.onElementAdded(element)
+        }
+
+        // this is a weird way to get animations to work nicely, but it works
+        private fun pxToPercent(element: Element) {
+            element.constraints.apply {
+                if (height is Pixel) {
+                    height = 100.percent.coerce((height as Pixel).pixels)
+                }
+            }
+            element.elements?.forLoop {
+                pxToPercent(it)
             }
         }
     }

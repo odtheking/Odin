@@ -11,6 +11,7 @@ import com.github.stivais.ui.events.onClick
 import com.github.stivais.ui.events.onMouseEnterExit
 import com.github.stivais.ui.events.onMouseMove
 import com.github.stivais.ui.events.onRelease
+import com.github.stivais.ui.renderer.GradientDirection
 import com.github.stivais.ui.utils.animate
 import com.github.stivais.ui.utils.radii
 import com.github.stivais.ui.utils.seconds
@@ -30,6 +31,21 @@ fun Element.block(
     block: Block.() -> Unit = {}
 ): Block {
     val block = if (radius != null) RoundedBlock(constraints, color, radius) else Block(constraints, color)
+    addElement(block)
+    block.block()
+    return block
+}
+
+fun Element.block(
+    constraints: Constraints? = null,
+    color1: Color,
+    color2: Color,
+    radius: Float = 0f,
+    direction: GradientDirection,
+    block: Block.() -> Unit = {}
+): GradientBlock {
+    val block = GradientBlock(constraints, color1, color2, radius, direction)
+//        if (radius != null) RoundedBlock(constraints, color, color2, radius) else Block(constraints, color)
     addElement(block)
     block.block()
     return block

@@ -22,21 +22,12 @@ class Text(
             if (field == value) return
             field = value
             needsUpdate = true
-//            (constraints.width as Pixel).pixels = renderer.textWidth(value, height)
         }
 
     private var needsUpdate = true
 
     init {
         this.color = textColor
-
-        onInitialization {
-//            // needs size to be set
-//            parent?.position()
-//            val width = renderer.textWidth(text, height)
-//            (this.constraints.width as Pixel).pixels = width
-//            this.width = width
-        }
     }
 
     override fun draw() {
@@ -46,6 +37,7 @@ class Text(
             position() // really suboptimal, however rarely happens so for now it is fine
             needsUpdate = false
         }
-        renderer.text(text, x, y + 1, height, color!!.rgba)
+        renderer.text(text, x, y, height, color!!.rgba)
+//        renderer.hollowRect(x, y, width, height, 1f, Color.WHITE.rgba)
     }
 }

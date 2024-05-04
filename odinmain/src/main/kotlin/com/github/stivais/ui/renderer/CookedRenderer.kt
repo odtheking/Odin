@@ -9,6 +9,8 @@ import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.GL11.*
+import me.odinmain.utils.render.GradientDirection as GradientDirectionOld
+import me.odinmain.utils.render.gradientRect as gradientRectOld
 
 // op renderer odin client
 // maybe isn't as fair comparsion as i cba to make it use new colors since im gonig to replace it soon
@@ -22,6 +24,22 @@ object CookedRenderer : Renderer {
     }
 
     override fun endFrame() {
+    }
+
+    override fun push() {
+        GlStateManager.pushMatrix()
+    }
+
+    override fun pop() {
+        GlStateManager.popMatrix()
+    }
+
+    override fun translate(x: Float, y: Float) {
+        GlStateManager.translate(x, y, 0f)
+    }
+
+    override fun scale(x: Float, y: Float) {
+        GlStateManager.scale(x, y, 0f)
     }
 
     override fun rect(x: Float, y: Float, w: Float, h: Float, color: Int) {
@@ -47,6 +65,36 @@ object CookedRenderer : Renderer {
     ) {
         val stupidColor = Color(color)
         roundedRectangle(x, y, w, h, Color.TRANSPARENT, stupidColor, Color.TRANSPARENT, thickness, tl, tr, bl, br, 1f)
+    }
+
+    override fun gradientRect(
+        x: Float,
+        y: Float,
+        w: Float,
+        h: Float,
+        color1: Int,
+        color2: Int,
+        direction: GradientDirection
+    ) = gradientRect(x, y, w, h, color1, color2, 0f, direction)
+
+    override fun gradientRect(
+        x: Float,
+        y: Float,
+        w: Float,
+        h: Float,
+        color1: Int,
+        color2: Int,
+        radius: Float,
+        direction: GradientDirection
+    ) {
+        val stupidColor1 = Color(color1)
+        val stupidColor2 = Color(color2)
+        gradientRectOld(x, y, w, h, stupidColor1, stupidColor2, radius, getGradientDirection(direction))
+    }
+
+    private fun getGradientDirection(direction: GradientDirection) = when (direction) {
+        GradientDirection.LeftToRight -> GradientDirectionOld.Right
+        GradientDirection.TopToBottom -> GradientDirectionOld.Down
     }
 
     override fun text(text: String, x: Float, y: Float, size: Float, color: Int) {

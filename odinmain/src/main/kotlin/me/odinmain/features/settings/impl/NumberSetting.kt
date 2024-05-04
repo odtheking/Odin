@@ -1,8 +1,10 @@
 package me.odinmain.features.settings.impl
 
 
-import com.github.stivais.ui.constraints.*
-import com.github.stivais.ui.constraints.positions.Center
+import com.github.stivais.ui.constraints.at
+import com.github.stivais.ui.constraints.constrain
+import com.github.stivais.ui.constraints.percent
+import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.elements.slider
 import com.github.stivais.ui.elements.text
@@ -37,9 +39,7 @@ class NumberSetting<E>(
 
     override var value: E = default
 
-    /**
-     * The amount a setting should increment.
-     */
+    /** The amount a setting should increment. */
     val increment = increment.toDouble()
 
     /** The minimum a setting can be */
@@ -55,19 +55,19 @@ class NumberSetting<E>(
             return "$number$unit"
         }
 
-    override fun getElement(parent: Element): SettingElement = parent.setting(40.px) {
+    override fun getElement(parent: Element): SettingElement = parent.setting(44.px) {
         text(
             text = name,
-            pos = at(x = 6.px, y = Center - 3.px),
+            pos = at(x = 6.px, y = 10.px),
             size = 35.percent
         )
         val display = text(
             text = text,
-            pos = at(x = -(6.px), y = Center - 3.px),
+            pos = at(x = -(6.px), y = 10.px),
             size = 35.percent
         )
         val slider = slider(
-            constraints = constrain(y = 80.percent, w = 95.percent, h = 20.percent),
+            constraints = constrain(y = 77.percent, w = 95.percent, h = 18.percent),
             color = mainColor,
             value = value.toDouble(), min = min, max = max,
             onChange = { percent ->
@@ -88,9 +88,7 @@ class NumberSetting<E>(
         }
     }
 
-    internal fun set(new: Number) {
-        value = roundToIncrement(new).coerceIn(min, max) as E
+    fun set(new: Number) {
+        value = (round((new.toDouble() / increment)) * increment).coerceIn(min, max) as E
     }
-
-    private fun roundToIncrement(x: Number): Double = round((x.toDouble() / increment)) * increment
 }

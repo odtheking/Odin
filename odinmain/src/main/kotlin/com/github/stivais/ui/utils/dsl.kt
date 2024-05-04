@@ -75,7 +75,7 @@ val Number.seconds
  * @param acceptsEvent If the events shouldn't be allowed to pass on
  * @param target The element to move when dragged
  */
-fun <E : Element> E.draggable(acceptsEvent: Boolean = true, target: Element = this): E {
+fun <E : Element> E.draggable(acceptsEvent: Boolean = true, target: Element = this, coerce: Boolean = false): E {
     val px: Pixel = 0.px
     val py: Pixel = 0.px
     // note: if parent is Bounding, it can cause issues
@@ -96,8 +96,13 @@ fun <E : Element> E.draggable(acceptsEvent: Boolean = true, target: Element = th
     }
     onMouseMove {
         if (pressed) {
-            px.pixels = ui.mx - x
-            py.pixels = ui.my - y
+            if (coerce) {
+                px.pixels = (ui.mx - x)
+                py.pixels = (ui.my - y).coerceIn(0f, parent?.height)
+            } else {
+                px.pixels = ui.mx - x
+                py.pixels = ui.my - y
+            }
         }
         acceptsEvent
     }

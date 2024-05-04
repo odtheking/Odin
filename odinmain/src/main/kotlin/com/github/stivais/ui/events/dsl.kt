@@ -5,7 +5,7 @@ package com.github.stivais.ui.events
 import com.github.stivais.ui.elements.Element
 
 
-fun <E : Element> E.onClick(button: Int?, block: Mouse.Clicked.() -> Boolean): E {
+fun <E : Element> E.onClick(button: Int? = 0, block: Mouse.Clicked.() -> Boolean): E {
     registerEvent(Mouse.Clicked(button), block as Event.() -> Boolean)
     return this
 }

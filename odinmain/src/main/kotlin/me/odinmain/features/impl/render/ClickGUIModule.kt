@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.render
 
+import com.github.stivais.ui.utils.color
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -21,6 +22,7 @@ import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.event.ClickEvent
 import net.minecraft.util.ChatComponentText
 import org.lwjgl.input.Keyboard
+import com.github.stivais.ui.color.Color as NewColor
 
 @AlwaysActive
 object ClickGUIModule: Module(
@@ -36,6 +38,12 @@ object ClickGUIModule: Module(
     val hudChat: Boolean by BooleanSetting("Shows HUDs in GUIs", true, description = "Shows HUDs in GUIs")
     val forceHypixel: Boolean by BooleanSetting("Force Hypixel", false, description = "Forces the hypixel check to be on (not recommended).")
     val updateMessage: Int by SelectorSetting("Update Message", "Beta", arrayListOf("Beta", "Full", "None"))
+
+    val colortest: NewColor.HSB by NewColorSetting("New color", color(50, 150, 220))
+
+    val toglge: Boolean by BooleanSetting("a")
+
+    val colortest2: NewColor.HSB by NewColorSetting("New color 2", color(50, 150, 220)).withDependency { toglge }
 
     val devMessages: Boolean by BooleanSetting("Dev Messages", true, description = "Enables dev messages in chat.").withDependency { DevPlayers.isDev }
     val devSize: Boolean by BooleanSetting("Dev Size", true, description = "Toggles client side dev size.").withDependency { DevPlayers.isDev }
