@@ -14,7 +14,7 @@ val visualWordsCommand = commodore("visualwords") {
         val replaceText = command.string.replace("&", "§").substringAfter("replace").trim()
         val replaceTextForChat = "\"${actualText.substring(0, actualText.length / 2)}⛏${actualText.substring(actualText.length / 2)}\""
         VisualWords.wordsMap[actualText] = replaceText
-        if (actualText in VisualWords.wordsMap) modMessage("Updating $replaceTextForChat with \"$replaceText\"") else modMessage("Replacing $replaceTextForChat with \"$replaceText\"")
+        modMessage("Replacing $replaceTextForChat with \"$replaceText\"")
         Config.save()
     }
 
