@@ -124,7 +124,7 @@ object RenderOptimizer : Module(
 
     private fun handleWitherMiner(entity: Entity) {
         val customName = entity.customNameTag.noControlCodes
-        if (entity !is EntityArmorStand || !customName.hasWitherMinerName()) return
+        if (entity !is EntityArmorStand || !customName.containsOneOf("Wither Miner", "Wither Guard", "Apostle")) return
         entity.alwaysRenderNameTag = false
     }
 
@@ -139,10 +139,6 @@ object RenderOptimizer : Module(
         val name = entity.customNameTag
         if (!name.startsWith("§6✯ ") && name.contains("§c❤") && dungeonMobSpawns.any { it in name })
             entity.alwaysRenderNameTag = false
-    }
-
-    private fun String.hasWitherMinerName(): Boolean {
-        return contains("Wither Miner") || contains("Wither Guard") || contains("Apostle")
     }
 
     private fun getHealerFairyTextureValue(armorStand: EntityArmorStand?): String? {

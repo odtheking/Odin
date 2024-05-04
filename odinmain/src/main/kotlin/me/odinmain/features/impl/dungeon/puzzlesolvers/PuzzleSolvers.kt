@@ -86,6 +86,6 @@ object PuzzleSolvers : Module(
         WaterSolver.scan(event)
 
         IceFillSolver.enterDungeonRoom(event)
-        //BlazeSolver.getRoomType()
+        BlazeSolver.getRoomType()
     }
 }
