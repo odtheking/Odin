@@ -5,6 +5,7 @@ import me.odinmain.events.impl.PreKeyInputEvent;
 import me.odinmain.events.impl.PreMouseInputEvent;
 import me.odinmain.features.impl.render.Animations;
 import me.odinmain.features.impl.render.CPSDisplay;
+import me.odinmain.utils.skyblock.PlayerUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemBlock;
@@ -35,6 +36,11 @@ public class MixinMinecraft {
         }
     }
 
+    @Inject(method = {"runTick"}, at = {@At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiScreen;handleInput()V")})
+    private void handleInput(CallbackInfo ci) {
+        PlayerUtils.INSTANCE.handleWindowClickQueue();
+    }
+
     @Inject(method = "rightClickMouse", at = @At("HEAD"), cancellable = true)
     private void rightClickMouse(CallbackInfo ci) {
         if (MinecraftForge.EVENT_BUS.post(new ClickEvent.RightClickEvent())) ci.cancel();
@@ -56,5 +62,4 @@ public class MixinMinecraft {
         if (MinecraftForge.EVENT_BUS.post(new ClickEvent.LeftClickEvent())) ci.cancel();
         CPSDisplay.INSTANCE.onLeftClick();
     }
-
 }

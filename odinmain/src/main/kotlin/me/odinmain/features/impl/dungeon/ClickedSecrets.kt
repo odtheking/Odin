@@ -1,4 +1,4 @@
-package me.odinmain.features.impl.render
+package me.odinmain.features.impl.dungeon
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -20,7 +20,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object ClickedSecrets : Module(
     name = "Clicked Secrets",
-    category = Category.RENDER,
+    category = Category.DUNGEON,
     description = "Draws a box around all the secrets you have clicked."
 ) {
     private val color: Color by ColorSetting("Color", Color.ORANGE.withAlpha(.4f), allowAlpha = true, description = "The color of the box.")

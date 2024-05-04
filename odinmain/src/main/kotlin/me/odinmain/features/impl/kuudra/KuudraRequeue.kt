@@ -9,7 +9,7 @@ import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.sendCommand
 
 object KuudraRequeue : Module(
-    name = "Auto Requeue",
+    name = "Kuudra Requeue",
     description = "Automatically starts a new kuudra at the end of a kuudra",
     category = Category.KUUDRA
 ) {

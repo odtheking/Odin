@@ -30,7 +30,8 @@ object SkyblockPlayer {
     fun onPacket(event: PacketReceivedEvent) {
         if (event.packet !is S02PacketChat || event.packet.type != 2.toByte()) return
         val msg = event.packet.chatComponent.unformattedText.noControlCodes
-        val (currentHp, maxHp, middleRegion, cMana, mMana) = Regex("(.+)/(.+)❤ {5}(.+) {5}(.+)/(.+)✎ Mana").find(msg)?.destructured ?: return
+        // https://regex101.com/r/3s8irT/1
+        val (currentHp, maxHp, middleRegion, cMana, mMana) = Regex(".*?([\\d|,]+)/([\\d|,]+)❤ {5}(.+) {5}([\\d|,]+)/([\\d|,]+)✎ Mana.*").find(msg)?.destructured ?: return
 
         maxHealth = maxHp.replace(",", "").toIntOrNull() ?: return
         currentMana = cMana.replace(",", "").toIntOrNull() ?: return

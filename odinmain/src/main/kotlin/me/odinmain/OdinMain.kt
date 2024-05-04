@@ -1,9 +1,6 @@
 package me.odinmain
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import me.odinmain.commands.impl.*
 import me.odinmain.config.*
 import me.odinmain.events.EventDispatcher
@@ -18,8 +15,10 @@ import me.odinmain.ui.util.shader.RoundedRect
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.HighlightRenderer
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.sendDataToServer
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.PlayerUtils
@@ -75,7 +74,7 @@ object OdinMain {
             DevPlayers,
             PartyNote,
             SkyblockPlayer,
-            //HighlightRenderer,
+            HighlightRenderer,
             //OdinUpdater,
             this
         ).forEach { MinecraftForge.EVENT_BUS.register(it) }
@@ -104,9 +103,10 @@ object OdinMain {
         launch { WaypointConfig.loadConfig() }
         launch { DungeonWaypointConfig.loadConfig() }
         launch { PBConfig.loadConfig() }
-        launch { DungeonWaypointConfigCLAY }
+        launch { DungeonWaypointConfigCLAY.loadConfig() }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     fun loadComplete() = runBlocking {
         runBlocking {
             launch {
@@ -118,6 +118,9 @@ object OdinMain {
         }
         ClickGUI.init()
         RoundedRect.initShaders()
+        GlobalScope.launch {
+            sendDataToServer(body = """{"username": "${mc.session?.username}", "version": "${if (isLegitVersion) "legit" else "cheater"} $VERSION"}""")
+        }
     }
 
     fun onTick() {

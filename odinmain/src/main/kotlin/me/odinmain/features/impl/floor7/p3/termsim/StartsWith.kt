@@ -40,9 +40,10 @@ class StartsWith(private val letter: String) : TermSimGui(
     }
 
     override fun slotClick(slot: Slot, button: Int) {
-        if (!slot.stack.displayName.startsWith(letter, true) || slot.stack.isItemEnchanted) return
+        val slot = slot.stack ?: return
+        if (!slot.displayName.startsWith(letter, true) || slot.isItemEnchanted) return
 
-        slot.stack.addEnchantment(Enchantment.infinity, 1)
+        slot.addEnchantment(Enchantment.infinity, 1)
         mc.thePlayer.playSound("random.orb", 1f, 1f)
         GuiEvent.GuiLoadedEvent(name, inventorySlots as ContainerChest).postAndCatch()
         if (inventorySlots?.inventorySlots?.subList(0, size)?.none { it?.stack?.displayName?.startsWith(letter, true) == true && !it.stack.isItemEnchanted } == true) {
