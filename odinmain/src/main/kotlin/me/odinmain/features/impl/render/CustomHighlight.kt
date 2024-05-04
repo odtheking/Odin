@@ -2,22 +2,16 @@ package me.odinmain.features.impl.render
 
 import me.odinmain.OdinMain.isLegitVersion
 import me.odinmain.events.impl.PostEntityMetadata
-import me.odinmain.events.impl.RenderEntityModelEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.ServerUtils.getPing
-import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.getPositionEyes
-import me.odinmain.utils.profile
-import me.odinmain.utils.render.*
-import me.odinmain.utils.render.RenderUtils.renderBoundingBox
-import me.odinmain.utils.render.RenderUtils.renderVec
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.HighlightRenderer
 import net.minecraft.entity.Entity
 import net.minecraft.entity.boss.EntityWither
 import net.minecraft.entity.item.EntityArmorStand
-import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 
@@ -60,7 +54,7 @@ object CustomHighlight : Module(
         }
     }
 
-    @SubscribeEvent
+   /* @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
         if (mode != 0 || event.entity !in currentEntities || (!mc.thePlayer.canEntityBeSeen(event.entity) && !renderThrough)) return
         //profile("Outline Esp") { OutlineUtils.outlineEntity(event, thickness, color, true) }
@@ -78,7 +72,7 @@ object CustomHighlight : Module(
             else if (mode == 3 && (mc.thePlayer.canEntityBeSeen(it) || renderThrough))
                 Renderer.draw2DEntity(it, thickness, color)
         }}
-    }
+    }*/
 
     @SubscribeEvent
     fun postMeta(event: PostEntityMetadata) {
