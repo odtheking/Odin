@@ -15,6 +15,7 @@ import me.odinmain.ui.util.shader.RoundedRect
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.HighlightRenderer
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.sendDataToServer
@@ -73,7 +74,7 @@ object OdinMain {
             DevPlayers,
             PartyNote,
             SkyblockPlayer,
-            //HighlightRenderer,
+            HighlightRenderer,
             //OdinUpdater,
             this
         ).forEach { MinecraftForge.EVENT_BUS.register(it) }
@@ -102,7 +103,7 @@ object OdinMain {
         launch { WaypointConfig.loadConfig() }
         launch { DungeonWaypointConfig.loadConfig() }
         launch { PBConfig.loadConfig() }
-        launch { DungeonWaypointConfigCLAY }
+        launch { DungeonWaypointConfigCLAY.loadConfig() }
     }
 
     @OptIn(DelicateCoroutinesApi::class)
