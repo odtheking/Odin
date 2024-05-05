@@ -2,6 +2,8 @@ package me.odinmain.features.impl.floor7
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.dungeon.BlessingDisplay
+import me.odinmain.features.impl.floor7.WitherDragons.dragonPriorityToggle
+import me.odinmain.features.impl.floor7.WitherDragons.dragonTitle
 import me.odinmain.features.impl.floor7.WitherDragons.easyPower
 import me.odinmain.features.impl.floor7.WitherDragons.normalPower
 import me.odinmain.features.impl.floor7.WitherDragons.paulBuff
@@ -14,17 +16,22 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils.Classes
 import me.odinmain.utils.skyblock.modMessage
 
 object DragonPriority {
-    var firstDragons = false
-    fun dragonPrioritySpawn() {
-        val spawningDragons = WitherDragonsEnum.entries.filter { it.spawning }.toMutableList()
 
-        if (spawningDragons.size != 2 || firstDragons) return
-        firstDragons = true
 
-        val dragon = sortPriority(spawningDragons)
+    fun findPriority(spawningDragon: MutableList<WitherDragonsEnum>): WitherDragonsEnum {
+        val priorityList = listOf(WitherDragonsEnum.Red, WitherDragonsEnum.Orange, WitherDragonsEnum.Blue, WitherDragonsEnum.Purple, WitherDragonsEnum.Green)
+        val priorityDragon = if (!dragonPriorityToggle) {
+            spawningDragon.sortBy { priorityList.indexOf(it) }
+            spawningDragon[0]
+        } else {
+            sortPriority(spawningDragon)
+        }
+        return priorityDragon
+    }
 
-        PlayerUtils.alert("§${dragon.colorCode}${dragon.name}")
-        modMessage("§${dragon.colorCode}${dragon.name} §7is your priority dragon!")
+    fun dragonPrioritySpawn(dragon: WitherDragonsEnum) {
+        if (dragonTitle) PlayerUtils.alert("§${dragon.colorCode}${dragon.name} is spawning!")
+        if (dragonPriorityToggle && WitherDragonsEnum.entries.filter { it.spawning }.toMutableList().size == 2) modMessage("§${dragon.colorCode}${dragon.name} §7is your priority dragon!")
     }
 
     fun sortPriority(spawningDragon: MutableList<WitherDragonsEnum>): WitherDragonsEnum {

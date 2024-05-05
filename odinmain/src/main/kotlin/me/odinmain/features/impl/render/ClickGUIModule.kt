@@ -99,11 +99,6 @@ object ClickGUIModule: Module(
             """.trimIndent(), false)
         }
         resetPositions()
-
-        @Suppress("OPT_IN_USAGE")
-        GlobalScope.launch {
-            sendDataToServer(body = """{"username": "${mc.thePlayer.name}", "version": "${if (OdinMain.isLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}""")
-        }
     }
 
     fun resetPositions() {

@@ -1,7 +1,5 @@
 package me.odinclient.features.impl.floor7.p3
 
-import me.odinclient.utils.skyblock.PlayerUtils.ClickType
-import me.odinclient.utils.skyblock.PlayerUtils.windowClick
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
@@ -9,6 +7,8 @@ import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.features.settings.impl.DualSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.clock.Clock
+import me.odinmain.utils.skyblock.PlayerUtils
+import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.client.event.RenderGameOverlayEvent
@@ -42,18 +42,18 @@ object HoverTerms : Module(
         if (TerminalSolver.currentTerm == TerminalTypes.RUBIX) {
             val needed = TerminalSolver.solution.count { it == hoveredItem }
             if (needed >= 3) {
-                windowClick(hoveredItem, ClickType.Right)
+                windowClick(hoveredItem, PlayerUtils.ClickType.Right)
                 triggerBotClock.update()
                 return
             }
         } else if (TerminalSolver.currentTerm == TerminalTypes.ORDER) {
             if (TerminalSolver.solution.first() == hoveredItem) {
-                windowClick(hoveredItem, if (middleClick) ClickType.Middle else ClickType.Left)
+                windowClick(hoveredItem, if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
                 triggerBotClock.update()
             }
             return
         }
-        windowClick(hoveredItem, if (middleClick) ClickType.Middle else ClickType.Left)
+        windowClick(hoveredItem, if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
         triggerBotClock.update()
     }
 }

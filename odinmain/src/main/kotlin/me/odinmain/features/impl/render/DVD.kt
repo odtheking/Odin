@@ -62,15 +62,27 @@ object DVD : Module(
             val screenHeight = sr.scaledHeight
 
             // Check collision with screen edges
-            if (x <= 0 || x + boxWidth >= screenWidth) {
+            if (x <= 0) {
+                x = 0 // Reset x position to prevent going out of bounds
+                getDVDColor()
+                dx = -dx // Reverse horizontal direction
+            } else if (x + boxWidth >= screenWidth) {
+                x = screenWidth - boxWidth // Adjust x position to prevent going out of bounds
                 getDVDColor()
                 dx = -dx // Reverse horizontal direction
             }
-            if (y <= 0 || y + boxHeight >= screenHeight) {
+
+            if (y <= 0) {
+                y = 0 // Reset y position to prevent going out of bounds
+                getDVDColor()
+                dy = -dy // Reverse vertical direction
+            } else if (y + boxHeight >= screenHeight) {
+                y = screenHeight - boxHeight // Adjust y position to prevent going out of bounds
                 getDVDColor()
                 dy = -dy // Reverse vertical direction
             }
 
+            // Check collision with corners
             if ((x <= 0 || x + boxWidth >= screenWidth) && (y <= 0 || y + boxHeight >= screenHeight)) {
                 modMessage("$text hit a corner!")
                 PlayerUtils.playLoudSound("note.pling", 100f, 1f)

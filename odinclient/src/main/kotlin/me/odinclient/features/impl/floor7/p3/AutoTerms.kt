@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.floor7.p3
 
-import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -9,7 +8,8 @@ import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.features.settings.impl.DualSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.clock.Clock
-import net.minecraft.client.gui.inventory.GuiChest
+import me.odinmain.utils.skyblock.PlayerUtils
+import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -44,10 +44,9 @@ object AutoTerms : Module(
             !clock.hasTimePassed(autoDelay) ||
             System.currentTimeMillis() - TerminalSolver.openedTerminalTime <= firstClickDelay ||
             clickedThisWindow ||
-            event.phase != TickEvent.Phase.START
+            event.phase != TickEvent.Phase.START ||
+            mc.thePlayer.openContainer !is ContainerChest
         ) return
-        val gui = mc.currentScreen as? GuiChest ?: return
-        if (gui.inventorySlots !is ContainerChest) return
 
         val item = TerminalSolver.solution.first()
 
@@ -55,18 +54,15 @@ object AutoTerms : Module(
         clock.update()
         breakClock.update()
         when (TerminalSolver.currentTerm) {
-            TerminalTypes.RUBIX ->  PlayerUtils.windowClick(
-                                        item,
-                                        if (TerminalSolver.solution.count { it == item } >= 3) PlayerUtils.ClickType.Right else if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left
-                                    )
+            TerminalTypes.RUBIX ->
+                windowClick(item,
+                    if (TerminalSolver.solution.count { it == item } >= 3) PlayerUtils.ClickType.Right else
+                        if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
 
+            TerminalTypes.ORDER ->
+                windowClick(TerminalSolver.solution.first(), if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
 
-            TerminalTypes.ORDER ->  PlayerUtils.windowClick(
-                                        TerminalSolver.solution.first(),
-                                        if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left
-                                    )
-
-            else -> PlayerUtils.windowClick(item, if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
+            else -> windowClick(item, if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
         }
     }
 }
