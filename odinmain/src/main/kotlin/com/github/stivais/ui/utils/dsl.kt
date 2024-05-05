@@ -2,16 +2,15 @@ package com.github.stivais.ui.utils
 
 import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.color.Color
+import com.github.stivais.ui.color.brighter
 import com.github.stivais.ui.constraints.Constraint
 import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.measurements.Pixel
 import com.github.stivais.ui.constraints.minus
 import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.elements.Element
-import com.github.stivais.ui.events.Mouse
-import com.github.stivais.ui.events.onClick
-import com.github.stivais.ui.events.onMouseMove
-import com.github.stivais.ui.events.onRelease
+import com.github.stivais.ui.elements.impl.Block
+import com.github.stivais.ui.events.*
 
 /**
  * Takes 4 numbers, and creates a [FloatArray] with those values
@@ -97,7 +96,7 @@ fun <E : Element> E.draggable(acceptsEvent: Boolean = true, target: Element = th
     onMouseMove {
         if (pressed) {
             if (coerce) {
-                px.pixels = (ui.mx - x)
+                px.pixels = (ui.mx - x).coerceIn(0f, parent?.width)
                 py.pixels = (ui.my - y).coerceIn(0f, parent?.height)
             } else {
                 px.pixels = ui.mx - x
@@ -116,7 +115,7 @@ fun <E : Element> E.draggable(acceptsEvent: Boolean = true, target: Element = th
  * Sets the element to be focused on click
  */
 fun <E : Element> E.focuses(): E {
-    onClick(0) {
+    onClick {
         ui.focus(this@focuses)
         true
     }
@@ -136,4 +135,14 @@ fun <E : Element> E.scrollable(duration: Float, target: Element, min: Float = 0f
         true
     }
     return this
+}
+
+fun <E : Block> E.hoverEffect(duration: Number = 0.25.seconds) {
+    val before = color!!
+    val hover = Color.Animated(from = before, to = Color { before.rgba.brighter() })
+    color = hover
+    onMouseEnterExit {
+        hover.animate(duration)
+        true
+    }
 }

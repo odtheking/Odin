@@ -16,6 +16,7 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.ModuleManager.modules
 import me.odinmain.features.impl.render.ClickGUIModule.color
+import me.odinmain.features.impl.render.ClickGUIModule.lastSeenVersion
 import me.odinmain.utils.capitalizeFirst
 
 @JvmField
@@ -24,7 +25,7 @@ val mainColor = Color { color.rgba }
 // todo: scissoring isn't complete
 fun clickGUI(renderer: Renderer) = UI(renderer) {
     text(
-        text = "odin-client ui-branch", // maybe put odin version in here
+        text = "odin-client $lastSeenVersion",
         pos = at(x = 1.px, y = -0.px),
         size = 12.px
     )

@@ -59,7 +59,7 @@ class NewColorSetting(
                         true
                     }
                 }
-
+                // saturation & brightness
                 block(
                     constraints = size(w = 95.percent, h = 170.px),
                     color1 = Color.WHITE,
@@ -73,6 +73,21 @@ class NewColorSetting(
                         direction = GradientDirection.TopToBottom
                     )
                 }
+                group(size(Copying, 10.px))
+                if (allowAlpha) {
+                    block(
+                        size(95.percent, h = 15.px),
+                        color = Color.WHITE,
+//                        color2 = Color.BLACK,
+//                        direction = GradientDirection.LeftToRight
+                    )
+                }
+//                block(
+//                    size(95.percent, h = 15.px),
+//                    color = Color.WHITE,
+////                        color2 = Color.BLACK,
+////                        direction = GradientDirection.LeftToRight
+//                )
             }
         }
     }

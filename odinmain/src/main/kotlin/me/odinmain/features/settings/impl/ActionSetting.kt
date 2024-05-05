@@ -5,11 +5,13 @@ import com.github.stivais.ui.constraints.percent
 import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.constraints.size
 import com.github.stivais.ui.elements.Element
-import com.github.stivais.ui.elements.button
+import com.github.stivais.ui.elements.block
 import com.github.stivais.ui.elements.text
 import com.github.stivais.ui.events.onClick
 import com.github.stivais.ui.impl.mainColor
+import com.github.stivais.ui.utils.hoverEffect
 import com.github.stivais.ui.utils.radii
+import com.github.stivais.ui.utils.seconds
 import me.odinmain.features.settings.Setting
 
 /**
@@ -30,20 +32,19 @@ class ActionSetting(
     var action: () -> Unit by this::value
 
     override fun getElement(parent: Element): SettingElement = parent.setting(40.px) {
-        button(
+        block(
             constraints = size(95.percent, 75.percent),
-            // only use for hover effect so color isn't important
-            offColor = Color.RGB(38, 38, 38),
-            onColor = Color.RGB(38, 38, 38),
-            radii = radii(all = 5)
+            color = Color.RGB(38, 38, 38),
+            radius = radii(all = 5)
         ) {
             text(
                 text = name,
             )
-            onClick(0) {
+            onClick {
                 action.invoke()
                 true
             }
+            hoverEffect(0.25.seconds)
             outline(mainColor)
         }
     }

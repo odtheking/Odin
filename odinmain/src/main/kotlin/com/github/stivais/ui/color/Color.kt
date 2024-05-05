@@ -6,25 +6,6 @@ import com.github.stivais.ui.utils.getRGBA
 import kotlin.math.roundToInt
 import java.awt.Color as JColor
 
-fun Color.toHSB(): Color.HSB {
-    return Color.HSB(
-        JColor.RGBtoHSB(
-            red,
-            green,
-            blue,
-            FloatArray(size = 3)
-        ),
-        a / 255f
-    )
-}
-
-inline fun Color(crossinline getter: () -> Int): Color = object : Color {
-    override val rgba: Int
-        get() {
-            return getter()
-        }
-}
-
 interface Color {
 
     val rgba: Int
@@ -173,11 +154,30 @@ inline val Int.blue
 inline val Int.alpha
     get() = this shr 24 and 0xFF
 
-fun Int.brighter(amount: Double = 1.2): Int {
+fun Int.brighter(factor: Double = 1.2): Int {
     return getRGBA(
-        (red * amount).roundToInt().coerceIn(0, 255),
-        (green * amount).roundToInt().coerceIn(0, 255),
-        (blue * amount).roundToInt().coerceIn(0, 255),
-        (alpha * amount).roundToInt().coerceIn(0, 255)
+        (red * factor).roundToInt().coerceIn(0, 255),
+        (green * factor).roundToInt().coerceIn(0, 255),
+        (blue * factor).roundToInt().coerceIn(0, 255),
+        (alpha * factor).roundToInt().coerceIn(0, 255)
     )
+}
+
+fun Color.toHSB(): Color.HSB {
+    return Color.HSB(
+        JColor.RGBtoHSB(
+            red,
+            green,
+            blue,
+            FloatArray(size = 3)
+        ),
+        a / 255f
+    )
+}
+
+inline fun Color(crossinline getter: () -> Int): Color = object : Color {
+    override val rgba: Int
+        get() {
+            return getter()
+        }
 }

@@ -2,17 +2,16 @@ package com.github.stivais.ui.elements
 
 import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.color.Color
-import com.github.stivais.ui.color.brighter
 import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.sizes.Copying
 import com.github.stivais.ui.elements.impl.*
 import com.github.stivais.ui.events.onClick
-import com.github.stivais.ui.events.onMouseEnterExit
 import com.github.stivais.ui.events.onMouseMove
 import com.github.stivais.ui.events.onRelease
 import com.github.stivais.ui.renderer.GradientDirection
 import com.github.stivais.ui.utils.animate
+import com.github.stivais.ui.utils.hoverEffect
 import com.github.stivais.ui.utils.radii
 import com.github.stivais.ui.utils.seconds
 
@@ -79,20 +78,16 @@ inline fun Element.button(
     crossinline dsl: Block.() -> Unit = {}
 ): Block {
     if (on) color.swap()
-    val hoverColor = Color.Animated(color, Color { color.rgba.brighter() })
     return block(
         constraints = constraints,
-        color = hoverColor,
+        color = color,
         radius = radii
     ) {
-        onMouseEnterExit {
-            hoverColor.animate(0.25.seconds)
-            true
-        }
-        onClick(0) {
+        onClick {
             color.animate(0.15.seconds)
             false
         }
+        hoverEffect(0.25.seconds)
         dsl()
     }
 }
@@ -115,18 +110,15 @@ fun Element.slider(
     onChange: (percent: Float) -> Unit
 ): Block {
     var dragging = false
+    val sliderPosition = Animatable.Raw(0f)
+
     return block(constraints, Color.RGB(26, 26, 26), radii(3)) {
-//        outline(color, 0.75.px)
-
-        val sliderPosition = Animatable.Raw(0f)
-        val animated = Color.Animated(from = color, Color { color.rgba.brighter() })
-
         block(
             constraints = constrain(0.px, 0.px, sliderPosition, Copying),
-            color = animated,
+            color = color,
             radius = radii(all = 4)
         )
-        onClick(0) {
+        onClick {
             val pos = (ui.mx - x).coerceIn(0f, width)
             sliderPosition.animate(to = pos, 0.75.seconds, Animations.EaseOutQuint)
             onChange(pos / width)
@@ -144,12 +136,9 @@ fun Element.slider(
         onRelease(0) {
             dragging = false
         }
-        onMouseEnterExit {
-            animated.animate(0.25.seconds)
-            true
-        }
         afterInitialization {
             sliderPosition.to(((value - min) / (max - min) * width).toFloat())
         }
+        hoverEffect(0.25.seconds)
     }
 }

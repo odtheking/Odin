@@ -31,10 +31,12 @@ class Text(
     }
 
     override fun draw() {
-        if (needsUpdate || constraints.height is Percent /* temporary */) {
+        // todo: make positioning not happen every frame,
+            //  because in ClickGUI almost all text uses percent, which basically halves frametime because of calculating width
+        if (needsUpdate || constraints.height is Percent) {
             parent?.position() // suboptimal
             (constraints.width as Pixel).pixels = renderer.textWidth(text, height)
-            position() // really suboptimal, however rarely happens so for now it is fine
+            position()
             needsUpdate = false
         }
         renderer.text(text, x, y, height, color!!.rgba)

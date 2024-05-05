@@ -60,13 +60,13 @@ abstract class Element(constraints: Constraints?) {
     var internalX: Float = 0f
         set(value) {
             field = value
-            x = value + (parent?.x ?: 0f)
+            x = value + (parent?.x ?: 0f) // this is an issue
         }
 
     var internalY: Float = 0f
         set(value) {
             field = value
-            y = value + (parent?.y ?: 0f)
+            y = value + (parent?.y ?: 0f) // this is an issue
         }
 
     var color: Color? = null
@@ -99,11 +99,16 @@ abstract class Element(constraints: Constraints?) {
         internalX = constraints.x.get(this, Type.X)
         internalY = constraints.y.get(this, Type.Y)
         elements?.forLoop { element ->
+            place(element)
             element.position()
             element.renders = element.intersects(this.x, this.y, width, height)
         }
         if (constraints.width.reliesOnChild()) width = constraints.width.get(this, Type.W)
         if (constraints.height.reliesOnChild()) height = constraints.height.get(this, Type.H)
+    }
+
+    open fun place(element: Element) {
+
     }
 
     fun render() {
