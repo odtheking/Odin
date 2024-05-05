@@ -22,7 +22,7 @@ object HighlightRenderer {
     val highlightModeList2 = arrayListOf("Outline", "Boxes", "Box 2D", "Glow")
 
     private val entityGetters: MutableList<Pair<() -> HighlightType, () -> Collection<HighlightEntity>>> = mutableListOf()
-    private val entities = mapOf<HighlightType, MutableList<HighlightEntity>>(
+    val entities = mapOf<HighlightType, MutableList<HighlightEntity>>(
         HighlightType.Outline to mutableListOf(),
         HighlightType.Glow to mutableListOf(),
         HighlightType.Boxes to mutableListOf(),
@@ -40,6 +40,7 @@ object HighlightRenderer {
             entityGetters.forEach {
                 entities[it.first.invoke()]?.addAll(it.second.invoke())
             }
+
         }.register()
     }
 
@@ -48,7 +49,7 @@ object HighlightRenderer {
         entities[HighlightType.Boxes]?.forEach {
             Renderer.drawBox(it.entity.renderBoundingBox, it.color, it.thickness, depth = it.depth, fillAlpha = 0)
         }
-        entities[HighlightType.Box2d]?.forEach {
+        entities[HighlightType.Box2d]?.filter { it.depth && mc.thePlayer.canEntityBeSeen(it.entity) }?.forEach {
             Renderer.draw2DEntity(it.entity, it.thickness * 6, it.color)
         }
     }
