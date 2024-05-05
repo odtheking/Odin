@@ -1,9 +1,9 @@
 package me.odinmain.features.impl.floor7.p3.termsim
 
-import me.odinmain.events.impl.GuiLoadedEvent
-import me.odinmain.features.impl.floor7.p3.TerminalSolver
+import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.impl.floor7.p3.TerminalTimes
 import me.odinmain.utils.getRandom
+import me.odinmain.utils.postAndCatch
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.Slot
@@ -40,12 +40,13 @@ class StartsWith(private val letter: String) : TermSimGui(
     }
 
     override fun slotClick(slot: Slot, button: Int) {
-        if (!slot.stack.displayName.startsWith(letter, true) || slot.stack.isItemEnchanted) return
+        val slot = slot.stack ?: return
+        if (!slot.displayName.startsWith(letter, true) || slot.isItemEnchanted) return
 
-        slot.stack.addEnchantment(Enchantment.infinity, 1)
+        slot.addEnchantment(Enchantment.infinity, 1)
         mc.thePlayer.playSound("random.orb", 1f, 1f)
-        TerminalSolver.onGuiLoad(GuiLoadedEvent(name, inventorySlots as ContainerChest))
-        if (inventorySlots.inventorySlots.subList(0, size).none { it.stack.displayName.startsWith(letter, true) && !it.stack.isItemEnchanted }) {
+        GuiEvent.GuiLoadedEvent(name, inventorySlots as ContainerChest).postAndCatch()
+        if (inventorySlots?.inventorySlots?.subList(0, size)?.none { it?.stack?.displayName?.startsWith(letter, true) == true && !it.stack.isItemEnchanted } == true) {
             solved(this.name, TerminalTimes.simStartsWithPB)
         }
     }

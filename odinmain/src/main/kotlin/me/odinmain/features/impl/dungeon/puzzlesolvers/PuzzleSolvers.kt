@@ -1,7 +1,5 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
-import me.odinmain.OdinMain
-import me.odinmain.events.impl.ClickEvent
 import me.odinmain.events.impl.EnteredDungeonRoomEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -26,18 +24,20 @@ object PuzzleSolvers : Module(
 ) {
     private val waterSolver: Boolean by BooleanSetting("Water Board", true, description = "Shows you the solution to the water puzzle.")
     val showOrder: Boolean by BooleanSetting("Show Order", true, description = "Shows the order of the levers to click.").withDependency { waterSolver }
+    val showTracer: Boolean by BooleanSetting("Show Tracer", true, description = "Shows a tracer to the next lever.").withDependency { waterSolver }
+    val tracerColorFirst: Color by ColorSetting("Tracer Color First", Color.GREEN, true, description = "Color for the first tracer").withDependency { showTracer }
+    val tracerColorSecond: Color by ColorSetting("Tracer Color Second", Color.ORANGE, true, description = "Color for the second tracer").withDependency { showTracer }
     val reset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
         WaterSolver.reset()
     }.withDependency { waterSolver }
 
     private val tpMaze: Boolean by BooleanSetting("Teleport Maze", true, description = "Shows you the solution for the TP maze puzzle")
-    val solutionThroughWalls: Boolean by BooleanSetting("Solution through walls", false, description = "Renders the final solution through walls").withDependency { tpMaze && !OdinMain.onLegitVersion }
+    val solutionThroughWalls: Boolean by BooleanSetting("Solution through walls", false, description = "Renders the final solution through walls").withDependency { tpMaze }
     val mazeColorOne: Color by ColorSetting("Color for one solution", Color.GREEN.withAlpha(.5f), true, description = "Color for when there is a single solution").withDependency { tpMaze }
     val mazeColorMultiple: Color by ColorSetting("Color for multiple solutions", Color.ORANGE.withAlpha(.5f), true, description = "Color for when there are multiple solutions").withDependency { tpMaze }
     val mazeColorVisited: Color by ColorSetting("Color for visited", Color.RED.withAlpha(.5f), true, description = "Color for the already used TP pads").withDependency { tpMaze }
 
     private val tttSolver: Boolean by BooleanSetting("Tic Tac Toe", true, description = "Shows you the solution for the TTT puzzle")
-    val blockWrongClicks: Boolean by BooleanSetting(name = "Block Wrong Clicks").withDependency { tttSolver && !OdinMain.onLegitVersion }
 
     private val iceFillSolver: Boolean by BooleanSetting("Ice Fill Solver", true, description = "Solver for the ice fill puzzle")
     private val iceFillColor: Color by ColorSetting("Ice Fill Color", Color.PINK, true, description = "Color for the ice fill solver").withDependency { iceFillSolver }
@@ -45,12 +45,8 @@ object PuzzleSolvers : Module(
         IceFillSolver.reset()
     }.withDependency { iceFillSolver }
 
-    override fun onKeybind() {
-        IceFillSolver.reset()
-    }
     init {
         execute(500) {
-            if (waterSolver) WaterSolver.scan()
             if (tpMaze) TPMaze.scan()
         }
 
@@ -86,13 +82,10 @@ object PuzzleSolvers : Module(
     }
 
     @SubscribeEvent
-    fun onRightClick(event: ClickEvent.RightClickEvent) {
-        if (tttSolver) TicTacToe.tttRightClick(event)
-    }
-
-    @SubscribeEvent
     fun onRoomEnter(event: EnteredDungeonRoomEvent) {
+        WaterSolver.scan(event)
+
         IceFillSolver.enterDungeonRoom(event)
-        //BlazeSolver.getRoomType()
+        BlazeSolver.getRoomType()
     }
 }

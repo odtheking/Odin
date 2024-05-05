@@ -1,19 +1,15 @@
 package me.odinmain.config
 
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonIOException
-import com.google.gson.JsonSyntaxException
+import com.google.gson.*
 import com.google.gson.reflect.TypeToken
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.dungeon.DungeonWaypoints.DungeonWaypoint
 import me.odinmain.utils.render.Color
 import java.io.File
 import java.io.IOException
 
+@Deprecated("DEPRECATED CONFIG, ONLY USED FOR MIGRATION, REMOVE AT A LATER DATE!")
 object DungeonWaypointConfig {
 
     private val gson = GsonBuilder().registerTypeAdapter(Color::class.java, Color.ColorSerializer()).setPrettyPrinting().create()

@@ -1,6 +1,6 @@
 package me.odinmain.features.impl.skyblock
 
-import me.odinmain.events.impl.PreMouseInputEvent
+import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.copyToClipboard
@@ -18,7 +18,7 @@ object CopyChat : Module(
     description = "Allows you to right click messages in chat to copy them.",
 ) {
     @SubscribeEvent
-    fun mouseClicked(event: PreMouseInputEvent) {
+    fun mouseClicked(event: GuiEvent.GuiMouseClickEvent) {
         if (event.button != 1 || mc.currentScreen !is GuiChat) return
 
         val mx = Mouse.getX()

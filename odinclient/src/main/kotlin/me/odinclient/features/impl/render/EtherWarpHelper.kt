@@ -8,10 +8,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.DungeonWaypoints.toBlockPos
 import me.odinmain.features.impl.dungeon.DungeonWaypoints.toVec3
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.DualSetting
-import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.PositionLook
 import me.odinmain.utils.clock.Clock
@@ -44,8 +41,8 @@ object EtherWarpHelper : Module(
     private val renderFail: Boolean by BooleanSetting("Show when failed", true).withDependency { render }
     private val renderColor: Color by ColorSetting("Color", Color.ORANGE.withAlpha(.5f), allowAlpha = true).withDependency { render }
     private val wrongColor: Color by ColorSetting("Wrong Color", Color.RED.withAlpha(.5f), allowAlpha = true).withDependency { renderFail }
-    private val filled: Boolean by DualSetting("Type", "Outline", "Filled", default = false).withDependency { render }
-    private val thickness: Float by NumberSetting("Thickness", 3f, 1f, 10f, .1f).withDependency { !filled && render }
+    private val style: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.")
+    private val thickness: Float by NumberSetting("Thickness", 3f, 1f, 10f, .1f).withDependency { render }
     private val phase: Boolean by BooleanSetting("Phase", false).withDependency { render }
     private val etherWarpTriggerBot: Boolean by BooleanSetting("Trigger Bot", false, description = "Uses Dungeon Waypoints to trigger bot to the closest waypoint.")
     private val etherWarpTBDelay: Long by NumberSetting("Trigger Bot Delay", 200L, 0, 1000, 10).withDependency { etherWarpTriggerBot }
@@ -79,12 +76,10 @@ object EtherWarpHelper : Module(
         if (render && mc.thePlayer.isSneaking && mc.thePlayer.heldItem.extraAttributes?.getBoolean("ethermerge") == true && (etherPos.succeeded || renderFail)) {
             val pos = etherPos.pos ?: return
             val color = if (etherPos.succeeded) renderColor else wrongColor
-            val aabb = getBlockAt(pos).getSelectedBoundingBox(mc.theWorld, pos) ?: return
+            getBlockAt(pos).setBlockBoundsBasedOnState(mc.theWorld, pos)
+            val aabb = getBlockAt(pos).getSelectedBoundingBox(mc.theWorld, pos).expand(0.002, 0.002, 0.002) ?: return
 
-            if (filled)
-                Renderer.drawBox(aabb, color, depth = phase, outlineAlpha = 0)
-            else
-                Renderer.drawBox(aabb, color, outlineWidth = thickness, depth = phase, fillAlpha = 0)
+            Renderer.drawBox(aabb, color, outlineWidth = thickness, depth = phase, outlineAlpha = if (style == 0) 0 else color.alpha, fillAlpha = if (style == 1) 0 else color.alpha)
         }
     }
 

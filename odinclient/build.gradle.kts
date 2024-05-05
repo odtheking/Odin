@@ -23,7 +23,6 @@ repositories {
     mavenCentral()
     maven("https://repo.spongepowered.org/maven/")
     maven("https://repo.essential.gg/repository/maven-public/")
-    maven("https://repo.polyfrost.cc/releases")
 }
 
 val shadowImpl: Configuration by configurations.creating {
@@ -95,12 +94,12 @@ tasks {
     }
 
     remapJar {
-        archiveBaseName = "odinclient"
+        archiveBaseName = "OdinClient"
         input = shadowJar.get().archiveFile
     }
 
     shadowJar {
-        archiveBaseName = "odinclient"
+        archiveBaseName = "OdinClient"
         archiveClassifier = "dev"
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         configurations = listOf(shadowImpl)

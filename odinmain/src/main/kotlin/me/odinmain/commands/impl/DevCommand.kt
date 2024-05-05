@@ -1,13 +1,13 @@
 package me.odinmain.commands.impl
 
 import com.github.stivais.commodore.utils.GreedyString
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
-import me.odinmain.OdinMain.scope
 import me.odinmain.commands.commodore
 import me.odinmain.events.impl.ChatPacketEvent
-import me.odinmain.features.ModuleManager.generateReadme
-import me.odinmain.features.impl.dungeon.puzzlesolvers.TPMaze
+import me.odinmain.features.ModuleManager.generateFeatureList
 import me.odinmain.features.impl.render.DevPlayers.updateDevs
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
@@ -22,20 +22,12 @@ import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 
 
+@OptIn(DelicateCoroutinesApi::class)
 val devCommand = commodore("oddev") {
-    //if (!isDev) return@commodore // i forgot to add require to recode lol
 
     literal("getdata") {
         literal("entity").runs { copyEntityData() }
         literal("block").runs { copyBlockData() }
-    }
-
-    literal("testtp").runs {
-        TPMaze.getCorrectPortals(
-            mc.thePlayer.positionVector,
-            mc.thePlayer.rotationYaw,
-            mc.thePlayer.rotationPitch
-        )
     }
 
     literal("particles").runs {
@@ -46,43 +38,22 @@ val devCommand = commodore("oddev") {
         sendCommand("particle flame 84 18 56 1 1 1 1 100")
     }
 
-    literal("resettp").runs {
-        TPMaze.correctPortals = listOf()
-        TPMaze.portals = setOf()
-    }
-
     literal("giveaotv").runs {
         sendCommand("give @p minecraft:diamond_shovel 1 0 {ExtraAttributes:{ethermerge:1b}}")
     }
 
-    literal("devlist").runs {
-        modMessage(updateDevs().entries.joinToString("\n\n"))
-    }
-
-    literal("sendServer").runs { string: String ->
-        // """{"username": "${mc.thePlayer.name}", "version": "${if (OdinMain.onLegitVersion) "legit" else "cheater"} ${OdinMain.VERSION}"}"""
-        scope.launch {
-            sendDataToServer(string)
-        }
-        modMessage(string)
+    literal("updatedevs").runs {
+       updateDevs()
     }
 
     literal("adddev").runs { name: String, password: String ->
-        modMessage("Sending data...")
-        scope.launch {
+        modMessage("Sending data... name: $name, password: $password")
+        GlobalScope.launch {
             modMessage(sendDataToServer("$name, [1,2,3], [1,2,3], false, $password", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
         }
     }
 
-
-    literal("getServer").runs { string: String ->
-        scope.launch {
-            val data = getDataFromServer(string)
-            modMessage(data)
-        }
-    }
-
-    literal("getteammates").runs {
+    literal("dunginfo").runs {
         modMessage("Teammates: ${DungeonUtils.dungeonTeammates.joinToString { "${it.name} (${it.clazz})" }}")
         modMessage("TeammatesNoSelf: ${DungeonUtils.dungeonTeammatesNoSelf.map { it.name }}")
         modMessage("LeapTeammates: ${DungeonUtils.leapTeammates.map { it.name }}")
@@ -124,7 +95,7 @@ val devCommand = commodore("oddev") {
     }
 
     literal("generatereadme").runs {
-        val readmeContent = generateReadme()
+        val readmeContent = generateFeatureList()
 
         val clipboard = Toolkit.getDefaultToolkit().systemClipboard
         val stringSelection = StringSelection(readmeContent)

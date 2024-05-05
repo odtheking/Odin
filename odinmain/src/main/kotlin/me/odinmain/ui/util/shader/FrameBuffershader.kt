@@ -18,8 +18,6 @@ abstract class FramebufferShader(fragmentShader: String) : Shader(fragmentShader
     private var entityShadows = false
 
     fun startDraw(partialTicks: Float) {
-        GlStateManager.enableAlpha()
-
         GlStateManager.pushMatrix()
         GlStateManager.pushAttrib()
 
@@ -39,16 +37,11 @@ abstract class FramebufferShader(fragmentShader: String) : Shader(fragmentShader
         this.radius = radius
         this.quality = quality
 
-        mc.entityRenderer.disableLightmap()
-        RenderHelper.disableStandardItemLighting()
 
         startShader()
         mc.entityRenderer.setupOverlayRendering()
         framebuffer?.let { drawFramebuffer(it) }
         stopShader()
-
-        mc.entityRenderer.enableLightmap()
-        RenderHelper.enableStandardItemLighting()
 
         GlStateManager.popMatrix()
         GlStateManager.popAttrib()

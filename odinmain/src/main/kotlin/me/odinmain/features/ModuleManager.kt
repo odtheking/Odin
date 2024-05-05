@@ -5,6 +5,7 @@ import me.odinmain.events.impl.*
 import me.odinmain.features.impl.dungeon.*
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers
 import me.odinmain.features.impl.floor7.NecronDropTimer
+import me.odinmain.features.impl.floor7.TerminalSimulator
 import me.odinmain.features.impl.floor7.WitherDragons
 import me.odinmain.features.impl.floor7.p3.*
 import me.odinmain.features.impl.kuudra.*
@@ -63,7 +64,6 @@ object ModuleManager {
         MelodyMessage,
         NecronDropTimer,
         BPSDisplay,
-        Camera,
         ClickedSecrets,
         ClickGUIModule,
         CustomHighlight,
@@ -82,7 +82,6 @@ object ModuleManager {
         ChatCommands,
         DeployableTimer,
         DianaHelper,
-        Reminders,
         Animations,
         SpaceHelmet,
         DungeonWaypoints,
@@ -111,14 +110,16 @@ object ModuleManager {
         KuudraRequeue,
         EnrageDisplay,
         BlockOverlay,
-        //ItemsHighlight,
+        ItemsHighlight,
         GoldorTimer,
         VisualWords,
         HidePlayers,
         WarpCooldown,
         PetKeybinds,
         CopyChat,
-        PartyNote
+        DVD,
+        PlayerDisplay,
+        TerminalSimulator
     )
 
     init {
@@ -228,19 +229,23 @@ object ModuleManager {
 
     fun getModuleByName(name: String?): Module? = modules.firstOrNull { it.name.equals(name, true) }
 
-    fun generateReadme(): String {
+    fun generateFeatureList(): String {
         val moduleList = modules.sortedByDescending { getTextWidth(it.name, 18f) }
         val categories = moduleList.groupBy { it.category }
-        val readme = StringBuilder()
 
-        for ((category, modulesInCategory) in categories) {
+        val categoryOrder = Category.entries.associateWith { it.ordinal }
+        val sortedCategories = categories.entries.sortedBy { categoryOrder[it.key] }
+
+        val featureList = StringBuilder()
+
+        for ((category, modulesInCategory) in sortedCategories) {
             val displayName = category.name.capitalizeFirst()
-            readme.appendLine("Category: ${if (displayName == "Floor7") "Floor 7" else displayName}")
+            featureList.appendLine("Category: ${if (displayName == "Floor7") "Floor 7" else displayName}")
             for (module in modulesInCategory) {
-                readme.appendLine("- ${module.name}: ${module.description}")
+                featureList.appendLine("- ${module.name}: ${module.description}")
             }
-            readme.appendLine()
+            featureList.appendLine()
         }
-        return readme.toString()
+        return featureList.toString()
     }
 }

@@ -1,8 +1,6 @@
 package me.odinmain.features.impl.dungeon
 
-import me.odinmain.events.impl.DrawGuiContainerScreenEvent
-import me.odinmain.events.impl.GuiClickEvent
-import me.odinmain.events.impl.GuiKeyPressEvent
+import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.LeapHelper.getPlayer
@@ -17,6 +15,8 @@ import me.odinmain.ui.util.MouseUtils.getQuadrant
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.name
 import me.odinmain.utils.render.*
+import me.odinmain.utils.skyblock.PlayerUtils
+import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.leapTeammates
 import me.odinmain.utils.skyblock.getItemIndexInContainerChest
@@ -43,7 +43,8 @@ object LeapMenu : Module(
     private val topRightKeybind: Keybinding by KeybindSetting("Top Right", Keyboard.KEY_2, "Used to click on the second person in the leap menu.").withDependency { useNumberKeys }
     private val bottomLeftKeybind: Keybinding by KeybindSetting("Bottom Left", Keyboard.KEY_3, "Used to click on the third person in the leap menu.").withDependency { useNumberKeys }
     private val bottomRightKeybind: Keybinding by KeybindSetting("Bottom right", Keyboard.KEY_4, "Used to click on the fourth person in the leap menu.").withDependency { useNumberKeys }
-    private val leapHelperToggle: Boolean by BooleanSetting("Leap Helper", true, description = "Highlights the leap helper player in the leap menu.")
+    private val size: Float by NumberSetting("Scale Factor", 1.0f, 0.5f, 2.0f, 0.1f, description = "Scale factor for the leap menu.")
+    private val leapHelperToggle: Boolean by BooleanSetting("Leap Helper", false, description = "Highlights the leap helper player in the leap menu.")
     private val leapHelperColor: Color by ColorSetting("Leap Helper Color", default = Color.WHITE, description = "Color of the Leap Helper highlight").withDependency { leapHelperToggle }
     val delay: Int by NumberSetting("Reset Leap Helper Delay", 30, 10.0, 120.0, 1.0, description = "Delay for clearing the leap helper highlight").withDependency { leapHelperToggle }
 
@@ -54,7 +55,7 @@ object LeapMenu : Module(
     private val EMPTY = DungeonUtils.DungeonPlayer("Empty", DungeonUtils.Classes.Archer, ResourceLocation("textures/entity/steve.png"))
 
     @SubscribeEvent
-    fun onDrawScreen(event: DrawGuiContainerScreenEvent) {
+    fun onDrawScreen(event: GuiEvent.DrawGuiContainerScreenEvent) {
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
         if (chest !is ContainerChest || chest.name != "Spirit Leap" || leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return
         hoveredQuadrant = getQuadrant()
@@ -70,6 +71,7 @@ object LeapMenu : Module(
             GlStateManager.enableAlpha()
 
             scale(1f / scaleFactor,  1f / scaleFactor)
+            scale(size, size)
             val displayWidth = Display.getWidth()
             val displayHeight = Display.getHeight()
             translate(displayWidth / 2, displayHeight / 2)
@@ -105,8 +107,9 @@ object LeapMenu : Module(
     }
 
     @SubscribeEvent
-    fun mouseClicked(event: GuiClickEvent) {
-        if (event.gui !is GuiChest || event.container !is ContainerChest || event.container.name != "Spirit Leap" || leapTeammates.isEmpty())  return
+    fun mouseClicked(event: GuiEvent.GuiMouseClickEvent) {
+        val gui = event.gui as? GuiChest ?: return
+        if (event.gui.inventorySlots !is ContainerChest || gui.inventorySlots.name != "Spirit Leap" || leapTeammates.isEmpty())  return
 
         val quadrant = getQuadrant()
         if ((type.equalsOneOf(1,2,3)) && leapTeammates.size < quadrant) return
@@ -115,13 +118,13 @@ object LeapMenu : Module(
         if (playerToLeap == EMPTY) return
         if (playerToLeap.isDead) return modMessage("This player is dead, can't leap.")
 
-        leapTo(playerToLeap.name, event.container)
+        leapTo(playerToLeap.name, gui.inventorySlots as? ContainerChest ?: return)
 
         event.isCanceled = true
     }
 
     @SubscribeEvent
-    fun keyTyped(event: GuiKeyPressEvent) {
+    fun keyTyped(event: GuiEvent.GuiKeyPressEvent) {
         if (
             event.container !is ContainerChest ||
             event.container.name != "Spirit Leap" ||
@@ -148,7 +151,7 @@ object LeapMenu : Module(
     private fun leapTo(name: String, containerChest: ContainerChest) {
         val index = getItemIndexInContainerChest(containerChest, name, 11..16) ?: return modMessage("Cant find player $name. This shouldn't be possible!")
         modMessage("Teleporting to $name.")
-        mc.playerController.windowClick(containerChest.windowId, index, 2, 3, mc.thePlayer)
+        windowClick(index, clickType = PlayerUtils.ClickType.Middle)
     }
 
     init {

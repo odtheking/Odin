@@ -9,7 +9,6 @@ import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.getTextWidth
 import me.odinmain.utils.render.text
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 import kotlin.math.abs
@@ -34,7 +33,7 @@ object CanClip : Module(
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (mc.thePlayer == null || !mc.thePlayer.isSneaking || !DungeonUtils.inBoss) {
+        if (mc.thePlayer == null || !mc.thePlayer.isSneaking) {
             if (canClip) {
                 animation.start()
                 canClip = false

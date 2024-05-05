@@ -7,9 +7,7 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
 import net.minecraft.block.Block
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.Tessellator
-import net.minecraft.client.renderer.WorldRenderer
+import net.minecraft.client.renderer.*
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -188,7 +186,6 @@ object RenderUtils {
         GlStateManager.enableTexture2D()
         GlStateManager.disableBlend()
         GlStateManager.enableDepth()
-        GlStateManager.enableLighting()
         GlStateManager.resetColor()
         GlStateManager.popMatrix()
     }
@@ -239,7 +236,6 @@ object RenderUtils {
         tessellator.draw()
         GlStateManager.enableTexture2D()
         GlStateManager.disableBlend()
-        GlStateManager.enableLighting()
         GlStateManager.enableDepth()
         GlStateManager.resetColor()
         GlStateManager.popMatrix()
@@ -422,7 +418,6 @@ object RenderUtils {
         GlStateManager.rotate(-renderManager.playerViewY, 0.0f, 1.0f, 0.0f)
         GlStateManager.rotate(renderManager.playerViewX * xMultiplier, 1.0f, 0.0f, 0.0f)
         scale(-scale, -scale, scale)
-        GlStateManager.disableLighting()
         GlStateManager.enableBlend()
         blendFactor()
 
@@ -449,7 +444,6 @@ object RenderUtils {
             GlStateManager.enableDepth()
             GlStateManager.depthMask(true)
         }
-        GlStateManager.enableLighting()
         GlStateManager.resetColor()
         GlStateManager.popMatrix()
     }
@@ -518,6 +512,7 @@ object RenderUtils {
      * @param height The height of the rectangle.
      */
     fun drawTexturedModalRect(x: Int, y: Int, width: Int, height: Int) {
+        Color.WHITE.bind()
         worldRenderer {
             begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
             pos(x.toDouble(), (y + height).toDouble(), 0.0).tex(0.0, 1.0).endVertex()
@@ -527,6 +522,7 @@ object RenderUtils {
         }
         tessellator.draw()
     }
+
 
     fun draw2D(entity: Entity, lineWidth: Float, color: Color) {
         val mvMatrix = getMatrix(2982)

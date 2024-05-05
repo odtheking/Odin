@@ -11,6 +11,7 @@ import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraft.util.EnumParticleTypes
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.EntityViewRenderEvent
+import net.minecraftforge.client.event.RenderBlockOverlayEvent
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -23,6 +24,9 @@ object NoDebuff : Module(
     private val antiPortal: Boolean by BooleanSetting("No Portal Effect", false, description = "Disables the nether portal overlay.")
     private val noShieldParticles: Boolean by BooleanSetting("No Shield Particle", false, description = "Removes purple particles and wither impact hearts.")
     private val antiWaterFOV: Boolean by BooleanSetting("No Water FOV", false, description = "Disable FOV change in water.")
+    private val noFire: Boolean by BooleanSetting("No Fire Overlay", false, description = "Disable Fire overlay on screen.")
+    private val noPush: Boolean by BooleanSetting("No Push", false, description = "Prevents from being pushed out of blocks.")
+    private val seeThroughBlocks: Boolean by BooleanSetting("See Through Blocks", false, description = "Makes blocks transparent.")
 
     @SubscribeEvent
     fun onRenderFog(event: EntityViewRenderEvent.FogDensity) {
@@ -55,6 +59,20 @@ object NoDebuff : Module(
     @SubscribeEvent
     fun onFOV(event: EntityViewRenderEvent.FOVModifier) {
         if (!antiWaterFOV || event.block.material != Material.water) return
-        event.fov = event.fov * 70F / 60F
+        event.fov *= 70F / 60F
+    }
+
+    @SubscribeEvent
+    fun onFire(event: RenderBlockOverlayEvent) {
+        if (event.overlayType == RenderBlockOverlayEvent.OverlayType.FIRE && noFire) event.isCanceled = true
+    }
+
+    @SubscribeEvent
+    fun onRenderBlockOverlay(event: RenderBlockOverlayEvent) {
+        if (event.overlayType == RenderBlockOverlayEvent.OverlayType.BLOCK && seeThroughBlocks) event.setCanceled(true)
+    }
+
+    fun isNoPush(): Boolean {
+        return noPush && enabled && mc.thePlayer.isSpectator && mc.thePlayer.heldItem == null
     }
 }

@@ -1,9 +1,9 @@
 package me.odinmain.features.impl.floor7.p3.termsim
 
-import me.odinmain.events.impl.GuiLoadedEvent
-import me.odinmain.features.impl.floor7.p3.TerminalSolver
+import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.impl.floor7.p3.TerminalTimes
 import me.odinmain.utils.getRandom
+import me.odinmain.utils.postAndCatch
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.Slot
@@ -53,9 +53,9 @@ class SelectAll(private val color: String) : TermSimGui(
 
         slot.stack.addEnchantment(Enchantment.infinity, 1)
         mc.thePlayer.playSound("random.orb", 1f, 1f)
-        TerminalSolver.onGuiLoad(GuiLoadedEvent(name, inventorySlots as ContainerChest))
-        if (inventorySlots.inventorySlots.subList(0, size).none {
-                it.stack?.isItemEnchanted == false && it.stack?.item in items && if (it.stack?.item == dye) it.stack?.metadata == correctDye else it.stack?.metadata == correctMeta
-            }) solved(this.name, TerminalTimes.simSelectAllPB)
+        GuiEvent.GuiLoadedEvent(name, inventorySlots as ContainerChest).postAndCatch()
+        if (inventorySlots?.inventorySlots?.subList(0, size)?.none {
+                it?.stack?.isItemEnchanted == false && it.stack?.item in items && if (it.stack?.item == dye) it.stack?.metadata == correctDye else it.stack?.metadata == correctMeta
+            } == true) solved(this.name, TerminalTimes.simSelectAllPB)
     }
 }

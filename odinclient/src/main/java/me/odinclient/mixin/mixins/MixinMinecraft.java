@@ -1,12 +1,12 @@
 package me.odinclient.mixin.mixins;
 
 import me.odinclient.features.impl.skyblock.CancelInteract;
-import me.odinclient.utils.skyblock.PlayerUtils;
 import me.odinmain.events.impl.ClickEvent;
 import me.odinmain.events.impl.PreKeyInputEvent;
 import me.odinmain.events.impl.PreMouseInputEvent;
 import me.odinmain.features.impl.render.Animations;
 import me.odinmain.features.impl.render.CPSDisplay;
+import me.odinmain.utils.skyblock.PlayerUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;

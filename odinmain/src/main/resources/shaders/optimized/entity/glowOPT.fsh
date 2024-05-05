@@ -6,7 +6,7 @@ uniform float glow_intensity = 2.0;
 void main ()
 {
   vec4 tmpvar_1;
-  tmpvar_1 = texture (texture, gl_TexCoord[0].xy);
+  tmpvar_1 = texture2D(texture, gl_TexCoord[0].xy);
   if ((tmpvar_1.w != 0.0)) {
     gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
   } else {
@@ -35,7 +35,7 @@ void main ()
          * radius)));
         tmpvar_11.y = int(uv_y_5);
         vec4 tmpvar_12;
-        tmpvar_12 = texelFetch (texture, tmpvar_11, 0);
+        tmpvar_12 = texelFetch(texture, tmpvar_11, 0);
         if ((tmpvar_12.w > 0.0)) {
           foundColor_4 = tmpvar_12.xyz;
           h_sum_10 = (h_sum_10 + tmpvar_12.w);

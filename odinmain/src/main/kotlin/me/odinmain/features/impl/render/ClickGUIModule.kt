@@ -97,9 +97,7 @@ object ClickGUIModule: Module(
             ${getChatBreak()}
             
             """.trimIndent(), false)
-
         }
-
         resetPositions()
     }
 

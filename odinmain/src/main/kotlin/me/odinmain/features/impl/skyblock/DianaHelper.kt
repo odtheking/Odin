@@ -41,7 +41,7 @@ object DianaHelper : Module(
     private val darkAuction: Boolean by BooleanSetting("DA Warp").withDependency { showWarpSettings }
     private val museum: Boolean by BooleanSetting("Museum Warp").withDependency { showWarpSettings }
     private val wizard: Boolean by BooleanSetting("Wizard Warp").withDependency { showWarpSettings }
-    private val autoWarp: Boolean by BooleanSetting("Auto Warp", description = "Automatically warps you to the nearest warp location 2 seconds after you activate the spade ability.").withDependency { !OdinMain.onLegitVersion }
+    private val autoWarp: Boolean by BooleanSetting("Auto Warp", description = "Automatically warps you to the nearest warp location 2 seconds after you activate the spade ability.").withDependency { !OdinMain.isLegitVersion }
     private var warpLocation: WarpPoint? = null
 
     private val cmdCooldown = Clock(3_000)
@@ -110,7 +110,7 @@ object DianaHelper : Module(
 
     @SubscribeEvent
     fun onRightClick(event: ClickEvent.RightClickEvent) {
-        if (!isHolding("ANCESTRAL_SPADE") || !autoWarp || OdinMain.onLegitVersion) return
+        if (!isHolding("ANCESTRAL_SPADE") || !autoWarp || OdinMain.isLegitVersion) return
         runIn(40) {
             onKeybind()
         }
