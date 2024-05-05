@@ -20,43 +20,39 @@ object PlayerDisplay : Module(
     private val hideFood: Boolean by BooleanSetting("Hide Food").withDependency { hideElements }
     private val hideHearts: Boolean by BooleanSetting("Hide Hearts").withDependency { hideElements }
     private val hideXP: Boolean by BooleanSetting("Hide XP Level").withDependency { hideElements }
-    private val healthHud: HudElement by HudSetting("Health Hud", 10f, 10f, 1f, true) {
-        val text =
+    // This is all in one hud for now because multiple huds in a single module doesnt work properly and i cba to fix it, it will be bad for now.
+    private val hud: HudElement by HudSetting("Stat Hud", 10f, 10f, 1f, true) {
+        var text =
             if (it)
-                "§c5000/5000❤"
+                "§c5000/5000❤  "
             else if (SkyblockPlayer.currentHealth != 0 && SkyblockPlayer.maxHealth != 0)
-                "§c${SkyblockPlayer.currentHealth}/${SkyblockPlayer.maxHealth}❤"
+                "§c${SkyblockPlayer.currentHealth}/${SkyblockPlayer.maxHealth}❤  "
             else return@HudSetting 0f to 0f
+
+        text += if (it)
+            "§a1000❈  "
+        else if (SkyblockPlayer.currentDefense != 0)
+            "§a${SkyblockPlayer.currentDefense}❈  "
+        else return@HudSetting 0f to 0f
+
+        text += if (it)
+            "§b2000/2000✎"
+        else if (SkyblockPlayer.currentMana != 0 && SkyblockPlayer.maxMana != 0)
+            "§b${SkyblockPlayer.currentMana}/${SkyblockPlayer.maxMana}✎"
+        else return@HudSetting 0f to 0f
+
+
         mcText(text, 2, 2, 2, Color.RED, center = false)
         return@HudSetting getMCTextWidth(text) * 2f + 4f to 20f
     }
-    private val manaHud: HudElement by HudSetting("Mana Hud", 10f, 10f, 1f, true) {
-        val text =
-            if (it)
-                "§b2000/2000✎"
-            else if (SkyblockPlayer.currentMana != 0 && SkyblockPlayer.maxMana != 0)
-                "§b${SkyblockPlayer.currentMana}/${SkyblockPlayer.maxMana}✎"
-            else return@HudSetting 0f to 0f
-        mcText(text, 2, 2, 2, Color.CYAN, center = false)
-        return@HudSetting getMCTextWidth(text) * 2f + 4f to 20f
-    }
-    private val defenseHud: HudElement by HudSetting("Defense Hud", 10f, 10f, 1f, true) {
-        val text =
-            if (it)
-                "§a1000❈"
-            else if (SkyblockPlayer.currentDefense != 0)
-                "§a${SkyblockPlayer.currentDefense}❈"
-            else return@HudSetting 0f to 0f
-        mcText(text, 2, 2, 2, Color.GREEN, center = false)
-        return@HudSetting getMCTextWidth(text) * 2f + 4f to 20f
-    }
+
 
     fun modifyText(text: String): String {
         if (!enabled) return text
         var toReturn = text
-        toReturn = if (healthHud.enabled) toReturn.replace("[\\d|,]+/[\\d|,]+❤".toRegex(), "") else toReturn
-        toReturn = if (manaHud.enabled) toReturn.replace("[\\d|,]+/[\\d|,]+✎ Mana".toRegex(), "") else toReturn
-        toReturn = if (defenseHud.enabled) toReturn.replace("[\\d|,]+§a❈ Defense".toRegex(), "") else toReturn
+        toReturn = if (hud.enabled) toReturn.replace("[\\d|,]+/[\\d|,]+❤".toRegex(), "") else toReturn
+        toReturn = if (hud.enabled) toReturn.replace("[\\d|,]+/[\\d|,]+✎ Mana".toRegex(), "") else toReturn
+        toReturn = if (hud.enabled) toReturn.replace("[\\d|,]+§a❈ Defense".toRegex(), "") else toReturn
         return toReturn
     }
 
