@@ -1,6 +1,7 @@
 package me.odinclient.features.impl.skyblock
 
 import me.odinmain.events.impl.GuiEvent
+import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -21,7 +22,6 @@ import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.client.event.sound.PlaySoundEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent
 
 
 object ChocolateFactory : Module(
@@ -41,20 +41,9 @@ object ChocolateFactory : Module(
 
     val indexToName = mapOf(29 to "Bro", 30 to "Cousin", 31 to "Sis", 32 to "Daddy", 33 to "Granny")
 
-    private var eggList = mutableListOf<Egg>()
-
-    private enum class ChocolateEggs (
-        val texture: String, val type: String, val color: Color
-    ) {
-        Breakfast   (BunnyEggTextures.breakfastEggTexture, "§6Breakfast Egg", Color.ORANGE),
-        Lunch       (BunnyEggTextures.lunchEggTexture,   "§9Lunch Egg ", Color.BLUE),
-        Dinner      (BunnyEggTextures.dinnerEggTexture,     "§aDinner Egg", Color.GREEN),
-    }
-
-    data class Egg(val entity: EntityArmorStand, val renderName: String, val color: Color)
 
     init {
-        onWorldLoad { eggList.clear() }
+        onWorldLoad { currentChocolateEggs.clear() }
         execute(delay = { delay }) {
             val container = mc.thePlayer?.openContainer as? ContainerChest ?: return@execute
             if (container.name != "Chocolate Factory") return@execute
@@ -118,29 +107,39 @@ object ChocolateFactory : Module(
         if (event.name == "random.eat") event.result = null // This should cancel the sound event
     }
 
+
+    private var currentChocolateEggs = mutableListOf<Egg>()
+    private enum class ChocolateEggs (
+        val texture: String, val type: String, val color: Color
+    ) {
+        Breakfast   (BunnyEggTextures.breakfastEggTexture, "§6Breakfast Egg", Color.ORANGE),
+        Lunch       (BunnyEggTextures.lunchEggTexture,   "§9Lunch Egg ", Color.BLUE),
+        Dinner      (BunnyEggTextures.dinnerEggTexture,     "§aDinner Egg", Color.GREEN),
+    }
+    data class Egg(val entity: EntityArmorStand, val renderName: String, val color: Color)
+
     @SubscribeEvent
-    fun onClientTick(event: TickEvent.ClientTickEvent) {
-        if (mc.theWorld == null) return
+    fun postMetadata(event: PostEntityMetadata) {
+        if (mc.theWorld.getEntityByID(event.packet.entityId) !is EntityArmorStand) return
         if(!eggEsp) {
-            eggList.clear()
+            currentChocolateEggs.clear()
             return
         }
-        val entityArmorStands = mc.theWorld.loadedEntityList.filterIsInstance<EntityArmorStand>()
-        if (event.phase == TickEvent.Phase.END) return
-        for (stand in entityArmorStands) {
-            val texture = getSkullValue(stand)
-            modMessage(texture)
-            val egg = ChocolateEggs.entries.firstOrNull { it.texture == texture } ?: return
-            val egg2 = Egg(stand, egg.type, egg.color)
-            if(egg2 !in eggList) eggList.add(egg2)
-        }
-        if(eggList.size > 3) eggList.clear()
+        var entity = mc.theWorld.getEntityByID(event.packet.entityId) as EntityArmorStand
+
+        if (currentChocolateEggs.any { it.entity == entity }) return
+        val name = entity.name.noControlCodes // (Looking into it on main server)
+        val texture = getSkullValue(entity)
+        val egg = ChocolateEggs.entries.firstOrNull { it.texture == texture } ?: return
+
+        currentChocolateEggs.add(Egg(entity, egg.type, egg.color))
+        if(currentChocolateEggs.size > 3) currentChocolateEggs.clear()
     }
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (eggList.isEmpty()) return
-        for (egg in eggList) {
+        if (currentChocolateEggs.isEmpty()) return
+        for (egg in currentChocolateEggs) {
             val location = Vec3(egg.entity.posX, egg.entity.posY, egg.entity.posZ)
             Renderer.drawCustomBeacon(egg.renderName, location, egg.color, increase = true, beacon = false)
         }
