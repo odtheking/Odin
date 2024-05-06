@@ -1,6 +1,7 @@
 package me.odinmain.commands.impl
 
 import com.github.stivais.commodore.utils.GreedyString
+import me.odinmain.OdinMain.mc
 import me.odinmain.commands.commodore
 import me.odinmain.config.Config
 import me.odinmain.features.impl.dungeon.PosMessages.posMessageStrings
@@ -11,6 +12,14 @@ val PosMsgCommand = commodore("posmsg") {
         val saveData = "x: ${x}, y: ${y}, z: ${z}, delay: ${delay}, message: \"${message}\""
         if (posMessageStrings.contains(saveData)) modMessage("This message already exists!")
         modMessage("Message \"${message}\" added at $x, $y, $z, with ${delay}ms delay")
+        posMessageStrings.add(saveData)
+        Config.save()
+    }
+
+    literal("addatpos").runs { delay: Long, message: GreedyString ->
+        val saveData = "x: ${mc.thePlayer.posX}, y: ${mc.thePlayer.posY}, z: ${mc.thePlayer.posZ}, delay: ${delay}, message: \"${message}\""
+        if (posMessageStrings.contains(saveData)) modMessage("This message already exists!")
+        modMessage("Message \"${message}\" added at ${mc.thePlayer.posX}, ${mc.thePlayer.posY}, ${mc.thePlayer.posZ}, with ${delay}ms delay")
         posMessageStrings.add(saveData)
         Config.save()
     }

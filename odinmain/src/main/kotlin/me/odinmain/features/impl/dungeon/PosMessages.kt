@@ -30,10 +30,17 @@ object PosMessages : Module(
     fun posMessageSend(event: PacketSentEvent) {
         if (event.packet !is C04PacketPlayerPosition /**|| (onlyDungeons && DungeonUtils.inDungeons) || !LocationUtils.inSkyblock*/) return
 
-         if (!posMessageStrings.any {
+        val nearPosMessages = posMessageStrings.filter {
             val msg = parsePosString(it) ?: return
             mc.thePlayer.getDistance(msg.x, msg.y, msg.z) <= 1
-        }) sending = false
+        }
+
+         if (nearPosMessages.isEmpty()) {
+             sending = false
+             return
+         }
+
+        val sentMessages = mutableMapOf<PosMessage, Boolean>()
 
         posMessageStrings.forEach {
             val msg = parsePosString(it) ?: return@forEach
@@ -41,9 +48,9 @@ object PosMessages : Module(
                 if (!sending) Timer().schedule(msg.delay) {
                     modMessage(msg.message)
                 }
-                sending = true
             }
         }
+        sending = true
     }
 
 
