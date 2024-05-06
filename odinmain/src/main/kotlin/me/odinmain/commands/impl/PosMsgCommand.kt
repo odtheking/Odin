@@ -2,35 +2,38 @@ package me.odinmain.commands.impl
 
 import com.github.stivais.commodore.utils.GreedyString
 import me.odinmain.commands.commodore
-import me.odinmain.config.PosMessagesConfig
-import me.odinmain.config.PosMessagesConfig.PosMessage
-import me.odinmain.config.PosMessagesConfig.PosMessages
+import me.odinmain.config.Config
+import me.odinmain.features.impl.dungeon.PosMessages.posMessageStringCancer
 import me.odinmain.utils.skyblock.modMessage
 
 val PosMsgCommand = commodore("posmsg") {
     literal("add").runs { x: Double, y: Double, z: Double, delay: Long, message: GreedyString ->
         modMessage("Message \"${message}\" added at $x, $y, $z, with ${delay}ms delay")
-        PosMessages.add(PosMessage(x, y, z, delay, message.string))
-        PosMessagesConfig.saveConfig()
+        val saveData = "x: ${x}, y: ${y}, z: ${z}, delay: ${delay}, message: \"${message}\""
+        posMessageStringCancer.add(saveData)
+        Config.save()
+        //PosMessagesConfig.saveConfig()
     }
 
     literal("remove").runs { index: Int ->
-        if (PosMessages.getOrNull(index) == null) return@runs modMessage("Theres no message in position #$index")
+        if (posMessageStringCancer.getOrNull(index) == null) return@runs modMessage("Theres no message in position #$index")
         modMessage("Removed Positional Message #$index")
-        PosMessages.removeAt(index-1)
-        PosMessagesConfig.saveConfig()
+        posMessageStringCancer.removeAt(index-1)
+        Config.save()
+        //PosMessagesConfig.saveConfig()
     }
 
     literal("clear").runs {
         modMessage("Cleared List")
-        PosMessages.clear()
-        PosMessagesConfig.saveConfig()
+        posMessageStringCancer.clear()
+        Config.save()
+        //PosMessagesConfig.saveConfig()
     }
 
     literal("list").runs {
-        val output = PosMessages.joinToString(separator = "\n") {
-            "${PosMessages.indexOf(it) + 1}: x: ${it.x}, y: ${it.y}, z: ${it.z}, delay: ${it.delay}, message: ${it.message}"
+        val output = posMessageStringCancer.joinToString(separator = "\n") {
+            "${posMessageStringCancer.indexOf(it) + 1}: " + it
         }
-        modMessage(if(PosMessages.isEmpty()) "Positional Message list is empty!" else "Positonal Message list:\n$output")
+        modMessage(if(posMessageStringCancer.isEmpty()) "Positional Message list is empty!" else "Positonal Message list:\n$output")
     }
 }

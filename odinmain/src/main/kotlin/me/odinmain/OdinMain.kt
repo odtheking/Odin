@@ -105,7 +105,6 @@ object OdinMain {
         launch { DungeonWaypointConfig.loadConfig() }
         launch { PBConfig.loadConfig() }
         launch { DungeonWaypointConfigCLAY.loadConfig() }
-        launch { PosMessagesConfig.loadConfig() }
     }
 
     @OptIn(DelicateCoroutinesApi::class)
