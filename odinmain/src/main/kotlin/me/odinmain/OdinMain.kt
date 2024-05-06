@@ -88,7 +88,8 @@ object OdinMain {
             highlightCommand,
             waypointCommand,
             dungeonWaypointsCommand,
-            visualWordsCommand
+            visualWordsCommand,
+            PosMsgCommand
         )
         OdinFont.init()
     }
