@@ -60,13 +60,13 @@ abstract class Element(constraints: Constraints?) {
     var internalX: Float = 0f
         set(value) {
             field = value
-            x = value + (parent?.x ?: 0f) // this is an issue
+//            x = value + (parent?.x ?: 0f) // this is an issue
         }
 
     var internalY: Float = 0f
         set(value) {
             field = value
-            y = value + (parent?.y ?: 0f) // this is an issue
+//            y = value + (parent?.y ?: 0f) // this is an issue
         }
 
     var color: Color? = null
@@ -91,24 +91,45 @@ abstract class Element(constraints: Constraints?) {
     abstract fun draw()
 
     // position needs a rework, make it only reposition if it needs,
-    // make it parent place child so it can be customized allowing for wrapping columns/rows
-    open fun position() {
+    fun position(place: Boolean = true) {
         if (!enabled) return
         if (!constraints.width.reliesOnChild()) width = constraints.width.get(this, Type.W)
         if (!constraints.height.reliesOnChild()) height = constraints.height.get(this, Type.H)
         internalX = constraints.x.get(this, Type.X)
         internalY = constraints.y.get(this, Type.Y)
-        elements?.forLoop { element ->
-            place(element)
-            element.position()
-            element.renders = element.intersects(this.x, this.y, width, height)
+
+        if (elements != null) {
+            elements!!.forLoop { element ->
+                element.position()
+                element.renders = element.intersects(this.x, this.y, width, height)
+            }
+        } else {
+            if (place) parent?.place(this)
         }
+
         if (constraints.width.reliesOnChild()) width = constraints.width.get(this, Type.W)
         if (constraints.height.reliesOnChild()) height = constraints.height.get(this, Type.H)
+        placed = false
     }
 
-    open fun place(element: Element) {
+    private var placed: Boolean = false // test
 
+    open fun place(element: Element) {
+        if (!placed) {
+            parent?.place(this)
+            placed = true
+        }
+        element.x = x + element.internalX
+        element.y = y + element.internalY
+    }
+
+    fun placeThis(recalculate: Boolean = true) {
+        if (recalculate) {
+            internalX = constraints.x.get(this, Type.X)
+            internalY = constraints.y.get(this, Type.Y)
+        }
+        x = parent!!.x + internalX
+        y = parent!!.y + internalY
     }
 
     fun render() {
@@ -191,6 +212,10 @@ abstract class Element(constraints: Constraints?) {
     fun toggle(value: Boolean = !enabled) {
         enabled = value
     }
+
+    fun x() = constraints.x
+
+    fun y() = constraints.y
 
     // todo: dsl, maybe move out of this class?
     fun width(): Constraint {

@@ -14,6 +14,10 @@ interface Renderer {
 
     fun translate(x: Float, y: Float)
 
+    fun pushScissor(x: Float, y: Float, w: Float, h: Float)
+
+    fun popScissor()
+
     fun rect(x: Float, y: Float, w: Float, h: Float, color: Int)
 
     fun rect(x: Float, y: Float, w: Float, h: Float, color: Int, tl: Float, bl: Float, br: Float, tr: Float)
@@ -37,9 +41,5 @@ interface Renderer {
     fun text(text: String, x: Float, y: Float, size: Float, color: Int)
 
     fun textWidth(text: String, size: Float): Float
-
-    fun pushScissor(x: Float, y: Float, w: Float, h: Float)
-
-    fun popScissor()
 
 }

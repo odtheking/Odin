@@ -15,15 +15,14 @@ import com.github.stivais.ui.utils.hoverEffect
 import com.github.stivais.ui.utils.radii
 import com.github.stivais.ui.utils.seconds
 
-fun Element.column(constraints: Constraints? = null, block: Column.() -> Unit = {}): Column {
+inline fun Element.column(constraints: Constraints? = null, block: Column.() -> Unit = {}): Column {
     val column = Column(constraints)
     addElement(column)
     column.block()
     return column
 }
 
-// todo: improve outline color
-fun Element.block(
+inline fun Element.block(
     constraints: Constraints? = null,
     color: Color,
     radius: FloatArray? = null,
@@ -35,12 +34,12 @@ fun Element.block(
     return block
 }
 
-fun Element.block(
+inline fun Element.block(
     constraints: Constraints? = null,
     color1: Color,
     color2: Color,
-    radius: Float = 0f,
     direction: GradientDirection,
+    radius: Float = 0f,
     block: Block.() -> Unit = {}
 ): GradientBlock {
     val block = GradientBlock(constraints, color1, color2, radius, direction)
@@ -50,7 +49,15 @@ fun Element.block(
     return block
 }
 
-fun Element.text(
+inline fun Element.block(
+    constraints: Constraints? = null,
+    colors: Pair<Color, Color>,
+    direction: GradientDirection,
+    radius: Float = 0f,
+    crossinline block: Block.() -> Unit = {}
+) = block(constraints, colors.first, colors.second, direction, radius, block)
+
+inline fun Element.text(
     text: String,
     pos: Constraints? = null,
     size: Measurement = 50.percent,
@@ -63,7 +70,7 @@ fun Element.text(
     return text
 }
 
-fun Element.group(constraints: Constraints? = null, block: Group.() -> Unit = {}): Group {
+inline fun Element.group(constraints: Constraints? = null, block: Group.() -> Unit = {}): Group {
     val column = Group(constraints)
     addElement(column)
     column.block()
@@ -101,13 +108,13 @@ inline fun Element.button(
     crossinline dsl: Block.() -> Unit = {}
 ): Block = button(constraints, Color.Animated(offColor, onColor), on, radii, dsl)
 
-fun Element.slider(
+inline fun Element.slider(
     constraints: Constraints?,
     color: Color,
     value: Double,
     min: Double,
     max: Double,
-    onChange: (percent: Float) -> Unit
+    crossinline onChange: (percent: Float) -> Unit
 ): Block {
     var dragging = false
     val sliderPosition = Animatable.Raw(0f)

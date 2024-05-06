@@ -26,7 +26,7 @@ val mainColor = Color { color.rgba }
 fun clickGUI(renderer: Renderer) = UI(renderer) {
     text(
         text = "odin-client $lastSeenVersion",
-        pos = at(x = 1.px, y = -0.px),
+        pos = at(x = 1.px, y = -(0.px)),
         size = 12.px
     )
     for (panel in Category.entries) {
@@ -72,6 +72,7 @@ private fun Element.module(module: Module) {
         ) {
             text(
                 text = module.name,
+                size = 16.px
             )
             onClick(0) {
                 module.toggle()

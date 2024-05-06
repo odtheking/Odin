@@ -27,6 +27,9 @@ object NVGRenderer : Renderer {
 
     private var vg: Long = -1
 
+    // used in getTextWidth to avoid reallocating
+    private val fontBounds = FloatArray(4)
+
     // this will be used later for fixing bugs caused by nvg i think
     var drawing: Boolean = false
 
@@ -63,6 +66,10 @@ object NVGRenderer : Renderer {
     override fun scale(x: Float, y: Float) = nvgScale(vg, x, y)
 
     override fun translate(x: Float, y: Float) = nvgTranslate(vg, x, y)
+
+    override fun pushScissor(x: Float, y: Float, w: Float, h: Float) = nvgScissor(vg, x, y, w, h)
+
+    override fun popScissor() = nvgResetScissor(vg)
 
     override fun rect(x: Float, y: Float, w: Float, h: Float, color: Int) {
         nvgBeginPath(vg)
@@ -112,8 +119,7 @@ object NVGRenderer : Renderer {
     ) {
         nvgBeginPath(vg)
         nvgRect(vg, x, y, w, h)
-        color(color1, color2)
-        gradient(x, y, w, h, direction)
+        gradient(color1, color2, x, y, w, h, direction)
         nvgFillPaint(vg, nvgPaint)
         nvgFill(vg)
     }
@@ -130,17 +136,9 @@ object NVGRenderer : Renderer {
     ) {
         nvgBeginPath(vg)
         nvgRoundedRect(vg, x, y, w, h, radius)
-        color(color1, color2)
-        gradient(x, y, w, h, direction)
+        gradient(color1, color2, x, y, w, h, direction)
         nvgFillPaint(vg, nvgPaint)
         nvgFill(vg)
-    }
-
-    private fun gradient(x: Float, y: Float, w: Float, h: Float, direction: GradientDirection) {
-        when (direction) {
-            GradientDirection.LeftToRight -> nvgLinearGradient(vg, x, y, x + w, y, nvgColor, nvgColor2, nvgPaint)
-            GradientDirection.TopToBottom -> nvgLinearGradient(vg, x, y, x, y + h, nvgColor, nvgColor2, nvgPaint)
-        }
     }
 
     override fun text(text: String, x: Float, y: Float, size: Float, color: Int) {
@@ -154,27 +152,22 @@ object NVGRenderer : Renderer {
     }
 
     override fun textWidth(text: String, size: Float): Float {
-        val bounds = FloatArray(4)
         nvgFontSize(vg, size)
         nvgFontFaceId(vg, tempFont.id)
-        return nvgTextBounds(vg, 0f, 0f, text, bounds)
-    }
-
-    override fun pushScissor(x: Float, y: Float, w: Float, h: Float) {
-        nvgScissor(vg, x, y, w, h)
-    }
-
-    override fun popScissor() {
-        nvgResetScissor(vg)
+        return nvgTextBounds(vg, 0f, 0f, text, fontBounds)
     }
 
     fun color(color: Int) {
         nvgRGBA(color.red.toByte(), color.green.toByte(), color.blue.toByte(), color.alpha.toByte(), nvgColor)
     }
 
-    fun color(color1: Int, color2: Int) {
+    private fun gradient(color1: Int, color2: Int, x: Float, y: Float, w: Float, h: Float, direction: GradientDirection) {
         nvgRGBA(color1.red.toByte(), color1.green.toByte(), color1.blue.toByte(), color1.alpha.toByte(), nvgColor)
         nvgRGBA(color2.red.toByte(), color2.green.toByte(), color2.blue.toByte(), color2.alpha.toByte(), nvgColor2)
+        when (direction) {
+            GradientDirection.LeftToRight -> nvgLinearGradient(vg, x, y, x + w, y, nvgColor, nvgColor2, nvgPaint)
+            GradientDirection.TopToBottom -> nvgLinearGradient(vg, x, y, x, y + h, nvgColor, nvgColor2, nvgPaint)
+        }
     }
 
     class NVGFont(val name: String, path: String) {

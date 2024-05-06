@@ -8,7 +8,8 @@ import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.sizes.Copying
 import com.github.stivais.ui.elements.*
 import com.github.stivais.ui.events.onClick
-import com.github.stivais.ui.renderer.GradientDirection
+import com.github.stivais.ui.renderer.GradientDirection.LeftToRight
+import com.github.stivais.ui.renderer.GradientDirection.TopToBottom
 import com.github.stivais.ui.utils.color
 import com.github.stivais.ui.utils.radii
 import com.github.stivais.ui.utils.seconds
@@ -62,15 +63,13 @@ class NewColorSetting(
                 // saturation & brightness
                 block(
                     constraints = size(w = 95.percent, h = 170.px),
-                    color1 = Color.WHITE,
-                    color2 = value,
-                    direction = GradientDirection.LeftToRight
+                    colors = Color.WHITE to value,
+                    direction = LeftToRight
                 ) {
                     block(
                         constraints = copies(),
-                        color1 = Color.TRANSPARENT,
-                        color2 = Color.BLACK,
-                        direction = GradientDirection.TopToBottom
+                        colors = Color.TRANSPARENT to Color.BLACK,
+                        direction = TopToBottom
                     )
                 }
                 group(size(Copying, 10.px))

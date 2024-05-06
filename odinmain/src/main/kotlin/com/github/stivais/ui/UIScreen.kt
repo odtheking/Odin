@@ -1,7 +1,6 @@
 package com.github.stivais.ui
 
 import me.odinmain.OdinMain.display
-import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.input.Mouse
@@ -64,10 +63,10 @@ class UIScreen(val ui: UI) : GuiScreen() {
 //        return super.keyPressed(keyCode, scanCode, modifiers)
 //    }
 
-    override fun onResize(mcIn: Minecraft?, w: Int, h: Int) {
-        ui.resize(mc.framebuffer.framebufferWidth, mc.framebuffer.framebufferHeight)
-        super.onResize(mcIn, w, h)
-    }
+//    override fun onResize(mcIn: Minecraft?, w: Int, h: Int) {
+//        ui.resize(mc.framebuffer.framebufferWidth, mc.framebuffer.framebufferHeight)
+//        super.onResize(mcIn, w, h)
+//    }
 
     override fun doesGuiPauseGame(): Boolean = false
 

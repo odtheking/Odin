@@ -3,6 +3,7 @@ package com.github.stivais.ui.elements.impl
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.constraints.Constraints
 import com.github.stivais.ui.constraints.Measurement
+import com.github.stivais.ui.constraints.Type
 import com.github.stivais.ui.constraints.measurements.Percent
 import com.github.stivais.ui.constraints.measurements.Pixel
 import com.github.stivais.ui.constraints.px
@@ -32,14 +33,15 @@ class Text(
 
     override fun draw() {
         // todo: make positioning not happen every frame,
-            //  because in ClickGUI almost all text uses percent, which basically halves frametime because of calculating width
+        //  because in ClickGUI almost all text uses percent, which basically halves frametime because of calculating width
         if (needsUpdate || constraints.height is Percent) {
-            parent?.position() // suboptimal
-            (constraints.width as Pixel).pixels = renderer.textWidth(text, height)
-            position()
+            height = constraints.height.get(this, Type.H)
+            val newWidth =  renderer.textWidth(text, height)
+            (constraints.width as Pixel).pixels = newWidth
+            width = newWidth
+            placeThis(recalculate = true)
             needsUpdate = false
         }
         renderer.text(text, x, y, height, color!!.rgba)
-//        renderer.hollowRect(x, y, width, height, 1f, Color.WHITE.rgba)
     }
 }
