@@ -1,8 +1,6 @@
 package me.odinmain.events
 
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import me.odinmain.events.impl.*
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock

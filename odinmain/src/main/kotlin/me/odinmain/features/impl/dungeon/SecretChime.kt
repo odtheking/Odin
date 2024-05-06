@@ -4,13 +4,8 @@ import me.odinmain.events.impl.EntityLeaveWorldEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.ActionSetting
-import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.features.settings.impl.SelectorSetting
-import me.odinmain.features.settings.impl.StringSetting
-import me.odinmain.utils.containsOneOf
-import me.odinmain.utils.distanceSquaredTo
-import me.odinmain.utils.noControlCodes
+import me.odinmain.features.settings.impl.*
+import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.item.EntityItem

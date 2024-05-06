@@ -1,8 +1,6 @@
 package me.odinmain.commands.impl
 
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import me.odinmain.OdinMain.mc
 import me.odinmain.commands.commodore
 import me.odinmain.utils.fetchURLData

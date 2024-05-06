@@ -1,6 +1,6 @@
 package me.odinclient.mixin.mixins.block;
 
-import me.odinclient.features.impl.render.NoCarpet;
+import me.odinclient.features.impl.render.NoDebuff;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCarpet;
 import net.minecraft.block.material.Material;
@@ -20,7 +20,7 @@ public class MixinBlockCarpet extends Block {
     @Inject(method = "setBlockBoundsFromMeta", at = @At("HEAD"), cancellable = true)
     private void onSetBlockBoundsFromMeta(int meta, CallbackInfo ci)
     {
-        if (NoCarpet.INSTANCE.noCarpetHook((BlockCarpet) this.blockState.getBlock())) ci.cancel();
+        if (NoDebuff.INSTANCE.noCarpetHook((BlockCarpet) this.blockState.getBlock())) ci.cancel();
     }
 
 }

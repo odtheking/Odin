@@ -14,9 +14,7 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.entity.Entity
 import net.minecraft.network.play.server.S2APacketParticles
-import net.minecraft.util.AxisAlignedBB
-import net.minecraft.util.EnumParticleTypes
-import net.minecraft.util.Vec3
+import net.minecraft.util.*
 
 enum class WitherDragonsEnum (
     val spawnPos: Vec3,
