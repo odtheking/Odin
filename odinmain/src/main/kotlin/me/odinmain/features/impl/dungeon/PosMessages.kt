@@ -8,6 +8,7 @@ import me.odinmain.features.settings.impl.ListSetting
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.skyblock.partyMessage
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import scala.tools.nsc.backend.icode.analysis.CopyPropagation.Const
@@ -52,7 +53,7 @@ object PosMessages : Module(
             }.forEach {
                 val msg = parsePosString(it) ?: return
                 if (!sending) Timer().schedule(msg.delay) {
-                    if (mc.thePlayer.getDistance(msg.x, msg.y, msg.z) <= 1) modMessage(msg.message)
+                    if (mc.thePlayer.getDistance(msg.x, msg.y, msg.z) <= 1) partyMessage(msg.message)
                 }
             }
             sending = true
