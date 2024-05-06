@@ -45,7 +45,7 @@ object LeapMenu : Module(
     private val leapHelperToggle: Boolean by BooleanSetting("Leap Helper", false, description = "Highlights the leap helper player in the leap menu.")
     private val leapHelperColor: Color by ColorSetting("Leap Helper Color", default = Color.WHITE, description = "Color of the Leap Helper highlight").withDependency { leapHelperToggle }
     val delay: Int by NumberSetting("Reset Leap Helper Delay", 30, 10.0, 120.0, 1.0, description = "Delay for clearing the leap helper highlight").withDependency { leapHelperToggle }
-
+    private val leapAnnounce: Boolean by BooleanSetting("Leap Announce", false, description = "Announces when you leap to a player.")
     private val hoveredAnims = List(4) { EaseInOut(200L) }
     private var hoveredQuadrant = -1
     private var previouslyHoveredQuadrant = -1
@@ -149,6 +149,7 @@ object LeapMenu : Module(
     private fun leapTo(name: String, containerChest: ContainerChest) {
         val index = getItemIndexInContainerChest(containerChest, name, 11..16) ?: return modMessage("Cant find player $name. This shouldn't be possible!")
         modMessage("Teleporting to $name.")
+        if (leapAnnounce) partyMessage("Leaping to $name.")
         windowClick(index, clickType = PlayerUtils.ClickType.Middle)
     }
 
