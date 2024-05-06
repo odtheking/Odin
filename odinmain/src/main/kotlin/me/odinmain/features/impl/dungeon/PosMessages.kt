@@ -1,40 +1,53 @@
 package me.odinmain.features.impl.dungeon
 
-import com.github.stivais.commodore.utils.GreedyString
-import com.sun.xml.internal.ws.api.message.Message
-import kotlinx.coroutines.Delay
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.ListSetting
-import me.odinmain.utils.clock.Clock
+import me.odinmain.config.PosMessagesConfig.PosMessages
+import me.odinmain.events.impl.PacketSentEvent
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.utils.skyblock.LocationUtils
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.partyMessage
-import net.minecraft.util.Vec3
+import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import java.util.*
+import kotlin.concurrent.schedule
 
 object PosMessages : Module(
     name = "Positional Messages",
     category = Category.DUNGEON,
-    description = "Sends a message when youre near a certain position. /posmsg add"
+    description = "Sends a message when you're near a certain position. /posmsg"
 ) {
-    val posMessages: MutableList<posMessagesData> by ListSetting("Pos Messages", mutableListOf())
+    val onlyDungeons: Boolean by BooleanSetting("Only in Dungeons", true, description = "Only sends messages when you're in a dungeon.")
 
-    data class posMessagesData(val x: Double, val y: Double, val z: Double, val delay: Long, val message: GreedyString)
 
-    var atPos = false
-
-    init {
-        execute(50) {
-            posMessages.forEach {
-                if (mc.thePlayer.getDistance(it.x, it.y, it.z,) <= 1) {
-                    val timer = Clock(it.delay)
-                    if (!atPos) {
-                        timer.update()
-                        atPos = true
+    @SubscribeEvent
+    fun posMessageSend(event: PacketSentEvent) {
+        if (event.packet !is C04PacketPlayerPosition || (onlyDungeons && DungeonUtils.inDungeons) || !LocationUtils.inSkyblock ) return
+        PosMessages.forEach {
+            if (mc.thePlayer.getDistance(it.x, it.y, it.z) <= 1) {
+                if (!it.sent) Timer().schedule(it.delay) {
+                    if (mc.thePlayer.getDistance(it.x, it.y, it.z) <= 1) {
+                        partyMessage(it.message)
                     }
-                    if (timer.hasTimePassed()) partyMessage(it.message)
-                } else {
-                    atPos = false
                 }
-            }
+                it.sent = true
+            } else it.sent = false
         }
     }
+
+    /**init {
+        execute(50) {
+            PosMessages.forEach {
+                if (mc.thePlayer.getDistance(it.x, it.y, it.z) <= 1) {
+                    if (!it.sent) Timer().schedule(it.delay) {
+                        if (mc.thePlayer.getDistance(it.x, it.y, it.z) <= 1) {
+                            modMessage(it.message)
+                        }
+                    }
+                    it.sent = true
+                } else it.sent = false
+            }
+        }
+    } */
 }
