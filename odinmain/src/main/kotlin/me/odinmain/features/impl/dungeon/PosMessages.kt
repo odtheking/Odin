@@ -23,26 +23,27 @@ object PosMessages : Module(
 
     data class PosMessage(val x: Double, val y: Double, val z: Double, val delay: Long, val message: String)
     val posMessageStrings: MutableList<String> by ListSetting("Pos Messages Strings", mutableListOf())
-    private var sending = false
+
+    var sending = false
 
     @SubscribeEvent
     fun posMessageSend(event: PacketSentEvent) {
-        if (event.packet !is C04PacketPlayerPosition || (onlyDungeons && DungeonUtils.inDungeons) || !LocationUtils.inSkyblock) return
-        if (posMessageStrings.any {
+        if (event.packet !is C04PacketPlayerPosition /**|| (onlyDungeons && DungeonUtils.inDungeons) || !LocationUtils.inSkyblock*/) return
+
+         if (!posMessageStrings.any {
             val msg = parsePosString(it) ?: return
             mc.thePlayer.getDistance(msg.x, msg.y, msg.z) <= 1
-        }) {
-            posMessageStrings.filter {
-                val msg = parsePosString(it) ?: return
-                mc.thePlayer.getDistance(msg.x, msg.y, msg.z) <= 1
-            }.forEach {
-                val msg = parsePosString(it) ?: return
+        }) sending = false
+
+        posMessageStrings.forEach {
+            val msg = parsePosString(it) ?: return@forEach
+            if (mc.thePlayer != null && mc.thePlayer.getDistance(msg.x, msg.y, msg.z) <= 1) {
                 if (!sending) Timer().schedule(msg.delay) {
-                    if (mc.thePlayer.getDistance(msg.x, msg.y, msg.z) <= 1) partyMessage(msg.message)
+                    modMessage(msg.message)
                 }
+                sending = true
             }
-            sending = true
-        } else sending = false
+        }
     }
 
 

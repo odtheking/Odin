@@ -8,8 +8,9 @@ import me.odinmain.utils.skyblock.modMessage
 
 val PosMsgCommand = commodore("posmsg") {
     literal("add").runs { x: Double, y: Double, z: Double, delay: Long, message: GreedyString ->
-        modMessage("Message \"${message}\" added at $x, $y, $z, with ${delay}ms delay")
         val saveData = "x: ${x}, y: ${y}, z: ${z}, delay: ${delay}, message: \"${message}\""
+        if (posMessageStrings.contains(saveData)) modMessage("This message already exists!")
+        modMessage("Message \"${message}\" added at $x, $y, $z, with ${delay}ms delay")
         posMessageStrings.add(saveData)
         Config.save()
     }
