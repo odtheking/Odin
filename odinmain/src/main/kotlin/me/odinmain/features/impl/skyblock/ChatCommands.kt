@@ -5,6 +5,7 @@ import me.odinmain.OdinMain
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.impl.dungeon.DungeonRequeue.disableRequeue
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ListSetting
@@ -47,7 +48,6 @@ object ChatCommands : Module(
     private val queKuudra: Boolean by BooleanSetting(name = "Queue kuudra cmds", default = true).withDependency { showSettings }
 
     private var dtPlayer: String? = null
-    var disableRequeue: Boolean? = false
     private val dtReason = mutableListOf<Pair<String, String>>()
     val blacklist: MutableList<String> by ListSetting("Blacklist", mutableListOf())
 
