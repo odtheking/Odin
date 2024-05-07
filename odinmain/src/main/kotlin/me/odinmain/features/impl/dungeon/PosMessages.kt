@@ -35,7 +35,7 @@ object PosMessages : Module(
             if (mc.thePlayer != null && mc.thePlayer.getDistance(msg.x, msg.y, msg.z) <= 1) {
                 if (!messageSent) Timer().schedule(msg.delay) {
                     if (mc.thePlayer.getDistance(msg.x, msg.y, msg.z) <= 1)
-                    modMessage(msg.message)
+                    partyMessage(msg.message)
                 }
                 sentMessages[it] = true
             } else sentMessages[it] = false
