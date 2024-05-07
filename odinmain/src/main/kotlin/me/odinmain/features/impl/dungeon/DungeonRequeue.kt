@@ -27,7 +27,7 @@ object DungeonRequeue : Module(
                 sendCommand(if (type) "instancerequeue" else "od ${LocationUtils.currentDungeon?.floor?.name?.lowercase()}", clientSide = !type)
             }
         }
-        onMessage(Regex("(\\[.+])? (.{0,16}) has left the party.")) {
+        onMessage(Regex("(\\[.+])? ?(.{0,16}) has left the party.")) {
             if (disablePartyLeave) disableRequeue = true
         }
     }
