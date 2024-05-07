@@ -8,6 +8,7 @@ import me.odinmain.features.settings.impl.ListSetting
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.skyblock.partyMessage
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.*
@@ -27,11 +28,10 @@ object PosMessages : Module(
 
     @SubscribeEvent
     fun posMessageSend(event: PacketSentEvent) {
-        if (event.packet !is C04PacketPlayerPosition || (onlyDungeons && DungeonUtils.inDungeons) || !LocationUtils.inSkyblock) return
+        if (event.packet !is C04PacketPlayerPosition /**|| (onlyDungeons && DungeonUtils.inDungeons) || !LocationUtils.inSkyblock*/) return
         posMessageStrings.forEach {
             val msg = parsePosString(it) ?: return@forEach
             val messageSent = sentMessages.getOrDefault(it, false)
-            modMessage(messageSent)
             if (mc.thePlayer != null && mc.thePlayer.getDistance(msg.x, msg.y, msg.z) <= 1) {
                 if (!messageSent) Timer().schedule(msg.delay) {
                     if (mc.thePlayer.getDistance(msg.x, msg.y, msg.z) <= 1)
@@ -44,14 +44,14 @@ object PosMessages : Module(
 
 
     private fun parsePosString(posMessageString: String): PosMessage? {
-        val map = posMessageString.split(",").map { it.trim().split(":") }
-        val finalMap = map.associate { it[0] to it[1] }
-        val x = finalMap["x"]?.toDoubleOrNull() ?: return null.also { modMessage("Failed to parse x: ${finalMap["x"]}")}
-        val y = finalMap["y"]?.toDoubleOrNull() ?: return null.also { modMessage("Failed to parse y: ${finalMap["y"]}")}
-        val z = finalMap["z"]?.toDoubleOrNull() ?: return null.also { modMessage("Failed to parse z: ${finalMap["z"]}")}
-        val delay = finalMap["delay"]?.trim()?.toLongOrNull() ?: return null.also { modMessage("Failed to parse delay: ${finalMap["delay"]}")}
-        val message = finalMap["message"]?.replace("\"", "") ?: return null.also { modMessage("Failed to parse message: ${finalMap["message"]}")}
-        return PosMessage(x, y, z, delay, message)
+        val regex = Regex("x: (.*), y: (.*), z: (.*), delay: (.*), message: \"(.*)\"")
+        val matchResult = regex.matchEntire(posMessageString) ?: return null
+        val (x, y, z, delay, message) = matchResult.destructured
+        val xDouble = x.toDoubleOrNull() ?: return null.also { modMessage("Failed to parse x: $x") }
+        val yDouble = y.toDoubleOrNull() ?: return null.also { modMessage("Failed to parse y: $y") }
+        val zDouble = z.toDoubleOrNull() ?: return null.also { modMessage("Failed to parse z: $z") }
+        val delayLong = delay.toLongOrNull() ?: return null.also { modMessage("Failed to parse delay: $delay") }
+        return PosMessage(xDouble, yDouble, zDouble, delayLong, message)
     }
 
 }
