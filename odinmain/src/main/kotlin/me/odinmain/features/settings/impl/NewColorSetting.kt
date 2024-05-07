@@ -2,6 +2,7 @@ package me.odinmain.features.settings.impl
 
 import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.color.Color
+import com.github.stivais.ui.color.color
 import com.github.stivais.ui.color.toHSB
 import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Animatable
@@ -10,7 +11,6 @@ import com.github.stivais.ui.elements.*
 import com.github.stivais.ui.events.onClick
 import com.github.stivais.ui.renderer.GradientDirection.LeftToRight
 import com.github.stivais.ui.renderer.GradientDirection.TopToBottom
-import com.github.stivais.ui.utils.color
 import com.github.stivais.ui.utils.radii
 import com.github.stivais.ui.utils.seconds
 import me.odinmain.features.settings.Setting
@@ -77,16 +77,8 @@ class NewColorSetting(
                     block(
                         size(95.percent, h = 15.px),
                         color = Color.WHITE,
-//                        color2 = Color.BLACK,
-//                        direction = GradientDirection.LeftToRight
                     )
                 }
-//                block(
-//                    size(95.percent, h = 15.px),
-//                    color = Color.WHITE,
-////                        color2 = Color.BLACK,
-////                        direction = GradientDirection.LeftToRight
-//                )
             }
         }
     }

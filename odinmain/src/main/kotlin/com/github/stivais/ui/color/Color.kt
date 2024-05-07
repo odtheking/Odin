@@ -181,3 +181,9 @@ inline fun Color(crossinline getter: () -> Int): Color = object : Color {
             return getter()
         }
 }
+
+fun color(r: Int, g: Int, b: Int, alpha: Float = 1f) = Color.RGB(r, g, b, alpha)
+
+fun color(h: Float, s: Float, b: Float, alpha: Float = 1f) = Color.HSB(h, s, b, alpha)
+
+fun color(from: Color, to: Color, swap: Boolean = false) = Color.Animated(from, to, swap)

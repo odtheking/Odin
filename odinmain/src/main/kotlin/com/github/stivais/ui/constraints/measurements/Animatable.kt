@@ -15,14 +15,15 @@ class Animatable(var from: Constraint, var to: Constraint): Measurement {
         }
     }
 
-    var animation: Animation? = null
+    private var animation: Animation? = null
 
-    var current: Float = 0f
+    private var current: Float = 0f
 
-    var before: Float? = null // is null
+    private var before: Float? = null // is null
 
     override fun get(element: Element, type: Type): Float {
         if (animation != null) {
+            element.update()
             val progress = animation!!.get()
             val from = before ?: from.get(element, type)
             current = from + (to.get(element, type) - from) * progress
@@ -75,6 +76,7 @@ class Animatable(var from: Constraint, var to: Constraint): Measurement {
 
         override fun get(element: Element, type: Type): Float {
             if (animation != null) {
+                element.update()
                 val result = animation!!.get()
                 if (animation!!.finished) {
                     animation = null

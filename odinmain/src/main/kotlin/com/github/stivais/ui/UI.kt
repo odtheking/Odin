@@ -47,11 +47,17 @@ class UI(
     private var frameTime: Long = 0
     private var performance: String = ""
 
+    var needsUpdate = true
+
     fun render() {
         val start = System.nanoTime()
 
         renderer.beginFrame(main.width, main.height)
-        main.position()
+        if (needsUpdate) {
+            needsUpdate = false
+            main.position()
+            main.clip()
+        }
         main.render()
         if (settings.frameMetrics) {
             renderer.text(performance, main.width - renderer.textWidth(performance, 12f), main.height - 12f, 12f, Color.WHITE.rgba)
@@ -86,6 +92,7 @@ class UI(
     fun resize(width: Int, height: Int) {
         main.constraints.width = width.px
         main.constraints.height = height.px
+        needsUpdate = true
     }
 
     fun focus(element: Element) {

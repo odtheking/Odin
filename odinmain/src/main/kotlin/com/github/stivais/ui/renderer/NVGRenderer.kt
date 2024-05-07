@@ -157,7 +157,7 @@ object NVGRenderer : Renderer {
         return nvgTextBounds(vg, 0f, 0f, text, fontBounds)
     }
 
-    fun color(color: Int) {
+    private fun color(color: Int) {
         nvgRGBA(color.red.toByte(), color.green.toByte(), color.blue.toByte(), color.alpha.toByte(), nvgColor)
     }
 

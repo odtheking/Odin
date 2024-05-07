@@ -3,6 +3,7 @@ package com.github.stivais.ui.impl
 import com.github.stivais.ui.UI
 import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.color.Color
+import com.github.stivais.ui.color.color
 import com.github.stivais.ui.constraints.at
 import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.px
@@ -11,7 +12,11 @@ import com.github.stivais.ui.constraints.sizes.Bounding
 import com.github.stivais.ui.elements.*
 import com.github.stivais.ui.events.onClick
 import com.github.stivais.ui.renderer.Renderer
-import com.github.stivais.ui.utils.*
+import com.github.stivais.ui.utils.animate
+import com.github.stivais.ui.utils.draggable
+import com.github.stivais.ui.utils.radii
+import com.github.stivais.ui.utils.seconds
+import me.odinmain.OdinMain
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.ModuleManager.modules
@@ -25,7 +30,7 @@ val mainColor = Color { color.rgba }
 // todo: scissoring isn't complete
 fun clickGUI(renderer: Renderer) = UI(renderer) {
     text(
-        text = "odin-client $lastSeenVersion",
+        text = "odin${if (OdinMain.onLegitVersion) "" else "-client"} $lastSeenVersion",
         pos = at(x = 1.px, y = -(0.px)),
         size = 12.px
     )
@@ -74,7 +79,7 @@ private fun Element.module(module: Module) {
                 text = module.name,
                 size = 16.px
             )
-            onClick(0) {
+            onClick {
                 module.toggle()
                 true
             }

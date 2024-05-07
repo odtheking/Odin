@@ -6,11 +6,13 @@ import com.github.stivais.ui.color.brighter
 import com.github.stivais.ui.constraints.Constraint
 import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.measurements.Pixel
-import com.github.stivais.ui.constraints.minus
 import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.elements.impl.Block
-import com.github.stivais.ui.events.*
+import com.github.stivais.ui.events.onClick
+import com.github.stivais.ui.events.onMouseEnterExit
+import com.github.stivais.ui.events.onMouseMove
+import com.github.stivais.ui.events.onRelease
 
 /**
  * Takes 4 numbers, and creates a [FloatArray] with those values
@@ -57,12 +59,6 @@ fun Constraint.animate(duration: Number, type: Animations = Animations.Linear) {
     }
 }
 
-fun color(r: Int, g: Int, b: Int, alpha: Float = 1f) = Color.RGB(r, g, b, alpha)
-
-fun color(h: Float, s: Float, b: Float, alpha: Float = 1f) = Color.HSB(h, s, b, alpha)
-
-fun color(from: Color, to: Color, swap: Boolean = false) = Color.Animated(from, to, swap)
-
 val Number.seconds
     get() = this.toFloat() * 1_000_000_000
 
@@ -102,6 +98,7 @@ fun <E : Element> E.draggable(acceptsEvent: Boolean = true, target: Element = th
                 px.pixels = ui.mx - x
                 py.pixels = ui.my - y
             }
+            update()
         }
         acceptsEvent
     }
@@ -117,21 +114,6 @@ fun <E : Element> E.draggable(acceptsEvent: Boolean = true, target: Element = th
 fun <E : Element> E.focuses(): E {
     onClick {
         ui.focus(this@focuses)
-        true
-    }
-    return this
-}
-
-// todo: rework scrolling, as this is really suboptimal
-fun <E : Element> E.scrollable(duration: Float, target: Element, min: Float = 0f): E {
-    var s = 0f
-    val anim = Animatable.Raw(0f)
-    target.constraints.apply {
-        y = (y - anim)
-    }
-    registerEvent(Mouse.Scrolled(0f)) {
-        s = (s - (this as Mouse.Scrolled).amount * 16).coerceIn(min, target.height)
-        anim.animate(s, duration)
         true
     }
     return this

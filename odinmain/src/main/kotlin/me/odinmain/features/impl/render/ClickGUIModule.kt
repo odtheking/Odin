@@ -1,6 +1,6 @@
 package me.odinmain.features.impl.render
 
-import com.github.stivais.ui.utils.color
+import com.github.stivais.ui.color.color
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch

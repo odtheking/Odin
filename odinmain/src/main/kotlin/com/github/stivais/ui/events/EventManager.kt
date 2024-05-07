@@ -13,7 +13,7 @@ class EventManager(private val ui: UI) {
     var focused: Element? = null
         private set
 
-    var elementHovered: Element? = null
+    private var elementHovered: Element? = null
         private set(value) {
             if (field === value) return
             field?.isHovered = false
@@ -37,10 +37,13 @@ class EventManager(private val ui: UI) {
         if (focused != null) {
             if (!dispatchFocused(focused, event) && !focused!!.isInside(mouseX, mouseY)) {
                 unfocus()
+                updateIfNecessary()
             }
             return
         }
-        dispatch(event)
+        if (dispatch(event)) {
+            updateIfNecessary()
+        }
     }
 
     fun onMouseRelease(button: Int) {
@@ -50,7 +53,9 @@ class EventManager(private val ui: UI) {
 
     fun onMouseScroll(amount: Float) {
         val event = Mouse.Scrolled(amount)
-        dispatch(event)
+        if (dispatch(event)) {
+            updateIfNecessary()
+        }
     }
 
     //
@@ -141,5 +146,11 @@ class EventManager(private val ui: UI) {
             }
         }
         return false
+    }
+
+    private fun updateIfNecessary() {
+        if (ui.settings.repositionOnEvent) {
+            ui.needsUpdate = true
+        }
     }
 }

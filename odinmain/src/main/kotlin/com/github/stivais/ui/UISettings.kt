@@ -9,4 +9,6 @@ class UISettings {
 
     var frameMetrics: Boolean = true
 
+    var repositionOnEvent: Boolean = true
+
 }

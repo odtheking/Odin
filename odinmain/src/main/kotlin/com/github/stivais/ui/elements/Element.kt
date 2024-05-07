@@ -35,7 +35,7 @@ import com.github.stivais.ui.utils.forLoop
 //
 // Goal: to avoid assigning positions and sizes as much as possible/mainly avoid magic numbers
 
-abstract class Element(constraints: Constraints?) {
+abstract class Element(constraints: Constraints?, var color: Color? = null) {
 
     // todo: maybe bring all values into here?
     val constraints: Constraints = constraints ?: Constraints(Undefined, Undefined, Undefined, Undefined)
@@ -58,18 +58,8 @@ abstract class Element(constraints: Constraints?) {
     var height: Float = 0f
 
     var internalX: Float = 0f
-        set(value) {
-            field = value
-//            x = value + (parent?.x ?: 0f) // this is an issue
-        }
 
     var internalY: Float = 0f
-        set(value) {
-            field = value
-//            y = value + (parent?.y ?: 0f) // this is an issue
-        }
-
-    var color: Color? = null
 
     var isHovered = false
         set(value) {
@@ -93,6 +83,7 @@ abstract class Element(constraints: Constraints?) {
     // position needs a rework, make it only reposition if it needs,
     fun position(place: Boolean = true) {
         if (!enabled) return
+        prePosition()
         if (!constraints.width.reliesOnChild()) width = constraints.width.get(this, Type.W)
         if (!constraints.height.reliesOnChild()) height = constraints.height.get(this, Type.H)
         internalX = constraints.x.get(this, Type.X)
@@ -101,7 +92,6 @@ abstract class Element(constraints: Constraints?) {
         if (elements != null) {
             elements!!.forLoop { element ->
                 element.position()
-                element.renders = element.intersects(this.x, this.y, width, height)
             }
         } else {
             if (place) parent?.place(this)
@@ -112,7 +102,20 @@ abstract class Element(constraints: Constraints?) {
         placed = false
     }
 
-    private var placed: Boolean = false // test
+    fun clip() {
+        elements?.forLoop {
+            it.renders = it.intersects(x, y, width, height)
+            it.clip()
+        }
+    }
+
+    open fun prePosition() {}
+
+    fun update() {
+        ui.needsUpdate = true
+    }
+
+    private var placed: Boolean = false
 
     open fun place(element: Element) {
         if (!placed) {
@@ -123,18 +126,8 @@ abstract class Element(constraints: Constraints?) {
         element.y = y + element.internalY
     }
 
-    fun placeThis(recalculate: Boolean = true) {
-        if (recalculate) {
-            internalX = constraints.x.get(this, Type.X)
-            internalY = constraints.y.get(this, Type.Y)
-        }
-        x = parent!!.x + internalX
-        y = parent!!.y + internalY
-    }
-
     fun render() {
         if (!renders) return
-//        renderer.push()
         draw()
         // check if size is valid
         if (width != 0f && height != 0f) {
@@ -144,7 +137,6 @@ abstract class Element(constraints: Constraints?) {
             }
             if (scissors) renderer.popScissor()
         }
-//        renderer.pop()
     }
 
     open fun accept(event: Event): Boolean {
@@ -186,10 +178,9 @@ abstract class Element(constraints: Constraints?) {
 
     // sets up position if element being added has an undefined position
     open fun onElementAdded(element: Element) {
-        element.apply {
-            if (constraints.x is Undefined) constraints.x = Center
-            if (constraints.y is Undefined) constraints.y = Center
-        }
+        val c = element.constraints
+        if (c.x is Undefined) c.x = Center
+        if (c.y is Undefined) c.y = Center
     }
 
     fun isInside(x: Float, y: Float): Boolean {

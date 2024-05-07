@@ -1,6 +1,7 @@
 package me.odinmain.features.settings.impl
 
 import com.github.stivais.ui.color.Color
+import com.github.stivais.ui.color.color
 import com.github.stivais.ui.constraints.at
 import com.github.stivais.ui.constraints.constrain
 import com.github.stivais.ui.constraints.percent
@@ -10,7 +11,6 @@ import com.github.stivais.ui.elements.button
 import com.github.stivais.ui.elements.text
 import com.github.stivais.ui.events.onClick
 import com.github.stivais.ui.impl.mainColor
-import com.github.stivais.ui.utils.color
 import com.github.stivais.ui.utils.radii
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
@@ -50,7 +50,7 @@ class BooleanSetting (
             size = 40.percent
         )
         button(
-            constraints = constrain(x = -6.px, w = 20.px, h = 50.percent),
+            constraints = constrain(x = -(6.px), w = 20.px, h = 50.percent),
             color = color(from = Color.RGB(38, 38, 38), to = mainColor),
             on = value,
             radii = radii(all = 5)

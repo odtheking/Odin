@@ -11,14 +11,11 @@ import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.renderer.GradientDirection
 import com.github.stivais.ui.utils.replaceUndefined
 
-open class Block(constraints: Constraints?, color: Color) : Element(constraints?.replaceUndefined(w = Copying, h = Copying)) {
+// todo: cleanup
+open class Block(constraints: Constraints?, color: Color) : Element(constraints?.replaceUndefined(w = Copying, h = Copying), color) {
 
     var outlineColor: Color? = null
     var outline: Measurement? = null
-
-    init {
-        this.color = color
-    }
 
     override fun draw() {
         if (color!!.rgba.alpha != 0) {
