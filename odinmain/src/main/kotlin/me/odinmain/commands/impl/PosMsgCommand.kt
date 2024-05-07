@@ -5,6 +5,7 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.commands.commodore
 import me.odinmain.config.Config
 import me.odinmain.features.impl.dungeon.PosMessages.posMessageStrings
+import me.odinmain.utils.round
 import me.odinmain.utils.skyblock.modMessage
 
 val PosMsgCommand = commodore("posmsg") {
@@ -17,9 +18,9 @@ val PosMsgCommand = commodore("posmsg") {
     }
 
     literal("addatpos").runs { delay: Long, message: GreedyString ->
-        val saveData = "x: ${mc.thePlayer.posX}, y: ${mc.thePlayer.posY}, z: ${mc.thePlayer.posZ}, delay: ${delay}, message: \"${message}\""
+        val saveData = "x: ${mc.thePlayer.posX.round(2)}, y: ${mc.thePlayer.posY.round(2)}, z: ${mc.thePlayer.posZ.round(2)}, delay: ${delay}, message: \"${message}\""
         if (posMessageStrings.contains(saveData)) modMessage("This message already exists!")
-        modMessage("Message \"${message}\" added at ${mc.thePlayer.posX}, ${mc.thePlayer.posY}, ${mc.thePlayer.posZ}, with ${delay}ms delay")
+        modMessage("Message \"${message}\" added at ${mc.thePlayer.posX.round(2)}, ${mc.thePlayer.posY.round(2)}, ${mc.thePlayer.posZ.round(2)}, with ${delay}ms delay")
         posMessageStrings.add(saveData)
         Config.save()
     }
