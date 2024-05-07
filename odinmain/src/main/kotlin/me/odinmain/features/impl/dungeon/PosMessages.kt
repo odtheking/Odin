@@ -8,7 +8,6 @@ import me.odinmain.features.settings.impl.ListSetting
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.modMessage
-import me.odinmain.utils.skyblock.partyMessage
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.*
@@ -23,34 +22,24 @@ object PosMessages : Module(
 
     data class PosMessage(val x: Double, val y: Double, val z: Double, val delay: Long, val message: String)
     val posMessageStrings: MutableList<String> by ListSetting("Pos Messages Strings", mutableListOf())
+    private val sentMessages = mutableMapOf<String, Boolean>()
 
-    var sending = false
 
     @SubscribeEvent
     fun posMessageSend(event: PacketSentEvent) {
-        if (event.packet !is C04PacketPlayerPosition /**|| (onlyDungeons && DungeonUtils.inDungeons) || !LocationUtils.inSkyblock*/) return
-
-        val nearPosMessages = posMessageStrings.filter {
-            val msg = parsePosString(it) ?: return
-            mc.thePlayer.getDistance(msg.x, msg.y, msg.z) <= 1
-        }
-
-         if (nearPosMessages.isEmpty()) {
-             sending = false
-             return
-         }
-
-        val sentMessages = mutableMapOf<PosMessage, Boolean>()
-
+        if (event.packet !is C04PacketPlayerPosition || (onlyDungeons && DungeonUtils.inDungeons) || !LocationUtils.inSkyblock) return
         posMessageStrings.forEach {
             val msg = parsePosString(it) ?: return@forEach
+            val messageSent = sentMessages.getOrDefault(it, false)
+            modMessage(messageSent)
             if (mc.thePlayer != null && mc.thePlayer.getDistance(msg.x, msg.y, msg.z) <= 1) {
-                if (!sending) Timer().schedule(msg.delay) {
+                if (!messageSent) Timer().schedule(msg.delay) {
+                    if (mc.thePlayer.getDistance(msg.x, msg.y, msg.z) <= 1)
                     modMessage(msg.message)
                 }
-            }
+                sentMessages[it] = true
+            } else sentMessages[it] = false
         }
-        sending = true
     }
 
 
