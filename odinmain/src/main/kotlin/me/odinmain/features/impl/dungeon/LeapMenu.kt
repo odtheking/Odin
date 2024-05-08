@@ -16,6 +16,8 @@ import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.name
 import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.PlayerUtils.windowClick
+import me.odinmain.utils.skyblock.PlayerUtils.ClickType
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.leapTeammates
 import net.minecraft.client.gui.Gui
@@ -149,7 +151,7 @@ object LeapMenu : Module(
         val index = getItemIndexInContainerChest(containerChest, name, 11..16) ?: return modMessage("Cant find player $name. This shouldn't be possible!")
         modMessage("Teleporting to $name.")
         if (leapAnnounce) partyMessage("Leaping to $name.")
-        mc.playerController.windowClick(containerChest.windowId, index, 2, 3, mc.thePlayer)
+        windowClick(index, ClickType.Middle, true)
     }
 
     init {
