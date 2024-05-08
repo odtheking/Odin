@@ -91,11 +91,12 @@ object PlayerUtils {
         Executor(delay = 500) { windowClickQueue.clear() }.register()
     }
 
-    fun windowClick(slotId: Int, button: Int, mode: Int) {
+    fun windowClick(slotId: Int, button: Int, mode: Int, instant: Boolean = false) {
         if (mc.currentScreen is TermSimGui) {
             val gui = mc.currentScreen as TermSimGui
             gui.delaySlotClick(gui.inventorySlots.getSlot(slotId), button)
-        } else windowClickQueue.add(WindowClick(slotId, button, mode))
+        } else if (instant) sendWindowClick(slotId, button, mode)
+        else windowClickQueue.add(WindowClick(slotId, button, mode))
     }
 
     fun handleWindowClickQueue() {
@@ -120,16 +121,16 @@ object PlayerUtils {
         }
     }
 
-    private fun middleClickWindow(slot: Int) {
+    /**private fun middleClickWindow(slot: Int) {
         windowClick(slot, 2, 2)
-    }
+    }*/
 
-    fun windowClick(slotId: Int, clickType: ClickType) {
+    fun windowClick(slotId: Int, clickType: ClickType, instant: Boolean = false) {
         when (clickType) {
-            is ClickType.Left -> windowClick(slotId, 0, 0)
-            is ClickType.Right -> windowClick(slotId, 1, 0)
-            is ClickType.Middle -> windowClick(slotId, 2, 3)
-            is ClickType.Shift -> windowClick(slotId, 0, 1)
+            is ClickType.Left -> windowClick(slotId, 0, 0, instant)
+            is ClickType.Right -> windowClick(slotId, 1, 0, instant)
+            is ClickType.Middle -> windowClick(slotId, 2, 3, instant)
+            is ClickType.Shift -> windowClick(slotId, 0, 1, instant)
         }
     }
 }

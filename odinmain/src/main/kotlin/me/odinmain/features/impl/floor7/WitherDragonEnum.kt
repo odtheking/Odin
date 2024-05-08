@@ -78,7 +78,7 @@ fun handleSpawnPacket(particle: S2APacketParticles) {
     val spawningDragons = WitherDragonsEnum.entries.filter { it.spawning }.toMutableList()
     if (spawningDragons.isEmpty()) return
     priorityDragon = findPriority(spawningDragons)
-    if (priorityDragon.particleSpawnTime == System.currentTimeMillis() +- 100) dragonPrioritySpawn(priorityDragon)
+    if (priorityDragon.particleSpawnTime in System.currentTimeMillis()-100..System.currentTimeMillis()+100) dragonPrioritySpawn(priorityDragon)
 }
 
 private fun checkParticle(event: S2APacketParticles, color: WitherDragonsEnum): Boolean {
