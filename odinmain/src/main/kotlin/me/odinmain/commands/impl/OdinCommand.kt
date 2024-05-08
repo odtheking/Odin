@@ -25,21 +25,18 @@ val mainCommand = commodore("od", "odin", "odinclient") {
     }
 
     literal("ep").runs {
-        val pearls = mc.thePlayer.inventory.mainInventory.firstOrNull() { it?.itemID == "ENDER_PEARL" }
-        val stack = 16 - (pearls?.stackSize ?: return@runs sendCommand("gfs ender_pearl 16"))
-        sendCommand("gfs ender_pearl $stack")
+        val pearls = mc.thePlayer.inventory.mainInventory.find { it?.itemID == "ENDER_PEARL" }?.stackSize ?: return@runs sendCommand("gfs ender_pearl 16")
+        sendCommand("gfs ender_pearl ${16 - pearls}")
     }
 
     literal("ij").runs {
-        val pearls = mc.thePlayer.inventory.mainInventory.firstOrNull() { it?.itemID == "INFLATABLE_JERRY" }
-        val stack = 64 - (pearls?.stackSize ?: return@runs sendCommand("gfs INFLATABLE_JERRY 64"))
-        sendCommand("gfs inflatable_jerry $stack")
+        val jerries = mc.thePlayer.inventory.mainInventory.find { it?.itemID == "INFLATABLE_JERRY" }?.stackSize ?: return@runs sendCommand("gfs INFLATABLE_JERRY 64")
+        sendCommand("gfs inflatable_jerry ${64 - jerries}")
     }
 
     literal("sl").runs {
-        val leaps = mc.thePlayer.inventory.mainInventory.firstOrNull() { it?.itemID == "SPIRIT_LEAP" }
-        val stack = 16 - (leaps?.stackSize ?: return@runs sendCommand("gfs spirit_leap 16"))
-        sendCommand("gfs spirit_leap $stack")
+        val leaps = mc.thePlayer.inventory.mainInventory.find { it?.itemID == "SPIRIT_LEAP" }?.stackSize ?: return@runs sendCommand("gfs spirit_leap 16")
+        sendCommand("gfs spirit_leap ${16 - leaps}")
     }
 
     literal("reset") {
@@ -66,8 +63,8 @@ val mainCommand = commodore("od", "odin", "odinclient") {
              §3- /blacklist §7» §8Used to configure your blacklist.
              §3- /highlight §7» §8Used to configure Highlight list.
              §3- /waypoint §7» §8Configure waypoints.
-             §3- /termsim §7» §8Simulates terminals so you can practice them.
-             §3- /rq §7» §8Requeues dungeon run.
+             §3- /termsim {ping}? {amount}? §7» §8Simulates terminals so you can practice them.
+             §3- /od rq §7» §8Requeues dungeon run.
              §3- /od m? » §8Teleports you to a floor in master mode.
              §3- /od f? » §8Teleports you to a floor in normal mode.
              §3- /od t? » §8Teleports you to a kuudra run.
