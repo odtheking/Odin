@@ -73,11 +73,11 @@ object NoDebuff : Module(
     }
 
     fun isNoPush(): Boolean {
-        return noPush && enabled && mc.thePlayer.isSpectator && mc.thePlayer.heldItem == null
+        return noPush && enabled
     }
 
     fun noCarpetHook(carpet: BlockCarpet): Boolean {
-        if (!noCarpet) return false
+        if (!noCarpet && !enabled) return false
         carpet.setBlockBounds(0f, 0f, 0f, 1f, 0f, 1f)
         return true
     }
