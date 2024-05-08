@@ -25,17 +25,17 @@ val mainCommand = commodore("od", "odin", "odinclient") {
     }
 
     literal("ep").runs {
-        val pearls = mc.thePlayer.inventory.mainInventory.find { it?.itemID == "ENDER_PEARL" }?.stackSize ?: return@runs sendCommand("gfs ender_pearl 16")
+        val pearls = mc.thePlayer.inventory.mainInventory.find { it?.itemID == "ENDER_PEARL" }?.stackSize ?: 0
         sendCommand("gfs ender_pearl ${16 - pearls}")
     }
 
     literal("ij").runs {
-        val jerries = mc.thePlayer.inventory.mainInventory.find { it?.itemID == "INFLATABLE_JERRY" }?.stackSize ?: return@runs sendCommand("gfs INFLATABLE_JERRY 64")
+        val jerries = mc.thePlayer.inventory.mainInventory.find { it?.itemID == "INFLATABLE_JERRY" }?.stackSize ?: 0
         sendCommand("gfs inflatable_jerry ${64 - jerries}")
     }
 
     literal("sl").runs {
-        val leaps = mc.thePlayer.inventory.mainInventory.find { it?.itemID == "SPIRIT_LEAP" }?.stackSize ?: return@runs sendCommand("gfs spirit_leap 16")
+        val leaps = mc.thePlayer.inventory.mainInventory.find { it?.itemID == "SPIRIT_LEAP" }?.stackSize ?: 0
         sendCommand("gfs spirit_leap ${16 - leaps}")
     }
 
