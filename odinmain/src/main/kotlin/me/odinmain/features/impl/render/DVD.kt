@@ -27,8 +27,8 @@ object DVD : Module(
     private val speed: Long by NumberSetting("Speed", 10, 1, 20, 1, description = "Speed of the DVD box.")
 
     override fun onEnable() {
-        var x = Display.getWidth() / 2
-        var y = Display.getHeight() / 2
+        x = Display.getWidth() / 2
+        y = Display.getHeight() / 2
         super.onEnable()
     }
     
