@@ -34,7 +34,8 @@ object ClickedSecrets : Module(
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (!DungeonUtils.inDungeons || secrets.isEmpty() || DungeonUtils.inBoss) return
 
-        secrets.forEach {
+        val tempList = secrets.toList()
+        tempList.forEach {
             val size = if (useRealSize) getBlockAt(it.pos).getSelectedBoundingBox(mc.theWorld, BlockPos(it.pos)) else it.pos.toAABB()
             Renderer.drawBox(size, if (it.locked) lockedColor else color, depth = phase,
                 outlineAlpha = if (style == 0) 0 else color.alpha, fillAlpha = if (style == 1) 0 else color.alpha)

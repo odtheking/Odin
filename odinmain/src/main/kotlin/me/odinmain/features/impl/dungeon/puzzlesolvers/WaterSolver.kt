@@ -122,6 +122,9 @@ object WaterSolver {
                 }
             ] = mutableEntry.value.asJsonArray.map { it.asDouble }.toTypedArray()
         }
+        runIn(5) {
+            solve(DungeonUtils.currentRoom?.room ?: return@runIn)
+        }
     }
 
 

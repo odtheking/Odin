@@ -66,7 +66,7 @@ object OdinMain {
             DevPlayers,
             PartyNote,
             SkyblockPlayer,
-            HighlightRenderer,
+            //HighlightRenderer,
             //OdinUpdater,
             this
         ).forEach { MinecraftForge.EVENT_BUS.register(it) }
