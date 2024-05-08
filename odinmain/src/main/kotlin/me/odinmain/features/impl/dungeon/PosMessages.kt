@@ -27,8 +27,8 @@ object PosMessages : Module(
 
 
     @SubscribeEvent
-    fun posMessageSend(event: PacketSentEvent) {
-        if (event.packet !is C04PacketPlayerPosition || (onlyDungeons && DungeonUtils.inDungeons) || !LocationUtils.inSkyblock) return
+    fun onPosUpdate(event: PacketSentEvent) {
+        if (event.packet !is C04PacketPlayerPosition || (onlyDungeons && !DungeonUtils.inDungeons) || !LocationUtils.inSkyblock) return
         posMessageStrings.forEach {
             val msg = parsePosString(it) ?: return@forEach
             val messageSent = sentMessages.getOrDefault(it, false)
