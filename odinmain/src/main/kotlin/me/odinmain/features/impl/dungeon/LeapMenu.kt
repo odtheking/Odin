@@ -187,7 +187,7 @@ object LeapMenu : Module(
         val result = Array(4) { EMPTY }
         val secondRound = mutableListOf<DungeonUtils.DungeonPlayer>()
 
-        for (player in players) {
+        for (player in players.sortedBy { it.clazz.prio }) {
             when {
                 result[player.clazz.defaultQuadrant] == EMPTY -> result[player.clazz.defaultQuadrant] = player
                 else -> secondRound.add(player)

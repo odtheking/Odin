@@ -32,7 +32,7 @@ object ClickedSecrets : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (!DungeonUtils.inDungeons || secrets.isEmpty() || DungeonUtils.inBoss) return
+        if (!DungeonUtils.inDungeons || DungeonUtils.inBoss || secrets.isEmpty()) return
 
         val tempList = secrets.toList()
         tempList.forEach {

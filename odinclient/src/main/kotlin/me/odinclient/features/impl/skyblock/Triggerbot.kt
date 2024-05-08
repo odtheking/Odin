@@ -47,7 +47,7 @@ object Triggerbot : Module(
         "Revoker", "Tear", "Ooze", "Cannibal", "Walker", "Putrid", "Mute", "Parasite", "WanderingSoul", "Leech",
         "Flamer", "Skull", "Mr.Dead", "Vader", "Frost", "Freak", "Bonzo", "Scarf", "Livid", "Psycho", "Reaper",
     )
-    val cauldronMap = mapOf(
+    private val cauldronMap = mapOf(
         "GREEN_KING_RELIC" to Vec2(49, 44),
         "RED_KING_RELIC" to Vec2(51, 42),
         "PURPLE_KING_RELIC" to Vec2(54, 41),

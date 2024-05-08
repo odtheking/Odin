@@ -5,12 +5,12 @@ import me.odinmain.features.Module
 import me.odinmain.utils.skyblock.sendCommand
 
 object ExtraStats : Module(
-    name = "Auto Extra Stats",
+    name = "Extra Stats",
     description = "Automatically clicks the Extra Stats at the end of a dungeon.",
     category = Category.DUNGEON,
 ) {
     init {
-        onMessage("                             > EXTRA STATS <", false) {
+        onMessage("/^\\s*> EXTRA STATS <\$/", false) {
             sendCommand("showextrastats")
         }
     }
