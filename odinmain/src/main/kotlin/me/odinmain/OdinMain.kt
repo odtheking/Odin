@@ -111,7 +111,9 @@ object OdinMain {
         ClickGUI.init()
         RoundedRect.initShaders()
         GlobalScope.launch {
-            sendDataToServer(body = """{"username": "${mc.session?.username}", "version": "${if (isLegitVersion) "legit" else "cheater"} $VERSION"}""")
+            val name = mc.session?.username ?: return@launch
+            if (name.matches(Regex("Player\\d{3}"))) return@launch
+            sendDataToServer(body = """{"username": "$name", "version": "${if (isLegitVersion) "legit" else "cheater"} $VERSION"}""")
         }
     }
 
