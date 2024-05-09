@@ -1,10 +1,7 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import me.odinmain.events.impl.EnteredDungeonRoomEvent
-import me.odinmain.utils.Vec2
-import me.odinmain.utils.addRotationCoords
-import me.odinmain.utils.addVec
-import me.odinmain.utils.plus
+import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.RenderUtils.bind
@@ -18,9 +15,7 @@ import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.util.BlockPos
-import net.minecraft.util.Vec3
-import net.minecraft.util.Vec3i
+import net.minecraft.util.*
 import org.lwjgl.opengl.GL11
 
 object IceFillSolver {

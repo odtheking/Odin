@@ -3,13 +3,8 @@ package me.odinclient.features.impl.dungeon
 import me.odinmain.config.Config
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.ActionSetting
-import me.odinmain.features.settings.impl.ListSetting
-import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.features.settings.impl.SelectorSetting
-import me.odinmain.utils.containsOneOf
-import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.name
+import me.odinmain.features.settings.impl.*
+import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import me.odinmain.utils.skyblock.modMessage

@@ -3,9 +3,7 @@ package me.odinmain.features.impl.floor7.p3
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.SelectorSetting
+import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Color

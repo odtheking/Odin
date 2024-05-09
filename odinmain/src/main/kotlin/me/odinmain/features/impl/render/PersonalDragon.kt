@@ -2,9 +2,7 @@ package me.odinmain.features.impl.render
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderX
 import me.odinmain.utils.render.RenderUtils.renderY

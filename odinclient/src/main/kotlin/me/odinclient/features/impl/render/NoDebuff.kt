@@ -5,14 +5,13 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.equalsOneOf
+import net.minecraft.block.BlockCarpet
 import net.minecraft.block.material.Material
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraft.util.EnumParticleTypes
 import net.minecraft.util.Vec3
-import net.minecraftforge.client.event.EntityViewRenderEvent
-import net.minecraftforge.client.event.RenderBlockOverlayEvent
-import net.minecraftforge.client.event.RenderGameOverlayEvent
+import net.minecraftforge.client.event.*
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object NoDebuff : Module(
@@ -27,6 +26,7 @@ object NoDebuff : Module(
     private val noFire: Boolean by BooleanSetting("No Fire Overlay", false, description = "Disable Fire overlay on screen.")
     private val noPush: Boolean by BooleanSetting("No Push", false, description = "Prevents from being pushed out of blocks.")
     private val seeThroughBlocks: Boolean by BooleanSetting("See Through Blocks", false, description = "Makes blocks transparent.")
+    private val noCarpet: Boolean by BooleanSetting("No Carpet", false, description = "Removes nearby carpet hitboxes.")
 
     @SubscribeEvent
     fun onRenderFog(event: EntityViewRenderEvent.FogDensity) {
@@ -73,6 +73,12 @@ object NoDebuff : Module(
     }
 
     fun isNoPush(): Boolean {
-        return noPush && enabled && mc.thePlayer.isSpectator && mc.thePlayer.heldItem == null
+        return noPush && enabled
+    }
+
+    fun noCarpetHook(carpet: BlockCarpet): Boolean {
+        if (!noCarpet && !enabled) return false
+        carpet.setBlockBounds(0f, 0f, 0f, 1f, 0f, 1f)
+        return true
     }
 }
