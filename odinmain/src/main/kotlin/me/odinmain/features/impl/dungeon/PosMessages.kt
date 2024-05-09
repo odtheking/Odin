@@ -30,7 +30,7 @@ object PosMessages : Module(
 
     @SubscribeEvent
     fun posMessageSend(event: PacketSentEvent) {
-        //if (event.packet !is C04PacketPlayerPosition || (onlyDungeons && !DungeonUtils.inDungeons) || !LocationUtils.inSkyblock) return
+        if (event.packet !is C04PacketPlayerPosition || (onlyDungeons && !DungeonUtils.inDungeons) || !LocationUtils.inSkyblock) return
         posMessageStrings.forEach {
             findParser(it)
         }
