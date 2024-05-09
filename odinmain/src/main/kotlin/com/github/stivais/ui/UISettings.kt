@@ -11,4 +11,6 @@ class UISettings {
 
     var repositionOnEvent: Boolean = true
 
+    var cacheFrames: Boolean = true
+
 }

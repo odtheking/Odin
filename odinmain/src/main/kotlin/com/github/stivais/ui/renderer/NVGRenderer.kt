@@ -5,14 +5,13 @@ import com.github.stivais.ui.color.blue
 import com.github.stivais.ui.color.green
 import com.github.stivais.ui.color.red
 import me.odinmain.OdinMain.mc
-import net.minecraft.client.renderer.GlStateManager
 import org.apache.commons.io.IOUtils
 import org.lwjgl.nanovg.NVGColor
+import org.lwjgl.nanovg.NVGLUFramebuffer
 import org.lwjgl.nanovg.NVGPaint
 import org.lwjgl.nanovg.NanoVG.*
-import org.lwjgl.nanovg.NanoVGGL2.NVG_ANTIALIAS
-import org.lwjgl.nanovg.NanoVGGL2.nvgCreate
-import org.lwjgl.opengl.GL11
+import org.lwjgl.nanovg.NanoVGGL2.*
+import org.lwjgl.opengl.GL11.*
 import java.io.FileNotFoundException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -25,10 +24,13 @@ object NVGRenderer : Renderer {
     private val nvgColor: NVGColor = NVGColor.malloc()
     private val nvgColor2: NVGColor = NVGColor.malloc()
 
+    private val fbos = HashMap<Framebuffer, NVGLUFramebuffer>()
     private var vg: Long = -1
 
     // used in getTextWidth to avoid reallocating
     private val fontBounds = FloatArray(4)
+
+//    var nvgFbo: NVGFBO? = null
 
     // this will be used later for fixing bugs caused by nvg i think
     var drawing: Boolean = false
@@ -45,8 +47,7 @@ object NVGRenderer : Renderer {
         if (drawing) throw IllegalStateException("[NVGRenderer] Already drawing, but called beginFrame")
         drawing = true
         if (!mc.framebuffer.isStencilEnabled) mc.framebuffer.enableStencil()
-        GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS)
-        GlStateManager.disableCull()
+        glPushAttrib(GL_ALL_ATTRIB_BITS)
         nvgBeginFrame(vg, width, height, 1f)
         nvgTextAlign(vg, NVG_ALIGN_LEFT or NVG_ALIGN_TOP)
     }
@@ -54,9 +55,56 @@ object NVGRenderer : Renderer {
     override fun endFrame() {
         if (!drawing) throw IllegalStateException("[NVGRenderer] Not drawing, but called endFrame")
         nvgEndFrame(vg)
-        GL11.glPopAttrib()
-        GlStateManager.enableCull()
+        glPopAttrib()
         drawing = false
+    }
+
+    override fun supportsFramebuffers(): Boolean = true
+
+    override fun createFramebuffer(w: Float, h: Float): Framebuffer {
+        val fbo = Framebuffer(w, h)
+        fbos[fbo] = nvgluCreateFramebuffer(
+            vg,
+            w.toInt(),
+            h.toInt(),
+            0
+        ) ?: throw NullPointerException("Error creating nvg fbo")
+        return fbo
+    }
+
+    override fun drawFramebuffer(fbo: Framebuffer, x: Float, y: Float) {
+        val nvgFbo = getFramebuffer(fbo)
+        nvgImagePattern(vg, 0f, 0f, fbo.width, fbo.height, 0f, nvgFbo.image(), 1f, nvgPaint)
+        nvgBeginPath(vg)
+        nvgRect(vg, x, y, fbo.width, fbo.height)
+        nvgFillPaint(vg, nvgPaint)
+        nvgFill(vg)
+        nvgClosePath(vg)
+    }
+
+    override fun bindFramebuffer(fbo: Framebuffer) {
+        glPushAttrib(GL_ALL_ATTRIB_BITS)
+        val nvgFbo = getFramebuffer(fbo)
+        nvgluBindFramebuffer(vg, nvgFbo)
+        glViewport(0, 0, fbo.width.toInt(), fbo.height.toInt())
+        glClearColor(0f, 0f,0f, 0f)
+        glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
+    }
+
+    override fun unbindFramebuffer() {
+        nvgluBindFramebuffer(vg, null)
+        glPopAttrib()
+    }
+
+    private fun getFramebuffer(fbo: Framebuffer): NVGLUFramebuffer {
+        return fbos[fbo] ?: throw NullPointerException("Unable to find $fbo")
+    }
+
+    // todo: use this in ui to not leak memeory
+    override fun destroyFramebuffer(fbo: Framebuffer) {
+        val nvgFbo = fbos[fbo] ?: return
+        nvgluDeleteFramebuffer(vg, nvgFbo)
+        fbos.remove(fbo)
     }
 
     override fun push() = nvgSave(vg)

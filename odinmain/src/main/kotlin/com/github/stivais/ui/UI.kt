@@ -6,6 +6,7 @@ import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.elements.impl.Group
 import com.github.stivais.ui.events.EventManager
+import com.github.stivais.ui.renderer.Framebuffer
 import com.github.stivais.ui.renderer.NVGRenderer
 import com.github.stivais.ui.renderer.Renderer
 import com.github.stivais.ui.utils.forLoop
@@ -40,6 +41,9 @@ class UI(
         main.position()
         afterInit?.forLoop { it() }
         afterInit = null
+        if (settings.cacheFrames && renderer.supportsFramebuffers()) {
+            framebuffer = renderer.createFramebuffer(main.width, main.height)
+        }
     }
 
     // frametime metrics
@@ -49,20 +53,47 @@ class UI(
 
     var needsUpdate = true
 
+    private var framebuffer: Framebuffer? = null
+
     fun render() {
         val start = System.nanoTime()
-
-        renderer.beginFrame(main.width, main.height)
-        if (needsUpdate) {
-            needsUpdate = false
-            main.position()
-            main.clip()
+        val fbo = framebuffer
+        if (fbo == null) {
+            renderer.beginFrame(main.width, main.height)
+            if (needsUpdate) {
+                needsUpdate = false
+                main.position()
+                main.clip()
+            }
+            main.render()
+            if (settings.frameMetrics) {
+                renderer.text(performance, main.width - renderer.textWidth(performance, 12f), main.height - 12f, 12f, Color.WHITE.rgba)
+            }
+            renderer.endFrame()
+        } else {
+            if (needsUpdate) {
+                needsUpdate = false
+                renderer.bindFramebuffer(fbo) // thanks ilmars for helping me fix
+                renderer.beginFrame(fbo.width, fbo.height)
+                main.position()
+                main.clip()
+                main.render()
+                renderer.endFrame()
+                renderer.unbindFramebuffer()
+            }
+            renderer.beginFrame(fbo.width, fbo.height)
+            renderer.drawFramebuffer(fbo, 0f, 0f)
+            if (settings.frameMetrics) {
+                renderer.text(
+                    performance,
+                    main.width - renderer.textWidth(performance, 12f),
+                    main.height - 12f,
+                    12f,
+                    Color.WHITE.rgba
+                )
+            }
+            renderer.endFrame()
         }
-        main.render()
-        if (settings.frameMetrics) {
-            renderer.text(performance, main.width - renderer.textWidth(performance, 12f), main.height - 12f, 12f, Color.WHITE.rgba)
-        }
-        renderer.endFrame()
 
         if (settings.frameMetrics) {
             frames++
@@ -93,6 +124,10 @@ class UI(
         main.constraints.width = width.px
         main.constraints.height = height.px
         needsUpdate = true
+        if (framebuffer != null) {
+            renderer.destroyFramebuffer(framebuffer!!)
+            framebuffer = renderer.createFramebuffer(main.width, main.height)
+        }
     }
 
     fun focus(element: Element) {

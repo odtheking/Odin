@@ -107,19 +107,16 @@ abstract class Setting<T> (
     }
 
     // todo: cleanup
-    // todo: improve animation
     internal inner class SettingElement(height: Size) : Element(size(240.px, Animatable(from = height, to = 0.px))) {
 
         private var visible: Boolean = visibilityDependency?.invoke() ?: true
 
         init {
-            if (!visible) (height() as Animatable).swap()
+            if (!visible) (constraints.height as Animatable).swap()
             scissors()
-            onInitialization {
-                afterInitialization {
-                    elements?.forLoop {
-                        pxToPercent(it)
-                    }
+            afterInitialization {
+                elements?.forLoop {
+                    pxToPercent(it)
                 }
             }
         }
@@ -127,16 +124,14 @@ abstract class Setting<T> (
         override fun draw() {
             if ((visibilityDependency?.invoke() != false) != visible) {
                 visible = !visible
-                height().animate(0.25.seconds, Animations.EaseInOutQuint)
+                constraints.height.animate(0.25.seconds, Animations.EaseInOutQuint)
                 update()
             }
         }
 
-        override fun onElementAdded(element: Element) {
-            super.onElementAdded(element)
-        }
-
-        // this is a weird way to get animations to work nicely, but it works
+        // this is a weird way to get animations to work nicely,
+        // but it works
+        // i have not tested it to see if it breaks with certain things
         private fun pxToPercent(element: Element) {
             element.constraints.apply {
                 if (height is Pixel) {

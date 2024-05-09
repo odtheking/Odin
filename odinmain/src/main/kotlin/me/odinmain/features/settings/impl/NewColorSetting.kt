@@ -11,6 +11,7 @@ import com.github.stivais.ui.elements.*
 import com.github.stivais.ui.events.onClick
 import com.github.stivais.ui.renderer.GradientDirection.LeftToRight
 import com.github.stivais.ui.renderer.GradientDirection.TopToBottom
+import com.github.stivais.ui.utils.draggable
 import com.github.stivais.ui.utils.radii
 import com.github.stivais.ui.utils.seconds
 import me.odinmain.features.settings.Setting
@@ -71,6 +72,11 @@ class NewColorSetting(
                         colors = Color.TRANSPARENT to Color.BLACK,
                         direction = TopToBottom
                     )
+                    block(
+                        constraints = size(10.px, 10.px),
+                        color = Color.BLACK,
+                        radii(5f)
+                    ).draggable(coerce = true)
                 }
                 group(size(Copying, 10.px))
                 if (allowAlpha) {

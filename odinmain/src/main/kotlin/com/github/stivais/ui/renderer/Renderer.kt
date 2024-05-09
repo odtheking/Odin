@@ -6,6 +6,18 @@ interface Renderer {
 
     fun endFrame()
 
+    fun supportsFramebuffers(): Boolean = false
+
+    fun createFramebuffer(w: Float, h: Float): Framebuffer = Framebuffer(w, h)
+
+    fun destroyFramebuffer(fbo: Framebuffer) {}
+
+    fun drawFramebuffer(fbo: Framebuffer, x: Float, y: Float) {}
+
+    fun bindFramebuffer(fbo: Framebuffer) {}
+
+    fun unbindFramebuffer() {}
+
     fun push()
 
     fun pop()

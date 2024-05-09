@@ -63,7 +63,6 @@ val Number.seconds
     get() = this.toFloat() * 1_000_000_000
 
 
-// todo: cleanup
 /**
  * Function that allows elements to be drag and dropped
  *
@@ -85,8 +84,8 @@ fun <E : Element> E.draggable(acceptsEvent: Boolean = true, target: Element = th
     var y = 0f
     onClick(0) {
         pressed = true
-        x = ui.mx - this@draggable.x
-        y = ui.my - this@draggable.y
+        x = ui.mx - internalX//.also { println(it) }
+        y = ui.my - internalY
         acceptsEvent
     }
     onMouseMove {
@@ -124,6 +123,9 @@ fun <E : Block> E.hoverEffect(duration: Number = 0.25.seconds) {
     val hover = Color.Animated(from = before, to = Color { before.rgba.brighter() })
     color = hover
     onMouseEnterExit {
+        if (ui.settings.cacheFrames) {
+            update()
+        }
         hover.animate(duration)
         true
     }

@@ -14,6 +14,10 @@ class UIScreen(val ui: UI) : GuiScreen() {
         ui.initialize()
     }
 
+    override fun onGuiClosed() {
+        // todo: add cleanup here
+    }
+
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         ui.eventManager?.apply {
             val mx = Mouse.getX().toFloat()

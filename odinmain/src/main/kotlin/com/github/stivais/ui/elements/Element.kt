@@ -80,7 +80,6 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
 
     abstract fun draw()
 
-    // position needs a rework, make it only reposition if it needs,
     fun position(place: Boolean = true) {
         if (!enabled) return
         prePosition()
@@ -231,19 +230,16 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
         return null
     }
 
-    // todo: dsl, maybe move out of this class?
-    fun sendEventTo(event: Event, target: Element): Boolean {
-        return target.accept(event)
-    }
-
-    // todo: dsl, maybe move out of this class?
-    fun sendEventTo(target: Element): Event.() -> Boolean {
-        return { target.accept(this) }
-    }
-
     fun afterInitialization(block: () -> Unit) {
-        if (ui.afterInit == null) ui.afterInit = arrayListOf()
-        ui.afterInit!!.add(block)
+        if (::ui.isInitialized) {
+            if (ui.afterInit == null) ui.afterInit = arrayListOf()
+            ui.afterInit!!.add(block)
+        } else {
+            onInitialization {
+                if (ui.afterInit == null) ui.afterInit = arrayListOf()
+                ui.afterInit!!.add(block)
+            }
+        }
     }
 
     fun takeEvents(from: Element) {
