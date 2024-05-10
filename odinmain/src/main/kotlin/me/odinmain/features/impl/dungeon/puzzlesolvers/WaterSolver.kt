@@ -57,13 +57,13 @@ object WaterSolver {
         val z = room.z
         val rotation = room.rotation
 
-        chestPosition = Vec2(x, z).addRotationCoords(rotation, 4).addRotationCoords(rotation, -11)
-        if (getBlockAt(chestPosition.x, 56, chestPosition.z) != Blocks.chest) return
+        chestPosition = Vec2(x, z).addRotationCoords(rotation, -7)
 
         roomFacing = rotation
 
         val pistonHeadPosition = chestPosition.addRotationCoords(roomFacing, -5).let { BlockPos(it.x, 82, it.z) }
-        val blockList = BlockPos.getAllInBox(BlockPos(pistonHeadPosition.x + 1, 78, pistonHeadPosition.z + 1), BlockPos(pistonHeadPosition.x - 1, 77, pistonHeadPosition.z - 1))
+        val blockList = BlockPos.getAllInBox(BlockPos(pistonHeadPosition.x + 1, 78, pistonHeadPosition.z + 1),
+            BlockPos(pistonHeadPosition.x - 1, 77, pistonHeadPosition.z - 1))
 
         val foundBlocks = mutableListOf(false, false, false, false, false)
 
