@@ -14,9 +14,7 @@ import me.odinmain.utils.xzDistance
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
-import net.minecraft.entity.monster.EntityBlaze
-import net.minecraft.entity.monster.EntityPigZombie
-import net.minecraft.entity.monster.EntitySkeleton
+import net.minecraft.entity.monster.*
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object BlazeAttunement : Module(

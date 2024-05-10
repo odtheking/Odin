@@ -41,7 +41,7 @@ object TeammatesHighlight : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (!DungeonUtils.inDungeons || !showName) return
+        if (!showName) return
         dungeonTeammatesNoSelf.forEach { teammate ->
             if (teammate.entity?.let { shouldRender(it) } != true) return@forEach
             if (!whenVisible && mc.thePlayer.canEntityBeSeen(teammate.entity)) return@forEach
@@ -59,7 +59,6 @@ object TeammatesHighlight : Module(
 
     private fun shouldRender(teammate: Entity): Boolean {
         return (inBoss || !DungeonUtils.inBoss) // boss
-                && teammate != mc.thePlayer // self
                 && DungeonUtils.inDungeons // in dungeon
     }
 }

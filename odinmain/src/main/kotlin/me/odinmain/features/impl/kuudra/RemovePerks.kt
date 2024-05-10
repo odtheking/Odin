@@ -4,9 +4,7 @@ import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.utils.containsOneOf
-import me.odinmain.utils.name
-import me.odinmain.utils.noControlCodes
+import me.odinmain.utils.*
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent

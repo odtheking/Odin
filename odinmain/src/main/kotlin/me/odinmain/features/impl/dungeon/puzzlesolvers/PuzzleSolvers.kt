@@ -7,9 +7,7 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.puzzlesolvers.WaterSolver.waterInteract
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.ActionSetting
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
+import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.profile
 import me.odinmain.utils.render.Color
@@ -38,6 +36,9 @@ object PuzzleSolvers : Module(
     val mazeColorOne: Color by ColorSetting("Color for one solution", Color.GREEN.withAlpha(.5f), true, description = "Color for when there is a single solution").withDependency { tpMaze }
     val mazeColorMultiple: Color by ColorSetting("Color for multiple solutions", Color.ORANGE.withAlpha(.5f), true, description = "Color for when there are multiple solutions").withDependency { tpMaze }
     val mazeColorVisited: Color by ColorSetting("Color for visited", Color.RED.withAlpha(.5f), true, description = "Color for the already used TP pads").withDependency { tpMaze }
+    private val click: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
+        TPMaze.reset()
+    }.withDependency { tpMaze }
 
     private val tttSolver: Boolean by BooleanSetting("Tic Tac Toe", true, description = "Shows you the solution for the TTT puzzle")
 
@@ -55,6 +56,8 @@ object PuzzleSolvers : Module(
     init {
         execute(500) {
             if (tpMaze) TPMaze.scan()
+            WaterSolver.scan()
+
         }
 
         onPacket(S08PacketPlayerPosLook::class.java) {
@@ -97,8 +100,6 @@ object PuzzleSolvers : Module(
 
     @SubscribeEvent
     fun onRoomEnter(event: EnteredDungeonRoomEvent) {
-        WaterSolver.scan(event)
-
         IceFillSolver.enterDungeonRoom(event)
         BlazeSolver.getRoomType(event)
     }

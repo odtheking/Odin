@@ -6,9 +6,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.getMCTextWidth
-import me.odinmain.utils.render.mcText
+import me.odinmain.utils.render.*
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object GoldorTimer : Module(

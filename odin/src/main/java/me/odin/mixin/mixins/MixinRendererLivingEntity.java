@@ -2,7 +2,6 @@ package me.odin.mixin.mixins;
 
 
 import me.odinmain.events.impl.RenderEntityModelEvent;
-import me.odinmain.features.impl.render.CustomHighlight;
 import me.odinmain.utils.render.Color;
 import me.odinmain.utils.render.HighlightRenderer;
 import me.odinmain.utils.render.RenderUtils;
@@ -47,7 +46,8 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> {
 
     @Inject(method = "setBrightness", at = @At(value = "HEAD"), cancellable = true)
     private  <T extends EntityLivingBase> void setBrightness(T entity, float partialTicks, boolean combineTextures, CallbackInfoReturnable<Boolean> cir) {
-        if (odin$entitiesMap.get(HighlightRenderer.HighlightType.Overlay).stream().anyMatch(e -> e.getEntity().equals(entity))) {
+        HighlightRenderer.HighlightEntity highlightEntity = odin$entitiesMap.get(HighlightRenderer.HighlightType.Overlay).stream().filter(e -> e.getEntity().equals(entity)).findFirst().orElse(null);
+        if (highlightEntity != null) {
             GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
             GlStateManager.enableTexture2D();
             GL11.glTexEnvi(8960, 8704, OpenGlHelper.GL_COMBINE);
@@ -73,7 +73,7 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> {
             GL11.glTexEnvi(8960, OpenGlHelper.GL_SOURCE0_ALPHA, OpenGlHelper.GL_PREVIOUS);
             GL11.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_ALPHA, 770);
             this.brightnessBuffer.position(0);
-            Color color = CustomHighlight.INSTANCE.getColor();
+            Color color = highlightEntity.getColor();
             brightnessBuffer.put(color.getR() / 255f);
             brightnessBuffer.put(color.getG() / 255f);
             brightnessBuffer.put(color.getB() / 255f);

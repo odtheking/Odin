@@ -2,12 +2,9 @@ package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.render.ClickGUIModule
-import me.odinmain.utils.cleanLine
-import me.odinmain.utils.cleanSB
+import me.odinmain.utils.*
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
-import me.odinmain.utils.getLines
-import me.odinmain.utils.sidebarLines
 import me.odinmain.utils.skyblock.dungeon.Dungeon
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getPhase
 import net.minecraft.client.network.NetHandlerPlayClient

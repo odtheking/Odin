@@ -1,13 +1,9 @@
 package me.odinclient.utils
 
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import me.odinclient.features.impl.dungeon.AutoIceFill
 import me.odinmain.utils.skyblock.getBlockIdAt
 import net.minecraft.util.Vec3
-
 
 
 suspend fun waitUntilPacked(x: Double, y: Double, z: Double) = coroutineScope {

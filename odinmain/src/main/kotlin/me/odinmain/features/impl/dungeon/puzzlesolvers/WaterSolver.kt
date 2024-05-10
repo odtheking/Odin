@@ -2,18 +2,14 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import me.odinmain.OdinMain.mc
-import me.odinmain.events.impl.EnteredDungeonRoomEvent
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.showOrder
 import me.odinmain.utils.Vec2
 import me.odinmain.utils.addRotationCoords
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.tiles.Room
 import me.odinmain.utils.skyblock.dungeon.tiles.Rotations
@@ -25,6 +21,9 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
 
 object WaterSolver {
 
@@ -44,8 +43,9 @@ object WaterSolver {
     private var openedWater = -1L
 
     @OptIn(DelicateCoroutinesApi::class)
-    fun scan(event: EnteredDungeonRoomEvent) {
-        val room = event.room?.room ?: return
+    fun scan() {
+        val room = DungeonUtils.currentRoom?.room ?: return
+        if (room.data.name != "Water Board" || variant != -1) return
 
         GlobalScope.launch {
             solve(room)
@@ -53,40 +53,35 @@ object WaterSolver {
     }
 
     private fun solve(room: Room) {
-        if (room.data.name != "Water Board") return
         val x = room.x
         val z = room.z
         val rotation = room.rotation
 
-        val centerPos = Vec2(x, z).addRotationCoords(rotation, 4)
-        chestPosition = centerPos.addRotationCoords(rotation, -11)
+        chestPosition = Vec2(x, z).addRotationCoords(rotation, 4).addRotationCoords(rotation, -11)
+        if (getBlockAt(chestPosition.x, 56, chestPosition.z) != Blocks.chest) return
+
         roomFacing = rotation
 
-        val pistonHeadPosition = chestPosition.addRotationCoords(roomFacing, -5)
-        val pistonHeadPos = BlockPos(pistonHeadPosition.x, 82, pistonHeadPosition.z)
+        val pistonHeadPosition = chestPosition.addRotationCoords(roomFacing, -5).let { BlockPos(it.x, 82, it.z) }
+        val blockList = BlockPos.getAllInBox(BlockPos(pistonHeadPosition.x + 1, 78, pistonHeadPosition.z + 1), BlockPos(pistonHeadPosition.x - 1, 77, pistonHeadPosition.z - 1))
 
-        val blockList = BlockPos.getAllInBox(BlockPos(pistonHeadPos.x + 1, 78, pistonHeadPos.z + 1), BlockPos(pistonHeadPos.x - 1, 77, pistonHeadPos.z - 1))
-        var foundGold = false
-        var foundClay = false
-        var foundEmerald = false
-        var foundQuartz = false
-        var foundDiamond = false
+        val foundBlocks = mutableListOf<Boolean>(false, false, false, false, false)
+
         for (blockPos in blockList) {
             when (getBlockAt(blockPos)) {
-                Blocks.gold_block -> foundGold = true
-                Blocks.hardened_clay -> foundClay = true
-                Blocks.emerald_block -> foundEmerald = true
-                Blocks.quartz_block -> foundQuartz = true
-                Blocks.diamond_block -> foundDiamond = true
+                Blocks.gold_block -> foundBlocks[0] = true
+                Blocks.hardened_clay -> foundBlocks[1] = true
+                Blocks.emerald_block -> foundBlocks[2] = true
+                Blocks.quartz_block -> foundBlocks[3] = true
+                Blocks.diamond_block -> foundBlocks[4] = true
             }
         }
 
-        // If the required blocks are found, then set the variant and extendedSlots.
         variant = when {
-            foundGold && foundClay -> 0
-            foundEmerald && foundQuartz -> 1
-            foundQuartz && foundDiamond -> 2
-            foundGold && foundQuartz -> 3
+            foundBlocks[0] && foundBlocks[1] -> 0
+            foundBlocks[2] && foundBlocks[3] -> 1
+            foundBlocks[3] && foundBlocks[4] -> 2
+            foundBlocks[0] && foundBlocks[3] -> 3
             else -> -1
         }
 
@@ -97,9 +92,6 @@ object WaterSolver {
         if (extendedSlots.length != 3) {
             extendedSlots = ""
             variant = -1
-            runIn(10) {
-                solve(DungeonUtils.currentRoom?.room ?: return@runIn)
-            }
             return
         }
 
@@ -157,8 +149,8 @@ object WaterSolver {
                 )
             }
         }
-
-        for (solution in solutions) {
+        val finalSolution = solutions
+        for (solution in finalSolution) {
             var orderText = ""
             solution.value.drop(solution.key.i).forEach {
                 orderText = if (it == 0.0) orderText.plus("0")
