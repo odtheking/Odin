@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
+import kotlinx.coroutines.*
 import me.odinmain.events.impl.EnteredDungeonRoomEvent
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
@@ -59,12 +60,15 @@ object IceFillSolver {
         GlStateManager.popMatrix()
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     fun enterDungeonRoom(event: EnteredDungeonRoomEvent) {
         if (event.room?.room?.data?.name != "Ice Fill" || scanned) return
         val rotation = event.room.room.rotation
 
         val startPos = Vec2(event.room.room.x, event.room.room.z).addRotationCoords(rotation, 8)
-        scanAllFloors(Vec3(startPos.x.toDouble(), 70.0, startPos.z.toDouble()), rotation)
+        GlobalScope.launch {
+            scanAllFloors(Vec3(startPos.x.toDouble(), 70.0, startPos.z.toDouble()), rotation)
+        }
         scanned = true
     }
 

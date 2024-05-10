@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.render
 
 import me.odinmain.events.impl.PacketReceivedEvent
-import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -29,8 +28,6 @@ object RenderOptimizer : Module(
 ) {
     private val fallingBlocks: Boolean by BooleanSetting(name = "Remove Falling Blocks", default = true, description = "Removes falling blocks that are not necessary.")
     private val removeTentacles: Boolean by BooleanSetting(name = "Remove P5 Tentacles", default = true, description = "Removes armorstands of tentacles which are not necessary.")
-    private val hideParticles: Boolean by BooleanSetting(name = "Hide P5 Particles", default = true, description = "Hides particles that are not necessary.")
-    private val hideHeartParticles: Boolean by BooleanSetting(name = "Hide Heart Particles", default = true, description = "Hides heart particles.")
     private val hideHealerFairy: Boolean by BooleanSetting(name = "Hide Healer Fairy", default = true, description = "Hides the healer fairy.")
     private val hideSoulWeaver: Boolean by BooleanSetting(name = "Hide Soul Weaver", default = true, description = "Hides the soul weaver.")
     private val hideArcherBones: Boolean by BooleanSetting(name = "Hide Archer Bones", default = true, description = "Hides the archer bones.")
@@ -41,6 +38,8 @@ object RenderOptimizer : Module(
 
     private val showParticleOptions: Boolean by DropdownSetting("Show Particles Options")
     private val removeExplosion: Boolean by BooleanSetting("Remove Explosion").withDependency { showParticleOptions }
+    private val hideParticles: Boolean by BooleanSetting(name = "Hide P5 Particles", default = true, description = "Hides particles that are not necessary.").withDependency { showParticleOptions }
+    private val hideHeartParticles: Boolean by BooleanSetting(name = "Hide Heart Particles", default = true, description = "Hides heart particles.").withDependency { showParticleOptions }
 
     private const val TENTACLE_TEXTURE = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzM3MjIzZDAxOTA2YWI2M2FmMWExNTk4ODM0M2I4NjM3ZTg1OTMwYjkwNWMzNTEyNWI1NDViMzk4YzU5ZTFjNSJ9fX0="
     private const val HEALER_FAIRY_TEXTURE = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTZjM2UzMWNmYzY2NzMzMjc1YzQyZmNmYjVkOWE0NDM0MmQ2NDNiNTVjZDE0YzljNzdkMjczYTIzNTIifX19"
@@ -49,13 +48,16 @@ object RenderOptimizer : Module(
     private val dungeonMobSpawns = setOf("Lurker", "Dreadlord", "Souleater", "Zombie", "Skeleton", "Skeletor", "Sniper", "Super Archer", "Spider", "Fels", "Withermancer")
 
     init {
-        execute(1000) {
+        execute(500) {
             mc.theWorld.loadedEntityList.forEach {
-                if (it !is EntityArmorStand) return@forEach
+                if (it !is EntityArmorStand || !DungeonUtils.inDungeons) return@forEach
                 if (hideArcherBones) handleHideArcherBones(it)
                 if (removeTentacles) removeTentacles(it)
                 if (hideHealerFairy) handleHealerFairy(it)
                 if (hideSoulWeaver) handleSoulWeaver(it)
+                if (hideNonStarredMobName) hideNonStarredMob(it)
+                if (hideWitherMinerName) handleWitherMiner(it)
+                if (hideTerracottaName) handleTerracota(it)
             }
         }
     }
@@ -66,16 +68,6 @@ object RenderOptimizer : Module(
         val inventoryList = event.entity.inventory.filterNotNull()
         if (inventoryList.size != 1 || inventoryList.first().item !is ItemBlock) return
         event.entity.setDead()
-    }
-
-    @SubscribeEvent
-    fun onMetaData(event: PostEntityMetadata) {
-        val entity = mc.theWorld.getEntityByID(event.packet.entityId) ?: return
-        if (entity !is EntityArmorStand || !DungeonUtils.inDungeons) return
-
-        if (hideNonStarredMobName) hideNonStarredMob(entity)
-        if (hideWitherMinerName) handleWitherMiner(entity)
-        if (hideTerracottaName) handleTerracota(entity)
     }
 
     @SubscribeEvent

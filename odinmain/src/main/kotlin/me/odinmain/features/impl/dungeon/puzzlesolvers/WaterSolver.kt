@@ -63,29 +63,25 @@ object WaterSolver {
         roomFacing = rotation
 
         val pistonHeadPosition = chestPosition.addRotationCoords(roomFacing, -5).let { BlockPos(it.x, 82, it.z) }
-
         val blockList = BlockPos.getAllInBox(BlockPos(pistonHeadPosition.x + 1, 78, pistonHeadPosition.z + 1), BlockPos(pistonHeadPosition.x - 1, 77, pistonHeadPosition.z - 1))
-        var foundGold = false
-        var foundClay = false
-        var foundEmerald = false
-        var foundQuartz = false
-        var foundDiamond = false
+
+        val foundBlocks = mutableListOf<Boolean>(false, false, false, false, false)
+
         for (blockPos in blockList) {
             when (getBlockAt(blockPos)) {
-                Blocks.gold_block -> foundGold = true
-                Blocks.hardened_clay -> foundClay = true
-                Blocks.emerald_block -> foundEmerald = true
-                Blocks.quartz_block -> foundQuartz = true
-                Blocks.diamond_block -> foundDiamond = true
+                Blocks.gold_block -> foundBlocks[0] = true
+                Blocks.hardened_clay -> foundBlocks[1] = true
+                Blocks.emerald_block -> foundBlocks[2] = true
+                Blocks.quartz_block -> foundBlocks[3] = true
+                Blocks.diamond_block -> foundBlocks[4] = true
             }
         }
 
-        // If the required blocks are found, then set the variant and extendedSlots.
         variant = when {
-            foundGold && foundClay -> 0
-            foundEmerald && foundQuartz -> 1
-            foundQuartz && foundDiamond -> 2
-            foundGold && foundQuartz -> 3
+            foundBlocks[0] && foundBlocks[1] -> 0
+            foundBlocks[2] && foundBlocks[3] -> 1
+            foundBlocks[3] && foundBlocks[4] -> 2
+            foundBlocks[0] && foundBlocks[3] -> 3
             else -> -1
         }
 
