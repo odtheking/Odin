@@ -65,7 +65,7 @@ object WaterSolver {
         val pistonHeadPosition = chestPosition.addRotationCoords(roomFacing, -5).let { BlockPos(it.x, 82, it.z) }
         val blockList = BlockPos.getAllInBox(BlockPos(pistonHeadPosition.x + 1, 78, pistonHeadPosition.z + 1), BlockPos(pistonHeadPosition.x - 1, 77, pistonHeadPosition.z - 1))
 
-        val foundBlocks = mutableListOf<Boolean>(false, false, false, false, false)
+        val foundBlocks = mutableListOf(false, false, false, false, false)
 
         for (blockPos in blockList) {
             when (getBlockAt(blockPos)) {

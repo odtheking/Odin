@@ -8,7 +8,6 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.RenderUtils.bind
 import me.odinmain.utils.render.RenderUtils.worldRenderer
-import me.odinmain.utils.skyblock.IceFillFloors
 import me.odinmain.utils.skyblock.IceFillFloors.floors
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.tiles.Rotations
@@ -30,7 +29,7 @@ object IceFillSolver {
 
     private var representativeFloors: List<List<List<Int>>>
     private val gson = GsonBuilder().setPrettyPrinting().create()
-    val isr = this::class.java.getResourceAsStream("/icefillFloors.json")
+    private val isr = this::class.java.getResourceAsStream("/icefillFloors.json")
         ?.let { InputStreamReader(it, StandardCharsets.UTF_8) }
 
     init {
@@ -138,7 +137,6 @@ object IceFillSolver {
             else -> Vec3(vec.x.toDouble(), vec.y.toDouble(), vec.z.toDouble())
         }
     }
-
 
     fun reset() {
         currentPatterns = ArrayList()
