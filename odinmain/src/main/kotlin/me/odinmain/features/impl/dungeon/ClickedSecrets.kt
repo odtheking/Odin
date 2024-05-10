@@ -64,7 +64,7 @@ object ClickedSecrets : Module(
             secrets.add(Chest(pos, System.currentTimeMillis()))
 
             runIn(timeToStay.toInt() * 20) {
-                secrets.remove(secrets.first())
+                secrets.removeFirstOrNull()
             }
         }
     }

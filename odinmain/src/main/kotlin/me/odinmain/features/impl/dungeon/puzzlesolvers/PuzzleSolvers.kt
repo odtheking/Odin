@@ -1,6 +1,8 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import me.odinmain.events.impl.EnteredDungeonRoomEvent
+import me.odinmain.events.impl.EntityLeaveWorldEvent
+import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.puzzlesolvers.WaterSolver.waterInteract
@@ -45,6 +47,11 @@ object PuzzleSolvers : Module(
         IceFillSolver.reset()
     }.withDependency { iceFillSolver }
 
+    private val blazeSolver: Boolean by BooleanSetting("Blaze Solver")
+    val blazeFirstColor: Color by ColorSetting("First Color", Color.GREEN, true)
+    val blazeSecondColor: Color by ColorSetting("Second Color", Color.ORANGE, true)
+    val blazeAllColor: Color by ColorSetting("Other Color", Color.WHITE.withAlpha(.3f), true)
+
     init {
         execute(500) {
             if (tpMaze) TPMaze.scan()
@@ -63,6 +70,7 @@ object PuzzleSolvers : Module(
             TPMaze.reset()
             TicTacToe.reset()
             IceFillSolver.reset()
+            BlazeSolver.reset()
         }
     }
 
@@ -73,7 +81,13 @@ object PuzzleSolvers : Module(
             if (tpMaze) TPMaze.tpRender()
             if (tttSolver) TicTacToe.tttRender()
             if (iceFillSolver) IceFillSolver.onRenderWorldLast(iceFillColor)
+            if (blazeSolver) BlazeSolver.renderBlazes()
         }
+    }
+
+    @SubscribeEvent
+    fun postEntityMetadata(event: PostEntityMetadata) {
+        BlazeSolver.getBlaze(event)
     }
 
     @SubscribeEvent
@@ -86,6 +100,6 @@ object PuzzleSolvers : Module(
         WaterSolver.scan(event)
 
         IceFillSolver.enterDungeonRoom(event)
-        BlazeSolver.getRoomType()
+        BlazeSolver.getRoomType(event)
     }
 }
