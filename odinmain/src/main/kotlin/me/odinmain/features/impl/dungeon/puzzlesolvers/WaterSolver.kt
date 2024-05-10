@@ -4,9 +4,9 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import kotlinx.coroutines.*
 import me.odinmain.OdinMain.mc
-import me.odinmain.events.impl.EnteredDungeonRoomEvent
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.showOrder
-import me.odinmain.utils.*
+import me.odinmain.utils.Vec2
+import me.odinmain.utils.addRotationCoords
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
@@ -43,8 +43,8 @@ object WaterSolver {
     private var openedWater = -1L
 
     @OptIn(DelicateCoroutinesApi::class)
-    fun scan(event: EnteredDungeonRoomEvent) {
-        val room = event.room?.room ?: return
+    fun scan() {
+        val room = DungeonUtils.currentRoom?.room ?: return
 
         GlobalScope.launch {
             solve(room)
@@ -52,25 +52,19 @@ object WaterSolver {
     }
 
     private fun solve(room: Room) {
-        if (room.data.name != "Water Board") return
+        if (room.data.name != "Water Board" || variant != -1) return
         val x = room.x
         val z = room.z
         val rotation = room.rotation
 
-        val centerPos = Vec2(x, z).addRotationCoords(rotation, 4)
-        chestPosition = centerPos.addRotationCoords(rotation, -11)
-        if (getBlockAt(chestPosition.x, 56, chestPosition.z) != Blocks.chest) {
-            runIn(10) {
-                solve(DungeonUtils.currentRoom?.room ?: return@runIn)
-            }
-            return
-        }
+        chestPosition = Vec2(x, z).addRotationCoords(rotation, 4).addRotationCoords(rotation, -11)
+        if (getBlockAt(chestPosition.x, 56, chestPosition.z) != Blocks.chest) return
+
         roomFacing = rotation
 
-        val pistonHeadPosition = chestPosition.addRotationCoords(roomFacing, -5)
-        val pistonHeadPos = BlockPos(pistonHeadPosition.x, 82, pistonHeadPosition.z)
+        val pistonHeadPosition = chestPosition.addRotationCoords(roomFacing, -5).let { BlockPos(it.x, 82, it.z) }
 
-        val blockList = BlockPos.getAllInBox(BlockPos(pistonHeadPos.x + 1, 78, pistonHeadPos.z + 1), BlockPos(pistonHeadPos.x - 1, 77, pistonHeadPos.z - 1))
+        val blockList = BlockPos.getAllInBox(BlockPos(pistonHeadPosition.x + 1, 78, pistonHeadPosition.z + 1), BlockPos(pistonHeadPosition.x - 1, 77, pistonHeadPosition.z - 1))
         var foundGold = false
         var foundClay = false
         var foundEmerald = false
@@ -102,9 +96,6 @@ object WaterSolver {
         if (extendedSlots.length != 3) {
             extendedSlots = ""
             variant = -1
-            runIn(10) {
-                solve(DungeonUtils.currentRoom?.room ?: return@runIn)
-            }
             return
         }
 
@@ -127,9 +118,6 @@ object WaterSolver {
                     else -> LeverBlock.NONE
                 }
             ] = mutableEntry.value.asJsonArray.map { it.asDouble }.toTypedArray()
-        }
-        runIn(20) {
-            solve(DungeonUtils.currentRoom?.room ?: return@runIn)
         }
     }
 
@@ -165,8 +153,8 @@ object WaterSolver {
                 )
             }
         }
-
-        for (solution in solutions) {
+        val finalSolution = solutions
+        for (solution in finalSolution) {
             var orderText = ""
             solution.value.drop(solution.key.i).forEach {
                 orderText = if (it == 0.0) orderText.plus("0")

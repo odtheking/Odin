@@ -49,6 +49,8 @@ object PuzzleSolvers : Module(
     init {
         execute(500) {
             if (tpMaze) TPMaze.scan()
+            WaterSolver.scan()
+
         }
 
         onPacket(S08PacketPlayerPosLook::class.java) {
@@ -84,8 +86,6 @@ object PuzzleSolvers : Module(
 
     @SubscribeEvent
     fun onRoomEnter(event: EnteredDungeonRoomEvent) {
-        WaterSolver.scan(event)
-
         IceFillSolver.enterDungeonRoom(event)
         BlazeSolver.getRoomType()
     }

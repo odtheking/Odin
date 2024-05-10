@@ -30,12 +30,12 @@ object AutoTerms : Module(
 
 
     @SubscribeEvent
-    fun onGuiOpen(event: GuiEvent.GuiLoadedEvent) {
+    fun onGuiLoaded(event: GuiEvent.GuiLoadedEvent) {
         clickedThisWindow = false
     }
 
     @SubscribeEvent
-    fun onRenderWorld(event: TickEvent.ClientTickEvent) {
+    fun onTick(event: TickEvent.ClientTickEvent) {
         if (breakClock.hasTimePassed(breakThreshold) && clickedThisWindow) {
             clickedThisWindow = false
         }
