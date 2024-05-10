@@ -45,6 +45,7 @@ object WaterSolver {
     @OptIn(DelicateCoroutinesApi::class)
     fun scan() {
         val room = DungeonUtils.currentRoom?.room ?: return
+        if (room.data.name != "Water Board" || variant != -1) return
 
         GlobalScope.launch {
             solve(room)
@@ -52,7 +53,6 @@ object WaterSolver {
     }
 
     private fun solve(room: Room) {
-        if (room.data.name != "Water Board" || variant != -1) return
         val x = room.x
         val z = room.z
         val rotation = room.rotation
