@@ -59,6 +59,12 @@ object WaterSolver {
 
         val centerPos = Vec2(x, z).addRotationCoords(rotation, 4)
         chestPosition = centerPos.addRotationCoords(rotation, -11)
+        if (getBlockAt(chestPosition.x, 56, chestPosition.z) != Blocks.chest) {
+            runIn(10) {
+                solve(DungeonUtils.currentRoom?.room ?: return@runIn)
+            }
+            return
+        }
         roomFacing = rotation
 
         val pistonHeadPosition = chestPosition.addRotationCoords(roomFacing, -5)
@@ -122,7 +128,7 @@ object WaterSolver {
                 }
             ] = mutableEntry.value.asJsonArray.map { it.asDouble }.toTypedArray()
         }
-        runIn(5) {
+        runIn(20) {
             solve(DungeonUtils.currentRoom?.room ?: return@runIn)
         }
     }
