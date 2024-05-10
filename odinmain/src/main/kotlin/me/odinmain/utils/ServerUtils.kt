@@ -5,9 +5,7 @@ import me.odinmain.events.impl.PacketReceivedEvent
 import net.minecraft.entity.Entity
 import net.minecraft.network.Packet
 import net.minecraft.network.play.client.C16PacketClientStatus
-import net.minecraft.network.play.server.S01PacketJoinGame
-import net.minecraft.network.play.server.S03PacketTimeUpdate
-import net.minecraft.network.play.server.S37PacketStatistics
+import net.minecraft.network.play.server.*
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent

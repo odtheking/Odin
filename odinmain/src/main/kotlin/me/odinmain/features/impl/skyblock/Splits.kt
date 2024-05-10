@@ -5,13 +5,8 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.utils.Split
-import me.odinmain.utils.SplitsManager
-import me.odinmain.utils.formatTime
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.getTextHeight
-import me.odinmain.utils.render.getTextWidth
-import me.odinmain.utils.render.text
+import me.odinmain.utils.*
+import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.modMessage
 

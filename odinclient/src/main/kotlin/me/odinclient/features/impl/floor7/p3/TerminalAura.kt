@@ -1,8 +1,6 @@
 package me.odinclient.features.impl.floor7.p3
 
-import me.odinmain.events.impl.PacketReceivedEvent
-import me.odinmain.events.impl.PacketSentEvent
-import me.odinmain.events.impl.PostEntityMetadata
+import me.odinmain.events.impl.*
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver

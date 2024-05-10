@@ -2,15 +2,16 @@ package me.odinclient.commands.impl
 
 import com.github.stivais.commodore.utils.GreedyString
 import me.odinclient.features.impl.dungeon.AutoSell.sellList
+import me.odinmain.OdinMain.mc
 import me.odinmain.commands.commodore
 import me.odinmain.config.Config
 import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.skyblock.unformattedName
 
 val autoSellCommand = commodore("autosell") {
-    runs { modMessage("Usage:\n /autosell <add/remove> <name>\n /autosell <clear/list>")}
 
-    literal("add").runs { item: GreedyString ->
-        val lowercase = item.string.lowercase()
+    literal("add").runs { item: GreedyString? ->
+        val lowercase = item?.string?.lowercase() ?: mc.thePlayer?.heldItem?.unformattedName ?: return@runs modMessage("Either hold an item or write an item name to be added to autosell.")
         if (lowercase in sellList) return@runs modMessage("$item is already in the Auto sell list.")
 
         modMessage("Added $item to the Auto sell list.")

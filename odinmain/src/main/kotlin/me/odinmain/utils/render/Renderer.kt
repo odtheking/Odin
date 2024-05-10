@@ -2,10 +2,8 @@ package me.odinmain.utils.render
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinmain.utils.addVec
-import me.odinmain.utils.min
+import me.odinmain.utils.*
 import me.odinmain.utils.render.RenderUtils.drawBeaconBeam
-import me.odinmain.utils.toAABB
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.entity.Entity
 import net.minecraft.util.AxisAlignedBB

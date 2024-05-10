@@ -15,12 +15,12 @@ abstract class Shader(fragmentShader: String) {
 
         try {
             val vertexStream = javaClass.getResourceAsStream("/shaders/source/entity/vertex.vsh")
-            vertexShaderID = createShader(IOUtils.toString(vertexStream), ARBVertexShader.GL_VERTEX_SHADER_ARB)
+            vertexShaderID = createShader(IOUtils.toString(vertexStream), ARBVertexShader.GL_VERTEX_SHADER_ARB, "/shaders/source/entity/vertex.vsh")
             IOUtils.closeQuietly(vertexStream)
 
             val fragmentStream =
                 javaClass.getResourceAsStream("/shaders/$fragmentShader")
-            fragmentShaderID = createShader(IOUtils.toString(fragmentStream), ARBFragmentShader.GL_FRAGMENT_SHADER_ARB)
+            fragmentShaderID = createShader(IOUtils.toString(fragmentStream), ARBFragmentShader.GL_FRAGMENT_SHADER_ARB, "/shaders/$fragmentShader")
             IOUtils.closeQuietly(fragmentStream)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -61,7 +61,7 @@ abstract class Shader(fragmentShader: String) {
 
     abstract fun updateUniforms()
 
-    private fun createShader(shaderSource: String, shaderType: Int): Int {
+    private fun createShader(shaderSource: String, shaderType: Int, shaderName: String): Int {
         var shader = 0
 
         try {
@@ -74,6 +74,7 @@ abstract class Shader(fragmentShader: String) {
 
             if (ARBShaderObjects.glGetObjectParameteriARB(shader, ARBShaderObjects.GL_OBJECT_COMPILE_STATUS_ARB) == GL11.GL_FALSE)
                 throw RuntimeException("Error creating shader: " + getLogInfo(shader))
+            else println("Successfully created shader $shaderName")
 
             return shader
         } catch (e: Exception) {

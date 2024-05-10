@@ -3,9 +3,7 @@ package me.odinmain.events.impl
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.inventory.Container
-import net.minecraft.inventory.ContainerChest
-import net.minecraft.inventory.Slot
+import net.minecraft.inventory.*
 import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.eventhandler.Cancelable
 import net.minecraftforge.fml.common.eventhandler.Event
