@@ -5,10 +5,8 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.utils.skyblock.Island
-import me.odinmain.utils.skyblock.LocationUtils
+import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.LocationUtils.inSkyblock
-import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.init.Blocks
@@ -68,6 +66,7 @@ object AutoExperiments : Module(
         val container = (event.gui as GuiChest).inventorySlots
         if (container !is ContainerChest) return
         val invSlots = container.inventorySlots
+        if (invSlots.size < 54) return
         when (currentExperiment) {
             ExperimentType.CHRONOMATRON -> solveChronomatron(invSlots)
             ExperimentType.ULTRASEQUENCER -> solveUltraSequencer(invSlots)
@@ -78,7 +77,7 @@ object AutoExperiments : Module(
     private fun solveChronomatron(invSlots: List<Slot>) {
         if (invSlots[49].stack?.item == Item.getItemFromBlock(Blocks.glowstone) && invSlots[lastAdded].stack?.isItemEnchanted == false) {
             hasAdded = false
-            if (chronomatronOrder.size > 11 && autoClose) mc.thePlayer.closeScreen()
+            if (chronomatronOrder.size > 11 && autoClose) mc.thePlayer?.closeScreen()
         }
         if (!hasAdded && invSlots[49].stack?.item == Items.clock) {
             invSlots.filter { it.slotNumber in 10..43 }.find { it.stack?.isItemEnchanted == true }?.let {
@@ -107,7 +106,7 @@ object AutoExperiments : Module(
             }
             hasAdded = true
             clicks = 0
-            if (ultrasequencerOrder.size > 9 && autoClose) mc.thePlayer.closeScreen()
+            if (ultrasequencerOrder.size > 9 && autoClose) mc.thePlayer?.closeScreen()
         }
         if (invSlots[49].stack?.item == Items.clock && ultrasequencerOrder.contains(clicks)
             && System.currentTimeMillis() - lastClickTime > delay

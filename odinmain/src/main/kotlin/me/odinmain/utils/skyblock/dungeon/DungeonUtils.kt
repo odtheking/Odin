@@ -132,7 +132,6 @@ object DungeonUtils {
                 val distinct = curRoom.positions.distinct().minByOrNull { it.core } ?: return
                 waypoints.forEach { waypoint ->
                     val vecBasedOnClay = waypoint.toVec3().rotateToNorth(room.rotation).addVec(x = distinct.x, z = distinct.z).subtractVec(x = curRoom.clayPos.x, z = curRoom.clayPos.z).rotateAroundNorth(room.rotation)
-                    modMessage(vecBasedOnClay)
                     DungeonWaypointConfigCLAY.waypoints.getOrPut(room.data.name) { mutableListOf() }.add(
                         DungeonWaypoint(vecBasedOnClay.xCoord, vecBasedOnClay.yCoord, vecBasedOnClay.zCoord, waypoint.color, waypoint.filled, waypoint.depth, waypoint.aabb, waypoint.title)
                     )

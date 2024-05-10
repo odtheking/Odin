@@ -27,6 +27,10 @@ operator fun Vec4f.times(mat: Matrix4f): Vec4f {
     )
 }
 
+fun BlockPos.add(vec: Vec2): BlockPos {
+    return this.add(vec.x, 0, vec.z)
+}
+
 /**
  * Gets the distance between two entities squared.
  */
@@ -473,6 +477,9 @@ operator fun Vec3.unaryMinus(): Vec3 = Vec3(-xCoord, -yCoord, -zCoord)
 fun AxisAlignedBB.offset(vec: Vec3) = AxisAlignedBB(
     this.minX + vec.xCoord, this.minY + vec.yCoord, this.minZ + vec.zCoord, this.maxX + vec.xCoord, this.maxY + vec.yCoord, this.maxZ + vec.zCoord
 )
+
+val AxisAlignedBB.middle: Vec3
+    get() = Vec3(this.minX + (this.maxX - this.minX) / 2, this.minY + (this.maxY - this.minY) / 2, this.minZ + (this.maxZ - this.minZ) / 2)
 
 /**
  * Finds the nearest grass block to the given position.

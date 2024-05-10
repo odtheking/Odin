@@ -5,13 +5,11 @@ import me.odinmain.OdinMain
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.impl.dungeon.DungeonRequeue.disableRequeue
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ListSetting
-import me.odinmain.utils.ServerUtils
-import me.odinmain.utils.floor
-import me.odinmain.utils.imgurID
-import me.odinmain.utils.runIn
+import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
 import net.minecraft.event.ClickEvent
 import net.minecraft.util.ChatComponentText
@@ -50,7 +48,6 @@ object ChatCommands : Module(
     private val queKuudra: Boolean by BooleanSetting(name = "Queue kuudra cmds", default = true).withDependency { showSettings }
 
     private var dtPlayer: String? = null
-    var disableRequeue: Boolean? = false
     private val dtReason = mutableListOf<Pair<String, String>>()
     val blacklist: MutableList<String> by ListSetting("Blacklist", mutableListOf())
 

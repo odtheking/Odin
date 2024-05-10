@@ -4,10 +4,7 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.currentTerm
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
-import me.odinmain.utils.render.Box
-import me.odinmain.utils.render.isPointWithin
-import me.odinmain.utils.render.scale
-import me.odinmain.utils.render.translate
+import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import net.minecraft.client.gui.ScaledResolution
@@ -50,7 +47,7 @@ abstract class TermGui {
         itemIndexMap.entries.find {
             it.value.isPointWithin(x, y)
         }?.let {
-            windowClick(it.key, if (button == 0) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Right)
+            windowClick(it.key, if (button == 0) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Right, true)
         }
     }
 
