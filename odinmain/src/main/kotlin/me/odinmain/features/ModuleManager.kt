@@ -116,7 +116,8 @@ object ModuleManager {
         CopyChat,
         DVD,
         PlayerDisplay,
-        TerminalSimulator
+        TerminalSimulator,
+        LockCursor
     )
 
     init {

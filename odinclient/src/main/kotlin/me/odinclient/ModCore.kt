@@ -66,7 +66,7 @@ class ModCore {
         ModuleManager.addModules(
             AutoGFS, /*AutoIceFill,*/ AutoSell, CancelInteract, CancelChestOpen, GhostPick, SecretHitboxes,
             SwapStonk, Arrows, ArrowAlign, CancelWrongTerms, HoverTerms, LightsDevice, SimonSays,
-            DioriteFucker, RelicAura, Trajectories, Ghosts, NoDebuff, LockCursor,
+            DioriteFucker, RelicAura, Trajectories, Ghosts, NoDebuff,
             ChocolateFactory, AutoExperiments, FarmingHitboxes, NoBlock, TermAC, Triggerbot, GhostBlocks, FreezeGame,
             AbilityKeybind, EtherWarpHelper, ChestEsp, NoBreakReset, EscrowFix, TerminalMove,
             TerminalAura, AutoTerms, Camera, AutoUlt
