@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
+import gg.essential.vigilance.gui.settings.DropDown
 import me.odinmain.events.impl.EnteredDungeonRoomEvent
 import me.odinmain.events.impl.EntityLeaveWorldEvent
 import me.odinmain.events.impl.PostEntityMetadata
@@ -20,38 +21,44 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 object PuzzleSolvers : Module(
     name = "Puzzle Solvers",
     category = Category.DUNGEON,
-    description = "Dungeon puzzle solvers."
+    description = "Dungeon puzzle solvers.",
+    key = null
 ) {
-    private val waterSolver: Boolean by BooleanSetting("Water Board", true, description = "Shows you the solution to the water puzzle.")
-    val showOrder: Boolean by BooleanSetting("Show Order", true, description = "Shows the order of the levers to click.").withDependency { waterSolver }
-    val showTracer: Boolean by BooleanSetting("Show Tracer", true, description = "Shows a tracer to the next lever.").withDependency { waterSolver }
-    val tracerColorFirst: Color by ColorSetting("Tracer Color First", Color.GREEN, true, description = "Color for the first tracer").withDependency { showTracer }
-    val tracerColorSecond: Color by ColorSetting("Tracer Color Second", Color.ORANGE, true, description = "Color for the second tracer").withDependency { showTracer }
+    private val waterDropDown: Boolean by DropdownSetting("Water")
+    private val waterSolver: Boolean by BooleanSetting("Water Board", true, description = "Shows you the solution to the water puzzle.").withDependency { waterDropDown }
+    val showOrder: Boolean by BooleanSetting("Show Order", true, description = "Shows the order of the levers to click.").withDependency { waterSolver && waterDropDown }
+    val showTracer: Boolean by BooleanSetting("Show Tracer", true, description = "Shows a tracer to the next lever.").withDependency { waterSolver && waterDropDown }
+    val tracerColorFirst: Color by ColorSetting("Tracer Color First", Color.GREEN, true, description = "Color for the first tracer").withDependency { showTracer && waterDropDown }
+    val tracerColorSecond: Color by ColorSetting("Tracer Color Second", Color.ORANGE, true, description = "Color for the second tracer").withDependency { showTracer && waterDropDown }
     val reset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
         WaterSolver.reset()
-    }.withDependency { waterSolver }
+    }.withDependency { waterSolver && waterDropDown }
 
-    private val tpMaze: Boolean by BooleanSetting("Teleport Maze", true, description = "Shows you the solution for the TP maze puzzle")
-    val solutionThroughWalls: Boolean by BooleanSetting("Solution through walls", false, description = "Renders the final solution through walls").withDependency { tpMaze }
-    val mazeColorOne: Color by ColorSetting("Color for one solution", Color.GREEN.withAlpha(.5f), true, description = "Color for when there is a single solution").withDependency { tpMaze }
-    val mazeColorMultiple: Color by ColorSetting("Color for multiple solutions", Color.ORANGE.withAlpha(.5f), true, description = "Color for when there are multiple solutions").withDependency { tpMaze }
-    val mazeColorVisited: Color by ColorSetting("Color for visited", Color.RED.withAlpha(.5f), true, description = "Color for the already used TP pads").withDependency { tpMaze }
+    private val mazeDropDown: Boolean by DropdownSetting("Maze")
+    private val tpMaze: Boolean by BooleanSetting("Teleport Maze", true, description = "Shows you the solution for the TP maze puzzle").withDependency { mazeDropDown }
+    val solutionThroughWalls: Boolean by BooleanSetting("Solution through walls", false, description = "Renders the final solution through walls").withDependency { tpMaze && mazeDropDown }
+    val mazeColorOne: Color by ColorSetting("Color for one solution", Color.GREEN.withAlpha(.5f), true, description = "Color for when there is a single solution").withDependency { tpMaze && mazeDropDown }
+    val mazeColorMultiple: Color by ColorSetting("Color for multiple solutions", Color.ORANGE.withAlpha(.5f), true, description = "Color for when there are multiple solutions").withDependency { tpMaze && mazeDropDown }
+    val mazeColorVisited: Color by ColorSetting("Color for visited", Color.RED.withAlpha(.5f), true, description = "Color for the already used TP pads").withDependency { tpMaze && mazeDropDown }
     private val click: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
         TPMaze.reset()
-    }.withDependency { tpMaze }
+    }.withDependency { tpMaze && mazeDropDown }
 
-    private val tttSolver: Boolean by BooleanSetting("Tic Tac Toe", true, description = "Shows you the solution for the TTT puzzle")
+    private val tttDropDown: Boolean by DropdownSetting("Tic Tac Toe")
+    private val tttSolver: Boolean by BooleanSetting("Tic Tac Toe", true, description = "Shows you the solution for the TTT puzzle").withDependency { tttDropDown }
 
-    private val iceFillSolver: Boolean by BooleanSetting("Ice Fill Solver", true, description = "Solver for the ice fill puzzle")
-    private val iceFillColor: Color by ColorSetting("Ice Fill Color", Color.PINK, true, description = "Color for the ice fill solver").withDependency { iceFillSolver }
+    private val iceFillDropDown: Boolean by DropdownSetting("Ice Fill")
+    private val iceFillSolver: Boolean by BooleanSetting("Ice Fill Solver", true, description = "Solver for the ice fill puzzle").withDependency { iceFillDropDown }
+    private val iceFillColor: Color by ColorSetting("Ice Fill Color", Color.PINK, true, description = "Color for the ice fill solver").withDependency { iceFillSolver && iceFillDropDown }
     val action: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
         IceFillSolver.reset()
-    }.withDependency { iceFillSolver }
+    }.withDependency { iceFillSolver && iceFillDropDown }
 
-    private val blazeSolver: Boolean by BooleanSetting("Blaze Solver")
-    val blazeFirstColor: Color by ColorSetting("First Color", Color.GREEN, true)
-    val blazeSecondColor: Color by ColorSetting("Second Color", Color.ORANGE, true)
-    val blazeAllColor: Color by ColorSetting("Other Color", Color.WHITE.withAlpha(.3f), true)
+    private val blazeDropDown: Boolean by DropdownSetting("Blaze")
+    private val blazeSolver: Boolean by BooleanSetting("Blaze Solver").withDependency { blazeDropDown }
+    val blazeFirstColor: Color by ColorSetting("First Color", Color.GREEN, true).withDependency { blazeSolver && blazeDropDown }
+    val blazeSecondColor: Color by ColorSetting("Second Color", Color.ORANGE, true).withDependency { blazeSolver && blazeDropDown }
+    val blazeAllColor: Color by ColorSetting("Other Color", Color.WHITE.withAlpha(.3f), true).withDependency { blazeSolver && blazeDropDown }
 
     init {
         execute(500) {
