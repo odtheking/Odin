@@ -19,11 +19,11 @@ open class Block(constraints: Constraints?, color: Color) : Element(constraints?
 
     override fun draw() {
         if (color!!.rgba.alpha != 0) {
-            renderer.rect(x, y, width, height, color!!.rgba)
+            renderer.rect(x, y, width, height, color!!.get(this))
         }
         if (outlineColor != null && outlineColor!!.rgba.alpha != 0) {
             val thickness = outline!!.get(this, Type.W)
-            renderer.hollowRect(x, y, width, height, thickness, outlineColor!!.rgba, 0f)
+            renderer.hollowRect(x, y, width, height, thickness, outlineColor!!.get(this), 0f)
         }
     }
 

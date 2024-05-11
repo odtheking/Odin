@@ -2,6 +2,7 @@ package com.github.stivais.ui.color
 
 import com.github.stivais.ui.animation.Animation
 import com.github.stivais.ui.animation.Animations
+import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.utils.getRGBA
 import kotlin.math.roundToInt
 import java.awt.Color as JColor
@@ -9,6 +10,8 @@ import java.awt.Color as JColor
 interface Color {
 
     val rgba: Int
+
+    fun get(element: Element): Int = rgba
 
     val red
         get() = rgba shr 16 and 0xFF
@@ -103,6 +106,13 @@ interface Color {
                 }
                 return color1.rgba
             }
+
+        override fun get(element: Element): Int {
+            if (animation != null) {
+                element.redraw()
+            }
+            return rgba
+        }
 
         fun animate(duration: Float = 0f, type: Animations) {
             if (duration == 0f) {

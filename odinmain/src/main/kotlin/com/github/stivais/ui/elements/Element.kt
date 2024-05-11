@@ -12,29 +12,6 @@ import com.github.stivais.ui.events.Event
 import com.github.stivais.ui.events.Mouse
 import com.github.stivais.ui.utils.forLoop
 
-
-// Positioning (X or Y) should be: defined with a measurement or aligned by left/top, center, right/bottom (with some padding)
-// or undefined where it gets set by the parent's element (by default best option is to center)
-//
-// Sizing (Width or Height) should be: defined with a measurement, copy the parents size, or wrap around elements children,
-// if left undefined, it is up to the element to set what it's default value should be
-//
-// Required:
-//  Measurements (All):
-//        Pixels: Pixels on the screen
-//        Animatable: Based between 2 constraints values
-//        Percents: Based on parent elements position (Maybe?)
-//
-//  Positions (X or Y):
-//        Linked: Gets position based on where the linked element ends, (Used in column)
-//        Aligned: Left/Middle/Right Aligning with padding (padding doesn't apply to middle)
-//
-//  Sizing (Width or Height):
-//        Bounding: Wraps around all children element, so they all fit
-//        Copying: Copies the parent's sizing
-//
-// Goal: to avoid assigning positions and sizes as much as possible/mainly avoid magic numbers
-
 abstract class Element(constraints: Constraints?, var color: Color? = null) {
 
     // todo: maybe bring all values into here?
@@ -76,11 +53,13 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
     private var scissors: Boolean = false
 
     var renders: Boolean = true
-        get() = enabled && field
+        get() {
+            return enabled && field
+        }
 
     abstract fun draw()
 
-    fun position(place: Boolean = true) {
+    fun position() {
         if (!enabled) return
         prePosition()
         if (!constraints.width.reliesOnChild()) width = constraints.width.get(this, Type.W)
@@ -93,7 +72,7 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
                 element.position()
             }
         } else {
-            if (place) parent?.place(this)
+            parent?.place(this)
         }
 
         if (constraints.width.reliesOnChild()) width = constraints.width.get(this, Type.W)
@@ -110,8 +89,8 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
 
     open fun prePosition() {}
 
-    fun update() {
-        ui.needsUpdate = true
+    fun redraw() {
+        ui.needsRedraw = true
     }
 
     private var placed: Boolean = false
@@ -137,6 +116,8 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
             if (scissors) renderer.popScissor()
         }
     }
+
+    var last = color?.rgba ?: 0
 
     open fun accept(event: Event): Boolean {
         if (events != null) {

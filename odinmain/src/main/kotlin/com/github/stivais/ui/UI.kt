@@ -1,6 +1,5 @@
 package com.github.stivais.ui
 
-import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.constraints.Constraints
 import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.elements.Element
@@ -51,7 +50,7 @@ class UI(
     private var frameTime: Long = 0
     private var performance: String = ""
 
-    var needsUpdate = true
+    var needsRedraw = true
 
     private var framebuffer: Framebuffer? = null
 
@@ -60,19 +59,19 @@ class UI(
         val fbo = framebuffer
         if (fbo == null) {
             renderer.beginFrame(main.width, main.height)
-            if (needsUpdate) {
-                needsUpdate = false
+            if (needsRedraw) {
+                needsRedraw = false
                 main.position()
                 main.clip()
             }
             main.render()
             if (settings.frameMetrics) {
-                renderer.text(performance, main.width - renderer.textWidth(performance, 12f), main.height - 12f, 12f, Color.WHITE.rgba)
+                renderer.text(performance, main.width - renderer.textWidth(performance, 12f), main.height - 12f, 12f)
             }
             renderer.endFrame()
         } else {
-            if (needsUpdate) {
-                needsUpdate = false
+            if (needsRedraw) {
+                needsRedraw = false
                 renderer.bindFramebuffer(fbo) // thanks ilmars for helping me fix
                 renderer.beginFrame(fbo.width, fbo.height)
                 main.position()
@@ -84,13 +83,7 @@ class UI(
             renderer.beginFrame(fbo.width, fbo.height)
             renderer.drawFramebuffer(fbo, 0f, 0f)
             if (settings.frameMetrics) {
-                renderer.text(
-                    performance,
-                    main.width - renderer.textWidth(performance, 12f),
-                    main.height - 12f,
-                    12f,
-                    Color.WHITE.rgba
-                )
+                renderer.text(performance, fbo.width - renderer.textWidth(performance, 12f), fbo.height - 12f, 12f,)
             }
             renderer.endFrame()
         }
@@ -123,11 +116,16 @@ class UI(
     fun resize(width: Int, height: Int) {
         main.constraints.width = width.px
         main.constraints.height = height.px
-        needsUpdate = true
+        needsRedraw = true
         if (framebuffer != null) {
             renderer.destroyFramebuffer(framebuffer!!)
             framebuffer = renderer.createFramebuffer(main.width, main.height)
         }
+    }
+
+    fun cleanup() {
+        val fbo = framebuffer ?: return
+        renderer.destroyFramebuffer(fbo)
     }
 
     fun focus(element: Element) {

@@ -7,7 +7,7 @@ interface Event {
 
 interface Mouse : Event {
 
-    class Clicked(val button: Int?) : Mouse {
+    data class Clicked(val button: Int?) : Mouse {
 
         override fun isFocused(): Boolean = button == null
 
@@ -22,7 +22,7 @@ interface Mouse : Event {
         override fun toString(): String = "MouseClicked(button=$button)"
     }
 
-    class Released(val button: Int) : Mouse {
+    data class Released(val button: Int) : Mouse {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (other !is Released) return false
@@ -34,7 +34,7 @@ interface Mouse : Event {
         override fun toString(): String = "MouseReleased(button=$button)"
     }
 
-    class Scrolled(val amount: Float) : Mouse {
+    data class Scrolled(val amount: Float) : Mouse {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             return other is Scrolled
@@ -54,7 +54,7 @@ interface Mouse : Event {
 // todo: implement key mods (i.e indicator for if ctrl and or shift is down)
 interface Key : Event {
 
-    class Typed(val char: Char) : Key {
+    data class Typed(val char: Char) : Key {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             return other is Typed
@@ -68,7 +68,7 @@ interface Key : Event {
     }
 
 
-    class CodePressed(val code: Int, private val down: Boolean) : Key {
+    data class CodePressed(val code: Int, private val down: Boolean) : Key {
 
         override fun isFocused(): Boolean = true
 

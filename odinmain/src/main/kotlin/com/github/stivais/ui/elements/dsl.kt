@@ -136,7 +136,7 @@ inline fun Element.slider(
             if (dragging) {
                 val pos = (ui.mx - x).coerceIn(0f, width)
                 sliderPosition.to(pos)
-                update()
+                redraw()
                 onChange(pos / width)
             }
             true

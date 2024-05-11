@@ -37,6 +37,6 @@ class Text(
     }
 
     override fun draw() {
-        renderer.text(text, x, y, height, color!!.rgba)
+        renderer.text(text, x, y, height, color!!.get(this))
     }
 }

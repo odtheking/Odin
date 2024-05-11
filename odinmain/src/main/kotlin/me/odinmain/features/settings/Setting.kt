@@ -125,7 +125,7 @@ abstract class Setting<T> (
             if ((visibilityDependency?.invoke() != false) != visible) {
                 visible = !visible
                 constraints.height.animate(0.25.seconds, Animations.EaseInOutQuint)
-                update()
+                redraw()
             }
         }
 

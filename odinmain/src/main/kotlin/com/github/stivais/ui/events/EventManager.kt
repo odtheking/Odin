@@ -150,7 +150,7 @@ class EventManager(private val ui: UI) {
 
     private fun updateIfNecessary() {
         if (ui.settings.repositionOnEvent) {
-            ui.needsUpdate = true
+            ui.needsRedraw = true
         }
     }
 }

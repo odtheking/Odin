@@ -79,18 +79,17 @@ class KeybindSetting(
             val display = text(
                 text = keyName
             )
-            onClick(null) {
+            onClick(null) { (button) ->
                 value.key = -100 + button!!
                 ui.unfocus()
                 true
             }
-            onKeycodePressed {
-                val new = when (code) {
+            onKeycodePressed { (code) ->
+                value.key = when (code) {
                     KEY_ESCAPE, KEY_BACK -> 0
                     KEY_NUMPADENTER, KEY_RETURN -> value.key
                     else -> code
                 }
-                value.key = new
                 ui.unfocus()
                 true
             }

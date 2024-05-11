@@ -27,7 +27,7 @@ class Column(constraints: Constraints?, var padding: Float = 0f, var wraps: Bool
 
     override fun draw() {
         if (color != null && color!!.rgba.alpha != 0) {
-            renderer.rect(x, y, width, height, color!!.rgba)
+            renderer.rect(x, y, width, height, color!!.get(this))
         }
     }
 

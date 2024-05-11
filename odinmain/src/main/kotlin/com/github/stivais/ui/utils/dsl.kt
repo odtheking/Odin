@@ -97,7 +97,7 @@ fun <E : Element> E.draggable(acceptsEvent: Boolean = true, target: Element = th
                 px.pixels = ui.mx - x
                 py.pixels = ui.my - y
             }
-            update()
+            redraw()
         }
         acceptsEvent
     }
@@ -112,7 +112,7 @@ fun <E : Element> E.draggable(acceptsEvent: Boolean = true, target: Element = th
  */
 fun <E : Element> E.focuses(): E {
     onClick {
-        ui.focus(this@focuses)
+        ui.focus(this)
         true
     }
     return this
@@ -120,13 +120,11 @@ fun <E : Element> E.focuses(): E {
 
 fun <E : Block> E.hoverEffect(duration: Number = 0.25.seconds) {
     val before = color!!
-    val hover = Color.Animated(from = before, to = Color { before.rgba.brighter() })
+    val hover = Color.Animated(from = before, to = Color { before.rgba.brighter(1.2) })
     color = hover
     onMouseEnterExit {
-        if (ui.settings.cacheFrames) {
-            update()
-        }
         hover.animate(duration)
+        redraw()
         true
     }
 }

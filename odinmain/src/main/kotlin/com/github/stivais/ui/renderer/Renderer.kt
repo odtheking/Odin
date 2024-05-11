@@ -1,5 +1,7 @@
 package com.github.stivais.ui.renderer
 
+import com.github.stivais.ui.color.Color
+
 interface Renderer {
 
     fun beginFrame(width: Float, height: Float)
@@ -50,7 +52,7 @@ interface Renderer {
 
     // todo: add fonts
 
-    fun text(text: String, x: Float, y: Float, size: Float, color: Int)
+    fun text(text: String, x: Float, y: Float, size: Float, color: Int = Color.WHITE.rgba)
 
     fun textWidth(text: String, size: Float): Float
 
