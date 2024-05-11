@@ -26,7 +26,6 @@ object NoDebuff : Module(
     private val noFire: Boolean by BooleanSetting("No Fire Overlay", false, description = "Disable Fire overlay on screen.")
     private val noPush: Boolean by BooleanSetting("No Push", false, description = "Prevents from being pushed out of blocks.")
     private val seeThroughBlocks: Boolean by BooleanSetting("See Through Blocks", false, description = "Makes blocks transparent.")
-    private val noCarpet: Boolean by BooleanSetting("No Carpet", false, description = "Removes nearby carpet hitboxes.")
 
     @SubscribeEvent
     fun onRenderFog(event: EntityViewRenderEvent.FogDensity) {
@@ -74,11 +73,5 @@ object NoDebuff : Module(
 
     fun isNoPush(): Boolean {
         return noPush && enabled
-    }
-
-    fun noCarpetHook(carpet: BlockCarpet): Boolean {
-        if (!noCarpet && !enabled) return false
-        carpet.setBlockBounds(0f, 0f, 0f, 1f, 0f, 1f)
-        return true
     }
 }
