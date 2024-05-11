@@ -19,7 +19,6 @@ import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.init.Blocks
 import net.minecraft.item.Item
 import net.minecraft.network.play.server.S04PacketEntityEquipment
-import net.minecraft.util.Vec3
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.event.entity.living.LivingDeathEvent
 
@@ -38,9 +37,9 @@ object DragonCheck {
         dragon.spawnedTime = System.currentTimeMillis()
         dragon.isSprayed = false
 
-        if (sendArrowHit) arrowSpawn(dragon)
-        if (resetOnDragons) onDragonSpawn()
-        if (sendSpawned) {
+        if (sendArrowHit && WitherDragons.enabled) arrowSpawn(dragon)
+        if (resetOnDragons && WitherDragons.enabled) onDragonSpawn()
+        if (sendSpawned && WitherDragons.enabled) {
             val numberSuffix = when (dragon.timesSpawned) {
                 1 -> "st"
                 2 -> "nd"
@@ -55,7 +54,7 @@ object DragonCheck {
         if (event.entity !is EntityDragon) return
         val dragon = WitherDragonsEnum.entries.find {it.entity?.entityId == event.entity.entityId} ?: return
 
-        if (sendTime) {
+        if (sendTime && WitherDragons.enabled) {
             val oldPB = dragon.dragonKillPBs.value
             val killTime = event.entity.ticksExisted / 20.0
             if (dragon.dragonKillPBs.value < event.entity.ticksExisted / 20.0) dragon.dragonKillPBs.value = killTime
@@ -63,7 +62,7 @@ object DragonCheck {
             modMessage("§${dragon.colorCode}${dragon.name} §fdragon was alive for ${printSecondsWithColor(killTime, 3.5, 7.5, down = false)}${if (killTime < oldPB) " §7(§dNew PB§7)" else ""}.")
         }
 
-        if (sendArrowHit) arrowDeath(dragon)
+        if (sendArrowHit && WitherDragons.enabled) arrowDeath(dragon)
         lastDragonDeath = dragon.name
     }
 
@@ -71,7 +70,6 @@ object DragonCheck {
         if (packet.itemStack?.item != Item.getItemFromBlock(Blocks.packed_ice)) return
 
         val sprayedEntity = mc.theWorld.getEntityByID(packet.entityID) as? EntityArmorStand ?: return
-
 
         WitherDragonsEnum.entries.forEach {
             if (it.entity?.isEntityAlive == true) {
@@ -95,11 +93,7 @@ object DragonCheck {
         ) return
 
         val dragon = WitherDragonsEnum.entries.find { lastDragonDeath == it.name } ?: return
-        if (sendNotification) modMessage("§${dragon.colorCode}${dragon.name} dragon counts.")
-    }
-
-    private fun Vec3.dragonCheck(vec3: Vec3): Boolean {
-        return this.xCoord == vec3.xCoord && this.yCoord == vec3.yCoord && this.zCoord == vec3.zCoord
+        if (sendNotification && WitherDragons.enabled) modMessage("§${dragon.colorCode}${dragon.name} dragon counts.")
     }
 
     private fun printSecondsWithColor(time1: Double, time2: Double, time3: Double, down: Boolean = true, colorCode1: String = "a", colorCode2: String = "6", colorCode3: String = "c"): String {
