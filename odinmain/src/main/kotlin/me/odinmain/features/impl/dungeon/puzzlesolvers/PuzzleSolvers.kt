@@ -56,6 +56,7 @@ object PuzzleSolvers : Module(
     private val blazeSolver: Boolean by BooleanSetting("Blaze Solver").withDependency { blazeDropDown }
     val blazeLineNext: Boolean by BooleanSetting("Blaze Solver Next Line", true).withDependency { blazeSolver && blazeDropDown }
     val blazeLineAmount: Int by NumberSetting("Blaze Solver Lines", 1, 1, 10).withDependency { blazeSolver && blazeLineNext && blazeDropDown }
+    val blazeStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.")
     val blazeFirstColor: Color by ColorSetting("First Color", Color.GREEN, true).withDependency { blazeSolver && blazeDropDown }
     val blazeSecondColor: Color by ColorSetting("Second Color", Color.ORANGE, true).withDependency { blazeSolver && blazeDropDown }
     val blazeAllColor: Color by ColorSetting("Other Color", Color.WHITE.withAlpha(.3f), true).withDependency { blazeSolver && blazeDropDown }
@@ -63,7 +64,7 @@ object PuzzleSolvers : Module(
     init {
         execute(500) {
             if (tpMaze) TPMaze.scan()
-            WaterSolver.scan()
+            if (waterSolver) WaterSolver.scan()
 
         }
 

@@ -9,13 +9,7 @@ import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.util.AxisAlignedBB
-import kotlin.collections.forEachIndexed
-import kotlin.collections.mutableListOf
-import kotlin.collections.mutableMapOf
-import kotlin.collections.removeAll
 import kotlin.collections.set
-import kotlin.collections.sortBy
-import kotlin.collections.sortByDescending
 
 object BlazeSolver {
     private val hpMap = mutableMapOf<EntityArmorStand, Int>()
@@ -51,7 +45,8 @@ object BlazeSolver {
                 else -> PuzzleSolvers.blazeAllColor
             }
             val aabb = AxisAlignedBB(-0.5, -2.0, -0.5, 0.5, 0.0, 0.5).offset(entity.renderVec)
-            Renderer.drawBox(aabb, color, outlineAlpha = color.alpha, fillAlpha = 0f)
+            Renderer.drawBox(aabb, color,
+                outlineAlpha = if (PuzzleSolvers.blazeStyle == 0) 0 else color.alpha, fillAlpha = if (PuzzleSolvers.blazeStyle == 1) 0 else color.alpha)
 
             if (PuzzleSolvers.blazeLineNext && index > 0 && index <= PuzzleSolvers.blazeLineAmount)
                 Renderer.draw3DLine(blazes[index - 1].renderVec, aabb.middle, color, 1f, false)
