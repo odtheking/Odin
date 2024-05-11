@@ -119,7 +119,7 @@ object PlayerUtils {
         mc.thePlayer.openContainer?.let {
             if (it !is ContainerChest) return@let
             val transactionID = mc.thePlayer.openContainer.getNextTransactionID(mc.thePlayer.inventory)
-            val itemStack = mc.thePlayer.inventory.mainInventory?.get(slotId) ?: return
+            val itemStack = mc.thePlayer?.inventory?.mainInventory?.get(slotId) ?: return
             mc.netHandler.addToSendQueue(C0EPacketClickWindow(it.windowId, slotId, button, mode, itemStack, transactionID))
         }
     }
