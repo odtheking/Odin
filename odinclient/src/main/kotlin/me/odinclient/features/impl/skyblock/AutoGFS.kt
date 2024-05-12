@@ -4,8 +4,9 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.clock.Clock
-import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.sendCommand
 import net.minecraft.init.Items
 
 object AutoGFS : Module(
@@ -19,11 +20,13 @@ object AutoGFS : Module(
 
     init {
         execute(500) {
-            if ((inDungeon || !DungeonUtils.inDungeons) || DungeonUtils.isGhost
-                || mc.currentScreen !== null || (inKuudra || LocationUtils.currentArea != Island.Kuudra)) return@execute
-            if (mc.thePlayer?.inventory?.mainInventory?.all { it?.item != Items.ender_pearl} == true && sackCooldown.hasTimePassed()) {
-                sendCommand("gfs ENDER_PEARL 16")
-                sackCooldown.update()
+            if ((DungeonUtils.isGhost || mc.currentScreen != null) &&
+                ((inKuudra && KuudraUtils.inKuudra) || (inDungeon && DungeonUtils.inDungeons))) {
+
+                if (mc.thePlayer?.inventory?.mainInventory?.all { it?.item != Items.ender_pearl } == true && sackCooldown.hasTimePassed()) {
+                    sendCommand("gfs ENDER_PEARL 16")
+                    sackCooldown.update()
+                }
             }
         }
     }
