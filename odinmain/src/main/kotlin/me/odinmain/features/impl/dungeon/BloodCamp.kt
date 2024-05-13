@@ -11,31 +11,68 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.skyblock.LocationUtils
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.Entity
+import net.minecraft.entity.boss.BossStatus
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.monster.EntityZombie
 import net.minecraft.init.Items
 import net.minecraft.network.play.server.S14PacketEntity.S17PacketEntityLookMove
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
+import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.common.util.Constants
+import net.minecraftforge.fml.common.gameevent.TickEvent
+import kotlin.math.roundToInt
 
 object BloodCamp : Module(
     name = "Blood Camp",
     description = "Draws boxes to spawning mobs in the blood room. WARNING: not perfectly accurate. Mobs spawn randomly between 38 - 40 ticks, adjust offset to adjust between this tickrange.",
     category = Category.DUNGEON
 ) {
-    private val fboxColor: Color by ColorSetting("Spawn Color", Color.RED, true, description = "Color for Spawn render box. Set alpha to 0 to disable.")
-    private val mboxColor: Color by ColorSetting("Position Color", Color.GREEN, true, description = "Color for Mob current adjusted position render box. Set alpha to 0 to disable.")
-    private val boxSize: Double by NumberSetting("Box Size", default = 1.0, increment = 0.1, min = 0.1, max = 1.0, description = "The size of the boxes. Lower values may be less accurate")
-    private val drawLine: Boolean by BooleanSetting("Line", default = true, description = "Line between Final box and Spawn box")
-    private val drawTime: Boolean by BooleanSetting("Time Left", default = true, description = "Time before mob spawn. Adjust offset depending on accuracy. (will always be up to 100 ms off)")
-    private val advanced: Boolean by DropdownSetting("Advanced", default = false)
-    private val offset: Int by NumberSetting("Offset", default = 35, increment = 1, max = 100, min = -100, description = "Spawn offset. This value can be edited to adjust average spawn point.").withDependency { advanced }
-    private val tick: Int by NumberSetting("Tick", default = 39, increment = 1, max = 41, min = 37, description = "Tick to assume spawn. Offset to offset this value to the ms.").withDependency { advanced }
+    private val bloodhelper: Boolean by BooleanSetting("Blood Camp Assist", default = true, description = "Renders a box where blood mobs will spawn.")
+    private val fboxColor: Color by ColorSetting("Spawn Color", Color.RED, true, description = "Color for Spawn render box. Set alpha to 0 to disable.").withDependency { bloodhelper }
+    private val mboxColor: Color by ColorSetting("Position Color", Color.GREEN, true, description = "Color for Mob current adjusted position render box. Set alpha to 0 to disable.").withDependency { bloodhelper }
+    private val boxSize: Double by NumberSetting("Box Size", default = 1.0, increment = 0.1, min = 0.1, max = 1.0, description = "The size of the boxes. Lower values may be less accurate").withDependency { bloodhelper }
+    private val drawLine: Boolean by BooleanSetting("Line", default = true, description = "Line between Final box and Spawn box").withDependency { bloodhelper }
+    private val drawTime: Boolean by BooleanSetting("Time Left", default = true, description = "Time before mob spawn. Adjust offset depending on accuracy. (will always be up to 100 ms off)").withDependency { bloodhelper }
+    private val advanced: Boolean by DropdownSetting("Advanced", default = false).withDependency { bloodhelper }
+    private val offset: Int by NumberSetting("Offset", default = 35, increment = 1, max = 100, min = -100, description = "Spawn offset. This value can be edited to adjust average spawn point.").withDependency { advanced && bloodhelper }
+    private val tick: Int by NumberSetting("Tick", default = 39, increment = 1, max = 41, min = 37, description = "Tick to assume spawn. Offset to offset this value to the ms.").withDependency { advanced && bloodhelper}
+    private val watcherBar: Boolean by BooleanSetting("Watcher Bar", default = true, description = "Shows the watcher's health.")
+
+    private var currentName: String? = null
+
+    @SubscribeEvent
+    fun onTick(event: TickEvent.ClientTickEvent) {
+        if (!DungeonUtils.inDungeons || !BossStatus.bossName.noControlCodes.contains("The Watcher") || !watcherBar) return
+
+        val health = BossStatus.healthScale
+        val floor = LocationUtils.currentDungeon?.floor ?: return
+
+        if (health < 0.05) {
+            currentName = null
+            return
+        }
+        val amount = 12 + floor.floorNumber
+        currentName = " " + (amount * health).roundToInt() + "/" + amount
+    }
+
+    @SubscribeEvent
+    fun onRenderBossHealth(event: RenderGameOverlayEvent) {
+        if (
+            !DungeonUtils.inDungeons ||
+            event.type != RenderGameOverlayEvent.ElementType.BOSSHEALTH ||
+            currentName == null ||
+            !watcherBar
+        ) return
+        if (BossStatus.bossName.noControlCodes != "The Watcher") return
+        BossStatus.bossName += currentName
+    }
 
     private val watcherSkulls = setOf(
         "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNlYzQwMDA4ZTFjMzFjMTk4NGY0ZDY1MGFiYjM0MTBmMjAzNzExOWZkNjI0YWZjOTUzNTYzYjczNTE1YTA3NyJ9fX0K",
@@ -67,14 +104,14 @@ object BloodCamp : Module(
         var timetook: Long? = null
     )
 
-    private val firstspawnregex = Regex("^\\[BOSS] The Watcher: Let's see how you can handle this.$")
+    private val firstSpawnRegex = Regex("^\\[BOSS] The Watcher: Let's see how you can handle this.$")
 
     private var firstSpawns = true
     private var watcher = mutableListOf<Entity>()
 
     @SubscribeEvent
     fun onEntityJoin(event: EntityJoinWorldEvent) {
-        if (watcher.isEmpty() && event.entity is EntityZombie) {
+        if (watcher.isEmpty() && event.entity is EntityZombie && bloodhelper) {
             runIn(2) {
                 (event.entity as EntityZombie).apply {
                     val helmet = getEquipmentInSlot(4)
@@ -143,7 +180,7 @@ object BloodCamp : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (watcher.isEmpty()) return
+        if (watcher.isEmpty() || !bloodhelper) return
         forRender.filter { (entity) -> !entity.isDead }.forEach { (entity, data) ->
             val dataS = entityList[entity] ?: return@forEach
             val startVector = dataS.startVector ?: return@forEach
@@ -213,11 +250,11 @@ object BloodCamp : Module(
             onTick()
         }
 
-        onPacket(S17PacketEntityLookMove::class.java) {
+        onPacket(S17PacketEntityLookMove::class.java, { bloodhelper }) {
             onPacketLookMove(it)
         }
 
-        onMessage(firstspawnregex) {
+        onMessage(firstSpawnRegex) {
             firstSpawns = false
         }
 
@@ -227,6 +264,7 @@ object BloodCamp : Module(
             watcher.clear()
             forRender.clear()
             ticktime = 0
+            currentName = null
         }
     }
 

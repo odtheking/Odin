@@ -56,7 +56,6 @@ object ModuleManager {
         MimicMessage,
         TeammatesHighlight,
         TerracottaTimer,
-        WatcherBar,
         TerminalSolver,
         TerminalTimes,
         MelodyMessage,
