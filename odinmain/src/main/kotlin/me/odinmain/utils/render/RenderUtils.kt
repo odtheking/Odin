@@ -380,6 +380,7 @@ object RenderUtils {
 
         GL11.glDepthMask(true)
         postDraw()
+        GlStateManager.resetColor()
         GlStateManager.popMatrix()
     }
 
@@ -512,7 +513,7 @@ object RenderUtils {
      * @param height The height of the rectangle.
      */
     fun drawTexturedModalRect(x: Int, y: Int, width: Int, height: Int) {
-        Color.WHITE.bind()
+        GlStateManager.resetColor()
         worldRenderer {
             begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
             pos(x.toDouble(), (y + height).toDouble(), 0.0).tex(0.0, 1.0).endVertex()
@@ -674,12 +675,14 @@ object RenderUtils {
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
         GlStateManager.translate(x, y, 0f)
         GlStateManager.scale(scale, scale, scale)
+        color.bind()
         var yOffset = y - mc.fontRendererObj.FONT_HEIGHT
         text.split("\n").forEach {
             yOffset += mc.fontRendererObj.FONT_HEIGHT
             val xOffset = if (center) mc.fontRendererObj.getStringWidth(it) / -2f else 0f
             mc.fontRendererObj.drawString(it, xOffset, 0f, color.rgba, shadow)
         }
+        GlStateManager.resetColor()
         GlStateManager.disableBlend()
         GlStateManager.popMatrix()
     }
