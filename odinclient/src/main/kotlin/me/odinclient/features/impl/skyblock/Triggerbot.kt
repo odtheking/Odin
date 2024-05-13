@@ -6,18 +6,11 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.Relic.currentRelic
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.DualSetting
-import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.utils.Vec2
+import me.odinmain.features.settings.impl.*
+import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
-import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.isFacingAABB
-import me.odinmain.utils.noControlCodes
-import me.odinmain.utils.skyblock.Island
-import me.odinmain.utils.skyblock.LocationUtils
+import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.itemID
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.item.EntityEnderCrystal
@@ -54,9 +47,9 @@ object Triggerbot : Module(
         "Revoker", "Tear", "Ooze", "Cannibal", "Walker", "Putrid", "Mute", "Parasite", "WanderingSoul", "Leech",
         "Flamer", "Skull", "Mr.Dead", "Vader", "Frost", "Freak", "Bonzo", "Scarf", "Livid", "Psycho", "Reaper",
     )
-    val cauldronMap = mapOf(
+    private val cauldronMap = mapOf(
         "GREEN_KING_RELIC" to Vec2(49, 44),
-        "Red_KING_RELIC" to Vec2(51, 42),
+        "RED_KING_RELIC" to Vec2(51, 42),
         "PURPLE_KING_RELIC" to Vec2(54, 41),
         "ORANGE_KING_RELIC" to Vec2(57, 42),
         "BLUE_KING_RELIC" to Vec2(59, 44)

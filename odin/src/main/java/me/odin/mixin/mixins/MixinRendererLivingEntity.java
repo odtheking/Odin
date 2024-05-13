@@ -2,8 +2,8 @@ package me.odin.mixin.mixins;
 
 
 import me.odinmain.events.impl.RenderEntityModelEvent;
-import me.odinmain.features.impl.render.CustomHighlight;
 import me.odinmain.utils.render.Color;
+import me.odinmain.utils.render.HighlightRenderer;
 import me.odinmain.utils.render.RenderUtils;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
@@ -16,12 +16,15 @@ import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.nio.FloatBuffer;
+import java.util.List;
+import java.util.Map;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -38,9 +41,13 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> {
     @Shadow
     private static DynamicTexture textureBrightness;
 
+    @Unique
+    Map<HighlightRenderer.HighlightType, List<HighlightRenderer.HighlightEntity>> odin$entitiesMap = HighlightRenderer.INSTANCE.getEntities();
+
     @Inject(method = "setBrightness", at = @At(value = "HEAD"), cancellable = true)
     private  <T extends EntityLivingBase> void setBrightness(T entity, float partialTicks, boolean combineTextures, CallbackInfoReturnable<Boolean> cir) {
-        if (CustomHighlight.INSTANCE.getCurrentEntities().contains(entity) && CustomHighlight.INSTANCE.getMode() == 1) {
+        HighlightRenderer.HighlightEntity highlightEntity = odin$entitiesMap.get(HighlightRenderer.HighlightType.Overlay).stream().filter(e -> e.getEntity().equals(entity)).findFirst().orElse(null);
+        if (highlightEntity != null) {
             GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
             GlStateManager.enableTexture2D();
             GL11.glTexEnvi(8960, 8704, OpenGlHelper.GL_COMBINE);
@@ -66,7 +73,7 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> {
             GL11.glTexEnvi(8960, OpenGlHelper.GL_SOURCE0_ALPHA, OpenGlHelper.GL_PREVIOUS);
             GL11.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_ALPHA, 770);
             this.brightnessBuffer.position(0);
-            Color color = CustomHighlight.INSTANCE.getColor();
+            Color color = highlightEntity.getColor();
             brightnessBuffer.put(color.getR() / 255f);
             brightnessBuffer.put(color.getG() / 255f);
             brightnessBuffer.put(color.getB() / 255f);
@@ -94,7 +101,8 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> {
 
     @Inject(method = "doRender(Lnet/minecraft/entity/EntityLivingBase;DDDFF)V", at = @At("HEAD"))
     private <T extends EntityLivingBase> void injectChamsPre(T entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo callbackInfo) {
-        if (CustomHighlight.INSTANCE.getCurrentEntities().contains(entity) && CustomHighlight.INSTANCE.getMode() == 1 && CustomHighlight.INSTANCE.getRenderThrough()) {
+        HighlightRenderer.HighlightEntity highlightEntity = odin$entitiesMap.get(HighlightRenderer.HighlightType.Overlay).stream().filter(e -> e.getEntity().equals(entity)).findFirst().orElse(null);
+        if (highlightEntity != null && !highlightEntity.getDepth()) {
             glEnable(GL_POLYGON_OFFSET_FILL);
             glPolygonOffset(1f, -1000000F);
         }
@@ -102,7 +110,8 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> {
 
     @Inject(method = "doRender(Lnet/minecraft/entity/EntityLivingBase;DDDFF)V", at = @At("RETURN"))
     private <T extends EntityLivingBase> void injectChamsPost(T entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo callbackInfo) {
-        if (CustomHighlight.INSTANCE.getCurrentEntities().contains(entity) && CustomHighlight.INSTANCE.getMode() == 1 && CustomHighlight.INSTANCE.getRenderThrough()) {
+        HighlightRenderer.HighlightEntity highlightEntity = odin$entitiesMap.get(HighlightRenderer.HighlightType.Overlay).stream().filter(e -> e.getEntity().equals(entity)).findFirst().orElse(null);
+        if (highlightEntity != null && !highlightEntity.getDepth()) {
             glPolygonOffset(1f, 1000000F);
             glDisable(GL_POLYGON_OFFSET_FILL);
         }

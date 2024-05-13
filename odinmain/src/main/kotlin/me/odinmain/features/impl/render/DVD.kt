@@ -2,13 +2,8 @@ package me.odinmain.features.impl.render
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.features.settings.impl.StringSetting
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.getMCTextHeight
-import me.odinmain.utils.render.mcText
-import me.odinmain.utils.render.roundedRectangle
+import me.odinmain.features.settings.impl.*
+import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.gui.ScaledResolution
@@ -31,6 +26,12 @@ object DVD : Module(
 
     private val speed: Long by NumberSetting("Speed", 10, 1, 20, 1, description = "Speed of the DVD box.")
 
+    override fun onEnable() {
+        x = Display.getWidth() / 2
+        y = Display.getHeight() / 2
+        super.onEnable()
+    }
+    
     private var x = Display.getWidth() / 2
     private var y = Display.getHeight() / 2
     private var dx = 1

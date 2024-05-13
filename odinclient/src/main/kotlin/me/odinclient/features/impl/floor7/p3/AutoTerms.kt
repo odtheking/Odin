@@ -20,22 +20,22 @@ object AutoTerms : Module(
     category = Category.FLOOR7,
     tag = TagType.RISKY
 ) {
-    private val autoDelay: Long by NumberSetting("Delay", 170L, 130, 300)
-    private val firstClickDelay: Long by NumberSetting("First Click Delay", 350L, 300, 500)
+    private val autoDelay: Long by NumberSetting("Delay", 170L, 130, 300, description = "Delay between clicks")
+    private val firstClickDelay: Long by NumberSetting("First Click Delay", 350L, 300, 500, description = "Delay before first click")
     private val middleClick: Boolean by DualSetting("Click Type", "Left", "Middle", default = true, description = "What Click to use")
-    private val breakThreshold: Long by NumberSetting("Break Threshold", 500L, 350L, 1000L, 10L)
+    private val breakThreshold: Long by NumberSetting("Break Threshold", 500L, 350L, 1000L, 10L, description = "Time before breaking the click")
     private val clock = Clock(autoDelay)
     private var clickedThisWindow = false
     private var breakClock = Clock(breakThreshold)
 
 
     @SubscribeEvent
-    fun onGuiOpen(event: GuiEvent.GuiLoadedEvent) {
+    fun onGuiLoaded(event: GuiEvent.GuiLoadedEvent) {
         clickedThisWindow = false
     }
 
     @SubscribeEvent
-    fun onRenderWorld(event: TickEvent.ClientTickEvent) {
+    fun onTick(event: TickEvent.ClientTickEvent) {
         if (breakClock.hasTimePassed(breakThreshold) && clickedThisWindow) {
             clickedThisWindow = false
         }

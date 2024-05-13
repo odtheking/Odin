@@ -4,9 +4,7 @@ import me.odinmain.features.impl.skyblock.DianaHelper
 import me.odinmain.utils.*
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.network.play.server.S2APacketParticles
-import net.minecraft.util.EnumParticleTypes
-import net.minecraft.util.Vec3
-import net.minecraft.util.Vec3i
+import net.minecraft.util.*
 import kotlin.math.*
 
 object DianaBurrowEstimate {

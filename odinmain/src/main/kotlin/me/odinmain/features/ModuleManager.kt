@@ -4,9 +4,7 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.*
 import me.odinmain.features.impl.dungeon.*
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers
-import me.odinmain.features.impl.floor7.NecronDropTimer
-import me.odinmain.features.impl.floor7.TerminalSimulator
-import me.odinmain.features.impl.floor7.WitherDragons
+import me.odinmain.features.impl.floor7.*
 import me.odinmain.features.impl.floor7.p3.*
 import me.odinmain.features.impl.kuudra.*
 import me.odinmain.features.impl.render.*
@@ -51,74 +49,29 @@ object ModuleManager {
     val executors = ArrayList<Pair<Module, Executor>>()
 
     val modules: ArrayList<Module> = arrayListOf(
-        DungeonRequeue,
-        BlessingDisplay,
-        ExtraStats,
-        KeyHighlight,
-        MimicMessage,
-        TeammatesHighlight,
-        TerracottaTimer,
-        WatcherBar,
-        TerminalSolver,
-        TerminalTimes,
-        MelodyMessage,
-        NecronDropTimer,
-        BPSDisplay,
-        ClickedSecrets,
-        ClickGUIModule,
-        CustomHighlight,
-        CPSDisplay,
-        DragonHitboxes,
-        GyroWand,
-        NameChanger,
-        NoCursorReset,
-        PersonalDragon,
-        RenderOptimizer,
-        ServerDisplay,
-        Waypoints,
-        AutoSprint,
-        BlazeAttunement,
-        CanClip,
-        ChatCommands,
-        DeployableTimer,
-        DianaHelper,
-        Animations,
-        SpaceHelmet,
-        DungeonWaypoints,
-        SecretChime,
-        LeapMenu,
-        PuzzleSolvers,
-        ArrowHit,
-        InactiveWaypoints,
-        Ragaxe,
-        MobSpawn,
-        WitherDragons,
-        BuildHelper,
-        FreshTimer,
-        KuudraDisplay,
-        NoPre,
-        PearlWaypoints,
-        RemovePerks,
-        SupplyWaypoints,
-        TeamHighlight,
-        VanqNotifier,
-        KuudraReminders,
-        KuudraSplits,
-        //Splits,
-        WardrobeKeybinds,
-        InvincibilityTimer,
-        KuudraRequeue,
-        EnrageDisplay,
-        BlockOverlay,
-        ItemsHighlight,
-        GoldorTimer,
-        VisualWords,
-        HidePlayers,
+
+        // dungeon
+        DungeonRequeue, BlessingDisplay, ExtraStats, KeyHighlight, MimicMessage, TeammatesHighlight,
+        TerracottaTimer, WatcherBar, ClickedSecrets, DungeonWaypoints, SecretChime, LeapMenu, PuzzleSolvers,
         WarpCooldown,
-        CopyChat,
-        DVD,
-        PlayerDisplay,
-        TerminalSimulator
+
+        // floor 7
+        TerminalSolver, TerminalTimes, MelodyMessage, NecronDropTimer, InactiveWaypoints, WitherDragons,
+        GoldorTimer, TerminalSimulator,
+
+        // render
+        BPSDisplay, ClickGUIModule, CustomHighlight, CPSDisplay, DragonHitboxes, GyroWand, NameChanger,
+        PersonalDragon, RenderOptimizer, ServerDisplay, Waypoints, CanClip, Animations, SpaceHelmet,
+        BlockOverlay, VisualWords, HidePlayers, DVD,
+
+        //skyblock
+        NoCursorReset, AutoSprint, BlazeAttunement, ChatCommands, DeployableTimer, DianaHelper, ArrowHit,
+        Ragaxe, MobSpawn, /*Splits,*/ WardrobeKeybinds, InvincibilityTimer, EnrageDisplay, /*ItemsHighlight,*/
+        CopyChat, PlayerDisplay, LockCursor,
+
+        // kuudra
+        BuildHelper, FreshTimer, KuudraDisplay, NoPre, PearlWaypoints, RemovePerks, SupplyWaypoints, TeamHighlight,
+        VanqNotifier, KuudraReminders, KuudraSplits, KuudraRequeue,
     )
 
     init {
