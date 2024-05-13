@@ -41,8 +41,8 @@ object BloodCamp : Module(
     private val drawLine: Boolean by BooleanSetting("Line", default = true, description = "Line between Final box and Spawn box").withDependency { bloodhelper }
     private val drawTime: Boolean by BooleanSetting("Time Left", default = true, description = "Time before mob spawn. Adjust offset depending on accuracy. (will always be up to 100 ms off)").withDependency { bloodhelper }
     private val advanced: Boolean by DropdownSetting("Advanced", default = false).withDependency { bloodhelper }
-    private val offset: Int by NumberSetting("Offset", default = 35, increment = 1, max = 100, min = -100, description = "Spawn offset. This value can be edited to adjust average spawn point.").withDependency { advanced && bloodhelper }
-    private val tick: Int by NumberSetting("Tick", default = 39, increment = 1, max = 41, min = 37, description = "Tick to assume spawn. Offset to offset this value to the ms.").withDependency { advanced && bloodhelper}
+    private val offset: Int by NumberSetting("Offset", default = 20, increment = 1, max = 100, min = -100, description = "Spawn offset. This value can be edited to adjust average spawn point.").withDependency { advanced && bloodhelper }
+    private val tick: Int by NumberSetting("Tick", default = 40, increment = 1, max = 41, min = 37, description = "Tick to assume spawn. Offset to offset this value to the ms.").withDependency { advanced && bloodhelper}
     private val watcherBar: Boolean by BooleanSetting("Watcher Bar", default = true, description = "Shows the watcher's health.")
 
     private var currentName: String? = null
@@ -101,7 +101,8 @@ object BloodCamp : Module(
         var finalVector: Vec3? = null,
         var time: Int? = null,
         val started: Long? = null,
-        var timetook: Long? = null
+        var timetook: Long? = null,
+        var firstSpawns: Boolean = true
     )
 
     private val firstSpawnRegex = Regex("^\\[BOSS] The Watcher: Let's see how you can handle this.$")
@@ -139,7 +140,7 @@ object BloodCamp : Module(
                     (startPoint.yCoord - (data.startVector?.yCoord ?: return)) / data.timetook!!,
                     (startPoint.zCoord - (data.startVector?.zCoord ?: return)) / data.timetook!!
                 )
-                val time = (if (firstSpawns) 2000 else 0) + (tick*50) - data.timetook!! + offset
+                val time = (if (data.firstSpawns) 2000 else 0) + (tick*50) - data.timetook!! + offset
                 val endpoint = Vec3(
                     startPoint.xCoord + speedVectors.xCoord * time,
                     startPoint.yCoord + speedVectors.yCoord * time,
@@ -173,7 +174,8 @@ object BloodCamp : Module(
 
             entityList[entity] = EntityData(
                 startVector = entity.positionVector,
-                started = ticktime
+                started = ticktime,
+                firstSpawns = firstSpawns
             )
         }
     }
