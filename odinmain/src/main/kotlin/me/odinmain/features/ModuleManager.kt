@@ -117,7 +117,8 @@ object ModuleManager {
         DVD,
         PlayerDisplay,
         TerminalSimulator,
-        LockCursor
+        LockCursor,
+        BloodCamp
     )
 
     init {
