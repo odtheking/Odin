@@ -19,7 +19,7 @@ import me.odinmain.utils.skyblock.PlayerUtils.posY
 import me.odinmain.utils.skyblock.PlayerUtils.posZ
 import kotlin.math.round
 
-val mainCommand = commodore("od", "odin", "odinclient") {
+val mainCommand = commodore("od", "odin") {
     runs {
         display = ClickGUI
     }

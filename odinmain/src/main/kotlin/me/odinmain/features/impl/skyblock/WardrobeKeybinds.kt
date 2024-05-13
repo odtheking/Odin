@@ -6,8 +6,6 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.name
-import me.odinmain.utils.skyblock.PlayerUtils.ClickType
-import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import me.odinmain.utils.skyblock.getItemIndexInContainerChest
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.gui.inventory.GuiChest
@@ -56,7 +54,7 @@ object WardrobeKeybinds : Module(
         }
         if (!clickCoolDown.hasTimePassed()) return
         if (index > chest.lowerChestInventory.sizeInventory - 1 || index < 1) return modMessage("Invalid index. $index, ${chest.name}")
-        windowClick(index, ClickType.Left, true)
+        mc.playerController.windowClick(chest.windowId, index, 0, 0, mc.thePlayer)
         clickCoolDown.update()
 
         event.isCanceled = true

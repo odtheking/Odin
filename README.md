@@ -6,6 +6,7 @@
 
 [![discord badge](https://img.shields.io/discord/1041616706327552000?label=discord&color=9089DA&logo=discord&style=for-the-badge)](https://discord.gg/2nCbC9hkxT)
 [![made with kotlin](https://img.shields.io/badge/Made%20With-Kotlin-orange?style=for-the-badge&logo=kotlin&logocolor=white)](https://kotlinlang.org/)
+[![downloads](https://img.shields.io/github/downloads/odtheking/Odin/total?style=for-the-badge)](https://github.com/odtheking/Odin)
 </div>
 
 Odin is a forge mod for Hypixel Skyblock on the minecraft version 1.8.9. The mod specializes in Kuudra & Dungeons and offers a bunch of additional features for all parts of Hypixel Skyblock. The mod is also designed to be as lightweight as possible to ensure that it does not impact the game's performance.

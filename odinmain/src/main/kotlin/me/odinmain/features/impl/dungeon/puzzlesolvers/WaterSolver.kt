@@ -21,6 +21,7 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
+import java.util.*
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
@@ -57,13 +58,13 @@ object WaterSolver {
         val z = room.z
         val rotation = room.rotation
 
-        chestPosition = Vec2(x, z).addRotationCoords(rotation, 4).addRotationCoords(rotation, -11)
-        if (getBlockAt(chestPosition.x, 56, chestPosition.z) != Blocks.chest) return
+        chestPosition = Vec2(x, z).addRotationCoords(rotation, -7)
 
         roomFacing = rotation
 
         val pistonHeadPosition = chestPosition.addRotationCoords(roomFacing, -5).let { BlockPos(it.x, 82, it.z) }
-        val blockList = BlockPos.getAllInBox(BlockPos(pistonHeadPosition.x + 1, 78, pistonHeadPosition.z + 1), BlockPos(pistonHeadPosition.x - 1, 77, pistonHeadPosition.z - 1))
+        val blockList = BlockPos.getAllInBox(BlockPos(pistonHeadPosition.x + 1, 78, pistonHeadPosition.z + 1),
+            BlockPos(pistonHeadPosition.x - 1, 77, pistonHeadPosition.z - 1))
 
         val foundBlocks = mutableListOf(false, false, false, false, false)
 
@@ -145,6 +146,7 @@ object WaterSolver {
                     Vec3(solutionList.first().first.leverPos).addVector(0.5, 0.5, 0.5),
                     Vec3(second.first.leverPos).addVector(0.5, 0.5, 0.5),
                     PuzzleSolvers.tracerColorSecond,
+                    lineWidth = 1.5f,
                     depth = true
                 )
             }
@@ -166,7 +168,7 @@ object WaterSolver {
                     else "§e${time}s"
                 } else {
                     val remainingTime = openedWater + time * 1000L - System.currentTimeMillis()
-                    if (remainingTime > 0) "§e${remainingTime / 1000}s"
+                    if (remainingTime > 0) "§e${String.format(Locale.US, "%.2f",remainingTime / 1000)}s"
                     else "§a§lCLICK ME!"
                 }
 

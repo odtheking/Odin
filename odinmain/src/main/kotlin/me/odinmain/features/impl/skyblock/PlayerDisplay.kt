@@ -1,4 +1,4 @@
-package me.odinmain.features.impl.render
+package me.odinmain.features.impl.skyblock
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object PlayerDisplay : Module(
     name = "Player Display",
     description = "Displays info about the skyblock player.",
-    category = Category.RENDER,
+    category = Category.SKYBLOCK,
 ) {
     private val hideElements: Boolean by DropdownSetting("Hide Elements")
     private val hideArmor: Boolean by BooleanSetting("Hide Armor").withDependency { hideElements }

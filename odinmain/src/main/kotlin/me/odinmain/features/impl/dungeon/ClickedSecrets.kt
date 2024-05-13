@@ -26,6 +26,7 @@ object ClickedSecrets : Module(
     private val phase: Boolean by BooleanSetting("Depth Check", false, description = "Boxes show through walls.")
     private val timeToStay: Long by NumberSetting("Time To Stay (seconds)", 7L, 1L, 60L, 1L, description = "The time the chests should remain highlighted.")
     private val useRealSize: Boolean by BooleanSetting("Use Real Size", true, description = "Whether or not to use the real size of the block.")
+    private val disableInBoss: Boolean by BooleanSetting("Disable In Boss", false, description = "Highlight clicks in boss")
 
     private data class Chest(val pos: BlockPos, val timeAdded: Long, var locked: Boolean = false)
     private val secrets = mutableListOf<Chest>()
@@ -53,7 +54,7 @@ object ClickedSecrets : Module(
         }
 
         onPacket(C08PacketPlayerBlockPlacement::class.java) { packet ->
-            if (!DungeonUtils.inDungeons || DungeonUtils.inBoss) return@onPacket
+            if (!DungeonUtils.inDungeons || (DungeonUtils.inBoss && disableInBoss) ) return@onPacket
 
             val pos = packet.position
             val blockState = mc.theWorld?.getBlockState(pos) ?: return@onPacket
