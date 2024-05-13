@@ -222,10 +222,10 @@ object BloodCamp : Module(
             val endAABB = AxisAlignedBB(boxSize,boxSize,boxSize, 0.0, 0.0, 0.0).offset(endPoint).offset((boxSize/2).unaryMinus(),1.5,(boxSize/2).unaryMinus())
 
             if (ping < time) {
-                Renderer.drawBox(pingAABB, mboxColor, fillAlpha = 0f, outlineAlpha = mboxColor.alpha)
-                Renderer.drawBox(endAABB, fboxColor, fillAlpha = 0f, outlineAlpha = fboxColor.alpha)
+                Renderer.drawBox(pingAABB, mboxColor, fillAlpha = 0f, outlineAlpha = mboxColor.alpha, depth = true)
+                Renderer.drawBox(endAABB, fboxColor, fillAlpha = 0f, outlineAlpha = fboxColor.alpha, depth = true)
             } else {
-                Renderer.drawBox(endAABB, Color.PINK, fillAlpha = 0f)
+                Renderer.drawBox(endAABB, Color.PINK, fillAlpha = 0f, depth = true)
             }
             val timeDisplay = (time.toFloat() - offset) / 1000
             val color = when {
@@ -234,7 +234,7 @@ object BloodCamp : Module(
                 timeDisplay in 0.0..0.5 -> Color.RED
                 else -> Color.BLUE
             }
-            if (drawTime) Renderer.drawStringInWorld("${timeDisplay}s", Vec3(endPoint.xCoord, endPoint.yCoord + 2f, endPoint.zCoord), color)
+            if (drawTime) Renderer.drawStringInWorld("${timeDisplay}s", Vec3(endPoint.xCoord, endPoint.yCoord + 2f, endPoint.zCoord), color, depth = true)
         }
 
     }
