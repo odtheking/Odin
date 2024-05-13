@@ -24,7 +24,7 @@ object AutoExperiments : Module(
 ){
     private val delay: Long by NumberSetting("Click Delay", 200, 0, 1000, 10, description = "Time in ms between automatic test clicks.")
     private val autoClose: Boolean by BooleanSetting("Auto Close", true, description = "Automatically close the GUI after completing the experiment.")
-    private val serumCount: Long by NumberSetting("Serum Count", 0, 0, 4, 1, description = "Consumed Metaphysical Serum count.")
+    private val serumCount: Long by NumberSetting("Serum Count", 0, 0, 3, 1, description = "Consumed Metaphysical Serum count.")
 
     private var currentExperiment = ExperimentType.NONE
     private var hasAdded = false
