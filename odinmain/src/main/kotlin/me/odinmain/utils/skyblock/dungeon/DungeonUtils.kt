@@ -258,6 +258,7 @@ object DungeonUtils {
     }
 
     private val tablistRegex = Regex("^\\[(\\d+)\\] (?:\\[\\w+\\] )*(\\w+) (?:.)*?\\((\\w+)(?: (\\w+))*\\)\$")
+    private val noNameTablistRegex = Regex("^\\[(\\d+)\\] (\\[\\w+\\] ?)*(\\w+)? [♲Ⓑ ]*\\((\\w+)(?: (\\w+))*\\)\$")
 
     private fun getDungeonTeammates(previousTeammates: List<DungeonPlayer>): List<DungeonPlayer> {
         val teammates = mutableListOf<DungeonPlayer>()
@@ -265,10 +266,10 @@ object DungeonUtils {
 
         for ((networkPlayerInfo, line) in tabList) {
 
-            val (_, sbLevel, name, clazz, clazzLevel) = tablistRegex.find(line.noControlCodes)?.groupValues ?: continue
+            val (_, sbLevel, name, clazz, clazzLevel) = tablistRegex.find(line.noControlCodes)?.groupValues ?: noNameTablistRegex.find(line.noControlCodes)?.groupValues ?: continue
 
             addTeammate(name, clazz, teammates, networkPlayerInfo)
-            if (clazz == "DEAD") {
+            if (clazz == "DEAD" || clazz == "EMPTY") {
                 val previousClass = previousTeammates.find { it.name == name }?.clazz ?: continue
                 addTeammate(name, previousClass.name, teammates, networkPlayerInfo)
             }

@@ -2,8 +2,7 @@ package me.odinmain.features.impl.floor7.p3.termsim
 
 import me.odinmain.config.Config
 import me.odinmain.features.impl.floor7.p3.TerminalTimes
-import me.odinmain.utils.getRandom
-import me.odinmain.utils.round
+import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.setLoreWidth
 import net.minecraft.inventory.Slot
@@ -53,14 +52,22 @@ object StartGui : TermSimGui(
         event.toolTip.add(1, "§7Personal Best: §d${pbTimes[index].value.round(2)}")
     }
 
+    private var areYouSure = false
+
     override fun slotClick(slot: Slot, button: Int) {
-        if (slot.slotIndex in listOf(4, 11, 12, 13, 14, 15, 22)) {
-            resetInv()
-        }
         val index = if (slot.slotIndex == 22) listOf(11,12,13,14,15).getRandom() else slot.slotIndex
 
         when (index) {
             4 -> {
+                if (!areYouSure) {
+                    modMessage("§cAre you sure you want to reset your PBs? Click again to confirm.")
+                    areYouSure = true
+                    runIn(60) {
+                        modMessage("§aPBs reset cancelled.")
+                        areYouSure = false
+                    }
+                    return
+                }
                 pbTimes.forEach { it.value = 99.0 }
                 Config.save()
                 modMessage("§cPBs reset!")

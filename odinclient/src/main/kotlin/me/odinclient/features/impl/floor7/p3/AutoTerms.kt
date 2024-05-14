@@ -5,8 +5,7 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
-import me.odinmain.features.settings.impl.DualSetting
-import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
@@ -24,6 +23,7 @@ object AutoTerms : Module(
     private val firstClickDelay: Long by NumberSetting("First Click Delay", 350L, 300, 500, description = "Delay before first click")
     private val middleClick: Boolean by DualSetting("Click Type", "Left", "Middle", default = true, description = "What Click to use")
     private val breakThreshold: Long by NumberSetting("Break Threshold", 500L, 350L, 1000L, 10L, description = "Time before breaking the click")
+    private val clickingOrder: Int by SelectorSetting("Clicking order", "from first", arrayListOf("from first", "from last", "random"), description = "")
     private val clock = Clock(autoDelay)
     private var clickedThisWindow = false
     private var breakClock = Clock(breakThreshold)
@@ -48,7 +48,7 @@ object AutoTerms : Module(
             mc.thePlayer.openContainer !is ContainerChest
         ) return
 
-        val item = TerminalSolver.solution.first()
+        val item = if (clickingOrder == 0) TerminalSolver.solution.firstOrNull() ?: return else if (clickingOrder == 1) TerminalSolver.solution.lastOrNull() ?: return else TerminalSolver.solution.random()
 
         clickedThisWindow = true
         clock.update()

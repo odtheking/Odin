@@ -380,8 +380,10 @@ object RenderUtils {
 
         GL11.glDepthMask(true)
         postDraw()
+        GlStateManager.resetColor()
         GlStateManager.popMatrix()
     }
+
 
     /**
      * Draws text in the world at the specified position with the specified color and optional parameters.
@@ -398,11 +400,10 @@ object RenderUtils {
         text: String,
         vec3: Vec3,
         color: Color = Color.WHITE.withAlpha(1f),
-        renderBlackBox: Boolean = false,
         depthTest: Boolean = true,
         scale: Float = 0.3f,
         shadow: Boolean = false
-    ) {
+        ) {
         val renderPos = getRenderPos(vec3)
 
         if (!depthTest) {
@@ -423,22 +424,7 @@ object RenderUtils {
 
         val textWidth = mc.fontRendererObj.getStringWidth(text)
 
-        if (renderBlackBox) {
-            val j = textWidth / 2
-            GlStateManager.disableTexture2D()
-            worldRenderer {
-                begin(7, DefaultVertexFormats.POSITION_COLOR)
-                worldRenderer.pos(-j - 1.0, -1.0, .0).color(.0f, .0f, .0f, 0.25f).endVertex()
-                worldRenderer.pos(-j - 1.0, 8.0, .0).color(.0f, .0f, .0f, 0.25f).endVertex()
-                worldRenderer.pos(j + 1.0, 8.0, .0).color(.0f, .0f, .0f, 0.25f).endVertex()
-                worldRenderer.pos(j + 1.0, -1.0, .0).color(.0f, .0f, .0f, 0.25f).endVertex()
-            }
-            tessellator.draw()
-            GlStateManager.enableTexture2D()
-        }
-
-        if (shadow) mc.fontRendererObj.drawStringWithShadow(text, -textWidth / 2f, 0f, color.rgba)
-        else mc.fontRendererObj.drawString(text, -textWidth / 2, 0, color.rgba)
+        mc.fontRendererObj.drawString("$text§r", -textWidth / 2f, 0f, color.rgba, shadow)
 
         if (!depthTest) {
             GlStateManager.enableDepth()
@@ -512,7 +498,7 @@ object RenderUtils {
      * @param height The height of the rectangle.
      */
     fun drawTexturedModalRect(x: Int, y: Int, width: Int, height: Int) {
-        Color.WHITE.bind()
+        GlStateManager.resetColor()
         worldRenderer {
             begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
             pos(x.toDouble(), (y + height).toDouble(), 0.0).tex(0.0, 1.0).endVertex()
@@ -674,12 +660,14 @@ object RenderUtils {
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
         GlStateManager.translate(x, y, 0f)
         GlStateManager.scale(scale, scale, scale)
+        color.bind()
         var yOffset = y - mc.fontRendererObj.FONT_HEIGHT
         text.split("\n").forEach {
             yOffset += mc.fontRendererObj.FONT_HEIGHT
             val xOffset = if (center) mc.fontRendererObj.getStringWidth(it) / -2f else 0f
             mc.fontRendererObj.drawString(it, xOffset, 0f, color.rgba, shadow)
         }
+        GlStateManager.resetColor()
         GlStateManager.disableBlend()
         GlStateManager.popMatrix()
     }

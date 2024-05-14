@@ -12,7 +12,6 @@ import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.dungeonTeammatesNoSelf
-import net.minecraft.entity.Entity
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -30,7 +29,7 @@ object TeammatesHighlight : Module(
 
     @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
-        if (!shouldRender(event.entity) || !showOutline) return
+        if (!shouldRender() || !showOutline) return
 
         val teammate = dungeonTeammatesNoSelf.find { it.entity == event.entity } ?: return
 
@@ -41,24 +40,21 @@ object TeammatesHighlight : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (!showName) return
+        if (!showName || !shouldRender()) return
         dungeonTeammatesNoSelf.forEach { teammate ->
-            if (teammate.entity?.let { shouldRender(it) } != true) return@forEach
-            if (!whenVisible && mc.thePlayer.canEntityBeSeen(teammate.entity)) return@forEach
-            if (teammate.entity.distanceSquaredTo(mc.thePlayer) >= 2333) return@forEach
-
+            val entity = teammate.entity ?: return@forEach
+            if (entity.distanceSquaredTo(mc.thePlayer) >= 2333) return@forEach
             Renderer.drawStringInWorld(
                 if (showClass) "${teammate.name} §e[${teammate.clazz.name[0]}]" else teammate.name,
                 teammate.entity.renderVec.addVec(y = 2.6),
                 color = teammate.clazz.color,
-                depth = false, renderBlackBox = false,
-                scale = 0.05f
+                depth = whenVisible, scale = 0.05f
             )
         }
     }
 
-    private fun shouldRender(teammate: Entity): Boolean {
+    private fun shouldRender(): Boolean {
         return (inBoss || !DungeonUtils.inBoss) // boss
-                && DungeonUtils.inDungeons // in dungeon
+                && DungeonUtils.inDungeons
     }
 }

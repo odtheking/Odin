@@ -25,7 +25,9 @@ object BlazeSolver {
 
         if (entity !is EntityArmorStand || entity in blazes || !DungeonUtils.inDungeons) return
         val matchResult = Regex("""^\[Lv15] Blaze [\d,]+/([\d,]+)❤$""").find(entity.name.noControlCodes) ?: return
-        hpMap[entity] = matchResult.groups[1]?.value?.replace(",", "")?.toIntOrNull() ?: return
+        var hp = matchResult.groups[1]?.value?.replace(",", "")?.toIntOrNull() ?: return
+        if (entity.name.contains("§5")) hp /= 4
+        hpMap[entity] = hp
         blazes.add(entity)
         if (blazes.isEmpty()) return
 

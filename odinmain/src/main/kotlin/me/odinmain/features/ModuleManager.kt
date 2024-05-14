@@ -49,11 +49,10 @@ object ModuleManager {
     val executors = ArrayList<Pair<Module, Executor>>()
 
     val modules: ArrayList<Module> = arrayListOf(
-
         // dungeon
         DungeonRequeue, BlessingDisplay, ExtraStats, KeyHighlight, MimicMessage, TeammatesHighlight,
-        TerracottaTimer, WatcherBar, ClickedSecrets, DungeonWaypoints, SecretChime, LeapMenu, PuzzleSolvers,
-        WarpCooldown,
+        TerracottaTimer, BloodCamp, ClickedSecrets, DungeonWaypoints, SecretChime, LeapMenu, PuzzleSolvers,
+        WarpCooldown, 
 
         // floor 7
         TerminalSolver, TerminalTimes, MelodyMessage, NecronDropTimer, InactiveWaypoints, WitherDragons,
