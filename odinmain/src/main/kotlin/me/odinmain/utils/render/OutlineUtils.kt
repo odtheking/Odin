@@ -8,9 +8,7 @@ import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.shader.Framebuffer
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
-import org.lwjgl.opengl.EXTFramebufferObject
-import org.lwjgl.opengl.EXTPackedDepthStencil
-import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.*
 
 
 /**

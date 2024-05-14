@@ -10,9 +10,7 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraft.util.EnumParticleTypes
 import net.minecraft.util.Vec3
-import net.minecraftforge.client.event.EntityViewRenderEvent
-import net.minecraftforge.client.event.RenderBlockOverlayEvent
-import net.minecraftforge.client.event.RenderGameOverlayEvent
+import net.minecraftforge.client.event.*
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object NoDebuff : Module(
@@ -73,6 +71,6 @@ object NoDebuff : Module(
     }
 
     fun isNoPush(): Boolean {
-        return noPush && enabled && mc.thePlayer.isSpectator && mc.thePlayer.heldItem == null
+        return noPush && enabled
     }
 }

@@ -2,12 +2,11 @@ package me.odinclient
 
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import me.odinclient.commands.impl.OdinClientCommand
 import me.odinclient.commands.impl.autoSellCommand
 import me.odinclient.features.impl.dungeon.*
 import me.odinclient.features.impl.dungeon.AutoSell.sellList
-import me.odinclient.features.impl.floor7.DioriteFucker
-import me.odinclient.features.impl.floor7.FreezeGame
-import me.odinclient.features.impl.floor7.RelicAura
+import me.odinclient.features.impl.floor7.*
 import me.odinclient.features.impl.floor7.p3.*
 import me.odinclient.features.impl.render.*
 import me.odinclient.features.impl.skyblock.*
@@ -22,9 +21,7 @@ import me.odinmain.utils.render.RenderUtils
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.Mod.EventHandler
-import net.minecraftforge.fml.common.event.FMLInitializationEvent
-import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
+import net.minecraftforge.fml.common.event.*
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlinx.coroutines.launch
@@ -45,7 +42,8 @@ class ModCore {
         MinecraftForge.EVENT_BUS.register(this)
 
         registerCommands(
-            autoSellCommand
+            autoSellCommand,
+            OdinClientCommand
         )
         FramebufferShader.setupCameraTransform =
             { (mc.entityRenderer as? IEntityRendererAccessor)?.invokeSetupCameraTransform(RenderUtils.partialTicks, 0) }
@@ -72,7 +70,7 @@ class ModCore {
         ModuleManager.addModules(
             AutoGFS, /*AutoIceFill,*/ AutoSell, CancelInteract, CancelChestOpen, GhostPick, SecretHitboxes,
             SwapStonk, Arrows, ArrowAlign, CancelWrongTerms, HoverTerms, LightsDevice, SimonSays,
-            DioriteFucker, RelicAura, Trajectories, Ghosts, NoCarpet, NoDebuff, LockCursor,
+            DioriteFucker, RelicAura, Trajectories, Ghosts, NoDebuff,
             ChocolateFactory, AutoExperiments, FarmingHitboxes, NoBlock, TermAC, Triggerbot, GhostBlocks, FreezeGame,
             AbilityKeybind, EtherWarpHelper, ChestEsp, NoBreakReset, EscrowFix, TerminalMove,
             TerminalAura, AutoTerms, Camera, AutoUlt

@@ -7,9 +7,7 @@ import me.odinmain.utils.postAndCatch
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.Slot
-import net.minecraft.item.EnumDyeColor
-import net.minecraft.item.Item
-import net.minecraft.item.ItemStack
+import net.minecraft.item.*
 import kotlin.math.floor
 
 class SelectAll(private val color: String) : TermSimGui(

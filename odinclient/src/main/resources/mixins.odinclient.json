@@ -44,7 +44,6 @@
     "mixins.MixinSoundManager",
     "mixins.MixinTileEntityChestRenderer",
     "mixins.block.MixinBlockButton",
-    "mixins.block.MixinBlockCarpet",
     "mixins.entity.MixinEntityPlayerSP",
     "mixins.entity.MixinEntityRenderer",
     "mixins.entity.MixinModelBiped",

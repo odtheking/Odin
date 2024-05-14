@@ -132,7 +132,6 @@ object DungeonUtils {
                 val distinct = curRoom.positions.distinct().minByOrNull { it.core } ?: return
                 waypoints.forEach { waypoint ->
                     val vecBasedOnClay = waypoint.toVec3().rotateToNorth(room.rotation).addVec(x = distinct.x, z = distinct.z).subtractVec(x = curRoom.clayPos.x, z = curRoom.clayPos.z).rotateAroundNorth(room.rotation)
-                    modMessage(vecBasedOnClay)
                     DungeonWaypointConfigCLAY.waypoints.getOrPut(room.data.name) { mutableListOf() }.add(
                         DungeonWaypoint(vecBasedOnClay.xCoord, vecBasedOnClay.yCoord, vecBasedOnClay.zCoord, waypoint.color, waypoint.filled, waypoint.depth, waypoint.aabb, waypoint.title)
                     )
@@ -259,6 +258,7 @@ object DungeonUtils {
     }
 
     private val tablistRegex = Regex("^\\[(\\d+)\\] (?:\\[\\w+\\] )*(\\w+) (?:.)*?\\((\\w+)(?: (\\w+))*\\)\$")
+    private val noNameTablistRegex = Regex("^\\[(\\d+)\\] (\\[\\w+\\] ?)*(\\w+)? [♲Ⓑ ]*\\((\\w+)(?: (\\w+))*\\)\$")
 
     private fun getDungeonTeammates(previousTeammates: List<DungeonPlayer>): List<DungeonPlayer> {
         val teammates = mutableListOf<DungeonPlayer>()
@@ -266,10 +266,10 @@ object DungeonUtils {
 
         for ((networkPlayerInfo, line) in tabList) {
 
-            val (_, sbLevel, name, clazz, clazzLevel) = tablistRegex.find(line.noControlCodes)?.groupValues ?: continue
+            val (_, sbLevel, name, clazz, clazzLevel) = tablistRegex.find(line.noControlCodes)?.groupValues ?: noNameTablistRegex.find(line.noControlCodes)?.groupValues ?: continue
 
             addTeammate(name, clazz, teammates, networkPlayerInfo)
-            if (clazz == "DEAD") {
+            if (clazz == "DEAD" || clazz == "EMPTY") {
                 val previousClass = previousTeammates.find { it.name == name }?.clazz ?: continue
                 addTeammate(name, previousClass.name, teammates, networkPlayerInfo)
             }

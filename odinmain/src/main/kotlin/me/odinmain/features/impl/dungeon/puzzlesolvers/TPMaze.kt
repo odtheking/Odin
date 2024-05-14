@@ -12,14 +12,12 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.toAABB
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
-import net.minecraft.util.AxisAlignedBB
-import net.minecraft.util.BlockPos
-import net.minecraft.util.Vec3
+import net.minecraft.util.*
 import java.util.concurrent.CopyOnWriteArraySet
 
 object TPMaze {
-    var portals = setOf<BlockPos>()
-    var correctPortals = listOf<BlockPos>()
+    private var portals = setOf<BlockPos>()
+    private var correctPortals = listOf<BlockPos>()
     private var visited = CopyOnWriteArraySet<BlockPos>()
 
     fun scan() {
@@ -41,7 +39,7 @@ object TPMaze {
         getCorrectPortals(Vec3(event.x, event.y, event.z), event.yaw, event.pitch)
     }
 
-    fun getCorrectPortals(pos: Vec3, yaw: Float, pitch: Float) {
+    private fun getCorrectPortals(pos: Vec3, yaw: Float, pitch: Float) {
         if (correctPortals.isEmpty()) correctPortals = correctPortals.plus(portals)
 
         correctPortals = correctPortals.filter {

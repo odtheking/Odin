@@ -2,10 +2,8 @@ package me.odinmain.utils.render
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinmain.utils.addVec
-import me.odinmain.utils.min
+import me.odinmain.utils.*
 import me.odinmain.utils.render.RenderUtils.drawBeaconBeam
-import me.odinmain.utils.toAABB
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.entity.Entity
 import net.minecraft.util.AxisAlignedBB
@@ -72,8 +70,7 @@ object Renderer {
         RenderUtils.drawStringInWorld(
             if (distance) "$title §r§f(§3${dist.toInt()}m§f)" else title,
             vec3.addVec(0.5, 1.7 + dist / 30, 0.5),
-            color = color,
-            shadow = true,
+            color = color, shadow = true,
             scale = if (increase) max(0.03, dist / 200.0).toFloat() else 0.06f,
             depthTest = false
         )
@@ -97,12 +94,11 @@ object Renderer {
         text: String,
         vec3: Vec3,
         color: Color = Color.WHITE,
-        renderBlackBox: Boolean = false,
         depth: Boolean = false,
-        scale: Float = 0.03f,
-        shadow: Boolean = true
+        scale: Float = 1f,
+        shadow: Boolean = true,
         ) {
-        RenderUtils.drawStringInWorld(text, vec3, color, renderBlackBox, depth, scale, shadow)
+        RenderUtils.drawStringInWorld(text, vec3, color, depth, scale, shadow)
     }
     /**
      * Draws a cylinder in the world with the specified parameters.

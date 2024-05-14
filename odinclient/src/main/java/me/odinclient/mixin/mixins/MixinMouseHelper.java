@@ -1,7 +1,7 @@
 package me.odinclient.mixin.mixins;
 
-import me.odinclient.features.impl.render.LockCursor;
 import me.odinmain.features.impl.render.NoCursorReset;
+import me.odinmain.features.impl.skyblock.LockCursor;
 import net.minecraft.util.MouseHelper;
 import org.lwjgl.input.Mouse;
 import org.spongepowered.asm.mixin.Mixin;

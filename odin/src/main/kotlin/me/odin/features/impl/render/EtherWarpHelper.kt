@@ -10,10 +10,9 @@ import me.odinmain.utils.PositionLook
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.EtherWarpHelper
 import me.odinmain.utils.skyblock.EtherWarpHelper.etherPos
-import me.odinmain.utils.skyblock.extraAttributes
-import me.odinmain.utils.skyblock.getBlockAt
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -47,7 +46,7 @@ object EtherWarpHelper : Module(
             val color = if (etherPos.succeeded) renderColor else wrongColor
             val aabb = getBlockAt(pos).getSelectedBoundingBox(mc.theWorld, pos).expand(0.002, 0.002, 0.002) ?: return
 
-            Renderer.drawBox(aabb, color, outlineWidth = thickness, depth = phase, outlineAlpha = if (style == 0) 0 else color.alpha, fillAlpha = if (style == 1) 0 else color.alpha)
+            Renderer.drawBox(aabb, color, outlineWidth = thickness, depth = !phase, outlineAlpha = if (style == 0) 0 else color.alpha, fillAlpha = if (style == 1) 0 else color.alpha)
         }
     }
 }

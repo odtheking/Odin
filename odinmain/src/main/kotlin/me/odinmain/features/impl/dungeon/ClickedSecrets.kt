@@ -2,10 +2,7 @@ package me.odinmain.features.impl.dungeon
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.features.settings.impl.SelectorSetting
+import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
@@ -29,15 +26,17 @@ object ClickedSecrets : Module(
     private val phase: Boolean by BooleanSetting("Depth Check", false, description = "Boxes show through walls.")
     private val timeToStay: Long by NumberSetting("Time To Stay (seconds)", 7L, 1L, 60L, 1L, description = "The time the chests should remain highlighted.")
     private val useRealSize: Boolean by BooleanSetting("Use Real Size", true, description = "Whether or not to use the real size of the block.")
+    private val disableInBoss: Boolean by BooleanSetting("Disable In Boss", false, description = "Highlight clicks in boss")
 
     private data class Chest(val pos: BlockPos, val timeAdded: Long, var locked: Boolean = false)
     private val secrets = mutableListOf<Chest>()
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (!DungeonUtils.inDungeons || secrets.isEmpty() || DungeonUtils.inBoss) return
+        if (!DungeonUtils.inDungeons || DungeonUtils.inBoss || secrets.isEmpty()) return
 
-        secrets.forEach {
+        val tempList = secrets.toList()
+        tempList.forEach {
             val size = if (useRealSize) getBlockAt(it.pos).getSelectedBoundingBox(mc.theWorld, BlockPos(it.pos)) else it.pos.toAABB()
             Renderer.drawBox(size, if (it.locked) lockedColor else color, depth = phase,
                 outlineAlpha = if (style == 0) 0 else color.alpha, fillAlpha = if (style == 1) 0 else color.alpha)
@@ -55,7 +54,7 @@ object ClickedSecrets : Module(
         }
 
         onPacket(C08PacketPlayerBlockPlacement::class.java) { packet ->
-            if (!DungeonUtils.inDungeons || DungeonUtils.inBoss) return@onPacket
+            if (!DungeonUtils.inDungeons || (DungeonUtils.inBoss && disableInBoss) ) return@onPacket
 
             val pos = packet.position
             val blockState = mc.theWorld?.getBlockState(pos) ?: return@onPacket
@@ -64,7 +63,7 @@ object ClickedSecrets : Module(
             secrets.add(Chest(pos, System.currentTimeMillis()))
 
             runIn(timeToStay.toInt() * 20) {
-                secrets.remove(secrets.first())
+                secrets.removeFirstOrNull()
             }
         }
     }

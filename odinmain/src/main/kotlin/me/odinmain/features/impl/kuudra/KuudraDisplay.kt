@@ -12,10 +12,8 @@ import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.render.getMCTextWidth
 import me.odinmain.utils.render.mcText
 import me.odinmain.utils.round
-import me.odinmain.utils.skyblock.Island
+import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.KuudraUtils.kuudraEntity
-import me.odinmain.utils.skyblock.LocationUtils
-import me.odinmain.utils.skyblock.PlayerUtils
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -51,10 +49,10 @@ object KuudraDisplay : Module(
         if (LocationUtils.currentArea != Island.Kuudra) return
 
         if (highlightKuudra)
-            Renderer.drawBox(kuudraEntity.renderBoundingBox, kuudraColor, depth = false, fillAlpha = 0)
+            Renderer.drawBox(kuudraEntity.renderBoundingBox, kuudraColor, depth = false, fillAlpha = 0, outlineWidth = thickness)
 
         if (kuudraHPDisplay)
-            Renderer.drawStringInWorld(getCurrentHealthDisplay(), kuudraEntity.positionVector.addVec(y = 10), Color.WHITE, depth = false, renderBlackBox = false, scale = healthSize, shadow = true)
+            Renderer.drawStringInWorld(getCurrentHealthDisplay(), kuudraEntity.positionVector.addVec(y = 10), Color.WHITE, depth = false, scale = healthSize, shadow = true)
     }
 
 
