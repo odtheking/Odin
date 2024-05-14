@@ -95,7 +95,7 @@ object Renderer {
         vec3: Vec3,
         color: Color = Color.WHITE,
         depth: Boolean = false,
-        scale: Float = 1f,
+        scale: Float = 0.03f,
         shadow: Boolean = true,
         ) {
         RenderUtils.drawStringInWorld(text, vec3, color, depth, scale, shadow)
