@@ -6,10 +6,11 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.distanceSquaredTo
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.OutlineUtils
 import me.odinmain.utils.render.RenderUtils.renderX
 import me.odinmain.utils.render.RenderUtils.renderY
 import me.odinmain.utils.render.RenderUtils.renderZ
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.dungeonTeammatesNoSelf
 import net.minecraft.util.Vec3
@@ -47,8 +48,8 @@ object TeammatesHighlight : Module(
             if (entity.distanceSquaredTo(mc.thePlayer) >= 2333) return@forEach
             val text = if (showClass) "${teammate.name} §e[${teammate.clazz.name[0]}]" else teammate.name
             Renderer.drawStringInWorld(
-                if (showClass) "${teammate.name} §e[${teammate.clazz.name[0]}]" else teammate.name,
-                Vec3(entity.renderX - ((getMCTextWidth(text) * 1.5f) / 2), entity.renderY + 2.6, entity.renderZ),
+                text,
+                Vec3(entity.renderX - 0.3f, entity.renderY + 2.6, entity.renderZ),
                 color = teammate.clazz.color,
                 depth = whenVisible, scale = 1.5f
             )
