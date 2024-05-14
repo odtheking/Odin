@@ -5,15 +5,13 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.utils.addVec
 import me.odinmain.utils.distanceSquaredTo
 import me.odinmain.utils.render.OutlineUtils
-import me.odinmain.utils.render.RenderUtils.renderX
-import me.odinmain.utils.render.RenderUtils.renderY
-import me.odinmain.utils.render.RenderUtils.renderZ
+import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.dungeonTeammatesNoSelf
-import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -46,12 +44,11 @@ object TeammatesHighlight : Module(
         dungeonTeammatesNoSelf.forEach { teammate ->
             val entity = teammate.entity ?: return@forEach
             if (entity.distanceSquaredTo(mc.thePlayer) >= 2333) return@forEach
-            val text = if (showClass) "${teammate.name} §e[${teammate.clazz.name[0]}]" else teammate.name
             Renderer.drawStringInWorld(
-                text,
-                Vec3(entity.renderX - 0.3f, entity.renderY + 2.6, entity.renderZ),
+                if (showClass) "${teammate.name} §e[${teammate.clazz.name[0]}]" else teammate.name,
+                teammate.entity.renderVec.addVec(y = 2.6),
                 color = teammate.clazz.color,
-                depth = whenVisible, scale = 1.5f
+                depth = whenVisible, scale = 0.05f
             )
         }
     }

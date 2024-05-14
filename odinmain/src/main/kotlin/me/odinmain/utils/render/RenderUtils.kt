@@ -384,6 +384,7 @@ object RenderUtils {
         GlStateManager.popMatrix()
     }
 
+
     /**
      * Draws text in the world at the specified position with the specified color and optional parameters.
      *
@@ -392,7 +393,7 @@ object RenderUtils {
      * @param color           The color of the text.
      * @param renderBlackBox  Indicates whether to render a black box behind the text (default is false).
      * @param depthTest       Indicates whether to draw with depth (default is true).
-     * @param scale           The scale of the text (default is 1).
+     * @param scale           The scale of the text (default is 0.03).
      * @param shadow          Indicates whether to render a shadow for the text (default is true).
      */
     fun drawStringInWorld(
@@ -400,11 +401,9 @@ object RenderUtils {
         vec3: Vec3,
         color: Color = Color.WHITE.withAlpha(1f),
         depthTest: Boolean = true,
-        scale: Float = 1f,
-        shadow: Boolean = false,
-        renderBlackBox: Boolean = false,
-
-    ) {
+        scale: Float = 0.3f,
+        shadow: Boolean = false
+        ) {
         val renderPos = getRenderPos(vec3)
 
         if (!depthTest) {
@@ -414,32 +413,23 @@ object RenderUtils {
 
         val xMultiplier = if (mc.gameSettings.thirdPersonView == 2) -1 else 1
 
-        GlStateManager.pushMatrix()
-        GL11.glNormal3f(0f, 1f, 0f)
         color.bind()
-
+        GlStateManager.pushMatrix()
         translate(renderPos.xCoord, renderPos.yCoord, renderPos.zCoord)
         GlStateManager.rotate(-renderManager.playerViewY, 0.0f, 1.0f, 0.0f)
         GlStateManager.rotate(renderManager.playerViewX * xMultiplier, 1.0f, 0.0f, 0.0f)
-        val f1 = 0.026666667f
-        GlStateManager.scale(-f1, -f1, f1)
-        GlStateManager.disableLighting()
+        scale(-scale, -scale, scale)
+        GlStateManager.enableBlend()
+        blendFactor()
 
         val textWidth = mc.fontRendererObj.getStringWidth(text)
 
-        if (renderBlackBox) {
-            GlStateManager.pushMatrix()
-            GlStateManager.scale(scale, scale, scale)
-            roundedRectangle(-textWidth / 2f - 2.0, -1.0, textWidth + 4.0, 9.0, Color.DARK_GRAY.withAlpha(0.5f), 0f)
-            GlStateManager.popMatrix()
-        }
-        mcText(text, -textWidth / 2f, 0f, scale, color, shadow, center = false)
+        mc.fontRendererObj.drawString("$text§r", -textWidth / 2f, 0f, color.rgba, shadow)
 
         if (!depthTest) {
             GlStateManager.enableDepth()
             GlStateManager.depthMask(true)
         }
-        GlStateManager.enableLighting()
         GlStateManager.resetColor()
         GlStateManager.popMatrix()
     }

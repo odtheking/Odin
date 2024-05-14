@@ -91,7 +91,7 @@ object ArrowAlign : Module(
                 clicksNeeded < 5 -> Color(255, 170, 0)
                 else -> Color(170, 0, 0)
             }
-            Renderer.drawStringInWorld(clicksNeeded.toString(), Vec3(-1.8, 124.6 - place.key.y, 79.5 - place.key.x), color, renderBlackBox = false)
+            Renderer.drawStringInWorld(clicksNeeded.toString(), Vec3(-1.8, 124.6 - place.key.y, 79.5 - place.key.x), color, scale = .05f)
         }
     }
 

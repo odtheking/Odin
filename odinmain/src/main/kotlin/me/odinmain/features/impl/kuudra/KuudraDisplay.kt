@@ -52,7 +52,7 @@ object KuudraDisplay : Module(
             Renderer.drawBox(kuudraEntity.renderBoundingBox, kuudraColor, depth = false, fillAlpha = 0, outlineWidth = thickness)
 
         if (kuudraHPDisplay)
-            Renderer.drawStringInWorld(getCurrentHealthDisplay(), kuudraEntity.positionVector.addVec(y = 10), Color.WHITE, depth = false, renderBlackBox = false, scale = healthSize, shadow = true)
+            Renderer.drawStringInWorld(getCurrentHealthDisplay(), kuudraEntity.positionVector.addVec(y = 10), Color.WHITE, depth = false, scale = healthSize, shadow = true)
     }
 
 

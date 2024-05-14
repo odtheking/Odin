@@ -48,7 +48,7 @@ object TeamHighlight : Module(
             Renderer.drawStringInWorld(
                 teammate.playerName, teammate.entity?.renderVec?.addVec(y = 2.6) ?: return,
                 if (teammate.eatFresh) highlightFreshColor else nameColor,
-                depth = false, scale = 1.5f
+                depth = false, scale = 0.05f
             )
         }
     }

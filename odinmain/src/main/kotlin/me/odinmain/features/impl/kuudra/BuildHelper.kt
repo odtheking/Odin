@@ -50,10 +50,10 @@ object BuildHelper : Module(
         if (KuudraUtils.phase != 2) return
         if (stunNotification && KuudraUtils.build > stunNotificationNumber) PlayerUtils.alert("§lGo to stun", playSound = false, color = Color.CYAN)
         if (buildHelperDraw)
-            Renderer.drawStringInWorld("Build ${colorBuild(KuudraUtils.build)}%", Vec3(-101.5, 84.0, -105.5), buildHelperColor, depth = false, scale = 3f)
+            Renderer.drawStringInWorld("Build ${colorBuild(KuudraUtils.build)}%", Vec3(-101.5, 84.0, -105.5), buildHelperColor, depth = false, scale = 0.15f)
 
         if (buildHelperDraw)
-            Renderer.drawStringInWorld("Builders ${colorBuilders(KuudraUtils.builders)}", Vec3(-101.5, 81.0, -105.5), buildHelperColor, depth = false, scale = 3f)
+            Renderer.drawStringInWorld("Builders ${colorBuilders(KuudraUtils.builders)}", Vec3(-101.5, 81.0, -105.5), buildHelperColor, depth = false, scale = 0.15f)
 
         if (unfinishedWaypoints && KuudraUtils.phase == 2) renderUnfinishedWaypoints()
     }

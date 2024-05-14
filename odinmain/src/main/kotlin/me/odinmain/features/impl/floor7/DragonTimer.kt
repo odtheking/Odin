@@ -22,11 +22,9 @@ object DragonTimer {
         if (toRender.isEmpty()) return
         toRender.forEach {
             Renderer.drawStringInWorld(
-                it.first,
-                it.third.spawnPos,
-                color = Color.WHITE,
-                depth = false,
-                scale = textScale
+                it.first, it.third.spawnPos,
+                color = Color.WHITE, depth = false,
+                scale = textScale / 5
             )
         }
     }

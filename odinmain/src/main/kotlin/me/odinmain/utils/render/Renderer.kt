@@ -97,9 +97,8 @@ object Renderer {
         depth: Boolean = false,
         scale: Float = 1f,
         shadow: Boolean = true,
-        renderBlackBox: Boolean = false,
         ) {
-        RenderUtils.drawStringInWorld(text, vec3, color, depth, scale, shadow, renderBlackBox)
+        RenderUtils.drawStringInWorld(text, vec3, color, depth, scale, shadow)
     }
     /**
      * Draws a cylinder in the world with the specified parameters.
