@@ -1,7 +1,7 @@
 package me.odinclient.features.impl.skyblock
 
+import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.events.impl.GuiEvent
-import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -65,7 +65,7 @@ object ChocolateFactory : Module(
     )
 
     init {
-        onWorldLoad { currentChocolateEggs = arrayOfNulls(3) }
+        onWorldLoad { currentDetectedEggs = arrayOfNulls(3) }
         execute(delay = { delay }) {
             val container = mc.thePlayer?.openContainer as? ContainerChest ?: return@execute
             if (container.name != "Chocolate Factory") return@execute
@@ -92,9 +92,11 @@ object ChocolateFactory : Module(
         }
 
         execute(delay = { 3000 }) {
-            if (eggEsp && possibleLocations.contains(LocationUtils.currentArea)) scanForEggs()
+            if(!eggEsp) currentDetectedEggs = arrayOfNulls(3);
+            if (eggEsp && possibleLocations.contains(LocationUtils.currentArea) && currentDetectedEggs.filterNotNull().size < 3) scanForEggs()
         }
     }
+
 
     private var bestWorker = 29
     private var bestCost = 0
@@ -135,7 +137,7 @@ object ChocolateFactory : Module(
     }
 
 
-    private var currentChocolateEggs = arrayOfNulls<Egg>(3)
+    private var currentDetectedEggs = arrayOfNulls<Egg>(3)
 
     private enum class ChocolateEggs(
         val texture: String, val type: String, val color: Color, val index: Int
@@ -145,7 +147,7 @@ object ChocolateFactory : Module(
         Dinner(BunnyEggTextures.dinnerEggTexture, "§aDinner Egg", Color.GREEN, 2),
     }
 
-    data class Egg(val entity: EntityArmorStand, val renderName: String, val color: Color)
+    data class Egg(val entity: EntityArmorStand, val renderName: String, val color: Color, var isFound: Boolean = false)
 
     private fun getEggType(entity: EntityArmorStand): ChocolateEggs? {
         val texture = getSkullValue(entity)
@@ -154,18 +156,44 @@ object ChocolateFactory : Module(
 
     fun scanForEggs() {
         for (entity in mc.theWorld.loadedEntityList.filterIsInstance<EntityArmorStand>()) {
-            val egg = getEggType(entity) ?: continue
-            currentChocolateEggs[egg.index] = Egg(entity, egg.type, egg.color)
+            val eggType = getEggType(entity) ?: continue
+            if(currentDetectedEggs[eggType.index] != null) continue
+            currentDetectedEggs[eggType.index] = Egg(entity, eggType.type, eggType.color)
         }
     }
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (currentChocolateEggs.isEmpty()) return
-        for (egg in currentChocolateEggs) {
-            if (egg == null) continue
-            val location = Vec3(egg.entity.posX - 0.5, egg.entity.posY + 1.47, egg.entity.posZ - 0.5)
-            Renderer.drawCustomBeacon(egg.renderName, location, egg.color, increase = true, beacon = false)
+        if (currentDetectedEggs.isEmpty()) return
+        for (egg in currentDetectedEggs) {
+            if (egg == null || egg.isFound) continue
+            val eggLocation = Vec3(egg.entity.posX - 0.5, egg.entity.posY + 1.47, egg.entity.posZ - 0.5)
+            Renderer.drawCustomBeacon(egg.renderName, eggLocation, egg.color, increase = true, beacon = false)
+        }
+    }
+
+    // HOPPITY'S HUNT A Chocolate Breakfast Egg has appeared!
+    // HOPPITY'S HUNT A Chocolate Lunch Egg has appeared!
+    // HOPPITY'S HUNT A Chocolate Dinner Egg has appeared!
+
+    // HOPPITY'S HUNT You found a Chocolate Breakfast Egg in front of the Iron Forger!
+    // HOPPITY'S HUNT You found a Chocolate Lunch Egg in the Blacksmith’s forge!
+    // HOPPITY'S HUNT You found a Chocolate Dinner Egg next to the Lazy Miner’s pickaxe!
+    @SubscribeEvent
+    fun onChat(event: ChatPacketEvent) {
+        if(!eggEsp) return
+        val match = Regex(".*(A|found|collected).+Chocolate (Lunch|Dinner|Breakfast).*").find(event.message) ?: return
+        val egg = ChocolateEggs.entries.find { it.type.contains(match.groupValues[2]) } ?: return
+        when(match.groupValues[1]) {
+            "A" -> {
+                currentDetectedEggs[egg.index] = null;
+            }
+            "found" -> {
+                currentDetectedEggs[egg.index]?.isFound = true
+            }
+            "collected" -> {
+                currentDetectedEggs[egg.index]?.isFound = true
+            }
         }
     }
 }
