@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.skyblock
 
-import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -58,7 +57,7 @@ object ChocolateFactory : Module(
             val container = mc.thePlayer?.openContainer as? ContainerChest ?: return@execute
             if (container.name != "Chocolate Factory") return@execute
 
-            if (clickFactory) windowClick(13, 1, 0)
+            if (clickFactory) windowClick(13, PlayerUtils.ClickType.Right)
         }
 
         execute(delay = { upgradeDelay }) {
@@ -74,7 +73,7 @@ object ChocolateFactory : Module(
             findWorker(container)
             if (!found) return@execute
             if (chocolate > bestCost && autoUpgrade) {
-                windowClick(bestWorker, 2, 3)
+                windowClick(bestWorker, PlayerUtils.ClickType.Middle)
                 if (upgradeMessage) modMessage("Trying to upgrade: Rabbit " + indexToName[bestWorker] + " with " + bestCost + " chocolate.")
             }
         }
@@ -153,18 +152,16 @@ object ChocolateFactory : Module(
     }
 
     fun scanForEggs() {
-        for (entity in mc.theWorld.loadedEntityList.filterIsInstance<EntityArmorStand>()) {
-            val eggType = getEggType(entity) ?: continue
-            if(currentDetectedEggs[eggType.index] != null) continue
-            currentDetectedEggs[eggType.index] = Egg(entity, eggType.type, eggType.color)
+        mc.theWorld.loadedEntityList.filterIsInstance<EntityArmorStand>().forEach { entity ->
+            val eggType = getEggType(entity) ?: return@forEach
+            currentDetectedEggs[eggType.index] = currentDetectedEggs[eggType.index] ?: Egg(entity, eggType.type, eggType.color)
         }
     }
 
+
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (currentDetectedEggs.isEmpty()) return
-        for (egg in currentDetectedEggs) {
-            if (egg == null || egg.isFound) continue
+        currentDetectedEggs.filterNotNull().filterNot { it.isFound }.forEach { egg ->
             val eggLocation = Vec3(egg.entity.posX - 0.5, egg.entity.posY + 1.47, egg.entity.posZ - 0.5)
             Renderer.drawCustomBeacon(egg.renderName, eggLocation, egg.color, increase = true, beacon = false)
         }
