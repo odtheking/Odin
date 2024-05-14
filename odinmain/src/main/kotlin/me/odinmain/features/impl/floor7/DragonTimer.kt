@@ -26,7 +26,7 @@ object DragonTimer {
                 it.third.spawnPos,
                 color = Color.WHITE,
                 depth = false,
-                scale = textScale / 5
+                scale = textScale
             )
         }
     }

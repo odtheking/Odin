@@ -392,17 +392,18 @@ object RenderUtils {
      * @param color           The color of the text.
      * @param renderBlackBox  Indicates whether to render a black box behind the text (default is false).
      * @param depthTest       Indicates whether to draw with depth (default is true).
-     * @param scale           The scale of the text (default is 0.03).
+     * @param scale           The scale of the text (default is 1).
      * @param shadow          Indicates whether to render a shadow for the text (default is true).
      */
     fun drawStringInWorld(
         text: String,
         vec3: Vec3,
         color: Color = Color.WHITE.withAlpha(1f),
-        renderBlackBox: Boolean = false,
         depthTest: Boolean = true,
-        scale: Float = 0.3f,
-        shadow: Boolean = false
+        scale: Float = 1f,
+        shadow: Boolean = false,
+        renderBlackBox: Boolean = false,
+
     ) {
         val renderPos = getRenderPos(vec3)
 
@@ -413,38 +414,32 @@ object RenderUtils {
 
         val xMultiplier = if (mc.gameSettings.thirdPersonView == 2) -1 else 1
 
-        color.bind()
         GlStateManager.pushMatrix()
+        GL11.glNormal3f(0f, 1f, 0f)
+        color.bind()
+
         translate(renderPos.xCoord, renderPos.yCoord, renderPos.zCoord)
         GlStateManager.rotate(-renderManager.playerViewY, 0.0f, 1.0f, 0.0f)
         GlStateManager.rotate(renderManager.playerViewX * xMultiplier, 1.0f, 0.0f, 0.0f)
-        scale(-scale, -scale, scale)
-        GlStateManager.enableBlend()
-        blendFactor()
+        val f1 = 0.026666667f
+        GlStateManager.scale(-f1, -f1, f1)
+        GlStateManager.disableLighting()
 
         val textWidth = mc.fontRendererObj.getStringWidth(text)
 
         if (renderBlackBox) {
-            val j = textWidth / 2
-            GlStateManager.disableTexture2D()
-            worldRenderer {
-                begin(7, DefaultVertexFormats.POSITION_COLOR)
-                worldRenderer.pos(-j - 1.0, -1.0, .0).color(.0f, .0f, .0f, 0.25f).endVertex()
-                worldRenderer.pos(-j - 1.0, 8.0, .0).color(.0f, .0f, .0f, 0.25f).endVertex()
-                worldRenderer.pos(j + 1.0, 8.0, .0).color(.0f, .0f, .0f, 0.25f).endVertex()
-                worldRenderer.pos(j + 1.0, -1.0, .0).color(.0f, .0f, .0f, 0.25f).endVertex()
-            }
-            tessellator.draw()
-            GlStateManager.enableTexture2D()
+            GlStateManager.pushMatrix()
+            GlStateManager.scale(scale, scale, scale)
+            roundedRectangle(-textWidth / 2f - 2.0, -1.0, textWidth + 4.0, 9.0, Color.DARK_GRAY.withAlpha(0.5f), 0f)
+            GlStateManager.popMatrix()
         }
-
-        if (shadow) mc.fontRendererObj.drawStringWithShadow(text, -textWidth / 2f, 0f, color.rgba)
-        else mc.fontRendererObj.drawString(text, -textWidth / 2, 0, color.rgba)
+        mcText(text, -textWidth / 2f, 0f, scale, color, shadow, center = false)
 
         if (!depthTest) {
             GlStateManager.enableDepth()
             GlStateManager.depthMask(true)
         }
+        GlStateManager.enableLighting()
         GlStateManager.resetColor()
         GlStateManager.popMatrix()
     }

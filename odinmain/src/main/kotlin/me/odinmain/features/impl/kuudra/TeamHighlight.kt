@@ -31,14 +31,14 @@ object TeamHighlight : Module(
 
     @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
-        if (event.entity == mc.thePlayer || !playerOutline || LocationUtils.currentArea != Island.Kuudra) return
+        if (event.entity == mc.thePlayer || !playerOutline || LocationUtils.currentArea != Island.Kuudra || KuudraUtils.phase < 1) return
         val teammate = kuudraTeammates.find { it.entity == event.entity } ?: return
 
         OutlineUtils.outlineEntity(event, 5f, if (teammate.eatFresh && highlightFresh) highlightFreshColor else outlineColor, true)
     }
 
     @SubscribeEvent
-    fun handleNames(event: RenderWorldLastEvent) {
+    fun onRenderWorld(event: RenderWorldLastEvent) {
         if (!highlightName || LocationUtils.currentArea != Island.Kuudra || KuudraUtils.phase < 1) return
 
         kuudraTeammates.forEach{ teammate ->
@@ -48,8 +48,7 @@ object TeamHighlight : Module(
             Renderer.drawStringInWorld(
                 teammate.playerName, teammate.entity?.renderVec?.addVec(y = 2.6) ?: return,
                 if (teammate.eatFresh) highlightFreshColor else nameColor,
-                depth = false, renderBlackBox = false,
-                scale = 0.05f
+                depth = false, scale = 1.5f
             )
         }
     }

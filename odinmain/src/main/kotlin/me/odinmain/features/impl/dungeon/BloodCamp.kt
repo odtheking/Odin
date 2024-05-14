@@ -4,10 +4,7 @@ import me.odinmain.events.impl.RealServerTick
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.DropdownSetting
-import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
@@ -23,9 +20,9 @@ import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.common.util.Constants
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.common.util.Constants
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.roundToInt
 
@@ -226,9 +223,9 @@ object BloodCamp : Module(
             if (ping < time) {
                 Renderer.drawBox(pingAABB, mboxColor, fillAlpha = 0f, outlineAlpha = mboxColor.alpha, depth = true)
                 Renderer.drawBox(endAABB, fboxColor, fillAlpha = 0f, outlineAlpha = fboxColor.alpha, depth = true)
-            } else {
+            } else
                 Renderer.drawBox(endAABB, Color.PINK, fillAlpha = 0f, depth = true)
-            }
+
             val timeDisplay = (time.toFloat() - offset) / 1000
             val color = when {
                 timeDisplay > 1.5 -> Color.GREEN
@@ -252,7 +249,7 @@ object BloodCamp : Module(
             onTick()
         }
 
-        onPacket(S17PacketEntityLookMove::class.java, { bloodhelper }) {
+        onPacket(S17PacketEntityLookMove::class.java, { bloodhelper && enabled }) {
             onPacketLookMove(it)
         }
 

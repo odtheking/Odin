@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(value = EntityPlayerSP.class)
 abstract public class MixinEntityPlayerSP {
     @ModifyExpressionValue(method = {"pushOutOfBlocks"}, at = @At(value = "FIELD", target =  "Lnet/minecraft/client/entity/EntityPlayerSP;noClip:Z"))
-    public boolean shouldPrevent(boolean original, EntityPlayerSP instance) {
+    public boolean shouldPrevent(boolean original) {
         return NoDebuff.INSTANCE.isNoPush() || original;
     }
 }
