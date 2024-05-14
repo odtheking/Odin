@@ -27,24 +27,12 @@ object ChocolateFactory : Module(
     description = "Automatically clicks the cookie in the Chocolate Factory menu.",
     category = Category.SKYBLOCK
 ) {
-    private val clickFactory: Boolean by BooleanSetting(
-        "Click Factory",
-        false,
-        description = "Click the cookie in the Chocolate Factory menu."
-    )
-    private val autoUpgrade: Boolean by BooleanSetting(
-        "Auto Upgrade",
-        false,
-        description = "Automatically upgrade the worker."
-    )
+    private val clickFactory: Boolean by BooleanSetting("Click Factory", false, description = "Click the cookie in the Chocolate Factory menu.")
+    private val autoUpgrade: Boolean by BooleanSetting("Auto Upgrade", false, description = "Automatically upgrade the worker.")
     private val delay: Long by NumberSetting("Delay", 150, 50, 300, 5)
     private val upgradeDelay: Long by NumberSetting("Upgrade delay", 500, 300, 2000, 100)
     private val cancelSound: Boolean by BooleanSetting("Cancel Sound")
-    private val upgradeMessage: Boolean by BooleanSetting(
-        "Odin Upgrade Message",
-        false,
-        description = "Prints a message when upgrading."
-    )
+    private val upgradeMessage: Boolean by BooleanSetting("Odin Upgrade Message", false, description = "Prints a message when upgrading.")
     private val eggEsp: Boolean by BooleanSetting("Egg ESP", false, description = "Shows the location of the egg.")
     private var chocolate = 0
     private var chocoProduction = 0f
@@ -94,6 +82,16 @@ object ChocolateFactory : Module(
         execute(delay = { 3000 }) {
             if(!eggEsp) currentDetectedEggs = arrayOfNulls(3);
             if (eggEsp && possibleLocations.contains(LocationUtils.currentArea) && currentDetectedEggs.filterNotNull().size < 3) scanForEggs()
+        }
+
+        onMessage(Regex(".*(A|found|collected).+Chocolate (Lunch|Dinner|Breakfast).*")){ it ->
+            if(!eggEsp) return@onMessage
+            val match = Regex(".*(A|found|collected).+Chocolate (Lunch|Dinner|Breakfast).*").find(it) ?: return@onMessage
+            val egg = ChocolateEggs.entries.find { it.type.contains(match.groupValues[2]) } ?: return@onMessage
+            when(match.groupValues[1]) {
+                "A" -> currentDetectedEggs[egg.index] = null
+                "found", "collected" -> currentDetectedEggs[egg.index]?.isFound = true
+            }
         }
     }
 
@@ -169,31 +167,6 @@ object ChocolateFactory : Module(
             if (egg == null || egg.isFound) continue
             val eggLocation = Vec3(egg.entity.posX - 0.5, egg.entity.posY + 1.47, egg.entity.posZ - 0.5)
             Renderer.drawCustomBeacon(egg.renderName, eggLocation, egg.color, increase = true, beacon = false)
-        }
-    }
-
-    // HOPPITY'S HUNT A Chocolate Breakfast Egg has appeared!
-    // HOPPITY'S HUNT A Chocolate Lunch Egg has appeared!
-    // HOPPITY'S HUNT A Chocolate Dinner Egg has appeared!
-
-    // HOPPITY'S HUNT You found a Chocolate Breakfast Egg in front of the Iron Forger!
-    // HOPPITY'S HUNT You found a Chocolate Lunch Egg in the Blacksmith’s forge!
-    // HOPPITY'S HUNT You found a Chocolate Dinner Egg next to the Lazy Miner’s pickaxe!
-    @SubscribeEvent
-    fun onChat(event: ChatPacketEvent) {
-        if(!eggEsp) return
-        val match = Regex(".*(A|found|collected).+Chocolate (Lunch|Dinner|Breakfast).*").find(event.message) ?: return
-        val egg = ChocolateEggs.entries.find { it.type.contains(match.groupValues[2]) } ?: return
-        when(match.groupValues[1]) {
-            "A" -> {
-                currentDetectedEggs[egg.index] = null;
-            }
-            "found" -> {
-                currentDetectedEggs[egg.index]?.isFound = true
-            }
-            "collected" -> {
-                currentDetectedEggs[egg.index]?.isFound = true
-            }
         }
     }
 }
