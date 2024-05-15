@@ -10,6 +10,7 @@ import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.LocationUtils
+import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import me.odinmain.utils.skyblock.getSkullValue
 import net.minecraft.entity.Entity
@@ -27,18 +28,19 @@ import kotlin.math.roundToInt
 
 object BloodCamp : Module(
     name = "Blood Camp",
-    description = "Draws boxes to spawning mobs in the blood room. WARNING: not perfectly accurate. Mobs spawn randomly between 38 - 40 ticks, adjust offset to adjust between this tickrange.",
+    description = "Draws boxes to spawning mobs in the blood room. WARNING: not perfectly accurate. Mobs spawn randomly between 37 - 41 ticks, adjust offset to adjust between ticks.",
     category = Category.DUNGEON
 ) {
     private val bloodhelper: Boolean by BooleanSetting("Blood Camp Assist", default = true, description = "Renders a box where blood mobs will spawn.")
-    private val fboxColor: Color by ColorSetting("Spawn Color", Color.RED, true, description = "Color for Spawn render box. Set alpha to 0 to disable.").withDependency { bloodhelper }
-    private val mboxColor: Color by ColorSetting("Position Color", Color.GREEN, true, description = "Color for Mob current adjusted position render box. Set alpha to 0 to disable.").withDependency { bloodhelper }
+    private val pboxColor: Color by ColorSetting("Spawn Color", Color.RED, true, description = "Color for Spawn render box. Set alpha to 0 to disable.").withDependency { bloodhelper }
+    private val fboxColor: Color by ColorSetting("Final Color", Color.CYAN, true, description = "Color for when Spawn and Mob boxes are merged. Set alpha to 0 to disable.").withDependency { bloodhelper }
+    private val mboxColor: Color by ColorSetting("Position Color", Color.GREEN, true, description = "Color for current position box. Set alpha to 0 to disable.").withDependency { bloodhelper }
     private val boxSize: Double by NumberSetting("Box Size", default = 1.0, increment = 0.1, min = 0.1, max = 1.0, description = "The size of the boxes. Lower values may be less accurate").withDependency { bloodhelper }
     private val drawLine: Boolean by BooleanSetting("Line", default = true, description = "Line between Final box and Spawn box").withDependency { bloodhelper }
     private val drawTime: Boolean by BooleanSetting("Time Left", default = true, description = "Time before mob spawn. Adjust offset depending on accuracy. (will always be up to 100 ms off)").withDependency { bloodhelper }
     private val advanced: Boolean by DropdownSetting("Advanced", default = false).withDependency { bloodhelper }
-    private val offset: Int by NumberSetting("Offset", default = 20, increment = 1, max = 100, min = -100, description = "Spawn offset. This value can be edited to adjust average spawn point.").withDependency { advanced && bloodhelper }
-    private val tick: Int by NumberSetting("Tick", default = 40, increment = 1, max = 41, min = 37, description = "Tick to assume spawn. Offset to offset this value to the ms.").withDependency { advanced && bloodhelper}
+    private val offset: Int by NumberSetting("Offset", default = 20, increment = 1, max = 100, min = -100, description = "Tick offset to adjust between ticks.").withDependency { advanced && bloodhelper }
+    private val tick: Int by NumberSetting("Tick", default = 40, increment = 1, max = 41, min = 37, description = "Tick to assume spawn. Adjust offset to offset this value to the ms.").withDependency { advanced && bloodhelper}
     private val watcherBar: Boolean by BooleanSetting("Watcher Bar", default = true, description = "Shows the watcher's health.")
 
     private var currentName: String? = null
@@ -78,8 +80,7 @@ object BloodCamp : Module(
 
     @SubscribeEvent
     fun onRenderBossHealth(event: RenderGameOverlayEvent) {
-        if (!inDungeons || event.type != RenderGameOverlayEvent.ElementType.BOSSHEALTH || currentName == null || !watcherBar) return
-        if (BossStatus.bossName.noControlCodes != "The Watcher") return
+        if (!inDungeons || event.type != RenderGameOverlayEvent.ElementType.BOSSHEALTH || currentName == null || !watcherBar || BossStatus.bossName.noControlCodes != "The Watcher") return 
         BossStatus.bossName += currentName
     }
 
@@ -87,7 +88,12 @@ object BloodCamp : Module(
         "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNGNlYzQwMDA4ZTFjMzFjMTk4NGY0ZDY1MGFiYjM0MTBmMjAzNzExOWZkNjI0YWZjOTUzNTYzYjczNTE1YTA3NyJ9fX0K",
         "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTVjMWRjNDdhMDRjZTU3MDAxYThiNzI2ZjAxOGNkZWY0MGI3ZWE5ZDdiZDZkODM1Y2E0OTVhMGVmMTY5Zjg5MyJ9fX0K",
         "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmY2ZTFlN2VkMzY1ODZjMmQ5ODA1NzAwMmJjMWFkYzk4MWUyODg5ZjdiZDdiNWIzODUyYmM1NWNjNzgwMjIwNCJ9fX0K",
-        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWZkNjFlODA1NWY2ZWU5N2FiNWI2MTk2YThkN2VjOTgwNzhhYzM3ZTAwMzc2MTU3YjZiNTIwZWFhYTJmOTNhZiJ9fX0K"
+        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWZkNjFlODA1NWY2ZWU5N2FiNWI2MTk2YThkN2VjOTgwNzhhYzM3ZTAwMzc2MTU3YjZiNTIwZWFhYTJmOTNhZiJ9fX0K",
+        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYjM3ZGQxOGI1OTgzYTc2N2U1NTZkYzY0NDI0YWY0YjlhYmRiNzVkNGM5ZThiMDk3ODE4YWZiYzQzMWJmMGUwOSJ9fX0K",
+        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTY2MmI2ZmI0YjhiNTg2ZGM0Y2RmODAzYjA0NDRkOWI0MWQyNDVjZGY2NjhkYWIzOGZhNmMwNjRhZmU4ZTQ2MSJ9fX0K",
+        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjczOWQ3ZjRlNjZhN2RiMmVhNmNkNDE0ZTRjNGJhNDFkZjdhOTI0NTVjOWZjNDJjYWFiMDE0NjY1YzM2N2FkNSJ9fX0K",
+        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTdkYjE5MjNkMDNjNGVmNGU5ZjZlODcyYzVhNmFkMjU3OGIxYWZmMmIyODFmYmMzZmZhNzQ2NmM4MjVmYjkifX19",
+        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjVmMGQ3OGZlMzhkMWQ3Zjc1ZjA4Y2RjZjJhMTg1NWQ2ZGEwMzM3ZTExNGEzYzYzZTNiZjNjNjE4YmM3MzJiMCJ9fX0K"
     )
 
     private var ticktime: Long = 0
@@ -113,31 +119,34 @@ object BloodCamp : Module(
         if (watcher.isNotEmpty() || entity !is EntityZombie || !bloodhelper) return
 
         val texture = getSkullValue(entity) ?: return
-        if (watcherSkulls.contains(texture)) watcher.add(entity)
+        if (watcherSkulls.contains(texture)) {
+            watcher.add(entity)
+            devMessage("Watcher found at ${entity.positionVector}")
+        }
     }
 
     fun onTick() {
         if (entityList.isEmpty()) return
-
+        watcher.removeAll {it.isDead}
         entityList.filter { (entity) -> watcher.any { it.getDistanceToEntity(entity) < 20 }
         }.forEach { (entity, data) ->
             if (data.started != null) data.timetook = ticktime - data.started
 
-            if (data.timetook == null) return@forEach
-            val startPoint = Vec3(entity.posX, entity.posY, entity.posZ)
+            val timeTook = data.timetook ?: return@forEach
             val startVector = data.startVector ?: return@forEach
+            val currVector = Vec3(entity.posX, entity.posY, entity.posZ)
 
             val speedVectors = Vec3(
-                (startPoint.xCoord - startVector.xCoord) / data.timetook!!,
-                (startPoint.yCoord - startVector.yCoord) / data.timetook!!,
-                (startPoint.zCoord - startVector.zCoord) / data.timetook!!
+                (currVector.xCoord - startVector.xCoord) / timeTook,
+                (currVector.yCoord - startVector.yCoord) / timeTook,
+                (currVector.zCoord - startVector.zCoord) / timeTook
             )
 
-            val time = (if (data.firstSpawns) 2000 else 0) + (tick * 50) - data.timetook!! + offset
+            val time = (if (data.firstSpawns) 2000 else 0) + (tick * 50) - timeTook + offset
             val endpoint = Vec3(
-                startPoint.xCoord + speedVectors.xCoord * time,
-                startPoint.yCoord + speedVectors.yCoord * time,
-                startPoint.zCoord + speedVectors.zCoord * time
+                currVector.xCoord + speedVectors.xCoord * time,
+                currVector.yCoord + speedVectors.yCoord * time,
+                currVector.zCoord + speedVectors.zCoord * time
             )
 
             forRender[entity]?.lastEndVector = forRender[entity]?.endVector
@@ -145,12 +154,13 @@ object BloodCamp : Module(
             if (entity !in forRender)
                 forRender[entity] = RenderEData(startVector = startVector)
 
-            val renderData = forRender[entity]
-            renderData?.currVector = startPoint
-            renderData?.endVector = endpoint
-            renderData?.time = time
-            renderData?.endVecUpdated = ticktime
-            renderData?.speedVectors = speedVectors
+            forRender[entity].let {
+                it?.currVector = currVector
+                it?.endVector = endpoint
+                it?.time = time
+                it?.endVecUpdated = ticktime
+                it?.speedVectors = speedVectors
+            }
         }
     }
 
@@ -170,9 +180,10 @@ object BloodCamp : Module(
 
         val ping = ServerUtils.averagePing
 
-        forRender.filter { (entity, data) -> !entity.isDead }.forEach { (entity, data) ->
+        forRender.filter { (entity) -> !entity.isDead }.forEach { (entity, data) ->
             val entityData = entityList[entity] ?: return@forEach
 
+            val timeTook = entityData.timetook ?: return@forEach
             val startVector = entityData.startVector ?: return@forEach
             val currVector = entity.positionVector ?: return@forEach
             val endVector = data.endVector ?: return@forEach
@@ -180,9 +191,9 @@ object BloodCamp : Module(
             val endVectorUpdated = min(ticktime - data.endVecUpdated!!, 100)
 
             val speedVectors = Vec3(
-                (currVector.xCoord - startVector.xCoord) / entityData.timetook!!,
-                (currVector.yCoord - startVector.yCoord) / entityData.timetook!!,
-                (currVector.zCoord - startVector.zCoord) / entityData.timetook!!
+                (currVector.xCoord - startVector.xCoord) / timeTook,
+                (currVector.yCoord - startVector.yCoord) / timeTook,
+                (currVector.zCoord - startVector.zCoord) / timeTook
             )
 
             val endPoint = Vec3(
@@ -197,6 +208,17 @@ object BloodCamp : Module(
                 currVector.zCoord + speedVectors.zCoord * ping
             )
 
+            val boxOffset: Vec3 = Vec3((boxSize/2).unaryMinus(),1.5,(boxSize/2).unaryMinus())
+            val pingAABB = AxisAlignedBB(boxSize,boxSize,boxSize, 0.0, 0.0, 0.0).offset(boxOffset).offset(pingPoint)
+            val endAABB = AxisAlignedBB(boxSize,boxSize,boxSize, 0.0, 0.0, 0.0).offset(boxOffset).offset(endPoint)
+
+            val time = data.time ?: return@forEach
+
+            if (ping < time) {
+                Renderer.drawBox(pingAABB, mboxColor, fillAlpha = 0f, outlineAlpha = mboxColor.alpha, depth = true)
+                Renderer.drawBox(endAABB, pboxColor, fillAlpha = 0f, outlineAlpha = pboxColor.alpha, depth = true)
+            } else Renderer.drawBox(endAABB, fboxColor, fillAlpha = 0f, outlineAlpha = fboxColor.alpha, depth = true)
+
             if (drawLine) {
                 Renderer.draw3DLine(
                     Vec3(currVector.xCoord, currVector.yCoord + 2.0, currVector.zCoord),
@@ -205,21 +227,14 @@ object BloodCamp : Module(
                 )
             }
 
-            val pingAABB = AxisAlignedBB(boxSize,boxSize,boxSize, 0.0, 0.0, 0.0).offset(pingPoint).offset((boxSize/2).unaryMinus(),1.5,(boxSize/2).unaryMinus())
-            val endAABB = AxisAlignedBB(boxSize,boxSize,boxSize, 0.0, 0.0, 0.0).offset(endPoint).offset((boxSize/2).unaryMinus(),1.5,(boxSize/2).unaryMinus())
-
-            Renderer.drawBox(pingAABB, mboxColor, fillAlpha = 0f, outlineAlpha = mboxColor.alpha, depth = true)
-            Renderer.drawBox(endAABB, fboxColor, fillAlpha = 0f, outlineAlpha = fboxColor.alpha, depth = true)
-            val time = data.time ?: return@forEach
-
             val timeDisplay = (time.toFloat() - offset) / 1000
-            val color = when {
+            val colorTime = when {
                 timeDisplay > 1.5 -> Color.GREEN
                 timeDisplay in 0.5..1.5 -> Color.ORANGE
                 timeDisplay in 0.0..0.5 -> Color.RED
                 else -> Color.BLUE
             }
-            if (drawTime) Renderer.drawStringInWorld("${timeDisplay}s", endPoint.addVec(y = 2), color, depth = true)
+            if (drawTime) Renderer.drawStringInWorld("${timeDisplay}s", endPoint.addVec(y = 2), colorTime, depth = true, scale = 0.03f)
         }
     }
 
