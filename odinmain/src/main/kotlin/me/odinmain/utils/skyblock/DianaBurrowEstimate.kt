@@ -55,7 +55,6 @@ object DianaBurrowEstimate {
         if (isFullyBroken) {
             burrows.remove(pos)
             DianaHelper.burrowsRender.remove(pos)
-            return
         }
         if (pos !in burrows.keys || !isHolding("ANCESTRAL_SPADE")) return
         lastBurrow = pos
