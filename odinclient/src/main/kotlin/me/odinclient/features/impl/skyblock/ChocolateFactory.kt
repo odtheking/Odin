@@ -5,9 +5,7 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.utils.BunnyEggTextures
-import me.odinmain.utils.name
-import me.odinmain.utils.noControlCodes
+import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.*
@@ -36,7 +34,7 @@ object ChocolateFactory : Module(
     private var chocolate = 0
     private var chocoProduction = 0f
 
-    val indexToName = mapOf(29 to "Bro", 30 to "Cousin", 31 to "Sis", 32 to "Daddy", 33 to "Granny")
+    private val indexToName = mapOf(29 to "Bro", 30 to "Cousin", 31 to "Sis", 32 to "Daddy", 33 to "Granny")
     private val possibleLocations = arrayOf(
         Island.SpiderDen,
         Island.CrimsonIsle,
@@ -54,8 +52,7 @@ object ChocolateFactory : Module(
     init {
         onWorldLoad { currentDetectedEggs = arrayOfNulls(3) }
         execute(delay = { delay }) {
-            val container = mc.thePlayer?.openContainer as? ContainerChest ?: return@execute
-            if (container.name != "Chocolate Factory") return@execute
+            if ((chocolate <= bestCost || !autoUpgrade) || !isInChocolateFactory()) return@execute
 
             if (clickFactory) windowClick(13, PlayerUtils.ClickType.Right)
         }
@@ -66,8 +63,8 @@ object ChocolateFactory : Module(
 
             val choco = container.getSlot(13)?.stack ?: return@execute
 
-            chocolate = choco.displayName.noControlCodes.replace(Regex("\\D"), "").toInt()
-            chocoProduction =
+            chocolate = choco.displayName.noControlCodes.replace(Regex("\\D"), "").toIntOrNull() ?: 0
+             chocoProduction =
                 choco.lore.find { it.endsWith("§8per second") }?.noControlCodes?.replace(",", "")?.toFloatOrNull() ?: 0f
 
             findWorker(container)
@@ -93,7 +90,6 @@ object ChocolateFactory : Module(
             }
         }
     }
-
 
     private var bestWorker = 29
     private var bestCost = 0
@@ -124,15 +120,14 @@ object ChocolateFactory : Module(
 
     @SubscribeEvent
     fun guiLoad(event: GuiEvent.GuiLoadedEvent) {
-        if (event.name == "Chocolate Factory") findWorker(event.gui)
+        if (isInChocolateFactory()) findWorker(event.gui)
     }
 
     @SubscribeEvent
     fun onSoundPlay(event: PlaySoundEvent) {
-        if (!cancelSound) return
-        if (event.name == "random.eat") event.result = null // This should cancel the sound event
+        if (!cancelSound || event.name != "random.eat" || !isInChocolateFactory()) return
+        event.result = null // This should cancel the sound event
     }
-
 
     private var currentDetectedEggs = arrayOfNulls<Egg>(3)
 
@@ -151,19 +146,22 @@ object ChocolateFactory : Module(
         return ChocolateEggs.entries.find { it.texture == texture }
     }
 
-    fun scanForEggs() {
+    private fun scanForEggs() {
         mc.theWorld.loadedEntityList.filterIsInstance<EntityArmorStand>().forEach { entity ->
             val eggType = getEggType(entity) ?: return@forEach
             currentDetectedEggs[eggType.index] = currentDetectedEggs[eggType.index] ?: Egg(entity, eggType.type, eggType.color)
         }
     }
 
-
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        currentDetectedEggs.filterNotNull().filterNot { it.isFound }.forEach { egg ->
+        currentDetectedEggs.filterNotNull().filter { !it.isFound }.forEach { egg ->
             val eggLocation = Vec3(egg.entity.posX - 0.5, egg.entity.posY + 1.47, egg.entity.posZ - 0.5)
             Renderer.drawCustomBeacon(egg.renderName, eggLocation, egg.color, increase = true, beacon = false)
         }
+    }
+
+    private fun isInChocolateFactory(): Boolean {
+        return mc.thePlayer.openContainer is ContainerChest && mc.thePlayer.openContainer.name == "Chocolate Factory"
     }
 }
