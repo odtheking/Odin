@@ -85,7 +85,6 @@ object Renderer {
      * @param text            The text to be drawn.
      * @param vec3            The position to draw the text.
      * @param color           The color of the text.
-     * @param renderBlackBox  Indicates whether to render a black box behind the text (default is false).
      * @param depth           Indicates whether to draw with depth (default is true).
      * @param scale           The scale of the text (default is 0.03).
      * @param shadow          Indicates whether to render a shadow for the text (default is true).

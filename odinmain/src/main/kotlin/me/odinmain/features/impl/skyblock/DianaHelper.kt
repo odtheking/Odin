@@ -63,7 +63,9 @@ object DianaHelper : Module(
 
         onPacket(C08PacketPlayerBlockPlacement::class.java) { DianaBurrowEstimate.blockEvent(it.position.toVec3i()) }
 
-        onPacket(C07PacketPlayerDigging::class.java) { DianaBurrowEstimate.blockEvent(it.position.toVec3i()) }
+        onPacket(C07PacketPlayerDigging::class.java) {
+            DianaBurrowEstimate.blockEvent(it.position.toVec3i(), it.status == C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK)
+        }
 
         onWorldLoad {
             DianaBurrowEstimate.reset()
@@ -71,12 +73,14 @@ object DianaHelper : Module(
             renderPos = null
             DianaBurrowEstimate.recentBurrows.clear()
         }
-    }
 
-    init {
         onMessage(Regex("^(Uh oh!|Woah!|Yikes!|Oi!|Danger!|Good Grief!|Oh!) You dug out a Minos Inquisitor!\$")) {
             if (sendInqMsg) partyMessage("x: ${PlayerUtils.posX.floor().toInt()}, y: ${PlayerUtils.posY.floor().toInt()}, z: ${PlayerUtils.posZ.floor().toInt()}")
             PlayerUtils.alert("§6§lInquisitor!")
+        }
+
+        onMessage(Regex(".*")) {
+            DianaBurrowEstimate.chat(it)
         }
     }
 
