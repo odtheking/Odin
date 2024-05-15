@@ -10,6 +10,7 @@ import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.partyMessage
 import me.odinmain.utils.toAABB
+import me.odinmain.utils.toVec3
 import net.minecraft.entity.monster.EntityZombie
 import net.minecraft.tileentity.TileEntityChest
 import net.minecraft.util.Vec3
@@ -37,8 +38,8 @@ object MimicMessage : Module(
             mimicKilled = false
         }
 
-        execute(500) {
-            val mimicChest = mc.theWorld.loadedTileEntityList.firstOrNull { it is TileEntityChest && it.chestType == 1 }?.pos ?: return@execute
+        execute(2000) {
+            mimicChest = mc.theWorld.loadedTileEntityList.firstOrNull { it is TileEntityChest && it.chestType == 1 }?.pos?.toVec3() ?: return@execute
         }
     }
 
