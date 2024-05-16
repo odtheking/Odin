@@ -8,6 +8,7 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.RenderUtils.partialTicks
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.devMessage
@@ -41,6 +42,7 @@ object BloodCamp : Module(
     private val advanced: Boolean by DropdownSetting("Advanced", default = false).withDependency { bloodhelper }
     private val offset: Int by NumberSetting("Offset", default = 20, increment = 1, max = 100, min = -100, description = "Tick offset to adjust between ticks.").withDependency { advanced && bloodhelper }
     private val tick: Int by NumberSetting("Tick", default = 40, increment = 1, max = 41, min = 37, description = "Tick to assume spawn. Adjust offset to offset this value to the ms.").withDependency { advanced && bloodhelper}
+    private val interpolation: Boolean by BooleanSetting("Interpolation", default = true, description = "Interpolates rendering boxes between ticks. Makes the jitter smoother, at the expense of accuracy.").withDependency { advanced }
     private val watcherBar: Boolean by BooleanSetting("Watcher Bar", default = true, description = "Shows the watcher's health.")
 
     private var currentName: String? = null
@@ -100,8 +102,8 @@ object BloodCamp : Module(
 
     private val forRender = hashMapOf<EntityArmorStand, RenderEData>()
     data class RenderEData(
-        var currVector: Vec3? = null, var lastEndVector: Vec3? = null, var endVector: Vec3? = null,
-        val startVector: Vec3, var time: Long? = null, var endVecUpdated: Long? = null, var speedVectors: Vec3? = null
+        var currVector: Vec3? = null, var lastEndVector: Vec3? = null, var endVector: Vec3? = null, var lastEndPoint: Vec3? = null,
+        val startVector: Vec3, var time: Long? = null, var endVecUpdated: Long? = null, var speedVectors: Vec3? = null, var lastPingPoint: Vec3? = null
     )
 
     private val entityList = hashMapOf<EntityArmorStand, EntityData>()
@@ -188,6 +190,8 @@ object BloodCamp : Module(
             val currVector = entity.positionVector ?: return@forEach
             val endVector = data.endVector ?: return@forEach
             val lastEndVector = data.lastEndVector ?: return@forEach
+            val lastEndPoint = data.lastEndPoint
+            val lastPingPoint = data.lastPingPoint
             val endVectorUpdated = min(ticktime - data.endVecUpdated!!, 100)
 
             val speedVectors = Vec3(
@@ -208,9 +212,15 @@ object BloodCamp : Module(
                 currVector.zCoord + speedVectors.zCoord * ping
             )
 
+            val renderEndPoint = getRenderVector(endPoint, event.partialTicks, lastEndPoint)
+            val renderPingPoint = getRenderVector(pingPoint, event.partialTicks, lastPingPoint)
+
+            data.lastEndPoint = endPoint
+            data.lastPingPoint = pingPoint
+
             val boxOffset: Vec3 = Vec3((boxSize/2).unaryMinus(),1.5,(boxSize/2).unaryMinus())
-            val pingAABB = AxisAlignedBB(boxSize,boxSize,boxSize, 0.0, 0.0, 0.0).offset(boxOffset).offset(pingPoint)
-            val endAABB = AxisAlignedBB(boxSize,boxSize,boxSize, 0.0, 0.0, 0.0).offset(boxOffset).offset(endPoint)
+            val pingAABB = AxisAlignedBB(boxSize,boxSize,boxSize, 0.0, 0.0, 0.0).offset(boxOffset).offset(renderPingPoint)
+            val endAABB = AxisAlignedBB(boxSize,boxSize,boxSize, 0.0, 0.0, 0.0).offset(boxOffset).offset(renderEndPoint)
 
             val time = data.time ?: return@forEach
 
@@ -236,6 +246,17 @@ object BloodCamp : Module(
             }
             if (drawTime) Renderer.drawStringInWorld("${timeDisplay}s", endPoint.addVec(y = 2), colorTime, depth = true, scale = 0.03f)
         }
+    }
+
+    private fun getRenderVector(currVector: Vec3, partialTicks: Float, lastVector: Vec3?): Vec3 {
+        if (lastVector != null && interpolation) {
+            val renderVector = Vec3(
+                lastVector.xCoord + (currVector.xCoord - lastVector.xCoord) * partialTicks,
+                lastVector.yCoord + (currVector.yCoord - lastVector.yCoord) * partialTicks,
+                lastVector.zCoord + (currVector.zCoord - lastVector.zCoord) * partialTicks
+            )
+            return renderVector
+        } else return currVector
     }
 
     @SubscribeEvent
