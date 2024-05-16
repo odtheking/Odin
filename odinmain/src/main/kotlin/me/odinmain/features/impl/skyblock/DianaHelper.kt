@@ -32,6 +32,7 @@ object DianaHelper : Module(
     private val tracerWidth: Float by NumberSetting("Tracer Width", default = 5f, min = 1f, max = 20f).withDependency { tracer }
     private val tracerColor: Color by ColorSetting("Tracer Line Color", default = Color.WHITE, allowAlpha = true, description = "Color of the tracer line").withDependency { tracer }
     private val tracerBurrows: Boolean by BooleanSetting("Tracer Burrows", default = false, description = "Draws a line from your position to the burrows")
+    private val style: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.")
     private val sendInqMsg: Boolean by BooleanSetting("Send Inq Msg", default = true, description = "Sends a message to the party when you dig out an inquisitor")
     private val showWarpSettings: Boolean by BooleanSetting("Show Warp Settings", default = true, description = "Shows the warp settings")
     private val castle: Boolean by BooleanSetting("Castle Warp").withDependency { showWarpSettings }
@@ -99,14 +100,14 @@ object DianaHelper : Module(
             if (tracer)
                 Renderer.draw3DLine(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), guess.addVec(.5, .5, .5), tracerColor, tracerWidth, depth = false)
 
-            Renderer.drawCustomBeacon("§6Guess${warpLocation?.displayName ?: ""}§r", guess, guessColor, increase = true)
+            Renderer.drawCustomBeacon("§6Guess${warpLocation?.displayName ?: ""}§r", guess, guessColor, increase = true, style = style)
         }
 
         val burrowsRenderCopy = burrowsRender.toMap()
 
         burrowsRenderCopy.forEach { (location, type) ->
             if (tracerBurrows) Renderer.draw3DLine(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), Vec3(location).addVec(.5, .5, .5), type.color, tracerWidth, depth = false)
-            Renderer.drawCustomBeacon(type.text, Vec3(location), type.color)
+            Renderer.drawCustomBeacon(type.text, Vec3(location), type.color, style = style)
         }
     }
 

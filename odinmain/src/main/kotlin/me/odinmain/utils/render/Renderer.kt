@@ -63,9 +63,10 @@ object Renderer {
      * @param noFade   Indicates whether the beacon should not fade based on distance (default is false).
      * @param distance Indicates whether to display the distance in the title (default is true).
      */
-    fun drawCustomBeacon(title: String, vec3: Vec3, color: Color, beacon: Boolean = true, increase: Boolean = true, noFade: Boolean = false, distance: Boolean = true) {
+    fun drawCustomBeacon(title: String, vec3: Vec3, color: Color, beacon: Boolean = true, increase: Boolean = true, noFade: Boolean = false, distance: Boolean = true, style: Int = 1) {
         val dist = vec3.distanceTo(mc.thePlayer.positionVector)
-        drawBox(aabb = vec3.toAABB(), color = color, fillAlpha = 0f, depth = false)
+        drawBox(vec3.toAABB(), color, depth = false,
+            outlineAlpha = if (style == 0) 0 else color.alpha, fillAlpha = if (style == 1) 0 else color.alpha)
 
         RenderUtils.drawStringInWorld(
             if (distance) "$title §r§f(§3${dist.toInt()}m§f)" else title,

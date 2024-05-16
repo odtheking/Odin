@@ -665,4 +665,24 @@ object RenderUtils {
         GlStateManager.disableBlend()
         GlStateManager.popMatrix()
     }
+
+    fun drawBlockBox(
+        pos: BlockPos,
+        color: Color,
+        outlineWidth: Float = 3f,
+        outline: Float = 1f,
+        fill: Float = 0.25f,
+        depth: Boolean = true
+    ) {
+        if (outline == 0f && fill == 0f) return
+
+        val block = mc.theWorld?.getBlockState(pos)?.block ?: return
+
+        block.setBlockBoundsBasedOnState(mc.theWorld, pos)
+        val aabb = block.getSelectedBoundingBox(mc.theWorld, pos).outlineBounds()
+        Renderer.drawBox(aabb, color, outlineWidth, outline, fill, depth)
+    }
+
+    fun AxisAlignedBB.outlineBounds(): AxisAlignedBB =
+        expand(0.0020000000949949026, 0.0020000000949949026, 0.0020000000949949026)
 }

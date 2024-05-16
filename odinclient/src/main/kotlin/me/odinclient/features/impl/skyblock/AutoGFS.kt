@@ -20,8 +20,10 @@ object AutoGFS : Module(
 
     init {
         execute(500) {
-            if ((DungeonUtils.isGhost || mc.currentScreen != null) &&
-                ((inKuudra && KuudraUtils.inKuudra) || (inDungeon && DungeonUtils.inDungeons))) {
+            if (
+                !DungeonUtils.isGhost && mc.currentScreen == null &&
+                ((inKuudra && KuudraUtils.inKuudra) || (inDungeon && DungeonUtils.inDungeons))
+            ) {
 
                 if (mc.thePlayer?.inventory?.mainInventory?.all { it?.item != Items.ender_pearl } == true && sackCooldown.hasTimePassed()) {
                     sendCommand("gfs ENDER_PEARL 16")

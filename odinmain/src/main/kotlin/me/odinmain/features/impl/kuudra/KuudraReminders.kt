@@ -44,7 +44,7 @@ object KuudraReminders : Module(
 
         onMessage(Regex("Used Extreme Focus! \\((\\d+) Mana\\)"), { manaDrain && enabled }) {
             val mana = Regex("Used Extreme Focus! \\((\\d+) Mana\\)").find(it)?.groupValues?.get(1)?.toIntOrNull() ?: return@onMessage
-            val amount = mc.theWorld.loadedEntityList.filter { it.distanceSquaredTo(mc.thePlayer) <= 7 }.size
+            val amount = mc.theWorld.loadedEntityList.filter { it.distanceSquaredTo(mc.thePlayer) <= 7 }.size - 1
             partyMessage("Used $mana mana on $amount people.")
         }
     }
