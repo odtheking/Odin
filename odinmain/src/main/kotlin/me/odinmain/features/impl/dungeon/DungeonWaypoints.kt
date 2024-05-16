@@ -1,6 +1,6 @@
 package me.odinmain.features.impl.dungeon
 
-import me.odinmain.config.DungeonWaypointConfigCLAY
+import me.odinmain.config.DungeonWaypointConfig
 import me.odinmain.events.impl.ClickEvent
 import me.odinmain.events.impl.EnteredDungeonRoomEvent
 import me.odinmain.features.Category
@@ -25,8 +25,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.opengl.GL11
 
 /**
- * Custom Waypoints for Dungeons
- * @author Bonsai, Azael
+ * Custom Waypoints for Dungeons and Skyblock
+ * @author Bonsai, Azael, ForBai
  */
 object DungeonWaypoints : Module(
     name = "Dungeon Waypoints",
@@ -46,16 +46,24 @@ object DungeonWaypoints : Module(
     private val resetButton: () -> Unit by ActionSetting("Reset Current Room") {
         val room = DungeonUtils.currentRoom ?: return@ActionSetting modMessage("Room not found!!!")
 
-        val waypoints = DungeonWaypointConfigCLAY.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
-        if (!waypoints.removeAll { true }) return@ActionSetting modMessage("Current room does not have any waypoints!")
+//        val waypoints = DungeonWaypointConfig.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
+//        if (!waypoints.removeAll { true }) return@ActionSetting modMessage("Current room does not have any waypoints!")
 
-        DungeonWaypointConfigCLAY.saveConfig()
+        DungeonWaypointConfig.saveConfig()
         DungeonUtils.setWaypoints(room)
         glList = -1
         modMessage("Successfully reset current room!")
     }
     private val debugWaypoint: Boolean by BooleanSetting("Debug Waypoint", false).withDependency { DevPlayers.isDev }
     private var glList = -1
+
+
+    data class WaypointCategory(
+        val name: String,
+        val enabled: Boolean,
+        val online: String = "not-online",
+        val waypoints: MutableList<DungeonWaypoint>
+    )
 
     data class DungeonWaypoint(
         val x: Double, val y: Double, val z: Double,
@@ -107,7 +115,9 @@ object DungeonWaypoints : Module(
             if (useBlockSize) getBlockAt(pos).getSelectedBoundingBox(mc.theWorld, BlockPos(0, 0, 0)).expand(0.002, 0.002, 0.002) ?: return
             else AxisAlignedBB(.5 - (size / 2), .5 - (size / 2), .5 - (size / 2), .5 + (size / 2), .5 + (size / 2), .5 + (size / 2)).expand(0.002, 0.002, 0.002)
 
-        val waypoints = DungeonWaypointConfigCLAY.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
+//        val waypoints = DungeonWaypointConfig.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
+
+        val waypoints = DungeonWaypointConfig.waypointsRooms.getOrPut(room.room.data.name) { mutableListOf() }
 
         val color = when (colorPallet) {
             0 -> color
@@ -130,7 +140,7 @@ object DungeonWaypoints : Module(
             waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, aabb, ""))
             devMessage("Added waypoint at $vec")
         }
-        DungeonWaypointConfigCLAY.saveConfig()
+        DungeonWaypointConfig.saveConfig()
         DungeonUtils.setWaypoints(room)
         glList = -1
     }

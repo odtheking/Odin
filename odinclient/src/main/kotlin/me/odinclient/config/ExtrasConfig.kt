@@ -4,7 +4,9 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonIOException
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain
 import me.odinmain.features.impl.dungeon.DungeonWaypoints
@@ -34,8 +36,6 @@ Room/Region Extras:
     }
 }
 
-
-other ideas include
 */
 
 
@@ -45,7 +45,7 @@ object ExtrasConfig {
 
     var waypoints: MutableMap<String, MutableList<DungeonWaypoints.DungeonWaypoint>> = mutableMapOf()
 
-    private val dungeonExtrasConfigFile = File(OdinMain.mc.mcDataDir, "config/odin/dungeon-extra-config.json").apply {
+    private val dungeonExtrasConfigFile = File(OdinMain.mc.mcDataDir, "config/odin/extra-config-dungeon.json").apply {
         try {
             createNewFile()
         } catch (e: Exception) {
@@ -53,7 +53,7 @@ object ExtrasConfig {
         }
     }
 
-    private val otherExtrasConfigFile = File(OdinMain.mc.mcDataDir, "config/odin/other-extra-config.json").apply {
+    private val otherExtrasConfigFile = File(OdinMain.mc.mcDataDir, "config/odin/extra-config-other.json").apply {
         try {
             createNewFile()
         } catch (e: Exception) {
@@ -88,8 +88,9 @@ object ExtrasConfig {
         }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     fun saveConfig() {
-        OdinMain.scope.launch(Dispatchers.IO) {
+        GlobalScope.launch(Dispatchers.IO) {
             try {
                 dungeonExtrasConfigFile.bufferedWriter().use {
                     it.write(gson.toJson(waypoints))

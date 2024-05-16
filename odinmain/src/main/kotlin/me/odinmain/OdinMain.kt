@@ -93,9 +93,8 @@ object OdinMain {
 
         launch { MiscConfig.loadConfig() }
         launch { WaypointConfig.loadConfig() }
-        launch { DungeonWaypointConfig.loadConfig() }
         launch { PBConfig.loadConfig() }
-        launch { DungeonWaypointConfigCLAY.loadConfig() }
+        launch { DungeonWaypointConfig.loadConfig() }
     }
 
     @OptIn(DelicateCoroutinesApi::class)

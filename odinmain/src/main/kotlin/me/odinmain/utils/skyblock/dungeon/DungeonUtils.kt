@@ -3,8 +3,8 @@ package me.odinmain.utils.skyblock.dungeon
 import com.google.common.collect.ComparisonChain
 import me.odinmain.OdinMain.mc
 import me.odinmain.config.DungeonWaypointConfig
-import me.odinmain.config.DungeonWaypointConfigCLAY
 import me.odinmain.events.impl.EnteredDungeonRoomEvent
+import me.odinmain.features.impl.dungeon.DungeonWaypoints.WaypointCategory
 import me.odinmain.features.impl.dungeon.DungeonWaypoints.DungeonWaypoint
 import me.odinmain.features.impl.dungeon.DungeonWaypoints.toVec3
 import me.odinmain.features.impl.dungeon.LeapMenu
@@ -24,7 +24,9 @@ import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
 import net.minecraft.tileentity.TileEntitySkull
-import net.minecraft.util.*
+import net.minecraft.util.BlockPos
+import net.minecraft.util.EnumFacing
+import net.minecraft.util.ResourceLocation
 import net.minecraft.world.WorldSettings
 import net.minecraftforge.event.entity.living.LivingEvent
 import net.minecraftforge.event.world.WorldEvent
@@ -32,18 +34,27 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object DungeonUtils {
 
-    inline val inDungeons get() =
-        LocationUtils.inSkyblock && currentDungeon != null
+    inline val inDungeons
+        get() =
+            LocationUtils.inSkyblock && currentDungeon != null
 
-    inline val inBoss get() =
-        currentDungeon?.inBoss ?: false
+    inline val inBoss
+        get() =
+            currentDungeon?.inBoss ?: false
 
     inline val secretCount get() = currentDungeon?.secretCount ?: 0
     inline val cryptsCount get() = currentDungeon?.cryptsCount ?: 0
     inline val deathCount get() = currentDungeon?.deathCount ?: 0
 
-    data class FullRoom(val room: Room, var clayPos: BlockPos, val positions: List<ExtraRoom>, var waypoints: List<DungeonWaypoint>)
+    data class FullRoom(
+        val room: Room,
+        var clayPos: BlockPos,
+        val positions: List<ExtraRoom>,
+        var categories: List<WaypointCategory>
+    )
+
     data class ExtraRoom(val x: Int, val z: Int, val core: Int)
+
     private var lastRoomPos: Pair<Int, Int> = Pair(0, 0)
     var currentRoom: FullRoom? = null
     val currentRoomName get() = currentRoom?.room?.data?.name ?: "Unknown"
@@ -95,29 +106,47 @@ object DungeonUtils {
 
     @SubscribeEvent
     fun onMove(event: LivingEvent.LivingUpdateEvent) {
-        if (mc.theWorld == null /*|| !inDungeons */||inBoss || !event.entity.equals(mc.thePlayer)) return
-        val xPos = START_X + ((mc.thePlayer.posX + 200) / 32).toInt() * ROOM_SIZE
-        val zPos = START_Z + ((mc.thePlayer.posZ + 200) / 32).toInt() * ROOM_SIZE
-        if (lastRoomPos.equal(xPos, zPos) && currentRoom != null) return
-        lastRoomPos = Pair(xPos, zPos)
+        if (mc.theWorld == null /*|| !inDungeons *//*|| inBoss*/ || !event.entity.equals(mc.thePlayer)) return
+        if (inDungeons) {
+            val xPos = START_X + ((mc.thePlayer.posX + 200) / 32).toInt() * ROOM_SIZE
+            val zPos = START_Z + ((mc.thePlayer.posZ + 200) / 32).toInt() * ROOM_SIZE
+            if (lastRoomPos.equal(xPos, zPos) && currentRoom != null) return
+            lastRoomPos = Pair(xPos, zPos)
 
-        val room = scanRoom(xPos, zPos) ?: return
-        val positions = room.let { findRoomTilesRecursively(it.x, it.z, it, mutableSetOf()) }
-        currentRoom = FullRoom(room, BlockPos(0,0,0), positions, emptyList())
-        currentRoom?.let {
-            val topLayer = getTopLayerOfRoom(it.positions.first().x, it.positions.first().z)
-            it.room.rotation = Rotations.entries.dropLast(1).find { rotation ->
-                it.positions.any { pos ->
-                    val blockPos = BlockPos(pos.x + rotation.x, topLayer, pos.z + rotation.z)
-                    val isCorrectClay = getBlockIdAt(blockPos) == 159 &&
-                        EnumFacing.HORIZONTALS.all { facing -> getBlockIdAt(blockPos.add(facing.frontOffsetX, 0, facing.frontOffsetZ)).equalsOneOf(159, 0) }
-                    if (isCorrectClay) it.clayPos = blockPos
-                    return@any isCorrectClay
-                }
-            } ?: Rotations.NONE
-            devMessage("Found rotation ${it.room.rotation}, clay pos: ${it.clayPos}")
-            setWaypoints(it)
-            EnteredDungeonRoomEvent(it).postAndCatch()
+            val room = scanRoom(xPos, zPos) ?: return
+            val positions = room.let { findRoomTilesRecursively(it.x, it.z, it, mutableSetOf()) }
+            currentRoom = FullRoom(room, BlockPos(0, 0, 0), positions, emptyList())
+            currentRoom?.let {
+                val topLayer = getTopLayerOfRoom(it.positions.first().x, it.positions.first().z)
+                it.room.rotation = Rotations.entries.dropLast(1).find { rotation ->
+                    it.positions.any { pos ->
+                        val blockPos = BlockPos(pos.x + rotation.x, topLayer, pos.z + rotation.z)
+                        val isCorrectClay = getBlockIdAt(blockPos) == 159 &&
+                                EnumFacing.HORIZONTALS.all { facing ->
+                                    getBlockIdAt(
+                                        blockPos.add(
+                                            facing.frontOffsetX,
+                                            0,
+                                            facing.frontOffsetZ
+                                        )
+                                    ).equalsOneOf(159, 0)
+                                }
+                        if (isCorrectClay) it.clayPos = blockPos
+                        return@any isCorrectClay
+                    }
+                } ?: Rotations.NONE
+                devMessage("Found rotation ${it.room.rotation}, clay pos: ${it.clayPos}")
+                setWaypoints(it)
+                EnteredDungeonRoomEvent(it).postAndCatch()
+            }
+        } else if (LocationUtils.currentArea != null) {
+            LocationUtils.currentArea.let {
+                var internalIsland: Island? = it
+                if (it == Island.DungeonBoss || it == Island.M7P1 || it == Island.M7P2 || it == Island.M7P3 || it == Island.M7P4 || it == Island.M7P5) internalIsland =
+                    Island.Dungeon
+
+
+            }
         }
     }
 
@@ -127,24 +156,20 @@ object DungeonUtils {
     fun setWaypoints(curRoom: FullRoom) {
         val room = curRoom.room
         curRoom.waypoints = mutableListOf<DungeonWaypoint>().apply {
-            // THIS IS FOR MIGRATION FROM CONFIGS ON "ALPHA" RELEASES (VERSIONS GOTTEN FROM GITHUB AFTER 1.2.5.BETA4
             DungeonWaypointConfig.waypoints[room.data.name]?.let { waypoints ->
-                val distinct = curRoom.positions.distinct().minByOrNull { it.core } ?: return
-                waypoints.forEach { waypoint ->
-                    val vecBasedOnClay = waypoint.toVec3().rotateToNorth(room.rotation).addVec(x = distinct.x, z = distinct.z).subtractVec(x = curRoom.clayPos.x, z = curRoom.clayPos.z).rotateAroundNorth(room.rotation)
-                    DungeonWaypointConfigCLAY.waypoints.getOrPut(room.data.name) { mutableListOf() }.add(
-                        DungeonWaypoint(vecBasedOnClay.xCoord, vecBasedOnClay.yCoord, vecBasedOnClay.zCoord, waypoint.color, waypoint.filled, waypoint.depth, waypoint.aabb, waypoint.title)
-                    )
-                    DungeonWaypointConfigCLAY.saveConfig()
-                    DungeonWaypointConfig.saveConfig()
-                }
-            }
-            DungeonWaypointConfig.waypoints[room.data.name]?.clear()
-
-            DungeonWaypointConfigCLAY.waypoints[room.data.name]?.let { waypoints ->
                 addAll(waypoints.map { waypoint ->
-                    val vec = waypoint.toVec3().rotateAroundNorth(room.rotation).addVec(x = curRoom.clayPos.x, z = curRoom.clayPos.z)
-                    DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, waypoint.color, waypoint.filled, waypoint.depth, waypoint.aabb, waypoint.title)
+                    val vec = waypoint.toVec3().rotateAroundNorth(room.rotation)
+                        .addVec(x = curRoom.clayPos.x, z = curRoom.clayPos.z)
+                    DungeonWaypoint(
+                        vec.xCoord,
+                        vec.yCoord,
+                        vec.zCoord,
+                        waypoint.color,
+                        waypoint.filled,
+                        waypoint.depth,
+                        waypoint.aabb,
+                        waypoint.title
+                    )
                 })
             }
         }
@@ -159,7 +184,14 @@ object DungeonUtils {
         if (room.data.cores.any { core == it }) {
             tiles.add(ExtraRoom(x, z, core))
             EnumFacing.HORIZONTALS.forEach {
-                tiles.addAll(findRoomTilesRecursively(x + it.frontOffsetX * ROOM_SIZE, z + it.frontOffsetZ * ROOM_SIZE, room, visited))
+                tiles.addAll(
+                    findRoomTilesRecursively(
+                        x + it.frontOffsetX * ROOM_SIZE,
+                        z + it.frontOffsetZ * ROOM_SIZE,
+                        room,
+                        visited
+                    )
+                )
             }
         }
         return tiles
@@ -204,7 +236,7 @@ object DungeonUtils {
         var prio: Int,
     ) {
         Archer(Color.ORANGE, 0, 2),
-        Berserk(Color.DARK_RED,1, 0),
+        Berserk(Color.DARK_RED, 1, 0),
         Healer(Color.PINK, 2, 2),
         Mage(Color.BLUE, 3, 2),
         Tank(Color.DARK_GREEN, 3, 1),
@@ -266,7 +298,8 @@ object DungeonUtils {
 
         for ((networkPlayerInfo, line) in tabList) {
 
-            val (_, sbLevel, name, clazz, clazzLevel) = tablistRegex.find(line.noControlCodes)?.groupValues ?: noNameTablistRegex.find(line.noControlCodes)?.groupValues ?: continue
+            val (_, sbLevel, name, clazz, clazzLevel) = tablistRegex.find(line.noControlCodes)?.groupValues
+                ?: noNameTablistRegex.find(line.noControlCodes)?.groupValues ?: continue
 
             addTeammate(name, clazz, teammates, networkPlayerInfo)
             if (clazz == "DEAD" || clazz == "EMPTY") {
@@ -278,7 +311,12 @@ object DungeonUtils {
         return teammates
     }
 
-    private fun addTeammate(name: String, clazz: String, teammates: MutableList<DungeonPlayer>, networkPlayerInfo: NetworkPlayerInfo) {
+    private fun addTeammate(
+        name: String,
+        clazz: String,
+        teammates: MutableList<DungeonPlayer>,
+        networkPlayerInfo: NetworkPlayerInfo
+    ) {
         Classes.entries.find { it.name == clazz }?.let { foundClass ->
             mc.theWorld.getPlayerEntityByName(name)?.let { player ->
                 teammates.add(DungeonPlayer(name, foundClass, networkPlayerInfo.locationSkin, player))
