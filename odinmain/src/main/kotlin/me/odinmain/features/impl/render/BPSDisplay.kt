@@ -3,7 +3,6 @@ package me.odinmain.features.impl.render
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.HudSetting
-import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.*
 import me.odinmain.utils.round
@@ -26,8 +25,7 @@ object BPSDisplay : Module(
         if (it) { // example
             mcText("§7BPS: §r17.8", 1f, 1f, 1, Color.WHITE, center = false)
         } else {
-            mcText("§7BPS: §r17.8", 1f, 1f, 1, Color.WHITE, center = false)
-            text("§7BPS: §r${bps.round(1)}", 1f, 7f, Color.WHITE, 10f, OdinFont.REGULAR)
+            mcText("§7BPS: §r${bps.round(1)}", 1f, 1f, 1, Color.WHITE, center = false)
         }
         getMCTextWidth("BPS: 17.5") + 2f to 10f
     }
