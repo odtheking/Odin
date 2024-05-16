@@ -56,19 +56,21 @@ object PuzzleSolvers : Module(
     private val blazeSolver: Boolean by BooleanSetting("Blaze Solver").withDependency { blazeDropDown }
     val blazeLineNext: Boolean by BooleanSetting("Blaze Solver Next Line", true).withDependency { blazeSolver && blazeDropDown }
     val blazeLineAmount: Int by NumberSetting("Blaze Solver Lines", 1, 1, 10).withDependency { blazeSolver && blazeLineNext && blazeDropDown }
-    val blazeStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.")
+    val blazeStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { blazeSolver && blazeDropDown }
     val blazeFirstColor: Color by ColorSetting("First Color", Color.GREEN, true).withDependency { blazeSolver && blazeDropDown }
     val blazeSecondColor: Color by ColorSetting("Second Color", Color.ORANGE, true).withDependency { blazeSolver && blazeDropDown }
     val blazeAllColor: Color by ColorSetting("Other Color", Color.WHITE.withAlpha(.3f), true).withDependency { blazeSolver && blazeDropDown }
 
     private val beamsDropDown: Boolean by DropdownSetting("Creeper Beams")
     private val beamsSolver: Boolean by BooleanSetting("Creeper Beams", true, description = "Shows you the solution for the Creeper Beams puzzle").withDependency { beamsDropDown }
+    val beamsDepth: Boolean by BooleanSetting("Depth", false, description = "Depth check").withDependency { beamsSolver && beamsDropDown }
+    val beamsTracer: Boolean by BooleanSetting("Tracer", false, description = "Tracer").withDependency { beamsSolver && beamsDropDown }
+
 
     init {
         execute(500) {
             if (tpMaze) TPMaze.scan()
             if (waterSolver) WaterSolver.scan()
-
         }
 
         onPacket(S08PacketPlayerPosLook::class.java) {

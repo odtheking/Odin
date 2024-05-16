@@ -672,7 +672,7 @@ object RenderUtils {
         outlineWidth: Float = 3f,
         outline: Float = 1f,
         fill: Float = 0.25f,
-        esp: Boolean = true
+        depth: Boolean = true
     ) {
         if (outline == 0f && fill == 0f) return
 
@@ -680,7 +680,7 @@ object RenderUtils {
 
         block.setBlockBoundsBasedOnState(mc.theWorld, pos)
         val aabb = block.getSelectedBoundingBox(mc.theWorld, pos).outlineBounds()
-        Renderer.drawBox(aabb, color, outlineWidth, outline, fill, esp)
+        Renderer.drawBox(aabb, color, outlineWidth, outline, fill, depth)
     }
 
     fun AxisAlignedBB.outlineBounds(): AxisAlignedBB =

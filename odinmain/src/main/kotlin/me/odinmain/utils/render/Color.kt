@@ -157,7 +157,7 @@ class Color(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f)
         val PINK = Color(255,85,255)
 
         @JvmField
-        val YELLOW = Color(255, 255, 85)
+        val YELLOW = Color(253, 218, 13)
 
         @JvmField
         val CYAN = Color(0, 170, 170)

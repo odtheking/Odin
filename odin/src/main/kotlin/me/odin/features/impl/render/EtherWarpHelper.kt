@@ -29,7 +29,7 @@ object EtherWarpHelper : Module(
     private val wrongColor: Color by ColorSetting("Wrong Color", Color.RED.withAlpha(.5f), allowAlpha = true).withDependency { renderFail }
     private val style: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.")
     private val thickness: Float by NumberSetting("Thickness", 3f, 1f, 10f, .1f)
-    private val phase: Boolean by BooleanSetting("Phase", false)
+    private val phase: Boolean by BooleanSetting("Depth check", false)
 
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
