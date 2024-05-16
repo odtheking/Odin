@@ -8,7 +8,6 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils.partialTicks
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.devMessage
@@ -42,7 +41,7 @@ object BloodCamp : Module(
     private val advanced: Boolean by DropdownSetting("Advanced", default = false).withDependency { bloodhelper }
     private val offset: Int by NumberSetting("Offset", default = 20, increment = 1, max = 100, min = -100, description = "Tick offset to adjust between ticks.").withDependency { advanced && bloodhelper }
     private val tick: Int by NumberSetting("Tick", default = 40, increment = 1, max = 41, min = 37, description = "Tick to assume spawn. Adjust offset to offset this value to the ms.").withDependency { advanced && bloodhelper}
-    private val interpolation: Boolean by BooleanSetting("Interpolation", default = true, description = "Interpolates rendering boxes between ticks. Makes the jitter smoother, at the expense of accuracy.").withDependency { advanced }
+    private val interpolation: Boolean by BooleanSetting("Interpolation", default = true, description = "Interpolates rendering boxes between ticks. Makes the jitter smoother, at the expense of accuracy.").withDependency { advanced && bloodhelper}
     private val watcherBar: Boolean by BooleanSetting("Watcher Bar", default = true, description = "Shows the watcher's health.")
 
     private var currentName: String? = null
@@ -182,17 +181,15 @@ object BloodCamp : Module(
 
         val ping = ServerUtils.averagePing
 
-        forRender.filter { (entity) -> !entity.isDead }.forEach { (entity, data) ->
+        forRender.filter { (entity) -> !entity.isDead }.forEach { (entity, renderData) ->
             val entityData = entityList[entity] ?: return@forEach
 
             val timeTook = entityData.timetook ?: return@forEach
             val startVector = entityData.startVector ?: return@forEach
             val currVector = entity.positionVector ?: return@forEach
-            val endVector = data.endVector ?: return@forEach
-            val lastEndVector = data.lastEndVector ?: return@forEach
-            val lastEndPoint = data.lastEndPoint
-            val lastPingPoint = data.lastPingPoint
-            val endVectorUpdated = min(ticktime - data.endVecUpdated!!, 100)
+            val endVector = renderData.endVector ?: return@forEach
+            val lastEndVector = renderData.lastEndVector ?: return@forEach
+            val endVectorUpdated = min(ticktime - renderData.endVecUpdated!!, 100)
 
             val speedVectors = Vec3(
                 (currVector.xCoord - startVector.xCoord) / timeTook,
@@ -212,17 +209,17 @@ object BloodCamp : Module(
                 currVector.zCoord + speedVectors.zCoord * ping
             )
 
-            val renderEndPoint = getRenderVector(endPoint, event.partialTicks, lastEndPoint)
-            val renderPingPoint = getRenderVector(pingPoint, event.partialTicks, lastPingPoint)
+            val renderEndPoint = getRenderVector(endPoint, event.partialTicks, renderData.lastEndPoint)
+            val renderPingPoint = getRenderVector(pingPoint, event.partialTicks, renderData.lastPingPoint)
 
-            data.lastEndPoint = endPoint
-            data.lastPingPoint = pingPoint
+            renderData.lastEndPoint = endPoint
+            renderData.lastPingPoint = pingPoint
 
-            val boxOffset: Vec3 = Vec3((boxSize/2).unaryMinus(),1.5,(boxSize/2).unaryMinus())
+            val boxOffset = Vec3((boxSize/2).unaryMinus(),1.5,(boxSize/2).unaryMinus())
             val pingAABB = AxisAlignedBB(boxSize,boxSize,boxSize, 0.0, 0.0, 0.0).offset(boxOffset).offset(renderPingPoint)
             val endAABB = AxisAlignedBB(boxSize,boxSize,boxSize, 0.0, 0.0, 0.0).offset(boxOffset).offset(renderEndPoint)
 
-            val time = data.time ?: return@forEach
+            val time = renderData.time ?: return@forEach
 
             if (ping < time) {
                 Renderer.drawBox(pingAABB, mboxColor, fillAlpha = 0f, outlineAlpha = mboxColor.alpha, depth = true)
