@@ -87,6 +87,7 @@ object PuzzleSolvers : Module(
             TicTacToe.reset()
             IceFillSolver.reset()
             BlazeSolver.reset()
+            BeamsSolver.reset()
         }
     }
 
