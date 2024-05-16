@@ -246,14 +246,13 @@ object BloodCamp : Module(
     }
 
     private fun getRenderVector(currVector: Vec3, partialTicks: Float, lastVector: Vec3?): Vec3 {
-        if (lastVector != null && interpolation) {
-            val renderVector = Vec3(
+        return if (lastVector != null && interpolation) {
+            Vec3(
                 lastVector.xCoord + (currVector.xCoord - lastVector.xCoord) * partialTicks,
                 lastVector.yCoord + (currVector.yCoord - lastVector.yCoord) * partialTicks,
                 lastVector.zCoord + (currVector.zCoord - lastVector.zCoord) * partialTicks
             )
-            return renderVector
-        } else return currVector
+        } else currVector
     }
 
     @SubscribeEvent
