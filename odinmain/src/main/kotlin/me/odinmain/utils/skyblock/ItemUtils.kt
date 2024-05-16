@@ -6,10 +6,11 @@ import me.odinmain.utils.render.Color
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
-import net.minecraft.entity.item.EntityArmorStand
+import net.minecraft.entity.Entity
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.*
+import net.minecraftforge.common.util.Constants
 
 /**
  * Returns the ExtraAttribute Compound
@@ -128,15 +129,15 @@ fun getRarity(lore: List<String>): ItemRarity? {
     return null
 }
 
-fun getSkullValue(armorStand: EntityArmorStand?): String? {
-    return armorStand?.inventory
+fun getSkullValue(entity: Entity?): String? {
+    return entity?.inventory
         ?.get(4)
         ?.tagCompound
         ?.getCompoundTag("SkullOwner")
         ?.getCompoundTag("Properties")
-        ?.getTagList("textures", 10)
+        ?.getTagList("textures", Constants.NBT.TAG_COMPOUND)
         ?.getCompoundTagAt(0)
-        ?.getString("Value")
+        ?.getString("Value") ?: return null
 }
 
 fun ItemStack.setLore(lines: List<String>): ItemStack {

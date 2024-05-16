@@ -349,7 +349,6 @@ object RenderUtils {
         GlStateManager.disableBlend()
         GlStateManager.popMatrix()
         GlStateManager.enableTexture2D()
-        GlStateManager.enableLighting()
         if (!depth) GlStateManager.enableDepth()
     }
 
@@ -391,7 +390,6 @@ object RenderUtils {
      * @param text            The text to be drawn.
      * @param vec3            The position to draw the text.
      * @param color           The color of the text.
-     * @param renderBlackBox  Indicates whether to render a black box behind the text (default is false).
      * @param depthTest       Indicates whether to draw with depth (default is true).
      * @param scale           The scale of the text (default is 0.03).
      * @param shadow          Indicates whether to render a shadow for the text (default is true).
@@ -559,10 +557,6 @@ object RenderUtils {
         return Matrix4f().load(floatBuffer) as Matrix4f
     }
 
-    fun worldToScreen(pointInWorld: Vec3f, screenWidth: Int, screenHeight: Int): Vec2f? =
-        worldToScreen(pointInWorld, getMatrix(2982), getMatrix(2983), screenWidth, screenHeight)
-
-
     private fun worldToScreen(pointInWorld: Vec3f, view: Matrix4f, projection: Matrix4f, screenWidth: Int, screenHeight: Int): Vec2f? {
         val clipSpacePos = (Vec4f(pointInWorld.x, pointInWorld.y, pointInWorld.z, 1.0f) * view) * projection
         val ndcSpacePos = Vector3f(clipSpacePos.x / clipSpacePos.w, clipSpacePos.y / clipSpacePos.w, clipSpacePos.z / clipSpacePos.w)
@@ -671,4 +665,24 @@ object RenderUtils {
         GlStateManager.disableBlend()
         GlStateManager.popMatrix()
     }
+
+    fun drawBlockBox(
+        pos: BlockPos,
+        color: Color,
+        outlineWidth: Float = 3f,
+        outline: Float = 1f,
+        fill: Float = 0.25f,
+        esp: Boolean = true
+    ) {
+        if (outline == 0f && fill == 0f) return
+
+        val block = mc.theWorld?.getBlockState(pos)?.block ?: return
+
+        block.setBlockBoundsBasedOnState(mc.theWorld, pos)
+        val aabb = block.getSelectedBoundingBox(mc.theWorld, pos).outlineBounds()
+        Renderer.drawBox(aabb, color, outlineWidth, outline, fill, esp)
+    }
+
+    fun AxisAlignedBB.outlineBounds(): AxisAlignedBB =
+        expand(0.0020000000949949026, 0.0020000000949949026, 0.0020000000949949026)
 }

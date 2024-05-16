@@ -63,9 +63,10 @@ object Renderer {
      * @param noFade   Indicates whether the beacon should not fade based on distance (default is false).
      * @param distance Indicates whether to display the distance in the title (default is true).
      */
-    fun drawCustomBeacon(title: String, vec3: Vec3, color: Color, beacon: Boolean = true, increase: Boolean = true, noFade: Boolean = false, distance: Boolean = true) {
+    fun drawCustomBeacon(title: String, vec3: Vec3, color: Color, beacon: Boolean = true, increase: Boolean = true, noFade: Boolean = false, distance: Boolean = true, style: Int = 1) {
         val dist = vec3.distanceTo(mc.thePlayer.positionVector)
-        drawBox(aabb = vec3.toAABB(), color = color, fillAlpha = 0f, depth = false)
+        drawBox(vec3.toAABB(), color, depth = false,
+            outlineAlpha = if (style == 0) 0 else color.alpha, fillAlpha = if (style == 1) 0 else color.alpha)
 
         RenderUtils.drawStringInWorld(
             if (distance) "$title §r§f(§3${dist.toInt()}m§f)" else title,
@@ -85,7 +86,6 @@ object Renderer {
      * @param text            The text to be drawn.
      * @param vec3            The position to draw the text.
      * @param color           The color of the text.
-     * @param renderBlackBox  Indicates whether to render a black box behind the text (default is false).
      * @param depth           Indicates whether to draw with depth (default is true).
      * @param scale           The scale of the text (default is 0.03).
      * @param shadow          Indicates whether to render a shadow for the text (default is true).
@@ -95,7 +95,7 @@ object Renderer {
         vec3: Vec3,
         color: Color = Color.WHITE,
         depth: Boolean = false,
-        scale: Float = 1f,
+        scale: Float = 0.03f,
         shadow: Boolean = true,
         ) {
         RenderUtils.drawStringInWorld(text, vec3, color, depth, scale, shadow)

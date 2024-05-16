@@ -51,18 +51,23 @@ object DianaBurrowEstimate {
     }
 
 
-    fun blockEvent(pos: Vec3i) {
+    fun blockEvent(pos: Vec3i, isFullyBroken: Boolean = false) {
+        if (isFullyBroken) {
+            burrows.remove(pos)
+            DianaHelper.burrowsRender.remove(pos)
+        }
         if (pos !in burrows.keys || !isHolding("ANCESTRAL_SPADE")) return
         lastBurrow = pos
     }
 
     fun chat(message: String) {
         if (!message.startsWith("You dug out a Griffin Burrow!") && message != "You finished the Griffin burrow chain! (4/4)") return
-        lastBurrow?.let {
-            recentBurrows.add(it)
-            burrows.remove(it)
-            DianaHelper.burrowsRender.remove(it)
-            lastBurrow = null
+
+       lastBurrow?.let {
+           recentBurrows.add(it)
+           burrows.remove(it)
+           DianaHelper.burrowsRender.remove(it)
+           lastBurrow = null
         }
     }
 
