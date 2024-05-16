@@ -61,6 +61,9 @@ object PuzzleSolvers : Module(
     val blazeSecondColor: Color by ColorSetting("Second Color", Color.ORANGE, true).withDependency { blazeSolver && blazeDropDown }
     val blazeAllColor: Color by ColorSetting("Other Color", Color.WHITE.withAlpha(.3f), true).withDependency { blazeSolver && blazeDropDown }
 
+    private val beamsDropDown: Boolean by DropdownSetting("Creeper Beams")
+    private val beamsSolver: Boolean by BooleanSetting("Creeper Beams", true, description = "Shows you the solution for the Creeper Beams puzzle").withDependency { beamsDropDown }
+
     init {
         execute(500) {
             if (tpMaze) TPMaze.scan()
@@ -93,6 +96,7 @@ object PuzzleSolvers : Module(
             if (tttSolver) TicTacToe.tttRender()
             if (iceFillSolver) IceFillSolver.onRenderWorldLast(iceFillColor)
             if (blazeSolver) BlazeSolver.renderBlazes()
+            if (beamsSolver) BeamsSolver.onRenderWorld()
         }
     }
 
@@ -110,5 +114,6 @@ object PuzzleSolvers : Module(
     fun onRoomEnter(event: EnteredDungeonRoomEvent) {
         IceFillSolver.enterDungeonRoom(event)
         BlazeSolver.getRoomType(event)
+        BeamsSolver.enterDungeonRoom(event)
     }
 }

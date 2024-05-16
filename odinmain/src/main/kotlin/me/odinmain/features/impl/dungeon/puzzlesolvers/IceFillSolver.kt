@@ -39,7 +39,6 @@ object IceFillSolver {
                 text, object : TypeToken<List<List<List<Int>>>>() {}.type
             )
             isr?.close()
-            println(representativeFloors.toString())
         } catch (e: Exception) {
             e.printStackTrace()
             representativeFloors = emptyList()

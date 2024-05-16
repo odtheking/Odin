@@ -202,8 +202,8 @@ fun Vec2.addRotationCoords(rotation: Rotations, dist: Int = 4): Vec2 {
     }
 }
 
-fun Vec2.addRotationCoords(rotation: Rotations, x: Number = 0, y: Number = 0){
-    when(rotation){
+fun Vec2.addRotationCoords(rotation: Rotations, x: Number = 0, y: Number = 0): Vec2 {
+    return when(rotation){
         Rotations.NORTH -> Vec2(this.x + x.toInt(), this.z + y.toInt())
         Rotations.WEST -> Vec2(this.x + y.toInt(), this.z - x.toInt())
         Rotations.SOUTH -> Vec2(this.x - x.toInt(), this.z - y.toInt())
