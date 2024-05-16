@@ -4,8 +4,8 @@ import com.google.common.collect.ComparisonChain
 import me.odinmain.OdinMain.mc
 import me.odinmain.config.DungeonWaypointConfig
 import me.odinmain.events.impl.EnteredDungeonRoomEvent
-import me.odinmain.features.impl.dungeon.DungeonWaypoints.WaypointCategory
 import me.odinmain.features.impl.dungeon.DungeonWaypoints.DungeonWaypoint
+import me.odinmain.features.impl.dungeon.DungeonWaypoints.WaypointCategory
 import me.odinmain.features.impl.dungeon.DungeonWaypoints.toVec3
 import me.odinmain.features.impl.dungeon.LeapMenu
 import me.odinmain.features.impl.dungeon.LeapMenu.odinSorting
@@ -53,11 +53,19 @@ object DungeonUtils {
         var categories: List<WaypointCategory>
     )
 
+    data class FullRegion(
+        val region: Island,
+        var categories: List<WaypointCategory>
+    )
+
     data class ExtraRoom(val x: Int, val z: Int, val core: Int)
 
     private var lastRoomPos: Pair<Int, Int> = Pair(0, 0)
     var currentRoom: FullRoom? = null
     val currentRoomName get() = currentRoom?.room?.data?.name ?: "Unknown"
+
+    var currentRegion: FullRegion? = null
+    val currentRegionName get() = currentRegion?.region?.name ?: "Unknown"
 
     private const val WITHER_ESSENCE_ID = "26bb1a8d-7c66-31c6-82d5-a9c04c94fb02"
     private const val REDSTONE_KEY = "edb0155f-379c-395a-9c7d-1b6005987ac8"
@@ -136,16 +144,17 @@ object DungeonUtils {
                     }
                 } ?: Rotations.NONE
                 devMessage("Found rotation ${it.room.rotation}, clay pos: ${it.clayPos}")
-                setWaypoints(it)
+                setRoomWaypoints(it)
                 EnteredDungeonRoomEvent(it).postAndCatch()
             }
-        } else if (LocationUtils.currentArea != null) {
-            LocationUtils.currentArea.let {
-                var internalIsland: Island? = it
-                if (it == Island.DungeonBoss || it == Island.M7P1 || it == Island.M7P2 || it == Island.M7P3 || it == Island.M7P4 || it == Island.M7P5) internalIsland =
-                    Island.Dungeon
-
-
+        } else {
+            var island = LocationUtils.currentArea ?: return
+            if (island == Island.DungeonBoss || island == Island.M7P1 || island == Island.M7P2 || island == Island.M7P3 || island == Island.M7P4 || island == Island.M7P5) island =
+                Island.Dungeon
+            currentRegion = FullRegion(island, emptyList())
+            currentRegion?.let {
+                devMessage("Entered region $island")
+                setRegionWaypoints(it)
             }
         }
     }
@@ -153,27 +162,45 @@ object DungeonUtils {
     /**
      * Sets the waypoints for the current room.
      */
-    fun setWaypoints(curRoom: FullRoom) {
+    fun setRoomWaypoints(curRoom: FullRoom) {
         val room = curRoom.room
-        curRoom.waypoints = mutableListOf<DungeonWaypoint>().apply {
-            DungeonWaypointConfig.waypoints[room.data.name]?.let { waypoints ->
-                addAll(waypoints.map { waypoint ->
-                    val vec = waypoint.toVec3().rotateAroundNorth(room.rotation)
-                        .addVec(x = curRoom.clayPos.x, z = curRoom.clayPos.z)
-                    DungeonWaypoint(
-                        vec.xCoord,
-                        vec.yCoord,
-                        vec.zCoord,
-                        waypoint.color,
-                        waypoint.filled,
-                        waypoint.depth,
-                        waypoint.aabb,
-                        waypoint.title
-                    )
-                })
+        curRoom.categories = mutableListOf<WaypointCategory>().apply {
+            DungeonWaypointConfig.waypointsRooms[room.data.name]?.let { categories ->
+                addAll(categories)
+
+            }
+        }
+        curRoom.categories.forEach { category ->
+            category.waypoints.map { waypoint ->
+                val vec = waypoint.toVec3().rotateAroundNorth(room.rotation)
+                    .addVec(x = curRoom.clayPos.x, z = curRoom.clayPos.z)
+                DungeonWaypoint(
+                    vec.xCoord,
+                    vec.yCoord,
+                    vec.zCoord,
+                    waypoint.color,
+                    waypoint.filled,
+                    waypoint.depth,
+                    waypoint.aabb,
+                    waypoint.title
+                )
             }
         }
     }
+
+    /**
+     * Sets the waypoints for the current room.
+     */
+    fun setRegionWaypoints(curRegion: FullRegion) {
+        val region = curRegion.region
+        curRegion.categories = mutableListOf<WaypointCategory>().apply {
+            DungeonWaypointConfig.waypointsRooms[region.name]?.let { categories ->
+                addAll(categories)
+
+            }
+        }
+    }
+
 
     private fun findRoomTilesRecursively(x: Int, z: Int, room: Room, visited: MutableSet<Vec2>): List<ExtraRoom> {
         val tiles = mutableListOf<ExtraRoom>()
@@ -272,7 +299,9 @@ object DungeonUtils {
             leapTeammates =
                 when (LeapMenu.type) {
                     0 -> odinSorting(dungeonTeammatesNoSelf.sortedBy { it.clazz.prio }).toMutableList()
-                    1 -> dungeonTeammatesNoSelf.sortedWith(compareBy({ it.clazz.ordinal }, { it.name })).toMutableList()
+                    1 -> dungeonTeammatesNoSelf.sortedWith(compareBy({ it.clazz.ordinal }, { it.name }))
+                        .toMutableList()
+
                     2 -> dungeonTeammatesNoSelf.sortedBy { it.name }.toMutableList()
                     else -> dungeonTeammatesNoSelf.toMutableList()
                 }
