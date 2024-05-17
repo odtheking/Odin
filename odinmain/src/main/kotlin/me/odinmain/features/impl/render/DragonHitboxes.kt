@@ -17,7 +17,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 object DragonHitboxes : Module(
     name = "Dragon Hitboxes",
     category = Category.RENDER,
-    description = "Renders real dragon hitboxes."
+    description = "Draws hitboxes around dragons."
 ) {
     private val onlyM7: Boolean by BooleanSetting(name = "Only M7")
     private val color: Color by ColorSetting(name = "Hitbox Color", default = Color(0, 255, 255))

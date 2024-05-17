@@ -18,9 +18,9 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.living.LivingDeathEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-object MimicMessage : Module(
-    "Mimic Message",
-    description = "Send message in party chat when mimic is killed.",
+object Mimic : Module(
+    "Mimic",
+    description = "Notifies when a mimic is killed in dungeons.",
     category = Category.DUNGEON
 ) {
     private val mimicMessage: String by StringSetting("Mimic Message", "Mimic Killed!", 128, description = "Message sent when mimic is detected as killed")

@@ -7,10 +7,10 @@ import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.*
 import me.odinmain.utils.render.*
 
-object ServerDisplay : Module(
+object ServerHud : Module(
     name = "Server Hud",
     category = Category.RENDER,
-    description = "Displays your current ping and the server's TPS."
+    description = "Displays your current ping, FPS and server's TPS."
 ) {
     private val ping: Boolean by BooleanSetting("Ping", true)
     private val tps: Boolean by BooleanSetting("TPS", true)

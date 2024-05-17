@@ -2,6 +2,7 @@ package me.odinmain
 
 import kotlinx.coroutines.*
 import me.odinmain.commands.impl.*
+import me.odinmain.commands.registerCommands
 import me.odinmain.config.*
 import me.odinmain.events.EventDispatcher
 import me.odinmain.features.ModuleManager
@@ -69,7 +70,7 @@ object OdinMain {
             this
         ).forEach { MinecraftForge.EVENT_BUS.register(it) }
 
-        me.odinmain.commands.registerCommands(
+        registerCommands(
             mainCommand,
             soopyCommand,
             termSimCommand,

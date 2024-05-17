@@ -6,8 +6,8 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.commands.commodore
 import me.odinmain.features.impl.dungeon.DungeonWaypoints
 import me.odinmain.features.impl.render.ClickGUIModule
-import me.odinmain.features.impl.render.ServerDisplay.colorizePing
-import me.odinmain.features.impl.render.ServerDisplay.colorizeTps
+import me.odinmain.features.impl.render.ServerHud.colorizePing
+import me.odinmain.features.impl.render.ServerHud.colorizeTps
 import me.odinmain.features.impl.skyblock.DianaHelper
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.hud.EditHUDGui

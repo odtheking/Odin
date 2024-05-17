@@ -16,7 +16,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object NoDebuff : Module(
     "No Debuff",
     category = Category.RENDER,
-    description = "Disables certain debuffs."
+    description = "Removes various unwanted effects from the game."
 ) {
     private val antiBlind: Boolean by BooleanSetting("No Blindness", false, description = "Disables blindness")
     private val antiPortal: Boolean by BooleanSetting("No Portal Effect", false, description = "Disables the nether portal overlay.")

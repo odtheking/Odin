@@ -50,7 +50,7 @@ object ModuleManager {
 
     val modules: ArrayList<Module> = arrayListOf(
         // dungeon
-        DungeonRequeue, BlessingDisplay, ExtraStats, KeyHighlight, MimicMessage, TeammatesHighlight,
+        DungeonRequeue, BlessingDisplay, ExtraStats, KeyHighlight, Mimic, TeammatesHighlight,
         TerracottaTimer, BloodCamp, ClickedSecrets, DungeonWaypoints, SecretChime, LeapMenu, PuzzleSolvers,
         WarpCooldown, 
 
@@ -60,7 +60,7 @@ object ModuleManager {
 
         // render
         BPSDisplay, ClickGUIModule, CustomHighlight, CPSDisplay, DragonHitboxes, GyroWand, NameChanger,
-        PersonalDragon, RenderOptimizer, ServerDisplay, Waypoints, CanClip, Animations, SpaceHelmet,
+        PersonalDragon, RenderOptimizer, ServerHud, Waypoints, CanClip, Animations, SpaceHelmet,
         BlockOverlay, VisualWords, HidePlayers, DVD,
 
         //skyblock

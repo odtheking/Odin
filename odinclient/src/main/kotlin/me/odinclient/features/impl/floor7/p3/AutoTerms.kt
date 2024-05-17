@@ -15,7 +15,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object AutoTerms : Module(
     name = "Auto Terms",
-    description = "Automatically completes the terminals in f7/m7.",
+    description = "Automatically completes the terminals in floor 7.",
     category = Category.FLOOR7,
     tag = TagType.RISKY
 ) {

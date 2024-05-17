@@ -18,7 +18,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 object PuzzleSolvers : Module(
     name = "Puzzle Solvers",
     category = Category.DUNGEON,
-    description = "Dungeon puzzle solvers.",
+    description = "Displays solutions for dungeon puzzles.",
     key = null
 ) {
     private val waterDropDown: Boolean by DropdownSetting("Water")

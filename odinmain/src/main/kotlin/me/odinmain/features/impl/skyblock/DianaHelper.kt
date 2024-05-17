@@ -24,7 +24,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object DianaHelper : Module(
     name = "Diana Helper",
-    description = "Helps with Diana's event.",
+    description = "Displays the location of the Diana guess and burrows.",
     category = Category.SKYBLOCK
 ) {
     private val guessColor: Color by ColorSetting("Guess Color", default = Color.WHITE, allowAlpha = true, description = "Color of the guess text")

@@ -15,7 +15,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object TerminalTimes : Module(
     name = "Terminal Times",
-    description = "Keeps track of how long you took to complete a terminal.",
+    description = "Records the time taken to complete terminals in floor 7.",
     category = Category.FLOOR7
 ) {
     private val sendMessage: Int by SelectorSetting("Send Message", "Always", arrayListOf("Only PB", "Always"))

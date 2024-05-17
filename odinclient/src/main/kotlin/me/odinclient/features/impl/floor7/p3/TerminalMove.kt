@@ -17,7 +17,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object TerminalMove : Module(
     name = "Terminal Move",
     category = Category.FLOOR7,
-    description = "Move in terminals without GUI hotbar keys",
+    description = "Move in terminals without GUI hotbar keys.",
     tag = TagType.RISKY
 ) {
 
@@ -39,5 +39,4 @@ object TerminalMove : Module(
         if (mc.thePlayer == null || mc.thePlayer.openContainer !is ContainerChest) return false
         return TerminalTypes.entries.stream().anyMatch { prefix: TerminalTypes? -> (mc.thePlayer.openContainer as ContainerChest).lowerChestInventory.name.startsWith(prefix?.guiName!!) }
     }
-
 }

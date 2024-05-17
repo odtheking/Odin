@@ -16,7 +16,7 @@ import java.util.*
 
 object TerracottaTimer : Module(
     name = "Terracotta Timer",
-    description = "Displays the time until the terracotta spawns.",
+    description = "Displays the time until the terracotta respawns.",
     category = Category.DUNGEON
 ) {
     private data class Terracotta(val pos: Vec3, var time: Double)

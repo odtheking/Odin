@@ -17,7 +17,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object DioriteFucker : Module(
     "Fuck Diorite",
-    description = "Replaces the pillars in the F7 & M7 boss-fight with glass.",
+    description = "Replaces the pillars in floor 7 storm fight with glass.",
     category = Category.FLOOR7,
 ) {
     private val stainedGlass: Boolean by BooleanSetting("Stained glass", default = false, description = "Swaps the diorite with stained glass" )

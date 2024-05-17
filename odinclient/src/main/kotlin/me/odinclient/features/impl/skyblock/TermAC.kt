@@ -13,7 +13,7 @@ object TermAC : Module(
     description = "Randomized auto-clicker for Terminator's salvation ability, enabled when holding right click.",
     category = Category.SKYBLOCK
 ) {
-    private val cps: Double by NumberSetting("Clicks Per Second", 5.0, 3.0, 12.0, .5, false, "The amount of clicks per second to perform.")
+    private val cps: Double by NumberSetting("Clicks Per Second", 5.0, 3.0, 15.0, .5, false, "The amount of clicks per second to perform.")
     private var nextClick = .0
 
     @SubscribeEvent
