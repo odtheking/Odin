@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
-import me.odinmain.events.impl.EnteredDungeonRoomEvent
-import me.odinmain.events.impl.PostEntityMetadata
+import me.odinmain.events.impl.*
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.puzzlesolvers.WaterSolver.waterInteract
@@ -118,5 +117,10 @@ object PuzzleSolvers : Module(
         IceFillSolver.enterDungeonRoom(event)
         BlazeSolver.getRoomType(event)
         BeamsSolver.enterDungeonRoom(event)
+    }
+
+    @SubscribeEvent
+    fun blockUpdateEvent(event: BlockChangeEvent) {
+        BeamsSolver.onBlockChange(event)
     }
 }
