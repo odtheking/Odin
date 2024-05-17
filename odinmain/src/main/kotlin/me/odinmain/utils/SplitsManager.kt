@@ -38,14 +38,14 @@ object SplitsManager {
 
         val currentSplitTime = currentSplit.time - currentSplits[index - 1].time
 
-        if (currentSplitTime.toDouble().round(3) <= oldPB) {
-            currentSplit.pb.value = currentSplitTime.toDouble().round(3)
+        if (currentSplitTime.round(3).toDouble() <= oldPB) {
+            currentSplit.pb.value = currentSplitTime.toDouble().round(3).toDouble()
             Config.save()
         }
 
         val allPBs = currentSplits.drop(1).joinToString("\n") { "§f${it.name}: ${formatTime(it.pb.value.toLong())}" }
 
-        modMessage("§6${currentSplit.name} §ftook §a${formatTime(currentSplitTime)} ${if (currentSplitTime.toDouble().round(3) < oldPB) "§f(§d§lPB§f) §8${formatTime(oldPB.toLong())}" else ""}",
+        modMessage("§6${currentSplit.name} §ftook §a${formatTime(currentSplitTime)} ${if (currentSplitTime.round(3).toDouble() < oldPB) "§f(§d§lPB§f) §8${formatTime(oldPB.toLong())}" else ""}",
             chatStyle = createClickStyle(ClickEvent.Action.SUGGEST_COMMAND, allPBs))
     }
 }

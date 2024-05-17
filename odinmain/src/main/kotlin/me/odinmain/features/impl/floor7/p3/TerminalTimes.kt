@@ -81,7 +81,7 @@ object TerminalTimes : Module(
         val previousTime = currentTerminal!!.setting.value
         if (time < previousTime + 0.005) {
             modMessage("§fNew best time for §6${currentTerminal?.name} §fis §a${time}s, §fold best time was §a${previousTime}s")
-            currentTerminal?.setting?.value = time.round(2)
+            currentTerminal?.setting?.value = time.round(2).toDouble()
             Config.save()
         }
         currentTerminal = null
