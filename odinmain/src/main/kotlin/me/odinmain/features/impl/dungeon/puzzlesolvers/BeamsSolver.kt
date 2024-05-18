@@ -34,20 +34,20 @@ object BeamsSolver {
         }
     }
 
-    private var currentLanternPairs = mutableMapOf<BlockPos, BlockPos>()
+    private var currentLanternPairs = mutableMapOf<BlockPos, Pair<BlockPos, Color>>()
 
     fun enterDungeonRoom(event: EnteredDungeonRoomEvent) {
         val room = event.room?.room ?: return // <-- orb = orb.orb
         if (room.data.name != "Creeper Beams") return reset()
 
         if (scanned) return
-        lanternPairs.forEach {
+        lanternPairs.forEachIndexed { index, it ->
             val pos = Vec2(room.x, room.z).addRotationCoords(room.rotation, x = it[0], z = it[2]).let { vec -> BlockPos(vec.x, it[1], vec.z) }
 
             val pos2 = Vec2(room.x, room.z).addRotationCoords(room.rotation, x = it[3], z = it[5]).let { vec -> BlockPos(vec.x, it[4], vec.z) }
 
             if (getBlockIdAt(pos) == 169 && getBlockIdAt(pos2) == 169)
-                currentLanternPairs[pos] = pos2
+                currentLanternPairs[pos] = pos2 to colors[index]
         }
         scanned = true
     }
@@ -56,13 +56,13 @@ object BeamsSolver {
         if (DungeonUtils.currentRoomName != "Creeper Beams" || DungeonUtils.inBoss || !scanned) return
         val finalLanternPairs = currentLanternPairs.toMap()
         finalLanternPairs.entries.forEachIndexed { index, positions ->
-            val color = colors.getSafe(index) ?: Color.WHITE
+            val color = positions.value.second
 
             RenderUtils.drawBlockBox(positions.key, color, fill = .7f, depth = PuzzleSolvers.beamsDepth)
-            RenderUtils.drawBlockBox(positions.value, color, fill = .7f, depth = PuzzleSolvers.beamsDepth)
+            RenderUtils.drawBlockBox(positions.value.first, color, fill = .7f, depth = PuzzleSolvers.beamsDepth)
 
             if (PuzzleSolvers.beamsTracer)
-                Renderer.draw3DLine(positions.key.toVec3().addVec(0.5, 0.5, 0.5), positions.value.toVec3().addVec(0.5, 0.5, 0.5), color, depth = PuzzleSolvers.beamsDepth, lineWidth = 1f)
+                Renderer.draw3DLine(positions.key.toVec3().addVec(0.5, 0.5, 0.5), positions.value.first.toVec3().addVec(0.5, 0.5, 0.5), color, depth = PuzzleSolvers.beamsDepth, lineWidth = 1f)
         }
     }
 
