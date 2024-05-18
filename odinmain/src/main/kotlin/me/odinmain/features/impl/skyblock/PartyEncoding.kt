@@ -32,14 +32,13 @@ object PartyEncoding: Module(
 
         val name = chatComponent.formattedText.split(":")[0]
         val message = chatComponent.unformattedText.split(":")[1].noControlCodes.drop(1)
-        val decoded = decodeMessage(message, key)
+        val decoded = decodeMessage(message, key) ?: return
 
-        if (decoded.isEmpty()) return
         val url = urlRegex.find(decoded)?.value
-        if (url != null)
-            modMessage("$name: $decoded", false, createClickStyle(ClickEvent.Action.OPEN_URL, url))
-        else
-            modMessage("$name: $decoded", false)
+        modMessage(
+            "$name: $decoded", false,
+            if (url != null) createClickStyle(ClickEvent.Action.OPEN_URL, url) else null
+        )
 
         event.isCanceled = true
     }
@@ -67,7 +66,7 @@ object PartyEncoding: Module(
         return Base64.getEncoder().encodeToString(encodedString.toByteArray())
     }
 
-    private fun decodeMessage(encodedMessage: String, key: String): String {
+    private fun decodeMessage(encodedMessage: String, key: String): String? {
         require(key.isNotEmpty()) { "Key must not be empty" }
 
         return try {
@@ -81,8 +80,7 @@ object PartyEncoding: Module(
 
             String(originalChars)
         } catch (e: IllegalArgumentException) {
-            "" // Normal messages won't be able to be decoded, so we just return an empty string
+            null // Normal messages won't be able to be decoded, so we just return an empty string
         }
     }
-
 }
