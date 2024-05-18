@@ -55,7 +55,7 @@ object BeamsSolver {
     fun onRenderWorld() {
         if (DungeonUtils.currentRoomName != "Creeper Beams" || DungeonUtils.inBoss || !scanned) return
         val finalLanternPairs = currentLanternPairs.toMap()
-        finalLanternPairs.entries.forEachIndexed { _, positions ->
+        finalLanternPairs.entries.forEach { positions ->
             val color = positions.value.second
 
             RenderUtils.drawBlockBox(positions.key, color, fill = .7f, depth = PuzzleSolvers.beamsDepth)

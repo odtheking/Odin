@@ -48,14 +48,14 @@ object PartyEncoding: Module(
         if (!event.message.startsWith("/pcd")) return
 
         val encoded = encodeMessage(event.message.drop(5), key)
-        if (encoded.length > 160) return
+        if (encoded.length > 160 || encoded.isEmpty()) return
         partyMessage(encoded)
         modMessage("§8Actual message for hypixel: §7$encoded", false)
         event.isCanceled = true
     }
 
     private fun encodeMessage(message: String, key: String): String {
-        require(key.isNotEmpty()) { "Key must not be empty" }
+        if (message.isEmpty() || key.isEmpty()) return ""
 
         val keyChars = key.toCharArray()
         val encodedChars = CharArray(message.length) { i ->
@@ -67,7 +67,7 @@ object PartyEncoding: Module(
     }
 
     private fun decodeMessage(encodedMessage: String, key: String): String? {
-        require(key.isNotEmpty()) { "Key must not be empty" }
+        if (encodedMessage.isEmpty() || key.isEmpty()) return null
 
         return try {
             val decodedBytes = Base64.getDecoder().decode(encodedMessage)
