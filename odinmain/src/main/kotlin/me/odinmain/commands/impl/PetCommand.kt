@@ -22,15 +22,13 @@ val petCommand = commodore("petkeys") {
     }
 
     literal("petpos").runs {
-        val petID = if (mc.thePlayer?.heldItem.itemID == "PET") mc.thePlayer?.heldItem.uuid else null
-        if (petID == null) return@runs modMessage("This is not a pet!")
+        val petID = if (mc.thePlayer?.heldItem.itemID == "PET") mc.thePlayer?.heldItem.uuid else return@runs modMessage("This is not a pet!")
         if (petID !in petList) return@runs modMessage("This pet is not in the list!")
         modMessage("This pet is position ${petList.indexOf(petID) +1} in the list.")
     }
 
     literal("remove").runs {
-        val petID = if (mc.thePlayer?.heldItem.itemID == "PET") mc.thePlayer?.heldItem.uuid else null
-        if (petID == null) return@runs modMessage("This is not a pet!")
+        val petID = if (mc.thePlayer?.heldItem.itemID == "PET") mc.thePlayer?.heldItem.uuid else return@runs modMessage("This is not a pet!")
         if (petID !in petList) return@runs modMessage("This pet is not in the list!")
 
         petList.remove(petID)
@@ -45,7 +43,7 @@ val petCommand = commodore("petkeys") {
     }
 
     literal("list").runs {
-        if (petList.size == 0) return@runs modMessage("pet list is empty")
+        if (petList.size == 0) return@runs modMessage("Pet list is empty")
         modMessage("Pet list:\n${petList.joinToString("\n")}")
     }
 

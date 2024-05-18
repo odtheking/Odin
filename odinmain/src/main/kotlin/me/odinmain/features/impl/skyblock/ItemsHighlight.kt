@@ -31,10 +31,6 @@ object ItemsHighlight : Module(
 
     private fun getEntityOutlineColor(entity: EntityItem): Color {
         return if (!colorStyle) getRarity(entity.entityItem.lore)?.color ?: Color.WHITE
-        else if (entity.getDistanceToEntity(mc.thePlayer) <= 3.5) {
-            Color.GREEN
-        } else {
-            Color.RED
-        }
+        else if (entity.getDistanceToEntity(mc.thePlayer) <= 3.5) Color.GREEN else Color.RED
     }
 }
