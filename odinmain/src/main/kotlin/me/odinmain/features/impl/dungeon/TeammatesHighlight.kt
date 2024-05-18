@@ -24,7 +24,7 @@ object TeammatesHighlight : Module(
     private val showOutline: Boolean by BooleanSetting("Outline", true, description = "Highlights teammates with an outline.")
     private val showName: Boolean by BooleanSetting("Name", true, description = "Highlights teammates with a name tag.")
     private val thickness: Float by NumberSetting("Line Width", 4f, 1.0, 10.0, 0.5, description = "The thickness of the outline.")
-    private val whenVisible: Boolean by BooleanSetting("When Visible", true, description = "Highlights teammates only when they are visible.")
+    private val depthCheck: Boolean by BooleanSetting("Depth check", true, description = "Highlights teammates only when they are visible.")
     private val inBoss: Boolean by BooleanSetting("In Boss", true, description = "Highlights teammates in boss rooms.")
 
     @SubscribeEvent
@@ -33,7 +33,7 @@ object TeammatesHighlight : Module(
 
         val teammate = dungeonTeammatesNoSelf.find { it.entity == event.entity } ?: return
 
-        if (!whenVisible && mc.thePlayer.canEntityBeSeen(teammate.entity)) return
+        if (depthCheck && !mc.thePlayer.canEntityBeSeen(teammate.entity)) return
 
         OutlineUtils.outlineEntity(event, thickness, teammate.clazz.color, true)
     }
@@ -48,7 +48,7 @@ object TeammatesHighlight : Module(
                 if (showClass) "${teammate.name} §e[${teammate.clazz.name[0]}]" else teammate.name,
                 teammate.entity.renderVec.addVec(y = 2.6),
                 color = teammate.clazz.color,
-                depth = whenVisible, scale = 0.05f
+                depth = depthCheck, scale = 0.05f
             )
         }
     }

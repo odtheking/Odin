@@ -80,7 +80,7 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
         event.isCanceled = true
     }
 
-    protected fun resetInv() {
+    private fun resetInv() {
         if (inventoryBefore.isNotEmpty())
             minecraft.thePlayer.inventory.mainInventory = inventoryBefore
         inventoryBefore = arrayOf()
