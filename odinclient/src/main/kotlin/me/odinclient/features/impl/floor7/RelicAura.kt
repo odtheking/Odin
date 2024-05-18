@@ -21,7 +21,7 @@ object RelicAura : Module(
     fun onTick(event: TickEvent.ClientTickEvent) {
         if (DungeonUtils.getPhase() != Island.M7P5) return
         val armorStands = mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()
-            ?.firstOrNull { it.inventory?.get(4)?.displayName?.contains("Relic") == true && mc.thePlayer.getDistanceToEntity(it) < 4 } ?: return
+            ?.firstOrNull { it.inventory?.get(4)?.displayName?.contains("Relic") == true && mc.thePlayer.getDistanceToEntity(it) < 3 } ?: return
         interactWithEntity(armorStands)
     }
 

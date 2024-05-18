@@ -18,9 +18,12 @@ object TerminalSimulator : Module(
 
     override fun onKeybind() {
         sendCommand(if (repetitiveTerminals == 1) "termsim $ping" else "termsim $ping $repetitiveTerminals", clientSide = true)
+        this.toggle()
     }
 
     override fun onEnable() {
         sendCommand(if (repetitiveTerminals == 1) "termsim $ping" else "termsim $ping $repetitiveTerminals", clientSide = true)
+        super.onEnable()
+        toggle()
     }
 }

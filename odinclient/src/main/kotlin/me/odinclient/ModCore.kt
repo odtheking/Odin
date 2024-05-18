@@ -2,6 +2,7 @@ package me.odinclient
 
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import me.odinclient.commands.impl.OdinClientCommand
 import me.odinclient.commands.impl.autoSellCommand
 import me.odinclient.features.impl.dungeon.*
 import me.odinclient.features.impl.dungeon.AutoSell.sellList
@@ -39,7 +40,8 @@ class ModCore {
         MinecraftForge.EVENT_BUS.register(this)
 
         registerCommands(
-            autoSellCommand
+            autoSellCommand,
+            OdinClientCommand
         )
         FramebufferShader.setupCameraTransform =
             { (mc.entityRenderer as? IEntityRendererAccessor)?.invokeSetupCameraTransform(RenderUtils.partialTicks, 0) }
@@ -64,9 +66,9 @@ class ModCore {
     @EventHandler
     fun loadComplete(event: FMLLoadCompleteEvent) {
         ModuleManager.addModules(
-            AutoGFS, /*AutoIceFill,*/ AutoSell, CancelInteract, CancelChestOpen, GhostPick, SecretHitboxes,
+            AutoGFS, /*AutoIceFill,*/ AutoSell, CancelInteract, CloseChest, GhostPick, SecretHitboxes,
             SwapStonk, Arrows, ArrowAlign, CancelWrongTerms, HoverTerms, LightsDevice, SimonSays,
-            DioriteFucker, RelicAura, Trajectories, Ghosts, NoDebuff, LockCursor,
+            DioriteFucker, RelicAura, Trajectories, Ghosts, NoDebuff,
             ChocolateFactory, AutoExperiments, FarmingHitboxes, NoBlock, TermAC, Triggerbot, GhostBlocks, FreezeGame,
             AbilityKeybind, EtherWarpHelper, ChestEsp, NoBreakReset, EscrowFix, TerminalMove,
             TerminalAura, AutoTerms, Camera, AutoUlt

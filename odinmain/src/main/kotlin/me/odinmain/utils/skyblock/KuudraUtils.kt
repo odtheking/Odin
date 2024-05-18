@@ -29,6 +29,9 @@ object KuudraUtils {
     var phase = 0
     var buildingPiles = mutableListOf<EntityArmorStand>()
 
+    inline val inKuudra get() =
+        LocationUtils.inSkyblock && LocationUtils.currentArea == Island.Kuudra
+
     data class KuudraPlayer(val playerName: String, var eatFresh: Boolean = false, var eatFreshTime: Long = 0, var entity: EntityPlayer? = null)
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {

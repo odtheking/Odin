@@ -6,6 +6,7 @@ import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
+import me.odinmain.utils.skyblock.getBlockAt
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.*
 import net.minecraft.client.renderer.entity.RenderManager
@@ -349,7 +350,6 @@ object RenderUtils {
         GlStateManager.disableBlend()
         GlStateManager.popMatrix()
         GlStateManager.enableTexture2D()
-        GlStateManager.enableLighting()
         if (!depth) GlStateManager.enableDepth()
     }
 
@@ -380,8 +380,10 @@ object RenderUtils {
 
         GL11.glDepthMask(true)
         postDraw()
+        GlStateManager.resetColor()
         GlStateManager.popMatrix()
     }
+
 
     /**
      * Draws text in the world at the specified position with the specified color and optional parameters.
@@ -389,7 +391,6 @@ object RenderUtils {
      * @param text            The text to be drawn.
      * @param vec3            The position to draw the text.
      * @param color           The color of the text.
-     * @param renderBlackBox  Indicates whether to render a black box behind the text (default is false).
      * @param depthTest       Indicates whether to draw with depth (default is true).
      * @param scale           The scale of the text (default is 0.03).
      * @param shadow          Indicates whether to render a shadow for the text (default is true).
@@ -398,11 +399,10 @@ object RenderUtils {
         text: String,
         vec3: Vec3,
         color: Color = Color.WHITE.withAlpha(1f),
-        renderBlackBox: Boolean = false,
         depthTest: Boolean = true,
         scale: Float = 0.3f,
         shadow: Boolean = false
-    ) {
+        ) {
         val renderPos = getRenderPos(vec3)
 
         if (!depthTest) {
@@ -423,22 +423,7 @@ object RenderUtils {
 
         val textWidth = mc.fontRendererObj.getStringWidth(text)
 
-        if (renderBlackBox) {
-            val j = textWidth / 2
-            GlStateManager.disableTexture2D()
-            worldRenderer {
-                begin(7, DefaultVertexFormats.POSITION_COLOR)
-                worldRenderer.pos(-j - 1.0, -1.0, .0).color(.0f, .0f, .0f, 0.25f).endVertex()
-                worldRenderer.pos(-j - 1.0, 8.0, .0).color(.0f, .0f, .0f, 0.25f).endVertex()
-                worldRenderer.pos(j + 1.0, 8.0, .0).color(.0f, .0f, .0f, 0.25f).endVertex()
-                worldRenderer.pos(j + 1.0, -1.0, .0).color(.0f, .0f, .0f, 0.25f).endVertex()
-            }
-            tessellator.draw()
-            GlStateManager.enableTexture2D()
-        }
-
-        if (shadow) mc.fontRendererObj.drawStringWithShadow(text, -textWidth / 2f, 0f, color.rgba)
-        else mc.fontRendererObj.drawString(text, -textWidth / 2, 0, color.rgba)
+        mc.fontRendererObj.drawString("$text§r", -textWidth / 2f, 0f, color.rgba, shadow)
 
         if (!depthTest) {
             GlStateManager.enableDepth()
@@ -512,7 +497,7 @@ object RenderUtils {
      * @param height The height of the rectangle.
      */
     fun drawTexturedModalRect(x: Int, y: Int, width: Int, height: Int) {
-        Color.WHITE.bind()
+        GlStateManager.resetColor()
         worldRenderer {
             begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
             pos(x.toDouble(), (y + height).toDouble(), 0.0).tex(0.0, 1.0).endVertex()
@@ -572,10 +557,6 @@ object RenderUtils {
         GL11.glGetFloat(matrix, floatBuffer)
         return Matrix4f().load(floatBuffer) as Matrix4f
     }
-
-    fun worldToScreen(pointInWorld: Vec3f, screenWidth: Int, screenHeight: Int): Vec2f? =
-        worldToScreen(pointInWorld, getMatrix(2982), getMatrix(2983), screenWidth, screenHeight)
-
 
     private fun worldToScreen(pointInWorld: Vec3f, view: Matrix4f, projection: Matrix4f, screenWidth: Int, screenHeight: Int): Vec2f? {
         val clipSpacePos = (Vec4f(pointInWorld.x, pointInWorld.y, pointInWorld.z, 1.0f) * view) * projection
@@ -674,13 +655,35 @@ object RenderUtils {
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
         GlStateManager.translate(x, y, 0f)
         GlStateManager.scale(scale, scale, scale)
+        color.bind()
         var yOffset = y - mc.fontRendererObj.FONT_HEIGHT
         text.split("\n").forEach {
             yOffset += mc.fontRendererObj.FONT_HEIGHT
             val xOffset = if (center) mc.fontRendererObj.getStringWidth(it) / -2f else 0f
             mc.fontRendererObj.drawString(it, xOffset, 0f, color.rgba, shadow)
         }
+        GlStateManager.resetColor()
         GlStateManager.disableBlend()
         GlStateManager.popMatrix()
     }
+
+    fun drawBlockBox(
+        pos: BlockPos,
+        color: Color,
+        outlineWidth: Float = 3f,
+        outline: Float = 1f,
+        fill: Float = 0.25f,
+        depth: Boolean = true
+    ) {
+        if (outline == 0f && fill == 0f) return
+
+        val block = getBlockAt(pos)
+
+        block.setBlockBoundsBasedOnState(mc.theWorld, pos)
+        val aabb = block.getSelectedBoundingBox(mc.theWorld, pos).outlineBounds()
+        Renderer.drawBox(aabb, color, outlineWidth, outline, fill, depth)
+    }
+
+    fun AxisAlignedBB.outlineBounds(): AxisAlignedBB =
+        expand(0.0020000000949949026, 0.0020000000949949026, 0.0020000000949949026)
 }

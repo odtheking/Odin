@@ -30,5 +30,6 @@ object DungeonRequeue : Module(
         onMessage(Regex("(\\[.+])? ?(.{0,16}) has left the party.")) {
             if (disablePartyLeave) disableRequeue = true
         }
+        onWorldLoad { disableRequeue = false }
     }
 }

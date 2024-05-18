@@ -60,7 +60,7 @@ class Panel(
             y = floor(y2 + mouseY)
         }
 
-        scrollOffset = scrollAnimation.get(scrollOffset, scrollTarget).round(0)
+        scrollOffset = scrollAnimation.get(scrollOffset, scrollTarget).round(0).toFloat()
         var startY = scrollOffset + height
         scale(1f / scaleFactor, 1f / scaleFactor, 1f)
         dropShadow(x, y, width, if (extended) (length + 5f).coerceAtLeast(height) else 40f, ColorUtil.moduleButtonColor, 15f, 10f, 10f, 10f, 10f)

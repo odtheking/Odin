@@ -4,7 +4,6 @@
   "minVersion": "0.7",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "mixins.MixinChatAllowedCharacters",
     "mixins.MixinChunk",
     "mixins.MixinEntityLivingBase",
     "mixins.MixinNetworkManager",
@@ -17,6 +16,7 @@
     "accessors.EntityRendererAccessor",
     "accessors.IEntityPlayerSPAccessor",
     "accessors.IMinecraftAccessor",
+    "mixins.MixinEntityPlayerSP",
     "mixins.MixinEntityRenderer",
     "mixins.MixinFontRenderer",
     "mixins.MixinGuiContainer",

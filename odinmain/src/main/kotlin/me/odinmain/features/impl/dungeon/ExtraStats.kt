@@ -6,7 +6,7 @@ import me.odinmain.utils.skyblock.sendCommand
 
 object ExtraStats : Module(
     name = "Extra Stats",
-    description = "Automatically clicks the Extra Stats at the end of a dungeon.",
+    description = "Shows additional dungeon stats at the end of the run in chat.",
     category = Category.DUNGEON,
 ) {
     init {

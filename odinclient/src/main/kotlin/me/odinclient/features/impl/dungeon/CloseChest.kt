@@ -14,10 +14,10 @@ import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-object CancelChestOpen : Module(
-    "Cancel Chest Open",
+object CloseChest : Module(
+    "Close Chest",
     category = Category.DUNGEON,
-    description = "Cancels the opening of chests in dungeons."
+    description = "Options to close the chest automatically or with any key or automatically."
 ) {
     private val mode: Boolean by DualSetting("Mode", "Auto", "Any Key", description = "The mode to use, auto will automatically close the chest, any key will make any key input close the chest.")
 

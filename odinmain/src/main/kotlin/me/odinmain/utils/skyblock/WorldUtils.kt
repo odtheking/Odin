@@ -13,8 +13,7 @@ import net.minecraft.util.BlockPos
  * @return The block ID as an `Int`, or `null` if the block at the given position is not present.
  */
 fun getBlockIdAt(blockpos: BlockPos): Int? {
-    return if (mc.theWorld?.getBlockState(blockpos)?.block == null) null
-    else Block.getIdFromBlock(mc.theWorld?.getBlockState(blockpos)?.block)
+    return Block.getIdFromBlock(mc.theWorld?.getBlockState(blockpos)?.block ?: return null)
 }
 
 /**

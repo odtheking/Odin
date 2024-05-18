@@ -10,13 +10,11 @@ import me.odinmain.features.impl.floor7.WitherDragons.paulBuff
 import me.odinmain.features.impl.floor7.WitherDragons.soloDebuff
 import me.odinmain.features.impl.floor7.WitherDragons.soloDebuffOnAll
 import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.skyblock.PlayerUtils
+import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.Classes
-import me.odinmain.utils.skyblock.modMessage
 
 object DragonPriority {
-
 
     fun findPriority(spawningDragon: MutableList<WitherDragonsEnum>): WitherDragonsEnum {
         val priorityList = listOf(WitherDragonsEnum.Red, WitherDragonsEnum.Orange, WitherDragonsEnum.Blue, WitherDragonsEnum.Purple, WitherDragonsEnum.Green)
@@ -34,7 +32,7 @@ object DragonPriority {
         if (dragonPriorityToggle && WitherDragonsEnum.entries.filter { it.spawning }.toMutableList().size == 2) modMessage("§${dragon.colorCode}${dragon.name} §7is your priority dragon!")
     }
 
-    fun sortPriority(spawningDragon: MutableList<WitherDragonsEnum>): WitherDragonsEnum {
+    private fun sortPriority(spawningDragon: MutableList<WitherDragonsEnum>): WitherDragonsEnum {
         val totalPower = BlessingDisplay.Blessings.POWER.current * if (paulBuff) 1.25 else 1.0 +
                 if (BlessingDisplay.Blessings.TIME.current > 0) 2.5 else 0.0
 
@@ -55,6 +53,12 @@ object DragonPriority {
             else if ((playerClass == Classes.Healer && spawningDragon.any { it == WitherDragonsEnum.Purple }) || soloDebuffOnAll)
                 spawningDragon.sortByDescending { priorityList.indexOf(it) }
         }
+        devMessage("§7 power: $totalPower")
+        devMessage("§7 class: $playerClass")
+        devMessage("§7 priority: ${spawningDragon[0].name}, ${spawningDragon[1].name}")
+        devMessage("§7 priorityList: ${priorityList.joinToString(", ") { it.name }}")
+        devMessage("is total power >= normal power? ${totalPower >= normalPower}")
+        devMessage("is total power >= easy power? ${totalPower >= easyPower}")
         return spawningDragon[0]
     }
 }

@@ -50,7 +50,7 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
     }
 
     fun solved(name: String, oldPb: NumberSetting<Double>) {
-        val time = ((System.currentTimeMillis() - startTime) / 1000.0).round(2)
+        val time = ((System.currentTimeMillis() - startTime) / 1000.0).round(2).toDouble()
         if (time < oldPb.value) {
             modMessage("§a$name §7solved in §6$time §7(§d§lNew PB§r§7)! Old PB was §8${oldPb.value.round(2)}s§7.")
             oldPb.value = time
@@ -80,7 +80,7 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
         event.isCanceled = true
     }
 
-    protected fun resetInv() {
+    private fun resetInv() {
         if (inventoryBefore.isNotEmpty())
             minecraft.thePlayer.inventory.mainInventory = inventoryBefore
         inventoryBefore = arrayOf()

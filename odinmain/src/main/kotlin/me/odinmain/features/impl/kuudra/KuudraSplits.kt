@@ -208,7 +208,7 @@ object KuudraSplits : Module(
 
             if (totalTime < oldPB && totalTime > 1L) {
                 if (sendPB) modMessage("§fNew best time for §6T${LocationUtils.kuudraTier} Kuudra §fis §a${totalTime}s, §fold best time was §a${oldPB}s")
-                KuudraTiers.entries.getSafe(LocationUtils.kuudraTier)?.pbTime?.value = totalTime.round(2)
+                KuudraTiers.entries.getSafe(LocationUtils.kuudraTier)?.pbTime?.value = totalTime.round(2).toDouble()
                 Config.save()
             }
         }
