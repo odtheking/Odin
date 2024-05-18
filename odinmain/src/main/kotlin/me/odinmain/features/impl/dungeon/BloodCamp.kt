@@ -212,9 +212,9 @@ object BloodCamp : Module(
             renderData.lastEndPoint = endPoint
             renderData.lastPingPoint = pingPoint
 
-            val boxOffset = Vec3((boxSize/2).unaryMinus(),1.5,(boxSize/2).unaryMinus())
-            val pingAABB = AxisAlignedBB(boxSize,boxSize,boxSize, 0.0, 0.0, 0.0).offset(boxOffset).offset(renderPingPoint)
-            val endAABB = AxisAlignedBB(boxSize,boxSize,boxSize, 0.0, 0.0, 0.0).offset(boxOffset).offset(renderEndPoint)
+            val boxOffset = Vec3(-(boxSize/2),1.5,-(boxSize/2))
+            val pingAABB = AxisAlignedBB(boxSize,boxSize,boxSize, 0.0, 0.0, 0.0).offset(boxOffset + renderPingPoint)
+            val endAABB = AxisAlignedBB(boxSize,boxSize,boxSize, 0.0, 0.0, 0.0).offset(boxOffset + renderEndPoint)
 
             val time = renderData.time ?: return@forEach
 
