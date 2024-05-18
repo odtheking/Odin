@@ -16,7 +16,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object KeyHighlight : Module(
     name = "Key Highlight",
-    description = "Draws a box around the key.",
+    description = "Highlights wither and blood keys in dungeons.",
     category = Category.DUNGEON,
 ) {
     private var currentKey: Pair<Color, Entity>? = null

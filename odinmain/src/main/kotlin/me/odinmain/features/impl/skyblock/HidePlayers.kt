@@ -15,7 +15,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object HidePlayers : Module(
     name = "Hide Players",
-    description = "Hides players",
+    description = "Hides players in your vicinity.",
     category = Category.SKYBLOCK
 ) {
     private val hideAll: Boolean by BooleanSetting("Hide all", default = false, false, "Hides all players, regardless of distance")

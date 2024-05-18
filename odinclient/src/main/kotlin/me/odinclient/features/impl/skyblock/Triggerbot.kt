@@ -25,7 +25,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object Triggerbot : Module(
     name = "Triggerbot",
-    description = "Various Triggerbots.",
+    description = "Various Triggerbots. (Blood, Spirit Bear, Crystal Triggerbot, Secret Triggerbot, Relic Triggerbot)",
     category = Category.DUNGEON
 ) {
     private val blood: Boolean by BooleanSetting("Blood Mobs")

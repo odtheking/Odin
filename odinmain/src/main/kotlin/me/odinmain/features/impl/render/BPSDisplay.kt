@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object BPSDisplay : Module(
-    name = "Bps Display",
+    name = "BPS Display",
     category = Category.RENDER,
     description = "Displays how many blocks per second you're breaking."
 ) {
@@ -44,7 +44,7 @@ object BPSDisplay : Module(
     fun tick(event: ClientTickEvent) {
         if (!isBreaking) return
         val secondsElapsed = (System.currentTimeMillis() - startTime) / 1000.0
-        bps = (blocksBroken / secondsElapsed).round(2)
+        bps = (blocksBroken / secondsElapsed).round(2).toDouble()
         if (System.currentTimeMillis() - lastBrokenBlock > 1000) {
             bps = 0.0
             isBreaking = false

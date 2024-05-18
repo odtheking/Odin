@@ -15,7 +15,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object TerminalTimes : Module(
     name = "Terminal Times",
-    description = "Keeps track of how long you took to complete a terminal.",
+    description = "Records the time taken to complete terminals in floor 7.",
     category = Category.FLOOR7
 ) {
     private val sendMessage: Int by SelectorSetting("Send Message", "Always", arrayListOf("Only PB", "Always"))
@@ -81,7 +81,7 @@ object TerminalTimes : Module(
         val previousTime = currentTerminal!!.setting.value
         if (time < previousTime + 0.005) {
             modMessage("§fNew best time for §6${currentTerminal?.name} §fis §a${time}s, §fold best time was §a${previousTime}s")
-            currentTerminal?.setting?.value = time.round(2)
+            currentTerminal?.setting?.value = time.round(2).toDouble()
             Config.save()
         }
         currentTerminal = null

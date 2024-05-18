@@ -26,7 +26,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object SimonSays : Module(
     name = "Simon Says",
-    description = "Different features for the Simon Says puzzle in f7/m7.",
+    description = "Different features for the Simon Says puzzle in floor 7.",
     category = Category.FLOOR7,
     tag = TagType.RISKY
 ) {
@@ -120,7 +120,7 @@ object SimonSays : Module(
     fun onEntityJoin(event: PostEntityMetadata) {
         val ent = mc.theWorld.getEntityByID(event.packet.entityId)
         if (ent !is EntityItem || Item.getIdFromItem(ent.entityItem.item) != 77) return
-        val pos = BlockPos(ent.posX.floor(), ent.posY.floor(), ent.posZ.floor()).east()
+        val pos = BlockPos(ent.posX.floor().toDouble(), ent.posY.floor().toDouble(), ent.posZ.floor().toDouble()).east()
         val index = clickInOrder.indexOf(pos)
         if (index == 2 && clickInOrder.size == 3) {
             clickInOrder.removeFirst()

@@ -6,6 +6,7 @@ import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
+import me.odinmain.utils.skyblock.getBlockAt
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.*
 import net.minecraft.client.renderer.entity.RenderManager
@@ -676,7 +677,7 @@ object RenderUtils {
     ) {
         if (outline == 0f && fill == 0f) return
 
-        val block = mc.theWorld?.getBlockState(pos)?.block ?: return
+        val block = getBlockAt(pos)
 
         block.setBlockBoundsBasedOnState(mc.theWorld, pos)
         val aabb = block.getSelectedBoundingBox(mc.theWorld, pos).outlineBounds()

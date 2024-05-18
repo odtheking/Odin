@@ -8,7 +8,7 @@ import me.odinmain.features.settings.impl.BooleanSetting
 object Waypoints : Module(
     name = "Waypoints",
     category = Category.RENDER,
-    description = "Custom Waypoints! /wp gui."
+    description = "Allows to render waypoints based on coordinates in chat."
 ) {
     private val fromParty: Boolean by BooleanSetting("From Party Chat", false, description = "Adds waypoints from party chat.")
     private val fromAll: Boolean by BooleanSetting("From All Chat", false, description = "Adds waypoints from all chat.")

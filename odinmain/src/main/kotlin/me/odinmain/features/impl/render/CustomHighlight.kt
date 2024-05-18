@@ -60,7 +60,7 @@ object CustomHighlight : Module(
 
    @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
-        if (mode != 0 || event.entity !in currentEntities || (!mc.thePlayer.canEntityBeSeen(event.entity) && !renderThrough)) return
+        if (mode != 0 || event.entity !in currentEntities || (renderThrough && !mc.thePlayer.canEntityBeSeen(event.entity))) return
         profile("Outline Esp") { OutlineUtils.outlineEntity(event, thickness, color, true) }
     }
 

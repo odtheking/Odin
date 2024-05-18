@@ -33,7 +33,7 @@ import kotlin.math.sqrt
 
 object Trajectories : Module(
     "Trajectories",
-    description = "Displays the trajectory of certain items.",
+    description = "Displays the trajectory of pearls and bows.",
     category = Category.RENDER
 ) {
     private val bows: Boolean by BooleanSetting("Bows", true, description = "Render trajectories of bow arrows")

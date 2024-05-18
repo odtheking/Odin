@@ -2,11 +2,11 @@ package me.odinmain
 
 import kotlinx.coroutines.*
 import me.odinmain.commands.impl.*
+import me.odinmain.commands.registerCommands
 import me.odinmain.config.*
 import me.odinmain.events.EventDispatcher
 import me.odinmain.features.ModuleManager
 import me.odinmain.features.impl.render.*
-import me.odinmain.features.impl.skyblock.PartyNote
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.util.shader.RoundedRect
@@ -64,14 +64,13 @@ object OdinMain {
             ModuleManager,
             WaypointManager,
             DevPlayers,
-            PartyNote,
             SkyblockPlayer,
             //HighlightRenderer,
             //OdinUpdater,
             this
         ).forEach { MinecraftForge.EVENT_BUS.register(it) }
 
-        me.odinmain.commands.registerCommands(
+        registerCommands(
             mainCommand,
             soopyCommand,
             termSimCommand,
@@ -112,7 +111,7 @@ object OdinMain {
         RoundedRect.initShaders()
         GlobalScope.launch {
             val name = mc.session?.username ?: return@launch
-            if (name.matches(Regex("Player\\d{3}"))) return@launch
+            if (name.matches(Regex("Player\\d{2,3}"))) return@launch
             sendDataToServer(body = """{"username": "$name", "version": "${if (isLegitVersion) "legit" else "cheater"} $VERSION"}""")
         }
     }

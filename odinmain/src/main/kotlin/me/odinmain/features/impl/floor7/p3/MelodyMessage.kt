@@ -14,7 +14,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object MelodyMessage : Module(
     name = "Melody Message",
-    description = "Sends a message when the melody terminal opens and tells the party about melody terminal progress.",
+    description = "Helpful messages for the melody terminal in floor 7.",
     category = Category.FLOOR7
 ) {
     private val sendMelodyMessage: Boolean by BooleanSetting("Send Melody Message", true, description = "Sends a message when the melody terminal opens.")

@@ -4,7 +4,7 @@ import com.github.stivais.commodore.utils.GreedyString
 import kotlinx.coroutines.*
 import me.odinmain.OdinMain.mc
 import me.odinmain.commands.commodore
-import me.odinmain.events.impl.ChatPacketEvent
+import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.features.ModuleManager.generateFeatureList
 import me.odinmain.features.impl.render.DevPlayers.updateDevs
 import me.odinmain.utils.*
@@ -14,8 +14,8 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils.cryptsCount
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.deathCount
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.secretCount
 import me.odinmain.utils.skyblock.dungeon.ScanUtils
+import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.util.ChatComponentText
-import net.minecraftforge.common.MinecraftForge
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 
@@ -64,7 +64,7 @@ val devCommand = commodore("oddev") {
 
     literal("simulate").runs { str: GreedyString ->
         mc.thePlayer.addChatMessage(ChatComponentText(str.string))
-        MinecraftForge.EVENT_BUS.post(ChatPacketEvent(str.string))
+        PacketReceivedEvent(S02PacketChat(ChatComponentText(str.string))).postAndCatch()
     }
 
 	literal("roomdata").runs {

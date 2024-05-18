@@ -19,7 +19,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object InactiveWaypoints : Module(
     name = "Inactive Waypoints",
     category = Category.FLOOR7,
-    description = "Shows inactive terminals, devices and levers"
+    description = "Shows inactive terminals, devices and levers."
 ) {
     private val showTerminals: Boolean by BooleanSetting(name = "Show Terminals", default = true, description = "Shows inactive terminals")
     private val showDevices: Boolean by BooleanSetting(name = "Show Devices", default = true, description = "Shows inactive devices")

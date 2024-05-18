@@ -21,7 +21,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object ChocolateFactory : Module(
     "Chocolate Factory",
-    description = "Automatically clicks the cookie in the Chocolate Factory menu.",
+    description = "Automates the Chocolate Factory.",
     category = Category.SKYBLOCK
 ) {
     private val clickFactory: Boolean by BooleanSetting("Click Factory", false, description = "Click the cookie in the Chocolate Factory menu.")
