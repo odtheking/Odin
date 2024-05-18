@@ -38,7 +38,7 @@ object BlockOverlay : Module(
 
     @SubscribeEvent
     fun onRenderBlockOverlay(event: DrawBlockHighlightEvent) {
-        if (event.target.typeOfHit != MovingObjectType.BLOCK) return
+        if (event.target.typeOfHit != MovingObjectType.BLOCK || mc.gameSettings.thirdPersonView != 0) return
         event.isCanceled = true
 
         color.bind()
