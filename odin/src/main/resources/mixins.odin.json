@@ -17,6 +17,7 @@
     "accessors.EntityRendererAccessor",
     "accessors.IEntityPlayerSPAccessor",
     "accessors.IMinecraftAccessor",
+    "mixins.MixinEntityPlayerSP",
     "mixins.MixinEntityRenderer",
     "mixins.MixinFontRenderer",
     "mixins.MixinGuiContainer",

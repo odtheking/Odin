@@ -22,8 +22,7 @@ object AutoGFS : Module(
                 !DungeonUtils.isGhost && mc.currentScreen == null &&
                 ((inKuudra && KuudraUtils.inKuudra) || (inDungeon && DungeonUtils.inDungeons))
             ) {
-
-                if (mc.thePlayer?.inventory?.mainInventory?.all { it?.itemID == "ENDER_PEARL" } == true && sackCooldown.hasTimePassed()) {
+                if (mc.thePlayer?.inventory?.mainInventory?.find { it?.itemID == "ENDER_PEARL" } == null && sackCooldown.hasTimePassed()) {
                     sendCommand("gfs ENDER_PEARL 16")
                     sackCooldown.update()
                 }
