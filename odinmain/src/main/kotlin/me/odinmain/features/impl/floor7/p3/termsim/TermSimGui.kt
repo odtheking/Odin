@@ -49,7 +49,7 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
 
     fun solved(name: String, pbIndex: Int) {
         val time = ((System.currentTimeMillis() - startTime) / 1000.0).round(2).toDouble()
-        TerminalTimes.simPBs.time(pbIndex, time, "§a$name §7solved in §6", "s§7!", addPBString = true, addOldPBString = true)
+        TerminalTimes.simPBs.time(pbIndex, time, "s§7!", "§a$name §7solved in §6", addPBString = true, addOldPBString = true)
         resetInv()
         if (this.consecutive > 0) openTerminal(ping, consecutive) else StartGui.open(ping)
     }
