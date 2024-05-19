@@ -2,7 +2,6 @@ package me.odinmain.utils.skyblock.dungeon
 
 import com.google.common.collect.ComparisonChain
 import me.odinmain.OdinMain.mc
-import me.odinmain.config.DungeonWaypointConfig
 import me.odinmain.config.DungeonWaypointConfigCLAY
 import me.odinmain.events.impl.EnteredDungeonRoomEvent
 import me.odinmain.features.impl.dungeon.DungeonWaypoints.DungeonWaypoint
@@ -127,20 +126,6 @@ object DungeonUtils {
     fun setWaypoints(curRoom: FullRoom) {
         val room = curRoom.room
         curRoom.waypoints = mutableListOf<DungeonWaypoint>().apply {
-            // THIS IS FOR MIGRATION FROM CONFIGS ON "ALPHA" RELEASES (VERSIONS GOTTEN FROM GITHUB AFTER 1.2.5.BETA4
-            DungeonWaypointConfig.waypoints[room.data.name]?.let { waypoints ->
-                val distinct = curRoom.positions.distinct().minByOrNull { it.core } ?: return
-                waypoints.forEach { waypoint ->
-                    val vecBasedOnClay = waypoint.toVec3().rotateToNorth(room.rotation).addVec(x = distinct.x, z = distinct.z).subtractVec(x = curRoom.clayPos.x, z = curRoom.clayPos.z).rotateAroundNorth(room.rotation)
-                    DungeonWaypointConfigCLAY.waypoints.getOrPut(room.data.name) { mutableListOf() }.add(
-                        DungeonWaypoint(vecBasedOnClay.xCoord, vecBasedOnClay.yCoord, vecBasedOnClay.zCoord, waypoint.color, waypoint.filled, waypoint.depth, waypoint.aabb, waypoint.title)
-                    )
-                    DungeonWaypointConfigCLAY.saveConfig()
-                    DungeonWaypointConfig.saveConfig()
-                }
-            }
-            DungeonWaypointConfig.waypoints[room.data.name]?.clear()
-
             DungeonWaypointConfigCLAY.waypoints[room.data.name]?.let { waypoints ->
                 addAll(waypoints.map { waypoint ->
                     val vec = waypoint.toVec3().rotateAroundNorth(room.rotation).addVec(x = curRoom.clayPos.x, z = curRoom.clayPos.z)

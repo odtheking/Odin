@@ -2,26 +2,17 @@ package me.odinmain.features.impl.render
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.DualSetting
-import me.odinmain.features.settings.impl.HudSetting
+import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.darker
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.*
 import me.odinmain.utils.render.RenderUtils.bind
-import me.odinmain.utils.render.getTextWidth
-import me.odinmain.utils.render.text
 import net.minecraft.client.gui.Gui.drawRect
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.scoreboard.Score
-import net.minecraft.scoreboard.ScoreObjective
-import net.minecraft.scoreboard.ScorePlayerTeam
-import net.minecraft.scoreboard.Scoreboard
+import net.minecraft.scoreboard.*
 import net.minecraft.util.EnumChatFormatting
-import org.lwjgl.opengl.GL11
 import kotlin.math.max
 
 
@@ -80,13 +71,10 @@ object Sidebar : Module(
     }
 
     private fun drawString(str: String, x: Int, y: Int) {
-        if (customFont) {
+        if (customFont)
             text(str, x - 1, y + 3, Color.WHITE, 7, shadow = textShadow)
-        } else if (textShadow) {
-            mc.fontRendererObj.drawStringWithShadow(str, x.toFloat(), y.toFloat(), -1)
-        } else {
-            mc.fontRendererObj.drawString(str, x, y, -1)
-        }
+        else
+            mcText(str, x, y, 1, Color.WHITE, shadow = textShadow)
     }
 
     private fun getStringWidth(str: String): Int {

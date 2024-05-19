@@ -90,9 +90,7 @@ object OdinMain {
             config.mkdirs()
         }
 
-        launch { MiscConfig.loadConfig() }
         launch { WaypointConfig.loadConfig() }
-        launch { DungeonWaypointConfig.loadConfig() }
         launch { PBConfig.loadConfig() }
         launch { DungeonWaypointConfigCLAY.loadConfig() }
     }
@@ -102,7 +100,6 @@ object OdinMain {
         runBlocking {
             launch {
                 Config.load()
-                Config.save() // so changes from MiscConfig get saved
                 ClickGUIModule.firstTimeOnVersion = ClickGUIModule.lastSeenVersion != VERSION
                 ClickGUIModule.lastSeenVersion = VERSION
             }
