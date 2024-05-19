@@ -55,7 +55,7 @@ object DragonPriority {
         }
         devMessage("§7 power: $totalPower")
         devMessage("§7 class: $playerClass")
-        devMessage("§7 priority: ${spawningDragon[0].name}, ${spawningDragon[1].name}")
+        devMessage("§7 priority: ${spawningDragon?.get(0)?.name}, ${spawningDragon?.get(1)?.name}")
         devMessage("§7 priorityList: ${priorityList.joinToString(", ") { it.name }}")
         devMessage("is total power >= normal power? ${totalPower >= normalPower}")
         devMessage("is total power >= easy power? ${totalPower >= easyPower}")
