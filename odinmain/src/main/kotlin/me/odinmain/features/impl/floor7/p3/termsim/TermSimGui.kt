@@ -2,13 +2,11 @@ package me.odinmain.features.impl.floor7.p3.termsim
 
 
 import me.odinmain.OdinMain.display
-import me.odinmain.config.Config
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.events.impl.PacketSentEvent
+import me.odinmain.features.impl.floor7.p3.TerminalTimes
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
-import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.*
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.*
@@ -49,13 +47,9 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
         GuiEvent.GuiLoadedEvent(name, inventorySlots as ContainerChest).postAndCatch()
     }
 
-    fun solved(name: String, oldPb: NumberSetting<Double>) {
+    fun solved(name: String, pbIndex: Int) {
         val time = ((System.currentTimeMillis() - startTime) / 1000.0).round(2).toDouble()
-        if (time < oldPb.value) {
-            modMessage("§a$name §7solved in §6$time §7(§d§lNew PB§r§7)! Old PB was §8${oldPb.value.round(2)}s§7.")
-            oldPb.value = time
-            Config.save()
-        } else modMessage("§a$name solved in §6${time}s §a!")
+        TerminalTimes.simPBs.time(pbIndex, time, "§a$name §7solved in §6", "s§7!", addPBString = true, addOldPBString = true)
         resetInv()
         if (this.consecutive > 0) openTerminal(ping, consecutive) else StartGui.open(ping)
     }
