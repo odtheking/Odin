@@ -5,16 +5,12 @@ import com.github.stivais.ui.color.blue
 import com.github.stivais.ui.color.green
 import com.github.stivais.ui.color.red
 import me.odinmain.OdinMain.mc
-import org.apache.commons.io.IOUtils
 import org.lwjgl.nanovg.NVGColor
 import org.lwjgl.nanovg.NVGLUFramebuffer
 import org.lwjgl.nanovg.NVGPaint
 import org.lwjgl.nanovg.NanoVG.*
 import org.lwjgl.nanovg.NanoVGGL2.*
 import org.lwjgl.opengl.GL11.*
-import java.io.FileNotFoundException
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
 import kotlin.math.round
 
 
@@ -24,23 +20,19 @@ object NVGRenderer : Renderer {
     private val nvgColor: NVGColor = NVGColor.malloc()
     private val nvgColor2: NVGColor = NVGColor.malloc()
 
+    private val fonts = HashMap<Font, Int>()
     private val fbos = HashMap<Framebuffer, NVGLUFramebuffer>()
     private var vg: Long = -1
 
     // used in getTextWidth to avoid reallocating
     private val fontBounds = FloatArray(4)
 
-//    var nvgFbo: NVGFBO? = null
-
     // this will be used later for fixing bugs caused by nvg i think
     var drawing: Boolean = false
-
-    private var tempFont: NVGFont
 
     init {
         vg = nvgCreate(NVG_ANTIALIAS)
         require(vg != -1L) { "Failed to initialize NanoVG" }
-        tempFont = NVGFont("Regular", "/assets/odinmain/fonts/Regular.otf")
     }
 
     override fun beginFrame(width: Float, height: Float) {
@@ -189,19 +181,19 @@ object NVGRenderer : Renderer {
         nvgFill(vg)
     }
 
-    override fun text(text: String, x: Float, y: Float, size: Float, color: Int) {
+    override fun text(text: String, x: Float, y: Float, size: Float, color: Int, font: Font) {
         nvgBeginPath(vg)
         nvgFontSize(vg, size)
-        nvgFontFaceId(vg, tempFont.id)
+        nvgFontFaceId(vg, getIDFromFont(font))
         color(color)
         nvgFillColor(vg, nvgColor)
         nvgText(vg, x, y, text)
         nvgClosePath(vg)
     }
 
-    override fun textWidth(text: String, size: Float): Float {
+    override fun textWidth(text: String, size: Float, font: Font): Float {
         nvgFontSize(vg, size)
-        nvgFontFaceId(vg, tempFont.id)
+        nvgFontFaceId(vg, getIDFromFont(font))
         return nvgTextBounds(vg, 0f, 0f, text, fontBounds)
     }
 
@@ -218,19 +210,9 @@ object NVGRenderer : Renderer {
         }
     }
 
-    class NVGFont(val name: String, path: String) {
-
-        var id: Int = -1
-        private val buffer: ByteBuffer
-
-        init {
-            val stream = this::class.java.getResourceAsStream(path) ?: throw FileNotFoundException(path)
-            val bytes =  IOUtils.toByteArray(stream)
-            stream.close()
-            buffer = ByteBuffer.allocateDirect(bytes.size).order(ByteOrder.nativeOrder()).put(bytes)
-            buffer.flip()
-            id = nvgCreateFontMem(vg, name, buffer, false)
-            require(id != -1) { "Font failed to initialize" }
+    private fun getIDFromFont(font: Font): Int {
+        return fonts[font] ?: nvgCreateFontMem(vg, font.name, font.buffer, false).also {
+            fonts[font] = it
         }
     }
 }

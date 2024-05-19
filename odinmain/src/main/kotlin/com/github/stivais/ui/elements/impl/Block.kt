@@ -8,6 +8,8 @@ import com.github.stivais.ui.constraints.Type
 import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.constraints.sizes.Copying
 import com.github.stivais.ui.elements.Element
+import com.github.stivais.ui.elements.scope.BlockScope
+import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.renderer.GradientDirection
 import com.github.stivais.ui.utils.replaceUndefined
 
@@ -32,6 +34,10 @@ open class Block(constraints: Constraints?, color: Color) : Element(constraints?
         outline = thickness
         outlineColor = color
         return this
+    }
+
+    override fun createScope(): ElementScope<*> {
+        return BlockScope(this)
     }
 }
 

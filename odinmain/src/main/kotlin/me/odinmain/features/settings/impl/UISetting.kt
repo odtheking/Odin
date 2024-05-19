@@ -10,5 +10,5 @@ class UISetting(val height: Size, val block: Element.() -> Unit) : Setting<Any?>
     override val default: Any? = null
     override var value: Any? = null
 
-    override fun getElement(parent: Element): SettingElement = parent.setting(height, block)
+    override fun getElement(parent: Element): SettingElement = parent.oldSetting(height, block)
 }

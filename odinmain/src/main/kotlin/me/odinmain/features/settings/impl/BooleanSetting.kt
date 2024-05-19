@@ -6,10 +6,8 @@ import com.github.stivais.ui.constraints.at
 import com.github.stivais.ui.constraints.constrain
 import com.github.stivais.ui.constraints.percent
 import com.github.stivais.ui.constraints.px
-import com.github.stivais.ui.elements.Element
-import com.github.stivais.ui.elements.button
-import com.github.stivais.ui.elements.text
-import com.github.stivais.ui.events.onClick
+import com.github.stivais.ui.elements.scope.ElementScope
+import com.github.stivais.ui.impl.button
 import com.github.stivais.ui.impl.mainColor
 import com.github.stivais.ui.utils.radii
 import com.google.gson.JsonElement
@@ -43,23 +41,25 @@ class BooleanSetting (
         }
     }
 
-    override fun getElement(parent: Element): SettingElement = parent.setting(40.px) {
-        text(
-            text = name,
-            pos = at(x = 6.px),
-            size = 40.percent
-        )
-        button(
-            constraints = constrain(x = -(6.px), w = 20.px, h = 50.percent),
-            color = color(from = Color.RGB(38, 38, 38), to = mainColor),
-            on = value,
-            radii = radii(all = 5)
-        ) {
-            onClick(0) {
-                value = !value
-                true
+    override fun ElementScope<*>.createElement() {
+        setting(40.px) {
+            text(
+                text = name,
+                pos = at(x = 6.px),
+                size = 40.percent
+            )
+            button(
+                constraints = constrain(x = -(6.px), w = 20.px, h = 50.percent),
+                color = color(from = Color.RGB(38, 38, 38), to = mainColor),
+                on = value,
+                radii = radii(all = 5)
+            ) {
+                onClick(0) {
+                    value = !value
+                    true
+                }
+                outline(color = mainColor)
             }
-            outline(color = mainColor)
         }
     }
 }

@@ -39,7 +39,7 @@ class NewColorSetting(
     // this is quite messy, however it would've been messier getting it to work with some animation
     override fun getElement(parent: Element): SettingElement {
         val size = Animatable(from = 40.px, to = if (allowAlpha) 285.px else 255.px)
-        return parent.setting(size) {
+        return parent.oldSetting(size) {
             column(constraints = copies()) {
                 group(
                     constraints = constrain(

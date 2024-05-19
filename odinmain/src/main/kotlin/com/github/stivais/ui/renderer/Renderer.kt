@@ -1,5 +1,6 @@
 package com.github.stivais.ui.renderer
 
+import com.github.stivais.ui.UI
 import com.github.stivais.ui.color.Color
 
 interface Renderer {
@@ -52,8 +53,8 @@ interface Renderer {
 
     // todo: add fonts
 
-    fun text(text: String, x: Float, y: Float, size: Float, color: Int = Color.WHITE.rgba)
+    fun text(text: String, x: Float, y: Float, size: Float, color: Int = Color.WHITE.rgba, font: Font = UI.defaultFont)
 
-    fun textWidth(text: String, size: Float): Float
+    fun textWidth(text: String, size: Float, font: Font = UI.defaultFont): Float
 
 }

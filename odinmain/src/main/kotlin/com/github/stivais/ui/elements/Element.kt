@@ -8,6 +8,7 @@ import com.github.stivais.ui.constraints.Constraints
 import com.github.stivais.ui.constraints.Type
 import com.github.stivais.ui.constraints.measurements.Undefined
 import com.github.stivais.ui.constraints.positions.Center
+import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.events.Event
 import com.github.stivais.ui.events.Mouse
 import com.github.stivais.ui.utils.forLoop
@@ -27,7 +28,10 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
 
     open var events: HashMap<Event, ArrayList<Event.() -> Boolean>>? = null
 
-    private var initializationTasks: ArrayList<() -> Unit>? = null
+    internal var initializationTasks: ArrayList<() -> Unit>? = null
+
+    val initialized
+        get() = ::ui.isInitialized
 
     var x: Float = 0f
     var y: Float = 0f
@@ -50,7 +54,7 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
 
     var enabled: Boolean = true
 
-    private var scissors: Boolean = false
+   var scissors: Boolean = false
 
     var renders: Boolean = true
         get() {
@@ -82,8 +86,10 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
 
     fun clip() {
         elements?.forLoop {
-            it.renders = it.intersects(x, y, width, height)
-            it.clip()
+            it.renders = it.intersects(x, y, width, height) && width != 0f && height != 0f
+            if (it.renders) {
+                it.clip()
+            }
         }
     }
 
@@ -93,7 +99,7 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
         ui.needsRedraw = true
     }
 
-    private var placed: Boolean = false
+    protected var placed: Boolean = false
 
     open fun place(element: Element) {
         if (!placed) {
@@ -107,17 +113,12 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
     fun render() {
         if (!renders) return
         draw()
-        // check if size is valid
-        if (width != 0f && height != 0f) {
-            if (scissors) renderer.pushScissor(x, y, width, height)
-            elements?.forLoop { element ->
-                element.render()
-            }
-            if (scissors) renderer.popScissor()
+        if (scissors) renderer.pushScissor(x, y, width, height)
+        elements?.forLoop { element ->
+            element.render()
         }
+        if (scissors) renderer.popScissor()
     }
-
-    var last = color?.rgba ?: 0
 
     open fun accept(event: Event): Boolean {
         if (events != null) {
@@ -142,18 +143,26 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
         if (elements == null) elements = arrayListOf()
         elements!!.add(element)
         element.parent = this
-        element.initialize(ui)
         onElementAdded(element)
-        if (ui.settings.positionOnAdd) element.position()
+        if (::ui.isInitialized) {
+            element.initialize(ui)
+        }
     }
 
     fun initialize(ui: UI) {
         this.ui = ui
+        elements?.forLoop {
+            it.initialize(ui)
+        }
         if (initializationTasks != null) {
             initializationTasks!!.forLoop { it() }
             initializationTasks!!.clear()
             initializationTasks = null
         }
+    }
+
+    open fun createScope(): ElementScope<*> {
+        return ElementScope(this)
     }
 
     // sets up position if element being added has an undefined position

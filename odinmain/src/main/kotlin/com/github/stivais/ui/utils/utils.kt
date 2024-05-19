@@ -31,3 +31,9 @@ inline fun <E> ArrayList<E>.forLoop(block: (E) -> Unit) {
         block(this[i])
     }
 }
+
+/**
+ * Multiplies a number by 1_000_000_000 to match nanoseconds
+ */
+val Number.seconds
+    get() = this.toFloat() * 1_000_000_000

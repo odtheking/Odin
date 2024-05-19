@@ -5,6 +5,7 @@ import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.measurements.Pixel
 import com.github.stivais.ui.elements.Element
+import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.utils.animate
 import com.github.stivais.ui.utils.forLoop
 import com.github.stivais.ui.utils.seconds
@@ -68,23 +69,23 @@ abstract class Setting<T> (
         this.value = value
     }
 
-    /**
-     * Generates elements for rendering the setting to the ClickGUI.
-     *
-     * Note: It is required to use [setting] to set the element properly
-     *
-     * Design note: It is recommended for all height constraints to be percent-based
-     * to make animation look nice (It does lead to bad code unfortunately)
-     */
-    internal open fun getElement(parent: Element): SettingElement? = null
+    internal open fun ElementScope<*>.createElement() {}
+
+    protected open fun getElement(parent: Element): SettingElement? = null
 
     /**
      * Creates a [SettingElement] and sets it up
      */
-    internal fun Element.setting(height: Size, block: SettingElement.() -> Unit): SettingElement {
+    protected fun Element.oldSetting(height: Size, block: SettingElement.() -> Unit): SettingElement {
         val element = SettingElement(height)
         addElement(element)
         element.block()
+        return element
+    }
+
+    protected fun ElementScope<*>.setting(height: Size, block: ElementScope<SettingElement>.() -> Unit): SettingElement {
+        val element = SettingElement(height)
+        create(ElementScope(element), block)
         return element
     }
 
@@ -107,7 +108,7 @@ abstract class Setting<T> (
     }
 
     // todo: cleanup
-    internal inner class SettingElement(height: Size) : Element(size(240.px, Animatable(from = height, to = 0.px))) {
+    protected inner class SettingElement(height: Size) : Element(size(240.px, Animatable(from = height, to = 0.px))) {
 
         private var visible: Boolean = visibilityDependency?.invoke() ?: true
 

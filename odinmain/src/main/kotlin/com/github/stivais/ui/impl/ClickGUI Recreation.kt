@@ -4,13 +4,15 @@ import com.github.stivais.ui.UI
 import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.color.color
+import com.github.stivais.ui.constraints.Constraints
 import com.github.stivais.ui.constraints.at
 import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.constraints.size
 import com.github.stivais.ui.constraints.sizes.Bounding
-import com.github.stivais.ui.elements.*
-import com.github.stivais.ui.events.onClick
+import com.github.stivais.ui.elements.scope.BlockScope
+import com.github.stivais.ui.elements.scope.ElementScope
+import com.github.stivais.ui.elements.scope.hoverEffect
 import com.github.stivais.ui.renderer.Renderer
 import com.github.stivais.ui.utils.animate
 import com.github.stivais.ui.utils.draggable
@@ -27,6 +29,9 @@ import me.odinmain.utils.capitalizeFirst
 @JvmField
 val mainColor = Color { color.rgba }
 
+@JvmField
+val `1`: Color = Color.RGB(26, 26, 26)
+
 // todo: scissoring isn't complete
 fun clickGUI(renderer: Renderer) = UI(renderer) {
     text(
@@ -38,7 +43,7 @@ fun clickGUI(renderer: Renderer) = UI(renderer) {
         column(at(x = panel.x.px, y = panel.y.px)) {
             block(
                 constraints = size(240.px, 40.px),
-                color = Color.RGB(26, 26, 26),
+                color = `1`,
                 radius = radii(tl = 5, tr = 5)
             ) {
                 text(
@@ -46,7 +51,7 @@ fun clickGUI(renderer: Renderer) = UI(renderer) {
                     size = 20.px
                 )
                 onClick(1) {
-                    sibling()!!.height().animate(0.5.seconds, Animations.EaseInOutQuint)
+                    sibling()!!.height.animate(0.5.seconds, Animations.EaseInOutQuint)
                     true
                 }
                 draggable(target = parent!!)
@@ -67,7 +72,7 @@ fun clickGUI(renderer: Renderer) = UI(renderer) {
     }
 }
 
-private fun Element.module(module: Module) {
+private fun ElementScope<*>.module(module: Module) {
     column(size(h = Animatable(from = 32.px, to = Bounding))) {
         scissors()
         button(
@@ -90,7 +95,31 @@ private fun Element.module(module: Module) {
         }
         for (setting in module.settings) {
             if (setting.hidden) continue
-            setting.getElement(this)
+            setting.apply {
+                createElement()
+            }
         }
+    }
+}
+
+inline fun ElementScope<*>.button(
+    constraints: Constraints? = null,
+    color: Color.Animated,
+    on: Boolean = false,
+    radii: FloatArray? = null,
+    crossinline dsl: BlockScope.() -> Unit = {}
+) {
+    if (on) color.swap()
+    block(
+        constraints = constraints,
+        color = color,
+        radius = radii
+    ) {
+        onClick {
+            color.animate(0.15.seconds)
+            false
+        }
+        hoverEffect(0.25.seconds)
+        dsl()
     }
 }

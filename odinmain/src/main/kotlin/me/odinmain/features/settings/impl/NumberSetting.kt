@@ -55,7 +55,7 @@ class NumberSetting<E>(
             return "$number$unit"
         }
 
-    override fun getElement(parent: Element): SettingElement = parent.setting(44.px) {
+    override fun getElement(parent: Element): SettingElement = parent.oldSetting(44.px) {
         text(
             text = name,
             pos = at(x = 6.px, y = 10.px),

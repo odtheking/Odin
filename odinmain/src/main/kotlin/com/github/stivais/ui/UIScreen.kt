@@ -4,6 +4,7 @@ import me.odinmain.OdinMain.display
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.input.Mouse
+import org.lwjgl.opengl.Display
 
 class UIScreen(val ui: UI) : GuiScreen() {
 
@@ -11,7 +12,7 @@ class UIScreen(val ui: UI) : GuiScreen() {
     private var previousHeight: Int = 0
 
     override fun initGui() {
-        ui.initialize()
+        ui.initialize(Display.getWidth(), Display.getHeight())
     }
 
     override fun onGuiClosed() {
@@ -19,30 +20,32 @@ class UIScreen(val ui: UI) : GuiScreen() {
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        ui.eventManager?.apply {
-            val mx = Mouse.getX().toFloat()
-            val my = mc.displayHeight - Mouse.getY() - 1f
+        ui.measureMetrics {
+            ui.eventManager?.apply {
+                val mx = Mouse.getX().toFloat()
+                val my = mc.displayHeight - Mouse.getY() - 1f
 
-            if (this.mouseX != mx || this.mouseY != my) {
-                onMouseMove(mx, my)
+                if (this.mouseX != mx || this.mouseY != my) {
+                    onMouseMove(mx, my)
+                }
+
+                val scroll = Mouse.getEventDWheel()
+                if (scroll != 0) {
+                    onMouseScroll(scroll.toFloat())
+                }
+            }
+            val w = mc.framebuffer.framebufferWidth
+            val h = mc.framebuffer.framebufferHeight
+            if (w != previousWidth || h != previousHeight) {
+                ui.resize(w, h)
+                previousWidth = w
+                previousHeight = h
             }
 
-            val scroll = Mouse.getEventDWheel()
-            if (scroll != 0) {
-                onMouseScroll(scroll.toFloat())
-            }
+            GlStateManager.pushMatrix()
+            ui.render()
+            GlStateManager.popMatrix()
         }
-        val w = mc.framebuffer.framebufferWidth
-        val h = mc.framebuffer.framebufferHeight
-        if (w != previousWidth || h != previousHeight) {
-            ui.resize(w, h)
-            previousWidth = w
-            previousHeight = h
-        }
-
-        GlStateManager.pushMatrix()
-        ui.render()
-        GlStateManager.popMatrix()
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, button: Int) {
@@ -65,11 +68,6 @@ class UIScreen(val ui: UI) : GuiScreen() {
 //            return true
 //        }
 //        return super.keyPressed(keyCode, scanCode, modifiers)
-//    }
-
-//    override fun onResize(mcIn: Minecraft?, w: Int, h: Int) {
-//        ui.resize(mc.framebuffer.framebufferWidth, mc.framebuffer.framebufferHeight)
-//        super.onResize(mcIn, w, h)
 //    }
 
     override fun doesGuiPauseGame(): Boolean = false

@@ -97,11 +97,11 @@ object CookedRenderer : Renderer {
         GradientDirection.TopToBottom -> GradientDirectionOld.Down
     }
 
-    override fun text(text: String, x: Float, y: Float, size: Float, color: Int) {
+    override fun text(text: String, x: Float, y: Float, size: Float, color: Int, font: Font) {
         OdinFont.text(text, x, y, Color(color), size, verticalAlign = TextPos.Top)
     }
 
-    override fun textWidth(text: String, size: Float): Float {
+    override fun textWidth(text: String, size: Float, font: Font): Float {
         return OdinFont.getTextWidth(text, size)
     }
 

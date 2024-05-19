@@ -4,28 +4,26 @@ import com.github.stivais.ui.constraints.Constraints
 import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.elements.impl.Group
+import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.events.EventManager
+import com.github.stivais.ui.renderer.Font
 import com.github.stivais.ui.renderer.Framebuffer
 import com.github.stivais.ui.renderer.NVGRenderer
 import com.github.stivais.ui.renderer.Renderer
 import com.github.stivais.ui.utils.forLoop
-import org.lwjgl.opengl.Display
+import me.odinmain.utils.round
 import java.util.logging.Logger
 
 class UI(
     val renderer: Renderer = NVGRenderer,
     settings: UISettings? = null
 ) {
+    val main: Group = Group(Constraints(0.px, 0.px, 1920.px, 1080.px))
 
     val settings: UISettings = settings ?: UISettings()
 
-    // temp
-    val main: Group = Group(Constraints(0.px, 0.px, Display.getWidth().px, Display.getHeight().px)).also {
-        it.initialize(this)
-    }
-
-    constructor(renderer: Renderer = NVGRenderer, block: Group.() -> Unit) : this(renderer) {
-        main.block()
+    constructor(renderer: Renderer = NVGRenderer, dsl: ElementScope<Group>.() -> Unit) : this(renderer) {
+        ElementScope(main).dsl()
     }
 
     var eventManager: EventManager? = EventManager(this)
@@ -36,7 +34,10 @@ class UI(
 
     var afterInit: ArrayList<() -> Unit>? = null
 
-    fun initialize() {
+    fun initialize(width: Int, height: Int) {
+        main.constraints.width = width.px
+        main.constraints.height = height.px
+        main.initialize(this)
         main.position()
         afterInit?.forLoop { it() }
         afterInit = null
@@ -45,17 +46,18 @@ class UI(
         }
     }
 
-    // frametime metrics
-    private var frames: Int = 0
-    private var frameTime: Long = 0
-    private var performance: String = ""
+    // frame metrics
+    var performance: String? = null
+    var lastUpdate = System.nanoTime()
+    var frames: Int = 0
+    var frameTime: Long = 0
 
     var needsRedraw = true
 
     private var framebuffer: Framebuffer? = null
 
+    // rework fbo
     fun render() {
-        val start = System.nanoTime()
         val fbo = framebuffer
         if (fbo == null) {
             renderer.beginFrame(main.width, main.height)
@@ -65,8 +67,8 @@ class UI(
                 main.clip()
             }
             main.render()
-            if (settings.frameMetrics) {
-                renderer.text(performance, main.width - renderer.textWidth(performance, 12f), main.height - 12f, 12f)
+            performance?.let {
+                renderer.text(it, main.width - renderer.textWidth(it, 12f), main.height - 12f, 12f)
             }
             renderer.endFrame()
         } else {
@@ -82,26 +84,33 @@ class UI(
             }
             renderer.beginFrame(fbo.width, fbo.height)
             renderer.drawFramebuffer(fbo, 0f, 0f)
-            if (settings.frameMetrics) {
-                renderer.text(performance, fbo.width - renderer.textWidth(performance, 12f), fbo.height - 12f, 12f,)
+            performance?.let {
+                renderer.text(it, main.width - renderer.textWidth(it, 12f), main.height - 12f, 12f)
             }
             renderer.endFrame()
         }
+    }
 
-        if (settings.frameMetrics) {
-            frames++
-            frameTime += System.nanoTime() - start
-            if (frames > 100) {
-                performance =
-                    "total elements: ${getStats(main, false)}, " +
-                    "elements rendering: ${getStats(main, true)}," +
-                    "frametime avg: ${(frameTime / frames) / 1_000_000.0}ms"
-                frames = 0
-                frameTime = 0
-            }
-        }
-        frames++
+    // idk about name
+    // kinda verbose
+    internal inline fun measureMetrics(block: () -> Unit) {
+        val start = System.nanoTime()
+        block()
         frameTime += System.nanoTime() - start
+        frames++
+        if (System.nanoTime() - lastUpdate >= 1_000_000_000) {
+            lastUpdate = System.nanoTime()
+            val sb = StringBuilder()
+            if (settings.elementMetrics) {
+                sb.append("elements: ${getStats(main, false)}, elements rendering: ${getStats(main, true)},")
+            }
+            if (settings.frameMetrics) {
+                sb.append("frame-time avg: ${((frameTime / frames) / 1_000_000.0).round(4)}ms")
+            }
+            performance = sb.toString()
+            frames = 0
+            frameTime = 0
+        }
     }
 
     private fun getStats(element: Element, onlyRender: Boolean): Int {
@@ -147,5 +156,7 @@ class UI(
         // temp name
         // future: maybe make a logging class, so you can get an element's "errors" and details
         val logger: Logger = Logger.getLogger("Odin/UI")
+
+        val defaultFont = Font("Regular", "/assets/odinmain/fonts/Regular.otf")
     }
 }
