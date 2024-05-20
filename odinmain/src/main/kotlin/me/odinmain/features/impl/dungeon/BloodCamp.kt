@@ -9,6 +9,7 @@ import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.ServerUtils.averagePing
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import net.minecraft.entity.Entity
@@ -176,8 +177,6 @@ object BloodCamp : Module(
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (watcher.isEmpty() || !bloodhelper) return
 
-        val ping = ServerUtils.averagePing
-
         forRender.filter { (entity) -> !entity.isDead }.forEach { (entity, renderData) ->
             val entityData = entityList[entity] ?: return@forEach
 
@@ -194,20 +193,16 @@ object BloodCamp : Module(
                 (currVector.zCoord - startVector.zCoord) / timeTook
             )
 
-            val endPoint = Vec3(
-                lastEndVector.xCoord + (endVector.xCoord - lastEndVector.xCoord) * endVectorUpdated / 100,
-                lastEndVector.yCoord + (endVector.yCoord - lastEndVector.yCoord) * endVectorUpdated / 100,
-                lastEndVector.zCoord + (endVector.zCoord - lastEndVector.zCoord) * endVectorUpdated / 100
-            )
+            val endPoint = calcEndVector(endVector, lastEndVector, endVectorUpdated/100)
 
             val pingPoint = Vec3(
-                currVector.xCoord + speedVectors.xCoord * ping,
-                currVector.yCoord + speedVectors.yCoord * ping,
-                currVector.zCoord + speedVectors.zCoord * ping
+                currVector.xCoord + speedVectors.xCoord * averagePing,
+                currVector.yCoord + speedVectors.yCoord * averagePing,
+                currVector.zCoord + speedVectors.zCoord * averagePing
             )
 
-            val renderEndPoint = getRenderVector(endPoint, event.partialTicks, renderData.lastEndPoint)
-            val renderPingPoint = getRenderVector(pingPoint, event.partialTicks, renderData.lastPingPoint)
+            val renderEndPoint = calcEndVector(endPoint, renderData.lastEndPoint, event.partialTicks, !interpolation)
+            val renderPingPoint = calcEndVector(pingPoint, renderData.lastPingPoint, event.partialTicks, !interpolation)
 
             renderData.lastEndPoint = endPoint
             renderData.lastPingPoint = pingPoint
@@ -218,7 +213,7 @@ object BloodCamp : Module(
 
             val time = renderData.time ?: return@forEach
 
-            if (ping < time) {
+            if (averagePing < time) {
                 Renderer.drawBox(pingAABB, mboxColor, fillAlpha = 0f, outlineAlpha = mboxColor.alpha, depth = true)
                 Renderer.drawBox(endAABB, pboxColor, fillAlpha = 0f, outlineAlpha = pboxColor.alpha, depth = true)
             } else Renderer.drawBox(endAABB, fboxColor, fillAlpha = 0f, outlineAlpha = fboxColor.alpha, depth = true)
@@ -242,12 +237,12 @@ object BloodCamp : Module(
         }
     }
 
-    private fun getRenderVector(currVector: Vec3, partialTicks: Float, lastVector: Vec3?): Vec3 {
-        return if (lastVector != null && interpolation) {
+    private fun calcEndVector(currVector: Vec3, lastVector: Vec3?, multiplier: Float, skip: Boolean = false): Vec3 {
+        return if (lastVector != null && !skip) {
             Vec3(
-                lastVector.xCoord + (currVector.xCoord - lastVector.xCoord) * partialTicks,
-                lastVector.yCoord + (currVector.yCoord - lastVector.yCoord) * partialTicks,
-                lastVector.zCoord + (currVector.zCoord - lastVector.zCoord) * partialTicks
+                lastVector.xCoord + (currVector.xCoord - lastVector.xCoord) * multiplier,
+                lastVector.yCoord + (currVector.yCoord - lastVector.yCoord) * multiplier,
+                lastVector.zCoord + (currVector.zCoord - lastVector.zCoord) * multiplier
             )
         } else currVector
     }
