@@ -20,7 +20,7 @@ public abstract class MixinEntityPlayerSP {
         return NoDebuff.INSTANCE.isNoPush() || original;
     }
 
-    @Inject(method = "sendChatMessage", at = @At("HEAD"), cancellable = true, locals = LocalCapture.CAPTURE_FAILHARD)
+    @Inject(method = "sendChatMessage", at = @At("HEAD"), cancellable = true, locals = LocalCapture.CAPTURE_FAILSOFT)
     private void onSendChatMessage(String message, CallbackInfo ci) {
         if (MinecraftForge.EVENT_BUS.post(new MessageSentEvent(message)))
             ci.cancel();
