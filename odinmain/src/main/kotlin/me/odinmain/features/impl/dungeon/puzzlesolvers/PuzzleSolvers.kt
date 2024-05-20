@@ -9,6 +9,7 @@ import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.profile
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -80,6 +81,11 @@ object PuzzleSolvers : Module(
             if (waterSolver) waterInteract(it)
         }
 
+        onMessage(Regex("\\[NPC] (.+): (.+).?")) { str ->
+            val (npc, message) = Regex("\\[NPC] (.+): (.+).?").find(str)?.destructured ?: return@onMessage
+            WeirdosSolver.onNPCMessage(npc, message)
+        }
+
         onWorldLoad {
             WaterSolver.reset()
             TPMaze.reset()
@@ -99,6 +105,7 @@ object PuzzleSolvers : Module(
             if (iceFillSolver) IceFillSolver.onRenderWorldLast(iceFillColor)
             if (blazeSolver) BlazeSolver.renderBlazes()
             if (beamsSolver) BeamsSolver.onRenderWorld()
+            WeirdosSolver.onRenderWorld()
         }
     }
 

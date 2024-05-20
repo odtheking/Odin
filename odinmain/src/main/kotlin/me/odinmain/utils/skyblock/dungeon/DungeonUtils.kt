@@ -28,6 +28,8 @@ import net.minecraft.world.WorldSettings
 import net.minecraftforge.event.entity.living.LivingEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object DungeonUtils {
 
@@ -93,8 +95,14 @@ object DungeonUtils {
     }
 
     @SubscribeEvent
-    fun onMove(event: LivingEvent.LivingUpdateEvent) {
-        if (mc.theWorld == null /*|| !inDungeons */||inBoss || !event.entity.equals(mc.thePlayer)) return
+    fun onMove(event: ClientTickEvent) {
+        if (event.phase != TickEvent.Phase.END)
+        if ((inBoss || (!inDungeons && mc.theWorld?.isRemote == false)) && currentRoom != null) {
+            currentRoom = null
+            EnteredDungeonRoomEvent(null).postAndCatch()
+            return
+        }
+        if (mc.theWorld == null /*|| !inDungeons */|| inBoss) return
         val xPos = START_X + ((mc.thePlayer.posX + 200) / 32).toInt() * ROOM_SIZE
         val zPos = START_Z + ((mc.thePlayer.posZ + 200) / 32).toInt() * ROOM_SIZE
         if (lastRoomPos.equal(xPos, zPos) && currentRoom != null) return
