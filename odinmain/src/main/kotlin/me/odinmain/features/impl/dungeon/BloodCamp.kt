@@ -177,7 +177,7 @@ object BloodCamp : Module(
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (watcher.isEmpty() || !bloodhelper) return
 
-        forRender.filter { (entity) -> !entity.isDead }.forEach { (entity, renderData) ->
+        forRender.filter { !it.key.isDead }.forEach { (entity, renderData) ->
             val entityData = entityList[entity] ?: return@forEach
 
             val timeTook = entityData.timetook ?: return@forEach
