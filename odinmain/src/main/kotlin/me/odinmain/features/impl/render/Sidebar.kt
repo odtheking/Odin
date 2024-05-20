@@ -74,7 +74,7 @@ object Sidebar : Module(
         if (customFont)
             text(str, x - 1, y + 3, Color.WHITE, 7, shadow = textShadow)
         else
-            mcText(str, x, y, 1, Color.WHITE, shadow = textShadow)
+            mcText(str, x, y, 1, Color.WHITE, shadow = textShadow, center = false)
     }
 
     private fun getStringWidth(str: String): Int {

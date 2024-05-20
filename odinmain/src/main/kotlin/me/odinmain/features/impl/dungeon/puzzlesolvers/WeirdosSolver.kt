@@ -2,17 +2,12 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.EnteredDungeonRoomEvent
-import me.odinmain.utils.Vec2
 import me.odinmain.utils.addRotationCoords
-import me.odinmain.utils.floor
 import me.odinmain.utils.noControlCodes
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.util.BlockPos
-import net.minecraft.util.Vec3
 
 object WeirdosSolver {
     private val solutions = listOf(
@@ -31,19 +26,18 @@ object WeirdosSolver {
         val correctNPC = mc.theWorld.loadedEntityList.filterIsInstance<EntityArmorStand>().find { it.name.noControlCodes == npc } ?: return
         val room = DungeonUtils.currentRoom?.room ?: return
 
-        val vec = Vec3(correctNPC.posX, 69.0, correctNPC.posZ).addRotationCoords(room.rotation, -1, 0)
-        modMessage(BlockPos(vec))
-        correctPos = BlockPos(vec)
+        correctPos = BlockPos(correctNPC.posX, 69.0, correctNPC.posZ).addRotationCoords(room.rotation, -1, 0)
     }
 
     fun onRenderWorld() {
+        if (DungeonUtils.currentRoomName != "Three Weirdos") return
         correctPos?.let {
-            RenderUtils.drawBlockBox(it, Color.WHITE)
+            RenderUtils.drawBlockBox(it, PuzzleSolvers.weirdosColor)
         }
     }
 
-    fun enteredRoom(event: EnteredDungeonRoomEvent) {
-
+    fun weirdosRoomEnter(event: EnteredDungeonRoomEvent) {
+        if (event.room?.room?.data?.name != "Three Weirdos")
+            correctPos = null
     }
-
 }

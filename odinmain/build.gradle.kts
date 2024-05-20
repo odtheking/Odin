@@ -25,6 +25,7 @@ repositories {
     mavenCentral()
     maven("https://repo.spongepowered.org/maven/")
     maven("https://repo.essential.gg/repository/maven-public/")
+    maven("https://repo.hypixel.net/repository/Hypixel/")
 }
 
 val shadowImpl: Configuration by configurations.creating {
@@ -44,7 +45,7 @@ dependencies {
     shadowImpl("gg.essential:loader-launchwrapper:1.1.3")
     compileOnly("gg.essential:essential-1.8.9-forge:12132+g6e2bf4dc5")
 
-    //api("com.mojang:brigadier:1.0.18")
+    shadowImpl("net.hypixel:mod-api:0.4.0")
 
     shadowImpl("com.github.Stivais:Commodore:3f4a14b1cf") {
         exclude(module = "kotlin-stdlib-jdk8")

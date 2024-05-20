@@ -28,7 +28,6 @@ abstract class GuiEvent : Event() {
     @Cancelable
     class GuiKeyPressEvent(val container: Container, val gui: GuiContainer, val keyCode: Int) : Event()
 
-
     class GuiClosedEvent(val gui: GuiContainer) : GuiEvent()
 
     @Cancelable
