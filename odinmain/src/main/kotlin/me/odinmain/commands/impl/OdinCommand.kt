@@ -6,6 +6,7 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.commands.commodore
 import me.odinmain.features.impl.dungeon.DungeonWaypoints
 import me.odinmain.features.impl.render.ClickGUIModule
+import me.odinmain.features.impl.render.ServerHud.colorizeFPS
 import me.odinmain.features.impl.render.ServerHud.colorizePing
 import me.odinmain.features.impl.render.ServerHud.colorizeTps
 import me.odinmain.features.impl.skyblock.DianaHelper
@@ -92,6 +93,10 @@ val mainCommand = commodore("od", "odin") {
 
     literal("ping").runs {
         modMessage("${colorizePing(ServerUtils.averagePing.toInt())}ms")
+    }
+
+    literal("fps").runs {
+        modMessage(colorizeFPS(ServerUtils.fps))
     }
 
     literal("tps").runs {

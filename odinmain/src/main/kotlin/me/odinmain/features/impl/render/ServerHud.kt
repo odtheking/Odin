@@ -46,7 +46,7 @@ object ServerHud : Module(
             }
         } else {
             if (style == 0) {
-                val fpsText = "§rFPS: §f${mc.debug.split(" ")[0].toIntOrNull() ?: 0}"
+                val fpsText = "§rFPS: §f${ServerUtils.fps}"
                 val pingText = "§rPing: §f${ServerUtils.averagePing.toInt()}"
                 val tpsText = "§rTPS: §f${if (ServerUtils.averageTps > 19.3) 20 else ServerUtils.averageTps.toInt()}"
                 var width = 0f
@@ -88,7 +88,7 @@ object ServerHud : Module(
         }
     }
 
-    private fun colorizeFPS(fps: Int): String {
+    fun colorizeFPS(fps: Int): String {
         return when {
             fps > 200 -> "§a$fps"
             fps > 100.0 -> "§e$fps"

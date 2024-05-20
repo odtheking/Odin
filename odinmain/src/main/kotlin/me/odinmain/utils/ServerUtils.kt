@@ -2,6 +2,7 @@ package me.odinmain.utils
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.PacketReceivedEvent
+import me.odinmain.features.impl.render.ServerHud
 import net.minecraft.entity.Entity
 import net.minecraft.network.Packet
 import net.minecraft.network.play.client.C16PacketClientStatus
@@ -11,7 +12,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object ServerUtils {
-
     private val packets = ArrayList<Packet<*>>()
 
     fun handleSendPacket(packet: Packet<*>): Boolean {
@@ -28,6 +28,7 @@ object ServerUtils {
     var averagePing = 0.0
     private var isPinging = false
     private var pingStartTime = 0L
+    val fps get() = mc.debug.split(" ")[0].toIntOrNull() ?: 0
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
