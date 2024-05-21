@@ -27,7 +27,7 @@ object DragonPriority {
     }
 
     fun dragonPrioritySpawn(dragon: WitherDragonsEnum) {
-        if (dragonTitle) PlayerUtils.alert("§${dragon.colorCode}${dragon.name} is spawning!")
+        if (dragonTitle && WitherDragons.enabled) PlayerUtils.alert("§${dragon.colorCode}${dragon.name} is spawning!")
         if (dragonPriorityToggle && WitherDragons.enabled && WitherDragonsEnum.entries.filter { it.spawning }.toMutableList().size == 2) modMessage("§${dragon.colorCode}${dragon.name} §7is your priority dragon!")
     }
 
@@ -54,8 +54,8 @@ object DragonPriority {
         }
         devMessage("§7 power: $totalPower")
         devMessage("§7 class: $playerClass")
-        devMessage("§7 priority: ${spawningDragon.map { it.name }}")
-        devMessage("§7 priorityList: ${priorityList.joinToString(", ") { it.name }}")
+        devMessage("§7 priority: $spawningDragon")
+        devMessage("§7 priorityList: $priorityList")
         devMessage("is total power >= normal power? ${totalPower >= normalPower}")
         devMessage("is total power >= easy power? ${totalPower >= easyPower}")
         return spawningDragon[0]

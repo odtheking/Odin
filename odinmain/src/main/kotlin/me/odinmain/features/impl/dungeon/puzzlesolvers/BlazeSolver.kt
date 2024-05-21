@@ -40,7 +40,7 @@ object BlazeSolver {
         blazes.removeAll {
             mc.theWorld.getEntityByID(it.entityId) == null
         }
-        if (blazes.isEmpty()) return partyMessage("Blaze puzzle solved!")
+        if (blazes.isEmpty() && PuzzleSolvers.blazeSendComplete) return partyMessage("Blaze puzzle solved!")
         blazes.forEachIndexed { index, entity ->
             val color = when (index) {
                 0 -> PuzzleSolvers.blazeFirstColor

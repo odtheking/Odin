@@ -9,7 +9,6 @@ import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.profile
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -65,7 +64,12 @@ object PuzzleSolvers : Module(
     private val beamsSolver: Boolean by BooleanSetting("Creeper Beams", true, description = "Shows you the solution for the Creeper Beams puzzle").withDependency { beamsDropDown }
     val beamsDepth: Boolean by BooleanSetting("Depth", false, description = "Depth check").withDependency { beamsSolver && beamsDropDown }
     val beamsTracer: Boolean by BooleanSetting("Tracer", false, description = "Tracer").withDependency { beamsSolver && beamsDropDown }
+    val blazeSendComplete: Boolean by BooleanSetting("Send Complete", false, description = "Send complete message").withDependency { beamsSolver && beamsDropDown }
 
+    private val weirdosDropDown: Boolean by DropdownSetting("Weirdos")
+    private val weirdosSolver: Boolean by BooleanSetting("Weirdos", true, description = "Shows you the solution for the Weirdos puzzle").withDependency { weirdosDropDown }
+    val weirdosColor: Color by ColorSetting("Weirdos Color", Color.GREEN, true, description = "Color for the weirdos solver").withDependency { weirdosSolver && weirdosDropDown }
+    val weirdosStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { weirdosSolver && weirdosDropDown }
 
     init {
         execute(500) {
@@ -81,7 +85,7 @@ object PuzzleSolvers : Module(
             if (waterSolver) waterInteract(it)
         }
 
-        onMessage(Regex("\\[NPC] (.+): (.+).?")) { str ->
+        onMessage(Regex("\\[NPC] (.+): (.+).?"), {enabled && weirdosSolver}) { str ->
             val (npc, message) = Regex("\\[NPC] (.+): (.+).?").find(str)?.destructured ?: return@onMessage
             WeirdosSolver.onNPCMessage(npc, message)
         }
@@ -93,6 +97,7 @@ object PuzzleSolvers : Module(
             IceFillSolver.reset()
             BlazeSolver.reset()
             BeamsSolver.reset()
+            WeirdosSolver.weirdosReset()
         }
     }
 
@@ -101,11 +106,11 @@ object PuzzleSolvers : Module(
         profile("Puzzle Solvers") {
             if (waterSolver) WaterSolver.waterRender()
             if (tpMaze) TPMaze.tpRender()
-            if (tttSolver) TicTacToe.tttRender()
+            if (tttSolver) TTTSolver.tttRenderWorld()
             if (iceFillSolver) IceFillSolver.onRenderWorldLast(iceFillColor)
             if (blazeSolver) BlazeSolver.renderBlazes()
             if (beamsSolver) BeamsSolver.onRenderWorld()
-            WeirdosSolver.onRenderWorld()
+            if (weirdosSolver) WeirdosSolver.onRenderWorld()
         }
     }
 
@@ -124,6 +129,7 @@ object PuzzleSolvers : Module(
         IceFillSolver.enterDungeonRoom(event)
         BlazeSolver.getRoomType(event)
         BeamsSolver.enterDungeonRoom(event)
+        TTTSolver.tttRoomEnter(event)
     }
 
     @SubscribeEvent
