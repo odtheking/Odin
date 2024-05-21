@@ -9,6 +9,7 @@ import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.ServerUtils.averagePing
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import net.minecraft.entity.Entity
@@ -26,19 +27,20 @@ import kotlin.math.roundToInt
 
 object BloodCamp : Module(
     name = "Blood Camp",
-    description = "Draws boxes to spawning mobs in the blood room. WARNING: not perfectly accurate. Mobs spawn randomly between 37 - 41 ticks, adjust offset to adjust between ticks.",
+    description = "Features for Blood Camping",
     category = Category.DUNGEON
 ) {
-    private val bloodhelper: Boolean by BooleanSetting("Blood Camp Assist", default = true, description = "Renders a box where blood mobs will spawn.")
+    private val bloodhelper: Boolean by BooleanSetting("Blood Camp Assist", default = true, description = "Draws boxes to spawning mobs in the blood room. WARNING: not perfectly accurate. Mobs spawn randomly between 37 - 41 ticks, adjust offset to adjust between ticks.")
     private val pboxColor: Color by ColorSetting("Spawn Color", Color.RED, true, description = "Color for Spawn render box. Set alpha to 0 to disable.").withDependency { bloodhelper }
     private val fboxColor: Color by ColorSetting("Final Color", Color.CYAN, true, description = "Color for when Spawn and Mob boxes are merged. Set alpha to 0 to disable.").withDependency { bloodhelper }
     private val mboxColor: Color by ColorSetting("Position Color", Color.GREEN, true, description = "Color for current position box. Set alpha to 0 to disable.").withDependency { bloodhelper }
-    private val boxSize: Double by NumberSetting("Box Size", default = 1.0, increment = 0.1, min = 0.1, max = 1.0, description = "The size of the boxes. Lower values may be less accurate").withDependency { bloodhelper }
-    private val drawLine: Boolean by BooleanSetting("Line", default = true, description = "Line between Final box and Spawn box").withDependency { bloodhelper }
-    private val drawTime: Boolean by BooleanSetting("Time Left", default = true, description = "Time before mob spawn. Adjust offset depending on accuracy. (will always be up to 100 ms off)").withDependency { bloodhelper }
+    private val boxSize: Double by NumberSetting("Box Size", default = 1.0, increment = 0.1, min = 0.1, max = 1.0, description = "The size of the boxes. Lower values may seem less accurate").withDependency { bloodhelper }
+    private val drawLine: Boolean by BooleanSetting("Line", default = true, description = "Line between Position box and Spawn box").withDependency { bloodhelper }
+    private val drawTime: Boolean by BooleanSetting("Time Left", default = true, description = "Time before the blood mob spawns. Adjust offset depending on accuracy. May be up to ~100ms off").withDependency { bloodhelper }
     private val advanced: Boolean by DropdownSetting("Advanced", default = false).withDependency { bloodhelper }
     private val offset: Int by NumberSetting("Offset", default = 20, increment = 1, max = 100, min = -100, description = "Tick offset to adjust between ticks.").withDependency { advanced && bloodhelper }
     private val tick: Int by NumberSetting("Tick", default = 40, increment = 1, max = 41, min = 37, description = "Tick to assume spawn. Adjust offset to offset this value to the ms.").withDependency { advanced && bloodhelper}
+    private val interpolation: Boolean by BooleanSetting("Interpolation", default = true, description = "Interpolates rendering boxes between ticks. Makes the jitter smoother, at the expense of some accuracy.").withDependency { advanced && bloodhelper}
     private val watcherBar: Boolean by BooleanSetting("Watcher Bar", default = true, description = "Shows the watcher's health.")
 
     private var currentName: String? = null
@@ -98,8 +100,8 @@ object BloodCamp : Module(
 
     private val forRender = hashMapOf<EntityArmorStand, RenderEData>()
     data class RenderEData(
-        var currVector: Vec3? = null, var lastEndVector: Vec3? = null, var endVector: Vec3? = null,
-        val startVector: Vec3, var time: Long? = null, var endVecUpdated: Long? = null, var speedVectors: Vec3? = null
+        var currVector: Vec3? = null, var lastEndVector: Vec3? = null, var endVector: Vec3? = null, var lastEndPoint: Vec3? = null,
+        val startVector: Vec3, var time: Long? = null, var endVecUpdated: Long? = null, var speedVectors: Vec3? = null, var lastPingPoint: Vec3? = null
     )
 
     private val entityList = hashMapOf<EntityArmorStand, EntityData>()
@@ -175,17 +177,15 @@ object BloodCamp : Module(
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (watcher.isEmpty() || !bloodhelper) return
 
-        val ping = ServerUtils.averagePing
-
-        forRender.filter { (entity) -> !entity.isDead }.forEach { (entity, data) ->
+        forRender.filter { !it.key.isDead }.forEach { (entity, renderData) ->
             val entityData = entityList[entity] ?: return@forEach
 
             val timeTook = entityData.timetook ?: return@forEach
             val startVector = entityData.startVector ?: return@forEach
             val currVector = entity.positionVector ?: return@forEach
-            val endVector = data.endVector ?: return@forEach
-            val lastEndVector = data.lastEndVector ?: return@forEach
-            val endVectorUpdated = min(ticktime - data.endVecUpdated!!, 100)
+            val endVector = renderData.endVector ?: return@forEach
+            val lastEndVector = renderData.lastEndVector ?: return@forEach
+            val endVectorUpdated = min(ticktime - renderData.endVecUpdated!!, 100)
 
             val speedVectors = Vec3(
                 (currVector.xCoord - startVector.xCoord) / timeTook,
@@ -193,25 +193,27 @@ object BloodCamp : Module(
                 (currVector.zCoord - startVector.zCoord) / timeTook
             )
 
-            val endPoint = Vec3(
-                lastEndVector.xCoord + (endVector.xCoord - lastEndVector.xCoord) * endVectorUpdated / 100,
-                lastEndVector.yCoord + (endVector.yCoord - lastEndVector.yCoord) * endVectorUpdated / 100,
-                lastEndVector.zCoord + (endVector.zCoord - lastEndVector.zCoord) * endVectorUpdated / 100
-            )
+            val endPoint = calcEndVector(endVector, lastEndVector, endVectorUpdated/100)
 
             val pingPoint = Vec3(
-                currVector.xCoord + speedVectors.xCoord * ping,
-                currVector.yCoord + speedVectors.yCoord * ping,
-                currVector.zCoord + speedVectors.zCoord * ping
+                currVector.xCoord + speedVectors.xCoord * averagePing,
+                currVector.yCoord + speedVectors.yCoord * averagePing,
+                currVector.zCoord + speedVectors.zCoord * averagePing
             )
 
-            val boxOffset: Vec3 = Vec3((boxSize/2).unaryMinus(),1.5,(boxSize/2).unaryMinus())
-            val pingAABB = AxisAlignedBB(boxSize,boxSize,boxSize, 0.0, 0.0, 0.0).offset(boxOffset).offset(pingPoint)
-            val endAABB = AxisAlignedBB(boxSize,boxSize,boxSize, 0.0, 0.0, 0.0).offset(boxOffset).offset(endPoint)
+            val renderEndPoint = calcEndVector(endPoint, renderData.lastEndPoint, event.partialTicks, !interpolation)
+            val renderPingPoint = calcEndVector(pingPoint, renderData.lastPingPoint, event.partialTicks, !interpolation)
 
-            val time = data.time ?: return@forEach
+            renderData.lastEndPoint = endPoint
+            renderData.lastPingPoint = pingPoint
 
-            if (ping < time) {
+            val boxOffset = Vec3(-(boxSize/2),1.5,-(boxSize/2))
+            val pingAABB = AxisAlignedBB(boxSize,boxSize,boxSize, 0.0, 0.0, 0.0).offset(boxOffset + renderPingPoint)
+            val endAABB = AxisAlignedBB(boxSize,boxSize,boxSize, 0.0, 0.0, 0.0).offset(boxOffset + renderEndPoint)
+
+            val time = renderData.time ?: return@forEach
+
+            if (averagePing < time) {
                 Renderer.drawBox(pingAABB, mboxColor, fillAlpha = 0f, outlineAlpha = mboxColor.alpha, depth = true)
                 Renderer.drawBox(endAABB, pboxColor, fillAlpha = 0f, outlineAlpha = pboxColor.alpha, depth = true)
             } else Renderer.drawBox(endAABB, fboxColor, fillAlpha = 0f, outlineAlpha = fboxColor.alpha, depth = true)
@@ -233,6 +235,16 @@ object BloodCamp : Module(
             }
             if (drawTime) Renderer.drawStringInWorld("${timeDisplay}s", endPoint.addVec(y = 2), colorTime, depth = true, scale = 0.03f)
         }
+    }
+
+    private fun calcEndVector(currVector: Vec3, lastVector: Vec3?, multiplier: Float, skip: Boolean = false): Vec3 {
+        return if (lastVector != null && !skip) {
+            Vec3(
+                lastVector.xCoord + (currVector.xCoord - lastVector.xCoord) * multiplier,
+                lastVector.yCoord + (currVector.yCoord - lastVector.yCoord) * multiplier,
+                lastVector.zCoord + (currVector.zCoord - lastVector.zCoord) * multiplier
+            )
+        } else currVector
     }
 
     @SubscribeEvent
