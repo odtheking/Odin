@@ -43,6 +43,8 @@ object PuzzleSolvers : Module(
 
     private val tttDropDown: Boolean by DropdownSetting("Tic Tac Toe")
     private val tttSolver: Boolean by BooleanSetting("Tic Tac Toe", true, description = "Shows you the solution for the TTT puzzle").withDependency { tttDropDown }
+    val tttColor: Color by ColorSetting("Weirdos Color", Color.GREEN, true, description = "Color for the weirdos solver").withDependency { weirdosSolver && weirdosDropDown }
+    val tttStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { weirdosSolver && weirdosDropDown }
 
     private val iceFillDropDown: Boolean by DropdownSetting("Ice Fill")
     private val iceFillSolver: Boolean by BooleanSetting("Ice Fill Solver", true, description = "Solver for the ice fill puzzle").withDependency { iceFillDropDown }
@@ -59,17 +61,28 @@ object PuzzleSolvers : Module(
     val blazeFirstColor: Color by ColorSetting("First Color", Color.GREEN, true).withDependency { blazeSolver && blazeDropDown }
     val blazeSecondColor: Color by ColorSetting("Second Color", Color.ORANGE, true).withDependency { blazeSolver && blazeDropDown }
     val blazeAllColor: Color by ColorSetting("Other Color", Color.WHITE.withAlpha(.3f), true).withDependency { blazeSolver && blazeDropDown }
+    val blazeSendComplete: Boolean by BooleanSetting("Send Complete", false, description = "Send complete message").withDependency { beamsSolver && blazeDropDown }
+    private val blazeReset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
+        BlazeSolver.reset()
+    }.withDependency { blazeSolver && blazeDropDown }
 
     private val beamsDropDown: Boolean by DropdownSetting("Creeper Beams")
     private val beamsSolver: Boolean by BooleanSetting("Creeper Beams", true, description = "Shows you the solution for the Creeper Beams puzzle").withDependency { beamsDropDown }
+    val beamStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { beamsSolver && beamsDropDown }
     val beamsDepth: Boolean by BooleanSetting("Depth", false, description = "Depth check").withDependency { beamsSolver && beamsDropDown }
     val beamsTracer: Boolean by BooleanSetting("Tracer", false, description = "Tracer").withDependency { beamsSolver && beamsDropDown }
-    val blazeSendComplete: Boolean by BooleanSetting("Send Complete", false, description = "Send complete message").withDependency { beamsSolver && beamsDropDown }
+    private val beamsReset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
+        BeamsSolver.reset()
+    }.withDependency { beamsSolver && beamsDropDown }
 
     private val weirdosDropDown: Boolean by DropdownSetting("Weirdos")
     private val weirdosSolver: Boolean by BooleanSetting("Weirdos", true, description = "Shows you the solution for the Weirdos puzzle").withDependency { weirdosDropDown }
     val weirdosColor: Color by ColorSetting("Weirdos Color", Color.GREEN, true, description = "Color for the weirdos solver").withDependency { weirdosSolver && weirdosDropDown }
     val weirdosStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { weirdosSolver && weirdosDropDown }
+    private val weirdosReset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
+        WeirdosSolver.weirdosReset()
+    }.withDependency { weirdosSolver && weirdosDropDown }
+
 
     init {
         execute(500) {
