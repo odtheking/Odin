@@ -13,9 +13,10 @@ import kotlin.experimental.and
 
 object TTTSolver {
 
+    // currently just rendering the board, no actual solving
+
     private var bottomRight = Vec2(0, 0)
     private val board = Array(3) { Array(3) { State.Blank to BlockPos(0, 0,0) } }
-
 
     fun tttRoomEnter(event: EnteredDungeonRoomEvent) {
         val room = event.room?.room ?: return
@@ -23,11 +24,9 @@ object TTTSolver {
 
         val vec2 = Vec2(room.x, room.z)
 
-        val center = vec2.addRotationCoords(room.rotation, 7, 0)
-        bottomRight = center
+        bottomRight = vec2.addRotationCoords(room.rotation, 7, 0)
 
         initializeBoard(bottomRight, room.rotation)
-        updateBoard(room.rotation)
     }
 
     private fun initializeBoard(bottomRight: Vec2, rotations: Rotations) {
@@ -39,17 +38,17 @@ object TTTSolver {
             }
         }
     }
-
+    // need to figure out when to call this, but it works
     private fun updateBoard(rotations: Rotations) {
         for (i in 0 until 3) {
             for (j in 0 until 3) {
-                val currentHorizontal = bottomRight.addRotationCoords(rotations, 0, -j)
-                val currentPosition = BlockPos(currentHorizontal.x.toDouble(), 70.0 + i, currentHorizontal.z.toDouble())
+                val currentSlot = bottomRight.addRotationCoords(rotations, 0, -j)
+                    .let { BlockPos(it.x.toDouble(), 70.0 + i, it.z.toDouble())}
 
-                val slotState = findSlotState(currentPosition)
+                val slotState = findSlotState(currentSlot)
                 when (slotState) {
-                    State.X -> board[i][j] = State.X to currentPosition
-                    State.O -> board[i][j] = State.O to currentPosition
+                    State.X -> board[i][j] = State.X to currentSlot
+                    State.O -> board[i][j] = State.O to currentSlot
                     else -> {}
                 }
             }
@@ -64,10 +63,10 @@ object TTTSolver {
     }
 
     fun tttRenderWorld() {
-        board.forEach {
-            it.forEach {
-                val state = it.first
-                val blockPos = it.second
+        board.forEach { rows ->
+            rows.forEach { columns ->
+                val state = columns.first
+                val blockPos = columns.second
 
                 val color = when (state) {
                     State.X -> Color.RED
