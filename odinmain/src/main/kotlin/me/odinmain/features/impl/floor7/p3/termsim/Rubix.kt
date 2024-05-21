@@ -36,7 +36,7 @@ object Rubix : TermSimGui(
         mc.thePlayer.playSound("random.orb", 1f, 1f)
         GuiEvent.GuiLoadedEvent(name, inventorySlots as ContainerChest).postAndCatch()
         if (grid.all { it?.stack?.metadata == grid.firstOrNull()?.stack?.metadata }) {
-            solved(this.name, TerminalTimes.simColorPB)
+            solved(this.name, 1)
         }
     }
 

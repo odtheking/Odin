@@ -29,6 +29,7 @@ object PBConfig {
                         this,
                         object : TypeToken<MutableMap<String, MutableList<Double>>>() {}.type
                 )
+                println("Successfully loaded pb config $pbs")
             }
         }  catch (e: Exception) {
             println("Odin: Error parsing pbs.")

@@ -49,7 +49,6 @@ class ModCore {
 
     @EventHandler
     fun postInit(event: FMLPostInitializationEvent) {
-        // here temporarily for mgiration
         val autoSellConfigFile = ConfigFile("autoSell-config")
         if (autoSellConfigFile.exists()) {
             with(autoSellConfigFile.bufferedReader().use { it.readText() }) {

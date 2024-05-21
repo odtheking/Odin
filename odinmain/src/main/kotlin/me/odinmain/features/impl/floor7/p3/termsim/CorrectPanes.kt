@@ -31,7 +31,7 @@ object CorrectPanes : TermSimGui(
         mc.thePlayer.playSound("random.orb", 1f, 1f)
         GuiEvent.GuiLoadedEvent(name, inventorySlots as ContainerChest).postAndCatch()
         if (inventorySlots.inventorySlots.subList(0, 45).none { it?.stack?.metadata == 14 }) {
-            solved(this.name, TerminalTimes.simPanesPB)
+            solved(this.name, 0)
         }
     }
 }

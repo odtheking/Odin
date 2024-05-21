@@ -7,6 +7,7 @@ import me.odinmain.utils.*
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.partyMessage
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.util.AxisAlignedBB
 import kotlin.collections.set
@@ -25,8 +26,7 @@ object BlazeSolver {
 
         if (entity !is EntityArmorStand || entity in blazes || !DungeonUtils.inDungeons) return
         val matchResult = Regex("""^\[Lv15] Blaze [\d,]+/([\d,]+)❤$""").find(entity.name.noControlCodes) ?: return
-        var hp = matchResult.groups[1]?.value?.replace(",", "")?.toIntOrNull() ?: return
-        if (entity.name.contains("§5")) hp /= 4
+        val hp = matchResult.groups[1]?.value?.replace(",", "")?.toIntOrNull() ?: return
         hpMap[entity] = hp
         blazes.add(entity)
         if (blazes.isEmpty()) return
@@ -40,6 +40,7 @@ object BlazeSolver {
         blazes.removeAll {
             mc.theWorld.getEntityByID(it.entityId) == null
         }
+        if (blazes.isEmpty()) return partyMessage("Blaze puzzle solved!")
         blazes.forEachIndexed { index, entity ->
             val color = when (index) {
                 0 -> PuzzleSolvers.blazeFirstColor

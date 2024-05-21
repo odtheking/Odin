@@ -8,6 +8,7 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.utils.name
 import me.odinmain.utils.round
+import me.odinmain.utils.skyblock.PersonalBest
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -27,11 +28,7 @@ object TerminalTimes : Module(
     private val melodyPB = +NumberSetting("Melody PB", 99.0, increment = 0.01, hidden = true)
     private val startsWithPB = +NumberSetting("Starts With PB", 99.0, increment = 0.01, hidden = true)
     private val selectAllPB = +NumberSetting("Select All PB", 99.0, increment = 0.01, hidden = true)
-    val simPanesPB = +NumberSetting("Sim Panes PB", 99.0, increment = 0.01, hidden = true)
-    val simColorPB = +NumberSetting("Sim Color PB", 99.0, increment = 0.01, hidden = true)
-    val simNumbersPB = +NumberSetting("Sim Numbers PB", 99.0, increment = 0.01, hidden = true)
-    val simStartsWithPB = +NumberSetting("Sim Starts With PB", 99.0, increment = 0.01, hidden = true)
-    val simSelectAllPB = +NumberSetting("Sim Select All PB", 99.0, increment = 0.01, hidden = true)
+    val simPBs = PersonalBest("Termsim", 5)
 
     @Suppress("UNUSED")
     enum class Terminals(

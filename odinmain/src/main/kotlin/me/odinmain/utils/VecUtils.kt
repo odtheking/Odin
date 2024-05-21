@@ -212,6 +212,26 @@ fun Vec2.addRotationCoords(rotation: Rotations, x: Number = 0, z: Number = 0): V
     }
 }
 
+fun Vec3.addRotationCoords(rotation: Rotations, x: Number = 0, z: Number = 0): Vec3 {
+    return when(rotation){
+        Rotations.NORTH -> Vec3(this.xCoord + x.toDouble(), this.yCoord, this.zCoord + z.toDouble())
+        Rotations.WEST -> Vec3(this.xCoord + z.toDouble(), this.yCoord, this.zCoord - x.toDouble())
+        Rotations.SOUTH -> Vec3(this.xCoord - x.toDouble(), this.yCoord, this.zCoord - z.toDouble())
+        Rotations.EAST -> Vec3(this.xCoord - z.toDouble(), this.yCoord, this.zCoord + x.toDouble())
+        Rotations.NONE -> this
+    }
+}
+
+fun BlockPos.addRotationCoords(rotation: Rotations, x: Number = 0, z: Number = 0): BlockPos {
+    return when(rotation){
+        Rotations.NORTH -> BlockPos(this.x + x.toInt(), this.y, this.z + z.toInt())
+        Rotations.WEST -> BlockPos(this.x + z.toInt(), this.y, this.z - x.toInt())
+        Rotations.SOUTH -> BlockPos(this.x - x.toInt(), this.y, this.z - z.toInt())
+        Rotations.EAST -> BlockPos(this.x - z.toInt(), this.y, this.z + x.toInt())
+        Rotations.NONE -> this
+    }
+}
+
 /**
  * Displaces a Vec2 by the given rotation, and distance.
  * @param rotation The rotation to offset with

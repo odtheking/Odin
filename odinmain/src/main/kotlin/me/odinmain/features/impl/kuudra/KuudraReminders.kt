@@ -30,8 +30,8 @@ object KuudraReminders : Module(
             PlayerUtils.alert("Buy Upgrades", displayText = displayText, playSound = playSound)
         }
 
-        onMessage("[NPC] Elle: Not again!", false, { pickUpSupplies }) {
-            PlayerUtils.alert("PickUP supplies", displayText = displayText, playSound = playSound)
+        onMessage("[NPC] Elle: Not again!", false, { pickUpSupplies && enabled }) {
+            PlayerUtils.alert("Pick up supplies", displayText = displayText, playSound = playSound)
         }
 
         onMessage("[NPC] Elle: It's time to build the Ballista again! Cover me!", false, { buildBallista && enabled }) {

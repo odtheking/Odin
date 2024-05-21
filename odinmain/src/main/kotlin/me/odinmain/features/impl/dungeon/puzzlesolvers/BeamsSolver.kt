@@ -47,7 +47,7 @@ object BeamsSolver {
             val pos2 = Vec2(room.x, room.z).addRotationCoords(room.rotation, x = it[3], z = it[5]).let { vec -> BlockPos(vec.x, it[4], vec.z) }
 
             if (getBlockIdAt(pos) == 169 && getBlockIdAt(pos2) == 169)
-                currentLanternPairs[pos] = pos2 to colors[index]
+                currentLanternPairs[pos] = pos2 to colors[currentLanternPairs.size]
         }
         scanned = true
     }
@@ -55,7 +55,7 @@ object BeamsSolver {
     fun onRenderWorld() {
         if (DungeonUtils.currentRoomName != "Creeper Beams" || DungeonUtils.inBoss || !scanned) return
         val finalLanternPairs = currentLanternPairs.toMap()
-        finalLanternPairs.entries.forEachIndexed { _, positions ->
+        finalLanternPairs.entries.forEach { positions ->
             val color = positions.value.second
 
             RenderUtils.drawBlockBox(positions.key, color, fill = .7f, depth = PuzzleSolvers.beamsDepth)
@@ -78,7 +78,7 @@ object BeamsSolver {
     }
 
     private val colors = listOf(
-        Color.ORANGE, Color.GREEN, Color.PINK, Color.CYAN, Color.YELLOW, Color.DARK_RED, Color.WHITE
+        Color.ORANGE, Color.GREEN, Color.PINK, Color.CYAN, Color.YELLOW, Color.DARK_RED, Color.WHITE, Color.PURPLE
     )
 }
 

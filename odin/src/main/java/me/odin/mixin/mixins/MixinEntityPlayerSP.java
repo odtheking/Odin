@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 @Mixin(value = EntityPlayerSP.class)
 public abstract class MixinEntityPlayerSP {
 
-    @Inject(method = "sendChatMessage", at = @At("HEAD"), cancellable = true, locals = LocalCapture.CAPTURE_FAILHARD)
+    @Inject(method = "sendChatMessage", at = @At("HEAD"), cancellable = true, locals = LocalCapture.CAPTURE_FAILSOFT)
     private void onSendChatMessage(String message, CallbackInfo ci) {
         if (MinecraftForge.EVENT_BUS.post(new MessageSentEvent(message)))
             ci.cancel();
