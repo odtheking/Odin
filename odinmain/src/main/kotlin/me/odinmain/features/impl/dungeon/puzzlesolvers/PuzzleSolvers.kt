@@ -64,10 +64,12 @@ object PuzzleSolvers : Module(
     private val beamsSolver: Boolean by BooleanSetting("Creeper Beams", true, description = "Shows you the solution for the Creeper Beams puzzle").withDependency { beamsDropDown }
     val beamsDepth: Boolean by BooleanSetting("Depth", false, description = "Depth check").withDependency { beamsSolver && beamsDropDown }
     val beamsTracer: Boolean by BooleanSetting("Tracer", false, description = "Tracer").withDependency { beamsSolver && beamsDropDown }
+    val blazeSendComplete: Boolean by BooleanSetting("Send Complete", false, description = "Send complete message").withDependency { beamsSolver && beamsDropDown }
 
     private val weirdosDropDown: Boolean by DropdownSetting("Weirdos")
     private val weirdosSolver: Boolean by BooleanSetting("Weirdos", true, description = "Shows you the solution for the Weirdos puzzle").withDependency { weirdosDropDown }
     val weirdosColor: Color by ColorSetting("Weirdos Color", Color.GREEN, true, description = "Color for the weirdos solver").withDependency { weirdosSolver && weirdosDropDown }
+    val weirdosStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { weirdosSolver && weirdosDropDown }
 
     init {
         execute(500) {
@@ -95,6 +97,7 @@ object PuzzleSolvers : Module(
             IceFillSolver.reset()
             BlazeSolver.reset()
             BeamsSolver.reset()
+            WeirdosSolver.weirdosReset()
         }
     }
 
@@ -103,7 +106,7 @@ object PuzzleSolvers : Module(
         profile("Puzzle Solvers") {
             if (waterSolver) WaterSolver.waterRender()
             if (tpMaze) TPMaze.tpRender()
-            if (tttSolver) TicTacToe.tttRender()
+            if (tttSolver) TTTSolver.tttRenderWorld()
             if (iceFillSolver) IceFillSolver.onRenderWorldLast(iceFillColor)
             if (blazeSolver) BlazeSolver.renderBlazes()
             if (beamsSolver) BeamsSolver.onRenderWorld()
@@ -126,7 +129,7 @@ object PuzzleSolvers : Module(
         IceFillSolver.enterDungeonRoom(event)
         BlazeSolver.getRoomType(event)
         BeamsSolver.enterDungeonRoom(event)
-        WeirdosSolver.weirdosRoomEnter(event)
+        TTTSolver.tttRoomEnter(event)
     }
 
     @SubscribeEvent

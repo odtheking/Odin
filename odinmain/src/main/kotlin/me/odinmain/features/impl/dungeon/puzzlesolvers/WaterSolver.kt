@@ -120,7 +120,7 @@ object WaterSolver {
 
 
     fun waterRender() {
-        if (DungeonUtils.currentRoomName != "Water Board") return
+        if (DungeonUtils.currentRoomName != "Water Board" || variant == -1) return
 
         val solutionList = solutions
             .flatMap { (lever, times) -> times.drop(lever.i).map { Pair(lever, it) } }
