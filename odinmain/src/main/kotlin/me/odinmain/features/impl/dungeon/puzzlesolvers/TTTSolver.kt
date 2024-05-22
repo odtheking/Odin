@@ -30,7 +30,7 @@ object TTTSolver {
         val room = event.room?.room ?: return
         if (room.data.name != "Tic Tac Toe") return
 
-        updateBoard(Vec2(room.x, room.z).addRotationCoords(room.rotation, 7, 0), room.rotation)
+        updateBoard(room.vec2.addRotationCoords(room.rotation, 7, 0), room.rotation)
     }
 
     private fun updateBoard(bottomRight: Vec2, rotations: Rotations) {

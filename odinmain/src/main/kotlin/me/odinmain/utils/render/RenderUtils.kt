@@ -497,7 +497,7 @@ object RenderUtils {
      * @param height The height of the rectangle.
      */
     fun drawTexturedModalRect(x: Int, y: Int, width: Int, height: Int) {
-        GlStateManager.resetColor()
+        Color.WHITE.bind()
         worldRenderer {
             begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
             pos(x.toDouble(), (y + height).toDouble(), 0.0).tex(0.0, 1.0).endVertex()

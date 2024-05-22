@@ -43,8 +43,8 @@ object PuzzleSolvers : Module(
 
     private val tttDropDown: Boolean by DropdownSetting("Tic Tac Toe")
     private val tttSolver: Boolean by BooleanSetting("Tic Tac Toe", true, description = "Shows you the solution for the TTT puzzle").withDependency { tttDropDown }
-    val tttColor: Color by ColorSetting("Weirdos Color", Color.GREEN, true, description = "Color for the weirdos solver").withDependency { weirdosSolver && weirdosDropDown }
-    val tttStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { weirdosSolver && weirdosDropDown }
+    val tttColor: Color by ColorSetting("Weirdos Color", Color.GREEN, true, description = "Color for the tic tac toe solver").withDependency { tttSolver && weirdosDropDown }
+    val tttStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { tttSolver && weirdosDropDown }
 
     private val iceFillDropDown: Boolean by DropdownSetting("Ice Fill")
     private val iceFillSolver: Boolean by BooleanSetting("Ice Fill Solver", true, description = "Solver for the ice fill puzzle").withDependency { iceFillDropDown }
@@ -61,7 +61,7 @@ object PuzzleSolvers : Module(
     val blazeFirstColor: Color by ColorSetting("First Color", Color.GREEN, true).withDependency { blazeSolver && blazeDropDown }
     val blazeSecondColor: Color by ColorSetting("Second Color", Color.ORANGE, true).withDependency { blazeSolver && blazeDropDown }
     val blazeAllColor: Color by ColorSetting("Other Color", Color.WHITE.withAlpha(.3f), true).withDependency { blazeSolver && blazeDropDown }
-    val blazeSendComplete: Boolean by BooleanSetting("Send Complete", false, description = "Send complete message").withDependency { beamsSolver && blazeDropDown }
+    val blazeSendComplete: Boolean by BooleanSetting("Send Complete", false, description = "Send complete message").withDependency { blazeSolver && blazeDropDown }
     private val blazeReset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
         BlazeSolver.reset()
     }.withDependency { blazeSolver && blazeDropDown }

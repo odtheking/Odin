@@ -25,7 +25,6 @@ import net.minecraft.init.Blocks
 import net.minecraft.tileentity.TileEntitySkull
 import net.minecraft.util.*
 import net.minecraft.world.WorldSettings
-import net.minecraftforge.event.entity.living.LivingEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -251,7 +250,6 @@ object DungeonUtils {
     }
 
     private val tablistRegex = Regex("^\\[(\\d+)\\] (?:\\[\\w+\\] )*(\\w+) (?:.)*?\\((\\w+)(?: (\\w+))*\\)\$")
-    private val noNameTablistRegex = Regex("^\\[(\\d+)\\] (\\[\\w+\\] ?)*(\\w+)? [♲Ⓑ ]*\\((\\w+)(?: (\\w+))*\\)\$")
 
     private fun getDungeonTeammates(previousTeammates: List<DungeonPlayer>): List<DungeonPlayer> {
         val teammates = mutableListOf<DungeonPlayer>()
@@ -259,7 +257,7 @@ object DungeonUtils {
 
         for ((networkPlayerInfo, line) in tabList) {
 
-            val (_, sbLevel, name, clazz, clazzLevel) = tablistRegex.find(line.noControlCodes)?.groupValues ?: noNameTablistRegex.find(line.noControlCodes)?.groupValues ?: continue
+            val (_, sbLevel, name, clazz, clazzLevel) = tablistRegex.find(line.noControlCodes)?.groupValues ?: continue
 
             addTeammate(name, clazz, teammates, networkPlayerInfo)
             if (clazz == "DEAD" || clazz == "EMPTY") {

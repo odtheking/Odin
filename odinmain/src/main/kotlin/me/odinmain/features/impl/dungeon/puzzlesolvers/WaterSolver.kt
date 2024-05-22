@@ -54,11 +54,9 @@ object WaterSolver {
     }
 
     private fun solve(room: Room) {
-        val x = room.x
-        val z = room.z
         val rotation = room.rotation
 
-        chestPosition = Vec2(x, z).addRotationCoords(rotation, -7)
+        chestPosition = room.vec2.addRotationCoords(rotation, -7)
 
         roomFacing = rotation
 

@@ -43,9 +43,9 @@ object BeamsSolver {
 
         if (scanned) return
         lanternPairs.forEach {
-            val pos = Vec2(room.x, room.z).addRotationCoords(room.rotation, x = it[0], z = it[2]).let { vec -> BlockPos(vec.x, it[1], vec.z) }
+            val pos = room.vec2.addRotationCoords(room.rotation, x = it[0], z = it[2]).let { vec -> BlockPos(vec.x, it[1], vec.z) }
 
-            val pos2 = Vec2(room.x, room.z).addRotationCoords(room.rotation, x = it[3], z = it[5]).let { vec -> BlockPos(vec.x, it[4], vec.z) }
+            val pos2 = room.vec2.addRotationCoords(room.rotation, x = it[3], z = it[5]).let { vec -> BlockPos(vec.x, it[4], vec.z) }
 
             if (getBlockIdAt(pos) == 169 && getBlockIdAt(pos2) == 169)
                 currentLanternPairs[pos] = pos2 to colors[currentLanternPairs.size]
