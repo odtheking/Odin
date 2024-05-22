@@ -129,7 +129,7 @@ object Triggerbot : Module(
 
             if (!DungeonUtils.inDungeons || (!secretTBInBoss && DungeonUtils.inBoss) || !DungeonUtils.isSecret(state, pos)) return@execute
 
-            val currentSlot = mc.thePlayer?.inventory?.currentItem
+            val currentSlot = mc.thePlayer?.inventory?.currentItem ?: 0
             if (swapSlot) mc.thePlayer?.inventory?.currentItem = secretTriggerBotSlot
             PlayerUtils.rightClick()
             if (swapSlot) mc.thePlayer?.inventory?.currentItem = currentSlot
