@@ -38,7 +38,7 @@ object EtherWarpHelper : Module(
     private val wrongColor: Color by ColorSetting("Wrong Color", Color.RED.withAlpha(.5f), allowAlpha = true).withDependency { renderFail }
     private val style: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.")
     private val thickness: Float by NumberSetting("Thickness", 3f, 1f, 10f, .1f).withDependency { render }
-    private val phase: Boolean by BooleanSetting("Phase", false).withDependency { render }
+    private val phase: Boolean by BooleanSetting("Depth check", false).withDependency { render }
     private val etherWarpTriggerBot: Boolean by BooleanSetting("Trigger Bot", false, description = "Uses Dungeon Waypoints to trigger bot to the closest waypoint.")
     private val etherWarpTBDelay: Long by NumberSetting("Trigger Bot Delay", 200L, 0, 1000, 10).withDependency { etherWarpTriggerBot }
     private val etherWarpHelper: Boolean by BooleanSetting("(MIGHT BAN) Rotator", false, description = "Rotates you to the closest waypoint when you left click with aotv.")
@@ -74,7 +74,7 @@ object EtherWarpHelper : Module(
             getBlockAt(pos).setBlockBoundsBasedOnState(mc.theWorld, pos)
             val aabb = getBlockAt(pos).getSelectedBoundingBox(mc.theWorld, pos).expand(0.002, 0.002, 0.002) ?: return
 
-            Renderer.drawBox(aabb, color, outlineWidth = thickness, depth = phase, outlineAlpha = if (style == 0) 0 else color.alpha, fillAlpha = if (style == 1) 0 else color.alpha)
+            Renderer.drawBox(aabb, color, outlineWidth = thickness, depth = !phase, outlineAlpha = if (style == 0) 0 else color.alpha, fillAlpha = if (style == 1) 0 else color.alpha)
         }
     }
 

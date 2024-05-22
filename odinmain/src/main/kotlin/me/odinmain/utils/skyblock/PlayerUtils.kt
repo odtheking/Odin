@@ -10,7 +10,6 @@ import me.odinmain.utils.render.Renderer
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.ItemStack
-import net.minecraft.network.play.client.C0EPacketClickWindow
 
 
 object PlayerUtils {
@@ -118,9 +117,7 @@ object PlayerUtils {
     private fun sendWindowClick(slotId: Int, button: Int, mode: Int) {
         mc.thePlayer.openContainer?.let {
             if (it !is ContainerChest) return@let
-            val transactionID = mc.thePlayer.openContainer.getNextTransactionID(mc.thePlayer.inventory);
-            val itemStack = mc.thePlayer.getInventory()?.get(slotId) ?: return
-            mc.netHandler.addToSendQueue(C0EPacketClickWindow(it.windowId, slotId, button, mode, itemStack, transactionID))
+            mc.playerController.windowClick(it.windowId, slotId, button, mode, mc.thePlayer)
         }
     }
 

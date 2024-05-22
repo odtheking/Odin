@@ -29,7 +29,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 @AlwaysActive // So it can be used in other modules
 object TerminalSolver : Module(
     name = "Terminal Solver",
-    description = "Renders solution of terminals in f7/m7",
+    description = "Renders solution for terminals in floor 7.",
     category = Category.FLOOR7
 ) {
     private val lockRubixSolution: Boolean by BooleanSetting("Lock Rubix Solution", false, description = "Locks the 'correct' color of the rubix terminal to the one that was scanned first, should make the solver less 'jumpy'.")

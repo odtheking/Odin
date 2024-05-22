@@ -9,3 +9,6 @@ import net.minecraftforge.fml.common.eventhandler.Event
  */
 @Cancelable
 class ChatPacketEvent(val message: String) : Event()
+
+@Cancelable
+class MessageSentEvent(val message: String) : Event()

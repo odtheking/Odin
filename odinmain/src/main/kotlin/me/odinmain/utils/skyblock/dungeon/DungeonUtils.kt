@@ -2,7 +2,6 @@ package me.odinmain.utils.skyblock.dungeon
 
 import com.google.common.collect.ComparisonChain
 import me.odinmain.OdinMain.mc
-import me.odinmain.config.DungeonWaypointConfig
 import me.odinmain.config.DungeonWaypointConfigCLAY
 import me.odinmain.events.impl.EnteredDungeonRoomEvent
 import me.odinmain.features.impl.dungeon.DungeonWaypoints.DungeonWaypoint
@@ -26,9 +25,10 @@ import net.minecraft.init.Blocks
 import net.minecraft.tileentity.TileEntitySkull
 import net.minecraft.util.*
 import net.minecraft.world.WorldSettings
-import net.minecraftforge.event.entity.living.LivingEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object DungeonUtils {
 
@@ -94,8 +94,14 @@ object DungeonUtils {
     }
 
     @SubscribeEvent
-    fun onMove(event: LivingEvent.LivingUpdateEvent) {
-        if (mc.theWorld == null /*|| !inDungeons */||inBoss || !event.entity.equals(mc.thePlayer)) return
+    fun onMove(event: ClientTickEvent) {
+        if (event.phase != TickEvent.Phase.END)
+        if ((inBoss || (!inDungeons && mc.theWorld?.isRemote == false)) && currentRoom != null) {
+            currentRoom = null
+            EnteredDungeonRoomEvent(null).postAndCatch()
+            return
+        }
+        if (mc.theWorld == null /*|| !inDungeons */|| inBoss) return
         val xPos = START_X + ((mc.thePlayer.posX + 200) / 32).toInt() * ROOM_SIZE
         val zPos = START_Z + ((mc.thePlayer.posZ + 200) / 32).toInt() * ROOM_SIZE
         if (lastRoomPos.equal(xPos, zPos) && currentRoom != null) return
@@ -127,20 +133,6 @@ object DungeonUtils {
     fun setWaypoints(curRoom: FullRoom) {
         val room = curRoom.room
         curRoom.waypoints = mutableListOf<DungeonWaypoint>().apply {
-            // THIS IS FOR MIGRATION FROM CONFIGS ON "ALPHA" RELEASES (VERSIONS GOTTEN FROM GITHUB AFTER 1.2.5.BETA4
-            DungeonWaypointConfig.waypoints[room.data.name]?.let { waypoints ->
-                val distinct = curRoom.positions.distinct().minByOrNull { it.core } ?: return
-                waypoints.forEach { waypoint ->
-                    val vecBasedOnClay = waypoint.toVec3().rotateToNorth(room.rotation).addVec(x = distinct.x, z = distinct.z).subtractVec(x = curRoom.clayPos.x, z = curRoom.clayPos.z).rotateAroundNorth(room.rotation)
-                    DungeonWaypointConfigCLAY.waypoints.getOrPut(room.data.name) { mutableListOf() }.add(
-                        DungeonWaypoint(vecBasedOnClay.xCoord, vecBasedOnClay.yCoord, vecBasedOnClay.zCoord, waypoint.color, waypoint.filled, waypoint.depth, waypoint.aabb, waypoint.title)
-                    )
-                    DungeonWaypointConfigCLAY.saveConfig()
-                    DungeonWaypointConfig.saveConfig()
-                }
-            }
-            DungeonWaypointConfig.waypoints[room.data.name]?.clear()
-
             DungeonWaypointConfigCLAY.waypoints[room.data.name]?.let { waypoints ->
                 addAll(waypoints.map { waypoint ->
                     val vec = waypoint.toVec3().rotateAroundNorth(room.rotation).addVec(x = curRoom.clayPos.x, z = curRoom.clayPos.z)
@@ -268,7 +260,7 @@ object DungeonUtils {
             val (_, sbLevel, name, clazz, clazzLevel) = tablistRegex.find(line.noControlCodes)?.groupValues ?: continue
 
             addTeammate(name, clazz, teammates, networkPlayerInfo)
-            if (clazz == "DEAD") {
+            if (clazz == "DEAD" || clazz == "EMPTY") {
                 val previousClass = previousTeammates.find { it.name == name }?.clazz ?: continue
                 addTeammate(name, previousClass.name, teammates, networkPlayerInfo)
             }

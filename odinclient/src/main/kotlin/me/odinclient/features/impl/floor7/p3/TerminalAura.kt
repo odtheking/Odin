@@ -22,7 +22,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 object TerminalAura : Module(
     name = "Terminal Aura",
     category = Category.FLOOR7,
-    description = "Automatically interacts with inactive terminals in M7P3.",
+    description = "Automatically interacts with inactive terminals in floor 7.",
     tag = TagType.RISKY
 ) {
 

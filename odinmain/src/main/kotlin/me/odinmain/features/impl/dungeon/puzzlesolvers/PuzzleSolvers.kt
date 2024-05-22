@@ -1,9 +1,6 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
-import gg.essential.vigilance.gui.settings.DropDown
-import me.odinmain.events.impl.EnteredDungeonRoomEvent
-import me.odinmain.events.impl.EntityLeaveWorldEvent
-import me.odinmain.events.impl.PostEntityMetadata
+import me.odinmain.events.impl.*
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.puzzlesolvers.WaterSolver.waterInteract
@@ -21,7 +18,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 object PuzzleSolvers : Module(
     name = "Puzzle Solvers",
     category = Category.DUNGEON,
-    description = "Dungeon puzzle solvers.",
+    description = "Displays solutions for dungeon puzzles.",
     key = null
 ) {
     private val waterDropDown: Boolean by DropdownSetting("Water")
@@ -46,6 +43,8 @@ object PuzzleSolvers : Module(
 
     private val tttDropDown: Boolean by DropdownSetting("Tic Tac Toe")
     private val tttSolver: Boolean by BooleanSetting("Tic Tac Toe", true, description = "Shows you the solution for the TTT puzzle").withDependency { tttDropDown }
+    val tttColor: Color by ColorSetting("Weirdos Color", Color.GREEN, true, description = "Color for the tic tac toe solver").withDependency { tttSolver && weirdosDropDown }
+    val tttStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { tttSolver && weirdosDropDown }
 
     private val iceFillDropDown: Boolean by DropdownSetting("Ice Fill")
     private val iceFillSolver: Boolean by BooleanSetting("Ice Fill Solver", true, description = "Solver for the ice fill puzzle").withDependency { iceFillDropDown }
@@ -56,15 +55,39 @@ object PuzzleSolvers : Module(
 
     private val blazeDropDown: Boolean by DropdownSetting("Blaze")
     private val blazeSolver: Boolean by BooleanSetting("Blaze Solver").withDependency { blazeDropDown }
+    val blazeLineNext: Boolean by BooleanSetting("Blaze Solver Next Line", true).withDependency { blazeSolver && blazeDropDown }
+    val blazeLineAmount: Int by NumberSetting("Blaze Solver Lines", 1, 1, 10).withDependency { blazeSolver && blazeLineNext && blazeDropDown }
+    val blazeStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { blazeSolver && blazeDropDown }
     val blazeFirstColor: Color by ColorSetting("First Color", Color.GREEN, true).withDependency { blazeSolver && blazeDropDown }
     val blazeSecondColor: Color by ColorSetting("Second Color", Color.ORANGE, true).withDependency { blazeSolver && blazeDropDown }
     val blazeAllColor: Color by ColorSetting("Other Color", Color.WHITE.withAlpha(.3f), true).withDependency { blazeSolver && blazeDropDown }
+    val blazeSendComplete: Boolean by BooleanSetting("Send Complete", false, description = "Send complete message").withDependency { blazeSolver && blazeDropDown }
+    private val blazeReset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
+        BlazeSolver.reset()
+    }.withDependency { blazeSolver && blazeDropDown }
+
+    private val beamsDropDown: Boolean by DropdownSetting("Creeper Beams")
+    private val beamsSolver: Boolean by BooleanSetting("Creeper Beams", true, description = "Shows you the solution for the Creeper Beams puzzle").withDependency { beamsDropDown }
+    val beamStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { beamsSolver && beamsDropDown }
+    val beamsDepth: Boolean by BooleanSetting("Depth", false, description = "Depth check").withDependency { beamsSolver && beamsDropDown }
+    val beamsTracer: Boolean by BooleanSetting("Tracer", false, description = "Tracer").withDependency { beamsSolver && beamsDropDown }
+    private val beamsReset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
+        BeamsSolver.reset()
+    }.withDependency { beamsSolver && beamsDropDown }
+
+    private val weirdosDropDown: Boolean by DropdownSetting("Weirdos")
+    private val weirdosSolver: Boolean by BooleanSetting("Weirdos", true, description = "Shows you the solution for the Weirdos puzzle").withDependency { weirdosDropDown }
+    val weirdosColor: Color by ColorSetting("Weirdos Color", Color.GREEN, true, description = "Color for the weirdos solver").withDependency { weirdosSolver && weirdosDropDown }
+    val weirdosStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { weirdosSolver && weirdosDropDown }
+    private val weirdosReset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
+        WeirdosSolver.weirdosReset()
+    }.withDependency { weirdosSolver && weirdosDropDown }
+
 
     init {
         execute(500) {
             if (tpMaze) TPMaze.scan()
-            WaterSolver.scan()
-
+            if (waterSolver) WaterSolver.scan()
         }
 
         onPacket(S08PacketPlayerPosLook::class.java) {
@@ -75,12 +98,19 @@ object PuzzleSolvers : Module(
             if (waterSolver) waterInteract(it)
         }
 
+        onMessage(Regex("\\[NPC] (.+): (.+).?"), {enabled && weirdosSolver}) { str ->
+            val (npc, message) = Regex("\\[NPC] (.+): (.+).?").find(str)?.destructured ?: return@onMessage
+            WeirdosSolver.onNPCMessage(npc, message)
+        }
+
         onWorldLoad {
             WaterSolver.reset()
             TPMaze.reset()
             TicTacToe.reset()
             IceFillSolver.reset()
             BlazeSolver.reset()
+            BeamsSolver.reset()
+            WeirdosSolver.weirdosReset()
         }
     }
 
@@ -89,9 +119,11 @@ object PuzzleSolvers : Module(
         profile("Puzzle Solvers") {
             if (waterSolver) WaterSolver.waterRender()
             if (tpMaze) TPMaze.tpRender()
-            if (tttSolver) TicTacToe.tttRender()
+            if (tttSolver) TTTSolver.tttRenderWorld()
             if (iceFillSolver) IceFillSolver.onRenderWorldLast(iceFillColor)
             if (blazeSolver) BlazeSolver.renderBlazes()
+            if (beamsSolver) BeamsSolver.onRenderWorld()
+            if (weirdosSolver) WeirdosSolver.onRenderWorld()
         }
     }
 
@@ -109,5 +141,12 @@ object PuzzleSolvers : Module(
     fun onRoomEnter(event: EnteredDungeonRoomEvent) {
         IceFillSolver.enterDungeonRoom(event)
         BlazeSolver.getRoomType(event)
+        BeamsSolver.enterDungeonRoom(event)
+        TTTSolver.tttRoomEnter(event)
+    }
+
+    @SubscribeEvent
+    fun blockUpdateEvent(event: BlockChangeEvent) {
+        BeamsSolver.onBlockChange(event)
     }
 }

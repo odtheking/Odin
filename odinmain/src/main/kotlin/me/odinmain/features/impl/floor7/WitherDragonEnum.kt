@@ -47,7 +47,10 @@ enum class WitherDragonsEnum (
         82.0..88.0, 91.0..97.0,  bluePB, skipKillTime = 1920),
 
     Purple(Vec3(56.0, 14.0, 125.0),  AxisAlignedBB(45.5, 13.0, 113.5,68.5, 23.0, 136.5),"5", Color.PURPLE,
-        53.0..59.0, 122.0..128.0,  purplePB, skipKillTime = 1900);
+        53.0..59.0, 122.0..128.0,  purplePB, skipKillTime = 1900),
+
+    None(Vec3(0.0, 0.0, 0.0), AxisAlignedBB(0.0, 0.0, 0.0, 0.0, 0.0, 0.0), "", Color.WHITE,
+        0.0..0.0, 0.0..0.0, redPB);
 
     fun spawnTime(): Long {
         return 5000L - (System.currentTimeMillis() - this.particleSpawnTime)
@@ -77,7 +80,7 @@ fun handleSpawnPacket(particle: S2APacketParticles) {
     }
     val spawningDragons = WitherDragonsEnum.entries.filter { it.spawning }.toMutableList()
     if (spawningDragons.isEmpty()) return
-    priorityDragon = findPriority(spawningDragons)
+    findPriority(spawningDragons).also { if (it != WitherDragonsEnum.None) priorityDragon = it }
     if (priorityDragon.particleSpawnTime in System.currentTimeMillis()-100..System.currentTimeMillis()+100) dragonPrioritySpawn(priorityDragon)
 }
 

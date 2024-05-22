@@ -10,36 +10,33 @@ import me.odinmain.features.impl.floor7.WitherDragons.paulBuff
 import me.odinmain.features.impl.floor7.WitherDragons.soloDebuff
 import me.odinmain.features.impl.floor7.WitherDragons.soloDebuffOnAll
 import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.skyblock.PlayerUtils
+import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.Classes
-import me.odinmain.utils.skyblock.modMessage
 
 object DragonPriority {
-
 
     fun findPriority(spawningDragon: MutableList<WitherDragonsEnum>): WitherDragonsEnum {
         val priorityList = listOf(WitherDragonsEnum.Red, WitherDragonsEnum.Orange, WitherDragonsEnum.Blue, WitherDragonsEnum.Purple, WitherDragonsEnum.Green)
         val priorityDragon = if (!dragonPriorityToggle) {
             spawningDragon.sortBy { priorityList.indexOf(it) }
             spawningDragon[0]
-        } else {
+        } else
             sortPriority(spawningDragon)
-        }
         return priorityDragon
     }
 
     fun dragonPrioritySpawn(dragon: WitherDragonsEnum) {
-        if (dragonTitle) PlayerUtils.alert("§${dragon.colorCode}${dragon.name} is spawning!")
-        if (dragonPriorityToggle && WitherDragonsEnum.entries.filter { it.spawning }.toMutableList().size == 2) modMessage("§${dragon.colorCode}${dragon.name} §7is your priority dragon!")
+        if (dragonTitle && WitherDragons.enabled) PlayerUtils.alert("§${dragon.colorCode}${dragon.name} is spawning!")
+        if (dragonPriorityToggle && WitherDragons.enabled && WitherDragonsEnum.entries.filter { it.spawning }.toMutableList().size == 2) modMessage("§${dragon.colorCode}${dragon.name} §7is your priority dragon!")
     }
 
-    fun sortPriority(spawningDragon: MutableList<WitherDragonsEnum>): WitherDragonsEnum {
+    private fun sortPriority(spawningDragon: MutableList<WitherDragonsEnum>): WitherDragonsEnum {
         val totalPower = BlessingDisplay.Blessings.POWER.current * if (paulBuff) 1.25 else 1.0 +
                 if (BlessingDisplay.Blessings.TIME.current > 0) 2.5 else 0.0
 
         val playerClass = DungeonUtils.dungeonTeammates.find { it.name == mc.thePlayer.name }?.clazz
-            ?: return modMessage("§cPlayer Class wasn't found! please report this").let { WitherDragonsEnum.Purple }
+            ?: return modMessage("§cPlayer Class wasn't found! please report this").let { WitherDragonsEnum.None }
 
         val dragonList = listOf(WitherDragonsEnum.Orange, WitherDragonsEnum.Green, WitherDragonsEnum.Red, WitherDragonsEnum.Blue, WitherDragonsEnum.Purple)
         val priorityList =
@@ -55,6 +52,12 @@ object DragonPriority {
             else if ((playerClass == Classes.Healer && spawningDragon.any { it == WitherDragonsEnum.Purple }) || soloDebuffOnAll)
                 spawningDragon.sortByDescending { priorityList.indexOf(it) }
         }
+        devMessage("§7 power: $totalPower")
+        devMessage("§7 class: $playerClass")
+        devMessage("§7 priority: $spawningDragon")
+        devMessage("§7 priorityList: $priorityList")
+        devMessage("is total power >= normal power? ${totalPower >= normalPower}")
+        devMessage("is total power >= easy power? ${totalPower >= easyPower}")
         return spawningDragon[0]
     }
 }

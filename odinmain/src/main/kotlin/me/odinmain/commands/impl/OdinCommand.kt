@@ -6,8 +6,9 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.commands.commodore
 import me.odinmain.features.impl.dungeon.DungeonWaypoints
 import me.odinmain.features.impl.render.ClickGUIModule
-import me.odinmain.features.impl.render.ServerDisplay.colorizePing
-import me.odinmain.features.impl.render.ServerDisplay.colorizeTps
+import me.odinmain.features.impl.render.ServerHud.colorizeFPS
+import me.odinmain.features.impl.render.ServerHud.colorizePing
+import me.odinmain.features.impl.render.ServerHud.colorizeTps
 import me.odinmain.features.impl.skyblock.DianaHelper
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.hud.EditHUDGui
@@ -19,7 +20,7 @@ import me.odinmain.utils.skyblock.PlayerUtils.posY
 import me.odinmain.utils.skyblock.PlayerUtils.posZ
 import kotlin.math.round
 
-val mainCommand = commodore("od", "odin", "odinclient") {
+val mainCommand = commodore("od", "odin") {
     runs {
         display = ClickGUI
     }
@@ -92,6 +93,10 @@ val mainCommand = commodore("od", "odin", "odinclient") {
 
     literal("ping").runs {
         modMessage("${colorizePing(ServerUtils.averagePing.toInt())}ms")
+    }
+
+    literal("fps").runs {
+        modMessage(colorizeFPS(ServerUtils.fps))
     }
 
     literal("tps").runs {

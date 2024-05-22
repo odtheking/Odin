@@ -21,7 +21,7 @@ import kotlin.math.sin
 object PersonalDragon : Module(
     name = "Personal Dragon",
     category = Category.RENDER,
-    description = "Renders your own personal dragon."
+    description = "Spawns your own personal dragon."
 ) {
     private val onlyF5: Boolean by BooleanSetting(name = "Only F5", default = true)
     private val scale: Float by NumberSetting(name = "Scale", 0.5f, 0.0f, 1.0f, 0.01f)

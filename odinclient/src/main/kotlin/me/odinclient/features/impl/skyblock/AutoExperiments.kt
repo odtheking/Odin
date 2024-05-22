@@ -5,9 +5,9 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.Island
+import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.LocationUtils.inSkyblock
-import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.init.Blocks
 import net.minecraft.init.Items
@@ -24,6 +24,7 @@ object AutoExperiments : Module(
 ){
     private val delay: Long by NumberSetting("Click Delay", 200, 0, 1000, 10, description = "Time in ms between automatic test clicks.")
     private val autoClose: Boolean by BooleanSetting("Auto Close", true, description = "Automatically close the GUI after completing the experiment.")
+    private val serumCount: Long by NumberSetting("Serum Count", 0, 0, 3, 1, description = "Consumed Metaphysical Serum count.")
 
     private var currentExperiment = ExperimentType.NONE
     private var hasAdded = false
@@ -77,7 +78,7 @@ object AutoExperiments : Module(
     private fun solveChronomatron(invSlots: List<Slot>) {
         if (invSlots[49].stack?.item == Item.getItemFromBlock(Blocks.glowstone) && invSlots[lastAdded].stack?.isItemEnchanted == false) {
             hasAdded = false
-            if (chronomatronOrder.size > 11 && autoClose) mc.thePlayer?.closeScreen()
+            if (chronomatronOrder.size > 11 - serumCount && autoClose) mc.thePlayer?.closeScreen()
         }
         if (!hasAdded && invSlots[49].stack?.item == Items.clock) {
             invSlots.filter { it.slotNumber in 10..43 }.find { it.stack?.isItemEnchanted == true }?.let {
@@ -88,7 +89,7 @@ object AutoExperiments : Module(
             }
         }
         if (hasAdded && invSlots[49].stack?.item == Items.clock && chronomatronOrder.size > clicks && System.currentTimeMillis() - lastClickTime > delay) {
-            windowClick(chronomatronOrder[clicks].first, PlayerUtils.ClickType.Middle)
+            mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, chronomatronOrder[clicks].first, 2, 3, mc.thePlayer)
             lastClickTime = System.currentTimeMillis()
             clicks++
         }
@@ -106,12 +107,17 @@ object AutoExperiments : Module(
             }
             hasAdded = true
             clicks = 0
-            if (ultrasequencerOrder.size > 9 && autoClose) mc.thePlayer?.closeScreen()
+            if (ultrasequencerOrder.size > 9 - serumCount && autoClose) mc.thePlayer?.closeScreen()
         }
         if (invSlots[49].stack?.item == Items.clock && ultrasequencerOrder.contains(clicks)
             && System.currentTimeMillis() - lastClickTime > delay
         ) {
-            ultrasequencerOrder[clicks]?.let { windowClick(chronomatronOrder[clicks].first, PlayerUtils.ClickType.Middle) }
+            ultrasequencerOrder[clicks]?.let {
+                mc.playerController.windowClick(
+                    mc.thePlayer.openContainer.windowId,
+                    it, 2, 3, mc.thePlayer
+                )
+            }
             lastClickTime = System.currentTimeMillis()
             clicks++
         }

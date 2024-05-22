@@ -12,7 +12,6 @@ import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.dungeonTeammatesNoSelf
-import net.minecraft.entity.Entity
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -25,40 +24,37 @@ object TeammatesHighlight : Module(
     private val showOutline: Boolean by BooleanSetting("Outline", true, description = "Highlights teammates with an outline.")
     private val showName: Boolean by BooleanSetting("Name", true, description = "Highlights teammates with a name tag.")
     private val thickness: Float by NumberSetting("Line Width", 4f, 1.0, 10.0, 0.5, description = "The thickness of the outline.")
-    private val whenVisible: Boolean by BooleanSetting("When Visible", true, description = "Highlights teammates only when they are visible.")
+    private val depthCheck: Boolean by BooleanSetting("Depth check", true, description = "Highlights teammates only when they are visible.")
     private val inBoss: Boolean by BooleanSetting("In Boss", true, description = "Highlights teammates in boss rooms.")
 
     @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
-        if (!shouldRender(event.entity) || !showOutline) return
+        if (!shouldRender() || !showOutline) return
 
         val teammate = dungeonTeammatesNoSelf.find { it.entity == event.entity } ?: return
 
-        if (!whenVisible && mc.thePlayer.canEntityBeSeen(teammate.entity)) return
+        if (depthCheck && !mc.thePlayer.canEntityBeSeen(teammate.entity)) return
 
         OutlineUtils.outlineEntity(event, thickness, teammate.clazz.color, true)
     }
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (!showName) return
+        if (!showName || !shouldRender()) return
         dungeonTeammatesNoSelf.forEach { teammate ->
-            if (teammate.entity?.let { shouldRender(it) } != true) return@forEach
-            if (!whenVisible && mc.thePlayer.canEntityBeSeen(teammate.entity)) return@forEach
-            if (teammate.entity.distanceSquaredTo(mc.thePlayer) >= 2333) return@forEach
-
+            val entity = teammate.entity ?: return@forEach
+            if (entity.distanceSquaredTo(mc.thePlayer) >= 2333) return@forEach
             Renderer.drawStringInWorld(
                 if (showClass) "${teammate.name} §e[${teammate.clazz.name[0]}]" else teammate.name,
                 teammate.entity.renderVec.addVec(y = 2.6),
                 color = teammate.clazz.color,
-                depth = false, renderBlackBox = false,
-                scale = 0.05f
+                depth = depthCheck, scale = 0.05f
             )
         }
     }
 
-    private fun shouldRender(teammate: Entity): Boolean {
+    private fun shouldRender(): Boolean {
         return (inBoss || !DungeonUtils.inBoss) // boss
-                && DungeonUtils.inDungeons // in dungeon
+                && DungeonUtils.inDungeons
     }
 }

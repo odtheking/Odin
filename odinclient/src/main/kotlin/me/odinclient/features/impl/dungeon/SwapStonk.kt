@@ -4,10 +4,7 @@ import me.odinclient.utils.skyblock.PlayerUtils.leftClick
 import me.odinclient.utils.skyblock.PlayerUtils.swapToIndex
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.KeybindSetting
-import me.odinmain.features.settings.impl.Keybinding
-import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.features.settings.impl.SelectorSetting
+import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.getItemSlot
 import me.odinmain.utils.skyblock.modMessage

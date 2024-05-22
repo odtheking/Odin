@@ -8,6 +8,7 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.utils.name
 import me.odinmain.utils.round
+import me.odinmain.utils.skyblock.PersonalBest
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -15,7 +16,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object TerminalTimes : Module(
     name = "Terminal Times",
-    description = "Keeps track of how long you took to complete a terminal.",
+    description = "Records the time taken to complete terminals in floor 7.",
     category = Category.FLOOR7
 ) {
     private val sendMessage: Int by SelectorSetting("Send Message", "Always", arrayListOf("Only PB", "Always"))
@@ -27,11 +28,7 @@ object TerminalTimes : Module(
     private val melodyPB = +NumberSetting("Melody PB", 99.0, increment = 0.01, hidden = true)
     private val startsWithPB = +NumberSetting("Starts With PB", 99.0, increment = 0.01, hidden = true)
     private val selectAllPB = +NumberSetting("Select All PB", 99.0, increment = 0.01, hidden = true)
-    val simPanesPB = +NumberSetting("Sim Panes PB", 99.0, increment = 0.01, hidden = true)
-    val simColorPB = +NumberSetting("Sim Color PB", 99.0, increment = 0.01, hidden = true)
-    val simNumbersPB = +NumberSetting("Sim Numbers PB", 99.0, increment = 0.01, hidden = true)
-    val simStartsWithPB = +NumberSetting("Sim Starts With PB", 99.0, increment = 0.01, hidden = true)
-    val simSelectAllPB = +NumberSetting("Sim Select All PB", 99.0, increment = 0.01, hidden = true)
+    val simPBs = PersonalBest("Termsim", 5)
 
     @Suppress("UNUSED")
     enum class Terminals(
@@ -81,7 +78,7 @@ object TerminalTimes : Module(
         val previousTime = currentTerminal!!.setting.value
         if (time < previousTime + 0.005) {
             modMessage("§fNew best time for §6${currentTerminal?.name} §fis §a${time}s, §fold best time was §a${previousTime}s")
-            currentTerminal?.setting?.value = time.round(2)
+            currentTerminal?.setting?.value = time.round(2).toDouble()
             Config.save()
         }
         currentTerminal = null

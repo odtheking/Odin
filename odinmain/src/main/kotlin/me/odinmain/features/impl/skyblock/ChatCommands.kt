@@ -8,6 +8,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.DungeonRequeue.disableRequeue
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.DropdownSetting
 import me.odinmain.features.settings.impl.ListSetting
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
@@ -25,7 +26,7 @@ object ChatCommands : Module(
     private var party: Boolean by BooleanSetting(name = "Party commands", default = true, description = "Toggles chat commands in party chat")
     private var guild: Boolean by BooleanSetting(name = "Guild commands", default = true, description = "Toggles chat commands in guild chat")
     private var private: Boolean by BooleanSetting(name = "Private commands", default = true, description = "Toggles chat commands in private chat")
-    private var showSettings: Boolean by BooleanSetting(name = "Show Settings", default = false, description = "Shows the settings for chat commands")
+    private var showSettings: Boolean by DropdownSetting(name = "Show Settings", default = false)
 
     private var warp: Boolean by BooleanSetting(name = "Warp", default = true).withDependency { showSettings }
     private var warptransfer: Boolean by BooleanSetting(name = "Warp & pt (warptransfer)", default = true).withDependency { showSettings }
@@ -39,8 +40,9 @@ object ChatCommands : Module(
     private var cat: Boolean by BooleanSetting(name = "Cat", default = true).withDependency { showSettings }
     private var pt: Boolean by BooleanSetting(name = "Party transfer (pt)", default = true).withDependency { showSettings }
     private var ping: Boolean by BooleanSetting(name = "Ping", default = true).withDependency { showSettings }
-    private var tps: Boolean by BooleanSetting(name = "tps", default = true).withDependency { showSettings }
-    private var dt: Boolean by BooleanSetting(name = "Dt", default = true).withDependency { showSettings }
+    private var tps: Boolean by BooleanSetting(name = "TPS", default = true).withDependency { showSettings }
+    private var fps: Boolean by BooleanSetting(name = "FPS", default = true).withDependency { showSettings }
+    private var dt: Boolean by BooleanSetting(name = "DT", default = true).withDependency { showSettings }
     private var inv: Boolean by BooleanSetting(name = "inv", default = true).withDependency { showSettings }
     private val invite: Boolean by BooleanSetting(name = "invite", default = true).withDependency { showSettings }
     private val racism: Boolean by BooleanSetting(name = "Racism", default = true).withDependency { showSettings }
@@ -54,7 +56,6 @@ object ChatCommands : Module(
     private fun getCatPic(): String {
         return try {
             "https://i.imgur.com/${imgurID("https://api.thecatapi.com/v1/images/search")}.png"
-
         } catch (e: Exception) {
             "imgurID Failed ${e.message}"
         }
@@ -144,7 +145,8 @@ object ChatCommands : Module(
             }
             "racism" -> if (racism) channelMessage("$name is ${Random.nextInt(1, 101)}% racist. Racism is not allowed!", name, channel)
             "ping" -> if (ping) channelMessage("Current Ping: ${floor(ServerUtils.averagePing).toInt()}ms", name, channel)
-            "tps" -> if (tps) channelMessage("Current TPS: ${floor(ServerUtils.averageTps.floor())}", name, channel)
+            "tps" -> if (tps) channelMessage("Current TPS: ${ServerUtils.averageTps.floor()}", name, channel)
+            "fps" -> if (fps) channelMessage("Current FPS: ${ServerUtils.fps}", name, channel)
 
             // Party cmds only
 
@@ -188,7 +190,7 @@ object ChatCommands : Module(
             }
 
             "t" -> {
-                if(!queKuudra) return
+                if (!queKuudra) return
                 val tier = message.substringAfter("t ")
                 if (message.substringAfter("t ") == message) return modMessage("§cPlease specify a tier.")
                 if (tier.toIntOrNull() == null) return modMessage("§cPlease specify a valid tier.")
@@ -213,17 +215,15 @@ object ChatCommands : Module(
 
     @SubscribeEvent
     fun dt(event: ChatPacketEvent) {
-        if (dtPlayer == null) return
-        if (event.message.contains("EXTRA STATS") || event.message.contains("KUUDRA DOWN!")) {
-            runIn(30) {
-                PlayerUtils.alert("§cPlayers need DT")
-                partyMessage("Players need DT: ${dtReason.joinToString(separator = ", ") { (name, reason) ->
-                    "$name: $reason" }}")
-                dtPlayer = null
-                dtReason.clear()
-            }
+        if (dtPlayer == null || !event.message.containsOneOf("EXTRA STATS", "KUUDRA DOWN!")) return
+        runIn(30) {
+            PlayerUtils.alert("§cPlayers need DT")
+            partyMessage("Players need DT: ${dtReason.joinToString(separator = ", ") { (name, reason) -> "$name: $reason" }}")
+            dtPlayer = null
+            dtReason.clear()
         }
     }
 
-    private fun isInBlacklist(name: String) : Boolean = blacklist.contains(name.lowercase())
+    private fun isInBlacklist(name: String) =
+        blacklist.contains(name.lowercase())
 }

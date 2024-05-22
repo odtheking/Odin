@@ -39,7 +39,7 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
         get() = clickGUIColor.brighter(1 + handler.percent() / 200f)
 
     fun getDisplay(): String {
-        return if (setting.valueDouble - setting.valueDouble.floor() == 0.0) {
+        return if (setting.valueDouble - setting.valueDouble.floor().toDouble() == 0.0) {
             "${(setting.valueInt * 100.0).roundToInt() / 100}${setting.unit}"
         } else {
             "${(setting.valueDouble * 100.0).roundToInt() / 100.0}${setting.unit}"

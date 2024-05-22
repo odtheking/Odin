@@ -13,8 +13,8 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object CPSDisplay : Module(
-    "Cps Display",
-    description = "Displays your CPS.",
+    "CPS Display",
+    description = "Displays your clicks per second.",
     category = Category.RENDER
 ) {
     private val countPackets: Boolean by BooleanSetting("Count Packets", false, description = "Counts packets sent outside of the rightclickmouse method, this will be better at detecting other mods' auto clickers, but might show inaccurate values.")

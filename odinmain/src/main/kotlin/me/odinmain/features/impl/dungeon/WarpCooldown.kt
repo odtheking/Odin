@@ -10,7 +10,7 @@ import me.odinmain.utils.render.*
 
 object WarpCooldown : Module (
     name = "Warp Cooldown",
-    description = "Timer before you can enter a new dungeon",
+    description = "Displays the time until you can warp into a dungeon again.",
     category = Category.DUNGEON
 ) {
     private val hud: HudElement by HudSetting("Warp Timer Hud", 10f, 10f, 1f, true) {

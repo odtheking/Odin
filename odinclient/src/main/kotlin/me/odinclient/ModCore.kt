@@ -1,10 +1,8 @@
 package me.odinclient
 
-import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
+import me.odinclient.commands.impl.OdinClientCommand
 import me.odinclient.commands.impl.autoSellCommand
 import me.odinclient.features.impl.dungeon.*
-import me.odinclient.features.impl.dungeon.AutoSell.sellList
 import me.odinclient.features.impl.floor7.*
 import me.odinclient.features.impl.floor7.p3.*
 import me.odinclient.features.impl.render.*
@@ -13,7 +11,6 @@ import me.odinclient.mixin.accessors.IEntityRendererAccessor
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.commands.registerCommands
-import me.odinmain.config.utils.ConfigFile
 import me.odinmain.features.ModuleManager
 import me.odinmain.ui.util.shader.FramebufferShader
 import me.odinmain.utils.render.RenderUtils
@@ -39,7 +36,8 @@ class ModCore {
         MinecraftForge.EVENT_BUS.register(this)
 
         registerCommands(
-            autoSellCommand
+            autoSellCommand,
+            OdinClientCommand
         )
         FramebufferShader.setupCameraTransform =
             { (mc.entityRenderer as? IEntityRendererAccessor)?.invokeSetupCameraTransform(RenderUtils.partialTicks, 0) }
@@ -47,24 +45,13 @@ class ModCore {
 
     @EventHandler
     fun postInit(event: FMLPostInitializationEvent) {
-        // here temporarily for mgiration
-        val autoSellConfigFile = ConfigFile("autoSell-config")
-        if (autoSellConfigFile.exists()) {
-            with(autoSellConfigFile.bufferedReader().use { it.readText() }) {
-                if (this != "") {
-                    val temp = GsonBuilder().setPrettyPrinting().create().fromJson<MutableList<String>>(this, object : TypeToken<MutableList<String>>() {}.type)
-                    sellList.addAll(temp)
-                }
-            }
-        }
-
         OdinMain.postInit()
     }
 
     @EventHandler
     fun loadComplete(event: FMLLoadCompleteEvent) {
         ModuleManager.addModules(
-            AutoGFS, /*AutoIceFill,*/ AutoSell, CancelInteract, CancelChestOpen, GhostPick, SecretHitboxes,
+            AutoGFS, /*AutoIceFill,*/ AutoSell, CancelInteract, CloseChest, GhostPick, SecretHitboxes,
             SwapStonk, Arrows, ArrowAlign, CancelWrongTerms, HoverTerms, LightsDevice, SimonSays,
             DioriteFucker, RelicAura, Trajectories, Ghosts, NoDebuff,
             ChocolateFactory, AutoExperiments, FarmingHitboxes, NoBlock, TermAC, Triggerbot, GhostBlocks, FreezeGame,

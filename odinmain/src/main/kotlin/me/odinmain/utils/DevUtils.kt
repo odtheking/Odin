@@ -11,8 +11,6 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.MovingObjectPosition
 import net.minecraft.world.WorldType
 import net.minecraftforge.common.util.Constants
-import java.awt.Toolkit
-import java.awt.datatransfer.StringSelection
 import java.io.ByteArrayInputStream
 import java.io.IOException
 
@@ -25,10 +23,8 @@ import java.io.IOException
  * Copies the NBT data of the entity you are looking at to your clipboard.
  */
 fun copyEntityData() {
-    if (mc.objectMouseOver == null || mc.objectMouseOver.typeOfHit != MovingObjectPosition.MovingObjectType.ENTITY) {
-        devMessage("You are not looking at an entity!")
-        return
-    }
+    if (mc.objectMouseOver == null || mc.objectMouseOver.typeOfHit != MovingObjectPosition.MovingObjectType.ENTITY) return devMessage("You are not looking at an entity!")
+
     val stringBuilder = StringBuilder()
     val entity = mc.objectMouseOver?.entityHit ?: return
 
@@ -37,21 +33,16 @@ fun copyEntityData() {
     entity.writeToNBT(entityData)
 
     // Add spacing before each new entry.
-    if (stringBuilder.isNotEmpty()) {
-        stringBuilder.append(System.lineSeparator()).append(System.lineSeparator())
-    }
+    if (stringBuilder.isNotEmpty()) stringBuilder.append(System.lineSeparator()).append(System.lineSeparator())
+
     stringBuilder.append("Class: ").append(entity.javaClass.getSimpleName()).append(System.lineSeparator())
-    if (entity.hasCustomName() || EntityPlayer::class.java.isAssignableFrom(entity.javaClass)) {
-        stringBuilder.append("Name: ").append(entity.getName()).append(System.lineSeparator())
-    }
+    if (entity.hasCustomName() || EntityPlayer::class.java.isAssignableFrom(entity.javaClass))
+        stringBuilder.append("Name: ").append(entity.name).append(System.lineSeparator())
+
     stringBuilder.append("NBT Data:").append(System.lineSeparator())
     stringBuilder.append(prettyPrintNBT(entityData))
-    if (stringBuilder.isNotEmpty()) {
-        writeToClipboard(
-            stringBuilder.toString(),
-            "Entity data was copied to clipboard!"
-        )
-    }
+    if (stringBuilder.isNotEmpty()) writeToClipboard(stringBuilder.toString(), "Entity data was copied to clipboard!")
+
 }
 
 fun copyBlockData() {
@@ -70,12 +61,8 @@ fun copyBlockData() {
     tileEntity?.writeToNBT(nbtTileEntity)
     nbt.setTag("tileEntity", nbtTileEntity)
     nbt.setString("type", Block.blockRegistry.getNameForObject(blockState.block).toString())
-    blockState.properties.forEach { (key: IProperty<*>, value: Comparable<*>) ->
-        nbt.setString(
-            key.name,
-            value.toString()
-        )
-    }
+    blockState.properties.forEach { (key: IProperty<*>, value: Comparable<*>) -> nbt.setString(key.name, value.toString()) }
+
     writeToClipboard(prettyPrintNBT(nbt), "Successfully copied the block data!")
 }
 
@@ -83,9 +70,8 @@ fun copyBlockData() {
  * Writes the given text to the clipboard.
  */
 fun writeToClipboard(text: String, successMessage: String?) {
-    val clipboard = Toolkit.getDefaultToolkit().systemClipboard
     try {
-        clipboard.setContents(StringSelection(text), null)
+        copyToClipboard(text)
         if (successMessage != null)
             devMessage(successMessage)
     } catch (exception: Exception) {

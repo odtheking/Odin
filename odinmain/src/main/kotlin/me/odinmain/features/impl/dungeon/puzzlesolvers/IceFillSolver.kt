@@ -39,7 +39,6 @@ object IceFillSolver {
                 text, object : TypeToken<List<List<List<Int>>>>() {}.type
             )
             isr?.close()
-            println(representativeFloors.toString())
         } catch (e: Exception) {
             e.printStackTrace()
             representativeFloors = emptyList()
@@ -81,10 +80,11 @@ object IceFillSolver {
     }
 
     fun enterDungeonRoom(event: EnteredDungeonRoomEvent) {
-        if (event.room?.room?.data?.name != "Ice Fill" || scanned) return
-        val rotation = event.room.room.rotation
+        val room = event.room?.room ?: return
+        if (room.data.name != "Ice Fill" || scanned) return
+        val rotation = room.rotation
 
-        val startPos = Vec2(event.room.room.x, event.room.room.z).addRotationCoords(rotation, 8)
+        val startPos = room.vec2.addRotationCoords(rotation, 8)
         scanAllFloors(Vec3(startPos.x.toDouble(), 70.0, startPos.z.toDouble()), rotation)
         scanned = true
     }

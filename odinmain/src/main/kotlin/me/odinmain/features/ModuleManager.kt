@@ -49,11 +49,10 @@ object ModuleManager {
     val executors = ArrayList<Pair<Module, Executor>>()
 
     val modules: ArrayList<Module> = arrayListOf(
-
         // dungeon
-        DungeonRequeue, BlessingDisplay, ExtraStats, KeyHighlight, MimicMessage, TeammatesHighlight,
-        TerracottaTimer, WatcherBar, ClickedSecrets, DungeonWaypoints, SecretChime, LeapMenu, PuzzleSolvers,
-        WarpCooldown, PosMessages,
+        DungeonRequeue, BlessingDisplay, PosMessages, ExtraStats, KeyHighlight, Mimic, TeammatesHighlight,
+        TerracottaTimer, BloodCamp, ClickedSecrets, DungeonWaypoints, SecretChime, LeapMenu, PuzzleSolvers,
+        WarpCooldown, 
 
         // floor 7
         TerminalSolver, TerminalTimes, MelodyMessage, NecronDropTimer, InactiveWaypoints, WitherDragons,
@@ -61,13 +60,13 @@ object ModuleManager {
 
         // render
         BPSDisplay, ClickGUIModule, CustomHighlight, CPSDisplay, DragonHitboxes, GyroWand, NameChanger,
-        PersonalDragon, RenderOptimizer, ServerDisplay, Waypoints, CanClip, Animations, SpaceHelmet,
-        BlockOverlay, VisualWords, HidePlayers, DVD,
+        PersonalDragon, RenderOptimizer, ServerHud, Waypoints, CanClip, Animations, SpaceHelmet,
+        BlockOverlay, VisualWords, HidePlayers, DVD, Sidebar,
 
         //skyblock
         NoCursorReset, AutoSprint, BlazeAttunement, ChatCommands, DeployableTimer, DianaHelper, ArrowHit,
         Ragaxe, MobSpawn, /*Splits,*/ WardrobeKeybinds, InvincibilityTimer, EnrageDisplay, /*ItemsHighlight,*/
-        CopyChat, PlayerDisplay, LockCursor,
+        CopyChat, PlayerDisplay, LockCursor, PartyEncoding, PetKeybinds,
 
         // kuudra
         BuildHelper, FreshTimer, KuudraDisplay, NoPre, PearlWaypoints, RemovePerks, SupplyWaypoints, TeamHighlight,

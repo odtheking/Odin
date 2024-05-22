@@ -54,6 +54,6 @@ class SelectAll(private val color: String) : TermSimGui(
         GuiEvent.GuiLoadedEvent(name, inventorySlots as ContainerChest).postAndCatch()
         if (inventorySlots?.inventorySlots?.subList(0, size)?.none {
                 it?.stack?.isItemEnchanted == false && it.stack?.item in items && if (it.stack?.item == dye) it.stack?.metadata == correctDye else it.stack?.metadata == correctMeta
-            } == true) solved(this.name, TerminalTimes.simSelectAllPB)
+            } == true) solved(this.name, 4)
     }
 }

@@ -21,6 +21,7 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
+import java.util.*
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
@@ -53,11 +54,9 @@ object WaterSolver {
     }
 
     private fun solve(room: Room) {
-        val x = room.x
-        val z = room.z
         val rotation = room.rotation
 
-        chestPosition = Vec2(x, z).addRotationCoords(rotation, -7)
+        chestPosition = room.vec2.addRotationCoords(rotation, -7)
 
         roomFacing = rotation
 
@@ -119,7 +118,7 @@ object WaterSolver {
 
 
     fun waterRender() {
-        if (DungeonUtils.currentRoomName != "Water Board") return
+        if (DungeonUtils.currentRoomName != "Water Board" || variant == -1) return
 
         val solutionList = solutions
             .flatMap { (lever, times) -> times.drop(lever.i).map { Pair(lever, it) } }
@@ -145,6 +144,7 @@ object WaterSolver {
                     Vec3(solutionList.first().first.leverPos).addVector(0.5, 0.5, 0.5),
                     Vec3(second.first.leverPos).addVector(0.5, 0.5, 0.5),
                     PuzzleSolvers.tracerColorSecond,
+                    lineWidth = 1.5f,
                     depth = true
                 )
             }
@@ -157,7 +157,7 @@ object WaterSolver {
                 else orderText.plus("${if (orderText.isEmpty()) "" else ", "}${sortedSolutions.indexOf(it) + 1}")
             }
             if (showOrder)
-                Renderer.drawStringInWorld(orderText, Vec3(solution.key.leverPos).addVector(.5, .5, .5), Color.WHITE, false, scale = .035f, depth = true)
+                Renderer.drawStringInWorld(orderText, Vec3(solution.key.leverPos).addVector(.5, .5, .5), Color.WHITE, scale = .035f)
 
             for (i in solution.key.i until solution.value.size) {
                 val time = solution.value[i]
@@ -166,11 +166,11 @@ object WaterSolver {
                     else "§e${time}s"
                 } else {
                     val remainingTime = openedWater + time * 1000L - System.currentTimeMillis()
-                    if (remainingTime > 0) "§e${remainingTime / 1000}s"
+                    if (remainingTime > 0) "§e${String.format(Locale.US, "%.2f",remainingTime / 1000)}s"
                     else "§a§lCLICK ME!"
                 }
 
-                Renderer.drawStringInWorld(displayText, Vec3(solution.key.leverPos).addVector(0.5, (i - solution.key.i) * 0.5 + 1.5, 0.5), Color.WHITE, false, depth = true, scale = 0.04f)
+                Renderer.drawStringInWorld(displayText, Vec3(solution.key.leverPos).addVector(0.5, (i - solution.key.i) * 0.5 + 1.5, 0.5), Color.WHITE, scale = 0.04f)
             }
         }
     }

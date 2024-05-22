@@ -3,6 +3,7 @@ package me.odinmain.features.impl.floor7.p3.termGUI
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.currentTerm
+import me.odinmain.features.impl.floor7.p3.TerminalSolver.openedTerminalTime
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.PlayerUtils
@@ -47,6 +48,7 @@ abstract class TermGui {
         itemIndexMap.entries.find {
             it.value.isPointWithin(x, y)
         }?.let {
+            if (System.currentTimeMillis() - openedTerminalTime < 300) return
             windowClick(it.key, if (button == 0) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Right, true)
         }
     }
