@@ -17,12 +17,12 @@ object TTTSolver {
 
     private val board = Array(9) { index ->
         BoardSlot(
-            State.Blank, BlockPos(0, 0,0), index % 3, index / 3,
+            State.Blank, null, index % 3, index / 3,
             if (index == 4) BoardPosition.Middle else if (index.equalsOneOf(0,2,6,8)) BoardPosition.Corner else BoardPosition.Edge
         )
     }
 
-    data class BoardSlot(val state: State, val location: BlockPos, val row: Int, val column: Int, val position: BoardPosition)
+    data class BoardSlot(val state: State, val location: BlockPos?, val row: Int, val column: Int, val position: BoardPosition)
 
     private var toRender: BlockPos? = null
 
@@ -49,7 +49,7 @@ object TTTSolver {
                 State.O -> Color.BLUE
                 else -> Color.WHITE
             }
-            Renderer.drawBox(slot.location.toAABB(), color, 1f, fillAlpha = 0f)
+            Renderer.drawBox(slot.location?.toAABB() ?: return, color, 1f, fillAlpha = 0f)
         }
     }
 

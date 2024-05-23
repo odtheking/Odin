@@ -78,6 +78,7 @@ val mainCommand = commodore("od", "odin") {
              §3- /od sl §7» §8Refills spirit leaps up to 16.
              §3- /spcmd §7» §8Use /spcmd cmds for command list.
              §3- /visualwords §7» §8Command to replace words in the game.
+             §3- /petkeys §7» §8Command to edit pet keybinds.
              """.trimIndent()
         )
     }
