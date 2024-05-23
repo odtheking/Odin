@@ -18,7 +18,11 @@ object TTTSolver {
     private val board = Array(9) { index ->
         BoardSlot(
             State.Blank, null, index % 3, index / 3,
-            if (index == 4) BoardPosition.Middle else if (index.equalsOneOf(0,2,6,8)) BoardPosition.Corner else BoardPosition.Edge
+            when (index) {
+                4 -> BoardPosition.Middle
+                0, 2, 6, 8 -> BoardPosition.Corner
+                else -> BoardPosition.Edge
+            }
         )
     }
 
@@ -35,10 +39,13 @@ object TTTSolver {
 
     private fun updateBoard(bottomRight: Vec2, rotations: Rotations) {
         for (index in 0 until 9) {
-            val currentSlot = bottomRight.addRotationCoords(rotations, 0, -index / 3)
-                .let { BlockPos(it.x.toDouble(), 70.0 + index % 3, it.z.toDouble())}
+            val currentSlot = bottomRight.addRotationCoords(rotations, 0, -index / 3).let { BlockPos(it.x.toDouble(), 70.0 + index % 3, it.z.toDouble())}
             board[index] = BoardSlot(findSlotState(currentSlot), currentSlot, index % 3, index / 3,
-                if (index == 4) BoardPosition.Middle else if (index.equalsOneOf(0,2,6,8)) BoardPosition.Corner else BoardPosition.Edge)
+                when (index) {
+                    4 -> BoardPosition.Middle
+                    0, 2, 6, 8 -> BoardPosition.Corner
+                    else -> BoardPosition.Edge
+                })
         }
     }
 

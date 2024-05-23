@@ -43,7 +43,7 @@ object PuzzleSolvers : Module(
 
     private val tttDropDown: Boolean by DropdownSetting("Tic Tac Toe")
     private val tttSolver: Boolean by BooleanSetting("Tic Tac Toe", true, description = "Shows you the solution for the TTT puzzle").withDependency { tttDropDown }
-    val tttColor: Color by ColorSetting("Weirdos Color", Color.GREEN, true, description = "Color for the tic tac toe solver").withDependency { tttSolver && weirdosDropDown }
+    val tttColor: Color by ColorSetting("TTT Color", Color.GREEN, true, description = "Color for the tic tac toe solver").withDependency { tttSolver && weirdosDropDown }
     val tttStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { tttSolver && weirdosDropDown }
 
     private val iceFillDropDown: Boolean by DropdownSetting("Ice Fill")
