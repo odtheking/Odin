@@ -249,7 +249,7 @@ object DungeonUtils {
         lastRoomPos = 0 to 0
     }
 
-    private val tablistRegex = Regex("^\\[(\\d+)\\] (?:\\[\\w+\\] )*(\\w+) (?:.)*?\\((\\w+)(?: (\\w+))*\\)\$")
+    private val tablistRegex = Regex("^\\[(\\d+)] (?:\\[\\w+] )*(\\w+) .*?\\((\\w+)(?: (\\w+))*\\)$")
 
     private fun getDungeonTeammates(previousTeammates: List<DungeonPlayer>): List<DungeonPlayer> {
         val teammates = mutableListOf<DungeonPlayer>()
@@ -279,11 +279,13 @@ object DungeonUtils {
 
     fun getDungeonTabList(): List<Pair<NetworkPlayerInfo, String>>? {
         val tabEntries = tabList
-        if (tabEntries.size < 18 || !tabEntries[0].second.contains("§r§b§lParty §r§f(")) {
-            return null
-        }
+        if (tabEntries.size < 18 || !tabEntries[0].second.contains("§r§b§lParty §r§f(")) return null
         return tabEntries
     }
+
+    private val tabList: List<Pair<NetworkPlayerInfo, String>>
+        get() = (mc.thePlayer?.sendQueue?.playerInfoMap?.sortedWith(tabListOrder) ?: emptyList())
+            .map { Pair(it, mc.ingameGUI.tabList.getPlayerName(it)) }
 
     private val tabListOrder = Comparator<NetworkPlayerInfo> { o1, o2 ->
         if (o1 == null) return@Comparator -1
@@ -297,9 +299,6 @@ object DungeonUtils {
         ).compare(o1.gameProfile.name, o2.gameProfile.name).result()
     }
 
-    private val tabList: List<Pair<NetworkPlayerInfo, String>>
-        get() = (mc.thePlayer?.sendQueue?.playerInfoMap?.sortedWith(tabListOrder) ?: emptyList())
-            .map { Pair(it, mc.ingameGUI.tabList.getPlayerName(it)) }
 
     /**
      * Determines whether a given block state and position represent a secret location.
