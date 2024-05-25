@@ -1,6 +1,5 @@
 package me.odinmain.utils.skyblock.dungeon
 
-import com.google.common.collect.ComparisonChain
 import me.odinmain.OdinMain.mc
 import me.odinmain.config.DungeonWaypointConfigCLAY
 import me.odinmain.events.impl.EnteredDungeonRoomEvent
@@ -24,7 +23,6 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
 import net.minecraft.tileentity.TileEntitySkull
 import net.minecraft.util.*
-import net.minecraft.world.WorldSettings
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -259,12 +257,12 @@ object DungeonUtils {
 
             val (_, sbLevel, name, clazz, clazzLevel) = tablistRegex.find(line.noControlCodes)?.groupValues ?: continue
 
-            addTeammate(name, clazz, teammates, networkPlayerInfo)
+            addTeammate(name, clazz, teammates, networkPlayerInfo) // will fail to find the EMPTY or DEAD class and won't add them to the list
             if (clazz == "DEAD" || clazz == "EMPTY") {
                 val previousClass = previousTeammates.find { it.name == name }?.clazz ?: continue
-                addTeammate(name, previousClass.name, teammates, networkPlayerInfo)
+                addTeammate(name, previousClass.name, teammates, networkPlayerInfo) // will add the player with the previous class
             }
-            teammates.find { it.name == name }?.isDead = clazz == "DEAD"
+            teammates.find { it.name == name }?.isDead = clazz == "DEAD" // set the player as dead if they are
         }
         return teammates
     }
@@ -278,27 +276,10 @@ object DungeonUtils {
     }
 
     fun getDungeonTabList(): List<Pair<NetworkPlayerInfo, String>>? {
-        val tabEntries = tabList
+        val tabEntries = getTabList
         if (tabEntries.size < 18 || !tabEntries[0].second.contains("§r§b§lParty §r§f(")) return null
         return tabEntries
     }
-
-    private val tabList: List<Pair<NetworkPlayerInfo, String>>
-        get() = (mc.thePlayer?.sendQueue?.playerInfoMap?.sortedWith(tabListOrder) ?: emptyList())
-            .map { Pair(it, mc.ingameGUI.tabList.getPlayerName(it)) }
-
-    private val tabListOrder = Comparator<NetworkPlayerInfo> { o1, o2 ->
-        if (o1 == null) return@Comparator -1
-        if (o2 == null) return@Comparator 0
-        return@Comparator ComparisonChain.start().compareTrueFirst(
-            o1.gameType != WorldSettings.GameType.SPECTATOR,
-            o2.gameType != WorldSettings.GameType.SPECTATOR
-        ).compare(
-            o1.playerTeam?.registeredName ?: "",
-            o2.playerTeam?.registeredName ?: ""
-        ).compare(o1.gameProfile.name, o2.gameProfile.name).result()
-    }
-
 
     /**
      * Determines whether a given block state and position represent a secret location.

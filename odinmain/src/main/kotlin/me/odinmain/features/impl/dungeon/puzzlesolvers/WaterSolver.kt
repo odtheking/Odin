@@ -149,7 +149,9 @@ object WaterSolver {
                 )
             }
         }
-        val finalSolution = solutions
+
+        val finalSolution = solutions.toMap()
+
         for (solution in finalSolution) {
             var orderText = ""
             solution.value.drop(solution.key.i).forEach {
@@ -174,6 +176,7 @@ object WaterSolver {
             }
         }
     }
+
 
     fun waterInteract(event: C08PacketPlayerBlockPlacement) {
         if (solutions.isEmpty()) return
