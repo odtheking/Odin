@@ -35,8 +35,8 @@ object DragonPriority {
         val totalPower = BlessingDisplay.Blessings.POWER.current * if (paulBuff) 1.25 else 1.0 +
                 if (BlessingDisplay.Blessings.TIME.current > 0) 2.5 else 0.0
 
-        val playerClass = DungeonUtils.dungeonTeammates.find { it.entity == mc.thePlayer }?.clazz
-            ?: modMessage("§cPlayer Class wasn't found! please report this. (Dragon Priority will not work this run if class cant be found!)")
+        val playerClass = DungeonUtils.dungeonTeammates.find { it.name == mc.thePlayer.name }?.clazz
+            ?: return modMessage("§cPlayer Class wasn't found! please report this").let { WitherDragonsEnum.None }
 
         val dragonList = listOf(WitherDragonsEnum.Orange, WitherDragonsEnum.Green, WitherDragonsEnum.Red, WitherDragonsEnum.Blue, WitherDragonsEnum.Purple)
         val priorityList =

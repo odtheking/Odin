@@ -1,7 +1,10 @@
 package me.odinmain.utils
 
+import com.google.common.collect.ComparisonChain
 import me.odinmain.OdinMain.mc
+import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.scoreboard.ScorePlayerTeam
+import net.minecraft.world.WorldSettings
 
 
 fun cleanSB(scoreboard: String?): String {
@@ -38,4 +41,23 @@ fun getLines(): List<String> {
             .let { if (it.size > 15) it.drop(15) else it }
             .map { ScorePlayerTeam.formatPlayerName(getPlayersTeam(it.playerName), it.playerName) }
     } ?: emptyList()
+}
+
+
+// Tablist utils
+
+val getTabList: List<Pair<NetworkPlayerInfo, String>>
+    get() = (mc.thePlayer?.sendQueue?.playerInfoMap?.sortedWith(tabListOrder) ?: emptyList())
+        .map { Pair(it, mc.ingameGUI.tabList.getPlayerName(it)) }
+
+val tabListOrder = Comparator<NetworkPlayerInfo> { o1, o2 ->
+    if (o1 == null) return@Comparator -1
+    if (o2 == null) return@Comparator 0
+    return@Comparator ComparisonChain.start().compareTrueFirst(
+        o1.gameType != WorldSettings.GameType.SPECTATOR,
+        o2.gameType != WorldSettings.GameType.SPECTATOR
+    ).compare(
+        o1.playerTeam?.registeredName ?: "",
+        o2.playerTeam?.registeredName ?: ""
+    ).compare(o1.gameProfile.name, o2.gameProfile.name).result()
 }

@@ -15,70 +15,99 @@ object TTTSolver {
 
     // currently just rendering the board, no actual solving
 
-    private var bottomRight = Vec2(0, 0)
-    private val board = Array(3) { Array(3) { State.Blank to BlockPos(0, 0,0) } }
+    private var board = Array(9) { index ->
+        BoardSlot(
+            State.Blank, BlockPos(0, 0, 0), index % 3, index / 3,
+            when (index) {
+                4 -> BoardPosition.Middle
+                0, 2, 6, 8 -> BoardPosition.Corner
+                else -> BoardPosition.Edge
+            }
+        )
+    }
+
+    data class BoardSlot(val state: State, val location: BlockPos, val row: Int, val column: Int, val position: BoardPosition)
+
+    private var toRender: BlockPos? = null
 
     fun tttRoomEnter(event: EnteredDungeonRoomEvent) {
         val room = event.room?.room ?: return
         if (room.data.name != "Tic Tac Toe") return
 
-        val vec2 = Vec2(room.x, room.z)
-
-        bottomRight = vec2.addRotationCoords(room.rotation, 7, 0)
-
-        initializeBoard(bottomRight, room.rotation)
+        updateBoard(room.vec2.addRotationCoords(room.rotation, 7, 0), room.rotation)
     }
 
-    private fun initializeBoard(bottomRight: Vec2, rotations: Rotations) {
-        for (i in 0 until 3) {
-            for (j in 0 until 3) {
-                val location = bottomRight.addRotationCoords(rotations, 0, -j)
-                    .let { BlockPos(it.x.toDouble(), 70.0 + i, it.z.toDouble())}
-                board[i][j] = findSlotState(location) to location
-            }
+    private fun updateBoard(bottomRight: Vec2, rotations: Rotations) {
+        for (index in 0 until 9) {
+            val currentSlot = bottomRight.addRotationCoords(rotations, 0, -index / 3).let { BlockPos(it.x.toDouble(), 70.0 + index % 3, it.z.toDouble())}
+            board[index] = BoardSlot(findSlotState(currentSlot), currentSlot, index % 3, index / 3,
+                when (index) {
+                    4 -> BoardPosition.Middle
+                    0, 2, 6, 8 -> BoardPosition.Corner
+                    else -> BoardPosition.Edge
+                })
         }
     }
-    // need to figure out when to call this, but it works
-    private fun updateBoard(rotations: Rotations) {
-        for (i in 0 until 3) {
-            for (j in 0 until 3) {
-                val currentSlot = bottomRight.addRotationCoords(rotations, 0, -j)
-                    .let { BlockPos(it.x.toDouble(), 70.0 + i, it.z.toDouble())}
 
-                val slotState = findSlotState(currentSlot)
-                when (slotState) {
-                    State.X -> board[i][j] = State.X to currentSlot
-                    State.O -> board[i][j] = State.O to currentSlot
-                    else -> {}
-                }
+    fun tttRenderWorld() {
+        board.forEach { slot ->
+            val color = when (slot.state) {
+                State.X -> Color.RED
+                State.O -> Color.BLUE
+                else -> Color.WHITE
             }
+            Renderer.drawBox(slot.location.toAABB(), color, 1f, fillAlpha = 0f)
+        }
+
+        toRender?.let {
+            Renderer.drawBox(it.toAABB(), Color.ORANGE, 1f, fillAlpha = 1f)
+        }
+    }
+
+    fun firstMove() {
+        if (board.filter { it.state == State.X }.size != 1) return
+        toRender = when (board.first { it.state == State.X }.position) {
+            BoardPosition.Middle -> board[0].location
+            BoardPosition.Corner -> board[4].location
+            else -> return
+        }
+    }
+
+    fun secondMove() {
+        if (board.filter { it.state == State.X }.size != 2) return
+        val slot = board.last { it.state == State.X }
+        toRender = when (slot.position) {
+            BoardPosition.Middle -> board[8].location
+            BoardPosition.Corner -> board[0].location
+            else -> return
+        }
+    }
+
+    fun tttReset() {
+        toRender = null
+        board = Array(9) { index ->
+            BoardSlot(
+                State.Blank, BlockPos(0, 0, 0), index % 3, index / 3,
+                when (index) {
+                    4 -> BoardPosition.Middle
+                    0, 2, 6, 8 -> BoardPosition.Corner
+                    else -> BoardPosition.Edge
+                }
+            )
         }
     }
 
     private fun findSlotState(blockPos: BlockPos): State {
         val itemFrameBlock = mc.theWorld.getEntitiesWithinAABB(EntityItemFrame::class.java, blockPos.toAABB()).filterIsInstance<EntityItemFrame>().firstOrNull() ?: return State.Blank
         val mapData = Items.filled_map.getMapData(itemFrameBlock.displayedItem, mc.theWorld) ?: return State.Blank
-        val colorInt: Int = (mapData.colors[8256] and 255.toByte()).toInt()
-        return if (colorInt == 114) State.X else State.O
-    }
-
-    fun tttRenderWorld() {
-        board.forEach { rows ->
-            rows.forEach { columns ->
-                val state = columns.first
-                val blockPos = columns.second
-
-                val color = when (state) {
-                    State.X -> Color.RED
-                    State.O -> Color.BLUE
-                    else -> Color.WHITE
-                }
-                Renderer.drawBox(blockPos.toAABB(), color, 1f, fillAlpha = 0f)
-            }
-        }
+        return if ((mapData.colors[8256] and 255.toByte()).toInt() == 114) State.X else State.O
     }
 
     enum class State {
         Blank, X, O
+    }
+
+    enum class BoardPosition {
+        Middle, Edge, Corner
     }
 }

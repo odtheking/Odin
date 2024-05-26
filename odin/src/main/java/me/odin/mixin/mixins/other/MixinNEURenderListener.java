@@ -1,6 +1,8 @@
 package me.odin.mixin.mixins.other;
 
 import me.odinmain.features.impl.dungeon.LeapMenu;
+import me.odinmain.features.impl.floor7.p3.TerminalSolver;
+import me.odinmain.features.impl.floor7.p3.TerminalTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.inventory.ContainerChest;
@@ -21,12 +23,13 @@ public class MixinNEURenderListener {
 
     @Inject(method = "onGuiScreenDrawPre", at = @At("HEAD"), cancellable = true, remap = false)
     private void neuInvButtons(GuiScreenEvent.DrawScreenEvent.Pre event, CallbackInfo ci) {
-        if (LeapMenu.INSTANCE.getEnabled() && mc.currentScreen instanceof GuiChest && ((GuiChest) mc.currentScreen).inventorySlots instanceof ContainerChest) {
-            String guiName = ((ContainerChest) ((GuiChest) mc.currentScreen).inventorySlots).getLowerChestInventory().getDisplayName().getUnformattedText();
-            if (guiName.equals("Spirit Leap")) {
-                ci.cancel();
-            }
-        }
-    }
+        if (!(mc.currentScreen instanceof GuiChest) || !(((GuiChest) mc.currentScreen).inventorySlots instanceof ContainerChest)) return;
+        String guiName = ((ContainerChest) ((GuiChest) mc.currentScreen).inventorySlots).getLowerChestInventory().getDisplayName().getUnformattedText();
 
+        if (LeapMenu.INSTANCE.getEnabled() && guiName.equals("Spirit Leap"))
+            ci.cancel();
+
+        if (TerminalSolver.INSTANCE.getEnabled() && TerminalSolver.INSTANCE.getRenderType() == 3 && TerminalSolver.INSTANCE.getCurrentTerm() != TerminalTypes.NONE)
+            ci.cancel();
+    }
 }

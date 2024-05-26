@@ -21,7 +21,8 @@ object WeirdosSolver {
     fun onRenderWorld() {
         if (DungeonUtils.currentRoomName != "Three Weirdos") return
         correctPos?.let {
-            Renderer.drawBox(it.toAABB(), PuzzleSolvers.weirdosColor, outlineAlpha = if (PuzzleSolvers.weirdosStyle == 0) 0 else PuzzleSolvers.weirdosColor.alpha, fillAlpha = if (PuzzleSolvers.weirdosStyle == 1) 0 else PuzzleSolvers.weirdosColor.alpha)
+            Renderer.drawBox(it.toAABB(), PuzzleSolvers.weirdosColor, outlineAlpha = if (PuzzleSolvers.weirdosStyle == 0) 0 else PuzzleSolvers.weirdosColor.alpha,
+                fillAlpha = if (PuzzleSolvers.weirdosStyle == 1) 0 else PuzzleSolvers.weirdosColor.alpha)
         }
     }
 
