@@ -31,10 +31,10 @@ object ChocolateFactory : Module(
     private val cancelSound: Boolean by BooleanSetting("Cancel Sound")
     private val upgradeMessage: Boolean by BooleanSetting("Odin Upgrade Message", false, description = "Prints a message when upgrading.")
     private val eggEsp: Boolean by BooleanSetting("Egg ESP", false, description = "Shows the location of the egg.")
-    private var chocolate = 0
+    private var chocolate = 0L
     private var chocoProduction = 0f
 
-    private val indexToName = mapOf(29 to "Bro", 30 to "Cousin", 31 to "Sis", 32 to "Daddy", 33 to "Granny")
+    private val workerIndexToNameMap = mapOf(28 to "Bro", 29 to "Cousin", 30 to "Sis", 31 to "Daddy", 32 to "Granny", 33 to "Uncle", 34 to "Dog")
     private val possibleLocations = arrayOf(
         Island.SpiderDen,
         Island.CrimsonIsle,
@@ -63,7 +63,7 @@ object ChocolateFactory : Module(
 
             val choco = container.getSlot(13)?.stack ?: return@execute
 
-            chocolate = choco.displayName.noControlCodes.replace(Regex("\\D"), "").toIntOrNull() ?: 0
+            chocolate = choco.displayName.noControlCodes.replace(Regex("\\D"), "").toLongOrNull() ?: 0
              chocoProduction =
                 choco.lore.find { it.endsWith("§8per second") }?.noControlCodes?.replace(",", "")?.toFloatOrNull() ?: 0f
 
@@ -71,7 +71,7 @@ object ChocolateFactory : Module(
             if (!found) return@execute
             if (chocolate > bestCost && autoUpgrade) {
                 windowClick(bestWorker, PlayerUtils.ClickType.Middle)
-                if (upgradeMessage) modMessage("Trying to upgrade: Rabbit " + indexToName[bestWorker] + " with " + bestCost + " chocolate.")
+                if (upgradeMessage) modMessage("Trying to upgrade: Rabbit " + workerIndexToNameMap[bestWorker] + " with " + bestCost + " chocolate.")
             }
         }
 
@@ -98,19 +98,19 @@ object ChocolateFactory : Module(
     private fun findWorker(container: Container) {
         val items = container.inventory ?: return
         val workers = mutableListOf<List<String?>>()
-        for (i in 29 until 34) {
+        for (i in workerIndexToNameMap.keys) {
             workers.add(items[i]?.lore ?: return)
         }
         found = false
         var maxValue = 0;
-        for (i in 0 until 5) {
-            val worker = workers[i]
+        for (i in workerIndexToNameMap.keys) {
+            val worker = workers[i - 28]
             if (worker.contains("climbed as far")) continue
             val index = worker.indexOfFirst { it?.contains("Cost") == true }.takeIf { it != -1 } ?: continue
             val cost = worker[index + 1]?.noControlCodes?.replace(Regex("\\D"), "")?.toIntOrNull() ?: continue
-            val value = cost / (i + 1).toFloat()
+            val value = cost / (i - 27).toFloat()
             if (value < maxValue || !found) {
-                bestWorker = 29 + i
+                bestWorker = i
                 maxValue = value.toInt()
                 bestCost = cost
                 found = true
