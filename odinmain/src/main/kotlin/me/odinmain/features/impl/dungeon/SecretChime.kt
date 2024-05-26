@@ -32,6 +32,7 @@ object SecretChime : Module(
     val reset: () -> Unit by ActionSetting("Play sound") {
         playSecretSound()
     }
+    private val inBoss: Boolean by BooleanSetting("In Boss Room", false, description = "Prevent playing the sound if in boss room.")
 
     private var lastPlayed = System.currentTimeMillis()
     private val drops = listOf(
@@ -40,7 +41,7 @@ object SecretChime : Module(
     )
 
     /**
-     * For item pickup detection. The forge event for item pickups cant be used, because item pickups are handled server side.
+     * For item pickup detection. The forge event for item pickups can't be used because item pickups are handled server side.
      */
     @SubscribeEvent
     fun onRemoveEntity(event: EntityLeaveWorldEvent) {
@@ -64,6 +65,7 @@ object SecretChime : Module(
     }
 
     private fun playSecretSound() {
+        if (inBoss && DungeonUtils.inBoss) return
         if (System.currentTimeMillis() - lastPlayed <= 10) return
         val sound = if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound]
         PlayerUtils.playLoudSound(sound, volume, pitch)

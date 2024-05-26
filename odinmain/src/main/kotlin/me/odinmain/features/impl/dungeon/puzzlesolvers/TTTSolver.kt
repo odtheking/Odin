@@ -15,7 +15,7 @@ object TTTSolver {
 
     // currently just rendering the board, no actual solving
 
-    private val board = Array(9) { index ->
+    private var board = Array(9) { index ->
         BoardSlot(
             State.Blank, BlockPos(0, 0, 0), index % 3, index / 3,
             when (index) {
@@ -58,6 +58,10 @@ object TTTSolver {
             }
             Renderer.drawBox(slot.location.toAABB(), color, 1f, fillAlpha = 0f)
         }
+
+        toRender?.let {
+            Renderer.drawBox(it.toAABB(), Color.ORANGE, 1f, fillAlpha = 1f)
+        }
     }
 
     fun firstMove() {
@@ -76,6 +80,20 @@ object TTTSolver {
             BoardPosition.Middle -> board[8].location
             BoardPosition.Corner -> board[0].location
             else -> return
+        }
+    }
+
+    fun tttReset() {
+        toRender = null
+        board = Array(9) { index ->
+            BoardSlot(
+                State.Blank, BlockPos(0, 0, 0), index % 3, index / 3,
+                when (index) {
+                    4 -> BoardPosition.Middle
+                    0, 2, 6, 8 -> BoardPosition.Corner
+                    else -> BoardPosition.Edge
+                }
+            )
         }
     }
 

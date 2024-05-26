@@ -1,6 +1,7 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
-import me.odinmain.events.impl.*
+import me.odinmain.events.impl.BlockChangeEvent
+import me.odinmain.events.impl.EnteredDungeonRoomEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.puzzlesolvers.WaterSolver.waterInteract
@@ -88,6 +89,7 @@ object PuzzleSolvers : Module(
         execute(500) {
             if (tpMaze) TPMaze.scan()
             if (waterSolver) WaterSolver.scan()
+            if (blazeSolver) BlazeSolver.getBlaze()
         }
 
         onPacket(S08PacketPlayerPosLook::class.java) {
@@ -128,11 +130,6 @@ object PuzzleSolvers : Module(
     }
 
     @SubscribeEvent
-    fun postEntityMetadata(event: PostEntityMetadata) {
-        BlazeSolver.getBlaze(event)
-    }
-
-    @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
         if (tttSolver) TicTacToe.tttTick(event)
     }
@@ -140,7 +137,6 @@ object PuzzleSolvers : Module(
     @SubscribeEvent
     fun onRoomEnter(event: EnteredDungeonRoomEvent) {
         IceFillSolver.enterDungeonRoom(event)
-        BlazeSolver.getRoomType(event)
         BeamsSolver.enterDungeonRoom(event)
         TTTSolver.tttRoomEnter(event)
     }

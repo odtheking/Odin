@@ -32,7 +32,6 @@ object ChocolateFactory : Module(
     private val upgradeMessage: Boolean by BooleanSetting("Odin Upgrade Message", false, description = "Prints a message when upgrading.")
     private val eggEsp: Boolean by BooleanSetting("Egg ESP", false, description = "Shows the location of the egg.")
     private var chocolate = 0
-    private var chocoProduction = 0f
 
     private val indexToName = mapOf(29 to "Bro", 30 to "Cousin", 31 to "Sis", 32 to "Daddy", 33 to "Granny")
     private val possibleLocations = arrayOf(
@@ -52,7 +51,7 @@ object ChocolateFactory : Module(
     init {
         onWorldLoad { currentDetectedEggs = arrayOfNulls(3) }
         execute(delay = { delay }) {
-            if ((chocolate <= bestCost || !autoUpgrade) || !isInChocolateFactory()) return@execute
+            if (!isInChocolateFactory()) return@execute
 
             if (clickFactory) windowClick(13, PlayerUtils.ClickType.Right)
         }
@@ -64,8 +63,6 @@ object ChocolateFactory : Module(
             val choco = container.getSlot(13)?.stack ?: return@execute
 
             chocolate = choco.displayName.noControlCodes.replace(Regex("\\D"), "").toIntOrNull() ?: 0
-             chocoProduction =
-                choco.lore.find { it.endsWith("§8per second") }?.noControlCodes?.replace(",", "")?.toFloatOrNull() ?: 0f
 
             findWorker(container)
             if (!found) return@execute
@@ -76,7 +73,7 @@ object ChocolateFactory : Module(
         }
 
         execute(delay = { 3000 }) {
-            if(!eggEsp) currentDetectedEggs = arrayOfNulls(3);
+            if(!eggEsp) currentDetectedEggs = arrayOfNulls(3)
             if (eggEsp && possibleLocations.contains(LocationUtils.currentArea) && currentDetectedEggs.filterNotNull().size < 3) scanForEggs()
         }
 
@@ -102,7 +99,7 @@ object ChocolateFactory : Module(
             workers.add(items[i]?.lore ?: return)
         }
         found = false
-        var maxValue = 0;
+        var maxValue = 0
         for (i in 0 until 5) {
             val worker = workers[i]
             if (worker.contains("climbed as far")) continue
