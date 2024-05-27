@@ -27,7 +27,7 @@ class PersonalBest(val name: String, val size: Int) {
 
     fun set(index: Int, value: Double) {
         pb?.set(index, value)
-        modMessage("Set $index value to $value")
+        //modMessage("Set $index value to $value")
         PBConfig.saveConfig()
     }
 }

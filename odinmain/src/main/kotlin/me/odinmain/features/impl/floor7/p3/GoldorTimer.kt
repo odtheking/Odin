@@ -3,9 +3,7 @@ package me.odinmain.features.impl.floor7.p3
 import me.odinmain.events.impl.RealServerTick
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.DualSetting
-import me.odinmain.features.settings.impl.HudSetting
+import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.*
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent

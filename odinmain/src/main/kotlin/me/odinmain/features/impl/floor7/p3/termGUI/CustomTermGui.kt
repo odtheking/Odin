@@ -42,7 +42,7 @@ object CustomTermGui {
 }
 
 abstract class TermGui {
-    protected val itemIndexMap: MutableMap<Int, Box> = mutableMapOf()
+    val itemIndexMap: MutableMap<Int, Box> = mutableMapOf()
 
     fun mouseClicked(x: Int, y: Int, button: Int) {
         itemIndexMap.entries.find {
@@ -53,5 +53,24 @@ abstract class TermGui {
         }
     }
 
+    companion object {
+        private var currentGui: TermGui? = null
+
+        fun setCurrentGui(gui: TermGui) {
+            currentGui = gui
+        }
+
+        fun getHoveredItem(x: Int, y: Int): Int? {
+            return currentGui?.itemIndexMap?.entries?.find {
+                it.value.isPointWithin(x, y)
+            }?.key
+        }
+
+        fun getItemIndexMap(): MutableMap<Int, Box> {
+            return currentGui?.itemIndexMap ?: mutableMapOf()
+        }
+    }
+
     open fun render() {}
 }
+

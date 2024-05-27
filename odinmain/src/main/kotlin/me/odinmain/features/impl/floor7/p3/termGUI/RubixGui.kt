@@ -9,8 +9,8 @@ import me.odinmain.features.impl.floor7.p3.TerminalSolver.textScale
 import me.odinmain.utils.render.*
 
 object RubixGui : TermGui() {
-
     override fun render() {
+        setCurrentGui(this)
         itemIndexMap.clear()
         roundedRectangle(-300, -175, 600, 300, TerminalSolver.customGuiColor, 10f, 1f)
         if (TerminalSolver.customGuiText == 0) {
