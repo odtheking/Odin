@@ -3,9 +3,14 @@ package me.odinclient.features.impl.floor7.p3
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
+import me.odinmain.features.impl.floor7.p3.TerminalSolver.currentTerm
+import me.odinmain.features.impl.floor7.p3.TerminalSolver.openedTerminalTime
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
+import me.odinmain.features.impl.floor7.p3.termGUI.TermGui
 import me.odinmain.features.settings.impl.DualSetting
 import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.ui.util.MouseUtils.mouseX
+import me.odinmain.ui.util.MouseUtils.mouseY
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
@@ -32,21 +37,29 @@ object HoverTerms : Module(
             mc.currentScreen !is GuiChest ||
             !enabled ||
             !triggerBotClock.hasTimePassed(triggerDelay) ||
-            System.currentTimeMillis() - TerminalSolver.openedTerminalTime <= firstClickDelay
+            System.currentTimeMillis() - openedTerminalTime <= firstClickDelay
         ) return
         val gui = mc.currentScreen as GuiChest
-        if (gui.inventorySlots !is ContainerChest || gui.slotUnderMouse?.inventory == mc.thePlayer?.inventory) return
-        val hoveredItem = gui.slotUnderMouse?.slotIndex ?: return
+        if (gui.inventorySlots !is ContainerChest) return
+
+        val hoveredItem = if (TerminalSolver.renderType == 3 && TerminalSolver.enabled && currentTerm != TerminalTypes.NONE)
+            TermGui.getHoveredItem(mouseX.toInt(), mouseY.toInt()) ?: return
+
+        else {
+            if (gui.slotUnderMouse?.inventory == mc.thePlayer?.inventory) return
+            gui.slotUnderMouse?.slotIndex ?: return
+        }
+
         if (hoveredItem !in TerminalSolver.solution) return
 
-        if (TerminalSolver.currentTerm == TerminalTypes.RUBIX) {
+        if (currentTerm == TerminalTypes.RUBIX) {
             val needed = TerminalSolver.solution.count { it == hoveredItem }
             if (needed >= 3) {
                 windowClick(hoveredItem, PlayerUtils.ClickType.Right)
                 triggerBotClock.update()
                 return
             }
-        } else if (TerminalSolver.currentTerm == TerminalTypes.ORDER) {
+        } else if (currentTerm == TerminalTypes.ORDER) {
             if (TerminalSolver.solution.first() == hoveredItem) {
                 windowClick(hoveredItem, if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
                 triggerBotClock.update()
