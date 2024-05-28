@@ -10,7 +10,7 @@ object ExtraStats : Module(
     category = Category.DUNGEON,
 ) {
     init {
-        onMessage("/^\\s*> EXTRA STATS <\$/", false) {
+        onMessage("                             > EXTRA STATS <", false) {
             sendCommand("showextrastats")
         }
     }

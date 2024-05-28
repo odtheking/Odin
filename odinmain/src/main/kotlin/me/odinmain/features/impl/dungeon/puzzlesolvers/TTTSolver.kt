@@ -15,10 +15,14 @@ object TTTSolver {
 
     // currently just rendering the board, no actual solving
 
-    private val board = Array(9) { index ->
+    private var board = Array(9) { index ->
         BoardSlot(
-            State.Blank, BlockPos(0, 0,0), index % 3, index / 3,
-            if (index == 4) BoardPosition.Middle else if (index.equalsOneOf(0,2,6,8)) BoardPosition.Corner else BoardPosition.Edge
+            State.Blank, BlockPos(0, 0, 0), index % 3, index / 3,
+            when (index) {
+                4 -> BoardPosition.Middle
+                0, 2, 6, 8 -> BoardPosition.Corner
+                else -> BoardPosition.Edge
+            }
         )
     }
 
@@ -35,10 +39,13 @@ object TTTSolver {
 
     private fun updateBoard(bottomRight: Vec2, rotations: Rotations) {
         for (index in 0 until 9) {
-            val currentSlot = bottomRight.addRotationCoords(rotations, 0, -index / 3)
-                .let { BlockPos(it.x.toDouble(), 70.0 + index % 3, it.z.toDouble())}
+            val currentSlot = bottomRight.addRotationCoords(rotations, 0, -index / 3).let { BlockPos(it.x.toDouble(), 70.0 + index % 3, it.z.toDouble())}
             board[index] = BoardSlot(findSlotState(currentSlot), currentSlot, index % 3, index / 3,
-                if (index == 4) BoardPosition.Middle else if (index.equalsOneOf(0,2,6,8)) BoardPosition.Corner else BoardPosition.Edge)
+                when (index) {
+                    4 -> BoardPosition.Middle
+                    0, 2, 6, 8 -> BoardPosition.Corner
+                    else -> BoardPosition.Edge
+                })
         }
     }
 
@@ -50,6 +57,10 @@ object TTTSolver {
                 else -> Color.WHITE
             }
             Renderer.drawBox(slot.location.toAABB(), color, 1f, fillAlpha = 0f)
+        }
+
+        toRender?.let {
+            Renderer.drawBox(it.toAABB(), Color.ORANGE, 1f, fillAlpha = 1f)
         }
     }
 
@@ -69,6 +80,20 @@ object TTTSolver {
             BoardPosition.Middle -> board[8].location
             BoardPosition.Corner -> board[0].location
             else -> return
+        }
+    }
+
+    fun tttReset() {
+        toRender = null
+        board = Array(9) { index ->
+            BoardSlot(
+                State.Blank, BlockPos(0, 0, 0), index % 3, index / 3,
+                when (index) {
+                    4 -> BoardPosition.Middle
+                    0, 2, 6, 8 -> BoardPosition.Corner
+                    else -> BoardPosition.Edge
+                }
+            )
         }
     }
 

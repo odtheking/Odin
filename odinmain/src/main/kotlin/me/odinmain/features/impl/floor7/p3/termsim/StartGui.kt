@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.floor7.p3.termsim
 
-import me.odinmain.config.Config
 import me.odinmain.features.impl.floor7.p3.TerminalTimes
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.modMessage
@@ -49,7 +48,6 @@ object StartGui : TermSimGui(
 
     override fun slotClick(slot: Slot, button: Int) {
         val index = if (slot.slotIndex == 22) listOf(11,12,13,14,15).getRandom() else slot.slotIndex
-
         when (index) {
             4 -> {
                 if (!areYouSure) {

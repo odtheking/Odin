@@ -2,7 +2,6 @@ package me.odinmain.utils
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.PacketReceivedEvent
-import me.odinmain.features.impl.render.ServerHud
 import net.minecraft.entity.Entity
 import net.minecraft.network.Packet
 import net.minecraft.network.play.client.C16PacketClientStatus

@@ -24,7 +24,7 @@ object TeammatesHighlight : Module(
     private val showOutline: Boolean by BooleanSetting("Outline", true, description = "Highlights teammates with an outline.")
     private val showName: Boolean by BooleanSetting("Name", true, description = "Highlights teammates with a name tag.")
     private val thickness: Float by NumberSetting("Line Width", 4f, 1.0, 10.0, 0.5, description = "The thickness of the outline.")
-    private val depthCheck: Boolean by BooleanSetting("Depth check", true, description = "Highlights teammates only when they are visible.")
+    private val depthCheck: Boolean by BooleanSetting("Depth check", false, description = "Highlights teammates only when they are visible.")
     private val inBoss: Boolean by BooleanSetting("In Boss", true, description = "Highlights teammates in boss rooms.")
 
     @SubscribeEvent
