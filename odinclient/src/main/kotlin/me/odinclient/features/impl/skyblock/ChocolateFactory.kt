@@ -33,7 +33,7 @@ object ChocolateFactory : Module(
     private val eggEsp: Boolean by BooleanSetting("Egg ESP", false, description = "Shows the location of the egg.")
     private var chocolate = 0
 
-    private val indexToName = mapOf(29 to "Bro", 30 to "Cousin", 31 to "Sis", 32 to "Daddy", 33 to "Granny")
+    private val indexToName = mapOf(28 to "Bro", 29 to "Cousin", 30 to "Sis", 31 to "Daddy", 32 to "Granny", 33 to "Uncle", 34 to "Dog")
     private val possibleLocations = arrayOf(
         Island.SpiderDen,
         Island.CrimsonIsle,
@@ -88,26 +88,26 @@ object ChocolateFactory : Module(
         }
     }
 
-    private var bestWorker = 29
+    private var bestWorker = 28
     private var bestCost = 0
     private var found = false
 
     private fun findWorker(container: Container) {
         val items = container.inventory ?: return
         val workers = mutableListOf<List<String?>>()
-        for (i in 29 until 34) {
+        for (i in 28 until 35) {
             workers.add(items[i]?.lore ?: return)
         }
         found = false
         var maxValue = 0
-        for (i in 0 until 5) {
+        for (i in 0 until 7) {
             val worker = workers[i]
             if (worker.contains("climbed as far")) continue
             val index = worker.indexOfFirst { it?.contains("Cost") == true }.takeIf { it != -1 } ?: continue
             val cost = worker[index + 1]?.noControlCodes?.replace(Regex("\\D"), "")?.toIntOrNull() ?: continue
             val value = cost / (i + 1).toFloat()
             if (value < maxValue || !found) {
-                bestWorker = 29 + i
+                bestWorker = 28 + i
                 maxValue = value.toInt()
                 bestCost = cost
                 found = true
