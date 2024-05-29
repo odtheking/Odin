@@ -7,8 +7,8 @@ import com.github.stivais.ui.constraints.constrain
 import com.github.stivais.ui.constraints.percent
 import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.elements.scope.ElementScope
-import com.github.stivais.ui.impl.button
-import com.github.stivais.ui.impl.mainColor
+import com.github.stivais.ui.elements.scope.button
+import com.github.stivais.ui.impl.ClickGUITheme
 import com.github.stivais.ui.utils.radii
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
@@ -17,10 +17,8 @@ import me.odinmain.features.settings.Setting
 
 /**
  * A setting that represents a boolean.
- *
- * @author Aton, Stivais
  */
-class BooleanSetting (
+class BooleanSetting(
     name: String,
     override val default: Boolean = false,
     hidden: Boolean = false,
@@ -50,7 +48,7 @@ class BooleanSetting (
             )
             button(
                 constraints = constrain(x = -(6.px), w = 20.px, h = 50.percent),
-                color = color(from = Color.RGB(38, 38, 38), to = mainColor),
+                color = color(from = Color.RGB(38, 38, 38), to = ClickGUITheme),
                 on = value,
                 radii = radii(all = 5)
             ) {
@@ -58,7 +56,7 @@ class BooleanSetting (
                     value = !value
                     true
                 }
-                outline(color = mainColor)
+                outline(color = ClickGUITheme)
             }
         }
     }

@@ -2,6 +2,7 @@ package com.github.stivais.ui.constraints.measurements
 
 import com.github.stivais.ui.constraints.Constraint.Companion.HORIZONTAL
 import com.github.stivais.ui.constraints.Measurement
+import com.github.stivais.ui.constraints.Position
 import com.github.stivais.ui.constraints.Type
 import com.github.stivais.ui.elements.Element
 
@@ -22,3 +23,16 @@ class LeftPixel(pixels: Float): Pixel(pixels) {
         }
     }
 }
+
+class Test(val c: Position): Position {
+    override fun get(element: Element, type: Type): Float {
+        return c.get(element, type) - (if (type.axis == HORIZONTAL) element.width else element.height) / 2
+    }
+}
+
+val Position.center
+    get() = Test(this)
+
+operator fun Position.not() = center
+
+operator fun Position.unaryPlus() = center

@@ -2,7 +2,6 @@ package me.odinmain.features.impl.render
 
 import com.github.stivais.ui.color.color
 import com.github.stivais.ui.constraints.px
-import com.github.stivais.ui.elements.text
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -47,7 +46,7 @@ object ClickGUIModule: Module(
 
     val colortest2: NewColor.HSB by NewColorSetting("New color 2", color(50, 150, 220)).withDependency { toglge }
 
-    val test: Any? by UISetting(40.px) {
+    val test by UISetting(40.px) {
         text("odc $lastSeenVersion")
         modMessage("a")
     }

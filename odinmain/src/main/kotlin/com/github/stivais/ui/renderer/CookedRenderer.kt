@@ -64,7 +64,7 @@ object CookedRenderer : Renderer {
         tr: Float
     ) {
         val stupidColor = Color(color)
-        roundedRectangle(x, y, w, h, Color.TRANSPARENT, stupidColor, Color.TRANSPARENT, thickness, tl, tr, bl, br, 1f)
+        roundedRectangle(x, y, w, h, Color.TRANSPARENT, stupidColor, Color.TRANSPARENT, thickness + 1f, tl, tr, bl, br, 1f)
     }
 
     override fun gradientRect(
@@ -98,11 +98,11 @@ object CookedRenderer : Renderer {
     }
 
     override fun text(text: String, x: Float, y: Float, size: Float, color: Int, font: Font) {
-        OdinFont.text(text, x, y, Color(color), size, verticalAlign = TextPos.Top)
+        OdinFont.text(text, x, y, Color(color), size * 0.75f, verticalAlign = TextPos.Top)
     }
 
     override fun textWidth(text: String, size: Float, font: Font): Float {
-        return OdinFont.getTextWidth(text, size)
+        return OdinFont.getTextWidth(text, size * 0.75f)
     }
 
     private val scissors: ArrayList<IntArray> = arrayListOf()

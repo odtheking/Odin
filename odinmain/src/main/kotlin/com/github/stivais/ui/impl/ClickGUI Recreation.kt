@@ -4,18 +4,16 @@ import com.github.stivais.ui.UI
 import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.color.color
-import com.github.stivais.ui.constraints.Constraints
 import com.github.stivais.ui.constraints.at
 import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.constraints.size
 import com.github.stivais.ui.constraints.sizes.Bounding
-import com.github.stivais.ui.elements.scope.BlockScope
 import com.github.stivais.ui.elements.scope.ElementScope
-import com.github.stivais.ui.elements.scope.hoverEffect
+import com.github.stivais.ui.elements.scope.button
+import com.github.stivais.ui.elements.scope.draggable
 import com.github.stivais.ui.renderer.Renderer
 import com.github.stivais.ui.utils.animate
-import com.github.stivais.ui.utils.draggable
 import com.github.stivais.ui.utils.radii
 import com.github.stivais.ui.utils.seconds
 import me.odinmain.OdinMain
@@ -27,12 +25,11 @@ import me.odinmain.features.impl.render.ClickGUIModule.lastSeenVersion
 import me.odinmain.utils.capitalizeFirst
 
 @JvmField
-val mainColor = Color { color.rgba }
+val ClickGUITheme = Color { color.rgba }
 
 @JvmField
-val `1`: Color = Color.RGB(26, 26, 26)
+val `gray 26`: Color = Color.RGB(26, 26, 26)
 
-// todo: scissoring isn't complete
 fun clickGUI(renderer: Renderer) = UI(renderer) {
     text(
         text = "odin${if (OdinMain.onLegitVersion) "" else "-client"} $lastSeenVersion",
@@ -43,7 +40,7 @@ fun clickGUI(renderer: Renderer) = UI(renderer) {
         column(at(x = panel.x.px, y = panel.y.px)) {
             block(
                 constraints = size(240.px, 40.px),
-                color = `1`,
+                color = `gray 26`,
                 radius = radii(tl = 5, tr = 5)
             ) {
                 text(
@@ -65,7 +62,7 @@ fun clickGUI(renderer: Renderer) = UI(renderer) {
             }
             block(
                 constraints = size(240.px, 10.px),
-                color = Color.RGB(26, 26, 26),
+                color = `gray 26`,
                 radius = radii(br = 5, bl = 5)
             )
         }
@@ -74,10 +71,9 @@ fun clickGUI(renderer: Renderer) = UI(renderer) {
 
 private fun ElementScope<*>.module(module: Module) {
     column(size(h = Animatable(from = 32.px, to = Bounding))) {
-        scissors()
         button(
             constraints = size(w = 240.px, h = 32.px),
-            color = color(from = Color.RGB(26, 26, 26), to = mainColor),
+            color = color(from = `gray 26`, to = ClickGUITheme),
             on = module.enabled
         ) {
             text(
@@ -89,7 +85,7 @@ private fun ElementScope<*>.module(module: Module) {
                 true
             }
             onClick(1) {
-                parent!!.height().animate(0.25.seconds, Animations.EaseInOutQuint)
+                parent()!!.height.animate(0.25.seconds, Animations.EaseInOutQuint)
                 true
             }
         }
@@ -99,27 +95,5 @@ private fun ElementScope<*>.module(module: Module) {
                 createElement()
             }
         }
-    }
-}
-
-inline fun ElementScope<*>.button(
-    constraints: Constraints? = null,
-    color: Color.Animated,
-    on: Boolean = false,
-    radii: FloatArray? = null,
-    crossinline dsl: BlockScope.() -> Unit = {}
-) {
-    if (on) color.swap()
-    block(
-        constraints = constraints,
-        color = color,
-        radius = radii
-    ) {
-        onClick {
-            color.animate(0.15.seconds)
-            false
-        }
-        hoverEffect(0.25.seconds)
-        dsl()
     }
 }

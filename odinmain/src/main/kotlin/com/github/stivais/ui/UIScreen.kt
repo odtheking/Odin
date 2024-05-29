@@ -6,7 +6,7 @@ import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.Display
 
-class UIScreen(val ui: UI) : GuiScreen() {
+open class UIScreen(val ui: UI) : GuiScreen() {
 
     private var previousWidth: Int = 0
     private var previousHeight: Int = 0
@@ -21,9 +21,17 @@ class UIScreen(val ui: UI) : GuiScreen() {
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         ui.measureMetrics {
+            val w = mc.framebuffer.framebufferWidth
+            val h = mc.framebuffer.framebufferHeight
+            if (w != previousWidth || h != previousHeight) {
+                ui.resize(w, h)
+                previousWidth = w
+                previousHeight = h
+            }
+
             ui.eventManager?.apply {
                 val mx = Mouse.getX().toFloat()
-                val my = mc.displayHeight - Mouse.getY() - 1f
+                val my = previousHeight - Mouse.getY() - 1f
 
                 if (this.mouseX != mx || this.mouseY != my) {
                     onMouseMove(mx, my)
@@ -34,14 +42,6 @@ class UIScreen(val ui: UI) : GuiScreen() {
                     onMouseScroll(scroll.toFloat())
                 }
             }
-            val w = mc.framebuffer.framebufferWidth
-            val h = mc.framebuffer.framebufferHeight
-            if (w != previousWidth || h != previousHeight) {
-                ui.resize(w, h)
-                previousWidth = w
-                previousHeight = h
-            }
-
             GlStateManager.pushMatrix()
             ui.render()
             GlStateManager.popMatrix()
@@ -75,6 +75,11 @@ class UIScreen(val ui: UI) : GuiScreen() {
     companion object {
         fun open(ui: UI) {
             display = UIScreen(ui)
+        }
+
+        @JvmName("openUI")
+        fun UI.open() {
+            open(this)
         }
     }
 }

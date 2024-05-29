@@ -4,21 +4,16 @@ package com.github.stivais.ui.elements.scope
 
 import com.github.stivais.ui.UI
 import com.github.stivais.ui.color.Color
-import com.github.stivais.ui.constraints.Constraints
-import com.github.stivais.ui.constraints.Measurement
-import com.github.stivais.ui.constraints.percent
-import com.github.stivais.ui.constraints.px
+import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.elements.Element
-import com.github.stivais.ui.elements.impl.Block
-import com.github.stivais.ui.elements.impl.Column
-import com.github.stivais.ui.elements.impl.RoundedBlock
-import com.github.stivais.ui.elements.impl.Text
+import com.github.stivais.ui.elements.impl.*
 import com.github.stivais.ui.events.Event
 import com.github.stivais.ui.events.Focused
 import com.github.stivais.ui.events.Key
 import com.github.stivais.ui.events.Mouse
+import com.github.stivais.ui.renderer.GradientDirection
 
-open class ElementScope<E: Element>(internal val element: E) {
+open class ElementScope<E: Element>(val element: E) {
 
     val x
         get() = element.constraints.x
@@ -44,6 +39,8 @@ open class ElementScope<E: Element>(internal val element: E) {
     val parent: Element?
         get() = element.parent
 
+    fun parent(): ElementScope<*>? = parent?.createScope()
+
     fun sibling(distance: Int = 1): ElementScope<*>? {
         if (element.parent != null) {
             val currIndex = element.parent!!.elements!!.indexOf(element)
@@ -60,14 +57,29 @@ open class ElementScope<E: Element>(internal val element: E) {
         return this as E
     }
 
+    fun <E : Element> castElement(): E {
+        return element as E
+    }
+
+    @DSL
+    fun group(
+        constraints: Constraints? = null,
+        block: ElementScope<Group>.() -> Unit = {}
+    ) = create(ElementScope(Group(constraints)), block)
+
     @DSL
     fun column(
         constraints: Constraints? = null,
-        block: ColumnScope.() -> Unit = {}
-    ) {
-        val element = Column(constraints)
-        create(ColumnScope(element), block)
-    }
+        padding: Size? = null,
+        block: LayoutScope.() -> Unit = {}
+    ) = create(LayoutScope(Layout.Column(constraints, padding)), block)
+
+    @DSL
+    fun row(
+        constraints: Constraints? = null,
+        padding: Size? = null,
+        block: LayoutScope.() -> Unit = {}
+    ) = create(LayoutScope(Layout.Row(constraints, padding)), block)
 
     @DSL
     fun block(
@@ -75,10 +87,16 @@ open class ElementScope<E: Element>(internal val element: E) {
         color: Color,
         radius: FloatArray? = null,
         block: BlockScope.() -> Unit = {}
-    ) {
-        val element = if (radius != null) RoundedBlock(constraints, color, radius) else Block(constraints, color)
-        create(BlockScope(element), block)
-    }
+    ) = create(BlockScope(if (radius != null) RoundedBlock(constraints, color, radius) else Block(constraints, color)), block)
+
+    @DSL
+    fun block(
+        constraints: Constraints? = null,
+        colors: Pair<Color, Color>,
+        radius: Float = 0f,
+        direction: GradientDirection,
+        block: BlockScope.() -> Unit = {}
+    ) = create(BlockScope(GradientBlock(constraints, colors.first, colors.second, radius, direction)), block)
 
     @DSL
     fun text(
@@ -87,7 +105,7 @@ open class ElementScope<E: Element>(internal val element: E) {
         size: Measurement = 50.percent,
         color: Color = Color.WHITE,
         block: ElementScope<Text>.() -> Unit = {}
-    ): Text = create(ElementScope(Text(text, color, pos, size)), block) as Text
+    ) = create(TextScope(Text(text, color, pos, size)), block)
 
     fun onInitialization(action: () -> Unit) {
         if (element.initialized) return UI.logger.warning("Tried calling \"onInitialization\" after init has already been done")
@@ -149,10 +167,14 @@ open class ElementScope<E: Element>(internal val element: E) {
         ui.eventManager?.focus(element)
     }
 
-    fun <E : Element, S : ElementScope<E>> create(scope: S, dsl: S.() -> Unit) : Element {
+    fun <E : Element, S : ElementScope<E>> create(scope: S, dsl: S.() -> Unit = {}) : S {
         this.element.addElement(scope.element)
         scope.dsl()
-        return scope.element
+        return scope
+    }
+
+    fun Element.add() {
+        this@ElementScope.element.addElement(this)
     }
 }
 
@@ -171,10 +193,16 @@ open class BlockScope(block: Block) : ElementScope<Block>(block) {
     }
 }
 
-open class ColumnScope(column: Column) : ElementScope<Column>(column) {
+open class LayoutScope(layout: Layout) : ElementScope<Layout>(layout) {
     @DSL
     fun background(color: Color) {
         element.color = color
+    }
+
+    // temporary
+    @DSL
+    fun divider(amount: Size) {
+        element.createDivider(amount)
     }
 }
 

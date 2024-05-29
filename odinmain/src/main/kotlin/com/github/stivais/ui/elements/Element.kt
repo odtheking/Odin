@@ -3,7 +3,6 @@ package com.github.stivais.ui.elements
 import com.github.stivais.ui.UI
 import com.github.stivais.ui.UI.Companion.logger
 import com.github.stivais.ui.color.Color
-import com.github.stivais.ui.constraints.Constraint
 import com.github.stivais.ui.constraints.Constraints
 import com.github.stivais.ui.constraints.Type
 import com.github.stivais.ui.constraints.measurements.Undefined
@@ -139,6 +138,16 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
         initializationTasks!!.add(action)
     }
 
+    fun addElement(element: Element, at: Int) {
+        if (elements == null) elements = arrayListOf()
+        elements!!.add(at, element)
+        element.parent = this
+        onElementAdded(element)
+        if (::ui.isInitialized) {
+            element.initialize(ui)
+        }
+    }
+
     fun addElement(element: Element) {
         if (elements == null) elements = arrayListOf()
         elements!!.add(element)
@@ -147,6 +156,12 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
         if (::ui.isInitialized) {
             element.initialize(ui)
         }
+    }
+
+    fun removeElement(element: Element) {
+        if (elements.isNullOrEmpty()) return logger.warning("Tried calling \"removeElement\" while there is no elements")
+        elements!!.remove(element)
+        element.parent = null
     }
 
     fun initialize(ui: UI) {
@@ -186,61 +201,4 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
         return (x < tx + tw && tx < x + width) && (y < ty + th && ty < y + height)
     }
 
-    fun focused(): Boolean = ui.eventManager?.focused == this
-
-    // todo: dsl, maybe move out of this class?
-    fun toggle(value: Boolean = !enabled) {
-        enabled = value
-    }
-
-    fun x() = constraints.x
-
-    fun y() = constraints.y
-
-    // todo: dsl, maybe move out of this class?
-    fun width(): Constraint {
-        return constraints.width
-    }
-
-    // todo: dsl, maybe move out of this class?
-    fun height(): Constraint {
-        return constraints.height
-    }
-
-    fun scissors() {
-        scissors = true
-    }
-
-    // todo: dsl, maybe move out of this class?
-    fun sibling(distance: Int = 1): Element? {
-        if (parent != null) {
-            val currIndex = parent!!.elements!!.indexOf(this)
-            return parent!!.elements!!.getOrNull(currIndex + distance)
-        }
-        return null
-    }
-
-    fun afterInitialization(block: () -> Unit) {
-        if (::ui.isInitialized) {
-            if (ui.afterInit == null) ui.afterInit = arrayListOf()
-            ui.afterInit!!.add(block)
-        } else {
-            onInitialization {
-                if (ui.afterInit == null) ui.afterInit = arrayListOf()
-                ui.afterInit!!.add(block)
-            }
-        }
-    }
-
-    fun takeEvents(from: Element) {
-        if (from.events == null) return logger.warning("Tried to take event from an element that doesn't have events")
-        if (events != null) {
-            events!!.putAll(from.events!!)
-        } else {
-            events = from.events
-        }
-        from.events = null
-    }
-
-    operator fun invoke(action: Element.() -> Unit) = action()
 }

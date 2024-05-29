@@ -32,18 +32,21 @@ class EventManager(private val ui: UI) {
         dispatchToAll(Mouse.Moved, ui.main)
     }
 
-    fun onMouseClick(button: Int) {
+    fun onMouseClick(button: Int): Boolean {
         val event = Mouse.Clicked(button)
         if (focused != null) {
             if (!dispatchFocused(focused, event) && !focused!!.isInside(mouseX, mouseY)) {
                 unfocus()
                 updateIfNecessary()
             }
-            return
+            return true
+        } else {
+            if (dispatch(event)) {
+                updateIfNecessary()
+                return true
+            }
         }
-        if (dispatch(event)) {
-            updateIfNecessary()
-        }
+        return false
     }
 
     fun onMouseRelease(button: Int) {

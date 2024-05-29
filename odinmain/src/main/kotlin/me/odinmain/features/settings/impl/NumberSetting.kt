@@ -5,10 +5,10 @@ import com.github.stivais.ui.constraints.at
 import com.github.stivais.ui.constraints.constrain
 import com.github.stivais.ui.constraints.percent
 import com.github.stivais.ui.constraints.px
-import com.github.stivais.ui.elements.Element
-import com.github.stivais.ui.elements.slider
-import com.github.stivais.ui.elements.text
-import com.github.stivais.ui.impl.mainColor
+import com.github.stivais.ui.elements.scope.ElementScope
+import com.github.stivais.ui.elements.scope.slider
+import com.github.stivais.ui.elements.scope.takeEvents
+import com.github.stivais.ui.impl.ClickGUITheme
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import me.odinmain.features.settings.Saving
@@ -23,7 +23,7 @@ import kotlin.math.round
  * @param min The minimum a value can be
  * @param max The maximum a value can be
  * @param increment The increment for the setting
- * @param unit The suffix for value in the UI (It is recommended to set this for better user experience)
+ * @param unit The suffix for value in the UI (It is recommended to set this for better UX)
  */
 @Suppress("UNCHECKED_CAST")
 class NumberSetting<E>(
@@ -55,27 +55,30 @@ class NumberSetting<E>(
             return "$number$unit"
         }
 
-    override fun getElement(parent: Element): SettingElement = parent.oldSetting(44.px) {
-        text(
-            text = name,
-            pos = at(x = 6.px, y = 10.px),
-            size = 35.percent
-        )
-        val display = text(
-            text = text,
-            pos = at(x = -(6.px), y = 10.px),
-            size = 35.percent
-        )
-        val slider = slider(
-            constraints = constrain(y = 77.percent, w = 95.percent, h = 18.percent),
-            color = mainColor,
-            value = value.toDouble(), min = min, max = max,
-            onChange = { percent ->
-                set(percent * (max - min) + min)
-                display.text = text
-            }
-        )
-        takeEvents(from = slider)
+    override fun ElementScope<*>.createElement() {
+        setting(44.px) {
+            text(
+                text = name,
+                pos = at(6.px, 10.px),
+                35.percent
+            )
+            val display = text(
+                text = text,
+                pos = at(x = -(6.px), y = 10.px),
+                size = 35.percent
+            )
+            takeEvents(
+                slider(
+                    constraints = constrain(y = 75.percent, w = 95.percent, h = 18.percent),
+                    color = ClickGUITheme,
+                    value = value.toDouble(), min = min, max = max,
+                    onChange = { percent ->
+                        set(percent * (max - min) + min)
+                        display.string = text
+                    }
+                )
+            )
+        }
     }
 
     override fun write(): JsonElement {

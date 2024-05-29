@@ -7,6 +7,7 @@ import com.github.stivais.ui.constraints.Type
 import com.github.stivais.ui.constraints.measurements.Pixel
 import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.elements.Element
+import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.utils.replaceUndefined
 
 class Text(
@@ -20,10 +21,10 @@ class Text(
         set(value) {
             if (field == value) return
             field = value
-            previousHeight = 0f // silly way to recalculate
+            previousHeight = 0f // forces recalculation
         }
 
-    // uses to check if width should be recalculated as it is an expensive one
+    // uses to check if width should be recalculated as it is expensive to do so
     private var previousHeight = 0f
 
     override fun prePosition() {
@@ -39,4 +40,12 @@ class Text(
     override fun draw() {
         renderer.text(text, x, y, height, color!!.get(this))
     }
+}
+
+class TextScope(text: Text) : ElementScope<Text>(text) {
+    var string: String
+        get() = element.text
+        set(value) {
+            element.text = value
+        }
 }

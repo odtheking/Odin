@@ -4,19 +4,11 @@ import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.sizes.Bounding
-import com.github.stivais.ui.elements.Element
-import com.github.stivais.ui.elements.button
 import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.elements.scope.focuses
 import com.github.stivais.ui.elements.scope.hoverEffect
-import com.github.stivais.ui.elements.text
-import com.github.stivais.ui.events.onClick
-import com.github.stivais.ui.events.onFocusGain
-import com.github.stivais.ui.events.onFocusLost
-import com.github.stivais.ui.events.onKeycodePressed
-import com.github.stivais.ui.impl.mainColor
+import com.github.stivais.ui.impl.ClickGUITheme
 import com.github.stivais.ui.utils.animate
-import com.github.stivais.ui.utils.focuses
 import com.github.stivais.ui.utils.radii
 import com.github.stivais.ui.utils.seconds
 import com.google.gson.JsonElement
@@ -101,57 +93,14 @@ class KeybindSetting(
                     outline!!.animate(0.25.seconds)
                 }
                 onFocusLost {
-                    display.text = keyName
+                    display.string = keyName
                     outlineColor!!.animate(0.25.seconds)
                     outline!!.animate(0.25.seconds)
                 }
                 hoverEffect()
                 focuses()
-                outline(color = mainColor, Animatable(from = 1.px, to = 2.5.px))
+                outline(color = ClickGUITheme, Animatable(from = 1.px, to = 2.5.px))
             }
-        }
-    }
-
-    override fun getElement(parent: Element): SettingElement = parent.oldSetting(40.px) {
-        text(
-            text = name,
-            pos = at(x = 6.px),
-            size = 40.percent
-        )
-        button(
-            constraints = constrain(x = -6.px, w = Bounding + 6.px, h = 70.percent),
-            offColor = Color.RGB(38, 38, 38),
-            onColor = Color.RGB(38, 38, 38),
-            radii = radii(all = 5)
-        ) {
-            val display = text(
-                text = keyName
-            )
-            onClick(null) { (button) ->
-                value.key = -100 + button!!
-                ui.unfocus()
-                true
-            }
-            onKeycodePressed { (code) ->
-                value.key = when (code) {
-                    KEY_ESCAPE, KEY_BACK -> 0
-                    KEY_NUMPADENTER, KEY_RETURN -> value.key
-                    else -> code
-                }
-                ui.unfocus()
-                true
-            }
-            onFocusGain {
-                outlineColor!!.animate(0.25.seconds)
-                outline!!.animate(0.25.seconds)
-            }
-            onFocusLost {
-                display.text = keyName
-                outlineColor!!.animate(0.25.seconds)
-                outline!!.animate(0.25.seconds)
-            }
-            focuses()
-            outline(color = mainColor, Animatable(from = 1.px, to = 2.5.px))
         }
     }
 

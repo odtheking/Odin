@@ -6,15 +6,15 @@ import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.constraints.size
 import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.elements.scope.hoverEffect
-import com.github.stivais.ui.impl.mainColor
+import com.github.stivais.ui.impl.ClickGUITheme
 import com.github.stivais.ui.utils.radii
 import com.github.stivais.ui.utils.seconds
 import me.odinmain.features.settings.Setting
 
 /**
- * Setting that gets ran when clicked.
+ * Setting that gets ran when clicked inside the UI
  *
- * @author Aton
+ * This setting doesn't contain any value
  */
 class ActionSetting(
     name: String,
@@ -43,7 +43,7 @@ class ActionSetting(
                     true
                 }
                 hoverEffect(0.25.seconds)
-                outline(mainColor)
+                outline(ClickGUITheme)
             }
         }
     }

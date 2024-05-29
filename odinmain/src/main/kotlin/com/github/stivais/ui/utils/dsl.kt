@@ -2,19 +2,8 @@ package com.github.stivais.ui.utils
 
 import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.color.Color
-import com.github.stivais.ui.color.brighter
 import com.github.stivais.ui.constraints.Constraint
 import com.github.stivais.ui.constraints.measurements.Animatable
-import com.github.stivais.ui.constraints.measurements.Pixel
-import com.github.stivais.ui.constraints.px
-import com.github.stivais.ui.elements.Element
-import com.github.stivais.ui.elements.impl.Block
-import com.github.stivais.ui.elements.scope.ElementScope
-import com.github.stivais.ui.elements.scope.afterInit
-import com.github.stivais.ui.events.onClick
-import com.github.stivais.ui.events.onMouseEnterExit
-import com.github.stivais.ui.events.onMouseMove
-import com.github.stivais.ui.events.onRelease
 
 /**
  * Takes 4 numbers, and creates a [FloatArray] with those values
@@ -59,111 +48,4 @@ fun Constraint.animate(duration: Number, type: Animations = Animations.Linear) {
     if (this is Animatable) {
         animate(duration.toFloat(), type)
     }
-}
-
-/**
- * Function that allows elements to be drag and dropped
- *
- * @param acceptsEvent If the events shouldn't be allowed to pass on
- * @param target The element to move when dragged
- */
-fun <E : Element> E.draggable(acceptsEvent: Boolean = true, target: Element = this, coerce: Boolean = false): E {
-    val px: Pixel = 0.px
-    val py: Pixel = 0.px
-    // note: if parent is Bounding, it can cause issues
-    afterInitialization {
-        px.pixels = target.internalX
-        py.pixels = target.internalY
-        target.constraints.x = px
-        target.constraints.y = py
-    }
-    var pressed = false
-    var x = 0f
-    var y = 0f
-    onClick(0) {
-        pressed = true
-        x = ui.mx - target.internalX
-        y = ui.my - target.internalY
-        acceptsEvent
-    }
-    onMouseMove {
-        if (pressed) {
-            if (coerce) {
-                px.pixels = (ui.mx - x).coerceIn(0f, parent?.width)
-                py.pixels = (ui.my - y).coerceIn(0f, parent?.height)
-            } else {
-                px.pixels = ui.mx - x
-                py.pixels = ui.my - y
-            }
-            redraw()
-        }
-        acceptsEvent
-    }
-    onRelease(0) {
-        pressed = false
-    }
-    return this
-}
-
-/**
- * Sets the element to be focused on click
- */
-fun <E : Element> E.focuses(): E {
-    onClick {
-        ui.focus(this)
-        true
-    }
-    return this
-}
-
-fun <E : Block> E.hoverEffect(duration: Number = 0.25.seconds) {
-    val before = color!!
-    val hover = Color.Animated(from = before, to = Color { before.rgba.brighter(1.2) })
-    color = hover
-    onMouseEnterExit {
-        hover.animate(duration)
-        redraw()
-        true
-    }
-}
-
-/**
- * Incompatible if the parent element size relies on the children
- */
-fun <E : ElementScope<*>> E.draggable(acceptsEvent: Boolean = true, target: Element = element, coerce: Boolean = false): E {
-    val px: Pixel = 0.px
-    val py: Pixel = 0.px
-    // note: if parent is Bounding, it can cause issues
-    afterInit {
-        px.pixels = target.internalX
-        py.pixels = target.internalY
-        target.constraints.x = px
-        target.constraints.y = py
-    }
-    var pressed = false
-    var x = 0f
-    var y = 0f
-    onClick(0) {
-        pressed = true
-        x = ui.mx - target.internalX
-        y = ui.my - target.internalY
-        acceptsEvent
-    }
-    onMouseMove {
-        if (pressed) {
-            if (coerce) {
-                px.pixels = (ui.mx - x).coerceIn(0f, parent?.width)
-                py.pixels = (ui.my - y).coerceIn(0f, parent?.height)
-            } else {
-                px.pixels = ui.mx - x
-                py.pixels = ui.my - y
-            }
-            redraw()
-        }
-        acceptsEvent
-    }
-    onRelease(0) {
-        pressed = false
-    }
-    return this
 }

@@ -5,6 +5,7 @@ import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.measurements.Pixel
 import com.github.stivais.ui.elements.Element
+import com.github.stivais.ui.elements.scope.ElementDSL
 import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.utils.animate
 import com.github.stivais.ui.utils.forLoop
@@ -71,19 +72,7 @@ abstract class Setting<T> (
 
     internal open fun ElementScope<*>.createElement() {}
 
-    protected open fun getElement(parent: Element): SettingElement? = null
-
-    /**
-     * Creates a [SettingElement] and sets it up
-     */
-    protected fun Element.oldSetting(height: Size, block: SettingElement.() -> Unit): SettingElement {
-        val element = SettingElement(height)
-        addElement(element)
-        element.block()
-        return element
-    }
-
-    protected fun ElementScope<*>.setting(height: Size, block: ElementScope<SettingElement>.() -> Unit): SettingElement {
+    protected fun ElementDSL.setting(height: Size, block: ElementScope<SettingElement>.() -> Unit): SettingElement {
         val element = SettingElement(height)
         create(ElementScope(element), block)
         return element
@@ -113,11 +102,14 @@ abstract class Setting<T> (
         private var visible: Boolean = visibilityDependency?.invoke() ?: true
 
         init {
-            if (!visible) (constraints.height as Animatable).swap()
-            scissors()
-            afterInitialization {
-                elements?.forLoop {
-                    pxToPercent(it)
+            scissors = true
+            if (!visible) {
+                (constraints.height as Animatable).swap()
+            }
+            onInitialization {
+                if (ui.afterInit == null) ui.afterInit = arrayListOf()
+                ui.afterInit!!.add {
+                    elements?.forLoop { fixHeight(it) }
                 }
             }
         }
@@ -130,17 +122,15 @@ abstract class Setting<T> (
             }
         }
 
-        // this is a weird way to get animations to work nicely,
-        // but it works
-        // i have not tested it to see if it breaks with certain things
-        private fun pxToPercent(element: Element) {
+        // this is a weird way to get animations to work nicely with px
+        private fun fixHeight(element: Element) {
             element.constraints.apply {
                 if (height is Pixel) {
                     height = 100.percent.coerce((height as Pixel).pixels)
                 }
             }
             element.elements?.forLoop {
-                pxToPercent(it)
+                fixHeight(it)
             }
         }
     }

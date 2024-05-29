@@ -11,7 +11,6 @@ import org.lwjgl.nanovg.NVGPaint
 import org.lwjgl.nanovg.NanoVG.*
 import org.lwjgl.nanovg.NanoVGGL2.*
 import org.lwjgl.opengl.GL11.*
-import kotlin.math.round
 
 
 object NVGRenderer : Renderer {
@@ -113,7 +112,7 @@ object NVGRenderer : Renderer {
 
     override fun rect(x: Float, y: Float, w: Float, h: Float, color: Int) {
         nvgBeginPath(vg)
-        nvgRect(vg, round(x), round(y), round(w), round(h))
+        nvgRect(vg, x, y, w, h)
         color(color)
         nvgFillColor(vg, nvgColor)
         nvgFill(vg)

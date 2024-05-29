@@ -105,7 +105,7 @@ class UI(
                 sb.append("elements: ${getStats(main, false)}, elements rendering: ${getStats(main, true)},")
             }
             if (settings.frameMetrics) {
-                sb.append("frame-time avg: ${((frameTime / frames) / 1_000_000.0).round(4)}ms")
+                sb.append("frame-time avg: ${((frameTime / frames) / 1_000_000.0).round(4)}s")
             }
             performance = sb.toString()
             frames = 0
