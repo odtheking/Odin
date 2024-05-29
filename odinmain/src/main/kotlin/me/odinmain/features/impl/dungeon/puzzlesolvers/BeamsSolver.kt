@@ -28,7 +28,6 @@ object BeamsSolver {
                 text, object : TypeToken<List<List<Int>>>() {}.type
             )
             isr?.close()
-            println(lanternPairs.toString())
         } catch (e: Exception) {
             e.printStackTrace()
             lanternPairs = emptyList()

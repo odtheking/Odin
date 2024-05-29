@@ -51,6 +51,10 @@ fun String.containsOneOf(options: Collection<String>, ignoreCase: Boolean = fals
     return options.any { this.contains(it, ignoreCase) }
 }
 
+fun String.startsWithOneOf(vararg options: String, ignoreCase: Boolean = false): Boolean {
+    return options.any { this.startsWith(it, ignoreCase) }
+}
+
 /**
  * Checks if the current object is equal to at least one of the specified objects.
  *

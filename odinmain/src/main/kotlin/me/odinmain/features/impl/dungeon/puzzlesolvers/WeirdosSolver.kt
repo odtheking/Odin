@@ -26,7 +26,7 @@ object WeirdosSolver {
         }
     }
 
-    fun weirdosReset() {
+    fun reset() {
         correctPos = null
     }
 
