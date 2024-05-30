@@ -24,11 +24,8 @@ object QuizSolver {
     init {
         try {
             val text = isr?.readText()
-            answers = gson.fromJson(
-                text, object : TypeToken<MutableMap<String, List<String>>>() {}.type
-            )
+            answers = gson.fromJson(text, object : TypeToken<MutableMap<String, List<String>>>() {}.type)
             isr?.close()
-            println(answers.toString())
         } catch (e: Exception) {
             e.printStackTrace()
             answers = mutableMapOf()
@@ -36,7 +33,6 @@ object QuizSolver {
     }
 
     fun onMessage(msg: String) {
-        modMessage("Year ${(((System.currentTimeMillis() / 1000) - 1560276000) / 446400).toInt() + 1}")
         if (msg.startsWith("[STATUE] Oruo the Omniscient: ") && msg.contains("answered Question #") && msg.endsWith("correctly!")) triviaAnswer = null
         triviaAnswers = if (msg.trim() == "What SkyBlock year is it?") {
             listOf("Year ${(((System.currentTimeMillis() / 1000) - 1560276000) / 446400).toInt() + 1}")
