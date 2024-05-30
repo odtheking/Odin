@@ -34,22 +34,25 @@ object QuizSolver {
 
     fun onMessage(msg: String) {
         if (msg.startsWith("[STATUE] Oruo the Omniscient: ") && msg.contains("answered Question #") && msg.endsWith("correctly!")) triviaAnswer = null
+
+        if (msg.trim().startsWithOneOf("ⓐ", "ⓑ", "ⓒ", ignoreCase = true)) {
+            triviaAnswer = triviaAnswers?.find { msg.endsWith(it) } ?: return
+        }
+
         triviaAnswers = if (msg.trim() == "What SkyBlock year is it?") {
             listOf("Year ${(((System.currentTimeMillis() / 1000) - 1560276000) / 446400).toInt() + 1}")
         } else {
             answers.entries.find { msg.contains(it.key) }?.value ?: return
         }
-
-        if (msg.trim().startsWithOneOf("ⓐ", "ⓑ", "ⓒ")) triviaAnswer = triviaAnswers?.find { msg.endsWith(it) } ?: return
     }
 
     fun onRenderArmorStandPre(event: RenderLivingEvent.Pre<EntityArmorStand?>) {
         if (triviaAnswer == null || event.entity !is EntityArmorStand) return
         with(event.entity.customNameTag) {
             if (isNotEmpty() && containsOneOf("ⓐ", "ⓑ", "ⓒ")) {
-                if (contains(triviaAnswer ?: return))
-                    RenderUtils.drawBlockBox(event.entity.position.down(), Color.GREEN, fill = .5f)
-                else event.isCanceled = true
+                if (contains(triviaAnswer ?: return)) {
+                    RenderUtils.drawBlockBox(event.entity.position.up(), Color.GREEN, fill = .5f)
+                } else event.isCanceled = true
             }
         }
     }

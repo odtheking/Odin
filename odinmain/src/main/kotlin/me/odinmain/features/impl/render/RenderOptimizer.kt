@@ -33,7 +33,7 @@ object RenderOptimizer : Module(
     private val hideWitherMinerName: Boolean by BooleanSetting(name = "Hide WitherMiner Name", default = true, description = "Hides the wither miner name.")
     private val hideTerracottaName: Boolean by BooleanSetting(name = "Hide Terracota Name", default = true, description = "Hides the terracota name.")
     private val hideNonStarredMobName: Boolean by BooleanSetting(name = "Hide Non-Starred Mob Name", default = true, description = "Hides the non-starred mob name.")
-    private val removeBlazePuzzleNames: Boolean by BooleanSetting(name = "Hide blazes", default = true, description = "Hides the blazes in the blaze puzzle room.")
+    private val removeBlazePuzzleNames: Boolean by BooleanSetting(name = "Hide blazes", default = false, description = "Hides the blazes in the blaze puzzle room.")
 
     private val showParticleOptions: Boolean by DropdownSetting("Show Particles Options")
     private val removeExplosion: Boolean by BooleanSetting("Remove Explosion").withDependency { showParticleOptions }
