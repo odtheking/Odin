@@ -3,15 +3,17 @@
 package com.github.stivais.ui.elements.scope
 
 import com.github.stivais.ui.UI
+import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.constraints.*
+import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.elements.impl.*
 import com.github.stivais.ui.events.Event
 import com.github.stivais.ui.events.Focused
 import com.github.stivais.ui.events.Key
 import com.github.stivais.ui.events.Mouse
-import com.github.stivais.ui.renderer.GradientDirection
+import com.github.stivais.ui.renderer.Gradient
 
 open class ElementScope<E: Element>(val element: E) {
 
@@ -33,6 +35,12 @@ open class ElementScope<E: Element>(val element: E) {
             element.color = value
         }
 
+    var enabled: Boolean
+        get() = element.enabled
+        set(value) {
+            element.enabled = value
+        }
+
     val ui: UI
         get() = element.ui
 
@@ -40,6 +48,18 @@ open class ElementScope<E: Element>(val element: E) {
         get() = element.parent
 
     fun parent(): ElementScope<*>? = parent?.createScope()
+
+    fun child(index: Int): ElementScope<*>? = element.elements?.get(index)?.createScope()
+
+    fun scroll(amount: Float, duration: Float, animation: Animations) {
+        val anim = element.scrollY ?: Animatable.Raw(0f).also { element.scrollY = it }
+        val curr = anim.current
+        anim.animate(
+            to = (curr + amount).coerceIn(-(element.height - curr), 0f),
+            duration,
+            animation
+        )
+    }
 
     fun sibling(distance: Int = 1): ElementScope<*>? {
         if (element.parent != null) {
@@ -94,7 +114,7 @@ open class ElementScope<E: Element>(val element: E) {
         constraints: Constraints? = null,
         colors: Pair<Color, Color>,
         radius: Float = 0f,
-        direction: GradientDirection,
+        direction: Gradient,
         block: BlockScope.() -> Unit = {}
     ) = create(BlockScope(GradientBlock(constraints, colors.first, colors.second, radius, direction)), block)
 
@@ -122,6 +142,10 @@ open class ElementScope<E: Element>(val element: E) {
             block(this as Mouse.Released)
             true
         }
+    }
+
+    fun onScroll(block: (Mouse.Scrolled) -> Boolean) {
+        element.registerEvent(Mouse.Scrolled(0f), block as Event.() -> Boolean)
     }
 
     fun onKeyPressed(block: (Key.CodePressed) -> Boolean) {

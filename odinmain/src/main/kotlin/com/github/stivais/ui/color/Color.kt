@@ -108,7 +108,7 @@ interface Color {
             }
 
         override fun get(element: Element): Int {
-            if (animation != null) {
+            if (animation != null && element.ui.framebuffer != null) {
                 element.redraw()
             }
             return rgba

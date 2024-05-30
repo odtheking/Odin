@@ -66,7 +66,7 @@ class SelectorSetting(
     override fun ElementScope<*>.createElement() {
         var text: TextScope? = null
         val height = Animatable(from = 40.px, to = (50 + 32 * options.size).px)
-        val thickness = Animatable(from = 1.px, to = 1.5.px)
+        val thickness = Animatable(from = 1.px, to = 1.75.px)
 
         setting(height) {
             group(
@@ -109,11 +109,12 @@ class SelectorSetting(
                 for ((index, option) in options.withIndex()) {
                     block(
                         constraints = size(w = Copying, h = 32.px),
-                        color = Color.TRANSPARENT,
+                        color = color(from = Color.TRANSPARENT, to = Color.RGB(150, 150, 150, 0.2f)),
                         radius = radii(5)
                     ) {
-                        text(text = option)
-                        outline(color = color(from = Color.TRANSPARENT, to = ClickGUITheme), thickness = 1.5.px)
+                        text(
+                            text = option
+                        )
 
                         onClick {
                             text!!.string = option
@@ -123,7 +124,7 @@ class SelectorSetting(
                             true
                         }
                         onMouseEnterExit {
-                            outlineColor!!.animate(duration = 0f)
+                            color!!.animate(duration = 0.05.seconds)
                             true
                         }
                     }

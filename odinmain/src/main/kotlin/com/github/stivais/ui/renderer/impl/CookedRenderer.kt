@@ -1,5 +1,8 @@
-package com.github.stivais.ui.renderer
+package com.github.stivais.ui.renderer.impl
 
+import com.github.stivais.ui.renderer.Font
+import com.github.stivais.ui.renderer.Gradient
+import com.github.stivais.ui.renderer.Renderer
 import me.odinmain.OdinMain.mc
 import me.odinmain.font.OdinFont
 import me.odinmain.utils.render.Color
@@ -42,6 +45,9 @@ object CookedRenderer : Renderer {
         GlStateManager.scale(x, y, 0f)
     }
 
+    override fun globalAlpha(amount: Float) {
+    }
+
     override fun rect(x: Float, y: Float, w: Float, h: Float, color: Int) {
         roundedRectangle(x, y, w, h, Color(color))
     }
@@ -74,7 +80,7 @@ object CookedRenderer : Renderer {
         h: Float,
         color1: Int,
         color2: Int,
-        direction: GradientDirection
+        direction: Gradient
     ) = gradientRect(x, y, w, h, color1, color2, 0f, direction)
 
     override fun gradientRect(
@@ -85,16 +91,16 @@ object CookedRenderer : Renderer {
         color1: Int,
         color2: Int,
         radius: Float,
-        direction: GradientDirection
+        direction: Gradient
     ) {
         val stupidColor1 = Color(color1)
         val stupidColor2 = Color(color2)
         gradientRectOld(x, y, w, h, stupidColor1, stupidColor2, radius, getGradientDirection(direction))
     }
 
-    private fun getGradientDirection(direction: GradientDirection) = when (direction) {
-        GradientDirection.LeftToRight -> GradientDirectionOld.Right
-        GradientDirection.TopToBottom -> GradientDirectionOld.Down
+    private fun getGradientDirection(direction: Gradient) = when (direction) {
+        Gradient.LeftToRight -> GradientDirectionOld.Right
+        Gradient.TopToBottom -> GradientDirectionOld.Down
     }
 
     override fun text(text: String, x: Float, y: Float, size: Float, color: Int, font: Font) {

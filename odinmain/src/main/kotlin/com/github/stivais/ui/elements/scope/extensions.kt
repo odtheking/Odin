@@ -1,6 +1,7 @@
 package com.github.stivais.ui.elements.scope
 
 import com.github.stivais.ui.UI
+import com.github.stivais.ui.UI.Companion.logger
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.color.brighter
 import com.github.stivais.ui.constraints.measurements.Pixel
@@ -27,14 +28,34 @@ fun ElementDSL.focuses() {
     }
 }
 
-fun ElementDSL.afterInit(block: () -> Unit) {
+/**
+ * Function that gets ran when the UI is finished initializing
+ *
+ * Note: Does nothing if UI is already initialized
+ *
+ * @param block The function to run
+ */
+fun ElementDSL.onUIOpen(block: UI.() -> Unit) {
+    if (element.initialized) return logger.warning("Called [onUIOpen], while UI is still initialized")
+    onInitialization {
+        if (ui.onOpen == null) ui.onOpen = arrayListOf()
+        ui.onOpen!!.add(block)
+    }
+}
+
+/**
+ * Function that gets ran when the UI is closed
+ *
+ * @param block The function to run
+ */
+fun ElementDSL.onUIClose(block: UI.() -> Unit) {
     if (element.initialized) {
-        if (ui.afterInit == null) ui.afterInit = arrayListOf()
-        ui.afterInit!!.add(block)
+        if (ui.onClose == null) ui.onClose = arrayListOf()
+        ui.onClose!!.add(block)
     } else {
         onInitialization {
-            if (ui.afterInit == null) ui.afterInit = arrayListOf()
-            ui.afterInit!!.add(block)
+            if (ui.onClose == null) ui.onClose = arrayListOf()
+            ui.onClose!!.add(block)
         }
     }
 }
@@ -46,7 +67,7 @@ fun ElementDSL.draggable(acceptsEvent: Boolean = true, target: Element = element
     val px: Pixel = 0.px
     val py: Pixel = 0.px
     // note: if parent is Bounding, it can cause issues
-    afterInit {
+    onUIOpen {
         px.pixels = target.internalX
         py.pixels = target.internalY
         target.constraints.x = px
@@ -82,7 +103,7 @@ fun ElementDSL.draggable(acceptsEvent: Boolean = true, target: Element = element
 fun ElementDSL.takeEvents(from: ElementDSL) {
     val to = element
     val f = from.element
-    if (f.events == null) return UI.logger.warning("Tried to take event from an element that doesn't have events")
+    if (f.events == null) return logger.warning("Tried to take event from an element that doesn't have events")
     if (to.events != null) {
         to.events!!.putAll(f.events!!)
     } else {

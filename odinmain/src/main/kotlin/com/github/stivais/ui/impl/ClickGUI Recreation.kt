@@ -1,6 +1,7 @@
 package com.github.stivais.ui.impl
 
 import com.github.stivais.ui.UI
+import com.github.stivais.ui.UIScreen
 import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.color.color
@@ -9,9 +10,7 @@ import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.constraints.size
 import com.github.stivais.ui.constraints.sizes.Bounding
-import com.github.stivais.ui.elements.scope.ElementScope
-import com.github.stivais.ui.elements.scope.button
-import com.github.stivais.ui.elements.scope.draggable
+import com.github.stivais.ui.elements.scope.*
 import com.github.stivais.ui.renderer.Renderer
 import com.github.stivais.ui.utils.animate
 import com.github.stivais.ui.utils.radii
@@ -31,6 +30,7 @@ val ClickGUITheme = Color { color.rgba }
 val `gray 26`: Color = Color.RGB(26, 26, 26)
 
 fun clickGUI(renderer: Renderer) = UI(renderer) {
+    openCloseAnim(0.5.seconds)
     text(
         text = "odin${if (OdinMain.onLegitVersion) "" else "-client"} $lastSeenVersion",
         pos = at(x = 1.px, y = -(0.px)),
@@ -38,6 +38,14 @@ fun clickGUI(renderer: Renderer) = UI(renderer) {
     )
     for (panel in Category.entries) {
         column(at(x = panel.x.px, y = panel.y.px)) {
+            onUIClose {
+                panel.x = element.x
+                panel.y = element.y
+            }
+            onScroll { (amount) ->
+                child(1)!!.scroll(amount * 1.25f, 0.1.seconds, Animations.Linear)
+                true
+            }
             block(
                 constraints = size(240.px, 40.px),
                 color = `gray 26`,
@@ -49,11 +57,13 @@ fun clickGUI(renderer: Renderer) = UI(renderer) {
                 )
                 onClick(1) {
                     sibling()!!.height.animate(0.5.seconds, Animations.EaseInOutQuint)
+                    panel.extended = !panel.extended
                     true
                 }
                 draggable(target = parent!!)
             }
             column(size(h = Animatable(from = Bounding, to = 0.px, swapIf = !panel.extended))) {
+                scissors()
                 for (module in modules) {
                     if (module.category != panel) continue
                     module(module)
@@ -94,6 +104,30 @@ private fun ElementScope<*>.module(module: Module) {
             setting.apply {
                 createElement()
             }
+        }
+    }
+}
+
+// todo: cleanup
+fun ElementDSL.openCloseAnim(
+    duration: Float,
+    animationIn: Animations = Animations.EaseOutQuint,
+    animationOut: Animations = Animations.EaseInBack
+) {
+    onUIOpen {
+        animate(duration, animationIn) {
+            alpha = it
+            scale = it
+        }
+    }
+    onUIClose {
+        keepOpen = true
+        animate(duration, animationOut) {
+            val percent = 1f - it
+            alpha = percent
+            scale = percent
+        }.onFinish {
+            UIScreen.current = null
         }
     }
 }

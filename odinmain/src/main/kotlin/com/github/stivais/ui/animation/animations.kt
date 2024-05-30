@@ -42,5 +42,12 @@ enum class Animations : Strategy {
             return if (percent < 0.5f) 16f * percent * percent * percent * percent * percent
             else 1 - (-2 * percent + 2).pow(5f) / 2f
         }
-    };
+    },
+    EaseInBack {
+        override fun getValue(percent: Float): Float {
+            val c1 = 1.70158f
+            val c3 = c1 + 1
+            return c3 * percent * percent * percent - c1 * percent * percent
+        }
+    },
 }

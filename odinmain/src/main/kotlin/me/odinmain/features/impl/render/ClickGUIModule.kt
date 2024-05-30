@@ -48,7 +48,7 @@ object ClickGUIModule: Module(
 
     val test by UISetting(40.px) {
         text("odc $lastSeenVersion")
-        modMessage("a")
+//        modMessage("a")
     }
 
     val devMessages: Boolean by BooleanSetting("Dev Messages", true, description = "Enables dev messages in chat.").withDependency { DevPlayers.isDev }

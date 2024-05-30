@@ -10,7 +10,7 @@ import com.github.stivais.ui.constraints.sizes.Copying
 import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.elements.scope.BlockScope
 import com.github.stivais.ui.elements.scope.ElementScope
-import com.github.stivais.ui.renderer.GradientDirection
+import com.github.stivais.ui.renderer.Gradient
 import com.github.stivais.ui.utils.replaceUndefined
 
 // todo: cleanup
@@ -63,7 +63,7 @@ class GradientBlock(
     color1: Color,
     var color2: Color,
     val radius: Float = 0f,
-    val direction: GradientDirection
+    val direction: Gradient
 //    private val radii: FloatArray
 ) : Block(constraints, color1) {
 

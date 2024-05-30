@@ -8,8 +8,8 @@ import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.sizes.Copying
 import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.elements.scope.draggable
-import com.github.stivais.ui.renderer.GradientDirection.LeftToRight
-import com.github.stivais.ui.renderer.GradientDirection.TopToBottom
+import com.github.stivais.ui.renderer.Gradient.LeftToRight
+import com.github.stivais.ui.renderer.Gradient.TopToBottom
 import com.github.stivais.ui.utils.radii
 import com.github.stivais.ui.utils.seconds
 import me.odinmain.features.settings.Setting

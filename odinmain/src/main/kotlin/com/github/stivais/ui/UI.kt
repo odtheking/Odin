@@ -1,5 +1,7 @@
 package com.github.stivais.ui
 
+import com.github.stivais.ui.animation.Animation
+import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.constraints.Constraints
 import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.elements.Element
@@ -8,8 +10,8 @@ import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.events.EventManager
 import com.github.stivais.ui.renderer.Font
 import com.github.stivais.ui.renderer.Framebuffer
-import com.github.stivais.ui.renderer.NVGRenderer
 import com.github.stivais.ui.renderer.Renderer
+import com.github.stivais.ui.renderer.impl.NVGRenderer
 import com.github.stivais.ui.utils.forLoop
 import me.odinmain.utils.round
 import java.util.logging.Logger
@@ -32,15 +34,25 @@ class UI(
 
     val my get() = eventManager!!.mouseY
 
-    var afterInit: ArrayList<() -> Unit>? = null
+    var onOpen: ArrayList<UI.() -> Unit>? = null
+
+    var onClose: ArrayList<UI.() -> Unit>? = null
+
+    var keepOpen = true
+
+    var animations: ArrayList<Pair<Animation, UI.(Float) -> Unit>>? = null
+
+    var alpha = 1f
+
+    var scale = 1f
 
     fun initialize(width: Int, height: Int) {
         main.constraints.width = width.px
         main.constraints.height = height.px
         main.initialize(this)
         main.position()
-        afterInit?.forLoop { it() }
-        afterInit = null
+        onOpen?.forLoop { this.it() }
+        onOpen = null
         if (settings.cacheFrames && renderer.supportsFramebuffers()) {
             framebuffer = renderer.createFramebuffer(main.width, main.height)
         }
@@ -54,13 +66,28 @@ class UI(
 
     var needsRedraw = true
 
-    private var framebuffer: Framebuffer? = null
+    var framebuffer: Framebuffer? = null
 
     // rework fbo
     fun render() {
         val fbo = framebuffer
         if (fbo == null) {
             renderer.beginFrame(main.width, main.height)
+            renderer.push()
+            animations?.removeIf { (anim, block) ->
+                this.block(anim.get())
+                anim.finished
+            }
+
+            if (alpha != 1f) {
+                renderer.globalAlpha(alpha)
+            }
+            if (scale != 1f) {
+                renderer.translate(main.width / 2f, main.height / 2f)
+                renderer.scale(scale, scale)
+                renderer.translate(-main.width / 2f, -main.height / 2f)
+            }
+
             if (needsRedraw) {
                 needsRedraw = false
                 main.position()
@@ -70,6 +97,7 @@ class UI(
             performance?.let {
                 renderer.text(it, main.width - renderer.textWidth(it, 12f), main.height - 12f, 12f)
             }
+            renderer.pop()
             renderer.endFrame()
         } else {
             if (needsRedraw) {
@@ -133,8 +161,13 @@ class UI(
     }
 
     fun cleanup() {
-        val fbo = framebuffer ?: return
-        renderer.destroyFramebuffer(fbo)
+        framebuffer?.let { fbo ->
+            renderer.destroyFramebuffer(fbo)
+        }
+        onClose?.forLoop {
+            this.it()
+        }
+        onClose = null
     }
 
     fun focus(element: Element) {
@@ -150,6 +183,17 @@ class UI(
     inline fun settings(block: UISettings.() -> Unit): UI {
         settings.apply(block)
         return this
+    }
+
+    fun animate(
+        duration: Float,
+        animation: Animations,
+        block: UI.(percent: Float) -> Unit
+    ): Animation {
+        val anim = Animation(duration, animation)
+        if (animations == null) animations = arrayListOf()
+        animations!!.add(Pair(anim, block))
+        return anim
     }
 
     companion object {

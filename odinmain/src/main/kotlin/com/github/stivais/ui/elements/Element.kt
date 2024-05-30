@@ -5,6 +5,7 @@ import com.github.stivais.ui.UI.Companion.logger
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.constraints.Constraints
 import com.github.stivais.ui.constraints.Type
+import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.measurements.Undefined
 import com.github.stivais.ui.constraints.positions.Center
 import com.github.stivais.ui.elements.scope.ElementScope
@@ -41,6 +42,10 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
 
     var internalY: Float = 0f
 
+    var scrollY: Animatable.Raw? = null
+
+    private var sy = 0f
+
     var isHovered = false
         set(value) {
             if (value) {
@@ -64,9 +69,12 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
 
     fun position() {
         if (!enabled) return
+        if (scrollY != null) {
+            sy = scrollY!!.get(this, Type.H)
+        }
         prePosition()
         if (!constraints.width.reliesOnChild()) width = constraints.width.get(this, Type.W)
-        if (!constraints.height.reliesOnChild()) height = constraints.height.get(this, Type.H)
+        if (!constraints.height.reliesOnChild()) height = constraints.height.get(this, Type.H) + sy
         internalX = constraints.x.get(this, Type.X)
         internalY = constraints.y.get(this, Type.Y)
 
@@ -79,7 +87,7 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
         }
 
         if (constraints.width.reliesOnChild()) width = constraints.width.get(this, Type.W)
-        if (constraints.height.reliesOnChild()) height = constraints.height.get(this, Type.H)
+        if (constraints.height.reliesOnChild()) height = constraints.height.get(this, Type.H) + sy
         placed = false
     }
 
@@ -98,7 +106,7 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
         ui.needsRedraw = true
     }
 
-    protected var placed: Boolean = false
+    private var placed: Boolean = false
 
     open fun place(element: Element) {
         if (!placed) {
@@ -106,7 +114,7 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
             placed = true
         }
         element.x = x + element.internalX
-        element.y = y + element.internalY
+        element.y = y + element.internalY + sy
     }
 
     fun render() {
@@ -154,6 +162,7 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
         element.parent = this
         onElementAdded(element)
         if (::ui.isInitialized) {
+            ui.needsRedraw = true
             element.initialize(ui)
         }
     }
@@ -190,7 +199,7 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
     fun isInside(x: Float, y: Float): Boolean {
         val tx = this.x
         val ty = this.y
-        return x in tx..tx + width && y in ty..ty + height
+        return x in tx..tx + width && y in ty..ty + height - sy
     }
 
     fun intersects(x: Float, y: Float, width: Float, height: Float): Boolean {

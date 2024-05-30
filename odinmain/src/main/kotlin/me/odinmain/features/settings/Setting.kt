@@ -107,8 +107,8 @@ abstract class Setting<T> (
                 (constraints.height as Animatable).swap()
             }
             onInitialization {
-                if (ui.afterInit == null) ui.afterInit = arrayListOf()
-                ui.afterInit!!.add {
+                if (ui.onOpen == null) ui.onOpen = arrayListOf()
+                ui.onOpen!!.add {
                     elements?.forLoop { fixHeight(it) }
                 }
             }

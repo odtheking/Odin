@@ -7,8 +7,14 @@ import com.github.stivais.ui.elements.Element
 class EventManager(private val ui: UI) {
 
     var mouseX: Float = 0f
+        set(value) {
+            field = value * ui.scale
+        }
 
     var mouseY: Float = 0f
+        set(value) {
+            field = value * ui.scale
+        }
 
     var focused: Element? = null
         private set
@@ -20,6 +26,11 @@ class EventManager(private val ui: UI) {
             value?.isHovered = true
             field = value
         }
+
+    fun check(): Boolean {
+        val hovered = elementHovered ?: return false
+        return !hovered.isInside(mouseX, mouseY)
+    }
 
     //
     // Mouse Input

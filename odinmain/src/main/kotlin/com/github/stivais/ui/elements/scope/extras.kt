@@ -71,7 +71,7 @@ inline fun ElementDSL.slider(
     onRelease(0) {
         dragging = false
     }
-    afterInit {
+    onUIOpen {
         sliderWidth.to(((value - min) / (max - min) * element.width).toFloat())
     }
 }

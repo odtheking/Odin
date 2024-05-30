@@ -1,5 +1,5 @@
 package com.github.stivais.ui.renderer
 
-enum class GradientDirection {
+enum class Gradient {
     LeftToRight, TopToBottom
 }

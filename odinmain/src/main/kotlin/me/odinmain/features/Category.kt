@@ -5,12 +5,21 @@ import me.odinmain.features.impl.render.ClickGUIModule
 enum class Category {
     DUNGEON, FLOOR7, RENDER, SKYBLOCK, KUUDRA;
 
-    val x: Float
+    var x: Float
         get() = ClickGUIModule.panelX[this]!!.value
+        set(value) {
+            ClickGUIModule.panelX[this]!!.value = value
+        }
 
-    val y: Float
+    var y: Float
         get() = ClickGUIModule.panelY[this]!!.value
+        set(value) {
+            ClickGUIModule.panelY[this]!!.value = value
+        }
 
-    val extended: Boolean
+    var extended: Boolean
         get() = ClickGUIModule.panelExtended[this]!!.value
+        set(value) {
+            ClickGUIModule.panelExtended[this]!!.value = value
+        }
 }

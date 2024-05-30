@@ -1,8 +1,11 @@
 package com.github.stivais.ui
 
 import me.odinmain.OdinMain.display
+import me.odinmain.OdinMain.mc
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.Display
 
@@ -17,6 +20,9 @@ open class UIScreen(val ui: UI) : GuiScreen() {
 
     override fun onGuiClosed() {
         ui.cleanup()
+        if (ui.keepOpen) {
+            current = this
+        }
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -33,18 +39,23 @@ open class UIScreen(val ui: UI) : GuiScreen() {
                 val mx = Mouse.getX().toFloat()
                 val my = previousHeight - Mouse.getY() - 1f
 
-                if (this.mouseX != mx || this.mouseY != my) {
+                if (this.mouseX != mx || this.mouseY != my || check()) {
                     onMouseMove(mx, my)
-                }
-
-                val scroll = Mouse.getEventDWheel()
-                if (scroll != 0) {
-                    onMouseScroll(scroll.toFloat())
                 }
             }
             GlStateManager.pushMatrix()
             ui.render()
             GlStateManager.popMatrix()
+        }
+    }
+
+    override fun handleMouseInput() {
+        super.handleMouseInput()
+        ui.eventManager?.let {
+            val scroll = Mouse.getEventDWheel()
+            if (scroll != 0) {
+                it.onMouseScroll(scroll.toFloat())
+            }
         }
     }
 
@@ -80,6 +91,15 @@ open class UIScreen(val ui: UI) : GuiScreen() {
         @JvmName("openUI")
         fun UI.open() {
             open(this)
+        }
+
+        var current: UIScreen? = null
+
+        @SubscribeEvent
+        fun onRender(event: RenderWorldLastEvent) {
+            if (mc.currentScreen == null) {
+                current?.drawScreen(0, 0, event.partialTicks)
+            }
         }
     }
 }

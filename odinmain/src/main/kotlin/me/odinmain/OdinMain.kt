@@ -1,6 +1,10 @@
 package me.odinmain
 
+import com.github.stivais.ui.UI
+import com.github.stivais.ui.UIScreen
+import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.impl.`ui command`
+import com.github.stivais.ui.renderer.impl.NVGRenderer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -33,6 +37,7 @@ import java.io.File
 import kotlin.coroutines.EmptyCoroutineContext
 
 object OdinMain {
+
     val mc: Minecraft = Minecraft.getMinecraft()
 
     const val VERSION = "@VER@"
@@ -41,6 +46,8 @@ object OdinMain {
     var display: GuiScreen? = null
     val onLegitVersion: Boolean
         get() = Loader.instance().activeModList.none { it.modId == "odclient" }
+
+    var renderer: com.github.stivais.ui.renderer.Renderer = NVGRenderer
 
     object MapColors {
         var bloodColor = Color.WHITE
@@ -57,6 +64,15 @@ object OdinMain {
         var openWitherDoorColor = Color.WHITE
         var witherDoorColor = Color.WHITE
         var roomDoorColor = Color.WHITE
+    }
+
+    init {
+        try {
+            Class.forName(UI::class.java.name)
+            Class.forName(Element::class.java.name)
+        } catch (e: Exception) {
+          println("Failed to preload ui")
+        }
     }
 
     fun init() {
@@ -76,6 +92,7 @@ object OdinMain {
             PartyNote,
             //HighlightRenderer,
             //OdinUpdater,
+            UIScreen,
             this
         ).forEach { MinecraftForge.EVENT_BUS.register(it) }
 

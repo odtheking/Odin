@@ -29,6 +29,8 @@ interface Renderer {
 
     fun translate(x: Float, y: Float)
 
+    fun globalAlpha(amount: Float)
+
     fun pushScissor(x: Float, y: Float, w: Float, h: Float)
 
     fun popScissor()
@@ -47,9 +49,9 @@ interface Renderer {
         hollowRect(x, y, w, h, thickness, color, radius, radius, radius, radius)
     }
 
-    fun gradientRect(x: Float, y: Float, w: Float, h: Float, color1: Int, color2: Int, direction: GradientDirection)
+    fun gradientRect(x: Float, y: Float, w: Float, h: Float, color1: Int, color2: Int, direction: Gradient)
 
-    fun gradientRect(x: Float, y: Float, w: Float, h: Float, color1: Int, color2: Int, radius: Float, direction: GradientDirection)
+    fun gradientRect(x: Float, y: Float, w: Float, h: Float, color1: Int, color2: Int, radius: Float, direction: Gradient)
 
     // todo: add fonts
 

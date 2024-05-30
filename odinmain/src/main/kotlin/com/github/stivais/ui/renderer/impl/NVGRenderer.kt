@@ -1,9 +1,13 @@
-package com.github.stivais.ui.renderer
+package com.github.stivais.ui.renderer.impl
 
 import com.github.stivais.ui.color.alpha
 import com.github.stivais.ui.color.blue
 import com.github.stivais.ui.color.green
 import com.github.stivais.ui.color.red
+import com.github.stivais.ui.renderer.Font
+import com.github.stivais.ui.renderer.Framebuffer
+import com.github.stivais.ui.renderer.Gradient
+import com.github.stivais.ui.renderer.Renderer
 import me.odinmain.OdinMain.mc
 import org.lwjgl.nanovg.NVGColor
 import org.lwjgl.nanovg.NVGLUFramebuffer
@@ -50,7 +54,7 @@ object NVGRenderer : Renderer {
         drawing = false
     }
 
-    override fun supportsFramebuffers(): Boolean = true
+    override fun supportsFramebuffers(): Boolean = false
 
     override fun createFramebuffer(w: Float, h: Float): Framebuffer {
         val fbo = Framebuffer(w, h)
@@ -91,7 +95,6 @@ object NVGRenderer : Renderer {
         return fbos[fbo] ?: throw NullPointerException("Unable to find $fbo")
     }
 
-    // todo: use this in ui to not leak memeory
     override fun destroyFramebuffer(fbo: Framebuffer) {
         val nvgFbo = fbos[fbo] ?: return
         nvgluDeleteFramebuffer(vg, nvgFbo)
@@ -105,6 +108,8 @@ object NVGRenderer : Renderer {
     override fun scale(x: Float, y: Float) = nvgScale(vg, x, y)
 
     override fun translate(x: Float, y: Float) = nvgTranslate(vg, x, y)
+
+    override fun globalAlpha(amount: Float) = nvgGlobalAlpha(vg, amount.coerceIn(0f, 1f))
 
     override fun pushScissor(x: Float, y: Float, w: Float, h: Float) = nvgScissor(vg, x, y, w, h)
 
@@ -154,7 +159,7 @@ object NVGRenderer : Renderer {
         h: Float,
         color1: Int,
         color2: Int,
-        direction: GradientDirection
+        direction: Gradient
     ) {
         nvgBeginPath(vg)
         nvgRect(vg, x, y, w, h)
@@ -171,7 +176,7 @@ object NVGRenderer : Renderer {
         color1: Int,
         color2: Int,
         radius: Float,
-        direction: GradientDirection
+        direction: Gradient
     ) {
         nvgBeginPath(vg)
         nvgRoundedRect(vg, x, y, w, h, radius)
@@ -200,12 +205,12 @@ object NVGRenderer : Renderer {
         nvgRGBA(color.red.toByte(), color.green.toByte(), color.blue.toByte(), color.alpha.toByte(), nvgColor)
     }
 
-    private fun gradient(color1: Int, color2: Int, x: Float, y: Float, w: Float, h: Float, direction: GradientDirection) {
+    private fun gradient(color1: Int, color2: Int, x: Float, y: Float, w: Float, h: Float, direction: Gradient) {
         nvgRGBA(color1.red.toByte(), color1.green.toByte(), color1.blue.toByte(), color1.alpha.toByte(), nvgColor)
         nvgRGBA(color2.red.toByte(), color2.green.toByte(), color2.blue.toByte(), color2.alpha.toByte(), nvgColor2)
         when (direction) {
-            GradientDirection.LeftToRight -> nvgLinearGradient(vg, x, y, x + w, y, nvgColor, nvgColor2, nvgPaint)
-            GradientDirection.TopToBottom -> nvgLinearGradient(vg, x, y, x, y + h, nvgColor, nvgColor2, nvgPaint)
+            Gradient.LeftToRight -> nvgLinearGradient(vg, x, y, x + w, y, nvgColor, nvgColor2, nvgPaint)
+            Gradient.TopToBottom -> nvgLinearGradient(vg, x, y, x, y + h, nvgColor, nvgColor2, nvgPaint)
         }
     }
 

@@ -64,7 +64,7 @@ class Animatable(var from: Constraint, var to: Constraint): Measurement {
 
     class Raw(start: Float) : Measurement {
 
-        private var current: Float = start
+        var current: Float = start
 
         private var animation: Animation? = null
 
