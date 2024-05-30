@@ -3,6 +3,7 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.util.Vec3
@@ -16,6 +17,7 @@ object WeirdosSolver {
         val room = DungeonUtils.currentRoom?.room ?: return
 
         correctPos = Vec3(correctNPC.posX - 0.5, 69.0, correctNPC.posZ - 0.5).addRotationCoords(room.rotation, -1, 0)
+        PlayerUtils.playLoudSound("note.pling", 2f, 1f)
     }
 
     fun onRenderWorld() {
