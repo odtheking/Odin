@@ -2,6 +2,7 @@ package com.github.stivais.ui.elements.scope
 
 import com.github.stivais.ui.UI
 import com.github.stivais.ui.UI.Companion.logger
+import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.color.brighter
 import com.github.stivais.ui.constraints.measurements.Pixel
@@ -110,4 +111,12 @@ fun ElementDSL.takeEvents(from: ElementDSL) {
         to.events = f.events
     }
     f.events = null
+}
+
+fun ElementDSL.animateColor(to: Color, duration: Float, anim: Animations = Animations.Linear) {
+    color = if (duration == 0f) to else Color.Animated(from = color ?: Color.TRANSPARENT, to = to).apply {
+        animate(duration, anim)?.onFinish {
+            color = to
+        }
+    }
 }

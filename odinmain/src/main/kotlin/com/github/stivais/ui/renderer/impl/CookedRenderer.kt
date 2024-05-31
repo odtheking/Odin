@@ -2,6 +2,7 @@ package com.github.stivais.ui.renderer.impl
 
 import com.github.stivais.ui.renderer.Font
 import com.github.stivais.ui.renderer.Gradient
+import com.github.stivais.ui.renderer.Image
 import com.github.stivais.ui.renderer.Renderer
 import me.odinmain.OdinMain.mc
 import me.odinmain.font.OdinFont
@@ -109,6 +110,20 @@ object CookedRenderer : Renderer {
 
     override fun textWidth(text: String, size: Float, font: Font): Float {
         return OdinFont.getTextWidth(text, size * 0.75f)
+    }
+
+    override fun image(
+        image: Image,
+        x: Float,
+        y: Float,
+        w: Float,
+        h: Float,
+        tl: Float,
+        bl: Float,
+        br: Float,
+        tr: Float
+    ) {
+        // todo: port for testing
     }
 
     private val scissors: ArrayList<IntArray> = arrayListOf()

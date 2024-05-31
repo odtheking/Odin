@@ -29,6 +29,12 @@ val ClickGUITheme = Color { color.rgba }
 @JvmField
 val `gray 26`: Color = Color.RGB(26, 26, 26)
 
+@JvmField
+val `gray 38`: Color = Color.RGB(38, 38, 38)
+
+@JvmField
+val `transparent fix`: Color = Color.RGB(255, 255, 255, 0.2f)
+
 fun clickGUI(renderer: Renderer) = UI(renderer) {
     openCloseAnim(0.5.seconds)
     text(
@@ -121,13 +127,13 @@ fun ElementDSL.openCloseAnim(
         }
     }
     onUIClose {
-        keepOpen = true
+        (window as UIScreen).keep()
         animate(duration, animationOut) {
             val percent = 1f - it
             alpha = percent
             scale = percent
         }.onFinish {
-            UIScreen.current = null
+            window.close()
         }
     }
 }

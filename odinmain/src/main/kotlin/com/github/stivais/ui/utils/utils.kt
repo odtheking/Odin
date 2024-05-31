@@ -25,7 +25,7 @@ fun Constraints?.replaceUndefined(
 }
 
 // using this with an arraylist is just as fast as an iterator, but is more memory efficient
-inline fun <E> ArrayList<E>.forLoop(block: (E) -> Unit) {
+inline fun <E> ArrayList<E>.loop(block: (E) -> Unit) {
     if (this.size == 0) return
     for (i in 0..<this.size) {
         block(this[i])

@@ -79,10 +79,10 @@ interface Color {
             }
         }
 
+        var animation: Animation? = null
+
         private var color1: Color = from
         private var color2: Color = to
-
-        private var animation: Animation? = null
 
         var current: Int = color1.rgba
         var from: Int = color1.rgba
@@ -109,12 +109,12 @@ interface Color {
 
         override fun get(element: Element): Int {
             if (animation != null && element.ui.framebuffer != null) {
-                element.redraw()
+                element.ui.needsRedraw = true
             }
             return rgba
         }
 
-        fun animate(duration: Float = 0f, type: Animations) {
+        fun animate(duration: Float = 0f, type: Animations): Animation? {
             if (duration == 0f) {
                 swap()
                 current = color1.rgba // here so it updates if you swap a color and want to animate it later
@@ -127,7 +127,9 @@ interface Color {
                     animation = Animation(duration, type)
                     from = color1.rgba
                 }
+                return animation!!
             }
+            return null
         }
 
         fun swap() {
@@ -171,7 +173,8 @@ inline val Int.blue
     get() = this and 0xFF
 
 inline val Int.alpha
-    get() = this shr 24 and 0xFF
+    get() = (this shr 24) and 0xFF
+
 
 fun Int.brighter(factor: Double = 1.2): Int {
     return getRGBA(

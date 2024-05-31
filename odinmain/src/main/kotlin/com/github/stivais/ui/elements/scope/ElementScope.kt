@@ -14,6 +14,8 @@ import com.github.stivais.ui.events.Focused
 import com.github.stivais.ui.events.Key
 import com.github.stivais.ui.events.Mouse
 import com.github.stivais.ui.renderer.Gradient
+import com.github.stivais.ui.renderer.Image
+import com.github.stivais.ui.utils.radii
 
 open class ElementScope<E: Element>(val element: E) {
 
@@ -114,9 +116,9 @@ open class ElementScope<E: Element>(val element: E) {
         constraints: Constraints? = null,
         colors: Pair<Color, Color>,
         radius: Float = 0f,
-        direction: Gradient,
+        gradient: Gradient,
         block: BlockScope.() -> Unit = {}
-    ) = create(BlockScope(GradientBlock(constraints, colors.first, colors.second, radius, direction)), block)
+    ) = create(BlockScope(GradientBlock(constraints, colors.first, colors.second, radius, gradient)), block)
 
     @DSL
     fun text(
@@ -124,8 +126,24 @@ open class ElementScope<E: Element>(val element: E) {
         pos: Constraints? = null,
         size: Measurement = 50.percent,
         color: Color = Color.WHITE,
-        block: ElementScope<Text>.() -> Unit = {}
+        block: TextScope.() -> Unit = {}
     ) = create(TextScope(Text(text, color, pos, size)), block)
+
+    @DSL
+    fun image(
+        image: Image,
+        constraints: Constraints? = null,
+        radius: FloatArray = 0.radii(),
+        dsl: ElementScope<ImageElement>.() -> Unit = {}
+    ) = create(ElementScope(ImageElement(image, constraints, radius)), dsl)
+
+    @DSL
+    fun image(
+        image: String,
+        constraints: Constraints? = null,
+        radius: FloatArray = 0.radii(),
+        dsl: ElementScope<ImageElement>.() -> Unit = {}
+    ) = create(ElementScope(ImageElement(Image(image), constraints, radius)), dsl)
 
     fun onInitialization(action: () -> Unit) {
         if (element.initialized) return UI.logger.warning("Tried calling \"onInitialization\" after init has already been done")

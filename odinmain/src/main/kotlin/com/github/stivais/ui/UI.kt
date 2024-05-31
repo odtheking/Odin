@@ -12,7 +12,7 @@ import com.github.stivais.ui.renderer.Font
 import com.github.stivais.ui.renderer.Framebuffer
 import com.github.stivais.ui.renderer.Renderer
 import com.github.stivais.ui.renderer.impl.NVGRenderer
-import com.github.stivais.ui.utils.forLoop
+import com.github.stivais.ui.utils.loop
 import me.odinmain.utils.round
 import java.util.logging.Logger
 
@@ -20,9 +20,14 @@ class UI(
     val renderer: Renderer = NVGRenderer,
     settings: UISettings? = null
 ) {
+    lateinit var window: Window
+
     val main: Group = Group(Constraints(0.px, 0.px, 1920.px, 1080.px))
 
     val settings: UISettings = settings ?: UISettings()
+
+    // temporary
+    var keepOpen = false
 
     constructor(renderer: Renderer = NVGRenderer, dsl: ElementScope<Group>.() -> Unit) : this(renderer) {
         ElementScope(main).dsl()
@@ -38,7 +43,6 @@ class UI(
 
     var onClose: ArrayList<UI.() -> Unit>? = null
 
-    var keepOpen = true
 
     var animations: ArrayList<Pair<Animation, UI.(Float) -> Unit>>? = null
 
@@ -46,12 +50,13 @@ class UI(
 
     var scale = 1f
 
-    fun initialize(width: Int, height: Int) {
+    fun initialize(window: Window, width: Int, height: Int) {
+        this.window = window
         main.constraints.width = width.px
         main.constraints.height = height.px
         main.initialize(this)
         main.position()
-        onOpen?.forLoop { this.it() }
+        onOpen?.loop { this.it() }
         onOpen = null
         if (settings.cacheFrames && renderer.supportsFramebuffers()) {
             framebuffer = renderer.createFramebuffer(main.width, main.height)
@@ -145,7 +150,7 @@ class UI(
         var amount = 0
         if (!(onlyRender && !element.renders)) {
             amount++
-            element.elements?.forLoop { amount += getStats(it, onlyRender) }
+            element.elements?.loop { amount += getStats(it, onlyRender) }
         }
         return amount
     }
@@ -164,7 +169,7 @@ class UI(
         framebuffer?.let { fbo ->
             renderer.destroyFramebuffer(fbo)
         }
-        onClose?.forLoop {
+        onClose?.loop {
             this.it()
         }
         onClose = null

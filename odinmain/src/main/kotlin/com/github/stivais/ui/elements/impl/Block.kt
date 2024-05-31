@@ -72,9 +72,9 @@ class GradientBlock(
     }
 
     override fun draw() {
-        if (color!!.rgba.alpha != 0) {
+//        if (color!!.rgba.alpha != 0 && color2.rgba.alpha != 0) {
             renderer.gradientRect(x, y, width, height, color!!.rgba, color2.rgba, radius, direction)
-        }
+//        }
         if (outlineColor != null && outlineColor!!.rgba.alpha != 0) {
             val thickness = outline!!.get(this, Type.W)
             renderer.hollowRect(x, y, width, height, thickness, outlineColor!!.rgba, radius)

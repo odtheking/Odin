@@ -7,9 +7,11 @@ import com.github.stivais.ui.constraints.constrain
 import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.constraints.sizes.Copying
+import com.github.stivais.ui.elements.impl.Group
 import com.github.stivais.ui.utils.animate
 import com.github.stivais.ui.utils.radii
 import com.github.stivais.ui.utils.seconds
+import me.odinmain.utils.round
 
 inline fun ElementDSL.button(
     constraints: Constraints? = null,
@@ -74,4 +76,38 @@ inline fun ElementDSL.slider(
     onUIOpen {
         sliderWidth.to(((value - min) / (max - min) * element.width).toFloat())
     }
+}
+
+inline fun ElementDSL.sliderBase(
+    constraints: Constraints? = null,
+    accepts: Boolean = false,
+    crossinline onChange: (x: Float, y: Float, wasClick: Boolean) -> Unit,
+    crossinline dsl: ElementScope<Group>.() -> Unit = {},
+) = group(constraints) {
+
+    var dragging = false
+
+    onClick {
+        onChange(
+            ((ui.mx - element.x).coerceIn(0f, element.width) / element.width).round(2),
+            ((ui.my - element.y).coerceIn(0f, element.height) / element.height).round(2),
+            true
+        )
+        dragging = true
+        accepts
+    }
+    onMouseMove {
+        if (dragging) {
+            onChange(
+                ((ui.mx - element.x).coerceIn(0f, element.width) / element.width).round(2),
+                ((ui.my - element.y).coerceIn(0f, element.height) / element.height).round(2),
+                false
+            )
+        }
+        accepts
+    }
+    onRelease {
+        dragging = false
+    }
+    dsl()
 }

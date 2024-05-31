@@ -2,6 +2,7 @@ package com.github.stivais.ui.events
 
 import com.github.stivais.ui.UI
 import com.github.stivais.ui.elements.Element
+import com.github.stivais.ui.utils.loop
 
 
 class EventManager(private val ui: UI) {
@@ -119,9 +120,9 @@ class EventManager(private val ui: UI) {
         var result: Element? = null
         if (element.renders && element.isInside(x, y)) {
             if (element.events != null) result = element // checks if even accepts any input/events
-            if (element.elements != null) {
-                for (child in element.elements!!) {
-                    getHovered(x, y, child)?.let { result = it }
+            element.elements?.loop { child ->
+                getHovered(x, y, child)?.let {
+                    result = it
                 }
             }
         }
@@ -138,11 +139,10 @@ class EventManager(private val ui: UI) {
     }
 
     private fun dispatchToAll(event: Event, element: Element) {
+        if (!element.renders) return // idk if this will cause issues, it shouldn't
         element.accept(event)
-        if (element.elements != null) {
-            for (child in element.elements!!) {
-                dispatchToAll(event, child)
-            }
+        element.elements?.loop {
+            dispatchToAll(event, it)
         }
     }
 

@@ -1,6 +1,5 @@
 package com.github.stivais.ui.elements.impl
 
-import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.color.alpha
 import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Percent
@@ -90,8 +89,6 @@ open class Layout(
     internal inner class Divider(amount: Size) : Element(
         if (this is Row) size(w = amount) else size(h = amount)
     ) {
-        override fun draw() {
-            renderer.hollowRect(x, y, width, height, 1f, Color.WHITE.rgba)
-        }
+        override fun draw() { /**/ }
     }
 }

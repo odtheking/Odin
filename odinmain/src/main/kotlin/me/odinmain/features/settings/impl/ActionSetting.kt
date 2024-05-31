@@ -1,12 +1,12 @@
 package me.odinmain.features.settings.impl
 
-import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.constraints.percent
 import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.constraints.size
 import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.elements.scope.hoverEffect
 import com.github.stivais.ui.impl.ClickGUITheme
+import com.github.stivais.ui.impl.`gray 38`
 import com.github.stivais.ui.utils.radii
 import com.github.stivais.ui.utils.seconds
 import me.odinmain.features.settings.Setting
@@ -32,7 +32,7 @@ class ActionSetting(
         setting(40.px) {
             block(
                 constraints = size(95.percent, 75.percent),
-                color = Color.RGB(38, 38, 38),
+                color = `gray 38`,
                 radius = radii(all = 5)
             ) {
                 text(

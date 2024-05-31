@@ -11,7 +11,7 @@ import com.github.stivais.ui.constraints.positions.Center
 import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.events.Event
 import com.github.stivais.ui.events.Mouse
-import com.github.stivais.ui.utils.forLoop
+import com.github.stivais.ui.utils.loop
 
 abstract class Element(constraints: Constraints?, var color: Color? = null) {
 
@@ -79,7 +79,7 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
         internalY = constraints.y.get(this, Type.Y)
 
         if (elements != null) {
-            elements!!.forLoop { element ->
+            elements!!.loop { element ->
                 element.position()
             }
         } else {
@@ -92,7 +92,7 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
     }
 
     fun clip() {
-        elements?.forLoop {
+        elements?.loop {
             it.renders = it.intersects(x, y, width, height) && width != 0f && height != 0f
             if (it.renders) {
                 it.clip()
@@ -101,10 +101,6 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
     }
 
     open fun prePosition() {}
-
-    fun redraw() {
-        ui.needsRedraw = true
-    }
 
     private var placed: Boolean = false
 
@@ -121,7 +117,7 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
         if (!renders) return
         draw()
         if (scissors) renderer.pushScissor(x, y, width, height)
-        elements?.forLoop { element ->
+        elements?.loop { element ->
             element.render()
         }
         if (scissors) renderer.popScissor()
@@ -129,7 +125,7 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
 
     open fun accept(event: Event): Boolean {
         if (events != null) {
-            events?.get(event)?.let { actions -> actions.forLoop { if (it(event)) return true } }
+            events?.get(event)?.let { actions -> actions.loop { if (it(event)) return true } }
         }
         return false
     }
@@ -144,16 +140,6 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
         if (::ui.isInitialized) return logger.warning("Tried calling \"onInitialization\" after init has already been done")
         if (initializationTasks == null) initializationTasks = arrayListOf()
         initializationTasks!!.add(action)
-    }
-
-    fun addElement(element: Element, at: Int) {
-        if (elements == null) elements = arrayListOf()
-        elements!!.add(at, element)
-        element.parent = this
-        onElementAdded(element)
-        if (::ui.isInitialized) {
-            element.initialize(ui)
-        }
     }
 
     fun addElement(element: Element) {
@@ -175,11 +161,11 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
 
     fun initialize(ui: UI) {
         this.ui = ui
-        elements?.forLoop {
+        elements?.loop {
             it.initialize(ui)
         }
         if (initializationTasks != null) {
-            initializationTasks!!.forLoop { it() }
+            initializationTasks!!.loop { it() }
             initializationTasks!!.clear()
             initializationTasks = null
         }

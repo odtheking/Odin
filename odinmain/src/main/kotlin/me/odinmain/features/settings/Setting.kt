@@ -8,7 +8,7 @@ import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.elements.scope.ElementDSL
 import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.utils.animate
-import com.github.stivais.ui.utils.forLoop
+import com.github.stivais.ui.utils.loop
 import com.github.stivais.ui.utils.seconds
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -72,10 +72,9 @@ abstract class Setting<T> (
 
     internal open fun ElementScope<*>.createElement() {}
 
-    protected fun ElementDSL.setting(height: Size, block: ElementScope<SettingElement>.() -> Unit): SettingElement {
-        val element = SettingElement(height)
-        create(ElementScope(element), block)
-        return element
+    protected fun ElementDSL.setting(height: Size, block: ElementScope<SettingElement>.() -> Unit = {}): ElementScope<*> {
+        return create(ElementScope(SettingElement(height)), block)
+//        return
     }
 
     companion object {
@@ -106,10 +105,11 @@ abstract class Setting<T> (
             if (!visible) {
                 (constraints.height as Animatable).swap()
             }
-            onInitialization {
+            if (initializationTasks == null) initializationTasks = arrayListOf()
+            initializationTasks!!.add {
                 if (ui.onOpen == null) ui.onOpen = arrayListOf()
                 ui.onOpen!!.add {
-                    elements?.forLoop { fixHeight(it) }
+                    elements?.loop { fixHeight(it) }
                 }
             }
         }
@@ -118,7 +118,7 @@ abstract class Setting<T> (
             if ((visibilityDependency?.invoke() != false) != visible) {
                 visible = !visible
                 constraints.height.animate(0.25.seconds, Animations.EaseInOutQuint)
-                redraw()
+                ui.needsRedraw = true
             }
         }
 
@@ -129,7 +129,7 @@ abstract class Setting<T> (
                     height = 100.percent.coerce((height as Pixel).pixels)
                 }
             }
-            element.elements?.forLoop {
+            element.elements?.loop {
                 fixHeight(it)
             }
         }

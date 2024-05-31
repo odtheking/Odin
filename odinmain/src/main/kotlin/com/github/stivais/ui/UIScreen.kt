@@ -9,13 +9,22 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.Display
 
-open class UIScreen(val ui: UI) : GuiScreen() {
+open class UIScreen(val ui: UI) : GuiScreen(), Window {
 
     private var previousWidth: Int = 0
     private var previousHeight: Int = 0
 
+    override fun close() {
+        if (mc.currentScreen == null) {
+            // assume current is the ui rendering
+            current = null
+        } else if (mc.currentScreen == this) {
+            mc.displayGuiScreen(null)
+        }
+    }
+
     override fun initGui() {
-        ui.initialize(Display.getWidth(), Display.getHeight())
+        ui.initialize(this, Display.getWidth(), Display.getHeight())
     }
 
     override fun onGuiClosed() {
@@ -82,6 +91,10 @@ open class UIScreen(val ui: UI) : GuiScreen() {
 //    }
 
     override fun doesGuiPauseGame(): Boolean = false
+
+    fun keep() {
+        current = this
+    }
 
     companion object {
         fun open(ui: UI) {

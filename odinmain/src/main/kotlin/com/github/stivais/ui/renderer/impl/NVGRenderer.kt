@@ -4,10 +4,7 @@ import com.github.stivais.ui.color.alpha
 import com.github.stivais.ui.color.blue
 import com.github.stivais.ui.color.green
 import com.github.stivais.ui.color.red
-import com.github.stivais.ui.renderer.Font
-import com.github.stivais.ui.renderer.Framebuffer
-import com.github.stivais.ui.renderer.Gradient
-import com.github.stivais.ui.renderer.Renderer
+import com.github.stivais.ui.renderer.*
 import me.odinmain.OdinMain.mc
 import org.lwjgl.nanovg.NVGColor
 import org.lwjgl.nanovg.NVGLUFramebuffer
@@ -15,7 +12,7 @@ import org.lwjgl.nanovg.NVGPaint
 import org.lwjgl.nanovg.NanoVG.*
 import org.lwjgl.nanovg.NanoVGGL2.*
 import org.lwjgl.opengl.GL11.*
-
+import org.lwjgl.stb.STBImage
 
 object NVGRenderer : Renderer {
 
@@ -24,6 +21,7 @@ object NVGRenderer : Renderer {
     private val nvgColor2: NVGColor = NVGColor.malloc()
 
     private val fonts = HashMap<Font, Int>()
+    private val images = HashMap<Image, Int>()
     private val fbos = HashMap<Framebuffer, NVGLUFramebuffer>()
     private var vg: Long = -1
 
@@ -54,7 +52,7 @@ object NVGRenderer : Renderer {
         drawing = false
     }
 
-    override fun supportsFramebuffers(): Boolean = false
+    override fun supportsFramebuffers(): Boolean = false // temp
 
     override fun createFramebuffer(w: Float, h: Float): Framebuffer {
         val fbo = Framebuffer(w, h)
@@ -199,6 +197,42 @@ object NVGRenderer : Renderer {
         nvgFontSize(vg, size)
         nvgFontFaceId(vg, getIDFromFont(font))
         return nvgTextBounds(vg, 0f, 0f, text, fontBounds)
+    }
+
+    override fun image(
+        image: Image,
+        x: Float,
+        y: Float,
+        w: Float,
+        h: Float,
+        tl: Float,
+        bl: Float,
+        br: Float,
+        tr: Float
+    ) {
+        nvgImagePattern(vg, x, y, w, h, 0f, getImage(image), 1f, nvgPaint)
+        nvgBeginPath(vg)
+        nvgRoundedRectVarying(vg, x, y, w, h, tl, tr, br, bl)
+        nvgFillPaint(vg, nvgPaint)
+        nvgFill(vg)
+    }
+
+    private fun getImage(image: Image): Int {
+        return images.getOrPut(image) { loadImage(image) }
+    }
+
+    private fun loadImage(image: Image): Int {
+        val w = IntArray(1)
+        val h = IntArray(1)
+        val channels = IntArray(1)
+        val buffer = STBImage.stbi_load_from_memory(
+            image.buffer,
+            w,
+            h,
+            channels,
+            4
+        ) ?: throw NullPointerException("Failed to load image: ${image.resourcePath}")
+        return nvgCreateImageRGBA(vg, w[0], h[0], 0, buffer)
     }
 
     private fun color(color: Int) {

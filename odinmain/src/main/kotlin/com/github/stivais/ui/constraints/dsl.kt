@@ -39,8 +39,7 @@ fun copies(indent: Number = 0f): Constraints {
     if (indent == 0f) {
         return Constraints(0.px, 0.px, Copying, Copying)
     }
-    val px = indent.px
-    return Constraints(px, px, -px, -px)
+    return Constraints(indent.px, indent.px, -(indent.px), -(indent.px))
 }
 
 operator fun Constraint.plus(other: Constraint) = Additive(this, other)

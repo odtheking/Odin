@@ -101,8 +101,10 @@ dependencies {
 
     lwjgl("org.lwjgl:lwjgl:${lwjglVersion}")
     lwjgl("org.lwjgl:lwjgl-nanovg:${lwjglVersion}")
+    lwjgl("org.lwjgl:lwjgl-stb:${lwjglVersion}")
     lwjglNative("org.lwjgl:lwjgl:${lwjglVersion}:${lwjglNatives}")
     lwjglNative("org.lwjgl:lwjgl-nanovg:${lwjglVersion}:${lwjglNatives}")
+    lwjglNative("org.lwjgl:lwjgl-stb:${lwjglVersion}:${lwjglNatives}")
     shadowImpl(lwjglJar.outputs.files)
 }
 

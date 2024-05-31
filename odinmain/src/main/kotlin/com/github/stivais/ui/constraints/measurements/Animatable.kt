@@ -23,7 +23,7 @@ class Animatable(var from: Constraint, var to: Constraint): Measurement {
 
     override fun get(element: Element, type: Type): Float {
         if (animation != null) {
-            element.redraw()
+            element.ui.needsRedraw = true
             val progress = animation!!.get()
             val from = before ?: from.get(element, type)
             current = from + (to.get(element, type) - from) * progress
@@ -76,7 +76,7 @@ class Animatable(var from: Constraint, var to: Constraint): Measurement {
 
         override fun get(element: Element, type: Type): Float {
             if (animation != null) {
-                element.redraw()
+                element.ui.needsRedraw = true
                 val result = animation!!.get()
                 if (animation!!.finished) {
                     animation = null

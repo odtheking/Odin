@@ -10,6 +10,7 @@ import com.github.stivais.ui.constraints.sizes.Copying
 import com.github.stivais.ui.elements.impl.TextScope
 import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.impl.ClickGUITheme
+import com.github.stivais.ui.impl.`gray 38`
 import com.github.stivais.ui.utils.animate
 import com.github.stivais.ui.utils.radii
 import com.github.stivais.ui.utils.seconds
@@ -29,6 +30,14 @@ class SelectorSetting(
     hidden: Boolean = false,
     description: String = "",
 ) : Setting<Int>(name, hidden, description), Saving {
+
+    constructor(
+        name: String,
+        options: ArrayList<String>,
+        default: String = options[0],
+        hidden: Boolean = false,
+        description: String = "",
+    ) : this(name, default, options, hidden, description)
 
     override val default: Int = optionIndex(default)
 
@@ -68,10 +77,8 @@ class SelectorSetting(
         val height = Animatable(from = 40.px, to = (50 + 32 * options.size).px)
         val thickness = Animatable(from = 1.px, to = 1.75.px)
 
-        setting(height) {
-            group(
-                constraints = constrain(0.px, 0.px, Copying, h = 40.px)
-            ) {
+        setting(height).column(copies()) {
+            group(constraints = size(w = Copying, h = 40.px)) {
                 text(
                     text = name,
                     pos = at(x = 6.px),
@@ -79,7 +86,7 @@ class SelectorSetting(
                 )
                 block(
                     constraints = constrain(x = -6.px, w = Bounding + 6.px, h = 72.5.percent),
-                    color = Color.RGB(38, 38, 38),
+                    color = `gray 38`,
                     radius = radii(5)
                 ) {
                     outline(
@@ -96,11 +103,12 @@ class SelectorSetting(
                     }
                 }
             }
-            column(constrain(y = 45.px, w = 95.percent, h = Bounding)) {
+            divider(5.px)
+            column(size(w = 95.percent, h = Bounding)) {
                 // background
                 block(
                     constraints = copies(),
-                    color = Color.RGB(38, 38, 38),
+                    color = `gray 38`,
                     radius = radii(all = 5)
                 ).outline(color = ClickGUITheme)
 

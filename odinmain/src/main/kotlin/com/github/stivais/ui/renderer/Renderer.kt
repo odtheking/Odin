@@ -59,4 +59,9 @@ interface Renderer {
 
     fun textWidth(text: String, size: Float, font: Font = UI.defaultFont): Float
 
+    fun image(image: Image, x: Float, y: Float, w: Float, h: Float, tl: Float, bl: Float, br: Float, tr: Float)
+
+    fun image(image: Image, x: Float, y: Float, w: Float, h: Float, radius: Float) {
+        image(image, x, y, w, h, radius, radius, radius, radius)
+    }
 }
