@@ -22,7 +22,7 @@ object Sidebar : Module(
     description = "Various settings to change the look of the minecraft sidebar."
 ) {
     private var variableScoreObjective: ScoreObjective? = null
-    private val hud: HudElement by HudSetting("Hud", 500f, 500f, 1f, false) {
+    private val hud: HudElement by HudSetting("Hud", 500f, 500f, 2f, false) {
         val scoreObjective = variableScoreObjective ?: return@HudSetting 0f to 0f
         val scoreboard: Scoreboard = scoreObjective.scoreboard
         val scoreList: MutableList<Score> = ArrayList()
@@ -63,7 +63,7 @@ object Sidebar : Module(
     private val customFont: Boolean by DualSetting("Font", "Minecraft", "Custom")
     private val textShadow: Boolean by BooleanSetting("Text Shadow")
     private val redNumbers: Boolean by BooleanSetting("Show Red Numbers")
-    private val backgroundColor: Color by ColorSetting("Background Color", Color.GRAY.withAlpha(.5f))
+    private val backgroundColor: Color by ColorSetting("Background Color", Color.GRAY.withAlpha(.5f), allowAlpha = true)
 
     fun renderSidebar(scoreObjective: ScoreObjective, scaledResolution: ScaledResolution): Boolean {
         variableScoreObjective = scoreObjective
