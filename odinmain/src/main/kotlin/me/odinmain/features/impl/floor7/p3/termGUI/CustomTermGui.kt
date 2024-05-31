@@ -42,7 +42,7 @@ object CustomTermGui {
 }
 
 abstract class TermGui {
-    val itemIndexMap: MutableMap<Int, Box> = mutableMapOf()
+    protected val itemIndexMap: MutableMap<Int, Box> = mutableMapOf()
 
     fun mouseClicked(x: Int, y: Int, button: Int) {
         itemIndexMap.entries.find {

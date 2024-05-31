@@ -4,7 +4,6 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.ServerUtils.getPing
-import me.odinmain.utils.distanceSquaredTo
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.partyMessage
 import net.minecraft.client.entity.EntityOtherPlayerMP
@@ -46,7 +45,9 @@ object KuudraReminders : Module(
 
         onMessage(Regex("Used Extreme Focus! \\((\\d+) Mana\\)"), { manaDrain && enabled }) {
             val mana = Regex("Used Extreme Focus! \\((\\d+) Mana\\)").find(it)?.groupValues?.get(1)?.toIntOrNull() ?: return@onMessage
-            val amount = mc.theWorld.loadedEntityList.filter { it.distanceSquaredTo(mc.thePlayer) <= 7 && it.getPing() == 0 && it is EntityOtherPlayerMP}.size - 1
+            val amount = mc.theWorld.loadedEntityList
+                .filterIsInstance<EntityOtherPlayerMP>()
+                .filter { entity -> entity.getPing() == 1 && entity.getDistanceSqToEntity(mc.thePlayer) < 49 }.size
             partyMessage("Used $mana mana on $amount people.")
         }
     }

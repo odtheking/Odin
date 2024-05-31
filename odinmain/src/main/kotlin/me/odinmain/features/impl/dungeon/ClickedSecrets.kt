@@ -54,7 +54,7 @@ object ClickedSecrets : Module(
         }
 
         onPacket(C08PacketPlayerBlockPlacement::class.java) { packet ->
-            if (!DungeonUtils.inDungeons || (DungeonUtils.inBoss && disableInBoss) ) return@onPacket
+            if (!DungeonUtils.inDungeons || (DungeonUtils.inBoss && disableInBoss)) return@onPacket
 
             val pos = packet.position
             val blockState = mc.theWorld?.getBlockState(pos) ?: return@onPacket

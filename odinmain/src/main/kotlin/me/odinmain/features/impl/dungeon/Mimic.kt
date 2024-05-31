@@ -38,7 +38,7 @@ object Mimic : Module(
 
     @SubscribeEvent
     fun onRenderLast(event: RenderChestEvent.Post) {
-        if (event.chest.chestType != 1) return
+        if (event.chest.chestType != 1 || !DungeonUtils.inDungeons || DungeonUtils.inBoss) return
         Renderer.drawBox(
             event.chest.pos.toAABB(), color, depth = true,
             outlineAlpha = if (style == 0) 0 else color.alpha, fillAlpha = if (style == 1) 0 else color.alpha)
