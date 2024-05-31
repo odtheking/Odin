@@ -420,6 +420,7 @@ object RenderUtils {
         scale(-scale, -scale, scale)
         GlStateManager.enableBlend()
         blendFactor()
+        GlStateManager.disableLighting()
 
         val textWidth = mc.fontRendererObj.getStringWidth(text)
 
@@ -429,6 +430,7 @@ object RenderUtils {
             GlStateManager.enableDepth()
             GlStateManager.depthMask(true)
         }
+        GlStateManager.enableLighting()
         GlStateManager.resetColor()
         GlStateManager.popMatrix()
     }

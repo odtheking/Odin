@@ -15,7 +15,6 @@ import me.odinmain.ui.util.MouseUtils.getQuadrant
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.name
 import me.odinmain.utils.render.*
-import me.odinmain.utils.render.RenderUtils.bind
 import me.odinmain.utils.render.RenderUtils.drawTexturedModalRect
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -67,7 +66,6 @@ object LeapMenu : Module(
             if (it == EMPTY) return@forEachIndexed
             GlStateManager.pushMatrix()
             GlStateManager.enableAlpha()
-            Color.WHITE.bind()
             scale(1f / scaleFactor,  1f / scaleFactor)
             scale(size, size)
             val displayWidth = Display.getWidth()
@@ -97,7 +95,6 @@ object LeapMenu : Module(
             text(it.name, x + 265f, y + 155f, if (!colorStyle) it.clazz.color else Color.DARK_GRAY, 48f)
             text(if (it.isDead) "§cDEAD" else it.clazz.name, x + 270f, y + 210f, Color.WHITE, 30f, shadow = true)
             rectangleOutline(x + 30, y + 30, 240, 240, color, 25f, 15f, 100f)
-            GlStateManager.resetColor()
             GlStateManager.disableAlpha()
             GlStateManager.popMatrix()
         }
