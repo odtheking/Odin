@@ -23,15 +23,15 @@ object ServerHud : Module(
                 var width = 0f
                 if (tps) {
                     width += getMCTextWidth("§rTPS: §f20") * 1.5f
-                    mcText("§rTPS: §f20", 1f, 5f, 2, ClickGUIModule.color, shadow = true, center = false)
+                    mcText("§rTPS: §f20", 1f, 5f, 2, Color.WHITE, shadow = true, center = false)
                 }
                 if (fps) {
                     width += getMCTextWidth("§rFPS: §f240") * 1.5f
-                    mcText("§rFPS: §f240", 5f + if (tps) getMCTextWidth("§rTPS: §f20") * 2f else 0f, 5f, 2, ClickGUIModule.color, shadow = true, center = false)
+                    mcText("§rFPS: §f240", 5f + if (tps) getMCTextWidth("§rTPS: §f20") * 2f else 0f, 5f, 2, Color.WHITE, shadow = true, center = false)
                 }
                 if (ping) {
                     width += getMCTextWidth("§rPing: §f60") * 1.5f
-                    mcText("§rPing: §f60", 5f + if (tps) getMCTextWidth("§rTPS: §f20") * 4.5f else 0f + if (fps) getMCTextWidth("§rFPS: §f240") * 3f + 5f else 0f, 5f, 2, ClickGUIModule.color, shadow = true, center = false)
+                    mcText("§rPing: §f60", 5f + if (tps) getMCTextWidth("§rTPS: §f20") * 4.5f else 0f + if (fps) getMCTextWidth("§rFPS: §f240") * 3f + 5f else 0f, 5f, 2, Color.WHITE, shadow = true, center = false)
                 }
                 width + 6f to if (ping || tps || fps) getMCTextHeight() * 2 + 6f else 0f
             } else {
