@@ -111,8 +111,8 @@ object PuzzleSolvers : Module(
             WeirdosSolver.onNPCMessage(npc, message)
         }
 
-        onMessageCancellable(Regex(".*"), {enabled && quizSolver}) { event ->
-            QuizSolver.onMessage(event.message, event)
+        onMessage(Regex(".*"), {enabled && quizSolver}) {
+            QuizSolver.onMessage(it)
         }
 
         onWorldLoad {

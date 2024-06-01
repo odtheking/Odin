@@ -2,7 +2,6 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.events.impl.EnteredDungeonRoomEvent
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
@@ -32,9 +31,9 @@ object QuizSolver {
         }
     }
 
-    fun onMessage(msg: String, event: ChatPacketEvent) {
+    fun onMessage(msg: String) {
         if (msg.startsWith("[STATUE] Oruo the Omniscient: ") && msg.contains("answered Question #") && msg.endsWith("correctly!"))
-            triviaOptions = MutableList(3) { TriviaAnswer(null, false) }
+            triviaOptions.forEach { it.correct = false }
 
         if (msg.trim().startsWithOneOf("ⓐ", "ⓑ", "ⓒ", ignoreCase = true)) {
             triviaAnswers?.any { msg.endsWith(it) } ?: return
