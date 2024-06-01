@@ -1,6 +1,7 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
-import me.odinmain.events.impl.*
+import me.odinmain.events.impl.BlockChangeEvent
+import me.odinmain.events.impl.EnteredDungeonRoomEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.puzzlesolvers.WaterSolver.waterInteract
@@ -49,7 +50,7 @@ object PuzzleSolvers : Module(
     private val iceFillDropDown: Boolean by DropdownSetting("Ice Fill")
     private val iceFillSolver: Boolean by BooleanSetting("Ice Fill Solver", false, description = "Solver for the ice fill puzzle").withDependency { iceFillDropDown }
     private val iceFillColor: Color by ColorSetting("Ice Fill Color", Color.PINK, true, description = "Color for the ice fill solver").withDependency { iceFillSolver && iceFillDropDown }
-    val action: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
+    private val action: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
         IceFillSolver.reset()
     }.withDependency { iceFillSolver && iceFillDropDown }
 
@@ -85,6 +86,7 @@ object PuzzleSolvers : Module(
 
     private val quizDropdown: Boolean by DropdownSetting("Quiz")
     private val quizSolver: Boolean by BooleanSetting("Quiz Solver", false, description = "Solver for the trivia puzzle").withDependency { quizDropdown }
+    val hideQuizMessage: Boolean by BooleanSetting("Hide Quiz Message", false, description = "Hides the quiz message").withDependency { quizSolver && quizDropdown }
     val quizReset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
         QuizSolver.reset()
     }.withDependency { quizDropdown && quizSolver }
@@ -108,6 +110,10 @@ object PuzzleSolvers : Module(
         onMessage(Regex("\\[NPC] (.+): (.+).?"), {enabled && weirdosSolver}) { str ->
             val (npc, message) = Regex("\\[NPC] (.+): (.+).?").find(str)?.destructured ?: return@onMessage
             WeirdosSolver.onNPCMessage(npc, message)
+        }
+
+        onMessageCancellable(Regex(".*"), {enabled && quizSolver}) { event ->
+            QuizSolver.onMessage(event.message, event)
         }
 
         onWorldLoad {
@@ -152,10 +158,5 @@ object PuzzleSolvers : Module(
     @SubscribeEvent
     fun blockUpdateEvent(event: BlockChangeEvent) {
         BeamsSolver.onBlockChange(event)
-    }
-
-    @SubscribeEvent
-    fun onMsg(event: ChatPacketEvent) {
-        if (quizSolver) QuizSolver.onMessage(event.message)
     }
 }

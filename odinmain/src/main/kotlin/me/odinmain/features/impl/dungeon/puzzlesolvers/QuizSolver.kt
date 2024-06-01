@@ -2,6 +2,7 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.events.impl.EnteredDungeonRoomEvent
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
@@ -20,7 +21,6 @@ object QuizSolver {
     private var triviaAnswer: MutableList<TriviaAnswer> = MutableList(3) { TriviaAnswer(null, false) }
     data class TriviaAnswer(var vec3: Vec3?, var correct: Boolean)
 
-
     init {
         try {
             val text = isr?.readText()
@@ -32,7 +32,7 @@ object QuizSolver {
         }
     }
 
-    fun onMessage(msg: String) {
+    fun onMessage(msg: String, event: ChatPacketEvent) {
         if (msg.startsWith("[STATUE] Oruo the Omniscient: ") && msg.contains("answered Question #") && msg.endsWith("correctly!"))
             triviaAnswer = MutableList(3) { TriviaAnswer(null, false) }
 
@@ -51,6 +51,7 @@ object QuizSolver {
         else
             answers.entries.find { msg.contains(it.key) }?.value ?: return
 
+        if (PuzzleSolvers.hideQuizMessage) event.isCanceled = true
     }
 
     fun enterRoomQuiz(event: EnteredDungeonRoomEvent) {
