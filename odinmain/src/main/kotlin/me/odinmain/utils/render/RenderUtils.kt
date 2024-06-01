@@ -499,9 +499,9 @@ object RenderUtils {
      * @param height The height of the rectangle.
      */
     fun drawTexturedModalRect(
-        x: Number, y: Number, width: Number, height: Number,
-        u: Number = 0.0f, v: Number = 0.0f, uWidth: Number = 1, vHeight: Number = 1,
-        tileWidth: Number = 1.0f, tileHeight: Number = 1.0f
+        x: Int, y: Int, width: Int, height: Int,
+        u: Float = 0f, v: Float = 0f, uWidth: Int = 1, vHeight: Int = 1,
+        tileWidth: Float = 1.0f, tileHeight: Float = 1.0f
     ) {
         val f = 1.0f / tileWidth
         val g = 1.0f / tileHeight
@@ -516,6 +516,7 @@ object RenderUtils {
         tessellator.draw()
         GlStateManager.resetColor()
     }
+
 
     fun draw2D(entity: Entity, lineWidth: Float, color: Color) {
         val mvMatrix = getMatrix(2982)
