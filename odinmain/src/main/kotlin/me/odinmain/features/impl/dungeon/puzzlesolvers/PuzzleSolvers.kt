@@ -9,10 +9,8 @@ import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.profile
 import me.odinmain.utils.render.Color
-import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
-import net.minecraftforge.client.event.RenderLivingEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -134,6 +132,7 @@ object PuzzleSolvers : Module(
             if (blazeSolver) BlazeSolver.renderBlazes()
             if (beamsSolver) BeamsSolver.onRenderWorld()
             if (weirdosSolver) WeirdosSolver.onRenderWorld()
+            if (quizSolver) QuizSolver.renderWorldLastQuiz()
         }
     }
 
@@ -147,6 +146,7 @@ object PuzzleSolvers : Module(
         IceFillSolver.enterDungeonRoom(event)
         BeamsSolver.enterDungeonRoom(event)
         TTTSolver.tttRoomEnter(event)
+        QuizSolver.enterRoomQuiz(event)
     }
 
     @SubscribeEvent
@@ -157,10 +157,5 @@ object PuzzleSolvers : Module(
     @SubscribeEvent
     fun onMsg(event: ChatPacketEvent) {
         if (quizSolver) QuizSolver.onMessage(event.message)
-    }
-
-    @SubscribeEvent
-    fun onRenderArmorStand(event: RenderLivingEvent.Pre<EntityArmorStand?>) {
-        if (quizSolver) QuizSolver.onRenderArmorStandPre(event)
     }
 }

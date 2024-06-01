@@ -18,6 +18,7 @@ import me.odinmain.utils.render.*
 import me.odinmain.utils.render.RenderUtils.drawTexturedModalRect
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.leapTeammates
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest
@@ -163,12 +164,12 @@ object LeapMenu : Module(
     }
 
 
-    private val leapTeammates: MutableList<DungeonUtils.DungeonPlayer> = mutableListOf(
+    /*private val leapTeammates: MutableList<DungeonUtils.DungeonPlayer> = mutableListOf(
         DungeonUtils.DungeonPlayer("Stiviaisd", DungeonUtils.Classes.Healer),
         DungeonUtils.DungeonPlayer("Odtheking", DungeonUtils.Classes.Archer),
         DungeonUtils.DungeonPlayer("Bonzi", DungeonUtils.Classes.Mage),
         DungeonUtils.DungeonPlayer("Cezar", DungeonUtils.Classes.Tank)
-    )
+    )*/
 
 
     /**
