@@ -7,7 +7,6 @@ import me.odinmain.events.impl.EnteredDungeonRoomEvent
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.util.Vec3
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
@@ -48,7 +47,7 @@ object QuizSolver {
 
         triviaAnswers = when {
             msg.trim() == "What SkyBlock year is it?" -> listOf("Year ${(((System.currentTimeMillis() / 1000) - 1560276000) / 446400).toInt() + 1}")
-            else -> answers.entries.find { msg.contains(it.key) }?.value ?: return modMessage("Quiz question: $msg")
+            else -> answers.entries.find { msg.contains(it.key) }?.value ?: return
         }
     }
 
