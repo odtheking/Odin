@@ -154,7 +154,7 @@ interface Color {
         val RED = RGB(255, 0, 0)
 
         @JvmField
-        val BLUE = RGB(0, 255, 0)
+        val BLUE = RGB(0, 0, 255)
 
         @JvmField
         val GREEN = RGB(0, 255, 0)

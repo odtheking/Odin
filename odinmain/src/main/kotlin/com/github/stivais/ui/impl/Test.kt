@@ -1,17 +1,18 @@
 package com.github.stivais.ui.impl
 
 import com.github.stivais.ui.UI
-import com.github.stivais.ui.color.Color
+import com.github.stivais.ui.constraints.constrain
 import com.github.stivais.ui.constraints.px
-import com.github.stivais.ui.constraints.size
-import com.github.stivais.ui.elements.impl.Button
+import com.github.stivais.ui.elements.impl.TextInput
 import com.github.stivais.ui.renderer.Renderer
 
 fun basic(renderer: Renderer) = UI(renderer) {
 
-    Button(
-        constraints = size(100.px, 100.px),
-        color = Color.BLACK
+
+
+    TextInput(
+        "HELLLO",
+        constraints = constrain(600.px, 600.px, 600.px, 600.px)
     ).add()
 
 //    column {

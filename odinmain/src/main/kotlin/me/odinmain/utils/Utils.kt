@@ -7,14 +7,16 @@ import me.odinmain.features.ModuleManager
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.modMessage
+import net.minecraft.client.Minecraft
 import net.minecraft.inventory.Container
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.Event
+import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.glu.GLU
 import java.awt.Toolkit
-import java.awt.datatransfer.StringSelection
+import java.awt.datatransfer.*
 import java.time.Month
 import java.time.format.TextStyle
 import java.util.*
@@ -270,4 +272,46 @@ fun copyToClipboard(text: String) {
     val clipboard = Toolkit.getDefaultToolkit().systemClipboard
     val stringSelection = StringSelection(text)
     clipboard.setContents(stringSelection, null)
+}
+
+fun getClipboardString(): String {
+    try {
+        val transferable = Toolkit.getDefaultToolkit().systemClipboard.getContents(null as Any?)
+        if (transferable != null && transferable.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+            return transferable.getTransferData(DataFlavor.stringFlavor) as String
+        }
+    } catch (_: java.lang.Exception) {
+    }
+
+    return ""
+}
+
+private fun isCtrlKeyDown(): Boolean {
+    return if (Minecraft.isRunningOnMac) Keyboard.isKeyDown(219) || Keyboard.isKeyDown(220) else Keyboard.isKeyDown(
+        29
+    ) || Keyboard.isKeyDown(157)
+}
+
+private fun isShiftKeyDown(): Boolean {
+    return Keyboard.isKeyDown(42) || Keyboard.isKeyDown(54)
+}
+
+private fun isAltKeyDown(): Boolean {
+    return Keyboard.isKeyDown(56) || Keyboard.isKeyDown(184)
+}
+
+fun isKeyComboCtrlX(keyID: Int): Boolean {
+    return keyID == 45 && isCtrlKeyDown() && !isShiftKeyDown() && !isAltKeyDown()
+}
+
+fun isKeyComboCtrlV(keyID: Int): Boolean {
+    return keyID == 47 && isCtrlKeyDown() && !isShiftKeyDown() && !isAltKeyDown()
+}
+
+fun isKeyComboCtrlC(keyID: Int): Boolean {
+    return keyID == 46 && isCtrlKeyDown() && !isShiftKeyDown() && !isAltKeyDown()
+}
+
+fun isKeyComboCtrlA(keyID: Int): Boolean {
+    return keyID == 30 && isCtrlKeyDown() && !isShiftKeyDown() && !isAltKeyDown()
 }
