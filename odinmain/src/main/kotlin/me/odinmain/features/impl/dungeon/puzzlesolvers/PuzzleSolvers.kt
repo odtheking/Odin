@@ -1,6 +1,7 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
-import me.odinmain.events.impl.*
+import me.odinmain.events.impl.BlockChangeEvent
+import me.odinmain.events.impl.EnteredDungeonRoomEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.puzzlesolvers.WaterSolver.waterInteract
@@ -9,10 +10,8 @@ import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.profile
 import me.odinmain.utils.render.Color
-import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
-import net.minecraftforge.client.event.RenderLivingEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -51,7 +50,7 @@ object PuzzleSolvers : Module(
     private val iceFillDropDown: Boolean by DropdownSetting("Ice Fill")
     private val iceFillSolver: Boolean by BooleanSetting("Ice Fill Solver", false, description = "Solver for the ice fill puzzle").withDependency { iceFillDropDown }
     private val iceFillColor: Color by ColorSetting("Ice Fill Color", Color.PINK, true, description = "Color for the ice fill solver").withDependency { iceFillSolver && iceFillDropDown }
-    val action: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
+    private val action: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
         IceFillSolver.reset()
     }.withDependency { iceFillSolver && iceFillDropDown }
 
@@ -112,6 +111,10 @@ object PuzzleSolvers : Module(
             WeirdosSolver.onNPCMessage(npc, message)
         }
 
+        onMessage(Regex(".*"), {enabled && quizSolver}) {
+            QuizSolver.onMessage(it)
+        }
+
         onWorldLoad {
             WaterSolver.reset()
             TPMaze.reset()
@@ -134,6 +137,7 @@ object PuzzleSolvers : Module(
             if (blazeSolver) BlazeSolver.renderBlazes()
             if (beamsSolver) BeamsSolver.onRenderWorld()
             if (weirdosSolver) WeirdosSolver.onRenderWorld()
+            if (quizSolver) QuizSolver.renderWorldLastQuiz()
         }
     }
 
@@ -147,20 +151,11 @@ object PuzzleSolvers : Module(
         IceFillSolver.enterDungeonRoom(event)
         BeamsSolver.enterDungeonRoom(event)
         TTTSolver.tttRoomEnter(event)
+        QuizSolver.enterRoomQuiz(event)
     }
 
     @SubscribeEvent
     fun blockUpdateEvent(event: BlockChangeEvent) {
         BeamsSolver.onBlockChange(event)
-    }
-
-    @SubscribeEvent
-    fun onMsg(event: ChatPacketEvent) {
-        if (quizSolver) QuizSolver.onMessage(event.message)
-    }
-
-    @SubscribeEvent
-    fun onRenderArmorStand(event: RenderLivingEvent.Pre<EntityArmorStand?>) {
-        if (quizSolver) QuizSolver.onRenderArmorStandPre(event)
     }
 }

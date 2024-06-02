@@ -90,7 +90,7 @@ object LeapMenu : Module(
             dropShadow(box, 10f, 15f, if (getQuadrant() - 1 != index) ColorUtil.moduleButtonColor else Color.WHITE)
             roundedRectangle(box, color, if (roundedRect) 12f else 0f)
 
-            drawTexturedModalRect(x + 30, y + 30, 8f, 8f, 8, 8, 240, 240, 64f, 64f)
+            drawTexturedModalRect(x + 30, y + 30, 240, 240,8f, 8f, 8, 8, 64f, 64f)
 
             text(it.name, x + 265f, y + 155f, if (!colorStyle) it.clazz.color else Color.DARK_GRAY, 48f)
             text(if (it.isDead) "§cDEAD" else it.clazz.name, x + 270f, y + 210f, Color.WHITE, 30f, shadow = true)
