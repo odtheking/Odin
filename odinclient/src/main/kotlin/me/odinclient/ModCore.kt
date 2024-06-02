@@ -56,7 +56,7 @@ class ModCore {
             DioriteFucker, RelicAura, Trajectories, Ghosts, NoDebuff,
             ChocolateFactory, AutoExperiments, FarmingHitboxes, NoBlock, TermAC, Triggerbot, GhostBlocks, FreezeGame,
             AbilityKeybind, EtherWarpHelper, ChestEsp, NoBreakReset, EscrowFix, TerminalMove,
-            TerminalAura, AutoTerms, Camera, AutoUlt/*, QueueTerms*/
+            TerminalAura, AutoTerms, Camera, AutoUlt, MoveInGUI
         )
         OdinMain.loadComplete()
     }
