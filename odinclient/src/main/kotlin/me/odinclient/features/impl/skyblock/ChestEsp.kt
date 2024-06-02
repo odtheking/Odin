@@ -72,11 +72,13 @@ object ChestEsp : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (renderMode != 1 || (onlyDungeon && !DungeonUtils.inDungeons) && !(onlyCH && LocationUtils.currentArea !== Island.CrystalHollows)) return
-        val chests = mc.theWorld.loadedTileEntityList.filterIsInstance<TileEntityChest>()
-        chests.forEach {
-            if (hideClicked && this.chests.contains(it.pos)) return
-            Renderer.drawBox(it.pos.toAABB(), color, 1f, depth = false, fillAlpha = 0)
+        if (renderMode != 1) return
+        if ((onlyDungeon && DungeonUtils.inDungeons) || (onlyCH && LocationUtils.currentArea == Island.CrystalHollows) || (!onlyDungeon && !onlyCH)) {
+            val chests = mc.theWorld.loadedTileEntityList.filterIsInstance<TileEntityChest>()
+            chests.forEach {
+                if (hideClicked && this.chests.contains(it.pos)) return
+                Renderer.drawBox(it.pos.toAABB(), color, 1f, depth = false, fillAlpha = 0)
+            }
         }
     }
 }
