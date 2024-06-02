@@ -19,15 +19,15 @@ object BlockOverlay : Module(
     description = "Lets you customize the vanilla block overlay",
 ) {
     private var fullBlock: Boolean by BooleanSetting("Full Block", false)
-    private var depthChest: Boolean by BooleanSetting("Depth check", false)
+    private var depthCheck: Boolean by BooleanSetting("Depth check", false)
     private var lineSmoothing: Boolean by BooleanSetting("Line Smoothing", false)
     private var lineWidth: Float by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f)
     private var expand: Float by NumberSetting("Expand", 0f, 0f, 10f, 0.1f)
     private var color: Color by ColorSetting("Color", Color(0, 0, 0, 0.4f), allowAlpha = true)
-    private val style: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.")
+    private val style: Int by SelectorSetting("Style", Renderer.defaultStyle, Renderer.styles, description = Renderer.styleDesc)
     private val reset: () -> Unit by ActionSetting("Reset") {
         fullBlock = false
-        depthChest = false
+        depthCheck = false
         lineSmoothing = false
         lineWidth = 2f
         expand = 0f
@@ -47,7 +47,6 @@ object BlockOverlay : Module(
 
         val aabb = if (fullBlock) blockPos.toAABB().expand(-0.008 + expand / 1000.0, -0.008 + expand / 1000.0, -0.008 + expand / 1000.0) else
             block.getSelectedBoundingBox(mc.theWorld, blockPos).outlineBounds().expand(expand / 1000.0, expand / 1000.0, expand / 1000.0) ?: return
-
-        Renderer.drawBox(aabb, color, lineWidth, depth = depthChest, outlineAlpha = if (style == 0) 0 else color.alpha, fillAlpha = if (style == 1) 0 else color.alpha)
+        Renderer.drawStyledBox(aabb, color, style, lineWidth, depthCheck)
     }
 }

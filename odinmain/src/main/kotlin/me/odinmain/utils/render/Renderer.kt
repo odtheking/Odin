@@ -1,6 +1,7 @@
 package me.odinmain.utils.render
 
 import me.odinmain.OdinMain.mc
+import me.odinmain.ui.clickgui.util.ColorUtil.multiplyAlpha
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
 import me.odinmain.utils.render.RenderUtils.drawBeaconBeam
@@ -15,6 +16,10 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.max
 
 object Renderer {
+
+    val defaultStyle = "Filled"
+    val styles = arrayListOf("Filled", "Outline", "Filled Outline")
+    val styleDesc = "How the box should be rendered."
 
     /**
      * Draws a box in the world with the specified axis-aligned bounding box (AABB), color, and optional parameters.
@@ -37,6 +42,23 @@ object Renderer {
         RenderUtils.drawOutlinedAABB(aabb, color.withAlpha(outlineAlpha.toFloat()), thickness = outlineWidth, depth = depth)
 
         RenderUtils.drawFilledAABB(aabb, color.withAlpha(fillAlpha.toFloat()), depth = depth)
+    }
+
+    fun drawStyledBox(
+        aabb: AxisAlignedBB,
+        color: Color,
+        style: Int,
+        width: Number = 3,
+        depth: Boolean = false
+    ) {
+        when (style) {
+            0 -> RenderUtils.drawFilledAABB(aabb, color, depth = depth)
+            1 -> RenderUtils.drawOutlinedAABB(aabb, color, thickness = width, depth = depth)
+            2 -> {
+                RenderUtils.drawOutlinedAABB(aabb, color, thickness = width, depth = depth)
+                RenderUtils.drawFilledAABB(aabb, color.multiplyAlpha(.6f), depth = depth)
+            }
+        }
     }
 
     /**

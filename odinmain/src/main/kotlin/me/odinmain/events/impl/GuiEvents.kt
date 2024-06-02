@@ -32,6 +32,9 @@ abstract class GuiEvent : Event() {
 
     @Cancelable
     class GuiWindowClickEvent(val windowId: Int, val slotId: Int, val mouseButtonClicked: Int, val mode: Int, val playerIn: EntityPlayer) : GuiEvent()
+
+    @Cancelable
+    class CustomTermGuiClick(val slot: Int, val mode: Int, val button: Int) : GuiEvent()
 }
 
 

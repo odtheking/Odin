@@ -8,6 +8,7 @@ import me.odinmain.features.impl.floor7.TerminalSimulator
 import me.odinmain.features.impl.floor7.p3.TerminalTimes
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.utils.*
+import me.odinmain.utils.skyblock.devMessage
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.*
@@ -26,7 +27,7 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
     private var startTime = 0L
     protected var ping = 0L
     private var consecutive = 0L
-    private var doesAcceptClick = true
+    var doesAcceptClick = true
     private val minecraft get() = Minecraft.getMinecraft() // this is needed here for some fucking reason and I have no clue but the OdinMain one is sometimes (but not always) null when open() runs ???? (this took like 30 minutes to figure out)
 
     open fun create() {
@@ -84,20 +85,22 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
         if (!doesAcceptClick || slot.inventory != this.inv) return
         doesAcceptClick = false
         runIn((ping / 50).toInt()) {
-            slotClick(slot, button)
             doesAcceptClick = true
+            slotClick(slot, button)
         }
     }
 
     final override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         val slot = slotUnderMouse ?: return
         if (slot.stack?.item == pane && slot.stack?.metadata == 15) return
+        if (!GuiEvent.GuiWindowClickEvent(mc.thePlayer.openContainer.windowId, slot.slotIndex, mouseButton, 0, mc.thePlayer).postAndCatch())
         delaySlotClick(slot, mouseButton)
     }
 
     final override fun handleMouseClick(slotIn: Slot?, slotId: Int, clickedButton: Int, clickType: Int) {
         val slot = slotIn ?: return
         if (slot.stack?.item == pane && slot.stack?.metadata == 15 || clickedButton != 4) return
+        if (!GuiEvent.GuiWindowClickEvent(mc.thePlayer.openContainer.windowId, slot.slotIndex, clickedButton, clickType, mc.thePlayer).postAndCatch())
         delaySlotClick(slot, 0)
     }
 }

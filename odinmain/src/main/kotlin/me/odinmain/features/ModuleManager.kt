@@ -91,7 +91,6 @@ object ModuleManager {
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START) return
-
         tickTasks.removeAll {
             if (it.ticksLeft <= 0) {
                 it.function()
