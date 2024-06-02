@@ -60,7 +60,7 @@ object OdinMain {
             mainCommand,
             soopyCommand,
             termSimCommand,
-            blacklistCommand,
+            chatCommandsCommand,
             devCommand,
             highlightCommand,
             waypointCommand,
