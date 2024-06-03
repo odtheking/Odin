@@ -3,69 +3,50 @@ package com.github.stivais.ui.elements.impl
 import com.github.stivais.ui.UI
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.constraints.Constraints
-import com.github.stivais.ui.constraints.Type
-import com.github.stivais.ui.constraints.measurements.Pixel
-import com.github.stivais.ui.elements.Element
+import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.events.Key
 import com.github.stivais.ui.events.Mouse
 import me.odinmain.features.impl.render.Animations
 import me.odinmain.utils.*
+import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.util.ChatAllowedCharacters
 import org.lwjgl.input.Keyboard
 import kotlin.math.abs
 
 
-// Unfinished
-class TextInput(var text: String, constraints: Constraints?) : Element(constraints) {
-
-    // uses to check if width should be recalculated as it is expensive to do so
-    private var previousHeight = 0f
-
-    override fun prePosition() {
-        if (!renders) return
-        height = constraints.height.get(this, Type.H)
-        if (previousHeight != height) {
-            previousHeight = height
-            val newWidth =  renderer.textWidth(text, height)
-            (constraints.width as Pixel).pixels = newWidth
-        }
-    }
+class TextInput(text: String, constraints: Constraints?) : Text(text, Color.WHITE, constraints, 30.px) {
 
     private var cursorPosition: Int = text.length
         set(value) {
             field = value.coerceIn(0, text.length)
+            positionCursor()
         }
 
-    private var selectionStart: Int = 0
+    private var selectionStart: Int = cursorPosition
         set(value) {
             field = value.coerceIn(0, text.length)
+            selectionX = renderer.textWidth(text.substring(0, value), size = height)
         }
 
-    private val selectedText: String
-        get() = if (selectionStart < cursorPosition) text.substring(selectionStart, cursorPosition) else text.substring(cursorPosition, selectionStart)
-
-
-    private val fontSize = 30f
+    private var textWidth = 0
     private var isHeld = false
 
-    private var cx: Float = 0f
-
-    private var cy: Float = 0f
+    private var cursorX: Float = 0f
+    private var cursorY: Float = 0f
+    private var selectionX: Float = 0f
 
     override fun draw() {
-        renderer.rect(x - 4, y - 4, renderer.textWidth(text, fontSize) + 8f, fontSize + 4, Color.BLACK.rgba, 9f)
+        renderer.rect(x - 4, y - 4, textWidth + 8f, height + 4, Color.BLACK.rgba, 9f)
         if (selectionStart != cursorPosition) {
-            val min = kotlin.math.min(cursorPosition, selectionStart)
-            val max = kotlin.math.max(cursorPosition, selectionStart)
-            val x1 = x + renderer.textWidth(text.substring(0, min), size = fontSize)
-            val x2 = x + renderer.textWidth(text.substring(0, max), size = fontSize)
-            renderer.rect(x1, y, x2 - x1, fontSize - 2, Color.RGB(0, 0, 255, 0.5f).rgba)
+            val startX = x + min(selectionX, cursorX).toInt()
+            val endX = x + max(selectionX, cursorX).toInt()
+            renderer.rect(startX, y, endX - startX, height - 2, Color.RGB(0, 0, 255, 0.5f).rgba)
         }
 
-        renderer.text(text, x, y, 30f, Color.WHITE.rgba)
+        renderer.text(text, x, y, height, Color.WHITE.rgba)
 
-        renderer.rect(x + cx, y + cy, 1f, 28f, Color.WHITE.rgba)
+        renderer.rect(x + cursorX, y + cursorY, 1f, height - 2, Color.WHITE.rgba)
     }
 
 
@@ -86,14 +67,12 @@ class TextInput(var text: String, constraints: Constraints?) : Element(constrain
             cursorPosition = ((ui.mx - x) / renderer.textWidth("a", 30f)).toInt()
             if (!isShiftKeyDown()) selectionStart = cursorPosition
             isHeld = true
-            positionCursor()
             true
         }
 
         registerEvent(Mouse.Moved) {
             if (isHeld)
                 cursorPosition = ((ui.mx - x) / renderer.textWidth("a", 30f)).toInt()
-                positionCursor()
             true
         }
 
@@ -193,8 +172,7 @@ class TextInput(var text: String, constraints: Constraints?) : Element(constrain
             }
         }
 
-        //devMessage("caret: $cursorPosition, text: $text, startSelect: $selectionStart,")
-        positionCursor()
+        devMessage("caret: $cursorPosition, text: $text, startSelect: $selectionStart,")
     }
 
     private fun moveCursorBy(moveAmount: Int) {
@@ -213,13 +191,14 @@ class TextInput(var text: String, constraints: Constraints?) : Element(constrain
         text = text.take(min) + addedText + text.substring(max)
 
         moveCursorBy(min - selectionStart + addedText.length)
+        textWidth = renderer.textWidth(text, size = height).toInt()
         selectionStart = cursorPosition
     }
 
     private fun positionCursor() {
         val currLine = getCurrentLine()
-        cx = renderer.textWidth(currLine.first, size = fontSize) + Animations.x
-        cy = Animations.y + currLine.second * fontSize
+        cursorX = renderer.textWidth(currLine.first, size = height) + Animations.x
+        cursorY = Animations.y + currLine.second * height
     }
 
     private fun getCurrentLine(): Pair<String, Int> {

@@ -8,11 +8,9 @@ import com.github.stivais.ui.renderer.Renderer
 
 fun basic(renderer: Renderer) = UI(renderer) {
 
-
-
     TextInput(
         "HELLLO",
-        constraints = constrain(600.px, 600.px, 600.px, 600.px)
+        constraints = constrain(920.px, 540.px, 200.px, 30.px)
     ).add()
 
 //    column {

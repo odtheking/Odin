@@ -1,16 +1,13 @@
 package com.github.stivais.ui.elements.impl
 
 import com.github.stivais.ui.color.Color
-import com.github.stivais.ui.constraints.Constraints
-import com.github.stivais.ui.constraints.Measurement
-import com.github.stivais.ui.constraints.Type
+import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Pixel
-import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.utils.replaceUndefined
 
-class Text(
+open class Text(
     text: String,
     textColor: Color,
     constraints: Constraints?,
