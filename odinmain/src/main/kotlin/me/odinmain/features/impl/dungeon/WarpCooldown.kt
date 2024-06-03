@@ -6,13 +6,11 @@ import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.clock.Clock
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.getTextWidth
-import me.odinmain.utils.render.text
+import me.odinmain.utils.render.*
 
 object WarpCooldown : Module (
     name = "Warp Cooldown",
-    description = "Timer before you can enter a new dungeon",
+    description = "Displays the time until you can warp into a dungeon again.",
     category = Category.DUNGEON
 ) {
     private val hud: HudElement by HudSetting("Warp Timer Hud", 10f, 10f, 1f, true) {

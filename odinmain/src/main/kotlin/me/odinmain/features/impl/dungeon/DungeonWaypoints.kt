@@ -1,6 +1,6 @@
 package me.odinmain.features.impl.dungeon
 
-import me.odinmain.config.DungeonWaypointConfig
+import me.odinmain.config.DungeonWaypointConfigCLAY
 import me.odinmain.events.impl.ClickEvent
 import me.odinmain.events.impl.EnteredDungeonRoomEvent
 import me.odinmain.features.Category
@@ -10,26 +10,16 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.*
 import me.odinmain.utils.render.RenderUtils.bind
 import me.odinmain.utils.render.RenderUtils.invoke
-import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.render.scale
-import me.odinmain.utils.skyblock.devMessage
+import me.odinmain.utils.render.RenderUtils.outlineBounds
+import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.getBlockAt
-import me.odinmain.utils.skyblock.isAir
-import me.odinmain.utils.skyblock.modMessage
-import net.minecraft.client.gui.GuiButton
-import net.minecraft.client.gui.GuiScreen
-import net.minecraft.client.gui.GuiTextField
-import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.gui.*
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.util.AxisAlignedBB
-import net.minecraft.util.BlockPos
-import net.minecraft.util.Vec3
+import net.minecraft.util.*
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -57,11 +47,11 @@ object DungeonWaypoints : Module(
     private val resetButton: () -> Unit by ActionSetting("Reset Current Room") {
         val room = DungeonUtils.currentRoom ?: return@ActionSetting modMessage("Room not found!!!")
 
-        val waypoints = DungeonWaypointConfig.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
+        val waypoints = DungeonWaypointConfigCLAY.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
         if (!waypoints.removeAll { true }) return@ActionSetting modMessage("Current room does not have any waypoints!")
 
-        DungeonWaypointConfig.saveConfig()
-        DungeonUtils.setWaypoints()
+        DungeonWaypointConfigCLAY.saveConfig()
+        DungeonUtils.setWaypoints(room)
         glList = -1
         modMessage("Successfully reset current room!")
     }
@@ -84,7 +74,7 @@ object DungeonWaypoints : Module(
 
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
-        if (DungeonUtils.inBoss || !DungeonUtils.inDungeons) return
+        if ((DungeonUtils.inBoss || !DungeonUtils.inDungeons) && !mc.theWorld.isRemote) return
         val room = DungeonUtils.currentRoom ?: return
         startProfile("Dungeon Waypoints")
         drawBoxes(room.waypoints)
@@ -113,13 +103,12 @@ object DungeonWaypoints : Module(
         val pos = mc.objectMouseOver?.blockPos ?: return
         if (!allowEdits || isAir(pos)) return
         val room = DungeonUtils.currentRoom ?: return
-        val distinct = room.positions.distinct().minByOrNull { it.core } ?: return
-        val vec = Vec3(pos).subtractVec(x = distinct.x, z = distinct.z).rotateToNorth(room.room.rotation)
+        val vec = Vec3(pos).subtractVec(x = room.clayPos.x, z = room.clayPos.z).rotateToNorth(room.room.rotation)
         val aabb =
-            if (useBlockSize) getBlockAt(pos).getSelectedBoundingBox(mc.theWorld, BlockPos(0, 0, 0)).expand(0.002, 0.002, 0.002) ?: return
+            if (useBlockSize) getBlockAt(pos).getSelectedBoundingBox(mc.theWorld, BlockPos(0, 0, 0))?.outlineBounds() ?: return
             else AxisAlignedBB(.5 - (size / 2), .5 - (size / 2), .5 - (size / 2), .5 + (size / 2), .5 + (size / 2), .5 + (size / 2)).expand(0.002, 0.002, 0.002)
 
-        val waypoints = DungeonWaypointConfig.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
+        val waypoints = DungeonWaypointConfigCLAY.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
 
         val color = when (colorPallet) {
             0 -> color
@@ -134,8 +123,6 @@ object DungeonWaypoints : Module(
             GuiSign.setCallback { enteredText ->
                 waypoints.removeIf { it.toVec3().equal(vec) }
                 waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, aabb, enteredText))
-                DungeonWaypointConfig.saveConfig()
-                DungeonUtils.setWaypoints()
             }
             mc.displayGuiScreen(GuiSign)
         } else if (waypoints.removeIf { it.toVec3().equal(vec) }) {
@@ -144,8 +131,8 @@ object DungeonWaypoints : Module(
             waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, aabb, ""))
             devMessage("Added waypoint at $vec")
         }
-        DungeonWaypointConfig.saveConfig()
-        DungeonUtils.setWaypoints()
+        DungeonWaypointConfigCLAY.saveConfig()
+        DungeonUtils.setWaypoints(room)
         glList = -1
     }
 
@@ -219,7 +206,7 @@ object DungeonWaypoints : Module(
             if (box.filled) {
                 GlStateManager.color(box.color.r / 255f, box.color.g / 255f, box.color.b / 255f, box.color.alpha.coerceAtMost(.8f))
                 RenderUtils.worldRenderer {
-                    begin(7, DefaultVertexFormats.POSITION_NORMAL)
+                    begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_NORMAL)
                     pos(aabb.minX, aabb.maxY, aabb.minZ).normal(0f, 0f, -1f).endVertex()
                     pos(aabb.maxX, aabb.maxY, aabb.minZ).normal(0f, 0f, -1f).endVertex()
                     pos(aabb.maxX, aabb.minY, aabb.minZ).normal(0f, 0f, -1f).endVertex()

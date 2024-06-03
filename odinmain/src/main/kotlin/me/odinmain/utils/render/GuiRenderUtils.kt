@@ -113,7 +113,7 @@ fun text(text: String, x: Number, y: Number, color: Color, size: Number, type: I
 }
 
 fun mcText(text: String, x: Number, y: Number, scale: Number, color: Color, shadow: Boolean = true, center: Boolean = true) {
-    RenderUtils.drawText(text, x.toFloat(), y.toFloat(), scale.toDouble(), color, shadow, center)
+    RenderUtils.drawText("$text§r", x.toFloat(), y.toFloat(), scale.toDouble(), color, shadow, center)
 }
 
 fun textAndWidth(text: String, x: Float, y: Float, color: Color, size: Float, type: Int = OdinFont.REGULAR, align: TextAlign = Left, verticalAlign: TextPos = TextPos.Middle, shadow: Boolean = false): Float {
@@ -191,7 +191,7 @@ fun resetScissor(scissor: Scissor) {
     scissorList.removeLast()
 }
 
-fun drawDynamicTexture(dynamicTexture: DynamicTexture, x: Float, y: Float, w: Float, h: Float) {
+fun drawDynamicTexture(dynamicTexture: DynamicTexture, x: Number, y: Number, w: Number, h: Number) {
     dynamicTexture.updateDynamicTexture()
     GlStateManager.bindTexture(dynamicTexture.glTextureId)
     drawTexturedModalRect(x.toInt(), y.toInt(), w.toInt(), h.toInt())

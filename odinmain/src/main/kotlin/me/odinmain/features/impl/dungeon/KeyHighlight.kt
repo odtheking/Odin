@@ -5,12 +5,10 @@ import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.utils.addVec
-import me.odinmain.utils.noControlCodes
+import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.toAABB
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -18,7 +16,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object KeyHighlight : Module(
     name = "Key Highlight",
-    description = "Draws a box around the key.",
+    description = "Highlights wither and blood keys in dungeons.",
     category = Category.DUNGEON,
 ) {
     private var currentKey: Pair<Color, Entity>? = null
@@ -44,7 +42,7 @@ object KeyHighlight : Module(
         }
 
         val pos = entity.positionVector.addVec(-0.5, 1, -0.5)
-        Renderer.drawBox(pos.toAABB(), color, fillAlpha = 0f, outlineWidth = thickness, depth = OdinMain.onLegitVersion)
+        Renderer.drawBox(pos.toAABB(), color, fillAlpha = 0f, outlineWidth = thickness, depth = OdinMain.isLegitVersion)
     }
 
     init {

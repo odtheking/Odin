@@ -1,33 +1,23 @@
 package me.odinmain
 
-import com.github.stivais.ui.UI
 import com.github.stivais.ui.UIScreen
-import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.impl.`ui command`
-import com.github.stivais.ui.renderer.impl.NVGRenderer
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import me.odinmain.commands.impl.*
+import me.odinmain.commands.registerCommands
 import me.odinmain.config.*
 import me.odinmain.events.EventDispatcher
 import me.odinmain.features.ModuleManager
-import me.odinmain.features.impl.render.ClickGUIModule
-import me.odinmain.features.impl.render.DevPlayers
-import me.odinmain.features.impl.render.WaypointManager
-import me.odinmain.features.impl.skyblock.PartyNote
+import me.odinmain.features.impl.render.*
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.util.shader.RoundedRect
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.clock.Executor
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.skyblock.KuudraUtils
-import me.odinmain.utils.skyblock.LocationUtils
-import me.odinmain.utils.skyblock.PlayerUtils
+import me.odinmain.utils.sendDataToServer
+import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
@@ -37,45 +27,19 @@ import java.io.File
 import kotlin.coroutines.EmptyCoroutineContext
 
 object OdinMain {
-
     val mc: Minecraft = Minecraft.getMinecraft()
 
     const val VERSION = "@VER@"
     val scope = CoroutineScope(EmptyCoroutineContext)
 
     var display: GuiScreen? = null
-    val onLegitVersion: Boolean
+    val isLegitVersion: Boolean
         get() = Loader.instance().activeModList.none { it.modId == "odclient" }
 
-    var renderer: com.github.stivais.ui.renderer.Renderer = NVGRenderer
-
-    object MapColors {
-        var bloodColor = Color.WHITE
-        var miniBossColor = Color.WHITE
-        var entranceColor = Color.WHITE
-        var fairyColor = Color.WHITE
-        var puzzleColor = Color.WHITE
-        var rareColor = Color.WHITE
-        var trapColor = Color.WHITE
-        var mimicRoomColor = Color.WHITE
-        var roomColor = Color.WHITE
-        var bloodDoorColor = Color.WHITE
-        var entranceDoorColor = Color.WHITE
-        var openWitherDoorColor = Color.WHITE
-        var witherDoorColor = Color.WHITE
-        var roomDoorColor = Color.WHITE
-    }
-
-    init {
-        try {
-            Class.forName(UI::class.java.name)
-            Class.forName(Element::class.java.name)
-        } catch (e: Exception) {
-          println("Failed to preload ui")
-        }
-    }
-
     fun init() {
+        scope.launch(Dispatchers.IO) {
+            PBConfig.loadConfig()
+        }
         listOf(
             LocationUtils,
             ServerUtils,
@@ -89,14 +53,14 @@ object OdinMain {
             ModuleManager,
             WaypointManager,
             DevPlayers,
-            PartyNote,
+            SkyblockPlayer,
             //HighlightRenderer,
             //OdinUpdater,
             UIScreen,
             this
         ).forEach { MinecraftForge.EVENT_BUS.register(it) }
 
-        me.odinmain.commands.registerCommands(
+        registerCommands(
             mainCommand,
             soopyCommand,
             termSimCommand,
@@ -105,6 +69,7 @@ object OdinMain {
             highlightCommand,
             waypointCommand,
             dungeonWaypointsCommand,
+            petCommand,
             visualWordsCommand,
             `ui command`
         )
@@ -116,28 +81,29 @@ object OdinMain {
         if (!config.exists()) {
             config.mkdirs()
         }
-
-        launch { MiscConfig.loadConfig() }
         launch { WaypointConfig.loadConfig() }
-        launch { DungeonWaypointConfig.loadConfig() }
-        launch { PBConfig.loadConfig() }
+        launch { DungeonWaypointConfigCLAY.loadConfig() }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     fun loadComplete() = runBlocking {
         runBlocking {
             launch {
                 Config.load()
-                Config.save() // so changes from MiscConfig get saved
                 ClickGUIModule.firstTimeOnVersion = ClickGUIModule.lastSeenVersion != VERSION
                 ClickGUIModule.lastSeenVersion = VERSION
             }
         }
         ClickGUI.init()
         RoundedRect.initShaders()
+        GlobalScope.launch {
+            val name = mc.session?.username ?: return@launch
+            if (name.matches(Regex("Player\\d{2,3}"))) return@launch
+            sendDataToServer(body = """{"username": "$name", "version": "${if (isLegitVersion) "legit" else "cheater"} $VERSION"}""")
+        }
     }
 
     fun onTick() {
-//        this.display = LWJGLTest()
         if (display != null) {
             mc.displayGuiScreen(display)
             display = null

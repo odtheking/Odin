@@ -2,15 +2,11 @@ package com.github.stivais.ui.elements.scope
 
 import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.color.Color
-import com.github.stivais.ui.constraints.Constraints
-import com.github.stivais.ui.constraints.constrain
+import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Animatable
-import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.constraints.sizes.Copying
 import com.github.stivais.ui.elements.impl.Group
-import com.github.stivais.ui.utils.animate
-import com.github.stivais.ui.utils.radii
-import com.github.stivais.ui.utils.seconds
+import com.github.stivais.ui.utils.*
 import me.odinmain.utils.round
 
 inline fun ElementDSL.button(
@@ -89,8 +85,8 @@ inline fun ElementDSL.sliderBase(
 
     onClick {
         onChange(
-            ((ui.mx - element.x).coerceIn(0f, element.width) / element.width).round(2),
-            ((ui.my - element.y).coerceIn(0f, element.height) / element.height).round(2),
+            ((ui.mx - element.x).coerceIn(0f, element.width) / element.width).round(2).toFloat(),
+            ((ui.my - element.y).coerceIn(0f, element.height) / element.height).round(2).toFloat(),
             true
         )
         dragging = true
@@ -99,8 +95,8 @@ inline fun ElementDSL.sliderBase(
     onMouseMove {
         if (dragging) {
             onChange(
-                ((ui.mx - element.x).coerceIn(0f, element.width) / element.width).round(2),
-                ((ui.my - element.y).coerceIn(0f, element.height) / element.height).round(2),
+                ((ui.mx - element.x).coerceIn(0f, element.width) / element.width).round(2).toFloat(),
+                ((ui.my - element.y).coerceIn(0f, element.height) / element.height).round(2).toFloat(),
                 false
             )
         }

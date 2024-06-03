@@ -6,9 +6,7 @@ import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.clickgui.animations.impl.ColorAnimation
 import me.odinmain.ui.clickgui.animations.impl.LinearAnimation
-import me.odinmain.ui.clickgui.elements.Element
-import me.odinmain.ui.clickgui.elements.ElementType
-import me.odinmain.ui.clickgui.elements.ModuleButton
+import me.odinmain.ui.clickgui.elements.*
 import me.odinmain.ui.clickgui.util.ColorUtil
 import me.odinmain.ui.clickgui.util.ColorUtil.brighter
 import me.odinmain.ui.clickgui.util.ColorUtil.buttonColor

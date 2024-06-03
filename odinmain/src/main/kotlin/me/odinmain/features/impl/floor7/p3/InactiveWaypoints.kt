@@ -3,14 +3,10 @@ package me.odinmain.features.impl.floor7.p3
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.SelectorSetting
+import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils
-import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.Entity
@@ -23,7 +19,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object InactiveWaypoints : Module(
     name = "Inactive Waypoints",
     category = Category.FLOOR7,
-    description = "Shows inactive terminals, devices and levers"
+    description = "Shows inactive terminals, devices and levers."
 ) {
     private val showTerminals: Boolean by BooleanSetting(name = "Show Terminals", default = true, description = "Shows inactive terminals")
     private val showDevices: Boolean by BooleanSetting(name = "Show Devices", default = true, description = "Shows inactive devices")

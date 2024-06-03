@@ -3,19 +3,13 @@ package me.odinmain.features.impl.kuudra
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.HudSetting
+import me.odinmain.features.settings.impl.*
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.getTextWidth
-import me.odinmain.utils.render.text
+import me.odinmain.utils.render.*
 import me.odinmain.utils.round
 import me.odinmain.utils.runIn
-import me.odinmain.utils.skyblock.KuudraUtils
-import me.odinmain.utils.skyblock.modMessage
-import me.odinmain.utils.skyblock.partyMessage
+import me.odinmain.utils.skyblock.*
 
 object FreshTimer : Module(
     name = "Fresh Timer",

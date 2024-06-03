@@ -6,18 +6,11 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.Relic.currentRelic
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.DualSetting
-import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.utils.Vec2
+import me.odinmain.features.settings.impl.*
+import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
-import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.isFacingAABB
-import me.odinmain.utils.noControlCodes
-import me.odinmain.utils.skyblock.Island
-import me.odinmain.utils.skyblock.LocationUtils
+import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.itemID
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.item.EntityEnderCrystal
@@ -32,7 +25,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object Triggerbot : Module(
     name = "Triggerbot",
-    description = "Various Triggerbots.",
+    description = "Various Triggerbots. (Blood, Spirit Bear, Crystal Triggerbot, Secret Triggerbot, Relic Triggerbot)",
     category = Category.DUNGEON
 ) {
     private val blood: Boolean by BooleanSetting("Blood Mobs")
@@ -46,6 +39,8 @@ object Triggerbot : Module(
     private val stbDelay: Long by NumberSetting("Delay", 200L, 0, 1000).withDependency { secretTriggerbot }
     private val stbCH: Boolean by BooleanSetting("Crystal Hollows Chests", true, description = "Opens chests in crystal hollows when looking at them").withDependency { secretTriggerbot }
     private val secretTBInBoss: Boolean by BooleanSetting("In Boss", true, description = "Makes the triggerbot work in dungeon boss aswell.").withDependency { secretTriggerbot }
+    private val swapSlot: Boolean by BooleanSetting("Swap slow", false)
+    private val secretTriggerBotSlot: Int by NumberSetting("Slot", 0, 0, 8, description = "The slot to use for the triggerbot.").withDependency { secretTriggerbot && swapSlot }
 
     private val triggerBotClock = Clock(stbDelay)
     private var clickedPositions = mapOf<BlockPos, Long>()
@@ -54,9 +49,9 @@ object Triggerbot : Module(
         "Revoker", "Tear", "Ooze", "Cannibal", "Walker", "Putrid", "Mute", "Parasite", "WanderingSoul", "Leech",
         "Flamer", "Skull", "Mr.Dead", "Vader", "Frost", "Freak", "Bonzo", "Scarf", "Livid", "Psycho", "Reaper",
     )
-    val cauldronMap = mapOf(
+    private val cauldronMap = mapOf(
         "GREEN_KING_RELIC" to Vec2(49, 44),
-        "Red_KING_RELIC" to Vec2(51, 42),
+        "RED_KING_RELIC" to Vec2(51, 42),
         "PURPLE_KING_RELIC" to Vec2(54, 41),
         "ORANGE_KING_RELIC" to Vec2(57, 42),
         "BLUE_KING_RELIC" to Vec2(59, 44)
@@ -134,7 +129,10 @@ object Triggerbot : Module(
 
             if (!DungeonUtils.inDungeons || (!secretTBInBoss && DungeonUtils.inBoss) || !DungeonUtils.isSecret(state, pos)) return@execute
 
+            val currentSlot = mc.thePlayer?.inventory?.currentItem ?: 0
+            if (swapSlot) mc.thePlayer?.inventory?.currentItem = secretTriggerBotSlot
             PlayerUtils.rightClick()
+            if (swapSlot) mc.thePlayer?.inventory?.currentItem = currentSlot
             triggerBotClock.update()
             if (tileEntity is TileEntityChest) return@execute
             clickedPositions = clickedPositions.plus(pos to System.currentTimeMillis())

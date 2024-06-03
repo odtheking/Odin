@@ -2,10 +2,8 @@ package me.odinmain.utils.render
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinmain.utils.addVec
-import me.odinmain.utils.min
+import me.odinmain.utils.*
 import me.odinmain.utils.render.RenderUtils.drawBeaconBeam
-import me.odinmain.utils.toAABB
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.entity.Entity
 import net.minecraft.util.AxisAlignedBB
@@ -65,15 +63,15 @@ object Renderer {
      * @param noFade   Indicates whether the beacon should not fade based on distance (default is false).
      * @param distance Indicates whether to display the distance in the title (default is true).
      */
-    fun drawCustomBeacon(title: String, vec3: Vec3, color: Color, beacon: Boolean = true, increase: Boolean = true, noFade: Boolean = false, distance: Boolean = true) {
+    fun drawCustomBeacon(title: String, vec3: Vec3, color: Color, beacon: Boolean = true, increase: Boolean = true, noFade: Boolean = false, distance: Boolean = true, style: Int = 1) {
         val dist = vec3.distanceTo(mc.thePlayer.positionVector)
-        drawBox(aabb = vec3.toAABB(), color = color, fillAlpha = 0f, depth = false)
+        drawBox(vec3.toAABB(), color, depth = false,
+            outlineAlpha = if (style == 0) 0 else color.alpha, fillAlpha = if (style == 1) 0 else color.alpha)
 
         RenderUtils.drawStringInWorld(
             if (distance) "$title §r§f(§3${dist.toInt()}m§f)" else title,
             vec3.addVec(0.5, 1.7 + dist / 30, 0.5),
-            color = color,
-            shadow = true,
+            color = color, shadow = true,
             scale = if (increase) max(0.03, dist / 200.0).toFloat() else 0.06f,
             depthTest = false
         )
@@ -88,7 +86,6 @@ object Renderer {
      * @param text            The text to be drawn.
      * @param vec3            The position to draw the text.
      * @param color           The color of the text.
-     * @param renderBlackBox  Indicates whether to render a black box behind the text (default is false).
      * @param depth           Indicates whether to draw with depth (default is true).
      * @param scale           The scale of the text (default is 0.03).
      * @param shadow          Indicates whether to render a shadow for the text (default is true).
@@ -97,12 +94,11 @@ object Renderer {
         text: String,
         vec3: Vec3,
         color: Color = Color.WHITE,
-        renderBlackBox: Boolean = false,
         depth: Boolean = false,
         scale: Float = 0.03f,
-        shadow: Boolean = true
+        shadow: Boolean = true,
         ) {
-        RenderUtils.drawStringInWorld(text, vec3, color, renderBlackBox, depth, scale, shadow)
+        RenderUtils.drawStringInWorld(text, vec3, color, depth, scale, shadow)
     }
     /**
      * Draws a cylinder in the world with the specified parameters.

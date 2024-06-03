@@ -15,11 +15,10 @@ import me.odinmain.ui.util.MouseUtils.getQuadrant
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.name
 import me.odinmain.utils.render.*
+import me.odinmain.utils.render.RenderUtils.drawTexturedModalRect
+import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.leapTeammates
-import me.odinmain.utils.skyblock.getItemIndexInContainerChest
-import me.odinmain.utils.skyblock.modMessage
-import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest
@@ -41,10 +40,11 @@ object LeapMenu : Module(
     private val topRightKeybind: Keybinding by KeybindSetting("Top Right", Keyboard.KEY_2, "Used to click on the second person in the leap menu.").withDependency { useNumberKeys }
     private val bottomLeftKeybind: Keybinding by KeybindSetting("Bottom Left", Keyboard.KEY_3, "Used to click on the third person in the leap menu.").withDependency { useNumberKeys }
     private val bottomRightKeybind: Keybinding by KeybindSetting("Bottom right", Keyboard.KEY_4, "Used to click on the fourth person in the leap menu.").withDependency { useNumberKeys }
-    private val leapHelperToggle: Boolean by BooleanSetting("Leap Helper", true, description = "Highlights the leap helper player in the leap menu.")
+    private val size: Float by NumberSetting("Scale Factor", 1.0f, 0.5f, 2.0f, 0.1f, description = "Scale factor for the leap menu.")
+    private val leapHelperToggle: Boolean by BooleanSetting("Leap Helper", false, description = "Highlights the leap helper player in the leap menu.")
     private val leapHelperColor: Color by ColorSetting("Leap Helper Color", default = Color.WHITE, description = "Color of the Leap Helper highlight").withDependency { leapHelperToggle }
     val delay: Int by NumberSetting("Reset Leap Helper Delay", 30, 10.0, 120.0, 1.0, description = "Delay for clearing the leap helper highlight").withDependency { leapHelperToggle }
-
+    private val leapAnnounce: Boolean by BooleanSetting("Leap Announce", false, description = "Announces when you leap to a player.")
     private val hoveredAnims = List(4) { EaseInOut(200L) }
     private var hoveredQuadrant = -1
     private var previouslyHoveredQuadrant = -1
@@ -66,8 +66,8 @@ object LeapMenu : Module(
             if (it == EMPTY) return@forEachIndexed
             GlStateManager.pushMatrix()
             GlStateManager.enableAlpha()
-
             scale(1f / scaleFactor,  1f / scaleFactor)
+            scale(size, size)
             val displayWidth = Display.getWidth()
             val displayHeight = Display.getHeight()
             translate(displayWidth / 2, displayHeight / 2)
@@ -90,12 +90,11 @@ object LeapMenu : Module(
             dropShadow(box, 10f, 15f, if (getQuadrant() - 1 != index) ColorUtil.moduleButtonColor else Color.WHITE)
             roundedRectangle(box, color, if (roundedRect) 12f else 0f)
 
-            Gui.drawScaledCustomSizeModalRect(x + 30, y + 30, 8f, 8f, 8, 8, 240, 240, 64f, 64f)
+            drawTexturedModalRect(x + 30, y + 30, 240, 240,8f, 8f, 8, 8, 64f, 64f)
 
             text(it.name, x + 265f, y + 155f, if (!colorStyle) it.clazz.color else Color.DARK_GRAY, 48f)
             text(if (it.isDead) "§cDEAD" else it.clazz.name, x + 270f, y + 210f, Color.WHITE, 30f, shadow = true)
             rectangleOutline(x + 30, y + 30, 240, 240, color, 25f, 15f, 100f)
-
             GlStateManager.disableAlpha()
             GlStateManager.popMatrix()
         }
@@ -147,6 +146,7 @@ object LeapMenu : Module(
     private fun leapTo(name: String, containerChest: ContainerChest) {
         val index = getItemIndexInContainerChest(containerChest, name, 11..16) ?: return modMessage("Cant find player $name. This shouldn't be possible!")
         modMessage("Teleporting to $name.")
+        if (leapAnnounce) partyMessage("Leaping to $name.")
         mc.playerController.windowClick(containerChest.windowId, index, 2, 3, mc.thePlayer)
     }
 
@@ -185,7 +185,7 @@ object LeapMenu : Module(
         val result = Array(4) { EMPTY }
         val secondRound = mutableListOf<DungeonUtils.DungeonPlayer>()
 
-        for (player in players) {
+        for (player in players.sortedBy { it.clazz.prio }) {
             when {
                 result[player.clazz.defaultQuadrant] == EMPTY -> result[player.clazz.defaultQuadrant] = player
                 else -> secondRound.add(player)

@@ -5,9 +5,7 @@ import me.odinmain.events.impl.ClickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.Color
@@ -26,7 +24,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object DianaHelper : Module(
     name = "Diana Helper",
-    description = "Helps with Diana's event.",
+    description = "Displays the location of the Diana guess and burrows.",
     category = Category.SKYBLOCK
 ) {
     private val guessColor: Color by ColorSetting("Guess Color", default = Color.WHITE, allowAlpha = true, description = "Color of the guess text")
@@ -34,6 +32,7 @@ object DianaHelper : Module(
     private val tracerWidth: Float by NumberSetting("Tracer Width", default = 5f, min = 1f, max = 20f).withDependency { tracer }
     private val tracerColor: Color by ColorSetting("Tracer Line Color", default = Color.WHITE, allowAlpha = true, description = "Color of the tracer line").withDependency { tracer }
     private val tracerBurrows: Boolean by BooleanSetting("Tracer Burrows", default = false, description = "Draws a line from your position to the burrows")
+    private val style: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.")
     private val sendInqMsg: Boolean by BooleanSetting("Send Inq Msg", default = true, description = "Sends a message to the party when you dig out an inquisitor")
     private val showWarpSettings: Boolean by BooleanSetting("Show Warp Settings", default = true, description = "Shows the warp settings")
     private val castle: Boolean by BooleanSetting("Castle Warp").withDependency { showWarpSettings }
@@ -41,7 +40,7 @@ object DianaHelper : Module(
     private val darkAuction: Boolean by BooleanSetting("DA Warp").withDependency { showWarpSettings }
     private val museum: Boolean by BooleanSetting("Museum Warp").withDependency { showWarpSettings }
     private val wizard: Boolean by BooleanSetting("Wizard Warp").withDependency { showWarpSettings }
-    private val autoWarp: Boolean by BooleanSetting("Auto Warp", description = "Automatically warps you to the nearest warp location 2 seconds after you activate the spade ability.").withDependency { !OdinMain.onLegitVersion }
+    private val autoWarp: Boolean by BooleanSetting("Auto Warp", description = "Automatically warps you to the nearest warp location 2 seconds after you activate the spade ability.").withDependency { !OdinMain.isLegitVersion }
     private var warpLocation: WarpPoint? = null
 
     private val cmdCooldown = Clock(3_000)
@@ -65,7 +64,9 @@ object DianaHelper : Module(
 
         onPacket(C08PacketPlayerBlockPlacement::class.java) { DianaBurrowEstimate.blockEvent(it.position.toVec3i()) }
 
-        onPacket(C07PacketPlayerDigging::class.java) { DianaBurrowEstimate.blockEvent(it.position.toVec3i()) }
+        onPacket(C07PacketPlayerDigging::class.java) {
+            DianaBurrowEstimate.blockEvent(it.position.toVec3i(), it.status == C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK)
+        }
 
         onWorldLoad {
             DianaBurrowEstimate.reset()
@@ -73,12 +74,14 @@ object DianaHelper : Module(
             renderPos = null
             DianaBurrowEstimate.recentBurrows.clear()
         }
-    }
 
-    init {
         onMessage(Regex("^(Uh oh!|Woah!|Yikes!|Oi!|Danger!|Good Grief!|Oh!) You dug out a Minos Inquisitor!\$")) {
             if (sendInqMsg) partyMessage("x: ${PlayerUtils.posX.floor().toInt()}, y: ${PlayerUtils.posY.floor().toInt()}, z: ${PlayerUtils.posZ.floor().toInt()}")
             PlayerUtils.alert("§6§lInquisitor!")
+        }
+
+        onMessage(Regex(".*")) {
+            DianaBurrowEstimate.chat(it)
         }
     }
 
@@ -97,20 +100,20 @@ object DianaHelper : Module(
             if (tracer)
                 Renderer.draw3DLine(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), guess.addVec(.5, .5, .5), tracerColor, tracerWidth, depth = false)
 
-            Renderer.drawCustomBeacon("§6Guess${warpLocation?.displayName ?: ""}§r", guess, guessColor, increase = true)
+            Renderer.drawCustomBeacon("§6Guess${warpLocation?.displayName ?: ""}§r", guess, guessColor, increase = true, style = style)
         }
 
         val burrowsRenderCopy = burrowsRender.toMap()
 
         burrowsRenderCopy.forEach { (location, type) ->
             if (tracerBurrows) Renderer.draw3DLine(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), Vec3(location).addVec(.5, .5, .5), type.color, tracerWidth, depth = false)
-            Renderer.drawCustomBeacon(type.text, Vec3(location), type.color)
+            Renderer.drawCustomBeacon(type.text, Vec3(location), type.color, style = style)
         }
     }
 
     @SubscribeEvent
     fun onRightClick(event: ClickEvent.RightClickEvent) {
-        if (!isHolding("ANCESTRAL_SPADE") || !autoWarp || OdinMain.onLegitVersion) return
+        if (!isHolding("ANCESTRAL_SPADE") || !autoWarp || OdinMain.isLegitVersion) return
         runIn(40) {
             onKeybind()
         }

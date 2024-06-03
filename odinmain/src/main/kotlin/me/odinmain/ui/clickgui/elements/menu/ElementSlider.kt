@@ -2,9 +2,7 @@ package me.odinmain.ui.clickgui.elements.menu
 
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.font.OdinFont
-import me.odinmain.ui.clickgui.elements.Element
-import me.odinmain.ui.clickgui.elements.ElementType
-import me.odinmain.ui.clickgui.elements.ModuleButton
+import me.odinmain.ui.clickgui.elements.*
 import me.odinmain.ui.clickgui.util.ColorUtil.brighter
 import me.odinmain.ui.clickgui.util.ColorUtil.clickGUIColor
 import me.odinmain.ui.clickgui.util.ColorUtil.elementBackground
@@ -13,6 +11,7 @@ import me.odinmain.ui.clickgui.util.HoverHandler
 import me.odinmain.ui.util.MouseUtils.isAreaHovered
 import me.odinmain.ui.util.MouseUtils.mouseX
 import me.odinmain.utils.floor
+import me.odinmain.utils.minus
 import me.odinmain.utils.render.*
 import org.lwjgl.input.Keyboard
 import kotlin.math.roundToInt

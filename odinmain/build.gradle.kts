@@ -10,7 +10,9 @@ plugins {
     kotlin("jvm") version "2.0.0-Beta1"
     id("net.kyori.blossom") version "1.3.1"
 }
+
 group = "me.odinmain"
+
 blossom {
     replaceToken("@VER@", version)
 }
@@ -68,7 +70,7 @@ repositories {
     mavenCentral()
     maven("https://repo.spongepowered.org/maven/")
     maven("https://repo.essential.gg/repository/maven-public/")
-    maven("https://repo.polyfrost.cc/releases")
+    maven("https://repo.hypixel.net/repository/Hypixel/")
 }
 
 val shadowImpl: Configuration by configurations.creating {
@@ -79,12 +81,16 @@ dependencies {
     minecraft("com.mojang:minecraft:1.8.9")
     mappings("de.oceanlabs.mcp:mcp_stable:22-1.8.9")
     forge("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9")
+
     implementation(kotlin("stdlib-jdk8"))
+
     annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
     compileOnly("org.spongepowered:mixin:0.8.5")
+
     shadowImpl("gg.essential:loader-launchwrapper:1.1.3")
     compileOnly("gg.essential:essential-1.8.9-forge:12132+g6e2bf4dc5")
-    //api("com.mojang:brigadier:1.0.18")
+    shadowImpl("net.hypixel:mod-api:0.4.0")
+
     shadowImpl("com.github.Stivais:Commodore:3f4a14b1cf") {
         exclude(module = "kotlin-stdlib-jdk8")
         exclude(module = "kotlin-reflect")

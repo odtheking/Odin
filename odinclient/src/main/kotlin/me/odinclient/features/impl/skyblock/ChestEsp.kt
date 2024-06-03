@@ -3,9 +3,7 @@ package me.odinclient.features.impl.skyblock
 import me.odinmain.events.impl.RenderChestEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.SelectorSetting
+import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
@@ -25,7 +23,7 @@ import org.lwjgl.opengl.GL11
 object ChestEsp : Module(
     name = "Chest Esp",
     category = Category.RENDER,
-    description = "Renders chams or the bounding box for all chests."
+    description = "Displays chests through walls."
 ) {
     private val onlyDungeon: Boolean by BooleanSetting(name = "Only Dungeon")
     private val onlyCH: Boolean by BooleanSetting(name = "Only Crystal Hollows")

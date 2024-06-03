@@ -1,8 +1,7 @@
 package me.odinmain.utils.skyblock.dungeon
 
-import com.google.common.collect.ComparisonChain
 import me.odinmain.OdinMain.mc
-import me.odinmain.config.DungeonWaypointConfig
+import me.odinmain.config.DungeonWaypointConfigCLAY
 import me.odinmain.events.impl.EnteredDungeonRoomEvent
 import me.odinmain.features.impl.dungeon.DungeonWaypoints.DungeonWaypoint
 import me.odinmain.features.impl.dungeon.DungeonWaypoints.toVec3
@@ -23,13 +22,11 @@ import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
 import net.minecraft.tileentity.TileEntitySkull
-import net.minecraft.util.BlockPos
-import net.minecraft.util.EnumFacing
-import net.minecraft.util.ResourceLocation
-import net.minecraft.world.WorldSettings
-import net.minecraftforge.event.entity.living.LivingEvent
+import net.minecraft.util.*
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object DungeonUtils {
 
@@ -43,7 +40,7 @@ object DungeonUtils {
     inline val cryptsCount get() = currentDungeon?.cryptsCount ?: 0
     inline val deathCount get() = currentDungeon?.deathCount ?: 0
 
-    data class FullRoom(val room: Room, val positions: List<ExtraRoom>, var waypoints: List<DungeonWaypoint>)
+    data class FullRoom(val room: Room, var clayPos: BlockPos, val positions: List<ExtraRoom>, var waypoints: List<DungeonWaypoint>)
     data class ExtraRoom(val x: Int, val z: Int, val core: Int)
     private var lastRoomPos: Pair<Int, Int> = Pair(0, 0)
     var currentRoom: FullRoom? = null
@@ -95,8 +92,14 @@ object DungeonUtils {
     }
 
     @SubscribeEvent
-    fun onMove(event: LivingEvent.LivingUpdateEvent) {
-        if (mc.theWorld == null /*|| !inDungeons */||inBoss || !event.entity.equals(mc.thePlayer)) return
+    fun onMove(event: ClientTickEvent) {
+        if (event.phase != TickEvent.Phase.END)
+        if ((inBoss || (!inDungeons && mc.theWorld?.isRemote == false)) && currentRoom != null) {
+            currentRoom = null
+            EnteredDungeonRoomEvent(null).postAndCatch()
+            return
+        }
+        if (mc.theWorld == null /*|| !inDungeons */|| inBoss) return
         val xPos = START_X + ((mc.thePlayer.posX + 200) / 32).toInt() * ROOM_SIZE
         val zPos = START_Z + ((mc.thePlayer.posZ + 200) / 32).toInt() * ROOM_SIZE
         if (lastRoomPos.equal(xPos, zPos) && currentRoom != null) return
@@ -104,33 +107,33 @@ object DungeonUtils {
 
         val room = scanRoom(xPos, zPos) ?: return
         val positions = room.let { findRoomTilesRecursively(it.x, it.z, it, mutableSetOf()) }
-        currentRoom = FullRoom(room, positions, emptyList())
+        currentRoom = FullRoom(room, BlockPos(0,0,0), positions, emptyList())
         currentRoom?.let {
             val topLayer = getTopLayerOfRoom(it.positions.first().x, it.positions.first().z)
             it.room.rotation = Rotations.entries.dropLast(1).find { rotation ->
                 it.positions.any { pos ->
-                    getBlockIdAt(pos.x + rotation.x, topLayer, pos.z + rotation.z) == 159 &&
-                    EnumFacing.HORIZONTALS.all { facing -> getBlockIdAt(pos.x + rotation.x + facing.frontOffsetX, topLayer, pos.z + rotation.z + facing.frontOffsetZ).equalsOneOf(159, 0) }
+                    val blockPos = BlockPos(pos.x + rotation.x, topLayer, pos.z + rotation.z)
+                    val isCorrectClay = getBlockIdAt(blockPos) == 159 &&
+                        EnumFacing.HORIZONTALS.all { facing -> getBlockIdAt(blockPos.add(facing.frontOffsetX, 0, facing.frontOffsetZ)).equalsOneOf(159, 0) }
+                    if (isCorrectClay) it.clayPos = blockPos
+                    return@any isCorrectClay
                 }
             } ?: Rotations.NONE
-            devMessage("Found rotation ${it.room.rotation}")
+            devMessage("Found rotation ${it.room.rotation}, clay pos: ${it.clayPos}")
+            setWaypoints(it)
+            EnteredDungeonRoomEvent(it).postAndCatch()
         }
-        setWaypoints()
-        EnteredDungeonRoomEvent(currentRoom).postAndCatch()
     }
 
     /**
      * Sets the waypoints for the current room.
-     * this code is way too much list manipulation, but it works
      */
-    fun setWaypoints() {
-        val curRoom = currentRoom ?: return
+    fun setWaypoints(curRoom: FullRoom) {
         val room = curRoom.room
-        val distinct = curRoom.positions.distinct().minByOrNull { it.core } ?: return
         curRoom.waypoints = mutableListOf<DungeonWaypoint>().apply {
-            DungeonWaypointConfig.waypoints[room.data.name]?.let { waypoints ->
+            DungeonWaypointConfigCLAY.waypoints[room.data.name]?.let { waypoints ->
                 addAll(waypoints.map { waypoint ->
-                    val vec = waypoint.toVec3().rotateAroundNorth(room.rotation).addVec(x = distinct.x, z = distinct.z)
+                    val vec = waypoint.toVec3().rotateAroundNorth(room.rotation).addVec(x = curRoom.clayPos.x, z = curRoom.clayPos.z)
                     DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, waypoint.color, waypoint.filled, waypoint.depth, waypoint.aabb, waypoint.title)
                 })
             }
@@ -167,7 +170,7 @@ object DungeonUtils {
      * @return The y-value of the roof, this is the y-value of the blocks.
      */
     private fun getTopLayerOfRoom(x: Int, z: Int): Int {
-        var currentHeight = 130
+        var currentHeight = 170
         while (isAir(x, currentHeight, z) && currentHeight > 70) {
             currentHeight--
         }
@@ -240,9 +243,11 @@ object DungeonUtils {
         dungeonTeammates = emptyList()
         dungeonTeammatesNoSelf = emptyList()
         leapTeammates.clear()
+        currentRoom = null
+        lastRoomPos = 0 to 0
     }
 
-    private val tablistRegex = Regex("^\\[(\\d+)\\] (?:\\[\\w+\\] )*(\\w+) (?:.)*?\\((\\w+)(?: (\\w+))*\\)\$")
+    private val tablistRegex = Regex("^\\[(\\d+)] (?:\\[\\w+] )*(\\w+) .*?\\((\\w+)(?: (\\w+))*\\)$")
 
     private fun getDungeonTeammates(previousTeammates: List<DungeonPlayer>): List<DungeonPlayer> {
         val teammates = mutableListOf<DungeonPlayer>()
@@ -252,12 +257,12 @@ object DungeonUtils {
 
             val (_, sbLevel, name, clazz, clazzLevel) = tablistRegex.find(line.noControlCodes)?.groupValues ?: continue
 
-            addTeammate(name, clazz, teammates, networkPlayerInfo)
-            if (clazz == "DEAD") {
+            addTeammate(name, clazz, teammates, networkPlayerInfo) // will fail to find the EMPTY or DEAD class and won't add them to the list
+            if (clazz == "DEAD" || clazz == "EMPTY") {
                 val previousClass = previousTeammates.find { it.name == name }?.clazz ?: continue
-                addTeammate(name, previousClass.name, teammates, networkPlayerInfo)
+                addTeammate(name, previousClass.name, teammates, networkPlayerInfo) // will add the player with the previous class
             }
-            teammates.find { it.name == name }?.isDead = clazz == "DEAD"
+            teammates.find { it.name == name }?.isDead = clazz == "DEAD" // set the player as dead if they are
         }
         return teammates
     }
@@ -271,28 +276,10 @@ object DungeonUtils {
     }
 
     fun getDungeonTabList(): List<Pair<NetworkPlayerInfo, String>>? {
-        val tabEntries = tabList
-        if (tabEntries.size < 18 || !tabEntries[0].second.contains("§r§b§lParty §r§f(")) {
-            return null
-        }
+        val tabEntries = getTabList
+        if (tabEntries.size < 18 || !tabEntries[0].second.contains("§r§b§lParty §r§f(")) return null
         return tabEntries
     }
-
-    private val tabListOrder = Comparator<NetworkPlayerInfo> { o1, o2 ->
-        if (o1 == null) return@Comparator -1
-        if (o2 == null) return@Comparator 0
-        return@Comparator ComparisonChain.start().compareTrueFirst(
-            o1.gameType != WorldSettings.GameType.SPECTATOR,
-            o2.gameType != WorldSettings.GameType.SPECTATOR
-        ).compare(
-            o1.playerTeam?.registeredName ?: "",
-            o2.playerTeam?.registeredName ?: ""
-        ).compare(o1.gameProfile.name, o2.gameProfile.name).result()
-    }
-
-    private val tabList: List<Pair<NetworkPlayerInfo, String>>
-        get() = (mc.thePlayer?.sendQueue?.playerInfoMap?.sortedWith(tabListOrder) ?: emptyList())
-            .map { Pair(it, mc.ingameGUI.tabList.getPlayerName(it)) }
 
     /**
      * Determines whether a given block state and position represent a secret location.

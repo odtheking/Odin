@@ -1,18 +1,12 @@
 package me.odinmain.features.impl.render
 
 
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonDeserializationContext
-import com.google.gson.JsonDeserializer
-import com.google.gson.JsonElement
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import com.google.gson.*
+import kotlinx.coroutines.*
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.render.ClickGUIModule.devSize
 import me.odinmain.utils.getDataFromServer
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.scale
+import me.odinmain.utils.render.*
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.model.ModelBase
 import net.minecraft.client.model.ModelRenderer
@@ -60,7 +54,7 @@ object DevPlayers {
     }
 
     private fun convertDecimalToNumber(s: String): String {
-        val pattern = Regex("""Decimal\('(\d+(?:\.\d+)?)'\)""")
+        val pattern = Regex("""Decimal\('(-?\d+(?:\.\d+)?)'\)""")
 
         return s.replace(pattern) { match -> match.groupValues[1] }
     }
@@ -81,11 +75,12 @@ object DevPlayers {
         updateDevs()
     }
 
-    fun preRenderCallbackScaleHook(entityLivingBaseIn: AbstractClientPlayer ) {
+    fun preRenderCallbackScaleHook(entityLivingBaseIn: AbstractClientPlayer) {
         if (!devs.containsKey(entityLivingBaseIn.name)) return
         if (!devSize && entityLivingBaseIn.name == mc.thePlayer.name) return
-        val dev = devs[entityLivingBaseIn.name]
-        if (dev != null) { scale(dev.xScale, dev.yScale, dev.zScale) }
+        val dev = devs[entityLivingBaseIn.name] ?: return
+        scale(dev.xScale, dev.yScale, dev.zScale)
+        if (dev.yScale < 0) translate(0f, dev.yScale * -2, 0f)
     }
 
     @SubscribeEvent
@@ -130,6 +125,8 @@ object DevPlayers {
             val x = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks
             val y = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks
             val z = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks
+            if (dev.yScale < 0) translate(0f, dev.yScale * -2, 0f)
+
             GlStateManager.translate(-mc.renderManager.viewerPosX + x, -mc.renderManager.viewerPosY + y, -mc.renderManager.viewerPosZ + z)
             GlStateManager.scale(-0.2 * dev.xScale, -0.2 * dev.yScale, 0.2 * dev.zScale)
             GlStateManager.rotate(180 + rotation, 0f, 1f, 0f)
@@ -161,7 +158,6 @@ object DevPlayers {
             GlStateManager.disableCull()
             GlStateManager.color(1f, 1f, 1f, 1f)
             GlStateManager.popMatrix()
-
         }
 
         private fun interpolate(yaw1: Float, yaw2: Float, percent: Float): Float {

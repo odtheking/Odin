@@ -2,9 +2,7 @@ package me.odinmain.features.impl.render
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -19,7 +17,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 object DragonHitboxes : Module(
     name = "Dragon Hitboxes",
     category = Category.RENDER,
-    description = "Renders real dragon hitboxes."
+    description = "Draws hitboxes around dragons."
 ) {
     private val onlyM7: Boolean by BooleanSetting(name = "Only M7")
     private val color: Color by ColorSetting(name = "Hitbox Color", default = Color(0, 255, 255))

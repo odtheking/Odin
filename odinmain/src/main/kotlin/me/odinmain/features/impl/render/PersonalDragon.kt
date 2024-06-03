@@ -2,9 +2,7 @@ package me.odinmain.features.impl.render
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderX
 import me.odinmain.utils.render.RenderUtils.renderY
@@ -23,7 +21,7 @@ import kotlin.math.sin
 object PersonalDragon : Module(
     name = "Personal Dragon",
     category = Category.RENDER,
-    description = "Renders your own personal dragon."
+    description = "Spawns your own personal dragon."
 ) {
     private val onlyF5: Boolean by BooleanSetting(name = "Only F5", default = true)
     private val scale: Float by NumberSetting(name = "Scale", 0.5f, 0.0f, 1.0f, 0.01f)

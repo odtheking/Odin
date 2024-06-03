@@ -1,10 +1,10 @@
 package me.odinclient.features.impl.floor7.p3
 
-import me.odinmain.events.impl.PacketReceivedEvent
-import me.odinmain.events.impl.PacketSentEvent
-import me.odinmain.events.impl.PostEntityMetadata
+import me.odinmain.events.impl.*
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.impl.floor7.p3.TerminalSolver
+import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.addVec
 import me.odinmain.utils.clock.Clock
@@ -22,11 +22,10 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 object TerminalAura : Module(
     name = "Terminal Aura",
     category = Category.FLOOR7,
-    description = "Automatically interacts with inactive terminals in M7P3.",
+    description = "Automatically interacts with inactive terminals in floor 7.",
     tag = TagType.RISKY
 ) {
 
-    private val throttleInteract: Boolean by BooleanSetting("Throttle Interact", true)
     private val onGround: Boolean by BooleanSetting("On Ground", true)
 
     private val clickClock = Clock(1000)
@@ -47,8 +46,9 @@ object TerminalAura : Module(
     fun onPacketSent(event: PacketSentEvent) {
         val packet = event.packet
         if (packet !is C02PacketUseEntity) return
-        if (!throttleInteract || packet.getEntityFromWorld(mc.theWorld).name.noControlCodes != "Inactive Terminal") return
-        if (!interactClock.hasTimePassed()) event.isCanceled = true else interactClock.update()
+        val entity = packet.getEntityFromWorld(mc.theWorld) ?: return
+        if (entity.name.noControlCodes != "Inactive Terminal") return
+        if (!interactClock.hasTimePassed() || TerminalSolver.currentTerm != TerminalTypes.NONE) event.isCanceled = true else interactClock.update()
     }
 
     @SubscribeEvent
@@ -76,4 +76,5 @@ object TerminalAura : Module(
         mc.thePlayer.sendQueue.addToSendQueue(C02PacketUseEntity(terminal, C02PacketUseEntity.Action.INTERACT))
         clickClock.update()
     }
+
 }

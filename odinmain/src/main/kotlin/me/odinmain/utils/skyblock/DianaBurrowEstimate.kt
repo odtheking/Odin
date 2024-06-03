@@ -4,9 +4,7 @@ import me.odinmain.features.impl.skyblock.DianaHelper
 import me.odinmain.utils.*
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.network.play.server.S2APacketParticles
-import net.minecraft.util.EnumParticleTypes
-import net.minecraft.util.Vec3
-import net.minecraft.util.Vec3i
+import net.minecraft.util.*
 import kotlin.math.*
 
 object DianaBurrowEstimate {
@@ -53,18 +51,23 @@ object DianaBurrowEstimate {
     }
 
 
-    fun blockEvent(pos: Vec3i) {
+    fun blockEvent(pos: Vec3i, isFullyBroken: Boolean = false) {
+        if (isFullyBroken) {
+            burrows.remove(pos)
+            DianaHelper.burrowsRender.remove(pos)
+        }
         if (pos !in burrows.keys || !isHolding("ANCESTRAL_SPADE")) return
         lastBurrow = pos
     }
 
     fun chat(message: String) {
         if (!message.startsWith("You dug out a Griffin Burrow!") && message != "You finished the Griffin burrow chain! (4/4)") return
-        lastBurrow?.let {
-            recentBurrows.add(it)
-            burrows.remove(it)
-            DianaHelper.burrowsRender.remove(it)
-            lastBurrow = null
+
+       lastBurrow?.let {
+           recentBurrows.add(it)
+           burrows.remove(it)
+           DianaHelper.burrowsRender.remove(it)
+           lastBurrow = null
         }
     }
 
@@ -173,9 +176,9 @@ object DianaBurrowEstimate {
                     particlePositions[particlePositions.size - 1].xCoord - particlePositions[particlePositions.size - 2].xCoord,
                     particlePositions[particlePositions.size - 1].zCoord - particlePositions[particlePositions.size - 2].xCoord
                 )
-
+                val estimatedBurrowDistance = estimatedBurrowDistance ?: return
                 var i = start + 1
-                while (distCovered < estimatedBurrowDistance!! && i < 10000) {
+                while (distCovered < estimatedBurrowDistance && i < 10000) {
                     val y = b / (i + a) + c
                     val dist = distMultiplier * (0.06507 * i + 0.259) // this is where inaccuracy comes from
 
@@ -201,7 +204,7 @@ object DianaBurrowEstimate {
                             distCovered = hypot(lastPos[0] - it.xCoord, lastPos[2] - it.zCoord)
                         }
 
-                        if (distCovered > estimatedBurrowDistance!!) break
+                        if (distCovered > estimatedBurrowDistance) break
                     }
                     i++
                 }

@@ -6,12 +6,11 @@ import me.odinmain.utils.render.Color
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
-import net.minecraft.entity.item.EntityArmorStand
+import net.minecraft.entity.Entity
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.ItemStack
-import net.minecraft.nbt.NBTTagCompound
-import net.minecraft.nbt.NBTTagList
-import net.minecraft.nbt.NBTTagString
+import net.minecraft.nbt.*
+import net.minecraftforge.common.util.Constants
 
 /**
  * Returns the ExtraAttribute Compound
@@ -35,16 +34,25 @@ val ItemStack.lore: List<String>
         List(it.tagCount()) { i -> it.getStringTagAt(i) }
     } ?: emptyList()
 
+val ItemStack.getLore: List<String>
+    get() = this.getTooltip(mc.thePlayer, false)
+
+
+
 /**
  * Returns Item ID for an Item
  */
 val ItemStack?.itemID: String
     get() = this?.extraAttributes?.getString("id") ?: ""
 
+/**
+ * Returns uuid for an Item
+ */
+val ItemStack?.uuid: String
+    get() = this?.extraAttributes?.getString("uuid") ?: ""
 
 inline val heldItem: ItemStack?
     get() = mc.thePlayer?.heldItem
-
 
  /**
  * Returns if an item has an ability
@@ -90,6 +98,27 @@ fun getItemIndexInContainerChest(container: ContainerChest, item: String, subLis
     }?.slotIndex
 }
 
+/**
+ * Gets index of an item in a chest using its uuid.
+ * @return null if not found.
+ */
+fun getItemIndexInContainerChestByUUID(container: ContainerChest, uuid: String, subList: IntRange = 0..container.inventory.size - 36, ignoreCase: Boolean = false): Int? {
+    return container.inventorySlots.subList(subList.first, subList.last + 1).firstOrNull {
+        it.stack?.uuid?.contains(uuid) == true
+    }?.slotIndex
+}
+
+/**
+ * Gets index of an item in a chest using its lore.
+ * @return null if not found.
+ */
+fun getItemIndexInContainerChestByLore(container: ContainerChest, lore: String, subList: IntRange = 0..container.inventory.size - 36, ignoreCase: Boolean = false): Int? {
+    return container.inventorySlots.subList(subList.first, subList.last + 1).firstOrNull {
+        it.stack?.lore?.contains(lore) == true
+    }?.slotIndex
+}
+
+
 
 enum class ItemRarity(
     val loreName: String,
@@ -125,15 +154,15 @@ fun getRarity(lore: List<String>): ItemRarity? {
     return null
 }
 
-fun getSkullValue(armorStand: EntityArmorStand?): String? {
-    return armorStand?.inventory
+fun getSkullValue(entity: Entity?): String? {
+    return entity?.inventory
         ?.get(4)
         ?.tagCompound
         ?.getCompoundTag("SkullOwner")
         ?.getCompoundTag("Properties")
-        ?.getTagList("textures", 10)
+        ?.getTagList("textures", Constants.NBT.TAG_COMPOUND)
         ?.getCompoundTagAt(0)
-        ?.getString("Value")
+        ?.getString("Value") ?: return null
 }
 
 fun ItemStack.setLore(lines: List<String>): ItemStack {

@@ -2,12 +2,8 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import me.odinmain.OdinMain.mc
-import me.odinmain.events.impl.EnteredDungeonRoomEvent
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.showOrder
 import me.odinmain.utils.Vec2
 import me.odinmain.utils.addRotationCoords
@@ -15,6 +11,7 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.tiles.Room
 import me.odinmain.utils.skyblock.dungeon.tiles.Rotations
 import me.odinmain.utils.skyblock.getBlockAt
 import me.odinmain.utils.skyblock.modMessage
@@ -24,6 +21,10 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
+import java.util.*
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
 
 object WaterSolver {
 
@@ -43,60 +44,53 @@ object WaterSolver {
     private var openedWater = -1L
 
     @OptIn(DelicateCoroutinesApi::class)
-    fun scan(event: EnteredDungeonRoomEvent) {
-        val room = event.room?.room ?: return
-        if (room.data.name != "Water Board") return
+    fun scan() {
+        val room = DungeonUtils.currentRoom?.room ?: return
+        if (room.data.name != "Water Board" || variant != -1) return
+
         GlobalScope.launch {
-            val x = room.x
-            val z = room.z
-            val rotation = room.rotation
-
-            val centerPos = Vec2(x, z).addRotationCoords(rotation, 4)
-
-            chestPosition = centerPos.addRotationCoords(rotation, -11)
-            roomFacing = rotation
-            delay(150)
-            solve()
+            solve(room)
         }
     }
 
-    private fun solve() {
-        val pistonHeadPosition = chestPosition.addRotationCoords(roomFacing, -5)
-        val pistonHeadPos = BlockPos(pistonHeadPosition.x, 82, pistonHeadPosition.z)
+    private fun solve(room: Room) {
+        val rotation = room.rotation
 
-        val blockList = BlockPos.getAllInBox(BlockPos(pistonHeadPos.x + 1, 78, pistonHeadPos.z + 1), BlockPos(pistonHeadPos.x - 1, 77, pistonHeadPos.z - 1))
-        var foundGold = false
-        var foundClay = false
-        var foundEmerald = false
-        var foundQuartz = false
-        var foundDiamond = false
+        chestPosition = room.vec2.addRotationCoords(rotation, -7)
+
+        roomFacing = rotation
+
+        val pistonHeadPosition = chestPosition.addRotationCoords(roomFacing, -5).let { BlockPos(it.x, 82, it.z) }
+        val blockList = BlockPos.getAllInBox(BlockPos(pistonHeadPosition.x + 1, 78, pistonHeadPosition.z + 1),
+            BlockPos(pistonHeadPosition.x - 1, 77, pistonHeadPosition.z - 1))
+
+        val foundBlocks = mutableListOf(false, false, false, false, false)
+
         for (blockPos in blockList) {
             when (getBlockAt(blockPos)) {
-                Blocks.gold_block -> foundGold = true
-                Blocks.hardened_clay -> foundClay = true
-                Blocks.emerald_block -> foundEmerald = true
-                Blocks.quartz_block -> foundQuartz = true
-                Blocks.diamond_block -> foundDiamond = true
+                Blocks.gold_block -> foundBlocks[0] = true
+                Blocks.hardened_clay -> foundBlocks[1] = true
+                Blocks.emerald_block -> foundBlocks[2] = true
+                Blocks.quartz_block -> foundBlocks[3] = true
+                Blocks.diamond_block -> foundBlocks[4] = true
             }
         }
 
-        // If the required blocks are found, then set the variant and extendedSlots.
         variant = when {
-            foundGold && foundClay -> 0
-            foundEmerald && foundQuartz -> 1
-            foundQuartz && foundDiamond -> 2
-            foundGold && foundQuartz -> 3
+            foundBlocks[0] && foundBlocks[1] -> 0
+            foundBlocks[2] && foundBlocks[3] -> 1
+            foundBlocks[3] && foundBlocks[4] -> 2
+            foundBlocks[0] && foundBlocks[3] -> 3
             else -> -1
         }
 
         extendedSlots = ""
         WoolColor.entries.filter { it.isExtended }.forEach { extendedSlots += it.ordinal.toString() }
-        modMessage(extendedSlots)
+
         // If the extendedSlots length is not 3, then retry.
         if (extendedSlots.length != 3) {
             extendedSlots = ""
             variant = -1
-            solve()
             return
         }
 
@@ -124,7 +118,7 @@ object WaterSolver {
 
 
     fun waterRender() {
-        if (DungeonUtils.currentRoomName != "Water Board") return
+        if (DungeonUtils.currentRoomName != "Water Board" || variant == -1) return
 
         val solutionList = solutions
             .flatMap { (lever, times) -> times.drop(lever.i).map { Pair(lever, it) } }
@@ -150,19 +144,22 @@ object WaterSolver {
                     Vec3(solutionList.first().first.leverPos).addVector(0.5, 0.5, 0.5),
                     Vec3(second.first.leverPos).addVector(0.5, 0.5, 0.5),
                     PuzzleSolvers.tracerColorSecond,
+                    lineWidth = 1.5f,
                     depth = true
                 )
             }
         }
 
-        for (solution in solutions) {
+        val finalSolution = solutions.toMap()
+
+        for (solution in finalSolution) {
             var orderText = ""
             solution.value.drop(solution.key.i).forEach {
                 orderText = if (it == 0.0) orderText.plus("0")
                 else orderText.plus("${if (orderText.isEmpty()) "" else ", "}${sortedSolutions.indexOf(it) + 1}")
             }
             if (showOrder)
-                Renderer.drawStringInWorld(orderText, Vec3(solution.key.leverPos).addVector(.5, .5, .5), Color.WHITE, false, scale = .035f, depth = true)
+                Renderer.drawStringInWorld(orderText, Vec3(solution.key.leverPos).addVector(.5, .5, .5), Color.WHITE, scale = .035f)
 
             for (i in solution.key.i until solution.value.size) {
                 val time = solution.value[i]
@@ -171,14 +168,15 @@ object WaterSolver {
                     else "§e${time}s"
                 } else {
                     val remainingTime = openedWater + time * 1000L - System.currentTimeMillis()
-                    if (remainingTime > 0) "§e${remainingTime / 1000}s"
+                    if (remainingTime > 0) "§e${String.format(Locale.US, "%.2f",remainingTime / 1000)}s"
                     else "§a§lCLICK ME!"
                 }
 
-                Renderer.drawStringInWorld(displayText, Vec3(solution.key.leverPos).addVector(0.5, (i - solution.key.i) * 0.5 + 1.5, 0.5), Color.WHITE, false, depth = true, scale = 0.04f)
+                Renderer.drawStringInWorld(displayText, Vec3(solution.key.leverPos).addVector(0.5, (i - solution.key.i) * 0.5 + 1.5, 0.5), Color.WHITE, scale = 0.04f)
             }
         }
     }
+
 
     fun waterInteract(event: C08PacketPlayerBlockPlacement) {
         if (solutions.isEmpty()) return

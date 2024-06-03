@@ -5,14 +5,12 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.getMCTextWidth
-import me.odinmain.utils.render.mcText
+import me.odinmain.utils.render.*
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object NecronDropTimer : Module(
     name = "Necron Drop Timer",
-    description = "Shows a timer for when Necron drops you down.",
+    description = "Displays the time until Necron drops you in floor 7.",
     category = Category.FLOOR7
 ) {
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {

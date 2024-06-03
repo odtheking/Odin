@@ -5,16 +5,13 @@ import com.github.stivais.ui.constraints.at
 import com.github.stivais.ui.constraints.constrain
 import com.github.stivais.ui.constraints.percent
 import com.github.stivais.ui.constraints.px
-import com.github.stivais.ui.elements.scope.ElementScope
-import com.github.stivais.ui.elements.scope.slider
-import com.github.stivais.ui.elements.scope.takeEvents
+import com.github.stivais.ui.elements.scope.*
 import com.github.stivais.ui.impl.ClickGUITheme
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import me.odinmain.features.settings.Saving
 import me.odinmain.features.settings.Setting
-import me.odinmain.utils.floor
-import me.odinmain.utils.round
+import me.odinmain.utils.*
 import kotlin.math.round
 
 /**

@@ -11,10 +11,7 @@ import me.odinmain.ui.clickgui.util.HoverHandler
 import me.odinmain.ui.hud.EditHUDGui.dragging
 import me.odinmain.ui.util.MouseUtils.isAreaHovered
 import me.odinmain.utils.endProfile
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.rectangleOutline
-import me.odinmain.utils.render.scale
-import me.odinmain.utils.render.translate
+import me.odinmain.utils.render.*
 import me.odinmain.utils.startProfile
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
@@ -32,7 +29,8 @@ open class HudElement(
     y: Float = 0f,
     val displayToggle: Boolean,
     defaultScale: Float = 2f,
-    val render: Render = { 0f to 0f }
+    val render: Render = { 0f to 0f },
+    val settingName: String
 ) {
 
     private var parentModule: Module? = null
@@ -45,7 +43,7 @@ open class HudElement(
     internal val xSetting: NumberSetting<Float>
     internal val ySetting: NumberSetting<Float>
     internal val scaleSetting: NumberSetting<Float>
-    val enabledSetting: BooleanSetting = BooleanSetting("hudEnabled", default = enabled, hidden = true)
+    val enabledSetting: BooleanSetting = BooleanSetting("$settingName enabled", default = enabled, hidden = true)
 
 
     val hoverHandler = HoverHandler(200)
@@ -167,11 +165,11 @@ open class HudElement(
     /** Used for smooth resetting animations */
     internal var resetScale: Float = 0f
 
-    private val xHud = NumberSetting("xHud", default = x, hidden = true, min = 0f, max = Float.MAX_VALUE)
-    private val yHud = NumberSetting("yHud", default = y, hidden = true, min = 0f, max = Float.MAX_VALUE)
+    private val xHud = NumberSetting("$settingName x", default = x, hidden = true, min = 0f, max = Float.MAX_VALUE)
+    private val yHud = NumberSetting("$settingName y", default = y, hidden = true, min = 0f, max = Float.MAX_VALUE)
 
     init {
-        val scaleHud = NumberSetting("scaleHud", defaultScale, 1f, 8.0f, 0.01f, hidden = true)
+        val scaleHud = NumberSetting("$settingName scale", defaultScale, 1f, 8.0f, 0.01f, hidden = true)
 
         this.xSetting = xHud
         this.ySetting = yHud

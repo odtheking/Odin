@@ -13,24 +13,20 @@ import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.skyblock.devMessage
-import me.odinmain.utils.skyblock.getBlockIdAt
-import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.skyblock.*
 import net.minecraft.block.BlockButtonStone
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.init.Blocks
 import net.minecraft.item.Item
-import net.minecraft.util.AxisAlignedBB
-import net.minecraft.util.BlockPos
-import net.minecraft.util.Vec3
+import net.minecraft.util.*
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object SimonSays : Module(
     name = "Simon Says",
-    description = "Different features for the Simon Says puzzle in f7/m7.",
+    description = "Different features for the Simon Says puzzle in floor 7.",
     category = Category.FLOOR7,
     tag = TagType.RISKY
 ) {
@@ -124,7 +120,7 @@ object SimonSays : Module(
     fun onEntityJoin(event: PostEntityMetadata) {
         val ent = mc.theWorld.getEntityByID(event.packet.entityId)
         if (ent !is EntityItem || Item.getIdFromItem(ent.entityItem.item) != 77) return
-        val pos = BlockPos(ent.posX.floor(), ent.posY.floor(), ent.posZ.floor()).east()
+        val pos = BlockPos(ent.posX.floor().toDouble(), ent.posY.floor().toDouble(), ent.posZ.floor().toDouble()).east()
         val index = clickInOrder.indexOf(pos)
         if (index == 2 && clickInOrder.size == 3) {
             clickInOrder.removeFirst()

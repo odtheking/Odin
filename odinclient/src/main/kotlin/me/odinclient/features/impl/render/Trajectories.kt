@@ -4,20 +4,15 @@ import me.odinmain.events.impl.RenderEntityModelEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.addVec
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.OutlineUtils
-import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.*
 import me.odinmain.utils.render.RenderUtils.bind
 import me.odinmain.utils.render.RenderUtils.renderX
 import me.odinmain.utils.render.RenderUtils.renderY
 import me.odinmain.utils.render.RenderUtils.renderZ
 import me.odinmain.utils.render.RenderUtils.worldRenderer
-import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.isShortbow
 import me.odinmain.utils.skyblock.itemID
@@ -38,7 +33,7 @@ import kotlin.math.sqrt
 
 object Trajectories : Module(
     "Trajectories",
-    description = "Displays the trajectory of certain items.",
+    description = "Displays the trajectory of pearls and bows.",
     category = Category.RENDER
 ) {
     private val bows: Boolean by BooleanSetting("Bows", true, description = "Render trajectories of bow arrows")

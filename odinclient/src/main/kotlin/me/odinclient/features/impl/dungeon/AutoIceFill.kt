@@ -1,25 +1,18 @@
 package me.odinclient.features.impl.dungeon
 
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import me.odinclient.utils.skyblock.PlayerUtils.clipTo
 import me.odinclient.utils.waitUntilPacked
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.puzzlesolvers.IceFillSolver
 import me.odinmain.features.impl.dungeon.puzzlesolvers.IceFillSolver.currentPatterns
-import me.odinmain.features.impl.dungeon.puzzlesolvers.IceFillSolver.transform
 import me.odinmain.features.impl.dungeon.puzzlesolvers.IceFillSolver.transformTo
-import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.plus
+import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.PlayerUtils.posFloored
 import me.odinmain.utils.skyblock.dungeon.tiles.Rotations
 import me.odinmain.utils.skyblock.getBlockIdAt
-import net.minecraft.util.BlockPos
-import net.minecraft.util.Vec3
-import net.minecraft.util.Vec3i
+import net.minecraft.util.*
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
@@ -52,7 +45,7 @@ object AutoIceFill: Module(
         } catch (e: Exception) {
             return
         }
-        val (bx, bz) = transform(pattern[0].x, pattern[0].z, rotation)
+        val (bx, bz) = Vec2(0,0) //transform(pattern[0].x, pattern[0].z, rotation)
         clipTo(x + bx, y + 1, z + bz)
         for (i in 0..pattern.size - 2) {
             val deferred = waitUntilPacked(
@@ -68,7 +61,7 @@ object AutoIceFill: Module(
             )
         }
         if (floorIndex == 2) return
-        val (bx2, bz2) = transform(pattern[pattern.size - 1].x, pattern[pattern.size - 1].z, rotation)
+        val (bx2, bz2) = Vec2(0,0) //transform(pattern[pattern.size - 1].x, pattern[pattern.size - 1].z, rotation)
         val deferred = waitUntilPacked(x + bx2, y, z + bz2)
         try {
             deferred.await()

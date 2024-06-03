@@ -3,22 +3,19 @@ package me.odinmain.features.impl.floor7.p3
 import me.odinmain.events.impl.RealServerTick
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.HudSetting
+import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.getMCTextWidth
-import me.odinmain.utils.render.mcText
+import me.odinmain.utils.render.*
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object GoldorTimer : Module(
     name = "Goldor Timer",
     category = Category.FLOOR7,
-    description = "Tick Timer for when goldor kills players"
+    description = "Displays the time until the Goldor fight starts in floor 7."
 ) {
     private val startTimer: Boolean by BooleanSetting("Start Timer", default = true, description = "5 second countdown until terms/devices are able to be completed")
     private val displayText: Boolean by BooleanSetting("Display Text", default = true, description = "Displays \"Start\"/\"Tick\" before the count")
-    private val displayInTicks: Boolean by BooleanSetting("Display in Ticks", default = false, description = "Displays the timer in game ticks rather than ms")
+    private val displayInTicks: Boolean by DualSetting("Timer Style", "Seconds", "Ticks", default = false, description = "Which Style to display timer in")
     private val symbolDisplay: Boolean by BooleanSetting("Display Symbol", default = true, description = "Displays s or t after the time")
     private val showPrefix: Boolean by BooleanSetting("Show Prefix", default = true, description = "Shows the prefix of the timer")
     private val hud: HudElement by HudSetting("Timer Hud", 10f, 10f, 1f, false) {

@@ -2,21 +2,16 @@ package me.odinmain.features.impl.floor7.p3.termsim
 
 
 import me.odinmain.OdinMain.display
-import me.odinmain.config.Config
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.events.impl.PacketSentEvent
-import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.utils.postAndCatch
-import me.odinmain.utils.round
-import me.odinmain.utils.runIn
-import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.features.impl.floor7.TerminalSimulator
+import me.odinmain.features.impl.floor7.p3.TerminalTimes
+import me.odinmain.features.impl.floor7.p3.TerminalTypes
+import me.odinmain.utils.*
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiChest
-import net.minecraft.inventory.ContainerChest
-import net.minecraft.inventory.InventoryBasic
-import net.minecraft.inventory.Slot
-import net.minecraft.item.Item
-import net.minecraft.item.ItemStack
+import net.minecraft.inventory.*
+import net.minecraft.item.*
 import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -30,6 +25,7 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
     private var inventoryBefore = arrayOf<ItemStack>()
     private var startTime = 0L
     protected var ping = 0L
+    private var consecutive = 0L
     private var doesAcceptClick = true
     private val minecraft get() = Minecraft.getMinecraft() // this is needed here for some fucking reason and I have no clue but the OdinMain one is sometimes (but not always) null when open() runs ???? (this took like 30 minutes to figure out)
 
@@ -37,35 +33,25 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
         this.inventorySlots.inventorySlots.subList(0, size).forEach { it.putStack(blackPane) } // override
     }
 
-    fun open(ping: Long = 0L) {
+    fun open(ping: Long = 0L, const: Long = 0L) {
         create()
-        minecraft.thePlayer?.inventory?.mainInventory?.let {
-            inventoryBefore = it.clone()
-        }
-        for (i in minecraft.thePlayer?.inventory?.mainInventory?.indices ?: 0..0) {
-            minecraft.thePlayer?.inventory?.mainInventory?.set(i, null)
-        }
         this.ping = ping
+        this.consecutive = const - 1
         display = this
         startTime = System.currentTimeMillis()
         GuiEvent.GuiLoadedEvent(name, inventorySlots as ContainerChest).postAndCatch()
     }
 
-    fun solved(name: String, oldPb: NumberSetting<Double>) {
-        val time = ((System.currentTimeMillis() - startTime) / 1000.0).round(2)
-        if (time < oldPb.value) {
-            modMessage("§a$name §7solved in §6$time §7(§d§lNew PB§r§7)! Old PB was §8${oldPb.value.round(2)}s§7.")
-            oldPb.value = time
-            Config.save()
-        } else modMessage("§a$name solved in §6${time}s §a!")
-        resetInv()
-        StartGui.open(ping)
+    fun solved(name: String, pbIndex: Int) {
+        val time = ((System.currentTimeMillis() - startTime) / 1000.0).round(2).toDouble()
+        TerminalTimes.simPBs.time(pbIndex, time, "s§7!", "§a$name §7solved in §6", addPBString = true, addOldPBString = true)
+        if (this.consecutive > 0) openTerminal(ping, consecutive) else if (TerminalSimulator.openStart) StartGui.open(ping) else mc.thePlayer.closeScreen()
     }
 
     open fun slotClick(slot: Slot, button: Int) {}
 
     override fun onGuiClosed() {
-        resetInv()
+        doesAcceptClick = true
         super.onGuiClosed()
     }
 
@@ -84,14 +70,21 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
     protected fun resetInv() {
         if (inventoryBefore.isNotEmpty())
             minecraft.thePlayer.inventory.mainInventory = inventoryBefore
-        inventoryBefore = arrayOf()
+    }
+
+    protected fun cleanInventory() {
+        minecraft.thePlayer?.inventory?.mainInventory?.let { inventoryBefore = it.clone() }
+
+        for (i in minecraft.thePlayer?.inventory?.mainInventory?.indices ?: 0..0) {
+            minecraft.thePlayer?.inventory?.setInventorySlotContents(i, null)
+        }
     }
 
     fun delaySlotClick(slot: Slot, button: Int) {
         if (!doesAcceptClick || slot.inventory != this.inv) return
-        slotClick(slot, button)
         doesAcceptClick = false
         runIn((ping / 50).toInt()) {
+            slotClick(slot, button)
             doesAcceptClick = true
         }
     }
@@ -106,5 +99,17 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
         val slot = slotIn ?: return
         if (slot.stack?.item == pane && slot.stack?.metadata == 15 || clickedButton != 4) return
         delaySlotClick(slot, 0)
+    }
+}
+
+fun openTerminal(ping: Long = 0L, const: Long = 0L) {
+
+    when (listOf(TerminalTypes.PANES, TerminalTypes.RUBIX, TerminalTypes.ORDER, TerminalTypes.STARTS_WITH, TerminalTypes.SELECT).random()) {
+        TerminalTypes.PANES -> CorrectPanes.open(ping, const)
+        TerminalTypes.RUBIX -> Rubix.open(ping, const)
+        TerminalTypes.ORDER -> InOrder.open(ping, const)
+        TerminalTypes.STARTS_WITH -> StartsWith(StartsWith.letters.shuffled().first()).open(ping, const)
+        TerminalTypes.SELECT -> SelectAll(EnumDyeColor.entries.getRandom().name.replace("_", " ").uppercase()).open(ping, const)
+        TerminalTypes.NONE -> {}
     }
 }

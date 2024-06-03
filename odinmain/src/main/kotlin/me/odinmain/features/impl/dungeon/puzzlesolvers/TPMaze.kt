@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
-import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.mazeColorMultiple
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.mazeColorOne
@@ -13,14 +12,12 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.toAABB
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
-import net.minecraft.util.AxisAlignedBB
-import net.minecraft.util.BlockPos
-import net.minecraft.util.Vec3
+import net.minecraft.util.*
 import java.util.concurrent.CopyOnWriteArraySet
 
 object TPMaze {
-    var portals = setOf<BlockPos>()
-    var correctPortals = listOf<BlockPos>()
+    private var portals = setOf<BlockPos>()
+    private var correctPortals = listOf<BlockPos>()
     private var visited = CopyOnWriteArraySet<BlockPos>()
 
     fun scan() {
@@ -42,7 +39,7 @@ object TPMaze {
         getCorrectPortals(Vec3(event.x, event.y, event.z), event.yaw, event.pitch)
     }
 
-    fun getCorrectPortals(pos: Vec3, yaw: Float, pitch: Float) {
+    private fun getCorrectPortals(pos: Vec3, yaw: Float, pitch: Float) {
         if (correctPortals.isEmpty()) correctPortals = correctPortals.plus(portals)
 
         correctPortals = correctPortals.filter {
@@ -59,7 +56,7 @@ object TPMaze {
         val color = if (correctPortals.size == 1) mazeColorOne else mazeColorMultiple
         correctPortals.forEach {
             if (visited.contains(it) && correctPortals.size != 1) return@forEach
-            Renderer.drawBox(RenderUtils.getBlockAABB(Blocks.end_portal_frame, it).expand(0.005, 0.005, 0.005), color, outlineAlpha = 0, fillAlpha = color.alpha, depth = !(solutionThroughWalls && correctPortals.size == 1 && !OdinMain.onLegitVersion))
+            Renderer.drawBox(RenderUtils.getBlockAABB(Blocks.end_portal_frame, it).expand(0.005, 0.005, 0.005), color, outlineAlpha = 0, fillAlpha = color.alpha, depth = !(solutionThroughWalls && correctPortals.size == 1))
         }
         visited.forEach {
             Renderer.drawBox(RenderUtils.getBlockAABB(Blocks.end_portal_frame, it).expand(0.005, 0.005, 0.005), mazeColorVisited, outlineAlpha = 0, fillAlpha = mazeColorVisited.alpha, depth = true)

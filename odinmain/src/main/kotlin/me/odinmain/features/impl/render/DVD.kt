@@ -2,12 +2,9 @@ package me.odinmain.features.impl.render
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.features.settings.impl.StringSetting
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.getMCTextHeight
-import me.odinmain.utils.render.mcText
-import me.odinmain.utils.render.roundedRectangle
+import me.odinmain.features.settings.impl.*
+import me.odinmain.utils.render.*
+import me.odinmain.utils.render.RenderUtils.bind
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.gui.ScaledResolution
@@ -23,12 +20,19 @@ object DVD : Module(
 ) {
     private val boxWidth: Int by NumberSetting("Box Width", 50, 0, 150, 1, description = "Width of the DVD box.")
     private val boxHeight: Int by NumberSetting("Box Height", 50, 0, 150, 1, description = "Height of the DVD box.")
+    private val roundedCorners: Boolean by BooleanSetting("Rounded Corners", true, description = "Whether the DVD box should have rounded corners.")
 
-    private val text: String by StringSetting("Text", "DVD", description = "Text to display on the DVD box.")
+    private val text: String by StringSetting("Text", "ODVD", description = "Text to display on the DVD box.")
     private val textScale: Float by NumberSetting("Text Scale", 1.5f, 0.1f, 2f, 0.1f, description = "Scale of the text.")
 
     private val speed: Long by NumberSetting("Speed", 10, 1, 20, 1, description = "Speed of the DVD box.")
 
+    override fun onEnable() {
+        x = Display.getWidth() / 2
+        y = Display.getHeight() / 2
+        super.onEnable()
+    }
+    
     private var x = Display.getWidth() / 2
     private var y = Display.getHeight() / 2
     private var dx = 1
@@ -43,9 +47,11 @@ object DVD : Module(
     }
 
     @SubscribeEvent
-    fun onRenderOverlay(event: RenderGameOverlayEvent) {
-        roundedRectangle(x, y, boxWidth, boxHeight, color, 9f)
+    fun onRenderOverlay(event: RenderGameOverlayEvent.Post) {
+        if (event.type != RenderGameOverlayEvent.ElementType.ALL) return
+        roundedRectangle(x, y, boxWidth, boxHeight, color, if (roundedCorners) 12f else 0f)
         mcText(text, x + boxWidth / 2, y + boxHeight / 2 - getMCTextHeight() * textScale / 2 , textScale, color, true)
+        Color.WHITE.bind()
     }
 
     init {
@@ -59,17 +65,29 @@ object DVD : Module(
             val screenHeight = sr.scaledHeight
 
             // Check collision with screen edges
-            if (x <= 0 || x + boxWidth >= screenWidth) {
+            if (x <= 0) {
+                x = 0 // Reset x position to prevent going out of bounds
+                getDVDColor()
+                dx = -dx // Reverse horizontal direction
+            } else if (x + boxWidth >= screenWidth) {
+                x = screenWidth - boxWidth // Adjust x position to prevent going out of bounds
                 getDVDColor()
                 dx = -dx // Reverse horizontal direction
             }
-            if (y <= 0 || y + boxHeight >= screenHeight) {
+
+            if (y <= 0) {
+                y = 0 // Reset y position to prevent going out of bounds
+                getDVDColor()
+                dy = -dy // Reverse vertical direction
+            } else if (y + boxHeight >= screenHeight) {
+                y = screenHeight - boxHeight // Adjust y position to prevent going out of bounds
                 getDVDColor()
                 dy = -dy // Reverse vertical direction
             }
 
+            // Check collision with corners
             if ((x <= 0 || x + boxWidth >= screenWidth) && (y <= 0 || y + boxHeight >= screenHeight)) {
-                modMessage("DVD hit a corner!")
+                modMessage("$text hit a corner!")
                 PlayerUtils.playLoudSound("note.pling", 100f, 1f)
             }
         }

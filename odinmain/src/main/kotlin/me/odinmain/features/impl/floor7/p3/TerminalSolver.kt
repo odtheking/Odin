@@ -1,9 +1,6 @@
 package me.odinmain.features.impl.floor7.p3
 
-import me.odinmain.events.impl.ChatPacketEvent
-import me.odinmain.events.impl.GuiEvent
-import me.odinmain.events.impl.TerminalClosedEvent
-import me.odinmain.events.impl.TerminalOpenedEvent
+import me.odinmain.events.impl.*
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.termGUI.CustomTermGui
@@ -15,19 +12,15 @@ import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.util.MouseUtils
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.postAndCatch
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.getMCTextWidth
-import me.odinmain.utils.render.mcText
-import me.odinmain.utils.render.translate
+import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.unformattedName
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.entity.player.InventoryPlayer
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.ContainerPlayer
-import net.minecraft.item.EnumDyeColor
-import net.minecraft.item.Item
-import net.minecraft.item.ItemStack
+import net.minecraft.item.*
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -36,12 +29,12 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 @AlwaysActive // So it can be used in other modules
 object TerminalSolver : Module(
     name = "Terminal Solver",
-    description = "Renders solution of terminals in f7/m7",
+    description = "Renders solution for terminals in floor 7.",
     category = Category.FLOOR7
 ) {
     private val lockRubixSolution: Boolean by BooleanSetting("Lock Rubix Solution", false, description = "Locks the 'correct' color of the rubix terminal to the one that was scanned first, should make the solver less 'jumpy'.")
     private val cancelToolTip: Boolean by BooleanSetting("Stop Tooltips", default = true, description = "Stops rendering tooltips in terminals")
-    private val renderType: Int by SelectorSetting("Mode", "Odin", arrayListOf("Odin", "Skytils", "SBE", "Custom GUI"))
+    val renderType: Int by SelectorSetting("Mode", "Odin", arrayListOf("Odin", "Skytils", "SBE", "Custom GUI"))
     val customGuiText: Int by SelectorSetting("Custom Gui Title", "Top Left", arrayListOf("Top Left", "Middle", "Disabled")).withDependency { renderType == 3 }
     val customScale: Float by NumberSetting("Custom Scale", 1f, .8f, 2.5f, .1f, description = "Size of the Custom Terminal Gui").withDependency { renderType == 3 }
     val textShadow: Boolean by BooleanSetting("Shadow", true, description = "Adds a shadow to the text")
@@ -66,7 +59,7 @@ object TerminalSolver : Module(
     val startsWithColor: Color by ColorSetting("Starts With Color", Color(0, 170, 170), true).withDependency { showColors }
     val selectColor: Color by ColorSetting("Select Color", Color(0, 170, 170), true).withDependency { showColors }
     val customGuiColor: Color by ColorSetting("Custom Gui Color", ColorUtil.moduleButtonColor.withAlpha(.8f), true).withDependency { showColors }
-    val gap: Int by NumberSetting("Gap", 20, 0, 20, 1, false, "gap between items").withDependency { renderType == 3 }
+    val gap: Int by NumberSetting("Gap", 10, 0, 20, 1, false, "gap between items").withDependency { renderType == 3 }
     val textScale: Int by NumberSetting("Text Scale", 1, 1, 3, increment = 1, description = "Text scale").withDependency { renderType == 3 }
 
     private var lastRubixSolution: Int? = null
@@ -133,9 +126,8 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun drawSlot(event: GuiEvent.DrawSlotEvent) {
-        if ((removeWrong || renderType == 0) && enabled && getShouldBlockWrong() && event.slot.slotIndex <= event.container.inventorySlots.size - 37 && event.slot.slotIndex !in solution) event.isCanceled = true
-        if (event.slot.slotIndex !in solution || event.slot.slotIndex > event.container.inventorySlots.size - 37 || event.slot.inventory == mc.thePlayer.inventory || !enabled || renderType == 3) return
-        val stack = event.slot.stack?.item?.registryName ?: return
+        if ((removeWrong || renderType == 0) && enabled && getShouldBlockWrong() && event.slot.slotIndex <= event.container.inventorySlots.size - 37 && event.slot.slotIndex !in solution && event.slot.inventory !is InventoryPlayer) event.isCanceled = true
+        if (event.slot.slotIndex !in solution || event.slot.slotIndex > event.container.inventorySlots.size - 37 || !enabled || renderType == 3 || event.slot.inventory is InventoryPlayer) return
 
         translate(0f, 0f, zLevel)
         GlStateManager.disableLighting()
@@ -164,7 +156,6 @@ object TerminalSolver : Module(
                     val amount = event.slot.stack?.stackSize ?: 0
                     mcText(amount.toString(), event.x + 8.5f - getMCTextWidth(amount.toString()) / 2, event.y + 4.5f, 1, textColor, shadow = textShadow, false)
                 }
-                if (stack != "minecraft:stained_glass_pane") event.isCanceled = true
             }
             TerminalTypes.STARTS_WITH ->
                 if (renderType != 1 || (renderType == 1 && !removeWrong)) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, startsWithColor.rgba)

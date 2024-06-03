@@ -1,10 +1,7 @@
 package me.odinmain.features.impl.render
 
-import com.github.stivais.ui.color.color
 import com.github.stivais.ui.constraints.px
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import me.odinmain.OdinMain
 import me.odinmain.config.Config
 import me.odinmain.features.Category
@@ -16,14 +13,10 @@ import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.sendDataToServer
-import me.odinmain.utils.skyblock.LocationUtils
-import me.odinmain.utils.skyblock.createClickStyle
-import me.odinmain.utils.skyblock.getChatBreak
-import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.skyblock.*
 import net.minecraft.event.ClickEvent
 import net.minecraft.util.ChatComponentText
 import org.lwjgl.input.Keyboard
-import com.github.stivais.ui.color.Color as NewColor
 
 @AlwaysActive
 object ClickGUIModule: Module(
@@ -44,11 +37,11 @@ object ClickGUIModule: Module(
     val forceHypixel: Boolean by BooleanSetting("Force Hypixel", false, description = "Forces the hypixel check to be on (not recommended).")
     val updateMessage: Int by SelectorSetting("Update Message", "Beta", arrayListOf("Beta", "Full", "None"))
 
-    val colortest: NewColor.HSB by NewColorSetting("New color", color(50, 150, 220))
+    //val colortest: NewColor.HSB by NewColorSetting("New color", color(50, 150, 220))
 
     val toglge: Boolean by BooleanSetting("a")
 
-    val colortest2: NewColor.HSB by NewColorSetting("New color 2", color(50, 150, 220)).withDependency { toglge }
+    //val colortest2: NewColor.HSB by NewColorSetting("New color 2", color(50, 150, 220)).withDependency { toglge }
 
     val test by UISetting(40.px) {
         text("odc $lastSeenVersion")
@@ -59,9 +52,9 @@ object ClickGUIModule: Module(
     val devSize: Boolean by BooleanSetting("Dev Size", true, description = "Toggles client side dev size.").withDependency { DevPlayers.isDev }
     private val devWings: Boolean by BooleanSetting("Dev Wings", false, description = "Toggles client side dev wings.").withDependency { DevPlayers.isDev }
     private val devWingsColor: Color by ColorSetting("Dev Wings Color", Color(255, 255, 255), description = "Color of the dev wings.").withDependency { DevPlayers.isDev }
-    private val devSizeX: Float by NumberSetting("Dev Size X", 1f, 0.1f, 2f, 0.1, description = "X scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
-    private val devSizeY: Float by NumberSetting("Dev Size Y", 1f, 0.1f, 2f, 0.1, description = "Y scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
-    private val devSizeZ: Float by NumberSetting("Dev Size Z", 1f, 0.1f, 2f, 0.1, description = "Z scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
+    private val devSizeX: Float by NumberSetting("Dev Size X", 1f, -1f, 3f, 0.1, description = "X scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
+    private val devSizeY: Float by NumberSetting("Dev Size Y", 1f, -1f, 3f, 0.1, description = "Y scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
+    private val devSizeZ: Float by NumberSetting("Dev Size Z", 1f, -1f, 3f, 0.1, description = "Z scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
     private var showHidden: Boolean by DropdownSetting("Show Hidden", false)
     private val passcode: String by StringSetting("Passcode", "odin", description = "Passcode for dev features.").withDependency { DevPlayers.isDev && showHidden }
 
@@ -115,9 +108,7 @@ object ClickGUIModule: Module(
             ${getChatBreak()}
             
             """.trimIndent(), false)
-
         }
-
         resetPositions()
     }
 

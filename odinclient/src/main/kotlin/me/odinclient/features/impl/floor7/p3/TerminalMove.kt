@@ -6,10 +6,7 @@ import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.font.OdinFont
-import me.odinmain.utils.render.TextAlign
-import me.odinmain.utils.render.TextPos
-import me.odinmain.utils.render.scaleFactor
-import me.odinmain.utils.render.text
+import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.inventory.ContainerChest
@@ -20,7 +17,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object TerminalMove : Module(
     name = "Terminal Move",
     category = Category.FLOOR7,
-    description = "Move in terminals without GUI hotbar keys",
+    description = "Move in terminals without GUI hotbar keys.",
     tag = TagType.RISKY
 ) {
 
@@ -42,5 +39,4 @@ object TerminalMove : Module(
         if (mc.thePlayer == null || mc.thePlayer.openContainer !is ContainerChest) return false
         return TerminalTypes.entries.stream().anyMatch { prefix: TerminalTypes? -> (mc.thePlayer.openContainer as ContainerChest).lowerChestInventory.name.startsWith(prefix?.guiName!!) }
     }
-
 }

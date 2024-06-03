@@ -5,16 +5,12 @@ import com.github.stivais.ui.UIScreen
 import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.color.color
-import com.github.stivais.ui.constraints.at
+import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Animatable
-import com.github.stivais.ui.constraints.px
-import com.github.stivais.ui.constraints.size
 import com.github.stivais.ui.constraints.sizes.Bounding
 import com.github.stivais.ui.elements.scope.*
 import com.github.stivais.ui.renderer.Renderer
-import com.github.stivais.ui.utils.animate
-import com.github.stivais.ui.utils.radii
-import com.github.stivais.ui.utils.seconds
+import com.github.stivais.ui.utils.*
 import me.odinmain.OdinMain
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -38,7 +34,7 @@ val `transparent fix`: Color = Color.RGB(255, 255, 255, 0.2f)
 fun clickGUI(renderer: Renderer) = UI(renderer) {
     openCloseAnim(0.5.seconds)
     text(
-        text = "odin${if (OdinMain.onLegitVersion) "" else "-client"} $lastSeenVersion",
+        text = "odin${if (OdinMain.isLegitVersion) "" else "-client"} $lastSeenVersion",
         pos = at(x = 1.px, y = -(0.px)),
         size = 12.px
     )

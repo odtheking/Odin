@@ -1,8 +1,6 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.events.impl.ClickEvent
-import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.blockWrongClicks
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.currentRoomName
@@ -13,7 +11,6 @@ import net.minecraft.init.Blocks
 import net.minecraft.init.Items
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
-import net.minecraft.util.MovingObjectPosition
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.experimental.and
 
@@ -153,11 +150,6 @@ object TicTacToe {
         if (!inDungeons) return
 
         Renderer.drawBox(bestMove?.toAABB() ?: return, Color.GREEN, fillAlpha = 0, depth = true)
-    }
-
-    fun tttRightClick(event: ClickEvent.RightClickEvent) {
-        if (!currentRoomName.contains("Tic Tac Toe") || !blockWrongClicks || mc.objectMouseOver.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK || mc.theWorld.getBlockState(mc.objectMouseOver.blockPos).block != Blocks.stone_button) return
-        if (bestMove == null || mc.objectMouseOver.blockPos != bestMove) event.isCanceled = true
     }
 
     /**
