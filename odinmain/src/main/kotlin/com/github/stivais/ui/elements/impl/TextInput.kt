@@ -60,6 +60,7 @@ class TextInput(text: String, constraints: Constraints?) : Text(text, Color.WHIT
             modMessage("focused")
             ui.focus(this@TextInput)
             Keyboard.enableRepeatEvents(true)
+            textWidth = renderer.textWidth(text, size = height).toInt()
             true
         }
 
