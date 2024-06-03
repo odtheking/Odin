@@ -84,20 +84,20 @@ interface Key : Event {
         }
     }
 
-//    class CodeReleased(val code: Int?) : Key {
-//
-//        override fun isFocused(): Boolean = true
-//
-//        override fun equals(other: Any?): Boolean {
-//            if (this === other) return true
-//            if (other !is CodeReleased) return false
-//            return other.code == null || code == other.code
-//        }
-//
-//        override fun hashCode(): Int {
-//            return 923521 // 31^4
-//        }
-//    }
+    class CodeReleased(val code: Int?) : Key {
+
+        override fun isFocused(): Boolean = true
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other !is CodeReleased) return false
+            return other.code == null || code == other.code
+        }
+
+        override fun hashCode(): Int {
+            return 923521 // 31^4
+        }
+    }
 }
 
 interface Focused : Event {

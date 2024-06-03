@@ -286,13 +286,13 @@ fun getClipboardString(): String {
     return ""
 }
 
-private fun isCtrlKeyDown(): Boolean {
+fun isCtrlKeyDown(): Boolean {
     return if (Minecraft.isRunningOnMac) Keyboard.isKeyDown(219) || Keyboard.isKeyDown(220) else Keyboard.isKeyDown(
         29
     ) || Keyboard.isKeyDown(157)
 }
 
-private fun isShiftKeyDown(): Boolean {
+fun isShiftKeyDown(): Boolean {
     return Keyboard.isKeyDown(42) || Keyboard.isKeyDown(54)
 }
 

@@ -9,7 +9,8 @@ import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.measurements.Undefined
 import com.github.stivais.ui.constraints.positions.Center
 import com.github.stivais.ui.elements.scope.ElementScope
-import com.github.stivais.ui.events.*
+import com.github.stivais.ui.events.Event
+import com.github.stivais.ui.events.Mouse
 import com.github.stivais.ui.utils.loop
 
 abstract class Element(constraints: Constraints?, var color: Color? = null) {
@@ -132,10 +133,6 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
     fun registerEvent(event: Event, block: Event.() -> Boolean) {
         if (events == null) events = HashMap()
         events!!.getOrPut(event) { arrayListOf() }.add(block)
-    }
-
-    fun onKeyPressed(block: (Key.CodePressed) -> Boolean) {
-        registerEvent(Key.CodePressed(-1, true), block as Event.() -> Boolean)
     }
 
     fun onInitialization(action: () -> Unit) {
