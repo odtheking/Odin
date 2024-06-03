@@ -10,7 +10,6 @@ import com.github.stivais.ui.events.Key
 import com.github.stivais.ui.events.Mouse
 import me.odinmain.features.impl.render.Animations
 import me.odinmain.utils.*
-import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.util.ChatAllowedCharacters
 import org.lwjgl.input.Keyboard
@@ -84,12 +83,8 @@ class TextInput(var text: String, constraints: Constraints?) : Element(constrain
         }
 
         registerEvent(Mouse.Clicked(null)) {
-            if (isShiftKeyDown())
-                cursorPosition = ((ui.mx - x) / renderer.textWidth("a", 30f)).toInt()
-            else {
-                cursorPosition = ((ui.mx - x) / renderer.textWidth("a", 30f)).toInt()
-                selectionStart = cursorPosition
-            }
+            cursorPosition = ((ui.mx - x) / renderer.textWidth("a", 30f)).toInt()
+            if (!isShiftKeyDown()) selectionStart = cursorPosition
             isHeld = true
             positionCursor()
             true
@@ -139,12 +134,9 @@ class TextInput(var text: String, constraints: Constraints?) : Element(constrain
 
                 Keyboard.KEY_LEFT -> {
                     if (isShiftKeyDown())
-                        if (isCtrlKeyDown()) {
-                            val prev = getNthWordFromPos(-1, cursorPosition)
-                            modMessage("prev: $prev")
-                            moveCursorBy(prev - cursorPosition)
-                            modMessage("move by ${prev - cursorPosition}")
-                        } else
+                        if (isCtrlKeyDown())
+                            moveCursorBy(getNthWordFromPos(-1, cursorPosition) - cursorPosition)
+                        else
                             moveCursorBy(-1)
 
                     else if (isCtrlKeyDown()) {
@@ -158,13 +150,11 @@ class TextInput(var text: String, constraints: Constraints?) : Element(constrain
 
                 Keyboard.KEY_RIGHT -> {
                     if (isShiftKeyDown())
-                        if (isCtrlKeyDown()) {
-                            val next = getNthWordFromPos(1, cursorPosition)
-                            modMessage("next: $next")
-                            moveCursorBy(next - cursorPosition)
-                            modMessage("move by ${next - cursorPosition}")
-                        } else
+                        if (isCtrlKeyDown())
+                            moveCursorBy(getNthWordFromPos(1, cursorPosition) - cursorPosition)
+                        else
                             moveCursorBy(1)
+
                     else if (isCtrlKeyDown()) {
                         cursorPosition = getNthWordFromPos(1, cursorPosition)
                         selectionStart = cursorPosition
@@ -203,7 +193,7 @@ class TextInput(var text: String, constraints: Constraints?) : Element(constrain
             }
         }
 
-        devMessage("caret: $cursorPosition, text: $text, startSelect: $selectionStart,")
+        //devMessage("caret: $cursorPosition, text: $text, startSelect: $selectionStart,")
         positionCursor()
     }
 
