@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.dungeon
 
+import io.github.moulberry.notenoughupdates.NEUApi
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -23,6 +24,8 @@ import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.client.event.GuiOpenEvent
+import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.Display
@@ -99,6 +102,13 @@ object LeapMenu : Module(
             GlStateManager.popMatrix()
         }
         event.isCanceled = true
+    }
+
+    @SubscribeEvent
+    fun guiOpen(event: GuiOpenEvent) {
+        val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
+        if (chest !is ContainerChest || chest.name != "Spirit Leap" || leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return
+        if (Loader.instance().activeModList.any { it.modId == "notenoughupdates" }) NEUApi.setInventoryButtonsToDisabled()
     }
 
     @SubscribeEvent

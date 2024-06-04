@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.floor7.p3
 
+import io.github.moulberry.notenoughupdates.NEUApi
 import me.odinmain.events.impl.*
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -96,6 +97,7 @@ object TerminalSolver : Module(
             else -> return
         }
         clicksNeeded = solution.size
+        if (renderType == 3) NEUApi.setInventoryButtonsToDisabled()
         TerminalOpenedEvent(currentTerm, solution).postAndCatch()
     }
 
@@ -270,11 +272,3 @@ object TerminalSolver : Module(
     }
 }
 
-enum class TerminalTypes(val guiName: String) {
-    PANES("Correct all the panes!"),
-    RUBIX("Change all to same color!"),
-    ORDER("Click in order!"),
-    STARTS_WITH("What starts with:"),
-    SELECT("Select all the"),
-    NONE("None")
-}

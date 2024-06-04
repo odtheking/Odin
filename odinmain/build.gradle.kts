@@ -44,6 +44,7 @@ dependencies {
 
     shadowImpl("gg.essential:loader-launchwrapper:1.1.3")
     compileOnly("gg.essential:essential-1.8.9-forge:12132+g6e2bf4dc5")
+    compileOnly("com.github.NotEnoughUpdates:NotEnoughUpdates:faf22b5dd9:all")
 
     shadowImpl("net.hypixel:mod-api:0.4.0")
 
