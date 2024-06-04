@@ -10,7 +10,7 @@ fun basic(renderer: Renderer) = UI(renderer) {
 
     TextInput(
         "HELLLO",
-        constraints = constrain(920.px, 540.px, 200.px, 30.px)
+        constraints = constrain(920.px, 540.px)
     ).add()
 
 //    column {

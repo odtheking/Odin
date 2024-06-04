@@ -1,14 +1,10 @@
 package com.github.stivais.ui.renderer.impl
 
-import com.github.stivais.ui.renderer.Font
-import com.github.stivais.ui.renderer.Gradient
-import com.github.stivais.ui.renderer.Image
+import com.github.stivais.ui.renderer.*
 import com.github.stivais.ui.renderer.Renderer
 import me.odinmain.OdinMain.mc
 import me.odinmain.font.OdinFont
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.TextPos
-import me.odinmain.utils.render.roundedRectangle
+import me.odinmain.utils.render.*
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.Display
@@ -141,5 +137,17 @@ object CookedRenderer : Renderer {
         if (scissors.size == 0) throw IllegalStateException("Can't pop scissor, if no scissor is active")
         scissors.removeAt(scissors.size - 1)
         scissors.lastOrNull()?.let { glScissor(it[0], it[1], it[2], it[3]) } ?: glDisable(GL_SCISSOR_TEST)
+    }
+
+    override fun drawWrappedString(
+        text: String,
+        x: Float,
+        y: Float,
+        width: Float,
+        size: Float,
+        color: Int,
+        font: Font
+    ) {
+        TODO("Not yet implemented")
     }
 }

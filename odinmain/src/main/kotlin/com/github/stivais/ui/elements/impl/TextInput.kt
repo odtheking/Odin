@@ -2,25 +2,30 @@ package com.github.stivais.ui.elements.impl
 
 import com.github.stivais.ui.UI
 import com.github.stivais.ui.color.Color
-import com.github.stivais.ui.constraints.Constraints
-import com.github.stivais.ui.constraints.px
+import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.events.Key
 import com.github.stivais.ui.events.Mouse
-import me.odinmain.features.impl.render.Animations
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.util.ChatAllowedCharacters
 import org.lwjgl.input.Keyboard
-import kotlin.math.abs
 
 
 class TextInput(text: String, constraints: Constraints?) : Text(text, Color.WHITE, constraints, 30.px) {
 
+    private var string: String = text
+        set(value) {
+            text = value
+            field = value
+            textWidth = renderer.textWidth(value, size = height).toInt()
+            cursorPosition = value.length
+        }
+
     private var cursorPosition: Int = text.length
         set(value) {
             field = value.coerceIn(0, text.length)
-            positionCursor()
+            positionCursor(text, cursorPosition, height)
         }
 
     private var selectionStart: Int = cursorPosition
@@ -29,26 +34,48 @@ class TextInput(text: String, constraints: Constraints?) : Text(text, Color.WHIT
             selectionX = renderer.textWidth(text.substring(0, value), size = height)
         }
 
+    private val lineNumber: Int
+        get() = text.count { it == '\n' } + 1
+
+
+
     private var textWidth = 0
     private var isHeld = false
 
-    private var cursorX: Float = 0f
-    private var cursorY: Float = 0f
     private var selectionX: Float = 0f
 
     override fun draw() {
-        renderer.rect(x - 4, y - 4, textWidth + 8f, height + 4, Color.BLACK.rgba, 9f)
+        renderer.rect(x - 4, y - 4, textWidth + 8f, 4 + height * lineNumber, Color.BLACK.rgba, 9f)
         if (selectionStart != cursorPosition) {
             val startX = x + min(selectionX, cursorX).toInt()
             val endX = x + max(selectionX, cursorX).toInt()
-            renderer.rect(startX, y, endX - startX, height - 2, Color.RGB(0, 0, 255, 0.5f).rgba)
+            renderer.rect(startX, y, endX - startX, height - 4, Color.RGB(0, 0, 255, 0.5f).rgba)
         }
 
-        renderer.text(text, x, y, height, Color.WHITE.rgba)
+        val width = constraints.width.get(this, Type.W)
+        modMessage("width: $width")
+
+        //wrappedTextBounds()
+
+        text.split("\n").forEachIndexed { index, text ->
+            renderer.text(text, x, y + height * index, height, Color.WHITE.rgba)
+        }
 
         renderer.rect(x + cursorX, y + cursorY, 1f, height - 2, Color.WHITE.rgba)
     }
 
+    fun wrappedText() {
+        val width = constraints.width.get(this, Type.W)
+        val height = constraints.height.get(this, Type.H)
+        val text = text.split("\n")
+        var y = y
+        text.forEachIndexed { index, text ->
+            //renderer.wrappedText(text, x, y, width, height, Color.WHITE.rgba)
+            y += height
+        }
+    }
+
+    private var lastClickTime = 0L
 
     init {
         registerEvent(Key.CodePressed(-1, true)) {
@@ -65,15 +92,21 @@ class TextInput(text: String, constraints: Constraints?) : Text(text, Color.WHIT
         }
 
         registerEvent(Mouse.Clicked(null)) {
-            cursorPosition = ((ui.mx - x) / renderer.textWidth("a", 30f)).toInt()
-            if (!isShiftKeyDown()) selectionStart = cursorPosition
+            if (System.currentTimeMillis() - lastClickTime < 300) { // Double click
+                selectionStart = getNthWordFromCursor(string, -1, cursorPosition)
+                cursorPosition = getNthWordFromCursor(string, 1, cursorPosition)
+            } else {
+                setCursorPositionBasedOnMouse()
+                if (!isShiftKeyDown()) selectionStart = cursorPosition
+            }
+            lastClickTime = System.currentTimeMillis()
             isHeld = true
             true
         }
 
         registerEvent(Mouse.Moved) {
-            if (isHeld)
-                cursorPosition = ((ui.mx - x) / renderer.textWidth("a", 30f)).toInt()
+            if (isHeld) setCursorPositionBasedOnMouse()
+            lastClickTime = 0L
             true
         }
 
@@ -83,6 +116,11 @@ class TextInput(text: String, constraints: Constraints?) : Text(text, Color.WHIT
         }
     }
 
+    private fun setCursorPositionBasedOnMouse() {
+        if (text.isEmpty()) return
+        cursorPosition = ((ui.mx - x) / (textWidth / text.length)).toInt().coerceIn(0, text.length)
+    }
+
     private fun handleKeyPress(code: Int, ui: UI) {
         when {
             isKeyComboCtrlA(code) -> {
@@ -90,20 +128,23 @@ class TextInput(text: String, constraints: Constraints?) : Text(text, Color.WHIT
                 selectionStart = 0
             }
 
-            isKeyComboCtrlC(code) -> copyToClipboard(text.substring(selectionStart, cursorPosition))
+            isKeyComboCtrlC(code) -> copyToClipboard(getSelectedText(string, selectionStart, cursorPosition))
 
-            isKeyComboCtrlV(code) -> insert(getClipboardString())
+            isKeyComboCtrlV(code) -> {
+                string = insert(getClipboardString(), string, selectionStart, cursorPosition)
+                selectionStart = cursorPosition
+            }
 
             isKeyComboCtrlX(code) -> {
-                copyToClipboard(text.substring(selectionStart, cursorPosition))
-                text = text.substring(0, selectionStart) + text.substring(cursorPosition)
+                copyToClipboard(getSelectedText(string, selectionStart, cursorPosition))
+                string = insert("", string, selectionStart, cursorPosition)
             }
 
             else -> when (code) {
 
                 Keyboard.KEY_BACK -> {
-                    if (isCtrlKeyDown()) deleteWords(-1)
-                    else deleteFromCursor(-1)
+                    string = if (isCtrlKeyDown()) deleteWords(string, selectionStart, cursorPosition, -1)
+                    else deleteFromCursor(string, selectionStart, cursorPosition, -1)
                     selectionStart = cursorPosition
                 }
 
@@ -114,32 +155,24 @@ class TextInput(text: String, constraints: Constraints?) : Text(text, Color.WHIT
 
                 Keyboard.KEY_LEFT -> {
                     if (isShiftKeyDown())
-                        if (isCtrlKeyDown())
-                            moveCursorBy(getNthWordFromPos(-1, cursorPosition) - cursorPosition)
-                        else
-                            moveCursorBy(-1)
+                        cursorPosition = if (isCtrlKeyDown()) moveCursorBy(cursorPosition, getNthWordFromPos(string, -1, cursorPosition) - cursorPosition)
+                            else moveCursorBy(cursorPosition, -1)
 
-                    else if (isCtrlKeyDown()) {
-                        cursorPosition = getNthWordFromPos(-1, cursorPosition)
-                        selectionStart = cursorPosition
-                    } else {
-                        moveCursorBy(-1)
+                    else {
+                        cursorPosition = if (isCtrlKeyDown()) getNthWordFromCursor(text, -1, cursorPosition)
+                            else moveCursorBy(cursorPosition, -1)
                         selectionStart = cursorPosition
                     }
                 }
 
                 Keyboard.KEY_RIGHT -> {
                     if (isShiftKeyDown())
-                        if (isCtrlKeyDown())
-                            moveCursorBy(getNthWordFromPos(1, cursorPosition) - cursorPosition)
-                        else
-                            moveCursorBy(1)
+                        cursorPosition = if (isCtrlKeyDown()) moveCursorBy(cursorPosition, getNthWordFromPos(string, 1, cursorPosition) - cursorPosition)
+                            else moveCursorBy(cursorPosition, 1)
 
-                    else if (isCtrlKeyDown()) {
-                        cursorPosition = getNthWordFromPos(1, cursorPosition)
-                        selectionStart = cursorPosition
-                    } else {
-                        moveCursorBy(1)
+                    else {
+                        cursorPosition = if (isCtrlKeyDown()) getNthWordFromPos(string, 1, cursorPosition)
+                            else moveCursorBy(cursorPosition, 1)
                         selectionStart = cursorPosition
                     }
                 }
@@ -156,106 +189,22 @@ class TextInput(text: String, constraints: Constraints?) : Text(text, Color.WHIT
                     ui.unfocus()
                 }
 
-                Keyboard.KEY_RETURN -> insert("\n")
+                Keyboard.KEY_RETURN -> string = insert("\n", string, selectionStart, cursorPosition, byPassFilter = true)
 
                 Keyboard.KEY_DELETE -> {
-                    if (isCtrlKeyDown()) deleteWords(1)
-                    else deleteFromCursor(1)
+                    string = if (isCtrlKeyDown()) deleteWords(string, selectionStart, cursorPosition, 1)
+                    else deleteFromCursor(string, selectionStart, cursorPosition, 1)
                     selectionStart = cursorPosition
                 }
 
                 else -> {
                     if (ChatAllowedCharacters.isAllowedCharacter(Keyboard.getEventCharacter())) {
-                        insert(Keyboard.getEventCharacter().toString())
+                        string = insert(Keyboard.getEventCharacter().toString(), string, selectionStart, cursorPosition)
                         selectionStart = cursorPosition
                     }
                 }
             }
         }
-
         devMessage("caret: $cursorPosition, text: $text, startSelect: $selectionStart,")
-    }
-
-    private fun moveCursorBy(moveAmount: Int) {
-        cursorPosition += moveAmount
-    }
-
-    private val maxStringLength = 256
-
-    private fun insert(string: String) {
-        val min = kotlin.math.min(cursorPosition, selectionStart)
-        val max = kotlin.math.max(cursorPosition, selectionStart)
-        val maxLength = maxStringLength - text.length + max - min
-
-        val addedText = ChatAllowedCharacters.filterAllowedCharacters(string).take(maxLength)
-
-        text = text.take(min) + addedText + text.substring(max)
-
-        moveCursorBy(min - selectionStart + addedText.length)
-        textWidth = renderer.textWidth(text, size = height).toInt()
-        selectionStart = cursorPosition
-    }
-
-    private fun positionCursor() {
-        val currLine = getCurrentLine()
-        cursorX = renderer.textWidth(currLine.first, size = height) + Animations.x
-        cursorY = Animations.y + currLine.second * height
-    }
-
-    private fun getCurrentLine(): Pair<String, Int> {
-        var i = 0
-        var ls = 0
-        var line = 0
-
-        for (chr in text) {
-            i++
-            if (chr == '\n') {
-                ls = i
-                line++
-            }
-            if (i == cursorPosition) {
-                return text.substring(ls, cursorPosition).substringBefore('\n') to line
-            }
-        }
-        return "" to 0
-    }
-
-    private fun getNthWordFromCursor(n: Int): Int = getNthWordFromPos(n, cursorPosition)
-
-    private fun getNthWordFromPos(n: Int, pos: Int): Int {
-        var i = pos
-        val negative = n < 0
-
-        repeat(abs(n)) {
-            if (negative) {
-                while (i > 0 && text[i - 1].code == 32) i--
-                while (i > 0 && text[i - 1].code != 32) i--
-            } else {
-                while (i < text.length && text[i].code == 32) i++
-                i = text.indexOf(32.toChar(), i)
-                if (i == -1) {
-                    i = text.length
-                }
-            }
-        }
-        return i
-    }
-
-    private fun deleteWords(num: Int) = deleteFromCursor(getNthWordFromCursor(num) - cursorPosition)
-
-    private fun deleteFromCursor(num: Int) {
-        if (text.isEmpty()) return
-        if (selectionStart != cursorPosition) {
-            insert("")
-        } else {
-            val negative = num < 0
-            val target = (cursorPosition + num).coerceIn(0, text.length)
-            if (negative) {
-                text = text.removeRange(target, cursorPosition)
-                moveCursorBy(num)
-            } else {
-                text = text.removeRange(cursorPosition, target)
-            }
-        }
     }
 }

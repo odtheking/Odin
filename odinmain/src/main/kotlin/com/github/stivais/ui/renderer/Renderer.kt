@@ -57,6 +57,8 @@ interface Renderer {
 
     fun text(text: String, x: Float, y: Float, size: Float, color: Int = Color.WHITE.rgba, font: Font = UI.defaultFont)
 
+    fun drawWrappedString(text: String, x: Float, y: Float, width: Float, size: Float, color: Int = Color.WHITE.rgba, font: Font = UI.defaultFont)
+
     fun textWidth(text: String, size: Float, font: Font = UI.defaultFont): Float
 
     fun image(image: Image, x: Float, y: Float, w: Float, h: Float, tl: Float, bl: Float, br: Float, tr: Float)

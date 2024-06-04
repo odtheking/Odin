@@ -1,18 +1,14 @@
 package com.github.stivais.ui.renderer.impl
 
-import com.github.stivais.ui.color.alpha
-import com.github.stivais.ui.color.blue
-import com.github.stivais.ui.color.green
-import com.github.stivais.ui.color.red
+import com.github.stivais.ui.color.*
 import com.github.stivais.ui.renderer.*
 import me.odinmain.OdinMain.mc
-import org.lwjgl.nanovg.NVGColor
-import org.lwjgl.nanovg.NVGLUFramebuffer
-import org.lwjgl.nanovg.NVGPaint
+import org.lwjgl.nanovg.*
 import org.lwjgl.nanovg.NanoVG.*
 import org.lwjgl.nanovg.NanoVGGL2.*
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.stb.STBImage
+
 
 object NVGRenderer : Renderer {
 
@@ -192,6 +188,24 @@ object NVGRenderer : Renderer {
         nvgText(vg, x, y, text)
         nvgClosePath(vg)
     }
+
+    override fun drawWrappedString(
+        text: String,
+        x: Float,
+        y: Float,
+        width: Float,
+        size: Float,
+        color: Int,
+        font: Font
+    ) {
+        nvgBeginPath(vg)
+        nvgFontSize(vg, size)
+        nvgFontFace(vg, font.name)
+        nvgTextAlign(vg, NVG_ALIGN_LEFT or NVG_ALIGN_MIDDLE) // Align top because center is weird with wrapping
+        color(color)
+        nvgTextBox(vg, x, y, width, text)
+    }
+
 
     override fun textWidth(text: String, size: Float, font: Font): Float {
         nvgFontSize(vg, size)
