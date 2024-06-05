@@ -1,6 +1,5 @@
 package com.github.stivais.ui.elements.impl
 
-import com.github.stivais.ui.UI
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.constraints.Constraints
 import com.github.stivais.ui.constraints.px
@@ -64,7 +63,7 @@ class TextInput(text: String, constraints: Constraints?) : Text(text, Color.WHIT
 
     init {
         registerEvent(Key.CodePressed(-1, true)) {
-            handleKeyPress((this as Key.CodePressed).code, ui)
+            handleKeyPress((this as Key.CodePressed).code)
             true
         }
 
@@ -75,7 +74,7 @@ class TextInput(text: String, constraints: Constraints?) : Text(text, Color.WHIT
 
             when (clickCount) {
                 1 -> {
-                    cursorPosition = setCursorPositionBasedOnMouse(x, textWidth, ui.mx)
+                    setCursorPositionBasedOnMouse(x, textWidth, ui.mx)
                     if (!isShiftKeyDown()) selectionStart = cursorPosition
                 }
 
@@ -90,11 +89,12 @@ class TextInput(text: String, constraints: Constraints?) : Text(text, Color.WHIT
                     cursorPosition = string.length
                 }
             }
+            isHeld = true
             true
         }
 
         registerEvent(Mouse.Moved) {
-            if (isHeld) cursorPosition = setCursorPositionBasedOnMouse(x, textWidth, ui.mx)
+            if (isHeld) setCursorPositionBasedOnMouse(x, textWidth, ui.mx)
             lastClickTime = 0L
             true
         }
@@ -115,7 +115,7 @@ class TextInput(text: String, constraints: Constraints?) : Text(text, Color.WHIT
     }
 
 
-    private fun handleKeyPress(code: Int, ui: UI) {
+    private fun handleKeyPress(code: Int) {
         when {
             isKeyComboCtrlA(code) -> {
                 cursorPosition = string.length
@@ -307,8 +307,8 @@ class TextInput(text: String, constraints: Constraints?) : Text(text, Color.WHIT
         return "" to 0
     }
 
-    private fun setCursorPositionBasedOnMouse(x: Float, textWidth: Int, mx: Float): Int {
-        if (string.isEmpty()) return 0
-        return ((mx - x) / (textWidth / string.length)).toInt().coerceIn(0, string.length)
+    private fun setCursorPositionBasedOnMouse(x: Float, textWidth: Int, mx: Float) {
+        if (string.isEmpty()) return
+        cursorPosition = ((mx - x) / (textWidth / string.length)).toInt().coerceIn(0, string.length)
     }
 }
