@@ -325,3 +325,7 @@ fun isKeyComboCtrlC(keyID: Int): Boolean {
 fun isKeyComboCtrlA(keyID: Int): Boolean {
     return keyID == 30 && isCtrlKeyDown() && !isShiftKeyDown() && !isAltKeyDown()
 }
+
+fun isKeyComboCtrlZ(keyID: Int): Boolean {
+    return keyID == Keyboard.KEY_Z && isCtrlKeyDown() && !isShiftKeyDown() && !isAltKeyDown()
+}

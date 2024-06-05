@@ -22,6 +22,7 @@ class TextInput(text: String, constraints: Constraints?) : Text(text, Color.WHIT
             textWidth = renderer.textWidth(value, size = height).toInt()
             cursorPosition = value.length
             selectionStart = cursorPosition
+            if (history.last() != value) history.add(value)
         }
 
     private var cursorPosition: Int = text.length
@@ -39,6 +40,7 @@ class TextInput(text: String, constraints: Constraints?) : Text(text, Color.WHIT
     private var textWidth = 0
     private var isHeld = false
 
+    private var history: MutableList<String> = mutableListOf(string)
     private var selectionX: Float = 0f
     private var lastClickTime = 0L
 
@@ -109,6 +111,13 @@ class TextInput(text: String, constraints: Constraints?) : Text(text, Color.WHIT
             isKeyComboCtrlX(code) -> {
                 copyToClipboard(getSelectedText(string, selectionStart, cursorPosition))
                 string = insert("", string, selectionStart, cursorPosition)
+            }
+
+            isKeyComboCtrlZ(code) -> {
+                if (history.size > 1) {
+                    history.removeAt(history.size - 1)
+                    string = history.last()
+                }
             }
 
             else -> when (code) {
