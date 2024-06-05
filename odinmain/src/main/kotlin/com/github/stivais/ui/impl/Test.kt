@@ -9,7 +9,7 @@ import com.github.stivais.ui.renderer.Renderer
 fun basic(renderer: Renderer) = UI(renderer) {
 
     TextInput(
-        "HELLLO",
+        "Hello Worlds!",
         constraints = constrain(920.px, 540.px)
     ).add()
 

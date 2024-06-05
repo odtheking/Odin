@@ -279,20 +279,21 @@ fun checkGLError(message: String) {
 }
 
 fun copyToClipboard(text: String) {
-    val clipboard = Toolkit.getDefaultToolkit().systemClipboard
-    val stringSelection = StringSelection(text)
-    clipboard.setContents(stringSelection, null)
+    try {
+        val clipboard = Toolkit.getDefaultToolkit().systemClipboard
+        val selection = StringSelection(text)
+        clipboard.setContents(selection, null)
+    } catch (_: Exception) {
+    }
 }
 
 fun getClipboardString(): String {
     try {
         val transferable = Toolkit.getDefaultToolkit().systemClipboard.getContents(null as Any?)
-        if (transferable != null && transferable.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+        if (transferable != null && transferable.isDataFlavorSupported(DataFlavor.stringFlavor))
             return transferable.getTransferData(DataFlavor.stringFlavor) as String
-        }
-    } catch (_: java.lang.Exception) {
+    } catch (_: Exception) {
     }
-
     return ""
 }
 
