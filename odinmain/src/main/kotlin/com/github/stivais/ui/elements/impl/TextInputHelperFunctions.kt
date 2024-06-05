@@ -41,9 +41,8 @@ var cursorX: Float = 0f
                 ls = i
                 line++
             }
-            if (i == cursorPosition) {
+            if (i == cursorPosition)
                 return text.substring(ls, cursorPosition).substringBefore('\n') to line
-            }
         }
         return "" to 0
     }
@@ -87,6 +86,7 @@ var cursorX: Float = 0f
     }
 
 
-fun getWidthestLine(text: String, fontSize: Float): Float {
-    return text.split("\n").maxOf { NVGRenderer.textWidth(it, size = fontSize) }
+fun setCursorPositionBasedOnMouse(text: String, x: Float, textWidth: Int, mx: Float): Int {
+    if (text.isEmpty()) return 0
+    return ((mx - x) / (textWidth / text.length)).toInt().coerceIn(0, text.length)
 }
