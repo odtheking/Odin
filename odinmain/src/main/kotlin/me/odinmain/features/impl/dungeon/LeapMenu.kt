@@ -130,9 +130,10 @@ object LeapMenu : Module(
 
     @SubscribeEvent
     fun keyTyped(event: GuiEvent.GuiKeyPressEvent) {
+        val gui = event.gui as? GuiChest ?: return
         if (
-            event.container !is ContainerChest ||
-            event.container.name != "Spirit Leap" ||
+            gui.inventorySlots !is ContainerChest ||
+            gui.inventorySlots.name != "Spirit Leap" ||
             !event.keyCode.equalsOneOf(topLeftKeybind.key, topRightKeybind.key, bottomLeftKeybind.key, bottomRightKeybind.key) ||
             leapTeammates.isEmpty() ||
             !useNumberKeys
@@ -148,7 +149,7 @@ object LeapMenu : Module(
         if (playerToLeap == EMPTY) return
         if (playerToLeap.isDead) return modMessage("This player is dead, can't leap.")
 
-        leapTo(playerToLeap.name, event.container)
+        leapTo(playerToLeap.name, gui.inventorySlots as ContainerChest)
 
         event.isCanceled = true
     }

@@ -26,7 +26,7 @@ abstract class GuiEvent : Event() {
     data class GuiMouseClickEvent(val gui: GuiScreen, val button: Int, val x: Int, val y: Int) : GuiEvent()
 
     @Cancelable
-    class GuiKeyPressEvent(val container: Container, val gui: GuiContainer, val keyCode: Int) : Event()
+    class GuiKeyPressEvent(val gui: GuiScreen, val keyCode: Int, val char: Char) : Event()
 
     class GuiClosedEvent(val gui: GuiContainer) : GuiEvent()
 
