@@ -47,11 +47,15 @@ object DragonPriority {
         spawningDragon.sortBy { priorityList.indexOf(it) }
 
         if (totalPower >= easyPower) {
-            if ((soloDebuff && playerClass == Classes.Tank && spawningDragon.any { it == WitherDragonsEnum.Purple }) || soloDebuffOnAll)
-                spawningDragon.sortByDescending { priorityList.indexOf(it) }
-            else if ((playerClass == Classes.Healer && spawningDragon.any { it == WitherDragonsEnum.Purple }) || soloDebuffOnAll)
-                spawningDragon.sortByDescending { priorityList.indexOf(it) }
+            if (soloDebuff) {
+                if (playerClass == Classes.Tank) {
+                    if (spawningDragon.any { it == WitherDragonsEnum.Purple } || soloDebuffOnAll) spawningDragon.sortByDescending { priorityList.indexOf(it) }
+                }
+            } else if (playerClass == Classes.Healer) {
+                if (spawningDragon.any { it == WitherDragonsEnum.Purple } || soloDebuffOnAll) spawningDragon.sortByDescending { priorityList.indexOf(it) }
+            }
         }
+
         devMessage("§7 power: $totalPower")
         devMessage("§7 class: $playerClass")
         devMessage("§7 priority: $spawningDragon")

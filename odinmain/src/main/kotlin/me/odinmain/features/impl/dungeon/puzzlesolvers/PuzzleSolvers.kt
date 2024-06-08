@@ -14,7 +14,6 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object PuzzleSolvers : Module(
     name = "Puzzle Solvers",
@@ -42,11 +41,11 @@ object PuzzleSolvers : Module(
         TPMaze.reset()
     }.withDependency { tpMaze && mazeDropDown }
 
-    private val tttDropDown: Boolean by DropdownSetting("Tic Tac Toe")
+    /*private val tttDropDown: Boolean by DropdownSetting("Tic Tac Toe")
     private val tttSolver: Boolean by BooleanSetting("Tic Tac Toe", false, description = "Shows you the solution for the TTT puzzle").withDependency { tttDropDown }
     val tttColor: Color by ColorSetting("TTT Color", Color.GREEN, true, description = "Color for the tic tac toe solver").withDependency { tttSolver && tttDropDown }
     val tttStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { tttSolver && tttDropDown }
-
+*/
     private val iceFillDropDown: Boolean by DropdownSetting("Ice Fill")
     private val iceFillSolver: Boolean by BooleanSetting("Ice Fill Solver", false, description = "Solver for the ice fill puzzle").withDependency { iceFillDropDown }
     private val iceFillColor: Color by ColorSetting("Ice Fill Color", Color.PINK, true, description = "Color for the ice fill solver").withDependency { iceFillSolver && iceFillDropDown }
@@ -132,18 +131,13 @@ object PuzzleSolvers : Module(
         profile("Puzzle Solvers") {
             if (waterSolver) WaterSolver.waterRender()
             if (tpMaze) TPMaze.tpRender()
-            if (tttSolver) TTTSolver.tttRenderWorld()
+            //if (tttSolver) TTTSolver.tttRenderWorld()
             if (iceFillSolver) IceFillSolver.onRenderWorldLast(iceFillColor)
             if (blazeSolver) BlazeSolver.renderBlazes()
             if (beamsSolver) BeamsSolver.onRenderWorld()
             if (weirdosSolver) WeirdosSolver.onRenderWorld()
             if (quizSolver) QuizSolver.renderWorldLastQuiz()
         }
-    }
-
-    @SubscribeEvent
-    fun onTick(event: TickEvent.ClientTickEvent) {
-        if (tttSolver) TicTacToe.tttTick(event)
     }
 
     @SubscribeEvent
