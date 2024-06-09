@@ -5,7 +5,7 @@ import me.odinmain.config.Config
 import me.odinmain.features.impl.floor7.WitherDragons.colors
 import me.odinmain.features.impl.floor7.WitherDragons.relicAnnounceTime
 import me.odinmain.features.impl.floor7.WitherDragons.selected
-import me.odinmain.features.impl.kuudra.KuudraSplits.unaryPlus
+import me.odinmain.features.impl.nether.KuudraSplits.unaryPlus
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.round

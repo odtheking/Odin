@@ -1,4 +1,4 @@
-package me.odinmain.features.impl.kuudra
+package me.odinmain.features.impl.nether
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -21,7 +21,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 object KuudraDisplay : Module(
     name = "Kuudra Display",
     description = "Displays information about Kuudra.",
-    category = Category.KUUDRA
+    category = Category.NETHER
 ) {
     private val highlightKuudra: Boolean by BooleanSetting("Highlight Kuudra", true, description = "Highlights the kuudra entity")
     private val kuudraColor: Color by ColorSetting("Kuudra Color", Color.RED, true, description = "Color of the kuudra highlight").withDependency { highlightKuudra }

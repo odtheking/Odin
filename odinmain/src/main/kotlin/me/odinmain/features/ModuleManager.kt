@@ -6,7 +6,7 @@ import me.odinmain.features.impl.dungeon.*
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers
 import me.odinmain.features.impl.floor7.*
 import me.odinmain.features.impl.floor7.p3.*
-import me.odinmain.features.impl.kuudra.*
+import me.odinmain.features.impl.nether.*
 import me.odinmain.features.impl.render.*
 import me.odinmain.features.impl.render.ClickGUIModule.hudChat
 import me.odinmain.features.impl.skyblock.*

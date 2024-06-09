@@ -1,4 +1,4 @@
-package me.odinclient.features.impl.skyblock
+package me.odinclient.features.impl.render
 
 import me.odinmain.events.impl.RenderChestEvent
 import me.odinmain.features.Category
@@ -7,22 +7,21 @@ import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.skyblock.Island
-import me.odinmain.utils.skyblock.LocationUtils
+import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.toAABB
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.init.Blocks
+import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.tileentity.TileEntityChest
 import net.minecraft.util.BlockPos
 import net.minecraftforge.client.event.RenderWorldLastEvent
-import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.opengl.GL11
 
 object ChestEsp : Module(
     name = "Chest Esp",
-    category = Category.RENDER,
+    category = Category.SKYBLOCK,
     description = "Displays chests through walls."
 ) {
     private val onlyDungeon: Boolean by BooleanSetting(name = "Only Dungeon")
@@ -35,16 +34,11 @@ object ChestEsp : Module(
 
     init {
         onWorldLoad { chests.clear() }
-    }
 
-    @SubscribeEvent
-    fun onInteract(event: PlayerInteractEvent) {
-        if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || !mc.theWorld.getBlockState(event.pos).block.equalsOneOf(
-                Blocks.chest,
-                Blocks.trapped_chest
-            )
-        ) return
-        chests.add(event.pos)
+        onPacket(C08PacketPlayerBlockPlacement::class.java) { packet ->
+            if (getBlockAt(packet.position).equalsOneOf(Blocks.chest, Blocks.trapped_chest))
+                chests.add(packet.position)
+        }
     }
 
     @SubscribeEvent
@@ -76,7 +70,7 @@ object ChestEsp : Module(
         if ((onlyDungeon && DungeonUtils.inDungeons) || (onlyCH && LocationUtils.currentArea == Island.CrystalHollows) || (!onlyDungeon && !onlyCH)) {
             val chests = mc.theWorld.loadedTileEntityList.filterIsInstance<TileEntityChest>()
             chests.forEach {
-                if (hideClicked && this.chests.contains(it.pos)) return
+                if (hideClicked && ChestEsp.chests.contains(it.pos)) return
                 Renderer.drawBox(it.pos.toAABB(), color, 1f, depth = false, fillAlpha = 0)
             }
         }

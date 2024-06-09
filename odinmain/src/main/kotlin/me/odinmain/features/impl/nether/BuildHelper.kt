@@ -1,4 +1,4 @@
-package me.odinmain.features.impl.kuudra
+package me.odinmain.features.impl.nether
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -20,7 +20,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object BuildHelper : Module(
     name = "Build Helper",
     description = "Helps you to build the ballista in Kuudra.",
-    category = Category.KUUDRA
+    category = Category.NETHER
 ) {
     private val buildHelperDraw: Boolean by BooleanSetting("Render on Ballista", false, description = "Draws the build helper")
     private val unfinishedWaypoints: Boolean by BooleanSetting("Unfinished Waypoints", true, description = "Renders the unfinished piles waypoints")

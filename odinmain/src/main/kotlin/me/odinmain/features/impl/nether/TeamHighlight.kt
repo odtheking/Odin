@@ -1,10 +1,10 @@
-package me.odinmain.features.impl.kuudra
+package me.odinmain.features.impl.nether
 
 import me.odinmain.events.impl.RenderEntityModelEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.impl.kuudra.FreshTimer.highlightFresh
-import me.odinmain.features.impl.kuudra.FreshTimer.highlightFreshColor
+import me.odinmain.features.impl.nether.FreshTimer.highlightFresh
+import me.odinmain.features.impl.nether.FreshTimer.highlightFreshColor
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
@@ -22,7 +22,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object TeamHighlight : Module(
     name = "Team Highlight",
     description = "Highlights your teammates in Kuudra.",
-    category = Category.KUUDRA
+    category = Category.NETHER
 ) {
     private val playerOutline: Boolean by BooleanSetting("Player Outline", true, description = "Outlines the player")
     private val highlightName: Boolean by BooleanSetting("Name Highlight", true, description = "Highlights the player name")

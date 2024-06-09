@@ -1,4 +1,4 @@
-package me.odinmain.features.impl.skyblock
+package me.odinmain.features.impl.nether
 
 import me.odinmain.events.impl.RenderEntityModelEvent
 import me.odinmain.features.Category
@@ -18,8 +18,8 @@ import net.minecraft.entity.monster.*
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object BlazeAttunement : Module(
-    "Blaze Attunement",
-    category = Category.SKYBLOCK,
+    name = "Blaze Attunement",
+    category = Category.NETHER,
     description = "Displays what attunement a blaze boss currently needs."
 ) {
     private val overlay: Boolean by BooleanSetting("Overlay Entities", false)

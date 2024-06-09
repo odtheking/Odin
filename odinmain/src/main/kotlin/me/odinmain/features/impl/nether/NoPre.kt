@@ -1,4 +1,4 @@
-package me.odinmain.features.impl.kuudra
+package me.odinmain.features.impl.nether
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -10,7 +10,7 @@ import net.minecraft.util.Vec3
 object NoPre : Module(
     name = "Pre-Spot Alert",
     description = "Alerts the party about the state of a pre spot.",
-    category = Category.KUUDRA
+    category = Category.NETHER
 ) {
     private val showAlert: Boolean by BooleanSetting("Show Alert", true, description = "Shows the alert")
 
@@ -67,7 +67,7 @@ object NoPre : Module(
             }
             if (second && pre) return@onMessage
             if (!pre && preSpot.isNotEmpty()) {
-                msg = "No ${preSpot}!"
+                msg = "No $preSpot!"
             } else if (!second) {
                 val location = when (preSpot) {
                     "Triangle" -> "Shop"
