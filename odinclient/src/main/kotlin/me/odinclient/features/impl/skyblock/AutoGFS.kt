@@ -16,12 +16,9 @@ object AutoGFS : Module(
 
     init {
         execute(4000) {
-            if (
-                !DungeonUtils.isGhost && mc.currentScreen == null &&
-                ((inKuudra && KuudraUtils.inKuudra) || (inDungeon && DungeonUtils.inDungeons))
-            ) {
-                if (mc.thePlayer?.inventory?.mainInventory?.firstOrNull { it?.itemID == "ENDER_PEARL" } == null)
-                    sendCommand("od ep", true)
+            if (!DungeonUtils.isGhost && mc.currentScreen == null && ((inKuudra && KuudraUtils.inKuudra) || (inDungeon && DungeonUtils.inDungeons))) {
+                val enderPearlStackSize = mc.thePlayer?.inventory?.mainInventory?.find { it?.itemID == "ENDER_PEARL" }?.stackSize ?: return@execute
+                if (enderPearlStackSize < 16) sendCommand("od ep", true)
             }
         }
     }

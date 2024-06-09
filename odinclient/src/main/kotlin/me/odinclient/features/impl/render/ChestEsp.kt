@@ -21,7 +21,7 @@ import org.lwjgl.opengl.GL11
 
 object ChestEsp : Module(
     name = "Chest Esp",
-    category = Category.SKYBLOCK,
+    category = Category.RENDER,
     description = "Displays chests through walls."
 ) {
     private val onlyDungeon: Boolean by BooleanSetting(name = "Only Dungeon")
@@ -70,7 +70,7 @@ object ChestEsp : Module(
         if ((onlyDungeon && DungeonUtils.inDungeons) || (onlyCH && LocationUtils.currentArea == Island.CrystalHollows) || (!onlyDungeon && !onlyCH)) {
             val chests = mc.theWorld.loadedTileEntityList.filterIsInstance<TileEntityChest>()
             chests.forEach {
-                if (hideClicked && ChestEsp.chests.contains(it.pos)) return
+                if (hideClicked && this.chests.contains(it.pos)) return
                 Renderer.drawBox(it.pos.toAABB(), color, 1f, depth = false, fillAlpha = 0)
             }
         }
