@@ -10,6 +10,7 @@ import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.*
 import me.odinmain.utils.ServerUtils.averagePing
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
@@ -180,7 +181,7 @@ object BloodCamp : Module(
         if (watcher.isEmpty()) return
 
         if (watcherHighlight) watcher.forEach { watcher ->
-            Renderer.drawBox(watcher.entityBoundingBox, Color.RED, 1f, depth = isLegitVersion, fillAlpha = 0)
+            Renderer.drawBox(watcher.renderVec.toAABB(), Color.RED, 1f, depth = isLegitVersion, fillAlpha = 0)
         }
 
         if (!bloodhelper) return

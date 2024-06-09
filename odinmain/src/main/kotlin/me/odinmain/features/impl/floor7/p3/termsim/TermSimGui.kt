@@ -5,10 +5,8 @@ import me.odinmain.OdinMain.display
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.events.impl.PacketSentEvent
 import me.odinmain.features.impl.floor7.TerminalSimulator
-import me.odinmain.features.impl.floor7.p3.TerminalTimes
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.utils.*
-import me.odinmain.utils.skyblock.devMessage
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.*
@@ -27,7 +25,7 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
     private var startTime = 0L
     protected var ping = 0L
     private var consecutive = 0L
-    var doesAcceptClick = true
+    private var doesAcceptClick = true
     private val minecraft get() = Minecraft.getMinecraft() // this is needed here for some fucking reason and I have no clue but the OdinMain one is sometimes (but not always) null when open() runs ???? (this took like 30 minutes to figure out)
 
     open fun create() {
@@ -45,7 +43,7 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
 
     fun solved(name: String, pbIndex: Int) {
         val time = ((System.currentTimeMillis() - startTime) / 1000.0).round(2).toDouble()
-        TerminalTimes.simPBs.time(pbIndex, time, "s§7!", "§a$name §7solved in §6", addPBString = true, addOldPBString = true)
+        TerminalSimulator.simPBs.time(pbIndex, time, "s§7!", "§a$name §7solved in §6", addPBString = true, addOldPBString = true)
         if (this.consecutive > 0) openTerminal(ping, consecutive) else if (TerminalSimulator.openStart) StartGui.open(ping) else mc.thePlayer.closeScreen()
     }
 

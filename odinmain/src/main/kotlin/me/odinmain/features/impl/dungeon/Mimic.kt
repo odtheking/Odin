@@ -5,7 +5,6 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -25,8 +24,10 @@ object Mimic : Module(
         partyMessage(mimicMessage)
     }
     private val mimicBox: Boolean by BooleanSetting("Mimic Box", false, description = "Draws a box around the mimic chest.")
-    private val style: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { mimicBox }
-    private val color: Color by ColorSetting("Color", Color.ORANGE.withAlpha(.4f), allowAlpha = true, description = "The color of the box.").withDependency { mimicBox }
+    private val style: Int by SelectorSetting("Style", Renderer.defaultStyle, Renderer.styles, description = Renderer.styleDesc).withDependency { mimicBox }
+    private val color: Color by ColorSetting("Color", Color(0, 0, 0, 0.4f), allowAlpha = true, description = "The color of the box.").withDependency { mimicBox }
+    private val lineWidth: Float by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.").withDependency { mimicBox }
+    private val depthCheck: Boolean by BooleanSetting("Depth check", false, description = "Boxes show through walls.").withDependency { mimicBox }
 
     @SubscribeEvent
     fun onEntityDeath(event: LivingDeathEvent) {
@@ -38,10 +39,8 @@ object Mimic : Module(
 
     @SubscribeEvent
     fun onRenderLast(event: RenderChestEvent.Post) {
-        if (event.chest.chestType != 1 || !DungeonUtils.inDungeons || DungeonUtils.inBoss) return
-        Renderer.drawBox(
-            event.chest.pos.toAABB(), color, depth = true,
-            outlineAlpha = if (style == 0) 0 else color.alpha, fillAlpha = if (style == 1) 0 else color.alpha)
+        if (event.chest.chestType != 1 || !DungeonUtils.inDungeons || DungeonUtils.inBoss || !mimicBox) return
+        Renderer.drawStyledBox(event.chest.pos.toAABB(), color, style, lineWidth, depthCheck)
     }
 
     override fun onKeybind() {

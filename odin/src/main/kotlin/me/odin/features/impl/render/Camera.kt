@@ -13,7 +13,7 @@ object Camera : Module(
     description = "Allows you to change qualities about third person view."
 ) {
     private val frontCamera: Boolean by BooleanSetting("No Front Camera")
-    private val fov: Float by NumberSetting("FOV", 70f, 1f, 180f, 1f)
+    private val fov: Float by NumberSetting("FOV", mc.gameSettings.fovSetting, 1f, 180f, 1f)
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {

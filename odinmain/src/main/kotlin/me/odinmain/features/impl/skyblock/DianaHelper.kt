@@ -76,7 +76,7 @@ object DianaHelper : Module(
         }
 
         onMessage(Regex("^(Uh oh!|Woah!|Yikes!|Oi!|Danger!|Good Grief!|Oh!) You dug out a Minos Inquisitor!\$")) {
-            if (sendInqMsg) partyMessage("x: ${PlayerUtils.posX.floor().toInt()}, y: ${PlayerUtils.posY.floor().toInt()}, z: ${PlayerUtils.posZ.floor().toInt()}")
+            if (sendInqMsg) partyMessage(PlayerUtils.getPositionString())
             PlayerUtils.alert("§6§lInquisitor!")
         }
 
