@@ -86,7 +86,6 @@ fun handleSpawnPacket(particle: S2APacketParticles) {
 
 private fun checkParticle(event: S2APacketParticles, color: WitherDragonsEnum): Boolean {
     return  event.xCoordinate in color.xRange &&
-            event.yCoordinate in 15.0..22.0 &&
             event.zCoordinate in color.zRange
 }
 

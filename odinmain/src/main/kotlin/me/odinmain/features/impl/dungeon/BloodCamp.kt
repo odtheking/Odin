@@ -43,7 +43,7 @@ object BloodCamp : Module(
     private val tick: Int by NumberSetting("Tick", default = 40, increment = 1, max = 41, min = 37, description = "Tick to assume spawn. Adjust offset to offset this value to the ms.").withDependency { advanced && bloodhelper}
     private val interpolation: Boolean by BooleanSetting("Interpolation", default = true, description = "Interpolates rendering boxes between ticks. Makes the jitter smoother, at the expense of some accuracy.").withDependency { advanced && bloodhelper}
     private val watcherBar: Boolean by BooleanSetting("Watcher Bar", default = true, description = "Shows the watcher's health.")
-    private val watcherHighlight: Boolean by BooleanSetting("Watcher Highlight", default = true, description = "Highlights the watcher.")
+    private val watcherHighlight: Boolean by BooleanSetting("Watcher Highlight", default = false, description = "Highlights the watcher.")
 
     private var currentName: String? = null
     private val firstSpawnRegex = Regex("^\\[BOSS] The Watcher: Let's see how you can handle this.$")

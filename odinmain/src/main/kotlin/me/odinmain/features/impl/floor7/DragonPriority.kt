@@ -10,9 +10,10 @@ import me.odinmain.features.impl.floor7.WitherDragons.paulBuff
 import me.odinmain.features.impl.floor7.WitherDragons.soloDebuff
 import me.odinmain.features.impl.floor7.WitherDragons.soloDebuffOnAll
 import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.Classes
+import me.odinmain.utils.skyblock.modMessage
 
 object DragonPriority {
 
@@ -56,12 +57,6 @@ object DragonPriority {
             }
         }
 
-        devMessage("§7 power: $totalPower")
-        devMessage("§7 class: $playerClass")
-        devMessage("§7 priority: $spawningDragon")
-        devMessage("§7 priorityList: $priorityList")
-        devMessage("is total power >= normal power? ${totalPower >= normalPower}")
-        devMessage("is total power >= easy power? ${totalPower >= easyPower}")
         return spawningDragon[0]
     }
 }
