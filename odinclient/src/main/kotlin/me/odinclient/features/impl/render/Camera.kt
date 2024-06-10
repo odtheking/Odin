@@ -21,7 +21,7 @@ object Camera : Module(
     private val frontCamera: Boolean by BooleanSetting("No Front Camera")
     private val cameraClip: Boolean by BooleanSetting("Camera Clip")
     private val cameraDist: Float by NumberSetting("Distance", 4f, 3.0, 12.0, 0.1)
-    private val fov: Float by NumberSetting("FOV", 70f, 1f, 180f, 1f)
+    private val fov: Float by NumberSetting("FOV", mc.gameSettings.fovSetting, 1f, 180f, 1f)
     private val freelookDropdown: Boolean by DropdownSetting("Freelook")
     private val toggle: Boolean by DualSetting("Type", "Hold", "Toggle", false).withDependency { freelookDropdown }
     private val freelookKeybind: Keybinding by KeybindSetting("Freelook Key", Keyboard.KEY_NONE, description = "Keybind to toggle/ hold for freelook.")

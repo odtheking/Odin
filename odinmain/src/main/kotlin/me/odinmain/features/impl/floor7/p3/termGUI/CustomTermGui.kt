@@ -68,10 +68,6 @@ abstract class TermGui {
                 it.value.isPointWithin(x, y)
             }?.key
         }
-
-        fun getItemIndexMap(): MutableMap<Int, Box> {
-            return currentGui?.itemIndexMap ?: mutableMapOf()
-        }
     }
 
     open fun render() {}

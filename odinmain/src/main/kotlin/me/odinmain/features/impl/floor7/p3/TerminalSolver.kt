@@ -194,7 +194,7 @@ object TerminalSolver : Module(
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.END) return
-        if (mc.thePlayer?.openContainer is ContainerPlayer || currentTerm == TerminalTypes.NONE) leftTerm()
+        if (mc.thePlayer?.openContainer is ContainerPlayer) leftTerm()
     }
 
     @SubscribeEvent
@@ -207,6 +207,7 @@ object TerminalSolver : Module(
     }
 
     private fun leftTerm() {
+        if (currentTerm == TerminalTypes.NONE && solution.isEmpty()) return
         TerminalClosedEvent(currentTerm).postAndCatch()
         currentTerm = TerminalTypes.NONE
         solution = emptyList()

@@ -32,7 +32,6 @@ object TerminalTimes : Module(
     @SubscribeEvent
     fun onTerminalClose(event: TerminalClosedEvent) {
         val time = (System.currentTimeMillis() - startTimer) / 1000.0
-
         termPBs.time(event.type.ordinal, time, "s§7!", "§a$name §7solved in §6", addPBString = true, addOldPBString = true, sendMessage)
     }
 }

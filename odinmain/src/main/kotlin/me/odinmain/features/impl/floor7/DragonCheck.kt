@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.floor7
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.config.Config
 import me.odinmain.features.impl.floor7.WitherDragons.arrowDeath
 import me.odinmain.features.impl.floor7.WitherDragons.arrowSpawn
 import me.odinmain.features.impl.floor7.WitherDragons.sendArrowHit
@@ -54,13 +53,9 @@ object DragonCheck {
         if (event.entity !is EntityDragon) return
         val dragon = WitherDragonsEnum.entries.find {it.entity?.entityId == event.entity.entityId} ?: return
 
-        if (sendTime && WitherDragons.enabled) {
-            val oldPB = dragon.dragonKillPBs.value
-            val killTime = event.entity.ticksExisted / 20.0
-            if (dragon.dragonKillPBs.value < event.entity.ticksExisted / 20.0) dragon.dragonKillPBs.value = killTime
-            Config.save()
-            modMessage("§${dragon.colorCode}${dragon.name} §fdragon was alive for ${printSecondsWithColor(killTime, 3.5, 7.5, down = false)}${if (killTime < oldPB) " §7(§dNew PB§7)" else ""}.")
-        }
+        if (sendTime && WitherDragons.enabled)
+            dragonPBs.time(dragon.ordinal, event.entity.ticksExisted / 20.0, "s§7!", "§${dragon.colorCode}${dragon.name} §7was alive for §6", addPBString = true, addOldPBString = true)
+
 
         if (sendArrowHit && WitherDragons.enabled) arrowDeath(dragon)
         lastDragonDeath = dragon.name
