@@ -27,7 +27,7 @@ val dungeonWaypointsCommand = commodore("dwp", "dungeonwaypoints") {
         modMessage("Changed size to: ${DungeonWaypoints.size}")
     }
 
-    literal("resetwaypoints").runs {
+    literal("reloadwaypoints").runs {
         reloadWaypoints()
     }
     literal("useblocksize").runs {
