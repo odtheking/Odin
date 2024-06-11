@@ -110,6 +110,16 @@ object DungeonWaypoints : Module(
         onWorldLoad {
             reloadWaypoints()
         }
+
+        onMessage(Regex("(?s).*(\\d+)/\\1 Secrets.*")) {
+            val room = DungeonUtils.currentRoom ?: return@onMessage
+            val waypoints = DungeonWaypointConfigCLAY.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
+            for (wp in waypoints.filter { it.secret && !it.clicked }) {
+                wp.clicked = true
+            }
+            DungeonUtils.setWaypoints(room)
+            glList = -1
+        }
     }
 
     @SubscribeEvent
