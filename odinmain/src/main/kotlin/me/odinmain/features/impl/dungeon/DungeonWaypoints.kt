@@ -138,17 +138,17 @@ object DungeonWaypoints : Module(
 
     @SubscribeEvent
     fun onEntityLeaveWorld(event: EntityLeaveWorldEvent) {
-        val room = DungeonUtils.currentRoom ?: return
         val pos = secretEntities[event.entity.entityId] ?: return
         if ((event.entity is EntityItem && event.entity.entityItem.displayName.noControlCodes.containsOneOf(drops, true)) || event.entity is EntityBat) {
-            clickSecret(room, pos)
+            clickSecret(pos, 3)
         }
     }
 
-    private fun clickSecret(room: DungeonUtils.FullRoom, pos: Vec3) {
+    private fun clickSecret(pos: Vec3, distance: Int) {
+        val room = DungeonUtils.currentRoom ?: return
         val vec = Vec3(pos.xCoord, pos.yCoord, pos.zCoord).subtractVec(x = room.clayPos.x, z = room.clayPos.z).rotateToNorth(room.room.rotation)
-        val waypoints = DungeonWaypointConfigCLAY.waypoints.getOrPut(DungeonUtils.currentRoom?.room?.data?.name ?: return) { mutableListOf() }
-        waypoints.find { wp -> wp.toVec3().distanceTo(vec) <= 3 && wp.secret && !wp.clicked}?.let {
+        val waypoints = DungeonWaypointConfigCLAY.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
+        waypoints.find { wp -> (if (distance == 0) wp.toVec3().equal(vec) else wp.toVec3().distanceTo(vec) <= distance) && wp.secret && !wp.clicked}?.let {
             it.clicked = true
             DungeonUtils.setWaypoints(room)
             devMessage("clicked $vec")
@@ -220,14 +220,7 @@ object DungeonWaypoints : Module(
             DungeonUtils.setWaypoints(room)
             glList = -1
         } else {
-            val vec = Vec3(pos).subtractVec(x = room.clayPos.x, z = room.clayPos.z).rotateToNorth(room.room.rotation)
-            val waypoints = DungeonWaypointConfigCLAY.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
-            waypoints.find { it.toVec3().equal(vec) && it.secret && !it.clicked}?.let {
-                it.clicked = true
-                DungeonUtils.setWaypoints(room)
-                devMessage("clicked $vec")
-                glList = -1
-            }
+            clickSecret(Vec3(pos), 0)
         }
     }
 
