@@ -125,17 +125,15 @@ object DungeonWaypoints : Module(
     @SubscribeEvent
     fun onMetaData(event: PostEntityMetadata) {
         val entity = mc.theWorld.getEntityByID(event.packet.entityId) ?: return
-        val pos = Vec3(entity.posX, entity.posY, entity.posZ)
         if (entity is EntityItem && entity.entityItem.displayName.noControlCodes.containsOneOf(drops, true)) {
-            secretEntities[event.packet.entityId] = Vec3(pos.xCoord, pos.yCoord, pos.zCoord)
+            secretEntities[event.packet.entityId] = entity.positionVector
         }
     }
 
     @SubscribeEvent
     fun onEntityJoinWorldEvent(event: EntityJoinWorldEvent) {
-        val pos = Vec3(event.entity.posX, event.entity.posY, event.entity.posZ)
         if (event.entity is EntityBat) {
-            secretEntities[event.entity.entityId] = Vec3(pos.xCoord, pos.yCoord, pos.zCoord)
+            secretEntities[event.entity.entityId] = event.entity.positionVector
         }
     }
 
