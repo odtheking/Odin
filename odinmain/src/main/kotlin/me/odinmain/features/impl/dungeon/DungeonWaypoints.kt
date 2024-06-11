@@ -3,6 +3,7 @@ package me.odinmain.features.impl.dungeon
 import me.odinmain.config.DungeonWaypointConfigCLAY
 import me.odinmain.events.impl.ClickEvent
 import me.odinmain.events.impl.EnteredDungeonRoomEvent
+import me.odinmain.events.impl.EntityLeaveWorldEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.render.DevPlayers
@@ -83,22 +84,12 @@ object DungeonWaypoints : Module(
     }
 
     private val secretItems = mutableMapOf<Int, Vec3>()
-    private val secretBats = mutableListOf<Vec3>()
+    private val secretBats = mutableMapOf<Int, Vec3>()
 
     private val drops = listOf(
         "Health Potion VIII Splash Potion", "Healing Potion 8 Splash Potion", "Healing Potion VIII Splash Potion",
         "Decoy", "Inflatable Jerry", "Spirit Leap", "Trap", "Training Weights", "Defuse Kit", "Dungeon Chest Key", "Treasure Talisman", "Revive Stone",
     )
-
-    @SubscribeEvent
-    fun onEntityJoinWorldEvent(event: EntityJoinWorldEvent) {
-        val pos = Vec3(event.entity.posX, event.entity.posY, event.entity.posZ.toInt().toDouble())
-        if (event.entity is EntityItem && (event.entity as EntityItem).entityItem.displayName.noControlCodes.containsOneOf(drops, true)) {
-            secretItems[event.entity.entityId] = Vec3(pos.xCoord, pos.yCoord, pos.zCoord)
-        } else if (event.entity is EntityBat) {
-            secretBats.add(Vec3(pos.xCoord, pos.yCoord, pos.zCoord))
-        }
-    }
 
     fun reloadWaypoints() {
         val room = DungeonUtils.currentRoom
@@ -118,22 +109,31 @@ object DungeonWaypoints : Module(
         onWorldLoad {
             reloadWaypoints()
         }
-        //todo maybe replace with entityleaveworld event? would give us item pos and maybe not need join world pos
-        onPacket(S0DPacketCollectItem::class.java) { packet ->
-            val room = DungeonUtils.currentRoom ?: return@onPacket
-            val pos = secretItems[packet.entityID] ?: return@onPacket
-            clickSecret(room, pos)
-        }
-        onPacket(S29PacketSoundEffect::class.java) { sound ->
-            if (sound.soundName == "mob.bat.death") {
-                val room = DungeonUtils.currentRoom ?: return@onPacket
-                val pos = secretBats.find { mc.thePlayer.getDistance(it.xCoord, it.yCoord, it.zCoord) <= 5 } ?: return@onPacket
-                clickSecret(room, pos)
-            }
+    }
+
+    @SubscribeEvent
+    fun onEntityJoinWorldEvent(event: EntityJoinWorldEvent) {
+        val pos = Vec3(event.entity.posX, event.entity.posY, event.entity.posZ.toInt().toDouble())
+        if (event.entity is EntityItem && (event.entity as EntityItem).entityItem.displayName.noControlCodes.containsOneOf(drops, true)) {
+            secretItems[event.entity.entityId] = Vec3(pos.xCoord, pos.yCoord, pos.zCoord)
+        } else if (event.entity is EntityBat) {
+            secretBats[event.entity.entityId] = Vec3(pos.xCoord, pos.yCoord, pos.zCoord)
         }
     }
 
-    fun clickSecret(room: DungeonUtils.FullRoom, pos: Vec3) {
+    @SubscribeEvent
+    fun onEntityLeaveWorld(event: EntityLeaveWorldEvent) {
+        val room = DungeonUtils.currentRoom ?: return
+        if (event.entity is EntityItem && event.entity.entityItem.displayName.noControlCodes.containsOneOf(drops, true)) {
+            val pos = secretItems[event.entity.entityId] ?: return
+            clickSecret(room, pos)
+        } else if (event.entity is EntityBat) {
+            val pos = secretBats[event.entity.entityId] ?: return
+            clickSecret(room, pos)
+        }
+    }
+
+    private fun clickSecret(room: DungeonUtils.FullRoom, pos: Vec3) {
         val vec = Vec3(pos.xCoord, pos.yCoord, pos.zCoord).subtractVec(x = room.clayPos.x, z = room.clayPos.z).rotateToNorth(room.room.rotation)
         val waypoints = DungeonWaypointConfigCLAY.waypoints.getOrPut(DungeonUtils.currentRoom?.room?.data?.name ?: return) { mutableListOf() }
         waypoints.find { wp -> wp.toVec3().distanceTo(vec) <= 3 && wp.secret && !wp.clicked}?.let {
