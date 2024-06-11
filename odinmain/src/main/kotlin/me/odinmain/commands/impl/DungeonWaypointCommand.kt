@@ -5,6 +5,7 @@ import me.odinmain.features.impl.dungeon.DungeonWaypoints
 import me.odinmain.features.impl.dungeon.DungeonWaypoints.reloadWaypoints
 import me.odinmain.utils.isHexaDecimal
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.modMessage
 
 val dungeonWaypointsCommand = commodore("dwp", "dungeonwaypoints") {
@@ -29,6 +30,7 @@ val dungeonWaypointsCommand = commodore("dwp", "dungeonwaypoints") {
 
     literal("reloadwaypoints").runs {
         reloadWaypoints()
+        modMessage("reloaded waypoints")
     }
 
     literal("secret").runs {

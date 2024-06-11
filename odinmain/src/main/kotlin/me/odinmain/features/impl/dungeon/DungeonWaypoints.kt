@@ -101,7 +101,6 @@ object DungeonWaypoints : Module(
         if (room != null) DungeonUtils.setWaypoints(room)
         glList = -1
         secretEntities.clear()
-        devMessage("reloaded waypoints")
     }
 
     init {
