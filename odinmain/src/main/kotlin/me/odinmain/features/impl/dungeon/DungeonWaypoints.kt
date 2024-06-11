@@ -84,8 +84,7 @@ object DungeonWaypoints : Module(
         modMessage("Dungeon Waypoint editing ${if (allowEdits) "§aenabled" else "§cdisabled"}§r!")
     }
 
-    private val secretItems = mutableMapOf<Int, Vec3>()
-    private val secretBats = mutableMapOf<Int, Vec3>()
+    private val secretEntities = mutableMapOf<Int, Vec3>()
 
     private val drops = listOf(
         "Health Potion VIII Splash Potion", "Healing Potion 8 Splash Potion", "Healing Potion VIII Splash Potion",
@@ -101,8 +100,7 @@ object DungeonWaypoints : Module(
         }
         if (room != null) DungeonUtils.setWaypoints(room)
         glList = -1
-        secretItems.clear()
-        secretBats.clear()
+        secretEntities.clear()
         devMessage("reloaded waypoints")
     }
 
@@ -129,7 +127,7 @@ object DungeonWaypoints : Module(
         val entity = mc.theWorld.getEntityByID(event.packet.entityId) ?: return
         val pos = Vec3(entity.posX, entity.posY, entity.posZ)
         if (entity is EntityItem && entity.entityItem.displayName.noControlCodes.containsOneOf(drops, true)) {
-            secretItems[event.packet.entityId] = Vec3(pos.xCoord, pos.yCoord, pos.zCoord)
+            secretEntities[event.packet.entityId] = Vec3(pos.xCoord, pos.yCoord, pos.zCoord)
         }
     }
 
@@ -137,18 +135,15 @@ object DungeonWaypoints : Module(
     fun onEntityJoinWorldEvent(event: EntityJoinWorldEvent) {
         val pos = Vec3(event.entity.posX, event.entity.posY, event.entity.posZ)
         if (event.entity is EntityBat) {
-            secretBats[event.entity.entityId] = Vec3(pos.xCoord, pos.yCoord, pos.zCoord)
+            secretEntities[event.entity.entityId] = Vec3(pos.xCoord, pos.yCoord, pos.zCoord)
         }
     }
 
     @SubscribeEvent
     fun onEntityLeaveWorld(event: EntityLeaveWorldEvent) {
         val room = DungeonUtils.currentRoom ?: return
-        if (event.entity is EntityItem && event.entity.entityItem.displayName.noControlCodes.containsOneOf(drops, true)) {
-            val pos = secretItems[event.entity.entityId] ?: return
-            clickSecret(room, pos)
-        } else if (event.entity is EntityBat) {
-            val pos = secretBats[event.entity.entityId] ?: return
+        val pos = secretEntities[event.entity.entityId] ?: return
+        if ((event.entity is EntityItem && event.entity.entityItem.displayName.noControlCodes.containsOneOf(drops, true)) || event.entity is EntityBat) {
             clickSecret(room, pos)
         }
     }
