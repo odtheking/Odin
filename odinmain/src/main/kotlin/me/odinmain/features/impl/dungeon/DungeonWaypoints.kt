@@ -4,6 +4,7 @@ import me.odinmain.config.DungeonWaypointConfigCLAY
 import me.odinmain.events.impl.ClickEvent
 import me.odinmain.events.impl.EnteredDungeonRoomEvent
 import me.odinmain.events.impl.EntityLeaveWorldEvent
+import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.render.DevPlayers
@@ -102,7 +103,7 @@ object DungeonWaypoints : Module(
         glList = -1
         secretItems.clear()
         secretBats.clear()
-        modMessage("reloaded waypoints")
+        devMessage("reloaded waypoints")
     }
 
     init {
@@ -112,11 +113,18 @@ object DungeonWaypoints : Module(
     }
 
     @SubscribeEvent
+    fun onMetaData(event: PostEntityMetadata) {
+        val entity = mc.theWorld.getEntityByID(event.packet.entityId) ?: return
+        val pos = Vec3(entity.posX, entity.posY, entity.posZ)
+        if (entity is EntityItem && entity.entityItem.displayName.noControlCodes.containsOneOf(drops, true)) {
+            secretItems[event.packet.entityId] = Vec3(pos.xCoord, pos.yCoord, pos.zCoord)
+        }
+    }
+
+    @SubscribeEvent
     fun onEntityJoinWorldEvent(event: EntityJoinWorldEvent) {
-        val pos = Vec3(event.entity.posX, event.entity.posY, event.entity.posZ.toInt().toDouble())
-        if (event.entity is EntityItem && (event.entity as EntityItem).entityItem.displayName.noControlCodes.containsOneOf(drops, true)) {
-            secretItems[event.entity.entityId] = Vec3(pos.xCoord, pos.yCoord, pos.zCoord)
-        } else if (event.entity is EntityBat) {
+        val pos = Vec3(event.entity.posX, event.entity.posY, event.entity.posZ)
+        if (event.entity is EntityBat) {
             secretBats[event.entity.entityId] = Vec3(pos.xCoord, pos.yCoord, pos.zCoord)
         }
     }
