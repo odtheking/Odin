@@ -1,11 +1,9 @@
 package me.odinmain.features.impl.floor7.p3
 
-import me.odinmain.OdinMain
 import me.odinmain.events.impl.TerminalClosedEvent
 import me.odinmain.events.impl.TerminalOpenedEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.impl.floor7.p3.termGUI.TermGui
 import me.odinmain.features.impl.floor7.p3.termsim.TermSimGui
 import me.odinmain.features.settings.impl.ActionSetting
 import me.odinmain.features.settings.impl.DualSetting

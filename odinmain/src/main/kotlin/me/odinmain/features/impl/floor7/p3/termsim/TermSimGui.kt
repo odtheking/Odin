@@ -111,7 +111,7 @@ fun openTerminal(ping: Long = 0L, const: Long = 0L) {
         TerminalTypes.ORDER -> InOrder.open(ping, const)
         TerminalTypes.STARTS_WITH -> StartsWith(StartsWith.letters.shuffled().first()).open(ping, const)
         TerminalTypes.SELECT -> SelectAll(EnumDyeColor.entries.getRandom().name.replace("_", " ").uppercase()).open(ping, const)
-        TerminalTypes.MELODY -> TODO()
+        TerminalTypes.MELODY -> {}
         TerminalTypes.NONE -> {}
     }
 }
