@@ -16,6 +16,7 @@ import me.odinmain.utils.render.RenderUtils.invoke
 import me.odinmain.utils.render.RenderUtils.outlineBounds
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.tiles.Room
 import net.minecraft.client.gui.*
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -41,10 +42,10 @@ object DungeonWaypoints : Module(
     category = Category.DUNGEON,
     tag = TagType.NEW
 ) {
-    private var allowEdits: Boolean by BooleanSetting("Allow Edits", false)
+    var allowEdits: Boolean by BooleanSetting("Allow Edits", false)
     var editText: Boolean by BooleanSetting("Edit Text", false, description = "Displays text under your crosshair telling you when you are editing waypoints.")
     var color: Color by ColorSetting("Color", default = Color.GREEN, description = "The color of the next waypoint you place.", allowAlpha = true).withDependency { colorPallet == 0 }
-    private val colorPallet: Int by SelectorSetting("Color pallet", "None", arrayListOf("None", "Aqua", "Magenta", "Yellow", "Lime"))
+    private val colorPallet: Int by SelectorSetting("Color pallet", "None", arrayListOf("None", "Aqua", "Magenta", "Yellow", "Lime", "Red"))
     var filled: Boolean by BooleanSetting("Filled", false, description = "If the next waypoint you place should be 'filled'.")
     var throughWalls: Boolean by BooleanSetting("Through walls", false, description = "If the next waypoint you place should be visible through walls.")
     var useBlockSize: Boolean by BooleanSetting("Use block size", false, description = "Use the size of the block you click for waypoint size.")
@@ -81,8 +82,8 @@ object DungeonWaypoints : Module(
         modMessage("Dungeon Waypoint editing ${if (allowEdits) "§aenabled" else "§cdisabled"}§r!")
     }
 
-    val secretItems = mutableMapOf<Int, Vec3>()
-    val secretBats = mutableListOf<Vec3>()
+    private val secretItems = mutableMapOf<Int, Vec3>()
+    private val secretBats = mutableListOf<Vec3>()
 
     private val drops = listOf(
         "Health Potion VIII Splash Potion", "Healing Potion 8 Splash Potion", "Healing Potion VIII Splash Potion",
@@ -91,7 +92,7 @@ object DungeonWaypoints : Module(
 
     @SubscribeEvent
     fun onEntityJoinWorldEvent(event: EntityJoinWorldEvent) {
-        val pos = Vec3(event.entity.posX, event.entity.posY, event.entity.posZ)
+        val pos = Vec3(event.entity.posX, event.entity.posY, event.entity.posZ.toInt().toDouble())
         if (event.entity is EntityItem && (event.entity as EntityItem).entityItem.displayName.noControlCodes.containsOneOf(drops, true)) {
             secretItems[event.entity.entityId] = Vec3(pos.xCoord, pos.yCoord, pos.zCoord)
         } else if (event.entity is EntityBat) {
@@ -99,30 +100,48 @@ object DungeonWaypoints : Module(
         }
     }
 
+    fun reloadWaypoints() {
+        val room = DungeonUtils.currentRoom
+        for ((_, waypoints) in DungeonWaypointConfigCLAY.waypoints) {
+            waypoints.filter { it.clicked }.forEach {
+                it.clicked = false
+            }
+        }
+        if (room != null) DungeonUtils.setWaypoints(room)
+        glList = -1
+        secretItems.clear()
+        secretBats.clear()
+        modMessage("reloaded waypoints")
+    }
+
     init {
         onWorldLoad {
-            for (waypoint in DungeonWaypointConfigCLAY.waypoints) {
-                waypoint.value.filter { it.clicked }.forEach { it.clicked = false }
-            }
-            secretItems.clear()
-            secretBats.clear()
+            reloadWaypoints()
         }
-        onPacket(S0DPacketCollectItem::class.java) {
+        //todo maybe replace with entityleaveworld event? would give us item pos and maybe not need join world pos
+        onPacket(S0DPacketCollectItem::class.java) { packet ->
             val room = DungeonUtils.currentRoom ?: return@onPacket
-            val pos = secretItems[it.entityID] ?: return@onPacket
-            val vec = Vec3(pos.xCoord, pos.yCoord, pos.zCoord).subtractVec(x = room.clayPos.x, z = room.clayPos.z).rotateToNorth(room.room.rotation)
-            val waypoints = DungeonWaypointConfigCLAY.waypoints.getOrPut(DungeonUtils.currentRoom?.room?.data?.name ?: return@onPacket) { mutableListOf() }
-            waypoints.find { wp -> wp.toVec3().distanceTo(vec) <= 3 && wp.secret}?.clicked = true
+            val pos = secretItems[packet.entityID] ?: return@onPacket
+            clickSecret(room, pos)
         }
         onPacket(S29PacketSoundEffect::class.java) { sound ->
             if (sound.soundName == "mob.bat.death") {
                 val room = DungeonUtils.currentRoom ?: return@onPacket
                 val pos = secretBats.find { mc.thePlayer.getDistance(it.xCoord, it.yCoord, it.zCoord) <= 5 } ?: return@onPacket
-                val vec = Vec3(pos.xCoord, pos.yCoord, pos.zCoord).subtractVec(x = room.clayPos.x, z = room.clayPos.z).rotateToNorth(room.room.rotation)
-                val waypoints = DungeonWaypointConfigCLAY.waypoints.getOrPut(DungeonUtils.currentRoom?.room?.data?.name ?: return@onPacket) { mutableListOf() }
-                waypoints.find { wp -> wp.toVec3().distanceTo(vec) <= 3 && wp.secret}?.clicked = true
+                clickSecret(room, pos)
             }
         }
+    }
+
+    fun clickSecret(room: DungeonUtils.FullRoom, pos: Vec3) {
+        val vec = Vec3(pos.xCoord, pos.yCoord, pos.zCoord).subtractVec(x = room.clayPos.x, z = room.clayPos.z).rotateToNorth(room.room.rotation)
+        val waypoints = DungeonWaypointConfigCLAY.waypoints.getOrPut(DungeonUtils.currentRoom?.room?.data?.name ?: return) { mutableListOf() }
+        waypoints.find { wp -> wp.toVec3().distanceTo(vec) <= 3 && wp.secret && !wp.clicked}?.let {
+            it.clicked = true
+            DungeonUtils.setWaypoints(room)
+            devMessage("clicked $vec")
+            glList = -1
+        }  ?: devMessage("Couldnt find waypoint")
     }
 
     @SubscribeEvent
@@ -191,7 +210,12 @@ object DungeonWaypoints : Module(
         } else {
             val vec = Vec3(pos).subtractVec(x = room.clayPos.x, z = room.clayPos.z).rotateToNorth(room.room.rotation)
             val waypoints = DungeonWaypointConfigCLAY.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
-            waypoints.find { it.toVec3().equal(vec) && it.secret}?.clicked = true
+            waypoints.find { it.toVec3().equal(vec) && it.secret && !it.clicked}?.let {
+                it.clicked = true
+                DungeonUtils.setWaypoints(room)
+                devMessage("clicked $vec")
+                glList = -1
+            } ?: devMessage("Couldnt find waypoint")
         }
     }
 

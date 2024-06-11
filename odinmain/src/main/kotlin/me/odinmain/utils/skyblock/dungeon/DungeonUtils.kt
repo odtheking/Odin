@@ -40,12 +40,7 @@ object DungeonUtils {
     inline val cryptsCount get() = currentDungeon?.cryptsCount ?: 0
     inline val deathCount get() = currentDungeon?.deathCount ?: 0
 
-    data class FullRoom(
-        val room: Room,
-        var clayPos: BlockPos,
-        val positions: List<ExtraRoom>,
-        var waypoints: List<DungeonWaypoint>
-    )
+    data class FullRoom(val room: Room, var clayPos: BlockPos, val positions: List<ExtraRoom>, var waypoints: List<DungeonWaypoint>)
     data class ExtraRoom(val x: Int, val z: Int, val core: Int)
     private var lastRoomPos: Pair<Int, Int> = Pair(0, 0)
     var currentRoom: FullRoom? = null
@@ -139,7 +134,7 @@ object DungeonUtils {
             DungeonWaypointConfigCLAY.waypoints[room.data.name]?.let { waypoints ->
                 addAll(waypoints.map { waypoint ->
                     val vec = waypoint.toVec3().rotateAroundNorth(room.rotation).addVec(x = curRoom.clayPos.x, z = curRoom.clayPos.z)
-                    DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, waypoint.color, waypoint.filled, waypoint.depth, waypoint.aabb, waypoint.title, waypoint.secret)
+                    DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, waypoint.color, waypoint.filled, waypoint.depth, waypoint.aabb, waypoint.title, waypoint.secret, waypoint.clicked)
                 })
             }
         }
