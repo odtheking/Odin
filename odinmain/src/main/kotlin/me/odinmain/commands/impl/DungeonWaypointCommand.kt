@@ -30,6 +30,12 @@ val dungeonWaypointsCommand = commodore("dwp", "dungeonwaypoints") {
     literal("reloadwaypoints").runs {
         reloadWaypoints()
     }
+
+    literal("secret").runs {
+        DungeonWaypoints.secretWaypoint = !DungeonWaypoints.secretWaypoint
+        modMessage("Changed Secrets to: ${DungeonWaypoints.secretWaypoint}")
+    }
+
     literal("useblocksize").runs {
         DungeonWaypoints.useBlockSize = !DungeonWaypoints.useBlockSize
         modMessage("Changed use block size to: ${DungeonWaypoints.useBlockSize}")
