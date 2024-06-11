@@ -161,7 +161,7 @@ object DungeonWaypoints : Module(
             DungeonUtils.setWaypoints(room)
             devMessage("clicked $vec")
             glList = -1
-        }  ?: devMessage("Couldnt find waypoint")
+        }
     }
 
     @SubscribeEvent
@@ -235,7 +235,7 @@ object DungeonWaypoints : Module(
                 DungeonUtils.setWaypoints(room)
                 devMessage("clicked $vec")
                 glList = -1
-            } ?: devMessage("Couldnt find waypoint")
+            }
         }
     }
 
