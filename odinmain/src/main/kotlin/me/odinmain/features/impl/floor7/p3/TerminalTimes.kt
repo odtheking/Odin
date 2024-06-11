@@ -35,7 +35,7 @@ object TerminalTimes : Module(
     @SubscribeEvent
     fun onTerminalClose(event: TerminalClosedEvent) {
         val time = (System.currentTimeMillis() - startTimer) / 1000.0
-        termPBs.time(event.type.ordinal, time, "s§7!", "§a$${event.type.guiName} §7solved in §6", addPBString = true, addOldPBString = true, sendMessage)
+        termPBs.time(event.type.ordinal, time, "s§7!", "§a${event.type.guiName} §7solved in §6", addPBString = true, addOldPBString = true, sendMessage)
         type = TerminalTypes.NONE
     }
 }
