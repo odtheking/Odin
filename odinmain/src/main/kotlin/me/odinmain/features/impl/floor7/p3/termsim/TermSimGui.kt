@@ -42,8 +42,8 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
     }
 
     fun solved(name: String, pbIndex: Int) {
-        val time = ((System.currentTimeMillis() - startTime) / 1000.0).round(2).toDouble()
-        TerminalSimulator.simPBs.time(pbIndex, time, "s§7!", "§a$name §7solved in §6", addPBString = true, addOldPBString = true)
+        val time = ((System.currentTimeMillis() - startTime) / 1000.0)
+        TerminalSimulator.simPBs.time(pbIndex, time, "s§7!", "§a$name §7(termsim) §7solved in §6", addPBString = true, addOldPBString = true)
         if (this.consecutive > 0) openTerminal(ping, consecutive) else if (TerminalSimulator.openStart) StartGui.open(ping) else mc.thePlayer.closeScreen()
     }
 
