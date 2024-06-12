@@ -93,7 +93,7 @@ object DungeonWaypoints : Module(
 
     fun reloadWaypoints() {
         val room = DungeonUtils.currentRoom
-        for ((_, waypointsList) in DungeonWaypointConfigCLAY.waypoints.filter { waypoints -> waypoints.value.any { it.clicked} }) {
+        for ((_, waypointsList) in DungeonWaypointConfigCLAY.waypoints.filter { waypoints -> waypoints.value.any { it.clicked } }) {
             waypointsList.filter { it.clicked }.forEach { it.clicked = false }
         }
 
@@ -111,9 +111,7 @@ object DungeonWaypoints : Module(
             val room = DungeonUtils.currentRoom ?: return@onMessage
             val waypoints = DungeonWaypointConfigCLAY.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
             if (waypoints.any { it.secret && !it.clicked}) {
-                for (wp in waypoints.filter { it.secret && !it.clicked }) {
-                    wp.clicked = true
-                }
+                for (wp in waypoints.filter { it.secret && !it.clicked }) { wp.clicked = true }
                 DungeonUtils.setWaypoints(room)
                 glList = -1
             }
