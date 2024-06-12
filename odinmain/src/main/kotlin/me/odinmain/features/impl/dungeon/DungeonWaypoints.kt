@@ -91,7 +91,7 @@ object DungeonWaypoints : Module(
         "Decoy", "Inflatable Jerry", "Spirit Leap", "Trap", "Training Weights", "Defuse Kit", "Dungeon Chest Key", "Treasure Talisman", "Revive Stone",
     )
 
-    fun reloadWaypoints() {
+    fun resetSecrets() {
         val room = DungeonUtils.currentRoom
         for ((_, waypointsList) in DungeonWaypointConfigCLAY.waypoints.filter { waypoints -> waypoints.value.any { it.clicked } }) {
             waypointsList.filter { it.clicked }.forEach { it.clicked = false }
@@ -104,7 +104,7 @@ object DungeonWaypoints : Module(
 
     init {
         onWorldLoad {
-            reloadWaypoints()
+            resetSecrets()
         }
 
         onMessage(Regex("(?s).*(\\d+)/\\1 Secrets.*")) {

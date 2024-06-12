@@ -2,10 +2,9 @@ package me.odinmain.commands.impl
 
 import me.odinmain.commands.commodore
 import me.odinmain.features.impl.dungeon.DungeonWaypoints
-import me.odinmain.features.impl.dungeon.DungeonWaypoints.reloadWaypoints
+import me.odinmain.features.impl.dungeon.DungeonWaypoints.resetSecrets
 import me.odinmain.utils.isHexaDecimal
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.modMessage
 
 val dungeonWaypointsCommand = commodore("dwp", "dungeonwaypoints") {
@@ -28,14 +27,14 @@ val dungeonWaypointsCommand = commodore("dwp", "dungeonwaypoints") {
         modMessage("Changed size to: ${DungeonWaypoints.size}")
     }
 
-    literal("reloadwaypoints").runs {
-        reloadWaypoints()
-        modMessage("reloaded waypoints")
+    literal("resetsecrets").runs {
+        resetSecrets()
+        modMessage("reset secret waypoints")
     }
 
     literal("secret").runs {
         DungeonWaypoints.secretWaypoint = !DungeonWaypoints.secretWaypoint
-        modMessage("Changed Secrets to: ${DungeonWaypoints.secretWaypoint}")
+        modMessage("Changed secret to: ${DungeonWaypoints.secretWaypoint}")
     }
 
     literal("useblocksize").runs {
