@@ -93,11 +93,10 @@ object DungeonWaypoints : Module(
 
     fun reloadWaypoints() {
         val room = DungeonUtils.currentRoom
-        for ((_, waypoints) in DungeonWaypointConfigCLAY.waypoints) {
-            waypoints.filter { it.clicked }.forEach {
-                it.clicked = false
-            }
+        for ((_, waypointsList) in DungeonWaypointConfigCLAY.waypoints.filter { waypoints -> waypoints.value.any { it.clicked} }) {
+            waypointsList.filter { it.clicked }.forEach { it.clicked = false }
         }
+
         if (room != null) DungeonUtils.setWaypoints(room)
         glList = -1
         secretEntities.clear()
