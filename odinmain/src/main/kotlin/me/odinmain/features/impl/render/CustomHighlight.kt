@@ -36,7 +36,7 @@ object CustomHighlight : Module(
 
     private val xray: Boolean by BooleanSetting("Depth Check", false).withDependency { !isLegitVersion }
     val highlightList: MutableList<String> by ListSetting("List", mutableListOf())
-    private val renderThrough: Boolean get() = if (isLegitVersion) false else xray
+    private val depthCheck: Boolean get() = if (isLegitVersion) true else xray
     private var currentEntities = mutableSetOf<Entity>()
 
     init {
@@ -60,7 +60,7 @@ object CustomHighlight : Module(
 
    @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
-        if (mode != 0 || event.entity !in currentEntities || (renderThrough && !mc.thePlayer.canEntityBeSeen(event.entity))) return
+        if (mode != 0 || event.entity !in currentEntities || (depthCheck && !mc.thePlayer.canEntityBeSeen(event.entity))) return
         profile("Outline Esp") { OutlineUtils.outlineEntity(event, thickness, color, true) }
     }
 
@@ -72,8 +72,8 @@ object CustomHighlight : Module(
                 RenderUtils.draw3DLine(getPositionEyes(mc.thePlayer.renderVec), getPositionEyes(it.renderVec), color, 2f, false)
 
             if (mode == 1)
-                Renderer.drawBox(it.renderBoundingBox, color, thickness, depth = !renderThrough, fillAlpha = 0)
-            else if (mode == 2 && (mc.thePlayer.canEntityBeSeen(it) || renderThrough))
+                Renderer.drawBox(it.renderBoundingBox, color, thickness, depth = !depthCheck, fillAlpha = 0)
+            else if (mode == 2 && (mc.thePlayer.canEntityBeSeen(it) || depthCheck))
                 Renderer.draw2DEntity(it, thickness, color)
         }}
     }
@@ -93,12 +93,12 @@ object CustomHighlight : Module(
     }
 
     private fun checkEntity(entity: Entity) {
-        if (entity !is EntityArmorStand || highlightList.none { entity.name.contains(it, true) } || entity in currentEntities || !entity.alwaysRenderNameTag && !renderThrough) return
+        if (entity !is EntityArmorStand || highlightList.none { entity.name.contains(it, true) } || entity in currentEntities || !entity.alwaysRenderNameTag && !depthCheck) return
         currentEntities.add(getMobEntity(entity) ?: return)
     }
 
     private fun checkStarred(entity: Entity) {
-        if (entity !is EntityArmorStand || !entity.name.startsWith("§6✯ ") || !entity.name.endsWith("§c❤") || entity in currentEntities || !entity.alwaysRenderNameTag && !renderThrough) return
+        if (entity !is EntityArmorStand || !entity.name.startsWith("§6✯ ") || !entity.name.endsWith("§c❤") || entity in currentEntities || !entity.alwaysRenderNameTag && !depthCheck) return
         currentEntities.add(getMobEntity(entity) ?: return)
     }
 

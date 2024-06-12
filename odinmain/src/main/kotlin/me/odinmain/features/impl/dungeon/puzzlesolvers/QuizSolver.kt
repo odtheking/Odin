@@ -36,11 +36,12 @@ object QuizSolver {
             triviaOptions.forEach { it.correct = false }
 
         if (msg.trim().startsWithOneOf("ⓐ", "ⓑ", "ⓒ", ignoreCase = true)) {
-            triviaAnswers?.any { msg.endsWith(it) } ?: return
-            when (msg.trim()[0]) {
-                'ⓐ' -> triviaOptions[0].correct = true
-                'ⓑ' -> triviaOptions[1].correct = true
-                'ⓒ' -> triviaOptions[2].correct = true
+            if (triviaAnswers?.any { msg.endsWith(it) } ?: return) {
+                when (msg.trim()[0]) {
+                    'ⓐ' -> triviaOptions[0].correct = true
+                    'ⓑ' -> triviaOptions[1].correct = true
+                    'ⓒ' -> triviaOptions[2].correct = true
+                }
             }
         }
 
