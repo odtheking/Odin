@@ -23,13 +23,13 @@ val chatCommandsCommand = commodore("chatcommandslist", "cclist", "chatclist", "
     }
 
     literal("clear").runs {
-        modMessage("list cleared.")
+        modMessage("List cleared.")
         blacklist.clear()
         Config.save()
     }
 
     literal("list").runs {
-        if (blacklist.size == 0) return@runs modMessage("list is empty")
-        modMessage("list:\n${blacklist.joinToString("\n")}")
+        if (blacklist.size == 0) return@runs modMessage("List is empty.")
+        modMessage("List:\n${blacklist.joinToString("\n")}")
     }
 }
