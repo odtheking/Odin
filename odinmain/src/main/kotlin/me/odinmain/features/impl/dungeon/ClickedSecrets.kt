@@ -37,7 +37,7 @@ object ClickedSecrets : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (/*!DungeonUtils.inDungeons || DungeonUtils.inBoss ||*/ secrets.isEmpty()) return
+        if (!DungeonUtils.inDungeons || (DungeonUtils.inBoss && disableInBoss) || secrets.isEmpty()) return
 
         val tempList = secrets.toList()
         tempList.forEach {
@@ -48,7 +48,7 @@ object ClickedSecrets : Module(
 
     @SubscribeEvent
     fun onSecret(event: SecretPickupEvent) {
-        if (event.type !is SecretItem.Interact || (DungeonUtils.inBoss && disableInBoss || secrets.any{ it.pos == event.type.blockPos })) return
+        if (event.type !is SecretItem.Interact || (DungeonUtils.inBoss && disableInBoss) || secrets.any{ it.pos == event.type.blockPos }) return
         secrets.add(Chest(event.type.blockPos, System.currentTimeMillis()))
 
         runIn(timeToStay.toInt() * 20) {

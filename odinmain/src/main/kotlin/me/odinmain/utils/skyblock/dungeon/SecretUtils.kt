@@ -23,14 +23,14 @@ object SecretUtils {
 
     @SubscribeEvent
     fun onRemoveEntity(event: EntityLeaveWorldEvent) {
-        //if (!inDungeons) return
+        if (!inDungeons) return
         if (event.entity is EntityItem && event.entity.entityItem.displayName.noControlCodes.containsOneOf(drops, true)) SecretPickupEvent(SecretItem.Item(event.entity)).postAndCatch()
         if (event.entity is EntityBat) SecretPickupEvent(SecretItem.Bat(event.entity)).postAndCatch()
     }
 
     @SubscribeEvent
     fun onPacket(event: PacketSentEvent) {
-        //if (!inDungeons) return
+        if (!inDungeons) return
         val packet = event.packet
         if (packet is C08PacketPlayerBlockPlacement && packet.position != null && isSecret(mc.theWorld?.getBlockState(packet.position) ?: return, packet.position)) {
             SecretPickupEvent(SecretItem.Interact(packet.position, mc.theWorld?.getBlockState(packet.position)  ?: return)).postAndCatch()
