@@ -22,7 +22,7 @@ object DungeonWaypointConfig {
     var waypoints: MutableMap<String, MutableList<DungeonWaypoint>> = mutableMapOf()
 
     var waypointsRooms: MutableMap<String, MutableList<WaypointCategory>> = mutableMapOf()
-    var waypointsRegions: MutableMap<String, MutableList<WaypointCategory>> = mutableMapOf()
+    var waypointRegions: MutableMap<String, MutableList<WaypointCategory>> = mutableMapOf()
 
 
     private val configFileRooms = File(mc.mcDataDir, "config/odin/dungeon-waypoint-config-rooms.json").apply {
@@ -54,7 +54,7 @@ object DungeonWaypointConfig {
             with(configFileOther.bufferedReader().use { it.readText() }) {
                 if (this.isEmpty()) return
 
-                waypointsRegions = gson.fromJson(
+                waypointRegions = gson.fromJson(
                     this,
                     object : TypeToken<MutableMap<String, MutableList<WaypointCategory>>>() {}.type
                 )
@@ -76,7 +76,7 @@ object DungeonWaypointConfig {
                     it.write(gson.toJson(waypointsRooms))
                 }
                 configFileOther.bufferedWriter().use {
-                    it.write(gson.toJson(waypointsRegions))
+                    it.write(gson.toJson(waypointRegions))
                 }
             } catch (e: IOException) {
                 println("Error saving Waypoint config.")
