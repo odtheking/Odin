@@ -1,10 +1,7 @@
 package me.odinmain.features.impl.dungeon
 
 import me.odinmain.config.DungeonWaypointConfigCLAY
-import me.odinmain.events.impl.ClickEvent
-import me.odinmain.events.impl.EnteredDungeonRoomEvent
-import me.odinmain.events.impl.EntityLeaveWorldEvent
-import me.odinmain.events.impl.PostEntityMetadata
+import me.odinmain.events.impl.*
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.render.DevPlayers
@@ -18,19 +15,13 @@ import me.odinmain.utils.render.RenderUtils.invoke
 import me.odinmain.utils.render.RenderUtils.outlineBounds
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.dungeon.tiles.Room
+import me.odinmain.utils.skyblock.dungeon.SecretItem
 import net.minecraft.client.gui.*
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.entity.Entity
-import net.minecraft.entity.item.EntityItem
-import net.minecraft.entity.passive.EntityBat
-import net.minecraft.network.play.server.S0DPacketCollectItem
-import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.util.*
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
-import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.opengl.GL11
 
@@ -44,7 +35,7 @@ object DungeonWaypoints : Module(
     category = Category.DUNGEON,
     tag = TagType.NEW
 ) {
-    var allowEdits: Boolean by BooleanSetting("Allow Edits", false)
+    private var allowEdits: Boolean by BooleanSetting("Allow Edits", false)
     var editText: Boolean by BooleanSetting("Edit Text", false, description = "Displays text under your crosshair telling you when you are editing waypoints.")
     var color: Color by ColorSetting("Color", default = Color.GREEN, description = "The color of the next waypoint you place.", allowAlpha = true).withDependency { colorPallet == 0 }
     private val colorPallet: Int by SelectorSetting("Color pallet", "None", arrayListOf("None", "Aqua", "Magenta", "Yellow", "Lime"))
@@ -84,12 +75,16 @@ object DungeonWaypoints : Module(
         modMessage("Dungeon Waypoint editing ${if (allowEdits) "§aenabled" else "§cdisabled"}§r!")
     }
 
-    private val secretEntities = mutableMapOf<Int, Vec3>()
+    @SubscribeEvent
+    fun onSecret(event: SecretPickupEvent) {
+        if (allowEdits) return
+        when (event.type) {
+            is SecretItem.Interact -> clickSecret(Vec3(event.type.blockPos), 0)
+            is SecretItem.Bat -> clickSecret(event.type.entity.positionVector, 5)
+            is SecretItem.Item -> clickSecret(event.type.entity.positionVector, 3)
+        }
+    }
 
-    private val drops = listOf(
-        "Health Potion VIII Splash Potion", "Healing Potion 8 Splash Potion", "Healing Potion VIII Splash Potion",
-        "Decoy", "Inflatable Jerry", "Spirit Leap", "Trap", "Training Weights", "Defuse Kit", "Dungeon Chest Key", "Treasure Talisman", "Revive Stone",
-    )
 
     fun resetSecrets() {
         val room = DungeonUtils.currentRoom
@@ -99,7 +94,6 @@ object DungeonWaypoints : Module(
 
         if (room != null) DungeonUtils.setWaypoints(room)
         glList = -1
-        secretEntities.clear()
     }
 
     init {
@@ -115,29 +109,6 @@ object DungeonWaypoints : Module(
                 DungeonUtils.setWaypoints(room)
                 glList = -1
             }
-        }
-    }
-
-    @SubscribeEvent
-    fun onMetaData(event: PostEntityMetadata) {
-        val entity = mc.theWorld.getEntityByID(event.packet.entityId) ?: return
-        if (entity is EntityItem && entity.entityItem.displayName.noControlCodes.containsOneOf(drops, true) && DungeonUtils.inDungeons) {
-            secretEntities[event.packet.entityId] = entity.positionVector
-        }
-    }
-
-    @SubscribeEvent
-    fun onEntityJoinWorldEvent(event: EntityJoinWorldEvent) {
-        if (event.entity is EntityBat && DungeonUtils.inDungeons) {
-            secretEntities[event.entity.entityId] = event.entity.positionVector
-        }
-    }
-
-    @SubscribeEvent
-    fun onEntityLeaveWorld(event: EntityLeaveWorldEvent) {
-        val pos = secretEntities[event.entity.entityId] ?: return
-        if ((event.entity is EntityItem && event.entity.entityItem.displayName.noControlCodes.containsOneOf(drops, true)) || event.entity is EntityBat) {
-            clickSecret(pos, 3)
         }
     }
 
@@ -183,42 +154,37 @@ object DungeonWaypoints : Module(
     fun onInteract(event: ClickEvent.RightClickEvent) {
         val pos = mc.objectMouseOver?.blockPos ?: return
         val room = DungeonUtils.currentRoom ?: return
-        if (isAir(pos)) return
-        if (allowEdits) {
-            val vec = Vec3(pos).subtractVec(x = room.clayPos.x, z = room.clayPos.z).rotateToNorth(room.room.rotation)
-            val aabb =
-                if (useBlockSize) getBlockAt(pos).getSelectedBoundingBox(mc.theWorld, BlockPos(0, 0, 0))?.outlineBounds() ?: return
-                else AxisAlignedBB(.5 - (size / 2), .5 - (size / 2), .5 - (size / 2), .5 + (size / 2), .5 + (size / 2), .5 + (size / 2)).expand(0.002, 0.002, 0.002)
+        if (isAir(pos) || !allowEdits) return
+        val vec = Vec3(pos).subtractVec(x = room.clayPos.x, z = room.clayPos.z).rotateToNorth(room.room.rotation)
+        val aabb =
+            if (useBlockSize) getBlockAt(pos).getSelectedBoundingBox(mc.theWorld, BlockPos(0, 0, 0))?.outlineBounds() ?: return
+            else AxisAlignedBB(.5 - (size / 2), .5 - (size / 2), .5 - (size / 2), .5 + (size / 2), .5 + (size / 2), .5 + (size / 2)).expand(0.002, 0.002, 0.002)
 
-            val waypoints = DungeonWaypointConfigCLAY.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
+        val waypoints = DungeonWaypointConfigCLAY.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
+         val color = when (colorPallet) {
+             0 -> color
+             1 -> Color.CYAN
+             2 -> Color.MAGENTA
+             3 -> Color.YELLOW
+             4 -> Color.GREEN
+             else -> color
+         }
 
-            val color = when (colorPallet) {
-                0 -> color
-                1 -> Color.CYAN
-                2 -> Color.MAGENTA
-                3 -> Color.YELLOW
-                4 -> Color.GREEN
-                else -> color
+        if (mc.thePlayer.isSneaking) {
+            GuiSign.setCallback { enteredText ->
+                waypoints.removeIf { it.toVec3().equal(vec) }
+                waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, aabb, enteredText, secretWaypoint))
             }
-
-            if (mc.thePlayer.isSneaking) {
-                GuiSign.setCallback { enteredText ->
-                    waypoints.removeIf { it.toVec3().equal(vec) }
-                    waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, aabb, enteredText, secretWaypoint))
-                }
-                mc.displayGuiScreen(GuiSign)
-            } else if (waypoints.removeIf { it.toVec3().equal(vec) }) {
-                devMessage("Removed waypoint at $vec")
-            } else {
-                waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, aabb, "", secretWaypoint))
-                devMessage("Added waypoint at $vec")
-            }
-            DungeonWaypointConfigCLAY.saveConfig()
-            DungeonUtils.setWaypoints(room)
-            glList = -1
+            mc.displayGuiScreen(GuiSign)
+        } else if (waypoints.removeIf { it.toVec3().equal(vec) }) {
+            devMessage("Removed waypoint at $vec")
         } else {
-            clickSecret(Vec3(pos), 0)
+            waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, aabb, "", secretWaypoint))
+            devMessage("Added waypoint at $vec")
         }
+        DungeonWaypointConfigCLAY.saveConfig()
+        DungeonUtils.setWaypoints(room)
+        glList = -1
     }
 
     @SubscribeEvent

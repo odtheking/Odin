@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.dungeon
 
+import me.odinmain.events.impl.SecretPickupEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
@@ -8,10 +9,12 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.SecretItem
 import me.odinmain.utils.skyblock.getBlockAt
 import me.odinmain.utils.toAABB
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.util.BlockPos
+import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -34,12 +37,22 @@ object ClickedSecrets : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (!DungeonUtils.inDungeons || DungeonUtils.inBoss || secrets.isEmpty()) return
+        if (/*!DungeonUtils.inDungeons || DungeonUtils.inBoss ||*/ secrets.isEmpty()) return
 
         val tempList = secrets.toList()
         tempList.forEach {
             val size = if (useRealSize) getBlockAt(it.pos).getSelectedBoundingBox(mc.theWorld, BlockPos(it.pos)) else it.pos.toAABB()
             Renderer.drawStyledBox(size, if (it.locked) lockedColor else color, style, lineWidth, depthCheck)
+        }
+    }
+
+    @SubscribeEvent
+    fun onSecret(event: SecretPickupEvent) {
+        if (event.type !is SecretItem.Interact || (DungeonUtils.inBoss && disableInBoss || secrets.any{ it.pos == event.type.blockPos })) return
+        secrets.add(Chest(event.type.blockPos, System.currentTimeMillis()))
+
+        runIn(timeToStay.toInt() * 20) {
+            secrets.removeFirstOrNull()
         }
     }
 
@@ -51,20 +64,6 @@ object ClickedSecrets : Module(
         onMessage("That chest is locked!", true) {
             if (secrets.isEmpty()) return@onMessage
             secrets.lastOrNull()?.let { it.locked = true }
-        }
-
-        onPacket(C08PacketPlayerBlockPlacement::class.java) { packet ->
-            if (!DungeonUtils.inDungeons || (DungeonUtils.inBoss && disableInBoss)) return@onPacket
-
-            val pos = packet.position
-            val blockState = mc.theWorld?.getBlockState(pos) ?: return@onPacket
-            if (!DungeonUtils.isSecret(blockState, pos) || secrets.any{ it.pos == pos }) return@onPacket
-
-            secrets.add(Chest(pos, System.currentTimeMillis()))
-
-            runIn(timeToStay.toInt() * 20) {
-                secrets.removeFirstOrNull()
-            }
         }
     }
 }

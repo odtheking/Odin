@@ -16,6 +16,7 @@ import me.odinmain.utils.render.*
 import me.odinmain.utils.sendDataToServer
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.SecretUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraftforge.common.MinecraftForge
@@ -51,6 +52,7 @@ object OdinMain {
             WaypointManager,
             DevPlayers,
             SkyblockPlayer,
+            SecretUtils,
             //HighlightRenderer,
             //OdinUpdater,
             this
