@@ -43,7 +43,7 @@ object DungeonWaypoints : Module(
     var throughWalls: Boolean by BooleanSetting("Through walls", false, description = "If the next waypoint you place should be visible through walls.")
     var useBlockSize: Boolean by BooleanSetting("Use block size", false, description = "Use the size of the block you click for waypoint size.")
     var size: Double by NumberSetting("Size", 1.0, .125, 1.0, increment = 0.01, description = "The size of the next waypoint you place.").withDependency { !useBlockSize }
-    var secretWaypoint: Boolean by BooleanSetting("Secret", default = false, description = "Waypoints with this setting, when clicked outside edit mode, are temporarily removed. Bats and items picked up near this secret will also be considered clicked.")
+    var secretWaypoint: Boolean by BooleanSetting("Secret", default = false, description = "Waypoints with this setting will be removed when a secret is interacted with near this waypoint.")
     private val disableDepth: Boolean by BooleanSetting("Disable Depth", false, description = "Disables depth testing for waypoints.")
     private val resetButton: () -> Unit by ActionSetting("Reset Current Room") {
         val room = DungeonUtils.currentRoom ?: return@ActionSetting modMessage("Room not found!!!")
