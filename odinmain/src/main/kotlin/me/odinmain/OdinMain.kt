@@ -2,17 +2,18 @@ package me.odinmain
 
 import kotlinx.coroutines.*
 import me.odinmain.commands.impl.*
+import me.odinmain.commands.registerCommands
 import me.odinmain.config.*
 import me.odinmain.events.EventDispatcher
 import me.odinmain.features.ModuleManager
 import me.odinmain.features.impl.render.*
-import me.odinmain.features.impl.skyblock.PartyNote
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.util.shader.RoundedRect
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.clock.Executor
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.sendDataToServer
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -33,24 +34,10 @@ object OdinMain {
     val isLegitVersion: Boolean
         get() = Loader.instance().activeModList.none { it.modId == "odclient" }
 
-    object MapColors {
-        var bloodColor = Color.WHITE
-        var miniBossColor = Color.WHITE
-        var entranceColor = Color.WHITE
-        var fairyColor = Color.WHITE
-        var puzzleColor = Color.WHITE
-        var rareColor = Color.WHITE
-        var trapColor = Color.WHITE
-        var mimicRoomColor = Color.WHITE
-        var roomColor = Color.WHITE
-        var bloodDoorColor = Color.WHITE
-        var entranceDoorColor = Color.WHITE
-        var openWitherDoorColor = Color.WHITE
-        var witherDoorColor = Color.WHITE
-        var roomDoorColor = Color.WHITE
-    }
-
     fun init() {
+        scope.launch(Dispatchers.IO) {
+            PBConfig.loadConfig()
+        }
         listOf(
             LocationUtils,
             ServerUtils,
@@ -64,14 +51,13 @@ object OdinMain {
             ModuleManager,
             WaypointManager,
             DevPlayers,
-            PartyNote,
             SkyblockPlayer,
             //HighlightRenderer,
             //OdinUpdater,
             this
         ).forEach { MinecraftForge.EVENT_BUS.register(it) }
 
-        me.odinmain.commands.registerCommands(
+        registerCommands(
             mainCommand,
             soopyCommand,
             termSimCommand,
@@ -80,6 +66,7 @@ object OdinMain {
             highlightCommand,
             waypointCommand,
             dungeonWaypointsCommand,
+            petCommand,
             visualWordsCommand
         )
         OdinFont.init()
@@ -90,10 +77,7 @@ object OdinMain {
         if (!config.exists()) {
             config.mkdirs()
         }
-
-        launch { MiscConfig.loadConfig() }
         launch { WaypointConfig.loadConfig() }
-        launch { PBConfig.loadConfig() }
         launch { DungeonWaypointConfig.loadConfig() }
     }
 
@@ -102,7 +86,6 @@ object OdinMain {
         runBlocking {
             launch {
                 Config.load()
-                Config.save() // so changes from MiscConfig get saved
                 ClickGUIModule.firstTimeOnVersion = ClickGUIModule.lastSeenVersion != VERSION
                 ClickGUIModule.lastSeenVersion = VERSION
             }
@@ -111,7 +94,7 @@ object OdinMain {
         RoundedRect.initShaders()
         GlobalScope.launch {
             val name = mc.session?.username ?: return@launch
-            if (name.matches(Regex("Player\\d{3}"))) return@launch
+            if (name.matches(Regex("Player\\d{2,3}"))) return@launch
             sendDataToServer(body = """{"username": "$name", "version": "${if (isLegitVersion) "legit" else "cheater"} $VERSION"}""")
         }
     }

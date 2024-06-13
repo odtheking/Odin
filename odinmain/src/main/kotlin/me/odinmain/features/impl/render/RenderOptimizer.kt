@@ -13,12 +13,11 @@ import me.odinmain.utils.skyblock.getSkullValue
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.item.EntityItem
+import net.minecraft.entity.monster.EntityBlaze
 import net.minecraft.init.Items
-import net.minecraft.item.ItemBlock
 import net.minecraft.network.play.server.S0EPacketSpawnObject
 import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraft.util.EnumParticleTypes
-import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object RenderOptimizer : Module(
@@ -34,7 +33,7 @@ object RenderOptimizer : Module(
     private val hideWitherMinerName: Boolean by BooleanSetting(name = "Hide WitherMiner Name", default = true, description = "Hides the wither miner name.")
     private val hideTerracottaName: Boolean by BooleanSetting(name = "Hide Terracota Name", default = true, description = "Hides the terracota name.")
     private val hideNonStarredMobName: Boolean by BooleanSetting(name = "Hide Non-Starred Mob Name", default = true, description = "Hides the non-starred mob name.")
-    private val removeArmorStands: Boolean by BooleanSetting(name = "Removes Useless ArmorStands", default = true, description = "Removes armor stands that are not necessary.")
+    private val removeBlazePuzzleNames: Boolean by BooleanSetting(name = "Hide blazes", default = false, description = "Hides the blazes in the blaze puzzle room.")
 
     private val showParticleOptions: Boolean by DropdownSetting("Show Particles Options")
     private val removeExplosion: Boolean by BooleanSetting("Remove Explosion").withDependency { showParticleOptions }
@@ -50,24 +49,18 @@ object RenderOptimizer : Module(
     init {
         execute(500) {
             mc.theWorld.loadedEntityList.forEach {
-                if (it !is EntityArmorStand || !DungeonUtils.inDungeons) return@forEach
+                if (!DungeonUtils.inDungeons) return@execute
+                if (removeBlazePuzzleNames) removeBlazePuzzleNames(it)
+                if (it !is EntityArmorStand) return@forEach
                 if (hideArcherBones) handleHideArcherBones(it)
                 if (removeTentacles) removeTentacles(it)
                 if (hideHealerFairy) handleHealerFairy(it)
                 if (hideSoulWeaver) handleSoulWeaver(it)
                 if (hideNonStarredMobName) hideNonStarredMob(it)
                 if (hideWitherMinerName) handleWitherMiner(it)
-                if (hideTerracottaName) handleTerracota(it)
+                if (hideTerracottaName) handleTerracotta(it)
             }
         }
-    }
-
-    @SubscribeEvent
-    fun entityJoinWorld(event: EntityJoinWorldEvent) {
-        if (event.entity !is EntityArmorStand || !event.entity.isInvisible || removeArmorStands) return
-        val inventoryList = event.entity.inventory.filterNotNull()
-        if (inventoryList.size != 1 || inventoryList.first().item !is ItemBlock) return
-        event.entity.setDead()
     }
 
     @SubscribeEvent
@@ -119,7 +112,7 @@ object RenderOptimizer : Module(
         entity.alwaysRenderNameTag = false
     }
 
-    private fun handleTerracota(entity: Entity) {
+    private fun handleTerracotta(entity: Entity) {
         if (entity.customNameTag.noControlCodes.contains("Terracotta "))
             entity.alwaysRenderNameTag = false
     }
@@ -127,6 +120,13 @@ object RenderOptimizer : Module(
     private fun hideNonStarredMob(entity: Entity) {
         val name = entity.customNameTag
         if (!name.startsWith("§6✯ ") && name.contains("§c❤") && dungeonMobSpawns.any { it in name })
+            entity.alwaysRenderNameTag = false
+    }
+
+    private fun removeBlazePuzzleNames(entity: Entity) {
+        if (entity is EntityBlaze) entity.setDead()
+        val name = entity.customNameTag
+        if (name.noControlCodes.startsWith("[Lv15] Blaze "))
             entity.alwaysRenderNameTag = false
     }
     

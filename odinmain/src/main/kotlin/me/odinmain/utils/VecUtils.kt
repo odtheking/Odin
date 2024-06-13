@@ -202,12 +202,32 @@ fun Vec2.addRotationCoords(rotation: Rotations, dist: Int = 4): Vec2 {
     }
 }
 
-fun Vec2.addRotationCoords(rotation: Rotations, x: Number = 0, y: Number = 0){
-    when(rotation){
-        Rotations.NORTH -> Vec2(this.x + x.toInt(), this.z + y.toInt())
-        Rotations.WEST -> Vec2(this.x + y.toInt(), this.z - x.toInt())
-        Rotations.SOUTH -> Vec2(this.x - x.toInt(), this.z - y.toInt())
-        Rotations.EAST -> Vec2(this.x - y.toInt(), this.z + x.toInt())
+fun Vec2.addRotationCoords(rotation: Rotations, x: Number = 0, z: Number = 0): Vec2 {
+    return when(rotation){
+        Rotations.NORTH -> Vec2(this.x + x.toInt(), this.z + z.toInt())
+        Rotations.WEST -> Vec2(this.x + z.toInt(), this.z - x.toInt())
+        Rotations.SOUTH -> Vec2(this.x - x.toInt(), this.z - z.toInt())
+        Rotations.EAST -> Vec2(this.x - z.toInt(), this.z + x.toInt())
+        Rotations.NONE -> this
+    }
+}
+
+fun Vec3.addRotationCoords(rotation: Rotations, x: Number = 0, z: Number = 0): Vec3 {
+    return when(rotation){
+        Rotations.NORTH -> Vec3(this.xCoord + x.toDouble(), this.yCoord, this.zCoord + z.toDouble())
+        Rotations.WEST -> Vec3(this.xCoord + z.toDouble(), this.yCoord, this.zCoord - x.toDouble())
+        Rotations.SOUTH -> Vec3(this.xCoord - x.toDouble(), this.yCoord, this.zCoord - z.toDouble())
+        Rotations.EAST -> Vec3(this.xCoord - z.toDouble(), this.yCoord, this.zCoord + x.toDouble())
+        Rotations.NONE -> this
+    }
+}
+
+fun BlockPos.addRotationCoords(rotation: Rotations, x: Number = 0, z: Number = 0): BlockPos {
+    return when(rotation){
+        Rotations.NORTH -> BlockPos(this.x + x.toInt(), this.y, this.z + z.toInt())
+        Rotations.WEST -> BlockPos(this.x + z.toInt(), this.y, this.z - x.toInt())
+        Rotations.SOUTH -> BlockPos(this.x - x.toInt(), this.y, this.z - z.toInt())
+        Rotations.EAST -> BlockPos(this.x - z.toInt(), this.y, this.z + x.toInt())
         Rotations.NONE -> this
     }
 }
@@ -361,14 +381,14 @@ fun Vec3i.addVec(x: Number = .0, y: Number = .0, z: Number = .0): Vec3i {
  * Floors every coordinate of a Vec3 and turns it into a Vec3i.
  */
 fun Vec3.floored(): Vec3i {
-    return Vec3i(xCoord.floor(), yCoord.floor(), zCoord.floor())
+    return Vec3i(xCoord.floor().toDouble(), yCoord.floor().toDouble(), zCoord.floor().toDouble())
 }
 
 /**
  * Floors every coordinate of a Vec3
  */
 fun Vec3.flooredVec(): Vec3 {
-    return Vec3(xCoord.floor(), yCoord.floor(), zCoord.floor())
+    return Vec3(xCoord.floor().toDouble(), yCoord.floor().toDouble(), zCoord.floor().toDouble())
 }
 
 /**

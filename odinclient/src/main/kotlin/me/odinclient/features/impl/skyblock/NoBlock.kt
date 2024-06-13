@@ -2,7 +2,9 @@ package me.odinclient.features.impl.skyblock
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.skyblock.LocationUtils
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.lore
 import net.minecraft.item.ItemSword
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
@@ -15,6 +17,7 @@ object NoBlock : Module(
     description = "Prevents you from blocking with items that have an ability, this is effectively NoSlow.",
     category = Category.SKYBLOCK
 ) {
+    private val onlyBoss: Boolean by BooleanSetting("Only Boss", false, description = "Only prevent blocking in boss fights.")
     private var isRightClickKeyDown = false
 
     @SubscribeEvent
@@ -26,7 +29,7 @@ object NoBlock : Module(
     @SubscribeEvent
     fun onInteract(event: PlayerInteractEvent) {
         if (!LocationUtils.inSkyblock || event.action != PlayerInteractEvent.Action.RIGHT_CLICK_AIR) return
-
+        if (onlyBoss && !DungeonUtils.inBoss) return
         val item = mc.thePlayer.heldItem
         if (item == null || item.item !is ItemSword) return
 

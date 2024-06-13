@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.floor7.p3.termsim
 
 import me.odinmain.events.impl.GuiEvent
-import me.odinmain.features.impl.floor7.p3.TerminalTimes
 import me.odinmain.utils.postAndCatch
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.Slot
@@ -16,6 +15,7 @@ object Rubix : TermSimGui(
     private val grid get() = inventorySlots.inventorySlots.subList(0, 45).filter { it?.stack?.metadata != 15 }
 
     override fun create() {
+        cleanInventory()
         this.inventorySlots.inventorySlots.subList(0, 45).forEachIndexed { index, it ->
             if (floor(index / 9.0) in 1.0..3.0 && index % 9 in 3..5) it.putStack(getPane())
             else it.putStack(blackPane)
@@ -35,9 +35,8 @@ object Rubix : TermSimGui(
         }
         mc.thePlayer.playSound("random.orb", 1f, 1f)
         GuiEvent.GuiLoadedEvent(name, inventorySlots as ContainerChest).postAndCatch()
-        if (grid.all { it?.stack?.metadata == grid.firstOrNull()?.stack?.metadata }) {
-            solved(this.name, TerminalTimes.simColorPB)
-        }
+        if (grid.all { it?.stack?.metadata == grid.firstOrNull()?.stack?.metadata })
+            solved(this.name, 1)
     }
 
     private fun getPane(): ItemStack {
@@ -49,6 +48,11 @@ object Rubix : TermSimGui(
             a < .8 -> genStack(order[3])
             else ->   genStack(order[4])
         }
+    }
+
+    override fun onGuiClosed() {
+        resetInv()
+        super.onGuiClosed()
     }
 
     private fun genStack(meta: Int) = ItemStack(pane, 1, meta).apply { setStackDisplayName("") } // This makes unique itemstacks, so terminalsolver works.

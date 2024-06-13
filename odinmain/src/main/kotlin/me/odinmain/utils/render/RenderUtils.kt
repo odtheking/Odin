@@ -6,6 +6,7 @@ import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
+import me.odinmain.utils.skyblock.getBlockAt
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.*
 import net.minecraft.client.renderer.entity.RenderManager
@@ -419,6 +420,7 @@ object RenderUtils {
         scale(-scale, -scale, scale)
         GlStateManager.enableBlend()
         blendFactor()
+        GlStateManager.disableLighting()
 
         val textWidth = mc.fontRendererObj.getStringWidth(text)
 
@@ -428,6 +430,7 @@ object RenderUtils {
             GlStateManager.enableDepth()
             GlStateManager.depthMask(true)
         }
+        GlStateManager.enableLighting()
         GlStateManager.resetColor()
         GlStateManager.popMatrix()
     }
@@ -495,16 +498,23 @@ object RenderUtils {
      * @param width The width of the rectangle.
      * @param height The height of the rectangle.
      */
-    fun drawTexturedModalRect(x: Int, y: Int, width: Int, height: Int) {
-        GlStateManager.resetColor()
+    fun drawTexturedModalRect(
+        x: Int, y: Int, width: Int, height: Int,
+        u: Float = 0f, v: Float = 0f, uWidth: Int = 1, vHeight: Int = 1,
+        tileWidth: Float = 1.0f, tileHeight: Float = 1.0f
+    ) {
+        val f = 1.0f / tileWidth
+        val g = 1.0f / tileHeight
+        Color.WHITE.bind()
         worldRenderer {
             begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
-            pos(x.toDouble(), (y + height).toDouble(), 0.0).tex(0.0, 1.0).endVertex()
-            pos((x + width).toDouble(), (y + height).toDouble(), 0.0).tex(1.0, 1.0).endVertex()
-            pos((x + width).toDouble(), y.toDouble(), 0.0).tex(1.0, 0.0).endVertex()
-            pos(x.toDouble(), y.toDouble(), 0.0).tex(0.0, 0.0).endVertex()
+            pos(x.toDouble(), (y + height).toDouble(), 0.0).tex((u * f).toDouble(), ((v + vHeight.toFloat()) * g).toDouble()).endVertex()
+            pos((x + width).toDouble(), (y + height).toDouble(), 0.0).tex(((u + uWidth.toFloat()) * f).toDouble(), ((v + vHeight.toFloat()) * g).toDouble()).endVertex()
+            pos((x + width).toDouble(), y.toDouble(), 0.0).tex(((u + uWidth.toFloat()) * f).toDouble(), (v * g).toDouble()).endVertex()
+            pos(x.toDouble(), y.toDouble(), 0.0).tex((u * f).toDouble(), (v * g).toDouble()).endVertex()
         }
         tessellator.draw()
+        GlStateManager.resetColor()
     }
 
 
@@ -652,8 +662,8 @@ object RenderUtils {
         GlStateManager.pushMatrix()
         GlStateManager.enableBlend()
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        GlStateManager.translate(x, y, 0f)
-        GlStateManager.scale(scale, scale, scale)
+        translate(x, y, 0f)
+        scale(scale, scale, scale)
         color.bind()
         var yOffset = y - mc.fontRendererObj.FONT_HEIGHT
         text.split("\n").forEach {
@@ -672,15 +682,15 @@ object RenderUtils {
         outlineWidth: Float = 3f,
         outline: Float = 1f,
         fill: Float = 0.25f,
-        esp: Boolean = true
+        depth: Boolean = true
     ) {
         if (outline == 0f && fill == 0f) return
 
-        val block = mc.theWorld?.getBlockState(pos)?.block ?: return
+        val block = getBlockAt(pos)
 
         block.setBlockBoundsBasedOnState(mc.theWorld, pos)
         val aabb = block.getSelectedBoundingBox(mc.theWorld, pos).outlineBounds()
-        Renderer.drawBox(aabb, color, outlineWidth, outline, fill, esp)
+        Renderer.drawBox(aabb, color, outlineWidth, outline, fill, depth)
     }
 
     fun AxisAlignedBB.outlineBounds(): AxisAlignedBB =

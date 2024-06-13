@@ -189,7 +189,7 @@ fun resetScissor(scissor: Scissor) {
     scissorList.removeLast()
 }
 
-fun drawDynamicTexture(dynamicTexture: DynamicTexture, x: Float, y: Float, w: Float, h: Float) {
+fun drawDynamicTexture(dynamicTexture: DynamicTexture, x: Number, y: Number, w: Number, h: Number) {
     dynamicTexture.updateDynamicTexture()
     GlStateManager.bindTexture(dynamicTexture.glTextureId)
     drawTexturedModalRect(x.toInt(), y.toInt(), w.toInt(), h.toInt())

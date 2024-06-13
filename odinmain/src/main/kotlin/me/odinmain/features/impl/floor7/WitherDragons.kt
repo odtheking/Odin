@@ -31,7 +31,6 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.*
 import kotlin.concurrent.schedule
-import kotlin.math.max
 
 
 object WitherDragons : Module(
@@ -47,10 +46,8 @@ object WitherDragons : Module(
             if (timerBackground) roundedRectangle(1f, 1f, getMCTextWidth("Purple spawning in 4500ms") + 1f, 32f, Color.DARK_GRAY.withAlpha(.75f), 3f)
             mcText("§5Purple spawning in §a4500ms", 2f, 5f, 1, Color.WHITE, center = false)
             mcText("§cRed spawning in §e1200ms", 2f, 20f, 1, Color.WHITE, center = false)
-            max(
-                getMCTextWidth("Purple spawning in 4500ms"),
-                getMCTextWidth("Red spawning in 1200ms")
-            ) + 2f to 33f
+
+            getMCTextWidth("Purple spawning in 4500ms")+ 2f to 33f
         } else if (DragonTimer.toRender.size != 0) {
             if (!dragonTimer) return@HudSetting 0f to 0f
             var width = 0f
@@ -66,7 +63,7 @@ object WitherDragons : Module(
     private val dragonBoxes: Boolean by BooleanSetting("Dragon Boxes", true, description = "Displays boxes for where M7 dragons spawn.")
     val lineThickness: Float by NumberSetting("Line Width", 2f, 1.0, 5.0, 0.5).withDependency { dragonBoxes }
     val dragonTitle: Boolean by BooleanSetting("Dragon Title", true, description = "Displays a title for spawning dragons.")
-    private val dragonTracers: Boolean by BooleanSetting("Dragon Tracer", false, description = "draws a line to spawning dragons")
+    private val dragonTracers: Boolean by BooleanSetting("Dragon Tracer", false, description = "Draws a line to spawning dragons")
     val tracerThickness: Float by NumberSetting("Tracer Width", 5f, 1f, 20f).withDependency { dragonTracers }
 
     private val dragonAlerts: Boolean by DropdownSetting("Dragon Alerts")
@@ -81,10 +78,10 @@ object WitherDragons : Module(
     private val dragonHealth: Boolean by BooleanSetting("Dragon Health", true, description = "Displays the health of M7 dragons.")
 
     val dragonPriorityToggle: Boolean by BooleanSetting("Dragon Priority", false, description = "Displays the priority of dragons spawning.")
-    val normalPower: Double by NumberSetting("Normal Power", 10.0, 0.0, 29.0, description = "Power needed to split.").withDependency { dragonPriorityToggle }
-    val easyPower: Double by NumberSetting("Easy Power", 10.0, 0.0, 29.0, description = "Power needed when its Purple and another dragon.").withDependency { dragonPriorityToggle }
+    val normalPower: Double by NumberSetting("Normal Power", 22.0, 0.0, 32.0, description = "Power needed to split.").withDependency { dragonPriorityToggle }
+    val easyPower: Double by NumberSetting("Easy Power", 19.0, 0.0, 32.0, description = "Power needed when its Purple and another dragon.").withDependency { dragonPriorityToggle }
     val soloDebuff: Boolean by DualSetting("Purple Solo Debuff", "Tank", "Healer", false, description = "Displays the debuff of the config.The class that solo debuffs purple, the other class helps b/m.").withDependency { dragonPriorityToggle }
-    val soloDebuffOnAll: Boolean by BooleanSetting("Solo Debuff on All Splits", false, description = "Same as Purple Solo Debuff but for all dragons (A will only have 1 debuff).").withDependency { dragonPriorityToggle }
+    val soloDebuffOnAll: Boolean by BooleanSetting("Solo Debuff on All Splits", true, description = "Same as Purple Solo Debuff but for all dragons (A will only have 1 debuff).").withDependency { dragonPriorityToggle }
     val paulBuff: Boolean by BooleanSetting("Paul Buff", false, description = "Multiplies the power in your run by 1.25").withDependency { dragonPriorityToggle }
 
     val colors = arrayListOf("Green", "Purple", "Blue", "Orange", "Red")

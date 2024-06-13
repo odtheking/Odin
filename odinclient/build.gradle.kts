@@ -47,7 +47,6 @@ dependencies {
     shadowImpl("gg.essential:loader-launchwrapper:1.1.3")
     compileOnly("gg.essential:essential-1.8.9-forge:12132+g6e2bf4dc5")
 
-    //api("com.mojang:brigadier:1.0.18")
     shadowImpl("com.github.Stivais:Commodore:3f4a14b1cf") {
         exclude(module = "kotlin-stdlib-jdk8")
         exclude(module = "kotlin-reflect")
@@ -99,6 +98,7 @@ tasks {
     }
 
     shadowJar {
+        destinationDirectory.set(layout.buildDirectory.dir("archiveJars"))
         archiveBaseName = "OdinClient"
         archiveClassifier = "dev"
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE

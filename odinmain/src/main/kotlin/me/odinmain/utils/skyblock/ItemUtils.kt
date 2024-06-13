@@ -45,10 +45,14 @@ val ItemStack.getLore: List<String>
 val ItemStack?.itemID: String
     get() = this?.extraAttributes?.getString("id") ?: ""
 
+/**
+ * Returns uuid for an Item
+ */
+val ItemStack?.uuid: String
+    get() = this?.extraAttributes?.getString("uuid") ?: ""
 
 inline val heldItem: ItemStack?
     get() = mc.thePlayer?.heldItem
-
 
  /**
  * Returns if an item has an ability
@@ -88,11 +92,32 @@ fun getItemSlot(item: String, ignoreCase: Boolean = true): Int? =
  * Gets index of an item in a chest.
  * @return null if not found.
  */
-fun getItemIndexInContainerChest(container: ContainerChest, item: String, subList: IntRange = 0..container.inventory.size - 36, ignoreCase: Boolean = false): Int? {
+fun getItemIndexInContainerChest(container: ContainerChest, item: String, subList: IntRange = 0..container.inventory.size - 36): Int? {
     return container.inventorySlots.subList(subList.first, subList.last + 1).firstOrNull {
-        it.stack?.unformattedName?.contains(item, ignoreCase) == true
+        it.stack?.unformattedName?.noControlCodes?.lowercase() == item.noControlCodes.lowercase()
     }?.slotIndex
 }
+
+/**
+ * Gets index of an item in a chest using its uuid.
+ * @return null if not found.
+ */
+fun getItemIndexInContainerChestByUUID(container: ContainerChest, uuid: String, subList: IntRange = 0..container.inventory.size - 36, ignoreCase: Boolean = false): Int? {
+    return container.inventorySlots.subList(subList.first, subList.last + 1).firstOrNull {
+        it.stack?.uuid?.contains(uuid) == true
+    }?.slotIndex
+}
+
+/**
+ * Gets index of an item in a chest using its lore.
+ * @return null if not found.
+ */
+fun getItemIndexInContainerChestByLore(container: ContainerChest, lore: String, subList: IntRange = 0..container.inventory.size - 36, ignoreCase: Boolean = false): Int? {
+    return container.inventorySlots.subList(subList.first, subList.last + 1).firstOrNull {
+        it.stack?.lore?.contains(lore) == true
+    }?.slotIndex
+}
+
 
 
 enum class ItemRarity(

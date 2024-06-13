@@ -51,6 +51,10 @@ fun String.containsOneOf(options: Collection<String>, ignoreCase: Boolean = fals
     return options.any { this.contains(it, ignoreCase) }
 }
 
+fun String.startsWithOneOf(vararg options: String, ignoreCase: Boolean = false): Boolean {
+    return options.any { this.startsWith(it, ignoreCase) }
+}
+
 /**
  * Checks if the current object is equal to at least one of the specified objects.
  *
@@ -69,24 +73,22 @@ fun Pair<Any?, Any?>?.equal(first: Any?, second: Any?): Boolean {
 }
 
 /**
- * Floors the double.
+ * Floors the current number.
+ * @return The floored number.
  */
-inline fun Double.floor(): Double = floor(this)
-
-/**
- * Rounds the double to the specified number of decimal places.
- */
-fun Double.round(decimals: Int): Double {
-    val multiplier = 10.0.pow(decimals)
-    return round(this * multiplier) / multiplier
+fun Number.floor(): Number {
+    return floor(this.toDouble())
 }
 
 /**
- * Rounds the float to the specified number of decimal places.
+ * Rounds the current number to the specified number of decimals.
+ * @param decimals The number of decimals to round to.
+ * @return The rounded number.
  */
-fun Float.round(decimals: Int): Float {
-    val multiplier = 10f.pow(decimals)
-    return round(this * multiplier) / multiplier
+fun Number.round(decimals: Int): Number {
+    require(decimals >= 0) { "Decimals must be non-negative" }
+    val factor = 10.0.pow(decimals)
+    return round(this.toDouble() * factor) / factor
 }
 
 val ContainerChest.name: String
@@ -250,6 +252,7 @@ fun formatTime(time: Long): String {
 val Char.isHexaDecimal
     get() = isDigit() || equalsOneOf("a","b","c","d","e","f","A","B","C","D","E","F")
 
+// Used in DeployableTimer.kt
 data object FlareTextures {
     val warningFlareTexture = "ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzMwNjIyMywKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjJlMmJmNmMxZWMzMzAyNDc5MjdiYTYzNDc5ZTU4NzJhYzY2YjA2OTAzYzg2YzgyYjUyZGFjOWYxYzk3MTQ1OCIKICAgIH0KICB9Cn0="
     val alertFlareTexture = "ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzMyNjQzMiwKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWQyYmY5ODY0NzIwZDg3ZmQwNmI4NGVmYTgwYjc5NWM0OGVkNTM5YjE2NTIzYzNiMWYxOTkwYjQwYzAwM2Y2YiIKICAgIH0KICB9Cn0="

@@ -1,22 +1,21 @@
 package me.odinmain.commands.impl
 
+import com.github.stivais.commodore.utils.GreedyString
 import com.github.stivais.commodore.utils.SyntaxException
 import me.odinmain.OdinMain.display
 import me.odinmain.OdinMain.mc
 import me.odinmain.commands.commodore
 import me.odinmain.features.impl.dungeon.DungeonWaypoints
 import me.odinmain.features.impl.render.ClickGUIModule
-import me.odinmain.features.impl.render.ServerDisplay.colorizePing
-import me.odinmain.features.impl.render.ServerDisplay.colorizeTps
+import me.odinmain.features.impl.render.ServerHud.colorizeFPS
+import me.odinmain.features.impl.render.ServerHud.colorizePing
+import me.odinmain.features.impl.render.ServerHud.colorizeTps
 import me.odinmain.features.impl.skyblock.DianaHelper
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.skyblock.*
-import me.odinmain.utils.skyblock.PlayerUtils.posX
-import me.odinmain.utils.skyblock.PlayerUtils.posY
-import me.odinmain.utils.skyblock.PlayerUtils.posZ
 import kotlin.math.round
 
 val mainCommand = commodore("od", "odin") {
@@ -86,12 +85,16 @@ val mainCommand = commodore("od", "odin") {
         DianaHelper.burrowsRender.clear()
     }
 
-    literal("sendcoords").runs {
-        sendChatMessage("x: ${posX.toInt()}, y: ${posY.toInt()}, z: ${posZ.toInt()}")
+    literal("sendcoords").runs { message: GreedyString ->
+        sendChatMessage(PlayerUtils.getPositionString() + message.string)
     }
 
     literal("ping").runs {
         modMessage("${colorizePing(ServerUtils.averagePing.toInt())}ms")
+    }
+
+    literal("fps").runs {
+        modMessage(colorizeFPS(ServerUtils.fps))
     }
 
     literal("tps").runs {

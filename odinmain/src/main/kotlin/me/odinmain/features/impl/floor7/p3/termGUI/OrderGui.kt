@@ -14,6 +14,7 @@ import me.odinmain.utils.render.*
 
 object OrderGui : TermGui() {
     override fun render() {
+        setCurrentGui(this)
         itemIndexMap.clear()
         roundedRectangle(-300, -125, 600, 225, TerminalSolver.customGuiColor, 10f, 1f)
         if (TerminalSolver.customGuiText == 0) {

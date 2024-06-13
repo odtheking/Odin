@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.floor7.p3.termsim
 
-import me.odinmain.config.Config
-import me.odinmain.features.impl.floor7.p3.TerminalTimes
+import me.odinmain.features.impl.floor7.TerminalSimulator
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.setLoreWidth
@@ -25,13 +24,6 @@ object StartGui : TermSimGui(
     private val resetButton = ItemStack(dye, 1, 8).setStackDisplayName("§cReset PBs")
     private val randomButton = ItemStack(dye, 1, 15).setStackDisplayName("§7Random")
     private val redstoneTorch = ItemStack(Item.getItemById(76), 1).setStackDisplayName("§4Common issues").setLoreWidth(listOf("§7- One of your mods might be §cconflicting §7with §5Termsim§7", "§7Issues that may be caused by others mods are item stacking, §7duping, glitching and more", "§7- Terminal solver from §cincompatible mods§7 won't work for §5Termsim", "§7- We recommend using odin's terminal solver for everything!", "§6If you have any issues with termsim, please report it to the §6discord server!"), 67)
-    private val pbTimes = listOf(
-        TerminalTimes.simPanesPB,
-        TerminalTimes.simColorPB,
-        TerminalTimes.simNumbersPB,
-        TerminalTimes.simStartsWithPB,
-        TerminalTimes.simSelectAllPB
-    )
 
     override fun create() {
         this.inventorySlots.inventorySlots.subList(0, 27).forEachIndexed { index, it ->
@@ -49,14 +41,13 @@ object StartGui : TermSimGui(
     fun onTooltip(event: ItemTooltipEvent) {
         if (event.itemStack.item != dye || event.toolTip.size == 0) return
         val index = termItems.indexOfFirst { it.displayName == event.itemStack.displayName }.takeIf { it != -1 } ?: return
-        event.toolTip.add(1, "§7Personal Best: §d${pbTimes[index].value.round(2)}")
+        event.toolTip.add(1, "§7Personal Best: §d${TerminalSimulator.simPBs.pb?.get(index)?.round(2) ?: 999.0}")
     }
 
     private var areYouSure = false
 
     override fun slotClick(slot: Slot, button: Int) {
         val index = if (slot.slotIndex == 22) listOf(11,12,13,14,15).getRandom() else slot.slotIndex
-
         when (index) {
             4 -> {
                 if (!areYouSure) {
@@ -68,8 +59,7 @@ object StartGui : TermSimGui(
                     }
                     return
                 }
-                pbTimes.forEach { it.value = 99.0 }
-                Config.save()
+                repeat(5) { i -> TerminalSimulator.simPBs.set(i, 999.0) }
                 modMessage("§cPBs reset!")
                 StartGui.open(ping)
             }

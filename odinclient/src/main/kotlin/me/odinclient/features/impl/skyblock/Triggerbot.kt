@@ -25,7 +25,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object Triggerbot : Module(
     name = "Triggerbot",
-    description = "Various Triggerbots.",
+    description = "Various Triggerbots. (Blood, Spirit Bear, Crystal Triggerbot, Secret Triggerbot, Relic Triggerbot)",
     category = Category.DUNGEON
 ) {
     private val blood: Boolean by BooleanSetting("Blood Mobs")
@@ -39,6 +39,8 @@ object Triggerbot : Module(
     private val stbDelay: Long by NumberSetting("Delay", 200L, 0, 1000).withDependency { secretTriggerbot }
     private val stbCH: Boolean by BooleanSetting("Crystal Hollows Chests", true, description = "Opens chests in crystal hollows when looking at them").withDependency { secretTriggerbot }
     private val secretTBInBoss: Boolean by BooleanSetting("In Boss", true, description = "Makes the triggerbot work in dungeon boss aswell.").withDependency { secretTriggerbot }
+    private val swapSlot: Boolean by BooleanSetting("Swap slow", false)
+    private val secretTriggerBotSlot: Int by NumberSetting("Slot", 0, 0, 8, description = "The slot to use for the triggerbot.").withDependency { secretTriggerbot && swapSlot }
 
     private val triggerBotClock = Clock(stbDelay)
     private var clickedPositions = mapOf<BlockPos, Long>()
@@ -127,7 +129,10 @@ object Triggerbot : Module(
 
             if (!DungeonUtils.inDungeons || (!secretTBInBoss && DungeonUtils.inBoss) || !DungeonUtils.isSecret(state, pos)) return@execute
 
+            val currentSlot = mc.thePlayer?.inventory?.currentItem ?: 0
+            if (swapSlot) mc.thePlayer?.inventory?.currentItem = secretTriggerBotSlot
             PlayerUtils.rightClick()
+            if (swapSlot) mc.thePlayer?.inventory?.currentItem = currentSlot
             triggerBotClock.update()
             if (tileEntity is TileEntityChest) return@execute
             clickedPositions = clickedPositions.plus(pos to System.currentTimeMillis())

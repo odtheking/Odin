@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.dungeon
 
+import io.github.moulberry.notenoughupdates.NEUApi
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -15,14 +16,16 @@ import me.odinmain.ui.util.MouseUtils.getQuadrant
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.name
 import me.odinmain.utils.render.*
+import me.odinmain.utils.render.RenderUtils.drawTexturedModalRect
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.leapTeammates
-import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.client.event.GuiOpenEvent
+import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.Display
@@ -66,7 +69,6 @@ object LeapMenu : Module(
             if (it == EMPTY) return@forEachIndexed
             GlStateManager.pushMatrix()
             GlStateManager.enableAlpha()
-
             scale(1f / scaleFactor,  1f / scaleFactor)
             scale(size, size)
             val displayWidth = Display.getWidth()
@@ -91,16 +93,22 @@ object LeapMenu : Module(
             dropShadow(box, 10f, 15f, if (getQuadrant() - 1 != index) ColorUtil.moduleButtonColor else Color.WHITE)
             roundedRectangle(box, color, if (roundedRect) 12f else 0f)
 
-            Gui.drawScaledCustomSizeModalRect(x + 30, y + 30, 8f, 8f, 8, 8, 240, 240, 64f, 64f)
+            drawTexturedModalRect(x + 30, y + 30, 240, 240,8f, 8f, 8, 8, 64f, 64f)
 
             text(it.name, x + 265f, y + 155f, if (!colorStyle) it.clazz.color else Color.DARK_GRAY, 48f)
             text(if (it.isDead) "§cDEAD" else it.clazz.name, x + 270f, y + 210f, Color.WHITE, 30f, shadow = true)
             rectangleOutline(x + 30, y + 30, 240, 240, color, 25f, 15f, 100f)
-
             GlStateManager.disableAlpha()
             GlStateManager.popMatrix()
         }
         event.isCanceled = true
+    }
+
+    @SubscribeEvent
+    fun guiOpen(event: GuiOpenEvent) {
+        val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
+        if (chest !is ContainerChest || chest.name != "Spirit Leap" || leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return
+        if (Loader.instance().activeModList.any { it.modId == "notenoughupdates" }) NEUApi.setInventoryButtonsToDisabled()
     }
 
     @SubscribeEvent
@@ -122,9 +130,10 @@ object LeapMenu : Module(
 
     @SubscribeEvent
     fun keyTyped(event: GuiEvent.GuiKeyPressEvent) {
+        val gui = event.gui as? GuiChest ?: return
         if (
-            event.container !is ContainerChest ||
-            event.container.name != "Spirit Leap" ||
+            gui.inventorySlots !is ContainerChest ||
+            gui.inventorySlots.name != "Spirit Leap" ||
             !event.keyCode.equalsOneOf(topLeftKeybind.key, topRightKeybind.key, bottomLeftKeybind.key, bottomRightKeybind.key) ||
             leapTeammates.isEmpty() ||
             !useNumberKeys
@@ -140,7 +149,7 @@ object LeapMenu : Module(
         if (playerToLeap == EMPTY) return
         if (playerToLeap.isDead) return modMessage("This player is dead, can't leap.")
 
-        leapTo(playerToLeap.name, event.container)
+        leapTo(playerToLeap.name, gui.inventorySlots as ContainerChest)
 
         event.isCanceled = true
     }

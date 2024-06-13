@@ -21,7 +21,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object ChocolateFactory : Module(
     "Chocolate Factory",
-    description = "Automatically clicks the cookie in the Chocolate Factory menu.",
+    description = "Automates the Chocolate Factory.",
     category = Category.SKYBLOCK
 ) {
     private val clickFactory: Boolean by BooleanSetting("Click Factory", false, description = "Click the cookie in the Chocolate Factory menu.")
@@ -32,9 +32,8 @@ object ChocolateFactory : Module(
     private val upgradeMessage: Boolean by BooleanSetting("Odin Upgrade Message", false, description = "Prints a message when upgrading.")
     private val eggEsp: Boolean by BooleanSetting("Egg ESP", false, description = "Shows the location of the egg.")
     private var chocolate = 0
-    private var chocoProduction = 0f
 
-    private val indexToName = mapOf(29 to "Bro", 30 to "Cousin", 31 to "Sis", 32 to "Daddy", 33 to "Granny")
+    private val indexToName = mapOf(28 to "Bro", 29 to "Cousin", 30 to "Sis", 31 to "Daddy", 32 to "Granny", 33 to "Uncle", 34 to "Dog")
     private val possibleLocations = arrayOf(
         Island.SpiderDen,
         Island.CrimsonIsle,
@@ -52,7 +51,7 @@ object ChocolateFactory : Module(
     init {
         onWorldLoad { currentDetectedEggs = arrayOfNulls(3) }
         execute(delay = { delay }) {
-            if ((chocolate <= bestCost || !autoUpgrade) || !isInChocolateFactory()) return@execute
+            if (!isInChocolateFactory()) return@execute
 
             if (clickFactory) windowClick(13, PlayerUtils.ClickType.Right)
         }
@@ -64,8 +63,6 @@ object ChocolateFactory : Module(
             val choco = container.getSlot(13)?.stack ?: return@execute
 
             chocolate = choco.displayName.noControlCodes.replace(Regex("\\D"), "").toIntOrNull() ?: 0
-             chocoProduction =
-                choco.lore.find { it.endsWith("§8per second") }?.noControlCodes?.replace(",", "")?.toFloatOrNull() ?: 0f
 
             findWorker(container)
             if (!found) return@execute
@@ -76,7 +73,7 @@ object ChocolateFactory : Module(
         }
 
         execute(delay = { 3000 }) {
-            if(!eggEsp) currentDetectedEggs = arrayOfNulls(3);
+            if(!eggEsp) currentDetectedEggs = arrayOfNulls(3)
             if (eggEsp && possibleLocations.contains(LocationUtils.currentArea) && currentDetectedEggs.filterNotNull().size < 3) scanForEggs()
         }
 
@@ -91,26 +88,26 @@ object ChocolateFactory : Module(
         }
     }
 
-    private var bestWorker = 29
+    private var bestWorker = 28
     private var bestCost = 0
     private var found = false
 
     private fun findWorker(container: Container) {
         val items = container.inventory ?: return
         val workers = mutableListOf<List<String?>>()
-        for (i in 29 until 34) {
+        for (i in 28 until 35) {
             workers.add(items[i]?.lore ?: return)
         }
         found = false
-        var maxValue = 0;
-        for (i in 0 until 5) {
+        var maxValue = 0
+        for (i in 0 until 7) {
             val worker = workers[i]
             if (worker.contains("climbed as far")) continue
             val index = worker.indexOfFirst { it?.contains("Cost") == true }.takeIf { it != -1 } ?: continue
             val cost = worker[index + 1]?.noControlCodes?.replace(Regex("\\D"), "")?.toIntOrNull() ?: continue
             val value = cost / (i + 1).toFloat()
             if (value < maxValue || !found) {
-                bestWorker = 29 + i
+                bestWorker = 28 + i
                 maxValue = value.toInt()
                 bestCost = cost
                 found = true

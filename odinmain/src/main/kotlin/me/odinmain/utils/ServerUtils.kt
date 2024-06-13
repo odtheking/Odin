@@ -11,7 +11,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object ServerUtils {
-
     private val packets = ArrayList<Packet<*>>()
 
     fun handleSendPacket(packet: Packet<*>): Boolean {
@@ -28,6 +27,7 @@ object ServerUtils {
     var averagePing = 0.0
     private var isPinging = false
     private var pingStartTime = 0L
+    val fps get() = mc.debug.split(" ")[0].toIntOrNull() ?: 0
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {

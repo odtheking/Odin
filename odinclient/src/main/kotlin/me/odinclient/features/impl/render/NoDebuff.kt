@@ -16,7 +16,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object NoDebuff : Module(
     "No Debuff",
     category = Category.RENDER,
-    description = "Disables certain debuffs."
+    description = "Removes various unwanted effects from the game."
 ) {
     private val antiBlind: Boolean by BooleanSetting("No Blindness", false, description = "Disables blindness")
     private val antiPortal: Boolean by BooleanSetting("No Portal Effect", false, description = "Disables the nether portal overlay.")
@@ -37,37 +37,36 @@ object NoDebuff : Module(
     @SubscribeEvent
     fun onOverlay(event: RenderGameOverlayEvent.Pre) {
         if (!antiPortal) return
-        if (event.type == RenderGameOverlayEvent.ElementType.PORTAL) {
+        if (event.type == RenderGameOverlayEvent.ElementType.PORTAL)
             event.isCanceled = true
-        }
     }
 
     @SubscribeEvent
     fun onPacket(event: PacketReceivedEvent) {
         if (!noShieldParticles || event.packet !is S2APacketParticles) return
         val packet = event.packet as S2APacketParticles
-        if (packet.particleType.equalsOneOf(EnumParticleTypes.SPELL_WITCH, EnumParticleTypes.HEART)) {
-            val particlePos = event.packet.run { Vec3(packet.xCoordinate, packet.yCoordinate, packet.zCoordinate) }
-            if (particlePos.squareDistanceTo(mc.thePlayer.positionVector) <= 169) {
-                event.isCanceled = true
-            }
-        }
+        if (!packet.particleType.equalsOneOf(EnumParticleTypes.SPELL_WITCH, EnumParticleTypes.HEART)) return
+
+        val particlePos = event.packet.run { Vec3(packet.xCoordinate, packet.yCoordinate, packet.zCoordinate) }
+        if (particlePos.squareDistanceTo(mc.thePlayer.positionVector) <= 169) event.isCanceled = true
     }
 
     @SubscribeEvent
     fun onFOV(event: EntityViewRenderEvent.FOVModifier) {
-        if (!antiWaterFOV || event.block.material != Material.water) return
-        event.fov *= 70F / 60F
+        if (antiWaterFOV && event.block.material == Material.water)
+            event.fov *= 70F / 60F
     }
 
     @SubscribeEvent
     fun onFire(event: RenderBlockOverlayEvent) {
-        if (event.overlayType == RenderBlockOverlayEvent.OverlayType.FIRE && noFire) event.isCanceled = true
+        if (event.overlayType == RenderBlockOverlayEvent.OverlayType.FIRE && noFire)
+            event.isCanceled = true
     }
 
     @SubscribeEvent
     fun onRenderBlockOverlay(event: RenderBlockOverlayEvent) {
-        if (event.overlayType == RenderBlockOverlayEvent.OverlayType.BLOCK && seeThroughBlocks) event.setCanceled(true)
+        if (event.overlayType == RenderBlockOverlayEvent.OverlayType.BLOCK && seeThroughBlocks)
+            event.isCanceled = true
     }
 
     fun isNoPush(): Boolean {

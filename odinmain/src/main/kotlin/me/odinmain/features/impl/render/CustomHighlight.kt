@@ -27,16 +27,16 @@ object CustomHighlight : Module(
 ) {
     private val scanDelay: Long by NumberSetting("Scan Delay", 500L, 10L, 2000L, 100L)
     private val starredMobESP: Boolean by BooleanSetting("Starred Mob Highlight", true, description = "Highlights mobs with a star in their name (remove star from the separate list).")
-    private val color: Color by ColorSetting("Color", Color.RED, true)
+    private val color: Color by ColorSetting("Color", Color.WHITE, true)
     //private val mode: Int by SelectorSetting("Mode", HighlightRenderer.highlightModeDefault, HighlightRenderer.highlightModeList)
     val mode: Int by SelectorSetting("Mode", "Outline", arrayListOf("Outline", "Boxes", "2D"))
     private val thickness: Float by NumberSetting("Line Width", 1f, .1f, 4f, .1f, description = "The line width of Outline/ Boxes/ 2D Boxes").withDependency { mode != HighlightRenderer.HighlightType.Overlay.ordinal }
     //private val glowIntensity: Float by NumberSetting("Glow Intensity", 2f, .5f, 5f, .1f, description = "The intensity of the glow effect.").withDependency { mode == HighlightRenderer.HighlightType.Glow.ordinal }
     private val tracerLimit: Int by NumberSetting("Tracer Limit", 0, 0, 15, description = "Highlight will draw tracer to all mobs when you have under this amount of mobs marked, set to 0 to disable. Helpful for finding lost mobs.").withDependency { !isLegitVersion }
 
-    private val xray: Boolean by BooleanSetting("Depth Check", true).withDependency { !isLegitVersion }
+    private val xray: Boolean by BooleanSetting("Depth Check", false).withDependency { !isLegitVersion }
     val highlightList: MutableList<String> by ListSetting("List", mutableListOf())
-    private val renderThrough: Boolean get() = if (isLegitVersion) false else xray
+    private val depthCheck: Boolean get() = if (isLegitVersion) true else xray
     private var currentEntities = mutableSetOf<Entity>()
 
     init {
@@ -60,7 +60,7 @@ object CustomHighlight : Module(
 
    @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
-        if (mode != 0 || event.entity !in currentEntities || (!mc.thePlayer.canEntityBeSeen(event.entity) && !renderThrough)) return
+        if (mode != 0 || event.entity !in currentEntities || (depthCheck && !mc.thePlayer.canEntityBeSeen(event.entity))) return
         profile("Outline Esp") { OutlineUtils.outlineEntity(event, thickness, color, true) }
     }
 
@@ -72,8 +72,8 @@ object CustomHighlight : Module(
                 RenderUtils.draw3DLine(getPositionEyes(mc.thePlayer.renderVec), getPositionEyes(it.renderVec), color, 2f, false)
 
             if (mode == 1)
-                Renderer.drawBox(it.renderBoundingBox, color, thickness, depth = !renderThrough, fillAlpha = 0)
-            else if (mode == 2 && (mc.thePlayer.canEntityBeSeen(it) || renderThrough))
+                Renderer.drawBox(it.renderBoundingBox, color, thickness, depth = !depthCheck, fillAlpha = 0)
+            else if (mode == 2 && (mc.thePlayer.canEntityBeSeen(it) || depthCheck))
                 Renderer.draw2DEntity(it, thickness, color)
         }}
     }
@@ -93,12 +93,12 @@ object CustomHighlight : Module(
     }
 
     private fun checkEntity(entity: Entity) {
-        if (entity !is EntityArmorStand || highlightList.none { entity.name.contains(it, true) } || entity in currentEntities || !entity.alwaysRenderNameTag && !renderThrough) return
+        if (entity !is EntityArmorStand || highlightList.none { entity.name.contains(it, true) } || entity in currentEntities || !entity.alwaysRenderNameTag && !depthCheck) return
         currentEntities.add(getMobEntity(entity) ?: return)
     }
 
     private fun checkStarred(entity: Entity) {
-        if (entity !is EntityArmorStand || !entity.name.startsWith("§6✯ ") || !entity.name.endsWith("§c❤") || entity in currentEntities || !entity.alwaysRenderNameTag && !renderThrough) return
+        if (entity !is EntityArmorStand || !entity.name.startsWith("§6✯ ") || !entity.name.endsWith("§c❤") || entity in currentEntities || !entity.alwaysRenderNameTag && !depthCheck) return
         currentEntities.add(getMobEntity(entity) ?: return)
     }
 

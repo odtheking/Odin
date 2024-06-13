@@ -4,6 +4,7 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.render.*
+import me.odinmain.utils.render.RenderUtils.bind
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.gui.ScaledResolution
@@ -50,6 +51,7 @@ object DVD : Module(
         if (event.type != RenderGameOverlayEvent.ElementType.ALL) return
         roundedRectangle(x, y, boxWidth, boxHeight, color, if (roundedCorners) 12f else 0f)
         mcText(text, x + boxWidth / 2, y + boxHeight / 2 - getMCTextHeight() * textScale / 2 , textScale, color, true)
+        Color.WHITE.bind()
     }
 
     init {

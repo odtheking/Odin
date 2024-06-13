@@ -54,11 +54,9 @@ object WaterSolver {
     }
 
     private fun solve(room: Room) {
-        val x = room.x
-        val z = room.z
         val rotation = room.rotation
 
-        chestPosition = Vec2(x, z).addRotationCoords(rotation, -7)
+        chestPosition = room.vec2.addRotationCoords(rotation, -7)
 
         roomFacing = rotation
 
@@ -120,7 +118,7 @@ object WaterSolver {
 
 
     fun waterRender() {
-        if (DungeonUtils.currentRoomName != "Water Board") return
+        if (DungeonUtils.currentRoomName != "Water Board" || variant == -1) return
 
         val solutionList = solutions
             .flatMap { (lever, times) -> times.drop(lever.i).map { Pair(lever, it) } }
@@ -151,7 +149,9 @@ object WaterSolver {
                 )
             }
         }
-        val finalSolution = solutions
+
+        val finalSolution = solutions.toMap()
+
         for (solution in finalSolution) {
             var orderText = ""
             solution.value.drop(solution.key.i).forEach {
@@ -176,6 +176,7 @@ object WaterSolver {
             }
         }
     }
+
 
     fun waterInteract(event: C08PacketPlayerBlockPlacement) {
         if (solutions.isEmpty()) return

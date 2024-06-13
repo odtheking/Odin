@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.floor7.p3
 
+import io.github.moulberry.notenoughupdates.NEUApi
 import me.odinmain.events.impl.*
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -22,6 +23,7 @@ import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.ContainerPlayer
 import net.minecraft.item.*
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
+import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
@@ -29,12 +31,12 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 @AlwaysActive // So it can be used in other modules
 object TerminalSolver : Module(
     name = "Terminal Solver",
-    description = "Renders solution of terminals in f7/m7",
+    description = "Renders solution for terminals in floor 7.",
     category = Category.FLOOR7
 ) {
     private val lockRubixSolution: Boolean by BooleanSetting("Lock Rubix Solution", false, description = "Locks the 'correct' color of the rubix terminal to the one that was scanned first, should make the solver less 'jumpy'.")
     private val cancelToolTip: Boolean by BooleanSetting("Stop Tooltips", default = true, description = "Stops rendering tooltips in terminals")
-    private val renderType: Int by SelectorSetting("Mode", "Odin", arrayListOf("Odin", "Skytils", "SBE", "Custom GUI"))
+    val renderType: Int by SelectorSetting("Mode", "Odin", arrayListOf("Odin", "Skytils", "SBE", "Custom GUI"))
     val customGuiText: Int by SelectorSetting("Custom Gui Title", "Top Left", arrayListOf("Top Left", "Middle", "Disabled")).withDependency { renderType == 3 }
     val customScale: Float by NumberSetting("Custom Scale", 1f, .8f, 2.5f, .1f, description = "Size of the Custom Terminal Gui").withDependency { renderType == 3 }
     val textShadow: Boolean by BooleanSetting("Shadow", true, description = "Adds a shadow to the text")
@@ -96,12 +98,13 @@ object TerminalSolver : Module(
             else -> return
         }
         clicksNeeded = solution.size
+        if (renderType == 3 && Loader.instance().activeModList.any { it.modId == "notenoughupdates" }) NEUApi.setInventoryButtonsToDisabled()
         TerminalOpenedEvent(currentTerm, solution).postAndCatch()
     }
 
     @SubscribeEvent
     fun onGuiRender(event: GuiEvent.DrawGuiContainerScreenEvent) {
-        if (currentTerm == TerminalTypes.NONE || !enabled || !renderType.equalsOneOf(0,3) || event.container !is ContainerChest) return
+        if (currentTerm == TerminalTypes.NONE || currentTerm == TerminalTypes.MELODY || !enabled || !renderType.equalsOneOf(0,3) || event.container !is ContainerChest) return
         if (renderType == 3) {
             CustomTermGui.render()
             event.isCanceled = true
@@ -192,7 +195,7 @@ object TerminalSolver : Module(
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.END) return
-        if (mc.thePlayer?.openContainer is ContainerPlayer || currentTerm == TerminalTypes.NONE) leftTerm()
+        if (mc.thePlayer?.openContainer is ContainerPlayer) leftTerm()
     }
 
     @SubscribeEvent
@@ -205,6 +208,7 @@ object TerminalSolver : Module(
     }
 
     private fun leftTerm() {
+        if (currentTerm == TerminalTypes.NONE && solution.isEmpty()) return
         TerminalClosedEvent(currentTerm).postAndCatch()
         currentTerm = TerminalTypes.NONE
         solution = emptyList()
@@ -270,11 +274,3 @@ object TerminalSolver : Module(
     }
 }
 
-enum class TerminalTypes(val guiName: String) {
-    PANES("Correct all the panes!"),
-    RUBIX("Change all to same color!"),
-    ORDER("Click in order!"),
-    STARTS_WITH("What starts with:"),
-    SELECT("Select all the"),
-    NONE("None")
-}

@@ -15,7 +15,7 @@ import kotlin.math.sqrt
 
 object Arrows : Module(
     name = "Arrows Triggerbot",
-    description = "Trigger bot for 4th device.",
+    description = "Trigger bot for 4th device in phase 3 of floor 7.",
     category = Category.FLOOR7
 )  {
     private val triggerBotDelay: Long by NumberSetting("Delay", 250L, 50L, 1000L, 10L)

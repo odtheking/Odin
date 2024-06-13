@@ -6,7 +6,7 @@ import me.odinmain.features.impl.dungeon.*
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers
 import me.odinmain.features.impl.floor7.*
 import me.odinmain.features.impl.floor7.p3.*
-import me.odinmain.features.impl.kuudra.*
+import me.odinmain.features.impl.nether.*
 import me.odinmain.features.impl.render.*
 import me.odinmain.features.impl.render.ClickGUIModule.hudChat
 import me.odinmain.features.impl.skyblock.*
@@ -50,7 +50,7 @@ object ModuleManager {
 
     val modules: ArrayList<Module> = arrayListOf(
         // dungeon
-        DungeonRequeue, BlessingDisplay, ExtraStats, KeyHighlight, MimicMessage, TeammatesHighlight,
+        DungeonRequeue, BlessingDisplay, ExtraStats, KeyHighlight, Mimic, TeammatesHighlight,
         TerracottaTimer, BloodCamp, ClickedSecrets, DungeonWaypoints, SecretChime, LeapMenu, PuzzleSolvers,
         WarpCooldown, 
 
@@ -60,13 +60,13 @@ object ModuleManager {
 
         // render
         BPSDisplay, ClickGUIModule, CustomHighlight, CPSDisplay, DragonHitboxes, GyroWand, NameChanger,
-        PersonalDragon, RenderOptimizer, ServerDisplay, Waypoints, CanClip, Animations, SpaceHelmet,
-        BlockOverlay, VisualWords, HidePlayers, DVD,
+        PersonalDragon, RenderOptimizer, ServerHud, Waypoints, CanClip, Animations, SpaceHelmet,
+        BlockOverlay, VisualWords, DVD, Sidebar,
 
         //skyblock
         NoCursorReset, AutoSprint, BlazeAttunement, ChatCommands, DeployableTimer, DianaHelper, ArrowHit,
         Ragaxe, MobSpawn, /*Splits,*/ WardrobeKeybinds, InvincibilityTimer, EnrageDisplay, /*ItemsHighlight,*/
-        CopyChat, PlayerDisplay, LockCursor,
+        CopyChat, PlayerDisplay, FarmKeys, PartyEncoding, PetKeybinds, SkillsSucks,
 
         // kuudra
         BuildHelper, FreshTimer, KuudraDisplay, NoPre, PearlWaypoints, RemovePerks, SupplyWaypoints, TeamHighlight,
@@ -91,7 +91,6 @@ object ModuleManager {
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START) return
-
         tickTasks.removeAll {
             if (it.ticksLeft <= 0) {
                 it.function()

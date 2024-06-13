@@ -25,6 +25,10 @@ object ColorUtil {
         return Color(r, g, b, alpha)
     }
 
+    fun Color.multiplyAlpha(factor: Float): Color {
+        return Color(r, g, b, (alpha * factor).coerceIn(0f, 1f))
+    }
+
     fun Color.brighter(factor: Float = 1.3f): Color {
         return Color(hue, saturation, (brightness * factor.coerceAtLeast(1f)).coerceAtMost(1f), alpha)
     }

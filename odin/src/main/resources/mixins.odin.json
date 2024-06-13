@@ -4,19 +4,18 @@
   "minVersion": "0.7",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "mixins.MixinChatAllowedCharacters",
     "mixins.MixinChunk",
     "mixins.MixinEntityLivingBase",
     "mixins.MixinNetworkManager",
     "mixins.MixinRendererLivingEntity",
     "mixins.MixinS1CPacketEntityMetadata",
-    "mixins.MixinWorld",
-    "mixins.other.MixinNEURenderListener"
+    "mixins.MixinWorld"
   ],
   "client": [
     "accessors.EntityRendererAccessor",
     "accessors.IEntityPlayerSPAccessor",
     "accessors.IMinecraftAccessor",
+    "mixins.MixinEntityPlayerSP",
     "mixins.MixinEntityRenderer",
     "mixins.MixinFontRenderer",
     "mixins.MixinGuiContainer",
