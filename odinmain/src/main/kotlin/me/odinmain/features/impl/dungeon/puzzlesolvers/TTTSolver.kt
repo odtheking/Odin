@@ -64,22 +64,22 @@ object TTTSolver {
         }
     }
 
-    fun firstMove() {
-        if (board.filter { it.state == State.X }.size != 1) return
-        toRender = when (board.first { it.state == State.X }.position) {
+    fun firstMove() : BlockPos? {
+        if (board.filter { it.state == State.X }.size != 1) return null
+        return when (board.first { it.state == State.X }.position) {
             BoardPosition.Middle -> board[0].location
             BoardPosition.Corner -> board[4].location
-            else -> return
+            else -> null
         }
     }
 
-    fun secondMove() {
-        if (board.filter { it.state == State.X }.size != 2) return
+    fun secondMove() : BlockPos? {
+        if (board.filter { it.state == State.X }.size != 2) return null
         val slot = board.last { it.state == State.X }
-        toRender = when (slot.position) {
+        return when (slot.position) {
             BoardPosition.Middle -> board[8].location
             BoardPosition.Corner -> board[0].location
-            else -> return
+            else -> null
         }
     }
 
