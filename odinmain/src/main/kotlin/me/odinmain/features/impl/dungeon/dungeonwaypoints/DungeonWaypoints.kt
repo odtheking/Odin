@@ -1,9 +1,12 @@
-package me.odinmain.features.impl.dungeon
+package me.odinmain.features.impl.dungeon.dungeonwaypoints
 
 import me.odinmain.config.DungeonWaypointConfigCLAY
 import me.odinmain.events.impl.*
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.clearSecrets
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.onSecret
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.resetSecrets
 import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
@@ -15,7 +18,6 @@ import me.odinmain.utils.render.RenderUtils.invoke
 import me.odinmain.utils.render.RenderUtils.outlineBounds
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.dungeon.SecretItem
 import net.minecraft.client.gui.*
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -57,7 +59,7 @@ object DungeonWaypoints : Module(
         modMessage("Successfully reset current room!")
     }
     private val debugWaypoint: Boolean by BooleanSetting("Debug Waypoint", false).withDependency { DevPlayers.isDev }
-    private var glList = -1
+    var glList = -1
 
     data class DungeonWaypoint(
         val x: Double, val y: Double, val z: Double,
@@ -75,53 +77,15 @@ object DungeonWaypoints : Module(
         modMessage("Dungeon Waypoint editing ${if (allowEdits) "§aenabled" else "§cdisabled"}§r!")
     }
 
+    init {
+        onWorldLoad { resetSecrets() }
+
+        onMessage(Regex("(?s).*(\\d+)/\\1 Secrets.*")) { clearSecrets() }
+    }
+
     @SubscribeEvent
     fun onSecret(event: SecretPickupEvent) {
-        if (allowEdits) return
-        when (event.type) {
-            is SecretItem.Interact -> clickSecret(Vec3(event.type.blockPos), 0)
-            is SecretItem.Bat -> clickSecret(event.type.entity.positionVector, 5)
-            is SecretItem.Item -> clickSecret(event.type.entity.positionVector, 3)
-        }
-    }
-
-
-    fun resetSecrets() {
-        val room = DungeonUtils.currentRoom
-        for ((_, waypointsList) in DungeonWaypointConfigCLAY.waypoints.filter { waypoints -> waypoints.value.any { it.clicked } }) {
-            waypointsList.filter { it.clicked }.forEach { it.clicked = false }
-        }
-
-        if (room != null) DungeonUtils.setWaypoints(room)
-        glList = -1
-    }
-
-    init {
-        onWorldLoad {
-            resetSecrets()
-        }
-
-        onMessage(Regex("(?s).*(\\d+)/\\1 Secrets.*")) {
-            val room = DungeonUtils.currentRoom ?: return@onMessage
-            val waypoints = DungeonWaypointConfigCLAY.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
-            if (waypoints.any { it.secret && !it.clicked}) {
-                for (wp in waypoints.filter { it.secret && !it.clicked }) { wp.clicked = true }
-                DungeonUtils.setWaypoints(room)
-                glList = -1
-            }
-        }
-    }
-
-    private fun clickSecret(pos: Vec3, distance: Int) {
-        val room = DungeonUtils.currentRoom ?: return
-        val vec = Vec3(pos.xCoord, pos.yCoord, pos.zCoord).subtractVec(x = room.clayPos.x, z = room.clayPos.z).rotateToNorth(room.room.rotation)
-        val waypoints = DungeonWaypointConfigCLAY.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
-        waypoints.find { wp -> (if (distance == 0) wp.toVec3().equal(vec) else wp.toVec3().distanceTo(vec) <= distance) && wp.secret && !wp.clicked}?.let {
-            it.clicked = true
-            DungeonUtils.setWaypoints(room)
-            devMessage("clicked $vec")
-            glList = -1
-        }
+        if (!allowEdits) SecretWaypoints.onSecret(event)
     }
 
     @SubscribeEvent
@@ -161,14 +125,14 @@ object DungeonWaypoints : Module(
             else AxisAlignedBB(.5 - (size / 2), .5 - (size / 2), .5 - (size / 2), .5 + (size / 2), .5 + (size / 2), .5 + (size / 2)).expand(0.002, 0.002, 0.002)
 
         val waypoints = DungeonWaypointConfigCLAY.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
-         val color = when (colorPallet) {
-             0 -> color
-             1 -> Color.CYAN
-             2 -> Color.MAGENTA
-             3 -> Color.YELLOW
-             4 -> Color.GREEN
-             else -> color
-         }
+        val color = when (colorPallet) {
+            0 -> color
+            1 -> Color.CYAN
+            2 -> Color.MAGENTA
+            3 -> Color.YELLOW
+            4 -> Color.GREEN
+            else -> color
+        }
 
         if (mc.thePlayer.isSneaking) {
             GuiSign.setCallback { enteredText ->
@@ -334,6 +298,6 @@ object GuiSign : GuiScreen() {
 
     // Method to set the callback function
     fun setCallback(callback: (String) -> Unit) {
-        this.callback = callback
+        GuiSign.callback = callback
     }
 }

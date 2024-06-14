@@ -3,8 +3,8 @@ package me.odinmain.utils.skyblock.dungeon
 import me.odinmain.OdinMain.mc
 import me.odinmain.config.DungeonWaypointConfigCLAY
 import me.odinmain.events.impl.EnteredDungeonRoomEvent
-import me.odinmain.features.impl.dungeon.DungeonWaypoints.DungeonWaypoint
-import me.odinmain.features.impl.dungeon.DungeonWaypoints.toVec3
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.DungeonWaypoint
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.toVec3
 import me.odinmain.features.impl.dungeon.LeapMenu
 import me.odinmain.features.impl.dungeon.LeapMenu.odinSorting
 import me.odinmain.utils.*

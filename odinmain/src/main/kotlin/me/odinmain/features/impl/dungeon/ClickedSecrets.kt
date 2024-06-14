@@ -9,12 +9,9 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.dungeon.SecretItem
 import me.odinmain.utils.skyblock.getBlockAt
 import me.odinmain.utils.toAABB
-import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.util.BlockPos
-import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -47,9 +44,9 @@ object ClickedSecrets : Module(
     }
 
     @SubscribeEvent
-    fun onSecret(event: SecretPickupEvent) {
-        if (event.type !is SecretItem.Interact || (DungeonUtils.inBoss && disableInBoss) || secrets.any{ it.pos == event.type.blockPos }) return
-        secrets.add(Chest(event.type.blockPos, System.currentTimeMillis()))
+    fun onSecret(event: SecretPickupEvent.Interact) {
+        if ((DungeonUtils.inBoss && disableInBoss) || secrets.any{ it.pos == event.blockPos }) return
+        secrets.add(Chest(event.blockPos, System.currentTimeMillis()))
 
         runIn(timeToStay.toInt() * 20) {
             secrets.removeFirstOrNull()

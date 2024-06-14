@@ -1,8 +1,8 @@
 package me.odinmain.commands.impl
 
 import me.odinmain.commands.commodore
-import me.odinmain.features.impl.dungeon.DungeonWaypoints
-import me.odinmain.features.impl.dungeon.DungeonWaypoints.resetSecrets
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.resetSecrets
 import me.odinmain.utils.isHexaDecimal
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.modMessage
