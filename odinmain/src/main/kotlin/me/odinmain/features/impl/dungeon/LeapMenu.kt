@@ -18,7 +18,7 @@ import me.odinmain.utils.name
 import me.odinmain.utils.render.*
 import me.odinmain.utils.render.RenderUtils.drawTexturedModalRect
 import me.odinmain.utils.skyblock.*
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.leapTeammates
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.renderer.GlStateManager
@@ -52,7 +52,7 @@ object LeapMenu : Module(
     private var hoveredQuadrant = -1
     private var previouslyHoveredQuadrant = -1
 
-    private val EMPTY = DungeonUtils.DungeonPlayer("Empty", DungeonUtils.Classes.Archer, ResourceLocation("textures/entity/steve.png"))
+    private val EMPTY = DungeonPlayer("Empty", DungeonClass.Archer, ResourceLocation("textures/entity/steve.png"))
 
     @SubscribeEvent
     fun onDrawScreen(event: GuiEvent.DrawGuiContainerScreenEvent) {
@@ -192,9 +192,9 @@ object LeapMenu : Module(
      * @param players The list of players to be sorted.
      * @return An array of sorted players.
      */
-    fun odinSorting(players: List<DungeonUtils.DungeonPlayer>): Array<DungeonUtils.DungeonPlayer> {
+    fun odinSorting(players: List<DungeonPlayer>): Array<DungeonPlayer> {
         val result = Array(4) { EMPTY }
-        val secondRound = mutableListOf<DungeonUtils.DungeonPlayer>()
+        val secondRound = mutableListOf<DungeonPlayer>()
 
         for (player in players.sortedBy { it.clazz.prio }) {
             when {

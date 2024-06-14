@@ -10,6 +10,7 @@ import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.LocationUtils.isArea
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.item.EntityArmorStand
@@ -120,7 +121,7 @@ object Triggerbot : Module(
 
             if (tileEntity is TileEntityChest && tileEntity.numPlayersUsing >= 1) return@execute
 
-            if (stbCH && LocationUtils.currentArea == Island.CrystalHollows && state.block == Blocks.chest) {
+            if (stbCH && LocationUtils.currentArea.isArea(Island.CrystalHollows) && state.block == Blocks.chest) {
                 PlayerUtils.rightClick()
                 triggerBotClock.update()
                 clickedPositions = clickedPositions.plus(pos to System.currentTimeMillis())

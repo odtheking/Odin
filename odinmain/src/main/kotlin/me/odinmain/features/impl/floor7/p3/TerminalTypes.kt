@@ -6,5 +6,6 @@ enum class TerminalTypes(val guiName: String) {
     ORDER("Click in order!"),
     STARTS_WITH("What starts with:"),
     SELECT("Select all the"),
+    MELODY("Click the button on time!"),
     NONE("None")
 }

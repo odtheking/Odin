@@ -1,12 +1,7 @@
 package me.odinmain.utils
 
-import me.odinmain.config.Config
-import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.utils.skyblock.createClickStyle
-import me.odinmain.utils.skyblock.modMessage
-import net.minecraft.event.ClickEvent
+data class Split(val message: String, val name: String, var time: Long = 0L)
 
-data class Split(val message: String, val name: String, val pb: NumberSetting<Double>,var time: Long = 0L)
 object SplitsManager {
 
     var currentSplits: MutableList<Split> = mutableListOf()
@@ -32,20 +27,6 @@ object SplitsManager {
         val currentSplit = currentSplits.find { it.message == msg } ?: return
         currentSplit.time = System.currentTimeMillis()
 
-        val oldPB = currentSplit.pb.value
-        val index = currentSplits.indexOf(currentSplit)
-        if (index == 0) return
 
-        val currentSplitTime = currentSplit.time - currentSplits[index - 1].time
-
-        if (currentSplitTime.round(3).toDouble() <= oldPB) {
-            currentSplit.pb.value = currentSplitTime.toDouble().round(3).toDouble()
-            Config.save()
-        }
-
-        val allPBs = currentSplits.drop(1).joinToString("\n") { "§f${it.name}: ${formatTime(it.pb.value.toLong())}" }
-
-        modMessage("§6${currentSplit.name} §ftook §a${formatTime(currentSplitTime)} ${if (currentSplitTime.round(3).toDouble() < oldPB) "§f(§d§lPB§f) §8${formatTime(oldPB.toLong())}" else ""}",
-            chatStyle = createClickStyle(ClickEvent.Action.SUGGEST_COMMAND, allPBs))
     }
 }

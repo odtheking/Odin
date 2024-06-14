@@ -18,6 +18,7 @@ import me.odinmain.utils.render.RenderUtils.invoke
 import me.odinmain.utils.render.RenderUtils.outlineBounds
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.ScanUtils
 import net.minecraft.client.gui.*
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -54,7 +55,7 @@ object DungeonWaypoints : Module(
         if (!waypoints.removeAll { true }) return@ActionSetting modMessage("Current room does not have any waypoints!")
 
         DungeonWaypointConfigCLAY.saveConfig()
-        DungeonUtils.setWaypoints(room)
+        ScanUtils.setWaypoints(room)
         glList = -1
         modMessage("Successfully reset current room!")
     }
@@ -147,7 +148,7 @@ object DungeonWaypoints : Module(
             devMessage("Added waypoint at $vec")
         }
         DungeonWaypointConfigCLAY.saveConfig()
-        DungeonUtils.setWaypoints(room)
+        ScanUtils.setWaypoints(room)
         glList = -1
     }
 
@@ -168,7 +169,7 @@ object DungeonWaypoints : Module(
         z + .5 + (size / 2)
     ).expand(.01, .01, .01)
 
-    private fun drawBoxes(boxes: Collection<DungeonWaypoint>, depth: Boolean = disableDepth) {
+    private fun drawBoxes(boxes: Collection<DungeonWaypoint>) {
         GlStateManager.pushMatrix()
         GlStateManager.translate(-RenderUtils.renderManager.viewerPosX, -RenderUtils.renderManager.viewerPosY, -RenderUtils.renderManager.viewerPosZ)
         RenderUtils.blendFactor()

@@ -73,7 +73,6 @@ object BeamsSolver {
         }.forEach { currentLanternPairs.remove(it.key) }
     }
 
-
     fun reset() {
         scanned = false
         currentLanternPairs.clear()

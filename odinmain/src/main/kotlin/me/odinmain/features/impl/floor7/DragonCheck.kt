@@ -56,7 +56,6 @@ object DragonCheck {
         if (sendTime && WitherDragons.enabled)
             dragonPBs.time(dragon.ordinal, event.entity.ticksExisted / 20.0, "s§7!", "§${dragon.colorCode}${dragon.name} §7was alive for §6", addPBString = true, addOldPBString = true)
 
-
         if (sendArrowHit && WitherDragons.enabled) arrowDeath(dragon)
         lastDragonDeath = dragon.name
     }

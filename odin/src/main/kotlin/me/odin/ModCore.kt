@@ -4,6 +4,7 @@ import me.odin.features.impl.floor7.p3.ArrowAlign
 import me.odin.features.impl.floor7.p3.SimonSays
 import me.odin.features.impl.render.Camera
 import me.odin.features.impl.render.EtherWarpHelper
+import me.odin.features.impl.skyblock.HidePlayers
 import me.odinmain.OdinMain
 import me.odinmain.features.ModuleManager
 import net.minecraftforge.common.MinecraftForge
@@ -45,7 +46,8 @@ class ModCore {
             ArrowAlign,
             SimonSays,
             EtherWarpHelper,
-            Camera
+            Camera,
+            HidePlayers
         )
 
         ModuleManager.modules.addAll(modules)

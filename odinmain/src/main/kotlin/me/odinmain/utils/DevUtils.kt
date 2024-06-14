@@ -67,19 +67,6 @@ fun copyBlockData() {
 }
 
 /**
- * Writes the given text to the clipboard.
- */
-fun writeToClipboard(text: String, successMessage: String?) {
-    try {
-        copyToClipboard(text)
-        if (successMessage != null)
-            devMessage(successMessage)
-    } catch (exception: Exception) {
-        devMessage("Clipboard not available!")
-    }
-}
-
-/**
  * Pretty prints the given NBT tag.
  * @param nbt The NBT tag to pretty print.
  * @return The pretty printed NBT tag.
