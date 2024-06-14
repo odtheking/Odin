@@ -9,6 +9,7 @@ import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.runIn
+import me.odinmain.utils.skyblock.LocationUtils.isArea
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.SharedMonsterAttributes
 import net.minecraft.entity.item.EntityArmorStand
@@ -30,7 +31,7 @@ object KuudraUtils {
     var buildingPiles = mutableListOf<EntityArmorStand>()
 
     inline val inKuudra get() =
-        LocationUtils.inSkyblock && LocationUtils.currentArea == Island.Kuudra
+        LocationUtils.inSkyblock && LocationUtils.currentArea.isArea(Island.Kuudra)
 
     data class KuudraPlayer(val playerName: String, var eatFresh: Boolean = false, var eatFreshTime: Long = 0, var entity: EntityPlayer? = null)
     @SubscribeEvent

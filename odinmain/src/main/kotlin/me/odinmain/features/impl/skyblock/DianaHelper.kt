@@ -1,6 +1,7 @@
 package me.odinmain.features.impl.skyblock
 
 import me.odinmain.OdinMain
+import me.odinmain.OdinMain.isLegitVersion
 import me.odinmain.events.impl.ClickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -40,7 +41,7 @@ object DianaHelper : Module(
     private val darkAuction: Boolean by BooleanSetting("DA Warp").withDependency { showWarpSettings }
     private val museum: Boolean by BooleanSetting("Museum Warp").withDependency { showWarpSettings }
     private val wizard: Boolean by BooleanSetting("Wizard Warp").withDependency { showWarpSettings }
-    private val autoWarp: Boolean by BooleanSetting("Auto Warp", description = "Automatically warps you to the nearest warp location 2 seconds after you activate the spade ability.").withDependency { !OdinMain.isLegitVersion }
+    private val autoWarp: Boolean by BooleanSetting("Auto Warp", description = "Automatically warps you to the nearest warp location 2 seconds after you activate the spade ability.").withDependency { !isLegitVersion }
     private var warpLocation: WarpPoint? = null
 
     private val cmdCooldown = Clock(3_000)

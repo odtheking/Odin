@@ -4,10 +4,9 @@ import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.copyToClipboard
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.scaleFactor
-import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.writeToClipboard
 import net.minecraft.client.gui.GuiChat
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
@@ -36,7 +35,6 @@ object CopyChat : Module(
         }
         val message = components.joinToString(separator = "") { it }
 
-        copyToClipboard(if (keybind.isDown()) message else message.noControlCodes)
-        modMessage(if (sendMessage) "§7${message.noControlCodes}" else "§aCopied chat message to clipboard!")
+        writeToClipboard(if (keybind.isDown()) message else message.noControlCodes, if (sendMessage) "§7${message.noControlCodes}" else "§aCopied chat message to clipboard!")
     }
 }

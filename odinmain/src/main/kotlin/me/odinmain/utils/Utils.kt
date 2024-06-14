@@ -6,6 +6,7 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.features.ModuleManager
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.inventory.Container
 import net.minecraft.inventory.ContainerChest
@@ -276,8 +277,32 @@ fun checkGLError(message: String) {
     }
 }
 
-fun copyToClipboard(text: String) {
-    val clipboard = Toolkit.getDefaultToolkit().systemClipboard
-    val stringSelection = StringSelection(text)
-    clipboard.setContents(stringSelection, null)
+/**
+ * Writes the given text to the clipboard.
+ */
+fun writeToClipboard(text: String, successMessage: String?) {
+    try {
+        val clipboard = Toolkit.getDefaultToolkit().systemClipboard
+        val stringSelection = StringSelection(text)
+        clipboard.setContents(stringSelection, null)
+        if (successMessage != null)
+            modMessage(successMessage)
+    } catch (exception: Exception) {
+        devMessage("Clipboard not available!")
+    }
+}
+
+fun writeToClipboard(text: String) {
+    writeToClipboard(text, null)
+}
+
+private val romanMap = mapOf('I' to 1, 'V' to 5, 'X' to 10, 'L' to 50, 'C' to 100, 'D' to 500, 'M' to 1000)
+fun romanToInt(s: String): Int {
+    var result = 0
+    for (i in 0 until s.length - 1) {
+        val current = romanMap[s[i]] ?: 0
+        val next = romanMap[s[i + 1]] ?: 0
+        result += if (current < next) -current else current
+    }
+    return result + (romanMap[s.last()] ?: 0)
 }

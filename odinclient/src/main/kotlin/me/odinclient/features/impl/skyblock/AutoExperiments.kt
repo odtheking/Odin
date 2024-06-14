@@ -8,6 +8,7 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.LocationUtils.inSkyblock
+import me.odinmain.utils.skyblock.LocationUtils.isArea
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.init.Blocks
 import net.minecraft.init.Items
@@ -46,7 +47,7 @@ object AutoExperiments : Module(
     @SubscribeEvent
     fun onGuiOpen(event: GuiEvent.GuiLoadedEvent) {
         reset()
-        if (LocationUtils.currentArea != Island.PrivateIsland) return
+        if (!LocationUtils.currentArea.isArea(Island.PrivateIsland)) return
         val chestName = event.name
 
         currentExperiment = when {

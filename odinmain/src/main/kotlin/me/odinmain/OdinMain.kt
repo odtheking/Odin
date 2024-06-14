@@ -17,6 +17,7 @@ import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.sendDataToServer
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.ScanUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraftforge.common.MinecraftForge
@@ -39,44 +40,27 @@ object OdinMain {
             PBConfig.loadConfig()
         }
         listOf(
-            LocationUtils,
-            ServerUtils,
-            PlayerUtils,
-            RenderUtils,
-            Renderer,
-            DungeonUtils,
-            KuudraUtils,
-            EventDispatcher,
-            Executor,
-            ModuleManager,
-            WaypointManager,
-            DevPlayers,
-            SkyblockPlayer,
-            //HighlightRenderer,
-            //OdinUpdater,
+            LocationUtils, ServerUtils, PlayerUtils,
+            RenderUtils, Renderer, DungeonUtils, KuudraUtils,
+            EventDispatcher, Executor, ModuleManager,
+            WaypointManager, DevPlayers, SkyblockPlayer,
+            ScanUtils, //HighlightRenderer, //OdinUpdater,
             this
         ).forEach { MinecraftForge.EVENT_BUS.register(it) }
 
         registerCommands(
-            mainCommand,
-            soopyCommand,
-            termSimCommand,
-            blacklistCommand,
-            devCommand,
-            highlightCommand,
-            waypointCommand,
-            dungeonWaypointsCommand,
-            petCommand,
-            visualWordsCommand
+            mainCommand, soopyCommand,
+            termSimCommand, blacklistCommand,
+            devCommand, highlightCommand,
+            waypointCommand, dungeonWaypointsCommand,
+            petCommand, visualWordsCommand
         )
         OdinFont.init()
     }
 
     fun postInit() = scope.launch(Dispatchers.IO) {
         val config = File(mc.mcDataDir, "config/odin")
-        if (!config.exists()) {
-            config.mkdirs()
-        }
+        if (!config.exists()) config.mkdirs()
         launch { WaypointConfig.loadConfig() }
         launch { DungeonWaypointConfigCLAY.loadConfig() }
     }

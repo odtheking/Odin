@@ -2,6 +2,7 @@ package me.odinmain.utils.skyblock
 
 import me.odinmain.features.impl.skyblock.DianaHelper
 import me.odinmain.utils.*
+import me.odinmain.utils.skyblock.LocationUtils.isArea
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraft.util.*
@@ -72,7 +73,7 @@ object DianaBurrowEstimate {
     }
 
     fun handleSoundPacket(it: S29PacketSoundEffect) {
-        if (it.soundName != "note.harp" || LocationUtils.currentArea != Island.Hub) return
+        if (it.soundName != "note.harp" || !LocationUtils.currentArea.isArea(Island.Hub)) return
 
         if (lastDingTime == 0L) firstPitch = it.pitch
 

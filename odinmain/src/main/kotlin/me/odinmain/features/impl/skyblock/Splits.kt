@@ -7,8 +7,8 @@ import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.*
 import me.odinmain.utils.render.*
-import me.odinmain.utils.skyblock.LocationUtils
-import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.LocationUtils.isArea
 
 object Splits : Module(
     "Splits",
@@ -60,10 +60,10 @@ object Splits : Module(
         }
 
         execute(500) {
-            if (!hasChangeWorld || LocationUtils.currentArea == null) return@execute
+            if (!hasChangeWorld || LocationUtils.currentArea.isArea(Island.Unknown)) return@execute
             hasChangeWorld = false
-            modMessage("Loading splits for ${LocationUtils.currentArea?.name}")
-            val currentInstance = allSplits[LocationUtils.currentArea?.name] ?: return@execute
+            modMessage("Loading splits for ${LocationUtils.currentArea.name}")
+            val currentInstance = allSplits[LocationUtils.currentArea.name] ?: return@execute
             currentInstance.forEach { it.time = 0L }
             SplitsManager.currentSplits = currentInstance.toMutableList()
         }
