@@ -8,16 +8,21 @@ import com.github.stivais.ui.color.color
 import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.sizes.Bounding
+import com.github.stivais.ui.elements.impl.TextInput
 import com.github.stivais.ui.elements.scope.*
 import com.github.stivais.ui.renderer.Renderer
-import com.github.stivais.ui.utils.*
+import com.github.stivais.ui.utils.animate
+import com.github.stivais.ui.utils.radii
+import com.github.stivais.ui.utils.seconds
 import me.odinmain.OdinMain
+import me.odinmain.config.Config
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.ModuleManager.modules
 import me.odinmain.features.impl.render.ClickGUIModule.color
 import me.odinmain.features.impl.render.ClickGUIModule.lastSeenVersion
 import me.odinmain.utils.capitalizeFirst
+import me.odinmain.utils.skyblock.modMessage
 
 @JvmField
 val ClickGUITheme = Color { color.rgba }
@@ -32,12 +37,17 @@ val `gray 38`: Color = Color.RGB(38, 38, 38)
 val `transparent fix`: Color = Color.RGB(255, 255, 255, 0.2f)
 
 fun clickGUI(renderer: Renderer) = UI(renderer) {
+    // used for search bar
+    val moduleElements = arrayListOf<Pair<Module, ElementDSL>>()
     openCloseAnim(0.5.seconds)
     text(
         text = "odin${if (OdinMain.isLegitVersion) "" else "-client"} $lastSeenVersion",
         pos = at(x = 1.px, y = -(0.px)),
         size = 12.px
     )
+    onUIClose {
+        Config.save()
+    }
     for (panel in Category.entries) {
         column(at(x = panel.x.px, y = panel.y.px)) {
             onUIClose {
@@ -68,7 +78,8 @@ fun clickGUI(renderer: Renderer) = UI(renderer) {
                 scissors()
                 for (module in modules) {
                     if (module.category != panel) continue
-                    module(module)
+                    val it = module(module)
+                    moduleElements.add(module to it)
                 }
                 background(color = Color.RGB(38, 38, 38, 0.7f))
             }
@@ -79,33 +90,52 @@ fun clickGUI(renderer: Renderer) = UI(renderer) {
             )
         }
     }
+
+    block(
+        constrain(y = 80.percent, w = 25.percent, h = 5.percent),
+        `gray 38`
+    ) {
+        TextInput(
+            "Search",
+            "Search",
+            null,
+            onTextChange = { str ->
+                for ((module, element) in moduleElements) {
+                    if (module.name == "Server Hud") {
+                        modMessage("${module.name.startsWith(str, true)}, $str, ${module.name}")
+                    }
+                    element.enabled = module.name.startsWith(str, true)
+                }
+            }
+        ).add()
+    }.draggable()
 }
 
-private fun ElementScope<*>.module(module: Module) {
-    column(size(h = Animatable(from = 32.px, to = Bounding))) {
-        button(
-            constraints = size(w = 240.px, h = 32.px),
-            color = color(from = `gray 26`, to = ClickGUITheme),
-            on = module.enabled
-        ) {
-            text(
-                text = module.name,
-                size = 16.px
-            )
-            onClick {
-                module.toggle()
-                true
-            }
-            onClick(1) {
-                parent()!!.height.animate(0.25.seconds, Animations.EaseInOutQuint)
-                true
-            }
+private fun ElementScope<*>.module(module: Module) = column(
+    constraints = size(h = Animatable(from = 32.px, to = Bounding))
+) {
+    button(
+        constraints = size(w = 240.px, h = 32.px),
+        color = color(from = `gray 26`, to = ClickGUITheme),
+        on = module.enabled
+    ) {
+        text(
+            text = module.name,
+            size = 16.px
+        )
+        onClick {
+            module.toggle()
+            true
         }
-        for (setting in module.settings) {
-            if (setting.hidden) continue
-            setting.apply {
-                createElement()
-            }
+        onClick(1) {
+            parent()!!.height.animate(0.25.seconds, Animations.EaseOutQuint)
+            true
+        }
+    }
+    for (setting in module.settings) {
+        if (setting.hidden) continue
+        setting.apply {
+            createElement()
         }
     }
 }

@@ -3,7 +3,6 @@ package com.github.stivais.ui
 import me.odinmain.OdinMain.display
 import me.odinmain.OdinMain.mc
 import net.minecraft.client.gui.GuiScreen
-import net.minecraft.client.renderer.GlStateManager
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Mouse
@@ -44,7 +43,7 @@ open class UIScreen(val ui: UI) : GuiScreen(), Window {
                 previousHeight = h
             }
 
-            ui.eventManager?.apply {
+            ui.eventManager.apply {
                 val mx = Mouse.getX().toFloat()
                 val my = previousHeight - Mouse.getY() - 1f
 
@@ -52,33 +51,29 @@ open class UIScreen(val ui: UI) : GuiScreen(), Window {
                     onMouseMove(mx, my)
                 }
             }
-            GlStateManager.pushMatrix()
             ui.render()
-            GlStateManager.popMatrix()
         }
     }
 
     override fun handleMouseInput() {
         super.handleMouseInput()
-        ui.eventManager?.let {
-            val scroll = Mouse.getEventDWheel()
-            if (scroll != 0) {
-                it.onMouseScroll(scroll.toFloat())
-            }
+        val scroll = Mouse.getEventDWheel()
+        if (scroll != 0) {
+            ui.eventManager.onMouseScroll(scroll.toFloat())
         }
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, button: Int) {
-        ui.eventManager?.onMouseClick(button)
+        ui.eventManager.onMouseClick(button)
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, button: Int) {
-        ui.eventManager?.onMouseRelease(button)
+        ui.eventManager.onMouseRelease(button)
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
-        if (ui.eventManager?.onKeyType(typedChar) == true) return
-        if (ui.eventManager?.onKeycodePressed(keyCode) == true) return
+        if (ui.eventManager.onKeyType(typedChar)) return
+        if (ui.eventManager.onKeycodePressed(keyCode)) return
         super.keyTyped(typedChar, keyCode)
     }
 

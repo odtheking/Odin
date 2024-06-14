@@ -2,11 +2,15 @@ package com.github.stivais.ui.elements.scope
 
 import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.color.Color
-import com.github.stivais.ui.constraints.*
+import com.github.stivais.ui.constraints.Constraints
+import com.github.stivais.ui.constraints.constrain
 import com.github.stivais.ui.constraints.measurements.Animatable
+import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.constraints.sizes.Copying
 import com.github.stivais.ui.elements.impl.Group
-import com.github.stivais.ui.utils.*
+import com.github.stivais.ui.utils.animate
+import com.github.stivais.ui.utils.radii
+import com.github.stivais.ui.utils.seconds
 import me.odinmain.utils.round
 
 inline fun ElementDSL.button(
@@ -106,4 +110,18 @@ inline fun ElementDSL.sliderBase(
         dragging = false
     }
     dsl()
+}
+
+inline fun ElementDSL.popupMenu(
+    constraints: Constraints? = null,
+    crossinline block: ElementScope<Group>.() -> Unit
+): ElementScope<Group> {
+    var group: ElementScope<Group>? = null
+    ui.main.createScope().apply {
+        group = group(constraints) {
+            block()
+            draggable()
+        }
+    }
+    return group!!
 }

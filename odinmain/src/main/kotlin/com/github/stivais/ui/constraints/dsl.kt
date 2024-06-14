@@ -1,9 +1,6 @@
 package com.github.stivais.ui.constraints
 
-import com.github.stivais.ui.constraints.measurements.LeftPixel
-import com.github.stivais.ui.constraints.measurements.Percent
-import com.github.stivais.ui.constraints.measurements.Pixel
-import com.github.stivais.ui.constraints.measurements.Undefined
+import com.github.stivais.ui.constraints.measurements.*
 import com.github.stivais.ui.constraints.operational.Additive
 import com.github.stivais.ui.constraints.operational.CoerceMax
 import com.github.stivais.ui.constraints.operational.Subtractive
@@ -40,6 +37,11 @@ fun copies(indent: Number = 0f): Constraints {
         return Constraints(0.px, 0.px, Copying, Copying)
     }
     return Constraints(indent.px, indent.px, -(indent.px), -(indent.px))
+}
+
+fun indent(amount: Number): Constraints {
+    val indent = amount.indent
+    return size(indent, indent)
 }
 
 operator fun Constraint.plus(other: Constraint) = Additive(this, other)

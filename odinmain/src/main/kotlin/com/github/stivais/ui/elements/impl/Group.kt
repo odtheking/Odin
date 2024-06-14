@@ -8,6 +8,6 @@ import com.github.stivais.ui.utils.replaceUndefined
 
 class Group(constraints: Constraints?) : Element(constraints.replaceUndefined(w = Bounding, h = Bounding)) {
     override fun draw() {
-//        renderer.border(x, y, width, height, 1f, java.awt.Color.WHITE.rgb)
+//        renderer.hollowRect(x, y, width, height, 1f, java.awt.Color.WHITE.rgb)
     }
 }

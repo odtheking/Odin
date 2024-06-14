@@ -1,17 +1,14 @@
 package com.github.stivais.ui.impl
 
 import com.github.stivais.ui.UI
-import com.github.stivais.ui.constraints.constrain
-import com.github.stivais.ui.constraints.px
-import com.github.stivais.ui.elements.impl.TextInput
 import com.github.stivais.ui.renderer.Renderer
 
 fun basic(renderer: Renderer) = UI(renderer) {
 
-    TextInput(
-        "Hello Worlds!",
-        constraints = constrain(920.px, 540.px)
-    ).add()
+//    TextInput(
+//        "Hello Worlds!",
+//        constraints = constrain(920.px, 540.px)
+//    ).add()
 
 //    column {
 //        repeat(5) {

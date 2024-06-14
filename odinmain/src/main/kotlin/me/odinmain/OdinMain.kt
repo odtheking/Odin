@@ -5,10 +5,16 @@ import com.github.stivais.ui.impl.`ui command`
 import kotlinx.coroutines.*
 import me.odinmain.commands.impl.*
 import me.odinmain.commands.registerCommands
-import me.odinmain.config.*
+import me.odinmain.config.Config
+import me.odinmain.config.DungeonWaypointConfigCLAY
+import me.odinmain.config.PBConfig
+import me.odinmain.config.WaypointConfig
 import me.odinmain.events.EventDispatcher
 import me.odinmain.features.ModuleManager
-import me.odinmain.features.impl.render.*
+import me.odinmain.features.impl.render.ClickGUIModule
+import me.odinmain.features.impl.render.DevPlayers
+import me.odinmain.features.impl.render.WaypointManager
+import me.odinmain.features.settings.impl.Hud
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.util.shader.RoundedRect
@@ -17,7 +23,10 @@ import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.sendDataToServer
-import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.KuudraUtils
+import me.odinmain.utils.skyblock.LocationUtils
+import me.odinmain.utils.skyblock.PlayerUtils
+import me.odinmain.utils.skyblock.SkyblockPlayer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
@@ -57,6 +66,7 @@ object OdinMain {
             //HighlightRenderer,
             //OdinUpdater,
             UIScreen,
+            Hud,
             this
         ).forEach { MinecraftForge.EVENT_BUS.register(it) }
 

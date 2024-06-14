@@ -13,18 +13,6 @@ interface Color {
 
     fun get(element: Element): Int = rgba
 
-    val red
-        get() = rgba shr 16 and 0xFF
-
-    val green
-        get() = rgba shr 8 and 0xFF
-
-    val blue
-        get() = rgba and 0xFF
-
-    val a
-        get() = rgba shr 24 and 0xFF
-
     @JvmInline
     value class RGB(override val rgba: Int) : Color {
         constructor(red: Int, green: Int, blue: Int, alpha: Float = 1f) : this(getRGBA(red, green, blue, (alpha * 255).roundToInt()))
@@ -175,6 +163,18 @@ inline val Int.blue
 inline val Int.alpha
     get() = (this shr 24) and 0xFF
 
+inline val Color.red
+    get() = rgba shr 16 and 0xFF
+
+val Color.green
+    get() = rgba shr 8 and 0xFF
+
+val Color.blue
+    get() = rgba and 0xFF
+
+val Color.alpha
+    get() = (rgba shr 24) and 0xFF
+
 
 fun Int.brighter(factor: Double = 1.2): Int {
     return getRGBA(
@@ -193,7 +193,7 @@ fun Color.toHSB(): Color.HSB {
             blue,
             FloatArray(size = 3)
         ),
-        a / 255f
+        alpha / 255f
     )
 }
 

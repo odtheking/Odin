@@ -74,6 +74,8 @@ class SelectorSetting(
 
     override fun ElementScope<*>.createElement() {
         var text: TextScope? = null
+        // temp/test
+        val alphaAnim = Animatable(0.25.px, 1.px)
         val height = Animatable(from = 40.px, to = (50 + 32 * options.size).px)
         val thickness = Animatable(from = 1.px, to = 1.75.px)
 
@@ -97,6 +99,7 @@ class SelectorSetting(
                         text = options[value]
                     )
                     onClick {
+                        alphaAnim.animate(0.25.seconds, Animations.EaseInOutQuint)
                         height.animate(0.25.seconds, Animations.EaseInOutQuint)
                         thickness.animate(0.25.seconds, Animations.EaseInOutQuint)
                         true
@@ -105,6 +108,7 @@ class SelectorSetting(
             }
             divider(5.px)
             column(size(w = 95.percent, h = Bounding)) {
+                element.alphaAnim = alphaAnim
                 // background
                 block(
                     constraints = copies(),

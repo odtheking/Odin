@@ -1,8 +1,11 @@
 package com.github.stivais.ui.elements.impl
 
+import com.github.stivais.ui.UI
 import com.github.stivais.ui.color.Color
+import com.github.stivais.ui.color.brighter
 import com.github.stivais.ui.constraints.Constraints
-import com.github.stivais.ui.constraints.px
+import com.github.stivais.ui.constraints.percent
+import com.github.stivais.ui.events.Focused
 import com.github.stivais.ui.events.Key
 import com.github.stivais.ui.events.Mouse
 import me.odinmain.utils.*
@@ -12,8 +15,15 @@ import net.minecraft.util.ChatAllowedCharacters
 import org.lwjgl.input.Keyboard
 import kotlin.math.abs
 
+// todo: rework, I undid everything cuz was no good or smth
+class TextInput(
+    text: String,
+    private val placeholder: String,
+    constraints: Constraints? = null,
+    val onTextChange: (string: String) -> Unit = {}
+) : Text(text, UI.defaultFont, Color.WHITE, constraints, 50.percent) {
 
-class TextInput(text: String, constraints: Constraints?) : Text(text, Color.WHITE, constraints, 30.px) {
+    private val placeholderColor: Color = Color { color!!.rgba.brighter(0.7) }
 
     private var string: String = text
         set(value) {
@@ -22,6 +32,8 @@ class TextInput(text: String, constraints: Constraints?) : Text(text, Color.WHIT
             textWidth = renderer.textWidth(value, size = height).toInt()
             if (history.last() != value) history.add(value)
             positionCursor()
+            ui.needsRedraw = true
+            onTextChange(value)
         }
 
     private var cursorPosition: Int = string.length
@@ -49,7 +61,7 @@ class TextInput(text: String, constraints: Constraints?) : Text(text, Color.WHIT
     private var clickCount: Int = 0
 
     override fun draw() {
-        renderer.rect(x - 4, y - 4, textWidth + 10f, height + 4, Color.BLACK.rgba, 9f)
+//        renderer.rect(x - 4, y - 4, textWidth + 10f, height + 4, Color.BLACK.rgba, 9f)
         if (selectionStart != cursorPosition) {
             val startX = x + min(selectionX, cursorX).toInt()
             val endX = x + max(selectionX, cursorX).toInt()
@@ -62,35 +74,45 @@ class TextInput(text: String, constraints: Constraints?) : Text(text, Color.WHIT
     }
 
     init {
+        registerEvent(Focused.Gained) {
+            modMessage("Focus gain")
+            true
+        }
+        registerEvent(Focused.Lost) {
+            modMessage("Focus lost")
+            true
+        }
         registerEvent(Key.CodePressed(-1, true)) {
             handleKeyPress((this as Key.CodePressed).code)
             true
         }
 
         registerEvent(Mouse.Clicked(null)) {
-            val currentTime = System.currentTimeMillis()
-            if (currentTime - lastClickTime < 300) clickCount++ else clickCount = 1
-            lastClickTime = currentTime
+            if ((this as Mouse.Clicked).button == 0) {
+                val currentTime = System.currentTimeMillis()
+                if (currentTime - lastClickTime < 300) clickCount++ else clickCount = 1
+                lastClickTime = currentTime
 
-            when (clickCount) {
-                1 -> {
-                    setCursorPositionBasedOnMouse(x, textWidth, ui.mx)
-                    if (!isShiftKeyDown()) selectionStart = cursorPosition
-                }
+                when (clickCount) {
+                    1 -> {
+                        setCursorPositionBasedOnMouse(x, textWidth, ui.mx)
+                        if (!isShiftKeyDown()) selectionStart = cursorPosition
+                    }
 
-                2 -> {
-                    val word = getCurrentWord(cursorPosition)
-                    selectionStart = word?.first ?: (cursorPosition - 1)
-                    cursorPosition = word?.second ?: cursorPosition
-                }
+                    2 -> {
+                        val word = getCurrentWord(cursorPosition)
+                        selectionStart = word?.first ?: (cursorPosition - 1)
+                        cursorPosition = word?.second ?: cursorPosition
+                    }
 
-                3 -> {
-                    selectionStart = 0
-                    cursorPosition = string.length
+                    3 -> {
+                        selectionStart = 0
+                        cursorPosition = string.length
+                    }
                 }
+                isHeld = true
             }
-            isHeld = true
-            true
+            false
         }
 
         registerEvent(Mouse.Moved) {
@@ -210,9 +232,10 @@ class TextInput(text: String, constraints: Constraints?) : Text(text, Color.WHIT
     }
 
     private fun insert(text: String) {
+        if (text.length >= 30) return
         val min = kotlin.math.min(cursorPosition, selectionStart)
         val max = kotlin.math.max(cursorPosition, selectionStart)
-        val maxLength = 256 - text.length + max - min
+        val maxLength = 30 - text.length + max - min
 
         val addedText = ChatAllowedCharacters.filterAllowedCharacters(text).take(maxLength)
 

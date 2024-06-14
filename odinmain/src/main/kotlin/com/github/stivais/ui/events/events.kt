@@ -54,7 +54,7 @@ interface Mouse : Event {
 // todo: implement key mods (i.e indicator for if ctrl and or shift is down)
 interface Key : Event {
 
-    data class Typed(val char: Char) : Key {
+    data class Typed(val char: Char = ' ') : Key {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             return other is Typed
@@ -68,7 +68,7 @@ interface Key : Event {
     }
 
 
-    data class CodePressed(val code: Int, private val down: Boolean) : Key {
+    data class CodePressed(val code: Int = -1, private val down: Boolean = true) : Key {
 
         override fun isFocused(): Boolean = true
 

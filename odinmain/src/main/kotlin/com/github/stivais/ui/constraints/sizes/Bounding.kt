@@ -13,8 +13,16 @@ object Bounding : Size {
         var value = 0f
         element.elements!!.loop { child ->
             if (!child.enabled) return@loop
-            val new = if (type.axis == HORIZONTAL) child.internalX + child.width else child.internalY + child.height
-            if (new > value) value = new
+            // maybe improve later
+            var ignoreIfCopying = false
+            val new = if (type.axis == HORIZONTAL) {
+                if (child.constraints.width is Copying) ignoreIfCopying = true
+                child.internalX + child.width
+            } else {
+                if (child.constraints.height is Copying) ignoreIfCopying = true
+                child.internalY + child.height
+            }
+            if (new > value && !ignoreIfCopying) value = new
         }
         return value
     }

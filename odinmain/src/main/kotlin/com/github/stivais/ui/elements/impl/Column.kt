@@ -15,15 +15,19 @@ import org.jetbrains.annotations.MustBeInvokedByOverriders
 open class Layout(
     constraints: Constraints?,
     protected val padding: Size?,
-//    private val direction: Int = 0,
 ) : Element(constraints?.replaceUndefined(w = Bounding, h = Bounding)) {
+
+    protected var lastLink: Linked? = null
 
     class Row(constraints: Constraints?, padding: Size?) : Layout(constraints, padding) {
 
         override fun onElementAdded(element: Element) {
             val c = element.constraints
             if (c.x is Undefined) {
-                c.x = Linked(elements?.lastOrNull { it.constraints.x is Linked })
+                val link = Linked(lastLink, element)
+                c.x = link
+                lastLink = link
+
                 if (padding != null && element !is Divider) {
                     val padding = if (padding !is Percent) padding else percentFix(padding)
                     createDivider(amount = padding)
@@ -37,13 +41,17 @@ open class Layout(
     }
 
     class Column(constraints: Constraints?, padding: Size?) : Layout(constraints, padding) {
+
         override fun onElementAdded(element: Element) {
             val c = element.constraints
             if (c.x is Undefined) {
                 c.x = if (constraints.width !is Bounding) Center else Pixel(0f)
             }
             if (c.y is Undefined) {
-                c.y = Linked(elements?.lastOrNull { it.constraints.y is Linked })
+                val link = Linked(lastLink, element)
+                c.y = link
+                lastLink = link
+
                 if (padding != null && element !is Divider) {
                     val padding = if (padding !is Percent) padding else percentFix(padding)
                     createDivider(amount = padding)

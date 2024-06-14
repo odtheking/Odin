@@ -14,4 +14,5 @@ class UISettings {
     // don't use for uis that update a lot
     var cacheFrames: Boolean = false
 
+    var cleanupOnOpenClose = true
 }

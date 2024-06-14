@@ -13,6 +13,7 @@ import com.github.stivais.ui.events.Event
 import com.github.stivais.ui.events.Focused
 import com.github.stivais.ui.events.Key
 import com.github.stivais.ui.events.Mouse
+import com.github.stivais.ui.renderer.Font
 import com.github.stivais.ui.renderer.Gradient
 import com.github.stivais.ui.renderer.Image
 import com.github.stivais.ui.utils.radii
@@ -123,11 +124,22 @@ open class ElementScope<E: Element>(val element: E) {
     @DSL
     fun text(
         text: String,
+        font: Font = UI.defaultFont,
         pos: Constraints? = null,
-        size: Measurement = 50.percent,
+        size: Size = 50.percent,
         color: Color = Color.WHITE,
         block: TextScope.() -> Unit = {}
-    ) = create(TextScope(Text(text, color, pos, size)), block)
+    ) = create(TextScope(Text(text, font, color, pos, size)), block)
+
+    @DSL
+    fun text(
+        text: () -> Any?,
+        font: Font = UI.defaultFont,
+        color: Color = Color.WHITE,
+        pos: Constraints? = null,
+        size: Size = 50.percent,
+        block: TextScope.() -> Unit = {}
+    ) = create(TextScope(Text.Supplied(text, font, color, pos, size)), block)
 
     @DSL
     fun image(
@@ -174,6 +186,14 @@ open class ElementScope<E: Element>(val element: E) {
         element.registerEvent(Key.CodePressed(-1, false), block as Event.() -> Boolean)
     }
 
+    fun onMouseEnter(block: (Event) -> Boolean) {
+        element.registerEvent(Mouse.Entered, block)
+    }
+
+    fun onMouseExit(block: (Event) -> Boolean) {
+        element.registerEvent(Mouse.Exited, block)
+    }
+
     fun onMouseEnterExit(block: (Event) -> Boolean) {
         element.registerEvent(Mouse.Entered, block)
         element.registerEvent(Mouse.Exited, block)
@@ -206,7 +226,7 @@ open class ElementScope<E: Element>(val element: E) {
     }
 
     fun focusThis() {
-        ui.eventManager?.focus(element)
+        ui.eventManager.focus(element)
     }
 
     fun <E : Element, S : ElementScope<E>> create(scope: S, dsl: S.() -> Unit = {}) : S {

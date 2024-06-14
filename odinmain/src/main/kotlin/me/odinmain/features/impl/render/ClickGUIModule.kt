@@ -1,7 +1,8 @@
 package me.odinmain.features.impl.render
 
-import com.github.stivais.ui.constraints.px
-import kotlinx.coroutines.*
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import me.odinmain.OdinMain
 import me.odinmain.config.Config
 import me.odinmain.features.Category
@@ -13,7 +14,10 @@ import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.sendDataToServer
-import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.LocationUtils
+import me.odinmain.utils.skyblock.createClickStyle
+import me.odinmain.utils.skyblock.getChatBreak
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.event.ClickEvent
 import net.minecraft.util.ChatComponentText
 import org.lwjgl.input.Keyboard
@@ -42,11 +46,6 @@ object ClickGUIModule: Module(
     val toglge: Boolean by BooleanSetting("a")
 
     //val colortest2: NewColor.HSB by NewColorSetting("New color 2", color(50, 150, 220)).withDependency { toglge }
-
-    val test by UISetting(40.px) {
-        text("odc $lastSeenVersion")
-//        modMessage("a")
-    }
 
     val devMessages: Boolean by BooleanSetting("Dev Messages", true, description = "Enables dev messages in chat.").withDependency { DevPlayers.isDev }
     val devSize: Boolean by BooleanSetting("Dev Size", true, description = "Toggles client side dev size.").withDependency { DevPlayers.isDev }

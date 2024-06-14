@@ -6,7 +6,6 @@ import com.github.stivais.ui.utils.loop
 
 
 class EventManager(private val ui: UI) {
-
     var mouseX: Float = 0f
         set(value) {
             field = value * ui.scale
@@ -20,8 +19,8 @@ class EventManager(private val ui: UI) {
     var focused: Element? = null
         private set
 
-    private var elementHovered: Element? = null
-        private set(value) {
+    var elementHovered: Element? = null
+        set(value) {
             if (field === value) return
             field?.isHovered = false
             value?.isHovered = true
@@ -47,7 +46,7 @@ class EventManager(private val ui: UI) {
     fun onMouseClick(button: Int): Boolean {
         val event = Mouse.Clicked(button)
         if (focused != null) {
-            if (!dispatchFocused(focused, event) && !focused!!.isInside(mouseX, mouseY)) {
+            if (!focused!!.isInside(mouseX, mouseY) && dispatchFocused(focused, event)) {
                 unfocus()
                 updateIfNecessary()
             }

@@ -46,6 +46,17 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
 
     private var sy = 0f
 
+    var alphaAnim: Animatable? = null
+
+    var alpha = 1f
+
+    var scale = 1f
+        set(value) {
+            field = value.coerceAtLeast(0f)
+        }
+
+    var scaleCenter = true
+
     var isHovered = false
         set(value) {
             if (value) {
@@ -56,9 +67,9 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
             field = value
         }
 
-    var enabled: Boolean = true
+    open var enabled: Boolean = true
 
-   var scissors: Boolean = false
+    var scissors: Boolean = true
 
     var renders: Boolean = true
         get() {
@@ -102,7 +113,7 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
 
     open fun prePosition() {}
 
-    private var placed: Boolean = false
+    protected var placed: Boolean = false
 
     open fun place(element: Element) {
         if (!placed) {
@@ -115,12 +126,31 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
 
     fun render() {
         if (!renders) return
+        renderer.push()
+        if (alphaAnim != null) {
+            alpha = alphaAnim!!.get(this, Type.X)
+        }
+        if (alpha != 1f) {
+            renderer.globalAlpha(alpha)
+        }
+        if (scale != 1f) {
+            var x = x
+            var y = y
+            if (scaleCenter) {
+                x += width / 2f
+                y += height / 2f
+            }
+            renderer.translate(x, y)
+            renderer.scale(scale, scale)
+            renderer.translate(-x, -y)
+        }
         draw()
         if (scissors) renderer.pushScissor(x, y, width, height)
         elements?.loop { element ->
             element.render()
         }
         if (scissors) renderer.popScissor()
+        renderer.pop()
     }
 
     open fun accept(event: Event): Boolean {
@@ -134,6 +164,10 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
         if (events == null) events = HashMap()
         events!!.getOrPut(event) { arrayListOf() }.add(block)
     }
+
+    @Suppress("UNCHECKED_CAST")
+    infix fun <E : Event> E.register(block: (E) -> Boolean) = registerEvent(this, block as Event.() -> Boolean)
+
 
     fun onInitialization(action: () -> Unit) {
         if (::ui.isInitialized) return logger.warning("Tried calling \"onInitialization\" after init has already been done")
@@ -152,10 +186,20 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
         }
     }
 
-    fun removeElement(element: Element) {
+    fun removeElement(element: Element?) {
+        if (element == null) return logger.warning("Tried removing element, but it doesn't exist")
         if (elements.isNullOrEmpty()) return logger.warning("Tried calling \"removeElement\" while there is no elements")
         elements!!.remove(element)
         element.parent = null
+    }
+
+    fun removeAll() {
+        elements?.loop { it.parent = null }
+        elements?.clear()
+        elements = null
+        if (::ui.isInitialized) {
+            ui.needsRedraw = true
+        }
     }
 
     fun initialize(ui: UI) {
@@ -184,15 +228,14 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
     fun isInside(x: Float, y: Float): Boolean {
         val tx = this.x
         val ty = this.y
-        return x in tx..tx + width && y in ty..ty + height - sy
+        return x in tx..tx + (width) * scale && y in ty..ty + (height - sy) * scale
     }
 
-    fun intersects(x: Float, y: Float, width: Float, height: Float): Boolean {
+    private fun intersects(x: Float, y: Float, width: Float, height: Float): Boolean {
         val tx = this.x
         val ty = this.y
         val tw = this.width
         val th = this.height
         return (x < tx + tw && tx < x + width) && (y < ty + th && ty < y + height)
     }
-
 }

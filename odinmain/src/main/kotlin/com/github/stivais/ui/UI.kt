@@ -33,11 +33,11 @@ class UI(
         ElementScope(main).dsl()
     }
 
-    var eventManager: EventManager? = EventManager(this)
+    var eventManager: EventManager = EventManager(this)
 
-    val mx get() = eventManager!!.mouseX
+    inline val mx get() = eventManager.mouseX
 
-    val my get() = eventManager!!.mouseY
+    inline val my get() = eventManager.mouseY
 
     var onOpen: ArrayList<UI.() -> Unit>? = null
 
@@ -54,10 +54,14 @@ class UI(
         this.window = window
         main.constraints.width = width.px
         main.constraints.height = height.px
+
         main.initialize(this)
         main.position()
+
         onOpen?.loop { this.it() }
-        onOpen = null
+        if (settings.cleanupOnOpenClose) {
+            onOpen = null
+        }
         if (settings.cacheFrames && renderer.supportsFramebuffers()) {
             framebuffer = renderer.createFramebuffer(main.width, main.height)
         }
@@ -166,23 +170,23 @@ class UI(
     }
 
     fun cleanup() {
-        framebuffer?.let { fbo ->
-            renderer.destroyFramebuffer(fbo)
-        }
-        onClose?.loop {
-            this.it()
-        }
-        onClose = null
+        eventManager.elementHovered = null
+        unfocus()
+        framebuffer?.let { fbo -> renderer.destroyFramebuffer(fbo) }
+        onClose?.loop { this.it() }
+        if (settings.cleanupOnOpenClose) onClose = null
     }
 
     fun focus(element: Element) {
-        if (eventManager == null) return logger.warning("Event Manager isn't setup, but called focus")
-        eventManager!!.focus(element)
+        eventManager.focus(element)
     }
 
     fun unfocus() {
-        if (eventManager == null) return logger.warning("Event Manager isn't setup, but called unfocus")
-        eventManager!!.unfocus()
+        eventManager.unfocus()
+    }
+
+    fun isFocused(element: Element): Boolean {
+        return eventManager.focused == element
     }
 
     inline fun settings(block: UISettings.() -> Unit): UI {
@@ -203,9 +207,10 @@ class UI(
 
     companion object {
         // temp name
-        // future: maybe make a logging class, so you can get an element's "errors" and details
+        // future: maybe make a log handling class, so you can get an element's "errors" and details
         val logger: Logger = Logger.getLogger("Odin/UI")
 
+        @JvmField
         val defaultFont = Font("Regular", "/assets/odinmain/fonts/Regular.otf")
     }
 }

@@ -32,15 +32,18 @@ fun ElementDSL.focuses() {
 /**
  * Function that gets ran when the UI is finished initializing
  *
- * Note: Does nothing if UI is already initialized
+ * If UI is already initialized, it just runs the function
  *
- * @param block The function to run
+ * @param function The function to run
  */
-fun ElementDSL.onUIOpen(block: UI.() -> Unit) {
-    if (element.initialized) return logger.warning("Called [onUIOpen], while UI is still initialized")
+fun ElementDSL.onUIOpen(function: UI.() -> Unit) {
+    if (element.initialized) {
+        function(element.ui)
+        return
+    }
     onInitialization {
         if (ui.onOpen == null) ui.onOpen = arrayListOf()
-        ui.onOpen!!.add(block)
+        ui.onOpen!!.add(function)
     }
 }
 

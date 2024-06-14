@@ -58,7 +58,7 @@ class NewColorSetting(
                 ) {
                     outline(color = hueMax)
                     block(
-                        constraints = size(90.percent, 80.percent),
+                        constraints = indent(2),
                         color = value,
                         radius = 4.radii()
                     )
@@ -117,7 +117,7 @@ class NewColorSetting(
                     value.saturation = px
                     value.brightness = 1f - py
                 }
-            )
+               )
         }
     }
 

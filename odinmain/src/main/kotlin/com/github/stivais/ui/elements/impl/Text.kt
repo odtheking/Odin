@@ -1,20 +1,26 @@
 package com.github.stivais.ui.elements.impl
 
+import com.github.stivais.ui.UI
 import com.github.stivais.ui.color.Color
-import com.github.stivais.ui.constraints.*
+import com.github.stivais.ui.constraints.Constraints
+import com.github.stivais.ui.constraints.Size
+import com.github.stivais.ui.constraints.Type
 import com.github.stivais.ui.constraints.measurements.Pixel
+import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.elements.scope.ElementScope
+import com.github.stivais.ui.renderer.Font
 import com.github.stivais.ui.utils.replaceUndefined
 
 open class Text(
     text: String,
-    textColor: Color,
-    constraints: Constraints?,
-    size: Measurement
-) : Element(constraints.replaceUndefined(w = 0.px, h = size), textColor) {
+    val font: Font = UI.defaultFont,
+    color: Color = Color.WHITE,
+    constraints: Constraints? = null,
+    size: Size,
+) : Element(constraints.replaceUndefined(w = 0.px, h = size), color) {
 
-    var text: String = text
+    open var text: String = text
         set(value) {
             if (field == value) return
             field = value
@@ -22,10 +28,10 @@ open class Text(
         }
 
     // uses to check if width should be recalculated as it is expensive to do so
-    private var previousHeight = 0f
+    protected var previousHeight = 0f
 
     override fun prePosition() {
-        if (!renders) return
+//        if (!renders) return
         height = constraints.height.get(this, Type.H)
         if (previousHeight != height) {
             previousHeight = height
@@ -35,7 +41,22 @@ open class Text(
     }
 
     override fun draw() {
-        renderer.text(text, x, y, height, color!!.get(this))
+//        renderer.hollowRect(x, y, width, height, 1f, Color.WHITE.rgba)
+        renderer.text(text, x, y, height, color!!.get(this), font)
+    }
+
+    class Supplied(
+        val supplier: () -> Any?,
+        font: Font,
+        color: Color,
+        constraints: Constraints?,
+        size: Size
+    ) : Text(supplier().toString(), font, color, constraints, size) {
+
+        override fun draw() {
+            text = supplier().toString()
+            super.draw()
+        }
     }
 }
 

@@ -1,5 +1,6 @@
 package me.odinmain.features.settings.impl
 
+import com.github.stivais.ui.elements.scope.ElementScope
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import me.odinmain.features.settings.Saving
@@ -33,5 +34,9 @@ class StringSetting(
         element?.asString?.let {
             value = it
         }
+    }
+
+    override fun ElementScope<*>.createElement() {
+
     }
 }
