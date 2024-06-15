@@ -44,8 +44,8 @@ object PetKeybinds : Module(
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
         if (chest !is ContainerChest) return
 
-        val matchResult = Regex("Pets \\((\\d)/(\\d)\\)").find(chest.name) ?: return
-        val (current, total) = matchResult.destructured
+        val matchResult = Regex("Pets(?: \\((\\d)/(\\d)\\))?").find(chest.name) ?: return
+        val (current, total) = listOf(matchResult.groups[1]?.value ?: "1", matchResult.groups[2]?.value ?: "1")
 
         val index = when {
             nextPageKeybind.isDown() -> if (current.toInt() < total.toInt()) 53 else return modMessage("You are already on the last page.")
