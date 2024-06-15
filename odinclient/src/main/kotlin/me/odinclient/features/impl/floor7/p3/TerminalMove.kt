@@ -11,7 +11,6 @@ import me.odinmain.utils.render.*
 import me.odinmain.utils.name
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.Island
-import me.odinmain.features.settings.Setting.Companion.withDependency
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.util.MovementInput
 import net.minecraft.client.Minecraft
@@ -30,11 +29,35 @@ object TerminalMove : Module(
     tag = TagType.RISKY
 ) {
 
-    private val moveinguiduringterms: Boolean by BooleanSetting("Show GUI while still allowing movement", default = true, description = "Only allows movement in GUIs while in terminals and no other GUIs")
+    private val moveinguiduringterms: Boolean by BooleanSetting("Show GUI", default = false, description = "Only allows movement in GUIs while in terminals and no other GUIs")
+    private val moveinanygui: Boolean by BooleanSetting("GUI move anywhere", default = false, description = "Allows movement in every single GUI (DO NOT USE WITH THE OTHER SETTING)")
+
+    private var originalMovementInput: MovementInput? = null
+    private var customMovementInput: CustomMovementInput? = null
+
+    init {
+        MinecraftForge.EVENT_BUS.register(this)
+    }
 
     @SubscribeEvent
-    fun onDrawOverlay(event: RenderGameOverlayEvent.Post) {
-        if (DungeonUtils.getPhase() != Island.M7P3 || moveinguiduringterms || !isInTerminal() || event.type != RenderGameOverlayEvent.ElementType.ALL) return
+    fun onKeyInput(event: GuiScreenEvent.KeyboardInputEvent.Pre) {
+        val mc = Minecraft.getMinecraft()
+        if (!isInValidGUI(mc) || isInChatMenu(mc)) return
+
+        val player = mc.thePlayer as? EntityPlayerSP ?: return
+
+        if (originalMovementInput == null) {
+            originalMovementInput = player.movementInput
+        }
+        if (player.movementInput !is CustomMovementInput) {
+            customMovementInput = CustomMovementInput(originalMovementInput!!, player)
+            player.movementInput = customMovementInput
+        }
+    }
+
+    @SubscribeEvent
+    fun onRenderGameOverlay(event: RenderGameOverlayEvent.Post) {
+        if (DungeonUtils.getPhase() != Island.M7P3 || !isInTerminal() || event.type != RenderGameOverlayEvent.ElementType.ALL || moveinguiduringterms || moveinanygui) return
         val containerName = (mc.thePlayer.openContainer as ContainerChest).lowerChestInventory.name
         text(containerName, mc.displayWidth / 2 / scaleFactor, (mc.displayHeight / 2 + 32) / scaleFactor, ClickGUIModule.color, 8f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Middle, true)
         text("Clicks left: ${TerminalSolver.clicksNeeded}", mc.displayWidth / 2 / scaleFactor, (mc.displayHeight / 2 + 64) / scaleFactor, ClickGUIModule.color, 8f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Middle, true)
@@ -42,7 +65,7 @@ object TerminalMove : Module(
 
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
-        if (DungeonUtils.getPhase() != Island.M7P3 || moveinguiduringterms || !isInTerminal()) return
+        if (DungeonUtils.getPhase() != Island.M7P3 || !isInTerminal() || moveinguiduringterms || moveinanygui) return
         mc.displayGuiScreen(null)
     }
 
@@ -51,134 +74,63 @@ object TerminalMove : Module(
         return TerminalTypes.entries.stream().anyMatch { prefix: TerminalTypes? -> (mc.thePlayer.openContainer as ContainerChest).lowerChestInventory.name.startsWith(prefix?.guiName!!) }
     }
 
-    private fun executeIfInTerminal() {
-        if (isInTerminal() && moveinguiduringterms) {
-            CustomEventHandler().register()
-        }
+    private fun isInValidGUI(mc: Minecraft): Boolean {
+        val currentScreen = mc.currentScreen
+        return (currentScreen != null && currentScreen !is net.minecraft.client.gui.GuiChat && moveinanygui) ||
+                (isInTerminal() && moveinguiduringterms)
     }
 
-    class CustomEventHandler {
+    private fun isInChatMenu(mc: Minecraft): Boolean {
+        val currentScreen = mc.currentScreen
+        return currentScreen is net.minecraft.client.gui.GuiChat
+    }
 
-        private var originalMovementInput: MovementInput? = null
-        private var customMovementInput: CustomMovementInput? = null
-
-        fun register() {
-            MinecraftForge.EVENT_BUS.register(this)
+    class CustomMovementInput(base: MovementInput, private val player: EntityPlayerSP) : MovementInput() {
+        init {
+            moveStrafe = base.moveStrafe
+            moveForward = base.moveForward
+            sneak = base.sneak
+            jump = base.jump
         }
 
-        @SubscribeEvent
-        fun onKeyInput(event: GuiScreenEvent.KeyboardInputEvent.Pre) {
+        override fun updatePlayerMoveState() {
             val mc = Minecraft.getMinecraft()
-            if (!isInValidGUI(mc) || isInChatMenu(mc)) return
+            if (isInChatMenu(mc)) return
 
-            val player = mc.thePlayer as? EntityPlayerSP ?: return
+            moveStrafe = 0.0f
+            moveForward = 0.0f
+            sneak = false
+            jump = false
 
-            originalMovementInput = player.movementInput
-            if (originalMovementInput !is CustomMovementInput) {
-                customMovementInput = CustomMovementInput(player.movementInput, player)
-                player.movementInput = customMovementInput
+            if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
+                moveForward += 1.0f
             }
-        }
-
-        @SubscribeEvent
-        fun onRenderGameOverlay(event: RenderGameOverlayEvent.Post) {
-            if (event.type != RenderGameOverlayEvent.ElementType.ALL) return
-            val mc = Minecraft.getMinecraft()
-            if (isInValidGUI(mc)) {
-                val text = ""
-                val screenWidth = event.resolution.scaledWidth
-                val screenHeight = event.resolution.scaledHeight
-                val fontRenderer = mc.fontRendererObj
-                val xPos = screenWidth / 2 - fontRenderer.getStringWidth(text) / 2
-                val yPos = screenHeight / 2 + 64
-                fontRenderer.drawStringWithShadow(text, xPos.toFloat(), yPos.toFloat(), 0xFFFFFF)
+            if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
+                moveForward -= 1.0f
             }
-        }
+            if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
+                moveStrafe += 1.0f
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
+                moveStrafe -= 1.0f
+            }
 
-        private fun isInValidGUI(mc: Minecraft): Boolean {
-            val currentScreen = mc.currentScreen
-            return currentScreen != null && currentScreen !is net.minecraft.client.gui.GuiChat
+            if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
+                jump = true
+            }
+
+            // Handle sneak (SHIFT)
+            if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+                sneak = true
+                moveForward *= 0.3f
+            } else {
+                sneak = false
+            }
         }
 
         private fun isInChatMenu(mc: Minecraft): Boolean {
             val currentScreen = mc.currentScreen
             return currentScreen is net.minecraft.client.gui.GuiChat
-        }
-
-        class CustomMovementInput(base: MovementInput, private val player: EntityPlayerSP) : MovementInput() {
-            private var forwardKeyDown = false
-            private var backKeyDown = false
-            private var leftKeyDown = false
-            private var rightKeyDown = false
-            private var jumpKeyDown = false
-            private var sneakKeyDown = false
-
-            init {
-                moveStrafe = base.moveStrafe
-                moveForward = base.moveForward
-                sneak = base.sneak
-                jump = base.jump
-            }
-
-            override fun updatePlayerMoveState() {
-                val mc = Minecraft.getMinecraft()
-                if (isInChatMenu(mc)) return
-
-                super.updatePlayerMoveState()
-
-                moveStrafe = 0.0f
-                moveForward = 0.0f
-                sneak = false
-                jump = false
-
-                if (Keyboard.isKeyDown(Keyboard.KEY_W)) {
-                    moveForward += 1.0f
-                    forwardKeyDown = true
-                } else {
-                    forwardKeyDown = false
-                }
-                if (Keyboard.isKeyDown(Keyboard.KEY_S)) {
-                    moveForward -= 1.0f
-                    backKeyDown = true
-                } else {
-                    backKeyDown = false
-                }
-                if (Keyboard.isKeyDown(Keyboard.KEY_D)) {
-                    moveStrafe -= 1.0f
-                    leftKeyDown = true
-                } else {
-                    leftKeyDown = false
-                }
-                if (Keyboard.isKeyDown(Keyboard.KEY_A)) {
-                    moveStrafe += 1.0f
-                    rightKeyDown = true
-                } else {
-                    rightKeyDown = false
-                }
-
-                if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
-                    jump = true
-                    jumpKeyDown = true
-                } else {
-                    jumpKeyDown = false
-                }
-
-                if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-                    sneak = true
-                    sneakKeyDown = true
-                    player.capabilities.isFlying = false
-                    player.motionX *= 0.3
-                    player.motionZ *= 0.3
-                } else {
-                    sneak = false
-                    sneakKeyDown = false
-                }
-            }
-
-            private fun isInChatMenu(mc: Minecraft): Boolean {
-                val currentScreen = mc.currentScreen
-                return currentScreen is net.minecraft.client.gui.GuiChat
-            }
         }
     }
 }
