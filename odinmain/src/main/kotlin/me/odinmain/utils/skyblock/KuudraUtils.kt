@@ -30,7 +30,7 @@ object KuudraUtils {
     var buildingPiles = mutableListOf<EntityArmorStand>()
 
     inline val inKuudra get() =
-        LocationUtils.inSkyblock && LocationUtils.currentArea == Island.Kuudra
+        LocationUtils.inSkyblock && LocationUtils.currentArea.isArea(Island.Kuudra)
 
     data class KuudraPlayer(val playerName: String, var eatFresh: Boolean = false, var eatFreshTime: Long = 0, var entity: EntityPlayer? = null)
     @SubscribeEvent

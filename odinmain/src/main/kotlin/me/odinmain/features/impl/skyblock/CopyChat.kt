@@ -3,11 +3,11 @@ package me.odinmain.features.impl.skyblock
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.copyToClipboard
+import me.odinmain.features.settings.impl.KeybindSetting
+import me.odinmain.features.settings.impl.Keybinding
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.scaleFactor
-import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.writeToClipboard
 import net.minecraft.client.gui.GuiChat
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
@@ -20,7 +20,6 @@ object CopyChat : Module(
     description = "Allows you to right click messages in chat to copy them.",
 ) {
     private val keybind: Keybinding by KeybindSetting("Keybind", Keyboard.KEY_LCONTROL, "Hold to copy message with color codes")
-    private val sendMessage: Boolean by BooleanSetting("Send Message", false, description =  "Sends the message you copied in chat.")
 
     @SubscribeEvent
     fun mouseClicked(event: GuiEvent.GuiMouseClickEvent) {
@@ -36,7 +35,6 @@ object CopyChat : Module(
         }
         val message = components.joinToString(separator = "") { it }
 
-        copyToClipboard(if (keybind.isDown()) message else message.noControlCodes)
-        modMessage(if (sendMessage) "§7${message.noControlCodes}" else "§aCopied chat message to clipboard!")
+        writeToClipboard(if (keybind.isDown()) message else message.noControlCodes, "§aCopied chat message to clipboard!")
     }
 }

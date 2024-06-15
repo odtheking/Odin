@@ -45,7 +45,7 @@ object ChestEsp : Module(
     fun onRenderChest(event: RenderChestEvent.Pre) {
         if (renderMode != 0 || event.chest != mc.theWorld.getTileEntity(event.chest.pos)) return
         if (hideClicked && chests.contains(event.chest.pos)) return
-        if ((onlyDungeon && DungeonUtils.inDungeons) || (onlyCH && LocationUtils.currentArea == Island.CrystalHollows) || (!onlyDungeon && !onlyCH)) {
+        if ((onlyDungeon && DungeonUtils.inDungeons) || (onlyCH && LocationUtils.currentArea.isArea(Island.CrystalHollows)) || (!onlyDungeon && !onlyCH)) {
             GL11.glEnable(GL11.GL_POLYGON_OFFSET_FILL)
             GlStateManager.color(1f, 1f, 1f, color.alpha)
             GlStateManager.enablePolygonOffset()
@@ -57,7 +57,7 @@ object ChestEsp : Module(
     fun onRenderChest(event: RenderChestEvent.Post) {
         if (renderMode != 0 || event.chest != mc.theWorld.getTileEntity(event.chest.pos)) return
         if (hideClicked && chests.contains(event.chest.pos)) return
-        if ((onlyDungeon && DungeonUtils.inDungeons) || (onlyCH && LocationUtils.currentArea == Island.CrystalHollows) || (!onlyDungeon && !onlyCH)) {
+        if ((onlyDungeon && DungeonUtils.inDungeons) || (onlyCH && LocationUtils.currentArea.isArea(Island.CrystalHollows)) || (!onlyDungeon && !onlyCH)) {
             GL11.glDisable(GL11.GL_POLYGON_OFFSET_FILL)
             GlStateManager.doPolygonOffset(1f, 1000000f)
             GlStateManager.disablePolygonOffset()
@@ -67,7 +67,7 @@ object ChestEsp : Module(
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (renderMode != 1) return
-        if ((onlyDungeon && DungeonUtils.inDungeons) || (onlyCH && LocationUtils.currentArea == Island.CrystalHollows) || (!onlyDungeon && !onlyCH)) {
+        if ((onlyDungeon && DungeonUtils.inDungeons) || (onlyCH && LocationUtils.currentArea.isArea(Island.CrystalHollows)) || (!onlyDungeon && !onlyCH)) {
             val chests = mc.theWorld.loadedTileEntityList.filterIsInstance<TileEntityChest>()
             chests.forEach {
                 if (hideClicked && this.chests.contains(it.pos)) return

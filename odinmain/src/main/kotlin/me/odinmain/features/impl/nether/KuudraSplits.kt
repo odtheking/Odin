@@ -72,7 +72,7 @@ object KuudraSplits : Module(
             }
             getMCTextWidth("Fuel/Stun: 0h 00m 00s") + 2f to 44f
         } else {
-            if (LocationUtils.currentArea != Island.Kuudra) return@HudSetting 0f to 0f
+            if (!KuudraUtils.inKuudra) return@HudSetting 0f to 0f
             val (times, current) = getSplitTimes()
 
             for (i in 0..4) {
