@@ -54,7 +54,7 @@ object ChocolateFactory : Module(
 
             if (clickFactory) windowClick(13, PlayerUtils.ClickType.Right)
 
-            val container = mc.thePlayer.openContainer as? ContainerChest ?: return   
+            val container = mc.thePlayer.openContainer as? ContainerChest ?: return@execute
             for (slot in container.inventorySlots) {
                 val stack = slot.stack ?: continue
                 if (stack.displayName.contains("CLICK ME!")) {
