@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.floor7
 
-import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.floor7.WitherDragons.dragonPriorityToggle
 import me.odinmain.features.impl.floor7.WitherDragons.dragonTitle
 import me.odinmain.features.impl.floor7.WitherDragons.easyPower
@@ -31,11 +30,9 @@ object DragonPriority {
     }
 
     private fun sortPriority(spawningDragon: MutableList<WitherDragonsEnum>): WitherDragonsEnum {
-        val totalPower = Blessings.POWER.current * if (paulBuff) 1.25 else 1.0 +
-                if (Blessings.TIME.current > 0) 2.5 else 0.0
+        val totalPower = Blessings.POWER.current * if (paulBuff) 1.25 else 1.0 + if (Blessings.TIME.current > 0) 2.5 else 0.0
 
-        val playerClass = DungeonUtils.dungeonTeammates.find { it.name == mc.thePlayer.name }?.clazz
-            ?: return modMessage("§cPlayer Class wasn't found! please report this").let { WitherDragonsEnum.None }
+        val playerClass = DungeonUtils.currentDungeonPlayer.clazz
 
         val dragonList = listOf(WitherDragonsEnum.Orange, WitherDragonsEnum.Green, WitherDragonsEnum.Red, WitherDragonsEnum.Blue, WitherDragonsEnum.Purple)
         val priorityList =

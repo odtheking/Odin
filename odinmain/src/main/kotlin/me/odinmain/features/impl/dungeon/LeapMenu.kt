@@ -52,7 +52,7 @@ object LeapMenu : Module(
     private var hoveredQuadrant = -1
     private var previouslyHoveredQuadrant = -1
 
-    private val EMPTY = DungeonPlayer("Empty", DungeonClass.Archer, ResourceLocation("textures/entity/steve.png"))
+    private val EMPTY = DungeonPlayer("Empty", DungeonClass.Unknown, ResourceLocation("textures/entity/steve.png"))
 
     @SubscribeEvent
     fun onDrawScreen(event: GuiEvent.DrawGuiContainerScreenEvent) {

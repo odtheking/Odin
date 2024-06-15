@@ -19,7 +19,7 @@ object Mimic : Module(
     description = "Helpful mimic utilities.",
     category = Category.DUNGEON
 ) {
-    private val mimicMessage: String by StringSetting("Mimic Message", "Mimic Killed!", 128, description = "Message sent when mimic is detected as killed")
+    val mimicMessage: String by StringSetting("Mimic Message", "Mimic Killed!", 128, description = "Message sent when mimic is detected as killed")
     val reset: () -> Unit by ActionSetting("Send message", description = "Sends Mimic killed message in party chat.") {
         partyMessage(mimicMessage)
     }
