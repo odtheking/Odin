@@ -28,7 +28,7 @@ object LocationUtils {
                     ?.let { cleanSB(it.displayName).contains("SKYBLOCK") } ?: false
 
             if (currentDungeon == null)
-                if (inSkyblock && sidebarLines.any { cleanSB(it).run { (contains("The Catacombs") && !contains("Queue")) || contains("Dungeon Cleared:") } })
+                if (currentArea.isArea(Island.SinglePlayer) || (inSkyblock && sidebarLines.any { cleanSB(it).run { (contains("The Catacombs") && !contains("Queue")) || contains("Dungeon Cleared:") } }))
                     currentDungeon = Dungeon()
 
             if (currentArea.isArea(Island.Unknown) || currentDungeon != null)

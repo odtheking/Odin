@@ -29,7 +29,7 @@ object SecretWaypoints {
         waypoints.find { wp -> (if (distance == 0) wp.toVec3().equal(vec) else wp.toVec3().distanceTo(vec) <= distance) && wp.secret && !wp.clicked}?.let {
             it.clicked = true
             ScanUtils.setWaypoints(room)
-            devMessage("clicked $vec")
+            devMessage("clicked ${it.toVec3()}")
             glList = -1
         }
     }

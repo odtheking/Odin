@@ -1,11 +1,10 @@
-package me.odinmain.features.impl.dungeon
+package me.odinmain.features.impl.dungeon.dungeonwaypoints
 
 import me.odinmain.config.DungeonWaypointConfigCLAY
 import me.odinmain.events.impl.*
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.clearSecrets
-import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.onSecret
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.resetSecrets
 import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.features.settings.Setting.Companion.withDependency
