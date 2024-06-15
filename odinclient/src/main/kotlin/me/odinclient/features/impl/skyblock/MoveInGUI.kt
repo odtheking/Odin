@@ -120,7 +120,7 @@ object MoveInGUI : Module(
                 jumpKeyDown = false
             }
 
-            if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+            if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
                 sneak = true
                 sneakKeyDown = true
                 player.capabilities.isFlying = false
