@@ -56,11 +56,8 @@ object DungeonWaypoints : Module(
 
     data class DungeonWaypoint(
         val x: Double, val y: Double, val z: Double,
-        val color: Color,
-        val filled: Boolean,
-        val depth: Boolean,
-        val aabb: AxisAlignedBB,
-        val title: String?
+        val color: Color, val filled: Boolean, val depth: Boolean,
+        val aabb: AxisAlignedBB, val title: String?
     )
 
     override fun onKeybind() {

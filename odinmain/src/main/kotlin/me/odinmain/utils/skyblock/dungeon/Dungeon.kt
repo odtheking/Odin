@@ -53,6 +53,7 @@ class Dungeon {
 
     fun enterDungeonRoom(event: EnteredDungeonRoomEvent) {
         currentRoom = event.room
+        if (passedRooms.any { it.room.data.name == event.room?.room?.data?.name }) return
         event.room?.let { passedRooms.add(it) }
     }
 

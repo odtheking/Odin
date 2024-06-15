@@ -19,7 +19,7 @@ object CopyChat : Module(
     category = Category.SKYBLOCK,
     description = "Allows you to right click messages in chat to copy them.",
 ) {
-    private val keybind: Keybinding by KeybindSetting("Keybind", Keyboard.KEY_LCONTROL, "Hold to copy message with color codes")
+    private val colorCodes: Keybinding by KeybindSetting("Color Codes", Keyboard.KEY_LCONTROL, "Hold to copy message with color codes.")
 
     @SubscribeEvent
     fun mouseClicked(event: GuiEvent.GuiMouseClickEvent) {
@@ -30,11 +30,11 @@ object CopyChat : Module(
         val components = mutableSetOf<String>()
 
         for (x in 0 until maxChatWidth step 10) {
-            val scannedComponent = chatGui.getChatComponent(x, Mouse.getY())?.unformattedTextForChat ?: continue
+            val scannedComponent = chatGui.getChatComponent(x, Mouse.getY()).formattedText ?: continue
             components.add(scannedComponent)
         }
         val message = components.joinToString(separator = "") { it }
 
-        writeToClipboard(if (keybind.isDown()) message else message.noControlCodes, "§aCopied chat message to clipboard!")
+        writeToClipboard(if (colorCodes.isDown()) message else message.noControlCodes, "§aCopied chat message to clipboard!")
     }
 }

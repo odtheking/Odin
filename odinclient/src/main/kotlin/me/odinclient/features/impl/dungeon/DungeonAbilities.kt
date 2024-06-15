@@ -1,4 +1,4 @@
-package me.odinclient.features.impl.skyblock
+package me.odinclient.features.impl.dungeon
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -10,10 +10,10 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.modMessage
 import org.lwjgl.input.Keyboard
 
-object AutoUlt : Module(
-    "Auto Keys",
-    description = "Automatically uses your ult at crucial moments",
-    category = Category.SKYBLOCK
+object DungeonAbilities : Module(
+    "Dungeon Abilities",
+    description = "Automatically uses your ability in dungeons.",
+    category = Category.DUNGEON
 ) {
     private val abilityKeybind: Keybinding by KeybindSetting("Ability Keybind", Keyboard.KEY_NONE, description = "Keybind to use your ability.").onPress {
         if (!DungeonUtils.inDungeons || !enabled) return@onPress
