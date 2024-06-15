@@ -9,7 +9,6 @@ import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.LocationUtils.currentArea
-import me.odinmain.utils.skyblock.LocationUtils.isArea
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i

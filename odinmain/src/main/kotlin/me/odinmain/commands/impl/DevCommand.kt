@@ -56,7 +56,7 @@ val devCommand = commodore("oddev") {
             |currentDungeonPlayer: ${DungeonUtils.currentDungeonPlayer.name}, ${DungeonUtils.currentDungeonPlayer.clazz}, ${DungeonUtils.currentDungeonPlayer.isDead}
             |mimicKilled: ${DungeonUtils.mimicKilled}
             |doorOpener: ${DungeonUtils.doorOpener}
-            |passedRooms: ${DungeonUtils.passedRooms.size}
+            |passedRooms: ${DungeonUtils.passedRooms.map { it.room.data.name }}
             |currentRoom: ${DungeonUtils.currentRoom?.room?.data?.name}
             |Teammates: ${DungeonUtils.dungeonTeammates.joinToString { "${it.name} (${it.clazz})" }}
             |TeammatesNoSelf: ${DungeonUtils.dungeonTeammatesNoSelf.map { it.name }}

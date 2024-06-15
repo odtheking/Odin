@@ -5,6 +5,7 @@ import me.odinmain.events.impl.EnteredDungeonRoomEvent
 import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.features.impl.dungeon.LeapMenu
 import me.odinmain.features.impl.dungeon.LeapMenu.odinSorting
+import me.odinmain.features.impl.dungeon.Mimic
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.PlayerUtils.posX
 import me.odinmain.utils.skyblock.PlayerUtils.posZ
@@ -13,7 +14,6 @@ import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.play.server.*
 
-// In future maybe add stats about the dungeon like time elapsed, deaths, total secrets etc.
 // could add some system to look back at previous runs.
 class Dungeon {
 
@@ -53,6 +53,7 @@ class Dungeon {
 
     fun enterDungeonRoom(event: EnteredDungeonRoomEvent) {
         currentRoom = event.room
+        if (passedRooms.any { it.room.data.name == event.room?.room?.data?.name }) return
         event.room?.let { passedRooms.add(it) }
     }
 
@@ -71,7 +72,7 @@ class Dungeon {
         if (doorOpener != null) dungeonStats.doorOpener = doorOpener.groupValues[1]
 
         val partyMessage = Regex("Party > .*?: (.+)\$").find(message)?.groupValues?.get(1) ?: return
-        if (partyMessage.lowercase().equalsOneOf("mimic killed", "mimic slain", "mimic killed!", "mimic dead", "mimic dead!", "\$skytils-dungeon-score-mimic\$"))
+        if (partyMessage.lowercase().equalsOneOf("mimic killed", "mimic slain", "mimic killed!", "mimic dead", "mimic dead!", "\$skytils-dungeon-score-mimic\$", Mimic.mimicMessage))
             dungeonStats.mimicKilled = true
     }
 
