@@ -18,6 +18,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.client.event.sound.PlaySoundEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
+
 object ChocolateFactory : Module(
     "Chocolate Factory",
     description = "Automates the Chocolate Factory.",
@@ -27,6 +28,7 @@ object ChocolateFactory : Module(
     private val autoUpgrade: Boolean by BooleanSetting("Auto Upgrade", false, description = "Automatically upgrade the worker.")
     private val delay: Long by NumberSetting("Delay", 150, 50, 300, 5)
     private val upgradeDelay: Long by NumberSetting("Upgrade delay", 500, 300, 2000, 100)
+    private val claimStray: Boolean by BooleanSetting("Claim Strays", false, description = "Claim stray rabbits in the Chocolate Factory menu.")
     private val cancelSound: Boolean by BooleanSetting("Cancel Sound")
     private val upgradeMessage: Boolean by BooleanSetting("Odin Upgrade Message", false, description = "Prints a message when upgrading.")
     private val eggEsp: Boolean by BooleanSetting("Egg ESP", false, description = "Shows the location of the egg.")
@@ -54,12 +56,14 @@ object ChocolateFactory : Module(
 
             if (clickFactory) windowClick(13, PlayerUtils.ClickType.Right)
 
-            val container = mc.thePlayer.openContainer as? ContainerChest ?: return@execute
-            for (slot in container.inventorySlots) {
-                val stack = slot.stack ?: continue
-                if (stack.displayName.contains("CLICK ME!")) {
-                    windowClick(slot.slotNumber, PlayerUtils.ClickType.Left)
-                    break
+            if (claimStray) {
+                val container = mc.thePlayer.openContainer as? ContainerChest ?: return@execute
+                for (slot in container.inventorySlots) {
+                    val stack = slot.stack ?: continue
+                    if (stack.displayName.contains("CLICK ME!")) {
+                        windowClick(slot.slotNumber, PlayerUtils.ClickType.Left)
+                        break
+                    }
                 }
             }
         }
