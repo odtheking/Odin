@@ -70,16 +70,15 @@ object LocationUtils {
         }.getOrDefault(false)
     }
 
-    fun Island.isArea(vararg areas: Island): Boolean = areas.any { it == this }
 
     /**
      * Returns the current area from the tab list info.
-     * If no info can be found return null.
+     * If no info can be found, return Island.Unknown.
      *
      * @author Aton
      */
     private fun getArea(): Island {
-        if (mc.isSingleplayer) return Island.SinglePlayer // debugging
+        if (mc.isSingleplayer) return Island.SinglePlayer
         if (!inSkyblock) return Island.Unknown
         val netHandlerPlayClient: NetHandlerPlayClient = mc.thePlayer?.sendQueue ?: return Island.Unknown
         val list = netHandlerPlayClient.playerInfoMap ?: return Island.Unknown
@@ -88,7 +87,6 @@ object LocationUtils {
             return if (getPhase() != Island.Unknown) getPhase() else if (currentDungeon!!.inBoss) Island.DungeonBoss else Island.Dungeon
 
         var area: String? = null
-        var extraInfo: String? = null
 
         for (entry in list) {
             val areaText = entry?.displayName?.unformattedText ?: continue
@@ -97,8 +95,9 @@ object LocationUtils {
                 area = areaText.substringAfter("Area: ")
                 if (!area.contains("Private Island")) break
             }
-            if (areaText.contains("Owner:")) extraInfo = areaText.substringAfter("Owner:")
+
         }
         return if (area == null) Island.Unknown else Island.entries.firstOrNull { area.contains(it.displayName) } ?: Island.Unknown.also { println("Unknown area: $area") }
     }
 }
+

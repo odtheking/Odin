@@ -8,7 +8,6 @@ import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.*
-import me.odinmain.utils.skyblock.LocationUtils.isArea
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.toAABB
 import net.minecraft.client.renderer.GlStateManager

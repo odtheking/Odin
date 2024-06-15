@@ -12,9 +12,12 @@ import me.odinmain.utils.ServerUtils.getPing
 import me.odinmain.utils.render.*
 import me.odinmain.utils.render.RenderUtils.renderBoundingBox
 import me.odinmain.utils.render.RenderUtils.renderVec
+import me.odinmain.utils.skyblock.devMessage
+import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.Entity
 import net.minecraft.entity.boss.EntityWither
 import net.minecraft.entity.item.EntityArmorStand
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -27,6 +30,7 @@ object CustomHighlight : Module(
 ) {
     private val scanDelay: Long by NumberSetting("Scan Delay", 500L, 10L, 2000L, 100L)
     private val starredMobESP: Boolean by BooleanSetting("Starred Mob Highlight", true, description = "Highlights mobs with a star in their name (remove star from the separate list).")
+    private val shadowAssasin: Boolean by BooleanSetting("Shadow Assassin", false, description = "Highlights Shadow Assassins")
     private val color: Color by ColorSetting("Color", Color.WHITE, true)
     //private val mode: Int by SelectorSetting("Mode", HighlightRenderer.highlightModeDefault, HighlightRenderer.highlightModeList)
     val mode: Int by SelectorSetting("Mode", "Outline", arrayListOf("Outline", "Boxes", "2D"))
@@ -58,7 +62,7 @@ object CustomHighlight : Module(
         }*/
     }
 
-   @SubscribeEvent
+    @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
         if (mode != 0 || event.entity !in currentEntities || (depthCheck && !mc.thePlayer.canEntityBeSeen(event.entity))) return
         profile("Outline Esp") { OutlineUtils.outlineEntity(event, thickness, color, true) }
@@ -83,6 +87,7 @@ object CustomHighlight : Module(
         val entity = mc.theWorld.getEntityByID(event.packet.entityId) ?: return
         checkEntity(entity)
         if (starredMobESP) checkStarred(entity)
+        if (shadowAssasin) checkAssassin(entity)
     }
 
     private fun getEntities() {
@@ -100,6 +105,11 @@ object CustomHighlight : Module(
     private fun checkStarred(entity: Entity) {
         if (entity !is EntityArmorStand || !entity.name.startsWith("§6✯ ") || !entity.name.endsWith("§c❤") || entity in currentEntities || !entity.alwaysRenderNameTag && !depthCheck) return
         currentEntities.add(getMobEntity(entity) ?: return)
+    }
+
+    private fun checkAssassin(entity: Entity) {
+        if (entity !is EntityOtherPlayerMP || entity.name != "Shadow Assassin") return
+        currentEntities.add(entity)
     }
 
     private fun getMobEntity(entity: Entity): Entity? {

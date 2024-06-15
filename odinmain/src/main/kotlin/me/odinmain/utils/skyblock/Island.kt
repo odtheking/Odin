@@ -26,4 +26,6 @@ enum class Island(val displayName: String) {
     M7P2("2"),
     M7P1("1"),
     Unknown("(Unknown)");
+
+    fun isArea(vararg areas: Island): Boolean { return areas.any { it == this } }
 }

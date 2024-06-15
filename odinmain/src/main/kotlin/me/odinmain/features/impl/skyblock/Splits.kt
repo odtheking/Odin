@@ -8,7 +8,6 @@ import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.*
 import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.*
-import me.odinmain.utils.skyblock.LocationUtils.isArea
 
 object Splits : Module(
     "Splits",

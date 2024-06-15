@@ -1,12 +1,21 @@
 package me.odinclient.features.impl.dungeon
 
+import me.odinclient.utils.skyblock.PlayerUtils.leftClick
+import me.odinclient.utils.skyblock.PlayerUtils.swapToIndex
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
+import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getPhase
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
+import me.odinmain.utils.skyblock.getItemSlot
+import me.odinmain.utils.skyblock.modMessage
+import net.minecraft.enchantment.Enchantment
 import net.minecraft.init.Blocks
+import net.minecraft.item.Item
+import net.minecraft.item.ItemStack
 import net.minecraft.tileentity.TileEntitySkull
 import net.minecraft.util.BlockPos
 import org.lwjgl.input.Keyboard
@@ -26,12 +35,46 @@ object GhostBlocks : Module(
     // pre blocks
     private val preGhostBlock: Boolean by BooleanSetting("F7 Ghost blocks")
 
-    private val blacklist = arrayOf(
-        Blocks.stone_button,
-        Blocks.chest,
-        Blocks.trapped_chest,
-        Blocks.lever
-    )
+    private val ghostPick: Boolean by BooleanSetting("Ghost Pick", false, description = "Gives you a ghost pickaxe in your selected slot when you press the keybind.")
+    private val slot: Int by NumberSetting("Ghost pick slot", 1, 1.0, 9.0, 1.0).withDependency { ghostPick }
+    private val level: Int by NumberSetting("Efficiency level", 10, 1.0, 100.0, 1.0).withDependency { ghostPick }
+    private val delay: Int by NumberSetting("Delay to Create", 0, 0, 1000, 10, unit = "ms").withDependency { ghostPick }
+
+    private val pickaxeKey: Keybinding by KeybindSetting("Pickaxe Keybind", Keyboard.KEY_NONE, description = "Press this keybind to create a ghost pickaxe").onPress { giveItem(278) }
+    private val axeKey: Keybinding by KeybindSetting("Axe Keybind", Keyboard.KEY_NONE, description = "Keybind to create an axe.").onPress { giveItem(279) }
+
+    private fun giveItem(id: Int) {
+        if (!enabled || mc.thePlayer == null || mc.currentScreen != null) return
+        runIn(delay / 50) {
+            val item = ItemStack(Item.getItemById(id), 1).apply {
+                addEnchantment(Enchantment.getEnchantmentById(32), level)
+                tagCompound?.setBoolean("Unbreakable", true)
+            }
+            mc.thePlayer?.inventory?.mainInventory?.set(slot - 1, item)
+        }
+    }
+
+    private val swapStonk: Boolean by BooleanSetting("Swap Stonk", false, description = "Does a swap stonk when you press the keybind.")
+    private val keybind: Keybinding by KeybindSetting("Keybind", Keyboard.KEY_NONE, "Press to perform a swap stonk")
+        .onPress {
+            if (enabled) {
+                val slot = getItemSlot(if (pickaxe == 1) "Stonk" else "Pickaxe", true)
+                if (slot in 0..8) {
+                    val originalItem = mc.thePlayer?.inventory?.currentItem ?: 0
+                    if (originalItem == slot) return@onPress
+                    leftClick()
+                    swapToIndex(slot!!)
+                    runIn(speed) { swapToIndex(originalItem) }
+                } else
+                    modMessage("Couldn't find pickaxe.")
+
+            }
+        }.withDependency { swapStonk }
+
+    private val pickaxe: Int by SelectorSetting("Type", "Pickaxe", arrayListOf("Pickaxe", "Stonk"), description = "The type of pickaxe to use").withDependency { swapStonk }
+    private val speed: Int by NumberSetting("Swap back speed", 2, 1, 5, description = "Delay between swapping back", unit = " ticks").withDependency { swapStonk }
+
+    private val blacklist = arrayOf(Blocks.stone_button, Blocks.chest, Blocks.trapped_chest, Blocks.lever)
 
     init {
         execute({ ghostBlockSpeed }) {

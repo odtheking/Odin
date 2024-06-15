@@ -8,7 +8,6 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.LocationUtils.inSkyblock
-import me.odinmain.utils.skyblock.LocationUtils.isArea
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.init.Blocks
 import net.minecraft.init.Items
