@@ -22,6 +22,7 @@ object PetKeybinds : Module(
     private val nextPageKeybind: Keybinding by KeybindSetting("Next Page Keybind", Keyboard.KEY_NONE, "Goes to the next page.")
     private val previousPageKeybind: Keybinding by KeybindSetting("Previous Page Keybind", Keyboard.KEY_NONE, "Goes to the previous page.")
     private val delay: Long by NumberSetting("Delay", 0, 0.0, 10000.0, 10.0, description = "The delay between each click .")
+    private val nounequip: Boolean by BooleanSetting("Disable Unequip", default = false, description = "Prevents using a pets keybind to unequip a pet. Does not prevent unequip keybind or normal clicking.")
     private val advanced: Boolean by DropdownSetting("Show Settings", false)
 
     private val pet1: Keybinding by KeybindSetting("Pet 1", Keyboard.KEY_1, "Pet 1 on the list.").withDependency { advanced }
@@ -58,11 +59,11 @@ object PetKeybinds : Module(
             }
         }
 
+        event.isCanceled = true
+        if (nounequip && getItemIndexInContainerChestByLore(chest, "§7§cClick to despawn!", 10..43) == index && !unequipKeybind.isDown()) return modMessage("That pet is already equipped!")
         if (!clickCoolDown.hasTimePassed() || index == null) return
         if (index > chest.lowerChestInventory.sizeInventory - 1 || index < 1) return modMessage("Invalid index. $index, ${chest.name}")
         mc.playerController.windowClick(chest.windowId, index, 0, 0, mc.thePlayer)
         clickCoolDown.update()
-
-        event.isCanceled = true
     }
 }
