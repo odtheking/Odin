@@ -48,6 +48,8 @@ object PetKeybinds : Module(
         val matchResult = Regex("Pets(?: \\((\\d)/(\\d)\\))?").find(chest.name) ?: return
         val (current, total) = listOf(matchResult.groups[1]?.value?.toIntOrNull() ?: 1, matchResult.groups[2]?.value?.toIntOrNull() ?: 1)
 
+        if (pets.any { it.isDown() } || arrayOf(nextPageKeybind, previousPageKeybind, unequipKeybind).any { it.isDown() }) event.isCanceled = true
+
         val index = when {
             nextPageKeybind.isDown() -> if (current < total) 53 else return modMessage("You are already on the last page.")
             previousPageKeybind.isDown() -> if (current > 1) 45 else return modMessage("You are already on the first page.")
@@ -64,6 +66,5 @@ object PetKeybinds : Module(
         if (index > chest.lowerChestInventory.sizeInventory - 1 || index < 1) return modMessage("Invalid index. $index, ${chest.name}")
         mc.playerController.windowClick(chest.windowId, index, 0, 0, mc.thePlayer)
         clickCoolDown.update()
-        event.isCanceled = true
     }
 }
