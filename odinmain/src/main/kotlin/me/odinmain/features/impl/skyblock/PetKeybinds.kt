@@ -59,11 +59,11 @@ object PetKeybinds : Module(
             }
         }
 
-        event.isCanceled = true
         if (nounequip && getItemIndexInContainerChestByLore(chest, "§7§cClick to despawn!", 10..43) == index && !unequipKeybind.isDown()) return modMessage("That pet is already equipped!")
         if (!clickCoolDown.hasTimePassed() || index == null) return
         if (index > chest.lowerChestInventory.sizeInventory - 1 || index < 1) return modMessage("Invalid index. $index, ${chest.name}")
         mc.playerController.windowClick(chest.windowId, index, 0, 0, mc.thePlayer)
         clickCoolDown.update()
+        event.isCanceled = true
     }
 }
