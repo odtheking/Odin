@@ -45,11 +45,11 @@ object PetKeybinds : Module(
         if (chest !is ContainerChest) return
 
         val matchResult = Regex("Pets(?: \\((\\d)/(\\d)\\))?").find(chest.name) ?: return
-        val (current, total) = listOf(matchResult.groups[1]?.value ?: "1", matchResult.groups[2]?.value ?: "1")
+        val (current, total) = listOf(matchResult.groups[1]?.value?.toIntOrNull() ?: 1, matchResult.groups[2]?.value?.toIntOrNull() ?: 1)
 
         val index = when {
-            nextPageKeybind.isDown() -> if (current.toInt() < total.toInt()) 53 else return modMessage("You are already on the last page.")
-            previousPageKeybind.isDown() -> if (current.toInt() > 1) 45 else return modMessage("You are already on the first page.")
+            nextPageKeybind.isDown() -> if (current < total) 53 else return modMessage("You are already on the last page.")
+            previousPageKeybind.isDown() -> if (current > 1) 45 else return modMessage("You are already on the first page.")
             unequipKeybind.isDown() -> getItemIndexInContainerChestByLore(chest, "§7§cClick to despawn!", 10..43) ?: return modMessage("Couldn't find equipped pet")
             else -> {
                 val petIndex = pets.indexOfFirst { it.isDown() }
