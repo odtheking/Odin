@@ -1,5 +1,6 @@
 package me.odinmain.commands.impl
 
+import com.github.stivais.commodore.utils.GreedyString
 import com.github.stivais.commodore.utils.SyntaxException
 import me.odinmain.OdinMain.display
 import me.odinmain.OdinMain.mc
@@ -15,9 +16,6 @@ import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.skyblock.*
-import me.odinmain.utils.skyblock.PlayerUtils.posX
-import me.odinmain.utils.skyblock.PlayerUtils.posY
-import me.odinmain.utils.skyblock.PlayerUtils.posZ
 import kotlin.math.round
 
 val mainCommand = commodore("od", "odin") {
@@ -87,8 +85,8 @@ val mainCommand = commodore("od", "odin") {
         DianaHelper.burrowsRender.clear()
     }
 
-    literal("sendcoords").runs {
-        sendChatMessage("x: ${posX.toInt()}, y: ${posY.toInt()}, z: ${posZ.toInt()}")
+    literal("sendcoords").runs { message: GreedyString ->
+        sendChatMessage(PlayerUtils.getPositionString() + message.string)
     }
 
     literal("ping").runs {
@@ -112,7 +110,7 @@ val mainCommand = commodore("od", "odin") {
             if (tier.length != 2 || tier[1] !in '1'..'7') throw SyntaxException()
             sendCommand("joininstance ${if (tier[0] == 'm') "master_" else ""}catacombs_floor_${floors[tier[1]]}")
         }
-        else if (!tier[0].equals('t')){
+        else if (tier[0] == 't'){
             if (tier.length != 2 || tier[1] !in '1'..'5') throw SyntaxException()
             sendCommand("joininstance kuudra_${tiers[tier[1]]}")
         }

@@ -1,4 +1,4 @@
-package me.odinmain.features.impl.skyblock
+package me.odinmain.features.impl.dungeon
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -27,8 +27,8 @@ object WarpCooldown : Module (
     private var warpTimer = Clock(30000)
 
     init {
-        onMessage(Regex("(?s)^.*\\[[^]]+] (\\w+) entered \\w+ Catacombs, Floor (\\w+)!.*\$")) {
-                warpTimer.updateCD()
+        onMessage(Regex("^\\[[^]]+] (\\w+) entered \\w+ Catacombs, Floor (\\w+)!$")) {
+            warpTimer.updateCD()
         }
     }
 }

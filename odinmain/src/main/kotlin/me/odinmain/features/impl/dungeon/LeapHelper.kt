@@ -62,7 +62,7 @@ object LeapHelper {
         leapHelperClear = ""
     }
 
-    private val keyRegex = Regex("(?:\\[(?:\\w+)] )?(\\w+) opened a (?:WITHER|Blood) door!")
+    private val keyRegex = Regex("(?:\\[\\w+] )?(\\w+) opened a (?:WITHER|Blood) door!")
     private val leapHelperClock = Clock(LeapMenu.delay * 1000L)
 
     fun leapHelperClearChatEvent(message: String) {

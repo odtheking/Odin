@@ -6,17 +6,12 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
-import me.odinmain.features.impl.floor7.p3.termsim.TermSimGui
-import me.odinmain.utils.name
-import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import me.odinmain.utils.skyblock.devMessage
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.lwjgl.Sys
 
 object QueueTerms : Module(
     name = "Queue Terms",

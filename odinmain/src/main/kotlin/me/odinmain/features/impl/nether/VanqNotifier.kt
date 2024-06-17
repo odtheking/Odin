@@ -1,4 +1,4 @@
-package me.odinmain.features.impl.kuudra
+package me.odinmain.features.impl.nether
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -9,7 +9,7 @@ import me.odinmain.utils.skyblock.*
 object VanqNotifier: Module(
     name = "Vanq Notifier",
     description = "Notifies you when a vanquisher is nearby.",
-    category = Category.KUUDRA
+    category = Category.NETHER
 ) {
     private val playSound: Boolean by BooleanSetting("Play Sound", true, description = "Plays a sound when a vanquisher spawns")
     private val showText: Boolean by BooleanSetting("Show Text", true, description = "Shows a message when a vanquisher spawns")

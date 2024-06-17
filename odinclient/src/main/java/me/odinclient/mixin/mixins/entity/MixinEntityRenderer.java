@@ -40,8 +40,6 @@ abstract public class MixinEntityRenderer implements IResourceManagerReloadListe
     }
 
     @Shadow private Minecraft mc;
-    @Shadow private float thirdPersonDistanceTemp;
-    @Shadow private float thirdPersonDistance;
 
     @Redirect(method = "orientCamera", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;translate(FFF)V", ordinal = 2))
     public void orientCamera(float x, float y, float z, float partialTicks){

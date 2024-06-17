@@ -1,4 +1,4 @@
-package me.odinmain.features.impl.kuudra
+package me.odinmain.features.impl.nether
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -14,7 +14,7 @@ import me.odinmain.utils.skyblock.*
 object FreshTimer : Module(
     name = "Fresh Timer",
     description = "Shows the time until fresh timer.",
-    category = Category.KUUDRA
+    category = Category.NETHER
 ){
     private val notifyFresh: Boolean by BooleanSetting("Notify Fresh", true, description = "Notifies your party when you get fresh timer")
     val highlightFresh: Boolean by BooleanSetting("Highlight Fresh", true, description = "Highlights fresh timer users")

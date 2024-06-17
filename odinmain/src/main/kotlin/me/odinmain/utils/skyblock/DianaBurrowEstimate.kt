@@ -72,7 +72,7 @@ object DianaBurrowEstimate {
     }
 
     fun handleSoundPacket(it: S29PacketSoundEffect) {
-        if (it.soundName != "note.harp" || LocationUtils.currentArea != Island.Hub) return
+        if (it.soundName != "note.harp" || !LocationUtils.currentArea.isArea(Island.Hub)) return
 
         if (lastDingTime == 0L) firstPitch = it.pitch
 

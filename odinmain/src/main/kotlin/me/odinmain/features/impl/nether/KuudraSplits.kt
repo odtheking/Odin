@@ -1,4 +1,4 @@
-package me.odinmain.features.impl.kuudra
+package me.odinmain.features.impl.nether
 
 import me.odinmain.config.Config
 import me.odinmain.features.Category
@@ -12,7 +12,7 @@ import me.odinmain.utils.skyblock.*
 object KuudraSplits : Module(
     name = "Kuudra Splits",
     description = "Splits for phases of Kuudra.",
-    category = Category.KUUDRA
+    category = Category.NETHER
 ) {
     private val t1PB = +NumberSetting("T1 PB", 999.0, increment = 0.001, hidden = true)
     private val t2PB = +NumberSetting("T2 PB", 999.0, increment = 0.001, hidden = true)
@@ -72,7 +72,7 @@ object KuudraSplits : Module(
             }
             getMCTextWidth("Fuel/Stun: 0h 00m 00s") + 2f to 44f
         } else {
-            if (LocationUtils.currentArea != Island.Kuudra) return@HudSetting 0f to 0f
+            if (!KuudraUtils.inKuudra) return@HudSetting 0f to 0f
             val (times, current) = getSplitTimes()
 
             for (i in 0..4) {

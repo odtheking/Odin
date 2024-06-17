@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     idea
     java
@@ -25,7 +23,6 @@ repositories {
     mavenCentral()
     maven("https://repo.spongepowered.org/maven/")
     maven("https://repo.essential.gg/repository/maven-public/")
-    maven("https://repo.hypixel.net/repository/Hypixel/")
 }
 
 val shadowImpl: Configuration by configurations.creating {
@@ -44,42 +41,11 @@ dependencies {
 
     shadowImpl("gg.essential:loader-launchwrapper:1.1.3")
     compileOnly("gg.essential:essential-1.8.9-forge:12132+g6e2bf4dc5")
-
-    shadowImpl("net.hypixel:mod-api:0.4.0")
+    compileOnly("com.github.NotEnoughUpdates:NotEnoughUpdates:faf22b5dd9:all")
 
     shadowImpl("com.github.Stivais:Commodore:3f4a14b1cf") {
         exclude(module = "kotlin-stdlib-jdk8")
         exclude(module = "kotlin-reflect")
-    }
-}
-
-tasks {
-    jar {
-        dependsOn(shadowJar)
-        enabled = false
-    }
-
-    remapJar {
-        archiveBaseName = "odinmain"
-        input = shadowJar.get().archiveFile
-    }
-
-    shadowJar {
-        archiveBaseName = "odinmain"
-        archiveClassifier = "dev"
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        configurations = listOf(shadowImpl)
-        mergeServiceFiles()
-    }
-
-    withType<JavaCompile> {
-        options.encoding = "UTF-8"
-    }
-
-    withType<KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = "1.8"
-        }
     }
 }
 

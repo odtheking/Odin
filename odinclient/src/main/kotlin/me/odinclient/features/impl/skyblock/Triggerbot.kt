@@ -120,7 +120,7 @@ object Triggerbot : Module(
 
             if (tileEntity is TileEntityChest && tileEntity.numPlayersUsing >= 1) return@execute
 
-            if (stbCH && LocationUtils.currentArea == Island.CrystalHollows && state.block == Blocks.chest) {
+            if (stbCH && LocationUtils.currentArea.isArea(Island.CrystalHollows) && state.block == Blocks.chest) {
                 PlayerUtils.rightClick()
                 triggerBotClock.update()
                 clickedPositions = clickedPositions.plus(pos to System.currentTimeMillis())

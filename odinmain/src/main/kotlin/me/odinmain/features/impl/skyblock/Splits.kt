@@ -7,8 +7,7 @@ import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.*
 import me.odinmain.utils.render.*
-import me.odinmain.utils.skyblock.LocationUtils
-import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.skyblock.*
 
 object Splits : Module(
     "Splits",
@@ -45,14 +44,6 @@ object Splits : Module(
     private val eee: String by StringSetting("eee", "WTF").withDependency { dropdownSetting && instanceSplits == 1 }
     private val fff: String by StringSetting("fff", "WTFv3").withDependency { dropdownSetting && instanceSplits == 1 }
 
-    private val emptyPB = +NumberSetting("aaa PB", 99999.0, increment = 0.001, hidden = true)
-    private val bbbPB = +NumberSetting("bbb PB", 99999.0, increment = 0.001, hidden = true)
-    private val cccPB = +NumberSetting("ccc PB", 99999.0, increment = 0.001, hidden = true)
-    private val dddPB = +NumberSetting("ddd PB", 99999.0, increment = 0.001, hidden = true)
-    private val eeePB = +NumberSetting("eee PB", 99999.0, increment = 0.001, hidden = true)
-    private val fffPB = +NumberSetting("fff PB", 99999.0, increment = 0.001, hidden = true)
-    private val totalLettersPB = +NumberSetting("Total PB", 999.0, increment = 0.001, hidden = true)
-
     private var hasChangeWorld = false
     init {
         onWorldLoad{
@@ -68,23 +59,23 @@ object Splits : Module(
         }
 
         execute(500) {
-            if (!hasChangeWorld || LocationUtils.currentArea == null) return@execute
+            if (!hasChangeWorld || LocationUtils.currentArea.isArea(Island.Unknown)) return@execute
             hasChangeWorld = false
-            modMessage("Loading splits for ${LocationUtils.currentArea?.name}")
-            val currentInstance = allSplits[LocationUtils.currentArea?.name] ?: return@execute
+            modMessage("Loading splits for ${LocationUtils.currentArea.name}")
+            val currentInstance = allSplits[LocationUtils.currentArea.name] ?: return@execute
             currentInstance.forEach { it.time = 0L }
             SplitsManager.currentSplits = currentInstance.toMutableList()
         }
     }
 
     private val singlePlayer = mutableListOf(
-        Split("aaa", aaa, emptyPB),
-        Split("bbb", bbb, bbbPB),
-        Split("ccc", ccc, cccPB),
-        Split("ddd", ddd, dddPB),
-        Split("eee", eee, eeePB),
-        Split("fff", fff, fffPB),
-        Split("end", "Run Total", totalLettersPB),
+        Split("aaa", aaa),
+        Split("bbb", bbb),
+        Split("ccc", ccc),
+        Split("ddd", ddd),
+        Split("eee", eee),
+        Split("fff", fff),
+        Split("end", "Run Total"),
     )
 
     private val allSplits = mutableMapOf(

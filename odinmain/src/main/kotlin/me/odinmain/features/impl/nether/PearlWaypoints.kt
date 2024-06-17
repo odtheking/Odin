@@ -1,4 +1,4 @@
-package me.odinmain.features.impl.kuudra
+package me.odinmain.features.impl.nether
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -16,7 +16,7 @@ import java.util.*
 object PearlWaypoints : Module(
     name = "Pearl Waypoints",
     description = "Renders waypoints for pearls in Kuudra.",
-    category = Category.KUUDRA
+    category = Category.NETHER
 ) {
     private val hideFarWaypoints: Boolean by BooleanSetting("Hide Far Waypoints", true, description = "Hides the waypoints that are far away")
 

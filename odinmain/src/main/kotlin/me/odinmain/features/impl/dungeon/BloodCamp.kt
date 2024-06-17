@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.dungeon
 
+import me.odinmain.OdinMain.isLegitVersion
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.events.impl.RealServerTick
 import me.odinmain.features.Category
@@ -9,6 +10,7 @@ import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.*
 import me.odinmain.utils.ServerUtils.averagePing
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
@@ -42,6 +44,7 @@ object BloodCamp : Module(
     private val tick: Int by NumberSetting("Tick", default = 40, increment = 1, max = 41, min = 37, description = "Tick to assume spawn. Adjust offset to offset this value to the ms.").withDependency { advanced && bloodhelper}
     private val interpolation: Boolean by BooleanSetting("Interpolation", default = true, description = "Interpolates rendering boxes between ticks. Makes the jitter smoother, at the expense of some accuracy.").withDependency { advanced && bloodhelper}
     private val watcherBar: Boolean by BooleanSetting("Watcher Bar", default = true, description = "Shows the watcher's health.")
+    private val watcherHighlight: Boolean by BooleanSetting("Watcher Highlight", default = false, description = "Highlights the watcher.")
 
     private var currentName: String? = null
     private val firstSpawnRegex = Regex("^\\[BOSS] The Watcher: Let's see how you can handle this.$")
@@ -175,7 +178,13 @@ object BloodCamp : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (watcher.isEmpty() || !bloodhelper) return
+        if (watcher.isEmpty()) return
+
+        if (watcherHighlight) watcher.forEach { watcher ->
+            Renderer.drawBox(watcher.renderVec.toAABB(), Color.RED, 1f, depth = isLegitVersion, fillAlpha = 0)
+        }
+
+        if (!bloodhelper) return
 
         forRender.filter { !it.key.isDead }.forEach { (entity, renderData) ->
             val entityData = entityList[entity] ?: return@forEach

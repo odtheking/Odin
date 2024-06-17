@@ -1,4 +1,4 @@
-package me.odinmain.features.impl.kuudra
+package me.odinmain.features.impl.nether
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -21,7 +21,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 object KuudraDisplay : Module(
     name = "Kuudra Display",
     description = "Displays information about Kuudra.",
-    category = Category.KUUDRA
+    category = Category.NETHER
 ) {
     private val highlightKuudra: Boolean by BooleanSetting("Highlight Kuudra", true, description = "Highlights the kuudra entity")
     private val kuudraColor: Color by ColorSetting("Kuudra Color", Color.RED, true, description = "Color of the kuudra highlight").withDependency { highlightKuudra }
@@ -36,7 +36,7 @@ object KuudraDisplay : Module(
             mcText("§a99.975M/300M", 1f, 1f, 1, Color.WHITE, center = false)
             getMCTextWidth("99.975k/100k") + 2f to 10f
         } else {
-            if (LocationUtils.currentArea != Island.Kuudra) return@HudSetting 0f to 0f
+            if (!KuudraUtils.inKuudra) return@HudSetting 0f to 0f
 
             mcText(getCurrentHealthDisplay(), 1f, 1f, 1, Color.WHITE, center = false)
             getMCTextWidth("99.975k/100k") + 2f to 10f
@@ -46,7 +46,7 @@ object KuudraDisplay : Module(
     private var kuudraHP = 100000f
     @SubscribeEvent
     fun renderWorldEvent(event: RenderWorldLastEvent) {
-        if (LocationUtils.currentArea != Island.Kuudra) return
+        if (!KuudraUtils.inKuudra) return
 
         if (highlightKuudra)
             Renderer.drawBox(kuudraEntity.renderBoundingBox, kuudraColor, depth = false, fillAlpha = 0, outlineWidth = thickness)
@@ -58,7 +58,7 @@ object KuudraDisplay : Module(
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.START || LocationUtils.currentArea != Island.Kuudra) return
+        if (event.phase != TickEvent.Phase.START || !KuudraUtils.inKuudra) return
 
         kuudraHP = kuudraEntity.health
         val kuudraPos = kuudraEntity.positionVector
