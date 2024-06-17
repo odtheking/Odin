@@ -14,6 +14,7 @@ import net.minecraft.entity.passive.EntityBat
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S02PacketChat
+import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraft.util.BlockPos
 import net.minecraftforge.client.event.GuiOpenEvent
@@ -29,13 +30,12 @@ object EventDispatcher {
     )
 
     /**
-     * Dispatches [SecretPickupEvent.Item] and [SecretPickupEvent.Bat]
+     * Dispatches [SecretPickupEvent.Item]
      */
     @SubscribeEvent
     fun onRemoveEntity(event: EntityLeaveWorldEvent) {
         if (!inDungeons) return
         if (event.entity is EntityItem && event.entity.entityItem.displayName.noControlCodes.containsOneOf(drops, true)) SecretPickupEvent.Item(event.entity).postAndCatch()
-        if (event.entity is EntityBat) SecretPickupEvent.Bat(event.entity).postAndCatch()
     }
 
     /**
@@ -51,10 +51,12 @@ object EventDispatcher {
     }
 
     /**
-     * Dispatches [ChatPacketEvent] and [RealServerTick].
+     * Dispatches [ChatPacketEvent], [RealServerTick], and [SecretPickupEvent.Bat]
      */
     @SubscribeEvent
     fun onPacket(event: PacketReceivedEvent) {
+        if (event.packet is S29PacketSoundEffect && event.packet.soundName == "mob.bat.death") SecretPickupEvent.Bat(event.packet).postAndCatch()
+
         if (event.packet is S32PacketConfirmTransaction) RealServerTick().postAndCatch()
 
         if (event.packet !is S02PacketChat || !ChatPacketEvent(event.packet.chatComponent.unformattedText.noControlCodes).postAndCatch()) return

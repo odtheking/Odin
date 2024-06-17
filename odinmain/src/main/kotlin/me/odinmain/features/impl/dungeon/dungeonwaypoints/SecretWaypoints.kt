@@ -1,10 +1,12 @@
 package me.odinmain.features.impl.dungeon.dungeonwaypoints
 
+import me.odinmain.OdinMain.mc
 import me.odinmain.config.DungeonWaypointConfigCLAY
 import me.odinmain.events.impl.SecretPickupEvent
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.glList
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.toVec3
 import me.odinmain.utils.equal
+import me.odinmain.utils.pos
 import me.odinmain.utils.rotateToNorth
 import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -17,7 +19,7 @@ object SecretWaypoints {
     fun onSecret(event: SecretPickupEvent) {
         when (event) {
             is SecretPickupEvent.Interact -> clickSecret(Vec3(event.blockPos), 0)
-            is SecretPickupEvent.Bat -> clickSecret(event.entity.positionVector, 5)
+            is SecretPickupEvent.Bat -> clickSecret(event.packet.pos, 5)
             is SecretPickupEvent.Item -> clickSecret(event.entity.positionVector, 3)
         }
     }
