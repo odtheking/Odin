@@ -123,6 +123,7 @@ object TerminalMove : Module(
             if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
                 sneak = true
                 moveForward *= 0.3f
+                moveStrafe *= 0.3f
             } else {
                 sneak = false
             }
