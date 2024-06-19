@@ -15,7 +15,7 @@ import me.odinmain.utils.render.*
 import me.odinmain.utils.render.RenderUtils.outlineBounds
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.dungeon.ScanUtils
+import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
 import net.minecraft.client.gui.*
 import net.minecraft.util.*
 import net.minecraftforge.client.event.RenderGameOverlayEvent
@@ -49,7 +49,7 @@ object DungeonWaypoints : Module(
         if (!waypoints.removeAll { true }) return@ActionSetting modMessage("Current room does not have any waypoints!")
 
         DungeonWaypointConfigCLAY.saveConfig()
-        ScanUtils.setWaypoints(room)
+        setWaypoints(room)
         glList = -1
         modMessage("Successfully reset current room!")
     }
@@ -139,7 +139,7 @@ object DungeonWaypoints : Module(
             devMessage("Added waypoint at $vec")
         }
         DungeonWaypointConfigCLAY.saveConfig()
-        ScanUtils.setWaypoints(room)
+        setWaypoints(room)
         glList = -1
     }
 
@@ -159,9 +159,22 @@ object DungeonWaypoints : Module(
         y + .5 + (size / 2),
         z + .5 + (size / 2)
     ).expand(.01, .01, .01)
+
+    /**
+     * Sets the waypoints for the current room.
+     */
+    fun setWaypoints(curRoom: FullRoom) {
+        val room = curRoom.room
+        curRoom.waypoints = mutableListOf<DungeonWaypoint>().apply {
+            DungeonWaypointConfigCLAY.waypoints[room.data.name]?.let { waypoints ->
+                addAll(waypoints.map { waypoint ->
+                    val vec = waypoint.toVec3().rotateAroundNorth(room.rotation).addVec(x = curRoom.clayPos.x, z = curRoom.clayPos.z)
+                    DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, waypoint.color, waypoint.filled, waypoint.depth, waypoint.aabb, waypoint.title)
+                })
+            }
+        }
+    }
 }
-
-
 
 object GuiSign : GuiScreen() {
     private lateinit var textField: GuiTextField

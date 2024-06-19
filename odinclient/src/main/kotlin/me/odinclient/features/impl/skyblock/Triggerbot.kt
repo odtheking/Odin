@@ -11,6 +11,7 @@ import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.M7Phases
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.item.EntityEnderCrystal
@@ -76,7 +77,7 @@ object Triggerbot : Module(
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        if (!DungeonUtils.inBoss || DungeonUtils.getPhase() != Island.M7P1 || !clickClock.hasTimePassed() || mc.objectMouseOver == null || !crystal) return
+        if (!DungeonUtils.inBoss || DungeonUtils.getPhase() != M7Phases.P1 || !clickClock.hasTimePassed() || mc.objectMouseOver == null || !crystal) return
         if ((take && mc.objectMouseOver.entityHit is EntityEnderCrystal) || (place && mc.objectMouseOver.entityHit?.name?.noControlCodes == "Energy Crystal Missing" && mc.thePlayer.heldItem.displayName.noControlCodes == "Energy Crystal")) {
             PlayerUtils.rightClick()
             clickClock.update()

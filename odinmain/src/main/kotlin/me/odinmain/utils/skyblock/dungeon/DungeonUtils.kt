@@ -4,7 +4,6 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.EnteredDungeonRoomEvent
 import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.utils.*
-import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.LocationUtils.currentDungeon
 import me.odinmain.utils.skyblock.PlayerUtils.posY
 import me.odinmain.utils.skyblock.getItemSlot
@@ -14,6 +13,7 @@ import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.init.Blocks
 import net.minecraft.tileentity.TileEntitySkull
 import net.minecraft.util.BlockPos
+import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.floor
 
@@ -24,6 +24,9 @@ object DungeonUtils {
 
     inline val floorNumber: Int get() =
         currentDungeon?.floor?.floorNumber ?: 0
+
+    inline val floor: Floor get() =
+        currentDungeon?.floor ?: Floor.E
 
     inline val inBoss: Boolean get() =
         currentDungeon?.inBoss ?: false
@@ -110,15 +113,15 @@ object DungeonUtils {
      *
      * @return The current phase of floor 7 boss, or `null` if the player is not in the boss room.
      */
-    fun getPhase(): Island {
-        if (!isFloor(7) || !inBoss) return Island.Unknown
+    fun getPhase(): M7Phases {
+        if (!isFloor(7) || !inBoss) return M7Phases.Unknown
 
         return when {
-            posY > 210 -> Island.M7P1
-            posY > 155 -> Island.M7P2
-            posY > 100 -> Island.M7P3
-            posY > 45 -> Island.M7P4
-            else -> Island.M7P5
+            posY > 210 -> M7Phases.P1
+            posY > 155 -> M7Phases.P2
+            posY > 100 -> M7Phases.P3
+            posY > 45 -> M7Phases.P4
+            else -> M7Phases.P5
         }
     }
 
@@ -130,6 +133,11 @@ object DungeonUtils {
     @SubscribeEvent
     fun onRoomEnter(event: EnteredDungeonRoomEvent) {
         currentDungeon?.enterDungeonRoom(event)
+    }
+
+    @SubscribeEvent
+    fun onWorldLoad(event: WorldEvent.Load) {
+        Blessings.entries.forEach { it.current = 0 }
     }
 
     private val tablistRegex = Regex("^\\[(\\d+)] (?:\\[\\w+] )*(\\w+) .*?\\((\\w+)(?: (\\w+))*\\)$")

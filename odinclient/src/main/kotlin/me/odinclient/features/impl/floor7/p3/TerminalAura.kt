@@ -9,8 +9,8 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.addVec
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.noControlCodes
-import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.M7Phases
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.inventory.ContainerPlayer
 import net.minecraft.network.play.client.C02PacketUseEntity
@@ -60,7 +60,7 @@ object TerminalAura : Module(
 
     @SubscribeEvent
     fun onEntityLoaded(event: PostEntityMetadata) {
-        if (DungeonUtils.getPhase() != Island.M7P3) return
+        if (DungeonUtils.getPhase() != M7Phases.P3) return
         val entity = (mc.theWorld.getEntityByID(event.packet.entityId))
         if (entity !is EntityArmorStand || entity.name.noControlCodes != "Inactive Terminal") return
         terminalEntityList.add(entity)
@@ -68,7 +68,7 @@ object TerminalAura : Module(
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (DungeonUtils.getPhase() != Island.M7P3 || mc.thePlayer.openContainer !is ContainerPlayer || (!mc.thePlayer.onGround && onGround) || !clickClock.hasTimePassed()) return
+        if (DungeonUtils.getPhase() != M7Phases.P3 || mc.thePlayer.openContainer !is ContainerPlayer || (!mc.thePlayer.onGround && onGround) || !clickClock.hasTimePassed()) return
         val terminal = terminalEntityList.firstOrNull {
             mc.thePlayer.positionVector.addVec(y = mc.thePlayer.getEyeHeight())
                 .distanceTo(Vec3(it.posX, it.posY + it.height / 2, it.posZ)) < 3.5

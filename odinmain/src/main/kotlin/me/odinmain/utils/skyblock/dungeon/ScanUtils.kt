@@ -3,10 +3,8 @@ package me.odinmain.utils.skyblock.dungeon
 import com.google.gson.*
 import com.google.gson.reflect.TypeToken
 import me.odinmain.OdinMain.mc
-import me.odinmain.config.DungeonWaypointConfigCLAY
 import me.odinmain.events.impl.EnteredDungeonRoomEvent
-import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.DungeonWaypoint
-import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.toVec3
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.setWaypoints
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inBoss
@@ -100,21 +98,6 @@ object ScanUtils {
         devMessage("Found rotation ${fullRoom.room.rotation}, clay pos: ${fullRoom.clayPos}")
         setWaypoints(fullRoom)
         EnteredDungeonRoomEvent(fullRoom).postAndCatch()
-    }
-
-    /**
-     * Sets the waypoints for the current room.
-     */
-    fun setWaypoints(curRoom: FullRoom) {
-        val room = curRoom.room
-        curRoom.waypoints = mutableListOf<DungeonWaypoint>().apply {
-            DungeonWaypointConfigCLAY.waypoints[room.data.name]?.let { waypoints ->
-                addAll(waypoints.map { waypoint ->
-                    val vec = waypoint.toVec3().rotateAroundNorth(room.rotation).addVec(x = curRoom.clayPos.x, z = curRoom.clayPos.z)
-                    DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, waypoint.color, waypoint.filled, waypoint.depth, waypoint.aabb, waypoint.title, waypoint.secret, waypoint.clicked)
-                })
-            }
-        }
     }
 
     private fun findRoomTilesRecursively(x: Int, z: Int, room: Room, visited: MutableSet<Vec2>): List<ExtraRoom> {
