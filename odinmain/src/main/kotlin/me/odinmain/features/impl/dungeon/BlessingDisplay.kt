@@ -2,7 +2,6 @@ package me.odinmain.features.impl.dungeon
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.hud.HudElement
@@ -10,7 +9,6 @@ import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.dungeon.Blessings
 import kotlin.math.max
 
-@AlwaysActive
 object BlessingDisplay : Module(
     name = "Blessing Display",
     description = "Displays the current blessings of the dungeon.",
@@ -50,6 +48,4 @@ object BlessingDisplay : Module(
     }
 
     data class Blessing(val type: Blessings, val enabled: Boolean, val color: Color)
-
-
 }

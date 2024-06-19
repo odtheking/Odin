@@ -13,6 +13,7 @@ import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.init.Blocks
 import net.minecraft.tileentity.TileEntitySkull
 import net.minecraft.util.BlockPos
+import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.floor
 
@@ -132,6 +133,11 @@ object DungeonUtils {
     @SubscribeEvent
     fun onRoomEnter(event: EnteredDungeonRoomEvent) {
         currentDungeon?.enterDungeonRoom(event)
+    }
+
+    @SubscribeEvent
+    fun onWorldLoad(event: WorldEvent.Load) {
+        Blessings.entries.forEach { it.current = 0 }
     }
 
     private val tablistRegex = Regex("^\\[(\\d+)] (?:\\[\\w+] )*(\\w+) .*?\\((\\w+)(?: (\\w+))*\\)$")

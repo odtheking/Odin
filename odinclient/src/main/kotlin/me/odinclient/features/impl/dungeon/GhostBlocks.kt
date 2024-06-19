@@ -55,20 +55,17 @@ object GhostBlocks : Module(
     }
 
     private val swapStonk: Boolean by BooleanSetting("Swap Stonk", false, description = "Does a swap stonk when you press the keybind.")
-    private val keybind: Keybinding by KeybindSetting("Keybind", Keyboard.KEY_NONE, "Press to perform a swap stonk")
+    private val swapStonkKey: Keybinding by KeybindSetting("Swap Stonk Keybind", Keyboard.KEY_NONE, "Press to perform a swap stonk")
         .onPress {
-            if (enabled) {
-                val slot = getItemSlot(if (pickaxe == 1) "Stonk" else "Pickaxe", true)
-                if (slot in 0..8) {
-                    val originalItem = mc.thePlayer?.inventory?.currentItem ?: 0
-                    if (originalItem == slot) return@onPress
-                    leftClick()
-                    swapToIndex(slot!!)
-                    runIn(speed) { swapToIndex(originalItem) }
-                } else
-                    modMessage("Couldn't find pickaxe.")
-
-            }
+            if (!enabled) return@onPress
+            val slot = getItemSlot(if (pickaxe == 1) "Stonk" else "Pickaxe", true)
+            if (slot in 0..8) {
+                val originalItem = mc.thePlayer?.inventory?.currentItem ?: 0
+                if (originalItem == slot) return@onPress
+                leftClick()
+                swapToIndex(slot!!)
+                runIn(speed) { swapToIndex(originalItem) } }
+            else modMessage("Couldn't find pickaxe.")
         }.withDependency { swapStonk }
 
     private val pickaxe: Int by SelectorSetting("Type", "Pickaxe", arrayListOf("Pickaxe", "Stonk"), description = "The type of pickaxe to use").withDependency { swapStonk }
@@ -87,7 +84,7 @@ object GhostBlocks : Module(
 
         execute(1000) {
             if (!DungeonUtils.isFloor(7) || !DungeonUtils.inBoss || !preGhostBlock || !enabled) return@execute
-            val phase = getPhase().displayName.toIntOrNull() ?: return@execute
+            val phase = getPhase().displayName.drop(1).toIntOrNull() ?: return@execute
             for (i in blocks[phase] ?: return@execute) {
                 mc.theWorld?.setBlockToAir(i)
             }

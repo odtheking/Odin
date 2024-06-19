@@ -5,8 +5,6 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.*
 import me.odinmain.utils.render.*
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.dungeon.M7Phases
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.util.Vec3
@@ -35,7 +33,7 @@ object InactiveWaypoints : Module(
 
     init {
         execute(500) {
-            if (DungeonUtils.getPhase() != M7Phases.P3) return@execute
+            //if (DungeonUtils.getPhase() != M7Phases.P3) return@execute
             inactiveList = mc.theWorld?.loadedEntityList?.filter {
                 it is EntityArmorStand && it.name.noControlCodes.containsOneOf("Inactive", "Not Activated", "CLICK HERE", ignoreCase = true)
             } ?: emptyList()
@@ -54,7 +52,7 @@ object InactiveWaypoints : Module(
             if ((name == "Inactive Terminal" && showTerminals) || (name == "Inactive" && showDevices) || (name == "Not Activated" && showLevers)) {
                 name = if (name == "Inactive Terminal") "Terminal" else if (name == "Inactive") "Device" else "Lever"
                 if (renderBox)
-                    Renderer.drawStyledBox(it.positionVector.toAABB(), color, style, lineWidth, depthCheck)
+                    Renderer.drawStyledBox(it.positionVector.addVec(-0.5, z = -0.5).toAABB(), color, style, lineWidth, depthCheck)
                 if (renderText)
                     Renderer.drawStringInWorld(name, it.positionVector.add(Vec3(0.0, 2.0, 0.0)), depth = false, color = Color.WHITE, scale = 0.05f)
                 if (renderBeacon)
