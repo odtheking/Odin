@@ -1,9 +1,9 @@
 package me.odinmain.features.impl.dungeon.dungeonwaypoints
 
-import me.odinmain.OdinMain.mc
 import me.odinmain.config.DungeonWaypointConfigCLAY
 import me.odinmain.events.impl.SecretPickupEvent
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.glList
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.setWaypoints
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.toVec3
 import me.odinmain.utils.equal
 import me.odinmain.utils.pos
@@ -30,7 +30,7 @@ object SecretWaypoints {
         val waypoints = DungeonWaypointConfigCLAY.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
         waypoints.find { wp -> (if (distance == 0) wp.toVec3().equal(vec) else wp.toVec3().distanceTo(vec) <= distance) && wp.secret && !wp.clicked}?.let {
             it.clicked = true
-            ScanUtils.setWaypoints(room)
+            setWaypoints(room)
             devMessage("clicked ${it.toVec3()}")
             glList = -1
         }
@@ -42,7 +42,7 @@ object SecretWaypoints {
             waypointsList.filter { it.clicked }.forEach { it.clicked = false }
         }
 
-        if (room != null) ScanUtils.setWaypoints(room)
+        if (room != null) setWaypoints(room)
         glList = -1
     }
 
@@ -51,7 +51,7 @@ object SecretWaypoints {
         val waypoints = DungeonWaypointConfigCLAY.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
         if (waypoints.any { it.secret && !it.clicked}) {
             for (wp in waypoints.filter { it.secret && !it.clicked }) { wp.clicked = true }
-            ScanUtils.setWaypoints(room)
+            setWaypoints(room)
             glList = -1
         }
     }

@@ -27,8 +27,8 @@ object LocationUtils {
                 inSkyblock = onHypixel && mc.theWorld.scoreboard.getObjectiveInDisplaySlot(1)?.let {
                     cleanSB(it.displayName).contains("SKYBLOCK") } ?: false
 
-            if ((currentDungeon == null && inSkyblock &&
-                sidebarLines.any { cleanSB(it).run { (contains("The Catacombs") && !contains("Queue")) || contains("Dungeon Cleared:") } }) || currentArea.isArea(Island.SinglePlayer))
+            if (currentDungeon == null && ((inSkyblock &&
+                sidebarLines.any { cleanSB(it).run { (contains("The Catacombs") && !contains("Queue")) || contains("Dungeon Cleared:") } }) || currentArea.isArea(Island.SinglePlayer)))
                     currentDungeon = Dungeon()
 
             if (currentArea.isArea(Island.Kuudra) && kuudraTier == 0) {
