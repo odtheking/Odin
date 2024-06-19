@@ -4,7 +4,6 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.EnteredDungeonRoomEvent
 import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.utils.*
-import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.LocationUtils.currentDungeon
 import me.odinmain.utils.skyblock.PlayerUtils.posY
 import me.odinmain.utils.skyblock.getItemSlot
@@ -24,6 +23,9 @@ object DungeonUtils {
 
     inline val floorNumber: Int get() =
         currentDungeon?.floor?.floorNumber ?: 0
+
+    inline val floor: Floor get() =
+        currentDungeon?.floor ?: Floor.E
 
     inline val inBoss: Boolean get() =
         currentDungeon?.inBoss ?: false
@@ -110,15 +112,15 @@ object DungeonUtils {
      *
      * @return The current phase of floor 7 boss, or `null` if the player is not in the boss room.
      */
-    fun getPhase(): Island {
-        if (!isFloor(7) || !inBoss) return Island.Unknown
+    fun getPhase(): M7Phases {
+        if (!isFloor(7) || !inBoss) return M7Phases.Unknown
 
         return when {
-            posY > 210 -> Island.M7P1
-            posY > 155 -> Island.M7P2
-            posY > 100 -> Island.M7P3
-            posY > 45 -> Island.M7P4
-            else -> Island.M7P5
+            posY > 210 -> M7Phases.P1
+            posY > 155 -> M7Phases.P2
+            posY > 100 -> M7Phases.P3
+            posY > 45 -> M7Phases.P4
+            else -> M7Phases.P5
         }
     }
 

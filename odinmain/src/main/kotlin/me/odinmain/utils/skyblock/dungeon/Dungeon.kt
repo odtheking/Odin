@@ -105,52 +105,6 @@ class Dungeon {
         updateDungeonTeammates()
     }
 
-    /**
-     * Enumeration representing different floors in a dungeon.
-     *
-     * This enum class defines various floors, including both regular floors (F1 to F7) and special mini-boss floors (M1 to M7).
-     * Each floor has an associated floor number and an indicator of whether it is a mini-boss floor.
-     *
-     * @property floorNumber The numerical representation of the floor, where E represents the entrance floor.
-     * @property isInMM Indicates whether the floor is a mini-boss floor (M1 to M7).
-     */
-    enum class Floor {
-        E, F1, F2, F3, F4, F5, F6, F7,
-        M1, M2, M3, M4, M5, M6, M7;
-
-        /**
-         * Gets the numerical representation of the floor.
-         *
-         * @return The floor number. E has a floor number of 0, F1 to F7 have floor numbers from 1 to 7, and M1 to M7 have floor numbers from 1 to 7.
-         */
-        val floorNumber: Int
-            get() {
-                return when (this) {
-                    E -> 0
-                    F1, M1 -> 1
-                    F2, M2 -> 2
-                    F3, M3 -> 3
-                    F4, M4 -> 4
-                    F5, M5 -> 5
-                    F6, M6 -> 6
-                    F7, M7 -> 7
-                }
-            }
-
-        /**
-         * Indicates whether the floor is a mini-boss floor.
-         *
-         * @return `true` if the floor is a mini-boss floor (M1 to M7), otherwise `false`.
-         */
-        val isInMM: Boolean
-            get() {
-                return when (this) {
-                    E, F1, F2, F3, F4, F5, F6, F7 -> false
-                    M1, M2, M3, M4, M5, M6, M7 -> true
-                }
-            }
-    }
-
     private val secretCountRegex = Regex("^§r Secrets Found: §r§b(\\d+)§r$")
     private val secretPercentRegex = Regex("^§r Secrets Found: §r§[ea]([\\d.]+)%§r$")
     private val cryptRegex = Regex("^§r Crypts: §r§6(\\d+)§r$")

@@ -12,7 +12,7 @@ class PersonalBest(val name: String, val size: Int) {
         }
     }
 
-    fun time(index: Int, time: Double, unit: String, message: String, addPBString: Boolean, addOldPBString: Boolean, sendOnlyPB: Boolean = false) {
+    fun time(index: Int, time: Double, unit: String = "s§7!", message: String, addPBString: Boolean, addOldPBString: Boolean, sendOnlyPB: Boolean = false) {
         var msg = "$message$time$unit"
         val oldPB = pb?.get(index) ?: 999.0
         if (oldPB > time) {
