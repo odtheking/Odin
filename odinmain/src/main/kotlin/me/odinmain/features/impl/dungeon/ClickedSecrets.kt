@@ -45,7 +45,7 @@ object ClickedSecrets : Module(
 
     @SubscribeEvent
     fun onSecret(event: SecretPickupEvent.Interact) {
-        if ((DungeonUtils.inBoss && disableInBoss) || secrets.any{ it.pos == event.blockPos }) return
+        if ((DungeonUtils.inBoss && disableInBoss) || secrets.any { it.pos == event.blockPos }) return
         secrets.add(Chest(event.blockPos, System.currentTimeMillis()))
 
         runIn(timeToStay.toInt() * 20) {

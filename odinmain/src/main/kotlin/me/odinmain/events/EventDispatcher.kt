@@ -34,21 +34,19 @@ object EventDispatcher {
      */
     @SubscribeEvent
     fun onRemoveEntity(event: EntityLeaveWorldEvent) {
-        if (!inDungeons) return
-        if (event.entity is EntityItem && event.entity.entityItem.displayName.noControlCodes.containsOneOf(drops, true)) SecretPickupEvent.Item(event.entity).postAndCatch()
+        if (!inDungeons || event.entity !is EntityItem || !event.entity.entityItem.displayName.noControlCodes.containsOneOf(drops, true)) return
+        SecretPickupEvent.Item(event.entity).postAndCatch()
     }
 
     /**
      * Dispatches [SecretPickupEvent.Interact]
      */
     @SubscribeEvent
-    fun onPacket(event: PacketSentEvent) {
-        if (!inDungeons) return
-        val packet = event.packet
-        if (packet is C08PacketPlayerBlockPlacement && packet.position != null && isSecret(mc.theWorld?.getBlockState(packet.position) ?: return, packet.position)) {
-            SecretPickupEvent.Interact(packet.position, mc.theWorld?.getBlockState(packet.position)  ?: return).postAndCatch()
+    fun onPacket(event: PacketSentEvent) { with(event.packet) {
+        if (inDungeons && this is C08PacketPlayerBlockPlacement && this.position != null && isSecret(mc.theWorld?.getBlockState(this.position) ?: return, this.position)) {
+            SecretPickupEvent.Interact(this.position, mc.theWorld?.getBlockState(this.position)  ?: return).postAndCatch()
         }
-    }
+    } }
 
     /**
      * Dispatches [ChatPacketEvent], [RealServerTick], and [SecretPickupEvent.Bat]
