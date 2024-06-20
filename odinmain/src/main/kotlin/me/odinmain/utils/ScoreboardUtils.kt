@@ -47,8 +47,12 @@ fun getLines(): List<String> {
 // Tablist utils
 
 val getTabList: List<Pair<NetworkPlayerInfo, String>>
-    get() = (mc.thePlayer?.sendQueue?.playerInfoMap?.sortedWith(tabListOrder) ?: emptyList())
-        .map { Pair(it, mc.ingameGUI.tabList.getPlayerName(it)) }
+    get() {
+        val playerInfoList = mc.thePlayer?.sendQueue?.playerInfoMap?.toList() ?: emptyList()
+        return playerInfoList.sortedWith(tabListOrder)
+            .map { Pair(it, mc.ingameGUI.tabList.getPlayerName(it)) }
+    }
+
 
 val tabListOrder = Comparator<NetworkPlayerInfo> { o1, o2 ->
     if (o1 == null) return@Comparator -1
