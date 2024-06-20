@@ -46,7 +46,7 @@ object AutoExperiments : Module(
     @SubscribeEvent
     fun onGuiOpen(event: GuiEvent.GuiLoadedEvent) {
         reset()
-        if (LocationUtils.currentArea != Island.PrivateIsland) return
+        if (!LocationUtils.currentArea.isArea(Island.PrivateIsland)) return
         val chestName = event.name
 
         currentExperiment = when {

@@ -1,4 +1,4 @@
-package me.odinmain.features.impl.skyblock
+package me.odinmain.features.impl.dungeon
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -26,7 +26,7 @@ import kotlin.math.abs
 object CanClip : Module(
     name = "Can Clip",
     description = "Tells you if you are currently able to clip through a stair under you.",
-    category = Category.SKYBLOCK
+    category = Category.DUNGEON
 ) {
     private val line: Boolean by BooleanSetting("Line", true, description = "draws a line where you can clip")
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, true) {

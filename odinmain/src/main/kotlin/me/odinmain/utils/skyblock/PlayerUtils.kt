@@ -51,6 +51,8 @@ object PlayerUtils {
     inline val posY get() = mc.thePlayer.posY
     inline val posZ get() = mc.thePlayer.posZ
 
+    fun getPositionString() = "x: ${posX.toInt()}, y: ${posY.toInt()}, z: ${posZ.toInt()}"
+
     val posFloored
         get() = mc.thePlayer.positionVector.floored()
 

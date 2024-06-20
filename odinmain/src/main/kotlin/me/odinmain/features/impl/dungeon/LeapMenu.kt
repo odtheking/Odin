@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.dungeon
 
+import io.github.moulberry.notenoughupdates.NEUApi
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -17,12 +18,14 @@ import me.odinmain.utils.name
 import me.odinmain.utils.render.*
 import me.odinmain.utils.render.RenderUtils.drawTexturedModalRect
 import me.odinmain.utils.skyblock.*
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.leapTeammates
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.client.event.GuiOpenEvent
+import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.Display
@@ -49,7 +52,7 @@ object LeapMenu : Module(
     private var hoveredQuadrant = -1
     private var previouslyHoveredQuadrant = -1
 
-    private val EMPTY = DungeonUtils.DungeonPlayer("Empty", DungeonUtils.Classes.Archer, ResourceLocation("textures/entity/steve.png"))
+    private val EMPTY = DungeonPlayer("Empty", DungeonClass.Unknown, ResourceLocation("textures/entity/steve.png"))
 
     @SubscribeEvent
     fun onDrawScreen(event: GuiEvent.DrawGuiContainerScreenEvent) {
@@ -102,6 +105,13 @@ object LeapMenu : Module(
     }
 
     @SubscribeEvent
+    fun guiOpen(event: GuiOpenEvent) {
+        val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
+        if (chest !is ContainerChest || chest.name != "Spirit Leap" || leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return
+        if (Loader.instance().activeModList.any { it.modId == "notenoughupdates" }) NEUApi.setInventoryButtonsToDisabled()
+    }
+
+    @SubscribeEvent
     fun mouseClicked(event: GuiEvent.GuiMouseClickEvent) {
         val gui = event.gui as? GuiChest ?: return
         if (event.gui.inventorySlots !is ContainerChest || gui.inventorySlots.name != "Spirit Leap" || leapTeammates.isEmpty())  return
@@ -120,9 +130,10 @@ object LeapMenu : Module(
 
     @SubscribeEvent
     fun keyTyped(event: GuiEvent.GuiKeyPressEvent) {
+        val gui = event.gui as? GuiChest ?: return
         if (
-            event.container !is ContainerChest ||
-            event.container.name != "Spirit Leap" ||
+            gui.inventorySlots !is ContainerChest ||
+            gui.inventorySlots.name != "Spirit Leap" ||
             !event.keyCode.equalsOneOf(topLeftKeybind.key, topRightKeybind.key, bottomLeftKeybind.key, bottomRightKeybind.key) ||
             leapTeammates.isEmpty() ||
             !useNumberKeys
@@ -138,7 +149,7 @@ object LeapMenu : Module(
         if (playerToLeap == EMPTY) return
         if (playerToLeap.isDead) return modMessage("This player is dead, can't leap.")
 
-        leapTo(playerToLeap.name, event.container)
+        leapTo(playerToLeap.name, gui.inventorySlots as ContainerChest)
 
         event.isCanceled = true
     }
@@ -181,9 +192,9 @@ object LeapMenu : Module(
      * @param players The list of players to be sorted.
      * @return An array of sorted players.
      */
-    fun odinSorting(players: List<DungeonUtils.DungeonPlayer>): Array<DungeonUtils.DungeonPlayer> {
+    fun odinSorting(players: List<DungeonPlayer>): Array<DungeonPlayer> {
         val result = Array(4) { EMPTY }
-        val secondRound = mutableListOf<DungeonUtils.DungeonPlayer>()
+        val secondRound = mutableListOf<DungeonPlayer>()
 
         for (player in players.sortedBy { it.clazz.prio }) {
             when {

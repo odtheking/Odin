@@ -12,6 +12,7 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.ui.util.MouseUtils.mouseX
 import me.odinmain.ui.util.MouseUtils.mouseY
 import me.odinmain.utils.clock.Clock
+import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import net.minecraft.client.gui.inventory.GuiChest
@@ -42,13 +43,14 @@ object HoverTerms : Module(
         val gui = mc.currentScreen as GuiChest
         if (gui.inventorySlots !is ContainerChest) return
 
-        val hoveredItem = if (TerminalSolver.renderType == 3 && TerminalSolver.enabled && currentTerm != TerminalTypes.NONE)
-            TermGui.getHoveredItem(mouseX.toInt(), mouseY.toInt()) ?: return
-
-        else {
-            if (gui.slotUnderMouse?.inventory == mc.thePlayer?.inventory) return
-            gui.slotUnderMouse?.slotIndex ?: return
-        }
+        val hoveredItem =
+            when {
+                TerminalSolver.renderType == 3 && TerminalSolver.enabled -> TermGui.getHoveredItem(mouseX.toInt(), mouseY.toInt())
+                else -> {
+                    if (gui.slotUnderMouse?.inventory == mc.thePlayer?.inventory) return
+                    gui.slotUnderMouse?.slotIndex
+                }
+            } ?: return
 
         if (hoveredItem !in TerminalSolver.solution) return
 
@@ -65,8 +67,9 @@ object HoverTerms : Module(
                 triggerBotClock.update()
             }
             return
-        }
-        windowClick(hoveredItem, if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
+        } else if (currentTerm.equalsOneOf(TerminalTypes.PANES, TerminalTypes.STARTS_WITH, TerminalTypes.SELECT))
+            windowClick(hoveredItem, if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
+
         triggerBotClock.update()
     }
 }

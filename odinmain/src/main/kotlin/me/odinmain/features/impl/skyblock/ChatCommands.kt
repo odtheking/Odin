@@ -17,7 +17,7 @@ import kotlin.math.floor
 import kotlin.random.Random
 
 object ChatCommands : Module(
-    name = "Chat commands",
+    name = "Chat Commands",
     category = Category.SKYBLOCK,
     description = "type !help in the corresponding channel for cmd list. Use /blacklist.",
 ) {

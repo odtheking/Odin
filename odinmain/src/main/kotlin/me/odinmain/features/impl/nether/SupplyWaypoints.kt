@@ -1,8 +1,8 @@
-package me.odinmain.features.impl.kuudra
+package me.odinmain.features.impl.nether
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.impl.kuudra.NoPre.missing
+import me.odinmain.features.impl.nether.NoPre.missing
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
@@ -18,7 +18,7 @@ import kotlin.math.sin
 object SupplyWaypoints : Module(
     name = "Supply Waypoints",
     description = "Renders waypoints for supplys in Kuudra.",
-    category = Category.KUUDRA
+    category = Category.NETHER
 ) {
     private val suppliesWaypoints: Boolean by BooleanSetting("Supplies Waypoints", true, description = "Renders the supply waypoints")
     private val supplyWaypointColor: Color by ColorSetting("Supply Waypoint Color", Color.YELLOW, true, description = "Color of the supply waypoints").withDependency { suppliesWaypoints }

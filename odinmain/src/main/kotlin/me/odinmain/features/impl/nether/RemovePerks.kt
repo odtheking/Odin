@@ -1,4 +1,4 @@
-package me.odinmain.features.impl.kuudra
+package me.odinmain.features.impl.nether
 
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.Category
@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object RemovePerks : Module(
     name = "Remove Perks",
     description = "Removes certain perks from the perk menu.",
-    category = Category.KUUDRA
+    category = Category.NETHER
 ) {
     private val renderStun: Boolean by BooleanSetting("Render Stun", false, description = "Renders the stun perk")
     @SubscribeEvent

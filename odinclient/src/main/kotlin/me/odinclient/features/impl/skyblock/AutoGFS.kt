@@ -3,7 +3,6 @@ package me.odinclient.features.impl.skyblock
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 
@@ -14,18 +13,12 @@ object AutoGFS : Module(
 ) {
     private val inKuudra: Boolean by BooleanSetting("In Kuudra", true, description = "Only get pearls in Kuudra.")
     private val inDungeon: Boolean by BooleanSetting("In Dungeon", true, description = "Only get pearls in dungeons.")
-    private val sackCooldown = Clock(4000)
 
     init {
-        execute(500) {
-            if (
-                !DungeonUtils.isGhost && mc.currentScreen == null &&
-                ((inKuudra && KuudraUtils.inKuudra) || (inDungeon && DungeonUtils.inDungeons))
-            ) {
-                if (mc.thePlayer?.inventory?.mainInventory?.find { it?.itemID == "ENDER_PEARL" } == null && sackCooldown.hasTimePassed()) {
-                    sendCommand("gfs ENDER_PEARL 16")
-                    sackCooldown.update()
-                }
+        execute(4000) {
+            if (!DungeonUtils.isGhost && mc.currentScreen == null && ((inKuudra && KuudraUtils.inKuudra) || (inDungeon && DungeonUtils.inDungeons))) {
+                val enderPearlStackSize = mc.thePlayer?.inventory?.mainInventory?.find { it?.itemID == "ENDER_PEARL" }?.stackSize ?: return@execute
+                if (enderPearlStackSize < 16) sendCommand("od ep", true)
             }
         }
     }

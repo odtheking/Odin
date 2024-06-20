@@ -11,19 +11,15 @@ import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
 import me.odinmain.utils.render.*
-import me.odinmain.utils.render.RenderUtils.bind
-import me.odinmain.utils.render.RenderUtils.invoke
 import me.odinmain.utils.render.RenderUtils.outlineBounds
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
 import net.minecraft.client.gui.*
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.*
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import org.lwjgl.opengl.GL11
 
 /**
  * Custom Waypoints for Dungeons
@@ -51,7 +47,7 @@ object DungeonWaypoints : Module(
         if (!waypoints.removeAll { true }) return@ActionSetting modMessage("Current room does not have any waypoints!")
 
         DungeonWaypointConfigCLAY.saveConfig()
-        DungeonUtils.setWaypoints(room)
+        setWaypoints(room)
         glList = -1
         modMessage("Successfully reset current room!")
     }
@@ -60,11 +56,8 @@ object DungeonWaypoints : Module(
 
     data class DungeonWaypoint(
         val x: Double, val y: Double, val z: Double,
-        val color: Color,
-        val filled: Boolean,
-        val depth: Boolean,
-        val aabb: AxisAlignedBB,
-        val title: String?
+        val color: Color, val filled: Boolean, val depth: Boolean,
+        val aabb: AxisAlignedBB, val title: String?
     )
 
     override fun onKeybind() {
@@ -77,7 +70,7 @@ object DungeonWaypoints : Module(
         if ((DungeonUtils.inBoss || !DungeonUtils.inDungeons) && !mc.theWorld.isRemote) return
         val room = DungeonUtils.currentRoom ?: return
         startProfile("Dungeon Waypoints")
-        drawBoxes(room.waypoints)
+        glList = RenderUtils.drawBoxes(room.waypoints, glList, disableDepth)
         room.waypoints.filter { it.title != null }.forEach {
             Renderer.drawStringInWorld(it.title ?: "", Vec3(it.x + 0.5, it.y + 0.5, it.z + 0.5))
         }
@@ -132,7 +125,7 @@ object DungeonWaypoints : Module(
             devMessage("Added waypoint at $vec")
         }
         DungeonWaypointConfigCLAY.saveConfig()
-        DungeonUtils.setWaypoints(room)
+        setWaypoints(room)
         glList = -1
     }
 
@@ -153,97 +146,21 @@ object DungeonWaypoints : Module(
         z + .5 + (size / 2)
     ).expand(.01, .01, .01)
 
-    private fun drawBoxes(boxes: Collection<DungeonWaypoint>, depth: Boolean = disableDepth) {
-        GlStateManager.pushMatrix()
-        GlStateManager.translate(-RenderUtils.renderManager.viewerPosX, -RenderUtils.renderManager.viewerPosY, -RenderUtils.renderManager.viewerPosZ)
-        RenderUtils.blendFactor()
-        GlStateManager.disableTexture2D()
-        GlStateManager.disableLighting()
-        GlStateManager.enableBlend()
-        GL11.glLineWidth(3f)
-        if (glList != -1) {
-            GL11.glCallList(glList)
-            GlStateManager.enableTexture2D()
-            GlStateManager.disableBlend()
-            GlStateManager.enableDepth()
-            GlStateManager.resetColor()
-            GlStateManager.popMatrix()
-            return
-        } else {
-            glList = GL11.glGenLists(1)
-            GL11.glNewList(glList, GL11.GL_COMPILE)
-        }
-
-        for (box in boxes) {
-            if (!box.depth || disableDepth) GlStateManager.disableDepth()
-            else GlStateManager.enableDepth()
-            box.color.bind()
-            val aabb = box.aabb.offset(box.x, box.y, box.z)
-
-            RenderUtils.worldRenderer {
-                begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
-                pos(aabb.minX, aabb.minY, aabb.minZ).endVertex()
-                pos(aabb.minX, aabb.minY, aabb.maxZ).endVertex()
-                pos(aabb.maxX, aabb.minY, aabb.maxZ).endVertex()
-                pos(aabb.maxX, aabb.minY, aabb.minZ).endVertex()
-                pos(aabb.minX, aabb.minY, aabb.minZ).endVertex()
-
-                pos(aabb.minX, aabb.maxY, aabb.minZ).endVertex()
-                pos(aabb.minX, aabb.maxY, aabb.maxZ).endVertex()
-                pos(aabb.maxX, aabb.maxY, aabb.maxZ).endVertex()
-                pos(aabb.maxX, aabb.maxY, aabb.minZ).endVertex()
-                pos(aabb.minX, aabb.maxY, aabb.minZ).endVertex()
-
-                pos(aabb.minX, aabb.maxY, aabb.maxZ).endVertex()
-                pos(aabb.minX, aabb.minY, aabb.maxZ).endVertex()
-                pos(aabb.maxX, aabb.minY, aabb.maxZ).endVertex()
-                pos(aabb.maxX, aabb.maxY, aabb.maxZ).endVertex()
-                pos(aabb.maxX, aabb.maxY, aabb.minZ).endVertex()
-                pos(aabb.maxX, aabb.minY, aabb.minZ).endVertex()
-            }
-            RenderUtils.tessellator.draw()
-
-            if (box.filled) {
-                GlStateManager.color(box.color.r / 255f, box.color.g / 255f, box.color.b / 255f, box.color.alpha.coerceAtMost(.8f))
-                RenderUtils.worldRenderer {
-                    begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_NORMAL)
-                    pos(aabb.minX, aabb.maxY, aabb.minZ).normal(0f, 0f, -1f).endVertex()
-                    pos(aabb.maxX, aabb.maxY, aabb.minZ).normal(0f, 0f, -1f).endVertex()
-                    pos(aabb.maxX, aabb.minY, aabb.minZ).normal(0f, 0f, -1f).endVertex()
-                    pos(aabb.minX, aabb.minY, aabb.minZ).normal(0f, 0f, -1f).endVertex()
-                    pos(aabb.minX, aabb.minY, aabb.maxZ).normal(0f, 0f, 1f).endVertex()
-                    pos(aabb.maxX, aabb.minY, aabb.maxZ).normal(0f, 0f, 1f).endVertex()
-                    pos(aabb.maxX, aabb.maxY, aabb.maxZ).normal(0f, 0f, 1f).endVertex()
-                    pos(aabb.minX, aabb.maxY, aabb.maxZ).normal(0f, 0f, 1f).endVertex()
-                    pos(aabb.minX, aabb.minY, aabb.minZ).normal(0f, -1f, 0f).endVertex()
-                    pos(aabb.maxX, aabb.minY, aabb.minZ).normal(0f, -1f, 0f).endVertex()
-                    pos(aabb.maxX, aabb.minY, aabb.maxZ).normal(0f, -1f, 0f).endVertex()
-                    pos(aabb.minX, aabb.minY, aabb.maxZ).normal(0f, -1f, 0f).endVertex()
-                    pos(aabb.minX, aabb.maxY, aabb.maxZ).normal(0f, 1f, 0f).endVertex()
-                    pos(aabb.maxX, aabb.maxY, aabb.maxZ).normal(0f, 1f, 0f).endVertex()
-                    pos(aabb.maxX, aabb.maxY, aabb.minZ).normal(0f, 1f, 0f).endVertex()
-                    pos(aabb.minX, aabb.maxY, aabb.minZ).normal(0f, 1f, 0f).endVertex()
-                    pos(aabb.minX, aabb.minY, aabb.maxZ).normal(-1f, 0f, 0f).endVertex()
-                    pos(aabb.minX, aabb.maxY, aabb.maxZ).normal(-1f, 0f, 0f).endVertex()
-                    pos(aabb.minX, aabb.maxY, aabb.minZ).normal(-1f, 0f, 0f).endVertex()
-                    pos(aabb.minX, aabb.minY, aabb.minZ).normal(-1f, 0f, 0f).endVertex()
-                    pos(aabb.maxX, aabb.minY, aabb.minZ).normal(1f, 0f, 0f).endVertex()
-                    pos(aabb.maxX, aabb.maxY, aabb.minZ).normal(1f, 0f, 0f).endVertex()
-                    pos(aabb.maxX, aabb.maxY, aabb.maxZ).normal(1f, 0f, 0f).endVertex()
-                    pos(aabb.maxX, aabb.minY, aabb.maxZ).normal(1f, 0f, 0f).endVertex()
-                }
-                RenderUtils.tessellator.draw()
+    /**
+     * Sets the waypoints for the current room.
+     */
+    fun setWaypoints(curRoom: FullRoom) {
+        val room = curRoom.room
+        curRoom.waypoints = mutableListOf<DungeonWaypoint>().apply {
+            DungeonWaypointConfigCLAY.waypoints[room.data.name]?.let { waypoints ->
+                addAll(waypoints.map { waypoint ->
+                    val vec = waypoint.toVec3().rotateAroundNorth(room.rotation).addVec(x = curRoom.clayPos.x, z = curRoom.clayPos.z)
+                    DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, waypoint.color, waypoint.filled, waypoint.depth, waypoint.aabb, waypoint.title)
+                })
             }
         }
-        GL11.glEndList()
-        GlStateManager.enableTexture2D()
-        GlStateManager.disableBlend()
-        GlStateManager.enableDepth()
-        GlStateManager.resetColor()
-        GlStateManager.popMatrix()
     }
 }
-
 
 object GuiSign : GuiScreen() {
     private lateinit var textField: GuiTextField

@@ -24,6 +24,7 @@ object CustomTermGui {
             TerminalTypes.ORDER -> OrderGui.render()
             TerminalTypes.STARTS_WITH -> StartsWithGui.render()
             TerminalTypes.SELECT -> SelectAllGui.render()
+            TerminalTypes.MELODY -> {}
             TerminalTypes.NONE -> {}
         }
         scale(1f / TerminalSolver.customScale, 1f / TerminalSolver.customScale)
@@ -38,6 +39,7 @@ object CustomTermGui {
             TerminalTypes.ORDER -> OrderGui.mouseClicked(x, y, button)
             TerminalTypes.STARTS_WITH -> StartsWithGui.mouseClicked(x, y, button)
             TerminalTypes.SELECT -> SelectAllGui.mouseClicked(x, y, button)
+            TerminalTypes.MELODY -> return
             TerminalTypes.NONE -> return
         }
     }
@@ -67,10 +69,6 @@ abstract class TermGui {
             return currentGui?.itemIndexMap?.entries?.find {
                 it.value.isPointWithin(x, y)
             }?.key
-        }
-
-        fun getItemIndexMap(): MutableMap<Int, Box> {
-            return currentGui?.itemIndexMap ?: mutableMapOf()
         }
     }
 
