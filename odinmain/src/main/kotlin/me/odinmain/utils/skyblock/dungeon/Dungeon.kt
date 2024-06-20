@@ -43,7 +43,7 @@ class Dungeon {
     }
 
     private fun getCurrentFloor() {
-        if (currentArea.isArea(Island.SinglePlayer)) { runCatching { floor = Floor.E } }
+        if (currentArea.isArea(Island.SinglePlayer)) { floor = Floor.E }
         for (i in sidebarLines) {
             val line = cleanSB(i)
 

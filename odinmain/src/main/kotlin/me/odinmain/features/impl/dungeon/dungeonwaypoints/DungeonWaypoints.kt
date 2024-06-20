@@ -115,7 +115,7 @@ object DungeonWaypoints : Module(
             if (useBlockSize) getBlockAt(pos).getSelectedBoundingBox(mc.theWorld, BlockPos(0, 0, 0))?.outlineBounds() ?: return
             else AxisAlignedBB(.5 - (size / 2), .5 - (size / 2), .5 - (size / 2), .5 + (size / 2), .5 + (size / 2), .5 + (size / 2)).expand(0.002, 0.002, 0.002)
 
-        val waypoints = DungeonWaypointConfigCLAY.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
+        val waypoints = getWaypoints(room)
 
         val color = when (colorPallet) {
             0 -> color
@@ -174,6 +174,11 @@ object DungeonWaypoints : Module(
             }
         }
     }
+
+    fun getWaypoints(room: FullRoom) : MutableList<DungeonWaypoint> {
+        return DungeonWaypointConfigCLAY.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
+    }
+
 }
 
 object GuiSign : GuiScreen() {
