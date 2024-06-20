@@ -50,7 +50,7 @@ object OdinMain {
 
         registerCommands(
             mainCommand, soopyCommand,
-            termSimCommand, blacklistCommand,
+            termSimCommand, chatCommandsCommand,
             devCommand, highlightCommand,
             waypointCommand, dungeonWaypointsCommand,
             petCommand, visualWordsCommand
