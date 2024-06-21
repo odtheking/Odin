@@ -2,8 +2,8 @@ package me.odinclient.features.impl.floor7
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.M7Phases
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.network.play.client.C02PacketUseEntity
@@ -19,7 +19,7 @@ object RelicAura : Module(
 ){
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        if (DungeonUtils.getPhase() != Island.M7P5) return
+        if (DungeonUtils.getPhase() != M7Phases.P5) return
         val armorStands = mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()
             ?.firstOrNull { it.inventory?.get(4)?.displayName?.contains("Relic") == true && mc.thePlayer.getDistanceToEntity(it) < 3 } ?: return
         interactWithEntity(armorStands)

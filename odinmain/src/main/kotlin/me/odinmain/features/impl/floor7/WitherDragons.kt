@@ -20,8 +20,8 @@ import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.max
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.*
-import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.M7Phases
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.*
@@ -90,12 +90,6 @@ object WitherDragons : Module(
     val selected: Int by SelectorSetting("Color", "Green", colors, description = "The color of your relic.").withDependency { relicAnnounce && relics}
     val relicAnnounceTime: Boolean by BooleanSetting("Relic Time", true, description = "Sends how long it took you to get that relic").withDependency { relics }
 
-    val redPB = +NumberSetting("Panes PB", 1000.0, increment = 0.01, hidden = true)
-    val orangePB = +NumberSetting("Color PB", 1000.0, increment = 0.01, hidden = true)
-    val greenPB = +NumberSetting("Numbers PB", 1000.0, increment = 0.01, hidden = true)
-    val bluePB = +NumberSetting("Melody PB", 1000.0, increment = 0.01, hidden = true)
-    val purplePB = +NumberSetting("Starts With PB", 1000.0, increment = 0.01, hidden = true)
-
     lateinit var priorityDragon: WitherDragonsEnum
 
     init {
@@ -111,7 +105,7 @@ object WitherDragons : Module(
             lastDragonDeath = ""
         }
 
-        onPacket(S2APacketParticles::class.java, { DungeonUtils.getPhase() == Island.M7P5 }) {
+        onPacket(S2APacketParticles::class.java, { DungeonUtils.getPhase() == M7Phases.P5 }) {
             handleSpawnPacket(it)
         }
 
@@ -119,12 +113,12 @@ object WitherDragons : Module(
             if (relicAnnounce || relicAnnounceTime) relicsBlockPlace(it)
         }
 
-        onPacket(S29PacketSoundEffect::class.java, { DungeonUtils.getPhase() == Island.M7P5 }) {
+        onPacket(S29PacketSoundEffect::class.java, { DungeonUtils.getPhase() == M7Phases.P5 }) {
             if (it.soundName != "random.successful_hit" || !sendArrowHit || !::priorityDragon.isInitialized) return@onPacket
             if (priorityDragon.entity?.isEntityAlive == true && System.currentTimeMillis() - priorityDragon.spawnedTime < priorityDragon.skipKillTime) arrowsHit++
         }
 
-        onPacket(S04PacketEntityEquipment::class.java, { DungeonUtils.getPhase() == Island.M7P5 }) {
+        onPacket(S04PacketEntityEquipment::class.java, { DungeonUtils.getPhase() == M7Phases.P5 }) {
             dragonSprayed(it)
         }
 
@@ -133,14 +127,14 @@ object WitherDragons : Module(
         }
 
         onMessage(Regex(".*")) {
-            if (DungeonUtils.getPhase() != Island.M7P5) return@onMessage
+            if (DungeonUtils.getPhase() != M7Phases.P5) return@onMessage
             onChatPacket(it)
         }
     }
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (DungeonUtils.getPhase() != Island.M7P5) return
+        if (DungeonUtils.getPhase() != M7Phases.P5) return
 
         if (dragonHealth) renderHP()
         if (dragonTimer) renderTime()
@@ -152,13 +146,13 @@ object WitherDragons : Module(
 
     @SubscribeEvent
     fun onEntityJoin(event: EntityJoinWorldEvent) {
-        if (DungeonUtils.getPhase() != Island.M7P5) return
+        if (DungeonUtils.getPhase() != M7Phases.P5) return
         dragonJoinWorld(event)
     }
 
     @SubscribeEvent
     fun onEntityLeave(event: LivingDeathEvent) {
-        if (DungeonUtils.getPhase() != Island.M7P5) return
+        if (DungeonUtils.getPhase() != M7Phases.P5) return
         dragonLeaveWorld(event)
     }
 
