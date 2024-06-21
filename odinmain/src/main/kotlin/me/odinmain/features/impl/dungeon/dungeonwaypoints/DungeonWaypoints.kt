@@ -1,10 +1,11 @@
-package me.odinmain.features.impl.dungeon
+package me.odinmain.features.impl.dungeon.dungeonwaypoints
 
 import me.odinmain.config.DungeonWaypointConfigCLAY
-import me.odinmain.events.impl.ClickEvent
-import me.odinmain.events.impl.EnteredDungeonRoomEvent
+import me.odinmain.events.impl.*
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.clearSecrets
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.resetSecrets
 import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
@@ -14,7 +15,7 @@ import me.odinmain.utils.render.*
 import me.odinmain.utils.render.RenderUtils.outlineBounds
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.dungeon.ScanUtils
+import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
 import net.minecraft.client.gui.*
 import net.minecraft.util.*
 import net.minecraftforge.client.event.RenderGameOverlayEvent
@@ -39,6 +40,7 @@ object DungeonWaypoints : Module(
     var throughWalls: Boolean by BooleanSetting("Through walls", false, description = "If the next waypoint you place should be visible through walls.")
     var useBlockSize: Boolean by BooleanSetting("Use block size", false, description = "Use the size of the block you click for waypoint size.")
     var size: Double by NumberSetting("Size", 1.0, .125, 1.0, increment = 0.01, description = "The size of the next waypoint you place.").withDependency { !useBlockSize }
+    var secretWaypoint: Boolean by BooleanSetting("Secret", default = false, description = "Waypoints with this setting will be removed when a secret is interacted with near this waypoint.")
     private val disableDepth: Boolean by BooleanSetting("Disable Depth", false, description = "Disables depth testing for waypoints.")
     private val resetButton: () -> Unit by ActionSetting("Reset Current Room") {
         val room = DungeonUtils.currentRoom ?: return@ActionSetting modMessage("Room not found!!!")
@@ -47,17 +49,18 @@ object DungeonWaypoints : Module(
         if (!waypoints.removeAll { true }) return@ActionSetting modMessage("Current room does not have any waypoints!")
 
         DungeonWaypointConfigCLAY.saveConfig()
-        ScanUtils.setWaypoints(room)
+        setWaypoints(room)
         glList = -1
         modMessage("Successfully reset current room!")
     }
     private val debugWaypoint: Boolean by BooleanSetting("Debug Waypoint", false).withDependency { DevPlayers.isDev }
-    private var glList = -1
+    var glList = -1
 
     data class DungeonWaypoint(
         val x: Double, val y: Double, val z: Double,
         val color: Color, val filled: Boolean, val depth: Boolean,
-        val aabb: AxisAlignedBB, val title: String?
+        val aabb: AxisAlignedBB, val title: String?,
+        val secret: Boolean, var clicked: Boolean = false
     )
 
     override fun onKeybind() {
@@ -65,13 +68,24 @@ object DungeonWaypoints : Module(
         modMessage("Dungeon Waypoint editing ${if (allowEdits) "§aenabled" else "§cdisabled"}§r!")
     }
 
+    init {
+        onWorldLoad { resetSecrets() }
+
+        onMessage(Regex("(?s).*(\\d+)/\\1 Secrets.*")) { clearSecrets() }
+    }
+
+    @SubscribeEvent
+    fun onSecret(event: SecretPickupEvent) {
+        if (!allowEdits) SecretWaypoints.onSecret(event)
+    }
+
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
         if ((DungeonUtils.inBoss || !DungeonUtils.inDungeons) && !mc.theWorld.isRemote) return
         val room = DungeonUtils.currentRoom ?: return
         startProfile("Dungeon Waypoints")
-        glList = RenderUtils.drawBoxes(room.waypoints, glList, disableDepth)
-        room.waypoints.filter { it.title != null }.forEach {
+        glList = RenderUtils.drawBoxes(room.waypoints.filter { !it.clicked }, glList, disableDepth)
+        room.waypoints.filter { it.title != null && !it.clicked }.forEach {
             Renderer.drawStringInWorld(it.title ?: "", Vec3(it.x + 0.5, it.y + 0.5, it.z + 0.5))
         }
 
@@ -101,7 +115,7 @@ object DungeonWaypoints : Module(
             if (useBlockSize) getBlockAt(pos).getSelectedBoundingBox(mc.theWorld, BlockPos(0, 0, 0))?.outlineBounds() ?: return
             else AxisAlignedBB(.5 - (size / 2), .5 - (size / 2), .5 - (size / 2), .5 + (size / 2), .5 + (size / 2), .5 + (size / 2)).expand(0.002, 0.002, 0.002)
 
-        val waypoints = DungeonWaypointConfigCLAY.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
+        val waypoints = getWaypoints(room)
 
         val color = when (colorPallet) {
             0 -> color
@@ -115,17 +129,17 @@ object DungeonWaypoints : Module(
         if (mc.thePlayer.isSneaking) {
             GuiSign.setCallback { enteredText ->
                 waypoints.removeIf { it.toVec3().equal(vec) }
-                waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, aabb, enteredText))
+                waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, aabb, enteredText, secretWaypoint))
             }
             mc.displayGuiScreen(GuiSign)
         } else if (waypoints.removeIf { it.toVec3().equal(vec) }) {
             devMessage("Removed waypoint at $vec")
         } else {
-            waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, aabb, ""))
+            waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, aabb, "", secretWaypoint))
             devMessage("Added waypoint at $vec")
         }
         DungeonWaypointConfigCLAY.saveConfig()
-        ScanUtils.setWaypoints(room)
+        setWaypoints(room)
         glList = -1
     }
 
@@ -145,9 +159,27 @@ object DungeonWaypoints : Module(
         y + .5 + (size / 2),
         z + .5 + (size / 2)
     ).expand(.01, .01, .01)
+
+    /**
+     * Sets the waypoints for the current room.
+     */
+    fun setWaypoints(curRoom: FullRoom) {
+        val room = curRoom.room
+        curRoom.waypoints = mutableListOf<DungeonWaypoint>().apply {
+            DungeonWaypointConfigCLAY.waypoints[room.data.name]?.let { waypoints ->
+                addAll(waypoints.map { waypoint ->
+                    val vec = waypoint.toVec3().rotateAroundNorth(room.rotation).addVec(x = curRoom.clayPos.x, z = curRoom.clayPos.z)
+                    DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, waypoint.color, waypoint.filled, waypoint.depth, waypoint.aabb, waypoint.title, waypoint.secret, waypoint.clicked)
+                })
+            }
+        }
+    }
+
+    fun getWaypoints(room: FullRoom) : MutableList<DungeonWaypoint> {
+        return DungeonWaypointConfigCLAY.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
+    }
+
 }
-
-
 
 object GuiSign : GuiScreen() {
     private lateinit var textField: GuiTextField

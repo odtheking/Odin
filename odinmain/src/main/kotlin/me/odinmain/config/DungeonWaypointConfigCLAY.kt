@@ -4,7 +4,7 @@ import com.google.gson.*
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.*
 import me.odinmain.OdinMain.mc
-import me.odinmain.features.impl.dungeon.DungeonWaypoints.DungeonWaypoint
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.DungeonWaypoint
 import me.odinmain.utils.render.Color
 import java.io.File
 import java.io.IOException

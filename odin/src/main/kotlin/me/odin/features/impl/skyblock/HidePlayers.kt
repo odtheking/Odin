@@ -6,8 +6,8 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.ServerUtils.getPing
-import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.M7Phases
 import net.minecraftforge.client.event.RenderPlayerEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -23,7 +23,7 @@ object HidePlayers : Module(
     @SubscribeEvent
     fun onRenderEntity(event: RenderPlayerEvent.Pre) {
         if (mc.isSingleplayer) return
-        val atDevs = (mc.thePlayer.getDistance(108.63, 120.0, 94.0) <= 1.8 || mc.thePlayer.getDistance(63.5, 127.0, 35.5) <= 1.8) && DungeonUtils.getPhase() == Island.M7P3
+        val atDevs = (mc.thePlayer.getDistance(108.63, 120.0, 94.0) <= 1.8 || mc.thePlayer.getDistance(63.5, 127.0, 35.5) <= 1.8) && DungeonUtils.getPhase() == M7Phases.P3
         if (event.entity.getPing() != 1 || event.entity == mc.thePlayer || (!atDevs && onlyDevs)) return
         if (event.entity.getDistanceToEntity(mc.thePlayer) <= distance || hideAll) event.isCanceled = true
     }
