@@ -4,7 +4,7 @@ import com.google.gson.*
 import com.google.gson.reflect.TypeToken
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.EnteredDungeonRoomEvent
-import me.odinmain.features.impl.dungeon.DungeonWaypoints.setWaypoints
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.setWaypoints
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inBoss

@@ -7,6 +7,8 @@ import me.odinmain.features.impl.dungeon.LeapMenu
 import me.odinmain.features.impl.dungeon.LeapMenu.odinSorting
 import me.odinmain.features.impl.dungeon.Mimic
 import me.odinmain.utils.*
+import me.odinmain.utils.skyblock.Island
+import me.odinmain.utils.skyblock.LocationUtils.currentArea
 import me.odinmain.utils.skyblock.PlayerUtils.posX
 import me.odinmain.utils.skyblock.PlayerUtils.posZ
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getDungeonTeammates
@@ -41,6 +43,7 @@ class Dungeon {
     }
 
     private fun getCurrentFloor() {
+        if (currentArea.isArea(Island.SinglePlayer)) { floor = Floor.E }
         for (i in sidebarLines) {
             val line = cleanSB(i)
 

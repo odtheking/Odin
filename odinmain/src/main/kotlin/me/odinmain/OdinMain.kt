@@ -6,6 +6,7 @@ import me.odinmain.commands.registerCommands
 import me.odinmain.config.*
 import me.odinmain.events.EventDispatcher
 import me.odinmain.features.ModuleManager
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints
 import me.odinmain.features.impl.render.*
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.ClickGUI

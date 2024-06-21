@@ -1,7 +1,8 @@
 package me.odinmain.commands.impl
 
 import me.odinmain.commands.commodore
-import me.odinmain.features.impl.dungeon.DungeonWaypoints
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.resetSecrets
 import me.odinmain.utils.isHexaDecimal
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.modMessage
@@ -24,6 +25,16 @@ val dungeonWaypointsCommand = commodore("dwp", "dungeonwaypoints") {
         if (size !in 0.1..1.0) return@runs modMessage("Size is not within 0.1 - 1 !")
         DungeonWaypoints.size = size
         modMessage("Changed size to: ${DungeonWaypoints.size}")
+    }
+
+    literal("resetsecrets").runs {
+        resetSecrets()
+        modMessage("reset secret waypoints")
+    }
+
+    literal("secret").runs {
+        DungeonWaypoints.secretWaypoint = !DungeonWaypoints.secretWaypoint
+        modMessage("Changed secret to: ${DungeonWaypoints.secretWaypoint}")
     }
 
     literal("useblocksize").runs {

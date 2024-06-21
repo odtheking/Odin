@@ -1,6 +1,6 @@
 package me.odinmain.utils.skyblock.dungeon.tiles
 
-import me.odinmain.features.impl.dungeon.DungeonWaypoints.DungeonWaypoint
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.DungeonWaypoint
 import me.odinmain.utils.Vec2
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
