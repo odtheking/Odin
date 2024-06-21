@@ -3,13 +3,15 @@ package me.odinclient.features.impl.skyblock
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.skyblock.LocationUtils.inSkyblock
+import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.init.Blocks
 import net.minecraft.inventory.ContainerChest
+import me.odinmain.utils.name
 import net.minecraft.item.ItemBlock
 import net.minecraftforge.client.event.GuiOpenEvent
-import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 
 /**
  * Module to automatically do the Melody's Harp minigame.
@@ -39,12 +41,13 @@ object AutoHarp : Module(
     }
 
     @SubscribeEvent
-    fun onRender(event: GuiScreenEvent.BackgroundDrawnEvent) {
+    fun onClientTick(event: TickEvent.ClientTickEvent) {
         if (!inHarp || mc.thePlayer == null) return
         val container = mc.thePlayer.openContainer ?: return
         if (container !is ContainerChest) return
-        val inventoryName = container.inventorySlots?.get(0)?.inventory?.name
-        if (inventoryName == null || !inventoryName.startsWith("Harp -")) {
+        val containerChest = mc.thePlayer.openContainer as? ContainerChest ?: return
+        if (containerChest.name == "Harp -") {
+
             inHarp = false
             return
         }
@@ -54,13 +57,7 @@ object AutoHarp : Module(
         for (ii in 0..6) {
             val slot = container.inventorySlots[37 + ii]
             if ((slot.stack?.item as? ItemBlock)?.block === Blocks.quartz_block) {
-                mc.playerController.windowClick(
-                    container.windowId,
-                    slot.slotNumber,
-                    2,
-                    3,
-                    mc.thePlayer
-                )
+                windowClick(container.windowId, slot.slotNumber, 0, true) // Assuming left-click mode (0) and instant action (true)
                 break
             }
         }
