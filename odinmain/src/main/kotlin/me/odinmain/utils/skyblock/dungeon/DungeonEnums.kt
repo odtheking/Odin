@@ -72,7 +72,7 @@ enum class Blessing(
  * @property floorNumber The numerical representation of the floor, where E represents the entrance floor.
  * @property isInMM Indicates whether the floor is a mini-boss floor (M1 to M7).
  */
-enum class Floor(val personalBest: PersonalBest, val secretPrecentage: Float = 1f) {
+enum class Floor(val personalBest: PersonalBest, val secretPercentage: Float = 1f) {
     E(PersonalBest("Entrance", 4), 0f),
     F1(PersonalBest("Floor 1", 6), 0.3f),
     F2(PersonalBest("Floor 2", 6), 0.4f),

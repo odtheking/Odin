@@ -101,7 +101,7 @@ object DungeonUtils {
         currentDungeon?.passedRooms ?: emptyList()
 
     inline val neededSecretsAmount: Int get() =
-        ceil(totalSecrets * floor.secretPrecentage).toInt()
+        ceil(totalSecrets * floor.secretPercentage).toInt()
 
     /**
      * Checks if the current dungeon floor number matches any of the specified options.
