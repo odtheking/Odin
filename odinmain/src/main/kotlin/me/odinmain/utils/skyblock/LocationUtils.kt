@@ -1,12 +1,12 @@
 package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
+import me.odinmain.events.impl.SkyblockJoinIslandEvent
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.skyblock.dungeon.Dungeon
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getPhase
 import net.minecraft.client.network.NetHandlerPlayClient
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -24,19 +24,22 @@ object LocationUtils {
     init {
         Executor(500) {
             if (!inSkyblock)
-                inSkyblock = onHypixel && mc.theWorld.scoreboard.getObjectiveInDisplaySlot(1)
-                    ?.let { cleanSB(it.displayName).contains("SKYBLOCK") } ?: false
+                inSkyblock = onHypixel && mc.theWorld.scoreboard.getObjectiveInDisplaySlot(1)?.let {
+                    cleanSB(it.displayName).contains("SKYBLOCK") } ?: false
 
-            if (currentDungeon == null)
-                if (inSkyblock && sidebarLines.any { cleanSB(it).run { (contains("The Catacombs") && !contains("Queue")) || contains("Dungeon Cleared:") } })
+            if (currentDungeon == null && ((inSkyblock &&
+                sidebarLines.any { cleanSB(it).run { (contains("The Catacombs") && !contains("Queue")) || contains("Dungeon Cleared:") } }) || currentArea.isArea(Island.SinglePlayer)))
                     currentDungeon = Dungeon()
-
-            if (currentArea.isArea(Island.Unknown) || currentDungeon != null)
-                currentArea = getArea()
 
             if (currentArea.isArea(Island.Kuudra) && kuudraTier == 0) {
                 getLines().find { cleanLine(it).contains("Kuudra's Hollow (") }?.let {
                     kuudraTier = it.substringBefore(")").lastOrNull()?.digitToIntOrNull() ?: 0 }
+            }
+
+            if (currentArea.isArea(Island.Unknown) || currentDungeon != null) {
+                val previousArea = currentArea
+                currentArea = getArea()
+                if (!currentArea.isArea(Island.Unknown) && previousArea != currentArea) SkyblockJoinIslandEvent(currentArea).postAndCatch()
             }
 
         }.register()
@@ -47,6 +50,7 @@ object LocationUtils {
         onHypixel = false
         inSkyblock = false
         currentArea = Island.Unknown
+        SkyblockJoinIslandEvent(currentArea).postAndCatch()
         currentDungeon = null
     }
 
@@ -70,7 +74,6 @@ object LocationUtils {
         }.getOrDefault(false)
     }
 
-
     /**
      * Returns the current area from the tab list info.
      * If no info can be found, return Island.Unknown.
@@ -83,21 +86,12 @@ object LocationUtils {
         val netHandlerPlayClient: NetHandlerPlayClient = mc.thePlayer?.sendQueue ?: return Island.Unknown
         val list = netHandlerPlayClient.playerInfoMap ?: return Island.Unknown
 
-        if (currentDungeon != null)
-            return if (getPhase() != Island.Unknown) getPhase() else if (currentDungeon!!.inBoss) Island.DungeonBoss else Island.Dungeon
+        val area = list.find {
+            it?.displayName?.unformattedText?.startsWith("Area: ") == true ||
+                    it?.displayName?.unformattedText?.startsWith("Dungeon: ") == true
+        }?.displayName?.formattedText
 
-        var area: String? = null
-
-        for (entry in list) {
-            val areaText = entry?.displayName?.unformattedText ?: continue
-
-            if (areaText.startsWith("Area: ")) {
-                area = areaText.substringAfter("Area: ")
-                if (!area.contains("Private Island")) break
-            }
-
-        }
-        return if (area == null) Island.Unknown else Island.entries.firstOrNull { area.contains(it.displayName) } ?: Island.Unknown.also { println("Unknown area: $area") }
+        return Island.entries.firstOrNull { area?.contains(it.displayName) == true } ?: Island.Unknown
     }
 }
 

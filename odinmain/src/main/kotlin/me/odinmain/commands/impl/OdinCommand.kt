@@ -5,7 +5,7 @@ import com.github.stivais.commodore.utils.SyntaxException
 import me.odinmain.OdinMain.display
 import me.odinmain.OdinMain.mc
 import me.odinmain.commands.commodore
-import me.odinmain.features.impl.dungeon.DungeonWaypoints
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.impl.render.ServerHud.colorizeFPS
 import me.odinmain.features.impl.render.ServerHud.colorizePing

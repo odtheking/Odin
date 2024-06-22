@@ -10,6 +10,7 @@ import me.odinmain.utils.render.RenderUtils.renderY
 import me.odinmain.utils.render.RenderUtils.renderZ
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.M7Phases
 import net.minecraft.util.*
 import kotlin.math.sqrt
 
@@ -23,7 +24,7 @@ object Arrows : Module(
 
     init {
         execute(10) {
-            if (!triggerBotClock.hasTimePassed(triggerBotDelay) || mc.thePlayer?.heldItem?.isShortbow == false || DungeonUtils.getPhase() != Island.M7P3) return@execute
+            if (!triggerBotClock.hasTimePassed(triggerBotDelay) || mc.thePlayer?.heldItem?.isShortbow == false || DungeonUtils.getPhase() != M7Phases.P3) return@execute
             setBowTrajectoryHeading(0f)
             if (mc.thePlayer?.heldItem?.itemID == "TERMINATOR") {
                 setBowTrajectoryHeading(-5f)
