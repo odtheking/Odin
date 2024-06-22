@@ -30,7 +30,7 @@ object DragonPriority {
     }
 
     private fun sortPriority(spawningDragon: MutableList<WitherDragonsEnum>): WitherDragonsEnum {
-        val totalPower = Blessings.POWER.current * if (paulBuff) 1.25 else 1.0 + if (Blessings.TIME.current > 0) 2.5 else 0.0
+        val totalPower = Blessing.POWER.current * if (paulBuff) 1.25 else 1.0 + if (Blessing.TIME.current > 0) 2.5 else 0.0
 
         val playerClass = DungeonUtils.currentDungeonPlayer.clazz
 
