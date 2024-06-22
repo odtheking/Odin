@@ -10,7 +10,7 @@ import net.minecraft.util.ResourceLocation
  * Data class representing a player in a dungeon, including their name, class, skin location, and associated player entity.
  *
  * @property name The name of the player.
- * @property clazz The player's class, defined by the [Classes] enum.
+ * @property clazz The player's class, defined by the [DungeonClass] enum.
  * @property locationSkin The resource location of the player's skin.
  * @property entity The optional associated player entity. Defaults to `null`.
  * @property isDead The player's death status. Defaults to `false`.
@@ -47,7 +47,7 @@ enum class DungeonClass(
     Unknown(Color.WHITE, 0, 0)
 }
 
-enum class Blessings(
+enum class Blessing(
     var regex: Regex,
     val displayString: String,
     var current: Int = 0
@@ -72,14 +72,14 @@ enum class Blessings(
  * @property floorNumber The numerical representation of the floor, where E represents the entrance floor.
  * @property isInMM Indicates whether the floor is a mini-boss floor (M1 to M7).
  */
-enum class Floor(val personalBest: PersonalBest) {
-    E(PersonalBest("Entrance", 4)),
-    F1(PersonalBest("Floor 1", 6)),
-    F2(PersonalBest("Floor 2", 6)),
-    F3(PersonalBest("Floor 3", 8)),
-    F4(PersonalBest("Floor 4", 5)),
-    F5(PersonalBest("Floor 5", 5)),
-    F6(PersonalBest("Floor 6", 7)),
+enum class Floor(val personalBest: PersonalBest, val secretPrecentage: Float = 1f) {
+    E(PersonalBest("Entrance", 4), 0f),
+    F1(PersonalBest("Floor 1", 6), 0.3f),
+    F2(PersonalBest("Floor 2", 6), 0.4f),
+    F3(PersonalBest("Floor 3", 8), 0.5f),
+    F4(PersonalBest("Floor 4", 5), 0.6f),
+    F5(PersonalBest("Floor 5", 5), 0.7f),
+    F6(PersonalBest("Floor 6", 7), 0.85f),
     F7(PersonalBest("Floor 7", 10)),
     M1(PersonalBest("Master 1", 6)),
     M2(PersonalBest("Master 2", 6)),

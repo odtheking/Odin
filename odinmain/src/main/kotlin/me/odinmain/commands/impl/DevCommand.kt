@@ -39,6 +39,7 @@ val devCommand = commodore("oddev") {
             |Floor: ${DungeonUtils.floorNumber}
             |InBoss: ${DungeonUtils.inBoss}
             |Secrets: ${DungeonUtils.secretCount} / ${DungeonUtils.totalSecrets}
+            |NeededSecrets: ${DungeonUtils.neededSecretsAmount}
             |Deaths: ${DungeonUtils.deathCount}
             |Crypts: ${DungeonUtils.cryptCount}
             |OpenRooms: ${DungeonUtils.openRoomCount}
@@ -56,7 +57,7 @@ val devCommand = commodore("oddev") {
             |Teammates: ${DungeonUtils.dungeonTeammates.joinToString { "${it.name} (${it.clazz})" }}
             |TeammatesNoSelf: ${DungeonUtils.dungeonTeammatesNoSelf.map { it.name }}
             |LeapTeammates: ${DungeonUtils.leapTeammates.map { it.name }}
-            |Blessings: ${Blessings.entries.joinToString { "${it.name}: ${it.current}" }}
+            |Blessings: ${Blessing.entries.joinToString { "${it.name}: ${it.current}" }}
             ${getChatBreak()}
         """.trimIndent(), false)
     }

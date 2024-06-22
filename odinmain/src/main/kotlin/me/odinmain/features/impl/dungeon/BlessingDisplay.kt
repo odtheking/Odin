@@ -6,7 +6,6 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.*
-import me.odinmain.utils.skyblock.dungeon.Blessings
 import kotlin.math.max
 
 object BlessingDisplay : Module(
@@ -27,11 +26,11 @@ object BlessingDisplay : Module(
 
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         val blessings = listOf(
-            Blessing(Blessings.POWER, power, powerColor),
-            Blessing(Blessings.TIME, time, timeColor),
-            Blessing(Blessings.STONE, stone, stoneColor),
-            Blessing(Blessings.LIFE, life, lifeColor),
-            Blessing(Blessings.WISDOM, wisdom, wisdomColor)
+            Blessing(Blessing.POWER, power, powerColor),
+            Blessing(Blessing.TIME, time, timeColor),
+            Blessing(Blessing.STONE, stone, stoneColor),
+            Blessing(Blessing.LIFE, life, lifeColor),
+            Blessing(Blessing.WISDOM, wisdom, wisdomColor)
         )
 
         val activeBlessings = blessings.filter { a -> a.enabled }
@@ -47,5 +46,5 @@ object BlessingDisplay : Module(
         getMCTextWidth("Power: 29").toFloat() to 10f * max(activeBlessings.count(), 1)
     }
 
-    data class Blessing(val type: Blessings, val enabled: Boolean, val color: Color)
+    data class Blessing(val type: me.odinmain.utils.skyblock.dungeon.Blessing, val enabled: Boolean, val color: Color)
 }

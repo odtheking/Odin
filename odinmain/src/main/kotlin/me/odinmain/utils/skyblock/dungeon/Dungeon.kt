@@ -80,7 +80,7 @@ class Dungeon {
     }
 
     private fun handleHeaderFooterPacket(packet: S47PacketPlayerListHeaderFooter) {
-        Blessings.entries.forEach { blessing ->
+        Blessing.entries.forEach { blessing ->
             blessing.regex.find(packet.footer.unformattedText.noControlCodes)?.let { match ->
                 blessing.current = romanToInt(match.groupValues[1])
             }

@@ -6,6 +6,7 @@ import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.LocationUtils.currentDungeon
 import me.odinmain.utils.skyblock.PlayerUtils.posY
+import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
 import me.odinmain.utils.skyblock.getItemSlot
 import net.minecraft.block.BlockSkull
 import net.minecraft.block.state.IBlockState
@@ -15,6 +16,7 @@ import net.minecraft.tileentity.TileEntitySkull
 import net.minecraft.util.BlockPos
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import kotlin.math.ceil
 import kotlin.math.floor
 
 object DungeonUtils {
@@ -92,11 +94,14 @@ object DungeonUtils {
     inline val mimicKilled: Boolean get() =
         currentDungeon?.dungeonStats?.mimicKilled ?: false
 
-    inline val currentRoom get() =
+    inline val currentRoom: FullRoom? get() =
         currentDungeon?.currentRoom
 
     inline val passedRooms get() =
         currentDungeon?.passedRooms ?: emptyList()
+
+    inline val neededSecretsAmount: Int get() =
+        ceil(totalSecrets * floor.secretPrecentage).toInt()
 
     /**
      * Checks if the current dungeon floor number matches any of the specified options.
@@ -137,7 +142,7 @@ object DungeonUtils {
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
-        Blessings.entries.forEach { it.current = 0 }
+        Blessing.entries.forEach { it.current = 0 }
     }
 
     private val tablistRegex = Regex("^\\[(\\d+)] (?:\\[\\w+] )*(\\w+) .*?\\((\\w+)(?: (\\w+))*\\)$")
@@ -148,7 +153,7 @@ object DungeonUtils {
 
         for ((networkPlayerInfo, line) in tabList) {
 
-            val (_, sbLevel, name, clazz, clazzLevel) = tablistRegex.find(line.noControlCodes)?.groupValues ?: continue
+            val (_, _, name, clazz, _) = tablistRegex.find(line.noControlCodes)?.groupValues ?: continue
 
             addTeammate(name, clazz, teammates, networkPlayerInfo) // will fail to find the EMPTY or DEAD class and won't add them to the list
             if (clazz == "DEAD" || clazz == "EMPTY") {
