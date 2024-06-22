@@ -28,7 +28,7 @@ object Splits : Module(
         } else {
             val (times, current) = SplitsManager.getSplitTimes(currentSplits)
             if (currentSplits.splits.isEmpty()) return@HudSetting 0f to 0f
-            val x = getMCTextWidth("Split 0: 0h 00m 00s")
+            val x = getMCTextWidth("Split: 0h 00m 00s")
             currentSplits.splits.dropLast(1).forEachIndexed { index, split ->
                 val time = formatTime(if (index >= times.size) 0 else times[index])
                 mcText(split.name, 1f, 9f + index * getMCTextHeight(), 1f, Color.WHITE, shadow = true, center = false)
@@ -44,16 +44,20 @@ object Splits : Module(
         }
     }
     private val bossEntrySplit: Boolean by BooleanSetting("Boss Entry Split", true)
+    val sendSplits: Boolean by BooleanSetting("Send Splits", true)
+    val sendOnlyPB: Boolean by BooleanSetting("Send Only PB", false)
 
     private val singlePlayerPBs = PersonalBest("SinglePlayer", 4)
     private val kuudraPBs = PersonalBest("Kuudra", 4)
+    private var currentPBValues = mutableListOf<Double>()
 
     init {
         onMessage(Regex(".*")){
             SplitsManager.handleMessage(it, currentSplits)
         }
         onWorldLoad {
-            currentSplits = SplitsGroup(emptyList(), PersonalBest("Unknown", 0))
+            currentSplits = SplitsGroup(mutableListOf(), singlePlayerPBs)
+            currentPBValues.clear()
         }
     }
 
@@ -63,6 +67,7 @@ object Splits : Module(
         modMessage("Loading splits for ${LocationUtils.currentArea.name}")
         currentSplits.splits.forEach { split -> split.time = 0L }
         SplitsManager.currentSplits = currentSplits
+        currentPBValues = currentSplits.personalBest?.pb ?: mutableListOf()
     }
 
     private fun initializeSplits(island: Island): SplitsGroup? {
@@ -72,14 +77,14 @@ object Splits : Module(
             Island.Dungeon -> {
                 val split = dungeonSplits[DungeonUtils.floor.floorNumber] ?: return null
 
-                split.add(0, Split(Regex("Starting in 1 second\\."), "§2Blood Open"))
+                split.add(0, Split(Regex("\\[NPC] Mort: Here, I found this map when I first entered the dungeon\\."), "§2Blood Open"))
                 split.add(1, Split(Regex("The BLOOD DOOR has been opened!"), "§bBlood Clear"))
                 split.add(2, Split(Regex("\\[BOSS] The Watcher: You have proven yourself\\. You may pass\\."), "§dBoss Entry"))
-                split.add(Split(Regex("\\s{29}> EXTRA STATS <"), ""))
+                split.add(Split(Regex("^\\s*☠ Defeated (.+) in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?\$"), "§1Total"))
 
                 SplitsGroup(split, DungeonUtils.floor.personalBest)
             }
-
+            // add rest of kuudra tiers
             Island.Kuudra -> {
                 if (LocationUtils.kuudraTier != 5) return null
                 SplitsGroup(mutableListOf(

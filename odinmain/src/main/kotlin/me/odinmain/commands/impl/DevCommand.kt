@@ -17,11 +17,6 @@ import net.minecraft.util.ChatComponentText
 @OptIn(DelicateCoroutinesApi::class)
 val devCommand = commodore("oddev") {
 
-    literal("getdata") {
-        literal("entity").runs { copyEntityData() }
-        literal("block").runs { copyBlockData() }
-    }
-
     literal("giveaotv").runs {
         sendCommand("give @p minecraft:diamond_shovel 1 0 {ExtraAttributes:{ethermerge:1b}}")
     }

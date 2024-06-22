@@ -6,13 +6,9 @@ import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.getWa
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.glList
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.setWaypoints
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.toVec3
-import me.odinmain.utils.equal
-import me.odinmain.utils.pos
-import me.odinmain.utils.rotateToNorth
+import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.dungeon.ScanUtils
-import me.odinmain.utils.subtractVec
 import net.minecraft.util.Vec3
 
 object SecretWaypoints {

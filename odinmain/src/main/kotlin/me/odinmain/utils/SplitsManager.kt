@@ -1,13 +1,15 @@
 package me.odinmain.utils
 
+import me.odinmain.features.impl.skyblock.Splits
 import me.odinmain.utils.skyblock.PersonalBest
+import me.odinmain.utils.skyblock.modMessage
 
 data class Split(val regex: Regex, val name: String, var time: Long = 0L)
-data class SplitsGroup(val splits: List<Split>, val personalBest: PersonalBest)
+data class SplitsGroup(val splits: List<Split>, val personalBest: PersonalBest?)
 
 object SplitsManager {
 
-    var currentSplits: SplitsGroup = SplitsGroup(emptyList(), PersonalBest("Unknown", 0))
+    var currentSplits: SplitsGroup = SplitsGroup(emptyList(), null)
 
     fun getSplitTimes(currentSplits: SplitsGroup): Pair<List<Long>, Int> {
         if (currentSplits.splits.isEmpty() || currentSplits.splits[0].time == 0L) return List(currentSplits.splits.size) { 0L } to -1
@@ -33,10 +35,19 @@ object SplitsManager {
         val index = splitsGroup.splits.indexOf(currentSplit).takeIf { it != 0 } ?: return
         val currentSplitTime = (currentSplit.time - splitsGroup.splits[index - 1].time) / 1000.0
 
-        splitsGroup.personalBest.time(index - 1, currentSplitTime, "s§7!", "§6${splitsGroup.splits[index - 1].name} §7took §6", addPBString = true, addOldPBString = true)
+        splitsGroup.personalBest?.time(index - 1, currentSplitTime, "s§7!", "§6${splitsGroup.splits[index - 1].name} §7took §6", addPBString = true, addOldPBString = true, alwaysSendPB = true, sendOnlyPB = Splits.sendOnlyPB)
+
+        if (index == splitsGroup.splits.size - 1) {
+            getSplitTimes(splitsGroup).first.forEachIndexed { i, it ->
+                val timeString = formatTime(it)
+                val name = if (i == splitsGroup.splits.size - 1) "Total" else splitsGroup.splits[i].name
+                if (Splits.sendSplits) modMessage("§6$name §7took §6$timeString §7to complete.")
+            }
+
+            splitsGroup.personalBest?.time(splitsGroup.splits.size, currentSplitTime, "s§7!", "§6Total time §7took §6", addPBString = true, addOldPBString = true, alwaysSendPB = true, sendOnlyPB = Splits.sendOnlyPB)
+        }
     }
 }
-
 
 private val entryRegexes = listOf(
     Regex("^\\[BOSS] Bonzo: Gratz for making it this far, but I'm basically unbeatable\\.$"),
@@ -47,7 +58,6 @@ private val entryRegexes = listOf(
     Regex("^\\[BOSS] Sadan: So you made it all the way here\\.\\.\\. Now you wish to defy me\\? Sadan\\?!$"),
     Regex("^\\[BOSS] Maxor: WELL! WELL! WELL! LOOK WHO'S HERE!$")
 )
-
 
 val singlePlayerSplitGroup = mutableListOf(
     Split(Regex("aaa"), "Blood Open"),

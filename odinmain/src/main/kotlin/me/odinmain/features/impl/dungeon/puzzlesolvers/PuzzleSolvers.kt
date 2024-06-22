@@ -117,7 +117,6 @@ object PuzzleSolvers : Module(
         onWorldLoad {
             WaterSolver.reset()
             TPMaze.reset()
-            TicTacToe.reset()
             IceFillSolver.reset()
             BlazeSolver.reset()
             BeamsSolver.reset()

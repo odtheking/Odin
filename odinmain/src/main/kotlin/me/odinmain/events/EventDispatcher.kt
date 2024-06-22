@@ -7,22 +7,16 @@ import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.isSecret
-import net.minecraft.block.state.IBlockState
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.entity.item.EntityItem
-import net.minecraft.entity.passive.EntityBat
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
-import net.minecraft.network.play.server.S02PacketChat
-import net.minecraft.network.play.server.S29PacketSoundEffect
-import net.minecraft.network.play.server.S32PacketConfirmTransaction
-import net.minecraft.util.BlockPos
+import net.minecraft.network.play.server.*
 import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object EventDispatcher {
-
 
     private val drops = listOf(
         "Health Potion VIII Splash Potion", "Healing Potion 8 Splash Potion", "Healing Potion VIII Splash Potion", "Healing VIII Splash Potion",
@@ -74,7 +68,7 @@ object EventDispatcher {
     }
 
     /**
-     * Dispatches [GuiLoadedEvent]
+     * Dispatches [GuiEvent.GuiLoadedEvent]
      */
     @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
@@ -90,5 +84,4 @@ object EventDispatcher {
 
         GuiEvent.GuiLoadedEvent(chestName, container).postAndCatch()
     }
-
 }

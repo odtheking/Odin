@@ -30,7 +30,7 @@ object CopyChat : Module(
         val components = mutableSetOf<String>()
 
         for (x in 0 until maxChatWidth step 10) {
-            val scannedComponent = chatGui.getChatComponent(x, Mouse.getY()).formattedText ?: continue
+            val scannedComponent = chatGui.getChatComponent(x, Mouse.getY())?.formattedText ?: continue
             components.add(scannedComponent)
         }
         val message = components.joinToString(separator = "") { it }

@@ -30,10 +30,10 @@ import kotlin.math.*
 
 object RenderUtils {
 
-    val tessellator: Tessellator = Tessellator.getInstance()
+    private val tessellator: Tessellator = Tessellator.getInstance()
     val worldRenderer: WorldRenderer = tessellator.worldRenderer
     private val beaconBeam = ResourceLocation("textures/entity/beacon_beam.png")
-    val renderManager: RenderManager = mc.renderManager
+    private val renderManager: RenderManager = mc.renderManager
 
     /**
      * Gets the rendered x-coordinate of an entity based on its last tick and current tick positions.

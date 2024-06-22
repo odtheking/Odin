@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.skyblock
 
+import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -9,7 +10,6 @@ import me.odinmain.utils.name
 import me.odinmain.utils.skyblock.*
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
-import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
 
@@ -41,7 +41,7 @@ object PetKeybinds : Module(
     val petList: MutableList<String> by ListSetting("List", mutableListOf())
 
     @SubscribeEvent
-    fun checkKeybinds(event: GuiScreenEvent.KeyboardInputEvent.Pre) {
+    fun checkKeybinds(event: GuiEvent.GuiKeyPressEvent) {
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
         if (chest !is ContainerChest) return
 

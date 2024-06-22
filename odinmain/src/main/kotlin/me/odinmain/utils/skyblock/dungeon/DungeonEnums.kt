@@ -73,21 +73,21 @@ enum class Blessings(
  * @property isInMM Indicates whether the floor is a mini-boss floor (M1 to M7).
  */
 enum class Floor(val personalBest: PersonalBest) {
-    E(PersonalBest("Entrance", 3)),
-    F1(PersonalBest("Floor 1", 5)),
-    F2(PersonalBest("Floor 2", 5)),
-    F3(PersonalBest("Floor 3", 7)),
-    F4(PersonalBest("Floor 4", 4)),
-    F5(PersonalBest("Floor 5", 4)),
-    F6(PersonalBest("Floor 6", 6)),
-    F7(PersonalBest("Floor 7", 9)),
-    M1(PersonalBest("Master 1", 3)),
-    M2(PersonalBest("Master 2", 5)),
-    M3(PersonalBest("Master 3", 7)),
-    M4(PersonalBest("Master 4", 4)),
-    M5(PersonalBest("Master 5", 4)),
-    M6(PersonalBest("Master 6", 6)),
-    M7(PersonalBest("Master 7", 9));
+    E(PersonalBest("Entrance", 4)),
+    F1(PersonalBest("Floor 1", 6)),
+    F2(PersonalBest("Floor 2", 6)),
+    F3(PersonalBest("Floor 3", 8)),
+    F4(PersonalBest("Floor 4", 5)),
+    F5(PersonalBest("Floor 5", 5)),
+    F6(PersonalBest("Floor 6", 7)),
+    F7(PersonalBest("Floor 7", 10)),
+    M1(PersonalBest("Master 1", 6)),
+    M2(PersonalBest("Master 2", 6)),
+    M3(PersonalBest("Master 3", 8)),
+    M4(PersonalBest("Master 4", 5)),
+    M5(PersonalBest("Master 5", 5)),
+    M6(PersonalBest("Master 6", 7)),
+    M7(PersonalBest("Master 7", 10));
 
     /**
      * Gets the numerical representation of the floor.

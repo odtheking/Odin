@@ -70,8 +70,8 @@ object ModuleManager {
         CopyChat, PlayerDisplay, FarmKeys, /*PartyEncoding,*/ PetKeybinds, /*SkillsSucks,*/
 
         // kuudra
-        BuildHelper, FreshTimer, KuudraDisplay, NoPre, PearlWaypoints, RemovePerks, SupplyWaypoints, TeamHighlight,
-        VanqNotifier, KuudraReminders, KuudraSplits, KuudraRequeue,
+        BuildHelper, FreshTimer, KuudraDisplay, NoPre, PearlWaypoints, RemovePerks, SupplyHelper, TeamHighlight,
+        VanqNotifier, KuudraReminders, KuudraRequeue,
     )
 
     init {

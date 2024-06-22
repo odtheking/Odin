@@ -20,9 +20,7 @@ object Mimic : Module(
     category = Category.DUNGEON
 ) {
     val mimicMessage: String by StringSetting("Mimic Message", "Mimic Killed!", 128, description = "Message sent when mimic is detected as killed")
-    val reset: () -> Unit by ActionSetting("Send message", description = "Sends Mimic killed message in party chat.") {
-        partyMessage(mimicMessage)
-    }
+    val reset: () -> Unit by ActionSetting("Send message", description = "Sends Mimic killed message in party chat.") { partyMessage(mimicMessage) }
     private val mimicBox: Boolean by BooleanSetting("Mimic Box", false, description = "Draws a box around the mimic chest.")
     private val style: Int by SelectorSetting("Style", Renderer.defaultStyle, Renderer.styles, description = Renderer.styleDesc).withDependency { mimicBox }
     private val color: Color by ColorSetting("Color", Color(0, 0, 0, 0.4f), allowAlpha = true, description = "The color of the box.").withDependency { mimicBox }

@@ -25,9 +25,7 @@ object SecretChime : Module(
     ).withDependency { sound == defaultSounds.size - 1 }
     private val volume: Float by NumberSetting("Volume", 1f, 0, 1, .01f, description = "Volume of the sound.")
     private val pitch: Float by NumberSetting("Pitch", 2f, 0, 2, .01f, description = "Pitch of the sound.")
-    val reset: () -> Unit by ActionSetting("Play sound") {
-        playSecretSound()
-    }
+    val reset: () -> Unit by ActionSetting("Play sound") { playSecretSound() }
     private val inBoss: Boolean by BooleanSetting("In Boss Room", false, description = "Prevent playing the sound if in boss room.")
 
     private var lastPlayed = System.currentTimeMillis()

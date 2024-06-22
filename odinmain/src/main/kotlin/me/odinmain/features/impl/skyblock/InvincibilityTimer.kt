@@ -46,6 +46,7 @@ object InvincibilityTimer : Module(
         if (invincibilityAnnounce) partyMessage("$invincibilityType Procced")
         invincibilityTime = Timer(60, invincibilityType)
     }
+
     @SubscribeEvent
     fun onServerTick(event: RealServerTick) {
         invincibilityTime.time--

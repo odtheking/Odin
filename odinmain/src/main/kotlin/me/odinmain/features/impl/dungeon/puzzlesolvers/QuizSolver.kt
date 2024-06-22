@@ -13,8 +13,7 @@ import java.nio.charset.StandardCharsets
 object QuizSolver {
     private var answers: MutableMap<String, List<String>>
     private val gson = GsonBuilder().setPrettyPrinting().create()
-    private val isr = this::class.java.getResourceAsStream("/quizAnswers.json")
-        ?.let { InputStreamReader(it, StandardCharsets.UTF_8) }
+    private val isr = this::class.java.getResourceAsStream("/quizAnswers.json")?.let { InputStreamReader(it, StandardCharsets.UTF_8) }
     private var triviaAnswers: List<String>? = null
 
     private var triviaOptions: MutableList<TriviaAnswer> = MutableList(3) { TriviaAnswer(null, false) }
