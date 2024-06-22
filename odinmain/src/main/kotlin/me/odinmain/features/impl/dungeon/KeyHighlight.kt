@@ -1,6 +1,6 @@
 package me.odinmain.features.impl.dungeon
 
-import me.odinmain.OdinMain
+import me.odinmain.OdinMain.isLegitVersion
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -42,7 +42,7 @@ object KeyHighlight : Module(
         }
 
         val pos = entity.positionVector.addVec(-0.5, 1, -0.5)
-        Renderer.drawBox(pos.toAABB(), color, fillAlpha = 0f, outlineWidth = thickness, depth = OdinMain.isLegitVersion)
+        Renderer.drawBox(pos.toAABB(), color, fillAlpha = 0f, outlineWidth = thickness, depth = isLegitVersion)
     }
 
     init {

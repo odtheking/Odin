@@ -1,4 +1,4 @@
-package me.odinmain.features.impl.kuudra
+package me.odinmain.features.impl.nether
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -11,7 +11,7 @@ import net.minecraft.client.entity.EntityOtherPlayerMP
 object KuudraReminders : Module(
     name = "Kuudra Reminders",
     description = "Displays reminders about Kuudra.",
-    category = Category.KUUDRA
+    category = Category.NETHER
 ) {
     private val displayText: Boolean by BooleanSetting("Display Text", true, description = "Displays kuudra information in chat")
     private val playSound: Boolean by BooleanSetting("Play Sound", true, description = "Plays a sound when a kuudra event occurs")

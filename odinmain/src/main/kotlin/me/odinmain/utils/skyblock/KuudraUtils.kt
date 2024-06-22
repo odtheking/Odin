@@ -3,7 +3,7 @@ package me.odinmain.utils.skyblock
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.events.impl.EntityLeaveWorldEvent
-import me.odinmain.features.impl.kuudra.NoPre
+import me.odinmain.features.impl.nether.NoPre
 import me.odinmain.utils.ServerUtils.getPing
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
@@ -30,7 +30,7 @@ object KuudraUtils {
     var buildingPiles = mutableListOf<EntityArmorStand>()
 
     inline val inKuudra get() =
-        LocationUtils.inSkyblock && LocationUtils.currentArea == Island.Kuudra
+        LocationUtils.inSkyblock && LocationUtils.currentArea.isArea(Island.Kuudra)
 
     data class KuudraPlayer(val playerName: String, var eatFresh: Boolean = false, var eatFreshTime: Long = 0, var entity: EntityPlayer? = null)
     @SubscribeEvent

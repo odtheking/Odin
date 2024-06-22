@@ -7,7 +7,6 @@ import me.odinmain.features.Module
 import me.odinmain.utils.addVec
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -26,9 +25,7 @@ object TerracottaTimer : Module(
     @SubscribeEvent
     fun onBlockPacket(event: BlockChangeEvent) {
         if (!DungeonUtils.isFloor(6) || !DungeonUtils.inBoss || !event.update.block.isFlowerPot) return
-        terracottaSpawning.add(
-            Terracotta(Vec3(event.pos).addVec(.5, 1.5, .5), if (LocationUtils.currentDungeon?.floor?.isInMM == true) 1200.0 else 1500.0)
-        )
+        terracottaSpawning.add(Terracotta(Vec3(event.pos).addVec(.5, 1.5, .5), if (DungeonUtils.floor.isInMM) 1200.0 else 1500.0))
     }
 
     @SubscribeEvent

@@ -18,8 +18,7 @@
     "mixins.block.MixinBlockMushroom",
     "mixins.block.MixinBlockNetherWart",
     "mixins.block.MixinBlockSkull",
-    "mixins.entity.MixinEntityLivingBase",
-    "mixins.other.MixinNEURenderListener"
+    "mixins.entity.MixinEntityLivingBase"
   ],
   "client": [
     "accessors.IEntityPlayerSPAccessor",

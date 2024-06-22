@@ -7,8 +7,8 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.DropdownSetting
 import me.odinmain.utils.*
-import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.M7Phases
 import me.odinmain.utils.skyblock.getSkullValue
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
@@ -73,7 +73,7 @@ object RenderOptimizer : Module(
             event.isCanceled = true
 
 
-        if (DungeonUtils.getPhase() == Island.M7P5 && hideParticles &&
+        if (DungeonUtils.getPhase() == M7Phases.P5 && hideParticles &&
             !event.packet.particleType.name.containsOneOf("ENCHANTMENT TABLE", "FLAME", "FIREWORKS_SPARK"))
             event.isCanceled = true
 
@@ -90,7 +90,7 @@ object RenderOptimizer : Module(
 
     private fun removeTentacles(entity: Entity) {
         val armorStand = entity as? EntityArmorStand
-        if (DungeonUtils.getPhase() == Island.M7P5 && getSkullValue(armorStand)?.contains(TENTACLE_TEXTURE) == true) armorStand?.setDead()
+        if (DungeonUtils.getPhase() == M7Phases.P5 && getSkullValue(armorStand)?.contains(TENTACLE_TEXTURE) == true) armorStand?.setDead()
     }
 
     private fun handleHealerFairy(entity: Entity) {

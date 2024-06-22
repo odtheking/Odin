@@ -26,6 +26,7 @@ object TeammatesHighlight : Module(
     private val thickness: Float by NumberSetting("Line Width", 4f, 1.0, 10.0, 0.5, description = "The thickness of the outline.")
     private val depthCheck: Boolean by BooleanSetting("Depth check", false, description = "Highlights teammates only when they are visible.")
     private val inBoss: Boolean by BooleanSetting("In Boss", true, description = "Highlights teammates in boss rooms.")
+    private val removeVanillaTag: Boolean by BooleanSetting("Remove Vanilla Tag", true, description = "Removes the vanilla name tag.")
 
     @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
@@ -43,6 +44,7 @@ object TeammatesHighlight : Module(
         if (!showName || !shouldRender()) return
         dungeonTeammatesNoSelf.forEach { teammate ->
             val entity = teammate.entity ?: return@forEach
+            if (removeVanillaTag) entity.alwaysRenderNameTag = false
             if (entity.distanceSquaredTo(mc.thePlayer) >= 2333) return@forEach
             Renderer.drawStringInWorld(
                 if (showClass) "${teammate.name} §e[${teammate.clazz.name[0]}]" else teammate.name,

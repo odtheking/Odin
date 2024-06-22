@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.skyblock
 
+import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -9,7 +10,6 @@ import me.odinmain.utils.name
 import me.odinmain.utils.skyblock.*
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
-import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
 
@@ -22,6 +22,7 @@ object PetKeybinds : Module(
     private val nextPageKeybind: Keybinding by KeybindSetting("Next Page Keybind", Keyboard.KEY_NONE, "Goes to the next page.")
     private val previousPageKeybind: Keybinding by KeybindSetting("Previous Page Keybind", Keyboard.KEY_NONE, "Goes to the previous page.")
     private val delay: Long by NumberSetting("Delay", 0, 0.0, 10000.0, 10.0, description = "The delay between each click .")
+    private val nounequip: Boolean by BooleanSetting("Disable Unequip", default = false, description = "Prevents using a pets keybind to unequip a pet. Does not prevent unequip keybind or normal clicking.")
     private val advanced: Boolean by DropdownSetting("Show Settings", false)
 
     private val pet1: Keybinding by KeybindSetting("Pet 1", Keyboard.KEY_1, "Pet 1 on the list.").withDependency { advanced }
@@ -40,16 +41,18 @@ object PetKeybinds : Module(
     val petList: MutableList<String> by ListSetting("List", mutableListOf())
 
     @SubscribeEvent
-    fun checkKeybinds(event: GuiScreenEvent.KeyboardInputEvent.Pre) {
+    fun checkKeybinds(event: GuiEvent.GuiKeyPressEvent) {
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
         if (chest !is ContainerChest) return
 
-        val matchResult = Regex("Pets \\((\\d)/(\\d)\\)").find(chest.name) ?: return
-        val (current, total) = matchResult.destructured
+        val matchResult = Regex("Pets(?: \\((\\d)/(\\d)\\))?").find(chest.name) ?: return
+        val (current, total) = listOf(matchResult.groups[1]?.value?.toIntOrNull() ?: 1, matchResult.groups[2]?.value?.toIntOrNull() ?: 1)
+
+        if (pets.any { it.isDown() } || arrayOf(nextPageKeybind, previousPageKeybind, unequipKeybind).any { it.isDown() }) event.isCanceled = true
 
         val index = when {
-            nextPageKeybind.isDown() -> if (current.toInt() < total.toInt()) 53 else return modMessage("You are already on the last page.")
-            previousPageKeybind.isDown() -> if (current.toInt() > 1) 45 else return modMessage("You are already on the first page.")
+            nextPageKeybind.isDown() -> if (current < total) 53 else return modMessage("You are already on the last page.")
+            previousPageKeybind.isDown() -> if (current > 1) 45 else return modMessage("You are already on the first page.")
             unequipKeybind.isDown() -> getItemIndexInContainerChestByLore(chest, "§7§cClick to despawn!", 10..43) ?: return modMessage("Couldn't find equipped pet")
             else -> {
                 val petIndex = pets.indexOfFirst { it.isDown() }
@@ -58,11 +61,10 @@ object PetKeybinds : Module(
             }
         }
 
+        if (nounequip && getItemIndexInContainerChestByLore(chest, "§7§cClick to despawn!", 10..43) == index && !unequipKeybind.isDown()) return modMessage("That pet is already equipped!")
         if (!clickCoolDown.hasTimePassed() || index == null) return
         if (index > chest.lowerChestInventory.sizeInventory - 1 || index < 1) return modMessage("Invalid index. $index, ${chest.name}")
         mc.playerController.windowClick(chest.windowId, index, 0, 0, mc.thePlayer)
         clickCoolDown.update()
-
-        event.isCanceled = true
     }
 }

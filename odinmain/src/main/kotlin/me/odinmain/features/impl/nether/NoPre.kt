@@ -1,4 +1,4 @@
-package me.odinmain.features.impl.kuudra
+package me.odinmain.features.impl.nether
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -10,7 +10,7 @@ import net.minecraft.util.Vec3
 object NoPre : Module(
     name = "Pre-Spot Alert",
     description = "Alerts the party about the state of a pre spot.",
-    category = Category.KUUDRA
+    category = Category.NETHER
 ) {
     private val showAlert: Boolean by BooleanSetting("Show Alert", true, description = "Shows the alert")
 
@@ -67,7 +67,7 @@ object NoPre : Module(
             }
             if (second && pre) return@onMessage
             if (!pre && preSpot.isNotEmpty()) {
-                msg = "No ${preSpot}!"
+                msg = "No $preSpot!"
             } else if (!second) {
                 val location = when (preSpot) {
                     "Triangle" -> "Shop"
@@ -82,10 +82,9 @@ object NoPre : Module(
             if (showAlert) PlayerUtils.alert(msg, time = 10)
         }
 
-        onMessage(Regex("Party > ?(\\[.+])? ?(.+): No ?(.*)!")) {
-            val match = Regex("Party > ?(\\[.+])? ?(.+): No ?(.*)!").find(it) ?: return@onMessage
-            val spot = match.groupValues.lastOrNull()?.replace("!", "") ?: return@onMessage
-            missing = spot
+        onMessage(Regex("^Party > \\[?(?:MVP|VIP)?\\+*]? ?(.{1,16}): No ?(.*)!")) {
+            val match = Regex("^Party > \\[?(?:MVP|VIP)?\\+*]? ?(.{1,16}): No ?(.*)!").find(it) ?: return@onMessage
+            missing = match.groupValues.lastOrNull() ?: return@onMessage
         }
     }
 }

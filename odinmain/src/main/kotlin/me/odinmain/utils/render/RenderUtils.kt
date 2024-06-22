@@ -4,6 +4,7 @@ import gg.essential.universal.shader.BlendState
 import gg.essential.universal.shader.UShader
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.DungeonWaypoint
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.getBlockAt
@@ -29,10 +30,10 @@ import kotlin.math.*
 
 object RenderUtils {
 
-    val tessellator: Tessellator = Tessellator.getInstance()
+    private val tessellator: Tessellator = Tessellator.getInstance()
     val worldRenderer: WorldRenderer = tessellator.worldRenderer
     private val beaconBeam = ResourceLocation("textures/entity/beacon_beam.png")
-    val renderManager: RenderManager = mc.renderManager
+    private val renderManager: RenderManager = mc.renderManager
 
     /**
      * Gets the rendered x-coordinate of an entity based on its last tick and current tick positions.
@@ -695,4 +696,97 @@ object RenderUtils {
 
     fun AxisAlignedBB.outlineBounds(): AxisAlignedBB =
         expand(0.0020000000949949026, 0.0020000000949949026, 0.0020000000949949026)
+
+
+    fun drawBoxes(boxes: Collection<DungeonWaypoint>, glList: Int, disableDepth: Boolean = false): Int {
+        var newGlList = glList
+        GlStateManager.pushMatrix()
+        GlStateManager.translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
+        blendFactor()
+        GlStateManager.disableTexture2D()
+        GlStateManager.disableLighting()
+        GlStateManager.enableBlend()
+        GL11.glLineWidth(3f)
+        if (newGlList  != -1) {
+            GL11.glCallList(newGlList)
+            GlStateManager.enableTexture2D()
+            GlStateManager.disableBlend()
+            GlStateManager.enableDepth()
+            GlStateManager.resetColor()
+            GlStateManager.popMatrix()
+            return newGlList
+        } else {
+            newGlList = GL11.glGenLists(1)
+            GL11.glNewList(newGlList, GL11.GL_COMPILE)
+        }
+
+        for (box in boxes) {
+            if (!box.depth || disableDepth) GlStateManager.disableDepth()
+            else GlStateManager.enableDepth()
+            box.color.bind()
+            val aabb = box.aabb.offset(box.x, box.y, box.z)
+
+            worldRenderer {
+                begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
+                pos(aabb.minX, aabb.minY, aabb.minZ).endVertex()
+                pos(aabb.minX, aabb.minY, aabb.maxZ).endVertex()
+                pos(aabb.maxX, aabb.minY, aabb.maxZ).endVertex()
+                pos(aabb.maxX, aabb.minY, aabb.minZ).endVertex()
+                pos(aabb.minX, aabb.minY, aabb.minZ).endVertex()
+
+                pos(aabb.minX, aabb.maxY, aabb.minZ).endVertex()
+                pos(aabb.minX, aabb.maxY, aabb.maxZ).endVertex()
+                pos(aabb.maxX, aabb.maxY, aabb.maxZ).endVertex()
+                pos(aabb.maxX, aabb.maxY, aabb.minZ).endVertex()
+                pos(aabb.minX, aabb.maxY, aabb.minZ).endVertex()
+
+                pos(aabb.minX, aabb.maxY, aabb.maxZ).endVertex()
+                pos(aabb.minX, aabb.minY, aabb.maxZ).endVertex()
+                pos(aabb.maxX, aabb.minY, aabb.maxZ).endVertex()
+                pos(aabb.maxX, aabb.maxY, aabb.maxZ).endVertex()
+                pos(aabb.maxX, aabb.maxY, aabb.minZ).endVertex()
+                pos(aabb.maxX, aabb.minY, aabb.minZ).endVertex()
+            }
+            tessellator.draw()
+
+            if (box.filled) {
+                GlStateManager.color(box.color.r / 255f, box.color.g / 255f, box.color.b / 255f, box.color.alpha.coerceAtMost(.8f))
+                worldRenderer {
+                    begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_NORMAL)
+                    pos(aabb.minX, aabb.maxY, aabb.minZ).normal(0f, 0f, -1f).endVertex()
+                    pos(aabb.maxX, aabb.maxY, aabb.minZ).normal(0f, 0f, -1f).endVertex()
+                    pos(aabb.maxX, aabb.minY, aabb.minZ).normal(0f, 0f, -1f).endVertex()
+                    pos(aabb.minX, aabb.minY, aabb.minZ).normal(0f, 0f, -1f).endVertex()
+                    pos(aabb.minX, aabb.minY, aabb.maxZ).normal(0f, 0f, 1f).endVertex()
+                    pos(aabb.maxX, aabb.minY, aabb.maxZ).normal(0f, 0f, 1f).endVertex()
+                    pos(aabb.maxX, aabb.maxY, aabb.maxZ).normal(0f, 0f, 1f).endVertex()
+                    pos(aabb.minX, aabb.maxY, aabb.maxZ).normal(0f, 0f, 1f).endVertex()
+                    pos(aabb.minX, aabb.minY, aabb.minZ).normal(0f, -1f, 0f).endVertex()
+                    pos(aabb.maxX, aabb.minY, aabb.minZ).normal(0f, -1f, 0f).endVertex()
+                    pos(aabb.maxX, aabb.minY, aabb.maxZ).normal(0f, -1f, 0f).endVertex()
+                    pos(aabb.minX, aabb.minY, aabb.maxZ).normal(0f, -1f, 0f).endVertex()
+                    pos(aabb.minX, aabb.maxY, aabb.maxZ).normal(0f, 1f, 0f).endVertex()
+                    pos(aabb.maxX, aabb.maxY, aabb.maxZ).normal(0f, 1f, 0f).endVertex()
+                    pos(aabb.maxX, aabb.maxY, aabb.minZ).normal(0f, 1f, 0f).endVertex()
+                    pos(aabb.minX, aabb.maxY, aabb.minZ).normal(0f, 1f, 0f).endVertex()
+                    pos(aabb.minX, aabb.minY, aabb.maxZ).normal(-1f, 0f, 0f).endVertex()
+                    pos(aabb.minX, aabb.maxY, aabb.maxZ).normal(-1f, 0f, 0f).endVertex()
+                    pos(aabb.minX, aabb.maxY, aabb.minZ).normal(-1f, 0f, 0f).endVertex()
+                    pos(aabb.minX, aabb.minY, aabb.minZ).normal(-1f, 0f, 0f).endVertex()
+                    pos(aabb.maxX, aabb.minY, aabb.minZ).normal(1f, 0f, 0f).endVertex()
+                    pos(aabb.maxX, aabb.maxY, aabb.minZ).normal(1f, 0f, 0f).endVertex()
+                    pos(aabb.maxX, aabb.maxY, aabb.maxZ).normal(1f, 0f, 0f).endVertex()
+                    pos(aabb.maxX, aabb.minY, aabb.maxZ).normal(1f, 0f, 0f).endVertex()
+                }
+                tessellator.draw()
+            }
+        }
+        GL11.glEndList()
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
+        GlStateManager.enableDepth()
+        GlStateManager.resetColor()
+        GlStateManager.popMatrix()
+        return newGlList
+    }
 }

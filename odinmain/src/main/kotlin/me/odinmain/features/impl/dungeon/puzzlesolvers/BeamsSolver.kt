@@ -24,9 +24,7 @@ object BeamsSolver {
     init {
         try {
             val text = isr?.readText()
-            lanternPairs = gson.fromJson(
-                text, object : TypeToken<List<List<Int>>>() {}.type
-            )
+            lanternPairs = gson.fromJson(text, object : TypeToken<List<List<Int>>>() {}.type)
             isr?.close()
         } catch (e: Exception) {
             e.printStackTrace()
@@ -72,7 +70,6 @@ object BeamsSolver {
                     event.update.block != Blocks.sea_lantern && event.old.block == Blocks.sea_lantern
         }.forEach { currentLanternPairs.remove(it.key) }
     }
-
 
     fun reset() {
         scanned = false

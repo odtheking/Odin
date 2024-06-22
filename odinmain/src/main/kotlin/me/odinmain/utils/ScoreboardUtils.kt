@@ -61,3 +61,9 @@ val tabListOrder = Comparator<NetworkPlayerInfo> { o1, o2 ->
         o2.playerTeam?.registeredName ?: ""
     ).compare(o1.gameProfile.name, o2.gameProfile.name).result()
 }
+
+fun getDungeonTabList(): List<Pair<NetworkPlayerInfo, String>>? {
+    val tabEntries = getTabList
+    if (tabEntries.size < 18 || !tabEntries[0].second.contains("§r§b§lParty §r§f(")) return null
+    return tabEntries
+}

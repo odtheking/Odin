@@ -3,16 +3,25 @@ package me.odinmain.utils.skyblock.dungeon
 import com.google.gson.*
 import com.google.gson.reflect.TypeToken
 import me.odinmain.OdinMain.mc
-import me.odinmain.utils.Vec2
-import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.skyblock.dungeon.tiles.RoomData
-import me.odinmain.utils.skyblock.dungeon.tiles.RoomDataDeserializer
+import me.odinmain.events.impl.EnteredDungeonRoomEvent
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.setWaypoints
+import me.odinmain.utils.*
+import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inBoss
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
+import me.odinmain.utils.skyblock.dungeon.tiles.*
 import net.minecraft.block.Block
 import net.minecraft.util.BlockPos
+import net.minecraft.util.EnumFacing
+import net.minecraftforge.event.world.WorldEvent
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 import java.io.FileNotFoundException
 
+
 object ScanUtils {
-    val roomList: Set<RoomData> = try {
+    private val roomList: Set<RoomData> = try {
         GsonBuilder()
             .registerTypeAdapter(RoomData::class.java, RoomDataDeserializer())
             .create().fromJson(
@@ -33,10 +42,9 @@ object ScanUtils {
         setOf()
     }
 
-    fun getRoomData(hash: Int): RoomData? =
+    private fun getRoomData(hash: Int): RoomData? =
         roomList.find { it.cores.any { core -> hash == core } }
 
-    fun getCore(pos: Vec2): Int = getCore(pos.x, pos.z)
 
     fun getCore(x: Int, z: Int): Int {
         val blocks = arrayListOf<Int>()
@@ -47,5 +55,90 @@ object ScanUtils {
             }
         }
         return blocks.joinToString("").hashCode()
+    }
+
+    private const val ROOM_SIZE = 32
+    private const val START_X = -185
+    private const val START_Z = -185
+    private var lastRoomPos: Pair<Int, Int> = Pair(0, 0)
+
+    @SubscribeEvent
+    fun onTick(event: ClientTickEvent) {
+        if (event.phase != TickEvent.Phase.END) {
+            if ((!inDungeons && mc.theWorld?.isRemote == false) || inBoss) {
+                EnteredDungeonRoomEvent(null).postAndCatch()
+                return
+            }
+        }
+        if (mc.theWorld == null /*|| !inDungeons*/ || inBoss) return
+
+        val xPos = START_X + ((mc.thePlayer.posX + 200) / 32).toInt() * ROOM_SIZE
+        val zPos = START_Z + ((mc.thePlayer.posZ + 200) / 32).toInt() * ROOM_SIZE
+
+        if (lastRoomPos.equal(xPos, zPos)) return
+        lastRoomPos = Pair(xPos, zPos)
+
+        val room = scanRoom(xPos, zPos) ?: return
+        val positions = findRoomTilesRecursively(room.x, room.z, room, mutableSetOf())
+
+        val fullRoom = FullRoom(room, BlockPos(0, 0, 0), positions, emptyList())
+        val topLayer = getTopLayerOfRoom(fullRoom.positions.first().x, fullRoom.positions.first().z)
+        fullRoom.room.rotation = Rotations.entries.dropLast(1).find { rotation ->
+            fullRoom.positions.any { pos ->
+                val blockPos = BlockPos(pos.x + rotation.x, topLayer, pos.z + rotation.z)
+                val isCorrectClay = getBlockIdAt(blockPos) == 159 &&
+                        EnumFacing.HORIZONTALS.all { facing ->
+                            getBlockIdAt(blockPos.add(facing.frontOffsetX, 0, facing.frontOffsetZ)).equalsOneOf(159, 0)
+                        }
+                if (isCorrectClay) fullRoom.clayPos = blockPos
+                return@any isCorrectClay
+            }
+        } ?: Rotations.NONE
+
+        devMessage("Found rotation ${fullRoom.room.rotation}, clay pos: ${fullRoom.clayPos}")
+        setWaypoints(fullRoom)
+        EnteredDungeonRoomEvent(fullRoom).postAndCatch()
+    }
+
+    private fun findRoomTilesRecursively(x: Int, z: Int, room: Room, visited: MutableSet<Vec2>): List<ExtraRoom> {
+        val tiles = mutableListOf<ExtraRoom>()
+        val pos = Vec2(x, z)
+        if (visited.contains(pos)) return tiles
+        visited.add(pos)
+        val core = getCore(x, z)
+        if (room.data.cores.any { core == it }) {
+            tiles.add(ExtraRoom(x, z, core))
+            EnumFacing.HORIZONTALS.forEach {
+                tiles.addAll(findRoomTilesRecursively(x + it.frontOffsetX * ROOM_SIZE, z + it.frontOffsetZ * ROOM_SIZE, room, visited))
+            }
+        }
+        return tiles
+    }
+
+    private fun scanRoom(x: Int, z: Int): Room? {
+        val roomCore = getCore(x, z)
+        return Room(x, z, getRoomData(roomCore) ?: return null).apply {
+            core = roomCore
+        }
+    }
+
+    /**
+     * Gets the top layer of blocks in a room (the roof) for finding the rotation of the room.
+     * This could be made recursive, but it's only a slightly cleaner implementation so idk
+     * @param x The x of the room to scan
+     * @param z The z of the room to scan
+     * @return The y-value of the roof, this is the y-value of the blocks.
+     */
+    private fun getTopLayerOfRoom(x: Int, z: Int): Int {
+        var currentHeight = 170
+        while (isAir(x, currentHeight, z) && currentHeight > 70) {
+            currentHeight--
+        }
+        return currentHeight
+    }
+
+    @SubscribeEvent
+    fun onWorldLoad(event: WorldEvent.Load) {
+        lastRoomPos = 0 to 0
     }
 }

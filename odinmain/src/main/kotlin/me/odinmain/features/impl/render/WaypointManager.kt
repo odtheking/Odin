@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.render
 
-import kotlinx.coroutines.DelicateCoroutinesApi
 import me.odinmain.config.WaypointConfig
 import me.odinmain.ui.waypoint.WaypointGUI
 import me.odinmain.utils.clock.Clock
@@ -8,6 +7,7 @@ import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.runIn
+import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.LocationUtils.currentArea
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.util.Vec3
@@ -32,13 +32,13 @@ object WaypointManager {
     fun addWaypoint(name: String = "§fWaypoint", vec3: Vec3i, color: Color = randomColor()) =
         addWaypoint(Waypoint(if (Waypoints.onlyDistance) "" else name, vec3.x, vec3.y, vec3.z, color))
 
-    fun addWaypoint(waypoint: Waypoint, area: String = currentArea?.displayName!!) {
+    fun addWaypoint(waypoint: Waypoint, area: String = currentArea.displayName!!) {
         waypoints.getOrPut(area) { mutableListOf() }.add(waypoint)
         WaypointConfig.saveConfig()
     }
 
     fun removeWaypoint(name: String) {
-        val matchingWaypoint = waypoints[currentArea?.displayName]?.find { it.name.noControlCodes.lowercase() == name } ?: return
+        val matchingWaypoint = waypoints[currentArea.displayName]?.find { it.name.noControlCodes.lowercase() == name } ?: return
         removeWaypoint(matchingWaypoint)
     }
 
@@ -53,7 +53,7 @@ object WaypointManager {
     }
 
     fun addTempWaypoint(name: String = "§fWaypoint", x: Int, y: Int, z: Int) {
-        if (currentArea == null) return modMessage("You are not in Skyblock.")
+        if (currentArea.isArea(Island.Unknown)) return modMessage("You are not in Skyblock.")
         if (!Waypoints.enabled) return
         if (listOf(x, y,z).any { abs(it) > 5000}) return modMessage("§cWaypoint out of bounds.")
         if (temporaryWaypoints.any { it.first.x == x && it.first.y == y && it.first.z == z }) return modMessage("§cWaypoint already exists at $x, $y, $z.")
@@ -77,7 +77,7 @@ object WaypointManager {
 
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
-        if (!Waypoints.enabled || currentArea == null) return
+        if (!Waypoints.enabled || currentArea.isArea(Island.Unknown)) return
         temporaryWaypoints.removeAll {
             it.first.renderBeacon()
             it.second.hasTimePassed()
@@ -88,13 +88,11 @@ object WaypointManager {
         }
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
         temporaryWaypoints.clear()
         runIn(80) {
-            if (currentArea != null) WaypointGUI.updateElements(currentArea?.displayName!!)
-
+            if (!currentArea.isArea(Island.Unknown)) WaypointGUI.updateElements(currentArea?.displayName!!)
         }
     }
 

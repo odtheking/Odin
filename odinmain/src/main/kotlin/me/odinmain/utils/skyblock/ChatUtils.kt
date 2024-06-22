@@ -3,6 +3,7 @@ package me.odinmain.utils.skyblock
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.render.ClickGUIModule.devMessages
 import me.odinmain.features.impl.render.DevPlayers
+import me.odinmain.features.impl.skyblock.ChatCommands
 import net.minecraft.event.ClickEvent
 import net.minecraft.event.HoverEvent
 import net.minecraft.util.*
@@ -39,6 +40,7 @@ fun rollDice(): Int = (1..6).random()
  * @param clientSide If `true`, the command is executed client-side; otherwise, server-side.
  */
 fun sendCommand(text: Any, clientSide: Boolean = false) {
+    if (LocationUtils.currentArea.isArea(Island.SinglePlayer)) return modMessage("Sending command: $text clientSide: $clientSide")
     if (clientSide) ClientCommandHandler.instance.executeCommand(mc.thePlayer, "/$text")
     else sendChatMessage("/$text")
 }
@@ -126,13 +128,11 @@ fun privateMessage(message: Any, name: String) {
  * @param name Name for private message.
  * @param channel Channel to send the message.
  */
-fun channelMessage(message: Any, name: String, channel: String) {
+fun channelMessage(message: Any, name: String, channel: ChatCommands.ChatChannel) {
     when (channel) {
-        "guild" -> guildMessage(message)
-        "party" -> partyMessage(message)
-        "private" -> privateMessage(message, name)
-        // Add more cases as needed for other channels
-        else -> throw IllegalArgumentException("Unsupported channel: $channel")
+        ChatCommands.ChatChannel.GUILD -> guildMessage(message)
+        ChatCommands.ChatChannel.PARTY -> partyMessage(message)
+        ChatCommands.ChatChannel.PRIVATE -> privateMessage(message, name)
     }
 }
 

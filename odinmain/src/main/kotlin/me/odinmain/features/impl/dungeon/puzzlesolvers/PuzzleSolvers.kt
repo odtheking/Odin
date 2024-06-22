@@ -14,7 +14,6 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object PuzzleSolvers : Module(
     name = "Puzzle Solvers",
@@ -23,7 +22,7 @@ object PuzzleSolvers : Module(
     key = null
 ) {
     private val waterDropDown: Boolean by DropdownSetting("Water")
-    private val waterSolver: Boolean by BooleanSetting("Water Board", false, description = "Shows you the solution to the water puzzle.").withDependency { waterDropDown }
+    private val waterSolver: Boolean by BooleanSetting("Water Board Solver", false, description = "Shows you the solution to the water puzzle.").withDependency { waterDropDown }
     val showOrder: Boolean by BooleanSetting("Show Order", true, description = "Shows the order of the levers to click.").withDependency { waterSolver && waterDropDown }
     val showTracer: Boolean by BooleanSetting("Show Tracer", true, description = "Shows a tracer to the next lever.").withDependency { waterSolver && waterDropDown }
     val tracerColorFirst: Color by ColorSetting("Tracer Color First", Color.GREEN, true, description = "Color for the first tracer").withDependency { showTracer && waterDropDown }
@@ -42,11 +41,11 @@ object PuzzleSolvers : Module(
         TPMaze.reset()
     }.withDependency { tpMaze && mazeDropDown }
 
-    private val tttDropDown: Boolean by DropdownSetting("Tic Tac Toe")
+    /*private val tttDropDown: Boolean by DropdownSetting("Tic Tac Toe")
     private val tttSolver: Boolean by BooleanSetting("Tic Tac Toe", false, description = "Shows you the solution for the TTT puzzle").withDependency { tttDropDown }
     val tttColor: Color by ColorSetting("TTT Color", Color.GREEN, true, description = "Color for the tic tac toe solver").withDependency { tttSolver && tttDropDown }
     val tttStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { tttSolver && tttDropDown }
-
+*/
     private val iceFillDropDown: Boolean by DropdownSetting("Ice Fill")
     private val iceFillSolver: Boolean by BooleanSetting("Ice Fill Solver", false, description = "Solver for the ice fill puzzle").withDependency { iceFillDropDown }
     private val iceFillColor: Color by ColorSetting("Ice Fill Color", Color.PINK, true, description = "Color for the ice fill solver").withDependency { iceFillSolver && iceFillDropDown }
@@ -67,8 +66,8 @@ object PuzzleSolvers : Module(
         BlazeSolver.reset()
     }.withDependency { blazeSolver && blazeDropDown }
 
-    private val beamsDropDown: Boolean by DropdownSetting("Creeper Beams")
-    private val beamsSolver: Boolean by BooleanSetting("Creeper Beams", false, description = "Shows you the solution for the Creeper Beams puzzle").withDependency { beamsDropDown }
+    private val beamsDropDown: Boolean by DropdownSetting("Beams")
+    private val beamsSolver: Boolean by BooleanSetting("Creeper Beams Solver", false, description = "Shows you the solution for the Creeper Beams puzzle").withDependency { beamsDropDown }
     val beamStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { beamsSolver && beamsDropDown }
     val beamsDepth: Boolean by BooleanSetting("Depth", false, description = "Depth check").withDependency { beamsSolver && beamsDropDown }
     val beamsTracer: Boolean by BooleanSetting("Tracer", false, description = "Tracer").withDependency { beamsSolver && beamsDropDown }
@@ -77,7 +76,7 @@ object PuzzleSolvers : Module(
     }.withDependency { beamsSolver && beamsDropDown }
 
     private val weirdosDropDown: Boolean by DropdownSetting("Weirdos")
-    private val weirdosSolver: Boolean by BooleanSetting("Weirdos", false, description = "Shows you the solution for the Weirdos puzzle").withDependency { weirdosDropDown }
+    private val weirdosSolver: Boolean by BooleanSetting("Weirdos Solver", false, description = "Shows you the solution for the Weirdos puzzle").withDependency { weirdosDropDown }
     val weirdosColor: Color by ColorSetting("Weirdos Color", Color.GREEN, true, description = "Color for the weirdos solver").withDependency { weirdosSolver && weirdosDropDown }
     val weirdosStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { weirdosSolver && weirdosDropDown }
     private val weirdosReset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
@@ -118,7 +117,6 @@ object PuzzleSolvers : Module(
         onWorldLoad {
             WaterSolver.reset()
             TPMaze.reset()
-            TicTacToe.reset()
             IceFillSolver.reset()
             BlazeSolver.reset()
             BeamsSolver.reset()
@@ -132,18 +130,13 @@ object PuzzleSolvers : Module(
         profile("Puzzle Solvers") {
             if (waterSolver) WaterSolver.waterRender()
             if (tpMaze) TPMaze.tpRender()
-            if (tttSolver) TTTSolver.tttRenderWorld()
+            //if (tttSolver) TTTSolver.tttRenderWorld()
             if (iceFillSolver) IceFillSolver.onRenderWorldLast(iceFillColor)
             if (blazeSolver) BlazeSolver.renderBlazes()
             if (beamsSolver) BeamsSolver.onRenderWorld()
             if (weirdosSolver) WeirdosSolver.onRenderWorld()
             if (quizSolver) QuizSolver.renderWorldLastQuiz()
         }
-    }
-
-    @SubscribeEvent
-    fun onTick(event: TickEvent.ClientTickEvent) {
-        if (tttSolver) TicTacToe.tttTick(event)
     }
 
     @SubscribeEvent

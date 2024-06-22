@@ -5,8 +5,8 @@ import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinmain.events.impl.ClickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.impl.dungeon.DungeonWaypoints.toBlockPos
-import me.odinmain.features.impl.dungeon.DungeonWaypoints.toVec3
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.toBlockPos
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.toVec3
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
@@ -34,11 +34,11 @@ object EtherWarpHelper : Module(
     private val render: Boolean by BooleanSetting("Show Etherwarp Guess", true)
     private val useServerPosition: Boolean by DualSetting("Positioning", "Server Pos", "Player Pos", description = "If etherwarp guess should use your server position or real position.").withDependency { render }
     private val renderFail: Boolean by BooleanSetting("Show when failed", true).withDependency { render }
-    private val renderColor: Color by ColorSetting("Color", Color.ORANGE.withAlpha(.5f), allowAlpha = true).withDependency { render }
     private val wrongColor: Color by ColorSetting("Wrong Color", Color.RED.withAlpha(.5f), allowAlpha = true).withDependency { renderFail }
-    private val style: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.")
-    private val thickness: Float by NumberSetting("Thickness", 3f, 1f, 10f, .1f).withDependency { render }
-    private val phase: Boolean by BooleanSetting("Depth check", false).withDependency { render }
+    private val style: Int by SelectorSetting("Style", Renderer.defaultStyle, Renderer.styles, description = Renderer.styleDesc).withDependency { render }
+    private val color: Color by ColorSetting("Color", Color.ORANGE.withAlpha(.5f), allowAlpha = true).withDependency { render }
+    private val lineWidth: Float by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.").withDependency { render }
+    private val depthCheck: Boolean by BooleanSetting("Depth check", false, description = "Boxes show through walls.").withDependency { render }
     private val etherWarpTriggerBot: Boolean by BooleanSetting("Trigger Bot", false, description = "Uses Dungeon Waypoints to trigger bot to the closest waypoint.")
     private val etherWarpTBDelay: Long by NumberSetting("Trigger Bot Delay", 200L, 0, 1000, 10).withDependency { etherWarpTriggerBot }
     private val etherWarpHelper: Boolean by BooleanSetting("(MIGHT BAN) Rotator", false, description = "Rotates you to the closest waypoint when you left click with aotv.")
@@ -70,11 +70,11 @@ object EtherWarpHelper : Module(
         etherPos = EtherWarpHelper.getEtherPos(positionLook)
         if (render && mc.thePlayer.isSneaking && mc.thePlayer.heldItem.extraAttributes?.getBoolean("ethermerge") == true && (etherPos.succeeded || renderFail)) {
             val pos = etherPos.pos ?: return
-            val color = if (etherPos.succeeded) renderColor else wrongColor
+            val color = if (etherPos.succeeded) color else wrongColor
             getBlockAt(pos).setBlockBoundsBasedOnState(mc.theWorld, pos)
             val aabb = getBlockAt(pos).getSelectedBoundingBox(mc.theWorld, pos).expand(0.002, 0.002, 0.002) ?: return
 
-            Renderer.drawBox(aabb, color, outlineWidth = thickness, depth = !phase, outlineAlpha = if (style == 0) 0 else color.alpha, fillAlpha = if (style == 1) 0 else color.alpha)
+            Renderer.drawStyledBox(aabb, color, style, lineWidth, depthCheck)
         }
     }
 

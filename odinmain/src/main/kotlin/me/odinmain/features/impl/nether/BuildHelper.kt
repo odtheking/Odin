@@ -1,4 +1,4 @@
-package me.odinmain.features.impl.kuudra
+package me.odinmain.features.impl.nether
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -20,7 +20,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object BuildHelper : Module(
     name = "Build Helper",
     description = "Helps you to build the ballista in Kuudra.",
-    category = Category.KUUDRA
+    category = Category.NETHER
 ) {
     private val buildHelperDraw: Boolean by BooleanSetting("Render on Ballista", false, description = "Draws the build helper")
     private val unfinishedWaypoints: Boolean by BooleanSetting("Unfinished Waypoints", true, description = "Renders the unfinished piles waypoints")
@@ -55,7 +55,8 @@ object BuildHelper : Module(
         if (buildHelperDraw)
             Renderer.drawStringInWorld("Builders ${colorBuilders(KuudraUtils.builders)}", Vec3(-101.5, 81.0, -105.5), buildHelperColor, depth = false, scale = 0.15f)
 
-        if (unfinishedWaypoints && KuudraUtils.phase == 2) renderUnfinishedWaypoints()
+        if (unfinishedWaypoints)
+            renderUnfinishedWaypoints()
     }
 
     private fun renderUnfinishedWaypoints() {
@@ -63,6 +64,7 @@ object BuildHelper : Module(
             Renderer.drawCustomBeacon(it.name, it.positionVector.addVec(0.5), Color.DARK_RED, true, increase = false, noFade = !fadeWaypoints, distance = false)
         }
     }
+
     private fun colorBuild(build: Int): String {
         return when {
             build >= 75 -> "§a$build"

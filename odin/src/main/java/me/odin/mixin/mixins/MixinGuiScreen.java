@@ -3,6 +3,7 @@ package me.odin.mixin.mixins;
 import me.odinmain.events.impl.GuiEvent;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.common.MinecraftForge;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -24,6 +25,12 @@ public class MixinGuiScreen {
                 ci.cancel();
             }
         }
+    }
+
+    @Inject(method = "handleKeyboardInput", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiScreen;keyTyped(CI)V"), cancellable = true)
+    private void onHandleKeyboardInput(CallbackInfo ci) {
+        if (MinecraftForge.EVENT_BUS.post(new GuiEvent.GuiKeyPressEvent(odin$gui, Keyboard.getEventKey(), Keyboard.getEventCharacter())))
+            ci.cancel();
     }
 }
 

@@ -31,8 +31,7 @@ object AutoSell : Module(
             val container = mc.thePlayer.openContainer ?: return@execute
             if (container !is ContainerChest) return@execute
 
-            val chestName = container.name
-            if (chestName.equalsOneOf("Trades", "Booster Cookie", "Farm Merchant")) {
+            if (container.name.equalsOneOf("Trades", "Booster Cookie", "Farm Merchant")) {
                 val index = container.inventorySlots.subList(54, 90).firstOrNull { doSell(it) }?.slotNumber ?: return@execute
                 when (clickType) {
                     0 -> windowClick(index, PlayerUtils.ClickType.Shift)

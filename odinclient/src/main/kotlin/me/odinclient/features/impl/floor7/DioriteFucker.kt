@@ -6,8 +6,8 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.profile
-import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.M7Phases
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
@@ -45,7 +45,7 @@ object DioriteFucker : Module(
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         profile("Diorite Fucker") {
-            if (DungeonUtils.getPhase() == Island.M7P2 && event.phase == TickEvent.Phase.END && mc.theWorld != null) replaceDiorite()
+            if (DungeonUtils.getPhase() == M7Phases.P2 && event.phase == TickEvent.Phase.END && mc.theWorld != null) replaceDiorite()
         }
     }
 
