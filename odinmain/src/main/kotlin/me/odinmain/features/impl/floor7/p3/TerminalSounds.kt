@@ -34,15 +34,15 @@ object TerminalSounds : Module(
 
     @SubscribeEvent
     fun onPacket(event: PacketReceivedEvent){ with(event.packet) {
-        if (currentTerm == TerminalTypes.NONE || this !is S29PacketSoundEffect) return@onPacket
+        if (currentTerm == TerminalTypes.NONE || this !is S29PacketSoundEffect || customSound == "note.pling") return@onPacket
         if (this.soundName == "note.pling" && this.volume == 8f && this.pitch == 4.047619f) {
             playTerminalSound()
             event.isCanceled = true
         }
     } }
 
-    private fun playTerminalSound() {
-        if (System.currentTimeMillis() - lastPlayed <= 10) return
+    fun playTerminalSound() {
+        if (System.currentTimeMillis() - lastPlayed <= 2) return
         val sound = if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound]
         PlayerUtils.playLoudSound(sound, volume, pitch)
         lastPlayed = System.currentTimeMillis()
