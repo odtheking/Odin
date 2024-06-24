@@ -13,7 +13,9 @@ import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
 import me.odinmain.utils.render.*
 import me.odinmain.utils.render.RenderUtils.outlineBounds
+import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.EtherWarpHelper.etherPos
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
 import net.minecraft.client.gui.*
@@ -34,6 +36,7 @@ object DungeonWaypoints : Module(
 ) {
     private var allowEdits: Boolean by BooleanSetting("Allow Edits", false)
     private var reachEdits: Boolean by BooleanSetting("Reach Edits", false, description = "Extends the reach of edit mode.")
+    private var reachColor: Color by ColorSetting("Reach Color", default = Color.WHITE, description = "Color of the reach box highlight.", allowAlpha = true).withDependency { reachEdits }
     var editText: Boolean by BooleanSetting("Edit Text", false, description = "Displays text under your crosshair telling you when you are editing waypoints.")
     var color: Color by ColorSetting("Color", default = Color.GREEN, description = "The color of the next waypoint you place.", allowAlpha = true).withDependency { colorPallet == 0 }
     private val colorPallet: Int by SelectorSetting("Color pallet", "None", arrayListOf("None", "Aqua", "Magenta", "Yellow", "Lime"))
@@ -80,6 +83,8 @@ object DungeonWaypoints : Module(
         if (!allowEdits) SecretWaypoints.onSecret(event)
     }
 
+    var reachPos: EtherWarpHelper.EtherPos? = null
+
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
         if ((DungeonUtils.inBoss || !DungeonUtils.inDungeons) && !mc.theWorld.isRemote) return
@@ -95,6 +100,16 @@ object DungeonWaypoints : Module(
             Renderer.drawBox(Vec3(distinct.x.toDouble(), 70.0, distinct.z.toDouble()).toAABB(), Color.GREEN, fillAlpha = 0)
         }
         endProfile()
+
+        if (reachEdits && allowEdits) {
+            reachPos = EtherWarpHelper.getEtherPos(mc.thePlayer.renderVec, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
+            val pos = reachPos?.pos ?: return
+            getBlockAt(pos).setBlockBoundsBasedOnState(mc.theWorld, pos)
+            val aabb = if (useBlockSize) getBlockAt(pos).getSelectedBoundingBox(mc.theWorld, pos).expand(0.002, 0.002, 0.002) ?: return
+            else AxisAlignedBB(pos.x + 0.5 - (size / 2), pos.y + .5 - (size / 2), pos.z + .5 - (size / 2), pos.x + .5 + (size / 2), pos.y + .5 + (size / 2), pos.z + .5 + (size / 2)).expand(0.002, 0.002, 0.002)
+
+            Renderer.drawStyledBox(aabb, reachColor, style = if (filled) 0 else 1, 1, !throughWalls)
+        }
     }
 
     @SubscribeEvent
@@ -108,7 +123,7 @@ object DungeonWaypoints : Module(
 
     @SubscribeEvent
     fun onInteract(event: ClickEvent.RightClickEvent) {
-        val pos = mc.objectMouseOver?.blockPos ?: return
+        val pos = if (!reachEdits) mc.objectMouseOver?.blockPos ?: return else reachPos?.pos ?: return
         if (!allowEdits || isAir(pos)) return
         val room = DungeonUtils.currentRoom ?: return
         val vec = Vec3(pos).subtractVec(x = room.clayPos.x, z = room.clayPos.z).rotateToNorth(room.room.rotation)
