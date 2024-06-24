@@ -19,7 +19,6 @@ import me.odinmain.utils.render.*
 import me.odinmain.utils.render.RenderUtils.drawTexturedModalRect
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.*
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils.leapTeammates
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest
@@ -70,9 +69,12 @@ object LeapMenu : Module(
             GlStateManager.pushMatrix()
             GlStateManager.enableAlpha()
             scale(1f / scaleFactor,  1f / scaleFactor)
-            scale(size, size)
+
             val displayWidth = Display.getWidth()
             val displayHeight = Display.getHeight()
+            translate(displayWidth / 2f, displayHeight / 2f, 0f)
+            scale(size, size, 1f)
+            translate(-displayWidth / 2f, -displayHeight / 2f, 0f)
             translate(displayWidth / 2, displayHeight / 2)
             val boxWidth = 800
             val boxHeight = 300
@@ -84,7 +86,6 @@ object LeapMenu : Module(
                 0, 1 -> -((displayHeight - (boxHeight * 2)) / 8 + boxHeight)
                 else -> ((displayHeight - (boxHeight * 2)) / 8)
             }
-            translate(x / size, y / size, 0f)
             mc.textureManager.bindTexture(it.locationSkin)
             val color = if (colorStyle) it.clazz.color else Color.DARK_GRAY
             if (it.name == (if (DungeonUtils.inBoss) LeapHelper.leapHelperBoss else LeapHelper.leapHelperClear) && leapHelperToggle)
@@ -176,12 +177,12 @@ object LeapMenu : Module(
     }
 
 
-    /*private val leapTeammates: MutableList<DungeonUtils.DungeonPlayer> = mutableListOf(
-        DungeonUtils.DungeonPlayer("Stiviaisd", DungeonUtils.Classes.Healer),
-        DungeonUtils.DungeonPlayer("Odtheking", DungeonUtils.Classes.Archer),
-        DungeonUtils.DungeonPlayer("Bonzi", DungeonUtils.Classes.Mage),
-        DungeonUtils.DungeonPlayer("Cezar", DungeonUtils.Classes.Tank)
-    )*/
+    private val leapTeammates: MutableList<DungeonPlayer> = mutableListOf(
+        DungeonPlayer("Stiviaisd", DungeonClass.Healer),
+        DungeonPlayer("Odtheking", DungeonClass.Archer),
+        DungeonPlayer("Bonzi", DungeonClass.Mage),
+        DungeonPlayer("Cezar", DungeonClass.Tank)
+    )
 
 
     /**
