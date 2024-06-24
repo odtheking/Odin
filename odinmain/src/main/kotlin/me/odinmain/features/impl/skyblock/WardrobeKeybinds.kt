@@ -38,8 +38,9 @@ object WardrobeKeybinds : Module(
 
     private val wardrobes = arrayOf(wardrobe1, wardrobe2, wardrobe3, wardrobe4, wardrobe5, wardrobe6, wardrobe7, wardrobe8, wardrobe9)
     private val clickCoolDown = Clock(delay)
+
     @SubscribeEvent
-    fun checkKeybinds(event: GuiEvent.GuiKeyPressEvent) {
+    fun onGuiKeyPress(event: GuiEvent.GuiKeyPressEvent) {
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
         if (chest !is ContainerChest) return
 

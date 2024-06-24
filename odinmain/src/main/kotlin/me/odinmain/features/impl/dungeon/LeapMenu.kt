@@ -84,6 +84,7 @@ object LeapMenu : Module(
                 0, 1 -> -((displayHeight - (boxHeight * 2)) / 8 + boxHeight)
                 else -> ((displayHeight - (boxHeight * 2)) / 8)
             }
+            translate(x / size, y / size, 0f)
             mc.textureManager.bindTexture(it.locationSkin)
             val color = if (colorStyle) it.clazz.color else Color.DARK_GRAY
             if (it.name == (if (DungeonUtils.inBoss) LeapHelper.leapHelperBoss else LeapHelper.leapHelperClear) && leapHelperToggle)
@@ -196,7 +197,7 @@ object LeapMenu : Module(
         val result = Array(4) { EMPTY }
         val secondRound = mutableListOf<DungeonPlayer>()
 
-        for (player in players.sortedBy { it.clazz.prio }) {
+        for (player in players.sortedBy { it.clazz.priority }) {
             when {
                 result[player.clazz.defaultQuadrant] == EMPTY -> result[player.clazz.defaultQuadrant] = player
                 else -> secondRound.add(player)

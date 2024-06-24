@@ -31,13 +31,13 @@ data class DungeonPlayer(
  *
  * @property color The color associated with the class.
  * @property defaultQuadrant The default quadrant for the class.
- * @property prio The priority of the class.
+ * @property priority The priority of the class.
  *
  */
 enum class DungeonClass(
     val color: Color,
     val defaultQuadrant: Int,
-    var prio: Int,
+    var priority: Int,
 ) {
     Archer(Color.ORANGE, 0, 2),
     Berserk(Color.DARK_RED,1, 0),
@@ -71,6 +71,8 @@ enum class Blessing(
  *
  * @property floorNumber The numerical representation of the floor, where E represents the entrance floor.
  * @property isInMM Indicates whether the floor is a mini-boss floor (M1 to M7).
+ * @property personalBest The personal best time for the floor.
+ * @property secretPercentage The percentage of secrets required.
  */
 enum class Floor(val personalBest: PersonalBest, val secretPercentage: Float = 1f) {
     E(PersonalBest("Entrance", 4), 0f),
