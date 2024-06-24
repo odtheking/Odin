@@ -69,9 +69,9 @@ object TerminalSolver : Module(
     var openedTerminalTime = 0L
     var clicksNeeded = -1
 
+
     var currentTerm = TerminalTypes.NONE
     var solution = listOf<Int>()
-
 
     @SubscribeEvent
     fun onGuiLoad(event: GuiEvent.GuiLoadedEvent) {
