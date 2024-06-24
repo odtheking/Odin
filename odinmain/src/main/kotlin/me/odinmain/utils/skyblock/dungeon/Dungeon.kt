@@ -165,7 +165,7 @@ class Dungeon {
 
         leapTeammates =
             when (LeapMenu.type) {
-                0 -> odinSorting(dungeonTeammatesNoSelf.sortedBy { it.clazz.prio }).toMutableList()
+                0 -> odinSorting(dungeonTeammatesNoSelf.sortedBy { it.clazz.priority }).toMutableList()
                 1 -> dungeonTeammatesNoSelf.sortedWith(compareBy({ it.clazz.ordinal }, { it.name })).toMutableList()
                 2 -> dungeonTeammatesNoSelf.sortedBy { it.name }.toMutableList()
                 else -> dungeonTeammatesNoSelf.toMutableList()
