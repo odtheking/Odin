@@ -72,6 +72,7 @@ object TerminalSolver : Module(
     var currentTerm = TerminalTypes.NONE
     var solution = listOf<Int>()
 
+
     @SubscribeEvent
     fun onGuiLoad(event: GuiEvent.GuiLoadedEvent) {
         val newTerm = TerminalTypes.entries.find { event.name.startsWith(it.guiName) } ?: TerminalTypes.NONE
