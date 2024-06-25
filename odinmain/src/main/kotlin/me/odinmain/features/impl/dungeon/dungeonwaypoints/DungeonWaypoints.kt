@@ -36,7 +36,7 @@ object DungeonWaypoints : Module(
 ) {
     private var allowEdits: Boolean by BooleanSetting("Allow Edits", false)
     private var reachEdits: Boolean by BooleanSetting("Reach Edits", false, description = "Extends the reach of edit mode.")
-    private var reachColor: Color by ColorSetting("Reach Color", default = Color.WHITE, description = "Color of the reach box highlight.", allowAlpha = true).withDependency { reachEdits }
+    private var reachColor: Color by ColorSetting("Reach Color", default = Color(0, 255, 213, 0.43f), description = "Color of the reach box highlight.", allowAlpha = true).withDependency { reachEdits }
     var editText: Boolean by BooleanSetting("Edit Text", false, description = "Displays text under your crosshair telling you when you are editing waypoints.")
     var color: Color by ColorSetting("Color", default = Color.GREEN, description = "The color of the next waypoint you place.", allowAlpha = true).withDependency { colorPallet == 0 }
     private val colorPallet: Int by SelectorSetting("Color pallet", "None", arrayListOf("None", "Aqua", "Magenta", "Yellow", "Lime"))
