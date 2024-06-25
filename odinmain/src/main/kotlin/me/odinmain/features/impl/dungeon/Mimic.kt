@@ -29,10 +29,9 @@ object Mimic : Module(
 
     @SubscribeEvent
     fun onEntityDeath(event: LivingDeathEvent) {
-        if (!DungeonUtils.inDungeons || event.entity !is EntityZombie) return
-        val entity = event.entity as EntityZombie
-        if (entity.isChild && (0..3).all { entity.getCurrentArmor(it) == null })
-            partyMessage(mimicMessage)
+        val entity = event.entity
+        if (!DungeonUtils.inDungeons) return
+        if (entity is EntityZombie && entity.isChild && (0..3).all { entity.getCurrentArmor(it) == null }) partyMessage(mimicMessage)
     }
 
     @SubscribeEvent

@@ -5,6 +5,9 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.*
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
+import me.odinmain.utils.skyblock.Island
+import me.odinmain.utils.skyblock.LocationUtils
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.isSecret
 import net.minecraft.client.gui.inventory.GuiChest
@@ -36,11 +39,13 @@ object EventDispatcher {
      * Dispatches [SecretPickupEvent.Interact]
      */
     @SubscribeEvent
-    fun onPacket(event: PacketSentEvent) { with(event.packet) {
-        if (inDungeons && this is C08PacketPlayerBlockPlacement && this.position != null && isSecret(mc.theWorld?.getBlockState(this.position) ?: return, this.position)) {
-            SecretPickupEvent.Interact(this.position, mc.theWorld?.getBlockState(this.position)  ?: return).postAndCatch()
+    fun onPacket(event: PacketSentEvent) {
+        with(event.packet) {
+            if (inDungeons && this is C08PacketPlayerBlockPlacement && this.position != null &&
+                isSecret(mc.theWorld?.getBlockState(this.position) ?: return, this.position))
+                    SecretPickupEvent.Interact(this.position, mc.theWorld?.getBlockState(this.position)  ?: return).postAndCatch()
         }
-    } }
+    }
 
     /**
      * Dispatches [ChatPacketEvent], [RealServerTick], and [SecretPickupEvent.Bat]
@@ -53,6 +58,17 @@ object EventDispatcher {
 
         if (event.packet !is S02PacketChat || !ChatPacketEvent(event.packet.chatComponent.unformattedText.noControlCodes).postAndCatch()) return
         event.isCanceled = true
+    }
+
+    /**
+     * Dispatches [DungeonEvents.RoomEnterEvent.DungeonStartEvent] and [DungeonEvents.RoomEnterEvent.DungeonEndEvent]
+     */
+    @SubscribeEvent
+    fun onChatPacketEvent(event: ChatPacketEvent) {
+        if (Regex("\\[NPC] Mort: Here, I found this map when I first entered the dungeon\\.").matches(event.message) || LocationUtils.currentArea.isArea(Island.SinglePlayer))
+            DungeonEvents.DungeonStartEvent(DungeonUtils.floor).postAndCatch()
+        if (Regex("^\\s*☠ Defeated (.+) in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?\$").matches(event.message))
+            DungeonEvents.DungeonEndEvent(DungeonUtils.floor).postAndCatch()
     }
 
     private val nextTime = Clock()

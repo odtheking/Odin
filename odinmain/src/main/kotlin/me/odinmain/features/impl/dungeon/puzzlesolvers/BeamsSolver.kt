@@ -3,7 +3,7 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import me.odinmain.events.impl.BlockChangeEvent
-import me.odinmain.events.impl.EnteredDungeonRoomEvent
+import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
@@ -34,7 +34,7 @@ object BeamsSolver {
 
     private var currentLanternPairs = mutableMapOf<BlockPos, Pair<BlockPos, Color>>()
 
-    fun enterDungeonRoom(event: EnteredDungeonRoomEvent) {
+    fun enterDungeonRoom(event: RoomEnterEvent) {
         val room = event.room?.room ?: return // <-- orb = orb.orb
         if (room.data.name != "Creeper Beams") return reset()
 

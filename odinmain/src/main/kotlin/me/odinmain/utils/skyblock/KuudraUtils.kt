@@ -77,7 +77,7 @@ object KuudraUtils {
     init {
         Executor(100) {
             val entities = mc.theWorld.loadedEntityList
-            giantZombies = entities.filter { it is EntityGiantZombie && it.heldItem.toString() == "1xitem.skull@3" } as MutableList<EntityGiantZombie>
+            giantZombies = entities.filterIsInstance<EntityGiantZombie>().filter { it.heldItem.toString() == "1xitem.skull@3" }.toMutableList()
             kuudraEntity = entities.filter { it is EntityMagmaCube && it.slimeSize == 30 && it.getEntityAttribute(SharedMonsterAttributes.maxHealth).baseValue.toFloat() == 100000f }[0] as EntityMagmaCube
             entities.forEach {
                 if (it.name.contains("Lv") || it.toString().contains("name=Armor Stand")) return@forEach
@@ -112,7 +112,7 @@ object KuudraUtils {
     @SubscribeEvent
     fun worldJoinEvent(event: EntityJoinWorldEvent) {
         if (event.entity is EntityOtherPlayerMP && event.entity.getPing() == 1 && !event.entity.isInvisible && !kuudraTeammates.any{ it.playerName == event.entity.name })
-            kuudraTeammates.add(KuudraPlayer((event.entity as EntityOtherPlayerMP).name, false, 0, event.entity as EntityOtherPlayerMP))
+            kuudraTeammates.add(KuudraPlayer(event.entity.name, false, 0, event.entity as EntityOtherPlayerMP))
     }
     @SubscribeEvent
     fun worldLeaveEvent(event: EntityLeaveWorldEvent) {

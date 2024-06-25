@@ -2,7 +2,7 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import me.odinmain.events.impl.EnteredDungeonRoomEvent
+import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils
@@ -79,7 +79,7 @@ object IceFillSolver {
         GlStateManager.popMatrix()
     }
 
-    fun enterDungeonRoom(event: EnteredDungeonRoomEvent) {
+    fun enterDungeonRoom(event: RoomEnterEvent) {
         val room = event.room?.room ?: return
         if (room.data.name != "Ice Fill" || scanned) return
         val rotation = room.rotation

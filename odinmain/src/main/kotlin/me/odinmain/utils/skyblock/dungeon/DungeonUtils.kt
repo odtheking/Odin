@@ -1,13 +1,13 @@
 package me.odinmain.utils.skyblock.dungeon
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.events.impl.EnteredDungeonRoomEvent
+import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
 import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.utils.*
+import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.LocationUtils.currentDungeon
 import me.odinmain.utils.skyblock.PlayerUtils.posY
 import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
-import me.odinmain.utils.skyblock.getItemSlot
 import net.minecraft.block.BlockSkull
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.network.NetworkPlayerInfo
@@ -22,7 +22,7 @@ import kotlin.math.floor
 object DungeonUtils {
 
     inline val inDungeons: Boolean get() =
-        currentDungeon != null
+        LocationUtils.currentArea.isArea(Island.Dungeon)
 
     inline val floorNumber: Int get() =
         currentDungeon?.floor?.floorNumber ?: 0
@@ -136,8 +136,8 @@ object DungeonUtils {
     }
 
     @SubscribeEvent
-    fun onRoomEnter(event: EnteredDungeonRoomEvent) {
-        currentDungeon?.enterDungeonRoom(event)
+    fun onRoomEnter(event: RoomEnterEvent) {
+        if (inDungeons) currentDungeon?.enterDungeonRoom(event)
     }
 
     @SubscribeEvent

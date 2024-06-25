@@ -1,7 +1,7 @@
 package me.odinmain.utils.skyblock.dungeon
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.events.impl.EnteredDungeonRoomEvent
+import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
 import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.features.impl.dungeon.LeapMenu
 import me.odinmain.features.impl.dungeon.LeapMenu.odinSorting
@@ -54,7 +54,7 @@ class Dungeon {
         }
     }
 
-    fun enterDungeonRoom(event: EnteredDungeonRoomEvent) {
+    fun enterDungeonRoom(event: RoomEnterEvent) {
         currentRoom = event.room
         if (passedRooms.any { it.room.data.name == event.room?.room?.data?.name }) return
         event.room?.let { passedRooms.add(it) }

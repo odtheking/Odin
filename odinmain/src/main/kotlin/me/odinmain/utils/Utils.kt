@@ -66,6 +66,10 @@ fun Any?.equalsOneOf(vararg options: Any?): Boolean {
     return options.any { this == it }
 }
 
+fun String?.matchesOneOf(vararg options: Regex): Boolean {
+    return options.any { it.matches(this ?: "") }
+}
+
 /**
  * Checks if the first value in the pair equals the first argument and the second value in the pair equals the second argument.
  */

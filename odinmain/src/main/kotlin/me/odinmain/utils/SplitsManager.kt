@@ -1,8 +1,13 @@
 package me.odinmain.utils
 
+import me.odinmain.events.impl.ChatPacketEvent
+import me.odinmain.events.impl.SkyblockJoinIslandEvent
 import me.odinmain.features.impl.skyblock.Splits
-import me.odinmain.utils.skyblock.PersonalBest
-import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.features.impl.skyblock.Splits.sendSplits
+import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import net.minecraftforge.event.world.WorldEvent
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 data class Split(val regex: Regex, val name: String, var time: Long = 0L)
 data class SplitsGroup(val splits: List<Split>, val personalBest: PersonalBest?)
@@ -11,7 +16,69 @@ object SplitsManager {
 
     var currentSplits: SplitsGroup = SplitsGroup(emptyList(), null)
 
-    fun getSplitTimes(currentSplits: SplitsGroup): Pair<List<Long>, Int> {
+    @SubscribeEvent
+    fun onChatPacket(event: ChatPacketEvent) {
+        val currentSplit = currentSplits.splits.find { it.regex.matches(event.message) } ?: return
+        currentSplit.time = System.currentTimeMillis()
+
+        val index = currentSplits.splits.indexOf(currentSplit).takeIf { it != 0 } ?: return
+        val currentSplitTime = (currentSplit.time - currentSplits.splits[index - 1].time) / 1000.0
+
+        currentSplits.personalBest?.time(index - 1, currentSplitTime, "s§7!", "§6${currentSplits.splits[index - 1].name} §7took §6", addPBString = true, addOldPBString = true, alwaysSendPB = true, sendOnlyPB = Splits.sendOnlyPB, sendMessage = Splits.enabled)
+
+        if (index == currentSplits.splits.size - 1) {
+            currentSplits.personalBest?.time(index, currentSplitTime, "s§7!", "§6Total time §7took §6", addPBString = true, addOldPBString = true, alwaysSendPB = true, sendOnlyPB = Splits.sendOnlyPB, sendMessage = Splits.enabled)
+
+            getAndUpdateSplitsTimes(currentSplits).first.forEachIndexed { i, it ->
+                val timeString = formatTime(it)
+                val name = if (i == currentSplits.splits.size - 1) "Total" else currentSplits.splits[i].name
+                if (sendSplits && Splits.enabled) modMessage("§6$name §7took §6$timeString §7to complete.")
+            }
+        }
+    }
+
+    @SubscribeEvent
+    fun onWorldLoad(event: WorldEvent.Load) {
+        currentSplits = SplitsGroup(mutableListOf(), null)
+    }
+
+    @SubscribeEvent
+    fun onJoinSkyblockIsland(event: SkyblockJoinIslandEvent) {
+        val currentSplits = initializeSplits(event.island) ?: return
+        modMessage("Loading splits for ${LocationUtils.currentArea.name}")
+        SplitsManager.currentSplits = currentSplits
+    }
+
+    private fun initializeSplits(island: Island): SplitsGroup? {
+        return when (island) {
+            Island.SinglePlayer -> SplitsGroup(singlePlayerSplitGroup, singlePlayerPBs)
+
+            Island.Dungeon -> {
+                val split = dungeonSplits[DungeonUtils.floor.floorNumber] ?: return null
+
+                split.add(0, Split(Regex("\\[NPC] Mort: Here, I found this map when I first entered the dungeon\\."), "§2Blood Open"))
+                split.add(1, Split(Regex("The BLOOD DOOR has been opened!"), "§bBlood Clear"))
+                split.add(2, Split(Regex("\\[BOSS] The Watcher: You have proven yourself\\. You may pass\\."), "§dBoss Entry"))
+                split.add(Split(Regex("^\\s*☠ Defeated (.+) in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?\$"), "§1Total"))
+
+                SplitsGroup(split, DungeonUtils.floor.personalBest)
+            }
+
+            Island.Kuudra -> {
+                when (LocationUtils.kuudraTier) {
+                    5 -> SplitsGroup(kuudraT5SplitsGroup, kuudraT5PBs)
+                    4 -> SplitsGroup(kuudraSplitsGroup, kuudraT4PBs)
+                    3 -> SplitsGroup(kuudraSplitsGroup, kuudraT3PBs)
+                    2 -> SplitsGroup(kuudraSplitsGroup, kuudraT2PBs)
+                    1 -> SplitsGroup(kuudraSplitsGroup, kuudraT1PBs)
+                    else -> null
+                }
+            }
+            else -> null
+        }
+    }
+
+    fun getAndUpdateSplitsTimes(currentSplits: SplitsGroup): Pair<List<Long>, Int> {
         if (currentSplits.splits.isEmpty() || currentSplits.splits[0].time == 0L) return List(currentSplits.splits.size) { 0L } to -1
         val latestTime = if (currentSplits.splits.last().time == 0L) System.currentTimeMillis() else currentSplits.splits.last().time
         val times = MutableList(currentSplits.splits.size) { 0L }.apply { this[size - 1] = latestTime - currentSplits.splits.first().time }
@@ -27,27 +94,29 @@ object SplitsManager {
         }
         return times to current
     }
-
-    fun handleMessage(msg: String, splitsGroup: SplitsGroup) {
-        val currentSplit = splitsGroup.splits.find { it.regex.matches(msg) } ?: return
-        currentSplit.time = System.currentTimeMillis()
-
-        val index = splitsGroup.splits.indexOf(currentSplit).takeIf { it != 0 } ?: return
-        val currentSplitTime = (currentSplit.time - splitsGroup.splits[index - 1].time) / 1000.0
-
-        splitsGroup.personalBest?.time(index - 1, currentSplitTime, "s§7!", "§6${splitsGroup.splits[index - 1].name} §7took §6", addPBString = true, addOldPBString = true, alwaysSendPB = true, sendOnlyPB = Splits.sendOnlyPB)
-
-        if (index == splitsGroup.splits.size - 1) {
-            getSplitTimes(splitsGroup).first.forEachIndexed { i, it ->
-                val timeString = formatTime(it)
-                val name = if (i == splitsGroup.splits.size - 1) "Total" else splitsGroup.splits[i].name
-                if (Splits.sendSplits) modMessage("§6$name §7took §6$timeString §7to complete.")
-            }
-
-            splitsGroup.personalBest?.time(splitsGroup.splits.size, currentSplitTime, "s§7!", "§6Total time §7took §6", addPBString = true, addOldPBString = true, alwaysSendPB = true, sendOnlyPB = Splits.sendOnlyPB)
-        }
-    }
 }
+
+private val singlePlayerPBs = PersonalBest("SinglePlayer", 5)
+private val kuudraT5PBs = PersonalBest("KuudraT5", 6)
+private val kuudraT4PBs = PersonalBest("KuudraT4", 5)
+private val kuudraT3PBs = PersonalBest("KuudraT3", 5)
+private val kuudraT2PBs = PersonalBest("KuudraT2", 5)
+private val kuudraT1PBs = PersonalBest("KuudraT1", 5)
+
+val kuudraT5SplitsGroup = mutableListOf(
+    Split(Regex("^\\[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!$"), "§2Supplies"),
+    Split(Regex("^\\[NPC] Elle: OMG! Great work collecting my supplies!$"), "§bBuild"),
+    Split(Regex("^\\[NPC] Elle: Phew! The Ballista is finally ready! It should be strong enough to tank Kuudra's blows now!$"), "§dEaten"),
+    Split(Regex("^(?!Elle has been eaten by Kuudra!\$)(.{1,16}) has been eaten by Kuudra!$"), "§cStun"),
+    Split(Regex("^(.{1,16}) destroyed one of Kuudra's pods!\$"), "§4Cleared"),
+    Split(Regex("^\\[NPC] Elle: Good job everyone. A hard fought battle come to an end. Let's get out of here before we run into any more trouble!$"), "Total"))
+
+val kuudraSplitsGroup = mutableListOf(
+    Split(Regex("^\\[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!$"), "§2Supplies"),
+    Split(Regex("^\\[NPC] Elle: OMG! Great work collecting my supplies!$"), "§bBuild"),
+    Split(Regex("^\\[NPC] Elle: Phew! The Ballista is finally ready! It should be strong enough to tank Kuudra's blows now!$"), "§cStun"),
+    Split(Regex("^\\[NPC] Elle: POW! SURELY THAT'S IT! I don't think he has any more in him!\$"), "§4Cleared"),
+    Split(Regex("^\\[NPC] Elle: Good job everyone. A hard fought battle come to an end. Let's get out of here before we run into any more trouble!$"), "Total"))
 
 private val entryRegexes = listOf(
     Regex("^\\[BOSS] Bonzo: Gratz for making it this far, but I'm basically unbeatable\\.$"),
