@@ -1,9 +1,8 @@
 package me.odinmain.utils
 
 import com.google.gson.Gson
-import com.google.gson.JsonParser
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
+import kotlinx.serialization.json.*
 import me.odinmain.features.impl.render.DevPlayers
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.HttpClients
@@ -227,16 +226,15 @@ fun fetch(uri: String): String? {
     }
 }
 
-fun hasBonusPaulScore(): Boolean {
-    val response = fetch("https://api.hypixel.net/resources/skyblock/election") ?: return false
-    val jsonObject = JsonParser().parse(response).asJsonObject ?: return false
-    val mayor = jsonObject["mayor"]?.asJsonObject ?: return false
-    val name = mayor["name"]?.asString ?: return false
+fun hasBonusPaulScore(): Boolean = runBlocking {
+    val response: String = fetch("https://api.hypixel.net/resources/skyblock/election").toString()
+    val jsonObject = Json.parseToJsonElement(response).jsonObject
+    val mayor = jsonObject["mayor"]?.jsonObject ?: return@runBlocking false
+    val name = mayor["name"]?.jsonPrimitive?.content ?: return@runBlocking false
     if (name == "Paul") {
-        return mayor.getAsJsonArray("perks")?.any {
-            it.asJsonObject?.getAsJsonPrimitive("name")?.asString == "EZPZ"
+        return@runBlocking mayor["perks"]?.jsonArray?.any {
+            it.jsonObject["name"]?.jsonPrimitive?.content == "EZPZ"
         } ?: false
     }
-
-    return false
+    false
 }

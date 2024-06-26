@@ -111,8 +111,11 @@ object DungeonUtils {
         return score
     }
 
-    inline val neededSecretsAmount: Int get() =
-        ceil(totalSecrets * (40.0 - getBonusScore + deathCount / 40.0)).toInt()
+    inline val neededSecretsAmount: Int get() {
+        val deathModifier = if (deathCount == 1) 1.0 else deathCount * 2.0 - 1.0
+        val scoreFactor = 40.0 - getBonusScore + deathModifier
+        return ceil(totalSecrets * scoreFactor / 40.0).toInt()
+    }
 
     /**
      * Checks if the current dungeon floor number matches any of the specified options.
