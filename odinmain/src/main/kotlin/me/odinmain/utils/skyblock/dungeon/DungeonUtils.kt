@@ -39,21 +39,6 @@ object DungeonUtils {
     inline val knownSecrets: Int get() =
         currentDungeon?.dungeonStats?.knownSecrets ?: 0
 
-    inline val requiredSecrets: Int get() =
-        when {
-            currentDungeon?.floor?.isInMM == true -> 100
-            floorNumber == 1 -> 30
-            floorNumber == 2 -> 40
-            floorNumber == 3 -> 50
-            floorNumber == 4 -> 60
-            floorNumber == 5 -> 70
-            floorNumber == 6 -> 85
-            else -> 100
-        }
-
-    inline val minSecrets: Int get() =
-        ceil((totalSecrets * requiredSecrets/100 * ((40 - (min(cryptCount, 5) + (if (mimicKilled) 2 else 0) + (if (deathCount == 1) deathCount else deathCount * 2 - 1)))/40)).toDouble()).toInt()
-
     inline val secretPercentage: Float get() =
         currentDungeon?.dungeonStats?.secretsPercent ?: 0f
 

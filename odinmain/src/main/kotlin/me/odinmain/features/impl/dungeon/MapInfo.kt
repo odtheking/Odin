@@ -27,10 +27,10 @@ object MapInfo : Module(
             mcText(mimicText, 1, 9, 1f, Color.WHITE, center = false)
             mcText(cryptText, 159 - getMCTextWidth(cryptText), 9, 1f, Color.WHITE, center = false)
         } else return@HudSetting 0f to 0f
-        160f to 10f
+        160f to 20f
     }
 
-    private val secretText = "§7Secrets: ${colorizeSecrets(DungeonUtils.secretCount, DungeonUtils.minSecrets)}§7-§e${DungeonUtils.minSecrets}§7-§c${DungeonUtils.totalSecrets}"
+    private val secretText = "§7Secrets: ${colorizeSecrets(DungeonUtils.secretCount, DungeonUtils.neededSecretsAmount)}§7-§e${DungeonUtils.neededSecretsAmount}§7-§c${DungeonUtils.totalSecrets}"
     private val unknownSecretsText = "§7Unknown: §b${DungeonUtils.totalSecrets - DungeonUtils.knownSecrets}"
     private val mimicText = if (DungeonUtils.mimicKilled) "§7Mimic: §a✔" else "§7Mimic: §c✘"
     private val cryptText = "§7Crypts: ${colorizeCrypts(DungeonUtils.cryptCount)}"
