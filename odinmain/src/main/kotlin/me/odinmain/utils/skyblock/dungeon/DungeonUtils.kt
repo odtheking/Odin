@@ -100,8 +100,19 @@ object DungeonUtils {
     inline val passedRooms get() =
         currentDungeon?.passedRooms ?: emptyList()
 
+    inline val isPaul: Boolean get() =
+        hasBonusPaulScore()
+
+    inline val getBonusScore: Int get() {
+        var score = 0
+        score += cryptCount.coerceAtMost(5)
+        if (mimicKilled) score += 2
+        if (isPaul) score += 10
+        return score
+    }
+
     inline val neededSecretsAmount: Int get() =
-        ceil(totalSecrets * floor.secretPercentage).toInt()
+        ceil(totalSecrets * (40.0 - getBonusScore + deathCount / 40.0)).toInt()
 
     /**
      * Checks if the current dungeon floor number matches any of the specified options.

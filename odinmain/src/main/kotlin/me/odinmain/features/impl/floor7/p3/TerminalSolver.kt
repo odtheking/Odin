@@ -204,7 +204,10 @@ object TerminalSolver : Module(
         val playerName = match.groups[1]?.value
         val completionStatus = match.groups[2]?.value
         if (playerName != mc.thePlayer.name) return
-        if (completionStatus == "(7/7)" || completionStatus == "(8/8)") leftTerm()
+        if (completionStatus == "(7/7)" || completionStatus == "(8/8)") {
+            TerminalSolvedEvent(currentTerm).postAndCatch()
+            leftTerm()
+        }
     }
 
     private fun leftTerm() {

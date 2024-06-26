@@ -21,7 +21,7 @@ object BlazeSolver {
         val hpMap = mutableMapOf<EntityArmorStand, Int>()
         blazes.clear()
         mc.theWorld.loadedEntityList.filterIsInstance<EntityArmorStand>().filter { it !in blazes }.forEach { entity ->
-            val matchResult = Regex("""^\[Lv15] Blaze [\d,]+/([\d,]+)❤$""").find(entity.name.noControlCodes) ?: return@forEach
+            val matchResult = Regex("^\\[Lv15] Blaze [\\d,]+/([\\d,]+)❤$").find(entity.name.noControlCodes) ?: return@forEach
             val hp = matchResult.groups[1]?.value?.replace(",", "")?.toIntOrNull() ?: return@forEach
             hpMap[entity] = hp
             blazes.add(entity)
@@ -45,10 +45,10 @@ object BlazeSolver {
             val aabb = AxisAlignedBB(-0.5, -2.0, -0.5, 0.5, 0.0, 0.5).offset(entity.positionVector)
 
             Renderer.drawBox(aabb, color,
-                outlineAlpha = if (PuzzleSolvers.blazeStyle == 0) 0 else color.alpha, fillAlpha = if (PuzzleSolvers.blazeStyle == 1) 0 else color.alpha)
+                outlineAlpha = if (PuzzleSolvers.blazeStyle == 0) 0 else color.alpha, fillAlpha = if (PuzzleSolvers.blazeStyle == 1) 0 else color.alpha, depth = true)
 
             if (PuzzleSolvers.blazeLineNext && index > 0 && index <= PuzzleSolvers.blazeLineAmount)
-                Renderer.draw3DLine(blazes[index - 1].renderVec, entity.entityBoundingBox.middle, color, 1f, false)
+                Renderer.draw3DLine(blazes[index - 1].renderVec, entity.entityBoundingBox.middle, color, 1f, true)
         }
     }
 

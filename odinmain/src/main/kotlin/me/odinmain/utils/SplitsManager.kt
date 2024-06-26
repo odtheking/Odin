@@ -45,7 +45,7 @@ object SplitsManager {
     @SubscribeEvent
     fun onJoinSkyblockIsland(event: SkyblockJoinIslandEvent) {
         val currentSplits = initializeSplits(event.island) ?: return
-        modMessage("Loading splits for ${LocationUtils.currentArea.name}")
+        if (Splits.enabled) modMessage("Loading splits for ${LocationUtils.currentArea.name}")
         SplitsManager.currentSplits = currentSplits
     }
 

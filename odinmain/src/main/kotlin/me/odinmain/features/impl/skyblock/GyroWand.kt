@@ -19,18 +19,17 @@ object GyroWand : Module(
     description = "Helpful features for the Gyrokinetic Wand",
     category = Category.SKYBLOCK
 ) {
-    private val gyroRange: Boolean by BooleanSetting("Gyro Range", true, description = "Renders a helpful circle to show the range of the Gyrokinetic Wand.")
-    private val color: Color by ColorSetting("Color", Color.MAGENTA.withAlpha(0.5f), allowAlpha = true).withDependency { gyroRange }
-    private val thickness: Float by NumberSetting("Thickness", 0.4f, 0, 10, 0.05).withDependency { gyroRange }
-    private val steps: Int by NumberSetting("Smoothness", 40, 20, 80, 1).withDependency { gyroRange }
-    private val showCooldown: Boolean by BooleanSetting("Show Cooldown", true, description = "Shows the cooldown of the Gyrokinetic Wand.").withDependency { gyroRange }
-    private val cooldownColor: Color by ColorSetting("Cooldown Color", Color.RED, allowAlpha = true).withDependency { showCooldown && gyroRange }
+    private val color: Color by ColorSetting("Color", Color.MAGENTA.withAlpha(0.5f), allowAlpha = true)
+    private val thickness: Float by NumberSetting("Thickness", 0.4f, 0, 10, 0.05)
+    private val steps: Int by NumberSetting("Smoothness", 40, 20, 80, 1)
+    private val showCooldown: Boolean by BooleanSetting("Show Cooldown", true, description = "Shows the cooldown of the Gyrokinetic Wand.")
+    private val cooldownColor: Color by ColorSetting("Cooldown Color", Color.RED, allowAlpha = true).withDependency { showCooldown }
 
     private val gyroCooldown = Clock(30_000)
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (heldItem?.itemID != "GYROKINETIC_WAND" || !gyroRange) return
+        if (heldItem?.itemID != "GYROKINETIC_WAND") return
         val pos = mc.thePlayer.rayTrace(25.0, event.partialTicks)?.blockPos ?: return
         val block = mc.theWorld?.getBlockState(pos)?.block ?: return
         if (block.isAir(mc.theWorld, pos)) return

@@ -36,12 +36,14 @@ val devCommand = commodore("oddev") {
         modMessage("""
             ${getChatBreak()}
             |inDungeons: ${DungeonUtils.inDungeons}
-            |Floor: ${DungeonUtils.floorNumber}
+            |Floor: ${DungeonUtils.floor.name}
             |InBoss: ${DungeonUtils.inBoss}
             |Secrets: ${DungeonUtils.secretCount} / ${DungeonUtils.totalSecrets}
             |NeededSecrets: ${DungeonUtils.neededSecretsAmount}
             |Deaths: ${DungeonUtils.deathCount}
             |Crypts: ${DungeonUtils.cryptCount}
+            |isPaul: ${DungeonUtils.isPaul}
+            |BonusScore: ${DungeonUtils.getBonusScore}
             |OpenRooms: ${DungeonUtils.openRoomCount}
             |CompletedRooms: ${DungeonUtils.completedRoomCount}
             |PercentCleared: ${DungeonUtils.percentCleared}%

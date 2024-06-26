@@ -7,6 +7,7 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.toBlockPos
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.toVec3
+import me.odinmain.features.impl.render.DevPlayers.isDev
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
@@ -30,7 +31,7 @@ object EtherWarpHelper : Module(
     description = "Shows you where your etherwarp will teleport you.",
     category = Category.RENDER
 ) {
-    private val zeroPing: Boolean by BooleanSetting("Zero Ping", false)
+    private val zeroPing: Boolean by BooleanSetting("Zero Ping", false).withDependency { isDev }
     private val render: Boolean by BooleanSetting("Show Etherwarp Guess", true)
     private val useServerPosition: Boolean by DualSetting("Positioning", "Server Pos", "Player Pos", description = "If etherwarp guess should use your server position or real position.").withDependency { render }
     private val renderFail: Boolean by BooleanSetting("Show when failed", true).withDependency { render }
@@ -84,7 +85,8 @@ object EtherWarpHelper : Module(
             zeroPing &&
             mc.thePlayer.holdingEtherWarp &&
             etherPos.succeeded &&
-            mc.thePlayer.isSneaking
+            mc.thePlayer.isSneaking &&
+            LocationUtils.currentArea.isArea(Island.SinglePlayer)
         ) {
             val pos = etherPos.pos ?: return
             mc.thePlayer.setPosition(pos.x + .5, pos.y + 1.0, pos.z + .5)

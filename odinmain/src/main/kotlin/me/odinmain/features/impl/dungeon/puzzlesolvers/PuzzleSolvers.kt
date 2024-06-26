@@ -85,6 +85,7 @@ object PuzzleSolvers : Module(
 
     private val quizDropdown: Boolean by DropdownSetting("Quiz")
     private val quizSolver: Boolean by BooleanSetting("Quiz Solver", false, description = "Solver for the trivia puzzle").withDependency { quizDropdown }
+    val quizDepth: Boolean by BooleanSetting("Quiz Depth", false, description = "Depth check for the trivia puzzle").withDependency { quizDropdown && quizSolver }
     val quizReset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
         QuizSolver.reset()
     }.withDependency { quizDropdown && quizSolver }

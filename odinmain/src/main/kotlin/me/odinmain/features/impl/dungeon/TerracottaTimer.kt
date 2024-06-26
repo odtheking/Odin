@@ -1,7 +1,7 @@
 package me.odinmain.features.impl.dungeon
 
 import me.odinmain.events.impl.BlockChangeEvent
-import me.odinmain.events.impl.ServerTickEvent
+import me.odinmain.events.impl.RealServerTick
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.addVec
@@ -29,7 +29,7 @@ object TerracottaTimer : Module(
     }
 
     @SubscribeEvent
-    fun onServerTick(event: ServerTickEvent) {
+    fun onServerTick(event: RealServerTick) {
         terracottaSpawning.removeAll {
             it.time -= 5
             it.time <= 0

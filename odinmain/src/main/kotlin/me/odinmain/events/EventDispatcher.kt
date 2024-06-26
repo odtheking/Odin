@@ -43,7 +43,7 @@ object EventDispatcher {
         with(event.packet) {
             if (inDungeons && this is C08PacketPlayerBlockPlacement && this.position != null &&
                 isSecret(mc.theWorld?.getBlockState(this.position) ?: return, this.position))
-                    SecretPickupEvent.Interact(this.position, mc.theWorld?.getBlockState(this.position)  ?: return).postAndCatch()
+                    SecretPickupEvent.Interact(this.position, mc.theWorld?.getBlockState(this.position) ?: return).postAndCatch()
         }
     }
 

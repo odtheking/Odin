@@ -75,7 +75,7 @@ enum class Blessing(
  * @property secretPercentage The percentage of secrets required.
  */
 enum class Floor(val personalBest: PersonalBest, val secretPercentage: Float = 1f) {
-    E(PersonalBest("Entrance", 4), 0f),
+    E(PersonalBest("Entrance", 4), 0.3f),
     F1(PersonalBest("Floor 1", 6), 0.3f),
     F2(PersonalBest("Floor 2", 6), 0.4f),
     F3(PersonalBest("Floor 3", 8), 0.5f),
