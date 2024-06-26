@@ -58,6 +58,8 @@ class Dungeon {
         currentRoom = event.room
         if (passedRooms.any { it.room.data.name == event.room?.room?.data?.name }) return
         event.room?.let { passedRooms.add(it) }
+        val roomSecrets = ScanUtils.getRoomSecrets(currentRoom?.room?.data?.name ?: return)
+        dungeonStats.knownSecrets = dungeonStats.knownSecrets?.plus(roomSecrets) ?: roomSecrets
     }
 
     fun onPacket(event: PacketReceivedEvent) {
@@ -118,6 +120,7 @@ class Dungeon {
     data class DungeonStats(
         var secretsFound: Int? = null,
         var secretsPercent: Float? = null,
+        var knownSecrets: Int? = null,
         var crypts: Int? = null,
         var openedRooms: Int? = null,
         var completedRooms: Int? = null,

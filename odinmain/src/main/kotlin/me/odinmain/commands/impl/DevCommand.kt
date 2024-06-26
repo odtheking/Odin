@@ -44,6 +44,8 @@ val devCommand = commodore("oddev") {
             |Floor: ${DungeonUtils.floorNumber}
             |InBoss: ${DungeonUtils.inBoss}
             |Secrets: ${DungeonUtils.secretCount} / ${DungeonUtils.totalSecrets}
+            |Known Secrets: ${DungeonUtils.knownSecrets}
+            |Minimum Secrets: ${DungeonUtils.minSecrets}
             |Deaths: ${DungeonUtils.deathCount}
             |Crypts: ${DungeonUtils.cryptCount}
             |OpenRooms: ${DungeonUtils.openRoomCount}
