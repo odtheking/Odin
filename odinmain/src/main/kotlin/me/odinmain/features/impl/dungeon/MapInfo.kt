@@ -22,6 +22,11 @@ object MapInfo : Module(
             mcText("§7Mimic: §a✔", 1, 9, 1f, Color.WHITE, center = false)
             mcText("§7Crypts: §e4", 159 - getMCTextWidth("§7Crypts: §a4"), 9, 1f, Color.WHITE, center = false)
         } else if (DungeonUtils.inDungeons){
+            val secretText = "§7Secrets: ${colorizeSecrets(DungeonUtils.secretCount, DungeonUtils.neededSecretsAmount)}§7-§e${DungeonUtils.neededSecretsAmount}§7-§c${DungeonUtils.totalSecrets}"
+            val unknownSecretsText = "§7Unknown: §b${DungeonUtils.totalSecrets - DungeonUtils.knownSecrets}"
+            val mimicText = if (DungeonUtils.mimicKilled) "§7Mimic: §a✔" else "§7Mimic: §c✘"
+            val cryptText = "§7Crypts: ${colorizeCrypts(DungeonUtils.cryptCount)}"
+
             mcText(secretText, 1, 1, 1f, Color.WHITE, center = false)
             mcText(unknownSecretsText, 159 - getMCTextWidth(unknownSecretsText), 1, 1f, Color.WHITE, center = false)
             mcText(mimicText, 1, 9, 1f, Color.WHITE, center = false)
@@ -29,19 +34,6 @@ object MapInfo : Module(
         } else return@HudSetting 0f to 0f
         160f to 20f
     }
-
-    val secrets = DungeonUtils.secretCount
-    val minSecrets = DungeonUtils.neededSecretsAmount
-    val totalSecrets = DungeonUtils.totalSecrets
-    val knownSecrets = DungeonUtils.knownSecrets
-    val mimicKilled = DungeonUtils.mimicKilled
-    val cryptCount = DungeonUtils.cryptCount
-
-
-    private val secretText = "§7Secrets: ${colorizeSecrets(secrets, minSecrets)}§7-§e${minSecrets}§7-§c${totalSecrets}"
-    private val unknownSecretsText = "§7Unknown: §b${totalSecrets - knownSecrets}"
-    private val mimicText = if (mimicKilled) "§7Mimic: §a✔" else "§7Mimic: §c✘"
-    private val cryptText = "§7Crypts: ${colorizeCrypts(cryptCount)}"
 
     private fun colorizeCrypts(count: Int): String {
         return when {
