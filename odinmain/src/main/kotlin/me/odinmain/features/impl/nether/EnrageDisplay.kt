@@ -1,6 +1,6 @@
 package me.odinmain.features.impl.nether
 
-import me.odinmain.events.impl.ServerTickEvent
+import me.odinmain.events.impl.RealServerTick
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.HudSetting
@@ -43,8 +43,7 @@ object EnrageDisplay : Module (
     }
 
     @SubscribeEvent
-    fun onServerTick(event: ServerTickEvent) {
+    fun onServerTick(event: RealServerTick) {
         enrageTimer--
     }
-
 }

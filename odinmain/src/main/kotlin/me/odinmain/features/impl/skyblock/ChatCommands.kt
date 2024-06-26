@@ -1,8 +1,7 @@
 package me.odinmain.features.impl.skyblock
 
 import kotlinx.coroutines.launch
-import me.odinmain.OdinMain
-import me.odinmain.events.impl.ChatPacketEvent
+import me.odinmain.OdinMain.scope
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.DungeonRequeue.disableRequeue
@@ -11,8 +10,6 @@ import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
 import net.minecraft.event.ClickEvent
-import net.minecraft.util.ChatComponentText
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.floor
 import kotlin.random.Random
 
@@ -60,85 +57,50 @@ object ChatCommands : Module(
         }
     }
 
-    private val partyRegex = Regex("Party > (\\[.+])? ?(.+): (.+)")
-    private val guildRegex = Regex("Guild > (\\[.+])? ?(.+) ?(\\[.+])?: ?(.+)")
-    private val fromRegex = Regex("From (\\[.+])? ?(.+): (.+)")
+    private val messageRegex = Regex("^(?:Party > \\[?(?:MVP|VIP)?\\+*]? ?(.{1,16}): ?(.+)\$|Guild > \\[?(?:MVP|VIP)?\\+*]? ?(.{1,16}?)(?= ?\\[| ?: ) ?\\[.+] ?: ?(.+)\$|From \\[?(?:MVP|VIP)?\\+*]? ?(.{1,16}): ?(.+)\$)")
 
-    @SubscribeEvent
-    fun chatCommands(event: ChatPacketEvent) {
-        val message = event.message
-        val channel = when {
-            partyRegex.matches(message) -> "party"
-            guildRegex.matches(message) -> "guild"
-            fromRegex.matches(message) -> "private"
-            else -> return
-        }
+    init {
+        onMessage(messageRegex) {
+            dt(it)
 
-        val ign = when (channel) {
-            "party" -> partyRegex.matchEntire(message)?.groups?.get(2)?.value
-            "guild" -> guildRegex.matchEntire(message)?.groups?.get(2)?.value
-            "private" -> fromRegex.matchEntire(message)?.groups?.get(2)?.value
-            else -> return
-        } ?: return
+            val chatMessage = messageRegex.find(it) ?: return@onMessage
+            val ign = chatMessage.groups[1]?.value ?: return@onMessage
+            val msg = chatMessage.groups[2]?.value ?: return@onMessage
 
-        if (whitelistOnly != isInBlacklist(ign)) return
+            if (whitelistOnly != isInBlacklist(ign)) return@onMessage
 
-        val msg = when (channel) {
-            "party" -> partyRegex.matchEntire(message)?.groups?.get(3)?.value?.lowercase()
-            "guild" -> guildRegex.matchEntire(message)?.groups?.get(4)?.value?.lowercase()
-            "private" -> fromRegex.matchEntire(message)?.groups?.get(3)?.value?.lowercase()
-            else -> ""
-        }
+            val channel = when(it.split(" ")[0]) {
+                "Party" -> if (!party) return@onMessage else ChatChannel.PARTY
+                "Guild" -> if (!guild) return@onMessage else ChatChannel.GUILD
+                "From" -> if (!private) return@onMessage else ChatChannel.PRIVATE
+                else -> return@onMessage
+            }
 
-        when (channel) {
-            "party" -> if (!party) return
-            "guild" -> if (!guild) return
-            "private" -> if (!private) return
-            else -> return // Handle unknown channels, or adjust as needed
-        }
-
-        runIn(6) {
-            handleChatCommands(msg!!, ign, channel)
+            runIn(5) {
+                handleChatCommands(msg, ign, channel)
+            }
         }
     }
 
-    private fun handleChatCommands(message: String, name: String, channel: String) {
-
-        val helpMessage = when (channel) {
-            "party" -> {
-                val commandsMap = mapOf("coords" to coords, "odin" to odin, "boop" to boop, "cf" to cf, "8ball" to eightball, "dice" to dice, "cat" to cat, "racism" to racism, "tps" to tps, "warp" to warp, "warptransfer" to warptransfer, "allinvite" to allinvite, "pt" to pt, "dt" to dt, "m" to queDungeons, "f" to queDungeons)
-                val enabledCommands = commandsMap.filterValues { it }.keys.joinToString(", ")
-                "Commands: $enabledCommands"
-            }
-            "guild" -> {
-                val commandsMap = mapOf("coords" to coords, "odin" to odin, "boop" to boop, "cf" to cf, "8ball" to eightball, "dice" to dice, "cat" to cat, "racism" to racism, "ping" to ping, "tps" to tps)
-                val enabledCommands = commandsMap.filterValues { it }.keys.joinToString(", ")
-                "Commands: $enabledCommands"
-            }
-            "private" -> {
-                val commandsMap = mapOf("coords" to coords, "odin" to odin, "boop" to boop, "cf" to cf, "8ball" to eightball, "dice" to dice, "cat" to cat, "racism" to racism, "ping" to ping, "tps" to tps, "inv" to inv, "invite" to invite)
-                val enabledCommands = commandsMap.filterValues { it }.keys.joinToString(", ")
-                "Commands: $enabledCommands"
-            }
-            else -> ""
+    private fun handleChatCommands(message: String, name: String, channel: ChatChannel) {
+        val commandsMap = when (channel) {
+            ChatChannel.PARTY -> mapOf("coords" to coords, "odin" to odin, "boop" to boop, "cf" to cf, "8ball" to eightball, "dice" to dice, "cat" to cat, "racism" to racism, "tps" to tps, "warp" to warp, "warptransfer" to warptransfer, "allinvite" to allinvite, "pt" to pt, "dt" to dt, "m" to queDungeons, "f" to queDungeons)
+            ChatChannel.GUILD -> mapOf("coords" to coords, "odin" to odin, "boop" to boop, "cf" to cf, "8ball" to eightball, "dice" to dice, "cat" to cat, "racism" to racism, "ping" to ping, "tps" to tps)
+            ChatChannel.PRIVATE -> mapOf("coords" to coords, "odin" to odin, "boop" to boop, "cf" to cf, "8ball" to eightball, "dice" to dice, "cat" to cat, "racism" to racism, "ping" to ping, "tps" to tps, "inv" to inv, "invite" to invite)
         }
 
         if (!message.startsWith("!")) return
         when (message.split(" ")[0].drop(1)) {
-            "help" -> channelMessage(helpMessage, name, channel)
+            "help" -> channelMessage("Commands: ${commandsMap.filterValues { it }.keys.joinToString(", ")}", name, channel)
             "coords" -> if (coords) channelMessage("x: ${PlayerUtils.posX.toInt()}, y: ${PlayerUtils.posY.toInt()}, z: ${PlayerUtils.posZ.toInt()}", name, channel)
             "odin" -> if (odin) channelMessage("Odin! https://discord.gg/2nCbC9hkxT", name, channel)
-            "boop" -> {
-                if (boop) {
-                    val boopAble = message.substringAfter("boop ")
-                    sendChatMessage("/boop $boopAble") }
-            }
+            "boop" -> if (boop) sendChatMessage("/boop ${message.substringAfter("boop ")}")
             "cf" -> if (cf) channelMessage(flipCoin(), name, channel)
             "8ball" -> if (eightball) channelMessage(eightBall(), name, channel)
             "dice" -> if (dice) channelMessage(rollDice(), name, channel)
             "cat" -> if (cat) {
                 modMessage("§aFetching cat picture...")
-                OdinMain.scope.launch {
+                scope.launch {
                     channelMessage(getCatPic(), name, channel)
                 }
             }
@@ -149,17 +111,20 @@ object ChatCommands : Module(
 
             // Party cmds only
 
-            "warp" -> if (warp && channel == "party") sendCommand("p warp")
-            "warptransfer" -> { if (warptransfer)
+            "warp" -> if (warp && channel == ChatChannel.PARTY) sendCommand("p warp")
+
+            "warptransfer" -> { if (warptransfer && channel == ChatChannel.PARTY)
                 sendCommand("p warp")
                 runIn(12) {
                     sendCommand("p transfer $name")
                 }
             }
-            "allinvite" -> if (allinvite && channel == "party") sendCommand("p settings allinvite")
-            "pt" -> if (pt && channel == "party") sendCommand("p transfer $name")
+            "allinvite" -> if (allinvite && channel == ChatChannel.PARTY) sendCommand("p settings allinvite")
 
-            "dt" -> if (dt && channel == "party") {
+            "pt" -> if (pt && channel == ChatChannel.PARTY) sendCommand("p transfer $name")
+
+            "dt" -> {
+                if (!dt || channel != ChatChannel.PARTY) return
                 var reason = "No reason given"
                 if (message.substringAfter("dt ") != message && !message.substringAfter("dt ").contains("!dt"))
                     reason = message.substringAfter("dt ")
@@ -171,58 +136,55 @@ object ChatCommands : Module(
             }
 
             "m" -> {
-                if (!queDungeons) return
+                if (!queDungeons || channel != ChatChannel.PARTY) return
                 val floor = message.substringAfter("m ")
                 if (message.substringAfter("m ") == message) return modMessage("§cPlease specify a floor.")
-                if (floor.toIntOrNull() == null) return modMessage("§cPlease specify a valid floor.")
                 modMessage("§aEntering master mode floor: $floor")
                 sendCommand("od m$floor", true)
             }
 
             "f" -> {
-                if (!queDungeons) return
+                if (!queDungeons || channel != ChatChannel.PARTY) return
                 val floor = message.substringAfter("f ")
                 if (message.substringAfter("f ") == message) return modMessage("§cPlease specify a floor.")
-                if (floor.toIntOrNull() == null) return modMessage("§cPlease specify a valid floor.")
                 modMessage("§aEntering floor: $floor")
                 sendCommand("od f$floor", true)
             }
 
             "t" -> {
-                if (!queKuudra) return
+                if (!queKuudra || channel != ChatChannel.PARTY) return
                 val tier = message.substringAfter("t ")
                 if (message.substringAfter("t ") == message) return modMessage("§cPlease specify a tier.")
-                if (tier.toIntOrNull() == null) return modMessage("§cPlease specify a valid tier.")
                 modMessage("§aEntering kuudra run: $tier")
                 sendCommand("od t$tier", true)
             }
 
             // Private cmds only
 
-            "inv" -> if (inv && channel == "private") inviteCommand(name)
-            "invite" -> if (invite && channel == "private") inviteCommand(name)
+            "inv" -> if (inv && channel == ChatChannel.PRIVATE) inviteCommand(name)
+            "invite" -> if (invite && channel == ChatChannel.PRIVATE) inviteCommand(name)
         }
     }
 
     private fun inviteCommand(name: String) {
-        mc.thePlayer.playSound("note.pling", 100f, 1f)
-        mc.thePlayer.addChatMessage(
-            ChatComponentText("§3Odin§bClient §8»§r Click on this message to invite $name to your party!")
-                .setChatStyle(createClickStyle(ClickEvent.Action.RUN_COMMAND,"/party invite $name"))
-        )
+        PlayerUtils.playLoudSound("note.pling", 100f, 1f)
+        modMessage("Click on this message to invite $name to your party!",
+            chatStyle = createClickStyle(ClickEvent.Action.RUN_COMMAND, "/party invite $name"))
     }
 
-    @SubscribeEvent
-    fun dt(event: ChatPacketEvent) {
-        if (dtPlayer == null || !event.message.containsOneOf("EXTRA STATS", "KUUDRA DOWN!")) return
+    private fun dt(message: String) {
+        if (!message.containsOneOf("EXTRA STATS", "KUUDRA DOWN!") || dtReason.isEmpty()) return
         runIn(30) {
             PlayerUtils.alert("§cPlayers need DT")
             partyMessage("Players need DT: ${dtReason.joinToString(separator = ", ") { (name, reason) -> "$name: $reason" }}")
-            dtPlayer = null
             dtReason.clear()
         }
     }
 
     private fun isInBlacklist(name: String) =
         blacklist.contains(name.lowercase())
+
+    enum class ChatChannel {
+        PARTY, GUILD, PRIVATE
+    }
 }

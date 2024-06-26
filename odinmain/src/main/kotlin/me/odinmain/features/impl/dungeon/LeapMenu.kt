@@ -70,9 +70,12 @@ object LeapMenu : Module(
             GlStateManager.pushMatrix()
             GlStateManager.enableAlpha()
             scale(1f / scaleFactor,  1f / scaleFactor)
-            scale(size, size)
+
             val displayWidth = Display.getWidth()
             val displayHeight = Display.getHeight()
+            translate(displayWidth / 2f, displayHeight / 2f, 0f)
+            scale(size, size, 1f)
+            translate(-displayWidth / 2f, -displayHeight / 2f, 0f)
             translate(displayWidth / 2, displayHeight / 2)
             val boxWidth = 800
             val boxHeight = 300
@@ -175,11 +178,11 @@ object LeapMenu : Module(
     }
 
 
-    /*private val leapTeammates: MutableList<DungeonUtils.DungeonPlayer> = mutableListOf(
-        DungeonUtils.DungeonPlayer("Stiviaisd", DungeonUtils.Classes.Healer),
-        DungeonUtils.DungeonPlayer("Odtheking", DungeonUtils.Classes.Archer),
-        DungeonUtils.DungeonPlayer("Bonzi", DungeonUtils.Classes.Mage),
-        DungeonUtils.DungeonPlayer("Cezar", DungeonUtils.Classes.Tank)
+   /* private val leapTeammates: MutableList<DungeonPlayer> = mutableListOf(
+        DungeonPlayer("Stiviaisd", DungeonClass.Healer),
+        DungeonPlayer("Odtheking", DungeonClass.Archer),
+        DungeonPlayer("Bonzi", DungeonClass.Mage),
+        DungeonPlayer("Cezar", DungeonClass.Tank)
     )*/
 
 
@@ -196,7 +199,7 @@ object LeapMenu : Module(
         val result = Array(4) { EMPTY }
         val secondRound = mutableListOf<DungeonPlayer>()
 
-        for (player in players.sortedBy { it.clazz.prio }) {
+        for (player in players.sortedBy { it.clazz.priority }) {
             when {
                 result[player.clazz.defaultQuadrant] == EMPTY -> result[player.clazz.defaultQuadrant] = player
                 else -> secondRound.add(player)

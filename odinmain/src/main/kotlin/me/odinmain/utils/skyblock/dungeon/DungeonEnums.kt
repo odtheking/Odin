@@ -10,7 +10,7 @@ import net.minecraft.util.ResourceLocation
  * Data class representing a player in a dungeon, including their name, class, skin location, and associated player entity.
  *
  * @property name The name of the player.
- * @property clazz The player's class, defined by the [Classes] enum.
+ * @property clazz The player's class, defined by the [DungeonClass] enum.
  * @property locationSkin The resource location of the player's skin.
  * @property entity The optional associated player entity. Defaults to `null`.
  * @property isDead The player's death status. Defaults to `false`.
@@ -31,13 +31,13 @@ data class DungeonPlayer(
  *
  * @property color The color associated with the class.
  * @property defaultQuadrant The default quadrant for the class.
- * @property prio The priority of the class.
+ * @property priority The priority of the class.
  *
  */
 enum class DungeonClass(
     val color: Color,
     val defaultQuadrant: Int,
-    var prio: Int,
+    var priority: Int,
 ) {
     Archer(Color.ORANGE, 0, 2),
     Berserk(Color.DARK_RED,1, 0),
@@ -47,7 +47,7 @@ enum class DungeonClass(
     Unknown(Color.WHITE, 0, 0)
 }
 
-enum class Blessings(
+enum class Blessing(
     var regex: Regex,
     val displayString: String,
     var current: Int = 0
@@ -71,23 +71,25 @@ enum class Blessings(
  *
  * @property floorNumber The numerical representation of the floor, where E represents the entrance floor.
  * @property isInMM Indicates whether the floor is a mini-boss floor (M1 to M7).
+ * @property personalBest The personal best time for the floor.
+ * @property secretPercentage The percentage of secrets required.
  */
-enum class Floor(val personalBest: PersonalBest) {
-    E(PersonalBest("Entrance", 3)),
-    F1(PersonalBest("Floor 1", 5)),
-    F2(PersonalBest("Floor 2", 5)),
-    F3(PersonalBest("Floor 3", 7)),
-    F4(PersonalBest("Floor 4", 4)),
-    F5(PersonalBest("Floor 5", 4)),
-    F6(PersonalBest("Floor 6", 6)),
-    F7(PersonalBest("Floor 7", 9)),
-    M1(PersonalBest("Master 1", 3)),
-    M2(PersonalBest("Master 2", 5)),
-    M3(PersonalBest("Master 3", 7)),
-    M4(PersonalBest("Master 4", 4)),
-    M5(PersonalBest("Master 5", 4)),
-    M6(PersonalBest("Master 6", 6)),
-    M7(PersonalBest("Master 7", 9));
+enum class Floor(val personalBest: PersonalBest, val secretPercentage: Float = 1f) {
+    E(PersonalBest("Entrance", 4), 0.3f),
+    F1(PersonalBest("Floor 1", 6), 0.3f),
+    F2(PersonalBest("Floor 2", 6), 0.4f),
+    F3(PersonalBest("Floor 3", 8), 0.5f),
+    F4(PersonalBest("Floor 4", 5), 0.6f),
+    F5(PersonalBest("Floor 5", 5), 0.7f),
+    F6(PersonalBest("Floor 6", 7), 0.85f),
+    F7(PersonalBest("Floor 7", 10)),
+    M1(PersonalBest("Master 1", 6)),
+    M2(PersonalBest("Master 2", 6)),
+    M3(PersonalBest("Master 3", 8)),
+    M4(PersonalBest("Master 4", 5)),
+    M5(PersonalBest("Master 5", 5)),
+    M6(PersonalBest("Master 6", 7)),
+    M7(PersonalBest("Master 7", 10));
 
     /**
      * Gets the numerical representation of the floor.

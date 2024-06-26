@@ -14,7 +14,6 @@ import net.minecraft.init.Items
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.Slot
 import net.minecraft.item.Item
-import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object AutoExperiments : Module(
@@ -62,7 +61,7 @@ object AutoExperiments : Module(
      * @author Harry282
      */
     @SubscribeEvent
-    fun onGuiDraw(event: GuiScreenEvent.BackgroundDrawnEvent) {
+    fun onGuiDraw(event: GuiEvent.DrawGuiContainerScreenEvent) {
         if (!inSkyblock || event.gui !is GuiChest) return
         val container = (event.gui as GuiChest).inventorySlots
         if (container !is ContainerChest) return

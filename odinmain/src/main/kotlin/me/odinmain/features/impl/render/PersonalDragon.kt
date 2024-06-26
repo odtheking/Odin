@@ -88,5 +88,4 @@ object PersonalDragon : Module(
         if (this.dragon == null || event.entity.entityId != this.dragon!!.entityId) return
         GlStateManager.popMatrix()
     }
-
 }

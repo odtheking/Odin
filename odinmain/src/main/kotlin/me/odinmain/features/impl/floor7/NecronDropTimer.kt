@@ -37,6 +37,7 @@ object NecronDropTimer : Module(
     fun onServerTick(event: RealServerTick) {
         if (timer > 0) timer--
     }
+
     init {
         onMessage("[BOSS] Necron: I'm afraid, your journey ends now.", false) {
             timer = 60

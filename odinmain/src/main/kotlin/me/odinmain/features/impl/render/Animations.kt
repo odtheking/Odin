@@ -99,5 +99,4 @@ object Animations : Module(
             }
         }
     }
-
 }

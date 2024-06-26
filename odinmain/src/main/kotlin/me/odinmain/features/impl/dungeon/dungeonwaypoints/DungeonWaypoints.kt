@@ -160,7 +160,7 @@ object DungeonWaypoints : Module(
     }
 
     @SubscribeEvent
-    fun onNewRoom(event: EnteredDungeonRoomEvent) {
+    fun onNewRoom(event: DungeonEvents.RoomEnterEvent) {
         glList = -1
     }
 

@@ -6,16 +6,14 @@ import me.odinmain.commands.registerCommands
 import me.odinmain.config.*
 import me.odinmain.events.EventDispatcher
 import me.odinmain.features.ModuleManager
-import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints
 import me.odinmain.features.impl.render.*
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.util.shader.RoundedRect
-import me.odinmain.utils.ServerUtils
+import me.odinmain.utils.*
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.sendDataToServer
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.ScanUtils
@@ -46,6 +44,7 @@ object OdinMain {
             EventDispatcher, Executor, ModuleManager,
             WaypointManager, DevPlayers, SkyblockPlayer,
             ScanUtils, //HighlightRenderer, //OdinUpdater,
+            SplitsManager,
             this
         ).forEach { MinecraftForge.EVENT_BUS.register(it) }
 

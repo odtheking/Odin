@@ -67,11 +67,11 @@ object ModuleManager {
         //skyblock
         NoCursorReset, AutoSprint, BlazeAttunement, ChatCommands, DeployableTimer, DianaHelper, ArrowHit,
         Ragaxe, MobSpawn, Splits, WardrobeKeybinds, InvincibilityTimer, EnrageDisplay, /*ItemsHighlight,*/
-        CopyChat, PlayerDisplay, FarmKeys, /*PartyEncoding,*/ PetKeybinds, /*SkillsSucks,*/
+        PlayerDisplay, FarmKeys, /*PartyEncoding,*/ PetKeybinds, /*SkillsSucks,*/ ChatEmotes,
 
         // kuudra
-        BuildHelper, FreshTimer, KuudraDisplay, NoPre, PearlWaypoints, RemovePerks, SupplyWaypoints, TeamHighlight,
-        VanqNotifier, KuudraReminders, KuudraSplits, KuudraRequeue,
+        BuildHelper, FreshTimer, KuudraDisplay, NoPre, PearlWaypoints, RemovePerks, SupplyHelper, TeamHighlight,
+        VanqNotifier, KuudraReminders, KuudraRequeue,
     )
 
     init {

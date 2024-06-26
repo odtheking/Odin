@@ -1,7 +1,7 @@
 package me.odinmain.utils.skyblock.dungeon
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.events.impl.EnteredDungeonRoomEvent
+import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
 import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.features.impl.dungeon.LeapMenu
 import me.odinmain.features.impl.dungeon.LeapMenu.odinSorting
@@ -54,7 +54,7 @@ class Dungeon {
         }
     }
 
-    fun enterDungeonRoom(event: EnteredDungeonRoomEvent) {
+    fun enterDungeonRoom(event: RoomEnterEvent) {
         currentRoom = event.room
         if (passedRooms.any { it.room.data.name == event.room?.room?.data?.name }) return
         event.room?.let { passedRooms.add(it) }
@@ -82,7 +82,7 @@ class Dungeon {
     }
 
     private fun handleHeaderFooterPacket(packet: S47PacketPlayerListHeaderFooter) {
-        Blessings.entries.forEach { blessing ->
+        Blessing.entries.forEach { blessing ->
             blessing.regex.find(packet.footer.unformattedText.noControlCodes)?.let { match ->
                 blessing.current = romanToInt(match.groupValues[1])
             }
@@ -168,7 +168,7 @@ class Dungeon {
 
         leapTeammates =
             when (LeapMenu.type) {
-                0 -> odinSorting(dungeonTeammatesNoSelf.sortedBy { it.clazz.prio }).toMutableList()
+                0 -> odinSorting(dungeonTeammatesNoSelf.sortedBy { it.clazz.priority }).toMutableList()
                 1 -> dungeonTeammatesNoSelf.sortedWith(compareBy({ it.clazz.ordinal }, { it.name })).toMutableList()
                 2 -> dungeonTeammatesNoSelf.sortedBy { it.name }.toMutableList()
                 else -> dungeonTeammatesNoSelf.toMutableList()

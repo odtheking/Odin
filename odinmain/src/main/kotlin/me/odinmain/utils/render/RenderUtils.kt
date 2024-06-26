@@ -30,10 +30,10 @@ import kotlin.math.*
 
 object RenderUtils {
 
-    val tessellator: Tessellator = Tessellator.getInstance()
+    private val tessellator: Tessellator = Tessellator.getInstance()
     val worldRenderer: WorldRenderer = tessellator.worldRenderer
     private val beaconBeam = ResourceLocation("textures/entity/beacon_beam.png")
-    val renderManager: RenderManager = mc.renderManager
+    private val renderManager: RenderManager = mc.renderManager
 
     /**
      * Gets the rendered x-coordinate of an entity based on its last tick and current tick positions.
@@ -449,31 +449,28 @@ object RenderUtils {
      * @param rot2        Rotation parameter.
      * @param rot3        Rotation parameter.
      * @param color       The color of the cylinder.
-     * @param phase       Indicates whether to phase the cylinder (default is false).
+     * @param depth       Indicates whether to phase the cylinder (default is false).
      * @param linemode    Indicates whether to draw the cylinder in line mode (default is false).
      */
     fun drawCylinder(
         pos: Vec3, baseRadius: Number, topRadius: Number, height: Number,
         slices: Number, stacks: Number, rot1: Number, rot2: Number, rot3: Number,
-        color: Color, phase: Boolean = false, linemode: Boolean = false
+        color: Color, depth: Boolean = false, linemode: Boolean = false
     ) {
         val renderPos = getRenderPos(pos)
-        val x = renderPos.xCoord
-        val y = renderPos.yCoord
-        val z = renderPos.zCoord
 
         GlStateManager.pushMatrix()
         GL11.glLineWidth(2.0f)
         GlStateManager.disableCull()
         GlStateManager.enableBlend()
-        GlStateManager.disableLighting()
         blendFactor()
+        GlStateManager.depthMask(false)
         GlStateManager.disableTexture2D()
 
-        if (phase) GlStateManager.disableDepth()
+        if (depth) GlStateManager.disableDepth()
 
         color.bind()
-        GlStateManager.translate(x, y, z)
+        GlStateManager.translate(renderPos.xCoord, renderPos.yCoord, renderPos.zCoord)
         GlStateManager.rotate(rot1.toFloat(), 1f, 0f, 0f)
         GlStateManager.rotate(rot2.toFloat(), 0f, 0f, 1f)
         GlStateManager.rotate(rot3.toFloat(), 0f, 1f, 0f)
@@ -485,10 +482,11 @@ object RenderUtils {
 
         GlStateManager.enableCull()
         GlStateManager.disableBlend()
+        GlStateManager.depthMask(true)
         GlStateManager.enableTexture2D()
+        if (depth) GlStateManager.enableDepth()
         GlStateManager.resetColor()
-        GlStateManager.enableLighting()
-        if (phase) GlStateManager.enableDepth()
+
         GlStateManager.popMatrix()
     }
 

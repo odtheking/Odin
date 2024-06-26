@@ -2,7 +2,8 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import me.odinmain.events.impl.EnteredDungeonRoomEvent
+import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
+import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.quizDepth
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
@@ -13,8 +14,7 @@ import java.nio.charset.StandardCharsets
 object QuizSolver {
     private var answers: MutableMap<String, List<String>>
     private val gson = GsonBuilder().setPrettyPrinting().create()
-    private val isr = this::class.java.getResourceAsStream("/quizAnswers.json")
-        ?.let { InputStreamReader(it, StandardCharsets.UTF_8) }
+    private val isr = this::class.java.getResourceAsStream("/quizAnswers.json")?.let { InputStreamReader(it, StandardCharsets.UTF_8) }
     private var triviaAnswers: List<String>? = null
 
     private var triviaOptions: MutableList<TriviaAnswer> = MutableList(3) { TriviaAnswer(null, false) }
@@ -32,7 +32,7 @@ object QuizSolver {
     }
 
     fun onMessage(msg: String) {
-        if (msg.startsWith("[STATUE] Oruo the Omniscient: ") && msg.contains("answered Question #") && msg.endsWith("correctly!"))
+        if ((msg.startsWith("[STATUE] Oruo the Omniscient: ") && msg.contains("answered Question #") && msg.endsWith("correctly!")) || msg == "[STATUE] Oruo the Omniscient: I bestow upon you all the power of a hundred years!")
             triviaOptions.forEach { it.correct = false }
 
         if (msg.trim().startsWithOneOf("ⓐ", "ⓑ", "ⓒ", ignoreCase = true)) {
@@ -51,7 +51,7 @@ object QuizSolver {
         }
     }
 
-    fun enterRoomQuiz(event: EnteredDungeonRoomEvent) {
+    fun enterRoomQuiz(event: RoomEnterEvent) {
         val room = event.room?.room ?: return
         if (room.data.name != "Quiz") return
 
@@ -65,7 +65,7 @@ object QuizSolver {
 
     fun renderWorldLastQuiz() {
         triviaOptions.filter { it.correct }.forEach { answer ->
-            answer.vec3?.toAABB()?.let { Renderer.drawBox(it, Color.GREEN, fillAlpha = 0f) }
+            answer.vec3?.toAABB()?.expand(0.0, 20.0, 0.0)?.let { Renderer.drawBox(it, Color.GREEN, depth = quizDepth) }
         }
     }
 

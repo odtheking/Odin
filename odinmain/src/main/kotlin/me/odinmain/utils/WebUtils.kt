@@ -1,9 +1,13 @@
 package me.odinmain.utils
 
 import com.google.gson.Gson
+import com.google.gson.JsonParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import me.odinmain.features.impl.render.DevPlayers
+import org.apache.http.client.methods.HttpGet
+import org.apache.http.impl.client.HttpClients
+import org.apache.http.util.EntityUtils
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
@@ -210,4 +214,29 @@ fun imgurID(url: String): String {
     val imgurID = imageLink.split(",")[26].substringAfter("i.imgur.com/").substringBefore(".")
     // Extract the Imgur ID from the Imgur API response
     return imgurID
+}
+
+fun fetch(uri: String): String? {
+    HttpClients.createMinimal().use {
+        try {
+            val httpGet = HttpGet(uri)
+            return EntityUtils.toString(it.execute(httpGet).entity)
+        } catch (e: Exception) {
+            return null
+        }
+    }
+}
+
+fun hasBonusPaulScore(): Boolean {
+    val response = fetch("https://api.hypixel.net/resources/skyblock/election") ?: return false
+    val jsonObject = JsonParser().parse(response).asJsonObject ?: return false
+    val mayor = jsonObject["mayor"]?.asJsonObject ?: return false
+    val name = mayor["name"]?.asString ?: return false
+    if (name == "Paul") {
+        return mayor.getAsJsonArray("perks")?.any {
+            it.asJsonObject?.getAsJsonPrimitive("name")?.asString == "EZPZ"
+        } ?: false
+    }
+
+    return false
 }

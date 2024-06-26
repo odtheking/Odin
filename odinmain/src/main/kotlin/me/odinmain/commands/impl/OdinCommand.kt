@@ -1,7 +1,6 @@
 package me.odinmain.commands.impl
 
 import com.github.stivais.commodore.utils.GreedyString
-import com.github.stivais.commodore.utils.SyntaxException
 import me.odinmain.OdinMain.display
 import me.odinmain.OdinMain.mc
 import me.odinmain.commands.commodore
@@ -107,11 +106,11 @@ val mainCommand = commodore("od", "odin") {
 
     runs { tier: String ->
         if(tier[0].equalsOneOf('f', 'm')) {
-            if (tier.length != 2 || tier[1] !in '1'..'7') throw SyntaxException()
+            if (tier.length != 2 || tier[1] !in '1'..'7') return@runs
             sendCommand("joininstance ${if (tier[0] == 'm') "master_" else ""}catacombs_floor_${floors[tier[1]]}")
         }
         else if (tier[0] == 't'){
-            if (tier.length != 2 || tier[1] !in '1'..'5') throw SyntaxException()
+            if (tier.length != 2 || tier[1] !in '1'..'5') return@runs
             sendCommand("joininstance kuudra_${tiers[tier[1]]}")
         }
     } suggests {

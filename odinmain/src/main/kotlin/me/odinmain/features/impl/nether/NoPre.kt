@@ -82,10 +82,9 @@ object NoPre : Module(
             if (showAlert) PlayerUtils.alert(msg, time = 10)
         }
 
-        onMessage(Regex("Party > ?(\\[.+])? ?(.+): No ?(.*)!")) {
-            val match = Regex("Party > ?(\\[.+])? ?(.+): No ?(.*)!").find(it) ?: return@onMessage
-            val spot = match.groupValues.lastOrNull()?.replace("!", "") ?: return@onMessage
-            missing = spot
+        onMessage(Regex("^Party > \\[?(?:MVP|VIP)?\\+*]? ?(.{1,16}): No ?(.*)!")) {
+            val match = Regex("^Party > \\[?(?:MVP|VIP)?\\+*]? ?(.{1,16}): No ?(.*)!").find(it) ?: return@onMessage
+            missing = match.groupValues.lastOrNull() ?: return@onMessage
         }
     }
 }

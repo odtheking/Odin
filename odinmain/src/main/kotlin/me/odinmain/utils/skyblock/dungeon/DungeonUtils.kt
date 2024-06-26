@@ -1,12 +1,13 @@
 package me.odinmain.utils.skyblock.dungeon
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.events.impl.EnteredDungeonRoomEvent
+import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
 import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.utils.*
+import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.LocationUtils.currentDungeon
 import me.odinmain.utils.skyblock.PlayerUtils.posY
-import me.odinmain.utils.skyblock.getItemSlot
+import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
 import net.minecraft.block.BlockSkull
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.network.NetworkPlayerInfo
@@ -21,7 +22,7 @@ import kotlin.math.floor
 object DungeonUtils {
 
     inline val inDungeons: Boolean get() =
-        currentDungeon != null
+        LocationUtils.currentArea.isArea(Island.Dungeon)
 
     inline val floorNumber: Int get() =
         currentDungeon?.floor?.floorNumber ?: 0
@@ -111,11 +112,25 @@ object DungeonUtils {
     inline val mimicKilled: Boolean get() =
         currentDungeon?.dungeonStats?.mimicKilled ?: false
 
-    inline val currentRoom get() =
+    inline val currentRoom: FullRoom? get() =
         currentDungeon?.currentRoom
 
     inline val passedRooms get() =
         currentDungeon?.passedRooms ?: emptyList()
+
+    inline val isPaul: Boolean get() =
+        hasBonusPaulScore()
+
+    inline val getBonusScore: Int get() {
+        var score = 0
+        score += cryptCount.coerceAtMost(5)
+        if (mimicKilled) score += 2
+        if (isPaul) score += 10
+        return score
+    }
+
+    inline val neededSecretsAmount: Int get() =
+        ceil(totalSecrets * (40.0 - getBonusScore + deathCount / 40.0)).toInt()
 
     /**
      * Checks if the current dungeon floor number matches any of the specified options.
@@ -152,13 +167,13 @@ object DungeonUtils {
     var foundSecrets: Int = 0
 
     @SubscribeEvent
-    fun onRoomEnter(event: EnteredDungeonRoomEvent) {
-        currentDungeon?.enterDungeonRoom(event)
+    fun onRoomEnter(event: RoomEnterEvent) {
+        if (inDungeons) currentDungeon?.enterDungeonRoom(event)
     }
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
-        Blessings.entries.forEach { it.current = 0 }
+        Blessing.entries.forEach { it.current = 0 }
     }
 
     private val tablistRegex = Regex("^\\[(\\d+)] (?:\\[\\w+] )*(\\w+) .*?\\((\\w+)(?: (\\w+))*\\)$")
@@ -169,7 +184,7 @@ object DungeonUtils {
 
         for ((networkPlayerInfo, line) in tabList) {
 
-            val (_, sbLevel, name, clazz, clazzLevel) = tablistRegex.find(line.noControlCodes)?.groupValues ?: continue
+            val (_, _, name, clazz, _) = tablistRegex.find(line.noControlCodes)?.groupValues ?: continue
 
             addTeammate(name, clazz, teammates, networkPlayerInfo) // will fail to find the EMPTY or DEAD class and won't add them to the list
             if (clazz == "DEAD" || clazz == "EMPTY") {

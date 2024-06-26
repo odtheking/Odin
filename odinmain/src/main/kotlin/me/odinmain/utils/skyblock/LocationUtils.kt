@@ -1,6 +1,7 @@
 package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
+import me.odinmain.events.impl.DungeonEvents
 import me.odinmain.events.impl.SkyblockJoinIslandEvent
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.utils.*
@@ -24,25 +25,30 @@ object LocationUtils {
     init {
         Executor(500) {
             if (!inSkyblock)
-                inSkyblock = onHypixel && mc.theWorld.scoreboard.getObjectiveInDisplaySlot(1)?.let {
-                    cleanSB(it.displayName).contains("SKYBLOCK") } ?: false
-
-            if (currentDungeon == null && ((inSkyblock &&
-                sidebarLines.any { cleanSB(it).run { (contains("The Catacombs") && !contains("Queue")) || contains("Dungeon Cleared:") } }) || currentArea.isArea(Island.SinglePlayer)))
-                    currentDungeon = Dungeon()
+                inSkyblock = onHypixel && mc.theWorld.scoreboard.getObjectiveInDisplaySlot(1)?.let { cleanSB(it.displayName).contains("SKYBLOCK") } ?: false
 
             if (currentArea.isArea(Island.Kuudra) && kuudraTier == 0) {
                 getLines().find { cleanLine(it).contains("Kuudra's Hollow (") }?.let {
                     kuudraTier = it.substringBefore(")").lastOrNull()?.digitToIntOrNull() ?: 0 }
             }
 
-            if (currentArea.isArea(Island.Unknown) || currentDungeon != null) {
+            if (currentArea.isArea(Island.Unknown)) {
                 val previousArea = currentArea
                 currentArea = getArea()
                 if (!currentArea.isArea(Island.Unknown) && previousArea != currentArea) SkyblockJoinIslandEvent(currentArea).postAndCatch()
             }
 
         }.register()
+    }
+
+    @SubscribeEvent
+    fun onDungeonStart(event: DungeonEvents.DungeonStartEvent) {
+        currentDungeon = Dungeon()
+    }
+
+    @SubscribeEvent
+    fun onDungeonEnd(event: DungeonEvents.DungeonEndEvent) {
+        currentDungeon = null
     }
 
     @SubscribeEvent

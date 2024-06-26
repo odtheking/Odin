@@ -31,8 +31,7 @@ object WaterSolver {
     private var waterSolutions: JsonObject
 
     init {
-        val isr = WaterSolver::class.java.getResourceAsStream("/watertimes.json")
-            ?.let { InputStreamReader(it, StandardCharsets.UTF_8) }
+        val isr = WaterSolver::class.java.getResourceAsStream("/watertimes.json")?.let { InputStreamReader(it, StandardCharsets.UTF_8) }
         waterSolutions = JsonParser().parse(isr).asJsonObject
     }
 

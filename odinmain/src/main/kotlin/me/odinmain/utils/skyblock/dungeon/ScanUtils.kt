@@ -3,7 +3,7 @@ package me.odinmain.utils.skyblock.dungeon
 import com.google.gson.*
 import com.google.gson.reflect.TypeToken
 import me.odinmain.OdinMain.mc
-import me.odinmain.events.impl.EnteredDungeonRoomEvent
+import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.setWaypoints
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
@@ -68,13 +68,12 @@ object ScanUtils {
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.END) {
-            if ((!inDungeons && mc.theWorld?.isRemote == false) || inBoss) {
-                EnteredDungeonRoomEvent(null).postAndCatch()
-                return
-            }
+        if (event.phase != TickEvent.Phase.END || mc.theWorld == null) return
+        if ((!inDungeons && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) || inBoss) {
+            if (DungeonUtils.currentRoom == null) return
+            RoomEnterEvent(null).postAndCatch()
+            return
         }
-        if (mc.theWorld == null /*|| !inDungeons*/ || inBoss) return
 
         val xPos = START_X + ((mc.thePlayer.posX + 200) / 32).toInt() * ROOM_SIZE
         val zPos = START_Z + ((mc.thePlayer.posZ + 200) / 32).toInt() * ROOM_SIZE
@@ -101,7 +100,7 @@ object ScanUtils {
 
         devMessage("Found rotation ${fullRoom.room.rotation}, clay pos: ${fullRoom.clayPos}")
         setWaypoints(fullRoom)
-        EnteredDungeonRoomEvent(fullRoom).postAndCatch()
+        RoomEnterEvent(fullRoom).postAndCatch()
     }
 
     private fun findRoomTilesRecursively(x: Int, z: Int, room: Room, visited: MutableSet<Vec2>): List<ExtraRoom> {
@@ -121,9 +120,7 @@ object ScanUtils {
 
     private fun scanRoom(x: Int, z: Int): Room? {
         val roomCore = getCore(x, z)
-        return Room(x, z, getRoomData(roomCore) ?: return null).apply {
-            core = roomCore
-        }
+        return Room(x, z, getRoomData(roomCore) ?: return null).apply { core = roomCore }
     }
 
     /**

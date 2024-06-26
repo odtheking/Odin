@@ -17,11 +17,6 @@ import net.minecraft.util.ChatComponentText
 @OptIn(DelicateCoroutinesApi::class)
 val devCommand = commodore("oddev") {
 
-    literal("getdata") {
-        literal("entity").runs { copyEntityData() }
-        literal("block").runs { copyBlockData() }
-    }
-
     literal("giveaotv").runs {
         sendCommand("give @p minecraft:diamond_shovel 1 0 {ExtraAttributes:{ethermerge:1b}}")
     }
@@ -41,13 +36,15 @@ val devCommand = commodore("oddev") {
         modMessage("""
             ${getChatBreak()}
             |inDungeons: ${DungeonUtils.inDungeons}
-            |Floor: ${DungeonUtils.floorNumber}
+            |Floor: ${DungeonUtils.floor.name}
             |InBoss: ${DungeonUtils.inBoss}
             |Secrets: ${DungeonUtils.secretCount} / ${DungeonUtils.totalSecrets}
+            |NeededSecrets: ${DungeonUtils.neededSecretsAmount}
             |Known Secrets: ${DungeonUtils.knownSecrets}
-            |Minimum Secrets: ${DungeonUtils.minSecrets}
             |Deaths: ${DungeonUtils.deathCount}
             |Crypts: ${DungeonUtils.cryptCount}
+            |isPaul: ${DungeonUtils.isPaul}
+            |BonusScore: ${DungeonUtils.getBonusScore}
             |OpenRooms: ${DungeonUtils.openRoomCount}
             |CompletedRooms: ${DungeonUtils.completedRoomCount}
             |PercentCleared: ${DungeonUtils.percentCleared}%
@@ -63,7 +60,7 @@ val devCommand = commodore("oddev") {
             |Teammates: ${DungeonUtils.dungeonTeammates.joinToString { "${it.name} (${it.clazz})" }}
             |TeammatesNoSelf: ${DungeonUtils.dungeonTeammatesNoSelf.map { it.name }}
             |LeapTeammates: ${DungeonUtils.leapTeammates.map { it.name }}
-            |Blessings: ${Blessings.entries.joinToString { "${it.name}: ${it.current}" }}
+            |Blessings: ${Blessing.entries.joinToString { "${it.name}: ${it.current}" }}
             ${getChatBreak()}
         """.trimIndent(), false)
     }

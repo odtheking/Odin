@@ -1,7 +1,7 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import me.odinmain.events.impl.BlockChangeEvent
-import me.odinmain.events.impl.EnteredDungeonRoomEvent
+import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.puzzlesolvers.WaterSolver.waterInteract
@@ -85,6 +85,7 @@ object PuzzleSolvers : Module(
 
     private val quizDropdown: Boolean by DropdownSetting("Quiz")
     private val quizSolver: Boolean by BooleanSetting("Quiz Solver", false, description = "Solver for the trivia puzzle").withDependency { quizDropdown }
+    val quizDepth: Boolean by BooleanSetting("Quiz Depth", false, description = "Depth check for the trivia puzzle").withDependency { quizDropdown && quizSolver }
     val quizReset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
         QuizSolver.reset()
     }.withDependency { quizDropdown && quizSolver }
@@ -117,7 +118,6 @@ object PuzzleSolvers : Module(
         onWorldLoad {
             WaterSolver.reset()
             TPMaze.reset()
-            TicTacToe.reset()
             IceFillSolver.reset()
             BlazeSolver.reset()
             BeamsSolver.reset()
@@ -141,7 +141,7 @@ object PuzzleSolvers : Module(
     }
 
     @SubscribeEvent
-    fun onRoomEnter(event: EnteredDungeonRoomEvent) {
+    fun onRoomEnter(event: RoomEnterEvent) {
         IceFillSolver.enterDungeonRoom(event)
         BeamsSolver.enterDungeonRoom(event)
         TTTSolver.tttRoomEnter(event)
