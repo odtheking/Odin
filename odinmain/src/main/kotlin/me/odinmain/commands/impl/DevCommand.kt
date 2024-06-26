@@ -36,27 +36,17 @@ val devCommand = commodore("oddev") {
         modMessage("""
             ${getChatBreak()}
             |inDungeons: ${DungeonUtils.inDungeons}
-            |Floor: ${DungeonUtils.floor.name}
             |InBoss: ${DungeonUtils.inBoss}
-            |Secrets: ${DungeonUtils.secretCount} / ${DungeonUtils.totalSecrets}
-            |NeededSecrets: ${DungeonUtils.neededSecretsAmount}
-            |Known Secrets: ${DungeonUtils.knownSecrets}
-            |Deaths: ${DungeonUtils.deathCount}
-            |Crypts: ${DungeonUtils.cryptCount}
-            |isPaul: ${DungeonUtils.isPaul}
-            |BonusScore: ${DungeonUtils.getBonusScore}
-            |OpenRooms: ${DungeonUtils.openRoomCount}
-            |CompletedRooms: ${DungeonUtils.completedRoomCount}
-            |PercentCleared: ${DungeonUtils.percentCleared}%
-            |SecretsRemaining: ${DungeonUtils.secretsRemaining}
-            |TotalRooms: ${DungeonUtils.totalRooms}
-            |DungeonTime: ${DungeonUtils.dungeonTime}
-            |isGhost: ${DungeonUtils.isGhost}
-            |currentDungeonPlayer: ${DungeonUtils.currentDungeonPlayer.name}, ${DungeonUtils.currentDungeonPlayer.clazz}, ${DungeonUtils.currentDungeonPlayer.isDead}
+            |Floor: ${DungeonUtils.floor.name}
+            |Secrets: (${DungeonUtils.secretCount} - ${DungeonUtils.neededSecretsAmount} - ${DungeonUtils.totalSecrets} - ${DungeonUtils.knownSecrets}) 
             |mimicKilled: ${DungeonUtils.mimicKilled}
+            |Deaths: ${DungeonUtils.deathCount} Crypts: ${DungeonUtils.cryptCount}
+            |BonusScore: ${DungeonUtils.getBonusScore} isPaul: ${DungeonUtils.isPaul}
+            |OpenRooms: ${DungeonUtils.openRoomCount} CompletedRooms: ${DungeonUtils.completedRoomCount} ${DungeonUtils.percentCleared}%
+            |DungeonTime: ${DungeonUtils.dungeonTime}
+            |currentDungeonPlayer: ${DungeonUtils.currentDungeonPlayer.name}, ${DungeonUtils.currentDungeonPlayer.clazz}, ${DungeonUtils.currentDungeonPlayer.isDead}, ${DungeonUtils.isGhost}
             |doorOpener: ${DungeonUtils.doorOpener}
-            |passedRooms: ${DungeonUtils.passedRooms.map { it.room.data.name }}
-            |currentRoom: ${DungeonUtils.currentRoom?.room?.data?.name}
+            |currentRoom: ${DungeonUtils.currentRoom?.room?.data?.name} roomsPassed: ${DungeonUtils.passedRooms.map { it.room.data.name }}
             |Teammates: ${DungeonUtils.dungeonTeammates.joinToString { "${it.name} (${it.clazz})" }}
             |TeammatesNoSelf: ${DungeonUtils.dungeonTeammatesNoSelf.map { it.name }}
             |LeapTeammates: ${DungeonUtils.leapTeammates.map { it.name }}

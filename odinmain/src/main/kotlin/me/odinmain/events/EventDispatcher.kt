@@ -31,7 +31,7 @@ object EventDispatcher {
      */
     @SubscribeEvent
     fun onRemoveEntity(event: EntityLeaveWorldEvent) {
-        if (!inDungeons || event.entity !is EntityItem || !event.entity.entityItem.displayName.noControlCodes.containsOneOf(drops, true)) return
+        if (!inDungeons || event.entity !is EntityItem || !event.entity.entityItem.displayName.noControlCodes.containsOneOf(drops, true) || mc.thePlayer.getDistanceToEntity(event.entity) > 6) return
         SecretPickupEvent.Item(event.entity).postAndCatch()
     }
 

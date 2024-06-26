@@ -42,13 +42,11 @@ object LocationUtils {
     }
 
     @SubscribeEvent
-    fun onDungeonStart(event: DungeonEvents.DungeonStartEvent) {
-        currentDungeon = Dungeon()
-    }
-
-    @SubscribeEvent
-    fun onDungeonEnd(event: DungeonEvents.DungeonEndEvent) {
-        currentDungeon = null
+    fun onDungeonStart(event: DungeonEvents) {
+        when (event) {
+            is DungeonEvents.DungeonStartEvent -> currentDungeon = Dungeon()
+            is DungeonEvents.DungeonEndEvent -> currentDungeon = null
+        }
     }
 
     @SubscribeEvent

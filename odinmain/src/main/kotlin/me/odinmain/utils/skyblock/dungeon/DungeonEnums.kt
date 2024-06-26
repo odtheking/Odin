@@ -122,8 +122,6 @@ enum class Floor(val personalBest: PersonalBest, val secretPercentage: Float = 1
                 M1, M2, M3, M4, M5, M6, M7 -> true
             }
         }
-
-
 }
 
 enum class M7Phases(val displayName: String) {

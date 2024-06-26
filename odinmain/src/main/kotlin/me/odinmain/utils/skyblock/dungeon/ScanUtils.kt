@@ -54,9 +54,7 @@ object ScanUtils {
         val blocks = arrayListOf<Int>()
         for (y in 140 downTo 12) {
             val id = Block.getIdFromBlock(mc.theWorld.getBlockState(BlockPos(x, y, z)).block)
-            if (!id.equalsOneOf(5, 54)) {
-                blocks.add(id)
-            }
+            if (!id.equalsOneOf(5, 54)) blocks.add(id)
         }
         return blocks.joinToString("").hashCode()
     }
@@ -98,7 +96,7 @@ object ScanUtils {
             }
         } ?: Rotations.NONE
 
-        devMessage("Found rotation ${fullRoom.room.rotation}, clay pos: ${fullRoom.clayPos}")
+        //devMessage("Found rotation ${fullRoom.room.rotation}, clay pos: ${fullRoom.clayPos}")
         setWaypoints(fullRoom)
         RoomEnterEvent(fullRoom).postAndCatch()
     }
@@ -125,17 +123,15 @@ object ScanUtils {
 
     /**
      * Gets the top layer of blocks in a room (the roof) for finding the rotation of the room.
-     * This could be made recursive, but it's only a slightly cleaner implementation so idk
+     *
      * @param x The x of the room to scan
      * @param z The z of the room to scan
+     * @param currentHeight The current height to scan at, default is 170
      * @return The y-value of the roof, this is the y-value of the blocks.
      */
-    private fun getTopLayerOfRoom(x: Int, z: Int): Int {
-        var currentHeight = 170
-        while (isAir(x, currentHeight, z) && currentHeight > 70) {
-            currentHeight--
-        }
-        return currentHeight
+    private fun getTopLayerOfRoom(x: Int, z: Int, currentHeight: Int = 170): Int {
+        return if (isAir(x, currentHeight, z) && currentHeight > 70) getTopLayerOfRoom(x, z, currentHeight - 1)
+        else currentHeight
     }
 
     @SubscribeEvent
