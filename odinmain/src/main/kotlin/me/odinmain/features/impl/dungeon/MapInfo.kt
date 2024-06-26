@@ -9,7 +9,6 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.getMCTextWidth
 import me.odinmain.utils.render.mcText
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import org.luaj.vm2.ast.Str
 
 object MapInfo : Module(
     name = "Map Info",
@@ -23,25 +22,26 @@ object MapInfo : Module(
             mcText("§7Mimic: §a✔", 1, 9, 1f, Color.WHITE, center = false)
             mcText("§7Crypts: §e4", 159 - getMCTextWidth("§7Crypts: §a4"), 9, 1f, Color.WHITE, center = false)
         } else if (DungeonUtils.inDungeons){
-            mcText(secretTxt, 1, 1, 1f, Color.WHITE, center = false)
-            mcText(unknownSecretTxt, 159 - getMCTextWidth(unknownSecretTxt), 1, 1f, Color.WHITE, center = false)
-            mcText(mimicTxt, 1, 9, 1f, Color.WHITE, center = false)
-            mcText(cryptTxt, 159 - getMCTextWidth(cryptTxt), 9, 1f, Color.WHITE, center = false)
+            mcText(secretText, 1, 1, 1f, Color.WHITE, center = false)
+            mcText(unknownSecretsText, 159 - getMCTextWidth(unknownSecretsText), 1, 1f, Color.WHITE, center = false)
+            mcText(mimicText, 1, 9, 1f, Color.WHITE, center = false)
+            mcText(cryptText, 159 - getMCTextWidth(cryptText), 9, 1f, Color.WHITE, center = false)
         } else return@HudSetting 0f to 0f
         160f to 20f
     }
 
-    private inline val secretTxt: String get() =
-        "§7Secrets: ${colorizeSecrets(DungeonUtils.secretCount, DungeonUtils.neededSecretsAmount)}§7-§e${DungeonUtils.neededSecretsAmount}§7-§c${DungeonUtils.totalSecrets}"
+    val secrets = DungeonUtils.secretCount
+    val minSecrets = DungeonUtils.neededSecretsAmount
+    val totalSecrets = DungeonUtils.totalSecrets
+    val knownSecrets = DungeonUtils.knownSecrets
+    val mimicKilled = DungeonUtils.mimicKilled
+    val cryptCount = DungeonUtils.cryptCount
 
-    private inline val unknownSecretTxt: String get() =
-        "§7Unknown: §b${DungeonUtils.totalSecrets - DungeonUtils.knownSecrets}"
 
-    private val mimicTxt: String get() =
-        "§7Mimic: ${if (DungeonUtils.mimicKilled) "§a✔" else "§c✘"}"
-
-    private val cryptTxt: String get() =
-        "§7Crypts: ${colorizeCrypts(DungeonUtils.cryptCount)}"
+    private val secretText = "§7Secrets: ${colorizeSecrets(secrets, minSecrets)}§7-§e${minSecrets}§7-§c${totalSecrets}"
+    private val unknownSecretsText = "§7Unknown: §b${totalSecrets - knownSecrets}"
+    private val mimicText = if (mimicKilled) "§7Mimic: §a✔" else "§7Mimic: §c✘"
+    private val cryptText = "§7Crypts: ${colorizeCrypts(cryptCount)}"
 
     private fun colorizeCrypts(count: Int): String {
         return when {
