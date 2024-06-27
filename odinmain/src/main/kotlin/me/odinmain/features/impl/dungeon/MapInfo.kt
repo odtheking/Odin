@@ -78,7 +78,7 @@ object MapInfo : Module(
             unknownSecretsText = "§7Unknown: §b${DungeonUtils.totalSecrets - DungeonUtils.knownSecrets}"
             mimicText = if (DungeonUtils.mimicKilled) "§7Mimic: §a✔" else "§7Mimic: §c✘"
             cryptText = "§7Crypts: ${colorizeCrypts(DungeonUtils.cryptCount)}"
-            //todo: scoreText = "§7Score: ${colorizeScore(DungeonUtils.score)}"
+            scoreText = "§7Score: ${colorizeScore(DungeonUtils.score)}"
         }
     }
 
