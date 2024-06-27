@@ -170,7 +170,7 @@ class Dungeon {
             }
             puzzleRegex.matches(text) -> {
                 val matchResult = puzzleRegex.find(text)
-                val puzzle = allPuzzles.find { it.name == matchResult?.groupValues?.get(1) }
+                val puzzle = Puzzle.allPuzzles.find { it.name == matchResult?.groupValues?.get(1) }?.copy()
                 if (puzzle != null) {
                     val status: PuzzleStatus? = when {
                         matchResult?.groupValues?.get(2) == "§c✖" -> PuzzleStatus.Failed

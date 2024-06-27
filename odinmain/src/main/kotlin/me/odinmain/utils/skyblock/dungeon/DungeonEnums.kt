@@ -23,11 +23,6 @@ data class DungeonPlayer(
     var isDead: Boolean = false
 )
 
-val allPuzzles = listOf(
-    Puzzle.Blaze, Puzzle.Beams, Puzzle.Weirdos, Puzzle.TTT, Puzzle.WaterBoard, Puzzle.TPMaze,
-    Puzzle.Boulder, Puzzle.IceFill, Puzzle.IcePath, Puzzle.Quiz, Puzzle.BombDefuse, Puzzle.Unknown
-)
-
 data class Puzzle(
     val name: String,
     var status: PuzzleStatus? = null
@@ -45,6 +40,11 @@ data class Puzzle(
         val IcePath = Puzzle("Ice Path")
         val Quiz = Puzzle("Trivia")
         val BombDefuse = Puzzle("Bomb Defuse")
+
+        val allPuzzles = listOf(
+            Blaze, Beams, Weirdos, TTT, WaterBoard, TPMaze,
+            Boulder, IceFill, IcePath, Quiz, BombDefuse, Unknown
+        )
     }
 }
 
