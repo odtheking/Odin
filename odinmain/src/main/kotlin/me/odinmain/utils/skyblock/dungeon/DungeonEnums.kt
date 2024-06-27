@@ -24,8 +24,8 @@ data class DungeonPlayer(
 )
 
 val allPuzzles = listOf(
-    Puzzle.BLAZE, Puzzle.BEAMS, Puzzle.WEIRDOS, Puzzle.TTT, Puzzle.WATERBOARD, Puzzle.TPMAZE,
-    Puzzle.BOULDER, Puzzle.ICEFILL, Puzzle.ICEPATH, Puzzle.QUIZ, Puzzle.BOMBDEFUSE, Puzzle.Unknown
+    Puzzle.Blaze, Puzzle.Beams, Puzzle.Weirdos, Puzzle.TTT, Puzzle.WaterBoard, Puzzle.TPMaze,
+    Puzzle.Boulder, Puzzle.IceFill, Puzzle.IcePath, Puzzle.Quiz, Puzzle.BombDefuse, Puzzle.Unknown
 )
 
 data class Puzzle(
@@ -34,24 +34,24 @@ data class Puzzle(
 ) {
     companion object {
         val Unknown = Puzzle("???")
-        val BLAZE = Puzzle("Higher or Lower")
-        val BEAMS = Puzzle("Creeper Beams")
-        val WEIRDOS = Puzzle("Three Weirdos")
+        val Blaze = Puzzle("Higher or Lower")
+        val Beams = Puzzle("Creeper Beams")
+        val Weirdos = Puzzle("Three Weirdos")
         val TTT = Puzzle("Tic Tac Toe")
-        val WATERBOARD = Puzzle("Water Board")
-        val TPMAZE = Puzzle("Teleport Maze")
-        val BOULDER = Puzzle("Boulder")
-        val ICEFILL = Puzzle("Ice Fill")
-        val ICEPATH = Puzzle("Ice Path")
-        val QUIZ = Puzzle("Trivia")
-        val BOMBDEFUSE = Puzzle("Bomb Defuse")
+        val WaterBoard = Puzzle("Water Board")
+        val TPMaze = Puzzle("Teleport Maze")
+        val Boulder = Puzzle("Boulder")
+        val IceFill = Puzzle("Ice Fill")
+        val IcePath = Puzzle("Ice Path")
+        val Quiz = Puzzle("Trivia")
+        val BombDefuse = Puzzle("Bomb Defuse")
     }
 }
 
 sealed class PuzzleStatus {
-    object Completed : PuzzleStatus()
-    object Failed : PuzzleStatus()
-    object Incomplete : PuzzleStatus()
+    data object Completed : PuzzleStatus()
+    data object Failed : PuzzleStatus()
+    data object Incomplete : PuzzleStatus()
 }
 
 /**
