@@ -44,7 +44,7 @@ object TeammatesHighlight : Module(
         if (!showName || !shouldRender()) return
         dungeonTeammatesNoSelf.forEach { teammate ->
             val entity = teammate.entity ?: return@forEach
-            if (removeVanillaTag) entity.alwaysRenderNameTag = false
+            if (removeVanillaTag) entity.customNameTag = ""
             if (entity.distanceSquaredTo(mc.thePlayer) >= 2333) return@forEach
             Renderer.drawStringInWorld(
                 if (showClass) "${teammate.name} §e[${teammate.clazz.name[0]}]" else teammate.name,

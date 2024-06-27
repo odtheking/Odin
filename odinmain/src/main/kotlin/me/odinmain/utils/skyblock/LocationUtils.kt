@@ -8,6 +8,7 @@ import me.odinmain.utils.*
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.skyblock.dungeon.Dungeon
+import me.odinmain.utils.skyblock.dungeon.Floor
 import net.minecraft.client.network.NetHandlerPlayClient
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -42,11 +43,14 @@ object LocationUtils {
     }
 
     @SubscribeEvent
-    fun onDungeonStart(event: DungeonEvents) {
-        when (event) {
-            is DungeonEvents.DungeonStartEvent -> currentDungeon = Dungeon()
-            is DungeonEvents.DungeonEndEvent -> currentDungeon = null
-        }
+    fun onSkyblockIslandEnter(event: SkyblockJoinIslandEvent) {
+        if ((event.island.isArea(Island.Dungeon) || event.island.isArea(Island.SinglePlayer)))
+            currentDungeon = Dungeon(getFloor())
+    }
+
+    @SubscribeEvent
+    fun onDungeonEnd(event: DungeonEvents.DungeonEndEvent) {
+        currentDungeon = null
     }
 
     @SubscribeEvent
@@ -96,6 +100,18 @@ object LocationUtils {
         }?.displayName?.formattedText
 
         return Island.entries.firstOrNull { area?.contains(it.displayName) == true } ?: Island.Unknown
+    }
+
+    private fun getFloor(): Floor? {
+        for (i in sidebarLines) {
+            val line = cleanSB(i)
+            if (line.contains("The Catacombs (")) {
+                runCatching {
+                    return Floor.valueOf(line.substringAfter("(").substringBefore(")"))
+                }.onFailure { modMessage("Could not get correct floor. Please report this.") }
+            }
+        }
+        return null
     }
 }
 

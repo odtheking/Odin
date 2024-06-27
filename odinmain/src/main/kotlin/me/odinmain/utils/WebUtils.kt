@@ -4,9 +4,6 @@ import com.google.gson.Gson
 import kotlinx.coroutines.*
 import kotlinx.serialization.json.*
 import me.odinmain.features.impl.render.DevPlayers
-import org.apache.http.client.methods.HttpGet
-import org.apache.http.impl.client.HttpClients
-import org.apache.http.util.EntityUtils
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
@@ -215,26 +212,14 @@ fun imgurID(url: String): String {
     return imgurID
 }
 
-fun fetch(uri: String): String? {
-    HttpClients.createMinimal().use {
-        try {
-            val httpGet = HttpGet(uri)
-            return EntityUtils.toString(it.execute(httpGet).entity)
-        } catch (e: Exception) {
-            return null
-        }
-    }
-}
-
-fun hasBonusPaulScore(): Boolean = runBlocking {
-    val response: String = fetch("https://api.hypixel.net/resources/skyblock/election").toString()
+suspend fun hasBonusPaulScore(): Boolean = coroutineScope {
+    val response: String = URL("https://api.hypixel.net/resources/skyblock/election").readText()
     val jsonObject = Json.parseToJsonElement(response).jsonObject
-    val mayor = jsonObject["mayor"]?.jsonObject ?: return@runBlocking false
-    val name = mayor["name"]?.jsonPrimitive?.content ?: return@runBlocking false
-    if (name == "Paul") {
-        return@runBlocking mayor["perks"]?.jsonArray?.any {
+    val mayor = jsonObject["mayor"]?.jsonObject ?: return@coroutineScope false
+    val name = mayor["name"]?.jsonPrimitive?.content ?: return@coroutineScope false
+    return@coroutineScope if (name == "Paul") {
+         mayor["perks"]?.jsonArray?.any {
             it.jsonObject["name"]?.jsonPrimitive?.content == "EZPZ"
         } ?: false
-    }
-    false
+    } else false
 }

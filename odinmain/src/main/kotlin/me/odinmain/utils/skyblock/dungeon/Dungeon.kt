@@ -1,35 +1,35 @@
 package me.odinmain.utils.skyblock.dungeon
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
+import me.odinmain.OdinMain.scope
 import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
 import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.features.impl.dungeon.LeapMenu
 import me.odinmain.features.impl.dungeon.LeapMenu.odinSorting
 import me.odinmain.features.impl.dungeon.Mimic
 import me.odinmain.utils.*
-import me.odinmain.utils.skyblock.Island
-import me.odinmain.utils.skyblock.LocationUtils.currentArea
 import me.odinmain.utils.skyblock.PlayerUtils.posX
 import me.odinmain.utils.skyblock.PlayerUtils.posZ
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getDungeonTeammates
 import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.play.server.*
 
 // could add some system to look back at previous runs.
-class Dungeon {
+class Dungeon(val floor: Floor?) {
 
-    lateinit var floor: Floor
+    var paul = false
     val inBoss: Boolean get() = getBoss()
     var dungeonTeammates: List<DungeonPlayer> = emptyList()
     var dungeonTeammatesNoSelf: List<DungeonPlayer> = emptyList()
     var leapTeammates = mutableListOf<DungeonPlayer>()
     var dungeonStats = DungeonStats()
     var currentRoom: FullRoom? = null
-    var passedRooms = mutableSetOf<FullRoom>()
+    var passedRooms = mutableListOf<FullRoom>()
 
     private fun getBoss(): Boolean {
-        return when (floor.floorNumber) {
+        return when (floor?.floorNumber) {
             1 -> posX > -71 && posZ > -39
             in 2..4 -> posX > -39 && posZ > -39
             in 5..6 -> posX > -39 && posZ > -7
@@ -39,18 +39,8 @@ class Dungeon {
     }
 
     init {
-        getCurrentFloor()
-    }
-
-    private fun getCurrentFloor() {
-        if (currentArea.isArea(Island.SinglePlayer)) { floor = Floor.E }
-        for (i in sidebarLines) {
-            val line = cleanSB(i)
-
-            if (line.contains("The Catacombs (")) {
-                runCatching { floor = Floor.valueOf(line.substringAfter("(").substringBefore(")")) }
-                    .onFailure { modMessage("Could not get correct floor. Please report this.") }
-            }
+        scope.launch(Dispatchers.IO) {
+            paul = hasBonusPaulScore()
         }
     }
 
