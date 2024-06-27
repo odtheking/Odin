@@ -79,6 +79,9 @@ class Dungeon {
         val partyMessage = Regex("Party > .*?: (.+)\$").find(message)?.groupValues?.get(1) ?: return
         if (partyMessage.lowercase().equalsOneOf("mimic killed", "mimic slain", "mimic killed!", "mimic dead", "mimic dead!", "\$skytils-dungeon-score-mimic\$", Mimic.mimicMessage))
             dungeonStats.mimicKilled = true
+        if (partyMessage.lowercase().equalsOneOf("blaze done!", "blaze done")) { //more completion messages may be necessary.
+            dungeonStats.puzzles.find { it == Puzzle.BLAZE }.let { it?.status = PuzzleStatus.Completed }
+        }
     }
 
     private fun handleHeaderFooterPacket(packet: S47PacketPlayerListHeaderFooter) {
@@ -116,6 +119,8 @@ class Dungeon {
     private val openedRoomsRegex = Regex("^§r Opened Rooms: §r§5(\\d+)§r$")
     private val completedRoomsRegex = Regex("^§r Completed Rooms: §r§d(\\d+)§r$")
     private val deathsRegex = Regex("^§r§a§lTeam Deaths: §r§f(\\d+)§r$")
+    private val puzzleCountRegex = Regex("^§r§a§bPuzzles: §r\\((\\d)\\)§r$")
+    private val puzzleRegex = Regex("^§r (\\w+(?: \\w+)*): §7\\[(.+)§7]§r$")
 
     data class DungeonStats(
         var secretsFound: Int? = null,
@@ -128,7 +133,9 @@ class Dungeon {
         var percentCleared: Int? = null,
         var elapsedTime: String? = null,
         var mimicKilled: Boolean = false,
-        var doorOpener: String? = null
+        var doorOpener: String? = null,
+        var puzzleCount: Int? = null,
+        val puzzles: MutableList<Puzzle> = mutableListOf<Puzzle>()
     )
 
     private fun updateDungeonStats(text: String, currentStats: DungeonStats): DungeonStats {
@@ -156,6 +163,28 @@ class Dungeon {
             deathsRegex.matches(text) -> {
                 val matchResult = deathsRegex.find(text)
                 currentStats.deaths = matchResult?.groupValues?.get(1)?.toIntOrNull()
+            }
+            puzzleCountRegex.matches(text) -> {
+                val matchResult = puzzleCountRegex.find(text)
+                currentStats.puzzleCount = matchResult?.groupValues?.get(1)?.toIntOrNull()
+            }
+            puzzleRegex.matches(text) -> {
+                val matchResult = puzzleRegex.find(text)
+                val puzzle = allPuzzles.find { it.name == matchResult?.groupValues?.get(1) }
+                if (puzzle != null) {
+                    val status: PuzzleStatus? = when {
+                        matchResult?.groupValues?.get(2) == "§c✖" -> PuzzleStatus.Failed
+                        matchResult?.groupValues?.get(2) == "§a✔" -> PuzzleStatus.Completed
+                        matchResult?.groupValues?.get(2) == "§6✦" -> PuzzleStatus.Incomplete
+                        else -> null
+                    }
+
+                    puzzle.status = status
+
+                    if (puzzle !in currentStats.puzzles || (currentStats.puzzles.size != currentStats.puzzleCount && puzzle == Puzzle.Unknown)) {
+                        currentStats.puzzles.add(puzzle)
+                    } else currentStats.puzzles[currentStats.puzzles.indexOf(puzzle)].status = status
+                }
             }
         }
 

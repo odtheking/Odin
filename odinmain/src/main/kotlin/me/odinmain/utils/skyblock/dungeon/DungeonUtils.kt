@@ -70,6 +70,9 @@ object DungeonUtils {
         else floor(100 / percentCleared * completedRoomCount + 0.4).toInt()
     }
 
+    inline val puzzles get() =
+        currentDungeon?.dungeonStats?.puzzles ?: emptyList()
+
     inline val dungeonTime: String get() =
         currentDungeon?.dungeonStats?.elapsedTime ?: "00m 00s"
 

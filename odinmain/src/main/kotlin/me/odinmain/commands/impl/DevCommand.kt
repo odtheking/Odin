@@ -43,6 +43,7 @@ val devCommand = commodore("oddev") {
             |Deaths: ${DungeonUtils.deathCount} Crypts: ${DungeonUtils.cryptCount}
             |BonusScore: ${DungeonUtils.getBonusScore} isPaul: ${DungeonUtils.isPaul}
             |OpenRooms: ${DungeonUtils.openRoomCount} CompletedRooms: ${DungeonUtils.completedRoomCount} ${DungeonUtils.percentCleared}%
+            |Puzzles: ${DungeonUtils.puzzles.map { it.name }}
             |DungeonTime: ${DungeonUtils.dungeonTime}
             |currentDungeonPlayer: ${DungeonUtils.currentDungeonPlayer.name}, ${DungeonUtils.currentDungeonPlayer.clazz}, ${DungeonUtils.currentDungeonPlayer.isDead}, ${DungeonUtils.isGhost}
             |doorOpener: ${DungeonUtils.doorOpener}
