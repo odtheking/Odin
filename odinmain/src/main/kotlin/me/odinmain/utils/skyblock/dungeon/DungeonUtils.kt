@@ -110,7 +110,7 @@ object DungeonUtils {
         currentDungeon?.passedRooms ?: emptyList()
 
     inline val isPaul: Boolean get() =
-        hasBonusPaulScore()
+         currentDungeon?.paul ?: false
 
     inline val getBonusScore: Int get() {
         var score = 0

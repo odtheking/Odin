@@ -22,7 +22,7 @@ class PersonalBest(val name: String, val size: Int) {
             if (addOldPBString)
                 msg += " Old PB was §8$oldPB"
             if (sendMessage) modMessage(msg)
-        } else if (!sendOnlyPB && sendMessage) modMessage("$msg ${if (alwaysSendPB) "(§8$oldPB)" else ""}")
+        } else if (!sendOnlyPB && sendMessage) modMessage("$msg ${if (alwaysSendPB) "(§8$oldPB§7)" else ""}")
     }
 
     fun set(index: Int, value: Double) {

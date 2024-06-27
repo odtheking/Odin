@@ -97,15 +97,15 @@ enum class Blessing(
 /**
  * Enumeration representing different floors in a dungeon.
  *
- * This enum class defines various floors, including both regular floors (F1 to F7) and special mini-boss floors (M1 to M7).
- * Each floor has an associated floor number and an indicator of whether it is a mini-boss floor.
+ * This enum class defines various floors, including both regular floors (F1 to F7) and master mode floors (M1 to M7).
+ * Each floor has an associated floor number and an indicator of whether it is a master mode floor.
  *
  * @property floorNumber The numerical representation of the floor, where E represents the entrance floor.
- * @property isInMM Indicates whether the floor is a mini-boss floor (M1 to M7).
+ * @property isInMM Indicates whether the floor is a master mode floor (M1 to M7).
  * @property personalBest The personal best time for the floor.
  * @property secretPercentage The percentage of secrets required.
  */
-enum class Floor(val personalBest: PersonalBest, val secretPercentage: Float = 1f) {
+enum class Floor(val personalBest: PersonalBest?, val secretPercentage: Float = 1f) {
     E(PersonalBest("Entrance", 4), 0.3f),
     F1(PersonalBest("Floor 1", 6), 0.3f),
     F2(PersonalBest("Floor 2", 6), 0.4f),
@@ -142,9 +142,9 @@ enum class Floor(val personalBest: PersonalBest, val secretPercentage: Float = 1
         }
 
     /**
-     * Indicates whether the floor is a mini-boss floor.
+     * Indicates whether the floor is a master mode floor.
      *
-     * @return `true` if the floor is a mini-boss floor (M1 to M7), otherwise `false`.
+     * @return `true` if the floor is a master mode floor (M1 to M7), otherwise `false`.
      */
     val isInMM: Boolean
         get() {

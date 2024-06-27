@@ -54,7 +54,7 @@ object SplitsManager {
             Island.SinglePlayer -> SplitsGroup(singlePlayerSplitGroup, singlePlayerPBs)
 
             Island.Dungeon -> {
-                val split = dungeonSplits[DungeonUtils.floor.floorNumber] ?: return null
+                val split = dungeonSplits[DungeonUtils.floor.floorNumber].toMutableList()
 
                 split.add(0, Split(Regex("\\[NPC] Mort: Here, I found this map when I first entered the dungeon\\."), "§2Blood Open"))
                 split.add(1, Split(Regex("The BLOOD DOOR has been opened!"), "§bBlood Clear"))
@@ -178,13 +178,13 @@ private val floor7SplitGroup = mutableListOf(
     Split(Regex("\\[BOSS] Necron: All this, for nothing\\.\\.\\."), "§4Cleared"),
 )
 
-val dungeonSplits = mapOf(
-    0 to entranceSplitGroup,
-    1 to floor1SplitGroup,
-    2 to floor2SplitGroup,
-    3 to floor3SplitGroup,
-    4 to floor4SplitGroup,
-    5 to floor5SplitGroup,
-    6 to floor6SplitGroup,
-    7 to floor7SplitGroup,
+val dungeonSplits = listOf(
+     entranceSplitGroup,
+     floor1SplitGroup,
+    floor2SplitGroup,
+     floor3SplitGroup,
+     floor4SplitGroup,
+    floor5SplitGroup,
+   floor6SplitGroup,
+     floor7SplitGroup,
 )
