@@ -111,7 +111,7 @@ class Dungeon(val floor: Floor?) {
     private val completedRoomsRegex = Regex("^§r Completed Rooms: §r§d(\\d+)§r$")
     private val deathsRegex = Regex("^§r§a§lTeam Deaths: §r§f(\\d+)§r$")
     private val puzzleCountRegex = Regex("^§r§[a-z]§lPuzzles: §r§f\\((\\d)\\)§r$")
-    private val puzzleRegex = Regex("^§r (\\w+(?: \\w+)*): §r§7\\[(§r§c§l✖|§r§a§l✔|§r§6§l✦)§r§7] (?:§r§f\\(§r§[a-z](\\w+)§r§f\\))?§r$")
+    private val puzzleRegex = Regex("^§r (\\w+(?: \\w+)*): §r§7\\[(§r§c§l✖|§r§a§l✔|§r§6§l✦)§r§7] ?(?:§r§f\\(§r§[a-z](\\w+)§r§f\\))?§r$")
 
     data class DungeonStats(
         var secretsFound: Int? = null,
