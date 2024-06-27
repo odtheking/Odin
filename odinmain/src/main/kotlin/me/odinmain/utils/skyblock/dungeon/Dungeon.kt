@@ -182,6 +182,7 @@ class Dungeon {
                     puzzle.status = status
 
                     if (puzzle !in currentStats.puzzles || (currentStats.puzzles.size != currentStats.puzzleCount && puzzle == Puzzle.Unknown)) {
+                        if (puzzle != Puzzle.Unknown) currentStats.puzzles.remove(currentStats.puzzles.first {it == Puzzle.Unknown})
                         currentStats.puzzles.add(puzzle)
                     } else currentStats.puzzles[currentStats.puzzles.indexOf(puzzle)].status = status
                 }
