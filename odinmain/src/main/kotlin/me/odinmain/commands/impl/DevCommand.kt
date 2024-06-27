@@ -38,6 +38,7 @@ val devCommand = commodore("oddev") {
             |inDungeons: ${DungeonUtils.inDungeons}
             |InBoss: ${DungeonUtils.inBoss}
             |Floor: ${DungeonUtils.floor.name}
+            |Score: ${DungeonUtils.score}
             |Secrets: (${DungeonUtils.secretCount} - ${DungeonUtils.neededSecretsAmount} - ${DungeonUtils.totalSecrets} - ${DungeonUtils.knownSecrets}) 
             |mimicKilled: ${DungeonUtils.mimicKilled}
             |Deaths: ${DungeonUtils.deathCount} Crypts: ${DungeonUtils.cryptCount}
