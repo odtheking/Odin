@@ -110,8 +110,8 @@ class Dungeon(val floor: Floor?) {
     private val openedRoomsRegex = Regex("^§r Opened Rooms: §r§5(\\d+)§r$")
     private val completedRoomsRegex = Regex("^§r Completed Rooms: §r§d(\\d+)§r$")
     private val deathsRegex = Regex("^§r§a§lTeam Deaths: §r§f(\\d+)§r$")
-    private val puzzleCountRegex = Regex("^§r§a§bPuzzles: §r\\((\\d)\\)§r$")
-    private val puzzleRegex = Regex("^§r (\\w+(?: \\w+)*): §7\\[(§c✖|§a✔|§6✦)§7]§r$")
+    private val puzzleCountRegex = Regex("^§r§[a-z]§lPuzzles: §r§f\\((\\d)\\)§r$")
+    private val puzzleRegex = Regex("^§r (\\w+(?: \\w+)*): §r§7\\[(§r§c§l✖|§r§a§l✔|§r§6§l✦)§r§7] (?:§r§f\\(§r§[a-z](\\w+)§r§f\\))?§r$")
 
     data class DungeonStats(
         var secretsFound: Int? = null,
@@ -130,7 +130,7 @@ class Dungeon(val floor: Floor?) {
     )
 
     private fun updateDungeonStats(text: String, currentStats: DungeonStats): DungeonStats {
-        modMessage(text.replace("§", "&"))
+        //modMessage(text.replace("§", "&"))
         when {
             secretCountRegex.matches(text) -> {
                 val matchResult = secretCountRegex.find(text)
