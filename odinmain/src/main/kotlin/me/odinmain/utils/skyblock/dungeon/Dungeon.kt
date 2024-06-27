@@ -164,6 +164,7 @@ class Dungeon(val floor: Floor?) {
                 val matchResult = puzzleRegex.find(text)
                 val puzzle = Puzzle.allPuzzles.find { it.name == matchResult?.groupValues?.get(1) }?.copy()
                 if (puzzle != null) {
+                    modMessage(text.replace("§", "&"), false)
                     val status: PuzzleStatus? = when {
                         matchResult?.groupValues?.get(2) == "§r§c§l✖" -> PuzzleStatus.Failed
                         matchResult?.groupValues?.get(2) == "§r§a§l✔" -> PuzzleStatus.Completed
