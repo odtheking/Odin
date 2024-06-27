@@ -73,6 +73,9 @@ object DungeonUtils {
     inline val puzzles get() =
         currentDungeon?.dungeonStats?.puzzles ?: emptyList()
 
+    inline val puzzleCount get() =
+        currentDungeon?.dungeonStats?.puzzleCount ?: 0
+
     inline val dungeonTime: String get() =
         currentDungeon?.dungeonStats?.elapsedTime ?: "00m 00s"
 
