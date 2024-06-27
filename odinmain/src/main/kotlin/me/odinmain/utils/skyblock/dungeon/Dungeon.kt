@@ -165,9 +165,9 @@ class Dungeon(val floor: Floor?) {
                 val puzzle = Puzzle.allPuzzles.find { it.name == matchResult?.groupValues?.get(1) }?.copy()
                 if (puzzle != null) {
                     val status: PuzzleStatus? = when {
-                        matchResult?.groupValues?.get(2) == "§c✖" -> PuzzleStatus.Failed
-                        matchResult?.groupValues?.get(2) == "§a✔" -> PuzzleStatus.Completed
-                        matchResult?.groupValues?.get(2) == "§6✦" -> PuzzleStatus.Incomplete
+                        matchResult?.groupValues?.get(2) == "§r§c§l✖" -> PuzzleStatus.Failed
+                        matchResult?.groupValues?.get(2) == "§r§a§l✔" -> PuzzleStatus.Completed
+                        matchResult?.groupValues?.get(2) == "§r§6§l✦" -> PuzzleStatus.Incomplete
                         else -> null
                     }
 
