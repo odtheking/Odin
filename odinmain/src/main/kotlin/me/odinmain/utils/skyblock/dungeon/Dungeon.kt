@@ -14,6 +14,7 @@ import me.odinmain.utils.skyblock.PlayerUtils.posX
 import me.odinmain.utils.skyblock.PlayerUtils.posZ
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getDungeonTeammates
 import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.play.server.*
 
 // could add some system to look back at previous runs.
@@ -129,6 +130,7 @@ class Dungeon(val floor: Floor?) {
     )
 
     private fun updateDungeonStats(text: String, currentStats: DungeonStats): DungeonStats {
+        modMessage(text.replace("§", "&"))
         when {
             secretCountRegex.matches(text) -> {
                 val matchResult = secretCountRegex.find(text)
