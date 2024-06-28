@@ -96,14 +96,14 @@ class Dungeon(val floor: Floor?) {
         if (time != null) dungeonStats.elapsedTime = time.groupValues[1]
     }
 
-    private fun getPuzzleData(tabList: List<Pair<NetworkPlayerInfo, String>>): List<Puzzle> {
-        val tabEntries = tabList.map { it.first.displayName.unformattedText ?: return emptyList() }
+    private fun updateDungeonPuzzles(tabList: List<Pair<NetworkPlayerInfo, String>>){
+        val tabEntries = tabList.map { it.first.displayName.unformattedText ?: return }
         tabEntries.find { it.matches(puzzleRegex) }.let {
             modMessage(it?.replace("§", "&"))
             val index = tabEntries.indexOf(it)
-            val matchResult = puzzleCountRegex.find(it ?: return emptyList())?.groupValues?.get(1)?.toIntOrNull() ?: 0
+            val matchResult = puzzleCountRegex.find(it ?: return)?.groupValues?.get(1)?.toIntOrNull() ?: 0
             val puzzleData = tabEntries.filterIndexed { i, _ -> i in index + 1..index + matchResult }
-            return handlePuzzleList(puzzleData)
+            puzzles = getPuzzles(puzzleData)
         }
     }
 
@@ -116,11 +116,11 @@ class Dungeon(val floor: Floor?) {
         }
 
         val tabList = getDungeonTabList() ?: emptyList()
-        getPuzzleData(tabList)
+        updateDungeonPuzzles(tabList)
         updateDungeonTeammates(tabList)
     }
 
-    private fun handlePuzzleList(list: List<String?> = listOf()): List<Puzzle> {
+    private fun getPuzzles(list: List<String?> = listOf()): List<Puzzle> {
         return list.filterNotNull().mapNotNull { text ->
             val matchGroups = puzzleRegex.find(text)?.groupValues
             if (matchGroups == null) {
