@@ -88,7 +88,7 @@ object MapInfo : Module(
     init {
         execute(500) {
             secretText = "§7Secrets: ${colorizeSecrets(DungeonUtils.secretCount, DungeonUtils.neededSecretsAmount)}§7-§e${DungeonUtils.neededSecretsAmount}§7-§c${DungeonUtils.totalSecrets}"
-            unknownSecretsText = if (!unknown) "§7Deaths: §c${colorizeDeaths(DungeonUtils.deathCount)}" else "§7Unknown: §b${if (DungeonUtils.totalSecrets - DungeonUtils.knownSecrets > 0) "??" else "${DungeonUtils.totalSecrets - DungeonUtils.knownSecrets}"}"
+            unknownSecretsText = if (!unknown) "§7Deaths: §c${colorizeDeaths(DungeonUtils.deathCount)}" else "§7Unknown: §b${if (DungeonUtils.totalSecrets - DungeonUtils.knownSecrets < 0) "??" else "${DungeonUtils.totalSecrets - DungeonUtils.knownSecrets}"}"
             mimicText = if (DungeonUtils.mimicKilled) "§7Mimic: §a✔" else "§7Mimic: §c✘"
             cryptText = "§7Crypts: ${colorizeCrypts(DungeonUtils.cryptCount)}"
             scoreText = "§7Score: ${colorizeScore(DungeonUtils.score)}"
