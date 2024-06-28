@@ -178,6 +178,36 @@ object DungeonUtils {
         Blessing.entries.forEach { it.current = 0 }
     }
 
+    private val puzzleRegex = Regex("^§r (\\w+(?: \\w+)*|\\?\\?\\?): §r§7\\[(§r§c§l✖|§r§a§l✔|§r§6§l✦)§r§7] ?(?:§r§f\\(§r§[a-z](\\w+)§r§f\\))?§r$")
+
+    fun getDungeonPuzzles(list: List<String?> = listOf()): List<Puzzle> {
+        return list.filterNotNull().mapNotNull { text ->
+            val matchGroups = puzzleRegex.find(text)?.groupValues
+            if (matchGroups == null) {
+                modMessage("${text.replace("§", "&")} doesnt match puzzle regex")
+                return@mapNotNull null
+            }
+            val puzzle = Puzzle.allPuzzles.find { it.name == matchGroups[1] }?.copy()
+            if (puzzle == null) {
+                modMessage("couldnt find matching puzzle for ${matchGroups[1]}")
+                return@mapNotNull null
+            }
+
+            puzzle.status = when {
+                puzzle in puzzles && puzzles[puzzles.indexOf(puzzle)].status == PuzzleStatus.Completed -> PuzzleStatus.Completed
+                matchGroups[2] == "§r§c§l✖" -> PuzzleStatus.Failed
+                matchGroups[2] == "§r§a§l✔" -> PuzzleStatus.Completed
+                matchGroups[2] == "§r§6§l✦" -> PuzzleStatus.Incomplete
+                else -> {
+                    modMessage(text.replace("§", "&"), false)
+                    return@mapNotNull null
+                }
+            }
+
+            puzzle
+        }
+    }
+
     private val tablistRegex = Regex("^\\[(\\d+)] (?:\\[\\w+] )*(\\w+) .*?\\((\\w+)(?: (\\w+))*\\)$")
 
     fun getDungeonTeammates(previousTeammates: List<DungeonPlayer>, tabList: List<Pair<NetworkPlayerInfo, String>>): List<DungeonPlayer> {

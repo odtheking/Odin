@@ -13,6 +13,7 @@ import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.PlayerUtils.posX
 import me.odinmain.utils.skyblock.PlayerUtils.posZ
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getDungeonTeammates
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getDungeonPuzzles
 import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.network.NetworkPlayerInfo
@@ -96,17 +97,6 @@ class Dungeon(val floor: Floor?) {
         if (time != null) dungeonStats.elapsedTime = time.groupValues[1]
     }
 
-    private fun updateDungeonPuzzles(tabList: List<Pair<NetworkPlayerInfo, String>>){
-        val tabEntries = tabList.map { it.first.displayName.unformattedText ?: return }
-        tabEntries.find { it.matches(puzzleCountRegex) }.let {
-            modMessage(it?.replace("§", "&"))
-            val index = tabEntries.indexOf(it)
-            val matchResult = puzzleCountRegex.find(it ?: return)?.groupValues?.get(1)?.toIntOrNull() ?: 0
-            val puzzleData = tabEntries.filterIndexed { i, _ -> i in index + 1..index + matchResult }
-            puzzles = getPuzzles(puzzleData)
-        }
-    }
-
     private fun handleTabListPacket(packet: S38PacketPlayerListItem) {
         if (packet.action != S38PacketPlayerListItem.Action.UPDATE_DISPLAY_NAME) return
         
@@ -120,34 +110,6 @@ class Dungeon(val floor: Floor?) {
         updateDungeonTeammates(tabList)
     }
 
-    private fun getPuzzles(list: List<String?> = listOf()): List<Puzzle> {
-        return list.filterNotNull().mapNotNull { text ->
-            val matchGroups = puzzleRegex.find(text)?.groupValues
-            if (matchGroups == null) {
-                modMessage("${text.replace("§", "&")} doesnt match puzzle regex")
-                return@mapNotNull null
-            }
-            val puzzle = Puzzle.allPuzzles.find { it.name == matchGroups[1] }?.copy()
-            if (puzzle == null) {
-                modMessage("couldnt find matching puzzle for ${matchGroups[1]}")
-                return@mapNotNull null
-            }
-
-            puzzle.status = when {
-                puzzle in puzzles && puzzles[puzzles.indexOf(puzzle)].status == PuzzleStatus.Completed -> PuzzleStatus.Completed
-                matchGroups[2] == "§r§c§l✖" -> PuzzleStatus.Failed
-                matchGroups[2] == "§r§a§l✔" -> PuzzleStatus.Completed
-                matchGroups[2] == "§r§6§l✦" -> PuzzleStatus.Incomplete
-                else -> {
-                    modMessage(text.replace("§", "&"), false)
-                    return@mapNotNull null
-                }
-            }
-
-            puzzle
-        }
-    }
-
     private val secretCountRegex = Regex("^§r Secrets Found: §r§b(\\d+)§r$")
     private val secretPercentRegex = Regex("^§r Secrets Found: §r§[ea]([\\d.]+)%§r$")
     private val cryptRegex = Regex("^§r Crypts: §r§6(\\d+)§r$")
@@ -155,7 +117,6 @@ class Dungeon(val floor: Floor?) {
     private val completedRoomsRegex = Regex("^§r Completed Rooms: §r§d(\\d+)§r$")
     private val deathsRegex = Regex("^§r§a§lTeam Deaths: §r§f(\\d+)§r$")
     private val puzzleCountRegex = Regex("^§r§[a-z]§lPuzzles: §r§f\\((\\d)\\)§r$")
-    private val puzzleRegex = Regex("^§r (\\w+(?: \\w+)*|\\?\\?\\?): §r§7\\[(§r§c§l✖|§r§a§l✔|§r§6§l✦)§r§7] ?(?:§r§f\\(§r§[a-z](\\w+)§r§f\\))?§r$")
 
     data class DungeonStats(
         var secretsFound: Int? = null,
@@ -224,6 +185,17 @@ class Dungeon(val floor: Floor?) {
         }
 
         return currentStats
+    }
+
+    private fun updateDungeonPuzzles(tabList: List<Pair<NetworkPlayerInfo, String>>){
+        val tabEntries = tabList.map { it.first.displayName?.unformattedText ?: return }
+        tabEntries.find { it.matches(puzzleCountRegex) }.let {
+            modMessage(it?.replace("§", "&"))
+            val index = tabEntries.indexOf(it)
+            val matchResult = puzzleCountRegex.find(it ?: return)?.groupValues?.get(1)?.toIntOrNull() ?: return
+            val puzzleData = tabEntries.filterIndexed { i, _ -> i in index + 1..index + matchResult }
+            puzzles = getDungeonPuzzles(puzzleData)
+        }
     }
 
     private fun updateDungeonTeammates(tabList: List<Pair<NetworkPlayerInfo, String>>) {
