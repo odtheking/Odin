@@ -26,20 +26,19 @@ object TerminalSounds : Module(
     ).withDependency { sound == defaultSounds.size - 1 }
     private val volume: Float by NumberSetting("Volume", 1f, 0, 1, .01f, description = "Volume of the sound.")
     private val pitch: Float by NumberSetting("Pitch", 2f, 0, 2, .01f, description = "Pitch of the sound.")
-    val reset: () -> Unit by ActionSetting("Play sound") {
-        playTerminalSound()
-    }
+    val reset: () -> Unit by ActionSetting("Play sound") { playTerminalSound() }
 
     private var lastPlayed = System.currentTimeMillis()
 
     @SubscribeEvent
-    fun onPacket(event: PacketReceivedEvent){ with(event.packet) {
-        if (currentTerm == TerminalTypes.NONE || this !is S29PacketSoundEffect || customSound == "note.pling") return@onPacket
-        if (this.soundName == "note.pling" && this.volume == 8f && this.pitch == 4.047619f) {
+    fun onPacket(event: PacketReceivedEvent){
+        with(event.packet) {
+            if (currentTerm == TerminalTypes.NONE || this !is S29PacketSoundEffect || customSound == "note.pling" ||
+                this.soundName != "note.pling" || this.volume != 8f || this.pitch != 4.047619f) return@onPacket
             playTerminalSound()
             event.isCanceled = true
         }
-    } }
+    }
 
     fun playTerminalSound() {
         if (System.currentTimeMillis() - lastPlayed <= 2) return
