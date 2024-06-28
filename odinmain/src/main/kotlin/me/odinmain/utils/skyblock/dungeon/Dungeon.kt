@@ -96,19 +96,20 @@ class Dungeon(val floor: Floor?) {
         if (time != null) dungeonStats.elapsedTime = time.groupValues[1]
     }
 
-    private fun getPuzzleData(tab: List<Pair<NetworkPlayerInfo, String>>): List<Puzzle> {
-        val tabList = tab.map { it.first.displayName.unformattedText } ?: return emptyList()
-        tabList.find { it.matches(puzzleRegex) }.let {
+    private fun getPuzzleData(tabList: List<Pair<NetworkPlayerInfo, String>>): List<Puzzle> {
+        val tabEntries = tabList.map { it.first.displayName.unformattedText ?: return emptyList() }
+        tabEntries.find { it.matches(puzzleRegex) }.let {
             modMessage(it?.replace("§", "&"))
-            val index = tabList.indexOf(it)
+            val index = tabEntries.indexOf(it)
             val matchResult = puzzleCountRegex.find(it ?: return emptyList())?.groupValues?.get(1)?.toIntOrNull() ?: 0
-            val puzzleData = tabList.filterIndexed { i, _ -> i in index+1..index + matchResult }
+            val puzzleData = tabEntries.filterIndexed { i, _ -> i in index + 1..index + matchResult }
             return handlePuzzleList(puzzleData)
         }
     }
 
     private fun handleTabListPacket(packet: S38PacketPlayerListItem) {
         if (packet.action != S38PacketPlayerListItem.Action.UPDATE_DISPLAY_NAME) return
+        
         packet.entries.forEach { entry ->
             val text = entry?.displayName?.formattedText ?: return@forEach
             dungeonStats = updateDungeonStats(text, dungeonStats)
