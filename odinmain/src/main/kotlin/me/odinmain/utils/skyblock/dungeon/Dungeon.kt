@@ -101,12 +101,13 @@ class Dungeon(val floor: Floor?) {
         packet.entries.forEach { entry ->
             val text = entry?.displayName?.formattedText ?: return@forEach
             if (puzzleCountRegex.matches(text)) {
+                modMessage(text.replace("§", "&"))
                 val index = packet.entries.indexOf(entry)
                 val matchResult = puzzleCountRegex.find(text)?.groupValues?.get(1)?.toIntOrNull() ?: 0
                 val puzzlesData = packet.entries.filterIndexed { i, _ ->
                     i in index+1..index + matchResult
                 }
-                modMessage("${puzzlesData.map { it?.displayName?.formattedText }} are the puzzle lines")
+                modMessage("$puzzlesData are the puzzle lines")
                 puzzles = handlePuzzleList(puzzlesData.map { it?.displayName?.formattedText })
                 return@forEach
             }
