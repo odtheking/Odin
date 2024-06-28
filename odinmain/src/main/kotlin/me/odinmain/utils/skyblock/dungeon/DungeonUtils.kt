@@ -180,9 +180,9 @@ object DungeonUtils {
 
     private val tablistRegex = Regex("^\\[(\\d+)] (?:\\[\\w+] )*(\\w+) .*?\\((\\w+)(?: (\\w+))*\\)$")
 
-    fun getDungeonTeammates(previousTeammates: List<DungeonPlayer>): List<DungeonPlayer> {
+    fun getDungeonTeammates(previousTeammates: List<DungeonPlayer>, tabList: List<Pair<NetworkPlayerInfo, String>>): List<DungeonPlayer> {
         val teammates = mutableListOf<DungeonPlayer>()
-        val tabList = getDungeonTabList() ?: return emptyList()
+        //val tabList = getDungeonTabList() ?: return emptyList()
 
         for ((networkPlayerInfo, line) in tabList) {
 
