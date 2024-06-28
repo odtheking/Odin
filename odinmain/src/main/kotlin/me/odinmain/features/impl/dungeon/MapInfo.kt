@@ -9,21 +9,23 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.getMCTextWidth
 import me.odinmain.utils.render.mcText
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.modMessage
 
 object MapInfo : Module(
     name = "Map Info",
     category = Category.DUNGEON,
     description = "Displays various information about the current dungeon map"
 ) {
+    val unknown: Boolean by DualSetting("Deaths", "Deaths", "Unknown", default = false, description = "display deaths or unknown secrets. (Unknown secrets are secrets in rooms that haven't been discovered yet. May not be helpful in full party runs.)")
+
     val hud: HudElement by HudSetting("Hud", 10f, 10f, 1f, false) {
         if (it) {
-            val unknownWidth = getMCTextWidth("§7Unknown: §b??")
+            val unknownText = if (!unknown) "§7Deaths: §c0" else "§7Unknown: §b??"
+            val unknownWidth = getMCTextWidth(unknownText)
             val cryptWidth = getMCTextWidth("§7Crypts: §c?")
             val scoreWidth = getMCTextWidth("§7Score: §d???")
             mcText("§7Secrets: 0§7-§e?§7-§c?", 1, 1, 1f, Color.WHITE, center = false)
             mcText("§7Score: §d???", 159 - scoreWidth, 1, 1f, Color.WHITE, center = false)
-            mcText("§7Unknown: §b??", 1, 9, 1f, Color.WHITE, center = false)
+            mcText(unknownText, 1, 9, 1f, Color.WHITE, center = false)
             val centerX = (unknownWidth+(160-unknownWidth-cryptWidth)/2) - getMCTextWidth("§7Mimic: §c✘")/2
             mcText("§7Mimic: §c✘", centerX, 9, 1f, Color.WHITE, center = false)
             mcText("§7Crypts: §c?", 159 - cryptWidth, 9, 1f, Color.WHITE, center = false)
@@ -41,11 +43,11 @@ object MapInfo : Module(
         160f to 16f
     }
 
-    var secretText = "§7Secrets: 0§7-§e?§7-§c?"
-    var unknownSecretsText = "§7Unknown: §b??"
-    var mimicText = "§7M"
-    var cryptText = "§7Crypts: §c?"
-    var scoreText = "§7Score: §d???"
+    private var secretText = "§7Secrets: 0§7-§e?§7-§c?"
+    private var unknownSecretsText = if (!unknown) "§7Deaths: §c0" else "§7Unknown: §b??"
+    private var mimicText = "§7M"
+    private var cryptText = "§7Crypts: §c0"
+    private var scoreText = "§7Score: §d???"
 
     private fun colorizeCrypts(count: Int): String {
         return when {
@@ -72,10 +74,19 @@ object MapInfo : Module(
         }
     }
 
+    private fun colorizeDeaths(count: Int): String {
+        return when {
+            count == 0 -> "§a0"
+            count <= if (DungeonUtils.floorNumber < 6) 2 else 3 -> "§e${count}"
+            count == if (DungeonUtils.floorNumber < 6) 3 else 4 -> "§c${count}"
+            else -> "§4${count}"
+        }
+    }
+
     init {
-        execute(1000) {
+        execute(500) {
             secretText = "§7Secrets: ${colorizeSecrets(DungeonUtils.secretCount, DungeonUtils.neededSecretsAmount)}§7-§e${DungeonUtils.neededSecretsAmount}§7-§c${DungeonUtils.totalSecrets}"
-            unknownSecretsText = "§7Unknown: §b${DungeonUtils.totalSecrets - DungeonUtils.knownSecrets}"
+            unknownSecretsText = if (!unknown) "§7Deaths: §c${colorizeDeaths(DungeonUtils.deathCount)}" else "§7Unknown: §b${DungeonUtils.totalSecrets - DungeonUtils.knownSecrets}"
             mimicText = if (DungeonUtils.mimicKilled) "§7Mimic: §a✔" else "§7Mimic: §c✘"
             cryptText = "§7Crypts: ${colorizeCrypts(DungeonUtils.cryptCount)}"
             scoreText = "§7Score: ${colorizeScore(DungeonUtils.score)}"

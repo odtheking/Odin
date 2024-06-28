@@ -121,12 +121,11 @@ object DungeonUtils {
     }
 
     inline val score: Int get() {
-        val exploration1 = if (totalSecrets != 0) (min(40, floor((secretCount/totalSecrets * 40f))).toInt()) else 0
-        val exploration2 = if (totalRooms != 0) (min(60, floor((completedRoomCount/totalRooms * 60f))).toInt()) else 0
-        val skill1 = if (totalSecrets != 0) (floor((completedRoomCount/totalRooms * 80f)).toInt()) else 0
+        val exploration1 = if (totalSecrets != 0) min(40, floor(secretCount/(totalSecrets * floor.secretPercentage) * 40f)).toInt() else 0
+        val exploration2 = if (totalRooms != 0) min(60, floor(completedRoomCount/totalRooms * 60f)).toInt() else 0
+        val skill1 = if (totalRooms != 0) floor(completedRoomCount/totalRooms * 80f).toInt() else 0
         val skill = max(0, (skill1 - puzzles.filter { it.status != PuzzleStatus.Completed }.size * 10) - deathCount * 2 - 1).toInt() + 20
-        val bonus = getBonusScore
-        return exploration1 + exploration2 + skill + bonus + 100
+        return exploration1 + exploration2 + skill + getBonusScore + 100
     }
 
     inline val neededSecretsAmount: Int get() {
