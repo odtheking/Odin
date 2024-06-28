@@ -5,6 +5,7 @@ import me.odinmain.OdinMain.mc
 import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.scoreboard.ScorePlayerTeam
 import net.minecraft.world.WorldSettings
+import java.util.concurrent.CopyOnWriteArrayList
 
 
 fun cleanSB(scoreboard: String?): String {
@@ -48,7 +49,7 @@ fun getLines(): List<String> {
 
 val getTabList: List<Pair<NetworkPlayerInfo, String>>
     get() {
-        val playerInfoList = mc.thePlayer?.sendQueue?.playerInfoMap?.toList() ?: emptyList()
+        val playerInfoList = mc.thePlayer?.sendQueue?.playerInfoMap?.let { CopyOnWriteArrayList(it) }?.toList() ?: emptyList()
         return playerInfoList.sortedWith(tabListOrder)
             .map { Pair(it, mc.ingameGUI.tabList.getPlayerName(it)) }
     }

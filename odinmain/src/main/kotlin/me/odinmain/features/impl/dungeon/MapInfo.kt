@@ -2,6 +2,7 @@ package me.odinmain.features.impl.dungeon
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.DualSetting
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.ui.hud.HudElement
@@ -15,7 +16,8 @@ object MapInfo : Module(
     category = Category.DUNGEON,
     description = "Displays various information about the current dungeon map"
 ) {
-    val unknown: Boolean by DualSetting("Deaths", "Deaths", "Unknown", default = false, description = "display deaths or unknown secrets. (Unknown secrets are secrets in rooms that haven't been discovered yet. May not be helpful in full party runs.)")
+    private val disableInBoss: Boolean by BooleanSetting("Disable in boss", default = true, description = "Disables the information display when you're in boss.")
+    private val unknown: Boolean by DualSetting("Deaths", "Deaths", "Unknown", default = false, description = "display deaths or unknown secrets. (Unknown secrets are secrets in rooms that haven't been discovered yet. May not be helpful in full party runs.)")
 
     val hud: HudElement by HudSetting("Hud", 10f, 10f, 1f, false) {
         if (it) {
@@ -29,7 +31,7 @@ object MapInfo : Module(
             val centerX = (unknownWidth+(160-unknownWidth-cryptWidth)/2) - getMCTextWidth("§7Mimic: §c✘")/2
             mcText("§7Mimic: §c✘", centerX, 9, 1f, Color.WHITE, center = false)
             mcText("§7Crypts: §c?", 159 - cryptWidth, 9, 1f, Color.WHITE, center = false)
-        } else if (DungeonUtils.inDungeons){
+        } else if (DungeonUtils.inDungeons && (!disableInBoss || !DungeonUtils.inBoss)){
             val unknownWidth = getMCTextWidth(unknownSecretsText)
             val cryptWidth = getMCTextWidth(cryptText)
             val scoreWidth = getMCTextWidth(scoreText)

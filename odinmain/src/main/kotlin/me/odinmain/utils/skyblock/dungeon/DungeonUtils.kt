@@ -131,7 +131,7 @@ object DungeonUtils {
     inline val neededSecretsAmount: Int get() {
         val deathModifier = deathCount * 2 - 1
         val scoreFactor = 40 - getBonusScore + deathModifier
-        return ceil(totalSecrets * scoreFactor / 40.0).toInt()
+        return ceil((totalSecrets * floor.secretPercentage) * scoreFactor / 40.0).toInt()
     }
 
     /**
