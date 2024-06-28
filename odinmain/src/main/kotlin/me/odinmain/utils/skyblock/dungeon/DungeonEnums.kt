@@ -29,7 +29,7 @@ data class Puzzle(
 ) {
     companion object {
         val Unknown = Puzzle("???")
-        val Blaze = Puzzle("Higher or Lower")
+        val Blaze = Puzzle("Higher Or Lower")
         val Beams = Puzzle("Creeper Beams")
         val Weirdos = Puzzle("Three Weirdos")
         val TTT = Puzzle("Tic Tac Toe")
