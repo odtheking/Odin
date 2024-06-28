@@ -189,13 +189,14 @@ class Dungeon(val floor: Floor?) {
 
     private fun updateDungeonPuzzles(tabList: List<Pair<NetworkPlayerInfo, String>>){
         val tabEntries = tabList.map { it.first.displayName?.unformattedText ?: return }
-        tabEntries.find { it.matches(puzzleCountRegex) }.let {
-            modMessage(it?.replace("§", "&"))
-            val index = tabEntries.indexOf(it)
-            val matchResult = puzzleCountRegex.find(it ?: return)?.groupValues?.get(1)?.toIntOrNull() ?: return
-            val puzzleData = tabEntries.filterIndexed { i, _ -> i in index + 1..index + matchResult }
-            puzzles = getDungeonPuzzles(puzzleData)
-        }
+        modMessage(tabEntries.map { it.replace("§", "&") })
+        val puzzleText = tabEntries.find { it.matches(puzzleCountRegex)} ?: return modMessage("Puzzle Text not in Tab Entries")
+        modMessage(puzzleText.replace("§", "&"))
+        val index = tabEntries.indexOf(puzzleText)
+        val matchResult = puzzleCountRegex.find(puzzleText ?: return)?.groupValues?.get(1)?.toIntOrNull() ?: return
+        val puzzleData = tabList.filterIndexed { i, _ -> i in index + 1..index + matchResult }
+        modMessage(puzzleData)
+        puzzles = getDungeonPuzzles(puzzleData.map { it.first.displayName?.unformattedText ?: return })
     }
 
     private fun updateDungeonTeammates(tabList: List<Pair<NetworkPlayerInfo, String>>) {

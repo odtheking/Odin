@@ -180,8 +180,8 @@ object DungeonUtils {
 
     private val puzzleRegex = Regex("^§r (\\w+(?: \\w+)*|\\?\\?\\?): §r§7\\[(§r§c§l✖|§r§a§l✔|§r§6§l✦)§r§7] ?(?:§r§f\\(§r§[a-z](\\w+)§r§f\\))?§r$")
 
-    fun getDungeonPuzzles(list: List<String?> = listOf()): List<Puzzle> {
-        return list.filterNotNull().mapNotNull { text ->
+    fun getDungeonPuzzles(list: List<String> = listOf()): List<Puzzle> {
+        return list.mapNotNull { text ->
             val matchGroups = puzzleRegex.find(text)?.groupValues
             if (matchGroups == null) {
                 modMessage("${text.replace("§", "&")} doesnt match puzzle regex")
