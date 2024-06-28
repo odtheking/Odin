@@ -33,13 +33,14 @@ object TerminalSounds : Module(
     private var lastPlayed = System.currentTimeMillis()
 
     @SubscribeEvent
-    fun onPacket(event: PacketReceivedEvent){ with(event.packet) {
-        if (currentTerm == TerminalTypes.NONE || this !is S29PacketSoundEffect || customSound == "note.pling") return@onPacket
-        if (this.soundName == "note.pling" && this.volume == 8f && this.pitch == 4.047619f) {
+    fun onPacket(event: PacketReceivedEvent){
+        with(event.packet) {
+            if (currentTerm == TerminalTypes.NONE || this !is S29PacketSoundEffect || customSound == "note.pling" ||
+                this.soundName != "note.pling" || this.volume != 8f || this.pitch != 4.047619f) return
             playTerminalSound()
             event.isCanceled = true
         }
-    } }
+    }
 
     fun playTerminalSound() {
         if (System.currentTimeMillis() - lastPlayed <= 2) return
