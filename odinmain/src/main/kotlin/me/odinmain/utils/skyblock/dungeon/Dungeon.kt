@@ -174,10 +174,10 @@ class Dungeon(val floor: Floor?) {
 
                     puzzle.status = status
 
-                    if (puzzle !in currentStats.puzzles || (currentStats.puzzles.size != currentStats.puzzleCount && puzzle == Puzzle.Unknown)) {
+                    if (puzzle.name !in currentStats.puzzles.map { it.name } || (currentStats.puzzles.size != currentStats.puzzleCount && puzzle == Puzzle.Unknown)) {
                         currentStats.puzzles.add(puzzle)
                         if (puzzle != Puzzle.Unknown) currentStats.puzzles.remove(currentStats.puzzles.firstOrNull {it == Puzzle.Unknown})
-                    } else currentStats.puzzles.find { it == puzzle }?.status = status
+                    } else currentStats.puzzles.find { it.name == puzzle.name }?.status = status
                 }
             }
         }
