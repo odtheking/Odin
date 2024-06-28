@@ -106,6 +106,7 @@ class Dungeon(val floor: Floor?) {
                 val puzzlesData = packet.entries.filterIndexed { i, _ ->
                     i in index+1..index + matchResult
                 }
+                modMessage("${puzzlesData.map { it?.displayName?.formattedText }} are the puzzle lines")
                 puzzles = handlePuzzleList(puzzlesData.map { it?.displayName?.formattedText })
                 return@forEach
             }
@@ -116,8 +117,16 @@ class Dungeon(val floor: Floor?) {
 
     private fun handlePuzzleList(list: List<String?> = listOf()): List<Puzzle> {
         return list.filterNotNull().mapNotNull { text ->
-            val matchGroups = puzzleRegex.find(text)?.groupValues ?: return@mapNotNull null
-            val puzzle = Puzzle.allPuzzles.find { it.name == matchGroups[1] }?.copy() ?: return@mapNotNull null
+            val matchGroups = puzzleRegex.find(text)?.groupValues
+            if (matchGroups == null) {
+                modMessage("${text.replace("§", "&")} doesnt match puzzle regex")
+                return@mapNotNull null
+            }
+            val puzzle = Puzzle.allPuzzles.find { it.name == matchGroups[1] }?.copy()
+            if (puzzle == null) {
+                modMessage("couldnt find matching puzzle for ${matchGroups[1]}")
+                return@mapNotNull null
+            }
 
             puzzle.status = when {
                 puzzle in puzzles && puzzles[puzzles.indexOf(puzzle)].status == PuzzleStatus.Completed -> PuzzleStatus.Completed

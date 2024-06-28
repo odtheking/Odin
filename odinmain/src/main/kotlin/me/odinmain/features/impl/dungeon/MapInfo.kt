@@ -46,7 +46,7 @@ object MapInfo : Module(
     }
 
     private var secretText = "§7Secrets: 0§7-§e?§7-§c?"
-    private var unknownSecretsText = if (!unknown) "§7Deaths: §c0" else "§7Unknown: §b??"
+    private var unknownSecretsText = if (!unknown) "§7Deaths: §a0" else "§7Unknown: §b??"
     private var mimicText = "§7Mimic: §c✘"
     private var cryptText = "§7Crypts: §c0"
     private var scoreText = "§7Score: §d???"
