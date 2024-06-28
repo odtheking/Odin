@@ -120,16 +120,20 @@ object DungeonUtils {
         return score
     }
 
+    inline val bloodOpened: Boolean get() =
+        currentDungeon?.dungeonStats?.bloodOpened ?: false
+
     inline val score: Int get() {
+        val completed: Int = completedRoomCount + if (bloodOpened) 1 else 0
         val exploration1 = if (totalSecrets != 0) floor(secretCount/(totalSecrets * floor.secretPercentage) * 40f).coerceAtMost(40f).toInt() else 0
-        val exploration2 = if (totalRooms != 0) floor(completedRoomCount/totalRooms * 60f).coerceAtMost(60f).toInt() else 0
-        val skill1 = if (totalRooms != 0) floor(completedRoomCount/totalRooms * 80f).coerceAtMost(80f).toInt() else 0
-        val skill = max(0, (skill1 - puzzles.filter { it.status != PuzzleStatus.Completed }.size * 10) - deathCount * 2 - 1).toInt() + 20
+        val exploration2 = if (totalRooms != 0) floor(completed/totalRooms * 60f).coerceAtMost(60f).toInt() else 0
+        val skill1 = if (totalRooms != 0) floor(completed/totalRooms * 80f).coerceAtMost(80f).toInt() else 0
+        val skill = (skill1 - puzzles.filter { it.status != PuzzleStatus.Completed }.size * 10 - (deathCount * 2 - 1).coerceAtLeast(0) + 20).coerceIn(20, 100)
         return exploration1 + exploration2 + skill + getBonusScore + 100
     }
 
     inline val neededSecretsAmount: Int get() {
-        val deathModifier = deathCount * 2 - 1
+        val deathModifier = (deathCount * 2 - 1).coerceAtLeast(0)
         val scoreFactor = 40 - getBonusScore + deathModifier
         return ceil((totalSecrets * floor.secretPercentage) * scoreFactor / 40.0).toInt()
     }
@@ -182,16 +186,8 @@ object DungeonUtils {
 
     fun getDungeonPuzzles(list: List<String> = listOf()): List<Puzzle> {
         return list.mapNotNull { text ->
-            val matchGroups = puzzleRegex.find(text)?.groupValues
-            if (matchGroups == null) {
-                modMessage("${text.replace("§", "&")} doesnt match puzzle regex")
-                return@mapNotNull null
-            }
-            val puzzle = Puzzle.allPuzzles.find { it.name == matchGroups[1] }?.copy()
-            if (puzzle == null) {
-                modMessage("couldnt find matching puzzle for ${matchGroups[1]}")
-                return@mapNotNull null
-            }
+            val matchGroups = puzzleRegex.find(text)?.groupValues ?: return@mapNotNull null
+            val puzzle = Puzzle.allPuzzles.find { it.name == matchGroups[1] }?.copy() ?: return@mapNotNull null
 
             puzzle.status = when {
                 puzzle in puzzles && puzzles[puzzles.indexOf(puzzle)].status == PuzzleStatus.Completed -> PuzzleStatus.Completed

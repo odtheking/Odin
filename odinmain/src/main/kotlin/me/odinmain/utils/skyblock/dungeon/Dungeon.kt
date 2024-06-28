@@ -12,10 +12,10 @@ import me.odinmain.features.impl.dungeon.Mimic
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.PlayerUtils.posX
 import me.odinmain.utils.skyblock.PlayerUtils.posZ
+import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getDungeonTeammates
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getDungeonPuzzles
 import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.network.play.server.*
 
@@ -67,6 +67,7 @@ class Dungeon(val floor: Floor?) {
 
     private fun handleChatPacket(packet: S02PacketChat) {
         val message = packet.chatComponent.unformattedText.noControlCodes
+        if (Regex("The BLOOD DOOR has been opened!").matches(message)) dungeonStats.bloodOpened = true
         val doorOpener = Regex("(?:\\[\\w+] )?(\\w+) opened a (?:WITHER|Blood) door!").find(message)
         if (doorOpener != null) dungeonStats.doorOpener = doorOpener.groupValues[1]
 
@@ -131,6 +132,7 @@ class Dungeon(val floor: Floor?) {
         var elapsedTime: String? = null,
         var mimicKilled: Boolean = false,
         var doorOpener: String? = null,
+        var bloodOpened: Boolean = false,
     )
 
     private fun updateDungeonStats(text: String, currentStats: DungeonStats): DungeonStats {
@@ -160,29 +162,6 @@ class Dungeon(val floor: Floor?) {
                 val matchResult = deathsRegex.find(text)
                 currentStats.deaths = matchResult?.groupValues?.get(1)?.toIntOrNull()
             }
-            /**puzzleCountRegex.matches(text) -> {
-                val matchResult = puzzleCountRegex.find(text)
-                currentStats.puzzleCount = matchResult?.groupValues?.get(1)?.toIntOrNull()
-            }
-            puzzleRegex.matches(text) -> {
-                val matchResult = puzzleRegex.find(text)
-                val puzzle = Puzzle.allPuzzles.find { it.name == matchResult?.groupValues?.get(1) }?.copy()
-                if (puzzle != null) {
-                    modMessage(text.replace("§", "&"), false)
-                    val status: PuzzleStatus? = when {
-                        matchResult?.groupValues?.get(2) == "§r§c§l✖" -> PuzzleStatus.Failed
-                        matchResult?.groupValues?.get(2) == "§r§a§l✔" -> PuzzleStatus.Completed
-                        matchResult?.groupValues?.get(2) == "§r§6§l✦" -> PuzzleStatus.Incomplete
-                        else -> null
-                    }
-
-                    if (puzzle !in currentStats.puzzles || (currentStats.puzzles.size != currentStats.puzzleCount && puzzle == Puzzle.Unknown)) {
-                        puzzle.status = status
-                        currentStats.puzzles.add(puzzle)
-                        if (puzzle != Puzzle.Unknown) currentStats.puzzles.remove(currentStats.puzzles.firstOrNull {it == Puzzle.Unknown})
-                    } else currentStats.puzzles.find { it == puzzle }?.status = status
-                }
-            }*/
         }
 
         return currentStats
@@ -190,13 +169,10 @@ class Dungeon(val floor: Floor?) {
 
     private fun updateDungeonPuzzles(tabList: List<Pair<NetworkPlayerInfo, String>>){
         val tabEntries = tabList.map { it.second }
-        modMessage(tabEntries.map { it.replace("§", "&") })
-        val puzzleText = tabEntries.find { puzzleCountRegex.matches(it) } ?: return modMessage("Puzzle Text not in Tab Entries")
-        modMessage(puzzleText.replace("§", "&"))
+        val puzzleText = tabEntries.find { puzzleCountRegex.matches(it) } ?: return devMessage("Puzzle text not in tab entries")
         val index = tabEntries.indexOf(puzzleText)
         val matchResult = puzzleCountRegex.find(puzzleText)?.groupValues?.get(1)?.toIntOrNull() ?: return
         val puzzleData = tabList.filterIndexed { i, _ -> i in index + 1..index + matchResult }
-        modMessage(puzzleData)
         puzzles = getDungeonPuzzles(puzzleData.map { it.second })
     }
 
