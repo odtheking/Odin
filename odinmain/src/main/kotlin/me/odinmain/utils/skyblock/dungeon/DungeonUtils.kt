@@ -124,12 +124,13 @@ object DungeonUtils {
         currentDungeon?.dungeonStats?.bloodOpened ?: false
 
     inline val score: Int get() {
-        val completed: Int = completedRoomCount + if (bloodOpened) 1 else 0
-        val exploration1 = if (totalSecrets != 0) floor(secretCount/(totalSecrets * floor.secretPercentage) * 40f).coerceAtMost(40f).toInt() else 0
-        val exploration2 = if (totalRooms != 0) floor(completed/totalRooms * 60f).coerceAtMost(60f).toInt() else 0
-        val skill1 = if (totalRooms != 0) floor(completed/totalRooms * 80f).coerceAtMost(80f).toInt() else 0
-        val skill = (skill1 - puzzles.filter { it.status != PuzzleStatus.Completed }.size * 10 - (deathCount * 2 - 1).coerceAtLeast(0) + 20).coerceIn(20, 100)
-        return exploration1 + exploration2 + skill + getBonusScore + 100
+        val completed: Int = completedRoomCount + if (bloodOpened) 1 else 0 + if (!inBoss) 1 else 0
+        val exploration1 = if (totalSecrets != 0) floor(secretPercentage/floor.secretPercentage * 40).coerceIn(0f, 40f).toInt() else 0
+        val exploration2 = if (totalRooms != 0) floor(completed/totalRooms * 60f).coerceIn(0f, 60f).toInt() else 0
+        val exploration = exploration1 + exploration2
+        val skillRooms = if (totalRooms != 0) floor(completed/totalRooms * 80f).coerceIn(0f, 80f).toInt() else 0
+        val skill = (20 + skillRooms - puzzles.filter { it.status == PuzzleStatus.Failed }.size * 10 - (deathCount * 2 - 1).coerceAtLeast(0)).coerceIn(20, 100)
+        return exploration + skill + getBonusScore + 100
     }
 
     inline val neededSecretsAmount: Int get() {
