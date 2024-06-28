@@ -47,9 +47,9 @@ class Dungeon(val floor: Floor?) {
     }
 
     fun enterDungeonRoom(event: RoomEnterEvent) {
-        currentRoom = event.room
-        if (passedRooms.any { it.room.data.name == event.room?.room?.data?.name }) return
-        event.room?.let { passedRooms.add(it) }
+        currentRoom = event.room ?: return
+        if (passedRooms.any { it.room.data.name == event.room.room.data.name }) return
+        event.room.let { passedRooms.add(it) }
         val roomSecrets = ScanUtils.getRoomSecrets(currentRoom?.room?.data?.name ?: return)
         dungeonStats.knownSecrets = dungeonStats.knownSecrets?.plus(roomSecrets) ?: roomSecrets
     }
@@ -101,16 +101,37 @@ class Dungeon(val floor: Floor?) {
         packet.entries.forEach { entry ->
             val text = entry?.displayName?.formattedText ?: return@forEach
             if (puzzleCountRegex.matches(text)) {
+                val index = packet.entries.indexOf(entry)
+                val matchResult = puzzleCountRegex.find(text)?.groupValues?.get(1)?.toIntOrNull() ?: 0
                 val puzzlesData = packet.entries.filterIndexed { i, _ ->
-                    val index = packet.entries.indexOf(entry)
-                    val matchResult = puzzleCountRegex.find(text)?.groupValues?.get(1)?.toIntOrNull() ?: 0
                     i in index+1..index + matchResult
                 }
                 puzzles = handlePuzzleList(puzzlesData.map { it?.displayName?.formattedText })
+                return@forEach
             }
             dungeonStats = updateDungeonStats(text, dungeonStats)
         }
         updateDungeonTeammates()
+    }
+
+    private fun handlePuzzleList(list: List<String?> = listOf()): List<Puzzle> {
+        return list.filterNotNull().mapNotNull { text ->
+            val matchGroups = puzzleRegex.find(text)?.groupValues ?: return@mapNotNull null
+            val puzzle = Puzzle.allPuzzles.find { it.name == matchGroups[1] }?.copy() ?: return@mapNotNull null
+
+            puzzle.status = when {
+                puzzle in puzzles && puzzles[puzzles.indexOf(puzzle)].status == PuzzleStatus.Completed -> PuzzleStatus.Completed
+                matchGroups[2] == "§r§c§l✖" -> PuzzleStatus.Failed
+                matchGroups[2] == "§r§a§l✔" -> PuzzleStatus.Completed
+                matchGroups[2] == "§r§6§l✦" -> PuzzleStatus.Incomplete
+                else -> {
+                    modMessage(text.replace("§", "&"), false)
+                    return@mapNotNull null
+                }
+            }
+
+            puzzle
+        }
     }
 
     private val secretCountRegex = Regex("^§r Secrets Found: §r§b(\\d+)§r$")
@@ -135,26 +156,6 @@ class Dungeon(val floor: Floor?) {
         var mimicKilled: Boolean = false,
         var doorOpener: String? = null,
     )
-
-    private fun handlePuzzleList(list: List<String?> = listOf()): List<Puzzle> {
-        val puzzleList = mutableListOf<Puzzle>()
-        for (text in list.filterNotNull()) {
-            val matchGroups = puzzleRegex.find(text)?.groupValues
-            val puzzle = Puzzle.allPuzzles.find { it.name == matchGroups?.get(1) }?.copy() ?: continue
-            puzzle.status = when {
-                puzzle in puzzles && puzzles[puzzles.indexOf(puzzle)].status?.equals( PuzzleStatus.Completed ) == true -> PuzzleStatus.Completed
-                matchGroups?.get(2) == "§r§c§l✖" -> PuzzleStatus.Failed
-                matchGroups?.get(2) == "§r§a§l✔" -> PuzzleStatus.Completed
-                matchGroups?.get(2) == "§r§6§l✦" -> PuzzleStatus.Incomplete
-                else -> {
-                    modMessage(text.replace("§", "&"), false)
-                    continue
-                }
-            }
-            puzzleList.add(puzzle)
-        }
-        return puzzleList
-    }
 
     private fun updateDungeonStats(text: String, currentStats: DungeonStats): DungeonStats {
         //modMessage(text.replace("§", "&"))
