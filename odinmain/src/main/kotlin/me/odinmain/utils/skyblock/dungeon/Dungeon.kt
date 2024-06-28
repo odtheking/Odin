@@ -190,7 +190,7 @@ class Dungeon(val floor: Floor?) {
     private fun updateDungeonPuzzles(tabList: List<Pair<NetworkPlayerInfo, String>>){
         val tabEntries = tabList.map { it.first.displayName?.unformattedText ?: return }
         modMessage(tabEntries.map { it.replace("§", "&") })
-        val puzzleText = tabEntries.find { it.matches(puzzleCountRegex)} ?: return modMessage("Puzzle Text not in Tab Entries")
+        val puzzleText = tabEntries.find { puzzleCountRegex.matches(it) } ?: return modMessage("Puzzle Text not in Tab Entries")
         modMessage(puzzleText.replace("§", "&"))
         val index = tabEntries.indexOf(puzzleText)
         val matchResult = puzzleCountRegex.find(puzzleText ?: return)?.groupValues?.get(1)?.toIntOrNull() ?: return
