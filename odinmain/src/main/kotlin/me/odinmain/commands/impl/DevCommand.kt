@@ -6,6 +6,7 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.commands.commodore
 import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.features.ModuleManager.generateFeatureList
+import me.odinmain.features.impl.dungeon.MapInfo
 import me.odinmain.features.impl.render.DevPlayers.updateDevs
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
@@ -38,7 +39,7 @@ val devCommand = commodore("oddev") {
             |inDungeons: ${DungeonUtils.inDungeons}
             |InBoss: ${DungeonUtils.inBoss}
             |Floor: ${DungeonUtils.floor.name}
-            |Score: ${DungeonUtils.score}
+            |Score: ${DungeonUtils.score}${when (MapInfo.togglePaul) {1 -> "Paul Force Disabled"; 2 -> "Paul Force Enabled"; else -> "" }}
             |Secrets: (${DungeonUtils.secretCount} - ${DungeonUtils.neededSecretsAmount} - ${DungeonUtils.totalSecrets} - ${DungeonUtils.knownSecrets}) 
             |mimicKilled: ${DungeonUtils.mimicKilled}
             |Deaths: ${DungeonUtils.deathCount}, Crypts: ${DungeonUtils.cryptCount}

@@ -5,6 +5,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.DualSetting
 import me.odinmain.features.settings.impl.HudSetting
+import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.getMCTextWidth
@@ -18,7 +19,7 @@ object MapInfo : Module(
 ) {
     private val disableInBoss: Boolean by BooleanSetting("Disable in boss", default = true, description = "Disables the information display when you're in boss.")
     private val unknown: Boolean by DualSetting("Deaths", "Deaths", "Unknown", default = false, description = "display deaths or unknown secrets. (Unknown secrets are secrets in rooms that haven't been discovered yet. May not be helpful in full party runs.)")
-    val togglePaul: Boolean by BooleanSetting("Disable Paul", false, description = "force disable paul bonus score.")
+    val togglePaul: Int by SelectorSetting("Paul Settings", "Automatic", options = arrayListOf("Automatic", "Force Disable", "Force Enable"))
 
     val hud: HudElement by HudSetting("Hud", 10f, 10f, 1f, false) {
         if (it) {
