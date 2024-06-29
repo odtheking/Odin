@@ -42,7 +42,7 @@ object Mimic : Module(
         execute(100) {
             if (!DungeonUtils.inDungeons || chestUpdate == 0L || pos == null || DungeonUtils.mimicKilled ||
                 System.currentTimeMillis() - chestUpdate > 600 || mc.thePlayer.getDistanceSq(pos) > 400 ) return@execute
-            if (mc.theWorld.loadedEntityList.find { it is EntityZombie && it.isChild && (0..3).all { i -> it.getCurrentArmor(i) == null } } == null) mimicKilled()
+            if (mc.theWorld.loadedEntityList.find { it is EntityZombie && it.isChild && (0..3).all { i -> it.getCurrentArmor(i) != null } } == null) mimicKilled()
         }
 
         onWorldLoad {

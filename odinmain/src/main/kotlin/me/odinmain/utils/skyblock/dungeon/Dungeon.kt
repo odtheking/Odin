@@ -16,12 +16,14 @@ import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getDungeonTeammates
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getDungeonPuzzles
 import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.network.play.server.*
 
 // could add some system to look back at previous runs.
-class Dungeon(val floor: Floor?) {
+class Dungeon() {
 
+    var floor: Floor? = null
     var paul = false
     val inBoss: Boolean get() = getBoss()
     var dungeonTeammates: List<DungeonPlayer> = emptyList()
@@ -90,6 +92,11 @@ class Dungeon(val floor: Floor?) {
     private fun handleScoreboardPacket(packet: S3EPacketTeams) {
         if (packet.action != 2) return
         val text = packet.prefix.plus(packet.suffix)
+
+        modMessage(text)
+
+        val floorText = Regex("^The Catacombs \\(([EFM][1-7]?)\\)\$").find(cleanSB(text))
+        if (floorText != null && floor == null) floor = Floor.valueOf(floorText.groupValues[1])
 
         val cleared = Regex("^Cleared: §[c6a](\\d+)% §8(?:§8)?\\(\\d+\\)$").find(text)
         if (cleared != null) dungeonStats.percentCleared = cleared.groupValues[1].toInt()
