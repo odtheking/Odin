@@ -57,10 +57,10 @@ object DungeonUtils {
         currentDungeon?.dungeonStats?.openedRooms ?: 0
 
     inline val completedRoomCount: Int get() =
-        currentDungeon?.dungeonStats?.completedRooms ?: 14
+        currentDungeon?.dungeonStats?.completedRooms ?: 0
 
     inline val percentCleared: Int get() =
-        currentDungeon?.dungeonStats?.percentCleared ?: 39
+        currentDungeon?.dungeonStats?.percentCleared ?: 0
 
     inline val secretsRemaining: Int get() =
         totalSecrets - secretCount
