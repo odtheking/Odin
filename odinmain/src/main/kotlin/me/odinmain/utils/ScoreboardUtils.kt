@@ -49,7 +49,7 @@ fun getLines(): List<String> {
 
 val getTabList: List<Pair<NetworkPlayerInfo, String>>
     get() {
-        val playerInfoList = mc.thePlayer?.sendQueue?.playerInfoMap?.let { CopyOnWriteArrayList(it) }?.toList() ?: emptyList()
+        val playerInfoList = mc.thePlayer?.sendQueue?.playerInfoMap?.let { CopyOnWriteArrayList(it) } ?: emptyList()
         return playerInfoList.sortedWith(tabListOrder)
             .map { Pair(it, mc.ingameGUI.tabList.getPlayerName(it)) }
     }
@@ -68,7 +68,7 @@ val tabListOrder = Comparator<NetworkPlayerInfo> { o1, o2 ->
 }
 
 fun getDungeonTabList(): List<Pair<NetworkPlayerInfo, String>>? {
-    val tabEntries = getTabList
+    val tabEntries = getTabList.toList()
     if (tabEntries.size < 18 || !tabEntries[0].second.contains("§r§b§lParty §r§f(")) return null
     return tabEntries
 }
