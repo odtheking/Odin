@@ -49,7 +49,7 @@ fun getLines(): List<String> {
 
 val getTabList: List<Pair<NetworkPlayerInfo, String>>
     get() {
-        val playerInfoList = mc.thePlayer?.sendQueue?.playerInfoMap?.let { CopyOnWriteArrayList(it) } ?: emptyList()
+        val playerInfoList = CopyOnWriteArrayList(mc.thePlayer?.sendQueue?.playerInfoMap ?: emptyList())
         return playerInfoList.sortedWith(tabListOrder)
             .map { Pair(it, mc.ingameGUI.tabList.getPlayerName(it)) }
     }
