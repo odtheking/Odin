@@ -38,7 +38,7 @@ data class Puzzle(
         val Boulder = Puzzle("Boulder")
         val IceFill = Puzzle("Ice Fill")
         val IcePath = Puzzle("Ice Path")
-        val Quiz = Puzzle("Trivia")
+        val Quiz = Puzzle("Quiz")
         val BombDefuse = Puzzle("Bomb Defuse")
 
         val allPuzzles = listOf(
