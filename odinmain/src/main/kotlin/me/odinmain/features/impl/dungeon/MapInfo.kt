@@ -27,22 +27,22 @@ object MapInfo : Module(
             val scoreWidth = getMCTextWidth("§7Score: §d???")
             mcText("§7Secrets: 0§7-§e?§7-§c?", 1, 1, 1f, Color.WHITE, center = false)
             mcText("§7Score: §d???", 159 - scoreWidth, 1, 1f, Color.WHITE, center = false)
-            mcText(unknownText, 1, 9, 1f, Color.WHITE, center = false)
+            mcText(unknownText, 1, 10, 1f, Color.WHITE, center = false)
             val centerX = (unknownWidth+(160-unknownWidth-cryptWidth)/2) - getMCTextWidth("§7Mimic: §c✘")/2
-            mcText("§7Mimic: §c✘", centerX, 9, 1f, Color.WHITE, center = false)
-            mcText("§7Crypts: §c?", 159 - cryptWidth, 9, 1f, Color.WHITE, center = false)
+            mcText("§7Mimic: §c✘", centerX, 10, 1f, Color.WHITE, center = false)
+            mcText("§7Crypts: §c?", 159 - cryptWidth, 10, 1f, Color.WHITE, center = false)
         } else if (DungeonUtils.inDungeons && (!disableInBoss || !DungeonUtils.inBoss)){
             val unknownWidth = getMCTextWidth(unknownSecretsText)
             val cryptWidth = getMCTextWidth(cryptText)
             val scoreWidth = getMCTextWidth(scoreText)
             mcText(secretText, 1, 1, 1f, Color.WHITE, center = false)
             mcText(scoreText, 159 - scoreWidth, 1, 1f, Color.WHITE, center = false)
-            mcText(unknownSecretsText, 1, 9, 1f, Color.WHITE, center = false)
+            mcText(unknownSecretsText, 1, 10, 1f, Color.WHITE, center = false)
             val centerX = (unknownWidth+(159-unknownWidth-cryptWidth)/2) - getMCTextWidth(mimicText)/2
-            mcText(mimicText, centerX, 9, 1f, Color.WHITE, center = false)
-            mcText(cryptText, 159 - cryptWidth, 9, 1f, Color.WHITE, center = false)
+            mcText(mimicText, centerX, 10, 1f, Color.WHITE, center = false)
+            mcText(cryptText, 159 - cryptWidth, 10, 1f, Color.WHITE, center = false)
         } else return@HudSetting 0f to 0f
-        160f to 16f
+        160f to 18f
     }
 
     private var secretText = "§7Secrets: 0§7-§e?§7-§c?"
@@ -88,7 +88,7 @@ object MapInfo : Module(
     init {
         execute(500) {
             secretText = "§7Secrets: ${colorizeSecrets(DungeonUtils.secretCount, DungeonUtils.neededSecretsAmount)}§7-§e${DungeonUtils.neededSecretsAmount}§7-§c${DungeonUtils.totalSecrets}"
-            unknownSecretsText = if (!unknown) "§7Deaths: §c${colorizeDeaths(DungeonUtils.deathCount)}" else "§7Unknown: §b${if (DungeonUtils.totalSecrets - DungeonUtils.knownSecrets < 0) "??" else "${DungeonUtils.totalSecrets - DungeonUtils.knownSecrets}"}"
+            unknownSecretsText = if (!unknown) "§7Deaths: §c${colorizeDeaths(DungeonUtils.deathCount)}" else "§7Unknown: §b${(DungeonUtils.totalSecrets - DungeonUtils.knownSecrets).coerceAtLeast(0)}"
             mimicText = if (DungeonUtils.mimicKilled) "§7Mimic: §a✔" else "§7Mimic: §c✘"
             cryptText = "§7Crypts: ${colorizeCrypts(DungeonUtils.cryptCount)}"
             scoreText = "§7Score: ${colorizeScore(DungeonUtils.score)}"
