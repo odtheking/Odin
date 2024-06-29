@@ -18,6 +18,7 @@ object MapInfo : Module(
 ) {
     private val disableInBoss: Boolean by BooleanSetting("Disable in boss", default = true, description = "Disables the information display when you're in boss.")
     private val unknown: Boolean by DualSetting("Deaths", "Deaths", "Unknown", default = false, description = "display deaths or unknown secrets. (Unknown secrets are secrets in rooms that haven't been discovered yet. May not be helpful in full party runs.)")
+    val togglePaul: Boolean by BooleanSetting("Disable Paul", false, description = "force disable paul bonus score.")
 
     val hud: HudElement by HudSetting("Hud", 10f, 10f, 1f, false) {
         if (it) {
@@ -87,6 +88,7 @@ object MapInfo : Module(
 
     init {
         execute(500) {
+            if (!DungeonUtils.inDungeons || (disableInBoss && DungeonUtils.inBoss)) return@execute
             secretText = "§7Secrets: ${colorizeSecrets(DungeonUtils.secretCount, DungeonUtils.neededSecretsAmount)}§7-§e${DungeonUtils.neededSecretsAmount}§7-§c${DungeonUtils.totalSecrets}"
             unknownSecretsText = if (!unknown) "§7Deaths: §c${colorizeDeaths(DungeonUtils.deathCount)}" else "§7Unknown: §b${(DungeonUtils.totalSecrets - DungeonUtils.knownSecrets).coerceAtLeast(0)}"
             mimicText = if (DungeonUtils.mimicKilled) "§7Mimic: §a✔" else "§7Mimic: §c✘"

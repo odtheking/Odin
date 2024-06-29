@@ -3,6 +3,7 @@ package me.odinmain.utils.skyblock.dungeon
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
 import me.odinmain.events.impl.PacketReceivedEvent
+import me.odinmain.features.impl.dungeon.MapInfo.togglePaul
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.LocationUtils.currentDungeon
@@ -116,7 +117,7 @@ object DungeonUtils {
         var score = 0
         score += cryptCount.coerceAtMost(5)
         if (mimicKilled) score += 2
-        if (isPaul) score += 10
+        if (isPaul && !togglePaul) score += 10
         return score
     }
 
