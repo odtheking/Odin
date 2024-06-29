@@ -45,7 +45,7 @@ object LocationUtils {
     @SubscribeEvent
     fun onSkyblockIslandEnter(event: SkyblockJoinIslandEvent) {
         if ((event.island.isArea(Island.Dungeon) || event.island.isArea(Island.SinglePlayer)))
-            currentDungeon = Dungeon(getFloor())
+            runIn(5) { currentDungeon = Dungeon(getFloor()) }
     }
 
     @SubscribeEvent
