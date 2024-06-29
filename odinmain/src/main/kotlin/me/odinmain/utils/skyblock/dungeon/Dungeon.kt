@@ -136,7 +136,6 @@ class Dungeon(val floor: Floor?) {
     )
 
     private fun updateDungeonStats(text: String, currentStats: DungeonStats): DungeonStats {
-        //modMessage(text.replace("§", "&"))
         when {
             secretCountRegex.matches(text) -> {
                 val matchResult = secretCountRegex.find(text)
