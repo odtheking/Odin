@@ -67,7 +67,7 @@ class Dungeon(val floor: Floor?) {
 
     private fun handleChatPacket(packet: S02PacketChat) {
         val message = packet.chatComponent.unformattedText.noControlCodes
-        if (Regex("The BLOOD DOOR has been opened!").matches(message)) dungeonStats.bloodOpened = true
+        if (Regex("\\[BOSS] The Watcher: You have proven yourself. You may pass.").matches(message)) dungeonStats.bloodDone = true
         val doorOpener = Regex("(?:\\[\\w+] )?(\\w+) opened a (?:WITHER|Blood) door!").find(message)
         if (doorOpener != null) dungeonStats.doorOpener = doorOpener.groupValues[1]
 
@@ -132,7 +132,7 @@ class Dungeon(val floor: Floor?) {
         var elapsedTime: String? = null,
         var mimicKilled: Boolean = false,
         var doorOpener: String? = null,
-        var bloodOpened: Boolean = false,
+        var bloodDone: Boolean = false,
     )
 
     private fun updateDungeonStats(text: String, currentStats: DungeonStats): DungeonStats {
