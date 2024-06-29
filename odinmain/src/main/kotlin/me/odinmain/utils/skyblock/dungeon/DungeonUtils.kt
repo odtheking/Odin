@@ -132,7 +132,7 @@ object DungeonUtils {
                 floor(completed/total * 60f).coerceIn(0f, 60f).toInt()
 
         val skillRooms = floor(completed/total * 80f).coerceIn(0f, 80f).toInt()
-        val puzzlePenalty = puzzles.filter { it.status == PuzzleStatus.Failed }.size * 10
+        val puzzlePenalty = puzzles.filter { it.status != PuzzleStatus.Completed }.size * 10
         val skill = (20 + skillRooms - puzzlePenalty - (deathCount * 2 - 1).coerceAtLeast(0)).coerceIn(20, 100)
 
         return exploration + skill + getBonusScore + 100
