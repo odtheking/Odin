@@ -125,7 +125,7 @@ object DungeonUtils {
         currentDungeon?.dungeonStats?.bloodDone ?: false
 
     inline val score: Int get() {
-        val completed: Float = completedRoomCount.toFloat() + if (!bloodDone) 1f else 0f + if (!inBoss) 1f else 0f
+        val completed: Float = completedRoomCount.toFloat() + (if (!bloodDone) 1f else 0f) + (if (!inBoss) 1f else 0f)
         val total: Float = if (totalRooms != 0) totalRooms.toFloat() else 36f
 
         val exploration = floor((secretPercentage/floor.secretPercentage)/100f * 40f).coerceIn(0f, 40f).toInt() +
