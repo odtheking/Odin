@@ -9,6 +9,7 @@ import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.skyblock.LocationUtils.currentDungeon
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.partyMessage
 import me.odinmain.utils.toAABB
@@ -21,7 +22,8 @@ object Mimic : Module(
     description = "Helpful mimic utilities.",
     category = Category.DUNGEON
 ) {
-    val mimicMessage: String by StringSetting("Mimic Message", "Mimic Killed!", 128, description = "Message sent when mimic is detected as killed")
+    private val mimicMessageToggle: Boolean by BooleanSetting("Toggle Mimic Message", default = true)
+    val mimicMessage: String by StringSetting("Mimic Message", "Mimic Killed!", 128, description = "Message sent when mimic is detected as killed").withDependency { mimicMessageToggle }
     val reset: () -> Unit by ActionSetting("Send message", description = "Sends Mimic killed message in party chat.") { partyMessage(mimicMessage) }
     private val mimicBox: Boolean by BooleanSetting("Mimic Box", false, description = "Draws a box around the mimic chest.")
     private val style: Int by SelectorSetting("Style", Renderer.defaultStyle, Renderer.styles, description = Renderer.styleDesc).withDependency { mimicBox }
@@ -32,8 +34,9 @@ object Mimic : Module(
     @SubscribeEvent
     fun onEntityDeath(event: LivingDeathEvent) {
         val entity = event.entity
-        if (DungeonUtils.inDungeons && entity is EntityZombie && entity.isChild && (0..3).all { entity.getCurrentArmor(it) == null })
-            partyMessage(mimicMessage)
+        if (!DungeonUtils.inDungeons || entity !is EntityZombie || !entity.isChild || !(0..3).all { entity.getCurrentArmor(it) == null }) return
+        if (mimicMessageToggle) partyMessage(mimicMessage)
+        currentDungeon?.dungeonStats?.mimicKilled = true
     }
 
     @SubscribeEvent
