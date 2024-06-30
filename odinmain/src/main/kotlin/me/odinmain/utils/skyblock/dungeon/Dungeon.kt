@@ -111,7 +111,7 @@ class Dungeon(val floor: Floor?) {
             dungeonStats = updateDungeonStats(text, dungeonStats)
         }
 
-        val tabList = getDungeonTabList() ?: CopyOnWriteArrayList(emptyList())
+        val tabList = getDungeonTabList() ?: emptyList()
 
         updateDungeonPuzzles(tabList)
         updateDungeonTeammates(tabList)
@@ -171,7 +171,7 @@ class Dungeon(val floor: Floor?) {
         return currentStats
     }
 
-    private fun updateDungeonPuzzles(tabList: CopyOnWriteArrayList<Pair<NetworkPlayerInfo, String>>){
+    private fun updateDungeonPuzzles(tabList: List<Pair<NetworkPlayerInfo, String>>){
         val tabEntries = tabList.map { it.second }
         val puzzleText = tabEntries.find { puzzleCountRegex.matches(it) } ?: return devMessage("Puzzle text not in tab entries")
         val index = tabEntries.indexOf(puzzleText)
@@ -180,7 +180,7 @@ class Dungeon(val floor: Floor?) {
         puzzles = getDungeonPuzzles(puzzleData)
     }
 
-    private fun updateDungeonTeammates(tabList: CopyOnWriteArrayList<Pair<NetworkPlayerInfo, String>>) {
+    private fun updateDungeonTeammates(tabList:List<Pair<NetworkPlayerInfo, String>>) {
         dungeonTeammates = getDungeonTeammates(dungeonTeammates, tabList)
         dungeonTeammatesNoSelf = dungeonTeammates.filter { it.entity != mc.thePlayer }
 
