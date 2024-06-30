@@ -47,7 +47,7 @@ object MapInfo : Module(
         160f to 18f
     }
 
-    private var secretText = "§7Secrets: §b0§7-§3?§7-§c?"
+    private var secretText = "§7Secrets: §b0§7-§b?§7-§c?"
     private var unknownSecretsText = if (!unknown) "§7Deaths: §a0" else "§7Unknown: §b??"
     private var mimicText = "§7Mimic: §c✘"
     private var cryptText = "§7Crypts: §c0"
@@ -69,15 +69,6 @@ object MapInfo : Module(
         }
     }
 
-    private fun colorizeSecrets(count: Int, max: Int): String {
-        return when {
-            count == 0 -> "§70"
-            count <= max * 0.5 -> "§c${count}"
-            count <= max * 0.99 -> "§e${count}"
-            else -> "§a${count}"
-        }
-    }
-
     private fun colorizeDeaths(count: Int): String {
         return when {
             count == 0 -> "§a0"
@@ -90,7 +81,7 @@ object MapInfo : Module(
     init {
         execute(500) {
             if (!DungeonUtils.inDungeons || (disableInBoss && DungeonUtils.inBoss)) return@execute
-            secretText = "§7Secrets: §b${DungeonUtils.secretCount}§7-§3${DungeonUtils.neededSecretsAmount}§7-§c${DungeonUtils.totalSecrets}"
+            secretText = "§7Secrets: §b${DungeonUtils.secretCount}§7-§b${DungeonUtils.neededSecretsAmount}§7-§c${DungeonUtils.totalSecrets}"
             unknownSecretsText = if (!unknown) "§7Deaths: §c${colorizeDeaths(DungeonUtils.deathCount)}" else "§7Unknown: §e${(DungeonUtils.totalSecrets - DungeonUtils.knownSecrets).coerceAtLeast(0)}"
             mimicText = if (DungeonUtils.mimicKilled) "§7Mimic: §a✔" else "§7Mimic: §c✘"
             cryptText = "§7Crypts: ${colorizeCrypts(DungeonUtils.cryptCount)}"
