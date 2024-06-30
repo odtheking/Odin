@@ -43,8 +43,11 @@ object Mimic : Module(
     init {
         execute(100) {
             if (!DungeonUtils.inDungeons || chestUpdate == 0L || pos == null || DungeonUtils.mimicKilled ||
-                System.currentTimeMillis() - chestUpdate > 600 || mc.thePlayer.getDistanceSq(pos) > 400 ) return@execute
-            if (mc.theWorld.loadedEntityList.any { e -> e is EntityZombie && e.isChild && (0..3).all { e.getCurrentArmor(it) == null } }) { mimicKilled() }
+                System.currentTimeMillis() - chestUpdate < 750 || mc.thePlayer.getDistanceSq(pos) > 400 ) return@execute
+            if (mc.theWorld.loadedEntityList.any { e -> e is EntityZombie && e.isChild && (0..3).all { e.getCurrentArmor(it) == null } }) {
+                modMessage("Mimic Killed")
+                mimicKilled()
+            } else modMessage("Mimic loaded!")
         }
 
         onWorldLoad {
@@ -56,6 +59,7 @@ object Mimic : Module(
     @SubscribeEvent
     fun onBlockUpdate(event: BlockChangeEvent) {
         if (!DungeonUtils.inDungeons || event.old.block != Blocks.trapped_chest || event.update.block != Blocks.air ) return
+        modMessage("Mimic Chest Openned")
         chestUpdate = System.currentTimeMillis()
         pos = event.pos
     }
