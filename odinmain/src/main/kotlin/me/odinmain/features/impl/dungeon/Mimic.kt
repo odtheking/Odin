@@ -10,6 +10,7 @@ import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.LocationUtils.currentDungeon
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.modMessage
@@ -37,31 +38,16 @@ object Mimic : Module(
     private val lineWidth: Float by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.").withDependency { mimicBox }
     private val depthCheck: Boolean by BooleanSetting("Depth check", false, description = "Boxes show through walls.").withDependency { mimicBox }
 
-    private var chestUpdate: Long = 0
-    private var pos: BlockPos? = null
-
-    init {
-        execute(100) {
-            if (!DungeonUtils.inDungeons || chestUpdate == 0L || pos == null || DungeonUtils.mimicKilled ||
-                System.currentTimeMillis() - chestUpdate < 750 || mc.thePlayer.getDistanceSq(pos) > 400 ) return@execute
-            if (mc.theWorld.loadedEntityList.any { e -> e is EntityZombie && e.isChild && (0..3).all { e.getCurrentArmor(it) == null } }) {
-                modMessage("Mimic Killed")
-                mimicKilled()
-            } else modMessage("Mimic loaded!")
-        }
-
-        onWorldLoad {
-            chestUpdate = 0L
-            pos = null
-        }
-    }
-
     @SubscribeEvent
     fun onBlockUpdate(event: BlockChangeEvent) {
         if (!DungeonUtils.inDungeons || event.old.block != Blocks.trapped_chest || event.update.block != Blocks.air ) return
-        modMessage("Mimic Chest Openned")
-        chestUpdate = System.currentTimeMillis()
-        pos = event.pos
+        modMessage("Mimic Chest Opened")
+        runIn(15) {
+            if (DungeonUtils.mimicKilled || mc.thePlayer.getDistanceSq(event.pos) > 400) return@runIn
+            if (mc.theWorld.loadedEntityList.any { e -> e is EntityZombie && e.isChild && (0..3).all { e.getCurrentArmor(it) == null } }) {
+                mimicKilled()
+            } else modMessage("Mimic loaded!")
+        }
     }
 
     @SubscribeEvent
@@ -80,6 +66,7 @@ object Mimic : Module(
     private fun mimicKilled() {
         if (DungeonUtils.mimicKilled) return
         if (mimicMessageToggle) partyMessage(mimicMessage)
+        else modMessage("Mimic Killed")
         currentDungeon?.dungeonStats?.mimicKilled = true
     }
 

@@ -2,6 +2,7 @@ package me.odinmain.utils
 
 import com.google.common.collect.ComparisonChain
 import me.odinmain.OdinMain.mc
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.scoreboard.ScorePlayerTeam
 import net.minecraft.world.WorldSettings
@@ -49,9 +50,14 @@ fun getLines(): List<String> {
 
 val getTabList: CopyOnWriteArrayList<Pair<NetworkPlayerInfo, String>>
     get() {
-        val playerInfoList = CopyOnWriteArrayList(mc.thePlayer?.sendQueue?.playerInfoMap ?: emptyList())
-        return CopyOnWriteArrayList(playerInfoList.sortedWith(tabListOrder)
-            .map { Pair(it, mc.ingameGUI.tabList.getPlayerName(it)) })
+        try {
+            val playerInfoList = CopyOnWriteArrayList(mc.thePlayer?.sendQueue?.playerInfoMap ?: emptyList())
+            return CopyOnWriteArrayList(playerInfoList.sortedWith(tabListOrder)
+                .map { Pair(it, mc.ingameGUI.tabList.getPlayerName(it)) })
+        } catch (e: ConcurrentModificationException) {
+            modMessage("Caught a $e running getTabList")
+            return CopyOnWriteArrayList(emptyList<Pair<NetworkPlayerInfo, String>>())
+        }
     }
 
 
