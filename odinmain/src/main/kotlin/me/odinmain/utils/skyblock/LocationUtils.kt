@@ -106,9 +106,7 @@ object LocationUtils {
         val floor = getFloor()
         if (floor == null && attempts < 4) {
             runIn(10) { createDungeon(attempts + 1)}
-            return
-        }
-        currentDungeon = Dungeon(floor)
+        } else currentDungeon = Dungeon(floor)
     }
 
     private fun getFloor(): Floor? {
