@@ -35,7 +35,7 @@ object Mimic : Module(
     private val lineWidth: Float by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.").withDependency { mimicBox }
     private val depthCheck: Boolean by BooleanSetting("Depth check", false, description = "Boxes show through walls.").withDependency { mimicBox }
 
-    private var chestUpdate: Long = 0
+    /**private var chestUpdate: Long = 0
     private var pos: BlockPos? = null
 
     init {
@@ -56,7 +56,7 @@ object Mimic : Module(
         if (event.old != Blocks.trapped_chest || event.update != Blocks.air ) return
         chestUpdate = System.currentTimeMillis()
         pos = event.pos
-    }
+    } */
 
     @SubscribeEvent
     fun onEntityDeath(event: LivingDeathEvent) {

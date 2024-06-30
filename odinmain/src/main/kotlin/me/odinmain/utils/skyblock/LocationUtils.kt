@@ -45,7 +45,7 @@ object LocationUtils {
     @SubscribeEvent
     fun onSkyblockIslandEnter(event: SkyblockJoinIslandEvent) {
         if ((event.island.isArea(Island.Dungeon) || event.island.isArea(Island.SinglePlayer)))
-            runIn(10) { currentDungeon = Dungeon() }
+            createDungeon()
     }
 
     @SubscribeEvent
@@ -100,6 +100,15 @@ object LocationUtils {
         }?.displayName?.formattedText
 
         return Island.entries.firstOrNull { area?.contains(it.displayName) == true } ?: Island.Unknown
+    }
+
+    private fun createDungeon(attempts: Int = 0) {
+        val floor = getFloor()
+        if (floor == null && attempts < 4) {
+            runIn(10) { createDungeon(attempts + 1)}
+            return
+        }
+        currentDungeon = Dungeon(floor)
     }
 
     private fun getFloor(): Floor? {
