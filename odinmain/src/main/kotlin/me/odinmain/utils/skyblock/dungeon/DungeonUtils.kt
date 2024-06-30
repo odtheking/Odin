@@ -17,6 +17,7 @@ import net.minecraft.tileentity.TileEntitySkull
 import net.minecraft.util.BlockPos
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.math.ceil
 import kotlin.math.floor
 
@@ -212,7 +213,7 @@ object DungeonUtils {
 
     private val tablistRegex = Regex("^\\[(\\d+)] (?:\\[\\w+] )*(\\w+) .*?\\((\\w+)(?: (\\w+))*\\)$")
 
-    fun getDungeonTeammates(previousTeammates: List<DungeonPlayer>, tabList: List<Pair<NetworkPlayerInfo, String>>): List<DungeonPlayer> {
+    fun getDungeonTeammates(previousTeammates: List<DungeonPlayer>, tabList: CopyOnWriteArrayList<Pair<NetworkPlayerInfo, String>>): List<DungeonPlayer> {
         val teammates = mutableListOf<DungeonPlayer>()
         //val tabList = getDungeonTabList() ?: return emptyList()
 
