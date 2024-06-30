@@ -12,6 +12,7 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.LocationUtils.currentDungeon
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.partyMessage
 import me.odinmain.utils.toAABB
 import net.minecraft.entity.monster.EntityZombie
@@ -20,6 +21,7 @@ import net.minecraft.network.play.server.S23PacketBlockChange
 import net.minecraft.util.BlockPos
 import net.minecraftforge.event.entity.living.LivingDeathEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object Mimic : Module(
     "Mimic",
@@ -35,14 +37,14 @@ object Mimic : Module(
     private val lineWidth: Float by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.").withDependency { mimicBox }
     private val depthCheck: Boolean by BooleanSetting("Depth check", false, description = "Boxes show through walls.").withDependency { mimicBox }
 
-    /**private var chestUpdate: Long = 0
+    private var chestUpdate: Long = 0
     private var pos: BlockPos? = null
 
     init {
         execute(100) {
             if (!DungeonUtils.inDungeons || chestUpdate == 0L || pos == null || DungeonUtils.mimicKilled ||
                 System.currentTimeMillis() - chestUpdate > 600 || mc.thePlayer.getDistanceSq(pos) > 400 ) return@execute
-            if (mc.theWorld.loadedEntityList.find { e -> e is EntityZombie && e.isChild && (0..3).all { e.getCurrentArmor(it) != null } } == null) mimicKilled()
+            if (mc.theWorld.loadedEntityList.any { e -> e is EntityZombie && e.isChild && (0..3).all { e.getCurrentArmor(it) == null } }) { mimicKilled() }
         }
 
         onWorldLoad {
@@ -53,10 +55,10 @@ object Mimic : Module(
 
     @SubscribeEvent
     fun onBlockUpdate(event: BlockChangeEvent) {
-        if (event.old != Blocks.trapped_chest || event.update != Blocks.air ) return
+        if (!DungeonUtils.inDungeons || event.old.block != Blocks.trapped_chest || event.update.block != Blocks.air ) return
         chestUpdate = System.currentTimeMillis()
         pos = event.pos
-    } */
+    }
 
     @SubscribeEvent
     fun onEntityDeath(event: LivingDeathEvent) {
