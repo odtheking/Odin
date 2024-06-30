@@ -41,12 +41,11 @@ object Mimic : Module(
     @SubscribeEvent
     fun onBlockUpdate(event: BlockChangeEvent) {
         if (!DungeonUtils.inDungeons || event.old.block != Blocks.trapped_chest || event.update.block != Blocks.air ) return
-        modMessage("Mimic Chest Opened")
         runIn(15) {
             if (DungeonUtils.mimicKilled || mc.thePlayer.getDistanceSq(event.pos) > 400) return@runIn
             if (mc.theWorld.loadedEntityList.any { e -> e is EntityZombie && e.isChild && (0..3).all { e.getCurrentArmor(it) == null } }) {
                 mimicKilled()
-            } else modMessage("Mimic loaded!")
+            }
         }
     }
 
@@ -66,7 +65,6 @@ object Mimic : Module(
     private fun mimicKilled() {
         if (DungeonUtils.mimicKilled) return
         if (mimicMessageToggle) partyMessage(mimicMessage)
-        else modMessage("Mimic Killed")
         currentDungeon?.dungeonStats?.mimicKilled = true
     }
 
