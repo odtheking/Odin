@@ -23,7 +23,7 @@ object CloseChest : Module(
 
     @SubscribeEvent
     fun onOpenWindow(event: PacketReceivedEvent) {
-        if (!inDungeons || event.packet !is S2DPacketOpenWindow || !(event.packet as S2DPacketOpenWindow).windowTitle.unformattedText.equalsOneOf("Chest", "Large Chest") || mode) return
+        if (!inDungeons || event.packet !is S2DPacketOpenWindow || !(event.packet as S2DPacketOpenWindow).windowTitle.unformattedText.equalsOneOf("Chest", "Large Chest", "§4Chest", "§4Large Chest") || mode) return
         mc.netHandler.networkManager.sendPacket(C0DPacketCloseWindow((event.packet as S2DPacketOpenWindow).windowId))
         event.isCanceled = true
     }
@@ -38,7 +38,7 @@ object CloseChest : Module(
     @SubscribeEvent
     fun onMouse(event: GuiEvent.GuiMouseClickEvent) {
         if (!inDungeons || !mode || event.gui !is GuiChest) return
-        if (((event.gui as? GuiChest)?.inventorySlots as? ContainerChest)?.name.equalsOneOf("Chest", "Large Chest"))
+        if (((event.gui as? GuiChest)?.inventorySlots as? ContainerChest)?.name.equalsOneOf("Chest", "Large Chest", "§4Chest", "§4Large Chest"))
             mc.thePlayer.closeScreen()
     }
 }
