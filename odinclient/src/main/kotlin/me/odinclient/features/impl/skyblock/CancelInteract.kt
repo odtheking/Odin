@@ -54,7 +54,7 @@ object CancelInteract : Module(
      */
     fun cancelInteractHook(instance: WorldClient, blockPos: BlockPos): Boolean {
         // When the module is not enabled preform the vanilla action.
-        if (cancelInteract) {
+        if (cancelInteract && enabled) {
             if (interactionWhitelist.contains(instance.getBlockState(blockPos).block)) return false
             if (mc.thePlayer.isHolding("Ender Pearl")) return true
             if (!onlyWithAbility || mc.thePlayer.heldItem.hasAbility)
@@ -72,7 +72,7 @@ object CancelInteract : Module(
         val itemStack: ItemStack? = mc.thePlayer?.heldItem
         flag = currentItemHittingBlock == null && itemStack == null
         if (currentItemHittingBlock != null && itemStack != null) {
-            if (noBreakReset && itemStack.tagCompound != null) {
+            if (noBreakReset && enabled && itemStack.tagCompound != null) {
                 val lore: String = itemStack.lore.toString()
                 if (lore.containsOneOf("GAUNTLET", "DRILL", "PICKAXE"))
                     return blockPos == currentBlock && itemStack.item === currentItemHittingBlock.item

@@ -1,8 +1,9 @@
 package me.odinmain.utils
 
 import com.google.gson.Gson
+import com.google.gson.JsonParser
 import kotlinx.coroutines.*
-import kotlinx.serialization.json.*
+
 import me.odinmain.features.impl.render.DevPlayers
 import java.io.*
 import java.net.HttpURLConnection
@@ -214,12 +215,13 @@ fun imgurID(url: String): String {
 
 suspend fun hasBonusPaulScore(): Boolean = coroutineScope {
     val response: String = URL("https://api.hypixel.net/resources/skyblock/election").readText()
-    val jsonObject = Json.parseToJsonElement(response).jsonObject
-    val mayor = jsonObject["mayor"]?.jsonObject ?: return@coroutineScope false
-    val name = mayor["name"]?.jsonPrimitive?.content ?: return@coroutineScope false
+    val jsonObject = JsonParser().parse(response).asJsonObject
+    val mayor = jsonObject.getAsJsonObject("mayor") ?: return@coroutineScope false
+    val name = mayor.get("name")?.asString ?: return@coroutineScope false
     return@coroutineScope if (name == "Paul") {
-         mayor["perks"]?.jsonArray?.any {
-            it.jsonObject["name"]?.jsonPrimitive?.content == "EZPZ"
+        val perks = mayor.getAsJsonArray("perks")
+        perks?.any {
+            it.asJsonObject.get("name")?.asString == "EZPZ"
         } ?: false
     } else false
 }

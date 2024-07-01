@@ -73,8 +73,7 @@ object RenderOptimizer : Module(
             event.isCanceled = true
 
 
-        if (DungeonUtils.getPhase() == M7Phases.P5 && hideParticles &&
-            !event.packet.particleType.name.containsOneOf("ENCHANTMENT TABLE", "FLAME", "FIREWORKS_SPARK"))
+        if (DungeonUtils.getPhase() == M7Phases.P5 && hideParticles && !event.packet.particleType.name.containsOneOf("ENCHANTMENT TABLE", "FLAME", "FIREWORKS_SPARK"))
             event.isCanceled = true
 
         if (hideHeartParticles && event.packet.particleType.name.containsOneOf("HEART"))
@@ -82,34 +81,30 @@ object RenderOptimizer : Module(
     }
 
     private fun handleHideArcherBones(entity: Entity) {
-        val itemEntity = entity as? EntityItem
-        if (itemEntity != null && DungeonUtils.inDungeons && itemEntity.entityItem.itemDamage == 15 && itemEntity.entityItem.item === Items.dye)
+        val itemEntity = entity as? EntityItem ?: return
+        if (DungeonUtils.inDungeons && itemEntity.entityItem.itemDamage == 15 && itemEntity.entityItem.item === Items.dye)
             entity.setDead()
-
     }
 
     private fun removeTentacles(entity: Entity) {
-        val armorStand = entity as? EntityArmorStand
-        if (DungeonUtils.getPhase() == M7Phases.P5 && getSkullValue(armorStand)?.contains(TENTACLE_TEXTURE) == true) armorStand?.setDead()
+        if (DungeonUtils.getPhase() == M7Phases.P5 && getSkullValue(entity)?.contains(TENTACLE_TEXTURE) == true)
+            entity.setDead()
     }
 
     private fun handleHealerFairy(entity: Entity) {
         val armorStand = entity as? EntityArmorStand ?: return
         if (armorStand.heldItem == null) return
-        if (
-            DungeonUtils.inDungeons && armorStand.heldItem?.item == Items.skull
-            && getHealerFairyTextureValue(armorStand) == (HEALER_FAIRY_TEXTURE)
-        ) armorStand.setDead()
+        if (DungeonUtils.inDungeons && armorStand.heldItem?.item == Items.skull && getHealerFairyTextureValue(armorStand) == (HEALER_FAIRY_TEXTURE))
+            armorStand.setDead()
     }
 
     private fun handleSoulWeaver(entity: Entity) {
-        val armorStand = entity as? EntityArmorStand
-        if (DungeonUtils.inDungeons && getSkullValue(armorStand)?.contains(SOUL_WEAVER_TEXTURE) == true) armorStand?.setDead()
+        if (DungeonUtils.inDungeons && getSkullValue(entity)?.contains(SOUL_WEAVER_TEXTURE) == true) entity.setDead()
     }
 
     private fun handleWitherMiner(entity: Entity) {
-        if (entity !is EntityArmorStand || !entity.customNameTag.noControlCodes.containsOneOf("Wither Miner", "Wither Guard", "Apostle")) return
-        entity.alwaysRenderNameTag = false
+        if (entity.customNameTag.noControlCodes.containsOneOf("Wither Miner", "Wither Guard", "Apostle"))
+            entity.alwaysRenderNameTag = false
     }
 
     private fun handleTerracotta(entity: Entity) {

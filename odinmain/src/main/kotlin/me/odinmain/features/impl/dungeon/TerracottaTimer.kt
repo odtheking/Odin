@@ -20,7 +20,6 @@ object TerracottaTimer : Module(
 ) {
     private data class Terracotta(val pos: Vec3, var time: Double)
     private var terracottaSpawning = mutableListOf<Terracotta>()
-    private var done = false
 
     @SubscribeEvent
     fun onBlockPacket(event: BlockChangeEvent) {
@@ -38,16 +37,12 @@ object TerracottaTimer : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        val iterator = terracottaSpawning.iterator()
-        while (iterator.hasNext()) {
-            val it = iterator.next()
-            if (done) return
+        if (!DungeonUtils.isFloor(6) || !DungeonUtils.inBoss || terracottaSpawning.isEmpty()) return
+        val terracottaList = terracottaSpawning.toList()
+        terracottaList.forEach {
             Renderer.drawStringInWorld(
                 "${String.format(Locale.US, "%.2f",it.time / 100.0)}s",
-                it.pos,
-                getColor(it.time / 100.0),
-                depth = false,
-                scale = 0.03f
+                it.pos, getColor(it.time / 100.0), depth = false, scale = 0.03f
             )
         }
     }
@@ -57,16 +52,6 @@ object TerracottaTimer : Module(
             time > 5.0 -> Color(0, 170, 0)
             time > 2.0 -> Color(255, 170, 0)
             else -> Color(170, 0, 0)
-        }
-    }
-
-    init {
-        onWorldLoad {
-            terracottaSpawning.clear()
-            done = false
-        }
-        onMessage("[BOSS] Sadan: ENOUGH!", true) {
-            done = true
         }
     }
 }

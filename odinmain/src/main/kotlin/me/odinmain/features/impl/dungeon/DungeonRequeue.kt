@@ -18,7 +18,7 @@ object DungeonRequeue : Module(
 
     var disableRequeue = false
     init {
-        onMessage("                             > EXTRA STATS <", false) {
+        onMessage(Regex(" {29}> EXTRA STATS <")) {
             if (disableRequeue) {
                 disableRequeue = false
                 return@onMessage

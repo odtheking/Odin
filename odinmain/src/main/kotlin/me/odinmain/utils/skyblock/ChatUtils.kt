@@ -4,10 +4,12 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.render.ClickGUIModule.devMessages
 import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.features.impl.skyblock.ChatCommands
+import me.odinmain.utils.noControlCodes
 import net.minecraft.event.ClickEvent
 import net.minecraft.event.HoverEvent
 import net.minecraft.util.*
 import net.minecraftforge.client.ClientCommandHandler
+import kotlin.math.roundToInt
 
 
 /**
@@ -40,7 +42,7 @@ fun rollDice(): Int = (1..6).random()
  * @param clientSide If `true`, the command is executed client-side; otherwise, server-side.
  */
 fun sendCommand(text: Any, clientSide: Boolean = false) {
-    if (LocationUtils.currentArea.isArea(Island.SinglePlayer)) return modMessage("Sending command: $text clientSide: $clientSide")
+    if (LocationUtils.currentArea.isArea(Island.SinglePlayer) && !clientSide) return modMessage("Sending command: $text")
     if (clientSide) ClientCommandHandler.instance.executeCommand(mc.thePlayer, "/$text")
     else sendChatMessage("/$text")
 }
@@ -145,6 +147,22 @@ fun getChatBreak(): String =
     mc.ingameGUI?.chatGUI?.chatWidth?.let {
         "§9§m" + "-".repeat(it / mc.fontRendererObj.getStringWidth("-"))
     } ?: ""
+
+/**
+ * Centers a given text in the chat.
+ *
+ * @param text Text to be centered.
+ * @return Centered text.
+ */
+fun getCenteredText(text: String): String {
+    val textWidth = mc.fontRendererObj.getStringWidth(text.noControlCodes)
+    val chatWidth = mc.ingameGUI?.chatGUI?.chatWidth ?: 0
+
+    if (textWidth >= chatWidth) return text
+
+    return StringBuilder().apply {
+        repeat((((chatWidth - textWidth) / 2f) / mc.fontRendererObj.getStringWidth(" ")).roundToInt()) { append(' ') } }.append(text).toString()
+}
 
 /**
  * Creates a `ChatStyle` with click and hover events for making a message clickable.

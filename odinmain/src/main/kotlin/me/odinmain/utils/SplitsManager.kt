@@ -1,11 +1,9 @@
 package me.odinmain.utils
 
 import me.odinmain.events.impl.ChatPacketEvent
-import me.odinmain.events.impl.SkyblockJoinIslandEvent
 import me.odinmain.features.impl.skyblock.Splits
 import me.odinmain.features.impl.skyblock.Splits.sendSplits
 import me.odinmain.utils.skyblock.*
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -15,9 +13,13 @@ data class SplitsGroup(val splits: List<Split>, val personalBest: PersonalBest?)
 object SplitsManager {
 
     var currentSplits: SplitsGroup = SplitsGroup(emptyList(), null)
+    private var dungeonEnded = false
 
     @SubscribeEvent
     fun onChatPacket(event: ChatPacketEvent) {
+        if (Regex(" {29}> EXTRA STATS <").matches(event.message)) dungeonEnded = true
+        if (dungeonEnded) return
+
         val currentSplit = currentSplits.splits.find { it.regex.matches(event.message) } ?: return
         currentSplit.time = System.currentTimeMillis()
 
@@ -27,54 +29,47 @@ object SplitsManager {
         currentSplits.personalBest?.time(index - 1, currentSplitTime, "s§7!", "§6${currentSplits.splits[index - 1].name} §7took §6", addPBString = true, addOldPBString = true, alwaysSendPB = true, sendOnlyPB = Splits.sendOnlyPB, sendMessage = Splits.enabled)
 
         if (index == currentSplits.splits.size - 1) {
-            currentSplits.personalBest?.time(index, currentSplitTime, "s§7!", "§6Total time §7took §6", addPBString = true, addOldPBString = true, alwaysSendPB = true, sendOnlyPB = Splits.sendOnlyPB, sendMessage = Splits.enabled)
-
-            getAndUpdateSplitsTimes(currentSplits).first.forEachIndexed { i, it ->
-                val timeString = formatTime(it)
-                val name = if (i == currentSplits.splits.size - 1) "Total" else currentSplits.splits[i].name
-                if (sendSplits && Splits.enabled) modMessage("§6$name §7took §6$timeString §7to complete.")
+            val (times, _) = getAndUpdateSplitsTimes(currentSplits)
+            currentSplits.personalBest?.time(index, times.last()/ 1000.0, "s§7!", "§6Total time §7took §6", addPBString = true, addOldPBString = true, alwaysSendPB = true, sendOnlyPB = Splits.sendOnlyPB, sendMessage = Splits.enabled)
+            runIn(10) {
+                times.forEachIndexed { i, it ->
+                    val name = if (i == currentSplits.splits.size - 1) "Total" else currentSplits.splits[i].name
+                    if (sendSplits && Splits.enabled) modMessage("§6$name §7took §6${formatTime(it)} §7to complete.")
+                }
             }
         }
     }
 
     @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Load) {
-        currentSplits = SplitsGroup(mutableListOf(), null)
-    }
+    fun onChat(event: ChatPacketEvent) {
+        if (event.message != "Starting in 4 seconds.") return
+        val island = LocationUtils.currentArea
 
-    @SubscribeEvent
-    fun onJoinSkyblockIsland(event: SkyblockJoinIslandEvent) {
-        val currentSplits = initializeSplits(event.island) ?: return
-        if (Splits.enabled) modMessage("Loading splits for ${LocationUtils.currentArea.name}")
-        SplitsManager.currentSplits = currentSplits
-    }
-
-    private fun initializeSplits(island: Island): SplitsGroup? {
-        return when (island) {
-            Island.SinglePlayer -> SplitsGroup(singlePlayerSplitGroup, singlePlayerPBs)
-
+        currentSplits = when (island) {
             Island.Dungeon -> {
-                val split = dungeonSplits[DungeonUtils.floor.floorNumber].toMutableList()
+                val floor = LocationUtils.getFloor() ?: return modMessage("§Couldn't get floor.")
+                val split = dungeonSplits[floor.floorNumber].toMutableList()
 
                 split.add(0, Split(Regex("\\[NPC] Mort: Here, I found this map when I first entered the dungeon\\."), "§2Blood Open"))
                 split.add(1, Split(Regex("The BLOOD DOOR has been opened!"), "§bBlood Clear"))
                 split.add(2, Split(Regex("\\[BOSS] The Watcher: You have proven yourself\\. You may pass\\."), "§dBoss Entry"))
                 split.add(Split(Regex("^\\s*☠ Defeated (.+) in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?\$"), "§1Total"))
 
-                SplitsGroup(split, DungeonUtils.floor.personalBest)
+                SplitsGroup(split.toMutableList(), floor.personalBest)
             }
 
             Island.Kuudra -> {
                 when (LocationUtils.kuudraTier) {
-                    5 -> SplitsGroup(kuudraT5SplitsGroup, kuudraT5PBs)
-                    4 -> SplitsGroup(kuudraSplitsGroup, kuudraT4PBs)
-                    3 -> SplitsGroup(kuudraSplitsGroup, kuudraT3PBs)
-                    2 -> SplitsGroup(kuudraSplitsGroup, kuudraT2PBs)
-                    1 -> SplitsGroup(kuudraSplitsGroup, kuudraT1PBs)
-                    else -> null
-                }
+                    5 -> SplitsGroup(kuudraT5SplitsGroup.toMutableList(), kuudraT5PBs)
+                    4 -> SplitsGroup(kuudraSplitsGroup.toMutableList(), kuudraT4PBs)
+                    3 -> SplitsGroup(kuudraSplitsGroup.toMutableList(), kuudraT3PBs)
+                    2 -> SplitsGroup(kuudraSplitsGroup.toMutableList(), kuudraT2PBs)
+                    1 -> SplitsGroup(kuudraSplitsGroup.toMutableList(), kuudraT1PBs)
+                    else -> SplitsGroup(emptyList(), null)
+               }
             }
-            else -> null
+            else -> SplitsGroup(emptyList(), null)
+
         }
     }
 
@@ -93,6 +88,12 @@ object SplitsManager {
             }
         }
         return times to current
+    }
+
+    @SubscribeEvent
+    fun onWorldLoad(event: WorldEvent.Load) {
+        dungeonEnded = false
+        currentSplits = SplitsGroup(mutableListOf(), null)
     }
 }
 
@@ -179,12 +180,12 @@ private val floor7SplitGroup = mutableListOf(
 )
 
 val dungeonSplits = listOf(
-     entranceSplitGroup,
-     floor1SplitGroup,
+    entranceSplitGroup,
+    floor1SplitGroup,
     floor2SplitGroup,
-     floor3SplitGroup,
-     floor4SplitGroup,
+    floor3SplitGroup,
+    floor4SplitGroup,
     floor5SplitGroup,
-   floor6SplitGroup,
-     floor7SplitGroup,
+    floor6SplitGroup,
+    floor7SplitGroup,
 )

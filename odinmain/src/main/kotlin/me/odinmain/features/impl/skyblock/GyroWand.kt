@@ -8,9 +8,8 @@ import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.skyblock.heldItem
-import me.odinmain.utils.skyblock.itemID
-import net.minecraft.util.Vec3
+import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.toVec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -30,13 +29,12 @@ object GyroWand : Module(
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (heldItem?.itemID != "GYROKINETIC_WAND") return
-        val pos = mc.thePlayer.rayTrace(25.0, event.partialTicks)?.blockPos ?: return
-        val block = mc.theWorld?.getBlockState(pos)?.block ?: return
-        if (block.isAir(mc.theWorld, pos)) return
+        val position = mc.thePlayer.rayTrace(25.0, event.partialTicks)?.blockPos?.takeIf { !getBlockAt(it).isAir(mc.theWorld, it) }?.toVec3() ?: return
+
         val finalColor = if (showCooldown && !gyroCooldown.hasTimePassed()) cooldownColor else color
 
         Renderer.drawCylinder(
-            Vec3(pos).addVector(0.5, 1.0, 0.5),
+            position.addVector(0.5, 1.0, 0.5),
             10f, 10f - thickness, 0.2f,
             steps, 1,
             0f, 90f, 90f,
