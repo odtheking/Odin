@@ -2,6 +2,7 @@ package me.odinmain.features.impl.dungeon
 
 import me.odinmain.OdinMain.isLegitVersion
 import me.odinmain.events.impl.BlockChangeEvent
+import me.odinmain.events.impl.EntityLeaveWorldEvent
 import me.odinmain.events.impl.RenderChestEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -13,16 +14,17 @@ import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.LocationUtils.currentDungeon
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.getSkullValue
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.partyMessage
 import me.odinmain.utils.toAABB
 import net.minecraft.entity.monster.EntityZombie
 import net.minecraft.init.Blocks
-import net.minecraft.network.play.server.S23PacketBlockChange
-import net.minecraft.util.BlockPos
+import net.minecraftforge.common.util.Constants
 import net.minecraftforge.event.entity.living.LivingDeathEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
+import java.util.UUID
 
 object Mimic : Module(
     "Mimic",
@@ -38,15 +40,30 @@ object Mimic : Module(
     private val lineWidth: Float by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.").withDependency { mimicBox }
     private val depthCheck: Boolean by BooleanSetting("Depth check", false, description = "Boxes show through walls.").withDependency { mimicBox }
 
+    private val mimicTexture ="eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTE5YzEyNTQzYmM3NzkyNjA1ZWY2OGUxZjg3NDlhZThmMmEzODFkOTA4NWQ0ZDRiNzgwYmExMjgyZDM1OTdhMCJ9fX0K"
+
+    private var mimicSpawned: Boolean = false
+
     @SubscribeEvent
-    fun onBlockUpdate(event: BlockChangeEvent) {
-        if (!DungeonUtils.inDungeons || event.old.block != Blocks.trapped_chest || event.update.block != Blocks.air ) return
-        runIn(15) {
-            if (DungeonUtils.mimicKilled || mc.thePlayer.getDistanceSq(event.pos) > 400) return@runIn
-            if (mc.theWorld.loadedEntityList.any { e -> e is EntityZombie && e.isChild && (0..3).all { e.getCurrentArmor(it) == null } }) {
+    fun onEntityLeaveWorld(event: EntityLeaveWorldEvent) {
+        with(event.entity) {
+            if (this is EntityZombie && this.isChild && getSkullValue(this).equals(mimicTexture) && mimicSpawned) {
                 mimicKilled()
+                mimicSpawned = false
             }
         }
+    }
+
+    init {
+        onWorldLoad {
+            mimicSpawned = false
+        }
+    }
+
+    @SubscribeEvent
+    fun onBlockUpdate(event: BlockChangeEvent) {
+        if (!DungeonUtils.inDungeons || event.old.block != Blocks.trapped_chest || event.update.block != Blocks.air || DungeonUtils.mimicKilled) return
+        mimicSpawned = true
     }
 
     @SubscribeEvent
@@ -54,6 +71,7 @@ object Mimic : Module(
         val entity = event.entity
         if (!DungeonUtils.inDungeons || entity !is EntityZombie || !entity.isChild || !(0..3).all { entity.getCurrentArmor(it) == null }) return
         mimicKilled()
+        mimicSpawned = false
     }
 
     @SubscribeEvent
@@ -70,5 +88,15 @@ object Mimic : Module(
 
     override fun onKeybind() {
         reset()
+    }
+
+    private fun mimicSkull(e: EntityZombie): Boolean {
+        return e.getCurrentArmor(3) // data from inventory isn't removed before the entity is dead, whereas getCurrentArmor() is set to null when it is.
+                ?.tagCompound
+                ?.getCompoundTag("SkullOwner")
+                ?.getCompoundTag("Properties")
+                ?.getTagList("textures", Constants.NBT.TAG_COMPOUND)
+                ?.getCompoundTagAt(0)
+                ?.getString("Value") == mimicTexture
     }
 }
