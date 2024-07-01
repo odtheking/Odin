@@ -3,6 +3,7 @@ package me.odinclient.features.impl.render
 import me.odinclient.mixin.accessors.IEntityPlayerSPAccessor
 import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinmain.events.impl.ClickEvent
+import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.toBlockPos
@@ -19,7 +20,9 @@ import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.EtherWarpHelper
 import me.odinmain.utils.skyblock.EtherWarpHelper.etherPos
+import me.odinmain.utils.skyblock.PlayerUtils.playLoudSound
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.util.MathHelper
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -45,6 +48,15 @@ object EtherWarpHelper : Module(
     private val etherWarpHelper: Boolean by BooleanSetting("(MIGHT BAN) Rotator", false, description = "Rotates you to the closest waypoint when you left click with aotv.")
     private val rotTime: Long by NumberSetting("Rotation Time", 150L, 10L, 600L, 1L).withDependency { etherWarpHelper }
     private val maxRot: Float by NumberSetting("Max Rotation", 90f, 0f, 360f, 1f).withDependency { etherWarpHelper }
+    private val sounds: Boolean by BooleanSetting("Custom Sounds", default = false)
+    private val defaultSounds = arrayListOf("mob.blaze.hit", "fire.ignite", "random.orb", "random.break", "mob.guardian.land.hit", "Custom")
+    private val sound: Int by SelectorSetting("Sound", "mob.blaze.hit", defaultSounds, description = "Which sound to play when you get a secret.").withDependency { sounds }
+    private val customSound: String by StringSetting("Custom Sound", "mob.blaze.hit",
+        description = "Name of a custom sound to play. This is used when Custom is selected in the Sound setting. Do not use the bat death sound or your game will freeze!", length = 32
+    ).withDependency { sound == defaultSounds.size - 1 && sounds}
+    private val volume: Float by NumberSetting("Volume", 1f, 0, 1, .01f, description = "Volume of the sound.").withDependency { sounds }
+    private val pitch: Float by NumberSetting("Pitch", 2f, 0, 2, .01f, description = "Pitch of the sound.").withDependency { sounds }
+    val reset: () -> Unit by ActionSetting("Play sound") { playEtherwarpSound() }.withDependency { sounds }
 
     private val tbClock = Clock(etherWarpTBDelay)
 
@@ -117,5 +129,19 @@ object EtherWarpHelper : Module(
             ) return
             smoothRotateTo(yaw, pitch, rotTime)
         }
+    }
+
+    @SubscribeEvent
+    fun onSoundPacket(event: PacketReceivedEvent) {
+        with(event.packet) {
+            if (this !is S29PacketSoundEffect || this.soundName != "mob.enderdragon.hit" || !sounds || this.volume != 1f || this.pitch != 0.53968257f) return
+            playEtherwarpSound()
+        }
+    }
+
+
+    private fun playEtherwarpSound() {
+        val sound = if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound]
+        playLoudSound(sound, volume, pitch)
     }
 }
