@@ -197,7 +197,7 @@ object DungeonUtils {
             val puzzle = Puzzle.allPuzzles.find { it.name == matchGroups[1] }?.copy() ?: return@mapNotNull null
 
             puzzle.status = when {
-                puzzle in puzzles && puzzles[puzzles.indexOf(puzzle)].status == PuzzleStatus.Completed -> PuzzleStatus.Completed
+                puzzles.find { it.name == puzzle.name }?.status == PuzzleStatus.Completed -> PuzzleStatus.Completed
                 matchGroups[2] == "§r§c§l✖" -> PuzzleStatus.Failed
                 matchGroups[2] == "§r§a§l✔" -> PuzzleStatus.Completed
                 matchGroups[2] == "§r§6§l✦" -> PuzzleStatus.Incomplete

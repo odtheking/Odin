@@ -77,7 +77,7 @@ class Dungeon(val floor: Floor?) {
         if (partyMessage.lowercase().equalsOneOf("mimic killed", "mimic slain", "mimic killed!", "mimic dead", "mimic dead!", "\$skytils-dungeon-score-mimic\$", Mimic.mimicMessage))
             dungeonStats.mimicKilled = true
         if (partyMessage.lowercase().equalsOneOf("blaze done!", "blaze done")) { //more completion messages may be necessary.
-            puzzles.find { it == Puzzle.Blaze }.let { it?.status = PuzzleStatus.Completed }
+            puzzles.find { it.name == Puzzle.Blaze.name }.let { it?.status = PuzzleStatus.Completed }
         }
     }
 
