@@ -31,7 +31,7 @@ object CloseChest : Module(
     @SubscribeEvent
     fun onInput(event: GuiEvent.GuiKeyPressEvent) {
         if (!inDungeons || !mode || event.gui !is GuiChest) return
-        if (((event.gui as? GuiChest)?.inventorySlots as? ContainerChest)?.name.equalsOneOf("Chest", "Large Chest"))
+        if (((event.gui as? GuiChest)?.inventorySlots as? ContainerChest)?.name.equalsOneOf("Chest", "Large Chest", "§4Chest", "§4Large Chest"))
             mc.thePlayer.closeScreen()
     }
 
