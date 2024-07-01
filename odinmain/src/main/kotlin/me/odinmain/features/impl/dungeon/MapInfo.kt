@@ -18,7 +18,7 @@ object MapInfo : Module(
     description = "Displays various information about the current dungeon map"
 ) {
     private val disableInBoss: Boolean by BooleanSetting("Disable in boss", default = true, description = "Disables the information display when you're in boss.")
-    private val minSecrets: Boolean by DualSetting("Min Secrets", "Minimum", "Remaining", default = false, description = "Display minimum secrets or secrets until s+.")
+    private val remaining: Boolean by DualSetting("Min Secrets", "Minimum", "Remaining", default = false, description = "Display minimum secrets or secrets until s+.")
     private val unknown: Boolean by DualSetting("Deaths", "Deaths", "Unknown", default = false, description = "Display deaths or unknown secrets. (Unknown secrets are secrets in rooms that haven't been discovered yet. May not be helpful in full party runs.)")
     val togglePaul: Int by SelectorSetting("Paul Settings", "Automatic", options = arrayListOf("Automatic", "Force Disable", "Force Enable"))
 
@@ -48,7 +48,7 @@ object MapInfo : Module(
         160f to 18f
     }
 
-    private var secretText = "§7Secrets: §e0§7-§b?§7-§c?"
+    private var secretText = "§7Secrets: §b0§7-§e?§7-§c?"
     private var unknownSecretsText = if (!unknown) "§7Deaths: §a0" else "§7Unknown: §b??"
     private var mimicText = "§7Mimic: §c✘"
     private var cryptText = "§7Crypts: §c0"
@@ -82,7 +82,7 @@ object MapInfo : Module(
     init {
         execute(500) {
             if (!DungeonUtils.inDungeons || (disableInBoss && DungeonUtils.inBoss)) return@execute
-            secretText = "§7Secrets: §e${DungeonUtils.secretCount}§7-§b${if (!minSecrets) DungeonUtils.neededSecretsAmount else (DungeonUtils.neededSecretsAmount - DungeonUtils.secretCount).coerceAtLeast(0)}§7-§c${DungeonUtils.totalSecrets}"
+            secretText = "§7Secrets: §b${DungeonUtils.secretCount}§7-§e${if (!remaining) DungeonUtils.neededSecretsAmount else (DungeonUtils.neededSecretsAmount - DungeonUtils.secretCount).coerceAtLeast(0)}§7-§c${DungeonUtils.totalSecrets}"
             unknownSecretsText = if (!unknown) "§7Deaths: §c${colorizeDeaths(DungeonUtils.deathCount)}" else "§7Unknown: §e${(DungeonUtils.totalSecrets - DungeonUtils.knownSecrets).coerceAtLeast(0)}"
             mimicText = if (DungeonUtils.mimicKilled) "§7Mimic: §a✔" else "§7Mimic: §c✘"
             cryptText = "§7Crypts: ${colorizeCrypts(DungeonUtils.cryptCount)}"
