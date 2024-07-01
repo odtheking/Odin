@@ -4,7 +4,6 @@ import me.odinmain.config.DungeonWaypointConfigCLAY
 import me.odinmain.events.impl.*
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.clearSecrets
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.resetSecrets
 import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -15,7 +14,6 @@ import me.odinmain.utils.render.*
 import me.odinmain.utils.render.RenderUtils.outlineBounds
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.skyblock.*
-import me.odinmain.utils.skyblock.EtherWarpHelper.etherPos
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
 import net.minecraft.client.gui.*
@@ -72,10 +70,9 @@ object DungeonWaypoints : Module(
         modMessage("Dungeon Waypoint editing ${if (allowEdits) "§aenabled" else "§cdisabled"}§r!")
     }
 
+
     init {
         onWorldLoad { resetSecrets() }
-
-        onMessage(Regex("(?s).*(\\d+)/\\1 Secrets.*")) { clearSecrets() }
     }
 
     @SubscribeEvent
