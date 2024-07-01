@@ -33,7 +33,7 @@ object EtherWarpHelper : Module(
     private val lineWidth: Float by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.")
     private val depthCheck: Boolean by BooleanSetting("Depth check", false, description = "Boxes show through walls.")
     private val sounds: Boolean by BooleanSetting("Custom Sounds", default = false)
-    private val defaultSounds = arrayListOf("mob.blaze.hit", "fire.ignite", "random.orb", "random.break", "mob.guardian.land.hit", "Custom")
+    private val defaultSounds = arrayListOf("mob.blaze.hit", "fire.ignite", "random.orb", "random.break", "mob.guardian.land.hit", "note.pling", "Custom")
     private val sound: Int by SelectorSetting("Sound", "mob.blaze.hit", defaultSounds, description = "Which sound to play when you get a secret.").withDependency { sounds }
     private val customSound: String by StringSetting("Custom Sound", "mob.blaze.hit",
         description = "Name of a custom sound to play. This is used when Custom is selected in the Sound setting. Do not use the bat death sound or your game will freeze!", length = 32
@@ -66,7 +66,7 @@ object EtherWarpHelper : Module(
     @SubscribeEvent
     fun onSoundPacket(event: PacketReceivedEvent) {
         with(event.packet) {
-            if (this !is S29PacketSoundEffect || this.soundName != "mob.enderdragon.hit" || !sounds) return
+            if (this !is S29PacketSoundEffect || this.soundName != "mob.enderdragon.hit" || !sounds || customSound == "mob.enderdragon.hit") return
             modMessage("${this.volume}, ${this.pitch}")
             playEtherwarpSound()
         }
