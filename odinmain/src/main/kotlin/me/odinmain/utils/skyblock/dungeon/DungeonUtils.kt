@@ -215,7 +215,6 @@ object DungeonUtils {
 
     fun getDungeonTeammates(previousTeammates: List<DungeonPlayer>, tabList: List<Pair<NetworkPlayerInfo, String>>): List<DungeonPlayer> {
         val teammates = mutableListOf<DungeonPlayer>()
-        //val tabList = getDungeonTabList() ?: return emptyList()
 
         for ((networkPlayerInfo, line) in tabList) {
 

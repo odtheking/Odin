@@ -93,9 +93,6 @@ class Dungeon(val floor: Floor?) {
         if (packet.action != 2) return
         val text = packet.prefix.plus(packet.suffix)
 
-        //val floorText = Regex("^§7. §cThe Catac§ccombs §7\\(([EFM][1-7]?)\\)\$").find(cleanSB(text))
-        //if (floorText != null && floor == null) floor = Floor.valueOf(floorText.groupValues[1])
-
         val cleared = Regex("^Cleared: §[c6a](\\d+)% §8(?:§8)?\\(\\d+\\)$").find(text)
         if (cleared != null) dungeonStats.percentCleared = cleared.groupValues[1].toInt()
 
