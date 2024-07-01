@@ -9,10 +9,12 @@ import me.odinmain.OdinMain.mc
 import org.lwjgl.nanovg.NVGColor
 import org.lwjgl.nanovg.NVGLUFramebuffer
 import org.lwjgl.nanovg.NVGPaint
+import org.lwjgl.nanovg.NanoSVG
 import org.lwjgl.nanovg.NanoVG.*
 import org.lwjgl.nanovg.NanoVGGL2.*
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.stb.STBImage
+import org.lwjgl.system.MemoryUtil
 
 
 object NVGRenderer : Renderer {
@@ -23,6 +25,7 @@ object NVGRenderer : Renderer {
 
     private val fonts = HashMap<Font, Int>()
     private val images = HashMap<Image, Int>()
+    private val svgs = HashMap<SVG, Int>()
     private val fbos = HashMap<Framebuffer, NVGLUFramebuffer>()
     var vg: Long = -1
 
@@ -236,8 +239,35 @@ object NVGRenderer : Renderer {
         nvgFill(vg)
     }
 
+    override fun svg(
+        svg: SVG,
+        x: Float,
+        y: Float,
+        w: Float,
+        h: Float,
+        scale: Float,
+        tl: Float,
+        bl: Float,
+        br: Float,
+        tr: Float
+    ) {
+        val x = x / scale
+        val y = y / scale
+        val w = w * scale
+        val h = h * scale
+        nvgImagePattern(vg, x, y, w, h, 0f, getSVG(svg), 1f, nvgPaint)
+        nvgBeginPath(vg)
+        nvgRoundedRectVarying(vg, x, y, w, h, tl, tr, br, bl)
+        nvgFillPaint(vg, nvgPaint)
+        nvgFill(vg)
+    }
+
     private fun getImage(image: Image): Int {
         return images.getOrPut(image) { loadImage(image) }
+    }
+
+    private fun getSVG(svg: SVG): Int {
+        return svgs.getOrPut(svg) { loadSVG(svg) }
     }
 
     private fun loadImage(image: Image): Int {
@@ -252,6 +282,17 @@ object NVGRenderer : Renderer {
             4
         ) ?: throw NullPointerException("Failed to load image: ${image.resourcePath}")
         return nvgCreateImageRGBA(vg, w[0], h[0], 0, buffer)
+    }
+
+    private fun loadSVG(svg: SVG): Int {
+        val svgImage = svg.svgImage
+        val memAlloc = MemoryUtil.memAlloc((svgImage.width() * svgImage.height() * 4).toInt())
+        val rasterizer = NanoSVG.nsvgCreateRasterizer()
+        NanoSVG.nsvgRasterize(rasterizer, svgImage, 0f, 0f, 1f, memAlloc, svgImage.width().toInt(), svgImage.height().toInt(), svgImage.width().toInt() * 4)
+        val image = nvgCreateImageRGBA(vg, svgImage.width().toInt(), svgImage.height().toInt(), 0, memAlloc)
+        NanoSVG.nsvgDeleteRasterizer(rasterizer)
+        NanoSVG.nsvgDelete(svgImage)
+        return image
     }
 
     fun color(color: Int) {
