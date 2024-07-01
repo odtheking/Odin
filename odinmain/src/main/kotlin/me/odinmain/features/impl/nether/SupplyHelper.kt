@@ -30,7 +30,7 @@ object SupplyHelper : Module(
     private var startRun = 0L
 
     init {
-        onMessage("[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!", false) {
+        onMessage(Regex("\\[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!")) {
             startRun = System.currentTimeMillis()
         }
 

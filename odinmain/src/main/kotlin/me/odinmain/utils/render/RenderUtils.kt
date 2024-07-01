@@ -421,7 +421,6 @@ object RenderUtils {
 
         GlStateManager.enableBlend()
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-        GlStateManager.disableLighting()
         color.bind()
 
         val textWidth = mc.fontRendererObj.getStringWidth(text)
@@ -433,7 +432,6 @@ object RenderUtils {
         }
 
         GlStateManager.disableBlend()
-        GlStateManager.enableLighting()
         GlStateManager.resetColor()
         GlStateManager.popMatrix()
     }

@@ -23,7 +23,6 @@ object NoDebuff : Module(
     private val noShieldParticles: Boolean by BooleanSetting("No Shield Particle", false, description = "Removes purple particles and wither impact hearts.")
     private val antiWaterFOV: Boolean by BooleanSetting("No Water FOV", false, description = "Disable FOV change in water.")
     private val noFire: Boolean by BooleanSetting("No Fire Overlay", false, description = "Disable Fire overlay on screen.")
-    private val noPush: Boolean by BooleanSetting("No Push", false, description = "Prevents from being pushed out of blocks.")
     private val seeThroughBlocks: Boolean by BooleanSetting("See Through Blocks", false, description = "Makes blocks transparent.")
 
     @SubscribeEvent
@@ -36,8 +35,7 @@ object NoDebuff : Module(
     }
     @SubscribeEvent
     fun onOverlay(event: RenderGameOverlayEvent.Pre) {
-        if (!antiPortal) return
-        if (event.type == RenderGameOverlayEvent.ElementType.PORTAL)
+        if (event.type == RenderGameOverlayEvent.ElementType.PORTAL && antiPortal)
             event.isCanceled = true
     }
 
@@ -67,9 +65,5 @@ object NoDebuff : Module(
     fun onRenderBlockOverlay(event: RenderBlockOverlayEvent) {
         if (event.overlayType == RenderBlockOverlayEvent.OverlayType.BLOCK && seeThroughBlocks)
             event.isCanceled = true
-    }
-
-    fun isNoPush(): Boolean {
-        return noPush && enabled
     }
 }

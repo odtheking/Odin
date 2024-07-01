@@ -67,15 +67,16 @@ sealed class PuzzleStatus {
  */
 enum class DungeonClass(
     val color: Color,
+    val colorCode: Char,
     val defaultQuadrant: Int,
     var priority: Int,
 ) {
-    Archer(Color.ORANGE, 0, 2),
-    Berserk(Color.DARK_RED,1, 0),
-    Healer(Color.PINK, 2, 2),
-    Mage(Color.BLUE, 3, 2),
-    Tank(Color.DARK_GREEN, 3, 1),
-    Unknown(Color.WHITE, 0, 0)
+    Archer(Color.ORANGE, '6',0, 2),
+    Berserk(Color.DARK_RED, '4',1, 0),
+    Healer(Color.PINK, 'd',2, 2),
+    Mage(Color.BLUE, 'b',3, 2),
+    Tank(Color.DARK_GREEN, '2',3, 1),
+    Unknown(Color.WHITE, 'f',0, 0)
 }
 
 enum class Blessing(
@@ -120,7 +121,8 @@ enum class Floor(val personalBest: PersonalBest?, val secretPercentage: Float = 
     M4(PersonalBest("Master 4", 5)),
     M5(PersonalBest("Master 5", 5)),
     M6(PersonalBest("Master 6", 7)),
-    M7(PersonalBest("Master 7", 10));
+    M7(PersonalBest("Master 7", 10)),
+    None(null);
 
     /**
      * Gets the numerical representation of the floor.
@@ -138,6 +140,7 @@ enum class Floor(val personalBest: PersonalBest?, val secretPercentage: Float = 
                 F5, M5 -> 5
                 F6, M6 -> 6
                 F7, M7 -> 7
+                None -> -1
             }
         }
 
@@ -149,7 +152,7 @@ enum class Floor(val personalBest: PersonalBest?, val secretPercentage: Float = 
     val isInMM: Boolean
         get() {
             return when (this) {
-                E, F1, F2, F3, F4, F5, F6, F7 -> false
+                E, F1, F2, F3, F4, F5, F6, F7, None -> false
                 M1, M2, M3, M4, M5, M6, M7 -> true
             }
         }

@@ -1,12 +1,10 @@
 package me.odinclient.features.impl.skyblock
 
-import me.odinmain.events.impl.DungeonEvents
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object AutoGFS : Module(
     name = "Auto Gfs",
@@ -22,11 +20,10 @@ object AutoGFS : Module(
         execute(4000) {
             if (refillOnTimer) refill()
         }
-    }
 
-    @SubscribeEvent
-    fun onDungeonStart(event: DungeonEvents.DungeonStartEvent) {
-        if (refillOnDungeonStart) refill()
+        onMessage(Regex("\\[NPC] Mort: Here, I found this map when I first entered the dungeon\\.")) {
+            if (refillOnDungeonStart) refill()
+        }
     }
 
     private fun refill() {

@@ -65,23 +65,22 @@ object OdinMain {
         launch { DungeonWaypointConfigCLAY.loadConfig() }
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     fun loadComplete() = runBlocking {
-        runBlocking {
-            launch {
-                Config.load()
-                ClickGUIModule.firstTimeOnVersion = ClickGUIModule.lastSeenVersion != VERSION
-                ClickGUIModule.lastSeenVersion = VERSION
-            }
-        }
+        launch {
+            Config.load()
+            ClickGUIModule.firstTimeOnVersion = ClickGUIModule.lastSeenVersion != VERSION
+            ClickGUIModule.lastSeenVersion = VERSION
+        }.join() // Ensure Config.load() and version checks are complete before proceeding
+
         ClickGUI.init()
         RoundedRect.initShaders()
-        GlobalScope.launch {
-            val name = mc.session?.username ?: return@launch
-            if (name.matches(Regex("Player\\d{2,3}"))) return@launch
+
+        val name = mc.session?.username?.takeIf { !it.matches(Regex("Player\\d{2,3}")) } ?: return@runBlocking
+        launch {
             sendDataToServer(body = """{"username": "$name", "version": "${if (isLegitVersion) "legit" else "cheater"} $VERSION"}""")
         }
     }
+
 
     fun onTick() {
         if (display != null) {
