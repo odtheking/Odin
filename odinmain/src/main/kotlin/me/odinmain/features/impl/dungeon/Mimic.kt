@@ -42,28 +42,9 @@ object Mimic : Module(
 
     private val mimicTexture ="eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTE5YzEyNTQzYmM3NzkyNjA1ZWY2OGUxZjg3NDlhZThmMmEzODFkOTA4NWQ0ZDRiNzgwYmExMjgyZDM1OTdhMCJ9fX0K"
 
-    private var mimicSpawned: Boolean = false
-
     @SubscribeEvent
     fun onEntityLeaveWorld(event: EntityLeaveWorldEvent) {
-        with(event.entity) {
-            if (this is EntityZombie && this.isChild && getSkullValue(this).equals(mimicTexture) && mimicSpawned) {
-                mimicKilled()
-                mimicSpawned = false
-            }
-        }
-    }
-
-    init {
-        onWorldLoad {
-            mimicSpawned = false
-        }
-    }
-
-    @SubscribeEvent
-    fun onBlockUpdate(event: BlockChangeEvent) {
-        if (!DungeonUtils.inDungeons || event.old.block != Blocks.trapped_chest || event.update.block != Blocks.air || DungeonUtils.mimicKilled) return
-        mimicSpawned = true
+        if (DungeonUtils.inDungeons && event.entity is EntityZombie && event.entity.isChild && getSkullValue(event.entity).equals(mimicTexture)) mimicKilled()
     }
 
     @SubscribeEvent
@@ -71,7 +52,6 @@ object Mimic : Module(
         val entity = event.entity
         if (!DungeonUtils.inDungeons || entity !is EntityZombie || !entity.isChild || !(0..3).all { entity.getCurrentArmor(it) == null }) return
         mimicKilled()
-        mimicSpawned = false
     }
 
     @SubscribeEvent
@@ -88,15 +68,5 @@ object Mimic : Module(
 
     override fun onKeybind() {
         reset()
-    }
-
-    private fun mimicSkull(e: EntityZombie): Boolean {
-        return e.getCurrentArmor(3) // data from inventory isn't removed before the entity is dead, whereas getCurrentArmor() is set to null when it is.
-                ?.tagCompound
-                ?.getCompoundTag("SkullOwner")
-                ?.getCompoundTag("Properties")
-                ?.getTagList("textures", Constants.NBT.TAG_COMPOUND)
-                ?.getCompoundTagAt(0)
-                ?.getString("Value") == mimicTexture
     }
 }
