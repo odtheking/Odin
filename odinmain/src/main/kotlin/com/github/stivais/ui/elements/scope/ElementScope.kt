@@ -16,6 +16,7 @@ import com.github.stivais.ui.events.Mouse
 import com.github.stivais.ui.renderer.Font
 import com.github.stivais.ui.renderer.Gradient
 import com.github.stivais.ui.renderer.Image
+import com.github.stivais.ui.renderer.SVG
 import com.github.stivais.ui.utils.radii
 
 open class ElementScope<E: Element>(val element: E) {
@@ -156,6 +157,22 @@ open class ElementScope<E: Element>(val element: E) {
         radius: FloatArray = 0.radii(),
         dsl: ElementScope<ImageElement>.() -> Unit = {}
     ) = create(ElementScope(ImageElement(Image(image), constraints, radius)), dsl)
+
+    @DSL
+    fun svg(
+        svg: SVG,
+        constraints: Constraints? = null,
+        radius: FloatArray = 0.radii(),
+        dsl: ElementScope<SVGElement>.() -> Unit = {}
+    ) = create(ElementScope(SVGElement(svg, constraints, radius)), dsl)
+
+    @DSL
+    fun svg(
+        svg: String,
+        constraints: Constraints? = null,
+        radius: FloatArray = 0.radii(),
+        dsl: ElementScope<SVGElement>.() -> Unit = {}
+    ) = create(ElementScope(SVGElement(SVG(svg), constraints, radius)), dsl)
 
     fun onInitialization(action: () -> Unit) {
         if (element.initialized) return UI.logger.warning("Tried calling \"onInitialization\" after init has already been done")
