@@ -82,7 +82,7 @@ object MapInfo : Module(
     init {
         execute(500) {
             if (!DungeonUtils.inDungeons || (disableInBoss && DungeonUtils.inBoss)) return@execute
-            secretText = "§7Secrets: §e${DungeonUtils.secretCount}§7-§b${if (minSecrets) DungeonUtils.neededSecretsAmount else (DungeonUtils.neededSecretsAmount - DungeonUtils.secretCount).coerceAtLeast(0)}§7-§c${DungeonUtils.totalSecrets}"
+            secretText = "§7Secrets: §e${DungeonUtils.secretCount}§7-§b${if (!minSecrets) DungeonUtils.neededSecretsAmount else (DungeonUtils.neededSecretsAmount - DungeonUtils.secretCount).coerceAtLeast(0)}§7-§c${DungeonUtils.totalSecrets}"
             unknownSecretsText = if (!unknown) "§7Deaths: §c${colorizeDeaths(DungeonUtils.deathCount)}" else "§7Unknown: §e${(DungeonUtils.totalSecrets - DungeonUtils.knownSecrets).coerceAtLeast(0)}"
             mimicText = if (DungeonUtils.mimicKilled) "§7Mimic: §a✔" else "§7Mimic: §c✘"
             cryptText = "§7Crypts: ${colorizeCrypts(DungeonUtils.cryptCount)}"
