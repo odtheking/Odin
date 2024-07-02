@@ -21,8 +21,8 @@ object Waypoints : Module(
             WaypointManager.addTempWaypoint("§6$name", x.toIntOrNull() ?: return@onMessage, y.toIntOrNull() ?: return@onMessage, z.toIntOrNull() ?: return@onMessage)
         }
 
-        onMessage(Regex("(?:\\[\\d+])? \\[?(?:MVP|VIP)?\\+*]? (.{0,16}): x: (-?\\d+),? y: (-?\\d+),? z: (-?\\d+)"), { fromAll && enabled }) { // greatest regex of all time!
-            val matchResult = Regex("(?:\\[\\d+])? \\[?(?:MVP|VIP)?\\+*]? (.{0,16}): x: (-?\\d+),? y: (-?\\d+),? z: (-?\\d+)").find(it) ?: return@onMessage
+        onMessage(Regex("(?:\\[\\d+])? \\[?(?:MVP|VIP)?\\+*]? (.{1,16}): x: (-?\\d+),? y: (-?\\d+),? z: (-?\\d+)"), { fromAll && enabled }) { // greatest regex of all time!
+            val matchResult = Regex("(?:\\[\\d+])? \\[?(?:MVP|VIP)?\\+*]? (.{1,16}): x: (-?\\d+),? y: (-?\\d+),? z: (-?\\d+)").find(it) ?: return@onMessage
             val (name, x, y, z) = matchResult.destructured
             WaypointManager.addTempWaypoint("§6$name", x.toIntOrNull() ?: return@onMessage, y.toIntOrNull() ?: return@onMessage, z.toIntOrNull() ?: return@onMessage)
         }

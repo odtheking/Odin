@@ -18,7 +18,7 @@ object ExtraStats : Module(
     private val extraStats = PostDungeonStats()
 
     private fun printEndStats() {
-        val dungeonMessage = if (DungeonUtils.floor.isInMM) "§cMaster Mode" else "§cThe Catacombs" + " §r- §e${DungeonUtils.floor.name}"
+        val dungeonMessage = if (DungeonUtils.floor.isInMM) "§cMaster Mode" else "§cThe Catacombs"
 
         val defeatedText = if (extraStats.bossKilled == null) "§c§lFAILED §a- §e${DungeonUtils.dungeonTime}" else
             "§aDefeated §c${extraStats.bossKilled} §ain §e${DungeonUtils.dungeonTime}${if (extraStats.timePB) " §d§l(NEW RECORD!)" else ""}"
@@ -27,7 +27,7 @@ object ExtraStats : Module(
 
         modMessage(getChatBreak(), prefix = false)
         modMessage("", prefix = false)
-        modMessage(getCenteredText(dungeonMessage), prefix = false)
+        modMessage(getCenteredText(dungeonMessage + " §r- §e${DungeonUtils.floor.name}"), prefix = false)
         modMessage("", prefix = false)
         modMessage(getCenteredText(defeatedText), prefix = false)
         modMessage(getCenteredText(scoreMessage), prefix = false)
@@ -93,11 +93,8 @@ object ExtraStats : Module(
                 Regex("^\\s*The Catacombs - .+ Stats\$"),
                 Regex("^\\s*Deaths: \\d+\$"),
                 Regex("^\\s*Master Mode Catacombs - .+ Stats\$"),
-                Regex("^\\s*Enemies Killed: \\d+\\s?(?:\\(NEW RECORD!\\))?\$"),
-                )
-            )  {
-            event.isCanceled = true
-        }
+                Regex("^\\s*Enemies Killed: \\d+\\s?(?:\\(NEW RECORD!\\))?\$"),)
+            ) event.isCanceled = true
     }
 
     data class PostDungeonStats(

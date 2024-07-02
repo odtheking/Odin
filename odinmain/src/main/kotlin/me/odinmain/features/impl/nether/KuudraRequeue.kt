@@ -28,7 +28,7 @@ object KuudraRequeue : Module(
             }
         }
 
-        onMessage(Regex("(\\[.+])? ?(.{0,16}) has left the party.")) {
+        onMessage(Regex("(\\[.+])? ?(.{1,16}) has left the party.")) {
             if (disablePartyLeave) disableRequeue = true
         }
     }
