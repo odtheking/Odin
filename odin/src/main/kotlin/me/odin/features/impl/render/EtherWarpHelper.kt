@@ -68,6 +68,7 @@ object EtherWarpHelper : Module(
         with(event.packet) {
             if (this !is S29PacketSoundEffect || this.soundName != "mob.enderdragon.hit" || !sounds || this.volume != 1f || this.pitch != 0.53968257f || customSound == "mob.enderdragon.hit") return
             playEtherwarpSound()
+            event.isCanceled = true
         }
     }
 
