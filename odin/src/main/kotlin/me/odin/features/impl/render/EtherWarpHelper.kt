@@ -8,6 +8,7 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.PositionLook
+import me.odinmain.utils.pos
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
@@ -67,14 +68,14 @@ object EtherWarpHelper : Module(
     fun onSoundPacket(event: PacketReceivedEvent) {
         with(event.packet) {
             if (this !is S29PacketSoundEffect || this.soundName != "mob.enderdragon.hit" || !sounds || this.volume != 1f || this.pitch != 0.53968257f || customSound == "mob.enderdragon.hit") return
-            playEtherwarpSound()
+            playEtherwarpSound(this.pos)
             event.isCanceled = true
         }
     }
 
 
-    private fun playEtherwarpSound() {
+    private fun playEtherwarpSound(pos: Vec3 = mc.thePlayer.positionVector) {
         val sound = if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound]
-        PlayerUtils.playLoudSound(sound, volume, pitch)
+        PlayerUtils.playLoudSoundAtLocation(pos, sound, volume, pitch)
     }
 }

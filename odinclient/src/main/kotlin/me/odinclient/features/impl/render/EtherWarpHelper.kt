@@ -20,7 +20,7 @@ import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.EtherWarpHelper
 import me.odinmain.utils.skyblock.EtherWarpHelper.etherPos
-import me.odinmain.utils.skyblock.PlayerUtils.playLoudSound
+import me.odinmain.utils.skyblock.PlayerUtils.playLoudSoundAtLocation
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.util.MathHelper
@@ -135,14 +135,14 @@ object EtherWarpHelper : Module(
     fun onSoundPacket(event: PacketReceivedEvent) {
         with(event.packet) {
             if (this !is S29PacketSoundEffect || this.soundName != "mob.enderdragon.hit" || !sounds || this.volume != 1f || this.pitch != 0.53968257f || customSound == "mob.enderdragon.hit") return
-            playEtherwarpSound()
+            playEtherwarpSound(this.pos)
             event.isCanceled = true
         }
     }
 
 
-    private fun playEtherwarpSound() {
+    private fun playEtherwarpSound(pos: Vec3 = mc.thePlayer.positionVector) {
         val sound = if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound]
-        playLoudSound(sound, volume, pitch)
+        playLoudSoundAtLocation(pos, sound, volume, pitch)
     }
 }
