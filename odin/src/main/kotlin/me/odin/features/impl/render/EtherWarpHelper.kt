@@ -66,8 +66,7 @@ object EtherWarpHelper : Module(
     @SubscribeEvent
     fun onSoundPacket(event: PacketReceivedEvent) {
         with(event.packet) {
-            if (this !is S29PacketSoundEffect || this.soundName != "mob.enderdragon.hit" || !sounds || customSound == "mob.enderdragon.hit") return
-            modMessage("${this.volume}, ${this.pitch}")
+            if (this !is S29PacketSoundEffect || this.soundName != "mob.enderdragon.hit" || !sounds || this.volume != 1f || this.pitch != 0.53968257f || customSound == "mob.enderdragon.hit") return
             playEtherwarpSound()
         }
     }
