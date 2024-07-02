@@ -56,7 +56,7 @@ object EtherWarpHelper : Module(
     ).withDependency { sound == defaultSounds.size - 1 && sounds}
     private val volume: Float by NumberSetting("Volume", 1f, 0, 1, .01f, description = "Volume of the sound.").withDependency { sounds }
     private val pitch: Float by NumberSetting("Pitch", 2f, 0, 2, .01f, description = "Pitch of the sound.").withDependency { sounds }
-    val reset: () -> Unit by ActionSetting("Play sound") { playEtherwarpSound() }.withDependency { sounds }
+    val reset: () -> Unit by ActionSetting("Play sound") { playLoudSoundAtLocation(mc.thePlayer.positionVector, if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], volume, pitch) }.withDependency { sounds }
 
     private val tbClock = Clock(etherWarpTBDelay)
 
@@ -135,14 +135,8 @@ object EtherWarpHelper : Module(
     fun onSoundPacket(event: PacketReceivedEvent) {
         with(event.packet) {
             if (this !is S29PacketSoundEffect || this.soundName != "mob.enderdragon.hit" || !sounds || this.volume != 1f || this.pitch != 0.53968257f || customSound == "mob.enderdragon.hit") return
-            playEtherwarpSound(this.pos)
+            playLoudSoundAtLocation(this.pos, if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], volume, pitch)
             event.isCanceled = true
         }
-    }
-
-
-    private fun playEtherwarpSound(pos: Vec3 = mc.thePlayer.positionVector) {
-        val sound = if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound]
-        playLoudSoundAtLocation(pos, sound, volume, pitch)
     }
 }
