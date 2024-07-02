@@ -42,6 +42,10 @@ object ScanUtils {
         setOf()
     }
 
+    fun getRoomSecrets(name: String): Int {
+        return roomList.find { it.name == name }?.secrets ?: return 0
+    }
+
     private fun getRoomData(hash: Int): RoomData? =
         roomList.find { it.cores.any { core -> hash == core } }
 

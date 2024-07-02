@@ -7,9 +7,11 @@ import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.floored
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
+import net.minecraft.client.audio.ISound
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.ItemStack
+import net.minecraft.util.Vec3
 
 
 object PlayerUtils {
@@ -27,6 +29,12 @@ object PlayerUtils {
     fun playLoudSound(sound: String?, volume: Float, pitch: Float) {
         shouldBypassVolume = true
         mc.thePlayer?.playSound(sound, volume, pitch)
+        shouldBypassVolume = false
+    }
+
+    fun playLoudSoundAtLocation(pos: Vec3, sound: String?, volume: Float, pitch: Float) {
+        shouldBypassVolume = true
+        mc.theWorld?.playSound(pos.xCoord, pos.yCoord, pos.zCoord, sound, volume, pitch, false)
         shouldBypassVolume = false
     }
 

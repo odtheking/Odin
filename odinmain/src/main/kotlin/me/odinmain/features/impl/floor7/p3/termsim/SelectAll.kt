@@ -1,6 +1,8 @@
 package me.odinmain.features.impl.floor7.p3.termsim
 
 import me.odinmain.events.impl.GuiEvent
+import me.odinmain.features.impl.floor7.p3.TerminalSounds
+import me.odinmain.features.impl.floor7.p3.TerminalSounds.playTerminalSound
 import me.odinmain.utils.getRandom
 import me.odinmain.utils.postAndCatch
 import net.minecraft.enchantment.Enchantment
@@ -50,7 +52,7 @@ class SelectAll(private val color: String) : TermSimGui(
         ) return
 
         slot.stack.addEnchantment(Enchantment.infinity, 1)
-        mc.thePlayer.playSound("random.orb", 1f, 1f)
+        if (TerminalSounds.enabled) playTerminalSound() else mc.thePlayer.playSound("random.orb", 1f, 1f)
         GuiEvent.GuiLoadedEvent(name, inventorySlots as ContainerChest).postAndCatch()
         if (inventorySlots?.inventorySlots?.subList(0, size)?.none {
                 it?.stack?.isItemEnchanted == false && it.stack?.item in items && if (it.stack?.item == dye) it.stack?.metadata == correctDye else it.stack?.metadata == correctMeta

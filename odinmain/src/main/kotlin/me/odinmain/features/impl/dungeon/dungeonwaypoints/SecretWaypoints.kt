@@ -42,15 +42,4 @@ object SecretWaypoints {
         if (room != null) setWaypoints(room)
         glList = -1
     }
-
-    fun clearSecrets() {
-        val room = DungeonUtils.currentRoom ?: return
-        val waypoints = getWaypoints(room)
-        if (waypoints.any { it.secret && !it.clicked}) {
-            for (wp in waypoints.filter { it.secret && !it.clicked }) { wp.clicked = true }
-            setWaypoints(room)
-            glList = -1
-        }
-    }
-
 }
