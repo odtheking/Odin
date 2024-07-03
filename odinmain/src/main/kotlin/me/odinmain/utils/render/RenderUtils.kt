@@ -486,7 +486,7 @@ object RenderUtils {
         GlStateManager.enableTexture2D()
         if (depth) GlStateManager.enableDepth()
         GlStateManager.resetColor()
-
+        Color.WHITE.bind()
         GlStateManager.popMatrix()
     }
 

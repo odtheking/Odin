@@ -30,12 +30,10 @@ object TPMaze {
     }
 
     fun tpPacket(event: S08PacketPlayerPosLook) {
-        if (DungeonUtils.currentRoomName != "Teleport Maze") return
+        if (DungeonUtils.currentRoomName != "Teleport Maze" || event.x % 0.5 != 0.0 || event.y != 69.5 || event.z % 0.5 != 0.0) return
         val eventBlockPos = BlockPos(event.x, event.y, event.z).toAABB().expand(0.5, 0.0, 0.5)
         val playerBlockPos = mc.thePlayer.position.toAABB().expand(0.5, 0.0, 0.5)
-        visited.addAll(
-            portals.filter { eventBlockPos.intersectsWith(it.toAABB()) || playerBlockPos.intersectsWith(it.toAABB()) }
-        )
+        visited.addAll(portals.filter { eventBlockPos.intersectsWith(it.toAABB()) || playerBlockPos.intersectsWith(it.toAABB()) })
         getCorrectPortals(Vec3(event.x, event.y, event.z), event.yaw, event.pitch)
     }
 
@@ -49,7 +47,6 @@ object TPMaze {
             ) && !it.toAABB().expand(.5, .0, .5).isVecInside(mc.thePlayer.positionVector)
         }
     }
-
 
     fun tpRender() {
         if (DungeonUtils.currentRoomName != "Teleport Maze") return

@@ -19,7 +19,6 @@ import java.lang.reflect.Type
 import kotlin.math.cos
 import kotlin.math.sin
 
-
 object DevPlayers {
     private var devs: HashMap<String, DevPlayer> = HashMap()
     val isDev get() = devs.containsKey(mc.session?.username)
@@ -169,6 +168,5 @@ object DevPlayers {
             }
             return f
         }
-
     }
 }

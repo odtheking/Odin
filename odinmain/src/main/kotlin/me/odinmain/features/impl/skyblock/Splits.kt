@@ -11,7 +11,7 @@ import me.odinmain.utils.formatTime
 import me.odinmain.utils.render.*
 
 object Splits : Module(
-    "Splits",
+    name = "Splits",
     description = "Automatic advanced skyblock splits.",
     category = Category.SKYBLOCK
 ) {

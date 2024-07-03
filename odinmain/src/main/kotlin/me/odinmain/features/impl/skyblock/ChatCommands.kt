@@ -1,7 +1,5 @@
 package me.odinmain.features.impl.skyblock
 
-import kotlinx.coroutines.launch
-import me.odinmain.OdinMain.scope
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.DungeonRequeue.disableRequeue
@@ -33,7 +31,6 @@ object ChatCommands : Module(
     private var cf: Boolean by BooleanSetting(name = "Coinflip (cf)", default = true).withDependency { showSettings }
     private var eightball: Boolean by BooleanSetting(name = "Eightball", default = true).withDependency { showSettings }
     private var dice: Boolean by BooleanSetting(name = "Dice", default = true).withDependency { showSettings }
-    private var cat: Boolean by BooleanSetting(name = "Cat", default = true).withDependency { showSettings }
     private var pt: Boolean by BooleanSetting(name = "Party transfer (pt)", default = true).withDependency { showSettings }
     private var ping: Boolean by BooleanSetting(name = "Ping", default = true).withDependency { showSettings }
     private var tps: Boolean by BooleanSetting(name = "TPS", default = true).withDependency { showSettings }
@@ -48,14 +45,6 @@ object ChatCommands : Module(
     private var dtPlayer: String? = null
     private val dtReason = mutableListOf<Pair<String, String>>()
     val blacklist: MutableList<String> by ListSetting("Blacklist", mutableListOf())
-
-    private fun getCatPic(): String {
-        return try {
-            "https://i.imgur.com/${imgurID("https://api.thecatapi.com/v1/images/search")}.png"
-        } catch (e: Exception) {
-            "imgurID Failed ${e.message}"
-        }
-    }
 
     private val messageRegex = Regex("^(?:Party > \\[?(?:MVP|VIP)?\\+*]? ?(.{1,16}): ?(.+)\$|Guild > \\[?(?:MVP|VIP)?\\+*]? ?(.{1,16}?)(?= ?\\[| ?: ) ?\\[.+] ?: ?(.+)\$|From \\[?(?:MVP|VIP)?\\+*]? ?(.{1,16}): ?(.+)\$)")
 
@@ -84,9 +73,9 @@ object ChatCommands : Module(
 
     private fun handleChatCommands(message: String, name: String, channel: ChatChannel) {
         val commandsMap = when (channel) {
-            ChatChannel.PARTY -> mapOf("coords" to coords, "odin" to odin, "boop" to boop, "cf" to cf, "8ball" to eightball, "dice" to dice, "cat" to cat, "racism" to racism, "tps" to tps, "warp" to warp, "warptransfer" to warptransfer, "allinvite" to allinvite, "pt" to pt, "dt" to dt, "m" to queDungeons, "f" to queDungeons)
-            ChatChannel.GUILD -> mapOf("coords" to coords, "odin" to odin, "boop" to boop, "cf" to cf, "8ball" to eightball, "dice" to dice, "cat" to cat, "racism" to racism, "ping" to ping, "tps" to tps)
-            ChatChannel.PRIVATE -> mapOf("coords" to coords, "odin" to odin, "boop" to boop, "cf" to cf, "8ball" to eightball, "dice" to dice, "cat" to cat, "racism" to racism, "ping" to ping, "tps" to tps, "inv" to inv, "invite" to invite)
+            ChatChannel.PARTY -> mapOf("coords" to coords, "odin" to odin, "boop" to boop, "cf" to cf, "8ball" to eightball, "dice" to dice, "racism" to racism, "tps" to tps, "warp" to warp, "warptransfer" to warptransfer, "allinvite" to allinvite, "pt" to pt, "dt" to dt, "m" to queDungeons, "f" to queDungeons)
+            ChatChannel.GUILD -> mapOf("coords" to coords, "odin" to odin, "boop" to boop, "cf" to cf, "8ball" to eightball, "dice" to dice, "racism" to racism, "ping" to ping, "tps" to tps)
+            ChatChannel.PRIVATE -> mapOf("coords" to coords, "odin" to odin, "boop" to boop, "cf" to cf, "8ball" to eightball, "dice" to dice, "racism" to racism, "ping" to ping, "tps" to tps, "inv" to inv, "invite" to invite)
         }
 
         if (!message.startsWith("!")) return
@@ -98,12 +87,6 @@ object ChatCommands : Module(
             "cf" -> if (cf) channelMessage(flipCoin(), name, channel)
             "8ball" -> if (eightball) channelMessage(eightBall(), name, channel)
             "dice" -> if (dice) channelMessage(rollDice(), name, channel)
-            "cat" -> if (cat) {
-                modMessage("§aFetching cat picture...")
-                scope.launch {
-                    channelMessage(getCatPic(), name, channel)
-                }
-            }
             "racism" -> if (racism) channelMessage("$name is ${Random.nextInt(1, 101)}% racist. Racism is not allowed!", name, channel)
             "ping" -> if (ping) channelMessage("Current Ping: ${floor(ServerUtils.averagePing).toInt()}ms", name, channel)
             "tps" -> if (tps) channelMessage("Current TPS: ${ServerUtils.averageTps.floor()}", name, channel)
@@ -113,12 +96,14 @@ object ChatCommands : Module(
 
             "warp" -> if (warp && channel == ChatChannel.PARTY) sendCommand("p warp")
 
-            "warptransfer" -> { if (warptransfer && channel == ChatChannel.PARTY)
-                sendCommand("p warp")
-                runIn(12) {
-                    sendCommand("p transfer $name")
+            "warptransfer" ->
+                if (warptransfer && channel == ChatChannel.PARTY) {
+                    sendCommand("p warp")
+                    runIn(12) {
+                        sendCommand("p transfer $name")
+                    }
                 }
-            }
+
             "allinvite" -> if (allinvite && channel == ChatChannel.PARTY) sendCommand("p settings allinvite")
 
             "pt" -> if (pt && channel == ChatChannel.PARTY) sendCommand("p transfer $name")
@@ -173,7 +158,8 @@ object ChatCommands : Module(
     }
 
     private fun dt(message: String) {
-        if (!message.containsOneOf("EXTRA STATS", "KUUDRA DOWN!") || dtReason.isEmpty()) return
+        if (!message.matchesOneOf(Regex(" {29}> EXTRA STATS <"), Regex("^\\[NPC] Elle: Good job everyone. A hard fought battle come to an end. Let's get out of here before we run into any more trouble!$"))
+            || dtReason.isEmpty()) return
         runIn(30) {
             PlayerUtils.alert("§cPlayers need DT")
             partyMessage("Players need DT: ${dtReason.joinToString(separator = ", ") { (name, reason) -> "$name: $reason" }}")

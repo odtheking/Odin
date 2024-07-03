@@ -2,7 +2,6 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import kotlinx.coroutines.*
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.showOrder
 import me.odinmain.utils.Vec2
@@ -42,14 +41,10 @@ object WaterSolver {
     private var solutions = mutableMapOf<LeverBlock, Array<Double>>()
     private var openedWater = -1L
 
-    @OptIn(DelicateCoroutinesApi::class)
     fun scan() {
         val room = DungeonUtils.currentRoom?.room ?: return
         if (room.data.name != "Water Board" || variant != -1) return
-
-        GlobalScope.launch {
-            solve(room)
-        }
+        solve(room)
     }
 
     private fun solve(room: Room) {

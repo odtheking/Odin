@@ -53,8 +53,10 @@ object TerminalSolver : Module(
     private val wrongColor: Color by ColorSetting("Wrong Color", Color(45, 45, 45), true).withDependency { renderType == 0 && showColors }
     val textColor: Color by ColorSetting("Text Color", Color(220, 220, 220), true).withDependency { showColors }
     val panesColor: Color by ColorSetting("Panes Color", Color(0, 170, 170), true).withDependency { showColors }
-    val rubixColor: Color by ColorSetting("Rubix Color", Color(0, 170, 170), true).withDependency { showColors }
-    val oppositeRubixColor: Color by ColorSetting("Negative Rubix Color", Color(170, 85, 0), true).withDependency { showColors }
+    val rubixColor1: Color by ColorSetting("Rubix Color 1", Color(0, 170, 170), true).withDependency { showColors }
+    val rubixColor2: Color by ColorSetting("Rubix Color 2", Color(0, 100, 100), true).withDependency { showColors }
+    val oppositeRubixColor1: Color by ColorSetting("Negative Rubix Color 1", Color(170, 85, 0), true).withDependency { showColors }
+    val oppositeRubixColor2: Color by ColorSetting("Negative Rubix Color 2", Color(210, 85, 0), true).withDependency { showColors }
     val orderColor: Color by ColorSetting("Order Color 1", Color(0, 170, 170, 1f), true).withDependency { showColors }
     val orderColor2: Color by ColorSetting("Order Color 2", Color(0, 100, 100, 1f), true).withDependency { showColors }
     val orderColor3: Color by ColorSetting("Order Color 3", Color(0, 65, 65, 1f), true).withDependency { showColors }
@@ -140,9 +142,16 @@ object TerminalSolver : Module(
 
             TerminalTypes.RUBIX -> {
                 val needed = solution.count { it == event.slot.slotIndex }
-                val text = if (needed < 3) needed.toString() else (needed - 5).toString()
-                Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, if (needed < 3) rubixColor.rgba else oppositeRubixColor.rgba)
-                mcText(text, event.x + 8f - getMCTextWidth(text) / 2, event.y + 4.5, 1, textColor, shadow = textShadow, false)
+                val text = if (needed < 3) needed else (needed - 5)
+                val color = when {
+                    needed < 3 && text == 2 -> rubixColor2
+                    needed < 3 && text == 1 -> rubixColor1
+                    text == -2 -> oppositeRubixColor2
+                    else -> oppositeRubixColor1
+                }
+
+                Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, color.rgba)
+                mcText(text.toString(), event.x + 8f - getMCTextWidth(text.toString()) / 2, event.y + 4.5, 1, textColor, shadow = textShadow, false)
             }
             TerminalTypes.ORDER -> {
                 val index = solution.indexOf(event.slot.slotIndex)
