@@ -26,13 +26,7 @@ object PlayerUtils {
      *
      * @author Aton
      */
-    fun playLoudSound(sound: String?, volume: Float, pitch: Float) {
-        shouldBypassVolume = true
-        mc.thePlayer?.playSound(sound, volume, pitch)
-        shouldBypassVolume = false
-    }
-
-    fun playLoudSoundAtLocation(pos: Vec3, sound: String?, volume: Float, pitch: Float) {
+    fun playLoudSound(sound: String?, volume: Float, pitch: Float, pos: Vec3 = mc.thePlayer.positionVector) {
         shouldBypassVolume = true
         mc.theWorld?.playSound(pos.xCoord, pos.yCoord, pos.zCoord, sound, volume, pitch, false)
         shouldBypassVolume = false

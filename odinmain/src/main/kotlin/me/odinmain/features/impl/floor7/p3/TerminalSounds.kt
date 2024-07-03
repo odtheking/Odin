@@ -32,8 +32,14 @@ object TerminalSounds : Module(
     @SubscribeEvent
     fun onPacket(event: PacketReceivedEvent){
         with(event.packet) {
-            if (this !is S29PacketSoundEffect || currentTerm == TerminalTypes.NONE || customSound == "note.pling" ||
-                soundName != "note.pling" || volume != 8f || pitch != 4.047619f) return
+            if (
+                this !is S29PacketSoundEffect ||
+                currentTerm == TerminalTypes.NONE ||
+                customSound == "note.pling" ||
+                soundName != "note.pling" ||
+                volume != 8f ||
+                pitch != 4.047619f
+            ) return
             playTerminalSound()
             event.isCanceled = true
         }

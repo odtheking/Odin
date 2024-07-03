@@ -15,6 +15,7 @@ import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.EtherWarpHelper
 import me.odinmain.utils.skyblock.EtherWarpHelper.etherPos
+import me.odinmain.utils.skyblock.PlayerUtils.playLoudSound
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -41,7 +42,7 @@ object EtherWarpHelper : Module(
     ).withDependency { sound == defaultSounds.size - 1 && sounds}
     private val soundVolume: Float by NumberSetting("Volume", 1f, 0, 1, .01f, description = "Volume of the sound.").withDependency { sounds }
     private val soundPitch: Float by NumberSetting("Pitch", 2f, 0, 2, .01f, description = "Pitch of the sound.").withDependency { sounds }
-    val reset: () -> Unit by ActionSetting("Play sound") {         PlayerUtils.playLoudSoundAtLocation(mc.thePlayer.positionVector, if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], soundVolume, soundPitch) }.withDependency { sounds }
+    val reset: () -> Unit by ActionSetting("Play sound") { playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], soundVolume, soundPitch) }.withDependency { sounds }
 
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
@@ -68,7 +69,7 @@ object EtherWarpHelper : Module(
     fun onSoundPacket(event: PacketReceivedEvent) {
         with(event.packet) {
             if (this !is S29PacketSoundEffect || soundName != "mob.enderdragon.hit" || !sounds || volume != 1f || pitch != 0.53968257f || customSound == "mob.enderdragon.hit") return
-            PlayerUtils.playLoudSoundAtLocation(pos, if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], soundVolume, soundPitch)
+            playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], soundVolume, soundPitch, pos)
             event.isCanceled = true
         }
     }
