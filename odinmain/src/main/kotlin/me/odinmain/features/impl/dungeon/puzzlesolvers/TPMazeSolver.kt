@@ -15,7 +15,7 @@ import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.*
 import java.util.concurrent.CopyOnWriteArraySet
 
-object TPMaze {
+object TPMazeSolver {
     private var portals = setOf<BlockPos>()
     private var correctPortals = listOf<BlockPos>()
     private var visited = CopyOnWriteArraySet<BlockPos>()

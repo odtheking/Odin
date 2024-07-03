@@ -62,7 +62,7 @@ object GhostBlocks : Module(
                 val originalItem = mc.thePlayer?.inventory?.currentItem ?: 0
                 if (originalItem == slot) return@onPress
                 leftClick()
-                swapToIndex(slot!!)
+                slot?.let { swapToIndex(it) }
                 runIn(speed) { swapToIndex(originalItem) } }
             else modMessage("Couldn't find pickaxe.")
         }.withDependency { swapStonk }

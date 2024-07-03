@@ -142,7 +142,7 @@ private val entranceSplitGroup = mutableListOf<Split>()
 
 private val floor1SplitGroup = mutableListOf(
     Split(entryRegexes[0], "§cBonzo's Sike"),
-    Split(Regex("\\[BOSS] Bonzo: Sike"), "§4Cleared"),
+    Split(Regex("\\[BOSS] Bonzo: Oh I'm dead!"), "§4Cleared"),
 )
 
 private val floor2SplitGroup = mutableListOf(

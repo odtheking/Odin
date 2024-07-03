@@ -40,12 +40,14 @@ object ArrowAlign : Module(
 
             possibleSolutions.find { solution ->
                 solution.indices.all { i ->
-                    (solution[i] == -1 || currentFrameRotations!![i] == -1) && solution[i] == currentFrameRotations!![i]
+                    val currentRotation = currentFrameRotations?.get(i) ?: return@all false
+                    (solution[i] == -1 || currentRotation == -1) && solution[i] == currentRotation
                 }
             }?.let { foundSolution ->
                 targetSolution = foundSolution
                 foundSolution.forEachIndexed { i, targetRotation ->
-                    val clicksNeeded = calculateClicksNeeded(currentFrameRotations!![i], targetRotation)
+                    val currentRotation = currentFrameRotations?.get(i) ?: return@forEachIndexed
+                    val clicksNeeded = calculateClicksNeeded(currentRotation, targetRotation)
                     if (clicksNeeded > 0) clicksRemaining[i] = clicksNeeded
                 }
             }
@@ -67,7 +69,8 @@ object ArrowAlign : Module(
         currentFrameRotations = currentFrameRotations?.toMutableList()?.apply { this[frameIndex] = (this[frameIndex] + 1) % 8 }
 
         currentFrameRotations?.let {
-            val remainingClicks = calculateClicksNeeded(it[frameIndex], targetSolution!![frameIndex])
+            val target = targetSolution ?: return
+            val remainingClicks = calculateClicksNeeded(it[frameIndex], target[frameIndex])
             if (remainingClicks == 0) clicksRemaining.remove(frameIndex)
         }
     }
@@ -95,10 +98,11 @@ object ArrowAlign : Module(
         val positionToRotationMap = itemFrames.associate { Vec3(it.posX, it.posY, it.posZ).toString() to it.rotation }
 
         return (0..24).map { index ->
-            if (recentClickTimestamps[index]?.let { System.currentTimeMillis() - it < 1000 } == true && currentFrameRotations != null)
-                currentFrameRotations!![index]
-            else
+            if (recentClickTimestamps[index]?.let { System.currentTimeMillis() - it < 1000 } == true && currentFrameRotations != null) {
+                currentFrameRotations?.get(index) ?: -1
+            } else {
                 positionToRotationMap[getFramePositionFromIndex(index).toString()] ?: -1
+            }
         }
     }
 
