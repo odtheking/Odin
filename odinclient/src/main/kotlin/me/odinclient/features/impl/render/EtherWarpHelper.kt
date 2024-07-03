@@ -50,9 +50,9 @@ object EtherWarpHelper : Module(
     private val maxRot: Float by NumberSetting("Max Rotation", 90f, 0f, 360f, 1f).withDependency { etherWarpHelper }
     private val sounds: Boolean by BooleanSetting("Custom Sounds", default = false)
     private val defaultSounds = arrayListOf("mob.blaze.hit", "fire.ignite", "random.orb", "random.break", "mob.guardian.land.hit", "note.pling", "Custom")
-    private val sound: Int by SelectorSetting("Sound", "mob.blaze.hit", defaultSounds, description = "Which sound to play when you get a secret.").withDependency { sounds }
+    private val sound: Int by SelectorSetting("Sound", "mob.blaze.hit", defaultSounds, description = "Which sound to play when you etherwarp.").withDependency { sounds }
     private val customSound: String by StringSetting("Custom Sound", "mob.blaze.hit",
-        description = "Name of a custom sound to play. This is used when Custom is selected in the Sound setting. Do not use the bat death sound or your game will freeze!", length = 32
+        description = "Name of a custom sound to play. This is used when Custom is selected in the Sound setting.", length = 32
     ).withDependency { sound == defaultSounds.size - 1 && sounds}
     private val soundVolume: Float by NumberSetting("Volume", 1f, 0, 1, .01f, description = "Volume of the sound.").withDependency { sounds }
     private val soundPitch: Float by NumberSetting("Pitch", 2f, 0, 2, .01f, description = "Pitch of the sound.").withDependency { sounds }
