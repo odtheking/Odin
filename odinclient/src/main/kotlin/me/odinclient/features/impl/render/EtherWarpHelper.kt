@@ -54,9 +54,9 @@ object EtherWarpHelper : Module(
     private val customSound: String by StringSetting("Custom Sound", "mob.blaze.hit",
         description = "Name of a custom sound to play. This is used when Custom is selected in the Sound setting. Do not use the bat death sound or your game will freeze!", length = 32
     ).withDependency { sound == defaultSounds.size - 1 && sounds}
-    private val volume: Float by NumberSetting("Volume", 1f, 0, 1, .01f, description = "Volume of the sound.").withDependency { sounds }
-    private val pitch: Float by NumberSetting("Pitch", 2f, 0, 2, .01f, description = "Pitch of the sound.").withDependency { sounds }
-    val reset: () -> Unit by ActionSetting("Play sound") { playLoudSoundAtLocation(mc.thePlayer.positionVector, if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], volume, pitch) }.withDependency { sounds }
+    private val soundVolume: Float by NumberSetting("Volume", 1f, 0, 1, .01f, description = "Volume of the sound.").withDependency { sounds }
+    private val soundPitch: Float by NumberSetting("Pitch", 2f, 0, 2, .01f, description = "Pitch of the sound.").withDependency { sounds }
+    val reset: () -> Unit by ActionSetting("Play sound") { playLoudSoundAtLocation(mc.thePlayer.positionVector, if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], soundVolume, soundPitch) }.withDependency { sounds }
 
     private val tbClock = Clock(etherWarpTBDelay)
 
@@ -134,8 +134,8 @@ object EtherWarpHelper : Module(
     @SubscribeEvent
     fun onSoundPacket(event: PacketReceivedEvent) {
         with(event.packet) {
-            if (this !is S29PacketSoundEffect || this.soundName != "mob.enderdragon.hit" || !sounds || this.volume != 1f || this.pitch != 0.53968257f || customSound == "mob.enderdragon.hit") return
-            playLoudSoundAtLocation(this.pos, if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], volume, pitch)
+            if (this !is S29PacketSoundEffect || soundName != "mob.enderdragon.hit" || !sounds || volume != 1f || pitch != 0.53968257f || customSound == "mob.enderdragon.hit") return
+            playLoudSoundAtLocation(pos, if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], soundVolume, soundPitch)
             event.isCanceled = true
         }
     }

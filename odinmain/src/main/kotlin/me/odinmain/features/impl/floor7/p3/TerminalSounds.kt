@@ -10,7 +10,6 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.features.settings.impl.StringSetting
 import me.odinmain.utils.skyblock.PlayerUtils
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -19,7 +18,7 @@ object TerminalSounds : Module(
     category = Category.FLOOR7,
     description = "Plays a sound whenever you click in a terminal"
 ){
-    private val defaultSounds = arrayListOf("mob.blaze.hit", "fire.ignite", "random.orb", "random.break", "mob.guardian.land.hit", "Custom")
+    private val defaultSounds = arrayListOf("mob.blaze.hit", "random.pop", "random.orb", "random.break", "mob.guardian.land.hit", "Custom")
     private val sound: Int by SelectorSetting("Sound", "mob.blaze.hit", defaultSounds, description = "Which sound to play when you click in a terminal")
     private val customSound: String by StringSetting("Custom Sound", "mob.blaze.hit",
         description = "Name of a custom sound to play. This is used when Custom is selected in the Sound setting.", length = 32
@@ -34,7 +33,7 @@ object TerminalSounds : Module(
     fun onPacket(event: PacketReceivedEvent){
         with(event.packet) {
             if (this !is S29PacketSoundEffect || currentTerm == TerminalTypes.NONE || customSound == "note.pling" ||
-                this.soundName != "note.pling" || this.volume != 8f || this.pitch != 4.047619f) return
+                soundName != "note.pling" || volume != 8f || pitch != 4.047619f) return
             playTerminalSound()
             event.isCanceled = true
         }
