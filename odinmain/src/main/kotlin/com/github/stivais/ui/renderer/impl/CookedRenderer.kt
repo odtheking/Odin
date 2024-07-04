@@ -1,10 +1,14 @@
 package com.github.stivais.ui.renderer.impl
 
-import com.github.stivais.ui.renderer.*
+import com.github.stivais.ui.renderer.Font
+import com.github.stivais.ui.renderer.Gradient
+import com.github.stivais.ui.renderer.Image
 import com.github.stivais.ui.renderer.Renderer
 import me.odinmain.OdinMain.mc
 import me.odinmain.font.OdinFont
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.TextPos
+import me.odinmain.utils.render.roundedRectangle
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.Display
@@ -40,6 +44,10 @@ object CookedRenderer : Renderer {
 
     override fun scale(x: Float, y: Float) {
         GlStateManager.scale(x, y, 0f)
+    }
+
+    override fun rotate(amount: Float) {
+        GlStateManager.rotate(amount, 0f, 0f, 1f)
     }
 
     override fun globalAlpha(amount: Float) {
@@ -122,6 +130,21 @@ object CookedRenderer : Renderer {
         // todo: port for testing
     }
 
+//    override fun svg(
+//        svg: SVG,
+//        x: Float,
+//        y: Float,
+//        w: Float,
+//        h: Float,
+//        scale: Float,
+//        tl: Float,
+//        bl: Float,
+//        br: Float,
+//        tr: Float
+//    ) {
+//        // wotn work
+//    }
+
     private val scissors: ArrayList<IntArray> = arrayListOf()
 
     override fun pushScissor(x: Float, y: Float, w: Float, h: Float) {
@@ -139,15 +162,15 @@ object CookedRenderer : Renderer {
         scissors.lastOrNull()?.let { glScissor(it[0], it[1], it[2], it[3]) } ?: glDisable(GL_SCISSOR_TEST)
     }
 
-    override fun drawWrappedString(
-        text: String,
-        x: Float,
-        y: Float,
-        width: Float,
-        size: Float,
-        color: Int,
-        font: Font
-    ) {
-        TODO("Not yet implemented")
-    }
+//    override fun drawWrappedString(
+//        text: String,
+//        x: Float,
+//        y: Float,
+//        width: Float,
+//        size: Float,
+//        color: Int,
+//        font: Font
+//    ) {
+//        TODO("Not yet implemented")
+//    }
 }

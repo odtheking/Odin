@@ -1,14 +1,20 @@
 package me.odinmain.features.settings.impl
 
 
+import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.constraints.at
 import com.github.stivais.ui.constraints.constrain
+import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.percent
 import com.github.stivais.ui.constraints.px
+import com.github.stivais.ui.constraints.sizes.Copying
 import com.github.stivais.ui.elements.scope.ElementScope
+import com.github.stivais.ui.elements.scope.hoverEffect
 import com.github.stivais.ui.elements.scope.slider
-import com.github.stivais.ui.elements.scope.takeEvents
 import com.github.stivais.ui.impl.ClickGUITheme
+import com.github.stivais.ui.impl.`gray 26`
+import com.github.stivais.ui.utils.radii
+import com.github.stivais.ui.utils.seconds
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import me.odinmain.features.settings.Saving
@@ -68,17 +74,32 @@ class NumberSetting<E>(
                 pos = at(x = -(6.px), y = 10.px),
                 size = 35.percent
             )
-            takeEvents(
-                slider(
-                    constraints = constrain(y = 75.percent, w = 95.percent, h = 18.percent),
+
+            val sliderAmount = Animatable.Raw((((value.toDouble() - min) / (max - min)) * 228).toFloat())
+            block(
+                constraints = constrain(y = 75.percent, w = 95.percent, h = 20.percent),
+                color = `gray 26`,
+                radius = 4.radii()
+            ) {
+                block(
+                    constraints = constrain(0.px, 0.px, sliderAmount, Copying),
                     color = ClickGUITheme,
-                    value = value.toDouble(), min = min, max = max,
-                    onChange = { percent ->
+                    radius = 4.radii()
+                ).hoverEffect(handler = this@block)
+                slider(
+                    onChange = { percent, _, wasClick ->
+                        val to = percent * element.width
+                        if (wasClick) {
+                            sliderAmount.animate(to = to, 0.75.seconds, Animations.EaseOutQuint)
+                        } else {
+                            sliderAmount.to(to = to)
+                        }
+                        this@setting.redraw()
                         set(percent * (max - min) + min)
                         display.string = text
                     }
                 )
-            )
+            }
         }
     }
 

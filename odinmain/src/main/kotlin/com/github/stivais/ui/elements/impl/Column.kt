@@ -24,7 +24,7 @@ open class Layout(
         override fun onElementAdded(element: Element) {
             val c = element.constraints
             if (c.x is Undefined) {
-                val link = Linked(lastLink, element)
+                val link = Linked(element, lastLink)
                 c.x = link
                 lastLink = link
 
@@ -48,11 +48,11 @@ open class Layout(
                 c.x = if (constraints.width !is Bounding) Center else Pixel(0f)
             }
             if (c.y is Undefined) {
-                val link = Linked(lastLink, element)
+                val link = Linked(element, lastLink)
                 c.y = link
                 lastLink = link
 
-                if (padding != null && element !is Divider) {
+                if (padding != null && element !is Divider && elements != null) {
                     val padding = if (padding !is Percent) padding else percentFix(padding)
                     createDivider(amount = padding)
                 }
@@ -65,23 +65,22 @@ open class Layout(
         if (color != null && color!!.rgba.alpha != 0) {
             renderer.rect(x, y, width, height, color!!.get(this))
         }
-//        renderer.hollowRect(x, y, width, height, 1f, Color.WHITE.rgba)
     }
 
     @MustBeInvokedByOverriders
     override fun onElementAdded(element: Element) {
         val c = element.constraints
-        if (constraints.width is Bounding && c.width is Percent) {
+        if (constraints.width.reliesOnChild() && c.width is Percent) {
             c.width = percentFix(c.width as Percent)
         }
-        if (constraints.height is Bounding && c.height is Percent) {
+        if (constraints.height.reliesOnChild() && c.height is Percent) {
             c.height = percentFix(c.height as Percent)
         }
     }
 
     protected fun percentFix(size: Percent, target: Element = parent!!): Size {
         val c = target.constraints
-        if (c.width is Bounding || c.height is Bounding) {
+        if (c.width.reliesOnChild() || c.height.reliesOnChild()) {
             return percentFix(size, target.parent!!)
         }
         val percent = size.percent

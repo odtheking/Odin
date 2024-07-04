@@ -33,8 +33,7 @@ object ClickGUIModule: Module(
     val enableNotification: Boolean by BooleanSetting("Enable notifications", true, description = "Shows you a notification in chat when you toggle an option with a keybind")
     val color: Color by ColorSetting("Gui Color", Color(50, 150, 220), allowAlpha = false, description = "Color theme in the gui.")
 
-    val booleanSettingStyle by SelectorSetting("Switch Style", arrayListOf("Switch", "Checkbox"))
-    val showBindConfliction by BooleanSetting("Show bind conflicts", default = true)
+    val showBindConfliction by BooleanSetting("Show vanilla     bind conflicts", default = true)
 
     val switchType: Boolean by DualSetting("Switch Type", "Checkbox", "Switch", default = true, description = "Switches the type of the settings in the gui.")
     val hudChat: Boolean by BooleanSetting("Shows HUDs in GUIs", true, description = "Shows HUDs in GUIs")
@@ -45,7 +44,7 @@ object ClickGUIModule: Module(
 
     val toglge: Boolean by BooleanSetting("a")
 
-    //val colortest2: NewColor.HSB by NewColorSetting("New color 2", color(50, 150, 220)).withDependency { toglge }
+//    val colortest2: NewColor.HSB by NewColorSetting("New color 2", color(50, 150, 220)).withDependency { toglge }
 
     val devMessages: Boolean by BooleanSetting("Dev Messages", true, description = "Enables dev messages in chat.").withDependency { DevPlayers.isDev }
     val devSize: Boolean by BooleanSetting("Dev Size", true, description = "Toggles client side dev size.").withDependency { DevPlayers.isDev }

@@ -9,31 +9,34 @@ import com.github.stivais.ui.elements.impl.Group
 import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.events.EventManager
 import com.github.stivais.ui.renderer.Font
-import com.github.stivais.ui.renderer.Framebuffer
 import com.github.stivais.ui.renderer.Renderer
 import com.github.stivais.ui.renderer.impl.NVGRenderer
 import com.github.stivais.ui.utils.loop
 import me.odinmain.utils.round
 import java.util.logging.Logger
 
-class UI(
-    val renderer: Renderer = NVGRenderer,
-    settings: UISettings? = null
-) {
+class UI(val renderer: Renderer = NVGRenderer) {
+
+    /**
+     * Used to reference the handler for this UI
+     */
     lateinit var window: Window
 
+    /**
+     * The master element, acts as the border
+     */
     val main: Group = Group(Constraints(0.px, 0.px, 1920.px, 1080.px))
 
-    val settings: UISettings = settings ?: UISettings()
+    /**
+     * Handles events, like mouse clicks or keyboard presses
+     */
+    var eventManager: EventManager = EventManager(this)
 
-    // temporary
-    var keepOpen = false
+//    var debug = false
 
     constructor(renderer: Renderer = NVGRenderer, dsl: ElementScope<Group>.() -> Unit) : this(renderer) {
         ElementScope(main).dsl()
     }
-
-    var eventManager: EventManager = EventManager(this)
 
     inline val mx get() = eventManager.mouseX
 
@@ -43,28 +46,18 @@ class UI(
 
     var onClose: ArrayList<UI.() -> Unit>? = null
 
-
     var animations: ArrayList<Pair<Animation, UI.(Float) -> Unit>>? = null
 
-    var alpha = 1f
-
-    var scale = 1f
-
-    fun initialize(window: Window, width: Int, height: Int) {
-        this.window = window
+    fun initialize(width: Int, height: Int, window: Window? = null) {
+        window?.let { this.window = it }
         main.constraints.width = width.px
         main.constraints.height = height.px
 
         main.initialize(this)
-        main.position()
+        main.redraw()
+        main.clip()
 
         onOpen?.loop { this.it() }
-        if (settings.cleanupOnOpenClose) {
-            onOpen = null
-        }
-        if (settings.cacheFrames && renderer.supportsFramebuffers()) {
-            framebuffer = renderer.createFramebuffer(main.width, main.height)
-        }
     }
 
     // frame metrics
@@ -73,64 +66,24 @@ class UI(
     var frames: Int = 0
     var frameTime: Long = 0
 
-    var needsRedraw = true
-
-    var framebuffer: Framebuffer? = null
-
     // rework fbo
     fun render() {
-        val fbo = framebuffer
-        if (fbo == null) {
-            renderer.beginFrame(main.width, main.height)
-            renderer.push()
-            animations?.removeIf { (anim, block) ->
-                this.block(anim.get())
-                anim.finished
-            }
-
-            if (alpha != 1f) {
-                renderer.globalAlpha(alpha)
-            }
-            if (scale != 1f) {
-                renderer.translate(main.width / 2f, main.height / 2f)
-                renderer.scale(scale, scale)
-                renderer.translate(-main.width / 2f, -main.height / 2f)
-            }
-
-            if (needsRedraw) {
-                needsRedraw = false
-                main.position()
-                main.clip()
-            }
-            main.render()
-            performance?.let {
-                renderer.text(it, main.width - renderer.textWidth(it, 12f), main.height - 12f, 12f)
-            }
-            renderer.pop()
-            renderer.endFrame()
-        } else {
-            if (needsRedraw) {
-                needsRedraw = false
-                renderer.bindFramebuffer(fbo) // thanks ilmars for helping me fix
-                renderer.beginFrame(fbo.width, fbo.height)
-                main.position()
-                main.clip()
-                main.render()
-                renderer.endFrame()
-                renderer.unbindFramebuffer()
-            }
-            renderer.beginFrame(fbo.width, fbo.height)
-            renderer.drawFramebuffer(fbo, 0f, 0f)
-            performance?.let {
-                renderer.text(it, main.width - renderer.textWidth(it, 12f), main.height - 12f, 12f)
-            }
-            renderer.endFrame()
+        renderer.beginFrame(main.width, main.height)
+        renderer.push()
+        animations?.removeIf { (anim, block) ->
+            this.block(anim.get())
+            anim.finished
         }
+        main.render()
+        performance?.let {
+            renderer.text(it, main.width - renderer.textWidth(it, 12f), main.height - 12f, 12f)
+        }
+        renderer.pop()
+        renderer.endFrame()
     }
 
-    // idk about name
-    // kinda verbose
-    internal inline fun measureMetrics(block: () -> Unit) {
+    internal inline fun measureFrametime(block: () -> Unit) {
+//        if (!debug) return
         val start = System.nanoTime()
         block()
         frameTime += System.nanoTime() - start
@@ -138,12 +91,8 @@ class UI(
         if (System.nanoTime() - lastUpdate >= 1_000_000_000) {
             lastUpdate = System.nanoTime()
             val sb = StringBuilder()
-            if (settings.elementMetrics) {
-                sb.append("elements: ${getStats(main, false)}, elements rendering: ${getStats(main, true)},")
-            }
-            if (settings.frameMetrics) {
-                sb.append("frame-time avg: ${((frameTime / frames) / 1_000_000.0).round(4)}s")
-            }
+            sb.append("elements: ${getStats(main, false)}, elements rendering: ${getStats(main, true)},")
+            sb.append("frame-time avg: ${((frameTime / frames) / 1_000_000.0).round(4)}s")
             performance = sb.toString()
             frames = 0
             frameTime = 0
@@ -162,19 +111,14 @@ class UI(
     fun resize(width: Int, height: Int) {
         main.constraints.width = width.px
         main.constraints.height = height.px
-        needsRedraw = true
-        if (framebuffer != null) {
-            renderer.destroyFramebuffer(framebuffer!!)
-            framebuffer = renderer.createFramebuffer(main.width, main.height)
-        }
+        main.redraw = true
     }
 
     fun cleanup() {
         eventManager.elementHovered = null
         unfocus()
-        framebuffer?.let { fbo -> renderer.destroyFramebuffer(fbo) }
         onClose?.loop { this.it() }
-        if (settings.cleanupOnOpenClose) onClose = null
+//        if (!settings.persistant) onClose = null
     }
 
     fun focus(element: Element) {
@@ -187,11 +131,6 @@ class UI(
 
     fun isFocused(element: Element): Boolean {
         return eventManager.focused == element
-    }
-
-    inline fun settings(block: UISettings.() -> Unit): UI {
-        settings.apply(block)
-        return this
     }
 
     fun animate(

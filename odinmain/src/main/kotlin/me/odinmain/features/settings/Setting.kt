@@ -7,6 +7,7 @@ import com.github.stivais.ui.constraints.measurements.Pixel
 import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.elements.scope.ElementDSL
 import com.github.stivais.ui.elements.scope.ElementScope
+import com.github.stivais.ui.impl.description
 import com.github.stivais.ui.utils.animate
 import com.github.stivais.ui.utils.loop
 import com.github.stivais.ui.utils.seconds
@@ -70,11 +71,18 @@ abstract class Setting<T> (
         this.value = value
     }
 
+    /**
+     * Creates the elements required for the UI
+     *
+     * It is highly recommended to use [setting] as your base element, due to simplify animations
+     */
     internal open fun ElementScope<*>.createElement() {}
 
+    /**
+     * Intended to be used as a base in [createElement] to easily provide animations for settings with potential requirements
+     */
     protected fun ElementDSL.setting(height: Size, block: ElementScope<SettingElement>.() -> Unit = {}): ElementScope<*> {
-        return create(ElementScope(SettingElement(height)), block)
-//        return
+        return create(ElementScope(SettingElement(height)).also { it.description(description) }, block)
     }
 
     companion object {
@@ -95,22 +103,22 @@ abstract class Setting<T> (
         }
     }
 
-    // todo: cleanup
     protected inner class SettingElement(height: Size) : Element(size(240.px, Animatable(from = height, to = 0.px))) {
 
         private var visible: Boolean = visibilityDependency?.invoke() ?: true
 
         init {
+            alphaAnim = Animatable(from = 1.px, to = 0.px)
             scissors = true
             if (!visible) {
                 (constraints.height as Animatable).swap()
+                (alphaAnim as Animatable).swap()
             }
+
             if (initializationTasks == null) initializationTasks = arrayListOf()
             initializationTasks!!.add {
                 if (ui.onOpen == null) ui.onOpen = arrayListOf()
-                ui.onOpen!!.add {
-                    elements?.loop { fixHeight(it) }
-                }
+                ui.onOpen!!.add { elements?.loop { fixHeight(it) } }
             }
         }
 
@@ -118,7 +126,8 @@ abstract class Setting<T> (
             if ((visibilityDependency?.invoke() != false) != visible) {
                 visible = !visible
                 constraints.height.animate(0.25.seconds, Animations.EaseInOutQuint)
-                ui.needsRedraw = true
+                alphaAnim!!.animate(0.25.seconds, Animations.EaseInOutQuint)
+                redraw = true
             }
         }
 

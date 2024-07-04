@@ -37,3 +37,6 @@ inline fun <E> ArrayList<E>.loop(block: (E) -> Unit) {
  */
 val Number.seconds
     get() = this.toFloat() * 1_000_000_000
+
+val Number.s
+    get() = this.toFloat() * 1_000_000_000

@@ -63,7 +63,7 @@ interface Color {
         constructor(from: Color, to: Color, swapIf: Boolean) : this(from, to) {
             if (swapIf) {
                 swap()
-                current = color1.rgba
+//                current = color1.rgba
             }
         }
 
@@ -96,9 +96,7 @@ interface Color {
             }
 
         override fun get(element: Element): Int {
-            if (animation != null && element.ui.framebuffer != null) {
-                element.ui.needsRedraw = true
-            }
+            // add stuff when fbo
             return rgba
         }
 
@@ -175,15 +173,15 @@ val Color.blue
 val Color.alpha
     get() = (rgba shr 24) and 0xFF
 
-
-fun Int.brighter(factor: Double = 1.2): Int {
-    return getRGBA(
-        (red * factor).roundToInt().coerceIn(0, 255),
-        (green * factor).roundToInt().coerceIn(0, 255),
-        (blue * factor).roundToInt().coerceIn(0, 255),
-        (alpha * factor).roundToInt().coerceIn(0, 255)
-    )
-}
+// fix
+//fun Int.brighter(factor: Double = 1.2): Int {
+//    return getRGBA(
+//        (red * factor).roundToInt().coerceIn(0, 255),
+//        (green * factor).roundToInt().coerceIn(0, 255),
+//        (blue * factor).roundToInt().coerceIn(0, 255),
+//        (alpha * factor).roundToInt().coerceIn(0, 255)
+//    )
+//}
 
 fun Color.toHSB(): Color.HSB {
     return Color.HSB(
@@ -209,3 +207,29 @@ fun color(r: Int, g: Int, b: Int, alpha: Float = 1f) = Color.RGB(r, g, b, alpha)
 fun color(h: Float, s: Float, b: Float, alpha: Float = 1f) = Color.HSB(h, s, b, alpha)
 
 fun color(from: Color, to: Color, swap: Boolean = false) = Color.Animated(from, to, swap)
+
+fun Int.brighter(factor: Double = 1.0): Int {
+    if (factor < 1.0) return this
+    var r = red
+    var g = green
+    var b = blue
+
+    val brightness = (1.0 / (2.0 - factor)).toInt()
+
+    if (r == 0 && g == 0 && b == 0) return getRGBA(brightness, brightness, brightness, alpha)
+
+    r = if (r in 1..< brightness) brightness else minOf((r / factor).toInt(), 255)
+    g = if (g in 1..< brightness) brightness else minOf((g / factor).toInt(), 255)
+    b = if (b in 1..< brightness) brightness else minOf((b / factor).toInt(), 255)
+
+    return getRGBA(r, g, b, alpha)
+}
+
+fun Int.darker(factor: Double = 1.0): Int {
+    return getRGBA(
+        (red * factor).roundToInt().coerceIn(0, 255),
+        (green * factor).roundToInt().coerceIn(0, 255),
+        (blue * factor).roundToInt().coerceIn(0, 255),
+        (alpha * factor).roundToInt().coerceIn(0, 255)
+    )
+}

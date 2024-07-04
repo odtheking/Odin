@@ -16,21 +16,26 @@ import com.github.stivais.ui.events.Mouse
 import com.github.stivais.ui.renderer.Font
 import com.github.stivais.ui.renderer.Gradient
 import com.github.stivais.ui.renderer.Image
-import com.github.stivais.ui.renderer.SVG
 import com.github.stivais.ui.utils.radii
 
 open class ElementScope<E: Element>(val element: E) {
 
-    val x
+    val ui: UI
+        get() = element.ui
+
+    val parent: Element?
+        get() = element.parent
+
+    val x: Position
         get() = element.constraints.x
 
-    val y
+    val y: Position
         get() = element.constraints.y
 
-    val width
+    val width: Size
         get() = element.constraints.width
 
-    val height
+    val height: Size
         get() = element.constraints.height
 
     var color: Color?
@@ -45,12 +50,6 @@ open class ElementScope<E: Element>(val element: E) {
             element.enabled = value
         }
 
-    val ui: UI
-        get() = element.ui
-
-    val parent: Element?
-        get() = element.parent
-
     fun parent(): ElementScope<*>? = parent?.createScope()
 
     fun child(index: Int): ElementScope<*>? = element.elements?.get(index)?.createScope()
@@ -59,7 +58,7 @@ open class ElementScope<E: Element>(val element: E) {
         val anim = element.scrollY ?: Animatable.Raw(0f).also { element.scrollY = it }
         val curr = anim.current
         anim.animate(
-            to = (curr + amount).coerceIn(-(element.height - curr), 0f),
+            to = (curr + amount).coerceIn(-(element.height), 0f),
             duration,
             animation
         )
@@ -143,6 +142,15 @@ open class ElementScope<E: Element>(val element: E) {
     ) = create(TextScope(Text.Supplied(text, font, color, pos, size)), block)
 
     @DSL
+    fun textInput(
+        text: String = "",
+        placeholder: String = "",
+        constraints: Constraints? = null,
+        maxWidth: Size? = null,
+        onTextChange: (string: String) -> Unit
+    ) = create(TextScope(TextInput(text, placeholder, constraints, maxWidth, false, onTextChange)))
+
+    @DSL
     fun image(
         image: Image,
         constraints: Constraints? = null,
@@ -158,22 +166,6 @@ open class ElementScope<E: Element>(val element: E) {
         dsl: ElementScope<ImageElement>.() -> Unit = {}
     ) = create(ElementScope(ImageElement(Image(image), constraints, radius)), dsl)
 
-    @DSL
-    fun svg(
-        svg: SVG,
-        constraints: Constraints? = null,
-        radius: FloatArray = 0.radii(),
-        dsl: ElementScope<SVGElement>.() -> Unit = {}
-    ) = create(ElementScope(SVGElement(svg, constraints, radius)), dsl)
-
-    @DSL
-    fun svg(
-        svg: String,
-        constraints: Constraints? = null,
-        radius: FloatArray = 0.radii(),
-        dsl: ElementScope<SVGElement>.() -> Unit = {}
-    ) = create(ElementScope(SVGElement(SVG(svg), constraints, radius)), dsl)
-
     fun onInitialization(action: () -> Unit) {
         if (element.initialized) return UI.logger.warning("Tried calling \"onInitialization\" after init has already been done")
         if (element.initializationTasks == null) element.initializationTasks = arrayListOf()
@@ -182,6 +174,10 @@ open class ElementScope<E: Element>(val element: E) {
 
     fun onClick(button: Int? = 0, block: (Mouse.Clicked) -> Boolean) {
         element.registerEvent(Mouse.Clicked(button), block as Event.() -> Boolean)
+    }
+
+    fun onFocusedClick(button: Int = 0, block: (Focused.Clicked) -> Boolean) {
+        element.registerEvent(Focused.Clicked(button), block as Event.() -> Boolean)
     }
 
     fun onRelease(button: Int = 0, block: (Mouse.Released) -> Unit) {
@@ -220,22 +216,27 @@ open class ElementScope<E: Element>(val element: E) {
         element.registerEvent(Mouse.Moved, block as Event.() -> Boolean)
     }
 
+    fun onMouseHovered(ms: Long, block: () -> Unit) {
+//        if (element.hoverEvents == null) element.hoverEvents = arrayListOf()
+//        element.hoverEvents!!.add(Mouse.Hovered(ms))
+    }
+
     fun onFocusGain(block: (Event) -> Unit) {
         element.registerEvent(Focused.Gained) {
             block(this)
-            true
+            false
         }
     }
 
     fun onFocusLost(block: (Event) -> Unit) {
         element.registerEvent(Focused.Lost) {
             block(this)
-            true
+            false
         }
     }
 
     fun redraw() {
-        element.ui.needsRedraw = true
+        element.redraw = true
     }
 
     fun scissors() {

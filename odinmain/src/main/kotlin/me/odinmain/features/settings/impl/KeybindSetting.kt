@@ -83,8 +83,8 @@ class KeybindSetting(
                     text = keyName,
                     color = if (isConflicting()) conflictingColor else Color.WHITE
                 )
-                onClick(null) { (button) ->
-                    value.key = -100 + button!!
+                onFocusedClick { (button) ->
+                    value.key = -100 + button
                     ui.unfocus()
                     true
                 }
@@ -126,7 +126,7 @@ class KeybindSetting(
         }
     }
 
-    companion object {
+    private companion object {
         @JvmField
         val conflictingColor: Color = Color.RGB(240, 70, 70)
     }

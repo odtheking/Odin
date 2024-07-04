@@ -7,7 +7,6 @@ import me.odinmain.ui.hud.Render
 /**
  * @author Stivais, Bonsai
  */
-// Todo: make huds use UI system
 class HudSetting(
     name: String,
     hud: HudElement,

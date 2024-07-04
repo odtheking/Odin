@@ -3,6 +3,8 @@ package com.github.stivais.ui.impl
 import com.github.stivais.ui.UI
 import com.github.stivais.ui.renderer.Renderer
 
+// pos - should: 0x0, is: 0x0
+// size - should: 1920x1080, is: 1920x1080
 fun basic(renderer: Renderer) = UI(renderer) {
 
 //    TextInput(
@@ -10,22 +12,4 @@ fun basic(renderer: Renderer) = UI(renderer) {
 //        constraints = constrain(920.px, 540.px)
 //    ).add()
 
-//    column {
-//        repeat(5) {
-//            block(
-//                constraints = size(100.px, 10.percent),
-//                color = Color.RED
-//            ) {
-//                outline(color = Color.BLACK)
-//                text(
-//                    text = "${it + 1}"
-//                )
-//                onClick(0) { _ ->
-//                    modMessage("Clicked block $it")
-//                    sibling()?.cast<BlockScope>()?.outline(Color.WHITE)
-//                    false
-//                }
-//            }
-//        }
-//    }
 }

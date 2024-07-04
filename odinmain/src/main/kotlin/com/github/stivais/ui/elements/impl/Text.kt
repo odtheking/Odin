@@ -30,14 +30,17 @@ open class Text(
     // uses to check if width should be recalculated as it is expensive to do so
     protected var previousHeight = 0f
 
-    override fun prePosition() {
-//        if (!renders) return
+    override fun preSize() {
         height = constraints.height.get(this, Type.H)
         if (previousHeight != height) {
             previousHeight = height
-            val newWidth =  renderer.textWidth(text, height)
+            val newWidth = getTextWidth()
             (constraints.width as Pixel).pixels = newWidth
         }
+    }
+
+    open fun getTextWidth(): Float {
+        return renderer.textWidth(text, height)
     }
 
     override fun draw() {

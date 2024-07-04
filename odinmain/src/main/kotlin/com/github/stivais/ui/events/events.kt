@@ -1,15 +1,10 @@
 package com.github.stivais.ui.events
 
-interface Event {
-    // todo: maybe better way?
-    fun isFocused() = false
-}
+interface Event
 
 interface Mouse : Event {
 
     data class Clicked(val button: Int?) : Mouse {
-
-        override fun isFocused(): Boolean = button == null
 
         override fun equals(other: Any?): Boolean { // needs to be overridden, so it is recognized in the events Map
             if (this === other) return true
@@ -70,8 +65,6 @@ interface Key : Event {
 
     data class CodePressed(val code: Int = -1, private val down: Boolean = true) : Key {
 
-        override fun isFocused(): Boolean = true
-
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (other !is CodePressed) return false
@@ -85,8 +78,6 @@ interface Key : Event {
     }
 
     class CodeReleased(val code: Int?) : Key {
-
-        override fun isFocused(): Boolean = true
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
@@ -102,12 +93,19 @@ interface Key : Event {
 
 interface Focused : Event {
 
-    data object Gained : Focused {
-        override fun isFocused(): Boolean = true
+    // todo: migrate
+    data class Clicked(val button: Int = 0 /* this doesn't matter for accepting event */) : Focused {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            return other is Clicked
+        }
+
+        override fun hashCode(): Int {
+            return 992 // 31^2 + 31
+        }
     }
 
-    data object Lost : Focused {
-        override fun isFocused(): Boolean = true
-    }
+    data object Gained : Focused
 
+    data object Lost : Focused
 }

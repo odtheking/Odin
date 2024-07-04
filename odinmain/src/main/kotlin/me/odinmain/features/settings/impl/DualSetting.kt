@@ -10,6 +10,8 @@ import me.odinmain.features.settings.Setting
  *
  * @author Aton, Bonsai
  */
+// TODO: Replace with selector settings, essentially the same thing
+@Deprecated("Use SelectorSetting")
 class DualSetting (
     name: String,
     val left: String,

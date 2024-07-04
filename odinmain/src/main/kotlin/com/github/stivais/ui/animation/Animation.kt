@@ -1,7 +1,7 @@
 package com.github.stivais.ui.animation
 
 class Animation(
-    private var duration: Float,
+    var duration: Float,
     val type: Animations,
     var from: Float = 0f,
     var to: Float = 1f,

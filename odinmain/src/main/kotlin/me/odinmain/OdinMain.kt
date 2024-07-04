@@ -14,7 +14,6 @@ import me.odinmain.features.ModuleManager
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.features.impl.render.WaypointManager
-import me.odinmain.features.settings.impl.Hud
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.util.shader.RoundedRect
@@ -63,10 +62,7 @@ object OdinMain {
             WaypointManager,
             DevPlayers,
             SkyblockPlayer,
-            //HighlightRenderer,
-            //OdinUpdater,
             UIScreen,
-            Hud,
             this
         ).forEach { MinecraftForge.EVENT_BUS.register(it) }
 

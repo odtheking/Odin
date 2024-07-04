@@ -10,25 +10,27 @@ import com.github.stivais.ui.constraints.measurements.Undefined
 import com.github.stivais.ui.constraints.positions.Center
 import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.events.Event
-import com.github.stivais.ui.events.Mouse
+import com.github.stivais.ui.renderer.Renderer
 import com.github.stivais.ui.utils.loop
 
 abstract class Element(constraints: Constraints?, var color: Color? = null) {
 
-    // todo: maybe bring all values into here?
     val constraints: Constraints = constraints ?: Constraints(Undefined, Undefined, Undefined, Undefined)
 
     lateinit var ui: UI
 
-    val renderer get() = ui.renderer
+    val renderer: Renderer
+        get() = ui.renderer
 
     var parent: Element? = null
 
     var elements: ArrayList<Element>? = null
 
-    open var events: HashMap<Event, ArrayList<Event.() -> Boolean>>? = null
+    open var events: HashMap<Event, ArrayList<(Event) -> Boolean>>? = null
 
     internal var initializationTasks: ArrayList<() -> Unit>? = null
+
+//    var scaledCentered = true
 
     val initialized
         get() = ::ui.isInitialized
@@ -38,34 +40,39 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
     var width: Float = 0f
     var height: Float = 0f
 
+//    var _height = 0f
+//        set(value) {
+//            field = value
+//        }
+
     var internalX: Float = 0f
 
     var internalY: Float = 0f
 
     var scrollY: Animatable.Raw? = null
 
-    private var sy = 0f
+    var sy = 0f
+        set(value) {
+            if (field == value) return
+            redraw = true
+            field = value
+        }
 
     var alphaAnim: Animatable? = null
 
+    var rotateAnim: Animatable? = null
+
     var alpha = 1f
+        set(value) {
+            field = value.coerceIn(0f, 1f)
+        }
 
     var scale = 1f
         set(value) {
             field = value.coerceAtLeast(0f)
         }
 
-    var scaleCenter = true
-
-    var isHovered = false
-        set(value) {
-            if (value) {
-                accept(Mouse.Entered)
-            } else {
-                accept(Mouse.Exited)
-            }
-            field = value
-        }
+    var rotation = 0f
 
     open var enabled: Boolean = true
 
@@ -78,71 +85,91 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
 
     abstract fun draw()
 
+    fun size() {
+        if (!enabled) return
+        preSize()
+        if (!constraints.width.reliesOnChild()) width = constraints.width.get(this, Type.W)
+        if (!constraints.height.reliesOnChild()) height = constraints.height.get(this, Type.H)
+        elements?.loop { it.size() }
+    }
+
     fun position() {
         if (!enabled) return
-        if (scrollY != null) {
-            sy = scrollY!!.get(this, Type.H)
-        }
-        prePosition()
-        if (!constraints.width.reliesOnChild()) width = constraints.width.get(this, Type.W)
-        if (!constraints.height.reliesOnChild()) height = constraints.height.get(this, Type.H) + sy
+
         internalX = constraints.x.get(this, Type.X)
         internalY = constraints.y.get(this, Type.Y)
+        x = internalX + (parent?.x ?: 0f) //+ (parent?.x ?: 0f)
+        y = internalY + (parent?.y ?: 0f) + (parent?.sy ?: 0f)
 
-        if (elements != null) {
-            elements!!.loop { element ->
-                element.position()
-            }
-        } else {
-            parent?.place(this)
-        }
+        elements?.loop { it.position() }
 
+        // resize after position because of Constraints like Bounding and Linked
         if (constraints.width.reliesOnChild()) width = constraints.width.get(this, Type.W)
-        if (constraints.height.reliesOnChild()) height = constraints.height.get(this, Type.H) + sy
-        placed = false
+        if (constraints.height.reliesOnChild()) height = constraints.height.get(this, Type.H)
+    }
+
+    var redraw = true
+
+    fun redraw() {
+        size()
+        position()
+    }
+
+    // rename
+    fun getElementToRedraw(): Element {
+        val p = parent ?: return this
+        return if (p.constraints.width.reliesOnChild() || p.constraints.height.reliesOnChild()) p.getElementToRedraw() else this
     }
 
     fun clip() {
         elements?.loop {
-            it.renders = it.intersects(x, y, width, height) && width != 0f && height != 0f
+            it.renders = it.intersects(x, y, width, height)// && it.width != 0f && it.height != 0f
             if (it.renders) {
                 it.clip()
             }
         }
     }
 
-    open fun prePosition() {}
-
-    protected var placed: Boolean = false
-
-    open fun place(element: Element) {
-        if (!placed) {
-            parent?.place(this)
-            placed = true
-        }
-        element.x = x + element.internalX
-        element.y = y + element.internalY + sy
-    }
+    open fun preSize() {}
 
     fun render() {
+        if (redraw) {
+            redraw = false
+            val test = getElementToRedraw()
+            test.size()
+            test.position()
+            test.clip()
+        }
         if (!renders) return
         renderer.push()
+//        if (scrollY != null) {
+//            renderer.hollowRect(x, y, width, height, 3f, Color.WHITE.rgba)
+//            sy = scrollY!!.get(this, Type.H)
+//        }
         if (alphaAnim != null) {
             alpha = alphaAnim!!.get(this, Type.X)
+        }
+        if (rotateAnim != null) {
+            rotation = rotateAnim!!.get(this, Type.X)
         }
         if (alpha != 1f) {
             renderer.globalAlpha(alpha)
         }
         if (scale != 1f) {
-            var x = x
-            var y = y
-            if (scaleCenter) {
-                x += width / 2f
-                y += height / 2f
-            }
-            renderer.translate(x, y)
+//            var x = x
+//            var y = y
+//            if (scaledCentered) {
+//                x += width / 2f
+//                y += height / 2f
+//            }
+            renderer.translate(x + width / 2f, y + height / 2f)
             renderer.scale(scale, scale)
-            renderer.translate(-x, -y)
+            renderer.translate(-(x + width / 2f), -(y + height / 2f))
+        }
+        if (rotation != 0f) {
+            renderer.translate(x + width / 2f, y + height / 2f)
+            renderer.rotate(rotation)
+            renderer.translate(-(x + width / 2f), -(y + height / 2f))
         }
         draw()
         if (scissors) renderer.pushScissor(x, y, width, height)
@@ -166,8 +193,7 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
     }
 
     @Suppress("UNCHECKED_CAST")
-    infix fun <E : Event> E.register(block: (E) -> Boolean) = registerEvent(this, block as Event.() -> Boolean)
-
+    infix fun <E : Event> E.register(block: (E) -> Boolean) = registerEvent(this, block as (Event) -> Boolean)
 
     fun onInitialization(action: () -> Unit) {
         if (::ui.isInitialized) return logger.warning("Tried calling \"onInitialization\" after init has already been done")
@@ -176,14 +202,11 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
     }
 
     fun addElement(element: Element) {
+        onElementAdded(element)
         if (elements == null) elements = arrayListOf()
         elements!!.add(element)
         element.parent = this
-        onElementAdded(element)
-        if (::ui.isInitialized) {
-            ui.needsRedraw = true
-            element.initialize(ui)
-        }
+        if (::ui.isInitialized) element.initialize(ui)
     }
 
     fun removeElement(element: Element?) {
@@ -198,7 +221,7 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
         elements?.clear()
         elements = null
         if (::ui.isInitialized) {
-            ui.needsRedraw = true
+            redraw = true
         }
     }
 

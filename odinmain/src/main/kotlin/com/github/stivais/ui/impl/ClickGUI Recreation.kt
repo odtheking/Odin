@@ -4,11 +4,9 @@ import com.github.stivais.ui.UI
 import com.github.stivais.ui.UIScreen
 import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.color.Color
-import com.github.stivais.ui.color.color
 import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.sizes.Bounding
-import com.github.stivais.ui.elements.impl.TextInput
 import com.github.stivais.ui.elements.scope.*
 import com.github.stivais.ui.renderer.Renderer
 import com.github.stivais.ui.utils.animate
@@ -22,7 +20,6 @@ import me.odinmain.features.ModuleManager.modules
 import me.odinmain.features.impl.render.ClickGUIModule.color
 import me.odinmain.features.impl.render.ClickGUIModule.lastSeenVersion
 import me.odinmain.utils.capitalizeFirst
-import me.odinmain.utils.skyblock.modMessage
 
 @JvmField
 val ClickGUITheme = Color { color.rgba }
@@ -36,18 +33,15 @@ val `gray 38`: Color = Color.RGB(38, 38, 38)
 @JvmField
 val `transparent fix`: Color = Color.RGB(255, 255, 255, 0.2f)
 
-fun clickGUI(renderer: Renderer) = UI(renderer) {
-    // used for search bar
-    val moduleElements = arrayListOf<Pair<Module, ElementDSL>>()
-    openCloseAnim(0.5.seconds)
+fun clickGUI(renderer: Renderer) = UI(renderer) ui@{
+    // used for search bar without needing to iterate over all elements
+    val moduleElements = ArrayList<Pair<Module, ElementDSL>>()
+    onUIClose { Config.save() }
     text(
         text = "odin${if (OdinMain.isLegitVersion) "" else "-client"} $lastSeenVersion",
         pos = at(x = 1.px, y = -(0.px)),
         size = 12.px
     )
-    onUIClose {
-        Config.save()
-    }
     for (panel in Category.entries) {
         column(at(x = panel.x.px, y = panel.y.px)) {
             onUIClose {
@@ -55,7 +49,7 @@ fun clickGUI(renderer: Renderer) = UI(renderer) {
                 panel.y = element.y
             }
             onScroll { (amount) ->
-                child(1)!!.scroll(amount * 1.25f, 0.1.seconds, Animations.Linear)
+                child(1)!!.scroll(amount, 0.1.seconds, Animations.Linear)
                 true
             }
             block(
@@ -93,37 +87,37 @@ fun clickGUI(renderer: Renderer) = UI(renderer) {
 
     block(
         constrain(y = 80.percent, w = 25.percent, h = 5.percent),
-        `gray 38`
+        color = `gray 26`,
+        radius = 5.radii()
     ) {
-        TextInput(
-            "Search",
-            "Search",
-            null,
-            onTextChange = { str ->
-                for ((module, element) in moduleElements) {
-                    if (module.name == "Server Hud") {
-                        modMessage("${module.name.startsWith(str, true)}, $str, ${module.name}")
-                    }
-                    element.enabled = module.name.startsWith(str, true)
-                }
+        textInput(placeholder = "Search") { str ->
+            for ((module, element) in moduleElements) {
+                element.enabled = module.name.contains(str, true)
             }
-        ).add()
-    }.draggable()
+            this@ui.redraw()
+        }
+    }.draggable(button = 1)
+
+    openAnim(0.5.seconds, Animations.EaseOutQuint)
+    closeAnim(0.5.seconds, Animations.EaseInBack)
 }
 
 private fun ElementScope<*>.module(module: Module) = column(
     constraints = size(h = Animatable(from = 32.px, to = Bounding))
 ) {
-    button(
-        constraints = size(w = 240.px, h = 32.px),
-        color = color(from = `gray 26`, to = ClickGUITheme),
-        on = module.enabled
+    val color = Color.Animated(from = `gray 26`, to = ClickGUITheme)
+    if (module.enabled) color.swap()
+    block(
+        constraints = size(240.px, h = 32.px),
+        color = color
     ) {
+        description(module.description)
         text(
             text = module.name,
             size = 16.px
         )
         onClick {
+            color.animate(0.15.seconds)
             module.toggle()
             true
         }
@@ -131,6 +125,7 @@ private fun ElementScope<*>.module(module: Module) = column(
             parent()!!.height.animate(0.25.seconds, Animations.EaseOutQuint)
             true
         }
+        hoverEffect(duration = 0.1.seconds)
     }
     for (setting in module.settings) {
         if (setting.hidden) continue
@@ -140,26 +135,31 @@ private fun ElementScope<*>.module(module: Module) = column(
     }
 }
 
-// todo: cleanup
-fun ElementDSL.openCloseAnim(
+fun ElementDSL.openAnim(
     duration: Float,
-    animationIn: Animations = Animations.EaseOutQuint,
-    animationOut: Animations = Animations.EaseInBack
+    animation: Animations,
 ) {
     onUIOpen {
-        animate(duration, animationIn) {
-            alpha = it
-            scale = it
+        animate(duration, animation) {
+            element.alpha = it
+            element.scale = it
         }
     }
+}
+
+fun ElementDSL.closeAnim(duration: Float, animation: Animations) {
     onUIClose {
-        (window as UIScreen).keep()
-        animate(duration, animationOut) {
+        UIScreen.closeAnimHandler = window as UIScreen
+        animate(duration, animation) {
             val percent = 1f - it
-            alpha = percent
-            scale = percent
+            element.alpha = percent
+            element.scale = percent
         }.onFinish {
-            window.close()
+            UIScreen.closeAnimHandler = null
         }
     }
+}
+
+fun ElementDSL.description(string: String) {
+    // todo: make
 }

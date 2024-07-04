@@ -8,24 +8,24 @@ import com.github.stivais.ui.utils.loop
 class EventManager(private val ui: UI) {
     var mouseX: Float = 0f
         set(value) {
-            field = value * ui.scale
+            field = value * ui.main.scale // maybe make mouse scale depending on current hovered element?
         }
 
     var mouseY: Float = 0f
         set(value) {
-            field = value * ui.scale
+            field = value * ui.main.scale // maybe make mouse scale depending on current hovered element?
         }
-
-    var focused: Element? = null
-        private set
 
     var elementHovered: Element? = null
         set(value) {
             if (field === value) return
-            field?.isHovered = false
-            value?.isHovered = true
+            if (field != null) dispatch(Mouse.Exited, field)
+            if (value != null) dispatch(Mouse.Entered, value)
             field = value
         }
+
+    var focused: Element? = null
+        private set
 
     fun check(): Boolean {
         val hovered = elementHovered ?: return false
@@ -44,20 +44,16 @@ class EventManager(private val ui: UI) {
     }
 
     fun onMouseClick(button: Int): Boolean {
-        val event = Mouse.Clicked(button)
         if (focused != null) {
-            if (!focused!!.isInside(mouseX, mouseY) && dispatchFocused(focused, event)) {
+            if (focused!!.isInside(mouseX, mouseY)) {
+                if (focused!!.accept(Focused.Clicked(button))) {
+                    return true
+                }
+            } else {
                 unfocus()
-                updateIfNecessary()
-            }
-            return true
-        } else {
-            if (dispatch(event)) {
-                updateIfNecessary()
-                return true
             }
         }
-        return false
+        return dispatch(Mouse.Clicked(button))
     }
 
     fun onMouseRelease(button: Int) {
@@ -67,9 +63,7 @@ class EventManager(private val ui: UI) {
 
     fun onMouseScroll(amount: Float) {
         val event = Mouse.Scrolled(amount)
-        if (dispatch(event)) {
-            updateIfNecessary()
-        }
+        dispatch(event)
     }
 
     //
@@ -131,7 +125,10 @@ class EventManager(private val ui: UI) {
     private fun dispatch(event: Event, element: Element? = elementHovered): Boolean {
         var current = element
         while (current != null) {
-            if (current.accept(event)) return true
+            if (current.accept(event)) {
+                current.redraw = true
+                return true
+            }
             current = current.parent
         }
         return false
@@ -142,28 +139,6 @@ class EventManager(private val ui: UI) {
         element.accept(event)
         element.elements?.loop {
             dispatchToAll(event, it)
-        }
-    }
-
-    // todo: maybe find a better way or clean this up? im not quite happy with it
-    private fun dispatchFocused(element: Element?, event: Event): Boolean { // could cause unwanted execution of certain inputs
-        element?.let {
-            for (entry in it.events?.entries ?: return true) {
-                if (entry.key::class.java == event::class.java) { // check if java class is the same
-                    if (!entry.key.isFocused()) continue
-                    for (function in entry.value) {
-                        if (function(event)) return true
-                    }
-                    return true
-                }
-            }
-        }
-        return false
-    }
-
-    private fun updateIfNecessary() {
-        if (ui.settings.repositionOnEvent) {
-            ui.needsRedraw = true
         }
     }
 }

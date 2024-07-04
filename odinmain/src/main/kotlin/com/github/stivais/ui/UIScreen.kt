@@ -13,28 +13,27 @@ open class UIScreen(val ui: UI) : GuiScreen(), Window {
     private var previousWidth: Int = 0
     private var previousHeight: Int = 0
 
-    override fun close() {
+    fun close() {
         if (mc.currentScreen == null) {
             // assume current is the ui rendering
-            current = null
+            closeAnimHandler = null
         } else if (mc.currentScreen == this) {
             mc.displayGuiScreen(null)
         }
     }
 
     override fun initGui() {
-        ui.initialize(this, Display.getWidth(), Display.getHeight())
+        val start = System.nanoTime()
+        ui.initialize(Display.getWidth(), Display.getHeight(), this)
+        println("UI initialization took: ${System.nanoTime() - start}")
     }
 
     override fun onGuiClosed() {
         ui.cleanup()
-        if (ui.keepOpen) {
-            current = this
-        }
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        ui.measureMetrics {
+        ui.measureFrametime {
             val w = mc.framebuffer.framebufferWidth
             val h = mc.framebuffer.framebufferHeight
             if (w != previousWidth || h != previousHeight) {
@@ -87,13 +86,11 @@ open class UIScreen(val ui: UI) : GuiScreen(), Window {
 
     override fun doesGuiPauseGame(): Boolean = false
 
-    fun keep() {
-        current = this
-    }
-
     companion object {
         fun open(ui: UI) {
+            val start = System.nanoTime()
             display = UIScreen(ui)
+            println("UI creation took: ${System.nanoTime() - start}")
         }
 
         @JvmName("openUI")
@@ -101,12 +98,12 @@ open class UIScreen(val ui: UI) : GuiScreen(), Window {
             open(this)
         }
 
-        var current: UIScreen? = null
+        var closeAnimHandler: UIScreen? = null
 
         @SubscribeEvent
         fun onRender(event: RenderWorldLastEvent) {
             if (mc.currentScreen == null) {
-                current?.drawScreen(0, 0, event.partialTicks)
+                closeAnimHandler?.drawScreen(0, 0, event.partialTicks)
             }
         }
     }

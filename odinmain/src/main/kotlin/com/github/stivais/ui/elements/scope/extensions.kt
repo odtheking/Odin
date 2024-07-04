@@ -1,7 +1,6 @@
 package com.github.stivais.ui.elements.scope
 
 import com.github.stivais.ui.UI
-import com.github.stivais.ui.UI.Companion.logger
 import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.color.brighter
@@ -11,11 +10,15 @@ import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.utils.animate
 import com.github.stivais.ui.utils.seconds
 
-fun BlockScope.hoverEffect(duration: Number = 0.25.seconds, accepts: Boolean = true) {
+fun BlockScope.hoverEffect(
+    duration: Number = 0.25.seconds,
+    accepts: Boolean = false,
+    handler: ElementScope<*> = this,
+) {
     val before = color!!
-    val hover = Color.Animated(from = before, to = Color { before.rgba.brighter(1.2) })
+    val hover = Color.Animated(from = before, to = Color { before.rgba.brighter(0.75) })
     color = hover
-    onMouseEnterExit {
+    handler.onMouseEnterExit {
         hover.animate(duration)
         redraw()
         accepts
@@ -67,7 +70,12 @@ fun ElementDSL.onUIClose(block: UI.() -> Unit) {
 /**
  * Incompatible if the parent element size relies on the children
  */
-fun ElementDSL.draggable(acceptsEvent: Boolean = true, target: Element = element, coerce: Boolean = false) {
+fun ElementDSL.draggable(
+    button: Int = 0,
+    acceptsEvent: Boolean = true,
+    target: Element = element,
+    coerce: Boolean = false
+) {
     val px: Pixel = 0.px
     val py: Pixel = 0.px
     // note: if parent is Bounding, it can cause issues
@@ -80,7 +88,7 @@ fun ElementDSL.draggable(acceptsEvent: Boolean = true, target: Element = element
     var pressed = false
     var x = 0f
     var y = 0f
-    onClick(0) {
+    onClick(button) {
         pressed = true
         x = ui.mx - target.internalX
         y = ui.my - target.internalY
@@ -99,21 +107,9 @@ fun ElementDSL.draggable(acceptsEvent: Boolean = true, target: Element = element
         }
         acceptsEvent
     }
-    onRelease(0) {
+    onRelease(button) {
         pressed = false
     }
-}
-
-fun ElementDSL.takeEvents(from: ElementDSL) {
-    val to = element
-    val f = from.element
-    if (f.events == null) return logger.warning("Tried to take event from an element that doesn't have events")
-    if (to.events != null) {
-        to.events!!.putAll(f.events!!)
-    } else {
-        to.events = f.events
-    }
-    f.events = null
 }
 
 fun ElementDSL.animateColor(to: Color, duration: Float, anim: Animations = Animations.Linear) {

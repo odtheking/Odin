@@ -73,71 +73,75 @@ class SelectorSetting(
     }
 
     override fun ElementScope<*>.createElement() {
+
         var text: TextScope? = null
         // temp/test
         val alphaAnim = Animatable(0.25.px, 1.px)
+
         val height = Animatable(from = 40.px, to = (50 + 32 * options.size).px)
         val thickness = Animatable(from = 1.px, to = 1.75.px)
 
-        setting(height).column(copies()) {
-            group(constraints = size(w = Copying, h = 40.px)) {
-                text(
-                    text = name,
-                    pos = at(x = 6.px),
-                    size = 40.percent
-                )
-                block(
-                    constraints = constrain(x = -6.px, w = Bounding + 6.px, h = 72.5.percent),
-                    color = `gray 38`,
-                    radius = radii(5)
-                ) {
-                    outline(
-                        color = ClickGUITheme,
-                        thickness
+        setting(height) {
+            column(copies()) {
+                group(constraints = size(w = Copying, h = 40.px)) {
+                    text(
+                        text = name,
+                        pos = at(x = 6.px),
+                        size = 40.percent
                     )
-                    text = text(
-                        text = options[value]
-                    )
-                    onClick {
-                        alphaAnim.animate(0.25.seconds, Animations.EaseInOutQuint)
-                        height.animate(0.25.seconds, Animations.EaseInOutQuint)
-                        thickness.animate(0.25.seconds, Animations.EaseInOutQuint)
-                        true
-                    }
-                }
-            }
-            divider(5.px)
-            column(size(w = 95.percent, h = Bounding)) {
-                element.alphaAnim = alphaAnim
-                // background
-                block(
-                    constraints = copies(),
-                    color = `gray 38`,
-                    radius = radii(all = 5)
-                ).outline(color = ClickGUITheme)
-
-                // options
-                // they're transparent, except for the outline which is animated on hover
-                for ((index, option) in options.withIndex()) {
                     block(
-                        constraints = size(w = Copying, h = 32.px),
-                        color = color(from = Color.TRANSPARENT, to = Color.RGB(150, 150, 150, 0.2f)),
+                        constraints = constrain(x = -6.px, w = Bounding + 6.px, h = 72.5.percent),
+                        color = `gray 38`,
                         radius = radii(5)
                     ) {
-                        text(
-                            text = option
+                        outline(
+                            color = ClickGUITheme,
+                            thickness
                         )
-
+                        text = text(
+                            text = options[value]
+                        )
                         onClick {
-                            text!!.string = option
-                            value = index
+                            alphaAnim.animate(0.25.seconds, Animations.EaseInOutQuint)
                             height.animate(0.25.seconds, Animations.EaseInOutQuint)
                             thickness.animate(0.25.seconds, Animations.EaseInOutQuint)
+                            this@setting.redraw()
                             true
                         }
-                        onMouseEnterExit {
-                            color!!.animate(duration = 0.05.seconds)
-                            true
+                    }
+                }
+                divider(5.px)
+                column(size(w = 95.percent, h = Bounding)) {
+                    element.alphaAnim = alphaAnim
+                    // background
+                    block(
+                        constraints = copies(),
+                        color = `gray 38`,
+                        radius = radii(all = 5)
+                    ).outline(color = ClickGUITheme)
+
+                    // options
+                    // they're transparent, except for the outline which is animated on hover
+                    for ((index, option) in options.withIndex()) {
+                        block(
+                            constraints = size(w = Copying, h = 32.px),
+                            color = color(from = Color.TRANSPARENT, to = Color.RGB(150, 150, 150, 0.2f)),
+                            radius = radii(5)
+                        ) {
+                            onClick {
+                                text!!.string = option
+                                value = index
+                                alphaAnim.animate(0.25.seconds, Animations.EaseInOutQuint)
+                                height.animate(0.25.seconds, Animations.EaseInOutQuint)
+                                thickness.animate(0.25.seconds, Animations.EaseInOutQuint)
+                                this@setting.redraw()
+                                true
+                            }
+                            onMouseEnterExit {
+                                color!!.animate(duration = 0.05.seconds)
+                                true
+                            }
+                            text(text = option)
                         }
                     }
                 }

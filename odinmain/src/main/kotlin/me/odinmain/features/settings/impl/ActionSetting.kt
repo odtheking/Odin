@@ -12,9 +12,11 @@ import com.github.stivais.ui.utils.seconds
 import me.odinmain.features.settings.Setting
 
 /**
- * Setting that gets ran when clicked inside the UI
+ * Setting, which contains a function that gets ran when clicked inside the UI
  *
  * This setting doesn't contain any value
+ *
+ * @param action Function that gets ran
  */
 class ActionSetting(
     name: String,
@@ -25,8 +27,6 @@ class ActionSetting(
     override val default: () -> Unit = action
 
     override var value: () -> Unit = default
-
-    var action: () -> Unit by this::value
 
     override fun ElementScope<*>.createElement() {
         setting(40.px) {
@@ -39,7 +39,7 @@ class ActionSetting(
                     text = name,
                 )
                 onClick {
-                    action.invoke()
+                    value.invoke()
                     true
                 }
                 hoverEffect(0.25.seconds)

@@ -4,35 +4,48 @@ import com.github.stivais.ui.UI
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.color.brighter
 import com.github.stivais.ui.constraints.Constraints
+import com.github.stivais.ui.constraints.Size
+import com.github.stivais.ui.constraints.Type
 import com.github.stivais.ui.constraints.percent
 import com.github.stivais.ui.events.Focused
 import com.github.stivais.ui.events.Key
 import com.github.stivais.ui.events.Mouse
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.devMessage
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.util.ChatAllowedCharacters
 import org.lwjgl.input.Keyboard
 import kotlin.math.abs
 
-// todo: rework, I undid everything cuz was no good or smth
+/*
+* TODO
+* - needs cleanup
+* - make options, like to stop typing if limit reached or continue
+* - only number options
+* - censor input like '******'
+*/
 class TextInput(
     text: String,
     private val placeholder: String,
     constraints: Constraints? = null,
+    val widthLimit: Size? = null,
+    val lockIfLimit: Boolean = false,
     val onTextChange: (string: String) -> Unit = {}
-) : Text(text, UI.defaultFont, Color.WHITE, constraints, 50.percent) {
+) : Text(text, UI.defaultFont, Color.WHITE, constraints, constraints?.height ?: 50.percent) {
 
-    private val placeholderColor: Color = Color { color!!.rgba.brighter(0.7) }
+    private val placeholderColor: Color = Color { color!!.rgba.brighter(1.5) }
 
     private var string: String = text
         set(value) {
+            if (lock) {
+                if (value.length > field.length) return
+            }
             text = value
             field = value
-            textWidth = renderer.textWidth(value, size = height).toInt()
+            textWidth = renderer.textWidth(value, size = height)
             if (history.last() != value) history.add(value)
             positionCursor()
-            ui.needsRedraw = true
+            redraw()
+//            ui.needsRedraw = true
             onTextChange(value)
         }
 
@@ -49,8 +62,20 @@ class TextInput(
             selectionX = renderer.textWidth(string.substring(0, field), size = height)
         }
 
-    private var textWidth = 0
+    private var textWidth = 0f
     private var isHeld = false
+
+    // experimental
+    var lock = false
+        set(value) {
+            if (value != field) {
+                redraw = true
+//                ui.needsRedraw = true
+            }
+            field = value
+        }
+
+    var offs = 0f
 
     private var cursorX: Float = 0f
     private var cursorY: Float = 0f
@@ -60,42 +85,68 @@ class TextInput(
     private var lastClickTime: Long = 0L
     private var clickCount: Int = 0
 
+    override fun preSize() {
+        super.preSize()
+        if (widthLimit != null) {
+            val maxW = widthLimit.get(this, Type.W)
+            if (width >= maxW) {
+                if (lockIfLimit) {
+                    lock = true
+                } else {
+                    offs = width - maxW
+                }
+                width = maxW
+            } else {
+                lock = false
+                offs = 0f
+            }
+        }
+    }
+
+    override fun getTextWidth(): Float {
+        if (text.isEmpty()) return renderer.textWidth(placeholder, height)
+        return super.getTextWidth()
+    }
+
     override fun draw() {
-//        renderer.rect(x - 4, y - 4, textWidth + 10f, height + 4, Color.BLACK.rgba, 9f)
+        // cleanup
         if (selectionStart != cursorPosition) {
             val startX = x + min(selectionX, cursorX).toInt()
             val endX = x + max(selectionX, cursorX).toInt()
-            renderer.rect(startX, y, endX - startX, height - 4, Color.RGB(0, 0, 255, 0.5f).rgba)
+            renderer.rect(startX - offs, y, endX - startX, height - 4, Color.RGB(0, 0, 255, 0.5f).rgba)
         }
 
-        renderer.text(text, x, y, height, Color.WHITE.rgba)
+        if (text.length != 0) {
+            renderer.text(text, x - offs, y, height, Color.WHITE.rgba)
+        } else {
+            renderer.text(placeholder, x, y, height, placeholderColor.rgba)
+        }
 
-        renderer.rect(x + cursorX, y + cursorY, 1f, height - 2, Color.WHITE.rgba) // caret
+        if (ui.isFocused(this))
+        renderer.rect(x + cursorX - offs, y + cursorY, 1f, height - 2, Color.WHITE.rgba) // caret
     }
 
     init {
         registerEvent(Focused.Gained) {
-            modMessage("Focus gain")
-            true
-        }
-        registerEvent(Focused.Lost) {
-            modMessage("Focus lost")
-            true
+            setCursorPositionBasedOnMouse(x, textWidth - offs, ui.mx)
+            selectionStart = cursorPosition
+            false
         }
         registerEvent(Key.CodePressed(-1, true)) {
             handleKeyPress((this as Key.CodePressed).code)
             true
         }
 
-        registerEvent(Mouse.Clicked(null)) {
-            if ((this as Mouse.Clicked).button == 0) {
+        registerEvent(Focused.Clicked()) {
+//            modMessage("a ${(this as Focused.Clicked).button}")
+            if ((this as Focused.Clicked).button == 0) {
                 val currentTime = System.currentTimeMillis()
                 if (currentTime - lastClickTime < 300) clickCount++ else clickCount = 1
                 lastClickTime = currentTime
 
                 when (clickCount) {
                     1 -> {
-                        setCursorPositionBasedOnMouse(x, textWidth, ui.mx)
+                        setCursorPositionBasedOnMouse(x, textWidth - offs, ui.mx)
                         if (!isShiftKeyDown()) selectionStart = cursorPosition
                     }
 
@@ -111,12 +162,13 @@ class TextInput(
                     }
                 }
                 isHeld = true
+                return@registerEvent true
             }
             false
         }
 
         registerEvent(Mouse.Moved) {
-            if (isHeld) setCursorPositionBasedOnMouse(x, textWidth, ui.mx)
+            if (isHeld) setCursorPositionBasedOnMouse(x, textWidth - offs, ui.mx)
             lastClickTime = 0L
             true
         }
@@ -127,11 +179,9 @@ class TextInput(
         }
 
         registerEvent(Mouse.Clicked(0)) {
-            modMessage("focused")
             ui.focus(this@TextInput)
             Keyboard.enableRepeatEvents(true)
-            textWidth = renderer.textWidth(string, size = height).toInt()
-            positionCursor()
+            textWidth = renderer.textWidth(string, size = height)
             true
         }
     }
@@ -221,6 +271,10 @@ class TextInput(
         }
         devMessage("cursorPosition: $cursorPosition, startSelect: $selectionStart string: $string")
     }
+
+    // cleanup everything under here
+    // rename stuff with "cursor" to caret
+    // remove unnecessary stuff and variables
 
     private fun moveCursorBy(amount: Int){
         cursorPosition = (cursorPosition + amount).coerceIn(0, string.length)
@@ -330,7 +384,7 @@ class TextInput(
         return "" to 0
     }
 
-    private fun setCursorPositionBasedOnMouse(x: Float, textWidth: Int, mx: Float) {
+    private fun setCursorPositionBasedOnMouse(x: Float, textWidth: Float, mx: Float) {
         if (string.isEmpty()) return
         cursorPosition = ((mx - x) / (textWidth / string.length)).toInt().coerceIn(0, string.length)
     }

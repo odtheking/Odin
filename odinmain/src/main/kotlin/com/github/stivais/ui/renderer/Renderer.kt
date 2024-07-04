@@ -29,6 +29,8 @@ interface Renderer {
 
     fun translate(x: Float, y: Float)
 
+    fun rotate(amount: Float)
+
     fun globalAlpha(amount: Float)
 
     fun pushScissor(x: Float, y: Float, w: Float, h: Float)
@@ -57,7 +59,7 @@ interface Renderer {
 
     fun text(text: String, x: Float, y: Float, size: Float, color: Int = Color.WHITE.rgba, font: Font = UI.defaultFont)
 
-    fun drawWrappedString(text: String, x: Float, y: Float, width: Float, size: Float, color: Int = Color.WHITE.rgba, font: Font = UI.defaultFont)
+//    fun drawWrappedString(text: String, x: Float, y: Float, width: Float, size: Float, color: Int = Color.WHITE.rgba, font: Font = UI.defaultFont)
 
     fun textWidth(text: String, size: Float, font: Font = UI.defaultFont): Float
 
@@ -67,10 +69,10 @@ interface Renderer {
         image(image, x, y, w, h, radius, radius, radius, radius)
     }
 
-    fun svg(svg: SVG, x: Float, y: Float, w: Float, h: Float, scale: Float, tl: Float, bl: Float, br: Float, tr: Float)
+//    fun svg(svg: SVG, x: Float, y: Float, w: Float, h: Float, scale: Float, tl: Float, bl: Float, br: Float, tr: Float)
 
-    fun svg(svg: SVG, x: Float, y: Float, w: Float, h: Float, scale: Float, radius: Float) {
-        svg(svg, x, y, w, h, scale, radius, radius, radius, radius)
-    }
+//    fun svg(svg: SVG, x: Float, y: Float, w: Float, h: Float, scale: Float, radius: Float) {
+//        svg(svg, x, y, w, h, scale, radius, radius, radius, radius)
+//    }
 
 }

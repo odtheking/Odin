@@ -9,7 +9,7 @@ import com.github.stivais.ui.constraints.measurements.center
 import com.github.stivais.ui.constraints.sizes.Copying
 import com.github.stivais.ui.elements.scope.ElementDSL
 import com.github.stivais.ui.elements.scope.ElementScope
-import com.github.stivais.ui.elements.scope.sliderBase
+import com.github.stivais.ui.elements.scope.slider
 import com.github.stivais.ui.impl.`gray 38`
 import com.github.stivais.ui.impl.`transparent fix`
 import com.github.stivais.ui.renderer.Gradient.LeftToRight
@@ -100,7 +100,7 @@ class NewColorSetting(
                     radius = 5.radii()
                 ).outline(Color.WHITE)
             }
-            sliderBase(
+            slider(
                 copies(),
                 accepts = true,
                 onChange = { px, py, isClick ->
@@ -117,7 +117,7 @@ class NewColorSetting(
                     value.saturation = px
                     value.brightness = 1f - py
                 }
-               )
+            )
         }
     }
 
@@ -133,7 +133,7 @@ class NewColorSetting(
                 color = value,
                 radius = 5.radii()
             ).outline(Color.WHITE)
-            sliderBase(
+            slider(
                 copies(),
                 accepts = true,
                 onChange = { px, _, isClick ->
@@ -159,7 +159,7 @@ class NewColorSetting(
                 color = value,
                 radius = 5.radii()
             ).outline(Color.WHITE)
-            sliderBase(
+            slider(
                 copies(),
                 accepts = true,
                 onChange = { px, _, isClick ->

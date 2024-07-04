@@ -1,104 +1,78 @@
 package me.odinmain.features.impl.render
 
-import com.github.stivais.ui.UI
-import com.github.stivais.ui.color.Color
-import com.github.stivais.ui.color.color
-import com.github.stivais.ui.constraints.constrain
-import com.github.stivais.ui.constraints.px
-import com.github.stivais.ui.constraints.sizes.Bounding
-import com.github.stivais.ui.renderer.Font
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.Hud
-import me.odinmain.features.settings.impl.NewColorSetting
-import me.odinmain.features.settings.impl.NewHudSetting
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.features.settings.impl.SelectorSetting
+import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.ServerUtils
-import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.max
+import me.odinmain.utils.render.*
+import me.odinmain.utils.round
 
 object ServerHud : Module(
     name = "Server Hud",
     category = Category.RENDER,
     description = "Displays your current ping, FPS and server's TPS."
 ) {
-    private val font by SelectorSetting("Font", arrayListOf("Custom", "Minecraft"))
-    private val text_color by NewColorSetting("Color", color(0, 100, 255))
+    private val ping: Boolean by BooleanSetting("Ping", true)
+    private val tps: Boolean by BooleanSetting("TPS", true)
+    private val fps: Boolean by BooleanSetting("FPS", false)
+    private val style: Int by SelectorSetting("Style", "Row", arrayListOf("Row", "Stacked"))
 
-    val ping by NewHudSetting(
-        name = "Ping",
-        hud = Hud(0f, 0f, true) {
-            modMessage("Hello")
-//            text("Wagwan", size = 20.px)
-            val font = when (font) {
-                0 -> UI.defaultFont
-                else -> Font("MC", "/assets/odinmain/fonts/Minecraft-Regular.otf")
+    val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
+        if (it) {
+            if (style == 0) {
+                var width = 0f
+                if (tps) {
+                    width += getMCTextWidth("§rTPS: §f20") * 1.5f
+                    mcText("§rTPS: §f20", 1f, 5f, 2, Color.WHITE, shadow = true, center = false)
+                }
+                if (fps) {
+                    width += getMCTextWidth("§rFPS: §f240") * 1.5f
+                    mcText("§rFPS: §f240", 5f + if (tps) getMCTextWidth("§rTPS: §f20") * 2f else 0f, 5f, 2, Color.WHITE, shadow = true, center = false)
+                }
+                if (ping) {
+                    width += getMCTextWidth("§rPing: §f60") * 1.5f
+                    mcText("§rPing: §f60", 5f + if (tps) getMCTextWidth("§rTPS: §f20") * 4.5f else 0f + if (fps) getMCTextWidth("§rFPS: §f240") * 3f + 5f else 0f, 5f, 2, Color.WHITE, shadow = true, center = false)
+                }
+                width + 6f to if (ping || tps || fps) getMCTextHeight() * 2 + 6f else 0f
+            } else {
+                if (ping) mcText("§6Ping: §a60ms", 1f, 9f, 2, Color.WHITE, shadow = true, center = false)
+                if (tps) mcText("§3TPS: §a20.0", 1f, 26f, 2, Color.WHITE, shadow = true, center = false)
+                if (fps) mcText("§dFPS: §a240", 1f, 43f, 2, Color.WHITE, shadow = true, center = false)
+                max(
+                    if (ping) getTextWidth("Ping: 60ms", 12f) else 0f,
+                    if (tps) getTextWidth("TPS: 20.0", 12f) else 0f,
+                    if (fps) getTextWidth("§dFPS: §a240.0", 12f) else 0f
+                ) + 2f to if (ping && tps && fps) 50f else if (ping && tps || ping && fps || tps && fps) 35f else 20f
             }
-            row(constrain(0.px, 0.px, Bounding, Bounding)) {
-                text("Ping", font, color = text_color, size = 30.px)
-                divider(10.px)
-                text(text = { "${ServerUtils.averagePing.toInt()}ms" }, font, color = Color.WHITE, size = 30.px)
+        } else {
+            if (style == 0) {
+                val fpsText = "§rFPS: §f${ServerUtils.fps}"
+                val pingText = "§rPing: §f${ServerUtils.averagePing.toInt()}"
+                val tpsText = "§rTPS: §f${if (ServerUtils.averageTps > 19.3) 20 else ServerUtils.averageTps.toInt()}"
+                var width = 0f
+                if (tps)
+                    width += mcTextAndWidth(tpsText, 1f, 5f, 2, ClickGUIModule.color, shadow = true, center = false) * 1.5f
+                if (fps)
+                    width += mcTextAndWidth(fpsText, 5f + (if (tps) getMCTextWidth(tpsText) * 2f else 0f), 5f, 2, ClickGUIModule.color, shadow = true, center = false) * 1.5f
+                if (ping)
+                    width += mcTextAndWidth(pingText, 5f + (if (tps) getMCTextWidth(tpsText) * 2f else 0f) + (if (fps) getMCTextWidth(fpsText) * 2f + 5f else 0f), 5f, 2, ClickGUIModule.color, shadow = true, center = false) * 1.5f
+                width + 2f to if (ping || tps || fps) getMCTextWidth("A") + 6f else 0f
+            } else {
+                if (ping) mcText("§6Ping: §a${ServerUtils.averagePing.toInt()}ms", 1f, 9f, 2, Color.WHITE, shadow = true, center = false)
+                if (tps) mcText("§3TPS: §a${ServerUtils.averageTps.round(1)}", 1f, 26f, 2, Color.WHITE, shadow = true, center = false)
+                if (fps) mcText("§dFPS: §a${mc.debug.split(" ")[0].toIntOrNull() ?: 0}", 1f, 43f, 2, Color.WHITE, shadow = true, center = false)
+                max(
+                    if (ping) getTextWidth("§ePing: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 12f) else 0f,
+                    if (tps) getTextWidth("§ePing: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 12f) else 0f,
+                    if (fps) getTextWidth("§dFPS: ${colorizeFPS(mc.debug.split(" ")[0].toIntOrNull() ?: 0)}", 12f) else 0f
+                ) + 2f to if (ping && tps && fps) 50f else if (ping && tps || ping && fps || tps && fps) 35f else 20f
             }
         }
-    )
-
-
-//    private val ping: Boolean by BooleanSetting("Ping", true)
-//    private val tps: Boolean by BooleanSetting("TPS", true)
-//    private val fps: Boolean by BooleanSetting("FPS", false)
-//    private val style: Int by SelectorSetting("Style", "Row", arrayListOf("Row", "Stacked"))
-//
-//    val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
-//        if (it) {
-//            if (style == 0) {
-//                var width = 0f
-//                if (tps) {
-//                    width += getMCTextWidth("§rTPS: §f20") * 1.5f
-//                    mcText("§rTPS: §f20", 1f, 5f, 2, Color.WHITE, shadow = true, center = false)
-//                }
-//                if (fps) {
-//                    width += getMCTextWidth("§rFPS: §f240") * 1.5f
-//                    mcText("§rFPS: §f240", 5f + if (tps) getMCTextWidth("§rTPS: §f20") * 2f else 0f, 5f, 2, Color.WHITE, shadow = true, center = false)
-//                }
-//                if (ping) {
-//                    width += getMCTextWidth("§rPing: §f60") * 1.5f
-//                    mcText("§rPing: §f60", 5f + if (tps) getMCTextWidth("§rTPS: §f20") * 4.5f else 0f + if (fps) getMCTextWidth("§rFPS: §f240") * 3f + 5f else 0f, 5f, 2, Color.WHITE, shadow = true, center = false)
-//                }
-//                width + 6f to if (ping || tps || fps) getMCTextHeight() * 2 + 6f else 0f
-//            } else {
-//                if (ping) mcText("§6Ping: §a60ms", 1f, 9f, 2, Color.WHITE, shadow = true, center = false)
-//                if (tps) mcText("§3TPS: §a20.0", 1f, 26f, 2, Color.WHITE, shadow = true, center = false)
-//                if (fps) mcText("§dFPS: §a240", 1f, 43f, 2, Color.WHITE, shadow = true, center = false)
-//                max(
-//                    if (ping) getTextWidth("Ping: 60ms", 12f) else 0f,
-//                    if (tps) getTextWidth("TPS: 20.0", 12f) else 0f,
-//                    if (fps) getTextWidth("§dFPS: §a240.0", 12f) else 0f
-//                ) + 2f to if (ping && tps && fps) 50f else if (ping && tps || ping && fps || tps && fps) 35f else 20f
-//            }
-//        } else {
-//            if (style == 0) {
-//                val fpsText = "§rFPS: §f${ServerUtils.fps}"
-//                val pingText = "§rPing: §f${ServerUtils.averagePing.toInt()}"
-//                val tpsText = "§rTPS: §f${if (ServerUtils.averageTps > 19.3) 20 else ServerUtils.averageTps.toInt()}"
-//                var width = 0f
-//                if (tps)
-//                    width += mcTextAndWidth(tpsText, 1f, 5f, 2, ClickGUIModule.color, shadow = true, center = false) * 1.5f
-//                if (fps)
-//                    width += mcTextAndWidth(fpsText, 5f + (if (tps) getMCTextWidth(tpsText) * 2f else 0f), 5f, 2, ClickGUIModule.color, shadow = true, center = false) * 1.5f
-//                if (ping)
-//                    width += mcTextAndWidth(pingText, 5f + (if (tps) getMCTextWidth(tpsText) * 2f else 0f) + (if (fps) getMCTextWidth(fpsText) * 2f + 5f else 0f), 5f, 2, ClickGUIModule.color, shadow = true, center = false) * 1.5f
-//                width + 2f to if (ping || tps || fps) getMCTextWidth("A") + 6f else 0f
-//            } else {
-//                if (ping) mcText("§6Ping: §a${ServerUtils.averagePing.toInt()}ms", 1f, 9f, 2, Color.WHITE, shadow = true, center = false)
-//                if (tps) mcText("§3TPS: §a${ServerUtils.averageTps.round(1)}", 1f, 26f, 2, Color.WHITE, shadow = true, center = false)
-//                if (fps) mcText("§dFPS: §a${mc.debug.split(" ")[0].toIntOrNull() ?: 0}", 1f, 43f, 2, Color.WHITE, shadow = true, center = false)
-//                max(
-//                    if (ping) getTextWidth("§ePing: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 12f) else 0f,
-//                    if (tps) getTextWidth("§ePing: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 12f) else 0f,
-//                    if (fps) getTextWidth("§dFPS: ${colorizeFPS(mc.debug.split(" ")[0].toIntOrNull() ?: 0)}", 12f) else 0f
-//                ) + 2f to if (ping && tps && fps) 50f else if (ping && tps || ping && fps || tps && fps) 35f else 20f
-//            }
-//        }
-//    }
+    }
 
     fun colorizePing(ping: Int): String {
         return when {

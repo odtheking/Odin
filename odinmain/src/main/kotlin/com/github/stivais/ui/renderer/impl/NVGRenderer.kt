@@ -10,6 +10,7 @@ import org.lwjgl.nanovg.NVGColor
 import org.lwjgl.nanovg.NVGLUFramebuffer
 import org.lwjgl.nanovg.NVGPaint
 import org.lwjgl.nanovg.NanoSVG
+import org.lwjgl.nanovg.NanoSVG.nsvgParse
 import org.lwjgl.nanovg.NanoVG.*
 import org.lwjgl.nanovg.NanoVGGL2.*
 import org.lwjgl.opengl.GL11.*
@@ -25,14 +26,13 @@ object NVGRenderer : Renderer {
 
     private val fonts = HashMap<Font, Int>()
     private val images = HashMap<Image, Int>()
-    private val svgs = HashMap<SVG, Int>()
+    private val svgs = HashMap<Image, Int>()
     private val fbos = HashMap<Framebuffer, NVGLUFramebuffer>()
     var vg: Long = -1
 
     // used in getTextWidth to avoid reallocating
     private val fontBounds = FloatArray(4)
 
-    // this will be used later for fixing bugs caused by nvg i think
     var drawing: Boolean = false
 
     init {
@@ -111,6 +111,8 @@ object NVGRenderer : Renderer {
 
     override fun translate(x: Float, y: Float) = nvgTranslate(vg, x, y)
 
+    override fun rotate(amount: Float) = nvgRotate(vg, amount)
+
     override fun globalAlpha(amount: Float) = nvgGlobalAlpha(vg, amount.coerceIn(0f, 1f))
 
     override fun pushScissor(x: Float, y: Float, w: Float, h: Float) = nvgScissor(vg, x, y, w, h)
@@ -119,7 +121,7 @@ object NVGRenderer : Renderer {
 
     override fun rect(x: Float, y: Float, w: Float, h: Float, color: Int) {
         nvgBeginPath(vg)
-        nvgRect(vg, x, y, w, h)
+        nvgRect(vg, x, y, w, h + .5f)
         color(color)
         nvgFillColor(vg, nvgColor)
         nvgFill(vg)
@@ -127,7 +129,7 @@ object NVGRenderer : Renderer {
 
     override fun rect(x: Float, y: Float, w: Float, h: Float, color: Int, tl: Float, bl: Float, br: Float, tr: Float) {
         nvgBeginPath(vg)
-        nvgRoundedRectVarying(vg, x, y, w, h, tl, tr, br, bl)
+        nvgRoundedRectVarying(vg, x, y, w, h + .5f, tl, tr, br, bl)
         color(color)
         nvgFillColor(vg, nvgColor)
         nvgFill(vg)
@@ -197,23 +199,6 @@ object NVGRenderer : Renderer {
         nvgClosePath(vg)
     }
 
-    override fun drawWrappedString(
-        text: String,
-        x: Float,
-        y: Float,
-        width: Float,
-        size: Float,
-        color: Int,
-        font: Font
-    ) {
-        nvgBeginPath(vg)
-        nvgFontSize(vg, size)
-        nvgFontFace(vg, font.name)
-        nvgTextAlign(vg, NVG_ALIGN_LEFT or NVG_ALIGN_MIDDLE) // Align top because center is weird with wrapping
-        color(color)
-        nvgTextBox(vg, x, y, width, text)
-    }
-
 
     override fun textWidth(text: String, size: Float, font: Font): Float {
         nvgFontSize(vg, size)
@@ -239,35 +224,13 @@ object NVGRenderer : Renderer {
         nvgFill(vg)
     }
 
-    override fun svg(
-        svg: SVG,
-        x: Float,
-        y: Float,
-        w: Float,
-        h: Float,
-        scale: Float,
-        tl: Float,
-        bl: Float,
-        br: Float,
-        tr: Float
-    ) {
-        val x = x / scale
-        val y = y / scale
-        val w = w * scale
-        val h = h * scale
-        nvgImagePattern(vg, x, y, w, h, 0f, getSVG(svg), 1f, nvgPaint)
-        nvgBeginPath(vg)
-        nvgRoundedRectVarying(vg, x, y, w, h, tl, tr, br, bl)
-        nvgFillPaint(vg, nvgPaint)
-        nvgFill(vg)
-    }
-
     private fun getImage(image: Image): Int {
-        return images.getOrPut(image) { loadImage(image) }
-    }
-
-    private fun getSVG(svg: SVG): Int {
-        return svgs.getOrPut(svg) { loadSVG(svg) }
+        return when (image.type) {
+            Image.Type.RASTER -> images.getOrPut(image) { loadImage(image) }
+            Image.Type.VECTOR -> {
+                svgs.getOrPut(image) { loadSVG(image) }
+            }
+        }
     }
 
     private fun loadImage(image: Image): Int {
@@ -275,7 +238,7 @@ object NVGRenderer : Renderer {
         val h = IntArray(1)
         val channels = IntArray(1)
         val buffer = STBImage.stbi_load_from_memory(
-            image.buffer,
+            image.buffer(),
             w,
             h,
             channels,
@@ -284,15 +247,20 @@ object NVGRenderer : Renderer {
         return nvgCreateImageRGBA(vg, w[0], h[0], 0, buffer)
     }
 
-    private fun loadSVG(svg: SVG): Int {
-        val svgImage = svg.svgImage
-        val memAlloc = MemoryUtil.memAlloc((svgImage.width() * svgImage.height() * 4).toInt())
+    private fun loadSVG(image: Image): Int {
+        val vec = image.stream.bufferedReader().readText()
+        val svg = nsvgParse(vec, "px", 96f) ?: throw IllegalStateException("Failed to parse ${image.resourcePath}")
+
+        image.width = svg.width()
+        image.height = svg.height()
+
+        val memAlloc = MemoryUtil.memAlloc((svg.width() * svg.height() * 4).toInt())
         val rasterizer = NanoSVG.nsvgCreateRasterizer()
-        NanoSVG.nsvgRasterize(rasterizer, svgImage, 0f, 0f, 1f, memAlloc, svgImage.width().toInt(), svgImage.height().toInt(), svgImage.width().toInt() * 4)
-        val image = nvgCreateImageRGBA(vg, svgImage.width().toInt(), svgImage.height().toInt(), 0, memAlloc)
+        NanoSVG.nsvgRasterize(rasterizer, svg, 0f, 0f, 1f, memAlloc, svg.width().toInt(), svg.height().toInt(), svg.width().toInt() * 4)
+        val nvgImage = nvgCreateImageRGBA(vg, svg.width().toInt(), svg.height().toInt(), 0, memAlloc)
         NanoSVG.nsvgDeleteRasterizer(rasterizer)
-        NanoSVG.nsvgDelete(svgImage)
-        return image
+        NanoSVG.nsvgDelete(svg)
+        return nvgImage
     }
 
     fun color(color: Int) {

@@ -5,7 +5,6 @@ import com.github.stivais.ui.UIScreen.Companion.open
 import com.github.stivais.ui.renderer.impl.CookedRenderer
 import com.github.stivais.ui.renderer.impl.NVGRenderer
 import me.odinmain.commands.commodore
-import me.odinmain.features.settings.impl.Hud
 
 val `ui command` = commodore("ui") {
     runs { type: String, `use old renderer`: Boolean? ->
@@ -13,7 +12,6 @@ val `ui command` = commodore("ui") {
         val ui = when (type) {
             "basic" -> basic(renderer)
             "clickgui" -> clickGUI(renderer)
-            "hud" -> Hud.UI
             else -> throw SyntaxException()
         }
         open(ui)
