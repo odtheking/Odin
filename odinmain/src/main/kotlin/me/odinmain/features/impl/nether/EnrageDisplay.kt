@@ -32,7 +32,7 @@ object EnrageDisplay : Module (
         }
     }
 
-    private var enrageTimer = 0
+    private var enrageTimer = -1
 
     init {
         onPacket(S29PacketSoundEffect::class.java) {
