@@ -23,17 +23,17 @@ val mainCommand = commodore("od", "odin") {
     }
 
     literal("ep").runs {
-        mc.thePlayer.inventory.mainInventory.find { it?.itemID == "ENDER_PEARL" }?.stackSize?.takeIf { it > 0 }
+        mc.thePlayer.inventory.mainInventory.find { it?.itemID == "ENDER_PEARL" }?.stackSize?.takeIf { it > 16 }
             ?.let { sendCommand("gfs ender_pearl ${16 - it}") }
     }
 
     literal("ij").runs {
-        mc.thePlayer.inventory.mainInventory.find { it?.itemID == "INFLATABLE_JERRY" }?.stackSize?.takeIf { it > 0 }
+        mc.thePlayer.inventory.mainInventory.find { it?.itemID == "INFLATABLE_JERRY" }?.stackSize?.takeIf { it > 64 }
             ?.let { sendCommand("gfs inflatable_jerry ${64 - it}") }
     }
 
     literal("sl").runs {
-        mc.thePlayer.inventory.mainInventory.find { it?.itemID == "SPIRIT_LEAP" }?.stackSize?.takeIf { it > 0 }
+        mc.thePlayer.inventory.mainInventory.find { it?.itemID == "SPIRIT_LEAP" }?.stackSize?.takeIf { it > 16 }
             ?.let { sendCommand("gfs spirit_leap ${16 - it}") }
     }
 

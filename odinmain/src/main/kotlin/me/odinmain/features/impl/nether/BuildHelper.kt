@@ -47,7 +47,7 @@ object BuildHelper : Module(
 
     @SubscribeEvent
     fun renderWorldEvent(event: RenderWorldLastEvent) {
-        if (!KuudraUtils.inKuudra || KuudraUtils.phase != 2 ) return
+        if (!KuudraUtils.inKuudra || KuudraUtils.phase != 2) return
         if (stunNotification && KuudraUtils.build > stunNotificationNumber) PlayerUtils.alert("§lGo to stun", playSound = false, color = Color.CYAN)
         if (buildHelperDraw)
             Renderer.drawStringInWorld("Build ${colorBuild(KuudraUtils.build)}%", Vec3(-101.5, 84.0, -105.5), buildHelperColor, depth = false, scale = 0.15f)
