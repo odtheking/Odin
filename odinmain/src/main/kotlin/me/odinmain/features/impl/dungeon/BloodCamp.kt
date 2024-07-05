@@ -159,9 +159,8 @@ object BloodCamp : Module(
     private fun onPacketLookMove(packet: S17PacketEntityLookMove) {
         val entity = packet.getEntity(mc.theWorld) ?: return
         if (entity !is EntityArmorStand || !watcher.any { it.getDistanceToEntity(entity) < 20 }) return
-        val item = getSkullValue(entity)
 
-        if (entity.getEquipmentInSlot(4)?.item != Items.skull || !allowedMobSkulls.contains(item) || entity in entityList) return
+        if (entity.getEquipmentInSlot(4)?.item != Items.skull || !allowedMobSkulls.contains(getSkullValue(entity)) || entity in entityList) return
 
         entityList[entity] = EntityData(startVector = entity.positionVector, started = ticktime, firstSpawns = firstSpawns)
     }
