@@ -2,6 +2,7 @@ package me.odinmain.utils.skyblock.dungeon
 
 import com.google.gson.*
 import com.google.gson.reflect.TypeToken
+import me.odinmain.OdinMain.logger
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.setWaypoints
@@ -35,7 +36,7 @@ object ScanUtils {
             is FileNotFoundException -> println("Room data not found, something went wrong! Please report this!")
             else -> {
                 println("Unknown error while reading room data.")
-                e.printStackTrace()
+                logger.error("Error reading room data", e)
                 println(e.message)
             }
         }

@@ -2,6 +2,7 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import me.odinmain.OdinMain.logger
 import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
 import me.odinmain.utils.*
@@ -27,7 +28,7 @@ object BeamsSolver {
             lanternPairs = gson.fromJson(text, object : TypeToken<List<List<Int>>>() {}.type)
             isr?.close()
         } catch (e: Exception) {
-            e.printStackTrace()
+            logger.error("Error loading creeper beams solutions", e)
             lanternPairs = emptyList()
         }
     }

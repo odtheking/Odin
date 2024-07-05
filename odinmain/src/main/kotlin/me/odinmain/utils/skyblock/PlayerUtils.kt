@@ -1,5 +1,6 @@
 package me.odinmain.utils.skyblock
 
+import me.odinmain.OdinMain.logger
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.floor7.p3.termsim.TermSimGui
 import me.odinmain.utils.clock.Executor
@@ -109,7 +110,7 @@ object PlayerUtils {
                 sendWindowClick(slotId, button, mode)
             } catch (e: Exception) {
                 println("Error sending window click: $this")
-                e.printStackTrace()
+                logger.error(e)
                 windowClickQueue.clear()
             }
         }

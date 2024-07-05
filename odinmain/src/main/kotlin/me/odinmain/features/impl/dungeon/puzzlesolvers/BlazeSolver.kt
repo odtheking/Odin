@@ -14,6 +14,7 @@ import kotlin.collections.set
 object BlazeSolver {
     private var blazes = mutableListOf<EntityArmorStand>()
     private var roomType = 0
+    private var lastBlazeCount = 10
 
     fun getBlaze() {
         val room = DungeonUtils.currentRoom?.room ?: return
@@ -35,7 +36,12 @@ object BlazeSolver {
         blazes.removeAll {
             mc.theWorld.getEntityByID(it.entityId) == null
         }
-        if (blazes.isEmpty() && PuzzleSolvers.blazeSendComplete) return partyMessage("Blaze puzzle solved!")
+        if (blazes.isEmpty() && lastBlazeCount == 1 && PuzzleSolvers.blazeSendComplete) {
+            partyMessage("Blaze puzzle solved!")
+            lastBlazeCount = 0
+            return
+        }
+        lastBlazeCount = blazes.size
         blazes.forEachIndexed { index, entity ->
             val color = when (index) {
                 0 -> PuzzleSolvers.blazeFirstColor
@@ -55,5 +61,6 @@ object BlazeSolver {
     fun reset() {
         blazes.clear()
         roomType = 0
+        lastBlazeCount = 10
     }
 }

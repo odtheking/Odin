@@ -93,6 +93,7 @@ object ExtraStats : Module(
                 Regex("^\\s*The Catacombs - .+ Stats\$"),
                 Regex("^\\s*Deaths: \\d+\$"),
                 Regex("^\\s*Master Mode Catacombs - .+ Stats\$"),
+                Regex("^\\s*\\+(\\d+) Bits\$"),
                 Regex("^\\s*Enemies Killed: \\d+\\s?(?:\\(NEW RECORD!\\))?\$"),)
             ) event.isCanceled = true
     }

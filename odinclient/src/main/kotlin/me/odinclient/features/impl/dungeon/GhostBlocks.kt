@@ -58,13 +58,12 @@ object GhostBlocks : Module(
         .onPress {
             if (!enabled) return@onPress
             val slot = getItemSlot(if (pickaxe == 1) "Stonk" else "Pickaxe", true)
-            if (slot in 0..8) {
-                val originalItem = mc.thePlayer?.inventory?.currentItem ?: 0
-                if (originalItem == slot) return@onPress
-                leftClick()
-                slot?.let { swapToIndex(it) }
-                runIn(speed) { swapToIndex(originalItem) } }
-            else modMessage("Couldn't find pickaxe.")
+            if (slot !in 0..8) modMessage("Couldn't find pickaxe.")
+            val originalItem = mc.thePlayer?.inventory?.currentItem ?: 0
+            if (originalItem == slot) return@onPress
+            leftClick()
+            slot?.let { swapToIndex(it) }
+            runIn(speed) { swapToIndex(originalItem) }
         }.withDependency { swapStonk }
 
     private val pickaxe: Int by SelectorSetting("Type", "Pickaxe", arrayListOf("Pickaxe", "Stonk"), description = "The type of pickaxe to use").withDependency { swapStonk }

@@ -50,7 +50,7 @@ object SplitsManager {
                 val floor = LocationUtils.getFloor() ?: return modMessage("§Couldn't get floor.")
                 val split = dungeonSplits[floor.floorNumber].toMutableList()
 
-                split.add(0, Split(Regex("\\[NPC] Mort: Here, I found this map when I first entered the dungeon\\."), "§2Blood Open"))
+                split.add(0, Split(if (floor.floorNumber != 0) Regex("\\[NPC] Mort: Here, I found this map when I first entered the dungeon\\.") else Regex("\\[NPC] Mort: Right-click the Orb for spells, and Left-click \\(or Drop\\) to use your Ultimate!"), "§2Blood Open"))
                 split.add(1, Split(Regex("The BLOOD DOOR has been opened!"), "§bBlood Clear"))
                 split.add(2, Split(Regex("\\[BOSS] The Watcher: You have proven yourself\\. You may pass\\."), "§dPortal Entry"))
                 split.add(Split(Regex("^\\s*☠ Defeated (.+) in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?\$"), "§1Total"))

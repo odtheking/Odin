@@ -21,6 +21,8 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.Loader
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 import java.io.File
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -29,6 +31,7 @@ object OdinMain {
 
     const val VERSION = "@VER@"
     val scope = CoroutineScope(EmptyCoroutineContext)
+    val logger: Logger = LogManager.getLogger("Odin")
 
     var display: GuiScreen? = null
     val isLegitVersion: Boolean

@@ -49,9 +49,15 @@ object ChatCommands : Module(
     private val messageRegex = Regex("^(?:Party > \\[?(?:MVP|VIP)?\\+*]? ?(.{1,16}): ?(.+)\$|Guild > \\[?(?:MVP|VIP)?\\+*]? ?(.{1,16}?)(?= ?\\[| ?: ) ?\\[.+] ?: ?(.+)\$|From \\[?(?:MVP|VIP)?\\+*]? ?(.{1,16}): ?(.+)\$)")
 
     init {
-        onMessage(messageRegex) {
-            dt(it)
+        onMessage(Regex(" {29}> EXTRA STATS <")) {
+            dt()
+        }
 
+        onMessage(Regex("^\\[NPC] Elle: Good job everyone. A hard fought battle come to an end. Let's get out of here before we run into any more trouble!$")) {
+            dt()
+        }
+
+        onMessage(messageRegex) {
             val chatMessage = messageRegex.find(it) ?: return@onMessage
             val ign = chatMessage.groups[1]?.value ?: return@onMessage
             val msg = chatMessage.groups[2]?.value ?: return@onMessage
@@ -157,9 +163,8 @@ object ChatCommands : Module(
             chatStyle = createClickStyle(ClickEvent.Action.RUN_COMMAND, "/party invite $name"))
     }
 
-    private fun dt(message: String) {
-        if (!message.matchesOneOf(Regex(" {29}> EXTRA STATS <"), Regex("^\\[NPC] Elle: Good job everyone. A hard fought battle come to an end. Let's get out of here before we run into any more trouble!$"))
-            || dtReason.isEmpty()) return
+    private fun dt() {
+        if (dtReason.isEmpty()) return
         runIn(30) {
             PlayerUtils.alert("§cPlayers need DT")
             partyMessage("Players need DT: ${dtReason.joinToString(separator = ", ") { (name, reason) -> "$name: $reason" }}")

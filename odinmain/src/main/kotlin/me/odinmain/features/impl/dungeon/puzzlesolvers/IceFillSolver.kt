@@ -2,6 +2,7 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import me.odinmain.OdinMain.logger
 import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
@@ -39,7 +40,7 @@ object IceFillSolver {
             )
             isr?.close()
         } catch (e: Exception) {
-            e.printStackTrace()
+            logger.error("Error loading ice fill floors", e)
             representativeFloors = emptyList()
         }
     }

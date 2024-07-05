@@ -2,11 +2,12 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import me.odinmain.OdinMain.logger
 import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.quizDepth
 import me.odinmain.utils.*
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.render.*
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.util.Vec3
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
@@ -26,7 +27,7 @@ object QuizSolver {
             answers = gson.fromJson(text, object : TypeToken<MutableMap<String, List<String>>>() {}.type)
             isr?.close()
         } catch (e: Exception) {
-            e.printStackTrace()
+            logger.error("Error loading quiz answers", e)
             answers = mutableMapOf()
         }
     }
@@ -64,8 +65,12 @@ object QuizSolver {
     }
 
     fun renderWorldLastQuiz() {
+        if (triviaAnswers == null || triviaOptions.isEmpty() || DungeonUtils.inBoss || !DungeonUtils.inDungeons) return
         triviaOptions.filter { it.correct }.forEach { answer ->
-            answer.vec3?.toAABB()?.expand(0.0, 20.0, 0.0)?.let { Renderer.drawBox(it, Color.GREEN, depth = quizDepth) }
+            answer.vec3?.addVec(y= -1)?.let {
+                Renderer.drawBox(it.toAABB(), Color.GREEN, depth = quizDepth)
+                RenderUtils.drawBeaconBeam(it, Color.GREEN, depth = quizDepth)
+            }
         }
     }
 

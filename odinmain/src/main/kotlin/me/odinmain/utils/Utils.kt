@@ -3,6 +3,7 @@
 package me.odinmain.utils
 
 import me.odinmain.OdinMain
+import me.odinmain.OdinMain.logger
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.ModuleManager
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
@@ -141,7 +142,7 @@ fun Event.postAndCatch(): Boolean {
     return runCatching {
         MinecraftForge.EVENT_BUS.post(this)
     }.onFailure {
-        it.printStackTrace()
+        logger.error("An error occurred", it)
         modMessage("${OdinMain.VERSION} Caught and logged an ${it::class.simpleName ?: "error"} at ${this::class.simpleName}. Please report this!")
     }.getOrDefault(isCanceled)
 }

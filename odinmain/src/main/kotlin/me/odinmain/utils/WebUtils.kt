@@ -2,6 +2,7 @@ package me.odinmain.utils
 
 import com.google.gson.JsonParser
 import kotlinx.coroutines.*
+import me.odinmain.OdinMain.logger
 import me.odinmain.features.impl.render.DevPlayers
 import java.io.*
 import java.net.HttpURLConnection
@@ -102,14 +103,14 @@ fun fetchURLData(url: String): String {
         return content.toString()
     } catch (e: Exception) {
         // Print the stack trace in case of an exception and return an empty string
-        e.printStackTrace()
+        logger.error("Error fetching data from URL: $url", e)
         return ""
     }
 }
 
 fun downloadFile(url: String, outputPath: String) {
-    val url = URL(url)
-    val connection = url.openConnection()
+    val wrappedURL = URL(url)
+    val connection = wrappedURL.openConnection()
     connection.connect()
 
     val inputStream = connection.getInputStream()

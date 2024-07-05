@@ -69,15 +69,17 @@ object CustomHighlight : Module(
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         if (!mode.equalsOneOf(1,2) && tracerLimit == 0) return
-        profile("ESP") { currentEntities.forEach {
-            if (currentEntities.size < tracerLimit && !isLegitVersion)
-                RenderUtils.draw3DLine(getPositionEyes(mc.thePlayer.renderVec), getPositionEyes(it.renderVec), color, 2f, false)
+        profile("ESP") {
+            currentEntities.forEach {
+                if (currentEntities.size < tracerLimit && !isLegitVersion)
+                    RenderUtils.draw3DLine(getPositionEyes(mc.thePlayer.renderVec), getPositionEyes(it.renderVec), color, 2f, false)
 
-            if (mode == 1)
-                Renderer.drawBox(it.renderBoundingBox, color, thickness, depth = !depthCheck, fillAlpha = 0)
-            else if (mode == 2 && (mc.thePlayer.canEntityBeSeen(it) || depthCheck))
-                Renderer.draw2DEntity(it, thickness, color)
-        }}
+                if (mode == 1)
+                    Renderer.drawBox(it.renderBoundingBox, color, thickness, depth = depthCheck, fillAlpha = 0)
+                else if (mode == 2 && (mc.thePlayer.canEntityBeSeen(it) || !depthCheck))
+                    Renderer.draw2DEntity(it, thickness, color)
+            }
+        }
     }
 
     @SubscribeEvent

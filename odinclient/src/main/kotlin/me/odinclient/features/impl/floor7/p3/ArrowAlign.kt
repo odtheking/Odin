@@ -74,7 +74,10 @@ object ArrowAlign : Module(
 
         if (framePosition.xCoord != frameGridCorner.xCoord || currentFrameRotations?.get(frameIndex) == -1 || frameIndex !in 0..24) return
 
-        if (!clicksRemaining.containsKey(frameIndex) && mc.thePlayer.isSneaking) return
+        if (!clicksRemaining.containsKey(frameIndex) && mc.thePlayer.isSneaking) {
+            if (blockWrong) event.isCanceled = true
+            return
+        }
 
         recentClickTimestamps[frameIndex] = System.currentTimeMillis()
         currentFrameRotations = currentFrameRotations?.toMutableList()?.apply { this[frameIndex] = (this[frameIndex] + 1) % 8 }
