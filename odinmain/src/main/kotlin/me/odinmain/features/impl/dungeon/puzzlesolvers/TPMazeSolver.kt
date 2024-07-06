@@ -6,7 +6,6 @@ import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.mazeColorOn
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.mazeColorVisited
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.solutionThroughWalls
 import me.odinmain.utils.isXZInterceptable
-import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.toAABB
@@ -53,10 +52,10 @@ object TPMazeSolver {
         val color = if (correctPortals.size == 1) mazeColorOne else mazeColorMultiple
         correctPortals.forEach {
             if (visited.contains(it) && correctPortals.size != 1) return@forEach
-            Renderer.drawBox(RenderUtils.getBlockAABB(Blocks.end_portal_frame, it).expand(0.005, 0.005, 0.005), color, outlineAlpha = 0, fillAlpha = color.alpha, depth = !(solutionThroughWalls && correctPortals.size == 1))
+            Renderer.drawBlock(it, color, outlineAlpha = 0, fillAlpha = color.alpha, depth = !(solutionThroughWalls && correctPortals.size == 1))
         }
         visited.forEach {
-            Renderer.drawBox(RenderUtils.getBlockAABB(Blocks.end_portal_frame, it).expand(0.005, 0.005, 0.005), mazeColorVisited, outlineAlpha = 0, fillAlpha = mazeColorVisited.alpha, depth = true)
+            Renderer.drawBlock(it, mazeColorVisited, outlineAlpha = 0, fillAlpha = mazeColorVisited.alpha, depth = true)
         }
     }
 

@@ -61,7 +61,7 @@ object BeamsSolver {
             Renderer.drawBox(positions.value.first.toAABB(), color, depth = PuzzleSolvers.beamsDepth, outlineAlpha = if (PuzzleSolvers.beamStyle == 0) 0 else color.alpha, fillAlpha = if (PuzzleSolvers.beamStyle == 1) 0 else color.alpha)
 
             if (PuzzleSolvers.beamsTracer)
-                Renderer.draw3DLine(positions.key.toVec3().addVec(0.5, 0.5, 0.5), positions.value.first.toVec3().addVec(0.5, 0.5, 0.5), color, depth = PuzzleSolvers.beamsDepth, lineWidth = 1f)
+                Renderer.draw3DLine(positions.key.toVec3().addVec(0.5, 0.5, 0.5), positions.value.first.toVec3().addVec(0.5, 0.5, 0.5), color = color, depth = PuzzleSolvers.beamsDepth, lineWidth = 1f)
         }
     }
 

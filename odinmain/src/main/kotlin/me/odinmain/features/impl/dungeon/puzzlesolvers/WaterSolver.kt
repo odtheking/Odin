@@ -128,7 +128,7 @@ object WaterSolver {
 
         val first = solutionList.firstOrNull() ?: return
 
-        if (PuzzleSolvers.showTracer) Renderer.draw3DLine(mc.thePlayer.renderVec, Vec3(first.first.leverPos).addVector(.5, .5, .5), PuzzleSolvers.tracerColorFirst, depth = true)
+        if (PuzzleSolvers.showTracer) Renderer.draw3DLine(mc.thePlayer.renderVec, Vec3(first.first.leverPos).addVector(.5, .5, .5), color = PuzzleSolvers.tracerColorFirst, depth = true)
 
         if (solutionList.size > 1 && PuzzleSolvers.showTracer) {
             val second = solutionList[1]
@@ -137,7 +137,7 @@ object WaterSolver {
                 Renderer.draw3DLine(
                     Vec3(solutionList.first().first.leverPos).addVector(0.5, 0.5, 0.5),
                     Vec3(second.first.leverPos).addVector(0.5, 0.5, 0.5),
-                    PuzzleSolvers.tracerColorSecond,
+                    color = PuzzleSolvers.tracerColorSecond,
                     lineWidth = 1.5f,
                     depth = true
                 )

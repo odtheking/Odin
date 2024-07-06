@@ -221,7 +221,7 @@ object BloodCamp : Module(
                 Renderer.draw3DLine(
                     Vec3(currVector.xCoord, currVector.yCoord + 2.0, currVector.zCoord),
                     Vec3(endPoint.xCoord, endPoint.yCoord + 2.0, endPoint.zCoord),
-                    Color.RED, 3f, true
+                    color = Color.RED, depth = true
                 )
             }
 
