@@ -142,7 +142,7 @@ object RenderUtils {
         GlStateManager.pushMatrix()
         preDraw()
         GlStateManager.disableCull()
-        depth(!depth)
+        depth(depth)
         color.bind()
 
         worldRenderer {
@@ -178,7 +178,7 @@ object RenderUtils {
         }
         tessellator.draw()
 
-        depth(depth)
+        depth(!depth)
         postDraw()
         GlStateManager.enableCull()
         GlStateManager.popMatrix()
@@ -199,11 +199,11 @@ object RenderUtils {
         preDraw()
         GL11.glLineWidth(thickness.toFloat())
 
-        depth(!depth)
-
-        RenderGlobal.drawOutlinedBoundingBox(aabb, color.r / 255, color.g / 255, color.b / 255, color.a / 255)
-
         depth(depth)
+
+        RenderGlobal.drawOutlinedBoundingBox(aabb, color.r, color.g, color.b, color.a)
+
+        depth(!depth)
         postDraw()
         GL11.glLineWidth(2f)
         GlStateManager.popMatrix()
@@ -326,7 +326,7 @@ object RenderUtils {
         GlStateManager.pushMatrix()
         color.bind()
         preDraw()
-        depth(!depth)
+        depth(depth)
         GL11.glEnable(GL11.GL_LINE_SMOOTH)
         GL11.glLineWidth(lineWidth)
 
@@ -336,7 +336,7 @@ object RenderUtils {
         }
         tessellator.draw()
 
-        depth(depth)
+        depth(!depth)
         postDraw()
         GlStateManager.popMatrix()
     }

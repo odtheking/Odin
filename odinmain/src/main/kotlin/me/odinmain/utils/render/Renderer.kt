@@ -82,10 +82,7 @@ object Renderer {
         when(style) {
             0 -> drawBlock(pos, color, width, 0, color.alpha, depth)
             1 -> drawBlock(pos, color, width, color.alpha, 0, depth)
-            2 -> {
-                drawBlock(pos, color, width, color.alpha, 0, depth)
-                drawBlock(pos, color.multiplyAlpha(.6f), width, 0, color.alpha, depth)
-            }
+            2 -> drawBlock(pos, color, width, color.alpha, color.multiplyAlpha(.75f).alpha, depth)
         }
     }
 
@@ -99,10 +96,7 @@ object Renderer {
         when (style) {
             0 -> drawBox(aabb, color, width, 0, color.alpha, depth)
             1 -> drawBox(aabb, color, width, color.alpha, 0, depth)
-            2 -> {
-                drawBox(aabb, color, width, color.alpha, 0, depth)
-                drawBox(aabb, color.multiplyAlpha(.6f), width, 0, color.alpha, depth)
-            }
+            2 -> drawBox(aabb, color, width, color.alpha, color.multiplyAlpha(.75f).alpha, depth)
         }
     }
 

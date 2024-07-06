@@ -37,7 +37,7 @@ object Mimic : Module(
 
     @SubscribeEvent
     fun onRenderLast(event: RenderChestEvent.Post) {
-        if (event.chest.chestType != 1 || !DungeonUtils.inDungeons || DungeonUtils.inBoss || !mimicBox) return
+        if (!mimicBox || !DungeonUtils.inDungeons || DungeonUtils.inBoss || event.chest.chestType != 1) return
         Renderer.drawStyledBox(event.chest.pos.toAABB(), color, style, lineWidth, isLegitVersion)
     }
 
