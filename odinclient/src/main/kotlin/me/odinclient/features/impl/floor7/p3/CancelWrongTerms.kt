@@ -21,7 +21,7 @@ object CancelWrongTerms : Module(
         val gui = event.gui as? GuiChest ?: return
         if (TerminalSolver.currentTerm == TerminalTypes.NONE) return
         if (TerminalSolver.currentTerm == TerminalTypes.RUBIX && disableRubix) return
-        if (gui.slotUnderMouse?.slotIndex in TerminalSolver.solution) return
+        if (gui.slotUnderMouse?.slotIndex !in TerminalSolver.solution) return
         event.isCanceled = true
     }
 }
