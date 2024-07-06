@@ -32,7 +32,7 @@ object WaypointManager {
     fun addWaypoint(name: String = "§fWaypoint", vec3: Vec3i, color: Color = randomColor()) =
         addWaypoint(Waypoint(if (Waypoints.onlyDistance) "" else name, vec3.x, vec3.y, vec3.z, color))
 
-    fun addWaypoint(waypoint: Waypoint, area: String = currentArea.displayName!!) {
+    fun addWaypoint(waypoint: Waypoint, area: String = currentArea.displayName) {
         waypoints.getOrPut(area) { mutableListOf() }.add(waypoint)
         WaypointConfig.saveConfig()
     }
@@ -92,7 +92,7 @@ object WaypointManager {
     fun onWorldLoad(event: WorldEvent.Load) {
         temporaryWaypoints.clear()
         runIn(80) {
-            if (!currentArea.isArea(Island.Unknown)) WaypointGUI.updateElements(currentArea?.displayName!!)
+            if (!currentArea.isArea(Island.Unknown)) WaypointGUI.updateElements(currentArea.displayName)
         }
     }
 

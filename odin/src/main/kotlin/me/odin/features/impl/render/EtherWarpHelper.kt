@@ -12,11 +12,11 @@ import me.odinmain.utils.pos
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.EtherWarpHelper
 import me.odinmain.utils.skyblock.EtherWarpHelper.etherPos
 import me.odinmain.utils.skyblock.PlayerUtils.playLoudSound
 import net.minecraft.network.play.server.S29PacketSoundEffect
+import me.odinmain.utils.skyblock.extraAttributes
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -58,10 +58,7 @@ object EtherWarpHelper : Module(
             val pos = etherPos.pos ?: return
             val color = if (etherPos.succeeded) color else wrongColor
 
-            getBlockAt(pos).setBlockBoundsBasedOnState(mc.theWorld, pos)
-            val aabb = getBlockAt(pos).getSelectedBoundingBox(mc.theWorld, pos).expand(0.002, 0.002, 0.002) ?: return
-
-            Renderer.drawStyledBox(aabb, color, style, lineWidth, depthCheck)
+            Renderer.drawStyledBlock(pos, color, style, lineWidth, depthCheck)
         }
     }
 

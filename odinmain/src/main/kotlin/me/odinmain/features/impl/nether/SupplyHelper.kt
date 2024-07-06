@@ -44,8 +44,9 @@ object SupplyHelper : Module(
 
     @SubscribeEvent
     fun onWorldRender(event: RenderWorldLastEvent) {
-        if (supplyDropWaypoints && KuudraUtils.phase == 1) renderDropLocations()
-        if (suppliesWaypoints && KuudraUtils.phase == 1) renderSupplyWaypoints()
+        if (!KuudraUtils.inKuudra || KuudraUtils.phase != 1) return
+        if (supplyDropWaypoints) renderDropLocations()
+        if (suppliesWaypoints) renderSupplyWaypoints()
     }
 
     private fun renderSupplyWaypoints() {

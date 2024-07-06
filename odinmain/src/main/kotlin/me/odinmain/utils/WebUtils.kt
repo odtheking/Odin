@@ -1,21 +1,13 @@
 package me.odinmain.utils
 
-import com.google.gson.Gson
 import com.google.gson.JsonParser
 import kotlinx.coroutines.*
-
+import me.odinmain.OdinMain.logger
 import me.odinmain.features.impl.render.DevPlayers
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
 
-private var IMGUR_KEYS = arrayOf(
-    "d30c6dc9941b52b",
-    "b2e8519cbb7712a",
-    "eb1f61e23b9eabd",
-    "d1275dca5af8904",
-    "ed46361ccd67d6d"
-)
 /**
  * Sends a POST request to a specified server URL with the provided request body.
  *
@@ -111,14 +103,14 @@ fun fetchURLData(url: String): String {
         return content.toString()
     } catch (e: Exception) {
         // Print the stack trace in case of an exception and return an empty string
-        e.printStackTrace()
+        logger.error("Error fetching data from URL: $url", e)
         return ""
     }
 }
 
 fun downloadFile(url: String, outputPath: String) {
-    val url = URL(url)
-    val connection = url.openConnection()
+    val wrappedURL = URL(url)
+    val connection = wrappedURL.openConnection()
     connection.connect()
 
     val inputStream = connection.getInputStream()
@@ -133,84 +125,6 @@ fun downloadFile(url: String, outputPath: String) {
 
     outputStream.close()
     inputStream.close()
-}
-
-/**
- * Uploads an image to Imgur using a random client ID from a predefined list.
- *
- * @param image The image data to be uploaded.
- * @return The response from the Imgur API as a string, or an empty string in case of an exception.
- */
-fun upload(image: String): String {
-    try {
-        val clientID = IMGUR_KEYS.random() // Assuming IMGUR_KEYS is defined somewhere with the list of client IDs
-
-        // Create a map with the image URL
-        val dataMap = mapOf("image" to image)
-
-        // Convert the map to JSON string using Gson
-        val gson = Gson()
-        val postData = gson.toJson(dataMap)
-
-        // Create a URL object for the Imgur API endpoint
-        val url = URL("https://api.imgur.com/3/image")
-
-        // Open a connection to the Imgur API endpoint
-        val connection = url.openConnection() as HttpURLConnection
-
-        // Set the request method to POST
-        connection.requestMethod = "POST"
-
-        // Set the necessary request headers
-        connection.setRequestProperty("Authorization", "Client-ID $clientID")
-        connection.setRequestProperty("Content-Type", "application/json")
-        connection.setRequestProperty("Content-Length", postData.length.toString())
-
-        // Enable output and send the request data
-        connection.doOutput = true
-        val outputStream = connection.outputStream
-        outputStream.write(postData.toByteArray())
-        outputStream.close()
-
-        // Read the response from the server
-        val responseCode = connection.responseCode
-        val reader = BufferedReader(InputStreamReader(connection.inputStream))
-        val response = StringBuilder()
-        var line: String?
-        while (reader.readLine().also { line = it } != null) {
-            response.append(line)
-        }
-        reader.close()
-
-        // Close the connection
-        connection.disconnect()
-
-        // Return the response as a string
-        return response.toString()
-    } catch (e: Exception) {
-        // Return an empty string in case of an exception
-        println("Error: ${e.message}")
-        return ""
-    }
-}
-
-/**
- * Extracts the Imgur ID of an image from the provided URL.
- *
- * @param url The URL of the image.
- * @return The Imgur ID as a string, or an empty string if the ID extraction fails or an exception occurs.
- */
-fun imgurID(url: String): String {
-    // Fetch data from the provided URL
-    val image: Any = fetchURLData(url)
-
-    // Split the fetched data to extract the image URL
-    val imageArray = image.toString().split(",")[1]
-    // Upload the image to Imgur and extract the Imgur ID from the response
-    val imageLink = upload(imageArray.drop(7).dropLast(1))
-    val imgurID = imageLink.split(",")[26].substringAfter("i.imgur.com/").substringBefore(".")
-    // Extract the Imgur ID from the Imgur API response
-    return imgurID
 }
 
 suspend fun hasBonusPaulScore(): Boolean = coroutineScope {

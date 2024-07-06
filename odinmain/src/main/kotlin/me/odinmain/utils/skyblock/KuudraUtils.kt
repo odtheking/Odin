@@ -42,8 +42,8 @@ object KuudraUtils {
     fun onChat(event: ChatPacketEvent) {
         val message = event.message
 
-        if (message.matches(Regex("^Party > ?(?:\\[\\S+])? (\\S{0,16}): FRESH"))) {
-            val playerName = Regex("^Party > ?(?:\\[\\S+])? (\\S{0,16}): FRESH").find(message)?.groupValues?.get(1)?.takeIf { it == mc.thePlayer?.name } ?: return
+        if (message.matches(Regex("^Party > ?(?:\\[\\S+])? (\\S{1,16}): FRESH"))) {
+            val playerName = Regex("^Party > ?(?:\\[\\S+])? (\\S{1,16}): FRESH").find(message)?.groupValues?.get(1)?.takeIf { it == mc.thePlayer?.name } ?: return
 
             kuudraTeammates.find { it.playerName == playerName }?.let { kuudraPlayer ->
                 kuudraPlayer.eatFresh = true
@@ -74,10 +74,12 @@ object KuudraUtils {
             kuudraEntity = entities.filterIsInstance<EntityMagmaCube>().filter { it.slimeSize == 30 && it.getEntityAttribute(SharedMonsterAttributes.maxHealth).baseValue.toFloat() == 100000f }[0]
 
             entities.filterIsInstance<EntityArmorStand>().forEach {
-                val message = Regex("Building Progress (\\d+)% \\((\\d+) Players Helping\\)").find(it.name.noControlCodes)
-                if (message != null) {
-                    build = message.groupValues[1].toIntOrNull() ?: 0
-                    builders = message.groupValues[2].toIntOrNull() ?: 0
+                if (phase == 2) {
+                    val message = Regex("Building Progress (\\d+)% \\((\\d+) Players Helping\\)").find(it.name.noControlCodes)
+                    if (message != null) {
+                        build = message.groupValues[1].toIntOrNull() ?: 0
+                        builders = message.groupValues[2].toIntOrNull() ?: 0
+                    }
                 }
 
                 if (phase != 1 || it.name != "✓ SUPPLIES RECEIVED ✓") return@forEach
@@ -109,7 +111,6 @@ object KuudraUtils {
             val entity = mc.theWorld.getPlayerEntityByName(name)
             teammates.add(KuudraPlayer(name, previousTeammate?.eatFresh ?: false, previousTeammate?.eatFreshTime ?: 0, entity))
         }
-        modMessage("teammates ${teammates.joinToString(", ") { it.playerName }}")
         return teammates
     }
 }

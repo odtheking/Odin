@@ -16,7 +16,7 @@ object VisualWords : Module(
         if (!enabled || text == null) return text
         var replacedText = text
         for (actualText in wordsMap.keys) {
-            replacedText = replacedText?.replace(actualText, wordsMap[actualText]!!)
+            replacedText = wordsMap[actualText]?.let { replacedText?.replace(actualText, it) }
         }
         return replacedText
     }

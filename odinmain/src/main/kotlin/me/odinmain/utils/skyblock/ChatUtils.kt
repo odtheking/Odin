@@ -1,5 +1,6 @@
 package me.odinmain.utils.skyblock
 
+import me.odinmain.OdinMain.logger
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.render.ClickGUIModule.devMessages
 import me.odinmain.features.impl.render.DevPlayers
@@ -69,7 +70,7 @@ fun modMessage(message: Any?, prefix: Boolean = true, chatStyle: ChatStyle? = nu
     val chatComponent = ChatComponentText(if (prefix) "§3Odin §8»§r $message" else message.toString())
     chatStyle?.let { chatComponent.setChatStyle(it) } // Set chat style using setChatStyle method
     try { mc.thePlayer?.addChatMessage(chatComponent) }
-    catch (e: Exception) { e.printStackTrace() }
+    catch (e: Exception) { logger.error("Error sending message: $message", e)}
 }
 
 

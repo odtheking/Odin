@@ -44,7 +44,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
     val color: Color
         get() = colorAnim.get(clickGUIColor, moduleButtonColor, module.enabled).brighter(1 + hover.percent() / 500f)
 
-    val width = Panel.width
+    val width = Panel.WIDTH
     val height = 32f
 
     var extended = false

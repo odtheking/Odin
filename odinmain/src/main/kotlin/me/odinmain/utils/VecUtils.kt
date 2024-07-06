@@ -35,9 +35,11 @@ fun BlockPos.add(vec: Vec2): BlockPos {
  * Gets the distance between two entities squared.
  */
 fun Entity.distanceSquaredTo(other: Entity): Double {
-    return (posX - other.posX).pow(2.0) +
-            (posY - other.posY).pow(2.0) +
-            (posZ - other.posZ).pow(2.0)
+    return (posX - other.posX).pow(2.0) + (posY - other.posY).pow(2.0) + (posZ - other.posZ).pow(2.0)
+}
+
+fun Entity.distanceSquaredTo(pos: Vec3): Double {
+    return (posX - pos.xCoord).pow(2.0) + (posY - pos.yCoord).pow(2.0) + (posZ - pos.zCoord).pow(2.0)
 }
 
 /**

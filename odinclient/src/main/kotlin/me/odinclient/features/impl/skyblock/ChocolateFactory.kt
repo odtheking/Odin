@@ -131,9 +131,9 @@ object ChocolateFactory : Module(
     private enum class ChocolateEggs(
         val texture: String, val type: String, val color: Color, val index: Int
     ) {
-        Breakfast(BunnyEggTextures.breakfastEggTexture, "§6Breakfast Egg", Color.ORANGE, 0),
-        Lunch(BunnyEggTextures.lunchEggTexture, "§9Lunch Egg ", Color.BLUE, 1),
-        Dinner(BunnyEggTextures.dinnerEggTexture, "§aDinner Egg", Color.GREEN, 2),
+        Breakfast(BunnyEggTextures.BREAKFAST_EGG_TEXTURE, "§6Breakfast Egg", Color.ORANGE, 0),
+        Lunch(BunnyEggTextures.LUNCH_EGG_TEXTURE, "§9Lunch Egg ", Color.BLUE, 1),
+        Dinner(BunnyEggTextures.DINNER_EGG_TEXTURE, "§aDinner Egg", Color.GREEN, 2),
     }
 
     data class Egg(val entity: EntityArmorStand, val renderName: String, val color: Color, var isFound: Boolean = false)

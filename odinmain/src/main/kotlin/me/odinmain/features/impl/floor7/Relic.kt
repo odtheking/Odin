@@ -32,9 +32,8 @@ object Relic {
     }
 
     fun relicsBlockPlace(packet: C08PacketPlayerBlockPlacement) {
-        if (timer == 0L) return
-        val block = mc.theWorld?.getBlockState(packet.position)?.block ?: return
-        if (!block.equalsOneOf(Blocks.cauldron, Blocks.anvil)) return
+        if (timer == 0L || !getBlockAt(packet.position).equalsOneOf(Blocks.cauldron, Blocks.anvil)) return
+
         val relic = Relic.entries.find { it.id == currentRelic } ?: return
         val hasPassed = (System.currentTimeMillis() - timer) / 1000.0
 

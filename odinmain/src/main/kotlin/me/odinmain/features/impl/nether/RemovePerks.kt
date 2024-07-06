@@ -9,23 +9,30 @@ import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-
 object RemovePerks : Module(
     name = "Remove Perks",
     description = "Removes certain perks from the perk menu.",
     category = Category.NETHER
 ) {
     private val renderStun: Boolean by BooleanSetting("Render Stun", false, description = "Renders the stun perk")
+
     @SubscribeEvent
     fun renderSlot(event: GuiEvent.DrawSlotEvent) {
-        if (event.gui !is GuiChest || event.gui.inventorySlots !is ContainerChest || (event.gui.inventorySlots as ContainerChest).name != "Perk Menu") return
-        val slot = event.slot.stack?.displayName.noControlCodes
+        val container = event.gui.inventorySlots as? ContainerChest ?: return
+        if (container.name != "Perk Menu") return
+
+        val slot = event.slot.stack?.displayName?.noControlCodes ?: return
         if (slotCheck(slot)) event.isCanceled = true
     }
+
     @SubscribeEvent
     fun guiMouseClick(event: GuiEvent.GuiMouseClickEvent) {
-        if (event.gui !is GuiChest || event.gui.inventorySlots !is ContainerChest || (event.gui.inventorySlots as ContainerChest).name != "Perk Menu") return
-        val slot = event.gui.slotUnderMouse?.stack?.displayName.noControlCodes
+        if (event.gui !is GuiChest) return
+
+        val container = event.gui.inventorySlots as? ContainerChest ?: return
+        if (container.name != "Perk Menu") return
+
+        val slot = event.gui.slotUnderMouse?.stack?.displayName?.noControlCodes ?: return
         if (slotCheck(slot)) event.isCanceled = true
     }
 

@@ -76,7 +76,7 @@ object PearlWaypoints : Module(
 
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
-        if (KuudraUtils.phase != 1) return
+        if (!KuudraUtils.inKuudra || KuudraUtils.phase != 1) return
 
         var closest = true
         getOrderedLineups(mc.thePlayer.position).forEach { (lineup, color) ->

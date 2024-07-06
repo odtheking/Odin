@@ -4,7 +4,7 @@ import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.RealServerTick
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.utils.addVec
+import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -23,7 +23,7 @@ object TerracottaTimer : Module(
 
     @SubscribeEvent
     fun onBlockPacket(event: BlockChangeEvent) {
-        if (!DungeonUtils.isFloor(6) || !DungeonUtils.inBoss || !event.update.block.isFlowerPot) return
+        if (!DungeonUtils.isFloor(6) || !DungeonUtils.inBoss || !event.update.block.isFlowerPot || terracottaSpawning.any { it.pos.equal(event.pos.toVec3()) }) return
         terracottaSpawning.add(Terracotta(Vec3(event.pos).addVec(.5, 1.5, .5), if (DungeonUtils.floor.isInMM) 1200.0 else 1500.0))
     }
 

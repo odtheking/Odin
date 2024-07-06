@@ -21,9 +21,9 @@ object ChatEmotes : Module(
         val words = event.message.split(" ").toMutableList()
 
         for (i in words.indices) {
-            if (replacements.containsKey(words[i])) {
+            replacements[words[i]]?.let {
                 replaced = true
-                words[i] = replacements[words[i]]!!
+                words[i] = it
             }
         }
 

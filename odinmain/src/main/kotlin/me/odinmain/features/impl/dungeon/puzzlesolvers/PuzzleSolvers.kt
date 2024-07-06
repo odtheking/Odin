@@ -38,7 +38,7 @@ object PuzzleSolvers : Module(
     val mazeColorMultiple: Color by ColorSetting("Color for multiple solutions", Color.ORANGE.withAlpha(.5f), true, description = "Color for when there are multiple solutions").withDependency { tpMaze && mazeDropDown }
     val mazeColorVisited: Color by ColorSetting("Color for visited", Color.RED.withAlpha(.5f), true, description = "Color for the already used TP pads").withDependency { tpMaze && mazeDropDown }
     private val click: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
-        TPMaze.reset()
+        TPMazeSolver.reset()
     }.withDependency { tpMaze && mazeDropDown }
 
     /*private val tttDropDown: Boolean by DropdownSetting("Tic Tac Toe")
@@ -93,13 +93,13 @@ object PuzzleSolvers : Module(
 
     init {
         execute(500) {
-            if (tpMaze) TPMaze.scan()
+            if (tpMaze) TPMazeSolver.scan()
             if (waterSolver) WaterSolver.scan()
             if (blazeSolver) BlazeSolver.getBlaze()
         }
 
         onPacket(S08PacketPlayerPosLook::class.java) {
-            if (tpMaze) TPMaze.tpPacket(it)
+            if (tpMaze) TPMazeSolver.tpPacket(it)
         }
 
         onPacket(C08PacketPlayerBlockPlacement::class.java) {
@@ -117,7 +117,7 @@ object PuzzleSolvers : Module(
 
         onWorldLoad {
             WaterSolver.reset()
-            TPMaze.reset()
+            TPMazeSolver.reset()
             IceFillSolver.reset()
             BlazeSolver.reset()
             BeamsSolver.reset()
@@ -130,7 +130,7 @@ object PuzzleSolvers : Module(
     fun onWorldRender(event: RenderWorldLastEvent) {
         profile("Puzzle Solvers") {
             if (waterSolver) WaterSolver.waterRender()
-            if (tpMaze) TPMaze.tpRender()
+            if (tpMaze) TPMazeSolver.tpRender()
             //if (tttSolver) TTTSolver.tttRenderWorld()
             if (iceFillSolver) IceFillSolver.onRenderWorldLast(iceFillColor)
             if (blazeSolver) BlazeSolver.renderBlazes()

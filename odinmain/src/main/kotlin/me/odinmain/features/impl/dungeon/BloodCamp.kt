@@ -34,17 +34,17 @@ object BloodCamp : Module(
     description = "Features for Blood Camping",
     category = Category.DUNGEON
 ) {
-    private val bloodhelper: Boolean by BooleanSetting("Blood Camp Assist", default = true, description = "Draws boxes to spawning mobs in the blood room. WARNING: not perfectly accurate. Mobs spawn randomly between 37 - 41 ticks, adjust offset to adjust between ticks.")
-    private val pboxColor: Color by ColorSetting("Spawn Color", Color.RED, true, description = "Color for Spawn render box. Set alpha to 0 to disable.").withDependency { bloodhelper }
-    private val fboxColor: Color by ColorSetting("Final Color", Color.CYAN, true, description = "Color for when Spawn and Mob boxes are merged. Set alpha to 0 to disable.").withDependency { bloodhelper }
-    private val mboxColor: Color by ColorSetting("Position Color", Color.GREEN, true, description = "Color for current position box. Set alpha to 0 to disable.").withDependency { bloodhelper }
-    private val boxSize: Double by NumberSetting("Box Size", default = 1.0, increment = 0.1, min = 0.1, max = 1.0, description = "The size of the boxes. Lower values may seem less accurate").withDependency { bloodhelper }
-    private val drawLine: Boolean by BooleanSetting("Line", default = true, description = "Line between Position box and Spawn box").withDependency { bloodhelper }
-    private val drawTime: Boolean by BooleanSetting("Time Left", default = true, description = "Time before the blood mob spawns. Adjust offset depending on accuracy. May be up to ~100ms off").withDependency { bloodhelper }
-    private val advanced: Boolean by DropdownSetting("Advanced", default = false).withDependency { bloodhelper }
-    private val offset: Int by NumberSetting("Offset", default = 20, increment = 1, max = 100, min = -100, description = "Tick offset to adjust between ticks.").withDependency { advanced && bloodhelper }
-    private val tick: Int by NumberSetting("Tick", default = 40, increment = 1, max = 41, min = 37, description = "Tick to assume spawn. Adjust offset to offset this value to the ms.").withDependency { advanced && bloodhelper}
-    private val interpolation: Boolean by BooleanSetting("Interpolation", default = true, description = "Interpolates rendering boxes between ticks. Makes the jitter smoother, at the expense of some accuracy.").withDependency { advanced && bloodhelper}
+    private val bloodHelper: Boolean by BooleanSetting("Blood Camp Assist", default = true, description = "Draws boxes to spawning mobs in the blood room. WARNING: not perfectly accurate. Mobs spawn randomly between 37 - 41 ticks, adjust offset to adjust between ticks.")
+    private val pboxColor: Color by ColorSetting("Spawn Color", Color.RED, true, description = "Color for Spawn render box. Set alpha to 0 to disable.").withDependency { bloodHelper }
+    private val fboxColor: Color by ColorSetting("Final Color", Color.CYAN, true, description = "Color for when Spawn and Mob boxes are merged. Set alpha to 0 to disable.").withDependency { bloodHelper }
+    private val mboxColor: Color by ColorSetting("Position Color", Color.GREEN, true, description = "Color for current position box. Set alpha to 0 to disable.").withDependency { bloodHelper }
+    private val boxSize: Double by NumberSetting("Box Size", default = 1.0, increment = 0.1, min = 0.1, max = 1.0, description = "The size of the boxes. Lower values may seem less accurate").withDependency { bloodHelper }
+    private val drawLine: Boolean by BooleanSetting("Line", default = true, description = "Line between Position box and Spawn box").withDependency { bloodHelper }
+    private val drawTime: Boolean by BooleanSetting("Time Left", default = true, description = "Time before the blood mob spawns. Adjust offset depending on accuracy. May be up to ~100ms off").withDependency { bloodHelper }
+    private val advanced: Boolean by DropdownSetting("Advanced", default = false).withDependency { bloodHelper }
+    private val offset: Int by NumberSetting("Offset", default = 20, increment = 1, max = 100, min = -100, description = "Tick offset to adjust between ticks.").withDependency { advanced && bloodHelper }
+    private val tick: Int by NumberSetting("Tick", default = 40, increment = 1, max = 41, min = 37, description = "Tick to assume spawn. Adjust offset to offset this value to the ms.").withDependency { advanced && bloodHelper}
+    private val interpolation: Boolean by BooleanSetting("Interpolation", default = true, description = "Interpolates rendering boxes between ticks. Makes the jitter smoother, at the expense of some accuracy.").withDependency { advanced && bloodHelper}
     private val watcherBar: Boolean by BooleanSetting("Watcher Bar", default = true, description = "Shows the watcher's health.")
     private val watcherHighlight: Boolean by BooleanSetting("Watcher Highlight", default = false, description = "Highlights the watcher.")
 
@@ -57,7 +57,7 @@ object BloodCamp : Module(
             getWatcherHealth()
         }
 
-        onPacket(S17PacketEntityLookMove::class.java, { bloodhelper && enabled }) {
+        onPacket(S17PacketEntityLookMove::class.java, { bloodHelper && enabled }) {
             onPacketLookMove(it)
         }
 
@@ -108,7 +108,7 @@ object BloodCamp : Module(
     @SubscribeEvent
     fun onPostMetadata(event: PostEntityMetadata) {
         val entity = mc.theWorld.getEntityByID(event.packet.entityId) ?: return
-        if (watcher.isNotEmpty() || entity !is EntityZombie || !bloodhelper) return
+        if (watcher.isNotEmpty() || entity !is EntityZombie || !bloodHelper) return
 
         val texture = getSkullValue(entity) ?: return
         if (watcherSkulls.contains(texture)) {
@@ -159,9 +159,8 @@ object BloodCamp : Module(
     private fun onPacketLookMove(packet: S17PacketEntityLookMove) {
         val entity = packet.getEntity(mc.theWorld) ?: return
         if (entity !is EntityArmorStand || !watcher.any { it.getDistanceToEntity(entity) < 20 }) return
-        val item = getSkullValue(entity)
 
-        if (entity.getEquipmentInSlot(4)?.item != Items.skull || !allowedMobSkulls.contains(item) || entity in entityList) return
+        if (entity.getEquipmentInSlot(4)?.item != Items.skull || !allowedMobSkulls.contains(getSkullValue(entity)) || entity in entityList) return
 
         entityList[entity] = EntityData(startVector = entity.positionVector, started = ticktime, firstSpawns = firstSpawns)
     }
@@ -174,7 +173,7 @@ object BloodCamp : Module(
             Renderer.drawBox(watcher.renderVec.toAABB(), Color.RED, 1f, depth = isLegitVersion, fillAlpha = 0)
         }
 
-        if (!bloodhelper) return
+        if (!bloodHelper) return
 
         forRender.filter { !it.key.isDead }.forEach { (entity, renderData) ->
             val entityData = entityList[entity] ?: return@forEach
@@ -184,7 +183,8 @@ object BloodCamp : Module(
             val currVector = entity.positionVector ?: return@forEach
             val endVector = renderData.endVector ?: return@forEach
             val lastEndVector = renderData.lastEndVector ?: return@forEach
-            val endVectorUpdated = min(ticktime - renderData.endVecUpdated!!, 100)
+            val endVecUpdated = renderData.endVecUpdated ?: return@forEach
+            val endVectorUpdated = min(ticktime - endVecUpdated, 100)
 
             val speedVectors = Vec3(
                 (currVector.xCoord - startVector.xCoord) / timeTook,
@@ -221,7 +221,7 @@ object BloodCamp : Module(
                 Renderer.draw3DLine(
                     Vec3(currVector.xCoord, currVector.yCoord + 2.0, currVector.zCoord),
                     Vec3(endPoint.xCoord, endPoint.yCoord + 2.0, endPoint.zCoord),
-                    Color.RED, 3f, true
+                    color = Color.RED, depth = true
                 )
             }
 
