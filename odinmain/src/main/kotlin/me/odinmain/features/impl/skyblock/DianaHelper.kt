@@ -47,6 +47,10 @@ object DianaHelper : Module(
     private val cmdCooldown = Clock(3_000)
     var renderPos: Vec3? = null
     val burrowsRender = mutableMapOf<Vec3i, BurrowType>()
+    private val hasSpade: Boolean
+        get() = mc.thePlayer?.inventory?.mainInventory?.find { it.itemID == "ANCESTRAL_SPADE" } != null
+    private val isDoingDiana: Boolean
+        get() = hasSpade && LocationUtils.currentArea.isArea(Island.Hub) && enabled
 
     enum class BurrowType(val text: String, val color: Color) {
         START("§aStart", Color.GREEN),
@@ -56,16 +60,20 @@ object DianaHelper : Module(
     }
 
     init {
-        onPacket(S29PacketSoundEffect::class.java) { DianaBurrowEstimate.handleSoundPacket(it) }
+        onPacket(S29PacketSoundEffect::class.java, { isDoingDiana }) {
+            DianaBurrowEstimate.handleSoundPacket(it)
+        }
 
-        onPacket(S2APacketParticles::class.java) {
+        onPacket(S2APacketParticles::class.java, { isDoingDiana }) {
             DianaBurrowEstimate.handleParticlePacket(it)
             DianaBurrowEstimate.handleBurrow(it)
         }
 
-        onPacket(C08PacketPlayerBlockPlacement::class.java) { DianaBurrowEstimate.blockEvent(it.position.toVec3i()) }
+        onPacket(C08PacketPlayerBlockPlacement::class.java, { isDoingDiana }) {
+            DianaBurrowEstimate.blockEvent(it.position.toVec3i())
+        }
 
-        onPacket(C07PacketPlayerDigging::class.java) {
+        onPacket(C07PacketPlayerDigging::class.java, { isDoingDiana }) {
             DianaBurrowEstimate.blockEvent(it.position.toVec3i(), it.status == C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK)
         }
 
