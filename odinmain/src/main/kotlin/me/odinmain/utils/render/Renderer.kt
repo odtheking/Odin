@@ -65,11 +65,8 @@ object Renderer {
         depth: Boolean = false
     ) {
         val block = getBlockAt(pos)
-
         block.setBlockBoundsBasedOnState(mc.theWorld, pos)
-        val aabb = block.getSelectedBoundingBox(mc.theWorld, pos).outlineBounds()
-
-        drawBox(aabb, color, outlineWidth, outlineAlpha, fillAlpha, depth)
+        drawBox(block.getSelectedBoundingBox(mc.theWorld, pos).outlineBounds(), color, outlineWidth, outlineAlpha, fillAlpha, depth)
     }
 
     fun drawStyledBlock(
@@ -79,7 +76,7 @@ object Renderer {
         width: Number = 3,
         depth: Boolean = false
     ) {
-        when(style) {
+        when (style) {
             0 -> drawBlock(pos, color, width, 0, color.alpha, depth)
             1 -> drawBlock(pos, color, width, color.alpha, 0, depth)
             2 -> drawBlock(pos, color, width, color.alpha, color.multiplyAlpha(.75f).alpha, depth)

@@ -110,6 +110,11 @@ object RenderUtils {
         GlStateManager.depthMask(depth)
     }
 
+    private fun resetDepth() {
+        GlStateManager.enableDepth()
+        GlStateManager.depthMask(true)
+    }
+
     fun postDraw() {
         GlStateManager.disableBlend()
         GlStateManager.enableAlpha()
@@ -178,7 +183,7 @@ object RenderUtils {
         }
         tessellator.draw()
 
-        depth(!depth)
+        resetDepth()
         postDraw()
         GlStateManager.enableCull()
         GlStateManager.popMatrix()
@@ -203,7 +208,7 @@ object RenderUtils {
 
         RenderGlobal.drawOutlinedBoundingBox(aabb, color.r, color.g, color.b, color.a)
 
-        depth(!depth)
+        resetDepth()
         postDraw()
         GL11.glLineWidth(2f)
         GlStateManager.popMatrix()
@@ -336,7 +341,7 @@ object RenderUtils {
         }
         tessellator.draw()
 
-        depth(!depth)
+        resetDepth()
         postDraw()
         GlStateManager.popMatrix()
     }
