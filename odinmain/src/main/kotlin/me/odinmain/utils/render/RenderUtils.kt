@@ -96,6 +96,10 @@ object RenderUtils {
         block.invoke(this)
     }
 
+    private fun WorldRenderer.addVertex(x: Double, y: Double, z: Double, nx: Float, ny: Float, nz: Float) {
+        pos(x, y, z).normal(nx, ny, nz).endVertex()
+    }
+
     fun preDraw() {
         GlStateManager.disableTexture2D()
         GlStateManager.enableBlend()
@@ -150,36 +154,51 @@ object RenderUtils {
         depth(depth)
         color.bind()
 
+        val minX = aabb.minX
+        val minY = aabb.minY
+        val minZ = aabb.minZ
+        val maxX = aabb.maxX
+        val maxY = aabb.maxY
+        val maxZ = aabb.maxZ
+
         worldRenderer {
             begin(7, DefaultVertexFormats.POSITION_NORMAL)
-            arrayOf(
-                Triple(aabb.minX, aabb.maxY, aabb.minZ) to Triple(0f, 0f, -1f),
-                Triple(aabb.maxX, aabb.maxY, aabb.minZ) to Triple(0f, 0f, -1f),
-                Triple(aabb.maxX, aabb.minY, aabb.minZ) to Triple(0f, 0f, -1f),
-                Triple(aabb.minX, aabb.minY, aabb.minZ) to Triple(0f, 0f, -1f),
-                Triple(aabb.minX, aabb.minY, aabb.maxZ) to Triple(0f, 0f, 1f),
-                Triple(aabb.maxX, aabb.minY, aabb.maxZ) to Triple(0f, 0f, 1f),
-                Triple(aabb.maxX, aabb.maxY, aabb.maxZ) to Triple(0f, 0f, 1f),
-                Triple(aabb.minX, aabb.maxY, aabb.maxZ) to Triple(0f, 0f, 1f),
-                Triple(aabb.minX, aabb.minY, aabb.minZ) to Triple(0f, -1f, 0f),
-                Triple(aabb.maxX, aabb.minY, aabb.minZ) to Triple(0f, -1f, 0f),
-                Triple(aabb.maxX, aabb.minY, aabb.maxZ) to Triple(0f, -1f, 0f),
-                Triple(aabb.minX, aabb.minY, aabb.maxZ) to Triple(0f, -1f, 0f),
-                Triple(aabb.minX, aabb.maxY, aabb.maxZ) to Triple(0f, 1f, 0f),
-                Triple(aabb.maxX, aabb.maxY, aabb.maxZ) to Triple(0f, 1f, 0f),
-                Triple(aabb.maxX, aabb.maxY, aabb.minZ) to Triple(0f, 1f, 0f),
-                Triple(aabb.minX, aabb.maxY, aabb.minZ) to Triple(0f, 1f, 0f),
-                Triple(aabb.minX, aabb.minY, aabb.maxZ) to Triple(-1f, 0f, 0f),
-                Triple(aabb.minX, aabb.maxY, aabb.maxZ) to Triple(-1f, 0f, 0f),
-                Triple(aabb.minX, aabb.maxY, aabb.minZ) to Triple(-1f, 0f, 0f),
-                Triple(aabb.minX, aabb.minY, aabb.minZ) to Triple(-1f, 0f, 0f),
-                Triple(aabb.maxX, aabb.minY, aabb.minZ) to Triple(1f, 0f, 0f),
-                Triple(aabb.maxX, aabb.maxY, aabb.minZ) to Triple(1f, 0f, 0f),
-                Triple(aabb.maxX, aabb.maxY, aabb.maxZ) to Triple(1f, 0f, 0f),
-                Triple(aabb.maxX, aabb.minY, aabb.maxZ) to Triple(1f, 0f, 0f)
-            ).forEach { (pos, normal) ->
-                pos(pos.first, pos.second, pos.third).normal(normal.first, normal.second, normal.third).endVertex()
-            }
+
+            // Front face
+            addVertex(minX, maxY, minZ, 0f, 0f, -1f)
+            addVertex(maxX, maxY, minZ, 0f, 0f, -1f)
+            addVertex(maxX, minY, minZ, 0f, 0f, -1f)
+            addVertex(minX, minY, minZ, 0f, 0f, -1f)
+
+            // Back face
+            addVertex(minX, minY, maxZ, 0f, 0f, 1f)
+            addVertex(maxX, minY, maxZ, 0f, 0f, 1f)
+            addVertex(maxX, maxY, maxZ, 0f, 0f, 1f)
+            addVertex(minX, maxY, maxZ, 0f, 0f, 1f)
+
+            // Bottom face
+            addVertex(minX, minY, minZ, 0f, -1f, 0f)
+            addVertex(maxX, minY, minZ, 0f, -1f, 0f)
+            addVertex(maxX, minY, maxZ, 0f, -1f, 0f)
+            addVertex(minX, minY, maxZ, 0f, -1f, 0f)
+
+            // Top face
+            addVertex(minX, maxY, maxZ, 0f, 1f, 0f)
+            addVertex(maxX, maxY, maxZ, 0f, 1f, 0f)
+            addVertex(maxX, maxY, minZ, 0f, 1f, 0f)
+            addVertex(minX, maxY, minZ, 0f, 1f, 0f)
+
+            // Left face
+            addVertex(minX, minY, maxZ, -1f, 0f, 0f)
+            addVertex(minX, maxY, maxZ, -1f, 0f, 0f)
+            addVertex(minX, maxY, minZ, -1f, 0f, 0f)
+            addVertex(minX, minY, minZ, -1f, 0f, 0f)
+
+            // Right face
+            addVertex(maxX, minY, minZ, 1f, 0f, 0f)
+            addVertex(maxX, maxY, minZ, 1f, 0f, 0f)
+            addVertex(maxX, maxY, maxZ, 1f, 0f, 0f)
+            addVertex(maxX, minY, maxZ, 1f, 0f, 0f)
         }
         tessellator.draw()
 
@@ -188,7 +207,6 @@ object RenderUtils {
         GlStateManager.enableCull()
         GlStateManager.popMatrix()
     }
-
 
     /**
      * Draws an outlined Axis Aligned Bounding Box (AABB).
@@ -648,7 +666,7 @@ object RenderUtils {
         GlStateManager.disableLighting()
         GlStateManager.enableBlend()
         GL11.glLineWidth(3f)
-        if (newGlList  != -1) {
+        if (newGlList != -1) {
             GL11.glCallList(newGlList)
             GlStateManager.enableTexture2D()
             GlStateManager.disableBlend()

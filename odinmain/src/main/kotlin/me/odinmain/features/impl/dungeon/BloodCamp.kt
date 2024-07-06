@@ -31,7 +31,7 @@ import kotlin.math.roundToInt
 
 object BloodCamp : Module(
     name = "Blood Camp",
-    description = "Features for Blood Camping",
+    description = "Features for Blood Camping.",
     category = Category.DUNGEON
 ) {
     private val bloodHelper: Boolean by BooleanSetting("Blood Camp Assist", default = true, description = "Draws boxes to spawning mobs in the blood room. WARNING: not perfectly accurate. Mobs spawn randomly between 37 - 41 ticks, adjust offset to adjust between ticks.")
