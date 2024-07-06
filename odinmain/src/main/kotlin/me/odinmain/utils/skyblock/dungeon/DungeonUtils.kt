@@ -177,8 +177,6 @@ object DungeonUtils {
         if (inDungeons) currentDungeon?.onPacket(event)
     }
 
-    var foundSecrets: Int = 0
-
     @SubscribeEvent
     fun onRoomEnter(event: RoomEnterEvent) {
         if (inDungeons) currentDungeon?.enterDungeonRoom(event)

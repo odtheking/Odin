@@ -119,6 +119,8 @@ object WaterSolver {
     fun waterRender() {
         if (DungeonUtils.currentRoomName != "Water Board" || variant == -1) return
 
+        val solutions = HashMap(solutions)
+
         val solutionList = solutions
             .flatMap { (lever, times) -> times.drop(lever.i).map { Pair(lever, it) } }
             .sortedBy { (lever, time) -> time + if (lever == LeverBlock.WATER) 0.01 else 0.0 }
