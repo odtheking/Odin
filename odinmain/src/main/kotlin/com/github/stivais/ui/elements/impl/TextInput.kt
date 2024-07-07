@@ -3,13 +3,8 @@ package com.github.stivais.ui.elements.impl
 import com.github.stivais.ui.UI
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.color.brighter
-import com.github.stivais.ui.constraints.Constraints
-import com.github.stivais.ui.constraints.Size
-import com.github.stivais.ui.constraints.Type
-import com.github.stivais.ui.constraints.percent
-import com.github.stivais.ui.events.Focused
-import com.github.stivais.ui.events.Key
-import com.github.stivais.ui.events.Mouse
+import com.github.stivais.ui.constraints.*
+import com.github.stivais.ui.events.*
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.devMessage
 import net.minecraft.util.ChatAllowedCharacters
@@ -29,6 +24,7 @@ class TextInput(
     constraints: Constraints? = null,
     val widthLimit: Size? = null,
     val lockIfLimit: Boolean = false,
+    val onlyNumbers: Boolean = false,
     val onTextChange: (string: String) -> Unit = {}
 ) : Text(text, UI.defaultFont, Color.WHITE, constraints, constraints?.height ?: 50.percent) {
 
@@ -43,20 +39,20 @@ class TextInput(
             field = value
             textWidth = renderer.textWidth(value, size = height)
             if (history.last() != value) history.add(value)
-            positionCursor()
+            positionCaret()
             redraw()
 //            ui.needsRedraw = true
             onTextChange(value)
         }
 
-    private var cursorPosition: Int = string.length
+    private var caretPosition: Int = string.length
         set(value) {
             field = value.coerceIn(0, string.length)
-            positionCursor()
+            positionCaret()
             // start animation
         }
 
-    private var selectionStart: Int = cursorPosition
+    private var selectionStart: Int = caretPosition
         set(value) {
             field = value.coerceIn(0, string.length)
             selectionX = renderer.textWidth(string.substring(0, field), size = height)
@@ -77,8 +73,7 @@ class TextInput(
 
     var offs = 0f
 
-    private var cursorX: Float = 0f
-    private var cursorY: Float = 0f
+    private var caretX: Float = 0f
 
     private var history: MutableList<String> = mutableListOf(string)
     private var selectionX: Float = 0f
@@ -110,26 +105,26 @@ class TextInput(
 
     override fun draw() {
         // cleanup
-        if (selectionStart != cursorPosition) {
-            val startX = x + min(selectionX, cursorX).toInt()
-            val endX = x + max(selectionX, cursorX).toInt()
+        if (selectionStart != caretPosition) {
+            val startX = x + min(selectionX, caretX).toInt()
+            val endX = x + max(selectionX, caretX).toInt()
             renderer.rect(startX - offs, y, endX - startX, height - 4, Color.RGB(0, 0, 255, 0.5f).rgba)
         }
 
-        if (text.length != 0) {
+        if (text.isNotEmpty()) {
             renderer.text(text, x - offs, y, height, Color.WHITE.rgba)
         } else {
             renderer.text(placeholder, x, y, height, placeholderColor.rgba)
         }
 
         if (ui.isFocused(this))
-        renderer.rect(x + cursorX - offs, y + cursorY, 1f, height - 2, Color.WHITE.rgba) // caret
+        renderer.rect(x + caretX - offs, y + height, 1f, height - 2, Color.WHITE.rgba) // caret
     }
 
     init {
         registerEvent(Focused.Gained) {
-            setCursorPositionBasedOnMouse(x, textWidth - offs, ui.mx)
-            selectionStart = cursorPosition
+            setCaretPositionBasedOnMouse(x, textWidth - offs, ui.mx)
+            selectionStart = caretPosition
             false
         }
         registerEvent(Key.CodePressed(-1, true)) {
@@ -146,19 +141,19 @@ class TextInput(
 
                 when (clickCount) {
                     1 -> {
-                        setCursorPositionBasedOnMouse(x, textWidth - offs, ui.mx)
-                        if (!isShiftKeyDown()) selectionStart = cursorPosition
+                        setCaretPositionBasedOnMouse(x, textWidth - offs, ui.mx)
+                        if (!isShiftKeyDown()) selectionStart = caretPosition
                     }
 
                     2 -> {
-                        val word = getCurrentWord(cursorPosition)
-                        selectionStart = word?.first ?: (cursorPosition - 1)
-                        cursorPosition = word?.second ?: cursorPosition
+                        val word = getCurrentWord(caretPosition)
+                        selectionStart = word?.first ?: (caretPosition - 1)
+                        caretPosition = word?.second ?: caretPosition
                     }
 
                     3 -> {
                         selectionStart = 0
-                        cursorPosition = string.length
+                        caretPosition = string.length
                     }
                 }
                 isHeld = true
@@ -168,7 +163,7 @@ class TextInput(
         }
 
         registerEvent(Mouse.Moved) {
-            if (isHeld) setCursorPositionBasedOnMouse(x, textWidth - offs, ui.mx)
+            if (isHeld) setCaretPositionBasedOnMouse(x, textWidth - offs, ui.mx)
             lastClickTime = 0L
             true
         }
@@ -186,20 +181,19 @@ class TextInput(
         }
     }
 
-
     private fun handleKeyPress(code: Int) {
         when {
             isKeyComboCtrlA(code) -> {
-                cursorPosition = string.length
+                caretPosition = string.length
                 selectionStart = 0
             }
 
-            isKeyComboCtrlC(code) -> copyToClipboard(getSelectedText(selectionStart, cursorPosition))
+            isKeyComboCtrlC(code) -> copyToClipboard(getSelectedText(selectionStart, caretPosition))
 
             isKeyComboCtrlV(code) -> insert(getClipboardString())
 
             isKeyComboCtrlX(code) -> {
-                copyToClipboard(getSelectedText(selectionStart, cursorPosition))
+                copyToClipboard(getSelectedText(selectionStart, caretPosition))
                 insert("")
             }
 
@@ -214,44 +208,44 @@ class TextInput(
 
                 Keyboard.KEY_BACK -> {
                     if (isCtrlKeyDown()) deleteWords(-1)
-                    else deleteFromCursor(-1)
+                    else deleteFromCaret(-1)
                 }
 
                 Keyboard.KEY_HOME -> {
-                    if (isShiftKeyDown()) moveCursorBy(-cursorPosition)
-                    else moveSelectionAndCursorBy(-cursorPosition)
+                    if (isShiftKeyDown()) moveCaretBy(-caretPosition)
+                    else moveSelectionAndCaretBy(-caretPosition)
                 }
 
                 Keyboard.KEY_LEFT -> {
                     if (isShiftKeyDown()) {
-                        if (isCtrlKeyDown()) moveCursorBy(getNthWordFromCursor(-1) - cursorPosition)
-                        else moveCursorBy(-1)
+                        if (isCtrlKeyDown()) moveCaretBy(getNthWordFromCaret(-1) - caretPosition)
+                        else moveCaretBy(-1)
                     }
                     else {
-                        if (isCtrlKeyDown()) moveSelectionAndCursorBy(getNthWordFromCursor(-1) - cursorPosition)
-                        else moveSelectionAndCursorBy(-1)
+                        if (isCtrlKeyDown()) moveSelectionAndCaretBy(getNthWordFromCaret(-1) - caretPosition)
+                        else moveSelectionAndCaretBy(-1)
                     }
                 }
 
                 Keyboard.KEY_RIGHT -> {
                     if (isShiftKeyDown()) {
-                        if (isCtrlKeyDown()) moveCursorBy(getNthWordFromCursor(1) - cursorPosition)
-                        else moveCursorBy(1)
+                        if (isCtrlKeyDown()) moveCaretBy(getNthWordFromCaret(1) - caretPosition)
+                        else moveCaretBy(1)
                     }
                     else {
-                        if (isCtrlKeyDown()) moveSelectionAndCursorBy(getNthWordFromCursor(1) - cursorPosition)
-                        else moveSelectionAndCursorBy(1)
+                        if (isCtrlKeyDown()) moveSelectionAndCaretBy(getNthWordFromCaret(1) - caretPosition)
+                        else moveSelectionAndCaretBy(1)
                     }
                 }
 
                 Keyboard.KEY_END -> {
-                    if (isShiftKeyDown()) moveCursorBy(string.length - cursorPosition)
-                    else moveSelectionAndCursorBy(string.length - cursorPosition)
+                    if (isShiftKeyDown()) moveCaretBy(string.length - caretPosition)
+                    else moveSelectionAndCaretBy(string.length - caretPosition)
                 }
 
                 Keyboard.KEY_ESCAPE, Keyboard.KEY_NUMPADENTER, Keyboard.KEY_RETURN -> {
                     selectionStart = 0
-                    cursorPosition = 0
+                    caretPosition = 0
                     Keyboard.enableRepeatEvents(false)
                     ui.unfocus()
                 }
@@ -260,61 +254,64 @@ class TextInput(
 
                 Keyboard.KEY_DELETE -> {
                     if (isCtrlKeyDown()) deleteWords(1)
-                    else deleteFromCursor(1)
+                    else deleteFromCaret(1)
                 }
 
                 else -> {
-                    if (ChatAllowedCharacters.isAllowedCharacter(Keyboard.getEventCharacter()))
-                        insert(Keyboard.getEventCharacter().toString())
+                    if (onlyNumbers) {
+                        if (Keyboard.getEventCharacter().isDigit() || Keyboard.getEventCharacter() == '.' || Keyboard.getEventCharacter() == '-')
+                            insert(Keyboard.getEventCharacter().toString())
+                    } else
+                        if (ChatAllowedCharacters.isAllowedCharacter(Keyboard.getEventCharacter()))
+                            insert(Keyboard.getEventCharacter().toString())
                 }
             }
         }
-        devMessage("cursorPosition: $cursorPosition, startSelect: $selectionStart string: $string")
+        devMessage("cursorPosition: $caretPosition, startSelect: $selectionStart string: $string")
     }
 
     // cleanup everything under here
-    // rename stuff with "cursor" to caret
     // remove unnecessary stuff and variables
 
-    private fun moveCursorBy(amount: Int){
-        cursorPosition = (cursorPosition + amount).coerceIn(0, string.length)
+    private fun moveCaretBy(amount: Int){
+        caretPosition = (caretPosition + amount).coerceIn(0, string.length)
     }
 
-    private fun moveSelectionAndCursorBy(amount: Int) {
-        cursorPosition = (cursorPosition + amount).coerceIn(0, string.length)
-        selectionStart = cursorPosition
+    private fun moveSelectionAndCaretBy(amount: Int) {
+        caretPosition = (caretPosition + amount).coerceIn(0, string.length)
+        selectionStart = caretPosition
     }
 
     private fun insert(text: String) {
         if (text.length >= 30) return
-        val min = kotlin.math.min(cursorPosition, selectionStart)
-        val max = kotlin.math.max(cursorPosition, selectionStart)
+        val min = kotlin.math.min(caretPosition, selectionStart)
+        val max = kotlin.math.max(caretPosition, selectionStart)
         val maxLength = 30 - text.length + max - min
 
         val addedText = ChatAllowedCharacters.filterAllowedCharacters(text).take(maxLength)
 
         string = string.take(min) + addedText + string.substring(max)
 
-        moveSelectionAndCursorBy(min - selectionStart + addedText.length)
-        selectionStart = cursorPosition
+        moveSelectionAndCaretBy(min - selectionStart + addedText.length)
+        selectionStart = caretPosition
     }
 
-    private fun deleteWords(num: Int) = deleteFromCursor(getNthWordFromCursor(num) - cursorPosition)
+    private fun deleteWords(num: Int) = deleteFromCaret(getNthWordFromCaret(num) - caretPosition)
 
-    private fun deleteFromCursor(num: Int) {
+    private fun deleteFromCaret(num: Int) {
         if (string.isEmpty()) return
-        if (selectionStart != cursorPosition) insert("")
+        if (selectionStart != caretPosition) insert("")
         else {
-            val target = (cursorPosition + num).coerceIn(0, text.length)
+            val target = (caretPosition + num).coerceIn(0, text.length)
             if (num < 0) {
-                string = string.removeRange(target, cursorPosition)
-                moveSelectionAndCursorBy(num)
+                string = string.removeRange(target, caretPosition)
+                moveSelectionAndCaretBy(num)
             } else
-                string = string.removeRange(cursorPosition, target)
+                string = string.removeRange(caretPosition, target)
         }
     }
 
-    private fun getNthWordFromCursor(n: Int): Int = getNthWordFromPos(n, cursorPosition)
+    private fun getNthWordFromCaret(n: Int): Int = getNthWordFromPos(n, caretPosition)
 
     private fun getNthWordFromPos(n: Int, pos: Int): Int {
         var i = pos
@@ -357,35 +354,16 @@ class TextInput(
         return if (isStartValid && isEndValid && start != end) Pair(start, end) else null
     }
 
-    private fun getSelectedText(selectionStart: Int, cursorPosition: Int): String {
-        return string.substring(min(selectionStart, cursorPosition).toInt(), max(selectionStart, cursorPosition).toInt())
+    private fun getSelectedText(selectionStart: Int, caretPosition: Int): String {
+        return string.substring(min(selectionStart, caretPosition).toInt(), max(selectionStart, caretPosition).toInt())
     }
 
-    private fun positionCursor() {
-        val currLine = getCurrentLine()
-        cursorX = renderer.textWidth(currLine.first, size = height)
-        cursorY = currLine.second * height
+    private fun positionCaret() {
+        caretX = renderer.textWidth(string, size = height)
     }
 
-    private fun getCurrentLine(): Pair<String, Int> {
-        var i = 0
-        var ls = 0
-        var line = 0
-
-        for (chr in string) {
-            i++
-            if (chr == '\n') {
-                ls = i
-                line++
-            }
-            if (i == cursorPosition)
-                return text.substring(ls, cursorPosition).substringBefore('\n') to line
-        }
-        return "" to 0
-    }
-
-    private fun setCursorPositionBasedOnMouse(x: Float, textWidth: Float, mx: Float) {
-        if (string.isEmpty()) return
-        cursorPosition = ((mx - x) / (textWidth / string.length)).toInt().coerceIn(0, string.length)
+    private fun setCaretPositionBasedOnMouse(x: Float, textWidth: Float, mx: Float) {
+        caretPosition = if (string.isEmpty()) 0
+        else ((mx - x) / (textWidth / string.length)).toInt().coerceIn(0, string.length)
     }
 }
