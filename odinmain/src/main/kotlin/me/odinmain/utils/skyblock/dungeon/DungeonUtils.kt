@@ -24,7 +24,7 @@ import kotlin.math.floor
 object DungeonUtils {
 
     inline val inDungeons: Boolean get() =
-        LocationUtils.currentArea.isArea(Island.Dungeon)
+        LocationUtils.currentArea.isArea(Island.Dungeon) || LocationUtils.currentArea.isArea(Island.SinglePlayer)
 
     inline val floorNumber: Int get() =
         currentDungeon?.floor?.floorNumber ?: 0
@@ -36,16 +36,16 @@ object DungeonUtils {
         currentDungeon?.inBoss ?: false
 
     inline val secretCount: Int get() =
-        currentDungeon?.dungeonStats?.secretsFound ?: 0
+        currentDungeon?.dungeonStats?.secretsFound ?: 12
 
     inline val knownSecrets: Int get() =
-        currentDungeon?.dungeonStats?.knownSecrets ?: 0
+        currentDungeon?.dungeonStats?.knownSecrets ?: 40
 
     inline val secretPercentage: Float get() =
         currentDungeon?.dungeonStats?.secretsPercent ?: 0f
 
     inline val totalSecrets: Int get() {
-        return if (secretCount == 0 || secretPercentage == 0f) 0
+        return if (secretCount == 0 || secretPercentage == 0f) 52
         else floor(100 / secretPercentage * secretCount + 0.5).toInt()
     }
 
@@ -142,7 +142,7 @@ object DungeonUtils {
     inline val neededSecretsAmount: Int get() {
         val deathModifier = (deathCount * 2 - 1).coerceAtLeast(0)
         val scoreFactor = 40 - getBonusScore + deathModifier
-        return ceil((totalSecrets * floor.secretPercentage) * scoreFactor / 40.0).toInt()
+        return 45 //ceil((totalSecrets * floor.secretPercentage) * scoreFactor / 40.0).toInt()
     }
 
     /**
