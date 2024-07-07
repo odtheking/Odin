@@ -127,14 +127,13 @@ object EtherWarpHelper : Module(
             smoothRotateTo(yaw, pitch, rotTime)
         }
     }
-    private var lastPlayed = System.currentTimeMillis()
 
     @SubscribeEvent
     fun onSoundPacket(event: PacketReceivedEvent) {
         with(event.packet) {
             if (this !is S29PacketSoundEffect || soundName != "mob.enderdragon.hit" || !sounds || volume != 1f || pitch != 0.53968257f || customSound == "mob.enderdragon.hit") return
-            if (System.currentTimeMillis() - lastPlayed > 1) playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], soundVolume, soundPitch, pos)
-            lastPlayed = System.currentTimeMillis()
+            val packet = S29PacketSoundEffect("minecraft:${if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound]}", x, y, z, soundVolume, soundPitch)
+            mc.addScheduledTask { mc.netHandler.handleSoundEffect(packet) }
             event.isCanceled = true
         }
     }

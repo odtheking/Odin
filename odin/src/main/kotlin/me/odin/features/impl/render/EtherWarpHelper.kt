@@ -17,6 +17,7 @@ import me.odinmain.utils.skyblock.EtherWarpHelper.etherPos
 import me.odinmain.utils.skyblock.PlayerUtils.playLoudSound
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import me.odinmain.utils.skyblock.extraAttributes
+import net.minecraft.network.PacketThreadUtil
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -62,14 +63,12 @@ object EtherWarpHelper : Module(
         }
     }
 
-    private var lastPlayed = System.currentTimeMillis()
-
     @SubscribeEvent
     fun onSoundPacket(event: PacketReceivedEvent) {
         with(event.packet) {
             if (this !is S29PacketSoundEffect || soundName != "mob.enderdragon.hit" || !sounds || volume != 1f || pitch != 0.53968257f || customSound == "mob.enderdragon.hit") return
-            if (System.currentTimeMillis() - lastPlayed > 1) playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], soundVolume, soundPitch, pos)
-            lastPlayed = System.currentTimeMillis()
+            val packet = S29PacketSoundEffect("minecraft:${if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound]}", x, y, z, soundVolume, soundPitch)
+            mc.addScheduledTask { mc.netHandler.handleSoundEffect(packet) }
             event.isCanceled = true
         }
     }
