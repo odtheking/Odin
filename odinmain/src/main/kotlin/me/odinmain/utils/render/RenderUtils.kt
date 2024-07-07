@@ -660,17 +660,15 @@ object RenderUtils {
     fun drawBoxes(boxes: Collection<DungeonWaypoint>, glList: Int, disableDepth: Boolean = false): Int {
         var newGlList = glList
         GlStateManager.pushMatrix()
-        GlStateManager.translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
-        blendFactor()
-        GlStateManager.disableTexture2D()
-        GlStateManager.disableLighting()
-        GlStateManager.enableBlend()
+        preDraw()
+        GlStateManager.disableCull()
+
         GL11.glLineWidth(3f)
         if (newGlList != -1) {
             GL11.glCallList(newGlList)
-            GlStateManager.enableTexture2D()
-            GlStateManager.disableBlend()
-            GlStateManager.enableDepth()
+            postDraw()
+            resetDepth()
+            GlStateManager.enableCull()
             GlStateManager.resetColor()
             GlStateManager.popMatrix()
             return newGlList
@@ -682,68 +680,66 @@ object RenderUtils {
         for (box in boxes) {
             if (!box.depth || disableDepth) GlStateManager.disableDepth()
             else GlStateManager.enableDepth()
-            box.color.bind()
             val aabb = box.aabb.offset(box.x, box.y, box.z)
 
-            worldRenderer {
-                begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
-                pos(aabb.minX, aabb.minY, aabb.minZ).endVertex()
-                pos(aabb.minX, aabb.minY, aabb.maxZ).endVertex()
-                pos(aabb.maxX, aabb.minY, aabb.maxZ).endVertex()
-                pos(aabb.maxX, aabb.minY, aabb.minZ).endVertex()
-                pos(aabb.minX, aabb.minY, aabb.minZ).endVertex()
-
-                pos(aabb.minX, aabb.maxY, aabb.minZ).endVertex()
-                pos(aabb.minX, aabb.maxY, aabb.maxZ).endVertex()
-                pos(aabb.maxX, aabb.maxY, aabb.maxZ).endVertex()
-                pos(aabb.maxX, aabb.maxY, aabb.minZ).endVertex()
-                pos(aabb.minX, aabb.maxY, aabb.minZ).endVertex()
-
-                pos(aabb.minX, aabb.maxY, aabb.maxZ).endVertex()
-                pos(aabb.minX, aabb.minY, aabb.maxZ).endVertex()
-                pos(aabb.maxX, aabb.minY, aabb.maxZ).endVertex()
-                pos(aabb.maxX, aabb.maxY, aabb.maxZ).endVertex()
-                pos(aabb.maxX, aabb.maxY, aabb.minZ).endVertex()
-                pos(aabb.maxX, aabb.minY, aabb.minZ).endVertex()
-            }
-            tessellator.draw()
+            RenderGlobal.drawOutlinedBoundingBox(aabb, box.color.r, box.color.g, box.color.b, box.color.a)
 
             if (box.filled) {
-                GlStateManager.color(box.color.r / 255f, box.color.g / 255f, box.color.b / 255f, box.color.alpha.coerceAtMost(.8f))
+                box.color.bind()
+
+                val minX = aabb.minX
+                val minY = aabb.minY
+                val minZ = aabb.minZ
+                val maxX = aabb.maxX
+                val maxY = aabb.maxY
+                val maxZ = aabb.maxZ
+
                 worldRenderer {
-                    begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_NORMAL)
-                    pos(aabb.minX, aabb.maxY, aabb.minZ).normal(0f, 0f, -1f).endVertex()
-                    pos(aabb.maxX, aabb.maxY, aabb.minZ).normal(0f, 0f, -1f).endVertex()
-                    pos(aabb.maxX, aabb.minY, aabb.minZ).normal(0f, 0f, -1f).endVertex()
-                    pos(aabb.minX, aabb.minY, aabb.minZ).normal(0f, 0f, -1f).endVertex()
-                    pos(aabb.minX, aabb.minY, aabb.maxZ).normal(0f, 0f, 1f).endVertex()
-                    pos(aabb.maxX, aabb.minY, aabb.maxZ).normal(0f, 0f, 1f).endVertex()
-                    pos(aabb.maxX, aabb.maxY, aabb.maxZ).normal(0f, 0f, 1f).endVertex()
-                    pos(aabb.minX, aabb.maxY, aabb.maxZ).normal(0f, 0f, 1f).endVertex()
-                    pos(aabb.minX, aabb.minY, aabb.minZ).normal(0f, -1f, 0f).endVertex()
-                    pos(aabb.maxX, aabb.minY, aabb.minZ).normal(0f, -1f, 0f).endVertex()
-                    pos(aabb.maxX, aabb.minY, aabb.maxZ).normal(0f, -1f, 0f).endVertex()
-                    pos(aabb.minX, aabb.minY, aabb.maxZ).normal(0f, -1f, 0f).endVertex()
-                    pos(aabb.minX, aabb.maxY, aabb.maxZ).normal(0f, 1f, 0f).endVertex()
-                    pos(aabb.maxX, aabb.maxY, aabb.maxZ).normal(0f, 1f, 0f).endVertex()
-                    pos(aabb.maxX, aabb.maxY, aabb.minZ).normal(0f, 1f, 0f).endVertex()
-                    pos(aabb.minX, aabb.maxY, aabb.minZ).normal(0f, 1f, 0f).endVertex()
-                    pos(aabb.minX, aabb.minY, aabb.maxZ).normal(-1f, 0f, 0f).endVertex()
-                    pos(aabb.minX, aabb.maxY, aabb.maxZ).normal(-1f, 0f, 0f).endVertex()
-                    pos(aabb.minX, aabb.maxY, aabb.minZ).normal(-1f, 0f, 0f).endVertex()
-                    pos(aabb.minX, aabb.minY, aabb.minZ).normal(-1f, 0f, 0f).endVertex()
-                    pos(aabb.maxX, aabb.minY, aabb.minZ).normal(1f, 0f, 0f).endVertex()
-                    pos(aabb.maxX, aabb.maxY, aabb.minZ).normal(1f, 0f, 0f).endVertex()
-                    pos(aabb.maxX, aabb.maxY, aabb.maxZ).normal(1f, 0f, 0f).endVertex()
-                    pos(aabb.maxX, aabb.minY, aabb.maxZ).normal(1f, 0f, 0f).endVertex()
+                    begin(7, DefaultVertexFormats.POSITION_NORMAL)
+
+                    // Front face
+                    addVertex(minX, maxY, minZ, 0f, 0f, -1f)
+                    addVertex(maxX, maxY, minZ, 0f, 0f, -1f)
+                    addVertex(maxX, minY, minZ, 0f, 0f, -1f)
+                    addVertex(minX, minY, minZ, 0f, 0f, -1f)
+
+                    // Back face
+                    addVertex(minX, minY, maxZ, 0f, 0f, 1f)
+                    addVertex(maxX, minY, maxZ, 0f, 0f, 1f)
+                    addVertex(maxX, maxY, maxZ, 0f, 0f, 1f)
+                    addVertex(minX, maxY, maxZ, 0f, 0f, 1f)
+
+                    // Bottom face
+                    addVertex(minX, minY, minZ, 0f, -1f, 0f)
+                    addVertex(maxX, minY, minZ, 0f, -1f, 0f)
+                    addVertex(maxX, minY, maxZ, 0f, -1f, 0f)
+                    addVertex(minX, minY, maxZ, 0f, -1f, 0f)
+
+                    // Top face
+                    addVertex(minX, maxY, maxZ, 0f, 1f, 0f)
+                    addVertex(maxX, maxY, maxZ, 0f, 1f, 0f)
+                    addVertex(maxX, maxY, minZ, 0f, 1f, 0f)
+                    addVertex(minX, maxY, minZ, 0f, 1f, 0f)
+
+                    // Left face
+                    addVertex(minX, minY, maxZ, -1f, 0f, 0f)
+                    addVertex(minX, maxY, maxZ, -1f, 0f, 0f)
+                    addVertex(minX, maxY, minZ, -1f, 0f, 0f)
+                    addVertex(minX, minY, minZ, -1f, 0f, 0f)
+
+                    // Right face
+                    addVertex(maxX, minY, minZ, 1f, 0f, 0f)
+                    addVertex(maxX, maxY, minZ, 1f, 0f, 0f)
+                    addVertex(maxX, maxY, maxZ, 1f, 0f, 0f)
+                    addVertex(maxX, minY, maxZ, 1f, 0f, 0f)
                 }
                 tessellator.draw()
             }
         }
         GL11.glEndList()
-        GlStateManager.enableTexture2D()
-        GlStateManager.disableBlend()
-        GlStateManager.enableDepth()
+        postDraw()
+        resetDepth()
+        GlStateManager.enableCull()
         GlStateManager.resetColor()
         GlStateManager.popMatrix()
         return newGlList
