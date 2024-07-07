@@ -57,7 +57,7 @@ object ModuleManager {
 
         // floor 7
         TerminalSolver, TerminalTimes, MelodyMessage, NecronDropTimer, InactiveWaypoints, WitherDragons,
-        GoldorTimer, TerminalSimulator, TerminalSounds, ShootDevice,
+        GoldorTimer, TerminalSimulator, TerminalSounds, ArrowsDevice,
 
         // render
         BPSDisplay, ClickGUIModule, CustomHighlight, CPSDisplay, DragonHitboxes, GyroWand, NameChanger,

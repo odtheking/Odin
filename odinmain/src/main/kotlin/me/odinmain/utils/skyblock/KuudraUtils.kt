@@ -96,7 +96,6 @@ object KuudraUtils {
             buildingPiles = entities.filterIsInstance<EntityArmorStand>().filter { it.name.noControlCodes.matches(Regex("PROGRESS: (\\d+)%")) }.map { it }
 
             kuudraTeammates = updateKuudraTeammates(kuudraTeammates)
-
         }.register()
     }
 
