@@ -9,13 +9,8 @@ import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.elements.impl.*
-import com.github.stivais.ui.events.Event
-import com.github.stivais.ui.events.Focused
-import com.github.stivais.ui.events.Key
-import com.github.stivais.ui.events.Mouse
-import com.github.stivais.ui.renderer.Font
-import com.github.stivais.ui.renderer.Gradient
-import com.github.stivais.ui.renderer.Image
+import com.github.stivais.ui.events.*
+import com.github.stivais.ui.renderer.*
 import com.github.stivais.ui.utils.radii
 
 open class ElementScope<E: Element>(val element: E) {
@@ -148,7 +143,7 @@ open class ElementScope<E: Element>(val element: E) {
         constraints: Constraints? = null,
         maxWidth: Size? = null,
         onTextChange: (string: String) -> Unit
-    ) = create(TextScope(TextInput(text, placeholder, constraints, maxWidth, false, onTextChange)))
+    ) = create(TextScope(TextInput(text, placeholder, constraints, maxWidth, false, onTextChange = onTextChange)))
 
     @DSL
     fun image(
