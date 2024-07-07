@@ -30,30 +30,10 @@ object PlayerUtils {
      *
      * @author Aton
      */
-    fun playLoudSound1(sound: String?, volume: Float, pitch: Float, pos: Vec3 = mc.thePlayer.positionVector) {
-        shouldBypassVolume = true
-        mc.theWorld?.playSound(pos.xCoord, pos.yCoord, pos.zCoord, sound, volume, pitch, false)
-        shouldBypassVolume = false
-    }
-
-    fun playLoudSound2(sound: String?, volume: Float, pitch: Float, pos: Vec3? = null) {
+    fun playLoudSound(sound: String?, volume: Float, pitch: Float, pos: Vec3? = null) {
         shouldBypassVolume = true
         mc.theWorld?.playSound(pos?.xCoord ?: mc.thePlayer.posX, pos?.yCoord ?: mc.thePlayer.posY, pos?.zCoord  ?: mc.thePlayer.posZ, sound, volume, pitch, false)
         shouldBypassVolume = false
-    }
-
-
-    fun playLoudSound(sound: String?, volume: Float, pitch: Float, pos: Vec3? = null) {
-        Minecraft.getMinecraft().soundHandler.playSound(
-            PositionedSoundRecord(
-                ResourceLocation("minecraft:$sound"),
-                volume,
-                pitch,
-                pos?.xCoord?.toFloat() ?: mc.thePlayer.posX.toFloat(),
-                pos?.yCoord?.toFloat() ?: mc.thePlayer.posY.toFloat(),
-                pos?.zCoord?.toFloat() ?: mc.thePlayer.posZ.toFloat(),
-            )
-        )
     }
 
     /**
