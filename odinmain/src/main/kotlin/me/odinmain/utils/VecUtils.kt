@@ -1,5 +1,7 @@
 package me.odinmain.utils
 
+import kotlinx.coroutines.ObsoleteCoroutinesApi
+import kotlinx.coroutines.channels.ticker
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
@@ -626,17 +628,44 @@ fun etherwarpRotateTo(targetPos: BlockPos): Triple<Double, Float, Float>? {
  * @param pitch The pitch to rotate to
  * @param rotTime how long the rotation should take. In milliseconds.
  */
+@OptIn(ObsoleteCoroutinesApi::class)
 fun smoothRotateTo(yaw: Float, pitch: Float, rotTime: Number, functionToRunWhenDone: () -> Unit = {}) {
     scope.launch {
-        val deltaYaw = yaw - MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw)
-        val deltaPitch = pitch - MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationPitch)
-        for (i in 0..rotTime.toInt()) {
-            mc.thePlayer.rotationYaw += deltaYaw / rotTime.toInt()
-            mc.thePlayer.rotationPitch += deltaPitch / rotTime.toInt()
-            Thread.sleep(1)
+        val initialYaw = MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw)
+        val initialPitch = MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationPitch)
+        val targetYaw = wrapAngle(yaw)
+        val targetPitch = wrapAngle(pitch)
+        val startTime = System.currentTimeMillis()
+        val duration = rotTime.toInt().coerceIn(10, 10000)
+
+        val tickerChannel = ticker(delayMillis = 1, initialDelayMillis = 0)
+        for (event in tickerChannel) {
+            val currentTime = System.currentTimeMillis()
+            val progress = ((currentTime - startTime).toFloat() / duration).coerceIn(0f, 1f)
+            val amount = bezier(progress, 0f, 1f, 1f, 1f)
+
+            mc.thePlayer.rotationYaw = initialYaw + (targetYaw - initialYaw) * amount
+            mc.thePlayer.rotationPitch = initialPitch + (targetPitch - initialPitch) * amount
+
+            if (progress >= 1f) {
+                tickerChannel.cancel()
+                break
+            }
         }
+
         mc.thePlayer.rotationYaw = yaw
         mc.thePlayer.rotationPitch = pitch
         functionToRunWhenDone.invoke()
     }
+}
+
+fun wrapAngle(angle: Float): Float {
+    var newAngle = angle
+    while (newAngle >= 180f) newAngle -= 360f
+    while (newAngle < -180f) newAngle += 360f
+    return newAngle
+}
+
+fun bezier(t: Float, initial: Float, p1: Float, p2: Float, final: Float): Float {
+    return (1 - t).pow(3) * initial + 3 * (1 - t).pow(2) * t * p1 + 3 * (1 - t) * t.pow(2) * p2 + t.pow(3) * final
 }

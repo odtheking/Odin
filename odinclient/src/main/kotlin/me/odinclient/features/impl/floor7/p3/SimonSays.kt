@@ -14,6 +14,8 @@ import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.M7Phases
 import net.minecraft.block.BlockButtonStone
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.item.EntityItem
@@ -80,7 +82,7 @@ object SimonSays : Module(
 
     @SubscribeEvent
     fun onBlockChange(event: BlockChangeEvent) {
-        //if (DungeonUtils.getPhase() != 3) return
+        if (DungeonUtils.getPhase() != M7Phases.P3) return
         val pos = event.pos
         val old = event.old
         val state = event.update
@@ -94,9 +96,8 @@ object SimonSays : Module(
 
         if (pos.y !in 120..123 || pos.z !in 92..95) return
 
-        if (pos.x == 111 && state.block == Blocks.sea_lantern && pos !in clickInOrder) {
-            clickInOrder.add(pos)
-        } else if (pos.x == 110) {
+        if (pos.x == 111 && state.block == Blocks.sea_lantern && pos !in clickInOrder) clickInOrder.add(pos)
+        else if (pos.x == 110) {
             if (state.block == Blocks.air) {
                 clickNeeded = 0
                 if (phaseClock.hasTimePassed()) {
@@ -105,9 +106,7 @@ object SimonSays : Module(
                 }
                 if (clearAfter) clickInOrder.clear()
             } else if (state.block == Blocks.stone_button) {
-                if (old.block == Blocks.air && clickInOrder.size > currentPhase + 1) {
-                    devMessage("was skipped!?!?!")
-                }
+                if (old.block == Blocks.air && clickInOrder.size > currentPhase + 1) devMessage("was skipped!?!?!")
                 if (old.block == Blocks.stone_button && state.getValue(BlockButtonStone.POWERED)) {
                     val index = clickInOrder.indexOf(pos.add(1, 0, 0)) + 1
                     clickNeeded = if (index >= clickInOrder.size) 0 else index
@@ -118,15 +117,11 @@ object SimonSays : Module(
 
     @SubscribeEvent
     fun onEntityJoin(event: PostEntityMetadata) {
-        val ent = mc.theWorld.getEntityByID(event.packet.entityId)
-        if (ent !is EntityItem || Item.getIdFromItem(ent.entityItem.item) != 77) return
-        val pos = BlockPos(ent.posX.floor().toDouble(), ent.posY.floor().toDouble(), ent.posZ.floor().toDouble()).east()
-        val index = clickInOrder.indexOf(pos)
-        if (index == 2 && clickInOrder.size == 3) {
-            clickInOrder.removeFirst()
-        } else if (index == 0 && clickInOrder.size == 2) {
-            clickInOrder.reverse()
-        }
+        val ent = mc.theWorld.getEntityByID(event.packet.entityId) as? EntityItem ?: return
+        if (Item.getIdFromItem(ent.entityItem.item) != 77) return
+        val index = clickInOrder.indexOf(BlockPos(ent.posX.floor().toDouble(), ent.posY.floor().toDouble(), ent.posZ.floor().toDouble()).east())
+        if (index == 2 && clickInOrder.size == 3) clickInOrder.removeFirst()
+        else if (index == 0 && clickInOrder.size == 2) clickInOrder.reverse()
     }
 
     private fun triggerBot() {
