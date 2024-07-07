@@ -72,7 +72,7 @@ object RenderUtils {
     private val viewerVec: Vec3
         get() = Vec3(renderManager.viewerPosX, renderManager.viewerPosY, renderManager.viewerPosZ)
 
-    fun blendFactor() {
+    private fun blendFactor() {
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
     }
 
@@ -153,55 +153,8 @@ object RenderUtils {
         GlStateManager.disableCull()
         depth(depth)
         color.bind()
-
-        val minX = aabb.minX
-        val minY = aabb.minY
-        val minZ = aabb.minZ
-        val maxX = aabb.maxX
-        val maxY = aabb.maxY
-        val maxZ = aabb.maxZ
-
-        worldRenderer {
-            begin(7, DefaultVertexFormats.POSITION_NORMAL)
-
-            // Front face
-            addVertex(minX, maxY, minZ, 0f, 0f, -1f)
-            addVertex(maxX, maxY, minZ, 0f, 0f, -1f)
-            addVertex(maxX, minY, minZ, 0f, 0f, -1f)
-            addVertex(minX, minY, minZ, 0f, 0f, -1f)
-
-            // Back face
-            addVertex(minX, minY, maxZ, 0f, 0f, 1f)
-            addVertex(maxX, minY, maxZ, 0f, 0f, 1f)
-            addVertex(maxX, maxY, maxZ, 0f, 0f, 1f)
-            addVertex(minX, maxY, maxZ, 0f, 0f, 1f)
-
-            // Bottom face
-            addVertex(minX, minY, minZ, 0f, -1f, 0f)
-            addVertex(maxX, minY, minZ, 0f, -1f, 0f)
-            addVertex(maxX, minY, maxZ, 0f, -1f, 0f)
-            addVertex(minX, minY, maxZ, 0f, -1f, 0f)
-
-            // Top face
-            addVertex(minX, maxY, maxZ, 0f, 1f, 0f)
-            addVertex(maxX, maxY, maxZ, 0f, 1f, 0f)
-            addVertex(maxX, maxY, minZ, 0f, 1f, 0f)
-            addVertex(minX, maxY, minZ, 0f, 1f, 0f)
-
-            // Left face
-            addVertex(minX, minY, maxZ, -1f, 0f, 0f)
-            addVertex(minX, maxY, maxZ, -1f, 0f, 0f)
-            addVertex(minX, maxY, minZ, -1f, 0f, 0f)
-            addVertex(minX, minY, minZ, -1f, 0f, 0f)
-
-            // Right face
-            addVertex(maxX, minY, minZ, 1f, 0f, 0f)
-            addVertex(maxX, maxY, minZ, 1f, 0f, 0f)
-            addVertex(maxX, maxY, maxZ, 1f, 0f, 0f)
-            addVertex(maxX, minY, maxZ, 1f, 0f, 0f)
-        }
+        addVertexesForFilledBox(aabb)
         tessellator.draw()
-
         if (!depth) resetDepth()
         postDraw()
         GlStateManager.enableCull()
@@ -681,60 +634,11 @@ object RenderUtils {
             if (!box.depth || disableDepth) GlStateManager.disableDepth()
             else GlStateManager.enableDepth()
             val aabb = box.aabb.offset(box.x, box.y, box.z)
+            box.color.bind()
 
-            RenderGlobal.drawOutlinedBoundingBox(aabb, box.color.r, box.color.g, box.color.b, box.color.a)
-
-            if (box.filled) {
-                box.color.bind()
-
-                val minX = aabb.minX
-                val minY = aabb.minY
-                val minZ = aabb.minZ
-                val maxX = aabb.maxX
-                val maxY = aabb.maxY
-                val maxZ = aabb.maxZ
-
-                worldRenderer {
-                    begin(7, DefaultVertexFormats.POSITION_NORMAL)
-
-                    // Front face
-                    addVertex(minX, maxY, minZ, 0f, 0f, -1f)
-                    addVertex(maxX, maxY, minZ, 0f, 0f, -1f)
-                    addVertex(maxX, minY, minZ, 0f, 0f, -1f)
-                    addVertex(minX, minY, minZ, 0f, 0f, -1f)
-
-                    // Back face
-                    addVertex(minX, minY, maxZ, 0f, 0f, 1f)
-                    addVertex(maxX, minY, maxZ, 0f, 0f, 1f)
-                    addVertex(maxX, maxY, maxZ, 0f, 0f, 1f)
-                    addVertex(minX, maxY, maxZ, 0f, 0f, 1f)
-
-                    // Bottom face
-                    addVertex(minX, minY, minZ, 0f, -1f, 0f)
-                    addVertex(maxX, minY, minZ, 0f, -1f, 0f)
-                    addVertex(maxX, minY, maxZ, 0f, -1f, 0f)
-                    addVertex(minX, minY, maxZ, 0f, -1f, 0f)
-
-                    // Top face
-                    addVertex(minX, maxY, maxZ, 0f, 1f, 0f)
-                    addVertex(maxX, maxY, maxZ, 0f, 1f, 0f)
-                    addVertex(maxX, maxY, minZ, 0f, 1f, 0f)
-                    addVertex(minX, maxY, minZ, 0f, 1f, 0f)
-
-                    // Left face
-                    addVertex(minX, minY, maxZ, -1f, 0f, 0f)
-                    addVertex(minX, maxY, maxZ, -1f, 0f, 0f)
-                    addVertex(minX, maxY, minZ, -1f, 0f, 0f)
-                    addVertex(minX, minY, minZ, -1f, 0f, 0f)
-
-                    // Right face
-                    addVertex(maxX, minY, minZ, 1f, 0f, 0f)
-                    addVertex(maxX, maxY, minZ, 1f, 0f, 0f)
-                    addVertex(maxX, maxY, maxZ, 1f, 0f, 0f)
-                    addVertex(maxX, minY, maxZ, 1f, 0f, 0f)
-                }
-                tessellator.draw()
-            }
+            if (box.filled) addVertexesForFilledBox(aabb)
+            else addVertexesForOutlinedBox(aabb)
+            tessellator.draw()
         }
         GL11.glEndList()
         postDraw()
@@ -743,5 +647,85 @@ object RenderUtils {
         GlStateManager.resetColor()
         GlStateManager.popMatrix()
         return newGlList
+    }
+
+    private fun addVertexesForFilledBox(aabb: AxisAlignedBB) {
+        val minX = aabb.minX
+        val minY = aabb.minY
+        val minZ = aabb.minZ
+        val maxX = aabb.maxX
+        val maxY = aabb.maxY
+        val maxZ = aabb.maxZ
+
+        worldRenderer {
+            begin(7, DefaultVertexFormats.POSITION_NORMAL)
+
+            // Front face
+            addVertex(minX, maxY, minZ, 0f, 0f, -1f)
+            addVertex(maxX, maxY, minZ, 0f, 0f, -1f)
+            addVertex(maxX, minY, minZ, 0f, 0f, -1f)
+            addVertex(minX, minY, minZ, 0f, 0f, -1f)
+
+            // Back face
+            addVertex(minX, minY, maxZ, 0f, 0f, 1f)
+            addVertex(maxX, minY, maxZ, 0f, 0f, 1f)
+            addVertex(maxX, maxY, maxZ, 0f, 0f, 1f)
+            addVertex(minX, maxY, maxZ, 0f, 0f, 1f)
+
+            // Bottom face
+            addVertex(minX, minY, minZ, 0f, -1f, 0f)
+            addVertex(maxX, minY, minZ, 0f, -1f, 0f)
+            addVertex(maxX, minY, maxZ, 0f, -1f, 0f)
+            addVertex(minX, minY, maxZ, 0f, -1f, 0f)
+
+            // Top face
+            addVertex(minX, maxY, maxZ, 0f, 1f, 0f)
+            addVertex(maxX, maxY, maxZ, 0f, 1f, 0f)
+            addVertex(maxX, maxY, minZ, 0f, 1f, 0f)
+            addVertex(minX, maxY, minZ, 0f, 1f, 0f)
+
+            // Left face
+            addVertex(minX, minY, maxZ, -1f, 0f, 0f)
+            addVertex(minX, maxY, maxZ, -1f, 0f, 0f)
+            addVertex(minX, maxY, minZ, -1f, 0f, 0f)
+            addVertex(minX, minY, minZ, -1f, 0f, 0f)
+
+            // Right face
+            addVertex(maxX, minY, minZ, 1f, 0f, 0f)
+            addVertex(maxX, maxY, minZ, 1f, 0f, 0f)
+            addVertex(maxX, maxY, maxZ, 1f, 0f, 0f)
+            addVertex(maxX, minY, maxZ, 1f, 0f, 0f)
+        }
+    }
+
+    private fun addVertexesForOutlinedBox(aabb: AxisAlignedBB) {
+        val minX = aabb.minX
+        val minY = aabb.minY
+        val minZ = aabb.minZ
+        val maxX = aabb.maxX
+        val maxY = aabb.maxY
+        val maxZ = aabb.maxZ
+
+        worldRenderer {
+            begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
+            pos(minX, minY, minZ).endVertex()
+            pos(minX, minY, maxZ).endVertex()
+            pos(maxX, minY, maxZ).endVertex()
+            pos(maxX, minY, minZ).endVertex()
+            pos(minX, minY, minZ).endVertex()
+
+            pos(minX, maxY, minZ).endVertex()
+            pos(minX, maxY, maxZ).endVertex()
+            pos(maxX, maxY, maxZ).endVertex()
+            pos(maxX, maxY, minZ).endVertex()
+            pos(minX, maxY, minZ).endVertex()
+
+            pos(minX, maxY, maxZ).endVertex()
+            pos(minX, minY, maxZ).endVertex()
+            pos(maxX, minY, maxZ).endVertex()
+            pos(maxX, maxY, maxZ).endVertex()
+            pos(maxX, maxY, minZ).endVertex()
+            pos(maxX, minY, minZ).endVertex()
+        }
     }
 }
