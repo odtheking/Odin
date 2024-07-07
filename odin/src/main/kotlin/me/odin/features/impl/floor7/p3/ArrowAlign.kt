@@ -18,7 +18,6 @@ object ArrowAlign : Module(
     description = "Shows a solution for the Arrow Align device.",
     category = Category.FLOOR7,
 ) {
-
     private val standPosition = Vec3(0.0, 120.0, 77.0)
     private val frameGridCorner = Vec3(-2.0, 120.0, 75.0)
 
@@ -58,10 +57,9 @@ object ArrowAlign : Module(
     fun onRightClick(event: ClickEvent.RightClickEvent) {
         val targetFrame = mc.objectMouseOver?.entityHit as? EntityItemFrame ?: return
 
-        val framePosition = Vec3(targetFrame.posX, targetFrame.posY, targetFrame.posZ)
-        val frameIndex = ((framePosition.yCoord - frameGridCorner.yCoord) + (framePosition.zCoord - frameGridCorner.zCoord) * 5).toInt()
+        val frameIndex = ((targetFrame.posY - frameGridCorner.yCoord) + (targetFrame.posZ - frameGridCorner.zCoord) * 5).toInt()
 
-        if (framePosition.xCoord != frameGridCorner.xCoord || currentFrameRotations?.get(frameIndex) == -1 || frameIndex !in 0..24) return
+        if (targetFrame.posX != frameGridCorner.xCoord || currentFrameRotations?.get(frameIndex) == -1 || frameIndex !in 0..24) return
 
         if (!clicksRemaining.containsKey(frameIndex) && mc.thePlayer.isSneaking) return
 

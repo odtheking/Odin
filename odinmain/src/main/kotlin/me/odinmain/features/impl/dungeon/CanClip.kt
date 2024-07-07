@@ -59,15 +59,14 @@ object CanClip : Module(
         if (prev != canClip) animation.start()
     }
 
-    val Blocks = mutableMapOf<Vec3, String>()
+    private val Blocks = mutableMapOf<Vec3, String>()
 
     init {
         onPacket(C07PacketPlayerDigging::class.java) {
             if (it.status != C07PacketPlayerDigging.Action.START_DESTROY_BLOCK || !line) return@onPacket
             val block = getBlockAt(it.position)
-            val state = mc.theWorld.getBlockState(it.position)
             if (block is BlockStairs) {
-                val dir = getDirection(state)
+                val dir = getDirection(block.defaultState)
                 Timer().schedule(1) {
                     if (isAir(it.position)) Blocks[it.position.toVec3()] = dir
                 }
@@ -81,8 +80,8 @@ object CanClip : Module(
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
         Blocks.forEach { (pos, dir) ->
-            var pos1: Vec3? = null
-            var pos2: Vec3? = null
+            val pos1: Vec3
+            val pos2: Vec3
             when (dir) {
                 "east" -> {
                     pos1 = Vec3(pos.xCoord + 0.24, pos.yCoord + 1.1, pos.zCoord)
@@ -107,7 +106,7 @@ object CanClip : Module(
         }
     }
 
-    private fun getDirection(block: IBlockState) :String {
+    private fun getDirection(block: IBlockState): String {
         var dir = "block is not stairs"
         var half = "block is not stairs"
         if (block.block is BlockStairs) {
