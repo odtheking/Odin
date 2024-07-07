@@ -41,7 +41,7 @@ object MapInfo : Module(
 
         val (trText, brText) = if (alternate) listOf(cryptText, scoreText) else listOf(scoreText, cryptText)
 
-        if (background) roundedRectangle(-margin, 0, width-1 + (margin * 2), 19, color, 0, 0)
+        if (background) roundedRectangle(-margin, 0, width + (margin * 2), 19, color, 0, 0)
         val brWidth = getMCTextWidth(brText)
         val trWidth = getMCTextWidth(trText)
         mcText(secretText, 1, 1, 1f, Color.WHITE, center = false)
