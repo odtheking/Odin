@@ -59,7 +59,7 @@ object MapInfo : Module(
 
     init {
         execute(250) {
-            if (DungeonUtils.score < 300 || !shownTitle || !scoreTitle || !DungeonUtils.inDungeons) return@execute
+            if (DungeonUtils.score < 300 || shownTitle || !scoreTitle || !DungeonUtils.inDungeons) return@execute
             PlayerUtils.alert(scoreText)
             shownTitle = true
         }
