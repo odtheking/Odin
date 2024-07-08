@@ -10,9 +10,11 @@ import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.profile
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.Renderer
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object PuzzleSolvers : Module(
@@ -90,6 +92,12 @@ object PuzzleSolvers : Module(
         QuizSolver.reset()
     }.withDependency { quizDropdown && quizSolver }
 
+    private val boulderDropDown: Boolean by DropdownSetting("Boulder")
+    private val boulderSolver: Boolean by BooleanSetting("Quiz Solver", false, description = "Solver for the boulder puzzle").withDependency { boulderDropDown }
+    val boulderStyle: Int by SelectorSetting("Style", Renderer.defaultStyle, Renderer.styles, description = Renderer.styleDesc).withDependency { boulderDropDown && boulderSolver }
+    val boulderColor: Color by ColorSetting("Color", Color.GREEN.withAlpha(.5f), allowAlpha = true, description = "The color of the box.").withDependency { boulderDropDown && boulderSolver }
+    val boulderLineWidth: Float by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.").withDependency { boulderDropDown && boulderSolver }
+
 
     init {
         execute(500) {
@@ -123,6 +131,7 @@ object PuzzleSolvers : Module(
             BeamsSolver.reset()
             WeirdosSolver.reset()
             QuizSolver.reset()
+            BoulderSolver.reset()
         }
     }
 
@@ -137,6 +146,7 @@ object PuzzleSolvers : Module(
             if (beamsSolver) BeamsSolver.onRenderWorld()
             if (weirdosSolver) WeirdosSolver.onRenderWorld()
             if (quizSolver) QuizSolver.renderWorldLastQuiz()
+            if (boulderSolver) BoulderSolver.onRenderWorld()
         }
     }
 
@@ -146,10 +156,16 @@ object PuzzleSolvers : Module(
         BeamsSolver.enterDungeonRoom(event)
         TTTSolver.tttRoomEnter(event)
         QuizSolver.enterRoomQuiz(event)
+        BoulderSolver.onRoomEnter(event)
     }
 
     @SubscribeEvent
     fun blockUpdateEvent(event: BlockChangeEvent) {
         BeamsSolver.onBlockChange(event)
+    }
+
+    @SubscribeEvent
+    fun onInteract(event: PlayerInteractEvent) {
+        BoulderSolver.playerInteract(event)
     }
 }
