@@ -23,6 +23,37 @@ data class DungeonPlayer(
     var isDead: Boolean = false
 )
 
+data class Puzzle(
+    val name: String,
+    var status: PuzzleStatus? = null
+) {
+    companion object {
+        val Unknown = Puzzle("???")
+        val Blaze = Puzzle("Higher Or Lower")
+        val Beams = Puzzle("Creeper Beams")
+        val Weirdos = Puzzle("Three Weirdos")
+        val TTT = Puzzle("Tic Tac Toe")
+        val WaterBoard = Puzzle("Water Board")
+        val TPMaze = Puzzle("Teleport Maze")
+        val Boulder = Puzzle("Boulder")
+        val IceFill = Puzzle("Ice Fill")
+        val IcePath = Puzzle("Ice Path")
+        val Quiz = Puzzle("Quiz")
+        val BombDefuse = Puzzle("Bomb Defuse")
+
+        val allPuzzles = listOf(
+            Blaze, Beams, Weirdos, TTT, WaterBoard, TPMaze,
+            Boulder, IceFill, IcePath, Quiz, BombDefuse, Unknown
+        )
+    }
+}
+
+sealed class PuzzleStatus {
+    data object Completed : PuzzleStatus()
+    data object Failed : PuzzleStatus()
+    data object Incomplete : PuzzleStatus()
+}
+
 /**
  * Enumeration representing player classes in a dungeon setting.
  *

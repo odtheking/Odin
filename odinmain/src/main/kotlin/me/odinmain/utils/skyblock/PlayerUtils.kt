@@ -8,9 +8,14 @@ import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.floored
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
+import net.minecraft.client.Minecraft
+import net.minecraft.client.audio.PositionedSound
+import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.ItemStack
+import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Vec3
 
 
 object PlayerUtils {
@@ -25,9 +30,9 @@ object PlayerUtils {
      *
      * @author Aton
      */
-    fun playLoudSound(sound: String?, volume: Float, pitch: Float) {
+    fun playLoudSound(sound: String?, volume: Float, pitch: Float, pos: Vec3? = null) {
         shouldBypassVolume = true
-        mc.thePlayer?.playSound(sound, volume, pitch)
+        mc.theWorld?.playSound(pos?.xCoord ?: mc.thePlayer.posX, pos?.yCoord ?: mc.thePlayer.posY, pos?.zCoord  ?: mc.thePlayer.posZ, sound, volume, pitch, false)
         shouldBypassVolume = false
     }
 

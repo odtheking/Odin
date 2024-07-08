@@ -7,6 +7,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.DualSetting
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.name
+import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
@@ -23,7 +24,7 @@ object CloseChest : Module(
 
     @SubscribeEvent
     fun onOpenWindow(event: PacketReceivedEvent) {
-        if (!inDungeons || event.packet !is S2DPacketOpenWindow || !(event.packet as S2DPacketOpenWindow).windowTitle.unformattedText.equalsOneOf("Chest", "Large Chest") || mode) return
+        if (!inDungeons || event.packet !is S2DPacketOpenWindow || !(event.packet as S2DPacketOpenWindow).windowTitle.unformattedText.noControlCodes.equalsOneOf("Chest", "Large Chest") || mode) return
         mc.netHandler.networkManager.sendPacket(C0DPacketCloseWindow((event.packet as S2DPacketOpenWindow).windowId))
         event.isCanceled = true
     }
@@ -31,14 +32,14 @@ object CloseChest : Module(
     @SubscribeEvent
     fun onInput(event: GuiEvent.GuiKeyPressEvent) {
         if (!inDungeons || !mode || event.gui !is GuiChest) return
-        if (((event.gui as? GuiChest)?.inventorySlots as? ContainerChest)?.name.equalsOneOf("Chest", "Large Chest"))
+        if (((event.gui as? GuiChest)?.inventorySlots as? ContainerChest)?.name.noControlCodes.equalsOneOf("Chest", "Large Chest"))
             mc.thePlayer.closeScreen()
     }
 
     @SubscribeEvent
     fun onMouse(event: GuiEvent.GuiMouseClickEvent) {
         if (!inDungeons || !mode || event.gui !is GuiChest) return
-        if (((event.gui as? GuiChest)?.inventorySlots as? ContainerChest)?.name.equalsOneOf("Chest", "Large Chest"))
+        if (((event.gui as? GuiChest)?.inventorySlots as? ContainerChest)?.name.noControlCodes.equalsOneOf("Chest", "Large Chest"))
             mc.thePlayer.closeScreen()
     }
 }

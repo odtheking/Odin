@@ -2,9 +2,12 @@ package me.odinmain.utils
 
 import com.google.common.collect.ComparisonChain
 import me.odinmain.OdinMain.mc
+import me.odinmain.utils.skyblock.devMessage
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.scoreboard.ScorePlayerTeam
 import net.minecraft.world.WorldSettings
+import java.util.concurrent.CopyOnWriteArrayList
 
 
 fun cleanSB(scoreboard: String?): String {
@@ -47,8 +50,19 @@ fun getLines(): List<String> {
 // Tablist utils
 
 val getTabList: List<Pair<NetworkPlayerInfo, String>>
-    get() = (mc.thePlayer?.sendQueue?.playerInfoMap?.sortedWith(tabListOrder) ?: emptyList())
-        .map { Pair(it, mc.ingameGUI.tabList.getPlayerName(it)) }
+    get() {
+        try {
+            val playerInfoList = mc.thePlayer?.sendQueue?.playerInfoMap?.toList() ?: emptyList()
+            return playerInfoList.sortedWith(tabListOrder)
+                .map { Pair(it, mc.ingameGUI.tabList.getPlayerName(it)) }
+        } catch (e: ConcurrentModificationException) {
+            devMessage("Caught a $e. running getTabList")
+            println(e.message)
+            e.printStackTrace()
+            return emptyList()
+        }
+    }
+
 
 val tabListOrder = Comparator<NetworkPlayerInfo> { o1, o2 ->
     if (o1 == null) return@Comparator -1
