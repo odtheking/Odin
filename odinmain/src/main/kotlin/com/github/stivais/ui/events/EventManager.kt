@@ -34,18 +34,16 @@ class EventManager(private val ui: UI) {
     fun onMouseMove(x: Float, y: Float) {
         mouseX = x
         mouseY = y
-        dispatchToAll(Mouse.Moved, ui.main)
+        var last = hoveredElements.lastOrNull()
 
-        if (hoveredElements.size != 0) {
-            while (hoveredElements.isNotEmpty() && !hoveredElements.last().isInside(x, y)) {
-                hoveredElements.last().accept(Mouse.Exited)
-//                modMessage("removed ${hoveredElements.size - 1}")
-                hoveredElements.removeLast()
-            }
+        while (last != null && !last.isInside(x, y)) {
+            last.accept(Mouse.Exited)
+            hoveredElements.removeLast()
+            last = hoveredElements.lastOrNull()
         }
-//            hoveredElements.clear()
 
-        getHoveredElements(x, y, hoveredElements.lastOrNull() ?: ui.main)
+        getHoveredElements(x, y, last ?: ui.main)
+        dispatchToAll(Mouse.Moved, ui.main)
     }
 
     fun onMouseClick(button: Int): Boolean {

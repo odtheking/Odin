@@ -167,7 +167,7 @@ open class ElementScope<E: Element>(val element: E) {
         element.initializationTasks!!.add(action)
     }
 
-    fun onClick(button: Int? = 0, block: (Mouse.Clicked) -> Boolean) {
+    fun onClick(button: Int = 0, block: (Mouse.Clicked) -> Boolean) {
         element.registerEvent(Mouse.Clicked(button), block as Event.() -> Boolean)
     }
 

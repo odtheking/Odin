@@ -4,7 +4,7 @@ interface Event
 
 interface Mouse : Event {
 
-    data class Clicked(val button: Int?) : Mouse {
+    data class Clicked(val button: Int) : Mouse {
 
         override fun equals(other: Any?): Boolean { // needs to be overridden, so it is recognized in the events Map
             if (this === other) return true
@@ -12,7 +12,7 @@ interface Mouse : Event {
             return button == other.button
         }
 
-        override fun hashCode(): Int = 31 * ((button ?: -1) + 500)
+        override fun hashCode(): Int = 31 * (button + 500)
 
         override fun toString(): String = "MouseClicked(button=$button)"
     }
