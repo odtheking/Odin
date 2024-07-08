@@ -102,7 +102,7 @@ object WitherDragons : Module(
                 it.spawnTime()
             }
             DragonTimer.toRender = ArrayList()
-            lastDragonDeath = ""
+            lastDragonDeath = WitherDragonsEnum.None
         }
 
         onPacket(S2APacketParticles::class.java, { DungeonUtils.getPhase() == M7Phases.P5 }) {
@@ -126,9 +126,8 @@ object WitherDragons : Module(
             if (relicAnnounce || relicAnnounceTime) relicsOnMessage()
         }
 
-        onMessage(Regex(".*")) {
-            if (DungeonUtils.getPhase() != M7Phases.P5) return@onMessage
-            onChatPacket(it)
+        onMessage(Regex("^\\[BOSS] Wither King: (Oh, this one hurts!|I have more of those\\.|My soul is disposable\\.)$"), { enabled && DungeonUtils.getPhase() != M7Phases.P5 } ) {
+            onChatPacket()
         }
     }
 
@@ -139,9 +138,8 @@ object WitherDragons : Module(
         if (dragonHealth) renderHP()
         if (dragonTimer) renderTime()
         if (dragonBoxes) renderBoxes()
-        if (::priorityDragon.isInitialized) {
+        if (::priorityDragon.isInitialized)
             if (dragonTracers) renderTracers(priorityDragon)
-        }
     }
 
     @SubscribeEvent
@@ -176,5 +174,4 @@ object WitherDragons : Module(
             }
         }
     }
-
 }

@@ -2,10 +2,12 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import me.odinmain.events.impl.EnteredDungeonRoomEvent
+import me.odinmain.OdinMain.logger
+import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
+import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.quizDepth
 import me.odinmain.utils.*
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.render.*
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.util.Vec3
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
@@ -13,8 +15,7 @@ import java.nio.charset.StandardCharsets
 object QuizSolver {
     private var answers: MutableMap<String, List<String>>
     private val gson = GsonBuilder().setPrettyPrinting().create()
-    private val isr = this::class.java.getResourceAsStream("/quizAnswers.json")
-        ?.let { InputStreamReader(it, StandardCharsets.UTF_8) }
+    private val isr = this::class.java.getResourceAsStream("/quizAnswers.json")?.let { InputStreamReader(it, StandardCharsets.UTF_8) }
     private var triviaAnswers: List<String>? = null
 
     private var triviaOptions: MutableList<TriviaAnswer> = MutableList(3) { TriviaAnswer(null, false) }
@@ -26,13 +27,13 @@ object QuizSolver {
             answers = gson.fromJson(text, object : TypeToken<MutableMap<String, List<String>>>() {}.type)
             isr?.close()
         } catch (e: Exception) {
-            e.printStackTrace()
+            logger.error("Error loading quiz answers", e)
             answers = mutableMapOf()
         }
     }
 
     fun onMessage(msg: String) {
-        if (msg.startsWith("[STATUE] Oruo the Omniscient: ") && msg.contains("answered Question #") && msg.endsWith("correctly!"))
+        if ((msg.startsWith("[STATUE] Oruo the Omniscient: ") && msg.contains("answered Question #") && msg.endsWith("correctly!")) || msg == "[STATUE] Oruo the Omniscient: I bestow upon you all the power of a hundred years!")
             triviaOptions.forEach { it.correct = false }
 
         if (msg.trim().startsWithOneOf("ⓐ", "ⓑ", "ⓒ", ignoreCase = true)) {
@@ -51,7 +52,7 @@ object QuizSolver {
         }
     }
 
-    fun enterRoomQuiz(event: EnteredDungeonRoomEvent) {
+    fun enterRoomQuiz(event: RoomEnterEvent) {
         val room = event.room?.room ?: return
         if (room.data.name != "Quiz") return
 
@@ -64,8 +65,12 @@ object QuizSolver {
     }
 
     fun renderWorldLastQuiz() {
+        if (triviaAnswers == null || triviaOptions.isEmpty() || DungeonUtils.inBoss || !DungeonUtils.inDungeons) return
         triviaOptions.filter { it.correct }.forEach { answer ->
-            answer.vec3?.toAABB()?.let { Renderer.drawBox(it, Color.GREEN, fillAlpha = 0f) }
+            answer.vec3?.addVec(y= -1)?.let {
+                Renderer.drawBox(it.toAABB(), Color.GREEN, depth = quizDepth)
+                RenderUtils.drawBeaconBeam(it, Color.GREEN, depth = quizDepth)
+            }
         }
     }
 

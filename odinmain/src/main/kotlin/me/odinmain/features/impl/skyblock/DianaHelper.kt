@@ -47,6 +47,10 @@ object DianaHelper : Module(
     private val cmdCooldown = Clock(3_000)
     var renderPos: Vec3? = null
     val burrowsRender = mutableMapOf<Vec3i, BurrowType>()
+    private val hasSpade: Boolean
+        get() = mc.thePlayer?.inventory?.mainInventory?.find { it.itemID == "ANCESTRAL_SPADE" } != null
+    private val isDoingDiana: Boolean
+        get() = hasSpade && LocationUtils.currentArea.isArea(Island.Hub) && enabled
 
     enum class BurrowType(val text: String, val color: Color) {
         START("§aStart", Color.GREEN),
@@ -56,16 +60,20 @@ object DianaHelper : Module(
     }
 
     init {
-        onPacket(S29PacketSoundEffect::class.java) { DianaBurrowEstimate.handleSoundPacket(it) }
+        onPacket(S29PacketSoundEffect::class.java, { isDoingDiana }) {
+            DianaBurrowEstimate.handleSoundPacket(it)
+        }
 
-        onPacket(S2APacketParticles::class.java) {
+        onPacket(S2APacketParticles::class.java, { isDoingDiana }) {
             DianaBurrowEstimate.handleParticlePacket(it)
             DianaBurrowEstimate.handleBurrow(it)
         }
 
-        onPacket(C08PacketPlayerBlockPlacement::class.java) { DianaBurrowEstimate.blockEvent(it.position.toVec3i()) }
+        onPacket(C08PacketPlayerBlockPlacement::class.java, { isDoingDiana }) {
+            DianaBurrowEstimate.blockEvent(it.position.toVec3i())
+        }
 
-        onPacket(C07PacketPlayerDigging::class.java) {
+        onPacket(C07PacketPlayerDigging::class.java, { isDoingDiana }) {
             DianaBurrowEstimate.blockEvent(it.position.toVec3i(), it.status == C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK)
         }
 
@@ -88,18 +96,19 @@ object DianaHelper : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
+        if (!LocationUtils.currentArea.isArea(Island.Hub)) return
+        if (renderPos == null && burrowsRender.isEmpty()) return
         renderPos?.let { guess ->
-
             if (guess.yCoord == 110.0 && mc.thePlayer.positionVector.distanceTo(guess) < 64) {
                 renderPos = findNearestGrassBlock(guess)
                 return
             }
             warpLocation = WarpPoint.entries.filter { it.unlocked() }.minBy { warp ->
                 warp.location.distanceTo(guess)
-            }.takeIf { it.location.distanceTo(guess) + 30 < mc.thePlayer.positionVector.distanceTo(guess) }
+            }.takeIf { it.location.distanceTo(guess) + 35 < mc.thePlayer.positionVector.distanceTo(guess) }
 
             if (tracer)
-                Renderer.draw3DLine(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), guess.addVec(.5, .5, .5), tracerColor, tracerWidth, depth = false)
+                Renderer.draw3DLine(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), guess.addVec(.5, .5, .5), color = tracerColor, lineWidth = tracerWidth, depth = false)
 
             Renderer.drawCustomBeacon("§6Guess${warpLocation?.displayName ?: ""}§r", guess, guessColor, increase = true, style = style)
         }
@@ -107,7 +116,7 @@ object DianaHelper : Module(
         val burrowsRenderCopy = burrowsRender.toMap()
 
         burrowsRenderCopy.forEach { (location, type) ->
-            if (tracerBurrows) Renderer.draw3DLine(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), Vec3(location).addVec(.5, .5, .5), type.color, tracerWidth, depth = false)
+            if (tracerBurrows) Renderer.draw3DLine(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), Vec3(location).addVec(.5, .5, .5), color = type.color, lineWidth = tracerWidth, depth = false)
             Renderer.drawCustomBeacon(type.text, Vec3(location), type.color, style = style)
         }
     }

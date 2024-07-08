@@ -47,9 +47,9 @@ object DeployableTimer : Module(
         val texture: String, val displayName: String,
         val priority: Int, val duration: Int, val range: Float
     ) {
-        Warning (FlareTextures.warningFlareTexture, "§aWarning Flare", 3, 180000, 40f),
-        Alert   (FlareTextures.alertFlareTexture, "§9Alert Flare",   5, 180000, 40f),
-        SOS     (FlareTextures.sosFlareTexture, "§l§5SOS Flare",   7, 180000, 40f),
+        Warning (FlareTextures.WARNING_FLARE_TEXTURE, "§aWarning Flare", 3, 180000, 40f),
+        Alert   (FlareTextures.ALERT_FLARE_TEXTURE, "§9Alert Flare",   5, 180000, 40f),
+        SOS     (FlareTextures.SOS_FLARE_TEXTURE, "§l§5SOS Flare",   7, 180000, 40f),
         Radiant ("placeholder", "§aRadiant",    1, 30000,  18f),
         Mana    ("placeholder", "§9Mana Flux",  2, 30000, 18f),
         Overflux("placeholder", "§5Overflux",   4, 30000, 18f),

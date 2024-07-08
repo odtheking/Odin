@@ -2,7 +2,6 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import kotlinx.coroutines.*
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.showOrder
 import me.odinmain.utils.Vec2
@@ -31,8 +30,7 @@ object WaterSolver {
     private var waterSolutions: JsonObject
 
     init {
-        val isr = WaterSolver::class.java.getResourceAsStream("/watertimes.json")
-            ?.let { InputStreamReader(it, StandardCharsets.UTF_8) }
+        val isr = WaterSolver::class.java.getResourceAsStream("/watertimes.json")?.let { InputStreamReader(it, StandardCharsets.UTF_8) }
         waterSolutions = JsonParser().parse(isr).asJsonObject
     }
 
@@ -43,14 +41,10 @@ object WaterSolver {
     private var solutions = mutableMapOf<LeverBlock, Array<Double>>()
     private var openedWater = -1L
 
-    @OptIn(DelicateCoroutinesApi::class)
     fun scan() {
         val room = DungeonUtils.currentRoom?.room ?: return
         if (room.data.name != "Water Board" || variant != -1) return
-
-        GlobalScope.launch {
-            solve(room)
-        }
+        solve(room)
     }
 
     private fun solve(room: Room) {
@@ -118,7 +112,9 @@ object WaterSolver {
 
 
     fun waterRender() {
-        if (DungeonUtils.currentRoomName != "Water Board" || variant == -1) return
+        if (DungeonUtils.currentRoomName != "Water Board" || variant == -1 || !DungeonUtils.inDungeons || DungeonUtils.inBoss) return
+
+        val solutions = HashMap(solutions)
 
         val solutionList = solutions
             .flatMap { (lever, times) -> times.drop(lever.i).map { Pair(lever, it) } }
@@ -134,7 +130,7 @@ object WaterSolver {
 
         val first = solutionList.firstOrNull() ?: return
 
-        if (PuzzleSolvers.showTracer) Renderer.draw3DLine(mc.thePlayer.renderVec, Vec3(first.first.leverPos).addVector(.5, .5, .5), PuzzleSolvers.tracerColorFirst, depth = true)
+        if (PuzzleSolvers.showTracer) Renderer.draw3DLine(mc.thePlayer.renderVec, Vec3(first.first.leverPos).addVector(.5, .5, .5), color = PuzzleSolvers.tracerColorFirst, depth = true)
 
         if (solutionList.size > 1 && PuzzleSolvers.showTracer) {
             val second = solutionList[1]
@@ -143,7 +139,7 @@ object WaterSolver {
                 Renderer.draw3DLine(
                     Vec3(solutionList.first().first.leverPos).addVector(0.5, 0.5, 0.5),
                     Vec3(second.first.leverPos).addVector(0.5, 0.5, 0.5),
-                    PuzzleSolvers.tracerColorSecond,
+                    color = PuzzleSolvers.tracerColorSecond,
                     lineWidth = 1.5f,
                     depth = true
                 )
@@ -176,7 +172,6 @@ object WaterSolver {
             }
         }
     }
-
 
     fun waterInteract(event: C08PacketPlayerBlockPlacement) {
         if (solutions.isEmpty()) return

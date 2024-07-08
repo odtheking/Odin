@@ -1,7 +1,7 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import me.odinmain.events.impl.BlockChangeEvent
-import me.odinmain.events.impl.EnteredDungeonRoomEvent
+import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.puzzlesolvers.WaterSolver.waterInteract
@@ -10,9 +10,11 @@ import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.profile
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.Renderer
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object PuzzleSolvers : Module(
@@ -38,7 +40,7 @@ object PuzzleSolvers : Module(
     val mazeColorMultiple: Color by ColorSetting("Color for multiple solutions", Color.ORANGE.withAlpha(.5f), true, description = "Color for when there are multiple solutions").withDependency { tpMaze && mazeDropDown }
     val mazeColorVisited: Color by ColorSetting("Color for visited", Color.RED.withAlpha(.5f), true, description = "Color for the already used TP pads").withDependency { tpMaze && mazeDropDown }
     private val click: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
-        TPMaze.reset()
+        TPMazeSolver.reset()
     }.withDependency { tpMaze && mazeDropDown }
 
     /*private val tttDropDown: Boolean by DropdownSetting("Tic Tac Toe")
@@ -77,7 +79,7 @@ object PuzzleSolvers : Module(
 
     private val weirdosDropDown: Boolean by DropdownSetting("Weirdos")
     private val weirdosSolver: Boolean by BooleanSetting("Weirdos Solver", false, description = "Shows you the solution for the Weirdos puzzle").withDependency { weirdosDropDown }
-    val weirdosColor: Color by ColorSetting("Weirdos Color", Color.GREEN, true, description = "Color for the weirdos solver").withDependency { weirdosSolver && weirdosDropDown }
+    val weirdosColor: Color by ColorSetting("Weirdos Color", Color.GREEN.withAlpha(0.7f), true, description = "Color for the weirdos solver").withDependency { weirdosSolver && weirdosDropDown }
     val weirdosStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { weirdosSolver && weirdosDropDown }
     private val weirdosReset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
         WeirdosSolver.reset()
@@ -85,20 +87,27 @@ object PuzzleSolvers : Module(
 
     private val quizDropdown: Boolean by DropdownSetting("Quiz")
     private val quizSolver: Boolean by BooleanSetting("Quiz Solver", false, description = "Solver for the trivia puzzle").withDependency { quizDropdown }
+    val quizDepth: Boolean by BooleanSetting("Quiz Depth", false, description = "Depth check for the trivia puzzle").withDependency { quizDropdown && quizSolver }
     val quizReset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
         QuizSolver.reset()
     }.withDependency { quizDropdown && quizSolver }
 
+    private val boulderDropDown: Boolean by DropdownSetting("Boulder")
+    private val boulderSolver: Boolean by BooleanSetting("Quiz Solver", false, description = "Solver for the boulder puzzle").withDependency { boulderDropDown }
+    val boulderStyle: Int by SelectorSetting("Style", Renderer.defaultStyle, Renderer.styles, description = Renderer.styleDesc).withDependency { boulderDropDown && boulderSolver }
+    val boulderColor: Color by ColorSetting("Color", Color.GREEN.withAlpha(.5f), allowAlpha = true, description = "The color of the box.").withDependency { boulderDropDown && boulderSolver }
+    val boulderLineWidth: Float by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.").withDependency { boulderDropDown && boulderSolver }
+
 
     init {
         execute(500) {
-            if (tpMaze) TPMaze.scan()
+            if (tpMaze) TPMazeSolver.scan()
             if (waterSolver) WaterSolver.scan()
             if (blazeSolver) BlazeSolver.getBlaze()
         }
 
         onPacket(S08PacketPlayerPosLook::class.java) {
-            if (tpMaze) TPMaze.tpPacket(it)
+            if (tpMaze) TPMazeSolver.tpPacket(it)
         }
 
         onPacket(C08PacketPlayerBlockPlacement::class.java) {
@@ -116,13 +125,13 @@ object PuzzleSolvers : Module(
 
         onWorldLoad {
             WaterSolver.reset()
-            TPMaze.reset()
-            TicTacToe.reset()
+            TPMazeSolver.reset()
             IceFillSolver.reset()
             BlazeSolver.reset()
             BeamsSolver.reset()
             WeirdosSolver.reset()
             QuizSolver.reset()
+            BoulderSolver.reset()
         }
     }
 
@@ -130,26 +139,33 @@ object PuzzleSolvers : Module(
     fun onWorldRender(event: RenderWorldLastEvent) {
         profile("Puzzle Solvers") {
             if (waterSolver) WaterSolver.waterRender()
-            if (tpMaze) TPMaze.tpRender()
+            if (tpMaze) TPMazeSolver.tpRender()
             //if (tttSolver) TTTSolver.tttRenderWorld()
             if (iceFillSolver) IceFillSolver.onRenderWorldLast(iceFillColor)
             if (blazeSolver) BlazeSolver.renderBlazes()
             if (beamsSolver) BeamsSolver.onRenderWorld()
             if (weirdosSolver) WeirdosSolver.onRenderWorld()
             if (quizSolver) QuizSolver.renderWorldLastQuiz()
+            if (boulderSolver) BoulderSolver.onRenderWorld()
         }
     }
 
     @SubscribeEvent
-    fun onRoomEnter(event: EnteredDungeonRoomEvent) {
+    fun onRoomEnter(event: RoomEnterEvent) {
         IceFillSolver.enterDungeonRoom(event)
         BeamsSolver.enterDungeonRoom(event)
         TTTSolver.tttRoomEnter(event)
         QuizSolver.enterRoomQuiz(event)
+        BoulderSolver.onRoomEnter(event)
     }
 
     @SubscribeEvent
     fun blockUpdateEvent(event: BlockChangeEvent) {
         BeamsSolver.onBlockChange(event)
+    }
+
+    @SubscribeEvent
+    fun onInteract(event: PlayerInteractEvent) {
+        BoulderSolver.playerInteract(event)
     }
 }

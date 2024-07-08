@@ -6,6 +6,7 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.commands.commodore
 import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.features.ModuleManager.generateFeatureList
+import me.odinmain.features.impl.dungeon.MapInfo
 import me.odinmain.features.impl.render.DevPlayers.updateDevs
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
@@ -16,11 +17,6 @@ import net.minecraft.util.ChatComponentText
 
 @OptIn(DelicateCoroutinesApi::class)
 val devCommand = commodore("oddev") {
-
-    literal("getdata") {
-        literal("entity").runs { copyEntityData() }
-        literal("block").runs { copyBlockData() }
-    }
 
     literal("giveaotv").runs {
         sendCommand("give @p minecraft:diamond_shovel 1 0 {ExtraAttributes:{ethermerge:1b}}")
@@ -41,27 +37,23 @@ val devCommand = commodore("oddev") {
         modMessage("""
             ${getChatBreak()}
             |inDungeons: ${DungeonUtils.inDungeons}
-            |Floor: ${DungeonUtils.floorNumber}
             |InBoss: ${DungeonUtils.inBoss}
-            |Secrets: ${DungeonUtils.secretCount} / ${DungeonUtils.totalSecrets}
-            |Deaths: ${DungeonUtils.deathCount}
-            |Crypts: ${DungeonUtils.cryptCount}
-            |OpenRooms: ${DungeonUtils.openRoomCount}
-            |CompletedRooms: ${DungeonUtils.completedRoomCount}
-            |PercentCleared: ${DungeonUtils.percentCleared}%
-            |SecretsRemaining: ${DungeonUtils.secretsRemaining}
-            |TotalRooms: ${DungeonUtils.totalRooms}
-            |DungeonTime: ${DungeonUtils.dungeonTime}
-            |isGhost: ${DungeonUtils.isGhost}
-            |currentDungeonPlayer: ${DungeonUtils.currentDungeonPlayer.name}, ${DungeonUtils.currentDungeonPlayer.clazz}, ${DungeonUtils.currentDungeonPlayer.isDead}
+            |Floor: ${DungeonUtils.floor.name}
+            |Score: ${DungeonUtils.score}${when (MapInfo.togglePaul) {1 -> ", Force disabled Paul"; 2 -> ", Force enabled Paul"; else -> "" }}
+            |Secrets: (${DungeonUtils.secretCount} - ${DungeonUtils.neededSecretsAmount} - ${DungeonUtils.totalSecrets} - ${DungeonUtils.knownSecrets}) 
             |mimicKilled: ${DungeonUtils.mimicKilled}
+            |Deaths: ${DungeonUtils.deathCount}, Crypts: ${DungeonUtils.cryptCount}
+            |BonusScore: ${DungeonUtils.getBonusScore}, isPaul: ${DungeonUtils.isPaul}
+            |OpenRooms: ${DungeonUtils.openRoomCount}, CompletedRooms: ${DungeonUtils.completedRoomCount} ${DungeonUtils.percentCleared}%, Blood Done: ${DungeonUtils.bloodDone}, Total: ${DungeonUtils.totalRooms}
+            |Puzzles: ${DungeonUtils.puzzles.joinToString { "${it.name} (${it.status.toString()})" }}, Count: ${DungeonUtils.puzzleCount}
+            |DungeonTime: ${DungeonUtils.dungeonTime}
+            |currentDungeonPlayer: ${DungeonUtils.currentDungeonPlayer.name}, ${DungeonUtils.currentDungeonPlayer.clazz}, ${DungeonUtils.currentDungeonPlayer.isDead}, ${DungeonUtils.isGhost}
             |doorOpener: ${DungeonUtils.doorOpener}
-            |passedRooms: ${DungeonUtils.passedRooms.map { it.room.data.name }}
-            |currentRoom: ${DungeonUtils.currentRoom?.room?.data?.name}
+            |currentRoom: ${DungeonUtils.currentRoom?.room?.data?.name}, roomsPassed: ${DungeonUtils.passedRooms.map { it.room.data.name }}
             |Teammates: ${DungeonUtils.dungeonTeammates.joinToString { "${it.name} (${it.clazz})" }}
             |TeammatesNoSelf: ${DungeonUtils.dungeonTeammatesNoSelf.map { it.name }}
             |LeapTeammates: ${DungeonUtils.leapTeammates.map { it.name }}
-            |Blessings: ${Blessings.entries.joinToString { "${it.name}: ${it.current}" }}
+            |Blessings: ${Blessing.entries.joinToString { "${it.name}: ${it.current}" }}
             ${getChatBreak()}
         """.trimIndent(), false)
     }

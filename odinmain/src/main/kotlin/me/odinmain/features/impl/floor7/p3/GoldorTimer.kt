@@ -20,7 +20,7 @@ object GoldorTimer : Module(
     private val showPrefix: Boolean by BooleanSetting("Show Prefix", default = true, description = "Shows the prefix of the timer")
     private val hud: HudElement by HudSetting("Timer Hud", 10f, 10f, 1f, false) {
         if (it) {
-            mcText("§7Tick: §a59t", 1f, 1f, 1, Color.WHITE, center = false)
+            mcText("${if(showPrefix) "§7Tick: " else ""}§a59t", 1f, 1f, 1, Color.WHITE, center = false)
             getMCTextWidth("Tick: 59t") + 2f to 10f
         } else {
             val displayType = if (startTime >= 0) { startTime } else { tickTime }

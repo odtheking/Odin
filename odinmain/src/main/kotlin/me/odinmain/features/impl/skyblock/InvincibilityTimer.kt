@@ -20,7 +20,7 @@ object InvincibilityTimer : Module(
     private val showPrefix: Boolean by BooleanSetting("Show Prefix", default = true, description = "Shows the prefix of the timer")
     private val hud: HudElement by HudSetting("Timer Hud", 10f, 10f, 1f, true) {
         if (it) {
-            mcText("§bBonzo§f: 59t", 1f, 1f, 1, Color.WHITE, center = false)
+            mcText("${if(showPrefix) "§bBonzo§f: " else ""}59t", 1f, 1f, 1, Color.WHITE, center = false)
             getMCTextWidth("Bonzo: 59t") + 2f to 10f
         } else {
             if (invincibilityTime.time <= 0) return@HudSetting 0f to 0f
@@ -46,6 +46,7 @@ object InvincibilityTimer : Module(
         if (invincibilityAnnounce) partyMessage("$invincibilityType Procced")
         invincibilityTime = Timer(60, invincibilityType)
     }
+
     @SubscribeEvent
     fun onServerTick(event: RealServerTick) {
         invincibilityTime.time--

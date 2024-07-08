@@ -7,11 +7,10 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.runIn
+import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getPhase
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
-import me.odinmain.utils.skyblock.getItemSlot
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.init.Blocks
 import net.minecraft.item.Item
@@ -59,13 +58,12 @@ object GhostBlocks : Module(
         .onPress {
             if (!enabled) return@onPress
             val slot = getItemSlot(if (pickaxe == 1) "Stonk" else "Pickaxe", true)
-            if (slot in 0..8) {
-                val originalItem = mc.thePlayer?.inventory?.currentItem ?: 0
-                if (originalItem == slot) return@onPress
-                leftClick()
-                swapToIndex(slot!!)
-                runIn(speed) { swapToIndex(originalItem) } }
-            else modMessage("Couldn't find pickaxe.")
+            if (slot !in 0..8) modMessage("Couldn't find pickaxe.")
+            val originalItem = mc.thePlayer?.inventory?.currentItem ?: 0
+            if (originalItem == slot) return@onPress
+            leftClick()
+            slot?.let { swapToIndex(it) }
+            runIn(speed) { swapToIndex(originalItem) }
         }.withDependency { swapStonk }
 
     private val pickaxe: Int by SelectorSetting("Type", "Pickaxe", arrayListOf("Pickaxe", "Stonk"), description = "The type of pickaxe to use").withDependency { swapStonk }
@@ -79,7 +77,7 @@ object GhostBlocks : Module(
             if (!ghostBlockKey.isDown()) return@execute
 
             val lookingAt = mc.thePlayer?.rayTrace(ghostBlockRange, 1f)
-            toAir(lookingAt?.blockPos)
+            toAir(lookingAt?.blockPos ?: return@execute)
         }
 
         execute(1000) {
@@ -88,7 +86,7 @@ object GhostBlocks : Module(
             for (i in blocks[phase] ?: return@execute) {
                 mc.theWorld?.setBlockToAir(i)
             }
-            for (i in enderchests[phase] ?: return@execute) {
+            for (i in enderChests[phase] ?: return@execute) {
                 mc.theWorld?.setBlockState(i, Blocks.ender_chest.defaultState)
             }
             for (i in glass[phase] ?: return@execute) {
@@ -97,19 +95,14 @@ object GhostBlocks : Module(
         }
     }
 
-    private fun toAir(blockPos: BlockPos?): Boolean {
-        if (blockPos != null) {
-            val block = mc.theWorld.getBlockState(blockPos).block
-            if (block !in blacklist && (block !== Blocks.skull || (ghostBlockSkulls && (mc.theWorld.getTileEntity(blockPos) as? TileEntitySkull)?.playerProfile?.id?.toString() != "26bb1a8d-7c66-31c6-82d5-a9c04c94fb02"))
-            ) {
-                mc.theWorld.setBlockToAir(blockPos)
-                return true
-            }
+    private fun toAir(blockPos: BlockPos) {
+        getBlockAt(blockPos).let { block ->
+            if (block !in blacklist && (block !== Blocks.skull || (ghostBlockSkulls && (mc.theWorld.getTileEntity(blockPos) as? TileEntitySkull)
+                    ?.playerProfile?.id?.toString() != "26bb1a8d-7c66-31c6-82d5-a9c04c94fb02"))) mc.theWorld.setBlockToAir(blockPos)
         }
-        return false
     }
 
-    private val enderchests = mapOf(
+    private val enderChests = mapOf(
         1 to arrayOf(
             BlockPos(77, 221, 35),
             BlockPos(77, 221, 34),

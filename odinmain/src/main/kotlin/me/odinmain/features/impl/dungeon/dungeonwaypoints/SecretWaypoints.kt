@@ -6,13 +6,9 @@ import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.getWa
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.glList
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.setWaypoints
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.toVec3
-import me.odinmain.utils.equal
-import me.odinmain.utils.pos
-import me.odinmain.utils.rotateToNorth
+import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.dungeon.ScanUtils
-import me.odinmain.utils.subtractVec
 import net.minecraft.util.Vec3
 
 object SecretWaypoints {
@@ -46,15 +42,4 @@ object SecretWaypoints {
         if (room != null) setWaypoints(room)
         glList = -1
     }
-
-    fun clearSecrets() {
-        val room = DungeonUtils.currentRoom ?: return
-        val waypoints = getWaypoints(room)
-        if (waypoints.any { it.secret && !it.clicked}) {
-            for (wp in waypoints.filter { it.secret && !it.clicked }) { wp.clicked = true }
-            setWaypoints(room)
-            glList = -1
-        }
-    }
-
 }

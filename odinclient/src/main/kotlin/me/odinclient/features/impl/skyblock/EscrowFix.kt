@@ -11,20 +11,18 @@ object EscrowFix : Module(
     description = "Automatically reopens the ah/bz when it gets closed by escrow.",
     category = Category.SKYBLOCK
 ) {
-    private val messages = hashMapOf(
+    private val messages = mapOf(
         "There was an error with the auction house! (AUCTION_EXPIRED_OR_NOT_FOUND)" to "ah",
         "There was an error with the auction house! (INVALID_BID)" to "ah",
         "Claiming BIN auction..." to "ah",
-        "Visit the Auction House to collect your item!" to "ah",
+        "Visit the Auction House to collect your item!" to "ah"
     )
 
-    val regex = Regex("""Escrow refunded (\d+) coins for Bazaar Instant Buy Submit!""")
+    private val regex = Regex("Escrow refunded (\\d+) coins for Bazaar Instant Buy Submit!")
 
     @SubscribeEvent
-    fun onClientChatReceived(event: ChatPacketEvent) {
-        messages[event.message]?.let { sendCommand(it) }
-
-        if (event.message.matches(regex))
-            sendCommand("bz")
+    fun onChatPacket(event: ChatPacketEvent) {
+        val command = messages[event.message] ?: if (event.message.matches(regex)) "bz" else null
+        command?.let { sendCommand(it) }
     }
 }

@@ -18,7 +18,7 @@ object KuudraRequeue : Module(
     private val disablePartyLeave: Boolean by BooleanSetting("Disable Party Leave", false, description = "Disables the requeue on party leave message.")
 
     init {
-        onMessage("KUUDRA DOWN!", true) {
+        onMessage(Regex("^\\[NPC] Elle: Good job everyone. A hard fought battle come to an end. Let's get out of here before we run into any more trouble!\$")) {
             if (disableRequeue) {
                 disableRequeue = false
                 return@onMessage
@@ -27,7 +27,8 @@ object KuudraRequeue : Module(
                 sendCommand("od t${LocationUtils.kuudraTier}", true)
             }
         }
-        onMessage(Regex("(\\[.+])? ?(.{0,16}) has left the party.")) {
+
+        onMessage(Regex("(\\[.+])? ?(.{1,16}) has left the party.")) {
             if (disablePartyLeave) disableRequeue = true
         }
     }

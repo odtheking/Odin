@@ -2,22 +2,16 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import me.odinmain.events.impl.EnteredDungeonRoomEvent
+import me.odinmain.OdinMain.logger
+import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils
-import me.odinmain.utils.render.RenderUtils.bind
-import me.odinmain.utils.render.RenderUtils.worldRenderer
+import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.IceFillFloors.floors
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.tiles.Rotations
-import me.odinmain.utils.skyblock.isAir
-import me.odinmain.utils.skyblock.modMessage
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.Tessellator
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.*
-import org.lwjgl.opengl.GL11
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 
@@ -35,12 +29,10 @@ object IceFillSolver {
     init {
         try {
             val text = isr?.readText()
-            representativeFloors = gson.fromJson(
-                text, object : TypeToken<List<List<List<Int>>>>() {}.type
-            )
+            representativeFloors = gson.fromJson(text, object : TypeToken<List<List<List<Int>>>>() {}.type)
             isr?.close()
         } catch (e: Exception) {
-            e.printStackTrace()
+            logger.error("Error loading ice fill floors", e)
             representativeFloors = emptyList()
         }
     }
@@ -54,32 +46,23 @@ object IceFillSolver {
         if (currentPatterns.size == 0 || rPos.size == 0 || DungeonUtils.currentRoomName != "Ice Fill") return
         val rotation = renderRotation ?: return
 
-        GlStateManager.pushMatrix()
-        color.bind()
-        RenderUtils.preDraw()
-        GlStateManager.depthMask(true)
-        GL11.glEnable(GL11.GL_LINE_SMOOTH)
-        GL11.glLineWidth(3f)
-
-        worldRenderer.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
+        val pointsList = mutableListOf<Vec3>()
         for (i in currentPatterns.indices) {
             val pattern = currentPatterns[i]
             val startPos = rPos[i]
-            worldRenderer.pos(startPos.xCoord, startPos.yCoord, startPos.zCoord).endVertex()
+            pointsList.add(startPos)
             for (point in pattern) {
-                startPos.add(transformTo(point, rotation)).let { worldRenderer.pos(it.xCoord, it.yCoord, it.zCoord).endVertex() }
+                val transformedPoint = startPos.add(transformTo(point, rotation))
+                pointsList.add(transformedPoint)
             }
-            val stairPos = startPos + transformTo(pattern.last().addVec(1, 1), rotation)
-            worldRenderer.pos(stairPos.xCoord, stairPos.yCoord, stairPos.zCoord).endVertex()
+            val stairPos = startPos.add(transformTo(pattern.last().addVec(1, 1), rotation))
+            pointsList.add(stairPos)
         }
 
-        Tessellator.getInstance().draw()
-        GlStateManager.depthMask(true)
-        RenderUtils.postDraw()
-        GlStateManager.popMatrix()
+        Renderer.draw3DLine(*pointsList.toTypedArray(), color = color, depth = true)
     }
 
-    fun enterDungeonRoom(event: EnteredDungeonRoomEvent) {
+    fun enterDungeonRoom(event: RoomEnterEvent) {
         val room = event.room?.room ?: return
         if (room.data.name != "Ice Fill" || scanned) return
         val rotation = room.rotation
@@ -108,7 +91,7 @@ object IceFillSolver {
                 isAir(bPos.add(transform(floorHeight[index][0], floorHeight[index][1], rotation))) &&
                 !isAir(bPos.add(transform(floorHeight[index][2], floorHeight[index][3], rotation)))
             ) {
-                modMessage("Section ${floorIndex + 1} scan took ${(System.nanoTime() - startTime) / 1000000.0}ms pattern: ${index + 1}")
+                devMessage("Section ${floorIndex + 1} scan took ${(System.nanoTime() - startTime) / 1000000.0}ms pattern: ${index + 1}")
 
                 renderPattern(pos, rotation)
                 currentPatterns.add(floors[floorIndex][index].toMutableList())

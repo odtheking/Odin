@@ -1,12 +1,15 @@
 package me.odinmain.utils.skyblock.dungeon
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.events.impl.EnteredDungeonRoomEvent
+import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
 import me.odinmain.events.impl.PacketReceivedEvent
-import me.odinmain.utils.*
+import me.odinmain.features.impl.dungeon.MapInfo.togglePaul
+import me.odinmain.utils.equalsOneOf
+import me.odinmain.utils.noControlCodes
+import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.LocationUtils.currentDungeon
 import me.odinmain.utils.skyblock.PlayerUtils.posY
-import me.odinmain.utils.skyblock.getItemSlot
+import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
 import net.minecraft.block.BlockSkull
 import net.minecraft.block.state.IBlockState
 import net.minecraft.client.network.NetworkPlayerInfo
@@ -15,12 +18,13 @@ import net.minecraft.tileentity.TileEntitySkull
 import net.minecraft.util.BlockPos
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import kotlin.math.ceil
 import kotlin.math.floor
 
 object DungeonUtils {
 
     inline val inDungeons: Boolean get() =
-        currentDungeon != null
+        LocationUtils.currentArea.isArea(Island.Dungeon)
 
     inline val floorNumber: Int get() =
         currentDungeon?.floor?.floorNumber ?: 0
@@ -33,6 +37,9 @@ object DungeonUtils {
 
     inline val secretCount: Int get() =
         currentDungeon?.dungeonStats?.secretsFound ?: 0
+
+    inline val knownSecrets: Int get() =
+        currentDungeon?.dungeonStats?.knownSecrets ?: 0
 
     inline val secretPercentage: Float get() =
         currentDungeon?.dungeonStats?.secretsPercent ?: 0f
@@ -62,8 +69,14 @@ object DungeonUtils {
 
     inline val totalRooms: Int get() {
         return if (completedRoomCount == 0 || percentCleared == 0) 0
-        else floor(100 / percentCleared * completedRoomCount + 0.4).toInt()
+        else floor((completedRoomCount/((percentCleared * 0.01).toFloat())) + 0.4).toInt()
     }
+
+    inline val puzzles get() =
+        currentDungeon?.puzzles ?: emptyList()
+
+    inline val puzzleCount get() =
+        currentDungeon?.puzzles?.size ?: 0
 
     inline val dungeonTime: String get() =
         currentDungeon?.dungeonStats?.elapsedTime ?: "00m 00s"
@@ -92,11 +105,45 @@ object DungeonUtils {
     inline val mimicKilled: Boolean get() =
         currentDungeon?.dungeonStats?.mimicKilled ?: false
 
-    inline val currentRoom get() =
+    inline val currentRoom: FullRoom? get() =
         currentDungeon?.currentRoom
 
     inline val passedRooms get() =
         currentDungeon?.passedRooms ?: emptyList()
+
+    inline val isPaul: Boolean get() =
+         currentDungeon?.paul ?: false
+
+    inline val getBonusScore: Int get() {
+        var score = 0
+        score += cryptCount.coerceAtMost(5)
+        if (mimicKilled) score += 2
+        if ((isPaul && togglePaul == 0) || togglePaul == 2) score += 10
+        return score
+    }
+
+    inline val bloodDone: Boolean get() =
+        currentDungeon?.dungeonStats?.bloodDone ?: false
+
+    inline val score: Int get() {
+        val completed: Float = completedRoomCount.toFloat() + (if (!bloodDone) 1f else 0f) + (if (!inBoss) 1f else 0f)
+        val total: Float = if (totalRooms != 0) totalRooms.toFloat() else 36f
+
+        val exploration = floor((secretPercentage/floor.secretPercentage)/100f * 40f).coerceIn(0f, 40f).toInt() +
+                floor(completed/total * 60f).coerceIn(0f, 60f).toInt()
+
+        val skillRooms = floor(completed/total * 80f).coerceIn(0f, 80f).toInt()
+        val puzzlePenalty = puzzles.filter { it.status != PuzzleStatus.Completed }.size * 10
+        val skill = (20 + skillRooms - puzzlePenalty - (deathCount * 2 - 1).coerceAtLeast(0)).coerceIn(20, 100)
+
+        return exploration + skill + getBonusScore + 100
+    }
+
+    inline val neededSecretsAmount: Int get() {
+        val deathModifier = (deathCount * 2 - 1).coerceAtLeast(0)
+        val scoreFactor = 40 - getBonusScore + deathModifier
+        return ceil((totalSecrets * floor.secretPercentage) * scoreFactor / 40.0).toInt()
+    }
 
     /**
      * Checks if the current dungeon floor number matches any of the specified options.
@@ -131,24 +178,44 @@ object DungeonUtils {
     }
 
     @SubscribeEvent
-    fun onRoomEnter(event: EnteredDungeonRoomEvent) {
-        currentDungeon?.enterDungeonRoom(event)
+    fun onRoomEnter(event: RoomEnterEvent) {
+        if (inDungeons) currentDungeon?.enterDungeonRoom(event)
     }
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
-        Blessings.entries.forEach { it.current = 0 }
+        Blessing.entries.forEach { it.current = 0 }
+    }
+
+    private val puzzleRegex = Regex("^§r (\\w+(?: \\w+)*|\\?\\?\\?): §r§7\\[(§r§c§l✖|§r§a§l✔|§r§6§l✦)§r§7] ?(?:§r§f\\(§r§[a-z](\\w+)§r§f\\))?§r$")
+
+    fun getDungeonPuzzles(list: List<String> = listOf()): List<Puzzle> {
+        return list.mapNotNull { text ->
+            val matchGroups = puzzleRegex.find(text)?.groupValues ?: return@mapNotNull null
+            val puzzle = Puzzle.allPuzzles.find { it.name == matchGroups[1] }?.copy() ?: return@mapNotNull null
+
+            puzzle.status = when {
+                puzzles.find { it.name == puzzle.name }?.status == PuzzleStatus.Completed -> PuzzleStatus.Completed
+                matchGroups[2] == "§r§c§l✖" -> PuzzleStatus.Failed
+                matchGroups[2] == "§r§a§l✔" -> PuzzleStatus.Completed
+                matchGroups[2] == "§r§6§l✦" -> PuzzleStatus.Incomplete
+                else -> {
+                    modMessage(text.replace("§", "&"), false)
+                    return@mapNotNull null
+                }
+            }
+            puzzle
+        }
     }
 
     private val tablistRegex = Regex("^\\[(\\d+)] (?:\\[\\w+] )*(\\w+) .*?\\((\\w+)(?: (\\w+))*\\)$")
 
-    fun getDungeonTeammates(previousTeammates: List<DungeonPlayer>): List<DungeonPlayer> {
+    fun getDungeonTeammates(previousTeammates: List<DungeonPlayer>, tabList: List<Pair<NetworkPlayerInfo, String>>): List<DungeonPlayer> {
         val teammates = mutableListOf<DungeonPlayer>()
-        val tabList = getDungeonTabList() ?: return emptyList()
 
         for ((networkPlayerInfo, line) in tabList) {
 
-            val (_, sbLevel, name, clazz, clazzLevel) = tablistRegex.find(line.noControlCodes)?.groupValues ?: continue
+            val (_, _, name, clazz, _) = tablistRegex.find(line.noControlCodes)?.groupValues ?: continue
 
             addTeammate(name, clazz, teammates, networkPlayerInfo) // will fail to find the EMPTY or DEAD class and won't add them to the list
             if (clazz == "DEAD" || clazz == "EMPTY") {
@@ -188,7 +255,6 @@ object DungeonUtils {
             if (tile !is TileEntitySkull) return false
             return tile.playerProfile?.id.toString().equalsOneOf(WITHER_ESSENCE_ID, REDSTONE_KEY)
         }
-
         return false
     }
 }

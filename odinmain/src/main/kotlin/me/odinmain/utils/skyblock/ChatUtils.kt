@@ -1,12 +1,16 @@
 package me.odinmain.utils.skyblock
 
+import me.odinmain.OdinMain.logger
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.render.ClickGUIModule.devMessages
 import me.odinmain.features.impl.render.DevPlayers
+import me.odinmain.features.impl.skyblock.ChatCommands
+import me.odinmain.utils.noControlCodes
 import net.minecraft.event.ClickEvent
 import net.minecraft.event.HoverEvent
 import net.minecraft.util.*
 import net.minecraftforge.client.ClientCommandHandler
+import kotlin.math.roundToInt
 
 
 /**
@@ -39,6 +43,7 @@ fun rollDice(): Int = (1..6).random()
  * @param clientSide If `true`, the command is executed client-side; otherwise, server-side.
  */
 fun sendCommand(text: Any, clientSide: Boolean = false) {
+    if (LocationUtils.currentArea.isArea(Island.SinglePlayer) && !clientSide) return modMessage("Sending command: $text")
     if (clientSide) ClientCommandHandler.instance.executeCommand(mc.thePlayer, "/$text")
     else sendChatMessage("/$text")
 }
@@ -65,7 +70,7 @@ fun modMessage(message: Any?, prefix: Boolean = true, chatStyle: ChatStyle? = nu
     val chatComponent = ChatComponentText(if (prefix) "§3Odin §8»§r $message" else message.toString())
     chatStyle?.let { chatComponent.setChatStyle(it) } // Set chat style using setChatStyle method
     try { mc.thePlayer?.addChatMessage(chatComponent) }
-    catch (e: Exception) { e.printStackTrace() }
+    catch (e: Exception) { logger.error("Error sending message: $message", e)}
 }
 
 
@@ -126,13 +131,11 @@ fun privateMessage(message: Any, name: String) {
  * @param name Name for private message.
  * @param channel Channel to send the message.
  */
-fun channelMessage(message: Any, name: String, channel: String) {
+fun channelMessage(message: Any, name: String, channel: ChatCommands.ChatChannel) {
     when (channel) {
-        "guild" -> guildMessage(message)
-        "party" -> partyMessage(message)
-        "private" -> privateMessage(message, name)
-        // Add more cases as needed for other channels
-        else -> throw IllegalArgumentException("Unsupported channel: $channel")
+        ChatCommands.ChatChannel.GUILD -> guildMessage(message)
+        ChatCommands.ChatChannel.PARTY -> partyMessage(message)
+        ChatCommands.ChatChannel.PRIVATE -> privateMessage(message, name)
     }
 }
 
@@ -145,6 +148,22 @@ fun getChatBreak(): String =
     mc.ingameGUI?.chatGUI?.chatWidth?.let {
         "§9§m" + "-".repeat(it / mc.fontRendererObj.getStringWidth("-"))
     } ?: ""
+
+/**
+ * Centers a given text in the chat.
+ *
+ * @param text Text to be centered.
+ * @return Centered text.
+ */
+fun getCenteredText(text: String): String {
+    val textWidth = mc.fontRendererObj.getStringWidth(text.noControlCodes)
+    val chatWidth = mc.ingameGUI?.chatGUI?.chatWidth ?: 0
+
+    if (textWidth >= chatWidth) return text
+
+    return StringBuilder().apply {
+        repeat((((chatWidth - textWidth) / 2f) / mc.fontRendererObj.getStringWidth(" ")).roundToInt()) { append(' ') } }.append(text).toString()
+}
 
 /**
  * Creates a `ChatStyle` with click and hover events for making a message clickable.

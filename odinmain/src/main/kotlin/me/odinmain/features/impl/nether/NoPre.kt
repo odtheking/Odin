@@ -27,7 +27,7 @@ object NoPre : Module(
 
     init {
         onMessage("[NPC] Elle: Head over to the main platform, I will join you when I get a bite!", false) {
-            val playerLocation = mc.thePlayer.positionVector
+            val playerLocation = mc.thePlayer?.positionVector ?: return@onMessage
             when {
                 triangle.distanceTo(playerLocation) < 15 -> {
                     preSpot = "Triangle"
@@ -49,7 +49,7 @@ object NoPre : Module(
                     preLoc = slash
                 }
             }
-            modMessage("Pre-spot: ${preSpot.ifEmpty { "You didn't get to your pre spot in time" }}")
+            modMessage("Pre-spot: ${preSpot.ifEmpty { "§cDidn't register your pre-spot because you didn't get there in time." }}")
         }
 
         onMessage("[NPC] Elle: Not again!", false) {
@@ -82,10 +82,9 @@ object NoPre : Module(
             if (showAlert) PlayerUtils.alert(msg, time = 10)
         }
 
-        onMessage(Regex("Party > ?(\\[.+])? ?(.+): No ?(.*)!")) {
-            val match = Regex("Party > ?(\\[.+])? ?(.+): No ?(.*)!").find(it) ?: return@onMessage
-            val spot = match.groupValues.lastOrNull()?.replace("!", "") ?: return@onMessage
-            missing = spot
+        onMessage(Regex("^Party > \\[?(?:MVP|VIP)?\\+*]? ?(.{1,16}): No ?(.*)!")) {
+            val match = Regex("^Party > \\[?(?:MVP|VIP)?\\+*]? ?(.{1,16}): No ?(.*)!").find(it) ?: return@onMessage
+            missing = match.groupValues.lastOrNull() ?: return@onMessage
         }
     }
 }

@@ -4,7 +4,7 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.runIn
-import me.odinmain.utils.skyblock.LocationUtils
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.sendCommand
 
 object DungeonRequeue : Module(
@@ -18,16 +18,17 @@ object DungeonRequeue : Module(
 
     var disableRequeue = false
     init {
-        onMessage("                             > EXTRA STATS <", false) {
+        onMessage(Regex(" {29}> EXTRA STATS <")) {
             if (disableRequeue) {
                 disableRequeue = false
                 return@onMessage
             }
+
             runIn(delay * 20) {
-                sendCommand(if (type) "instancerequeue" else "od ${LocationUtils.currentDungeon?.floor?.name?.lowercase()}", clientSide = !type)
+                sendCommand(if (type) "instancerequeue" else "od ${DungeonUtils.floor.name.lowercase()}", clientSide = !type)
             }
         }
-        onMessage(Regex("(\\[.+])? ?(.{0,16}) has left the party.")) {
+        onMessage(Regex("\\[?(?:MVP|VIP)?\\+*]? ?(.{1,16}) has left the party.")) {
             if (disablePartyLeave) disableRequeue = true
         }
         onWorldLoad { disableRequeue = false }

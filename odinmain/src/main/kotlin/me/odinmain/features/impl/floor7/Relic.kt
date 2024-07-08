@@ -12,7 +12,7 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 object Relic {
     val currentRelic get() = mc.thePlayer?.heldItem?.itemID ?: ""
 
-    enum class Relics (
+    enum class Relic (
         val id: String,
         val colorCode: String
     ) {
@@ -32,10 +32,9 @@ object Relic {
     }
 
     fun relicsBlockPlace(packet: C08PacketPlayerBlockPlacement) {
-        if (timer == 0L) return
-        val block = mc.theWorld?.getBlockState(packet.position)?.block ?: return
-        if (!block.equalsOneOf(Blocks.cauldron, Blocks.anvil) || !currentRelic.equalsOneOf("GREEN_KING_RELIC", "PURPLE_KING_RELIC", "BLUE_KING_RELIC", "ORANGE_KING_RELIC", "RED_KING_RELIC")) return
-        val relic = Relics.entries.find { it.id == currentRelic } ?: return modMessage("Relic not found")
+        if (timer == 0L || !getBlockAt(packet.position).equalsOneOf(Blocks.cauldron, Blocks.anvil)) return
+
+        val relic = Relic.entries.find { it.id == currentRelic } ?: return
         val hasPassed = (System.currentTimeMillis() - timer) / 1000.0
 
         relicPBs.time(relic.ordinal, hasPassed, "s§7!", "§${relic.colorCode}${relic.name} §7took §6", addPBString = true, addOldPBString = true, relicAnnounceTime)

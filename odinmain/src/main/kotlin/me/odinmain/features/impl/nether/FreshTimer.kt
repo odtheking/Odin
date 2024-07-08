@@ -47,17 +47,6 @@ object FreshTimer : Module(
                 teammate.eatFresh = false
             }
             if (notifyFresh) partyMessage("FRESH")
-
         }
     }
-
-    /*@SubscribeEvent
-    fun renderWorldLast(event: RenderWorldLastEvent) {
-        if (!boxFreshPlayers) return
-        KuudraUtils.kuudraTeammates.forEach {
-            if (it.entity == null || it.playerName == mc.thePlayer.name) return@forEach
-            if (!it.eatFresh) return@forEach
-            RenderUtils.drawFilledBox(it.entity?.renderBoundingBox ?: return@forEach, color = highlightFreshColor, false)
-        }
-    }*/
 }

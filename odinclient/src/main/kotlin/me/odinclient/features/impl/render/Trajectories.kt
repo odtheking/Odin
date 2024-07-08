@@ -259,10 +259,9 @@ object Trajectories : Module(
         GlStateManager.popMatrix()
     }
 
-
     private fun drawPearlCollisionBox() {
         if (pearlImpactPos == null) return
-        val pos = pearlImpactPos!!
+        val pos = pearlImpactPos ?: return
         val aabb = AxisAlignedBB(
             pos.first.xCoord, pos.first.yCoord, pos.first.zCoord,
             pos.second.xCoord, pos.second.yCoord, pos.second.zCoord
