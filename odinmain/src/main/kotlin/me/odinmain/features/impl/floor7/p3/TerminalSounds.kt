@@ -5,10 +5,7 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.currentTerm
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.ActionSetting
-import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.features.settings.impl.SelectorSetting
-import me.odinmain.features.settings.impl.StringSetting
+import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.skyblock.PlayerUtils
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent

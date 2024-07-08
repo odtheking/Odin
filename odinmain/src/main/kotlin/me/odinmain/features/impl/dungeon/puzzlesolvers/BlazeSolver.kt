@@ -32,6 +32,7 @@ object BlazeSolver {
     }
 
     fun renderBlazes() {
+        if (!DungeonUtils.inDungeons || DungeonUtils.inBoss) return
         if (blazes.isEmpty()) return
         blazes.removeAll {
             mc.theWorld.getEntityByID(it.entityId) == null

@@ -173,7 +173,6 @@ object WaterSolver {
         }
     }
 
-
     fun waterInteract(event: C08PacketPlayerBlockPlacement) {
         if (solutions.isEmpty()) return
         LeverBlock.entries.find { it.leverPos == event.position }?.let {
