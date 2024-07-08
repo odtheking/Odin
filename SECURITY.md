@@ -3,7 +3,7 @@
 If you discover a security vulnerability within this mod, please report it to us as soon as possible. To ensure your report is handled in a timely manner and to protect our users, please follow the guidelines below:
 
 1. **Do not disclose publicly**: Do not share the vulnerability until we have had a chance to address it.
-2. **Email us**: Send a detailed report of the vulnerability to [odinmod@gmail.com](). Please include:
+2. **Email us**: Send a detailed report of the vulnerability to [odinmod.project@gmail.com](). Please include:
     - A description of the vulnerability.
     - Steps to reproduce the issue.
     - Any potential fixes you might have in mind.
