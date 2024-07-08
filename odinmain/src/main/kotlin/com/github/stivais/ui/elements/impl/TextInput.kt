@@ -362,7 +362,24 @@ class TextInput(
     }
 
     private fun positionCaret() {
-        caretX = renderer.textWidth(string, size = height)
+        caretX = renderer.textWidth(getCurrentLine().first, size = height)
+    }
+
+    private fun getCurrentLine(): Pair<String, Int> {
+        var i = 0
+        var ls = 0
+        var line = 0
+
+        for (chr in string) {
+            i++
+            if (chr == '\n') {
+                ls = i
+                line++
+            }
+            if (i == caretPosition)
+                return text.substring(ls, caretPosition).substringBefore('\n') to line
+        }
+        return "" to 0
     }
 
     private fun setCaretPositionBasedOnMouse(x: Float, textWidth: Float, mx: Float) {
