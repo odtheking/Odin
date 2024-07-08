@@ -18,7 +18,7 @@ object MapInfo : Module(
 ) {
     private val disableInBoss: Boolean by BooleanSetting("Disable in boss", default = true, description = "Disables the information display when you're in boss.")
     private val scoreTitle: Boolean by BooleanSetting("300 Score Title", default = true, description = "Displays a title on 300 score")
-    private val scoreText: String by StringSetting("Title Text", default = "300 Score!", description = "Text to be displayed on 300 score.").withDependency { scoreTitle }
+    private val scoreText: String by StringSetting("Title Text", default = "&c300 Score!", description = "Text to be displayed on 300 score.").withDependency { scoreTitle }
     private val alternate: Boolean by  BooleanSetting("Flip Crypts and Score", default = false, description = "Flips crypts and score.")
     private val addRemaining: Boolean by BooleanSetting("Include remaining", default = false, description = "adds remaining to the secrets display.").withDependency { alternate }
     private val remaining: Boolean by DualSetting("Min Secrets", "Minimum", "Remaining", default = false, description = "Display minimum secrets or secrets until s+.").withDependency { !(addRemaining && alternate) }
@@ -60,7 +60,7 @@ object MapInfo : Module(
     init {
         execute(250) {
             if (DungeonUtils.score < 300 || shownTitle || !scoreTitle || !DungeonUtils.inDungeons) return@execute
-            PlayerUtils.alert(scoreText)
+            PlayerUtils.alert(scoreText.replace("&", "§"))
             shownTitle = true
         }
 
@@ -72,7 +72,7 @@ object MapInfo : Module(
     private fun colorizeCrypts(count: Int): String {
         return when {
             count < 3 -> "§c${count}"
-            count <5 -> "§e${count}"
+            count < 5 -> "§e${count}"
             else -> "§a${count}"
         }
     }
@@ -80,7 +80,7 @@ object MapInfo : Module(
     private fun colorizeScore(score: Int): String {
         return when {
             score < 270 -> "§c${score}"
-            score < 300-> "§e${score}"
+            score < 300 -> "§e${score}"
             else -> "§a${score}"
         }
     }
