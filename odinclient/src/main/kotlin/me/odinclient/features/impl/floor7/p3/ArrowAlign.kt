@@ -69,10 +69,9 @@ object ArrowAlign : Module(
     fun onRightClick(event: ClickEvent.RightClickEvent) {
         val targetFrame = mc.objectMouseOver?.entityHit as? EntityItemFrame ?: return
 
-        val framePosition = Vec3(targetFrame.posX, targetFrame.posY, targetFrame.posZ)
-        val frameIndex = ((framePosition.yCoord - frameGridCorner.yCoord) + (framePosition.zCoord - frameGridCorner.zCoord) * 5).toInt()
+        val frameIndex = ((targetFrame.posY - frameGridCorner.yCoord) + (targetFrame.posZ - frameGridCorner.zCoord) * 5).toInt()
 
-        if (framePosition.xCoord != frameGridCorner.xCoord || currentFrameRotations?.get(frameIndex) == -1 || frameIndex !in 0..24) return
+        if (targetFrame.posX != frameGridCorner.xCoord || currentFrameRotations?.get(frameIndex) == -1 || frameIndex !in 0..24) return
 
         if (!clicksRemaining.containsKey(frameIndex) && mc.thePlayer.isSneaking) {
             if (blockWrong) event.isCanceled = true
@@ -100,7 +99,7 @@ object ArrowAlign : Module(
                 clickNeeded < 5 -> Color(255, 170, 0)
                 else -> Color(170, 0, 0)
             }
-            Renderer.drawStringInWorld(clickNeeded.toString(), Vec3(framePosition.xCoord, framePosition.yCoord + 0.6, framePosition.zCoord + 0.5), color, scale = 0.5f)
+            Renderer.drawStringInWorld(clickNeeded.toString(), framePosition.addVec(y = 0.6, z = 0.5), color, scale = 0.5f)
         }
     }
 
@@ -112,11 +111,9 @@ object ArrowAlign : Module(
         val positionToRotationMap = itemFrames.associate { Vec3(it.posX, it.posY, it.posZ).toString() to it.rotation }
 
         return (0..24).map { index ->
-            if (recentClickTimestamps[index]?.let { System.currentTimeMillis() - it < 1000 } == true && currentFrameRotations != null) {
+            if (recentClickTimestamps[index]?.let { System.currentTimeMillis() - it < 1000 } == true && currentFrameRotations != null)
                 currentFrameRotations?.get(index) ?: -1
-            } else {
-                positionToRotationMap[getFramePositionFromIndex(index).toString()] ?: -1
-            }
+            else positionToRotationMap[getFramePositionFromIndex(index).toString()] ?: -1
         }
     }
 

@@ -6,7 +6,9 @@ import me.odinmain.commands.registerCommands
 import me.odinmain.config.*
 import me.odinmain.events.EventDispatcher
 import me.odinmain.features.ModuleManager
+import me.odinmain.features.ModuleManager.modules
 import me.odinmain.features.impl.render.*
+import me.odinmain.features.settings.impl.KeybindSetting
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.util.shader.RoundedRect
@@ -74,6 +76,12 @@ object OdinMain {
             ClickGUIModule.firstTimeOnVersion = ClickGUIModule.lastSeenVersion != VERSION
             ClickGUIModule.lastSeenVersion = VERSION
         }.join() // Ensure Config.load() and version checks are complete before proceeding
+
+        for (module in modules) {
+            module.keybinding?.let {
+                module.register(KeybindSetting("Keybind", it, "Toggles the module"))
+            }
+        }
 
         ClickGUI.init()
         RoundedRect.initShaders()

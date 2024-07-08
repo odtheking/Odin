@@ -7,6 +7,7 @@ import me.odinmain.utils.addVec
 import me.odinmain.utils.distanceSquaredTo
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.entity.item.EntityItemFrame
 import net.minecraft.init.Items
 import net.minecraft.util.Vec3
@@ -16,7 +17,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object ArrowAlign : Module(
     name = "Arrow Align",
     description = "Shows a solution for the Arrow Align device.",
-    category = Category.FLOOR7,
+    category = Category.FLOOR7
 ) {
     private val standPosition = Vec3(0.0, 120.0, 77.0)
     private val frameGridCorner = Vec3(-2.0, 120.0, 75.0)
@@ -28,6 +29,7 @@ object ArrowAlign : Module(
 
     init {
         execute(200) {
+            modMessage("Arrow Align is not functional.")
             clicksRemaining.clear()
             if ((mc.thePlayer?.distanceSquaredTo(standPosition) ?: return@execute) > 225) {
                 currentFrameRotations = null
@@ -84,7 +86,7 @@ object ArrowAlign : Module(
                 clickNeeded < 5 -> Color(255, 170, 0)
                 else -> Color(170, 0, 0)
             }
-            Renderer.drawStringInWorld(clickNeeded.toString(), Vec3(framePosition.xCoord, framePosition.yCoord + 0.6, framePosition.zCoord + 0.5), color, scale = 0.5f)
+            Renderer.drawStringInWorld(clickNeeded.toString(), framePosition.addVec(y = 0.6, z = 0.5), color, scale = 0.5f)
         }
     }
 
@@ -96,11 +98,9 @@ object ArrowAlign : Module(
         val positionToRotationMap = itemFrames.associate { Vec3(it.posX, it.posY, it.posZ).toString() to it.rotation }
 
         return (0..24).map { index ->
-            if (recentClickTimestamps[index]?.let { System.currentTimeMillis() - it < 1000 } == true && currentFrameRotations != null) {
+            if (recentClickTimestamps[index]?.let { System.currentTimeMillis() - it < 1000 } == true && currentFrameRotations != null)
                 currentFrameRotations?.get(index) ?: -1
-            } else {
-                positionToRotationMap[getFramePositionFromIndex(index).toString()] ?: -1
-            }
+            else positionToRotationMap[getFramePositionFromIndex(index).toString()] ?: -1
         }
     }
 

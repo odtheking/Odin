@@ -3,20 +3,14 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import me.odinmain.events.impl.DungeonEvents
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.utils.addRotationCoords
 import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.devMessage
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.getBlockIdAt
 import net.minecraft.util.BlockPos
-import net.minecraft.util.Vec3
-import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 
@@ -60,7 +54,8 @@ object BoulderSolver {
     }
 
     fun onRenderWorld() {
-        currentPositions.forEach {
+        if (DungeonUtils.currentRoomName != "Boulder") return
+        currentPositions.firstOrNull()?.let {
             Renderer.drawStyledBlock(it.render, PuzzleSolvers.boulderColor, PuzzleSolvers.boulderStyle, PuzzleSolvers.boulderLineWidth)
         }
     }

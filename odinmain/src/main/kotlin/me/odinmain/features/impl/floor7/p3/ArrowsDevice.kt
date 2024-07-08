@@ -21,11 +21,14 @@ object ArrowsDevice : Module(
     key = null
 ) {
     private val markedPositionColor: Color by ColorSetting("Marked Position", Color.RED, description = "Color of the marked position.")
-    private val reset: Keybinding by KeybindSetting("Reset", Keyboard.KEY_NONE, description = "Resets the solver.").onPress { markedPositions.clear() }
+    private val resetKey: Keybinding by KeybindSetting("Reset", Keyboard.KEY_NONE, description = "Resets the solver.").onPress { reset() }
+    private val reset: () -> Unit by ActionSetting("Reset") {
+        markedPositions.clear()
+    }
 
     init {
         onWorldLoad {
-            markedPositions.clear()
+            reset()
         }
     }
 
