@@ -183,6 +183,7 @@ class TextInput(
     }
 
     private fun handleKeyPress(code: Int) {
+        val eventChar = Keyboard.getEventCharacter()
         when {
             isKeyComboCtrlA(code) -> {
                 caretPosition = string.length
@@ -251,20 +252,21 @@ class TextInput(
                     ui.unfocus()
                 }
 
-               // Keyboard.KEY_RETURN -> string = insert("\n", string, selectionStart, cursorPosition, byPassFilter = true)
-
                 Keyboard.KEY_DELETE -> {
                     if (isCtrlKeyDown()) deleteWords(1)
                     else deleteFromCaret(1)
                 }
 
                 else -> {
+
                     if (onlyNumbers) {
-                        if (Keyboard.getEventCharacter().isDigit() || Keyboard.getEventCharacter() == '.' || Keyboard.getEventCharacter() == '-')
-                            insert(Keyboard.getEventCharacter().toString())
+                        when {
+                            string.isEmpty() && eventChar == '-' -> insert(eventChar.toString())
+                            string.contains('-') && eventChar == '.' -> insert(eventChar.toString())
+                            eventChar != '.' && eventChar != '-' && eventChar.isDigit()  -> insert(eventChar.toString())
+                        }
                     } else
-                        if (ChatAllowedCharacters.isAllowedCharacter(Keyboard.getEventCharacter()))
-                            insert(Keyboard.getEventCharacter().toString())
+                        if (ChatAllowedCharacters.isAllowedCharacter(eventChar)) insert(eventChar.toString())
                 }
             }
         }
