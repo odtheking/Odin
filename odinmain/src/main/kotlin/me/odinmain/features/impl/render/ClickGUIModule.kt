@@ -57,7 +57,7 @@ object ClickGUIModule: Module(
     private val passcode: String by StringSetting("Passcode", "odin", description = "Passcode for dev features.").withDependency { DevPlayers.isDev && showHidden }
 
     @OptIn(DelicateCoroutinesApi::class)
-    val reset: () -> Unit by ActionSetting("Send Dev Data") {
+    val reset by ActionSetting("Send Dev Data") {
         showHidden = false
         GlobalScope.launch {
             modMessage(sendDataToServer(body = "${mc.thePlayer.name}, [${devWingsColor.r},${devWingsColor.g},${devWingsColor.b}], [$devSizeX,$devSizeY,$devSizeZ], $devWings, $passcode", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
@@ -65,7 +65,7 @@ object ClickGUIModule: Module(
         }
     }.withDependency { DevPlayers.isDev }
 
-    val action: () -> Unit by ActionSetting("Open Example Hud") {
+    val action by ActionSetting("Open Example Hud") {
         OdinMain.display = EditHUDGui
     }
 

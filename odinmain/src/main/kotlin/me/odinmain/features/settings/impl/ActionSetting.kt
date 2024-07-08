@@ -3,6 +3,7 @@ package me.odinmain.features.settings.impl
 import com.github.stivais.ui.constraints.percent
 import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.constraints.size
+import com.github.stivais.ui.elements.scope.ElementDSL
 import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.elements.scope.hoverEffect
 import com.github.stivais.ui.impl.ClickGUITheme
@@ -21,12 +22,12 @@ import me.odinmain.features.settings.Setting
 class ActionSetting(
     name: String,
     description: String = "",
-    action: () -> Unit = {}
-) : Setting<() -> Unit>(name, false, description) {
+    action: ElementDSL.() -> Unit = {}
+) : Setting<ElementDSL.() -> Unit>(name, false, description) {
 
-    override val default: () -> Unit = action
+    override val default: ElementDSL.() -> Unit = action
 
-    override var value: () -> Unit = default
+    override var value: ElementDSL.() -> Unit = default
 
     override fun ElementScope<*>.createElement() {
         setting(40.px) {
@@ -39,7 +40,7 @@ class ActionSetting(
                     text = name,
                 )
                 onClick {
-                    value.invoke()
+                    value.invoke(this)
                     true
                 }
                 hoverEffect(0.25.seconds)

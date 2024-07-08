@@ -41,8 +41,8 @@ object Animations : Module(
     val noSwing: Boolean by BooleanSetting("No Swing", false, description = "Prevents your item from visually swinging forward")
     val noBlock: Boolean by BooleanSetting("No Block", false, description = "Disables the visual block animation")
 
-    val reset: () -> Unit by ActionSetting("Reset") {
-        this.settings.forEach { it.reset() }
+    val reset by ActionSetting("Reset") {
+        settings.forEach { it.reset() }
     }
 
     fun itemTransferHook(equipProgress: Float, swingProgress: Float): Boolean {

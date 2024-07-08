@@ -21,7 +21,7 @@ object Mimic : Module(
     category = Category.DUNGEON
 ) {
     private val mimicMessage: String by StringSetting("Mimic Message", "Mimic Killed!", 128, description = "Message sent when mimic is detected as killed")
-    val reset: () -> Unit by ActionSetting("Send message", description = "Sends Mimic killed message in party chat.") {
+    val reset by ActionSetting("Send message", description = "Sends Mimic killed message in party chat.") {
         partyMessage(mimicMessage)
     }
     private val mimicBox: Boolean by BooleanSetting("Mimic Box", false, description = "Draws a box around the mimic chest.")
@@ -45,6 +45,6 @@ object Mimic : Module(
     }
 
     override fun onKeybind() {
-        reset()
+        partyMessage(mimicMessage)
     }
 }

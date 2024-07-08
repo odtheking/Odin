@@ -25,13 +25,13 @@ object BlockOverlay : Module(
     private var expand: Float by NumberSetting("Expand", 0f, 0f, 10f, 0.1f)
     private var color: Color by ColorSetting("Color", Color(0, 0, 0, 0.4f), allowAlpha = true)
     private val style: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.")
-    private val reset: () -> Unit by ActionSetting("Reset") {
+    private val reset by ActionSetting("Reset") {
         fullBlock = false
         depthChest = false
         lineSmoothing = false
         lineWidth = 2f
         expand = 0f
-        color = Color(0, 0, 0, 0.4f)
+        this@BlockOverlay.color = Color(0, 0, 0, 0.4f)
     }
 
     @SubscribeEvent

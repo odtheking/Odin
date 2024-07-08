@@ -19,7 +19,7 @@ object AutoSell : Module(
     val sellList: MutableSet<String> by ListSetting("Sell list", mutableSetOf())
     private val delay: Long by NumberSetting("Delay", 100, 30.0, 300.0, 5.0)
     private val clickType: Int by SelectorSetting("Click Type", "Shift", arrayListOf("Shift", "Middle", "Left"))
-    private val addDefaults: () -> Unit by ActionSetting("Add defaults") {
+    private val addDefaults by ActionSetting("Add defaults") {
         sellList.addAll(defaultItems)
         modMessage("Added default items to auto sell list")
         Config.save()

@@ -117,8 +117,9 @@ class TextInput(
             renderer.text(placeholder, x, y, height, placeholderColor.rgba)
         }
 
-        if (ui.isFocused(this))
-        renderer.rect(x + caretX - offs, y + height, 1f, height - 2, Color.WHITE.rgba) // caret
+        if (ui.isFocused(this)) {
+            renderer.rect(x + caretX - offs, y, 1f, height - 2, Color.WHITE.rgba)
+        }
     }
 
     init {

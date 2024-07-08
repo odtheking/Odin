@@ -30,7 +30,7 @@ object KuudraSplits : Module(
     private val splitsLine3: Color by ColorSetting("Splits Line 3", Color.CYAN, description = "Color of the third line of the splits display")
     private val splitsLine4: Color by ColorSetting("Splits Line 4", Color.PURPLE, description = "Color of the fourth line of the splits display")
     private val splitsLine5: Color by ColorSetting("Splits Line 5", Color.RED, description = "Color of the fifth line of the splits display")
-    val reset: () -> Unit by ActionSetting("Send PBs", description = "Sends your current PBs.") {
+    val reset by ActionSetting("Send PBs", description = "Sends your current PBs.") {
            modMessage(
                """§8List of PBs:
         §fT1: §a${t1PB.value.round(2)}s
