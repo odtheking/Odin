@@ -8,6 +8,7 @@ import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.max
 import me.odinmain.utils.render.*
+import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 
 object MapInfo : Module(
@@ -16,6 +17,8 @@ object MapInfo : Module(
     description = "Displays various information about the current dungeon map"
 ) {
     private val disableInBoss: Boolean by BooleanSetting("Disable in boss", default = true, description = "Disables the information display when you're in boss.")
+    private val scoreTitle: Boolean by BooleanSetting("300 Score Title", default = true, description = "Displays a title on 300 score")
+    private val scoreText: String by StringSetting("Title Text", default = "300 Score!", description = "Text to be displayed on 300 score.").withDependency { scoreTitle }
     private val alternate: Boolean by  BooleanSetting("Flip Crypts and Score", default = false, description = "Flips crypts and score.")
     private val addRemaining: Boolean by BooleanSetting("Include remaining", default = false, description = "adds remaining to the secrets display.").withDependency { alternate }
     private val remaining: Boolean by DualSetting("Min Secrets", "Minimum", "Remaining", default = false, description = "Display minimum secrets or secrets until s+.").withDependency { !(addRemaining && alternate) }
@@ -26,12 +29,11 @@ object MapInfo : Module(
     private val margin: Float by NumberSetting("Margin", default = 0f, min = 0f, max = 5f, increment = 1f).withDependency { background }
     private val color: Color by ColorSetting("Background Color", default = Color.DARK_GRAY.withAlpha(0.5f), true, description = "The color of the background").withDependency { background }
 
-
     val hud: HudElement by HudSetting("Hud", 10f, 10f, 1f, false) {
         if ((!DungeonUtils.inDungeons || (disableInBoss && DungeonUtils.inBoss)) && !it) return@HudSetting 0f to 0f
 
         val scoreText = "§7Score: ${colorizeScore(DungeonUtils.score)}"
-        val secretText = "§7Secrets: §b${DungeonUtils.secretCount}"+
+        val secretText = "§7Secrets: §b${DungeonUtils.secretCount}" +
                 (if (addRemaining && alternate) "§7-§d${(DungeonUtils.neededSecretsAmount - DungeonUtils.secretCount).coerceAtLeast(0)}" else "") +
                 "§7-§e${if (!remaining || (addRemaining && alternate)) DungeonUtils.neededSecretsAmount else (DungeonUtils.neededSecretsAmount - DungeonUtils.secretCount).coerceAtLeast(0)}"+
                 "§7-§c${DungeonUtils.totalSecrets}"
@@ -51,6 +53,20 @@ object MapInfo : Module(
         mcText(mimicText, centerX, 10, 1f, Color.WHITE, center = false)
         mcText(brText, width-1 - brWidth, 10, 1f, Color.WHITE, center = false)
         width to 19f
+    }
+
+    private var shownTitle = false
+
+    init {
+        execute(250) {
+            if (DungeonUtils.score < 300 || !shownTitle || !scoreTitle) return@execute
+            PlayerUtils.alert(scoreText)
+            shownTitle = true
+        }
+
+        onWorldLoad {
+            shownTitle = false
+        }
     }
 
     private fun colorizeCrypts(count: Int): String {
