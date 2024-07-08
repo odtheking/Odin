@@ -7,7 +7,6 @@ import me.odinmain.utils.addVec
 import me.odinmain.utils.distanceSquaredTo
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.entity.item.EntityItemFrame
 import net.minecraft.init.Items
 import net.minecraft.util.Vec3
@@ -29,7 +28,6 @@ object ArrowAlign : Module(
 
     init {
         execute(200) {
-            modMessage("Arrow Align is not functional.")
             clicksRemaining.clear()
             if ((mc.thePlayer?.distanceSquaredTo(standPosition) ?: return@execute) > 225) {
                 currentFrameRotations = null
