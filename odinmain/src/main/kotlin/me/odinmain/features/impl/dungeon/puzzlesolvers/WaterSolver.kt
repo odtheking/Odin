@@ -112,7 +112,7 @@ object WaterSolver {
 
 
     fun waterRender() {
-        if (DungeonUtils.currentRoomName != "Water Board" || variant == -1) return
+        if (DungeonUtils.currentRoomName != "Water Board" || variant == -1 || !DungeonUtils.inDungeons || DungeonUtils.inBoss) return
 
         val solutions = HashMap(solutions)
 

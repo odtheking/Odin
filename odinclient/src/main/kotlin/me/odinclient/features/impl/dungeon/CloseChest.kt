@@ -22,22 +22,25 @@ object CloseChest : Module(
 
     @SubscribeEvent
     fun onOpenWindow(event: PacketReceivedEvent) {
-        if (!inDungeons || event.packet !is S2DPacketOpenWindow || !(event.packet as S2DPacketOpenWindow).windowTitle.unformattedText.noControlCodes.equalsOneOf("Chest", "Large Chest") || mode) return
-        mc.netHandler.networkManager.sendPacket(C0DPacketCloseWindow((event.packet as S2DPacketOpenWindow).windowId))
+        val packet = event.packet as? S2DPacketOpenWindow ?: return
+        if (!inDungeons || !packet.windowTitle.unformattedText.noControlCodes.equalsOneOf("Chest", "Large Chest") || mode) return
+        mc.netHandler.networkManager.sendPacket(C0DPacketCloseWindow(packet.windowId))
         event.isCanceled = true
     }
 
     @SubscribeEvent
     fun onInput(event: GuiEvent.GuiKeyPressEvent) {
-        if (!inDungeons || !mode || event.gui !is GuiChest) return
-        if (((event.gui as? GuiChest)?.inventorySlots as? ContainerChest)?.name.noControlCodes.equalsOneOf("Chest", "Large Chest"))
+        val gui = event.gui as? GuiChest ?: return
+        if (!inDungeons || !mode) return
+        if ((gui.inventorySlots as? ContainerChest)?.name?.noControlCodes?.equalsOneOf("Chest", "Large Chest") == true)
             mc.thePlayer.closeScreen()
     }
 
     @SubscribeEvent
     fun onMouse(event: GuiEvent.GuiMouseClickEvent) {
-        if (!inDungeons || !mode || event.gui !is GuiChest) return
-        if (((event.gui as? GuiChest)?.inventorySlots as? ContainerChest)?.name.noControlCodes.equalsOneOf("Chest", "Large Chest"))
+        val gui = event.gui as? GuiChest ?: return
+        if (!inDungeons || !mode) return
+        if ((gui.inventorySlots as? ContainerChest)?.name?.noControlCodes?.equalsOneOf("Chest", "Large Chest") == true)
             mc.thePlayer.closeScreen()
     }
 }
