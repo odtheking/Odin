@@ -262,7 +262,7 @@ class TextInput(
                     if (onlyNumbers) {
                         when {
                             string.isEmpty() && eventChar == '-' -> insert(eventChar.toString())
-                            string.contains('-') && eventChar == '.' -> insert(eventChar.toString())
+                            !string.contains('-') && eventChar == '.' -> insert(eventChar.toString())
                             eventChar != '.' && eventChar != '-' && eventChar.isDigit()  -> insert(eventChar.toString())
                         }
                     } else
