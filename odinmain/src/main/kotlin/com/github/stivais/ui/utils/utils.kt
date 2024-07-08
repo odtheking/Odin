@@ -32,6 +32,13 @@ inline fun <E> ArrayList<E>.loop(block: (E) -> Unit) {
     }
 }
 
+inline fun <E> ArrayList<E>.reverseLoop(block: (E) -> Unit) {
+    if (this.size == 0) return
+    for (i in this.size - 1 downTo 0) {
+        block(this[i])
+    }
+}
+
 /**
  * Multiplies a number by 1_000_000_000 to match nanoseconds
  */

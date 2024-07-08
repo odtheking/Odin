@@ -11,6 +11,7 @@ import me.odinmain.features.settings.Setting
  * @author Aton, Bonsai
  */
 // TODO: Replace with selector settings, essentially the same thing
+// Maybe a way to port?
 @Deprecated("Use SelectorSetting")
 class DualSetting (
     name: String,

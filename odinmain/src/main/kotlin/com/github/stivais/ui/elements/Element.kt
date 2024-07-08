@@ -40,11 +40,6 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
     var width: Float = 0f
     var height: Float = 0f
 
-//    var _height = 0f
-//        set(value) {
-//            field = value
-//        }
-
     var internalX: Float = 0f
 
     var internalY: Float = 0f

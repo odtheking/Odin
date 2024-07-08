@@ -21,6 +21,9 @@ import me.odinmain.features.settings.Setting
  * Setting that lets you type a string.
  * @author Aton, Stivais
  */
+// TODO:
+// - add proper options for length, if should lock if width reached or continue
+//
 class StringSetting(
     name: String,
     override val default: String = "",

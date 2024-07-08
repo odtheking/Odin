@@ -32,6 +32,7 @@ import kotlin.math.round
  * @param increment The increment for the setting
  * @param unit The suffix for value in the UI (It is recommended to set this for better UX)
  */
+// TODO: Option to use a text field that only accepts numbers instead of slider
 @Suppress("UNCHECKED_CAST")
 class NumberSetting<E>(
     name: String,

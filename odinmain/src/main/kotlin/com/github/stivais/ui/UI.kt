@@ -2,6 +2,7 @@ package com.github.stivais.ui
 
 import com.github.stivais.ui.animation.Animation
 import com.github.stivais.ui.animation.Animations
+import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.constraints.Constraints
 import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.elements.Element
@@ -31,8 +32,6 @@ class UI(val renderer: Renderer = NVGRenderer) {
      * Handles events, like mouse clicks or keyboard presses
      */
     var eventManager: EventManager = EventManager(this)
-
-//    var debug = false
 
     constructor(renderer: Renderer = NVGRenderer, dsl: ElementScope<Group>.() -> Unit) : this(renderer) {
         ElementScope(main).dsl()
@@ -75,6 +74,12 @@ class UI(val renderer: Renderer = NVGRenderer) {
             anim.finished
         }
         main.render()
+        var i = 0
+        eventManager.hoveredElements.loop {
+            renderer.text(i.toString(), it.x, it.y, 15f)
+            i++
+            renderer.hollowRect(it.x, it.y, it.width, it.height, 1f, Color.WHITE.rgba)
+        }
         performance?.let {
             renderer.text(it, main.width - renderer.textWidth(it, 12f), main.height - 12f, 12f)
         }
@@ -115,7 +120,7 @@ class UI(val renderer: Renderer = NVGRenderer) {
     }
 
     fun cleanup() {
-        eventManager.elementHovered = null
+        eventManager.hoveredElements.clear()
         unfocus()
         onClose?.loop { this.it() }
 //        if (!settings.persistant) onClose = null
