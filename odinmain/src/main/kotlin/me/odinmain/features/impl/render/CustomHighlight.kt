@@ -12,6 +12,7 @@ import me.odinmain.utils.ServerUtils.getPing
 import me.odinmain.utils.render.*
 import me.odinmain.utils.render.RenderUtils.renderBoundingBox
 import me.odinmain.utils.render.RenderUtils.renderVec
+import me.odinmain.utils.skyblock.devMessage
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.Entity
 import net.minecraft.entity.boss.EntityWither
@@ -37,13 +38,14 @@ object CustomHighlight : Module(
     private val tracerLimit: Int by NumberSetting("Tracer Limit", 0, 0, 15, description = "Highlight will draw tracer to all mobs when you have under this amount of mobs marked, set to 0 to disable. Helpful for finding lost mobs.").withDependency { !isLegitVersion }
 
     private val xray: Boolean by BooleanSetting("Depth Check", false).withDependency { !isLegitVersion }
+    private val showInvisible: Boolean by BooleanSetting("Show Invisible", false).withDependency { !isLegitVersion }
     val highlightList: MutableList<String> by ListSetting("List", mutableListOf())
     private val depthCheck: Boolean get() = if (isLegitVersion) true else xray
     private var currentEntities = mutableSetOf<Entity>()
 
     init {
         execute({ scanDelay }) {
-            currentEntities.removeAll { it.isDead }
+            currentEntities.removeAll { mc.theWorld.getEntityByID(it.entityId) == null }
             getEntities()
         }
 
@@ -62,7 +64,9 @@ object CustomHighlight : Module(
 
     @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
-        if (mode != 0 || event.entity !in currentEntities || (depthCheck && !mc.thePlayer.canEntityBeSeen(event.entity))) return
+        if (event.entity !in currentEntities) return
+        if (showInvisible && event.entity.isInvisible) event.entity.isInvisible = false
+        if (mode != 0 || (depthCheck && !mc.thePlayer.canEntityBeSeen(event.entity))) return
         profile("Outline Esp") { OutlineUtils.outlineEntity(event, thickness, color, true) }
     }
 

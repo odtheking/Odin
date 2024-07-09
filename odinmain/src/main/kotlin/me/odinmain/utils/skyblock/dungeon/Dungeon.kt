@@ -168,7 +168,7 @@ class Dungeon(val floor: Floor?) {
 
     private fun updateDungeonPuzzles(tabList: List<Pair<NetworkPlayerInfo, String>>){
         val tabEntries = tabList.map { it.second }
-        val puzzleText = tabEntries.find { puzzleCountRegex.matches(it) } ?: return devMessage("Puzzle text not in tab entries")
+        val puzzleText = tabEntries.find { puzzleCountRegex.matches(it) } ?: return
         val index = tabEntries.indexOf(puzzleText)
         val puzzleCount = puzzleCountRegex.find(puzzleText)?.groupValues?.get(1)?.toIntOrNull() ?: return
         val puzzleData = tabEntries.filterIndexed { i, _ -> i in index + 1..index + puzzleCount }
