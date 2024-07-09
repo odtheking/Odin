@@ -68,22 +68,20 @@ val devCommand = commodore("oddev") {
     }
 
 	literal("roomdata").runs {
-        val room = DungeonUtils.currentRoom //?: return@does modMessage("§cYou are not in a dungeon!")
-        val x = ((mc.thePlayer.posX + 200) / 32).toInt()
-        val z = ((mc.thePlayer.posZ + 200) / 32).toInt()
-        val xPos = -185 + x * 32
-        val zPos = -185 + z * 32
+        val room = DungeonUtils.currentRoom ?: return@runs modMessage("§cYou are not in a dungeon!")
+        val xPos = (-185 + ((mc.thePlayer.posX + 200) / 32) * 32).toInt()
+        val zPos = (-185 + ((mc.thePlayer.posZ + 200) / 32) * 32).toInt()
         val core = ScanUtils.getCore(xPos, zPos)
         modMessage(
             """
-                    ${getChatBreak()}
-                    Middle: $xPos, $zPos
-                    Room: ${room?.room?.data?.name}
-                    Core: $core
-                    Rotation: ${room?.room?.rotation}
-                    Positions: ${room?.positions}
-                    ${getChatBreak()}
-                    """.trimIndent(), false
+            ${getChatBreak()}
+            Middle: $xPos, $zPos
+            Room: ${room.room.data.name}
+            Core: $core
+            Rotation: ${room.room.rotation}
+            Positions: ${room.positions}
+            ${getChatBreak()}
+            """.trimIndent(), false
         )
         writeToClipboard(core.toString(), "Copied $core to clipboard!")
     }

@@ -66,7 +66,6 @@ object SplitsManager {
                     1 -> SplitsGroup(kuudraSplitsGroup.map { it.copy(time = 0L) }, kuudraT1PBs)
                     else -> SplitsGroup(emptyList(), null)
                 }
-
             }
             else -> SplitsGroup(emptyList(), null)
         }
