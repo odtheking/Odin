@@ -7,10 +7,6 @@ import net.minecraft.util.Vec3
 
 object PlayerUtils {
 
-    fun windowClick(slot: Int, mouseButton: Int, mode: Int) {
-        mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, slot, mouseButton, mode, mc.thePlayer)
-    }
-
     /**
      * Right-clicks the next tick
      */

@@ -4,8 +4,8 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.skyblock.LocationUtils.inSkyblock
 import me.odinmain.utils.name
-import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinmain.utils.*
+import me.odinmain.utils.skyblock.PlayerUtils
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.init.Blocks
 import net.minecraft.inventory.ContainerChest
@@ -33,12 +33,8 @@ object AutoHarp : Module(
     fun onGuiOpen(event: GuiOpenEvent) {
         if (event.gui !is GuiChest || !inSkyblock) return
         val container = (event.gui as GuiChest).inventorySlots
-        if (container is ContainerChest) {
-            val chestName = container.name
-            if (chestName.startsWith("Harp -")) {
-                inHarp = true
-            }
-        }
+        if (container !is ContainerChest) return
+        inHarp = container.name.startsWith("Harp -")
     }
 
     @SubscribeEvent
@@ -57,7 +53,7 @@ object AutoHarp : Module(
         for (ii in 0..6) {
             val slot = container.inventorySlots[37 + ii]
             if ((slot.stack?.item as? ItemBlock)?.block === Blocks.quartz_block) {
-                PlayerUtils.windowClick(slot.slotNumber, 0, 0)
+                PlayerUtils.windowClick(slot.slotNumber, PlayerUtils.ClickType.Left)
                 break
             }
         }
