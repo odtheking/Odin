@@ -41,8 +41,9 @@ object Mimic : Module(
 
     @SubscribeEvent
     fun onEntityDeath(event: LivingDeathEvent) {
-        val entity = event.entity
-        if (!DungeonUtils.inDungeons || entity !is EntityZombie || !entity.isChild || !(0..3).all { entity.getCurrentArmor(it) == null }) return
+        with(event.entity) {
+            if (!DungeonUtils.inDungeons || this !is EntityZombie || !this.isChild || !(0..3).all { this.getCurrentArmor(it) == null }) return
+        }
         mimicKilled()
     }
 

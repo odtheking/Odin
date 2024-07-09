@@ -6,6 +6,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
 import net.minecraft.init.Blocks
@@ -40,9 +41,10 @@ object ArrowsDevice : Module(
 
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
+        if (PlayerUtils.posZ > 55 || (PlayerUtils.posX > 95 || PlayerUtils.posX < 15)) reset()
         if (!DungeonUtils.inDungeons || DungeonUtils.getPhase() != M7Phases.P3 || markedPositions.isEmpty()) return
         markedPositions.forEach {
-            Renderer.drawBlock(it, markedPositionColor)
+            Renderer.drawBlock(it, markedPositionColor, depth = true)
         }
     }
 

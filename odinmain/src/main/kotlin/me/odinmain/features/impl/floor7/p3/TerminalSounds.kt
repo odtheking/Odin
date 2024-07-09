@@ -48,5 +48,4 @@ object TerminalSounds : Module(
         PlayerUtils.playLoudSound(sound, volume, pitch)
         lastPlayed = System.currentTimeMillis()
     }
-
 }

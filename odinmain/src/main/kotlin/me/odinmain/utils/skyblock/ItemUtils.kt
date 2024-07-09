@@ -2,7 +2,8 @@ package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.noControlCodes
-import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.*
+import me.odinmain.utils.render.RenderUtils.bind
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
@@ -33,11 +34,6 @@ val ItemStack.lore: List<String>
     get() = this.tagCompound?.getCompoundTag("display")?.getTagList("Lore", 8)?.let {
         List(it.tagCount()) { i -> it.getStringTagAt(i) }
     } ?: emptyList()
-
-val ItemStack.getLore: List<String>
-    get() = this.getTooltip(mc.thePlayer, false)
-
-
 
 /**
  * Returns Item ID for an Item
@@ -118,8 +114,6 @@ fun getItemIndexInContainerChestByLore(container: ContainerChest, lore: String, 
     }?.slotIndex
 }
 
-
-
 enum class ItemRarity(
     val loreName: String,
     val colorCode: String,
@@ -197,13 +191,12 @@ fun ItemStack.setLoreWidth(lines: List<String>, width: Int): ItemStack {
     return this
 }
 
-
-
 fun ItemStack.drawItem(x: Float = 0f, y: Float = 0f, scale: Float = 1f, z: Float = 200f) {
     GlStateManager.pushMatrix()
-    GlStateManager.scale(scale, scale, 1f)
-    GlStateManager.translate(x / scale, y / scale, 0f)
-    GlStateManager.color(1f, 1f, 1f, 1f)
+    scale(1f / scaleFactor, 1f / scaleFactor)
+    scale(scale, scale, 1f)
+    translate(x / scale, y / scale, 0f)
+    Color.WHITE.bind()
 
     RenderHelper.enableStandardItemLighting()
     RenderHelper.enableGUIStandardItemLighting()
@@ -211,5 +204,6 @@ fun ItemStack.drawItem(x: Float = 0f, y: Float = 0f, scale: Float = 1f, z: Float
     mc.renderItem.zLevel = z
     mc.renderItem.renderItemIntoGUI(this, 0, 0)
     RenderHelper.disableStandardItemLighting()
+    scale(scaleFactor, scaleFactor, 1f)
     GlStateManager.popMatrix()
 }
