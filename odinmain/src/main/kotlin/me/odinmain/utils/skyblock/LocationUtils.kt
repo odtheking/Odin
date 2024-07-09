@@ -1,12 +1,14 @@
 package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
+import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.events.impl.SkyblockJoinIslandEvent
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.skyblock.dungeon.Dungeon
+import me.odinmain.utils.skyblock.dungeon.Floor
 import net.minecraft.client.network.NetHandlerPlayClient
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -17,6 +19,7 @@ object LocationUtils {
     private var onHypixel: Boolean = false
     var inSkyblock: Boolean = false
 
+    private val dungeonsList: MutableList<Dungeon> = mutableListOf()
     var currentDungeon: Dungeon? = null
     var currentArea: Island = Island.Unknown
     var kuudraTier: Int = 0
@@ -24,25 +27,32 @@ object LocationUtils {
     init {
         Executor(500) {
             if (!inSkyblock)
-                inSkyblock = onHypixel && mc.theWorld.scoreboard.getObjectiveInDisplaySlot(1)?.let {
-                    cleanSB(it.displayName).contains("SKYBLOCK") } ?: false
+                inSkyblock = onHypixel && mc.theWorld.scoreboard.getObjectiveInDisplaySlot(1)?.let { cleanSB(it.displayName).contains("SKYBLOCK") } ?: false
 
-            if (currentDungeon == null && ((inSkyblock &&
-                sidebarLines.any { cleanSB(it).run { (contains("The Catacombs") && !contains("Queue")) || contains("Dungeon Cleared:") } }) || currentArea.isArea(Island.SinglePlayer)))
-                    currentDungeon = Dungeon()
-
-            if (currentArea.isArea(Island.Kuudra) && kuudraTier == 0) {
+            if (currentArea.isArea(Island.Kuudra) && kuudraTier == 0)
                 getLines().find { cleanLine(it).contains("Kuudra's Hollow (") }?.let {
                     kuudraTier = it.substringBefore(")").lastOrNull()?.digitToIntOrNull() ?: 0 }
-            }
 
-            if (currentArea.isArea(Island.Unknown) || currentDungeon != null) {
+            if (currentArea.isArea(Island.Unknown)) {
                 val previousArea = currentArea
                 currentArea = getArea()
                 if (!currentArea.isArea(Island.Unknown) && previousArea != currentArea) SkyblockJoinIslandEvent(currentArea).postAndCatch()
             }
 
         }.register()
+    }
+
+    private var dungeonEnded = false
+
+    @SubscribeEvent
+    fun onChatPacketEvent(event: ChatPacketEvent) {
+        if (Regex("\\[NPC] Mort: Here, I found this map when I first entered the dungeon\\.").matches(event.message))
+            currentDungeon = Dungeon(getFloor())
+
+        if (Regex(" {29}> EXTRA STATS <").matches(event.message)) {
+            dungeonsList.add(currentDungeon ?: return)
+            dungeonEnded = true
+        }
     }
 
     @SubscribeEvent
@@ -56,9 +66,12 @@ object LocationUtils {
 
     @SubscribeEvent
     fun onWorldChange(event: WorldEvent.Unload) {
+        if (dungeonEnded) {
+            currentDungeon = null
+            dungeonEnded = false
+        }
         inSkyblock = false
         currentArea = Island.Unknown
-        currentDungeon = null
     }
 
     /**
@@ -92,6 +105,14 @@ object LocationUtils {
         }?.displayName?.formattedText
 
         return Island.entries.firstOrNull { area?.contains(it.displayName) == true } ?: Island.Unknown
+    }
+
+    fun getFloor(): Floor? {
+        for (i in sidebarLines) {
+            val floor = Regex("The Catacombs \\((\\w+)\\)\$").find(cleanSB(i))?.groupValues?.get(1) ?: continue
+            return Floor.valueOf(floor)
+        }
+        return null
     }
 }
 

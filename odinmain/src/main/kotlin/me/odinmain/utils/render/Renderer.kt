@@ -5,10 +5,11 @@ import me.odinmain.ui.clickgui.util.ColorUtil.multiplyAlpha
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
 import me.odinmain.utils.render.RenderUtils.drawBeaconBeam
+import me.odinmain.utils.render.RenderUtils.outlineBounds
+import me.odinmain.utils.skyblock.getBlockAt
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.entity.Entity
-import net.minecraft.util.AxisAlignedBB
-import net.minecraft.util.Vec3
+import net.minecraft.util.*
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -39,9 +40,47 @@ object Renderer {
         fillAlpha: Number = 1,
         depth: Boolean = false
     ) {
+        if (outlineAlpha == 0f && fillAlpha == 0f) return
         RenderUtils.drawOutlinedAABB(aabb, color.withAlpha(outlineAlpha.toFloat()), thickness = outlineWidth, depth = depth)
 
         RenderUtils.drawFilledAABB(aabb, color.withAlpha(fillAlpha.toFloat()), depth = depth)
+    }
+
+    /**
+     * Draws a block in the world with the specified position, color, and optional parameters.
+     *
+     * @param pos          The position of the block.
+     * @param color        The color of the block.
+     * @param outlineWidth The width of the outline (default is 3).
+     * @param outlineAlpha The alpha value of the outline (default is 1).
+     * @param fillAlpha    The alpha value of the fill (default is 1).
+     * @param depth        Indicates whether to draw with depth (default is false).
+     */
+    fun drawBlock(
+        pos: BlockPos,
+        color: Color,
+        outlineWidth: Number = 3,
+        outlineAlpha: Number = 1,
+        fillAlpha: Number = 1,
+        depth: Boolean = false
+    ) {
+        val block = getBlockAt(pos)
+        block.setBlockBoundsBasedOnState(mc.theWorld, pos)
+        drawBox(block.getSelectedBoundingBox(mc.theWorld, pos).outlineBounds(), color, outlineWidth, outlineAlpha, fillAlpha, depth)
+    }
+
+    fun drawStyledBlock(
+        pos: BlockPos,
+        color: Color,
+        style: Int,
+        width: Number = 3,
+        depth: Boolean = false
+    ) {
+        when (style) {
+            0 -> drawBlock(pos, color, width, 0, color.alpha, depth)
+            1 -> drawBlock(pos, color, width, color.alpha, 0, depth)
+            2 -> drawBlock(pos, color, width, color.alpha, color.multiplyAlpha(.75f).alpha, depth)
+        }
     }
 
     fun drawStyledBox(
@@ -52,26 +91,22 @@ object Renderer {
         depth: Boolean = false
     ) {
         when (style) {
-            0 -> RenderUtils.drawFilledAABB(aabb, color, depth = depth)
-            1 -> RenderUtils.drawOutlinedAABB(aabb, color, thickness = width, depth = depth)
-            2 -> {
-                RenderUtils.drawOutlinedAABB(aabb, color, thickness = width, depth = depth)
-                RenderUtils.drawFilledAABB(aabb, color.multiplyAlpha(.6f), depth = depth)
-            }
+            0 -> drawBox(aabb, color, width, 0, color.alpha, depth)
+            1 -> drawBox(aabb, color, width, color.alpha, 0, depth)
+            2 -> drawBox(aabb, color, width, color.alpha, color.multiplyAlpha(.75f).alpha, depth)
         }
     }
 
     /**
      * Draws a 3D line between two specified points in the world.
      *
-     * @param pos1      The starting position of the line.
-     * @param pos2      The ending position of the line.
+     * @param points    The points to draw the line between.
      * @param color     The color of the line.
      * @param lineWidth The width of the line (default is 3).
      * @param depth     Indicates whether to draw with depth (default is false).
      */
-    fun draw3DLine(pos1: Vec3, pos2: Vec3, color: Color, lineWidth: Float = 3f, depth: Boolean = false) {
-        RenderUtils.draw3DLine(pos1, pos2, color, lineWidth, depth)
+    fun draw3DLine(vararg points: Vec3, color: Color, lineWidth: Float = 3f, depth: Boolean = false) {
+        RenderUtils.renderLines(*points, color = color, lineWidth = lineWidth, depth = depth)
     }
 
     /**
@@ -118,10 +153,11 @@ object Renderer {
         color: Color = Color.WHITE,
         depth: Boolean = false,
         scale: Float = 0.03f,
-        shadow: Boolean = true,
-        ) {
+        shadow: Boolean = true
+    ) {
         RenderUtils.drawStringInWorld(text, vec3, color, depth, scale, shadow)
     }
+
     /**
      * Draws a cylinder in the world with the specified parameters.
      *

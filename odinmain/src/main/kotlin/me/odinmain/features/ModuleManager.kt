@@ -53,11 +53,11 @@ object ModuleManager {
         // dungeon
         DungeonRequeue, BlessingDisplay, ExtraStats, KeyHighlight, Mimic, TeammatesHighlight,
         TerracottaTimer, BloodCamp, ClickedSecrets, DungeonWaypoints, SecretChime, LeapMenu, PuzzleSolvers,
-        WarpCooldown, 
+        WarpCooldown, MapInfo,
 
         // floor 7
         TerminalSolver, TerminalTimes, MelodyMessage, NecronDropTimer, InactiveWaypoints, WitherDragons,
-        GoldorTimer, TerminalSimulator,
+        GoldorTimer, TerminalSimulator, TerminalSounds, ArrowsDevice,
 
         // render
         BPSDisplay, ClickGUIModule, CustomHighlight, CPSDisplay, DragonHitboxes, GyroWand, NameChanger,
@@ -67,20 +67,12 @@ object ModuleManager {
         //skyblock
         NoCursorReset, AutoSprint, BlazeAttunement, ChatCommands, DeployableTimer, DianaHelper, ArrowHit,
         Ragaxe, MobSpawn, Splits, WardrobeKeybinds, InvincibilityTimer, EnrageDisplay, /*ItemsHighlight,*/
-        CopyChat, PlayerDisplay, FarmKeys, /*PartyEncoding,*/ PetKeybinds, /*SkillsSucks,*/
+        PlayerDisplay, FarmKeys, /*PartyEncoding,*/ PetKeybinds, /*SkillsSucks,*/ ChatEmotes,
 
         // kuudra
         BuildHelper, FreshTimer, KuudraDisplay, NoPre, PearlWaypoints, RemovePerks, SupplyHelper, TeamHighlight,
         VanqNotifier, KuudraReminders, KuudraRequeue,
     )
-
-    init {
-        for (module in modules) {
-            module.keybinding?.let {
-                module.register(KeybindSetting("Keybind", it, "Toggles the module"))
-            }
-        }
-    }
 
     fun addModules(vararg module: Module) {
         for (i in module) {

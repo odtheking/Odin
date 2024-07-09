@@ -6,6 +6,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.clock.Clock
+import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.name
 import me.odinmain.utils.skyblock.getItemIndexInContainerChest
 import me.odinmain.utils.skyblock.modMessage
@@ -38,8 +39,10 @@ object WardrobeKeybinds : Module(
 
     private val wardrobes = arrayOf(wardrobe1, wardrobe2, wardrobe3, wardrobe4, wardrobe5, wardrobe6, wardrobe7, wardrobe8, wardrobe9)
     private val clickCoolDown = Clock(delay)
+
     @SubscribeEvent
-    fun checkKeybinds(event: GuiEvent.GuiKeyPressEvent) {
+    fun onGuiKeyPress(event: GuiEvent.GuiKeyPressEvent) {
+        if (!event.keyCode.equalsOneOf(unequipKeybind, nextPageKeybind, previousPageKeybind, *wardrobes)) return
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
         if (chest !is ContainerChest) return
 

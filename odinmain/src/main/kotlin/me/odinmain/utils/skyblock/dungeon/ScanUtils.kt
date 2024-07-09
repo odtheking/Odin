@@ -2,8 +2,9 @@ package me.odinmain.utils.skyblock.dungeon
 
 import com.google.gson.*
 import com.google.gson.reflect.TypeToken
+import me.odinmain.OdinMain.logger
 import me.odinmain.OdinMain.mc
-import me.odinmain.events.impl.EnteredDungeonRoomEvent
+import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.setWaypoints
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
@@ -35,11 +36,15 @@ object ScanUtils {
             is FileNotFoundException -> println("Room data not found, something went wrong! Please report this!")
             else -> {
                 println("Unknown error while reading room data.")
-                e.printStackTrace()
+                logger.error("Error reading room data", e)
                 println(e.message)
             }
         }
         setOf()
+    }
+
+    fun getRoomSecrets(name: String): Int {
+        return roomList.find { it.name == name }?.secrets ?: return 0
     }
 
     private fun getRoomData(hash: Int): RoomData? =
@@ -50,9 +55,7 @@ object ScanUtils {
         val blocks = arrayListOf<Int>()
         for (y in 140 downTo 12) {
             val id = Block.getIdFromBlock(mc.theWorld.getBlockState(BlockPos(x, y, z)).block)
-            if (!id.equalsOneOf(5, 54)) {
-                blocks.add(id)
-            }
+            if (!id.equalsOneOf(5, 54)) blocks.add(id)
         }
         return blocks.joinToString("").hashCode()
     }
@@ -64,13 +67,12 @@ object ScanUtils {
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.END) {
-            if ((!inDungeons && mc.theWorld?.isRemote == false) || inBoss) {
-                EnteredDungeonRoomEvent(null).postAndCatch()
-                return
-            }
+        if (event.phase != TickEvent.Phase.END || mc.theWorld == null) return
+        if ((!inDungeons && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) || inBoss) {
+            if (DungeonUtils.currentRoom == null) return
+            RoomEnterEvent(null).postAndCatch()
+            return
         }
-        if (mc.theWorld == null /*|| !inDungeons*/ || inBoss) return
 
         val xPos = START_X + ((mc.thePlayer.posX + 200) / 32).toInt() * ROOM_SIZE
         val zPos = START_Z + ((mc.thePlayer.posZ + 200) / 32).toInt() * ROOM_SIZE
@@ -95,9 +97,9 @@ object ScanUtils {
             }
         } ?: Rotations.NONE
 
-        devMessage("Found rotation ${fullRoom.room.rotation}, clay pos: ${fullRoom.clayPos}")
+        //devMessage("Found rotation ${fullRoom.room.rotation}, clay pos: ${fullRoom.clayPos}")
         setWaypoints(fullRoom)
-        EnteredDungeonRoomEvent(fullRoom).postAndCatch()
+        RoomEnterEvent(fullRoom).postAndCatch()
     }
 
     private fun findRoomTilesRecursively(x: Int, z: Int, room: Room, visited: MutableSet<Vec2>): List<ExtraRoom> {
@@ -117,24 +119,20 @@ object ScanUtils {
 
     private fun scanRoom(x: Int, z: Int): Room? {
         val roomCore = getCore(x, z)
-        return Room(x, z, getRoomData(roomCore) ?: return null).apply {
-            core = roomCore
-        }
+        return Room(x, z, getRoomData(roomCore) ?: return null).apply { core = roomCore }
     }
 
     /**
      * Gets the top layer of blocks in a room (the roof) for finding the rotation of the room.
-     * This could be made recursive, but it's only a slightly cleaner implementation so idk
+     *
      * @param x The x of the room to scan
      * @param z The z of the room to scan
+     * @param currentHeight The current height to scan at, default is 170
      * @return The y-value of the roof, this is the y-value of the blocks.
      */
-    private fun getTopLayerOfRoom(x: Int, z: Int): Int {
-        var currentHeight = 170
-        while (isAir(x, currentHeight, z) && currentHeight > 70) {
-            currentHeight--
-        }
-        return currentHeight
+    private fun getTopLayerOfRoom(x: Int, z: Int, currentHeight: Int = 170): Int {
+        return if (isAir(x, currentHeight, z) && currentHeight > 70) getTopLayerOfRoom(x, z, currentHeight - 1)
+        else currentHeight
     }
 
     @SubscribeEvent

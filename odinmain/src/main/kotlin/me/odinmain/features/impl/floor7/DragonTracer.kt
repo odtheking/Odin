@@ -11,6 +11,6 @@ import me.odinmain.utils.render.Renderer
 object DragonTracer {
     fun renderTracers(dragon: WitherDragonsEnum) {
         if (dragon.spawnTime() > 0)
-            Renderer.draw3DLine(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), dragon.spawnPos.addVec(0.5, 3.5, 0.5), dragon.color, tracerThickness)
+            Renderer.draw3DLine(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), dragon.spawnPos.addVec(0.5, 3.5, 0.5), color = dragon.color, lineWidth = tracerThickness)
     }
 }

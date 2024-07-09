@@ -10,7 +10,6 @@ import me.odinmain.features.impl.floor7.WitherDragons.sendSpray
 import me.odinmain.features.impl.floor7.WitherDragons.sendTime
 import me.odinmain.features.impl.skyblock.ArrowHit.onDragonSpawn
 import me.odinmain.features.impl.skyblock.ArrowHit.resetOnDragons
-import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.isVecInXZ
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.entity.boss.EntityDragon
@@ -23,7 +22,7 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent
 
 object DragonCheck {
 
-    var lastDragonDeath = ""
+    var lastDragonDeath: WitherDragonsEnum = WitherDragonsEnum.None
 
     fun dragonJoinWorld(event: EntityJoinWorldEvent) {
         if (event.entity !is EntityDragon) return
@@ -52,12 +51,12 @@ object DragonCheck {
     fun dragonLeaveWorld(event: LivingDeathEvent) {
         if (event.entity !is EntityDragon) return
         val dragon = WitherDragonsEnum.entries.find {it.entity?.entityId == event.entity.entityId} ?: return
+        lastDragonDeath = dragon
 
         if (sendTime && WitherDragons.enabled)
             dragonPBs.time(dragon.ordinal, event.entity.ticksExisted / 20.0, "s§7!", "§${dragon.colorCode}${dragon.name} §7was alive for §6", addPBString = true, addOldPBString = true)
 
         if (sendArrowHit && WitherDragons.enabled) arrowDeath(dragon)
-        lastDragonDeath = dragon.name
     }
 
     fun dragonSprayed(packet: S04PacketEntityEquipment) {
@@ -72,33 +71,8 @@ object DragonCheck {
         }
     }
 
-    fun onChatPacket(message: String) {
-        if (
-            !message.equalsOneOf(
-                "[BOSS] Wither King: Oh, this one hurts!",
-                "[BOSS] Wither King: I have more of those.",
-                "[BOSS] Wither King: My soul is disposable."
-            )
-        ) return
-
-        val dragon = WitherDragonsEnum.entries.find { lastDragonDeath == it.name } ?: return
+    fun onChatPacket() {
+        val dragon = WitherDragonsEnum.entries.find { lastDragonDeath == it } ?: return
         if (sendNotification && WitherDragons.enabled) modMessage("§${dragon.colorCode}${dragon.name} dragon counts.")
-    }
-
-    private fun printSecondsWithColor(time1: Double, time2: Double, time3: Double, down: Boolean = true, colorCode1: String = "a", colorCode2: String = "6", colorCode3: String = "c"): String {
-        val colorCode = if (down) {
-            when {
-                time1 <= time2 -> colorCode3
-                time1 <= time3 -> colorCode2
-                else -> colorCode1
-            }
-        } else {
-            when {
-                time1 <= time2 -> colorCode1
-                time1 <= time3 -> colorCode2
-                else -> colorCode3
-            }
-        }
-        return "§$colorCode${time1}s"
     }
 }

@@ -30,7 +30,7 @@ object SupplyHelper : Module(
     private var startRun = 0L
 
     init {
-        onMessage("[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!", false) {
+        onMessage(Regex("\\[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!")) {
             startRun = System.currentTimeMillis()
         }
 
@@ -44,8 +44,9 @@ object SupplyHelper : Module(
 
     @SubscribeEvent
     fun onWorldRender(event: RenderWorldLastEvent) {
-        if (supplyDropWaypoints && KuudraUtils.phase == 1) renderDropLocations()
-        if (suppliesWaypoints && KuudraUtils.phase == 1) renderSupplyWaypoints()
+        if (!KuudraUtils.inKuudra || KuudraUtils.phase != 1) return
+        if (supplyDropWaypoints) renderDropLocations()
+        if (suppliesWaypoints) renderSupplyWaypoints()
     }
 
     private fun renderSupplyWaypoints() {
@@ -56,23 +57,19 @@ object SupplyHelper : Module(
         }
     }
 
+    private val locations = listOf(
+        Pair(Vec3(-98.0, 78.0, -112.0), "Shop"),
+        Pair(Vec3(-98.0, 78.0, -99.0), "Equals"),
+        Pair(Vec3(-110.0, 78.0, -106.0), "X Cannon"),
+        Pair(Vec3(-106.0, 78.0, -112.0), "X"),
+        Pair(Vec3(-94.0, 78.0, -106.0), "Triangle"),
+        Pair(Vec3(-106.0, 78.0, -99.0), "Slash")
+    )
+
     private fun renderDropLocations() {
-        if (KuudraUtils.supplies[0])
-            Renderer.drawCustomBeacon("", Vec3(-98.0, 78.0, -112.0), if (missing == "Shop") Color.GREEN else Color.RED, increase = false) // shop
-
-        if (KuudraUtils.supplies[1])
-            Renderer.drawCustomBeacon("", Vec3(-98.0, 78.0, -99.0), if (missing == "Equals") Color.GREEN else Color.RED, increase = false) // equals
-
-        if (KuudraUtils.supplies[2])
-            Renderer.drawCustomBeacon("", Vec3(-110.0, 78.0, -106.0), if (missing == "X Cannon") Color.GREEN else Color.RED, increase = false) // cannon
-
-        if (KuudraUtils.supplies[3])
-            Renderer.drawCustomBeacon("", Vec3(-106.0, 78.0, -112.0), if (missing == "X") Color.GREEN else Color.RED, increase = false) // x
-
-        if (KuudraUtils.supplies[4])
-            Renderer.drawCustomBeacon("", Vec3(-94.0, 78.0, -106.0), if (missing == "Triangle") Color.GREEN else Color.RED, increase = false) // tri
-
-        if (KuudraUtils.supplies[5])
-            Renderer.drawCustomBeacon("", Vec3(-106.0, 78.0, -99.0), if (missing == "Slash") Color.GREEN else Color.RED, increase = false) // slash
+        locations.forEachIndexed { index, (position, name) ->
+            if (!KuudraUtils.supplies[index]) return@forEachIndexed
+            Renderer.drawCustomBeacon("", position, if (missing == name) Color.GREEN else Color.RED, increase = false)
+        }
     }
 }

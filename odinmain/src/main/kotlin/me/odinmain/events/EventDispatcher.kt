@@ -19,8 +19,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object EventDispatcher {
 
     private val drops = listOf(
-        "Health Potion VIII Splash Potion", "Healing Potion 8 Splash Potion", "Healing Potion VIII Splash Potion", "Healing VIII Splash Potion",
-        "Decoy", "Inflatable Jerry", "Spirit Leap", "Trap", "Training Weights", "Defuse Kit", "Dungeon Chest Key", "Treasure Talisman", "Revive Stone",
+        "Health Potion VIII Splash Potion", "Healing Potion 8 Splash Potion", "Healing Potion VIII Splash Potion", "Healing VIII Splash Potion", "Healing 8 Splash Potion",
+        "Decoy", "Inflatable Jerry", "Spirit Leap", "Trap", "Training Weights", "Defuse Kit", "Dungeon Chest Key", "Treasure Talisman", "Revive Stone", "Architect's First Draft"
     )
 
     /**
@@ -28,7 +28,7 @@ object EventDispatcher {
      */
     @SubscribeEvent
     fun onRemoveEntity(event: EntityLeaveWorldEvent) {
-        if (!inDungeons || event.entity !is EntityItem || !event.entity.entityItem.displayName.noControlCodes.containsOneOf(drops, true)) return
+        if (!inDungeons || event.entity !is EntityItem || !event.entity.entityItem.displayName.noControlCodes.containsOneOf(drops, true) || mc.thePlayer.getDistanceToEntity(event.entity) > 6) return
         SecretPickupEvent.Item(event.entity).postAndCatch()
     }
 
@@ -36,11 +36,13 @@ object EventDispatcher {
      * Dispatches [SecretPickupEvent.Interact]
      */
     @SubscribeEvent
-    fun onPacket(event: PacketSentEvent) { with(event.packet) {
-        if (inDungeons && this is C08PacketPlayerBlockPlacement && this.position != null && isSecret(mc.theWorld?.getBlockState(this.position) ?: return, this.position)) {
-            SecretPickupEvent.Interact(this.position, mc.theWorld?.getBlockState(this.position)  ?: return).postAndCatch()
+    fun onPacket(event: PacketSentEvent) {
+        with(event.packet) {
+            if (inDungeons && this is C08PacketPlayerBlockPlacement && position != null &&
+                isSecret(mc.theWorld?.getBlockState(position) ?: return, position))
+                    SecretPickupEvent.Interact(position, mc.theWorld?.getBlockState(position) ?: return).postAndCatch()
         }
-    } }
+    }
 
     /**
      * Dispatches [ChatPacketEvent], [RealServerTick], and [SecretPickupEvent.Bat]

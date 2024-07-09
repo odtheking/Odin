@@ -1,7 +1,7 @@
 package me.odinmain.features.impl.floor7.p3
 
-import me.odinmain.events.impl.TerminalClosedEvent
 import me.odinmain.events.impl.TerminalOpenedEvent
+import me.odinmain.events.impl.TerminalSolvedEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.termsim.TermSimGui
@@ -34,7 +34,7 @@ object TerminalTimes : Module(
     }
 
     @SubscribeEvent
-    fun onTerminalClose(event: TerminalClosedEvent) {
+    fun onTerminalClose(event: TerminalSolvedEvent) {
         if (type == TerminalTypes.NONE || mc.currentScreen is TermSimGui) return
         val time = (System.currentTimeMillis() - startTimer) / 1000.0
         termPBs.time(event.type.ordinal, time, "s§7!", "§a${event.type.guiName} §7solved in §6", addPBString = true, addOldPBString = true, sendMessage)

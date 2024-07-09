@@ -24,7 +24,7 @@ object FarmKeys: Module(
     }
 
     override fun onDisable() {
-        updateKeyBindings(-100, 57, previousSensitivity / 100)
+        updateKeyBindings(-100, 57, previousSensitivity / 200)
         super.onDisable()
     }
 

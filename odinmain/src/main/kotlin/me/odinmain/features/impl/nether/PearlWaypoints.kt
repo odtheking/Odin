@@ -73,10 +73,9 @@ object PearlWaypoints : Module(
         "Slash" to BlockPos(-106, 157, -99)
     )
 
-
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
-        if (KuudraUtils.phase != 1) return
+        if (!KuudraUtils.inKuudra || KuudraUtils.phase != 1) return
 
         var closest = true
         getOrderedLineups(mc.thePlayer.position).forEach { (lineup, color) ->
@@ -84,11 +83,11 @@ object PearlWaypoints : Module(
                 Renderer.drawBox(aabb = it.toAABB(), color = color, outlineWidth = if (!closest && hideFarWaypoints) 1f else 3f,
                     outlineAlpha = if (!closest && hideFarWaypoints) 0.25f else 1f, fillAlpha = 0f, depth = false)
             }
-            lineup.lineups.forEach {
-                if (NoPre.missing == "" || NoPre.missing == "Square") return@forEach Renderer.drawBox(aabb = it.toAABB(), color = color, outlineAlpha = 0f, fillAlpha = if (!closest && hideFarWaypoints) 0f else 1f, depth = false)
-                if (lineup.startPos == setOf(BlockPos(-141, 78, -91)) && blockNameMap[NoPre.missing] != it) return@forEach
+            lineup.lineups.forEach lineupLoop@{
+                if (NoPre.missing == "" || NoPre.missing == "Square") return@lineupLoop Renderer.drawBox(aabb = it.toAABB(), color = color, outlineAlpha = 0f, fillAlpha = if (!closest && hideFarWaypoints) 0f else 3f, depth = false)
+                if (lineup.startPos == setOf(BlockPos(-141, 78, -91)) && blockNameMap[NoPre.missing] != it) return@lineupLoop
 
-                Renderer.drawBox(aabb = it.toAABB(), color = color, outlineAlpha = 0f, fillAlpha = if (!closest && hideFarWaypoints) 0f else 1f, depth = false)
+                Renderer.drawBox(aabb = it.toAABB(), color = color, outlineAlpha = 0f, fillAlpha = if (!closest && hideFarWaypoints) 0f else 3f, depth = false)
             }
             closest = false
         }

@@ -6,6 +6,7 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.commands.commodore
 import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.features.ModuleManager.generateFeatureList
+import me.odinmain.features.impl.dungeon.MapInfo
 import me.odinmain.features.impl.render.DevPlayers.updateDevs
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
@@ -36,24 +37,19 @@ val devCommand = commodore("oddev") {
         modMessage("""
             ${getChatBreak()}
             |inDungeons: ${DungeonUtils.inDungeons}
-            |Floor: ${DungeonUtils.floorNumber}
             |InBoss: ${DungeonUtils.inBoss}
-            |Secrets: ${DungeonUtils.secretCount} / ${DungeonUtils.totalSecrets}
-            |NeededSecrets: ${DungeonUtils.neededSecretsAmount}
-            |Deaths: ${DungeonUtils.deathCount}
-            |Crypts: ${DungeonUtils.cryptCount}
-            |OpenRooms: ${DungeonUtils.openRoomCount}
-            |CompletedRooms: ${DungeonUtils.completedRoomCount}
-            |PercentCleared: ${DungeonUtils.percentCleared}%
-            |SecretsRemaining: ${DungeonUtils.secretsRemaining}
-            |TotalRooms: ${DungeonUtils.totalRooms}
-            |DungeonTime: ${DungeonUtils.dungeonTime}
-            |isGhost: ${DungeonUtils.isGhost}
-            |currentDungeonPlayer: ${DungeonUtils.currentDungeonPlayer.name}, ${DungeonUtils.currentDungeonPlayer.clazz}, ${DungeonUtils.currentDungeonPlayer.isDead}
+            |Floor: ${DungeonUtils.floor.name}
+            |Score: ${DungeonUtils.score}${when (MapInfo.togglePaul) {1 -> ", Force disabled Paul"; 2 -> ", Force enabled Paul"; else -> "" }}
+            |Secrets: (${DungeonUtils.secretCount} - ${DungeonUtils.neededSecretsAmount} - ${DungeonUtils.totalSecrets} - ${DungeonUtils.knownSecrets}) 
             |mimicKilled: ${DungeonUtils.mimicKilled}
+            |Deaths: ${DungeonUtils.deathCount}, Crypts: ${DungeonUtils.cryptCount}
+            |BonusScore: ${DungeonUtils.getBonusScore}, isPaul: ${DungeonUtils.isPaul}
+            |OpenRooms: ${DungeonUtils.openRoomCount}, CompletedRooms: ${DungeonUtils.completedRoomCount} ${DungeonUtils.percentCleared}%, Blood Done: ${DungeonUtils.bloodDone}, Total: ${DungeonUtils.totalRooms}
+            |Puzzles: ${DungeonUtils.puzzles.joinToString { "${it.name} (${it.status.toString()})" }}, Count: ${DungeonUtils.puzzleCount}
+            |DungeonTime: ${DungeonUtils.dungeonTime}
+            |currentDungeonPlayer: ${DungeonUtils.currentDungeonPlayer.name}, ${DungeonUtils.currentDungeonPlayer.clazz}, ${DungeonUtils.currentDungeonPlayer.isDead}, ${DungeonUtils.isGhost}
             |doorOpener: ${DungeonUtils.doorOpener}
-            |passedRooms: ${DungeonUtils.passedRooms.map { it.room.data.name }}
-            |currentRoom: ${DungeonUtils.currentRoom?.room?.data?.name}
+            |currentRoom: ${DungeonUtils.currentRoom?.room?.data?.name}, roomsPassed: ${DungeonUtils.passedRooms.map { it.room.data.name }}
             |Teammates: ${DungeonUtils.dungeonTeammates.joinToString { "${it.name} (${it.clazz})" }}
             |TeammatesNoSelf: ${DungeonUtils.dungeonTeammatesNoSelf.map { it.name }}
             |LeapTeammates: ${DungeonUtils.leapTeammates.map { it.name }}
@@ -72,22 +68,20 @@ val devCommand = commodore("oddev") {
     }
 
 	literal("roomdata").runs {
-        val room = DungeonUtils.currentRoom //?: return@does modMessage("§cYou are not in a dungeon!")
-        val x = ((mc.thePlayer.posX + 200) / 32).toInt()
-        val z = ((mc.thePlayer.posZ + 200) / 32).toInt()
-        val xPos = -185 + x * 32
-        val zPos = -185 + z * 32
+        val room = DungeonUtils.currentRoom ?: return@runs modMessage("§cYou are not in a dungeon!")
+        val xPos = (-185 + ((mc.thePlayer.posX + 200) / 32) * 32).toInt()
+        val zPos = (-185 + ((mc.thePlayer.posZ + 200) / 32) * 32).toInt()
         val core = ScanUtils.getCore(xPos, zPos)
         modMessage(
             """
-                    ${getChatBreak()}
-                    Middle: $xPos, $zPos
-                    Room: ${room?.room?.data?.name}
-                    Core: $core
-                    Rotation: ${room?.room?.rotation}
-                    Positions: ${room?.positions}
-                    ${getChatBreak()}
-                    """.trimIndent(), false
+            ${getChatBreak()}
+            Middle: $xPos, $zPos
+            Room: ${room.room.data.name}
+            Core: $core
+            Rotation: ${room.room.rotation}
+            Positions: ${room.positions}
+            ${getChatBreak()}
+            """.trimIndent(), false
         )
         writeToClipboard(core.toString(), "Copied $core to clipboard!")
     }

@@ -17,11 +17,9 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 import kotlin.math.exp
 import kotlin.math.max
 
-
 /**
  * Parts taken from [Floppa Client](https://github.com/FloppaCoding/FloppaClient)
  */
-
 object Animations : Module(
     name = "Animations",
     category = Category.RENDER,
@@ -46,7 +44,7 @@ object Animations : Module(
     }
 
     fun itemTransferHook(equipProgress: Float, swingProgress: Float): Boolean {
-        if (!this.enabled) return false
+        if (!enabled) return false
         val newSize = (0.4 * exp(size)).toFloat()
         val newX = (0.56f * (1 + x))
         val newY = (-0.52f * (1 - y))
@@ -71,8 +69,8 @@ object Animations : Module(
     }
 
     fun getItemInUseCountHook(player: AbstractClientPlayer, itemToRender: ItemStack): Int {
-        if (this.noBlock && itemToRender.item is ItemSword && player.itemInUseDuration <= 7) return 0
-        return player.itemInUseCount
+        return if (this.noBlock && itemToRender.item is ItemSword && player.itemInUseDuration <= 7) 0
+        else player.itemInUseCount
     }
 
     private fun getArmSwingAnimationEnd(player: EntityPlayerSP): Int {

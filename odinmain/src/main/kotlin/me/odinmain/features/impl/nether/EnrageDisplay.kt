@@ -1,6 +1,6 @@
 package me.odinmain.features.impl.nether
 
-import me.odinmain.events.impl.ServerTickEvent
+import me.odinmain.events.impl.RealServerTick
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.HudSetting
@@ -32,19 +32,18 @@ object EnrageDisplay : Module (
         }
     }
 
-    private var enrageTimer = 0
+    private var enrageTimer = -1
 
     init {
         onPacket(S29PacketSoundEffect::class.java) {
-            if (it.soundName == "mob.zombie.remedy" && it.pitch == 1.0f && it.volume == 0.5f && mc.thePlayer?.getCurrentArmor(0)?.itemID == "REAPER_BOOTS" && mc.thePlayer?.getCurrentArmor(1)?.itemID == "REAPER_LEGGINGS" && mc.thePlayer?.getCurrentArmor(2)?.itemID == "REAPER_CHESTPLATE") {
-                enrageTimer = 120
-            }
+            if (it.soundName == "mob.zombie.remedy" && it.pitch == 1.0f && it.volume == 0.5f && mc.thePlayer?.getCurrentArmor(0)?.itemID == "REAPER_BOOTS" &&
+                mc.thePlayer?.getCurrentArmor(1)?.itemID == "REAPER_LEGGINGS" && mc.thePlayer?.getCurrentArmor(2)?.itemID == "REAPER_CHESTPLATE")
+                    enrageTimer = 120
         }
     }
 
     @SubscribeEvent
-    fun onServerTick(event: ServerTickEvent) {
+    fun onServerTick(event: RealServerTick) {
         enrageTimer--
     }
-
 }

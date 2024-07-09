@@ -43,8 +43,8 @@ class ModCore {
     @EventHandler
     fun loadComplete(event: FMLLoadCompleteEvent) {
         val modules = arrayListOf(
-            ArrowAlign,
             SimonSays,
+            ArrowAlign,
             EtherWarpHelper,
             Camera,
             HidePlayers
