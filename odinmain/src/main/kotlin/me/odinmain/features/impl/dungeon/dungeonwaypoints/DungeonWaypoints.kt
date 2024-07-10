@@ -16,6 +16,7 @@ import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
+import net.minecraft.block.BlockSign
 import net.minecraft.client.gui.*
 import net.minecraft.util.*
 import net.minecraftforge.client.event.RenderGameOverlayEvent
@@ -124,8 +125,9 @@ object DungeonWaypoints : Module(
         if (!allowEdits || isAir(pos)) return
         val room = DungeonUtils.currentRoom ?: return
         val vec = Vec3(pos).subtractVec(x = room.clayPos.x, z = room.clayPos.z).rotateToNorth(room.room.rotation)
+        val block = getBlockAt(pos)
         val aabb =
-            if (useBlockSize) getBlockAt(pos).getSelectedBoundingBox(mc.theWorld, BlockPos(0, 0, 0))?.outlineBounds() ?: return
+            if (useBlockSize && block !is BlockSign) block.getSelectedBoundingBox(mc.theWorld, BlockPos(0, 0, 0))?.outlineBounds() ?: return
             else AxisAlignedBB(.5 - (size / 2), .5 - (size / 2), .5 - (size / 2), .5 + (size / 2), .5 + (size / 2), .5 + (size / 2)).expand(0.002, 0.002, 0.002)
 
         val waypoints = getWaypoints(room)

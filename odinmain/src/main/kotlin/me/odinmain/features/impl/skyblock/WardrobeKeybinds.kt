@@ -6,7 +6,6 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.clock.Clock
-import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.name
 import me.odinmain.utils.skyblock.getItemIndexInContainerChest
 import me.odinmain.utils.skyblock.modMessage
@@ -42,7 +41,6 @@ object WardrobeKeybinds : Module(
 
     @SubscribeEvent
     fun onGuiKeyPress(event: GuiEvent.GuiKeyPressEvent) {
-        if (!event.keyCode.equalsOneOf(unequipKeybind, nextPageKeybind, previousPageKeybind, *wardrobes)) return
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
         if (chest !is ContainerChest) return
 
@@ -57,6 +55,7 @@ object WardrobeKeybinds : Module(
         }
         if (!clickCoolDown.hasTimePassed()) return
         if (index > chest.lowerChestInventory.sizeInventory - 1 || index < 1) return modMessage("Invalid index. $index, ${chest.name}")
+        if (getItemIndexInContainerChest(chest, "Equipped", 36..44) == index) return modMessage("Armor is already equipped.")
         mc.playerController.windowClick(chest.windowId, index, 0, 0, mc.thePlayer)
         clickCoolDown.update()
 
