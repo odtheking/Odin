@@ -1,6 +1,7 @@
 package me.odin
 
 import me.odin.features.impl.floor7.p3.ArrowAlign
+import me.odin.features.impl.floor7.p3.ArrowsDevice
 import me.odin.features.impl.floor7.p3.SimonSays
 import me.odin.features.impl.render.Camera
 import me.odin.features.impl.render.EtherWarpHelper
@@ -42,7 +43,7 @@ class ModCore {
 
     @EventHandler
     fun loadComplete(event: FMLLoadCompleteEvent) {
-        ModuleManager.addModules(SimonSays, ArrowAlign, EtherWarpHelper, Camera, HidePlayers)
+        ModuleManager.addModules(SimonSays, ArrowsDevice, ArrowAlign, EtherWarpHelper, Camera, HidePlayers)
 
         OdinMain.loadComplete()
     }

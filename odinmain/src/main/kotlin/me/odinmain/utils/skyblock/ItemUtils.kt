@@ -69,6 +69,14 @@ val ItemStack?.isShortbow: Boolean
         return this?.lore?.any { it.contains("Shortbow: Instantly shoots!") } == true
     }
 
+/**
+ * Returns if an item is a fishing rod
+ */
+val ItemStack?.isFishingRod: Boolean
+    get() {
+        return this?.lore?.any { it.contains("FISHING ROD") } == true
+    }
+
 val EntityPlayerSP.holdingEtherWarp: Boolean
     get() = this.heldItem?.extraAttributes?.getBoolean("ethermerge") == true
 
