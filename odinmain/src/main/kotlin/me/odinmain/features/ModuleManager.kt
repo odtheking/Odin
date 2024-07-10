@@ -74,6 +74,14 @@ object ModuleManager {
         VanqNotifier, KuudraReminders, KuudraRequeue,
     )
 
+    init {
+        for (module in modules) {
+            module.keybinding?.let {
+                module.register(KeybindSetting("Keybind", it, "Toggles the module"))
+            }
+        }
+    }
+
     fun addModules(vararg module: Module) {
         for (i in module) {
             modules.add(i)
