@@ -1,6 +1,8 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import me.odinmain.OdinMain.mc
+import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.blazeHeight
+import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.blazeWidth
 import me.odinmain.utils.*
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
@@ -49,7 +51,7 @@ object BlazeSolver {
                 1 -> PuzzleSolvers.blazeSecondColor
                 else -> PuzzleSolvers.blazeAllColor
             }
-            val aabb = AxisAlignedBB(-0.5, -2.0, -0.5, 0.5, 0.0, 0.5).offset(entity.positionVector)
+            val aabb = AxisAlignedBB(-blazeWidth / 2, -1 - (blazeHeight / 2), -blazeWidth / 2, blazeWidth / 2, (blazeHeight / 2) - 1, blazeWidth / 2).offset(entity.positionVector)
 
             Renderer.drawBox(aabb, color,
                 outlineAlpha = if (PuzzleSolvers.blazeStyle == 0) 0 else color.alpha, fillAlpha = if (PuzzleSolvers.blazeStyle == 1) 0 else color.alpha, depth = true)

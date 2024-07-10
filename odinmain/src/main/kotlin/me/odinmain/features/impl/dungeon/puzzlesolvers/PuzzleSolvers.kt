@@ -63,6 +63,8 @@ object PuzzleSolvers : Module(
     val blazeFirstColor: Color by ColorSetting("First Color", Color.GREEN, true).withDependency { blazeSolver && blazeDropDown }
     val blazeSecondColor: Color by ColorSetting("Second Color", Color.ORANGE, true).withDependency { blazeSolver && blazeDropDown }
     val blazeAllColor: Color by ColorSetting("Other Color", Color.WHITE.withAlpha(.3f), true).withDependency { blazeSolver && blazeDropDown }
+    val blazeWidth: Double by NumberSetting("Box Width", 1.0, 0.5, 2.0, 0.1).withDependency { blazeSolver && blazeDropDown }
+    val blazeHeight: Double by NumberSetting("Box Height", 2.0, 1.0, 3.0, 0.1).withDependency { blazeSolver && blazeDropDown }
     val blazeSendComplete: Boolean by BooleanSetting("Send Complete", false, description = "Send complete message").withDependency { blazeSolver && blazeDropDown }
     private val blazeReset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
         BlazeSolver.reset()
