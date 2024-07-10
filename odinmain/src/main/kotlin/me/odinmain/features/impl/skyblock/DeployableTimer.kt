@@ -63,8 +63,6 @@ object DeployableTimer : Module(
 
     @SubscribeEvent
     fun postMetadata(event: PostEntityMetadata) {
-        if (mc.theWorld.getEntityByID(event.packet.entityId) !is EntityArmorStand) return
-
         var entity = mc.theWorld.getEntityByID(event.packet.entityId) as? EntityArmorStand ?: return
 
         if (activeDeployables.any { it.entity == entity }) return
