@@ -109,3 +109,12 @@ interface Focused : Event {
 
     data object Lost : Focused
 }
+
+interface Lifetime : Event {
+
+    data object Initialized : Lifetime
+
+    data object AfterInitialized : Lifetime
+
+    data object Uninitialized : Lifetime
+}

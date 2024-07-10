@@ -2,12 +2,14 @@ package com.github.stivais.ui.impl
 
 import com.github.stivais.ui.UI
 import com.github.stivais.ui.UIScreen
+import com.github.stivais.ui.animation.Animation
 import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.sizes.Bounding
 import com.github.stivais.ui.elements.scope.*
+import com.github.stivais.ui.operation.AnimationOperation
 import com.github.stivais.ui.renderer.Renderer
 import com.github.stivais.ui.utils.animate
 import com.github.stivais.ui.utils.radii
@@ -36,7 +38,7 @@ val `transparent fix`: Color = Color.RGB(255, 255, 255, 0.2f)
 fun clickGUI(renderer: Renderer) = UI(renderer) ui@{
     // used for search bar without needing to iterate over all elements
     val moduleElements = ArrayList<Pair<Module, ElementDSL>>()
-    onUIClose { Config.save() }
+    onRemove { Config.save() }
     text(
         text = "odin${if (OdinMain.isLegitVersion) "" else "-client"} $lastSeenVersion",
         pos = at(x = 1.px, y = -(0.px)),
@@ -44,7 +46,7 @@ fun clickGUI(renderer: Renderer) = UI(renderer) ui@{
     )
     for (panel in Category.entries) {
         column(at(x = panel.x.px, y = panel.y.px)) {
-            onUIClose {
+            onRemove {
                 panel.x = element.x
                 panel.y = element.y
             }
@@ -139,24 +141,23 @@ fun ElementDSL.openAnim(
     duration: Float,
     animation: Animations,
 ) {
-    onUIOpen {
-        animate(duration, animation) {
+    onCreation {
+        // test
+        AnimationOperation(Animation(duration, animation)) {
             element.alpha = it
             element.scale = it
-        }
+        }.add()
     }
 }
 
 fun ElementDSL.closeAnim(duration: Float, animation: Animations) {
-    onUIClose {
-        UIScreen.closeAnimHandler = window as UIScreen
-        animate(duration, animation) {
-            val percent = 1f - it
-            element.alpha = percent
-            element.scale = percent
-        }.onFinish {
-            UIScreen.closeAnimHandler = null
-        }
+    onRemove {
+        UIScreen.closeAnimHandler = ui.window as UIScreen
+        // test
+        AnimationOperation(Animation(duration, animation).onFinish { UIScreen.closeAnimHandler = null }) {
+            element.alpha = 1f - it
+            element.scale = 1f - it
+        }.add()
     }
 }
 

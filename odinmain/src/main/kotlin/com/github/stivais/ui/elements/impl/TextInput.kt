@@ -40,7 +40,7 @@ class TextInput(
             textWidth = renderer.textWidth(value, size = height)
             if (history.last() != value) history.add(value)
             positionCaret()
-            redraw()
+            redraw = true
 //            ui.needsRedraw = true
             onTextChange(value)
         }

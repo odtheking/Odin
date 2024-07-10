@@ -34,6 +34,14 @@ class EventManager(private val ui: UI) {
     fun onMouseMove(x: Float, y: Float) {
         mouseX = x
         mouseY = y
+
+        // check if an element might be over the current hovered tree
+        ui.main.elements?.reverseLoop {
+            if (it.isInside(x, y) && !hoveredElements.contains(it)) {
+                hoveredElements.clear()
+            }
+        }
+
         var last = hoveredElements.lastOrNull()
 
         while (last != null && !last.isInside(x, y)) {
@@ -115,7 +123,7 @@ class EventManager(private val ui: UI) {
     private fun getHoveredElements(x: Float, y: Float, element: Element = ui.main): Boolean {
         var result = false
         if (element.renders && element.isInside(x, y)) {
-            if (element.events != null && !hoveredElements.contains(element)) {
+            if (element.acceptsInput && !hoveredElements.contains(element)) {
                 hoveredElements.add(element)
                 element.accept(Mouse.Entered)
                 result = true
@@ -131,7 +139,7 @@ class EventManager(private val ui: UI) {
         return result
     }
 
-    private fun dispatch(event: Event): Boolean {
+    fun dispatch(event: Event): Boolean {
         hoveredElements.reverseLoop {
             if (it.accept(event)) {
                 it.redraw = true
@@ -141,7 +149,7 @@ class EventManager(private val ui: UI) {
         return false
     }
 
-    private fun dispatchToAll(event: Event, element: Element) {
+    fun dispatchToAll(event: Event, element: Element) {
         if (!element.renders) return
         element.accept(event)
         element.elements?.loop {

@@ -1,7 +1,5 @@
 package com.github.stivais.ui
 
-import com.github.stivais.ui.animation.Animation
-import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.constraints.Constraints
 import com.github.stivais.ui.constraints.px
@@ -9,6 +7,8 @@ import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.elements.impl.Group
 import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.events.EventManager
+import com.github.stivais.ui.events.Lifetime
+import com.github.stivais.ui.operation.UIOperation
 import com.github.stivais.ui.renderer.Font
 import com.github.stivais.ui.renderer.Renderer
 import com.github.stivais.ui.renderer.impl.NVGRenderer
@@ -41,11 +41,7 @@ class UI(val renderer: Renderer = NVGRenderer) {
 
     inline val my get() = eventManager.mouseY
 
-    var onOpen: ArrayList<UI.() -> Unit>? = null
-
-    var onClose: ArrayList<UI.() -> Unit>? = null
-
-    var animations: ArrayList<Pair<Animation, UI.(Float) -> Unit>>? = null
+    var operations: ArrayList<UIOperation>? = null
 
     fun initialize(width: Int, height: Int, window: Window? = null) {
         window?.let { this.window = it }
@@ -53,10 +49,11 @@ class UI(val renderer: Renderer = NVGRenderer) {
         main.constraints.height = height.px
 
         main.initialize(this)
-        main.redraw()
+        main.size()
+        main.position()
         main.clip()
 
-        onOpen?.loop { this.it() }
+        eventManager.dispatchToAll(Lifetime.AfterInitialized, main)
     }
 
     // frame metrics
@@ -69,16 +66,15 @@ class UI(val renderer: Renderer = NVGRenderer) {
     fun render() {
         renderer.beginFrame(main.width, main.height)
         renderer.push()
-        animations?.removeIf { (anim, block) ->
-            this.block(anim.get())
-            anim.finished
+        operations?.removeIf {
+            it.run()
         }
         main.render()
         var i = 0
         eventManager.hoveredElements.loop {
             renderer.text(i.toString(), it.x, it.y, 15f)
-            i++
             renderer.hollowRect(it.x, it.y, it.width, it.height, 1f, Color.WHITE.rgba)
+            i++
         }
         performance?.let {
             renderer.text(it, main.width - renderer.textWidth(it, 12f), main.height - 12f, 12f)
@@ -122,8 +118,7 @@ class UI(val renderer: Renderer = NVGRenderer) {
     fun cleanup() {
         eventManager.hoveredElements.clear()
         unfocus()
-        onClose?.loop { this.it() }
-//        if (!settings.persistant) onClose = null
+        eventManager.dispatchToAll(Lifetime.Uninitialized, main)
     }
 
     fun focus(element: Element) {
@@ -136,17 +131,6 @@ class UI(val renderer: Renderer = NVGRenderer) {
 
     fun isFocused(element: Element): Boolean {
         return eventManager.focused == element
-    }
-
-    fun animate(
-        duration: Float,
-        animation: Animations,
-        block: UI.(percent: Float) -> Unit
-    ): Animation {
-        val anim = Animation(duration, animation)
-        if (animations == null) animations = arrayListOf()
-        animations!!.add(Pair(anim, block))
-        return anim
     }
 
     companion object {

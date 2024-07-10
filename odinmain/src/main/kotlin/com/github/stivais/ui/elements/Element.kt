@@ -10,6 +10,8 @@ import com.github.stivais.ui.constraints.measurements.Undefined
 import com.github.stivais.ui.constraints.positions.Center
 import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.events.Event
+import com.github.stivais.ui.events.Lifetime
+import com.github.stivais.ui.operation.UIOperation
 import com.github.stivais.ui.renderer.Renderer
 import com.github.stivais.ui.utils.loop
 
@@ -26,9 +28,9 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
 
     var elements: ArrayList<Element>? = null
 
-    open var events: HashMap<Event, ArrayList<(Event) -> Boolean>>? = null
+    var acceptsInput = false
 
-    internal var initializationTasks: ArrayList<() -> Unit>? = null
+    var events: HashMap<Event, ArrayList<(Event) -> Boolean>>? = null
 
 //    var scaledCentered = true
 
@@ -105,11 +107,6 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
 
     var redraw = true
 
-    fun redraw() {
-        size()
-        position()
-    }
-
     // rename
     fun getElementToRedraw(): Element {
         val p = parent ?: return this
@@ -177,23 +174,24 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
 
     open fun accept(event: Event): Boolean {
         if (events != null) {
-            events?.get(event)?.let { actions -> actions.loop { if (it(event)) return true } }
+            events!![event]?.let { actions -> actions.loop { if (it(event)) return true } }
+            if (event is Lifetime) events!!.remove(event)
         }
         return false
     }
 
-    fun registerEvent(event: Event, block: Event.() -> Boolean) {
+    @Suppress("UNCHECKED_CAST")
+    fun <E : Event> registerEvent(event: E, block: E.() -> Boolean) {
+        if (event !is Lifetime) acceptsInput = true
         if (events == null) events = HashMap()
-        events!!.getOrPut(event) { arrayListOf() }.add(block)
+        events!!.getOrPut(event) { arrayListOf() }.add(block as (Event) -> Boolean)
     }
 
-    @Suppress("UNCHECKED_CAST")
-    infix fun <E : Event> E.register(block: (E) -> Boolean) = registerEvent(this, block as (Event) -> Boolean)
+    infix fun <E : Event> E.register(block: (E) -> Boolean) = registerEvent(this, block)
 
-    fun onInitialization(action: () -> Unit) {
-        if (::ui.isInitialized) return logger.warning("Tried calling \"onInitialization\" after init has already been done")
-        if (initializationTasks == null) initializationTasks = arrayListOf()
-        initializationTasks!!.add(action)
+    fun addOperation(operation: UIOperation) {
+        if (ui.operations == null) ui.operations = arrayListOf()
+        ui.operations!!.add(operation)
     }
 
     fun addElement(element: Element) {
@@ -207,6 +205,7 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
     fun removeElement(element: Element?) {
         if (element == null) return logger.warning("Tried removing element, but it doesn't exist")
         if (elements.isNullOrEmpty()) return logger.warning("Tried calling \"removeElement\" while there is no elements")
+        element.accept(Lifetime.Uninitialized)
         elements!!.remove(element)
         element.parent = null
     }
@@ -222,14 +221,8 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
 
     fun initialize(ui: UI) {
         this.ui = ui
-        elements?.loop {
-            it.initialize(ui)
-        }
-        if (initializationTasks != null) {
-            initializationTasks!!.loop { it() }
-            initializationTasks!!.clear()
-            initializationTasks = null
-        }
+        elements?.loop { it.initialize(ui) }
+        accept(Lifetime.Initialized)
     }
 
     open fun createScope(): ElementScope<*> {

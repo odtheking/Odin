@@ -1,6 +1,5 @@
 package com.github.stivais.ui.elements.scope
 
-import com.github.stivais.ui.UI
 import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.color.brighter
@@ -12,7 +11,6 @@ import com.github.stivais.ui.utils.seconds
 
 fun BlockScope.hoverEffect(
     duration: Number = 0.25.seconds,
-    accepts: Boolean = false,
     handler: ElementScope<*> = this,
 ) {
     val before = color!!
@@ -21,7 +19,7 @@ fun BlockScope.hoverEffect(
     handler.onMouseEnterExit {
         hover.animate(duration)
         redraw()
-        accepts
+        false
     }
 }
 
@@ -29,41 +27,6 @@ fun ElementDSL.focuses() {
     onClick {
         focusThis()
         true
-    }
-}
-
-/**
- * Function that gets ran when the UI is finished initializing
- *
- * If UI is already initialized, it just runs the function
- *
- * @param function The function to run
- */
-fun ElementDSL.onUIOpen(function: UI.() -> Unit) {
-    if (element.initialized) {
-        function(element.ui)
-        return
-    }
-    onInitialization {
-        if (ui.onOpen == null) ui.onOpen = arrayListOf()
-        ui.onOpen!!.add(function)
-    }
-}
-
-/**
- * Function that gets ran when the UI is closed
- *
- * @param block The function to run
- */
-fun ElementDSL.onUIClose(block: UI.() -> Unit) {
-    if (element.initialized) {
-        if (ui.onClose == null) ui.onClose = arrayListOf()
-        ui.onClose!!.add(block)
-    } else {
-        onInitialization {
-            if (ui.onClose == null) ui.onClose = arrayListOf()
-            ui.onClose!!.add(block)
-        }
     }
 }
 
@@ -79,7 +42,7 @@ fun ElementDSL.draggable(
     val px: Pixel = 0.px
     val py: Pixel = 0.px
     // note: if parent is Bounding, it can cause issues
-    onUIOpen {
+    afterCreation {
         px.pixels = target.internalX
         py.pixels = target.internalY
         target.constraints.x = px

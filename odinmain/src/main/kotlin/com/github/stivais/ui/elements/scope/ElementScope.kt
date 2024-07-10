@@ -1,5 +1,3 @@
-@file:Suppress("UNCHECKED_CAST")
-
 package com.github.stivais.ui.elements.scope
 
 import com.github.stivais.ui.UI
@@ -10,6 +8,7 @@ import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.elements.impl.*
 import com.github.stivais.ui.events.*
+import com.github.stivais.ui.operation.UIOperation
 import com.github.stivais.ui.renderer.*
 import com.github.stivais.ui.utils.radii
 
@@ -68,16 +67,16 @@ open class ElementScope<E: Element>(val element: E) {
         return null
     }
 
-    /**
-     * Dangerous
-     */
-    fun <E : ElementScope<*>> cast(): E {
-        return this as E
-    }
-
-    fun <E : Element> castElement(): E {
-        return element as E
-    }
+//    /**
+//     * Dangerous
+//     */
+//    fun <E : ElementScope<*>> cast(): E {
+//        return this as E
+//    }
+//
+//    fun <E : Element> castElement(): E {
+//        return element as E
+//    }
 
     @DSL
     fun group(
@@ -161,37 +160,52 @@ open class ElementScope<E: Element>(val element: E) {
         dsl: ElementScope<ImageElement>.() -> Unit = {}
     ) = create(ElementScope(ImageElement(Image(image), constraints, radius)), dsl)
 
-    fun onInitialization(action: () -> Unit) {
-        if (element.initialized) return UI.logger.warning("Tried calling \"onInitialization\" after init has already been done")
-        if (element.initializationTasks == null) element.initializationTasks = arrayListOf()
-        element.initializationTasks!!.add(action)
+    fun onCreation(block: () -> Unit) {
+        element.registerEvent(Lifetime.Initialized) {
+            block()
+            false
+        }
+    }
+
+    fun afterCreation(block: () -> Unit) {
+        element.registerEvent(Lifetime.AfterInitialized) {
+            block()
+            false
+        }
+    }
+
+    fun onRemove(block: () -> Unit) {
+        element.registerEvent(Lifetime.Uninitialized) {
+            block()
+            false
+        }
     }
 
     fun onClick(button: Int = 0, block: (Mouse.Clicked) -> Boolean) {
-        element.registerEvent(Mouse.Clicked(button), block as Event.() -> Boolean)
+        element.registerEvent(Mouse.Clicked(button), block)
     }
 
     fun onFocusedClick(button: Int = 0, block: (Focused.Clicked) -> Boolean) {
-        element.registerEvent(Focused.Clicked(button), block as Event.() -> Boolean)
+        element.registerEvent(Focused.Clicked(button), block)
     }
 
     fun onRelease(button: Int = 0, block: (Mouse.Released) -> Unit) {
         element.registerEvent(Mouse.Released(button)) {
-            block(this as Mouse.Released)
+            block(this)
             true
         }
     }
 
     fun onScroll(block: (Mouse.Scrolled) -> Boolean) {
-        element.registerEvent(Mouse.Scrolled(0f), block as Event.() -> Boolean)
+        element.registerEvent(Mouse.Scrolled(0f), block)
     }
 
     fun onKeyPressed(block: (Key.CodePressed) -> Boolean) {
-        element.registerEvent(Key.CodePressed(-1, true), block as Event.() -> Boolean)
+        element.registerEvent(Key.CodePressed(-1, true), block)
     }
 
     fun onKeyRelease(block: (Key.CodePressed) -> Boolean) {
-        element.registerEvent(Key.CodePressed(-1, false), block as Event.() -> Boolean)
+        element.registerEvent(Key.CodePressed(-1, false), block)
     }
 
     fun onMouseEnter(block: (Event) -> Boolean) {
@@ -208,7 +222,7 @@ open class ElementScope<E: Element>(val element: E) {
     }
 
     fun onMouseMove(block: (Mouse.Moved) -> Boolean) {
-        element.registerEvent(Mouse.Moved, block as Event.() -> Boolean)
+        element.registerEvent(Mouse.Moved, block)
     }
 
     fun onMouseHovered(ms: Long, block: () -> Unit) {
@@ -250,6 +264,10 @@ open class ElementScope<E: Element>(val element: E) {
 
     fun Element.add() {
         this@ElementScope.element.addElement(this)
+    }
+
+    fun UIOperation.add() {
+        element.addOperation(this)
     }
 }
 
