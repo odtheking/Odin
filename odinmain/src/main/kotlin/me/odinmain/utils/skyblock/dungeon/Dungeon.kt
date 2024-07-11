@@ -12,7 +12,6 @@ import me.odinmain.features.impl.dungeon.Mimic
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.PlayerUtils.posX
 import me.odinmain.utils.skyblock.PlayerUtils.posZ
-import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getDungeonPuzzles
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getDungeonTeammates
 import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
@@ -49,9 +48,10 @@ class Dungeon(val floor: Floor?) {
     }
 
     fun enterDungeonRoom(event: RoomEnterEvent) {
-        currentRoom = event.room ?: return
-        if (passedRooms.any { it.room.data.name == event.room.room.data.name }) return
-        event.room.let { passedRooms.add(it) }
+        currentRoom = event.room
+        val room = event.room ?: return
+        if (passedRooms.any { it.room.data.name == room.room.data.name }) return
+        passedRooms.add(room)
         val roomSecrets = ScanUtils.getRoomSecrets(currentRoom?.room?.data?.name ?: return)
         dungeonStats.knownSecrets = dungeonStats.knownSecrets?.plus(roomSecrets) ?: roomSecrets
     }
