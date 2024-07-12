@@ -1,6 +1,7 @@
 package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
+import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.*
 import me.odinmain.utils.render.RenderUtils.bind
@@ -75,6 +76,14 @@ val ItemStack?.isShortbow: Boolean
 val ItemStack?.isFishingRod: Boolean
     get() {
         return this?.lore?.any { it.contains("FISHING ROD") } == true
+    }
+
+/**
+ * Returns if an item is Spirit leaps or an Infinileap
+ */
+val ItemStack?.isLeap: Boolean
+    get() {
+        return this?.unformattedName?.noControlCodes?.equalsOneOf("Infinileap", "Spirit Leap") ?: false
     }
 
 val EntityPlayerSP.holdingEtherWarp: Boolean
