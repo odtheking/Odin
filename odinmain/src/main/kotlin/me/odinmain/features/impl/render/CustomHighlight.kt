@@ -12,7 +12,6 @@ import me.odinmain.utils.ServerUtils.getPing
 import me.odinmain.utils.render.*
 import me.odinmain.utils.render.RenderUtils.renderBoundingBox
 import me.odinmain.utils.render.RenderUtils.renderVec
-import me.odinmain.utils.skyblock.devMessage
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.Entity
 import net.minecraft.entity.boss.EntityWither

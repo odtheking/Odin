@@ -2,9 +2,8 @@ package me.odinclient.features.impl.skyblock
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.utils.skyblock.LocationUtils.inSkyblock
 import me.odinmain.utils.name
-import me.odinmain.utils.*
+import me.odinmain.utils.skyblock.LocationUtils.inSkyblock
 import me.odinmain.utils.skyblock.PlayerUtils
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.init.Blocks

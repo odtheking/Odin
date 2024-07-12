@@ -94,6 +94,12 @@ fun getItemIndexInContainerChest(container: ContainerChest, item: String, subLis
     }?.slotIndex
 }
 
+fun getItemIndexInContainerChest(container: ContainerChest, item: Collection<String>, subList: IntRange = 0..container.inventory.size - 36): Int? {
+    return container.inventorySlots.subList(subList.first, subList.last + 1).firstOrNull {
+        item.any { item -> it.stack?.unformattedName?.noControlCodes?.lowercase() == item.noControlCodes.lowercase() }
+    }?.slotIndex
+}
+
 fun getItemIndexInContainerChest(container: ContainerChest, item: String, subList: IntRange = 0..container.inventory.size - 36, ignoreCase: Boolean = false): Int? {
     return container.inventorySlots.subList(subList.first, subList.last + 1).firstOrNull {
         it.stack?.unformattedName?.contains(item, ignoreCase) == true
