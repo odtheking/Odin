@@ -6,7 +6,6 @@ import me.odinmain.events.impl.DungeonEvents
 import me.odinmain.utils.addRotationCoords
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.getBlockIdAt
 import net.minecraft.util.BlockPos
@@ -33,7 +32,7 @@ object BoulderSolver {
     }
 
     fun onRoomEnter(event: DungeonEvents.RoomEnterEvent) {
-        val room = event.room?.room ?: return reset()
+        val room = event.fullRoom?.room ?: return reset()
         if (room.data.name != "Boulder") return reset()
         var str = ""
         for (z in -3..2) {

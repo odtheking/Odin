@@ -21,6 +21,7 @@ object SplitsManager {
         if (dungeonEnded) return
 
         val currentSplit = currentSplits.splits.find { it.regex.matches(event.message) } ?: return
+        if (currentSplit.time != 0L) return
         currentSplit.time = System.currentTimeMillis()
 
         val index = currentSplits.splits.indexOf(currentSplit).takeIf { it != 0 } ?: return
@@ -49,7 +50,7 @@ object SplitsManager {
                 val floor = LocationUtils.getFloor() ?: return modMessage("§Couldn't get floor.")
                 val split = dungeonSplits[floor.floorNumber].toMutableList()
 
-                split.add(0, Split(if (floor.floorNumber != 0) Regex("\\[NPC] Mort: Here, I found this map when I first entered the dungeon\\.") else Regex("\\[NPC] Mort: Right-click the Orb for spells, and Left-click \\(or Drop\\) to use your Ultimate!"), "§2Blood Open"))
+                split.add(0, Split(Regex("\\[NPC] Mort: Here, I found this map when I first entered the dungeon\\.|\\[NPC] Mort: Right-click the Orb for spells, and Left-click \\(or Drop\\) to use your Ultimate!"), "§2Blood Open"))
                 split.add(1, Split(Regex(BLOOD_OPEN_REGEX), "§bBlood Clear"))
                 split.add(2, Split(Regex("\\[BOSS] The Watcher: You have proven yourself\\. You may pass\\."), "§dPortal Entry"))
                 split.add(Split(Regex("^\\s*☠ Defeated (.+) in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?\$"), "§1Total"))
@@ -179,5 +180,5 @@ val dungeonSplits = listOf(
     floor7SplitGroup,
 )
 
-// https://regex101.com/r/k1vuTt/1
-private const val BLOOD_OPEN_REGEX = "^\\[BOSS] The Watcher: (Congratulations, you made it through the Entrance\\.|Ah, you've finally arrived\\.|Ah, we meet again\\.\\.\\.|So you made it this far\\.\\.\\. interesting\\.|You've managed to scratch and claw your way here, eh\\?|I'm starting to get tired of seeing you around here\\.\\.\\.|Oh\\.\\. hello\\?|Things feel a little more roomy now, eh\\?)$"
+// https://regex101.com/r/BXKhOI/1
+private const val BLOOD_OPEN_REGEX = "^\\[BOSS] The Watcher: (Congratulations, you made it through the Entrance\\.|Ah, you've finally arrived\\.|Ah, we meet again\\.\\.\\.|So you made it this far\\.\\.\\. interesting\\.|You've managed to scratch and claw your way here, eh\\?|I'm starting to get tired of seeing you around here\\.\\.\\.|Oh\\.\\. hello\\?|Things feel a little more roomy now, eh\\?)$|^The BLOOD DOOR has been opened!$"

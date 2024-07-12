@@ -14,7 +14,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
 
 object PetKeybinds : Module(
-    "Pet Keybinds",
+    name = "Pet Keybinds",
     description = "keybinds for pets (/petkeys)",
     category = Category.SKYBLOCK
 ) {

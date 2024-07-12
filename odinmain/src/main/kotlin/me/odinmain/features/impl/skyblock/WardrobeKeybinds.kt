@@ -6,6 +6,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.clock.Clock
+import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.name
 import me.odinmain.utils.skyblock.getItemIndexInContainerChest
 import me.odinmain.utils.skyblock.modMessage
@@ -15,7 +16,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
 
 object WardrobeKeybinds : Module(
-    "Wardrobe Keybinds",
+    name = "Wardrobe Keybinds",
     description = "Keybinds for wardrobe equiping and unequipping.",
     category = Category.SKYBLOCK
 ) {
@@ -41,24 +42,26 @@ object WardrobeKeybinds : Module(
 
     @SubscribeEvent
     fun onGuiKeyPress(event: GuiEvent.GuiKeyPressEvent) {
+        if (!event.keyCode.equalsOneOf(unequipKeybind.key, nextPageKeybind.key, previousPageKeybind.key) || !wardrobes.any { it.key == event.keyCode }) return
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
         if (chest !is ContainerChest) return
 
         val matchResult = Regex("Wardrobe \\((\\d)/(\\d)\\)").find(chest.name) ?: return
         val (current, total) = matchResult.destructured
+        val equippedIndex = getItemIndexInContainerChest(chest, "equipped", 36..44, true)
 
         val index = when {
-            nextPageKeybind.isDown() -> if (current.toInt() < total.toInt()) 53 else return modMessage("You are already on the last page.")
-            previousPageKeybind.isDown() -> if (current.toInt() > 1) 45 else return modMessage("You are already on the first page.")
-            unequipKeybind.isDown() -> getItemIndexInContainerChest(chest, "Equipped", 36..44) ?: return modMessage("Couldn't find equipped armor.")
+            nextPageKeybind.isDown() -> if (current.toInt() < total.toInt()) 53 else return modMessage("§cYou are already on the last page.")
+            previousPageKeybind.isDown() -> if (current.toInt() > 1) 45 else return modMessage("§cYou are already on the first page.")
+            unequipKeybind.isDown() -> equippedIndex ?: return modMessage("§cCouldn't find equipped armor.")
             else -> {
                 val keyIndex = wardrobes.indexOfFirst { it.isDown() }.takeIf { it != -1 } ?: return
-                if (getItemIndexInContainerChest(chest, "Equipped", 36..44) == keyIndex) return modMessage("Armor  already equipped.")
+                if (equippedIndex == keyIndex + 36) return modMessage("§cArmor already equipped.")
                 keyIndex + 36
             }
         }
         if (!clickCoolDown.hasTimePassed()) return
-        if (index > chest.lowerChestInventory.sizeInventory - 1 || index < 1) return modMessage("Invalid index. $index, ${chest.name}")
+        if (index > chest.lowerChestInventory.sizeInventory - 1 || index < 1) return modMessage("§cInvalid index. $index, ${chest.name}")
         mc.playerController.windowClick(chest.windowId, index, 0, 0, mc.thePlayer)
         clickCoolDown.update()
 

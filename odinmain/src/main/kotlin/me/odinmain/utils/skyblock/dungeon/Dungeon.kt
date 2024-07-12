@@ -27,7 +27,7 @@ class Dungeon(val floor: Floor?) {
     var dungeonTeammatesNoSelf: List<DungeonPlayer> = emptyList()
     var leapTeammates = mutableListOf<DungeonPlayer>()
     var dungeonStats = DungeonStats()
-    var currentRoom: FullRoom? = null
+    var currentFullRoom: FullRoom? = null
     var passedRooms = mutableListOf<FullRoom>()
     var puzzles = listOf<Puzzle>()
 
@@ -48,11 +48,11 @@ class Dungeon(val floor: Floor?) {
     }
 
     fun enterDungeonRoom(event: RoomEnterEvent) {
-        currentRoom = event.room
-        val room = event.room ?: return
-        if (passedRooms.any { it.room.data.name == room.room.data.name }) return
-        passedRooms.add(room)
-        val roomSecrets = ScanUtils.getRoomSecrets(currentRoom?.room?.data?.name ?: return)
+        currentFullRoom = event.fullRoom
+        val fullRoom = event.fullRoom ?: return
+        if (passedRooms.any { it.room.data.name == fullRoom.room.data.name }) return
+        passedRooms.add(fullRoom)
+        val roomSecrets = ScanUtils.getRoomSecrets(currentFullRoom?.room?.data?.name ?: return)
         dungeonStats.knownSecrets = dungeonStats.knownSecrets?.plus(roomSecrets) ?: roomSecrets
     }
 

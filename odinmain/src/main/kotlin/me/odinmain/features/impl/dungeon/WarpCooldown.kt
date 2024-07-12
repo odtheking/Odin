@@ -27,7 +27,8 @@ object WarpCooldown : Module (
     private var warpTimer = Clock(30000)
 
     init {
-        onMessage(Regex("^\\[[^]]+] (\\w+) entered \\w+ Catacombs, Floor (\\w+)!$")) {
+        onMessage(Regex("(?s)^.*\\[[^]]+] (\\w+) entered \\w+ Catacombs, Floor (\\w+)!.*\$")) {
+            if (!it.startsWith("-----------------------------") && !it.endsWith("-----------------------------")) return@onMessage
             warpTimer.updateCD()
         }
     }

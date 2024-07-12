@@ -3,7 +3,6 @@ package me.odinmain.features.impl.render
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.clickgui.util.ColorUtil.darker
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.*
@@ -51,7 +50,6 @@ object Sidebar : Module(
             }
             if (index == scoreList.size) {
                 val s3 = scoreObjective.displayName
-                drawRect(-2, 0, width, mc.fontRendererObj.FONT_HEIGHT, backgroundColor.darker(1f).rgba)
                 drawRect(-2, 0, width, mc.fontRendererObj.FONT_HEIGHT, color)
                 drawString(s3, width - getStringWidth(s3), 1)
             }
