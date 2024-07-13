@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.dungeon
 
+import me.odinmain.events.impl.SkyblockJoinIslandEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -9,6 +10,7 @@ import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object MapInfo : Module(
     name = "Map Info",
@@ -87,17 +89,13 @@ object MapInfo : Module(
     private val compactScoreMargin: Float by NumberSetting("Margin", default = 0f, min = 0f, max = 5f, increment = 1f).withDependency { compactScoreBackground && compactScore.enabled }
     private val compactScoreColor: Color by ColorSetting("Background Color", default = Color.DARK_GRAY.withAlpha(0.5f), true, description = "The color of the background").withDependency { compactScoreBackground && compactScore.enabled }
 
-    private var shownTitle = false
+    var shownTitle = false
 
     init {
         execute(250) {
             if (DungeonUtils.score < 300 || shownTitle || !scoreTitle || !DungeonUtils.inDungeons) return@execute
             PlayerUtils.alert(scoreText.replace("&", "§"))
             shownTitle = true
-        }
-
-        onWorldLoad {
-            shownTitle = false
         }
     }
 
