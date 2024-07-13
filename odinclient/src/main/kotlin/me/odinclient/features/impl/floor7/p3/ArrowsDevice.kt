@@ -46,6 +46,7 @@ object ArrowsDevice : Module(
     private val reset: () -> Unit by ActionSetting("Reset") {
         markedPositions.clear()
         autoState = AutoState.Stopped
+        actionQueue.clear()
     }.withDependency { solver }
     private val auto: Boolean by BooleanSetting("Auto", description = "Automatically complete device")
     private val autoPhoenix: Boolean by BooleanSetting("Auto phoenix", default = true, description = "Automatically swap to phoenix pet using cast rod pet rules, must be set up correctly").withDependency { auto }
@@ -199,8 +200,8 @@ object ArrowsDevice : Module(
                 setCurrentSlot(leapSlot)
             },
             {
-                rightClick()
                 autoState = AutoState.WaitingOnLeapingGui
+                rightClick()
             }
         ))
     }
@@ -270,17 +271,14 @@ object ArrowsDevice : Module(
 
         val leapTo = DungeonUtils.leapTeammates.firstOrNull { it.clazz == classes[autoLeapClass] } ?: DungeonUtils.leapTeammates.first()
 
-        // TODO: See if this is necessary, just thought that since there is a first click delay in autoTerms, there should be a longer delay between guiOpen and clicking here
-        // Also this is ugly asf (but execute is weird)
-        actionQueue.addAll(listOf(
-            {},
-            {
-                getItemIndexInContainerChest(chest, leapTo.name, 11..16)?.let {
-                    PlayerUtils.windowClick(it, PlayerUtils.ClickType.Middle, instant = false)
-                }
-                autoState = AutoState.Stopped
+        clock.update()
+
+        actionQueue.add {
+            getItemIndexInContainerChest(chest, leapTo.name, 11..16)?.let {
+                PlayerUtils.windowClick(it, PlayerUtils.ClickType.Middle, instant = false)
             }
-        ))
+            autoState = AutoState.Stopped
+        }
     }
 
     @SubscribeEvent
