@@ -1,7 +1,6 @@
 package me.odinclient.features.impl.floor7.p3
 
 import me.odinclient.utils.skyblock.PlayerUtils.rightClick
-import me.odinmain.OdinMain
 import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.RealServerTick
 import me.odinmain.features.Category
@@ -26,7 +25,6 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
-import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 import org.lwjgl.input.Keyboard
@@ -36,11 +34,11 @@ object ArrowsDevice : Module(
     description = "Different features for the Sharp Shooter puzzle in floor 7.",
     category = Category.FLOOR7,
     tag = TagType.RISKY,
-    key = null
 ) {
     private val solver: Boolean by BooleanSetting("Solver")
     private val markedPositionColor: Color by ColorSetting("Marked Position", Color.RED, description = "Color of the marked position.").withDependency { solver }
     private val targetPositionColor: Color by ColorSetting("Target Position", Color.GREEN, description = "Color of the target position.").withDependency { solver }
+    private val alertOnDeviceComplete: Boolean by BooleanSetting("Device complete alert", default = true, description = "Send an alert when device is complete")
     private val resetKey: Keybinding by KeybindSetting("Reset", Keyboard.KEY_NONE, description = "Resets the solver.").onPress {
         reset()
     }.withDependency { solver }
@@ -54,7 +52,8 @@ object ArrowsDevice : Module(
     private val autoLeap: Boolean by BooleanSetting("Auto leap", default = true, description = "Automatically leap once device is done").withDependency { auto }
     private val autoLeapClass: Int by SelectorSetting("Leap to", defaultSelected = "Archer", arrayListOf("Archer", "Mage", "Berserk", "Healer", "Tank"), description = "Who to leap to").withDependency { autoLeap && auto }
     private val autoLeapOnlyPre: Boolean by BooleanSetting("Only leap on pre", default = true, description = "Only auto leap when doing i4").withDependency { autoLeap && auto }
-    private val delay: Long by NumberSetting("Delay", 100L, 30, 300, description = "Delay between actions").withDependency { auto }
+    private val delay: Long by NumberSetting("Delay", 150L, 80, 300, description = "Delay between actions").withDependency { auto }
+    private val aimingTime: Long by NumberSetting("Aiming duration", 100L, 80, 200, description = "Time taken to aim at a target").withDependency { auto }
 
     private val markedPositions = mutableSetOf<BlockPos>()
     private var targetPosition: BlockPos? = null
@@ -75,17 +74,30 @@ object ArrowsDevice : Module(
     private var serverTicksSinceLastTargetDisappeared: Int? = null;
 
     init {
-        onMessage(Regex("^Your (?:. )?Bonzo's Mask saved your life!$"), { enabled && auto && autoPhoenix && isPlayerOnStand() }, ::phoenixSwap)
+        onMessage(Regex("^Your (?:. )?Bonzo's Mask saved your life!$"), { enabled && auto && autoPhoenix && isPlayerOnStand() }) {
+            phoenixSwap()
+        }
 
-        // This is the quickest way to know if the device is complete, but isn't consistent ()
-        onMessage(Regex("^[a-zA-Z0-9_]{3,} completed a device! \\([1-7]/7\\)"), { enabled && isPlayerInRoom() }, ::onComplete)
+        onMessage(Regex("^[a-zA-Z0-9_]{3,} completed a device! \\([1-7]/7\\)"), { enabled && isPlayerInRoom() }) {
+            onComplete()
+        }
+
+        onMessage(Regex("^ ☠ You died and became a ghost\\.$"), { enabled && isPlayerOnStand() }) {
+            // Died while on device
+            autoState = AutoState.Stopped
+            actionQueue.clear()
+            // Prevent the tick count from continuing and registering a false positive
+            // This does mean we could get a false negative but since the player is already
+            // dead knowing if the device is complete has less importance (no leaping)
+            serverTicksSinceLastTargetDisappeared = 11
+        }
 
         execute(1000) {
             if(DungeonUtils.getPhase() != M7Phases.P3) return@execute
 
             // Cast is safe since we won't return an entity that isn't an armor stand
             activeArmorStand = mc.theWorld?.loadedEntityList?.find {
-                it is EntityArmorStand && it.name.containsOneOf(inactiveDeviceString, activeDeviceString) && it.distanceSquaredTo(
+                it is EntityArmorStand && it.name.containsOneOf(INACTIVE_DEVICE_STRING, ACTIVE_DEVICE_STRING) && it.distanceSquaredTo(
                     standPosition.toVec3()) <= 4.0
             } as EntityArmorStand?
         }
@@ -132,7 +144,7 @@ object ArrowsDevice : Module(
         }
     }
 
-    private fun phoenixSwap(message: String) {
+    private fun phoenixSwap() {
         val rodSlot = mc.thePlayer?.inventory?.mainInventory?.indexOfFirst { it.isFishingRod } ?: -1;
 
         if (rodSlot < 0 || rodSlot >= 9) {
@@ -217,7 +229,7 @@ object ArrowsDevice : Module(
             holdBow()
             holdClick()
             val (_, yaw, pitch) = getDirectionToVec3(target)
-            smoothRotateTo(yaw, pitch, delay) {
+            smoothRotateTo(yaw, pitch, aimingTime) {
                 autoState = AutoState.Shooting
                 holdBow()
             }
@@ -232,14 +244,16 @@ object ArrowsDevice : Module(
     //    for the text most of the time (but not always) also can fail if the player leaves the device before those 10
     //    ticks are up
     // We use all three here since we want to detect as soon as possible (since we might die if we wait too long).
-    private fun onComplete(msg: String = "") {
+    private fun onComplete() {
         if(isDeviceComplete) return
 
         isDeviceComplete = true
         releaseClick()
 
-        modMessage("Sharp shooter device complete")
-        PlayerUtils.playLoudSound("note.pling", 2f, 1f)
+        if(alertOnDeviceComplete) {
+            modMessage("Sharp shooter device complete")
+            PlayerUtils.alert("Device Complete", color = Color.GREEN)
+        }
 
         autoState = AutoState.Stopped
 
@@ -256,13 +270,14 @@ object ArrowsDevice : Module(
 
         val leapTo = DungeonUtils.leapTeammates.firstOrNull { it.clazz == classes[autoLeapClass] } ?: DungeonUtils.leapTeammates.first()
 
-        // TODO: See if this is necessary, just thought that since there is a first click delay in autoTerms, there should be a delay between guiOpen and clicking here
+        // TODO: See if this is necessary, just thought that since there is a first click delay in autoTerms, there should be a longer delay between guiOpen and clicking here
+        // Also this is ugly asf (but execute is weird)
         actionQueue.addAll(listOf(
             {},
-            {},
-            fun() {
-                val index = getItemIndexInContainerChest(chest, leapTo.name, 11..16) ?: return modMessage("Cant find player $name. This shouldn't be possible!")
-                mc.playerController.windowClick(chest.windowId, index, 2, 3, mc.thePlayer)
+            {
+                getItemIndexInContainerChest(chest, leapTo.name, 11..16)?.let {
+                    PlayerUtils.windowClick(it, PlayerUtils.ClickType.Middle, instant = false)
+                }
                 autoState = AutoState.Stopped
             }
         ))
@@ -275,7 +290,7 @@ object ArrowsDevice : Module(
             return
         }
 
-        if(!isDeviceComplete && activeArmorStand?.name == activeDeviceString)  {
+        if(!isDeviceComplete && activeArmorStand?.name == ACTIVE_DEVICE_STRING)  {
             onComplete()
         }
 
@@ -389,8 +404,8 @@ object ArrowsDevice : Module(
     private val roomBoundingBox = AxisAlignedBB(20.0, 100.0, 30.0, 89.0, 151.0, 51.0)
     private val lastGateBlock = BlockPos(8, 118, 50)
 
-    private val activeDeviceString = "\u00A7aDevice"
-    private val inactiveDeviceString = "\u00A7cInactive"
+    private const val ACTIVE_DEVICE_STRING = "\u00A7aDevice"
+    private const val INACTIVE_DEVICE_STRING = "\u00A7cInactive"
 
     private val classes = listOf(DungeonClass.Archer, DungeonClass.Mage, DungeonClass.Berserk, DungeonClass.Healer, DungeonClass.Tank)
 
