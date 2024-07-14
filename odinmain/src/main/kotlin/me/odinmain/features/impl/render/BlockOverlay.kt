@@ -2,6 +2,7 @@ package me.odinmain.features.impl.render
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
@@ -20,6 +21,7 @@ object BlockOverlay : Module(
     private val color: Color by ColorSetting("Color", Color(0, 0, 0, 0.4f), allowAlpha = true, description = "The color of the box.")
     private val lineWidth: Float by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.")
     private val depthCheck: Boolean by BooleanSetting("Depth check", false, description = "Boxes show through walls.")
+    private val lineSmoothing: Boolean by BooleanSetting("Line Smoothing", false, description = "Makes the lines smoother.").withDependency { style == 1 || style == 2 }
 
     @SubscribeEvent
     fun onRenderBlockOverlay(event: DrawBlockHighlightEvent) {
@@ -27,10 +29,9 @@ object BlockOverlay : Module(
         event.isCanceled = true
 
         val blockPos = event.target.blockPos
-        val block = getBlockAt(event.target.blockPos)
 
-        if (block.material === Material.air || !mc.theWorld.worldBorder.contains(blockPos)) return
+        if (getBlockAt(blockPos).material === Material.air || !mc.theWorld.worldBorder.contains(blockPos)) return
 
-        Renderer.drawStyledBlock(blockPos, color, style, lineWidth, depthCheck)
+        Renderer.drawStyledBlock(blockPos, color, style, lineWidth, depthCheck, lineSmoothing)
     }
 }

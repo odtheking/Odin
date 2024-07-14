@@ -5,6 +5,7 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
+import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.name
 import me.odinmain.utils.skyblock.getItemIndexInContainerChest
 import me.odinmain.utils.skyblock.modMessage
@@ -22,7 +23,7 @@ object WardrobeKeybinds : Module(
     private val nextPageKeybind: Keybinding by KeybindSetting("Next Page Keybind", Keyboard.KEY_NONE, "Goes to the next page.")
     private val previousPageKeybind: Keybinding by KeybindSetting("Previous Page Keybind", Keyboard.KEY_NONE, "Goes to the previous page.")
     private val delay: Long by NumberSetting("Delay", 0, 0.0, 10000.0, 10.0, description = "The delay between each click.")
-    private val disallowUnequippingEquipped: Boolean by BooleanSetting("Disallow Unequipping Equipped", false, description = "Prevents unequipping equipped armor.")
+    private val disallowUnequippingEquipped: Boolean by BooleanSetting("Disable Unequip", false, description = "Prevents unequipping equipped armor.")
 
     private val advanced: Boolean by DropdownSetting("Show Settings", false)
 
@@ -37,7 +38,7 @@ object WardrobeKeybinds : Module(
     private val wardrobe9: Keybinding by KeybindSetting("Wardrobe 9", Keyboard.KEY_9, "Wardrobe 9").withDependency { advanced }
 
     private val wardrobes = arrayOf(wardrobe1, wardrobe2, wardrobe3, wardrobe4, wardrobe5, wardrobe6, wardrobe7, wardrobe8, wardrobe9)
-    private var lastClickTime: Long = 0L
+    private val clickCoolDown = Clock(delay)
 
     @SubscribeEvent
     fun onGuiKeyPress(event: GuiEvent.GuiKeyPressEvent) {
@@ -59,10 +60,10 @@ object WardrobeKeybinds : Module(
                 keyIndex + 36
             }
         }
-        if (System.currentTimeMillis() - lastClickTime < delay) return
+        if (!clickCoolDown.hasTimePassed(delay)) return
         if (index > chest.lowerChestInventory.sizeInventory - 1 || index < 1) return modMessage("§cInvalid index. $index, ${chest.name}")
         mc.playerController.windowClick(chest.windowId, index, 0, 0, mc.thePlayer)
-        lastClickTime = System.currentTimeMillis()
+        clickCoolDown.update()
 
         event.isCanceled = true
     }
