@@ -1,6 +1,6 @@
 package me.odinmain.features.impl.dungeon
 
-import me.odinmain.OdinMain
+import me.odinmain.OdinMain.isLegitVersion
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -19,35 +19,37 @@ object KeyHighlight : Module(
     description = "Highlights wither and blood keys in dungeons.",
     category = Category.DUNGEON,
 ) {
-    private var currentKey: Pair<Color, Entity>? = null
     private val thickness: Float by NumberSetting("Thickness", 5f, 1f, 20f, .1f, description = "The thickness of the box.")
+    data class KeyInfo(val color: Color, val entity: Entity)
+    private var currentKey: KeyInfo? = null
+
+    init {
+        onWorldLoad {
+            currentKey = null
+        }
+    }
 
     @SubscribeEvent
     fun postMetadata(event: PostEntityMetadata) {
-        if (mc.theWorld.getEntityByID(event.packet.entityId) !is EntityArmorStand || !DungeonUtils.inDungeons || DungeonUtils.inBoss) return
-        val entity = mc.theWorld.getEntityByID(event.packet.entityId) as EntityArmorStand
+        val entity = mc.theWorld.getEntityByID(event.packet.entityId) as? EntityArmorStand ?: return
+        if (!DungeonUtils.inDungeons || DungeonUtils.inBoss) return
+
         currentKey = when (entity.name.noControlCodes) {
-            "Wither Key" -> Color.BLACK to entity
-            "Blood Key" -> Color.RED to entity
+            "Wither Key" -> KeyInfo(Color.BLACK, entity)
+            "Blood Key" -> KeyInfo(Color.RED, entity)
             else -> return
         }
     }
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        val (color, entity) = currentKey ?: return
-        if (entity.isDead) {
-            currentKey = null
-            return
-        }
+        currentKey?.let { (color, entity) ->
+            if (entity.isDead) {
+                currentKey = null
+                return
+            }
 
-        val pos = entity.positionVector.addVec(-0.5, 1, -0.5)
-        Renderer.drawBox(pos.toAABB(), color, fillAlpha = 0f, outlineWidth = thickness, depth = OdinMain.isLegitVersion)
-    }
-
-    init {
-        onWorldLoad {
-            currentKey = null
+            Renderer.drawBox(entity.positionVector.addVec(-0.5, 1, -0.5).toAABB(), color, fillAlpha = 0f, outlineWidth = thickness, depth = isLegitVersion)
         }
     }
 }

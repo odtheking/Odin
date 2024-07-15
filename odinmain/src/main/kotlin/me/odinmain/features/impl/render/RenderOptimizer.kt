@@ -7,16 +7,15 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.DropdownSetting
 import me.odinmain.utils.*
-import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.M7Phases
 import me.odinmain.utils.skyblock.getSkullValue
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.monster.EntityBlaze
 import net.minecraft.init.Items
-import net.minecraft.network.play.server.S0EPacketSpawnObject
-import net.minecraft.network.play.server.S2APacketParticles
+import net.minecraft.network.play.server.*
 import net.minecraft.util.EnumParticleTypes
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -30,10 +29,11 @@ object RenderOptimizer : Module(
     private val hideHealerFairy: Boolean by BooleanSetting(name = "Hide Healer Fairy", default = true, description = "Hides the healer fairy.")
     private val hideSoulWeaver: Boolean by BooleanSetting(name = "Hide Soul Weaver", default = true, description = "Hides the soul weaver.")
     private val hideArcherBones: Boolean by BooleanSetting(name = "Hide Archer Bones", default = true, description = "Hides the archer bones.")
+    private val hide0HealthNames: Boolean by BooleanSetting(name = "Hide 0 Health", default = true, description = "Hides the names of entities with 0 health.")
     private val hideWitherMinerName: Boolean by BooleanSetting(name = "Hide WitherMiner Name", default = true, description = "Hides the wither miner name.")
     private val hideTerracottaName: Boolean by BooleanSetting(name = "Hide Terracota Name", default = true, description = "Hides the terracota name.")
     private val hideNonStarredMobName: Boolean by BooleanSetting(name = "Hide Non-Starred Mob Name", default = true, description = "Hides the non-starred mob name.")
-    private val removeBlazePuzzleNames: Boolean by BooleanSetting(name = "Hide blazes", default = true, description = "Hides the blazes in the blaze puzzle room.")
+    private val removeBlazePuzzleNames: Boolean by BooleanSetting(name = "Hide blazes", default = false, description = "Hides the blazes in the blaze puzzle room.")
 
     private val showParticleOptions: Boolean by DropdownSetting("Show Particles Options")
     private val removeExplosion: Boolean by BooleanSetting("Remove Explosion").withDependency { showParticleOptions }
@@ -63,8 +63,22 @@ object RenderOptimizer : Module(
         }
     }
 
+    private val healthMatches = arrayOf(
+        Regex("^§.\\[§.Lv\\d+§.] §.+ (?:§.)+0§f/.+§c❤$"),
+        Regex("^.+ (?:§.)+0§c❤$")
+    )
+
     @SubscribeEvent
     fun onPacket(event: PacketReceivedEvent) {
+        if (event.packet is S1CPacketEntityMetadata && hide0HealthNames) {
+            val entity = mc.theWorld.getEntityByID(event.packet.entityId) ?: return
+            val list = event.packet.func_149376_c() ?: return
+
+            list.filterIsInstance<String>()
+                .takeUnless { strings -> strings.any { healthMatches.any { regex -> regex.matches(it) } } }
+                ?.forEach { _ -> entity.alwaysRenderNameTag = false }
+        }
+
         if (event.packet is S0EPacketSpawnObject && event.packet.type == 70 && fallingBlocks) event.isCanceled = true
 
         if (event.packet !is S2APacketParticles) return
@@ -73,8 +87,7 @@ object RenderOptimizer : Module(
             event.isCanceled = true
 
 
-        if (DungeonUtils.getPhase() == Island.M7P5 && hideParticles &&
-            !event.packet.particleType.name.containsOneOf("ENCHANTMENT TABLE", "FLAME", "FIREWORKS_SPARK"))
+        if (DungeonUtils.getPhase() == M7Phases.P5 && hideParticles && !event.packet.particleType.name.containsOneOf("ENCHANTMENT TABLE", "FLAME", "FIREWORKS_SPARK"))
             event.isCanceled = true
 
         if (hideHeartParticles && event.packet.particleType.name.containsOneOf("HEART"))
@@ -82,34 +95,30 @@ object RenderOptimizer : Module(
     }
 
     private fun handleHideArcherBones(entity: Entity) {
-        val itemEntity = entity as? EntityItem
-        if (itemEntity != null && DungeonUtils.inDungeons && itemEntity.entityItem.itemDamage == 15 && itemEntity.entityItem.item === Items.dye)
+        val itemEntity = entity as? EntityItem ?: return
+        if (DungeonUtils.inDungeons && itemEntity.entityItem.itemDamage == 15 && itemEntity.entityItem.item === Items.dye)
             entity.setDead()
-
     }
 
     private fun removeTentacles(entity: Entity) {
-        val armorStand = entity as? EntityArmorStand
-        if (DungeonUtils.getPhase() == Island.M7P5 && getSkullValue(armorStand)?.contains(TENTACLE_TEXTURE) == true) armorStand?.setDead()
+        if (DungeonUtils.getPhase() == M7Phases.P5 && getSkullValue(entity)?.contains(TENTACLE_TEXTURE) == true)
+            entity.setDead()
     }
 
     private fun handleHealerFairy(entity: Entity) {
         val armorStand = entity as? EntityArmorStand ?: return
         if (armorStand.heldItem == null) return
-        if (
-            DungeonUtils.inDungeons && armorStand.heldItem?.item == Items.skull
-            && getHealerFairyTextureValue(armorStand) == (HEALER_FAIRY_TEXTURE)
-        ) armorStand.setDead()
+        if (DungeonUtils.inDungeons && armorStand.heldItem?.item == Items.skull && getHealerFairyTextureValue(armorStand) == (HEALER_FAIRY_TEXTURE))
+            armorStand.setDead()
     }
 
     private fun handleSoulWeaver(entity: Entity) {
-        val armorStand = entity as? EntityArmorStand
-        if (DungeonUtils.inDungeons && getSkullValue(armorStand)?.contains(SOUL_WEAVER_TEXTURE) == true) armorStand?.setDead()
+        if (DungeonUtils.inDungeons && getSkullValue(entity)?.contains(SOUL_WEAVER_TEXTURE) == true) entity.setDead()
     }
 
     private fun handleWitherMiner(entity: Entity) {
-        if (entity !is EntityArmorStand || !entity.customNameTag.noControlCodes.containsOneOf("Wither Miner", "Wither Guard", "Apostle")) return
-        entity.alwaysRenderNameTag = false
+        if (entity.customNameTag.noControlCodes.containsOneOf("Wither Miner", "Wither Guard", "Apostle"))
+            entity.alwaysRenderNameTag = false
     }
 
     private fun handleTerracotta(entity: Entity) {

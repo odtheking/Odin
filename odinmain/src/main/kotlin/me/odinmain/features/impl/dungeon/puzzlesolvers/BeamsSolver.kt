@@ -2,8 +2,9 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import me.odinmain.OdinMain.logger
 import me.odinmain.events.impl.BlockChangeEvent
-import me.odinmain.events.impl.EnteredDungeonRoomEvent
+import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
@@ -24,21 +25,18 @@ object BeamsSolver {
     init {
         try {
             val text = isr?.readText()
-            lanternPairs = gson.fromJson(
-                text, object : TypeToken<List<List<Int>>>() {}.type
-            )
+            lanternPairs = gson.fromJson(text, object : TypeToken<List<List<Int>>>() {}.type)
             isr?.close()
-            println(lanternPairs.toString())
         } catch (e: Exception) {
-            e.printStackTrace()
+            logger.error("Error loading creeper beams solutions", e)
             lanternPairs = emptyList()
         }
     }
 
     private var currentLanternPairs = mutableMapOf<BlockPos, Pair<BlockPos, Color>>()
 
-    fun enterDungeonRoom(event: EnteredDungeonRoomEvent) {
-        val room = event.room?.room ?: return // <-- orb = orb.orb
+    fun enterDungeonRoom(event: RoomEnterEvent) {
+        val room = event.fullRoom?.room ?: return // <-- orb = orb.orb
         if (room.data.name != "Creeper Beams") return reset()
 
         if (scanned) return
@@ -63,7 +61,7 @@ object BeamsSolver {
             Renderer.drawBox(positions.value.first.toAABB(), color, depth = PuzzleSolvers.beamsDepth, outlineAlpha = if (PuzzleSolvers.beamStyle == 0) 0 else color.alpha, fillAlpha = if (PuzzleSolvers.beamStyle == 1) 0 else color.alpha)
 
             if (PuzzleSolvers.beamsTracer)
-                Renderer.draw3DLine(positions.key.toVec3().addVec(0.5, 0.5, 0.5), positions.value.first.toVec3().addVec(0.5, 0.5, 0.5), color, depth = PuzzleSolvers.beamsDepth, lineWidth = 1f)
+                Renderer.draw3DLine(positions.key.toVec3().addVec(0.5, 0.5, 0.5), positions.value.first.toVec3().addVec(0.5, 0.5, 0.5), color = color, depth = PuzzleSolvers.beamsDepth, lineWidth = 1f)
         }
     }
 
@@ -73,7 +71,6 @@ object BeamsSolver {
                     event.update.block != Blocks.sea_lantern && event.old.block == Blocks.sea_lantern
         }.forEach { currentLanternPairs.remove(it.key) }
     }
-
 
     fun reset() {
         scanned = false

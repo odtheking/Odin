@@ -4,6 +4,7 @@ import me.odin.features.impl.floor7.p3.ArrowAlign
 import me.odin.features.impl.floor7.p3.SimonSays
 import me.odin.features.impl.render.Camera
 import me.odin.features.impl.render.EtherWarpHelper
+import me.odin.features.impl.skyblock.HidePlayers
 import me.odinmain.OdinMain
 import me.odinmain.features.ModuleManager
 import net.minecraftforge.common.MinecraftForge
@@ -41,17 +42,10 @@ class ModCore {
 
     @EventHandler
     fun loadComplete(event: FMLLoadCompleteEvent) {
-        val modules = arrayListOf(
-            ArrowAlign,
-            SimonSays,
-            EtherWarpHelper,
-            Camera
-        )
+        ModuleManager.addModules(SimonSays, ArrowAlign, EtherWarpHelper, Camera, HidePlayers)
 
-        ModuleManager.modules.addAll(modules)
         OdinMain.loadComplete()
     }
-
 
     companion object {
         const val MOD_ID = "od"

@@ -19,7 +19,6 @@ import java.lang.reflect.Type
 import kotlin.math.cos
 import kotlin.math.sin
 
-
 object DevPlayers {
     private var devs: HashMap<String, DevPlayer> = HashMap()
     val isDev get() = devs.containsKey(mc.session?.username)
@@ -27,6 +26,8 @@ object DevPlayers {
     data class DevPlayer(val xScale: Float = 1f, val yScale: Float = 1f, val zScale: Float = 1f,
                          val wings: Boolean = false, val wingsColor: Color = Color(255, 255, 255))
     data class DevData(val devName: String, val wingsColor: Triple<Int, Int, Int>, val size: Triple<Float, Float, Float>, val wings: Boolean)
+
+    @Suppress("UNCHECKED_CAST")
     class DevDeserializer : JsonDeserializer<DevData> {
         override fun deserialize(
             json: JsonElement?,
@@ -167,6 +168,5 @@ object DevPlayers {
             }
             return f
         }
-
     }
 }

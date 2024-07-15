@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.floor7.p3
 
+import io.github.moulberry.notenoughupdates.NEUApi
 import me.odinmain.events.impl.*
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -22,6 +23,7 @@ import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.ContainerPlayer
 import net.minecraft.item.*
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
+import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
@@ -51,8 +53,10 @@ object TerminalSolver : Module(
     private val wrongColor: Color by ColorSetting("Wrong Color", Color(45, 45, 45), true).withDependency { renderType == 0 && showColors }
     val textColor: Color by ColorSetting("Text Color", Color(220, 220, 220), true).withDependency { showColors }
     val panesColor: Color by ColorSetting("Panes Color", Color(0, 170, 170), true).withDependency { showColors }
-    val rubixColor: Color by ColorSetting("Rubix Color", Color(0, 170, 170), true).withDependency { showColors }
-    val oppositeRubixColor: Color by ColorSetting("Negative Rubix Color", Color(170, 85, 0), true).withDependency { showColors }
+    val rubixColor1: Color by ColorSetting("Rubix Color 1", Color(0, 170, 170), true).withDependency { showColors }
+    val rubixColor2: Color by ColorSetting("Rubix Color 2", Color(0, 100, 100), true).withDependency { showColors }
+    val oppositeRubixColor1: Color by ColorSetting("Negative Rubix Color 1", Color(170, 85, 0), true).withDependency { showColors }
+    val oppositeRubixColor2: Color by ColorSetting("Negative Rubix Color 2", Color(210, 85, 0), true).withDependency { showColors }
     val orderColor: Color by ColorSetting("Order Color 1", Color(0, 170, 170, 1f), true).withDependency { showColors }
     val orderColor2: Color by ColorSetting("Order Color 2", Color(0, 100, 100, 1f), true).withDependency { showColors }
     val orderColor3: Color by ColorSetting("Order Color 3", Color(0, 65, 65, 1f), true).withDependency { showColors }
@@ -96,12 +100,13 @@ object TerminalSolver : Module(
             else -> return
         }
         clicksNeeded = solution.size
+        if (renderType == 3 && Loader.instance().activeModList.any { it.modId == "notenoughupdates" }) NEUApi.setInventoryButtonsToDisabled()
         TerminalOpenedEvent(currentTerm, solution).postAndCatch()
     }
 
     @SubscribeEvent
     fun onGuiRender(event: GuiEvent.DrawGuiContainerScreenEvent) {
-        if (currentTerm == TerminalTypes.NONE || !enabled || !renderType.equalsOneOf(0,3) || event.container !is ContainerChest) return
+        if (currentTerm == TerminalTypes.NONE || currentTerm == TerminalTypes.MELODY || !enabled || !renderType.equalsOneOf(0,3) || event.container !is ContainerChest) return
         if (renderType == 3) {
             CustomTermGui.render()
             event.isCanceled = true
@@ -137,9 +142,16 @@ object TerminalSolver : Module(
 
             TerminalTypes.RUBIX -> {
                 val needed = solution.count { it == event.slot.slotIndex }
-                val text = if (needed < 3) needed.toString() else (needed - 5).toString()
-                Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, if (needed < 3) rubixColor.rgba else oppositeRubixColor.rgba)
-                mcText(text, event.x + 8f - getMCTextWidth(text) / 2, event.y + 4.5, 1, textColor, shadow = textShadow, false)
+                val text = if (needed < 3) needed else (needed - 5)
+                val color = when {
+                    needed < 3 && text == 2 -> rubixColor2
+                    needed < 3 && text == 1 -> rubixColor1
+                    text == -2 -> oppositeRubixColor2
+                    else -> oppositeRubixColor1
+                }
+
+                Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, color.rgba)
+                mcText(text.toString(), event.x + 8f - getMCTextWidth(text.toString()) / 2, event.y + 4.5, 1, textColor, shadow = textShadow, false)
             }
             TerminalTypes.ORDER -> {
                 val index = solution.indexOf(event.slot.slotIndex)
@@ -177,7 +189,7 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun guiClick(event: GuiEvent.GuiMouseClickEvent) {
-        if (renderType != 3 || currentTerm == TerminalTypes.NONE || !enabled) return
+        if (renderType != 3 || currentTerm == TerminalTypes.NONE || currentTerm == TerminalTypes.MELODY || !enabled) return
         CustomTermGui.mouseClicked(MouseUtils.mouseX.toInt(), MouseUtils.mouseY.toInt(), event.button)
         event.isCanceled = true
     }
@@ -192,7 +204,7 @@ object TerminalSolver : Module(
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.END) return
-        if (mc.thePlayer?.openContainer is ContainerPlayer || currentTerm == TerminalTypes.NONE) leftTerm()
+        if (mc.thePlayer?.openContainer is ContainerPlayer) leftTerm()
     }
 
     @SubscribeEvent
@@ -201,10 +213,14 @@ object TerminalSolver : Module(
         val playerName = match.groups[1]?.value
         val completionStatus = match.groups[2]?.value
         if (playerName != mc.thePlayer.name) return
-        if (completionStatus == "(7/7)" || completionStatus == "(8/8)") leftTerm()
+        if (completionStatus == "(7/7)" || completionStatus == "(8/8)") {
+            TerminalSolvedEvent(currentTerm).postAndCatch()
+            leftTerm()
+        }
     }
 
     private fun leftTerm() {
+        if (currentTerm == TerminalTypes.NONE && solution.isEmpty()) return
         TerminalClosedEvent(currentTerm).postAndCatch()
         currentTerm = TerminalTypes.NONE
         solution = emptyList()
@@ -270,11 +286,3 @@ object TerminalSolver : Module(
     }
 }
 
-enum class TerminalTypes(val guiName: String) {
-    PANES("Correct all the panes!"),
-    RUBIX("Change all to same color!"),
-    ORDER("Click in order!"),
-    STARTS_WITH("What starts with:"),
-    SELECT("Select all the"),
-    NONE("None")
-}

@@ -15,15 +15,14 @@ object SecretHitboxes : Module(
     description = "Full block Secret hitboxes.",
     category = Category.DUNGEON
 ) {
-    val lever: Boolean by BooleanSetting("Lever", default = true)
-    val button: Boolean by BooleanSetting("Button", default = true)
-    val essence: Boolean by BooleanSetting("Essence", default = true)
-    val chests: Boolean by BooleanSetting("Chests", default = true)
+    val lever: Boolean by BooleanSetting("Lever", default = false)
+    val button: Boolean by BooleanSetting("Button", default = false)
+    val essence: Boolean by BooleanSetting("Essence", default = false)
+    val chests: Boolean by BooleanSetting("Chests", default = false)
 
     private val mostSignificantBits = UUID.fromString("26bb1a8d-7c66-31c6-82d5-a9c04c94fb02").mostSignificantBits
 
     fun isEssence(blockPos: BlockPos): Boolean {
         return essence && (mc.theWorld.getTileEntity(blockPos) as? TileEntitySkull)?.playerProfile?.id?.mostSignificantBits == mostSignificantBits
     }
-
 }

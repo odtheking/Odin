@@ -1,6 +1,7 @@
 package me.odinmain.ui.util.shader
 
-import org.apache.commons.io.IOUtils;
+import me.odinmain.OdinMain.logger
+import org.apache.commons.io.IOUtils
 import org.lwjgl.opengl.*
 
 
@@ -10,8 +11,8 @@ abstract class Shader(fragmentShader: String) {
     private var uniformsMap: MutableMap<String, Int>? = null
 
     init {
-        var vertexShaderID: Int = 0
-        var fragmentShaderID: Int = 0
+        var vertexShaderID = 0
+        var fragmentShaderID = 0
 
         try {
             val vertexStream = javaClass.getResourceAsStream("/shaders/source/entity/vertex.vsh")
@@ -23,8 +24,7 @@ abstract class Shader(fragmentShader: String) {
             fragmentShaderID = createShader(IOUtils.toString(fragmentStream), ARBFragmentShader.GL_FRAGMENT_SHADER_ARB, "/shaders/$fragmentShader")
             IOUtils.closeQuietly(fragmentStream)
         } catch (e: Exception) {
-            e.printStackTrace()
-
+            logger.error("Error creating shader", e)
         }
 
         if (vertexShaderID != 0 && fragmentShaderID != 0) {
@@ -90,7 +90,7 @@ abstract class Shader(fragmentShader: String) {
         )
     }
 
-    fun setUniform(uniformName: String, location: Int) {
+    private fun setUniform(uniformName: String, location: Int) {
         uniformsMap!![uniformName] = location
     }
 

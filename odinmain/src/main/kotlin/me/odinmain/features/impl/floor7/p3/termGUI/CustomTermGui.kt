@@ -1,10 +1,12 @@
 package me.odinmain.features.impl.floor7.p3.termGUI
 
 import me.odinmain.OdinMain.mc
+import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.currentTerm
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.openedTerminalTime
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
+import me.odinmain.utils.postAndCatch
 import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
@@ -22,6 +24,7 @@ object CustomTermGui {
             TerminalTypes.ORDER -> OrderGui.render()
             TerminalTypes.STARTS_WITH -> StartsWithGui.render()
             TerminalTypes.SELECT -> SelectAllGui.render()
+            TerminalTypes.MELODY -> {}
             TerminalTypes.NONE -> {}
         }
         scale(1f / TerminalSolver.customScale, 1f / TerminalSolver.customScale)
@@ -36,19 +39,21 @@ object CustomTermGui {
             TerminalTypes.ORDER -> OrderGui.mouseClicked(x, y, button)
             TerminalTypes.STARTS_WITH -> StartsWithGui.mouseClicked(x, y, button)
             TerminalTypes.SELECT -> SelectAllGui.mouseClicked(x, y, button)
+            TerminalTypes.MELODY -> return
             TerminalTypes.NONE -> return
         }
     }
 }
 
 abstract class TermGui {
-    val itemIndexMap: MutableMap<Int, Box> = mutableMapOf()
+    protected val itemIndexMap: MutableMap<Int, Box> = mutableMapOf()
 
     fun mouseClicked(x: Int, y: Int, button: Int) {
         itemIndexMap.entries.find {
             it.value.isPointWithin(x, y)
         }?.let {
             if (System.currentTimeMillis() - openedTerminalTime < 300) return
+            if (GuiEvent.CustomTermGuiClick(it.key, if (button == 0) 3 else 0, button).postAndCatch()) return
             windowClick(it.key, if (button == 0) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Right, true)
         }
     }
@@ -64,10 +69,6 @@ abstract class TermGui {
             return currentGui?.itemIndexMap?.entries?.find {
                 it.value.isPointWithin(x, y)
             }?.key
-        }
-
-        fun getItemIndexMap(): MutableMap<Int, Box> {
-            return currentGui?.itemIndexMap ?: mutableMapOf()
         }
     }
 

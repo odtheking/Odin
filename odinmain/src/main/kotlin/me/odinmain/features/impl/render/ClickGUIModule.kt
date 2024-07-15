@@ -1,7 +1,8 @@
 package me.odinmain.features.impl.render
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.launch
 import me.odinmain.OdinMain
+import me.odinmain.OdinMain.scope
 import me.odinmain.config.Config
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -19,7 +20,7 @@ import org.lwjgl.input.Keyboard
 
 @AlwaysActive
 object ClickGUIModule: Module(
-    "Click Gui",
+    name = "Click Gui",
     Keyboard.KEY_RSHIFT,
     category = Category.RENDER,
     description = "Allows you to customize the GUI."
@@ -42,10 +43,9 @@ object ClickGUIModule: Module(
     private var showHidden: Boolean by DropdownSetting("Show Hidden", false)
     private val passcode: String by StringSetting("Passcode", "odin", description = "Passcode for dev features.").withDependency { DevPlayers.isDev && showHidden }
 
-    @OptIn(DelicateCoroutinesApi::class)
     val reset: () -> Unit by ActionSetting("Send Dev Data") {
         showHidden = false
-        GlobalScope.launch {
+        scope.launch {
             modMessage(sendDataToServer(body = "${mc.thePlayer.name}, [${devWingsColor.r},${devWingsColor.g},${devWingsColor.b}], [$devSizeX,$devSizeY,$devSizeZ], $devWings, $passcode", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
             DevPlayers.updateDevs()
         }

@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain
+import me.odinmain.OdinMain.logger
 import java.io.File
 
 object PBConfig {
@@ -34,7 +35,7 @@ object PBConfig {
         }  catch (e: Exception) {
             println("Odin: Error parsing pbs.")
             println(e.message)
-            e.printStackTrace()
+            logger.error("Error parsing pbs.", e)
         }
     }
 

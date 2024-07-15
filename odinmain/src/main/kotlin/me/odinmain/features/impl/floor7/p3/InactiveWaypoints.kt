@@ -2,19 +2,16 @@ package me.odinmain.features.impl.floor7.p3
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
 import me.odinmain.utils.render.*
-import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.M7Phases
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-
 
 object InactiveWaypoints : Module(
     name = "Inactive Waypoints",
@@ -28,14 +25,16 @@ object InactiveWaypoints : Module(
     private val renderBeacon: Boolean by BooleanSetting(name = "Render Beacon", default = true, description = "Renders a beacon beam on the inactive waypoint")
     private val renderBox: Boolean by BooleanSetting(name = "Render Box", default = true, description = "Renders a box around the inactive waypoint")
     private val hideDefault: Boolean by BooleanSetting(name = "Hide Default", default = true, description = "Hide the Hypixel names of Inactive Terminals")
-    private val style: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { renderBox }
-    private val color: Color by ColorSetting("Color", Color.RED.withAlpha(.5f), true, description = "The color of the inactive waypoints")
+    private val style: Int by SelectorSetting("Style", Renderer.defaultStyle, Renderer.styles, description = Renderer.styleDesc)
+    private val color: Color by ColorSetting("Color", Color(0, 0, 0, 0.4f), allowAlpha = true, description = "The color of the box.")
+    private val lineWidth: Float by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.")
+    private val depthCheck: Boolean by BooleanSetting("Depth check", false, description = "Boxes show through walls.")
 
     private var inactiveList = listOf<Entity>()
 
     init {
         execute(500) {
-            if (DungeonUtils.getPhase() != Island.M7P3) return@execute
+            if (DungeonUtils.getPhase() != M7Phases.P3) return@execute
             inactiveList = mc.theWorld?.loadedEntityList?.filter {
                 it is EntityArmorStand && it.name.noControlCodes.containsOneOf("Inactive", "Not Activated", "CLICK HERE", ignoreCase = true)
             } ?: emptyList()
@@ -54,7 +53,7 @@ object InactiveWaypoints : Module(
             if ((name == "Inactive Terminal" && showTerminals) || (name == "Inactive" && showDevices) || (name == "Not Activated" && showLevers)) {
                 name = if (name == "Inactive Terminal") "Terminal" else if (name == "Inactive") "Device" else "Lever"
                 if (renderBox)
-                    Renderer.drawBox(it.position.toAABB(), color, 2f, depth = false, outlineAlpha = if (style == 0) 0 else color.alpha, fillAlpha = if (style == 1) 0 else color.alpha)
+                    Renderer.drawStyledBox(it.positionVector.addVec(-0.5, z = -0.5).toAABB(), color, style, lineWidth, depthCheck)
                 if (renderText)
                     Renderer.drawStringInWorld(name, it.positionVector.add(Vec3(0.0, 2.0, 0.0)), depth = false, color = Color.WHITE, scale = 0.05f)
                 if (renderBeacon)

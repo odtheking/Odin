@@ -1,26 +1,17 @@
 package me.odinmain.utils.skyblock.dungeon.tiles
 
-import me.odinmain.OdinMain.MapColors
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.DungeonWaypoint
 import me.odinmain.utils.Vec2
-import me.odinmain.utils.render.Color
+import net.minecraft.util.BlockPos
+import net.minecraft.util.Vec3
 
 class Room(override val x: Int, override val z: Int, var data: RoomData) : Tile {
     var vec2 = Vec2(x, z)
+    var vec3 = Vec3(x.toDouble(), 70.0, z.toDouble())
     var core = 0
-    var hasMimic = false
-    var isSeparator = false
     var rotation = Rotations.NONE
-    var rotationCore: Int? = null
     override var state: RoomState = RoomState.UNDISCOVERED
-    override val color: Color
-        get() = when (data.type) {
-            RoomType.BLOOD -> MapColors.bloodColor
-            RoomType.CHAMPION -> MapColors.miniBossColor
-            RoomType.ENTRANCE -> MapColors.entranceColor
-            RoomType.FAIRY -> MapColors.fairyColor
-            RoomType.PUZZLE -> MapColors.puzzleColor
-            RoomType.RARE -> MapColors.rareColor
-            RoomType.TRAP -> MapColors.trapColor
-            else -> if (hasMimic) MapColors.mimicRoomColor else MapColors.roomColor
-        }
 }
+
+data class FullRoom(val room: Room, var clayPos: BlockPos, val positions: List<ExtraRoom>, var waypoints: List<DungeonWaypoint>)
+data class ExtraRoom(val x: Int, val z: Int, val core: Int)

@@ -1,6 +1,7 @@
 package me.odinmain.features.impl.skyblock
 
 import me.odinmain.OdinMain
+import me.odinmain.OdinMain.isLegitVersion
 import me.odinmain.events.impl.ClickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -21,7 +22,6 @@ import net.minecraft.util.Vec3i
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-
 object DianaHelper : Module(
     name = "Diana Helper",
     description = "Displays the location of the Diana guess and burrows.",
@@ -40,12 +40,16 @@ object DianaHelper : Module(
     private val darkAuction: Boolean by BooleanSetting("DA Warp").withDependency { showWarpSettings }
     private val museum: Boolean by BooleanSetting("Museum Warp").withDependency { showWarpSettings }
     private val wizard: Boolean by BooleanSetting("Wizard Warp").withDependency { showWarpSettings }
-    private val autoWarp: Boolean by BooleanSetting("Auto Warp", description = "Automatically warps you to the nearest warp location 2 seconds after you activate the spade ability.").withDependency { !OdinMain.isLegitVersion }
+    private val autoWarp: Boolean by BooleanSetting("Auto Warp", description = "Automatically warps you to the nearest warp location 2 seconds after you activate the spade ability.").withDependency { !isLegitVersion }
     private var warpLocation: WarpPoint? = null
 
     private val cmdCooldown = Clock(3_000)
     var renderPos: Vec3? = null
     val burrowsRender = mutableMapOf<Vec3i, BurrowType>()
+    private val hasSpade: Boolean
+        get() = mc.thePlayer?.inventory?.mainInventory?.find { it.itemID == "ANCESTRAL_SPADE" } != null
+    private val isDoingDiana: Boolean
+        get() = hasSpade && LocationUtils.currentArea.isArea(Island.Hub) && enabled
 
     enum class BurrowType(val text: String, val color: Color) {
         START("§aStart", Color.GREEN),
@@ -55,16 +59,20 @@ object DianaHelper : Module(
     }
 
     init {
-        onPacket(S29PacketSoundEffect::class.java) { DianaBurrowEstimate.handleSoundPacket(it) }
+        onPacket(S29PacketSoundEffect::class.java, { isDoingDiana }) {
+            DianaBurrowEstimate.handleSoundPacket(it)
+        }
 
-        onPacket(S2APacketParticles::class.java) {
+        onPacket(S2APacketParticles::class.java, { isDoingDiana }) {
             DianaBurrowEstimate.handleParticlePacket(it)
             DianaBurrowEstimate.handleBurrow(it)
         }
 
-        onPacket(C08PacketPlayerBlockPlacement::class.java) { DianaBurrowEstimate.blockEvent(it.position.toVec3i()) }
+        onPacket(C08PacketPlayerBlockPlacement::class.java, { isDoingDiana }) {
+            DianaBurrowEstimate.blockEvent(it.position.toVec3i())
+        }
 
-        onPacket(C07PacketPlayerDigging::class.java) {
+        onPacket(C07PacketPlayerDigging::class.java, { isDoingDiana }) {
             DianaBurrowEstimate.blockEvent(it.position.toVec3i(), it.status == C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK)
         }
 
@@ -76,7 +84,7 @@ object DianaHelper : Module(
         }
 
         onMessage(Regex("^(Uh oh!|Woah!|Yikes!|Oi!|Danger!|Good Grief!|Oh!) You dug out a Minos Inquisitor!\$")) {
-            if (sendInqMsg) partyMessage("x: ${PlayerUtils.posX.floor().toInt()}, y: ${PlayerUtils.posY.floor().toInt()}, z: ${PlayerUtils.posZ.floor().toInt()}")
+            if (sendInqMsg) partyMessage(PlayerUtils.getPositionString())
             PlayerUtils.alert("§6§lInquisitor!")
         }
 
@@ -87,18 +95,19 @@ object DianaHelper : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
+        if (!LocationUtils.currentArea.isArea(Island.Hub)) return
+        if (renderPos == null && burrowsRender.isEmpty()) return
         renderPos?.let { guess ->
-
             if (guess.yCoord == 110.0 && mc.thePlayer.positionVector.distanceTo(guess) < 64) {
                 renderPos = findNearestGrassBlock(guess)
                 return
             }
             warpLocation = WarpPoint.entries.filter { it.unlocked() }.minBy { warp ->
                 warp.location.distanceTo(guess)
-            }.takeIf { it.location.distanceTo(guess) + 30 < mc.thePlayer.positionVector.distanceTo(guess) }
+            }.takeIf { it.location.distanceTo(guess) + 35 < mc.thePlayer.positionVector.distanceTo(guess) }
 
             if (tracer)
-                Renderer.draw3DLine(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), guess.addVec(.5, .5, .5), tracerColor, tracerWidth, depth = false)
+                Renderer.draw3DLine(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), guess.addVec(.5, .5, .5), color = tracerColor, lineWidth = tracerWidth, depth = false)
 
             Renderer.drawCustomBeacon("§6Guess${warpLocation?.displayName ?: ""}§r", guess, guessColor, increase = true, style = style)
         }
@@ -106,7 +115,7 @@ object DianaHelper : Module(
         val burrowsRenderCopy = burrowsRender.toMap()
 
         burrowsRenderCopy.forEach { (location, type) ->
-            if (tracerBurrows) Renderer.draw3DLine(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), Vec3(location).addVec(.5, .5, .5), type.color, tracerWidth, depth = false)
+            if (tracerBurrows) Renderer.draw3DLine(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), Vec3(location).addVec(.5, .5, .5), color = type.color, lineWidth = tracerWidth, depth = false)
             Renderer.drawCustomBeacon(type.text, Vec3(location), type.color, style = style)
         }
     }

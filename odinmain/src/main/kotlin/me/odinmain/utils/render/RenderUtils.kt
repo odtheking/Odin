@@ -4,10 +4,9 @@ import gg.essential.universal.shader.BlendState
 import gg.essential.universal.shader.UShader
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.DungeonWaypoint
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
-import me.odinmain.utils.skyblock.getBlockAt
-import net.minecraft.block.Block
 import net.minecraft.client.renderer.*
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.client.renderer.texture.TextureUtil
@@ -29,10 +28,10 @@ import kotlin.math.*
 
 object RenderUtils {
 
-    val tessellator: Tessellator = Tessellator.getInstance()
+    private val tessellator: Tessellator = Tessellator.getInstance()
     val worldRenderer: WorldRenderer = tessellator.worldRenderer
     private val beaconBeam = ResourceLocation("textures/entity/beacon_beam.png")
-    val renderManager: RenderManager = mc.renderManager
+    private val renderManager: RenderManager = mc.renderManager
 
     /**
      * Gets the rendered x-coordinate of an entity based on its last tick and current tick positions.
@@ -73,7 +72,7 @@ object RenderUtils {
     private val viewerVec: Vec3
         get() = Vec3(renderManager.viewerPosX, renderManager.viewerPosY, renderManager.viewerPosZ)
 
-    fun blendFactor() {
+    private fun blendFactor() {
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
     }
 
@@ -93,26 +92,20 @@ object RenderUtils {
             renderZ + this.width / 2
         )
 
-    fun getBlockAABB(block: Block, pos: BlockPos): AxisAlignedBB {
-        val minX = pos.x.toDouble() + block.blockBoundsMinX
-        val minY = pos.y.toDouble() + block.blockBoundsMinY
-        val minZ = pos.z.toDouble() + block.blockBoundsMinZ
-        val maxX = pos.x.toDouble() + block.blockBoundsMaxX
-        val maxY = pos.y.toDouble() + block.blockBoundsMaxY
-        val maxZ = pos.z.toDouble() + block.blockBoundsMaxZ
-        return AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ)
-    }
-
     inline operator fun WorldRenderer.invoke(block: WorldRenderer.() -> Unit) {
         block.invoke(this)
     }
 
+    private fun WorldRenderer.addVertex(x: Double, y: Double, z: Double, nx: Float, ny: Float, nz: Float) {
+        pos(x, y, z).normal(nx, ny, nz).endVertex()
+    }
+
     fun preDraw() {
-        GlStateManager.enableAlpha()
-        //GlStateManager.enableBlend()
-        GlStateManager.disableLighting()
         GlStateManager.disableTexture2D()
-        //GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        GlStateManager.enableBlend()
+        GlStateManager.disableLighting()
+        GlStateManager.disableAlpha()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
         translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
     }
 
@@ -121,9 +114,16 @@ object RenderUtils {
         GlStateManager.depthMask(depth)
     }
 
+    private fun resetDepth() {
+        GlStateManager.enableDepth()
+        GlStateManager.depthMask(true)
+    }
+
     fun postDraw() {
         GlStateManager.disableBlend()
+        GlStateManager.enableAlpha()
         GlStateManager.enableTexture2D()
+        Color.WHITE.bind()
     }
 
     fun Color.bind() {
@@ -147,50 +147,19 @@ object RenderUtils {
      */
     fun drawFilledAABB(aabb: AxisAlignedBB, color: Color, depth: Boolean = false) {
         if (color.isTransparent) return
-        GlStateManager.pushMatrix()
-        color.bind()
-        GlStateManager.translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
-        blendFactor()
-        if (!depth) GlStateManager.disableDepth()
-        GlStateManager.disableTexture2D()
-        GlStateManager.disableLighting()
-        GlStateManager.enableBlend()
 
-        worldRenderer {
-            begin(7, DefaultVertexFormats.POSITION_NORMAL)
-            pos(aabb.minX, aabb.maxY, aabb.minZ).normal(0f, 0f, -1f).endVertex()
-            pos(aabb.maxX, aabb.maxY, aabb.minZ).normal(0f, 0f, -1f).endVertex()
-            pos(aabb.maxX, aabb.minY, aabb.minZ).normal(0f, 0f, -1f).endVertex()
-            pos(aabb.minX, aabb.minY, aabb.minZ).normal(0f, 0f, -1f).endVertex()
-            pos(aabb.minX, aabb.minY, aabb.maxZ).normal(0f, 0f, 1f).endVertex()
-            pos(aabb.maxX, aabb.minY, aabb.maxZ).normal(0f, 0f, 1f).endVertex()
-            pos(aabb.maxX, aabb.maxY, aabb.maxZ).normal(0f, 0f, 1f).endVertex()
-            pos(aabb.minX, aabb.maxY, aabb.maxZ).normal(0f, 0f, 1f).endVertex()
-            pos(aabb.minX, aabb.minY, aabb.minZ).normal(0f, -1f, 0f).endVertex()
-            pos(aabb.maxX, aabb.minY, aabb.minZ).normal(0f, -1f, 0f).endVertex()
-            pos(aabb.maxX, aabb.minY, aabb.maxZ).normal(0f, -1f, 0f).endVertex()
-            pos(aabb.minX, aabb.minY, aabb.maxZ).normal(0f, -1f, 0f).endVertex()
-            pos(aabb.minX, aabb.maxY, aabb.maxZ).normal(0f, 1f, 0f).endVertex()
-            pos(aabb.maxX, aabb.maxY, aabb.maxZ).normal(0f, 1f, 0f).endVertex()
-            pos(aabb.maxX, aabb.maxY, aabb.minZ).normal(0f, 1f, 0f).endVertex()
-            pos(aabb.minX, aabb.maxY, aabb.minZ).normal(0f, 1f, 0f).endVertex()
-            pos(aabb.minX, aabb.minY, aabb.maxZ).normal(-1f, 0f, 0f).endVertex()
-            pos(aabb.minX, aabb.maxY, aabb.maxZ).normal(-1f, 0f, 0f).endVertex()
-            pos(aabb.minX, aabb.maxY, aabb.minZ).normal(-1f, 0f, 0f).endVertex()
-            pos(aabb.minX, aabb.minY, aabb.minZ).normal(-1f, 0f, 0f).endVertex()
-            pos(aabb.maxX, aabb.minY, aabb.minZ).normal(1f, 0f, 0f).endVertex()
-            pos(aabb.maxX, aabb.maxY, aabb.minZ).normal(1f, 0f, 0f).endVertex()
-            pos(aabb.maxX, aabb.maxY, aabb.maxZ).normal(1f, 0f, 0f).endVertex()
-            pos(aabb.maxX, aabb.minY, aabb.maxZ).normal(1f, 0f, 0f).endVertex()
-        }
+        GlStateManager.pushMatrix()
+        preDraw()
+        GlStateManager.disableCull()
+        depth(depth)
+        color.bind()
+        addVertexesForFilledBox(aabb)
         tessellator.draw()
-        GlStateManager.enableTexture2D()
-        GlStateManager.disableBlend()
-        GlStateManager.enableDepth()
-        GlStateManager.resetColor()
+        if (!depth) resetDepth()
+        postDraw()
+        GlStateManager.enableCull()
         GlStateManager.popMatrix()
     }
-
 
     /**
      * Draws an outlined Axis Aligned Bounding Box (AABB).
@@ -200,45 +169,27 @@ object RenderUtils {
      * @param thickness The thickness of the outline.
      * @param depth Whether to enable depth testing.
      */
-    fun drawOutlinedAABB(aabb: AxisAlignedBB, color: Color, thickness: Number = 3f, depth: Boolean = false) {
+    fun drawOutlinedAABB(aabb: AxisAlignedBB, color: Color, thickness: Number = 3f, depth: Boolean = false, smoothLines: Boolean = true) {
         if (color.isTransparent) return
         GlStateManager.pushMatrix()
-        color.bind()
-        GlStateManager.translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
-        blendFactor()
-        if (!depth) GlStateManager.disableDepth()
-        GlStateManager.disableTexture2D()
-        GlStateManager.disableLighting()
-        GlStateManager.enableBlend()
-        GL11.glLineWidth(thickness.toFloat())
+        preDraw()
 
-        worldRenderer {
-            begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
-            pos(aabb.minX, aabb.minY, aabb.minZ).endVertex()
-            pos(aabb.minX, aabb.minY, aabb.maxZ).endVertex()
-            pos(aabb.maxX, aabb.minY, aabb.maxZ).endVertex()
-            pos(aabb.maxX, aabb.minY, aabb.minZ).endVertex()
-            pos(aabb.minX, aabb.minY, aabb.minZ).endVertex()
-
-            pos(aabb.minX, aabb.maxY, aabb.minZ).endVertex()
-            pos(aabb.minX, aabb.maxY, aabb.maxZ).endVertex()
-            pos(aabb.maxX, aabb.maxY, aabb.maxZ).endVertex()
-            pos(aabb.maxX, aabb.maxY, aabb.minZ).endVertex()
-            pos(aabb.minX, aabb.maxY, aabb.minZ).endVertex()
-
-            pos(aabb.minX, aabb.maxY, aabb.maxZ).endVertex()
-            pos(aabb.minX, aabb.minY, aabb.maxZ).endVertex()
-            pos(aabb.maxX, aabb.minY, aabb.maxZ).endVertex()
-            pos(aabb.maxX, aabb.maxY, aabb.maxZ).endVertex()
-            pos(aabb.maxX, aabb.maxY, aabb.minZ).endVertex()
-            pos(aabb.maxX, aabb.minY, aabb.minZ).endVertex()
+        if (smoothLines) {
+            GL11.glEnable(GL11.GL_LINE_SMOOTH)
+            GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST)
         }
 
+        GL11.glLineWidth(thickness.toFloat())
+        depth(depth)
+        color.bind()
+        addVertexesForOutlinedBox(aabb)
         tessellator.draw()
-        GlStateManager.enableTexture2D()
-        GlStateManager.disableBlend()
-        GlStateManager.enableDepth()
-        GlStateManager.resetColor()
+
+        if (smoothLines) GL11.glDisable(GL11.GL_LINE_SMOOTH)
+
+        if (!depth) resetDepth()
+        postDraw()
+        GL11.glLineWidth(2f)
         GlStateManager.popMatrix()
     }
 
@@ -353,37 +304,26 @@ object RenderUtils {
         if (!depth) GlStateManager.enableDepth()
     }
 
-    /**
-     * Draws a 3D line between two specified points in the world.
-     *
-     * @param vec1      The starting position of the line.
-     * @param vec2      The ending position of the line.
-     * @param color     The color of the line.
-     * @param lineWidth The width of the line (default is 3).
-     * @param depth     Indicates whether to draw with depth (default is false).
-     */
-    fun draw3DLine(vec1: Vec3, vec2: Vec3, color: Color, lineWidth: Float, depth: Boolean) {
+    fun renderLines(vararg points: Vec3, color: Color, lineWidth: Float, depth: Boolean) {
+        if (points.size < 2) return
+
         GlStateManager.pushMatrix()
         color.bind()
         preDraw()
-        GlStateManager.depthMask(depth)
-
+        depth(depth)
         GL11.glEnable(GL11.GL_LINE_SMOOTH)
         GL11.glLineWidth(lineWidth)
 
-        worldRenderer {
-            begin(GL11.GL_LINES, DefaultVertexFormats.POSITION)
-            pos(vec1.xCoord, vec1.yCoord, vec1.zCoord).endVertex()
-            pos(vec2.xCoord, vec2.yCoord, vec2.zCoord).endVertex()
+        worldRenderer.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
+        for (point in points) {
+            worldRenderer.pos(point.xCoord, point.yCoord, point.zCoord).endVertex()
         }
         tessellator.draw()
 
-        GL11.glDepthMask(true)
+        if (!depth) resetDepth()
         postDraw()
-        GlStateManager.resetColor()
         GlStateManager.popMatrix()
     }
-
 
     /**
      * Draws text in the world at the specified position with the specified color and optional parameters.
@@ -402,7 +342,7 @@ object RenderUtils {
         depthTest: Boolean = true,
         scale: Float = 0.3f,
         shadow: Boolean = false
-        ) {
+    ) {
         val renderPos = getRenderPos(vec3)
 
         if (!depthTest) {
@@ -412,23 +352,25 @@ object RenderUtils {
 
         val xMultiplier = if (mc.gameSettings.thirdPersonView == 2) -1 else 1
 
-        color.bind()
         GlStateManager.pushMatrix()
-        translate(renderPos.xCoord, renderPos.yCoord, renderPos.zCoord)
+        GlStateManager.translate(renderPos.xCoord, renderPos.yCoord, renderPos.zCoord)
         GlStateManager.rotate(-renderManager.playerViewY, 0.0f, 1.0f, 0.0f)
         GlStateManager.rotate(renderManager.playerViewX * xMultiplier, 1.0f, 0.0f, 0.0f)
-        scale(-scale, -scale, scale)
+        GlStateManager.scale(-scale, -scale, scale)
+
         GlStateManager.enableBlend()
-        blendFactor()
+        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+        color.bind()
 
         val textWidth = mc.fontRendererObj.getStringWidth(text)
-
         mc.fontRendererObj.drawString("$text§r", -textWidth / 2f, 0f, color.rgba, shadow)
 
         if (!depthTest) {
             GlStateManager.enableDepth()
             GlStateManager.depthMask(true)
         }
+
+        GlStateManager.disableBlend()
         GlStateManager.resetColor()
         GlStateManager.popMatrix()
     }
@@ -446,31 +388,28 @@ object RenderUtils {
      * @param rot2        Rotation parameter.
      * @param rot3        Rotation parameter.
      * @param color       The color of the cylinder.
-     * @param phase       Indicates whether to phase the cylinder (default is false).
+     * @param depth       Indicates whether to phase the cylinder (default is false).
      * @param linemode    Indicates whether to draw the cylinder in line mode (default is false).
      */
     fun drawCylinder(
         pos: Vec3, baseRadius: Number, topRadius: Number, height: Number,
         slices: Number, stacks: Number, rot1: Number, rot2: Number, rot3: Number,
-        color: Color, phase: Boolean = false, linemode: Boolean = false
+        color: Color, depth: Boolean = false, linemode: Boolean = false
     ) {
         val renderPos = getRenderPos(pos)
-        val x = renderPos.xCoord
-        val y = renderPos.yCoord
-        val z = renderPos.zCoord
 
         GlStateManager.pushMatrix()
         GL11.glLineWidth(2.0f)
         GlStateManager.disableCull()
         GlStateManager.enableBlend()
-        GlStateManager.disableLighting()
         blendFactor()
+        GlStateManager.depthMask(false)
         GlStateManager.disableTexture2D()
 
-        if (phase) GlStateManager.disableDepth()
+        if (depth) GlStateManager.disableDepth()
 
         color.bind()
-        GlStateManager.translate(x, y, z)
+        GlStateManager.translate(renderPos.xCoord, renderPos.yCoord, renderPos.zCoord)
         GlStateManager.rotate(rot1.toFloat(), 1f, 0f, 0f)
         GlStateManager.rotate(rot2.toFloat(), 0f, 0f, 1f)
         GlStateManager.rotate(rot3.toFloat(), 0f, 1f, 0f)
@@ -482,10 +421,11 @@ object RenderUtils {
 
         GlStateManager.enableCull()
         GlStateManager.disableBlend()
+        GlStateManager.depthMask(true)
         GlStateManager.enableTexture2D()
+        if (depth) GlStateManager.enableDepth()
         GlStateManager.resetColor()
-        GlStateManager.enableLighting()
-        if (phase) GlStateManager.enableDepth()
+        Color.WHITE.bind()
         GlStateManager.popMatrix()
     }
 
@@ -496,16 +436,23 @@ object RenderUtils {
      * @param width The width of the rectangle.
      * @param height The height of the rectangle.
      */
-    fun drawTexturedModalRect(x: Int, y: Int, width: Int, height: Int) {
+    fun drawTexturedModalRect(
+        x: Int, y: Int, width: Int, height: Int,
+        u: Float = 0f, v: Float = 0f, uWidth: Int = 1, vHeight: Int = 1,
+        tileWidth: Float = 1.0f, tileHeight: Float = 1.0f
+    ) {
+        val f = 1.0f / tileWidth
+        val g = 1.0f / tileHeight
         Color.WHITE.bind()
         worldRenderer {
             begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
-            pos(x.toDouble(), (y + height).toDouble(), 0.0).tex(0.0, 1.0).endVertex()
-            pos((x + width).toDouble(), (y + height).toDouble(), 0.0).tex(1.0, 1.0).endVertex()
-            pos((x + width).toDouble(), y.toDouble(), 0.0).tex(1.0, 0.0).endVertex()
-            pos(x.toDouble(), y.toDouble(), 0.0).tex(0.0, 0.0).endVertex()
+            pos(x.toDouble(), (y + height).toDouble(), 0.0).tex((u * f).toDouble(), ((v + vHeight.toFloat()) * g).toDouble()).endVertex()
+            pos((x + width).toDouble(), (y + height).toDouble(), 0.0).tex(((u + uWidth.toFloat()) * f).toDouble(), ((v + vHeight.toFloat()) * g).toDouble()).endVertex()
+            pos((x + width).toDouble(), y.toDouble(), 0.0).tex(((u + uWidth.toFloat()) * f).toDouble(), (v * g).toDouble()).endVertex()
+            pos(x.toDouble(), y.toDouble(), 0.0).tex((u * f).toDouble(), (v * g).toDouble()).endVertex()
         }
         tessellator.draw()
+        GlStateManager.resetColor()
     }
 
 
@@ -653,8 +600,8 @@ object RenderUtils {
         GlStateManager.pushMatrix()
         GlStateManager.enableBlend()
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        GlStateManager.translate(x, y, 0f)
-        GlStateManager.scale(scale, scale, scale)
+        translate(x, y, 0f)
+        scale(scale, scale, scale)
         color.bind()
         var yOffset = y - mc.fontRendererObj.FONT_HEIGHT
         text.split("\n").forEach {
@@ -667,23 +614,126 @@ object RenderUtils {
         GlStateManager.popMatrix()
     }
 
-    fun drawBlockBox(
-        pos: BlockPos,
-        color: Color,
-        outlineWidth: Float = 3f,
-        outline: Float = 1f,
-        fill: Float = 0.25f,
-        depth: Boolean = true
-    ) {
-        if (outline == 0f && fill == 0f) return
-
-        val block = getBlockAt(pos)
-
-        block.setBlockBoundsBasedOnState(mc.theWorld, pos)
-        val aabb = block.getSelectedBoundingBox(mc.theWorld, pos).outlineBounds()
-        Renderer.drawBox(aabb, color, outlineWidth, outline, fill, depth)
-    }
-
     fun AxisAlignedBB.outlineBounds(): AxisAlignedBB =
         expand(0.0020000000949949026, 0.0020000000949949026, 0.0020000000949949026)
+
+
+    fun drawBoxes(boxes: Collection<DungeonWaypoint>, glList: Int, disableDepth: Boolean = false): Int {
+        var newGlList = glList
+        GlStateManager.pushMatrix()
+        preDraw()
+        GlStateManager.disableCull()
+
+        GL11.glLineWidth(3f)
+        if (newGlList != -1) {
+            GL11.glCallList(newGlList)
+            postDraw()
+            resetDepth()
+            GlStateManager.enableCull()
+            GlStateManager.resetColor()
+            GlStateManager.popMatrix()
+            return newGlList
+        } else {
+            newGlList = GL11.glGenLists(1)
+            GL11.glNewList(newGlList, GL11.GL_COMPILE)
+        }
+
+        for (box in boxes) {
+            if (!box.depth || disableDepth) GlStateManager.disableDepth()
+            else GlStateManager.enableDepth()
+            val aabb = box.aabb.offset(box.x, box.y, box.z)
+            box.color.bind()
+
+            if (box.filled) addVertexesForFilledBox(aabb)
+            else addVertexesForOutlinedBox(aabb)
+            tessellator.draw()
+        }
+        GL11.glEndList()
+        postDraw()
+        resetDepth()
+        GlStateManager.enableCull()
+        GlStateManager.resetColor()
+        GlStateManager.popMatrix()
+        return newGlList
+    }
+
+    private fun addVertexesForFilledBox(aabb: AxisAlignedBB) {
+        val minX = aabb.minX
+        val minY = aabb.minY
+        val minZ = aabb.minZ
+        val maxX = aabb.maxX
+        val maxY = aabb.maxY
+        val maxZ = aabb.maxZ
+
+        worldRenderer {
+            begin(7, DefaultVertexFormats.POSITION_NORMAL)
+
+            // Front face
+            addVertex(minX, maxY, minZ, 0f, 0f, -1f)
+            addVertex(maxX, maxY, minZ, 0f, 0f, -1f)
+            addVertex(maxX, minY, minZ, 0f, 0f, -1f)
+            addVertex(minX, minY, minZ, 0f, 0f, -1f)
+
+            // Back face
+            addVertex(minX, minY, maxZ, 0f, 0f, 1f)
+            addVertex(maxX, minY, maxZ, 0f, 0f, 1f)
+            addVertex(maxX, maxY, maxZ, 0f, 0f, 1f)
+            addVertex(minX, maxY, maxZ, 0f, 0f, 1f)
+
+            // Bottom face
+            addVertex(minX, minY, minZ, 0f, -1f, 0f)
+            addVertex(maxX, minY, minZ, 0f, -1f, 0f)
+            addVertex(maxX, minY, maxZ, 0f, -1f, 0f)
+            addVertex(minX, minY, maxZ, 0f, -1f, 0f)
+
+            // Top face
+            addVertex(minX, maxY, maxZ, 0f, 1f, 0f)
+            addVertex(maxX, maxY, maxZ, 0f, 1f, 0f)
+            addVertex(maxX, maxY, minZ, 0f, 1f, 0f)
+            addVertex(minX, maxY, minZ, 0f, 1f, 0f)
+
+            // Left face
+            addVertex(minX, minY, maxZ, -1f, 0f, 0f)
+            addVertex(minX, maxY, maxZ, -1f, 0f, 0f)
+            addVertex(minX, maxY, minZ, -1f, 0f, 0f)
+            addVertex(minX, minY, minZ, -1f, 0f, 0f)
+
+            // Right face
+            addVertex(maxX, minY, minZ, 1f, 0f, 0f)
+            addVertex(maxX, maxY, minZ, 1f, 0f, 0f)
+            addVertex(maxX, maxY, maxZ, 1f, 0f, 0f)
+            addVertex(maxX, minY, maxZ, 1f, 0f, 0f)
+        }
+    }
+
+    private fun addVertexesForOutlinedBox(aabb: AxisAlignedBB) {
+        val minX = aabb.minX
+        val minY = aabb.minY
+        val minZ = aabb.minZ
+        val maxX = aabb.maxX
+        val maxY = aabb.maxY
+        val maxZ = aabb.maxZ
+
+        worldRenderer {
+            begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
+            pos(minX, minY, minZ).endVertex()
+            pos(minX, minY, maxZ).endVertex()
+            pos(maxX, minY, maxZ).endVertex()
+            pos(maxX, minY, minZ).endVertex()
+            pos(minX, minY, minZ).endVertex()
+
+            pos(minX, maxY, minZ).endVertex()
+            pos(minX, maxY, maxZ).endVertex()
+            pos(maxX, maxY, maxZ).endVertex()
+            pos(maxX, maxY, minZ).endVertex()
+            pos(minX, maxY, minZ).endVertex()
+
+            pos(minX, maxY, maxZ).endVertex()
+            pos(minX, minY, maxZ).endVertex()
+            pos(maxX, minY, maxZ).endVertex()
+            pos(maxX, maxY, maxZ).endVertex()
+            pos(maxX, maxY, minZ).endVertex()
+            pos(maxX, minY, minZ).endVertex()
+        }
+    }
 }

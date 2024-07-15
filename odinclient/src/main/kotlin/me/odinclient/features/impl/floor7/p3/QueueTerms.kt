@@ -7,9 +7,11 @@ import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
-import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.skyblock.devMessage
 import net.minecraft.client.gui.inventory.GuiContainer
+import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object QueueTerms : Module(
     name = "Queue Terms",
@@ -19,17 +21,11 @@ object QueueTerms : Module(
     private data class Click(val slot: Int, val mode: Int, val button: Int)
     private var clickedThisWindow = false
     private val queue = mutableListOf<Click>()
-
+    private var lastClickTime = 0L
 
     @SubscribeEvent
     fun onGuiOpen(event: GuiEvent.GuiLoadedEvent) {
-        if (queue.isNotEmpty()) {
-            val container = mc.thePlayer?.openContainer ?: return
-            val click = queue.firstOrNull() ?: return
-            windowClick(slotId = click.slot, button = click.button, mode = click.mode)
-            queue.removeFirst()
-            clickedThisWindow = true
-        } else clickedThisWindow = false
+        clickedThisWindow = false
     }
 
     @SubscribeEvent
@@ -39,16 +35,48 @@ object QueueTerms : Module(
     }
 
     @SubscribeEvent
+    fun onTick(event: TickEvent.ClientTickEvent) {
+        if (
+            event.phase != TickEvent.Phase.START ||
+            System.currentTimeMillis() - lastClickTime < 140 ||
+            TerminalSolver.currentTerm == TerminalTypes.NONE ||
+            queue.isEmpty() ||
+            clickedThisWindow
+        ) return
+        val click = queue.removeFirst()
+        windowClick(slotId = click.slot, button = click.button, mode = click.mode)
+        lastClickTime = System.currentTimeMillis()
+        clickedThisWindow = true
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOW)
     fun onMouseClick(event: GuiEvent.GuiMouseClickEvent) {
-        if (TerminalSolver.currentTerm == TerminalTypes.NONE ) return
+        if (TerminalSolver.currentTerm == TerminalTypes.NONE || event.isCanceled) return
         if (!clickedThisWindow) {
             clickedThisWindow = true
             return
         }
-
+        val slot = (event.gui as? GuiContainer)?.slotUnderMouse?.slotIndex ?: return
         event.isCanceled = true
+        handleWindowClick(slot, 0, event.button)
+    }
+
+    @SubscribeEvent
+    fun onCustomTermClick(event: GuiEvent.CustomTermGuiClick) {
+        if (TerminalSolver.currentTerm == TerminalTypes.NONE) return
+        if (!clickedThisWindow) {
+            clickedThisWindow = true
+            return
+        }
+        event.isCanceled = true
+        handleWindowClick(event.slot, event.mode, event.button)
+    }
+
+    fun handleWindowClick(slot: Int, mode: Int, button: Int) {
+        if (slot !in TerminalSolver.solution) return
+        if (TerminalSolver.currentTerm == TerminalTypes.ORDER && slot != TerminalSolver.solution.first()) return
         clickedThisWindow = true
-        queue.add(Click(slot = (event.gui as? GuiContainer)?.slotUnderMouse?.slotIndex ?: return, mode = if (event.button == 2) 3 else 0, button = event.button))
-        modMessage("added ${queue.last()}")
+        queue.add(Click(slot = slot, mode = mode, button = button))
+        devMessage("added ${queue.last()}")
     }
 }
