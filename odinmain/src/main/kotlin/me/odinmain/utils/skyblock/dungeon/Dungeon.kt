@@ -33,7 +33,8 @@ class Dungeon(val floor: Floor?) {
     var puzzles = listOf<Puzzle>()
 
     private fun getBoss(): Boolean {
-        return when (floor?.floorNumber) {
+        if (floor == null) return false
+        return when (floor.floorNumber) {
             1 -> posX > -71 && posZ > -39
             in 2..4 -> posX > -39 && posZ > -39
             in 5..6 -> posX > -39 && posZ > -7

@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.dungeon
 
-import me.odinmain.events.impl.SkyblockJoinIslandEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -10,7 +9,6 @@ import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object MapInfo : Module(
     name = "Map Info",
