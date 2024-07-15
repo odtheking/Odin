@@ -9,7 +9,7 @@ import me.odinmain.features.impl.floor7.*
 import me.odinmain.features.impl.floor7.p3.*
 import me.odinmain.features.impl.nether.*
 import me.odinmain.features.impl.render.*
-import me.odinmain.features.impl.render.ClickGUIModule.hudChat
+import me.odinmain.features.impl.render.ClickGUI.hudChat
 import me.odinmain.features.impl.skyblock.*
 import me.odinmain.features.settings.impl.KeybindSetting
 import me.odinmain.ui.hud.EditHUDGui
@@ -60,7 +60,7 @@ object ModuleManager {
         GoldorTimer, TerminalSimulator, TerminalSounds, ArrowsDevice,
 
         // render
-        BPSDisplay, ClickGUIModule, CustomHighlight, CPSDisplay, DragonHitboxes, GyroWand, NameChanger,
+        BPSDisplay, ClickGUI, CustomHighlight, CPSDisplay, DragonHitboxes, GyroWand, NameChanger,
         PersonalDragon, RenderOptimizer, ServerHud, Waypoints, CanClip, Animations, SpaceHelmet,
         BlockOverlay, VisualWords, DVD, Sidebar,
 

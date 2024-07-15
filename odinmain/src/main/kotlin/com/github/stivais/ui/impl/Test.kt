@@ -1,28 +1,20 @@
 package com.github.stivais.ui.impl
 
 import com.github.stivais.ui.UI
-import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.constraints.size
-import com.github.stivais.ui.elements.scope.ElementDSL
-import com.github.stivais.ui.renderer.Renderer
+import com.github.stivais.ui.elements.impl.TextInput
+import com.github.stivais.ui.events.Mouse
 import me.odinmain.utils.skyblock.modMessage
 
-fun basic(renderer: Renderer) = UI(renderer) {
 
-    fun ElementDSL.test(size: Float): ElementDSL {
-        return block(size(size.px, size.px), Color.RED) {
-            outline(Color.BLACK)
-            onMouseEnter {
-                modMessage("entered $size")
-                true
-            }
-            onMouseExit {
-                modMessage("exited $size")
-                true
-            }
-        }
-    }
+fun basic() = UI {
 
-    test(60f).test(40f).test(20f)
+    TextInput("", "placeholder", size = 20.px, censor = true) {
+        modMessage(it.toFloatOrNull())
+    }.also { it.registerEvent(Mouse.Clicked(1)) {
+        it.censorInput = !it.censorInput
+        false
+    } }.add()
+
 }

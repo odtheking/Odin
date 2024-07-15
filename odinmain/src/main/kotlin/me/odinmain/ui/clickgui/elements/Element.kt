@@ -2,7 +2,7 @@ package me.odinmain.ui.clickgui.elements
 
 
 import me.odinmain.features.settings.Setting
-import me.odinmain.ui.clickgui.ClickGUI
+import me.odinmain.ui.clickgui.OldClickGUI
 import me.odinmain.ui.clickgui.util.HoverHandler
 import me.odinmain.ui.util.MouseUtils.isAreaHovered
 
@@ -45,7 +45,7 @@ open class Element<S : Setting<*>>(val parent: ModuleButton, val setting: S, typ
     open fun render(): Float {
         hoverHandler.handle(x, y, w, h)
         if (hoverHandler.percent() > 0) {
-            ClickGUI.setDescription(setting.description, x + w + 10f, y, hoverHandler)
+            OldClickGUI.setDescription(setting.description, x + w + 10f, y, hoverHandler)
         }
         draw()
         return h

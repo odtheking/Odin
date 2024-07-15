@@ -2,7 +2,7 @@ package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.logger
 import me.odinmain.OdinMain.mc
-import me.odinmain.features.impl.render.ClickGUIModule.devMessages
+import me.odinmain.features.impl.render.ClickGUI.devMessages
 import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.features.impl.skyblock.ChatCommands
 import me.odinmain.utils.noControlCodes

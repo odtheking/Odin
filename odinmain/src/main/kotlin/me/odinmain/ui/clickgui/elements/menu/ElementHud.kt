@@ -1,8 +1,9 @@
 package me.odinmain.ui.clickgui.elements.menu
 
-import me.odinmain.features.impl.render.ClickGUIModule
+import me.odinmain.features.impl.render.ClickGUI
 import me.odinmain.features.settings.impl.HudSetting
-import me.odinmain.ui.clickgui.ClickGUI
+import me.odinmain.font.OdinFont
+import me.odinmain.ui.clickgui.OldClickGUI
 import me.odinmain.ui.clickgui.animations.impl.ColorAnimation
 import me.odinmain.ui.clickgui.animations.impl.LinearAnimation
 import me.odinmain.ui.clickgui.elements.*
@@ -49,13 +50,13 @@ class ElementHud(parent: ModuleButton, setting: HudSetting) : Element<HudSetting
 
     override fun draw() {
         roundedRectangle(x, y, w, h, ColorUtil.elementBackground)
-        text(name, x + 6f, y + 18f, textColor, 12f, 0)
+        text(name, x + 6f, y + 18f, textColor, 12f, OdinFont.REGULAR)
 
         var offset = 30f
         if (setting.displayToggle) {
             hover.handle(x + w - 30f, y + 5f, 21f, 20f)
             val color = colorAnim.get(clickGUIColor, buttonColor, setting.enabled).brighter(1 + hover.percent() / 500f)
-            if (!ClickGUIModule.switchType) {
+            if (!ClickGUI.switchType) {
                 dropShadow(x + w - offset, y + 5f, 21f, 20f, 10f, 0.75f)
                 roundedRectangle(x + w - offset, y + 5f, 21f, 20f, color, 5f)
                 rectangleOutline(x + w - offset, y + 5f, 21f, 20f, clickGUIColor, 5f, 3f)
@@ -85,7 +86,7 @@ class ElementHud(parent: ModuleButton, setting: HudSetting) : Element<HudSetting
                     setting.enabled = !setting.enabled
                     setting.value.enabledSetting.value = setting.enabled
                 }
-                isShortcutHovered -> ClickGUI.swapScreens(EditHUDGui)
+                isShortcutHovered -> OldClickGUI.swapScreens(EditHUDGui)
                 else -> return false
             }
             return true

@@ -9,11 +9,13 @@ import com.github.stivais.ui.constraints.sizes.Bounding
 import com.github.stivais.ui.constraints.sizes.Copying
 import com.github.stivais.ui.elements.impl.TextScope
 import com.github.stivais.ui.elements.scope.ElementScope
-import com.github.stivais.ui.impl.ClickGUITheme
-import com.github.stivais.ui.impl.`gray 38`
-import com.github.stivais.ui.utils.*
+import com.github.stivais.ui.utils.animate
+import com.github.stivais.ui.utils.radius
+import com.github.stivais.ui.utils.seconds
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
+import me.odinmain.features.impl.render.ClickGUI
+import me.odinmain.features.impl.render.ClickGUI.`gray 38`
 import me.odinmain.features.settings.Saving
 import me.odinmain.features.settings.Setting
 
@@ -90,10 +92,10 @@ class SelectorSetting(
                     block(
                         constraints = constrain(x = -6.px, w = Bounding + 6.px, h = 72.5.percent),
                         color = `gray 38`,
-                        radius = radii(5)
+                        radius = radius(5)
                     ) {
                         outline(
-                            color = ClickGUITheme,
+                            color = ClickGUI.color,
                             thickness
                         )
                         text = text(
@@ -115,8 +117,8 @@ class SelectorSetting(
                     block(
                         constraints = copies(),
                         color = `gray 38`,
-                        radius = radii(all = 5)
-                    ).outline(color = ClickGUITheme)
+                        radius = radius(all = 5)
+                    ).outline(color = ClickGUI.color, thickness = 1.5.px)
 
                     // options
                     // they're transparent, except for the outline which is animated on hover
@@ -124,7 +126,7 @@ class SelectorSetting(
                         block(
                             constraints = size(w = Copying, h = 32.px),
                             color = color(from = Color.TRANSPARENT, to = Color.RGB(150, 150, 150, 0.2f)),
-                            radius = radii(5)
+                            radius = radius(5)
                         ) {
                             onClick {
                                 text!!.string = option

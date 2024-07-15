@@ -4,14 +4,16 @@ import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.sizes.Bounding
-import com.github.stivais.ui.elements.scope.*
-import com.github.stivais.ui.impl.ClickGUITheme
-import com.github.stivais.ui.impl.`gray 38`
-import com.github.stivais.ui.utils.*
+import com.github.stivais.ui.elements.scope.ElementScope
+import com.github.stivais.ui.elements.scope.focuses
+import com.github.stivais.ui.elements.scope.hoverEffect
+import com.github.stivais.ui.utils.animate
+import com.github.stivais.ui.utils.radius
+import com.github.stivais.ui.utils.seconds
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
-import me.odinmain.OdinMain.mc
-import me.odinmain.features.impl.render.ClickGUIModule
+import me.odinmain.features.impl.render.ClickGUI
+import me.odinmain.features.impl.render.ClickGUI.`gray 38`
 import me.odinmain.features.settings.Saving
 import me.odinmain.features.settings.Setting
 import org.lwjgl.input.Keyboard.*
@@ -58,9 +60,9 @@ class KeybindSetting(
             }
         }
 
-    private fun isConflicting(): Boolean {
-        return mc.gameSettings.keyBindings.any { it.keyCode == value.key } && value.key != 0 && ClickGUIModule.showBindConfliction
-    }
+//    private fun isConflicting(): Boolean {
+//        return mc.gameSettings.keyBindings.any { it.keyCode == value.key } && value.key != 0 && ClickGUI.showBindConfliction
+//    }
 
     override fun ElementScope<*>.createElement() {
         setting(40.px) {
@@ -72,11 +74,11 @@ class KeybindSetting(
             block(
                 constraints = constrain(x = -6.px, w = Bounding + 6.px, h = 70.percent),
                 color = `gray 38`,
-                radius = radii(5)
+                radius = radius(5)
             ) {
                 val display = text(
                     text = keyName,
-                    color = if (isConflicting()) conflictingColor else Color.WHITE
+                    color = /*if (isConflicting()) conflictingColor else */Color.WHITE
                 )
                 onFocusedClick { (button) ->
                     value.key = -100 + button
@@ -98,15 +100,14 @@ class KeybindSetting(
                 }
                 onFocusLost {
                     display.string = keyName
-                    val target = if (isConflicting()) conflictingColor else Color.WHITE
-                    display.animateColor(to = target, duration = 0.1.seconds)
-
+//                    val target = if (isConflicting()) conflictingColor else Color.WHITE
+//                    display.animateColor(to = target, duration = 0.1.seconds)
                     outlineColor!!.animate(0.25.seconds)
                     outline!!.animate(0.25.seconds)
                 }
                 hoverEffect()
                 focuses()
-                outline(color = ClickGUITheme, Animatable(from = 1.px, to = 2.5.px))
+                outline(color = ClickGUI.color, Animatable(from = 1.px, to = 2.5.px))
             }
         }
     }
@@ -121,10 +122,10 @@ class KeybindSetting(
         }
     }
 
-    private companion object {
-        @JvmField
-        val conflictingColor: Color = Color.RGB(240, 70, 70)
-    }
+//    private companion object {
+//        @JvmField
+//        val conflictingColor: Color = Color.RGB(240, 70, 70)
+//    }
 }
 
 class Keybinding(var key: Int) {

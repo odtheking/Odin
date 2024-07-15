@@ -35,25 +35,25 @@ fun ElementDSL.focuses() {
 fun ElementDSL.draggable(
     button: Int = 0,
     acceptsEvent: Boolean = true,
-    target: Element = element,
+    moves: Element = element,
     coerce: Boolean = false
 ) {
     val px: Pixel = 0.px
     val py: Pixel = 0.px
     // note: if parent is Bounding, it can cause issues
     afterCreation {
-        px.pixels = target.internalX
-        py.pixels = target.internalY
-        target.constraints.x = px
-        target.constraints.y = py
+        px.pixels = moves.internalX
+        py.pixels = moves.internalY
+        moves.constraints.x = px
+        moves.constraints.y = py
     }
     var pressed = false
     var x = 0f
     var y = 0f
     onClick(button) {
         pressed = true
-        x = ui.mx - target.internalX
-        y = ui.my - target.internalY
+        x = ui.mx - moves.internalX
+        y = ui.my - moves.internalY
         acceptsEvent
     }
     onMouseMove {

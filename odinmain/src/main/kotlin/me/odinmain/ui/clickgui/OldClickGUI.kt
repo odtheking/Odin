@@ -3,7 +3,8 @@ package me.odinmain.ui.clickgui
 import me.odinmain.OdinMain.display
 import me.odinmain.config.Config
 import me.odinmain.features.Category
-import me.odinmain.features.impl.render.ClickGUIModule
+import me.odinmain.features.impl.render.ClickGUI
+import me.odinmain.font.OdinFont
 import me.odinmain.ui.Screen
 import me.odinmain.ui.clickgui.animations.impl.EaseInOut
 import me.odinmain.ui.clickgui.elements.menu.ElementColor
@@ -30,7 +31,7 @@ import kotlin.math.sign
  * @author Stivais, Aton
  * @see [Panel]
  */
-object ClickGUI : Screen() {
+object OldClickGUI : Screen() {
 
     private val panels: ArrayList<Panel> = arrayListOf()
 
@@ -98,7 +99,7 @@ object ClickGUI : Screen() {
             if (panels[i].keyTyped(typedChar, keyCode)) return
         }
 
-        if (keyCode == ClickGUIModule.settings.last().value && !anim.isAnimating()) {
+        if (keyCode == ClickGUI.settings.last().value && !anim.isAnimating()) {
             mc.displayGuiScreen(null as GuiScreen?)
             if (mc.currentScreen == null) {
                 mc.setIngameFocus()
@@ -111,15 +112,15 @@ object ClickGUI : Screen() {
         open = true
         anim.start(true)
 
-        if (OpenGlHelper.shadersSupported && mc.renderViewEntity is EntityPlayer && ClickGUIModule.blur) {
-            mc.entityRenderer.stopUseShader()
-            mc.entityRenderer.loadShader(ResourceLocation("shaders/post/blur.json"))
-        }
+//        if (OpenGlHelper.shadersSupported && mc.renderViewEntity is EntityPlayer && ClickGUI.blur) {
+//            mc.entityRenderer.stopUseShader()
+//            mc.entityRenderer.loadShader(ResourceLocation("shaders/post/blur.json"))
+//        }
 
         for (panel in panels) {
-            panel.x = ClickGUIModule.panelX[panel.category]!!.value
-            panel.y = ClickGUIModule.panelY[panel.category]!!.value
-            panel.extended = ClickGUIModule.panelExtended[panel.category]!!.enabled
+            panel.x = ClickGUI.panelX[panel.category]!!.value
+            panel.y = ClickGUI.panelY[panel.category]!!.value
+            panel.extended = ClickGUI.panelExtended[panel.category]!!.enabled
             panel.moduleButtons.forEach { it.updateElements() }
         }
     }
@@ -176,7 +177,7 @@ object ClickGUI : Screen() {
                 x, y, area.first + 7, area.second + 9,
                 buttonColor.withAlpha((hoverHandler!!.percent() / 100f).coerceIn(0f, 0.8f)), 5f
             )
-            wrappedText(text!!, x + 7f, y + 12f, 300f, textColor, 12f, 0)
+            wrappedText(text!!, x + 7f, y + 12f, 300f, textColor, 12f, OdinFont.REGULAR)
             if (hoverHandler!!.percent() == 0) {
                 text = null
                 hoverHandler = null

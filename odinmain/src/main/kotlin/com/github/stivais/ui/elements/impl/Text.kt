@@ -13,7 +13,7 @@ open class Text(
     text: String,
     val font: Font = UI.defaultFont,
     color: Color = Color.WHITE,
-    constraints: Constraints? = null,
+    constraints: Positions? = null,
     size: Size,
 ) : Element(constraints.replaceUndefined(w = 0.px, h = size), color) {
 
@@ -21,6 +21,7 @@ open class Text(
         set(value) {
             if (field == value) return
             field = value
+            redraw = true
             previousHeight = 0f // forces recalculation
         }
 
@@ -49,7 +50,7 @@ open class Text(
         val supplier: () -> Any?,
         font: Font,
         color: Color,
-        constraints: Constraints?,
+        constraints: Positions?,
         size: Size
     ) : Text(supplier().toString(), font, color, constraints, size) {
 

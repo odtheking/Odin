@@ -1,10 +1,13 @@
 package me.odinmain
 
-import me.odinmain.features.impl.render.ClickGUIModule.updateMessage
+import kotlinx.serialization.json.*
+import me.odinmain.features.impl.render.ClickGUI
+import me.odinmain.features.impl.render.ClickGUI.updateMessage
+import me.odinmain.font.OdinFont
 import me.odinmain.ui.OdinGuiButton
 import me.odinmain.utils.downloadFile
-import me.odinmain.utils.render.RenderUtils
-import me.odinmain.utils.render.drawDynamicTexture
+import me.odinmain.utils.fetchURLData
+import me.odinmain.utils.render.*
 import net.minecraft.client.gui.*
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.texture.DynamicTexture
@@ -16,6 +19,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.opengl.GL11
 import java.io.File
 import java.lang.management.ManagementFactory
+
 
 object OdinUpdater: GuiScreen() {
 
@@ -39,11 +43,11 @@ object OdinUpdater: GuiScreen() {
         }
 
         val tags = try {
-            //Json.parseToJsonElement(fetchURLData("https://api.github.com/repos/odtheking/OdinClient/tags"))
+            Json.parseToJsonElement(fetchURLData("https://api.github.com/repos/odtheking/OdinClient/tags"))
         } catch (e: Exception) {
             return
         }
-        //tag = tags.jsonArray[0].jsonObject["name"].toString().replace("\"", "")
+        tag = tags.jsonArray[0].jsonObject["name"].toString().replace("\"", "")
 
         isNewer = this.isSecondNewer(tag)
 
@@ -72,10 +76,10 @@ object OdinUpdater: GuiScreen() {
         GlStateManager.scale(1f / scaleFactor, 1f / scaleFactor, 1f)
         this.drawLogo()
         if (isOutdatedJava) {
-            //text("You are using an outdated version of java (${System.getProperty("java.version")}) which does not allow the auto updater to work properly", mc.displayWidth / 2f, 500f, Color.RED, 18f, 0, TextAlign.Middle, TextPos.Middle, false)
+            text("You are using an outdated version of java (${System.getProperty("java.version")}) which does not allow the auto updater to work properly", mc.displayWidth / 2f, 500f, Color.RED, 18f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Middle, false)
         } else {
-           // text("A new version of ${if (OdinMain.isLegitVersion) "Odin" else "OdinClient"} is available!", mc.displayWidth / 2f, 450f, Color.WHITE, 18f, 0, TextAlign.Middle, TextPos.Middle, false)
-           // text("§fNewest: §r$tag   §fCurrent: §r${OdinMain.VERSION}", mc.displayWidth / 2f - getTextWidth("Newest: $tag   Current: ${OdinMain.VERSION}", 18f) / 2, 500f, ClickGUIModule.color, 18f, 0, TextAlign.Left, TextPos.Middle, false)
+            text("A new version of ${if (OdinMain.isLegitVersion) "Odin" else "OdinClient"} is available!", mc.displayWidth / 2f, 450f, Color.WHITE, 18f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Middle, false)
+            text("§fNewest: §r$tag   §fCurrent: §r${OdinMain.VERSION}", mc.displayWidth / 2f - getTextWidth("Newest: $tag   Current: ${OdinMain.VERSION}", 18f) / 2, 500f, ClickGUI.oldColor, 18f, OdinFont.REGULAR, TextAlign.Left, TextPos.Middle, false)
         }
         GlStateManager.popMatrix()
         super.drawScreen(mouseX, mouseY, partialTicks)

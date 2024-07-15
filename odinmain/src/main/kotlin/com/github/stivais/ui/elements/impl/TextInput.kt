@@ -11,72 +11,75 @@ import net.minecraft.client.gui.GuiScreen
 import net.minecraft.util.ChatAllowedCharacters
 import org.lwjgl.input.Keyboard
 import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
 
 /*
 * TODO
 * - needs cleanup
-* - make options, like to stop typing if limit reached or continue
-* - only number options
-* - censor input like '******'
 */
 class TextInput(
     text: String,
     private val placeholder: String,
-    constraints: Constraints? = null,
+    position: Positions? = null,
+    size: Size,
     val widthLimit: Size? = null,
-    val lockIfLimit: Boolean = false,
+    censor: Boolean = false,
     val onlyNumbers: Boolean = false,
     val onTextChange: (string: String) -> Unit = {}
-) : Text(text, UI.defaultFont, Color.WHITE, constraints, constraints?.height ?: 50.percent) {
+) : Text(text, UI.defaultFont, Color.WHITE, position, size) {
 
-    private val placeholderColor: Color = Color { color!!.rgba.darker(0.75) }
-
-    private var string: String = text
+    override var text: String = text
         set(value) {
-            if (lock) {
-                if (value.length > field.length) return
-            }
-            text = value
+            if (field == value) return
             field = value
-            textWidth = renderer.textWidth(value, size = height)
-            if (history.last() != value) history.add(value)
-            positionCaret()
             redraw = true
-//            ui.needsRedraw = true
+            previousHeight = 0f
+
+            // text input stuff
+            if (history.last() != value) history.add(value)
+            if (censorInput) censorCache = buildString { repeat(text.length) { append('*') } }
+
+            updateCaret()
             onTextChange(value)
         }
 
-    private var caretPosition: Int = string.length
+    private val _text: String
+        get() = if (censorInput) censorCache!! else text
+
+    private val placeholderColor: Color = Color { color!!.rgba.darker(0.75) }
+
+    var censorInput = censor
         set(value) {
-            field = value.coerceIn(0, string.length)
-            positionCaret()
+            if (value == field) return
+            censorCache = if (value) buildString { repeat(text.length) { append('*') } } else null
+            redraw = true
+            previousHeight = 0f
+            field = value
+        }
+
+    private var censorCache: String? = if (censor) buildString { repeat(text.length) { append('*') } } else null
+
+    private var caretPosition: Int = text.length
+        set(value) {
+            field = value.coerceIn(0, text.length)
+            updateCaret()
             // start animation
         }
 
     private var selectionStart: Int = caretPosition
         set(value) {
-            field = value.coerceIn(0, string.length)
-            selectionX = renderer.textWidth(string.substring(0, field), size = height)
+            field = value.coerceIn(0, text.length)
+            selectionX = renderer.textWidth(text.substring(0, field), size = height)
         }
 
-    private var textWidth = 0f
-    private var isHeld = false
+    private var dragging = false
 
-    // experimental
-    var lock = false
-        set(value) {
-            if (value != field) {
-                redraw = true
-//                ui.needsRedraw = true
-            }
-            field = value
-        }
-
-    var offs = 0f
+    private var offs = 0f
 
     private var caretX: Float = 0f
 
-    private var history: MutableList<String> = mutableListOf(string)
+    private var history: MutableList<String> = mutableListOf(text)
     private var selectionX: Float = 0f
     private var lastClickTime: Long = 0L
     private var clickCount: Int = 0
@@ -86,22 +89,20 @@ class TextInput(
         if (widthLimit != null) {
             val maxW = widthLimit.get(this, Type.W)
             if (width >= maxW) {
-                if (lockIfLimit) {
-                    lock = true
-                } else {
-                    offs = width - maxW
-                }
+                offs = width - maxW
                 width = maxW
             } else {
-                lock = false
                 offs = 0f
             }
         }
     }
 
     override fun getTextWidth(): Float {
-        if (text.isEmpty()) return renderer.textWidth(placeholder, height)
-        return super.getTextWidth()
+        return when {
+            text.isEmpty() -> renderer.textWidth(placeholder, height)
+            censorInput -> renderer.textWidth(censorCache!!, height)
+            else -> super.getTextWidth()
+        }
     }
 
     override fun draw() {
@@ -111,75 +112,84 @@ class TextInput(
             val endX = x + max(selectionX, caretX).toInt()
             renderer.rect(startX - offs, y, endX - startX, height - 4, Color.RGB(0, 0, 255, 0.5f).rgba)
         }
-
-        if (text.isNotEmpty()) {
-            renderer.text(text, x - offs, y, height, Color.WHITE.rgba)
-        } else {
-            renderer.text(placeholder, x, y, height, placeholderColor.rgba)
+        when {
+            text.isEmpty() -> {
+                renderer.text(placeholder, x, y, height, placeholderColor.rgba)
+            }
+            censorInput -> {
+                renderer.text(censorCache!!, x, y, height, color!!.get(this))
+            }
+            else -> {
+                renderer.text(text, x - offs, y, height, Color.WHITE.rgba)
+            }
         }
 
         if (ui.isFocused(this)) {
             renderer.rect(x + caretX - offs, y, 1f, height - 2, Color.WHITE.rgba)
         }
+        renderer.hollowRect(x, y, width, height, 1f, Color.WHITE.rgba)
     }
 
     init {
-        registerEvent(Focused.Gained) {
-            setCaretPositionBasedOnMouse(x, textWidth - offs, ui.mx)
+        Focused.Gained register {
+            Keyboard.enableRepeatEvents(true)
+            setCaretPositionBasedOnMouse()
             selectionStart = caretPosition
             false
         }
-        registerEvent(Key.CodePressed(-1, true)) {
-            handleKeyPress((this as Key.CodePressed).code)
+        Focused.Lost register {
+            selectionStart = caretPosition
+            Keyboard.enableRepeatEvents(false)
+            false
+        }
+        // todo bring function inside this
+        Key.CodePressed(-1, true) register {
+            handleKeyPress(it.code)
             true
         }
 
-        registerEvent(Focused.Clicked()) {
-//            modMessage("a ${(this as Focused.Clicked).button}")
-            if ((this as Focused.Clicked).button == 0) {
-                val currentTime = System.currentTimeMillis()
-                if (currentTime - lastClickTime < 300) clickCount++ else clickCount = 1
-                lastClickTime = currentTime
+        Focused.Clicked(0) register {
+            if (it.button == 0) {
+                val current = System.currentTimeMillis()
+                if (current - lastClickTime < 300) clickCount++ else clickCount = 1
+                lastClickTime = current
 
                 when (clickCount) {
                     1 -> {
-                        setCaretPositionBasedOnMouse(x, textWidth - offs, ui.mx)
+                        setCaretPositionBasedOnMouse()
                         if (!isShiftKeyDown()) selectionStart = caretPosition
                     }
-
                     2 -> {
                         val word = getCurrentWord(caretPosition)
                         selectionStart = word?.first ?: (caretPosition - 1)
                         caretPosition = word?.second ?: caretPosition
                     }
-
                     3 -> {
                         selectionStart = 0
-                        caretPosition = string.length
+                        caretPosition = text.length
                     }
                 }
-                isHeld = true
-                return@registerEvent true
+                dragging = true
+                return@register true
             }
             false
         }
-
-        registerEvent(Mouse.Moved) {
-            if (isHeld) setCaretPositionBasedOnMouse(x, textWidth - offs, ui.mx)
+        Mouse.Moved register {
+            if (dragging) {
+                setCaretPositionBasedOnMouse()
+                return@register true
+            }
             lastClickTime = 0L
-            true
+            false
         }
-
-        registerEvent(Mouse.Released(0)) {
-            isHeld = false
-            true
+        Mouse.Clicked(0) register {
+            dragging = true
+            ui.focus(this)
+            false
         }
-
-        registerEvent(Mouse.Clicked(0)) {
-            ui.focus(this@TextInput)
-            Keyboard.enableRepeatEvents(true)
-            textWidth = renderer.textWidth(string, size = height)
-            true
+        Mouse.Released(0) register {
+            dragging = false
+            false
         }
     }
 
@@ -187,7 +197,7 @@ class TextInput(
         val eventChar = Keyboard.getEventCharacter()
         when {
             isKeyComboCtrlA(code) -> {
-                caretPosition = string.length
+                caretPosition = this.text.length
                 selectionStart = 0
             }
 
@@ -203,7 +213,7 @@ class TextInput(
             isKeyComboCtrlZ(code) -> {
                 if (history.size > 1) {
                     history.removeAt(history.size - 1)
-                    string = history.last()
+                    this.text = history.last()
                 }
             }
 
@@ -242,14 +252,13 @@ class TextInput(
                 }
 
                 Keyboard.KEY_END -> {
-                    if (isShiftKeyDown()) moveCaretBy(string.length - caretPosition)
-                    else moveSelectionAndCaretBy(string.length - caretPosition)
+                    if (isShiftKeyDown()) moveCaretBy(text.length - caretPosition)
+                    else moveSelectionAndCaretBy(text.length - caretPosition)
                 }
 
                 Keyboard.KEY_ESCAPE, Keyboard.KEY_NUMPADENTER, Keyboard.KEY_RETURN -> {
                     selectionStart = 0
                     caretPosition = 0
-                    Keyboard.enableRepeatEvents(false)
                     ui.unfocus()
                 }
 
@@ -259,42 +268,39 @@ class TextInput(
                 }
 
                 else -> {
-
                     if (onlyNumbers) {
-                        when {
-                            string.isEmpty() && eventChar == '-' -> insert(eventChar.toString())
-                            !string.contains('-') && eventChar == '.' -> insert(eventChar.toString())
-                            eventChar != '.' && eventChar != '-' && eventChar.isDigit()  -> insert(eventChar.toString())
-                        }
-                    } else
+                        val insert = eventChar.isDigit() || (eventChar == '-' && text.isEmpty()) || (eventChar == '.' && !text.contains('.'))
+                        if (insert) insert(eventChar.toString())
+                    } else {
                         if (ChatAllowedCharacters.isAllowedCharacter(eventChar)) insert(eventChar.toString())
+                    }
                 }
             }
         }
-        devMessage("cursorPosition: $caretPosition, startSelect: $selectionStart string: $string")
+        devMessage("cursorPosition: $caretPosition, startSelect: $selectionStart string: ${this.text}")
     }
 
     // cleanup everything under here
     // remove unnecessary stuff and variables
 
-    private fun moveCaretBy(amount: Int){
-        caretPosition = (caretPosition + amount).coerceIn(0, string.length)
+    private fun moveCaretBy(amount: Int) {
+        caretPosition = (caretPosition + amount).coerceIn(0, text.length)
     }
 
     private fun moveSelectionAndCaretBy(amount: Int) {
-        caretPosition = (caretPosition + amount).coerceIn(0, string.length)
+        caretPosition = (caretPosition + amount).coerceIn(0, text.length)
         selectionStart = caretPosition
     }
 
     private fun insert(text: String) {
         if (text.length >= 30) return
-        val min = kotlin.math.min(caretPosition, selectionStart)
-        val max = kotlin.math.max(caretPosition, selectionStart)
+        val min = min(caretPosition, selectionStart)
+        val max = max(caretPosition, selectionStart)
         val maxLength = 30 - text.length + max - min
 
         val addedText = ChatAllowedCharacters.filterAllowedCharacters(text).take(maxLength)
 
-        string = string.take(min) + addedText + string.substring(max)
+        this.text = this.text.take(min) + addedText + this.text.substring(max)
 
         moveSelectionAndCaretBy(min - selectionStart + addedText.length)
         selectionStart = caretPosition
@@ -303,15 +309,15 @@ class TextInput(
     private fun deleteWords(num: Int) = deleteFromCaret(getNthWordFromCaret(num) - caretPosition)
 
     private fun deleteFromCaret(num: Int) {
-        if (string.isEmpty()) return
+        if (text.isEmpty()) return
         if (selectionStart != caretPosition) insert("")
         else {
             val target = (caretPosition + num).coerceIn(0, text.length)
             if (num < 0) {
-                string = string.removeRange(target, caretPosition)
+                text = text.removeRange(target, caretPosition)
                 moveSelectionAndCaretBy(num)
             } else
-                string = string.removeRange(caretPosition, target)
+                text = text.removeRange(caretPosition, target)
         }
     }
 
@@ -323,13 +329,13 @@ class TextInput(
 
         repeat(abs(n)) {
             if (negative) {
-                while (i > 0 && string[i - 1].code == 32) i--
-                while (i > 0 && string[i - 1].code != 32) i--
+                while (i > 0 && text[i - 1].code == 32) i--
+                while (i > 0 && text[i - 1].code != 32) i--
             } else {
-                while (i < string.length && string[i].code == 32) i++
-                i = string.indexOf(32.toChar(), i)
+                while (i < text.length && text[i].code == 32) i++
+                i = text.indexOf(32.toChar(), i)
                 if (i == -1) {
-                    i = string.length
+                    i = text.length
                 }
             }
         }
@@ -337,54 +343,47 @@ class TextInput(
     }
 
     private fun getCurrentWord(pos: Int): Pair<Int, Int>? {
-        val length = string.length
+        val length = text.length
         var start = pos
         var end = pos
 
         // Move start left until a space or the beginning of the string
-        while (start > 0 && string[start - 1].code != 32) {
+        while (start > 0 && text[start - 1].code != 32) {
             start--
         }
 
         // Move end right until a space or the end of the string
-        while (end < length && string[end].code != 32) {
+        while (end < length && text[end].code != 32) {
             end++
         }
 
         // Check if the word is surrounded by text or is at the edges of the string
-        val isStartValid = start == 0 || string[start - 1].code == 32
-        val isEndValid = end == length || string[end].code == 32
+        val isStartValid = start == 0 || text[start - 1].code == 32
+        val isEndValid = end == length || text[end].code == 32
 
         return if (isStartValid && isEndValid && start != end) Pair(start, end) else null
     }
 
     private fun getSelectedText(selectionStart: Int, caretPosition: Int): String {
-        return string.substring(min(selectionStart, caretPosition).toInt(), max(selectionStart, caretPosition).toInt())
+        return substringSafe(text, selectionStart, caretPosition)
     }
 
-    private fun positionCaret() {
-        caretX = renderer.textWidth(getCurrentLine().first, size = height)
+    private fun updateCaret() {
+        val str = if (caretPosition <= text.length) _text.substring(0, caretPosition) else ""
+        caretX = renderer.textWidth(str, size = height)
     }
 
-    private fun getCurrentLine(): Pair<String, Int> {
-        var i = 0
-        var ls = 0
-        var line = 0
-
-        for (chr in string) {
-            i++
-            if (chr == '\n') {
-                ls = i
-                line++
-            }
-            if (i == caretPosition)
-                return text.substring(ls, caretPosition).substringBefore('\n') to line
-        }
-        return "" to 0
+    private fun setCaretPositionBasedOnMouse() {
+        caretPosition = if (this.text.isEmpty()) 0
+        else ((ui.mx - x) / ((width - offs) / this.text.length)).toInt().coerceIn(0, this.text.length)
     }
 
-    private fun setCaretPositionBasedOnMouse(x: Float, textWidth: Float, mx: Float) {
-        caretPosition = if (string.isEmpty()) 0
-        else ((mx - x) / (textWidth / string.length)).toInt().coerceIn(0, string.length)
+    private fun substringSafe(string: String, start: Int, end: Int): String {
+        if (start == end) return ""
+        val s: Int
+        val e: Int
+        // check if start is bigger than end, if so, swap them
+        if (start > end) { s = end; e = start } else { s = start; e = end }
+        return string.substring(s, max(e, string.length - 1))
     }
 }

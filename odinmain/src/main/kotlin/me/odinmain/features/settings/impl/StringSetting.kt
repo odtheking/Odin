@@ -6,11 +6,13 @@ import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.positions.Center
 import com.github.stivais.ui.elements.scope.ElementScope
-import com.github.stivais.ui.impl.ClickGUITheme
-import com.github.stivais.ui.impl.`gray 38`
-import com.github.stivais.ui.utils.*
+import com.github.stivais.ui.utils.animate
+import com.github.stivais.ui.utils.radii
+import com.github.stivais.ui.utils.seconds
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
+import me.odinmain.features.impl.render.ClickGUI
+import me.odinmain.features.impl.render.ClickGUI.`gray 38`
 import me.odinmain.features.settings.Saving
 import me.odinmain.features.settings.Setting
 
@@ -49,7 +51,7 @@ class StringSetting(
 
     override fun ElementScope<*>.createElement() {
         val thickness = Animatable(from = 1.px, to = 1.75.px)
-        val hover = Color.Animated(from = `gray 38`, to = Color { `gray 38`.rgba.brighter(0.75) })
+        val hover = Color.Animated(from = `gray 38`, to = Color { `gray 38`.rgba.brighter(1.2) })
         setting(70.px).column(copies()) {
             divider(10.px)
             text(text = name, pos = at(6.px), size = 16.px)
@@ -61,7 +63,8 @@ class StringSetting(
             ) {
                 textInput(
                     text = value,
-                    constraints = constrain(6.px, y = Center + 1.px, h = 50.percent),
+                    constraints = at(6.px, y = Center + 1.px), // todo: fix text offset
+                    size = 50.percent,
                     maxWidth = 85.percent,
                     onTextChange = { str ->
                         value = if (str.length <= length) str else value
@@ -69,20 +72,14 @@ class StringSetting(
                 ).apply {
                     onFocusGain { thickness.animate(0.25.seconds) }
                     onFocusLost { thickness.animate(0.25.seconds) }
-                    onMouseEnterExit { // slight inconvenience
-                        hover.animate(0.25.seconds)
-                        true
-                    }
                 }
                 onClick {
-                    child(0)?.focusThis()
-                    true
+                    child(0)?.focusThis(); true
                 }
                 onMouseEnterExit {
-                    hover.animate(0.25.seconds)
-                    true
+                    hover.animate(0.25.seconds); false
                 }
-                outline(ClickGUITheme, thickness)
+                outline(ClickGUI.color, thickness)
                 scissors()
             }
         }

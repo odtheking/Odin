@@ -8,8 +8,9 @@ import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.elements.scope.ElementDSL
 import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.events.Lifetime
-import com.github.stivais.ui.impl.tooltip
-import com.github.stivais.ui.utils.*
+import com.github.stivais.ui.utils.animate
+import com.github.stivais.ui.utils.loop
+import com.github.stivais.ui.utils.seconds
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import me.odinmain.features.Module
@@ -20,13 +21,11 @@ import kotlin.reflect.KProperty
 /**
  * Superclass for settings
  *
- * If you want to implement saving/loading for your setting, you need to also use the [Saving] interface
+ * If you want to implement saving/loading for your setting, you need to implement the [Saving] interface
  *
  * @param name Name of the setting
  * @param hidden If setting shouldn't ever appear in the UI
  * @param description Description for the setting
- *
- * @author Stivais, Aton
  */
 abstract class Setting<T> (
     val name: String,
@@ -47,7 +46,7 @@ abstract class Setting<T> (
     /**
      * Dependency for if it should be shown in the UI
      *
-     * @see SettingElement
+     * @see Component
      */
     var visibilityDependency: (() -> Boolean)? = null
 
@@ -56,6 +55,14 @@ abstract class Setting<T> (
      */
     open fun reset() {
         value = default
+    }
+
+    /**
+     * Sets this setting to not show up inside the [UI][me.odinmain.features.impl.render.ClickGUI]
+     */
+    fun hide(): Setting<T> {
+        hidden = true
+        return this
     }
 
     override operator fun provideDelegate(thisRef: Module, property: KProperty<*>): ReadWriteProperty<Module, T> {
@@ -70,20 +77,6 @@ abstract class Setting<T> (
         this.value = value
     }
 
-    /**
-     * Creates the elements required for the UI
-     *
-     * It is highly recommended to use [setting] as your base element, due to simplify animations
-     */
-    internal open fun ElementScope<*>.createElement() {}
-
-    /**
-     * Intended to be used as a base in [createElement] to easily provide animations for settings with potential requirements
-     */
-    protected fun ElementDSL.setting(height: Size, block: ElementScope<SettingElement>.() -> Unit = {}): ElementScope<*> {
-        return create(ElementScope(SettingElement(height)).also { it.tooltip(description) }, block)
-    }
-
     companion object {
 
         /**
@@ -94,7 +87,7 @@ abstract class Setting<T> (
         /**
          * Adds a dependency for a setting, for it to only be rendered if it matches true
          *
-         * @see SettingElement
+         * @see Component
          */
         fun <K : Setting<T>, T> K.withDependency(dependency: () -> Boolean): K {
             visibilityDependency = dependency
@@ -102,8 +95,40 @@ abstract class Setting<T> (
         }
     }
 
+    /**
+     * Creates the elements required for the [UI][me.odinmain.features.impl.render.ClickGUI.clickGUI]
+     *
+     * It is highly recommended to use [setting] as your base element,
+     * because it handles complex features that isn't feasible without
+     *
+     * ```
+     * // Do:
+     *  override fun ElementDSL.createElement() {
+     *      setting(height) {
+     *          // actual elements inside
+     *      }
+     *  }
+     *
+     *  // Don't do:
+     *  override fun ElementDSL.createElement() {
+     *      // elements
+     *  }
+     * ```
+     *
+     * @see [setting]
+     */
+    open fun ElementDSL.createElement() {}
+
+    /**
+     * Intended to be used as a base in [createElement] to easily provide animations for settings with potential requirements
+     */
+    protected fun ElementDSL.setting(height: Size, block: ElementDSL.() -> Unit = {}): ElementScope<*> {
+        return create(ElementScope(Component(height)), block)
+    }
+
     // TODO: Find out why ClickGUI runs 2x slower until a setting visibility changes
-    protected inner class SettingElement(height: Size) : Element(size(240.px, Animatable(from = height, to = 0.px))) {
+    // TODO: Make custom event to tell if value has changed so it can update visually if it was changed externally
+    protected inner class Component(height: Size) : Element(size(240.px, Animatable(from = height, to = 0.px))) {
 
         private var visible: Boolean = visibilityDependency?.invoke() ?: true
 

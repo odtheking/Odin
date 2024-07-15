@@ -9,7 +9,7 @@ object VisualWords : Module(
     category = Category.RENDER,
     description = "Replaces words in the world with other words /visualwords."
 ) {
-    val wordsMap: MutableMap<String, String> by MapSetting("wordsMap", mutableMapOf(), "")
+    val wordsMap: MutableMap<String, String> by MapSetting("wordsMap", mutableMapOf())
 
     @JvmStatic
     fun replaceText(text: String?): String? {

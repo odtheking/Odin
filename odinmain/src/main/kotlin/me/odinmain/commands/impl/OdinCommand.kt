@@ -1,47 +1,56 @@
 package me.odinmain.commands.impl
 
-import com.github.stivais.commodore.utils.GreedyString
+import com.github.stivais.commodore.utils.SyntaxException
+import com.github.stivais.ui.UIScreen.Companion.open
 import me.odinmain.OdinMain.display
 import me.odinmain.OdinMain.mc
 import me.odinmain.commands.commodore
-import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
-import me.odinmain.features.impl.render.ClickGUIModule
+import me.odinmain.features.impl.dungeon.DungeonWaypoints
+import me.odinmain.features.impl.render.ClickGUI
+import me.odinmain.features.impl.render.ClickGUI.clickGUI
 import me.odinmain.features.impl.render.ServerHud.colorizeFPS
 import me.odinmain.features.impl.render.ServerHud.colorizePing
 import me.odinmain.features.impl.render.ServerHud.colorizeTps
 import me.odinmain.features.impl.skyblock.DianaHelper
-import me.odinmain.ui.clickgui.ClickGUI
+import me.odinmain.ui.clickgui.OldClickGUI
 import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.PlayerUtils.posX
+import me.odinmain.utils.skyblock.PlayerUtils.posY
+import me.odinmain.utils.skyblock.PlayerUtils.posZ
 import kotlin.math.round
 
 val mainCommand = commodore("od", "odin") {
     runs {
-        display = ClickGUI
+//        display = OldClickGUI
+        open(clickGUI())
     }
 
     literal("ep").runs {
-        val amount = mc.thePlayer.inventory.mainInventory.find { it?.itemID == "ENDER_PEARL" }?.stackSize ?: 0
-        if (amount != 16) sendCommand("gfs ender_pearl ${16 - amount}") else modMessage("§cAlready at max stack size.")
+        val pearls = mc.thePlayer.inventory.mainInventory.find { it?.itemID == "ENDER_PEARL" }?.stackSize ?: 0
+        sendCommand("gfs ender_pearl ${16 - pearls}")
     }
 
     literal("ij").runs {
-        val amount = mc.thePlayer.inventory.mainInventory.find { it?.itemID == "INFLATABLE_JERRY" }?.stackSize ?: 0
-        if (amount != 64) sendCommand("gfs inflatable_jerry ${64 - amount}") else modMessage("§cAlready at max stack size.")
-
+        val jerries = mc.thePlayer.inventory.mainInventory.find { it?.itemID == "INFLATABLE_JERRY" }?.stackSize ?: 0
+        sendCommand("gfs inflatable_jerry ${64 - jerries}")
     }
 
     literal("sl").runs {
-        val amount = mc.thePlayer.inventory.mainInventory.find { it?.itemID == "SPIRIT_LEAP" }?.stackSize ?: 0
-        if (amount != 16) sendCommand("gfs spirit_leap ${16 - amount}") else modMessage("§cAlready at max stack size.")
+        val leaps = mc.thePlayer.inventory.mainInventory.find { it?.itemID == "SPIRIT_LEAP" }?.stackSize ?: 0
+        sendCommand("gfs spirit_leap ${16 - leaps}")
     }
 
     literal("reset") {
         literal("clickgui").runs {
-            ClickGUIModule.resetPositions()
-            modMessage("Reset click gui positions.")
+            ClickGUI.panelSettings.forEach { (_, data) ->
+                data.x = data.defaultX
+                data.y = data.defaultY
+                data.extended = data.defaultExtended
+            }
+            modMessage("Reset ClickGUI panel positions")
         }
         literal("hud").runs {
             EditHUDGui.resetHUDs()
@@ -85,8 +94,8 @@ val mainCommand = commodore("od", "odin") {
         DianaHelper.burrowsRender.clear()
     }
 
-    literal("sendcoords").runs { message: GreedyString ->
-        sendChatMessage(PlayerUtils.getPositionString() + message.string)
+    literal("sendcoords").runs {
+        sendChatMessage("x: ${posX.toInt()}, y: ${posY.toInt()}, z: ${posZ.toInt()}")
     }
 
     literal("ping").runs {
@@ -107,11 +116,11 @@ val mainCommand = commodore("od", "odin") {
 
     runs { tier: String ->
         if(tier[0].equalsOneOf('f', 'm')) {
-            if (tier.length != 2 || tier[1] !in '1'..'7') return@runs
+            if (tier.length != 2 || tier[1] !in '1'..'7') throw SyntaxException()
             sendCommand("joininstance ${if (tier[0] == 'm') "master_" else ""}catacombs_floor_${floors[tier[1]]}")
         }
-        else if (tier[0] == 't'){
-            if (tier.length != 2 || tier[1] !in '1'..'5') return@runs
+        else if (!tier[0].equals('t')){
+            if (tier.length != 2 || tier[1] !in '1'..'5') throw SyntaxException()
             sendCommand("joininstance kuudra_${tiers[tier[1]]}")
         }
     } suggests {

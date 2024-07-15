@@ -51,11 +51,11 @@ object ServerHud : Module(
                 val tpsText = "§rTPS: §f${if (ServerUtils.averageTps > 19.3) 20 else ServerUtils.averageTps.toInt()}"
                 var width = 0f
                 if (tps)
-                    width += mcTextAndWidth(tpsText, 1f, 5f, 2, ClickGUIModule.color, shadow = true, center = false) * 1.5f
+                    width += mcTextAndWidth(tpsText, 1f, 5f, 2, ClickGUI.oldColor, shadow = true, center = false) * 1.5f
                 if (fps)
-                    width += mcTextAndWidth(fpsText, 5f + (if (tps) getMCTextWidth(tpsText) * 2f else 0f), 5f, 2, ClickGUIModule.color, shadow = true, center = false) * 1.5f
+                    width += mcTextAndWidth(fpsText, 5f + (if (tps) getMCTextWidth(tpsText) * 2f else 0f), 5f, 2, ClickGUI.oldColor, shadow = true, center = false) * 1.5f
                 if (ping)
-                    width += mcTextAndWidth(pingText, 5f + (if (tps) getMCTextWidth(tpsText) * 2f else 0f) + (if (fps) getMCTextWidth(fpsText) * 2f + 5f else 0f), 5f, 2, ClickGUIModule.color, shadow = true, center = false) * 1.5f
+                    width += mcTextAndWidth(pingText, 5f + (if (tps) getMCTextWidth(tpsText) * 2f else 0f) + (if (fps) getMCTextWidth(fpsText) * 2f + 5f else 0f), 5f, 2, ClickGUI.oldColor, shadow = true, center = false) * 1.5f
                 width + 2f to if (ping || tps || fps) getMCTextWidth("A") + 6f else 0f
             } else {
                 if (ping) mcText("§6Ping: §a${ServerUtils.averagePing.toInt()}ms", 1f, 9f, 2, Color.WHITE, shadow = true, center = false)
