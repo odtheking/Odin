@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED")
+
 package com.github.stivais.ui.renderer
 
 import com.github.stivais.ui.UI
@@ -53,13 +55,9 @@ interface Renderer {
 
     fun gradientRect(x: Float, y: Float, w: Float, h: Float, color1: Int, color2: Int, direction: Gradient)
 
-    fun gradientRect(x: Float, y: Float, w: Float, h: Float, color1: Int, color2: Int, radius: Float, direction: Gradient)
-
-    // todo: add fonts
+    fun gradientRect(x: Float, y: Float, w: Float, h: Float, color1: Int, color2: Int, gradient: Gradient, tl: Float, bl: Float, br: Float, tr: Float)
 
     fun text(text: String, x: Float, y: Float, size: Float, color: Int = Color.WHITE.rgba, font: Font = UI.defaultFont)
-
-//    fun drawWrappedString(text: String, x: Float, y: Float, width: Float, size: Float, color: Int = Color.WHITE.rgba, font: Font = UI.defaultFont)
 
     fun textWidth(text: String, size: Float, font: Font = UI.defaultFont): Float
 
@@ -68,11 +66,4 @@ interface Renderer {
     fun image(image: Image, x: Float, y: Float, w: Float, h: Float, radius: Float) {
         image(image, x, y, w, h, radius, radius, radius, radius)
     }
-
-//    fun svg(svg: SVG, x: Float, y: Float, w: Float, h: Float, scale: Float, tl: Float, bl: Float, br: Float, tr: Float)
-
-//    fun svg(svg: SVG, x: Float, y: Float, w: Float, h: Float, scale: Float, radius: Float) {
-//        svg(svg, x, y, w, h, scale, radius, radius, radius, radius)
-//    }
-
 }

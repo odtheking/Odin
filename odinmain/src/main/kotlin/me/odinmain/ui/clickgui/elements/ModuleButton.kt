@@ -73,7 +73,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
                     is NumberSetting -> ElementSlider(this, setting)
                     is SelectorSetting -> ElementSelector(this, setting)
                     is StringSetting -> ElementTextField(this, setting)
-                    is ColorSetting -> ElementColor(this, setting)
+                    is OldColorSetting -> ElementColor(this, setting)
                     is ActionSetting -> ElementAction(this, setting)
                     is DualSetting -> ElementDual(this, setting)
                     is HudSetting -> ElementHud(this, setting)

@@ -29,7 +29,7 @@ object ChestEsp : Module(
     private val onlyCH: Boolean by BooleanSetting(name = "Only Crystal Hollows")
     private val hideClicked: Boolean by BooleanSetting(name = "Hide Clicked")
     private val renderMode: Int by SelectorSetting(name = "Render Mode", "Chams", arrayListOf("Chams", "Outline"))
-    private val color: Color by ColorSetting(name = "Color", default = Color.RED, allowAlpha = true)
+    private val color: Color by OldColorSetting(name = "Color", default = Color.RED, allowAlpha = true)
 
     private val chests = mutableSetOf<BlockPos>()
 

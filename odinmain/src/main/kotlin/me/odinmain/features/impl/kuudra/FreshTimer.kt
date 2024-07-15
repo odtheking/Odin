@@ -18,9 +18,9 @@ object FreshTimer : Module(
 ){
     private val notifyFresh: Boolean by BooleanSetting("Notify Fresh", true, description = "Notifies your party when you get fresh timer")
     val highlightFresh: Boolean by BooleanSetting("Highlight Fresh", true, description = "Highlights fresh timer users")
-    val highlightFreshColor: Color by ColorSetting("Highlight Fresh Color", Color.YELLOW, true).withDependency { highlightFresh }
+    val highlightFreshColor: Color by OldColorSetting("Highlight Fresh Color", Color.YELLOW, true).withDependency { highlightFresh }
     //private val boxFreshPlayers: Boolean by BooleanSetting("Box Fresh Players", true, description = "Boxes fresh timer users")
-    private val freshTimerHUDColor: Color by ColorSetting("Fresh Timer Color", Color.ORANGE, true)
+    private val freshTimerHUDColor: Color by OldColorSetting("Fresh Timer Color", Color.ORANGE, true)
     private val hud: HudElement by HudSetting("Fresh timer HUD", 10f, 10f, 1f, true) {
         if (it) {
             text("Fresh§f: 9s", 1f, 9f, freshTimerHUDColor, 12f, OdinFont.REGULAR, shadow = true)

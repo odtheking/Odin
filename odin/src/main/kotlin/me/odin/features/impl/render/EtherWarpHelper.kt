@@ -24,9 +24,9 @@ object EtherWarpHelper : Module(
 ) {
     private val render: Boolean by BooleanSetting("Show Etherwarp Guess", true)
     private val useServerPosition: Boolean by DualSetting("Positioning", "Server Pos", "Player Pos", description = "If etherwarp guess should use your server position or real position.").withDependency { render }
-    private val renderColor: Color by ColorSetting("Color", Color.ORANGE.withAlpha(.5f), allowAlpha = true)
+    private val renderColor: Color by OldColorSetting("Color", Color.ORANGE.withAlpha(.5f), allowAlpha = true)
     private val renderFail: Boolean by BooleanSetting("Show when failed", true)
-    private val wrongColor: Color by ColorSetting("Wrong Color", Color.RED.withAlpha(.5f), allowAlpha = true).withDependency { renderFail }
+    private val wrongColor: Color by OldColorSetting("Wrong Color", Color.RED.withAlpha(.5f), allowAlpha = true).withDependency { renderFail }
     private val style: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.")
     private val thickness: Float by NumberSetting("Thickness", 3f, 1f, 10f, .1f)
     private val phase: Boolean by BooleanSetting("Depth check", false)

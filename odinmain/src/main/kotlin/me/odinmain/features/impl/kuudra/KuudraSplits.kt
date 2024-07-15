@@ -25,11 +25,11 @@ object KuudraSplits : Module(
     private val t5KillPB = +NumberSetting("T5 Kill PB", 999.0, increment = 0.001, hidden = true)
     private val sendPB: Boolean by BooleanSetting("Send PB", true, description = "Sends a message when a new PB is achieved")
     private val sendSupplyTime: Boolean by BooleanSetting("Send Supply Time", true, description = "Sends a message when a supply is collected")
-    private val splitsLine1: Color by ColorSetting("Splits Line 1", Color.GREEN, description = "Color of the first line of the splits display")
-    private val splitsLine2: Color by ColorSetting("Splits Line 2", Color.ORANGE, description = "Color of the second line of the splits display")
-    private val splitsLine3: Color by ColorSetting("Splits Line 3", Color.CYAN, description = "Color of the third line of the splits display")
-    private val splitsLine4: Color by ColorSetting("Splits Line 4", Color.PURPLE, description = "Color of the fourth line of the splits display")
-    private val splitsLine5: Color by ColorSetting("Splits Line 5", Color.RED, description = "Color of the fifth line of the splits display")
+    private val splitsLine1: Color by OldColorSetting("Splits Line 1", Color.GREEN, description = "Color of the first line of the splits display")
+    private val splitsLine2: Color by OldColorSetting("Splits Line 2", Color.ORANGE, description = "Color of the second line of the splits display")
+    private val splitsLine3: Color by OldColorSetting("Splits Line 3", Color.CYAN, description = "Color of the third line of the splits display")
+    private val splitsLine4: Color by OldColorSetting("Splits Line 4", Color.PURPLE, description = "Color of the fourth line of the splits display")
+    private val splitsLine5: Color by OldColorSetting("Splits Line 5", Color.RED, description = "Color of the fifth line of the splits display")
     val reset by ActionSetting("Send PBs", description = "Sends your current PBs.") {
            modMessage(
                """§8List of PBs:

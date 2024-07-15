@@ -86,7 +86,7 @@ object CookedRenderer : Renderer {
         color1: Int,
         color2: Int,
         direction: Gradient
-    ) = gradientRect(x, y, w, h, color1, color2, 0f, direction)
+    ) = gradientRect(x, y, w, h, color1, color2, direction, 0f, 0f, 0f, 0f)
 
     override fun gradientRect(
         x: Float,
@@ -95,12 +95,15 @@ object CookedRenderer : Renderer {
         h: Float,
         color1: Int,
         color2: Int,
-        radius: Float,
-        direction: Gradient
+        gradient: Gradient,
+        tl: Float,
+        bl: Float,
+        br: Float,
+        tr: Float
     ) {
         val stupidColor1 = Color(color1)
         val stupidColor2 = Color(color2)
-        gradientRectOld(x, y, w, h, stupidColor1, stupidColor2, radius, getGradientDirection(direction))
+        gradientRectOld(x, y, w, h, stupidColor1, stupidColor2, tl, getGradientDirection(gradient))
     }
 
     private fun getGradientDirection(direction: Gradient) = when (direction) {

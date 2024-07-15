@@ -107,14 +107,12 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
 
     fun position(x: Float = (parent?.x ?: 0f), y: Float = (parent?.y ?: 0f)) {
         if (!enabled) return
-        if (scrollY != null) {
-            sy = scrollY!!.get(this, Type.H)
-            modMessage("$sy")
-        }
+        if (scrollY != null) sy = scrollY!!.get(this, Type.H)
+
         internalX = constraints.x.get(this, Type.X)
         internalY = constraints.y.get(this, Type.Y)
-        this.x = internalX + x //(parent?.x ?: 0f) //+ (parent?.x ?: 0f)
-        this.y = internalY + y //(parent?.y ?: 0f) + (parent?.sy ?: 0f)
+        this.x = internalX + x
+        this.y = internalY + y
 
         elements?.loop { it.position(this.x, this.y + sy) }
 
@@ -198,7 +196,7 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
             element.render()
         }
         if (scissors) renderer.popScissor()
-        if (hovered) renderer.hollowRect(x, y, width, height, 1f, Color.WHITE.rgba)
+//        if (hovered) renderer.hollowRect(x, y, width, height, 1f, Color.WHITE.rgba)
         renderer.pop()
     }
 

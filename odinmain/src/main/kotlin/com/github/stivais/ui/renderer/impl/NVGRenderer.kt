@@ -179,12 +179,15 @@ object NVGRenderer : Renderer {
         h: Float,
         color1: Int,
         color2: Int,
-        radius: Float,
-        direction: Gradient
+        gradient: Gradient,
+        tl: Float,
+        bl: Float,
+        br: Float,
+        tr: Float
     ) {
         nvgBeginPath(vg)
-        nvgRoundedRect(vg, x, y, w, h, radius)
-        gradient(color1, color2, x, y, w, h, direction)
+        nvgRoundedRectVarying(vg, x, y, w, h, tl, tr, br, bl)
+        gradient(color1, color2, x, y, w, h, gradient)
         nvgFillPaint(vg, nvgPaint)
         nvgFill(vg)
     }

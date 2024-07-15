@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.render
 
+import com.github.stivais.ui.color.Color
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -12,7 +13,7 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.hud.EditHUDGui
-import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.Color as _Color
 import me.odinmain.utils.sendDataToServer
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.createClickStyle
@@ -31,9 +32,11 @@ object ClickGUIModule: Module(
 ) {
     val blur: Boolean by BooleanSetting("Blur", false, description = "Toggles the background blur for the gui.")
     val enableNotification: Boolean by BooleanSetting("Enable notifications", true, description = "Shows you a notification in chat when you toggle an option with a keybind")
-    val color: Color by ColorSetting("Gui Color", Color(50, 150, 220), allowAlpha = false, description = "Color theme in the gui.")
+    val color by OldColorSetting("Gui Color", _Color(50, 150, 220), allowAlpha = false, description = "Color theme in the gui.")
 
-    val showBindConfliction by BooleanSetting("Show vanilla     bind conflicts", default = true)
+    val showBindConfliction by BooleanSetting("Show vanilla bind conflicts", default = true)
+
+    val _color by ColorSetting("Color", Color.RGB(50, 150, 220), allowAlpha = false, description = "Color used within the UI")
 
     val switchType: Boolean by DualSetting("Switch Type", "Checkbox", "Switch", default = true, description = "Switches the type of the settings in the gui.")
     val hudChat: Boolean by BooleanSetting("Shows HUDs in GUIs", true, description = "Shows HUDs in GUIs")
@@ -44,12 +47,12 @@ object ClickGUIModule: Module(
 
     val toglge: Boolean by BooleanSetting("a")
 
-//    val colortest2: NewColor.HSB by NewColorSetting("New color 2", color(50, 150, 220)).withDependency { toglge }
+    val colortest2 by ColorSetting("New color 2", Color.RGB(50, 150, 220)).withDependency { toglge }
 
     val devMessages: Boolean by BooleanSetting("Dev Messages", true, description = "Enables dev messages in chat.").withDependency { DevPlayers.isDev }
     val devSize: Boolean by BooleanSetting("Dev Size", true, description = "Toggles client side dev size.").withDependency { DevPlayers.isDev }
     private val devWings: Boolean by BooleanSetting("Dev Wings", false, description = "Toggles client side dev wings.").withDependency { DevPlayers.isDev }
-    private val devWingsColor: Color by ColorSetting("Dev Wings Color", Color(255, 255, 255), description = "Color of the dev wings.").withDependency { DevPlayers.isDev }
+    private val devWingsColor by OldColorSetting("Dev Wings Color", _Color(255, 255, 255), description = "Color of the dev wings.").withDependency { DevPlayers.isDev }
     private val devSizeX: Float by NumberSetting("Dev Size X", 1f, -1f, 3f, 0.1, description = "X scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
     private val devSizeY: Float by NumberSetting("Dev Size Y", 1f, -1f, 3f, 0.1, description = "Y scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
     private val devSizeZ: Float by NumberSetting("Dev Size Z", 1f, -1f, 3f, 0.1, description = "Z scale of the dev size.").withDependency { DevPlayers.isDev && devSize }

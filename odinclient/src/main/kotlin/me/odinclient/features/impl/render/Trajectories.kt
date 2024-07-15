@@ -45,7 +45,7 @@ object Trajectories : Module(
     private val width: Float by NumberSetting("Line Width", 1f, 0.1f, 5.0, 0.1f)
     private val planeSize: Float by NumberSetting("Plane Size", 2f, 0.1f, 5.0, 0.1f).withDependency { plane }
     private val boxSize: Float by NumberSetting("Box Size", 0.5f, 0.5f, 3.0f, 0.1f).withDependency { boxes }
-    private val color: Color by ColorSetting("Color", Color.CYAN, true)
+    private val color: Color by OldColorSetting("Color", Color.CYAN, true)
 
     private var boxRenderQueue: MutableList<Pair<Vec3, Vec3>> = mutableListOf()
     private var entityRenderQueue = mutableListOf<Entity>()

@@ -24,7 +24,7 @@ object KuudraDisplay : Module(
     category = Category.KUUDRA
 ) {
     private val highlightKuudra: Boolean by BooleanSetting("Highlight Kuudra", true, description = "Highlights the kuudra entity")
-    private val kuudraColor: Color by ColorSetting("Kuudra Color", Color.RED, true, description = "Color of the kuudra highlight").withDependency { highlightKuudra }
+    private val kuudraColor: Color by OldColorSetting("Kuudra Color", Color.RED, true, description = "Color of the kuudra highlight").withDependency { highlightKuudra }
     private val thickness: Float by NumberSetting("Thickness", 3f, 0.1, 8f, description = "Thickness of the kuudra highlight").withDependency { highlightKuudra }
     private val kuudraSpawnAlert: Boolean by BooleanSetting("Kuudra Spawn Alert", true, description = "Alerts you where kuudra spawns")
     private val kuudraHPDisplay: Boolean by BooleanSetting("Kuudra HP", true, description = "Show the kuudra's health")

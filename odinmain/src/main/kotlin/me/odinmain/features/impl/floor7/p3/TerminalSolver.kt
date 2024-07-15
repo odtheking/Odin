@@ -48,17 +48,17 @@ object TerminalSolver : Module(
     private val removeWrongSelect: Boolean by BooleanSetting("Stop Select", true).withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings && removeWrong }
 
     private val showColors: Boolean by DropdownSetting("Color Settings")
-    private val wrongColor: Color by ColorSetting("Wrong Color", Color(45, 45, 45), true).withDependency { renderType == 0 && showColors }
-    val textColor: Color by ColorSetting("Text Color", Color(220, 220, 220), true).withDependency { showColors }
-    val panesColor: Color by ColorSetting("Panes Color", Color(0, 170, 170), true).withDependency { showColors }
-    val rubixColor: Color by ColorSetting("Rubix Color", Color(0, 170, 170), true).withDependency { showColors }
-    val oppositeRubixColor: Color by ColorSetting("Negative Rubix Color", Color(170, 85, 0), true).withDependency { showColors }
-    val orderColor: Color by ColorSetting("Order Color 1", Color(0, 170, 170, 1f), true).withDependency { showColors }
-    val orderColor2: Color by ColorSetting("Order Color 2", Color(0, 100, 100, 1f), true).withDependency { showColors }
-    val orderColor3: Color by ColorSetting("Order Color 3", Color(0, 65, 65, 1f), true).withDependency { showColors }
-    val startsWithColor: Color by ColorSetting("Starts With Color", Color(0, 170, 170), true).withDependency { showColors }
-    val selectColor: Color by ColorSetting("Select Color", Color(0, 170, 170), true).withDependency { showColors }
-    val customGuiColor: Color by ColorSetting("Custom Gui Color", ColorUtil.moduleButtonColor.withAlpha(.8f), true).withDependency { showColors }
+    private val wrongColor: Color by OldColorSetting("Wrong Color", Color(45, 45, 45), true).withDependency { renderType == 0 && showColors }
+    val textColor: Color by OldColorSetting("Text Color", Color(220, 220, 220), true).withDependency { showColors }
+    val panesColor: Color by OldColorSetting("Panes Color", Color(0, 170, 170), true).withDependency { showColors }
+    val rubixColor: Color by OldColorSetting("Rubix Color", Color(0, 170, 170), true).withDependency { showColors }
+    val oppositeRubixColor: Color by OldColorSetting("Negative Rubix Color", Color(170, 85, 0), true).withDependency { showColors }
+    val orderColor: Color by OldColorSetting("Order Color 1", Color(0, 170, 170, 1f), true).withDependency { showColors }
+    val orderColor2: Color by OldColorSetting("Order Color 2", Color(0, 100, 100, 1f), true).withDependency { showColors }
+    val orderColor3: Color by OldColorSetting("Order Color 3", Color(0, 65, 65, 1f), true).withDependency { showColors }
+    val startsWithColor: Color by OldColorSetting("Starts With Color", Color(0, 170, 170), true).withDependency { showColors }
+    val selectColor: Color by OldColorSetting("Select Color", Color(0, 170, 170), true).withDependency { showColors }
+    val customGuiColor: Color by OldColorSetting("Custom Gui Color", ColorUtil.moduleButtonColor.withAlpha(.8f), true).withDependency { showColors }
     val gap: Int by NumberSetting("Gap", 10, 0, 20, 1, false, "gap between items").withDependency { renderType == 3 }
     val textScale: Int by NumberSetting("Text Scale", 1, 1, 3, increment = 1, description = "Text scale").withDependency { renderType == 3 }
 

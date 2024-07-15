@@ -38,7 +38,7 @@ class Animatable(var from: Constraint, var to: Constraint): Measurement {
         return from.get(element, type)
     }
 
-    fun animate(duration: Float, type: Animations) {
+    fun animate(duration: Float, type: Animations): Animation? {
         if (duration == 0f) {
             swap()
         } else {
@@ -50,6 +50,7 @@ class Animatable(var from: Constraint, var to: Constraint): Measurement {
                 animation = Animation(duration, type)
             }
         }
+        return animation
     }
 
     fun swap() {

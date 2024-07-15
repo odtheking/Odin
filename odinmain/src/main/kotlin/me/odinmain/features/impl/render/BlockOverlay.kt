@@ -23,7 +23,7 @@ object BlockOverlay : Module(
     private var lineSmoothing: Boolean by BooleanSetting("Line Smoothing", false)
     private var lineWidth: Float by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f)
     private var expand: Float by NumberSetting("Expand", 0f, 0f, 10f, 0.1f)
-    private var color: Color by ColorSetting("Color", Color(0, 0, 0, 0.4f), allowAlpha = true)
+    private var color: Color by OldColorSetting("Color", Color(0, 0, 0, 0.4f), allowAlpha = true)
     private val style: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.")
     private val reset by ActionSetting("Reset") {
         fullBlock = false

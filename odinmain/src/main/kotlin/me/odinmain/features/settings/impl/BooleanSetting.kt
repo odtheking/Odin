@@ -2,13 +2,9 @@ package me.odinmain.features.settings.impl
 
 import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.color.Color
-import com.github.stivais.ui.color.brighter
-import com.github.stivais.ui.constraints.at
-import com.github.stivais.ui.constraints.constrain
+import com.github.stivais.ui.color.darker
+import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Animatable
-import com.github.stivais.ui.constraints.measurements.center
-import com.github.stivais.ui.constraints.percent
-import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.elements.scope.hoverEffect
 import com.github.stivais.ui.impl.ClickGUITheme
@@ -63,7 +59,7 @@ class BooleanSetting(
                 color = color,
                 radius = 9.radii()
             ) {
-                outline(color = Color { ClickGUITheme.rgba.brighter(1.25) }, thickness = 1.5.px)
+                outline(color = Color { ClickGUITheme.rgba.darker(0.75) }, thickness = 1.5.px)
                 block(
                     constraints = constrain(x = pointerPos, w = 50.percent, h = 80.percent),
                     color = Color.WHITE,

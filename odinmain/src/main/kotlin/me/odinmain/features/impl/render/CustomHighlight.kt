@@ -27,7 +27,7 @@ object CustomHighlight : Module(
 ) {
     private val scanDelay: Long by NumberSetting("Scan Delay", 500L, 10L, 2000L, 100L)
     private val starredMobESP: Boolean by BooleanSetting("Starred Mob Highlight", true, description = "Highlights mobs with a star in their name (remove star from the separate list).")
-    private val color: Color by ColorSetting("Color", Color.WHITE, true)
+    private val color: Color by OldColorSetting("Color", Color.WHITE, true)
     //private val mode: Int by SelectorSetting("Mode", HighlightRenderer.highlightModeDefault, HighlightRenderer.highlightModeList)
     val mode: Int by SelectorSetting("Mode", "Outline", arrayListOf("Outline", "Boxes", "2D"))
     private val thickness: Float by NumberSetting("Line Width", 1f, .1f, 4f, .1f, description = "The line width of Outline/ Boxes/ 2D Boxes").withDependency { mode != HighlightRenderer.HighlightType.Overlay.ordinal }

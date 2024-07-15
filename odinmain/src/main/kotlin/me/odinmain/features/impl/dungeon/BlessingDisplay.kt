@@ -18,15 +18,15 @@ object BlessingDisplay : Module(
     category = Category.DUNGEON,
 ) {
     private val power: Boolean by BooleanSetting("Power Blessing", true, description = "Displays the power blessing.")
-    private val powerColor: Color by ColorSetting("Power Color", Color.DARK_RED, true, description = "The color of the power blessing.").withDependency { power }
+    private val powerColor: Color by OldColorSetting("Power Color", Color.DARK_RED, true, description = "The color of the power blessing.").withDependency { power }
     private val time: Boolean by BooleanSetting("Time Blessing", true, description = "Displays the time blessing.")
-    private val timeColor: Color by ColorSetting("Time Color", Color.PURPLE, true, description = "The color of the time blessing.").withDependency { time }
+    private val timeColor: Color by OldColorSetting("Time Color", Color.PURPLE, true, description = "The color of the time blessing.").withDependency { time }
     private val stone: Boolean by BooleanSetting("Stone Blessing", false, description = "Displays the stone blessing.")
-    private val stoneColor: Color by ColorSetting("Stone Color", Color.GRAY, true, description = "The color of the stone blessing.").withDependency { stone }
+    private val stoneColor: Color by OldColorSetting("Stone Color", Color.GRAY, true, description = "The color of the stone blessing.").withDependency { stone }
     private val life: Boolean by BooleanSetting("Life Blessing", false, description = "Displays the life blessing.")
-    private val lifeColor: Color by ColorSetting("Life Color", Color.RED, true, description = "The color of the life blessing.").withDependency { life }
+    private val lifeColor: Color by OldColorSetting("Life Color", Color.RED, true, description = "The color of the life blessing.").withDependency { life }
     private val wisdom: Boolean by BooleanSetting("Wisdom Blessing", false, description = "Displays the wisdom blessing.")
-    private val wisdomColor: Color by ColorSetting("Wisdom Color", Color.BLUE, true, description = "The color of the wisdom blessing.").withDependency { wisdom }
+    private val wisdomColor: Color by OldColorSetting("Wisdom Color", Color.BLUE, true, description = "The color of the wisdom blessing.").withDependency { wisdom }
 
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         val activeBlessings = Blessings.entries.filter { a -> a.enabled }

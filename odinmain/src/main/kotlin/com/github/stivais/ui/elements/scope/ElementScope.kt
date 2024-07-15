@@ -104,16 +104,16 @@ open class ElementScope<E: Element>(val element: E) {
         color: Color,
         radius: FloatArray? = null,
         block: BlockScope.() -> Unit = {}
-    ) = create(BlockScope(if (radius != null) RoundedBlock(constraints, color, radius) else Block(constraints, color)), block)
+    ) = create(BlockScope(Block(constraints, color, radius)), block)
 
     @DSL
     fun block(
         constraints: Constraints? = null,
         colors: Pair<Color, Color>,
-        radius: Float = 0f,
+        radius: FloatArray?,
         gradient: Gradient,
         block: BlockScope.() -> Unit = {}
-    ) = create(BlockScope(GradientBlock(constraints, colors.first, colors.second, radius, gradient)), block)
+    ) = create(BlockScope(Block.Gradient(constraints, colors.first, colors.second, radius, gradient)), block)
 
     @DSL
     fun text(

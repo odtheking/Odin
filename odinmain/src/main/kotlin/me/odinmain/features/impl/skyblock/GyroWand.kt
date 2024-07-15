@@ -20,11 +20,11 @@ object GyroWand : Module(
     category = Category.SKYBLOCK
 ) {
     private val gyroRange: Boolean by BooleanSetting("Gyro Range", true, description = "Renders a helpful circle to show the range of the Gyrokinetic Wand.")
-    private val color: Color by ColorSetting("Color", Color.MAGENTA.withAlpha(0.5f), allowAlpha = true).withDependency { gyroRange }
+    private val color: Color by OldColorSetting("Color", Color.MAGENTA.withAlpha(0.5f), allowAlpha = true).withDependency { gyroRange }
     private val thickness: Float by NumberSetting("Thickness", 0.4f, 0, 3, 0.05).withDependency { gyroRange }
     private val steps: Int by NumberSetting("Smoothness", 40, 20, 80, 1).withDependency { gyroRange }
     private val showCooldown: Boolean by BooleanSetting("Show Cooldown", true, description = "Shows the cooldown of the Gyrokinetic Wand.").withDependency { gyroRange }
-    private val cooldownColor: Color by ColorSetting("Cooldown Color", Color.RED, allowAlpha = true).withDependency { showCooldown && gyroRange }
+    private val cooldownColor: Color by OldColorSetting("Cooldown Color", Color.RED, allowAlpha = true).withDependency { showCooldown && gyroRange }
 
     private val gyroCooldown = Clock(30_000)
 

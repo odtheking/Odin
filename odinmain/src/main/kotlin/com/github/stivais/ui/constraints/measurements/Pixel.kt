@@ -14,7 +14,7 @@ open class Pixel(var pixels: Float): Measurement {
     operator fun unaryMinus(): LeftPixel = LeftPixel(pixels)
 }
 
-// todo: find a better name
+// todo: make it work with any position
 class LeftPixel(pixels: Float): Pixel(pixels) {
     override fun get(element: Element, type: Type): Float {
         return if (type.axis == HORIZONTAL) {
@@ -24,39 +24,3 @@ class LeftPixel(pixels: Float): Pixel(pixels) {
         }
     }
 }
-
-class Test(val c: Position): Position {
-    override fun get(element: Element, type: Type): Float {
-        return c.get(element, type) - (if (type.axis == HORIZONTAL) element.width else element.height) / 2
-    }
-}
-
-class Test2(val s: Size): Size {
-
-    override fun get(element: Element, type: Type): Float {
-        TODO("Not yet implemented")
-    }
-
-
-}
-
-class Test3(val amount: Float): Size {
-
-    override fun get(element: Element, type: Type): Float {
-        return if (type.axis == HORIZONTAL) {
-            (element.parent?.width ?: 0f) - element.internalX - amount
-        } else {
-            (element.parent?.height ?: 0f) - element.internalY - amount
-        }
-    }
-}
-
-val Number.indent
-    get() = Test3(this.toFloat())
-
-val Position.center
-    get() = Test(this)
-
-operator fun Position.not() = center
-
-operator fun Position.unaryPlus() = center

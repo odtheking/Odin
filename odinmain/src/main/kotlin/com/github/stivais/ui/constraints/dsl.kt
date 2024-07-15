@@ -4,8 +4,10 @@ import com.github.stivais.ui.constraints.measurements.*
 import com.github.stivais.ui.constraints.operational.Additive
 import com.github.stivais.ui.constraints.operational.CoerceMax
 import com.github.stivais.ui.constraints.operational.Subtractive
+import com.github.stivais.ui.constraints.positions.Alignment
 import com.github.stivais.ui.constraints.positions.Center
 import com.github.stivais.ui.constraints.sizes.Copying
+import com.github.stivais.ui.constraints.sizes.Indent
 
 fun constrain(
     x: Position = Undefined,
@@ -29,6 +31,15 @@ val Number.percent: Percent
         val value = this.toFloat() / 100f
         return Percent(value)
     }
+
+val Number.indent
+    get() = Indent(this.toFloat())
+
+val Position.center
+    get() = Alignment.Center(this)
+
+val Position.alignRight
+    get() = Alignment.Right(this)
 
 fun center(): Constraints = at(Center, Center)
 

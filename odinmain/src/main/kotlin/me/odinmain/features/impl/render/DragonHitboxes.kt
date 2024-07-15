@@ -20,7 +20,7 @@ object DragonHitboxes : Module(
     description = "Draws hitboxes around dragons."
 ) {
     private val onlyM7: Boolean by BooleanSetting(name = "Only M7")
-    private val color: Color by ColorSetting(name = "Hitbox Color", default = Color(0, 255, 255))
+    private val color: Color by OldColorSetting(name = "Hitbox Color", default = Color(0, 255, 255))
     private val lineWidth: Float by NumberSetting(name = "Line Thickness", default = 3f, min = 0f, max = 10f, increment = 0.1f)
 
     private val entityPositions = mutableMapOf<Int, Array<Double>>()

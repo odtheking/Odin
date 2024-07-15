@@ -25,7 +25,6 @@ import me.odinmain.features.ModuleManager.modules
 import me.odinmain.features.impl.render.ClickGUIModule.color
 import me.odinmain.features.impl.render.ClickGUIModule.lastSeenVersion
 import me.odinmain.utils.capitalizeFirst
-import me.odinmain.utils.skyblock.modMessage
 
 @JvmField
 val ClickGUITheme = Color { color.rgba }
@@ -165,12 +164,12 @@ fun ElementDSL.closeAnim(duration: Float, animation: Animations) {
     }
 }
 
-fun ElementDSL.tooltip(string: String) {
-    if (string.isEmpty()) return
+fun ElementDSL.tooltip(description: String) {
+    if (description.isEmpty()) return
 
     var popup: Popup? = null
     onHover(1.seconds) {
-        val x: Position = (element.x + element.width + 5).px
+        val x = if (element.x >= ui.main.width / 2f) (element.x - 5).px.alignRight else (element.x + element.width + 5).px
         val y = (element.y + 5).px
         popup = popup(at(x, y)) {
             block(
@@ -179,15 +178,14 @@ fun ElementDSL.tooltip(string: String) {
                 radius = 5.radii()
             ) {
                 outline(ClickGUITheme, 2.px)
-                text(text = string)
+                text(text = description)
             }
             element.alphaAnim = Animatable(0.px, 1.px).apply { animate(0.25.seconds) }
         }
     }
     onMouseExit {
         popup?.let {
-            it.element.alphaAnim?.animate(0.25.seconds, Animations.Linear)
-            it.element.alphaAnim?.animation?.onFinish {
+            it.element.alphaAnim?.animate(0.25.seconds, Animations.Linear)?.onFinish {
                 it.close()
                 popup = null
             }

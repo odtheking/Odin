@@ -29,7 +29,7 @@ object PersonalDragon : Module(
     private val vertical: Float by NumberSetting(name = "Vertical", 0.0f, -10.0f, 10.0f, 0.1f)
     private val degrees: Float by NumberSetting(name = "Degrees", 0.0f, -180.0f, 180.0f, 1.0f)
     private val animationSpeed: Float by NumberSetting(name = "Animation Speed", 0.5f, 0.0f, 1.0f, 0.01f)
-    private val color: Color by ColorSetting(name = "Color", default = Color.WHITE)
+    private val color: Color by OldColorSetting(name = "Color", default = Color.WHITE)
 
     var dragon: EntityDragon? = null
 

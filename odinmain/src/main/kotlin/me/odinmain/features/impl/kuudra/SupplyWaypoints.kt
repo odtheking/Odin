@@ -5,7 +5,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.impl.kuudra.NoPre.missing
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
+import me.odinmain.features.settings.impl.OldColorSetting
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.KuudraUtils
@@ -21,7 +21,7 @@ object SupplyWaypoints : Module(
     category = Category.KUUDRA
 ) {
     private val suppliesWaypoints: Boolean by BooleanSetting("Supplies Waypoints", true, description = "Renders the supply waypoints")
-    private val supplyWaypointColor: Color by ColorSetting("Supply Waypoint Color", Color.YELLOW, true, description = "Color of the supply waypoints").withDependency { suppliesWaypoints }
+    private val supplyWaypointColor: Color by OldColorSetting("Supply Waypoint Color", Color.YELLOW, true, description = "Color of the supply waypoints").withDependency { suppliesWaypoints }
     private val supplyDropWaypoints: Boolean by BooleanSetting("Supply Drop Waypoints", true, description = "Renders the supply drop waypoints")
 
     @SubscribeEvent

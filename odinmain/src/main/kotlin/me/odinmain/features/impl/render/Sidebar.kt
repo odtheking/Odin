@@ -63,7 +63,7 @@ object Sidebar : Module(
     private val customFont: Boolean by DualSetting("Font", "Minecraft", "Custom")
     private val textShadow: Boolean by BooleanSetting("Text Shadow")
     private val redNumbers: Boolean by BooleanSetting("Show Red Numbers")
-    private val backgroundColor: Color by ColorSetting("Background Color", Color.GRAY.withAlpha(.5f), allowAlpha = true)
+    private val backgroundColor: Color by OldColorSetting("Background Color", Color.GRAY.withAlpha(.5f), allowAlpha = true)
 
     fun renderSidebar(scoreObjective: ScoreObjective, scaledResolution: ScaledResolution): Boolean {
         variableScoreObjective = scoreObjective

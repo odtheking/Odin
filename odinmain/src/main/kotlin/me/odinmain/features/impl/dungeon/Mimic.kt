@@ -26,7 +26,7 @@ object Mimic : Module(
     }
     private val mimicBox: Boolean by BooleanSetting("Mimic Box", false, description = "Draws a box around the mimic chest.")
     private val style: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { mimicBox }
-    private val color: Color by ColorSetting("Color", Color.ORANGE.withAlpha(.4f), allowAlpha = true, description = "The color of the box.").withDependency { mimicBox }
+    private val color: Color by OldColorSetting("Color", Color.ORANGE.withAlpha(.4f), allowAlpha = true, description = "The color of the box.").withDependency { mimicBox }
 
     @SubscribeEvent
     fun onEntityDeath(event: LivingDeathEvent) {

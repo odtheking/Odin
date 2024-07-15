@@ -29,7 +29,7 @@ object InactiveWaypoints : Module(
     private val renderBox: Boolean by BooleanSetting(name = "Render Box", default = true, description = "Renders a box around the inactive waypoint")
     private val hideDefault: Boolean by BooleanSetting(name = "Hide Default", default = true, description = "Hide the Hypixel names of Inactive Terminals")
     private val style: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { renderBox }
-    private val color: Color by ColorSetting("Color", Color.RED.withAlpha(.5f), true, description = "The color of the inactive waypoints")
+    private val color: Color by OldColorSetting("Color", Color.RED.withAlpha(.5f), true, description = "The color of the inactive waypoints")
 
     private var inactiveList = listOf<Entity>()
 

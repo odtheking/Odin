@@ -1,6 +1,6 @@
 package me.odinmain.ui.clickgui.elements.menu
 
-import me.odinmain.features.settings.impl.ColorSetting
+import me.odinmain.features.settings.impl.OldColorSetting
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.animations.impl.ColorAnimation
 import me.odinmain.ui.clickgui.animations.impl.EaseInOut
@@ -33,8 +33,8 @@ import kotlin.math.floor
  * @author Stivais, Aton
  * @see [Element]
  */
-class ElementColor(parent: ModuleButton, setting: ColorSetting) :
-    Element<ColorSetting>(parent, setting, ElementType.COLOR) {
+class ElementColor(parent: ModuleButton, setting: OldColorSetting) :
+    Element<OldColorSetting>(parent, setting, ElementType.COLOR) {
 
     private val anim = EaseInOut(200)
     var dragging: Int? = null
