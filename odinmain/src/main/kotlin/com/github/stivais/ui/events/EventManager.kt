@@ -17,6 +17,15 @@ class EventManager(private val ui: UI) {
             field = value * ui.main.scale // maybe make mouse scale depending on current hovered element?
         }
 
+    /**
+     * Used to dispatch bubbling events
+     */
+    private var hoveredElement: Element? = null
+        set(value) {
+            if (value == field) return
+            field = value
+        }
+
     var hoveredElements: ArrayList<Element> = arrayListOf()
 
     var focused: Element? = null
@@ -34,23 +43,7 @@ class EventManager(private val ui: UI) {
     fun onMouseMove(x: Float, y: Float) {
         mouseX = x
         mouseY = y
-
-        // check if an element might be over the current hovered tree
-        ui.main.elements?.reverseLoop {
-            if (it.isInside(x, y) && !hoveredElements.contains(it)) {
-                hoveredElements.clear()
-            }
-        }
-
-        var last = hoveredElements.lastOrNull()
-
-        while (last != null && !last.isInside(x, y)) {
-            last.accept(Mouse.Exited)
-            hoveredElements.removeLast()
-            last = hoveredElements.lastOrNull()
-        }
-
-        getHoveredElements(x, y, last ?: ui.main)
+        hoveredElement = getHoveredElement(x, y, ui.main)
         dispatchToAll(Mouse.Moved, ui.main)
     }
 
@@ -120,31 +113,42 @@ class EventManager(private val ui: UI) {
         focused = null
     }
 
-    private fun getHoveredElements(x: Float, y: Float, element: Element = ui.main): Boolean {
-        var result = false
+    private fun getHoveredElement(x: Float, y: Float, element: Element = ui.main): Element? {
+        var result: Element? = null
         if (element.renders && element.isInside(x, y)) {
-            if (element.acceptsInput && !hoveredElements.contains(element)) {
-                hoveredElements.add(element)
-                element.accept(Mouse.Entered)
-                result = true
-            }
-            element.elements?.let {
-                for (i in it.size - 1 downTo 0) {
-                    if (getHoveredElements(x, y, it[i])) {
-                        break
+            element.elements?.reverseLoop { it ->
+                if (result == null) {
+                    getHoveredElement(x, y, it)?.let {
+                        result = it
+                        return@reverseLoop // prevent discarding hovered
                     }
                 }
+                discard(it)
+            }
+            if (element.acceptsInput) {
+                element.hovered = true
+                if (result == null) result = element
             }
         }
         return result
     }
 
-    fun dispatch(event: Event): Boolean {
-        hoveredElements.reverseLoop {
-            if (it.accept(event)) {
-                it.redraw = true
+    // TODO: Rename
+    private fun discard(element: Element) {
+        // checks if it isn't hovered but acceptsInput to skip checking its children
+        if (!element.hovered && element.acceptsInput) return
+        element.hovered = false
+        element.elements?.loop { discard(it) }
+    }
+
+    fun dispatch(event: Event, element: Element? = hoveredElement): Boolean {
+        var current = element
+        while (current != null) {
+            if (current.accept(event)) {
+                current.redraw = true
                 return true
             }
+            current = current.parent
         }
         return false
     }

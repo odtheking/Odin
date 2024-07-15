@@ -11,6 +11,7 @@ import com.github.stivais.ui.constraints.positions.Center
 import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.events.Event
 import com.github.stivais.ui.events.Lifetime
+import com.github.stivais.ui.events.Mouse
 import com.github.stivais.ui.operation.UIOperation
 import com.github.stivais.ui.renderer.Renderer
 import com.github.stivais.ui.utils.loop
@@ -107,6 +108,13 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
 
     var redraw = true
 
+    var hovered = false
+        set(value) {
+            if (value == field) return
+            if (value) accept(Mouse.Entered) else accept(Mouse.Exited)
+            field = value
+        }
+
     // rename
     fun getElementToRedraw(): Element {
         val p = parent ?: return this
@@ -169,6 +177,7 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
             element.render()
         }
         if (scissors) renderer.popScissor()
+//        if (hovered) renderer.hollowRect(x, y, width, height, 1f, Color.WHITE.rgba)
         renderer.pop()
     }
 

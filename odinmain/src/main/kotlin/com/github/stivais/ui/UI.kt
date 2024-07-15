@@ -70,12 +70,6 @@ class UI(val renderer: Renderer = NVGRenderer) {
             it.run()
         }
         main.render()
-        var i = 0
-        eventManager.hoveredElements.loop {
-            renderer.text(i.toString(), it.x, it.y, 15f)
-            renderer.hollowRect(it.x, it.y, it.width, it.height, 1f, Color.WHITE.rgba)
-            i++
-        }
         performance?.let {
             renderer.text(it, main.width - renderer.textWidth(it, 12f), main.height - 12f, 12f)
         }

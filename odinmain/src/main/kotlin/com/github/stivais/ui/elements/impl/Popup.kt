@@ -12,8 +12,8 @@ class Popup(element: Group) : ElementScope<Group>(element) {
     }
 }
 
-fun ElementDSL.popup(constraints: Constraints? = size(Bounding, Bounding), block: Popup.() -> Unit) {
+fun ElementDSL.popup(constraints: Constraints? = size(Bounding, Bounding), block: Popup.() -> Unit): Popup {
     val group = Group(constraints)
     ui.main.addElement(group)
-    Popup(group).block()
+    return Popup(group).also(block)
 }

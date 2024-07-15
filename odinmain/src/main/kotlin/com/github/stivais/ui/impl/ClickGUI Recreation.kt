@@ -8,8 +8,11 @@ import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.sizes.Bounding
+import com.github.stivais.ui.elements.impl.Popup
+import com.github.stivais.ui.elements.impl.popup
 import com.github.stivais.ui.elements.scope.*
 import com.github.stivais.ui.operation.AnimationOperation
+import com.github.stivais.ui.operation.UIOperation
 import com.github.stivais.ui.renderer.Renderer
 import com.github.stivais.ui.utils.animate
 import com.github.stivais.ui.utils.radii
@@ -22,6 +25,7 @@ import me.odinmain.features.ModuleManager.modules
 import me.odinmain.features.impl.render.ClickGUIModule.color
 import me.odinmain.features.impl.render.ClickGUIModule.lastSeenVersion
 import me.odinmain.utils.capitalizeFirst
+import me.odinmain.utils.skyblock.modMessage
 
 @JvmField
 val ClickGUITheme = Color { color.rgba }
@@ -46,6 +50,12 @@ fun clickGUI(renderer: Renderer) = UI(renderer) ui@{
     )
     for (panel in Category.entries) {
         column(at(x = panel.x.px, y = panel.y.px)) {
+            onMouseEnter {
+                modMessage("enter")
+            }
+            onMouseExit {
+                modMessage("exit")
+            }
             onRemove {
                 panel.x = element.x
                 panel.y = element.y
@@ -113,7 +123,7 @@ private fun ElementScope<*>.module(module: Module) = column(
         constraints = size(240.px, h = 32.px),
         color = color
     ) {
-        description(module.description)
+        tooltip(module.description)
         text(
             text = module.name,
             size = 16.px
@@ -161,6 +171,38 @@ fun ElementDSL.closeAnim(duration: Float, animation: Animations) {
     }
 }
 
-fun ElementDSL.description(string: String) {
-    // todo: make
+fun ElementDSL.tooltip(string: String) {
+    if (string.isEmpty()) return
+
+    var popup: Popup? = null
+    onHover(1.seconds) {
+        val x: Position = (element.x + element.width).px
+        val y = element.y.px
+        popup = popup(at(x, y)) {
+            text(string, pos = at(0.px, 0.px), size = 20.px)
+            element.alphaAnim = Animatable(0.px, 1.px).apply { animate(0.25.seconds) }
+        }
+    }
+    onMouseExit {
+        popup?.let {
+            it.element.alphaAnim?.animate(0.25.seconds, Animations.Linear)
+            it.element.alphaAnim?.animation?.onFinish {
+                it.close()
+                popup = null
+            }
+        }
+    }
+}
+
+fun ElementDSL.onHover(duration: Float, block: () -> Unit) {
+    onMouseEnter {
+        UIOperation {
+            val start = System.nanoTime()
+            if (System.nanoTime() - start >= duration) {
+                block()
+                return@UIOperation true
+            }
+            !element.isInside(ui.mx, ui.my)
+        }.add()
+    }
 }

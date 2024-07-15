@@ -209,20 +209,7 @@ fun color(h: Float, s: Float, b: Float, alpha: Float = 1f) = Color.HSB(h, s, b, 
 fun color(from: Color, to: Color, swap: Boolean = false) = Color.Animated(from, to, swap)
 
 fun Int.brighter(factor: Double = 1.0): Int {
-    if (factor < 1.0) return this
-    var r = red
-    var g = green
-    var b = blue
-
-    val brightness = (1.0 / (2.0 - factor)).toInt()
-
-    if (r == 0 && g == 0 && b == 0) return getRGBA(brightness, brightness, brightness, alpha)
-
-    r = if (r in 1..< brightness) brightness else minOf((r / factor).toInt(), 255)
-    g = if (g in 1..< brightness) brightness else minOf((g / factor).toInt(), 255)
-    b = if (b in 1..< brightness) brightness else minOf((b / factor).toInt(), 255)
-
-    return getRGBA(r, g, b, alpha)
+    return darker(factor) // temp
 }
 
 fun Int.darker(factor: Double = 1.0): Int {

@@ -208,12 +208,18 @@ open class ElementScope<E: Element>(val element: E) {
         element.registerEvent(Key.CodePressed(-1, false), block)
     }
 
-    fun onMouseEnter(block: (Event) -> Boolean) {
-        element.registerEvent(Mouse.Entered, block)
+    fun onMouseEnter(block: (Event) -> Unit) {
+        element.registerEvent(Mouse.Entered) {
+            block(this)
+            false
+        }
     }
 
-    fun onMouseExit(block: (Event) -> Boolean) {
-        element.registerEvent(Mouse.Exited, block)
+    fun onMouseExit(block: (Event) -> Unit) {
+        element.registerEvent(Mouse.Exited) {
+            block(this)
+            false
+        }
     }
 
     fun onMouseEnterExit(block: (Event) -> Boolean) {

@@ -8,7 +8,7 @@ import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.elements.scope.ElementDSL
 import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.events.Lifetime
-import com.github.stivais.ui.impl.description
+import com.github.stivais.ui.impl.tooltip
 import com.github.stivais.ui.utils.animate
 import com.github.stivais.ui.utils.loop
 import com.github.stivais.ui.utils.seconds
@@ -83,7 +83,7 @@ abstract class Setting<T> (
      * Intended to be used as a base in [createElement] to easily provide animations for settings with potential requirements
      */
     protected fun ElementDSL.setting(height: Size, block: ElementScope<SettingElement>.() -> Unit = {}): ElementScope<*> {
-        return create(ElementScope(SettingElement(height)).also { it.description(description) }, block)
+        return create(ElementScope(SettingElement(height)).also { it.tooltip(description) }, block)
     }
 
     companion object {
