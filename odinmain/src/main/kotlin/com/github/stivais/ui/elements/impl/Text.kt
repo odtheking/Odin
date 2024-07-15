@@ -2,11 +2,8 @@ package com.github.stivais.ui.elements.impl
 
 import com.github.stivais.ui.UI
 import com.github.stivais.ui.color.Color
-import com.github.stivais.ui.constraints.Constraints
-import com.github.stivais.ui.constraints.Size
-import com.github.stivais.ui.constraints.Type
+import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Pixel
-import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.renderer.Font
@@ -16,7 +13,7 @@ open class Text(
     text: String,
     val font: Font = UI.defaultFont,
     color: Color = Color.WHITE,
-    constraints: Constraints? = null,
+    constraints: Positions? = null,
     size: Size,
 ) : Element(constraints.replaceUndefined(w = 0.px, h = size), color) {
 
@@ -24,6 +21,7 @@ open class Text(
         set(value) {
             if (field == value) return
             field = value
+            redraw = true
             previousHeight = 0f // forces recalculation
         }
 
@@ -52,7 +50,7 @@ open class Text(
         val supplier: () -> Any?,
         font: Font,
         color: Color,
-        constraints: Constraints?,
+        constraints: Positions?,
         size: Size
     ) : Text(supplier().toString(), font, color, constraints, size) {
 

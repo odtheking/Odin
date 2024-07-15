@@ -9,8 +9,8 @@ import com.github.stivais.ui.elements.Element
 
 class Animatable(var from: Constraint, var to: Constraint): Measurement {
 
-    constructor(from: Constraint, to: Constraint, swapIf: Boolean) : this(from, to) {
-        if (swapIf) {
+    constructor(from: Constraint, to: Constraint, swap: Boolean) : this(from, to) {
+        if (swap) {
             swap()
         }
     }

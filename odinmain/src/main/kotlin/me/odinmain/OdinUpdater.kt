@@ -1,8 +1,8 @@
 package me.odinmain
 
 import kotlinx.serialization.json.*
-import me.odinmain.features.impl.render.ClickGUIModule
-import me.odinmain.features.impl.render.ClickGUIModule.updateMessage
+import me.odinmain.features.impl.render.ClickGUI
+import me.odinmain.features.impl.render.ClickGUI.updateMessage
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.OdinGuiButton
 import me.odinmain.utils.downloadFile
@@ -79,7 +79,7 @@ object OdinUpdater: GuiScreen() {
             text("You are using an outdated version of java (${System.getProperty("java.version")}) which does not allow the auto updater to work properly", mc.displayWidth / 2f, 500f, Color.RED, 18f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Middle, false)
         } else {
             text("A new version of ${if (OdinMain.isLegitVersion) "Odin" else "OdinClient"} is available!", mc.displayWidth / 2f, 450f, Color.WHITE, 18f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Middle, false)
-            text("§fNewest: §r$tag   §fCurrent: §r${OdinMain.VERSION}", mc.displayWidth / 2f - getTextWidth("Newest: $tag   Current: ${OdinMain.VERSION}", 18f) / 2, 500f, ClickGUIModule.color, 18f, OdinFont.REGULAR, TextAlign.Left, TextPos.Middle, false)
+            text("§fNewest: §r$tag   §fCurrent: §r${OdinMain.VERSION}", mc.displayWidth / 2f - getTextWidth("Newest: $tag   Current: ${OdinMain.VERSION}", 18f) / 2, 500f, ClickGUI.oldColor, 18f, OdinFont.REGULAR, TextAlign.Left, TextPos.Middle, false)
         }
         GlStateManager.popMatrix()
         super.drawScreen(mouseX, mouseY, partialTicks)

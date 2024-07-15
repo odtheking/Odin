@@ -6,10 +6,10 @@ import com.github.stivais.ui.constraints.size
 import com.github.stivais.ui.elements.scope.ElementDSL
 import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.elements.scope.hoverEffect
-import com.github.stivais.ui.impl.ClickGUITheme
-import com.github.stivais.ui.impl.`gray 38`
-import com.github.stivais.ui.utils.radii
+import com.github.stivais.ui.utils.radius
 import com.github.stivais.ui.utils.seconds
+import me.odinmain.features.impl.render.ClickGUI
+import me.odinmain.features.impl.render.ClickGUI.`gray 38`
 import me.odinmain.features.settings.Setting
 
 /**
@@ -34,7 +34,7 @@ class ActionSetting(
             block(
                 constraints = size(95.percent, 75.percent),
                 color = `gray 38`,
-                radius = radii(all = 5)
+                radius = radius(all = 5)
             ) {
                 text(
                     text = name,
@@ -44,7 +44,7 @@ class ActionSetting(
                     true
                 }
                 hoverEffect(0.25.seconds)
-                outline(ClickGUITheme)
+                outline(ClickGUI.color)
             }
         }
     }

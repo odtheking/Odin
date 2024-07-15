@@ -4,7 +4,7 @@ package me.odinmain.features.impl.render
 import com.google.gson.*
 import kotlinx.coroutines.*
 import me.odinmain.OdinMain.mc
-import me.odinmain.features.impl.render.ClickGUIModule.devSize
+import me.odinmain.features.impl.render.ClickGUI.devSize
 import me.odinmain.utils.getDataFromServer
 import me.odinmain.utils.render.*
 import net.minecraft.client.entity.AbstractClientPlayer

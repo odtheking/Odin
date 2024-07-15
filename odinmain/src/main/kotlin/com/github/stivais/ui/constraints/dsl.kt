@@ -16,7 +16,7 @@ fun constrain(
     h: Size = Undefined
 ) = Constraints(x, y, w, h)
 
-fun at(x: Position = Undefined, y: Position = Undefined) = Constraints(x, y, Undefined, Undefined)
+fun at(x: Position = Undefined, y: Position = Undefined) = Positions(x, y)
 
 fun size(w: Size = Undefined, h: Size = Undefined) = Constraints(Undefined, Undefined, w, h)
 

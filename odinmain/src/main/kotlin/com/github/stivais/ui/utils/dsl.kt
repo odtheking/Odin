@@ -6,21 +6,21 @@ import com.github.stivais.ui.constraints.Constraint
 import com.github.stivais.ui.constraints.measurements.Animatable
 
 @JvmName("radiiThis")
-fun Number.radii() = radii(this)
+fun Number.radii() = radius(this)
 
 /**
  * Takes 4 numbers, and creates a [FloatArray] with those values
  *
  * It is used for rounded elements
  */
-fun radii(tl: Number = 0f, tr: Number = 0f, bl: Number = 0f, br: Number = 0f) = floatArrayOf(tl.toFloat(), bl.toFloat(), br.toFloat(), tr.toFloat())
+fun radius(tl: Number = 0f, tr: Number = 0f, bl: Number = 0f, br: Number = 0f) = floatArrayOf(tl.toFloat(), bl.toFloat(), br.toFloat(), tr.toFloat())
 
 /**
  * Takes 1 numbers, and converts it into a [FloatArray] with a size of 4
  *
  * It is used for rounded elements
  */
-fun radii(all: Number): FloatArray {
+fun radius(all: Number): FloatArray {
     val value = all.toFloat()
     return floatArrayOf(value, value, value, value)
 }

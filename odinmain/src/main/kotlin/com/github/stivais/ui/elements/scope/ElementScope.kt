@@ -119,7 +119,7 @@ open class ElementScope<E: Element>(val element: E) {
     fun text(
         text: String,
         font: Font = UI.defaultFont,
-        pos: Constraints? = null,
+        pos: Positions? = null,
         size: Size = 50.percent,
         color: Color = Color.WHITE,
         block: TextScope.() -> Unit = {}
@@ -130,7 +130,7 @@ open class ElementScope<E: Element>(val element: E) {
         text: () -> Any?,
         font: Font = UI.defaultFont,
         color: Color = Color.WHITE,
-        pos: Constraints? = null,
+        pos: Positions? = null,
         size: Size = 50.percent,
         block: TextScope.() -> Unit = {}
     ) = create(TextScope(Text.Supplied(text, font, color, pos, size)), block)
@@ -139,10 +139,11 @@ open class ElementScope<E: Element>(val element: E) {
     fun textInput(
         text: String = "",
         placeholder: String = "",
-        constraints: Constraints? = null,
+        constraints: Positions? = null,
+        size: Size,
         maxWidth: Size? = null,
         onTextChange: (string: String) -> Unit
-    ) = create(TextScope(TextInput(text, placeholder, constraints, maxWidth, false, onTextChange = onTextChange)))
+    ) = create(TextScope(TextInput(text, placeholder, constraints, size, maxWidth, false, onTextChange = onTextChange)))
 
     @DSL
     fun image(

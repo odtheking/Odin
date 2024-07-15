@@ -11,11 +11,11 @@ import me.odinmain.config.PBConfig
 import me.odinmain.config.WaypointConfig
 import me.odinmain.events.EventDispatcher
 import me.odinmain.features.ModuleManager
-import me.odinmain.features.impl.render.ClickGUIModule
+import me.odinmain.features.impl.render.ClickGUI
 import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.features.impl.render.WaypointManager
 import me.odinmain.font.OdinFont
-import me.odinmain.ui.clickgui.ClickGUI
+import me.odinmain.ui.clickgui.OldClickGUI
 import me.odinmain.ui.util.shader.RoundedRect
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.clock.Executor
@@ -96,11 +96,11 @@ object OdinMain {
         runBlocking {
             launch {
                 Config.load()
-                ClickGUIModule.firstTimeOnVersion = ClickGUIModule.lastSeenVersion != VERSION
-                ClickGUIModule.lastSeenVersion = VERSION
+                ClickGUI.firstTimeOnVersion = ClickGUI.lastSeenVersion != VERSION
+                ClickGUI.lastSeenVersion = VERSION
             }
         }
-        ClickGUI.init()
+        OldClickGUI.init()
         RoundedRect.initShaders()
         GlobalScope.launch {
             val name = mc.session?.username ?: return@launch

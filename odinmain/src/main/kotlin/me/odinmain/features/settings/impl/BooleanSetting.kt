@@ -7,13 +7,13 @@ import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.elements.scope.hoverEffect
-import com.github.stivais.ui.impl.ClickGUITheme
-import com.github.stivais.ui.impl.`gray 38`
 import com.github.stivais.ui.utils.animate
 import com.github.stivais.ui.utils.radii
 import com.github.stivais.ui.utils.seconds
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
+import me.odinmain.features.impl.render.ClickGUI
+import me.odinmain.features.impl.render.ClickGUI.`gray 38`
 import me.odinmain.features.settings.Saving
 import me.odinmain.features.settings.Setting
 
@@ -49,7 +49,7 @@ class BooleanSetting(
                 size = 40.percent
             )
             val pointerPos = Animatable(from = 30.percent.center, to = 70.percent.center)
-            val color = Color.Animated(from = `gray 38`, to = ClickGUITheme)
+            val color = Color.Animated(from = `gray 38`, to = ClickGUI.color)
             if (value) {
                 pointerPos.swap()
                 color.swap()
@@ -59,7 +59,7 @@ class BooleanSetting(
                 color = color,
                 radius = 9.radii()
             ) {
-                outline(color = Color { ClickGUITheme.rgba.darker(0.75) }, thickness = 1.5.px)
+                outline(color = Color { ClickGUI.color.rgba.darker(0.75) }, thickness = 1.5.px)
                 block(
                     constraints = constrain(x = pointerPos, w = 50.percent, h = 80.percent),
                     color = Color.WHITE,

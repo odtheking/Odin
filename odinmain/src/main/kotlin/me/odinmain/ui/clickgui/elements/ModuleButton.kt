@@ -1,10 +1,10 @@
 package me.odinmain.ui.clickgui.elements
 
 import me.odinmain.features.Module
-import me.odinmain.features.impl.render.ClickGUIModule
+import me.odinmain.features.impl.render.ClickGUI
 import me.odinmain.features.settings.impl.*
 import me.odinmain.font.OdinFont
-import me.odinmain.ui.clickgui.ClickGUI
+import me.odinmain.ui.clickgui.OldClickGUI
 import me.odinmain.ui.clickgui.Panel
 import me.odinmain.ui.clickgui.animations.impl.ColorAnimation
 import me.odinmain.ui.clickgui.animations.impl.EaseInOut
@@ -100,7 +100,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
         hover.handle(x, y, width, height - 1)
 
         if (hoverHandler.percent() > 0) {
-            ClickGUI.setDescription(module.description, x + width + 10f, y, hoverHandler)
+            OldClickGUI.setDescription(module.description, x + width + 10f, y, hoverHandler)
         }
 
         roundedRectangle(x, y, width, height, color)
@@ -112,7 +112,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
                 drawDynamicTexture(bannableIcon, x + width / 2 + textWidth / 2, y + 2f, 25f, 25f)
             } else if (module.tag == Module.TagType.FPSTAX) {
                 drawDynamicTexture(fpsHeavyIcon, x + width / 2 + textWidth / 2, y, 35f, 35f)
-            } else if (module.tag == Module.TagType.NEW && ClickGUIModule.firstTimeOnVersion) {
+            } else if (module.tag == Module.TagType.NEW && ClickGUI.firstTimeOnVersion) {
                 drawDynamicTexture(newFeatureIcon, x + width / 2 + textWidth / 2, y, 35f, 35f)
             }
         }

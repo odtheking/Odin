@@ -1,12 +1,12 @@
 package me.odinmain.ui.clickgui.util
 
-import me.odinmain.features.impl.render.ClickGUIModule
+import me.odinmain.features.impl.render.ClickGUI
 import me.odinmain.utils.render.Color
 
 object ColorUtil {
 
     inline val clickGUIColor: Color
-        get() = ClickGUIModule.color
+        get() = ClickGUI.oldColor
 
     val buttonColor = Color(38, 38, 38)
 

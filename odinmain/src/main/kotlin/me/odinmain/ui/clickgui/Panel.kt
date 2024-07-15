@@ -2,7 +2,7 @@ package me.odinmain.ui.clickgui
 
 import me.odinmain.features.Category
 import me.odinmain.features.ModuleManager.modules
-import me.odinmain.features.impl.render.ClickGUIModule
+import me.odinmain.features.impl.render.ClickGUI
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.SearchBar.currentSearch
 import me.odinmain.ui.clickgui.animations.impl.LinearAnimation
@@ -33,10 +33,10 @@ class Panel(
     private var dragging = false
     val moduleButtons: ArrayList<ModuleButton> = ArrayList()
 
-    var x = ClickGUIModule.panelX[category]!!.value
-    var y = ClickGUIModule.panelY[category]!!.value
+    var x = ClickGUI.panelX[category]!!.value
+    var y = ClickGUI.panelY[category]!!.value
 
-    var extended: Boolean = ClickGUIModule.panelExtended[category]!!.enabled
+    var extended: Boolean = ClickGUI.panelExtended[category]!!.enabled
 
     private var length = 0f
 
@@ -116,9 +116,9 @@ class Panel(
     fun mouseReleased(state: Int) {
         if (state == 0) dragging = false
 
-        ClickGUIModule.panelX[category]!!.value = x
-        ClickGUIModule.panelY[category]!!.value = y
-        ClickGUIModule.panelExtended[category]!!.enabled = extended
+        ClickGUI.panelX[category]!!.value = x
+        ClickGUI.panelY[category]!!.value = y
+        ClickGUI.panelExtended[category]!!.enabled = extended
 
         if (extended) {
             moduleButtons.filter { it.module.name.contains(currentSearch, true) }.reversed().forEach {

@@ -1,7 +1,7 @@
 package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.features.impl.render.ClickGUIModule.devMessages
+import me.odinmain.features.impl.render.ClickGUI.devMessages
 import me.odinmain.features.impl.render.DevPlayers
 import net.minecraft.event.ClickEvent
 import net.minecraft.event.HoverEvent

@@ -9,8 +9,6 @@ import com.github.stivais.ui.constraints.sizes.Copying
 import com.github.stivais.ui.elements.scope.ElementDSL
 import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.elements.scope.slider
-import com.github.stivais.ui.impl.`gray 38`
-import com.github.stivais.ui.impl.`transparent fix`
 import com.github.stivais.ui.renderer.Gradient.LeftToRight
 import com.github.stivais.ui.renderer.Gradient.TopToBottom
 import com.github.stivais.ui.utils.radii
@@ -46,7 +44,7 @@ class ColorSetting(
                 // color preview + dropdown button thingy
                 block(
                     constraints = constrain(x = -(6.px), w = 30.px, h = 50.percent),
-                    color = `gray 38`,
+                    color = transparentFix,
                     radius = 5.radii()
                 ) {
                     outline(color = hueMax)
@@ -89,7 +87,7 @@ class ColorSetting(
             block(
                 constraints = copies(),
                 // temp fix until I figure out why nanovg doesn't render anything under 0.2f alpha
-                colors = `transparent fix` to Color.BLACK,
+                colors = transparentFix to Color.BLACK,
                 radius = 5.radii(),
                 gradient = TopToBottom
             ) {
@@ -147,7 +145,7 @@ class ColorSetting(
         val x = Animatable.Raw((228f * value.alpha).coerceIn(8f, 220f))
         block(
             size(w = 95.percent, h = 15.px),
-            colors = `transparent fix` to hueMax,
+            colors = transparentFix to hueMax,
             radius = 5.radii(),
             gradient = LeftToRight
         ) {
@@ -166,5 +164,10 @@ class ColorSetting(
                 }
             )
         }
+    }
+
+    companion object {
+        @JvmField
+        val transparentFix: Color = Color.RGB(0, 0, 0, 0.2f)
     }
 }

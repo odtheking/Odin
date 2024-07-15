@@ -3,7 +3,7 @@ package me.odinmain.features
 import me.odinmain.OdinMain
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.ModuleManager.executors
-import me.odinmain.features.impl.render.ClickGUIModule
+import me.odinmain.features.impl.render.ClickGUI
 import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.features.settings.Setting
 import me.odinmain.features.settings.impl.HudSetting
@@ -78,7 +78,7 @@ abstract class Module(
 
     open fun onKeybind() {
         toggle()
-        if (ClickGUIModule.enableNotification) {
+        if (ClickGUI.enableNotification) {
             modMessage("$name ${if (enabled) "§aenabled" else "§cdisabled"}.")
         }
     }

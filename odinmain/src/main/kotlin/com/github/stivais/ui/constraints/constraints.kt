@@ -1,8 +1,11 @@
 package com.github.stivais.ui.constraints
 
+import com.github.stivais.ui.constraints.measurements.Undefined
 import com.github.stivais.ui.elements.Element
 
-class Constraints(var x: Position, var y: Position, var width: Size, var height: Size)
+open class Constraints(var x: Position, var y: Position, var width: Size, var height: Size)
+
+class Positions(x: Position, y: Position) : Constraints(x, y, Undefined, Undefined)
 
 // todo: reduce interface usages (however im not sure if its possible)
 interface Constraint {
