@@ -17,7 +17,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.cos
 import kotlin.math.sin
 
-
 object PersonalDragon : Module(
     name = "Personal Dragon",
     category = Category.RENDER,
@@ -34,32 +33,32 @@ object PersonalDragon : Module(
     var dragon: EntityDragon? = null
 
     override fun onDisable() {
-        if (this.dragon == null) return
-        mc.theWorld?.removeEntityFromWorld(this.dragon!!.entityId)
-        this.dragon = null
+        dragon?.let {
+            mc.theWorld?.removeEntityFromWorld(it.entityId)
+            dragon = null
+        }
         super.onDisable()
     }
 
     @SubscribeEvent
     fun onWorldUnload(event: WorldEvent.Unload) {
-        if (this.dragon != null) {
-            mc.theWorld.removeEntityFromWorld(dragon!!.entityId)
-            this.dragon = null
+        dragon?.let {
+            mc.theWorld?.removeEntityFromWorld(it.entityId)
+            dragon = null
         }
     }
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (this.dragon == null && mc.theWorld != null) {
+        if (dragon == null && mc.theWorld != null) {
             dragon = EntityDragon(mc.theWorld)
-            mc.theWorld.addEntityToWorld(dragon!!.entityId, dragon)
+            dragon?.let { mc.theWorld?.addEntityToWorld(it.entityId, it) }
             return
         }
-        if (mc.thePlayer == null) return
-        var yaw = mc.thePlayer.rotationYaw
-        if (yaw < 0) yaw += 180 else if (yaw > 0) yaw -= 180
-        dragon?.apply {
-            setLocationAndAngles(mc.thePlayer.renderX, mc.thePlayer.renderY + 6, mc.thePlayer.renderZ, yaw, mc.thePlayer.rotationPitch)
+        mc.thePlayer?.let { player ->
+            var yaw = player.rotationYaw
+            if (yaw < 0) yaw += 180 else if (yaw > 0) yaw -= 180
+            dragon?.apply { setLocationAndAngles(player.renderX, player.renderY + 9999, player.renderZ, yaw, player.rotationPitch) }
         }
     }
 
@@ -73,20 +72,26 @@ object PersonalDragon : Module(
     }
 
     @SubscribeEvent
-    fun onRenderEntityPre(event: RenderLivingEvent.Pre<EntityDragon>){
-        if (this.dragon == null || event.entity.entityId != this.dragon!!.entityId) return
-        if (onlyF5 && mc.gameSettings.thirdPersonView == 0) { event.isCanceled = true; return }
-        val yawRadians = Math.toRadians(mc.thePlayer.rotationYaw.toDouble() + this.degrees)
-        GlStateManager.pushMatrix()
-        GlStateManager.translate(this.horizontal * cos(yawRadians), this.vertical.toDouble(), this.horizontal * sin(yawRadians))
-        GlStateManager.scale(this.scale / 4, this.scale / 4, this.scale / 4)
-        GlStateManager.color(color.r / 255f, color.g / 255f, color.b / 255f)
+    fun onRenderEntityPre(event: RenderLivingEvent.Pre<EntityDragon>) {
+        dragon?.let {
+            if (event.entity.entityId != it.entityId) return
+            if (onlyF5 && mc.gameSettings.thirdPersonView == 0) {
+                event.isCanceled = true
+                return
+            }
+            val yawRadians = Math.toRadians(mc.thePlayer.rotationYaw.toDouble() + degrees)
+            GlStateManager.pushMatrix()
+            GlStateManager.translate(horizontal * cos(yawRadians), vertical.toDouble(), horizontal * sin(yawRadians))
+            GlStateManager.scale(scale / 4, scale / 4, scale / 4)
+            GlStateManager.color(color.r / 255f, color.g / 255f, color.b / 255f)
+        }
     }
 
     @SubscribeEvent
     fun onRenderEntityPost(event: RenderLivingEvent.Post<EntityDragon>) {
-        if (this.dragon == null || event.entity.entityId != this.dragon!!.entityId) return
-        GlStateManager.popMatrix()
+        dragon?.let {
+            if (event.entity.entityId != it.entityId) return
+            GlStateManager.popMatrix()
+        }
     }
-
 }

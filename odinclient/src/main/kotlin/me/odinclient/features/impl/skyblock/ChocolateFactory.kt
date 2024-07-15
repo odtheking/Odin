@@ -18,9 +18,8 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.client.event.sound.PlaySoundEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-
 object ChocolateFactory : Module(
-    "Chocolate Factory",
+    name = "Chocolate Factory",
     description = "Automates the Chocolate Factory.",
     category = Category.SKYBLOCK
 ) {
@@ -28,6 +27,7 @@ object ChocolateFactory : Module(
     private val autoUpgrade: Boolean by BooleanSetting("Auto Upgrade", false, description = "Automatically upgrade the worker.")
     private val delay: Long by NumberSetting("Delay", 150, 50, 300, 5)
     private val upgradeDelay: Long by NumberSetting("Upgrade delay", 500, 300, 2000, 100)
+    private val claimStray: Boolean by BooleanSetting("Claim Strays", false, description = "Claim stray rabbits in the Chocolate Factory menu.")
     private val cancelSound: Boolean by BooleanSetting("Cancel Sound")
     private val upgradeMessage: Boolean by BooleanSetting("Odin Upgrade Message", false, description = "Prints a message when upgrading.")
     private val eggEsp: Boolean by BooleanSetting("Egg ESP", false, description = "Shows the location of the egg.")
@@ -54,6 +54,12 @@ object ChocolateFactory : Module(
             if (!isInChocolateFactory()) return@execute
 
             if (clickFactory) windowClick(13, PlayerUtils.ClickType.Right)
+            
+            if (claimStray) {
+                val container = mc.thePlayer.openContainer as? ContainerChest ?: return@execute
+                val found = container.inventorySlots.find { it.stack.displayName.contains("CLICK ME!") } ?: return@execute
+                windowClick(found.slotNumber, PlayerUtils.ClickType.Left)
+            }
         }
 
         execute(delay = { upgradeDelay }) {
@@ -131,9 +137,9 @@ object ChocolateFactory : Module(
     private enum class ChocolateEggs(
         val texture: String, val type: String, val color: Color, val index: Int
     ) {
-        Breakfast(BunnyEggTextures.breakfastEggTexture, "§6Breakfast Egg", Color.ORANGE, 0),
-        Lunch(BunnyEggTextures.lunchEggTexture, "§9Lunch Egg ", Color.BLUE, 1),
-        Dinner(BunnyEggTextures.dinnerEggTexture, "§aDinner Egg", Color.GREEN, 2),
+        Breakfast(BunnyEggTextures.BREAKFAST_EGG_TEXTURE, "§6Breakfast Egg", Color.ORANGE, 0),
+        Lunch(BunnyEggTextures.LUNCH_EGG_TEXTURE, "§9Lunch Egg ", Color.BLUE, 1),
+        Dinner(BunnyEggTextures.DINNER_EGG_TEXTURE, "§aDinner Egg", Color.GREEN, 2),
     }
 
     data class Egg(val entity: EntityArmorStand, val renderName: String, val color: Color, var isFound: Boolean = false)

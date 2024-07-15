@@ -1,6 +1,6 @@
 package me.odinclient.mixin.mixins;
 
-import me.odinclient.features.impl.skyblock.NoBreakReset;
+import me.odinclient.features.impl.skyblock.CancelInteract;
 import me.odinmain.events.impl.GuiEvent;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.entity.player.EntityPlayer;
@@ -29,7 +29,7 @@ public class MixinPlayerControllerMP {
      */
     @Overwrite
     private boolean isHittingPosition(BlockPos pos) {
-        return NoBreakReset.isHittingPositionHook(pos, currentItemHittingBlock, currentBlock);
+        return CancelInteract.isHittingPositionHook(pos, currentItemHittingBlock, currentBlock);
     }
 
     @Inject(method = "windowClick", at = @At(value = "HEAD"), cancellable = true)

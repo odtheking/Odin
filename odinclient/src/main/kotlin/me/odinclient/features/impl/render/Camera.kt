@@ -14,13 +14,14 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 object Camera : Module(
-    "Camera",
+    name = "Camera",
     category = Category.RENDER,
     description = "Allows you to change qualities about third person view."
 ) {
     private val frontCamera: Boolean by BooleanSetting("No Front Camera")
     private val cameraClip: Boolean by BooleanSetting("Camera Clip")
     private val cameraDist: Float by NumberSetting("Distance", 4f, 3.0, 12.0, 0.1)
+    private val fov: Float by NumberSetting("FOV", mc.gameSettings.fovSetting, 1f, 180f, 1f)
     private val freelookDropdown: Boolean by DropdownSetting("Freelook")
     private val toggle: Boolean by DualSetting("Type", "Hold", "Toggle", false).withDependency { freelookDropdown }
     private val freelookKeybind: Keybinding by KeybindSetting("Freelook Key", Keyboard.KEY_NONE, description = "Keybind to toggle/ hold for freelook.")
@@ -28,7 +29,6 @@ object Camera : Module(
         .onPress {
             if (!freelookToggled && enabled) enable()
             else if ((toggle || !enabled) && freelookToggled) disable()
-
     }
     var freelookToggled = false
     private var cameraYaw = 0f
@@ -46,9 +46,12 @@ object Camera : Module(
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        if (frontCamera && mc.gameSettings.thirdPersonView == 2) {
+        if (mc.gameSettings.fovSetting != fov)
+            mc.gameSettings.fovSetting = fov
+
+        if (frontCamera && mc.gameSettings.thirdPersonView == 2)
             mc.gameSettings.thirdPersonView = 0
-        }
+
         if (!freelookKeybind.isDown() && freelookToggled && !toggle) disable()
     }
 

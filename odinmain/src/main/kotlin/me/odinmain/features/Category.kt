@@ -3,7 +3,7 @@ package me.odinmain.features
 import me.odinmain.features.impl.render.ClickGUIModule
 
 enum class Category {
-    DUNGEON, FLOOR7, RENDER, SKYBLOCK, KUUDRA;
+    DUNGEON, FLOOR7, RENDER, SKYBLOCK, NETHER;
 
     var x: Float
         get() = ClickGUIModule.panelX[this]!!.value

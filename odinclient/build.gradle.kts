@@ -68,7 +68,6 @@ repositories {
     mavenCentral()
     maven("https://repo.spongepowered.org/maven/")
     maven("https://repo.essential.gg/repository/maven-public/")
-    maven("https://repo.hypixel.net/repository/Hypixel/")
 }
 
 val shadowImpl: Configuration by configurations.creating {
@@ -90,11 +89,9 @@ dependencies {
     annotationProcessor("org.spongepowered:mixin:0.8.5:processor")
     compileOnly("org.spongepowered:mixin:0.8.5")
 
-    shadowImpl("net.hypixel:mod-api:0.4.0")
     shadowImpl("gg.essential:loader-launchwrapper:1.1.3")
     compileOnly("gg.essential:essential-1.8.9-forge:12132+g6e2bf4dc5")
 
-    //api("com.mojang:brigadier:1.0.18")
     shadowImpl("com.github.Stivais:Commodore:3f4a14b1cf") {
         exclude(module = "kotlin-stdlib-jdk8")
         exclude(module = "kotlin-reflect")
@@ -157,6 +154,7 @@ tasks {
     }
 
     shadowJar {
+        destinationDirectory.set(layout.buildDirectory.dir("archiveJars"))
         archiveBaseName = "OdinClient"
         archiveClassifier = "dev"
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE

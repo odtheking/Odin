@@ -13,7 +13,7 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object CPSDisplay : Module(
-    "CPS Display",
+    name = "CPS Display",
     description = "Displays your clicks per second.",
     category = Category.RENDER
 ) {

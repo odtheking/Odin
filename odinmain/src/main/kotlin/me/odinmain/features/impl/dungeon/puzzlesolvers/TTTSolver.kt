@@ -1,7 +1,7 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.events.impl.EnteredDungeonRoomEvent
+import me.odinmain.events.impl.DungeonEvents
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
@@ -30,11 +30,11 @@ object TTTSolver {
 
     private var toRender: BlockPos? = null
 
-    fun tttRoomEnter(event: EnteredDungeonRoomEvent) {
-        val room = event.room?.room ?: return
+    fun tttRoomEnter(event: DungeonEvents.RoomEnterEvent) {
+        val room = event.fullRoom?.room ?: return
         if (room.data.name != "Tic Tac Toe") return
 
-        updateBoard(room.vec2.addRotationCoords(room.rotation, 7, 0), room.rotation)
+        //updateBoard(room.vec2.addRotationCoords(room.rotation, 7, 0), room.rotation)
     }
 
     private fun updateBoard(bottomRight: Vec2, rotations: Rotations) {
@@ -64,22 +64,22 @@ object TTTSolver {
         }
     }
 
-    fun firstMove() {
-        if (board.filter { it.state == State.X }.size != 1) return
-        toRender = when (board.first { it.state == State.X }.position) {
+    fun firstMove() : BlockPos? {
+        if (board.filter { it.state == State.X }.size != 1) return null
+        return when (board.first { it.state == State.X }.position) {
             BoardPosition.Middle -> board[0].location
             BoardPosition.Corner -> board[4].location
-            else -> return
+            else -> null
         }
     }
 
-    fun secondMove() {
-        if (board.filter { it.state == State.X }.size != 2) return
+    fun secondMove() : BlockPos? {
+        if (board.filter { it.state == State.X }.size != 2) return null
         val slot = board.last { it.state == State.X }
-        toRender = when (slot.position) {
+        return when (slot.position) {
             BoardPosition.Middle -> board[8].location
             BoardPosition.Corner -> board[0].location
-            else -> return
+            else -> null
         }
     }
 

@@ -173,7 +173,7 @@ abstract class Module(
         executors.add(this to Executor(delay, profileName, func))
     }
 
-    fun execute(delay: Long, repeats: Int, profileName: String = this.name, func:Executable) {
+    fun execute(delay: Long, repeats: Int, profileName: String = this.name, func: Executable) {
         executors.add(this to Executor.LimitedExecutor(delay, repeats, profileName, func))
     }
 

@@ -3,8 +3,9 @@ package me.odinmain.config
 import com.google.gson.*
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.*
+import me.odinmain.OdinMain.logger
 import me.odinmain.OdinMain.mc
-import me.odinmain.features.impl.dungeon.DungeonWaypoints.DungeonWaypoint
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.DungeonWaypoint
 import me.odinmain.utils.render.Color
 import java.io.File
 import java.io.IOException
@@ -35,7 +36,7 @@ object DungeonWaypointConfigCLAY {
         }  catch (e: JsonSyntaxException) {
             println("Error parsing configs.")
             println(e.message)
-            e.printStackTrace()
+            logger.error("Error parsing configs.", e)
         } catch (e: JsonIOException) {
             println("Error reading configs.")
         }

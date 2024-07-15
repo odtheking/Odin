@@ -1,9 +1,6 @@
 package me.odinmain.features.impl.render
 
-import com.github.stivais.ui.color.Color
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import me.odinmain.OdinMain
 import me.odinmain.config.Config
 import me.odinmain.features.Category
@@ -13,12 +10,9 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.hud.EditHUDGui
-import me.odinmain.utils.render.Color as _Color
+import me.odinmain.utils.render.Color
 import me.odinmain.utils.sendDataToServer
-import me.odinmain.utils.skyblock.LocationUtils
-import me.odinmain.utils.skyblock.createClickStyle
-import me.odinmain.utils.skyblock.getChatBreak
-import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.skyblock.*
 import net.minecraft.event.ClickEvent
 import net.minecraft.util.ChatComponentText
 import org.lwjgl.input.Keyboard
@@ -59,10 +53,9 @@ object ClickGUIModule: Module(
     private var showHidden: Boolean by DropdownSetting("Show Hidden", false)
     private val passcode: String by StringSetting("Passcode", "odin", description = "Passcode for dev features.").withDependency { DevPlayers.isDev && showHidden }
 
-    @OptIn(DelicateCoroutinesApi::class)
     val reset by ActionSetting("Send Dev Data") {
         showHidden = false
-        GlobalScope.launch {
+        scope.launch {
             modMessage(sendDataToServer(body = "${mc.thePlayer.name}, [${devWingsColor.r},${devWingsColor.g},${devWingsColor.b}], [$devSizeX,$devSizeY,$devSizeZ], $devWings, $passcode", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
             DevPlayers.updateDevs()
         }

@@ -28,45 +28,17 @@ val soopyCommand = commodore("soopycmd", "spcmd", "spc") {
         val url = "https://soopy.dev/api/soopyv2/botcommand?m=$command&u=$targetUser"
 
         modMessage("Running command...")
-        GlobalScope.launch { modMessage(fetchURLData(url)) }
-    }.suggests("command", commands)
-}
-
-
-/*object SoopyCommand : Commodore {
-    override val command: CommandNode =
-        literal("spcmd") {
-
-            runs {
-                modMessage("Usage: /spcmd <command> [player] || /spcmd cmds")
-            }
-
-            runs { str: GreedyString ->
-                val message = str.string.split(" ")
-                var url = ""
-                if (message[0].lowercase().equalsOneOf("cmds", "commands", "cmd", "command"))
-                    return@runs modMessage("""Available commands:
-                        | kuudra, auctions, skills, skillaverage, dojo, 
-                        | overflowskills, overflowskillaverage, bestiary, 
-                        | faction, nucleus, guildof, essence, secrets, bank, 
-                        | pet, whatdoing, dungeon, currdungeon, sblvl, classaverage, 
-                        | rtca, nw.""".trimMargin())
-
-                when (message.size) {
-                    1 -> {
-                        val playerName = mc.thePlayer.name
-                        val command = message[0]
-                        url = "https://soopy.dev/api/soopyv2/botcommand?m=$command&u=$playerName"
-                    }
-                    2 -> {
-                        val targetUser = message[1]
-                        val command = message[0]
-                        url = "https://soopy.dev/api/soopyv2/botcommand?m=$command&u=$targetUser"
-                    }
+        GlobalScope.launch {
+            try {
+                val result = withTimeout(5000) {
+                    fetchURLData(url)
                 }
-                modMessage("Running command...")
-
-                scope.launch { modMessage(fetchURLData(url)) }
+                modMessage(result)
+            } catch (e: TimeoutCancellationException) {
+                modMessage("Request timed out")
+            } catch (e: Exception) {
+                modMessage("Failed to fetch data: ${e.message}")
             }
         }
-}*/
+    }.suggests("command", commands)
+}

@@ -28,10 +28,9 @@ object DragonHitboxes : Module(
 
     @SubscribeEvent
     fun onClientTick(event: ClientTickEvent) {
-        if (mc.theWorld == null) return
+        if (mc.theWorld == null || event.phase == TickEvent.Phase.END) return
         val entityDragons = mc.theWorld.loadedEntityList.filterIsInstance<EntityDragon>()
         dragonRenderQueue = entityDragons as ArrayList<EntityDragon>
-        if (event.phase == TickEvent.Phase.END) return
 
         for (dragon in entityDragons) {
             for (entity in dragon.dragonPartArray) {
@@ -86,10 +85,8 @@ object DragonHitboxes : Module(
     }
 
     @SubscribeEvent
-    fun onWorldUnload(event: WorldEvent.Unload)
-    {
+    fun onWorldUnload(event: WorldEvent.Unload) {
         entityPositions.clear()
         dragonRenderQueue.clear()
     }
-
 }

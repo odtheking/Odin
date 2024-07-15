@@ -7,143 +7,144 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import net.minecraft.entity.item.EntityItemFrame
-import net.minecraft.init.Blocks
 import net.minecraft.init.Items
-import net.minecraft.item.Item
-import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.util.*
 
 object ArrowAlign : Module(
     name = "Arrow Align",
     description = "Different features for the arrow alignment device.",
     category = Category.FLOOR7
 ) {
-    private val solver: Boolean by BooleanSetting("Solver")
     private val blockWrong: Boolean by BooleanSetting("Block Wrong Clicks", false, description = "Blocks wrong clicks, shift will override this")
     private val triggerBot: Boolean by BooleanSetting("Trigger Bot")
     private val sneakToDisableTriggerbot: Boolean by BooleanSetting("Sneak to disable", false, description = "Disables triggerbot when you are sneaking").withDependency { triggerBot }
     private val delay: Long by NumberSetting<Long>("Delay", 200, 70, 500).withDependency { triggerBot }
-    private val multipleScans: Boolean by BooleanSetting("Multiple Scans", true)
-    private val delayScan: Long by NumberSetting("Scan Delay", 3000, 10.0, 10000.0, 10.0)
-    private var scanned = false
 
-    private val area = BlockPos.getAllInBox(BlockPos(-2, 125, 79), BlockPos(-2, 121, 75))
-        .sortedWith { a, b ->
-            if (a.y == b.y) return@sortedWith b.z - a.z
-            if (a.y < b.y) return@sortedWith 1
-            if (a.y > b.y) return@sortedWith -1
-            return@sortedWith 0
-        }
     private val triggerBotClock = Clock(delay)
-    private data class Vec2(val x: Int, val y: Int)
-    private data class Frame(val entity: EntityItemFrame, var rotations: Int)
-    private val neededRotations = HashMap<Vec2, Frame>()
+
+    private val frameGridCorner = Vec3(-2.0, 120.0, 75.0)
+
+    private val recentClickTimestamps = mutableMapOf<Int, Long>()
+    private val clicksRemaining = mutableMapOf<Int, Int>()
+    private var currentFrameRotations: List<Int>? = null
+    private var targetSolution: List<Int>? = null
 
     init {
-        execute(delayScan) {
-            if (mc.thePlayer.getDistanceSq(BlockPos(-2, 122, 76)) > 225 /*|| DungeonUtils.getPhase() != 3*/ || (scanned && !multipleScans)) return@execute
-            calculate()
-            scanned = true
-        }
+        execute(100) {
+            clicksRemaining.clear()
+            if ((mc.thePlayer?.distanceSquaredTo(Vec3(0.0, 120.0, 77.0)) ?: return@execute) > 200) {
+                currentFrameRotations = null
+                targetSolution = null
+                return@execute
+            }
 
-        onWorldLoad {
-            scanned = false
-            neededRotations.clear()
+            currentFrameRotations = getFrames()
+
+            possibleSolutions.forEach { arr ->
+                for (i in arr.indices) {
+                    if ((arr[i] == -1 || currentFrameRotations?.get(i) == -1) && arr[i] != currentFrameRotations?.get(i)) return@forEach
+                }
+
+                for (i in arr.indices) {
+                    clicksRemaining[i] = calculateClicksNeeded(currentFrameRotations?.get(i) ?: return@forEach, arr[i]).takeIf { it != 0 } ?: continue
+                }
+            }
         }
     }
 
     @SubscribeEvent
     fun onRightClick(event: ClickEvent.RightClickEvent) {
-        if (mc.objectMouseOver?.entityHit !is EntityItemFrame) return
-        val frame = neededRotations.values.find { it.entity == mc.objectMouseOver.entityHit as EntityItemFrame } ?: return
-        if (frame.rotations == 0 && blockWrong && !mc.thePlayer.isSneaking) {
-            event.isCanceled = true
+        val targetFrame = mc.objectMouseOver?.entityHit as? EntityItemFrame ?: return
+
+        val targetFramePosition = targetFrame.positionVector.flooredVec()
+
+        val frameIndex = ((targetFramePosition.yCoord - frameGridCorner.yCoord) + (targetFramePosition.zCoord - frameGridCorner.zCoord) * 5).toInt()
+        if (targetFramePosition.xCoord != frameGridCorner.xCoord || currentFrameRotations?.get(frameIndex) == -1 || frameIndex !in 0..24) return
+
+        if (!clicksRemaining.containsKey(frameIndex) && mc.thePlayer.isSneaking) {
+            if (blockWrong) event.isCanceled = true
             return
         }
-        if (frame.rotations == 0) frame.rotations = 7
-        else frame.rotations--
-    }
 
-    private fun triggerBot() {
-        if (!triggerBotClock.hasTimePassed(delay) || ( sneakToDisableTriggerbot && mc.thePlayer.isSneaking )) return
-        val rot = neededRotations.values.find { it.entity == mc.objectMouseOver?.entityHit } ?: return
-        if (rot.rotations == 0) return
-        PlayerUtils.rightClick()
-        triggerBotClock.update()
+        recentClickTimestamps[frameIndex] = System.currentTimeMillis()
+        currentFrameRotations = currentFrameRotations?.toMutableList()?.apply { this[frameIndex] = (this[frameIndex] + 1) % 8 }
+
+        currentFrameRotations?.let {
+            val target = targetSolution ?: return
+            val remainingClicks = calculateClicksNeeded(it[frameIndex], target[frameIndex])
+            if (remainingClicks == 0) clicksRemaining.remove(frameIndex)
+        }
     }
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (triggerBot) triggerBot()
-        if (!solver) return
-        for (place in neededRotations) {
-            val clicksNeeded = place.value.rotations
+        if (clicksRemaining.isEmpty()) return
+        triggerBot()
+        clicksRemaining.forEach { (index, clickNeeded) ->
+            val framePosition = getFramePositionFromIndex(index)
             val color = when {
-                clicksNeeded == 0 -> continue
-                clicksNeeded < 3 -> Color(85, 255, 85)
-                clicksNeeded < 5 -> Color(255, 170, 0)
+                clickNeeded == 0 -> return@forEach
+                clickNeeded < 3 -> Color(85, 255, 85)
+                clickNeeded < 5 -> Color(255, 170, 0)
                 else -> Color(170, 0, 0)
             }
-            Renderer.drawStringInWorld(clicksNeeded.toString(), Vec3(-1.8, 124.6 - place.key.y, 79.5 - place.key.x), color, scale = .05f)
+            Renderer.drawStringInWorld(clickNeeded.toString(), framePosition.addVec(y = 0.6, z = 0.5), color)
         }
     }
 
-    private fun calculate() {
-        val frames = mc.theWorld.getEntities(EntityItemFrame::class.java) {
-            it != null && it.position in area && it.displayedItem != null
-        }.takeIf { it.isNotEmpty() } ?: return
-        val solutions = HashMap<Vec2, Int>()
-        val maze = Array(5) { IntArray(5) }
-        val queue = LinkedList<Vec2>()
-        val visited = Array(5) { BooleanArray(5) }
-        neededRotations.clear()
-        area.forEachIndexed { i, pos ->
-            val x = i % 5
-            val y = i / 5
-            val frame = frames.find { it.position == pos } ?: return@forEachIndexed
-            // 0 = null, 1 = arrow, 2 = end, 3 = start
-            maze[x][y] = when (frame.displayedItem.item) {
-                Items.arrow -> 1
-                Item.getItemFromBlock(Blocks.wool) -> {
-                    when (frame.displayedItem.itemDamage) {
-                        5 -> 3
-                        14 -> 2
-                        else -> 0
-                    }
-                }
-                else -> 0
-            }
-            when (maze[x][y]) {
-                1 -> neededRotations[Vec2(x, y)] = Frame(frame, frame.rotation)
-                3 -> queue.add(Vec2(x, y))
-            }
+    private fun getFrames(): List<Int> {
+        val itemFrames = mc.theWorld.getEntities(EntityItemFrame::class.java) {
+            it != null && it.displayedItem?.item == Items.arrow
+        } ?: return List(25) { -1 }
+
+        val positionToRotationMap = itemFrames.associate { it.positionVector.flooredVec().toString() to it.rotation }
+
+        return (0..24).map { index ->
+            if (recentClickTimestamps[index]?.let { System.currentTimeMillis() - it < 1000 } == true && currentFrameRotations != null)
+                currentFrameRotations?.get(index) ?: -1
+            else
+                positionToRotationMap[getFramePositionFromIndex(index).toString()] ?: -1
         }
-        while (queue.size != 0) {
-            val s = queue.poll()
-            val directions = arrayOf(Vec2(1, 0), Vec2(0, 1), Vec2(-1, 0), Vec2(0, -1))
-            for (i in 3 downTo 0) {
-                val x = s.x + directions[i].x
-                val y = s.y + directions[i].y
-                if (x !in 0..4 || y !in 0..4) continue
-                val rotations = i * 2 + 1
-                if (solutions[Vec2(x, y)] != null || maze[x][y] !in 1..2) continue
-                queue.add(Vec2(x, y))
-                solutions[s] = rotations
-                if (visited[s.x][s.y]) continue
-                val frame = neededRotations[s]?.entity ?: continue
-                var neededRotation = neededRotations[s]?.rotations ?: continue
-                neededRotation = rotations - neededRotation
-                if (neededRotation < 0) neededRotation += 8
-                neededRotations[s] = Frame(frame, neededRotation)
-                visited[s.x][s.y] = true
-            }
+    }
+
+    private fun getFramePositionFromIndex(index: Int): Vec3 {
+        return frameGridCorner.addVec(0, index % 5, index / 5)
+    }
+
+    private fun calculateClicksNeeded(currentRotation: Int, targetRotation: Int): Int {
+        return (8 - currentRotation + targetRotation) % 8
+    }
+
+    private val possibleSolutions = listOf(
+        listOf(7, 7, -1, -1, -1, 1, -1, -1, -1, -1, 1, 3, 3, 3, 3, -1, -1, -1, -1, 1, -1, -1, -1, 7, 1),
+        listOf(-1, -1, 7, 7, 5, -1, 7, 1, -1, 5, -1, -1, -1, -1, -1, -1, 7, 5, -1, 1, -1, -1, 7, 7, 1),
+        listOf(7, 7, -1, -1, -1, 1, -1, -1, -1, -1, 1, 3, -1, 7, 5, -1, -1, -1, -1, 5, -1, -1, -1, 3, 3),
+        listOf(5, 3, 3, 3, -1, 5, -1, -1, -1, -1, 7, 7, -1, -1, -1, 1, -1, -1, -1, -1, 1, 3, 3, 3, -1),
+        listOf(5, 3, 3, 3, 3, 5, -1, -1, -1, 1, 7, 7, -1, -1, 1, -1, -1, -1, -1, 1, -1, 7, 7, 7, 1),
+        listOf(7, 7, 7, 7, -1, 1, -1, -1, -1, -1, 1, 3, 3, 3, 3, -1, -1, -1, -1, 1, -1, 7, 7, 7, 1),
+        listOf(-1, -1, -1, -1, -1, 1, -1, 1, -1, 1, 1, -1, 1, -1, 1, 1, -1, 1, -1, 1, -1, -1, -1, -1, -1),
+        listOf(-1, -1, -1, -1, -1, 1, 3, 3, 3, 3, -1, -1, -1, -1, 1, 7, 7, 7, 7, 1, -1, -1, -1, -1, -1),
+        listOf(-1, -1, -1, -1, -1, -1, 1, -1, 1, -1, 7, 1, 7, 1, 3, 1, -1, 1, -1, 1, -1, -1, -1, -1, -1)
+    )
+
+    private fun triggerBot() {
+        if (!triggerBotClock.hasTimePassed(delay) || (sneakToDisableTriggerbot && mc.thePlayer.isSneaking)) return
+        val targetFrame = mc.objectMouseOver?.entityHit as? EntityItemFrame ?: return
+
+        val targetFramePosition = targetFrame.positionVector.flooredVec()
+
+        val frameIndex = ((targetFramePosition.yCoord - frameGridCorner.yCoord) + (targetFramePosition.zCoord - frameGridCorner.zCoord) * 5).toInt()
+        if (targetFramePosition.xCoord != frameGridCorner.xCoord || currentFrameRotations?.get(frameIndex) == -1 || frameIndex !in 0..24) return
+        clicksRemaining[frameIndex]?.let {
+            PlayerUtils.rightClick()
+            triggerBotClock.update()
         }
     }
 }

@@ -12,7 +12,7 @@ object DragonTimer {
         toRender = ArrayList()
 
         WitherDragonsEnum.entries.forEachIndexed { index, dragon ->
-            if (dragon.spawning && dragon.spawnTime() > 0)
+            if (dragon.state == WitherDragonState.SPAWNING && dragon.spawnTime() > 0)
                 toRender.add(Triple("§${dragon.colorCode}${dragon} spawn: ${colorTime(dragon.spawnTime())}ms", index, dragon))
         }
     }

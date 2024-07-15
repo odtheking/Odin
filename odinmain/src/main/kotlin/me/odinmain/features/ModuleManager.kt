@@ -3,10 +3,11 @@ package me.odinmain.features
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.*
 import me.odinmain.features.impl.dungeon.*
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers
 import me.odinmain.features.impl.floor7.*
 import me.odinmain.features.impl.floor7.p3.*
-import me.odinmain.features.impl.kuudra.*
+import me.odinmain.features.impl.nether.*
 import me.odinmain.features.impl.render.*
 import me.odinmain.features.impl.render.ClickGUIModule.hudChat
 import me.odinmain.features.impl.skyblock.*
@@ -52,25 +53,25 @@ object ModuleManager {
         // dungeon
         DungeonRequeue, BlessingDisplay, ExtraStats, KeyHighlight, Mimic, TeammatesHighlight,
         TerracottaTimer, BloodCamp, ClickedSecrets, DungeonWaypoints, SecretChime, LeapMenu, PuzzleSolvers,
-        WarpCooldown, 
+        WarpCooldown, MapInfo,
 
         // floor 7
         TerminalSolver, TerminalTimes, MelodyMessage, NecronDropTimer, InactiveWaypoints, WitherDragons,
-        GoldorTimer, TerminalSimulator,
+        GoldorTimer, TerminalSimulator, TerminalSounds, ArrowsDevice,
 
         // render
         BPSDisplay, ClickGUIModule, CustomHighlight, CPSDisplay, DragonHitboxes, GyroWand, NameChanger,
         PersonalDragon, RenderOptimizer, ServerHud, Waypoints, CanClip, Animations, SpaceHelmet,
-        BlockOverlay, VisualWords, HidePlayers, DVD, Sidebar,
+        BlockOverlay, VisualWords, DVD, Sidebar,
 
         //skyblock
         NoCursorReset, AutoSprint, BlazeAttunement, ChatCommands, DeployableTimer, DianaHelper, ArrowHit,
-        Ragaxe, MobSpawn, /*Splits,*/ WardrobeKeybinds, InvincibilityTimer, EnrageDisplay, /*ItemsHighlight,*/
-        CopyChat, PlayerDisplay, FarmKeys, PartyEncoding, PetKeybinds, SkillsSucks,
+        Ragaxe, MobSpawn, Splits, WardrobeKeybinds, InvincibilityTimer, EnrageDisplay, /*ItemsHighlight,*/
+        PlayerDisplay, FarmKeys, /*PartyEncoding,*/ PetKeybinds, /*SkillsSucks,*/ ChatEmotes,
 
         // kuudra
-        BuildHelper, FreshTimer, KuudraDisplay, NoPre, PearlWaypoints, RemovePerks, SupplyWaypoints, TeamHighlight,
-        VanqNotifier, KuudraReminders, KuudraSplits, KuudraRequeue,
+        BuildHelper, FreshTimer, KuudraDisplay, NoPre, PearlWaypoints, RemovePerks, SupplyHelper, TeamHighlight,
+        VanqNotifier, KuudraReminders, KuudraRequeue, TacTimer
     )
 
     init {
@@ -91,7 +92,6 @@ object ModuleManager {
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START) return
-
         tickTasks.removeAll {
             if (it.ticksLeft <= 0) {
                 it.function()

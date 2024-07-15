@@ -6,7 +6,6 @@ import me.odinmain.features.settings.impl.*
 import net.minecraft.client.settings.KeyBinding
 import org.lwjgl.input.Keyboard
 
-
 object FarmKeys: Module(
     name = "Farm Keys",
     description = "Optimizes your keybinds for farming in Skyblock.",
@@ -24,7 +23,7 @@ object FarmKeys: Module(
     }
 
     override fun onDisable() {
-        updateKeyBindings(-100, 57, previousSensitivity / 100)
+        updateKeyBindings(-100, 57, previousSensitivity / 200)
         super.onDisable()
     }
 

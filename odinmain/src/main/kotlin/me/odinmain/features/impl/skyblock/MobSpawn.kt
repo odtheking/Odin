@@ -5,12 +5,11 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.clock.Clock
-import me.odinmain.utils.floor
 import me.odinmain.utils.skyblock.*
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object MobSpawn: Module(
-    "Mob Spawn",
+    name = "Mob Spawn",
     category = Category.SKYBLOCK,
     description = "Sends a message whenever a mob spawns."
 ) {
@@ -29,7 +28,7 @@ object MobSpawn: Module(
 
         modMessage("§5$mobName has spawned!")
         PlayerUtils.alert("§5$mobName has spawned!", playSound = !soundOnly)
-        if (ac) sendChatMessage("$mobName spawned at: x: ${PlayerUtils.posX.floor()}, y: ${PlayerUtils.posY.floor()}, z: ${PlayerUtils.posZ.floor()}")
-        if (pc) partyMessage("$mobName spawned at: x: ${PlayerUtils.posX.floor()}, y: ${PlayerUtils.posY.floor()}, z: ${PlayerUtils.posZ.floor()}")
+        if (ac) sendChatMessage("$mobName spawned at: ${PlayerUtils.getPositionString()}")
+        if (pc) partyMessage("$mobName spawned at: x: ${PlayerUtils.getPositionString()}")
     }
 }
