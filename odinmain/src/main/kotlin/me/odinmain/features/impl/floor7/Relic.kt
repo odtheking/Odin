@@ -14,13 +14,13 @@ object Relic {
 
     enum class Relic (
         val id: String,
-        val colorCode: String
+        val colorCode: Char
     ) {
-        Green("GREEN_KING_RELIC", "§a"),
-        Purple("PURPLE_KING_RELIC", "§5"),
-        Blue("BLUE_KING_RELIC", "§b"),
-        Orange("ORANGE_KING_RELIC", "§6"),
-        Red("RED_KING_RELIC", "§c")
+        Green("GREEN_KING_RELIC", 'a'),
+        Purple("PURPLE_KING_RELIC", '5'),
+        Blue("BLUE_KING_RELIC", 'b'),
+        Orange("ORANGE_KING_RELIC", '6'),
+        Red("RED_KING_RELIC", 'c')
     }
 
     private val relicPBs = PersonalBest("Relics", 5)

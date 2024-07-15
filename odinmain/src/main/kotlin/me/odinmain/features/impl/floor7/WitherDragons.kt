@@ -34,7 +34,7 @@ import kotlin.concurrent.schedule
 
 
 object WitherDragons : Module(
-    "Wither Dragons",
+    name = "Wither Dragons",
     description = "Various features for Wither dragons (boxes, timer, HP, priority and more).",
     category = Category.FLOOR7
 ) {
@@ -97,7 +97,7 @@ object WitherDragons : Module(
             WitherDragonsEnum.entries.forEach {
                 it.particleSpawnTime = 0L
                 it.timesSpawned = 0
-                it.spawning = false
+                it.state = WitherDragonState.DEAD
                 it.entity = null
                 it.spawnTime()
             }

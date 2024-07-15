@@ -8,18 +8,14 @@ import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.addVec
 import me.odinmain.utils.render.*
-import me.odinmain.utils.render.RenderUtils.bind
 import me.odinmain.utils.render.RenderUtils.renderX
 import me.odinmain.utils.render.RenderUtils.renderY
 import me.odinmain.utils.render.RenderUtils.renderZ
-import me.odinmain.utils.render.RenderUtils.worldRenderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.isShortbow
 import me.odinmain.utils.skyblock.itemID
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.Tessellator
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.Entity
+import net.minecraft.entity.boss.EntityWither
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.monster.EntityBlaze
 import net.minecraft.entity.projectile.EntityArrow
@@ -28,7 +24,6 @@ import net.minecraft.item.ItemEnderPearl
 import net.minecraft.util.*
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import org.lwjgl.opengl.GL11
 import kotlin.math.sqrt
 
 object Trajectories : Module(
@@ -239,24 +234,9 @@ object Trajectories : Module(
     }
 
     private fun drawLine(lines: ArrayList<Vec3>) {
-        if (lines.size == 0) return
+        if (lines.isEmpty()) return
 
-        GlStateManager.pushMatrix()
-        color.bind()
-        RenderUtils.preDraw()
-        GlStateManager.depthMask(false)
-        GL11.glEnable(GL11.GL_LINE_SMOOTH)
-        GL11.glLineWidth(width)
-
-        worldRenderer.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
-        for (line in lines) {
-            worldRenderer.pos(line.xCoord, line.yCoord, line.zCoord).endVertex()
-        }
-
-        Tessellator.getInstance().draw()
-        GlStateManager.depthMask(true)
-        RenderUtils.postDraw()
-        GlStateManager.popMatrix()
+        Renderer.draw3DLine(*lines.toTypedArray(), color = color, lineWidth = width, depth = true)
     }
 
     private fun drawPearlCollisionBox() {
@@ -266,8 +246,7 @@ object Trajectories : Module(
             pos.first.xCoord, pos.first.yCoord, pos.first.zCoord,
             pos.second.xCoord, pos.second.yCoord, pos.second.zCoord
         )
-        Renderer.drawBox(aabb,
-            color, width, depth = false, fillAlpha = 0)
+        Renderer.drawBox(aabb, color, width, depth = false, fillAlpha = 0)
 
         pearlImpactPos = null
     }
@@ -296,17 +275,17 @@ object Trajectories : Module(
 
     @SubscribeEvent
     fun onRenderModel(event: RenderEntityModelEvent) {
-        if (event.entity !in entityRenderQueue) return
-        if (!mc.thePlayer.canEntityBeSeen(event.entity)) return
-        if (!bows || mc.thePlayer?.heldItem?.item !is ItemBow) return
-        if(event.entity is EntityBlaze && DungeonUtils.inDungeons) return
+        val player = mc.thePlayer ?: return
+        val entity = event.entity
 
-        OutlineUtils.outlineEntity(
-            event,
-            width,
-            color,
-            false
-        )
+        if (entity !in entityRenderQueue ||
+            !player.canEntityBeSeen(entity) ||
+            (!bows || player.heldItem?.item !is ItemBow) ||
+            (entity is EntityBlaze && DungeonUtils.inDungeons) ||
+            (entity is EntityWither && entity.isInvisible)
+            ) return
+
+        OutlineUtils.outlineEntity(event, width, color, false)
     }
 
     private fun hypot(x: Double, y: Double, d: Double): Double = sqrt(x * x + y * y + d * d)

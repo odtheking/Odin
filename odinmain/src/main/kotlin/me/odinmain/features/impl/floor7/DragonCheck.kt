@@ -28,7 +28,7 @@ object DragonCheck {
         if (event.entity !is EntityDragon) return
         val dragon = WitherDragonsEnum.entries.find { isVecInXZ(event.entity.positionVector, it.boxesDimensions) } ?: return
 
-        dragon.spawning = false
+        dragon.state = WitherDragonState.ALIVE
         dragon.particleSpawnTime = 0L
         dragon.timesSpawned += 1
         dragon.entity = event.entity
@@ -50,7 +50,8 @@ object DragonCheck {
 
     fun dragonLeaveWorld(event: LivingDeathEvent) {
         if (event.entity !is EntityDragon) return
-        val dragon = WitherDragonsEnum.entries.find {it.entity?.entityId == event.entity.entityId} ?: return
+        val dragon = WitherDragonsEnum.entries.find {it.entity?.entityId == event.entity?.entityId} ?: return
+        dragon.state = WitherDragonState.DEAD
         lastDragonDeath = dragon
 
         if (sendTime && WitherDragons.enabled)

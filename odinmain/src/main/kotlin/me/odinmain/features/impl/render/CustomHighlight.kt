@@ -28,7 +28,7 @@ object CustomHighlight : Module(
 ) {
     private val scanDelay: Long by NumberSetting("Scan Delay", 500L, 10L, 2000L, 100L)
     private val starredMobESP: Boolean by BooleanSetting("Starred Mob Highlight", true, description = "Highlights mobs with a star in their name (remove star from the separate list).")
-    private val shadowAssasin: Boolean by BooleanSetting("Shadow Assassin", false, description = "Highlights Shadow Assassins")
+    private val shadowAssasin: Boolean by BooleanSetting("Shadow Assassin", false, description = "Highlights Shadow Assassins").withDependency { !isLegitVersion }
     private val color: Color by ColorSetting("Color", Color.WHITE, true)
     //private val mode: Int by SelectorSetting("Mode", HighlightRenderer.highlightModeDefault, HighlightRenderer.highlightModeList)
     val mode: Int by SelectorSetting("Mode", "Outline", arrayListOf("Outline", "Boxes", "2D"))
@@ -64,7 +64,7 @@ object CustomHighlight : Module(
     @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
         if (event.entity !in currentEntities) return
-        if (showInvisible && event.entity.isInvisible) event.entity.isInvisible = false
+        if (showInvisible && event.entity.isInvisible && isLegitVersion) event.entity.isInvisible = false
         if (mode != 0 || (depthCheck && !mc.thePlayer.canEntityBeSeen(event.entity))) return
         profile("Outline Esp") { OutlineUtils.outlineEntity(event, thickness, color, true) }
     }
@@ -90,7 +90,7 @@ object CustomHighlight : Module(
         val entity = mc.theWorld.getEntityByID(event.packet.entityId) ?: return
         checkEntity(entity)
         if (starredMobESP) checkStarred(entity)
-        if (shadowAssasin) checkAssassin(entity)
+        if (shadowAssasin && isLegitVersion) checkAssassin(entity)
     }
 
     private fun getEntities() {
@@ -117,8 +117,7 @@ object CustomHighlight : Module(
 
     private fun getMobEntity(entity: Entity): Entity? {
         return mc.theWorld.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.offset(0.0, -1.0, 0.0))
-            .filter { it != null && it !is EntityArmorStand && it.getPing() != 1 && it != mc.thePlayer}
+            .filter { it != null && it !is EntityArmorStand && it.getPing() != 1 && it != mc.thePlayer && !(it is EntityWither && it.isInvisible)}
             .minByOrNull { entity.getDistanceToEntity(it) }
-            .takeIf { !(it is EntityWither && it.isInvisible) }
     }
 }
