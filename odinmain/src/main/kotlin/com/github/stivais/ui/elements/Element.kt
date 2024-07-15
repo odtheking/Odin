@@ -8,6 +8,7 @@ import com.github.stivais.ui.constraints.Type
 import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.measurements.Undefined
 import com.github.stivais.ui.constraints.positions.Center
+import com.github.stivais.ui.elements.impl.Layout
 import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.events.Event
 import com.github.stivais.ui.events.Lifetime
@@ -15,6 +16,7 @@ import com.github.stivais.ui.events.Mouse
 import com.github.stivais.ui.operation.UIOperation
 import com.github.stivais.ui.renderer.Renderer
 import com.github.stivais.ui.utils.loop
+import me.odinmain.utils.skyblock.modMessage
 
 abstract class Element(constraints: Constraints?, var color: Color? = null) {
 
@@ -40,8 +42,16 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
 
     var x: Float = 0f
     var y: Float = 0f
+
     var width: Float = 0f
+        set(value) {
+            field = value.coerceAtLeast(0f)
+        }
+
     var height: Float = 0f
+        set(value) {
+            field = value.coerceAtLeast(0f)
+        }
 
     var internalX: Float = 0f
 
@@ -80,6 +90,10 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
         get() {
             return enabled && field
         }
+        set(value) {
+            if (!value) hovered = false
+            field = value
+        }
 
     abstract fun draw()
 
@@ -87,26 +101,38 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
         if (!enabled) return
         preSize()
         if (!constraints.width.reliesOnChild()) width = constraints.width.get(this, Type.W)
-        if (!constraints.height.reliesOnChild()) height = constraints.height.get(this, Type.H)
+        if (!constraints.height.reliesOnChild()) height = constraints.height.get(this, Type.H) + sy
         elements?.loop { it.size() }
     }
 
-    fun position() {
+    fun position(x: Float = (parent?.x ?: 0f), y: Float = (parent?.y ?: 0f)) {
         if (!enabled) return
-
+        if (scrollY != null) {
+            sy = scrollY!!.get(this, Type.H)
+            modMessage("$sy")
+        }
         internalX = constraints.x.get(this, Type.X)
         internalY = constraints.y.get(this, Type.Y)
-        x = internalX + (parent?.x ?: 0f) //+ (parent?.x ?: 0f)
-        y = internalY + (parent?.y ?: 0f) + (parent?.sy ?: 0f)
+        this.x = internalX + x //(parent?.x ?: 0f) //+ (parent?.x ?: 0f)
+        this.y = internalY + y //(parent?.y ?: 0f) + (parent?.sy ?: 0f)
 
-        elements?.loop { it.position() }
+        elements?.loop { it.position(this.x, this.y + sy) }
 
         // resize after position because of Constraints like Bounding and Linked
         if (constraints.width.reliesOnChild()) width = constraints.width.get(this, Type.W)
-        if (constraints.height.reliesOnChild()) height = constraints.height.get(this, Type.H)
+        if (constraints.height.reliesOnChild()) height = constraints.height.get(this, Type.H) + sy
     }
 
-    var redraw = true
+    private var _redraw = true
+
+    var redraw: Boolean
+        get() = _redraw
+        set(value) {
+            if (value) {
+                val element = getElementToRedraw()
+                element._redraw = true
+            }
+        }
 
     var hovered = false
         set(value) {
@@ -133,19 +159,14 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
     open fun preSize() {}
 
     fun render() {
-        if (redraw) {
-            redraw = false
-            val test = getElementToRedraw()
-            test.size()
-            test.position()
-            test.clip()
+        if (_redraw) {
+            _redraw = false
+            size()
+            position()
+            clip()
         }
         if (!renders) return
         renderer.push()
-//        if (scrollY != null) {
-//            renderer.hollowRect(x, y, width, height, 3f, Color.WHITE.rgba)
-//            sy = scrollY!!.get(this, Type.H)
-//        }
         if (alphaAnim != null) {
             alpha = alphaAnim!!.get(this, Type.X)
         }
@@ -177,7 +198,7 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
             element.render()
         }
         if (scissors) renderer.popScissor()
-//        if (hovered) renderer.hollowRect(x, y, width, height, 1f, Color.WHITE.rgba)
+        if (hovered) renderer.hollowRect(x, y, width, height, 1f, Color.WHITE.rgba)
         renderer.pop()
     }
 

@@ -26,14 +26,11 @@ class EventManager(private val ui: UI) {
             field = value
         }
 
-    var hoveredElements: ArrayList<Element> = arrayListOf()
-
     var focused: Element? = null
         private set
 
     fun check(): Boolean {
-        val hovered = hoveredElements.lastOrNull() ?: return false
-        return !hovered.isInside(mouseX, mouseY)
+        return hoveredElement?.isInside(mouseX, mouseY) == false
     }
 
     //

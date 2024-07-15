@@ -3,6 +3,7 @@ package com.github.stivais.ui.elements.impl
 import com.github.stivais.ui.UI
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.color.brighter
+import com.github.stivais.ui.color.darker
 import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.events.*
 import me.odinmain.utils.*
@@ -28,7 +29,7 @@ class TextInput(
     val onTextChange: (string: String) -> Unit = {}
 ) : Text(text, UI.defaultFont, Color.WHITE, constraints, constraints?.height ?: 50.percent) {
 
-    private val placeholderColor: Color = Color { color!!.rgba.brighter(1.5) }
+    private val placeholderColor: Color = Color { color!!.rgba.darker(0.75) }
 
     private var string: String = text
         set(value) {

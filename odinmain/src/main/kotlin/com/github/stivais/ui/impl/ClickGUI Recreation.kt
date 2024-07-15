@@ -50,12 +50,6 @@ fun clickGUI(renderer: Renderer) = UI(renderer) ui@{
     )
     for (panel in Category.entries) {
         column(at(x = panel.x.px, y = panel.y.px)) {
-            onMouseEnter {
-                modMessage("enter")
-            }
-            onMouseExit {
-                modMessage("exit")
-            }
             onRemove {
                 panel.x = element.x
                 panel.y = element.y
@@ -176,10 +170,17 @@ fun ElementDSL.tooltip(string: String) {
 
     var popup: Popup? = null
     onHover(1.seconds) {
-        val x: Position = (element.x + element.width).px
-        val y = element.y.px
+        val x: Position = (element.x + element.width + 5).px
+        val y = (element.y + 5).px
         popup = popup(at(x, y)) {
-            text(string, pos = at(0.px, 0.px), size = 20.px)
+            block(
+                constraints = constrain(0.px, 0.px, Bounding + 10.px, 30.px),
+                color = `gray 38`,
+                radius = 5.radii()
+            ) {
+                outline(ClickGUITheme, 2.px)
+                text(text = string)
+            }
             element.alphaAnim = Animatable(0.px, 1.px).apply { animate(0.25.seconds) }
         }
     }
@@ -196,13 +197,13 @@ fun ElementDSL.tooltip(string: String) {
 
 fun ElementDSL.onHover(duration: Float, block: () -> Unit) {
     onMouseEnter {
+        val start = System.nanoTime()
         UIOperation {
-            val start = System.nanoTime()
             if (System.nanoTime() - start >= duration) {
                 block()
                 return@UIOperation true
             }
-            !element.isInside(ui.mx, ui.my)
+            !element.isInside(ui.mx, ui.my) || !element.renders
         }.add()
     }
 }

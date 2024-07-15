@@ -52,7 +52,7 @@ open class ElementScope<E: Element>(val element: E) {
         val anim = element.scrollY ?: Animatable.Raw(0f).also { element.scrollY = it }
         val curr = anim.current
         anim.animate(
-            to = (curr + amount).coerceIn(-(element.height), 0f),
+            to = (curr + amount).coerceIn(-(element.height - element.sy), 0f),
             duration,
             animation
         )

@@ -110,7 +110,6 @@ class UI(val renderer: Renderer = NVGRenderer) {
     }
 
     fun cleanup() {
-        eventManager.hoveredElements.clear()
         unfocus()
         eventManager.dispatchToAll(Lifetime.Uninitialized, main)
     }
