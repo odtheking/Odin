@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object NoBlock : Module(
-    "No Block",
+    name = "No Block",
     description = "Prevents you from blocking with items that have an ability, this is effectively NoSlow.",
     category = Category.SKYBLOCK
 ) {

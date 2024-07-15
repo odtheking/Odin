@@ -27,7 +27,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.sqrt
 
 object Trajectories : Module(
-    "Trajectories",
+    name = "Trajectories",
     description = "Displays the trajectory of pearls and bows.",
     category = Category.RENDER
 ) {

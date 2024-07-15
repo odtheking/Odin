@@ -37,7 +37,7 @@ object ArrowAlign : Module(
     private var targetSolution: List<Int>? = null
 
     init {
-        execute(200) {
+        execute(100) {
             clicksRemaining.clear()
             if ((mc.thePlayer?.distanceSquaredTo(Vec3(0.0, 120.0, 77.0)) ?: return@execute) > 200) {
                 currentFrameRotations = null

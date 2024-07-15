@@ -6,7 +6,6 @@ import me.odinmain.features.settings.impl.*
 import net.minecraft.client.settings.KeyBinding
 import org.lwjgl.input.Keyboard
 
-
 object FarmKeys: Module(
     name = "Farm Keys",
     description = "Optimizes your keybinds for farming in Skyblock.",

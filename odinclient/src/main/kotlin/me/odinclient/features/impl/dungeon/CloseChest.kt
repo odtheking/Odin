@@ -14,7 +14,7 @@ import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object CloseChest : Module(
-    "Close Chest",
+    name = "Close Chest",
     category = Category.DUNGEON,
     description = "Options to close the chest automatically or with any key or automatically."
 ) {

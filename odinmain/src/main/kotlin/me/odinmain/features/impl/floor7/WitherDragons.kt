@@ -32,7 +32,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.*
 import kotlin.concurrent.schedule
 
-
 object WitherDragons : Module(
     name = "Wither Dragons",
     description = "Various features for Wither dragons (boxes, timer, HP, priority and more).",

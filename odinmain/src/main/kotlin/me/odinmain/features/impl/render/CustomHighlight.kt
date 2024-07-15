@@ -19,7 +19,6 @@ import net.minecraft.entity.item.EntityArmorStand
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-
 object CustomHighlight : Module(
     name = "Custom Highlight",
     category = Category.RENDER,

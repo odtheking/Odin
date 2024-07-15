@@ -14,7 +14,6 @@ import net.minecraft.scoreboard.*
 import net.minecraft.util.EnumChatFormatting
 import kotlin.math.max
 
-
 object Sidebar : Module(
     name = "Sidebar",
     category = Category.RENDER,
