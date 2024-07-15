@@ -4,7 +4,6 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.addVec
 import me.odinmain.utils.render.Color
@@ -28,17 +27,17 @@ object BuildHelper : Module(
     private val buildHelperColor: Color by OldColorSetting("Build Helper Color", Color.ORANGE, description = "Color of the build helper")
     private val hud: HudElement by HudSetting("Build helper HUD", 10f, 10f, 1f, true) {
         if (it) {
-            text("Build §c50§8%", 1f, 9f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
-            text("Builders §e2", 1f, 24f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
-            text("Freshers: §e1", 1f, 39f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
+            text("Build §c50§8%", 1f, 9f, buildHelperColor, 12f, 0, shadow = true)
+            text("Builders §e2", 1f, 24f, buildHelperColor, 12f, 0, shadow = true)
+            text("Freshers: §e1", 1f, 39f, buildHelperColor, 12f, 0, shadow = true)
 
             getTextWidth("4Build 50%", 12f) + 2f to 48f
         } else {
             if (KuudraUtils.phase != 2) return@HudSetting 0f to 0f
 
-            text("Build ${colorBuild(KuudraUtils.build)}§8%", 1f, 9f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
-            text("Builders ${colorBuilders(KuudraUtils.builders)}", 1f,  24f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
-            text("Freshers: ${colorBuilders(KuudraUtils.kuudraTeammates.filter { teammate -> teammate.eatFresh }.size)}", 1f, 39f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
+            text("Build ${colorBuild(KuudraUtils.build)}§8%", 1f, 9f, buildHelperColor, 12f, 0, shadow = true)
+            text("Builders ${colorBuilders(KuudraUtils.builders)}", 1f,  24f, buildHelperColor, 12f, 0, shadow = true)
+            text("Freshers: ${colorBuilders(KuudraUtils.kuudraTeammates.filter { teammate -> teammate.eatFresh }.size)}", 1f, 39f, buildHelperColor, 12f, 0, shadow = true)
             getTextWidth("4Build 50%", 12f) + 2f to 42f
         }
     }

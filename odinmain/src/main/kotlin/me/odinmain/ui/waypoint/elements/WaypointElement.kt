@@ -2,7 +2,6 @@ package me.odinmain.ui.waypoint.elements
 
 import me.odinmain.features.impl.render.WaypointManager
 import me.odinmain.features.impl.render.WaypointManager.Waypoint
-import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.animations.impl.ColorAnimation
 import me.odinmain.ui.waypoint.WaypointGUI
 import me.odinmain.ui.waypoint.WaypointGUI.mouseHandler
@@ -16,10 +15,10 @@ class WaypointElement(val waypoint: Waypoint) {
     var y = 0f
 
     private val inputFields = arrayOf(
-        WaypointInputField(name, mouseHandler, 12f, OdinFont.REGULAR),
-        WaypointInputField(waypoint.x, "x:", mouseHandler, 10f, OdinFont.REGULAR),
-        WaypointInputField(waypoint.y, "y:", mouseHandler, 10f, OdinFont.REGULAR),
-        WaypointInputField(waypoint.z, "z:", mouseHandler, 10f, OdinFont.REGULAR),
+        WaypointInputField(name, mouseHandler, 12f, 0),
+        WaypointInputField(waypoint.x, "x:", mouseHandler, 10f, 0),
+        WaypointInputField(waypoint.y, "y:", mouseHandler, 10f, 0),
+        WaypointInputField(waypoint.z, "z:", mouseHandler, 10f, 0),
     )
     //private val trash = DynamicTexture(loadBufferedImage("/assets/odinmain/waypoint/trash.png"))
 

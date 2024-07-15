@@ -1,7 +1,6 @@
 package me.odinmain.ui.clickgui.elements.menu
 
 import me.odinmain.features.settings.impl.KeybindSetting
-import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.animations.impl.ColorAnimation
 import me.odinmain.ui.clickgui.elements.*
 import me.odinmain.ui.clickgui.util.ColorUtil
@@ -52,8 +51,8 @@ class ElementKeyBind(parent: ModuleButton, setting: KeybindSetting) :
             rectangleOutline(x + w - 21 - width, y + 3, width + 12.5f, 22.5f, color, 4f,1.5f)
         }
 
-        text(name,  x + 6f, y + h / 2, textColor, 12f, OdinFont.REGULAR)
-        text(value, x + w - 14, y + 8f, textColor, 12f, OdinFont.REGULAR, TextAlign.Right, TextPos.Top)
+        text(name,  x + 6f, y + h / 2, textColor, 12f, 0)
+        text(value, x + w - 14, y + 8f, textColor, 12f, 0, TextAlign.Right, TextPos.Top)
     }
 
     override fun mouseClicked(mouseButton: Int): Boolean {

@@ -1,29 +1,27 @@
-package me.odinmain.features.impl.dungeon
+package me.odinmain.features.impl.dungeon.dungeonwaypoints
 
 import me.odinmain.config.DungeonWaypointConfigCLAY
-import me.odinmain.events.impl.ClickEvent
-import me.odinmain.events.impl.EnteredDungeonRoomEvent
+import me.odinmain.events.impl.*
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.resetSecrets
 import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
 import me.odinmain.utils.render.*
-import me.odinmain.utils.render.RenderUtils.bind
-import me.odinmain.utils.render.RenderUtils.invoke
 import me.odinmain.utils.render.RenderUtils.outlineBounds
+import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
+import net.minecraft.block.BlockSign
 import net.minecraft.client.gui.*
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.*
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import org.lwjgl.opengl.GL11
 
 /**
  * Custom Waypoints for Dungeons
@@ -37,7 +35,7 @@ object DungeonWaypoints : Module(
 ) {
     private var allowEdits: Boolean by BooleanSetting("Allow Edits", false)
     private var reachEdits: Boolean by BooleanSetting("Reach Edits", false, description = "Extends the reach of edit mode.")
-    private var reachColor: Color by ColorSetting("Reach Color", default = Color(0, 255, 213, 0.43f), description = "Color of the reach box highlight.", allowAlpha = true).withDependency { reachEdits }
+    private var reachColor: Color by OldColorSetting("Reach Color", default = Color(0, 255, 213, 0.43f), description = "Color of the reach box highlight.", allowAlpha = true).withDependency { reachEdits }
     var editText: Boolean by BooleanSetting("Edit Text", false, description = "Displays text under your crosshair telling you when you are editing waypoints.")
     var color: Color by OldColorSetting("Color", default = Color.GREEN, description = "The color of the next waypoint you place.", allowAlpha = true).withDependency { colorPallet == 0 }
     private val colorPallet: Int by SelectorSetting("Color pallet", "None", arrayListOf("None", "Aqua", "Magenta", "Yellow", "Lime"))
@@ -146,7 +144,19 @@ object DungeonWaypoints : Module(
         if (mc.thePlayer.isSneaking) {
             GuiSign.setCallback { enteredText ->
                 waypoints.removeIf { it.toVec3().equal(vec) }
-                waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, aabb, enteredText, secretWaypoint))
+                waypoints.add(
+                    DungeonWaypoint(
+                        vec.xCoord,
+                        vec.yCoord,
+                        vec.zCoord,
+                        color.copy(),
+                        filled,
+                        !throughWalls,
+                        aabb,
+                        enteredText,
+                        secretWaypoint
+                    )
+                )
             }
             mc.displayGuiScreen(GuiSign)
         } else if (waypoints.removeIf { it.toVec3().equal(vec) }) {
@@ -236,6 +246,6 @@ object GuiSign : GuiScreen() {
 
     // Method to set the callback function
     fun setCallback(callback: (String) -> Unit) {
-        this.callback = callback
+        GuiSign.callback = callback
     }
 }

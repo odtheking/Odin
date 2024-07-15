@@ -1,7 +1,6 @@
 package me.odinmain.ui.clickgui.elements.menu
 
 import me.odinmain.features.settings.impl.DualSetting
-import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.animations.impl.EaseInOut
 import me.odinmain.ui.clickgui.elements.*
 import me.odinmain.ui.clickgui.util.ColorUtil.buttonColor
@@ -39,8 +38,8 @@ class ElementDual(parent: ModuleButton, setting: DualSetting) : Element<DualSett
         val pos = posAnim.get(8f, w / 2, !setting.enabled)
         roundedRectangle(x + pos, y + 3f, w / 2 - 6f, 28f, clickGUIColor, 5f)
 
-        text(setting.left, x + w / 4 + 6f, y + 1f + h / 2, Color.WHITE.darkerIf(isLeftHovered), 12f, OdinFont.REGULAR, TextAlign.Middle)
-        text(setting.right, x + w * 3 / 4 - 3f,y + 1f + h / 2, Color.WHITE.darkerIf(isRightHovered), 12f, OdinFont.REGULAR, TextAlign.Middle)
+        text(setting.left, x + w / 4 + 6f, y + 1f + h / 2, Color.WHITE.darkerIf(isLeftHovered), 12f, 0, TextAlign.Middle)
+        text(setting.right, x + w * 3 / 4 - 3f,y + 1f + h / 2, Color.WHITE.darkerIf(isRightHovered), 12f, 0, TextAlign.Middle)
     }
 
     override fun mouseClicked(mouseButton: Int): Boolean {

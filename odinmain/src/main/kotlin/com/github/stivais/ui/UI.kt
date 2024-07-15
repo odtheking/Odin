@@ -1,6 +1,5 @@
 package com.github.stivais.ui
 
-import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.constraints.Constraints
 import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.elements.Element

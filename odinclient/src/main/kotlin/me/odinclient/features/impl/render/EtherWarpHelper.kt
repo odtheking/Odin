@@ -5,8 +5,9 @@ import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinmain.events.impl.ClickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.impl.dungeon.DungeonWaypoints.toBlockPos
-import me.odinmain.features.impl.dungeon.DungeonWaypoints.toVec3
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.toBlockPos
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.toVec3
+import me.odinmain.features.impl.render.DevPlayers.isDev
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
@@ -18,6 +19,7 @@ import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.EtherWarpHelper
 import me.odinmain.utils.skyblock.EtherWarpHelper.etherPos
+import me.odinmain.utils.skyblock.PlayerUtils.playLoudSound
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.util.MathHelper
 import net.minecraft.util.Vec3
@@ -52,7 +54,7 @@ object EtherWarpHelper : Module(
     ).withDependency { sound == defaultSounds.size - 1 && sounds}
     private val soundVolume: Float by NumberSetting("Volume", 1f, 0, 1, .01f, description = "Volume of the sound.").withDependency { sounds }
     private val soundPitch: Float by NumberSetting("Pitch", 2f, 0, 2, .01f, description = "Pitch of the sound.").withDependency { sounds }
-    val reset: () -> Unit by ActionSetting("Play sound") { playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], soundVolume, soundPitch) }.withDependency { sounds }
+    val reset by ActionSetting("Play sound") { playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], soundVolume, soundPitch) }.withDependency { sounds }
 
     private val tbClock = Clock(etherWarpTBDelay)
 
@@ -61,7 +63,7 @@ object EtherWarpHelper : Module(
         if (
             etherWarpTriggerBot &&
             tbClock.hasTimePassed(etherWarpTBDelay) &&
-            DungeonUtils.currentRoom?.waypoints?.any { etherPos.vec?.equal(it.toVec3()) == true } == true &&
+            DungeonUtils.currentFullRoom?.waypoints?.any { etherPos.vec?.equal(it.toVec3()) == true } == true &&
             mc.thePlayer.isSneaking &&
             mc.thePlayer.holdingEtherWarp
         ) {
@@ -79,11 +81,11 @@ object EtherWarpHelper : Module(
         etherPos = EtherWarpHelper.getEtherPos(positionLook)
         if (render && mc.thePlayer.isSneaking && mc.thePlayer.heldItem.extraAttributes?.getBoolean("ethermerge") == true && (etherPos.succeeded || renderFail)) {
             val pos = etherPos.pos ?: return
-            val color = if (etherPos.succeeded) renderColor else wrongColor
+            val color = if (etherPos.succeeded) color else wrongColor
             getBlockAt(pos).setBlockBoundsBasedOnState(mc.theWorld, pos)
             val aabb = getBlockAt(pos).getSelectedBoundingBox(mc.theWorld, pos).expand(0.002, 0.002, 0.002) ?: return
 
-            Renderer.drawBox(aabb, color, outlineWidth = thickness, depth = !phase, outlineAlpha = if (style == 0) 0 else color.alpha, fillAlpha = if (style == 1) 0 else color.alpha)
+            Renderer.drawBox(aabb, color, outlineWidth = lineWidth, depth = depthCheck, outlineAlpha = if (style == 0) 0 else color.alpha, fillAlpha = if (style == 1) 0 else color.alpha)
         }
     }
 
@@ -108,7 +110,7 @@ object EtherWarpHelper : Module(
             mc.thePlayer.holdingEtherWarp &&
             mc.thePlayer.isSneaking
         ) {
-            val waypoints = DungeonUtils.currentRoom?.waypoints ?: return
+            val waypoints = DungeonUtils.currentFullRoom?.waypoints ?: return
             val wp = waypoints.mapNotNull {
                 etherwarpRotateTo(it.toBlockPos()) ?: return@mapNotNull null
             }.minByOrNull {

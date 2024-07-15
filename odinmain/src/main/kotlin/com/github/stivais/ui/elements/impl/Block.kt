@@ -2,9 +2,7 @@ package com.github.stivais.ui.elements.impl
 
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.color.alpha
-import com.github.stivais.ui.constraints.Constraints
-import com.github.stivais.ui.constraints.Measurement
-import com.github.stivais.ui.constraints.Type
+import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.renderer.Gradient as GradientType
 

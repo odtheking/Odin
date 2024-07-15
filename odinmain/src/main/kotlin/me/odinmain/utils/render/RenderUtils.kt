@@ -1,10 +1,8 @@
 package me.odinmain.utils.render
 
-import gg.essential.universal.shader.BlendState
-import gg.essential.universal.shader.UShader
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
-import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.DungeonWaypoint
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
 import net.minecraft.client.renderer.*
@@ -550,16 +548,6 @@ object RenderUtils {
     }
 
     /**
-     * Creates a shader from a vertex shader, fragment shader, and a blend state
-     *
-     * @param vertName The name of the vertex shader's file.
-     * @param fragName The name of the fragment shader's file.
-     * @param blendState The blend state for the shader
-     */
-    fun createLegacyShader(vertName: String, fragName: String, blendState: BlendState) =
-        UShader.fromLegacyShader(readShader(vertName, "vsh"), readShader(fragName, "fsh"), blendState)
-
-    /**
      * Reads a shader file as a text file, and returns the contents
      *
      * @param name The name of the shader file
@@ -618,7 +606,7 @@ object RenderUtils {
         expand(0.0020000000949949026, 0.0020000000949949026, 0.0020000000949949026)
 
 
-    fun drawBoxes(boxes: Collection<DungeonWaypoint>, glList: Int, disableDepth: Boolean = false): Int {
+    fun drawBoxes(boxes: Collection<DungeonWaypoints.DungeonWaypoint>, glList: Int, disableDepth: Boolean = false): Int {
         var newGlList = glList
         GlStateManager.pushMatrix()
         preDraw()

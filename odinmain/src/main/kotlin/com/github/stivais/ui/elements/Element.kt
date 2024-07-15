@@ -8,15 +8,11 @@ import com.github.stivais.ui.constraints.Type
 import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.measurements.Undefined
 import com.github.stivais.ui.constraints.positions.Center
-import com.github.stivais.ui.elements.impl.Layout
 import com.github.stivais.ui.elements.scope.ElementScope
-import com.github.stivais.ui.events.Event
-import com.github.stivais.ui.events.Lifetime
-import com.github.stivais.ui.events.Mouse
+import com.github.stivais.ui.events.*
 import com.github.stivais.ui.operation.UIOperation
 import com.github.stivais.ui.renderer.Renderer
 import com.github.stivais.ui.utils.loop
-import me.odinmain.utils.skyblock.modMessage
 
 abstract class Element(constraints: Constraints?, var color: Color? = null) {
 

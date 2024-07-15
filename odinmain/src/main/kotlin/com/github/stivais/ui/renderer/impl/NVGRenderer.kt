@@ -1,15 +1,9 @@
 package com.github.stivais.ui.renderer.impl
 
-import com.github.stivais.ui.color.alpha
-import com.github.stivais.ui.color.blue
-import com.github.stivais.ui.color.green
-import com.github.stivais.ui.color.red
+import com.github.stivais.ui.color.*
 import com.github.stivais.ui.renderer.*
 import me.odinmain.OdinMain.mc
-import org.lwjgl.nanovg.NVGColor
-import org.lwjgl.nanovg.NVGLUFramebuffer
-import org.lwjgl.nanovg.NVGPaint
-import org.lwjgl.nanovg.NanoSVG
+import org.lwjgl.nanovg.*
 import org.lwjgl.nanovg.NanoSVG.nsvgParse
 import org.lwjgl.nanovg.NanoVG.*
 import org.lwjgl.nanovg.NanoVGGL2.*

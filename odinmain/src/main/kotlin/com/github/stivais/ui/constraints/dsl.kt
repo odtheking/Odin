@@ -1,9 +1,7 @@
 package com.github.stivais.ui.constraints
 
 import com.github.stivais.ui.constraints.measurements.*
-import com.github.stivais.ui.constraints.operational.Additive
-import com.github.stivais.ui.constraints.operational.CoerceMax
-import com.github.stivais.ui.constraints.operational.Subtractive
+import com.github.stivais.ui.constraints.operational.*
 import com.github.stivais.ui.constraints.positions.Alignment
 import com.github.stivais.ui.constraints.positions.Center
 import com.github.stivais.ui.constraints.sizes.Copying

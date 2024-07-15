@@ -8,9 +8,7 @@ import com.github.stivais.ui.constraints.positions.Center
 import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.impl.ClickGUITheme
 import com.github.stivais.ui.impl.`gray 38`
-import com.github.stivais.ui.utils.animate
-import com.github.stivais.ui.utils.radii
-import com.github.stivais.ui.utils.seconds
+import com.github.stivais.ui.utils.*
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import me.odinmain.features.settings.Saving

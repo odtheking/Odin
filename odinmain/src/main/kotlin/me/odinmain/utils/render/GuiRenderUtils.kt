@@ -1,10 +1,7 @@
 package me.odinmain.utils.render
 
-import gg.essential.universal.UMatrixStack
 import me.odinmain.OdinMain.mc
-import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.util.ColorUtil
-import me.odinmain.ui.util.shader.RoundedRect
 import me.odinmain.utils.*
 import me.odinmain.utils.render.RenderUtils.drawTexturedModalRect
 import me.odinmain.utils.render.TextAlign.Left
@@ -16,7 +13,6 @@ import org.lwjgl.opengl.GL11
 
 // todo: get rid of this and make it use CookedRenderer
 
-val matrix = UMatrixStack.Compat
 val scaleFactor get() = ScaledResolution(mc).scaleFactor.toFloat()
 
 data class Box(var x: Number, var y: Number, var w: Number, var h: Number)
@@ -35,27 +31,7 @@ fun roundedRectangle(
     borderThickness: Number, topL: Number, topR: Number, botL: Number, botR: Number, edgeSoftness: Number,
     color2: Color = color, gradientDir: Int = 0, shadowSoftness: Float = 0f
 ) {
-    matrix.runLegacyMethod(matrix.get()) {
-        RoundedRect.drawRectangle(
-            matrix.get(),
-            x.toFloat(),
-            y.toFloat(),
-            w.toFloat(),
-            h.toFloat(),
-            color,
-            borderColor,
-            shadowColor,
-            borderThickness.toFloat(),
-            topL.toFloat(),
-            topR.toFloat(),
-            botL.toFloat(),
-            botR.toFloat(),
-            edgeSoftness.toFloat(),
-            color2,
-            gradientDir,
-            shadowSoftness
-        )
-    }
+    //matrix.runLegacyMethod(matrix.get())
 }
 
 fun roundedRectangle(x: Number, y: Number, w: Number, h: Number, color: Color, radius: Number = 0f, edgeSoftness: Number = 0.5f) =
@@ -81,44 +57,25 @@ fun gradientRect(x: Float, y: Float, w: Float, h: Float, color1: Color, color2: 
 }
 
 fun drawHSBBox(x: Float, y: Float, w: Float, h: Float, color: Color) {
-    matrix.runLegacyMethod(matrix.get()) {
-        RoundedRect.drawHSBBox(
-            matrix.get(),
-            x,
-            y,
-            w,
-            h,
-            color,
-        )
-    }
+    //matrix.runLegacyMethod(matrix.get())
     rectangleOutline(x-1, y-1, w+2, h+2, Color(38, 38, 38), 3f, 2f)
 }
 
 fun circle(x: Number, y: Number, radius: Number, color: Color, borderColor: Color = color, borderThickness: Number = 0f) {
-    matrix.runLegacyMethod(matrix.get()) {
-        RoundedRect.drawCircle(
-            matrix.get(),
-            x.toFloat(),
-            y.toFloat(),
-            radius.toFloat(),
-            color,
-            borderColor,
-            borderThickness.toFloat()
-        )
-    }
+    //matrix.runLegacyMethod(matrix.get())
 }
 
-fun text(text: String, x: Number, y: Number, color: Color, size: Number, type: Int = OdinFont.REGULAR, align: TextAlign = Left, verticalAlign: TextPos = TextPos.Middle, shadow: Boolean = false) {
-    OdinFont.text(text, x.toFloat(), y.toFloat(), color, size.toFloat(), align, verticalAlign, shadow, type)
+fun text(text: String, x: Number, y: Number, color: Color, size: Number, type: Int = 0, align: TextAlign = Left, verticalAlign: TextPos = TextPos.Middle, shadow: Boolean = false) {
+    //OdinFont.text(text, x.toFloat(), y.toFloat(), color, size.toFloat(), align, verticalAlign, shadow, type)
 }
 
 fun mcText(text: String, x: Number, y: Number, scale: Number, color: Color, shadow: Boolean = true, center: Boolean = true) {
     RenderUtils.drawText("$text§r", x.toFloat(), y.toFloat(), scale.toDouble(), color, shadow, center)
 }
 
-fun textAndWidth(text: String, x: Float, y: Float, color: Color, size: Float, type: Int = OdinFont.REGULAR, align: TextAlign = Left, verticalAlign: TextPos = TextPos.Middle, shadow: Boolean = false): Float {
+fun textAndWidth(text: String, x: Float, y: Float, color: Color, size: Float, type: Int = 0, align: TextAlign = Left, verticalAlign: TextPos = TextPos.Middle, shadow: Boolean = false): Float {
     text(text, x, y, color, size, type, align, verticalAlign, shadow)
-    return getTextWidth(text, size)
+    return 0f //getTextWidth(text, size)
 }
 
 fun mcTextAndWidth(text: String, x: Number, y: Number, scale: Number, color: Color, shadow: Boolean = true, center: Boolean = true): Float {
@@ -128,11 +85,11 @@ fun mcTextAndWidth(text: String, x: Number, y: Number, scale: Number, color: Col
 
 fun getMCTextWidth(text: String) = mc.fontRendererObj.getStringWidth(text)
 
-fun getTextWidth(text: String, size: Float) = OdinFont.getTextWidth(text, size)
+fun getTextWidth(text: String, size: Float) = 0f//OdinFont.getTextWidth(text, size)
 
 fun getMCTextHeight() = mc.fontRendererObj.FONT_HEIGHT
 
-fun getTextHeight(text: String, size: Float) = OdinFont.getTextHeight(text, size)
+fun getTextHeight(text: String, size: Float) = 0f //OdinFont.getTextHeight(text, size)
 
 fun translate(x: Number, y: Number, z: Number = 1f) = GlStateManager.translate(x.toDouble(), y.toDouble(), z.toDouble())
 
@@ -146,23 +103,7 @@ fun scale(x: Number, y: Number, z: Number = 1f) = GlStateManager.scale(x.toDoubl
 
 fun dropShadow(x: Number, y: Number, w: Number, h: Number, shadowColor: Color, shadowSoftness: Number, topL: Number, topR: Number, botL: Number, botR: Number) {
     translate(0f, 0f, -100f)
-
-    matrix.runLegacyMethod(matrix.get()) {
-        RoundedRect.drawDropShadow(
-            matrix.get(),
-            (x - shadowSoftness / 2).toFloat(),
-            (y - shadowSoftness / 2).toFloat(),
-            (w + shadowSoftness).toFloat(),
-            (h + shadowSoftness).toFloat(),
-            shadowColor,
-            topL.toFloat(),
-            topR.toFloat(),
-            botL.toFloat(),
-            botR.toFloat(),
-            shadowSoftness.toFloat()
-        )
-    }
-
+    //matrix.runLegacyMethod(matrix.get())
     translate(0f, 0f, 100f)
 }
 
@@ -197,12 +138,12 @@ fun drawDynamicTexture(dynamicTexture: DynamicTexture, x: Number, y: Number, w: 
     drawTexturedModalRect(x.toInt(), y.toInt(), w.toInt(), h.toInt())
 }
 
-fun wrappedText(text: String, x: Float, y: Float, w: Float, color: Color, size: Float, type: Int = OdinFont.REGULAR, shadow: Boolean = false) {
-    OdinFont.wrappedText(text, x, y, w, color, size, type, shadow = shadow)
+fun wrappedText(text: String, x: Float, y: Float, w: Float, color: Color, size: Float, type: Int = 0, shadow: Boolean = false) {
+   // OdinFont.wrappedText(text, x, y, w, color, size, type, shadow = shadow)
 }
 
 fun wrappedTextBounds(text: String, width: Float, size: Float): Pair<Float, Float> {
-    return OdinFont.wrappedTextBounds(text, width, size)
+    return 0f to 0f//OdinFont.wrappedTextBounds(text, width, size)
 }
 
 enum class TextAlign {

@@ -9,9 +9,7 @@ import com.github.stivais.ui.elements.scope.ElementDSL
 import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.events.Lifetime
 import com.github.stivais.ui.impl.tooltip
-import com.github.stivais.ui.utils.animate
-import com.github.stivais.ui.utils.loop
-import com.github.stivais.ui.utils.seconds
+import com.github.stivais.ui.utils.*
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import me.odinmain.features.Module

@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.dungeon
 
-import me.odinmain.events.impl.SkyblockJoinIslandEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -10,7 +9,6 @@ import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object MapInfo : Module(
     name = "Map Info",
@@ -56,7 +54,7 @@ object MapInfo : Module(
     private val unknown: Boolean by DualSetting("Deaths", "Deaths", "Unfound", default = false, description = "Display deaths or unfound secrets. (Unknown secrets are secrets in rooms that haven't been discovered yet. May not be helpful in full party runs.)").withDependency { hud.enabled }
     private val fullBackground: Boolean by BooleanSetting("Background", default = false, description = "Render a background behind the score info").withDependency { hud.enabled }
     private val fullMargin: Float by NumberSetting("Margin", default = 0f, min = 0f, max = 5f, increment = 1f).withDependency { fullBackground && hud.enabled }
-    private val fullColor: Color by ColorSetting("Background Color", default = Color.DARK_GRAY.withAlpha(0.5f), true, description = "The color of the background").withDependency { fullBackground && hud.enabled }
+    private val fullColor: Color by OldColorSetting("Background Color", default = Color.DARK_GRAY.withAlpha(0.5f), true, description = "The color of the background").withDependency { fullBackground && hud.enabled }
 
     val compactSecrets: HudElement by HudSetting("Compact Secrets", 10f, 10f, 1f, true) {
         if ((!DungeonUtils.inDungeons || (disableInBoss && DungeonUtils.inBoss)) && !it) return@HudSetting 0f to 0f
@@ -74,7 +72,7 @@ object MapInfo : Module(
     private val compactRemaining: Boolean by DualSetting("Min Secrets", "Minimum", "Remaining", default = false, description = "Display minimum secrets or secrets until s+.").withDependency { !compactAddRemaining && compactSecrets.enabled }
     private val compactSecretBackground: Boolean by BooleanSetting("Background", default = false, description = "Render a background behind the score info").withDependency { compactSecrets.enabled }
     private val compactSecretMargin: Float by NumberSetting("Margin", default = 0f, min = 0f, max = 5f, increment = 1f).withDependency { compactSecretBackground && compactSecrets.enabled }
-    private val compactSecretColor: Color by ColorSetting("Background Color", default = Color.DARK_GRAY.withAlpha(0.5f), true, description = "The color of the background").withDependency { compactSecretBackground && compactSecrets.enabled }
+    private val compactSecretColor: Color by OldColorSetting("Background Color", default = Color.DARK_GRAY.withAlpha(0.5f), true, description = "The color of the background").withDependency { compactSecretBackground && compactSecrets.enabled }
 
     val compactScore: HudElement by HudSetting("Compact Score", 10f, 10f, 1f, true) {
         if ((!DungeonUtils.inDungeons || (disableInBoss && DungeonUtils.inBoss)) && !it) return@HudSetting 0f to 0f
@@ -87,7 +85,7 @@ object MapInfo : Module(
 
     private val compactScoreBackground: Boolean by BooleanSetting("Background", default = false, description = "Render a background behind the score info").withDependency { compactScore.enabled }
     private val compactScoreMargin: Float by NumberSetting("Margin", default = 0f, min = 0f, max = 5f, increment = 1f).withDependency { compactScoreBackground && compactScore.enabled }
-    private val compactScoreColor: Color by ColorSetting("Background Color", default = Color.DARK_GRAY.withAlpha(0.5f), true, description = "The color of the background").withDependency { compactScoreBackground && compactScore.enabled }
+    private val compactScoreColor: Color by OldColorSetting("Background Color", default = Color.DARK_GRAY.withAlpha(0.5f), true, description = "The color of the background").withDependency { compactScoreBackground && compactScore.enabled }
 
     var shownTitle = false
 

@@ -2,12 +2,12 @@ package com.github.stivais.ui.elements.impl
 
 import com.github.stivais.ui.UI
 import com.github.stivais.ui.color.Color
-import com.github.stivais.ui.color.brighter
 import com.github.stivais.ui.color.darker
 import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.events.*
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.devMessage
+import net.minecraft.client.gui.GuiScreen
 import net.minecraft.util.ChatAllowedCharacters
 import org.lwjgl.input.Keyboard
 import kotlin.math.abs
@@ -191,12 +191,12 @@ class TextInput(
                 selectionStart = 0
             }
 
-            isKeyComboCtrlC(code) -> copyToClipboard(getSelectedText(selectionStart, caretPosition))
+            isKeyComboCtrlC(code) -> writeToClipboard(getSelectedText(selectionStart, caretPosition))
 
-            isKeyComboCtrlV(code) -> insert(getClipboardString())
+            isKeyComboCtrlV(code) -> insert(GuiScreen.getClipboardString())
 
             isKeyComboCtrlX(code) -> {
-                copyToClipboard(getSelectedText(selectionStart, caretPosition))
+                writeToClipboard(getSelectedText(selectionStart, caretPosition))
                 insert("")
             }
 

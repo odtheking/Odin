@@ -2,9 +2,7 @@ package com.github.stivais.ui.constraints.measurements
 
 import com.github.stivais.ui.animation.Animation
 import com.github.stivais.ui.animation.Animations
-import com.github.stivais.ui.constraints.Constraint
-import com.github.stivais.ui.constraints.Measurement
-import com.github.stivais.ui.constraints.Type
+import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.elements.Element
 
 class Animatable(var from: Constraint, var to: Constraint): Measurement {

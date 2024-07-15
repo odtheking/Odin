@@ -13,10 +13,10 @@ class AreaButton(
 
     fun draw(): Float {
         /*vg.nanoVG {
-            width = getTextWidth(area, 10f, OdinFont.REGULAR)
+            width = getTextWidth(area, 10f, 0)
             scissor(0f, 25f, 480f, 25f) {
                 if (area == WaypointGUI.displayArea) drawRoundedRect(x - 3, y - 10, width + 7, 18f, 5f, Color(32, 32, 32).rgb)
-                drawText(area, x, y, Color.WHITE.rgb, 10, OdinFont.REGULAR)
+                drawText(area, x, y, Color.WHITE.rgb, 10, 0)
                 drawLine(x - 5, y - 7, x - 5, y + 7, 0.7, Color.WHITE.rgb)
             }
         }

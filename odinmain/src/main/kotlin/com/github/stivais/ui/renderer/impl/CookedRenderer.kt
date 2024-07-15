@@ -1,13 +1,8 @@
 package com.github.stivais.ui.renderer.impl
 
-import com.github.stivais.ui.renderer.Font
-import com.github.stivais.ui.renderer.Gradient
-import com.github.stivais.ui.renderer.Image
-import com.github.stivais.ui.renderer.Renderer
+import com.github.stivais.ui.renderer.*
 import me.odinmain.OdinMain.mc
-import me.odinmain.font.OdinFont
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.TextPos
 import me.odinmain.utils.render.roundedRectangle
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
@@ -112,11 +107,11 @@ object CookedRenderer : Renderer {
     }
 
     override fun text(text: String, x: Float, y: Float, size: Float, color: Int, font: Font) {
-        OdinFont.text(text, x, y, Color(color), size * 0.75f, verticalAlign = TextPos.Top)
+        //OdinFont.text(text, x, y, Color(color), size * 0.75f, verticalAlign = TextPos.Top)
     }
 
     override fun textWidth(text: String, size: Float, font: Font): Float {
-        return OdinFont.getTextWidth(text, size * 0.75f)
+        return 0f //OdinFont.getTextWidth(text, size * 0.75f)
     }
 
     override fun image(

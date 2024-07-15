@@ -1,8 +1,6 @@
 package com.github.stivais.ui.constraints.operational
 
-import com.github.stivais.ui.constraints.Constraint
-import com.github.stivais.ui.constraints.Measurement
-import com.github.stivais.ui.constraints.Type
+import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.elements.Element
 
 class Additive(val first: Constraint, val second: Constraint) : Measurement {

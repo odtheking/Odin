@@ -4,7 +4,6 @@ import me.odinmain.events.impl.RealServerTick
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.HudSetting
-import me.odinmain.font.OdinFont
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.itemID
@@ -18,7 +17,7 @@ object EnrageDisplay : Module (
 ) {
     private val hud: HudElement by HudSetting("Enrage Timer Hud", 10f, 10f, 1f, false) {
         if (it) {
-            text("§4Enrage: §a119t", 1f, 9f, Color.RED, 12f, OdinFont.REGULAR, shadow = true)
+            text("§4Enrage: §a119t", 1f, 9f, Color.RED, 12f, 0, shadow = true)
             getTextWidth("Enrage: 119t", 12f) + 2f to 16f
         } else {
             val colorCode = when {
@@ -27,7 +26,7 @@ object EnrageDisplay : Module (
                 enrageTimer in 0..30 -> "§c"
                 else -> return@HudSetting 0f to 0f
             }
-            text("§4Enrage: ${colorCode}${enrageTimer}t", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
+            text("§4Enrage: ${colorCode}${enrageTimer}t", 1f, 9f, Color.WHITE, 12f, 0, shadow = true)
             getTextWidth("Enrage: 119t", 12f) + 2f to 12f
         }
     }

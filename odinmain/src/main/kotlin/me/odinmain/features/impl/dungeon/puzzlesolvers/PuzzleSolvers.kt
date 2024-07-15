@@ -1,7 +1,7 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import me.odinmain.events.impl.BlockChangeEvent
-import me.odinmain.events.impl.EnteredDungeonRoomEvent
+import me.odinmain.events.impl.DungeonEvents
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.puzzlesolvers.WaterSolver.waterInteract
@@ -10,11 +10,12 @@ import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.profile
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.Renderer
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object PuzzleSolvers : Module(
     name = "Puzzle Solvers",
@@ -98,7 +99,7 @@ object PuzzleSolvers : Module(
     private val boulderSolver: Boolean by BooleanSetting("Boulder Solver", false, description = "Solver for the boulder puzzle").withDependency { boulderDropDown }
     val showAllBoulderClicks: Boolean by DualSetting("Boulder clicks", "Only First", "All Clicks", false).withDependency { boulderDropDown && boulderSolver }
     val boulderStyle: Int by SelectorSetting("Boulder Style", Renderer.defaultStyle, Renderer.styles, description = Renderer.styleDesc).withDependency { boulderDropDown && boulderSolver }
-    val boulderColor: Color by ColorSetting("Boulder Color", Color.GREEN.withAlpha(.5f), allowAlpha = true, description = "The color of the box.").withDependency { boulderDropDown && boulderSolver }
+    val boulderColor: Color by OldColorSetting("Boulder Color", Color.GREEN.withAlpha(.5f), allowAlpha = true, description = "The color of the box.").withDependency { boulderDropDown && boulderSolver }
     val boulderLineWidth: Float by NumberSetting("Boulder Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.").withDependency { boulderDropDown && boulderSolver }
 
 
@@ -154,7 +155,7 @@ object PuzzleSolvers : Module(
     }
 
     @SubscribeEvent
-    fun onRoomEnter(event: RoomEnterEvent) {
+    fun onRoomEnter(event: DungeonEvents.RoomEnterEvent) {
         IceFillSolver.enterDungeonRoom(event)
         BeamsSolver.enterDungeonRoom(event)
         TTTSolver.tttRoomEnter(event)

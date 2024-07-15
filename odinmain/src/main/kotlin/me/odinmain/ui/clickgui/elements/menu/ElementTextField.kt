@@ -1,7 +1,6 @@
 package me.odinmain.ui.clickgui.elements.menu
 
 import me.odinmain.features.settings.impl.StringSetting
-import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.animations.impl.ColorAnimation
 import me.odinmain.ui.clickgui.elements.*
 import me.odinmain.ui.clickgui.util.ColorUtil
@@ -45,7 +44,7 @@ class ElementTextField(parent: ModuleButton, setting: StringSetting) :
                 rectangleOutline(x + w - 16 - width, y + 3, width + 12.5f, 22.5f, color, 4f,1.5f)
             }
 
-            text(display, x + w - 10, y + 16f, textColor, 12f, OdinFont.REGULAR, TextAlign.Right)
+            text(display, x + w - 10, y + 16f, textColor, 12f, 0, TextAlign.Right)
             text(name,  x + 6f, y + h / 2, textColor, 12f)
         } else {
             if (isHovered || listening) {
@@ -58,9 +57,9 @@ class ElementTextField(parent: ModuleButton, setting: StringSetting) :
                     rectangleOutline(x + w / 2 - width / 2 - 7, y + 3, width + 12.5f, 22.5f, color, 4f,3f)
                 }
 
-                text(display, x + w / 2f, y + h / 2f, textColor, 12f, OdinFont.REGULAR, TextAlign.Middle)
+                text(display, x + w / 2f, y + h / 2f, textColor, 12f, 0, TextAlign.Middle)
             }
-            else text(name, x + w / 2f, y + h / 2f, textColor, 12f, OdinFont.REGULAR, TextAlign.Middle)
+            else text(name, x + w / 2f, y + h / 2f, textColor, 12f, 0, TextAlign.Middle)
         }
     }
 

@@ -21,7 +21,6 @@ import net.minecraftforge.fml.common.event.*
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-@Suppress("UNUSED_PARAMETER")
 @Mod(
     modid = ModCore.MOD_ID,
     name = ModCore.NAME,

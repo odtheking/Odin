@@ -284,6 +284,25 @@ fun checkGLError(message: String) {
         println("$i: $s")
     }
 }
+/**
+ * Writes the given text to the clipboard.
+ */
+fun writeToClipboard(text: String, successMessage: String?) {
+    try {
+        val clipboard = Toolkit.getDefaultToolkit().systemClipboard
+        val stringSelection = StringSelection(text)
+        clipboard.setContents(stringSelection, null)
+        if (successMessage != null)
+            modMessage(successMessage)
+    } catch (exception: Exception) {
+        devMessage("Clipboard not available!")
+    }
+}
+
+fun writeToClipboard(text: String) {
+    writeToClipboard(text, null)
+}
+
 
 fun isCtrlKeyDown(): Boolean {
     return if (Minecraft.isRunningOnMac) Keyboard.isKeyDown(219) || Keyboard.isKeyDown(220) else Keyboard.isKeyDown(
@@ -317,23 +336,6 @@ fun isKeyComboCtrlA(keyID: Int): Boolean {
 
 fun isKeyComboCtrlZ(keyID: Int): Boolean {
     return keyID == Keyboard.KEY_Z && isCtrlKeyDown() && !isShiftKeyDown() && !isAltKeyDown()
-/**
- * Writes the given text to the clipboard.
- */
-fun writeToClipboard(text: String, successMessage: String?) {
-    try {
-        val clipboard = Toolkit.getDefaultToolkit().systemClipboard
-        val stringSelection = StringSelection(text)
-        clipboard.setContents(stringSelection, null)
-        if (successMessage != null)
-            modMessage(successMessage)
-    } catch (exception: Exception) {
-        devMessage("Clipboard not available!")
-    }
-}
-
-fun writeToClipboard(text: String) {
-    writeToClipboard(text, null)
 }
 
 private val romanMap = mapOf('I' to 1, 'V' to 5, 'X' to 10, 'L' to 50, 'C' to 100, 'D' to 500, 'M' to 1000)

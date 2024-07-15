@@ -90,7 +90,6 @@ fun devMessage(message: Any?, prefix: Boolean = true) {
  * Sends a message in all chat on Hypixel.
  *
  * @param message Message to be sent.
- * @param name Person to send to.
  */
 fun allMessage(message: Any) {
     sendCommand("ac $message")

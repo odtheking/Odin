@@ -5,7 +5,6 @@ import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.features.impl.render.ClickGUIModule
-import me.odinmain.font.OdinFont
 import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
@@ -25,8 +24,8 @@ object TerminalMove : Module(
     fun onDrawOverlay(event: RenderGameOverlayEvent.Post) {
         if (DungeonUtils.getPhase() != M7Phases.P3 || !isInTerminal() || event.type != RenderGameOverlayEvent.ElementType.ALL) return
         val containerName = (mc.thePlayer.openContainer as ContainerChest).lowerChestInventory.name
-        text(containerName, mc.displayWidth / 2 / scaleFactor, (mc.displayHeight / 2 + 32) / scaleFactor, ClickGUIModule.color, 8f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Middle, true)
-        text("Clicks left: ${TerminalSolver.clicksNeeded}", mc.displayWidth / 2 / scaleFactor, (mc.displayHeight / 2 + 64) / scaleFactor, ClickGUIModule.color, 8f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Middle, true)
+        text(containerName, mc.displayWidth / 2 / scaleFactor, (mc.displayHeight / 2 + 32) / scaleFactor, ClickGUIModule.color, 8f, 0, TextAlign.Middle, TextPos.Middle, true)
+        text("Clicks left: ${TerminalSolver.clicksNeeded}", mc.displayWidth / 2 / scaleFactor, (mc.displayHeight / 2 + 64) / scaleFactor, ClickGUIModule.color, 8f, 0, TextAlign.Middle, TextPos.Middle, true)
     }
 
     @SubscribeEvent

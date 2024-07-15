@@ -14,9 +14,7 @@ import com.github.stivais.ui.elements.scope.*
 import com.github.stivais.ui.operation.AnimationOperation
 import com.github.stivais.ui.operation.UIOperation
 import com.github.stivais.ui.renderer.Renderer
-import com.github.stivais.ui.utils.animate
-import com.github.stivais.ui.utils.radii
-import com.github.stivais.ui.utils.seconds
+import com.github.stivais.ui.utils.*
 import me.odinmain.OdinMain
 import me.odinmain.config.Config
 import me.odinmain.features.Category

@@ -2,8 +2,6 @@ package com.github.stivais.ui.constraints.measurements
 
 import com.github.stivais.ui.constraints.Constraint.Companion.HORIZONTAL
 import com.github.stivais.ui.constraints.Measurement
-import com.github.stivais.ui.constraints.Position
-import com.github.stivais.ui.constraints.Size
 import com.github.stivais.ui.constraints.Type
 import com.github.stivais.ui.elements.Element
 

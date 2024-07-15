@@ -3,7 +3,6 @@ package me.odinmain.ui.clickgui
 import me.odinmain.features.Category
 import me.odinmain.features.ModuleManager.modules
 import me.odinmain.features.impl.render.ClickGUIModule
-import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.SearchBar.currentSearch
 import me.odinmain.ui.clickgui.animations.impl.LinearAnimation
 import me.odinmain.ui.clickgui.elements.ModuleButton
@@ -66,7 +65,7 @@ class Panel(
         dropShadow(x, y, WIDTH, if (extended) (length + 5f).coerceAtLeast(HEIGHT) else 40f, ColorUtil.moduleButtonColor, 15f, 10f, 10f, 10f, 10f)
         roundedRectangle(x, y, WIDTH, HEIGHT, ColorUtil.moduleButtonColor, ColorUtil.moduleButtonColor, ColorUtil.moduleButtonColor, 0f, 15f, 15f, 0f, 0f, 0f)
 
-        text(if (displayName == "Floor7") "Floor 7" else displayName, x + WIDTH / 2f, y + HEIGHT / 2f, ColorUtil.textColor, 20f, type = OdinFont.BOLD, TextAlign.Middle)
+        text(if (displayName == "Floor7") "Floor 7" else displayName, x + WIDTH / 2f, y + HEIGHT / 2f, ColorUtil.textColor, 20f, type = 0, TextAlign.Middle)
 
         val s = scissor(x, y + HEIGHT, WIDTH, 5000f)
         if (extended && moduleButtons.isNotEmpty()) {

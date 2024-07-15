@@ -21,15 +21,13 @@ object ArrowsDevice : Module(
     category = Category.FLOOR7,
     key = null
 ) {
-    private val markedPositionColor: Color by ColorSetting("Marked Position", Color.RED, description = "Color of the marked position.")
-    private val resetKey: Keybinding by KeybindSetting("Reset", Keyboard.KEY_NONE, description = "Resets the solver.").onPress { reset() }
-    private val reset: () -> Unit by ActionSetting("Reset") {
-        markedPositions.clear()
-    }
+    private val markedPositionColor: Color by OldColorSetting("Marked Position", Color.RED, description = "Color of the marked position.")
+    private val resetKey: Keybinding by KeybindSetting("Reset", Keyboard.KEY_NONE, description = "Resets the solver.").onPress { markedPositions.clear() }
+    private val reset by ActionSetting("Reset") { markedPositions.clear() }
 
     init {
         onWorldLoad {
-            reset()
+            markedPositions.clear()
         }
     }
 
@@ -41,7 +39,7 @@ object ArrowsDevice : Module(
 
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
-        if (PlayerUtils.posZ > 55 || (PlayerUtils.posX > 95 || PlayerUtils.posX < 15)) reset()
+        if (PlayerUtils.posZ > 55 || (PlayerUtils.posX > 95 || PlayerUtils.posX < 15)) markedPositions.clear()
         if (!DungeonUtils.inDungeons || DungeonUtils.getPhase() != M7Phases.P3 || markedPositions.isEmpty()) return
         markedPositions.forEach {
             Renderer.drawBlock(it, markedPositionColor, depth = true)

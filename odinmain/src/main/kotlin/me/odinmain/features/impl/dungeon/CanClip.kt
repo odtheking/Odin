@@ -4,7 +4,6 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.HudSetting
-import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.animations.impl.EaseInOut
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.*
@@ -31,10 +30,10 @@ object CanClip : Module(
     private val line: Boolean by BooleanSetting("Line", true, description = "draws a line where you can clip")
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, true) {
         if (it) {
-            text("Can Clip", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR)
+            text("Can Clip", 1f, 9f, Color.WHITE, 12f, 0)
             getTextWidth("Can Clip", 12f) to 12f
         } else {
-            text("Can Clip", 1f, 9f, Color(0, 255, 0, animation.get(0f, 1f, !canClip)), 12f, OdinFont.REGULAR)
+            text("Can Clip", 1f, 9f, Color(0, 255, 0, animation.get(0f, 1f, !canClip)), 12f, 0)
             getTextWidth("Can Clip", 12f) to 12f
         }
     }

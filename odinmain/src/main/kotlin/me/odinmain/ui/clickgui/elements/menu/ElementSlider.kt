@@ -1,7 +1,6 @@
 package me.odinmain.ui.clickgui.elements.menu
 
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.elements.*
 import me.odinmain.ui.clickgui.util.ColorUtil.brighter
 import me.odinmain.ui.clickgui.util.ColorUtil.clickGUIColor
@@ -65,8 +64,8 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
         }
         roundedRectangle(x, y, w, h, elementBackground)
 
-        text(name, x + 6f, y + h / 2f - 3f, textColor, 12f, OdinFont.REGULAR)
-        text(getDisplay(), x + w - 6f, y + h / 2f - 3f, textColor, 12f, OdinFont.REGULAR, TextAlign.Right)
+        text(name, x + 6f, y + h / 2f - 3f, textColor, 12f, 0)
+        text(getDisplay(), x + w - 6f, y + h / 2f - 3f, textColor, 12f, 0, TextAlign.Right)
 
         roundedRectangle(x + 6f, y + 28f, w - 12f, 7f, sliderBGColor, 2.5f)
         dropShadow(x + 6f, y + 28f, w - 12f, 7f, 10f, 0.75f)

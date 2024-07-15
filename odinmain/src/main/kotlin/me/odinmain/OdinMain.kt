@@ -5,30 +5,16 @@ import com.github.stivais.ui.impl.`ui command`
 import kotlinx.coroutines.*
 import me.odinmain.commands.impl.*
 import me.odinmain.commands.registerCommands
-import me.odinmain.config.Config
-import me.odinmain.config.DungeonWaypointConfigCLAY
-import me.odinmain.config.PBConfig
-import me.odinmain.config.WaypointConfig
+import me.odinmain.config.*
 import me.odinmain.events.EventDispatcher
 import me.odinmain.features.ModuleManager
-import me.odinmain.features.impl.render.ClickGUIModule
-import me.odinmain.features.impl.render.DevPlayers
-import me.odinmain.features.impl.render.WaypointManager
-import me.odinmain.font.OdinFont
+import me.odinmain.features.impl.render.*
 import me.odinmain.ui.clickgui.ClickGUI
-import me.odinmain.ui.util.shader.RoundedRect
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.*
-import me.odinmain.utils.render.RenderUtils
-import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.sendDataToServer
-import me.odinmain.utils.skyblock.KuudraUtils
-import me.odinmain.utils.skyblock.LocationUtils
-import me.odinmain.utils.skyblock.PlayerUtils
-import me.odinmain.utils.skyblock.SkyblockPlayer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.ScanUtils
 import net.minecraft.client.Minecraft
@@ -72,7 +58,6 @@ object OdinMain {
             waypointCommand, dungeonWaypointsCommand,
             petCommand, visualWordsCommand, `ui command`
         )
-        OdinFont.init()
     }
 
     fun postInit() = scope.launch(Dispatchers.IO) {
@@ -90,7 +75,6 @@ object OdinMain {
         }.join() // Ensure Config.load() and version checks are complete before proceeding
 
         ClickGUI.init()
-        RoundedRect.initShaders()
 
         val name = mc.session?.username?.takeIf { !it.matches(Regex("Player\\d{2,3}")) } ?: return@runBlocking
         launch {
