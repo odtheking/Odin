@@ -25,7 +25,7 @@ object SecretWaypoints {
         waypoints.find { wp -> wp.toVec3().equal(vec) && wp.secret && wp.clicked }?.let {
             it.clicked = false
             setWaypoints(room)
-            devMessage("Unclicked ${it.toVec3()}")
+            devMessage("unclicked ${it.toVec3()}")
             glList = -1
             lastClicked = null
         }
@@ -41,7 +41,7 @@ object SecretWaypoints {
 
     private fun clickSecret(pos: Vec3, distance: Int, block: IBlockState? = null) {
         val room = DungeonUtils.currentRoom ?: return
-        val vec = Vec3(pos.xCoord, pos.yCoord, pos.zCoord).subtractVec(x = room.clayPos.x, z = room.clayPos.z).rotateToNorth(room.room.rotation)
+        val vec = pos.subtractVec(x = room.clayPos.x, z = room.clayPos.z).rotateToNorth(room.room.rotation)
         val waypoints = getWaypoints(room)
         waypoints.find { wp -> (if (distance == 0) wp.toVec3().equal(vec) else wp.toVec3().distanceTo(vec) <= distance) && wp.secret && !wp.clicked}?.let {
             if (block?.block is BlockChest) lastClicked = BlockPos(pos)
