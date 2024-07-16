@@ -69,7 +69,6 @@ configurations {
         exclude(group = "org.kodein.type")
         exclude(group = "org.ow2.asm")
         exclude(group = "com.paulscode")
-        exclude(group = "com.google.guava")
         exclude(group = "com.google.code.findbugs")
         exclude(group = "ch.qos.logback")
         exclude(group = "com.ibm.icu")
