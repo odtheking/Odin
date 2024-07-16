@@ -1,11 +1,9 @@
 package me.odinmain
 
-import kotlinx.serialization.json.*
 import me.odinmain.features.impl.render.ClickGUI
 import me.odinmain.features.impl.render.ClickGUI.updateMessage
 import me.odinmain.ui.OdinGuiButton
 import me.odinmain.utils.downloadFile
-import me.odinmain.utils.fetchURLData
 import me.odinmain.utils.render.*
 import net.minecraft.client.gui.*
 import net.minecraft.client.renderer.GlStateManager
@@ -41,12 +39,12 @@ object OdinUpdater: GuiScreen() {
         }
 
         val tags = try {
-            Json.parseToJsonElement(fetchURLData("https://api.github.com/repos/odtheking/OdinClient/tags"))
+            //Json.parseToJsonElement(fetchURLData("https://api.github.com/repos/odtheking/OdinClient/tags"))
         } catch (e: Exception) {
             return
         }
-        tag = tags.jsonArray[0].jsonObject["name"].toString().replace("\"", "")
-
+        //tag = tags.jsonArray[0].jsonObject["name"].toString().replace("\"", "")
+        // use gson instead of kotlinx.serialization.json
         isNewer = this.isSecondNewer(tag)
 
         if (isNewer)

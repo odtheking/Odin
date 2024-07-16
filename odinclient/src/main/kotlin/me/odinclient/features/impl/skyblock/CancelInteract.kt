@@ -23,7 +23,7 @@ import net.minecraft.util.BlockPos
 object CancelInteract : Module(
     name = "Cancel Interact",
     category = Category.SKYBLOCK,
-    description = "Cancels the interaction with certain blocks, so that the item can be used instead. "
+    description = "Cancels the interaction with certain blocks, so that the item can be used instead."
 ){
     private val cancelInteract: Boolean by BooleanSetting("Cancel Interact", true, description = "Cancels the interaction with certain blocks, so that the item can be used instead.")
     private val onlyWithAbility: Boolean by BooleanSetting("Only Ability", false, description = "Check whether the item has an ability before cancelling interactions.")

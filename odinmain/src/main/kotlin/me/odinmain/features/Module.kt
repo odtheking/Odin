@@ -10,11 +10,10 @@ import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.features.settings.impl.Keybinding
 import me.odinmain.utils.clock.Executable
 import me.odinmain.utils.clock.Executor
+import me.odinmain.utils.registerAndCatch
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.Packet
-import net.minecraftforge.common.MinecraftForge
 import org.lwjgl.input.Keyboard
-
 import kotlin.reflect.full.hasAnnotation
 
 /**
@@ -53,27 +52,21 @@ abstract class Module(
     val alwaysActive = this::class.hasAnnotation<AlwaysActive>()
 
     init {
-        if (alwaysActive) {
-            MinecraftForge.EVENT_BUS.register(this)
-        }
+        if (alwaysActive) this.registerAndCatch()
     }
 
     /**
      * Gets toggled when module is enabled
      */
     open fun onEnable() {
-        if (!alwaysActive) {
-            MinecraftForge.EVENT_BUS.register(this)
-        }
+        if (!alwaysActive) this.registerAndCatch()
     }
 
     /**
      * Gets toggled when module is disabled
      */
     open fun onDisable() {
-        if (!alwaysActive) {
-            MinecraftForge.EVENT_BUS.unregister(this)
-        }
+        if (!alwaysActive) this.registerAndCatch()
     }
 
     open fun onKeybind() {

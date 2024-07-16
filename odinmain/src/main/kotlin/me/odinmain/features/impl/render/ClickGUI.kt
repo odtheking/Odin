@@ -11,9 +11,7 @@ import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.sizes.Bounding
 import com.github.stivais.ui.elements.impl.Popup
 import com.github.stivais.ui.elements.impl.popup
-import com.github.stivais.ui.elements.scope.ElementDSL
-import com.github.stivais.ui.elements.scope.draggable
-import com.github.stivais.ui.elements.scope.hoverEffect
+import com.github.stivais.ui.elements.scope.*
 import com.github.stivais.ui.operation.AnimationOperation
 import com.github.stivais.ui.operation.UIOperation
 import com.github.stivais.ui.utils.*
@@ -79,9 +77,7 @@ object ClickGUI: Module(
         }
     }.withDependency { DevPlayers.isDev }
 
-    val action by ActionSetting("Open HUD Editor", description = "Opens the HUD Editor, allowing you to reposition HUDs") {
-        OdinMain.display = EditHUDGui
-    }
+    val action by ActionSetting("Open HUD Editor", description = "Opens the HUD Editor, allowing you to reposition HUDs") { OdinMain.display = EditHUDGui }
 
     private var joined: Boolean by BooleanSetting("First join", false).hide()
     var lastSeenVersion: String by StringSetting("Last seen version", "1.0.0").hide()
@@ -161,7 +157,6 @@ object ClickGUI: Module(
         // used for search bar to not require iterating over all elements
         val moduleElements = arrayListOf<Pair<Module, ElementDSL>>()
         onRemove {
-            modMessage("saved")
             Config.save()
         }
         for (panel in Category.entries) {

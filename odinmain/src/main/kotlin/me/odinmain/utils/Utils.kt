@@ -5,6 +5,7 @@ package me.odinmain.utils
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.logger
 import me.odinmain.OdinMain.mc
+import me.odinmain.features.Module
 import me.odinmain.features.ModuleManager
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
@@ -147,6 +148,15 @@ fun Event.postAndCatch(): Boolean {
         logger.error("An error occurred", it)
         modMessage("${OdinMain.VERSION} Caught and logged an ${it::class.simpleName ?: "error"} at ${this::class.simpleName}. Please report this!")
     }.getOrDefault(isCanceled)
+}
+
+fun Module.registerAndCatch() {
+    runCatching {
+        MinecraftForge.EVENT_BUS.register(this)
+    }.onFailure {
+        logger.error("An error occurred", it)
+        modMessage("${OdinMain.VERSION} Caught and logged an ${it::class.simpleName ?: "error"} at ${this::class.simpleName}. Please report this!")
+    }
 }
 
 // Companion object to expose the extension function statically for Java
