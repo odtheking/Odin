@@ -131,6 +131,7 @@ tasks {
             "MixinConfigs" to "mixins.odinclient.json",
             "TweakClass" to "org.spongepowered.asm.launch.MixinTweaker",
         )
+        dependsOn(lwjglJar)
         dependsOn(shadowJar)
         enabled = false
     }
@@ -145,7 +146,8 @@ tasks {
         archiveBaseName = "OdinClient"
         archiveClassifier = "dev"
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        configurations = listOf(shadowImpl)
+        configurations = listOf(shadowImpl, lwjglNative)
+        exclude("META-INF/versions/**")
         mergeServiceFiles()
         fun relocate(name: String) = relocate(name, "odinclient.deps.$name") // todo: relocate lwjgl
     }
