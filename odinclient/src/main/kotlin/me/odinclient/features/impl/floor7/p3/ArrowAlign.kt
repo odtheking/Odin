@@ -104,9 +104,10 @@ object ArrowAlign : Module(
     }
 
     private fun getFrames(): List<Int> {
-        val itemFrames = mc.theWorld.getEntities(EntityItemFrame::class.java) {
-            it != null && it.displayedItem?.item == Items.arrow
-        } ?: return List(25) { -1 }
+        val itemFrames = mc.theWorld.loadedEntityList
+            .filterIsInstance<EntityItemFrame>()
+            .filter { it.displayedItem?.item == Items.arrow }
+        if (itemFrames.isEmpty()) return List(25) { -1 }
 
         val positionToRotationMap = itemFrames.associate { Vec3(it.posX, it.posY, it.posZ).toString() to it.rotation }
 
