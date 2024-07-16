@@ -60,6 +60,6 @@ object Mimic : Module(
     }
 
     override fun onKeybind() {
-        mimicKilled()
+        reset()
     }
 }

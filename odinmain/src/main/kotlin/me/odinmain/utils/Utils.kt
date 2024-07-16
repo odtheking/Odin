@@ -234,8 +234,6 @@ fun min(vararg numbers: Number): Float {
 /**
  * Returns the String with the first letter capitalized
  *
- * @param this The String to capitalize the first letter of
- *
  * @return The String with the first letter capitalized
  */
 fun String.capitalizeFirst(): String {
@@ -367,4 +365,11 @@ fun romanToInt(s: String): Int {
         result += if (current < next) -current else current
     }
     return result + (romanMap[s.last()] ?: 0)
+}
+
+inline fun <T> List<T>.forEachIndexedReturn(action: (index: Int, T) -> Unit): List<T> {
+    for (i in indices) {
+        action(i, this[i])
+    }
+    return this
 }

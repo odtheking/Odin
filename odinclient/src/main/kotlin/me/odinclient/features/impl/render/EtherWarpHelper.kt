@@ -3,6 +3,7 @@ package me.odinclient.features.impl.render
 import me.odinclient.mixin.accessors.IEntityPlayerSPAccessor
 import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinmain.events.impl.ClickEvent
+import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.toBlockPos
@@ -21,6 +22,7 @@ import me.odinmain.utils.skyblock.EtherWarpHelper
 import me.odinmain.utils.skyblock.EtherWarpHelper.etherPos
 import me.odinmain.utils.skyblock.PlayerUtils.playLoudSound
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.util.MathHelper
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -82,10 +84,7 @@ object EtherWarpHelper : Module(
         if (render && mc.thePlayer.isSneaking && mc.thePlayer.heldItem.extraAttributes?.getBoolean("ethermerge") == true && (etherPos.succeeded || renderFail)) {
             val pos = etherPos.pos ?: return
             val color = if (etherPos.succeeded) color else wrongColor
-            getBlockAt(pos).setBlockBoundsBasedOnState(mc.theWorld, pos)
-            val aabb = getBlockAt(pos).getSelectedBoundingBox(mc.theWorld, pos).expand(0.002, 0.002, 0.002) ?: return
-
-            Renderer.drawBox(aabb, color, outlineWidth = lineWidth, depth = depthCheck, outlineAlpha = if (style == 0) 0 else color.alpha, fillAlpha = if (style == 1) 0 else color.alpha)
+            Renderer.drawStyledBlock(pos, color, style, lineWidth, depthCheck)
         }
     }
 
@@ -95,7 +94,8 @@ object EtherWarpHelper : Module(
             zeroPing &&
             mc.thePlayer.holdingEtherWarp &&
             etherPos.succeeded &&
-            mc.thePlayer.isSneaking
+            mc.thePlayer.isSneaking &&
+            LocationUtils.currentArea.isArea(Island.SinglePlayer)
         ) {
             val pos = etherPos.pos ?: return
             mc.thePlayer.setPosition(pos.x + .5, pos.y + 1.0, pos.z + .5)
@@ -125,6 +125,15 @@ object EtherWarpHelper : Module(
                 (pitch - MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationPitch)).absoluteValue > maxRot
             ) return
             smoothRotateTo(yaw, pitch, rotTime)
+        }
+    }
+
+    @SubscribeEvent
+    fun onSoundPacket(event: PacketReceivedEvent) {
+        with(event.packet) {
+            if (this !is S29PacketSoundEffect || soundName != "mob.enderdragon.hit" || !sounds || volume != 1f || pitch != 0.53968257f || customSound == "mob.enderdragon.hit") return
+            mc.addScheduledTask { playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], soundVolume, soundPitch, pos) }
+            event.isCanceled = true
         }
     }
 }

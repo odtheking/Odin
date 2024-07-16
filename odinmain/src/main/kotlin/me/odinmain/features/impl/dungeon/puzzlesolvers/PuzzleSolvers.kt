@@ -1,7 +1,7 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import me.odinmain.events.impl.BlockChangeEvent
-import me.odinmain.events.impl.DungeonEvents
+import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.puzzlesolvers.WaterSolver.waterInteract
@@ -155,7 +155,7 @@ object PuzzleSolvers : Module(
     }
 
     @SubscribeEvent
-    fun onRoomEnter(event: DungeonEvents.RoomEnterEvent) {
+    fun onRoomEnter(event: RoomEnterEvent) {
         IceFillSolver.enterDungeonRoom(event)
         BeamsSolver.enterDungeonRoom(event)
         TTTSolver.tttRoomEnter(event)

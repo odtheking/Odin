@@ -1,6 +1,5 @@
 package me.odinmain.utils
 
-import com.google.common.collect.ComparisonChain
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.skyblock.devMessage
 import net.minecraft.client.network.NetworkPlayerInfo
@@ -63,15 +62,17 @@ val getTabList: List<Pair<NetworkPlayerInfo, String>>
 
 
 val tabListOrder = Comparator<NetworkPlayerInfo> { o1, o2 ->
+    if (o1 == null && o2 == null) return@Comparator 0
     if (o1 == null) return@Comparator -1
-    if (o2 == null) return@Comparator 0
-    return@Comparator ComparisonChain.start().compareTrueFirst(
-        o1.gameType != WorldSettings.GameType.SPECTATOR,
-        o2.gameType != WorldSettings.GameType.SPECTATOR
-    ).compare(
-        o1.playerTeam?.registeredName ?: "",
-        o2.playerTeam?.registeredName ?: ""
-    ).compare(o1.gameProfile.name, o2.gameProfile.name).result()
+    if (o2 == null) return@Comparator 1
+
+    val spectatorComparison = compareValuesBy(o1, o2) { it.gameType == WorldSettings.GameType.SPECTATOR }
+    if (spectatorComparison != 0) return@Comparator spectatorComparison
+
+    val teamNameComparison = compareValuesBy(o1, o2) { it.playerTeam?.registeredName.orEmpty() }
+    if (teamNameComparison != 0) return@Comparator teamNameComparison
+
+    return@Comparator compareValuesBy(o1, o2) { it.gameProfile.name }
 }
 
 fun getDungeonTabList(): List<Pair<NetworkPlayerInfo, String>>? {
