@@ -220,8 +220,6 @@ fun min(vararg numbers: Number): Float {
 /**
  * Returns the String with the first letter capitalized
  *
- * @param this The String to capitalize the first letter of
- *
  * @return The String with the first letter capitalized
  */
 fun String.capitalizeFirst(): String {
