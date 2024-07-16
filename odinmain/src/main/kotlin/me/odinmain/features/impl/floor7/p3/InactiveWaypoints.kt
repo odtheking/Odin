@@ -13,7 +13,6 @@ import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-
 object InactiveWaypoints : Module(
     name = "Inactive Waypoints",
     category = Category.FLOOR7,

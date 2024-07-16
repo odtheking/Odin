@@ -57,12 +57,12 @@ object GhostBlocks : Module(
     private val swapStonkKey: Keybinding by KeybindSetting("Swap Stonk Keybind", Keyboard.KEY_NONE, "Press to perform a swap stonk")
         .onPress {
             if (!enabled) return@onPress
-            val slot = getItemSlot(if (pickaxe == 1) "Stonk" else "Pickaxe", true)
-            if (slot !in 0..8) modMessage("Couldn't find pickaxe.")
+            val slot = getItemSlot(if (pickaxe == 1) "Stonk" else "Pickaxe", true) ?: return@onPress
+            if (slot !in 0..8) return@onPress modMessage("Couldn't find pickaxe.")
             val originalItem = mc.thePlayer?.inventory?.currentItem ?: 0
             if (originalItem == slot) return@onPress
             leftClick()
-            slot?.let { swapToIndex(it) }
+            swapToIndex(slot)
             runIn(speed) { swapToIndex(originalItem) }
         }.withDependency { swapStonk }
 

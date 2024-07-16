@@ -17,11 +17,11 @@ import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
 import net.minecraft.block.BlockButtonStone
-import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.init.Blocks
 import net.minecraft.item.Item
-import net.minecraft.util.*
+import net.minecraft.util.BlockPos
+import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -32,7 +32,6 @@ object SimonSays : Module(
     category = Category.FLOOR7,
     tag = TagType.RISKY
 ) {
-    private val solver: Boolean by BooleanSetting("Solver")
     private val start: Boolean by BooleanSetting("Start", default = true, description = "Starts the device when it can be started.")
     private val startClicks: Int by NumberSetting("Start Clicks", 3, 1, 10).withDependency { start }
     private val startClickDelay: Int by NumberSetting("Start Click Delay", 3, 1, 5).withDependency { start }
@@ -193,21 +192,14 @@ object SimonSays : Module(
 
         if (triggerBot) triggerBot()
 
-        if (!solver) return
-        GlStateManager.disableCull()
-
         for (index in clickNeeded until clickInOrder.size) {
-            val pos = clickInOrder[index]
-            val x = pos.x - .125
-            val y = pos.y + .3125
-            val z = pos.z + .25
+            val position = clickInOrder[index]
             val color = when (index) {
                 clickNeeded -> Color(0, 170, 0)
                 clickNeeded + 1 -> Color(255, 170, 0)
                 else -> Color(170, 0, 0)
             }.withAlpha(.5f)
-            Renderer.drawBox(AxisAlignedBB(x, y, z, x + .25, y + .375, z + .5), color, outlineAlpha = 1f, fillAlpha = 0.6f)
+            Renderer.drawBlock(position, color, 1f, depth = true, outlineAlpha = 0)
         }
-        GlStateManager.enableCull()
     }
 }

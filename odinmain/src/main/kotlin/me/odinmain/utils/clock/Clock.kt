@@ -46,7 +46,6 @@ class Clock(val delay: Long = 0L) {
         return lastTime - System.currentTimeMillis()
     }
 
-
     /**
      * @param delay the delay to check if it has passed since lastTime
      * @param setTime sets lastTime if time has passed

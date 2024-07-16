@@ -7,7 +7,7 @@ import me.odinmain.utils.render.Renderer
 object DragonBoxes {
     fun renderBoxes() {
         WitherDragonsEnum.entries.forEach {
-            if (it.entity?.isEntityAlive == true)
+            if (it.state != WitherDragonState.DEAD)
                 Renderer.drawBox(it.boxesDimensions, it.color.withAlpha(0.5f), lineThickness, depth = false, fillAlpha = 0)
         }
     }

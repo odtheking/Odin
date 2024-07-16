@@ -11,13 +11,13 @@ import me.odinmain.utils.skyblock.modMessage
 import org.lwjgl.input.Keyboard
 
 object DungeonAbilities : Module(
-    "Dungeon Abilities",
+    name = "Dungeon Abilities",
     description = "Automatically uses your ability in dungeons.",
     category = Category.DUNGEON
 ) {
     private val abilityKeybind: Keybinding by KeybindSetting("Ability Keybind", Keyboard.KEY_NONE, description = "Keybind to use your ability.").onPress {
         if (!DungeonUtils.inDungeons || !enabled) return@onPress
-        PlayerUtils.dropItem()
+        PlayerUtils.dropItem(true)
     }
 
     init {

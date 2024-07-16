@@ -14,7 +14,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 object Camera : Module(
-    "Camera",
+    name = "Camera",
     category = Category.RENDER,
     description = "Allows you to change qualities about third person view."
 ) {

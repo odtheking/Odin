@@ -42,18 +42,10 @@ class ModCore {
 
     @EventHandler
     fun loadComplete(event: FMLLoadCompleteEvent) {
-        val modules = arrayListOf(
-            ArrowAlign,
-            SimonSays,
-            EtherWarpHelper,
-            Camera,
-            HidePlayers
-        )
+        ModuleManager.addModules(SimonSays, ArrowAlign, EtherWarpHelper, Camera, HidePlayers)
 
-        ModuleManager.modules.addAll(modules)
         OdinMain.loadComplete()
     }
-
 
     companion object {
         const val MOD_ID = "od"

@@ -42,7 +42,7 @@ object WaterSolver {
     private var openedWater = -1L
 
     fun scan() {
-        val room = DungeonUtils.currentRoom?.room ?: return
+        val room = DungeonUtils.currentFullRoom?.room ?: return
         if (room.data.name != "Water Board" || variant != -1) return
         solve(room)
     }
@@ -172,7 +172,6 @@ object WaterSolver {
             }
         }
     }
-
 
     fun waterInteract(event: C08PacketPlayerBlockPlacement) {
         if (solutions.isEmpty()) return

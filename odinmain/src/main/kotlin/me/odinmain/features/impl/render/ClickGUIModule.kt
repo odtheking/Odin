@@ -20,7 +20,7 @@ import org.lwjgl.input.Keyboard
 
 @AlwaysActive
 object ClickGUIModule: Module(
-    "Click Gui",
+    name = "Click Gui",
     Keyboard.KEY_RSHIFT,
     category = Category.RENDER,
     description = "Allows you to customize the GUI."
