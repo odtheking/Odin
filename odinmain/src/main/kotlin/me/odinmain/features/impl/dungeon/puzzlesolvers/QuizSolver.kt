@@ -53,7 +53,7 @@ object QuizSolver {
     }
 
     fun enterRoomQuiz(event: RoomEnterEvent) {
-        val room = event.room?.room ?: return
+        val room = event.fullRoom?.room ?: return
         if (room.data.name != "Quiz") return
 
         val rotation = room.rotation

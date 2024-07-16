@@ -19,7 +19,7 @@ object BlazeSolver {
     private var lastBlazeCount = 10
 
     fun getBlaze() {
-        val room = DungeonUtils.currentRoom?.room ?: return
+        val room = DungeonUtils.currentFullRoom?.room ?: return
         if (!DungeonUtils.inDungeons || !room.data.name.equalsOneOf("Lower Blaze", "Higher Blaze")) return
         val hpMap = mutableMapOf<EntityArmorStand, Int>()
         blazes.clear()

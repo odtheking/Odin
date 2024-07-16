@@ -11,7 +11,7 @@ import me.odinmain.utils.skyblock.modMessage
 import org.lwjgl.input.Keyboard
 
 object DungeonAbilities : Module(
-    "Dungeon Abilities",
+    name = "Dungeon Abilities",
     description = "Automatically uses your ability in dungeons.",
     category = Category.DUNGEON
 ) {

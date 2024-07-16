@@ -39,7 +39,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         name: Upload OdinClient
         with:
-          name: "Odinclient Build"
+          name: "OdinClient Build"
           path: odinclient/build/libs/*.jar
       - name: Test with Gradle
         run: ./gradlew test

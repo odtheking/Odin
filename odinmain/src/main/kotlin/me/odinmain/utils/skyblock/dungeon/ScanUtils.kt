@@ -69,7 +69,7 @@ object ScanUtils {
     fun onTick(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.END || mc.theWorld == null) return
         if ((!inDungeons && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) || inBoss) {
-            if (DungeonUtils.currentRoom == null) return
+            if (DungeonUtils.currentFullRoom == null) return
             RoomEnterEvent(null).postAndCatch()
             return
         }

@@ -71,8 +71,16 @@ object ModuleManager {
 
         // kuudra
         BuildHelper, FreshTimer, KuudraDisplay, NoPre, PearlWaypoints, RemovePerks, SupplyHelper, TeamHighlight,
-        VanqNotifier, KuudraReminders, KuudraRequeue,
+        VanqNotifier, KuudraReminders, KuudraRequeue, TacTimer
     )
+
+    init {
+        for (module in modules) {
+            module.keybinding?.let {
+                module.register(KeybindSetting("Keybind", it, "Toggles the module"))
+            }
+        }
+    }
 
     fun addModules(vararg module: Module) {
         for (i in module) {

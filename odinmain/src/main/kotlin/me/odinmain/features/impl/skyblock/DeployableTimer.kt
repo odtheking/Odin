@@ -67,7 +67,7 @@ object DeployableTimer : Module(
 
         if (activeDeployables.any { it.entity == entity }) return
         val name = entity.name.noControlCodes
-        val deployable = DeployableTypes.entries.firstOrNull { it.texture == getSkullValue(entity) || name.startsWith(it.displayName.noControlCodes)} ?: return
+        val deployable = DeployableTypes.entries.firstOrNull { name.startsWith(it.displayName.noControlCodes) || it.texture == getSkullValue(entity) } ?: return
         val duration =
             if (deployable.texture == "placeholder") {
 

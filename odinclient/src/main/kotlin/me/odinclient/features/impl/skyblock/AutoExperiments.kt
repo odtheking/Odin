@@ -17,7 +17,7 @@ import net.minecraft.item.Item
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object AutoExperiments : Module(
-    "Auto Experiments",
+    name = "Auto Experiments",
     category = Category.SKYBLOCK,
     description = "Automatically click on the Chronomatron and Ultrasequencer experiments."
 ){

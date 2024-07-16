@@ -36,7 +36,7 @@ object BeamsSolver {
     private var currentLanternPairs = mutableMapOf<BlockPos, Pair<BlockPos, Color>>()
 
     fun enterDungeonRoom(event: RoomEnterEvent) {
-        val room = event.room?.room ?: return // <-- orb = orb.orb
+        val room = event.fullRoom?.room ?: return // <-- orb = orb.orb
         if (room.data.name != "Creeper Beams") return reset()
 
         if (scanned) return

@@ -42,7 +42,7 @@ object WaterSolver {
     private var openedWater = -1L
 
     fun scan() {
-        val room = DungeonUtils.currentRoom?.room ?: return
+        val room = DungeonUtils.currentFullRoom?.room ?: return
         if (room.data.name != "Water Board" || variant != -1) return
         solve(room)
     }
@@ -112,7 +112,7 @@ object WaterSolver {
 
 
     fun waterRender() {
-        if (DungeonUtils.currentRoomName != "Water Board" || variant == -1 || !DungeonUtils.inDungeons || DungeonUtils.inBoss) return
+        if (DungeonUtils.currentRoomName != "Water Board" || variant == -1) return
 
         val solutions = HashMap(solutions)
 

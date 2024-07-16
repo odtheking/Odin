@@ -22,7 +22,7 @@ object SecretWaypoints {
     }
 
     private fun clickSecret(pos: Vec3, distance: Int) {
-        val room = DungeonUtils.currentRoom ?: return
+        val room = DungeonUtils.currentFullRoom ?: return
         val vec = Vec3(pos.xCoord, pos.yCoord, pos.zCoord).subtractVec(x = room.clayPos.x, z = room.clayPos.z).rotateToNorth(room.room.rotation)
         val waypoints = getWaypoints(room)
         waypoints.find { wp -> (if (distance == 0) wp.toVec3().equal(vec) else wp.toVec3().distanceTo(vec) <= distance) && wp.secret && !wp.clicked}?.let {
@@ -34,7 +34,7 @@ object SecretWaypoints {
     }
 
     fun resetSecrets() {
-        val room = DungeonUtils.currentRoom
+        val room = DungeonUtils.currentFullRoom
         for (waypointsList in DungeonWaypointConfigCLAY.waypoints.filter { waypoints -> waypoints.value.any { it.clicked } }.values) {
             waypointsList.filter { it.clicked }.forEach { it.clicked = false }
         }

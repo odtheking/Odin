@@ -169,15 +169,23 @@ object RenderUtils {
      * @param thickness The thickness of the outline.
      * @param depth Whether to enable depth testing.
      */
-    fun drawOutlinedAABB(aabb: AxisAlignedBB, color: Color, thickness: Number = 3f, depth: Boolean = false) {
+    fun drawOutlinedAABB(aabb: AxisAlignedBB, color: Color, thickness: Number = 3f, depth: Boolean = false, smoothLines: Boolean = true) {
         if (color.isTransparent) return
         GlStateManager.pushMatrix()
         preDraw()
+
+        if (smoothLines) {
+            GL11.glEnable(GL11.GL_LINE_SMOOTH)
+            GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST)
+        }
+
         GL11.glLineWidth(thickness.toFloat())
-
         depth(depth)
+        color.bind()
+        addVertexesForOutlinedBox(aabb)
+        tessellator.draw()
 
-        RenderGlobal.drawOutlinedBoundingBox(aabb, color.r, color.g, color.b, color.a)
+        if (smoothLines) GL11.glDisable(GL11.GL_LINE_SMOOTH)
 
         if (!depth) resetDepth()
         postDraw()

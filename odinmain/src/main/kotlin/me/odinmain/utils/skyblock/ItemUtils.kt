@@ -94,6 +94,18 @@ fun getItemIndexInContainerChest(container: ContainerChest, item: String, subLis
     }?.slotIndex
 }
 
+fun getItemIndexInContainerChest(container: ContainerChest, item: Collection<String>, subList: IntRange = 0..container.inventory.size - 36): Int? {
+    return container.inventorySlots.subList(subList.first, subList.last + 1).firstOrNull {
+        item.any { item -> it.stack?.unformattedName?.noControlCodes?.lowercase() == item.noControlCodes.lowercase() }
+    }?.slotIndex
+}
+
+fun getItemIndexInContainerChest(container: ContainerChest, item: String, subList: IntRange = 0..container.inventory.size - 36, ignoreCase: Boolean = false): Int? {
+    return container.inventorySlots.subList(subList.first, subList.last + 1).firstOrNull {
+        it.stack?.unformattedName?.contains(item, ignoreCase) == true
+    }?.slotIndex
+}
+
 /**
  * Gets index of an item in a chest using its uuid.
  * @return null if not found.
@@ -193,7 +205,6 @@ fun ItemStack.setLoreWidth(lines: List<String>, width: Int): ItemStack {
 
 fun ItemStack.drawItem(x: Float = 0f, y: Float = 0f, scale: Float = 1f, z: Float = 200f) {
     GlStateManager.pushMatrix()
-    scale(1f / scaleFactor, 1f / scaleFactor)
     scale(scale, scale, 1f)
     translate(x / scale, y / scale, 0f)
     Color.WHITE.bind()
@@ -204,6 +215,5 @@ fun ItemStack.drawItem(x: Float = 0f, y: Float = 0f, scale: Float = 1f, z: Float
     mc.renderItem.zLevel = z
     mc.renderItem.renderItemIntoGUI(this, 0, 0)
     RenderHelper.disableStandardItemLighting()
-    scale(scaleFactor, scaleFactor, 1f)
     GlStateManager.popMatrix()
 }
