@@ -5,6 +5,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.hud.HudElement
+import me.odinmain.utils.forEachIndexedReturn
 import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.dungeon.Blessing
 import kotlin.math.max
@@ -35,13 +36,13 @@ object BlessingDisplay : Module(
     )
 
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) { example ->
-        val activeBlessings = blessings.filter { it.enabled.invoke() }
-        activeBlessings.forEachIndexed { index, blessing ->
+        return@HudSetting blessings.filterIndexed { index, blessing ->
+            if (!blessing.enabled.invoke()) return@filterIndexed false
             val level = if (example) 19 else blessing.type.current
             if (level <= 0) return@HudSetting 0f to 0f
             mcText("${blessing.type.displayString} §a29§r", 0f, 10f * index, 1, blessing.color.invoke(), center = false)
-        }
-        getMCTextWidth("Power: 19").toFloat() to 10f * activeBlessings.size.coerceAtLeast(1)
+            true
+        }.let { getMCTextWidth("Power: 19").toFloat() to 10f * it.size.coerceAtLeast(1) }
     }
 
 

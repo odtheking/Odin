@@ -320,3 +320,10 @@ fun romanToInt(s: String): Int {
     }
     return result + (romanMap[s.last()] ?: 0)
 }
+
+inline fun <T> List<T>.forEachIndexedReturn(action: (index: Int, T) -> Unit): List<T> {
+    for (i in indices) {
+        action(i, this[i])
+    }
+    return this
+}
