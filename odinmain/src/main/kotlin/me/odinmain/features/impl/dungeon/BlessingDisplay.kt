@@ -25,27 +25,24 @@ object BlessingDisplay : Module(
     private val wisdom: Boolean by BooleanSetting("Wisdom Blessing", false, description = "Displays the wisdom blessing.")
     private val wisdomColor: Color by ColorSetting("Wisdom Color", Color.BLUE, true, description = "The color of the wisdom blessing.").withDependency { wisdom }
 
-    private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
-        val blessings = listOf(
-            BlessingData(Blessing.POWER, power, powerColor),
-            BlessingData(Blessing.TIME, time, timeColor),
-            BlessingData(Blessing.STONE, stone, stoneColor),
-            BlessingData(Blessing.LIFE, life, lifeColor),
-            BlessingData(Blessing.WISDOM, wisdom, wisdomColor)
-        )
+    private data class BlessingData(val type: Blessing, val enabled: () -> Boolean, val color: () -> Color)
+    private val blessings = listOf(
+        BlessingData(Blessing.POWER, { power }, { powerColor }),
+        BlessingData(Blessing.TIME, { time }, { timeColor }),
+        BlessingData(Blessing.STONE, { stone }, { stoneColor }),
+        BlessingData(Blessing.LIFE, { life }, { lifeColor }),
+        BlessingData(Blessing.WISDOM, { wisdom }, { wisdomColor })
+    )
 
-        val activeBlessings = blessings.filter { a -> a.enabled }
-        if (it) {
-            activeBlessings.forEachIndexed { index, blessing ->
-                mcText("${blessing.type.displayString} §a29§r", 0f, 10f * index, 1, blessing.color, center = false)
-            }
-        } else {
-            activeBlessings.filter { blessing -> blessing.type.current > 0 }.forEachIndexed { index, blessing ->
-                mcText("${blessing.type.displayString} §a${blessing.type.current}§r", 0f, 5f + 10 * (index - 1), 1, blessing.color, center = false)
-            }
+    private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) { example ->
+        val activeBlessings = blessings.filter { it.enabled.invoke() }
+        activeBlessings.forEachIndexed { index, blessing ->
+            val level = if (example) 19 else blessing.type.current
+            if (level <= 0) return@HudSetting 0f to 0f
+            mcText("${blessing.type.displayString} §a29§r", 0f, 10f * index, 1, blessing.color.invoke(), center = false)
         }
-        getMCTextWidth("Power: 29").toFloat() to 10f * max(activeBlessings.count(), 1)
+        getMCTextWidth("Power: 19").toFloat() to 10f * activeBlessings.size.coerceAtLeast(1)
     }
 
-    data class BlessingData(val type: Blessing, val enabled: Boolean, val color: Color)
+
 }
