@@ -8,13 +8,9 @@ import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.floored
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
-import net.minecraft.client.Minecraft
-import net.minecraft.client.audio.PositionedSound
-import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.ItemStack
-import net.minecraft.util.ResourceLocation
 import net.minecraft.util.Vec3
 
 
@@ -49,8 +45,8 @@ object PlayerUtils {
         if (displayText) Renderer.displayTitle(title , time, color = color)
     }
 
-    fun dropItem() {
-        mc.thePlayer.dropOneItem(false)
+    fun dropItem(dropAll: Boolean = false) {
+        mc.thePlayer.dropOneItem(dropAll)
     }
 
     inline val posX get() = mc.thePlayer.posX

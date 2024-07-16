@@ -78,7 +78,7 @@ object ExtraStats : Module(
 
     @SubscribeEvent
     fun onChatMessage(event: ClientChatReceivedEvent) {
-        if (event.message.unformattedText.noControlCodes.matchesOneOf(
+        if (DungeonUtils.inDungeons && event.message.unformattedText.noControlCodes.matchesOneOf(
                 Regex(" {29}> EXTRA STATS <"),
                 Regex("^\\s*☠ Defeated (.+) in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?\$"),
                 Regex("^\\s*Team Score: \\d+ \\(.{1,2}\\)\\s?(?:\\(NEW RECORD!\\))?\$"),

@@ -6,6 +6,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
 import net.minecraft.init.Blocks
@@ -21,16 +22,14 @@ object ArrowsDevice : Module(
     key = null
 ) {
     private val markedPositionColor: Color by ColorSetting("Marked Position", Color.RED, description = "Color of the marked position.")
-    private val reset: Keybinding by KeybindSetting("Reset", Keyboard.KEY_NONE, description = "Resets the solver.").onPress { markedPositions.clear() }
-
-    override fun onKeybind() {
+    private val resetKey: Keybinding by KeybindSetting("Reset", Keyboard.KEY_NONE, description = "Resets the solver.").onPress { reset() }
+    private val reset: () -> Unit by ActionSetting("Reset") {
         markedPositions.clear()
-        super.onKeybind()
     }
 
     init {
         onWorldLoad {
-            markedPositions.clear()
+            reset()
         }
     }
 
@@ -42,9 +41,10 @@ object ArrowsDevice : Module(
 
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
+        if (PlayerUtils.posZ > 55 || (PlayerUtils.posX > 95 || PlayerUtils.posX < 15)) reset()
         if (!DungeonUtils.inDungeons || DungeonUtils.getPhase() != M7Phases.P3 || markedPositions.isEmpty()) return
         markedPositions.forEach {
-            Renderer.drawBlock(it, markedPositionColor)
+            Renderer.drawBlock(it, markedPositionColor, depth = true)
         }
     }
 

@@ -16,7 +16,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object DioriteFucker : Module(
-    "Fuck Diorite",
+    name = "Fuck Diorite",
     description = "Replaces the pillars in floor 7 storm fight with glass.",
     category = Category.FLOOR7,
 ) {

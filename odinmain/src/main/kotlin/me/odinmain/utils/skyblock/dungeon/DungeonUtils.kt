@@ -4,7 +4,8 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
 import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.features.impl.dungeon.MapInfo.togglePaul
-import me.odinmain.utils.*
+import me.odinmain.utils.equalsOneOf
+import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.LocationUtils.currentDungeon
 import me.odinmain.utils.skyblock.PlayerUtils.posY
@@ -17,7 +18,6 @@ import net.minecraft.tileentity.TileEntitySkull
 import net.minecraft.util.BlockPos
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.math.ceil
 import kotlin.math.floor
 
@@ -85,7 +85,7 @@ object DungeonUtils {
         getItemSlot("Haunt", true) != null
 
     inline val currentRoomName get() =
-        currentDungeon?.currentRoom?.room?.data?.name ?: "Unknown"
+        currentDungeon?.currentFullRoom?.room?.data?.name ?: "Unknown"
 
     inline val dungeonTeammates get() =
         currentDungeon?.dungeonTeammates ?: emptyList()
@@ -105,8 +105,8 @@ object DungeonUtils {
     inline val mimicKilled: Boolean get() =
         currentDungeon?.dungeonStats?.mimicKilled ?: false
 
-    inline val currentRoom: FullRoom? get() =
-        currentDungeon?.currentRoom
+    inline val currentFullRoom: FullRoom? get() =
+        currentDungeon?.currentFullRoom
 
     inline val passedRooms get() =
         currentDungeon?.passedRooms ?: emptyList()
@@ -204,7 +204,6 @@ object DungeonUtils {
                     return@mapNotNull null
                 }
             }
-
             puzzle
         }
     }
@@ -256,7 +255,6 @@ object DungeonUtils {
             if (tile !is TileEntitySkull) return false
             return tile.playerProfile?.id.toString().equalsOneOf(WITHER_ESSENCE_ID, REDSTONE_KEY)
         }
-
         return false
     }
 }

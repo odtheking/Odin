@@ -11,7 +11,7 @@ import me.odinmain.utils.skyblock.*
 import net.minecraft.entity.item.EntityItem
 
 object ItemsHighlight : Module(
-    "Item Highlight",
+    name = "Item Highlight",
     description = "Outlines dropped item entities.",
     category = Category.RENDER
 ) {

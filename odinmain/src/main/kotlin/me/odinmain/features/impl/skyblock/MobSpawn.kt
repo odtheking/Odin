@@ -9,7 +9,7 @@ import me.odinmain.utils.skyblock.*
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object MobSpawn: Module(
-    "Mob Spawn",
+    name = "Mob Spawn",
     category = Category.SKYBLOCK,
     description = "Sends a message whenever a mob spawns."
 ) {

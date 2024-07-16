@@ -2,6 +2,7 @@ package me.odin.mixin.mixins;
 
 
 import me.odinmain.events.impl.RenderEntityModelEvent;
+import me.odinmain.utils.EventExtensions;
 import me.odinmain.utils.render.Color;
 import me.odinmain.utils.render.HighlightRenderer;
 import me.odinmain.utils.render.RenderUtils;
@@ -11,7 +12,6 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -94,7 +94,6 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> {
             GL11.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_ALPHA, 770);
             GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
 
-
             cir.setReturnValue(true);
         }
     }
@@ -119,7 +118,7 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> {
 
     @Inject(method = "renderLayers", at = @At("RETURN"), cancellable = true)
     private void onRenderLayers(T entitylivingbaseIn, float p_177093_2_, float p_177093_3_, float partialTicks, float p_177093_5_, float p_177093_6_, float p_177093_7_, float p_177093_8_, CallbackInfo ci) {
-        if (MinecraftForge.EVENT_BUS.post(new RenderEntityModelEvent(
+       if (EventExtensions.postAndCatch(new RenderEntityModelEvent(
                 entitylivingbaseIn, p_177093_2_, p_177093_3_, p_177093_5_, p_177093_6_, p_177093_7_, p_177093_8_, mainModel
         ))) {
             ci.cancel();

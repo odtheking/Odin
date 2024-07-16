@@ -18,10 +18,8 @@ object Splits : Module(
     private val hud: HudElement by HudSetting("Splits Display HUD", 10f, 10f, 1f, true) {
         if (it) {
             for (i in 0 until 5) {
-                text("Split $i: 0h 00m 00s", 1f, 9f + i * getTextHeight("12", 13f), Color.WHITE, 12f, shadow = true)
+                mcText("Split $i:", 1f, 9f + i * getMCTextHeight(), 1f, Color.WHITE, shadow = true, center = false)
             }
-
-            getTextWidth("Fuel/Stun: 0h 00m 00s", 12f) + 2f to 80f
         } else {
             val (times, current) = getAndUpdateSplitsTimes(currentSplits)
             if (currentSplits.splits.isEmpty()) return@HudSetting 0f to 0f
@@ -36,8 +34,8 @@ object Splits : Module(
                 mcText("§9Boss Entry", 1f, (currentSplits.splits.size) * getMCTextHeight(), 1f, Color.WHITE, shadow = true, center = false)
                 mcText(time, x, (currentSplits.splits.size) * getMCTextHeight(), 1f, Color.WHITE, shadow = true, center = false)
             }
-            getMCTextWidth("Split 0: 0h 00m 00s") + 2f to 80f
         }
+        getMCTextWidth("Split 0: 0h 00m 00s") + 2f to 80f
     }
     private val bossEntrySplit: Boolean by BooleanSetting("Boss Entry Split", true)
     val sendSplits: Boolean by BooleanSetting("Send Splits", true)

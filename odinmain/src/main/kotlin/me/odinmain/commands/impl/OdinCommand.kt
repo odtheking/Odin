@@ -24,18 +24,18 @@ val mainCommand = commodore("od", "odin") {
 
     literal("ep").runs {
         val amount = mc.thePlayer.inventory.mainInventory.find { it?.itemID == "ENDER_PEARL" }?.stackSize ?: 0
-        if (amount != 16) modMessage("gfs ender_pearl ${16 - amount}") else modMessage("§cAlready at max stack size.")
+        if (amount != 16) sendCommand("gfs ender_pearl ${16 - amount}") else modMessage("§cAlready at max stack size.")
     }
 
     literal("ij").runs {
         val amount = mc.thePlayer.inventory.mainInventory.find { it?.itemID == "INFLATABLE_JERRY" }?.stackSize ?: 0
-        if (amount != 64) modMessage("gfs inflatable_jerry ${64 - amount}") else modMessage("§cAlready at max stack size.")
+        if (amount != 64) sendCommand("gfs inflatable_jerry ${64 - amount}") else modMessage("§cAlready at max stack size.")
 
     }
 
     literal("sl").runs {
         val amount = mc.thePlayer.inventory.mainInventory.find { it?.itemID == "SPIRIT_LEAP" }?.stackSize ?: 0
-        if (amount != 16) modMessage("gfs spirit_leap ${16 - amount}") else modMessage("§cAlready at max stack size.")
+        if (amount != 16) sendCommand("gfs spirit_leap ${16 - amount}") else modMessage("§cAlready at max stack size.")
     }
 
     literal("reset") {

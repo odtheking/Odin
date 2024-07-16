@@ -22,7 +22,6 @@ import net.minecraft.util.Vec3i
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-
 object DianaHelper : Module(
     name = "Diana Helper",
     description = "Displays the location of the Diana guess and burrows.",

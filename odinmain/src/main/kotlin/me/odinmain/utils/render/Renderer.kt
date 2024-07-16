@@ -38,10 +38,11 @@ object Renderer {
         outlineWidth: Number = 3,
         outlineAlpha: Number = 1,
         fillAlpha: Number = 1,
-        depth: Boolean = false
+        depth: Boolean = false,
+        lineSmoothing: Boolean = true
     ) {
         if (outlineAlpha == 0f && fillAlpha == 0f) return
-        RenderUtils.drawOutlinedAABB(aabb, color.withAlpha(outlineAlpha.toFloat()), thickness = outlineWidth, depth = depth)
+        RenderUtils.drawOutlinedAABB(aabb, color.withAlpha(outlineAlpha.toFloat()), thickness = outlineWidth, depth = depth, lineSmoothing)
 
         RenderUtils.drawFilledAABB(aabb, color.withAlpha(fillAlpha.toFloat()), depth = depth)
     }
@@ -62,11 +63,12 @@ object Renderer {
         outlineWidth: Number = 3,
         outlineAlpha: Number = 1,
         fillAlpha: Number = 1,
-        depth: Boolean = false
+        depth: Boolean = false,
+        lineSmoothing: Boolean = true
     ) {
         val block = getBlockAt(pos)
         block.setBlockBoundsBasedOnState(mc.theWorld, pos)
-        drawBox(block.getSelectedBoundingBox(mc.theWorld, pos).outlineBounds(), color, outlineWidth, outlineAlpha, fillAlpha, depth)
+        drawBox(block.getSelectedBoundingBox(mc.theWorld, pos).outlineBounds(), color, outlineWidth, outlineAlpha, fillAlpha, depth, lineSmoothing)
     }
 
     fun drawStyledBlock(
@@ -74,12 +76,13 @@ object Renderer {
         color: Color,
         style: Int,
         width: Number = 3,
-        depth: Boolean = false
+        depth: Boolean = false,
+        lineSmoothing: Boolean = true
     ) {
         when (style) {
-            0 -> drawBlock(pos, color, width, 0, color.alpha, depth)
-            1 -> drawBlock(pos, color, width, color.alpha, 0, depth)
-            2 -> drawBlock(pos, color, width, color.alpha, color.multiplyAlpha(.75f).alpha, depth)
+            0 -> drawBlock(pos, color, width, 0, color.alpha, depth, lineSmoothing)
+            1 -> drawBlock(pos, color, width, color.alpha, 0, depth, lineSmoothing)
+            2 -> drawBlock(pos, color, width, color.alpha, color.multiplyAlpha(.75f).alpha, depth, lineSmoothing)
         }
     }
 

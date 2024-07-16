@@ -58,7 +58,7 @@ object PersonalDragon : Module(
         mc.thePlayer?.let { player ->
             var yaw = player.rotationYaw
             if (yaw < 0) yaw += 180 else if (yaw > 0) yaw -= 180
-            dragon?.apply { setLocationAndAngles(player.renderX, player.renderY + 6, player.renderZ, yaw, player.rotationPitch) }
+            dragon?.apply { setLocationAndAngles(player.renderX, player.renderY + 9999, player.renderZ, yaw, player.rotationPitch) }
         }
     }
 

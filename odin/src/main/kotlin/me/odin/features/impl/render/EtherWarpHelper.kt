@@ -15,9 +15,8 @@ import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.EtherWarpHelper
 import me.odinmain.utils.skyblock.EtherWarpHelper.etherPos
 import me.odinmain.utils.skyblock.PlayerUtils.playLoudSound
-import net.minecraft.network.play.server.S29PacketSoundEffect
 import me.odinmain.utils.skyblock.extraAttributes
-import net.minecraft.network.PacketThreadUtil
+import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
