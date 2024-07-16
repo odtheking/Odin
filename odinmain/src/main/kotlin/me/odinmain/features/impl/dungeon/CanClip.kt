@@ -66,7 +66,7 @@ object CanClip : Module(
             if (it.status != C07PacketPlayerDigging.Action.START_DESTROY_BLOCK || !line) return@onPacket
             val block = getBlockAt(it.position)
             if (block is BlockStairs) {
-                val dir = getDirection(block.defaultState)
+                val dir = getDirection(mc.theWorld.getBlockState(it.position))
                 Timer().schedule(1) {
                     if (isAir(it.position)) Blocks[it.position.toVec3()] = dir
                 }
@@ -102,7 +102,7 @@ object CanClip : Module(
                 else -> return
             }
 
-            if (line) Renderer.draw3DLine(pos1, pos2, color = Color.RED)
+            if (line) Renderer.draw3DLine(pos1, pos2, color = Color.RED, depth = true)
         }
     }
 
