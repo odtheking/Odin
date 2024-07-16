@@ -18,6 +18,7 @@ val lwjglNative: Configuration by configurations.creating {
 
 val lwjglJar = tasks.create<ShadowJar>("lwjglJar") {
     group = "shadow"
+    destinationDirectory.set(layout.buildDirectory.dir("archiveJars"))
     archiveClassifier.set("lwjgl")
     configurations = listOf(lwjgl)
     exclude("META-INF/versions/**")

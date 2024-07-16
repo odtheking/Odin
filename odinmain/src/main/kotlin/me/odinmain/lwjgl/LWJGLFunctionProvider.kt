@@ -1,35 +1,33 @@
-package me.odinmain.lwjgl;
+package me.odinmain.lwjgl
 
-import org.lwjgl.opengl.GLContext;
-import org.lwjgl.system.FunctionProvider;
+import org.lwjgl.opengl.GLContext
+import org.lwjgl.system.FunctionProvider
+import java.lang.reflect.Method
+import java.nio.ByteBuffer
 
-import java.lang.reflect.Method;
-import java.nio.ByteBuffer;
+class LWJGLFunctionProvider : FunctionProvider {
+    private var mGetfunctionaddress: Method? = null
 
-public class LWJGLFunctionProvider implements FunctionProvider {
-
-    private final Method m_getFunctionAddress;
-
-    public LWJGLFunctionProvider() {
+    init {
         try {
-            m_getFunctionAddress = GLContext.class.getDeclaredMethod("getFunctionAddress", String.class);
-            m_getFunctionAddress.setAccessible(true);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            mGetfunctionaddress = GLContext::class.java.getDeclaredMethod("getFunctionAddress", String::class.java).let { 
+                it.isAccessible = true
+                it
+            }
+        } catch (e: Exception) {
+            throw RuntimeException(e)
         }
     }
 
-    @Override
-    public long getFunctionAddress(CharSequence functionName) {
+    override fun getFunctionAddress(functionName: CharSequence): Long {
         try {
-            return (long) m_getFunctionAddress.invoke(null, functionName.toString());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            return mGetfunctionaddress!!.invoke(null, functionName.toString()) as Long
+        } catch (e: Exception) {
+            throw RuntimeException(e)
         }
     }
 
-    @Override
-    public long getFunctionAddress(ByteBuffer byteBuffer) {
-        throw new UnsupportedOperationException();
+    override fun getFunctionAddress(byteBuffer: ByteBuffer): Long {
+        throw UnsupportedOperationException()
     }
 }

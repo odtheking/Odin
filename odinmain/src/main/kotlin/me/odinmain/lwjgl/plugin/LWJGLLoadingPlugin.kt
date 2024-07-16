@@ -1,48 +1,38 @@
-package me.odinmain.lwjgl.plugin;
+package me.odinmain.lwjgl.plugin
 
-import net.minecraft.launchwrapper.Launch;
-import net.minecraft.launchwrapper.LaunchClassLoader;
-import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
+import net.minecraft.launchwrapper.Launch
+import net.minecraft.launchwrapper.LaunchClassLoader
+import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin
 
-import java.lang.reflect.Field;
-import java.util.Map;
-import java.util.Set;
+class LWJGLLoadingPlugin : IFMLLoadingPlugin {
 
-public class LWJGLLoadingPlugin implements IFMLLoadingPlugin {
-
-    public LWJGLLoadingPlugin() {
+    init {
+        @Suppress("UNCHECKED_CAST")
         try {
-            Field f_exceptions = LaunchClassLoader.class.getDeclaredField("classLoaderExceptions");
-            f_exceptions.setAccessible(true);
-            Set<String> exceptions = (Set<String>) f_exceptions.get(Launch.classLoader);
-            exceptions.remove("org.lwjgl.");
-        } catch (Exception e) {
-            throw new RuntimeException("e");
+            val fExceptions = LaunchClassLoader::class.java.getDeclaredField("classLoaderExceptions")
+            fExceptions.isAccessible = true
+            val exceptions = fExceptions[Launch.classLoader] as MutableSet<String>
+            exceptions.remove("org.lwjgl.")
+        } catch (e: Exception) {
+            throw RuntimeException("e")
         }
     }
 
-    @Override
-    public String[] getASMTransformerClass() {
-        return new String[]{"me.odinmain.lwjgl.plugin.LWJGLClassTransformer"};
+    override fun getASMTransformerClass(): Array<String> {
+        return arrayOf("me.odinmain.lwjgl.plugin.LWJGLClassTransformer")
     }
 
-    @Override
-    public String getModContainerClass() {
-        return null;
+    override fun getModContainerClass(): String? {
+        return null
     }
 
-    @Override
-    public String getSetupClass() {
-        return null;
+    override fun getSetupClass(): String? {
+        return null
     }
 
-    @Override
-    public void injectData(Map<String, Object> data) {
+    override fun injectData(data: Map<String, Any>) {}
 
-    }
-
-    @Override
-    public String getAccessTransformerClass() {
-        return null;
+    override fun getAccessTransformerClass(): String? {
+        return null
     }
 }
