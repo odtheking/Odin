@@ -145,8 +145,9 @@ fun Event.postAndCatch(): Boolean {
     return runCatching {
         MinecraftForge.EVENT_BUS.post(this)
     }.onFailure {
+        it.printStackTrace()
         logger.error("An error occurred", it)
-        modMessage("${OdinMain.VERSION} Caught and logged an ${it::class.simpleName ?: "error"} at ${this::class.simpleName}. Please report this!")
+        modMessage("${OdinMain.VERSION} Caught and logged an ${it::class.simpleName ?: "error"} at ${this::class.simpleName}. §cPlease report this with a log in the discord!")
     }.getOrDefault(isCanceled)
 }
 
@@ -154,6 +155,7 @@ fun Module.registerAndCatch() {
     runCatching {
         MinecraftForge.EVENT_BUS.register(this)
     }.onFailure {
+        it.printStackTrace()
         logger.error("An error occurred", it)
         modMessage("${OdinMain.VERSION} Caught and logged an ${it::class.simpleName ?: "error"} at ${this::class.simpleName}. Please report this!")
     }
