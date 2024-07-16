@@ -7,7 +7,6 @@ import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.percent
 import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.elements.scope.ElementDSL
-import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.renderer.Image
 import com.github.stivais.ui.utils.seconds
 import me.odinmain.features.settings.Setting

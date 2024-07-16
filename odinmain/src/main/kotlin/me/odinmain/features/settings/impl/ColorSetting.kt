@@ -6,9 +6,7 @@ import com.github.stivais.ui.color.toHSB
 import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.sizes.Copying
-import com.github.stivais.ui.elements.scope.ElementDSL
-import com.github.stivais.ui.elements.scope.ElementScope
-import com.github.stivais.ui.elements.scope.slider
+import com.github.stivais.ui.elements.scope.*
 import com.github.stivais.ui.renderer.Gradient.LeftToRight
 import com.github.stivais.ui.renderer.Gradient.TopToBottom
 import com.github.stivais.ui.utils.radii

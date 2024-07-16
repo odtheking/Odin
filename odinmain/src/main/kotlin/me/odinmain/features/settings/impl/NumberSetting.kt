@@ -8,9 +8,7 @@ import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.percent
 import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.constraints.sizes.Copying
-import com.github.stivais.ui.elements.scope.ElementScope
-import com.github.stivais.ui.elements.scope.hoverEffect
-import com.github.stivais.ui.elements.scope.slider
+import com.github.stivais.ui.elements.scope.*
 import com.github.stivais.ui.utils.radii
 import com.github.stivais.ui.utils.seconds
 import com.google.gson.JsonElement
@@ -19,9 +17,7 @@ import me.odinmain.features.impl.render.ClickGUI
 import me.odinmain.features.impl.render.ClickGUI.`gray 26`
 import me.odinmain.features.settings.Saving
 import me.odinmain.features.settings.Setting
-import me.odinmain.utils.floor
-import me.odinmain.utils.minus
-import me.odinmain.utils.round
+import me.odinmain.utils.*
 import kotlin.math.round
 
 /**

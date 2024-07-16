@@ -1,11 +1,7 @@
 package me.odinmain.features.settings.impl
 
-import com.github.stivais.ui.constraints.percent
-import com.github.stivais.ui.constraints.px
-import com.github.stivais.ui.constraints.size
-import com.github.stivais.ui.elements.scope.ElementDSL
-import com.github.stivais.ui.elements.scope.ElementScope
-import com.github.stivais.ui.elements.scope.hoverEffect
+import com.github.stivais.ui.constraints.*
+import com.github.stivais.ui.elements.scope.*
 import com.github.stivais.ui.utils.radius
 import com.github.stivais.ui.utils.seconds
 import me.odinmain.features.impl.render.ClickGUI

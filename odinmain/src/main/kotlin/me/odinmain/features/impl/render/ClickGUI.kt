@@ -6,41 +6,28 @@ import com.github.stivais.ui.UIScreen.Companion.open
 import com.github.stivais.ui.animation.Animation
 import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.color.Color
-import com.github.stivais.ui.constraints.at
+import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Animatable
-import com.github.stivais.ui.constraints.px
-import com.github.stivais.ui.constraints.size
 import com.github.stivais.ui.constraints.sizes.Bounding
-import com.github.stivais.ui.elements.scope.ElementDSL
-import com.github.stivais.ui.elements.scope.draggable
-import com.github.stivais.ui.elements.scope.hoverEffect
+import com.github.stivais.ui.elements.scope.*
 import com.github.stivais.ui.operation.AnimationOperation
-import com.github.stivais.ui.utils.animate
-import com.github.stivais.ui.utils.loop
-import com.github.stivais.ui.utils.radius
-import com.github.stivais.ui.utils.seconds
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
+import com.github.stivais.ui.utils.*
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain
+import me.odinmain.OdinMain.scope
 import me.odinmain.config.Config
-import me.odinmain.features.Category
-import me.odinmain.features.Module
-import me.odinmain.features.ModuleManager
+import me.odinmain.features.*
 import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.utils.capitalizeFirst
-import me.odinmain.utils.render.Color as _Color
 import me.odinmain.utils.sendDataToServer
-import me.odinmain.utils.skyblock.LocationUtils
-import me.odinmain.utils.skyblock.createClickStyle
-import me.odinmain.utils.skyblock.getChatBreak
-import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.skyblock.*
 import net.minecraft.event.ClickEvent
 import net.minecraft.util.ChatComponentText
 import org.lwjgl.input.Keyboard
+import me.odinmain.utils.render.Color as _Color
 
 @AlwaysActive
 object ClickGUI: Module(
@@ -79,19 +66,15 @@ object ClickGUI: Module(
     // todo: censored option for textinput
     private val passcode: String by StringSetting("Passcode", "odin", description = "Passcode for dev features.").withDependency { DevPlayers.isDev && showHidden }
 
-    // todo: remove globalscope
-    @OptIn(DelicateCoroutinesApi::class)
     val reset by ActionSetting("Send Dev Data") {
         showHidden = false
-        GlobalScope.launch {
+        scope.launch {
             modMessage(sendDataToServer(body = "${mc.thePlayer.name}, [${devWingsColor.r},${devWingsColor.g},${devWingsColor.b}], [$devSizeX,$devSizeY,$devSizeZ], $devWings, $passcode", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
             DevPlayers.updateDevs()
         }
     }.withDependency { DevPlayers.isDev }
 
-    val action by ActionSetting("Open HUD Editor", description = "Opens the HUD Editor, allowing you to reposition HUDs") {
-        OdinMain.display = EditHUDGui
-    }
+    val action by ActionSetting("Open HUD Editor", description = "Opens the HUD Editor, allowing you to reposition HUDs") { OdinMain.display = EditHUDGui }
 
     private var joined: Boolean by BooleanSetting("First join", false).hide()
     var lastSeenVersion: String by StringSetting("Last seen version", "1.0.0").hide()
