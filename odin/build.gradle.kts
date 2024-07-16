@@ -69,7 +69,8 @@ dependencies {
     forge("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9")
 
     implementation(kotlin("stdlib-jdk8"))
-
+    shadowImpl("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC")
+    shadowImpl("org.jetbrains.kotlin:kotlin-reflect:2.0.0")
     implementation(project(mapOf("path" to ":odinmain")))
     shadowImpl(project(":odinmain")) {
         exclude(module = "kotlin-stdlib-jdk8")
