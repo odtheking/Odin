@@ -2,7 +2,6 @@ package me.odinmain.ui.clickgui.elements.menu
 
 import me.odinmain.features.impl.render.ClickGUI
 import me.odinmain.features.settings.impl.HudSetting
-import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.OldClickGUI
 import me.odinmain.ui.clickgui.animations.impl.ColorAnimation
 import me.odinmain.ui.clickgui.animations.impl.LinearAnimation
@@ -20,7 +19,6 @@ import me.odinmain.ui.util.MouseUtils.isAreaHovered
 import me.odinmain.utils.render.*
 import me.odinmain.utils.render.RenderUtils.loadBufferedImage
 import net.minecraft.client.renderer.texture.DynamicTexture
-
 
 /**
  * Renders all the modules.
@@ -50,7 +48,7 @@ class ElementHud(parent: ModuleButton, setting: HudSetting) : Element<HudSetting
 
     override fun draw() {
         roundedRectangle(x, y, w, h, ColorUtil.elementBackground)
-        text(name, x + 6f, y + 18f, textColor, 12f, OdinFont.REGULAR)
+        text(name, x + 6f, y + 18f, textColor, 12f, 0)
 
         var offset = 30f
         if (setting.displayToggle) {

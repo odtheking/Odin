@@ -43,7 +43,7 @@ fun rollDice(): Int = (1..6).random()
  * @param clientSide If `true`, the command is executed client-side; otherwise, server-side.
  */
 fun sendCommand(text: Any, clientSide: Boolean = false) {
-    if (LocationUtils.currentArea.isArea(Island.SinglePlayer) && !clientSide) return modMessage("Sending command: $text")
+    if (LocationUtils.currentArea?.isArea(Island.SinglePlayer) == true && !clientSide) return modMessage("Sending command: $text")
     if (clientSide) ClientCommandHandler.instance.executeCommand(mc.thePlayer, "/$text")
     else sendChatMessage("/$text")
 }

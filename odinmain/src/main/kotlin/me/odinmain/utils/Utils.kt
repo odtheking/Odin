@@ -149,6 +149,14 @@ fun Event.postAndCatch(): Boolean {
     }.getOrDefault(isCanceled)
 }
 
+// Companion object to expose the extension function statically for Java
+object EventExtensions {
+    @JvmStatic
+    fun postAndCatch(event: Event): Boolean {
+        return event.postAndCatch()
+    }
+}
+
 /**
  * Executes the specified function after the specified number of **minecraft** ticks.
  * @param ticks The number of ticks to wait.

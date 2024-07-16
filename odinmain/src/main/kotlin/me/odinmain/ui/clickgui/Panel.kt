@@ -3,7 +3,6 @@ package me.odinmain.ui.clickgui
 import me.odinmain.features.Category
 import me.odinmain.features.ModuleManager.modules
 import me.odinmain.features.impl.render.ClickGUI
-import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.SearchBar.currentSearch
 import me.odinmain.ui.clickgui.animations.impl.LinearAnimation
 import me.odinmain.ui.clickgui.elements.ModuleButton
@@ -61,14 +60,14 @@ class Panel(
         }
 
         scrollOffset = scrollAnimation.get(scrollOffset, scrollTarget).round(0).toFloat()
-        var startY = scrollOffset + height
+        var startY = scrollOffset + HEIGHT
         scale(1f / scaleFactor, 1f / scaleFactor, 1f)
-        dropShadow(x, y, width, if (extended) (length + 5f).coerceAtLeast(height) else 40f, ColorUtil.moduleButtonColor, 15f, 10f, 10f, 10f, 10f)
-        roundedRectangle(x, y, width, height, ColorUtil.moduleButtonColor, ColorUtil.moduleButtonColor, ColorUtil.moduleButtonColor, 0f, 15f, 15f, 0f, 0f, 0f)
+        dropShadow(x, y, WIDTH, if (extended) (length + 5f).coerceAtLeast(HEIGHT) else 40f, ColorUtil.moduleButtonColor, 15f, 10f, 10f, 10f, 10f)
+        roundedRectangle(x, y, WIDTH, HEIGHT, ColorUtil.moduleButtonColor, ColorUtil.moduleButtonColor, ColorUtil.moduleButtonColor, 0f, 15f, 15f, 0f, 0f, 0f)
 
-        text(if (displayName == "Floor7") "Floor 7" else displayName, x + width / 2f, y + height / 2f, ColorUtil.textColor, 20f, type = OdinFont.BOLD, TextAlign.Middle)
+        text(if (displayName == "Floor7") "Floor 7" else displayName, x + WIDTH / 2f, y + HEIGHT / 2f, ColorUtil.textColor, 20f, type = 0, TextAlign.Middle)
 
-        val s = scissor(x, y + height, width, 5000f)
+        val s = scissor(x, y + HEIGHT, WIDTH, 5000f)
         if (extended && moduleButtons.isNotEmpty()) {
             for (button in moduleButtons.filter { it.module.name.contains(currentSearch, true) }) {
                 button.y = startY
@@ -80,7 +79,7 @@ class Panel(
         val lastColor =
             if (extended) moduleButtons.lastOrNull()?.color ?: ColorUtil.moduleButtonColor
             else ColorUtil.moduleButtonColor
-        roundedRectangle(x, y + startY, width, 10f, lastColor, lastColor, lastColor, 0f, 0f, 0f, 10f, 10f, 4f)
+        roundedRectangle(x, y + startY, WIDTH, 10f, lastColor, lastColor, lastColor, 0f, 0f, 0f, 10f, 10f, 4f)
         resetScissor(s)
         scale(scaleFactor, scaleFactor, 1f)
     }
@@ -136,13 +135,13 @@ class Panel(
     }
 
     private val isHovered
-        get() = isAreaHovered(x, y, width, height)
+        get() = isAreaHovered(x, y, WIDTH, HEIGHT)
 
     private val isMouseOverExtended
-        get() = extended && isAreaHovered(x, y, width, length.coerceAtLeast(height))
+        get() = extended && isAreaHovered(x, y, WIDTH, length.coerceAtLeast(HEIGHT))
 
     companion object {
-        const val width = 240f
-        const val height = 40f
+        const val WIDTH = 240f
+        const val HEIGHT = 40f
     }
 }

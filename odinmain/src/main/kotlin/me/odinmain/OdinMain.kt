@@ -5,32 +5,24 @@ import com.github.stivais.ui.impl.`ui command`
 import kotlinx.coroutines.*
 import me.odinmain.commands.impl.*
 import me.odinmain.commands.registerCommands
-import me.odinmain.config.Config
-import me.odinmain.config.DungeonWaypointConfigCLAY
-import me.odinmain.config.PBConfig
-import me.odinmain.config.WaypointConfig
+import me.odinmain.config.*
 import me.odinmain.events.EventDispatcher
 import me.odinmain.features.ModuleManager
-import me.odinmain.features.impl.render.ClickGUI
-import me.odinmain.features.impl.render.DevPlayers
-import me.odinmain.features.impl.render.WaypointManager
-import me.odinmain.font.OdinFont
+import me.odinmain.features.impl.render.*
 import me.odinmain.ui.clickgui.OldClickGUI
-import me.odinmain.ui.util.shader.RoundedRect
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.sendDataToServer
-import me.odinmain.utils.skyblock.KuudraUtils
-import me.odinmain.utils.skyblock.LocationUtils
-import me.odinmain.utils.skyblock.PlayerUtils
-import me.odinmain.utils.skyblock.SkyblockPlayer
+import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.Loader
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 import java.io.File
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -39,6 +31,7 @@ object OdinMain {
 
     const val VERSION = "@VER@"
     val scope = CoroutineScope(EmptyCoroutineContext)
+    val logger: Logger = LogManager.getLogger("Odin")
 
     var display: GuiScreen? = null
     val isLegitVersion: Boolean
@@ -70,7 +63,7 @@ object OdinMain {
             mainCommand,
             soopyCommand,
             termSimCommand,
-            blacklistCommand,
+            chatCommandsCommand,
             devCommand,
             highlightCommand,
             waypointCommand,
@@ -79,7 +72,6 @@ object OdinMain {
             visualWordsCommand,
             `ui command`
         )
-        OdinFont.init()
     }
 
     fun postInit() = scope.launch(Dispatchers.IO) {
@@ -91,7 +83,6 @@ object OdinMain {
         launch { DungeonWaypointConfigCLAY.loadConfig() }
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     fun loadComplete() = runBlocking {
         runBlocking {
             launch {
@@ -101,8 +92,7 @@ object OdinMain {
             }
         }
         OldClickGUI.init()
-        RoundedRect.initShaders()
-        GlobalScope.launch {
+        scope.launch {
             val name = mc.session?.username ?: return@launch
             if (name.matches(Regex("Player\\d{2,3}"))) return@launch
             sendDataToServer(body = """{"username": "$name", "version": "${if (isLegitVersion) "legit" else "cheater"} $VERSION"}""")

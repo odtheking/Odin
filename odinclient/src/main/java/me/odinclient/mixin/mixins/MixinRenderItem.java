@@ -1,10 +1,10 @@
 package me.odinclient.mixin.mixins;
 
 import me.odinmain.events.impl.GuiEvent;
+import me.odinmain.utils.EventExtensions;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.common.MinecraftForge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -15,7 +15,7 @@ public abstract class MixinRenderItem {
 
     @Inject(method = "renderItemOverlayIntoGUI", at = @At("HEAD"), cancellable = true)
     private void renderItemOverlayPost(FontRenderer fr, ItemStack stack, int xPosition, int yPosition, String text, CallbackInfo ci) {
-        if (MinecraftForge.EVENT_BUS.post(new GuiEvent.DrawSlotOverlayEvent(stack, xPosition, yPosition, text)))
+        if (EventExtensions.postAndCatch(new GuiEvent.DrawSlotOverlayEvent(stack, xPosition, yPosition, text)))
             ci.cancel();
     }
 }

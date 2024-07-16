@@ -4,7 +4,6 @@ import me.odinmain.OdinMain.display
 import me.odinmain.config.Config
 import me.odinmain.features.Category
 import me.odinmain.features.impl.render.ClickGUI
-import me.odinmain.font.OdinFont
 import me.odinmain.ui.Screen
 import me.odinmain.ui.clickgui.animations.impl.EaseInOut
 import me.odinmain.ui.clickgui.elements.menu.ElementColor
@@ -16,9 +15,6 @@ import me.odinmain.ui.clickgui.util.HoverHandler
 import me.odinmain.utils.render.*
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.OpenGlHelper
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Mouse
 import kotlin.math.sign
 
@@ -177,7 +173,7 @@ object OldClickGUI : Screen() {
                 x, y, area.first + 7, area.second + 9,
                 buttonColor.withAlpha((hoverHandler!!.percent() / 100f).coerceIn(0f, 0.8f)), 5f
             )
-            wrappedText(text!!, x + 7f, y + 12f, 300f, textColor, 12f, OdinFont.REGULAR)
+            wrappedText(text!!, x + 7f, y + 12f, 300f, textColor, 12f, 0)
             if (hoverHandler!!.percent() == 0) {
                 text = null
                 hoverHandler = null

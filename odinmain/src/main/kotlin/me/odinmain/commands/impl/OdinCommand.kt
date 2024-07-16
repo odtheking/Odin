@@ -2,17 +2,15 @@ package me.odinmain.commands.impl
 
 import com.github.stivais.commodore.utils.SyntaxException
 import com.github.stivais.ui.UIScreen.Companion.open
-import me.odinmain.OdinMain.display
 import me.odinmain.OdinMain.mc
 import me.odinmain.commands.commodore
-import me.odinmain.features.impl.dungeon.DungeonWaypoints
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
 import me.odinmain.features.impl.render.ClickGUI
 import me.odinmain.features.impl.render.ClickGUI.clickGUI
 import me.odinmain.features.impl.render.ServerHud.colorizeFPS
 import me.odinmain.features.impl.render.ServerHud.colorizePing
 import me.odinmain.features.impl.render.ServerHud.colorizeTps
 import me.odinmain.features.impl.skyblock.DianaHelper
-import me.odinmain.ui.clickgui.OldClickGUI
 import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.equalsOneOf
