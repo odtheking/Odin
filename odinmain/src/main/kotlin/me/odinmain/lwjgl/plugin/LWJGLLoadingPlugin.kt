@@ -3,7 +3,9 @@ package me.odinmain.lwjgl.plugin
 import net.minecraft.launchwrapper.Launch
 import net.minecraft.launchwrapper.LaunchClassLoader
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin
+import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin.MCVersion
 
+@MCVersion("1.8.9")
 class LWJGLLoadingPlugin : IFMLLoadingPlugin {
 
     init {

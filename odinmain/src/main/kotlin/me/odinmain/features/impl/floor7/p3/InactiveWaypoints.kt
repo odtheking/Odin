@@ -25,7 +25,7 @@ object InactiveWaypoints : Module(
     private val renderBeacon: Boolean by BooleanSetting(name = "Render Beacon", default = true, description = "Renders a beacon beam on the inactive waypoint")
     private val renderBox: Boolean by BooleanSetting(name = "Render Box", default = true, description = "Renders a box around the inactive waypoint")
     private val hideDefault: Boolean by BooleanSetting(name = "Hide Default", default = true, description = "Hide the Hypixel names of Inactive Terminals")
-    private val style: Int by SelectorSetting("Style", Renderer.defaultStyle, Renderer.styles, description = Renderer.styleDesc)
+    private val style: Int by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION)
     private val color: Color by OldColorSetting("Color", Color(0, 0, 0, 0.4f), allowAlpha = true, description = "The color of the box.")
     private val lineWidth: Float by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.")
     private val depthCheck: Boolean by BooleanSetting("Depth check", false, description = "Boxes show through walls.")

@@ -20,7 +20,7 @@ object ClickedSecrets : Module(
     category = Category.DUNGEON,
     description = "Marks all the secrets you have clicked."
 ) {
-    private val style: Int by SelectorSetting("Style", Renderer.defaultStyle, Renderer.styles, description = Renderer.styleDesc)
+    private val style: Int by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION)
     private val color: Color by OldColorSetting("Color", Color.ORANGE.withAlpha(.4f), allowAlpha = true, description = "The color of the box.")
     private val lineWidth: Float by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.")
     private val depthCheck: Boolean by BooleanSetting("Depth check", false, description = "Boxes show through walls.")
