@@ -9,8 +9,13 @@ import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.sizes.Bounding
-import com.github.stivais.ui.elements.scope.*
+import com.github.stivais.ui.elements.impl.Popup
+import com.github.stivais.ui.elements.impl.popup
+import com.github.stivais.ui.elements.scope.ElementDSL
+import com.github.stivais.ui.elements.scope.draggable
+import com.github.stivais.ui.elements.scope.hoverEffect
 import com.github.stivais.ui.operation.AnimationOperation
+import com.github.stivais.ui.operation.UIOperation
 import com.github.stivais.ui.utils.*
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain
@@ -74,7 +79,9 @@ object ClickGUI: Module(
         }
     }.withDependency { DevPlayers.isDev }
 
-    val action by ActionSetting("Open HUD Editor", description = "Opens the HUD Editor, allowing you to reposition HUDs") { OdinMain.display = EditHUDGui }
+    val action by ActionSetting("Open HUD Editor", description = "Opens the HUD Editor, allowing you to reposition HUDs") {
+        OdinMain.display = EditHUDGui
+    }
 
     private var joined: Boolean by BooleanSetting("First join", false).hide()
     var lastSeenVersion: String by StringSetting("Last seen version", "1.0.0").hide()
@@ -154,6 +161,7 @@ object ClickGUI: Module(
         // used for search bar to not require iterating over all elements
         val moduleElements = arrayListOf<Pair<Module, ElementDSL>>()
         onRemove {
+            modMessage("saved")
             Config.save()
         }
         for (panel in Category.entries) {
@@ -207,11 +215,12 @@ object ClickGUI: Module(
     private fun ElementDSL.module(module: Module) = column(size(h = Animatable(from = 32.px, to = Bounding))) {
         // used to lazily load setting elements, as they're not visible until clicked and most of them go unseen
         var loaded = false
-        val color = Color.Animated(from = `gray 26`, to = this@ClickGUI.color)
+        val color = Color.Animated(from = `gray 26`, to = this@ClickGUI.color, swapIf = module.enabled)
         block(
             size(240.px, 32.px),
             color = color
         ) {
+            hoverInfo(description = module.description)
             hoverEffect(0.1.seconds)
             text(
                 text = module.name,
@@ -255,6 +264,48 @@ object ClickGUI: Module(
             AnimationOperation(Animation(duration, animation).onFinish { UIScreen.closeAnimHandler = null }) {
                 element.alpha = 1f - it
                 element.scale = 1f - it
+            }.add()
+        }
+    }
+
+    fun ElementDSL.hoverInfo(description: String) {
+        if (description.isEmpty()) return
+
+        var popup: Popup? = null
+        onHover(1.seconds) {
+            val x = if (element.x >= ui.main.width / 2f) (element.x - 5).px.alignRight else (element.x + element.width + 5).px
+            val y = (element.y + 5).px
+            popup = popup(at(x, y)) {
+                block(
+                    constraints = constrain(0.px, 0.px, Bounding + 10.px, 30.px),
+                    color = `gray 38`,
+                    radius = 5.radii()
+                ) {
+                    outline(this@ClickGUI.color, 2.px)
+                    text(text = description)
+                }
+                element.alphaAnim = Animatable(0.px, 1.px).apply { animate(0.25.seconds) }
+            }
+        }
+        onMouseExit {
+            popup?.let {
+                it.element.alphaAnim?.animate(0.25.seconds, Animations.Linear)?.onFinish {
+                    it.close()
+                    popup = null
+                }
+            }
+        }
+    }
+
+    fun ElementDSL.onHover(duration: Float, block: () -> Unit) {
+        onMouseEnter {
+            val start = System.nanoTime()
+            UIOperation {
+                if (System.nanoTime() - start >= duration) {
+                    block()
+                    return@UIOperation true
+                }
+                !element.isInside(ui.mx, ui.my) || !element.renders
             }.add()
         }
     }
