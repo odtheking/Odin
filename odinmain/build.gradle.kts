@@ -32,28 +32,17 @@ val lwjglJar = tasks.create<ShadowJar>("lwjglJar") {
 
 val lwjglVersion = "3.3.3"
 
-val lwjglNatives = when {
-    arrayOf("Linux", "SunOS", "Unit").any { System.getProperty("os.name")!!.startsWith(it) } -> {
-        val arch = System.getProperty("os.arch")!!
-        when {
-            arrayOf("arm", "aarch64").any { arch.startsWith(it) } ->
-                "natives-linux${if (arch.contains("64") || arch.startsWith("armv8")) "-arm64" else "-arm32"}"
-            arch.startsWith("ppc") -> "natives-linux-ppc64le"
-            arch.startsWith("riscv") -> "natives-linux-riscv64"
-            else -> "natives-linux"
-        }
+val lwjglNatives: String = run {
+    val arch = System.getProperty("os.arch")!!
+    if (arch.contains("64")) {
+        "natives-windows${if (arch.startsWith("aarch64")) "-arm64" else ""}"
+    } else {
+        "natives-windows-x86"
     }
-    arrayOf("Mac OS X", "Darwin").any { System.getProperty("os.name")!!.startsWith(it) } -> {
-        val arch = System.getProperty("os.arch")!!
-        "natives-macos${if (arch.startsWith("aarch64")) "-arm64" else ""}"
-    }
-    arrayOf("Windows").any { System.getProperty("os.name")!!.startsWith(it) } -> {
-        val arch = System.getProperty("os.arch")!!
-        if (arch.contains("64")) "natives-windows${if (arch.startsWith("aarch64")) "-arm64" else ""}"
-        else "natives-windows-x86"
-    }
-    else -> throw Error("Unrecognized or unsupported platform. Please set \"lwjglNatives\" manually")
 }
+
+
+
 
 sourceSets.main {
     java.srcDir(file("$projectDir/src/main/kotlin"))
@@ -86,7 +75,6 @@ dependencies {
     lwjglNative("org.lwjgl:lwjgl-stb:${lwjglVersion}:${lwjglNatives}")
     shadowImpl(lwjglJar.outputs.files)
 }
-
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(8))
 kotlin.jvmToolchain(8)

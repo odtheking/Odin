@@ -11,7 +11,6 @@ import org.lwjgl.opengl.GL11.*
 import org.lwjgl.stb.STBImage
 import org.lwjgl.system.MemoryUtil
 
-
 object NVGRenderer : Renderer {
 
     private val nvgPaint: NVGPaint = NVGPaint.malloc()
