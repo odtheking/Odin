@@ -75,6 +75,7 @@ object PuzzleSolvers : Module(
     val beamStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { beamsSolver && beamsDropDown }
     val beamsDepth: Boolean by BooleanSetting("Depth", false, description = "Depth check").withDependency { beamsSolver && beamsDropDown }
     val beamsTracer: Boolean by BooleanSetting("Tracer", false, description = "Tracer").withDependency { beamsSolver && beamsDropDown }
+    val beamsAlpha: Float by NumberSetting("Color Alpha", .7f, 0f, 1f, .05f).withDependency { beamsSolver && beamsDropDown }
     private val beamsReset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
         BeamsSolver.reset()
     }.withDependency { beamsSolver && beamsDropDown }

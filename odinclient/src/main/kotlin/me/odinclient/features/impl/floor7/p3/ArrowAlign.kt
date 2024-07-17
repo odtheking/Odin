@@ -136,7 +136,7 @@ object ArrowAlign : Module(
     )
 
     private fun triggerBot() {
-        if (!triggerBotClock.hasTimePassed(delay) || (sneakToDisableTriggerbot && mc.thePlayer.isSneaking)) return
+        if (!triggerBotClock.hasTimePassed(delay) || (sneakToDisableTriggerbot && mc.thePlayer.isSneaking) || !triggerBot) return
         val targetFrame = mc.objectMouseOver?.entityHit as? EntityItemFrame ?: return
 
         val targetFramePosition = targetFrame.positionVector.flooredVec()

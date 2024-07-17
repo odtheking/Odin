@@ -9,7 +9,9 @@ import me.odinmain.features.ModuleManager
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.devMessage
+import me.odinmain.utils.skyblock.itemID
 import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.skyblock.sendCommand
 import net.minecraft.inventory.Container
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.common.MinecraftForge
@@ -259,13 +261,13 @@ fun formatTime(time: Long): String {
         if (it > 0) "${it}m " else ""
     }
     val seconds = (remaining / 1000f).let {
-        "%.2f".format(it)
+        String.format(Locale.US, "%.2f", it)
     }
     return "$hours$minutes${seconds}s"
 }
 
 val Char.isHexaDecimal
-    get() = isDigit() || equalsOneOf("a","b","c","d","e","f","A","B","C","D","E","F")
+    get() = isDigit() || lowercase().equalsOneOf("a","b","c","d","e","f")
 
 // Used in DeployableTimer.kt
 data object FlareTextures {
@@ -326,4 +328,9 @@ inline fun <T> List<T>.forEachIndexedReturn(action: (index: Int, T) -> Unit): Li
         action(i, this[i])
     }
     return this
+}
+
+fun fillItemFromSack(amount: Int, itemId: String, sackName: String, sendMessage: Boolean) {
+    val needed = mc.thePlayer.inventory.mainInventory.find { it?.itemID == itemId }?.stackSize ?: 0
+    if (needed != amount) sendCommand("gfs $sackName ${amount - needed}") else if (sendMessage) modMessage("§cAlready at max stack size.")
 }
