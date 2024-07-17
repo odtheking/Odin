@@ -4,6 +4,7 @@ import me.odinmain.config.DungeonWaypointConfigCLAY
 import me.odinmain.events.impl.*
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.onLocked
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.resetSecrets
 import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -74,6 +75,10 @@ object DungeonWaypoints : Module(
 
     init {
         onWorldLoad { resetSecrets() }
+
+        onMessage("That chest is locked!", true) {
+            onLocked()
+        }
     }
 
     @SubscribeEvent
