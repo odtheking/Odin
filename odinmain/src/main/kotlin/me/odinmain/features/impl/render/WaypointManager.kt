@@ -48,18 +48,22 @@ object WaypointManager {
     }
 
     fun clearWaypoints() {
-        waypoints[currentArea?.displayName]?.clear()
+        waypoints[currentArea.displayName]?.clear()
         WaypointConfig.saveConfig()
     }
 
     fun addTempWaypoint(name: String = "§fWaypoint", x: Int, y: Int, z: Int) {
-        if (currentArea.isArea(Island.Unknown)) return modMessage("You are not in Skyblock.")
+        if (currentArea.isArea(Island.Unknown)) return modMessage("§cYou are not in Skyblock.")
         if (!Waypoints.enabled) return
         if (listOf(x, y,z).any { abs(it) > 5000}) return modMessage("§cWaypoint out of bounds.")
         if (temporaryWaypoints.any { it.first.x == x && it.first.y == y && it.first.z == z }) return modMessage("§cWaypoint already exists at $x, $y, $z.")
-        modMessage("Added waypoint at $x, $y, $z.")
-        temporaryWaypoints.add(Pair(Waypoint(if (Waypoints.onlyDistance) "" else name, x, y, z, Color.RED), Clock(60_000)))
+        modMessage("§aAdded temporary waypoint at §6$x§r, §3$y§r, §d$z§r.")
+        temporaryWaypoints.add(Pair(Waypoint(if (Waypoints.onlyDistance) "" else name, x, y, z, colors.random()), Clock(60_000)))
     }
+
+    private val colors = listOf(
+        Color.ORANGE, Color.GREEN, Color.PINK, Color.CYAN, Color.YELLOW, Color.DARK_RED, Color.WHITE, Color.PURPLE, Color.YELLOW, Color.RED, Color.PINK
+    )
 
     fun addTempWaypoint(name: String = "§fWaypoint", vec3: Vec3i) {
         addTempWaypoint(name, vec3.x, vec3.y, vec3.z)
@@ -83,7 +87,7 @@ object WaypointManager {
             it.second.hasTimePassed()
         }
 
-        waypoints[currentArea?.displayName]?.forEach {
+        waypoints[currentArea.displayName]?.forEach {
             if (it.shouldShow) it.renderBeacon()
         }
     }
