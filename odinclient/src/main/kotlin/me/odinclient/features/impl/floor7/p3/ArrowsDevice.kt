@@ -51,7 +51,7 @@ object ArrowsDevice : Module(
     private val auto: Boolean by BooleanSetting("Auto", description = "Automatically complete device")
     private val autoPhoenix: Boolean by BooleanSetting("Auto phoenix", default = true, description = "Automatically swap to phoenix pet using cast rod pet rules, must be set up correctly").withDependency { auto }
     private val autoLeap: Boolean by BooleanSetting("Auto leap", default = true, description = "Automatically leap once device is done").withDependency { auto }
-    private val autoLeapClass: Int by SelectorSetting("Leap to", defaultSelected = "Archer", arrayListOf("Archer", "Mage", "Berserk", "Healer", "Tank"), description = "Who to leap to").withDependency { autoLeap && auto }
+    private val autoLeapClass: Int by SelectorSetting("Leap to", defaultSelected = "Mage", arrayListOf("Archer", "Berserk", "Healer", "Mage", "Tank"), description = "Who to leap to").withDependency { autoLeap && auto }
     private val autoLeapOnlyPre: Boolean by BooleanSetting("Only leap on pre", default = true, description = "Only auto leap when doing i4").withDependency { autoLeap && auto }
     private val delay: Long by NumberSetting("Delay", 150L, 80, 300, description = "Delay between actions").withDependency { auto }
     private val aimingTime: Long by NumberSetting("Aiming duration", 100L, 80, 200, description = "Time taken to aim at a target").withDependency { auto }
@@ -67,23 +67,25 @@ object ArrowsDevice : Module(
     // ArmorStand showing the status of the device
     private var activeArmorStand: EntityArmorStand? = null
 
-    // Clock used for action delay (mostly for phoenix swapping and leap)
+    // Clock used for action delay (mostly for phoenix swapping and leaping)
     private val clock = Clock(delay)
     private val actionQueue = ArrayDeque<() -> Unit>()
 
     // Number of server ticks since the last target disappeared, or null if there is a target
-    private var serverTicksSinceLastTargetDisappeared: Int? = null;
+    private var serverTicksSinceLastTargetDisappeared: Int? = null
 
     init {
-        onMessage(Regex("^Your (?:. )?Bonzo's Mask saved your life!$"), { enabled && auto && autoPhoenix && isPlayerOnStand() }) {
+        onMessage(
+            Regex("^Your (?:. )?Bonzo's Mask saved your life!$"),
+            { enabled && auto && autoPhoenix && isPlayerOnStand }) {
             phoenixSwap()
         }
 
-        onMessage(Regex("^[a-zA-Z0-9_]{3,} completed a device! \\([1-7]/7\\)"), { enabled && isPlayerInRoom() }) {
+        onMessage(Regex("^[a-zA-Z0-9_]{3,} completed a device! \\([1-7]/7\\)"), { enabled && isPlayerInRoom }) {
             onComplete()
         }
 
-        onMessage(Regex("^ ☠ You died and became a ghost\\.$"), { enabled && isPlayerOnStand() }) {
+        onMessage(Regex("^ ☠ You died and became a ghost\\.$"), { enabled && isPlayerOnStand }) {
             // Died while on device
             autoState = AutoState.Stopped
             actionQueue.clear()
@@ -94,12 +96,16 @@ object ArrowsDevice : Module(
         }
 
         execute(1000) {
-            if(DungeonUtils.getPhase() != M7Phases.P3) return@execute
+            if (DungeonUtils.getPhase() != M7Phases.P3) return@execute
 
             // Cast is safe since we won't return an entity that isn't an armor stand
             activeArmorStand = mc.theWorld?.loadedEntityList?.find {
-                it is EntityArmorStand && it.name.containsOneOf(INACTIVE_DEVICE_STRING, ACTIVE_DEVICE_STRING) && it.distanceSquaredTo(
-                    standPosition.toVec3()) <= 4.0
+                it is EntityArmorStand && it.name.equalsOneOf(
+                    INACTIVE_DEVICE_STRING,
+                    ACTIVE_DEVICE_STRING
+                ) && it.distanceSquaredTo(
+                    standPosition.toVec3()
+                ) <= 4.0
             } as EntityArmorStand?
         }
 
@@ -110,27 +116,23 @@ object ArrowsDevice : Module(
         }
     }
 
-    private fun isDeviceRoomOpen(): Boolean {
-        val block = mc.theWorld.getBlockState(lastGateBlock)
-        return block == Blocks.air.defaultState
-    }
+    private val isDeviceRoomOpen: Boolean
+        get() = mc.theWorld.getBlockState(lastGateBlock) == Blocks.air.defaultState
 
-    private fun isPlayerOnStand(): Boolean {
-        return (mc.thePlayer?.distanceSquaredTo(standPosition.toVec3()) ?: Double.MAX_VALUE) <= 1.0
-    }
+    private val isPlayerOnStand: Boolean
+        get() = (mc.thePlayer?.distanceSquaredTo(standPosition.toVec3()) ?: Double.MAX_VALUE) <= 1.0
 
-    private fun isPlayerInRoom(): Boolean {
-        return mc.thePlayer?.let { roomBoundingBox.isVecInside(it.positionVector) } ?: false
-    }
+    private val isPlayerInRoom: Boolean
+        get() = mc.thePlayer?.let { roomBoundingBox.isVecInside(it.positionVector) } == true
 
     private fun holdClick() {
-        if(!mc.gameSettings.keyBindUseItem.isPressed) {
+        if (!mc.gameSettings.keyBindUseItem.isPressed) {
             KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, true)
         }
     }
 
     private fun releaseClick() {
-        if(mc.gameSettings.keyBindUseItem.isPressed) {
+        if (mc.gameSettings.keyBindUseItem.isPressed) {
             KeyBinding.setKeyBindState(mc.gameSettings.keyBindUseItem.keyCode, false)
         }
     }
@@ -140,13 +142,13 @@ object ArrowsDevice : Module(
     }
 
     private fun holdBow() {
-        if((mc.thePlayer?.inventory?.currentItem ?: -1) != bowSlot) {
+        if ((mc.thePlayer?.inventory?.currentItem ?: -1) != bowSlot) {
             mc.thePlayer.inventory.currentItem = bowSlot
         }
     }
 
     private fun phoenixSwap() {
-        val rodSlot = mc.thePlayer?.inventory?.mainInventory?.indexOfFirst { it.isFishingRod } ?: -1;
+        val rodSlot = mc.thePlayer?.inventory?.mainInventory?.indexOfFirst { it.isFishingRod } ?: -1
 
         if (rodSlot < 0 || rodSlot >= 9) {
             modMessage("Couldn't find rod for phoenix swap")
@@ -209,7 +211,7 @@ object ArrowsDevice : Module(
     private fun aimAtTarget() {
         targetPosition?.let {
 
-            if(isPhoenixSwapping) {
+            if (isPhoenixSwapping) {
                 // We are busy with swapping to phoenix, so wait until that's done
                 actionQueue.add(::aimAtTarget)
                 return
@@ -222,7 +224,11 @@ object ArrowsDevice : Module(
 
             // Choose a correct target to hit as many blocks as possible
             val target = Vec3(
-                if (x == 0 || (x == 1 && markedPositions.contains(positions[x + 1 + y * 3]))) { 67.5 } else { 65.5 },
+                if (x == 0 || (x == 1 && markedPositions.contains(positions[x + 1 + y * 3]))) {
+                    67.5
+                } else {
+                    65.5
+                },
                 131.3 - 2 * y,
                 50.0
             )
@@ -246,19 +252,19 @@ object ArrowsDevice : Module(
     //    ticks are up
     // We use all three here since we want to detect as soon as possible (since we might die if we wait too long).
     private fun onComplete() {
-        if(isDeviceComplete) return
+        if (isDeviceComplete) return
 
         isDeviceComplete = true
         releaseClick()
 
-        if(alertOnDeviceComplete) {
+        if (alertOnDeviceComplete) {
             modMessage("Sharp shooter device complete")
             PlayerUtils.alert("Device Complete", color = Color.GREEN)
         }
 
         autoState = AutoState.Stopped
 
-        if (auto && autoLeap && (!autoLeapOnlyPre || !isDeviceRoomOpen())) {
+        if (auto && autoLeap && (!autoLeapOnlyPre || !isDeviceRoomOpen)) {
             leap()
         }
     }
@@ -269,7 +275,8 @@ object ArrowsDevice : Module(
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
         if (chest !is ContainerChest || chest.name != "Spirit Leap" || DungeonUtils.leapTeammates.isEmpty()) return
 
-        val leapTo = DungeonUtils.leapTeammates.firstOrNull { it.clazz == classes[autoLeapClass] } ?: DungeonUtils.leapTeammates.first()
+        val leapTo = DungeonUtils.leapTeammates.firstOrNull { it.clazz == DungeonClass.entries[autoLeapClass] }
+            ?: DungeonUtils.leapTeammates.first()
 
         clock.update()
 
@@ -283,17 +290,17 @@ object ArrowsDevice : Module(
 
     @SubscribeEvent
     fun onTick(tickEvent: ClientTickEvent) {
-        if(!isPlayerInRoom()) {
+        if (!isPlayerInRoom) {
             reset()
             return
         }
 
-        if(!isDeviceComplete && activeArmorStand?.name == ACTIVE_DEVICE_STRING)  {
+        if (!isDeviceComplete && activeArmorStand?.name == ACTIVE_DEVICE_STRING) {
             onComplete()
         }
 
         if (autoState != AutoState.Stopped) {
-            if (!isPlayerOnStand()) {
+            if (!isPlayerOnStand) {
                 autoState = AutoState.Stopped
                 releaseClick()
                 return
@@ -316,7 +323,7 @@ object ArrowsDevice : Module(
         serverTicksSinceLastTargetDisappeared = serverTicksSinceLastTargetDisappeared?.let {
             // There was no target last tick (or the count would be null)
 
-            if(targetPosition != null) {
+            if (targetPosition != null) {
                 // A target appeared
                 return@let null
             } else if (it < 10) {
@@ -324,7 +331,7 @@ object ArrowsDevice : Module(
                 return@let it + 1
             } else if (it == 10) {
                 // We reached 10 ticks, device is either done, or the player left the stand
-                if(isPlayerOnStand()) onComplete()
+                if (isPlayerOnStand) onComplete()
                 return@let 11
             } else {
                 return@let 11
@@ -348,7 +355,7 @@ object ArrowsDevice : Module(
             if (targetPosition == event.pos) {
                 targetPosition = null
 
-                if(autoState != AutoState.Stopped) {
+                if (autoState != AutoState.Stopped) {
                     //releaseClick()
                     autoState = AutoState.Aiming
                 }
@@ -361,9 +368,9 @@ object ArrowsDevice : Module(
             markedPositions.remove(event.pos)
             targetPosition = event.pos
 
-            if (isPlayerOnStand() && auto) {
+            if (isPlayerOnStand && auto) {
                 if (autoState == AutoState.Stopped) {
-                    bowSlot = mc.thePlayer?.inventory?.mainInventory?.indexOfFirst { it.isShortbow } ?: -1;
+                    bowSlot = mc.thePlayer?.inventory?.mainInventory?.indexOfFirst { it.isShortbow } ?: -1
 
                     if (bowSlot < 0 || bowSlot >= 9) {
                         modMessage("Couldn't find shortbow for auto sharp shooter")
@@ -402,10 +409,8 @@ object ArrowsDevice : Module(
     private val roomBoundingBox = AxisAlignedBB(20.0, 100.0, 30.0, 89.0, 151.0, 51.0)
     private val lastGateBlock = BlockPos(8, 118, 50)
 
-    private const val ACTIVE_DEVICE_STRING = "\u00A7aDevice"
-    private const val INACTIVE_DEVICE_STRING = "\u00A7cInactive"
-
-    private val classes = listOf(DungeonClass.Archer, DungeonClass.Mage, DungeonClass.Berserk, DungeonClass.Healer, DungeonClass.Tank)
+    private const val ACTIVE_DEVICE_STRING = "§aDevice"
+    private const val INACTIVE_DEVICE_STRING = "§cInactive"
 
     private enum class AutoState {
         Stopped,

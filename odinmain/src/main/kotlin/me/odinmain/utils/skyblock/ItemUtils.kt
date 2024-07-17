@@ -83,7 +83,7 @@ val ItemStack?.isFishingRod: Boolean
  */
 val ItemStack?.isLeap: Boolean
     get() {
-        return this?.unformattedName?.noControlCodes?.equalsOneOf("Infinileap", "Spirit Leap") ?: false
+        return this?.itemID?.equalsOneOf("INFINITE_SPIRIT_LEAP", "SPIRIT_LEAP") == true
     }
 
 val EntityPlayerSP.holdingEtherWarp: Boolean

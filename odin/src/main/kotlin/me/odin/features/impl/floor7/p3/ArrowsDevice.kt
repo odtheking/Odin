@@ -47,14 +47,14 @@ object ArrowsDevice : Module(
     private var activeArmorStand: EntityArmorStand? = null
 
     // Number of server ticks since the last target disappeared, or null if there is a target
-    private var serverTicksSinceLastTargetDisappeared: Int? = null;
+    private var serverTicksSinceLastTargetDisappeared: Int? = null
 
     init {
-        onMessage(Regex("^[a-zA-Z0-9_]{3,} completed a device! \\([1-7]/7\\)"), { enabled && isPlayerInRoom() }) {
+        onMessage(Regex("^[a-zA-Z0-9_]{3,} completed a device! \\([1-7]/7\\)"), { enabled && isPlayerInRoom }) {
             onComplete()
         }
 
-        onMessage(Regex("^ ☠ You died and became a ghost\\.$"), { enabled && isPlayerOnStand() }) {
+        onMessage(Regex("^ ☠ You died and became a ghost\\.$"), { enabled && isPlayerOnStand }) {
             // Prevent the tick count from continuing and registering a false positive
             // This does mean we could get a false negative but since the player is already
             // dead knowing if the device is complete has less importance (no leaping)
@@ -62,12 +62,16 @@ object ArrowsDevice : Module(
         }
 
         execute(1000) {
-            if(DungeonUtils.getPhase() != M7Phases.P3) return@execute
+            if (DungeonUtils.getPhase() != M7Phases.P3) return@execute
 
             // Cast is safe since we won't return an entity that isn't an armor stand
             activeArmorStand = mc.theWorld?.loadedEntityList?.find {
-                it is EntityArmorStand && it.name.containsOneOf(INACTIVE_DEVICE_STRING, ACTIVE_DEVICE_STRING) && it.distanceSquaredTo(
-                    standPosition.toVec3()) <= 4.0
+                it is EntityArmorStand && it.name.equalsOneOf(
+                    INACTIVE_DEVICE_STRING,
+                    ACTIVE_DEVICE_STRING
+                ) && it.distanceSquaredTo(
+                    standPosition.toVec3()
+                ) <= 4.0
             } as EntityArmorStand?
         }
 
@@ -78,13 +82,11 @@ object ArrowsDevice : Module(
         }
     }
 
-    private fun isPlayerOnStand(): Boolean {
-        return (mc.thePlayer?.distanceSquaredTo(standPosition.toVec3()) ?: Double.MAX_VALUE) <= 1.0
-    }
+    private val isPlayerOnStand: Boolean
+        get() = (mc.thePlayer?.distanceSquaredTo(standPosition.toVec3()) ?: Double.MAX_VALUE) <= 1.0
 
-    private fun isPlayerInRoom(): Boolean {
-        return mc.thePlayer?.let { roomBoundingBox.isVecInside(it.positionVector) } ?: false
-    }
+    private val isPlayerInRoom: Boolean
+        get() = mc.thePlayer?.let { roomBoundingBox.isVecInside(it.positionVector) } == true
 
     // There are 3 detection methods for device completion:
     //  - Message: If the '... completed a device! (1/7)' message is sent, this is usually the fastest way to detect,
@@ -95,11 +97,11 @@ object ArrowsDevice : Module(
     //    ticks are up
     // We use all three here since we want to detect as soon as possible (since we might die if we wait too long).
     private fun onComplete() {
-        if(isDeviceComplete) return
+        if (isDeviceComplete) return
 
         isDeviceComplete = true
 
-        if(alertOnDeviceComplete) {
+        if (alertOnDeviceComplete) {
             modMessage("Sharp shooter device complete")
             PlayerUtils.alert("Device Complete", color = Color.GREEN)
         }
@@ -107,12 +109,12 @@ object ArrowsDevice : Module(
 
     @SubscribeEvent
     fun onTick(tickEvent: ClientTickEvent) {
-        if(!isPlayerInRoom()) {
+        if (!isPlayerInRoom) {
             reset()
             return
         }
 
-        if(!isDeviceComplete && activeArmorStand?.name == ACTIVE_DEVICE_STRING)  {
+        if (!isDeviceComplete && activeArmorStand?.name == ACTIVE_DEVICE_STRING) {
             onComplete()
         }
     }
@@ -123,7 +125,7 @@ object ArrowsDevice : Module(
         serverTicksSinceLastTargetDisappeared = serverTicksSinceLastTargetDisappeared?.let {
             // There was no target last tick (or the count would be null)
 
-            if(targetPosition != null) {
+            if (targetPosition != null) {
                 // A target appeared
                 return@let null
             } else if (it < 10) {
@@ -131,7 +133,7 @@ object ArrowsDevice : Module(
                 return@let it + 1
             } else if (it == 10) {
                 // We reached 10 ticks, device is either done, or the player left the stand
-                if(isPlayerOnStand()) onComplete()
+                if (isPlayerOnStand) onComplete()
                 return@let 11
             } else {
                 return@let 11
@@ -186,6 +188,6 @@ object ArrowsDevice : Module(
     private val standPosition = BlockPos(63.5, 127.0, 35.5)
     private val roomBoundingBox = AxisAlignedBB(20.0, 100.0, 30.0, 89.0, 151.0, 51.0)
 
-    private const val ACTIVE_DEVICE_STRING = "\u00A7aDevice"
-    private const val INACTIVE_DEVICE_STRING = "\u00A7cInactive"
+    private const val ACTIVE_DEVICE_STRING = "§aDevice"
+    private const val INACTIVE_DEVICE_STRING = "§cInactive"
 }
