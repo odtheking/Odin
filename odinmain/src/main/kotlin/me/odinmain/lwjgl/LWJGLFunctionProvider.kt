@@ -6,13 +6,12 @@ import java.lang.reflect.Method
 import java.nio.ByteBuffer
 
 class LWJGLFunctionProvider : FunctionProvider {
-    private var mGetfunctionaddress: Method? = null
+    private var getFunctionAddress: Method? = null
 
     init {
         try {
-            mGetfunctionaddress = GLContext::class.java.getDeclaredMethod("getFunctionAddress", String::class.java).let { 
-                it.isAccessible = true
-                it
+            getFunctionAddress = GLContext::class.java.getDeclaredMethod("getFunctionAddress", String::class.java).apply {
+                isAccessible = true
             }
         } catch (e: Exception) {
             throw RuntimeException(e)
@@ -21,7 +20,7 @@ class LWJGLFunctionProvider : FunctionProvider {
 
     override fun getFunctionAddress(functionName: CharSequence): Long {
         try {
-            return mGetfunctionaddress!!.invoke(null, functionName.toString()) as Long
+            return getFunctionAddress?.invoke(null, functionName.toString()) as Long
         } catch (e: Exception) {
             throw RuntimeException(e)
         }

@@ -89,6 +89,7 @@ loom {
     }
     runConfigs {
         getByName("client") {
+            property("fml.coreMods.load", "me.odinmain.lwjgl.plugin.LWJGLLoadingPlugin")
             if (SystemUtils.IS_OS_MAC_OSX) vmArgs.remove("-XstartOnFirstThread")
         }
         remove(getByName("server"))
@@ -113,6 +114,7 @@ tasks {
 
     jar {
         manifest.attributes(
+            "FMLCorePlugin" to "me.odinmain.lwjgl.plugin.LWJGLLoadingPlugin",
             "FMLCorePluginContainsFMLMod" to true,
             "ForceLoadAsMod" to true,
             "MixinConfigs" to "mixins.odin.json",

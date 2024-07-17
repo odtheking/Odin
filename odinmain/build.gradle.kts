@@ -41,9 +41,6 @@ val lwjglNatives: String = run {
     }
 }
 
-
-
-
 sourceSets.main {
     java.srcDir(file("$projectDir/src/main/kotlin"))
     output.setResourcesDir(sourceSets.main.flatMap { it.java.classesDirectory })

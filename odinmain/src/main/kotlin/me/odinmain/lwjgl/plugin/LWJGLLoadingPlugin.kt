@@ -6,8 +6,9 @@ import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin.MCVersion
 
 @MCVersion("1.8.9")
+@IFMLLoadingPlugin.Name("Odin LWJGL Loading Plugin")
+@IFMLLoadingPlugin.SortingIndex(5)
 class LWJGLLoadingPlugin : IFMLLoadingPlugin {
-
     init {
         @Suppress("UNCHECKED_CAST")
         try {
@@ -24,17 +25,11 @@ class LWJGLLoadingPlugin : IFMLLoadingPlugin {
         return arrayOf("me.odinmain.lwjgl.plugin.LWJGLClassTransformer")
     }
 
-    override fun getModContainerClass(): String? {
-        return null
-    }
+    override fun getModContainerClass(): String? = null
 
-    override fun getSetupClass(): String? {
-        return null
-    }
+    override fun getSetupClass(): String? = null
 
     override fun injectData(data: Map<String, Any>) {}
 
-    override fun getAccessTransformerClass(): String? {
-        return null
-    }
+    override fun getAccessTransformerClass(): String? = null
 }

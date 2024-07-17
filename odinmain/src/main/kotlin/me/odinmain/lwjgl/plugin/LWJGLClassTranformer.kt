@@ -5,8 +5,8 @@ import org.objectweb.asm.*
 import org.objectweb.asm.tree.*
 
 class LWJGLClassTransformer : IClassTransformer {
-    override fun transform(name: String, transformedName: String, basicClass: ByteArray): ByteArray {
-        if (name == "org.lwjgl.nanovg.NanoVGGLConfig") {
+    override fun transform(name: String?, transformedName: String?, basicClass: ByteArray?): ByteArray? {
+        if (name == "org.lwjgl.nanovg.NanoVGGLConfig" && basicClass != null) {
             val reader = ClassReader(basicClass)
             val node = ClassNode()
             reader.accept(node, ClassReader.EXPAND_FRAMES)
@@ -42,6 +42,7 @@ class LWJGLClassTransformer : IClassTransformer {
                     method.instructions.insert(list)
                 }
             }
+
             val cw = ClassWriter(ClassWriter.COMPUTE_FRAMES)
             node.accept(cw)
             return cw.toByteArray()
