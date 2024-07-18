@@ -104,6 +104,7 @@ class TextInput(
     }
 
     override fun draw() {
+        val focused = ui.isFocused(this)
         // cleanup
         if (selectionStart != caretPosition) {
             val startX = x + min(selectionX, caretX).toInt()
@@ -111,7 +112,7 @@ class TextInput(
             renderer.rect(startX - offs, y, endX - startX, height - 4, Color.RGB(0, 0, 255, 0.5f).rgba)
         }
         when {
-            text.isEmpty() -> {
+            text.isEmpty() && !focused -> {
                 renderer.text(placeholder, x, y, height, placeholderColor.rgba)
             }
             censorInput -> {
@@ -122,10 +123,10 @@ class TextInput(
             }
         }
 
-        if (ui.isFocused(this)) {
+        if (focused) {
             renderer.rect(x + caretX - offs, y, 1f, height - 2, Color.WHITE.rgba)
         }
-        renderer.hollowRect(x, y, width, height, 1f, Color.WHITE.rgba)
+//        renderer.hollowRect(x, y, width, height, 1f, Color.WHITE.rgba)
     }
 
     init {

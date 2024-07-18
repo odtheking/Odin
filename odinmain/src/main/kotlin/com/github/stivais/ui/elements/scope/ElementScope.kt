@@ -140,7 +140,7 @@ open class ElementScope<E: Element>(val element: E) {
         text: String = "",
         placeholder: String = "",
         constraints: Positions? = null,
-        size: Size,
+        size: Size = 50.percent,
         maxWidth: Size? = null,
         censored: Boolean = false,
         onTextChange: (string: String) -> Unit

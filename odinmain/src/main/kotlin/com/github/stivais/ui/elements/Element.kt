@@ -229,18 +229,16 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
     fun removeElement(element: Element?) {
         if (element == null) return logger.warning("Tried removing element, but it doesn't exist")
         if (elements.isNullOrEmpty()) return logger.warning("Tried calling \"removeElement\" while there is no elements")
+        ui.eventManager.remove(element)
         element.accept(Lifetime.Uninitialized)
         elements!!.remove(element)
         element.parent = null
     }
 
     fun removeAll() {
-        elements?.loop { it.parent = null }
-        elements?.clear()
+        elements?.loop { removeElement(it) }
         elements = null
-        if (::ui.isInitialized) {
-            redraw = true
-        }
+        if (::ui.isInitialized) redraw = true
     }
 
     fun initialize(ui: UI) {

@@ -33,6 +33,7 @@ class UI(val renderer: Renderer = NVGRenderer) {
     var eventManager: EventManager = EventManager(this)
 
     constructor(renderer: Renderer = NVGRenderer, dsl: ElementScope<Group>.() -> Unit) : this(renderer) {
+        main.initialize(this)
         ElementScope(main).dsl()
     }
 

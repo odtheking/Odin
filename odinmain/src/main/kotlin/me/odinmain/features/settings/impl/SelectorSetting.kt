@@ -106,6 +106,12 @@ class SelectorSetting(
                             this@setting.redraw()
                             true
                         }
+                        onClick(button = 1) {
+                            index += 1
+                            text!!.string = selected
+                            this@setting.redraw()
+                            true
+                        }
                     }
                 }
                 divider(5.px)

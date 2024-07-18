@@ -29,6 +29,13 @@ class EventManager(private val ui: UI) {
     var focused: Element? = null
         private set
 
+    fun remove(element: Element?) {
+        element?.let {
+            if (it == focused) unfocus()
+            if (it == hoveredElement) hoveredElement = null
+        }
+    }
+
     fun check(): Boolean {
         return hoveredElement?.isInside(mouseX, mouseY) == false
     }
