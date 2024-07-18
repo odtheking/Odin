@@ -1,13 +1,10 @@
 package me.odinmain.utils.render
 
+import com.github.stivais.ui.color.Color
 import me.odinmain.OdinMain.mc
-import me.odinmain.events.impl.RenderOverlayNoCaching
-import me.odinmain.ui.util.shader.GlowShader
-import me.odinmain.ui.util.shader.OutlineShader
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.render.RenderUtils.renderBoundingBox
-import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -52,37 +49,5 @@ object HighlightRenderer {
         entities[HighlightType.Box2d]?.filter { it.depth && mc.thePlayer.canEntityBeSeen(it.entity) }?.forEach {
             Renderer.draw2DEntity(it.entity, it.thickness * 6, it.color)
         }
-    }
-
-    @SubscribeEvent
-    fun on2d(event: RenderOverlayNoCaching) {
-        if (entities[HighlightType.Outline]?.isNotEmpty() == true && entities[HighlightType.Overlay]?.isNotEmpty() == true) return
-        GlStateManager.pushMatrix()
-        mc.renderManager.setRenderOutlines(true)
-        RenderUtils.enableOutlineMode()
-        if (entities[HighlightType.Outline]?.isNotEmpty() == true) {
-            OutlineShader.startDraw(event.partialTicks)
-            entities[HighlightType.Outline]?.forEach {
-                RenderUtils.outlineColor(it.color)
-                mc.renderManager.renderEntityStatic(it.entity, event.partialTicks, true)
-            }
-            OutlineShader.stopDraw(Color.WHITE, (entities[HighlightType.Outline]?.firstOrNull()?.thickness ?: 1f) / 3f, 1f)
-        }
-        if (entities[HighlightType.Glow]?.isNotEmpty() == true) {
-            GlowShader.startDraw(event.partialTicks)
-            entities[HighlightType.Glow]?.forEach {
-                RenderUtils.outlineColor(it.color)
-                mc.renderManager.renderEntityStatic(it.entity, event.partialTicks, true)
-            }
-            GlowShader.endDraw(
-                Color.WHITE,
-                entities[HighlightType.Glow]?.firstOrNull()?.thickness ?: 1f,
-                entities[HighlightType.Glow]?.firstOrNull()?.glowIntensity ?: 1f
-            )
-        }
-        mc.entityRenderer.disableLightmap()
-        RenderUtils.disableOutlineMode()
-        mc.renderManager.setRenderOutlines(false)
-        GlStateManager.popMatrix()
     }
 }

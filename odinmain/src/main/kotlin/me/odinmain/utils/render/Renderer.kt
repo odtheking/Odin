@@ -1,8 +1,7 @@
 package me.odinmain.utils.render
 
+import com.github.stivais.ui.color.*
 import me.odinmain.OdinMain.mc
-import me.odinmain.ui.clickgui.util.ColorUtil.multiplyAlpha
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
 import me.odinmain.utils.render.RenderUtils.drawBeaconBeam
 import me.odinmain.utils.render.RenderUtils.outlineBounds
@@ -42,9 +41,9 @@ object Renderer {
         lineSmoothing: Boolean = true
     ) {
         if (outlineAlpha == 0f && fillAlpha == 0f) return
-        RenderUtils.drawOutlinedAABB(aabb, color.withAlpha(outlineAlpha.toFloat()), thickness = outlineWidth, depth = depth, lineSmoothing)
+        RenderUtils.drawOutlinedAABB(aabb, color.multiplyAlpha(outlineAlpha.toFloat()), thickness = outlineWidth, depth = depth, lineSmoothing)
 
-        RenderUtils.drawFilledAABB(aabb, color.withAlpha(fillAlpha.toFloat()), depth = depth)
+        RenderUtils.drawFilledAABB(aabb, color.multiplyAlpha(fillAlpha.toFloat()), depth = depth)
     }
 
     /**
@@ -137,7 +136,7 @@ object Renderer {
         )
 
         val alpha = if (noFade) 1f else min(1f, max(0f, dist.toFloat()) / 60f)
-        if (beacon) drawBeaconBeam(vec3, color.withAlpha(alpha), depth = false)
+        if (beacon) drawBeaconBeam(vec3, color.multiplyAlpha(alpha), depth = false)
     }
 
     /**
@@ -196,7 +195,7 @@ object Renderer {
     fun displayTitle(title: String, ticks: Int, color: Color = Color.WHITE) {
         displayTitle = title
         titleTicks = ticks
-        displayColor = color
+        displayColor = color as Color.RGB
     }
 
     private fun clearTitle() {
@@ -210,11 +209,11 @@ object Renderer {
         mc.entityRenderer.setupOverlayRendering()
         val sr = ScaledResolution(mc)
 
-        mcText(
+        /*mcText( implement nvg text rendering
             text = displayTitle, x = sr.scaledWidth / 2f,
             y = sr.scaledHeight / 2.5f, scale = 4.0,
             color = displayColor, center = true
-        )
+        )*/
     }
 
     @SubscribeEvent

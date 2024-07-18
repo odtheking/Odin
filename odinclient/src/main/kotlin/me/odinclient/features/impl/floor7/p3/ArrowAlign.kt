@@ -1,5 +1,6 @@
 package me.odinclient.features.impl.floor7.p3
 
+import com.github.stivais.ui.color.Color
 import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinmain.events.impl.ClickEvent
 import me.odinmain.features.Category
@@ -9,7 +10,6 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import net.minecraft.entity.item.EntityItemFrame
 import net.minecraft.init.Items
@@ -91,9 +91,9 @@ object ArrowAlign : Module(
             val framePosition = getFramePositionFromIndex(index)
             val color = when {
                 clickNeeded == 0 -> return@forEach
-                clickNeeded < 3 -> Color(85, 255, 85)
-                clickNeeded < 5 -> Color(255, 170, 0)
-                else -> Color(170, 0, 0)
+                clickNeeded < 3 -> Color.MINECRAFT_GREEN
+                clickNeeded < 5 -> Color.MINECRAFT_GOLD
+                else -> Color.MINECRAFT_RED
             }
             Renderer.drawStringInWorld(clickNeeded.toString(), framePosition.addVec(y = 0.6, z = 0.5), color)
         }

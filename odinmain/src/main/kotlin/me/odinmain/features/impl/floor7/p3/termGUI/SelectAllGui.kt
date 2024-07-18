@@ -1,14 +1,7 @@
 package me.odinmain.features.impl.floor7.p3.termGUI
 
-import me.odinmain.OdinMain.mc
-import me.odinmain.features.impl.floor7.p3.TerminalSolver
-import me.odinmain.features.impl.floor7.p3.TerminalSolver.customScale
-import me.odinmain.features.impl.floor7.p3.TerminalSolver.gap
-import me.odinmain.features.impl.floor7.p3.TerminalSolver.solution
-import me.odinmain.utils.render.*
-
 object SelectAllGui : TermGui() {
-    override fun render() {
+    /*override fun render() {
         setCurrentGui(this)
         itemIndexMap.clear()
         roundedRectangle(-300, -175, 600, 350, TerminalSolver.customGuiColor, 10f, 1f)
@@ -31,5 +24,5 @@ object SelectAllGui : TermGui() {
                 box.h.toFloat() * customScale
             )
         }
-    }
+    }*/
 }

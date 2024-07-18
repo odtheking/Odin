@@ -1,10 +1,8 @@
 package me.odinmain
 
-import me.odinmain.features.impl.render.ClickGUI
 import me.odinmain.features.impl.render.ClickGUI.updateMessage
-import me.odinmain.ui.OdinGuiButton
 import me.odinmain.utils.downloadFile
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.RenderUtils
 import net.minecraft.client.gui.*
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.texture.DynamicTexture
@@ -57,16 +55,16 @@ object OdinUpdater: GuiScreen() {
         // add a warning that updating will restart the game
         this.scaleFactor = ScaledResolution(mc).scaleFactor
         if (isOutdatedJava) {
-            this.buttonList.add(OdinGuiButton(2, mc.displayWidth / 2 - 175, mc.displayHeight - 500, 350, 80, "Update Java Guide", 24f))
-            this.buttonList.add(OdinGuiButton(0, mc.displayWidth / 2 - 60, mc.displayHeight - 100, 120, 50, "Close", 20f))
+            //this.buttonList.add(OdinGuiButton(2, mc.displayWidth / 2 - 175, mc.displayHeight - 500, 350, 80, "Update Java Guide", 24f))
+            //this.buttonList.add(OdinGuiButton(0, mc.displayWidth / 2 - 60, mc.displayHeight - 100, 120, 50, "Close", 20f))
         } else {
-            this.buttonList.add(OdinGuiButton(0, mc.displayWidth / 2 - 60, mc.displayHeight - 100, 120, 50, "Later", 20f))
-            this.buttonList.add(OdinGuiButton(1, mc.displayWidth / 2 - 100, mc.displayHeight - 300, 200, 70, "Update", 24f))
+            //this.buttonList.add(OdinGuiButton(0, mc.displayWidth / 2 - 60, mc.displayHeight - 100, 120, 50, "Later", 20f))
+            //this.buttonList.add(OdinGuiButton(1, mc.displayWidth / 2 - 100, mc.displayHeight - 300, 200, 70, "Update", 24f))
         }
         super.initGui()
     }
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+  /*  override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         this.drawBackground(0)
         GlStateManager.pushMatrix()
         GlStateManager.scale(1f / scaleFactor, 1f / scaleFactor, 1f)
@@ -79,7 +77,7 @@ object OdinUpdater: GuiScreen() {
         }
         GlStateManager.popMatrix()
         super.drawScreen(mouseX, mouseY, partialTicks)
-    }
+    }*/
 
     override fun actionPerformed(button: GuiButton?) {
         if (button == null) return
@@ -132,7 +130,7 @@ object OdinUpdater: GuiScreen() {
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
         GlStateManager.translate(mc.displayWidth / 2f - 384, 0f, 0f)
         GlStateManager.scale(0.4f, 0.4f, 1f)
-        drawDynamicTexture(logoTexture, 0f, 0f, 1920f, 1080f)
+        //drawDynamicTexture(logoTexture, 0f, 0f, 1920f, 1080f)
         GlStateManager.disableBlend()
         GlStateManager.popMatrix()
     }

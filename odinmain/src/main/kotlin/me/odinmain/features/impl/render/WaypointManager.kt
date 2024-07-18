@@ -1,10 +1,9 @@
 package me.odinmain.features.impl.render
 
+import com.github.stivais.ui.color.Color
 import me.odinmain.config.WaypointConfig
-import me.odinmain.ui.waypoint.WaypointGUI
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.noControlCodes
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.Island
@@ -15,7 +14,6 @@ import net.minecraft.util.Vec3i
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.util.*
 import kotlin.math.abs
 
 // TODO: Make changes cuz ngl its kinda eh (eg: good ordered waypoints for mining so people dont need to use ct)
@@ -26,10 +24,10 @@ object WaypointManager {
     private inline val waypoints get() = WaypointConfig.waypoints
     private var temporaryWaypoints = mutableListOf<Pair<Waypoint, Clock>>()
 
-    fun addWaypoint(name: String = "§fWaypoint", x: Int, y: Int, z: Int, color: Color = randomColor()) =
+    fun addWaypoint(name: String = "§fWaypoint", x: Int, y: Int, z: Int, color: Color = colors.random()) =
         addWaypoint(Waypoint(if (Waypoints.onlyDistance) "" else name, x, y, z, color))
 
-    fun addWaypoint(name: String = "§fWaypoint", vec3: Vec3i, color: Color = randomColor()) =
+    fun addWaypoint(name: String = "§fWaypoint", vec3: Vec3i, color: Color = colors.random()) =
         addWaypoint(Waypoint(if (Waypoints.onlyDistance) "" else name, vec3.x, vec3.y, vec3.z, color))
 
     fun addWaypoint(waypoint: Waypoint, area: String = currentArea.displayName) {
@@ -43,7 +41,7 @@ object WaypointManager {
     }
 
     fun removeWaypoint(waypoint: Waypoint) {
-        waypoints[WaypointGUI.displayArea]?.remove(waypoint)
+        //waypoints[WaypointGUI.displayArea]?.remove(waypoint)
         WaypointConfig.saveConfig()
     }
 
@@ -62,21 +60,12 @@ object WaypointManager {
     }
 
     private val colors = listOf(
-        Color.ORANGE, Color.GREEN, Color.PINK, Color.CYAN, Color.YELLOW, Color.DARK_RED, Color.WHITE, Color.PURPLE, Color.YELLOW, Color.RED, Color.PINK
+        Color.MINECRAFT_GOLD, Color.MINECRAFT_GREEN, Color.MINECRAFT_LIGHT_PURPLE, Color.MINECRAFT_AQUA, Color.MINECRAFT_YELLOW,
+        Color.MINECRAFT_DARK_RED, Color.WHITE, Color.MINECRAFT_DARK_PURPLE, Color.MINECRAFT_YELLOW, Color.MINECRAFT_RED, Color.MINECRAFT_LIGHT_PURPLE
     )
 
     fun addTempWaypoint(name: String = "§fWaypoint", vec3: Vec3i) {
         addTempWaypoint(name, vec3.x, vec3.y, vec3.z)
-    }
-
-    fun randomColor(): Color {
-        val random = Random()
-
-        val hue = random.nextFloat()
-        val saturation = random.nextFloat() * 0.5f + 0.5f // High saturation
-        val brightness = random.nextFloat() * 0.5f + 0.5f // High brightness
-
-        return Color(hue, saturation, brightness)
     }
 
     @SubscribeEvent
@@ -96,7 +85,7 @@ object WaypointManager {
     fun onWorldLoad(event: WorldEvent.Load) {
         temporaryWaypoints.clear()
         runIn(80) {
-            if (!currentArea.isArea(Island.Unknown)) WaypointGUI.updateElements(currentArea.displayName)
+            //if (!currentArea.isArea(Island.Unknown)) WaypointGUI.updateElements(currentArea.displayName)
         }
     }
 

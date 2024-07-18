@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.dungeon.dungeonwaypoints
 
+import com.github.stivais.ui.color.Color
 import me.odinmain.config.DungeonWaypointConfigCLAY
 import me.odinmain.events.impl.*
 import me.odinmain.features.Category
@@ -8,11 +9,11 @@ import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.resetS
 import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.RenderUtils.outlineBounds
 import me.odinmain.utils.render.RenderUtils.renderVec
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
@@ -35,9 +36,9 @@ object DungeonWaypoints : Module(
 ) {
     private var allowEdits: Boolean by BooleanSetting("Allow Edits", false)
     private var reachEdits: Boolean by BooleanSetting("Reach Edits", false, description = "Extends the reach of edit mode.")
-    private var reachColor: Color by OldColorSetting("Reach Color", default = Color(0, 255, 213, 0.43f), description = "Color of the reach box highlight.", allowAlpha = true).withDependency { reachEdits }
+    private var reachColor by ColorSetting("Reach Color", Color.RGB(0, 255, 213, 0.43f), description = "Color of the reach box highlight.", allowAlpha = true).withDependency { reachEdits }
     var editText: Boolean by BooleanSetting("Edit Text", false, description = "Displays text under your crosshair telling you when you are editing waypoints.")
-    var color: Color by OldColorSetting("Color", default = Color.GREEN, description = "The color of the next waypoint you place.", allowAlpha = true).withDependency { colorPallet == 0 }
+    var color by ColorSetting("Color", Color.MINECRAFT_GREEN, description = "The color of the next waypoint you place.", allowAlpha = true).withDependency { colorPallet == 0 }
     private val colorPallet: Int by SelectorSetting("Color pallet", "None", arrayListOf("None", "Aqua", "Magenta", "Yellow", "Lime"))
     var filled: Boolean by BooleanSetting("Filled", false, description = "If the next waypoint you place should be 'filled'.")
     var throughWalls: Boolean by BooleanSetting("Through walls", false, description = "If the next waypoint you place should be visible through walls.")
@@ -114,9 +115,9 @@ object DungeonWaypoints : Module(
     fun onRenderOverlay(event: RenderGameOverlayEvent.Post) {
         if (mc.currentScreen != null || event.type != RenderGameOverlayEvent.ElementType.ALL || !allowEdits || !editText) return
         val sr = ScaledResolution(mc)
-        scale(2f / sr.scaleFactor, 2f / sr.scaleFactor, 1f)
+       /* scale(2f / sr.scaleFactor, 2f / sr.scaleFactor, 1f)
         mc.fontRendererObj.drawString("Editing Waypoints", mc.displayWidth / 4 - mc.fontRendererObj.getStringWidth("Editing Waypoints") / 2, mc.displayHeight / 4 + 10, Color.WHITE.withAlpha(.5f).rgba)
-        scale(sr.scaleFactor / 2f, sr.scaleFactor / 2f, 1f)
+        scale(sr.scaleFactor / 2f, sr.scaleFactor / 2f, 1f)*/ // TODO: Implement nvg text rendering
     }
 
     @SubscribeEvent
@@ -134,9 +135,9 @@ object DungeonWaypoints : Module(
 
         val color = when (colorPallet) {
             0 -> color
-            1 -> Color.CYAN
-            2 -> Color.MAGENTA
-            3 -> Color.YELLOW
+            1 -> Color.MINECRAFT_AQUA
+            2 -> Color.MINECRAFT_DARK_PURPLE
+            3 -> Color.MINECRAFT_YELLOW
             4 -> Color.GREEN
             else -> color
         }
@@ -149,7 +150,7 @@ object DungeonWaypoints : Module(
                         vec.xCoord,
                         vec.yCoord,
                         vec.zCoord,
-                        color.copy(),
+                        color, // re add color.copy()
                         filled,
                         !throughWalls,
                         aabb,
@@ -162,7 +163,7 @@ object DungeonWaypoints : Module(
         } else if (waypoints.removeIf { it.toVec3().equal(vec) }) {
             devMessage("Removed waypoint at $vec")
         } else {
-            waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, aabb, "", secretWaypoint))
+            waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color, filled, !throughWalls, aabb, "", secretWaypoint)) // re add color.copy()
             devMessage("Added waypoint at $vec")
         }
         DungeonWaypointConfigCLAY.saveConfig()

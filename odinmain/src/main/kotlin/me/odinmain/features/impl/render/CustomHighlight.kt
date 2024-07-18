@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.render
 
+import com.github.stivais.ui.color.Color
 import me.odinmain.OdinMain.isLegitVersion
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.events.impl.RenderEntityModelEvent
@@ -19,7 +20,6 @@ import net.minecraft.entity.item.EntityArmorStand
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-
 object CustomHighlight : Module(
     name = "Custom Highlight",
     category = Category.RENDER,
@@ -28,7 +28,7 @@ object CustomHighlight : Module(
 ) {
     private val scanDelay: Long by NumberSetting("Scan Delay", 500L, 10L, 2000L, 100L)
     private val starredMobESP: Boolean by BooleanSetting("Starred Mob Highlight", true, description = "Highlights mobs with a star in their name (remove star from the separate list).")
-    private val color: Color by OldColorSetting("Color", Color.WHITE, true)
+    private val color: Color by ColorSetting("Color", Color.WHITE, true)
     private val shadowAssasin: Boolean by BooleanSetting("Shadow Assassin", false, description = "Highlights Shadow Assassins").withDependency { !isLegitVersion }
     //private val mode: Int by SelectorSetting("Mode", HighlightRenderer.highlightModeDefault, HighlightRenderer.highlightModeList)
     val mode: Int by SelectorSetting("Mode", "Outline", arrayListOf("Outline", "Boxes", "2D"))

@@ -1,11 +1,12 @@
 package me.odinclient.features.impl.render
 
+import com.github.stivais.ui.color.Color
+import com.github.stivais.ui.color.alpha
 import me.odinmain.events.impl.RenderChestEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -28,7 +29,7 @@ object ChestEsp : Module(
     private val onlyCH: Boolean by BooleanSetting(name = "Only Crystal Hollows")
     private val hideClicked: Boolean by BooleanSetting(name = "Hide Clicked")
     private val renderMode: Int by SelectorSetting(name = "Render Mode", "Chams", arrayListOf("Chams", "Outline"))
-    private val color: Color by OldColorSetting(name = "Color", default = Color.RED, allowAlpha = true)
+    private val color: Color by ColorSetting(name = "Color", Color.RED, allowAlpha = true)
 
     private val chests = mutableSetOf<BlockPos>()
 
@@ -47,7 +48,7 @@ object ChestEsp : Module(
         if (hideClicked && chests.contains(event.chest.pos)) return
         if ((onlyDungeon && DungeonUtils.inDungeons) || (onlyCH && LocationUtils.currentArea.isArea(Island.CrystalHollows)) || (!onlyDungeon && !onlyCH)) {
             GL11.glEnable(GL11.GL_POLYGON_OFFSET_FILL)
-            GlStateManager.color(1f, 1f, 1f, color.alpha)
+            GlStateManager.color(1f, 1f, 1f, color.alpha.toFloat())
             GlStateManager.enablePolygonOffset()
             GlStateManager.doPolygonOffset(1f, -1000000f)
         }

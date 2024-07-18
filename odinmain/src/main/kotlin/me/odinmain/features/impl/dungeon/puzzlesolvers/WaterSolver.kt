@@ -1,12 +1,12 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
+import com.github.stivais.ui.color.Color
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.showOrder
 import me.odinmain.utils.Vec2
 import me.odinmain.utils.addRotationCoords
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils

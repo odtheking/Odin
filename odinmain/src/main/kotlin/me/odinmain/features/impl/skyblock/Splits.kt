@@ -3,19 +3,13 @@ package me.odinmain.features.impl.skyblock
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.HudSetting
-import me.odinmain.ui.hud.HudElement
-import me.odinmain.utils.SplitsManager.currentSplits
-import me.odinmain.utils.SplitsManager.getAndUpdateSplitsTimes
-import me.odinmain.utils.formatTime
-import me.odinmain.utils.render.*
 
 object Splits : Module(
     name = "Splits",
     description = "Automatic advanced skyblock splits.",
     category = Category.SKYBLOCK
 ) {
-    private val hud: HudElement by HudSetting("Splits Display HUD", 10f, 10f, 1f, true) {
+    /*private val hud: HudElement by HudSetting("Splits Display HUD", 10f, 10f, 1f, true) {
         if (it) {
             for (i in 0 until 5) {
                 mcText("Split $i:", 1f, 9f + i * getMCTextHeight(), 1f, Color.WHITE, shadow = true, center = false)
@@ -36,7 +30,7 @@ object Splits : Module(
             }
         }
         getMCTextWidth("Split 0: 0h 00m 00s") + 2f to 80f
-    }
+    }*/
     private val bossEntrySplit: Boolean by BooleanSetting("Boss Entry Split", true)
     val sendSplits: Boolean by BooleanSetting("Send Splits", true)
     val sendOnlyPB: Boolean by BooleanSetting("Send Only PB", false)

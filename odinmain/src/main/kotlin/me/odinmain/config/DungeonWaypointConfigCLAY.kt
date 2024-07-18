@@ -1,17 +1,20 @@
 package me.odinmain.config
 
+import com.github.stivais.ui.color.*
+import com.github.stivais.ui.color.Color.Companion.hexToRgba
+import com.github.stivais.ui.color.Color.Companion.toHexString
 import com.google.gson.*
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.*
 import me.odinmain.OdinMain.logger
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.DungeonWaypoint
-import me.odinmain.utils.render.Color
 import java.io.File
 import java.io.IOException
+import java.lang.reflect.Type
 
 object DungeonWaypointConfigCLAY {
-    private val gson = GsonBuilder().registerTypeAdapter(Color::class.java, Color.ColorSerializer()).setPrettyPrinting().create()
+    private val gson = GsonBuilder().registerTypeAdapter(Color::class.java, ColorSerializer()).setPrettyPrinting().create()
 
     var waypoints: MutableMap<String, MutableList<DungeonWaypoint>> = mutableMapOf()
 
@@ -53,5 +56,17 @@ object DungeonWaypointConfigCLAY {
                 println("Error saving Waypoint config.")
             }
         }
+    }
+}
+
+class ColorSerializer : JsonSerializer<Color>, JsonDeserializer<Color> {
+    override fun serialize(src: Color?, typeOfSrc: Type?, context: JsonSerializationContext?): JsonElement {
+        return JsonPrimitive("#${src?.toHexString() ?: Color.BLACK.toHexString()}")
+    }
+
+    override fun deserialize(json: JsonElement?, typeOfT: Type?, context: JsonDeserializationContext?): Color {
+        val hexValue = json?.asString?.removePrefix("#") ?: "00000000"
+        val color = hexToRgba(hexValue)
+        return Color.RGB(color.red, color.green, color.blue, color.alpha.toFloat())
     }
 }

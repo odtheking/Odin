@@ -7,8 +7,6 @@ import me.odinmain.OdinMain.logger
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.Module
 import me.odinmain.features.ModuleManager
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.Minecraft
@@ -17,10 +15,12 @@ import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.Event
 import org.lwjgl.input.Keyboard
+import org.lwjgl.input.Mouse
+import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.glu.GLU
 import java.awt.Toolkit
-import java.awt.datatransfer.*
+import java.awt.datatransfer.StringSelection
 import java.time.Month
 import java.time.format.TextStyle
 import java.util.*
@@ -240,12 +240,6 @@ fun String.capitalizeFirst(): String {
     return substring(0, 1).uppercase(Locale.getDefault()) + substring(1, length).lowercase()
 }
 
-fun Color.coerceAlpha(min: Float, max: Float): Color {
-    return if (this.alpha < min) this.withAlpha(min)
-    else if (this.alpha > max) this.withAlpha(max)
-    else this
-}
-
 fun <T> Collection<T>.getSafe(index: Int?): T? {
     return try {
         this.toList()[index ?: return null]
@@ -372,4 +366,17 @@ inline fun <T> List<T>.forEachIndexedReturn(action: (index: Int, T) -> Unit): Li
         action(i, this[i])
     }
     return this
+}
+
+val trueMouseX: Float
+    get() = Mouse.getX().toFloat()
+
+val trueMouseY: Float
+    get() = mc.displayHeight - Mouse.getY() - 1f
+
+fun getQuadrant(): Int {
+    return when {
+        trueMouseX >= Display.getWidth() / 2 -> if (trueMouseY >= Display.getHeight() / 2) 4 else 2
+        else -> if (trueMouseY >= Display.getHeight() / 2) 3 else 1
+    }
 }

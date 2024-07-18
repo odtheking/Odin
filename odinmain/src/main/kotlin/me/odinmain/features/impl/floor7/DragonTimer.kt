@@ -1,7 +1,7 @@
 package me.odinmain.features.impl.floor7
 
+import com.github.stivais.ui.color.Color
 import me.odinmain.features.impl.floor7.WitherDragons.textScale
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 
 object DragonTimer {

@@ -1,12 +1,13 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
+import com.github.stivais.ui.color.Color
+import com.github.stivais.ui.color.alpha
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import me.odinmain.OdinMain.logger
 import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
 import me.odinmain.utils.*
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.getBlockIdAt
@@ -78,7 +79,7 @@ object BeamsSolver {
     }
 
     private val colors = listOf(
-        Color.ORANGE, Color.GREEN, Color.PINK, Color.CYAN, Color.YELLOW, Color.DARK_RED, Color.WHITE, Color.PURPLE
+        Color.MINECRAFT_GOLD, Color.MINECRAFT_GREEN, Color.MINECRAFT_LIGHT_PURPLE, Color.MINECRAFT_AQUA, Color.MINECRAFT_YELLOW, Color.MINECRAFT_DARK_RED, Color.WHITE, Color.MINECRAFT_DARK_PURPLE
     )
 }
 

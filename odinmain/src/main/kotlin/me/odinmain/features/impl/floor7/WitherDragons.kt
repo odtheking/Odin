@@ -15,11 +15,6 @@ import me.odinmain.features.impl.floor7.Relic.relicsBlockPlace
 import me.odinmain.features.impl.floor7.Relic.relicsOnMessage
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinmain.ui.hud.HudElement
-import me.odinmain.utils.max
-import me.odinmain.utils.noControlCodes
-import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
 import me.odinmain.utils.skyblock.modMessage
@@ -39,8 +34,8 @@ object WitherDragons : Module(
 ) {
     private val dragonTimer: Boolean by BooleanSetting("Dragon Timer", true, description = "Displays a timer for when M7 dragons spawn.")
     val textScale: Float by NumberSetting(name = "Text Scale", default = 0.8f, min = 0.1f, max = 5f, increment = 0.1f).withDependency { dragonTimer }
-    private val timerBackground: Boolean by BooleanSetting("HUD Timer Background", false, description = "Displays a background for the timer.").withDependency { dragonTimer && hud.displayToggle }
-    private val hud: HudElement by HudSetting("Dragon Timer HUD", 10f, 10f, 1f, true) {
+    private val timerBackground: Boolean by BooleanSetting("HUD Timer Background", false, description = "Displays a background for the timer.").withDependency { dragonTimer /*&& hud.displayToggle*/ }
+    /*private val hud: HudElement by HudSetting("Dragon Timer HUD", 10f, 10f, 1f, true) {
         if (it) {
             if (timerBackground) roundedRectangle(1f, 1f, getMCTextWidth("Purple spawning in 4500ms") + 1f, 32f, Color.DARK_GRAY.withAlpha(.75f), 3f)
             mcText("§5Purple spawning in §a4500ms", 2f, 5f, 1, Color.WHITE, center = false)
@@ -57,7 +52,7 @@ object WitherDragons : Module(
             if (timerBackground) roundedRectangle(1f, 1f, getMCTextWidth("Purple spawning in 4500ms") + 1f, 32f, Color.DARK_GRAY.withAlpha(.75f), 3f)
             width to DragonTimer.toRender.size * 17f
         } else 0f to 0f
-    }
+    }*/
 
     private val dragonBoxes: Boolean by BooleanSetting("Dragon Boxes", true, description = "Displays boxes for where M7 dragons spawn.")
     val lineThickness: Float by NumberSetting("Line Width", 2f, 1.0, 5.0, 0.5).withDependency { dragonBoxes }

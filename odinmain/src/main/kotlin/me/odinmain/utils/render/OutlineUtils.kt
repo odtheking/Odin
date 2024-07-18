@@ -1,5 +1,6 @@
 package me.odinmain.utils.render
 
+import com.github.stivais.ui.color.*
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.RenderEntityModelEvent
 import net.minecraft.client.model.ModelBase
@@ -9,7 +10,6 @@ import net.minecraft.client.shader.Framebuffer
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.*
-
 
 /**
  * Modified from LiquidBounce under GPL-3.0
@@ -159,10 +159,10 @@ object OutlineUtils {
 
     private fun setColor(color: Color) {
         GL11.glColor4d(
-            (color.r / 255f).toDouble(),
-            (color.g / 255f).toDouble(),
-            (color.b / 255f).toDouble(),
-            (color.a / 255f).toDouble()
+            (color.red / 255).toDouble(),
+            (color.green / 255).toDouble(),
+            (color.blue / 255).toDouble(),
+            (color.alpha / 255).toDouble()
         )
     }
 

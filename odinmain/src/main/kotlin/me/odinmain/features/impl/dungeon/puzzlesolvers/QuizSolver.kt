@@ -1,12 +1,14 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
+import com.github.stivais.ui.color.Color
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import me.odinmain.OdinMain.logger
 import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.quizDepth
 import me.odinmain.utils.*
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.util.Vec3
 import java.io.InputStreamReader
@@ -68,8 +70,8 @@ object QuizSolver {
         if (triviaAnswers == null || triviaOptions.isEmpty() || DungeonUtils.inBoss || !DungeonUtils.inDungeons) return
         triviaOptions.filter { it.correct }.forEach { answer ->
             answer.vec3?.addVec(y= -1)?.let {
-                Renderer.drawBox(it.toAABB(), Color.GREEN, depth = quizDepth)
-                RenderUtils.drawBeaconBeam(it, Color.GREEN, depth = quizDepth)
+                Renderer.drawBox(it.toAABB(), Color.MINECRAFT_GREEN, depth = quizDepth)
+                RenderUtils.drawBeaconBeam(it, Color.MINECRAFT_GREEN, depth = quizDepth)
             }
         }
     }

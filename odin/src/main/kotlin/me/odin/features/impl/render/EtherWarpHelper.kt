@@ -1,15 +1,15 @@
 package me.odin.features.impl.render
 
+import com.github.stivais.ui.color.Color
+import com.github.stivais.ui.color.multiplyAlpha
 import me.odin.mixin.accessors.IEntityPlayerSPAccessor
 import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.PositionLook
 import me.odinmain.utils.pos
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.EtherWarpHelper
@@ -29,9 +29,9 @@ object EtherWarpHelper : Module(
     private val render: Boolean by BooleanSetting("Show Etherwarp Guess", true)
     private val useServerPosition: Boolean by DualSetting("Positioning", "Server Pos", "Player Pos", description = "If etherwarp guess should use your server position or real position.").withDependency { render }
     private val renderFail: Boolean by BooleanSetting("Show when failed", true)
-    private val wrongColor: Color by OldColorSetting("Wrong Color", Color.RED.withAlpha(.5f), allowAlpha = true).withDependency { renderFail }
+    private val wrongColor: Color by ColorSetting("Wrong Color", Color.MINECRAFT_RED.multiplyAlpha(.5f), allowAlpha = true).withDependency { renderFail }
     private val style: Int by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION)
-    private val color: Color by OldColorSetting("Color", Color.ORANGE.withAlpha(.5f), allowAlpha = true)
+    private val color: Color by ColorSetting("Color", Color.MINECRAFT_GOLD.multiplyAlpha(.5f), allowAlpha = true)
     private val lineWidth: Float by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.")
     private val depthCheck: Boolean by BooleanSetting("Depth check", false, description = "Boxes show through walls.")
     private val sounds: Boolean by BooleanSetting("Custom Sounds", default = false, description = "Plays the selected custom sound when you etherwarp.")

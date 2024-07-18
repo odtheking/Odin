@@ -1,9 +1,9 @@
 package me.odinmain.features.impl.render
 
+import com.github.stivais.ui.color.*
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderX
 import me.odinmain.utils.render.RenderUtils.renderY
 import me.odinmain.utils.render.RenderUtils.renderZ
@@ -28,7 +28,7 @@ object PersonalDragon : Module(
     private val vertical: Float by NumberSetting(name = "Vertical", 0.0f, -10.0f, 10.0f, 0.1f)
     private val degrees: Float by NumberSetting(name = "Degrees", 0.0f, -180.0f, 180.0f, 1.0f)
     private val animationSpeed: Float by NumberSetting(name = "Animation Speed", 0.5f, 0.0f, 1.0f, 0.01f)
-    private val color: Color by OldColorSetting(name = "Color", default = Color.WHITE)
+    private val color: Color by ColorSetting(name = "Color", Color.WHITE)
 
     var dragon: EntityDragon? = null
 
@@ -83,7 +83,7 @@ object PersonalDragon : Module(
             GlStateManager.pushMatrix()
             GlStateManager.translate(horizontal * cos(yawRadians), vertical.toDouble(), horizontal * sin(yawRadians))
             GlStateManager.scale(scale / 4, scale / 4, scale / 4)
-            GlStateManager.color(color.r / 255f, color.g / 255f, color.b / 255f)
+            GlStateManager.color(color.red / 255f, color.green / 255f, color.blue / 255f)
         }
     }
 

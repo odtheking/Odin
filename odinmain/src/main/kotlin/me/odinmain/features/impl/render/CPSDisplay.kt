@@ -1,14 +1,11 @@
 package me.odinmain.features.impl.render
 
+import com.github.stivais.ui.color.Color
 import me.odinmain.events.impl.PacketSentEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.clickgui.animations.impl.EaseInOut
-import me.odinmain.ui.clickgui.util.ColorUtil.brighter
-import me.odinmain.ui.hud.HudElement
-import me.odinmain.utils.render.*
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -21,10 +18,10 @@ object CPSDisplay : Module(
     private val advanced: Boolean by DropdownSetting("Show Settings", false)
     private val button: Int by SelectorSetting("Button", "Both", arrayListOf("Left", "Right", "Both")).withDependency { advanced }
     private val mouseText: Boolean by BooleanSetting("Show Button", true).withDependency { advanced }
-    private val color: Color by OldColorSetting("Color", Color(21, 22, 23, 0.5f), allowAlpha = true).withDependency { advanced }
-    private val textColor: Color by OldColorSetting("Text Color", Color(239, 239, 239, 1f), allowAlpha = true).withDependency { advanced }
+    private val color: Color by ColorSetting("Color", Color.RGB(21, 22, 23, 0.5f), allowAlpha = true).withDependency { advanced }
+    private val textColor: Color by ColorSetting("Text Color", Color.RGB(239, 239, 239, 1f), allowAlpha = true).withDependency { advanced }
     private val outline: Boolean by BooleanSetting("Outline", true).withDependency { advanced }
-    private val hud: HudElement by HudSetting("Display", 10f, 10f, 2f, false) {
+    /*private val hud: HudElement by HudSetting("Display", 10f, 10f, 2f, false) {
         leftClicks.removeAll { System.currentTimeMillis() - it > 1000 }
         rightClicks.removeAll { System.currentTimeMillis() - it > 1000 }
 
@@ -60,24 +57,22 @@ object CPSDisplay : Module(
             } else mcText(value, 20f, 10f, 2, textColor, center = false)
         }
         if (button == 2) 100f to 38f else 50f to 38f
-    }
+    }*/
 
-
-
-    private val leftAnim = EaseInOut(300)
-    private val rightAnim = EaseInOut(300)
+    //private val leftAnim = EaseInOut(300)
+   // private val rightAnim = EaseInOut(300)
 
     private val leftClicks = mutableListOf<Long>()
     private val rightClicks = mutableListOf<Long>()
 
     fun onLeftClick() {
         leftClicks.add(System.currentTimeMillis())
-        leftAnim.start(true)
+       // leftAnim.start(true)
     }
 
     fun onRightClick() {
         rightClicks.add(System.currentTimeMillis())
-        rightAnim.start(true)
+       // rightAnim.start(true)
     }
 
     @SubscribeEvent

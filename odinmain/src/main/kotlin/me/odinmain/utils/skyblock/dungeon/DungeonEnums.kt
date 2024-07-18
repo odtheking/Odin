@@ -1,10 +1,9 @@
 package me.odinmain.utils.skyblock.dungeon
 
-import me.odinmain.utils.render.Color
+import com.github.stivais.ui.color.Color
 import me.odinmain.utils.skyblock.PersonalBest
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
-
 
 /**
  * Data class representing a player in a dungeon, including their name, class, skin location, and associated player entity.
@@ -28,18 +27,18 @@ data class Puzzle(
     var status: PuzzleStatus? = null
 ) {
     companion object {
-        val Unknown = Puzzle("???")
+        private val Unknown = Puzzle("???")
         val Blaze = Puzzle("Higher Or Lower")
-        val Beams = Puzzle("Creeper Beams")
-        val Weirdos = Puzzle("Three Weirdos")
-        val TTT = Puzzle("Tic Tac Toe")
-        val WaterBoard = Puzzle("Water Board")
-        val TPMaze = Puzzle("Teleport Maze")
-        val Boulder = Puzzle("Boulder")
-        val IceFill = Puzzle("Ice Fill")
-        val IcePath = Puzzle("Ice Path")
-        val Quiz = Puzzle("Quiz")
-        val BombDefuse = Puzzle("Bomb Defuse")
+        private val Beams = Puzzle("Creeper Beams")
+        private val Weirdos = Puzzle("Three Weirdos")
+        private val TTT = Puzzle("Tic Tac Toe")
+        private val WaterBoard = Puzzle("Water Board")
+        private val TPMaze = Puzzle("Teleport Maze")
+        private val Boulder = Puzzle("Boulder")
+        private val IceFill = Puzzle("Ice Fill")
+        private val IcePath = Puzzle("Ice Path")
+        private val Quiz = Puzzle("Quiz")
+        private val BombDefuse = Puzzle("Bomb Defuse")
 
         val allPuzzles = listOf(
             Blaze, Beams, Weirdos, TTT, WaterBoard, TPMaze,
@@ -71,12 +70,12 @@ enum class DungeonClass(
     val defaultQuadrant: Int,
     var priority: Int,
 ) {
-    Archer(Color.ORANGE, '6',0, 2),
-    Berserk(Color.DARK_RED, '4',1, 0),
-    Healer(Color.PINK, 'd',2, 2),
-    Mage(Color.BLUE, 'b',3, 2),
-    Tank(Color.DARK_GREEN, '2',3, 1),
-    Unknown(Color.WHITE, 'f',0, 0)
+    Archer(Color.MINECRAFT_GOLD, '6', 0, 2),
+    Berserk(Color.MINECRAFT_DARK_RED, '4', 1, 0),
+    Healer(Color.MINECRAFT_LIGHT_PURPLE, 'd', 2, 2),
+    Mage(Color.MINECRAFT_BLUE, 'b', 3, 2),
+    Tank(Color.MINECRAFT_DARK_GREEN, '2', 3, 1),
+    Unknown(Color.WHITE, 'f', 0, 0)
 }
 
 enum class Blessing(

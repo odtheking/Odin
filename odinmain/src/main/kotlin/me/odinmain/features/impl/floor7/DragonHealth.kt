@@ -1,7 +1,7 @@
 package me.odinmain.features.impl.floor7
 
+import com.github.stivais.ui.color.Color
 import me.odinmain.utils.addVec
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
 import net.minecraft.entity.boss.EntityDragon

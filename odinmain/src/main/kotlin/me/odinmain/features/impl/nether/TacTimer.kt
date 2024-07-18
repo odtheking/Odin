@@ -3,10 +3,6 @@ package me.odinmain.features.impl.nether
 import me.odinmain.events.impl.RealServerTick
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.HudSetting
-import me.odinmain.ui.hud.HudElement
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.mcTextAndWidth
 import me.odinmain.utils.skyblock.itemID
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -16,7 +12,7 @@ object TacTimer : Module(
     category = Category.NETHER,
     description = "Tactical Insertion Timer"
 ) {
-    private val hud: HudElement by HudSetting("Timer Hud", 10f, 10f, 1f, false) {
+    /*private val hud: HudElement by HudSetting("Timer Hud", 10f, 10f, 1f, false) {
         if (it) {
             val width = mcTextAndWidth("§6Tac: 59t", 1f, 1f, 1f, color = Color.WHITE, center = false)
             width + 2f to 12f
@@ -30,7 +26,7 @@ object TacTimer : Module(
             val width = mcTextAndWidth("§6Tac: ${colorCode}${tacTimer}t", 1f, 1f, 1f, color = Color.WHITE, center = false)
             width + 2f to 12f
         }
-    }
+    }*/
 
     private var tacTimer = -1
 

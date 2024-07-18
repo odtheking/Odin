@@ -1,5 +1,7 @@
 package me.odinclient.features.impl.render
 
+import com.github.stivais.ui.color.Color
+import com.github.stivais.ui.color.multiplyAlpha
 import me.odinclient.mixin.accessors.IEntityPlayerSPAccessor
 import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinmain.events.impl.ClickEvent
@@ -11,10 +13,8 @@ import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.toVec
 import me.odinmain.features.impl.render.DevPlayers.isDev
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.*
@@ -38,9 +38,9 @@ object EtherWarpHelper : Module(
     private val render: Boolean by BooleanSetting("Show Etherwarp Guess", true)
     private val useServerPosition: Boolean by DualSetting("Positioning", "Server Pos", "Player Pos", description = "If etherwarp guess should use your server position or real position.").withDependency { render }
     private val renderFail: Boolean by BooleanSetting("Show when failed", true).withDependency { render }
-    private val wrongColor: Color by OldColorSetting("Wrong Color", Color.RED.withAlpha(.5f), allowAlpha = true).withDependency { renderFail }
+    private val wrongColor: Color by ColorSetting("Wrong Color", Color.RED.multiplyAlpha(.5f), allowAlpha = true).withDependency { renderFail }
     private val style: Int by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { render }
-    private val color: Color by OldColorSetting("Color", Color.ORANGE.withAlpha(.5f), allowAlpha = true).withDependency { render }
+    private val color: Color by ColorSetting("Color", Color.MINECRAFT_GOLD.multiplyAlpha(.5f), allowAlpha = true).withDependency { render }
     private val lineWidth: Float by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.").withDependency { render }
     private val depthCheck: Boolean by BooleanSetting("Depth check", false, description = "Boxes show through walls.").withDependency { render }
     private val etherWarpTriggerBot: Boolean by BooleanSetting("Trigger Bot", false, description = "Uses Dungeon Waypoints to trigger bot to the closest waypoint.")

@@ -1,6 +1,7 @@
 package me.odinmain.features.impl.render
 
 
+import com.github.stivais.ui.color.*
 import com.google.gson.*
 import kotlinx.coroutines.*
 import me.odinmain.OdinMain.mc
@@ -24,7 +25,7 @@ object DevPlayers {
     val isDev get() = devs.containsKey(mc.session?.username)
 
     data class DevPlayer(val xScale: Float = 1f, val yScale: Float = 1f, val zScale: Float = 1f,
-                         val wings: Boolean = false, val wingsColor: Color = Color(255, 255, 255))
+                         val wings: Boolean = false, val wingsColor: Color = Color.RGB(255, 255, 255))
     data class DevData(val devName: String, val wingsColor: Triple<Int, Int, Int>, val size: Triple<Float, Float, Float>, val wings: Boolean)
 
     @Suppress("UNCHECKED_CAST")
@@ -66,7 +67,7 @@ object DevPlayers {
             val data = convertDecimalToNumber(getDataFromServer("https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
             val gson = GsonBuilder().registerTypeAdapter(DevData::class.java, DevDeserializer()).create()
             gson.fromJson(data, Array<DevData>::class.java).forEach {
-                devs[it.devName] = DevPlayer(it.size.first, it.size.second, it.size.third, it.wings, Color(it.wingsColor.first, it.wingsColor.second, it.wingsColor.third))
+                devs[it.devName] = DevPlayer(it.size.first, it.size.second, it.size.third, it.wings, Color.RGB(it.wingsColor.first, it.wingsColor.second, it.wingsColor.third))
             }
         }
         return devs
@@ -80,8 +81,8 @@ object DevPlayers {
         if (!devs.containsKey(entityLivingBaseIn.name)) return
         if (!devSize && entityLivingBaseIn.name == mc.thePlayer.name) return
         val dev = devs[entityLivingBaseIn.name] ?: return
-        scale(dev.xScale, dev.yScale, dev.zScale)
-        if (dev.yScale < 0) translate(0f, dev.yScale * -2, 0f)
+        GlStateManager.scale(dev.xScale, dev.yScale, dev.zScale)
+        if (dev.yScale < 0) GlStateManager.translate(0f, dev.yScale * -2, 0f)
     }
 
     @SubscribeEvent
@@ -126,7 +127,7 @@ object DevPlayers {
             val x = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks
             val y = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks
             val z = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks
-            if (dev.yScale < 0) translate(0f, dev.yScale * -2, 0f)
+            if (dev.yScale < 0) GlStateManager.translate(0f, dev.yScale * -2, 0f)
 
             GlStateManager.translate(-mc.renderManager.viewerPosX + x, -mc.renderManager.viewerPosY + y, -mc.renderManager.viewerPosZ + z)
             GlStateManager.scale(-0.2 * dev.xScale, -0.2 * dev.yScale, 0.2 * dev.zScale)
@@ -138,7 +139,7 @@ object DevPlayers {
                 GlStateManager.translate(0.0, (0.125 / 1.0) * dev.yScale, 0.0)
             }
 
-            GlStateManager.color(dev.wingsColor.r.toFloat()/255, dev.wingsColor.g.toFloat()/255, dev.wingsColor.b.toFloat()/255, 1f)
+            GlStateManager.color(dev.wingsColor.red/255f, dev.wingsColor.green/255f, dev.wingsColor.blue/255f, 1f)
             mc.textureManager.bindTexture(dragonWingTextureLocation)
 
             for (j in 0..1) {

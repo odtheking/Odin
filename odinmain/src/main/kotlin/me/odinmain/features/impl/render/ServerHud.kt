@@ -2,10 +2,8 @@ package me.odinmain.features.impl.render
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.hud.HudElement
-import me.odinmain.utils.*
-import me.odinmain.utils.render.*
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.SelectorSetting
 
 object ServerHud : Module(
     name = "Server Hud",
@@ -17,7 +15,7 @@ object ServerHud : Module(
     private val fps: Boolean by BooleanSetting("FPS", false)
     private val style: Int by SelectorSetting("Style", "Row", arrayListOf("Row", "Stacked"))
 
-    val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
+    /*val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {
             if (style == 0) {
                 var width = 0f
@@ -68,7 +66,7 @@ object ServerHud : Module(
                 ) + 2f to if (ping && tps && fps) 50f else if (ping && tps || ping && fps || tps && fps) 35f else 20f
             }
         }
-    }
+    }*/
 
     fun colorizePing(ping: Int): String {
         return when {

@@ -1,11 +1,11 @@
 package me.odinmain.features.impl.dungeon
 
+import com.github.stivais.ui.color.Color
 import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.RealServerTick
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.*
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.util.Vec3
@@ -49,9 +49,9 @@ object TerracottaTimer : Module(
 
     private fun getColor(time: Double): Color {
         return when {
-            time > 5.0 -> Color(0, 170, 0)
-            time > 2.0 -> Color(255, 170, 0)
-            else -> Color(170, 0, 0)
+            time > 5.0 -> Color.MINECRAFT_RED
+            time > 2.0 -> Color.MINECRAFT_GOLD
+            else -> Color.MINECRAFT_GREEN
         }
     }
 }

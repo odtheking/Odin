@@ -6,7 +6,6 @@ import me.odinmain.features.ModuleManager.executors
 import me.odinmain.features.impl.render.ClickGUI
 import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.features.settings.Setting
-import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.features.settings.impl.Keybinding
 import me.odinmain.utils.clock.Executable
 import me.odinmain.utils.clock.Executor
@@ -84,9 +83,9 @@ abstract class Module(
 
     fun <K : Setting<*>> register(setting: K): K {
         settings.add(setting)
-        if (setting is HudSetting) {
-            setting.value.init(this)
-        }
+        /*if (setting is HudSetting) {
+            setting.value.init(this) TODO: Fix this when we have a proper HUD handling
+        }*/
         return setting
     }
 

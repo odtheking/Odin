@@ -1,5 +1,7 @@
 package me.odinmain.features.impl.floor7.p3
 
+import com.github.stivais.ui.color.Color
+import com.github.stivais.ui.color.multiplyAlpha
 import io.github.moulberry.notenoughupdates.NEUApi
 import me.odinmain.events.impl.*
 import me.odinmain.features.Category
@@ -8,12 +10,7 @@ import me.odinmain.features.impl.floor7.p3.termGUI.CustomTermGui
 import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.clickgui.util.ColorUtil
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinmain.ui.util.MouseUtils
-import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.postAndCatch
-import me.odinmain.utils.render.*
+import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.unformattedName
 import net.minecraft.client.gui.Gui
@@ -50,19 +47,19 @@ object TerminalSolver : Module(
     private val removeWrongSelect: Boolean by BooleanSetting("Stop Select", true).withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings && removeWrong }
 
     private val showColors: Boolean by DropdownSetting("Color Settings")
-    private val wrongColor: Color by OldColorSetting("Wrong Color", Color(45, 45, 45), true).withDependency { renderType == 0 && showColors }
-    val textColor: Color by OldColorSetting("Text Color", Color(220, 220, 220), true).withDependency { showColors }
-    val panesColor: Color by OldColorSetting("Panes Color", Color(0, 170, 170), true).withDependency { showColors }
-    val rubixColor1: Color by OldColorSetting("Rubix Color 1", Color(0, 170, 170), true).withDependency { showColors }
-    val rubixColor2: Color by OldColorSetting("Rubix Color 2", Color(0, 100, 100), true).withDependency { showColors }
-    val oppositeRubixColor1: Color by OldColorSetting("Negative Rubix Color 1", Color(170, 85, 0), true).withDependency { showColors }
-    val oppositeRubixColor2: Color by OldColorSetting("Negative Rubix Color 2", Color(210, 85, 0), true).withDependency { showColors }
-    val orderColor: Color by OldColorSetting("Order Color 1", Color(0, 170, 170, 1f), true).withDependency { showColors }
-    val orderColor2: Color by OldColorSetting("Order Color 2", Color(0, 100, 100, 1f), true).withDependency { showColors }
-    val orderColor3: Color by OldColorSetting("Order Color 3", Color(0, 65, 65, 1f), true).withDependency { showColors }
-    val startsWithColor: Color by OldColorSetting("Starts With Color", Color(0, 170, 170), true).withDependency { showColors }
-    val selectColor: Color by OldColorSetting("Select Color", Color(0, 170, 170), true).withDependency { showColors }
-    val customGuiColor: Color by OldColorSetting("Custom Gui Color", ColorUtil.moduleButtonColor.withAlpha(.8f), true).withDependency { showColors }
+    private val wrongColor: Color by ColorSetting("Wrong Color", Color.RGB(45, 45, 45), true).withDependency { renderType == 0 && showColors }
+    val textColor: Color by ColorSetting("Text Color", Color.RGB(220, 220, 220), true).withDependency { showColors }
+    val panesColor: Color by ColorSetting("Panes Color", Color.RGB(0, 170, 170), true).withDependency { showColors }
+    val rubixColor1: Color by ColorSetting("Rubix Color 1", Color.RGB(0, 170, 170), true).withDependency { showColors }
+    val rubixColor2: Color by ColorSetting("Rubix Color 2", Color.RGB(0, 100, 100), true).withDependency { showColors }
+    val oppositeRubixColor1: Color by ColorSetting("Negative Rubix Color 1", Color.RGB(170, 85, 0), true).withDependency { showColors }
+    val oppositeRubixColor2: Color by ColorSetting("Negative Rubix Color 2", Color.RGB(210, 85, 0), true).withDependency { showColors }
+    val orderColor: Color by ColorSetting("Order Color 1", Color.RGB(0, 170, 170, 1f), true).withDependency { showColors }
+    val orderColor2: Color by ColorSetting("Order Color 2", Color.RGB(0, 100, 100, 1f), true).withDependency { showColors }
+    val orderColor3: Color by ColorSetting("Order Color 3", Color.RGB(0, 65, 65, 1f), true).withDependency { showColors }
+    val startsWithColor: Color by ColorSetting("Starts With Color", Color.RGB(0, 170, 170), true).withDependency { showColors }
+    val selectColor: Color by ColorSetting("Select Color", Color.RGB(0, 170, 170), true).withDependency { showColors }
+    val customGuiColor: Color by ColorSetting("Custom Gui Color", Color.MINECRAFT_GRAY.multiplyAlpha(0.8f), true).withDependency { showColors }
     val gap: Int by NumberSetting("Gap", 10, 0, 20, 1, false, "gap between items").withDependency { renderType == 3 }
     val textScale: Int by NumberSetting("Text Scale", 1, 1, 3, increment = 1, description = "Text scale").withDependency { renderType == 3 }
 
@@ -112,9 +109,9 @@ object TerminalSolver : Module(
             event.isCanceled = true
             return
         }
-        translate(event.guiLeft.toFloat(), event.guiTop.toFloat(), 399f)
+        GlStateManager.translate(event.guiLeft.toFloat(), event.guiTop.toFloat(), 399f)
         Gui.drawRect(7, 16, event.xSize - 7, event.ySize - 96, wrongColor.rgba)
-        translate(-event.guiLeft.toFloat(), -event.guiTop.toFloat(), -399f)
+        GlStateManager.translate(-event.guiLeft.toFloat(), -event.guiTop.toFloat(), -399f)
     }
 
     private fun getShouldBlockWrong(): Boolean {
@@ -134,7 +131,7 @@ object TerminalSolver : Module(
         if ((removeWrong || renderType == 0) && enabled && getShouldBlockWrong() && event.slot.slotIndex <= event.container.inventorySlots.size - 37 && event.slot.slotIndex !in solution && event.slot.inventory !is InventoryPlayer) event.isCanceled = true
         if (event.slot.slotIndex !in solution || event.slot.slotIndex > event.container.inventorySlots.size - 37 || !enabled || renderType == 3 || event.slot.inventory is InventoryPlayer) return
 
-        translate(0f, 0f, zLevel)
+        GlStateManager.translate(0f, 0f, zLevel)
         GlStateManager.disableLighting()
         GlStateManager.enableDepth()
         when (currentTerm) {
@@ -151,7 +148,7 @@ object TerminalSolver : Module(
                 }
 
                 Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, color.rgba)
-                mcText(text.toString(), event.x + 8f - getMCTextWidth(text.toString()) / 2, event.y + 4.5, 1, textColor, shadow = textShadow, false)
+                //mcText(text.toString(), event.x + 8f - getMCTextWidth(text.toString()) / 2, event.y + 4.5, 1, textColor, shadow = textShadow, false)
             }
             TerminalTypes.ORDER -> {
                 val index = solution.indexOf(event.slot.slotIndex)
@@ -166,7 +163,7 @@ object TerminalSolver : Module(
                 }
                 if (renderOrderNumbers) {
                     val amount = event.slot.stack?.stackSize ?: 0
-                    mcText(amount.toString(), event.x + 8.5f - getMCTextWidth(amount.toString()) / 2, event.y + 4.5f, 1, textColor, shadow = textShadow, false)
+                    //mcText(amount.toString(), event.x + 8.5f - getMCTextWidth(amount.toString()) / 2, event.y + 4.5f, 1, textColor, shadow = textShadow, false)
                 }
             }
             TerminalTypes.STARTS_WITH ->
@@ -178,7 +175,7 @@ object TerminalSolver : Module(
             else -> {}
         }
         GlStateManager.enableLighting()
-        translate(0f, 0f, -zLevel)
+        GlStateManager.translate(0f, 0f, -zLevel)
     }
 
     @SubscribeEvent
@@ -190,7 +187,7 @@ object TerminalSolver : Module(
     @SubscribeEvent
     fun guiClick(event: GuiEvent.GuiMouseClickEvent) {
         if (renderType != 3 || currentTerm == TerminalTypes.NONE || currentTerm == TerminalTypes.MELODY || !enabled) return
-        CustomTermGui.mouseClicked(MouseUtils.mouseX.toInt(), MouseUtils.mouseY.toInt(), event.button)
+        CustomTermGui.mouseClicked(trueMouseX.toInt(), trueMouseY.toInt(), event.button)
         event.isCanceled = true
     }
 

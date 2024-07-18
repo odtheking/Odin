@@ -1,13 +1,13 @@
 package me.odinmain.features.impl.nether
 
+import com.github.stivais.ui.color.Color
+import com.github.stivais.ui.color.multiplyAlpha
 import me.odinmain.events.impl.RenderEntityModelEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.noControlCodes
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.OutlineUtils
 import me.odinmain.utils.render.RenderUtils.bind
 import me.odinmain.utils.xzDistance
@@ -36,12 +36,12 @@ object BlazeAttunement : Module(
                 val name = entity.name.noControlCodes
 
                 val color = when {
-                    name.contains("CRYSTAL ♨") -> Color(85, 250, 236)
-                    name.contains("ASHEN ♨") -> Color(45, 45, 45)
-                    name.contains("AURIC ♨") -> Color(206, 219, 57)
-                    name.contains("SPIRIT ♨") -> Color(255, 255, 255)
+                    name.contains("CRYSTAL ♨") -> Color.RGB(85, 250, 236)
+                    name.contains("ASHEN ♨") -> Color.RGB(45, 45, 45)
+                    name.contains("AURIC ♨") -> Color.RGB(206, 219, 57)
+                    name.contains("SPIRIT ♨") -> Color.RGB(255, 255, 255)
                     else -> return@forEach
-                }.withAlpha(.4f)
+                }.multiplyAlpha(.4f)
 
                 val entities =
                     mc.theWorld.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.expand(0.0, 3.0, 0.0))

@@ -1,11 +1,11 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
+import com.github.stivais.ui.color.Color
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import me.odinmain.OdinMain.logger
 import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
 import me.odinmain.utils.*
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.IceFillFloors.IceFillFloors
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils

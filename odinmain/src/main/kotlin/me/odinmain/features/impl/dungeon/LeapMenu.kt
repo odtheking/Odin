@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.dungeon
 
+import com.github.stivais.ui.color.Color
 import io.github.moulberry.notenoughupdates.NEUApi
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.Category
@@ -10,25 +11,18 @@ import me.odinmain.features.impl.dungeon.LeapHelper.leapHelperClearChatEvent
 import me.odinmain.features.impl.dungeon.LeapHelper.worldLoad
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.clickgui.animations.impl.EaseInOut
-import me.odinmain.ui.clickgui.util.ColorUtil
-import me.odinmain.ui.util.MouseUtils.getQuadrant
-import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.name
-import me.odinmain.utils.render.*
-import me.odinmain.utils.render.RenderUtils.drawTexturedModalRect
+import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
-import me.odinmain.utils.skyblock.dungeon.*
+import me.odinmain.utils.skyblock.dungeon.DungeonClass
+import me.odinmain.utils.skyblock.dungeon.DungeonPlayer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.leapTeammates
 import net.minecraft.client.gui.inventory.GuiChest
-import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
-import org.lwjgl.opengl.Display
 
 object LeapMenu : Module(
     name = "Leap Menu",
@@ -45,10 +39,10 @@ object LeapMenu : Module(
     private val bottomRightKeybind: Keybinding by KeybindSetting("Bottom right", Keyboard.KEY_4, "Used to click on the fourth person in the leap menu.").withDependency { useNumberKeys }
     private val size: Float by NumberSetting("Scale Factor", 1.0f, 0.5f, 2.0f, 0.1f, description = "Scale factor for the leap menu.")
     private val leapHelperToggle: Boolean by BooleanSetting("Leap Helper", false, description = "Highlights the leap helper player in the leap menu.")
-    private val leapHelperColor: Color by OldColorSetting("Leap Helper Color", default = Color.WHITE, description = "Color of the Leap Helper highlight").withDependency { leapHelperToggle }
+    private val leapHelperColor: Color by ColorSetting("Leap Helper Color", Color.WHITE, description = "Color of the Leap Helper highlight").withDependency { leapHelperToggle }
     val delay: Int by NumberSetting("Reset Leap Helper Delay", 30, 10.0, 120.0, 1.0, description = "Delay for clearing the leap helper highlight").withDependency { leapHelperToggle }
     private val leapAnnounce: Boolean by BooleanSetting("Leap Announce", false, description = "Announces when you leap to a player.")
-    private val hoveredAnims = List(4) { EaseInOut(200L) }
+   // private val hoveredAnims = List(4) { EaseInOut(200L) }
     private var hoveredQuadrant = -1
     private var previouslyHoveredQuadrant = -1
 
@@ -59,12 +53,12 @@ object LeapMenu : Module(
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
         if (chest !is ContainerChest || chest.name != "Spirit Leap" || leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return
         hoveredQuadrant = getQuadrant()
-        if (hoveredQuadrant != previouslyHoveredQuadrant && previouslyHoveredQuadrant != -1) {
+        /*if (hoveredQuadrant != previouslyHoveredQuadrant && previouslyHoveredQuadrant != -1) {
             hoveredAnims[hoveredQuadrant - 1].start()
             hoveredAnims[previouslyHoveredQuadrant - 1].start(true)
         }
-        previouslyHoveredQuadrant = hoveredQuadrant
-
+        previouslyHoveredQuadrant = hoveredQuadrant*/
+/*
         leapTeammates.forEachIndexed { index, it ->
             if (it == EMPTY) return@forEachIndexed
             GlStateManager.pushMatrix()
@@ -103,7 +97,7 @@ object LeapMenu : Module(
             rectangleOutline(x + 30, y + 30, 240, 240, color, 25f, 15f, 100f)
             GlStateManager.disableAlpha()
             GlStateManager.popMatrix()
-        }
+        }*/ // TODO: rewrite with ui lib
         event.isCanceled = true
     }
 

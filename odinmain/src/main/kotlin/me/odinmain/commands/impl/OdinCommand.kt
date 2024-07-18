@@ -11,7 +11,6 @@ import me.odinmain.features.impl.render.ServerHud.colorizeFPS
 import me.odinmain.features.impl.render.ServerHud.colorizePing
 import me.odinmain.features.impl.render.ServerHud.colorizeTps
 import me.odinmain.features.impl.skyblock.DianaHelper
-import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.skyblock.*
@@ -51,7 +50,7 @@ val mainCommand = commodore("od", "odin") {
             modMessage("Reset ClickGUI panel positions")
         }
         literal("hud").runs {
-            EditHUDGui.resetHUDs()
+           // EditHUDGui.resetHUDs() TODO: Implement this
             modMessage("Reset HUD positions.")
         }
     }

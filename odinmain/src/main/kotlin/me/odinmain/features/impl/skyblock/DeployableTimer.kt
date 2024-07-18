@@ -3,16 +3,11 @@ package me.odinmain.features.impl.skyblock
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.HudSetting
-import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.FlareTextures
 import me.odinmain.utils.noControlCodes
-import me.odinmain.utils.render.*
-import me.odinmain.utils.skyblock.drawItem
 import me.odinmain.utils.skyblock.getSkullValue
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.item.Item
-import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object DeployableTimer : Module(
@@ -21,7 +16,7 @@ object DeployableTimer : Module(
     category = Category.SKYBLOCK
 ) {
     private val firework = Item.getByNameOrId("minecraft:fireworks")
-    private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
+    /*private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {
             mcText("§l§5SOS Flare", 40, 10, 1.35 ,Color.WHITE, center = false)
             mcText("§e179s", 40, 25, 1.2 ,Color.WHITE, center = false)
@@ -41,7 +36,7 @@ object DeployableTimer : Module(
             activeDeployable.entity.inventory?.get(4)?.drawItem(x= -10f, y= -4f, scale = 3.5f)
             getMCTextWidth(activeDeployable.deployable.displayName.noControlCodes) + 45f to 52f
         }
-    }
+    }*/
 
     enum class DeployableTypes (
         val texture: String, val displayName: String,

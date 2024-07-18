@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
+import com.github.stivais.ui.color.alpha
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.blazeHeight
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.blazeWidth

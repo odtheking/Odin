@@ -1,5 +1,7 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
+import com.github.stivais.ui.color.Color
+import com.github.stivais.ui.color.multiplyAlpha
 import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
 import me.odinmain.features.Category
@@ -7,9 +9,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.puzzlesolvers.WaterSolver.waterInteract
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.profile
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
@@ -27,8 +27,8 @@ object PuzzleSolvers : Module(
     private val waterSolver: Boolean by BooleanSetting("Water Board Solver", false, description = "Shows you the solution to the water puzzle.").withDependency { waterDropDown }
     val showOrder: Boolean by BooleanSetting("Show Order", true, description = "Shows the order of the levers to click.").withDependency { waterSolver && waterDropDown }
     val showTracer: Boolean by BooleanSetting("Show Tracer", true, description = "Shows a tracer to the next lever.").withDependency { waterSolver && waterDropDown }
-    val tracerColorFirst: Color by OldColorSetting("Tracer Color First", Color.GREEN, true, description = "Color for the first tracer").withDependency { showTracer && waterDropDown }
-    val tracerColorSecond: Color by OldColorSetting("Tracer Color Second", Color.ORANGE, true, description = "Color for the second tracer").withDependency { showTracer && waterDropDown }
+    val tracerColorFirst: Color by ColorSetting("Tracer Color First", Color.MINECRAFT_GREEN, true, description = "Color for the first tracer").withDependency { showTracer && waterDropDown }
+    val tracerColorSecond: Color by ColorSetting("Tracer Color Second", Color.MINECRAFT_GOLD, true, description = "Color for the second tracer").withDependency { showTracer && waterDropDown }
     val reset by ActionSetting("Reset", description = "Resets the solver.") {
         WaterSolver.reset()
     }.withDependency { waterSolver && waterDropDown }
@@ -36,9 +36,9 @@ object PuzzleSolvers : Module(
     private val mazeDropDown: Boolean by DropdownSetting("Maze")
     private val tpMaze: Boolean by BooleanSetting("Teleport Maze", false, description = "Shows you the solution for the TP maze puzzle").withDependency { mazeDropDown }
     val solutionThroughWalls: Boolean by BooleanSetting("Solution through walls", false, description = "Renders the final solution through walls").withDependency { tpMaze && mazeDropDown }
-    val mazeColorOne: Color by OldColorSetting("Color for one solution", Color.GREEN.withAlpha(.5f), true, description = "Color for when there is a single solution").withDependency { tpMaze && mazeDropDown }
-    val mazeColorMultiple: Color by OldColorSetting("Color for multiple solutions", Color.ORANGE.withAlpha(.5f), true, description = "Color for when there are multiple solutions").withDependency { tpMaze && mazeDropDown }
-    val mazeColorVisited: Color by OldColorSetting("Color for visited", Color.RED.withAlpha(.5f), true, description = "Color for the already used TP pads").withDependency { tpMaze && mazeDropDown }
+    val mazeColorOne: Color by ColorSetting("Color for one solution", Color.MINECRAFT_GREEN.multiplyAlpha(.5f), true, description = "Color for when there is a single solution").withDependency { tpMaze && mazeDropDown }
+    val mazeColorMultiple: Color by ColorSetting("Color for multiple solutions", Color.MINECRAFT_GOLD.multiplyAlpha(.5f), true, description = "Color for when there are multiple solutions").withDependency { tpMaze && mazeDropDown }
+    val mazeColorVisited: Color by ColorSetting("Color for visited", Color.MINECRAFT_RED.multiplyAlpha(.5f), true, description = "Color for the already used TP pads").withDependency { tpMaze && mazeDropDown }
     private val click by ActionSetting("Reset", description = "Resets the solver.") {
         TPMazeSolver.reset()
     }.withDependency { tpMaze && mazeDropDown }
@@ -50,7 +50,7 @@ object PuzzleSolvers : Module(
 */
     private val iceFillDropDown: Boolean by DropdownSetting("Ice Fill")
     private val iceFillSolver: Boolean by BooleanSetting("Ice Fill Solver", false, description = "Solver for the ice fill puzzle").withDependency { iceFillDropDown }
-    private val iceFillColor: Color by OldColorSetting("Ice Fill Color", Color.PINK, true, description = "Color for the ice fill solver").withDependency { iceFillSolver && iceFillDropDown }
+    private val iceFillColor: Color by ColorSetting("Ice Fill Color", Color.MINECRAFT_LIGHT_PURPLE, true, description = "Color for the ice fill solver").withDependency { iceFillSolver && iceFillDropDown }
     private val action by ActionSetting("Reset", description = "Resets the solver.") {
         IceFillSolver.reset()
     }.withDependency { iceFillSolver && iceFillDropDown }
@@ -60,9 +60,9 @@ object PuzzleSolvers : Module(
     val blazeLineNext: Boolean by BooleanSetting("Blaze Solver Next Line", true).withDependency { blazeSolver && blazeDropDown }
     val blazeLineAmount: Int by NumberSetting("Blaze Solver Lines", 1, 1, 10).withDependency { blazeSolver && blazeLineNext && blazeDropDown }
     val blazeStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { blazeSolver && blazeDropDown }
-    val blazeFirstColor: Color by OldColorSetting("First Color", Color.GREEN, true).withDependency { blazeSolver && blazeDropDown }
-    val blazeSecondColor: Color by OldColorSetting("Second Color", Color.ORANGE, true).withDependency { blazeSolver && blazeDropDown }
-    val blazeAllColor: Color by OldColorSetting("Other Color", Color.WHITE.withAlpha(.3f), true).withDependency { blazeSolver && blazeDropDown }
+    val blazeFirstColor: Color by ColorSetting("First Color", Color.MINECRAFT_GREEN, true).withDependency { blazeSolver && blazeDropDown }
+    val blazeSecondColor: Color by ColorSetting("Second Color", Color.MINECRAFT_GOLD, true).withDependency { blazeSolver && blazeDropDown }
+    val blazeAllColor: Color by ColorSetting("Other Color", Color.WHITE.multiplyAlpha(.3f), true).withDependency { blazeSolver && blazeDropDown }
     val blazeWidth: Double by NumberSetting("Box Width", 1.0, 0.5, 2.0, 0.1).withDependency { blazeSolver && blazeDropDown }
     val blazeHeight: Double by NumberSetting("Box Height", 2.0, 1.0, 3.0, 0.1).withDependency { blazeSolver && blazeDropDown }
     val blazeSendComplete: Boolean by BooleanSetting("Send Complete", false, description = "Send complete message").withDependency { blazeSolver && blazeDropDown }
@@ -81,8 +81,8 @@ object PuzzleSolvers : Module(
 
     private val weirdosDropDown: Boolean by DropdownSetting("Weirdos")
     private val weirdosSolver: Boolean by BooleanSetting("Weirdos Solver", false, description = "Shows you the solution for the Weirdos puzzle").withDependency { weirdosDropDown }
-    val weirdosColor: Color by OldColorSetting("Weirdos Color", Color.GREEN.withAlpha(0.7f), true, description = "Color for the weirdos solver").withDependency { weirdosSolver && weirdosDropDown }
-    val weirdosWrongColor: Color by OldColorSetting("Weirdos Wrong Color", Color.RED.withAlpha(.7f), true,  description = "Color for the incorrect Weirdos.").withDependency { weirdosSolver && weirdosDropDown }
+    val weirdosColor: Color by ColorSetting("Weirdos Color", Color.MINECRAFT_GREEN.multiplyAlpha(0.7f), true, description = "Color for the weirdos solver").withDependency { weirdosSolver && weirdosDropDown }
+    val weirdosWrongColor: Color by ColorSetting("Weirdos Wrong Color", Color.MINECRAFT_RED.multiplyAlpha(.7f), true,  description = "Color for the incorrect Weirdos.").withDependency { weirdosSolver && weirdosDropDown }
     val weirdosStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { weirdosSolver && weirdosDropDown }
     private val weirdosReset by ActionSetting("Reset", description = "Resets the solver.") {
         WeirdosSolver.reset()
@@ -99,7 +99,7 @@ object PuzzleSolvers : Module(
     private val boulderSolver: Boolean by BooleanSetting("Boulder Solver", false, description = "Solver for the boulder puzzle").withDependency { boulderDropDown }
     val showAllBoulderClicks: Boolean by DualSetting("Boulder clicks", "Only First", "All Clicks", false).withDependency { boulderDropDown && boulderSolver }
     val boulderStyle: Int by SelectorSetting("Boulder Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { boulderDropDown && boulderSolver }
-    val boulderColor: Color by OldColorSetting("Boulder Color", Color.GREEN.withAlpha(.5f), allowAlpha = true, description = "The color of the box.").withDependency { boulderDropDown && boulderSolver }
+    val boulderColor: Color by ColorSetting("Boulder Color", Color.GREEN.multiplyAlpha(.5f), allowAlpha = true, description = "The color of the box.").withDependency { boulderDropDown && boulderSolver }
     val boulderLineWidth: Float by NumberSetting("Boulder Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.").withDependency { boulderDropDown && boulderSolver }
 
 

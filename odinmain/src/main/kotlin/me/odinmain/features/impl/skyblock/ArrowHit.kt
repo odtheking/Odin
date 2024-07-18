@@ -3,10 +3,9 @@ package me.odinmain.features.impl.skyblock
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.hud.HudElement
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.StringSetting
 import me.odinmain.utils.clock.Clock
-import me.odinmain.utils.render.*
 import net.minecraft.network.play.server.S29PacketSoundEffect
 
 object ArrowHit : Module(
@@ -24,7 +23,7 @@ object ArrowHit : Module(
     private val resetArrowClock = Clock(resetCountClock.toIntOrNull()?.times(1000L) ?: 9999)
     private var arrowCount = 0
 
-    private val hud: HudElement by HudSetting("Display", 10f, 10f, 2f, false) {
+    /*private val hud: HudElement by HudSetting("Display", 10f, 10f, 2f, false) {
         if (it) {
             mcText("156", 0f, 2f, 1f, Color.WHITE, center = false)
             getMCTextWidth("156").toFloat() to 12f
@@ -32,7 +31,7 @@ object ArrowHit : Module(
             mcText("$arrowCount", 0f, 2f, 1f, Color.WHITE, center = false)
             getMCTextWidth("$arrowCount").toFloat() to 12f
         }
-    }
+    }*/
     init {
         onPacket(S29PacketSoundEffect::class.java) {
             if (it.soundName != "random.successful_hit") return@onPacket

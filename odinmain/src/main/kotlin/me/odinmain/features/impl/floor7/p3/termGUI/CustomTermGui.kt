@@ -7,17 +7,19 @@ import me.odinmain.features.impl.floor7.p3.TerminalSolver.currentTerm
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.openedTerminalTime
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.utils.postAndCatch
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.RenderUtils.isPointWithin
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.renderer.GlStateManager
 
 object CustomTermGui {
     fun render() {
         val sr = ScaledResolution(mc)
-        scale(1f / sr.scaleFactor, 1f / sr.scaleFactor)
-        translate(mc.displayWidth / 2, mc.displayHeight / 2)
-        scale(TerminalSolver.customScale, TerminalSolver.customScale)
+        GlStateManager.scale(1.0 / sr.scaleFactor, 1.0 / sr.scaleFactor, 0.0)
+        GlStateManager.translate(mc.displayWidth / 2.0, mc.displayHeight / 2.0, 0.0)
+        GlStateManager.scale(TerminalSolver.customScale.toDouble(), TerminalSolver.customScale.toDouble(), 0.0)
         when (currentTerm) {
             TerminalTypes.PANES -> PanesGui.render()
             TerminalTypes.RUBIX -> RubixGui.render()
@@ -27,9 +29,9 @@ object CustomTermGui {
             TerminalTypes.MELODY -> {}
             TerminalTypes.NONE -> {}
         }
-        scale(1f / TerminalSolver.customScale, 1f / TerminalSolver.customScale)
-        translate(-mc.displayWidth / 2, -mc.displayHeight / 2)
-        scale(sr.scaleFactor, sr.scaleFactor)
+        GlStateManager.scale(1.0 / TerminalSolver.customScale, 1.0 / TerminalSolver.customScale, 0.0)
+        GlStateManager.translate(-mc.displayWidth / 2.0, -mc.displayHeight / 2.0, 0.0)
+        GlStateManager.scale(sr.scaleFactor.toDouble(), sr.scaleFactor.toDouble(), 0.0)
     }
 
     fun mouseClicked(x: Int, y: Int, button: Int) {
@@ -46,7 +48,7 @@ object CustomTermGui {
 }
 
 abstract class TermGui {
-    protected val itemIndexMap: MutableMap<Int, Box> = mutableMapOf()
+    protected val itemIndexMap: MutableMap<Int, RenderUtils.Box> = mutableMapOf()
 
     fun mouseClicked(x: Int, y: Int, button: Int) {
         itemIndexMap.entries.find {

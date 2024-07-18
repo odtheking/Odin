@@ -9,7 +9,6 @@ import me.odinmain.config.*
 import me.odinmain.events.EventDispatcher
 import me.odinmain.features.ModuleManager
 import me.odinmain.features.impl.render.*
-import me.odinmain.ui.clickgui.OldClickGUI
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.render.RenderUtils
@@ -91,7 +90,6 @@ object OdinMain {
                 ClickGUI.lastSeenVersion = VERSION
             }
         }
-        OldClickGUI.init()
         scope.launch {
             val name = mc.session?.username ?: return@launch
             if (name.matches(Regex("Player\\d{2,3}"))) return@launch

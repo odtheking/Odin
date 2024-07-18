@@ -17,7 +17,6 @@ import me.odinmain.features.impl.render.ClickGUI.`gray 38`
 import me.odinmain.features.settings.Saving
 import me.odinmain.features.settings.Setting
 
-
 /**
  * Setting that lets you pick between an array of strings.
  */

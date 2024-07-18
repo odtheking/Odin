@@ -125,6 +125,13 @@ interface Color {
         }
     }
 
+    /**
+     * Checks if color isn't visible.
+     * Main use is to prevent rendering when the color is invisible.
+     */
+    val isTransparent: Boolean
+        get() = alpha == 0
+
     companion object {
         // todo: add more
         @JvmField
@@ -144,6 +151,81 @@ interface Color {
 
         @JvmField
         val GREEN = RGB(0, 255, 0)
+
+        // Minecraft colors
+
+        @JvmField
+        val MINECRAFT_DARK_BLUE = RGB(0, 0 , 170)
+
+        @JvmField
+        val MINECRAFT_DARK_GREEN = RGB(0, 170, 0)
+
+        @JvmField
+        val MINECRAFT_DARK_AQUA = RGB(0, 170, 170)
+
+        @JvmField
+        val MINECRAFT_DARK_RED = RGB(170, 0, 0)
+
+        @JvmField
+        val MINECRAFT_DARK_PURPLE = RGB(170, 0, 170)
+
+        @JvmField
+        val MINECRAFT_GOLD = RGB(255, 170, 0)
+
+        @JvmField
+        val MINECRAFT_GRAY = RGB(170, 170, 170)
+
+        @JvmField
+        val MINECRAFT_DARK_GRAY = RGB(85, 85, 85)
+
+        @JvmField
+        val MINECRAFT_BLUE = RGB(85, 85, 255)
+
+        @JvmField
+        val MINECRAFT_GREEN = RGB(85, 255, 85)
+
+        @JvmField
+        val MINECRAFT_AQUA = RGB(85, 255, 255)
+
+        @JvmField
+        val MINECRAFT_RED = RGB(255, 85, 85)
+
+        @JvmField
+        val MINECRAFT_LIGHT_PURPLE = RGB(255, 85, 255)
+
+        @JvmField
+        val MINECRAFT_YELLOW = RGB(255, 255, 85)
+
+        fun hexToRgba(hex: String): Int {
+            val color = hex.removePrefix("#")
+            val r: Int
+            val g: Int
+            val b: Int
+            val a: Int
+
+            when (color.length) {
+                6 -> {
+                    r = color.substring(0, 2).toInt(16)
+                    g = color.substring(2, 4).toInt(16)
+                    b = color.substring(4, 6).toInt(16)
+                    a = 255
+                }
+                8 -> {
+                    r = color.substring(0, 2).toInt(16)
+                    g = color.substring(2, 4).toInt(16)
+                    b = color.substring(4, 6).toInt(16)
+                    a = color.substring(6, 8).toInt(16)
+                }
+                else -> throw IllegalArgumentException("Invalid hex color format. Use #RRGGBB or #RRGGBBAA.")
+            }
+            return getRGBA(r, g, b, a)
+        }
+
+        fun Color.toHexString(): String {
+            val hex = Integer.toHexString(rgba)
+            return "#" + hex.substring(2)
+
+        }
     }
 }
 
@@ -164,14 +246,40 @@ inline val Int.alpha
 inline val Color.red
     get() = rgba shr 16 and 0xFF
 
-val Color.green
+inline val Color.green
     get() = rgba shr 8 and 0xFF
 
-val Color.blue
+inline val Color.blue
     get() = rgba and 0xFF
 
-val Color.alpha
+inline val Color.alpha
     get() = (rgba shr 24) and 0xFF
+
+object ColorUtils {
+    inline val Int.red
+        get() = this shr 16 and 0xFF
+
+    inline val Int.green
+        get() = this shr 8 and 0xFF
+
+    inline val Int.blue
+        get() = this and 0xFF
+
+    inline val Int.alpha
+        get() = (this shr 24) and 0xFF
+
+    inline val Color.red
+        get() = rgba shr 16 and 0xFF
+
+    inline val Color.green
+        get() = rgba shr 8 and 0xFF
+
+    inline val Color.blue
+        get() = rgba and 0xFF
+
+    inline val Color.alpha
+        get() = (rgba shr 24) and 0xFF
+}
 
 // fix
 //fun Int.brighter(factor: Double = 1.2): Int {
@@ -219,4 +327,19 @@ fun Int.darker(factor: Double = 1.0): Int {
         (blue * factor).roundToInt().coerceIn(0, 255),
         (alpha * factor).roundToInt().coerceIn(0, 255)
     )
+}
+
+/**
+ * Changes or creates a new color with the given alpha. (There is no checks if alpha is in valid range for now.)
+ */
+fun Color.withAlpha(alpha: Int): Color {
+    return when (this) {
+        is Color.RGB -> Color.RGB(red, green, blue, alpha / 255f)
+        is Color.HSB -> Color.HSB(hue, saturation, brightness, alpha / 255f)
+        else -> throw IllegalArgumentException("Unsupported color type")
+    }
+}
+
+fun Color.multiplyAlpha(factor: Float): Color {
+    return withAlpha((alpha * factor).roundToInt())
 }

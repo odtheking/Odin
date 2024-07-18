@@ -1,12 +1,10 @@
 package me.odinmain.features.impl.dungeon
 
+import com.github.stivais.ui.color.Color
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.HudSetting
-import me.odinmain.ui.clickgui.animations.impl.EaseInOut
-import me.odinmain.ui.hud.HudElement
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.getBlockAt
 import me.odinmain.utils.skyblock.isAir
 import me.odinmain.utils.toVec3
@@ -28,7 +26,7 @@ object CanClip : Module(
     category = Category.DUNGEON
 ) {
     private val line: Boolean by BooleanSetting("Line", true, description = "draws a line where you can clip")
-    private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, true) {
+    /*private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, true) {
         if (it) {
             text("Can Clip", 1f, 9f, Color.WHITE, 12f, 0)
             getTextWidth("Can Clip", 12f) to 12f
@@ -36,16 +34,16 @@ object CanClip : Module(
             text("Can Clip", 1f, 9f, Color(0, 255, 0, animation.get(0f, 1f, !canClip)), 12f, 0)
             getTextWidth("Can Clip", 12f) to 12f
         }
-    }
+    }*/
 
-    private val animation = EaseInOut(300)
+    //private val animation = EaseInOut(300)
     private var canClip = false
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         if (mc.thePlayer == null || !mc.thePlayer.isSneaking) {
             if (canClip) {
-                animation.start()
+                //animation.start()
                 canClip = false
             }
             return
@@ -55,7 +53,7 @@ object CanClip : Module(
         val z = abs(mc.thePlayer.posZ % 1)
         val prev = canClip
         canClip = x in 0.235..0.265 || x in 0.735..0.765 || z in 0.235..0.265 || z in 0.735..0.765
-        if (prev != canClip) animation.start()
+        //if (prev != canClip) animation.start()
     }
 
     private val Blocks = mutableMapOf<Vec3, String>()
@@ -102,7 +100,7 @@ object CanClip : Module(
                 else -> return
             }
 
-            if (line) Renderer.draw3DLine(pos1, pos2, color = Color.RED)
+            if (line) Renderer.draw3DLine(pos1, pos2, color = Color.MINECRAFT_RED)
         }
     }
 

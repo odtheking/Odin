@@ -1,10 +1,10 @@
 package me.odinmain.features.impl.floor7.p3
 
+import com.github.stivais.ui.color.Color
 import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -21,7 +21,7 @@ object ArrowsDevice : Module(
     category = Category.FLOOR7,
     key = null
 ) {
-    private val markedPositionColor: Color by OldColorSetting("Marked Position", Color.RED, description = "Color of the marked position.")
+    private val markedPositionColor: Color by ColorSetting("Marked Position", Color.RED, description = "Color of the marked position.")
     private val resetKey: Keybinding by KeybindSetting("Reset", Keyboard.KEY_NONE, description = "Resets the solver.").onPress { markedPositions.clear() }
     private val reset by ActionSetting("Reset") { markedPositions.clear() }
 

@@ -1,10 +1,10 @@
 package me.odinclient.features.impl.render
 
+import com.github.stivais.ui.color.Color
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.addVec
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
 import net.minecraft.entity.SharedMonsterAttributes

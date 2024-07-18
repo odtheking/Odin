@@ -1,9 +1,9 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
+import com.github.stivais.ui.color.Color
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.DungeonEvents
 import me.odinmain.utils.*
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.tiles.Rotations
 import net.minecraft.entity.item.EntityItemFrame
@@ -52,15 +52,15 @@ object TTTSolver {
     fun tttRenderWorld() {
         board.forEach { slot ->
             val color = when (slot.state) {
-                State.X -> Color.RED
-                State.O -> Color.BLUE
+                State.X -> Color.MINECRAFT_RED
+                State.O -> Color.MINECRAFT_BLUE
                 else -> Color.WHITE
             }
             Renderer.drawBox(slot.location.toAABB(), color, 1f, fillAlpha = 0f)
         }
 
         toRender?.let {
-            Renderer.drawBox(it.toAABB(), Color.ORANGE, 1f, fillAlpha = 1f)
+            Renderer.drawBox(it.toAABB(), Color.MINECRAFT_GOLD, 1f, fillAlpha = 1f)
         }
     }
 

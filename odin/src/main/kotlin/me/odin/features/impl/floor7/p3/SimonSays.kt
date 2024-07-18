@@ -1,14 +1,14 @@
 package me.odin.features.impl.floor7.p3
 
+import com.github.stivais.ui.color.Color
+import com.github.stivais.ui.color.multiplyAlpha
 import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.floor
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -94,10 +94,10 @@ object SimonSays : Module(
         for (index in clickNeeded until clickInOrder.size) {
             val position = clickInOrder[index]
             val color = when (index) {
-                clickNeeded -> Color(0, 170, 0)
-                clickNeeded + 1 -> Color(255, 170, 0)
-                else -> Color(170, 0, 0)
-            }.withAlpha(.5f)
+                clickNeeded -> Color.MINECRAFT_GREEN
+                clickNeeded + 1 -> Color.MINECRAFT_GOLD
+                else -> Color.MINECRAFT_RED
+            }.multiplyAlpha(0.5f)
             Renderer.drawBlock(position, color, 1f, depth = true, outlineAlpha = 0)
         }
     }

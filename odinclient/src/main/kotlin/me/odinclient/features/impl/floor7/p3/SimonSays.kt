@@ -1,5 +1,7 @@
 package me.odinclient.features.impl.floor7.p3
 
+import com.github.stivais.ui.color.Color
+import com.github.stivais.ui.color.multiplyAlpha
 import me.odinclient.utils.skyblock.PlayerUtils.rightClick
 import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.PostEntityMetadata
@@ -8,10 +10,8 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -141,7 +141,7 @@ object SimonSays : Module(
         val isInSSRange = mc.thePlayer.getDistanceSqToCenter(BlockPos(108, 120, 93)) <= 1.45 * 1.45
         Renderer.drawCylinder(
             Vec3(108.5, 120.0, 93.5), 1.45f, 1.45f, .6f, 35,
-            1, 0f, 90f, 90f, (if (isInSSRange) Color.GREEN else Color.ORANGE).withAlpha(.5f)
+            1, 0f, 90f, 90f, (if (isInSSRange) Color.MINECRAFT_GREEN else Color.MINECRAFT_GOLD).multiplyAlpha(.5f)
         )
 
         if (
@@ -195,10 +195,10 @@ object SimonSays : Module(
         for (index in clickNeeded until clickInOrder.size) {
             val position = clickInOrder[index]
             val color = when (index) {
-                clickNeeded -> Color(0, 170, 0)
-                clickNeeded + 1 -> Color(255, 170, 0)
-                else -> Color(170, 0, 0)
-            }.withAlpha(.5f)
+                clickNeeded -> Color.MINECRAFT_GREEN
+                clickNeeded + 1 -> Color.MINECRAFT_GOLD
+                else -> Color.MINECRAFT_RED
+            }.multiplyAlpha(.5f)
             Renderer.drawBlock(position, color, 1f, depth = true, outlineAlpha = 0)
         }
     }

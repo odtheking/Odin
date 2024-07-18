@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.nether
 
+import com.github.stivais.ui.color.Color
 import me.odinmain.events.impl.RenderEntityModelEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -7,10 +8,9 @@ import me.odinmain.features.impl.nether.FreshTimer.highlightFresh
 import me.odinmain.features.impl.nether.FreshTimer.highlightFreshColor
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.OldColorSetting
+import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.utils.addVec
 import me.odinmain.utils.distanceSquaredTo
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.OutlineUtils
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
@@ -26,8 +26,8 @@ object TeamHighlight : Module(
 ) {
     private val playerOutline: Boolean by BooleanSetting("Player Outline", true, description = "Outlines the player")
     private val highlightName: Boolean by BooleanSetting("Name Highlight", true, description = "Highlights the player name")
-    private val outlineColor: Color by OldColorSetting("Outline Color", Color.PURPLE, true, description = "Color of the player outline").withDependency { playerOutline }
-    private val nameColor: Color by OldColorSetting("Name Color", Color.PINK, true, description = "Color of the name highlight").withDependency { highlightName }
+    private val outlineColor: Color by ColorSetting("Outline Color", Color.MINECRAFT_DARK_PURPLE, true, description = "Color of the player outline").withDependency { playerOutline }
+    private val nameColor: Color by ColorSetting("Name Color", Color.MINECRAFT_LIGHT_PURPLE, true, description = "Color of the name highlight").withDependency { highlightName }
 
     @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {

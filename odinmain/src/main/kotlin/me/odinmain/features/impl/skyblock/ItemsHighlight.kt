@@ -1,9 +1,9 @@
 package me.odinmain.features.impl.skyblock
 
+import com.github.stivais.ui.color.Color
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.HighlightRenderer
 import me.odinmain.utils.render.HighlightRenderer.highlightModeDefault
 import me.odinmain.utils.render.HighlightRenderer.highlightModeList
@@ -32,8 +32,8 @@ object ItemsHighlight : Module(
     private fun getEntityOutlineColor(entity: EntityItem): Color {
         return when {
             !colorStyle -> getRarity(entity.entityItem.lore)?.color ?: Color.WHITE
-            entity.ticksExisted <= 11 -> Color.YELLOW
-            entity.getDistanceToEntity(mc.thePlayer) <= 3.5 -> Color.GREEN
+            entity.ticksExisted <= 11 -> Color.MINECRAFT_YELLOW
+            entity.getDistanceToEntity(mc.thePlayer) <= 3.5 -> Color.MINECRAFT_GREEN
             else -> Color.RED
         }
     }

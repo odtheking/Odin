@@ -1,10 +1,11 @@
 package me.odinmain.utils.render
 
+import com.github.stivais.ui.color.*
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
+import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.*
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.client.renderer.texture.TextureUtil
@@ -16,13 +17,11 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL11
-import org.lwjgl.opengl.GL13
 import org.lwjgl.util.glu.Cylinder
 import org.lwjgl.util.glu.GLU
 import org.lwjgl.util.vector.Vector3f
 import java.awt.image.BufferedImage
 import kotlin.math.*
-
 
 object RenderUtils {
 
@@ -30,6 +29,17 @@ object RenderUtils {
     private val worldRenderer: WorldRenderer = tessellator.worldRenderer
     private val beaconBeam = ResourceLocation("textures/entity/beacon_beam.png")
     private val renderManager: RenderManager = mc.renderManager
+    val scaleFactor get() = ScaledResolution(mc).scaleFactor.toFloat()
+
+    data class Box(var x: Number, var y: Number, var w: Number, var h: Number)
+    data class BoxWithClass<T : Number>(var x: T, var y: T, var w: T, var h: T)
+    fun Box.expand(factor: Number): Box = Box(this.x - factor, this.y - factor, this.w + factor * 2, this.h + factor * 2)
+    fun Box.isPointWithin(x: Number, y: Number): Boolean {
+        return x.toDouble() >= this.x.toDouble() &&
+                y.toDouble() >= this.y.toDouble() &&
+                x.toDouble() <= (this.x.toDouble() + this.w.toDouble()) &&
+                y.toDouble() <= (this.y.toDouble() + this.h.toDouble())
+    }
 
     /**
      * Gets the rendered x-coordinate of an entity based on its last tick and current tick positions.
@@ -104,7 +114,7 @@ object RenderUtils {
         GlStateManager.disableLighting()
         GlStateManager.disableAlpha()
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
+        GlStateManager.translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
     }
 
     fun depth(depth: Boolean) {
@@ -126,7 +136,7 @@ object RenderUtils {
 
     fun Color.bind() {
         GlStateManager.resetColor()
-        GlStateManager.color(r / 255f, g / 255f, b / 255f, a / 255f)
+        GlStateManager.color(red / 255f, green / 255f, blue / 255f, alpha / 255f)
     }
 
     private fun getRenderPos(vec: Vec3): Vec3 {
@@ -235,10 +245,10 @@ object RenderUtils {
         GlStateManager.pushMatrix()
         GlStateManager.enableBlend()
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
+        GlStateManager.translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
 
-        fun WorldRenderer.color(alpha: Float = color.alpha) { // local function is used to simplify this.
-            this.color(color.r / 255f, color.g / 255f, color.b / 255f, alpha).endVertex()
+        fun WorldRenderer.color(alpha: Float = color.alpha.toFloat()) { // local function is used to simplify this.
+            this.color(color.red / 255f, color.green / 255f, color.blue / 255f, alpha).endVertex()
         }
 
         worldRenderer {
@@ -336,7 +346,7 @@ object RenderUtils {
     fun drawStringInWorld(
         text: String,
         vec3: Vec3,
-        color: Color = Color.WHITE.withAlpha(1f),
+        color: Color = Color.WHITE.withAlpha(1),
         depthTest: Boolean = true,
         scale: Float = 0.3f,
         shadow: Boolean = false
@@ -486,7 +496,7 @@ object RenderUtils {
         }
 
         if ((box.x > 0f && box.y > 0f && box.x <= mc.displayWidth && box.y <= mc.displayHeight) || (box.w > 0 && box.h > 0 && box.w <= mc.displayWidth && box.h <= mc.displayHeight))
-            rectangleOutline(box.x, box.y, box.w - box.x, box.h - box.y, color, 1f, lineWidth)
+            //rectangleOutline(box.x, box.y, box.w - box.x, box.h - box.y, color, 1f, lineWidth)
 
         GlStateManager.disableBlend()
         GL11.glEnable(GL11.GL_DEPTH_TEST)
@@ -513,50 +523,6 @@ object RenderUtils {
         }
         return Vec2f(screenX, screenY)
     }
-
-    private val BUF_FLOAT_4 = BufferUtils.createFloatBuffer(4)
-    var isRenderingOutlinedEntities = false
-        private set
-
-    fun enableOutlineMode() {
-        isRenderingOutlinedEntities = true
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL13.GL_COMBINE)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_RGB, GL11.GL_REPLACE)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE0_RGB, GL13.GL_CONSTANT)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND0_RGB, GL11.GL_SRC_COLOR)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_ALPHA, GL11.GL_REPLACE)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE0_ALPHA, GL11.GL_TEXTURE)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND0_ALPHA, GL11.GL_SRC_ALPHA)
-    }
-    fun outlineColor(color: Color) {
-        BUF_FLOAT_4.put(0, color.redFloat)
-        BUF_FLOAT_4.put(1, color.greenFloat)
-        BUF_FLOAT_4.put(2, color.blueFloat)
-        BUF_FLOAT_4.put(3, color.alphaFloat)
-        GL11.glTexEnv(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_COLOR, BUF_FLOAT_4)
-    }
-
-    fun disableOutlineMode() {
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_MODULATE)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_RGB, GL11.GL_MODULATE)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE0_RGB, GL11.GL_TEXTURE)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND0_RGB, GL11.GL_SRC_COLOR)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_ALPHA, GL11.GL_MODULATE)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE0_ALPHA, GL11.GL_TEXTURE)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND0_ALPHA, GL11.GL_SRC_ALPHA)
-        isRenderingOutlinedEntities = false
-    }
-
-    /**
-     * Reads a shader file as a text file, and returns the contents
-     *
-     * @param name The name of the shader file
-     * @param ext The file extension of the shader file (usually fsh or vsh)
-     *
-     * @return The contents of the shader file at the given path.
-     */
-    private fun readShader(name: String, ext: String): String =
-        OdinMain::class.java.getResource("/shaders/source/$name.$ext")?.readText() ?: ""
 
     /**
      * Loads a BufferedImage from a path to a resource in the project
@@ -588,8 +554,8 @@ object RenderUtils {
         GlStateManager.pushMatrix()
         GlStateManager.enableBlend()
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        translate(x, y, 0f)
-        scale(scale, scale, scale)
+        GlStateManager.translate(x, y, 0f)
+        GlStateManager.scale(scale, scale, scale)
         color.bind()
         var yOffset = y - mc.fontRendererObj.FONT_HEIGHT
         text.split("\n").forEach {

@@ -5,7 +5,7 @@ import com.github.stivais.ui.UIScreen
 import com.github.stivais.ui.UIScreen.Companion.open
 import com.github.stivais.ui.animation.Animation
 import com.github.stivais.ui.animation.Animations
-import com.github.stivais.ui.color.Color
+import com.github.stivais.ui.color.*
 import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.sizes.Bounding
@@ -22,14 +22,12 @@ import me.odinmain.features.*
 import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.utils.capitalizeFirst
 import me.odinmain.utils.sendDataToServer
 import me.odinmain.utils.skyblock.*
 import net.minecraft.event.ClickEvent
 import net.minecraft.util.ChatComponentText
 import org.lwjgl.input.Keyboard
-import me.odinmain.utils.render.Color as _Color
 
 @AlwaysActive
 object ClickGUI: Module(
@@ -43,11 +41,6 @@ object ClickGUI: Module(
 //    val blur: Boolean by BooleanSetting("Blur", false, description = "Toggles the background blur for the gui.")
     val enableNotification: Boolean by BooleanSetting("Enable chat notifications", true, description = "Sends a message when you toggle a module with a keybind")
 
-    // remove
-    val oldColor by OldColorSetting("Gui Color", _Color(50, 150, 220), allowAlpha = false, description = "Color theme in the gui.")
-    // remove
-    val switchType: Boolean by DualSetting("Switch Type", "Checkbox", "Switch", default = true, description = "Switches the type of the settings in the gui.").hide()
-
     // by default on?
     val hudChat by BooleanSetting("Shows HUDs in GUIs", true, description = "Shows HUDs in GUIs")
 
@@ -59,7 +52,7 @@ object ClickGUI: Module(
     val devMessages: Boolean by BooleanSetting("Dev Messages", true, description = "Enables dev messages in chat.").withDependency { DevPlayers.isDev }
     val devSize: Boolean by BooleanSetting("Dev Size", true, description = "Toggles client side dev size.").withDependency { DevPlayers.isDev }
     private val devWings: Boolean by BooleanSetting("Dev Wings", false, description = "Toggles client side dev wings.").withDependency { DevPlayers.isDev }
-    private val devWingsColor by OldColorSetting("Dev Wings Color", _Color(255, 255, 255), description = "Color of the dev wings.").withDependency { DevPlayers.isDev }
+    private val devWingsColor by ColorSetting("Dev Wings Color", Color.RGB(255, 255, 255), description = "Color of the dev wings.").withDependency { DevPlayers.isDev }
     private val devSizeX: Float by NumberSetting("Dev Size X", 1f, -1f, 3f, 0.1, description = "X scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
     private val devSizeY: Float by NumberSetting("Dev Size Y", 1f, -1f, 3f, 0.1, description = "Y scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
     private val devSizeZ: Float by NumberSetting("Dev Size Z", 1f, -1f, 3f, 0.1, description = "Z scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
@@ -71,12 +64,12 @@ object ClickGUI: Module(
     val reset by ActionSetting("Send Dev Data") {
         showHidden = false
         scope.launch {
-            modMessage(sendDataToServer(body = "${mc.thePlayer.name}, [${devWingsColor.r},${devWingsColor.g},${devWingsColor.b}], [$devSizeX,$devSizeY,$devSizeZ], $devWings, $passcode", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
+            modMessage(sendDataToServer(body = "${mc.thePlayer.name}, [${devWingsColor.red},${devWingsColor.green},${devWingsColor.blue}], [$devSizeX,$devSizeY,$devSizeZ], $devWings, $passcode", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
             DevPlayers.updateDevs()
         }
     }.withDependency { DevPlayers.isDev }
 
-    val action by ActionSetting("Open HUD Editor", description = "Opens the HUD Editor, allowing you to reposition HUDs") { OdinMain.display = EditHUDGui }
+    val action by ActionSetting("Open HUD Editor", description = "Opens the HUD Editor, allowing you to reposition HUDs") { /*OdinMain.display = EditHUDGui*/ }
 
     private var joined: Boolean by BooleanSetting("First join", false).hide()
     var lastSeenVersion: String by StringSetting("Last seen version", "1.0.0").hide()

@@ -1,11 +1,11 @@
 package me.odinclient.features.impl.render
 
+import com.github.stivais.ui.color.Color
 import me.odinmain.events.impl.RenderEntityModelEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.addVec
 import me.odinmain.utils.render.*
 import me.odinmain.utils.render.RenderUtils.renderX
@@ -40,7 +40,7 @@ object Trajectories : Module(
     private val width: Float by NumberSetting("Line Width", 1f, 0.1f, 5.0, 0.1f)
     private val planeSize: Float by NumberSetting("Plane Size", 2f, 0.1f, 5.0, 0.1f).withDependency { plane }
     private val boxSize: Float by NumberSetting("Box Size", 0.5f, 0.5f, 3.0f, 0.1f).withDependency { boxes }
-    private val color: Color by OldColorSetting("Color", Color.CYAN, true)
+    private val color: Color by ColorSetting("Color", Color.MINECRAFT_AQUA, true)
 
     private var boxRenderQueue: MutableList<Pair<Vec3, Vec3>> = mutableListOf()
     private var entityRenderQueue = mutableListOf<Entity>()
@@ -230,7 +230,7 @@ object Trajectories : Module(
             null -> return
         }
         val aabb = AxisAlignedBB(vec1.xCoord, vec1.yCoord, vec1.zCoord, vec2.xCoord, vec2.yCoord, vec2.zCoord)
-        RenderUtils.drawFilledAABB(aabb, color.withAlpha(color.alpha / 2, true), false)
+        RenderUtils.drawFilledAABB(aabb, color, false)
     }
 
     private fun drawLine(lines: ArrayList<Vec3>) {
