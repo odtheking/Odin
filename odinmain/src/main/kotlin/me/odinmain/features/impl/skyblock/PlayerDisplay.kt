@@ -56,9 +56,9 @@ object PlayerDisplay : Module(
 
     private val defenseHud: HudElement by HudSetting("Defense Hud", 10f, 10f, 1f, true) { example ->
         var text = if (example)
-            "1000"
+            formatNumberWithCustomSeparator(1000)
         else if (SkyblockPlayer.currentDefense != 0)
-            "${SkyblockPlayer.currentDefense}"
+            formatNumberWithCustomSeparator(SkyblockPlayer.currentDefense)
         else return@HudSetting 0f to 0f
 
         if (showIcons) text += "❈"
