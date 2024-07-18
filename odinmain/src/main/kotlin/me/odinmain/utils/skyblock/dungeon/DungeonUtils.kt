@@ -251,7 +251,7 @@ object DungeonUtils {
     fun isSecret(state: IBlockState, pos: BlockPos): Boolean {
         if (state.block.equalsOneOf(Blocks.chest, Blocks.trapped_chest, Blocks.lever)) return true
         else if (state.block is BlockSkull) {
-            val tile = mc.theWorld.getTileEntity(pos) ?: return false
+            val tile = mc.theWorld?.getTileEntity(pos) ?: return false
             if (tile !is TileEntitySkull) return false
             return tile.playerProfile?.id.toString().equalsOneOf(WITHER_ESSENCE_ID, REDSTONE_KEY)
         }

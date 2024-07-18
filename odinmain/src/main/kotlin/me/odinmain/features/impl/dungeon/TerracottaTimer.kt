@@ -41,7 +41,7 @@ object TerracottaTimer : Module(
         val terracottaList = terracottaSpawning.toList()
         terracottaList.forEach {
             Renderer.drawStringInWorld(
-                "${String.format(Locale.US, "%.2f",it.time / 100.0)}s",
+                "${ String.format(Locale.US, "%.2f", it.time / 100.0) }s",
                 it.pos, getColor(it.time / 100.0), depth = false, scale = 0.03f
             )
         }

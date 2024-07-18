@@ -107,8 +107,8 @@ object BloodCamp : Module(
 
     @SubscribeEvent
     fun onPostMetadata(event: PostEntityMetadata) {
-        val entity = mc.theWorld.getEntityByID(event.packet.entityId) ?: return
-        if (watcher.isNotEmpty() || entity !is EntityZombie || !bloodHelper) return
+        val entity = mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityZombie ?: return
+        if (watcher.isNotEmpty() || !bloodHelper) return
 
         val texture = getSkullValue(entity) ?: return
         if (watcherSkulls.contains(texture)) {

@@ -9,6 +9,7 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.RenderUtils.outlineBounds
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.LocationUtils.currentDungeon
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -28,7 +29,7 @@ object Mimic : Module(
     val mimicMessage: String by StringSetting("Mimic Message", "Mimic Killed!", 128, description = "Message sent when mimic is detected as killed").withDependency { mimicMessageToggle }
     val reset: () -> Unit by ActionSetting("Send message", description = "Sends Mimic killed message in party chat.") { mimicKilled() }
     private val mimicBox: Boolean by BooleanSetting("Mimic Box", false, description = "Draws a box around the mimic chest.")
-    private val style: Int by SelectorSetting("Style", Renderer.defaultStyle, Renderer.styles, description = Renderer.styleDesc).withDependency { mimicBox }
+    private val style: Int by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { mimicBox }
     private val color: Color by ColorSetting("Color", Color.RED.withAlpha(0.5f), allowAlpha = true, description = "The color of the box.").withDependency { mimicBox }
     private val lineWidth: Float by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.").withDependency { mimicBox }
 
@@ -50,7 +51,7 @@ object Mimic : Module(
     @SubscribeEvent
     fun onRenderLast(event: RenderChestEvent.Post) {
         if (!mimicBox || !DungeonUtils.inDungeons || DungeonUtils.inBoss || event.chest.chestType != 1) return
-        Renderer.drawStyledBox(event.chest.pos.toAABB(), color = color, style =  style, width = lineWidth, depth = isLegitVersion)
+        Renderer.drawStyledBox(event.chest.pos.toAABB().outlineBounds(), color = color, style =  style, width = lineWidth, depth = isLegitVersion)
     }
 
     private fun mimicKilled() {

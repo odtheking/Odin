@@ -34,10 +34,11 @@ object SupplyHelper : Module(
             startRun = System.currentTimeMillis()
         }
 
-        onMessageCancellable(Regex("(\\[.+])? (\\w+) recovered one of Elle's supplies! \\((\\d/\\d)\\)")) {
+        onMessageCancellable(Regex("(\\[\\w+])?(\\w+) recovered one of Elle's supplies! \\((\\d)\\/(\\d)\\)")) {
             if (!sendSupplyTime) return@onMessageCancellable
-            val matchResult = Regex("(\\[.+])? (\\w+) recovered one of Elle's supplies! \\((\\d/\\d)\\)").find(it.message) ?: return@onMessageCancellable
-            modMessage("§6${matchResult.groupValues[2]}§a took ${formatTime((System.currentTimeMillis() - startRun))} to recover supply §8(${matchResult.groupValues[3]})!", false)
+            val matchResult = Regex("(\\[\\w+])?(\\w+) recovered one of Elle's supplies! \\((\\d)\\/(\\d)\\)").find(it.message) ?: return@onMessageCancellable
+            val (_, name, current, total) = matchResult.groupValues
+            modMessage("$name, §a§lrecovered a supply at ${formatTime((System.currentTimeMillis() - startRun))}!, §r§8($current/$total)", false)
             it.isCanceled = true
         }
     }

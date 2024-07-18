@@ -54,7 +54,7 @@ object ScanUtils {
     fun getCore(x: Int, z: Int): Int {
         val blocks = arrayListOf<Int>()
         for (y in 140 downTo 12) {
-            val id = Block.getIdFromBlock(mc.theWorld.getBlockState(BlockPos(x, y, z)).block)
+            val id = Block.getIdFromBlock(mc.theWorld?.getBlockState(BlockPos(x, y, z))?.block)
             if (!id.equalsOneOf(5, 54)) blocks.add(id)
         }
         return blocks.joinToString("").hashCode()

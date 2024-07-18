@@ -100,9 +100,10 @@ object ArrowAlign : Module(
     }
 
     private fun getFrames(): List<Int> {
-        val itemFrames = mc.theWorld.getEntities(EntityItemFrame::class.java) {
-            it != null && it.displayedItem?.item == Items.arrow
-        } ?: return List(25) { -1 }
+        val itemFrames = mc.theWorld.loadedEntityList
+            .filterIsInstance<EntityItemFrame>()
+            .filter { it.displayedItem?.item == Items.arrow }
+        if (itemFrames.isEmpty()) return List(25) { -1 }
 
         val positionToRotationMap = itemFrames.associate { it.positionVector.flooredVec().toString() to it.rotation }
 
@@ -135,7 +136,7 @@ object ArrowAlign : Module(
     )
 
     private fun triggerBot() {
-        if (!triggerBotClock.hasTimePassed(delay) || (sneakToDisableTriggerbot && mc.thePlayer.isSneaking)) return
+        if (!triggerBotClock.hasTimePassed(delay) || (sneakToDisableTriggerbot && mc.thePlayer.isSneaking) || !triggerBot) return
         val targetFrame = mc.objectMouseOver?.entityHit as? EntityItemFrame ?: return
 
         val targetFramePosition = targetFrame.positionVector.flooredVec()

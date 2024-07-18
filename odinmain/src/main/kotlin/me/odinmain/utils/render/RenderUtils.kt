@@ -29,7 +29,7 @@ import kotlin.math.*
 object RenderUtils {
 
     private val tessellator: Tessellator = Tessellator.getInstance()
-    val worldRenderer: WorldRenderer = tessellator.worldRenderer
+    private val worldRenderer: WorldRenderer = tessellator.worldRenderer
     private val beaconBeam = ResourceLocation("textures/entity/beacon_beam.png")
     private val renderManager: RenderManager = mc.renderManager
 
@@ -100,7 +100,7 @@ object RenderUtils {
         pos(x, y, z).normal(nx, ny, nz).endVertex()
     }
 
-    fun preDraw() {
+    private fun preDraw() {
         GlStateManager.disableTexture2D()
         GlStateManager.enableBlend()
         GlStateManager.disableLighting()
@@ -119,7 +119,7 @@ object RenderUtils {
         GlStateManager.depthMask(true)
     }
 
-    fun postDraw() {
+    private fun postDraw() {
         GlStateManager.disableBlend()
         GlStateManager.enableAlpha()
         GlStateManager.enableTexture2D()
@@ -389,12 +389,12 @@ object RenderUtils {
      * @param rot3        Rotation parameter.
      * @param color       The color of the cylinder.
      * @param depth       Indicates whether to phase the cylinder (default is false).
-     * @param linemode    Indicates whether to draw the cylinder in line mode (default is false).
+     * @param lineMode    Indicates whether to draw the cylinder in line mode (default is false).
      */
     fun drawCylinder(
         pos: Vec3, baseRadius: Number, topRadius: Number, height: Number,
         slices: Number, stacks: Number, rot1: Number, rot2: Number, rot3: Number,
-        color: Color, depth: Boolean = false, linemode: Boolean = false
+        color: Color, depth: Boolean = false, lineMode: Boolean = false
     ) {
         val renderPos = getRenderPos(pos)
 
@@ -416,7 +416,7 @@ object RenderUtils {
 
         val cyl = Cylinder()
         cyl.drawStyle = GLU.GLU_LINE
-        if (linemode) cyl.draw(baseRadius.toFloat(), topRadius.toFloat(), height.toFloat(), slices.toInt(), stacks.toInt())
+        if (lineMode) cyl.draw(baseRadius.toFloat(), topRadius.toFloat(), height.toFloat(), slices.toInt(), stacks.toInt())
         else Cylinder().draw(baseRadius.toFloat(), topRadius.toFloat(), height.toFloat(), slices.toInt(), stacks.toInt())
 
         GlStateManager.enableCull()

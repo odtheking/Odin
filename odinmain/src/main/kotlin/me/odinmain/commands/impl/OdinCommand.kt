@@ -14,6 +14,7 @@ import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.equalsOneOf
+import me.odinmain.utils.fillItemFromSack
 import me.odinmain.utils.skyblock.*
 import kotlin.math.round
 
@@ -23,19 +24,15 @@ val mainCommand = commodore("od", "odin") {
     }
 
     literal("ep").runs {
-        val amount = mc.thePlayer.inventory.mainInventory.find { it?.itemID == "ENDER_PEARL" }?.stackSize ?: 0
-        if (amount != 16) sendCommand("gfs ender_pearl ${16 - amount}") else modMessage("§cAlready at max stack size.")
+        fillItemFromSack(16, "ENDER_PEARL", "ender_pearl", true)
     }
 
     literal("ij").runs {
-        val amount = mc.thePlayer.inventory.mainInventory.find { it?.itemID == "INFLATABLE_JERRY" }?.stackSize ?: 0
-        if (amount != 64) sendCommand("gfs inflatable_jerry ${64 - amount}") else modMessage("§cAlready at max stack size.")
-
+        fillItemFromSack(64, "INFLATABLE_JERRY", "inflatable_jerry", true)
     }
 
     literal("sl").runs {
-        val amount = mc.thePlayer.inventory.mainInventory.find { it?.itemID == "SPIRIT_LEAP" }?.stackSize ?: 0
-        if (amount != 16) sendCommand("gfs spirit_leap ${16 - amount}") else modMessage("§cAlready at max stack size.")
+        fillItemFromSack(16, "SPIRIT_LEAP", "spirit_leap", true)
     }
 
     literal("reset") {
