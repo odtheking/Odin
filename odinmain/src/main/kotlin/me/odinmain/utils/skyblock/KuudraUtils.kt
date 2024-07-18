@@ -68,7 +68,7 @@ object KuudraUtils {
     init {
         Executor(500) {
             if (!LocationUtils.currentArea.isArea(Island.Kuudra)) return@Executor
-            val entities = mc.theWorld.loadedEntityList
+            val entities = mc.theWorld?.loadedEntityList ?: return@Executor
             giantZombies = entities.filterIsInstance<EntityGiantZombie>().filter{ it.heldItem.unformattedName == "Head" }.toMutableList()
 
             kuudraEntity = entities.filterIsInstance<EntityMagmaCube>().filter { it.slimeSize == 30 && it.getEntityAttribute(SharedMonsterAttributes.maxHealth).baseValue.toFloat() == 100000f }[0]
@@ -107,7 +107,7 @@ object KuudraUtils {
             val text = entry.first.displayName?.formattedText?.noControlCodes ?: return@forEach
             val (_, _, name) = Regex("^\\[(\\d+)] (?:\\[\\w+] )*(\\w+)").find(text)?.groupValues ?: return@forEach
             val previousTeammate = previousTeammates.find { it.playerName == name }
-            val entity = mc.theWorld.getPlayerEntityByName(name)
+            val entity = mc.theWorld?.getPlayerEntityByName(name)
             teammates.add(KuudraPlayer(name, previousTeammate?.eatFresh ?: false, previousTeammate?.eatFreshTime ?: 0, entity))
         }
         return teammates

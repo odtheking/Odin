@@ -31,7 +31,7 @@ object KeyHighlight : Module(
 
     @SubscribeEvent
     fun postMetadata(event: PostEntityMetadata) {
-        val entity = mc.theWorld.getEntityByID(event.packet.entityId) as? EntityArmorStand ?: return
+        val entity = mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityArmorStand ?: return
         if (!DungeonUtils.inDungeons || DungeonUtils.inBoss) return
 
         currentKey = when (entity.name.noControlCodes) {

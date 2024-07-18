@@ -86,7 +86,7 @@ object CustomHighlight : Module(
 
     @SubscribeEvent
     fun postMeta(event: PostEntityMetadata) {
-        val entity = mc.theWorld.getEntityByID(event.packet.entityId) ?: return
+        val entity = mc.theWorld?.getEntityByID(event.packet.entityId) ?: return
         checkEntity(entity)
         if (starredMobESP) checkStarred(entity)
         if (shadowAssasin && isLegitVersion) checkAssassin(entity)

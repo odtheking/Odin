@@ -27,7 +27,7 @@ object LocationUtils {
     init {
         Executor(500) {
             if (!inSkyblock)
-                inSkyblock = onHypixel && mc.theWorld.scoreboard.getObjectiveInDisplaySlot(1)?.let { cleanSB(it.displayName).contains("SKYBLOCK") } ?: false
+                inSkyblock = onHypixel && mc.theWorld?.scoreboard?.getObjectiveInDisplaySlot(1)?.let { cleanSB(it.displayName).contains("SKYBLOCK") } ?: false
 
             if (currentArea.isArea(Island.Kuudra) && kuudraTier == 0)
                 getLines().find { cleanLine(it).contains("Kuudra's Hollow (") }?.let {

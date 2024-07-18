@@ -68,5 +68,4 @@ object BoulderSolver {
     fun reset() {
         currentPositions = mutableListOf()
     }
-
 }

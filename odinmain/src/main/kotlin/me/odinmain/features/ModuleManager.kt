@@ -66,7 +66,7 @@ object ModuleManager {
 
         //skyblock
         NoCursorReset, AutoSprint, BlazeAttunement, ChatCommands, DeployableTimer, DianaHelper, ArrowHit,
-        Ragaxe, MobSpawn, Splits, WardrobeKeybinds, InvincibilityTimer, EnrageDisplay, /*ItemsHighlight,*/
+        Ragaxe, MobSpawn, Splits, WardrobeKeybinds, InvincibilityTimer, EnrageDisplay, ItemsHighlight,
         PlayerDisplay, FarmKeys, /*PartyEncoding,*/ PetKeybinds, /*SkillsSucks,*/ ChatEmotes, CommandKeybinds,
 
         // kuudra

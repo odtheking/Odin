@@ -63,7 +63,7 @@ object DeployableTimer : Module(
 
     @SubscribeEvent
     fun postMetadata(event: PostEntityMetadata) {
-        var entity = mc.theWorld.getEntityByID(event.packet.entityId) as? EntityArmorStand ?: return
+        var entity = mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityArmorStand ?: return
 
         if (activeDeployables.any { it.entity == entity }) return
         val name = entity.name.noControlCodes

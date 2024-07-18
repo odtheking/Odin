@@ -97,8 +97,8 @@ object GhostBlocks : Module(
 
     private fun toAir(blockPos: BlockPos) {
         getBlockAt(blockPos).let { block ->
-            if (block !in blacklist && (block !== Blocks.skull || (ghostBlockSkulls && (mc.theWorld.getTileEntity(blockPos) as? TileEntitySkull)
-                    ?.playerProfile?.id?.toString() != "26bb1a8d-7c66-31c6-82d5-a9c04c94fb02"))) mc.theWorld.setBlockToAir(blockPos)
+            if (block !in blacklist && (block !== Blocks.skull || (ghostBlockSkulls && (mc.theWorld?.getTileEntity(blockPos) as? TileEntitySkull)
+                    ?.playerProfile?.id?.toString() != "26bb1a8d-7c66-31c6-82d5-a9c04c94fb02"))) mc.theWorld?.setBlockToAir(blockPos)
         }
     }
 

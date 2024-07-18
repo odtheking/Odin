@@ -56,7 +56,7 @@ object DioriteFucker : Module(
     }
 
     private fun setGlass(pos: BlockPos) =
-        mc.theWorld.setBlockState(pos, if (stainedGlass) Blocks.stained_glass.getStateFromMeta(color) else Blocks.glass.defaultState, 3)
+        mc.theWorld?.setBlockState(pos, if (stainedGlass) Blocks.stained_glass.getStateFromMeta(color) else Blocks.glass.defaultState, 3)
 
 
     private fun isDiorite(pos: BlockPos): Boolean =
