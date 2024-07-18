@@ -43,14 +43,14 @@ object HighlightRenderer {
         entities[HighlightType.Boxes]?.forEach {
             Renderer.drawBox(it.entity.renderBoundingBox, it.color, it.thickness, depth = it.depth, fillAlpha = 0)
         }
-        entities[HighlightType.Box2d]?.filter { it.depth && mc.thePlayer.canEntityBeSeen(it.entity) }?.forEach {
+        entities[HighlightType.Box2d]?.filter { !it.depth || mc.thePlayer.canEntityBeSeen(it.entity) }?.forEach {
             Renderer.draw2DEntity(it.entity, it.thickness * 6, it.color)
         }
     }
 
     @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
-        val entities = entities[HighlightType.Outline]?.filter { it.depth && mc.thePlayer.canEntityBeSeen(it.entity) } ?: return
+        val entities = entities[HighlightType.Outline]?.filter { !it.depth || mc.thePlayer.canEntityBeSeen(it.entity) } ?: return
         if (entities.isEmpty()) return
         val entity = entities.find { it.entity == event.entity } ?: return
         OutlineUtils.outlineEntity(event, entity.thickness, entity.color, shouldCancelHurt = true)

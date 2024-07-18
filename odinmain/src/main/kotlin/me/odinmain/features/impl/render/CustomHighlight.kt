@@ -30,7 +30,7 @@ object CustomHighlight : Module(
     private val shadowAssasin: Boolean by BooleanSetting("Shadow Assassin", false, description = "Highlights Shadow Assassins").withDependency { !isLegitVersion }
     private val color: Color by ColorSetting("Color", Color.WHITE, true)
     //private val mode: Int by SelectorSetting("Mode", HighlightRenderer.highlightModeDefault, HighlightRenderer.highlightModeList)
-    val mode: Int by SelectorSetting("Mode", "Outline", arrayListOf("Outline", "Boxes", "2D"))
+    val mode: Int by SelectorSetting("Mode", HighlightRenderer.HIGHLIGHT_MODE_DEFAULT, HighlightRenderer.highlightModeList)
     private val thickness: Float by NumberSetting("Line Width", 1f, .1f, 4f, .1f, description = "The line width of Outline/ Boxes/ 2D Boxes").withDependency { mode != HighlightRenderer.HighlightType.Overlay.ordinal }
     //private val glowIntensity: Float by NumberSetting("Glow Intensity", 2f, .5f, 5f, .1f, description = "The intensity of the glow effect.").withDependency { mode == HighlightRenderer.HighlightType.Glow.ordinal }
     private val tracerLimit: Int by NumberSetting("Tracer Limit", 0, 0, 15, description = "Highlight will draw tracer to all mobs when you have under this amount of mobs marked, set to 0 to disable. Helpful for finding lost mobs.").withDependency { !isLegitVersion }
@@ -47,40 +47,16 @@ object CustomHighlight : Module(
             getEntities()
         }
 
-        execute(30_000) {
+        execute(30_000) { // TODO: Make sure this is needed, since scan delay *should* take care of the same?
             currentEntities.clear()
             getEntities()
         }
 
         onWorldLoad { currentEntities.clear() }
 
-        /*HighlightRenderer.addEntityGetter({ HighlightRenderer.HighlightType.entries[mode]}) {
+        HighlightRenderer.addEntityGetter({ HighlightRenderer.HighlightType.entries[mode]}) {
             if (!enabled) emptyList()
-            else currentEntities.map { HighlightRenderer.HighlightEntity(it, color, thickness, !renderThrough, glowIntensity) }
-        }*/
-    }
-
-    @SubscribeEvent
-    fun onRenderEntityModel(event: RenderEntityModelEvent) {
-        if (event.entity !in currentEntities) return
-        if (showInvisible && event.entity.isInvisible && isLegitVersion) event.entity.isInvisible = false
-        if (mode != 0 || (depthCheck && !mc.thePlayer.canEntityBeSeen(event.entity))) return
-        profile("Outline Esp") { OutlineUtils.outlineEntity(event, thickness, color, true) }
-    }
-
-    @SubscribeEvent
-    fun onRenderWorldLast(event: RenderWorldLastEvent) {
-        if (!mode.equalsOneOf(1,2) && tracerLimit == 0) return
-        profile("ESP") {
-            currentEntities.forEach {
-                if (currentEntities.size < tracerLimit && !isLegitVersion)
-                    Renderer.draw3DLine(getPositionEyes(mc.thePlayer.renderVec), getPositionEyes(it.renderVec), color = color)
-
-                if (mode == 1)
-                    Renderer.drawBox(it.renderBoundingBox, color, thickness, depth = depthCheck, fillAlpha = 0)
-                else if (mode == 2 && (mc.thePlayer.canEntityBeSeen(it) || !depthCheck))
-                    Renderer.draw2DEntity(it, thickness, color)
-            }
+            else currentEntities.map { HighlightRenderer.HighlightEntity(it, color, thickness, depthCheck) }
         }
     }
 
@@ -105,7 +81,7 @@ object CustomHighlight : Module(
     }
 
     private fun checkStarred(entity: Entity) {
-        if (entity !is EntityArmorStand || !entity.name.startsWith("§6✯ ") || !entity.name.endsWith("§c❤") || entity in currentEntities || !entity.alwaysRenderNameTag && !depthCheck) return
+        if (entity !is EntityArmorStand || !entity.name.startsWith("§6✯ ") || !entity.name.endsWith("§c❤") || entity in currentEntities || (!entity.alwaysRenderNameTag && depthCheck)) return
         currentEntities.add(getMobEntity(entity) ?: return)
     }
 
