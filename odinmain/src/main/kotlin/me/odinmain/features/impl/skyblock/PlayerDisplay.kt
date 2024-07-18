@@ -26,36 +26,47 @@ object PlayerDisplay : Module(
     private val hideMana: Boolean by BooleanSetting("Hide Mana", true).withDependency { hideActionBar }
     private val hideDefense: Boolean by BooleanSetting("Hide Defense", true).withDependency { hideActionBar }
 
+    private val showIcons: Boolean by BooleanSetting("Show Icons", true, description = "Shows icons indicating what the number means.")
+
     private val healthHud: HudElement by HudSetting("Health Hud", 10f, 10f, 1f, true) {
-        val text =
+        var text =
             if (it)
-                "§c5000/5000❤"
+                "5000/5000"
             else if (SkyblockPlayer.currentHealth != 0 && SkyblockPlayer.maxHealth != 0)
-                "§c${SkyblockPlayer.currentHealth}/${SkyblockPlayer.maxHealth}❤"
+                "${SkyblockPlayer.currentHealth}/${SkyblockPlayer.maxHealth}"
             else return@HudSetting 0f to 0f
 
+        if (showIcons) text += "❤"
 
-        return@HudSetting mcTextAndWidth(text, 2, 2, 2, Color.RED, center = false) * 2f + 2f to 20f
+        return@HudSetting mcTextAndWidth(text, 2, 2, 2, healthColor, center = false) * 2f + 2f to 20f
     }
+    private val healthColor: Color by ColorSetting("Health Color", Color.RED, true)
+
     private val manaHud: HudElement by HudSetting("Mana Hud", 10f, 10f, 1f, true) {
-        val text = if (it)
-            "§b2000/2000✎"
+        var text = if (it)
+            "2000/2000"
         else if (SkyblockPlayer.currentMana != 0 && SkyblockPlayer.maxMana != 0)
-            "§b${SkyblockPlayer.currentMana}/${SkyblockPlayer.maxMana}✎"
+            "${SkyblockPlayer.currentMana}/${SkyblockPlayer.maxMana}"
         else return@HudSetting 0f to 0f
 
-        return@HudSetting mcTextAndWidth(text, 2, 2, 2, Color.BLUE, center = false) * 2f + 2f to 20f
+        if (showIcons) text += "✎"
+
+        return@HudSetting mcTextAndWidth(text, 2, 2, 2, manaColor, center = false) * 2f + 2f to 20f
     }
+    private val manaColor: Color by ColorSetting("Mana Color", Color.BLUE, true)
 
     private val defenseHud: HudElement by HudSetting("Defense Hud", 10f, 10f, 1f, true) {
-        val text = if (it)
-            "§a1000❈"
+        var text = if (it)
+            "1000"
         else if (SkyblockPlayer.currentDefense != 0)
-            "§a${SkyblockPlayer.currentDefense}❈"
+            "${SkyblockPlayer.currentDefense}"
         else return@HudSetting 0f to 0f
 
-        return@HudSetting mcTextAndWidth(text, 2, 2, 2, Color.GREEN, center = false) * 2f + 2f to 20f
+        if (showIcons) text += "❈"
+
+        return@HudSetting mcTextAndWidth(text, 2, 2, 2, defenseColor, center = false) * 2f + 2f to 20f
     }
+    private val defenseColor: Color by ColorSetting("Defense Color", Color.GREEN, true)
 
 
     fun modifyText(text: String): String {
