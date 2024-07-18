@@ -39,9 +39,9 @@ object BlessingDisplay : Module(
         return@HudSetting blessings.filterIndexed { index, blessing ->
             if (!blessing.enabled.invoke()) return@filterIndexed false
             val level = if (example) 19 else blessing.type.current
-            if (level <= 0) return@HudSetting 0f to 0f
-            mcText("${blessing.type.displayString} §a29§r", 0f, 10f * index, 1, blessing.color.invoke(), center = false)
-            true
+            if (level <= 0) return@filterIndexed false
+            mcText("${blessing.type.displayString} §a$level§r", 0f, 10f * index, 1, blessing.color.invoke(), center = false)
+            return@filterIndexed true
         }.let { getMCTextWidth("Power: 19").toFloat() to 10f * it.size.coerceAtLeast(1) }
     }
 
