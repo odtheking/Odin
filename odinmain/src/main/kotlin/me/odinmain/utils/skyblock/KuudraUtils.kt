@@ -16,6 +16,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object KuudraUtils {
     var kuudraTeammates: List<KuudraPlayer> = emptyList()
+    var kuudraTeammatesNoSelf: List<KuudraPlayer> = emptyList()
     var giantZombies: MutableList<EntityGiantZombie> = mutableListOf()
     var supplies = BooleanArray(6) { true }
     var kuudraEntity: EntityMagmaCube = EntityMagmaCube(mc.theWorld)
@@ -32,6 +33,7 @@ object KuudraUtils {
     fun onWorldLoad(event: WorldEvent.Load) {
         phase = 0
         kuudraTeammates = mutableListOf()
+        kuudraTeammatesNoSelf = mutableListOf()
         supplies = BooleanArray(6) { true }
         giantZombies = mutableListOf()
         kuudraEntity = EntityMagmaCube(mc.theWorld)
@@ -96,6 +98,7 @@ object KuudraUtils {
             buildingPiles = entities.filterIsInstance<EntityArmorStand>().filter { it.name.noControlCodes.matches(Regex("PROGRESS: (\\d+)%")) }.map { it }
 
             kuudraTeammates = updateKuudraTeammates(kuudraTeammates)
+            kuudraTeammatesNoSelf = kuudraTeammates.filter { it.playerName != mc.thePlayer?.name }
         }.register()
     }
 

@@ -76,4 +76,12 @@ object DragonCheck {
         val dragon = WitherDragonsEnum.entries.find { lastDragonDeath == it } ?: return
         if (sendNotification && WitherDragons.enabled) modMessage("§${dragon.colorCode}${dragon.name} dragon counts.")
     }
+
+    fun dragonStateConfirmation() {
+        val entities = mc.theWorld?.loadedEntityList ?: return
+        WitherDragonsEnum.entries.forEach { dragon ->
+            if (dragon.state == WitherDragonState.ALIVE && !entities.contains(dragon.entity)) dragon.state = WitherDragonState.DEAD
+            if (dragon.state == WitherDragonState.DEAD && entities.contains(dragon.entity)) dragon.state = WitherDragonState.ALIVE
+        }
+    }
 }
