@@ -209,7 +209,7 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
-        val match = Regex("(.+) (?:activated|completed) a (?:terminal|lever)! \\((\\d)/(\\d)\\)").find(event.message) ?: return
+        val match = Regex("(.{1,16}) (?:activated|completed) a (?:terminal|lever)! \\((\\d)/(\\d)\\)").find(event.message) ?: return
         val playerName = match.groups[1]?.value
         val completionStatus = match.groups[2]?.value
         if (playerName != mc.thePlayer.name) return
