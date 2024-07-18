@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken
 import me.odinmain.events.impl.DungeonEvents
 import me.odinmain.utils.addRotationCoords
 import me.odinmain.utils.equalsOneOf
+import me.odinmain.utils.removeFirstOrNull
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.getBlockIdAt
@@ -62,7 +63,7 @@ object BoulderSolver {
 
     fun playerInteract(event: PlayerInteractEvent) {
         if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || !getBlockIdAt(event.pos).equalsOneOf(77, 323)) return
-        currentPositions.removeIf { it.click == event.pos }
+        currentPositions.removeFirstOrNull { it.click == event.pos }
     }
 
     fun reset() {

@@ -1,7 +1,9 @@
 package me.odinclient.features.impl.dungeon
 
+import com.sun.security.ntlm.Client
 import me.odinclient.utils.skyblock.PlayerUtils.leftClick
 import me.odinclient.utils.skyblock.PlayerUtils.swapToIndex
+import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -11,12 +13,18 @@ import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getPhase
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
+import net.minecraft.block.state.IBlockState
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.init.Blocks
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
+import net.minecraft.network.play.server.S21PacketChunkData
 import net.minecraft.tileentity.TileEntitySkull
 import net.minecraft.util.BlockPos
+import net.minecraftforge.event.entity.player.PlayerInteractEvent
+import net.minecraftforge.event.entity.player.PlayerUseItemEvent.Tick
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.input.Keyboard
 
 object GhostBlocks : Module(
@@ -93,6 +101,23 @@ object GhostBlocks : Module(
                 mc.theWorld?.setBlockState(i, Blocks.stained_glass.defaultState)
             }
         }
+
+        onWorldLoad {
+            sdBlocks.clear()
+        }
+
+        onPacket(S21PacketChunkData::class.java, { enabled && stonkDelayToggle && (!sdOnlySB || LocationUtils.inSkyblock) }) { packet ->
+            val minX = packet.chunkX shl 4
+            val minZ = packet.chunkZ shl 4
+            val maxX = minX + 15
+            val maxZ = minZ + 15
+
+            sdBlocks.filter { it.pos.x in minX..maxX && it.pos.z in minZ..maxZ }.forEach {
+                mc.theWorld.setBlockState(it.pos, Blocks.air.defaultState)
+                it.serverReplaced = true
+                it.state = mc.theWorld.getBlockState(it.pos)
+            }
+        }
     }
 
     private fun toAir(blockPos: BlockPos) {
@@ -102,6 +127,53 @@ object GhostBlocks : Module(
         }
     }
 
+    private val stonkDelayToggle: Boolean by BooleanSetting("Stonk Delay Toggle", description = "Delay mined blocks reset time")
+    private val sdOnlySB: Boolean by BooleanSetting("SD Only In SB", true, description = "Disables Stonk Delay when outside of Skyblock.").withDependency { stonkDelayToggle }
+    private val stonkDelay: Long by NumberSetting("Stonk Delay Time", 200L, 50L, 10000L, 10L, unit = "ms", description = "The time before blocks reset").withDependency { stonkDelayToggle }
+
+    private data class BlockData(val pos: BlockPos, var state: IBlockState, val time: Long, var serverReplaced: Boolean)
+    private val sdBlocks = mutableListOf<BlockData>()
+
+    private fun BlockData.reset() = mc.theWorld.setBlockState(pos, state)
+
+
+    fun breakBlock(pos: BlockPos) {
+        if (!stonkDelayToggle || (sdOnlySB && !LocationUtils.inSkyblock)) return
+        sdBlocks.add(BlockData(pos, mc.theWorld.getBlockState(pos), System.currentTimeMillis(), false))
+    }
+
+    @SubscribeEvent
+    fun onBlockChange(event: BlockChangeEvent) {
+        if (event.update == Blocks.air.defaultState || !stonkDelayToggle || (sdOnlySB && !LocationUtils.inSkyblock)) return
+        sdBlocks.find { event.pos == it.pos }?.let {
+            it.state = event.update
+            it.serverReplaced = true
+            event.isCanceled = true
+        }
+    }
+
+    @SubscribeEvent
+    fun onPlayerInteract(event: PlayerInteractEvent) {
+        if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || !stonkDelayToggle || (sdOnlySB && !LocationUtils.inSkyblock)) return
+        sdBlocks.removeIf { it.pos == (event.pos.offset(event.face) ?: return@removeIf false) }
+    }
+
+    @SubscribeEvent
+    fun tick(event: TickEvent.ClientTickEvent) {
+        if (event.phase != TickEvent.Phase.START || !stonkDelayToggle || (sdOnlySB && !LocationUtils.inSkyblock)) return
+        val currentMillis = System.currentTimeMillis()
+        val blocksToReset = mutableListOf<BlockData>()
+        sdBlocks.removeAll {
+            val timeExisted = currentMillis - it.time
+            val shouldReset = it.serverReplaced && timeExisted >= stonkDelay
+            if (shouldReset) blocksToReset.add(it)
+            shouldReset || (timeExisted >= 10000)
+        }
+        blocksToReset.forEach { it.reset() }
+    }
+
+
+    // TODO: MAKE THIS JSON PLS ITS SO BAD
     private val enderChests = mapOf(
         1 to arrayOf(
             BlockPos(77, 221, 35),

@@ -332,3 +332,9 @@ fun fillItemFromSack(amount: Int, itemId: String, sackName: String, sendMessage:
     val needed = mc.thePlayer.inventory.mainInventory.find { it?.itemID == itemId }?.stackSize ?: 0
     if (needed != amount) sendCommand("gfs $sackName ${amount - needed}") else if (sendMessage) modMessage("§cAlready at max stack size.")
 }
+
+inline fun <T> MutableCollection<T>.removeFirstOrNull(predicate: (T) -> Boolean): T? {
+    val first = firstOrNull(predicate) ?: return null
+    this.remove(first)
+    return first
+}
