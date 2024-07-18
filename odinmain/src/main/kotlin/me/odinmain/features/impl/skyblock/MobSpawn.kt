@@ -23,7 +23,8 @@ object MobSpawn: Module(
 
     @SubscribeEvent
     fun postMeta(event: PostEntityMetadata) {
-        if (!mc.theWorld.getEntityByID(event.packet.entityId).name.contains(mobName) || !time.hasTimePassed()) return
+        val entity = mc.theWorld?.getEntityByID(event.packet.entityId) ?: return
+        if (!entity.name.contains(mobName) || !time.hasTimePassed()) return
         time.update()
 
         modMessage("§5$mobName has spawned!")

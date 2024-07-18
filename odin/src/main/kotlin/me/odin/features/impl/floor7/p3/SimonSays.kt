@@ -78,10 +78,10 @@ object SimonSays : Module(
     }
 
     @SubscribeEvent
-    fun onEntityJoin(event: PostEntityMetadata) {
-        val ent = mc.theWorld.getEntityByID(event.packet.entityId) as? EntityItem ?: return
-        if (Item.getIdFromItem(ent.entityItem.item) != 77) return
-        val pos = BlockPos(ent.posX.floor().toDouble(), ent.posY.floor().toDouble(), ent.posZ.floor().toDouble()).east()
+    fun onPostMetadata(event: PostEntityMetadata) {
+        val entity = mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityItem ?: return
+        if (Item.getIdFromItem(entity.entityItem.item) != 77) return
+        val pos = BlockPos(entity.posX.floor().toDouble(), entity.posY.floor().toDouble(), entity.posZ.floor().toDouble()).east()
         val index = clickInOrder.indexOf(pos)
         if (index == 2 && clickInOrder.size == 3) clickInOrder.removeFirst()
         else if (index == 0 && clickInOrder.size == 2) clickInOrder.reverse()

@@ -602,9 +602,7 @@ fun etherwarpRotateTo(targetPos: BlockPos): Triple<Double, Float, Float>? {
 
         val vec32 = eyeVec.addVector(dirVec.xCoord * dist, dirVec.yCoord * dist, dirVec.zCoord * dist)
         // TODO: Make this use etherwarp raytracing, not default minecraft (Take from EtherWarpHelper)
-        val obj = mc.theWorld.rayTraceBlocks(eyeVec, vec32, true, false, true) ?: run {
-            return null
-        }
+        val obj = mc.theWorld?.rayTraceBlocks(eyeVec, vec32, true, false, true) ?: return null
         if (obj.blockPos == targetPos) {
             target = targetVec
             break

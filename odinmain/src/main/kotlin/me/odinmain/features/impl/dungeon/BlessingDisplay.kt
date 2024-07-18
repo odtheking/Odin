@@ -5,10 +5,8 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.utils.forEachIndexedReturn
 import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.dungeon.Blessing
-import kotlin.math.max
 
 object BlessingDisplay : Module(
     name = "Blessing Display",
@@ -44,6 +42,4 @@ object BlessingDisplay : Module(
             return@filterIndexed true
         }.let { getMCTextWidth("Power: 19").toFloat() to 10f * it.size.coerceAtLeast(1) }
     }
-
-
 }
