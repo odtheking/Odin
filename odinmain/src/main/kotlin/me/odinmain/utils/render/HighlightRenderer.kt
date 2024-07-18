@@ -4,7 +4,6 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.RenderEntityModelEvent
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
-import me.odinmain.utils.render.RenderUtils.renderBoundingBox
 import net.minecraft.entity.Entity
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -13,7 +12,7 @@ object HighlightRenderer {
     enum class HighlightType {
         Outline, Boxes, Box2d, Overlay
     }
-    data class HighlightEntity(val entity: Entity, val color: Color, val thickness: Float, val depth: Boolean)
+    data class HighlightEntity(val entity: Entity, val color: Color, val thickness: Float, val depth: Boolean, val boxStyle: Int = 0)
     const val HIGHLIGHT_MODE_DEFAULT = "Outline"
     val highlightModeList = arrayListOf("Outline", "Boxes", "Box 2D", "Overlay")
 
@@ -41,7 +40,7 @@ object HighlightRenderer {
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         entities[HighlightType.Boxes]?.forEach {
-            Renderer.drawBox(it.entity.renderBoundingBox, it.color, it.thickness, depth = it.depth, fillAlpha = 0)
+            Renderer.drawStyledBox(it.entity.entityBoundingBox, it.color, it.boxStyle, it.thickness, it.depth)
         }
         entities[HighlightType.Box2d]?.filter { !it.depth || mc.thePlayer.canEntityBeSeen(it.entity) }?.forEach {
             Renderer.draw2DEntity(it.entity, it.thickness * 6, it.color)

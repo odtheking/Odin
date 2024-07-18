@@ -2,21 +2,16 @@ package me.odinmain.features.impl.render
 
 import me.odinmain.OdinMain.isLegitVersion
 import me.odinmain.events.impl.PostEntityMetadata
-import me.odinmain.events.impl.RenderEntityModelEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.*
 import me.odinmain.utils.ServerUtils.getPing
 import me.odinmain.utils.render.*
-import me.odinmain.utils.render.RenderUtils.renderBoundingBox
-import me.odinmain.utils.render.RenderUtils.renderVec
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.Entity
 import net.minecraft.entity.boss.EntityWither
 import net.minecraft.entity.item.EntityArmorStand
-import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object CustomHighlight : Module(
@@ -25,30 +20,25 @@ object CustomHighlight : Module(
     tag = TagType.FPSTAX,
     description = "Allows you to highlight selected mobs. (/highlight)"
 ) {
-    private val scanDelay: Long by NumberSetting("Scan Delay", 500L, 10L, 2000L, 100L)
     private val starredMobESP: Boolean by BooleanSetting("Starred Mob Highlight", true, description = "Highlights mobs with a star in their name (remove star from the separate list).")
     private val shadowAssasin: Boolean by BooleanSetting("Shadow Assassin", false, description = "Highlights Shadow Assassins").withDependency { !isLegitVersion }
+    private val mode: Int by SelectorSetting("Mode", HighlightRenderer.HIGHLIGHT_MODE_DEFAULT, HighlightRenderer.highlightModeList)
+
     private val color: Color by ColorSetting("Color", Color.WHITE, true)
-    //private val mode: Int by SelectorSetting("Mode", HighlightRenderer.highlightModeDefault, HighlightRenderer.highlightModeList)
-    val mode: Int by SelectorSetting("Mode", HighlightRenderer.HIGHLIGHT_MODE_DEFAULT, HighlightRenderer.highlightModeList)
-    private val thickness: Float by NumberSetting("Line Width", 1f, .1f, 4f, .1f, description = "The line width of Outline/ Boxes/ 2D Boxes").withDependency { mode != HighlightRenderer.HighlightType.Overlay.ordinal }
-    //private val glowIntensity: Float by NumberSetting("Glow Intensity", 2f, .5f, 5f, .1f, description = "The intensity of the glow effect.").withDependency { mode == HighlightRenderer.HighlightType.Glow.ordinal }
-    private val tracerLimit: Int by NumberSetting("Tracer Limit", 0, 0, 15, description = "Highlight will draw tracer to all mobs when you have under this amount of mobs marked, set to 0 to disable. Helpful for finding lost mobs.").withDependency { !isLegitVersion }
+    private val thickness: Float by NumberSetting("Line Width", 1f, .1f, 4f, .1f, description = "The line width of Outline / Boxes/ 2D Boxes").withDependency { mode != HighlightRenderer.HighlightType.Overlay.ordinal }
+    private val style: Int by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { mode != HighlightRenderer.HighlightType.Boxes.ordinal }
+    private val scanDelay: Long by NumberSetting("Scan Delay", 500L, 10L, 2000L, 100L)
 
     private val xray: Boolean by BooleanSetting("Depth Check", false).withDependency { !isLegitVersion }
     private val showInvisible: Boolean by BooleanSetting("Show Invisible", false).withDependency { !isLegitVersion }
+
     val highlightList: MutableList<String> by ListSetting("List", mutableListOf())
     private val depthCheck: Boolean get() = if (isLegitVersion) true else xray
     private var currentEntities = mutableSetOf<Entity>()
 
     init {
         execute({ scanDelay }) {
-            currentEntities.removeAll { mc.theWorld.getEntityByID(it.entityId) == null }
-            getEntities()
-        }
-
-        execute(30_000) { // TODO: Make sure this is needed, since scan delay *should* take care of the same?
-            currentEntities.clear()
+            currentEntities.removeAll { mc.theWorld?.getEntityByID(it.entityId) == null }
             getEntities()
         }
 
@@ -56,13 +46,14 @@ object CustomHighlight : Module(
 
         HighlightRenderer.addEntityGetter({ HighlightRenderer.HighlightType.entries[mode]}) {
             if (!enabled) emptyList()
-            else currentEntities.map { HighlightRenderer.HighlightEntity(it, color, thickness, depthCheck) }
+            else currentEntities.map { HighlightRenderer.HighlightEntity(it, color, thickness, depthCheck, style) }
         }
     }
 
     @SubscribeEvent
     fun postMeta(event: PostEntityMetadata) {
         val entity = mc.theWorld?.getEntityByID(event.packet.entityId) ?: return
+        if (showInvisible && entity.isInvisible && isLegitVersion) entity.isInvisible = false
         checkEntity(entity)
         if (starredMobESP) checkStarred(entity)
         if (shadowAssasin && isLegitVersion) checkAssassin(entity)

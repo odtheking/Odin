@@ -128,6 +128,10 @@ object WitherDragons : Module(
         onMessage(Regex("^\\[BOSS] Wither King: (Oh, this one hurts!|I have more of those\\.|My soul is disposable\\.)$"), { enabled && DungeonUtils.getPhase() != M7Phases.P5 } ) {
             onChatPacket()
         }
+
+        execute(200) {
+            DragonCheck.dragonStateConfirmation()
+        }
     }
 
     @SubscribeEvent

@@ -8,10 +8,7 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.features.ModuleManager
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.skyblock.devMessage
-import me.odinmain.utils.skyblock.itemID
-import me.odinmain.utils.skyblock.modMessage
-import me.odinmain.utils.skyblock.sendCommand
+import me.odinmain.utils.skyblock.*
 import net.minecraft.inventory.Container
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.common.MinecraftForge
@@ -144,6 +141,7 @@ fun Event.postAndCatch(): Boolean {
     return runCatching {
         MinecraftForge.EVENT_BUS.post(this)
     }.onFailure {
+        it.printStackTrace()
         logger.error("An error occurred", it)
         modMessage("${OdinMain.VERSION} Caught and logged an ${it::class.simpleName ?: "error"} at ${this::class.simpleName}. Please report this!")
     }.getOrDefault(isCanceled)
