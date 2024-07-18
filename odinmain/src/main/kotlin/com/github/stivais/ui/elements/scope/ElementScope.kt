@@ -142,8 +142,9 @@ open class ElementScope<E: Element>(val element: E) {
         constraints: Positions? = null,
         size: Size,
         maxWidth: Size? = null,
+        censored: Boolean = false,
         onTextChange: (string: String) -> Unit
-    ) = create(TextScope(TextInput(text, placeholder, constraints, size, maxWidth, false, onTextChange = onTextChange)))
+    ) = create(TextScope(TextInput(text, placeholder, constraints, size, maxWidth, censored, onTextChange = onTextChange)))
 
     @DSL
     fun image(
@@ -271,6 +272,10 @@ open class ElementScope<E: Element>(val element: E) {
 
     fun Element.add() {
         this@ElementScope.element.addElement(this)
+    }
+
+    fun operation(operation: UIOperation) {
+        element.addOperation(operation)
     }
 
     fun UIOperation.add() {

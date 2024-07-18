@@ -5,7 +5,7 @@ import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.renderer.Image
 
 class ImageElement(
-    private val image: Image,
+    var image: Image,
     constraints: Constraints? = null,
     private val radii: FloatArray,
 ) : Element(constraints) {

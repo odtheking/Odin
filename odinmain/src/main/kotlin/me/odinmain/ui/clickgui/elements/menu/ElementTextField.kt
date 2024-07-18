@@ -24,7 +24,7 @@ class ElementTextField(parent: ModuleButton, setting: StringSetting) :
     Element<StringSetting>(parent, setting, ElementType.TEXT_FIELD) {
 
     val display: String
-        inline get() = setting.text
+        inline get() = setting.value
 
     private val colorAnim = ColorAnimation(100)
     private val hover = HoverHandler(0, 150)
@@ -77,8 +77,8 @@ class ElementTextField(parent: ModuleButton, setting: StringSetting) :
         if (listening) {
             when (keyCode) {
                 Keyboard.KEY_ESCAPE, Keyboard.KEY_NUMPADENTER, Keyboard.KEY_RETURN -> if (colorAnim.start()) listening = false
-                Keyboard.KEY_BACK -> setting.text = setting.text.dropLast(1)
-                !in keyBlackList -> setting.text += typedChar.toString()
+                Keyboard.KEY_BACK -> setting.value = setting.value.dropLast(1)
+                !in keyBlackList -> setting.value += typedChar.toString()
             }
             return true
         }

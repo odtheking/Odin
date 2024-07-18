@@ -57,4 +57,4 @@ operator fun Constraint.plus(other: Constraint) = Additive(this, other)
 
 operator fun Constraint.minus(other: Constraint) = Subtractive(this, other)
 
-fun Constraint.coerce(max: Float) = CoerceMax(max, this)
+fun Constraint.coerce(max: Float) = CoerceMaxOld(max, this)

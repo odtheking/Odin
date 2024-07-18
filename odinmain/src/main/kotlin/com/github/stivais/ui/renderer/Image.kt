@@ -7,11 +7,10 @@ import java.nio.ByteOrder
 
 class Image(
     val resourcePath: String,
-    val type: Type = Type.RASTER
+    val type: Type = getType(resourcePath)
 ) {
     var width = 0f
     var height = 0f
-
 
     // im not sure if its required to close the stream
     val stream = this::class.java.getResourceAsStream(resourcePath) ?: throw FileNotFoundException(resourcePath)
@@ -33,5 +32,11 @@ class Image(
     fun buffer(): ByteBuffer {
         val bytes =  IOUtils.toByteArray(stream)
         return ByteBuffer.allocateDirect(bytes.size).order(ByteOrder.nativeOrder()).put(bytes).also { it.flip() }
+    }
+
+    companion object {
+        fun getType(path: String): Type {
+            return if (path.substringAfterLast('.') == "svg") Type.VECTOR else Type.RASTER
+        }
     }
 }

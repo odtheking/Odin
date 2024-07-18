@@ -13,7 +13,6 @@ import com.github.stivais.ui.elements.impl.Popup
 import com.github.stivais.ui.elements.impl.popup
 import com.github.stivais.ui.elements.scope.*
 import com.github.stivais.ui.operation.AnimationOperation
-import com.github.stivais.ui.operation.UIOperation
 import com.github.stivais.ui.utils.*
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain
@@ -268,6 +267,7 @@ object ClickGUI: Module(
 
         var popup: Popup? = null
         onHover(1.seconds) {
+            if (popup != null) return@onHover
             val x = if (element.x >= ui.main.width / 2f) (element.x - 5).px.alignRight else (element.x + element.width + 5).px
             val y = (element.y + 5).px
             popup = popup(at(x, y)) {
@@ -295,13 +295,13 @@ object ClickGUI: Module(
     fun ElementDSL.onHover(duration: Float, block: () -> Unit) {
         onMouseEnter {
             val start = System.nanoTime()
-            UIOperation {
+            operation {
                 if (System.nanoTime() - start >= duration) {
                     block()
-                    return@UIOperation true
+                    return@operation true
                 }
                 !element.isInside(ui.mx, ui.my) || !element.renders
-            }.add()
+            }
         }
     }
 
