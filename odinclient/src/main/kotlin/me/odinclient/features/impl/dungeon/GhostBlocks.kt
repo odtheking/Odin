@@ -8,6 +8,7 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
+import me.odinmain.utils.rangeAdd
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -105,19 +106,6 @@ object GhostBlocks : Module(
         onWorldLoad {
             sdBlocks.clear()
         }
-
-        onPacket(S21PacketChunkData::class.java, { enabled && stonkDelayToggle && (!sdOnlySB || LocationUtils.inSkyblock) }) { packet ->
-            val minX = packet.chunkX shl 4
-            val minZ = packet.chunkZ shl 4
-            val maxX = minX + 15
-            val maxZ = minZ + 15
-
-            sdBlocks.filter { it.pos.x in minX..maxX && it.pos.z in minZ..maxZ }.forEach {
-                mc.theWorld.setBlockState(it.pos, Blocks.air.defaultState)
-                it.serverReplaced = true
-                it.state = mc.theWorld.getBlockState(it.pos)
-            }
-        }
     }
 
     private fun toAir(blockPos: BlockPos) {
@@ -170,6 +158,17 @@ object GhostBlocks : Module(
             shouldReset || (timeExisted >= 10000)
         }
         blocksToReset.forEach { it.reset() }
+    }
+
+    fun postChunkData(packet: S21PacketChunkData) {
+        if (!enabled || !stonkDelayToggle || (sdOnlySB && !LocationUtils.inSkyblock)) return
+        sdBlocks.filter {
+            it.pos.x in (packet.chunkX shl 4).rangeAdd(15) && it.pos.z in (packet.chunkZ shl 4).rangeAdd(15)
+        }.forEach {
+            mc.theWorld.setBlockState(it.pos, Blocks.air.defaultState)
+            it.serverReplaced = true
+            it.state = mc.theWorld.getBlockState(it.pos)
+        }
     }
 
 

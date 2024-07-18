@@ -338,3 +338,5 @@ inline fun <T> MutableCollection<T>.removeFirstOrNull(predicate: (T) -> Boolean)
     this.remove(first)
     return first
 }
+
+fun Int.rangeAdd(add: Int): IntRange = this..this+add

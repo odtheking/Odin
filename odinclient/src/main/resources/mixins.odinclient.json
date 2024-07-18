@@ -34,6 +34,7 @@
     "mixins.MixinMinecraft",
     "mixins.MixinModList",
     "mixins.MixinMouseHelper",
+    "mixins.MixinNetHandlerPlayClient",
     "mixins.MixinNetworkManager",
     "mixins.MixinPlayerControllerMP",
     "mixins.MixinRenderDragon",
