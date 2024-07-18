@@ -32,6 +32,7 @@ object GhostBlocks : Module(
     name = "Ghost Blocks",
     description = "Creates ghost blocks on key press, and in specific locations.",
     category = Category.DUNGEON,
+    key = null,
 ) {
     // gkey
     private val ghostBlockKey: Keybinding by KeybindSetting("Ghost block Keybind", Keyboard.KEY_NONE, "Makes blocks you're looking at disappear.")
@@ -303,4 +304,9 @@ object GhostBlocks : Module(
             BlockPos(54, 63, 74)
         )
     )
+
+
+    private val toggleKeybind: Keybinding by KeybindSetting("Toggle Module", Keyboard.KEY_NONE, description = "Keybind to toggle the module on/ off.").onPress {
+        this.onKeybind()
+    }
 }
