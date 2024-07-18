@@ -31,35 +31,31 @@ object PlayerDisplay : Module(
     private val showIcons: Boolean by BooleanSetting("Show Icons", true, description = "Shows icons indicating what the number means.")
     private val thousandSeperator: String by StringSetting("Thousands Seperator", "", 1, description = "The seperator between thousands and hundreds.")
 
-    private val healthHud: HudElement by HudSetting("Health Hud", 10f, 10f, 1f, true) {
-        var text =
-            if (it)
-                "5000/5000"
+    private val healthHud: HudElement by HudSetting("Health Hud", 10f, 10f, 1f, true) { example ->
+        val text =
+            if (example)
+                generateText(5000, 5000, "❤")
             else if (SkyblockPlayer.currentHealth != 0 && SkyblockPlayer.maxHealth != 0)
-                "${SkyblockPlayer.currentHealth}/${SkyblockPlayer.maxHealth}"
+                generateText(SkyblockPlayer.currentHealth, SkyblockPlayer.maxHealth, "❤")
             else return@HudSetting 0f to 0f
-
-        if (showIcons) text += "❤"
 
         return@HudSetting mcTextAndWidth(text, 2, 2, 2, healthColor, center = false) * 2f + 2f to 20f
     }
     private val healthColor: Color by ColorSetting("Health Color", Color.RED, true)
 
-    private val manaHud: HudElement by HudSetting("Mana Hud", 10f, 10f, 1f, true) {
-        var text = if (it)
-            "2000/2000"
+    private val manaHud: HudElement by HudSetting("Mana Hud", 10f, 10f, 1f, true) { example ->
+        val text = if (example)
+            generateText(2000, 2000, "✎")
         else if (SkyblockPlayer.currentMana != 0 && SkyblockPlayer.maxMana != 0)
-            "${SkyblockPlayer.currentMana}/${SkyblockPlayer.maxMana}"
+            generateText(SkyblockPlayer.currentMana, SkyblockPlayer.maxMana, "✎")
         else return@HudSetting 0f to 0f
-
-        if (showIcons) text += "✎"
 
         return@HudSetting mcTextAndWidth(text, 2, 2, 2, manaColor, center = false) * 2f + 2f to 20f
     }
     private val manaColor: Color by ColorSetting("Mana Color", Color.BLUE, true)
 
-    private val defenseHud: HudElement by HudSetting("Defense Hud", 10f, 10f, 1f, true) {
-        var text = if (it)
+    private val defenseHud: HudElement by HudSetting("Defense Hud", 10f, 10f, 1f, true) { example ->
+        var text = if (example)
             "1000"
         else if (SkyblockPlayer.currentDefense != 0)
             "${SkyblockPlayer.currentDefense}"
@@ -81,20 +77,16 @@ object PlayerDisplay : Module(
         return toReturn
     }
 
-    private fun generateText(current: Int, max: Int, icon: String) {
-        val currentString =
+    private fun generateText(current: Int, max: Int, icon: String): String {
+        return "${formatNumberWithCustomSeparator(current)}/${formatNumberWithCustomSeparator(max)}${if (showIcons) icon else ""}"
     }
 
-    fun formatNumberWithCustomSeparator(number: Int, separator: Char): String {
-        // Create a DecimalFormatSymbols object and set the grouping separator
+    private fun formatNumberWithCustomSeparator(number: Int): String {
         val symbols = DecimalFormatSymbols(Locale.US).apply {
             groupingSeparator = thousandSeperator.toCharArray().firstOrNull() ?: return number.toString()
         }
-
-        // Create a formatter with the custom grouping separator
         val formatter = java.text.DecimalFormat("#,###", symbols)
 
-        // Format the number
         return formatter.format(number)
     }
 
