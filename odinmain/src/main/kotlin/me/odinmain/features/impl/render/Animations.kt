@@ -3,6 +3,7 @@ package me.odinmain.features.impl.render
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
+import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.isHolding
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.entity.EntityPlayerSP
@@ -40,14 +41,14 @@ object Animations : Module(
     val blockHit: Boolean by BooleanSetting("Block Hit", false, description = "Visual 1.7 block hit animation")
     val noEquipReset: Boolean by BooleanSetting("No Equip Reset", false, description = "Disables the equipping animation when switching items")
     private val noSwing: Boolean by BooleanSetting("No Swing", false, description = "Prevents your item from visually swinging forward")
-    private val noTermSwing: Boolean by BooleanSetting("No Terminator Swing", false, description = "Prevents your Terminator from visually swinging forward")
+    private val noTermSwing: Boolean by BooleanSetting("No Terminator Swing", false, description = "Prevents your Terminator from swinging")
     val noBlock: Boolean by BooleanSetting("No Block", false, description = "Disables the visual block animation")
 
     val reset: () -> Unit by ActionSetting("Reset") {
         this.settings.forEach { it.reset() }
     }
 
-    val shouldStopSwing get() = enabled && (noSwing || (noTermSwing && isHolding("TERMINATOR")))
+    val shouldStopSwing get() = enabled && noSwing
 
     fun itemTransferHook(equipProgress: Float, swingProgress: Float): Boolean {
         if (!enabled) return false
@@ -91,8 +92,16 @@ object Animations : Module(
      */
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (!blockHit || event.phase != TickEvent.Phase.END) return
+        if ( event.phase != TickEvent.Phase.END) return
         val player = mc.thePlayer ?: return
+        if (noTermSwing && isHolding("TERMINATOR")) {
+            player.isSwingInProgress = false
+            player.swingProgress = 0f
+            player.swingProgressInt = -1
+            return
+        }
+
+        if (!blockHit) return
 
         if (mc.gameSettings.keyBindAttack.isKeyDown && mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit === MovingObjectPosition.MovingObjectType.BLOCK) {
             if (!player.isSwingInProgress || player.swingProgressInt >= getArmSwingAnimationEnd(player) / 2 || player.swingProgressInt < 0) {
