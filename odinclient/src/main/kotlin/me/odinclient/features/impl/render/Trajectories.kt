@@ -12,6 +12,7 @@ import me.odinmain.utils.render.RenderUtils.renderX
 import me.odinmain.utils.render.RenderUtils.renderY
 import me.odinmain.utils.render.RenderUtils.renderZ
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.isHolding
 import me.odinmain.utils.skyblock.isShortbow
 import me.odinmain.utils.skyblock.itemID
 import net.minecraft.entity.Entity
@@ -60,7 +61,7 @@ object Trajectories : Module(
                 pair1 = this.setBowTrajectoryHeading(0f, false)
                 pair2 = Pair(arrayListOf(Vec3(0.0, 0.0, 0.0)), null)
                 pair3 = Pair(arrayListOf(Vec3(0.0, 0.0, 0.0)), null)
-                if (mc.thePlayer.heldItem?.itemID == "TERMINATOR") {
+                if (isHolding("TERMINATOR")) {
                     pair2 = this.setBowTrajectoryHeading(-5f, false)
                     pair3 = this.setBowTrajectoryHeading(5f, false)
                 }
