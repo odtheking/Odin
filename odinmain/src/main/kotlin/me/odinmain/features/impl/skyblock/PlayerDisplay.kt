@@ -10,6 +10,8 @@ import me.odinmain.utils.render.mcTextAndWidth
 import me.odinmain.utils.skyblock.SkyblockPlayer
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import java.text.DecimalFormatSymbols
+import java.util.*
 
 object PlayerDisplay : Module(
     name = "Player Display",
@@ -27,6 +29,7 @@ object PlayerDisplay : Module(
     private val hideDefense: Boolean by BooleanSetting("Hide Defense", true).withDependency { hideActionBar }
 
     private val showIcons: Boolean by BooleanSetting("Show Icons", true, description = "Shows icons indicating what the number means.")
+    private val thousandSeperator: String by StringSetting("Thousands Seperator", "", 1, description = "The seperator between thousands and hundreds.")
 
     private val healthHud: HudElement by HudSetting("Health Hud", 10f, 10f, 1f, true) {
         var text =
@@ -73,9 +76,26 @@ object PlayerDisplay : Module(
         if (!enabled) return text
         var toReturn = text
         toReturn = if (hideHealth) toReturn.replace("[\\d|,]+/[\\d|,]+❤".toRegex(), "") else toReturn
-        toReturn = if (hideMana) toReturn.replace("[\\d|,]+/[\\d|,]+✎ Mana".toRegex(), "") else toReturn
+        toReturn = if (hideMana) toReturn.replace("[\\d|,]+/[\\d|,]+✎( Mana)?".toRegex(), "") else toReturn
         toReturn = if (hideDefense) toReturn.replace("[\\d|,]+§a❈ Defense".toRegex(), "") else toReturn
         return toReturn
+    }
+
+    private fun generateText(current: Int, max: Int, icon: String) {
+        val currentString =
+    }
+
+    fun formatNumberWithCustomSeparator(number: Int, separator: Char): String {
+        // Create a DecimalFormatSymbols object and set the grouping separator
+        val symbols = DecimalFormatSymbols(Locale.US).apply {
+            groupingSeparator = thousandSeperator.toCharArray().firstOrNull() ?: return number.toString()
+        }
+
+        // Create a formatter with the custom grouping separator
+        val formatter = java.text.DecimalFormat("#,###", symbols)
+
+        // Format the number
+        return formatter.format(number)
     }
 
     @SubscribeEvent
