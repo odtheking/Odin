@@ -41,11 +41,13 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> {
     private static DynamicTexture textureBrightness;
 
     @Unique
-    Map<HighlightRenderer.HighlightType, List<HighlightRenderer.HighlightEntity>> odin$entitiesMap = HighlightRenderer.INSTANCE.getEntities();
+    private HighlightRenderer.HighlightEntity odinMod$getHighlightEntity(EntityLivingBase entity) {
+        return HighlightRenderer.INSTANCE.getEntities().get(HighlightRenderer.HighlightType.Overlay).stream().filter(e -> e.getEntity().equals(entity)).findFirst().orElse(null);
+    }
 
     @Inject(method = "setBrightness", at = @At(value = "HEAD"), cancellable = true)
     private  <T extends EntityLivingBase> void setBrightness(T entity, float partialTicks, boolean combineTextures, CallbackInfoReturnable<Boolean> cir) {
-        HighlightRenderer.HighlightEntity highlightEntity = odin$entitiesMap.get(HighlightRenderer.HighlightType.Overlay).stream().filter(e -> e.getEntity().equals(entity)).findFirst().orElse(null);
+        HighlightRenderer.HighlightEntity highlightEntity = odinMod$getHighlightEntity(entity);
         if (highlightEntity != null) {
             GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
             GlStateManager.enableTexture2D();
@@ -99,7 +101,7 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> {
 
     @Inject(method = "doRender(Lnet/minecraft/entity/EntityLivingBase;DDDFF)V", at = @At("HEAD"))
     private <T extends EntityLivingBase> void injectChamsPre(T entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo callbackInfo) {
-        HighlightRenderer.HighlightEntity highlightEntity = odin$entitiesMap.get(HighlightRenderer.HighlightType.Overlay).stream().filter(e -> e.getEntity().equals(entity)).findFirst().orElse(null);
+        HighlightRenderer.HighlightEntity highlightEntity = odinMod$getHighlightEntity(entity);
         if (highlightEntity != null && !highlightEntity.getDepth()) {
             glEnable(GL_POLYGON_OFFSET_FILL);
             glPolygonOffset(1f, -1000000F);
@@ -108,7 +110,7 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> {
 
     @Inject(method = "doRender(Lnet/minecraft/entity/EntityLivingBase;DDDFF)V", at = @At("RETURN"))
     private <T extends EntityLivingBase> void injectChamsPost(T entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo callbackInfo) {
-        HighlightRenderer.HighlightEntity highlightEntity = odin$entitiesMap.get(HighlightRenderer.HighlightType.Overlay).stream().filter(e -> e.getEntity().equals(entity)).findFirst().orElse(null);
+        HighlightRenderer.HighlightEntity highlightEntity = odinMod$getHighlightEntity(entity);
         if (highlightEntity != null && !highlightEntity.getDepth()) {
             glPolygonOffset(1f, 1000000F);
             glDisable(GL_POLYGON_OFFSET_FILL);
