@@ -28,6 +28,9 @@ object PlayerDisplay : Module(
     private val hideMana: Boolean by BooleanSetting("Hide Mana", true).withDependency { hideActionBar }
     private val hideOverflow: Boolean by BooleanSetting("Hide Overflow Mana", true).withDependency { hideActionBar }
     private val hideDefense: Boolean by BooleanSetting("Hide Defense", true).withDependency { hideActionBar }
+    private val overflow: Boolean by DropdownSetting("Overflow Mana")
+    private val separateOverflow: Boolean by BooleanSetting("Separate Overflow Mana", false).withDependency { overflow }
+    private val hideZeroSF: Boolean by BooleanSetting("Hide 0 Overflow", true).withDependency { overflow }
 
     private val showIcons: Boolean by BooleanSetting("Show Icons", true, description = "Shows icons indicating what the number means.")
     private val thousandSeperator: String by StringSetting("Thousands Seperator", "", 1, description = "The seperator between thousands and hundreds.")
@@ -46,24 +49,24 @@ object PlayerDisplay : Module(
 
     private val manaHud: HudElement by HudSetting("Mana Hud", 10f, 10f, 1f, true) { example ->
         val text = if (example)
-            generateText(2000, 20000, "✎") + (if(!separateOverflow) " ${generateText(SkyblockPlayer.overflowMana, "ʬ")}" else "")
+            generateText(2000, 20000, "✎") + (if(!separateOverflow) " ${generateText(SkyblockPlayer.overflowMana, "ʬ", hideZeroSF)}" else "")
         else if (SkyblockPlayer.maxMana != 0)
             if(SkyblockPlayer.currentMana == 0 && separateOverflow) return@HudSetting 0f to 0f
-            else generateText(SkyblockPlayer.currentMana, SkyblockPlayer.maxMana, "✎") + (if(!separateOverflow && overflowManaHud.enabled) " ${generateText(SkyblockPlayer.overflowMana, "ʬ")}" else "")
+            else generateText(SkyblockPlayer.currentMana, SkyblockPlayer.maxMana, "✎") + (if(!separateOverflow && overflowManaHud.enabled) " ${generateText(SkyblockPlayer.overflowMana, "ʬ", hideZeroSF)}" else "")
         else return@HudSetting 0f to 0f
 
         return@HudSetting mcTextAndWidth(text, 2, 2, 2, manaColor, center = false) * 2f + 2f to 20f
     }
     private val manaColor: Color by ColorSetting("Mana Color", Color.BLUE, true)
 
-    private val separateOverflow: Boolean by BooleanSetting("Separate Overflow Mana", false)
+
 
 
     private val overflowManaHud: HudElement by HudSetting("Overflow Mana Hud", 10f, 10f, 1f, true) { example ->
         val text = if (example)
-            generateText(333, "ʬ")
-        else if (SkyblockPlayer.overflowMana != 0 && separateOverflow)
-            generateText(SkyblockPlayer.overflowMana, "ʬ")
+            generateText(333, "ʬ", hideZeroSF)
+        else if (separateOverflow)
+            generateText(SkyblockPlayer.overflowMana, "ʬ", hideZeroSF)
         else return@HudSetting 0f to 0f
 
         return@HudSetting mcTextAndWidth(text, 2, 2, 2, overflowManaColor, center = false) * 2f + 2f to 20f
@@ -72,9 +75,9 @@ object PlayerDisplay : Module(
 
     private val defenseHud: HudElement by HudSetting("Defense Hud", 10f, 10f, 1f, true) { example ->
         val text = if (example)
-            generateText(1000, "❈")
+            generateText(1000, "❈", true)
         else if (SkyblockPlayer.currentDefense != 0)
-            generateText(SkyblockPlayer.currentDefense, "❈")
+            generateText(SkyblockPlayer.currentDefense, "❈", true)
         else return@HudSetting 0f to 0f
 
 
@@ -97,7 +100,8 @@ object PlayerDisplay : Module(
         return "${formatNumberWithCustomSeparator(current)}/${formatNumberWithCustomSeparator(max)}${if (showIcons) icon else ""}"
     }
 
-    private fun generateText(current: Int, icon: String): String{
+    private fun generateText(current: Int, icon: String, hideZero: Boolean): String{
+        if(hideZero && current == 0) return ""
         return "${formatNumberWithCustomSeparator(current)}${if (showIcons) icon else ""}"
     }
 
