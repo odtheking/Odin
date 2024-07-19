@@ -2,11 +2,13 @@ package me.odinmain.events.impl
 
 import net.minecraft.client.model.ModelBase
 import net.minecraft.entity.EntityLivingBase
+import net.minecraftforge.fml.common.eventhandler.Cancelable
 import net.minecraftforge.fml.common.eventhandler.Event
 
 /**
- * @see me.odinmain.mixin.MixinRendererLivingEntity.renderModel
+ * @see MixinRendererLivingEntity
  */
+@Cancelable
 class RenderEntityModelEvent(
     var entity: EntityLivingBase,
     var limbSwing: Float,
@@ -16,4 +18,12 @@ class RenderEntityModelEvent(
     var headPitch: Float,
     var scaleFactor: Float,
     var model: ModelBase
+): Event()
+
+@Cancelable
+class RenderEntityNameEvent (
+    var entity: EntityLivingBase,
+    var x: Double,
+    var y: Double,
+    var z: Double,
 ): Event()

@@ -24,7 +24,6 @@ object BlazeAttunement : Module(
 ) {
     private val overlay: Boolean by BooleanSetting("Overlay Entities", false)
     private val thickness: Float by NumberSetting("Outline Thickness", 5f, 5f, 20f, 0.5f)
-    private val cancelHurt: Boolean by BooleanSetting("Cancel Hurt", true)
 
     private var currentBlazes = hashMapOf<Entity, Color>()
 
@@ -57,7 +56,7 @@ object BlazeAttunement : Module(
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
         val color = currentBlazes[event.entity] ?: return
 
-        OutlineUtils.outlineEntity(event, thickness, color, cancelHurt)
+        OutlineUtils.outlineEntity(event, color, thickness)
     }
 
     fun changeBlazeColor(entity: Entity) {

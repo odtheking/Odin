@@ -12,9 +12,7 @@ import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.util.shader.RoundedRect
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Executor
-import me.odinmain.utils.render.HighlightRenderer
-import me.odinmain.utils.render.RenderUtils
-import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.ScanUtils

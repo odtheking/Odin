@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.dungeon
 
-import com.sun.security.ntlm.Client
 import me.odinclient.utils.skyblock.PlayerUtils.leftClick
 import me.odinclient.utils.skyblock.PlayerUtils.swapToIndex
 import me.odinmain.events.impl.BlockChangeEvent
@@ -23,7 +22,6 @@ import net.minecraft.network.play.server.S21PacketChunkData
 import net.minecraft.tileentity.TileEntitySkull
 import net.minecraft.util.BlockPos
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
-import net.minecraftforge.event.entity.player.PlayerUseItemEvent.Tick
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.input.Keyboard
