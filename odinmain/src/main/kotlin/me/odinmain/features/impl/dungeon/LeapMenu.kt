@@ -1,6 +1,9 @@
 package me.odinmain.features.impl.dungeon
 
+import com.github.stivais.ui.UI
 import com.github.stivais.ui.color.Color
+import com.github.stivais.ui.constraints.*
+import com.github.stivais.ui.utils.radii
 import io.github.moulberry.notenoughupdates.NEUApi
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.Category
@@ -15,7 +18,6 @@ import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonClass
 import me.odinmain.utils.skyblock.dungeon.DungeonPlayer
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils.leapTeammates
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.util.ResourceLocation
@@ -23,6 +25,7 @@ import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
+import org.lwjgl.opengl.Display
 
 object LeapMenu : Module(
     name = "Leap Menu",
@@ -47,6 +50,36 @@ object LeapMenu : Module(
     private var previouslyHoveredQuadrant = -1
 
     private val EMPTY = DungeonPlayer("Empty", DungeonClass.Unknown, ResourceLocation("textures/entity/steve.png"))
+    private const val BOX_WIDTH = 800
+    private const val BOX_HEIGHT = 300
+
+    fun leapMenu() = UI {
+        group {
+            leapTeammates.forEachIndexed { index, it ->
+                modMessage("Drawing ${it.name}")
+                if (it == EMPTY) return@forEachIndexed modMessage("Empty")
+                val displayWidth = Display.getWidth()
+                val displayHeight = Display.getHeight()
+                val x = when (index) {
+                    0, 2 -> -((displayWidth - (BOX_WIDTH * 2)) / 6 + BOX_WIDTH)
+                    else -> ((displayWidth - (BOX_WIDTH * 2)) / 6)
+                }
+                val y = when (index) {
+                    0, 1 -> -((displayHeight - (BOX_HEIGHT * 2)) / 8 + BOX_HEIGHT)
+                    else -> ((displayHeight - (BOX_HEIGHT * 2)) / 8)
+                }
+                block(
+                    constraints = constrain(x.px, y.px, 800.px, 300.px),
+                    color = Color.MINECRAFT_DARK_GRAY,
+                    radius = 12.radii()
+                ) {
+                    text(it.name, size = 48.px)
+                    text(if (it.isDead) "§cDEAD" else it.clazz.name, size = 30.px, color = Color.WHITE)
+                    //rectangleOutline(color = Color.MINECRAFT_DARK_GRAY, thickness = 25.px, radius = 15.radii(), alpha = 100)
+                }
+            }
+        }
+    }
 
     @SubscribeEvent
     fun onDrawScreen(event: GuiEvent.DrawGuiContainerScreenEvent) {
@@ -172,14 +205,23 @@ object LeapMenu : Module(
     }
 
 
-   /* private val leapTeammates: MutableList<DungeonPlayer> = mutableListOf(
+   private val leapTeammates: MutableList<DungeonPlayer> = mutableListOf(
         DungeonPlayer("Stiviaisd", DungeonClass.Healer),
         DungeonPlayer("Odtheking", DungeonClass.Archer),
         DungeonPlayer("Bonzi", DungeonClass.Mage),
         DungeonPlayer("Cezar", DungeonClass.Tank)
-    )*/
+    )
 
 
+    /**
+     * Sorts the list of players based on their default quadrant and class priority.
+     * The function first tries to place each player in their default quadrant. If the quadrant is already occupied,
+     * the player is added to a second round list. After all players have been processed, the function fills the remaining
+     * empty quadrants with the players from the second round list.
+     *
+     * @param players The list of players to be sorted.
+     * @return An array of sorted players.
+     */
     /**
      * Sorts the list of players based on their default quadrant and class priority.
      * The function first tries to place each player in their default quadrant. If the quadrant is already occupied,

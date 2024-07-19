@@ -202,7 +202,11 @@ class TextInput(
 
             isKeyComboCtrlC(code) -> writeToClipboard(getSelectedText(selectionStart, caretPosition))
 
-            isKeyComboCtrlV(code) -> insert(GuiScreen.getClipboardString())
+            isKeyComboCtrlV(code) -> {
+                val clipboard = GuiScreen.getClipboardString()
+                caretPosition = (caretPosition + clipboard.length)
+                insert(GuiScreen.getClipboardString())
+            }
 
             isKeyComboCtrlX(code) -> {
                 writeToClipboard(getSelectedText(selectionStart, caretPosition))

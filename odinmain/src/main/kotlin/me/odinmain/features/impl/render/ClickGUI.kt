@@ -72,6 +72,7 @@ object ClickGUI: Module(
     val action by ActionSetting("Open HUD Editor", description = "Opens the HUD Editor, allowing you to reposition HUDs") { /*OdinMain.display = EditHUDGui*/ }
 
     private var joined: Boolean by BooleanSetting("First join", false).hide()
+    private var warned: Boolean by BooleanSetting("Warned", false).hide()
     var lastSeenVersion: String by StringSetting("Last seen version", "1.0.0").hide()
 
     var firstTimeOnVersion = false
@@ -322,7 +323,6 @@ object ClickGUI: Module(
     }
 
     // for ui branch warning
-    private var warned = false
 
     private fun ElementDSL.uiBranchWarning() {
         popup(copies()) {
@@ -333,8 +333,8 @@ object ClickGUI: Module(
                 divider(15.px)
                 text("WARNING", size = 30.px)
 
-                text("You are using an extremely unstable branch that shouldn't be intentionally used.", size = 20.px)
-                text("If you downloaded this from GitHub Actions, ensure you don't download from the ui branch", size = 20.px)
+                text("You are using an extremely unstable branch that shouldn't be unintentionally used.", size = 20.px)
+                text("If you downloaded this from GitHub Actions, ensure you don't download from the ui branch accidentally.", size = 20.px)
 
                 divider(10.px)
                 block(size(Bounding + 30.px, Bounding + 10.px), this@ClickGUI.color, radius = 5.radii()) {
