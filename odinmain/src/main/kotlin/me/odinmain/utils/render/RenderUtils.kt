@@ -33,7 +33,7 @@ object RenderUtils {
 
     data class Box(var x: Number, var y: Number, var w: Number, var h: Number)
     data class BoxWithClass<T : Number>(var x: T, var y: T, var w: T, var h: T)
-    fun Box.expand(factor: Number): Box = Box(this.x - factor, this.y - factor, this.w + factor * 2, this.h + factor * 2)
+//    fun Box.expand(factor: Number): Box = Box(this.x - factor, this.y - factor, this.w + factor.toFloat() * 2, this.h + factor.toFloat() * 2)
     fun Box.isPointWithin(x: Number, y: Number): Boolean {
         return x.toDouble() >= this.x.toDouble() &&
                 y.toDouble() >= this.y.toDouble() &&

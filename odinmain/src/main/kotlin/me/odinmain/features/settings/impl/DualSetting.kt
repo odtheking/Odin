@@ -17,6 +17,8 @@ import me.odinmain.features.settings.Setting
  *
  * @author Aton, Bonsai
  */
+// todo: please replace its such a bad setting
+// reasons: hard to make look good, alternatives that are already good exist
 class DualSetting(
     name: String,
     val left: String,

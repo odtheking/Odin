@@ -23,6 +23,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
  * @author Aton, Bonsai
  */
 object ModuleManager {
+    // todo: cleanup
     data class PacketFunction<T : Packet<*>>(
         val type: Class<T>,
         val function: (T) -> Unit,
@@ -32,14 +33,17 @@ object ModuleManager {
     data class MessageFunction(val filter: Regex, val shouldRun: () -> Boolean, val function: (String) -> Unit)
     data class MessageFunctionCancellable(val filter: Regex, val shouldRun: () -> Boolean, val function: (ChatPacketEvent) -> Unit)
 
+    // todo: cleanup
     data class TickTask(var ticksLeft: Int, val function: () -> Unit)
 
+    // todo: cleanup
     val packetFunctions = mutableListOf<PacketFunction<Packet<*>>>()
     val messageFunctions = mutableListOf<MessageFunction>()
     val cancellableMessageFunctions = mutableListOf<MessageFunctionCancellable>()
     val worldLoadFunctions = mutableListOf<() -> Unit>()
     val tickTasks = mutableListOf<TickTask>()
     //val huds = arrayListOf<HudElement>()
+    // todo: cleanup
     val executors = ArrayList<Pair<Module, Executor>>()
 
     val modules: ArrayList<Module> = arrayListOf(

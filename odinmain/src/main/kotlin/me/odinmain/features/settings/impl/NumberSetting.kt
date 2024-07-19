@@ -18,6 +18,7 @@ import me.odinmain.features.impl.render.ClickGUI.`gray 26`
 import me.odinmain.features.settings.Saving
 import me.odinmain.features.settings.Setting
 import me.odinmain.utils.*
+import kotlin.math.floor
 import kotlin.math.round
 
 /**
@@ -44,18 +45,18 @@ class NumberSetting<E>(
     override var value: E = default
 
     /** The amount a setting should increment. */
-    val increment = increment.toDouble()
+    private val increment = increment.toDouble()
 
     /** The minimum a setting can be */
-    val min = min.toDouble()
+    private val min = min.toDouble()
 
     /** The maximum a setting can be */
-    var max = max.toDouble()
+    private val max = max.toDouble()
 
     private val text: String
         get() {
             val double = value.toDouble()
-            val number = if (double - double.floor() == 0.0) value.toInt() else double.round(2)
+            val number = if (double - floor(double) == 0.0) value.toInt() else double.round(2)
             return "$number$unit"
         }
 

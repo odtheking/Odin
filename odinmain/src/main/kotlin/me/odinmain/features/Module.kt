@@ -9,10 +9,11 @@ import me.odinmain.features.settings.Setting
 import me.odinmain.features.settings.impl.Keybinding
 import me.odinmain.utils.clock.Executable
 import me.odinmain.utils.clock.Executor
-import me.odinmain.utils.registerAndCatch
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.Packet
+import net.minecraftforge.common.MinecraftForge
 import org.lwjgl.input.Keyboard
+import scala.collection.parallel.ParIterableLike.Min
 import kotlin.reflect.full.hasAnnotation
 
 /**
@@ -22,17 +23,31 @@ import kotlin.reflect.full.hasAnnotation
 abstract class Module(
     val name: String,
     key: Int? = Keyboard.KEY_NONE,
-    @Transient val category: Category = Category.RENDER,
+    category: Category? = null, // temporarily here, todo: remove
     @Transient var description: String = "",
     @Transient val tag: TagType = TagType.NONE,
     toggled: Boolean = false,
 ) {
+    /**
+     * Category for this module.
+     *
+     * It is defined by the package of the module. (For example: me.odin.features.impl.render == Category.RENDER).
+     * If it is in an invalid package, it will use Category.RENDER as a default
+     */
+    @Transient
+    val category: Category = getCategory(this::class.java) ?: category ?: Category.RENDER
 
+    /**
+     * Reference for if the module is enabled
+     *
+     * When it is enabled, it is registered to the Forge Eventbus,
+     * otherwise it's unregistered unless it has the annotation [@AlwaysActive][AlwaysActive]
+     */
     var enabled: Boolean = toggled
         private set
 
     /**
-     * Settings for the module
+     * List of settings for the module
      */
     val settings: ArrayList<Setting<*>> = ArrayList()
 
@@ -51,21 +66,24 @@ abstract class Module(
     val alwaysActive = this::class.hasAnnotation<AlwaysActive>()
 
     init {
-        if (alwaysActive) this.registerAndCatch()
+        if (alwaysActive) {
+            @Suppress("LeakingThis")
+            MinecraftForge.EVENT_BUS.register(this)
+        }
     }
 
     /**
      * Gets toggled when module is enabled
      */
     open fun onEnable() {
-        if (!alwaysActive) this.registerAndCatch()
+        if (!alwaysActive) MinecraftForge.EVENT_BUS.register(this)
     }
 
     /**
      * Gets toggled when module is disabled
      */
     open fun onDisable() {
-        if (!alwaysActive) this.registerAndCatch()
+        if (!alwaysActive) MinecraftForge.EVENT_BUS.unregister(this)
     }
 
     open fun onKeybind() {
@@ -173,7 +191,23 @@ abstract class Module(
         executors.add(this to Executor(delay, profileName, func))
     }
 
+    // this is unused
+    @Deprecated("remove")
     enum class TagType {
         NONE, NEW, RISKY, FPSTAX
+    }
+
+    companion object {
+        private fun getCategory(clazz: Class<out Module>): Category? {
+            val `package` = clazz.`package`.name
+            return when { //     DUNGEON, FLOOR7, RENDER, SKYBLOCK, NETHER;
+                `package`.contains("dungeon") -> Category.DUNGEON
+                `package`.contains("floor7") -> Category.FLOOR7
+                `package`.contains("render") -> Category.RENDER
+                `package`.contains("skyblock") -> Category.SKYBLOCK
+                `package`.contains("nether") -> Category.NETHER
+                else -> null
+            }
+        }
     }
 }

@@ -1,11 +1,11 @@
 @file:Suppress("FunctionName")
+@file:JvmName("Utils")
 
 package me.odinmain.utils
 
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.logger
 import me.odinmain.OdinMain.mc
-import me.odinmain.features.Module
 import me.odinmain.features.ModuleManager
 import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.modMessage
@@ -25,7 +25,6 @@ import java.time.Month
 import java.time.format.TextStyle
 import java.util.*
 import kotlin.math.*
-
 
 private val FORMATTING_CODE_PATTERN = Regex("§[0-9a-fk-or]", RegexOption.IGNORE_CASE)
 
@@ -86,6 +85,7 @@ fun Pair<Any?, Any?>?.equal(first: Any?, second: Any?): Boolean {
  * Floors the current number.
  * @return The floored number.
  */
+// todo: make overloading functions rather than this
 fun Number.floor(): Number {
     return floor(this.toDouble())
 }
@@ -106,22 +106,6 @@ val ContainerChest.name: String
 
 val Container.name: String
     get() = (this as? ContainerChest)?.name ?: "Undefined Container"
-
-operator fun Number.div(number: Number): Number {
-    return this.toDouble() / number.toDouble()
-}
-
-operator fun Number.times(number: Number): Number {
-    return this.toDouble() * number.toDouble()
-}
-
-operator fun Number.minus(number: Number): Number {
-    return this.toDouble() - number.toDouble()
-}
-
-operator fun Number.plus(number: Number): Number {
-    return this.toDouble() + number.toDouble()
-}
 
 /**
  * Returns a random number between the specified range.
@@ -151,17 +135,8 @@ fun Event.postAndCatch(): Boolean {
     }.getOrDefault(isCanceled)
 }
 
-fun Module.registerAndCatch() {
-    runCatching {
-        MinecraftForge.EVENT_BUS.register(this)
-    }.onFailure {
-        it.printStackTrace()
-        logger.error("An error occurred", it)
-        modMessage("${OdinMain.VERSION} Caught and logged an ${it::class.simpleName ?: "error"} at ${this::class.simpleName}. Please report this!")
-    }
-}
-
 // Companion object to expose the extension function statically for Java
+// todo: move into the file. an extra object is stupid
 object EventExtensions {
     @JvmStatic
     fun postAndCatch(event: Event): Boolean {
@@ -174,6 +149,7 @@ object EventExtensions {
  * @param ticks The number of ticks to wait.
  * @param func The function to execute after the specified number of
  */
+// todo: my idea is to remove ticktasks to a better system, make it use that
 fun runIn(ticks: Int, func: () -> Unit) {
     if (ticks <= 0) {
         func()
@@ -182,6 +158,7 @@ fun runIn(ticks: Int, func: () -> Unit) {
     ModuleManager.tickTasks.add(ModuleManager.TickTask(ticks, func))
 }
 
+// todo: remove? do these profilers actually get used over intelllij
 /**
  * Profiles the specified function with the specified string as profile section name.
  * Uses the minecraft profiler.
@@ -195,6 +172,7 @@ inline fun profile(name: String, func: () -> Unit) {
     endProfile()
 }
 
+// todo: remove? do these profilers actually get used over intelllij
 /**
  * Starts a minecraft profiler section with the specified name + "Odin: ".
  */
@@ -202,6 +180,7 @@ fun startProfile(name: String) {
     mc.mcProfiler.startSection("Odin: $name")
 }
 
+// todo: remove? do these profilers actually get used over intelllij
 /**
  * Ends the current minecraft profiler section.
  */
@@ -216,6 +195,8 @@ fun endProfile() {
  *
  * @returns The maximum value of the numbers, as a float
  */
+// todo: this is bad, overrides kotlin min/max, uses vararg when all impls are 2 values
+// it'd be better to just use maxBy
 fun max(vararg numbers: Number): Float {
     return numbers.maxBy { it.toFloat() }.toFloat()
 }
@@ -227,6 +208,8 @@ fun max(vararg numbers: Number): Float {
  *
  * @returns The minimum value of the numbers, as a float
  */
+// todo: this is bad, overrides kotlin min/max, uses vararg when all impls are 2 values
+// it'd be better to just use minBy
 fun min(vararg numbers: Number): Float {
     return numbers.minBy { it.toFloat() }.toFloat()
 }
@@ -273,6 +256,7 @@ fun formatTime(time: Long): String {
 val Char.isHexaDecimal
     get() = isDigit() || equalsOneOf("a","b","c","d","e","f","A","B","C","D","E","F")
 
+// todo: move this into the module its used in????? not a whole extra object just to hold 3 constants
 // Used in DeployableTimer.kt
 data object FlareTextures {
     const val WARNING_FLARE_TEXTURE = "ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzMwNjIyMywKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjJlMmJmNmMxZWMzMzAyNDc5MjdiYTYzNDc5ZTU4NzJhYzY2YjA2OTAzYzg2YzgyYjUyZGFjOWYxYzk3MTQ1OCIKICAgIH0KICB9Cn0="
@@ -280,6 +264,8 @@ data object FlareTextures {
     const val SOS_FLARE_TEXTURE = "ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzM0NzQ4OSwKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzAwNjJjYzk4ZWJkYTcyYTZhNGI4OTc4M2FkY2VmMjgxNWI0ODNhMDFkNzNlYTg3YjNkZjc2MDcyYTg5ZDEzYiIKICAgIH0KICB9Cn0="
 }
 
+
+// todo: move this into the module its used in????? not a whole extra object just to hold 3 constants
 // Used in ChocolateFactory.kt
 data object BunnyEggTextures {
     const val DINNER_EGG_TEXTURE = "ewogICJ0aW1lc3RhbXAiIDogMTcxMTQ2MjY0OTcwMSwKICAicHJvZmlsZUlkIiA6ICI3NGEwMzQxNWY1OTI0ZTA4YjMyMGM2MmU1NGE3ZjJhYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZXp6aXIiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTVlMzYxNjU4MTlmZDI4NTBmOTg1NTJlZGNkNzYzZmY5ODYzMTMxMTkyODNjMTI2YWNlMGM0Y2M0OTVlNzZhOCIKICAgIH0KICB9Cn0"
@@ -296,9 +282,8 @@ fun checkGLError(message: String) {
         println("$i: $s")
     }
 }
-/**
- * Writes the given text to the clipboard.
- */
+
+// todo: move all this to somewhere more relevant
 fun writeToClipboard(text: String, successMessage: String?) {
     try {
         val clipboard = Toolkit.getDefaultToolkit().systemClipboard
@@ -311,6 +296,8 @@ fun writeToClipboard(text: String, successMessage: String?) {
     }
 }
 
+
+// todo: move all this to somewhere more relevant
 fun writeToClipboard(text: String) {
     writeToClipboard(text, null)
 }
@@ -351,6 +338,7 @@ fun isKeyComboCtrlZ(keyID: Int): Boolean {
 }
 
 private val romanMap = mapOf('I' to 1, 'V' to 5, 'X' to 10, 'L' to 50, 'C' to 100, 'D' to 500, 'M' to 1000)
+
 fun romanToInt(s: String): Int {
     var result = 0
     for (i in 0 until s.length - 1) {
@@ -361,6 +349,7 @@ fun romanToInt(s: String): Int {
     return result + (romanMap[s.last()] ?: 0)
 }
 
+// remove
 inline fun <T> List<T>.forEachIndexedReturn(action: (index: Int, T) -> Unit): List<T> {
     for (i in indices) {
         action(i, this[i])
@@ -368,12 +357,15 @@ inline fun <T> List<T>.forEachIndexedReturn(action: (index: Int, T) -> Unit): Li
     return this
 }
 
+// remove
 val trueMouseX: Float
     get() = Mouse.getX().toFloat()
 
+// remove
 val trueMouseY: Float
     get() = mc.displayHeight - Mouse.getY() - 1f
 
+// remove
 fun getQuadrant(): Int {
     return when {
         trueMouseX >= Display.getWidth() / 2 -> if (trueMouseY >= Display.getHeight() / 2) 4 else 2

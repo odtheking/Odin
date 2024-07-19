@@ -11,7 +11,6 @@ import me.odinmain.utils.skyblock.dungeon.Blessing
 object BlessingDisplay : Module(
     name = "Blessing Display",
     description = "Displays the current blessings of the dungeon.",
-    category = Category.DUNGEON,
 ) {
     private val power: Boolean by BooleanSetting("Power Blessing", true, description = "Displays the power blessing.")
     private val powerColor: Color by ColorSetting("Power Color", Color.MINECRAFT_DARK_RED, true, description = "The color of the power blessing.").withDependency { power }
