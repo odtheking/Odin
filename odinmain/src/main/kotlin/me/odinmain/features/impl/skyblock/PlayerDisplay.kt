@@ -26,6 +26,7 @@ object PlayerDisplay : Module(
     private val hideActionBar: Boolean by DropdownSetting("Hide Action Bar Elements")
     private val hideHealth: Boolean by BooleanSetting("Hide Health", true).withDependency { hideActionBar }
     private val hideMana: Boolean by BooleanSetting("Hide Mana", true).withDependency { hideActionBar }
+    private val hideOverflow: Boolean by BooleanSetting("Hide Overflow Mana", true).withDependency { hideActionBar }
     private val hideDefense: Boolean by BooleanSetting("Hide Defense", true).withDependency { hideActionBar }
 
     private val showIcons: Boolean by BooleanSetting("Show Icons", true, description = "Shows icons indicating what the number means.")
@@ -45,23 +46,37 @@ object PlayerDisplay : Module(
 
     private val manaHud: HudElement by HudSetting("Mana Hud", 10f, 10f, 1f, true) { example ->
         val text = if (example)
-            generateText(2000, 2000, "✎")
-        else if (SkyblockPlayer.currentMana != 0 && SkyblockPlayer.maxMana != 0)
-            generateText(SkyblockPlayer.currentMana, SkyblockPlayer.maxMana, "✎")
+            generateText(2000, 20000, "✎") + (if(!separateOverflow) " ${generateText(SkyblockPlayer.overflowMana, "ʬ")}" else "")
+        else if (SkyblockPlayer.maxMana != 0)
+            if(SkyblockPlayer.currentMana == 0 && separateOverflow) return@HudSetting 0f to 0f
+            else generateText(SkyblockPlayer.currentMana, SkyblockPlayer.maxMana, "✎") + (if(!separateOverflow && overflowManaHud.enabled) " ${generateText(SkyblockPlayer.overflowMana, "ʬ")}" else "")
         else return@HudSetting 0f to 0f
 
         return@HudSetting mcTextAndWidth(text, 2, 2, 2, manaColor, center = false) * 2f + 2f to 20f
     }
     private val manaColor: Color by ColorSetting("Mana Color", Color.BLUE, true)
 
-    private val defenseHud: HudElement by HudSetting("Defense Hud", 10f, 10f, 1f, true) { example ->
-        var text = if (example)
-            formatNumberWithCustomSeparator(1000)
-        else if (SkyblockPlayer.currentDefense != 0)
-            formatNumberWithCustomSeparator(SkyblockPlayer.currentDefense)
+    private val separateOverflow: Boolean by BooleanSetting("Separate Overflow Mana", false)
+
+
+    private val overflowManaHud: HudElement by HudSetting("Overflow Mana Hud", 10f, 10f, 1f, true) { example ->
+        val text = if (example)
+            generateText(333, "ʬ")
+        else if (SkyblockPlayer.overflowMana != 0 && separateOverflow)
+            generateText(SkyblockPlayer.overflowMana, "ʬ")
         else return@HudSetting 0f to 0f
 
-        if (showIcons) text += "❈"
+        return@HudSetting mcTextAndWidth(text, 2, 2, 2, overflowManaColor, center = false) * 2f + 2f to 20f
+    }
+    private val overflowManaColor: Color by ColorSetting("Overflow Mana Color", Color.CYAN, true)
+
+    private val defenseHud: HudElement by HudSetting("Defense Hud", 10f, 10f, 1f, true) { example ->
+        val text = if (example)
+            generateText(1000, "❈")
+        else if (SkyblockPlayer.currentDefense != 0)
+            generateText(SkyblockPlayer.currentDefense, "❈")
+        else return@HudSetting 0f to 0f
+
 
         return@HudSetting mcTextAndWidth(text, 2, 2, 2, defenseColor, center = false) * 2f + 2f to 20f
     }
@@ -73,12 +88,17 @@ object PlayerDisplay : Module(
         var toReturn = text
         toReturn = if (hideHealth) toReturn.replace("[\\d|,]+/[\\d|,]+❤".toRegex(), "") else toReturn
         toReturn = if (hideMana) toReturn.replace("[\\d|,]+/[\\d|,]+✎( Mana)?".toRegex(), "") else toReturn
+        toReturn = if (hideOverflow) toReturn.replace("§?[\\d|,]+ʬ".toRegex(), "") else toReturn
         toReturn = if (hideDefense) toReturn.replace("[\\d|,]+§a❈ Defense".toRegex(), "") else toReturn
         return toReturn
     }
 
     private fun generateText(current: Int, max: Int, icon: String): String {
         return "${formatNumberWithCustomSeparator(current)}/${formatNumberWithCustomSeparator(max)}${if (showIcons) icon else ""}"
+    }
+
+    private fun generateText(current: Int, icon: String): String{
+        return "${formatNumberWithCustomSeparator(current)}${if (showIcons) icon else ""}"
     }
 
     private fun formatNumberWithCustomSeparator(number: Int): String {
