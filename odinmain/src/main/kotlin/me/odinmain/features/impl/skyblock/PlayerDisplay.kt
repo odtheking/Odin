@@ -85,6 +85,18 @@ object PlayerDisplay : Module(
     }
     private val defenseColor: Color by ColorSetting("Defense Color", Color.GREEN, true)
 
+    private val eHPHud: HudElement by HudSetting("EffectiveHealth Hud", 10f, 10f, 1f, true) { example ->
+        val text = if (example)
+            generateText(1000000, "", true)
+        else if (SkyblockPlayer.effectiveHP != 0)
+            generateText(SkyblockPlayer.effectiveHP, "", true)
+        else return@HudSetting 0f to 0f
+
+
+        return@HudSetting mcTextAndWidth(text, 2, 2, 2, ehpColor, center = false) * 2f + 2f to 20f
+    }
+    private val ehpColor: Color by ColorSetting("EffectiveHealth Color", Color.DARK_GREEN, true)
+
 
     fun modifyText(text: String): String {
         if (!enabled) return text

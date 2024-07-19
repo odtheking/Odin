@@ -27,6 +27,7 @@ object SkyblockPlayer {
     var currentSpeed: Int = 0
     var currentDefense: Int = 0
     var overflowMana: Int = 0
+    var effectiveHP: Int = 0
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onPacket(event: PacketReceivedEvent) {
@@ -40,7 +41,7 @@ object SkyblockPlayer {
         currentMana = cMana.replace(",", "").toIntOrNull() ?: return
         maxMana = mMana.replace(",", "").toIntOrNull() ?: return
         overflowMana = oMana.replace(",", "").replace("ʬ","").toIntOrNull() ?: 0
-
         currentDefense = Regex("([\\d|,]+)❈ Defense").find(middleRegion)?.groupValues?.get(1)?.replace(",", "")?.toIntOrNull() ?: return
+        effectiveHP = (currentHealth * (1 + currentDefense / 100))
     }
 }
