@@ -33,7 +33,7 @@ object PlayerDisplay : Module(
     private val hideZeroSF: Boolean by BooleanSetting("Hide 0 Overflow", true).withDependency { overflow }
 
     private val showIcons: Boolean by BooleanSetting("Show Icons", true, description = "Shows icons indicating what the number means.")
-    private val thousandSeperator: String by StringSetting("Thousands Seperator", "", 1, description = "The seperator between thousands and hundreds.")
+    private val thousandSeperator: String by StringSetting("Thousands Separator", "", 1, description = "The Separator between thousands and hundreds.")
 
     private val healthHud: HudElement by HudSetting("Health Hud", 10f, 10f, 1f, true) { example ->
         val text =
