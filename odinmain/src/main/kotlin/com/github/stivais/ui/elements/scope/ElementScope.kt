@@ -67,17 +67,6 @@ open class ElementScope<E: Element>(val element: E) {
         return null
     }
 
-//    /**
-//     * Dangerous
-//     */
-//    fun <E : ElementScope<*>> cast(): E {
-//        return this as E
-//    }
-//
-//    fun <E : Element> castElement(): E {
-//        return element as E
-//    }
-
     @DSL
     fun group(
         constraints: Constraints? = null,
@@ -224,18 +213,14 @@ open class ElementScope<E: Element>(val element: E) {
         }
     }
 
-    fun onMouseEnterExit(block: (Event) -> Boolean) {
-        element.registerEvent(Mouse.Entered, block)
-        element.registerEvent(Mouse.Exited, block)
+    fun onMouseEnterExit(block: (Event) -> Unit) {
+        val func: Event.() -> Boolean = { block(this); false }
+        element.registerEvent(Mouse.Entered, func)
+        element.registerEvent(Mouse.Exited, func)
     }
 
     fun onMouseMove(block: (Mouse.Moved) -> Boolean) {
         element.registerEvent(Mouse.Moved, block)
-    }
-
-    fun onMouseHovered(ms: Long, block: () -> Unit) {
-//        if (element.hoverEvents == null) element.hoverEvents = arrayListOf()
-//        element.hoverEvents!!.add(Mouse.Hovered(ms))
     }
 
     fun onFocusGain(block: (Event) -> Unit) {

@@ -2,6 +2,7 @@ package com.github.stivais.ui.elements.impl
 
 import com.github.stivais.ui.UI
 import com.github.stivais.ui.color.Color
+import com.github.stivais.ui.color.color
 import com.github.stivais.ui.color.darker
 import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.events.*
@@ -45,7 +46,7 @@ class TextInput(
     private val _text: String
         get() = if (censorInput) censorCache!! else text
 
-    private val placeholderColor: Color = Color { color!!.rgba.darker(0.75) }
+    private val placeholderColor: Color = color { color!!.rgba.darker(0.75) }
 
     var censorInput = censor
         set(value) {

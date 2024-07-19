@@ -1,8 +1,6 @@
 package me.odinmain.config
 
 import com.github.stivais.ui.color.*
-import com.github.stivais.ui.color.Color.Companion.hexToRgba
-import com.github.stivais.ui.color.Color.Companion.toHexString
 import com.google.gson.*
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.*
@@ -66,7 +64,7 @@ class ColorSerializer : JsonSerializer<Color>, JsonDeserializer<Color> {
 
     override fun deserialize(json: JsonElement?, typeOfT: Type?, context: JsonDeserializationContext?): Color {
         val hexValue = json?.asString?.removePrefix("#") ?: "00000000"
-        val color = hexToRgba(hexValue)
+        val color = hexToRGBA(hexValue)
         return Color.RGB(color.red, color.green, color.blue, color.alpha.toFloat())
     }
 }

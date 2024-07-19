@@ -2,7 +2,9 @@ package me.odinmain.features.settings.impl
 
 import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.color.Color
+import com.github.stivais.ui.color.color
 import com.github.stivais.ui.color.toHSB
+import com.github.stivais.ui.color.withAlpha
 import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.sizes.Copying
@@ -26,8 +28,7 @@ class ColorSetting(
 
     override var value: Color.HSB = default
 
-    @JvmField
-    val hueMax = Color { HSBtoRGB(value.hue, 1f, 1f) }
+    private val hueMax = color { HSBtoRGB(value.hue, 1f, 1f) }
 
     override fun ElementScope<*>.createElement() {
         val size = Animatable(from = 40.px, to = if (allowAlpha) 260.px else 240.px)
@@ -45,7 +46,7 @@ class ColorSetting(
                     color = transparentFix,
                     radius = 5.radii()
                 ) {
-                    outline(color = hueMax)
+                    outline(color = color { value.withAlpha(255).rgba })
                     block(
                         constraints = indent(2),
                         color = value,
@@ -164,8 +165,8 @@ class ColorSetting(
         }
     }
 
-    companion object {
-        @JvmField
-        val transparentFix: Color = Color.RGB(0, 0, 0, 0.2f)
+    private companion object {
+        @JvmStatic
+        val transparentFix: Color.RGB = Color.RGB(0, 0, 0, 0.2f)
     }
 }

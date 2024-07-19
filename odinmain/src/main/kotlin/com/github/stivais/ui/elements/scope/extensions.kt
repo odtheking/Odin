@@ -2,6 +2,7 @@ package com.github.stivais.ui.elements.scope
 
 import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.color.Color
+import com.github.stivais.ui.color.color
 import com.github.stivais.ui.color.darker
 import com.github.stivais.ui.constraints.measurements.Pixel
 import com.github.stivais.ui.constraints.px
@@ -14,12 +15,9 @@ fun BlockScope.hoverEffect(
     handler: ElementScope<*> = this,
 ) {
     val before = color!!
-    val hover = Color.Animated(from = before, to = Color { before.rgba.darker(1.25) })
+    val hover = Color.Animated(from = before, to = color { before.rgba.darker(1.25) })
     color = hover
-    handler.onMouseEnterExit {
-        hover.animate(duration)
-        false
-    }
+    handler.onMouseEnterExit { hover.animate(duration) }
 }
 
 fun ElementDSL.focuses() {

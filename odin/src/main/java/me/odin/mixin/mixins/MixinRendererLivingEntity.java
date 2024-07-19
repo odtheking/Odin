@@ -1,7 +1,6 @@
 package me.odin.mixin.mixins;
 
 import com.github.stivais.ui.color.Color;
-import com.github.stivais.ui.color.ColorUtils;
 import me.odinmain.events.impl.RenderEntityModelEvent;
 import me.odinmain.utils.EventExtensions;
 import me.odinmain.utils.render.HighlightRenderer;
@@ -25,6 +24,7 @@ import java.nio.FloatBuffer;
 import java.util.List;
 import java.util.Map;
 
+import static com.github.stivais.ui.color.ColorUtils.*;
 import static org.lwjgl.opengl.GL11.*;
 
 @Mixin(RendererLivingEntity.class)
@@ -73,10 +73,10 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> {
             GL11.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_ALPHA, 770);
             this.brightnessBuffer.position(0);
             Color color = highlightEntity.getColor();
-            brightnessBuffer.put(ColorUtils.INSTANCE.getRed(color) / 255f);
-            brightnessBuffer.put(ColorUtils.INSTANCE.getGreen(color) / 255f);
-            brightnessBuffer.put(ColorUtils.INSTANCE.getBlue(color) / 255f);
-            brightnessBuffer.put(ColorUtils.INSTANCE.getAlpha(color) / 255f);
+            brightnessBuffer.put(getRed(color) / 255f);
+            brightnessBuffer.put(getGreen(color) / 255f);
+            brightnessBuffer.put(getBlue(color) / 255f);
+            brightnessBuffer.put(getAlpha(color) / 255f);
             this.brightnessBuffer.flip();
             GL11.glTexEnv(8960, 8705, this.brightnessBuffer);
             GlStateManager.setActiveTexture(OpenGlHelper.GL_TEXTURE2);

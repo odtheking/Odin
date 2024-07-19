@@ -1,6 +1,7 @@
 package me.odinmain.features.settings.impl
 
 import com.github.stivais.ui.color.Color
+import com.github.stivais.ui.color.color
 import com.github.stivais.ui.color.brighter
 import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Animatable
@@ -85,7 +86,7 @@ class StringSetting(
                     input.focusThis(); true
                 }
                 onMouseEnterExit {
-                    hover.animate(0.25.seconds); false
+                    hover.animate(0.25.seconds)
                 }
                 outline(ClickGUI.color, thickness)
                 scissors()
@@ -118,6 +119,6 @@ class StringSetting(
     }
 
     private companion object {
-        private val `gray 38 brighter` = Color { `gray 38`.rgba.brighter(1.2) }
+        private val `gray 38 brighter` = color { `gray 38`.rgba.brighter(1.2) }
     }
 }

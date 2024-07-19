@@ -2,7 +2,6 @@ package me.odinmain.features.settings.impl
 
 import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.color.Color
-import com.github.stivais.ui.color.color
 import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.sizes.Bounding
@@ -87,7 +86,7 @@ class SelectorSetting(
                         size = 40.percent
                     )
                     block(
-                        constraints = constrain(x = -6.px, w = Bounding + 6.px, h = 72.5.percent),
+                        constraints = constrain(x = -6.px, w = Bounding + 6.px, h = 75.percent),
                         color = `gray 38`,
                         radius = radius(5)
                     ) {
@@ -102,12 +101,6 @@ class SelectorSetting(
                             alphaAnim.animate(0.25.seconds, Animations.EaseInOutQuint)
                             height.animate(0.25.seconds, Animations.EaseInOutQuint)
                             thickness.animate(0.25.seconds, Animations.EaseInOutQuint)
-                            this@setting.redraw()
-                            true
-                        }
-                        onClick(button = 1) {
-                            index += 1
-                            text!!.string = selected
                             this@setting.redraw()
                             true
                         }
@@ -126,9 +119,10 @@ class SelectorSetting(
                     // options
                     // they're transparent, except for the outline which is animated on hover
                     for ((index, option) in options.withIndex()) {
+                        val color = Color.Animated(from = Color.TRANSPARENT, to = Color.RGB(150, 150, 150, 0.2f))
                         block(
                             constraints = size(w = Copying, h = 32.px),
-                            color = color(from = Color.TRANSPARENT, to = Color.RGB(150, 150, 150, 0.2f)),
+                            color = color,
                             radius = radius(5)
                         ) {
                             onClick {
@@ -141,8 +135,7 @@ class SelectorSetting(
                                 true
                             }
                             onMouseEnterExit {
-                                color!!.animate(duration = 0.05.seconds)
-                                true
+                                color.animate(duration = 0.05.seconds)
                             }
                             text(text = option)
                         }
