@@ -26,10 +26,9 @@ object ArrowsDevice : Module(
     description = "Solver for the Sharp Shooter puzzle in floor 7.",
     category = Category.FLOOR7,
 ) {
-    private val solver: Boolean by BooleanSetting("Solver")
+    private val solver: Boolean by BooleanSetting("Solver", default = true)
     private val markedPositionColor: Color by ColorSetting("Marked Position", Color.RED, description = "Color of the marked position.").withDependency { solver }
     private val targetPositionColor: Color by ColorSetting("Target Position", Color.GREEN, description = "Color of the target position.").withDependency { solver }
-    private val alertOnDeviceComplete: Boolean by BooleanSetting("Device complete alert", default = true, description = "Send an alert when device is complete")
     private val resetKey: Keybinding by KeybindSetting("Reset", Keyboard.KEY_NONE, description = "Resets the solver.").onPress {
         reset()
     }.withDependency { solver }
@@ -37,6 +36,7 @@ object ArrowsDevice : Module(
     private val reset: () -> Unit by ActionSetting("Reset") {
         markedPositions.clear()
     }.withDependency { solver }
+    private val alertOnDeviceComplete: Boolean by BooleanSetting("Device complete alert", default = true, description = "Send an alert when device is complete")
 
     private val markedPositions = mutableSetOf<BlockPos>()
     private var targetPosition: BlockPos? = null
@@ -65,14 +65,14 @@ object ArrowsDevice : Module(
             if (DungeonUtils.getPhase() != M7Phases.P3) return@execute
 
             // Cast is safe since we won't return an entity that isn't an armor stand
-            activeArmorStand = mc.theWorld?.loadedEntityList?.find {
-                it is EntityArmorStand && it.name.equalsOneOf(
+            activeArmorStand = mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()?.find {
+                it.name.equalsOneOf(
                     INACTIVE_DEVICE_STRING,
                     ACTIVE_DEVICE_STRING
                 ) && it.distanceSquaredTo(
                     standPosition.toVec3()
                 ) <= 4.0
-            } as EntityArmorStand?
+            }
         }
 
         onWorldLoad {
