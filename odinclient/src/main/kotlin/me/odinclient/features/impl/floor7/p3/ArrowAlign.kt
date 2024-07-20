@@ -3,7 +3,6 @@ package me.odinclient.features.impl.floor7.p3
 import com.github.stivais.ui.color.Color
 import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinmain.events.impl.ClickEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -19,13 +18,12 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object ArrowAlign : Module(
     name = "Arrow Align",
-    description = "Different features for the arrow alignment device.",
-    category = Category.FLOOR7
+    description = "Different features for the arrow alignment device."
 ) {
-    private val blockWrong: Boolean by BooleanSetting("Block Wrong Clicks", false, description = "Blocks wrong clicks, shift will override this")
-    private val triggerBot: Boolean by BooleanSetting("Trigger Bot")
-    private val sneakToDisableTriggerbot: Boolean by BooleanSetting("Sneak to disable", false, description = "Disables triggerbot when you are sneaking").withDependency { triggerBot }
-    private val delay: Long by NumberSetting<Long>("Delay", 200, 70, 500).withDependency { triggerBot }
+    private val blockWrong by BooleanSetting("Block Wrong Clicks", false, description = "Blocks wrong clicks, shift will override this")
+    private val triggerBot by BooleanSetting("Trigger Bot")
+    private val sneakToDisableTriggerbot by BooleanSetting("Sneak to disable", false, description = "Disables triggerbot when you are sneaking").withDependency { triggerBot }
+    private val delay by NumberSetting<Long>("Delay", 200, 70, 500).withDependency { triggerBot }
 
     private val triggerBotClock = Clock(delay)
 

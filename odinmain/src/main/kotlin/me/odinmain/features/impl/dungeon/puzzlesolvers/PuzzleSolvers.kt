@@ -4,7 +4,6 @@ import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.color.multiplyAlpha
 import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.puzzlesolvers.WaterSolver.waterInteract
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -19,14 +18,13 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object PuzzleSolvers : Module(
     name = "Puzzle Solvers",
-    category = Category.DUNGEON,
     description = "Displays solutions for dungeon puzzles.",
     key = null
 ) {
-    private val waterDropDown: Boolean by DropdownSetting("Water")
-    private val waterSolver: Boolean by BooleanSetting("Water Board Solver", false, description = "Shows you the solution to the water puzzle.").withDependency { waterDropDown }
-    val showOrder: Boolean by BooleanSetting("Show Order", true, description = "Shows the order of the levers to click.").withDependency { waterSolver && waterDropDown }
-    val showTracer: Boolean by BooleanSetting("Show Tracer", true, description = "Shows a tracer to the next lever.").withDependency { waterSolver && waterDropDown }
+    private val waterDropDown by DropdownSetting("Water")
+    private val waterSolver by BooleanSetting("Water Board Solver", false, description = "Shows you the solution to the water puzzle.").withDependency { waterDropDown }
+    val showOrder by BooleanSetting("Show Order", true, description = "Shows the order of the levers to click.").withDependency { waterSolver && waterDropDown }
+    val showTracer by BooleanSetting("Show Tracer", true, description = "Shows a tracer to the next lever.").withDependency { waterSolver && waterDropDown }
     val tracerColorFirst: Color by ColorSetting("Tracer Color First", Color.MINECRAFT_GREEN, true, description = "Color for the first tracer").withDependency { showTracer && waterDropDown }
     val tracerColorSecond: Color by ColorSetting("Tracer Color Second", Color.MINECRAFT_GOLD, true, description = "Color for the second tracer").withDependency { showTracer && waterDropDown }
     val reset by ActionSetting("Reset", description = "Resets the solver.") {
@@ -97,7 +95,7 @@ object PuzzleSolvers : Module(
 
     private val boulderDropDown: Boolean by DropdownSetting("Boulder")
     private val boulderSolver: Boolean by BooleanSetting("Boulder Solver", false, description = "Solver for the boulder puzzle").withDependency { boulderDropDown }
-    val showAllBoulderClicks: Boolean by DualSetting("Boulder clicks", "Only First", "All Clicks", false).withDependency { boulderDropDown && boulderSolver }
+    val showAllBoulderClicks by SelectorSetting("Boulder clicks", "Only First", arrayListOf("Only First", "All Clicks")).withDependency { boulderDropDown && boulderSolver }
     val boulderStyle: Int by SelectorSetting("Boulder Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { boulderDropDown && boulderSolver }
     val boulderColor: Color by ColorSetting("Boulder Color", Color.GREEN.multiplyAlpha(.5f), allowAlpha = true, description = "The color of the box.").withDependency { boulderDropDown && boulderSolver }
     val boulderLineWidth: Float by NumberSetting("Boulder Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.").withDependency { boulderDropDown && boulderSolver }

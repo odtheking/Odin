@@ -82,13 +82,37 @@ fun Pair<Any?, Any?>?.equal(first: Any?, second: Any?): Boolean {
 }
 
 /**
- * Floors the current number.
- * @return The floored number.
+ * Floors the current Double number.
+ * @return The floored Double number.
  */
-// todo: make overloading functions rather than this
-fun Number.floor(): Number {
-    return floor(this.toDouble())
+fun Double.floor(): Double {
+    return floor(this)
 }
+
+/**
+ * Floors the current Float number.
+ * @return The floored Float number.
+ */
+fun Float.floor(): Float {
+    return floor(this.toDouble()).toFloat()
+}
+
+/**
+ * Floors the current Long number.
+ * @return The floored Long number (no change as Long is already an integer).
+ */
+fun Long.floor(): Long {
+    return this
+}
+
+/**
+ * Floors the current Int number.
+ * @return The floored Int number (no change as Int is already an integer).
+ */
+fun Int.floor(): Int {
+    return this
+}
+
 
 /**
  * Rounds the current number to the specified number of decimals.
@@ -135,15 +159,6 @@ fun Event.postAndCatch(): Boolean {
     }.getOrDefault(isCanceled)
 }
 
-// Companion object to expose the extension function statically for Java
-// todo: move into the file. an extra object is stupid
-object EventExtensions {
-    @JvmStatic
-    fun postAndCatch(event: Event): Boolean {
-        return event.postAndCatch()
-    }
-}
-
 /**
  * Executes the specified function after the specified number of **minecraft** ticks.
  * @param ticks The number of ticks to wait.
@@ -158,7 +173,6 @@ fun runIn(ticks: Int, func: () -> Unit) {
     ModuleManager.tickTasks.add(ModuleManager.TickTask(ticks, func))
 }
 
-// todo: remove? do these profilers actually get used over intelllij
 /**
  * Profiles the specified function with the specified string as profile section name.
  * Uses the minecraft profiler.
@@ -172,7 +186,6 @@ inline fun profile(name: String, func: () -> Unit) {
     endProfile()
 }
 
-// todo: remove? do these profilers actually get used over intelllij
 /**
  * Starts a minecraft profiler section with the specified name + "Odin: ".
  */
@@ -180,38 +193,11 @@ fun startProfile(name: String) {
     mc.mcProfiler.startSection("Odin: $name")
 }
 
-// todo: remove? do these profilers actually get used over intelllij
 /**
  * Ends the current minecraft profiler section.
  */
 fun endProfile() {
     mc.mcProfiler.endSection()
-}
-
-/**
- * Returns the maximum value of the numbers you give in as a float
- *
- * @param numbers All the numbers you want to compare
- *
- * @returns The maximum value of the numbers, as a float
- */
-// todo: this is bad, overrides kotlin min/max, uses vararg when all impls are 2 values
-// it'd be better to just use maxBy
-fun max(vararg numbers: Number): Float {
-    return numbers.maxBy { it.toFloat() }.toFloat()
-}
-
-/**
- * Returns the minimum value of the numbers you give in as a float
- *
- * @param numbers All the numbers you want to compare
- *
- * @returns The minimum value of the numbers, as a float
- */
-// todo: this is bad, overrides kotlin min/max, uses vararg when all impls are 2 values
-// it'd be better to just use minBy
-fun min(vararg numbers: Number): Float {
-    return numbers.minBy { it.toFloat() }.toFloat()
 }
 
 /**
@@ -255,23 +241,6 @@ fun formatTime(time: Long): String {
 
 val Char.isHexaDecimal
     get() = isDigit() || equalsOneOf("a","b","c","d","e","f","A","B","C","D","E","F")
-
-// todo: move this into the module its used in????? not a whole extra object just to hold 3 constants
-// Used in DeployableTimer.kt
-data object FlareTextures {
-    const val WARNING_FLARE_TEXTURE = "ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzMwNjIyMywKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjJlMmJmNmMxZWMzMzAyNDc5MjdiYTYzNDc5ZTU4NzJhYzY2YjA2OTAzYzg2YzgyYjUyZGFjOWYxYzk3MTQ1OCIKICAgIH0KICB9Cn0="
-    const val ALERT_FLARE_TEXTURE = "ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzMyNjQzMiwKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWQyYmY5ODY0NzIwZDg3ZmQwNmI4NGVmYTgwYjc5NWM0OGVkNTM5YjE2NTIzYzNiMWYxOTkwYjQwYzAwM2Y2YiIKICAgIH0KICB9Cn0="
-    const val SOS_FLARE_TEXTURE = "ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzM0NzQ4OSwKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzAwNjJjYzk4ZWJkYTcyYTZhNGI4OTc4M2FkY2VmMjgxNWI0ODNhMDFkNzNlYTg3YjNkZjc2MDcyYTg5ZDEzYiIKICAgIH0KICB9Cn0="
-}
-
-
-// todo: move this into the module its used in????? not a whole extra object just to hold 3 constants
-// Used in ChocolateFactory.kt
-data object BunnyEggTextures {
-    const val DINNER_EGG_TEXTURE = "ewogICJ0aW1lc3RhbXAiIDogMTcxMTQ2MjY0OTcwMSwKICAicHJvZmlsZUlkIiA6ICI3NGEwMzQxNWY1OTI0ZTA4YjMyMGM2MmU1NGE3ZjJhYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZXp6aXIiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTVlMzYxNjU4MTlmZDI4NTBmOTg1NTJlZGNkNzYzZmY5ODYzMTMxMTkyODNjMTI2YWNlMGM0Y2M0OTVlNzZhOCIKICAgIH0KICB9Cn0"
-    const val LUNCH_EGG_TEXTURE = "ewogICJ0aW1lc3RhbXAiIDogMTcxMTQ2MjU2ODExMiwKICAicHJvZmlsZUlkIiA6ICI3NzUwYzFhNTM5M2Q0ZWQ0Yjc2NmQ4ZGUwOWY4MjU0NiIsCiAgInByb2ZpbGVOYW1lIiA6ICJSZWVkcmVsIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzdhZTZkMmQzMWQ4MTY3YmNhZjk1MjkzYjY4YTRhY2Q4NzJkNjZlNzUxZGI1YTM0ZjJjYmM2NzY2YTAzNTZkMGEiCiAgICB9CiAgfQp9"
-    const val BREAKFAST_EGG_TEXTURE = "ewogICJ0aW1lc3RhbXAiIDogMTcxMTQ2MjY3MzE0OSwKICAicHJvZmlsZUlkIiA6ICJiN2I4ZTlhZjEwZGE0NjFmOTY2YTQxM2RmOWJiM2U4OCIsCiAgInByb2ZpbGVOYW1lIiA6ICJBbmFiYW5hbmFZZzciLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTQ5MzMzZDg1YjhhMzE1ZDAzMzZlYjJkZjM3ZDhhNzE0Y2EyNGM1MWI4YzYwNzRmMWI1YjkyN2RlYjUxNmMyNCIKICAgIH0KICB9Cn0"
-}
 
 fun checkGLError(message: String) {
     var i: Int

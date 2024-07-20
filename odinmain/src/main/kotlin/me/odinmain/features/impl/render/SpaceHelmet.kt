@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.render
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.getCurrentMonthName
@@ -11,10 +10,9 @@ import net.minecraft.item.ItemStack
 
 object SpaceHelmet : Module(
     name = "Space Helmet",
-    category = Category.RENDER,
     description = "Equips you with a space helmet."
 ) {
-    private val speed: Long by NumberSetting("Speed", 250, 100, 1000, 10, description = "The speed at which the color changes.")
+    private val speed by NumberSetting("Speed", 250L, 100, 1000, 10, description = "The speed at which the color changes.")
     private var edition = 0
     private val values = listOf(14, 1, 4, 5, 13, 9, 11, 10, 6)
     private var currentIndex = 0

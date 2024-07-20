@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.skyblock
 
 import me.odinmain.events.impl.GuiEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
@@ -15,25 +14,24 @@ import org.lwjgl.input.Keyboard
 
 object PetKeybinds : Module(
     name = "Pet Keybinds",
-    description = "keybinds for pets (/petkeys)",
-    category = Category.SKYBLOCK
+    description = "keybinds for pets (/petkeys)"
 ) {
-    private val unequipKeybind: Keybinding by KeybindSetting("Unequip Keybind", Keyboard.KEY_NONE, "Unequips the current Pet.")
-    private val nextPageKeybind: Keybinding by KeybindSetting("Next Page Keybind", Keyboard.KEY_NONE, "Goes to the next page.")
-    private val previousPageKeybind: Keybinding by KeybindSetting("Previous Page Keybind", Keyboard.KEY_NONE, "Goes to the previous page.")
-    private val delay: Long by NumberSetting("Delay", 0, 0.0, 10000.0, 10.0, description = "The delay between each click .")
-    private val nounequip: Boolean by BooleanSetting("Disable Unequip", default = false, description = "Prevents using a pets keybind to unequip a pet. Does not prevent unequip keybind or normal clicking.")
-    private val advanced: Boolean by DropdownSetting("Show Settings", false)
+    private val unequipKeybind by KeybindSetting("Unequip Keybind", Keyboard.KEY_NONE, "Unequips the current Pet.")
+    private val nextPageKeybind by KeybindSetting("Next Page Keybind", Keyboard.KEY_NONE, "Goes to the next page.")
+    private val previousPageKeybind by KeybindSetting("Previous Page Keybind", Keyboard.KEY_NONE, "Goes to the previous page.")
+    private val delay by NumberSetting("Delay", 0L, 0.0, 10000.0, 10.0, description = "The delay between each click .")
+    private val nounequip by BooleanSetting("Disable Unequip", default = false, description = "Prevents using a pets keybind to unequip a pet. Does not prevent unequip keybind or normal clicking.")
+    private val advanced by DropdownSetting("Show Settings", false)
 
-    private val pet1: Keybinding by KeybindSetting("Pet 1", Keyboard.KEY_1, "Pet 1 on the list.").withDependency { advanced }
-    private val pet2: Keybinding by KeybindSetting("Pet 2", Keyboard.KEY_2, "Pet 2 on the list.").withDependency { advanced }
-    private val pet3: Keybinding by KeybindSetting("Pet 3", Keyboard.KEY_3, "Pet 3 on the list.").withDependency { advanced }
-    private val pet4: Keybinding by KeybindSetting("Pet 4", Keyboard.KEY_4, "Pet 4 on the list.").withDependency { advanced }
-    private val pet5: Keybinding by KeybindSetting("Pet 5", Keyboard.KEY_5, "Pet 5 on the list.").withDependency { advanced }
-    private val pet6: Keybinding by KeybindSetting("Pet 6", Keyboard.KEY_6, "Pet 6 on the list.").withDependency { advanced }
-    private val pet7: Keybinding by KeybindSetting("Pet 7", Keyboard.KEY_7, "Pet 7 on the list.").withDependency { advanced }
-    private val pet8: Keybinding by KeybindSetting("Pet 8", Keyboard.KEY_8, "Pet 8 on the list.").withDependency { advanced }
-    private val pet9: Keybinding by KeybindSetting("Pet 9", Keyboard.KEY_9, "Pet 9 on the list.").withDependency { advanced }
+    private val pet1 by KeybindSetting("Pet 1", Keyboard.KEY_1, "Pet 1 on the list.").withDependency { advanced }
+    private val pet2 by KeybindSetting("Pet 2", Keyboard.KEY_2, "Pet 2 on the list.").withDependency { advanced }
+    private val pet3 by KeybindSetting("Pet 3", Keyboard.KEY_3, "Pet 3 on the list.").withDependency { advanced }
+    private val pet4 by KeybindSetting("Pet 4", Keyboard.KEY_4, "Pet 4 on the list.").withDependency { advanced }
+    private val pet5 by KeybindSetting("Pet 5", Keyboard.KEY_5, "Pet 5 on the list.").withDependency { advanced }
+    private val pet6 by KeybindSetting("Pet 6", Keyboard.KEY_6, "Pet 6 on the list.").withDependency { advanced }
+    private val pet7 by KeybindSetting("Pet 7", Keyboard.KEY_7, "Pet 7 on the list.").withDependency { advanced }
+    private val pet8 by KeybindSetting("Pet 8", Keyboard.KEY_8, "Pet 8 on the list.").withDependency { advanced }
+    private val pet9 by KeybindSetting("Pet 9", Keyboard.KEY_9, "Pet 9 on the list.").withDependency { advanced }
 
     private val pets = arrayOf(pet1, pet2, pet3, pet4, pet5, pet6, pet7, pet8, pet9)
     private val clickCoolDown = Clock(delay)

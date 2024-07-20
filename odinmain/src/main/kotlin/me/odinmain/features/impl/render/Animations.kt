@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.render
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
 import net.minecraft.client.entity.AbstractClientPlayer
@@ -22,22 +21,21 @@ import kotlin.math.max
  */
 object Animations : Module(
     name = "Animations",
-    category = Category.RENDER,
     description = "Changes the appearance of the first-person view model."
 ) {
-    val size: Float by NumberSetting("Size", 0.0f, -1.5, 1.5, 0.05, description = "Scales the size of your currently held item. Default: 0")
-    val x: Float by NumberSetting("X", 0.0f, -2.5, 1.5, 0.05, description = "Moves the held item. Default: 0")
-    val y: Float by NumberSetting("Y", 0.0f, -1.5, 1.5, 0.05, description = "Moves the held item. Default: 0")
-    val z: Float by NumberSetting("Z", 0.0f, -1.5, 3.0, 0.05, description = "Moves the held item. Default: 0")
-    private val yaw: Float by NumberSetting("Yaw", 0.0f, -180.0, 180.0, 1.0, description = "Rotates your held item. Default: 0")
-    private val pitch: Float by NumberSetting("Pitch", 0.0f, -180.0, 180.0, 1.0, description = "Rotates your held item. Default: 0")
-    private val roll: Float by NumberSetting("Roll", 0.0f, -180.0, 180.0, 1.0, description = "Rotates your held item. Default: 0")
-    val speed: Float by NumberSetting("Speed", 0.0f, -2.0, 1.0, 0.05, description = "Speed of the swing animation.")
-    val ignoreHaste: Boolean by BooleanSetting("Ignore Haste", false, description = "Makes the chosen speed override haste modifiers.")
-    val blockHit: Boolean by BooleanSetting("Block Hit", false, description = "Visual 1.7 block hit animation")
-    val noEquipReset: Boolean by BooleanSetting("No Equip Reset", false, description = "Disables the equipping animation when switching items")
-    val noSwing: Boolean by BooleanSetting("No Swing", false, description = "Prevents your item from visually swinging forward")
-    val noBlock: Boolean by BooleanSetting("No Block", false, description = "Disables the visual block animation")
+    val size by NumberSetting("Size", 0.0f, -1.5, 1.5, 0.05, description = "Scales the size of your currently held item. Default: 0")
+    val x by NumberSetting("X", 0.0f, -2.5, 1.5, 0.05, description = "Moves the held item. Default: 0")
+    val y by NumberSetting("Y", 0.0f, -1.5, 1.5, 0.05, description = "Moves the held item. Default: 0")
+    val z by NumberSetting("Z", 0.0f, -1.5, 3.0, 0.05, description = "Moves the held item. Default: 0")
+    private val yaw by NumberSetting("Yaw", 0.0f, -180.0, 180.0, 1.0, description = "Rotates your held item. Default: 0")
+    private val pitch by NumberSetting("Pitch", 0.0f, -180.0, 180.0, 1.0, description = "Rotates your held item. Default: 0")
+    private val roll by NumberSetting("Roll", 0.0f, -180.0, 180.0, 1.0, description = "Rotates your held item. Default: 0")
+    val speed by NumberSetting("Speed", 0.0f, -2.0, 1.0, 0.05, description = "Speed of the swing animation.")
+    val ignoreHaste by BooleanSetting("Ignore Haste", false, description = "Makes the chosen speed override haste modifiers.")
+    val blockHit by BooleanSetting("Block Hit", false, description = "Visual 1.7 block hit animation")
+    val noEquipReset by BooleanSetting("No Equip Reset", false, description = "Disables the equipping animation when switching items")
+    val noSwing by BooleanSetting("No Swing", false, description = "Prevents your item from visually swinging forward")
+    val noBlock by BooleanSetting("No Block", false, description = "Disables the visual block animation")
 
     val reset by ActionSetting("Reset") {
         settings.forEach { it.reset() }

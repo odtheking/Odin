@@ -3,7 +3,6 @@ package me.odinmain.features.impl.nether
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.color.multiplyAlpha
 import me.odinmain.events.impl.RenderEntityModelEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
@@ -19,12 +18,11 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object BlazeAttunement : Module(
     name = "Blaze Attunement",
-    category = Category.NETHER,
     description = "Displays what attunement a blaze boss currently needs."
 ) {
-    private val overlay: Boolean by BooleanSetting("Overlay Entities", false)
-    private val thickness: Float by NumberSetting("Outline Thickness", 5f, 5f, 20f, 0.5f)
-    private val cancelHurt: Boolean by BooleanSetting("Cancel Hurt", true)
+    private val overlay by BooleanSetting("Overlay Entities", false)
+    private val thickness by NumberSetting("Outline Thickness", 5f, 5f, 20f, 0.5f)
+    private val cancelHurt by BooleanSetting("Cancel Hurt", true)
 
     private var currentBlazes = hashMapOf<Entity, Color>()
 

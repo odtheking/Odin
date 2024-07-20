@@ -3,7 +3,6 @@ package me.odinmain.features.impl.dungeon
 import com.github.stivais.ui.color.Color
 import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.RealServerTick
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Renderer
@@ -15,8 +14,7 @@ import java.util.*
 
 object TerracottaTimer : Module(
     name = "Terracotta Timer",
-    description = "Displays the time until the terracotta respawns.",
-    category = Category.DUNGEON
+    description = "Displays the time until the terracotta respawns."
 ) {
     private data class Terracotta(val pos: Vec3, var time: Double)
     private var terracottaSpawning = mutableListOf<Terracotta>()

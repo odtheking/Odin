@@ -3,7 +3,6 @@ package me.odinmain.features.impl.dungeon.dungeonwaypoints
 import com.github.stivais.ui.color.Color
 import me.odinmain.config.DungeonWaypointConfigCLAY
 import me.odinmain.events.impl.*
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.resetSecrets
 import me.odinmain.features.impl.render.DevPlayers
@@ -31,21 +30,20 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object DungeonWaypoints : Module(
     name = "Dungeon Waypoints",
     description = "Shows waypoints for dungeons. Currently it's quite buggy and doesn't work well with some rooms.",
-    category = Category.DUNGEON,
     tag = TagType.NEW
 ) {
-    private var allowEdits: Boolean by BooleanSetting("Allow Edits", false)
-    private var reachEdits: Boolean by BooleanSetting("Reach Edits", false, description = "Extends the reach of edit mode.")
+    private var allowEdits by BooleanSetting("Allow Edits", false)
+    private var reachEdits by BooleanSetting("Reach Edits", false, description = "Extends the reach of edit mode.")
     private var reachColor by ColorSetting("Reach Color", Color.RGB(0, 255, 213, 0.43f), description = "Color of the reach box highlight.", allowAlpha = true).withDependency { reachEdits }
-    var editText: Boolean by BooleanSetting("Edit Text", false, description = "Displays text under your crosshair telling you when you are editing waypoints.")
+    var editText by BooleanSetting("Edit Text", false, description = "Displays text under your crosshair telling you when you are editing waypoints.")
     var color by ColorSetting("Color", Color.MINECRAFT_GREEN, description = "The color of the next waypoint you place.", allowAlpha = true).withDependency { colorPallet == 0 }
     private val colorPallet: Int by SelectorSetting("Color pallet", "None", arrayListOf("None", "Aqua", "Magenta", "Yellow", "Lime"))
-    var filled: Boolean by BooleanSetting("Filled", false, description = "If the next waypoint you place should be 'filled'.")
-    var throughWalls: Boolean by BooleanSetting("Through walls", false, description = "If the next waypoint you place should be visible through walls.")
-    var useBlockSize: Boolean by BooleanSetting("Use block size", false, description = "Use the size of the block you click for waypoint size.")
-    var size: Double by NumberSetting("Size", 1.0, .125, 1.0, increment = 0.01, description = "The size of the next waypoint you place.").withDependency { !useBlockSize }
-    var secretWaypoint: Boolean by BooleanSetting("Secret", default = false, description = "If the next waypoint you place should be removed when a secret is interacted with near this waypoint.")
-    private val disableDepth: Boolean by BooleanSetting("Disable Depth", false, description = "Disables depth testing for waypoints.")
+    var filled by BooleanSetting("Filled", false, description = "If the next waypoint you place should be 'filled'.")
+    var throughWalls by BooleanSetting("Through walls", false, description = "If the next waypoint you place should be visible through walls.")
+    var useBlockSize by BooleanSetting("Use block size", false, description = "Use the size of the block you click for waypoint size.")
+    var size by NumberSetting("Size", 1.0, .125, 1.0, increment = 0.01, description = "The size of the next waypoint you place.").withDependency { !useBlockSize }
+    var secretWaypoint by BooleanSetting("Secret", default = false, description = "If the next waypoint you place should be removed when a secret is interacted with near this waypoint.")
+    private val disableDepth by BooleanSetting("Disable Depth", false, description = "Disables depth testing for waypoints.")
     private val resetButton by ActionSetting("Reset Current Room") {
         val room = DungeonUtils.currentFullRoom ?: return@ActionSetting modMessage("Room not found!!!")
 

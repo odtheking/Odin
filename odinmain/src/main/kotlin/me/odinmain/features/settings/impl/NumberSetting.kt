@@ -17,7 +17,7 @@ import me.odinmain.features.impl.render.ClickGUI
 import me.odinmain.features.impl.render.ClickGUI.`gray 26`
 import me.odinmain.features.settings.Saving
 import me.odinmain.features.settings.Setting
-import me.odinmain.utils.*
+import me.odinmain.utils.round
 import kotlin.math.floor
 import kotlin.math.round
 

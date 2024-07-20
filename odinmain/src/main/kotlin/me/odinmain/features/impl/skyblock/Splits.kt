@@ -1,13 +1,11 @@
 package me.odinmain.features.impl.skyblock
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 
 object Splits : Module(
     name = "Splits",
-    description = "Automatic advanced skyblock splits.",
-    category = Category.SKYBLOCK
+    description = "Automatic advanced skyblock splits."
 ) {
     /*private val hud: HudElement by HudSetting("Splits Display HUD", 10f, 10f, 1f, true) {
         if (it) {

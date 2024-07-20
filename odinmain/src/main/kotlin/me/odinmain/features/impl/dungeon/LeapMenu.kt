@@ -1,17 +1,21 @@
 package me.odinmain.features.impl.dungeon
 
 import com.github.stivais.ui.UI
+import com.github.stivais.ui.UIScreen
 import com.github.stivais.ui.color.Color
+import com.github.stivais.ui.color.multiplyAlpha
 import com.github.stivais.ui.constraints.*
+import com.github.stivais.ui.constraints.measurements.Animatable
+import com.github.stivais.ui.elements.scope.hoverEffect
 import com.github.stivais.ui.utils.radii
 import io.github.moulberry.notenoughupdates.NEUApi
 import me.odinmain.events.impl.GuiEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.LeapHelper.getPlayer
 import me.odinmain.features.impl.dungeon.LeapHelper.leapHelperBossChatEvent
 import me.odinmain.features.impl.dungeon.LeapHelper.leapHelperClearChatEvent
 import me.odinmain.features.impl.dungeon.LeapHelper.worldLoad
+import me.odinmain.features.impl.render.ClickGUI.`gray 38`
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.*
@@ -25,73 +29,93 @@ import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
-import org.lwjgl.opengl.Display
 
 object LeapMenu : Module(
     name = "Leap Menu",
-    description = "Renders a custom leap menu when in the Spirit Leap gui.",
-    category = Category.DUNGEON
+    description = "Renders a custom leap menu when in the Spirit Leap gui."
 ) {
-    val type: Int by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("Odin Sorting", "A-Z Class (BetterMap)", "A-Z Name", "No Sorting"), description = "How to sort the leap menu.")
-    private val colorStyle: Boolean by DualSetting("Color Style", "Gray", "Color", default = false, description = "Which color style to use")
-    private val roundedRect: Boolean by BooleanSetting("Rounded Rect", true, description = "Toggles the rounded rect for the gui.")
-    private val useNumberKeys: Boolean by BooleanSetting("Use Number Keys", false, description = "Use keyboard keys to leap to the player you want, going from left to right, top to bottom.")
-    private val topLeftKeybind: Keybinding by KeybindSetting("Top Left", Keyboard.KEY_1, "Used to click on the first person in the leap menu.").withDependency { useNumberKeys }
-    private val topRightKeybind: Keybinding by KeybindSetting("Top Right", Keyboard.KEY_2, "Used to click on the second person in the leap menu.").withDependency { useNumberKeys }
-    private val bottomLeftKeybind: Keybinding by KeybindSetting("Bottom Left", Keyboard.KEY_3, "Used to click on the third person in the leap menu.").withDependency { useNumberKeys }
-    private val bottomRightKeybind: Keybinding by KeybindSetting("Bottom right", Keyboard.KEY_4, "Used to click on the fourth person in the leap menu.").withDependency { useNumberKeys }
-    private val size: Float by NumberSetting("Scale Factor", 1.0f, 0.5f, 2.0f, 0.1f, description = "Scale factor for the leap menu.")
-    private val leapHelperToggle: Boolean by BooleanSetting("Leap Helper", false, description = "Highlights the leap helper player in the leap menu.")
-    private val leapHelperColor: Color by ColorSetting("Leap Helper Color", Color.WHITE, description = "Color of the Leap Helper highlight").withDependency { leapHelperToggle }
-    val delay: Int by NumberSetting("Reset Leap Helper Delay", 30, 10.0, 120.0, 1.0, description = "Delay for clearing the leap helper highlight").withDependency { leapHelperToggle }
-    private val leapAnnounce: Boolean by BooleanSetting("Leap Announce", false, description = "Announces when you leap to a player.")
+    val type by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("Odin Sorting", "A-Z Class (BetterMap)", "A-Z Name", "No Sorting"), description = "How to sort the leap menu.")
+    private val colorStyle by SelectorSetting("Color Style", "Gray", arrayListOf("Gray", "Color"), description = "Which color style to use")
+    private val roundedRect by BooleanSetting("Rounded Rect", true, description = "Toggles the rounded rect for the gui.")
+    private val useNumberKeys by BooleanSetting("Use Number Keys", false, description = "Use keyboard keys to leap to the player you want, going from left to right, top to bottom.")
+    private val topLeftKeybind by KeybindSetting("Top Left", Keyboard.KEY_1, "Used to click on the first person in the leap menu.").withDependency { useNumberKeys }
+    private val topRightKeybind by KeybindSetting("Top Right", Keyboard.KEY_2, "Used to click on the second person in the leap menu.").withDependency { useNumberKeys }
+    private val bottomLeftKeybind by KeybindSetting("Bottom Left", Keyboard.KEY_3, "Used to click on the third person in the leap menu.").withDependency { useNumberKeys }
+    private val bottomRightKeybind by KeybindSetting("Bottom right", Keyboard.KEY_4, "Used to click on the fourth person in the leap menu.").withDependency { useNumberKeys }
+    private val size by NumberSetting("Scale Factor", 1.0f, 0.5f, 2.0f, 0.1f, description = "Scale factor for the leap menu.")
+    private val leapHelperToggle by BooleanSetting("Leap Helper", false, description = "Highlights the leap helper player in the leap menu.")
+    private val leapHelperColor by ColorSetting("Leap Helper Color", Color.WHITE, description = "Color of the Leap Helper highlight").withDependency { leapHelperToggle }
+    val delay by NumberSetting("Reset Leap Helper Delay", 30, 10.0, 120.0, 1.0, description = "Delay for clearing the leap helper highlight").withDependency { leapHelperToggle }
+    private val leapAnnounce by BooleanSetting("Leap Announce", false, description = "Announces when you leap to a player.")
    // private val hoveredAnims = List(4) { EaseInOut(200L) }
-    private var hoveredQuadrant = -1
-    private var previouslyHoveredQuadrant = -1
 
     private val EMPTY = DungeonPlayer("Empty", DungeonClass.Unknown, ResourceLocation("textures/entity/steve.png"))
-    private const val BOX_WIDTH = 800
-    private const val BOX_HEIGHT = 300
 
     fun leapMenu() = UI {
-        group {
-            leapTeammates.forEachIndexed { index, it ->
-                modMessage("Drawing ${it.name}")
-                if (it == EMPTY) return@forEachIndexed modMessage("Empty")
-                val displayWidth = Display.getWidth()
-                val displayHeight = Display.getHeight()
-                val x = when (index) {
-                    0, 2 -> -((displayWidth - (BOX_WIDTH * 2)) / 6 + BOX_WIDTH)
-                    else -> ((displayWidth - (BOX_WIDTH * 2)) / 6)
-                }
-                val y = when (index) {
-                    0, 1 -> -((displayHeight - (BOX_HEIGHT * 2)) / 8 + BOX_HEIGHT)
-                    else -> ((displayHeight - (BOX_HEIGHT * 2)) / 8)
-                }
-                block(
-                    constraints = constrain(x.px, y.px, 800.px, 300.px),
-                    color = Color.MINECRAFT_DARK_GRAY,
+        val sizeX = Animatable(from = 80.percent, to = 90.percent)
+        val sizeY = Animatable(from = 50.percent, to = 60.percent)
+        leapTeammates.forEachIndexed { index, it ->
+            if (it == EMPTY) return@forEachIndexed modMessage("Empty")
+            val x = when (index) {
+                0, 2 -> 16.percent
+                else -> 2.percent
+            }
+
+            val y = when (index) {
+                0, 1 -> 32.percent
+                else -> 4.percent
+            }
+
+            val groupY = when (index) {
+                0, 1 -> 0.percent
+                else -> 50.percent
+            }
+
+            val groupX = when (index) {
+                0, 2 -> 0.percent
+                else -> 50.percent
+            }
+            group(constraints = constrain(groupX, groupY, 50.percent, 50.percent)) {
+
+                val block = block(
+                    constraints = constrain(x, y, sizeX, sizeY),
+                    color = `gray 38`,
                     radius = 12.radii()
                 ) {
-                    text(it.name, size = 48.px)
-                    text(if (it.isDead) "§cDEAD" else it.clazz.name, size = 30.px, color = Color.WHITE)
-                    //rectangleOutline(color = Color.MINECRAFT_DARK_GRAY, thickness = 25.px, radius = 15.radii(), alpha = 100)
+
+                    //image(it.locationSkin.toString(), constrain(30.px, 30.px, 240.px, 240.px), 9.radii())
+                    block(constrain(5.percent, 10.percent, 33.percent, 80.percent), color = Color.WHITE, radius = 9.radii())
+                    column(constraints = constrain(38.percent, 40.percent)) {
+                        text(it.name, size = 48.px, color = it.clazz.color)
+                        divider(15.px)
+                        block(constrain(0.px, 55.px, 25.percent, 1.px), color = Color.WHITE.multiplyAlpha(0.2f), radius = 9.radii())
+                        text(if (it.isDead) "§cDEAD" else it.clazz.name, size = 30.px, color = Color.WHITE)
+                    }
+                    onClick {
+                        modMessage(getQuadrant())
+                        ui.main.removeElement(element)
+                        true
+                    }
+                }
+                onMouseEnterExit {
+                    block.hoverEffect()
                 }
             }
+
         }
     }
 
     @SubscribeEvent
     fun onDrawScreen(event: GuiEvent.DrawGuiContainerScreenEvent) {
-        val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
-        if (chest !is ContainerChest || chest.name != "Spirit Leap" || leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return
-        hoveredQuadrant = getQuadrant()
-        /*if (hoveredQuadrant != previouslyHoveredQuadrant && previouslyHoveredQuadrant != -1) {
+
+
+        /*hoveredQuadrant =
+        if (hoveredQuadrant != previouslyHoveredQuadrant && previouslyHoveredQuadrant != -1) {
             hoveredAnims[hoveredQuadrant - 1].start()
             hoveredAnims[previouslyHoveredQuadrant - 1].start(true)
         }
-        previouslyHoveredQuadrant = hoveredQuadrant*/
-/*
+        previouslyHoveredQuadrant = hoveredQuadrant
+
         leapTeammates.forEachIndexed { index, it ->
             if (it == EMPTY) return@forEachIndexed
             GlStateManager.pushMatrix()
@@ -114,7 +138,6 @@ object LeapMenu : Module(
                 0, 1 -> -((displayHeight - (boxHeight * 2)) / 8 + boxHeight)
                 else -> ((displayHeight - (boxHeight * 2)) / 8)
             }
-            mc.textureManager.bindTexture(it.locationSkin)
             val color = if (colorStyle) it.clazz.color else Color.DARK_GRAY
             if (it.name == (if (DungeonUtils.inBoss) LeapHelper.leapHelperBoss else LeapHelper.leapHelperClear) && leapHelperToggle)
                 roundedRectangle(x - 25, y - 25, boxWidth + 50, boxHeight + 50, leapHelperColor, if (roundedRect) 12f else 0f)
@@ -130,14 +153,16 @@ object LeapMenu : Module(
             rectangleOutline(x + 30, y + 30, 240, 240, color, 25f, 15f, 100f)
             GlStateManager.disableAlpha()
             GlStateManager.popMatrix()
-        }*/ // TODO: rewrite with ui lib
-        event.isCanceled = true
+        }
+        event.isCanceled = true*/
     }
 
     @SubscribeEvent
     fun guiOpen(event: GuiOpenEvent) {
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
         if (chest !is ContainerChest || chest.name != "Spirit Leap" || leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return
+        val guiScreen = UIScreen(leapMenu())
+        event.gui = guiScreen
         if (Loader.instance().activeModList.any { it.modId == "notenoughupdates" }) NEUApi.setInventoryButtonsToDisabled()
     }
 

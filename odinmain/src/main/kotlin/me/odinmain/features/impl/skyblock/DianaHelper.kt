@@ -4,7 +4,6 @@ import com.github.stivais.ui.color.Color
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.isLegitVersion
 import me.odinmain.events.impl.ClickEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
@@ -24,23 +23,22 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object DianaHelper : Module(
     name = "Diana Helper",
-    description = "Displays the location of the Diana guess and burrows.",
-    category = Category.SKYBLOCK
+    description = "Displays the location of the Diana guess and burrows."
 ) {
-    private val guessColor: Color by ColorSetting("Guess Color", Color.WHITE, allowAlpha = true, description = "Color of the guess text")
-    private val tracer: Boolean by BooleanSetting("Tracer", default = false, description = "Draws a line from your position to the guess")
-    private val tracerWidth: Float by NumberSetting("Tracer Width", default = 5f, min = 1f, max = 20f).withDependency { tracer }
-    private val tracerColor: Color by ColorSetting("Tracer Line Color", Color.WHITE, allowAlpha = true, description = "Color of the tracer line").withDependency { tracer }
-    private val tracerBurrows: Boolean by BooleanSetting("Tracer Burrows", default = false, description = "Draws a line from your position to the burrows")
-    private val style: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.")
-    private val sendInqMsg: Boolean by BooleanSetting("Send Inq Msg", default = true, description = "Sends a message to the party when you dig out an inquisitor")
-    private val showWarpSettings: Boolean by BooleanSetting("Show Warp Settings", default = true, description = "Shows the warp settings")
-    private val castle: Boolean by BooleanSetting("Castle Warp").withDependency { showWarpSettings }
-    private val crypt: Boolean by BooleanSetting("Crypt Warp").withDependency { showWarpSettings }
-    private val darkAuction: Boolean by BooleanSetting("DA Warp").withDependency { showWarpSettings }
-    private val museum: Boolean by BooleanSetting("Museum Warp").withDependency { showWarpSettings }
-    private val wizard: Boolean by BooleanSetting("Wizard Warp").withDependency { showWarpSettings }
-    private val autoWarp: Boolean by BooleanSetting("Auto Warp", description = "Automatically warps you to the nearest warp location 2 seconds after you activate the spade ability.").withDependency { !isLegitVersion }
+    private val guessColor by ColorSetting("Guess Color", Color.WHITE, allowAlpha = true, description = "Color of the guess text")
+    private val tracer by BooleanSetting("Tracer", default = false, description = "Draws a line from your position to the guess")
+    private val tracerWidth by NumberSetting("Tracer Width", default = 5f, min = 1f, max = 20f).withDependency { tracer }
+    private val tracerColor by ColorSetting("Tracer Line Color", Color.WHITE, allowAlpha = true, description = "Color of the tracer line").withDependency { tracer }
+    private val tracerBurrows by BooleanSetting("Tracer Burrows", default = false, description = "Draws a line from your position to the burrows")
+    private val style by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.")
+    private val sendInqMsg by BooleanSetting("Send Inq Msg", default = true, description = "Sends a message to the party when you dig out an inquisitor")
+    private val showWarpSettings by BooleanSetting("Show Warp Settings", default = true, description = "Shows the warp settings")
+    private val castle by BooleanSetting("Castle Warp").withDependency { showWarpSettings }
+    private val crypt by BooleanSetting("Crypt Warp").withDependency { showWarpSettings }
+    private val darkAuction by BooleanSetting("DA Warp").withDependency { showWarpSettings }
+    private val museum by BooleanSetting("Museum Warp").withDependency { showWarpSettings }
+    private val wizard by BooleanSetting("Wizard Warp").withDependency { showWarpSettings }
+    private val autoWarp by BooleanSetting("Auto Warp", description = "Automatically warps you to the nearest warp location 2 seconds after you activate the spade ability.").withDependency { !isLegitVersion }
     private var warpLocation: WarpPoint? = null
 
     private val cmdCooldown = Clock(3_000)

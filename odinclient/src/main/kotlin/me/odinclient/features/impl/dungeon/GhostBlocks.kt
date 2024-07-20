@@ -2,7 +2,6 @@ package me.odinclient.features.impl.dungeon
 
 import me.odinclient.utils.skyblock.PlayerUtils.leftClick
 import me.odinclient.utils.skyblock.PlayerUtils.swapToIndex
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
@@ -21,26 +20,25 @@ import org.lwjgl.input.Keyboard
 
 object GhostBlocks : Module(
     name = "Ghost Blocks",
-    description = "Creates ghost blocks on key press, and in specific locations.",
-    category = Category.DUNGEON,
+    description = "Creates ghost blocks on key press, and in specific locations."
 ) {
     // gkey
-    private val ghostBlockKey: Keybinding by KeybindSetting("Ghost block Keybind", Keyboard.KEY_NONE, "Makes blocks you're looking at disappear.")
-    private val ghostBlockSpeed: Long by NumberSetting("Speed", 50L, 0.0, 300.0, 10.0, unit = "ms")
-    private val ghostBlockSkulls: Boolean by BooleanSetting("Ghost Skulls", true, description = "If enabled skulls will also be turned into ghost blocks.")
-    private val ghostBlockRange: Double by NumberSetting("Range", 8.0, 4.5, 80.0, 0.5, description = "Maximum range at which ghost blocks will be created.")
-    private val onlyDungeon: Boolean by BooleanSetting("Only In Dungeon", false, description = "Will only work inside of a dungeon.")
+    private val ghostBlockKey by KeybindSetting("Ghost block Keybind", Keyboard.KEY_NONE, "Makes blocks you're looking at disappear.")
+    private val ghostBlockSpeed by NumberSetting("Speed", 50L, 0.0, 300.0, 10.0, unit = "ms")
+    private val ghostBlockSkulls by BooleanSetting("Ghost Skulls", true, description = "If enabled skulls will also be turned into ghost blocks.")
+    private val ghostBlockRange by NumberSetting("Range", 8.0, 4.5, 80.0, 0.5, description = "Maximum range at which ghost blocks will be created.")
+    private val onlyDungeon by BooleanSetting("Only In Dungeon", false, description = "Will only work inside of a dungeon.")
 
     // pre blocks
-    private val preGhostBlock: Boolean by BooleanSetting("F7 Ghost blocks")
+    private val preGhostBlock by BooleanSetting("F7 Ghost blocks")
 
-    private val ghostPick: Boolean by BooleanSetting("Ghost Pick", false, description = "Gives you a ghost pickaxe in your selected slot when you press the keybind.")
-    private val slot: Int by NumberSetting("Ghost pick slot", 1, 1.0, 9.0, 1.0).withDependency { ghostPick }
-    private val level: Int by NumberSetting("Efficiency level", 10, 1.0, 100.0, 1.0).withDependency { ghostPick }
-    private val delay: Int by NumberSetting("Delay to Create", 0, 0, 1000, 10, unit = "ms").withDependency { ghostPick }
+    private val ghostPick by BooleanSetting("Ghost Pick", false, description = "Gives you a ghost pickaxe in your selected slot when you press the keybind.")
+    private val slot by NumberSetting("Ghost pick slot", 1, 1.0, 9.0, 1.0).withDependency { ghostPick }
+    private val level by NumberSetting("Efficiency level", 10, 1.0, 100.0, 1.0).withDependency { ghostPick }
+    private val delay by NumberSetting("Delay to Create", 0, 0, 1000, 10, unit = "ms").withDependency { ghostPick }
 
-    private val pickaxeKey: Keybinding by KeybindSetting("Pickaxe Keybind", Keyboard.KEY_NONE, description = "Press this keybind to create a ghost pickaxe").onPress { giveItem(278) }
-    private val axeKey: Keybinding by KeybindSetting("Axe Keybind", Keyboard.KEY_NONE, description = "Keybind to create an axe.").onPress { giveItem(279) }
+    private val pickaxeKey by KeybindSetting("Pickaxe Keybind", Keyboard.KEY_NONE, description = "Press this keybind to create a ghost pickaxe").onPress { giveItem(278) }
+    private val axeKey by KeybindSetting("Axe Keybind", Keyboard.KEY_NONE, description = "Keybind to create an axe.").onPress { giveItem(279) }
 
     private fun giveItem(id: Int) {
         if (!enabled || mc.thePlayer == null || mc.currentScreen != null) return
@@ -53,8 +51,8 @@ object GhostBlocks : Module(
         }
     }
 
-    private val swapStonk: Boolean by BooleanSetting("Swap Stonk", false, description = "Does a swap stonk when you press the keybind.")
-    private val swapStonkKey: Keybinding by KeybindSetting("Swap Stonk Keybind", Keyboard.KEY_NONE, "Press to perform a swap stonk")
+    private val swapStonk by BooleanSetting("Swap Stonk", false, description = "Does a swap stonk when you press the keybind.")
+    private val swapStonkKey by KeybindSetting("Swap Stonk Keybind", Keyboard.KEY_NONE, "Press to perform a swap stonk")
         .onPress {
             if (!enabled) return@onPress
             val slot = getItemSlot(if (pickaxe == 1) "Stonk" else "Pickaxe", true) ?: return@onPress
@@ -66,8 +64,8 @@ object GhostBlocks : Module(
             runIn(speed) { swapToIndex(originalItem) }
         }.withDependency { swapStonk }
 
-    private val pickaxe: Int by SelectorSetting("Type", "Pickaxe", arrayListOf("Pickaxe", "Stonk"), description = "The type of pickaxe to use").withDependency { swapStonk }
-    private val speed: Int by NumberSetting("Swap back speed", 2, 1, 5, description = "Delay between swapping back", unit = " ticks").withDependency { swapStonk }
+    private val pickaxe by SelectorSetting("Type", "Pickaxe", arrayListOf("Pickaxe", "Stonk"), description = "The type of pickaxe to use").withDependency { swapStonk }
+    private val speed by NumberSetting("Swap back speed", 2, 1, 5, description = "Delay between swapping back", unit = " ticks").withDependency { swapStonk }
 
     private val blacklist = arrayOf(Blocks.stone_button, Blocks.chest, Blocks.trapped_chest, Blocks.lever)
 

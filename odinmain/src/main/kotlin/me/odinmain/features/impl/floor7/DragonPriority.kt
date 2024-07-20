@@ -43,7 +43,7 @@ object DragonPriority {
         spawningDragon.sortBy { priorityList.indexOf(it) }
 
         if (totalPower >= easyPower) {
-            if (soloDebuff) {
+            if (soloDebuff == 0) {
                 if (playerClass == DungeonClass.Tank) {
                     if (spawningDragon.any { it == WitherDragonsEnum.Purple } || soloDebuffOnAll) spawningDragon.sortByDescending { priorityList.indexOf(it) }
                 }

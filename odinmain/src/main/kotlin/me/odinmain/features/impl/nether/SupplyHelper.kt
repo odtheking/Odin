@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.nether
 
 import com.github.stivais.ui.color.Color
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.nether.NoPre.missing
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -19,13 +18,12 @@ import kotlin.math.sin
 
 object SupplyHelper : Module(
     name = "Supply Helper",
-    description = "Helps with supplies in kuudra.",
-    category = Category.NETHER
+    description = "Helps with supplies in kuudra."
 ) {
-    private val suppliesWaypoints: Boolean by BooleanSetting("Supplies Waypoints", true, description = "Renders the supply waypoints")
-    private val supplyWaypointColor: Color by ColorSetting("Supply Waypoint Color", Color.MINECRAFT_YELLOW, true, description = "Color of the supply waypoints").withDependency { suppliesWaypoints }
-    private val supplyDropWaypoints: Boolean by BooleanSetting("Supply Drop Waypoints", true, description = "Renders the supply drop waypoints")
-    private val sendSupplyTime: Boolean by BooleanSetting("Send Supply Time", true, description = "Sends a message when a supply is collected")
+    private val suppliesWaypoints by BooleanSetting("Supplies Waypoints", true, description = "Renders the supply waypoints")
+    private val supplyWaypointColor by ColorSetting("Supply Waypoint Color", Color.MINECRAFT_YELLOW, true, description = "Color of the supply waypoints").withDependency { suppliesWaypoints }
+    private val supplyDropWaypoints by BooleanSetting("Supply Drop Waypoints", true, description = "Renders the supply drop waypoints")
+    private val sendSupplyTime by BooleanSetting("Send Supply Time", true, description = "Sends a message when a supply is collected")
 
     private var startRun = 0L
 

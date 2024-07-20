@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.skyblock
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.render.RenderUtils.loadBufferedImage
 import net.minecraft.client.renderer.texture.DynamicTexture
@@ -11,8 +10,7 @@ import org.lwjgl.input.Mouse
 
 object SkillsSucks : Module(
     name = "Skills Sucks",
-    description = "Skills sucks.",
-    category = Category.SKYBLOCK
+    description = "Skills sucks."
 ) {
 
     private val skillsSucks = DynamicTexture(loadBufferedImage("/assets/odinmain/img.png"))

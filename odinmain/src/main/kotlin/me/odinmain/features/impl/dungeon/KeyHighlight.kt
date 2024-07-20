@@ -3,7 +3,6 @@ package me.odinmain.features.impl.dungeon
 import com.github.stivais.ui.color.Color
 import me.odinmain.OdinMain.isLegitVersion
 import me.odinmain.events.impl.PostEntityMetadata
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.*
@@ -16,8 +15,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object KeyHighlight : Module(
     name = "Key Highlight",
-    description = "Highlights wither and blood keys in dungeons.",
-    category = Category.DUNGEON,
+    description = "Highlights wither and blood keys in dungeons."
 ) {
     private val thickness: Float by NumberSetting("Thickness", 5f, 1f, 20f, .1f, description = "The thickness of the box.")
     data class KeyInfo(val color: Color, val entity: Entity)
@@ -31,7 +29,7 @@ object KeyHighlight : Module(
 
     @SubscribeEvent
     fun postMetadata(event: PostEntityMetadata) {
-        val entity = mc.theWorld.getEntityByID(event.packet.entityId) as? EntityArmorStand ?: return
+        val entity = mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityArmorStand ?: return
         if (!DungeonUtils.inDungeons || DungeonUtils.inBoss) return
 
         currentKey = when (entity.name.noControlCodes) {

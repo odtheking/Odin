@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.nether
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.skyblock.*
@@ -9,10 +8,9 @@ import net.minecraft.util.Vec3
 
 object NoPre : Module(
     name = "Pre-Spot Alert",
-    description = "Alerts the party about the state of a pre spot.",
-    category = Category.NETHER
+    description = "Alerts the party about the state of a pre spot."
 ) {
-    private val showAlert: Boolean by BooleanSetting("Show Alert", true, description = "Shows the alert")
+    private val showAlert by BooleanSetting("Show Alert", true, description = "Shows the alert")
 
     private val shop = Vec3(-81.0, 76.0, -143.0)
     private val xCannon = Vec3(-143.0, 76.0, -125.0)

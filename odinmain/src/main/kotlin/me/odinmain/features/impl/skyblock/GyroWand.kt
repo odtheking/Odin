@@ -2,7 +2,6 @@ package me.odinmain.features.impl.skyblock
 
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.color.multiplyAlpha
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
@@ -14,15 +13,14 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object GyroWand : Module(
-    "Gyro Wand",
-    description = "Helpful features for the Gyrokinetic Wand",
-    category = Category.SKYBLOCK
+    name = "Gyro Wand",
+    description = "Helpful features for the Gyrokinetic Wand"
 ) {
-    private val color: Color by ColorSetting("Color", Color.MINECRAFT_DARK_PURPLE.multiplyAlpha(0.5f), allowAlpha = true)
-    private val thickness: Float by NumberSetting("Thickness", 0.4f, 0, 10, 0.05)
-    private val steps: Int by NumberSetting("Smoothness", 40, 20, 80, 1)
-    private val showCooldown: Boolean by BooleanSetting("Show Cooldown", true, description = "Shows the cooldown of the Gyrokinetic Wand.")
-    private val cooldownColor: Color by ColorSetting("Cooldown Color", Color.MINECRAFT_RED, allowAlpha = true).withDependency { showCooldown }
+    private val color by ColorSetting("Color", Color.MINECRAFT_DARK_PURPLE.multiplyAlpha(0.5f), allowAlpha = true)
+    private val thickness by NumberSetting("Thickness", 0.4f, 0, 10, 0.05)
+    private val steps by NumberSetting("Smoothness", 40, 20, 80, 1)
+    private val showCooldown by BooleanSetting("Show Cooldown", true, description = "Shows the cooldown of the Gyrokinetic Wand.")
+    private val cooldownColor by ColorSetting("Cooldown Color", Color.MINECRAFT_RED, allowAlpha = true).withDependency { showCooldown }
 
     private val gyroCooldown = Clock(30_000)
 

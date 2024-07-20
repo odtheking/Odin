@@ -1,20 +1,18 @@
 package me.odinmain.features.impl.dungeon
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 
 object MapInfo : Module(
     name = "Map Info",
-    category = Category.DUNGEON,
     description = "Displays various information about the current dungeon map"
 ) {
 
-    private val disableInBoss: Boolean by BooleanSetting("Disable in boss", default = true, description = "Disables the information display when you're in boss.")
-    private val scoreTitle: Boolean by BooleanSetting("300 Score Title", default = true, description = "Displays a title on 300 score")
-    private val scoreText: String by StringSetting("Title Text", default = "&c300 Score!", description = "Text to be displayed on 300 score.").withDependency { scoreTitle }
-    val togglePaul: Int by SelectorSetting("Paul Settings", "Automatic", options = arrayListOf("Automatic", "Force Disable", "Force Enable"))
+    private val disableInBoss by BooleanSetting("Disable in boss", default = true, description = "Disables the information display when you're in boss.")
+    private val scoreTitle by BooleanSetting("300 Score Title", default = true, description = "Displays a title on 300 score")
+    private val scoreText by StringSetting("Title Text", default = "&c300 Score!", description = "Text to be displayed on 300 score.").withDependency { scoreTitle }
+    val togglePaul by SelectorSetting("Paul Settings", "Automatic", options = arrayListOf("Automatic", "Force Disable", "Force Enable"))
 
    /* val hud: HudElement by HudSetting("Full Hud", 10f, 10f, 1f, true) {
         if ((!DungeonUtils.inDungeons || (disableInBoss && DungeonUtils.inBoss)) && !it) return@HudSetting 0f to 0f

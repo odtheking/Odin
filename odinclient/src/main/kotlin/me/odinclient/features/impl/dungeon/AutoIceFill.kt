@@ -3,7 +3,6 @@ package me.odinclient.features.impl.dungeon
 import kotlinx.coroutines.*
 import me.odinclient.utils.skyblock.PlayerUtils.clipTo
 import me.odinclient.utils.waitUntilPacked
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.puzzlesolvers.IceFillSolver
 import me.odinmain.features.impl.dungeon.puzzlesolvers.IceFillSolver.currentPatterns
@@ -18,8 +17,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object AutoIceFill: Module(
     name = "Auto Ice Fill",
-    description = "Automatically completes the ice fill puzzle.",
-    category = Category.DUNGEON,
+    description = "Automatically completes the ice fill puzzle."
 ) {
     @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent

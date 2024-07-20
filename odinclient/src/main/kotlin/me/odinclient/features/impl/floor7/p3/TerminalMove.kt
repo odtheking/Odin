@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.floor7.p3
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -12,7 +11,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object TerminalMove : Module(
     name = "Terminal Move",
-    category = Category.FLOOR7,
     description = "Move in terminals without GUI hotbar keys.",
     tag = TagType.RISKY
 ) {

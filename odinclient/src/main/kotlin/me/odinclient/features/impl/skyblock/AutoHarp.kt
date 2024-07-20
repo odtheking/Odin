@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.skyblock
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.name
 import me.odinmain.utils.skyblock.LocationUtils.inSkyblock
@@ -21,8 +20,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
  * @author Aton, X45k
  */
 object AutoHarp : Module(
-    "Auto Harp",
-    category = Category.SKYBLOCK,
+    name = "Auto Harp",
     description = "Automatically Completes Melody's Harp"
 ){
     private var inHarp = false

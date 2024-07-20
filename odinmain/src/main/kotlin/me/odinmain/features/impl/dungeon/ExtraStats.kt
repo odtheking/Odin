@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.dungeon
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.matchesOneOf
 import me.odinmain.utils.noControlCodes
@@ -12,8 +11,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object ExtraStats : Module(
     name = "Extra Stats",
-    description = "Shows additional dungeon stats at the end of the run in chat.",
-    category = Category.DUNGEON,
+    description = "Shows additional dungeon stats at the end of the run in chat."
 ) {
     private val extraStats = PostDungeonStats()
 

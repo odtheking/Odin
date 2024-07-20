@@ -2,7 +2,6 @@ package me.odinclient.features.impl.floor7.p3
 
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.events.impl.TerminalClosedEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
@@ -15,7 +14,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object QueueTerms : Module(
     name = "Queue Terms",
-    category = Category.FLOOR7,
     description = "Queues clicks in terminals to ensure every click is registered."
 ) {
     private data class Click(val slot: Int, val mode: Int, val button: Int)

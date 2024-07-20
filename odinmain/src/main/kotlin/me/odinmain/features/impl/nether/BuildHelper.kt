@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.nether
 
 import com.github.stivais.ui.color.Color
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
@@ -15,13 +14,12 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object BuildHelper : Module(
     name = "Build Helper",
-    description = "Helps you to build the ballista in Kuudra.",
-    category = Category.NETHER
+    description = "Helps you to build the ballista in Kuudra."
 ) {
-    private val buildHelperDraw: Boolean by BooleanSetting("Render on Ballista", false, description = "Draws the build helper")
-    private val unfinishedWaypoints: Boolean by BooleanSetting("Unfinished Waypoints", true, description = "Renders the unfinished piles waypoints")
-    private val fadeWaypoints: Boolean by BooleanSetting("Fade Waypoints", true, description = "Fades the waypoints when close to them")
-    private val buildHelperColor: Color by ColorSetting("Build Helper Color", Color.MINECRAFT_GOLD, description = "Color of the build helper")
+    private val buildHelperDraw by BooleanSetting("Render on Ballista", false, description = "Draws the build helper")
+    private val unfinishedWaypoints by BooleanSetting("Unfinished Waypoints", true, description = "Renders the unfinished piles waypoints")
+    private val fadeWaypoints by BooleanSetting("Fade Waypoints", true, description = "Fades the waypoints when close to them")
+    private val buildHelperColor by ColorSetting("Build Helper Color", Color.MINECRAFT_GOLD, description = "Color of the build helper")
     /*private val hud: HudElement by HudSetting("Build helper HUD", 10f, 10f, 1f, true) {
         if (it) {
             text("Build §c50§8%", 1f, 9f, buildHelperColor, 12f, 0, shadow = true)
@@ -38,8 +36,8 @@ object BuildHelper : Module(
             getTextWidth("4Build 50%", 12f) + 2f to 42f
         }
     }*/
-    private val stunNotification: Boolean by BooleanSetting("Stun Notification", true, description = "Notifies you when to go to stun")
-    private val stunNotificationNumber: Int by NumberSetting("Stun Notification %", 93, 0.0, 100.0, description = "The build % to notify at").withDependency { stunNotification }
+    private val stunNotification by BooleanSetting("Stun Notification", true, description = "Notifies you when to go to stun")
+    private val stunNotificationNumber by NumberSetting("Stun Notification %", 93, 0.0, 100.0, description = "The build % to notify at").withDependency { stunNotification }
 
     @SubscribeEvent
     fun renderWorldEvent(event: RenderWorldLastEvent) {

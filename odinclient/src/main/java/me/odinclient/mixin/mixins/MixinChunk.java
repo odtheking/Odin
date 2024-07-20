@@ -1,7 +1,6 @@
 package me.odinclient.mixin.mixins;
 
 import me.odinmain.events.impl.BlockChangeEvent;
-import me.odinmain.utils.EventExtensions;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.World;
@@ -13,6 +12,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import static me.odinmain.utils.Utils.postAndCatch;
+
 @Mixin(Chunk.class)
 public abstract class MixinChunk {
     @Shadow
@@ -22,7 +23,7 @@ public abstract class MixinChunk {
 
     @Inject(method = "setBlockState", at = @At("HEAD"), cancellable = true)
     private void onBlockChange(BlockPos pos, IBlockState state, CallbackInfoReturnable<IBlockState> cir) {
-        if (EventExtensions.postAndCatch(new BlockChangeEvent(pos, this.getBlockState(pos), state, this.worldObj)))
+        if (postAndCatch(new BlockChangeEvent(pos, this.getBlockState(pos), state, this.worldObj)))
             cir.setReturnValue(this.getBlockState(pos));
     }
 }

@@ -2,7 +2,6 @@ package me.odinmain.features.impl.skyblock
 
 import me.odinmain.events.impl.MessageSentEvent
 import me.odinmain.events.impl.PacketReceivedEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.StringSetting
 import me.odinmain.utils.noControlCodes
@@ -14,8 +13,7 @@ import java.util.*
 
 // idk about this design wise
 object PartyEncoding: Module(
-    "Party Encoding",
-    category = Category.SKYBLOCK,
+    name = "Party Encoding",
     description = "Encodes and decodes party messages."
 ) {
     private val key: String by StringSetting("Key", "odin", description = "Key")

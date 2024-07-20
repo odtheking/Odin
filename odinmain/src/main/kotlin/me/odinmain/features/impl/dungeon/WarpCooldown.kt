@@ -1,13 +1,11 @@
 package me.odinmain.features.impl.dungeon
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.clock.Clock
 
 object WarpCooldown : Module (
     name = "Warp Cooldown",
-    description = "Displays the time until you can warp into a dungeon again.",
-    category = Category.DUNGEON
+    description = "Displays the time until you can warp into a dungeon again."
 ) {
    /* private val hud: HudElement by HudSetting("Warp Timer Hud", 10f, 10f, 1f, true) {
         if (it) {

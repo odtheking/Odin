@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.floor7
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -17,11 +16,10 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object DioriteFucker : Module(
     name = "Fuck Diorite",
-    description = "Replaces the pillars in floor 7 storm fight with glass.",
-    category = Category.FLOOR7,
+    description = "Replaces the pillars in floor 7 storm fight with glass."
 ) {
-    private val stainedGlass: Boolean by BooleanSetting("Stained glass", default = false, description = "Swaps the diorite with stained glass" )
-    private val color: Int by NumberSetting("Color", 0, 0.0, 15.0, 1.0).withDependency { stainedGlass }
+    private val stainedGlass by BooleanSetting("Stained glass", default = false, description = "Swaps the diorite with stained glass" )
+    private val color by NumberSetting("Color", 0, 0.0, 15.0, 1.0).withDependency { stainedGlass }
     private val pillars = listOf(listOf(46, 169, 41), listOf(46, 169, 65), listOf(100, 169, 65), listOf(100, 179, 41))
     private val coordinates: MutableList<BlockPos> = mutableListOf<BlockPos>().apply {
         pillars.forEach { (x, y, z) ->

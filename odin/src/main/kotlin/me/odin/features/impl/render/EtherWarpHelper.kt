@@ -4,7 +4,6 @@ import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.color.multiplyAlpha
 import me.odin.mixin.accessors.IEntityPlayerSPAccessor
 import me.odinmain.events.impl.PacketReceivedEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
@@ -23,11 +22,10 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object EtherWarpHelper : Module(
     name = "Ether Warp Helper",
-    description = "Shows you where your etherwarp will teleport you.",
-    category = Category.RENDER
+    description = "Shows you where your etherwarp will teleport you."
 ) {
     private val render: Boolean by BooleanSetting("Show Etherwarp Guess", true)
-    private val useServerPosition: Boolean by DualSetting("Positioning", "Server Pos", "Player Pos", description = "If etherwarp guess should use your server position or real position.").withDependency { render }
+    private val useServerPosition by SelectorSetting("Positioning", "Server Pos", arrayListOf("Server Pos", "Player Pos"), description = "If etherwarp guess should use your server position or real position.").withDependency { render }
     private val renderFail: Boolean by BooleanSetting("Show when failed", true)
     private val wrongColor: Color by ColorSetting("Wrong Color", Color.MINECRAFT_RED.multiplyAlpha(.5f), allowAlpha = true).withDependency { renderFail }
     private val style: Int by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION)
@@ -48,7 +46,7 @@ object EtherWarpHelper : Module(
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         val player = mc.thePlayer as? IEntityPlayerSPAccessor ?: return
         val positionLook =
-            if (useServerPosition)
+            if (useServerPosition == 0)
                 PositionLook(Vec3(player.lastReportedPosX, player.lastReportedPosY, player.lastReportedPosZ), player.lastReportedYaw, player.lastReportedPitch)
             else
                 PositionLook(mc.thePlayer.renderVec, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)

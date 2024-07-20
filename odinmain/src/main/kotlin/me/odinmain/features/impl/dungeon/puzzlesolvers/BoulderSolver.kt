@@ -52,7 +52,7 @@ object BoulderSolver {
 
     fun onRenderWorld() {
         if (DungeonUtils.currentRoomName != "Boulder" || currentPositions.isEmpty()) return
-        if (PuzzleSolvers.showAllBoulderClicks) currentPositions.forEach {
+        if (PuzzleSolvers.showAllBoulderClicks == 1) currentPositions.forEach {
             Renderer.drawStyledBlock(it.render, PuzzleSolvers.boulderColor, PuzzleSolvers.boulderStyle, PuzzleSolvers.boulderLineWidth)
         }
         else currentPositions.firstOrNull()?.let {

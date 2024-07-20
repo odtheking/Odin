@@ -2,9 +2,8 @@ package me.odinclient.features.impl.dungeon
 
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.events.impl.PacketReceivedEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.DualSetting
+import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import net.minecraft.client.gui.inventory.GuiChest
@@ -15,15 +14,14 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object CloseChest : Module(
     name = "Close Chest",
-    category = Category.DUNGEON,
     description = "Options to close the chest automatically or with any key or automatically."
 ) {
-    private val mode: Boolean by DualSetting("Mode", "Auto", "Any Key", description = "The mode to use, auto will automatically close the chest, any key will make any key input close the chest.")
+    private val mode by SelectorSetting("Mode", "Auto", arrayListOf("Auto", "Any Key"), description = "The mode to use, auto will automatically close the chest, any key will make any key input close the chest.")
 
     @SubscribeEvent
     fun onOpenWindow(event: PacketReceivedEvent) {
         val packet = event.packet as? S2DPacketOpenWindow ?: return
-        if (!inDungeons || !packet.windowTitle.unformattedText.noControlCodes.equalsOneOf("Chest", "Large Chest") || mode) return
+        if (!inDungeons || !packet.windowTitle.unformattedText.noControlCodes.equalsOneOf("Chest", "Large Chest") || mode == 0) return
         mc.netHandler.networkManager.sendPacket(C0DPacketCloseWindow(packet.windowId))
         event.isCanceled = true
     }
@@ -31,7 +29,7 @@ object CloseChest : Module(
     @SubscribeEvent
     fun onInput(event: GuiEvent.GuiKeyPressEvent) {
         val gui = event.gui as? GuiChest ?: return
-        if (!inDungeons || !mode) return
+        if (!inDungeons || mode != 1) return
         if ((gui.inventorySlots as? ContainerChest)?.name?.noControlCodes?.equalsOneOf("Chest", "Large Chest") == true)
             mc.thePlayer.closeScreen()
     }
@@ -39,7 +37,7 @@ object CloseChest : Module(
     @SubscribeEvent
     fun onMouse(event: GuiEvent.GuiMouseClickEvent) {
         val gui = event.gui as? GuiChest ?: return
-        if (!inDungeons || !mode) return
+        if (!inDungeons || mode != 1) return
         if ((gui.inventorySlots as? ContainerChest)?.name?.noControlCodes?.equalsOneOf("Chest", "Large Chest") == true)
             mc.thePlayer.closeScreen()
     }

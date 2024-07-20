@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.dungeon
 
 import me.odinmain.events.impl.RenderEntityModelEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
@@ -17,7 +16,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object TeammatesHighlight : Module(
     name = "Teammate Highlight",
-    category = Category.DUNGEON,
     description = "Enhances visibility of your dungeon teammates and their name tags."
 ) {
     private val showClass: Boolean by BooleanSetting("Show Class", true, description = "Shows the class of the teammate.")

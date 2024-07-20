@@ -1,10 +1,7 @@
 package me.odinmain.features.settings.impl
 
 import com.github.stivais.ui.animation.Animations
-import com.github.stivais.ui.color.Color
-import com.github.stivais.ui.color.color
-import com.github.stivais.ui.color.toHSB
-import com.github.stivais.ui.color.withAlpha
+import com.github.stivais.ui.color.*
 import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.sizes.Copying

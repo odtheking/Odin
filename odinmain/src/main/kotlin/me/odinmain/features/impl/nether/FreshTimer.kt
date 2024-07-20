@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.nether
 
 import com.github.stivais.ui.color.Color
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -11,13 +10,12 @@ import me.odinmain.utils.skyblock.*
 
 object FreshTimer : Module(
     name = "Fresh Timer",
-    description = "Shows the time until fresh timer.",
-    category = Category.NETHER
+    description = "Shows the time until fresh timer."
 ){
-    private val notifyFresh: Boolean by BooleanSetting("Notify Fresh", true, description = "Notifies your party when you get fresh timer")
-    val highlightFresh: Boolean by BooleanSetting("Highlight Fresh", true, description = "Highlights fresh timer users")
-    val highlightFreshColor: Color by ColorSetting("Highlight Fresh Color", Color.MINECRAFT_YELLOW, true).withDependency { highlightFresh }
-    private val freshTimerHUDColor: Color by ColorSetting("Fresh Timer Color", Color.MINECRAFT_GOLD, true)
+    private val notifyFresh by BooleanSetting("Notify Fresh", true, description = "Notifies your party when you get fresh timer")
+    val highlightFresh by BooleanSetting("Highlight Fresh", true, description = "Highlights fresh timer users")
+    val highlightFreshColor by ColorSetting("Highlight Fresh Color", Color.MINECRAFT_YELLOW, true).withDependency { highlightFresh }
+    private val freshTimerHUDColor by ColorSetting("Fresh Timer Color", Color.MINECRAFT_GOLD, true)
     /*private val hud: HudElement by HudSetting("Fresh timer HUD", 10f, 10f, 1f, true) {
         if (it) {
             text("Fresh§f: 9s", 1f, 9f, freshTimerHUDColor, 12f, 0, shadow = true)

@@ -5,7 +5,6 @@ import com.github.stivais.ui.color.multiplyAlpha
 import me.odinclient.utils.skyblock.PlayerUtils.rightClick
 import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.PostEntityMetadata
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -29,19 +28,18 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object SimonSays : Module(
     name = "Simon Says",
     description = "Different features for the Simon Says puzzle in floor 7.",
-    category = Category.FLOOR7,
     tag = TagType.RISKY
 ) {
-    private val start: Boolean by BooleanSetting("Start", default = true, description = "Starts the device when it can be started.")
-    private val startClicks: Int by NumberSetting("Start Clicks", 3, 1, 10).withDependency { start }
-    private val startClickDelay: Int by NumberSetting("Start Click Delay", 3, 1, 5).withDependency { start }
-    private val triggerBot: Boolean by BooleanSetting("Triggerbot")
-    private val triggerBotDelay: Long by NumberSetting<Long>("Triggerbot Delay", 200, 70, 500).withDependency { triggerBot }
-    private val autoSS: Boolean by BooleanSetting("Auto SS", false)
-    private val autoSSDelay: Long by NumberSetting<Long>("Delay Between Clicks", 200, 50, 500).withDependency { autoSS }
-    private val autoSSRotateTime: Int by NumberSetting("Rotate Time", 150, 0, 400).withDependency { autoSS }
-    private val blockWrong: Boolean by BooleanSetting("Block Wrong Clicks", false, description = "Blocks Any Wrong Clicks (sneak to disable).")
-    private val clearAfter: Boolean by BooleanSetting("Clear After", false, description = "Clears the clicks when showing next, should work better with ss skip, but will be less consistent")
+    private val start by BooleanSetting("Start", default = true, description = "Starts the device when it can be started.")
+    private val startClicks by NumberSetting("Start Clicks", 3, 1, 10).withDependency { start }
+    private val startClickDelay by NumberSetting("Start Click Delay", 3, 1, 5).withDependency { start }
+    private val triggerBot by BooleanSetting("Triggerbot")
+    private val triggerBotDelay by NumberSetting<Long>("Triggerbot Delay", 200, 70, 500).withDependency { triggerBot }
+    private val autoSS by BooleanSetting("Auto SS", false)
+    private val autoSSDelay by NumberSetting<Long>("Delay Between Clicks", 200, 50, 500).withDependency { autoSS }
+    private val autoSSRotateTime by NumberSetting("Rotate Time", 150, 0, 400).withDependency { autoSS }
+    private val blockWrong by BooleanSetting("Block Wrong Clicks", false, description = "Blocks Any Wrong Clicks (sneak to disable).")
+    private val clearAfter by BooleanSetting("Clear After", false, description = "Clears the clicks when showing next, should work better with ss skip, but will be less consistent")
 
     private val triggerBotClock = Clock(triggerBotDelay)
     private val firstClickClock = Clock(800)

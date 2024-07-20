@@ -13,7 +13,6 @@ import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.Packet
 import net.minecraftforge.common.MinecraftForge
 import org.lwjgl.input.Keyboard
-import scala.collection.parallel.ParIterableLike.Min
 import kotlin.reflect.full.hasAnnotation
 
 /**
@@ -23,7 +22,6 @@ import kotlin.reflect.full.hasAnnotation
 abstract class Module(
     val name: String,
     key: Int? = Keyboard.KEY_NONE,
-    category: Category? = null, // temporarily here, todo: remove
     @Transient var description: String = "",
     @Transient val tag: TagType = TagType.NONE,
     toggled: Boolean = false,
@@ -35,7 +33,7 @@ abstract class Module(
      * If it is in an invalid package, it will use Category.RENDER as a default
      */
     @Transient
-    val category: Category = getCategory(this::class.java) ?: category ?: Category.RENDER
+    val category: Category = getCategory(this::class.java) ?: Category.RENDER
 
     /**
      * Reference for if the module is enabled

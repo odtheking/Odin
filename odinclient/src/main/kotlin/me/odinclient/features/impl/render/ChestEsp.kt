@@ -1,9 +1,7 @@
 package me.odinclient.features.impl.render
 
 import com.github.stivais.ui.color.Color
-import com.github.stivais.ui.color.alpha
 import me.odinmain.events.impl.RenderChestEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.equalsOneOf
@@ -22,14 +20,13 @@ import org.lwjgl.opengl.GL11
 
 object ChestEsp : Module(
     name = "Chest Esp",
-    category = Category.RENDER,
     description = "Displays chests through walls."
 ) {
-    private val onlyDungeon: Boolean by BooleanSetting(name = "Only Dungeon")
-    private val onlyCH: Boolean by BooleanSetting(name = "Only Crystal Hollows")
-    private val hideClicked: Boolean by BooleanSetting(name = "Hide Clicked")
-    private val renderMode: Int by SelectorSetting(name = "Render Mode", "Chams", arrayListOf("Chams", "Outline"))
-    private val color: Color by ColorSetting(name = "Color", Color.RED, allowAlpha = true)
+    private val onlyDungeon by BooleanSetting(name = "Only Dungeon")
+    private val onlyCH by BooleanSetting(name = "Only Crystal Hollows")
+    private val hideClicked by BooleanSetting(name = "Hide Clicked")
+    private val renderMode by SelectorSetting(name = "Render Mode", "Chams", arrayListOf("Chams", "Outline"))
+    private val color by ColorSetting(name = "Color", Color.RED, allowAlpha = true)
 
     private val chests = mutableSetOf<BlockPos>()
 

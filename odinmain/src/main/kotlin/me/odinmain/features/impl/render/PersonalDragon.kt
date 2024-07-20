@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.render
 
 import com.github.stivais.ui.color.*
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.render.RenderUtils.renderX
@@ -19,16 +18,15 @@ import kotlin.math.sin
 
 object PersonalDragon : Module(
     name = "Personal Dragon",
-    category = Category.RENDER,
     description = "Spawns your own personal dragon."
 ) {
-    private val onlyF5: Boolean by BooleanSetting(name = "Only F5", default = true)
-    private val scale: Float by NumberSetting(name = "Scale", 0.5f, 0.0f, 1.0f, 0.01f)
-    private val horizontal: Float by NumberSetting(name = "Horizontal", 0.0f, -10.0f, 10.0f, 0.1f)
-    private val vertical: Float by NumberSetting(name = "Vertical", 0.0f, -10.0f, 10.0f, 0.1f)
-    private val degrees: Float by NumberSetting(name = "Degrees", 0.0f, -180.0f, 180.0f, 1.0f)
-    private val animationSpeed: Float by NumberSetting(name = "Animation Speed", 0.5f, 0.0f, 1.0f, 0.01f)
-    private val color: Color by ColorSetting(name = "Color", Color.WHITE)
+    private val onlyF5 by BooleanSetting(name = "Only F5", default = true)
+    private val scale by NumberSetting(name = "Scale", 0.5f, 0.0f, 1.0f, 0.01f)
+    private val horizontal by NumberSetting(name = "Horizontal", 0.0f, -10.0f, 10.0f, 0.1f)
+    private val vertical by NumberSetting(name = "Vertical", 0.0f, -10.0f, 10.0f, 0.1f)
+    private val degrees by NumberSetting(name = "Degrees", 0.0f, -180.0f, 180.0f, 1.0f)
+    private val animationSpeed by NumberSetting(name = "Animation Speed", 0.5f, 0.0f, 1.0f, 0.01f)
+    private val color by ColorSetting(name = "Color", Color.WHITE)
 
     var dragon: EntityDragon? = null
 

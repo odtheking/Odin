@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.render
 
 import com.github.stivais.ui.color.Color
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.render.Renderer
@@ -16,12 +15,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object DragonHitboxes : Module(
     name = "Dragon Hitboxes",
-    category = Category.RENDER,
     description = "Draws hitboxes around dragons."
 ) {
-    private val onlyM7: Boolean by BooleanSetting(name = "Only M7")
-    private val color: Color by ColorSetting(name = "Hitbox Color",  Color.RGB(0, 255, 255))
-    private val lineWidth: Float by NumberSetting(name = "Line Thickness", default = 3f, min = 0f, max = 10f, increment = 0.1f)
+    private val onlyM7 by BooleanSetting(name = "Only M7")
+    private val color by ColorSetting(name = "Hitbox Color",  Color.RGB(0, 255, 255))
+    private val lineWidth by NumberSetting(name = "Line Thickness", default = 3f, min = 0f, max = 10f, increment = 0.1f)
 
     private val entityPositions = mutableMapOf<Int, Array<Double>>()
     private var dragonRenderQueue: ArrayList<EntityDragon> = ArrayList()

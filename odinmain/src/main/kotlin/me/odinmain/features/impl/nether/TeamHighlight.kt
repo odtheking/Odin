@@ -2,7 +2,6 @@ package me.odinmain.features.impl.nether
 
 import com.github.stivais.ui.color.Color
 import me.odinmain.events.impl.RenderEntityModelEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.nether.FreshTimer.highlightFresh
 import me.odinmain.features.impl.nether.FreshTimer.highlightFreshColor
@@ -21,13 +20,12 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object TeamHighlight : Module(
     name = "Team Highlight",
-    description = "Highlights your teammates in Kuudra.",
-    category = Category.NETHER
+    description = "Highlights your teammates in Kuudra."
 ) {
-    private val playerOutline: Boolean by BooleanSetting("Player Outline", true, description = "Outlines the player")
-    private val highlightName: Boolean by BooleanSetting("Name Highlight", true, description = "Highlights the player name")
-    private val outlineColor: Color by ColorSetting("Outline Color", Color.MINECRAFT_DARK_PURPLE, true, description = "Color of the player outline").withDependency { playerOutline }
-    private val nameColor: Color by ColorSetting("Name Color", Color.MINECRAFT_LIGHT_PURPLE, true, description = "Color of the name highlight").withDependency { highlightName }
+    private val playerOutline by BooleanSetting("Player Outline", true, description = "Outlines the player")
+    private val highlightName by BooleanSetting("Name Highlight", true, description = "Highlights the player name")
+    private val outlineColor by ColorSetting("Outline Color", Color.MINECRAFT_DARK_PURPLE, true, description = "Color of the player outline").withDependency { playerOutline }
+    private val nameColor by ColorSetting("Name Color", Color.MINECRAFT_LIGHT_PURPLE, true, description = "Color of the name highlight").withDependency { highlightName }
 
     @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {

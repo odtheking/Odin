@@ -1,19 +1,17 @@
 package me.odinmain.features.impl.render
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.SelectorSetting
 
 object ServerHud : Module(
     name = "Server Hud",
-    category = Category.RENDER,
     description = "Displays your current ping, FPS and server's TPS."
 ) {
-    private val ping: Boolean by BooleanSetting("Ping", true)
-    private val tps: Boolean by BooleanSetting("TPS", true)
-    private val fps: Boolean by BooleanSetting("FPS", false)
-    private val style: Int by SelectorSetting("Style", "Row", arrayListOf("Row", "Stacked"))
+    private val ping by BooleanSetting("Ping", true)
+    private val tps by BooleanSetting("TPS", true)
+    private val fps by BooleanSetting("FPS", false)
+    private val style by SelectorSetting("Style", "Row", arrayListOf("Row", "Stacked"))
 
     /*val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {

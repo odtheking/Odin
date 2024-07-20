@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.dungeon
 
 import com.github.stivais.ui.color.Color
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.render.Renderer
@@ -22,10 +21,9 @@ import kotlin.math.abs
 
 object CanClip : Module(
     name = "Can Clip",
-    description = "Tells you if you are currently able to clip through a stair under you.",
-    category = Category.DUNGEON
+    description = "Tells you if you are currently able to clip through a stair under you."
 ) {
-    private val line: Boolean by BooleanSetting("Line", true, description = "draws a line where you can clip")
+    private val line by BooleanSetting("Line", true, description = "draws a line where you can clip")
     /*private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, true) {
         if (it) {
             text("Can Clip", 1f, 9f, Color.WHITE, 12f, 0)

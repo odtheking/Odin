@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.skyblock
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.DungeonRequeue.disableRequeue
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -13,34 +12,33 @@ import kotlin.random.Random
 
 object ChatCommands : Module(
     name = "Chat Commands",
-    category = Category.SKYBLOCK,
     description = "type !help in the corresponding channel for cmd list. Use /blacklist.",
 ) {
-    private var party: Boolean by BooleanSetting(name = "Party commands", default = true, description = "Toggles chat commands in party chat")
-    private var guild: Boolean by BooleanSetting(name = "Guild commands", default = true, description = "Toggles chat commands in guild chat")
-    private var private: Boolean by BooleanSetting(name = "Private commands", default = true, description = "Toggles chat commands in private chat")
-    private var showSettings: Boolean by DropdownSetting(name = "Show Settings", default = false)
-    private val whitelistOnly: Boolean by DualSetting("Whitelist Only", left = "blacklist", right = "Whitelist", default = false, description = "Whether the list should act like a whitelist or a blacklist")
+    private var party by BooleanSetting(name = "Party commands", default = true, description = "Toggles chat commands in party chat")
+    private var guild by BooleanSetting(name = "Guild commands", default = true, description = "Toggles chat commands in guild chat")
+    private var private by BooleanSetting(name = "Private commands", default = true, description = "Toggles chat commands in private chat")
+    private var showSettings by DropdownSetting(name = "Show Settings", default = false)
+    private val whitelistOnly by SelectorSetting("Whitelist Only", "Blacklist", arrayListOf("Blacklist", "Whitelist") , description = "Whether the list should act like a whitelist or a blacklist")
 
-    private var warp: Boolean by BooleanSetting(name = "Warp", default = true).withDependency { showSettings }
-    private var warptransfer: Boolean by BooleanSetting(name = "Warp & pt (warptransfer)", default = true).withDependency { showSettings }
-    private var coords: Boolean by BooleanSetting(name = "Coords (coords)", default = true).withDependency { showSettings }
-    private var allinvite: Boolean by BooleanSetting(name = "Allinvite", default = true).withDependency { showSettings }
-    private var odin: Boolean by BooleanSetting(name = "Odin", default = true).withDependency { showSettings }
-    private var boop: Boolean by BooleanSetting(name = "Boop", default = true).withDependency { showSettings }
-    private var cf: Boolean by BooleanSetting(name = "Coinflip (cf)", default = true).withDependency { showSettings }
-    private var eightball: Boolean by BooleanSetting(name = "Eightball", default = true).withDependency { showSettings }
-    private var dice: Boolean by BooleanSetting(name = "Dice", default = true).withDependency { showSettings }
-    private var pt: Boolean by BooleanSetting(name = "Party transfer (pt)", default = true).withDependency { showSettings }
-    private var ping: Boolean by BooleanSetting(name = "Ping", default = true).withDependency { showSettings }
-    private var tps: Boolean by BooleanSetting(name = "TPS", default = true).withDependency { showSettings }
-    private var fps: Boolean by BooleanSetting(name = "FPS", default = true).withDependency { showSettings }
-    private var dt: Boolean by BooleanSetting(name = "DT", default = true).withDependency { showSettings }
-    private var inv: Boolean by BooleanSetting(name = "inv", default = true).withDependency { showSettings }
-    private val invite: Boolean by BooleanSetting(name = "invite", default = true).withDependency { showSettings }
-    private val racism: Boolean by BooleanSetting(name = "Racism", default = true).withDependency { showSettings }
-    private val queDungeons: Boolean by BooleanSetting(name = "Queue dungeons cmds", default = true).withDependency { showSettings }
-    private val queKuudra: Boolean by BooleanSetting(name = "Queue kuudra cmds", default = true).withDependency { showSettings }
+    private var warp by BooleanSetting(name = "Warp", default = true).withDependency { showSettings }
+    private var warptransfer by BooleanSetting(name = "Warp & pt (warptransfer)", default = true).withDependency { showSettings }
+    private var coords by BooleanSetting(name = "Coords (coords)", default = true).withDependency { showSettings }
+    private var allinvite by BooleanSetting(name = "Allinvite", default = true).withDependency { showSettings }
+    private var odin by BooleanSetting(name = "Odin", default = true).withDependency { showSettings }
+    private var boop by BooleanSetting(name = "Boop", default = true).withDependency { showSettings }
+    private var cf by BooleanSetting(name = "Coinflip (cf)", default = true).withDependency { showSettings }
+    private var eightball by BooleanSetting(name = "Eightball", default = true).withDependency { showSettings }
+    private var dice by BooleanSetting(name = "Dice", default = true).withDependency { showSettings }
+    private var pt by BooleanSetting(name = "Party transfer (pt)", default = true).withDependency { showSettings }
+    private var ping by BooleanSetting(name = "Ping", default = true).withDependency { showSettings }
+    private var tps by BooleanSetting(name = "TPS", default = true).withDependency { showSettings }
+    private var fps by BooleanSetting(name = "FPS", default = true).withDependency { showSettings }
+    private var dt by BooleanSetting(name = "DT", default = true).withDependency { showSettings }
+    private var inv by BooleanSetting(name = "inv", default = true).withDependency { showSettings }
+    private val invite by BooleanSetting(name = "invite", default = true).withDependency { showSettings }
+    private val racism by BooleanSetting(name = "Racism", default = true).withDependency { showSettings }
+    private val queDungeons by BooleanSetting(name = "Queue dungeons cmds", default = true).withDependency { showSettings }
+    private val queKuudra by BooleanSetting(name = "Queue kuudra cmds", default = true).withDependency { showSettings }
 
     private var dtPlayer: String? = null
     private val dtReason = mutableListOf<Pair<String, String>>()
@@ -62,7 +60,7 @@ object ChatCommands : Module(
             val ign = chatMessage.groups[1]?.value ?: return@onMessage
             val msg = chatMessage.groups[2]?.value ?: return@onMessage
 
-            if (whitelistOnly != isInBlacklist(ign)) return@onMessage
+            if (whitelistOnly == 1 != isInBlacklist(ign)) return@onMessage
 
             val channel = when(it.split(" ")[0]) {
                 "Party" -> if (!party) return@onMessage else ChatChannel.PARTY

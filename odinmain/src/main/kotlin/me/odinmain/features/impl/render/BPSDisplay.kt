@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.render
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.round
 import net.minecraft.network.play.client.C07PacketPlayerDigging
@@ -9,7 +8,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object BPSDisplay : Module(
     name = "BPS Display",
-    category = Category.RENDER,
     description = "Displays how many blocks per second you're breaking."
 ) {
     private var startTime: Long = 0

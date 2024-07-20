@@ -2,7 +2,6 @@ package me.odinmain.features.impl.render
 
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.color.multiplyAlpha
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
 import net.minecraft.client.gui.ScaledResolution
@@ -10,7 +9,6 @@ import net.minecraft.scoreboard.ScoreObjective
 
 object Sidebar : Module(
     name = "Sidebar",
-    category = Category.RENDER,
     description = "Various settings to change the look of the minecraft sidebar."
 ) {
     private var variableScoreObjective: ScoreObjective? = null
@@ -51,7 +49,7 @@ object Sidebar : Module(
         Color.WHITE.bind()
         width.toFloat() to (scoreList.size + 1) * mc.fontRendererObj.FONT_HEIGHT.toFloat()
     }*/
-    private val customFont: Boolean by DualSetting("Font", "Minecraft", "Custom")
+    private val customFont by SelectorSetting("Font", "Minecraft", arrayListOf("Minecraft", "Custom"))
     private val textShadow: Boolean by BooleanSetting("Text Shadow")
     private val redNumbers: Boolean by BooleanSetting("Show Red Numbers")
     private val backgroundColor: Color by ColorSetting("Background Color", Color.MINECRAFT_GRAY.multiplyAlpha(.5f), allowAlpha = true)

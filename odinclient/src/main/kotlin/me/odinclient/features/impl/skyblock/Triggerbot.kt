@@ -2,7 +2,6 @@ package me.odinclient.features.impl.skyblock
 
 import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinclient.utils.skyblock.PlayerUtils.leftClick
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.Relic.currentRelic
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -25,22 +24,21 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object Triggerbot : Module(
     name = "Triggerbot",
-    description = "Various Triggerbots. (Blood, Spirit Bear, Crystal Triggerbot, Secret Triggerbot, Relic Triggerbot)",
-    category = Category.DUNGEON
+    description = "Various Triggerbots. (Blood, Spirit Bear, Crystal Triggerbot, Secret Triggerbot, Relic Triggerbot)"
 ) {
-    private val blood: Boolean by BooleanSetting("Blood Mobs")
-    private val bloodClickType: Boolean by DualSetting("Blood Click Type", "Left", "Right", description = "What button to click for blood mobs.").withDependency { blood }
-    private val spiritBear: Boolean by BooleanSetting("Spirit Bear")
-    private val crystal: Boolean by BooleanSetting("Crystal Triggerbot", default = false)
-    private val take: Boolean by BooleanSetting("Take", default = true).withDependency { crystal }
-    private val place: Boolean by BooleanSetting("Place", default = true).withDependency { crystal }
+    private val blood by BooleanSetting("Blood Mobs")
+    private val bloodClickType by SelectorSetting("Blood Click Type", "Left", arrayListOf("Left", "Right"), description = "What button to click for blood mobs.").withDependency { blood }
+    private val spiritBear by BooleanSetting("Spirit Bear")
+    private val crystal by BooleanSetting("Crystal Triggerbot", default = false)
+    private val take by BooleanSetting("Take", default = true).withDependency { crystal }
+    private val place by BooleanSetting("Place", default = true).withDependency { crystal }
 
-    private val secretTriggerbot: Boolean by BooleanSetting("Secret Triggerbot", default = false)
-    private val stbDelay: Long by NumberSetting("Delay", 200L, 0, 1000).withDependency { secretTriggerbot }
-    private val stbCH: Boolean by BooleanSetting("Crystal Hollows Chests", true, description = "Opens chests in crystal hollows when looking at them").withDependency { secretTriggerbot }
-    private val secretTBInBoss: Boolean by BooleanSetting("In Boss", true, description = "Makes the triggerbot work in dungeon boss aswell.").withDependency { secretTriggerbot }
-    private val swapSlot: Boolean by BooleanSetting("Swap slow", false)
-    private val secretTriggerBotSlot: Int by NumberSetting("Slot", 0, 0, 8, description = "The slot to use for the triggerbot.").withDependency { secretTriggerbot && swapSlot }
+    private val secretTriggerbot by BooleanSetting("Secret Triggerbot", default = false)
+    private val stbDelay by NumberSetting("Delay", 200L, 0, 1000).withDependency { secretTriggerbot }
+    private val stbCH by BooleanSetting("Crystal Hollows Chests", true, description = "Opens chests in crystal hollows when looking at them").withDependency { secretTriggerbot }
+    private val secretTBInBoss by BooleanSetting("In Boss", true, description = "Makes the triggerbot work in dungeon boss aswell.").withDependency { secretTriggerbot }
+    private val swapSlot by BooleanSetting("Swap slow", false)
+    private val secretTriggerBotSlot by NumberSetting("Slot", 0, 0, 8, description = "The slot to use for the triggerbot.").withDependency { secretTriggerbot && swapSlot }
 
     private val triggerBotClock = Clock(stbDelay)
     private var clickedPositions = mapOf<BlockPos, Long>()
@@ -70,7 +68,7 @@ object Triggerbot : Module(
         val (x, y, z) = Triple(ent.posX, ent.posY, ent.posZ)
         if (!isFacingAABB(AxisAlignedBB(x - .5, y - 2.0, z - .5, x + .5, y + 3.0, z + .5), 30f)) return
 
-        if (bloodClickType && name != "Spirit Bear") PlayerUtils.rightClick()
+        if (bloodClickType == 1 && name != "Spirit Bear") PlayerUtils.rightClick()
         else leftClick()
     }
 

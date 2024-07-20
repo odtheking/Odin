@@ -33,7 +33,6 @@ import org.lwjgl.input.Keyboard
 object ClickGUI: Module(
     name = "Click GUI",
     key = Keyboard.KEY_RSHIFT,
-    category = Category.RENDER,
     description = "Allows you to customize the UI"
 ) {
     val color by ColorSetting("Color", Color.RGB(50, 150, 220), allowAlpha = false, description = "Color mainly used within the UI")
@@ -49,14 +48,14 @@ object ClickGUI: Module(
     // make useful someday
     val updateMessage by SelectorSetting("Update Message", "Beta", arrayListOf("Beta", "Full", "None")).hide()
 
-    val devMessages: Boolean by BooleanSetting("Dev Messages", true, description = "Enables dev messages in chat.").withDependency { DevPlayers.isDev }
-    val devSize: Boolean by BooleanSetting("Dev Size", true, description = "Toggles client side dev size.").withDependency { DevPlayers.isDev }
-    private val devWings: Boolean by BooleanSetting("Dev Wings", false, description = "Toggles client side dev wings.").withDependency { DevPlayers.isDev }
+    val devMessages by BooleanSetting("Dev Messages", true, description = "Enables dev messages in chat.").withDependency { DevPlayers.isDev }
+    val devSize by BooleanSetting("Dev Size", true, description = "Toggles client side dev size.").withDependency { DevPlayers.isDev }
+    private val devWings by BooleanSetting("Dev Wings", false, description = "Toggles client side dev wings.").withDependency { DevPlayers.isDev }
     private val devWingsColor by ColorSetting("Dev Wings Color", Color.RGB(255, 255, 255), description = "Color of the dev wings.").withDependency { DevPlayers.isDev }
-    private val devSizeX: Float by NumberSetting("Dev Size X", 1f, -1f, 3f, 0.1, description = "X scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
-    private val devSizeY: Float by NumberSetting("Dev Size Y", 1f, -1f, 3f, 0.1, description = "Y scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
-    private val devSizeZ: Float by NumberSetting("Dev Size Z", 1f, -1f, 3f, 0.1, description = "Z scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
-    private var showHidden: Boolean by DropdownSetting("Show Hidden", false).withDependency { DevPlayers.isDev }
+    private val devSizeX by NumberSetting("Dev Size X", 1f, -1f, 3f, 0.1, description = "X scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
+    private val devSizeY by NumberSetting("Dev Size Y", 1f, -1f, 3f, 0.1, description = "Y scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
+    private val devSizeZ by NumberSetting("Dev Size Z", 1f, -1f, 3f, 0.1, description = "Z scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
+    private var showHidden by DropdownSetting("Show Hidden", false).withDependency { DevPlayers.isDev }
 
     // todo: censored option for textinput
     private val passcode: String by StringSetting("Passcode", "odin", description = "Passcode for dev features.").withDependency { DevPlayers.isDev && showHidden }
@@ -71,9 +70,9 @@ object ClickGUI: Module(
 
     val action by ActionSetting("Open HUD Editor", description = "Opens the HUD Editor, allowing you to reposition HUDs") { /*OdinMain.display = EditHUDGui*/ }
 
-    private var joined: Boolean by BooleanSetting("First join", false).hide()
-    private var warned: Boolean by BooleanSetting("Warned", false).hide()
-    var lastSeenVersion: String by StringSetting("Last seen version", "1.0.0").hide()
+    private var joined by BooleanSetting("First join", false).hide()
+    private var warned by BooleanSetting("Warned", false).hide()
+    var lastSeenVersion by StringSetting("Last seen version", "1.0.0").hide()
 
     var firstTimeOnVersion = false
 

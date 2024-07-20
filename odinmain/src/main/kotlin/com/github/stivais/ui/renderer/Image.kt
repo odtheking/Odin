@@ -30,7 +30,7 @@ class Image(
     }
 
     fun buffer(): ByteBuffer {
-        val bytes =  IOUtils.toByteArray(stream)
+        val bytes = IOUtils.toByteArray(stream)
         return ByteBuffer.allocateDirect(bytes.size).order(ByteOrder.nativeOrder()).put(bytes).also { it.flip() }
     }
 

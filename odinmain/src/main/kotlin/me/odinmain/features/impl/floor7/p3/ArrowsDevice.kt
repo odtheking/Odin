@@ -2,7 +2,6 @@ package me.odinmain.features.impl.floor7.p3
 
 import com.github.stivais.ui.color.Color
 import me.odinmain.events.impl.BlockChangeEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.render.Renderer
@@ -18,11 +17,10 @@ import org.lwjgl.input.Keyboard
 object ArrowsDevice : Module(
     name = "ArrowsDevice",
     description = "Marks already shot positions in the Arrows Device puzzle.",
-    category = Category.FLOOR7,
     key = null
 ) {
-    private val markedPositionColor: Color by ColorSetting("Marked Position", Color.RED, description = "Color of the marked position.")
-    private val resetKey: Keybinding by KeybindSetting("Reset", Keyboard.KEY_NONE, description = "Resets the solver.").onPress { markedPositions.clear() }
+    private val markedPositionColor by ColorSetting("Marked Position", Color.RED, description = "Color of the marked position.")
+    private val resetKey by KeybindSetting("Reset", Keyboard.KEY_NONE, description = "Resets the solver.").onPress { markedPositions.clear() }
     private val reset by ActionSetting("Reset") { markedPositions.clear() }
 
     init {

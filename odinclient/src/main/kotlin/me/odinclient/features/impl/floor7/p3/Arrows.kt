@@ -1,7 +1,6 @@
 package me.odinclient.features.impl.floor7.p3
 
 import me.odinclient.utils.skyblock.PlayerUtils
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.clock.Clock
@@ -16,10 +15,9 @@ import kotlin.math.sqrt
 
 object Arrows : Module(
     name = "Arrows Triggerbot",
-    description = "Trigger bot for 4th device in phase 3 of floor 7.",
-    category = Category.FLOOR7
+    description = "Trigger bot for 4th device in phase 3 of floor 7."
 ) {
-    private val triggerBotDelay: Long by NumberSetting("Delay", 250L, 50L, 1000L, 10L)
+    private val triggerBotDelay by NumberSetting("Delay", 250L, 50L, 1000L, 10L)
     private val triggerBotClock = Clock(triggerBotDelay)
 
     init {

@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.render
 
 import com.github.stivais.ui.color.Color
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.render.RenderUtils.bind
@@ -15,12 +14,11 @@ import java.awt.Color.getHSBColor
 
 object DVD : Module(
     name = "DVD",
-    category = Category.RENDER,
     description = "No further explanation."
 ) {
-    private val boxWidth: Int by NumberSetting("Box Width", 50, 0, 150, 1, description = "Width of the DVD box.")
-    private val boxHeight: Int by NumberSetting("Box Height", 50, 0, 150, 1, description = "Height of the DVD box.")
-    private val roundedCorners: Boolean by BooleanSetting("Rounded Corners", true, description = "Whether the DVD box should have rounded corners.")
+    private val boxWidth by NumberSetting("Box Width", 50, 0, 150, 1, description = "Width of the DVD box.")
+    private val boxHeight by NumberSetting("Box Height", 50, 0, 150, 1, description = "Height of the DVD box.")
+    private val roundedCorners by BooleanSetting("Rounded Corners", true, description = "Whether the DVD box should have rounded corners.")
 
     private val text: String by StringSetting("Text", "ODVD", description = "Text to display on the DVD box.")
     private val textScale: Float by NumberSetting("Text Scale", 1.5f, 0.1f, 2f, 0.1f, description = "Scale of the text.")

@@ -1,8 +1,6 @@
 package me.odinmain.features.settings.impl
 
-import com.github.stivais.ui.color.Color
-import com.github.stivais.ui.color.color
-import com.github.stivais.ui.color.brighter
+import com.github.stivais.ui.color.*
 import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.positions.Center

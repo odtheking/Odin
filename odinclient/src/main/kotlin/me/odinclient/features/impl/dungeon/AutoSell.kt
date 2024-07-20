@@ -1,7 +1,6 @@
 package me.odinclient.features.impl.dungeon
 
 import me.odinmain.config.Config
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.equalsOneOf
@@ -12,12 +11,11 @@ import net.minecraft.inventory.ContainerChest
 
 object AutoSell : Module(
     name = "Auto Sell",
-    description = "Automatically sell items in trades and cookie menus.",
-    category = Category.DUNGEON
+    description = "Automatically sell items in trades and cookie menus."
 ) {
     val sellList: MutableSet<String> by ListSetting("Sell list", mutableSetOf())
-    private val delay: Long by NumberSetting("Delay", 100, 30.0, 300.0, 5.0)
-    private val clickType: Int by SelectorSetting("Click Type", "Shift", arrayListOf("Shift", "Middle", "Left"))
+    private val delay by NumberSetting("Delay", 100L, 30L, 300L, 5L)
+    private val clickType by SelectorSetting("Click Type", "Shift", arrayListOf("Shift", "Middle", "Left"))
     private val addDefaults by ActionSetting("Add defaults") {
         sellList.addAll(defaultItems)
         modMessage("§aAdded default items to auto sell list")

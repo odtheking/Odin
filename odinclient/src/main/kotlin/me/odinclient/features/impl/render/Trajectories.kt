@@ -2,7 +2,6 @@ package me.odinclient.features.impl.render
 
 import com.github.stivais.ui.color.Color
 import me.odinmain.events.impl.RenderEntityModelEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
@@ -28,19 +27,18 @@ import kotlin.math.sqrt
 
 object Trajectories : Module(
     name = "Trajectories",
-    description = "Displays the trajectory of pearls and bows.",
-    category = Category.RENDER
+    description = "Displays the trajectory of pearls and bows."
 ) {
-    private val bows: Boolean by BooleanSetting("Bows", true, description = "Render trajectories of bow arrows")
-    private val pearls: Boolean by BooleanSetting("Pearls", true, description = "Render trajectories of ender pearls")
-    private val plane: Boolean by BooleanSetting("Show Plane", false, description = "Shows a flat square rotated relative to the predicted block that will be hit.")
-    private val boxes: Boolean by BooleanSetting("Show Boxes", true, description = "Shows boxes displaying where arrows or pearls will hit, if this is disabled it will only highlight entities your arrows will hit.")
-    private val lines: Boolean by BooleanSetting("Show Lines", true, description = "Shows the trajectory as a line.")
-    private val range: Float by NumberSetting("Solver Range", 30f, 1f, 60f, 1f, description = "How many ticks are simulated, performance impact scales with this")
-    private val width: Float by NumberSetting("Line Width", 1f, 0.1f, 5.0, 0.1f)
-    private val planeSize: Float by NumberSetting("Plane Size", 2f, 0.1f, 5.0, 0.1f).withDependency { plane }
-    private val boxSize: Float by NumberSetting("Box Size", 0.5f, 0.5f, 3.0f, 0.1f).withDependency { boxes }
-    private val color: Color by ColorSetting("Color", Color.MINECRAFT_AQUA, true)
+    private val bows by BooleanSetting("Bows", true, description = "Render trajectories of bow arrows")
+    private val pearls by BooleanSetting("Pearls", true, description = "Render trajectories of ender pearls")
+    private val plane by BooleanSetting("Show Plane", false, description = "Shows a flat square rotated relative to the predicted block that will be hit.")
+    private val boxes by BooleanSetting("Show Boxes", true, description = "Shows boxes displaying where arrows or pearls will hit, if this is disabled it will only highlight entities your arrows will hit.")
+    private val lines by BooleanSetting("Show Lines", true, description = "Shows the trajectory as a line.")
+    private val range by NumberSetting("Solver Range", 30f, 1f, 60f, 1f, description = "How many ticks are simulated, performance impact scales with this")
+    private val width by NumberSetting("Line Width", 1f, 0.1f, 5.0, 0.1f)
+    private val planeSize by NumberSetting("Plane Size", 2f, 0.1f, 5.0, 0.1f).withDependency { plane }
+    private val boxSize by NumberSetting("Box Size", 0.5f, 0.5f, 3.0f, 0.1f).withDependency { boxes }
+    private val color by ColorSetting("Color", Color.MINECRAFT_AQUA, true)
 
     private var boxRenderQueue: MutableList<Pair<Vec3, Vec3>> = mutableListOf()
     private var entityRenderQueue = mutableListOf<Entity>()

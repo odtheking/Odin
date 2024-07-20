@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.dungeon
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import net.minecraft.tileentity.TileEntitySkull
@@ -12,13 +11,12 @@ import java.util.*
  */
 object SecretHitboxes : Module(
     name = "Secret Hitboxes",
-    description = "Full block Secret hitboxes.",
-    category = Category.DUNGEON
+    description = "Full block Secret hitboxes."
 ) {
-    val lever: Boolean by BooleanSetting("Lever", default = false)
-    val button: Boolean by BooleanSetting("Button", default = false)
-    val essence: Boolean by BooleanSetting("Essence", default = false)
-    val chests: Boolean by BooleanSetting("Chests", default = false)
+    val lever by BooleanSetting("Lever", default = false)
+    val button by BooleanSetting("Button", default = false)
+    val essence by BooleanSetting("Essence", default = false)
+    val chests by BooleanSetting("Chests", default = false)
 
     private val mostSignificantBits = UUID.fromString("26bb1a8d-7c66-31c6-82d5-a9c04c94fb02").mostSignificantBits
 

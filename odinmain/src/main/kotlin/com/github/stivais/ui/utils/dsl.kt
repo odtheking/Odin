@@ -2,7 +2,6 @@ package com.github.stivais.ui.utils
 
 import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.color.Color
-import com.github.stivais.ui.color.color
 import com.github.stivais.ui.constraints.Constraint
 import com.github.stivais.ui.constraints.measurements.Animatable
 

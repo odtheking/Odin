@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.render
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
@@ -15,20 +14,19 @@ import kotlin.math.sin
 
 object Camera : Module(
     name = "Camera",
-    category = Category.RENDER,
     description = "Allows you to change qualities about third person view."
 ) {
-    private val frontCamera: Boolean by BooleanSetting("No Front Camera")
-    private val cameraClip: Boolean by BooleanSetting("Camera Clip")
-    private val cameraDist: Float by NumberSetting("Distance", 4f, 3.0, 12.0, 0.1)
-    private val fov: Float by NumberSetting("FOV", mc.gameSettings.fovSetting, 1f, 180f, 1f)
-    private val freelookDropdown: Boolean by DropdownSetting("Freelook")
-    private val toggle: Boolean by DualSetting("Type", "Hold", "Toggle", false).withDependency { freelookDropdown }
-    private val freelookKeybind: Keybinding by KeybindSetting("Freelook Key", Keyboard.KEY_NONE, description = "Keybind to toggle/ hold for freelook.")
+    private val frontCamera by BooleanSetting("No Front Camera")
+    private val cameraClip by BooleanSetting("Camera Clip")
+    private val cameraDist by NumberSetting("Distance", 4f, 3.0, 12.0, 0.1)
+    private val fov by NumberSetting("FOV", mc.gameSettings.fovSetting, 1f, 180f, 1f)
+    private val freelookDropdown by DropdownSetting("Freelook")
+    private val toggle by SelectorSetting("Type", "Hold", arrayListOf("Hold", "Toggle")).withDependency { freelookDropdown }
+    private val freelookKeybind by KeybindSetting("Freelook Key", Keyboard.KEY_NONE, description = "Keybind to toggle/ hold for freelook.")
         .withDependency { freelookDropdown }
         .onPress {
             if (!freelookToggled && enabled) enable()
-            else if ((toggle || !enabled) && freelookToggled) disable()
+            else if ((toggle == 1 || !enabled) && freelookToggled) disable()
     }
     var freelookToggled = false
     private var cameraYaw = 0f
@@ -52,7 +50,7 @@ object Camera : Module(
         if (frontCamera && mc.gameSettings.thirdPersonView == 2)
             mc.gameSettings.thirdPersonView = 0
 
-        if (!freelookKeybind.isDown() && freelookToggled && !toggle) disable()
+        if (!freelookKeybind.isDown() && freelookToggled && toggle == 0) disable()
     }
 
     private fun enable() {

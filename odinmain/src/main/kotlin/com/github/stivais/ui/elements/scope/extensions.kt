@@ -1,9 +1,7 @@
 package com.github.stivais.ui.elements.scope
 
 import com.github.stivais.ui.animation.Animations
-import com.github.stivais.ui.color.Color
-import com.github.stivais.ui.color.color
-import com.github.stivais.ui.color.darker
+import com.github.stivais.ui.color.*
 import com.github.stivais.ui.constraints.measurements.Pixel
 import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.elements.Element

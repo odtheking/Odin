@@ -4,7 +4,6 @@ import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.color.multiplyAlpha
 import io.github.moulberry.notenoughupdates.NEUApi
 import me.odinmain.events.impl.*
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.termGUI.CustomTermGui
 import me.odinmain.features.settings.AlwaysActive
@@ -28,40 +27,39 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 @AlwaysActive // So it can be used in other modules
 object TerminalSolver : Module(
     name = "Terminal Solver",
-    description = "Renders solution for terminals in floor 7.",
-    category = Category.FLOOR7
+    description = "Renders solution for terminals in floor 7."
 ) {
-    private val lockRubixSolution: Boolean by BooleanSetting("Lock Rubix Solution", false, description = "Locks the 'correct' color of the rubix terminal to the one that was scanned first, should make the solver less 'jumpy'.")
-    private val cancelToolTip: Boolean by BooleanSetting("Stop Tooltips", default = true, description = "Stops rendering tooltips in terminals")
-    val renderType: Int by SelectorSetting("Mode", "Odin", arrayListOf("Odin", "Skytils", "SBE", "Custom GUI"))
-    val customGuiText: Int by SelectorSetting("Custom Gui Title", "Top Left", arrayListOf("Top Left", "Middle", "Disabled")).withDependency { renderType == 3 }
-    val customScale: Float by NumberSetting("Custom Scale", 1f, .8f, 2.5f, .1f, description = "Size of the Custom Terminal Gui").withDependency { renderType == 3 }
-    val textShadow: Boolean by BooleanSetting("Shadow", true, description = "Adds a shadow to the text")
-    val renderOrderNumbers: Boolean by BooleanSetting("Render Order Numbers", true)
+    private val lockRubixSolution by BooleanSetting("Lock Rubix Solution", false, description = "Locks the 'correct' color of the rubix terminal to the one that was scanned first, should make the solver less 'jumpy'.")
+    private val cancelToolTip by BooleanSetting("Stop Tooltips", default = true, description = "Stops rendering tooltips in terminals")
+    val renderType by SelectorSetting("Mode", "Odin", arrayListOf("Odin", "Skytils", "SBE", "Custom GUI"))
+    val customGuiText by SelectorSetting("Custom Gui Title", "Top Left", arrayListOf("Top Left", "Middle", "Disabled")).withDependency { renderType == 3 }
+    val customScale by NumberSetting("Custom Scale", 1f, .8f, 2.5f, .1f, description = "Size of the Custom Terminal Gui").withDependency { renderType == 3 }
+    val textShadow by BooleanSetting("Shadow", true, description = "Adds a shadow to the text")
+    val renderOrderNumbers by BooleanSetting("Render Order Numbers", true)
 
-    private val showRemoveWrongSettings: Boolean by DropdownSetting("Render Wrong Settings").withDependency { renderType.equalsOneOf(1,2) }
-    private val removeWrong: Boolean by BooleanSetting("Stop Rendering Wrong").withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings }
-    private val removeWrongPanes: Boolean by BooleanSetting("Stop Panes", true).withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings && removeWrong }
-    private val removeWrongRubix: Boolean by BooleanSetting("Stop Rubix", true).withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings && removeWrong }
-    private val removeWrongStartsWith: Boolean by BooleanSetting("Stop Starts With", true).withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings && removeWrong }
-    private val removeWrongSelect: Boolean by BooleanSetting("Stop Select", true).withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings && removeWrong }
+    private val showRemoveWrongSettings by DropdownSetting("Render Wrong Settings").withDependency { renderType.equalsOneOf(1,2) }
+    private val removeWrong by BooleanSetting("Stop Rendering Wrong").withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings }
+    private val removeWrongPanes by BooleanSetting("Stop Panes", true).withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings && removeWrong }
+    private val removeWrongRubix by BooleanSetting("Stop Rubix", true).withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings && removeWrong }
+    private val removeWrongStartsWith by BooleanSetting("Stop Starts With", true).withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings && removeWrong }
+    private val removeWrongSelect by BooleanSetting("Stop Select", true).withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings && removeWrong }
 
-    private val showColors: Boolean by DropdownSetting("Color Settings")
-    private val wrongColor: Color by ColorSetting("Wrong Color", Color.RGB(45, 45, 45), true).withDependency { renderType == 0 && showColors }
-    val textColor: Color by ColorSetting("Text Color", Color.RGB(220, 220, 220), true).withDependency { showColors }
-    val panesColor: Color by ColorSetting("Panes Color", Color.RGB(0, 170, 170), true).withDependency { showColors }
-    val rubixColor1: Color by ColorSetting("Rubix Color 1", Color.RGB(0, 170, 170), true).withDependency { showColors }
-    val rubixColor2: Color by ColorSetting("Rubix Color 2", Color.RGB(0, 100, 100), true).withDependency { showColors }
-    val oppositeRubixColor1: Color by ColorSetting("Negative Rubix Color 1", Color.RGB(170, 85, 0), true).withDependency { showColors }
-    val oppositeRubixColor2: Color by ColorSetting("Negative Rubix Color 2", Color.RGB(210, 85, 0), true).withDependency { showColors }
-    val orderColor: Color by ColorSetting("Order Color 1", Color.RGB(0, 170, 170, 1f), true).withDependency { showColors }
-    val orderColor2: Color by ColorSetting("Order Color 2", Color.RGB(0, 100, 100, 1f), true).withDependency { showColors }
-    val orderColor3: Color by ColorSetting("Order Color 3", Color.RGB(0, 65, 65, 1f), true).withDependency { showColors }
-    val startsWithColor: Color by ColorSetting("Starts With Color", Color.RGB(0, 170, 170), true).withDependency { showColors }
-    val selectColor: Color by ColorSetting("Select Color", Color.RGB(0, 170, 170), true).withDependency { showColors }
-    val customGuiColor: Color by ColorSetting("Custom Gui Color", Color.MINECRAFT_GRAY.multiplyAlpha(0.8f), true).withDependency { showColors }
-    val gap: Int by NumberSetting("Gap", 10, 0, 20, 1, false, "gap between items").withDependency { renderType == 3 }
-    val textScale: Int by NumberSetting("Text Scale", 1, 1, 3, increment = 1, description = "Text scale").withDependency { renderType == 3 }
+    private val showColors by DropdownSetting("Color Settings")
+    private val wrongColor by ColorSetting("Wrong Color", Color.RGB(45, 45, 45), true).withDependency { renderType == 0 && showColors }
+    val textColor by ColorSetting("Text Color", Color.RGB(220, 220, 220), true).withDependency { showColors }
+    val panesColor by ColorSetting("Panes Color", Color.RGB(0, 170, 170), true).withDependency { showColors }
+    val rubixColor1 by ColorSetting("Rubix Color 1", Color.RGB(0, 170, 170), true).withDependency { showColors }
+    val rubixColor2 by ColorSetting("Rubix Color 2", Color.RGB(0, 100, 100), true).withDependency { showColors }
+    val oppositeRubixColor1 by ColorSetting("Negative Rubix Color 1", Color.RGB(170, 85, 0), true).withDependency { showColors }
+    val oppositeRubixColor2 by ColorSetting("Negative Rubix Color 2", Color.RGB(210, 85, 0), true).withDependency { showColors }
+    val orderColor by ColorSetting("Order Color 1", Color.RGB(0, 170, 170, 1f), true).withDependency { showColors }
+    val orderColor2 by ColorSetting("Order Color 2", Color.RGB(0, 100, 100, 1f), true).withDependency { showColors }
+    val orderColor3 by ColorSetting("Order Color 3", Color.RGB(0, 65, 65, 1f), true).withDependency { showColors }
+    val startsWithColor by ColorSetting("Starts With Color", Color.RGB(0, 170, 170), true).withDependency { showColors }
+    val selectColor by ColorSetting("Select Color", Color.RGB(0, 170, 170), true).withDependency { showColors }
+    val customGuiColor by ColorSetting("Custom Gui Color", Color.MINECRAFT_GRAY.multiplyAlpha(0.8f), true).withDependency { showColors }
+    val gap by NumberSetting("Gap", 10, 0, 20, 1, false, "gap between items").withDependency { renderType == 3 }
+    val textScale by NumberSetting("Text Scale", 1, 1, 3, increment = 1, description = "Text scale").withDependency { renderType == 3 }
 
     private var lastRubixSolution: Int? = null
     private val zLevel get() = if (renderType == 1 && currentTerm.equalsOneOf(TerminalTypes.STARTS_WITH, TerminalTypes.SELECT)) 100f else 400f

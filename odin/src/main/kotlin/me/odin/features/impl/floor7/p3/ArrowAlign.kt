@@ -2,7 +2,6 @@ package me.odin.features.impl.floor7.p3
 
 import com.github.stivais.ui.color.Color
 import me.odinmain.events.impl.ClickEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Renderer
@@ -14,8 +13,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object ArrowAlign : Module(
     name = "Arrow Align",
-    description = "Shows a solution for the Arrow Align device.",
-    category = Category.FLOOR7
+    description = "Shows a solution for the Arrow Align device."
 ) {
     private val frameGridCorner = Vec3(-2.0, 120.0, 75.0)
 

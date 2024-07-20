@@ -1,6 +1,5 @@
 package me.odin.features.impl.render
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
@@ -9,11 +8,10 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object Camera : Module(
     name = "Camera",
-    category = Category.RENDER,
     description = "Allows you to change qualities about third person view."
 ) {
-    private val frontCamera: Boolean by BooleanSetting("No Front Camera")
-    private val fov: Float by NumberSetting("FOV", mc.gameSettings.fovSetting, 1f, 180f, 1f)
+    private val frontCamera by BooleanSetting("No Front Camera")
+    private val fov by NumberSetting("FOV", mc.gameSettings.fovSetting, 1f, 180f, 1f)
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {

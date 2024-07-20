@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.render
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.clock.Clock
 import net.minecraft.client.gui.inventory.GuiChest
@@ -10,10 +9,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object NoCursorReset : Module(
-    "No Cursor Reset",
-    description = "Makes your cursor stop resetting between guis.",
-    category = Category.RENDER
-) {
+    name = "No Cursor Reset",
+    description = "Makes your cursor stop resetting between guis.") {
     private val clock = Clock(150)
     private var wasNotNull = false
 

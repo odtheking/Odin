@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.nether
 
 import com.github.stivais.ui.color.Color
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.render.Renderer
@@ -15,10 +14,9 @@ import java.util.*
 
 object PearlWaypoints : Module(
     name = "Pearl Waypoints",
-    description = "Renders waypoints for pearls in Kuudra.",
-    category = Category.NETHER
+    description = "Renders waypoints for pearls in Kuudra."
 ) {
-    private val hideFarWaypoints: Boolean by BooleanSetting("Hide Far Waypoints", true, description = "Hides the waypoints that are far away")
+    private val hideFarWaypoints by BooleanSetting("Hide Far Waypoints", true, description = "Hides the waypoints that are far away")
 
     private val pearlLineups: Map<Lineup, Color> = mapOf(
         // Triangle

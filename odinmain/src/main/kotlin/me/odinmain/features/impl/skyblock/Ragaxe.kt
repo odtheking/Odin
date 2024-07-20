@@ -1,17 +1,15 @@
 package me.odinmain.features.impl.skyblock
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.skyblock.PlayerUtils
 
 object Ragaxe : Module(
     name = "Rag Axe",
-    description = "Tracks rag axe cooldowns.",
-    category = Category.SKYBLOCK
+    description = "Tracks rag axe cooldowns."
 ) {
-    private val alert: Boolean by BooleanSetting("Alert", true, description = "Alerts you when you start casting rag axe.")
-    private val alertCancelled: Boolean by BooleanSetting("Alert Cancelled", true, description = "Alerts you when your rag axe is cancelled.")
+    private val alert by BooleanSetting("Alert", true, description = "Alerts you when you start casting rag axe.")
+    private val alertCancelled by BooleanSetting("Alert Cancelled", true, description = "Alerts you when your rag axe is cancelled.")
 
     init {
         onMessage(Regex("^.+CASTING IN 3s(.+)?\$"), { alert && enabled }) {

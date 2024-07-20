@@ -1,14 +1,12 @@
 package me.odinmain.features.impl.floor7
 
 import me.odinmain.events.impl.RealServerTick
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object NecronDropTimer : Module(
     name = "Necron Drop Timer",
-    description = "Displays the time until Necron drops you in floor 7.",
-    category = Category.FLOOR7
+    description = "Displays the time until Necron drops you in floor 7."
 ) {
     /*private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {

@@ -1,9 +1,7 @@
 package com.github.stivais.ui.elements.impl
 
 import com.github.stivais.ui.UI
-import com.github.stivais.ui.color.Color
-import com.github.stivais.ui.color.color
-import com.github.stivais.ui.color.darker
+import com.github.stivais.ui.color.*
 import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.events.*
 import me.odinmain.utils.*

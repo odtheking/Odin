@@ -1,13 +1,11 @@
 package me.odinclient.features.impl.skyblock
 
 import me.odinclient.mixin.accessors.IBlockAccessor
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import net.minecraft.block.Block
 
 object FarmingHitboxes : Module(
     name = "Farming Hitboxes",
-    category = Category.SKYBLOCK,
     description = "Expands the hitbox of some crops to a full block."
 ) {
     fun setFullBlock(block: Block) {

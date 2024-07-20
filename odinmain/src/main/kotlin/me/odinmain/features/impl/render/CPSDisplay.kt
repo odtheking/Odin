@@ -2,7 +2,6 @@ package me.odinmain.features.impl.render
 
 import com.github.stivais.ui.color.Color
 import me.odinmain.events.impl.PacketSentEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
@@ -11,16 +10,15 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object CPSDisplay : Module(
     name = "CPS Display",
-    description = "Displays your clicks per second.",
-    category = Category.RENDER
+    description = "Displays your clicks per second."
 ) {
-    private val countPackets: Boolean by BooleanSetting("Count Packets", false, description = "Counts packets sent outside of the rightclickmouse method, this will be better at detecting other mods' auto clickers, but might show inaccurate values.")
-    private val advanced: Boolean by DropdownSetting("Show Settings", false)
-    private val button: Int by SelectorSetting("Button", "Both", arrayListOf("Left", "Right", "Both")).withDependency { advanced }
-    private val mouseText: Boolean by BooleanSetting("Show Button", true).withDependency { advanced }
-    private val color: Color by ColorSetting("Color", Color.RGB(21, 22, 23, 0.5f), allowAlpha = true).withDependency { advanced }
-    private val textColor: Color by ColorSetting("Text Color", Color.RGB(239, 239, 239, 1f), allowAlpha = true).withDependency { advanced }
-    private val outline: Boolean by BooleanSetting("Outline", true).withDependency { advanced }
+    private val countPackets by BooleanSetting("Count Packets", false, description = "Counts packets sent outside of the rightclickmouse method, this will be better at detecting other mods' auto clickers, but might show inaccurate values.")
+    private val advanced by DropdownSetting("Show Settings", false)
+    private val button by SelectorSetting("Button", "Both", arrayListOf("Left", "Right", "Both")).withDependency { advanced }
+    private val mouseText by BooleanSetting("Show Button", true).withDependency { advanced }
+    private val color by ColorSetting("Color", Color.RGB(21, 22, 23, 0.5f), allowAlpha = true).withDependency { advanced }
+    private val textColor by ColorSetting("Text Color", Color.RGB(239, 239, 239, 1f), allowAlpha = true).withDependency { advanced }
+    private val outline by BooleanSetting("Outline", true).withDependency { advanced }
     /*private val hud: HudElement by HudSetting("Display", 10f, 10f, 2f, false) {
         leftClicks.removeAll { System.currentTimeMillis() - it > 1000 }
         rightClicks.removeAll { System.currentTimeMillis() - it > 1000 }

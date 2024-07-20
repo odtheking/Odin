@@ -1,7 +1,6 @@
 package me.odinclient.features.impl.skyblock
 
 import me.odinclient.utils.skyblock.PlayerUtils.leftClick
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.skyblock.itemID
@@ -10,10 +9,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object TermAC : Module(
     name = "Terminator Ac",
-    description = "Randomized auto-clicker for Terminator's salvation ability, enabled when holding right click.",
-    category = Category.SKYBLOCK
+    description = "Randomized auto-clicker for Terminator's salvation ability, enabled when holding right click."
 ) {
-    private val cps: Double by NumberSetting("Clicks Per Second", 5.0, 3.0, 15.0, .5, false, "The amount of clicks per second to perform.")
+    private val cps by NumberSetting("Clicks Per Second", 5.0, 3.0, 15.0, .5, false, "The amount of clicks per second to perform.")
     private var nextClick = .0
 
     @SubscribeEvent

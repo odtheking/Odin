@@ -1,7 +1,6 @@
 package me.odinclient.features.impl.floor7.p3
 
 import me.odinmain.events.impl.GuiEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
@@ -11,10 +10,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object CancelWrongTerms : Module(
     name = "Stop Wrong Clicks",
-    description = "Stops you from clicking wrong items in terminals.",
-    category = Category.FLOOR7
+    description = "Stops you from clicking wrong items in terminals."
 ) {
-    private val disableRubix: Boolean by BooleanSetting("Disable in Rubix", false, description = "If enabled will not block wrong clicks in Rubix")
+    private val disableRubix by BooleanSetting("Disable in Rubix", false, description = "If enabled will not block wrong clicks in Rubix")
 
     @SubscribeEvent
     fun onSlotClick(event: GuiEvent.GuiMouseClickEvent) {

@@ -6,7 +6,7 @@ import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin.MCVersion
 
 @MCVersion("1.8.9")
-@IFMLLoadingPlugin.Name("Odin LWJGL Loading Plugin")
+@IFMLLoadingPlugin.Name("OdinLWJGLLoadingPlugin")
 @IFMLLoadingPlugin.SortingIndex(5)
 class LWJGLLoadingPlugin : IFMLLoadingPlugin {
     init {

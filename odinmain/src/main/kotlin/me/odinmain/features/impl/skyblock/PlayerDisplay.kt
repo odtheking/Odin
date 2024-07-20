@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.skyblock
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -10,18 +9,17 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object PlayerDisplay : Module(
     name = "Player Display",
-    description = "Displays info about the skyblock player.",
-    category = Category.SKYBLOCK,
+    description = "Displays info about the skyblock player."
 ) {
-    private val hideElements: Boolean by DropdownSetting("Hide Elements")
-    private val hideArmor: Boolean by BooleanSetting("Hide Armor").withDependency { hideElements }
-    private val hideFood: Boolean by BooleanSetting("Hide Food").withDependency { hideElements }
-    private val hideHearts: Boolean by BooleanSetting("Hide Hearts").withDependency { hideElements }
-    private val hideXP: Boolean by BooleanSetting("Hide XP Level").withDependency { hideElements }
-    private val hideActionBar: Boolean by DropdownSetting("Hide Action Bar Elements")
-    private val hideHealth: Boolean by BooleanSetting("Hide Health", true).withDependency { hideActionBar }
-    private val hideMana: Boolean by BooleanSetting("Hide Mana", true).withDependency { hideActionBar }
-    private val hideDefense: Boolean by BooleanSetting("Hide Defense", true).withDependency { hideActionBar }
+    private val hideElements by DropdownSetting("Hide Elements")
+    private val hideArmor by BooleanSetting("Hide Armor").withDependency { hideElements }
+    private val hideFood by BooleanSetting("Hide Food").withDependency { hideElements }
+    private val hideHearts by BooleanSetting("Hide Hearts").withDependency { hideElements }
+    private val hideXP by BooleanSetting("Hide XP Level").withDependency { hideElements }
+    private val hideActionBar by DropdownSetting("Hide Action Bar Elements")
+    private val hideHealth by BooleanSetting("Hide Health", true).withDependency { hideActionBar }
+    private val hideMana by BooleanSetting("Hide Mana", true).withDependency { hideActionBar }
+    private val hideDefense by BooleanSetting("Hide Defense", true).withDependency { hideActionBar }
 
     /*private val healthHud: HudElement by HudSetting("Health Hud", 10f, 10f, 1f, true) {
         val text =

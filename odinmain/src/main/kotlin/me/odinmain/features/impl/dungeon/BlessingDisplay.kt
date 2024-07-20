@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.dungeon
 
 import com.github.stivais.ui.color.Color
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -12,16 +11,16 @@ object BlessingDisplay : Module(
     name = "Blessing Display",
     description = "Displays the current blessings of the dungeon.",
 ) {
-    private val power: Boolean by BooleanSetting("Power Blessing", true, description = "Displays the power blessing.")
-    private val powerColor: Color by ColorSetting("Power Color", Color.MINECRAFT_DARK_RED, true, description = "The color of the power blessing.").withDependency { power }
-    private val time: Boolean by BooleanSetting("Time Blessing", true, description = "Displays the time blessing.")
-    private val timeColor: Color by ColorSetting("Time Color", Color.MINECRAFT_DARK_PURPLE, true, description = "The color of the time blessing.").withDependency { time }
-    private val stone: Boolean by BooleanSetting("Stone Blessing", false, description = "Displays the stone blessing.")
-    private val stoneColor: Color by ColorSetting("Stone Color", Color.MINECRAFT_GRAY, true, description = "The color of the stone blessing.").withDependency { stone }
-    private val life: Boolean by BooleanSetting("Life Blessing", false, description = "Displays the life blessing.")
-    private val lifeColor: Color by ColorSetting("Life Color", Color.MINECRAFT_RED, true, description = "The color of the life blessing.").withDependency { life }
-    private val wisdom: Boolean by BooleanSetting("Wisdom Blessing", false, description = "Displays the wisdom blessing.")
-    private val wisdomColor: Color by ColorSetting("Wisdom Color", Color.MINECRAFT_BLUE, true, description = "The color of the wisdom blessing.").withDependency { wisdom }
+    private val power by BooleanSetting("Power Blessing", true, description = "Displays the power blessing.")
+    private val powerColor by ColorSetting("Power Color", Color.MINECRAFT_DARK_RED, true, description = "The color of the power blessing.").withDependency { power }
+    private val time by BooleanSetting("Time Blessing", true, description = "Displays the time blessing.")
+    private val timeColor by ColorSetting("Time Color", Color.MINECRAFT_DARK_PURPLE, true, description = "The color of the time blessing.").withDependency { time }
+    private val stone by BooleanSetting("Stone Blessing", false, description = "Displays the stone blessing.")
+    private val stoneColor by ColorSetting("Stone Color", Color.MINECRAFT_GRAY, true, description = "The color of the stone blessing.").withDependency { stone }
+    private val life by BooleanSetting("Life Blessing", false, description = "Displays the life blessing.")
+    private val lifeColor by ColorSetting("Life Color", Color.MINECRAFT_RED, true, description = "The color of the life blessing.").withDependency { life }
+    private val wisdom by BooleanSetting("Wisdom Blessing", false, description = "Displays the wisdom blessing.")
+    private val wisdomColor by ColorSetting("Wisdom Color", Color.MINECRAFT_BLUE, true, description = "The color of the wisdom blessing.").withDependency { wisdom }
 
     private data class BlessingData(val type: Blessing, val enabled: () -> Boolean, val color: () -> Color)
     private val blessings = listOf(

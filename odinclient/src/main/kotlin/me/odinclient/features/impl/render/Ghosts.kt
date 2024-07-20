@@ -1,7 +1,6 @@
 package me.odinclient.features.impl.render
 
 import com.github.stivais.ui.color.Color
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.addVec
@@ -12,12 +11,11 @@ import net.minecraft.entity.monster.EntityCreeper
 
 object Ghosts : Module(
     name = "Ghosts",
-    description = "Diverse QOL for ghosts in the Dwarven Mines.",
-    category = Category.SKYBLOCK
+    description = "Diverse QOL for ghosts in the Dwarven Mines."
 ) {
-    private var showGhostNametag: Boolean by BooleanSetting(name = "Show Ghost Nametag")
-    private var showGhosts: Boolean by BooleanSetting(name = "Hide Ghosts")
-    private var hideChargedLayer: Boolean by BooleanSetting(name = "Hide Charged Layer")
+    private var showGhostNametag by BooleanSetting(name = "Show Ghost Nametag")
+    private var showGhosts by BooleanSetting(name = "Hide Ghosts")
+    private var hideChargedLayer by BooleanSetting(name = "Hide Charged Layer")
 
     init {
         execute(500) {
