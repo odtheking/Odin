@@ -10,6 +10,9 @@ import com.github.stivais.ui.renderer.Gradient.LeftToRight
 import com.github.stivais.ui.renderer.Gradient.TopToBottom
 import com.github.stivais.ui.utils.radii
 import com.github.stivais.ui.utils.seconds
+import com.google.gson.JsonElement
+import com.google.gson.JsonPrimitive
+import me.odinmain.features.settings.Saving
 import me.odinmain.features.settings.Setting
 import java.awt.Color.HSBtoRGB
 
@@ -19,13 +22,25 @@ class ColorSetting(
     val allowAlpha: Boolean = true,
     description: String = "",
     hidden: Boolean = false
-) : Setting<Color.HSB>(name, hidden, description) {
+) : Setting<Color.HSB>(name, hidden, description), Saving {
 
     override val default: Color.HSB = color.toHSB()
 
     override var value: Color.HSB = default
 
     private val hueMax = color { HSBtoRGB(value.hue, 1f, 1f) }
+
+    override fun read(element: JsonElement?) {
+        if (element?.asString?.startsWith("#") == true) {
+            value = Color.RGB(hexToRGBA(element.asString)).toHSB()
+        } else element?.asInt?.let {
+            value = Color.RGB(it).toHSB()
+        }
+    }
+
+    override fun write(): JsonElement {
+        return JsonPrimitive(value.toHexString())
+    }
 
     override fun ElementScope<*>.createElement() {
         val size = Animatable(from = 40.px, to = if (allowAlpha) 260.px else 240.px)

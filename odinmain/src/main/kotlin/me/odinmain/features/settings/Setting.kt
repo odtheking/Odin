@@ -3,11 +3,9 @@ package me.odinmain.features.settings
 import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Animatable
-import com.github.stivais.ui.constraints.measurements.Pixel
 import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.elements.scope.ElementDSL
 import com.github.stivais.ui.elements.scope.ElementScope
-import com.github.stivais.ui.events.Lifetime
 import com.github.stivais.ui.utils.*
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -137,11 +135,6 @@ abstract class Setting<T> (
                 (constraints.height as Animatable).swap()
                 (alphaAnim as Animatable).swap()
             }
-
-            Lifetime.AfterInitialized register {
-                elements?.loop { fixHeight(it) }
-                false
-            }
         }
 
         override fun draw() {
@@ -150,18 +143,6 @@ abstract class Setting<T> (
                 constraints.height.animate(0.25.seconds, Animations.EaseInOutQuint)
                 alphaAnim!!.animate(0.25.seconds, Animations.EaseInOutQuint)
                 redraw = true
-            }
-        }
-
-        // this is a weird way to get animations to work nicely with px
-        private fun fixHeight(element: Element) {
-            element.constraints.apply {
-                if (height is Pixel) {
-                    height = 100.percent.coerce((height as Pixel).pixels)
-                }
-            }
-            element.elements?.loop {
-                fixHeight(it)
             }
         }
     }

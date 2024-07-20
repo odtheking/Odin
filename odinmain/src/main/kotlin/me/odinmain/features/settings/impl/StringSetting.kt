@@ -58,7 +58,7 @@ class StringSetting(
         setting(70.px) {
             text(
                 text = name,
-                pos = at(x = 6.px, y = 10.px),
+                pos = at(x = 6.px, y = 8.px),
                 size = 16.px
             )
             block(

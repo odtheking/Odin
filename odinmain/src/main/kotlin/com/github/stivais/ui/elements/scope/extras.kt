@@ -2,14 +2,12 @@ package com.github.stivais.ui.elements.scope
 
 import com.github.stivais.ui.constraints.Constraints
 import com.github.stivais.ui.constraints.copies
-import com.github.stivais.ui.elements.impl.Group
 import me.odinmain.utils.round
 
-inline fun ElementDSL.slider(
+fun ElementDSL.slider(
     constraints: Constraints? = copies(),
     accepts: Boolean = false,
-    crossinline onChange: (x: Float, y: Float, wasClick: Boolean) -> Unit,
-    crossinline dsl: ElementScope<Group>.() -> Unit = {},
+    onChange: (x: Float, y: Float, wasClick: Boolean) -> Unit,
 ) = group(constraints) {
 
     var dragging = false
@@ -36,5 +34,4 @@ inline fun ElementDSL.slider(
     onRelease {
         dragging = false
     }
-    dsl()
 }

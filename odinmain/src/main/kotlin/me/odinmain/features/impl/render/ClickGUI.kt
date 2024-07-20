@@ -57,7 +57,7 @@ object ClickGUI: Module(
     private val devSizeZ by NumberSetting("Dev Size Z", 1f, -1f, 3f, 0.1, description = "Z scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
     private var showHidden by DropdownSetting("Show Hidden", false).withDependency { DevPlayers.isDev }
 
-    // todo: censored option for textinput
+    // todo: censored option for textinput, max length, etc idk man its so much work
     private val passcode: String by StringSetting("Passcode", "odin", description = "Passcode for dev features.").withDependency { DevPlayers.isDev && showHidden }
 
     val reset by ActionSetting("Send Dev Data") {
@@ -79,11 +79,6 @@ object ClickGUI: Module(
     val panelSettings by MapSetting("Panel Data", mutableMapOf<Category, PanelData>()).also { setting ->
         Category.entries.forEach { setting.value[it] = PanelData(x = 10f + 260f * it.ordinal, y = 10f, extended = true) }
     }
-
-    // remove
-    val panelX = mutableMapOf<Category, NumberSetting<Float>>()
-    val panelY = mutableMapOf<Category, NumberSetting<Float>>()
-    val panelExtended = mutableMapOf<Category, BooleanSetting>()
 
     init {
         // todo: cleanup
@@ -115,17 +110,6 @@ object ClickGUI: Module(
             ${getChatBreak()}
             
             """.trimIndent(), false)
-        }
-        resetPositions()
-    }
-
-    // todo: remove
-    fun resetPositions() {
-        Category.entries.forEach {
-            val incr = 10f + 260f * it.ordinal
-            panelX.getOrPut(it) { +NumberSetting(it.name + ",x", default = incr, hidden = true) }.value = incr
-            panelY.getOrPut(it) { +NumberSetting(it.name + ",y", default = 10f, hidden = true) }.value = 10f
-            panelExtended.getOrPut(it) { +BooleanSetting(it.name + ",extended", default = true, hidden = true) }.enabled = true
         }
     }
 

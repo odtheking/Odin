@@ -29,8 +29,8 @@ abstract class Module(
     /**
      * Category for this module.
      *
-     * It is defined by the package of the module. (For example: me.odin.features.impl.render == Category.RENDER).
-     * If it is in an invalid package, it will use Category.RENDER as a default
+     * It is defined by the package of the module. (For example: me.odin.features.impl.render == [Category.RENDER]).
+     * If it is in an invalid package, it will use [Category.RENDER] as a default
      */
     @Transient
     val category: Category = getCategory(this::class.java) ?: Category.RENDER

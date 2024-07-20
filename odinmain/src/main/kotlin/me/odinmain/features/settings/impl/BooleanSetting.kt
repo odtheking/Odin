@@ -4,10 +4,13 @@ import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.color.*
 import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Animatable
+import com.github.stivais.ui.elements.scope.BlockScope
+import com.github.stivais.ui.elements.scope.ElementDSL
 import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.elements.scope.hoverEffect
 import com.github.stivais.ui.utils.animate
 import com.github.stivais.ui.utils.radii
+import com.github.stivais.ui.utils.radius
 import com.github.stivais.ui.utils.seconds
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
@@ -42,35 +45,41 @@ class BooleanSetting(
 
     override fun ElementScope<*>.createElement() {
         setting(40.px) {
-            text(
-                text = name,
-                pos = at(x = 6.px),
-                size = 40.percent
-            )
-            val pointerPos = Animatable(from = 30.percent.center, to = 70.percent.center)
-            val color = Color.Animated(from = `gray 38`, to = ClickGUI.color)
-            if (value) {
-                pointerPos.swap()
-                color.swap()
+            text(text = name, pos = at(x = 6.px), size = 40.percent)
+            switch(
+                constrain(x = -6.px, w = 35.px, h = 50.percent),
+                color = Color.Animated(from = `gray 38`, to = ClickGUI.color),
+                on = value
+            ).onClick {
+                value = !value
+                true
             }
+        }
+    }
+
+    fun ElementDSL.switch(
+        constraints: Constraints? = null,
+        color: Color.Animated,
+        on: Boolean = false
+    ): BlockScope {
+        val color2 = color.color2
+        val pointer = Animatable(from = 30.percent.center, to = 70.percent.center)
+        if (on) {
+            pointer.swap()
+            color.swap()
+        }
+        return block(constraints, color, radius = 9.radii()) {
+            outline(color { color2.rgba.darker() }, thickness = 1.5.px)
+            hoverEffect()
             block(
-                constraints = constrain(x = -6.px, w = 35.px, h = 50.percent),
-                color = color,
-                radius = 9.radii()
-            ) {
-                outline(color = color { ClickGUI.color.rgba.darker(0.75) }, thickness = 1.5.px)
-                block(
-                    constraints = constrain(x = pointerPos, w = 50.percent, h = 80.percent),
-                    color = Color.WHITE,
-                    radius = 8.radii()
-                )
-                onClick {
-                    color.animate(0.25.seconds)
-                    pointerPos.animate(0.25.seconds, Animations.EaseInOutQuint)
-                    value = !value
-                    true
-                }
-                hoverEffect()
+                constrain(x = pointer, w = 50.percent, h = 80.percent),
+                color = Color.WHITE,
+                radius = 8.radii()
+            )
+            onClick {
+                color.animate(0.25.seconds)
+                pointer.animate(0.25.seconds, Animations.EaseInOutQuint)
+                false
             }
         }
     }

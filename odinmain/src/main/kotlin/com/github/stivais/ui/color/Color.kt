@@ -71,14 +71,13 @@ interface Color {
         constructor(from: Color, to: Color, swapIf: Boolean) : this(from, to) {
             if (swapIf) {
                 swap()
-//                current = color1.rgba
             }
         }
 
         var animation: Animation? = null
 
-        private var color1: Color = from
-        private var color2: Color = to
+        var color1: Color = from
+        var color2: Color = to
 
         var current: Int = color1.rgba
         var from: Int = color1.rgba
