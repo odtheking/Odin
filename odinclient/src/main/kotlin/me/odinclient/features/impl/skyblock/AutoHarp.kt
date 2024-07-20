@@ -52,7 +52,7 @@ object AutoHarp : Module(
         for (ii in 0..6) {
             val slot = container.inventorySlots[37 + ii]
             if ((slot.stack?.item as? ItemBlock)?.block === Blocks.quartz_block) {
-                PlayerUtils.windowClick(slot.slotNumber, PlayerUtils.ClickType.Left)
+                PlayerUtils.windowClick(slot.slotNumber, PlayerUtils.ClickType.Middle)
                 break
             }
         }
