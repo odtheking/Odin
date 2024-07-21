@@ -16,6 +16,8 @@ import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.fillItemFromSack
 import me.odinmain.utils.skyblock.*
+import java.awt.Desktop
+import java.net.URI
 import kotlin.math.round
 
 val mainCommand = commodore("od", "odin") {
@@ -71,6 +73,7 @@ val mainCommand = commodore("od", "odin") {
              §3- /od ep §7» §8Refills ender pearls up to 16.
              §3- /od ij §7» §8Refills inflatable Jerry's up to 64.
              §3- /od sl §7» §8Refills spirit leaps up to 16.
+             §3- /od sc <user> §7» §8Tries to open SkyCrypt for the specified user in browser.
              §3- /spcmd §7» §8Use /spcmd cmds for command list.
              §3- /visualwords §7» §8Command to replace words in the game.
              """.trimIndent()
@@ -100,6 +103,16 @@ val mainCommand = commodore("od", "odin") {
 
     literal("dwp").runs {
         DungeonWaypoints.onKeybind()
+    }
+
+    literal("sc").runs { name: String? ->
+        val targetUser = name ?: mc.thePlayer.name
+        modMessage("Opening SkyCrypt for $targetUser.")
+        try {
+            Desktop.getDesktop().browse(URI("https://sky.shiiyu.moe/$targetUser"))
+        } catch (e: Exception) {
+            modMessage("Failed to open in browser.")
+        }
     }
 
     runs { tier: String ->
