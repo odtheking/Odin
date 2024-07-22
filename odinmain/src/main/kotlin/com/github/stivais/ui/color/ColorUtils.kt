@@ -67,6 +67,8 @@ fun Color.withAlpha(alpha: Int): Color = Color.RGB(red, green, blue, alpha / 255
  */
 fun Color.multiplyAlpha(factor: Float): Color = withAlpha((alpha * factor).roundToInt())
 
+fun colorFrom(hex: String): Color.RGB = Color.RGB(hexToRGBA(hex))
+
 fun hexToRGBA(hex: String): Int {
     return when (hex.length) {
         7 -> {

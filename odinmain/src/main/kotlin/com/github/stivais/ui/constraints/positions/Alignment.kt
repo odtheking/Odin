@@ -5,7 +5,7 @@ import com.github.stivais.ui.constraints.Position
 import com.github.stivais.ui.constraints.Type
 import com.github.stivais.ui.elements.Element
 
-interface Alignment : Position {
+sealed interface Alignment : Position {
 
     val position: Position
 

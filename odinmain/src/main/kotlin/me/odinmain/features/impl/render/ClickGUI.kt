@@ -162,7 +162,7 @@ object ClickGUI: Module(
                     draggable(moves = parent!!)
                 }
                 // modules
-                column(size(h = Animatable(from = Bounding, to = 0.px, swap = !data.extended))) {
+                column(size(h = Animatable(from = Bounding, to = 0.px, swapIf = !data.extended))) {
                     background(color = Color.RGB(38, 38, 38, 0.7f))
                     scissors()
                     for (module in ModuleManager.modules) {

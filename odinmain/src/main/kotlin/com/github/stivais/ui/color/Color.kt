@@ -1,13 +1,28 @@
 package com.github.stivais.ui.color
 
+import com.github.stivais.ui.animation.Animating
 import com.github.stivais.ui.animation.Animation
 import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.elements.Element
 import kotlin.math.roundToInt
 import java.awt.Color as JColor
 
+/**
+ * # Color
+ *
+ * The color interface is used to represent a 32-bit integer in ARGB format.
+ *
+ * It is primarily used in [UIs][com.github.stivais.ui.UI].
+ *
+ * @see Color.RGB
+ * @see Color.HSB
+ * @see Color.Animated
+ */
 interface Color {
 
+    /**
+     * Integer representation of this color in ARGB format
+     */
     val rgba: Int
 
     /**
@@ -15,6 +30,13 @@ interface Color {
      */
     fun get(element: Element): Int = rgba
 
+    /**
+     * # Color.RGB
+     *
+     * Low cost implementation of [Color], due to Kotlin's inline classes
+     *
+     * This is the most common [color][Color], because it mainly represents red, blue and green.
+     */
     @JvmInline
     value class RGB(override val rgba: Int) : Color {
         constructor(
@@ -25,6 +47,13 @@ interface Color {
         ) : this(getRGBA(red, green, blue, (alpha * 255).roundToInt()))
     }
 
+    /**
+     * # Color.HSB
+     *
+     * This [Color] implementation represents the color in HSBA format.
+     *
+     * It only updates the [rgba][Color.rgba] value if any of the hue, saturation or brightness values have been changed.
+     */
     open class HSB(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f) : Color {
 
         constructor(hsb: FloatArray, alpha: Float = 1f) : this(hsb[0], hsb[1], hsb[2], alpha)
@@ -66,21 +95,46 @@ interface Color {
             }
     }
 
-    class Animated(from: Color, to: Color) : Color {
+    /**
+     * # Color.Animated
+     *
+     * This [Color] implementation allows you to animate between 2 different [colors][Color],
+     * allowing for the outcome to be expected.
+     *
+     * This implements the [Animating.Swapping] interface
+     *
+     * @see Animating.Swapping
+     */
+    class Animated(from: Color, to: Color) : Color, Animating.Swapping {
 
         constructor(from: Color, to: Color, swapIf: Boolean) : this(from, to) {
             if (swapIf) {
                 swap()
             }
         }
-
+        /**
+         * Current animation for this [Color.Animated]
+         *
+         * If this is null, that means it isn't animating
+         */
         var animation: Animation? = null
 
+        /**
+         * The first color to animate from.
+         *
+         * Note: When animating it swaps between [color1] and [color2]
+         */
         var color1: Color = from
+
+        /**
+         * The second color to animate from.
+         *
+         * Note: When animating it swaps between [color1] and [color2]
+         */
         var color2: Color = to
 
-        var current: Int = color1.rgba
-        var from: Int = color1.rgba
+        private var current: Int = color1.rgba
+        private var from: Int = color1.rgba
 
         override val rgba: Int
             get() {
@@ -107,7 +161,7 @@ interface Color {
             return rgba
         }
 
-        fun animate(duration: Float = 0f, type: Animations): Animation? {
+        override fun animate(duration: Float, type: Animations): Animation? {
             if (duration == 0f) {
                 swap()
                 current = color1.rgba // here so it updates if you swap a color and want to animate it later
@@ -125,7 +179,7 @@ interface Color {
             return null
         }
 
-        fun swap() {
+        override fun swap() {
             val temp = color2
             color2 = color1
             color1 = temp

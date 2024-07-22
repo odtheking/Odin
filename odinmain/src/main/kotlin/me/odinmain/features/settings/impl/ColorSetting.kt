@@ -28,13 +28,11 @@ class ColorSetting(
 
     override var value: Color.HSB = default
 
-    private val hueMax = color { HSBtoRGB(value.hue, 1f, 1f) }
-
     override fun read(element: JsonElement?) {
         if (element?.asString?.startsWith("#") == true) {
-            value = Color.RGB(hexToRGBA(element.asString)).toHSB()
-        } else element?.asInt?.let {
-            value = Color.RGB(it).toHSB()
+            value = colorFrom(element.asString).toHSB()
+        } else {
+            element?.asInt?.let { value = Color.RGB(it).toHSB() }
         }
     }
 
@@ -45,6 +43,7 @@ class ColorSetting(
     override fun ElementScope<*>.createElement() {
         val size = Animatable(from = 40.px, to = if (allowAlpha) 260.px else 240.px)
         val alpha = Animatable(0.px, 1.px)
+        val hueMax = color { HSBtoRGB(value.hue, 1f, 1f) }
         setting(size) {
             group(constrain(0.px, 0.px, w = Copying, h = 40.px)) {
                 text(
@@ -75,18 +74,18 @@ class ColorSetting(
 
             column(constraints = constrain(0.px, 40.px, w = Copying)) {
                 element.alphaAnim = alpha
-                `saturation and brightness`()
+                saturationAndBrightness(hueMax)
                 divider(10.px)
-                `hue slider`()
+                hueSlider()
                 if (allowAlpha) {
                     divider(10.px)
-                    `alpha slider`()
+                    alphaSlider(hueMax)
                 }
             }
         }
     }
 
-    private fun ElementDSL.`saturation and brightness`() {
+    private fun ElementDSL.saturationAndBrightness(hueMax: Color) {
         val x = Animatable.Raw((228f * value.saturation).coerceIn(8f, 220f))
         val y = Animatable.Raw((170f * (1f - value.brightness)).coerceIn(8f, 220f))
         block(
@@ -128,7 +127,7 @@ class ColorSetting(
         }
     }
 
-    private fun ElementDSL.`hue slider`() {
+    private fun ElementDSL.hueSlider() {
         val x = Animatable.Raw((228f * value.hue).coerceIn(8f, 220f))
         image(
             "/assets/odinmain/clickgui/HueGradient.png",
@@ -152,7 +151,7 @@ class ColorSetting(
         }
     }
 
-    private fun ElementDSL.`alpha slider`() {
+    private fun ElementDSL.alphaSlider(hueMax: Color) {
         val x = Animatable.Raw((228f * value.alpha).coerceIn(8f, 220f))
         block(
             size(w = 95.percent, h = 15.px),
