@@ -165,7 +165,7 @@ object ClickGUI: Module(
                 column(size(h = Animatable(from = Bounding, to = 0.px, swapIf = !data.extended))) {
                     background(color = Color.RGB(38, 38, 38, 0.7f))
                     scissors()
-                    for (module in ModuleManager.modules) {
+                    for (module in ModuleManager.modules.sortedBy { ui.renderer.textWidth(it.name, 16f) }) {
                         if (module.category != panel) continue
                         val it = module(module)
                         moduleElements.add(module to it)
