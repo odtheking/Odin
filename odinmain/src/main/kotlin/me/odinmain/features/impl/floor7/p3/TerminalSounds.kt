@@ -5,6 +5,7 @@ import me.odinmain.events.impl.TerminalSolvedEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.currentTerm
+import me.odinmain.features.impl.floor7.p3.termsim.TermSimGui
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.skyblock.PlayerUtils
@@ -55,6 +56,7 @@ object TerminalSounds : Module(
 
     @SubscribeEvent
     fun onTermComplete(event: TerminalSolvedEvent) {
+        if (event.type == TerminalTypes.NONE || mc.currentScreen is TermSimGui || event.playerName != mc.thePlayer?.name) return
         playCompleteSound()
     }
 

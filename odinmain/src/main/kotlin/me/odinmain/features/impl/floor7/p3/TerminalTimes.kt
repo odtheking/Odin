@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.floor7.p3
 
+import me.odinmain.events.impl.RealServerTick
 import me.odinmain.events.impl.TerminalOpenedEvent
 import me.odinmain.events.impl.TerminalSolvedEvent
 import me.odinmain.features.Category
@@ -52,7 +53,7 @@ object TerminalTimes : Module(
     private var completed: Pair<Int, Int> = Pair(0, 7)
     private var phaseTimer = 0L
     private var sectionTimer = 0L
-    private val times = mutableListOf<Int>()
+    private val times = mutableListOf<Long>()
 
     @SubscribeEvent
     fun onMessage(event: ClientChatReceivedEvent) {
@@ -72,28 +73,30 @@ object TerminalTimes : Module(
         onMessage(terminalCompleteRegex, { terminalSplits }) {
             val matchResult = terminalCompleteRegex.find(it)?.groups ?: return@onMessage
             val complete = Pair(matchResult[4]?.value?.toIntOrNull() ?: return@onMessage, matchResult[5]?.value?.toIntOrNull() ?: return@onMessage)
-            modMessage("§6${matchResult[1]?.value} §a${matchResult[2]?.value} a ${matchResult[3]?.value}! (§c${complete.first}§a/${complete.second}) §8(§7${sectionTimer} §8| §7${phaseTimer}§8)", false)
+            modMessage("§6${matchResult[1]?.value} §a${matchResult[2]?.value} a ${matchResult[3]?.value}! (§c${complete.first}§a/${complete.second}) §8(§7${sectionTimer.seconds}s §8| §7${phaseTimer.seconds}s§8)", false)
             if ((complete.first == complete.second && gateBlown) || complete.first < completed.first) resetSection() else completed = complete
         }
 
         onMessage("The Core entrance is opening!", false, { terminalSplits }) {
             resetSection()
-            modMessage("§bTimes: §a${times.joinToString(" §8| §a")}§8, §bTotal: $phaseTimer")
+            modMessage("§bTimes: §a${times.map { it.seconds }.joinToString("s §8| §a")}§8, §bTotal: ${phaseTimer.seconds}s")
         }
     }
+
+    private val Long.seconds get() = this.toFloat() / 20
 
     private fun resetSection(full: Boolean = false) {
         if (full) {
             times.clear()
             phaseTimer = 0L
-        } else times.add(sectionTimer.toInt())
+        } else times.add(sectionTimer)
         completed = Pair(0, 7)
         sectionTimer = 0L
         gateBlown = false
     }
 
     @SubscribeEvent
-    fun onServerTick(event: ClientTickEvent) {
+    fun onServerTick(event: RealServerTick) {
         if (!terminalSplits) return
         phaseTimer++
         sectionTimer++
