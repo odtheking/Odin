@@ -14,7 +14,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object GyroWand : Module(
-    "Gyro Wand",
+    name = "Gyro Wand",
     description = "Helpful features for the Gyrokinetic Wand",
     category = Category.SKYBLOCK
 ) {
@@ -29,16 +29,14 @@ object GyroWand : Module(
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (heldItem?.itemID != "GYROKINETIC_WAND") return
-        val position = mc.thePlayer.rayTrace(25.0, event.partialTicks)?.blockPos?.takeIf { !getBlockAt(it).isAir(mc.theWorld, it) }?.toVec3() ?: return
+        val position = mc.thePlayer?.rayTrace(25.0, event.partialTicks)?.blockPos?.takeIf { !getBlockAt(it).isAir(mc.theWorld, it) }?.toVec3() ?: return
 
         val finalColor = if (showCooldown && !gyroCooldown.hasTimePassed()) cooldownColor else color
 
         Renderer.drawCylinder(
             position.addVector(0.5, 1.0, 0.5),
             10f, 10f - thickness, 0.2f,
-            steps, 1,
-            0f, 90f, 90f,
-            finalColor
+            steps, 1, 0f, 90f, 90f, finalColor
         )
     }
 

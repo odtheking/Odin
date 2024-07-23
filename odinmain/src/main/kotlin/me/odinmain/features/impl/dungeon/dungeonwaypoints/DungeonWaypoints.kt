@@ -90,7 +90,7 @@ object DungeonWaypoints : Module(
 
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
-        if ((DungeonUtils.inBoss || !DungeonUtils.inDungeons) && mc.theWorld.isRemote) return
+        if ((DungeonUtils.inBoss || !DungeonUtils.inDungeons) && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) return
         val room = DungeonUtils.currentFullRoom ?: return
         startProfile("Dungeon Waypoints")
         glList = RenderUtils.drawBoxes(room.waypoints.filter { !it.clicked }, glList, disableDepth)

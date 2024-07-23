@@ -53,6 +53,6 @@ object HighlightRenderer {
         val entities = entities[HighlightType.Outline]?.filter { !it.depth || mc.thePlayer.canEntityBeSeen(it.entity) } ?: return
         if (entities.isEmpty()) return
         val entity = entities.find { it.entity == event.entity } ?: return
-        OutlineUtils.outlineEntity(event, entity.thickness, entity.color, shouldCancelHurt = true)
+        OutlineUtils.outlineEntity(event, entity.color, entity.thickness)
     }
 }

@@ -304,7 +304,7 @@ object RenderUtils {
         if (!depth) GlStateManager.enableDepth()
     }
 
-    fun renderLines(vararg points: Vec3, color: Color, lineWidth: Float, depth: Boolean) {
+    fun drawLines(vararg points: Vec3, color: Color, lineWidth: Float, depth: Boolean) {
         if (points.size < 2) return
 
         GlStateManager.pushMatrix()
@@ -314,13 +314,33 @@ object RenderUtils {
         GL11.glEnable(GL11.GL_LINE_SMOOTH)
         GL11.glLineWidth(lineWidth)
 
-        worldRenderer.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
-        for (point in points) {
-            worldRenderer.pos(point.xCoord, point.yCoord, point.zCoord).endVertex()
+        worldRenderer {
+            begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
+            for (point in points) {
+                pos(point.xCoord, point.yCoord, point.zCoord).endVertex()
+            }
         }
         tessellator.draw()
 
         if (!depth) resetDepth()
+        postDraw()
+        GlStateManager.popMatrix()
+    }
+
+    fun drawLine(color: Color, x1: Double, y1: Double, x2: Double, y2: Double, lineWidth: Float) {
+        GlStateManager.pushMatrix()
+        color.bind()
+        preDraw()
+        GL11.glEnable(GL11.GL_LINE_SMOOTH)
+        GL11.glLineWidth(lineWidth)
+
+        worldRenderer {
+            begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
+            pos(x1, y1, 0.0).endVertex()
+            pos(x2, y2, 0.0).endVertex()
+        }
+        tessellator.draw()
+
         postDraw()
         GlStateManager.popMatrix()
     }
@@ -736,4 +756,6 @@ object RenderUtils {
             pos(maxX, minY, minZ).endVertex()
         }
     }
+
+
 }

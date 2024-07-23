@@ -59,8 +59,7 @@ object ChatCommands : Module(
 
         onMessage(messageRegex) {
             val chatMessage = messageRegex.find(it) ?: return@onMessage
-            val ign = chatMessage.groups[1]?.value ?: return@onMessage
-            val msg = chatMessage.groups[2]?.value ?: return@onMessage
+            val (ign, message) = chatMessage.destructured
 
             if (whitelistOnly != isInBlacklist(ign)) return@onMessage
 
@@ -72,7 +71,7 @@ object ChatCommands : Module(
             }
 
             runIn(5) {
-                handleChatCommands(msg, ign, channel)
+                handleChatCommands(message, ign, channel)
             }
         }
     }
@@ -87,7 +86,7 @@ object ChatCommands : Module(
         if (!message.startsWith("!")) return
         when (message.split(" ")[0].drop(1)) {
             "help" -> channelMessage("Commands: ${commandsMap.filterValues { it }.keys.joinToString(", ")}", name, channel)
-            "coords" -> if (coords) channelMessage("x: ${PlayerUtils.posX.toInt()}, y: ${PlayerUtils.posY.toInt()}, z: ${PlayerUtils.posZ.toInt()}", name, channel)
+            "coords" -> if (coords) channelMessage(PlayerUtils.getPositionString(), name, channel)
             "odin" -> if (odin) channelMessage("Odin! https://discord.gg/2nCbC9hkxT", name, channel)
             "boop" -> if (boop) sendChatMessage("/boop ${message.substringAfter("boop ")}")
             "cf" -> if (cf) channelMessage(flipCoin(), name, channel)

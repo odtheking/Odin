@@ -24,7 +24,7 @@ object TPMazeSolver {
         val pos = mc.thePlayer?.position ?: return
         portals = portals.plus(
             BlockPos.getAllInBox(BlockPos(pos.x + 22, 70, pos.z + 22), BlockPos(pos.x - 22, 69, pos.z - 22))
-                .filter { mc.theWorld.getBlockState(it).block == Blocks.end_portal_frame }
+                .filter { mc.theWorld?.getBlockState(it)?.block == Blocks.end_portal_frame }
         )
     }
 

@@ -53,10 +53,10 @@ object CustomHighlight : Module(
     @SubscribeEvent
     fun postMeta(event: PostEntityMetadata) {
         val entity = mc.theWorld?.getEntityByID(event.packet.entityId) ?: return
-        if (showInvisible && entity.isInvisible && isLegitVersion) entity.isInvisible = false
         checkEntity(entity)
         if (starredMobESP) checkStarred(entity)
         if (shadowAssasin && isLegitVersion) checkAssassin(entity)
+        if (showInvisible && entity.isInvisible && isLegitVersion && entity !in currentEntities) entity.isInvisible = false
     }
 
     private fun getEntities() {
@@ -82,8 +82,8 @@ object CustomHighlight : Module(
     }
 
     private fun getMobEntity(entity: Entity): Entity? {
-        return mc.theWorld.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.offset(0.0, -1.0, 0.0))
-            .filter { it != null && it !is EntityArmorStand && it.getPing() != 1 && it != mc.thePlayer && !(it is EntityWither && it.isInvisible)}
-            .minByOrNull { entity.getDistanceToEntity(it) }
+        return mc.theWorld?.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.offset(0.0, -1.0, 0.0))
+            ?.filter { it != null && it !is EntityArmorStand && it.getPing() != 1 && it != mc.thePlayer && !(it is EntityWither && it.isInvisible)}
+            ?.minByOrNull { entity.getDistanceToEntity(it) }
     }
 }
