@@ -69,9 +69,9 @@ object TerminalTimes : Module(
             resetSection(true)
         }
 
-        onMessageCancellable(terminalCompleteRegex, { terminalSplits }) {
-            val matchResult = terminalCompleteRegex.find(it.message)?.groups ?: return@onMessageCancellable
-            val complete = Pair(matchResult[4]?.value?.toIntOrNull() ?: return@onMessageCancellable, matchResult[5]?.value?.toIntOrNull() ?: return@onMessageCancellable)
+        onMessage(terminalCompleteRegex, { terminalSplits }) {
+            val matchResult = terminalCompleteRegex.find(it)?.groups ?: return@onMessage
+            val complete = Pair(matchResult[4]?.value?.toIntOrNull() ?: return@onMessage, matchResult[5]?.value?.toIntOrNull() ?: return@onMessage)
             modMessage("§6${matchResult[1]?.value} §a${matchResult[2]?.value} a ${matchResult[3]?.value}! (§c${complete.first}§a/${complete.second}) §8(§7${sectionTimer} §8| §7${phaseTimer}§8)", false)
             if ((complete.first == complete.second && gateBlown) || complete.first < completed.first) resetSection() else completed = complete
         }
