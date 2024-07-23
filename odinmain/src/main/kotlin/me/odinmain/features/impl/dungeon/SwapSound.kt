@@ -37,8 +37,7 @@ object SwapSound : Module(
 
     @SubscribeEvent
     fun onLeftClick(event: ClickEvent.LeftClickEvent) {
-        if (heldItem?.item in pickaxes && mc.thePlayer?.inventory?.mainInventory?.get(slot ?: return)?.item !in pickaxes) {
-            mc.addScheduledTask { PlayerUtils.playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], volume, pitch) }
-        }
+        if (heldItem?.item !in pickaxes || mc.thePlayer?.inventory?.mainInventory?.get(slot ?: return)?.item in pickaxes) return
+        mc.addScheduledTask { PlayerUtils.playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], volume, pitch) }
     }
 }
