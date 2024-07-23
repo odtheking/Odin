@@ -82,8 +82,8 @@ object CustomHighlight : Module(
     }
 
     private fun getMobEntity(entity: Entity): Entity? {
-        return mc.theWorld.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.offset(0.0, -1.0, 0.0))
-            .filter { it != null && it !is EntityArmorStand && it.getPing() != 1 && it != mc.thePlayer && !(it is EntityWither && it.isInvisible)}
-            .minByOrNull { entity.getDistanceToEntity(it) }
+        return mc.theWorld?.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.offset(0.0, -1.0, 0.0))
+            ?.filter { it != null && it !is EntityArmorStand && it.getPing() != 1 && it != mc.thePlayer && !(it is EntityWither && it.isInvisible)}
+            ?.minByOrNull { entity.getDistanceToEntity(it) }
     }
 }

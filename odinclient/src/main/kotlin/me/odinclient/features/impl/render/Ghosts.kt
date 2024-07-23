@@ -21,10 +21,10 @@ object Ghosts : Module(
 
     init {
         execute(500) {
-            mc.theWorld.loadedEntityList
-                .filterIsInstance<EntityCreeper>()
-                .filter { entityCreeper -> entityCreeper.getEntityAttribute(SharedMonsterAttributes.maxHealth).baseValue >= 1000000 }
-                .forEach { creeper ->
+            mc.theWorld?.loadedEntityList
+                ?.filterIsInstance<EntityCreeper>()
+                ?.filter { entityCreeper -> entityCreeper.getEntityAttribute(SharedMonsterAttributes.maxHealth).baseValue >= 1000000 }
+                ?.forEach { creeper ->
                     creeper.isInvisible = showGhosts
                     creeper.dataWatcher.updateObject(17, (if (hideChargedLayer) 0 else 1).toByte())
 

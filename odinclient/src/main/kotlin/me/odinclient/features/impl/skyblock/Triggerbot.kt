@@ -110,8 +110,8 @@ object Triggerbot : Module(
             ) return@execute
 
             val pos = mc.objectMouseOver?.blockPos ?: return@execute
-            val state = mc.theWorld.getBlockState(pos) ?: return@execute
-            val tileEntity = mc.theWorld.getTileEntity(pos) ?: null
+            val state = mc.theWorld?.getBlockState(pos) ?: return@execute
+            val tileEntity = mc.theWorld?.getTileEntity(pos) ?: return@execute
             clickedPositions = clickedPositions.filter { it.value + 1000L > System.currentTimeMillis() }
             if (
                 (pos.x in 58..62 && pos.y in 133..136 && pos.z == 142) || // looking at lights device

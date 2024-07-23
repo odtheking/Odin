@@ -71,7 +71,7 @@ object DeployableTimer : Module(
         val duration =
             if (deployable.texture == "placeholder") {
 
-                entity = mc.theWorld.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.offset(0.0, -3.0, 0.0)).filterIsInstance<EntityArmorStand>().firstOrNull() ?: return
+                entity = mc.theWorld?.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.offset(0.0, -3.0, 0.0))?.filterIsInstance<EntityArmorStand>()?.firstOrNull() ?: return
                 (orbRegex.find(name)?.groupValues?.get(2)?.toIntOrNull() ?: return) * 1000
             }
             else deployable.duration

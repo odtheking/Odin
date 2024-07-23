@@ -4,7 +4,6 @@ import kotlinx.coroutines.launch
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.scope
 import me.odinmain.config.Config
-import me.odinmain.events.impl.RenderOverlayNoCaching
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.AlwaysActive
@@ -13,14 +12,10 @@ import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils2D
 import me.odinmain.utils.sendDataToServer
 import me.odinmain.utils.skyblock.*
-import me.odinmain.utils.toAABB
 import net.minecraft.event.ClickEvent
 import net.minecraft.util.ChatComponentText
-import net.minecraft.util.Vec3
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
 
 @AlwaysActive
@@ -59,12 +54,7 @@ object ClickGUIModule: Module(
     val action: () -> Unit by ActionSetting("Open Example Hud") {
         OdinMain.display = EditHUDGui
     }
-    @SubscribeEvent
-    fun renderOverlay(event: RenderOverlayNoCaching) {
-        RenderUtils2D.drawNameTag(Vec3(0.0, 0.0, 0.0), "Odin ${OdinMain.VERSION}")
-        RenderUtils2D.draw2DESP(Vec3(0.0, -5.0, 0.0).toAABB(), Color.WHITE, 2f)
-        RenderUtils2D.draw3DESP(Vec3(0.0, 5.0, 0.0).toAABB(), Color.WHITE, 2f)
-    }
+
     private var joined: Boolean by BooleanSetting("First join", false, hidden = true)
     var lastSeenVersion: String by StringSetting("Last seen version", "1.0.0", hidden = true)
     var firstTimeOnVersion = false

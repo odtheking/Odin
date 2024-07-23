@@ -121,8 +121,7 @@ object GhostBlocks : Module(
     private data class BlockData(val pos: BlockPos, var state: IBlockState, val time: Long, var serverReplaced: Boolean)
     private val sdBlocks = mutableListOf<BlockData>()
 
-    private fun BlockData.reset() = mc.theWorld.setBlockState(pos, state)
-
+    private fun BlockData.reset() = mc.theWorld?.setBlockState(pos, state)
 
     fun breakBlock(pos: BlockPos) {
         if (!stonkDelayToggle || (sdOnlySB && !LocationUtils.inSkyblock)) return
@@ -164,7 +163,7 @@ object GhostBlocks : Module(
         sdBlocks.filter {
             it.pos.x in (packet.chunkX shl 4).rangeAdd(15) && it.pos.z in (packet.chunkZ shl 4).rangeAdd(15)
         }.forEach {
-            mc.theWorld.setBlockState(it.pos, Blocks.air.defaultState)
+            mc.theWorld?.setBlockState(it.pos, Blocks.air.defaultState)
             it.serverReplaced = true
             it.state = mc.theWorld.getBlockState(it.pos)
         }

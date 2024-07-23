@@ -43,7 +43,7 @@ object ChestEsp : Module(
 
     @SubscribeEvent
     fun onRenderChest(event: RenderChestEvent.Pre) {
-        if (renderMode != 0 || event.chest != mc.theWorld.getTileEntity(event.chest.pos)) return
+        if (renderMode != 0 || event.chest != mc.theWorld?.getTileEntity(event.chest.pos)) return
         if (hideClicked && chests.contains(event.chest.pos)) return
         if ((onlyDungeon && DungeonUtils.inDungeons) || (onlyCH && LocationUtils.currentArea.isArea(Island.CrystalHollows)) || (!onlyDungeon && !onlyCH)) {
             GL11.glEnable(GL11.GL_POLYGON_OFFSET_FILL)
@@ -55,7 +55,7 @@ object ChestEsp : Module(
 
     @SubscribeEvent
     fun onRenderChest(event: RenderChestEvent.Post) {
-        if (renderMode != 0 || event.chest != mc.theWorld.getTileEntity(event.chest.pos)) return
+        if (renderMode != 0 || event.chest != mc.theWorld?.getTileEntity(event.chest.pos)) return
         if (hideClicked && chests.contains(event.chest.pos)) return
         if ((onlyDungeon && DungeonUtils.inDungeons) || (onlyCH && LocationUtils.currentArea.isArea(Island.CrystalHollows)) || (!onlyDungeon && !onlyCH)) {
             GL11.glDisable(GL11.GL_POLYGON_OFFSET_FILL)
@@ -68,7 +68,7 @@ object ChestEsp : Module(
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (renderMode != 1) return
         if ((onlyDungeon && DungeonUtils.inDungeons) || (onlyCH && LocationUtils.currentArea.isArea(Island.CrystalHollows)) || (!onlyDungeon && !onlyCH)) {
-            val chests = mc.theWorld.loadedTileEntityList.filterIsInstance<TileEntityChest>()
+            val chests = mc.theWorld?.loadedTileEntityList?.filterIsInstance<TileEntityChest>() ?: return
             chests.forEach {
                 if (hideClicked && this.chests.contains(it.pos)) return
                 Renderer.drawBox(it.pos.toAABB(), color, 1f, depth = false, fillAlpha = 0)

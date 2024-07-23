@@ -23,7 +23,7 @@ object BlazeSolver {
         if (!DungeonUtils.inDungeons || !room.data.name.equalsOneOf("Lower Blaze", "Higher Blaze")) return
         val hpMap = mutableMapOf<EntityArmorStand, Int>()
         blazes.clear()
-        mc.theWorld.loadedEntityList.filterIsInstance<EntityArmorStand>().filter { it !in blazes }.forEach { entity ->
+        mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()?.filter { it !in blazes }?.forEach { entity ->
             val matchResult = Regex("^\\[Lv15] Blaze [\\d,]+/([\\d,]+)❤$").find(entity.name.noControlCodes) ?: return@forEach
             val hp = matchResult.groups[1]?.value?.replace(",", "")?.toIntOrNull() ?: return@forEach
             hpMap[entity] = hp
@@ -37,7 +37,7 @@ object BlazeSolver {
         if (!DungeonUtils.inDungeons || DungeonUtils.inBoss) return
         if (blazes.isEmpty()) return
         blazes.removeAll {
-            mc.theWorld.getEntityByID(it.entityId) == null
+            mc.theWorld?.getEntityByID(it.entityId) == null
         }
         if (blazes.isEmpty() && lastBlazeCount == 1 && PuzzleSolvers.blazeSendComplete) {
             partyMessage("Blaze puzzle solved!")

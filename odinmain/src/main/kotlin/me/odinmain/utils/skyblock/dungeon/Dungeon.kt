@@ -26,7 +26,7 @@ class Dungeon(val floor: Floor?) {
     val inBoss: Boolean get() = getBoss()
     var dungeonTeammates: List<DungeonPlayer> = emptyList()
     var dungeonTeammatesNoSelf: List<DungeonPlayer> = emptyList()
-    var leapTeammates = mutableListOf<DungeonPlayer>()
+    var leapTeammates: List<DungeonPlayer> = emptyList()
     var dungeonStats = DungeonStats()
     var currentFullRoom: FullRoom? = null
     var passedRooms = mutableListOf<FullRoom>()
