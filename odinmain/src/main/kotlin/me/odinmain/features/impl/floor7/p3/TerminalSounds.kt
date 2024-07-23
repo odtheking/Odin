@@ -68,7 +68,7 @@ object TerminalSounds : Module(
     fun playTerminalSound() {
         if (System.currentTimeMillis() - lastPlayed <= 2) return
         val sound = if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound]
-        PlayerUtils.playLoudSound(sound, clickVolume, clickPitch)
+        mc.addScheduledTask { PlayerUtils.playLoudSound(sound, clickVolume, clickPitch) }
         lastPlayed = System.currentTimeMillis()
     }
 }
