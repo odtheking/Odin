@@ -6,9 +6,12 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.termsim.TermSimGui
 import me.odinmain.features.settings.impl.ActionSetting
+import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.DualSetting
+import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.PersonalBest
 import me.odinmain.utils.skyblock.modMessage
+import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
@@ -22,6 +25,8 @@ object TerminalTimes : Module(
         repeat(6) { i -> termPBs.set(i, 999.0) }
         modMessage("§6Terminal PBs §fhave been reset.")
     }
+
+    private val terminalSplits: Boolean by BooleanSetting("Terminal Splits", default = true, description = "Adds the time when a term was completed to its message, and sends the total term time after terms are done.")
 
     private val termPBs = PersonalBest("Terminals", 6)
     private var startTimer = 0L
@@ -50,25 +55,29 @@ object TerminalTimes : Module(
     private var sectionTimer = 0L
     private val times = mutableListOf<Int>()
 
+    @SubscribeEvent
+    fun onMessage(event: ClientChatReceivedEvent) {
+        if (event.message.unformattedText.noControlCodes.matches(terminalCompleteRegex) && terminalSplits) event.isCanceled = true
+    }
+
     init {
-        onMessage("The gate has been destroyed!", false) {
+        onMessage("The gate has been destroyed!", false, { terminalSplits }) {
             if (completed.first == completed.second) resetSection()
             else gateBlown = true
         }
 
-        onMessage("[BOSS] Goldor: Who dares trespass into my domain?", false) {
+        onMessage("[BOSS] Goldor: Who dares trespass into my domain?", false, { terminalSplits }) {
             resetSection(true)
         }
 
-        onMessageCancellable(terminalCompleteRegex) {
+        onMessageCancellable(terminalCompleteRegex, { terminalSplits }) {
             val matchResult = terminalCompleteRegex.find(it.message)?.groups ?: return@onMessageCancellable
             val complete = Pair(matchResult[4]?.value?.toIntOrNull() ?: return@onMessageCancellable, matchResult[5]?.value?.toIntOrNull() ?: return@onMessageCancellable)
             modMessage("§6${matchResult[1]?.value} §a${matchResult[2]?.value} a ${matchResult[3]?.value}! (§c${complete.first}§a/${complete.second}) §8(§7${sectionTimer} §8| §7${phaseTimer}§8)", false)
             if ((complete.first == complete.second && gateBlown) || complete.first < completed.first) resetSection() else completed = complete
-            it.isCanceled = true
         }
 
-        onMessage("The Core entrance is opening!", false) {
+        onMessage("The Core entrance is opening!", false, { terminalSplits }) {
             resetSection()
             modMessage("§bTimes: §a${times.joinToString(" §8| §a")}§8, §bTotal: $phaseTimer")
         }
@@ -86,6 +95,7 @@ object TerminalTimes : Module(
 
     @SubscribeEvent
     fun onServerTick(event: ClientTickEvent) {
+        if (!terminalSplits) return
         phaseTimer++
         sectionTimer++
     }
