@@ -50,7 +50,6 @@ object DianaBurrowEstimate {
         burrow.found = true
     }
 
-
     fun blockEvent(pos: Vec3i, isFullyBroken: Boolean = false) {
         if (isFullyBroken) {
             burrows.remove(pos)
@@ -106,9 +105,9 @@ object DianaBurrowEstimate {
             return
         }
 
-        val lineDist = secondLastParticlePosition?.distanceTo(currentParticlePosition!!)!!
+        val lineDist = secondLastParticlePosition?.distanceTo(currentParticlePosition) ?: return
 
-        val changesHelp = currentParticlePosition?.subtract(secondLastParticlePosition!!)!!
+        val changesHelp = currentParticlePosition?.subtract(secondLastParticlePosition) ?: return
         val changes = listOf(changesHelp.xCoord, changesHelp.yCoord, changesHelp.zCoord).map { it / lineDist }
 
         lastSoundPoint?.let {
@@ -135,9 +134,9 @@ object DianaBurrowEstimate {
         currentParticlePosition = currLoc.clone()
 
         if (secondLastParticlePosition == null || firstParticlePoint == null || estimatedBurrowDistance == null || lastSoundPoint == null) return
-        val lineDist = secondLastParticlePosition?.distanceTo(currentParticlePosition!!)!!
+        val lineDist = secondLastParticlePosition?.distanceTo(currentParticlePosition) ?: return
 
-        val changesHelp = currentParticlePosition?.subtract(secondLastParticlePosition!!)!!
+        val changesHelp = currentParticlePosition?.subtract(secondLastParticlePosition) ?: return
         val changes = listOf(changesHelp.xCoord, changesHelp.yCoord, changesHelp.zCoord).map { it / lineDist }
 
         lastParticlePosition?.let {

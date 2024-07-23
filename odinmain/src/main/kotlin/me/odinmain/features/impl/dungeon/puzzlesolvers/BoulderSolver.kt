@@ -3,9 +3,7 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import me.odinmain.events.impl.DungeonEvents
-import me.odinmain.utils.addRotationCoords
-import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.removeFirstOrNull
+import me.odinmain.utils.*
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.getBlockIdAt

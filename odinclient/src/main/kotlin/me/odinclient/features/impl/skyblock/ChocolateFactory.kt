@@ -150,7 +150,7 @@ object ChocolateFactory : Module(
     }
 
     private fun scanForEggs() {
-        mc.theWorld.loadedEntityList.filterIsInstance<EntityArmorStand>().forEach { entity ->
+        mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()?.forEach { entity ->
             val eggType = getEggType(entity) ?: return@forEach
             currentDetectedEggs[eggType.index] = currentDetectedEggs[eggType.index] ?: Egg(entity, eggType.type, eggType.color)
         }

@@ -14,7 +14,6 @@ import me.odinmain.utils.render.RenderUtils.renderZ
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.isHolding
 import me.odinmain.utils.skyblock.isShortbow
-import me.odinmain.utils.skyblock.itemID
 import net.minecraft.entity.Entity
 import net.minecraft.entity.boss.EntityWither
 import net.minecraft.entity.item.EntityArmorStand
@@ -286,7 +285,7 @@ object Trajectories : Module(
             (entity is EntityWither && entity.isInvisible)
             ) return
 
-        OutlineUtils.outlineEntity(event, width, color, false)
+        OutlineUtils.outlineEntity(event, color, width)
     }
 
     private fun hypot(x: Double, y: Double, d: Double): Double = sqrt(x * x + y * y + d * d)

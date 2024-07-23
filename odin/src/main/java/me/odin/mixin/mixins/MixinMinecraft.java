@@ -30,9 +30,8 @@ public class MixinMinecraft {
 
     @Inject(method = {"runTick"}, at = {@At(value = "INVOKE", target = "Lorg/lwjgl/input/Mouse;getEventButton()I", remap = false)})
     public void mouseKeyPresses(CallbackInfo ci) {
-        int k = Mouse.getEventButton();
         if (Mouse.getEventButtonState()) {
-            EventExtensions.postAndCatch(new PreMouseInputEvent(k));
+            EventExtensions.postAndCatch(new PreMouseInputEvent(Mouse.getEventButton()));
         }
     }
 

@@ -23,11 +23,9 @@ object SpaceHelmet : Module(
         execute({ speed }) {
             if (mc.thePlayer == null || mc.currentScreen !== null) return@execute
 
-            val color = values[currentIndex]
             currentIndex = (currentIndex + 1) % values.size
-            val item = ItemStack(Item.getItemFromBlock(Blocks.stained_glass), 1, color).apply {
-                setStackDisplayName("§c§lSpace Helmet")
-            }.setLore(listOf("§7A rare space helmet forged", "§7from shards of moon glass", "", "§7To: ${mc.thePlayer.displayName.siblings.firstOrNull()?.formattedText}", "§7From: §6Odin", "", "§8Edition #${edition}", "§8${getCurrentMonthName()} 2024", "", "§8This item can be reforged!", "§c§lSPECIAL HELMET"))
+            val item = ItemStack(Item.getItemFromBlock(Blocks.stained_glass), 1, values[currentIndex]).apply { setStackDisplayName("§c§lSpace Helmet") }
+                .setLore(listOf("§7A rare space helmet forged", "§7from shards of moon glass", "", "§7To: ${mc.thePlayer.displayName.siblings.firstOrNull()?.formattedText}", "§7From: §6Odin", "", "§8Edition #${edition}", "§8${getCurrentMonthName()} 2024", "", "§8This item can be reforged!", "§c§lSPECIAL HELMET"))
             edition += 1
             mc.thePlayer?.inventory?.armorInventory?.set(3, item)
         }

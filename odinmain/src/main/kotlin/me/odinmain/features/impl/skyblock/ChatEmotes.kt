@@ -7,9 +7,9 @@ import me.odinmain.utils.skyblock.sendChatMessage
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object ChatEmotes : Module(
-    name = "Copy Emotes",
+    name = "Chat Emotes",
     category = Category.SKYBLOCK,
-    description = "Allows you to right click messages in chat to copy them.",
+    description = "Allows you to send hypixel's emotes.",
 ) {
     private var replaced = false
 

@@ -48,7 +48,7 @@ object RenderOptimizer : Module(
 
     init {
         execute(500) {
-            mc.theWorld.loadedEntityList.forEach {
+            mc.theWorld?.loadedEntityList?.forEach {
                 if (!DungeonUtils.inDungeons) return@execute
                 if (removeBlazePuzzleNames) removeBlazePuzzleNames(it)
                 if (it !is EntityArmorStand) return@forEach
@@ -71,7 +71,7 @@ object RenderOptimizer : Module(
     @SubscribeEvent
     fun onPacket(event: PacketReceivedEvent) {
         if (event.packet is S1CPacketEntityMetadata && hide0HealthNames) {
-            val entity = mc.theWorld.getEntityByID(event.packet.entityId) ?: return
+            val entity = mc.theWorld?.getEntityByID(event.packet.entityId) ?: return
             val list = event.packet.func_149376_c() ?: return
 
             list.filterIsInstance<String>()

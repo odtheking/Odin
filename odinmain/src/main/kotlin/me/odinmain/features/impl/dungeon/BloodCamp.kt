@@ -122,7 +122,9 @@ object BloodCamp : Module(
         watcher.removeAll {it.isDead}
         entityList.filter { (entity) -> watcher.any { it.getDistanceToEntity(entity) < 20 }
         }.forEach { (entity, data) ->
-            if (data.started != null) data.timetook = ticktime - data.started
+            data.started?.let {
+                data.timetook = ticktime - it
+            }
 
             val timeTook = data.timetook ?: return@forEach
             val startVector = data.startVector ?: return@forEach
@@ -146,19 +148,19 @@ object BloodCamp : Module(
             if (entity !in forRender)
                 forRender[entity] = RenderEData(startVector = startVector)
 
-            forRender[entity].let {
-                it?.currVector = currVector
-                it?.endVector = endpoint
-                it?.time = time
-                it?.endVecUpdated = ticktime
-                it?.speedVectors = speedVectors
+            forRender[entity]?.let {
+                it.currVector = currVector
+                it.endVector = endpoint
+                it.time = time
+                it.endVecUpdated = ticktime
+                it.speedVectors = speedVectors
             }
         }
     }
 
     private fun onPacketLookMove(packet: S17PacketEntityLookMove) {
-        val entity = packet.getEntity(mc.theWorld) ?: return
-        if (entity !is EntityArmorStand || !watcher.any { it.getDistanceToEntity(entity) < 20 }) return
+        val entity = packet.getEntity(mc.theWorld) as? EntityArmorStand ?: return
+        if (!watcher.any { it.getDistanceToEntity(entity) < 20 }) return
 
         if (entity.getEquipmentInSlot(4)?.item != Items.skull || !allowedMobSkulls.contains(getSkullValue(entity)) || entity in entityList) return
 
@@ -192,7 +194,7 @@ object BloodCamp : Module(
                 (currVector.zCoord - startVector.zCoord) / timeTook
             )
 
-            val endPoint = calcEndVector(endVector, lastEndVector, endVectorUpdated/100)
+            val endPoint = calcEndVector(endVector, lastEndVector, endVectorUpdated / 100)
 
             val pingPoint = Vec3(
                 currVector.xCoord + speedVectors.xCoord * averagePing,

@@ -59,8 +59,4 @@ object Mimic : Module(
         if (mimicMessageToggle) partyMessage(mimicMessage)
         currentDungeon?.dungeonStats?.mimicKilled = true
     }
-
-    override fun onKeybind() {
-        reset()
-    }
 }

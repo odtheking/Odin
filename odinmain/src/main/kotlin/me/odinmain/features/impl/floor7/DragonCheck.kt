@@ -63,7 +63,7 @@ object DragonCheck {
     fun dragonSprayed(packet: S04PacketEntityEquipment) {
         if (packet.itemStack?.item != Item.getItemFromBlock(Blocks.packed_ice)) return
 
-        val sprayedEntity = mc.theWorld.getEntityByID(packet.entityID) as? EntityArmorStand ?: return
+        val sprayedEntity = mc.theWorld?.getEntityByID(packet.entityID) as? EntityArmorStand ?: return
 
         WitherDragonsEnum.entries.filter{ !it.isSprayed && it.state == WitherDragonState.ALIVE && sprayedEntity.getDistanceToEntity(it.entity) <= 8 }.forEach {
             val sprayedIn = (System.currentTimeMillis() - it.spawnedTime)
@@ -80,7 +80,7 @@ object DragonCheck {
     fun dragonStateConfirmation() {
         val entities = mc.theWorld?.loadedEntityList.orEmpty()
         WitherDragonsEnum.entries.forEach { dragon ->
-            dragon.state = if (entities.contains(dragon.entity)) WitherDragonState.ALIVE else WitherDragonState.DEAD
+            dragon.state = if (!entities.contains(dragon.entity) && dragon.state == WitherDragonState.ALIVE) WitherDragonState.DEAD else dragon.state
         }
     }
 }

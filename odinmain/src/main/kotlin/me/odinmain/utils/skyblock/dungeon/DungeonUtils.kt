@@ -229,7 +229,7 @@ object DungeonUtils {
 
     private fun addTeammate(name: String, clazz: String, teammates: MutableList<DungeonPlayer>, networkPlayerInfo: NetworkPlayerInfo) {
         DungeonClass.entries.find { it.name == clazz }?.let { foundClass ->
-            mc.theWorld.getPlayerEntityByName(name)?.let { player ->
+            mc.theWorld?.getPlayerEntityByName(name)?.let { player ->
                 teammates.add(DungeonPlayer(name, foundClass, networkPlayerInfo.locationSkin, player))
             } ?: teammates.add(DungeonPlayer(name, foundClass, networkPlayerInfo.locationSkin, null))
         }

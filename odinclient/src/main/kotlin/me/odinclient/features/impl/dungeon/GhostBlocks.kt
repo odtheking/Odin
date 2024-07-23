@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.dungeon
 
-import com.sun.security.ntlm.Client
 import me.odinclient.utils.skyblock.PlayerUtils.leftClick
 import me.odinclient.utils.skyblock.PlayerUtils.swapToIndex
 import me.odinmain.events.impl.BlockChangeEvent
@@ -23,7 +22,6 @@ import net.minecraft.network.play.server.S21PacketChunkData
 import net.minecraft.tileentity.TileEntitySkull
 import net.minecraft.util.BlockPos
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
-import net.minecraftforge.event.entity.player.PlayerUseItemEvent.Tick
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.input.Keyboard
@@ -123,8 +121,7 @@ object GhostBlocks : Module(
     private data class BlockData(val pos: BlockPos, var state: IBlockState, val time: Long, var serverReplaced: Boolean)
     private val sdBlocks = mutableListOf<BlockData>()
 
-    private fun BlockData.reset() = mc.theWorld.setBlockState(pos, state)
-
+    private fun BlockData.reset() = mc.theWorld?.setBlockState(pos, state)
 
     fun breakBlock(pos: BlockPos) {
         if (!stonkDelayToggle || (sdOnlySB && !LocationUtils.inSkyblock)) return
@@ -166,7 +163,7 @@ object GhostBlocks : Module(
         sdBlocks.filter {
             it.pos.x in (packet.chunkX shl 4).rangeAdd(15) && it.pos.z in (packet.chunkZ shl 4).rangeAdd(15)
         }.forEach {
-            mc.theWorld.setBlockState(it.pos, Blocks.air.defaultState)
+            mc.theWorld?.setBlockState(it.pos, Blocks.air.defaultState)
             it.serverReplaced = true
             it.state = mc.theWorld.getBlockState(it.pos)
         }

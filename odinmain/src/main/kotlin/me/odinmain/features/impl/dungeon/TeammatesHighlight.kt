@@ -40,13 +40,13 @@ object TeammatesHighlight : Module(
     }
 
     @SubscribeEvent
-    fun onRenderWorld(event: RenderWorldLastEvent) { // make a entity render nametag event and use that instead
+    fun onRenderWorld(event: RenderWorldLastEvent) {
         if (!showName || !shouldRender()) return
         dungeonTeammatesNoSelf.forEach { teammate ->
             val entity = teammate.entity ?: return@forEach
             if (entity.distanceSquaredTo(mc.thePlayer) >= 2100) return@forEach
             Renderer.drawStringInWorld(
-                if (showClass) "${teammate.name} §e[${teammate.clazz.name[0]}]" else teammate.name,
+                if (showClass) "§${teammate.clazz.colorCode}${teammate.name} §e[${teammate.clazz.name[0]}]" else "§${teammate.clazz.colorCode}${teammate.name}",
                 teammate.entity.renderVec.addVec(y = 2.6),
                 color = teammate.clazz.color,
                 depth = depthCheck, scale = 0.05f

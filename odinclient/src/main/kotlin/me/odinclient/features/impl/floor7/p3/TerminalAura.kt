@@ -59,7 +59,7 @@ object TerminalAura : Module(
     @SubscribeEvent
     fun onEntityLoaded(event: PostEntityMetadata) {
         if (DungeonUtils.getPhase() != M7Phases.P3) return
-        val entity = mc.theWorld.getEntityByID(event.packet.entityId) as? EntityArmorStand ?: return
+        val entity = mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityArmorStand ?: return
         if (entity.name.noControlCodes != "Inactive Terminal") return
         terminalEntityList.add(entity)
     }

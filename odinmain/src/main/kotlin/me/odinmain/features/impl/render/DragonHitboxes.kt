@@ -29,7 +29,7 @@ object DragonHitboxes : Module(
     @SubscribeEvent
     fun onClientTick(event: ClientTickEvent) {
         if (mc.theWorld == null || event.phase == TickEvent.Phase.END) return
-        val entityDragons = mc.theWorld.loadedEntityList.filterIsInstance<EntityDragon>()
+        val entityDragons = mc.theWorld.loadedEntityList?.filterIsInstance<EntityDragon>()
         dragonRenderQueue = entityDragons as ArrayList<EntityDragon>
 
         for (dragon in entityDragons) {
