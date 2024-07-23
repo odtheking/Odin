@@ -33,7 +33,7 @@ jobs:
         run: ./gradlew build -x test --stacktrace
       - name: Get Git hash
         id: get_git_hash
-        run: echo "::set-output name=hash::$(git rev-parse --short HEAD)"
+        run: echo "hash=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       - name: Rename Odin JAR with Git hash
         run: |
           for file in odin/build/libs/*.jar; do
