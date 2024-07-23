@@ -11,6 +11,7 @@ import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.init.Items
 import net.minecraft.network.play.client.C09PacketHeldItemChange
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object SwapSound : Module(
     name = "Swap Sound",
@@ -28,6 +29,7 @@ object SwapSound : Module(
 
     var slot: Int? = null
     private val pickaxes = arrayListOf(Items.diamond_pickaxe, Items.golden_pickaxe, Items.wooden_pickaxe, Items.stone_pickaxe, Items.iron_pickaxe)
+    private var playedThisTick = false
 
     init {
         onPacket(C09PacketHeldItemChange::class.java) {
@@ -37,7 +39,13 @@ object SwapSound : Module(
 
     @SubscribeEvent
     fun onLeftClick(event: ClickEvent.LeftClickEvent) {
-        if (heldItem?.item !in pickaxes || mc.thePlayer?.inventory?.mainInventory?.get(slot ?: return)?.item in pickaxes) return
+        if (heldItem?.item !in pickaxes || mc.thePlayer?.inventory?.mainInventory?.get(slot ?: return)?.item in pickaxes || playedThisTick) return
         mc.addScheduledTask { PlayerUtils.playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], volume, pitch) }
+        playedThisTick = true
+    }
+
+    @SubscribeEvent
+    fun onClientTick(event: ClientTickEvent) {
+        playedThisTick = false
     }
 }
