@@ -105,8 +105,7 @@ val mainCommand = commodore("od", "odin") {
         DungeonWaypoints.onKeybind()
     }
 
-    literal("sc").runs { name: String? ->
-        val targetUser = name ?: mc.thePlayer.name
+    literal("sc").runs { targetUser: String ->
         modMessage("Opening SkyCrypt for $targetUser.")
         try {
             Desktop.getDesktop().browse(URI("https://sky.shiiyu.moe/$targetUser"))
