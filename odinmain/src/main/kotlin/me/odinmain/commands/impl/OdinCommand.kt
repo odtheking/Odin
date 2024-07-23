@@ -2,7 +2,6 @@ package me.odinmain.commands.impl
 
 import com.github.stivais.commodore.utils.GreedyString
 import me.odinmain.OdinMain.display
-import me.odinmain.OdinMain.mc
 import me.odinmain.commands.commodore
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
 import me.odinmain.features.impl.render.ClickGUIModule
