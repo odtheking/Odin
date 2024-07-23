@@ -8,6 +8,7 @@ import me.odinmain.features.impl.floor7.p3.TerminalSolver.currentTerm
 import me.odinmain.features.impl.floor7.p3.termsim.TermSimGui
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
+import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.PlayerUtils
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -57,7 +58,7 @@ object TerminalSounds : Module(
 
     @SubscribeEvent
     fun onTermComplete(event: TerminalSolvedEvent) {
-        if (event.type == TerminalTypes.NONE || mc.currentScreen is TermSimGui || event.playerName != mc.thePlayer?.name || !completeSounds) return
+        if (event.type == TerminalTypes.NONE || mc.currentScreen is TermSimGui || event.playerName != mc.thePlayer?.name.noControlCodes || !completeSounds) return
         playCompleteSound()
     }
 
