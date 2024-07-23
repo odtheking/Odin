@@ -28,7 +28,7 @@ object TerminalSounds : Module(
     private val clickPitch: Float by NumberSetting("Pitch", 2f, 0, 2, .01f, description = "Pitch of the sound.").withDependency { clickSounds }
     val reset: () -> Unit by ActionSetting("Play sound") { playTerminalSound() }.withDependency { clickSounds }
     val completeSounds: Boolean by BooleanSetting("Complete Sounds", default = false, description = "Plays a sound when you complete a terminal")
-    private val completedSound: Int by SelectorSetting("Complete Sound", "mob.blaze.hit", defaultSounds, description = "Which sound to play when you complete the terminal").withDependency { completeSounds }
+    private val completedSound: Int by SelectorSetting("Sound", "mob.blaze.hit", defaultSounds, description = "Which sound to play when you complete the terminal").withDependency { completeSounds }
     private val customCompleteSound: String by StringSetting("Custom Completion Sound", "mob.blaze.hit",
         description = "Name of a custom sound to play. This is used when Custom is selected in the Sound setting.", length = 32
     ).withDependency { completedSound == defaultSounds.size - 1 && completeSounds }
@@ -47,7 +47,8 @@ object TerminalSounds : Module(
                 customSound == "note.pling" ||
                 soundName != "note.pling" ||
                 volume != 8f ||
-                pitch != 4.047619f
+                pitch != 4.047619f ||
+                !clickSounds
             ) return
             playTerminalSound()
             event.isCanceled = true
@@ -56,7 +57,7 @@ object TerminalSounds : Module(
 
     @SubscribeEvent
     fun onTermComplete(event: TerminalSolvedEvent) {
-        if (event.type == TerminalTypes.NONE || mc.currentScreen is TermSimGui || event.playerName != mc.thePlayer?.name) return
+        if (event.type == TerminalTypes.NONE || mc.currentScreen is TermSimGui || event.playerName != mc.thePlayer?.name || !completeSounds) return
         playCompleteSound()
     }
 
