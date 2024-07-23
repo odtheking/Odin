@@ -6,6 +6,9 @@ import me.odinmain.events.impl.GuiEvent
 import me.odinmain.events.impl.PacketSentEvent
 import me.odinmain.features.impl.floor7.TerminalSimulator
 import me.odinmain.features.impl.floor7.TerminalSimulator.sendMessage
+import me.odinmain.features.impl.floor7.p3.TerminalSounds
+import me.odinmain.features.impl.floor7.p3.TerminalSounds.completeSounds
+import me.odinmain.features.impl.floor7.p3.TerminalSounds.playCompleteSound
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.utils.*
 import net.minecraft.client.Minecraft
@@ -45,6 +48,7 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
     fun solved(name: String, pbIndex: Int) {
         val time = (System.currentTimeMillis() - startTime) / 1000.0
         TerminalSimulator.simPBs.time(pbIndex, time, "s§7!", "§a$name §7(termsim) §7solved in §6", addPBString = true, addOldPBString = true, sendOnlyPB = sendMessage)
+        if (TerminalSounds.enabled && completeSounds) playCompleteSound()
         if (this.consecutive > 0) openTerminal(ping, consecutive) else if (TerminalSimulator.openStart) StartGui.open(ping) else mc.thePlayer.closeScreen()
     }
 
