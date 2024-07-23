@@ -19,11 +19,3 @@ class RenderEntityModelEvent(
     var scaleFactor: Float,
     var model: ModelBase
 ): Event()
-
-@Cancelable
-class RenderEntityNameEvent (
-    var entity: EntityLivingBase,
-    var x: Double,
-    var y: Double,
-    var z: Double,
-): Event()

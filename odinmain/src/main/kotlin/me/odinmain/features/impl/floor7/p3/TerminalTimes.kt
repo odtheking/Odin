@@ -35,9 +35,8 @@ object TerminalTimes : Module(
 
     @SubscribeEvent
     fun onTerminalClose(event: TerminalSolvedEvent) {
-        if (type == TerminalTypes.NONE || mc.currentScreen is TermSimGui) return
-        val time = (System.currentTimeMillis() - startTimer) / 1000.0
-        termPBs.time(event.type.ordinal, time, "s§7!", "§a${event.type.guiName} §7solved in §6", addPBString = true, addOldPBString = true, sendOnlyPB = sendMessage)
+        if (type == TerminalTypes.NONE || mc.currentScreen is TermSimGui || event.playerName != mc.thePlayer?.name) return
+        termPBs.time(event.type.ordinal, (System.currentTimeMillis() - startTimer) / 1000.0, "s§7!", "§a${event.type.guiName} §7solved in §6", addPBString = true, addOldPBString = true, sendOnlyPB = sendMessage)
         type = TerminalTypes.NONE
     }
 }

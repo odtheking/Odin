@@ -46,7 +46,7 @@ object OdinMain {
             EventDispatcher, Executor, ModuleManager,
             WaypointManager, DevPlayers, SkyblockPlayer,
             ScanUtils, HighlightRenderer, //OdinUpdater,
-            SplitsManager,
+            SplitsManager, RenderUtils2D,
             this
         ).forEach { MinecraftForge.EVENT_BUS.register(it) }
 

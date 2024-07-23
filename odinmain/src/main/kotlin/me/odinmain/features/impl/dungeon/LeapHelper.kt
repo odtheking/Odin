@@ -1,11 +1,10 @@
 package me.odinmain.features.impl.dungeon
 
-import me.odinmain.OdinMain.mc
-import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.equal
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
+import me.odinmain.utils.skyblock.getBlockAt
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
@@ -23,17 +22,17 @@ object LeapHelper {
     )
     private var currentPos = NONE
 
-    var leapHelperClear = ""
-    var leapHelperBoss = ""
-    var leapHelper: String = if (DungeonUtils.inBoss) leapHelperBoss else leapHelperClear
+    val leapHelperName
+        get() = getPlayer()
 
-    fun getPlayer() {
-        if (DungeonUtils.dungeonTeammates.isEmpty()) return
+    fun getPlayer() : String {
+        if (DungeonUtils.dungeonTeammatesNoSelf.isEmpty()) return ""
+        if (!DungeonUtils.inBoss) return DungeonUtils.doorOpener
         if (DungeonUtils.getPhase() == M7Phases.P3) scanGates()
-        if (currentPos == NONE) return
-        leapHelperBoss = DungeonUtils.dungeonTeammates
+        if (currentPos == NONE) return ""
+        return DungeonUtils.dungeonTeammatesNoSelf
             .filter {
-                it.entity != null && it.entity != mc.thePlayer &&
+                it.entity != null &&
                 if (currentPos.equal(Vec3(54.0, 4.0, 95.0))) it.entity.posY < 54.0 else true // To make sure the player is underneath necron's platform
             }
             .minByOrNull { it.entity?.positionVector?.distanceTo(currentPos) ?: 10000.0 }
@@ -50,30 +49,15 @@ object LeapHelper {
 
     private fun scanGates() {
         gateBlocks.entries.forEach { (pos, vec) ->
-            val block = mc.theWorld.getBlockState(pos)
-            if (block == Blocks.air.defaultState) // Is barrier if gate is closed
-                currentPos = vec
+            if (getBlockAt(pos) == Blocks.air) currentPos = vec // Is barrier if gate is closed
         }
     }
 
     fun worldLoad() {
         currentPos = NONE
-        leapHelperBoss = ""
-        leapHelperClear = ""
-    }
-
-    private val keyRegex = Regex("(?:\\[\\w+] )?(\\w+) opened a (?:WITHER|Blood) door!")
-    private val leapHelperClock = Clock(LeapMenu.delay * 1000L)
-
-    fun leapHelperClearChatEvent(message: String) {
-        if(leapHelperClock.hasTimePassed()) leapHelperClear = ""
-        leapHelperClear = keyRegex.find(message)?.groupValues?.get(1) ?: return
-        leapHelperClock.update()
     }
 
     fun leapHelperBossChatEvent(message: String) {
-        if (message !in messageMap) return
-        currentPos = messageMap[message] ?: NONE
-        leapHelperBoss = ""
+        if (message in messageMap) currentPos = messageMap[message] ?: NONE
     }
 }

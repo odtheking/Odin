@@ -1,7 +1,6 @@
 package me.odinclient.mixin.mixins;
 
 import me.odinmain.events.impl.RenderEntityModelEvent;
-import me.odinmain.events.impl.RenderEntityNameEvent;
 import me.odinmain.utils.EventExtensions;
 import me.odinmain.utils.render.Color;
 import me.odinmain.utils.render.HighlightRenderer;
@@ -116,16 +115,13 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> {
         }
     }
 
-    @Inject(method = "renderModel", at = @At("HEAD"), cancellable = true)
-    private <T extends EntityLivingBase> void renderModel(T entity, float p_77036_2_, float p_77036_3_, float p_77036_4_, float p_77036_5_, float p_77036_6_, float scaleFactor, CallbackInfo ci) {
-        if (EventExtensions.postAndCatch(new RenderEntityModelEvent(entity, p_77036_2_, p_77036_3_, p_77036_4_, p_77036_5_, p_77036_6_, scaleFactor, mainModel)))
+    @Inject(method = "renderLayers", at = @At("RETURN"), cancellable = true)
+    private void onRenderLayers(T entitylivingbaseIn, float p_177093_2_, float p_177093_3_, float partialTicks, float p_177093_5_, float p_177093_6_, float p_177093_7_, float p_177093_8_, CallbackInfo ci) {
+        if (EventExtensions.postAndCatch(new RenderEntityModelEvent(
+                entitylivingbaseIn, p_177093_2_, p_177093_3_, p_177093_5_, p_177093_6_, p_177093_7_, p_177093_8_, mainModel
+        ))) {
             ci.cancel();
-    }
-
-    @Inject(method = "renderName*", at = @At("HEAD"), cancellable = true)
-    private void renderName(T entity, double x, double y, double z, CallbackInfo ci) {
-        if (EventExtensions.postAndCatch(new RenderEntityNameEvent(entity, x, y, z)))
-            ci.cancel();
+        }
     }
 
     @Inject(method = "setScoreTeamColor", at = @At("HEAD"), cancellable = true)

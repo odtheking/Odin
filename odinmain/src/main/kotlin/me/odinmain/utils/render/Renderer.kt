@@ -109,7 +109,7 @@ object Renderer {
      * @param depth     Indicates whether to draw with depth (default is false).
      */
     fun draw3DLine(vararg points: Vec3, color: Color, lineWidth: Float = 3f, depth: Boolean = false) {
-        RenderUtils.renderLines(*points, color = color, lineWidth = lineWidth, depth = depth)
+        RenderUtils.drawLines(*points, color = color, lineWidth = lineWidth, depth = depth)
     }
 
     /**
