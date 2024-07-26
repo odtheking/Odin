@@ -44,7 +44,7 @@ object CanClip : Module(
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (mc.thePlayer == null || !mc.thePlayer.isSneaking) {
+        mc.thePlayer?.isSneaking?.let {
             if (canClip) {
                 animation.start()
                 canClip = false

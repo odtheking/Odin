@@ -4,6 +4,7 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.RenderUtils.renderBoundingBox
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.*
 import net.minecraft.entity.item.EntityItem
@@ -26,7 +27,7 @@ object ItemsHighlight : Module(
         val entities = mc.theWorld?.loadedEntityList?.filterIsInstance<EntityItem>() ?: return
         if (entities.isEmpty()) return
         entities.forEach { entity ->
-            Renderer.drawStyledBox(entity.entityBoundingBox, getEntityOutlineColor(entity), style, lineWidth, depthCheck)
+            Renderer.drawStyledBox(entity.renderBoundingBox, getEntityOutlineColor(entity), style, lineWidth, depthCheck)
         }
     }
 

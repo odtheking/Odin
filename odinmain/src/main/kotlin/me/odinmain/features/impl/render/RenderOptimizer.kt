@@ -87,10 +87,10 @@ object RenderOptimizer : Module(
             event.isCanceled = true
 
 
-        if (DungeonUtils.getPhase() == M7Phases.P5 && hideParticles && !event.packet.particleType.name.containsOneOf("ENCHANTMENT TABLE", "FLAME", "FIREWORKS_SPARK"))
+        if (DungeonUtils.getPhase() == M7Phases.P5 && hideParticles && !event.packet.particleType.equalsOneOf(EnumParticleTypes.ENCHANTMENT_TABLE, EnumParticleTypes.FLAME, EnumParticleTypes.FIREWORKS_SPARK))
             event.isCanceled = true
 
-        if (hideHeartParticles && event.packet.particleType.name.containsOneOf("HEART"))
+        if (hideHeartParticles && event.packet.particleType == EnumParticleTypes.HEART)
             event.isCanceled = true
     }
 
@@ -101,19 +101,18 @@ object RenderOptimizer : Module(
     }
 
     private fun removeTentacles(entity: Entity) {
-        if (DungeonUtils.getPhase() == M7Phases.P5 && getSkullValue(entity)?.contains(TENTACLE_TEXTURE) == true)
+        if (DungeonUtils.getPhase() == M7Phases.P5 && getSkullValue(entity) == TENTACLE_TEXTURE)
             entity.setDead()
     }
 
     private fun handleHealerFairy(entity: Entity) {
         val armorStand = entity as? EntityArmorStand ?: return
-        if (armorStand.heldItem == null) return
-        if (DungeonUtils.inDungeons && armorStand.heldItem?.item == Items.skull && getHealerFairyTextureValue(armorStand) == (HEALER_FAIRY_TEXTURE))
+        if (DungeonUtils.inDungeons && armorStand.heldItem?.item == Items.skull && getHealerFairyTextureValue(armorStand) == HEALER_FAIRY_TEXTURE)
             armorStand.setDead()
     }
 
     private fun handleSoulWeaver(entity: Entity) {
-        if (DungeonUtils.inDungeons && getSkullValue(entity)?.contains(SOUL_WEAVER_TEXTURE) == true) entity.setDead()
+        if (DungeonUtils.inDungeons && getSkullValue(entity) == SOUL_WEAVER_TEXTURE) entity.setDead()
     }
 
     private fun handleWitherMiner(entity: Entity) {

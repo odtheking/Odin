@@ -24,13 +24,13 @@ object DragonHitboxes : Module(
     private val lineWidth: Float by NumberSetting(name = "Line Thickness", default = 3f, min = 0f, max = 10f, increment = 0.1f)
 
     private val entityPositions = mutableMapOf<Int, Array<Double>>()
-    private var dragonRenderQueue: ArrayList<EntityDragon> = ArrayList()
+    private var dragonRenderQueue: List<EntityDragon> = emptyList()
 
     @SubscribeEvent
     fun onClientTick(event: ClientTickEvent) {
-        if (mc.theWorld == null || event.phase == TickEvent.Phase.END) return
-        val entityDragons = mc.theWorld.loadedEntityList?.filterIsInstance<EntityDragon>()
-        dragonRenderQueue = entityDragons as ArrayList<EntityDragon>
+        if (event.phase == TickEvent.Phase.END) return
+        val entityDragons = mc.theWorld?.loadedEntityList?.filterIsInstance<EntityDragon>() ?: return
+        dragonRenderQueue = entityDragons
 
         for (dragon in entityDragons) {
             for (entity in dragon.dragonPartArray) {
@@ -87,6 +87,6 @@ object DragonHitboxes : Module(
     @SubscribeEvent
     fun onWorldUnload(event: WorldEvent.Unload) {
         entityPositions.clear()
-        dragonRenderQueue.clear()
+        dragonRenderQueue = emptyList()
     }
 }

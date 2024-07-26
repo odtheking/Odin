@@ -47,7 +47,7 @@ object DungeonWaypoints : Module(
     var secretWaypoint: Boolean by BooleanSetting("Secret", default = false, description = "If the next waypoint you place should be removed when a secret is interacted with near this waypoint.")
     private val disableDepth: Boolean by BooleanSetting("Disable Depth", false, description = "Disables depth testing for waypoints.")
     private val resetButton: () -> Unit by ActionSetting("Reset Current Room") {
-        val room = DungeonUtils.currentFullRoom ?: return@ActionSetting modMessage("Room not found!!!")
+        val room = DungeonUtils.currentFullRoom ?: return@ActionSetting modMessage("Room not found!")
 
         val waypoints = DungeonWaypointConfigCLAY.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
         if (!waypoints.removeAll { true }) return@ActionSetting modMessage("Current room does not have any waypoints!")
@@ -198,7 +198,6 @@ object DungeonWaypoints : Module(
     fun getWaypoints(room: FullRoom) : MutableList<DungeonWaypoint> {
         return DungeonWaypointConfigCLAY.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
     }
-
 }
 
 object GuiSign : GuiScreen() {

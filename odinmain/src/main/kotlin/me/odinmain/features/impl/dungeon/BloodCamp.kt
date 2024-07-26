@@ -122,9 +122,7 @@ object BloodCamp : Module(
         watcher.removeAll {it.isDead}
         entityList.filter { (entity) -> watcher.any { it.getDistanceToEntity(entity) < 20 }
         }.forEach { (entity, data) ->
-            data.started?.let {
-                data.timetook = ticktime - it
-            }
+            data.started?.let { data.timetook = ticktime - it }
 
             val timeTook = data.timetook ?: return@forEach
             val startVector = data.startVector ?: return@forEach

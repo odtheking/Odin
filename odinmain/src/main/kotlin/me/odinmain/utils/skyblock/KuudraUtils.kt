@@ -17,7 +17,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object KuudraUtils {
     var kuudraTeammates: List<KuudraPlayer> = emptyList()
     var kuudraTeammatesNoSelf: List<KuudraPlayer> = emptyList()
-    var giantZombies: MutableList<EntityGiantZombie> = mutableListOf()
+    var giantZombies: List<EntityGiantZombie> = mutableListOf()
     var supplies = BooleanArray(6) { true }
     var kuudraEntity: EntityMagmaCube = EntityMagmaCube(mc.theWorld)
     var builders = 0

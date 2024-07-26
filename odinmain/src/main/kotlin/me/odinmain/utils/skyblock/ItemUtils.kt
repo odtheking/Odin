@@ -78,6 +78,9 @@ val EntityPlayerSP.holdingEtherWarp: Boolean
 fun isHolding(id: String): Boolean =
     mc.thePlayer?.heldItem?.itemID == id
 
+fun EntityPlayerSP.isHolding(id: String): Boolean =
+    this.heldItem?.itemID == id
+
 /**
  * Returns first slot of an Item
  */
@@ -91,12 +94,6 @@ fun getItemSlot(item: String, ignoreCase: Boolean = true): Int? =
 fun getItemIndexInContainerChest(container: ContainerChest, item: String, subList: IntRange = 0..container.inventory.size - 36): Int? {
     return container.inventorySlots.subList(subList.first, subList.last + 1).firstOrNull {
         it.stack?.unformattedName?.noControlCodes?.lowercase() == item.noControlCodes.lowercase()
-    }?.slotIndex
-}
-
-fun getItemIndexInContainerChest(container: ContainerChest, item: Collection<String>, subList: IntRange = 0..container.inventory.size - 36): Int? {
-    return container.inventorySlots.subList(subList.first, subList.last + 1).firstOrNull {
-        item.any { item -> it.stack?.unformattedName?.noControlCodes?.lowercase() == item.noControlCodes.lowercase() }
     }?.slotIndex
 }
 
@@ -152,8 +149,7 @@ private val rarityRegex: Regex = Regex("§l(?<rarity>[A-Z]+) ?(?<type>[A-Z ]+)?(
 fun getRarity(lore: List<String>): ItemRarity? {
     // Start from the end since the rarity is usually the last line or one of the last.
     for (i in lore.indices.reversed()) {
-        val currentLine = lore[i]
-        val match = rarityRegex.find(currentLine) ?: continue
+        val match = rarityRegex.find(lore[i]) ?: continue
         val rarity: String = match.groups["rarity"]?.value ?: continue
         return ItemRarity.entries.find { it.loreName == rarity }
     }

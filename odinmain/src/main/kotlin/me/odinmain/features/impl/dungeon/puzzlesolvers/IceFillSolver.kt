@@ -43,9 +43,9 @@ object IceFillSolver {
         val rotation = renderRotation ?: return
 
         val pointsList = mutableListOf<Vec3>()
-        for (i in currentPatterns.indices) {
-            val pattern = currentPatterns[i]
-            val startPos = patternStartPositions[i]
+        for (index in currentPatterns.indices) {
+            val pattern = currentPatterns[index]
+            val startPos = patternStartPositions[index]
             pointsList.add(startPos)
             for (point in pattern) {
                 val transformedPoint = startPos.add(transformTo(point, rotation))
@@ -54,7 +54,6 @@ object IceFillSolver {
             val stairPos = startPos.add(transformTo(pattern.last().addVec(1, 1), rotation))
             pointsList.add(stairPos)
         }
-
         Renderer.draw3DLine(*pointsList.toTypedArray(), color = color, depth = true)
     }
 

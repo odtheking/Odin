@@ -43,7 +43,7 @@ object BlazeAttunement : Module(
                 }.withAlpha(.4f)
 
                 val entities =
-                    mc.theWorld?.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.expand(0.0, 3.0, 0.0))
+                    mc.theWorld?.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.offset(0.0, -1.0, 0.0))
                         ?.filter { it is EntityBlaze || it is EntitySkeleton || it is EntityPigZombie }
                         ?.sortedByDescending { xzDistance(it, entity) } ?: return@execute
                 if (entities.isEmpty()) return@forEach

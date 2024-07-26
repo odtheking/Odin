@@ -30,14 +30,13 @@ object NoBlock : Module(
     fun onInteract(event: PlayerInteractEvent) {
         if (!LocationUtils.inSkyblock || event.action != PlayerInteractEvent.Action.RIGHT_CLICK_AIR) return
         if (onlyBoss && !DungeonUtils.inBoss) return
-        val item = mc.thePlayer.heldItem
-        if (item == null || item.item !is ItemSword) return
+        val item = mc.thePlayer?.heldItem ?: return
+        if (item.item !is ItemSword) return
 
         if (!mc.thePlayer.heldItem.lore.any { it.contains("§6Ability: ") && it.endsWith("§e§lRIGHT CLICK") }) return
         event.isCanceled = true
 
-        if (!isRightClickKeyDown) {
+        if (!isRightClickKeyDown)
             mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
-        }
     }
 }

@@ -21,7 +21,7 @@ object SpaceHelmet : Module(
 
     init {
         execute({ speed }) {
-            if (mc.thePlayer == null || mc.currentScreen !== null) return@execute
+            if (mc.currentScreen !== null) return@execute
 
             currentIndex = (currentIndex + 1) % values.size
             val item = ItemStack(Item.getItemFromBlock(Blocks.stained_glass), 1, values[currentIndex]).apply { setStackDisplayName("§c§lSpace Helmet") }

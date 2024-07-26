@@ -51,7 +51,7 @@ object Trajectories : Module(
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         entityRenderQueue.clear()
         planePos = null
-        if (mc.thePlayer == null || mc.thePlayer.heldItem == null) return
+        if (mc.thePlayer?.heldItem == null) return
         if (bows && mc.thePlayer.heldItem.item is ItemBow) {
             val pair1: Pair<ArrayList<Vec3>, MovingObjectPosition?>
             var pair2: Pair<ArrayList<Vec3>, MovingObjectPosition?>
@@ -240,15 +240,15 @@ object Trajectories : Module(
     }
 
     private fun drawPearlCollisionBox() {
-        if (pearlImpactPos == null) return
-        val pos = pearlImpactPos ?: return
-        val aabb = AxisAlignedBB(
-            pos.first.xCoord, pos.first.yCoord, pos.first.zCoord,
-            pos.second.xCoord, pos.second.yCoord, pos.second.zCoord
-        )
-        Renderer.drawBox(aabb, color, width, depth = false, fillAlpha = 0)
+        pearlImpactPos?.let {
+            val aabb = AxisAlignedBB(
+                it.first.xCoord, it.first.yCoord, it.first.zCoord,
+                it.second.xCoord, it.second.yCoord, it.second.zCoord
+            )
+            Renderer.drawBox(aabb, color, width, depth = false, fillAlpha = 0)
+            pearlImpactPos = null
+        }
 
-        pearlImpactPos = null
     }
 
     private fun drawBowCollisionBoxes() {

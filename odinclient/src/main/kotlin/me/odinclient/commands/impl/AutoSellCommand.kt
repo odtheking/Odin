@@ -11,10 +11,10 @@ import me.odinmain.utils.skyblock.unformattedName
 val autoSellCommand = commodore("autosell") {
 
     literal("add").runs { item: GreedyString? ->
-        val lowercase = item?.string?.lowercase() ?: mc.thePlayer?.heldItem?.unformattedName ?: return@runs modMessage("Either hold an item or write an item name to be added to autosell.")
-        if (lowercase in sellList) return@runs modMessage("$item is already in the Auto sell list.")
+        val lowercase = item?.string?.lowercase() ?: mc.thePlayer?.heldItem?.unformattedName?.lowercase() ?: return@runs modMessage("Either hold an item or write an item name to be added to autosell.")
+        if (lowercase in sellList) return@runs modMessage("$lowercase is already in the Auto sell list.")
 
-        modMessage("Added $item to the Auto sell list.")
+        modMessage("Added $lowercase to the Auto sell list.")
         sellList.add(lowercase)
         Config.save()
     }
@@ -36,6 +36,7 @@ val autoSellCommand = commodore("autosell") {
 
     literal("list").runs {
         if (sellList.size == 0) return@runs modMessage("Auto sell list is empty")
-        modMessage("Auto sell list:\n${sellList.joinToString("\n")}")
+        val chunkedList = sellList.chunked(10)
+        modMessage("Auto sell list:\n${chunkedList.joinToString("\n")}")
     }
 }

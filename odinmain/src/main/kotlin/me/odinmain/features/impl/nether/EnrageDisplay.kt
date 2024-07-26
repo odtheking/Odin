@@ -11,7 +11,7 @@ import me.odinmain.utils.skyblock.itemID
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-object EnrageDisplay : Module (
+object EnrageDisplay : Module(
     name = "Enrage Display",
     description = "Timer for cooldown of reaper armor enrage",
     category = Category.NETHER

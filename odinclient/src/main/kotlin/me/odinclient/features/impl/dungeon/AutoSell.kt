@@ -4,10 +4,10 @@ import me.odinmain.config.Config
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.name
-import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.*
+import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.inventory.ContainerChest
 
 object AutoSell : Module(
@@ -26,11 +26,11 @@ object AutoSell : Module(
 
     init {
         execute(delay = { delay }) {
-            if (!enabled) return@execute
-            val container = mc.thePlayer?.openContainer as? ContainerChest ?: return@execute
+            if (!enabled || sellList.isEmpty()) return@execute
+            val container = mc.thePlayer.openContainer as? ContainerChest ?: return@execute
 
             if (!container.name.equalsOneOf("Trades", "Booster Cookie", "Farm Merchant")) return@execute
-            val index = getItemIndexInContainerChest(container, sellList, 54..90) ?: return@execute
+            val index = container.inventorySlots?.subList(54, 90)?.firstOrNull { it.stack?.displayName?.containsOneOf(sellList, true) == true }?.slotNumber ?: return@execute
             when (clickType) {
                 0 -> windowClick(index, PlayerUtils.ClickType.Shift)
                 1 -> windowClick(index, PlayerUtils.ClickType.Middle)

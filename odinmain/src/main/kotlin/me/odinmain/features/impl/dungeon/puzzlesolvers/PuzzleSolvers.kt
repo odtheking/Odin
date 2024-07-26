@@ -106,7 +106,6 @@ object PuzzleSolvers : Module(
 
     init {
         execute(500) {
-            if (tpMaze) TPMazeSolver.scan()
             if (waterSolver) WaterSolver.scan()
             if (blazeSolver) BlazeSolver.getBlaze()
         }
@@ -162,6 +161,7 @@ object PuzzleSolvers : Module(
         TTTSolver.tttRoomEnter(event)
         QuizSolver.enterRoomQuiz(event)
         BoulderSolver.onRoomEnter(event)
+        TPMazeSolver.onRoomEnter(event)
     }
 
     @SubscribeEvent
