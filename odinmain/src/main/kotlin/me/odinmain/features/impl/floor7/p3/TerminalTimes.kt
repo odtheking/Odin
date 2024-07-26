@@ -61,23 +61,23 @@ object TerminalTimes : Module(
     }
 
     init {
-        onMessage("The gate has been destroyed!", false, { terminalSplits }) {
+        onMessage("The gate has been destroyed!", false, { enabled && terminalSplits }) {
             if (completed.first == completed.second) resetSection()
             else gateBlown = true
         }
 
-        onMessage("[BOSS] Goldor: Who dares trespass into my domain?", false, { terminalSplits }) {
+        onMessage("[BOSS] Goldor: Who dares trespass into my domain?", false, { enabled && terminalSplits }) {
             resetSection(true)
         }
 
-        onMessage(terminalCompleteRegex, { terminalSplits }) {
-            val matchResult = terminalCompleteRegex.find(it)?.groups ?: return@onMessage
-            val complete = Pair(matchResult[4]?.value?.toIntOrNull() ?: return@onMessage, matchResult[5]?.value?.toIntOrNull() ?: return@onMessage)
-            modMessage("§6${matchResult[1]?.value} §a${matchResult[2]?.value} a ${matchResult[3]?.value}! (§c${complete.first}§a/${complete.second}) §8(§7${sectionTimer.seconds}s §8| §7${phaseTimer.seconds}s§8)", false)
-            if ((complete.first == complete.second && gateBlown) || complete.first < completed.first) resetSection() else completed = complete
+        onMessage(terminalCompleteRegex, { enabled && terminalSplits }) {
+            val (name, activated, type, current, total) = terminalCompleteRegex.find(it)?.destructured ?: return@onMessage
+            modMessage("§6$name §a$activated a $type! (§c${current}§a/${total}) §8(§7${sectionTimer.seconds}s §8| §7${phaseTimer.seconds}s§8)", false)
+            if ((current == total && gateBlown) || (current.toIntOrNull() ?: return@onMessage) < completed.first) resetSection()
+            else completed = Pair(current.toIntOrNull() ?: return@onMessage, total.toIntOrNull() ?: return@onMessage)
         }
 
-        onMessage("The Core entrance is opening!", false, { terminalSplits }) {
+        onMessage("The Core entrance is opening!", false, { enabled && terminalSplits }) {
             resetSection()
             modMessage("§bTimes: §a${times.joinToString(" §8| ") { "§a${it.seconds}s" }}§8, §bTotal: §ag${phaseTimer.seconds}s")
         }

@@ -58,7 +58,7 @@ object TerminalSounds : Module(
 
     @SubscribeEvent
     fun onTermComplete(event: TerminalSolvedEvent) {
-        if (event.type == TerminalTypes.NONE || mc.currentScreen is TermSimGui || event.playerName != mc.thePlayer?.name.noControlCodes || !completeSounds) return
+        if (event.type == TerminalTypes.NONE || mc.currentScreen is TermSimGui || event.playerName != mc.thePlayer?.name || !completeSounds) return
         playCompleteSound()
     }
 

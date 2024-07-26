@@ -28,7 +28,7 @@ object SwapSound : Module(
     private val pitch: Float by NumberSetting("Pitch", 2f, 0, 2, .01f, description = "Pitch of the sound.")
     val reset: () -> Unit by ActionSetting("Play sound") { PlayerUtils.playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], volume, pitch) }
 
-    var slot: Int? = null
+    private var slot: Int? = null
     private val pickaxes = arrayListOf(Items.diamond_pickaxe, Items.golden_pickaxe, Items.wooden_pickaxe, Items.stone_pickaxe, Items.iron_pickaxe)
     private var playedThisTick = false
 
