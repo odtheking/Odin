@@ -56,8 +56,8 @@ object ModuleManager {
         WarpCooldown, MapInfo, SwapSound,
 
         // floor 7
-        TerminalSolver, TerminalTimes, MelodyMessage, NecronDropTimer, InactiveWaypoints, WitherDragons,
-        GoldorTimer, TerminalSimulator, TerminalSounds, ArrowsDevice,
+        TerminalSolver, TerminalTimes, MelodyMessage, TickTimers, InactiveWaypoints, WitherDragons,
+        TerminalSimulator, TerminalSounds, ArrowsDevice,
 
         // render
         BPSDisplay, ClickGUIModule, CustomHighlight, CPSDisplay, DragonHitboxes, GyroWand, NameChanger,

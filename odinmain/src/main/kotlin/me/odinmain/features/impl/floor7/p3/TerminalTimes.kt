@@ -79,7 +79,7 @@ object TerminalTimes : Module(
 
         onMessage("The Core entrance is opening!", false, { enabled && terminalSplits }) {
             resetSection()
-            modMessage("§bTimes: §a${times.joinToString(" §8| ") { "§a${it.seconds}s" }}§8, §bTotal: §ag${phaseTimer.seconds}s")
+            modMessage("§bTimes: §a${times.joinToString(" §8| ") { "§a${it.seconds}s" }}§8, §bTotal: §a${phaseTimer.seconds}s")
         }
     }
 
