@@ -65,10 +65,10 @@ object TickTimers : Module(
 
         onMessage(Regex("\\[BOSS] Storm: I should have known that I stood no chance\\.")) {
             if (goldorHud.enabled) goldorStartTime = 104
-            if (stormHud.enabled) padTickTime = 20
+            if (stormHud.enabled) padTickTime = -1
         }
 
-        onMessage(Regex("\\[BOSS] Storm: I should have known that I stood no chance\\."), { enabled && stormHud.enabled }) { padTickTime = -1 }
+        onMessage(Regex("\\[BOSS] Storm: Pathetic Maxor, just like expected\\."), { enabled && stormHud.enabled }) { padTickTime = 20 }
 
         onWorldLoad {
             necronTime = -1
