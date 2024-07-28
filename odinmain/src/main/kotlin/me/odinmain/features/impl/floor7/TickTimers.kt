@@ -35,7 +35,7 @@ object TickTimers : Module(
     private val goldorHud: HudElement by HudSetting("Goldor Hud", 10f, 10f, 1f, true) {
         if (it) {
             mcTextAndWidth(formatTimer(35, 60, "§7Tick:"), 1f, 1f, 2, Color.DARK_RED, shadow = true ,center = false) * 2 + 2f to 16f
-        } else if (goldorStartTime >= 0 || goldorTickTime >= 0) {
+        } else if ((goldorStartTime >= 0 && startTimer) || goldorTickTime >= 0) {
             val (prefix: String, time: Int, max: Int) = if (goldorStartTime >= 0 && startTimer) Triple("§aStart:", goldorStartTime, 104) else Triple("§7Tick:", goldorTickTime, 60)
             mcTextAndWidth(formatTimer(time, max, prefix), 1f, 1f, 2, Color.DARK_RED, shadow = true ,center = false) * 2 + 2f to 16f
         } else 0f to 0f
