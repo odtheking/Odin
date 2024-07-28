@@ -11,7 +11,6 @@ import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.mcTextAndWidth
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object TickTimers : Module(
     name = "Tick Timers",
@@ -72,12 +71,12 @@ object TickTimers : Module(
         onMessage(Regex("\\[BOSS] Storm: I should have known that I stood no chance\\."), { enabled && stormHud.enabled }) { padTickTime = -1 }
 
         onWorldLoad {
-            if (necronHud.enabled) necronTime = -1
-            if (goldorHud.enabled) {
-                goldorTickTime = -1
-                goldorStartTime = -1
-            }
-            if (stormHud.enabled) padTickTime = -1
+            necronTime = -1
+
+            goldorTickTime = -1
+            goldorStartTime = -1
+
+            padTickTime = -1
         }
     }
 
