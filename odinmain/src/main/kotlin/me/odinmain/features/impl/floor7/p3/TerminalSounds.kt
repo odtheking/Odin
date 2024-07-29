@@ -46,7 +46,6 @@ object TerminalSounds : Module(
         with(event.packet) {
             if (
                 this !is S29PacketSoundEffect ||
-                currentTerm == TerminalTypes.NONE ||
                 customSound == "note.pling" ||
                 soundName != "note.pling" ||
                 volume != 8f ||
