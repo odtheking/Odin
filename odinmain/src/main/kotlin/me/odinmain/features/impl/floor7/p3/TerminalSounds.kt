@@ -66,7 +66,7 @@ object TerminalSounds : Module(
             (currentTerm != TerminalTypes.ORDER && gui.slotUnderMouse?.slotIndex !in TerminalSolver.solution) ||
             (currentTerm == TerminalTypes.ORDER && gui.slotUnderMouse?.slotIndex != TerminalSolver.solution.first())
             ) return
-        if (TerminalSolver.solution.size == 1) {
+        if (TerminalSolver.solution.size == 1 && completeSounds) {
             if (!cancelLastClick) playTerminalSound()
             playCompleteSound()
         } else playTerminalSound()
@@ -80,7 +80,7 @@ object TerminalSounds : Module(
             (currentTerm != TerminalTypes.ORDER && event.slot !in TerminalSolver.solution) ||
             (currentTerm == TerminalTypes.ORDER && event.slot != TerminalSolver.solution.first())
             ) return
-        if (TerminalSolver.solution.size == 1) {
+        if (TerminalSolver.solution.size == 1 && completeSounds) {
             if (!cancelLastClick) playTerminalSound()
             playCompleteSound()
         } else playTerminalSound()
