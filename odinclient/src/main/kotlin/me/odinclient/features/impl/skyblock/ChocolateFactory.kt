@@ -18,9 +18,8 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.client.event.sound.PlaySoundEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-
 object ChocolateFactory : Module(
-    "Chocolate Factory",
+    name = "Chocolate Factory",
     description = "Automates the Chocolate Factory.",
     category = Category.SKYBLOCK
 ) {
@@ -151,7 +150,7 @@ object ChocolateFactory : Module(
     }
 
     private fun scanForEggs() {
-        mc.theWorld.loadedEntityList.filterIsInstance<EntityArmorStand>().forEach { entity ->
+        mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()?.forEach { entity ->
             val eggType = getEggType(entity) ?: return@forEach
             currentDetectedEggs[eggType.index] = currentDetectedEggs[eggType.index] ?: Egg(entity, eggType.type, eggType.color)
         }

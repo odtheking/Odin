@@ -18,5 +18,4 @@ public class MixinSoundManager {
     private void bypassPlayerVolume(ISound sound, SoundPoolEntry entry, SoundCategory category, CallbackInfoReturnable<Float> cir) {
         if (PlayerUtils.INSTANCE.getShouldBypassVolume()) cir.setReturnValue(MathHelper.clamp_float(sound.getVolume(), 0f, 1f));
     }
-
 }

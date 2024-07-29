@@ -7,6 +7,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.ui.hud.HudElement
+import me.odinmain.utils.matchesOneOf
 import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.partyMessage
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -40,7 +41,7 @@ object InvincibilityTimer : Module(
     @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
         val msg = event.message
-        if (!msg.matches(bonzoMaskRegex) && !msg.matches(phoenixPetRegex) && !msg.matches(spiritPetRegex)) return
+        if (!msg.matchesOneOf(bonzoMaskRegex, phoenixPetRegex, spiritPetRegex)) return
 
         val invincibilityType = if (msg.contains("Bonzo's Mask")) "Bonzo" else if (msg.contains("Phoenix")) "Phoenix" else "Spirit"
         if (invincibilityAnnounce) partyMessage("$invincibilityType Procced")

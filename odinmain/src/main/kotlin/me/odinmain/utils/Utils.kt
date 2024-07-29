@@ -8,8 +8,7 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.features.ModuleManager
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.skyblock.devMessage
-import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.skyblock.*
 import net.minecraft.inventory.Container
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.common.MinecraftForge
@@ -142,9 +141,18 @@ fun Event.postAndCatch(): Boolean {
     return runCatching {
         MinecraftForge.EVENT_BUS.post(this)
     }.onFailure {
+        it.printStackTrace()
         logger.error("An error occurred", it)
         modMessage("${OdinMain.VERSION} Caught and logged an ${it::class.simpleName ?: "error"} at ${this::class.simpleName}. Please report this!")
     }.getOrDefault(isCanceled)
+}
+
+// Companion object to expose the extension function statically for Java
+object EventExtensions {
+    @JvmStatic
+    fun postAndCatch(event: Event): Boolean {
+        return event.postAndCatch()
+    }
 }
 
 /**
@@ -212,8 +220,6 @@ fun min(vararg numbers: Number): Float {
 /**
  * Returns the String with the first letter capitalized
  *
- * @param this The String to capitalize the first letter of
- *
  * @return The String with the first letter capitalized
  */
 fun String.capitalizeFirst(): String {
@@ -251,13 +257,13 @@ fun formatTime(time: Long): String {
         if (it > 0) "${it}m " else ""
     }
     val seconds = (remaining / 1000f).let {
-        "%.2f".format(it)
+        String.format(Locale.US, "%.2f", it)
     }
     return "$hours$minutes${seconds}s"
 }
 
 val Char.isHexaDecimal
-    get() = isDigit() || equalsOneOf("a","b","c","d","e","f","A","B","C","D","E","F")
+    get() = isDigit() || lowercase().equalsOneOf("a","b","c","d","e","f")
 
 // Used in DeployableTimer.kt
 data object FlareTextures {
@@ -312,3 +318,23 @@ fun romanToInt(s: String): Int {
     }
     return result + (romanMap[s.last()] ?: 0)
 }
+
+inline fun <T> List<T>.forEachIndexedReturn(action: (index: Int, T) -> Unit): List<T> {
+    for (i in indices) {
+        action(i, this[i])
+    }
+    return this
+}
+
+fun fillItemFromSack(amount: Int, itemId: String, sackName: String, sendMessage: Boolean) {
+    val needed = mc.thePlayer.inventory.mainInventory.find { it?.itemID == itemId }?.stackSize ?: 0
+    if (needed != amount) sendCommand("gfs $sackName ${amount - needed}") else if (sendMessage) modMessage("§cAlready at max stack size.")
+}
+
+inline fun <T> MutableCollection<T>.removeFirstOrNull(predicate: (T) -> Boolean): T? {
+    val first = firstOrNull(predicate) ?: return null
+    this.remove(first)
+    return first
+}
+
+fun Int.rangeAdd(add: Int): IntRange = this..this+add

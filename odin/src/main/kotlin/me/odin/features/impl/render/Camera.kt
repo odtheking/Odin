@@ -8,7 +8,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object Camera : Module(
-    "Camera",
+    name = "Camera",
     category = Category.RENDER,
     description = "Allows you to change qualities about third person view."
 ) {

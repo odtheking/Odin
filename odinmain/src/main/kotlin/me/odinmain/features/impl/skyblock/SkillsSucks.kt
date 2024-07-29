@@ -10,9 +10,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent
 import org.lwjgl.input.Mouse
 
-
 object SkillsSucks : Module(
-    "Skills Sucks",
+    name = "Skills Sucks",
     description = "Skills sucks.",
     category = Category.SKYBLOCK
 ) {

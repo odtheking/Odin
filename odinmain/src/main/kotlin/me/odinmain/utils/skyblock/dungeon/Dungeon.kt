@@ -8,11 +8,11 @@ import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
 import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.features.impl.dungeon.LeapMenu
 import me.odinmain.features.impl.dungeon.LeapMenu.odinSorting
+import me.odinmain.features.impl.dungeon.MapInfo.shownTitle
 import me.odinmain.features.impl.dungeon.Mimic
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.PlayerUtils.posX
 import me.odinmain.utils.skyblock.PlayerUtils.posZ
-import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getDungeonPuzzles
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getDungeonTeammates
 import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
@@ -26,14 +26,15 @@ class Dungeon(val floor: Floor?) {
     val inBoss: Boolean get() = getBoss()
     var dungeonTeammates: List<DungeonPlayer> = emptyList()
     var dungeonTeammatesNoSelf: List<DungeonPlayer> = emptyList()
-    var leapTeammates = mutableListOf<DungeonPlayer>()
+    var leapTeammates: List<DungeonPlayer> = emptyList()
     var dungeonStats = DungeonStats()
-    var currentRoom: FullRoom? = null
+    var currentFullRoom: FullRoom? = null
     var passedRooms = mutableListOf<FullRoom>()
     var puzzles = listOf<Puzzle>()
 
     private fun getBoss(): Boolean {
-        return when (floor?.floorNumber) {
+        if (floor == null) return false
+        return when (floor.floorNumber) {
             1 -> posX > -71 && posZ > -39
             in 2..4 -> posX > -39 && posZ > -39
             in 5..6 -> posX > -39 && posZ > -7
@@ -46,13 +47,16 @@ class Dungeon(val floor: Floor?) {
         scope.launch(Dispatchers.IO) {
             paul = hasBonusPaulScore()
         }
+
+        shownTitle = false
     }
 
     fun enterDungeonRoom(event: RoomEnterEvent) {
-        currentRoom = event.room ?: return
-        if (passedRooms.any { it.room.data.name == event.room.room.data.name }) return
-        event.room.let { passedRooms.add(it) }
-        val roomSecrets = ScanUtils.getRoomSecrets(currentRoom?.room?.data?.name ?: return)
+        currentFullRoom = event.fullRoom
+        val fullRoom = currentFullRoom ?: return
+        if (passedRooms.any { it.room.data.name == fullRoom.room.data.name }) return
+        passedRooms.add(fullRoom)
+        val roomSecrets = ScanUtils.getRoomSecrets(fullRoom.room.data.name)
         dungeonStats.knownSecrets = dungeonStats.knownSecrets?.plus(roomSecrets) ?: roomSecrets
     }
 
@@ -74,7 +78,7 @@ class Dungeon(val floor: Floor?) {
         val partyMessage = Regex("Party > .*?: (.+)\$").find(message)?.groupValues?.get(1) ?: return
         if (partyMessage.lowercase().equalsOneOf("mimic killed", "mimic slain", "mimic killed!", "mimic dead", "mimic dead!", "\$skytils-dungeon-score-mimic\$", Mimic.mimicMessage))
             dungeonStats.mimicKilled = true
-        if (partyMessage.lowercase().equalsOneOf("blaze done!", "blaze done")) { //more completion messages may be necessary.
+        if (partyMessage.lowercase().equalsOneOf("blaze done!", "blaze done", "blaze puzzle solved!")) { //more completion messages may be necessary.
             puzzles.find { it.name == Puzzle.Blaze.name }.let { it?.status = PuzzleStatus.Completed }
         }
     }

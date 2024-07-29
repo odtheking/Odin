@@ -80,10 +80,7 @@ object EtherWarpHelper {
     private fun isValidEtherWarpBlock(pos: BlockPos): Boolean {
         // Checking the actual block to etherwarp ontop of
         // Can be at foot level, but not etherwarped onto directly.
-        if (getBlockAt(pos).registryName in validEtherwarpFeetBlocks) return false
-
-        // The block at foot level
-        if (getBlockAt(pos.up(1)).registryName !in validEtherwarpFeetBlocks) return false
+        if (getBlockAt(pos).registryName in validEtherwarpFeetBlocks || getBlockAt(pos.up(1)).registryName !in validEtherwarpFeetBlocks) return false
 
         return getBlockAt(pos.up(2)).registryName in validEtherwarpFeetBlocks
     }
@@ -130,5 +127,4 @@ object EtherWarpHelper {
         "minecraft:torch",
         "minecraft:vine",
     )
-
 }

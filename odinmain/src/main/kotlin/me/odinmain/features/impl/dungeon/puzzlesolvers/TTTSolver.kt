@@ -31,10 +31,10 @@ object TTTSolver {
     private var toRender: BlockPos? = null
 
     fun tttRoomEnter(event: DungeonEvents.RoomEnterEvent) {
-        val room = event.room?.room ?: return
+        val room = event.fullRoom?.room ?: return
         if (room.data.name != "Tic Tac Toe") return
 
-        updateBoard(room.vec2.addRotationCoords(room.rotation, 7, 0), room.rotation)
+        //updateBoard(room.vec2.addRotationCoords(room.rotation, 7, 0), room.rotation)
     }
 
     private fun updateBoard(bottomRight: Vec2, rotations: Rotations) {
@@ -98,7 +98,7 @@ object TTTSolver {
     }
 
     private fun findSlotState(blockPos: BlockPos): State {
-        val itemFrameBlock = mc.theWorld.getEntitiesWithinAABB(EntityItemFrame::class.java, blockPos.toAABB()).filterIsInstance<EntityItemFrame>().firstOrNull() ?: return State.Blank
+        val itemFrameBlock = mc.theWorld?.getEntitiesWithinAABB(EntityItemFrame::class.java, blockPos.toAABB())?.filterIsInstance<EntityItemFrame>()?.firstOrNull() ?: return State.Blank
         val mapData = Items.filled_map.getMapData(itemFrameBlock.displayedItem, mc.theWorld) ?: return State.Blank
         return if ((mapData.colors[8256] and 255.toByte()).toInt() == 114) State.X else State.O
     }

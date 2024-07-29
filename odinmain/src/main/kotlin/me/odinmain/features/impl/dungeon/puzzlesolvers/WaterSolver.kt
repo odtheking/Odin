@@ -42,17 +42,14 @@ object WaterSolver {
     private var openedWater = -1L
 
     fun scan() {
-        val room = DungeonUtils.currentRoom?.room ?: return
+        val room = DungeonUtils.currentFullRoom?.room ?: return
         if (room.data.name != "Water Board" || variant != -1) return
         solve(room)
     }
 
     private fun solve(room: Room) {
-        val rotation = room.rotation
-
-        chestPosition = room.vec2.addRotationCoords(rotation, -7)
-
-        roomFacing = rotation
+        roomFacing = room.rotation
+        chestPosition = room.vec2.addRotationCoords(roomFacing, -7)
 
         val pistonHeadPosition = chestPosition.addRotationCoords(roomFacing, -5).let { BlockPos(it.x, 82, it.z) }
         val blockList = BlockPos.getAllInBox(BlockPos(pistonHeadPosition.x + 1, 78, pistonHeadPosition.z + 1),
@@ -112,7 +109,7 @@ object WaterSolver {
 
 
     fun waterRender() {
-        if (DungeonUtils.currentRoomName != "Water Board" || variant == -1 || !DungeonUtils.inDungeons || DungeonUtils.inBoss) return
+        if (DungeonUtils.currentRoomName != "Water Board" || variant == -1) return
 
         val solutions = HashMap(solutions)
 

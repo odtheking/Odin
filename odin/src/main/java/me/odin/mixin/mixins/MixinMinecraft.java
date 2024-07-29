@@ -5,11 +5,11 @@ import me.odinmain.events.impl.PreKeyInputEvent;
 import me.odinmain.events.impl.PreMouseInputEvent;
 import me.odinmain.features.impl.render.Animations;
 import me.odinmain.features.impl.render.CPSDisplay;
+import me.odinmain.utils.EventExtensions;
 import me.odinmain.utils.skyblock.PlayerUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemBlock;
-import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,15 +24,14 @@ public class MixinMinecraft {
     public void keyPresses(CallbackInfo ci) {
         int k = (Keyboard.getEventKey() == 0) ? (Keyboard.getEventCharacter() + 256) : Keyboard.getEventKey();
         if (Keyboard.getEventKeyState()) {
-            MinecraftForge.EVENT_BUS.post(new PreKeyInputEvent(k));
+            EventExtensions.postAndCatch(new PreKeyInputEvent(k));
         }
     }
 
     @Inject(method = {"runTick"}, at = {@At(value = "INVOKE", target = "Lorg/lwjgl/input/Mouse;getEventButton()I", remap = false)})
     public void mouseKeyPresses(CallbackInfo ci) {
-        int k = Mouse.getEventButton();
         if (Mouse.getEventButtonState()) {
-            MinecraftForge.EVENT_BUS.post(new PreMouseInputEvent(k));
+            EventExtensions.postAndCatch(new PreMouseInputEvent(Mouse.getEventButton()));
         }
     }
 
@@ -43,13 +42,12 @@ public class MixinMinecraft {
 
     @Inject(method = "rightClickMouse", at = @At("HEAD"), cancellable = true)
     private void rightClickMouse(CallbackInfo ci) {
-        if (MinecraftForge.EVENT_BUS.post(new ClickEvent.RightClickEvent())) ci.cancel();
+        if (EventExtensions.postAndCatch(new ClickEvent.RightClickEvent())) ci.cancel();
         CPSDisplay.INSTANCE.onRightClick();
         /*
         Taken from [Sk1erLLC's OldAnimations Mod](https://github.com/Sk1erLLC/OldAnimations) to enable block hitting
         */
-        if (Animations.INSTANCE.getBlockHit() &&
-                Minecraft.getMinecraft().playerController.getIsHittingBlock() &&
+        if (Animations.INSTANCE.getBlockHit() && Minecraft.getMinecraft().playerController.getIsHittingBlock() &&
                 Minecraft.getMinecraft().thePlayer.getHeldItem() != null &&
                 (Minecraft.getMinecraft().thePlayer.getHeldItem().getItemUseAction() != EnumAction.NONE ||
                         Minecraft.getMinecraft().thePlayer.getHeldItem().getItem() instanceof ItemBlock)) {
@@ -59,7 +57,7 @@ public class MixinMinecraft {
 
     @Inject(method = "clickMouse", at = @At("HEAD"), cancellable = true)
     private void clickMouse(CallbackInfo ci) {
-        if (MinecraftForge.EVENT_BUS.post(new ClickEvent.LeftClickEvent())) ci.cancel();
+        if (EventExtensions.postAndCatch(new ClickEvent.LeftClickEvent())) ci.cancel();
         CPSDisplay.INSTANCE.onLeftClick();
     }
 }

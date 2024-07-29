@@ -16,7 +16,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object DioriteFucker : Module(
-    "Fuck Diorite",
+    name = "Fuck Diorite",
     description = "Replaces the pillars in floor 7 storm fight with glass.",
     category = Category.FLOOR7,
 ) {
@@ -56,7 +56,7 @@ object DioriteFucker : Module(
     }
 
     private fun setGlass(pos: BlockPos) =
-        mc.theWorld.setBlockState(pos, if (stainedGlass) Blocks.stained_glass.getStateFromMeta(color) else Blocks.glass.defaultState, 3)
+        mc.theWorld?.setBlockState(pos, if (stainedGlass) Blocks.stained_glass.getStateFromMeta(color) else Blocks.glass.defaultState, 3)
 
 
     private fun isDiorite(pos: BlockPos): Boolean =

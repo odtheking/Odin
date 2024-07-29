@@ -12,8 +12,7 @@ import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.util.shader.RoundedRect
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Executor
-import me.odinmain.utils.render.RenderUtils
-import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.ScanUtils
@@ -46,8 +45,8 @@ object OdinMain {
             RenderUtils, Renderer, DungeonUtils, KuudraUtils,
             EventDispatcher, Executor, ModuleManager,
             WaypointManager, DevPlayers, SkyblockPlayer,
-            ScanUtils, //HighlightRenderer, //OdinUpdater,
-            SplitsManager,
+            ScanUtils, HighlightRenderer, //OdinUpdater,
+            SplitsManager, RenderUtils2D,
             this
         ).forEach { MinecraftForge.EVENT_BUS.register(it) }
 

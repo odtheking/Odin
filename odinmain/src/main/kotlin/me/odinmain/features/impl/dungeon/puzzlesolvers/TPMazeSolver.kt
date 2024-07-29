@@ -1,43 +1,42 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import me.odinmain.OdinMain.mc
+import me.odinmain.events.impl.DungeonEvents
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.mazeColorMultiple
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.mazeColorOne
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.mazeColorVisited
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.solutionThroughWalls
-import me.odinmain.utils.isXZInterceptable
+import me.odinmain.utils.*
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.toAABB
+import me.odinmain.utils.skyblock.getBlockAt
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.*
 import java.util.concurrent.CopyOnWriteArraySet
 
 object TPMazeSolver {
-    private var portals = setOf<BlockPos>()
+    private var tpPads = setOf<BlockPos>()
     private var correctPortals = listOf<BlockPos>()
     private var visited = CopyOnWriteArraySet<BlockPos>()
 
-    fun scan() {
-        if (portals.size >= 30 || DungeonUtils.currentRoomName != "Teleport Maze") return
-        val pos = mc.thePlayer?.position ?: return
-        portals = portals.plus(
-            BlockPos.getAllInBox(BlockPos(pos.x + 22, 70, pos.z + 22), BlockPos(pos.x - 22, 69, pos.z - 22))
-                .filter { mc.theWorld.getBlockState(it).block == Blocks.end_portal_frame }
-        )
+    fun onRoomEnter(event: DungeonEvents.RoomEnterEvent) {
+        val room = event.fullRoom?.room ?: return
+        if (room.data.name != "Teleport Maze") return
+        tpPads = setOf()
+        BlockPos.getAllInBox(room.vec3.addRotationCoords(room.rotation, -16, -16).toBlockPos(), room.vec3.addRotationCoords(room.rotation, 16, 16).toBlockPos())
+            .filter { getBlockAt(it) == Blocks.end_portal_frame }
+            .forEach { tpPads = tpPads.plus(it) }
     }
 
     fun tpPacket(event: S08PacketPlayerPosLook) {
-        if (DungeonUtils.currentRoomName != "Teleport Maze" || event.x % 0.5 != 0.0 || event.y != 69.5 || event.z % 0.5 != 0.0) return
-        val eventBlockPos = BlockPos(event.x, event.y, event.z).toAABB().expand(0.5, 0.0, 0.5)
-        val playerBlockPos = mc.thePlayer.position.toAABB().expand(0.5, 0.0, 0.5)
-        visited.addAll(portals.filter { eventBlockPos.intersectsWith(it.toAABB()) || playerBlockPos.intersectsWith(it.toAABB()) })
+        if (DungeonUtils.currentRoomName != "Teleport Maze" || event.x % 0.5 != 0.0 || event.y != 69.5 || event.z % 0.5 != 0.0 || tpPads.isEmpty()) return
+        visited.addAll(tpPads.filter { Vec3(event.x, event.y, event.z).toAABB().intersectsWith(it.toAABB()) || mc.thePlayer?.position?.toAABB()?.intersectsWith(it.toAABB()) == true })
         getCorrectPortals(Vec3(event.x, event.y, event.z), event.yaw, event.pitch)
     }
 
     private fun getCorrectPortals(pos: Vec3, yaw: Float, pitch: Float) {
-        if (correctPortals.isEmpty()) correctPortals = correctPortals.plus(portals)
+        if (correctPortals.isEmpty()) correctPortals = correctPortals.plus(tpPads)
 
         correctPortals = correctPortals.filter {
             isXZInterceptable(
@@ -60,7 +59,7 @@ object TPMazeSolver {
     }
 
     fun reset() {
-        portals = setOf()
+        tpPads = setOf()
         correctPortals = listOf()
         visited = CopyOnWriteArraySet<BlockPos>()
     }

@@ -15,8 +15,7 @@ import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.monster.EntityBlaze
 import net.minecraft.init.Items
-import net.minecraft.network.play.server.S0EPacketSpawnObject
-import net.minecraft.network.play.server.S2APacketParticles
+import net.minecraft.network.play.server.*
 import net.minecraft.util.EnumParticleTypes
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -30,6 +29,7 @@ object RenderOptimizer : Module(
     private val hideHealerFairy: Boolean by BooleanSetting(name = "Hide Healer Fairy", default = true, description = "Hides the healer fairy.")
     private val hideSoulWeaver: Boolean by BooleanSetting(name = "Hide Soul Weaver", default = true, description = "Hides the soul weaver.")
     private val hideArcherBones: Boolean by BooleanSetting(name = "Hide Archer Bones", default = true, description = "Hides the archer bones.")
+    private val hide0HealthNames: Boolean by BooleanSetting(name = "Hide 0 Health", default = true, description = "Hides the names of entities with 0 health.")
     private val hideWitherMinerName: Boolean by BooleanSetting(name = "Hide WitherMiner Name", default = true, description = "Hides the wither miner name.")
     private val hideTerracottaName: Boolean by BooleanSetting(name = "Hide Terracota Name", default = true, description = "Hides the terracota name.")
     private val hideNonStarredMobName: Boolean by BooleanSetting(name = "Hide Non-Starred Mob Name", default = true, description = "Hides the non-starred mob name.")
@@ -48,7 +48,7 @@ object RenderOptimizer : Module(
 
     init {
         execute(500) {
-            mc.theWorld.loadedEntityList.forEach {
+            mc.theWorld?.loadedEntityList?.forEach {
                 if (!DungeonUtils.inDungeons) return@execute
                 if (removeBlazePuzzleNames) removeBlazePuzzleNames(it)
                 if (it !is EntityArmorStand) return@forEach
@@ -63,8 +63,22 @@ object RenderOptimizer : Module(
         }
     }
 
+    private val healthMatches = arrayOf(
+        Regex("^§.\\[§.Lv\\d+§.] §.+ (?:§.)+0§f/.+§c❤$"),
+        Regex("^.+ (?:§.)+0§c❤$")
+    )
+
     @SubscribeEvent
     fun onPacket(event: PacketReceivedEvent) {
+        if (event.packet is S1CPacketEntityMetadata && hide0HealthNames) {
+            val entity = mc.theWorld?.getEntityByID(event.packet.entityId) ?: return
+            val list = event.packet.func_149376_c() ?: return
+
+            list.filterIsInstance<String>()
+                .takeUnless { strings -> strings.any { healthMatches.any { regex -> regex.matches(it) } } }
+                ?.forEach { _ -> entity.alwaysRenderNameTag = false }
+        }
+
         if (event.packet is S0EPacketSpawnObject && event.packet.type == 70 && fallingBlocks) event.isCanceled = true
 
         if (event.packet !is S2APacketParticles) return
@@ -73,10 +87,10 @@ object RenderOptimizer : Module(
             event.isCanceled = true
 
 
-        if (DungeonUtils.getPhase() == M7Phases.P5 && hideParticles && !event.packet.particleType.name.containsOneOf("ENCHANTMENT TABLE", "FLAME", "FIREWORKS_SPARK"))
+        if (DungeonUtils.getPhase() == M7Phases.P5 && hideParticles && !event.packet.particleType.equalsOneOf(EnumParticleTypes.ENCHANTMENT_TABLE, EnumParticleTypes.FLAME, EnumParticleTypes.FIREWORKS_SPARK))
             event.isCanceled = true
 
-        if (hideHeartParticles && event.packet.particleType.name.containsOneOf("HEART"))
+        if (hideHeartParticles && event.packet.particleType == EnumParticleTypes.HEART)
             event.isCanceled = true
     }
 
@@ -87,19 +101,18 @@ object RenderOptimizer : Module(
     }
 
     private fun removeTentacles(entity: Entity) {
-        if (DungeonUtils.getPhase() == M7Phases.P5 && getSkullValue(entity)?.contains(TENTACLE_TEXTURE) == true)
+        if (DungeonUtils.getPhase() == M7Phases.P5 && getSkullValue(entity) == TENTACLE_TEXTURE)
             entity.setDead()
     }
 
     private fun handleHealerFairy(entity: Entity) {
         val armorStand = entity as? EntityArmorStand ?: return
-        if (armorStand.heldItem == null) return
-        if (DungeonUtils.inDungeons && armorStand.heldItem?.item == Items.skull && getHealerFairyTextureValue(armorStand) == (HEALER_FAIRY_TEXTURE))
+        if (DungeonUtils.inDungeons && armorStand.heldItem?.item == Items.skull && getHealerFairyTextureValue(armorStand) == HEALER_FAIRY_TEXTURE)
             armorStand.setDead()
     }
 
     private fun handleSoulWeaver(entity: Entity) {
-        if (DungeonUtils.inDungeons && getSkullValue(entity)?.contains(SOUL_WEAVER_TEXTURE) == true) entity.setDead()
+        if (DungeonUtils.inDungeons && getSkullValue(entity) == SOUL_WEAVER_TEXTURE) entity.setDead()
     }
 
     private fun handleWitherMiner(entity: Entity) {

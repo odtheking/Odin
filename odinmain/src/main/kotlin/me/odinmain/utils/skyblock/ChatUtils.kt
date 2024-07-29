@@ -54,8 +54,7 @@ fun sendCommand(text: Any, clientSide: Boolean = false) {
  * @param message Message to be sent.
  */
 fun sendChatMessage(message: Any) {
-    if (mc.thePlayer == null) return
-    mc.thePlayer.sendChatMessage(message.toString())
+    mc.thePlayer?.sendChatMessage(message.toString())
 }
 
 /**
@@ -66,7 +65,6 @@ fun sendChatMessage(message: Any) {
  * @param chatStyle Optional chat style to be applied to the message.
  */
 fun modMessage(message: Any?, prefix: Boolean = true, chatStyle: ChatStyle? = null) {
-    if (mc.thePlayer == null) return
     val chatComponent = ChatComponentText(if (prefix) "§3Odin §8»§r $message" else message.toString())
     chatStyle?.let { chatComponent.setChatStyle(it) } // Set chat style using setChatStyle method
     try { mc.thePlayer?.addChatMessage(chatComponent) }
@@ -81,7 +79,7 @@ fun modMessage(message: Any?, prefix: Boolean = true, chatStyle: ChatStyle? = nu
  * @param prefix If `true`, adds a prefix to the message.
  */
 fun devMessage(message: Any?, prefix: Boolean = true) {
-    if (!devMessages || mc.thePlayer == null || !DevPlayers.isDev) return
+    if (!devMessages || !DevPlayers.isDev) return
     val msg = if (prefix) "§3Odin§bDev §8»§r $message" else message.toString()
     mc.thePlayer?.addChatMessage(ChatComponentText(msg))
 }

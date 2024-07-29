@@ -16,7 +16,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object KuudraUtils {
     var kuudraTeammates: List<KuudraPlayer> = emptyList()
-    var giantZombies: MutableList<EntityGiantZombie> = mutableListOf()
+    var kuudraTeammatesNoSelf: List<KuudraPlayer> = emptyList()
+    var giantZombies: List<EntityGiantZombie> = mutableListOf()
     var supplies = BooleanArray(6) { true }
     var kuudraEntity: EntityMagmaCube = EntityMagmaCube(mc.theWorld)
     var builders = 0
@@ -32,6 +33,7 @@ object KuudraUtils {
     fun onWorldLoad(event: WorldEvent.Load) {
         phase = 0
         kuudraTeammates = mutableListOf()
+        kuudraTeammatesNoSelf = mutableListOf()
         supplies = BooleanArray(6) { true }
         giantZombies = mutableListOf()
         kuudraEntity = EntityMagmaCube(mc.theWorld)
@@ -68,7 +70,7 @@ object KuudraUtils {
     init {
         Executor(500) {
             if (!LocationUtils.currentArea.isArea(Island.Kuudra)) return@Executor
-            val entities = mc.theWorld.loadedEntityList
+            val entities = mc.theWorld?.loadedEntityList ?: return@Executor
             giantZombies = entities.filterIsInstance<EntityGiantZombie>().filter{ it.heldItem.unformattedName == "Head" }.toMutableList()
 
             kuudraEntity = entities.filterIsInstance<EntityMagmaCube>().filter { it.slimeSize == 30 && it.getEntityAttribute(SharedMonsterAttributes.maxHealth).baseValue.toFloat() == 100000f }[0]
@@ -96,6 +98,7 @@ object KuudraUtils {
             buildingPiles = entities.filterIsInstance<EntityArmorStand>().filter { it.name.noControlCodes.matches(Regex("PROGRESS: (\\d+)%")) }.map { it }
 
             kuudraTeammates = updateKuudraTeammates(kuudraTeammates)
+            kuudraTeammatesNoSelf = kuudraTeammates.filter { it.playerName != mc.thePlayer?.name }
         }.register()
     }
 
@@ -107,7 +110,7 @@ object KuudraUtils {
             val text = entry.first.displayName?.formattedText?.noControlCodes ?: return@forEach
             val (_, _, name) = Regex("^\\[(\\d+)] (?:\\[\\w+] )*(\\w+)").find(text)?.groupValues ?: return@forEach
             val previousTeammate = previousTeammates.find { it.playerName == name }
-            val entity = mc.theWorld.getPlayerEntityByName(name)
+            val entity = mc.theWorld?.getPlayerEntityByName(name)
             teammates.add(KuudraPlayer(name, previousTeammate?.eatFresh ?: false, previousTeammate?.eatFreshTime ?: 0, entity))
         }
         return teammates

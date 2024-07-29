@@ -2,9 +2,8 @@ package me.odinclient.features.impl.skyblock
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.utils.skyblock.LocationUtils.inSkyblock
 import me.odinmain.utils.name
-import me.odinmain.utils.*
+import me.odinmain.utils.skyblock.LocationUtils.inSkyblock
 import me.odinmain.utils.skyblock.PlayerUtils
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.init.Blocks
@@ -22,7 +21,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
  * @author Aton, X45k
  */
 object AutoHarp : Module(
-    "Auto Harp",
+    name = "Auto Harp",
     category = Category.SKYBLOCK,
     description = "Automatically Completes Melody's Harp"
 ){
@@ -31,27 +30,24 @@ object AutoHarp : Module(
 
     @SubscribeEvent
     fun onGuiOpen(event: GuiOpenEvent) {
-        if (event.gui !is GuiChest || !inSkyblock) return
-        val container = (event.gui as GuiChest).inventorySlots
-        if (container !is ContainerChest) return
+        if (!inSkyblock) return
+        val container = (event.gui as? GuiChest)?.inventorySlots ?: return
         inHarp = container.name.startsWith("Harp -")
     }
 
     @SubscribeEvent
     fun onClientTick(event: TickEvent.ClientTickEvent) {
-        if (!inHarp || mc.thePlayer == null) return
-        val container = mc.thePlayer.openContainer ?: return
-        if (container !is ContainerChest) return
-        val containerChest = mc.thePlayer.openContainer as? ContainerChest ?: return
-        if (containerChest.name == "Harp -") {
+        if (!inHarp) return
+        val container = mc.thePlayer?.openContainer as? ContainerChest ?: return
+        if (container.name == "Harp -") {
             inHarp = false
             return
         }
         val newHash = container.inventorySlots.subList(0,36).joinToString("") { it?.stack?.displayName ?: "" }.hashCode()
         if (lastInv == newHash) return
         lastInv = newHash
-        for (ii in 0..6) {
-            val slot = container.inventorySlots[37 + ii]
+        for (i in 0..6) {
+            val slot = container.inventorySlots[37 + i]
             if ((slot.stack?.item as? ItemBlock)?.block === Blocks.quartz_block) {
                 PlayerUtils.windowClick(slot.slotNumber, PlayerUtils.ClickType.Left)
                 break

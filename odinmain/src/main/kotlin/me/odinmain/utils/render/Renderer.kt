@@ -18,9 +18,9 @@ import kotlin.math.max
 
 object Renderer {
 
-    val defaultStyle = "Filled"
+    const val DEFAULT_STYLE = "Filled"
     val styles = arrayListOf("Filled", "Outline", "Filled Outline")
-    val styleDesc = "How the box should be rendered."
+    const val STYLE_DESCRIPTION = "How the box should be rendered."
 
     /**
      * Draws a box in the world with the specified axis-aligned bounding box (AABB), color, and optional parameters.
@@ -38,10 +38,11 @@ object Renderer {
         outlineWidth: Number = 3,
         outlineAlpha: Number = 1,
         fillAlpha: Number = 1,
-        depth: Boolean = false
+        depth: Boolean = false,
+        lineSmoothing: Boolean = true
     ) {
         if (outlineAlpha == 0f && fillAlpha == 0f) return
-        RenderUtils.drawOutlinedAABB(aabb, color.withAlpha(outlineAlpha.toFloat()), thickness = outlineWidth, depth = depth)
+        RenderUtils.drawOutlinedAABB(aabb, color.withAlpha(outlineAlpha.toFloat()), thickness = outlineWidth, depth = depth, lineSmoothing)
 
         RenderUtils.drawFilledAABB(aabb, color.withAlpha(fillAlpha.toFloat()), depth = depth)
     }
@@ -62,11 +63,12 @@ object Renderer {
         outlineWidth: Number = 3,
         outlineAlpha: Number = 1,
         fillAlpha: Number = 1,
-        depth: Boolean = false
+        depth: Boolean = false,
+        lineSmoothing: Boolean = true
     ) {
         val block = getBlockAt(pos)
         block.setBlockBoundsBasedOnState(mc.theWorld, pos)
-        drawBox(block.getSelectedBoundingBox(mc.theWorld, pos).outlineBounds(), color, outlineWidth, outlineAlpha, fillAlpha, depth)
+        drawBox(block.getSelectedBoundingBox(mc.theWorld, pos).outlineBounds(), color, outlineWidth, outlineAlpha, fillAlpha, depth, lineSmoothing)
     }
 
     fun drawStyledBlock(
@@ -74,12 +76,13 @@ object Renderer {
         color: Color,
         style: Int,
         width: Number = 3,
-        depth: Boolean = false
+        depth: Boolean = false,
+        lineSmoothing: Boolean = true
     ) {
         when (style) {
-            0 -> drawBlock(pos, color, width, 0, color.alpha, depth)
-            1 -> drawBlock(pos, color, width, color.alpha, 0, depth)
-            2 -> drawBlock(pos, color, width, color.alpha, color.multiplyAlpha(.75f).alpha, depth)
+            0 -> drawBlock(pos, color, width, 0, color.alpha, depth, lineSmoothing)
+            1 -> drawBlock(pos, color, width, color.alpha, 0, depth, lineSmoothing)
+            2 -> drawBlock(pos, color, width, color.alpha, color.multiplyAlpha(.75f).alpha, depth, lineSmoothing)
         }
     }
 
@@ -106,7 +109,7 @@ object Renderer {
      * @param depth     Indicates whether to draw with depth (default is false).
      */
     fun draw3DLine(vararg points: Vec3, color: Color, lineWidth: Float = 3f, depth: Boolean = false) {
-        RenderUtils.renderLines(*points, color = color, lineWidth = lineWidth, depth = depth)
+        RenderUtils.drawLines(*points, color = color, lineWidth = lineWidth, depth = depth)
     }
 
     /**
@@ -172,14 +175,14 @@ object Renderer {
      * @param rot3        Rotation parameter.
      * @param color       The color of the cylinder.
      * @param phase       Indicates whether to phase the cylinder (default is false).
-     * @param linemode    Indicates whether to draw the cylinder in line mode (default is false).
+     * @param lineMode    Indicates whether to draw the cylinder in line mode (default is false).
      */
     fun drawCylinder(
         pos: Vec3, baseRadius: Float, topRadius: Float, height: Float,
         slices: Int, stacks: Int, rot1: Float, rot2: Float, rot3: Float,
-        color: Color, phase: Boolean = false, linemode: Boolean = false
+        color: Color, phase: Boolean = false, lineMode: Boolean = false
     ) {
-        RenderUtils.drawCylinder(pos, baseRadius, topRadius, height, slices, stacks, rot1, rot2, rot3, color, linemode, phase)
+        RenderUtils.drawCylinder(pos, baseRadius, topRadius, height, slices, stacks, rot1, rot2, rot3, color, lineMode, phase)
     }
 
     fun draw2DEntity(entity: Entity, lineWidth: Float, color: Color) {
