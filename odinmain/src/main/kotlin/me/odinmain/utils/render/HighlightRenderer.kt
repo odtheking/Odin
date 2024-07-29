@@ -4,6 +4,7 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.RenderEntityModelEvent
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
+import me.odinmain.utils.render.RenderUtils.renderBoundingBox
 import net.minecraft.entity.Entity
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -40,7 +41,7 @@ object HighlightRenderer {
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         entities[HighlightType.Boxes]?.forEach {
-            Renderer.drawStyledBox(it.entity.entityBoundingBox, it.color, it.boxStyle, it.thickness, it.depth)
+            Renderer.drawStyledBox(it.entity.renderBoundingBox, it.color, it.boxStyle, it.thickness, it.depth)
         }
         entities[HighlightType.Box2d]?.filter { !it.depth || mc.thePlayer.canEntityBeSeen(it.entity) }?.forEach {
             Renderer.draw2DEntity(it.entity, it.thickness * 6, it.color)

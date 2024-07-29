@@ -7,7 +7,10 @@ import me.odinmain.utils.*
 import me.odinmain.utils.render.RenderUtils.renderBoundingBox
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.Puzzle
+import me.odinmain.utils.skyblock.dungeon.PuzzleStatus
 import me.odinmain.utils.skyblock.getBlockIdAt
 import me.odinmain.utils.skyblock.partyMessage
 import net.minecraft.entity.item.EntityArmorStand
@@ -40,8 +43,9 @@ object BlazeSolver {
         blazes.removeAll {
             mc.theWorld?.getEntityByID(it.entityId) == null
         }
-        if (blazes.isEmpty() && lastBlazeCount == 1 && PuzzleSolvers.blazeSendComplete) {
-            partyMessage("Blaze puzzle solved!")
+        if (blazes.isEmpty() && lastBlazeCount == 1) {
+            LocationUtils.currentDungeon?.puzzles?.find { it.name == Puzzle.Blaze.name }?.status = PuzzleStatus.Completed
+            if (PuzzleSolvers.blazeSendComplete) partyMessage("Blaze puzzle solved!")
             lastBlazeCount = 0
             return
         }
