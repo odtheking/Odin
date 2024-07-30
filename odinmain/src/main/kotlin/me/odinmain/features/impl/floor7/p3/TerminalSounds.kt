@@ -91,6 +91,12 @@ object TerminalSounds : Module(
         mc.addScheduledTask { mc.thePlayer.playSound("note.pling", 8f, 4f) }
     }
 
+    init {
+        onMessage("The gate has been destroyed!", false) { mc.addScheduledTask { mc.thePlayer.playSound("note.pling", 8f, 4f) } }
+
+        onMessage("The Core entrance is opening!", false) { mc.addScheduledTask { mc.thePlayer.playSound("note.pling", 8f, 4f) } }
+    }
+
     fun playCompleteSound() {
         val sound = if (completedSound == defaultSounds.size - 1) customCompleteSound else defaultSounds[completedSound]
         mc.addScheduledTask { PlayerUtils.playLoudSound(sound, completeVolume, completePitch) }
