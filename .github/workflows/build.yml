@@ -31,30 +31,16 @@ jobs:
         run: chmod +x ./gradlew
       - name: Build with Gradle
         run: ./gradlew build -x test --stacktrace
-      - name: Get Git hash
-        id: get_git_hash
-        run: echo "hash=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-      - name: Rename Odin JAR with Git hash
-        run: |
-          for file in odin/build/libs/*.jar; do
-            mv "$file" "${file%.jar}-${{ steps.get_git_hash.outputs.hash }}.jar"
-          done
-      - name: Rename OdinClient JAR with Git hash
-        run: |
-          for file in odinclient/build/libs/*.jar; do
-            mv "$file" "${file%.jar}-${{ steps.get_git_hash.outputs.hash }}.jar"
-          done
-
       - uses: actions/upload-artifact@v3
         name: Upload Odin
         with:
           name: "Odin Build"
-          path: odin/build/libs/*-${{ steps.get_git_hash.outputs.hash }}.jar
+          path: odin/build/libs/*.jar
       - uses: actions/upload-artifact@v3
         name: Upload OdinClient
         with:
           name: "OdinClient Build"
-          path: odinclient/build/libs/*-${{ steps.get_git_hash.outputs.hash }}.jar
+          path: odinclient/build/libs/*.jar
       - name: Test with Gradle
         run: ./gradlew test
       - uses: actions/upload-artifact@v3
