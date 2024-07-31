@@ -17,6 +17,7 @@ object SkyblockPlayer {
     mana bar
     current speed
     current ehp
+    current overflow mana
      */
 
     val currentHealth: Int get() = (maxHealth * (mc.thePlayer?.health ?: 0f) / 40f).toInt()
@@ -25,18 +26,22 @@ object SkyblockPlayer {
     var maxMana: Int = 0
     var currentSpeed: Int = 0
     var currentDefense: Int = 0
+    var overflowMana: Int = 0
+    var effectiveHP: Int = 0
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onPacket(event: PacketReceivedEvent) {
         if (event.packet !is S02PacketChat || event.packet.type != 2.toByte()) return
         val msg = event.packet.chatComponent.unformattedText.noControlCodes
         // https://regex101.com/r/3s8irT/2
-        val (currentHp, maxHp, middleRegion, cMana, mMana) = Regex(".*?([\\d|,]+)/([\\d|,]+)❤ {5}(.+) {5}([\\d|,]+)/([\\d|,]+)✎([\\d|,]{0,5}.| Mana).*").find(msg)?.destructured ?: return
+        // new version for overflow mana: https://regex101.com/r/3IFer3/1
+        val (currentHp, maxHp, middleRegion, cMana, mMana, oMana) = Regex(".*?([\\d|,]+)/([\\d|,]+)❤ {5}(.+) {5}([\\d|,]+)/([\\d|,]+)✎ (Mana|§?[\\d|,]+ʬ).*").find(msg)?.destructured ?: return
 
         maxHealth = maxHp.replace(",", "").toIntOrNull() ?: return
         currentMana = cMana.replace(",", "").toIntOrNull() ?: return
         maxMana = mMana.replace(",", "").toIntOrNull() ?: return
-
+        overflowMana = oMana.replace(",", "").replace("ʬ","").toIntOrNull() ?: 0
         currentDefense = Regex("([\\d|,]+)❈ Defense").find(middleRegion)?.groupValues?.get(1)?.replace(",", "")?.toIntOrNull() ?: return
+        effectiveHP = (currentHealth * (1 + currentDefense / 100))
     }
 }

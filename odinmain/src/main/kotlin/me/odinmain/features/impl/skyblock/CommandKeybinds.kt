@@ -19,6 +19,12 @@ object CommandKeybinds : Module(
     private val storage: Keybinding by KeybindSetting("Storage", Keyboard.KEY_NONE, "").onPress {
         sendCommand("storage")
     }
+    private val wardrobe: Keybinding by KeybindSetting("Wardrobe", Keyboard.KEY_NONE, "").onPress {
+        sendCommand("wardrobe")
+    }
+    private val equipment: Keybinding by KeybindSetting("Equipment", Keyboard.KEY_NONE, "").onPress {
+        sendCommand("equipment")
+    }
     private val dhub: Keybinding by KeybindSetting("Dungeon Hub", Keyboard.KEY_NONE, "").onPress {
         sendCommand("warp dungeon_hub")
     }
