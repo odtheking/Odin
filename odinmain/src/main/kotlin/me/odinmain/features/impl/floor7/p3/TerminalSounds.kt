@@ -51,34 +51,34 @@ object TerminalSounds : Module(
                 volume == 8f &&
                 //pitch == 1.8888888f &&
                 pitch == 4.047619f &&
-                shouldReplaceSounds()
+                shouldReplaceSounds
             ) event.isCanceled = true
         }
     }
 
     @SubscribeEvent
     fun onSlotClick(event: GuiEvent.GuiMouseClickEvent) {
-        if (!shouldReplaceSounds()) return
+        if (!shouldReplaceSounds) return
         val slot = (event.gui as? GuiChest)?.slotUnderMouse?.slotIndex ?: return
         clickSlot(slot)
     }
 
     @SubscribeEvent
     fun onCustomSlotClick(event: GuiEvent.CustomTermGuiClick) {
-        if (!shouldReplaceSounds()) return
+        if (!shouldReplaceSounds) return
         clickSlot(event.slot)
     }
 
     @SubscribeEvent
     fun onTermComplete(event: TerminalSolvedEvent) {
-        if (shouldReplaceSounds() && event.playerName != mc.thePlayer?.name || (!completeSounds && !clickSounds)) mc.addScheduledTask { mc.thePlayer.playSound("note.pling", 8f, 4f) }
-        else if (shouldReplaceSounds() && completeSounds && !clickSounds) mc.addScheduledTask { playCompleteSound() }
+        if (shouldReplaceSounds && event.playerName != mc.thePlayer?.name || (!completeSounds && !clickSounds)) mc.addScheduledTask { mc.thePlayer.playSound("note.pling", 8f, 4f) }
+        else if (shouldReplaceSounds && completeSounds && !clickSounds) mc.addScheduledTask { playCompleteSound() }
     }
 
     init {
-        onMessage("The gate has been destroyed!", false, { enabled && shouldReplaceSounds() }) { mc.addScheduledTask { mc.thePlayer.playSound("note.pling", 8f, 4f) } }
+        onMessage("The gate has been destroyed!", false, { enabled && shouldReplaceSounds }) { mc.addScheduledTask { mc.thePlayer.playSound("note.pling", 8f, 4f) } }
 
-        onMessage("The Core entrance is opening!", false, { enabled && shouldReplaceSounds() }) { mc.addScheduledTask { mc.thePlayer.playSound("note.pling", 8f, 4f) } }
+        onMessage("The Core entrance is opening!", false, { enabled && shouldReplaceSounds }) { mc.addScheduledTask { mc.thePlayer.playSound("note.pling", 8f, 4f) } }
     }
 
     private fun clickSlot(slot: Int) {
@@ -105,7 +105,5 @@ object TerminalSounds : Module(
         lastPlayed = System.currentTimeMillis()
     }
 
-    private fun shouldReplaceSounds(): Boolean {
-        return (currentTerm != TerminalTypes.NONE && clickSounds)
-    }
+    private val shouldReplaceSounds get() = (currentTerm != TerminalTypes.NONE && clickSounds)
 }
