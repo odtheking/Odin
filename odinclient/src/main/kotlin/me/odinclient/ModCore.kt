@@ -8,7 +8,6 @@ import me.odinclient.features.impl.floor7.p3.*
 import me.odinclient.features.impl.render.*
 import me.odinclient.features.impl.skyblock.*
 import me.odinclient.mixin.accessors.IEntityRendererAccessor
-import me.odinclient.utils.EntityOutlineRenderer
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.commands.registerCommands
@@ -35,7 +34,6 @@ class ModCore {
     fun init(event: FMLInitializationEvent) {
         OdinMain.init()
         listOf(
-            EntityOutlineRenderer,
             this
         ).forEach { MinecraftForge.EVENT_BUS.register(it) }
 
