@@ -70,14 +70,14 @@ object TerminalSounds : Module(
 
     @SubscribeEvent
     fun onTermComplete(event: TerminalSolvedEvent) {
-        if (shouldReplaceSounds && event.playerName != mc.thePlayer?.name || (!completeSounds && !clickSounds)) mc.addScheduledTask { mc.thePlayer.playSound("note.pling", 8f, 4f) }
-        else if (shouldReplaceSounds && completeSounds && !clickSounds) mc.addScheduledTask { playCompleteSound() }
+        if (shouldReplaceSounds && event.playerName != mc.thePlayer?.name || (!completeSounds && !clickSounds)) mc.thePlayer.playSound("note.pling", 8f, 4f)
+        else if (shouldReplaceSounds && completeSounds && !clickSounds) playCompleteSound()
     }
 
     init {
-        onMessage("The gate has been destroyed!", false, { enabled && shouldReplaceSounds }) { mc.addScheduledTask { mc.thePlayer.playSound("note.pling", 8f, 4f) } }
+        onMessage("The gate has been destroyed!", false, { enabled && shouldReplaceSounds }) { mc.thePlayer.playSound("note.pling", 8f, 4f) }
 
-        onMessage("The Core entrance is opening!", false, { enabled && shouldReplaceSounds }) { mc.addScheduledTask { mc.thePlayer.playSound("note.pling", 8f, 4f) } }
+        onMessage("The Core entrance is opening!", false, { enabled && shouldReplaceSounds }) { mc.thePlayer.playSound("note.pling", 8f, 4f) }
     }
 
     private fun clickSlot(slot: Int) {
@@ -94,13 +94,13 @@ object TerminalSounds : Module(
 
     fun playCompleteSound() {
         val sound = if (completedSound == defaultSounds.size - 1) customCompleteSound else defaultSounds[completedSound]
-        mc.addScheduledTask { PlayerUtils.playLoudSound(sound, completeVolume, completePitch) }
+        PlayerUtils.playLoudSound(sound, completeVolume, completePitch)
     }
 
     fun playTerminalSound() {
         if (System.currentTimeMillis() - lastPlayed <= 2) return
         val sound = if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound]
-        mc.addScheduledTask { PlayerUtils.playLoudSound(sound, clickVolume, clickPitch) }
+        PlayerUtils.playLoudSound(sound, clickVolume, clickPitch)
         lastPlayed = System.currentTimeMillis()
     }
 

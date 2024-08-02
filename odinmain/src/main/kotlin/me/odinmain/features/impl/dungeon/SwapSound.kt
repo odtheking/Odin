@@ -41,7 +41,7 @@ object SwapSound : Module(
     @SubscribeEvent
     fun onLeftClick(event: ClickEvent.LeftClickEvent) {
         if (heldItem?.item !in pickaxes || mc.thePlayer?.inventory?.mainInventory?.get(slot ?: return)?.item in pickaxes || playedThisTick || (onlyBlock && mc.objectMouseOver.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK)) return
-        mc.addScheduledTask { PlayerUtils.playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], volume, pitch) }
+        PlayerUtils.playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], volume, pitch)
         playedThisTick = true
     }
 
