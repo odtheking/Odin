@@ -19,7 +19,7 @@ object ItemsHighlight : Module(
     private val style: Int by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION)
     private val lineWidth: Float by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.")
     private val depthCheck: Boolean by BooleanSetting("Depth check", false, description = "Boxes show through walls.")
-    private val colorStyle: Boolean by DualSetting("Color Style", "Rarity", "Distance", default = false, description = "Which color style to use")
+    private val colorStyle: Boolean by DualSetting("Color Style", "Rarity", "Distance", default = false, description = "Which color style to use.")
 
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {

@@ -12,10 +12,10 @@ object ServerHud : Module(
     category = Category.RENDER,
     description = "Displays your current ping, FPS and server's TPS."
 ) {
-    private val ping: Boolean by BooleanSetting("Ping", true)
-    private val tps: Boolean by BooleanSetting("TPS", true)
-    private val fps: Boolean by BooleanSetting("FPS", false)
-    private val style: Int by SelectorSetting("Style", "Row", arrayListOf("Row", "Stacked"))
+    private val ping: Boolean by BooleanSetting("Ping", true, description = "Displays your current ping.")
+    private val tps: Boolean by BooleanSetting("TPS", true, description = "Displays the server's TPS.")
+    private val fps: Boolean by BooleanSetting("FPS", false, description = "Displays your current FPS.")
+    private val style: Int by SelectorSetting("Style", "Row", arrayListOf("Row", "Stacked"), description = "The style of the server hud.")
 
     val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {

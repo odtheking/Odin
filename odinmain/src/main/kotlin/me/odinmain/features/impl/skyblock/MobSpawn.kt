@@ -13,11 +13,11 @@ object MobSpawn: Module(
     category = Category.SKYBLOCK,
     description = "Sends a message whenever a mob spawns."
 ) {
-    private val mobName: String by StringSetting("Mob Name", "MobName", 40, description = "Message sent when mob is detected as spawned")
-    private val soundOnly: Boolean by BooleanSetting("Sound Only", false, description = "Only plays sound when mob spawns")
-    private val delay: Long by NumberSetting("Time between alerts", 3000, 10.0, 10000.0, 10.0, description = "Time between alerts in milliseconds")
-    private val ac: Boolean by BooleanSetting("All Chat", false , description = "Send message in all chat")
-    private val pc: Boolean by BooleanSetting("Party Chat", false, description = "Send message in party chat")
+    private val mobName: String by StringSetting("Mob Name", "MobName", 40, description = "Message sent when mob is detected as spawned.")
+    private val soundOnly: Boolean by BooleanSetting("Sound Only", false, description = "Only plays sound when mob spawns.")
+    private val delay: Long by NumberSetting("Time between alerts", 3000, 10.0, 10000.0, 10.0, description = "Time between alerts in milliseconds.")
+    private val ac: Boolean by BooleanSetting("All Chat", false , description = "Send message in all chat.")
+    private val pc: Boolean by BooleanSetting("Party Chat", false, description = "Send message in party chat.")
 
     private val time = Clock(delay)
 

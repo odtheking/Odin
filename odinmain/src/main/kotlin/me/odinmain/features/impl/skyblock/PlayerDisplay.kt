@@ -11,6 +11,7 @@ import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.SkyblockPlayer
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
 
@@ -20,18 +21,18 @@ object PlayerDisplay : Module(
     category = Category.SKYBLOCK,
 ) {
     private val hideElements: Boolean by DropdownSetting("Hide Elements")
-    private val hideArmor: Boolean by BooleanSetting("Hide Armor").withDependency { hideElements }
-    private val hideFood: Boolean by BooleanSetting("Hide Food").withDependency { hideElements }
-    private val hideHearts: Boolean by BooleanSetting("Hide Hearts").withDependency { hideElements }
-    private val hideXP: Boolean by BooleanSetting("Hide XP Level").withDependency { hideElements }
+    private val hideArmor: Boolean by BooleanSetting("Hide Armor", true, description = "Hides the armor bar.").withDependency { hideElements }
+    private val hideFood: Boolean by BooleanSetting("Hide Food", true, description = "Hides the food bar.").withDependency { hideElements }
+    private val hideHearts: Boolean by BooleanSetting("Hide Hearts", true, description = "Hides the hearts.").withDependency { hideElements }
+    private val hideXP: Boolean by BooleanSetting("Hide XP Level", true, description = "Hides the XP level.").withDependency { hideElements }
     private val hideActionBar: Boolean by DropdownSetting("Hide Action Bar Elements")
-    private val hideHealth: Boolean by BooleanSetting("Hide Health", true).withDependency { hideActionBar }
-    private val hideMana: Boolean by BooleanSetting("Hide Mana", true).withDependency { hideActionBar }
-    private val hideOverflow: Boolean by BooleanSetting("Hide Overflow Mana", true).withDependency { hideActionBar }
-    private val hideDefense: Boolean by BooleanSetting("Hide Defense", true).withDependency { hideActionBar }
+    private val hideHealth: Boolean by BooleanSetting("Hide Health", true, description = "Hides the health bar.").withDependency { hideActionBar }
+    private val hideMana: Boolean by BooleanSetting("Hide Mana", true, description = "Hides the mana bar.").withDependency { hideActionBar }
+    private val hideOverflow: Boolean by BooleanSetting("Hide Overflow Mana", true, description = "Hides the overflow mana bar.").withDependency { hideActionBar }
+    private val hideDefense: Boolean by BooleanSetting("Hide Defense", true, description = "Hides the defense bar.").withDependency { hideActionBar }
     private val overflow: Boolean by DropdownSetting("Overflow Mana")
-    private val separateOverflow: Boolean by BooleanSetting("Separate Overflow Mana", true).withDependency { overflow }
-    private val hideZeroSF: Boolean by BooleanSetting("Hide 0 Overflow", true).withDependency { overflow }
+    private val separateOverflow: Boolean by BooleanSetting("Separate Overflow Mana", true, description = "Separates the overflow mana from the mana bar.").withDependency { overflow }
+    private val hideZeroSF: Boolean by BooleanSetting("Hide 0 Overflow", true, description = "Hides the overflow mana when it's 0.").withDependency { overflow && separateOverflow }
 
     private val showIcons: Boolean by BooleanSetting("Show Icons", true, description = "Shows icons indicating what the number means.")
     private val thousandSeperator: String by StringSetting("Thousands Separator", "", 1, description = "The Separator between thousands and hundreds.")
@@ -61,9 +62,6 @@ object PlayerDisplay : Module(
         return@HudSetting mcTextAndWidth(text, 2, 2, 2, manaColor, center = false) * 2f + 2f to 20f
     }
     private val manaColor: Color by ColorSetting("Mana Color", Color.BLUE, true)
-
-
-
 
     private val overflowManaHud: HudElement by HudSetting("Overflow Mana Hud", 10f, 10f, 1f, true) { example ->
         val text = if (example)
@@ -127,7 +125,7 @@ object PlayerDisplay : Module(
         val symbols = DecimalFormatSymbols(Locale.US).apply {
             groupingSeparator = thousandSeperator.toCharArray().firstOrNull() ?: return number.toString()
         }
-        val formatter = java.text.DecimalFormat("#,###", symbols)
+        val formatter = DecimalFormat("#,###", symbols)
 
         return formatter.format(number)
     }

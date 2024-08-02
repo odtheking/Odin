@@ -7,7 +7,7 @@ import me.odinmain.features.settings.impl.MapSetting
 object VisualWords : Module(
     name = "Visual Words",
     category = Category.RENDER,
-    description = "Replaces words in the world with other words /visualwords."
+    description = "Replaces words in the world with other words. (/visualwords)"
 ) {
     val wordsMap: MutableMap<String, String> by MapSetting("wordsMap", mutableMapOf(), "")
 

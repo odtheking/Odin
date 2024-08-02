@@ -10,7 +10,7 @@ object FreezeGame : Module(
     description = "Freezes the game when you press the keybind.",
     category = Category.FLOOR7
 ) {
-    private val freezeTime: Long by NumberSetting("Freeze Time", 8000L, 100L, 12000L)
+    private val freezeTime: Long by NumberSetting("Freeze Time", 8000L, 100L, 12000L, unit = "ms", description = "The time to freeze the game for.")
 
     override fun onKeybind() {
         if (!enabled) return

@@ -14,7 +14,7 @@ object CancelWrongTerms : Module(
     description = "Stops you from clicking wrong items in terminals.",
     category = Category.FLOOR7
 ) {
-    private val disableRubix: Boolean by BooleanSetting("Disable in Rubix", false, description = "If enabled will not block wrong clicks in Rubix")
+    private val disableRubix: Boolean by BooleanSetting("Disable in Rubix", false, description = "If enabled will not block wrong clicks in Rubix.")
 
     @SubscribeEvent
     fun onSlotClick(event: GuiEvent.GuiMouseClickEvent) {

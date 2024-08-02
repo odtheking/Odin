@@ -550,6 +550,7 @@ object RenderUtils {
         GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE0_ALPHA, GL11.GL_TEXTURE)
         GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND0_ALPHA, GL11.GL_SRC_ALPHA)
     }
+
     fun outlineColor(color: Color) {
         BUF_FLOAT_4.put(0, color.redFloat)
         BUF_FLOAT_4.put(1, color.greenFloat)

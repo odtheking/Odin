@@ -16,7 +16,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object CloseChest : Module(
     name = "Close Chest",
     category = Category.DUNGEON,
-    description = "Options to close the chest automatically or with any key or automatically."
+    description = "Allows you to close the chest with any key or automatically."
 ) {
     private val mode: Boolean by DualSetting("Mode", "Auto", "Any Key", description = "The mode to use, auto will automatically close the chest, any key will make any key input close the chest.")
 

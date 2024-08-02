@@ -34,37 +34,37 @@ object TerminalSolver : Module(
     description = "Renders solution for terminals in floor 7.",
     category = Category.FLOOR7
 ) {
-    private val lockRubixSolution: Boolean by BooleanSetting("Lock Rubix Solution", false, description = "Locks the 'correct' color of the rubix terminal to the one that was scanned first, should make the solver less 'jumpy'.")
-    private val cancelToolTip: Boolean by BooleanSetting("Stop Tooltips", default = true, description = "Stops rendering tooltips in terminals")
-    val renderType: Int by SelectorSetting("Mode", "Odin", arrayListOf("Odin", "Skytils", "SBE", "Custom GUI"))
-    val customGuiText: Int by SelectorSetting("Custom Gui Title", "Top Left", arrayListOf("Top Left", "Middle", "Disabled")).withDependency { renderType == 3 }
+    val renderType: Int by SelectorSetting("Mode", "Odin", arrayListOf("Odin", "Skytils", "SBE", "Custom GUI"), description = "How the terminal solver should render.")
+    val customGuiText: Int by SelectorSetting("Custom Gui Title", "Top Left", arrayListOf("Top Left", "Middle", "Disabled"), description = "Where the custom gui text should be rendered.").withDependency { renderType == 3 }
     val customScale: Float by NumberSetting("Custom Scale", 1f, .8f, 2.5f, .1f, description = "Size of the Custom Terminal Gui").withDependency { renderType == 3 }
-    val textShadow: Boolean by BooleanSetting("Shadow", true, description = "Adds a shadow to the text")
-    val renderOrderNumbers: Boolean by BooleanSetting("Render Order Numbers", true)
+    val textShadow: Boolean by BooleanSetting("Text Shadow", true, description = "Adds a shadow to the text.")
+    val renderOrderNumbers: Boolean by BooleanSetting("Render Order Numbers", false, description = "Renders all numbers in the order terminal.")
+    private val lockRubixSolution: Boolean by BooleanSetting("Lock Rubix Solution", true, description = "Locks the 'correct' color of the rubix terminal to the one that was scanned first, should make the solver less 'jumpy'.")
+    private val cancelToolTip: Boolean by BooleanSetting("Stop Tooltips", true, description = "Stops rendering tooltips in terminals.")
 
     private val showRemoveWrongSettings: Boolean by DropdownSetting("Render Wrong Settings").withDependency { renderType.equalsOneOf(1,2) }
-    private val removeWrong: Boolean by BooleanSetting("Stop Rendering Wrong").withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings }
-    private val removeWrongPanes: Boolean by BooleanSetting("Stop Panes", true).withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings && removeWrong }
-    private val removeWrongRubix: Boolean by BooleanSetting("Stop Rubix", true).withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings && removeWrong }
-    private val removeWrongStartsWith: Boolean by BooleanSetting("Stop Starts With", true).withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings && removeWrong }
-    private val removeWrongSelect: Boolean by BooleanSetting("Stop Select", true).withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings && removeWrong }
+    private val removeWrong: Boolean by BooleanSetting("Stop Rendering Wrong", true, description = "Main toggle for stopping the rendering of incorrect items in terminals.").withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings }
+    private val removeWrongPanes: Boolean by BooleanSetting("Stop Panes", true, description = "Stops rendering wrong panes in the panes terminal.").withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings && removeWrong }
+    private val removeWrongRubix: Boolean by BooleanSetting("Stop Rubix", true, description = "Stops rendering wrong colors in the rubix terminal.").withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings && removeWrong }
+    private val removeWrongStartsWith: Boolean by BooleanSetting("Stop Starts With", true, description = "Stops rendering wrong items in the starts with terminal.").withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings && removeWrong }
+    private val removeWrongSelect: Boolean by BooleanSetting("Stop Select", true, description = "Stops rendering wrong items in the select terminal.").withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings && removeWrong }
 
     private val showColors: Boolean by DropdownSetting("Color Settings")
-    private val wrongColor: Color by ColorSetting("Wrong Color", Color(45, 45, 45), true).withDependency { renderType == 0 && showColors }
-    val textColor: Color by ColorSetting("Text Color", Color(220, 220, 220), true).withDependency { showColors }
-    val panesColor: Color by ColorSetting("Panes Color", Color(0, 170, 170), true).withDependency { showColors }
-    val rubixColor1: Color by ColorSetting("Rubix Color 1", Color(0, 170, 170), true).withDependency { showColors }
-    val rubixColor2: Color by ColorSetting("Rubix Color 2", Color(0, 100, 100), true).withDependency { showColors }
-    val oppositeRubixColor1: Color by ColorSetting("Negative Rubix Color 1", Color(170, 85, 0), true).withDependency { showColors }
-    val oppositeRubixColor2: Color by ColorSetting("Negative Rubix Color 2", Color(210, 85, 0), true).withDependency { showColors }
-    val orderColor: Color by ColorSetting("Order Color 1", Color(0, 170, 170, 1f), true).withDependency { showColors }
-    val orderColor2: Color by ColorSetting("Order Color 2", Color(0, 100, 100, 1f), true).withDependency { showColors }
-    val orderColor3: Color by ColorSetting("Order Color 3", Color(0, 65, 65, 1f), true).withDependency { showColors }
-    val startsWithColor: Color by ColorSetting("Starts With Color", Color(0, 170, 170), true).withDependency { showColors }
-    val selectColor: Color by ColorSetting("Select Color", Color(0, 170, 170), true).withDependency { showColors }
-    val customGuiColor: Color by ColorSetting("Custom Gui Color", ColorUtil.moduleButtonColor.withAlpha(.8f), true).withDependency { showColors }
-    val gap: Int by NumberSetting("Gap", 10, 0, 20, 1, false, "gap between items").withDependency { renderType == 3 }
-    val textScale: Int by NumberSetting("Text Scale", 1, 1, 3, increment = 1, description = "Text scale").withDependency { renderType == 3 }
+    private val backgroundColor: Color by ColorSetting("Background Color", Color(45, 45, 45), true, description = "Background color of the terminal solver.").withDependency { renderType == 0 && showColors }
+    val customGuiColor: Color by ColorSetting("Custom Gui Color", ColorUtil.moduleButtonColor.withAlpha(.8f), true, description = "Color of the custom gui.").withDependency { renderType == 3 && showColors }
+    val gap: Int by NumberSetting("Gap", 10, 0, 20, 1, false, "Gap between items for the custom gui.").withDependency { renderType == 3 }
+    val textScale: Int by NumberSetting("Text Scale", 1, 1, 3, increment = 1, description = "Scale of the text in the custom gui.").withDependency { renderType == 3 }
+    val textColor: Color by ColorSetting("Text Color", Color(220, 220, 220), true, description = "Text color of the terminal solver.").withDependency { showColors }
+    val panesColor: Color by ColorSetting("Panes Color", Color(0, 170, 170), true, description = "Color of the panes terminal solver.").withDependency { showColors }
+    val rubixColor1: Color by ColorSetting("Rubix Color 1", Color(0, 170, 170), true, description = "Color of the rubix terminal solver for 1 click.").withDependency { showColors }
+    val rubixColor2: Color by ColorSetting("Rubix Color 2", Color(0, 100, 100), true, description = "Color of the rubix terminal solver for 2 click.").withDependency { showColors }
+    val oppositeRubixColor1: Color by ColorSetting("Rubix Color -1", Color(170, 85, 0), true, description = "Color of the rubix terminal solver for -1 click.").withDependency { showColors }
+    val oppositeRubixColor2: Color by ColorSetting("Rubix Color -2", Color(210, 85, 0), true, description = "Color of the rubix terminal solver for -2 click.").withDependency { showColors }
+    val orderColor: Color by ColorSetting("Order Color 1", Color(0, 170, 170, 1f), true, description = "Color of the order terminal solver for 1st item.").withDependency { showColors }
+    val orderColor2: Color by ColorSetting("Order Color 2", Color(0, 100, 100, 1f), true, description = "Color of the order terminal solver for 2nd item.").withDependency { showColors }
+    val orderColor3: Color by ColorSetting("Order Color 3", Color(0, 65, 65, 1f), true, description = "Color of the order terminal solver for 3rd item.").withDependency { showColors }
+    val startsWithColor: Color by ColorSetting("Starts With Color", Color(0, 170, 170), true, description = "Color of the starts with terminal solver.").withDependency { showColors }
+    val selectColor: Color by ColorSetting("Select Color", Color(0, 170, 170), true, description = "Color of the select terminal solver.").withDependency { showColors }
 
     private var lastRubixSolution: Int? = null
     private val zLevel get() = if (renderType == 1 && currentTerm.equalsOneOf(TerminalTypes.STARTS_WITH, TerminalTypes.SELECT)) 100f else 400f
@@ -113,7 +113,7 @@ object TerminalSolver : Module(
             return
         }
         translate(event.guiLeft.toFloat(), event.guiTop.toFloat(), 399f)
-        Gui.drawRect(7, 16, event.xSize - 7, event.ySize - 96, wrongColor.rgba)
+        Gui.drawRect(7, 16, event.xSize - 7, event.ySize - 96, backgroundColor.rgba)
         translate(-event.guiLeft.toFloat(), -event.guiTop.toFloat(), -399f)
     }
 

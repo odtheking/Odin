@@ -10,7 +10,7 @@ import me.odinmain.utils.skyblock.itemID
 
 object AutoGFS : Module(
     name = "Auto Gfs",
-    description = "Automatically gets pearls from sacks if your inventory doesn't have any.",
+    description = "Automatically refills certain items from sack.",
     category = Category.DUNGEON
 ) {
     private val inKuudra: Boolean by BooleanSetting("In Kuudra", true, description = "Only gfs in Kuudra.")

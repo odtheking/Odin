@@ -25,13 +25,13 @@ object ChocolateFactory : Module(
 ) {
     private val clickFactory: Boolean by BooleanSetting("Click Factory", false, description = "Click the cookie in the Chocolate Factory menu.")
     private val autoUpgrade: Boolean by BooleanSetting("Auto Upgrade", false, description = "Automatically upgrade the worker.")
-    private val delay: Long by NumberSetting("Delay", 150, 50, 300, 5)
-    private val upgradeDelay: Long by NumberSetting("Upgrade delay", 500, 300, 2000, 100)
+    private val delay: Long by NumberSetting("Delay", 150, 50, 300, 5, unit = "ms", description = "Delay between actions.")
+    private val upgradeDelay: Long by NumberSetting("Upgrade delay", 500, 300, 2000, 100, unit = "ms", description = "Delay between upgrades.")
     private val claimStray: Boolean by BooleanSetting("Claim Strays", false, description = "Claim stray rabbits in the Chocolate Factory menu.")
-    private val cancelSound: Boolean by BooleanSetting("Cancel Sound")
+    private val cancelSound: Boolean by BooleanSetting("Cancel Sound", false, description = "Cancels the eating sound in the Chocolate Factory.")
     private val upgradeMessage: Boolean by BooleanSetting("Odin Upgrade Message", false, description = "Prints a message when upgrading.")
     private val eggEsp: Boolean by BooleanSetting("Egg ESP", false, description = "Shows the location of the egg.")
-    private var chocolate = 0
+    private var chocolate: Long = 0L
 
     private val indexToName = mapOf(28 to "Bro", 29 to "Cousin", 30 to "Sis", 31 to "Daddy", 32 to "Granny", 33 to "Uncle", 34 to "Dog")
     private val possibleLocations = arrayOf(
@@ -68,7 +68,7 @@ object ChocolateFactory : Module(
 
             val choco = container.getSlot(13)?.stack ?: return@execute
 
-            chocolate = choco.displayName.noControlCodes.replace(Regex("\\D"), "").toIntOrNull() ?: 0
+            chocolate = choco.displayName.noControlCodes.replace(Regex("\\D"), "").toLongOrNull() ?: 0L
 
             findWorker(container)
             if (!found) return@execute

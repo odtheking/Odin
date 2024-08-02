@@ -25,7 +25,7 @@ abstract class Module(
     val name: String,
     key: Int? = Keyboard.KEY_NONE,
     @Transient val category: Category = Category.RENDER,
-    @Transient var description: String = "",
+    @Transient var description: String,
     @Transient val tag: TagType = TagType.NONE,
     toggled: Boolean = false,
 ) {

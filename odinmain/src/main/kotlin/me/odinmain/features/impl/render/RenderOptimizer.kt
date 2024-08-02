@@ -36,9 +36,9 @@ object RenderOptimizer : Module(
     private val removeBlazePuzzleNames: Boolean by BooleanSetting(name = "Hide blazes", default = false, description = "Hides the blazes in the blaze puzzle room.")
 
     private val showParticleOptions: Boolean by DropdownSetting("Show Particles Options")
-    private val removeExplosion: Boolean by BooleanSetting("Remove Explosion").withDependency { showParticleOptions }
+    private val removeExplosion: Boolean by BooleanSetting("Remove Explosion", default = false, description = "Removes explosion particles.").withDependency { showParticleOptions }
     private val hideParticles: Boolean by BooleanSetting(name = "Hide P5 Particles", default = true, description = "Hides particles that are not necessary.").withDependency { showParticleOptions }
-    private val hideHeartParticles: Boolean by BooleanSetting(name = "Hide Heart Particles", default = true, description = "Hides heart particles.").withDependency { showParticleOptions }
+    private val hideHeartParticles: Boolean by BooleanSetting(name = "Hide Heart Particles", default = false, description = "Hides heart particles.").withDependency { showParticleOptions }
 
     private const val TENTACLE_TEXTURE = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzM3MjIzZDAxOTA2YWI2M2FmMWExNTk4ODM0M2I4NjM3ZTg1OTMwYjkwNWMzNTEyNWI1NDViMzk4YzU5ZTFjNSJ9fX0="
     private const val HEALER_FAIRY_TEXTURE = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTZjM2UzMWNmYzY2NzMzMjc1YzQyZmNmYjVkOWE0NDM0MmQ2NDNiNTVjZDE0YzljNzdkMjczYTIzNTIifX19"

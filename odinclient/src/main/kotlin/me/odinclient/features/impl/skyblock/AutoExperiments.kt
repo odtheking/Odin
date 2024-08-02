@@ -21,7 +21,7 @@ object AutoExperiments : Module(
     category = Category.SKYBLOCK,
     description = "Automatically click on the Chronomatron and Ultrasequencer experiments."
 ){
-    private val delay: Long by NumberSetting("Click Delay", 200, 0, 1000, 10, description = "Time in ms between automatic test clicks.")
+    private val delay: Long by NumberSetting("Click Delay", 200, 0, 1000, 10, unit = "ms", description = "Time in ms between automatic test clicks.")
     private val autoClose: Boolean by BooleanSetting("Auto Close", true, description = "Automatically close the GUI after completing the experiment.")
     private val serumCount: Long by NumberSetting("Serum Count", 0, 0, 3, 1, description = "Consumed Metaphysical Serum count.")
 
@@ -62,11 +62,8 @@ object AutoExperiments : Module(
      */
     @SubscribeEvent
     fun onGuiDraw(event: GuiEvent.DrawGuiContainerScreenEvent) {
-        if (!inSkyblock || event.gui !is GuiChest) return
-        val container = (event.gui as GuiChest).inventorySlots
-        if (container !is ContainerChest) return
-        val invSlots = container.inventorySlots
-        if (invSlots.size < 54) return
+        if (!inSkyblock) return
+        val invSlots = ((event.gui as? GuiChest)?.inventorySlots as? ContainerChest)?.inventorySlots?.takeIf { it.size >= 54 } ?: return
         when (currentExperiment) {
             ExperimentType.CHRONOMATRON -> solveChronomatron(invSlots)
             ExperimentType.ULTRASEQUENCER -> solveUltraSequencer(invSlots)

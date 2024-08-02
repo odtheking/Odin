@@ -27,18 +27,18 @@ object PuzzleSolvers : Module(
     private val waterSolver: Boolean by BooleanSetting("Water Board Solver", false, description = "Shows you the solution to the water puzzle.").withDependency { waterDropDown }
     val showOrder: Boolean by BooleanSetting("Show Order", true, description = "Shows the order of the levers to click.").withDependency { waterSolver && waterDropDown }
     val showTracer: Boolean by BooleanSetting("Show Tracer", true, description = "Shows a tracer to the next lever.").withDependency { waterSolver && waterDropDown }
-    val tracerColorFirst: Color by ColorSetting("Tracer Color First", Color.GREEN, true, description = "Color for the first tracer").withDependency { showTracer && waterDropDown }
-    val tracerColorSecond: Color by ColorSetting("Tracer Color Second", Color.ORANGE, true, description = "Color for the second tracer").withDependency { showTracer && waterDropDown }
+    val tracerColorFirst: Color by ColorSetting("Tracer Color First", Color.GREEN, true, description = "Color for the first tracer.").withDependency { showTracer && waterDropDown }
+    val tracerColorSecond: Color by ColorSetting("Tracer Color Second", Color.ORANGE, true, description = "Color for the second tracer.").withDependency { showTracer && waterDropDown }
     val reset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
         WaterSolver.reset()
     }.withDependency { waterSolver && waterDropDown }
 
     private val mazeDropDown: Boolean by DropdownSetting("Maze")
-    private val tpMaze: Boolean by BooleanSetting("Teleport Maze", false, description = "Shows you the solution for the TP maze puzzle").withDependency { mazeDropDown }
-    val solutionThroughWalls: Boolean by BooleanSetting("Solution through walls", false, description = "Renders the final solution through walls").withDependency { tpMaze && mazeDropDown }
-    val mazeColorOne: Color by ColorSetting("Color for one solution", Color.GREEN.withAlpha(.5f), true, description = "Color for when there is a single solution").withDependency { tpMaze && mazeDropDown }
-    val mazeColorMultiple: Color by ColorSetting("Color for multiple solutions", Color.ORANGE.withAlpha(.5f), true, description = "Color for when there are multiple solutions").withDependency { tpMaze && mazeDropDown }
-    val mazeColorVisited: Color by ColorSetting("Color for visited", Color.RED.withAlpha(.5f), true, description = "Color for the already used TP pads").withDependency { tpMaze && mazeDropDown }
+    private val tpMaze: Boolean by BooleanSetting("Teleport Maze", false, description = "Shows you the solution for the TP maze puzzle.").withDependency { mazeDropDown }
+    val solutionThroughWalls: Boolean by BooleanSetting("Solution through walls", false, description = "Renders the final solution through walls.").withDependency { tpMaze && mazeDropDown }
+    val mazeColorOne: Color by ColorSetting("Color for one solution", Color.GREEN.withAlpha(.5f), true, description = "Color for when there is a single solution.").withDependency { tpMaze && mazeDropDown }
+    val mazeColorMultiple: Color by ColorSetting("Color for multiple solutions", Color.ORANGE.withAlpha(.5f), true, description = "Color for when there are multiple solutions.").withDependency { tpMaze && mazeDropDown }
+    val mazeColorVisited: Color by ColorSetting("Color for visited", Color.RED.withAlpha(.5f), true, description = "Color for the already used TP pads.").withDependency { tpMaze && mazeDropDown }
     private val click: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
         TPMazeSolver.reset()
     }.withDependency { tpMaze && mazeDropDown }
@@ -49,40 +49,40 @@ object PuzzleSolvers : Module(
     val tttStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { tttSolver && tttDropDown }
 */
     private val iceFillDropDown: Boolean by DropdownSetting("Ice Fill")
-    private val iceFillSolver: Boolean by BooleanSetting("Ice Fill Solver", false, description = "Solver for the ice fill puzzle").withDependency { iceFillDropDown }
-    private val iceFillColor: Color by ColorSetting("Ice Fill Color", Color.PINK, true, description = "Color for the ice fill solver").withDependency { iceFillSolver && iceFillDropDown }
+    private val iceFillSolver: Boolean by BooleanSetting("Ice Fill Solver", false, description = "Solver for the ice fill puzzle.").withDependency { iceFillDropDown }
+    private val iceFillColor: Color by ColorSetting("Ice Fill Color", Color.PINK, true, description = "Color for the ice fill solver.").withDependency { iceFillSolver && iceFillDropDown }
     private val action: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
         IceFillSolver.reset()
     }.withDependency { iceFillSolver && iceFillDropDown }
 
     private val blazeDropDown: Boolean by DropdownSetting("Blaze")
-    private val blazeSolver: Boolean by BooleanSetting("Blaze Solver").withDependency { blazeDropDown }
-    val blazeLineNext: Boolean by BooleanSetting("Blaze Solver Next Line", true).withDependency { blazeSolver && blazeDropDown }
-    val blazeLineAmount: Int by NumberSetting("Blaze Solver Lines", 1, 1, 10).withDependency { blazeSolver && blazeLineNext && blazeDropDown }
+    private val blazeSolver: Boolean by BooleanSetting("Blaze Solver", description = "Shows you the solution for the Blaze puzzle").withDependency { blazeDropDown }
+    val blazeLineNext: Boolean by BooleanSetting("Blaze Solver Next Line", true, description = "Shows the next line to click.").withDependency { blazeSolver && blazeDropDown }
+    val blazeLineAmount: Int by NumberSetting("Blaze Solver Lines", 1, 1, 10, 1, description = "Amount of lines to show.").withDependency { blazeSolver && blazeDropDown }
     val blazeStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { blazeSolver && blazeDropDown }
-    val blazeFirstColor: Color by ColorSetting("First Color", Color.GREEN, true).withDependency { blazeSolver && blazeDropDown }
-    val blazeSecondColor: Color by ColorSetting("Second Color", Color.ORANGE, true).withDependency { blazeSolver && blazeDropDown }
-    val blazeAllColor: Color by ColorSetting("Other Color", Color.WHITE.withAlpha(.3f), true).withDependency { blazeSolver && blazeDropDown }
-    val blazeWidth: Double by NumberSetting("Box Width", 1.0, 0.5, 2.0, 0.1).withDependency { blazeSolver && blazeDropDown }
-    val blazeHeight: Double by NumberSetting("Box Height", 2.0, 1.0, 3.0, 0.1).withDependency { blazeSolver && blazeDropDown }
+    val blazeFirstColor: Color by ColorSetting("First Color", Color.GREEN, true, description = "Color for the first blaze.").withDependency { blazeSolver && blazeDropDown }
+    val blazeSecondColor: Color by ColorSetting("Second Color", Color.ORANGE, true, description = "Color for the second blaze.").withDependency { blazeSolver && blazeDropDown }
+    val blazeAllColor: Color by ColorSetting("Other Color", Color.WHITE.withAlpha(.3f), true, description = "Color for the other blazes.").withDependency { blazeSolver && blazeDropDown }
+    val blazeWidth: Double by NumberSetting("Box Width", 1.0, 0.5, 2.0, 0.1, description = "Width of the box.").withDependency { blazeSolver && blazeDropDown }
+    val blazeHeight: Double by NumberSetting("Box Height", 2.0, 1.0, 3.0, 0.1, description = "Height of the box.").withDependency { blazeSolver && blazeDropDown }
     val blazeSendComplete: Boolean by BooleanSetting("Send Complete", false, description = "Send complete message").withDependency { blazeSolver && blazeDropDown }
     private val blazeReset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
         BlazeSolver.reset()
     }.withDependency { blazeSolver && blazeDropDown }
 
     private val beamsDropDown: Boolean by DropdownSetting("Beams")
-    private val beamsSolver: Boolean by BooleanSetting("Creeper Beams Solver", false, description = "Shows you the solution for the Creeper Beams puzzle").withDependency { beamsDropDown }
+    private val beamsSolver: Boolean by BooleanSetting("Creeper Beams Solver", false, description = "Shows you the solution for the Creeper Beams puzzle.").withDependency { beamsDropDown }
     val beamStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { beamsSolver && beamsDropDown }
-    val beamsDepth: Boolean by BooleanSetting("Depth", false, description = "Depth check").withDependency { beamsSolver && beamsDropDown }
-    val beamsTracer: Boolean by BooleanSetting("Tracer", false, description = "Tracer").withDependency { beamsSolver && beamsDropDown }
-    val beamsAlpha: Float by NumberSetting("Color Alpha", .7f, 0f, 1f, .05f).withDependency { beamsSolver && beamsDropDown }
+    val beamsDepth: Boolean by BooleanSetting("Depth", false, description = "Depth check for the beams puzzle.").withDependency { beamsSolver && beamsDropDown }
+    val beamsTracer: Boolean by BooleanSetting("Tracer", false, description = "Shows a tracer to the next lantern.").withDependency { beamsSolver && beamsDropDown }
+    val beamsAlpha: Float by NumberSetting("Color Alpha", .7f, 0f, 1f, .05f, description = "The alpha of the color.").withDependency { beamsSolver && beamsDropDown }
     private val beamsReset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
         BeamsSolver.reset()
     }.withDependency { beamsSolver && beamsDropDown }
 
     private val weirdosDropDown: Boolean by DropdownSetting("Weirdos")
-    private val weirdosSolver: Boolean by BooleanSetting("Weirdos Solver", false, description = "Shows you the solution for the Weirdos puzzle").withDependency { weirdosDropDown }
-    val weirdosColor: Color by ColorSetting("Weirdos Color", Color.GREEN.withAlpha(0.7f), true, description = "Color for the weirdos solver").withDependency { weirdosSolver && weirdosDropDown }
+    private val weirdosSolver: Boolean by BooleanSetting("Weirdos Solver", false, description = "Shows you the solution for the Weirdos puzzle.").withDependency { weirdosDropDown }
+    val weirdosColor: Color by ColorSetting("Weirdos Color", Color.GREEN.withAlpha(0.7f), true, description = "Color for the weirdos solver.").withDependency { weirdosSolver && weirdosDropDown }
     val weirdosWrongColor: Color by ColorSetting("Weirdos Wrong Color", Color.RED.withAlpha(.7f), true,  description = "Color for the incorrect Weirdos.").withDependency { weirdosSolver && weirdosDropDown }
     val weirdosStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { weirdosSolver && weirdosDropDown }
     private val weirdosReset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
@@ -90,19 +90,18 @@ object PuzzleSolvers : Module(
     }.withDependency { weirdosSolver && weirdosDropDown }
 
     private val quizDropdown: Boolean by DropdownSetting("Quiz")
-    private val quizSolver: Boolean by BooleanSetting("Quiz Solver", false, description = "Solver for the trivia puzzle").withDependency { quizDropdown }
-    val quizDepth: Boolean by BooleanSetting("Quiz Depth", false, description = "Depth check for the trivia puzzle").withDependency { quizDropdown && quizSolver }
+    private val quizSolver: Boolean by BooleanSetting("Quiz Solver", false, description = "Solver for the trivia puzzle.").withDependency { quizDropdown }
+    val quizDepth: Boolean by BooleanSetting("Quiz Depth", false, description = "Depth check for the trivia puzzle.").withDependency { quizDropdown && quizSolver }
     val quizReset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
         QuizSolver.reset()
     }.withDependency { quizDropdown && quizSolver }
 
     private val boulderDropDown: Boolean by DropdownSetting("Boulder")
-    private val boulderSolver: Boolean by BooleanSetting("Boulder Solver", false, description = "Solver for the boulder puzzle").withDependency { boulderDropDown }
-    val showAllBoulderClicks: Boolean by DualSetting("Boulder clicks", "Only First", "All Clicks", false).withDependency { boulderDropDown && boulderSolver }
+    private val boulderSolver: Boolean by BooleanSetting("Boulder Solver", false, description = "Solver for the boulder puzzle.").withDependency { boulderDropDown }
+    val showAllBoulderClicks: Boolean by DualSetting("Boulder clicks", "Only First", "All Clicks", false, description = "Shows all the clicks or only the first.").withDependency { boulderDropDown && boulderSolver }
     val boulderStyle: Int by SelectorSetting("Boulder Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { boulderDropDown && boulderSolver }
     val boulderColor: Color by ColorSetting("Boulder Color", Color.GREEN.withAlpha(.5f), allowAlpha = true, description = "The color of the box.").withDependency { boulderDropDown && boulderSolver }
     val boulderLineWidth: Float by NumberSetting("Boulder Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.").withDependency { boulderDropDown && boulderSolver }
-
 
     init {
         execute(500) {

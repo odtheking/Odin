@@ -24,11 +24,11 @@ object ChestEsp : Module(
     category = Category.RENDER,
     description = "Displays chests through walls."
 ) {
-    private val onlyDungeon: Boolean by BooleanSetting(name = "Only Dungeon")
-    private val onlyCH: Boolean by BooleanSetting(name = "Only Crystal Hollows")
-    private val hideClicked: Boolean by BooleanSetting(name = "Hide Clicked")
-    private val renderMode: Int by SelectorSetting(name = "Render Mode", "Chams", arrayListOf("Chams", "Outline"))
-    private val color: Color by ColorSetting(name = "Color", default = Color.RED, allowAlpha = true)
+    private val onlyDungeon: Boolean by BooleanSetting(name = "Only Dungeon", description = "Only show chests in dungeons.")
+    private val onlyCH: Boolean by BooleanSetting(name = "Only Crystal Hollows", description = "Only show chests in Crystal Hollows.")
+    private val hideClicked: Boolean by BooleanSetting(name = "Hide Clicked", description = "Hide chests that have been clicked.")
+    private val renderMode: Int by SelectorSetting(name = "Render Mode", "Chams", arrayListOf("Chams", "Outline"), description = "The rendering mode.")
+    private val color: Color by ColorSetting(name = "Color", default = Color.RED, allowAlpha = true, description = "The color of the chest ESP.")
 
     private val chests = mutableSetOf<BlockPos>()
 

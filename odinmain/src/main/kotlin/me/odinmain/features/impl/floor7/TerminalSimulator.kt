@@ -11,7 +11,7 @@ object TerminalSimulator : Module(
     description = "Simulates a floor 7 terminal from phase 3.",
     category = Category.FLOOR7
 ) {
-    val sendMessage: Boolean by DualSetting("Send Message", "Always", "Only PB", false, description = "Send a message when a terminal is completed")
+    val sendMessage: Boolean by DualSetting("Send Message", "Always", "Only PB", false, description = "Send a message when a terminal is completed.")
     private val ping :Int by NumberSetting("Ping", 0, 0, 500, description = "Ping of the terminal.")
     private val repetitiveTerminals: Int by NumberSetting("Random Terminals", 1, 1, 100, description = "Amount of random terminals.")
     val openStart: Boolean by BooleanSetting("Open Start", false, description = "Open the start menu after you finish a terminal.")
