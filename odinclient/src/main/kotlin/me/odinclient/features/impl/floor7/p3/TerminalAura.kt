@@ -25,7 +25,6 @@ object TerminalAura : Module(
     description = "Automatically interacts with inactive terminals in floor 7.",
     tag = TagType.RISKY
 ) {
-
     private val onGround: Boolean by BooleanSetting("On Ground", true)
 
     private val clickClock = Clock(1000)
@@ -44,8 +43,7 @@ object TerminalAura : Module(
 
     @SubscribeEvent
     fun onPacketSent(event: PacketSentEvent) {
-        val packet = event.packet
-        if (packet !is C02PacketUseEntity) return
+        val packet = event.packet as? C02PacketUseEntity ?: return
         val entity = packet.getEntityFromWorld(mc.theWorld) ?: return
         if (entity.name.noControlCodes != "Inactive Terminal") return
         if (!interactClock.hasTimePassed() || TerminalSolver.currentTerm != TerminalTypes.NONE) event.isCanceled = true else interactClock.update()
@@ -53,16 +51,16 @@ object TerminalAura : Module(
 
     @SubscribeEvent
     fun onPacketReceived(event: PacketReceivedEvent) {
-        if (event.packet !is S2DPacketOpenWindow) return
-        val title = (event.packet as S2DPacketOpenWindow).windowTitle.formattedText.noControlCodes
+        val packet = event.packet as? S2DPacketOpenWindow ?: return
+        val title = packet.windowTitle.formattedText.noControlCodes
         if (title == "Click the button on time!") interactClock.update()
     }
 
     @SubscribeEvent
     fun onEntityLoaded(event: PostEntityMetadata) {
         if (DungeonUtils.getPhase() != M7Phases.P3) return
-        val entity = (mc.theWorld.getEntityByID(event.packet.entityId))
-        if (entity !is EntityArmorStand || entity.name.noControlCodes != "Inactive Terminal") return
+        val entity = mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityArmorStand ?: return
+        if (entity.name.noControlCodes != "Inactive Terminal") return
         terminalEntityList.add(entity)
     }
 
@@ -76,5 +74,4 @@ object TerminalAura : Module(
         mc.thePlayer.sendQueue.addToSendQueue(C02PacketUseEntity(terminal, C02PacketUseEntity.Action.INTERACT))
         clickClock.update()
     }
-
 }

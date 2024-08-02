@@ -77,7 +77,7 @@ object NoPre : Module(
                 }
                 msg = "No $location!"
             }
-            if (msg.isEmpty()) return@onMessage modMessage("You didn't get to your pre spot in time")
+            if (msg.isEmpty()) return@onMessage modMessage("§cYou didn't get to your pre spot in time")
             partyMessage(msg)
             if (showAlert) PlayerUtils.alert(msg, time = 10)
         }

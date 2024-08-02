@@ -7,9 +7,8 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.utils.addVec
+import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
-import me.odinmain.utils.distanceSquaredTo
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import net.minecraft.entity.item.EntityItemFrame
@@ -30,7 +29,6 @@ object ArrowAlign : Module(
 
     private val triggerBotClock = Clock(delay)
 
-    private val standPosition = Vec3(0.0, 120.0, 77.0)
     private val frameGridCorner = Vec3(-2.0, 120.0, 75.0)
 
     private val recentClickTimestamps = mutableMapOf<Int, Long>()
@@ -39,9 +37,9 @@ object ArrowAlign : Module(
     private var targetSolution: List<Int>? = null
 
     init {
-        execute(200) {
+        execute(100) {
             clicksRemaining.clear()
-            if ((mc.thePlayer?.distanceSquaredTo(standPosition) ?: return@execute) > 225) {
+            if ((mc.thePlayer?.distanceSquaredTo(Vec3(0.0, 120.0, 77.0)) ?: return@execute) > 200) {
                 currentFrameRotations = null
                 targetSolution = null
                 return@execute
@@ -49,17 +47,13 @@ object ArrowAlign : Module(
 
             currentFrameRotations = getFrames()
 
-            possibleSolutions.find { solution ->
-                solution.indices.all { i ->
-                    val currentRotation = currentFrameRotations?.get(i) ?: return@all false
-                    (solution[i] == -1 || currentRotation == -1) && solution[i] == currentRotation
+            possibleSolutions.forEach { arr ->
+                for (i in arr.indices) {
+                    if ((arr[i] == -1 || currentFrameRotations?.get(i) == -1) && arr[i] != currentFrameRotations?.get(i)) return@forEach
                 }
-            }?.let { foundSolution ->
-                targetSolution = foundSolution
-                foundSolution.forEachIndexed { i, targetRotation ->
-                    val currentRotation = currentFrameRotations?.get(i) ?: return@forEachIndexed
-                    val clicksNeeded = calculateClicksNeeded(currentRotation, targetRotation)
-                    if (clicksNeeded > 0) clicksRemaining[i] = clicksNeeded
+
+                for (i in arr.indices) {
+                    clicksRemaining[i] = calculateClicksNeeded(currentFrameRotations?.get(i) ?: return@forEach, arr[i]).takeIf { it != 0 } ?: continue
                 }
             }
         }
@@ -69,9 +63,10 @@ object ArrowAlign : Module(
     fun onRightClick(event: ClickEvent.RightClickEvent) {
         val targetFrame = mc.objectMouseOver?.entityHit as? EntityItemFrame ?: return
 
-        val frameIndex = ((targetFrame.posY - frameGridCorner.yCoord) + (targetFrame.posZ - frameGridCorner.zCoord) * 5).toInt()
+        val targetFramePosition = targetFrame.positionVector.flooredVec()
 
-        if (targetFrame.posX != frameGridCorner.xCoord || currentFrameRotations?.get(frameIndex) == -1 || frameIndex !in 0..24) return
+        val frameIndex = ((targetFramePosition.yCoord - frameGridCorner.yCoord) + (targetFramePosition.zCoord - frameGridCorner.zCoord) * 5).toInt()
+        if (targetFramePosition.xCoord != frameGridCorner.xCoord || currentFrameRotations?.get(frameIndex) == -1 || frameIndex !in 0..24) return
 
         if (!clicksRemaining.containsKey(frameIndex) && mc.thePlayer.isSneaking) {
             if (blockWrong) event.isCanceled = true
@@ -91,6 +86,7 @@ object ArrowAlign : Module(
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (clicksRemaining.isEmpty()) return
+        triggerBot()
         clicksRemaining.forEach { (index, clickNeeded) ->
             val framePosition = getFramePositionFromIndex(index)
             val color = when {
@@ -99,30 +95,32 @@ object ArrowAlign : Module(
                 clickNeeded < 5 -> Color(255, 170, 0)
                 else -> Color(170, 0, 0)
             }
-            Renderer.drawStringInWorld(clickNeeded.toString(), framePosition.addVec(y = 0.6, z = 0.5), color, scale = 0.5f)
+            Renderer.drawStringInWorld(clickNeeded.toString(), framePosition.addVec(y = 0.6, z = 0.5), color)
         }
     }
 
     private fun getFrames(): List<Int> {
-        val itemFrames = mc.theWorld.getEntities(EntityItemFrame::class.java) {
-            it != null && it.displayedItem?.item == Items.arrow
-        } ?: return List(25) { -1 }
+        val itemFrames = mc.theWorld.loadedEntityList
+            .filterIsInstance<EntityItemFrame>()
+            .filter { it.displayedItem?.item == Items.arrow }
+        if (itemFrames.isEmpty()) return List(25) { -1 }
 
-        val positionToRotationMap = itemFrames.associate { Vec3(it.posX, it.posY, it.posZ).toString() to it.rotation }
+        val positionToRotationMap = itemFrames.associate { it.positionVector.flooredVec().toString() to it.rotation }
 
         return (0..24).map { index ->
             if (recentClickTimestamps[index]?.let { System.currentTimeMillis() - it < 1000 } == true && currentFrameRotations != null)
                 currentFrameRotations?.get(index) ?: -1
-            else positionToRotationMap[getFramePositionFromIndex(index).toString()] ?: -1
+            else
+                positionToRotationMap[getFramePositionFromIndex(index).toString()] ?: -1
         }
-    }
-
-    private fun calculateClicksNeeded(currentRotation: Int, targetRotation: Int): Int {
-        return (8 - currentRotation + targetRotation) % 8
     }
 
     private fun getFramePositionFromIndex(index: Int): Vec3 {
         return frameGridCorner.addVec(0, index % 5, index / 5)
+    }
+
+    private fun calculateClicksNeeded(currentRotation: Int, targetRotation: Int): Int {
+        return (8 - currentRotation + targetRotation) % 8
     }
 
     private val possibleSolutions = listOf(
@@ -138,15 +136,14 @@ object ArrowAlign : Module(
     )
 
     private fun triggerBot() {
-        if (!triggerBotClock.hasTimePassed(delay) || (sneakToDisableTriggerbot && mc.thePlayer.isSneaking)) return
+        if (!triggerBotClock.hasTimePassed(delay) || (sneakToDisableTriggerbot && mc.thePlayer.isSneaking) || !triggerBot) return
         val targetFrame = mc.objectMouseOver?.entityHit as? EntityItemFrame ?: return
 
-        val framePosition = Vec3(targetFrame.posX, targetFrame.posY, targetFrame.posZ)
-        val frameIndex = ((framePosition.yCoord - frameGridCorner.yCoord) + (framePosition.zCoord - frameGridCorner.zCoord) * 5).toInt()
+        val targetFramePosition = targetFrame.positionVector.flooredVec()
 
-        if (framePosition.xCoord != frameGridCorner.xCoord || currentFrameRotations?.get(frameIndex) == -1 || frameIndex !in 0..24) return
-
-        if (!clicksRemaining.containsKey(frameIndex)) {
+        val frameIndex = ((targetFramePosition.yCoord - frameGridCorner.yCoord) + (targetFramePosition.zCoord - frameGridCorner.zCoord) * 5).toInt()
+        if (targetFramePosition.xCoord != frameGridCorner.xCoord || currentFrameRotations?.get(frameIndex) == -1 || frameIndex !in 0..24) return
+        clicksRemaining[frameIndex]?.let {
             PlayerUtils.rightClick()
             triggerBotClock.update()
         }

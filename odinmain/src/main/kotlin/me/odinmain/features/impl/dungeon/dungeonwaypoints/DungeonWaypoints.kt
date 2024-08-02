@@ -4,6 +4,7 @@ import me.odinmain.config.DungeonWaypointConfigCLAY
 import me.odinmain.events.impl.*
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.onLocked
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.resetSecrets
 import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -16,6 +17,7 @@ import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
+import net.minecraft.block.BlockSign
 import net.minecraft.client.gui.*
 import net.minecraft.util.*
 import net.minecraftforge.client.event.RenderGameOverlayEvent
@@ -45,7 +47,7 @@ object DungeonWaypoints : Module(
     var secretWaypoint: Boolean by BooleanSetting("Secret", default = false, description = "If the next waypoint you place should be removed when a secret is interacted with near this waypoint.")
     private val disableDepth: Boolean by BooleanSetting("Disable Depth", false, description = "Disables depth testing for waypoints.")
     private val resetButton: () -> Unit by ActionSetting("Reset Current Room") {
-        val room = DungeonUtils.currentRoom ?: return@ActionSetting modMessage("Room not found!!!")
+        val room = DungeonUtils.currentFullRoom ?: return@ActionSetting modMessage("Room not found!")
 
         val waypoints = DungeonWaypointConfigCLAY.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
         if (!waypoints.removeAll { true }) return@ActionSetting modMessage("Current room does not have any waypoints!")
@@ -73,6 +75,10 @@ object DungeonWaypoints : Module(
 
     init {
         onWorldLoad { resetSecrets() }
+
+        onMessage("That chest is locked!", true) {
+            onLocked()
+        }
     }
 
     @SubscribeEvent
@@ -84,8 +90,8 @@ object DungeonWaypoints : Module(
 
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
-        if ((DungeonUtils.inBoss || !DungeonUtils.inDungeons) && mc.theWorld.isRemote) return
-        val room = DungeonUtils.currentRoom ?: return
+        if ((DungeonUtils.inBoss || !DungeonUtils.inDungeons) && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) return
+        val room = DungeonUtils.currentFullRoom ?: return
         startProfile("Dungeon Waypoints")
         glList = RenderUtils.drawBoxes(room.waypoints.filter { !it.clicked }, glList, disableDepth)
         room.waypoints.filter { it.title != null && !it.clicked }.forEach {
@@ -122,10 +128,11 @@ object DungeonWaypoints : Module(
     fun onInteract(event: ClickEvent.RightClickEvent) {
         val pos = if (!reachEdits) mc.objectMouseOver?.blockPos ?: return else reachPos?.pos ?: return
         if (!allowEdits || isAir(pos)) return
-        val room = DungeonUtils.currentRoom ?: return
+        val room = DungeonUtils.currentFullRoom ?: return
         val vec = Vec3(pos).subtractVec(x = room.clayPos.x, z = room.clayPos.z).rotateToNorth(room.room.rotation)
+        val block = getBlockAt(pos)
         val aabb =
-            if (useBlockSize) getBlockAt(pos).getSelectedBoundingBox(mc.theWorld, BlockPos(0, 0, 0))?.outlineBounds() ?: return
+            if (useBlockSize && block !is BlockSign) block.getSelectedBoundingBox(mc.theWorld, BlockPos(0, 0, 0))?.outlineBounds() ?: return
             else AxisAlignedBB(.5 - (size / 2), .5 - (size / 2), .5 - (size / 2), .5 + (size / 2), .5 + (size / 2), .5 + (size / 2)).expand(0.002, 0.002, 0.002)
 
         val waypoints = getWaypoints(room)
@@ -191,7 +198,6 @@ object DungeonWaypoints : Module(
     fun getWaypoints(room: FullRoom) : MutableList<DungeonWaypoint> {
         return DungeonWaypointConfigCLAY.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
     }
-
 }
 
 object GuiSign : GuiScreen() {

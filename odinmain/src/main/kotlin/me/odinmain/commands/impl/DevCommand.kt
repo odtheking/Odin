@@ -49,7 +49,7 @@ val devCommand = commodore("oddev") {
             |DungeonTime: ${DungeonUtils.dungeonTime}
             |currentDungeonPlayer: ${DungeonUtils.currentDungeonPlayer.name}, ${DungeonUtils.currentDungeonPlayer.clazz}, ${DungeonUtils.currentDungeonPlayer.isDead}, ${DungeonUtils.isGhost}
             |doorOpener: ${DungeonUtils.doorOpener}
-            |currentRoom: ${DungeonUtils.currentRoom?.room?.data?.name}, roomsPassed: ${DungeonUtils.passedRooms.map { it.room.data.name }}
+            |currentRoom: ${DungeonUtils.currentFullRoom?.room?.data?.name}, roomsPassed: ${DungeonUtils.passedRooms.map { it.room.data.name }}
             |Teammates: ${DungeonUtils.dungeonTeammates.joinToString { "${it.name} (${it.clazz})" }}
             |TeammatesNoSelf: ${DungeonUtils.dungeonTeammatesNoSelf.map { it.name }}
             |LeapTeammates: ${DungeonUtils.leapTeammates.map { it.name }}
@@ -68,7 +68,7 @@ val devCommand = commodore("oddev") {
     }
 
 	literal("roomdata").runs {
-        val room = DungeonUtils.currentRoom ?: return@runs modMessage("§cYou are not in a dungeon!")
+        val room = DungeonUtils.currentFullRoom ?: return@runs modMessage("§cYou are not in a dungeon!")
         val xPos = (-185 + ((mc.thePlayer.posX + 200) / 32) * 32).toInt()
         val zPos = (-185 + ((mc.thePlayer.posZ + 200) / 32) * 32).toInt()
         val core = ScanUtils.getCore(xPos, zPos)

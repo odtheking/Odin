@@ -3,7 +3,6 @@ package me.odinmain.features.impl.nether
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.utils.floor
 import me.odinmain.utils.skyblock.*
 
 object VanqNotifier: Module(
@@ -20,8 +19,8 @@ object VanqNotifier: Module(
        onMessage("A Vanquisher is spawning nearby!", false) {
            modMessage("Vanquisher has spawned!")
            PlayerUtils.alert("§5Vanquisher", playSound = playSound, displayText = showText)
-           if (ac) allMessage("x: ${PlayerUtils.posX.floor()}, y: ${PlayerUtils.posY.floor()}, z: ${PlayerUtils.posZ.floor()}")
-           if (pc) partyMessage("x: ${PlayerUtils.posX.floor()}, y: ${PlayerUtils.posY.floor()}, z: ${PlayerUtils.posZ.floor()}")
+           if (ac) allMessage(PlayerUtils.getPositionString())
+           if (pc) partyMessage(PlayerUtils.getPositionString())
        }
    }
 }

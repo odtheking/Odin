@@ -3,10 +3,8 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import me.odinmain.events.impl.DungeonEvents
-import me.odinmain.utils.addRotationCoords
-import me.odinmain.utils.equalsOneOf
+import me.odinmain.utils.*
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.getBlockIdAt
 import net.minecraft.util.BlockPos
@@ -33,7 +31,7 @@ object BoulderSolver {
     }
 
     fun onRoomEnter(event: DungeonEvents.RoomEnterEvent) {
-        val room = event.room?.room ?: return reset()
+        val room = event.fullRoom?.room ?: return reset()
         if (room.data.name != "Boulder") return reset()
         var str = ""
         for (z in -3..2) {
@@ -43,31 +41,30 @@ object BoulderSolver {
                 }
             }
         }
-        devMessage(str)
         val coords = solutions[str] ?: return
         currentPositions = coords.map { sol ->
             val render = room.vec2.addRotationCoords(room.rotation, sol[0], sol[1])
             val click = room.vec2.addRotationCoords(room.rotation, sol[2], sol[3])
             BoxPosition(BlockPos(render.x, 65, render.z), BlockPos(click.x, 65, click.z))
         }.toMutableList()
-        devMessage(currentPositions)
     }
 
     fun onRenderWorld() {
-        if (DungeonUtils.currentRoomName != "Boulder") return
-        currentPositions.firstOrNull()?.let {
+        if (DungeonUtils.currentRoomName != "Boulder" || currentPositions.isEmpty()) return
+        if (PuzzleSolvers.showAllBoulderClicks) currentPositions.forEach {
+            Renderer.drawStyledBlock(it.render, PuzzleSolvers.boulderColor, PuzzleSolvers.boulderStyle, PuzzleSolvers.boulderLineWidth)
+        }
+        else currentPositions.firstOrNull()?.let {
             Renderer.drawStyledBlock(it.render, PuzzleSolvers.boulderColor, PuzzleSolvers.boulderStyle, PuzzleSolvers.boulderLineWidth)
         }
     }
 
     fun playerInteract(event: PlayerInteractEvent) {
-        if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) return
-        if (!getBlockIdAt(event.pos).equalsOneOf(77, 323)) return
-        currentPositions.removeIf { it.click == event.pos }
+        if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || !getBlockIdAt(event.pos).equalsOneOf(77, 323)) return
+        currentPositions.removeFirstOrNull { it.click == event.pos }
     }
 
     fun reset() {
         currentPositions = mutableListOf()
     }
-
 }

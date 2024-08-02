@@ -14,13 +14,13 @@ object Relic {
 
     enum class Relic (
         val id: String,
-        val colorCode: String
+        val colorCode: Char
     ) {
-        Green("GREEN_KING_RELIC", "§a"),
-        Purple("PURPLE_KING_RELIC", "§5"),
-        Blue("BLUE_KING_RELIC", "§b"),
-        Orange("ORANGE_KING_RELIC", "§6"),
-        Red("RED_KING_RELIC", "§c")
+        Green("GREEN_KING_RELIC", 'a'),
+        Purple("PURPLE_KING_RELIC", '5'),
+        Blue("BLUE_KING_RELIC", 'b'),
+        Orange("ORANGE_KING_RELIC", '6'),
+        Red("RED_KING_RELIC", 'c')
     }
 
     private val relicPBs = PersonalBest("Relics", 5)
@@ -37,7 +37,7 @@ object Relic {
         val relic = Relic.entries.find { it.id == currentRelic } ?: return
         val hasPassed = (System.currentTimeMillis() - timer) / 1000.0
 
-        relicPBs.time(relic.ordinal, hasPassed, "s§7!", "§${relic.colorCode}${relic.name} §7took §6", addPBString = true, addOldPBString = true, relicAnnounceTime)
+        relicPBs.time(relic.ordinal, hasPassed, "s§7!", "§${relic.colorCode}${relic.name} §7took §6", addPBString = true, addOldPBString = true, sendOnlyPB = false, sendMessage = relicAnnounceTime)
         timer = 0L
     }
 }

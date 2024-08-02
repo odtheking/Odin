@@ -1,6 +1,7 @@
 package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
+import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.*
 import me.odinmain.utils.render.RenderUtils.bind
@@ -69,6 +70,22 @@ val ItemStack?.isShortbow: Boolean
         return this?.lore?.any { it.contains("Shortbow: Instantly shoots!") } == true
     }
 
+/**
+ * Returns if an item is a fishing rod
+ */
+val ItemStack?.isFishingRod: Boolean
+    get() {
+        return this?.lore?.any { it.contains("FISHING ROD") } == true
+    }
+
+/**
+ * Returns if an item is Spirit leaps or an Infinileap
+ */
+val ItemStack?.isLeap: Boolean
+    get() {
+        return this?.itemID?.equalsOneOf("INFINITE_SPIRIT_LEAP", "SPIRIT_LEAP") == true
+    }
+
 val EntityPlayerSP.holdingEtherWarp: Boolean
     get() = this.heldItem?.extraAttributes?.getBoolean("ethermerge") == true
 
@@ -77,6 +94,9 @@ val EntityPlayerSP.holdingEtherWarp: Boolean
  */
 fun isHolding(id: String): Boolean =
     mc.thePlayer?.heldItem?.itemID == id
+
+fun EntityPlayerSP.isHolding(id: String): Boolean =
+    this.heldItem?.itemID == id
 
 /**
  * Returns first slot of an Item
@@ -91,6 +111,12 @@ fun getItemSlot(item: String, ignoreCase: Boolean = true): Int? =
 fun getItemIndexInContainerChest(container: ContainerChest, item: String, subList: IntRange = 0..container.inventory.size - 36): Int? {
     return container.inventorySlots.subList(subList.first, subList.last + 1).firstOrNull {
         it.stack?.unformattedName?.noControlCodes?.lowercase() == item.noControlCodes.lowercase()
+    }?.slotIndex
+}
+
+fun getItemIndexInContainerChest(container: ContainerChest, item: String, subList: IntRange = 0..container.inventory.size - 36, ignoreCase: Boolean = false): Int? {
+    return container.inventorySlots.subList(subList.first, subList.last + 1).firstOrNull {
+        it.stack?.unformattedName?.contains(item, ignoreCase) == true
     }?.slotIndex
 }
 
@@ -140,8 +166,7 @@ private val rarityRegex: Regex = Regex("§l(?<rarity>[A-Z]+) ?(?<type>[A-Z ]+)?(
 fun getRarity(lore: List<String>): ItemRarity? {
     // Start from the end since the rarity is usually the last line or one of the last.
     for (i in lore.indices.reversed()) {
-        val currentLine = lore[i]
-        val match = rarityRegex.find(currentLine) ?: continue
+        val match = rarityRegex.find(lore[i]) ?: continue
         val rarity: String = match.groups["rarity"]?.value ?: continue
         return ItemRarity.entries.find { it.loreName == rarity }
     }
@@ -193,7 +218,6 @@ fun ItemStack.setLoreWidth(lines: List<String>, width: Int): ItemStack {
 
 fun ItemStack.drawItem(x: Float = 0f, y: Float = 0f, scale: Float = 1f, z: Float = 200f) {
     GlStateManager.pushMatrix()
-    scale(1f / scaleFactor, 1f / scaleFactor)
     scale(scale, scale, 1f)
     translate(x / scale, y / scale, 0f)
     Color.WHITE.bind()
@@ -204,6 +228,5 @@ fun ItemStack.drawItem(x: Float = 0f, y: Float = 0f, scale: Float = 1f, z: Float
     mc.renderItem.zLevel = z
     mc.renderItem.renderItemIntoGUI(this, 0, 0)
     RenderHelper.disableStandardItemLighting()
-    scale(scaleFactor, scaleFactor, 1f)
     GlStateManager.popMatrix()
 }

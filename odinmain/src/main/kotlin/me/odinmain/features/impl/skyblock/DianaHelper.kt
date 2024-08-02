@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.skyblock
 
-import me.odinmain.OdinMain
 import me.odinmain.OdinMain.isLegitVersion
 import me.odinmain.events.impl.ClickEvent
 import me.odinmain.features.Category
@@ -21,7 +20,6 @@ import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-
 
 object DianaHelper : Module(
     name = "Diana Helper",
@@ -123,7 +121,7 @@ object DianaHelper : Module(
 
     @SubscribeEvent
     fun onRightClick(event: ClickEvent.RightClickEvent) {
-        if (!isHolding("ANCESTRAL_SPADE") || !autoWarp || OdinMain.isLegitVersion) return
+        if (!isHolding("ANCESTRAL_SPADE") || !autoWarp || isLegitVersion) return
         runIn(40) {
             onKeybind()
         }

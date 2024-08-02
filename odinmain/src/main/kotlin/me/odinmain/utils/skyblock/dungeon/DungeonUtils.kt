@@ -85,7 +85,7 @@ object DungeonUtils {
         getItemSlot("Haunt", true) != null
 
     inline val currentRoomName get() =
-        currentDungeon?.currentRoom?.room?.data?.name ?: "Unknown"
+        currentDungeon?.currentFullRoom?.room?.data?.name ?: "Unknown"
 
     inline val dungeonTeammates get() =
         currentDungeon?.dungeonTeammates ?: emptyList()
@@ -105,8 +105,8 @@ object DungeonUtils {
     inline val mimicKilled: Boolean get() =
         currentDungeon?.dungeonStats?.mimicKilled ?: false
 
-    inline val currentRoom: FullRoom? get() =
-        currentDungeon?.currentRoom
+    inline val currentFullRoom: FullRoom? get() =
+        currentDungeon?.currentFullRoom
 
     inline val passedRooms get() =
         currentDungeon?.passedRooms ?: emptyList()
@@ -229,7 +229,7 @@ object DungeonUtils {
 
     private fun addTeammate(name: String, clazz: String, teammates: MutableList<DungeonPlayer>, networkPlayerInfo: NetworkPlayerInfo) {
         DungeonClass.entries.find { it.name == clazz }?.let { foundClass ->
-            mc.theWorld.getPlayerEntityByName(name)?.let { player ->
+            mc.theWorld?.getPlayerEntityByName(name)?.let { player ->
                 teammates.add(DungeonPlayer(name, foundClass, networkPlayerInfo.locationSkin, player))
             } ?: teammates.add(DungeonPlayer(name, foundClass, networkPlayerInfo.locationSkin, null))
         }
@@ -251,7 +251,7 @@ object DungeonUtils {
     fun isSecret(state: IBlockState, pos: BlockPos): Boolean {
         if (state.block.equalsOneOf(Blocks.chest, Blocks.trapped_chest, Blocks.lever)) return true
         else if (state.block is BlockSkull) {
-            val tile = mc.theWorld.getTileEntity(pos) ?: return false
+            val tile = mc.theWorld?.getTileEntity(pos) ?: return false
             if (tile !is TileEntitySkull) return false
             return tile.playerProfile?.id.toString().equalsOneOf(WITHER_ESSENCE_ID, REDSTONE_KEY)
         }

@@ -8,7 +8,7 @@ import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.*
 
-object WarpCooldown : Module (
+object WarpCooldown : Module(
     name = "Warp Cooldown",
     description = "Displays the time until you can warp into a dungeon again.",
     category = Category.DUNGEON
@@ -27,7 +27,7 @@ object WarpCooldown : Module (
     private var warpTimer = Clock(30000)
 
     init {
-        onMessage(Regex("^\\[[^]]+] (\\w+) entered \\w+ Catacombs, Floor (\\w+)!$")) {
+        onMessage(Regex("^-*>newLine<-\\[[^]]+] (\\w+) entered \\w+ Catacombs, Floor (\\w+)!->newLine<-*$")) {
             warpTimer.updateCD()
         }
     }

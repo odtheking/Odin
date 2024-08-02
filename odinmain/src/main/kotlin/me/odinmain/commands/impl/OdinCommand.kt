@@ -2,7 +2,6 @@ package me.odinmain.commands.impl
 
 import com.github.stivais.commodore.utils.GreedyString
 import me.odinmain.OdinMain.display
-import me.odinmain.OdinMain.mc
 import me.odinmain.commands.commodore
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
 import me.odinmain.features.impl.render.ClickGUIModule
@@ -12,9 +11,10 @@ import me.odinmain.features.impl.render.ServerHud.colorizeTps
 import me.odinmain.features.impl.skyblock.DianaHelper
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.hud.EditHUDGui
-import me.odinmain.utils.ServerUtils
-import me.odinmain.utils.equalsOneOf
+import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
+import java.awt.Desktop
+import java.net.URI
 import kotlin.math.round
 
 val mainCommand = commodore("od", "odin") {
@@ -23,19 +23,15 @@ val mainCommand = commodore("od", "odin") {
     }
 
     literal("ep").runs {
-        val amount = mc.thePlayer.inventory.mainInventory.find { it?.itemID == "ENDER_PEARL" }?.stackSize ?: 0
-        if (amount != 16) modMessage("gfs ender_pearl ${16 - amount}") else modMessage("§cAlready at max stack size.")
+        fillItemFromSack(16, "ENDER_PEARL", "ender_pearl", true)
     }
 
     literal("ij").runs {
-        val amount = mc.thePlayer.inventory.mainInventory.find { it?.itemID == "INFLATABLE_JERRY" }?.stackSize ?: 0
-        if (amount != 64) modMessage("gfs inflatable_jerry ${64 - amount}") else modMessage("§cAlready at max stack size.")
-
+        fillItemFromSack(64, "INFLATABLE_JERRY", "inflatable_jerry", true)
     }
 
     literal("sl").runs {
-        val amount = mc.thePlayer.inventory.mainInventory.find { it?.itemID == "SPIRIT_LEAP" }?.stackSize ?: 0
-        if (amount != 16) modMessage("gfs spirit_leap ${16 - amount}") else modMessage("§cAlready at max stack size.")
+        fillItemFromSack(16, "SPIRIT_LEAP", "spirit_leap", true)
     }
 
     literal("reset") {
@@ -74,6 +70,7 @@ val mainCommand = commodore("od", "odin") {
              §3- /od ep §7» §8Refills ender pearls up to 16.
              §3- /od ij §7» §8Refills inflatable Jerry's up to 64.
              §3- /od sl §7» §8Refills spirit leaps up to 16.
+             §3- /od sc <user> §7» §8Tries to open SkyCrypt for the specified user in default browser.
              §3- /spcmd §7» §8Use /spcmd cmds for command list.
              §3- /visualwords §7» §8Command to replace words in the game.
              """.trimIndent()
@@ -103,6 +100,15 @@ val mainCommand = commodore("od", "odin") {
 
     literal("dwp").runs {
         DungeonWaypoints.onKeybind()
+    }
+
+    literal("sc").runs { targetUser: String ->
+        modMessage("Opening SkyCrypt for $targetUser.")
+        try {
+            Desktop.getDesktop().browse(URI("https://sky.shiiyu.moe/$targetUser"))
+        } catch (e: Exception) {
+            modMessage("Failed to open in browser.")
+        }
     }
 
     runs { tier: String ->

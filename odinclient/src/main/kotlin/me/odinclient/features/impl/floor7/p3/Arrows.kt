@@ -26,7 +26,7 @@ object Arrows : Module(
         execute(10) {
             if (!triggerBotClock.hasTimePassed(triggerBotDelay) || mc.thePlayer?.heldItem?.isShortbow == false || DungeonUtils.getPhase() != M7Phases.P3) return@execute
             setBowTrajectoryHeading(0f)
-            if (mc.thePlayer?.heldItem?.itemID == "TERMINATOR") {
+            if (isHolding("TERMINATOR")) {
                 setBowTrajectoryHeading(-5f)
                 setBowTrajectoryHeading(5f)
             }
@@ -61,7 +61,7 @@ object Arrows : Module(
         var posVec = pV
         for (i in 0..20) {
             val vec = motionVec.add(posVec)
-            val rayTrace = mc.theWorld.rayTraceBlocks(posVec, vec, false, true, false)
+            val rayTrace = mc.theWorld?.rayTraceBlocks(posVec, vec, false, true, false)
             if (rayTrace?.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
                 if (getBlockIdAt(rayTrace.blockPos) == 133) {
                     if (rayTrace.blockPos.x !in 64..68 || rayTrace.blockPos.y !in 126..130) return // not on device

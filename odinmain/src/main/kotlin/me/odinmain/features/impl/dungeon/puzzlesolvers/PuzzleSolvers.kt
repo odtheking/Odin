@@ -63,6 +63,8 @@ object PuzzleSolvers : Module(
     val blazeFirstColor: Color by ColorSetting("First Color", Color.GREEN, true).withDependency { blazeSolver && blazeDropDown }
     val blazeSecondColor: Color by ColorSetting("Second Color", Color.ORANGE, true).withDependency { blazeSolver && blazeDropDown }
     val blazeAllColor: Color by ColorSetting("Other Color", Color.WHITE.withAlpha(.3f), true).withDependency { blazeSolver && blazeDropDown }
+    val blazeWidth: Double by NumberSetting("Box Width", 1.0, 0.5, 2.0, 0.1).withDependency { blazeSolver && blazeDropDown }
+    val blazeHeight: Double by NumberSetting("Box Height", 2.0, 1.0, 3.0, 0.1).withDependency { blazeSolver && blazeDropDown }
     val blazeSendComplete: Boolean by BooleanSetting("Send Complete", false, description = "Send complete message").withDependency { blazeSolver && blazeDropDown }
     private val blazeReset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
         BlazeSolver.reset()
@@ -73,6 +75,7 @@ object PuzzleSolvers : Module(
     val beamStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { beamsSolver && beamsDropDown }
     val beamsDepth: Boolean by BooleanSetting("Depth", false, description = "Depth check").withDependency { beamsSolver && beamsDropDown }
     val beamsTracer: Boolean by BooleanSetting("Tracer", false, description = "Tracer").withDependency { beamsSolver && beamsDropDown }
+    val beamsAlpha: Float by NumberSetting("Color Alpha", .7f, 0f, 1f, .05f).withDependency { beamsSolver && beamsDropDown }
     private val beamsReset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
         BeamsSolver.reset()
     }.withDependency { beamsSolver && beamsDropDown }
@@ -80,6 +83,7 @@ object PuzzleSolvers : Module(
     private val weirdosDropDown: Boolean by DropdownSetting("Weirdos")
     private val weirdosSolver: Boolean by BooleanSetting("Weirdos Solver", false, description = "Shows you the solution for the Weirdos puzzle").withDependency { weirdosDropDown }
     val weirdosColor: Color by ColorSetting("Weirdos Color", Color.GREEN.withAlpha(0.7f), true, description = "Color for the weirdos solver").withDependency { weirdosSolver && weirdosDropDown }
+    val weirdosWrongColor: Color by ColorSetting("Weirdos Wrong Color", Color.RED.withAlpha(.7f), true,  description = "Color for the incorrect Weirdos.").withDependency { weirdosSolver && weirdosDropDown }
     val weirdosStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { weirdosSolver && weirdosDropDown }
     private val weirdosReset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
         WeirdosSolver.reset()
@@ -94,14 +98,14 @@ object PuzzleSolvers : Module(
 
     private val boulderDropDown: Boolean by DropdownSetting("Boulder")
     private val boulderSolver: Boolean by BooleanSetting("Boulder Solver", false, description = "Solver for the boulder puzzle").withDependency { boulderDropDown }
-    val boulderStyle: Int by SelectorSetting("Boulder Style", Renderer.defaultStyle, Renderer.styles, description = Renderer.styleDesc).withDependency { boulderDropDown && boulderSolver }
+    val showAllBoulderClicks: Boolean by DualSetting("Boulder clicks", "Only First", "All Clicks", false).withDependency { boulderDropDown && boulderSolver }
+    val boulderStyle: Int by SelectorSetting("Boulder Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { boulderDropDown && boulderSolver }
     val boulderColor: Color by ColorSetting("Boulder Color", Color.GREEN.withAlpha(.5f), allowAlpha = true, description = "The color of the box.").withDependency { boulderDropDown && boulderSolver }
     val boulderLineWidth: Float by NumberSetting("Boulder Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.").withDependency { boulderDropDown && boulderSolver }
 
 
     init {
         execute(500) {
-            if (tpMaze) TPMazeSolver.scan()
             if (waterSolver) WaterSolver.scan()
             if (blazeSolver) BlazeSolver.getBlaze()
         }
@@ -157,6 +161,7 @@ object PuzzleSolvers : Module(
         TTTSolver.tttRoomEnter(event)
         QuizSolver.enterRoomQuiz(event)
         BoulderSolver.onRoomEnter(event)
+        TPMazeSolver.onRoomEnter(event)
     }
 
     @SubscribeEvent

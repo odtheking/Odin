@@ -3,8 +3,10 @@ package me.odinclient.features.impl.skyblock
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.fillItemFromSack
+import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.itemID
 
 object AutoGFS : Module(
     name = "Auto Gfs",
@@ -32,8 +34,8 @@ object AutoGFS : Module(
         if (DungeonUtils.isGhost || mc.currentScreen != null || !(inKuudra && KuudraUtils.inKuudra) && !(inDungeon && DungeonUtils.inDungeons)) return
         val inventory = mc.thePlayer?.inventory?.mainInventory ?: return
 
-        inventory.find { it?.itemID == "ENDER_PEARL" }?.takeIf { refillPearl }?.also { sendCommand("od ep", true) }
+        inventory.find { it?.itemID == "ENDER_PEARL" }?.takeIf { refillPearl }?.also { fillItemFromSack(16, "ENDER_PEARL", "ender_pearl", false) }
 
-        inventory.find { it?.itemID == "INFLATABLE_JERRY" }?.takeIf { refillJerry }?.also { sendCommand("od ij", true) }
+        inventory.find { it?.itemID == "INFLATABLE_JERRY" }?.takeIf { refillJerry }?.also { fillItemFromSack(64, "INFLATABLE_JERRY", "inflatable_jerry", false) }
     }
 }

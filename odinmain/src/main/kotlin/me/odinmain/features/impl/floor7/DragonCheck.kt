@@ -28,7 +28,7 @@ object DragonCheck {
         if (event.entity !is EntityDragon) return
         val dragon = WitherDragonsEnum.entries.find { isVecInXZ(event.entity.positionVector, it.boxesDimensions) } ?: return
 
-        dragon.spawning = false
+        dragon.state = WitherDragonState.ALIVE
         dragon.particleSpawnTime = 0L
         dragon.timesSpawned += 1
         dragon.entity = event.entity
@@ -50,7 +50,8 @@ object DragonCheck {
 
     fun dragonLeaveWorld(event: LivingDeathEvent) {
         if (event.entity !is EntityDragon) return
-        val dragon = WitherDragonsEnum.entries.find {it.entity?.entityId == event.entity.entityId} ?: return
+        val dragon = WitherDragonsEnum.entries.find {it.entity?.entityId == event.entity?.entityId} ?: return
+        dragon.state = WitherDragonState.DEAD
         lastDragonDeath = dragon
 
         if (sendTime && WitherDragons.enabled)
@@ -62,9 +63,9 @@ object DragonCheck {
     fun dragonSprayed(packet: S04PacketEntityEquipment) {
         if (packet.itemStack?.item != Item.getItemFromBlock(Blocks.packed_ice)) return
 
-        val sprayedEntity = mc.theWorld.getEntityByID(packet.entityID) as? EntityArmorStand ?: return
+        val sprayedEntity = mc.theWorld?.getEntityByID(packet.entityID) as? EntityArmorStand ?: return
 
-        WitherDragonsEnum.entries.filter{ !it.isSprayed && it.entity?.isEntityAlive == true && sprayedEntity.getDistanceToEntity(it.entity) <= 8 }.forEach {
+        WitherDragonsEnum.entries.filter{ !it.isSprayed && it.state == WitherDragonState.ALIVE && sprayedEntity.getDistanceToEntity(it.entity) <= 8 }.forEach {
             val sprayedIn = (System.currentTimeMillis() - it.spawnedTime)
             if (sendSpray) modMessage("§${it.colorCode}${it.name} §fdragon was sprayed in §c${sprayedIn}§fms ")
             it.isSprayed = true
@@ -74,5 +75,12 @@ object DragonCheck {
     fun onChatPacket() {
         val dragon = WitherDragonsEnum.entries.find { lastDragonDeath == it } ?: return
         if (sendNotification && WitherDragons.enabled) modMessage("§${dragon.colorCode}${dragon.name} dragon counts.")
+    }
+
+    fun dragonStateConfirmation() {
+        val entities = mc.theWorld?.loadedEntityList.orEmpty()
+        WitherDragonsEnum.entries.forEach { dragon ->
+            dragon.state = if (!entities.contains(dragon.entity) && dragon.state == WitherDragonState.ALIVE) WitherDragonState.DEAD else dragon.state
+        }
     }
 }

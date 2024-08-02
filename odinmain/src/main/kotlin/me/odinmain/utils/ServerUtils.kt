@@ -2,13 +2,14 @@ package me.odinmain.utils
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.PacketReceivedEvent
+import me.odinmain.utils.clock.Executor
+import me.odinmain.utils.clock.Executor.Companion.register
 import net.minecraft.entity.Entity
 import net.minecraft.network.Packet
 import net.minecraft.network.play.client.C16PacketClientStatus
 import net.minecraft.network.play.server.*
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object ServerUtils {
     private val packets = ArrayList<Packet<*>>()
@@ -36,12 +37,10 @@ object ServerUtils {
         averagePing = 0.0
     }
 
-    private var tickRamp = 20
-    @SubscribeEvent
-    fun onTick(event: TickEvent.ClientTickEvent) {
-        tickRamp++
-        if (tickRamp % 40 != 0) return
-        sendPing()
+    init {
+        Executor(2000) {
+            sendPing()
+        }.register()
     }
 
     @SubscribeEvent

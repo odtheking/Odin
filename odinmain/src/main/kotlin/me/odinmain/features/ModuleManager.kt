@@ -53,11 +53,11 @@ object ModuleManager {
         // dungeon
         DungeonRequeue, BlessingDisplay, ExtraStats, KeyHighlight, Mimic, TeammatesHighlight,
         TerracottaTimer, BloodCamp, ClickedSecrets, DungeonWaypoints, SecretChime, LeapMenu, PuzzleSolvers,
-        WarpCooldown, MapInfo,
+        WarpCooldown, MapInfo, SwapSound,
 
         // floor 7
-        TerminalSolver, TerminalTimes, MelodyMessage, NecronDropTimer, InactiveWaypoints, WitherDragons,
-        GoldorTimer, TerminalSimulator, TerminalSounds, ArrowsDevice,
+        TerminalSolver, TerminalTimes, MelodyMessage, TickTimers, InactiveWaypoints, WitherDragons,
+        TerminalSimulator, TerminalSounds,
 
         // render
         BPSDisplay, ClickGUIModule, CustomHighlight, CPSDisplay, DragonHitboxes, GyroWand, NameChanger,
@@ -66,13 +66,21 @@ object ModuleManager {
 
         //skyblock
         NoCursorReset, AutoSprint, BlazeAttunement, ChatCommands, DeployableTimer, DianaHelper, ArrowHit,
-        Ragaxe, MobSpawn, Splits, WardrobeKeybinds, InvincibilityTimer, EnrageDisplay, /*ItemsHighlight,*/
-        PlayerDisplay, FarmKeys, /*PartyEncoding,*/ PetKeybinds, /*SkillsSucks,*/ ChatEmotes,
+        Ragaxe, MobSpawn, Splits, WardrobeKeybinds, InvincibilityTimer, EnrageDisplay, ItemsHighlight,
+        PlayerDisplay, FarmKeys, /*PartyEncoding,*/ PetKeybinds, /*SkillsSucks,*/ ChatEmotes, CommandKeybinds,
 
         // kuudra
         BuildHelper, FreshTimer, KuudraDisplay, NoPre, PearlWaypoints, RemovePerks, SupplyHelper, TeamHighlight,
-        VanqNotifier, KuudraReminders, KuudraRequeue,
+        VanqNotifier, KuudraReminders, KuudraRequeue, TacTimer
     )
+
+    init {
+        for (module in modules) {
+            module.keybinding?.let {
+                module.register(KeybindSetting("Keybind", it, "Toggles the module"))
+            }
+        }
+    }
 
     fun addModules(vararg module: Module) {
         for (i in module) {

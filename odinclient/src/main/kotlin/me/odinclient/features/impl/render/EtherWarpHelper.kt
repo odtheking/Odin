@@ -39,7 +39,7 @@ object EtherWarpHelper : Module(
     private val useServerPosition: Boolean by DualSetting("Positioning", "Server Pos", "Player Pos", description = "If etherwarp guess should use your server position or real position.").withDependency { render }
     private val renderFail: Boolean by BooleanSetting("Show when failed", true).withDependency { render }
     private val wrongColor: Color by ColorSetting("Wrong Color", Color.RED.withAlpha(.5f), allowAlpha = true).withDependency { renderFail }
-    private val style: Int by SelectorSetting("Style", Renderer.defaultStyle, Renderer.styles, description = Renderer.styleDesc).withDependency { render }
+    private val style: Int by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { render }
     private val color: Color by ColorSetting("Color", Color.ORANGE.withAlpha(.5f), allowAlpha = true).withDependency { render }
     private val lineWidth: Float by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.").withDependency { render }
     private val depthCheck: Boolean by BooleanSetting("Depth check", false, description = "Boxes show through walls.").withDependency { render }
@@ -65,7 +65,7 @@ object EtherWarpHelper : Module(
         if (
             etherWarpTriggerBot &&
             tbClock.hasTimePassed(etherWarpTBDelay) &&
-            DungeonUtils.currentRoom?.waypoints?.any { etherPos.vec?.equal(it.toVec3()) == true } == true &&
+            DungeonUtils.currentFullRoom?.waypoints?.any { etherPos.vec?.equal(it.toVec3()) == true } == true &&
             mc.thePlayer.isSneaking &&
             mc.thePlayer.holdingEtherWarp
         ) {
@@ -110,7 +110,7 @@ object EtherWarpHelper : Module(
             mc.thePlayer.holdingEtherWarp &&
             mc.thePlayer.isSneaking
         ) {
-            val waypoints = DungeonUtils.currentRoom?.waypoints ?: return
+            val waypoints = DungeonUtils.currentFullRoom?.waypoints ?: return
             val wp = waypoints.mapNotNull {
                 etherwarpRotateTo(it.toBlockPos()) ?: return@mapNotNull null
             }.minByOrNull {

@@ -63,16 +63,15 @@ object DeployableTimer : Module(
 
     @SubscribeEvent
     fun postMetadata(event: PostEntityMetadata) {
-        if (mc.theWorld.getEntityByID(event.packet.entityId) !is EntityArmorStand) return
-
-        var entity = mc.theWorld.getEntityByID(event.packet.entityId) as? EntityArmorStand ?: return
+        var entity = mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityArmorStand ?: return
 
         if (activeDeployables.any { it.entity == entity }) return
         val name = entity.name.noControlCodes
-        val deployable = DeployableTypes.entries.firstOrNull { it.texture == getSkullValue(entity) || name.startsWith(it.displayName.noControlCodes)} ?: return
+        val deployable = DeployableTypes.entries.firstOrNull { name.startsWith(it.displayName.noControlCodes) || it.texture == getSkullValue(entity) } ?: return
         val duration =
             if (deployable.texture == "placeholder") {
-                entity = (mc.theWorld.getEntitiesInAABBexcluding(entity, entity.entityBoundingBox.offset(0.0, -3.0, 0.0)) { it is EntityArmorStand }.firstOrNull() ?: return) as EntityArmorStand
+
+                entity = mc.theWorld?.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.offset(0.0, -3.0, 0.0))?.filterIsInstance<EntityArmorStand>()?.firstOrNull() ?: return
                 (orbRegex.find(name)?.groupValues?.get(2)?.toIntOrNull() ?: return) * 1000
             }
             else deployable.duration

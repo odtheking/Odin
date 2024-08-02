@@ -29,7 +29,7 @@ import kotlin.math.*
 object RenderUtils {
 
     private val tessellator: Tessellator = Tessellator.getInstance()
-    val worldRenderer: WorldRenderer = tessellator.worldRenderer
+    private val worldRenderer: WorldRenderer = tessellator.worldRenderer
     private val beaconBeam = ResourceLocation("textures/entity/beacon_beam.png")
     private val renderManager: RenderManager = mc.renderManager
 
@@ -100,7 +100,7 @@ object RenderUtils {
         pos(x, y, z).normal(nx, ny, nz).endVertex()
     }
 
-    fun preDraw() {
+    private fun preDraw() {
         GlStateManager.disableTexture2D()
         GlStateManager.enableBlend()
         GlStateManager.disableLighting()
@@ -119,7 +119,7 @@ object RenderUtils {
         GlStateManager.depthMask(true)
     }
 
-    fun postDraw() {
+    private fun postDraw() {
         GlStateManager.disableBlend()
         GlStateManager.enableAlpha()
         GlStateManager.enableTexture2D()
@@ -169,15 +169,23 @@ object RenderUtils {
      * @param thickness The thickness of the outline.
      * @param depth Whether to enable depth testing.
      */
-    fun drawOutlinedAABB(aabb: AxisAlignedBB, color: Color, thickness: Number = 3f, depth: Boolean = false) {
+    fun drawOutlinedAABB(aabb: AxisAlignedBB, color: Color, thickness: Number = 3f, depth: Boolean = false, smoothLines: Boolean = true) {
         if (color.isTransparent) return
         GlStateManager.pushMatrix()
         preDraw()
+
+        if (smoothLines) {
+            GL11.glEnable(GL11.GL_LINE_SMOOTH)
+            GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST)
+        }
+
         GL11.glLineWidth(thickness.toFloat())
-
         depth(depth)
+        color.bind()
+        addVertexesForOutlinedBox(aabb)
+        tessellator.draw()
 
-        RenderGlobal.drawOutlinedBoundingBox(aabb, color.r, color.g, color.b, color.a)
+        if (smoothLines) GL11.glDisable(GL11.GL_LINE_SMOOTH)
 
         if (!depth) resetDepth()
         postDraw()
@@ -296,7 +304,7 @@ object RenderUtils {
         if (!depth) GlStateManager.enableDepth()
     }
 
-    fun renderLines(vararg points: Vec3, color: Color, lineWidth: Float, depth: Boolean) {
+    fun drawLines(vararg points: Vec3, color: Color, lineWidth: Float, depth: Boolean) {
         if (points.size < 2) return
 
         GlStateManager.pushMatrix()
@@ -306,13 +314,33 @@ object RenderUtils {
         GL11.glEnable(GL11.GL_LINE_SMOOTH)
         GL11.glLineWidth(lineWidth)
 
-        worldRenderer.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
-        for (point in points) {
-            worldRenderer.pos(point.xCoord, point.yCoord, point.zCoord).endVertex()
+        worldRenderer {
+            begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
+            for (point in points) {
+                pos(point.xCoord, point.yCoord, point.zCoord).endVertex()
+            }
         }
         tessellator.draw()
 
         if (!depth) resetDepth()
+        postDraw()
+        GlStateManager.popMatrix()
+    }
+
+    fun drawLine(color: Color, x1: Double, y1: Double, x2: Double, y2: Double, lineWidth: Float) {
+        GlStateManager.pushMatrix()
+        color.bind()
+        preDraw()
+        GL11.glEnable(GL11.GL_LINE_SMOOTH)
+        GL11.glLineWidth(lineWidth)
+
+        worldRenderer {
+            begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
+            pos(x1, y1, 0.0).endVertex()
+            pos(x2, y2, 0.0).endVertex()
+        }
+        tessellator.draw()
+
         postDraw()
         GlStateManager.popMatrix()
     }
@@ -381,12 +409,12 @@ object RenderUtils {
      * @param rot3        Rotation parameter.
      * @param color       The color of the cylinder.
      * @param depth       Indicates whether to phase the cylinder (default is false).
-     * @param linemode    Indicates whether to draw the cylinder in line mode (default is false).
+     * @param lineMode    Indicates whether to draw the cylinder in line mode (default is false).
      */
     fun drawCylinder(
         pos: Vec3, baseRadius: Number, topRadius: Number, height: Number,
         slices: Number, stacks: Number, rot1: Number, rot2: Number, rot3: Number,
-        color: Color, depth: Boolean = false, linemode: Boolean = false
+        color: Color, depth: Boolean = false, lineMode: Boolean = false
     ) {
         val renderPos = getRenderPos(pos)
 
@@ -408,7 +436,7 @@ object RenderUtils {
 
         val cyl = Cylinder()
         cyl.drawStyle = GLU.GLU_LINE
-        if (linemode) cyl.draw(baseRadius.toFloat(), topRadius.toFloat(), height.toFloat(), slices.toInt(), stacks.toInt())
+        if (lineMode) cyl.draw(baseRadius.toFloat(), topRadius.toFloat(), height.toFloat(), slices.toInt(), stacks.toInt())
         else Cylinder().draw(baseRadius.toFloat(), topRadius.toFloat(), height.toFloat(), slices.toInt(), stacks.toInt())
 
         GlStateManager.enableCull()
@@ -728,4 +756,6 @@ object RenderUtils {
             pos(maxX, minY, minZ).endVertex()
         }
     }
+
+
 }

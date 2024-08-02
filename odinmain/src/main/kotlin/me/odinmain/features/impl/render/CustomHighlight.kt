@@ -2,24 +2,17 @@ package me.odinmain.features.impl.render
 
 import me.odinmain.OdinMain.isLegitVersion
 import me.odinmain.events.impl.PostEntityMetadata
-import me.odinmain.events.impl.RenderEntityModelEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.*
 import me.odinmain.utils.ServerUtils.getPing
 import me.odinmain.utils.render.*
-import me.odinmain.utils.render.RenderUtils.renderBoundingBox
-import me.odinmain.utils.render.RenderUtils.renderVec
-import me.odinmain.utils.skyblock.devMessage
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.Entity
 import net.minecraft.entity.boss.EntityWither
 import net.minecraft.entity.item.EntityArmorStand
-import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-
 
 object CustomHighlight : Module(
     name = "Custom Highlight",
@@ -27,71 +20,43 @@ object CustomHighlight : Module(
     tag = TagType.FPSTAX,
     description = "Allows you to highlight selected mobs. (/highlight)"
 ) {
-    private val scanDelay: Long by NumberSetting("Scan Delay", 500L, 10L, 2000L, 100L)
     private val starredMobESP: Boolean by BooleanSetting("Starred Mob Highlight", true, description = "Highlights mobs with a star in their name (remove star from the separate list).")
-    private val shadowAssasin: Boolean by BooleanSetting("Shadow Assassin", false, description = "Highlights Shadow Assassins")
+    private val shadowAssasin: Boolean by BooleanSetting("Shadow Assassin", false, description = "Highlights Shadow Assassins").withDependency { !isLegitVersion }
+    private val mode: Int by SelectorSetting("Mode", HighlightRenderer.HIGHLIGHT_MODE_DEFAULT, HighlightRenderer.highlightModeList)
+
     private val color: Color by ColorSetting("Color", Color.WHITE, true)
-    //private val mode: Int by SelectorSetting("Mode", HighlightRenderer.highlightModeDefault, HighlightRenderer.highlightModeList)
-    val mode: Int by SelectorSetting("Mode", "Outline", arrayListOf("Outline", "Boxes", "2D"))
-    private val thickness: Float by NumberSetting("Line Width", 1f, .1f, 4f, .1f, description = "The line width of Outline/ Boxes/ 2D Boxes").withDependency { mode != HighlightRenderer.HighlightType.Overlay.ordinal }
-    //private val glowIntensity: Float by NumberSetting("Glow Intensity", 2f, .5f, 5f, .1f, description = "The intensity of the glow effect.").withDependency { mode == HighlightRenderer.HighlightType.Glow.ordinal }
-    private val tracerLimit: Int by NumberSetting("Tracer Limit", 0, 0, 15, description = "Highlight will draw tracer to all mobs when you have under this amount of mobs marked, set to 0 to disable. Helpful for finding lost mobs.").withDependency { !isLegitVersion }
+    private val thickness: Float by NumberSetting("Line Width", 1f, .1f, 4f, .1f, description = "The line width of Outline / Boxes/ 2D Boxes").withDependency { mode != HighlightRenderer.HighlightType.Overlay.ordinal }
+    private val style: Int by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { mode != HighlightRenderer.HighlightType.Boxes.ordinal }
+    private val scanDelay: Long by NumberSetting("Scan Delay", 500L, 10L, 2000L, 100L)
 
     private val xray: Boolean by BooleanSetting("Depth Check", false).withDependency { !isLegitVersion }
     private val showInvisible: Boolean by BooleanSetting("Show Invisible", false).withDependency { !isLegitVersion }
+
     val highlightList: MutableList<String> by ListSetting("List", mutableListOf())
     private val depthCheck: Boolean get() = if (isLegitVersion) true else xray
     private var currentEntities = mutableSetOf<Entity>()
 
     init {
         execute({ scanDelay }) {
-            currentEntities.removeAll { mc.theWorld.getEntityByID(it.entityId) == null }
-            getEntities()
-        }
-
-        execute(30_000) {
-            currentEntities.clear()
+            currentEntities.removeAll { mc.theWorld?.getEntityByID(it.entityId) == null }
             getEntities()
         }
 
         onWorldLoad { currentEntities.clear() }
 
-        /*HighlightRenderer.addEntityGetter({ HighlightRenderer.HighlightType.entries[mode]}) {
+        HighlightRenderer.addEntityGetter({ HighlightRenderer.HighlightType.entries[mode]}) {
             if (!enabled) emptyList()
-            else currentEntities.map { HighlightRenderer.HighlightEntity(it, color, thickness, !renderThrough, glowIntensity) }
-        }*/
-    }
-
-    @SubscribeEvent
-    fun onRenderEntityModel(event: RenderEntityModelEvent) {
-        if (event.entity !in currentEntities) return
-        if (showInvisible && event.entity.isInvisible) event.entity.isInvisible = false
-        if (mode != 0 || (depthCheck && !mc.thePlayer.canEntityBeSeen(event.entity))) return
-        profile("Outline Esp") { OutlineUtils.outlineEntity(event, thickness, color, true) }
-    }
-
-    @SubscribeEvent
-    fun onRenderWorldLast(event: RenderWorldLastEvent) {
-        if (!mode.equalsOneOf(1,2) && tracerLimit == 0) return
-        profile("ESP") {
-            currentEntities.forEach {
-                if (currentEntities.size < tracerLimit && !isLegitVersion)
-                    Renderer.draw3DLine(getPositionEyes(mc.thePlayer.renderVec), getPositionEyes(it.renderVec), color = color)
-
-                if (mode == 1)
-                    Renderer.drawBox(it.renderBoundingBox, color, thickness, depth = depthCheck, fillAlpha = 0)
-                else if (mode == 2 && (mc.thePlayer.canEntityBeSeen(it) || !depthCheck))
-                    Renderer.draw2DEntity(it, thickness, color)
-            }
+            else currentEntities.map { HighlightRenderer.HighlightEntity(it, color, thickness, depthCheck, style) }
         }
     }
 
     @SubscribeEvent
     fun postMeta(event: PostEntityMetadata) {
-        val entity = mc.theWorld.getEntityByID(event.packet.entityId) ?: return
+        val entity = mc.theWorld?.getEntityByID(event.packet.entityId) ?: return
         checkEntity(entity)
         if (starredMobESP) checkStarred(entity)
-        if (shadowAssasin) checkAssassin(entity)
+        if (shadowAssasin && isLegitVersion) checkAssassin(entity)
+        if (showInvisible && entity.isInvisible && isLegitVersion && entity !in currentEntities) entity.isInvisible = false
     }
 
     private fun getEntities() {
@@ -107,7 +72,7 @@ object CustomHighlight : Module(
     }
 
     private fun checkStarred(entity: Entity) {
-        if (entity !is EntityArmorStand || !entity.name.startsWith("§6✯ ") || !entity.name.endsWith("§c❤") || entity in currentEntities || !entity.alwaysRenderNameTag && !depthCheck) return
+        if (entity !is EntityArmorStand || !entity.name.startsWith("§6✯ ") || !entity.name.endsWith("§c❤") || entity in currentEntities || (!entity.alwaysRenderNameTag && depthCheck)) return
         currentEntities.add(getMobEntity(entity) ?: return)
     }
 
@@ -117,9 +82,8 @@ object CustomHighlight : Module(
     }
 
     private fun getMobEntity(entity: Entity): Entity? {
-        return mc.theWorld.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.offset(0.0, -1.0, 0.0))
-            .filter { it != null && it !is EntityArmorStand && it.getPing() != 1 && it != mc.thePlayer}
-            .minByOrNull { entity.getDistanceToEntity(it) }
-            .takeIf { !(it is EntityWither && it.isInvisible) }
+        return mc.theWorld?.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.offset(0.0, -1.0, 0.0))
+            ?.filter { it != null && it !is EntityArmorStand && it.getPing() != 1 && it != mc.thePlayer && !(it is EntityWither && it.isInvisible)}
+            ?.minByOrNull { entity.getDistanceToEntity(it) }
     }
 }

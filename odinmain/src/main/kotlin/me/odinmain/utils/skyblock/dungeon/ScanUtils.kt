@@ -10,6 +10,7 @@ import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inBoss
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.passedRooms
 import me.odinmain.utils.skyblock.dungeon.tiles.*
 import net.minecraft.block.Block
 import net.minecraft.util.BlockPos
@@ -48,13 +49,13 @@ object ScanUtils {
     }
 
     private fun getRoomData(hash: Int): RoomData? =
-        roomList.find { it.cores.any { core -> hash == core } }
+        roomList.find { hash in it.cores }
 
 
     fun getCore(x: Int, z: Int): Int {
         val blocks = arrayListOf<Int>()
         for (y in 140 downTo 12) {
-            val id = Block.getIdFromBlock(mc.theWorld.getBlockState(BlockPos(x, y, z)).block)
+            val id = Block.getIdFromBlock(mc.theWorld?.getBlockState(BlockPos(x, y, z))?.block)
             if (!id.equalsOneOf(5, 54)) blocks.add(id)
         }
         return blocks.joinToString("").hashCode()
@@ -69,7 +70,7 @@ object ScanUtils {
     fun onTick(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.END || mc.theWorld == null) return
         if ((!inDungeons && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) || inBoss) {
-            if (DungeonUtils.currentRoom == null) return
+            if (DungeonUtils.currentFullRoom == null) return
             RoomEnterEvent(null).postAndCatch()
             return
         }
@@ -79,6 +80,10 @@ object ScanUtils {
 
         if (lastRoomPos.equal(xPos, zPos)) return
         lastRoomPos = Pair(xPos, zPos)
+        passedRooms.find { previousRoom -> previousRoom.positions.any { it.x == xPos && it.z == zPos } }?.let { room ->
+            RoomEnterEvent(room).postAndCatch()
+            return
+        }
 
         val room = scanRoom(xPos, zPos) ?: return
         val positions = findRoomTilesRecursively(room.x, room.z, room, mutableSetOf())
@@ -87,13 +92,11 @@ object ScanUtils {
         val topLayer = getTopLayerOfRoom(fullRoom.positions.first().x, fullRoom.positions.first().z)
         fullRoom.room.rotation = Rotations.entries.dropLast(1).find { rotation ->
             fullRoom.positions.any { pos ->
-                val blockPos = BlockPos(pos.x + rotation.x, topLayer, pos.z + rotation.z)
-                val isCorrectClay = getBlockIdAt(blockPos) == 159 &&
-                        EnumFacing.HORIZONTALS.all { facing ->
-                            getBlockIdAt(blockPos.add(facing.frontOffsetX, 0, facing.frontOffsetZ)).equalsOneOf(159, 0)
-                        }
-                if (isCorrectClay) fullRoom.clayPos = blockPos
-                return@any isCorrectClay
+                BlockPos(pos.x + rotation.x, topLayer, pos.z + rotation.z).let { blockPos ->
+                    getBlockIdAt(blockPos) == 159 && EnumFacing.HORIZONTALS.all { facing ->
+                        getBlockIdAt(blockPos.add(facing.frontOffsetX, 0, facing.frontOffsetZ)).equalsOneOf(159, 0)
+                    }.also { isCorrectClay -> if (isCorrectClay) fullRoom.clayPos = blockPos }
+                }
             }
         } ?: Rotations.NONE
 
@@ -104,11 +107,9 @@ object ScanUtils {
 
     private fun findRoomTilesRecursively(x: Int, z: Int, room: Room, visited: MutableSet<Vec2>): List<ExtraRoom> {
         val tiles = mutableListOf<ExtraRoom>()
-        val pos = Vec2(x, z)
-        if (visited.contains(pos)) return tiles
-        visited.add(pos)
+        Vec2(x, z).takeIf { it !in visited }?.also { visited.add(it) } ?: return tiles
         val core = getCore(x, z)
-        if (room.data.cores.any { core == it }) {
+        if (core in room.data.cores) {
             tiles.add(ExtraRoom(x, z, core))
             EnumFacing.HORIZONTALS.forEach {
                 tiles.addAll(findRoomTilesRecursively(x + it.frontOffsetX * ROOM_SIZE, z + it.frontOffsetZ * ROOM_SIZE, room, visited))
@@ -117,10 +118,9 @@ object ScanUtils {
         return tiles
     }
 
-    private fun scanRoom(x: Int, z: Int): Room? {
-        val roomCore = getCore(x, z)
-        return Room(x, z, getRoomData(roomCore) ?: return null).apply { core = roomCore }
-    }
+    private fun scanRoom(x: Int, z: Int): Room? =
+        getCore(x, z).let { core -> getRoomData(core)?.let { Room(x, z, it).apply { this.core = core } } }
+
 
     /**
      * Gets the top layer of blocks in a room (the roof) for finding the rotation of the room.
@@ -131,8 +131,7 @@ object ScanUtils {
      * @return The y-value of the roof, this is the y-value of the blocks.
      */
     private fun getTopLayerOfRoom(x: Int, z: Int, currentHeight: Int = 170): Int {
-        return if (isAir(x, currentHeight, z) && currentHeight > 70) getTopLayerOfRoom(x, z, currentHeight - 1)
-        else currentHeight
+        return if (isAir(x, currentHeight, z) && currentHeight > 70) getTopLayerOfRoom(x, z, currentHeight - 1) else currentHeight
     }
 
     @SubscribeEvent

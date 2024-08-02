@@ -28,5 +28,4 @@ public abstract class MixinEntityLivingBase {
                         6);
         cir.setReturnValue(Math.max((int)(length* Math.exp(-Animations.INSTANCE.getSpeed())), 1));
     }
-
 }

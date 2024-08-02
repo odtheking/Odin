@@ -3,7 +3,7 @@ package me.odinmain.utils.skyblock
 import net.minecraft.util.Vec3i
 
 object IceFillFloors {
-    val floors = arrayOf(
+    val IceFillFloors = arrayOf(
         arrayOf(
             arrayOf(
                 Vec3i(0, 0, -1),

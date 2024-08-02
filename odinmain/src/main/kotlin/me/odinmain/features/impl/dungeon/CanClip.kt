@@ -44,7 +44,7 @@ object CanClip : Module(
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (mc.thePlayer == null || !mc.thePlayer.isSneaking) {
+        mc.thePlayer?.isSneaking?.let {
             if (canClip) {
                 animation.start()
                 canClip = false
@@ -65,8 +65,9 @@ object CanClip : Module(
         onPacket(C07PacketPlayerDigging::class.java) {
             if (it.status != C07PacketPlayerDigging.Action.START_DESTROY_BLOCK || !line) return@onPacket
             val block = getBlockAt(it.position)
+            val state = mc.theWorld?.getBlockState(it.position) ?: return@onPacket
             if (block is BlockStairs) {
-                val dir = getDirection(block.defaultState)
+                val dir = getDirection(state)
                 Timer().schedule(1) {
                     if (isAir(it.position)) Blocks[it.position.toVec3()] = dir
                 }
@@ -102,7 +103,7 @@ object CanClip : Module(
                 else -> return
             }
 
-            if (line) Renderer.draw3DLine(pos1, pos2, color = Color.RED)
+            if (line) Renderer.draw3DLine(pos1, pos2, color = Color.RED, depth = true)
         }
     }
 

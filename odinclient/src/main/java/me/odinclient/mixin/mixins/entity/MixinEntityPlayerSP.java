@@ -1,8 +1,8 @@
 package me.odinclient.mixin.mixins.entity;
 
 import me.odinmain.events.impl.MessageSentEvent;
+import me.odinmain.utils.EventExtensions;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraftforge.common.MinecraftForge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -14,7 +14,7 @@ public abstract class MixinEntityPlayerSP {
 
     @Inject(method = "sendChatMessage", at = @At("HEAD"), cancellable = true, locals = LocalCapture.CAPTURE_FAILSOFT)
     private void onSendChatMessage(String message, CallbackInfo ci) {
-        if (MinecraftForge.EVENT_BUS.post(new MessageSentEvent(message)))
+        if (EventExtensions.postAndCatch(new MessageSentEvent(message)))
             ci.cancel();
     }
 }

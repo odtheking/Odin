@@ -6,16 +6,13 @@ import me.odinmain.commands.registerCommands
 import me.odinmain.config.*
 import me.odinmain.events.EventDispatcher
 import me.odinmain.features.ModuleManager
-import me.odinmain.features.ModuleManager.modules
 import me.odinmain.features.impl.render.*
-import me.odinmain.features.settings.impl.KeybindSetting
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.util.shader.RoundedRect
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Executor
-import me.odinmain.utils.render.RenderUtils
-import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.ScanUtils
@@ -48,8 +45,8 @@ object OdinMain {
             RenderUtils, Renderer, DungeonUtils, KuudraUtils,
             EventDispatcher, Executor, ModuleManager,
             WaypointManager, DevPlayers, SkyblockPlayer,
-            ScanUtils, //HighlightRenderer, //OdinUpdater,
-            SplitsManager,
+            ScanUtils, HighlightRenderer, //OdinUpdater,
+            SplitsManager, RenderUtils2D,
             this
         ).forEach { MinecraftForge.EVENT_BUS.register(it) }
 
@@ -76,12 +73,6 @@ object OdinMain {
             ClickGUIModule.firstTimeOnVersion = ClickGUIModule.lastSeenVersion != VERSION
             ClickGUIModule.lastSeenVersion = VERSION
         }.join() // Ensure Config.load() and version checks are complete before proceeding
-
-        for (module in modules) {
-            module.keybinding?.let {
-                module.register(KeybindSetting("Keybind", it, "Toggles the module"))
-            }
-        }
 
         ClickGUI.init()
         RoundedRect.initShaders()

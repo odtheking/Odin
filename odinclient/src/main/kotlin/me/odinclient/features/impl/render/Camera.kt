@@ -14,7 +14,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 object Camera : Module(
-    "Camera",
+    name = "Camera",
     category = Category.RENDER,
     description = "Allows you to change qualities about third person view."
 ) {
@@ -103,7 +103,7 @@ object Camera : Module(
             f3 *= .1f
             f4 *= .1f
             f5 *= .1f
-            val movingObjectPosition = mc.theWorld.rayTraceBlocks(
+            val movingObjectPosition = mc.theWorld?.rayTraceBlocks(
                 Vec3(d0 + f3.toDouble(), d1 + f4.toDouble(), d2 + f5.toDouble()),
                 Vec3(d0 - d4 + f3.toDouble() + f5.toDouble(), d1 - d6 + f4.toDouble(), d2 - d5 + f5.toDouble())
             )
