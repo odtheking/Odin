@@ -17,7 +17,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object KuudraUtils {
     var kuudraTeammates: List<KuudraPlayer> = emptyList()
     var kuudraTeammatesNoSelf: List<KuudraPlayer> = emptyList()
-    var giantZombies: MutableList<EntityGiantZombie> = mutableListOf()
+    var giantZombies: List<EntityGiantZombie> = mutableListOf()
     var supplies = BooleanArray(6) { true }
     var kuudraEntity: EntityMagmaCube = EntityMagmaCube(mc.theWorld)
     var builders = 0
@@ -84,7 +84,7 @@ object KuudraUtils {
                     }
                 }
 
-                if (phase != 1 || it.name != "✓ SUPPLIES RECEIVED ✓") return@forEach
+                if (phase != 1 || it.name.contains("SUPPLIES RECEIVED")) return@forEach
                 val x = it.posX.toInt()
                 val z = it.posZ.toInt()
                 if (x == -98 && z == -112) supplies[0] = false

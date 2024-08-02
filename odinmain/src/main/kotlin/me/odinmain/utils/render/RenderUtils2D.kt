@@ -17,7 +17,7 @@ import java.nio.IntBuffer
 
 object RenderUtils2D {
 
-    private data class Box2D(val x: Double, val y: Double, val x1: Double, val y1: Double)
+    private data class Box2D(val x: Double, val y: Double, val w: Double, val h: Double)
 
     private val modelViewMatrix: FloatBuffer = BufferUtils.createFloatBuffer(16)
     private val projectionMatrix: FloatBuffer = BufferUtils.createFloatBuffer(16)
@@ -51,9 +51,7 @@ object RenderUtils2D {
 
         return success.takeIf { it && coords[2] in 0.0..1.0 }?.run {
             val sr = ScaledResolution(mc)
-            val x = coords[0] / sr.scaleFactor
-            val y = sr.scaledHeight - (coords[1] / sr.scaleFactor)
-            Vec3(x.toDouble(), y.toDouble(), coords[2].toDouble())
+            Vec3(coords[0] / sr.scaleFactor.toDouble(), (sr.scaledHeight - (coords[1] / sr.scaleFactor)).toDouble(), coords[2].toDouble())
         }
     }
 
@@ -95,18 +93,16 @@ object RenderUtils2D {
     fun draw2DESP(aabb: AxisAlignedBB, color: Color, thickness: Float) {
         calculateBoundingBox(aabb)?.let { box ->
             with(RenderUtils) {
-                drawLine(color, box.x, box.y, box.x, box.y1, thickness)
-                drawLine(color, box.x, box.y, box.x1, box.y, thickness)
-                drawLine(color, box.x1, box.y1, box.x1, box.y, thickness)
-                drawLine(color, box.x1, box.y1, box.x, box.y1, thickness)
+                drawLine(color, box.x, box.y, box.x, box.h, thickness)
+                drawLine(color, box.x, box.y, box.w, box.y, thickness)
+                drawLine(color, box.w, box.h, box.w, box.y, thickness)
+                drawLine(color, box.w, box.h, box.x, box.h, thickness)
             }
         }
     }
 
     fun draw3DESP(aabb: AxisAlignedBB, color: Color, thickness: Float) {
-        val projected = getVertices(aabb).mapNotNull { worldToScreenPosition(it) }
-
-        if (projected.size != 8) return
+        val projected = getVertices(aabb).mapNotNull { worldToScreenPosition(it) }.takeIf { it.size == 8 } ?: return
 
         with(RenderUtils) {
             drawLine(color, projected[0].xCoord, projected[0].yCoord, projected[1].xCoord, projected[1].yCoord, thickness)

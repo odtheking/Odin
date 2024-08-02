@@ -14,7 +14,7 @@ object RemovePerks : Module(
     description = "Removes certain perks from the perk menu.",
     category = Category.NETHER
 ) {
-    private val renderStun: Boolean by BooleanSetting("Render Stun", false, description = "Renders the stun perk")
+    private val renderStun: Boolean by BooleanSetting("Render Stun", false, description = "Renders the stun role perks.")
 
     @SubscribeEvent
     fun renderSlot(event: GuiEvent.DrawSlotEvent) {

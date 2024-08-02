@@ -5,6 +5,7 @@ import kotlinx.coroutines.channels.ticker
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
+import me.odinmain.utils.render.RenderUtils.outlineBounds
 import me.odinmain.utils.skyblock.dungeon.tiles.Rotations
 import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
@@ -190,7 +191,6 @@ fun Vec3.rotateToNorth(rotation: Rotations): Vec3 {
     }
 }
 
-
 /**
  * Rotates a Vec2 to the given rotation.
  * @param rotation The rotation to rotate to
@@ -224,29 +224,6 @@ fun Vec3.addRotationCoords(rotation: Rotations, x: Number = 0, z: Number = 0): V
         Rotations.EAST -> Vec3(this.xCoord - z.toDouble(), this.yCoord, this.zCoord + x.toDouble())
         Rotations.NONE -> this
     }
-}
-
-fun BlockPos.addRotationCoords(rotation: Rotations, x: Number = 0, z: Number = 0): BlockPos {
-    return when(rotation){
-        Rotations.NORTH -> BlockPos(this.x + x.toInt(), this.y, this.z + z.toInt())
-        Rotations.WEST -> BlockPos(this.x + z.toInt(), this.y, this.z - x.toInt())
-        Rotations.SOUTH -> BlockPos(this.x - x.toInt(), this.y, this.z - z.toInt())
-        Rotations.EAST -> BlockPos(this.x - z.toInt(), this.y, this.z + x.toInt())
-        Rotations.NONE -> this
-    }
-}
-
-/**
- * Displaces a Vec2 by the given rotation, and distance.
- * @param rotation The rotation to offset with
- * @param dist The distance to displace by
- * @return The displaced Vec2
- */
-fun Vec2.addRotationCoords(rotation: EnumFacing, dist: Int = 4): Vec2 {
-    return Vec2(
-        x + rotation.frontOffsetX * dist,
-        z + rotation.frontOffsetZ * dist
-    )
 }
 
 fun Vec2.offset(rotation: Rotations, n: Int): Vec2 {
@@ -380,7 +357,6 @@ fun Vec3i.addVec(x: Number = .0, y: Number = .0, z: Number = .0): Vec3i {
     return Vec3i(this.x + x.toInt(), this.y + y.toInt(), this.z + z.toInt())
 }
 
-
 /**
  * Floors every coordinate of a Vec3 and turns it into a Vec3i.
  */
@@ -399,16 +375,22 @@ fun Vec3.flooredVec(): Vec3 {
  * @param add Will determine the maximum bounds
  */
 fun BlockPos.toAABB(add: Double = 1.0): AxisAlignedBB {
-    return AxisAlignedBB(this.x.toDouble(), this.y.toDouble(), this.z.toDouble(), this.x + add, this.y + add, this.z + add).expand(0.002, 0.002, 0.002)
+    return AxisAlignedBB(this.x.toDouble(), this.y.toDouble(), this.z.toDouble(), this.x + add, this.y + add, this.z + add).outlineBounds()
 }
 
 /**
  * @param add Will determine the maximum bounds
  */
 fun Vec3.toAABB(add: Double = 1.0): AxisAlignedBB {
-    return AxisAlignedBB(this.xCoord, this.yCoord, this.zCoord, this.xCoord + add, this.yCoord + add, this.zCoord + add).expand(0.002, 0.002, 0.002)
+    return AxisAlignedBB(this.xCoord, this.yCoord, this.zCoord, this.xCoord + add, this.yCoord + add, this.zCoord + add).outlineBounds()
 }
 
+/**
+ * Turns a Vec3 into a BlockPos.
+ */
+fun Vec3.toBlockPos(add: Double = 0.0): BlockPos {
+    return BlockPos(this.xCoord + add, this.yCoord + add, this.zCoord + add)
+}
 
 /**
  * Clones a Vec3 object.
@@ -448,7 +430,7 @@ fun DoubleArray.toVec3(): Vec3 {
  * @see me.odinmain.utils.skyblock.DianaBurrowEstimate.guessPosition
  * @author Soopy
  */
-fun solveEquationThing(x: Vec3, y: Vec3): Triple<Double, Double, Double> {
+fun calculateCoefficientsFromVectors(x: Vec3, y: Vec3): Triple<Double, Double, Double> {
     val a = (-y.xCoord * x.yCoord * x.xCoord - y.yCoord * x.yCoord * x.zCoord + y.yCoord * x.yCoord * x.xCoord + x.yCoord * x.zCoord * y.zCoord + x.xCoord * x.zCoord * y.xCoord - x.xCoord * x.zCoord * y.zCoord) / (x.yCoord * y.xCoord - x.yCoord * y.zCoord + x.xCoord * y.zCoord - y.xCoord * x.zCoord + y.yCoord * x.zCoord - y.yCoord * x.xCoord)
     val b = (y.xCoord - y.yCoord) * (x.xCoord + a) * (x.yCoord + a) / (x.yCoord - x.xCoord)
     val c = y.xCoord - b / (x.xCoord + a)
@@ -561,14 +543,10 @@ fun getDirectionToVec3(pos: Vec3): Triple<Double, Float, Float> {
  * @see getDirection
  * @author Aton
  */
-fun etherwarpRotateTo(targetPos: BlockPos): Triple<Double, Float, Float>? {
-    val distance = mc.thePlayer.getDistanceSq(targetPos)
-    val dist = 61.0
+fun etherwarpRotateTo(targetPos: BlockPos, dist: Double = 61.0): Triple<Double, Float, Float>? {
+    val distance = mc.thePlayer?.getDistanceSq(targetPos) ?: return null
 
-    if (distance > (dist + 2) * (dist + 2)) {
-        return null
-    }
-
+    if (distance > (dist + 2) * (dist + 2)) return null
 
     // check whether the block can be seen or is to far away
     val targets = listOf(
@@ -609,14 +587,12 @@ fun etherwarpRotateTo(targetPos: BlockPos): Triple<Double, Float, Float>? {
         }
     }
 
-    if (target == null) {
-        return null
+    return target?.let {
+        getDirection(
+            mc.thePlayer.posX, mc.thePlayer.posY + fastEyeHeight(), mc.thePlayer.posZ,
+            target.xCoord, target.yCoord, target.zCoord
+        )
     }
-
-    return getDirection(
-        mc.thePlayer.posX, mc.thePlayer.posY + fastEyeHeight(), mc.thePlayer.posZ,
-        target.xCoord, target.yCoord, target.zCoord
-    )
 }
 
 /**
@@ -642,8 +618,8 @@ fun smoothRotateTo(yaw: Float, pitch: Float, rotTime: Number, functionToRunWhenD
             val progress = ((currentTime - startTime).toFloat() / duration).coerceIn(0f, 1f)
             val amount = bezier(progress, 0f, 1f, 1f, 1f)
 
-            mc.thePlayer.rotationYaw = initialYaw + (targetYaw - initialYaw) * amount
-            mc.thePlayer.rotationPitch = initialPitch + (targetPitch - initialPitch) * amount
+            mc.thePlayer?.rotationYaw = initialYaw + (targetYaw - initialYaw) * amount
+            mc.thePlayer?.rotationPitch = initialPitch + (targetPitch - initialPitch) * amount
 
             if (progress >= 1f) {
                 tickerChannel.cancel()
@@ -651,8 +627,8 @@ fun smoothRotateTo(yaw: Float, pitch: Float, rotTime: Number, functionToRunWhenD
             }
         }
 
-        mc.thePlayer.rotationYaw = yaw
-        mc.thePlayer.rotationPitch = pitch
+        mc.thePlayer?.rotationYaw = yaw
+        mc.thePlayer?.rotationPitch = pitch
         functionToRunWhenDone.invoke()
     }
 }

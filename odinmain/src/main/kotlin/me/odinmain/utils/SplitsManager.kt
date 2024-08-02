@@ -13,13 +13,9 @@ data class SplitsGroup(val splits: List<Split>, val personalBest: PersonalBest?)
 object SplitsManager {
 
     var currentSplits: SplitsGroup = SplitsGroup(emptyList(), null)
-    private var dungeonEnded = false
 
     @SubscribeEvent
     fun onChatPacket(event: ChatPacketEvent) {
-        if (Regex(" {29}> EXTRA STATS <").matches(event.message)) dungeonEnded = true
-        if (dungeonEnded) return
-
         val currentSplit = currentSplits.splits.find { it.regex.matches(event.message) } ?: return
         if (currentSplit.time != 0L) return
         currentSplit.time = System.currentTimeMillis()
@@ -31,7 +27,7 @@ object SplitsManager {
 
         if (index == currentSplits.splits.size - 1) {
             val (times, _) = getAndUpdateSplitsTimes(currentSplits)
-            currentSplits.personalBest?.time(index, times.last()/ 1000.0, "s§7!", "§6Total time §7took §6", addPBString = true, addOldPBString = true, alwaysSendPB = true, sendOnlyPB = Splits.sendOnlyPB, sendMessage = Splits.enabled)
+            currentSplits.personalBest?.time(index, times.last() / 1000.0, "s§7!", "§6Total time §7took §6", addPBString = true, addOldPBString = true, alwaysSendPB = true, sendOnlyPB = Splits.sendOnlyPB, sendMessage = Splits.enabled)
             runIn(10) {
                 times.forEachIndexed { i, it ->
                     val name = if (i == currentSplits.splits.size - 1) "Total" else currentSplits.splits[i].name
@@ -91,7 +87,6 @@ object SplitsManager {
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
-        dungeonEnded = false
         currentSplits = SplitsGroup(mutableListOf(), null)
     }
 }

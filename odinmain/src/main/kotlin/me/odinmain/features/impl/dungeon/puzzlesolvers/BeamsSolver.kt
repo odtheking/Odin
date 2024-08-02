@@ -41,7 +41,6 @@ object BeamsSolver {
         val room = event.fullRoom?.room ?: return // <-- orb = orb.orb
         if (room.data.name != "Creeper Beams") return reset()
 
-        if (scanned) return
         currentLanternPairs.clear()
         lanternPairs.forEach {
             val pos = room.vec2.addRotationCoords(room.rotation, x = it[0], z = it[2]).let { vec -> BlockPos(vec.x, it[1], vec.z) }
@@ -51,11 +50,10 @@ object BeamsSolver {
             if (getBlockIdAt(pos) == 169 && getBlockIdAt(pos2) == 169)
                 currentLanternPairs[pos] = pos2 to colors[currentLanternPairs.size]
         }
-        scanned = true
     }
 
     fun onRenderWorld() {
-        if (DungeonUtils.currentRoomName != "Creeper Beams" || DungeonUtils.inBoss || !scanned) return
+        if (DungeonUtils.currentRoomName != "Creeper Beams" || currentLanternPairs.isEmpty()) return
         val finalLanternPairs = currentLanternPairs.toMap()
         finalLanternPairs.entries.forEach { positions ->
             val color = positions.value.second

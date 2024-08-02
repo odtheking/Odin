@@ -17,7 +17,7 @@ object NoDebuff : Module(
     category = Category.RENDER,
     description = "Removes various unwanted effects from the game."
 ) {
-    private val antiBlind: Boolean by BooleanSetting("No Blindness", false, description = "Disables blindness")
+    private val antiBlind: Boolean by BooleanSetting("No Blindness", false, description = "Disables blindness.")
     private val antiPortal: Boolean by BooleanSetting("No Portal Effect", false, description = "Disables the nether portal overlay.")
     private val antiPumpkin: Boolean by BooleanSetting("No Pumpkin Overlay", false, description = "Disables the pumpkin overlay.")
     private val noShieldParticles: Boolean by BooleanSetting("No Shield Particle", false, description = "Removes purple particles and wither impact hearts.")

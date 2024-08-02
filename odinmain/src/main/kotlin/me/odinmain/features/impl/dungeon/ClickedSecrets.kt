@@ -9,11 +9,11 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.getBlockAt
 import me.odinmain.utils.toAABB
 import net.minecraft.util.BlockPos
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import java.util.concurrent.CopyOnWriteArrayList
 
 object ClickedSecrets : Module(
     name = "Clicked Secrets",
@@ -27,40 +27,39 @@ object ClickedSecrets : Module(
     private val lockedColor: Color by ColorSetting("Locked Color", Color.RED.withAlpha(.4f), allowAlpha = true, description = "The color of the box when the chest is locked.")
     private val timeToStay: Long by NumberSetting("Time To Stay (seconds)", 7L, 1L, 60L, 1L, description = "The time the chests should remain highlighted.")
     private val useRealSize: Boolean by BooleanSetting("Use Real Size", true, description = "Whether or not to use the real size of the block.")
-    private val disableInBoss: Boolean by BooleanSetting("Disable In Boss", false, description = "Highlight clicks in boss")
+    private val disableInBoss: Boolean by BooleanSetting("Disable In Boss", false, description = "Highlight clicks in boss.")
 
     private data class Chest(val pos: BlockPos, val timeAdded: Long, var locked: Boolean = false)
-    private val secrets = mutableListOf<Chest>()
+    private val clickedSecretsList = CopyOnWriteArrayList<Chest>()
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (!DungeonUtils.inDungeons || (DungeonUtils.inBoss && disableInBoss) || secrets.isEmpty()) return
+        if (!DungeonUtils.inDungeons || (DungeonUtils.inBoss && disableInBoss) || clickedSecretsList.isEmpty()) return
 
-        val tempList = secrets.toList()
-        tempList.forEach {
-            val size = if (useRealSize) getBlockAt(it.pos).getSelectedBoundingBox(mc.theWorld, BlockPos(it.pos)) else it.pos.toAABB()
-            Renderer.drawStyledBox(size, if (it.locked) lockedColor else color, style, lineWidth, depthCheck)
+        clickedSecretsList.forEach {
+            if (useRealSize) Renderer.drawStyledBlock(it.pos, if (it.locked) lockedColor else color, style, lineWidth, depthCheck)
+            else Renderer.drawStyledBox(it.pos.toAABB(), if (it.locked) lockedColor else color, style, lineWidth, depthCheck)
         }
     }
 
     @SubscribeEvent
     fun onSecret(event: SecretPickupEvent.Interact) {
-        if ((DungeonUtils.inBoss && disableInBoss) || secrets.any { it.pos == event.blockPos }) return
-        secrets.add(Chest(event.blockPos, System.currentTimeMillis()))
+        if ((DungeonUtils.inBoss && disableInBoss) || clickedSecretsList.any { it.pos == event.blockPos }) return
+        clickedSecretsList.add(Chest(event.blockPos, System.currentTimeMillis()))
 
         runIn(timeToStay.toInt() * 20) {
-            secrets.removeFirstOrNull()
+            clickedSecretsList.removeFirstOrNull()
         }
     }
 
     init {
         onWorldLoad {
-            secrets.clear()
+            clickedSecretsList.clear()
         }
 
         onMessage("That chest is locked!", true) {
-            if (secrets.isEmpty()) return@onMessage
-            secrets.lastOrNull()?.let { it.locked = true }
+            if (clickedSecretsList.isEmpty()) return@onMessage
+            clickedSecretsList.lastOrNull()?.let { it.locked = true }
         }
     }
 }

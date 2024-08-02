@@ -36,9 +36,9 @@ object RenderOptimizer : Module(
     private val removeBlazePuzzleNames: Boolean by BooleanSetting(name = "Hide blazes", default = false, description = "Hides the blazes in the blaze puzzle room.")
 
     private val showParticleOptions: Boolean by DropdownSetting("Show Particles Options")
-    private val removeExplosion: Boolean by BooleanSetting("Remove Explosion").withDependency { showParticleOptions }
+    private val removeExplosion: Boolean by BooleanSetting("Remove Explosion", default = false, description = "Removes explosion particles.").withDependency { showParticleOptions }
     private val hideParticles: Boolean by BooleanSetting(name = "Hide P5 Particles", default = true, description = "Hides particles that are not necessary.").withDependency { showParticleOptions }
-    private val hideHeartParticles: Boolean by BooleanSetting(name = "Hide Heart Particles", default = true, description = "Hides heart particles.").withDependency { showParticleOptions }
+    private val hideHeartParticles: Boolean by BooleanSetting(name = "Hide Heart Particles", default = false, description = "Hides heart particles.").withDependency { showParticleOptions }
 
     private const val TENTACLE_TEXTURE = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzM3MjIzZDAxOTA2YWI2M2FmMWExNTk4ODM0M2I4NjM3ZTg1OTMwYjkwNWMzNTEyNWI1NDViMzk4YzU5ZTFjNSJ9fX0="
     private const val HEALER_FAIRY_TEXTURE = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTZjM2UzMWNmYzY2NzMzMjc1YzQyZmNmYjVkOWE0NDM0MmQ2NDNiNTVjZDE0YzljNzdkMjczYTIzNTIifX19"
@@ -87,10 +87,10 @@ object RenderOptimizer : Module(
             event.isCanceled = true
 
 
-        if (DungeonUtils.getPhase() == M7Phases.P5 && hideParticles && !event.packet.particleType.name.containsOneOf("ENCHANTMENT TABLE", "FLAME", "FIREWORKS_SPARK"))
+        if (DungeonUtils.getPhase() == M7Phases.P5 && hideParticles && !event.packet.particleType.equalsOneOf(EnumParticleTypes.ENCHANTMENT_TABLE, EnumParticleTypes.FLAME, EnumParticleTypes.FIREWORKS_SPARK))
             event.isCanceled = true
 
-        if (hideHeartParticles && event.packet.particleType.name.containsOneOf("HEART"))
+        if (hideHeartParticles && event.packet.particleType == EnumParticleTypes.HEART)
             event.isCanceled = true
     }
 
@@ -101,19 +101,18 @@ object RenderOptimizer : Module(
     }
 
     private fun removeTentacles(entity: Entity) {
-        if (DungeonUtils.getPhase() == M7Phases.P5 && getSkullValue(entity)?.contains(TENTACLE_TEXTURE) == true)
+        if (DungeonUtils.getPhase() == M7Phases.P5 && getSkullValue(entity) == TENTACLE_TEXTURE)
             entity.setDead()
     }
 
     private fun handleHealerFairy(entity: Entity) {
         val armorStand = entity as? EntityArmorStand ?: return
-        if (armorStand.heldItem == null) return
-        if (DungeonUtils.inDungeons && armorStand.heldItem?.item == Items.skull && getHealerFairyTextureValue(armorStand) == (HEALER_FAIRY_TEXTURE))
+        if (DungeonUtils.inDungeons && armorStand.heldItem?.item == Items.skull && getHealerFairyTextureValue(armorStand) == HEALER_FAIRY_TEXTURE)
             armorStand.setDead()
     }
 
     private fun handleSoulWeaver(entity: Entity) {
-        if (DungeonUtils.inDungeons && getSkullValue(entity)?.contains(SOUL_WEAVER_TEXTURE) == true) entity.setDead()
+        if (DungeonUtils.inDungeons && getSkullValue(entity) == SOUL_WEAVER_TEXTURE) entity.setDead()
     }
 
     private fun handleWitherMiner(entity: Entity) {

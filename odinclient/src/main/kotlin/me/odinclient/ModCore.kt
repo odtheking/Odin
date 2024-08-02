@@ -33,7 +33,9 @@ class ModCore {
     @EventHandler
     fun init(event: FMLInitializationEvent) {
         OdinMain.init()
-        MinecraftForge.EVENT_BUS.register(this)
+        listOf(
+            this
+        ).forEach { MinecraftForge.EVENT_BUS.register(it) }
 
         registerCommands(
             autoSellCommand,
@@ -52,7 +54,7 @@ class ModCore {
     fun loadComplete(event: FMLLoadCompleteEvent) {
         ModuleManager.addModules(
             AutoGFS, /*AutoIceFill,*/ AutoSell, CancelInteract, CloseChest, SecretHitboxes,
-            Arrows, ArrowAlign, CancelWrongTerms, HoverTerms, LightsDevice, SimonSays,
+            Arrows, ArrowAlign, CancelWrongTerms, HoverTerms, LightsDevice, SimonSays, ArrowsDevice,
             DioriteFucker, RelicAura, Trajectories, Ghosts, NoDebuff, ChocolateFactory, AutoExperiments,
             FarmingHitboxes, NoBlock, TermAC, Triggerbot, GhostBlocks, FreezeGame, EtherWarpHelper, ChestEsp,
             EscrowFix, TerminalMove, TerminalAura, AutoTerms, Camera, DungeonAbilities/*, QueueTerms*/, HidePlayers, AutoHarp

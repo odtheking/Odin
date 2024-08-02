@@ -4,9 +4,7 @@ import me.odinmain.events.impl.RealServerTick
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.DualSetting
-import me.odinmain.features.settings.impl.HudSetting
+import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.mcTextAndWidth
@@ -17,9 +15,9 @@ object TickTimers : Module(
     category = Category.FLOOR7,
     description = "Various tick timers for the floor 7 boss."
 ) {
-    private val displayInTicks: Boolean by DualSetting("Timer Style", "Seconds", "Ticks", default = false, description = "Which Style to display the timers in")
-    private val symbolDisplay: Boolean by BooleanSetting("Display Symbol", default = true, description = "Displays s or t after the timers")
-    private val showPrefix: Boolean by BooleanSetting("Show Prefix", default = true, description = "Shows the prefix of the timers")
+    private val displayInTicks: Boolean by DualSetting("Timer Style", "Seconds", "Ticks", default = false, description = "Which Style to display the timers in.")
+    private val symbolDisplay: Boolean by BooleanSetting("Display Symbol", default = true, description = "Displays s or t after the timers.")
+    private val showPrefix: Boolean by BooleanSetting("Show Prefix", default = true, description = "Shows the prefix of the timers.")
 
     private val necronHud: HudElement by HudSetting("Necron Hud", 10f, 10f, 1f, true) {
         if (it) {
