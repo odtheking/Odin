@@ -6,6 +6,7 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.*
+import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.Blessing
 
 object BlessingDisplay : Module(
@@ -34,12 +35,12 @@ object BlessingDisplay : Module(
     )
 
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) { example ->
-        return@HudSetting blessings.filterIndexed { index, blessing ->
-            if (!blessing.enabled.invoke()) return@filterIndexed false
-            val level = if (example) 19 else blessing.type.current
-            if (level <= 0) return@filterIndexed false
-            mcText("${blessing.type.displayString} §a$level§r", 0f, 10f * index, 1, blessing.color.invoke(), center = false)
-            return@filterIndexed true
-        }.let { getMCTextWidth("Power: 19").toFloat() to 10f * it.size.coerceAtLeast(1) }
+        (0..5).reduce { acc, index ->
+            val blessing = blessings[index - 1]
+            if (!blessing.enabled.invoke()) return@reduce acc
+            val level = if (example) 19 else if (blessing.type.current > 0) blessing.type.current else return@reduce acc
+            mcText("${blessing.type.displayString} §a$level§r", 0, 10 * acc, 1, blessing.color.invoke(), center = false)
+            acc + 1
+        }.let { getMCTextWidth("Power: 19").toFloat() to 10f * it }
     }
 }
