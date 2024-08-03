@@ -8,6 +8,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.currentTerm
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
+import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.skyblock.PlayerUtils
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.network.play.server.S29PacketSoundEffect
@@ -80,7 +81,7 @@ object TerminalSounds : Module(
 
     private fun clickSlot(slot: Int) {
         if (
-            (currentTerm != TerminalTypes.ORDER && slot !in TerminalSolver.solution) ||
+            (!currentTerm.equalsOneOf(TerminalTypes.MELODY, TerminalTypes.ORDER) && slot !in TerminalSolver.solution) ||
             (currentTerm == TerminalTypes.ORDER && slot != TerminalSolver.solution.first()) ||
             (currentTerm == TerminalTypes.MELODY && slot !in arrayOf(43, 34, 25, 16))
         ) return
