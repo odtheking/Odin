@@ -28,7 +28,7 @@ object CanClip : Module(
     description = "Tells you if you are currently able to clip through a stair under you.",
     category = Category.DUNGEON
 ) {
-    private val line: Boolean by BooleanSetting("Line", true, description = "draws a line where you can clip.")
+    private val line: Boolean by BooleanSetting("Line", true, description = "draws a line where you can clip")
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, true) {
         if (it) {
             text("Can Clip", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR)
@@ -42,9 +42,13 @@ object CanClip : Module(
     private val animation = EaseInOut(300)
     private var canClip = false
 
+    private val ranges = listOf(0.235..0.265, 0.735..0.765)
+
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (mc.thePlayer?.isSneaking == true) {
+        val player = mc.thePlayer ?: return
+
+        if (player.isSneaking) {
             if (canClip) {
                 animation.start()
                 canClip = false
@@ -52,10 +56,8 @@ object CanClip : Module(
             return
         }
 
-        val x = abs(mc.thePlayer.posX % 1)
-        val z = abs(mc.thePlayer.posZ % 1)
         val prev = canClip
-        canClip = x in 0.235..0.265 || x in 0.735..0.765 || z in 0.235..0.265 || z in 0.735..0.765
+        canClip = ranges.any { abs(player.posX % 1) in it || abs(player.posZ % 1) in it}
         if (prev != canClip) animation.start()
     }
 

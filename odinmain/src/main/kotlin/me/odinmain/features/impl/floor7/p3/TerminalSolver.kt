@@ -73,6 +73,7 @@ object TerminalSolver : Module(
 
 
     var currentTerm = TerminalTypes.NONE
+    private var lastTermOpened = TerminalTypes.NONE
     var solution = listOf<Int>()
 
     @SubscribeEvent
@@ -80,6 +81,7 @@ object TerminalSolver : Module(
         val newTerm = TerminalTypes.entries.find { event.name.startsWith(it.guiName) } ?: TerminalTypes.NONE
         if (newTerm != currentTerm) {
             currentTerm = newTerm
+            lastTermOpened = currentTerm
             openedTerminalTime = System.currentTimeMillis()
             lastRubixSolution = null
         }
@@ -211,7 +213,7 @@ object TerminalSolver : Module(
     fun onChat(event: ChatPacketEvent) {
         val match = Regex("(.{1,16}) (?:activated|completed) a (?:terminal|device|lever)! \\((\\d)/(\\d)\\)").find(event.message) ?: return
         val (playerName, completionStatus, total) = match.destructured
-        TerminalSolvedEvent(currentTerm, playerName, completionStatus.toIntOrNull() ?: return, total.toIntOrNull() ?: return).postAndCatch()
+        TerminalSolvedEvent(lastTermOpened, playerName, completionStatus.toIntOrNull() ?: return, total.toIntOrNull() ?: return).postAndCatch()
     }
 
     private fun leftTerm() {
