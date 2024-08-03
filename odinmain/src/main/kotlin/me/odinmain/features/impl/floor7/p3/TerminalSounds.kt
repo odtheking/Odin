@@ -43,12 +43,10 @@ object TerminalSounds : Module(
     @SubscribeEvent
     fun onPacket(event: PacketReceivedEvent){
         with(event.packet) {
-            //if (this is S29PacketSoundEffect) modMessage("$soundName, $volume, $pitch")
             if (
                 this is S29PacketSoundEffect &&
                 soundName == "note.pling" &&
                 volume == 8f &&
-                //pitch == 1.8888888f &&
                 pitch == 4.047619f &&
                 shouldReplaceSounds
             ) event.isCanceled = true
