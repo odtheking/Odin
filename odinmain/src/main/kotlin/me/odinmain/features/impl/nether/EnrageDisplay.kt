@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object EnrageDisplay : Module(
     name = "Enrage Display",
-    description = "Timer for cooldown of reaper armor enrage",
+    description = "Timer for cooldown of reaper armor enrage.",
     category = Category.NETHER
 ) {
     private val hud: HudElement by HudSetting("Enrage Timer Hud", 10f, 10f, 1f, false) {

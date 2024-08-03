@@ -1,27 +1,22 @@
 package me.odinmain.features.impl.floor7.p3
 
-import me.odinmain.events.impl.RealServerTick
-import me.odinmain.events.impl.TerminalOpenedEvent
-import me.odinmain.events.impl.TerminalSolvedEvent
+import me.odinmain.events.impl.*
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.termsim.TermSimGui
-import me.odinmain.features.settings.impl.ActionSetting
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.DualSetting
+import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.PersonalBest
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object TerminalTimes : Module(
     name = "Terminal Times",
     description = "Records the time taken to complete terminals in floor 7.",
     category = Category.FLOOR7
 ) {
-    private val sendMessage: Boolean by DualSetting("Send Message", "Always", "Only PB", true, description = "Send a message when a terminal is completed")
+    private val sendMessage: Boolean by DualSetting("Send Message", "Always", "Only PB", true, description = "Send a message when a terminal is completed.")
     private val reset: () -> Unit by ActionSetting("Reset pbs") {
         repeat(6) { i -> termPBs.set(i, 999.0) }
         modMessage("§6Terminal PBs §fhave been reset.")

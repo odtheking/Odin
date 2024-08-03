@@ -28,20 +28,20 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object SimonSays : Module(
     name = "Simon Says",
-    description = "Different features for the Simon Says puzzle in floor 7.",
+    description = "Different features for the Simon Says device.",
     category = Category.FLOOR7,
     tag = TagType.RISKY
 ) {
-    private val start: Boolean by BooleanSetting("Start", default = true, description = "Starts the device when it can be started.")
-    private val startClicks: Int by NumberSetting("Start Clicks", 3, 1, 10).withDependency { start }
-    private val startClickDelay: Int by NumberSetting("Start Click Delay", 3, 1, 5).withDependency { start }
-    private val triggerBot: Boolean by BooleanSetting("Triggerbot")
-    private val triggerBotDelay: Long by NumberSetting<Long>("Triggerbot Delay", 200, 70, 500).withDependency { triggerBot }
-    private val autoSS: Boolean by BooleanSetting("Auto SS", false)
-    private val autoSSDelay: Long by NumberSetting<Long>("Delay Between Clicks", 200, 50, 500).withDependency { autoSS }
-    private val autoSSRotateTime: Int by NumberSetting("Rotate Time", 150, 0, 400).withDependency { autoSS }
+    private val start: Boolean by BooleanSetting("Start", default = true, description = "Automatically starts the device when it can be started.")
+    private val startClicks: Int by NumberSetting("Start Clicks", 3, 1, 10, description = "Amount of clicks to start the device.").withDependency { start }
+    private val startClickDelay: Int by NumberSetting("Start Click Delay", 3, 1, 5, description = "Delay between each start click.").withDependency { start }
+    private val triggerBot: Boolean by BooleanSetting("Triggerbot", false, description = "Automatically clicks the correct button when you look at it.")
+    private val triggerBotDelay: Long by NumberSetting("Triggerbot Delay", 200L, 70, 500, unit = "ms", description = "The delay between each click.").withDependency { triggerBot }
+    private val autoSS: Boolean by BooleanSetting("Auto SS", false, description = "Automatically clicks the correct button when you are in range.")
+    private val autoSSDelay: Long by NumberSetting("Delay Between Clicks", 200L, 50, 500, unit = "ms", description = "The delay between each click.").withDependency { autoSS }
+    private val autoSSRotateTime: Int by NumberSetting("Rotate Time", 150, 0, 400, unit = "ms", description = "The time it takes to rotate to the correct button.").withDependency { autoSS }
     private val blockWrong: Boolean by BooleanSetting("Block Wrong Clicks", false, description = "Blocks Any Wrong Clicks (sneak to disable).")
-    private val clearAfter: Boolean by BooleanSetting("Clear After", false, description = "Clears the clicks when showing next, should work better with ss skip, but will be less consistent")
+    private val clearAfter: Boolean by BooleanSetting("Clear After", false, description = "Clears the clicks when showing next, should work better with ss skip, but will be less consistent.")
 
     private val triggerBotClock = Clock(triggerBotDelay)
     private val firstClickClock = Clock(800)

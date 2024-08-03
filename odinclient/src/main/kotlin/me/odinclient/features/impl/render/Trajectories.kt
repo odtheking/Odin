@@ -31,16 +31,16 @@ object Trajectories : Module(
     description = "Displays the trajectory of pearls and bows.",
     category = Category.RENDER
 ) {
-    private val bows: Boolean by BooleanSetting("Bows", true, description = "Render trajectories of bow arrows")
-    private val pearls: Boolean by BooleanSetting("Pearls", true, description = "Render trajectories of ender pearls")
+    private val bows: Boolean by BooleanSetting("Bows", true, description = "Render trajectories of bow arrows.")
+    private val pearls: Boolean by BooleanSetting("Pearls", true, description = "Render trajectories of ender pearls.")
     private val plane: Boolean by BooleanSetting("Show Plane", false, description = "Shows a flat square rotated relative to the predicted block that will be hit.")
     private val boxes: Boolean by BooleanSetting("Show Boxes", true, description = "Shows boxes displaying where arrows or pearls will hit, if this is disabled it will only highlight entities your arrows will hit.")
     private val lines: Boolean by BooleanSetting("Show Lines", true, description = "Shows the trajectory as a line.")
-    private val range: Float by NumberSetting("Solver Range", 30f, 1f, 60f, 1f, description = "How many ticks are simulated, performance impact scales with this")
-    private val width: Float by NumberSetting("Line Width", 1f, 0.1f, 5.0, 0.1f)
-    private val planeSize: Float by NumberSetting("Plane Size", 2f, 0.1f, 5.0, 0.1f).withDependency { plane }
-    private val boxSize: Float by NumberSetting("Box Size", 0.5f, 0.5f, 3.0f, 0.1f).withDependency { boxes }
-    private val color: Color by ColorSetting("Color", Color.CYAN, true)
+    private val range: Float by NumberSetting("Solver Range", 30f, 1f, 120f, 1f, description = "How many ticks are simulated, performance impact scales with this.")
+    private val width: Float by NumberSetting("Line Width", 1f, 0.1f, 5.0, 0.1f, description = "The width of the line.")
+    private val planeSize: Float by NumberSetting("Plane Size", 2f, 0.1f, 5.0, 0.1f, description = "The size of the plane.").withDependency { plane }
+    private val boxSize: Float by NumberSetting("Box Size", 0.5f, 0.5f, 3.0f, 0.1f, description = "The size of the box.").withDependency { boxes }
+    private val color: Color by ColorSetting("Color", Color.CYAN, true, description = "The color of the trajectory.")
 
     private var boxRenderQueue: MutableList<Pair<Vec3, Vec3>> = mutableListOf()
     private var entityRenderQueue = mutableListOf<Entity>()

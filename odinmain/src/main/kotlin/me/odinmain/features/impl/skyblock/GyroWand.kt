@@ -18,9 +18,9 @@ object GyroWand : Module(
     description = "Helpful features for the Gyrokinetic Wand",
     category = Category.SKYBLOCK
 ) {
-    private val color: Color by ColorSetting("Color", Color.MAGENTA.withAlpha(0.5f), allowAlpha = true)
-    private val thickness: Float by NumberSetting("Thickness", 0.4f, 0, 10, 0.05)
-    private val steps: Int by NumberSetting("Smoothness", 40, 20, 80, 1)
+    private val color: Color by ColorSetting("Color", Color.MAGENTA.withAlpha(0.5f), allowAlpha = true, description = "The color of the Gyrokinetic Wand range.")
+    private val thickness: Float by NumberSetting("Thickness", 0.4f, 0, 10, 0.05f, description = "The thickness of the Gyrokinetic Wand range.")
+    private val steps: Int by NumberSetting("Smoothness", 40, 20, 80, 1, description = "The amount of steps to use when rendering the Gyrokinetic Wand range.")
     private val showCooldown: Boolean by BooleanSetting("Show Cooldown", true, description = "Shows the cooldown of the Gyrokinetic Wand.")
     private val cooldownColor: Color by ColorSetting("Cooldown Color", Color.RED, allowAlpha = true).withDependency { showCooldown }
 
@@ -31,12 +31,10 @@ object GyroWand : Module(
         if (heldItem?.itemID != "GYROKINETIC_WAND") return
         val position = mc.thePlayer?.rayTrace(25.0, event.partialTicks)?.blockPos?.takeIf { !getBlockAt(it).isAir(mc.theWorld, it) }?.toVec3() ?: return
 
-        val finalColor = if (showCooldown && !gyroCooldown.hasTimePassed()) cooldownColor else color
-
         Renderer.drawCylinder(
             position.addVector(0.5, 1.0, 0.5),
             10f, 10f - thickness, 0.2f,
-            steps, 1, 0f, 90f, 90f, finalColor
+            steps, 1, 0f, 90f, 90f, if (showCooldown && !gyroCooldown.hasTimePassed()) cooldownColor else color
         )
     }
 

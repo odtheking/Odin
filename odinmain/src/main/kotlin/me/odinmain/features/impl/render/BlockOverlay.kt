@@ -25,12 +25,12 @@ object BlockOverlay : Module(
 
     @SubscribeEvent
     fun onRenderBlockOverlay(event: DrawBlockHighlightEvent) {
-        if (event.target.typeOfHit != MovingObjectType.BLOCK || mc.gameSettings.thirdPersonView != 0) return
+        if (event.target.typeOfHit != MovingObjectType.BLOCK || mc.gameSettings?.thirdPersonView != 0) return
         event.isCanceled = true
 
         val blockPos = event.target.blockPos
 
-        if (getBlockAt(blockPos).material === Material.air || !mc.theWorld.worldBorder.contains(blockPos)) return
+        if (getBlockAt(blockPos).material === Material.air || blockPos !in mc.theWorld.worldBorder) return
 
         Renderer.drawStyledBlock(blockPos, color, style, lineWidth, depthCheck, lineSmoothing)
     }

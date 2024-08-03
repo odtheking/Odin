@@ -80,7 +80,7 @@ object DragonCheck {
     fun dragonStateConfirmation() {
         val entities = mc.theWorld?.loadedEntityList.orEmpty()
         WitherDragonsEnum.entries.forEach { dragon ->
-            dragon.state = if (!entities.contains(dragon.entity) && dragon.state == WitherDragonState.ALIVE) WitherDragonState.DEAD else dragon.state
+            dragon.state = if (dragon.entity !in entities && dragon.state == WitherDragonState.ALIVE) WitherDragonState.DEAD else dragon.state
         }
     }
 }

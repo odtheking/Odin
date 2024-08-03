@@ -12,6 +12,7 @@ import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.*
+import java.util.concurrent.CopyOnWriteArrayList
 
 object TerracottaTimer : Module(
     name = "Terracotta Timer",
@@ -19,7 +20,7 @@ object TerracottaTimer : Module(
     category = Category.DUNGEON
 ) {
     private data class Terracotta(val pos: Vec3, var time: Double)
-    private var terracottaSpawning = mutableListOf<Terracotta>()
+    private var terracottaSpawning = CopyOnWriteArrayList<Terracotta>()
 
     @SubscribeEvent
     fun onBlockPacket(event: BlockChangeEvent) {
@@ -38,8 +39,7 @@ object TerracottaTimer : Module(
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (!DungeonUtils.isFloor(6) || !DungeonUtils.inBoss || terracottaSpawning.isEmpty()) return
-        val terracottaList = terracottaSpawning.toList()
-        terracottaList.forEach {
+        terracottaSpawning.forEach {
             Renderer.drawStringInWorld(
                 "${String.format(Locale.US, "%.2f", it.time / 100.0)}s",
                 it.pos, getColor(it.time / 100.0), depth = false, scale = 0.03f

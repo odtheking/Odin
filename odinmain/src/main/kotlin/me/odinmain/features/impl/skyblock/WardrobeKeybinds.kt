@@ -26,7 +26,6 @@ object WardrobeKeybinds : Module(
     private val disallowUnequippingEquipped: Boolean by BooleanSetting("Disable Unequip", false, description = "Prevents unequipping equipped armor.")
 
     private val advanced: Boolean by DropdownSetting("Show Settings", false)
-
     private val wardrobe1: Keybinding by KeybindSetting("Wardrobe 1", Keyboard.KEY_1, "Wardrobe 1").withDependency { advanced }
     private val wardrobe2: Keybinding by KeybindSetting("Wardrobe 2", Keyboard.KEY_2, "Wardrobe 2").withDependency { advanced }
     private val wardrobe3: Keybinding by KeybindSetting("Wardrobe 3", Keyboard.KEY_3, "Wardrobe 3").withDependency { advanced }

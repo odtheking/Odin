@@ -84,7 +84,7 @@ object KuudraUtils {
                     }
                 }
 
-                if (phase != 1 || it.name != "✓ SUPPLIES RECEIVED ✓") return@forEach
+                if (phase != 1 || it.name.contains("SUPPLIES RECEIVED")) return@forEach
                 val x = it.posX.toInt()
                 val z = it.posZ.toInt()
                 if (x == -98 && z == -112) supplies[0] = false

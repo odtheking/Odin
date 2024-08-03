@@ -17,7 +17,7 @@ object MapInfo : Module(
 ) {
 
     private val disableInBoss: Boolean by BooleanSetting("Disable in boss", default = true, description = "Disables the information display when you're in boss.")
-    private val scoreTitle: Boolean by BooleanSetting("300 Score Title", default = true, description = "Displays a title on 300 score")
+    private val scoreTitle: Boolean by BooleanSetting("300 Score Title", default = true, description = "Displays a title on 300 score.")
     private val scoreText: String by StringSetting("Title Text", default = "&c300 Score!", description = "Text to be displayed on 300 score.").withDependency { scoreTitle }
     val togglePaul: Int by SelectorSetting("Paul Settings", "Automatic", options = arrayListOf("Automatic", "Force Disable", "Force Enable"))
 

@@ -17,8 +17,8 @@ object InvincibilityTimer : Module(
     description = "Timer to show how long you have left Invincible.",
     category = Category.SKYBLOCK
 )  {
-    private val invincibilityAnnounce: Boolean by BooleanSetting("Announce Invincibility", default = true, description = "Announces when you get invincibility")
-    private val showPrefix: Boolean by BooleanSetting("Show Prefix", default = true, description = "Shows the prefix of the timer")
+    private val invincibilityAnnounce: Boolean by BooleanSetting("Announce Invincibility", default = true, description = "Announces when you get invincibility.")
+    private val showPrefix: Boolean by BooleanSetting("Show Prefix", default = true, description = "Shows the prefix of the timer.")
     private val hud: HudElement by HudSetting("Timer Hud", 10f, 10f, 1f, true) {
         if (it) {
             mcText("${if(showPrefix) "§bBonzo§f: " else ""}59t", 1f, 1f, 1, Color.WHITE, center = false)

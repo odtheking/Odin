@@ -18,13 +18,13 @@ object InactiveWaypoints : Module(
     category = Category.FLOOR7,
     description = "Shows inactive terminals, devices and levers."
 ) {
-    private val showTerminals: Boolean by BooleanSetting(name = "Show Terminals", default = true, description = "Shows inactive terminals")
-    private val showDevices: Boolean by BooleanSetting(name = "Show Devices", default = true, description = "Shows inactive devices")
-    private val showLevers: Boolean by BooleanSetting(name = "Show Levers", default = true, description = "Shows inactive levers")
-    private val renderText: Boolean by BooleanSetting(name = "Render Text", default = true, description = "Renders the name of the inactive waypoint")
-    private val renderBeacon: Boolean by BooleanSetting(name = "Render Beacon", default = true, description = "Renders a beacon beam on the inactive waypoint")
-    private val renderBox: Boolean by BooleanSetting(name = "Render Box", default = true, description = "Renders a box around the inactive waypoint")
-    private val hideDefault: Boolean by BooleanSetting(name = "Hide Default", default = true, description = "Hide the Hypixel names of Inactive Terminals")
+    private val showTerminals: Boolean by BooleanSetting(name = "Show Terminals", default = true, description = "Shows inactive terminals.")
+    private val showDevices: Boolean by BooleanSetting(name = "Show Devices", default = true, description = "Shows inactive devices.")
+    private val showLevers: Boolean by BooleanSetting(name = "Show Levers", default = true, description = "Shows inactive levers.")
+    private val renderText: Boolean by BooleanSetting(name = "Render Text", default = true, description = "Renders the name of the inactive waypoint.")
+    private val renderBeacon: Boolean by BooleanSetting(name = "Render Beacon", default = true, description = "Renders a beacon beam on the inactive waypoint.")
+    private val renderBox: Boolean by BooleanSetting(name = "Render Box", default = true, description = "Renders a box around the inactive waypoint.")
+    private val hideDefault: Boolean by BooleanSetting(name = "Hide Default", default = true, description = "Hide the Hypixel names of Inactive Terminals.")
     private val style: Int by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION)
     private val color: Color by ColorSetting("Color", Color(0, 0, 0, 0.4f), allowAlpha = true, description = "The color of the box.")
     private val lineWidth: Float by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.")

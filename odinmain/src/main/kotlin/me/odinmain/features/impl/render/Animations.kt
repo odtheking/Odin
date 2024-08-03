@@ -33,11 +33,11 @@ object Animations : Module(
     private val roll: Float by NumberSetting("Roll", 0.0f, -180.0, 180.0, 1.0, description = "Rotates your held item. Default: 0")
     val speed: Float by NumberSetting("Speed", 0.0f, -2.0, 1.0, 0.05, description = "Speed of the swing animation.")
     val ignoreHaste: Boolean by BooleanSetting("Ignore Haste", false, description = "Makes the chosen speed override haste modifiers.")
-    val blockHit: Boolean by BooleanSetting("Block Hit", false, description = "Visual 1.7 block hit animation")
-    val noEquipReset: Boolean by BooleanSetting("No Equip Reset", false, description = "Disables the equipping animation when switching items")
-    private val noSwing: Boolean by BooleanSetting("No Swing", false, description = "Prevents your item from visually swinging forward")
-    private val noTermSwing: Boolean by BooleanSetting("No Terminator Swing", false, description = "Prevents your Terminator from swinging")
-    val noBlock: Boolean by BooleanSetting("No Block", false, description = "Disables the visual block animation")
+    val blockHit: Boolean by BooleanSetting("Block Hit", false, description = "Visual 1.7 block hit animation.")
+    val noEquipReset: Boolean by BooleanSetting("No Equip Reset", false, description = "Disables the equipping animation when switching items.")
+    private val noSwing: Boolean by BooleanSetting("No Swing", false, description = "Prevents your item from visually swinging forward.")
+    private val noTermSwing: Boolean by BooleanSetting("No Terminator Swing", false, description = "Prevents your Terminator from swinging.")
+    val noBlock: Boolean by BooleanSetting("No Block", false, description = "Disables the visual block animation.")
 
     val reset: () -> Unit by ActionSetting("Reset") {
         this.settings.forEach { it.reset() }

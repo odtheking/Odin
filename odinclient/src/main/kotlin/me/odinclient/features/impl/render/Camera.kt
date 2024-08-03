@@ -16,14 +16,14 @@ import kotlin.math.sin
 object Camera : Module(
     name = "Camera",
     category = Category.RENDER,
-    description = "Allows you to change qualities about third person view."
+    description = "Various camera improvements and settings."
 ) {
-    private val frontCamera: Boolean by BooleanSetting("No Front Camera")
-    private val cameraClip: Boolean by BooleanSetting("Camera Clip")
-    private val cameraDist: Float by NumberSetting("Distance", 4f, 3.0, 12.0, 0.1)
-    private val fov: Float by NumberSetting("FOV", mc.gameSettings.fovSetting, 1f, 180f, 1f)
+    private val frontCamera: Boolean by BooleanSetting("No Front Camera", false, description = "Disables front camera.")
+    private val cameraClip: Boolean by BooleanSetting("Camera Clip", false, description = "Allows the camera to clip through blocks.")
+    private val cameraDist: Float by NumberSetting("Distance", 4f, 3.0, 12.0, 0.1, description = "The distance of the camera from the player.")
+    private val fov: Float by NumberSetting("FOV", mc.gameSettings.fovSetting, 1f, 180f, 1f, description = "The field of view of the camera.")
     private val freelookDropdown: Boolean by DropdownSetting("Freelook")
-    private val toggle: Boolean by DualSetting("Type", "Hold", "Toggle", false).withDependency { freelookDropdown }
+    private val toggle: Boolean by DualSetting("Type", "Hold", "Toggle", false, description = "The type of freelook.").withDependency { freelookDropdown }
     private val freelookKeybind: Keybinding by KeybindSetting("Freelook Key", Keyboard.KEY_NONE, description = "Keybind to toggle/ hold for freelook.")
         .withDependency { freelookDropdown }
         .onPress {
@@ -88,9 +88,7 @@ object Camera : Module(
         var dist = d3
         var f2 = cameraPitch
 
-        if (mc.gameSettings.thirdPersonView == 2) {
-            f2 += 180.0f
-        }
+        if (mc.gameSettings.thirdPersonView == 2) f2 += 180.0f
 
         val d4 = (sin(cameraYaw / 180.0f * Math.PI.toFloat()) * cos(f2 / 180.0f * Math.PI.toFloat())).toDouble() * dist
         val d5 = (-cos(cameraYaw / 180.0f * Math.PI.toFloat()) * cos(f2 / 180.0f * Math.PI.toFloat())).toDouble() * dist

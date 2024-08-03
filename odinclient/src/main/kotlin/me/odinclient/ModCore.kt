@@ -33,7 +33,9 @@ class ModCore {
     @EventHandler
     fun init(event: FMLInitializationEvent) {
         OdinMain.init()
-        MinecraftForge.EVENT_BUS.register(this)
+        listOf(
+            this
+        ).forEach { MinecraftForge.EVENT_BUS.register(it) }
 
         registerCommands(
             autoSellCommand,

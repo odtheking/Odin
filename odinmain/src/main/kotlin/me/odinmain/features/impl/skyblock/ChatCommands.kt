@@ -16,11 +16,11 @@ object ChatCommands : Module(
     category = Category.SKYBLOCK,
     description = "type !help in the corresponding channel for cmd list. Use /blacklist.",
 ) {
-    private var party: Boolean by BooleanSetting(name = "Party commands", default = true, description = "Toggles chat commands in party chat")
-    private var guild: Boolean by BooleanSetting(name = "Guild commands", default = true, description = "Toggles chat commands in guild chat")
-    private var private: Boolean by BooleanSetting(name = "Private commands", default = true, description = "Toggles chat commands in private chat")
+    private var party: Boolean by BooleanSetting(name = "Party commands", default = true, description = "Toggles chat commands in party chat.")
+    private var guild: Boolean by BooleanSetting(name = "Guild commands", default = true, description = "Toggles chat commands in guild chat.")
+    private var private: Boolean by BooleanSetting(name = "Private commands", default = true, description = "Toggles chat commands in private chat.")
+    private val whitelistOnly: Boolean by DualSetting("Whitelist Only", left = "blacklist", right = "Whitelist", default = false, description = "Whether the list should act like a whitelist or a blacklist.")
     private var showSettings: Boolean by DropdownSetting(name = "Show Settings", default = false)
-    private val whitelistOnly: Boolean by DualSetting("Whitelist Only", left = "blacklist", right = "Whitelist", default = false, description = "Whether the list should act like a whitelist or a blacklist")
 
     private var warp: Boolean by BooleanSetting(name = "Warp", default = true).withDependency { showSettings }
     private var warptransfer: Boolean by BooleanSetting(name = "Warp & pt (warptransfer)", default = true).withDependency { showSettings }

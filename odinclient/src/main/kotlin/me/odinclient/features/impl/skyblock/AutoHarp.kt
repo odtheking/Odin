@@ -23,7 +23,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 object AutoHarp : Module(
     name = "Auto Harp",
     category = Category.SKYBLOCK,
-    description = "Automatically Completes Melody's Harp"
+    description = "Automatically Completes Melody's Harp."
 ){
     private var inHarp = false
     private var lastInv = 0
@@ -31,8 +31,8 @@ object AutoHarp : Module(
     @SubscribeEvent
     fun onGuiOpen(event: GuiOpenEvent) {
         if (!inSkyblock) return
-        val container = (event.gui as? GuiChest)?.inventorySlots ?: return
-        inHarp = container.name.startsWith("Harp -")
+        val inventorySlots = (event.gui as? GuiChest)?.inventorySlots ?: return
+        inHarp = inventorySlots.name.startsWith("Harp -")
     }
 
     @SubscribeEvent
