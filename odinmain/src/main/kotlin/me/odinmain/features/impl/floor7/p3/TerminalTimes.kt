@@ -24,7 +24,7 @@ object TerminalTimes : Module(
 
     private val terminalSplits: Boolean by BooleanSetting("Terminal Splits", default = true, description = "Adds the time when a term was completed to its message, and sends the total term time after terms are done.")
 
-    private val termPBs = PersonalBest("Terminals", 6)
+    private val termPBs = PersonalBest("Terminals", 7)
     private var startTimer = 0L
     private var type = TerminalTypes.NONE
 
