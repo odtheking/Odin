@@ -47,7 +47,7 @@ class StartsWith(private val letter: String) : TermSimGui(
         if (!slot.displayName.startsWith(letter, true) || slot.isItemEnchanted) return
 
         slot.addEnchantment(Enchantment.infinity, 1)
-        if (TerminalSounds.enabled && clickSounds) playTerminalSound() else mc.thePlayer.playSound("random.orb", 1f, 1f)
+        if (!TerminalSounds.enabled || !clickSounds) mc.thePlayer.playSound("random.orb", 1f, 1f)
         GuiEvent.GuiLoadedEvent(name, inventorySlots as ContainerChest).postAndCatch()
         if (inventorySlots?.inventorySlots?.subList(0, size)?.none { it?.stack?.displayName?.startsWith(letter, true) == true && !it.stack.isItemEnchanted } == true) {
             solved(this.name, 3)
