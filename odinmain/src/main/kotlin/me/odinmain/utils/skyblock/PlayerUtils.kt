@@ -45,10 +45,6 @@ object PlayerUtils {
         if (displayText) Renderer.displayTitle(title , time, color = color)
     }
 
-    fun dropItem(dropAll: Boolean = false) {
-        mc.thePlayer.dropOneItem(dropAll)
-    }
-
     inline val posX get() = mc.thePlayer.posX
     inline val posY get() = mc.thePlayer.posY
     inline val posZ get() = mc.thePlayer.posZ
