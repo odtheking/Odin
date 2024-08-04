@@ -9,7 +9,9 @@ import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.elements.impl.*
 import com.github.stivais.ui.events.*
 import com.github.stivais.ui.operation.UIOperation
-import com.github.stivais.ui.renderer.*
+import com.github.stivais.ui.renderer.Font
+import com.github.stivais.ui.renderer.Gradient
+import com.github.stivais.ui.renderer.Image
 import com.github.stivais.ui.utils.radii
 
 open class ElementScope<E: Element>(val element: E) {
@@ -265,6 +267,11 @@ open class ElementScope<E: Element>(val element: E) {
 
     fun UIOperation.add() {
         element.addOperation(this)
+    }
+
+    fun Element.scope(block: ElementScope<*>.() -> Unit) {
+        add()
+        block(createScope())
     }
 }
 

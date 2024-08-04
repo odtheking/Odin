@@ -50,7 +50,7 @@ class UI(val renderer: Renderer = NVGRenderer) {
 
         main.initialize(this)
         main.size()
-        main.position()
+        main.positionChildren()
         main.clip()
 
         eventManager.dispatchToAll(Lifetime.AfterInitialized, main)

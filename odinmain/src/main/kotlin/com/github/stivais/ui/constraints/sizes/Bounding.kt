@@ -17,10 +17,10 @@ object Bounding : Size {
             var ignoreIfCopying = false
             val new = if (type.axis == HORIZONTAL) {
                 if (child.constraints.width is Copying) ignoreIfCopying = true
-                child.internalX + child.width
+                (child.x - element.x) + child.width
             } else {
                 if (child.constraints.height is Copying) ignoreIfCopying = true
-                child.internalY + child.height
+                (child.y - element.y) + child.height
             }
             if (new > value && !ignoreIfCopying) value = new
         }

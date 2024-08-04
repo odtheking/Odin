@@ -8,7 +8,11 @@ import com.github.stivais.ui.elements.Element
 class Linked(val element: Element, private val previous: Linked?) : Position {
     override fun get(element: Element, type: Type): Float {
         val link = getNextValid(previous)?.element ?: return 0f
-        return if (type.axis == HORIZONTAL) link.internalX + link.width else link.internalY + link.height
+        return if (type.axis == HORIZONTAL) {
+            (link.x - (link.parent?.x ?: 0f)) + link.width
+        } else {
+            (link.y - (link.parent?.y ?: 0f)) + link.height
+        }
     }
 
     private fun getNextValid(previous: Linked?): Linked? {

@@ -88,9 +88,7 @@ open class UIScreen(val ui: UI) : GuiScreen(), Window {
 
     companion object {
         fun open(ui: UI) {
-            val start = System.nanoTime()
             display = UIScreen(ui)
-            println("UI creation took: ${System.nanoTime() - start}")
         }
 
         @JvmName("openUI")

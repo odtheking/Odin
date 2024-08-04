@@ -2,34 +2,20 @@ package com.github.stivais.ui.elements.impl
 
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.constraints.Constraints
-import com.github.stivais.ui.constraints.Size
 import com.github.stivais.ui.constraints.Type
 import com.github.stivais.ui.constraints.measurements.Undefined
-import com.github.stivais.ui.constraints.plus
-import com.github.stivais.ui.constraints.sizes.Bounding
 import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.utils.loop
-import com.github.stivais.ui.utils.replaceUndefined
 
-// rework start
-class Column(
-    constraints: Constraints?,
-    private val paddingX: Size?,
-    private val paddingY: Size?,
-) : Element(constraints?.replaceUndefined(w = Bounding, h = Bounding)) {
+class Grid(
+    constraints: Constraints?
+) : Element(constraints) {
 
-    private val position = hashSetOf<Element>()
-
-    init {
-        this.constraints.apply {
-            width += paddingX
-            height += paddingY
-        }
-    }
+    val position = hashSetOf<Element>()
 
     override fun onElementAdded(element: Element) {
         val constraints = element.constraints
-        if (constraints.y is Undefined) {
+        if (constraints.x is Undefined && constraints.y is Undefined) {
             position.add(element)
         }
     }
@@ -37,16 +23,18 @@ class Column(
     override fun positionChildren() {
         if (!enabled) return
 
-        val px = paddingX?.get(this, Type.W) ?: 0f
-        val py = paddingY?.get(this, Type.H) ?: 0f
-
-        var increment = 0f
+        var currX = 0f
+        var currY = 0f
         elements?.loop {
             if (position.contains(it)) {
-                it.position(x + px, y + py + increment)
-                increment += it.height + py
+                if (currX + it.width > width) {
+                    currX = 0f
+                    currY += it.height
+                }
+                it.position(x + currX, y + currY)
+                currX += it.width
             } else {
-                it.position(x + px, y + py)
+                it.position(x, y)
             }
             it.positionChildren()
         }

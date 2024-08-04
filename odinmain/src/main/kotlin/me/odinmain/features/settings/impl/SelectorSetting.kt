@@ -8,7 +8,9 @@ import com.github.stivais.ui.constraints.sizes.Bounding
 import com.github.stivais.ui.constraints.sizes.Copying
 import com.github.stivais.ui.elements.impl.TextScope
 import com.github.stivais.ui.elements.scope.ElementScope
-import com.github.stivais.ui.utils.*
+import com.github.stivais.ui.utils.animate
+import com.github.stivais.ui.utils.radius
+import com.github.stivais.ui.utils.seconds
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import me.odinmain.features.impl.render.ClickGUI
@@ -95,7 +97,8 @@ class SelectorSetting(
                             thickness
                         )
                         text = text(
-                            text = options[value]
+                            text = options[value],
+                            pos = at(x = 6.px)
                         )
                         onClick {
                             alphaAnim.animate(0.25.seconds, Animations.EaseInOutQuint)

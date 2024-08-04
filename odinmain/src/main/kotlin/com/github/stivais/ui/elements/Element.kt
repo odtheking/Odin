@@ -9,7 +9,9 @@ import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.measurements.Undefined
 import com.github.stivais.ui.constraints.positions.Center
 import com.github.stivais.ui.elements.scope.ElementScope
-import com.github.stivais.ui.events.*
+import com.github.stivais.ui.events.Event
+import com.github.stivais.ui.events.Lifetime
+import com.github.stivais.ui.events.Mouse
 import com.github.stivais.ui.operation.UIOperation
 import com.github.stivais.ui.renderer.Renderer
 import com.github.stivais.ui.utils.loop
@@ -48,10 +50,6 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
         set(value) {
             field = value.coerceAtLeast(0f)
         }
-
-    var internalX: Float = 0f
-
-    var internalY: Float = 0f
 
     var scrollY: Animatable.Raw? = null
 
@@ -101,18 +99,17 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
         elements?.loop { it.size() }
     }
 
-    fun position(x: Float = (parent?.x ?: 0f), y: Float = (parent?.y ?: 0f)) {
+    fun position(newX: Float, newY: Float) {
+        x = constraints.x.get(this, Type.X) + newX
+        y = constraints.y.get(this, Type.Y) + newY
+    }
+
+    open fun positionChildren() {
         if (!enabled) return
-        if (scrollY != null) sy = scrollY!!.get(this, Type.H)
-
-        internalX = constraints.x.get(this, Type.X)
-        internalY = constraints.y.get(this, Type.Y)
-        this.x = internalX + x
-        this.y = internalY + y
-
-        elements?.loop { it.position(this.x, this.y + sy) }
-
-        // resize after position because of Constraints like Bounding and Linked
+        elements?.loop {
+            it.position(x, y)
+            it.positionChildren()
+        }
         if (constraints.width.reliesOnChild()) width = constraints.width.get(this, Type.W)
         if (constraints.height.reliesOnChild()) height = constraints.height.get(this, Type.H) + sy
     }
@@ -136,9 +133,9 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
         }
 
     // rename
-    fun getElementToRedraw(): Element {
+    private fun getElementToRedraw(): Element {
         val p = parent ?: return this
-        return if (p.constraints.width.reliesOnChild() || p.constraints.height.reliesOnChild()) p.getElementToRedraw() else this
+        return if (p.constraints.width.reliesOnChild() || p.constraints.height.reliesOnChild()) p.getElementToRedraw() else p
     }
 
     fun clip() {
@@ -156,7 +153,8 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
         if (_redraw) {
             _redraw = false
             size()
-            position()
+            positionChildren()
+//            position(this.x, this.y)
             clip()
         }
         if (!renders) return

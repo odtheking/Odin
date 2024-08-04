@@ -1,7 +1,11 @@
 package com.github.stivais.ui.constraints
 
-import com.github.stivais.ui.constraints.measurements.*
-import com.github.stivais.ui.constraints.operational.*
+import com.github.stivais.ui.constraints.measurements.Percent
+import com.github.stivais.ui.constraints.measurements.Pixel
+import com.github.stivais.ui.constraints.measurements.Undefined
+import com.github.stivais.ui.constraints.operational.Additive
+import com.github.stivais.ui.constraints.operational.CoerceMaxOld
+import com.github.stivais.ui.constraints.operational.Subtractive
 import com.github.stivais.ui.constraints.positions.Alignment
 import com.github.stivais.ui.constraints.positions.Center
 import com.github.stivais.ui.constraints.sizes.Copying
@@ -21,7 +25,7 @@ fun size(w: Size = Undefined, h: Size = Undefined) = Constraints(Undefined, Unde
 val Number.px: Pixel
     get() {
         val value = this.toFloat()
-        return if (value < 0) LeftPixel(value) else Pixel(value)
+        return Pixel(value)
     }
 
 val Number.percent: Percent
@@ -53,7 +57,9 @@ fun indent(amount: Number): Constraints {
     return size(indent, indent)
 }
 
-operator fun Constraint.plus(other: Constraint) = Additive(this, other)
+operator fun Position.plus(other: Position?) = if (other == null) this else Additive(this, other)
+
+operator fun Size.plus(other: Size?) = if (other == null) this else Additive(this, other)
 
 operator fun Constraint.minus(other: Constraint) = Subtractive(this, other)
 

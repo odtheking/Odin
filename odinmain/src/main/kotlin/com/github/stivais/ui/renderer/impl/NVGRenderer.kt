@@ -1,9 +1,15 @@
 package com.github.stivais.ui.renderer.impl
 
-import com.github.stivais.ui.color.*
+import com.github.stivais.ui.color.alpha
+import com.github.stivais.ui.color.blue
+import com.github.stivais.ui.color.green
+import com.github.stivais.ui.color.red
 import com.github.stivais.ui.renderer.*
 import me.odinmain.OdinMain.mc
-import org.lwjgl.nanovg.*
+import org.lwjgl.nanovg.NVGColor
+import org.lwjgl.nanovg.NVGLUFramebuffer
+import org.lwjgl.nanovg.NVGPaint
+import org.lwjgl.nanovg.NanoSVG
 import org.lwjgl.nanovg.NanoSVG.nsvgParse
 import org.lwjgl.nanovg.NanoVG.*
 import org.lwjgl.nanovg.NanoVGGL2.*
@@ -14,14 +20,14 @@ import org.lwjgl.system.MemoryUtil
 object NVGRenderer : Renderer {
 
     private val nvgPaint: NVGPaint = NVGPaint.malloc()
-    val nvgColor: NVGColor = NVGColor.malloc()
+    private val nvgColor: NVGColor = NVGColor.malloc()
     private val nvgColor2: NVGColor = NVGColor.malloc()
 
     private val fonts = HashMap<Font, Int>()
     private val images = HashMap<Image, Int>()
     private val svgs = HashMap<Image, Int>()
     private val fbos = HashMap<Framebuffer, NVGLUFramebuffer>()
-    var vg: Long = -1
+    private var vg: Long = -1
 
     // used in getTextWidth to avoid reallocating
     private val fontBounds = FloatArray(4)

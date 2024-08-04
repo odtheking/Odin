@@ -13,15 +13,17 @@ import me.odinmain.features.impl.render.ServerHud.colorizeTps
 import me.odinmain.features.impl.skyblock.DianaHelper
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.PlayerUtils.posX
 import me.odinmain.utils.skyblock.PlayerUtils.posY
 import me.odinmain.utils.skyblock.PlayerUtils.posZ
+import me.odinmain.utils.skyblock.itemID
+import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.skyblock.sendChatMessage
+import me.odinmain.utils.skyblock.sendCommand
 import kotlin.math.round
 
 val mainCommand = commodore("od", "odin") {
     runs {
-//        display = OldClickGUI
         open(clickGUI())
     }
 
@@ -42,15 +44,16 @@ val mainCommand = commodore("od", "odin") {
 
     literal("reset") {
         literal("clickgui").runs {
-            ClickGUI.panelSettings.forEach { (_, data) ->
-                data.x = data.defaultX
-                data.y = data.defaultY
-                data.extended = data.defaultExtended
-            }
+            ClickGUI.getSettingByName("Panel Data")?.reset()
+//            ClickGUI.panelSettings.forEach { (_, data) ->
+//                data.x = data.defaultX
+//                data.y = data.defaultY
+//                data.extended = data.defaultExtended
+//            }
             modMessage("Reset ClickGUI panel positions")
         }
         literal("hud").runs {
-           // EditHUDGui.resetHUDs() TODO: Implement this
+            // EditHUDGui.resetHUDs() TODO: Implement this
             modMessage("Reset HUD positions.")
         }
     }
@@ -112,11 +115,10 @@ val mainCommand = commodore("od", "odin") {
     }
 
     runs { tier: String ->
-        if(tier[0].equalsOneOf('f', 'm')) {
+        if (tier[0].equalsOneOf('f', 'm')) {
             if (tier.length != 2 || tier[1] !in '1'..'7') throw SyntaxException()
             sendCommand("joininstance ${if (tier[0] == 'm') "master_" else ""}catacombs_floor_${floors[tier[1]]}")
-        }
-        else if (!tier[0].equals('t')){
+        } else if (!tier[0].equals('t')) {
             if (tier.length != 2 || tier[1] !in '1'..'5') throw SyntaxException()
             sendCommand("joininstance kuudra_${tiers[tier[1]]}")
         }

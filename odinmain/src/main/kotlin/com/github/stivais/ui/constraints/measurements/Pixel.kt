@@ -16,9 +16,11 @@ open class Pixel(var pixels: Float): Measurement {
 class LeftPixel(pixels: Float): Pixel(pixels) {
     override fun get(element: Element, type: Type): Float {
         return if (type.axis == HORIZONTAL) {
-            (element.parent?.width ?: 0f) - (if (type.isPosition) element.width else element.internalX) - pixels
+            val ix = (element.x - (element.parent?.x ?: 0f))
+            (element.parent?.width ?: 0f) - (if (type.isPosition) element.width else ix) - pixels
         } else {
-            (element.parent?.height ?: 0f) - (if (type.isPosition) element.height else element.internalY) - pixels
+            val iy = (element.x - (element.parent?.x ?: 0f))
+            (element.parent?.height ?: 0f) - (if (type.isPosition) element.height else iy) - pixels
         }
     }
 }

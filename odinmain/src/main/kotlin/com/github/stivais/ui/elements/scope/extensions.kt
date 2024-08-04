@@ -1,7 +1,9 @@
 package com.github.stivais.ui.elements.scope
 
 import com.github.stivais.ui.animation.Animations
-import com.github.stivais.ui.color.*
+import com.github.stivais.ui.color.Color
+import com.github.stivais.ui.color.color
+import com.github.stivais.ui.color.darker
 import com.github.stivais.ui.constraints.measurements.Pixel
 import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.elements.Element
@@ -38,8 +40,8 @@ fun ElementDSL.draggable(
     val py: Pixel = 0.px
     // note: if parent is Bounding, it can cause issues
     afterCreation {
-        px.pixels = moves.internalX
-        py.pixels = moves.internalY
+        px.pixels = (moves.x - (moves.parent?.x ?: 0f))
+        py.pixels = (moves.y - (moves.parent?.y ?: 0f))
         moves.constraints.x = px
         moves.constraints.y = py
     }
@@ -48,8 +50,8 @@ fun ElementDSL.draggable(
     var y = 0f
     onClick(button) {
         pressed = true
-        x = ui.mx - moves.internalX
-        y = ui.my - moves.internalY
+        x = ui.mx - (moves.x - (moves.parent?.x ?: 0f))
+        y = ui.my - (moves.y - (moves.parent?.y ?: 0f))
         acceptsEvent
     }
     onMouseMove {
