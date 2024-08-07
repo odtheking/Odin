@@ -13,5 +13,5 @@ class Room(override val x: Int, override val z: Int, var data: RoomData) : Tile 
     override var state: RoomState = RoomState.UNDISCOVERED
 }
 
-data class FullRoom(val room: Room, var clayPos: BlockPos, val positions: List<ExtraRoom>, var waypoints: List<DungeonWaypoint>)
-data class ExtraRoom(val x: Int, val z: Int, val core: Int)
+data class FullRoom(val room: Room, var clayPos: BlockPos, val extraRooms: List<ExtraRoom>, var waypoints: List<DungeonWaypoint>)
+data class ExtraRoom(val room: Room, val x: Int, val z: Int, val core: Int)

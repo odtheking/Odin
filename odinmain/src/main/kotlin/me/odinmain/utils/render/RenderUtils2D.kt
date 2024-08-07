@@ -1,9 +1,14 @@
 package me.odinmain.utils.render
 
 import me.odinmain.OdinMain.mc
+import me.odinmain.utils.corners
+import me.odinmain.utils.render.RenderUtils.bind
 import me.odinmain.utils.render.RenderUtils.renderVec
+import me.odinmain.utils.render.RenderUtils.tessellator
+import me.odinmain.utils.render.RenderUtils.worldRenderer
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -17,7 +22,7 @@ import java.nio.IntBuffer
 
 object RenderUtils2D {
 
-    private data class Box2D(val x: Double, val y: Double, val w: Double, val h: Double)
+    data class Box2D(val x: Double, val y: Double, val w: Double, val h: Double)
 
     private val modelViewMatrix: FloatBuffer = BufferUtils.createFloatBuffer(16)
     private val projectionMatrix: FloatBuffer = BufferUtils.createFloatBuffer(16)
@@ -56,13 +61,12 @@ object RenderUtils2D {
     }
 
     private fun calculateBoundingBox(aabb: AxisAlignedBB): Box2D? {
-        val vertices = getVertices(aabb)
         var x1 = Double.MAX_VALUE
         var x2 = Double.MIN_VALUE
         var y1 = Double.MAX_VALUE
         var y2 = Double.MIN_VALUE
 
-        vertices.forEach { vertex ->
+        aabb.corners.forEach { vertex ->
             worldToScreenPosition(vertex)?.let { vec ->
                 x1 = x1.coerceAtMost(vec.xCoord)
                 x2 = x2.coerceAtLeast(vec.xCoord)
@@ -73,50 +77,49 @@ object RenderUtils2D {
         return if (x1 != Double.MAX_VALUE) Box2D(x1, y1, x2, y2) else null
     }
 
-    private fun getVertices(aabb: AxisAlignedBB): Array<Vec3> = arrayOf(
-        Vec3(aabb.minX, aabb.minY, aabb.minZ),
-        Vec3(aabb.minX, aabb.minY, aabb.maxZ),
-        Vec3(aabb.maxX, aabb.minY, aabb.maxZ),
-        Vec3(aabb.maxX, aabb.minY, aabb.minZ),
-        Vec3(aabb.minX, aabb.maxY, aabb.minZ),
-        Vec3(aabb.minX, aabb.maxY, aabb.maxZ),
-        Vec3(aabb.maxX, aabb.maxY, aabb.maxZ),
-        Vec3(aabb.maxX, aabb.maxY, aabb.minZ)
-    )
 
     fun drawNameTag(vec3: Vec3, name: String) {
         worldToScreenPosition(vec3)?.let { pos ->
-            mc.fontRendererObj.drawString(name, pos.xCoord.toFloat(), pos.yCoord.toFloat(), -1, true)
+            mc.fontRendererObj.drawString(name, pos.xCoord.toFloat(), pos.yCoord.toFloat(), -1, true) // can use nvg in the future
         }
     }
 
     fun draw2DESP(aabb: AxisAlignedBB, color: Color, thickness: Float) {
         calculateBoundingBox(aabb)?.let { box ->
-            with(RenderUtils) {
-                drawLine(color, box.x, box.y, box.x, box.h, thickness)
-                drawLine(color, box.x, box.y, box.w, box.y, thickness)
-                drawLine(color, box.w, box.h, box.w, box.y, thickness)
-                drawLine(color, box.w, box.h, box.x, box.h, thickness)
-            }
+            drawBox(box, color, thickness)
         }
     }
 
-    fun draw3DESP(aabb: AxisAlignedBB, color: Color, thickness: Float) {
-        val projected = getVertices(aabb).mapNotNull { worldToScreenPosition(it) }.takeIf { it.size == 8 } ?: return
+    fun drawBox(box: Box2D, color: Color, lineWidth: Float) {
+        GlStateManager.pushMatrix()
+        GlStateManager.enableBlend()
+        GlStateManager.disableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        GL11.glEnable(GL11.GL_LINE_SMOOTH)
+        GL11.glLineWidth(lineWidth)
+        color.bind()
 
-        with(RenderUtils) {
-            drawLine(color, projected[0].xCoord, projected[0].yCoord, projected[1].xCoord, projected[1].yCoord, thickness)
-            drawLine(color, projected[0].xCoord, projected[0].yCoord, projected[4].xCoord, projected[4].yCoord, thickness)
-            drawLine(color, projected[5].xCoord, projected[5].yCoord, projected[1].xCoord, projected[1].yCoord, thickness)
-            drawLine(color, projected[5].xCoord, projected[5].yCoord, projected[4].xCoord, projected[4].yCoord, thickness)
-            drawLine(color, projected[3].xCoord, projected[3].yCoord, projected[2].xCoord, projected[2].yCoord, thickness)
-            drawLine(color, projected[3].xCoord, projected[3].yCoord, projected[7].xCoord, projected[7].yCoord, thickness)
-            drawLine(color, projected[6].xCoord, projected[6].yCoord, projected[2].xCoord, projected[2].yCoord, thickness)
-            drawLine(color, projected[6].xCoord, projected[6].yCoord, projected[7].xCoord, projected[7].yCoord, thickness)
-            drawLine(color, projected[1].xCoord, projected[1].yCoord, projected[2].xCoord, projected[2].yCoord, thickness)
-            drawLine(color, projected[0].xCoord, projected[0].yCoord, projected[3].xCoord, projected[3].yCoord, thickness)
-            drawLine(color, projected[4].xCoord, projected[4].yCoord, projected[7].xCoord, projected[7].yCoord, thickness)
-            drawLine(color, projected[5].xCoord, projected[5].yCoord, projected[6].xCoord, projected[6].yCoord, thickness)
-        }
+        worldRenderer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION)
+
+        // Draw the four lines of the box
+        worldRenderer.pos(box.x, box.y, 0.0).endVertex()  // Top-left to top-right
+        worldRenderer.pos(box.w, box.y, 0.0).endVertex()
+
+        worldRenderer.pos(box.w, box.y, 0.0).endVertex()  // Top-right to bottom-right
+        worldRenderer.pos(box.w, box.h, 0.0).endVertex()
+
+        worldRenderer.pos(box.w, box.h, 0.0).endVertex()  // Bottom-right to bottom-left
+        worldRenderer.pos(box.x, box.h, 0.0).endVertex()
+
+        worldRenderer.pos(box.x, box.h, 0.0).endVertex()  // Bottom-left to top-left
+        worldRenderer.pos(box.x, box.y, 0.0).endVertex()
+
+        tessellator.draw()
+
+        Color.WHITE.bind()
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
+        GL11.glDisable(GL11.GL_LINE_SMOOTH)
+        GlStateManager.popMatrix()
     }
 }

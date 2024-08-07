@@ -129,6 +129,10 @@ private fun isXZInterceptable(start: Vec3, goal: Vec3?, aabb: AxisAlignedBB): Bo
             */
 }
 
+fun Vec2.equal(other: Vec2): Boolean {
+    return this.x == other.x && this.z == other.z
+}
+
 /**
  * Checks if every coordinate of the given Vec3 is equal to the other Vec3.
  * @param other The Vec3 to check against
@@ -143,8 +147,17 @@ fun Vec3.equal(other: Vec3): Boolean {
  * @param factor The factor to multiply by
  * @return The multiplied Vec3
  */
-fun Vec3.multiply(factor: Double): Vec3 {
-    return Vec3(this.xCoord * factor, this.yCoord * factor, this.zCoord * factor)
+fun Vec3.multiply(factor: Number): Vec3 {
+    return Vec3(this.xCoord * factor.toDouble(), this.yCoord * factor.toDouble(), this.zCoord * factor.toDouble())
+}
+
+/**
+ * Divides every coordinate of a Vec3 by the given divisor.
+ * @param divisor The divisor to divide by
+ * @return The divided Vec3
+ */
+fun Vec3.divide(divisor: Number): Vec3 {
+    return Vec3(this.xCoord / divisor.toDouble(), this.yCoord / divisor.toDouble(), this.zCoord / divisor.toDouble())
 }
 
 /**

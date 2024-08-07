@@ -99,7 +99,7 @@ object DungeonWaypoints : Module(
         }
 
         if (debugWaypoint) {
-            val distinct = room.positions.distinct().minByOrNull { it.core } ?: return
+            val distinct = room.extraRooms.distinct().minByOrNull { it.core } ?: return
             Renderer.drawBox(Vec3(distinct.x.toDouble(), 70.0, distinct.z.toDouble()).toAABB(), Color.GREEN, fillAlpha = 0)
         }
         endProfile()
@@ -166,6 +166,7 @@ object DungeonWaypoints : Module(
     @SubscribeEvent
     fun onNewRoom(event: DungeonEvents.RoomEnterEvent) {
         glList = -1
+        event.fullRoom?.let { setWaypoints(it) }
     }
 
     fun DungeonWaypoint.toVec3() = Vec3(x, y, z)

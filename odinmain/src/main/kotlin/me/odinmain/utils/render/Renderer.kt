@@ -185,8 +185,8 @@ object Renderer {
         RenderUtils.drawCylinder(pos, baseRadius, topRadius, height, slices, stacks, rot1, rot2, rot3, color, lineMode, phase)
     }
 
-    fun draw2DEntity(entity: Entity, lineWidth: Float, color: Color) {
-        RenderUtils.draw2D(entity, lineWidth, color)
+    fun draw2DEntity(entity: Entity, color: Color, lineWidth: Float) {
+       RenderUtils2D.draw2DESP(entity.entityBoundingBox, color, lineWidth)
     }
 
     private var displayTitle = ""

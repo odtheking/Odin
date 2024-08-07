@@ -56,7 +56,7 @@ object ChestEsp : Module(
     @SubscribeEvent
     fun onRenderChest(event: RenderChestEvent.Post) {
         if (renderMode != 0 || event.chest != mc.theWorld?.getTileEntity(event.chest.pos)) return
-        if (hideClicked && chests.contains(event.chest.pos)) return
+        if (hideClicked && event.chest.pos in chests) return
         if ((onlyDungeon && DungeonUtils.inDungeons) || (onlyCH && LocationUtils.currentArea.isArea(Island.CrystalHollows)) || (!onlyDungeon && !onlyCH)) {
             GL11.glDisable(GL11.GL_POLYGON_OFFSET_FILL)
             GlStateManager.doPolygonOffset(1f, 1000000f)

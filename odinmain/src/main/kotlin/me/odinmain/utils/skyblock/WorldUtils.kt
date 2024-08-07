@@ -35,7 +35,11 @@ fun isAir(blockPos: BlockPos): Boolean {
  * @return `true` if the block at the given position is air, `false` otherwise.
  */
 fun isAir(x: Int, y: Int, z: Int): Boolean {
-    return Block.getIdFromBlock(mc.theWorld?.getBlockState(BlockPos(x, y, z))?.block) == 0
+    return getBlockAt(x, y, z) == Blocks.air
+}
+
+fun isGold(x: Int, y: Int, z: Int): Boolean {
+    return getBlockAt(x, y, z) == Blocks.gold_block
 }
 
 /**
