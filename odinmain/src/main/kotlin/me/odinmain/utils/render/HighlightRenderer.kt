@@ -78,6 +78,8 @@ object HighlightRenderer {
         mc.entityRenderer.disableLightmap()
         RenderUtils.disableOutlineMode()
         mc.renderManager.setRenderOutlines(false)
+        GlStateManager.disableAlpha()
+        GlStateManager.disableBlend()
         GlStateManager.popMatrix()
     }
 }
