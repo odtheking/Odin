@@ -79,6 +79,8 @@ object HighlightRenderer {
         RenderUtils.disableOutlineMode()
         mc.renderManager.setRenderOutlines(false)
         GlStateManager.disableAlpha()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        GlStateManager.enableTexture2D()
         GlStateManager.disableBlend()
         GlStateManager.popMatrix()
     }
