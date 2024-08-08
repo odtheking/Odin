@@ -79,6 +79,7 @@ object HighlightRenderer {
         RenderUtils.disableOutlineMode()
         mc.renderManager.setRenderOutlines(false)
         GlStateManager.alphaFunc(516, 0.1f)
+        GlStateManager.clear(256)
         GlStateManager.popMatrix()
     }
 }
