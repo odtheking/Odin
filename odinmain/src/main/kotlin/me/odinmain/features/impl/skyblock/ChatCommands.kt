@@ -4,8 +4,13 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.DungeonRequeue.disableRequeue
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.*
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.DropdownSetting
+import me.odinmain.features.settings.impl.DualSetting
+import me.odinmain.features.settings.impl.ListSetting
+import me.odinmain.utils.ServerUtils
+import me.odinmain.utils.floor
+import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.*
 import net.minecraft.event.ClickEvent
 import kotlin.math.floor
@@ -49,17 +54,13 @@ object ChatCommands : Module(
     private val messageRegex = Regex("^(?:Party > (\\[.+])? ?(.{1,16}): ?(.+)\$|Guild > (\\[.+])? ?(.{1,16}?)(?= ?\\[| ?: ) ?\\[.+] ?: ?(.+)\$|From (\\[.+])? ?(.{1,16}): ?(.+)\$)")
 
     init {
-        onMessage(Regex(" {29}> EXTRA STATS <")) {
-            dt()
-        }
-
-        onMessage(Regex("^\\[NPC] Elle: Good job everyone. A hard fought battle come to an end. Let's get out of here before we run into any more trouble!$")) {
+        onMessage(Regex(" {29}> EXTRA STATS <|^\\[NPC] Elle: Good job everyone. A hard fought battle come to an end. Let's get out of here before we run into any more trouble!$")) {
             dt()
         }
 
         onMessage(messageRegex) {
             val chatMessage = messageRegex.find(it) ?: return@onMessage
-            val (ign, message) = chatMessage.destructured
+            val (_, ign, message) = chatMessage.destructured
 
             if (whitelistOnly != isInBlacklist(ign)) return@onMessage
 

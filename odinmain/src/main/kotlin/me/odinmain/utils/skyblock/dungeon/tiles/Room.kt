@@ -14,4 +14,4 @@ class Room(override val x: Int, override val z: Int, var data: RoomData) : Tile 
 }
 
 data class FullRoom(val room: Room, var clayPos: BlockPos, val extraRooms: List<ExtraRoom>, var waypoints: List<DungeonWaypoint>)
-data class ExtraRoom(val room: Room, val x: Int, val z: Int, val core: Int)
+data class ExtraRoom(val x: Int, val z: Int, val core: Int)
