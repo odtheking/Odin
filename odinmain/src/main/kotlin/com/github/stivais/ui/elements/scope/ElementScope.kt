@@ -185,7 +185,7 @@ open class ElementScope<E: Element>(val element: E) {
     fun onRelease(button: Int = 0, block: (Mouse.Released) -> Unit) {
         element.registerEvent(Mouse.Released(button)) {
             block(this)
-            true
+            false
         }
     }
 
@@ -259,6 +259,10 @@ open class ElementScope<E: Element>(val element: E) {
 
     fun Element.add() {
         this@ElementScope.element.addElement(this)
+    }
+
+    fun addElement(element: Element) {
+        this@ElementScope.element.addElement(element)
     }
 
     fun operation(operation: UIOperation) {

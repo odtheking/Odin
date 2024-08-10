@@ -126,6 +126,12 @@ class UI(val renderer: Renderer = NVGRenderer) {
         return eventManager.focused == element
     }
 
+    fun empty() {
+        cleanup() // might active the event multiple times, look into this
+        main.removeAll()
+        operations?.clear()
+    }
+
     companion object {
         // temp name
         // future: maybe make a log handling class, so you can get an element's "errors" and details

@@ -18,7 +18,7 @@ class Column(
     private val paddingY: Size?,
 ) : Element(constraints?.replaceUndefined(w = Bounding, h = Bounding)) {
 
-    private val position = hashSetOf<Element>()
+    private val positionedElements = hashSetOf<Element>()
 
     init {
         this.constraints.apply {
@@ -30,7 +30,7 @@ class Column(
     override fun onElementAdded(element: Element) {
         val constraints = element.constraints
         if (constraints.y is Undefined) {
-            position.add(element)
+            positionedElements.add(element)
         }
     }
 
@@ -42,7 +42,7 @@ class Column(
 
         var increment = 0f
         elements?.loop {
-            if (position.contains(it)) {
+            if (positionedElements.contains(it)) {
                 it.position(x + px, y + py + increment)
                 increment += it.height + py
             } else {

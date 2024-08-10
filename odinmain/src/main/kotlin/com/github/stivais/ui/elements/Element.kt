@@ -154,8 +154,8 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
             _redraw = false
             size()
             positionChildren()
-//            position(this.x, this.y)
             clip()
+//            renderer.hollowRect(x, y, width, height, 1f, Color.WHITE.rgba)
         }
         if (!renders) return
         renderer.push()

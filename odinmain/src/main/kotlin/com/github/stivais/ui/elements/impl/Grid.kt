@@ -11,12 +11,12 @@ class Grid(
     constraints: Constraints?
 ) : Element(constraints) {
 
-    val position = hashSetOf<Element>()
+    private val positionedElements = hashSetOf<Element>()
 
     override fun onElementAdded(element: Element) {
         val constraints = element.constraints
         if (constraints.x is Undefined && constraints.y is Undefined) {
-            position.add(element)
+            positionedElements.add(element)
         }
     }
 
@@ -26,7 +26,7 @@ class Grid(
         var currX = 0f
         var currY = 0f
         elements?.loop {
-            if (position.contains(it)) {
+            if (positionedElements.contains(it)) {
                 if (currX + it.width > width) {
                     currX = 0f
                     currY += it.height
