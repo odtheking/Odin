@@ -52,7 +52,6 @@ object HighlightRenderer {
             Renderer.drawStringInWorld("test", it.entity.renderVec.addVec(y = 2))
             Renderer.drawStyledBox(it.entity.renderBoundingBox, it.color, it.boxStyle, it.thickness, it.depth)
         }
-
     }
 
     @SubscribeEvent
@@ -83,8 +82,9 @@ object HighlightRenderer {
         mc.entityRenderer.disableLightmap()
         RenderUtils.disableOutlineMode()
         mc.renderManager.setRenderOutlines(false)
-        GlStateManager.alphaFunc(516, 0.1f)
-        GlStateManager.clear(256)
         GlStateManager.popMatrix()
+        glEnable(GL_BLEND)
+        GlStateManager.enableBlend()
+        GlStateManager.blendFunc(770, 771)
     }
 }

@@ -19,7 +19,9 @@ object ItemsHighlight : Module(
     private val thickness: Float by NumberSetting("Line Width", 1f, .1f, 4f, .1f, description = "The line width of Outline / Boxes/ 2D Boxes.").withDependency { mode != HighlightRenderer.HighlightType.Overlay.ordinal }
     private val style: Int by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { mode == HighlightRenderer.HighlightType.Boxes.ordinal }
     private val depthCheck: Boolean by BooleanSetting("Depth check", false, description = "Boxes show through walls.")
-    private val colorStyle: Boolean by DualSetting("Color Style", "Rarity", "Distance", default = false, description = "Which color style to use.")
+    private val colorList = arrayListOf("Rarity", "Distance", "Custom")
+    private val colorStyle: Int by SelectorSetting("Color Style", "Rarity", colorList, false, description = "Which color style to use.")
+    private val customColor: Color by ColorSetting("Custom Color", Color.WHITE.withAlpha(1f), true).withDependency { colorStyle == 2 }
 
     private var currentEntityItems = mutableSetOf<EntityItem>()
 
@@ -36,11 +38,14 @@ object ItemsHighlight : Module(
     }
 
     private fun getEntityOutlineColor(entity: EntityItem): Color {
-        return when {
-            !colorStyle -> getRarity(entity.entityItem.lore)?.color ?: Color.WHITE
-            entity.ticksExisted <= 11 -> Color.YELLOW
-            entity.getDistanceToEntity(mc.thePlayer) <= 3.5 -> Color.GREEN
-            else -> Color.RED
+        return when (colorStyle){
+            0 -> getRarity(entity.entityItem.lore)?.color ?: Color.WHITE
+            1 -> {
+                if (entity.ticksExisted <= 11) Color.YELLOW
+                else if (entity.getDistanceToEntity(mc.thePlayer) <= 3.5) Color.GREEN
+                else Color.RED
+            }
+            else -> customColor
         }
     }
 }

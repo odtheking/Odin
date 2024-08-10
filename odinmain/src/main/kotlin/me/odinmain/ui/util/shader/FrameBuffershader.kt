@@ -30,8 +30,6 @@ abstract class FramebufferShader(fragmentShader: String) : Shader(fragmentShader
 
     fun stopDraw(color: Color, radius: Float, quality: Float) {
         mc.gameSettings.entityShadows = entityShadows
-        glEnable(GL_BLEND)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         mc.framebuffer.bindFramebuffer(true)
         this.color = color
         this.radius = radius
