@@ -16,9 +16,10 @@ abstract class FramebufferShader(fragmentShader: String) : Shader(fragmentShader
 
     private var entityShadows = false
 
-    fun startDraw(partialTicks: Float) {
+    fun startDraw() {
         GlStateManager.pushMatrix()
         GlStateManager.pushAttrib()
+        GlStateManager.disableFog()
 
         framebuffer = setupFrameBuffer(framebuffer)
         framebuffer?.bindFramebuffer(true)
@@ -42,6 +43,7 @@ abstract class FramebufferShader(fragmentShader: String) : Shader(fragmentShader
         framebuffer?.let { drawFramebuffer(it) }
         stopShader()
 
+        GlStateManager.enableFog()
         GlStateManager.popMatrix()
         GlStateManager.popAttrib()
     }
@@ -60,7 +62,7 @@ abstract class FramebufferShader(fragmentShader: String) : Shader(fragmentShader
         }
     }
 
-    /**
+    /**=-./'
      * @author TheSlowly
      */
     fun drawFramebuffer(framebuffer: Framebuffer) {

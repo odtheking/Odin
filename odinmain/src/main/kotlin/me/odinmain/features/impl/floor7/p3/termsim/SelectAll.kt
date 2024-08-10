@@ -3,7 +3,6 @@ package me.odinmain.features.impl.floor7.p3.termsim
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.impl.floor7.p3.TerminalSounds
 import me.odinmain.features.impl.floor7.p3.TerminalSounds.clickSounds
-import me.odinmain.features.impl.floor7.p3.TerminalSounds.playTerminalSound
 import me.odinmain.utils.getRandom
 import me.odinmain.utils.postAndCatch
 import net.minecraft.enchantment.Enchantment

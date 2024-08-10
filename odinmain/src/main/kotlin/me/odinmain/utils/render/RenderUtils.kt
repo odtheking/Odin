@@ -356,10 +356,10 @@ object RenderUtils {
         GlStateManager.rotate(-renderManager.playerViewY, 0.0f, 1.0f, 0.0f)
         GlStateManager.rotate(renderManager.playerViewX * xMultiplier, 1.0f, 0.0f, 0.0f)
         GlStateManager.scale(-scale, -scale, scale)
+        GlStateManager.disableLighting()
 
         GlStateManager.enableBlend()
         blendFactor()
-        color.bind()
 
         val textWidth = mc.fontRendererObj.getStringWidth(text)
         mc.fontRendererObj.drawString("$text§r", -textWidth / 2f, 0f, color.rgba, shadow)
@@ -369,6 +369,7 @@ object RenderUtils {
             GlStateManager.depthMask(true)
         }
 
+        GlStateManager.enableLighting()
         GlStateManager.disableBlend()
         GlStateManager.resetColor()
         GlStateManager.popMatrix()

@@ -1,8 +1,6 @@
 package me.odin
 
-import me.odin.features.impl.floor7.p3.ArrowAlign
-import me.odin.features.impl.floor7.p3.ArrowsDevice
-import me.odin.features.impl.floor7.p3.SimonSays
+import me.odin.features.impl.floor7.p3.*
 import me.odin.features.impl.render.Camera
 import me.odin.features.impl.render.EtherWarpHelper
 import me.odin.features.impl.skyblock.HidePlayers

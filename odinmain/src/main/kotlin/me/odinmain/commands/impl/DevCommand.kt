@@ -79,7 +79,7 @@ val devCommand = commodore("oddev") {
             Room: ${room.room.data.name}
             Core: $core
             Rotation: ${room.room.rotation}
-            Positions: ${room.extraRooms}
+            Positions: ${room.extraRooms.joinToString { "(${it.x}, ${it.z})" }}
             ${getChatBreak()}
             """.trimIndent(), false
         )

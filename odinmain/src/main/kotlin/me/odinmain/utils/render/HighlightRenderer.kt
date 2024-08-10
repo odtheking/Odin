@@ -4,13 +4,17 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.RenderOverlayNoCaching
 import me.odinmain.ui.util.shader.GlowShader
 import me.odinmain.ui.util.shader.OutlineShader
+import me.odinmain.utils.addVec
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.render.RenderUtils.renderBoundingBox
+import me.odinmain.utils.render.RenderUtils.renderVec
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import org.lwjgl.opengl.GL11.GL_BLEND
+import org.lwjgl.opengl.GL11.glEnable
 
 object HighlightRenderer {
     enum class HighlightType {
@@ -45,6 +49,7 @@ object HighlightRenderer {
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         entities[HighlightType.Boxes]?.forEach {
+            Renderer.drawStringInWorld("test", it.entity.renderVec.addVec(y = 2))
             Renderer.drawStyledBox(it.entity.renderBoundingBox, it.color, it.boxStyle, it.thickness, it.depth)
         }
 
@@ -60,16 +65,16 @@ object HighlightRenderer {
         mc.renderManager.setRenderOutlines(true)
         RenderUtils.enableOutlineMode()
         if (entities[HighlightType.Outline]?.isNotEmpty() == true) {
-            OutlineShader.startDraw(event.partialTicks)
-            entities[HighlightType.Outline]?.filter { !it.depth || mc.thePlayer.canEntityBeSeen(it.entity) }?.forEach {
+            OutlineShader.startDraw()
+            entities[HighlightType.Outline]?.filter { (!it.depth || mc.thePlayer.canEntityBeSeen(it.entity)) && it.entity.isEntityAlive}?.forEach {
                 RenderUtils.outlineColor(it.color)
                 mc.renderManager.renderEntityStatic(it.entity, event.partialTicks, true)
             }
             OutlineShader.stopDraw(Color.WHITE, (entities[HighlightType.Outline]?.firstOrNull()?.thickness ?: 1f) / 3f, 1f)
         }
         if (entities[HighlightType.Glow]?.isNotEmpty() == true) {
-            GlowShader.startDraw(event.partialTicks)
-            entities[HighlightType.Glow]?.filter { !it.depth || mc.thePlayer.canEntityBeSeen(it.entity) }?.forEach {
+            GlowShader.startDraw()
+            entities[HighlightType.Glow]?.filter { (!it.depth || mc.thePlayer.canEntityBeSeen(it.entity)) && it.entity.isEntityAlive }?.forEach {
                 RenderUtils.outlineColor(it.color)
                 mc.renderManager.renderEntityStatic(it.entity, event.partialTicks, true)
             }

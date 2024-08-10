@@ -115,14 +115,11 @@ object ScanUtils {
 
         val roomCenter = getRoomCenter(mc.thePlayer.posX.toInt(), mc.thePlayer.posZ.toInt())
 
-        noneRotationList.removeIf {
-            if (it?.room?.vec2?.equals(roomCenter) == true) {
-                updateRotation(it)
-                if (it.room.rotation != Rotations.NONE) {
-                    RoomEnterEvent(it).postAndCatch()
-                    true
-                } else false
-            } else false
+        noneRotationList.find { it?.room?.vec2?.equals(roomCenter) == true }?.let { room ->
+            if (room.room.rotation != Rotations.NONE) {
+                noneRotationList.remove(room)
+                RoomEnterEvent(room).postAndCatch()
+            }
         }
 
         if (lastRoomPos.equal(roomCenter)) return
@@ -143,11 +140,10 @@ object ScanUtils {
                 }
             }
 
-        devMessage("Found rotation ${fullRoom.room.rotation}, clay pos: ${fullRoom.clayPos}")
         RoomEnterEvent(fullRoom).postAndCatch()
     }
 
-    fun updateRotation(fullRoom: FullRoom) {
+    private fun updateRotation(fullRoom: FullRoom) {
         fullRoom.room.rotation = Rotations.entries.dropLast(1).find { rotation ->
             fullRoom.extraRooms.any { pos ->
                 BlockPos(pos.x + rotation.x, getTopLayerOfRoom(fullRoom.room.vec2), pos.z + rotation.z).let { blockPos ->
@@ -200,8 +196,7 @@ object ScanUtils {
     /**
      * Gets the top layer of blocks in a room (the roof) for finding the rotation of the room.
      *
-     * @param x The x of the room to scan
-     * @param z The z of the room to scan
+     * @param vec2 The x and z values of the room.
      * @param currentHeight The current height to scan at, default is 170
      * @return The y-value of the roof, this is the y-value of the blocks.
      */

@@ -166,7 +166,10 @@ object DungeonWaypoints : Module(
     @SubscribeEvent
     fun onNewRoom(event: DungeonEvents.RoomEnterEvent) {
         glList = -1
-        event.fullRoom?.let { setWaypoints(it) }
+        event.fullRoom?.let {
+            setWaypoints(it)
+            devMessage("${event.fullRoom.room.data.name} - ${event.fullRoom.room.rotation} || clay: ${event.fullRoom.clayPos}")
+        }
     }
 
     fun DungeonWaypoint.toVec3() = Vec3(x, y, z)
