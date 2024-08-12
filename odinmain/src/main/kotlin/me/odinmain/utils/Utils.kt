@@ -9,6 +9,7 @@ import me.odinmain.features.ModuleManager
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.*
+import net.minecraft.entity.Entity
 import net.minecraft.inventory.Container
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.common.MinecraftForge
@@ -338,3 +339,5 @@ inline fun <T> MutableCollection<T>.removeFirstOrNull(predicate: (T) -> Boolean)
 }
 
 fun Int.rangeAdd(add: Int): IntRange = this..this+add
+
+val Entity.rotation get() = Pair(rotationYaw, rotationPitch)
