@@ -25,10 +25,7 @@ import net.minecraft.item.ItemEnderPearl
 import net.minecraft.util.*
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.sin
-import kotlin.math.sqrt
+import kotlin.math.*
 
 object Trajectories : Module(
     name = "Trajectories",
@@ -46,9 +43,9 @@ object Trajectories : Module(
     private val boxSize: Float by NumberSetting("Box Size", 0.5f, 0.5f, 3.0f, 0.1f, description = "The size of the box.").withDependency { boxes }
     private val color: Color by ColorSetting("Color", Color.CYAN, true, description = "The color of the trajectory.")
 
-    private var boxRenderQueue: MutableList<Pair<Vec3, Vec3>> = mutableListOf()
+    private var boxRenderQueue: MutableList<AxisAlignedBB> = mutableListOf()
     private var entityRenderQueue = mutableListOf<Entity>()
-    private var pearlImpactPos: Pair<Vec3,Vec3>? = null
+    private var pearlImpactPos: AxisAlignedBB? = null
     private var planePos: MovingObjectPosition? = null
 
     @SubscribeEvent
@@ -88,24 +85,24 @@ object Trajectories : Module(
         }
         if (pearls) {
             pearlImpactPos = null
-            val itemStack = mc.thePlayer.heldItem
-            if (itemStack?.item is ItemEnderPearl && !itemStack.displayName.contains("leap", ignoreCase = true)) {
+            val itemStack = mc.thePlayer?.heldItem ?: return
+            if (itemStack.item is ItemEnderPearl && !itemStack.displayName.contains("leap", ignoreCase = true)) {
                 val pair = setPearlTrajectoryHeading()
                 if (boxes) drawPearlCollisionBox()
-                if (plane) drawPlaneCollision(pair.second)
                 if (lines) drawLine(pair.first)
+                if (plane) drawPlaneCollision(pair.second)
             }
         }
     }
 
     private fun setPearlTrajectoryHeading(): Pair<ArrayList<Vec3>, MovingObjectPosition?> {
-        val (yaw, pitch) = mc.thePlayer.rotation
-        val posVec = mc.thePlayer.renderVec.addVec(y = mc.thePlayer.eyeHeight)
-            .subtractVec(cos(yaw / 180 * PI) * 0.16, .1, sin(yaw / 180 * PI) * 0.16)
+        val (yaw, pitch) = mc.thePlayer?.rotation ?: return Pair(arrayListOf(), null)
+        val posVec = mc.thePlayer?.renderVec?.addVec(y = mc.thePlayer.eyeHeight)
+            ?.subtractVec(cos(yaw / 180 * PI) * 0.16, .1, sin(yaw / 180 * PI) * 0.16) ?: return Pair(arrayListOf(), null)
         val motionVec = Vec3(
-            -sin(yaw / 180 * PI) * cos(pitch / 180 * PI),
-            cos(yaw / 180 * PI) * cos(pitch / 180 * PI),
-            -sin(pitch / 180 * PI) // TODO: REPLACE ALL THESE WITH TORADIANS OR WHATEVER ITS SUPPOSED TO BE!
+            -sin(Math.toRadians(yaw.toDouble())) * cos(Math.toRadians(pitch.toDouble())),
+            cos(Math.toRadians(yaw.toDouble())) * cos(Math.toRadians(pitch.toDouble())),
+            -sin(Math.toRadians(pitch.toDouble()))
         ).multiply(0.6)
 
         return calculatePearlTrajectory(motionVec.divide(hypot(motionVec.xCoord, motionVec.yCoord, motionVec.zCoord)), posVec)
@@ -120,18 +117,19 @@ object Trajectories : Module(
         for (i in 0..range) {
             if (hitResult) break
             lines.add(posVec)
-            val vec = motionVec.add(posVec)
-            val rayTrace = mc.theWorld.rayTraceBlocks(posVec, vec, false, true, false)
-            if (rayTrace != null) {
-                rayTraceHit = rayTrace
-                lines.add(rayTrace.hitVec)
-                pearlImpactPos =
-                    Pair(
-                        rayTrace.hitVec.addVector(-0.15 * boxSize, -0.15 * boxSize, -0.15 * boxSize),
-                        rayTrace.hitVec.addVector(0.15 * boxSize, 0.15 * boxSize, 0.15 * boxSize)
-                    )
-                hitResult = true
-            }
+            val rayTrace = mc.theWorld?.rayTraceBlocks(posVec, motionVec.add(posVec), false, true, false) ?: continue
+            rayTraceHit = rayTrace
+            lines.add(rayTrace.hitVec)
+            pearlImpactPos =
+                AxisAlignedBB(
+                    rayTrace.hitVec.xCoord - 0.15 * boxSize,
+                    rayTrace.hitVec.yCoord - 0.15 * boxSize,
+                    rayTrace.hitVec.zCoord - 0.15 * boxSize,
+                    rayTrace.hitVec.xCoord + 0.15 * boxSize,
+                    rayTrace.hitVec.yCoord + 0.15 * boxSize,
+                    rayTrace.hitVec.zCoord + 0.15 * boxSize
+                )
+            hitResult = true
             posVec = posVec.add(motionVec)
             motionVec = Vec3(motionVec.xCoord * 0.99, motionVec.yCoord * 0.99 - 0.03, motionVec.zCoord * 0.99)
         }
@@ -148,10 +146,10 @@ object Trajectories : Module(
 
         val yawRadians = ((mc.thePlayer.rotationYaw + yawOffset) / 180) * Math.PI.toFloat()
         val pitchRadians = (mc.thePlayer.rotationPitch / 180) * Math.PI.toFloat()
-
-        var posX = mc.thePlayer.renderX
-        var posY = mc.thePlayer.renderY + mc.thePlayer.eyeHeight
-        var posZ = mc.thePlayer.renderZ
+        val thePlayer = mc.thePlayer ?: return Pair(arrayListOf(), null)
+        var posX = thePlayer.renderX
+        var posY = thePlayer.renderY + mc.thePlayer.eyeHeight
+        var posZ = thePlayer.renderZ
         posX -= (MathHelper.cos(mc.thePlayer.rotationYaw / 180.0f * Math.PI.toFloat()) * 0.16f).toDouble()
         posY -= 0.1
         posZ -= (MathHelper.sin(mc.thePlayer.rotationYaw / 180.0f * Math.PI.toFloat()) * 0.16f).toDouble()
@@ -183,7 +181,7 @@ object Trajectories : Module(
                 .offset(posVec.xCoord, posVec.yCoord, posVec.zCoord)
                 .addCoord(motionVec.xCoord, motionVec.yCoord, motionVec.zCoord)
                 .expand(0.01, 0.01, 0.01)
-            val entityHit = mc.theWorld.getEntitiesWithinAABBExcludingEntity(mc.thePlayer, aabb).filter { it !is EntityArrow && it !is EntityArmorStand}
+            val entityHit = mc.theWorld?.getEntitiesWithinAABBExcludingEntity(mc.thePlayer, aabb)?.filter { it !is EntityArrow && it !is EntityArmorStand } ?: emptyList()
             if (entityHit.isNotEmpty()) {
                 hitResult = true
                 entityRenderQueue.addAll(entityHit)
@@ -191,9 +189,13 @@ object Trajectories : Module(
                 rayTraceHit = rayTrace
                 lines.add(rayTrace.hitVec)
                 boxRenderQueue.add(
-                    Pair(
-                        rayTrace.hitVec.addVector(-0.15 * boxSize, -0.15 * boxSize, -0.15 * boxSize),
-                        rayTrace.hitVec.addVector(0.15 * boxSize, 0.15 * boxSize, 0.15 * boxSize)
+                    AxisAlignedBB(
+                        rayTrace.hitVec.xCoord - 0.15 * boxSize,
+                        rayTrace.hitVec.yCoord - 0.15 * boxSize,
+                        rayTrace.hitVec.zCoord - 0.15 * boxSize,
+                        rayTrace.hitVec.xCoord + 0.15 * boxSize,
+                        rayTrace.hitVec.yCoord + 0.15 * boxSize,
+                        rayTrace.hitVec.zCoord + 0.15 * boxSize
                     )
                 )
                 hitResult = true
@@ -222,8 +224,7 @@ object Trajectories : Module(
             }
             else -> return
         }
-        val aabb = AxisAlignedBB(vec1.xCoord, vec1.yCoord, vec1.zCoord, vec2.xCoord, vec2.yCoord, vec2.zCoord)
-        RenderUtils.drawFilledAABB(aabb, color.withAlpha(color.alpha / 2, true), false)
+        RenderUtils.drawFilledAABB(AxisAlignedBB(vec1.xCoord, vec1.yCoord, vec1.zCoord, vec2.xCoord, vec2.yCoord, vec2.zCoord), color.withAlpha(color.alpha / 2, true), false)
     }
 
     private fun drawLine(lines: ArrayList<Vec3>) {
@@ -233,11 +234,7 @@ object Trajectories : Module(
     }
 
     private fun drawPearlCollisionBox() {
-        pearlImpactPos?.let {
-            val aabb = AxisAlignedBB(
-                it.first.xCoord, it.first.yCoord, it.first.zCoord,
-                it.second.xCoord, it.second.yCoord, it.second.zCoord
-            )
+        pearlImpactPos?.let { aabb ->
             Renderer.drawBox(aabb, color, width, depth = false, fillAlpha = 0)
             pearlImpactPos = null
         }
@@ -246,22 +243,20 @@ object Trajectories : Module(
 
     private fun drawBowCollisionBoxes() {
         if (boxRenderQueue.size == 0) return
-        for (b in boxRenderQueue) {
+        val renderVec = mc.thePlayer?.renderVec ?: return
+        for (axisAlignedBB in boxRenderQueue) {
             if (
                 hypot(
-                    mc.thePlayer.renderX - b.first.xCoord,
-                    mc.thePlayer.renderY + mc.thePlayer.eyeHeight - b.first.yCoord,
-                    mc.thePlayer.renderZ - b.first.zCoord
+                    renderVec.xCoord - axisAlignedBB.minX,
+                    renderVec.yCoord + mc.thePlayer.eyeHeight - axisAlignedBB.minY,
+                    renderVec.zCoord - axisAlignedBB.minZ
                 ) < 2
             ) {
                 boxRenderQueue.clear()
                 return
             }
-            val aabb = AxisAlignedBB(
-                b.first.xCoord, b.first.yCoord, b.first.zCoord,
-                b.second.xCoord, b.second.yCoord, b.second.zCoord
-            )
-            Renderer.drawBox(aabb, color, width, depth = true, fillAlpha = 0)
+
+            Renderer.drawBox(axisAlignedBB, color, width, depth = true, fillAlpha = 0)
         }
         boxRenderQueue.clear()
     }
