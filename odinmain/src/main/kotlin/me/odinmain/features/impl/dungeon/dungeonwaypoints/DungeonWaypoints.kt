@@ -106,12 +106,10 @@ object DungeonWaypoints : Module(
 
         if (reachEdits && allowEdits) {
             reachPos = EtherWarpHelper.getEtherPos(mc.thePlayer.renderVec, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
-            val pos = reachPos?.pos ?: return
-            getBlockAt(pos).setBlockBoundsBasedOnState(mc.theWorld, pos)
-            val aabb = if (useBlockSize) getBlockAt(pos).getSelectedBoundingBox(mc.theWorld, pos).expand(0.002, 0.002, 0.002) ?: return
-            else AxisAlignedBB(pos.x + 0.5 - (size / 2), pos.y + .5 - (size / 2), pos.z + .5 - (size / 2), pos.x + .5 + (size / 2), pos.y + .5 + (size / 2), pos.z + .5 + (size / 2)).expand(0.002, 0.002, 0.002)
-
-            Renderer.drawStyledBox(aabb, reachColor, style = if (filled) 0 else 1, 1, !throughWalls)
+            reachPos?.pos?.let {
+                if (useBlockSize) Renderer.drawStyledBlock(it, reachColor, style = if (filled) 0 else 1, 1, !throughWalls)
+                else Renderer.drawStyledBox(AxisAlignedBB(it.x + 0.5 - (size / 2), it.y + .5 - (size / 2), it.z + .5 - (size / 2), it.x + .5 + (size / 2), it.y + .5 + (size / 2), it.z + .5 + (size / 2)).outlineBounds(), reachColor, style = if (filled) 0 else 1, 1, !throughWalls)
+            }
         }
     }
 
@@ -146,7 +144,7 @@ object DungeonWaypoints : Module(
             else -> color
         }
 
-        if (mc.thePlayer.isSneaking) {
+        if (mc.thePlayer?.isSneaking == true) {
             GuiSign.setCallback { enteredText ->
                 waypoints.removeIf { it.toVec3().equal(vec) }
                 waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, aabb, enteredText, secretWaypoint))
