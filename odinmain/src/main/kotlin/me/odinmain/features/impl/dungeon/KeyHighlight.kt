@@ -35,8 +35,8 @@ object KeyHighlight : Module(
 
     @SubscribeEvent
     fun postMetadata(event: PostEntityMetadata) {
-        val entity = mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityArmorStand ?: return
         if (!DungeonUtils.inDungeons || DungeonUtils.inBoss) return
+        val entity = mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityArmorStand ?: return
 
         currentKey = when (entity.name.noControlCodes) {
             "Wither Key" -> KeyInfo(entity, witherColor)
@@ -52,7 +52,7 @@ object KeyHighlight : Module(
                 currentKey = null
                 return
             }
-            Renderer.drawStyledBox(entity.positionVector.addVec(0.5, 1, 0.5).toAABB(), color, style, lineWidth, isLegitVersion)
+            Renderer.drawStyledBox(entity.positionVector.addVec(-0.5, 1, -0.5).toAABB(), color, style, lineWidth, isLegitVersion)
         }
     }
 }

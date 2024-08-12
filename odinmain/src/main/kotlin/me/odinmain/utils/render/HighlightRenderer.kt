@@ -58,7 +58,7 @@ object HighlightRenderer {
         entities[HighlightType.Box2d]?.filter { !it.depth || mc.thePlayer.isEntitySeen(it.entity) }?.forEach {
             Renderer.draw2DEntity(it.entity, it.color, it.thickness)
         }
-        if (entities[HighlightType.Outline]?.isNotEmpty() == true && entities[HighlightType.Overlay]?.isNotEmpty() == true) return
+        if (entities[HighlightType.Outline]?.isEmpty() == true && entities[HighlightType.Glow]?.isEmpty() == true) return
         GlStateManager.pushMatrix()
         mc.renderManager.setRenderOutlines(true)
         RenderUtils.enableOutlineMode()

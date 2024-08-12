@@ -50,58 +50,6 @@ object ScanUtils {
     private var previousRoomScanned: FullRoom? = null
     private var noneRotationList: MutableList<FullRoom?> = mutableListOf()
 
-//    @SubscribeEvent
-//    fun onTick(event: ClientTickEvent) {
-//        if (event.phase != TickEvent.Phase.END || mc.theWorld == null || mc.thePlayer == null) return
-//
-//        // If not in dungeons or in the boss area, handle room exit/reset events and also set current room to null by posting a null room event prevents features work when not needed
-//        if ((!inDungeons && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) || inBoss) {
-//            if (DungeonUtils.currentFullRoom == null) return
-//            RoomEnterEvent(null).postAndCatch() // Send event indicating room exit or reset
-//            return
-//        }
-//
-//        val roomCenter = getRoomCenter(mc.thePlayer.posX.toInt(), mc.thePlayer.posZ.toInt())
-//
-//        // Check if we are scanning the same room as last tick
-//        if (previousRoomScanned?.extraRooms?.any { it.x == roomCenter.x && it.z == roomCenter.z } == true && previousRoomScanned?.room?.rotation != Rotations.NONE) {
-//            // If the player is still in the same room and the rotation has been found, skip scanning
-//            if (lastRoomPos.equal(roomCenter)) return
-//            lastRoomPos = roomCenter
-//
-//            // Check if the room has been visited before
-//            passedRooms.find { previousRoom -> previousRoom.extraRooms.any { it.x == roomCenter.x && it.z == roomCenter.z } }?.let { room ->
-//                // If we're already in the cached room, avoid posting duplicate events
-//                if (DungeonUtils.currentFullRoom?.extraRooms?.any { it.x == roomCenter.x && it.z == roomCenter.z } == true) return
-//                RoomEnterEvent(room).postAndCatch()
-//                return
-//            }
-//        }
-//
-//        // If scanning the same room as the previous tick and rotation wasn't found, use the previous room as fallback
-//        val room = if (previousRoomScanned?.extraRooms?.any { it.x == roomCenter.x && it.z == roomCenter.z } == true && previousRoomScanned?.room?.rotation != Rotations.NONE)
-//            previousRoomScanned?.room ?: return
-//        else scanRoom(roomCenter) ?: return
-//
-//        val fullRoom = FullRoom(room, BlockPos(0, 0, 0), findRoomTilesRecursively(room.vec2, room, mutableSetOf()), emptyList()).apply {
-//            this.room.rotation = Rotations.entries.dropLast(1).find { rotation ->
-//                this.extraRooms.any { pos ->
-//                    BlockPos(pos.x + rotation.x, getTopLayerOfRoom(this.room.vec2), pos.z + rotation.z).let { blockPos ->
-//                        getBlockIdAt(blockPos) == 159 && EnumFacing.HORIZONTALS.all { facing ->
-//                            getBlockIdAt(blockPos.add(facing.frontOffsetX, 0, facing.frontOffsetZ)).equalsOneOf(159, 0)
-//                        }.also { isCorrectClay -> if (isCorrectClay) this.clayPos = blockPos }
-//                    }
-//                }
-//            } ?: Rotations.NONE
-//        }.also {
-//            previousRoomScanned = it
-//            if (it.room.rotation == Rotations.NONE) return
-//        }
-//
-//        devMessage("Found rotation ${fullRoom.room.rotation}, clay pos: ${fullRoom.clayPos}")
-//        RoomEnterEvent(fullRoom).postAndCatch()
-//    }
-
     @SubscribeEvent
     fun onTick1(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.END || mc.theWorld == null || mc.thePlayer == null) return
@@ -115,7 +63,7 @@ object ScanUtils {
 
         val roomCenter = getRoomCenter(mc.thePlayer.posX.toInt(), mc.thePlayer.posZ.toInt())
 
-        noneRotationList.find { it?.room?.vec2?.equals(roomCenter) == true }?.let { room ->
+        noneRotationList.find { it?.extraRooms?.any { room -> room.x == roomCenter.x && room.z == roomCenter.z } == true }?.let { room ->
             if (room.room.rotation != Rotations.NONE) {
                 noneRotationList.remove(room)
                 RoomEnterEvent(room).postAndCatch()
@@ -136,7 +84,7 @@ object ScanUtils {
             .also {
                 if (it.room.rotation == Rotations.NONE) {
                     noneRotationList.add(it)
-                    return@also
+                    return
                 }
             }
 

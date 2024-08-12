@@ -19,7 +19,6 @@ abstract class FramebufferShader(fragmentShader: String) : Shader(fragmentShader
     fun startDraw() {
         GlStateManager.pushMatrix()
         GlStateManager.pushAttrib()
-        GlStateManager.disableFog()
 
         framebuffer = setupFrameBuffer(framebuffer)
         framebuffer?.bindFramebuffer(true)
@@ -41,9 +40,8 @@ abstract class FramebufferShader(fragmentShader: String) : Shader(fragmentShader
         framebuffer?.let { drawFramebuffer(it) }
         stopShader()
 
-        GlStateManager.enableFog()
-        GlStateManager.popMatrix()
         GlStateManager.popAttrib()
+        GlStateManager.popMatrix()
     }
 
     /**
