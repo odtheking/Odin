@@ -6,8 +6,9 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinmain.utils.addVec
+import me.odinmain.utils.*
 import me.odinmain.utils.render.*
+import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.RenderUtils.renderX
 import me.odinmain.utils.render.RenderUtils.renderY
 import me.odinmain.utils.render.RenderUtils.renderZ
@@ -24,6 +25,9 @@ import net.minecraft.item.ItemEnderPearl
 import net.minecraft.util.*
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 import kotlin.math.sqrt
 
 object Trajectories : Module(
@@ -36,7 +40,7 @@ object Trajectories : Module(
     private val plane: Boolean by BooleanSetting("Show Plane", false, description = "Shows a flat square rotated relative to the predicted block that will be hit.")
     private val boxes: Boolean by BooleanSetting("Show Boxes", true, description = "Shows boxes displaying where arrows or pearls will hit, if this is disabled it will only highlight entities your arrows will hit.")
     private val lines: Boolean by BooleanSetting("Show Lines", true, description = "Shows the trajectory as a line.")
-    private val range: Float by NumberSetting("Solver Range", 30f, 1f, 120f, 1f, description = "How many ticks are simulated, performance impact scales with this.")
+    private val range: Int by NumberSetting("Solver Range", 30, 1, 120, 1, description = "How many ticks are simulated, performance impact scales with this.")
     private val width: Float by NumberSetting("Line Width", 1f, 0.1f, 5.0, 0.1f, description = "The width of the line.")
     private val planeSize: Float by NumberSetting("Plane Size", 2f, 0.1f, 5.0, 0.1f, description = "The size of the plane.").withDependency { plane }
     private val boxSize: Float by NumberSetting("Box Size", 0.5f, 0.5f, 3.0f, 0.1f, description = "The size of the box.").withDependency { boxes }
@@ -57,65 +61,54 @@ object Trajectories : Module(
             var pair2: Pair<ArrayList<Vec3>, MovingObjectPosition?>
             var pair3: Pair<ArrayList<Vec3>, MovingObjectPosition?>
             if (mc.thePlayer.heldItem?.isShortbow == true) {
-                pair1 = this.setBowTrajectoryHeading(0f, false)
+                pair1 = setBowTrajectoryHeading(0f, false)
                 pair2 = Pair(arrayListOf(Vec3(0.0, 0.0, 0.0)), null)
                 pair3 = Pair(arrayListOf(Vec3(0.0, 0.0, 0.0)), null)
                 if (isHolding("TERMINATOR")) {
-                    pair2 = this.setBowTrajectoryHeading(-5f, false)
-                    pair3 = this.setBowTrajectoryHeading(5f, false)
+                    pair2 = setBowTrajectoryHeading(-5f, false)
+                    pair3 = setBowTrajectoryHeading(5f, false)
                 }
             } else {
                 if (mc.thePlayer.itemInUseDuration == 0) return
-                pair1 = this.setBowTrajectoryHeading(0f, true)
+                pair1 = setBowTrajectoryHeading(0f, true)
                 pair2 = Pair(arrayListOf(Vec3(0.0, 0.0, 0.0)), null)
                 pair3 = Pair(arrayListOf(Vec3(0.0, 0.0, 0.0)), null)
             }
-            if (boxes) this.drawBowCollisionBoxes()
+            if (boxes) drawBowCollisionBoxes()
             if (plane) {
-                this.drawPlaneCollision(pair1.second)
-                this.drawPlaneCollision(pair2.second)
-                this.drawPlaneCollision(pair3.second)
+                drawPlaneCollision(pair1.second)
+                drawPlaneCollision(pair2.second)
+                drawPlaneCollision(pair3.second)
             }
             if (lines) {
-                this.drawLine(pair1.first)
-                this.drawLine(pair2.first)
-                this.drawLine(pair3.first)
+                drawLine(pair1.first)
+                drawLine(pair2.first)
+                drawLine(pair3.first)
             }
         }
         if (pearls) {
             pearlImpactPos = null
             val itemStack = mc.thePlayer.heldItem
             if (itemStack?.item is ItemEnderPearl && !itemStack.displayName.contains("leap", ignoreCase = true)) {
-                val pair = this.setPearlTrajectoryHeading()
-                if (boxes) this.drawPearlCollisionBox()
-                if (plane) this.drawPlaneCollision(pair.second)
-                if (lines) this.drawLine(pair.first)
+                val pair = setPearlTrajectoryHeading()
+                if (boxes) drawPearlCollisionBox()
+                if (plane) drawPlaneCollision(pair.second)
+                if (lines) drawLine(pair.first)
             }
         }
     }
 
     private fun setPearlTrajectoryHeading(): Pair<ArrayList<Vec3>, MovingObjectPosition?> {
-        var motionX =
-            (-MathHelper.sin(mc.thePlayer.rotationYaw / 180.0f * Math.PI.toFloat()) * MathHelper.cos(mc.thePlayer.rotationPitch / 180.0f * Math.PI.toFloat()) * 0.4)
-        var motionZ =
-            (MathHelper.cos(mc.thePlayer.rotationYaw / 180.0f * Math.PI.toFloat()) * MathHelper.cos(mc.thePlayer.rotationPitch / 180.0f * Math.PI.toFloat()) * 0.4)
-        var motionY =
-            (-MathHelper.sin(mc.thePlayer.rotationPitch / 180.0f * Math.PI.toFloat()) * 0.4)
-        var posX = mc.thePlayer.renderX
-        var posY = mc.thePlayer.renderY + mc.thePlayer.eyeHeight
-        var posZ = mc.thePlayer.renderZ
-        posX -= (MathHelper.cos(mc.thePlayer.rotationYaw / 180.0f * Math.PI.toFloat()) * 0.16f).toDouble()
-        posY -= 0.1f
-        posZ -= (MathHelper.sin(mc.thePlayer.rotationYaw / 180.0f * Math.PI.toFloat()) * 0.16f).toDouble()
-        val f = MathHelper.sqrt_double(motionX * motionX + motionY * motionY + motionZ * motionZ)
-        motionX /= f
-        motionY /= f
-        motionZ /= f
-        motionX *= 1.5f
-        motionY *= 1.5f
-        motionZ *= 1.5f
+        val (yaw, pitch) = mc.thePlayer.rotation
+        val posVec = mc.thePlayer.renderVec.addVec(y = mc.thePlayer.eyeHeight)
+            .subtractVec(cos(yaw / 180 * PI) * 0.16, .1, sin(yaw / 180 * PI) * 0.16)
+        val motionVec = Vec3(
+            -sin(yaw / 180 * PI) * cos(pitch / 180 * PI),
+            cos(yaw / 180 * PI) * cos(pitch / 180 * PI),
+            -sin(pitch / 180 * PI) // TODO: REPLACE ALL THESE WITH TORADIANS OR WHATEVER ITS SUPPOSED TO BE!
+        ).multiply(0.6)
 
-        return calculatePearlTrajectory(Vec3(motionX, motionY, motionZ), Vec3(posX, posY, posZ))
+        return calculatePearlTrajectory(motionVec.divide(hypot(motionVec.xCoord, motionVec.yCoord, motionVec.zCoord)), posVec)
     }
 
     private fun calculatePearlTrajectory(mV: Vec3,pV: Vec3): Pair<ArrayList<Vec3>, MovingObjectPosition?> {
@@ -124,7 +117,7 @@ object Trajectories : Module(
         var posVec = pV
         val lines = arrayListOf<Vec3>()
         var rayTraceHit: MovingObjectPosition? = null
-        for (i in 0..range.toInt()) {
+        for (i in 0..range) {
             if (hitResult) break
             lines.add(posVec)
             val vec = motionVec.add(posVec)
@@ -181,7 +174,7 @@ object Trajectories : Module(
         var posVec = pV
         val lines = arrayListOf<Vec3>()
         var rayTraceHit: MovingObjectPosition? = null
-        for (i in 0..range.toInt()) {
+        for (i in 0..range) {
             if (hitResult) break
             lines.add(posVec)
             val vec = motionVec.add(posVec)
@@ -227,7 +220,7 @@ object Trajectories : Module(
                 vec1 = rayTrace.hitVec.addVec(-0.02, -0.15 * planeSize, -0.15 * planeSize)
                 vec2 = rayTrace.hitVec.addVec(0.02, 0.15 * planeSize, 0.15 * planeSize)
             }
-            null -> return
+            else -> return
         }
         val aabb = AxisAlignedBB(vec1.xCoord, vec1.yCoord, vec1.zCoord, vec2.xCoord, vec2.yCoord, vec2.zCoord)
         RenderUtils.drawFilledAABB(aabb, color.withAlpha(color.alpha / 2, true), false)
@@ -280,10 +273,10 @@ object Trajectories : Module(
 
         if (entity !in entityRenderQueue ||
             !player.canEntityBeSeen(entity) ||
-            (!bows || player.heldItem?.item !is ItemBow) ||
+            !bows || player.heldItem?.item !is ItemBow ||
             (entity is EntityBlaze && DungeonUtils.inDungeons) ||
             (entity is EntityWither && entity.isInvisible)
-            ) return
+        ) return
 
         OutlineUtils.outlineEntity(event, color, width)
     }
