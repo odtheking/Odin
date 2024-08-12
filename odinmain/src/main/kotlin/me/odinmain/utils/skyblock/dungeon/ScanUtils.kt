@@ -64,6 +64,7 @@ object ScanUtils {
         val roomCenter = getRoomCenter(mc.thePlayer.posX.toInt(), mc.thePlayer.posZ.toInt())
 
         noneRotationList.find { it?.extraRooms?.any { room -> room.x == roomCenter.x && room.z == roomCenter.z } == true }?.let { room ->
+            updateRotation(room)
             if (room.room.rotation != Rotations.NONE) {
                 noneRotationList.remove(room)
                 RoomEnterEvent(room).postAndCatch()

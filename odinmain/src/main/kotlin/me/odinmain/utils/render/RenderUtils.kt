@@ -67,10 +67,7 @@ object RenderUtils {
     val Entity.renderVec: Vec3
         get() = Vec3(renderX, renderY, renderZ)
 
-    val viewerVec: Vec3
-        get() = Vec3(renderManager.viewerPosX, renderManager.viewerPosY, renderManager.viewerPosZ)
-
-    fun blendFactor() = GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+    private fun blendFactor() = GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
 
 
     /**
@@ -561,40 +558,34 @@ object RenderUtils {
 
     fun drawBoxes(boxes: Collection<DungeonWaypoint>, glList: Int, disableDepth: Boolean = false): Int {
         var newGlList = glList
-        GlStateManager.pushMatrix()
-        preDraw()
-        GlStateManager.disableCull()
 
-        GL11.glLineWidth(3f)
         if (newGlList != -1) {
             GL11.glCallList(newGlList)
-            postDraw()
-            resetDepth()
-            GlStateManager.enableCull()
-            GlStateManager.resetColor()
-            GlStateManager.popMatrix()
             return newGlList
         } else {
             newGlList = GL11.glGenLists(1)
             GL11.glNewList(newGlList, GL11.GL_COMPILE)
         }
+        GlStateManager.pushMatrix()
+        GlStateManager.disableCull()
+        GL11.glLineWidth(3f)
+        preDraw()
 
         for (box in boxes) {
-            if (!box.depth || disableDepth) GlStateManager.disableDepth()
-            else GlStateManager.enableDepth()
+            if (!box.depth || disableDepth) GlStateManager.disableDepth() else GlStateManager.enableDepth()
             val aabb = box.aabb.offset(box.x, box.y, box.z)
             box.color.bind()
 
             if (box.filled) addVertexesForFilledBox(aabb)
             else addVertexesForOutlinedBox(aabb)
-            tessellator.draw()
         }
-        GL11.glEndList()
+        tessellator.draw()
         postDraw()
         resetDepth()
         GlStateManager.enableCull()
         GlStateManager.resetColor()
         GlStateManager.popMatrix()
+        GL11.glEndList()
         return newGlList
     }
 

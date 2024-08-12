@@ -72,7 +72,6 @@ object DungeonWaypoints : Module(
         modMessage("Dungeon Waypoint editing ${if (allowEdits) "§aenabled" else "§cdisabled"}§r!")
     }
 
-
     init {
         onWorldLoad { resetSecrets() }
 
