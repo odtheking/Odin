@@ -578,8 +578,9 @@ object RenderUtils {
 
             if (box.filled) addVertexesForFilledBox(aabb)
             else addVertexesForOutlinedBox(aabb)
+            tessellator.draw()
         }
-        tessellator.draw()
+
         postDraw()
         resetDepth()
         GlStateManager.enableCull()
@@ -668,6 +669,4 @@ object RenderUtils {
             pos(maxX, minY, minZ).endVertex()
         }
     }
-
-
 }

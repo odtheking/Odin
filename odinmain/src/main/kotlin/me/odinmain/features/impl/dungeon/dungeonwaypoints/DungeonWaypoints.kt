@@ -98,8 +98,9 @@ object DungeonWaypoints : Module(
         }
 
         if (debugWaypoint) {
-            val distinct = room.extraRooms.distinct().minByOrNull { it.core } ?: return
-            Renderer.drawBox(Vec3(distinct.x.toDouble(), 70.0, distinct.z.toDouble()).toAABB(), Color.GREEN, fillAlpha = 0)
+            room.extraRooms.forEach {
+                Renderer.drawBox(Vec3(it.x.toDouble(), 70.0, it.z.toDouble()).toAABB(), Color.GREEN, fillAlpha = 0)
+            }
         }
         endProfile()
 
