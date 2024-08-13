@@ -26,7 +26,7 @@ object RelicAura : Module(
     }
 
     private fun interactWithEntity(entity: Entity) {
-        val objectMouseOver = mc.objectMouseOver.hitVec
+        val objectMouseOver = mc.objectMouseOver?.hitVec ?: return
         val dx = objectMouseOver.xCoord - entity.posX
         val dy = objectMouseOver.yCoord - entity.posY
         val dz = objectMouseOver.zCoord - entity.posX

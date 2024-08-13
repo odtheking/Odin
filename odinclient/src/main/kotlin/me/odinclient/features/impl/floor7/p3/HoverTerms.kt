@@ -1,5 +1,6 @@
 package me.odinclient.features.impl.floor7.p3
 
+import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
@@ -12,12 +13,10 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.ui.util.MouseUtils.mouseX
 import me.odinmain.ui.util.MouseUtils.mouseY
 import me.odinmain.utils.clock.Clock
-import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
-import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object HoverTerms : Module(
@@ -32,7 +31,7 @@ object HoverTerms : Module(
     private val triggerBotClock = Clock(triggerDelay)
 
     @SubscribeEvent
-    fun onRenderWorld(event: RenderGameOverlayEvent.Pre) {
+    fun onDrawGuiContainer(event: GuiEvent.DrawGuiContainerScreenEvent) {
         if (
             TerminalSolver.solution.isEmpty() ||
             mc.currentScreen !is GuiChest ||
@@ -54,21 +53,25 @@ object HoverTerms : Module(
 
         if (hoveredItem !in TerminalSolver.solution) return
 
-        if (currentTerm == TerminalTypes.RUBIX) {
-            val needed = TerminalSolver.solution.count { it == hoveredItem }
-            if (needed >= 3) {
-                windowClick(hoveredItem, PlayerUtils.ClickType.Right)
-                triggerBotClock.update()
+        when (currentTerm) {
+            TerminalTypes.RUBIX -> {
+                val needed = TerminalSolver.solution.count { it == hoveredItem }
+                if (needed >= 3) {
+                    windowClick(hoveredItem, PlayerUtils.ClickType.Right)
+                    triggerBotClock.update()
+                    return
+                }
+            }
+            TerminalTypes.ORDER -> {
+                if (TerminalSolver.solution.first() == hoveredItem) {
+                    windowClick(hoveredItem, if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
+                    triggerBotClock.update()
+                }
                 return
             }
-        } else if (currentTerm == TerminalTypes.ORDER) {
-            if (TerminalSolver.solution.first() == hoveredItem) {
-                windowClick(hoveredItem, if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
-                triggerBotClock.update()
-            }
-            return
-        } else if (currentTerm.equalsOneOf(TerminalTypes.PANES, TerminalTypes.STARTS_WITH, TerminalTypes.SELECT))
-            windowClick(hoveredItem, if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
+            TerminalTypes.PANES, TerminalTypes.STARTS_WITH, TerminalTypes.SELECT -> windowClick(hoveredItem, if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
+            else -> return
+        }
 
         triggerBotClock.update()
     }

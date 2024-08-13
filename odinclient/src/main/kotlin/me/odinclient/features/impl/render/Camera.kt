@@ -71,17 +71,15 @@ object Camera : Module(
 
     @SubscribeEvent
     fun cameraSetup(e: EntityViewRenderEvent.CameraSetup) {
-        if (freelookToggled) {
-            e.yaw = cameraYaw
-            e.pitch = cameraPitch
-        }
+        if (!freelookToggled) return
+        e.yaw = cameraYaw
+        e.pitch = cameraPitch
     }
 
     fun updateCameraAndRender(f2: Float, f3: Float) {
-        if (freelookToggled) {
-            cameraYaw += f2 / 7
-            cameraPitch = MathHelper.clamp_float((cameraPitch + f3 / 7), -90f, 90f)
-        }
+        if (!freelookToggled) return
+        cameraYaw += f2 / 7
+        cameraPitch = MathHelper.clamp_float((cameraPitch + f3 / 7), -90f, 90f)
     }
 
     fun calculateCameraDistance(d0: Double, d1: Double, d2: Double, d3: Double): Float {

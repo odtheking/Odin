@@ -558,21 +558,27 @@ object RenderUtils {
 
     fun drawBoxes(boxes: Collection<DungeonWaypoint>, glList: Int, disableDepth: Boolean = false): Int {
         var newGlList = glList
+        GlStateManager.pushMatrix()
+        preDraw()
+        GlStateManager.disableCull()
 
+        GL11.glLineWidth(3f)
         if (newGlList != -1) {
             GL11.glCallList(newGlList)
+            postDraw()
+            resetDepth()
+            GlStateManager.enableCull()
+            GlStateManager.resetColor()
+            GlStateManager.popMatrix()
             return newGlList
         } else {
             newGlList = GL11.glGenLists(1)
             GL11.glNewList(newGlList, GL11.GL_COMPILE)
         }
-        GlStateManager.pushMatrix()
-        GlStateManager.disableCull()
-        GL11.glLineWidth(3f)
-        preDraw()
 
         for (box in boxes) {
-            if (!box.depth || disableDepth) GlStateManager.disableDepth() else GlStateManager.enableDepth()
+            if (!box.depth || disableDepth) GlStateManager.disableDepth()
+            else GlStateManager.enableDepth()
             val aabb = box.aabb.offset(box.x, box.y, box.z)
             box.color.bind()
 
@@ -580,13 +586,12 @@ object RenderUtils {
             else addVertexesForOutlinedBox(aabb)
             tessellator.draw()
         }
-
+        GL11.glEndList()
         postDraw()
         resetDepth()
         GlStateManager.enableCull()
         GlStateManager.resetColor()
         GlStateManager.popMatrix()
-        GL11.glEndList()
         return newGlList
     }
 

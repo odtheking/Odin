@@ -10,6 +10,9 @@ import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.RenderUtils.renderX
+import me.odinmain.utils.render.RenderUtils.renderY
+import me.odinmain.utils.render.RenderUtils.renderZ
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.*
@@ -24,6 +27,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 import org.lwjgl.input.Keyboard
+import kotlin.math.sqrt
 
 object ArrowsDevice : Module(
     name = "Arrows Device",
@@ -46,7 +50,7 @@ object ArrowsDevice : Module(
     }.withDependency { solver && solverDropdown }
     private val alertOnDeviceComplete: Boolean by BooleanSetting("Device complete alert", default = true, description = "Send an alert when device is complete").withDependency { solverDropdown }
 
-    private val autoDropdown: Boolean by DropdownSetting("Auto")
+    private val autoDropdown: Boolean by DropdownSetting("Auto Device")
     private val auto: Boolean by BooleanSetting("Enabled", description = "Automatically complete device").withDependency { autoDropdown }
     private val autoPhoenix: Boolean by BooleanSetting("Auto phoenix", default = true, description = "Automatically swap to phoenix pet using cast rod pet rules, must be set up correctly").withDependency { auto && autoDropdown }
     private val autoLeap: Boolean by BooleanSetting("Auto leap", default = true, description = "Automatically leap once device is done").withDependency { auto && autoDropdown }
@@ -54,6 +58,11 @@ object ArrowsDevice : Module(
     private val autoLeapOnlyPre: Boolean by BooleanSetting("Only leap on pre", default = true, description = "Only auto leap when doing i4").withDependency { autoLeap && auto && autoDropdown }
     private val delay: Long by NumberSetting("Delay", 150L, 80, 300, description = "Delay between actions").withDependency { auto && autoDropdown }
     private val aimingTime: Long by NumberSetting("Aiming duration", 100L, 80, 200, description = "Time taken to aim at a target").withDependency { auto && autoDropdown }
+
+    private val triggerBotDropdown: Boolean by DropdownSetting("Trigger Bot")
+    private val triggerBot: Boolean by BooleanSetting("Enabled", description = "Automatically shoot targets").withDependency { triggerBotDropdown }
+    private val triggerBotDelay: Long by NumberSetting("Delay", 250L, 50L, 1000L, 10L, unit = "ms", description = "The delay between each click.")
+    private val triggerBotClock = Clock(triggerBotDelay)
 
     private val markedPositions = mutableSetOf<BlockPos>()
     private var targetPosition: BlockPos? = null
@@ -106,6 +115,56 @@ object ArrowsDevice : Module(
             reset()
             // Reset is called when leaving the device room, but device remains complete across an entire run, so this doesn't belong in reset
             isDeviceComplete = false
+        }
+
+        execute(10) {
+            if (!triggerBot || !triggerBotClock.hasTimePassed(triggerBotDelay) || mc.thePlayer?.heldItem?.isShortbow == false || DungeonUtils.getPhase() != M7Phases.P3) return@execute
+            setBowTrajectoryHeading(0f)
+            if (!isHolding("TERMINATOR")) return@execute
+            setBowTrajectoryHeading(-5f)
+            setBowTrajectoryHeading(5f)
+        }
+    }
+
+    private fun setBowTrajectoryHeading(yawOffset: Float) {
+        val yawRadians = ((mc.thePlayer.rotationYaw + yawOffset) / 180) * Math.PI.toFloat()
+        val pitchRadians = (mc.thePlayer.rotationPitch / 180) * Math.PI.toFloat()
+
+        var posX = mc.thePlayer.renderX
+        var posY = mc.thePlayer.renderY + mc.thePlayer.eyeHeight
+        var posZ = mc.thePlayer.renderZ
+        posX -= (MathHelper.cos(mc.thePlayer.rotationYaw / 180.0f * Math.PI.toFloat()) * 0.16f).toDouble()
+        posY -= 0.1
+        posZ -= (MathHelper.sin(mc.thePlayer.rotationYaw / 180.0f * Math.PI.toFloat()) * 0.16f).toDouble()
+
+        var motionX = (-MathHelper.sin(yawRadians) * MathHelper.cos(pitchRadians)).toDouble()
+        var motionY = -MathHelper.sin(pitchRadians).toDouble()
+        var motionZ = (MathHelper.cos(yawRadians) * MathHelper.cos(pitchRadians)).toDouble()
+
+        val lengthOffset = sqrt(motionX * motionX + motionY * motionY + motionZ * motionZ)
+        motionX = motionX / lengthOffset * 3
+        motionY = motionY / lengthOffset * 3
+        motionZ = motionZ / lengthOffset * 3
+
+        calculateBowTrajectory(Vec3(motionX,motionY,motionZ),Vec3(posX,posY,posZ))
+    }
+
+    private fun calculateBowTrajectory(mV: Vec3, pV: Vec3) {
+        var motionVec = mV
+        var posVec = pV
+        for (i in 0..20) {
+            val vec = motionVec.add(posVec)
+            val rayTrace = mc.theWorld?.rayTraceBlocks(posVec, vec, false, true, false)
+            if (rayTrace?.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
+                if (getBlockIdAt(rayTrace.blockPos) == 133) {
+                    if (rayTrace.blockPos.x !in 64..68 || rayTrace.blockPos.y !in 126..130) return // not on device
+                    me.odinclient.utils.skyblock.PlayerUtils.rightClick()
+                    triggerBotClock.update()
+                }
+                break
+            }
+            posVec = posVec.add(motionVec)
+            motionVec = Vec3(motionVec.xCoord * 0.99, motionVec.yCoord * 0.99 - 0.05, motionVec.zCoord * 0.99)
         }
     }
 

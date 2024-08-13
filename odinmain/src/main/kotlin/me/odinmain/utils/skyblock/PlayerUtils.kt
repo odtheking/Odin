@@ -117,9 +117,9 @@ object PlayerUtils {
     }
 
     private fun sendWindowClick(slotId: Int, button: Int, mode: Int) {
-        mc.thePlayer.openContainer?.let {
+        mc.thePlayer?.openContainer?.let {
             if (it !is ContainerChest) return@let
-            mc.playerController.windowClick(it.windowId, slotId, button, mode, mc.thePlayer)
+            mc.playerController?.windowClick(it.windowId, slotId, button, mode, mc.thePlayer)
         }
     }
 
