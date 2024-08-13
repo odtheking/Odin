@@ -6,7 +6,9 @@ import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.mazeColorMu
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.mazeColorOne
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.mazeColorVisited
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.solutionThroughWalls
+import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
+import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.getBlockAt
@@ -24,14 +26,13 @@ object TPMazeSolver {
         val room = event.fullRoom?.room ?: return
         if (room.data.name != "Teleport Maze") return
         tpPads = setOf()
-        BlockPos.getAllInBox(room.vec3.addRotationCoords(room.rotation, -16, -16).toBlockPos(), room.vec3.addRotationCoords(room.rotation, 16, 16).toBlockPos())
-            .filter { getBlockAt(it) == Blocks.end_portal_frame }
-            .forEach { tpPads = tpPads.plus(it) }
+        tpPads = BlockPos.getAllInBox(room.vec3.addRotationCoords(room.rotation, -16, -16).addVec(y = -1).toBlockPos(), room.vec3.addRotationCoords(room.rotation, 16, 16).addVec(y = -1).toBlockPos())
+            .filter { getBlockAt(it) == Blocks.end_portal_frame }.toSet()
     }
 
     fun tpPacket(event: S08PacketPlayerPosLook) {
         if (DungeonUtils.currentRoomName != "Teleport Maze" || event.x % 0.5 != 0.0 || event.y != 69.5 || event.z % 0.5 != 0.0 || tpPads.isEmpty()) return
-        visited.addAll(tpPads.filter { Vec3(event.x, event.y, event.z).toAABB().intersectsWith(it.toAABB()) || mc.thePlayer?.position?.toAABB()?.intersectsWith(it.toAABB()) == true })
+        visited.addAll(tpPads.filter { Vec3(event.x, event.y, event.z).toAABB().expand(0.5, 0.0, 0.5).intersectsWith(it.toAABB()) || mc.thePlayer?.entityBoundingBox?.expand(0.5, 0.0, 0.5)?.intersectsWith(it.toAABB()) == true })
         getCorrectPortals(Vec3(event.x, event.y, event.z), event.yaw, event.pitch)
     }
 
@@ -49,17 +50,16 @@ object TPMazeSolver {
     fun tpRender() {
         if (DungeonUtils.currentRoomName != "Teleport Maze") return
         val color = if (correctPortals.size == 1) mazeColorOne else mazeColorMultiple
-        correctPortals.forEach {
-            if (visited.contains(it) && correctPortals.size != 1) return@forEach
-            Renderer.drawBlock(it, color, outlineAlpha = 0, fillAlpha = color.alpha, depth = !(solutionThroughWalls && correctPortals.size == 1))
-        }
-        visited.forEach {
-            Renderer.drawBlock(it, mazeColorVisited, outlineAlpha = 0, fillAlpha = mazeColorVisited.alpha, depth = true)
+        tpPads.forEach {
+            when (it) {
+                in visited -> Renderer.drawBlock(it, mazeColorVisited, outlineAlpha = 0, fillAlpha = mazeColorVisited.alpha, depth = true)
+                in correctPortals -> Renderer.drawBlock(it, color, outlineAlpha = 0, fillAlpha = color.alpha, depth = !(solutionThroughWalls && correctPortals.size == 1))
+                else -> Renderer.drawBlock(it, Color.WHITE.withAlpha(0.5f), outlineAlpha = 0, fillAlpha = 0.5f, depth = true)
+            }
         }
     }
 
     fun reset() {
-        tpPads = setOf()
         correctPortals = listOf()
         visited = CopyOnWriteArraySet<BlockPos>()
     }

@@ -10,6 +10,7 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.animations.impl.EaseInOut
 import me.odinmain.ui.clickgui.util.ColorUtil
+import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.util.MouseUtils.getQuadrant
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.name
@@ -36,6 +37,7 @@ object LeapMenu : Module(
 ) {
     val type: Int by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("Odin Sorting", "A-Z Class (BetterMap)", "A-Z Name", "No Sorting"), description = "How to sort the leap menu.")
     private val colorStyle: Boolean by DualSetting("Color Style", "Gray", "Color", default = false, description = "Which color style to use.")
+    private val backgroundColor: Color by ColorSetting("Background Color", default = Color.DARK_GRAY.withAlpha(0.9f), allowAlpha = true, description = "Color of the background of the leap menu.")
     private val roundedRect: Boolean by BooleanSetting("Rounded Rect", true, description = "Toggles the rounded rect for the gui.")
     private val useNumberKeys: Boolean by BooleanSetting("Use Number Keys", false, description = "Use keyboard keys to leap to the player you want, going from left to right, top to bottom.")
     private val topLeftKeybind: Keybinding by KeybindSetting("Top Left", Keyboard.KEY_1, "Used to click on the first person in the leap menu.").withDependency { useNumberKeys }
@@ -87,7 +89,7 @@ object LeapMenu : Module(
                 else -> ((displayHeight - (boxHeight * 2)) / 8)
             }
             mc.textureManager.bindTexture(it.locationSkin)
-            val color = if (colorStyle) it.clazz.color else Color.DARK_GRAY
+            val color = if (colorStyle) it.clazz.color else backgroundColor
             if (it.name == LeapHelper.leapHelperName && leapHelperToggle)
                 roundedRectangle(x - 25, y - 25, boxWidth + 50, boxHeight + 50, leapHelperColor, if (roundedRect) 12f else 0f)
 
@@ -97,7 +99,7 @@ object LeapMenu : Module(
 
             drawTexturedModalRect(x + 30, y + 30, 240, 240,8f, 8f, 8, 8, 64f, 64f)
 
-            text(it.name, x + 265f, y + 155f, if (!colorStyle) it.clazz.color else Color.DARK_GRAY, 48f)
+            text(it.name, x + 265f, y + 155f, if (!colorStyle) it.clazz.color else backgroundColor, 48f)
             text(if (it.isDead) "§cDEAD" else it.clazz.name, x + 270f, y + 210f, Color.WHITE, 30f, shadow = true)
             rectangleOutline(x + 30, y + 30, 240, 240, color, 25f, 15f, 100f)
             GlStateManager.disableAlpha()

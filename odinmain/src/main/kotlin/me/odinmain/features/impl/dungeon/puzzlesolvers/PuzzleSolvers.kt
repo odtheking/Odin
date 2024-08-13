@@ -23,7 +23,7 @@ object PuzzleSolvers : Module(
     description = "Displays solutions for dungeon puzzles.",
     key = null
 ) {
-    private val waterDropDown: Boolean by DropdownSetting("Water")
+    private val waterDropDown: Boolean by DropdownSetting("Water Board")
     private val waterSolver: Boolean by BooleanSetting("Water Board Solver", false, description = "Shows you the solution to the water puzzle.").withDependency { waterDropDown }
     val showOrder: Boolean by BooleanSetting("Show Order", true, description = "Shows the order of the levers to click.").withDependency { waterSolver && waterDropDown }
     val showTracer: Boolean by BooleanSetting("Show Tracer", true, description = "Shows a tracer to the next lever.").withDependency { waterSolver && waterDropDown }
@@ -33,7 +33,7 @@ object PuzzleSolvers : Module(
         WaterSolver.reset()
     }.withDependency { waterSolver && waterDropDown }
 
-    private val mazeDropDown: Boolean by DropdownSetting("Maze")
+    private val mazeDropDown: Boolean by DropdownSetting("TP Maze")
     private val tpMaze: Boolean by BooleanSetting("Teleport Maze", false, description = "Shows you the solution for the TP maze puzzle.").withDependency { mazeDropDown }
     val solutionThroughWalls: Boolean by BooleanSetting("Solution through walls", false, description = "Renders the final solution through walls.").withDependency { tpMaze && mazeDropDown }
     val mazeColorOne: Color by ColorSetting("Color for one solution", Color.GREEN.withAlpha(.5f), true, description = "Color for when there is a single solution.").withDependency { tpMaze && mazeDropDown }
@@ -70,7 +70,7 @@ object PuzzleSolvers : Module(
         BlazeSolver.reset()
     }.withDependency { blazeSolver && blazeDropDown }
 
-    private val beamsDropDown: Boolean by DropdownSetting("Beams")
+    private val beamsDropDown: Boolean by DropdownSetting("Creeper Beams")
     private val beamsSolver: Boolean by BooleanSetting("Creeper Beams Solver", false, description = "Shows you the solution for the Creeper Beams puzzle.").withDependency { beamsDropDown }
     val beamStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { beamsSolver && beamsDropDown }
     val beamsDepth: Boolean by BooleanSetting("Depth", false, description = "Depth check for the beams puzzle.").withDependency { beamsSolver && beamsDropDown }
@@ -80,7 +80,7 @@ object PuzzleSolvers : Module(
         BeamsSolver.reset()
     }.withDependency { beamsSolver && beamsDropDown }
 
-    private val weirdosDropDown: Boolean by DropdownSetting("Weirdos")
+    private val weirdosDropDown: Boolean by DropdownSetting("Three Weirdos")
     private val weirdosSolver: Boolean by BooleanSetting("Weirdos Solver", false, description = "Shows you the solution for the Weirdos puzzle.").withDependency { weirdosDropDown }
     val weirdosColor: Color by ColorSetting("Weirdos Color", Color.GREEN.withAlpha(0.7f), true, description = "Color for the weirdos solver.").withDependency { weirdosSolver && weirdosDropDown }
     val weirdosWrongColor: Color by ColorSetting("Weirdos Wrong Color", Color.RED.withAlpha(.7f), true,  description = "Color for the incorrect Weirdos.").withDependency { weirdosSolver && weirdosDropDown }
