@@ -9,7 +9,6 @@ import me.odinmain.features.impl.dungeon.LeapHelper.worldLoad
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.animations.impl.EaseInOut
-import me.odinmain.ui.clickgui.util.ColorUtil
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.util.MouseUtils.getQuadrant
 import me.odinmain.utils.equalsOneOf
@@ -94,7 +93,7 @@ object LeapMenu : Module(
                 roundedRectangle(x - 25, y - 25, boxWidth + 50, boxHeight + 50, leapHelperColor, if (roundedRect) 12f else 0f)
 
             val box = Box(x, y, boxWidth, boxHeight).expand(hoveredAnims[index].get(0f, 15f, hoveredQuadrant - 1 != index))
-            dropShadow(box, 10f, 15f, if (getQuadrant() - 1 != index) ColorUtil.moduleButtonColor else Color.WHITE)
+            dropShadow(box, 10f, 15f, if (getQuadrant() - 1 != index) backgroundColor else Color.WHITE)
             roundedRectangle(box, color, if (roundedRect) 12f else 0f)
 
             drawTexturedModalRect(x + 30, y + 30, 240, 240,8f, 8f, 8, 8, 64f, 64f)

@@ -47,17 +47,15 @@ object ScanUtils {
     private const val START_X = -185
     private const val START_Z = -185
     private var lastRoomPos: Vec2 = Vec2(0, 0)
-    private var previousRoomScanned: FullRoom? = null
     private var noneRotationList: MutableList<FullRoom?> = mutableListOf()
 
     @SubscribeEvent
-    fun onTick1(event: ClientTickEvent) {
+    fun onTick(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.END || mc.theWorld == null || mc.thePlayer == null) return
 
-        // If not in dungeons or in the boss area, handle room exit/reset events and also set current room to null by posting a null room event prevents features work when not needed
         if ((!inDungeons && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) || inBoss) {
             if (DungeonUtils.currentFullRoom == null) return
-            RoomEnterEvent(null).postAndCatch() // Send event indicating room exit or reset
+            RoomEnterEvent(null).postAndCatch()
             return
         }
 
@@ -82,7 +80,7 @@ object ScanUtils {
         val room = scanRoom(roomCenter) ?: return
         val fullRoom = FullRoom(room, BlockPos(0, 0, 0), findRoomTilesRecursively(room.vec2, room, mutableSetOf()), emptyList()).apply { updateRotation(this) }
             .also {
-                if (it.room.rotation == Rotations.NONE) {
+                if (it.room.rotation != Rotations.NONE) {
                     noneRotationList.add(it)
                     return
                 }
@@ -131,12 +129,32 @@ object ScanUtils {
         return Vec2(roomX * 32 + START_X, roomZ * 32 + START_Z)
     }
 
+    /**
+     * Gets the core of a room.
+     *
+     * @param vec2 The x and z values of the room.
+     * @author Harry282
+     * @return The core of the room.
+     */
     fun getCore(vec2: Vec2): Int {
         val sb = StringBuilder(150)
-        val chunk = mc.theWorld?.getChunkFromBlockCoords(BlockPos(vec2.x, 0, vec2.z)) ?: return 0
-        for (y in 140 downTo 12) {
-            val id = Block.blockRegistry.getIDForObject(chunk.getBlock(BlockPos(vec2.x, y, vec2.z)))
-            if (!id.equalsOneOf(5, 54, 153)) sb.append(id)
+        val chunk = mc.theWorld.getChunkFromChunkCoords(vec2.x shr 4, vec2.z shr 4)
+        val height = chunk.getHeightValue(vec2.x and 15, vec2.z and 15).coerceIn(11..140)
+        sb.append(CharArray(140 - height) { '0' })
+        var bedrock = 0
+        for (y in height downTo 12) {
+            val id = Block.getIdFromBlock(chunk.getBlock(BlockPos(vec2.x, y, vec2.z)))
+            if (id == 0 && bedrock >= 2 && y < 69) {
+                sb.append(CharArray(y - 11) { '0' })
+                break
+            }
+
+            if (id == 7) bedrock++
+            else {
+                bedrock = 0
+                if (id.equalsOneOf(5, 54, 146)) continue
+            }
+            sb.append(id)
         }
         return sb.toString().hashCode()
     }

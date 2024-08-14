@@ -246,7 +246,17 @@ fun getCurrentMonthName(): String {
     return currentMonth.getDisplayName(TextStyle.FULL, Locale.getDefault())
 }
 
-fun formatTime(time: Long): String {
+
+/**
+ * Formats a time duration in milliseconds into a human-readable string.
+ *
+ * The string will show hours, minutes, and seconds, with an optional number of decimal places for the seconds.
+ *
+ * @param time The time duration in milliseconds to be formatted.
+ * @param decimalPlaces The number of decimal places to show for the seconds. Default is 2.
+ * @return A formatted string representing the time duration. For example, "1h 2m 3.45s".
+ */
+fun formatTime(time: Long, decimalPlaces: Int = 2): String {
     if (time == 0L) return "0s"
     var remaining = time
     val hours = (remaining / 3600000).toInt().let {
@@ -258,10 +268,12 @@ fun formatTime(time: Long): String {
         if (it > 0) "${it}m " else ""
     }
     val seconds = (remaining / 1000f).let {
-        String.format(Locale.US, "%.2f", it)
+        // Adjust formatting based on decimalPlaces parameter
+        String.format(Locale.US, "%.${decimalPlaces}f", it)
     }
     return "$hours$minutes${seconds}s"
 }
+
 
 val Char.isHexaDecimal
     get() = isDigit() || lowercase().equalsOneOf("a","b","c","d","e","f")
