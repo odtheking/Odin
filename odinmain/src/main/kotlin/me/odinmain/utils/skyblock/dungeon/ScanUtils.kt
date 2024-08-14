@@ -80,7 +80,7 @@ object ScanUtils {
         val room = scanRoom(roomCenter) ?: return
         val fullRoom = FullRoom(room, BlockPos(0, 0, 0), findRoomTilesRecursively(room.vec2, room, mutableSetOf()), emptyList()).apply { updateRotation(this) }
             .also {
-                if (it.room.rotation != Rotations.NONE) {
+                if (it.room.rotation == Rotations.NONE) {
                     noneRotationList.add(it)
                     return
                 }

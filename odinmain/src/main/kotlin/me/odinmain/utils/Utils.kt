@@ -246,7 +246,6 @@ fun getCurrentMonthName(): String {
     return currentMonth.getDisplayName(TextStyle.FULL, Locale.getDefault())
 }
 
-
 /**
  * Formats a time duration in milliseconds into a human-readable string.
  *
@@ -273,7 +272,6 @@ fun formatTime(time: Long, decimalPlaces: Int = 2): String {
     }
     return "$hours$minutes${seconds}s"
 }
-
 
 val Char.isHexaDecimal
     get() = isDigit() || lowercase().equalsOneOf("a","b","c","d","e","f")
