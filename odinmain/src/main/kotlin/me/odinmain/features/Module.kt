@@ -5,7 +5,10 @@ import com.github.stivais.ui.constraints.measurements.Percent
 import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.elements.scope.ElementScope
 import me.odinmain.OdinMain
+import me.odinmain.events.dsl.EventDSL
 import me.odinmain.events.impl.ChatPacketEvent
+import me.odinmain.events.impl.PacketReceivedEvent
+import me.odinmain.events.impl.PacketSentEvent
 import me.odinmain.features.ModuleManager.executors
 import me.odinmain.features.ModuleManager.setupHUD
 import me.odinmain.features.impl.render.ClickGUI
@@ -31,7 +34,7 @@ abstract class Module(
     @Transient var description: String = "",
     @Transient val tag: TagType = TagType.NONE,
     toggled: Boolean = false,
-) {
+) : EventDSL() {
     /**
      * Category for this module.
      *
@@ -123,6 +126,19 @@ abstract class Module(
             }
         }
         return null
+    }
+
+    inline fun <reified T : Packet<*>> onPacket(crossinline block: (packet: T) -> Unit) {
+        onEvent<PacketSentEvent> { (packet) ->
+            if (T::class.java.isInstance(packet)) {
+                block(packet as T)
+            }
+        }
+        onEvent<PacketReceivedEvent> { (packet) ->
+            if (T::class.java.isInstance(packet)) {
+                block(packet as T)
+            }
+        }
     }
 
     /**

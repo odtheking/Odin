@@ -6,6 +6,7 @@
   "mixins": [
     "accessors.IBlockAccessor",
     "mixins.MixinChunk",
+    "mixins.MixinEventBus",
     "mixins.MixinNetworkManager",
     "mixins.MixinRendererLivingEntity",
     "mixins.MixinS1CPacketEntityMetadata",
