@@ -1,8 +1,9 @@
 package me.odinmain.commands.impl
 
 import com.github.stivais.commodore.utils.GreedyString
-import kotlinx.coroutines.*
+import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
+import me.odinmain.OdinMain.scope
 import me.odinmain.commands.commodore
 import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.features.ModuleManager.generateFeatureList
@@ -16,7 +17,6 @@ import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.util.ChatComponentText
 
 
-@OptIn(DelicateCoroutinesApi::class)
 val devCommand = commodore("oddev") {
 
     literal("giveaotv").runs {
@@ -29,8 +29,8 @@ val devCommand = commodore("oddev") {
 
     literal("adddev").runs { name: String, password: String ->
         modMessage("Sending data... name: $name, password: $password")
-        GlobalScope.launch {
-            modMessage(sendDataToServer("$name, [1,2,3], [1,2,3], false, $password", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
+        scope.launch {
+            modMessage(sendDataToServer("$name, [1,2,3], [1,2,3], true, $password", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
         }
     }
 

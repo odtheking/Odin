@@ -1,6 +1,7 @@
 package me.odinclient.features.impl.floor7.p3
 
-import me.odinmain.events.impl.*
+import me.odinmain.events.impl.PacketSentEvent
+import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
@@ -39,6 +40,10 @@ object TerminalAura : Module(
         onMessage(Regex("This Terminal doesn't seem to be responsive at the moment.")) {
             interactClock.update()
         }
+
+        onPacket(S2DPacketOpenWindow::class.java) {
+            if (it.windowTitle.formattedText.noControlCodes == "Click the button on time!") interactClock.update()
+        }
     }
 
     @SubscribeEvent
@@ -50,26 +55,17 @@ object TerminalAura : Module(
     }
 
     @SubscribeEvent
-    fun onPacketReceived(event: PacketReceivedEvent) {
-        val packet = event.packet as? S2DPacketOpenWindow ?: return
-        val title = packet.windowTitle.formattedText.noControlCodes
-        if (title == "Click the button on time!") interactClock.update()
-    }
-
-    @SubscribeEvent
     fun onEntityLoaded(event: PostEntityMetadata) {
         if (DungeonUtils.getPhase() != M7Phases.P3) return
         val entity = mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityArmorStand ?: return
-        if (entity.name.noControlCodes != "Inactive Terminal") return
-        terminalEntityList.add(entity)
+        if (entity.name.noControlCodes == "Inactive Terminal") terminalEntityList.add(entity)
     }
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (DungeonUtils.getPhase() != M7Phases.P3 || mc.thePlayer.openContainer !is ContainerPlayer || (!mc.thePlayer.onGround && onGround) || !clickClock.hasTimePassed()) return
+        if (DungeonUtils.getPhase() != M7Phases.P3 || mc.thePlayer?.openContainer !is ContainerPlayer || (!mc.thePlayer.onGround && onGround) || !clickClock.hasTimePassed()) return
         val terminal = terminalEntityList.firstOrNull {
-            mc.thePlayer.positionVector.addVec(y = mc.thePlayer.getEyeHeight())
-                .distanceTo(Vec3(it.posX, it.posY + it.height / 2, it.posZ)) < 3.5
+            mc.thePlayer.positionVector.addVec(y = mc.thePlayer.getEyeHeight()).distanceTo(Vec3(it.posX, it.posY + it.height / 2, it.posZ)) < 3.5
         } ?: return
         mc.thePlayer.sendQueue.addToSendQueue(C02PacketUseEntity(terminal, C02PacketUseEntity.Action.INTERACT))
         clickClock.update()

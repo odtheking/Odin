@@ -69,8 +69,6 @@ object TerminalSolver : Module(
     private var lastRubixSolution: Int? = null
     private val zLevel get() = if (renderType == 1 && currentTerm.equalsOneOf(TerminalTypes.STARTS_WITH, TerminalTypes.SELECT)) 100f else 400f
     var openedTerminalTime = 0L
-    var clicksNeeded = -1
-
 
     var currentTerm = TerminalTypes.NONE
     private var lastTermOpened = TerminalTypes.NONE
@@ -87,7 +85,7 @@ object TerminalSolver : Module(
         }
         if (currentTerm == TerminalTypes.NONE) return leftTerm()
         val items = event.gui.inventory.subList(0, event.gui.inventory.size - 37)
-        when (currentTerm) {
+        solution = when (currentTerm) {
             TerminalTypes.PANES -> solvePanes(items)
             TerminalTypes.RUBIX -> solveColor(items)
             TerminalTypes.ORDER -> solveNumbers(items)
@@ -101,7 +99,6 @@ object TerminalSolver : Module(
             }
             else -> return
         }
-        clicksNeeded = solution.size
         if (renderType == 3 && Loader.instance().activeModList.any { it.modId == "notenoughupdates" }) NEUApi.setInventoryButtonsToDisabled()
         TerminalOpenedEvent(currentTerm, solution).postAndCatch()
     }
@@ -223,12 +220,12 @@ object TerminalSolver : Module(
         solution = emptyList()
     }
 
-    private fun solvePanes(items: List<ItemStack?>) {
-        solution = items.filter { it?.metadata == 14 }.map { items.indexOf(it) }
+    private fun solvePanes(items: List<ItemStack?>): List<Int> {
+        return items.filter { it?.metadata == 14 }.map { items.indexOf(it) }
     }
 
     private val colorOrder = listOf(1, 4, 13, 11, 14)
-    private fun solveColor(items: List<ItemStack?>) {
+    private fun solveColor(items: List<ItemStack?>): List<Int> {
         val panes = items.filter { it?.metadata != 15 && Item.getIdFromItem(it?.item) == 160 }.filterNotNull()
         var temp = List(100) { i -> i }
         if (lastRubixSolution != null && lockRubixSolution) {
@@ -250,7 +247,7 @@ object TerminalSolver : Module(
                 }
             }
         }
-        solution = temp
+        return temp
     }
 
     private fun getRealSize(list: List<Int>): Int {
@@ -265,16 +262,16 @@ object TerminalSolver : Module(
     private fun dist(pane: Int, most: Int): Int =
             if (pane > most) (most + colorOrder.size) - pane else most - pane
 
-    private fun solveNumbers(items: List<ItemStack?>) {
-        solution = items.filter { it?.metadata == 14 && Item.getIdFromItem(it.item) == 160 }.filterNotNull().sortedBy { it.stackSize }.map { items.indexOf(it) }
+    private fun solveNumbers(items: List<ItemStack?>): List<Int> {
+        return items.filter { it?.metadata == 14 && Item.getIdFromItem(it.item) == 160 }.filterNotNull().sortedBy { it.stackSize }.map { items.indexOf(it) }
     }
 
-    private fun solveStartsWith(items: List<ItemStack?>, letter: String) {
-        solution = items.filter { it?.unformattedName?.startsWith(letter, true) == true && !it.isItemEnchanted }.map { items.indexOf(it) }
+    private fun solveStartsWith(items: List<ItemStack?>, letter: String): List<Int> {
+        return items.filter { it?.unformattedName?.startsWith(letter, true) == true && !it.isItemEnchanted }.map { items.indexOf(it) }
     }
 
-    private fun solveSelect(items: List<ItemStack?>, color: String) {
-        solution = items.filter {
+    private fun solveSelect(items: List<ItemStack?>, color: String): List<Int> {
+        return items.filter {
             it?.isItemEnchanted == false &&
             it.unlocalizedName?.contains(color, true) == true &&
             (color == "lightblue" || it.unlocalizedName?.contains("lightBlue", true) == false) && // color BLUE should not accept light blue items.
