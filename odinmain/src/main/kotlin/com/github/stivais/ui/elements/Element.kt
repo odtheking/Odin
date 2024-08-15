@@ -74,6 +74,8 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
             field = value.coerceAtLeast(0f)
         }
 
+    var scaledCentered = true
+
     var rotation = 0f
 
     open var enabled: Boolean = true
@@ -169,15 +171,15 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
             renderer.globalAlpha(alpha)
         }
         if (scale != 1f) {
-//            var x = x
-//            var y = y
-//            if (scaledCentered) {
-//                x += width / 2f
-//                y += height / 2f
-//            }
-            renderer.translate(x + width / 2f, y + height / 2f)
+            var x = x
+            var y = y
+            if (scaledCentered) {
+                x += width / 2f
+                y += height / 2f
+            }
+            renderer.translate(x, y)
             renderer.scale(scale, scale)
-            renderer.translate(-(x + width / 2f), -(y + height / 2f))
+            renderer.translate(-x, -y)
         }
         if (rotation != 0f) {
             renderer.translate(x + width / 2f, y + height / 2f)
@@ -234,7 +236,13 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
     }
 
     fun removeAll() {
-        elements?.loop { removeElement(it) }
+        if (elements == null) return
+        elements?.removeIf { element ->
+            ui.eventManager.remove(element)
+            element.accept(Lifetime.Uninitialized)
+            element.parent = null
+            true
+        }
         elements = null
         if (::ui.isInitialized) redraw = true
     }

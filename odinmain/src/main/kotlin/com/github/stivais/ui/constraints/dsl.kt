@@ -5,6 +5,7 @@ import com.github.stivais.ui.constraints.measurements.Pixel
 import com.github.stivais.ui.constraints.measurements.Undefined
 import com.github.stivais.ui.constraints.operational.Additive
 import com.github.stivais.ui.constraints.operational.CoerceMaxOld
+import com.github.stivais.ui.constraints.operational.Multiplicative
 import com.github.stivais.ui.constraints.operational.Subtractive
 import com.github.stivais.ui.constraints.positions.Alignment
 import com.github.stivais.ui.constraints.positions.Center
@@ -62,5 +63,7 @@ operator fun Position.plus(other: Position?) = if (other == null) this else Addi
 operator fun Size.plus(other: Size?) = if (other == null) this else Additive(this, other)
 
 operator fun Constraint.minus(other: Constraint) = Subtractive(this, other)
+
+operator fun Constraint.times(other: Constraint) = Multiplicative(this, other)
 
 fun Constraint.coerce(max: Float) = CoerceMaxOld(max, this)

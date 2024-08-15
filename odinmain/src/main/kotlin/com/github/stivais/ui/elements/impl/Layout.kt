@@ -6,7 +6,7 @@ import com.github.stivais.ui.constraints.measurements.Percent
 import com.github.stivais.ui.constraints.measurements.Pixel
 import com.github.stivais.ui.constraints.measurements.Undefined
 import com.github.stivais.ui.constraints.positions.Center
-import com.github.stivais.ui.constraints.positions.Linked
+import com.github.stivais.ui.constraints.positions.OldLinked
 import com.github.stivais.ui.constraints.sizes.Bounding
 import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.utils.replaceUndefined
@@ -18,14 +18,14 @@ open class Layout(
     protected val padding: Size?,
 ) : Element(constraints?.replaceUndefined(w = Bounding, h = Bounding)) {
 
-    protected var lastLink: Linked? = null
+    protected var lastLink: OldLinked? = null
 
     class Row(constraints: Constraints?, padding: Size?) : Layout(constraints, padding) {
 
         override fun onElementAdded(element: Element) {
             val c = element.constraints
             if (c.x is Undefined) {
-                val link = Linked(element, lastLink)
+                val link = OldLinked(element, lastLink)
                 c.x = link
                 lastLink = link
 
@@ -49,7 +49,7 @@ open class Layout(
                 c.x = if (constraints.width !is Bounding) Center else Pixel(0f)
             }
             if (c.y is Undefined) {
-                val link = Linked(element, lastLink)
+                val link = OldLinked(element, lastLink)
                 c.y = link
                 lastLink = link
 

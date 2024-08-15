@@ -96,6 +96,11 @@ open class UIScreen(val ui: UI) : GuiScreen(), Window {
             open(this)
         }
 
+        fun UI.init(): UI {
+            initialize(Display.getWidth(), Display.getHeight())
+            return this
+        }
+
         var closeAnimHandler: UIScreen? = null
 
         @SubscribeEvent

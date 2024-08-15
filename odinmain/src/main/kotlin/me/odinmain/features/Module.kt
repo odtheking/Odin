@@ -1,11 +1,17 @@
 package me.odinmain.features
 
+import com.github.stivais.ui.constraints.Constraints
+import com.github.stivais.ui.constraints.measurements.Percent
+import com.github.stivais.ui.elements.Element
+import com.github.stivais.ui.elements.scope.ElementScope
 import me.odinmain.OdinMain
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.ModuleManager.executors
+import me.odinmain.features.ModuleManager.setupHUD
 import me.odinmain.features.impl.render.ClickGUI
 import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.features.settings.Setting
+import me.odinmain.features.settings.impl.HUDSetting
 import me.odinmain.features.settings.impl.Keybinding
 import me.odinmain.utils.clock.Executable
 import me.odinmain.utils.clock.Executor
@@ -99,9 +105,6 @@ abstract class Module(
 
     fun <K : Setting<*>> register(setting: K): K {
         settings.add(setting)
-        /*if (setting is HudSetting) {
-            setting.value.init(this) TODO: Fix this when we have a proper HUD handling
-        }*/
         return setting
     }
 
@@ -189,22 +192,78 @@ abstract class Module(
         executors.add(this to Executor(delay, profileName, func))
     }
 
+    fun HUD.setting(name: String, desciption: String): HUDSetting {
+        return HUDSetting(name, this, desciption)
+    }
+
+
     // this is unused
     @Deprecated("remove")
     enum class TagType {
         NONE, NEW, RISKY, FPSTAX
     }
 
-    companion object {
+    private companion object {
         private fun getCategory(clazz: Class<out Module>): Category? {
             val `package` = clazz.`package`.name
-            return when { //     DUNGEON, FLOOR7, RENDER, SKYBLOCK, NETHER;
+            return when {
                 `package`.contains("dungeon") -> Category.DUNGEON
                 `package`.contains("floor7") -> Category.FLOOR7
                 `package`.contains("render") -> Category.RENDER
                 `package`.contains("skyblock") -> Category.SKYBLOCK
                 `package`.contains("nether") -> Category.NETHER
                 else -> null
+            }
+        }
+    }
+
+    inner class HUD(
+        val x: Percent,
+        val y: Percent,
+        var enabled: Boolean = true,
+        val builder: HUDScope.() -> Unit
+    ) {
+        val defaultX: Float = x.percent
+        val defaultY: Float = y.percent
+
+        var scale = 1f
+            set(value) {
+                field = value.coerceAtLeast(0.25f)
+            }
+
+        init {
+            ModuleManager.HUDs.add(this)
+            setupHUD(this)
+        }
+
+        inner class Drawable(constraints: Constraints, val preview: Boolean) : Element(constraints) {
+
+            override var enabled: Boolean = true
+                get() = field && this@HUD.enabled && this@Module.enabled
+
+            init {
+                scaledCentered = false
+                if (!preview) {
+                    scale = this@HUD.scale
+                }
+            }
+            override fun draw() {
+                if (!preview) {
+                    scale = this@HUD.scale
+                }
+            }
+            override fun onElementAdded(element: Element) {
+            }
+        }
+    }
+
+    class HUDScope(element: HUD.Drawable) : ElementScope<HUD.Drawable>(element) {
+        inline fun needs(crossinline block: () -> Boolean) {
+            if (!element.preview) {
+                operation {
+                    element.enabled = block()
+                    false
+                }
             }
         }
     }

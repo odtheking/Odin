@@ -1,7 +1,6 @@
 package me.odinmain
 
 import com.github.stivais.ui.UIScreen
-import com.github.stivais.ui.impl.huds.HUDManager
 import com.github.stivais.ui.impl.`ui command`
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -67,7 +66,6 @@ object OdinMain {
             DevPlayers,
             SkyblockPlayer,
             UIScreen,
-            HUDManager,
             this
         ).forEach { MinecraftForge.EVENT_BUS.register(it) }
 

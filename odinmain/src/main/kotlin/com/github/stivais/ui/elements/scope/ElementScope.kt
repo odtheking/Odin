@@ -257,8 +257,9 @@ open class ElementScope<E: Element>(val element: E) {
         return scope
     }
 
-    fun Element.add() {
+    fun <E : Element> E.add(): E {
         this@ElementScope.element.addElement(this)
+        return this
     }
 
     fun addElement(element: Element) {

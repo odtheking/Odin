@@ -1,10 +1,23 @@
 package me.odinmain.features
 
+import com.github.stivais.ui.UI
+import com.github.stivais.ui.UIScreen.Companion.init
+import com.github.stivais.ui.UIScreen.Companion.open
+import com.github.stivais.ui.color.Color
+import com.github.stivais.ui.constraints.constrain
+import com.github.stivais.ui.constraints.copies
+import com.github.stivais.ui.constraints.size
+import com.github.stivais.ui.constraints.sizes.Bounding
+import com.github.stivais.ui.elements.scope.draggable
+import com.github.stivais.ui.utils.loop
+import me.odinmain.config.Config
 import me.odinmain.events.impl.*
 import me.odinmain.features.impl.dungeon.*
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers
-import me.odinmain.features.impl.floor7.*
+import me.odinmain.features.impl.floor7.NecronDropTimer
+import me.odinmain.features.impl.floor7.TerminalSimulator
+import me.odinmain.features.impl.floor7.WitherDragons
 import me.odinmain.features.impl.floor7.p3.*
 import me.odinmain.features.impl.nether.*
 import me.odinmain.features.impl.render.*
@@ -17,12 +30,61 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import kotlin.math.sign
 
 /**
  * Class that contains all Modules and huds
  * @author Aton, Bonsai
  */
 object ModuleManager {
+
+    val HUDs = arrayListOf<Module.HUD>()
+
+    private val hudUI = UI().init()
+
+    fun setupHUD(hud: Module.HUD) {
+        val drawable = hud.Drawable(constrain(hud.x, hud.y, Bounding, Bounding), preview = false)
+        hudUI.main.addElement(drawable)
+        hud.builder(Module.HUDScope(drawable))
+    }
+
+    @SubscribeEvent
+    fun onRender(event: RenderWorldLastEvent) {
+        hudUI.render()
+    }
+
+    fun openHUDEditor(/*huds: List<Module.HUD>*/) = UI {
+        // temp fix for scaling bs
+//        operation { redraw(); false }
+        onCreation { hudUI.empty() }
+        onRemove {
+            HUDs.loop { setupHUD(it) }
+            hudUI.init()
+            Config.save()
+        }
+
+        HUDs.loop { hud ->
+            row(constrain(x = hud.x, y = hud.y, w = Bounding, h = Bounding)) {
+                element.scaledCentered = false
+                element.scale = hud.scale
+                val drawable = hud.Drawable(size(Bounding, Bounding), preview = true).add()
+                hud.builder(Module.HUDScope(drawable))
+
+                onScroll { (amount) ->
+                    hud.scale += 0.1f * amount.sign
+                    element.scale = hud.scale
+                    true
+                }
+                onRelease {
+                    hud.x.percent = element.x / ui.main.width
+                    hud.y.percent = element.y / ui.main.height
+                }
+                draggable()
+                block(copies(), Color.TRANSPARENT).outline(Color.WHITE)
+            }
+        }
+    }.open()
+
     // todo: cleanup
     data class PacketFunction<T : Packet<*>>(
         val type: Class<T>,
@@ -31,7 +93,11 @@ object ModuleManager {
     )
 
     data class MessageFunction(val filter: Regex, val shouldRun: () -> Boolean, val function: (String) -> Unit)
-    data class MessageFunctionCancellable(val filter: Regex, val shouldRun: () -> Boolean, val function: (ChatPacketEvent) -> Unit)
+    data class MessageFunctionCancellable(
+        val filter: Regex,
+        val shouldRun: () -> Boolean,
+        val function: (ChatPacketEvent) -> Unit
+    )
 
     // todo: cleanup
     data class TickTask(var ticksLeft: Int, val function: () -> Unit)
@@ -42,6 +108,7 @@ object ModuleManager {
     val cancellableMessageFunctions = mutableListOf<MessageFunctionCancellable>()
     val worldLoadFunctions = mutableListOf<() -> Unit>()
     val tickTasks = mutableListOf<TickTask>()
+
     //val huds = arrayListOf<HudElement>()
     // todo: cleanup
     val executors = ArrayList<Pair<Module, Executor>>()
@@ -178,23 +245,23 @@ object ModuleManager {
     fun getModuleByName(name: String?): Module? = modules.firstOrNull { it.name.equals(name, true) }
 
     fun generateFeatureList(): String {
-       /* val moduleList = modules.sortedByDescending { getTextWidth(it.name, 18f) }
-        val categories = moduleList.groupBy { it.category }
+        /* val moduleList = modules.sortedByDescending { getTextWidth(it.name, 18f) }
+         val categories = moduleList.groupBy { it.category }
 
-        val categoryOrder = Category.entries.associateWith { it.ordinal }
-        val sortedCategories = categories.entries.sortedBy { categoryOrder[it.key] }
+         val categoryOrder = Category.entries.associateWith { it.ordinal }
+         val sortedCategories = categories.entries.sortedBy { categoryOrder[it.key] }
 
-        val featureList = StringBuilder()
+         val featureList = StringBuilder()
 
-        for ((category, modulesInCategory) in sortedCategories) {
-            val displayName = category.name.capitalizeFirst()
-            featureList.appendLine("Category: ${if (displayName == "Floor7") "Floor 7" else displayName}")
-            for (module in modulesInCategory) {
-                featureList.appendLine("- ${module.name}: ${module.description}")
-            }
-            featureList.appendLine()
-        }
-        return featureList.toString()*/
+         for ((category, modulesInCategory) in sortedCategories) {
+             val displayName = category.name.capitalizeFirst()
+             featureList.appendLine("Category: ${if (displayName == "Floor7") "Floor 7" else displayName}")
+             for (module in modulesInCategory) {
+                 featureList.appendLine("- ${module.name}: ${module.description}")
+             }
+             featureList.appendLine()
+         }
+         return featureList.toString()*/
         return ""
     }
 }
