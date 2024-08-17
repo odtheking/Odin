@@ -105,12 +105,8 @@ object IceFillSolver {
     }
 
     fun transformTo(vec: Vec3i, rotation: Rotations): Vec3 {
-        return when (rotation) {
-            Rotations.NORTH -> Vec3(vec.z.toDouble(), vec.y.toDouble(), -vec.x.toDouble())
-            Rotations.WEST -> Vec3(-vec.x.toDouble(), vec.y.toDouble(), -vec.z.toDouble())
-            Rotations.SOUTH -> Vec3(-vec.z.toDouble(), vec.y.toDouble(), vec.x.toDouble())
-            Rotations.EAST -> Vec3(vec.x.toDouble(), vec.y.toDouble(), vec.z.toDouble())
-            else -> Vec3(vec.x.toDouble(), vec.y.toDouble(), vec.z.toDouble())
+        return with(transform(vec.x, vec.z, rotation)) {
+            Vec3(x.toDouble(), vec.y.toDouble(), z.toDouble())
         }
     }
 
