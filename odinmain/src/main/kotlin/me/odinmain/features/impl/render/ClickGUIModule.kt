@@ -40,7 +40,7 @@ object ClickGUIModule: Module(
     private val devSizeX: Float by NumberSetting("Dev Size X", 1f, -1f, 3f, 0.1, description = "X scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
     private val devSizeY: Float by NumberSetting("Dev Size Y", 1f, -1f, 3f, 0.1, description = "Y scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
     private val devSizeZ: Float by NumberSetting("Dev Size Z", 1f, -1f, 3f, 0.1, description = "Z scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
-    private var showHidden: Boolean by DropdownSetting("Show Hidden", false)
+    private var showHidden: Boolean by DropdownSetting("Show Hidden", false).withDependency { DevPlayers.isDev }
     private val passcode: String by StringSetting("Passcode", "odin", description = "Passcode for dev features.").withDependency { DevPlayers.isDev && showHidden }
 
     val reset: () -> Unit by ActionSetting("Send Dev Data") {
