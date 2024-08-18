@@ -5,6 +5,6 @@ import net.minecraftforge.fml.common.eventhandler.Event
 /**
  * @see me.odinmain.events.EventDispatcher
  */
-class ServerTickEvent : Event()
+data object ServerTickEvent : Event()
 
-class RealServerTick : Event()
+data object RealServerTick : Event()

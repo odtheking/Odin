@@ -87,7 +87,7 @@ object EtherWarpHelper : Module(
     }
 
     @SubscribeEvent
-    fun onClick(event: ClickEvent.RightClickEvent) {
+    fun onClick(event: ClickEvent.Right) {
         if (
             zeroPing &&
             mc.thePlayer.holdingEtherWarp &&
@@ -102,7 +102,7 @@ object EtherWarpHelper : Module(
     }
 
     @SubscribeEvent
-    fun onLeftClick(event: ClickEvent.LeftClickEvent) {
+    fun onLeftClick(event: ClickEvent.Left) {
         if (
             etherWarpHelper &&
             mc.thePlayer.holdingEtherWarp &&

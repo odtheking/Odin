@@ -3,7 +3,7 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.color.multiplyAlpha
 import me.odinmain.events.impl.BlockChangeEvent
-import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
+import me.odinmain.events.impl.DungeonEvent.RoomEnterEvent
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.puzzlesolvers.WaterSolver.waterInteract
 import me.odinmain.features.settings.Setting.Companion.withDependency

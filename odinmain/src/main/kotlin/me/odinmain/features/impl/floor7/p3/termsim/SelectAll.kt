@@ -8,7 +8,9 @@ import me.odinmain.utils.postAndCatch
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.Slot
-import net.minecraft.item.*
+import net.minecraft.item.EnumDyeColor
+import net.minecraft.item.Item
+import net.minecraft.item.ItemStack
 import kotlin.math.floor
 
 class SelectAll(private val color: String) : TermSimGui(
@@ -53,7 +55,7 @@ class SelectAll(private val color: String) : TermSimGui(
 
         slot.stack.addEnchantment(Enchantment.infinity, 1)
         if (TerminalSounds.enabled) playTerminalSound() else mc.thePlayer.playSound("random.orb", 1f, 1f)
-        GuiEvent.GuiLoadedEvent(name, inventorySlots as ContainerChest).postAndCatch()
+        GuiEvent.Loaded(name, inventorySlots as ContainerChest).postAndCatch()
         if (inventorySlots?.inventorySlots?.subList(0, size)?.none {
                 it?.stack?.isItemEnchanted == false && it.stack?.item in items && if (it.stack?.item == dye) it.stack?.metadata == correctDye else it.stack?.metadata == correctMeta
             } == true) solved(this.name, 4)

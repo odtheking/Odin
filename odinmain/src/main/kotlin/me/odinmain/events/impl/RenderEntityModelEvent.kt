@@ -7,7 +7,7 @@ import net.minecraftforge.fml.common.eventhandler.Event
 /**
  * @see me.odinmain.mixin.MixinRendererLivingEntity.renderModel
  */
-class RenderEntityModelEvent(
+data class RenderEntityModelEvent(
     var entity: EntityLivingBase,
     var limbSwing: Float,
     var limbSwingAmount: Float,

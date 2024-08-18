@@ -2,7 +2,7 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import me.odinmain.events.impl.DungeonEvents
+import me.odinmain.events.impl.DungeonEvent
 import me.odinmain.utils.addRotationCoords
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.Renderer
@@ -31,7 +31,7 @@ object BoulderSolver {
         }
     }
 
-    fun onRoomEnter(event: DungeonEvents.RoomEnterEvent) {
+    fun onRoomEnter(event: DungeonEvent.RoomEnterEvent) {
         val room = event.fullRoom?.room ?: return reset()
         if (room.data.name != "Boulder") return reset()
         var str = ""

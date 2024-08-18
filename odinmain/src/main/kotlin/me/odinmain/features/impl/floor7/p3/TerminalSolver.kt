@@ -3,21 +3,28 @@ package me.odinmain.features.impl.floor7.p3
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.color.multiplyAlpha
 import io.github.moulberry.notenoughupdates.NEUApi
-import me.odinmain.events.impl.*
+import me.odinmain.events.impl.ChatPacketEvent
+import me.odinmain.events.impl.GuiEvent
+import me.odinmain.events.impl.TerminalEvent
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.termGUI.CustomTermGui
 import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.*
+import me.odinmain.utils.equalsOneOf
+import me.odinmain.utils.postAndCatch
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.unformattedName
+import me.odinmain.utils.trueMouseX
+import me.odinmain.utils.trueMouseY
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.InventoryPlayer
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.ContainerPlayer
-import net.minecraft.item.*
+import net.minecraft.item.EnumDyeColor
+import net.minecraft.item.Item
+import net.minecraft.item.ItemStack
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -71,7 +78,7 @@ object TerminalSolver : Module(
     var solution = listOf<Int>()
 
     @SubscribeEvent
-    fun onGuiLoad(event: GuiEvent.GuiLoadedEvent) {
+    fun onGuiLoad(event: GuiEvent.Loaded) {
         val newTerm = TerminalTypes.entries.find { event.name.startsWith(it.guiName) } ?: TerminalTypes.NONE
         if (newTerm != currentTerm) {
             currentTerm = newTerm
@@ -96,7 +103,7 @@ object TerminalSolver : Module(
         }
         clicksNeeded = solution.size
         if (renderType == 3 && Loader.instance().activeModList.any { it.modId == "notenoughupdates" }) NEUApi.setInventoryButtonsToDisabled()
-        TerminalOpenedEvent(currentTerm, solution).postAndCatch()
+        TerminalEvent.Opened(currentTerm, solution).postAndCatch()
     }
 
     @SubscribeEvent
@@ -209,14 +216,14 @@ object TerminalSolver : Module(
         val completionStatus = match.groups[2]?.value
         if (playerName != mc.thePlayer.name) return
         if (completionStatus == "(7/7)" || completionStatus == "(8/8)") {
-            TerminalSolvedEvent(currentTerm).postAndCatch()
+            TerminalEvent.Solved(currentTerm).postAndCatch()
             leftTerm()
         }
     }
 
     private fun leftTerm() {
         if (currentTerm == TerminalTypes.NONE && solution.isEmpty()) return
-        TerminalClosedEvent(currentTerm).postAndCatch()
+        TerminalEvent.Closed(currentTerm).postAndCatch()
         currentTerm = TerminalTypes.NONE
         solution = emptyList()
     }

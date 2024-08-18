@@ -29,7 +29,7 @@ object AutoTerms : Module(
 
 
     @SubscribeEvent
-    fun onGuiLoaded(event: GuiEvent.GuiLoadedEvent) {
+    fun onGuiLoaded(event: GuiEvent.Loaded) {
         clickedThisWindow = false
     }
 

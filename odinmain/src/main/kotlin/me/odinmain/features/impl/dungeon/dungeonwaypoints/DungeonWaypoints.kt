@@ -2,7 +2,9 @@ package me.odinmain.features.impl.dungeon.dungeonwaypoints
 
 import com.github.stivais.ui.color.Color
 import me.odinmain.config.DungeonWaypointConfigCLAY
-import me.odinmain.events.impl.*
+import me.odinmain.events.impl.ClickEvent
+import me.odinmain.events.impl.DungeonEvent
+import me.odinmain.events.impl.SecretPickupEvent
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.resetSecrets
 import me.odinmain.features.impl.render.DevPlayers
@@ -17,8 +19,13 @@ import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
 import net.minecraft.block.BlockSign
-import net.minecraft.client.gui.*
-import net.minecraft.util.*
+import net.minecraft.client.gui.GuiButton
+import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.gui.GuiTextField
+import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.util.AxisAlignedBB
+import net.minecraft.util.BlockPos
+import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -119,7 +126,7 @@ object DungeonWaypoints : Module(
     }
 
     @SubscribeEvent
-    fun onInteract(event: ClickEvent.RightClickEvent) {
+    fun onInteract(event: ClickEvent.Right) {
         val pos = if (!reachEdits) mc.objectMouseOver?.blockPos ?: return else reachPos?.pos ?: return
         if (!allowEdits || isAir(pos)) return
         val room = DungeonUtils.currentFullRoom ?: return
@@ -170,7 +177,7 @@ object DungeonWaypoints : Module(
     }
 
     @SubscribeEvent
-    fun onNewRoom(event: DungeonEvents.RoomEnterEvent) {
+    fun onNewRoom(event: DungeonEvent.RoomEnterEvent) {
         glList = -1
     }
 

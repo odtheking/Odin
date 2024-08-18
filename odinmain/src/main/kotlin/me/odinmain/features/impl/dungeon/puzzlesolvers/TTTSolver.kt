@@ -2,10 +2,12 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import com.github.stivais.ui.color.Color
 import me.odinmain.OdinMain.mc
-import me.odinmain.events.impl.DungeonEvents
-import me.odinmain.utils.*
+import me.odinmain.events.impl.DungeonEvent
+import me.odinmain.utils.Vec2
+import me.odinmain.utils.addRotationCoords
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.tiles.Rotations
+import me.odinmain.utils.toAABB
 import net.minecraft.entity.item.EntityItemFrame
 import net.minecraft.init.Items
 import net.minecraft.util.BlockPos
@@ -30,7 +32,7 @@ object TTTSolver {
 
     private var toRender: BlockPos? = null
 
-    fun tttRoomEnter(event: DungeonEvents.RoomEnterEvent) {
+    fun tttRoomEnter(event: DungeonEvent.RoomEnterEvent) {
         val room = event.fullRoom?.room ?: return
         if (room.data.name != "Tic Tac Toe") return
 

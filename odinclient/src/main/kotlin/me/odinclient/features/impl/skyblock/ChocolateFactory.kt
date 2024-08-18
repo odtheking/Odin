@@ -117,7 +117,7 @@ object ChocolateFactory : Module(
     }
 
     @SubscribeEvent
-    fun guiLoad(event: GuiEvent.GuiLoadedEvent) {
+    fun guiLoad(event: GuiEvent.Loaded) {
         if (isInChocolateFactory()) findWorker(event.gui)
     }
 

@@ -7,11 +7,17 @@ import me.odinmain.events.impl.PacketSentEvent
 import me.odinmain.features.impl.floor7.TerminalSimulator
 import me.odinmain.features.impl.floor7.TerminalSimulator.sendOnlyPB
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
-import me.odinmain.utils.*
+import me.odinmain.utils.getRandom
+import me.odinmain.utils.postAndCatch
+import me.odinmain.utils.runIn
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiChest
-import net.minecraft.inventory.*
-import net.minecraft.item.*
+import net.minecraft.inventory.ContainerChest
+import net.minecraft.inventory.InventoryBasic
+import net.minecraft.inventory.Slot
+import net.minecraft.item.EnumDyeColor
+import net.minecraft.item.Item
+import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -39,7 +45,7 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
         this.consecutive = const - 1
         display = this
         startTime = System.currentTimeMillis()
-        GuiEvent.GuiLoadedEvent(name, inventorySlots as ContainerChest).postAndCatch()
+        GuiEvent.Loaded(name, inventorySlots as ContainerChest).postAndCatch()
     }
 
     fun solved(name: String, pbIndex: Int) {

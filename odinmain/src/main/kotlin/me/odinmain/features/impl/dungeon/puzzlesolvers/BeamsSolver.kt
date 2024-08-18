@@ -6,15 +6,19 @@ import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import me.odinmain.OdinMain.logger
 import me.odinmain.events.impl.BlockChangeEvent
-import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
-import me.odinmain.utils.*
+import me.odinmain.events.impl.DungeonEvent.RoomEnterEvent
+import me.odinmain.utils.addRotationCoords
+import me.odinmain.utils.addVec
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.getBlockIdAt
+import me.odinmain.utils.toAABB
+import me.odinmain.utils.toVec3
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
+import kotlin.collections.set
 
 object BeamsSolver {
     private var scanned = false

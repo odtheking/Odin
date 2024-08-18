@@ -31,7 +31,7 @@ object CorrectPanes : TermSimGui(
     override fun slotClick(slot: Slot, button: Int) {
         if (slot.stack?.metadata == 14) slot.putStack(greenPane) else slot.putStack(redPane)
         if (TerminalSounds.enabled) playTerminalSound() else mc.thePlayer.playSound("random.orb", 1f, 1f)
-        GuiEvent.GuiLoadedEvent(name, inventorySlots as ContainerChest).postAndCatch()
+        GuiEvent.Loaded(name, inventorySlots as ContainerChest).postAndCatch()
         if (inventorySlots.inventorySlots.subList(0, 45).none { it?.stack?.metadata == 14 })
             solved(this.name, 0)
     }

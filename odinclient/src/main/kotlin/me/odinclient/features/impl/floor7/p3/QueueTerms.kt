@@ -1,7 +1,7 @@
 package me.odinclient.features.impl.floor7.p3
 
 import me.odinmain.events.impl.GuiEvent
-import me.odinmain.events.impl.TerminalClosedEvent
+import me.odinmain.events.impl.TerminalEvent
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
@@ -22,12 +22,12 @@ object QueueTerms : Module(
     private var lastClickTime = 0L
 
     @SubscribeEvent
-    fun onGuiOpen(event: GuiEvent.GuiLoadedEvent) {
+    fun onGuiOpen(event: GuiEvent.Loaded) {
         clickedThisWindow = false
     }
 
     @SubscribeEvent
-    fun onTerminalLeft(event: TerminalClosedEvent) {
+    fun onTerminalLeft(event: TerminalEvent.Closed) {
         clickedThisWindow = false
         queue.clear()
     }

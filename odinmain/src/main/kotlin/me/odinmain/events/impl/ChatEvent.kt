@@ -8,7 +8,7 @@ import net.minecraftforge.fml.common.eventhandler.Event
  * @see me.odinmain.events.EventDispatcher
  */
 @Cancelable
-class ChatPacketEvent(val message: String) : Event()
+data class ChatPacketEvent(val message: String) : Event()
 
 @Cancelable
-class MessageSentEvent(val message: String) : Event()
+data class MessageSentEvent(val message: String) : Event()

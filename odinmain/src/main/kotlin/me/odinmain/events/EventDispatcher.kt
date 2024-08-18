@@ -1,6 +1,8 @@
 package me.odinmain.events
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.*
 import me.odinmain.utils.*
@@ -11,7 +13,9 @@ import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
-import net.minecraft.network.play.server.*
+import net.minecraft.network.play.server.S02PacketChat
+import net.minecraft.network.play.server.S29PacketSoundEffect
+import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -51,7 +55,7 @@ object EventDispatcher {
     fun onPacket(event: PacketReceivedEvent) {
         if (event.packet is S29PacketSoundEffect && event.packet.soundName == "mob.bat.death") SecretPickupEvent.Bat(event.packet).postAndCatch()
 
-        if (event.packet is S32PacketConfirmTransaction) RealServerTick().postAndCatch()
+        if (event.packet is S32PacketConfirmTransaction) RealServerTick.postAndCatch()
 
         if (event.packet !is S02PacketChat || !ChatPacketEvent(event.packet.chatComponent.unformattedText.noControlCodes).postAndCatch()) return
         event.isCanceled = true
@@ -65,12 +69,12 @@ object EventDispatcher {
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (nextTime.hasTimePassed((1000L / ServerUtils.averageTps).toLong(), setTime = true)) {
-            ServerTickEvent().postAndCatch()
+            ServerTickEvent.postAndCatch()
         }
     }
 
     /**
-     * Dispatches [GuiEvent.GuiLoadedEvent]
+     * Dispatches [GuiEvent.Loaded]
      */
     @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
@@ -84,6 +88,6 @@ object EventDispatcher {
         val deferred = waitUntilLastItem(container)
         try { deferred.await() } catch (e: Exception) { return@launch } // Wait until the last item in the chest isn't null
 
-        GuiEvent.GuiLoadedEvent(chestName, container).postAndCatch()
+        GuiEvent.Loaded(chestName, container).postAndCatch()
     }
 }

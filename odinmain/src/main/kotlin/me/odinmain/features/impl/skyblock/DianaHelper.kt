@@ -6,7 +6,10 @@ import me.odinmain.OdinMain.isLegitVersion
 import me.odinmain.events.impl.ClickEvent
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.*
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.ColorSetting
+import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.RenderUtils.renderVec
@@ -119,7 +122,7 @@ object DianaHelper : Module(
     }
 
     @SubscribeEvent
-    fun onRightClick(event: ClickEvent.RightClickEvent) {
+    fun onRightClick(event: ClickEvent.Right) {
         if (!isHolding("ANCESTRAL_SPADE") || !autoWarp || OdinMain.isLegitVersion) return
         runIn(40) {
             onKeybind()

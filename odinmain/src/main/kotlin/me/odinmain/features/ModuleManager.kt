@@ -10,6 +10,7 @@ import com.github.stivais.ui.constraints.size
 import com.github.stivais.ui.constraints.sizes.Bounding
 import com.github.stivais.ui.elements.scope.draggable
 import com.github.stivais.ui.utils.loop
+import me.odinmain.OdinMain.mc
 import me.odinmain.config.Config
 import me.odinmain.events.impl.*
 import me.odinmain.features.impl.dungeon.*
@@ -33,8 +34,9 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.sign
 
 /**
- * Class that contains all Modules and huds
- * @author Aton, Bonsai
+ * # Module Manager
+ *
+ * This object stores all [Modules][Module] and provides functionality to [HUDs][Module.HUD]
  */
 object ModuleManager {
 
@@ -48,8 +50,18 @@ object ModuleManager {
         hud.builder(Module.HUDScope(drawable))
     }
 
+    private var previousWidth: Int = 0
+    private var previousHeight: Int = 0
+
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
+        val w = mc.framebuffer.framebufferWidth
+        val h = mc.framebuffer.framebufferHeight
+        if (w != previousWidth || h != previousHeight) {
+            hudUI.resize(w, h)
+            previousWidth = w
+            previousHeight = h
+        }
         hudUI.render()
     }
 
@@ -218,19 +230,6 @@ object ModuleManager {
             }
         }
     }
-
-    /*@SubscribeEvent TODO: readd when we have proper hud handling
-    fun onRenderOverlay(event: RenderGameOverlayEvent.Post) {
-        if ((mc.currentScreen != null && !hudChat) || event.type != RenderGameOverlayEvent.ElementType.ALL || mc.currentScreen == EditHUDGui) return
-
-        mc.mcProfiler.startSection("Odin Hud")
-
-        for (i in 0 until huds.size) {
-            huds[i].draw(false)
-        }
-
-        mc.mcProfiler.endSection()
-    }*/
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {

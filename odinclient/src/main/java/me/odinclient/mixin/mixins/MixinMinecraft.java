@@ -48,7 +48,7 @@ public class MixinMinecraft {
     @Inject(method = "rightClickMouse", at = @At("HEAD"), cancellable = true)
     private void rightClickMouse(CallbackInfo ci) {
         CPSDisplay.INSTANCE.onRightClick();
-        if (postAndCatch(new ClickEvent.RightClickEvent())) {
+        if (postAndCatch(new ClickEvent.Right())) {
             ci.cancel();
             return;
         }
@@ -69,7 +69,7 @@ public class MixinMinecraft {
     private void clickMouse(CallbackInfo ci)
     {
         CPSDisplay.INSTANCE.onLeftClick();
-        if (postAndCatch(new ClickEvent.LeftClickEvent())) ci.cancel();
+        if (postAndCatch(new ClickEvent.Left())) ci.cancel();
     }
 
     @Redirect(method = {"rightClickMouse"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/WorldClient;isAirBlock(Lnet/minecraft/util/BlockPos;)Z"))
