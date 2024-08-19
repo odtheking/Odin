@@ -6,7 +6,6 @@ import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.DungeonWaypoint
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinmain.utils.*
 import net.minecraft.client.renderer.*
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.client.renderer.texture.TextureUtil
@@ -21,15 +20,14 @@ import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL13
 import org.lwjgl.util.glu.Cylinder
 import org.lwjgl.util.glu.GLU
-import org.lwjgl.util.vector.Vector3f
 import java.awt.image.BufferedImage
 import kotlin.math.*
 
 
 object RenderUtils {
 
-    private val tessellator: Tessellator = Tessellator.getInstance()
-    private val worldRenderer: WorldRenderer = tessellator.worldRenderer
+    val tessellator: Tessellator = Tessellator.getInstance()
+    val worldRenderer: WorldRenderer = tessellator.worldRenderer
     private val beaconBeam = ResourceLocation("textures/entity/beacon_beam.png")
     private val renderManager: RenderManager = mc.renderManager
 
@@ -69,12 +67,8 @@ object RenderUtils {
     val Entity.renderVec: Vec3
         get() = Vec3(renderX, renderY, renderZ)
 
-    private val viewerVec: Vec3
-        get() = Vec3(renderManager.viewerPosX, renderManager.viewerPosY, renderManager.viewerPosZ)
+    private fun blendFactor() = GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
 
-    private fun blendFactor() {
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-    }
 
     /**
      * Gets the rendered bounding box of an entity based on its last tick and current tick positions.
@@ -327,24 +321,6 @@ object RenderUtils {
         GlStateManager.popMatrix()
     }
 
-    fun drawLine(color: Color, x1: Double, y1: Double, x2: Double, y2: Double, lineWidth: Float) {
-        GlStateManager.pushMatrix()
-        color.bind()
-        preDraw()
-        GL11.glEnable(GL11.GL_LINE_SMOOTH)
-        GL11.glLineWidth(lineWidth)
-
-        worldRenderer {
-            begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
-            pos(x1, y1, 0.0).endVertex()
-            pos(x2, y2, 0.0).endVertex()
-        }
-        tessellator.draw()
-
-        postDraw()
-        GlStateManager.popMatrix()
-    }
-
     /**
      * Draws text in the world at the specified position with the specified color and optional parameters.
      *
@@ -377,10 +353,10 @@ object RenderUtils {
         GlStateManager.rotate(-renderManager.playerViewY, 0.0f, 1.0f, 0.0f)
         GlStateManager.rotate(renderManager.playerViewX * xMultiplier, 1.0f, 0.0f, 0.0f)
         GlStateManager.scale(-scale, -scale, scale)
+        GlStateManager.disableLighting()
 
         GlStateManager.enableBlend()
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-        color.bind()
+        blendFactor()
 
         val textWidth = mc.fontRendererObj.getStringWidth(text)
         mc.fontRendererObj.drawString("$text§r", -textWidth / 2f, 0f, color.rgba, shadow)
@@ -390,6 +366,7 @@ object RenderUtils {
             GlStateManager.depthMask(true)
         }
 
+        GlStateManager.enableLighting()
         GlStateManager.disableBlend()
         GlStateManager.resetColor()
         GlStateManager.popMatrix()
@@ -476,66 +453,6 @@ object RenderUtils {
     }
 
 
-    fun draw2D(entity: Entity, lineWidth: Float, color: Color) {
-        val mvMatrix = getMatrix(2982)
-        val projectionMatrix = getMatrix(2983)
-        val bb = entity.entityBoundingBox.offset(-entity.positionVector).offset(entity.renderVec).offset(-viewerVec)
-        var box = BoxWithClass(Float.MAX_VALUE, Float.MAX_VALUE, -1f,  -1f)
-
-        GL11.glPushAttrib(GL11.GL_S)
-        GL11.glEnable(GL11.GL_BLEND)
-        GL11.glDisable(GL11.GL_TEXTURE_2D)
-        GL11.glDisable(GL11.GL_DEPTH_TEST)
-        GL11.glMatrixMode(GL11.GL_PROJECTION)
-        GlStateManager.pushMatrix()
-        GL11.glLoadIdentity()
-        GL11.glOrtho(0.0, mc.displayWidth.toDouble(), mc.displayHeight.toDouble(), .0, -1.0, 1.0)
-        GL11.glMatrixMode(GL11.GL_MODELVIEW)
-        GlStateManager.pushMatrix()
-        GL11.glLoadIdentity()
-        GL11.glDisable(GL11.GL_DEPTH_TEST)
-        blendFactor()
-        GlStateManager.enableTexture2D()
-        GlStateManager.depthMask(true)
-        GL11.glLineWidth(lineWidth)
-
-        for (boxVertex in bb.corners) {
-            val screenPos = worldToScreen(
-                Vec3f(boxVertex.xCoord.toFloat(), boxVertex.yCoord.toFloat(), boxVertex.zCoord.toFloat()),
-                mvMatrix, projectionMatrix, mc.displayWidth, mc.displayHeight
-            ) ?: continue
-            box = BoxWithClass(min(screenPos.x, box.x), min(screenPos.y, box.y), max(screenPos.x, box.w), max(screenPos.y, box.h))
-        }
-
-        if ((box.x > 0f && box.y > 0f && box.x <= mc.displayWidth && box.y <= mc.displayHeight) || (box.w > 0 && box.h > 0 && box.w <= mc.displayWidth && box.h <= mc.displayHeight))
-            rectangleOutline(box.x, box.y, box.w - box.x, box.h - box.y, color, 1f, lineWidth)
-
-        GlStateManager.disableBlend()
-        GL11.glEnable(GL11.GL_DEPTH_TEST)
-        GL11.glMatrixMode(GL11.GL_PROJECTION)
-        GlStateManager.popMatrix()
-        GL11.glMatrixMode(GL11.GL_MODELVIEW)
-        GlStateManager.popMatrix()
-        GL11.glPopAttrib()
-    }
-
-    private fun getMatrix(matrix: Int): Matrix4f {
-        val floatBuffer = BufferUtils.createFloatBuffer(16)
-        GL11.glGetFloat(matrix, floatBuffer)
-        return Matrix4f().load(floatBuffer) as Matrix4f
-    }
-
-    private fun worldToScreen(pointInWorld: Vec3f, view: Matrix4f, projection: Matrix4f, screenWidth: Int, screenHeight: Int): Vec2f? {
-        val clipSpacePos = (Vec4f(pointInWorld.x, pointInWorld.y, pointInWorld.z, 1.0f) * view) * projection
-        val ndcSpacePos = Vector3f(clipSpacePos.x / clipSpacePos.w, clipSpacePos.y / clipSpacePos.w, clipSpacePos.z / clipSpacePos.w)
-        val screenX: Float = (ndcSpacePos.x + 1.0f) / 2.0f * screenWidth
-        val screenY: Float = (1.0f - ndcSpacePos.y) / 2.0f * screenHeight
-        if (ndcSpacePos.z < -1.0 || ndcSpacePos.z > 1.0) {
-            return null
-        }
-        return Vec2f(screenX, screenY)
-    }
-
     private val BUF_FLOAT_4 = BufferUtils.createFloatBuffer(4)
     var isRenderingOutlinedEntities = false
         private set
@@ -550,13 +467,6 @@ object RenderUtils {
         GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE0_ALPHA, GL11.GL_TEXTURE)
         GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND0_ALPHA, GL11.GL_SRC_ALPHA)
     }
-    fun outlineColor(color: Color) {
-        BUF_FLOAT_4.put(0, color.redFloat)
-        BUF_FLOAT_4.put(1, color.greenFloat)
-        BUF_FLOAT_4.put(2, color.blueFloat)
-        BUF_FLOAT_4.put(3, color.alphaFloat)
-        GL11.glTexEnv(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_COLOR, BUF_FLOAT_4)
-    }
 
     fun disableOutlineMode() {
         GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_MODULATE)
@@ -567,6 +477,14 @@ object RenderUtils {
         GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE0_ALPHA, GL11.GL_TEXTURE)
         GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND0_ALPHA, GL11.GL_SRC_ALPHA)
         isRenderingOutlinedEntities = false
+    }
+
+    fun outlineColor(color: Color) {
+        BUF_FLOAT_4.put(0, color.redFloat)
+        BUF_FLOAT_4.put(1, color.greenFloat)
+        BUF_FLOAT_4.put(2, color.blueFloat)
+        BUF_FLOAT_4.put(3, color.alphaFloat)
+        GL11.glTexEnv(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_COLOR, BUF_FLOAT_4)
     }
 
     /**
@@ -641,8 +559,9 @@ object RenderUtils {
     fun drawBoxes(boxes: Collection<DungeonWaypoint>, glList: Int, disableDepth: Boolean = false): Int {
         var newGlList = glList
         GlStateManager.pushMatrix()
-        preDraw()
         GlStateManager.disableCull()
+        GlStateManager.depthMask(false)
+        preDraw()
 
         GL11.glLineWidth(3f)
         if (newGlList != -1) {
@@ -756,6 +675,4 @@ object RenderUtils {
             pos(maxX, minY, minZ).endVertex()
         }
     }
-
-
 }

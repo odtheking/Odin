@@ -4,7 +4,6 @@ import me.odinmain.OdinMain.logger
 import org.apache.commons.io.IOUtils
 import org.lwjgl.opengl.*
 
-
 abstract class Shader(fragmentShader: String) {
     private var programId: Int = 0
 
@@ -37,7 +36,6 @@ abstract class Shader(fragmentShader: String) {
                 ARBShaderObjects.glValidateProgramARB(programId)
             }
         }
-
     }
 
     fun startShader() {

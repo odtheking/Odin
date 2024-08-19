@@ -148,7 +148,7 @@ enum class ItemRarity(
     COMMON("COMMON", "§f", Color.WHITE),
     UNCOMMON("UNCOMMON", "§2", Color.GREEN),
     RARE("RARE", "§9", Color.BLUE),
-    EPIC("EPIC", "§5", Color.MAGENTA),
+    EPIC("EPIC", "§5", Color.PURPLE),
     LEGENDARY("LEGENDARY", "§6", Color.ORANGE),
     MYTHIC("MYTHIC", "§d", Color.MAGENTA),
     DIVINE("DIVINE", "§b", Color.CYAN),

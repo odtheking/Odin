@@ -3,7 +3,6 @@ package me.odinmain.features.impl.floor7.p3.termsim
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.impl.floor7.p3.TerminalSounds
 import me.odinmain.features.impl.floor7.p3.TerminalSounds.clickSounds
-import me.odinmain.features.impl.floor7.p3.TerminalSounds.playTerminalSound
 import me.odinmain.utils.postAndCatch
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.Slot
@@ -15,7 +14,7 @@ object Rubix : TermSimGui(
     45
 ) {
     private val order = listOf(1, 4, 13, 11, 14)
-    private val grid get() = inventorySlots.inventorySlots.subList(0, 45).filter { it?.stack?.metadata != 15 }
+    private val grid get() = inventorySlots.inventorySlots.subList(0, 45).filter { it?.stack?.metadata != 15 && it.stack.item != pane }
 
     override fun create() {
         cleanInventory()
@@ -36,7 +35,7 @@ object Rubix : TermSimGui(
             }
             else -> return
         }
-        if (TerminalSounds.enabled && clickSounds) playTerminalSound() else mc.thePlayer.playSound("random.orb", 1f, 1f)
+        if (!TerminalSounds.enabled || !clickSounds) mc.thePlayer?.playSound("random.orb", 1f, 1f)
         GuiEvent.GuiLoadedEvent(name, inventorySlots as ContainerChest).postAndCatch()
         if (grid.all { it?.stack?.metadata == grid.firstOrNull()?.stack?.metadata })
             solved(this.name, 1)

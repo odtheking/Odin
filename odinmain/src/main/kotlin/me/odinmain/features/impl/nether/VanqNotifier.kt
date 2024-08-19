@@ -10,10 +10,10 @@ object VanqNotifier: Module(
     description = "Notifies you when a vanquisher is nearby.",
     category = Category.NETHER
 ) {
-    private val playSound: Boolean by BooleanSetting("Play Sound", true, description = "Plays a sound when a vanquisher spawns")
-    private val showText: Boolean by BooleanSetting("Show Text", true, description = "Shows a message when a vanquisher spawns")
-    private val ac: Boolean by BooleanSetting("All Chat", false, description = "Sends the message to all chat")
-    private val pc: Boolean by BooleanSetting("Party Chat", true, description = "Sends the message to party chat")
+    private val playSound: Boolean by BooleanSetting("Play Sound", true, description = "Plays a sound when a vanquisher spawns.")
+    private val showText: Boolean by BooleanSetting("Show Text", true, description = "Shows a message when a vanquisher spawns.")
+    private val ac: Boolean by BooleanSetting("All Chat", false, description = "Sends the message to all chat.")
+    private val pc: Boolean by BooleanSetting("Party Chat", true, description = "Sends the message to party chat.")
 
    init {
        onMessage("A Vanquisher is spawning nearby!", false) {

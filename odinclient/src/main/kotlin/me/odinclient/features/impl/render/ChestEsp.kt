@@ -24,27 +24,31 @@ object ChestEsp : Module(
     category = Category.RENDER,
     description = "Displays chests through walls."
 ) {
-    private val onlyDungeon: Boolean by BooleanSetting(name = "Only Dungeon")
-    private val onlyCH: Boolean by BooleanSetting(name = "Only Crystal Hollows")
-    private val hideClicked: Boolean by BooleanSetting(name = "Hide Clicked")
-    private val renderMode: Int by SelectorSetting(name = "Render Mode", "Chams", arrayListOf("Chams", "Outline"))
-    private val color: Color by ColorSetting(name = "Color", default = Color.RED, allowAlpha = true)
+    private val onlyDungeon: Boolean by BooleanSetting(name = "Only Dungeon", description = "Only show chests in dungeons.")
+    private val onlyCH: Boolean by BooleanSetting(name = "Only Crystal Hollows", description = "Only show chests in Crystal Hollows.")
+    private val hideClicked: Boolean by BooleanSetting(name = "Hide Clicked", description = "Hide chests that have been clicked.")
+    private val renderMode: Int by SelectorSetting(name = "Render Mode", "Chams", arrayListOf("Chams", "Outline"), description = "The rendering mode.")
+    private val color: Color by ColorSetting(name = "Color", default = Color.RED, allowAlpha = true, description = "The color of the chest ESP.")
 
-    private val chests = mutableSetOf<BlockPos>()
+    private val clickedChests = mutableSetOf<BlockPos>()
+    private var chests = mutableSetOf<BlockPos>()
 
     init {
-        onWorldLoad { chests.clear() }
+        onWorldLoad { clickedChests.clear() }
 
         onPacket(C08PacketPlayerBlockPlacement::class.java) { packet ->
-            if (getBlockAt(packet.position).equalsOneOf(Blocks.chest, Blocks.trapped_chest))
-                chests.add(packet.position)
+            if (getBlockAt(packet.position).equalsOneOf(Blocks.chest, Blocks.trapped_chest)) clickedChests.add(packet.position)
+        }
+
+        execute(100) {
+            chests = mc.theWorld?.loadedTileEntityList?.filterIsInstance<TileEntityChest>()?.map { it.pos }?.toMutableSet() ?: mutableSetOf()
         }
     }
 
     @SubscribeEvent
     fun onRenderChest(event: RenderChestEvent.Pre) {
         if (renderMode != 0 || event.chest != mc.theWorld?.getTileEntity(event.chest.pos)) return
-        if (hideClicked && chests.contains(event.chest.pos)) return
+        if (hideClicked && event.chest.pos in clickedChests) return
         if ((onlyDungeon && DungeonUtils.inDungeons) || (onlyCH && LocationUtils.currentArea.isArea(Island.CrystalHollows)) || (!onlyDungeon && !onlyCH)) {
             GL11.glEnable(GL11.GL_POLYGON_OFFSET_FILL)
             GlStateManager.color(1f, 1f, 1f, color.alpha)
@@ -56,7 +60,7 @@ object ChestEsp : Module(
     @SubscribeEvent
     fun onRenderChest(event: RenderChestEvent.Post) {
         if (renderMode != 0 || event.chest != mc.theWorld?.getTileEntity(event.chest.pos)) return
-        if (hideClicked && chests.contains(event.chest.pos)) return
+        if (hideClicked && event.chest.pos in clickedChests) return
         if ((onlyDungeon && DungeonUtils.inDungeons) || (onlyCH && LocationUtils.currentArea.isArea(Island.CrystalHollows)) || (!onlyDungeon && !onlyCH)) {
             GL11.glDisable(GL11.GL_POLYGON_OFFSET_FILL)
             GlStateManager.doPolygonOffset(1f, 1000000f)
@@ -68,10 +72,9 @@ object ChestEsp : Module(
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (renderMode != 1) return
         if ((onlyDungeon && DungeonUtils.inDungeons) || (onlyCH && LocationUtils.currentArea.isArea(Island.CrystalHollows)) || (!onlyDungeon && !onlyCH)) {
-            val chests = mc.theWorld?.loadedTileEntityList?.filterIsInstance<TileEntityChest>() ?: return
             chests.forEach {
-                if (hideClicked && this.chests.contains(it.pos)) return
-                Renderer.drawBox(it.pos.toAABB(), color, 1f, depth = false, fillAlpha = 0)
+                if (hideClicked && it in clickedChests) return
+                Renderer.drawBox(it.toAABB(), color, 1f, depth = false, fillAlpha = 0)
             }
         }
     }

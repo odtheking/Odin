@@ -27,9 +27,11 @@ object PlayerUtils {
      * @author Aton
      */
     fun playLoudSound(sound: String?, volume: Float, pitch: Float, pos: Vec3? = null) {
-        shouldBypassVolume = true
-        mc.addScheduledTask { mc.theWorld?.playSound(pos?.xCoord ?: mc.thePlayer.posX, pos?.yCoord ?: mc.thePlayer.posY, pos?.zCoord  ?: mc.thePlayer.posZ, sound, volume, pitch, false) }
-        shouldBypassVolume = false
+        mc.addScheduledTask {
+            shouldBypassVolume = true
+            mc.theWorld?.playSound(pos?.xCoord ?: mc.thePlayer.posX, pos?.yCoord ?: mc.thePlayer.posY, pos?.zCoord  ?: mc.thePlayer.posZ, sound, volume, pitch, false)
+            shouldBypassVolume = false
+        }
     }
 
     /**
@@ -43,10 +45,6 @@ object PlayerUtils {
     fun alert(title: String, time: Int = 20, color: Color = Color.WHITE, playSound: Boolean = true, displayText: Boolean = true) {
         if (playSound) playLoudSound("note.pling", 100f, 1f)
         if (displayText) Renderer.displayTitle(title , time, color = color)
-    }
-
-    fun dropItem(dropAll: Boolean = false) {
-        mc.thePlayer.dropOneItem(dropAll)
     }
 
     inline val posX get() = mc.thePlayer.posX
@@ -119,9 +117,9 @@ object PlayerUtils {
     }
 
     private fun sendWindowClick(slotId: Int, button: Int, mode: Int) {
-        mc.thePlayer.openContainer?.let {
+        mc.thePlayer?.openContainer?.let {
             if (it !is ContainerChest) return@let
-            mc.playerController.windowClick(it.windowId, slotId, button, mode, mc.thePlayer)
+            mc.playerController?.windowClick(it.windowId, slotId, button, mode, mc.thePlayer)
         }
     }
 

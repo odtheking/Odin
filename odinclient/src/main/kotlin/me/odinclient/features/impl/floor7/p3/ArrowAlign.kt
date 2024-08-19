@@ -19,13 +19,13 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object ArrowAlign : Module(
     name = "Arrow Align",
-    description = "Different features for the arrow alignment device.",
+    description = "Shows a solution for the Arrow Align device.",
     category = Category.FLOOR7
 ) {
-    private val blockWrong: Boolean by BooleanSetting("Block Wrong Clicks", false, description = "Blocks wrong clicks, shift will override this")
-    private val triggerBot: Boolean by BooleanSetting("Trigger Bot")
-    private val sneakToDisableTriggerbot: Boolean by BooleanSetting("Sneak to disable", false, description = "Disables triggerbot when you are sneaking").withDependency { triggerBot }
-    private val delay: Long by NumberSetting<Long>("Delay", 200, 70, 500).withDependency { triggerBot }
+    private val blockWrong: Boolean by BooleanSetting("Block Wrong Clicks", false, description = "Blocks wrong clicks, shift will override this.")
+    private val triggerBot: Boolean by BooleanSetting("Trigger Bot", false, description = "Automatically clicks the correct frame if the player is facing it.")
+    private val sneakToDisableTriggerbot: Boolean by BooleanSetting("Sneak to disable", false, description = "Disables triggerbot when you are sneaking.").withDependency { triggerBot }
+    private val delay: Long by NumberSetting("Delay", 200L, 70, 500, unit = "ms", description = "The delay between each click.").withDependency { triggerBot }
 
     private val triggerBotClock = Clock(delay)
 
@@ -68,8 +68,8 @@ object ArrowAlign : Module(
         val frameIndex = ((targetFramePosition.yCoord - frameGridCorner.yCoord) + (targetFramePosition.zCoord - frameGridCorner.zCoord) * 5).toInt()
         if (targetFramePosition.xCoord != frameGridCorner.xCoord || currentFrameRotations?.get(frameIndex) == -1 || frameIndex !in 0..24) return
 
-        if (!clicksRemaining.containsKey(frameIndex) && mc.thePlayer.isSneaking) {
-            if (blockWrong) event.isCanceled = true
+        if (!clicksRemaining.containsKey(frameIndex) && !mc.thePlayer.isSneaking && blockWrong) {
+            event.isCanceled = true
             return
         }
 

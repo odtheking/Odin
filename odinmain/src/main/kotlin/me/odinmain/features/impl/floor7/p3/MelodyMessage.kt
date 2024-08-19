@@ -18,7 +18,7 @@ object MelodyMessage : Module(
     category = Category.FLOOR7
 ) {
     private val sendMelodyMessage: Boolean by BooleanSetting("Send Melody Message", true, description = "Sends a message when the melody terminal opens.")
-    private val melodyMessage: String by StringSetting("Melody Message", "Melody Terminal start!", 128, description = "Message sent when the melody terminal opens").withDependency { sendMelodyMessage }
+    private val melodyMessage: String by StringSetting("Melody Message", "Melody Terminal start!", 128, description = "Message sent when the melody terminal opens.").withDependency { sendMelodyMessage }
     private val melodyProgress: Boolean by BooleanSetting("Melody Progress", false, description = "Tells the party about melody terminal progress.")
 
     private var saidMelody = false

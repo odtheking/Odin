@@ -42,9 +42,13 @@ object CanClip : Module(
     private val animation = EaseInOut(300)
     private var canClip = false
 
+    private val ranges = listOf(0.235..0.265, 0.735..0.765)
+
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        mc.thePlayer?.isSneaking?.let {
+        val player = mc.thePlayer ?: return
+
+        if (player.isSneaking) {
             if (canClip) {
                 animation.start()
                 canClip = false
@@ -52,10 +56,8 @@ object CanClip : Module(
             return
         }
 
-        val x = abs(mc.thePlayer.posX % 1)
-        val z = abs(mc.thePlayer.posZ % 1)
         val prev = canClip
-        canClip = x in 0.235..0.265 || x in 0.735..0.765 || z in 0.235..0.265 || z in 0.735..0.765
+        canClip = ranges.any { abs(player.posX % 1) in it || abs(player.posZ % 1) in it}
         if (prev != canClip) animation.start()
     }
 

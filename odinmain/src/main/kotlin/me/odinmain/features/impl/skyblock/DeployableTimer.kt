@@ -17,7 +17,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object DeployableTimer : Module(
     name = "Deployable Timer",
-    description = "Displays the active deployable and it's time left",
+    description = "Displays the active deployable and it's time left.",
     category = Category.SKYBLOCK
 ) {
     private val firework = Item.getByNameOrId("minecraft:fireworks")

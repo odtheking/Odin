@@ -8,9 +8,8 @@ import me.odinmain.features.impl.floor7.WitherDragons.paulBuff
 import me.odinmain.features.impl.floor7.WitherDragons.soloDebuff
 import me.odinmain.features.impl.floor7.WitherDragons.soloDebuffOnAll
 import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.skyblock.PlayerUtils
+import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.*
-import me.odinmain.utils.skyblock.modMessage
 
 object DragonPriority {
 
@@ -32,8 +31,8 @@ object DragonPriority {
     private fun sortPriority(spawningDragon: MutableList<WitherDragonsEnum>): WitherDragonsEnum {
         val totalPower = Blessing.POWER.current * if (paulBuff) 1.25 else 1.0 + if (Blessing.TIME.current > 0) 2.5 else 0.0
 
-        val playerClass = DungeonUtils.currentDungeonPlayer.clazz
-
+        val playerClass = DungeonUtils.currentDungeonPlayer.clazz.also { if (it == DungeonClass.Unknown) modMessage("§cFailed to get dungeon class.") }
+        devMessage("§8Getting priority dragon for §${playerClass.colorCode}${playerClass.name}§8 with §4$totalPower§8 power.")
         val dragonList = listOf(WitherDragonsEnum.Orange, WitherDragonsEnum.Green, WitherDragonsEnum.Red, WitherDragonsEnum.Blue, WitherDragonsEnum.Purple)
         val priorityList =
             if (totalPower >= normalPower || (spawningDragon.any { it == WitherDragonsEnum.Purple } && totalPower >= easyPower))

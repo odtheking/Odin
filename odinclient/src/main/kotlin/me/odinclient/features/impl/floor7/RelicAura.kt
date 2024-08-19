@@ -14,7 +14,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 object RelicAura : Module(
     name = "Relic Aura",
     category = Category.FLOOR7,
-    description = "Automatically picks up relics in the Wither King boss-fight.",
+    description = "Automatically picks up relics in the Wither King boss.",
     tag = TagType.RISKY
 ){
     @SubscribeEvent
@@ -26,7 +26,7 @@ object RelicAura : Module(
     }
 
     private fun interactWithEntity(entity: Entity) {
-        val objectMouseOver = mc.objectMouseOver.hitVec
+        val objectMouseOver = mc.objectMouseOver?.hitVec ?: return
         val dx = objectMouseOver.xCoord - entity.posX
         val dy = objectMouseOver.yCoord - entity.posY
         val dz = objectMouseOver.zCoord - entity.posX

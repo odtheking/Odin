@@ -1,8 +1,9 @@
 package me.odinmain.commands.impl
 
 import com.github.stivais.commodore.utils.GreedyString
-import kotlinx.coroutines.*
+import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
+import me.odinmain.OdinMain.scope
 import me.odinmain.commands.commodore
 import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.features.ModuleManager.generateFeatureList
@@ -11,11 +12,11 @@ import me.odinmain.features.impl.render.DevPlayers.updateDevs
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.*
+import me.odinmain.utils.skyblock.dungeon.ScanUtils.getRoomCenter
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.util.ChatComponentText
 
 
-@OptIn(DelicateCoroutinesApi::class)
 val devCommand = commodore("oddev") {
 
     literal("giveaotv").runs {
@@ -28,8 +29,8 @@ val devCommand = commodore("oddev") {
 
     literal("adddev").runs { name: String, password: String ->
         modMessage("Sending data... name: $name, password: $password")
-        GlobalScope.launch {
-            modMessage(sendDataToServer("$name, [1,2,3], [1,2,3], false, $password", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
+        scope.launch {
+            modMessage(sendDataToServer("$name, [1,2,3], [1,2,3], true, $password", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
         }
     }
 
@@ -69,17 +70,16 @@ val devCommand = commodore("oddev") {
 
 	literal("roomdata").runs {
         val room = DungeonUtils.currentFullRoom ?: return@runs modMessage("§cYou are not in a dungeon!")
-        val xPos = (-185 + ((mc.thePlayer.posX + 200) / 32) * 32).toInt()
-        val zPos = (-185 + ((mc.thePlayer.posZ + 200) / 32) * 32).toInt()
-        val core = ScanUtils.getCore(xPos, zPos)
+        val roomCenter = getRoomCenter(mc.thePlayer.posX.toInt(), mc.thePlayer.posZ.toInt())
+        val core = ScanUtils.getCore(roomCenter)
         modMessage(
             """
             ${getChatBreak()}
-            Middle: $xPos, $zPos
+            Middle: ${roomCenter.x}, ${roomCenter.z}
             Room: ${room.room.data.name}
             Core: $core
             Rotation: ${room.room.rotation}
-            Positions: ${room.positions}
+            Positions: ${room.extraRooms.joinToString { "(${it.x}, ${it.z})" }}
             ${getChatBreak()}
             """.trimIndent(), false
         )

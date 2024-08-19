@@ -19,6 +19,7 @@ import me.odinmain.ui.util.MouseUtils.mouseX
 import me.odinmain.ui.util.MouseUtils.mouseY
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.*
+import me.odinmain.utils.render.RenderUtils.bind
 import me.odinmain.utils.render.RenderUtils.loadBufferedImage
 import net.minecraft.client.renderer.texture.DynamicTexture
 import org.lwjgl.input.Keyboard
@@ -51,7 +52,6 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
     private var listeningForString = false
 
     // TODO: MAKE A BETTER DESIGN (FUNCTION IS ALL HERE P MUCH)
-    @OptIn(ExperimentalStdlibApi::class)
     override fun draw() {
         h = floor(anim.get(36f, if (setting.allowAlpha) 285f else 255f, !extended))
 
@@ -118,6 +118,7 @@ class ElementColor(parent: ModuleButton, setting: ColorSetting) :
         }
 
         resetScissor(scissor)
+        Color.WHITE.bind()
     }
 
     private fun completeHexString() {

@@ -17,11 +17,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object DioriteFucker : Module(
     name = "Fuck Diorite",
-    description = "Replaces the pillars in floor 7 storm fight with glass.",
+    description = "Replaces the pillars in the storm fight with glass.",
     category = Category.FLOOR7,
 ) {
-    private val stainedGlass: Boolean by BooleanSetting("Stained glass", default = false, description = "Swaps the diorite with stained glass" )
-    private val color: Int by NumberSetting("Color", 0, 0.0, 15.0, 1.0).withDependency { stainedGlass }
+    private val stainedGlass: Boolean by BooleanSetting("Stained glass", default = false, description = "Swaps the diorite with stained glass.")
+    private val color: Int by NumberSetting("Color", 0, 0.0, 15.0, 1.0, description = "Color for the stained glass.").withDependency { stainedGlass }
     private val pillars = listOf(listOf(46, 169, 41), listOf(46, 169, 65), listOf(100, 169, 65), listOf(100, 179, 41))
     private val coordinates: MutableList<BlockPos> = mutableListOf<BlockPos>().apply {
         pillars.forEach { (x, y, z) ->

@@ -9,9 +9,10 @@ import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.init.Blocks
 import net.minecraft.util.AxisAlignedBB
@@ -66,12 +67,7 @@ object ArrowsDevice : Module(
 
             // Cast is safe since we won't return an entity that isn't an armor stand
             activeArmorStand = mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()?.find {
-                it.name.equalsOneOf(
-                    INACTIVE_DEVICE_STRING,
-                    ACTIVE_DEVICE_STRING
-                ) && it.distanceSquaredTo(
-                    standPosition.toVec3()
-                ) <= 4.0
+                it.name.equalsOneOf(INACTIVE_DEVICE_STRING, ACTIVE_DEVICE_STRING) && it.distanceSquaredTo(standPosition.toVec3()) <= 4.0
             }
         }
 
@@ -102,21 +98,16 @@ object ArrowsDevice : Module(
         isDeviceComplete = true
 
         if (alertOnDeviceComplete) {
-            modMessage("Sharp shooter device complete")
-            PlayerUtils.alert("Device Complete", color = Color.GREEN)
+            modMessage("§aSharp shooter device complete")
+            PlayerUtils.alert("§aDevice Complete", color = Color.GREEN)
         }
     }
 
     @SubscribeEvent
     fun onTick(tickEvent: ClientTickEvent) {
-        if (!isPlayerInRoom) {
-            reset()
-            return
-        }
+        if (!isPlayerInRoom) return reset()
 
-        if (!isDeviceComplete && activeArmorStand?.name == ACTIVE_DEVICE_STRING) {
-            onComplete()
-        }
+        if (!isDeviceComplete && activeArmorStand?.name == ACTIVE_DEVICE_STRING) onComplete()
     }
 
 
@@ -125,22 +116,15 @@ object ArrowsDevice : Module(
         serverTicksSinceLastTargetDisappeared = serverTicksSinceLastTargetDisappeared?.let {
             // There was no target last tick (or the count would be null)
 
-            if (targetPosition != null) {
-                // A target appeared
-                return@let null
-            } else if (it < 10) {
-                // No target yet, count the ticks
-                return@let it + 1
-            } else if (it == 10) {
+            if (targetPosition != null) return@let null // A target appeared
+            else if (it < 10)  return@let it + 1 // No target yet, count the ticks
+            else if (it == 10) {
                 // We reached 10 ticks, device is either done, or the player left the stand
                 if (isPlayerOnStand) onComplete()
                 return@let 11
-            } else {
-                return@let 11
-            }
+            } else return@let 11
         } ?: run {
             // There was a target last tick (or one appeared this tick
-
             // Check if target disappeared, set count accordingly
             return@run if (targetPosition == null) 0 else null
         }
@@ -154,9 +138,7 @@ object ArrowsDevice : Module(
         if (event.old.block == Blocks.emerald_block && event.update.block == Blocks.stained_hardened_clay) {
             markedPositions.add(event.pos)
             // This condition should always be true but im never sure with Hypixel
-            if (targetPosition == event.pos) {
-                targetPosition = null
-            }
+            if (targetPosition == event.pos) targetPosition = null
         }
 
         // New target appeared

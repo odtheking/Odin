@@ -82,8 +82,8 @@ val mainCommand = commodore("od", "odin") {
         DianaHelper.burrowsRender.clear()
     }
 
-    literal("sendcoords").runs { message: GreedyString ->
-        sendChatMessage(PlayerUtils.getPositionString() + message.string)
+    literal("sendcoords").runs { message: GreedyString? ->
+        sendChatMessage(PlayerUtils.getPositionString() + if (message == null) "" else " ${message.string}")
     }
 
     literal("ping").runs {

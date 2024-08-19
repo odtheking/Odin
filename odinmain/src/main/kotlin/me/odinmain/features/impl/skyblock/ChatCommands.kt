@@ -16,11 +16,11 @@ object ChatCommands : Module(
     category = Category.SKYBLOCK,
     description = "type !help in the corresponding channel for cmd list. Use /blacklist.",
 ) {
-    private var party: Boolean by BooleanSetting(name = "Party commands", default = true, description = "Toggles chat commands in party chat")
-    private var guild: Boolean by BooleanSetting(name = "Guild commands", default = true, description = "Toggles chat commands in guild chat")
-    private var private: Boolean by BooleanSetting(name = "Private commands", default = true, description = "Toggles chat commands in private chat")
+    private var party: Boolean by BooleanSetting(name = "Party commands", default = true, description = "Toggles chat commands in party chat.")
+    private var guild: Boolean by BooleanSetting(name = "Guild commands", default = true, description = "Toggles chat commands in guild chat.")
+    private var private: Boolean by BooleanSetting(name = "Private commands", default = true, description = "Toggles chat commands in private chat.")
+    private val whitelistOnly: Boolean by DualSetting("Whitelist Only", left = "blacklist", right = "Whitelist", default = false, description = "Whether the list should act like a whitelist or a blacklist.")
     private var showSettings: Boolean by DropdownSetting(name = "Show Settings", default = false)
-    private val whitelistOnly: Boolean by DualSetting("Whitelist Only", left = "blacklist", right = "Whitelist", default = false, description = "Whether the list should act like a whitelist or a blacklist")
 
     private var warp: Boolean by BooleanSetting(name = "Warp", default = true).withDependency { showSettings }
     private var warptransfer: Boolean by BooleanSetting(name = "Warp & pt (warptransfer)", default = true).withDependency { showSettings }
@@ -46,20 +46,16 @@ object ChatCommands : Module(
     private val dtReason = mutableListOf<Pair<String, String>>()
     val blacklist: MutableList<String> by ListSetting("Blacklist", mutableListOf())
 
-    private val messageRegex = Regex("^(?:Party > \\[?(?:MVP|VIP)?\\+*]? ?(.{1,16}): ?(.+)\$|Guild > \\[?(?:MVP|VIP)?\\+*]? ?(.{1,16}?)(?= ?\\[| ?: ) ?\\[.+] ?: ?(.+)\$|From \\[?(?:MVP|VIP)?\\+*]? ?(.{1,16}): ?(.+)\$)")
+    private val messageRegex = Regex("^(?:Party > (\\[.+])? ?(.{1,16}): ?(.+)\$|Guild > (\\[.+])? ?(.{1,16}?)(?= ?\\[| ?: ) ?\\[.+] ?: ?(.+)\$|From (\\[.+])? ?(.{1,16}): ?(.+)\$)")
 
     init {
-        onMessage(Regex(" {29}> EXTRA STATS <")) {
-            dt()
-        }
-
-        onMessage(Regex("^\\[NPC] Elle: Good job everyone. A hard fought battle come to an end. Let's get out of here before we run into any more trouble!$")) {
+        onMessage(Regex(" {29}> EXTRA STATS <|^\\[NPC] Elle: Good job everyone. A hard fought battle come to an end. Let's get out of here before we run into any more trouble!$")) {
             dt()
         }
 
         onMessage(messageRegex) {
             val chatMessage = messageRegex.find(it) ?: return@onMessage
-            val (ign, message) = chatMessage.destructured
+            val (_, ign, message) = chatMessage.destructured
 
             if (whitelistOnly != isInBlacklist(ign)) return@onMessage
 

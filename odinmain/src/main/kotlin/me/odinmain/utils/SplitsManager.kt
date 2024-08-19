@@ -27,7 +27,7 @@ object SplitsManager {
 
         if (index == currentSplits.splits.size - 1) {
             val (times, _) = getAndUpdateSplitsTimes(currentSplits)
-            currentSplits.personalBest?.time(index, times.last()/ 1000.0, "s§7!", "§6Total time §7took §6", addPBString = true, addOldPBString = true, alwaysSendPB = true, sendOnlyPB = Splits.sendOnlyPB, sendMessage = Splits.enabled)
+            currentSplits.personalBest?.time(index, times.last() / 1000.0, "s§7!", "§6Total time §7took §6", addPBString = true, addOldPBString = true, alwaysSendPB = true, sendOnlyPB = Splits.sendOnlyPB, sendMessage = Splits.enabled)
             runIn(10) {
                 times.forEachIndexed { i, it ->
                     val name = if (i == currentSplits.splits.size - 1) "Total" else currentSplits.splits[i].name

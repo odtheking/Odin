@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.floor7
 
-import me.odinmain.features.impl.floor7.WitherDragons.textScale
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 
@@ -24,7 +23,7 @@ object DragonTimer {
             Renderer.drawStringInWorld(
                 it.first, it.third.spawnPos,
                 color = Color.WHITE, depth = false,
-                scale = textScale / 5
+                scale = 0.16f
             )
         }
     }

@@ -22,10 +22,10 @@ object SupplyHelper : Module(
     description = "Helps with supplies in kuudra.",
     category = Category.NETHER
 ) {
-    private val suppliesWaypoints: Boolean by BooleanSetting("Supplies Waypoints", true, description = "Renders the supply waypoints")
-    private val supplyWaypointColor: Color by ColorSetting("Supply Waypoint Color", Color.YELLOW, true, description = "Color of the supply waypoints").withDependency { suppliesWaypoints }
-    private val supplyDropWaypoints: Boolean by BooleanSetting("Supply Drop Waypoints", true, description = "Renders the supply drop waypoints")
-    private val sendSupplyTime: Boolean by BooleanSetting("Send Supply Time", true, description = "Sends a message when a supply is collected")
+    private val suppliesWaypoints: Boolean by BooleanSetting("Supplies Waypoints", true, description = "Renders the supply waypoints.")
+    private val supplyWaypointColor: Color by ColorSetting("Supply Waypoint Color", Color.YELLOW, true, description = "Color of the supply waypoints.").withDependency { suppliesWaypoints }
+    private val supplyDropWaypoints: Boolean by BooleanSetting("Supply Drop Waypoints", true, description = "Renders the supply drop waypoints.")
+    private val sendSupplyTime: Boolean by BooleanSetting("Send Supply Time", true, description = "Sends a message when a supply is collected.")
 
     private var startRun = 0L
 
@@ -34,9 +34,9 @@ object SupplyHelper : Module(
             startRun = System.currentTimeMillis()
         }
 
-        onMessageCancellable(Regex("(\\[\\w+])?(\\w+) recovered one of Elle's supplies! \\((\\d)\\/(\\d)\\)")) {
+        onMessageCancellable(Regex("(\\[\\w+])?(\\w+) recovered one of Elle's supplies! \\((\\d)/(\\d)\\)")) {
             if (!sendSupplyTime) return@onMessageCancellable
-            val matchResult = Regex("(\\[\\w+])?(\\w+) recovered one of Elle's supplies! \\((\\d)\\/(\\d)\\)").find(it.message) ?: return@onMessageCancellable
+            val matchResult = Regex("(\\[\\w+])?(\\w+) recovered one of Elle's supplies! \\((\\d)/(\\d)\\)").find(it.message) ?: return@onMessageCancellable
             val (_, name, current, total) = matchResult.groupValues
             modMessage("$name, §a§lrecovered a supply at ${formatTime((System.currentTimeMillis() - startRun))}!, §r§8($current/$total)", false)
             it.isCanceled = true
