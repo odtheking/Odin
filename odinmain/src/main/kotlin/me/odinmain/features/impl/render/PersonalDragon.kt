@@ -1,0 +1,97 @@
+package me.odinmain.features.impl.render
+
+import me.odinmain.features.Category
+import me.odinmain.features.Module
+import me.odinmain.features.settings.impl.*
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.RenderUtils.renderX
+import me.odinmain.utils.render.RenderUtils.renderY
+import me.odinmain.utils.render.RenderUtils.renderZ
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.entity.boss.EntityDragon
+import net.minecraftforge.client.event.RenderLivingEvent
+import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.event.world.WorldEvent
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
+import kotlin.math.cos
+import kotlin.math.sin
+
+object PersonalDragon : Module(
+    name = "Personal Dragon",
+    category = Category.RENDER,
+    description = "Spawns your own personal dragon."
+) {
+    private val onlyF5: Boolean by BooleanSetting(name = "Only F5", default = true, description = "Only render the dragon when in F5 mode.")
+    private val scale: Float by NumberSetting(name = "Scale", 0.5f, 0f, 1f, 0.01f, description = "The scale of the dragon.")
+    private val horizontal: Float by NumberSetting(name = "Horizontal", -1f, -10f, 10f, 0.1f, description = "The horizontal offset of the dragon.")
+    private val vertical: Float by NumberSetting(name = "Vertical", 0f, -10f, 10f, 0.1f, description = "The vertical offset of the dragon.")
+    private val degrees: Float by NumberSetting(name = "Degrees", 0f, -180f, 180f, 1f, description = "The degrees of the dragon.")
+    private val animationSpeed: Float by NumberSetting(name = "Animation Speed", 0.5f, 0.0f, 1f, 0.01f, description = "The speed of the dragon's animation.")
+    private val color: Color by ColorSetting(name = "Color", default = Color.WHITE, description = "The color of the dragon.")
+
+    var dragon: EntityDragon? = null
+
+    override fun onDisable() {
+        dragon?.let {
+            mc.theWorld?.removeEntityFromWorld(it.entityId)
+            dragon = null
+        }
+        super.onDisable()
+    }
+
+    @SubscribeEvent
+    fun onWorldUnload(event: WorldEvent.Unload) {
+        dragon?.let {
+            mc.theWorld?.removeEntityFromWorld(it.entityId)
+            dragon = null
+        }
+    }
+
+    @SubscribeEvent
+    fun onRenderWorld(event: RenderWorldLastEvent) {
+        if (dragon == null && mc.theWorld != null) {
+            dragon = EntityDragon(mc.theWorld)
+            dragon?.let { mc.theWorld?.addEntityToWorld(it.entityId, it) }
+            return
+        }
+        mc.thePlayer?.let { player ->
+            var yaw = player.rotationYaw
+            if (yaw < 0) yaw += 180 else if (yaw > 0) yaw -= 180
+            dragon?.apply { setLocationAndAngles(player.renderX, player.renderY + 8, player.renderZ, yaw, player.rotationPitch) }
+        }
+    }
+
+    @SubscribeEvent
+    fun onTick(event: TickEvent.ClientTickEvent) {
+        if (event.phase != TickEvent.Phase.END) return
+        dragon?.apply {
+            animTime -= (1 - animationSpeed) / 5
+            isSilent = true
+        }
+    }
+
+    @SubscribeEvent
+    fun onRenderEntityPre(event: RenderLivingEvent.Pre<EntityDragon>) {
+        dragon?.let {
+            if (event.entity.entityId != it.entityId) return
+            if (onlyF5 && mc.gameSettings.thirdPersonView == 0) {
+                event.isCanceled = true
+                return
+            }
+            val yawRadians = Math.toRadians(mc.thePlayer.rotationYaw.toDouble() + degrees)
+            GlStateManager.pushMatrix()
+            GlStateManager.translate(horizontal * cos(yawRadians), vertical.toDouble(), horizontal * sin(yawRadians))
+            GlStateManager.scale(scale / 4, scale / 4, scale / 4)
+            GlStateManager.color(color.r / 255f, color.g / 255f, color.b / 255f)
+        }
+    }
+
+    @SubscribeEvent
+    fun onRenderEntityPost(event: RenderLivingEvent.Post<EntityDragon>) {
+        dragon?.let {
+            if (event.entity.entityId != it.entityId) return
+            GlStateManager.popMatrix()
+        }
+    }
+}

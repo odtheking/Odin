@@ -1,0 +1,40 @@
+{
+  "package": "me.odin.mixin",
+  "refmap": "mixins.odin.refmap.json",
+  "minVersion": "0.7",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "mixins.MixinChunk",
+    "mixins.MixinEntityLivingBase",
+    "mixins.MixinNetworkManager",
+    "mixins.MixinRendererLivingEntity",
+    "mixins.MixinS1CPacketEntityMetadata",
+    "mixins.MixinWorld"
+  ],
+  "client": [
+    "accessors.EntityRendererAccessor",
+    "accessors.IEntityPlayerSPAccessor",
+    "accessors.IMinecraftAccessor",
+    "mixins.MixinEntityPlayerSP",
+    "mixins.MixinEntityRenderer",
+    "mixins.MixinFontRenderer",
+    "mixins.MixinGuiContainer",
+    "mixins.MixinGuiIngame",
+    "mixins.MixinGuiScreen",
+    "mixins.MixinItem",
+    "mixins.MixinItemRenderer",
+    "mixins.MixinMinecraft",
+    "mixins.MixinModList",
+    "mixins.MixinMouseHelper",
+    "mixins.MixinNetworkManager",
+    "mixins.MixinPlayerControllerMP",
+    "mixins.MixinRenderDragon",
+    "mixins.MixinRenderEntityItem",
+    "mixins.MixinRendererLivingEntity",
+    "mixins.MixinRenderItem",
+    "mixins.MixinRenderPlayer",
+    "mixins.MixinSoundManager",
+    "mixins.model.MixinModelBiped",
+    "mixins.model.MixinModelBlaze"
+  ]
+}
