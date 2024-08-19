@@ -2,6 +2,8 @@ package me.odinclient.features.impl.dungeon
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.NumberSetting
 import net.minecraft.client.Minecraft
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.item.ItemStack
@@ -16,28 +18,35 @@ import kotlin.concurrent.schedule
 
 object AutoBoom : Module(
     name = "Auto Superboom",
-    description = "Places a superboom when you left-click cracked stone bricks. (has a delay so no ban)",
-    category = Category.DUNGEON
+    description = "Places a superboom when you left-click.",
+    category = Category.DUNGEON,
+    tag = TagType.RISKY
 ) {
     private val minecraft: Minecraft = Minecraft.getMinecraft()
 
+    private val swapDelay: Long by NumberSetting("Swap Delay", 10L, 1, 20, unit = "ticks", description = "Superboom swapping delay in ticks.")
+    private val placeDelay: Long by NumberSetting("Place Delay", 10L, 1, 20, unit = "ticks", description = "Placing Superboom delay in ticks.")
+    private val anyBlock: Boolean by BooleanSetting("Any Block", default = false, description = "Place Superboom on any block.")
+
     @SubscribeEvent
     fun onLeftClick(event: PlayerInteractEvent) {
-        // Check if the action is left-click on block and if it's cracked stone bricks
-        if (event.action == PlayerInteractEvent.Action.LEFT_CLICK_BLOCK && isLookingAtCrackedStoneBricks(event.pos)) {
-            val superboomSlot = findSuperboomSlot()
-            if (superboomSlot != -1) {
-                // First, switch to the Superboom TNT slot after 1 second
-                Timer().schedule(1000) {
-                    minecraft.thePlayer.inventory.currentItem = superboomSlot
+        if (event.action == PlayerInteractEvent.Action.LEFT_CLICK_BLOCK) {
+            if (anyBlock || isLookingAtCrackedStoneBricks(event.pos)) {
+                val superboomSlot = findSuperboomSlot()
+                if (superboomSlot != -1) {
+                    val swapDelayMillis = swapDelay * 50
+                    val placeDelayMillis = placeDelay * 50
 
-                    // Then, trigger the right-click after another 1 second
-                    Timer().schedule(1000) {
-                        triggerRightClick()
+                    Timer().schedule(swapDelayMillis) {
+                        minecraft.thePlayer.inventory.currentItem = superboomSlot
+
+                        Timer().schedule(placeDelayMillis) {
+                            triggerRightClick()
+                        }
                     }
+                } else {
+                    minecraft.thePlayer.addChatMessage(ChatComponentText("No item named 'Superboom TNT' could be found."))
                 }
-            } else {
-                minecraft.thePlayer.addChatMessage(ChatComponentText("No item named 'Superboom TNT' could be found."))
             }
         }
     }
@@ -50,7 +59,7 @@ object AutoBoom : Module(
                 return i
             }
         }
-        return -1 // Not found
+        return -1
     }
 
     private fun isLookingAtCrackedStoneBricks(pos: BlockPos): Boolean {
