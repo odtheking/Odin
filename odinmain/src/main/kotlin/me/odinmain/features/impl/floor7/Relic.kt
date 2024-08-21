@@ -37,7 +37,7 @@ object Relic {
         val relic = Relic.entries.find { it.id == currentRelic } ?: return
         val hasPassed = (System.currentTimeMillis() - timer) / 1000.0
 
-        relicPBs.time(relic.ordinal, hasPassed, "s§7!", "§${relic.colorCode}${relic.name} §7took §6", addPBString = true, addOldPBString = true, sendOnlyPB = false, sendMessage = relicAnnounceTime)
+        relicPBs.time(relic.ordinal, hasPassed, "s§7!", "§${relic.colorCode}${relic.name} relic §7took §6", addPBString = true, addOldPBString = true, sendOnlyPB = false, sendMessage = relicAnnounceTime)
         timer = 0L
     }
 }

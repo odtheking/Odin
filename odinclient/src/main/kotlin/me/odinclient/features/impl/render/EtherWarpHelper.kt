@@ -134,7 +134,7 @@ object EtherWarpHelper : Module(
     fun onSoundPacket(event: PacketReceivedEvent) {
         with(event.packet) {
             if (this !is S29PacketSoundEffect || soundName != "mob.enderdragon.hit" || !sounds || volume != 1f || pitch != 0.53968257f || customSound == "mob.enderdragon.hit") return
-            playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], soundVolume, soundPitch, pos)
+            playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], soundVolume, soundPitch, positionVector)
             event.isCanceled = true
         }
     }
