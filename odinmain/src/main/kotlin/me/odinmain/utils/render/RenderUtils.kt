@@ -559,8 +559,9 @@ object RenderUtils {
     fun drawBoxes(boxes: Collection<DungeonWaypoint>, glList: Int, disableDepth: Boolean = false): Int {
         var newGlList = glList
         GlStateManager.pushMatrix()
-        preDraw()
         GlStateManager.disableCull()
+        GlStateManager.depthMask(false)
+        preDraw()
 
         GL11.glLineWidth(3f)
         if (newGlList != -1) {

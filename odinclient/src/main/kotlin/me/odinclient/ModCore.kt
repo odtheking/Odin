@@ -41,8 +41,6 @@ class ModCore {
             autoSellCommand,
             OdinClientCommand
         )
-        FramebufferShader.setupCameraTransform =
-            { (mc.entityRenderer as? IEntityRendererAccessor)?.invokeSetupCameraTransform(RenderUtils.partialTicks, 0) }
     }
 
     @EventHandler
