@@ -16,6 +16,7 @@ import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.init.Blocks
 import net.minecraft.tileentity.TileEntitySkull
 import net.minecraft.util.BlockPos
+import net.minecraft.util.ResourceLocation
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.ceil
@@ -216,21 +217,21 @@ object DungeonUtils {
 
             val (_, _, name, clazz, _) = tablistRegex.find(line.noControlCodes)?.groupValues ?: continue
 
-            addTeammate(name, clazz, teammates, networkPlayerInfo) // will fail to find the EMPTY or DEAD class and won't add them to the list
+            addTeammate(name, clazz, teammates, networkPlayerInfo.locationSkin) // will fail to find the EMPTY or DEAD class and won't add them to the list
             if (clazz == "DEAD" || clazz == "EMPTY") {
                 val previousClass = previousTeammates.find { it.name == name }?.clazz ?: continue
-                addTeammate(name, previousClass.name, teammates, networkPlayerInfo) // will add the player with the previous class
+                addTeammate(name, previousClass.name, teammates, networkPlayerInfo.locationSkin) // will add the player with the previous class
             }
             teammates.find { it.name == name }?.isDead = clazz == "DEAD" // set the player as dead if they are
         }
         return teammates
     }
 
-    private fun addTeammate(name: String, clazz: String, teammates: MutableList<DungeonPlayer>, networkPlayerInfo: NetworkPlayerInfo) {
+    private fun addTeammate(name: String, clazz: String, teammates: MutableList<DungeonPlayer>, locationSkin: ResourceLocation) {
         DungeonClass.entries.find { it.name == clazz }?.let { foundClass ->
             mc.theWorld?.getPlayerEntityByName(name)?.let { player ->
-                teammates.add(DungeonPlayer(name, foundClass, networkPlayerInfo.locationSkin, player))
-            } ?: teammates.add(DungeonPlayer(name, foundClass, networkPlayerInfo.locationSkin, null))
+                teammates.add(DungeonPlayer(name, foundClass, locationSkin, player))
+            } ?: teammates.add(DungeonPlayer(name, foundClass, locationSkin, null))
         }
     }
 
@@ -248,7 +249,7 @@ object DungeonUtils {
      * @return `true` if the specified block state and position indicate a secret location, otherwise `false`.
      */
     fun isSecret(state: IBlockState, pos: BlockPos): Boolean {
-        if (state.block.equalsOneOf(Blocks.chest, Blocks.trapped_chest, Blocks.lever)) return true
+        if (state.block.equalsOneOf(Blocks.chest, Blocks.trapped_chest, Blocks.lever, Blocks.lever)) return true
         else if (state.block is BlockSkull) {
             val tile = mc.theWorld?.getTileEntity(pos) ?: return false
             if (tile !is TileEntitySkull) return false

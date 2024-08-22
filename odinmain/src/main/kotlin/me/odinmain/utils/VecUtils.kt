@@ -10,6 +10,7 @@ import me.odinmain.utils.skyblock.dungeon.tiles.Rotations
 import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S29PacketSoundEffect
+import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraft.util.*
 import kotlin.math.*
 
@@ -482,8 +483,11 @@ fun Vec3.coerceZIn(min: Double, max: Double): Vec3 {
  * Gets the Vec3 position of the given S29PacketSoundEffect.
  * @author Bonsai
  */
-val S29PacketSoundEffect.pos: Vec3
+val S29PacketSoundEffect.positionVector: Vec3
     get() = Vec3(this.x, this.y, this.z)
+
+val S2APacketParticles.positionVector: Vec3
+    get() = Vec3(this.xCoordinate, this.yCoordinate, this.zCoordinate)
 
 val AxisAlignedBB.corners: List<Vec3>
     get() = listOf(
@@ -507,7 +511,7 @@ val AxisAlignedBB.middle: Vec3
  * @author Bonsai
  */
 fun findNearestGrassBlock(pos: Vec3): Vec3 {
-    val chunk = mc.theWorld.getChunkFromBlockCoords(BlockPos(pos))
+    val chunk = mc.theWorld?.getChunkFromBlockCoords(BlockPos(pos)) ?: return pos.coerceYIn(50.0, 110.0)
     if (!chunk.isLoaded) return pos.coerceYIn(50.0, 110.0)
 
     val blocks = List(70) { i -> BlockPos(pos.xCoord, i + 50.0, pos.zCoord) }.filter { chunk.getBlock(it) == Blocks.grass }

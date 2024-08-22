@@ -34,7 +34,7 @@ object SecretWaypoints {
     fun onSecret(event: SecretPickupEvent) {
         when (event) {
             is SecretPickupEvent.Interact -> clickSecret(Vec3(event.blockPos), 0, event.blockState)
-            is SecretPickupEvent.Bat -> clickSecret(event.packet.pos, 5)
+            is SecretPickupEvent.Bat -> clickSecret(event.packet.positionVector, 5)
             is SecretPickupEvent.Item -> clickSecret(event.entity.positionVector, 3)
         }
     }

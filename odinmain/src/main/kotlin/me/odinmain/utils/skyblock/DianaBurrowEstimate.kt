@@ -38,15 +38,15 @@ object DianaBurrowEstimate {
             when (particleType) {
                 ParticleType.FOOTSTEP -> hasFootstep = true
                 ParticleType.ENCHANT -> hasEnchant = true
-                ParticleType.EMPTY -> type = 0
-                ParticleType.MOB -> type = 1
-                ParticleType.TREASURE -> type = 2
+                ParticleType.EMPTY -> type = DianaHelper.BurrowType.START
+                ParticleType.MOB -> type = DianaHelper.BurrowType.MOB
+                ParticleType.TREASURE -> type = DianaHelper.BurrowType.TREASURE
             }
         }
 
-        if (!burrow.hasEnchant || !burrow.hasFootstep || burrow.type == -1 || burrow.found || location in recentBurrows) return
+        if (!burrow.hasEnchant || !burrow.hasFootstep || burrow.type == DianaHelper.BurrowType.UNKNOWN || burrow.found || location in recentBurrows) return
 
-        DianaHelper.burrowsRender[burrow.location] = burrow.getType()
+        DianaHelper.burrowsRender[burrow.location] = burrow.type
         burrow.found = true
     }
 
@@ -62,21 +62,20 @@ object DianaBurrowEstimate {
     fun chat(message: String) {
         if (!message.startsWith("You dug out a Griffin Burrow!") && message != "You finished the Griffin burrow chain! (4/4)") return
 
-       lastBurrow?.let {
-           recentBurrows.add(it)
-           burrows.remove(it)
-           DianaHelper.burrowsRender.remove(it)
-           lastBurrow = null
+        lastBurrow?.let {
+            recentBurrows.add(it)
+            burrows.remove(it)
+            DianaHelper.burrowsRender.remove(it)
+            lastBurrow = null
         }
     }
 
     fun handleSoundPacket(packetSound: S29PacketSoundEffect) {
         if (packetSound.soundName != "note.harp" || !LocationUtils.currentArea.isArea(Island.Hub)) return
 
-        if (lastDingTime == 0L) firstPitch = packetSound.pitch
-
         lastDingTime = System.currentTimeMillis()
 
+        if (lastDingTime == 0L) firstPitch = packetSound.pitch
         if (packetSound.pitch < lastDingPitch) reset()
 
         if (lastDingPitch == 0f) {
@@ -92,36 +91,41 @@ object DianaBurrowEstimate {
         numberOfDings++
         if (numberOfDings > 1) dingPitchSlopes.add(packetSound.pitch - lastDingPitch)
         if (dingPitchSlopes.size > 20) dingPitchSlopes.removeFirst()
-        val slope = if (dingPitchSlopes.isNotEmpty()) dingPitchSlopes.average() else 0.0
-        lastSoundPoint = packetSound.pos
+        lastSoundPoint = packetSound.positionVector
         lastDingPitch = packetSound.pitch
 
-        val secondLastParticlePosition = secondLastParticlePosition ?: return
-        val currentParticlePosition = currentParticlePosition ?: return
-        val firstParticlePoint = firstParticlePoint ?: return
+        val secondLastPosition = secondLastParticlePosition ?: return
+        val currentPosition = currentParticlePosition ?: return
+        val firstPosition = firstParticlePoint ?: return
 
-        estimatedBurrowDistance = (Math.E / slope) - firstParticlePoint.distanceTo(packetSound.pos)
+        estimatedBurrowDistance = (Math.E / if (dingPitchSlopes.isNotEmpty()) dingPitchSlopes.average() else 0.0) - firstPosition.distanceTo(packetSound.positionVector)
 
         if (estimatedBurrowDistance?.let { it > 1000 } == true) {
             estimatedBurrowDistance = null
             return
         }
 
-        val changesHelp = currentParticlePosition.subtract(secondLastParticlePosition) ?: return
-        val changes = listOf(changesHelp.xCoord, changesHelp.yCoord, changesHelp.zCoord).map { it / secondLastParticlePosition.distanceTo(currentParticlePosition) }
+        val changes = currentPosition.subtract(secondLastPosition)?.let { vec3 ->
+            listOf(vec3.xCoord, vec3.yCoord, vec3.zCoord)
+                .map { it / secondLastPosition.distanceTo(currentPosition) }
+        } ?: return
 
-        lastSoundPoint?.let {
-            val estimatedBurrowDistance = estimatedBurrowDistance ?: return@let
-            estimatedBurrowPosition = Vec3(it.xCoord + changes[0] * (estimatedBurrowDistance), it.yCoord + changes[1] * (estimatedBurrowDistance), it.zCoord + changes[2] * (estimatedBurrowDistance))
+        estimatedBurrowDistance?.let { distance ->
+            lastSoundPoint?.let { lastSoundPos ->
+                estimatedBurrowPosition = Vec3(
+                    lastSoundPos.xCoord + changes[0] * distance,
+                    lastSoundPos.yCoord + changes[1] * distance,
+                    lastSoundPos.zCoord + changes[2] * distance
+                )
+            }
         }
     }
 
     fun handleParticlePacket(packet: S2APacketParticles) {
         if (packet.particleType != EnumParticleTypes.DRIP_LAVA) return
-        val currLoc = Vec3(packet.xCoordinate, packet.yCoordinate, packet.zCoordinate)
+        val currLoc = packet.positionVector
 
-        val run = lastSoundPoint?.let { abs(currLoc.xCoord - it.xCoord) < 2 && abs(currLoc.yCoord - it.yCoord) < 0.5 && abs(currLoc.zCoord - it.zCoord) < 2 } ?: false
-        if (!run) return
+        if (lastSoundPoint?.let { abs(currLoc.xCoord - it.xCoord) < 2 && abs(currLoc.yCoord - it.yCoord) < 0.5 && abs(currLoc.zCoord - it.zCoord) < 2 } != true) return
 
         guessPosition(currLoc)
 
@@ -130,102 +134,98 @@ object DianaBurrowEstimate {
         lastParticlePosition = currentParticlePosition
         currentParticlePosition = currLoc.clone()
 
-        val secondLastParticlePosition = secondLastParticlePosition ?: return
+        val secondLastPosition = secondLastParticlePosition ?: return
+        val estimatedDistance = estimatedBurrowDistance ?: return
 
-        val estimatedBurrowDistance = estimatedBurrowDistance ?: return
-        //val firstParticlePoint = firstParticlePoint ?: return check if the check for if null is needed here
-        //val lastSoundPoint = lastSoundPoint ?: return check if the check for if null is needed here
-
-        val changesHelp = currentParticlePosition?.subtract(secondLastParticlePosition) ?: return
-        val changes = listOf(changesHelp.xCoord, changesHelp.yCoord, changesHelp.zCoord).map { it / secondLastParticlePosition.distanceTo(currentParticlePosition) }
+        val changes = currentParticlePosition?.subtract(secondLastPosition)?.let { vec3 ->
+            listOf(vec3.xCoord, vec3.yCoord, vec3.zCoord)
+                .map { it / secondLastPosition.distanceTo(currentParticlePosition) }
+        } ?: return
 
         lastParticlePosition?.let {
-            estimatedBurrowPosition = Vec3(it.xCoord + changes[0] * estimatedBurrowDistance, it.yCoord + changes[1], it.zCoord + changes[2] * estimatedBurrowDistance)
+            estimatedBurrowPosition = Vec3(
+                it.xCoord + changes[0] * estimatedDistance,
+                it.yCoord + changes[1],
+                it.zCoord + changes[2] * estimatedDistance
+            )
         }
     }
 
     private fun guessPosition(currLoc: Vec3) {
-        if (particlePositions.size < 100 && particlePositions.isEmpty() || particlePositions.last().distanceTo(currLoc) != 0.0) {
-            var distMultiplier = 1.0
-            if (particlePositions.size > 2) {
-                val predictedDist = 0.06507 * particlePositions.size + 0.259
-                val lastPos = particlePositions.last()
-                val actualDist = currLoc.distanceTo(lastPos)
-                distMultiplier = actualDist / predictedDist
-            }
-            particlePositions.add(currLoc)
+        if (particlePositions.size >= 100 || particlePositions.isNotEmpty() && particlePositions.last().distanceTo(currLoc) == 0.0) return
 
-            if (particlePositions.size > 5 && estimatedBurrowPosition != null) {
-                val slopeThing = particlePositions.zipWithNext { a, b -> atan((a.xCoord - b.xCoord) / (a.zCoord - b.zCoord)) }
-                val (a, b, c) = calculateCoefficientsFromVectors(
-                    Vec3(slopeThing.size - 5.0, slopeThing.size - 3.0, slopeThing.size - 1.0),
-                    Vec3(slopeThing[slopeThing.size - 5], slopeThing[slopeThing.size - 3], slopeThing[slopeThing.size - 1])
+        val distMultiplier = particlePositions.takeIf { it.size > 2 }
+            ?.let { currLoc.distanceTo(it.last()) / (0.06507 * it.size + 0.259) }
+            ?: 1.0
+
+        particlePositions.add(currLoc)
+
+        if (particlePositions.size <= 5 || estimatedBurrowPosition == null) return
+
+        val slopeValues = particlePositions.asSequence().zipWithNext { a, b ->
+            atan((a.xCoord - b.xCoord) / (a.zCoord - b.zCoord))
+        }.toList()
+
+        val (a, b, c) = calculateCoefficientsFromVectors(
+            Vec3(slopeValues.size - 5.0, slopeValues.size - 3.0, slopeValues.size - 1.0),
+            Vec3(slopeValues[slopeValues.size - 5], slopeValues[slopeValues.size - 3], slopeValues[slopeValues.size - 1])
+        )
+
+        val pr1 = mutableListOf<Vec3>()
+        val pr2 = mutableListOf<Vec3>()
+        val start = slopeValues.size - 1
+        val lastPos = particlePositions[start].toDoubleArray()
+        val lastPos2 = particlePositions[start].toDoubleArray()
+
+        var distCovered = 0.0
+
+        val ySpeed = (particlePositions.last().xCoord - particlePositions[particlePositions.size - 2].xCoord) /
+                hypot(
+                    particlePositions.last().xCoord - particlePositions[particlePositions.size - 2].xCoord,
+                    particlePositions.last().zCoord - particlePositions[particlePositions.size - 2].zCoord
                 )
 
-                val pr1 = mutableListOf<Vec3>()
-                val pr2 = mutableListOf<Vec3>()
+        val estimatedDistance = estimatedBurrowDistance ?: return
 
-                val start = slopeThing.size - 1
-                val lastPos = particlePositions[start].toDoubleArray()
-                val lastPos2 = particlePositions[start].toDoubleArray()
+        var i = start + 1
+        while (distCovered < estimatedDistance && i < 10000) {
+            val y = b / (i + a) + c
+            val dist = distMultiplier * (0.06507 * i + 0.259)
+            val xOff = dist * sin(y)
+            val zOff = dist * cos(y)
 
-                var distCovered = 0.0
+            repeat(5) {
+                lastPos[0] += xOff / 5
+                lastPos[2] += zOff / 5
+                lastPos[1] += ySpeed * dist / 5
 
-                val ySpeed =
-                    particlePositions[particlePositions.size - 1].xCoord - particlePositions[particlePositions.size - 2].xCoord / hypot(
-                    particlePositions[particlePositions.size - 1].xCoord - particlePositions[particlePositions.size - 2].xCoord,
-                    particlePositions[particlePositions.size - 1].zCoord - particlePositions[particlePositions.size - 2].xCoord
-                )
-                val estimatedBurrowDistance = estimatedBurrowDistance ?: return
-                var i = start + 1
-                while (distCovered < estimatedBurrowDistance && i < 10000) {
-                    val y = b / (i + a) + c
-                    val dist = distMultiplier * (0.06507 * i + 0.259) // this is where inaccuracy comes from
+                lastPos2[0] -= xOff / 5
+                lastPos2[2] -= zOff / 5
+                lastPos2[1] += ySpeed * dist / 5
 
-                    val xOff = dist * sin(y)
-                    val zOff = dist * cos(y)
+                pr1.add(lastPos.toVec3())
+                pr2.add(lastPos2.toVec3())
 
-                    val density = 5
-
-                    for (o in 0..density) {
-                        lastPos[0] += xOff / density
-                        lastPos[2] += zOff / density
-
-                        lastPos[1] += ySpeed * dist / density
-                        lastPos2[1] += ySpeed * dist / density
-
-                        lastPos2[0] -= xOff / density
-                        lastPos2[2] -= zOff / density
-
-                        pr1.add(lastPos.toVec3())
-                        pr2.add(lastPos2.toVec3())
-
-                        lastSoundPoint?.let {
-                            distCovered = hypot(lastPos[0] - it.xCoord, lastPos[2] - it.zCoord)
-                        }
-
-                        if (distCovered > estimatedBurrowDistance) break
-                    }
-                    i++
-                }
-                if (pr1.isEmpty()) return
-
-                val p1 = pr1.last()
-                val p2 = pr2.last()
-
-                estimatedBurrowPosition?.let {
-                    modMessage("Estimated burrow position: ${it.xCoord}, ${it.yCoord}, ${it.zCoord}")
-                    DianaHelper.renderPos = findNearestGrassBlock(
-                        if (
-                            ((p1.xCoord - it.xCoord) * (2 + p1.zCoord - it.zCoord)).pow(2) <
-                            ((p2.xCoord - it.xCoord) * (2 + p2.zCoord - it.zCoord)).pow(2)
-                        )
-                            Vec3(floor(p1.xCoord), 120.0, floor(p1.zCoord))
-                        else
-                            Vec3(floor(p2.xCoord), 120.0, floor(p2.zCoord))
-                    )
-                }
+                lastSoundPoint?.let { distCovered = hypot(lastPos[0] - it.xCoord, lastPos[2] - it.zCoord) }
+                if (distCovered > estimatedDistance) return@repeat
             }
+            i++
+        }
+
+        if (pr1.isEmpty()) return
+
+        val p1 = pr1.last()
+        val p2 = pr2.last()
+
+        estimatedBurrowPosition?.let {
+            DianaHelper.renderPos = findNearestGrassBlock(
+                if (((p1.xCoord - it.xCoord) * (2 + p1.zCoord - it.zCoord)).pow(2) <
+                    ((p2.xCoord - it.xCoord) * (2 + p2.zCoord - it.zCoord)).pow(2)
+                )
+                    Vec3(floor(p1.xCoord), 120.0, floor(p1.zCoord))
+                else
+                    Vec3(floor(p2.xCoord), 120.0, floor(p2.zCoord))
+            )
         }
     }
 
@@ -259,20 +259,11 @@ object DianaBurrowEstimate {
         }
     }
 
-    class Burrow(
+    data class Burrow(
         var location: Vec3i,
         var hasFootstep: Boolean = false,
         var hasEnchant: Boolean = false,
-        var type: Int = -1,
+        var type: DianaHelper.BurrowType = DianaHelper.BurrowType.UNKNOWN,
         var found: Boolean = false,
-    ) {
-        fun getType(): DianaHelper.BurrowType {
-            return when (this.type) {
-                0 -> DianaHelper.BurrowType.START
-                1 -> DianaHelper.BurrowType.MOB
-                2 -> DianaHelper.BurrowType.TREASURE
-                else -> DianaHelper.BurrowType.UNKNOWN
-            }
-        }
-    }
+    )
 }
