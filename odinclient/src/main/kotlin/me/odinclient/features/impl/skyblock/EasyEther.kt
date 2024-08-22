@@ -19,7 +19,7 @@ object EasyEther : Module(
     tag = TagType.RISKY
 ) {
     private val etherOnLC: Boolean by BooleanSetting("On Left Click", true, description = "Etherwarps on left click.")
-    private val etherOnShift: Boolean by BooleanSetting("On Sneak", true, description = "Etherwarps on sneak.")
+    private val etherOnShift: Boolean by BooleanSetting("On Sneak", false, description = "Etherwarps on sneak.")
 
     @SubscribeEvent
     fun onMouseEvent(event: MouseEvent) {
