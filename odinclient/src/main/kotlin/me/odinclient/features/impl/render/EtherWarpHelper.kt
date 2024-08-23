@@ -47,10 +47,10 @@ object EtherWarpHelper : Module(
 
     private val etherwarpTBDropDown: Boolean by DropdownSetting("Trigger Bot")
     private val etherWarpTriggerBot: Boolean by BooleanSetting("Trigger Bot", false, description = "Uses Dungeon Waypoints to trigger bot to the closest waypoint.").withDependency { etherwarpTBDropDown }
-    private val etherWarpTBDelay: Long by NumberSetting("Trigger Bot Delay", 200L, 0, 1000, 10).withDependency { etherWarpTriggerBot && etherwarpTBDropDown }
+    private val etherWarpTBDelay: Long by NumberSetting("Trigger Bot Delay", 200L, 0, 1000, 10, description = "Delay between each trigger bot click.").withDependency { etherWarpTriggerBot && etherwarpTBDropDown }
     private val etherWarpHelper: Boolean by BooleanSetting("(MIGHT BAN) Rotator", false, description = "Rotates you to the closest waypoint when you left click with aotv.").withDependency { etherwarpTBDropDown }
-    private val rotTime: Long by NumberSetting("Rotation Time", 150L, 10L, 600L, 1L).withDependency { etherWarpHelper && etherwarpTBDropDown }
-    private val maxRot: Float by NumberSetting("Max Rotation", 90f, 0f, 360f, 1f).withDependency { etherWarpHelper && etherwarpTBDropDown }
+    private val rotTime: Long by NumberSetting("Rotation Time", 150L, 10L, 600L, 1L, description = "Time it takes to rotate to the closest waypoint.").withDependency { etherWarpHelper && etherwarpTBDropDown }
+    private val maxRot: Float by NumberSetting("Max Rotation", 90f, 0f, 360f, 1f, description = "Max rotation difference to rotate to a waypoint.").withDependency { etherWarpHelper && etherwarpTBDropDown }
 
     private val dropdown: Boolean by DropdownSetting("Sounds", false)
     private val sounds: Boolean by BooleanSetting("Custom Sounds", default = false, description = "Plays the selected custom sound when you etherwarp.").withDependency { dropdown }

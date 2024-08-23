@@ -36,14 +36,14 @@ object ArrowsDevice : Module(
     tag = TagType.RISKY,
 ) {
     private val solverDropdown: Boolean by DropdownSetting("Solver")
-    private val solver: Boolean by BooleanSetting("Enabled", default = true).withDependency { solverDropdown }
+    private val solver: Boolean by BooleanSetting("Enabled", default = true, description = "Automatically solve the puzzle.").withDependency { solverDropdown }
     private val markedPositionColor: Color by ColorSetting("Marked Position", Color.RED, description = "Color of the marked position.").withDependency { solver && solverDropdown }
     private val targetPositionColor: Color by ColorSetting("Target Position", Color.GREEN, description = "Color of the target position.").withDependency { solver && solverDropdown }
     private val resetKey: Keybinding by KeybindSetting("Reset", Keyboard.KEY_NONE, description = "Resets the solver.").onPress {
         reset()
     }.withDependency { solver && solverDropdown }
     private val depthCheck: Boolean by BooleanSetting("Depth check", true, description = "Marked positions show through walls.").withDependency { solver && solverDropdown }
-    private val reset: () -> Unit by ActionSetting("Reset") {
+    private val reset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
         markedPositions.clear()
         autoState = AutoState.Stopped
         actionQueue.clear()

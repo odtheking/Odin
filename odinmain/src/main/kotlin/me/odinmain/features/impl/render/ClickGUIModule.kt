@@ -31,7 +31,7 @@ object ClickGUIModule: Module(
     val switchType: Boolean by DualSetting("Switch Type", "Checkbox", "Switch", default = true, description = "Switches the type of the settings in the gui.")
     val hudChat: Boolean by BooleanSetting("Shows HUDs in GUIs", true, description = "Shows HUDs in GUIs")
     val forceHypixel: Boolean by BooleanSetting("Force Hypixel", false, description = "Forces the hypixel check to be on (not recommended).")
-    val updateMessage: Int by SelectorSetting("Update Message", "Beta", arrayListOf("Beta", "Full", "None"))
+    val updateMessage: Int by SelectorSetting("Update Message", "Beta", arrayListOf("Beta", "Full", "None"), description = "Shows the update message in chat.")
 
     val devMessages: Boolean by BooleanSetting("Dev Messages", false, description = "Enables dev messages in chat.").withDependency { DevPlayers.isDev }
     val devSize: Boolean by BooleanSetting("Dev Size", true, description = "Toggles client side dev size.").withDependency { DevPlayers.isDev }
@@ -43,7 +43,7 @@ object ClickGUIModule: Module(
     private var showHidden: Boolean by DropdownSetting("Show Hidden", false).withDependency { DevPlayers.isDev }
     private val passcode: String by StringSetting("Passcode", "odin", description = "Passcode for dev features.").withDependency { DevPlayers.isDev && showHidden }
 
-    val reset: () -> Unit by ActionSetting("Send Dev Data") {
+    val reset: () -> Unit by ActionSetting("Send Dev Data", description = "Sends dev data to the server.") {
         showHidden = false
         scope.launch {
             modMessage(sendDataToServer(body = "${mc.thePlayer.name}, [${devWingsColor.r},${devWingsColor.g},${devWingsColor.b}], [$devSizeX,$devSizeY,$devSizeZ], $devWings, $passcode", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
@@ -51,12 +51,12 @@ object ClickGUIModule: Module(
         }
     }.withDependency { DevPlayers.isDev }
 
-    val action: () -> Unit by ActionSetting("Open Example Hud") {
+    val action: () -> Unit by ActionSetting("Open Example Hud", description = "Opens an example hud to allow configuration of huds.") {
         OdinMain.display = EditHUDGui
     }
 
-    private var joined: Boolean by BooleanSetting("First join", false, hidden = true)
-    var lastSeenVersion: String by StringSetting("Last seen version", "1.0.0", hidden = true)
+    private var joined: Boolean by BooleanSetting("First join", false, hidden = true, "")
+    var lastSeenVersion: String by StringSetting("Last seen version", "1.0.0", hidden = true, description = "")
     var firstTimeOnVersion = false
 
     val panelX = mutableMapOf<Category, NumberSetting<Float>>()
@@ -99,9 +99,9 @@ object ClickGUIModule: Module(
     fun resetPositions() {
         Category.entries.forEach {
             val incr = 10f + 260f * it.ordinal
-            panelX.getOrPut(it) { +NumberSetting(it.name + ",x", default = incr, hidden = true) }.value = incr
-            panelY.getOrPut(it) { +NumberSetting(it.name + ",y", default = 10f, hidden = true) }.value = 10f
-            panelExtended.getOrPut(it) { +BooleanSetting(it.name + ",extended", default = true, hidden = true) }.enabled = true
+            panelX.getOrPut(it) { +NumberSetting(it.name + ",x", default = incr, hidden = true, description = "") }.value = incr
+            panelY.getOrPut(it) { +NumberSetting(it.name + ",y", default = 10f, hidden = true, description = "") }.value = 10f
+            panelExtended.getOrPut(it) { +BooleanSetting(it.name + ",extended", default = true, hidden = true, description = "") }.enabled = true
         }
     }
 

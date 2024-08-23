@@ -14,7 +14,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object TacTimer : Module(
     name = "Tac Timer",
     category = Category.NETHER,
-    description = "Tactical Insertion Timer"
+    description = "Tactical Insertion Timer."
 ) {
     private val hud: HudElement by HudSetting("Timer Hud", 10f, 10f, 1f, false) {
         if (it) {

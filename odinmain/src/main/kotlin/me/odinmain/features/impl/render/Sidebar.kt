@@ -57,10 +57,10 @@ object Sidebar : Module(
         Color.WHITE.bind()
         width.toFloat() to (scoreList.size + 1) * mc.fontRendererObj.FONT_HEIGHT.toFloat()
     }
-    private val customFont: Boolean by DualSetting("Font", "Minecraft", "Custom")
-    private val textShadow: Boolean by BooleanSetting("Text Shadow")
-    private val redNumbers: Boolean by BooleanSetting("Show Red Numbers")
-    private val backgroundColor: Color by ColorSetting("Background Color", Color.GRAY.withAlpha(.5f), allowAlpha = true)
+    private val customFont: Boolean by DualSetting("Font", "Minecraft", "Custom", description = "The font to use for the sidebar.")
+    private val textShadow: Boolean by BooleanSetting("Text Shadow", true, description = "Whether to render a shadow behind the text.")
+    private val redNumbers: Boolean by BooleanSetting("Show Red Numbers", true, description = "Whether to show the numbers in red.")
+    private val backgroundColor: Color by ColorSetting("Background Color", Color.GRAY.withAlpha(.5f), allowAlpha = true, description = "The color of the sidebar background.")
 
     fun renderSidebar(scoreObjective: ScoreObjective, scaledResolution: ScaledResolution): Boolean {
         variableScoreObjective = scoreObjective

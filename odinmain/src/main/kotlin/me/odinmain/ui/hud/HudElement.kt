@@ -43,8 +43,7 @@ open class HudElement(
     internal val xSetting: NumberSetting<Float>
     internal val ySetting: NumberSetting<Float>
     internal val scaleSetting: NumberSetting<Float>
-    val enabledSetting: BooleanSetting = BooleanSetting("$settingName enabled", default = enabled, hidden = true)
-
+    val enabledSetting: BooleanSetting = BooleanSetting("$settingName enabled", default = enabled, hidden = true, "")
 
     val hoverHandler = HoverHandler(200)
 
@@ -165,11 +164,11 @@ open class HudElement(
     /** Used for smooth resetting animations */
     internal var resetScale: Float = 0f
 
-    private val xHud = NumberSetting("$settingName x", default = x, hidden = true, min = 0f, max = Float.MAX_VALUE)
-    private val yHud = NumberSetting("$settingName y", default = y, hidden = true, min = 0f, max = Float.MAX_VALUE)
+    private val xHud = NumberSetting("$settingName x", default = x, hidden = true, min = 0f, max = Float.MAX_VALUE, description = "")
+    private val yHud = NumberSetting("$settingName y", default = y, hidden = true, min = 0f, max = Float.MAX_VALUE, description = "")
 
     init {
-        val scaleHud = NumberSetting("$settingName scale", defaultScale, 1f, 8.0f, 0.01f, hidden = true)
+        val scaleHud = NumberSetting("$settingName scale", defaultScale, 1f, 8.0f, 0.01f, hidden = true, description = "")
 
         this.xSetting = xHud
         this.ySetting = yHud

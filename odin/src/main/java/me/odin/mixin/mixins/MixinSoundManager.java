@@ -1,10 +1,7 @@
 package me.odin.mixin.mixins;
 
 import me.odinmain.utils.skyblock.PlayerUtils;
-import net.minecraft.client.audio.ISound;
-import net.minecraft.client.audio.SoundCategory;
-import net.minecraft.client.audio.SoundManager;
-import net.minecraft.client.audio.SoundPoolEntry;
+import net.minecraft.client.audio.*;
 import net.minecraft.util.MathHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

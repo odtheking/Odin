@@ -85,9 +85,8 @@ object OdinMain {
 
 
     fun onTick() {
-        if (display != null) {
-            mc.displayGuiScreen(display)
-            display = null
-        }
+        if (display == null) return
+        mc.displayGuiScreen(display)
+        display = null
     }
 }

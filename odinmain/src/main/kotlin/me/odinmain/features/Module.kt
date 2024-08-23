@@ -14,7 +14,6 @@ import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.Packet
 import net.minecraftforge.common.MinecraftForge
 import org.lwjgl.input.Keyboard
-
 import kotlin.reflect.full.hasAnnotation
 
 /**

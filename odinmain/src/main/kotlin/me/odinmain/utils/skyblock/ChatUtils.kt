@@ -6,8 +6,7 @@ import me.odinmain.features.impl.render.ClickGUIModule.devMessages
 import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.features.impl.skyblock.ChatCommands
 import me.odinmain.utils.noControlCodes
-import net.minecraft.event.ClickEvent
-import net.minecraft.event.HoverEvent
+import net.minecraft.event.*
 import net.minecraft.util.*
 import net.minecraftforge.client.ClientCommandHandler
 import kotlin.math.roundToInt

@@ -4,7 +4,7 @@ import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.floor
@@ -26,6 +26,9 @@ object SimonSays : Module(
     description = "Shows a solution for the Simon Says device.",
     category = Category.FLOOR7,
 ) {
+    private val style: Int by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION)
+    private val lineWidth: Float by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.")
+    private val depthCheck: Boolean by BooleanSetting("Depth check", false, description = "Boxes show through walls.")
     private val clearAfter: Boolean by BooleanSetting("Clear After", false, description = "Clears the clicks when showing next, should work better with ss skip, but will be less consistent.")
 
     private val firstButton = BlockPos(110, 121, 91)
@@ -98,7 +101,7 @@ object SimonSays : Module(
                 clickNeeded + 1 -> Color(255, 170, 0)
                 else -> Color(170, 0, 0)
             }.withAlpha(.5f)
-            Renderer.drawBlock(position, color, 1f, depth = true, outlineAlpha = 0)
+            Renderer.drawStyledBlock(position, color, style, lineWidth, depthCheck)
         }
     }
 }

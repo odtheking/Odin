@@ -22,15 +22,15 @@ object CustomHighlight : Module(
 ) {
     private val starredMobESP: Boolean by BooleanSetting("Starred Mob Highlight", true, description = "Highlights mobs with a star in their name (remove star from the separate list).")
     private val shadowAssasin: Boolean by BooleanSetting("Shadow Assassin", false, description = "Highlights Shadow Assassins.").withDependency { !isLegitVersion }
-    private val mode: Int by SelectorSetting("Mode", HighlightRenderer.HIGHLIGHT_MODE_DEFAULT, HighlightRenderer.highlightModeList)
+    private val mode: Int by SelectorSetting("Mode", HighlightRenderer.HIGHLIGHT_MODE_DEFAULT, HighlightRenderer.highlightModeList, description = HighlightRenderer.HIGHLIGHT_MODE_DESCRIPTION)
 
-    private val color: Color by ColorSetting("Color", Color.WHITE, true)
+    private val color: Color by ColorSetting("Color", Color.WHITE, true, description = "The color of the highlight.")
     private val thickness: Float by NumberSetting("Line Width", 1f, .1f, 4f, .1f, description = "The line width of Outline / Boxes/ 2D Boxes.").withDependency { mode != HighlightRenderer.HighlightType.Overlay.ordinal }
     private val style: Int by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { mode == HighlightRenderer.HighlightType.Boxes.ordinal }
-    private val scanDelay: Long by NumberSetting("Scan Delay", 500L, 10L, 2000L, 100L)
+    private val scanDelay: Long by NumberSetting("Scan Delay", 500L, 10L, 2000L, 100L, description = "The delay between entity scans.")
 
-    private val xray: Boolean by BooleanSetting("Depth Check", false).withDependency { !isLegitVersion }
-    private val showInvisible: Boolean by BooleanSetting("Show Invisible", false).withDependency { !isLegitVersion }
+    private val xray: Boolean by BooleanSetting("Depth Check", false, description = "Highlights entities through walls.").withDependency { !isLegitVersion }
+    private val showInvisible: Boolean by BooleanSetting("Show Invisible", false, description = "Highlights invisible entities.").withDependency { isLegitVersion }
 
     val highlightList: MutableList<String> by ListSetting("List", mutableListOf())
     private val depthCheck: Boolean get() = if (isLegitVersion) true else xray

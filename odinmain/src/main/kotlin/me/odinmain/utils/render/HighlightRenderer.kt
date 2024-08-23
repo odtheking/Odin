@@ -10,19 +10,16 @@ import me.odinmain.utils.render.RenderUtils.enableOutlineMode
 import me.odinmain.utils.render.RenderUtils.outlineColor
 import me.odinmain.utils.render.RenderUtils.renderBoundingBox
 import me.odinmain.utils.render.RenderUtils.renderVec
-import net.minecraft.client.Minecraft
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.client.renderer.culling.ICamera
-import net.minecraft.client.shader.Framebuffer
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import org.lwjgl.opengl.GL11
 
 object HighlightRenderer {
     enum class HighlightType {
@@ -31,6 +28,7 @@ object HighlightRenderer {
     data class HighlightEntity(val entity: Entity, val color: Color, val thickness: Float, val depth: Boolean, val boxStyle: Int = 0)
     const val HIGHLIGHT_MODE_DEFAULT = "Outline"
     val highlightModeList = arrayListOf("Outline", "Glow", "Boxes", "Box 2D", "Overlay")
+    const val HIGHLIGHT_MODE_DESCRIPTION = "The type of highlight to use."
 
     private val entityGetters: MutableList<Pair<() -> HighlightType, () -> Collection<HighlightEntity>>> = mutableListOf()
     val entities = mapOf<HighlightType, MutableList<HighlightEntity>>(
@@ -77,18 +75,18 @@ object HighlightRenderer {
 
     @JvmStatic
     fun renderEntityOutline(camera: ICamera, partialTicks: Float) {
+        OutlineShader.startDraw()
+
         RenderHelper.disableStandardItemLighting()
         GlStateManager.disableFog()
-
-        OutlineShader.startDraw()
 
         mc.renderManager.setRenderOutlines(true)
         enableOutlineMode()
 
-        for (entity1 in mc.theWorld.getLoadedEntityList()) {
-            if (!shouldRender(camera, entity1, entity1.renderVec)) continue
-            outlineColor(Color.WHITE)
-            mc.renderManager.renderEntitySimple(entity1, partialTicks)
+        entities[HighlightType.Outline]?.forEach {
+            if (!shouldRender(camera, it.entity, it.entity.renderVec)) return
+            outlineColor(it.color)
+            mc.renderManager.renderEntitySimple(it.entity, partialTicks)
         }
 
         disableOutlineMode()
@@ -96,20 +94,9 @@ object HighlightRenderer {
         RenderHelper.enableStandardItemLighting()
         mc.renderManager.setRenderOutlines(false)
         OutlineShader.stopDraw(Color.WHITE, 0.5f, 1f)
-
-        GlStateManager.enableLighting()
-        GlStateManager.enableFog()
-        GlStateManager.enableBlend()
-        GlStateManager.enableColorMaterial()
-        GlStateManager.enableDepth()
-        GlStateManager.enableAlpha()
     }
 
     private fun shouldRender(camera: ICamera, entity: Entity, vector: Vec3): Boolean =
-        // Only render the view entity when sleeping or in 3rd person mode
-        if (entity === mc.renderViewEntity &&
-            !(mc.renderViewEntity is EntityLivingBase && (mc.renderViewEntity as EntityLivingBase).isPlayerSleeping ||
-                    mc.gameSettings.thirdPersonView != 0)) {
-            false
-        } else mc.theWorld.isBlockLoaded(BlockPos(entity)) && (mc.renderManager.shouldRender(entity, camera, vector.xCoord, vector.yCoord, vector.zCoord) || entity.riddenByEntity === mc.thePlayer)
+        if (entity === mc.renderViewEntity && !(mc.renderViewEntity is EntityLivingBase && (mc.renderViewEntity as EntityLivingBase).isPlayerSleeping || mc.gameSettings.thirdPersonView != 0)) false
+        else mc.theWorld.isBlockLoaded(BlockPos(entity)) && (mc.renderManager.shouldRender(entity, camera, vector.xCoord, vector.yCoord, vector.zCoord) || entity.riddenByEntity === mc.thePlayer)
 }

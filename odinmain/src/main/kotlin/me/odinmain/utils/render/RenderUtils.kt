@@ -69,7 +69,6 @@ object RenderUtils {
 
     private fun blendFactor() = GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
 
-
     /**
      * Gets the rendered bounding box of an entity based on its last tick and current tick positions.
      *
@@ -451,7 +450,6 @@ object RenderUtils {
         tessellator.draw()
         GlStateManager.resetColor()
     }
-
 
     private val BUF_FLOAT_4 = BufferUtils.createFloatBuffer(4)
     var isRenderingOutlinedEntities = false

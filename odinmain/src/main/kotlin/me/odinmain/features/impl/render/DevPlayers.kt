@@ -8,16 +8,14 @@ import me.odinmain.features.impl.render.ClickGUIModule.devSize
 import me.odinmain.utils.getDataFromServer
 import me.odinmain.utils.render.*
 import net.minecraft.client.entity.AbstractClientPlayer
-import net.minecraft.client.model.ModelBase
-import net.minecraft.client.model.ModelRenderer
+import net.minecraft.client.model.*
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.RenderPlayerEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.lang.reflect.Type
-import kotlin.math.cos
-import kotlin.math.sin
+import kotlin.math.*
 
 object DevPlayers {
     private var devs: HashMap<String, DevPlayer> = HashMap()

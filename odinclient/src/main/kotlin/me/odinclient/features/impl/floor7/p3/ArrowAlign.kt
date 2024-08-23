@@ -16,6 +16,9 @@ import net.minecraft.init.Items
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
 
 object ArrowAlign : Module(
     name = "Arrow Align",

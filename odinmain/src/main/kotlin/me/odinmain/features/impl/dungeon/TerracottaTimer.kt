@@ -19,8 +19,8 @@ object TerracottaTimer : Module(
     description = "Displays the time until the terracotta respawns.",
     category = Category.DUNGEON
 ) {
-    private data class Terracotta(val pos: Vec3, var time: Double)
     private var terracottaSpawning = CopyOnWriteArrayList<Terracotta>()
+    private data class Terracotta(val pos: Vec3, var time: Double)
 
     @SubscribeEvent
     fun onBlockPacket(event: BlockChangeEvent) {

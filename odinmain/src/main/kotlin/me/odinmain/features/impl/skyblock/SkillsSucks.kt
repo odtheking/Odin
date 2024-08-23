@@ -15,7 +15,6 @@ object SkillsSucks : Module(
     description = "Skills sucks.",
     category = Category.SKYBLOCK
 ) {
-
     private val skillsSucks = DynamicTexture(loadBufferedImage("/assets/odinmain/img.png"))
 
     private var currentPronoun: String? = null

@@ -2,14 +2,9 @@ package me.odinmain.ui.util.shader
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.render.Color
-import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.shader.Framebuffer
-import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.*
-import org.lwjgl.opengl.GL20.glUseProgram
-import org.lwjgl.opengl.GL30
 
 abstract class FramebufferShader(fragmentShader: String) : Shader(fragmentShader) {
     protected var color = Color.WHITE

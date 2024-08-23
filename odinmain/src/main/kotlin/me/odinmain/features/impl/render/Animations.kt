@@ -39,7 +39,7 @@ object Animations : Module(
     private val noTermSwing: Boolean by BooleanSetting("No Terminator Swing", false, description = "Prevents your Terminator from swinging.")
     val noBlock: Boolean by BooleanSetting("No Block", false, description = "Disables the visual block animation.")
 
-    val reset: () -> Unit by ActionSetting("Reset") {
+    val reset: () -> Unit by ActionSetting("Reset", description = "Resets the settings to their default values.") {
         this.settings.forEach { it.reset() }
     }
 

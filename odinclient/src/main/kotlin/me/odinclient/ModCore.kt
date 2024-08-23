@@ -7,13 +7,9 @@ import me.odinclient.features.impl.floor7.*
 import me.odinclient.features.impl.floor7.p3.*
 import me.odinclient.features.impl.render.*
 import me.odinclient.features.impl.skyblock.*
-import me.odinclient.mixin.accessors.IEntityRendererAccessor
 import me.odinmain.OdinMain
-import me.odinmain.OdinMain.mc
 import me.odinmain.commands.registerCommands
 import me.odinmain.features.ModuleManager
-import me.odinmain.ui.util.shader.FramebufferShader
-import me.odinmain.utils.render.RenderUtils
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.Mod.EventHandler

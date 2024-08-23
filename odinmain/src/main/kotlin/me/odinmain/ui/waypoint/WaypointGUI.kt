@@ -1,14 +1,11 @@
 package me.odinmain.ui.waypoint
 
 import me.odinmain.config.WaypointConfig
-import me.odinmain.features.impl.render.WaypointManager
+import me.odinmain.features.impl.render.*
 import me.odinmain.features.impl.render.WaypointManager.randomColor
-import me.odinmain.features.impl.render.Waypoints
-import me.odinmain.ui.clickgui.animations.impl.EaseInOut
-import me.odinmain.ui.clickgui.animations.impl.LinearAnimation
+import me.odinmain.ui.clickgui.animations.impl.*
 import me.odinmain.ui.util.MouseHandler
-import me.odinmain.ui.waypoint.elements.AreaButton
-import me.odinmain.ui.waypoint.elements.WaypointElement
+import me.odinmain.ui.waypoint.elements.*
 import me.odinmain.utils.floored
 import me.odinmain.utils.skyblock.LocationUtils.currentArea
 import net.minecraft.client.gui.GuiScreen

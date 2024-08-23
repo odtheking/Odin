@@ -16,6 +16,7 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.monster.*
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import kotlin.collections.set
 
 object BlazeAttunement : Module(
     name = "Blaze Attunement",

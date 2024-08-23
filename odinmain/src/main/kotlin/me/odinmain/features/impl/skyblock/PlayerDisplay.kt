@@ -48,7 +48,7 @@ object PlayerDisplay : Module(
 
         return@HudSetting mcTextAndWidth(text, 2, 2, 2, healthColor, center = false) * 2f + 2f to 20f
     }
-    private val healthColor: Color by ColorSetting("Health Color", Color.RED, true)
+    private val healthColor: Color by ColorSetting("Health Color", Color.RED, true, description = "The color of the health text.")
 
     private val manaHud: HudElement by HudSetting("Mana Hud", 10f, 10f, 1f, true) { example ->
         val text = if (example)
@@ -61,7 +61,7 @@ object PlayerDisplay : Module(
 
         return@HudSetting mcTextAndWidth(text, 2, 2, 2, manaColor, center = false) * 2f + 2f to 20f
     }
-    private val manaColor: Color by ColorSetting("Mana Color", Color.BLUE, true)
+    private val manaColor: Color by ColorSetting("Mana Color", Color.BLUE, true, description = "The color of the mana text.")
 
     private val overflowManaHud: HudElement by HudSetting("Overflow Mana Hud", 10f, 10f, 1f, true) { example ->
         val text = if (example)
@@ -73,7 +73,7 @@ object PlayerDisplay : Module(
 
         return@HudSetting mcTextAndWidth(text, 2, 2, 2, overflowManaColor, center = false) * 2f + 2f to 20f
     }
-    private val overflowManaColor: Color by ColorSetting("Overflow Mana Color", Color.CYAN, true)
+    private val overflowManaColor: Color by ColorSetting("Overflow Mana Color", Color.CYAN, true, description = "The color of the overflow mana text.")
 
     private val defenseHud: HudElement by HudSetting("Defense Hud", 10f, 10f, 1f, true) { example ->
         val text = if (example)
@@ -86,7 +86,7 @@ object PlayerDisplay : Module(
 
         return@HudSetting mcTextAndWidth(text, 2, 2, 2, defenseColor, center = false) * 2f + 2f to 20f
     }
-    private val defenseColor: Color by ColorSetting("Defense Color", Color.GREEN, true)
+    private val defenseColor: Color by ColorSetting("Defense Color", Color.GREEN, true, description = "The color of the defense text.")
 
     private val eHPHud: HudElement by HudSetting("EffectiveHealth Hud", 10f, 10f, 1f, true) { example ->
         val text = if (example)
@@ -99,7 +99,7 @@ object PlayerDisplay : Module(
 
         return@HudSetting mcTextAndWidth(text, 2, 2, 2, ehpColor, center = false) * 2f + 2f to 20f
     }
-    private val ehpColor: Color by ColorSetting("EffectiveHealth Color", Color.DARK_GREEN, true)
+    private val ehpColor: Color by ColorSetting("EffectiveHealth Color", Color.DARK_GREEN, true, description = "The color of the effective health text.")
 
 
     fun modifyText(text: String): String {
