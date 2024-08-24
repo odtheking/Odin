@@ -10,7 +10,6 @@ import me.odinmain.utils.skyblock.PersonalBest
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import org.lwjgl.Sys
 
 object TerminalTimes : Module(
     name = "Terminal Times",
