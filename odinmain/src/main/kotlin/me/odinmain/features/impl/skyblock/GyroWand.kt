@@ -15,7 +15,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object GyroWand : Module(
     name = "Gyro Wand",
-    description = "Helpful features for the Gyrokinetic Wand",
+    description = "Helpful features for the Gyrokinetic Wand.",
     category = Category.SKYBLOCK
 ) {
     private val color: Color by ColorSetting("Color", Color.MAGENTA.withAlpha(0.5f), allowAlpha = true, description = "The color of the Gyrokinetic Wand range.")

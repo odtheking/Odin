@@ -18,7 +18,7 @@ object PartyEncoding: Module(
     category = Category.SKYBLOCK,
     description = "Encodes and decodes party messages."
 ) {
-    private val key: String by StringSetting("Key", "odin", description = "Key")
+    private val key: String by StringSetting("Key", "odin", description = "Key.")
 
     private val urlRegex = Regex("https?://\\S+")
 

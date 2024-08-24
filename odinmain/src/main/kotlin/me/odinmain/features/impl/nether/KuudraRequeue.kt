@@ -11,7 +11,7 @@ import me.odinmain.utils.skyblock.sendCommand
 
 object KuudraRequeue : Module(
     name = "Kuudra Requeue",
-    description = "Automatically starts a new kuudra at the end of a kuudra",
+    description = "Automatically starts a new kuudra at the end of a kuudra.",
     category = Category.NETHER
 ) {
     private val delay: Int by NumberSetting("Delay", 10, 0, 30, 1, description = "The delay in seconds before requeuing.")

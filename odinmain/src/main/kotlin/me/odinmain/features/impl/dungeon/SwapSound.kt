@@ -16,13 +16,13 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 object SwapSound : Module(
     name = "Swap Sound",
     category = Category.DUNGEON,
-    description = "Plays a sound when you successfully stonk swap"
+    description = "Plays a sound when you successfully stonk swap."
 ) {
     private val onlyBlock: Boolean by BooleanSetting("Only Over Block", default = false, description = "Only plays a sound when you're looking at a block.")
     private val defaultSounds = arrayListOf("mob.blaze.hit", "fire.ignite", "random.orb", "random.break", "mob.guardian.land.hit", "note.pling", "Custom")
-    private val sound: Int by SelectorSetting("Sound", "mob.blaze.hit", defaultSounds, description = "Which sound to play when you successfully stonk swap")
+    private val sound: Int by SelectorSetting("Sound", "mob.blaze.hit", defaultSounds, description = "Which sound to play when you successfully stonk swap.")
     private val customSound: String by StringSetting("Custom Sound", "mob.blaze.hit",
-        description = "Name of a custom sound to play. This is used when Custom is selected in the Sound setting", length = 32
+        description = "Name of a custom sound to play. This is used when Custom is selected in the Sound setting.", length = 32
     ).withDependency { sound == defaultSounds.size - 1 }
     private val volume: Float by NumberSetting("Volume", 1f, 0, 1, .01f, description = "Volume of the sound.")
     private val pitch: Float by NumberSetting("Pitch", 2f, 0, 2, .01f, description = "Pitch of the sound.")

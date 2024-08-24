@@ -37,7 +37,7 @@ object ArrowsDevice : Module(
     private val reset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
         markedPositions.clear()
     }.withDependency { solver }
-    private val alertOnDeviceComplete: Boolean by BooleanSetting("Device complete alert", default = true, description = "Send an alert when device is complete")
+    private val alertOnDeviceComplete: Boolean by BooleanSetting("Device complete alert", default = true, description = "Send an alert when device is complete.")
 
     private val markedPositions = mutableSetOf<BlockPos>()
     private var targetPosition: BlockPos? = null

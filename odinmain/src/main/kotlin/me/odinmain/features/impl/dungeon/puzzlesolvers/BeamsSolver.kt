@@ -16,6 +16,7 @@ import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
+import java.util.concurrent.ConcurrentHashMap
 
 object BeamsSolver {
     private var scanned = false
@@ -35,7 +36,7 @@ object BeamsSolver {
         }
     }
 
-    private var currentLanternPairs = mutableMapOf<BlockPos, Pair<BlockPos, Color>>()
+    private var currentLanternPairs = ConcurrentHashMap<BlockPos, Pair<BlockPos, Color>>()
 
     fun enterDungeonRoom(event: RoomEnterEvent) {
         val room = event.fullRoom?.room ?: return // <-- orb = orb.orb
@@ -54,8 +55,8 @@ object BeamsSolver {
 
     fun onRenderWorld() {
         if (DungeonUtils.currentRoomName != "Creeper Beams" || currentLanternPairs.isEmpty()) return
-        val finalLanternPairs = currentLanternPairs.toMap()
-        finalLanternPairs.entries.forEach { positions ->
+
+        currentLanternPairs.entries.forEach { positions ->
             val color = positions.value.second
 
             Renderer.drawBox(positions.key.toAABB(), color, depth = PuzzleSolvers.beamsDepth, outlineAlpha = if (PuzzleSolvers.beamStyle == 0) 0 else color.alpha, fillAlpha = if (PuzzleSolvers.beamStyle == 1) 0 else beamsAlpha)

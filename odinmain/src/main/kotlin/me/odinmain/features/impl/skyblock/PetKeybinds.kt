@@ -15,7 +15,7 @@ import org.lwjgl.input.Keyboard
 
 object PetKeybinds : Module(
     name = "Pet Keybinds",
-    description = "keybinds for the pets menu. (/petkeys)",
+    description = "Keybinds for the pets menu. (/petkeys)",
     category = Category.SKYBLOCK
 ) {
     private val unequipKeybind: Keybinding by KeybindSetting("Unequip Keybind", Keyboard.KEY_NONE, "Unequips the current Pet.")

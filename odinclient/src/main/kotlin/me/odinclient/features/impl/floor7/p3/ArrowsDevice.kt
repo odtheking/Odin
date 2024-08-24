@@ -48,19 +48,19 @@ object ArrowsDevice : Module(
         autoState = AutoState.Stopped
         actionQueue.clear()
     }.withDependency { solver && solverDropdown }
-    private val alertOnDeviceComplete: Boolean by BooleanSetting("Device complete alert", default = true, description = "Send an alert when device is complete").withDependency { solverDropdown }
+    private val alertOnDeviceComplete: Boolean by BooleanSetting("Device complete alert", default = true, description = "Send an alert when device is complete.").withDependency { solverDropdown }
 
     private val autoDropdown: Boolean by DropdownSetting("Auto Device")
-    private val auto: Boolean by BooleanSetting("Enabled", description = "Automatically complete device").withDependency { autoDropdown }
-    private val autoPhoenix: Boolean by BooleanSetting("Auto phoenix", default = true, description = "Automatically swap to phoenix pet using cast rod pet rules, must be set up correctly").withDependency { auto && autoDropdown }
-    private val autoLeap: Boolean by BooleanSetting("Auto leap", default = true, description = "Automatically leap once device is done").withDependency { auto && autoDropdown }
-    private val autoLeapClass: Int by SelectorSetting("Leap to", defaultSelected = "Mage", arrayListOf("Archer", "Berserk", "Healer", "Mage", "Tank"), description = "Who to leap to").withDependency { autoLeap && auto && autoDropdown }
-    private val autoLeapOnlyPre: Boolean by BooleanSetting("Only leap on pre", default = true, description = "Only auto leap when doing i4").withDependency { autoLeap && auto && autoDropdown }
-    private val delay: Long by NumberSetting("Delay", 150L, 80, 300, description = "Delay between actions").withDependency { auto && autoDropdown }
-    private val aimingTime: Long by NumberSetting("Aiming duration", 100L, 80, 200, description = "Time taken to aim at a target").withDependency { auto && autoDropdown }
+    private val auto: Boolean by BooleanSetting("Enabled", description = "Automatically complete device.").withDependency { autoDropdown }
+    private val autoPhoenix: Boolean by BooleanSetting("Auto phoenix", default = true, description = "Automatically swap to phoenix pet using cast rod pet rules, must be set up correctly.").withDependency { auto && autoDropdown }
+    private val autoLeap: Boolean by BooleanSetting("Auto leap", default = true, description = "Automatically leap once device is done.").withDependency { auto && autoDropdown }
+    private val autoLeapClass: Int by SelectorSetting("Leap to", defaultSelected = "Mage", arrayListOf("Archer", "Berserk", "Healer", "Mage", "Tank"), description = "Who to leap to.").withDependency { autoLeap && auto && autoDropdown }
+    private val autoLeapOnlyPre: Boolean by BooleanSetting("Only leap on pre", default = true, description = "Only auto leap when doing i4.").withDependency { autoLeap && auto && autoDropdown }
+    private val delay: Long by NumberSetting("Delay", 150L, 80, 300, description = "Delay between actions.").withDependency { auto && autoDropdown }
+    private val aimingTime: Long by NumberSetting("Aiming duration", 100L, 80, 200, description = "Time taken to aim at a target.").withDependency { auto && autoDropdown }
 
     private val triggerBotDropdown: Boolean by DropdownSetting("Trigger Bot")
-    private val triggerBot: Boolean by BooleanSetting("Enabled", description = "Automatically shoot targets").withDependency { triggerBotDropdown }
+    private val triggerBot: Boolean by BooleanSetting("Enabled", description = "Automatically shoot targets.").withDependency { triggerBotDropdown }
     private val triggerBotDelay: Long by NumberSetting("Delay", 250L, 50L, 1000L, 10L, unit = "ms", description = "The delay between each click.")
     private val triggerBotClock = Clock(triggerBotDelay)
 

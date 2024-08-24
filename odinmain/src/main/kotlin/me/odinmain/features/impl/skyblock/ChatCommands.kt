@@ -14,7 +14,7 @@ import kotlin.random.Random
 object ChatCommands : Module(
     name = "Chat Commands",
     category = Category.SKYBLOCK,
-    description = "type !help in the corresponding channel for cmd list. Use /blacklist.",
+    description = "Type !help in the corresponding channel for cmd list. Use /blacklist.",
 ) {
     private var party: Boolean by BooleanSetting(name = "Party commands", default = true, description = "Toggles chat commands in party chat.")
     private var guild: Boolean by BooleanSetting(name = "Guild commands", default = true, description = "Toggles chat commands in guild chat.")

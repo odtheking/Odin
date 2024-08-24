@@ -21,6 +21,7 @@ import net.minecraft.util.Vec3
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
@@ -111,7 +112,7 @@ object WaterSolver {
     fun waterRender() {
         if (DungeonUtils.currentRoomName != "Water Board" || variant == -1) return
 
-        val solutions = HashMap(solutions)
+        val solutions = ConcurrentHashMap(solutions)
 
         val solutionList = solutions
             .flatMap { (lever, times) -> times.drop(lever.i).map { Pair(lever, it) } }
@@ -143,9 +144,7 @@ object WaterSolver {
             }
         }
 
-        val finalSolution = solutions.toMap()
-
-        for (solution in finalSolution) {
+        for (solution in solutions) {
             var orderText = ""
             solution.value.drop(solution.key.i).forEach {
                 orderText = if (it == 0.0) orderText.plus("0")
