@@ -6,8 +6,8 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.runIn
+import me.odinmain.OdinMain.mc
 import me.odinclient.utils.skyblock.PlayerUtils
-import net.minecraft.client.Minecraft
 import net.minecraft.util.BlockPos
 import net.minecraft.util.ChatComponentText
 import net.minecraft.block.Block
@@ -21,7 +21,6 @@ object AutoBoom : Module(
     category = Category.DUNGEON,
     tag = TagType.RISKY
 ) {
-    private val minecraft: Minecraft = Minecraft.getMinecraft()
 
     private val placeDelay: Long by NumberSetting("Place Delay", 10L, 1, 20, unit = "ticks", description = "Placing Superboom delay in ticks.")
     private val anyBlock: Boolean by BooleanSetting("Any Block", default = false, description = "Place Superboom on any block.")
@@ -30,7 +29,7 @@ object AutoBoom : Module(
     fun onLeftClick(event: PlayerInteractEvent) {
         if (event.action != PlayerInteractEvent.Action.LEFT_CLICK_BLOCK || (!anyBlock && !isLookingAtCrackedStoneBricks(event.pos))) return
 
-        val superboomSlot = getItemSlot("Superboom TNT") ?: return minecraft.thePlayer.addChatMessage(ChatComponentText("No item named 'Superboom TNT' could be found."))
+        val superboomSlot = getItemSlot("Superboom TNT") ?: return
 
         schedulePlace(superboomSlot)
     }
@@ -38,7 +37,7 @@ object AutoBoom : Module(
     private fun schedulePlace(superboomSlot: Int) {
         // Instantly swap to Superboom
         runIn(3) {
-            minecraft.thePlayer.inventory.currentItem = superboomSlot
+            mc.thePlayer.inventory.currentItem = superboomSlot
         }
 
         // Delay for placing the item
@@ -48,8 +47,8 @@ object AutoBoom : Module(
     }
 
     private fun isLookingAtCrackedStoneBricks(pos: BlockPos): Boolean {
-        val block: Block = minecraft.theWorld.getBlockState(pos).block
-        return block is BlockStoneBrick && block.getMetaFromState(minecraft.theWorld.getBlockState(pos)) == BlockStoneBrick.CRACKED_META
+        val blockId = getBlockIdAt(pos)
+        return blockId == 98 && mc.theWorld.getBlockState(pos).block.getMetaFromState(mc.theWorld.getBlockState(pos)) == 2
     }
 
     private fun triggerRightClick() {
