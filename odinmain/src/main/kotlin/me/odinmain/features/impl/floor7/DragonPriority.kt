@@ -29,7 +29,7 @@ object DragonPriority {
     }
 
     private fun sortPriority(spawningDragon: MutableList<WitherDragonsEnum>): WitherDragonsEnum {
-        val totalPower = Blessing.POWER.current * if (paulBuff) 1.25 else 1.0 + if (Blessing.TIME.current > 0) 2.5 else 0.0
+        val totalPower = Blessing.POWER.current * (if (paulBuff) 1.25 else 1.0) + (if (Blessing.TIME.current > 0) 2.5 else 0.0)
 
         val playerClass = DungeonUtils.currentDungeonPlayer.clazz.also { if (it == DungeonClass.Unknown) modMessage("§cFailed to get dungeon class.") }
         devMessage("§8Getting priority dragon for §${playerClass.colorCode}${playerClass.name}§8 with §4$totalPower§8 power.")
