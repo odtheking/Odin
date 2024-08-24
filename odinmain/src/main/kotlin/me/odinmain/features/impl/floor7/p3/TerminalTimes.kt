@@ -23,6 +23,7 @@ object TerminalTimes : Module(
     }
 
     private val terminalSplits: Boolean by BooleanSetting("Terminal Splits", default = true, description = "Adds the time when a term was completed to its message, and sends the total term time after terms are done.")
+    private val useRealTime: Boolean by BooleanSetting("Use Real Time", default = true, description = "Use real time instead of server ticks.")
 
     private val termPBs = PersonalBest("Terminals", 7)
     private var startTimer = 0L
@@ -78,21 +79,21 @@ object TerminalTimes : Module(
         }
     }
 
-    private val Long.seconds get() = this.toFloat() / 20
+    private val Long.seconds get() = if (!useRealTime) (this.toDouble() / 20) else ((System.currentTimeMillis() - this).toDouble()/1000)
 
     private fun resetSection(full: Boolean = false) {
         if (full) {
             times.clear()
-            phaseTimer = 0L
+            phaseTimer = if (!useRealTime) 0L else System.currentTimeMillis()
         } else times.add(sectionTimer)
         completed = Pair(0, 7)
-        sectionTimer = 0L
+        sectionTimer = if (!useRealTime) 0L else System.currentTimeMillis()
         gateBlown = false
     }
 
     @SubscribeEvent
     fun onServerTick(event: RealServerTick) {
-        if (!terminalSplits) return
+        if (!terminalSplits || useRealTime) return
         phaseTimer++
         sectionTimer++
     }
