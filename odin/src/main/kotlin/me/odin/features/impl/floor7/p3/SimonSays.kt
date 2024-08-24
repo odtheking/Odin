@@ -17,6 +17,7 @@ import net.minecraft.block.BlockButtonStone
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.init.Blocks
 import net.minecraft.item.Item
+import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -96,12 +97,15 @@ object SimonSays : Module(
 
         for (index in clickNeeded until clickInOrder.size) {
             val position = clickInOrder[index]
+            val x = position.x - .125
+            val y = position.y + .3125
+            val z = position.z + .25
             val color = when (index) {
                 clickNeeded -> Color(0, 170, 0)
                 clickNeeded + 1 -> Color(255, 170, 0)
                 else -> Color(170, 0, 0)
             }.withAlpha(.5f)
-            Renderer.drawStyledBlock(position, color, style, lineWidth, depthCheck)
+            Renderer.drawStyledBox(AxisAlignedBB(x, y, z, x + .25, y + .375, z + .5), color, style, lineWidth, depthCheck)
         }
     }
 }

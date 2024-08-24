@@ -16,8 +16,9 @@ import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.client.renderer.culling.ICamera
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
-import net.minecraft.util.BlockPos
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.Vec3
+import net.minecraftforge.client.MinecraftForgeClient
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -75,16 +76,15 @@ object HighlightRenderer {
 
     @JvmStatic
     fun renderEntityOutline(camera: ICamera, partialTicks: Float) {
+        val pass = MinecraftForgeClient.getRenderPass()
         OutlineShader.startDraw()
-
         RenderHelper.disableStandardItemLighting()
         GlStateManager.disableFog()
-
         mc.renderManager.setRenderOutlines(true)
         enableOutlineMode()
 
         entities[HighlightType.Outline]?.forEach {
-            if (!shouldRender(camera, it.entity, it.entity.renderVec)) return
+            if (!shouldRender(it.entity, pass, mc.renderViewEntity, camera, it.entity.renderVec)) return@forEach
             outlineColor(it.color)
             mc.renderManager.renderEntitySimple(it.entity, partialTicks)
         }
@@ -93,10 +93,19 @@ object HighlightRenderer {
 
         RenderHelper.enableStandardItemLighting()
         mc.renderManager.setRenderOutlines(false)
+
+        GlStateManager.enableLighting()
         OutlineShader.stopDraw(Color.WHITE, 0.5f, 1f)
+        GlStateManager.enableFog()
+        GlStateManager.enableBlend()
+        GlStateManager.enableColorMaterial()
+        GlStateManager.enableDepth()
+        GlStateManager.enableAlpha()
     }
 
-    private fun shouldRender(camera: ICamera, entity: Entity, vector: Vec3): Boolean =
-        if (entity === mc.renderViewEntity && !(mc.renderViewEntity is EntityLivingBase && (mc.renderViewEntity as EntityLivingBase).isPlayerSleeping || mc.gameSettings.thirdPersonView != 0)) false
-        else mc.theWorld.isBlockLoaded(BlockPos(entity)) && (mc.renderManager.shouldRender(entity, camera, vector.xCoord, vector.yCoord, vector.zCoord) || entity.riddenByEntity === mc.thePlayer)
+    private fun shouldRender(entity: Entity, pass: Int, renderViewEntity: Entity, camera: ICamera, vec3: Vec3): Boolean {
+        if (!entity.shouldRenderInPass(pass)) return false
+        val inRangeToRender = entity.isInRangeToRender3d(vec3.xCoord, vec3.yCoord, vec3.zCoord) && (entity.ignoreFrustumCheck || camera.isBoundingBoxInFrustum(entity.entityBoundingBox) || entity.riddenByEntity == mc.thePlayer)
+        return (entity != renderViewEntity || mc.gameSettings.thirdPersonView != 0 || (renderViewEntity is EntityLivingBase && renderViewEntity.isPlayerSleeping)) && inRangeToRender && entity is EntityPlayer
+    }
 }

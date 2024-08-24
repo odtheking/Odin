@@ -103,7 +103,7 @@ object Trajectories : Module(
             -sin(Math.toRadians(yaw.toDouble())) * cos(Math.toRadians(pitch.toDouble())),
             cos(Math.toRadians(yaw.toDouble())) * cos(Math.toRadians(pitch.toDouble())),
             -sin(Math.toRadians(pitch.toDouble()))
-        ).multiply(0.6)
+        ).multiply(factor = 0.6)
 
         return calculatePearlTrajectory(motionVec.divide(hypot(motionVec.xCoord, motionVec.yCoord, motionVec.zCoord)), posVec)
     }

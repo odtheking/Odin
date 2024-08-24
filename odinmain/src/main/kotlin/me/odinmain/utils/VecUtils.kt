@@ -152,6 +152,10 @@ fun Vec3.multiply(factor: Number): Vec3 {
     return Vec3(this.xCoord * factor.toDouble(), this.yCoord * factor.toDouble(), this.zCoord * factor.toDouble())
 }
 
+fun Vec3.multiply(x: Double = 1.0, y: Double = 1.0, z: Double = 1.0): Vec3 {
+    return Vec3(this.xCoord * x, this.yCoord * y, this.zCoord * z)
+}
+
 /**
  * Divides every coordinate of a Vec3 by the given divisor.
  * @param divisor The divisor to divide by

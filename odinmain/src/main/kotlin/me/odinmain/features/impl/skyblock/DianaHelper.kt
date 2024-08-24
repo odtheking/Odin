@@ -36,6 +36,7 @@ object DianaHelper : Module(
     private val showWarpSettings: Boolean by BooleanSetting("Show Warp Settings", default = true, description = "Shows the warp settings")
     private val castle: Boolean by BooleanSetting("Castle Warp", description = "Warp to the castle").withDependency { showWarpSettings }
     private val crypt: Boolean by BooleanSetting("Crypt Warp", description = "Warp to the crypt").withDependency { showWarpSettings }
+    private val stonks: Boolean by BooleanSetting("Stonks Warp", description = "Warp to the stonks").withDependency { showWarpSettings }
     private val darkAuction: Boolean by BooleanSetting("DA Warp", description = "Warp to the dark auction").withDependency { showWarpSettings }
     private val museum: Boolean by BooleanSetting("Museum Warp", description = "Warp to the museum").withDependency { showWarpSettings }
     private val wizard: Boolean by BooleanSetting("Wizard Warp", description = "Warp to the wizard").withDependency { showWarpSettings }
@@ -141,6 +142,7 @@ object DianaHelper : Module(
         HUB     (displayName = " §8(§fHub§8)",          Vec3(-3.0, 70.0, -70.0),   { true }),
         CASTLE  (displayName = " §8(§fCastle§8)",       Vec3(-250.0, 130.0, 45.0), { castle }),
         CRYPT   (displayName = " §8(§fCrypt§8)",        Vec3(-190.0, 74.0, -88.0), { crypt }),
+        STONK   (displayName = " §8(§fStonks§8)",       Vec3(-52.5, 70.0, -49.5),  { stonks }),
         DA      (displayName = " §8(§fDark Auction§8)", Vec3(91.0, 75.0, 173.0),   { darkAuction }),
         MUSEUM  (displayName = " §8(§fMuseum§8)",       Vec3(-75.0, 76.0, 81.0),   { museum }),
         WIZARD  (displayName = " §8(§fWizard§8)",       Vec3(42.5, 122.0, 69.0),   { wizard })

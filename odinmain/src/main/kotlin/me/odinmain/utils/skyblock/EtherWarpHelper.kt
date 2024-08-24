@@ -26,10 +26,8 @@ object EtherWarpHelper {
     fun getEtherPos(pos: Vec3, yaw: Float, pitch: Float): EtherPos {
         mc.thePlayer ?: return EtherPos.NONE
 
-        val lookVec = getLook(yaw = yaw, pitch = pitch).normalize().multiply(60.0)
         val startPos: Vec3 = getPositionEyes(pos)
-
-        val endPos = lookVec.add(startPos)
+        val endPos = getLook(yaw = yaw, pitch = pitch).normalize().multiply(factor = 60.0).add(startPos)
 
         return traverseVoxels(startPos, endPos)
     }
@@ -59,9 +57,8 @@ object EtherWarpHelper {
         while (iters < 1000) {
             iters++
             val pos = BlockPos(currentPos[0].toInt(), currentPos[1].toInt(), currentPos[2].toInt())
-            val currentBlock = getBlockIdAt(pos)
 
-            if (currentBlock != 0) return EtherPos(isValidEtherWarpBlock(pos), pos)
+            if (getBlockIdAt(pos) != 0) return EtherPos(isValidEtherWarpBlock(pos), pos)
 
             if (currentPos.contentEquals(endPos)) break // reached end
 

@@ -14,31 +14,29 @@ abstract class FramebufferShader(fragmentShader: String) : Shader(fragmentShader
     private var entityShadows = false
 
     fun startDraw() {
-        GlStateManager.pushMatrix()
-
         framebuffer = setupFrameBuffer(framebuffer)
-        framebuffer?.bindFramebuffer(true)
+        framebuffer?.bindFramebuffer(false)
         entityShadows = mc.gameSettings.entityShadows
         mc.gameSettings.entityShadows = false
     }
 
     fun stopDraw(color: Color, radius: Float, quality: Float) {
         mc.gameSettings.entityShadows = entityShadows
-        mc.framebuffer.bindFramebuffer(true)
+        mc.framebuffer.bindFramebuffer(false)
         this.color = color
         this.radius = radius
         this.quality = quality
+    }
 
+    fun draw() {
         startShader()
 
-        GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        framebuffer?.framebufferRenderExt(mc.displayWidth, mc.displayHeight, false);
-        GlStateManager.disableBlend();
+        GlStateManager.enableBlend()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 0, 1)
+        framebuffer?.framebufferRenderExt(mc.displayWidth, mc.displayHeight, false)
+        GlStateManager.disableBlend()
 
         stopShader()
-
-        GlStateManager.popMatrix()
     }
 
     /**
