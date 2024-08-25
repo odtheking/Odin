@@ -23,7 +23,7 @@ object TerminalTimes : Module(
     }
 
     private val terminalSplits: Boolean by BooleanSetting("Terminal Splits", default = true, description = "Adds the time when a term was completed to its message, and sends the total term time after terms are done.")
-    private val useRealTime: Boolean by BooleanSetting("Use Real Time", default = true, description = "Use real time instead of server ticks.")
+    private val useRealTime: Boolean by BooleanSetting("Use Real Time", default = true, description = "Use real time rather than server ticks.")
 
     private val termPBs = PersonalBest("Terminals", 7)
     private var startTimer = 0L
@@ -47,9 +47,10 @@ object TerminalTimes : Module(
 
     private var gateBlown = false
     private var completed: Pair<Int, Int> = Pair(0, 7)
+    private var currentTick = 0L
     private var phaseTimer = 0L
     private var sectionTimer = 0L
-    private val times = mutableListOf<Long>()
+    private val times = mutableListOf<Double>()
 
     @SubscribeEvent
     fun onMessage(event: ClientChatReceivedEvent) {
@@ -75,26 +76,25 @@ object TerminalTimes : Module(
 
         onMessage("The Core entrance is opening!", false, { enabled && terminalSplits }) {
             resetSection()
-            modMessage("§bTimes: §a${times.joinToString(" §8| ") { "§a${it.seconds}s" }}§8, §bTotal: §a${phaseTimer.seconds}s")
+            modMessage("§bTimes: §a${times.joinToString(" §8| ") { "§a${it}s" }}§8, §bTotal: §a${phaseTimer.seconds}s")
         }
     }
 
-    private val Long.seconds get() = if (!useRealTime) (this.toDouble() / 20) else ((System.currentTimeMillis() - this).toDouble()/1000)
+    private val Long.seconds get() = ((if (useRealTime) System.currentTimeMillis() else currentTick) - this).toDouble()/1000
 
     private fun resetSection(full: Boolean = false) {
         if (full) {
             times.clear()
-            phaseTimer = if (!useRealTime) 0L else System.currentTimeMillis()
-        } else times.add(sectionTimer)
+            phaseTimer = if (useRealTime) System.currentTimeMillis() else currentTick
+        } else times.add(sectionTimer.seconds)
         completed = Pair(0, 7)
-        sectionTimer = if (!useRealTime) 0L else System.currentTimeMillis()
+        sectionTimer = if (useRealTime) System.currentTimeMillis() else currentTick
         gateBlown = false
     }
 
     @SubscribeEvent
     fun onServerTick(event: RealServerTick) {
         if (!terminalSplits || useRealTime) return
-        phaseTimer++
-        sectionTimer++
+        currentTick += 50
     }
 }
