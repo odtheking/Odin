@@ -98,9 +98,9 @@ class Dungeon(val floor: Floor?) {
         val text = packet.prefix.plus(packet.suffix)
 
         val cleared = Regex("^Cleared: §[c6a](\\d+)% §8(?:§8)?\\(\\d+\\)$").find(text)
-        if (cleared != null) {
-            if (cleared.groupValues[1].toInt() != dungeonStats.percentCleared && expectingBloodUpdate) dungeonStats.bloodDone = true
-            dungeonStats.percentCleared = cleared.groupValues[1].toInt()
+        cleared?.groupValues[1]?.toInt()?.let {
+            if (dungeonStats.percentCleared != it && expectingBloodUpdate) dungeonStats.bloodDone = true
+            dungeonStats.percentCleared = it
         }
 
         val time = Regex("^Time Elapsed: §a§a([\\dsmh ]+)$").find(text)
