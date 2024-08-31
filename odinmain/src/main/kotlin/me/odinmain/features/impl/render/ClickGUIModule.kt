@@ -26,10 +26,10 @@ object ClickGUIModule: Module(
     description = "Allows you to customize the GUI."
 ) {
     val blur: Boolean by BooleanSetting("Blur", false, description = "Toggles the background blur for the gui.")
-    val enableNotification: Boolean by BooleanSetting("Enable notifications", true, description = "Shows you a notification in chat when you toggle an option with a keybind")
+    val enableNotification: Boolean by BooleanSetting("Enable notifications", true, description = "Shows you a notification in chat when you toggle an option with a keybind.")
     val color: Color by ColorSetting("Gui Color", Color(50, 150, 220), allowAlpha = false, description = "Color theme in the gui.")
     val switchType: Boolean by DualSetting("Switch Type", "Checkbox", "Switch", default = true, description = "Switches the type of the settings in the gui.")
-    val hudChat: Boolean by BooleanSetting("Shows HUDs in GUIs", true, description = "Shows HUDs in GUIs")
+    val hudChat: Boolean by BooleanSetting("Shows HUDs in GUIs", true, description = "Shows HUDs in GUIs.")
     val forceHypixel: Boolean by BooleanSetting("Force Hypixel", false, description = "Forces the hypixel check to be on (not recommended).")
     val updateMessage: Int by SelectorSetting("Update Message", "Beta", arrayListOf("Beta", "Full", "None"), description = "Shows the update message in chat.")
 

@@ -28,7 +28,7 @@ object CanClip : Module(
     description = "Tells you if you are currently able to clip through a stair under you.",
     category = Category.DUNGEON
 ) {
-    private val line: Boolean by BooleanSetting("Line", true, description = "draws a line where you can clip")
+    private val line: Boolean by BooleanSetting("Line", true, description = "Draws a line where you can clip.")
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, true) {
         if (it) {
             text("Can Clip", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR)

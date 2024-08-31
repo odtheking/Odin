@@ -52,10 +52,10 @@ object EtherWarpHelper {
 
         val currentPos = DoubleArray(3) { floor(start.get(it)) }
         val endPos = DoubleArray(3) { floor(end.get(it)) }
-        var iters = 0
+        var iterations = 0
 
-        while (iters < 1000) {
-            iters++
+        while (iterations < 1000) {
+            iterations++
             val pos = BlockPos(currentPos[0].toInt(), currentPos[1].toInt(), currentPos[2].toInt())
 
             if (getBlockIdAt(pos) != 0) return EtherPos(isValidEtherWarpBlock(pos), pos)

@@ -39,7 +39,7 @@ object BloodCamp : Module(
     private val fboxColor: Color by ColorSetting("Final Color", Color.CYAN, true, description = "Color for when Spawn and Mob boxes are merged. Set alpha to 0 to disable.").withDependency { bloodHelper }
     private val mboxColor: Color by ColorSetting("Position Color", Color.GREEN, true, description = "Color for current position box. Set alpha to 0 to disable.").withDependency { bloodHelper }
     private val boxSize: Double by NumberSetting("Box Size", default = 1.0, increment = 0.1, min = 0.1, max = 1.0, description = "The size of the boxes. Lower values may seem less accurate.").withDependency { bloodHelper }
-    private val drawLine: Boolean by BooleanSetting("Line", default = true, description = "Line between Position box and Spawn box").withDependency { bloodHelper }
+    private val drawLine: Boolean by BooleanSetting("Line", default = true, description = "Line between Position box and Spawn box.").withDependency { bloodHelper }
     private val drawTime: Boolean by BooleanSetting("Time Left", default = true, description = "Time before the blood mob spawns. Adjust offset depending on accuracy. May be up to ~100ms off.").withDependency { bloodHelper }
     private val advanced: Boolean by DropdownSetting("Advanced", default = false).withDependency { bloodHelper }
     private val offset: Int by NumberSetting("Offset", default = 20, increment = 1, max = 100, min = -100, description = "Tick offset to adjust between ticks.").withDependency { advanced && bloodHelper }

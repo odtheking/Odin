@@ -15,7 +15,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object BlockOverlay : Module(
     name = "Block Overlay",
     category = Category.RENDER,
-    description = "Lets you customize the vanilla block overlay",
+    description = "Lets you customize the vanilla block overlay.",
 ) {
     private val style: Int by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION)
     private val color: Color by ColorSetting("Color", Color(0, 0, 0, 0.4f), allowAlpha = true, description = "The color of the box.")

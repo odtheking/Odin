@@ -55,7 +55,7 @@ object EtherWarpHelper : Module(
     private val dropdown: Boolean by DropdownSetting("Sounds", false)
     private val sounds: Boolean by BooleanSetting("Custom Sounds", default = false, description = "Plays the selected custom sound when you etherwarp.").withDependency { dropdown }
     private val defaultSounds = arrayListOf("mob.blaze.hit", "fire.ignite", "random.orb", "random.break", "mob.guardian.land.hit", "note.pling", "Custom")
-    private val sound: Int by SelectorSetting("Sound", "mob.blaze.hit", defaultSounds, description = "Which sound to play when you etherwarp").withDependency { sounds && dropdown }
+    private val sound: Int by SelectorSetting("Sound", "mob.blaze.hit", defaultSounds, description = "Which sound to play when you etherwarp.").withDependency { sounds && dropdown }
     private val customSound: String by StringSetting("Custom Sound", "mob.blaze.hit",
         description = "Name of a custom sound to play. This is used when Custom is selected in the Sound setting.", length = 32
     ).withDependency { sound == defaultSounds.size - 1 && sounds && dropdown }

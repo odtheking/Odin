@@ -13,7 +13,7 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 object MapInfo : Module(
     name = "Map Info",
     category = Category.DUNGEON,
-    description = "Displays various information about the current dungeon map"
+    description = "Displays various information about the current dungeon map."
 ) {
     private val disableInBoss: Boolean by BooleanSetting("Disable in boss", default = true, description = "Disables the information display when you're in boss.")
     private val scoreTitle: Boolean by BooleanSetting("300 Score Title", default = true, description = "Displays a title on 300 score.")
@@ -47,11 +47,11 @@ object MapInfo : Module(
     }
 
     private val alternate: Boolean by  BooleanSetting("Flip Crypts and Score", default = false, description = "Flips crypts and score.").withDependency { fullHud.enabled }
-    private val fullAddRemaining: Boolean by BooleanSetting("Include Remaining", default = false, description = "adds remaining to the secrets display.").withDependency { alternate && fullHud.enabled }
+    private val fullAddRemaining: Boolean by BooleanSetting("Include Remaining", default = false, description = "Adds remaining to the secrets display.").withDependency { alternate && fullHud.enabled }
     private val fullRemaining: Boolean by DualSetting("Remaining Secrets", "Minimum", "Remaining", default = false, description = "Display minimum secrets or secrets until s+.").withDependency { !(fullAddRemaining && alternate) && fullHud.enabled }
     private val fullWidth: Float by NumberSetting("Width", default = 160f, min = 160f, max = 200f, increment = 1f, description = "The width of the hud.").withDependency { fullHud.enabled }
     private val unknown: Boolean by DualSetting("Deaths", "Deaths", "Unfound", default = false, description = "Display deaths or unfound secrets. (Unknown secrets are secrets in rooms that haven't been discovered yet. May not be helpful in full party runs.)").withDependency { fullHud.enabled }
-    private val fullBackground: Boolean by BooleanSetting("Hud Background", default = false, description = "Render a background behind the score inf.o").withDependency { fullHud.enabled }
+    private val fullBackground: Boolean by BooleanSetting("Hud Background", default = false, description = "Render a background behind the score info.").withDependency { fullHud.enabled }
     private val fullMargin: Float by NumberSetting("Hud Margin", default = 0f, min = 0f, max = 5f, increment = 1f, description = "The margin around the hud.").withDependency { fullBackground && fullHud.enabled }
     private val fullColor: Color by ColorSetting("Hud Background Color", default = Color.DARK_GRAY.withAlpha(0.5f), true, description = "The color of the background.").withDependency { fullBackground && fullHud.enabled }
 
@@ -67,7 +67,7 @@ object MapInfo : Module(
         width.toFloat() to 9f
     }
 
-    private val compactAddRemaining: Boolean by BooleanSetting("Include remaining", default = false, description = "adds remaining to the secrets display.").withDependency { compactSecrets.enabled }
+    private val compactAddRemaining: Boolean by BooleanSetting("Include remaining", default = false, description = "Adds remaining to the secrets display.").withDependency { compactSecrets.enabled }
     private val compactRemaining: Boolean by DualSetting("Min Secrets", "Minimum", "Remaining", default = false, description = "Display minimum secrets or secrets until s+.").withDependency { !compactAddRemaining && compactSecrets.enabled }
     private val compactSecretBackground: Boolean by BooleanSetting("Secret Background", default = false, description = "Render a background behind the score info.").withDependency { compactSecrets.enabled }
     private val compactSecretMargin: Float by NumberSetting("Secret Margin", default = 0f, min = 0f, max = 5f, increment = 1f, description = "The margin around the hud.").withDependency { compactSecretBackground && compactSecrets.enabled }

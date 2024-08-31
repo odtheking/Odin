@@ -124,10 +124,7 @@ private fun isXZInterceptable(start: Vec3, goal: Vec3?, aabb: AxisAlignedBB): Bo
     return isVecInZ(start.getIntermediateWithXValue(goal, aabb.minX), aabb) ||
             isVecInZ(start.getIntermediateWithXValue(goal, aabb.maxX), aabb) ||
             isVecInX(start.getIntermediateWithZValue(goal, aabb.minZ), aabb) ||
-            isVecInX(start.getIntermediateWithZValue(goal, aabb.maxZ), aabb) /*||
-            isVecInXZ(start.getIntermediateWithYValue(goal, 0.0), aabb) ||
-            isVecInXZ(start.getIntermediateWithYValue(goal, 255.0), aabb)
-            */
+            isVecInX(start.getIntermediateWithZValue(goal, aabb.maxZ), aabb)
 }
 
 fun Vec2.equal(other: Vec2): Boolean {
@@ -352,7 +349,6 @@ private fun isVecInX(vec: Vec3?, aabb: AxisAlignedBB): Boolean =
 operator fun Vec3.plus(vec3: Vec3): Vec3 {
     return this.add(vec3)
 }
-
 
 /**
  * Adds the given coordinates to the Vec3.
