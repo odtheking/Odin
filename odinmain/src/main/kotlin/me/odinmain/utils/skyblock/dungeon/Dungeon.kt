@@ -22,6 +22,8 @@ import net.minecraft.network.play.server.*
 // could add some system to look back at previous runs.
 class Dungeon(val floor: Floor?) {
 
+    var expectingBloodUpdate: Boolean = false
+
     var paul = false
     val inBoss: Boolean get() = getBoss()
     var dungeonTeammates: List<DungeonPlayer> = emptyList()
@@ -71,7 +73,7 @@ class Dungeon(val floor: Floor?) {
 
     private fun handleChatPacket(packet: S02PacketChat) {
         val message = packet.chatComponent.unformattedText.noControlCodes
-        if (Regex("\\[BOSS] The Watcher: You have proven yourself. You may pass.").matches(message)) dungeonStats.bloodDone = true
+        if (Regex("\\[BOSS] The Watcher: You have proven yourself. You may pass.").matches(message)) { expectingBloodUpdate = true }
         val doorOpener = Regex("(?:\\[\\w+] )?(\\w+) opened a (?:WITHER|Blood) door!").find(message)
         if (doorOpener != null) dungeonStats.doorOpener = doorOpener.groupValues[1]
 
@@ -96,7 +98,10 @@ class Dungeon(val floor: Floor?) {
         val text = packet.prefix.plus(packet.suffix)
 
         val cleared = Regex("^Cleared: §[c6a](\\d+)% §8(?:§8)?\\(\\d+\\)$").find(text)
-        if (cleared != null) dungeonStats.percentCleared = cleared.groupValues[1].toInt()
+        cleared?.groupValues[1]?.toInt()?.let {
+            if (dungeonStats.percentCleared != it && expectingBloodUpdate) dungeonStats.bloodDone = true
+            dungeonStats.percentCleared = it
+        }
 
         val time = Regex("^Time Elapsed: §a§a([\\dsmh ]+)$").find(text)
         if (time != null) dungeonStats.elapsedTime = time.groupValues[1]
