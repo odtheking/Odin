@@ -25,13 +25,13 @@ object DragonCheck {
     var lastDragonDeath: WitherDragonsEnum = WitherDragonsEnum.None
 
     fun dragonJoinWorld(event: EntityJoinWorldEvent) {
-        if (event.entity !is EntityDragon) return
-        val dragon = WitherDragonsEnum.entries.find { isVecInXZ(event.entity.positionVector, it.boxesDimensions) } ?: return
+        val entity = event.entity as? EntityDragon ?: return
+        val dragon = WitherDragonsEnum.entries.find { isVecInXZ(entity.positionVector, it.boxesDimensions) } ?: return
 
         dragon.state = WitherDragonState.ALIVE
         dragon.particleSpawnTime = 0L
         dragon.timesSpawned += 1
-        dragon.entity = event.entity
+        dragon.entity = entity
         dragon.spawnedTime = System.currentTimeMillis()
         dragon.isSprayed = false
 
@@ -49,25 +49,23 @@ object DragonCheck {
     }
 
     fun dragonLeaveWorld(event: LivingDeathEvent) {
-        if (event.entity !is EntityDragon) return
-        val dragon = WitherDragonsEnum.entries.find {it.entity?.entityId == event.entity?.entityId} ?: return
+        val entity = event.entity as? EntityDragon ?: return
+        val dragon = WitherDragonsEnum.entries.find {it.entity?.entityId == entity.entityId} ?: return
         dragon.state = WitherDragonState.DEAD
         lastDragonDeath = dragon
 
         if (sendTime && WitherDragons.enabled)
-            dragonPBs.time(dragon.ordinal, event.entity.ticksExisted / 20.0, "s§7!", "§${dragon.colorCode}${dragon.name} §7was alive for §6", addPBString = true, addOldPBString = true)
+            dragonPBs.time(dragon.ordinal, entity.ticksExisted / 20.0, "s§7!", "§${dragon.colorCode}${dragon.name} §7was alive for §6", addPBString = true, addOldPBString = true)
 
         if (sendArrowHit && WitherDragons.enabled) arrowDeath(dragon)
     }
 
     fun dragonSprayed(packet: S04PacketEntityEquipment) {
         if (packet.itemStack?.item != Item.getItemFromBlock(Blocks.packed_ice)) return
-
         val sprayedEntity = mc.theWorld?.getEntityByID(packet.entityID) as? EntityArmorStand ?: return
 
         WitherDragonsEnum.entries.filter{ !it.isSprayed && it.state == WitherDragonState.ALIVE && sprayedEntity.getDistanceToEntity(it.entity) <= 8 }.forEach {
-            val sprayedIn = (System.currentTimeMillis() - it.spawnedTime)
-            if (sendSpray) modMessage("§${it.colorCode}${it.name} §fdragon was sprayed in §c${sprayedIn}§fms ")
+            if (sendSpray) modMessage("§${it.colorCode}${it.name} §fdragon was sprayed in §c${System.currentTimeMillis() - it.spawnedTime}§fms ")
             it.isSprayed = true
         }
     }

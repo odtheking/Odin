@@ -77,9 +77,9 @@ object HighlightRenderer {
     @JvmStatic
     fun renderEntityOutline(camera: ICamera, partialTicks: Float) {
         val pass = MinecraftForgeClient.getRenderPass()
+        GlStateManager.pushMatrix()
         OutlineShader.startDraw()
-        RenderHelper.disableStandardItemLighting()
-        GlStateManager.disableFog()
+
         mc.renderManager.setRenderOutlines(true)
         enableOutlineMode()
 
@@ -94,13 +94,8 @@ object HighlightRenderer {
         RenderHelper.enableStandardItemLighting()
         mc.renderManager.setRenderOutlines(false)
 
-        GlStateManager.enableLighting()
         OutlineShader.stopDraw(Color.WHITE, 0.5f, 1f)
-        GlStateManager.enableFog()
-        GlStateManager.enableBlend()
-        GlStateManager.enableColorMaterial()
-        GlStateManager.enableDepth()
-        GlStateManager.enableAlpha()
+        GlStateManager.popMatrix()
     }
 
     private fun shouldRender(entity: Entity, pass: Int, renderViewEntity: Entity, camera: ICamera, vec3: Vec3): Boolean {

@@ -69,16 +69,16 @@ object Animations : Module(
     }
 
     fun getItemInUseCountHook(player: AbstractClientPlayer, itemToRender: ItemStack): Int {
-        return if (this.noBlock && itemToRender.item is ItemSword && player.itemInUseDuration <= 7) 0
-        else player.itemInUseCount
+        return if (this.noBlock && itemToRender.item is ItemSword && player.itemInUseDuration <= 7) 0 else player.itemInUseCount
     }
 
     private fun getArmSwingAnimationEnd(player: EntityPlayerSP): Int {
-        val length =
-            if (ignoreHaste) 6
-            else if (player.isPotionActive(Potion.digSpeed)) 6 - (1 + player.getActivePotionEffect(Potion.digSpeed).amplifier)
-            else if (player.isPotionActive(Potion.digSlowdown)) 6 + (1 + player.getActivePotionEffect(Potion.digSlowdown).amplifier) * 2
-            else 6
+        val length = when {
+            ignoreHaste -> 6
+            player.isPotionActive(Potion.digSpeed) -> 6 - (1 + player.getActivePotionEffect(Potion.digSpeed).amplifier)
+            player.isPotionActive(Potion.digSlowdown) -> 6 + (1 + player.getActivePotionEffect(Potion.digSlowdown).amplifier) * 2
+            else -> 6
+        }
         return max((length * exp(-speed)),1.0f).toInt()
     }
 
@@ -87,7 +87,7 @@ object Animations : Module(
      */
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if ( event.phase != TickEvent.Phase.END) return
+        if (event.phase != TickEvent.Phase.END) return
         val player = mc.thePlayer ?: return
         if (noTermSwing && isHolding("TERMINATOR")) {
             player.isSwingInProgress = false
@@ -98,11 +98,9 @@ object Animations : Module(
 
         if (!blockHit) return
 
-        if (mc.gameSettings.keyBindAttack.isKeyDown && mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit === MovingObjectPosition.MovingObjectType.BLOCK) {
-            if (!player.isSwingInProgress || player.swingProgressInt >= getArmSwingAnimationEnd(player) / 2 || player.swingProgressInt < 0) {
-                player.isSwingInProgress = true
-                player.swingProgressInt = -1
-            }
-        }
+        if (!mc.gameSettings.keyBindAttack.isKeyDown || mc.objectMouseOver == null || mc.objectMouseOver.typeOfHit !== MovingObjectPosition.MovingObjectType.BLOCK) return
+        if (player.isSwingInProgress && player.swingProgressInt < getArmSwingAnimationEnd(player) / 2 && player.swingProgressInt >= 0) return
+        player.isSwingInProgress = true
+        player.swingProgressInt = -1
     }
 }

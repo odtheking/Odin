@@ -17,8 +17,8 @@ public abstract class MixinRenderGlobal {
         HighlightRenderer.renderEntityOutline(camera, partialTicks);
     }
 
-    @Inject(method = "renderEntityOutlineFramebuffer", at = @At(value = "HEAD"))
-    public void afterFramebufferDraw(CallbackInfo callbackInfo) {
+    @Inject(method = "renderEntities", at = @At(value = "TAIL", target = "Lnet/minecraft/client/renderer/RenderGlobal;isRenderEntityOutlines()Z"))
+    public void prenderEntitiesOutlines(Entity renderViewEntity, ICamera camera, float partialTicks, CallbackInfo ci) {
         OutlineShader.INSTANCE.draw();
     }
 }

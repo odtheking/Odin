@@ -141,30 +141,17 @@ class Dungeon(val floor: Floor?) {
 
     private fun updateDungeonStats(text: String, currentStats: DungeonStats): DungeonStats {
         when {
-            secretCountRegex.matches(text) -> {
-                val matchResult = secretCountRegex.find(text)
-                currentStats.secretsFound = matchResult?.groupValues?.get(1)?.toIntOrNull()
-            }
-            secretPercentRegex.matches(text) -> {
-                val matchResult = secretPercentRegex.find(text)
-                currentStats.secretsPercent = matchResult?.groupValues?.get(1)?.toFloatOrNull()
-            }
-            cryptRegex.matches(text) -> {
-                val matchResult = cryptRegex.find(text)
-                currentStats.crypts = matchResult?.groupValues?.get(1)?.toIntOrNull()
-            }
-            openedRoomsRegex.matches(text) -> {
-                val matchResult = openedRoomsRegex.find(text)
-                currentStats.openedRooms = matchResult?.groupValues?.get(1)?.toIntOrNull()
-            }
-            completedRoomsRegex.matches(text) -> {
-                val matchResult = completedRoomsRegex.find(text)
-                currentStats.completedRooms = matchResult?.groupValues?.get(1)?.toIntOrNull()
-            }
-            deathsRegex.matches(text) -> {
-                val matchResult = deathsRegex.find(text)
-                currentStats.deaths = matchResult?.groupValues?.get(1)?.toIntOrNull()
-            }
+            secretCountRegex.matches(text) -> currentStats.secretsFound = secretCountRegex.find(text)?.groupValues?.get(1)?.toIntOrNull()
+
+            secretPercentRegex.matches(text) -> currentStats.secretsPercent = secretPercentRegex.find(text)?.groupValues?.get(1)?.toFloatOrNull()
+
+            cryptRegex.matches(text) -> currentStats.crypts = cryptRegex.find(text)?.groupValues?.get(1)?.toIntOrNull()
+
+            openedRoomsRegex.matches(text) -> currentStats.openedRooms = openedRoomsRegex.find(text)?.groupValues?.get(1)?.toIntOrNull()
+
+            completedRoomsRegex.matches(text) -> currentStats.completedRooms = completedRoomsRegex.find(text)?.groupValues?.get(1)?.toIntOrNull()
+
+            deathsRegex.matches(text) -> currentStats.deaths = deathsRegex.find(text)?.groupValues?.get(1)?.toIntOrNull()
         }
 
         return currentStats

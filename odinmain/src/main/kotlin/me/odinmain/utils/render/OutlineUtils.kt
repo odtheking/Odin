@@ -8,7 +8,6 @@ import org.lwjgl.opengl.EXTFramebufferObject
 import org.lwjgl.opengl.EXTPackedDepthStencil
 import org.lwjgl.opengl.GL11.*
 
-
 /**
  * Modified from LiquidBounce under GPL-3.0
  * https://github.com/CCBlueX/LiquidBounce/blob/legacy/LICENSE
