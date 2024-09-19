@@ -20,7 +20,7 @@ import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.network.play.server.*
 
 // could add some system to look back at previous runs.
-class Dungeon(val floor: Floor?) {
+class Dungeon(val floor: Floor) {
 
     var expectingBloodUpdate: Boolean = false
 
@@ -35,7 +35,6 @@ class Dungeon(val floor: Floor?) {
     var puzzles = listOf<Puzzle>()
 
     private fun getBoss(): Boolean {
-        if (floor == null) return false
         return when (floor.floorNumber) {
             1 -> posX > -71 && posZ > -39
             in 2..4 -> posX > -39 && posZ > -39
@@ -73,23 +72,19 @@ class Dungeon(val floor: Floor?) {
 
     private fun handleChatPacket(packet: S02PacketChat) {
         val message = packet.chatComponent.unformattedText.noControlCodes
-        if (Regex("\\[BOSS] The Watcher: You have proven yourself. You may pass.").matches(message)) { expectingBloodUpdate = true }
-        val doorOpener = Regex("(?:\\[\\w+] )?(\\w+) opened a (?:WITHER|Blood) door!").find(message)
-        if (doorOpener != null) dungeonStats.doorOpener = doorOpener.groupValues[1]
+        if (Regex("\\[BOSS] The Watcher: You have proven yourself. You may pass.").matches(message)) dungeonStats.bloodDone = true
+        Regex("(?:\\[\\w+] )?(\\w+) opened a (?:WITHER|Blood) door!").find(message)?.let { dungeonStats.doorOpener = it.groupValues[1] }
 
-        val partyMessage = Regex("Party > .*?: (.+)\$").find(message)?.groupValues?.get(1) ?: return
-        if (partyMessage.lowercase().equalsOneOf("mimic killed", "mimic slain", "mimic killed!", "mimic dead", "mimic dead!", "\$skytils-dungeon-score-mimic\$", Mimic.mimicMessage))
+        val partyMessage = Regex("Party > .*?: (.+)\$").find(message)?.groupValues?.get(1)?.lowercase() ?: return
+        if (partyMessage.equalsOneOf("mimic killed", "mimic slain", "mimic killed!", "mimic dead", "mimic dead!", "\$skytils-dungeon-score-mimic\$", Mimic.mimicMessage))
             dungeonStats.mimicKilled = true
-        if (partyMessage.lowercase().equalsOneOf("blaze done!", "blaze done", "blaze puzzle solved!")) { //more completion messages may be necessary.
+        if (partyMessage.equalsOneOf("blaze done!", "blaze done", "blaze puzzle solved!"))  //more completion messages may be necessary.
             puzzles.find { it.name == Puzzle.Blaze.name }.let { it?.status = PuzzleStatus.Completed }
-        }
     }
 
     private fun handleHeaderFooterPacket(packet: S47PacketPlayerListHeaderFooter) {
         Blessing.entries.forEach { blessing ->
-            blessing.regex.find(packet.footer.unformattedText.noControlCodes)?.let { match ->
-                blessing.current = romanToInt(match.groupValues[1])
-            }
+            blessing.regex.find(packet.footer.unformattedText.noControlCodes)?.let { match -> blessing.current = romanToInt(match.groupValues[1]) }
         }
     }
 
@@ -102,17 +97,14 @@ class Dungeon(val floor: Floor?) {
             if (dungeonStats.percentCleared != it && expectingBloodUpdate) dungeonStats.bloodDone = true
             dungeonStats.percentCleared = it
         }
-
-        val time = Regex("^Time Elapsed: §a§a([\\dsmh ]+)$").find(text)
-        if (time != null) dungeonStats.elapsedTime = time.groupValues[1]
+        Regex("^Time Elapsed: §a§a([\\dsmh ]+)$").find(text)?.let { dungeonStats.elapsedTime = it.groupValues[1] }
     }
 
     private fun handleTabListPacket(packet: S38PacketPlayerListItem) {
         if (packet.action != S38PacketPlayerListItem.Action.UPDATE_DISPLAY_NAME) return
         
         packet.entries.forEach { entry ->
-            val text = entry?.displayName?.formattedText ?: return@forEach
-            dungeonStats = updateDungeonStats(text, dungeonStats)
+            entry?.displayName?.formattedText?.let { dungeonStats = updateDungeonStats(it, dungeonStats) }
         }
 
         val tabList = getDungeonTabList() ?: emptyList()

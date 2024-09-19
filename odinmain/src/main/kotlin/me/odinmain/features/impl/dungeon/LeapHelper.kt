@@ -28,7 +28,7 @@ object LeapHelper {
     fun getPlayer() : String {
         if (DungeonUtils.dungeonTeammatesNoSelf.isEmpty()) return ""
         if (!DungeonUtils.inBoss) return DungeonUtils.doorOpener
-        if (DungeonUtils.getPhase() == M7Phases.P3) scanGates()
+        if (DungeonUtils.getF7Phase() == M7Phases.P3) scanGates()
         if (currentPos == NONE) return ""
         return DungeonUtils.dungeonTeammatesNoSelf
             .filter {

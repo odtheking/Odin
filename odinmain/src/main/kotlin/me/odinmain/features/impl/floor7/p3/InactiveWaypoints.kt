@@ -36,7 +36,7 @@ object InactiveWaypoints : Module(
 
     init {
         execute(500) {
-            if (DungeonUtils.getPhase() != M7Phases.P3) return@execute
+            if (DungeonUtils.getF7Phase() != M7Phases.P3) return@execute
             inactiveList = mc.theWorld?.loadedEntityList?.filter {
                 it is EntityArmorStand && it.name.noControlCodes.containsOneOf("Inactive", "Not Activated", "CLICK HERE", ignoreCase = true)
             } ?: emptyList()

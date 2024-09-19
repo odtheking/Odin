@@ -4,12 +4,11 @@ import me.odinmain.utils.addVec
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
-import net.minecraft.entity.boss.EntityDragon
 
 object DragonHealth{
     fun renderHP() {
         WitherDragonsEnum.entries.forEach {
-            val dragon = it.entity as? EntityDragon ?: return
+            val dragon = it.entity ?: return
             if (dragon.health > 0)
                 Renderer.drawStringInWorld(colorHealth(dragon.health), dragon.renderVec.addVec(y = 1.5), Color.WHITE, depth = false, scale = 0.2f, shadow = true)
         }

@@ -70,16 +70,15 @@ object BloodCamp : Module(
             firstSpawns = true
             watcher.clear()
             forRender.clear()
-            ticktime = 0
+            tickTime = 0
             currentName = null
         }
     }
 
     private fun getWatcherHealth() {
         if (!inDungeons || !BossStatus.bossName.noControlCodes.contains("The Watcher") || !watcherBar) return
-        val health = BossStatus.healthScale
         val amount = 12 + DungeonUtils.floor.floorNumber
-        currentName = if (health < 0.05) null else " ${(amount * health).roundToInt()}/$amount"
+        currentName = if (BossStatus.healthScale < 0.05) null else " ${(amount * BossStatus.healthScale).roundToInt()}/$amount"
     }
 
     @SubscribeEvent
@@ -88,7 +87,7 @@ object BloodCamp : Module(
         BossStatus.bossName += currentName
     }
 
-    private var ticktime: Long = 0
+    private var tickTime: Long = 0
 
     private val forRender = hashMapOf<EntityArmorStand, RenderEData>()
     data class RenderEData(
@@ -110,11 +109,9 @@ object BloodCamp : Module(
         val entity = mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityZombie ?: return
         if (watcher.isNotEmpty() || !bloodHelper) return
 
-        val texture = getSkullValue(entity) ?: return
-        if (watcherSkulls.contains(texture)) {
-            watcher.add(entity)
-            devMessage("Watcher found at ${entity.positionVector}")
-        }
+        if (!watcherSkulls.contains(getSkullValue(entity))) return
+        watcher.add(entity)
+        devMessage("Watcher found at ${entity.positionVector}")
     }
 
     fun onTick() {
@@ -122,7 +119,7 @@ object BloodCamp : Module(
         watcher.removeAll {it.isDead}
         entityList.filter { (entity) -> watcher.any { it.getDistanceToEntity(entity) < 20 }
         }.forEach { (entity, data) ->
-            data.started?.let { data.timetook = ticktime - it }
+            data.started?.let { data.timetook = tickTime - it }
 
             val timeTook = data.timetook ?: return@forEach
             val startVector = data.startVector ?: return@forEach
@@ -150,7 +147,7 @@ object BloodCamp : Module(
                 it.currVector = currVector
                 it.endVector = endpoint
                 it.time = time
-                it.endVecUpdated = ticktime
+                it.endVecUpdated = tickTime
                 it.speedVectors = speedVectors
             }
         }
@@ -162,7 +159,7 @@ object BloodCamp : Module(
 
         if (entity.getEquipmentInSlot(4)?.item != Items.skull || !allowedMobSkulls.contains(getSkullValue(entity)) || entity in entityList) return
 
-        entityList[entity] = EntityData(startVector = entity.positionVector, started = ticktime, firstSpawns = firstSpawns)
+        entityList[entity] = EntityData(startVector = entity.positionVector, started = tickTime, firstSpawns = firstSpawns)
     }
 
     @SubscribeEvent
@@ -184,7 +181,7 @@ object BloodCamp : Module(
             val endVector = renderData.endVector ?: return@forEach
             val lastEndVector = renderData.lastEndVector ?: return@forEach
             val endVecUpdated = renderData.endVecUpdated ?: return@forEach
-            val endVectorUpdated = min(ticktime - endVecUpdated, 100)
+            val endVectorUpdated = min(tickTime - endVecUpdated, 100)
 
             val speedVectors = Vec3(
                 (currVector.xCoord - startVector.xCoord) / timeTook,
@@ -248,7 +245,7 @@ object BloodCamp : Module(
 
     @SubscribeEvent
     fun onServerTick(event: RealServerTick) {
-        ticktime += 50
+        tickTime += 50
     }
 
     //Skull data gotten by DocilElm

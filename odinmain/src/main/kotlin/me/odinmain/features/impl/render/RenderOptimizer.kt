@@ -87,7 +87,7 @@ object RenderOptimizer : Module(
             event.isCanceled = true
 
 
-        if (DungeonUtils.getPhase() == M7Phases.P5 && hideParticles && !event.packet.particleType.equalsOneOf(EnumParticleTypes.ENCHANTMENT_TABLE, EnumParticleTypes.FLAME, EnumParticleTypes.FIREWORKS_SPARK))
+        if (DungeonUtils.getF7Phase() == M7Phases.P5 && hideParticles && !event.packet.particleType.equalsOneOf(EnumParticleTypes.ENCHANTMENT_TABLE, EnumParticleTypes.FLAME, EnumParticleTypes.FIREWORKS_SPARK))
             event.isCanceled = true
 
         if (hideHeartParticles && event.packet.particleType == EnumParticleTypes.HEART)
@@ -101,7 +101,7 @@ object RenderOptimizer : Module(
     }
 
     private fun removeTentacles(entity: Entity) {
-        if (DungeonUtils.getPhase() == M7Phases.P5 && getSkullValue(entity) == TENTACLE_TEXTURE)
+        if (DungeonUtils.getF7Phase() == M7Phases.P5 && getSkullValue(entity) == TENTACLE_TEXTURE)
             entity.setDead()
     }
 

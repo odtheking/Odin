@@ -81,7 +81,7 @@ object SimonSays : Module(
 
     @SubscribeEvent
     fun onBlockChange(event: BlockChangeEvent) {
-        if (DungeonUtils.getPhase() != M7Phases.P3) return
+        if (DungeonUtils.getF7Phase() != M7Phases.P3) return
         val pos = event.pos
         val old = event.old
         val state = event.update
