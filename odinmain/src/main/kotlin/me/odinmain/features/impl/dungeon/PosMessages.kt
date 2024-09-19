@@ -25,46 +25,57 @@ object PosMessages : Module(
 
     data class PosMessage(val x: Double, val y: Double, val z: Double, val x2: Double?, val y2: Double?, val z2: Double?, val delay: Long, val distance: Double?, val message: String)
     val posMessageStrings: MutableList<String> by ListSetting("Pos Messages Strings", mutableListOf())
-    private val sentMessages = mutableMapOf<String, Boolean>()
+    private val sentMessages = mutableMapOf<PosMessage, Boolean>()
 
+    val parsedStrings: MutableList<PosMessage> = mutableListOf()
 
     @SubscribeEvent
     fun posMessageSend(event: PacketSentEvent) {
-        if (event.packet !is C04PacketPlayerPosition || (onlyDungeons && !DungeonUtils.inDungeons) || !LocationUtils.inSkyblock) return
-        posMessageStrings.forEach {
-            findParser(it)
+        if (event.packet !is C04PacketPlayerPosition || (onlyDungeons && !DungeonUtils.inDungeons)) return
+        parsedStrings.forEach { message ->
+            message.x2?.let { handleInString(message) } ?: handleAtString(message)
         }
     }
 
-    private fun findParser(posMessageString: String) {
-        val atRegex = Regex("x: (.*), y: (.*), z: (.*), delay: (.*), distance: (.*), message: \"(.*)\"")
-        val inRegex = Regex("x: (.*), y: (.*), z: (.*), x2: (.*), y2: (.*), z2: (.*), delay: (.*), message: \"(.*)\"")
-        if (posMessageString.matches(atRegex)) handleAtString(posMessageString) else handleInString(posMessageString)
+    var parsed = false
+
+    init {
+        onWorldLoad {
+            if (parsed) return@onWorldLoad
+            posMessageStrings.forEach { findParser(it, true) }
+            parsed = true
+        }
     }
 
-    private fun handleAtString(posMessageString: String) {
-        val parsedmsg = parseAtString(posMessageString) ?: return
-        val msgSent = sentMessages.getOrDefault(posMessageString, false)
-        if (mc.thePlayer != null && mc.thePlayer.getDistance(parsedmsg.x, parsedmsg.y, parsedmsg.z) <= (parsedmsg.distance ?: return)) {
-            if (!msgSent) Timer().schedule(parsedmsg.delay) {
-                if (mc.thePlayer.getDistance(parsedmsg.x, parsedmsg.y, parsedmsg.z) <= parsedmsg.distance)
-                    partyMessage(parsedmsg.message)
+    private val atRegex = Regex("x: (.*), y: (.*), z: (.*), delay: (.*), distance: (.*), message: \"(.*)\"")
+
+    fun findParser(posMessageString: String, addToList: Boolean): PosMessage? {
+        val message = if (posMessageString.matches(atRegex)) parseAtString(posMessageString) else parseInString(posMessageString)
+        if (addToList) message?.let { parsedStrings.add(it) }
+        return message
+    }
+
+    private fun handleAtString(posMessage: PosMessage) {
+        val msgSent = sentMessages.getOrDefault(posMessage, false)
+        if (mc.thePlayer != null && mc.thePlayer.getDistance(posMessage.x, posMessage.y, posMessage.z) <= (posMessage.distance ?: return)) {
+            if (!msgSent) Timer().schedule(posMessage.delay) {
+                if (mc.thePlayer.getDistance(posMessage.x, posMessage.y, posMessage.z) <= posMessage.distance)
+                    partyMessage(posMessage.message)
             }
-            sentMessages[posMessageString] = true
-        } else sentMessages[posMessageString] = false
+            sentMessages[posMessage] = true
+        } else sentMessages[posMessage] = false
     }
 
-    private fun handleInString(posMessageString: String) {
-        val parsedmsg = parseInString(posMessageString) ?: return
-        val msgSent = sentMessages.getOrDefault(posMessageString, false)
-        if (mc.thePlayer != null && isVecInXZ(mc.thePlayer.positionVector, AxisAlignedBB(parsedmsg.x, parsedmsg.y, parsedmsg.z, parsedmsg.x2 ?: return, parsedmsg.y2 ?: return, parsedmsg.z2 ?: return))) {
-            if (!msgSent) Timer().schedule(parsedmsg.delay) {
-                if (isVecInXZ(mc.thePlayer.positionVector, AxisAlignedBB(parsedmsg.x, parsedmsg.y, parsedmsg.z, parsedmsg.x2, parsedmsg.y2, parsedmsg.z2))) {
-                    partyMessage(parsedmsg.message)
+    private fun handleInString(posMessage: PosMessage) {
+        val msgSent = sentMessages.getOrDefault(posMessage, false)
+        if (mc.thePlayer != null && isVecInXZ(mc.thePlayer.positionVector, AxisAlignedBB(posMessage.x, posMessage.y, posMessage.z, posMessage.x2 ?: return, posMessage.y2 ?: return, posMessage.z2 ?: return))) {
+            if (!msgSent) Timer().schedule(posMessage.delay) {
+                if (isVecInXZ(mc.thePlayer.positionVector, AxisAlignedBB(posMessage.x, posMessage.y, posMessage.z, posMessage.x2, posMessage.y2, posMessage.z2))) {
+                    partyMessage(posMessage.message)
                 }
             }
-            sentMessages[posMessageString] = true
-        } else sentMessages[posMessageString] = false
+            sentMessages[posMessage] = true
+        } else sentMessages[posMessage] = false
     }
 
     private fun parseAtString(posMessageString: String): PosMessage? {
