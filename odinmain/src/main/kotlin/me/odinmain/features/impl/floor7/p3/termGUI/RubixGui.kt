@@ -9,8 +9,8 @@ import me.odinmain.features.impl.floor7.p3.TerminalSolver.textScale
 import me.odinmain.utils.render.*
 
 object RubixGui : TermGui() {
-
     override fun render() {
+        setCurrentGui(this)
         itemIndexMap.clear()
         roundedRectangle(-300, -175, 600, 300, TerminalSolver.customGuiColor, 10f, 1f)
         if (TerminalSolver.customGuiText == 0) {
@@ -22,14 +22,20 @@ object RubixGui : TermGui() {
         }
         solution.forEach { pane ->
             val slot = mc.thePlayer?.inventoryContainer?.inventorySlots?.get(pane) ?: return@forEach
-            val needed = solution.count() {it == slot.slotIndex}
-            val text = if (needed < 3) needed.toString() else (needed - 5).toString()
+            val needed = solution.count {it == slot.slotIndex}
+            val text = if (needed < 3) needed else (needed - 5)
 
             val row = pane / 9 - 1
             val col = pane % 9 - 2
             val box = BoxWithClass((-168 + ((gap -20).unaryPlus() * 0.5)) + col * 70, -110 + row * 70, 70 - gap, 70 - gap)
-            roundedRectangle(box, if (needed < 3) TerminalSolver.rubixColor else TerminalSolver.oppositeRubixColor)
-            mcText(text, -168 + col * 70 + 26f , -110 + row * 70 + (27f - (textScale*3) - (gap * 0.5)), 2 + textScale, TerminalSolver.textColor, shadow = TerminalSolver.textShadow)
+            val color = when {
+                needed < 3 && text == 2 -> TerminalSolver.rubixColor2
+                needed < 3 && text == 1 -> TerminalSolver.rubixColor1
+                text == -2 -> TerminalSolver.oppositeRubixColor2
+                else -> TerminalSolver.oppositeRubixColor1
+            }
+            roundedRectangle(box, color)
+            mcText(text.toString(), -168 + col * 70 + 26f , -110 + row * 70 + (27f - (textScale*3) - (gap * 0.5)), 2 + textScale, TerminalSolver.textColor, shadow = TerminalSolver.textShadow)
             itemIndexMap[pane] = Box(
                 box.x.toFloat() * customScale + mc.displayWidth / 2,
                 box.y.toFloat() * customScale + mc.displayHeight / 2,

@@ -14,15 +14,14 @@ import net.minecraft.init.Items
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.Slot
 import net.minecraft.item.Item
-import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object AutoExperiments : Module(
-    "Auto Experiments",
+    name = "Auto Experiments",
     category = Category.SKYBLOCK,
     description = "Automatically click on the Chronomatron and Ultrasequencer experiments."
 ){
-    private val delay: Long by NumberSetting("Click Delay", 200, 0, 1000, 10, description = "Time in ms between automatic test clicks.")
+    private val delay: Long by NumberSetting("Click Delay", 200, 0, 1000, 10, unit = "ms", description = "Time in ms between automatic test clicks.")
     private val autoClose: Boolean by BooleanSetting("Auto Close", true, description = "Automatically close the GUI after completing the experiment.")
     private val serumCount: Long by NumberSetting("Serum Count", 0, 0, 3, 1, description = "Consumed Metaphysical Serum count.")
 
@@ -46,7 +45,7 @@ object AutoExperiments : Module(
     @SubscribeEvent
     fun onGuiOpen(event: GuiEvent.GuiLoadedEvent) {
         reset()
-        if (LocationUtils.currentArea != Island.PrivateIsland) return
+        if (!LocationUtils.currentArea.isArea(Island.PrivateIsland)) return
         val chestName = event.name
 
         currentExperiment = when {
@@ -62,12 +61,9 @@ object AutoExperiments : Module(
      * @author Harry282
      */
     @SubscribeEvent
-    fun onGuiDraw(event: GuiScreenEvent.BackgroundDrawnEvent) {
-        if (!inSkyblock || event.gui !is GuiChest) return
-        val container = (event.gui as GuiChest).inventorySlots
-        if (container !is ContainerChest) return
-        val invSlots = container.inventorySlots
-        if (invSlots.size < 54) return
+    fun onGuiDraw(event: GuiEvent.DrawGuiContainerScreenEvent) {
+        if (!inSkyblock) return
+        val invSlots = ((event.gui as? GuiChest)?.inventorySlots as? ContainerChest)?.inventorySlots?.takeIf { it.size >= 54 } ?: return
         when (currentExperiment) {
             ExperimentType.CHRONOMATRON -> solveChronomatron(invSlots)
             ExperimentType.ULTRASEQUENCER -> solveUltraSequencer(invSlots)

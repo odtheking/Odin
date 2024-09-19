@@ -15,16 +15,16 @@ object Ghosts : Module(
     description = "Diverse QOL for ghosts in the Dwarven Mines.",
     category = Category.SKYBLOCK
 ) {
-    private var showGhostNametag: Boolean by BooleanSetting(name = "Show Ghost Nametag")
-    private var showGhosts: Boolean by BooleanSetting(name = "Hide Ghosts")
-    private var hideChargedLayer: Boolean by BooleanSetting(name = "Hide Charged Layer")
+    private var showGhostNametag: Boolean by BooleanSetting(name = "Show Ghost Nametag", description = "Show the ghost's name tag.")
+    private var showGhosts: Boolean by BooleanSetting(name = "Hide Ghosts", description = "Hide ghosts.")
+    private var hideChargedLayer: Boolean by BooleanSetting(name = "Hide Charged Layer", description = "Hide the charged layer of the ghost.")
 
     init {
         execute(500) {
-            mc.theWorld.loadedEntityList
-                .filterIsInstance<EntityCreeper>()
-                .filter { entityCreeper -> entityCreeper.getEntityAttribute(SharedMonsterAttributes.maxHealth).baseValue >= 1000000 }
-                .forEach { creeper ->
+            mc.theWorld?.loadedEntityList
+                ?.filterIsInstance<EntityCreeper>()
+                ?.filter { entityCreeper -> entityCreeper.getEntityAttribute(SharedMonsterAttributes.maxHealth).baseValue >= 1000000 }
+                ?.forEach { creeper ->
                     creeper.isInvisible = showGhosts
                     creeper.dataWatcher.updateObject(17, (if (hideChargedLayer) 0 else 1).toByte())
 
@@ -51,10 +51,8 @@ object Ghosts : Module(
         val result: String = if (number >= 1000000) {
             val short = (number / 1000000).toString()
             val shortSplit = short.split(".")
-            (if (shortSplit[1] != "0") short else shortSplit[0]) + "M"
-        } else {
-            (number / 1000).toInt().toString() + "k"
-        }
+            if (shortSplit[1] != "0") short else shortSplit[0] + "M"
+        } else (number / 1000).toInt().toString() + "k"
         return result
     }
 }

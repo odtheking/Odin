@@ -14,21 +14,21 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 object Camera : Module(
-    "Camera",
+    name = "Camera",
     category = Category.RENDER,
-    description = "Allows you to change qualities about third person view."
+    description = "Various camera improvements and settings."
 ) {
-    private val frontCamera: Boolean by BooleanSetting("No Front Camera")
-    private val cameraClip: Boolean by BooleanSetting("Camera Clip")
-    private val cameraDist: Float by NumberSetting("Distance", 4f, 3.0, 12.0, 0.1)
+    private val frontCamera: Boolean by BooleanSetting("No Front Camera", false, description = "Disables front camera.")
+    private val cameraClip: Boolean by BooleanSetting("Camera Clip", false, description = "Allows the camera to clip through blocks.")
+    private val cameraDist: Float by NumberSetting("Distance", 4f, 3.0, 12.0, 0.1, description = "The distance of the camera from the player.")
+    private val fov: Float by NumberSetting("FOV", mc.gameSettings.fovSetting, 1f, 180f, 1f, description = "The field of view of the camera.")
     private val freelookDropdown: Boolean by DropdownSetting("Freelook")
-    private val toggle: Boolean by DualSetting("Type", "Hold", "Toggle", false).withDependency { freelookDropdown }
+    private val toggle: Boolean by DualSetting("Type", "Hold", "Toggle", false, description = "The type of freelook.").withDependency { freelookDropdown }
     private val freelookKeybind: Keybinding by KeybindSetting("Freelook Key", Keyboard.KEY_NONE, description = "Keybind to toggle/ hold for freelook.")
         .withDependency { freelookDropdown }
         .onPress {
             if (!freelookToggled && enabled) enable()
             else if ((toggle || !enabled) && freelookToggled) disable()
-
     }
     var freelookToggled = false
     private var cameraYaw = 0f
@@ -46,9 +46,12 @@ object Camera : Module(
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        if (frontCamera && mc.gameSettings.thirdPersonView == 2) {
+        if (mc.gameSettings.fovSetting != fov)
+            mc.gameSettings.fovSetting = fov
+
+        if (frontCamera && mc.gameSettings.thirdPersonView == 2)
             mc.gameSettings.thirdPersonView = 0
-        }
+
         if (!freelookKeybind.isDown() && freelookToggled && !toggle) disable()
     }
 
@@ -68,26 +71,22 @@ object Camera : Module(
 
     @SubscribeEvent
     fun cameraSetup(e: EntityViewRenderEvent.CameraSetup) {
-        if (freelookToggled) {
-            e.yaw = cameraYaw
-            e.pitch = cameraPitch
-        }
+        if (!freelookToggled) return
+        e.yaw = cameraYaw
+        e.pitch = cameraPitch
     }
 
     fun updateCameraAndRender(f2: Float, f3: Float) {
-        if (freelookToggled) {
-            cameraYaw += f2 / 7
-            cameraPitch = MathHelper.clamp_float((cameraPitch + f3 / 7), -90f, 90f)
-        }
+        if (!freelookToggled) return
+        cameraYaw += f2 / 7
+        cameraPitch = MathHelper.clamp_float((cameraPitch + f3 / 7), -90f, 90f)
     }
 
     fun calculateCameraDistance(d0: Double, d1: Double, d2: Double, d3: Double): Float {
         var dist = d3
         var f2 = cameraPitch
 
-        if (mc.gameSettings.thirdPersonView == 2) {
-            f2 += 180.0f
-        }
+        if (mc.gameSettings.thirdPersonView == 2) f2 += 180.0f
 
         val d4 = (sin(cameraYaw / 180.0f * Math.PI.toFloat()) * cos(f2 / 180.0f * Math.PI.toFloat())).toDouble() * dist
         val d5 = (-cos(cameraYaw / 180.0f * Math.PI.toFloat()) * cos(f2 / 180.0f * Math.PI.toFloat())).toDouble() * dist
@@ -100,7 +99,7 @@ object Camera : Module(
             f3 *= .1f
             f4 *= .1f
             f5 *= .1f
-            val movingObjectPosition = mc.theWorld.rayTraceBlocks(
+            val movingObjectPosition = mc.theWorld?.rayTraceBlocks(
                 Vec3(d0 + f3.toDouble(), d1 + f4.toDouble(), d2 + f5.toDouble()),
                 Vec3(d0 - d4 + f3.toDouble() + f5.toDouble(), d1 - d6 + f4.toDouble(), d2 - d5 + f5.toDouble())
             )

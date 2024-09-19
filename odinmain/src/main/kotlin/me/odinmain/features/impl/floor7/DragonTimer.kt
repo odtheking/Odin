@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.floor7
 
-import me.odinmain.features.impl.floor7.WitherDragons.textScale
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 
@@ -12,7 +11,7 @@ object DragonTimer {
         toRender = ArrayList()
 
         WitherDragonsEnum.entries.forEachIndexed { index, dragon ->
-            if (dragon.spawning && dragon.spawnTime() > 0)
+            if (dragon.state == WitherDragonState.SPAWNING && dragon.spawnTime() > 0)
                 toRender.add(Triple("§${dragon.colorCode}${dragon} spawn: ${colorTime(dragon.spawnTime())}ms", index, dragon))
         }
     }
@@ -24,7 +23,7 @@ object DragonTimer {
             Renderer.drawStringInWorld(
                 it.first, it.third.spawnPos,
                 color = Color.WHITE, depth = false,
-                scale = textScale / 5
+                scale = 0.16f
             )
         }
     }

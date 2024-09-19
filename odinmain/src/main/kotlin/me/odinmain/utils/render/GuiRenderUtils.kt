@@ -132,7 +132,7 @@ fun getMCTextHeight() = mc.fontRendererObj.FONT_HEIGHT
 
 fun getTextHeight(text: String, size: Float) = OdinFont.getTextHeight(text, size)
 
-fun translate(x: Number, y: Number, z: Number = 0f) = GlStateManager.translate(x.toDouble(), y.toDouble(), z.toDouble())
+fun translate(x: Number, y: Number, z: Number = 1f) = GlStateManager.translate(x.toDouble(), y.toDouble(), z.toDouble())
 
 fun rotate(degrees: Float, xPos: Float, yPos: Float, zPos: Float, xAxis: Float, yAxis: Float, zAxis: Float) {
     translate(xPos, yPos, zPos)
@@ -189,7 +189,7 @@ fun resetScissor(scissor: Scissor) {
     scissorList.removeLast()
 }
 
-fun drawDynamicTexture(dynamicTexture: DynamicTexture, x: Float, y: Float, w: Float, h: Float) {
+fun drawDynamicTexture(dynamicTexture: DynamicTexture, x: Number, y: Number, w: Number, h: Number) {
     dynamicTexture.updateDynamicTexture()
     GlStateManager.bindTexture(dynamicTexture.glTextureId)
     drawTexturedModalRect(x.toInt(), y.toInt(), w.toInt(), h.toInt())

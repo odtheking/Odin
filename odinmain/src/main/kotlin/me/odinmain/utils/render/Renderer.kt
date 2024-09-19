@@ -1,13 +1,15 @@
 package me.odinmain.utils.render
 
 import me.odinmain.OdinMain.mc
+import me.odinmain.ui.clickgui.util.ColorUtil.multiplyAlpha
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
 import me.odinmain.utils.render.RenderUtils.drawBeaconBeam
+import me.odinmain.utils.render.RenderUtils.outlineBounds
+import me.odinmain.utils.skyblock.getBlockAt
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.entity.Entity
-import net.minecraft.util.AxisAlignedBB
-import net.minecraft.util.Vec3
+import net.minecraft.util.*
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -15,6 +17,10 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.max
 
 object Renderer {
+
+    const val DEFAULT_STYLE = "Filled"
+    val styles = arrayListOf("Filled", "Outline", "Filled Outline")
+    const val STYLE_DESCRIPTION = "How the box should be rendered."
 
     /**
      * Draws a box in the world with the specified axis-aligned bounding box (AABB), color, and optional parameters.
@@ -32,24 +38,78 @@ object Renderer {
         outlineWidth: Number = 3,
         outlineAlpha: Number = 1,
         fillAlpha: Number = 1,
-        depth: Boolean = false
+        depth: Boolean = false,
+        lineSmoothing: Boolean = true
     ) {
-        RenderUtils.drawOutlinedAABB(aabb, color.withAlpha(outlineAlpha.toFloat()), thickness = outlineWidth, depth = depth)
+        if (outlineAlpha == 0f && fillAlpha == 0f) return
+        RenderUtils.drawOutlinedAABB(aabb, color.withAlpha(outlineAlpha.toFloat()), thickness = outlineWidth, depth = depth, lineSmoothing)
 
         RenderUtils.drawFilledAABB(aabb, color.withAlpha(fillAlpha.toFloat()), depth = depth)
     }
 
     /**
+     * Draws a block in the world with the specified position, color, and optional parameters.
+     *
+     * @param pos          The position of the block.
+     * @param color        The color of the block.
+     * @param outlineWidth The width of the outline (default is 3).
+     * @param outlineAlpha The alpha value of the outline (default is 1).
+     * @param fillAlpha    The alpha value of the fill (default is 1).
+     * @param depth        Indicates whether to draw with depth (default is false).
+     */
+    fun drawBlock(
+        pos: BlockPos,
+        color: Color,
+        outlineWidth: Number = 3,
+        outlineAlpha: Number = 1,
+        fillAlpha: Number = 1,
+        depth: Boolean = false,
+        lineSmoothing: Boolean = true
+    ) {
+        val block = getBlockAt(pos)
+        block.setBlockBoundsBasedOnState(mc.theWorld, pos)
+        drawBox(block.getSelectedBoundingBox(mc.theWorld, pos).outlineBounds(), color, outlineWidth, outlineAlpha, fillAlpha, depth, lineSmoothing)
+    }
+
+    fun drawStyledBlock(
+        pos: BlockPos,
+        color: Color,
+        style: Int,
+        width: Number = 3,
+        depth: Boolean = false,
+        lineSmoothing: Boolean = true
+    ) {
+        when (style) {
+            0 -> drawBlock(pos, color, width, 0, color.alpha, depth, lineSmoothing)
+            1 -> drawBlock(pos, color, width, color.alpha, 0, depth, lineSmoothing)
+            2 -> drawBlock(pos, color, width, color.alpha, color.multiplyAlpha(.75f).alpha, depth, lineSmoothing)
+        }
+    }
+
+    fun drawStyledBox(
+        aabb: AxisAlignedBB,
+        color: Color,
+        style: Int,
+        width: Number = 3,
+        depth: Boolean = false
+    ) {
+        when (style) {
+            0 -> drawBox(aabb, color, width, 0, color.alpha, depth)
+            1 -> drawBox(aabb, color, width, color.alpha, 0, depth)
+            2 -> drawBox(aabb, color, width, color.alpha, color.multiplyAlpha(.75f).alpha, depth)
+        }
+    }
+
+    /**
      * Draws a 3D line between two specified points in the world.
      *
-     * @param pos1      The starting position of the line.
-     * @param pos2      The ending position of the line.
+     * @param points    The points to draw the line between.
      * @param color     The color of the line.
      * @param lineWidth The width of the line (default is 3).
      * @param depth     Indicates whether to draw with depth (default is false).
      */
-    fun draw3DLine(pos1: Vec3, pos2: Vec3, color: Color, lineWidth: Float = 3f, depth: Boolean = false) {
-        RenderUtils.draw3DLine(pos1, pos2, color, lineWidth, depth)
+    fun draw3DLine(vararg points: Vec3, color: Color, lineWidth: Float = 3f, depth: Boolean = false) {
+        RenderUtils.drawLines(*points, color = color, lineWidth = lineWidth, depth = depth)
     }
 
     /**
@@ -96,10 +156,11 @@ object Renderer {
         color: Color = Color.WHITE,
         depth: Boolean = false,
         scale: Float = 0.03f,
-        shadow: Boolean = true,
-        ) {
+        shadow: Boolean = true
+    ) {
         RenderUtils.drawStringInWorld(text, vec3, color, depth, scale, shadow)
     }
+
     /**
      * Draws a cylinder in the world with the specified parameters.
      *
@@ -114,18 +175,18 @@ object Renderer {
      * @param rot3        Rotation parameter.
      * @param color       The color of the cylinder.
      * @param phase       Indicates whether to phase the cylinder (default is false).
-     * @param linemode    Indicates whether to draw the cylinder in line mode (default is false).
+     * @param lineMode    Indicates whether to draw the cylinder in line mode (default is false).
      */
     fun drawCylinder(
         pos: Vec3, baseRadius: Float, topRadius: Float, height: Float,
         slices: Int, stacks: Int, rot1: Float, rot2: Float, rot3: Float,
-        color: Color, phase: Boolean = false, linemode: Boolean = false
+        color: Color, phase: Boolean = false, lineMode: Boolean = false
     ) {
-        RenderUtils.drawCylinder(pos, baseRadius, topRadius, height, slices, stacks, rot1, rot2, rot3, color, linemode, phase)
+        RenderUtils.drawCylinder(pos, baseRadius, topRadius, height, slices, stacks, rot1, rot2, rot3, color, lineMode, phase)
     }
 
-    fun draw2DEntity(entity: Entity, lineWidth: Float, color: Color) {
-        RenderUtils.draw2D(entity, lineWidth, color)
+    fun draw2DEntity(entity: Entity, color: Color, lineWidth: Float) {
+       RenderUtils2D.draw2DESP(entity.entityBoundingBox, color, lineWidth)
     }
 
     private var displayTitle = ""

@@ -14,7 +14,6 @@ import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.Packet
 import net.minecraftforge.common.MinecraftForge
 import org.lwjgl.input.Keyboard
-
 import kotlin.reflect.full.hasAnnotation
 
 /**
@@ -25,7 +24,7 @@ abstract class Module(
     val name: String,
     key: Int? = Keyboard.KEY_NONE,
     @Transient val category: Category = Category.RENDER,
-    @Transient var description: String = "",
+    @Transient var description: String,
     @Transient val tag: TagType = TagType.NONE,
     toggled: Boolean = false,
 ) {
@@ -173,7 +172,7 @@ abstract class Module(
         executors.add(this to Executor(delay, profileName, func))
     }
 
-    fun execute(delay: Long, repeats: Int, profileName: String = this.name, func:Executable) {
+    fun execute(delay: Long, repeats: Int, profileName: String = this.name, func: Executable) {
         executors.add(this to Executor.LimitedExecutor(delay, repeats, profileName, func))
     }
 

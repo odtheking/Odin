@@ -8,5 +8,5 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 public interface EntityRendererAccessor {
 
     @Invoker
-    public void invokeSetupCameraTransform(float partialTicks, int pass);
+    void invokeSetupCameraTransform(float partialTicks, int pass);
 }

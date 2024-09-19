@@ -11,6 +11,7 @@ import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.M7Phases
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.item.EntityEnderCrystal
@@ -22,24 +23,26 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-
 object Triggerbot : Module(
     name = "Triggerbot",
     description = "Various Triggerbots. (Blood, Spirit Bear, Crystal Triggerbot, Secret Triggerbot, Relic Triggerbot)",
     category = Category.DUNGEON
 ) {
-    private val blood: Boolean by BooleanSetting("Blood Mobs")
+    private val blood: Boolean by BooleanSetting("Blood Mobs", default = false, description = "Automatically clicks blood mobs.")
     private val bloodClickType: Boolean by DualSetting("Blood Click Type", "Left", "Right", description = "What button to click for blood mobs.").withDependency { blood }
-    private val spiritBear: Boolean by BooleanSetting("Spirit Bear")
-    private val crystal: Boolean by BooleanSetting("Crystal Triggerbot", default = false)
-    private val take: Boolean by BooleanSetting("Take", default = true).withDependency { crystal }
-    private val place: Boolean by BooleanSetting("Place", default = true).withDependency { crystal }
 
-    private val secretTriggerbot: Boolean by BooleanSetting("Secret Triggerbot", default = false)
-    private val stbDelay: Long by NumberSetting("Delay", 200L, 0, 1000).withDependency { secretTriggerbot }
-    private val stbCH: Boolean by BooleanSetting("Crystal Hollows Chests", true, description = "Opens chests in crystal hollows when looking at them").withDependency { secretTriggerbot }
+    private val spiritBear: Boolean by BooleanSetting("Spirit Bear", default = false, description = "Automatically clicks the spirit bear.")
+
+    private val crystal: Boolean by BooleanSetting("Crystal Triggerbot", default = false, description = "Automatically takes and places crystals.")
+    private val take: Boolean by BooleanSetting("Take", default = true, description = "Takes crystals.").withDependency { crystal }
+    private val place: Boolean by BooleanSetting("Place", default = true, description = "Places crystals.").withDependency { crystal }
+
+    private val secretTriggerbot: Boolean by BooleanSetting("Secret Triggerbot", default = false, description = "Automatically clicks secret buttons.")
+    private val stbDelay: Long by NumberSetting("Delay", 200L, 0, 1000, unit = "ms", description = "The delay between each click.").withDependency { secretTriggerbot }
+
+    private val stbCH: Boolean by BooleanSetting("Crystal Hollows Chests", true, description = "Opens chests in crystal hollows when looking at them.").withDependency { secretTriggerbot }
     private val secretTBInBoss: Boolean by BooleanSetting("In Boss", true, description = "Makes the triggerbot work in dungeon boss aswell.").withDependency { secretTriggerbot }
-    private val swapSlot: Boolean by BooleanSetting("Swap slow", false)
+    private val swapSlot: Boolean by BooleanSetting("Swap slow", false, description = "Swaps to the slot before clicking.").withDependency { secretTriggerbot }
     private val secretTriggerBotSlot: Int by NumberSetting("Slot", 0, 0, 8, description = "The slot to use for the triggerbot.").withDependency { secretTriggerbot && swapSlot }
 
     private val triggerBotClock = Clock(stbDelay)
@@ -76,7 +79,7 @@ object Triggerbot : Module(
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        if (!DungeonUtils.inBoss || DungeonUtils.getPhase() != Island.M7P1 || !clickClock.hasTimePassed() || mc.objectMouseOver == null || !crystal) return
+        if (!DungeonUtils.inBoss || DungeonUtils.getF7Phase() != M7Phases.P1 || !clickClock.hasTimePassed() || mc.objectMouseOver == null || !crystal) return
         if ((take && mc.objectMouseOver.entityHit is EntityEnderCrystal) || (place && mc.objectMouseOver.entityHit?.name?.noControlCodes == "Energy Crystal Missing" && mc.thePlayer.heldItem.displayName.noControlCodes == "Energy Crystal")) {
             PlayerUtils.rightClick()
             clickClock.update()
@@ -110,8 +113,8 @@ object Triggerbot : Module(
             ) return@execute
 
             val pos = mc.objectMouseOver?.blockPos ?: return@execute
-            val state = mc.theWorld.getBlockState(pos) ?: return@execute
-            val tileEntity = mc.theWorld.getTileEntity(pos) ?: null
+            val state = mc.theWorld?.getBlockState(pos) ?: return@execute
+            val tileEntity = mc.theWorld?.getTileEntity(pos) ?: return@execute
             clickedPositions = clickedPositions.filter { it.value + 1000L > System.currentTimeMillis() }
             if (
                 (pos.x in 58..62 && pos.y in 133..136 && pos.z == 142) || // looking at lights device
@@ -120,7 +123,7 @@ object Triggerbot : Module(
 
             if (tileEntity is TileEntityChest && tileEntity.numPlayersUsing >= 1) return@execute
 
-            if (stbCH && LocationUtils.currentArea == Island.CrystalHollows && state.block == Blocks.chest) {
+            if (stbCH && LocationUtils.currentArea.isArea(Island.CrystalHollows) && state.block == Blocks.chest) {
                 PlayerUtils.rightClick()
                 triggerBotClock.update()
                 clickedPositions = clickedPositions.plus(pos to System.currentTimeMillis())

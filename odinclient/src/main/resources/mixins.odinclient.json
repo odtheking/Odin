@@ -18,8 +18,7 @@
     "mixins.block.MixinBlockMushroom",
     "mixins.block.MixinBlockNetherWart",
     "mixins.block.MixinBlockSkull",
-    "mixins.entity.MixinEntityLivingBase",
-    "mixins.other.MixinNEURenderListener"
+    "mixins.entity.MixinEntityLivingBase"
   ],
   "client": [
     "accessors.IEntityPlayerSPAccessor",
@@ -31,13 +30,14 @@
     "mixins.MixinGuiScreen",
     "mixins.MixinItem",
     "mixins.MixinItemRenderer",
-    "mixins.MixinLayerCape",
     "mixins.MixinMinecraft",
     "mixins.MixinModList",
     "mixins.MixinMouseHelper",
+    "mixins.MixinNetHandlerPlayClient",
     "mixins.MixinNetworkManager",
     "mixins.MixinPlayerControllerMP",
     "mixins.MixinRenderDragon",
+    "mixins.MixinRenderEntityItem",
     "mixins.MixinRenderItem",
     "mixins.MixinRenderPlayer",
     "mixins.MixinSoundManager",

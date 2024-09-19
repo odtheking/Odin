@@ -9,6 +9,7 @@ import me.odinmain.utils.render.*
 
 object SelectAllGui : TermGui() {
     override fun render() {
+        setCurrentGui(this)
         itemIndexMap.clear()
         roundedRectangle(-300, -175, 600, 350, TerminalSolver.customGuiColor, 10f, 1f)
         if (TerminalSolver.customGuiText == 0) {

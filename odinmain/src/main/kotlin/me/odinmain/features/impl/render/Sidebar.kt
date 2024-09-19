@@ -3,7 +3,6 @@ package me.odinmain.features.impl.render
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.clickgui.util.ColorUtil.darker
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.*
@@ -15,14 +14,13 @@ import net.minecraft.scoreboard.*
 import net.minecraft.util.EnumChatFormatting
 import kotlin.math.max
 
-
 object Sidebar : Module(
     name = "Sidebar",
     category = Category.RENDER,
     description = "Various settings to change the look of the minecraft sidebar."
 ) {
     private var variableScoreObjective: ScoreObjective? = null
-    private val hud: HudElement by HudSetting("Hud", 500f, 500f, 1f, false) {
+    private val hud: HudElement by HudSetting("Hud", 500f, 500f, 2f, false) {
         val scoreObjective = variableScoreObjective ?: return@HudSetting 0f to 0f
         val scoreboard: Scoreboard = scoreObjective.scoreboard
         val scoreList: MutableList<Score> = ArrayList()
@@ -46,12 +44,9 @@ object Sidebar : Module(
             val scoreY: Int = index * mc.fontRendererObj.FONT_HEIGHT
             drawRect(-2, scoreY, width, scoreY + mc.fontRendererObj.FONT_HEIGHT, color)
             drawString(s1, 0, scoreY)
-            if (this.redNumbers) {
-                drawString(s2, width - getStringWidth(s2), scoreY)
-            }
+            if (this.redNumbers) drawString(s2, width - getStringWidth(s2), scoreY)
             if (index == scoreList.size) {
                 val s3 = scoreObjective.displayName
-                drawRect(-2, 0, width, mc.fontRendererObj.FONT_HEIGHT, backgroundColor.darker(1f).rgba)
                 drawRect(-2, 0, width, mc.fontRendererObj.FONT_HEIGHT, color)
                 drawString(s3, width - getStringWidth(s3), 1)
             }
@@ -60,10 +55,10 @@ object Sidebar : Module(
         Color.WHITE.bind()
         width.toFloat() to (scoreList.size + 1) * mc.fontRendererObj.FONT_HEIGHT.toFloat()
     }
-    private val customFont: Boolean by DualSetting("Font", "Minecraft", "Custom")
-    private val textShadow: Boolean by BooleanSetting("Text Shadow")
-    private val redNumbers: Boolean by BooleanSetting("Show Red Numbers")
-    private val backgroundColor: Color by ColorSetting("Background Color", Color.GRAY.withAlpha(.5f))
+    private val customFont: Boolean by DualSetting("Font", "Minecraft", "Custom", description = "The font to use for the sidebar.")
+    private val textShadow: Boolean by BooleanSetting("Text Shadow", true, description = "Whether to render a shadow behind the text.")
+    private val redNumbers: Boolean by BooleanSetting("Show Red Numbers", true, description = "Whether to show the numbers in red.")
+    private val backgroundColor: Color by ColorSetting("Background Color", Color.GRAY.withAlpha(.5f), allowAlpha = true, description = "The color of the sidebar background.")
 
     fun renderSidebar(scoreObjective: ScoreObjective, scaledResolution: ScaledResolution): Boolean {
         variableScoreObjective = scoreObjective

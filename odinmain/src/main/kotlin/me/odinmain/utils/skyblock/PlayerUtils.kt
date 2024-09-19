@@ -1,5 +1,6 @@
 package me.odinmain.utils.skyblock
 
+import me.odinmain.OdinMain.logger
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.floor7.p3.termsim.TermSimGui
 import me.odinmain.utils.clock.Executor
@@ -10,6 +11,7 @@ import me.odinmain.utils.render.Renderer
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.ItemStack
+import net.minecraft.util.Vec3
 
 
 object PlayerUtils {
@@ -24,10 +26,12 @@ object PlayerUtils {
      *
      * @author Aton
      */
-    fun playLoudSound(sound: String?, volume: Float, pitch: Float) {
-        shouldBypassVolume = true
-        mc.thePlayer?.playSound(sound, volume, pitch)
-        shouldBypassVolume = false
+    fun playLoudSound(sound: String?, volume: Float, pitch: Float, pos: Vec3? = null) {
+        mc.addScheduledTask {
+            shouldBypassVolume = true
+            mc.theWorld?.playSound(pos?.xCoord ?: mc.thePlayer.posX, pos?.yCoord ?: mc.thePlayer.posY, pos?.zCoord  ?: mc.thePlayer.posZ, sound, volume, pitch, false)
+            shouldBypassVolume = false
+        }
     }
 
     /**
@@ -43,13 +47,11 @@ object PlayerUtils {
         if (displayText) Renderer.displayTitle(title , time, color = color)
     }
 
-    fun dropItem() {
-        mc.thePlayer.dropOneItem(false)
-    }
-
     inline val posX get() = mc.thePlayer.posX
     inline val posY get() = mc.thePlayer.posY
     inline val posZ get() = mc.thePlayer.posZ
+
+    fun getPositionString() = "x: ${posX.toInt()}, y: ${posY.toInt()}, z: ${posZ.toInt()}"
 
     val posFloored
         get() = mc.thePlayer.positionVector.floored()
@@ -107,7 +109,7 @@ object PlayerUtils {
                 sendWindowClick(slotId, button, mode)
             } catch (e: Exception) {
                 println("Error sending window click: $this")
-                e.printStackTrace()
+                logger.error(e)
                 windowClickQueue.clear()
             }
         }
@@ -115,9 +117,9 @@ object PlayerUtils {
     }
 
     private fun sendWindowClick(slotId: Int, button: Int, mode: Int) {
-        mc.thePlayer.openContainer?.let {
+        mc.thePlayer?.openContainer?.let {
             if (it !is ContainerChest) return@let
-            mc.playerController.windowClick(it.windowId, slotId, button, mode, mc.thePlayer)
+            mc.playerController?.windowClick(it.windowId, slotId, button, mode, mc.thePlayer)
         }
     }
 

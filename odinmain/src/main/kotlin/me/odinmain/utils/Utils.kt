@@ -1,12 +1,15 @@
-@file:Suppress("NOTHING_TO_INLINE", "FunctionName")
+@file:Suppress("FunctionName")
 
 package me.odinmain.utils
 
+import me.odinmain.OdinMain
+import me.odinmain.OdinMain.logger
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.ModuleManager
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.skyblock.*
+import net.minecraft.entity.Entity
 import net.minecraft.inventory.Container
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.common.MinecraftForge
@@ -51,6 +54,10 @@ fun String.containsOneOf(options: Collection<String>, ignoreCase: Boolean = fals
     return options.any { this.contains(it, ignoreCase) }
 }
 
+fun String.startsWithOneOf(vararg options: String, ignoreCase: Boolean = false): Boolean {
+    return options.any { this.startsWith(it, ignoreCase) }
+}
+
 /**
  * Checks if the current object is equal to at least one of the specified objects.
  *
@@ -59,6 +66,10 @@ fun String.containsOneOf(options: Collection<String>, ignoreCase: Boolean = fals
  */
 fun Any?.equalsOneOf(vararg options: Any?): Boolean {
     return options.any { this == it }
+}
+
+fun String?.matchesOneOf(vararg options: Regex): Boolean {
+    return options.any { it.matches(this ?: "") }
 }
 
 /**
@@ -132,8 +143,17 @@ fun Event.postAndCatch(): Boolean {
         MinecraftForge.EVENT_BUS.post(this)
     }.onFailure {
         it.printStackTrace()
-        modMessage("Caught and logged an ${it::class.simpleName ?: "error"} at ${this::class.simpleName}. Please report this!")
+        logger.error("An error occurred", it)
+        modMessage("${OdinMain.VERSION} Caught and logged an ${it::class.simpleName ?: "error"} at ${this::class.simpleName}. Please report this!")
     }.getOrDefault(isCanceled)
+}
+
+// Companion object to expose the extension function statically for Java
+object EventExtensions {
+    @JvmStatic
+    fun postAndCatch(event: Event): Boolean {
+        return event.postAndCatch()
+    }
 }
 
 /**
@@ -201,8 +221,6 @@ fun min(vararg numbers: Number): Float {
 /**
  * Returns the String with the first letter capitalized
  *
- * @param String The String to capitalize
- *
  * @return The String with the first letter capitalized
  */
 fun String.capitalizeFirst(): String {
@@ -228,7 +246,16 @@ fun getCurrentMonthName(): String {
     return currentMonth.getDisplayName(TextStyle.FULL, Locale.getDefault())
 }
 
-fun formatTime(time: Long): String {
+/**
+ * Formats a time duration in milliseconds into a human-readable string.
+ *
+ * The string will show hours, minutes, and seconds, with an optional number of decimal places for the seconds.
+ *
+ * @param time The time duration in milliseconds to be formatted.
+ * @param decimalPlaces The number of decimal places to show for the seconds. Default is 2.
+ * @return A formatted string representing the time duration. For example, "1h 2m 3.45s".
+ */
+fun formatTime(time: Long, decimalPlaces: Int = 2): String {
     if (time == 0L) return "0s"
     var remaining = time
     val hours = (remaining / 3600000).toInt().let {
@@ -240,26 +267,27 @@ fun formatTime(time: Long): String {
         if (it > 0) "${it}m " else ""
     }
     val seconds = (remaining / 1000f).let {
-        "%.2f".format(it)
+        // Adjust formatting based on decimalPlaces parameter
+        String.format(Locale.US, "%.${decimalPlaces}f", it)
     }
     return "$hours$minutes${seconds}s"
 }
 
 val Char.isHexaDecimal
-    get() = isDigit() || equalsOneOf("a","b","c","d","e","f","A","B","C","D","E","F")
+    get() = isDigit() || lowercase().equalsOneOf("a","b","c","d","e","f")
 
 // Used in DeployableTimer.kt
 data object FlareTextures {
-    val warningFlareTexture = "ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzMwNjIyMywKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjJlMmJmNmMxZWMzMzAyNDc5MjdiYTYzNDc5ZTU4NzJhYzY2YjA2OTAzYzg2YzgyYjUyZGFjOWYxYzk3MTQ1OCIKICAgIH0KICB9Cn0="
-    val alertFlareTexture = "ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzMyNjQzMiwKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWQyYmY5ODY0NzIwZDg3ZmQwNmI4NGVmYTgwYjc5NWM0OGVkNTM5YjE2NTIzYzNiMWYxOTkwYjQwYzAwM2Y2YiIKICAgIH0KICB9Cn0="
-    val sosFlareTexture = "ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzM0NzQ4OSwKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzAwNjJjYzk4ZWJkYTcyYTZhNGI4OTc4M2FkY2VmMjgxNWI0ODNhMDFkNzNlYTg3YjNkZjc2MDcyYTg5ZDEzYiIKICAgIH0KICB9Cn0="
+    const val WARNING_FLARE_TEXTURE = "ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzMwNjIyMywKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjJlMmJmNmMxZWMzMzAyNDc5MjdiYTYzNDc5ZTU4NzJhYzY2YjA2OTAzYzg2YzgyYjUyZGFjOWYxYzk3MTQ1OCIKICAgIH0KICB9Cn0="
+    const val ALERT_FLARE_TEXTURE = "ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzMyNjQzMiwKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWQyYmY5ODY0NzIwZDg3ZmQwNmI4NGVmYTgwYjc5NWM0OGVkNTM5YjE2NTIzYzNiMWYxOTkwYjQwYzAwM2Y2YiIKICAgIH0KICB9Cn0="
+    const val SOS_FLARE_TEXTURE = "ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzM0NzQ4OSwKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzAwNjJjYzk4ZWJkYTcyYTZhNGI4OTc4M2FkY2VmMjgxNWI0ODNhMDFkNzNlYTg3YjNkZjc2MDcyYTg5ZDEzYiIKICAgIH0KICB9Cn0="
 }
 
 // Used in ChocolateFactory.kt
 data object BunnyEggTextures {
-    val  dinnerEggTexture = "ewogICJ0aW1lc3RhbXAiIDogMTcxMTQ2MjY0OTcwMSwKICAicHJvZmlsZUlkIiA6ICI3NGEwMzQxNWY1OTI0ZTA4YjMyMGM2MmU1NGE3ZjJhYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZXp6aXIiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTVlMzYxNjU4MTlmZDI4NTBmOTg1NTJlZGNkNzYzZmY5ODYzMTMxMTkyODNjMTI2YWNlMGM0Y2M0OTVlNzZhOCIKICAgIH0KICB9Cn0"
-    val lunchEggTexture = "ewogICJ0aW1lc3RhbXAiIDogMTcxMTQ2MjU2ODExMiwKICAicHJvZmlsZUlkIiA6ICI3NzUwYzFhNTM5M2Q0ZWQ0Yjc2NmQ4ZGUwOWY4MjU0NiIsCiAgInByb2ZpbGVOYW1lIiA6ICJSZWVkcmVsIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzdhZTZkMmQzMWQ4MTY3YmNhZjk1MjkzYjY4YTRhY2Q4NzJkNjZlNzUxZGI1YTM0ZjJjYmM2NzY2YTAzNTZkMGEiCiAgICB9CiAgfQp9"
-    val  breakfastEggTexture = "ewogICJ0aW1lc3RhbXAiIDogMTcxMTQ2MjY3MzE0OSwKICAicHJvZmlsZUlkIiA6ICJiN2I4ZTlhZjEwZGE0NjFmOTY2YTQxM2RmOWJiM2U4OCIsCiAgInByb2ZpbGVOYW1lIiA6ICJBbmFiYW5hbmFZZzciLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTQ5MzMzZDg1YjhhMzE1ZDAzMzZlYjJkZjM3ZDhhNzE0Y2EyNGM1MWI4YzYwNzRmMWI1YjkyN2RlYjUxNmMyNCIKICAgIH0KICB9Cn0"
+    const val DINNER_EGG_TEXTURE = "ewogICJ0aW1lc3RhbXAiIDogMTcxMTQ2MjY0OTcwMSwKICAicHJvZmlsZUlkIiA6ICI3NGEwMzQxNWY1OTI0ZTA4YjMyMGM2MmU1NGE3ZjJhYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZXp6aXIiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTVlMzYxNjU4MTlmZDI4NTBmOTg1NTJlZGNkNzYzZmY5ODYzMTMxMTkyODNjMTI2YWNlMGM0Y2M0OTVlNzZhOCIKICAgIH0KICB9Cn0"
+    const val LUNCH_EGG_TEXTURE = "ewogICJ0aW1lc3RhbXAiIDogMTcxMTQ2MjU2ODExMiwKICAicHJvZmlsZUlkIiA6ICI3NzUwYzFhNTM5M2Q0ZWQ0Yjc2NmQ4ZGUwOWY4MjU0NiIsCiAgInByb2ZpbGVOYW1lIiA6ICJSZWVkcmVsIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzdhZTZkMmQzMWQ4MTY3YmNhZjk1MjkzYjY4YTRhY2Q4NzJkNjZlNzUxZGI1YTM0ZjJjYmM2NzY2YTAzNTZkMGEiCiAgICB9CiAgfQp9"
+    const val BREAKFAST_EGG_TEXTURE = "ewogICJ0aW1lc3RhbXAiIDogMTcxMTQ2MjY3MzE0OSwKICAicHJvZmlsZUlkIiA6ICJiN2I4ZTlhZjEwZGE0NjFmOTY2YTQxM2RmOWJiM2U4OCIsCiAgInByb2ZpbGVOYW1lIiA6ICJBbmFiYW5hbmFZZzciLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTQ5MzMzZDg1YjhhMzE1ZDAzMzZlYjJkZjM3ZDhhNzE0Y2EyNGM1MWI4YzYwNzRmMWI1YjkyN2RlYjUxNmMyNCIKICAgIH0KICB9Cn0"
 }
 
 fun checkGLError(message: String) {
@@ -272,8 +300,54 @@ fun checkGLError(message: String) {
     }
 }
 
-fun copyToClipboard(text: String) {
-    val clipboard = Toolkit.getDefaultToolkit().systemClipboard
-    val stringSelection = StringSelection(text)
-    clipboard.setContents(stringSelection, null)
+/**
+ * Writes the given text to the clipboard.
+ */
+fun writeToClipboard(text: String, successMessage: String?) {
+    try {
+        val clipboard = Toolkit.getDefaultToolkit().systemClipboard
+        val stringSelection = StringSelection(text)
+        clipboard.setContents(stringSelection, null)
+        if (successMessage != null)
+            modMessage(successMessage)
+    } catch (exception: Exception) {
+        devMessage("Clipboard not available!")
+    }
 }
+
+fun writeToClipboard(text: String) {
+    writeToClipboard(text, null)
+}
+
+private val romanMap = mapOf('I' to 1, 'V' to 5, 'X' to 10, 'L' to 50, 'C' to 100, 'D' to 500, 'M' to 1000)
+fun romanToInt(s: String): Int {
+    var result = 0
+    for (i in 0 until s.length - 1) {
+        val current = romanMap[s[i]] ?: 0
+        val next = romanMap[s[i + 1]] ?: 0
+        result += if (current < next) -current else current
+    }
+    return result + (romanMap[s.last()] ?: 0)
+}
+
+inline fun <T> List<T>.forEachIndexedReturn(action: (index: Int, T) -> Unit): List<T> {
+    for (i in indices) {
+        action(i, this[i])
+    }
+    return this
+}
+
+fun fillItemFromSack(amount: Int, itemId: String, sackName: String, sendMessage: Boolean) {
+    val needed = mc.thePlayer.inventory.mainInventory.find { it?.itemID == itemId }?.stackSize ?: 0
+    if (needed != amount) sendCommand("gfs $sackName ${amount - needed}") else if (sendMessage) modMessage("§cAlready at max stack size.")
+}
+
+inline fun <T> MutableCollection<T>.removeFirstOrNull(predicate: (T) -> Boolean): T? {
+    val first = firstOrNull(predicate) ?: return null
+    this.remove(first)
+    return first
+}
+
+fun Int.rangeAdd(add: Int): IntRange = this..this+add
+
+val Entity.rotation get() = Pair(rotationYaw, rotationPitch)

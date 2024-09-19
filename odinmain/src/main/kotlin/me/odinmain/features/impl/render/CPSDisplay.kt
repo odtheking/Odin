@@ -13,17 +13,17 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object CPSDisplay : Module(
-    "CPS Display",
+    name = "CPS Display",
     description = "Displays your clicks per second.",
     category = Category.RENDER
 ) {
     private val countPackets: Boolean by BooleanSetting("Count Packets", false, description = "Counts packets sent outside of the rightclickmouse method, this will be better at detecting other mods' auto clickers, but might show inaccurate values.")
     private val advanced: Boolean by DropdownSetting("Show Settings", false)
-    private val button: Int by SelectorSetting("Button", "Both", arrayListOf("Left", "Right", "Both")).withDependency { advanced }
-    private val mouseText: Boolean by BooleanSetting("Show Button", true).withDependency { advanced }
-    private val color: Color by ColorSetting("Color", Color(21, 22, 23, 0.5f), allowAlpha = true).withDependency { advanced }
-    private val textColor: Color by ColorSetting("Text Color", Color(239, 239, 239, 1f), allowAlpha = true).withDependency { advanced }
-    private val outline: Boolean by BooleanSetting("Outline", true).withDependency { advanced }
+    private val button: Int by SelectorSetting("Button", "Both", arrayListOf("Left", "Right", "Both"), description = "The button to display the CPS of.").withDependency { advanced }
+    private val mouseText: Boolean by BooleanSetting("Show Button", true, description = "Shows the button name.").withDependency { advanced }
+    private val color: Color by ColorSetting("Color", Color(21, 22, 23, 0.5f), allowAlpha = true, description = "The color of the display.").withDependency { advanced }
+    private val textColor: Color by ColorSetting("Text Color", Color(239, 239, 239, 1f), allowAlpha = true, description = "The color of the text.").withDependency { advanced }
+    private val outline: Boolean by BooleanSetting("Outline", true, description = "Adds an outline to the display.").withDependency { advanced }
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 2f, false) {
         leftClicks.removeAll { System.currentTimeMillis() - it > 1000 }
         rightClicks.removeAll { System.currentTimeMillis() - it > 1000 }

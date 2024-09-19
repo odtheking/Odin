@@ -1,6 +1,7 @@
 package me.odinclient.utils.skyblock
 
 import me.odinmain.OdinMain.mc
+import me.odinmain.utils.runIn
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.util.Vec3
 
@@ -21,8 +22,8 @@ object PlayerUtils {
         KeyBinding.onTick(mc.gameSettings.keyBindAttack.keyCode) // Simple way of making completely sure the left-clicks are sent at the same time as vanilla ones.
     }
 
-    fun dropAll() {
-        mc.thePlayer.dropOneItem(true)
+    fun dropItem(dropAll: Boolean = false) {
+        runIn(1) { mc.thePlayer.dropOneItem(dropAll) } // just so that this runs on tick properly
     }
 
     fun swapToIndex(index: Int) {

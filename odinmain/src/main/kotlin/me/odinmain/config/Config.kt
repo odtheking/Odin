@@ -1,6 +1,7 @@
 package me.odinmain.config
 
 import com.google.gson.*
+import me.odinmain.OdinMain.logger
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.ModuleManager
 import me.odinmain.features.settings.Saving
@@ -21,7 +22,7 @@ object Config {
             createNewFile()
         } catch (e: Exception) {
             println("Error initializing module config\n${e.message}")
-            e.printStackTrace()
+            logger.error("Error initializing module config", e)
         }
     }
 
@@ -45,7 +46,7 @@ object Config {
             }
         } catch (e: Exception) {
             println("Error loading config.\n${e.message}")
-            e.printStackTrace()
+            logger.error("Error initializing module config", e)
         }
     }
 
@@ -72,7 +73,7 @@ object Config {
             configFile.bufferedWriter().use { it.write(gson.toJson(jsonArray)) }
         } catch (e: Exception) {
             println("Error saving config.\n${e.message}")
-            e.printStackTrace()
+            logger.error("Error saving config.", e)
         }
     }
 }

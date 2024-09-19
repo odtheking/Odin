@@ -19,19 +19,18 @@ object DragonHitboxes : Module(
     category = Category.RENDER,
     description = "Draws hitboxes around dragons."
 ) {
-    private val onlyM7: Boolean by BooleanSetting(name = "Only M7")
-    private val color: Color by ColorSetting(name = "Hitbox Color", default = Color(0, 255, 255))
-    private val lineWidth: Float by NumberSetting(name = "Line Thickness", default = 3f, min = 0f, max = 10f, increment = 0.1f)
+    private val onlyM7: Boolean by BooleanSetting(name = "Only M7", default = true, description = "Only render hitboxes in floor 7.")
+    private val color: Color by ColorSetting(name = "Hitbox Color", default = Color(0, 255, 255), description = "The color of the hitboxes.")
+    private val lineWidth: Float by NumberSetting(name = "Line Thickness", default = 3f, min = 0f, max = 10f, increment = 0.1f, description = "The thickness of the lines.")
 
     private val entityPositions = mutableMapOf<Int, Array<Double>>()
-    private var dragonRenderQueue: ArrayList<EntityDragon> = ArrayList()
+    private var dragonRenderQueue: List<EntityDragon> = emptyList()
 
     @SubscribeEvent
     fun onClientTick(event: ClientTickEvent) {
-        if (mc.theWorld == null) return
-        val entityDragons = mc.theWorld.loadedEntityList.filterIsInstance<EntityDragon>()
-        dragonRenderQueue = entityDragons as ArrayList<EntityDragon>
         if (event.phase == TickEvent.Phase.END) return
+        val entityDragons = mc.theWorld?.loadedEntityList?.filterIsInstance<EntityDragon>() ?: return
+        dragonRenderQueue = entityDragons
 
         for (dragon in entityDragons) {
             for (entity in dragon.dragonPartArray) {
@@ -86,10 +85,8 @@ object DragonHitboxes : Module(
     }
 
     @SubscribeEvent
-    fun onWorldUnload(event: WorldEvent.Unload)
-    {
+    fun onWorldUnload(event: WorldEvent.Unload) {
         entityPositions.clear()
-        dragonRenderQueue.clear()
+        dragonRenderQueue = emptyList()
     }
-
 }

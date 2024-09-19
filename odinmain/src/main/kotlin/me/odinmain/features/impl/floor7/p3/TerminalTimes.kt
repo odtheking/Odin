@@ -1,86 +1,100 @@
 package me.odinmain.features.impl.floor7.p3
 
-import me.odinmain.config.Config
-import me.odinmain.events.impl.ChatPacketEvent
+import me.odinmain.events.impl.*
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.features.settings.impl.SelectorSetting
-import me.odinmain.utils.name
-import me.odinmain.utils.round
+import me.odinmain.features.impl.floor7.p3.termsim.TermSimGui
+import me.odinmain.features.settings.impl.*
+import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.PersonalBest
 import me.odinmain.utils.skyblock.modMessage
-import net.minecraft.inventory.ContainerChest
+import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object TerminalTimes : Module(
     name = "Terminal Times",
     description = "Records the time taken to complete terminals in floor 7.",
     category = Category.FLOOR7
 ) {
-    private val sendMessage: Int by SelectorSetting("Send Message", "Always", arrayListOf("Only PB", "Always"))
-    private var currentTerminal: Terminals? = null
+    private val sendMessage: Boolean by DualSetting("Send Message", "Always", "Only PB", true, description = "Send a message when a terminal is completed.")
+    private val reset: () -> Unit by ActionSetting("Reset pbs", description = "Resets the terminal PBs.") {
+        repeat(6) { i -> termPBs.set(i, 999.0) }
+        modMessage("§6Terminal PBs §fhave been reset.")
+    }
+
+    private val terminalSplits: Boolean by BooleanSetting("Terminal Splits", default = true, description = "Adds the time when a term was completed to its message, and sends the total term time after terms are done.")
+    private val useRealTime: Boolean by BooleanSetting("Use Real Time", default = true, description = "Use real time rather than server ticks.")
+
+    private val termPBs = PersonalBest("Terminals", 7)
     private var startTimer = 0L
-    private val panesPB = +NumberSetting("Panes PB", 99.0, increment = 0.01, hidden = true)
-    private val colorPB = +NumberSetting("Color PB", 99.0, increment = 0.01, hidden = true)
-    private val numbersPB = +NumberSetting("Numbers PB", 99.0, increment = 0.01, hidden = true)
-    private val melodyPB = +NumberSetting("Melody PB", 99.0, increment = 0.01, hidden = true)
-    private val startsWithPB = +NumberSetting("Starts With PB", 99.0, increment = 0.01, hidden = true)
-    private val selectAllPB = +NumberSetting("Select All PB", 99.0, increment = 0.01, hidden = true)
-    val simPBs = PersonalBest("Termsim", 5)
+    private var type = TerminalTypes.NONE
 
-    @Suppress("UNUSED")
-    enum class Terminals(
-        val fullName: String,
-        val setting: NumberSetting<Double>
-    ) {
-        Panes("Correct all the panes!", panesPB),
-        Color("Change all to same color!", colorPB),
-        Numbers("Click in order!", numbersPB),
-        Melody("Click the button on time!", melodyPB),
-        `Starts With`("What starts with", startsWithPB),
-        `Select All`("Select all the", selectAllPB),
+    @SubscribeEvent
+    fun onTerminalOpen(event: TerminalOpenedEvent) {
+        if (event.type == type || mc.currentScreen is TermSimGui) return
+        type = event.type
+        startTimer = System.currentTimeMillis()
     }
 
     @SubscribeEvent
-    fun onClientTick(event: TickEvent.ClientTickEvent) {
-        if (currentTerminal != null) return
+    fun onTerminalClose(event: TerminalSolvedEvent) {
+        if (type == TerminalTypes.NONE || mc.currentScreen is TermSimGui || event.playerName != mc.thePlayer?.name) return
+        termPBs.time(event.type.ordinal, (System.currentTimeMillis() - startTimer) / 1000.0, "s§7!", "§a${event.type.guiName} §7solved in §6", addPBString = true, addOldPBString = true, sendOnlyPB = sendMessage)
+        type = TerminalTypes.NONE
+    }
 
-        val container = mc.thePlayer?.openContainer ?: return
-        if (container !is ContainerChest) return
+    private val terminalCompleteRegex = Regex("(.{1,16}) (activated|completed) a (terminal|lever|device)! \\((\\d)/(\\d)\\)")
 
-        Terminals.entries.find { container.name.startsWith(it.fullName) }?.let {
-            currentTerminal = it
-            startTimer = System.currentTimeMillis()
+    private var gateBlown = false
+    private var completed: Pair<Int, Int> = Pair(0, 7)
+    private var currentTick = 0L
+    private var phaseTimer = 0L
+    private var sectionTimer = 0L
+    private val times = mutableListOf<Double>()
+
+    @SubscribeEvent
+    fun onMessage(event: ClientChatReceivedEvent) {
+        if (event.message.unformattedText.noControlCodes.matches(terminalCompleteRegex) && terminalSplits) event.isCanceled = true
+    }
+
+    init {
+        onMessage("The gate has been destroyed!", false, { enabled && terminalSplits }) {
+            if (completed.first == completed.second) resetSection()
+            else gateBlown = true
+        }
+
+        onMessage("[BOSS] Goldor: Who dares trespass into my domain?", false, { enabled && terminalSplits }) {
+            resetSection(true)
+        }
+
+        onMessage(terminalCompleteRegex, { enabled && terminalSplits }) {
+            val (name, activated, type, current, total) = terminalCompleteRegex.find(it)?.destructured ?: return@onMessage
+            modMessage("§6$name §a$activated a $type! (§c${current}§a/${total}) §8(§7${sectionTimer.seconds}s §8| §7${phaseTimer.seconds}s§8)", false)
+            if ((current == total && gateBlown) || (current.toIntOrNull() ?: return@onMessage) < completed.first) resetSection()
+            else completed = Pair(current.toIntOrNull() ?: return@onMessage, total.toIntOrNull() ?: return@onMessage)
+        }
+
+        onMessage("The Core entrance is opening!", false, { enabled && terminalSplits }) {
+            resetSection()
+            modMessage("§bTimes: §a${times.joinToString(" §8| ") { "§a${it}s" }}§8, §bTotal: §a${phaseTimer.seconds}s")
         }
     }
 
+    private val Long.seconds get() = ((if (useRealTime) System.currentTimeMillis() else currentTick) - this).toDouble()/1000
+
+    private fun resetSection(full: Boolean = false) {
+        if (full) {
+            times.clear()
+            phaseTimer = if (useRealTime) System.currentTimeMillis() else currentTick
+        } else times.add(sectionTimer.seconds)
+        completed = Pair(0, 7)
+        sectionTimer = if (useRealTime) System.currentTimeMillis() else currentTick
+        gateBlown = false
+    }
+
     @SubscribeEvent
-    fun onClientChatReceived(event: ChatPacketEvent) {
-        if (currentTerminal == null) return
-        val match = Regex("(.+) (?:activated|completed) a terminal! \\((\\d)/(\\d)\\)").find(event.message) ?: return
-        val (_, name, current, max) = match.groups.map { it?.value }
-
-        if (current?.toInt() == max?.toInt() || current?.toInt() == 0) {
-            if (name != mc.thePlayer.name) {
-                // Gate opened and not by player
-                currentTerminal = null
-                return
-            }
-        }
-
-        if (name != mc.thePlayer.name) return
-        val time = (System.currentTimeMillis() - startTimer) / 1000.0
-
-        if (sendMessage == 1) modMessage("§6${currentTerminal?.name} §ftook §a${time}s")
-
-        val previousTime = currentTerminal!!.setting.value
-        if (time < previousTime + 0.005) {
-            modMessage("§fNew best time for §6${currentTerminal?.name} §fis §a${time}s, §fold best time was §a${previousTime}s")
-            currentTerminal?.setting?.value = time.round(2).toDouble()
-            Config.save()
-        }
-        currentTerminal = null
+    fun onServerTick(event: RealServerTick) {
+        if (!terminalSplits || useRealTime) return
+        currentTick += 50
     }
 }

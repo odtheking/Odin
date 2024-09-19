@@ -1,10 +1,11 @@
 package me.odinmain.features.impl.dungeon
 
-import me.odinmain.OdinMain
+import me.odinmain.OdinMain.isLegitVersion
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.features.settings.impl.*
+import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
@@ -19,35 +20,39 @@ object KeyHighlight : Module(
     description = "Highlights wither and blood keys in dungeons.",
     category = Category.DUNGEON,
 ) {
-    private var currentKey: Pair<Color, Entity>? = null
-    private val thickness: Float by NumberSetting("Thickness", 5f, 1f, 20f, .1f, description = "The thickness of the box.")
+    private val style: Int by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION)
+    private val witherColor: Color by ColorSetting("Wither Color", Color.BLACK.withAlpha(0.8f), allowAlpha = true, description = "The color of the box.")
+    private val bloodColor: Color by ColorSetting("Blood Color", Color.RED.withAlpha(0.8f), allowAlpha = true, description = "The color of the box.")
+    private val lineWidth: Float by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.")
+    private data class KeyInfo(val entity: Entity, val color: Color)
+    private var currentKey: KeyInfo? = null
+
+    init {
+        onWorldLoad {
+            currentKey = null
+        }
+    }
 
     @SubscribeEvent
     fun postMetadata(event: PostEntityMetadata) {
-        if (mc.theWorld.getEntityByID(event.packet.entityId) !is EntityArmorStand || !DungeonUtils.inDungeons || DungeonUtils.inBoss) return
-        val entity = mc.theWorld.getEntityByID(event.packet.entityId) as EntityArmorStand
+        if (!DungeonUtils.inDungeons || DungeonUtils.inBoss) return
+        val entity = mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityArmorStand ?: return
+
         currentKey = when (entity.name.noControlCodes) {
-            "Wither Key" -> Color.BLACK to entity
-            "Blood Key" -> Color.RED to entity
+            "Wither Key" -> KeyInfo(entity, witherColor)
+            "Blood Key" -> KeyInfo(entity, bloodColor)
             else -> return
         }
     }
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        val (color, entity) = currentKey ?: return
-        if (entity.isDead) {
-            currentKey = null
-            return
-        }
-
-        val pos = entity.positionVector.addVec(-0.5, 1, -0.5)
-        Renderer.drawBox(pos.toAABB(), color, fillAlpha = 0f, outlineWidth = thickness, depth = OdinMain.isLegitVersion)
-    }
-
-    init {
-        onWorldLoad {
-            currentKey = null
+        currentKey?.let { (entity, color) ->
+            if (entity.isDead) {
+                currentKey = null
+                return
+            }
+            Renderer.drawStyledBox(entity.positionVector.addVec(-0.5, 1, -0.5).toAABB(), color, style, lineWidth, isLegitVersion)
         }
     }
 }

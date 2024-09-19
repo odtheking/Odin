@@ -4,9 +4,14 @@ package me.odinmain.features.impl.floor7.p3.termsim
 import me.odinmain.OdinMain.display
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.events.impl.PacketSentEvent
-import me.odinmain.features.impl.floor7.p3.TerminalTimes
+import me.odinmain.features.impl.floor7.TerminalSimulator
+import me.odinmain.features.impl.floor7.TerminalSimulator.sendMessage
+import me.odinmain.features.impl.floor7.p3.TerminalSounds
+import me.odinmain.features.impl.floor7.p3.TerminalSounds.completeSounds
+import me.odinmain.features.impl.floor7.p3.TerminalSounds.playCompleteSound
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.utils.*
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.*
@@ -34,12 +39,6 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
 
     fun open(ping: Long = 0L, const: Long = 0L) {
         create()
-        minecraft.thePlayer?.inventory?.mainInventory?.let {
-            inventoryBefore = it.clone()
-        }
-        for (i in minecraft.thePlayer?.inventory?.mainInventory?.indices ?: 0..0) {
-            minecraft.thePlayer?.inventory?.mainInventory?.set(i, null)
-        }
         this.ping = ping
         this.consecutive = const - 1
         display = this
@@ -48,16 +47,14 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
     }
 
     fun solved(name: String, pbIndex: Int) {
-        val time = ((System.currentTimeMillis() - startTime) / 1000.0).round(2).toDouble()
-        TerminalTimes.simPBs.time(pbIndex, time, "s§7!", "§a$name §7solved in §6", addPBString = true, addOldPBString = true)
-        resetInv()
-        if (this.consecutive > 0) openTerminal(ping, consecutive) else StartGui.open(ping)
+        TerminalSimulator.simPBs.time(pbIndex, (System.currentTimeMillis() - startTime) / 1000.0, "s§7!", "§a$name §7(termsim) §7solved in §6", addPBString = true, addOldPBString = true, sendOnlyPB = sendMessage)
+        if (TerminalSounds.enabled && completeSounds) playCompleteSound()
+        if (this.consecutive > 0) openTerminal(ping, consecutive) else if (TerminalSimulator.openStart) StartGui.open(ping) else mc.thePlayer.closeScreen()
     }
 
     open fun slotClick(slot: Slot, button: Int) {}
 
     override fun onGuiClosed() {
-        resetInv()
         doesAcceptClick = true
         super.onGuiClosed()
     }
@@ -68,50 +65,57 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
 
     @SubscribeEvent
     fun onPacketSend(event: PacketSentEvent) {
-        val packet = event.packet
-        if (packet !is C0EPacketClickWindow || mc.currentScreen != this) return
+        val packet = event.packet as? C0EPacketClickWindow ?: return
+        if (mc.currentScreen != this) return
         delaySlotClick(this.inventorySlots.inventorySlots[packet.slotId], packet.usedButton)
         event.isCanceled = true
     }
 
-    private fun resetInv() {
+    protected fun resetInv() {
         if (inventoryBefore.isNotEmpty())
             minecraft.thePlayer.inventory.mainInventory = inventoryBefore
-        inventoryBefore = arrayOf()
+    }
+
+    protected fun cleanInventory() {
+        minecraft.thePlayer?.inventory?.mainInventory?.let { inventoryBefore = it.clone() }
+
+        for (i in minecraft.thePlayer?.inventory?.mainInventory?.indices ?: 0..0) {
+            minecraft.thePlayer?.inventory?.setInventorySlotContents(i, null)
+        }
     }
 
     fun delaySlotClick(slot: Slot, button: Int) {
         if (!doesAcceptClick || slot.inventory != this.inv) return
         doesAcceptClick = false
         runIn((ping / 50).toInt()) {
-            slotClick(slot, button)
             doesAcceptClick = true
+            slotClick(slot, button)
         }
     }
-
-
 
     final override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         val slot = slotUnderMouse ?: return
         if (slot.stack?.item == pane && slot.stack?.metadata == 15) return
+        if (!GuiEvent.GuiWindowClickEvent(mc.thePlayer.openContainer.windowId, slot.slotIndex, mouseButton, 0, mc.thePlayer).postAndCatch())
         delaySlotClick(slot, mouseButton)
     }
 
     final override fun handleMouseClick(slotIn: Slot?, slotId: Int, clickedButton: Int, clickType: Int) {
         val slot = slotIn ?: return
-        if (slot.stack?.item == pane && slot.stack?.metadata == 15 || clickedButton != 4) return
+        if (slot.stack?.item == pane && slot.stack?.metadata == 15) return
+        if (!GuiEvent.GuiWindowClickEvent(mc.thePlayer.openContainer.windowId, slot.slotIndex, clickedButton, clickType, mc.thePlayer).postAndCatch())
         delaySlotClick(slot, 0)
     }
 }
 
 fun openTerminal(ping: Long = 0L, const: Long = 0L) {
-
     when (listOf(TerminalTypes.PANES, TerminalTypes.RUBIX, TerminalTypes.ORDER, TerminalTypes.STARTS_WITH, TerminalTypes.SELECT).random()) {
         TerminalTypes.PANES -> CorrectPanes.open(ping, const)
         TerminalTypes.RUBIX -> Rubix.open(ping, const)
         TerminalTypes.ORDER -> InOrder.open(ping, const)
         TerminalTypes.STARTS_WITH -> StartsWith(StartsWith.letters.shuffled().first()).open(ping, const)
         TerminalTypes.SELECT -> SelectAll(EnumDyeColor.entries.getRandom().name.replace("_", " ").uppercase()).open(ping, const)
+        TerminalTypes.MELODY -> {}
         TerminalTypes.NONE -> {}
     }
 }

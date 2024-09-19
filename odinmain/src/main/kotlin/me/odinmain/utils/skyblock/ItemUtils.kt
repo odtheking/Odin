@@ -1,8 +1,10 @@
 package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
+import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.noControlCodes
-import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.*
+import me.odinmain.utils.render.RenderUtils.bind
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
@@ -33,11 +35,6 @@ val ItemStack.lore: List<String>
     get() = this.tagCompound?.getCompoundTag("display")?.getTagList("Lore", 8)?.let {
         List(it.tagCount()) { i -> it.getStringTagAt(i) }
     } ?: emptyList()
-
-val ItemStack.getLore: List<String>
-    get() = this.getTooltip(mc.thePlayer, false)
-
-
 
 /**
  * Returns Item ID for an Item
@@ -73,14 +70,37 @@ val ItemStack?.isShortbow: Boolean
         return this?.lore?.any { it.contains("Shortbow: Instantly shoots!") } == true
     }
 
-val EntityPlayerSP.holdingEtherWarp: Boolean
-    get() = this.heldItem?.extraAttributes?.getBoolean("ethermerge") == true
+/**
+ * Returns if an item is a fishing rod
+ */
+val ItemStack?.isFishingRod: Boolean
+    get() {
+        return this?.lore?.any { it.contains("FISHING ROD") } == true
+    }
+
+/**
+ * Returns if an item is Spirit leaps or an Infinileap
+ */
+val ItemStack?.isLeap: Boolean
+    get() {
+        return this?.itemID?.equalsOneOf("INFINITE_SPIRIT_LEAP", "SPIRIT_LEAP") == true
+    }
+
+val EntityPlayerSP.usingEtherWarp: Boolean
+    get() {
+        val item = heldItem ?: return false
+        if (item.itemID == "ETHERWARP_CONDUIT") return true
+        return isSneaking && item.extraAttributes?.getBoolean("ethermerge") == true
+    }
 
 /**
  * Returns the ID of held item
  */
 fun isHolding(id: String): Boolean =
     mc.thePlayer?.heldItem?.itemID == id
+
+fun EntityPlayerSP.isHolding(id: String): Boolean =
+    this.heldItem?.itemID == id
 
 /**
  * Returns first slot of an Item
@@ -92,6 +112,12 @@ fun getItemSlot(item: String, ignoreCase: Boolean = true): Int? =
  * Gets index of an item in a chest.
  * @return null if not found.
  */
+fun getItemIndexInContainerChest(container: ContainerChest, item: String, subList: IntRange = 0..container.inventory.size - 36): Int? {
+    return container.inventorySlots.subList(subList.first, subList.last + 1).firstOrNull {
+        it.stack?.unformattedName?.noControlCodes?.lowercase() == item.noControlCodes.lowercase()
+    }?.slotIndex
+}
+
 fun getItemIndexInContainerChest(container: ContainerChest, item: String, subList: IntRange = 0..container.inventory.size - 36, ignoreCase: Boolean = false): Int? {
     return container.inventorySlots.subList(subList.first, subList.last + 1).firstOrNull {
         it.stack?.unformattedName?.contains(item, ignoreCase) == true
@@ -118,8 +144,6 @@ fun getItemIndexInContainerChestByLore(container: ContainerChest, lore: String, 
     }?.slotIndex
 }
 
-
-
 enum class ItemRarity(
     val loreName: String,
     val colorCode: String,
@@ -128,7 +152,7 @@ enum class ItemRarity(
     COMMON("COMMON", "§f", Color.WHITE),
     UNCOMMON("UNCOMMON", "§2", Color.GREEN),
     RARE("RARE", "§9", Color.BLUE),
-    EPIC("EPIC", "§5", Color.MAGENTA),
+    EPIC("EPIC", "§5", Color.PURPLE),
     LEGENDARY("LEGENDARY", "§6", Color.ORANGE),
     MYTHIC("MYTHIC", "§d", Color.MAGENTA),
     DIVINE("DIVINE", "§b", Color.CYAN),
@@ -146,8 +170,7 @@ private val rarityRegex: Regex = Regex("§l(?<rarity>[A-Z]+) ?(?<type>[A-Z ]+)?(
 fun getRarity(lore: List<String>): ItemRarity? {
     // Start from the end since the rarity is usually the last line or one of the last.
     for (i in lore.indices.reversed()) {
-        val currentLine = lore[i]
-        val match = rarityRegex.find(currentLine) ?: continue
+        val match = rarityRegex.find(lore[i]) ?: continue
         val rarity: String = match.groups["rarity"]?.value ?: continue
         return ItemRarity.entries.find { it.loreName == rarity }
     }
@@ -197,13 +220,11 @@ fun ItemStack.setLoreWidth(lines: List<String>, width: Int): ItemStack {
     return this
 }
 
-
-
 fun ItemStack.drawItem(x: Float = 0f, y: Float = 0f, scale: Float = 1f, z: Float = 200f) {
     GlStateManager.pushMatrix()
-    GlStateManager.scale(scale, scale, 1f)
-    GlStateManager.translate(x / scale, y / scale, 0f)
-    GlStateManager.color(1f, 1f, 1f, 1f)
+    scale(scale, scale, 1f)
+    translate(x / scale, y / scale, 0f)
+    Color.WHITE.bind()
 
     RenderHelper.enableStandardItemLighting()
     RenderHelper.enableGUIStandardItemLighting()

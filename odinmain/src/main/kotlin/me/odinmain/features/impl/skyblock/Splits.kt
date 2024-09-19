@@ -2,92 +2,43 @@ package me.odinmain.features.impl.skyblock
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.utils.*
+import me.odinmain.utils.SplitsManager.currentSplits
+import me.odinmain.utils.SplitsManager.getAndUpdateSplitsTimes
+import me.odinmain.utils.formatTime
 import me.odinmain.utils.render.*
-import me.odinmain.utils.skyblock.LocationUtils
-import me.odinmain.utils.skyblock.modMessage
 
 object Splits : Module(
-    "Splits",
+    name = "Splits",
     description = "Automatic advanced skyblock splits.",
     category = Category.SKYBLOCK
 ) {
-    private val hud: HudElement by HudSetting("Splits Display HUD", 10f, 10f, 1f, true) {
-        if (it) {
-            for (i in 0 until 5) {
-                text("Split $i: 0h 00m 00s", 1f, 9f + i * getTextHeight("12", 13f), Color.WHITE, 12f, shadow = true)
+    private val hud: HudElement by HudSetting("Splits Display HUD", 10f, 10f, 1f, true) { example ->
+        if (example) {
+            repeat(5) { i ->
+                mcText("Split $i:", 1f, 9f + i * getMCTextHeight(), 1f, Color.WHITE, shadow = true, center = false)
             }
-
-            getTextWidth("Fuel/Stun: 0h 00m 00s", 12f) + 2f to 80f
-        } else {
-            val (times, current) = SplitsManager.getSplitTimes()
-            if (SplitsManager.currentSplits.isEmpty()) return@HudSetting 0f to 0f
-
-            SplitsManager.currentSplits.dropLast(1).forEachIndexed { index, split ->
-                val time = formatTime(if (index >= times.size) 0 else times[index])
-                text("${split.name}: $time", 1f, 9f + index * getTextHeight("12", 13f), Color.WHITE, 12f, shadow = true)
-            }
-            text("Total: ${formatTime(times.sum())}", 1f, (SplitsManager.currentSplits.size + 1) * getTextHeight("12", 13f), Color.WHITE, 12f, shadow = true)
-
-            getTextWidth("Fuel/Stun: 0h 00m 00s", 12f) + 2f to 80f
+            return@HudSetting getMCTextWidth("Split 0: 0h 00m 00s") + 2f to 80f
         }
+
+        val (times, current) = getAndUpdateSplitsTimes(currentSplits)
+        if (currentSplits.splits.isEmpty()) return@HudSetting 0f to 0f
+        val x = getMCTextWidth("Split: 0h 00m 00s")
+        currentSplits.splits.dropLast(1).forEachIndexed { index, split ->
+            val time = formatTime(if (index >= times.size) 0 else times[index], numbersAfterDecimal)
+            mcText(split.name, 1f, 9f + index * getMCTextHeight(), 1f, Color.WHITE, shadow = true, center = false)
+            mcText(time, x, 9f + index * getMCTextHeight(), 1f, Color.WHITE, shadow = true, center = false)
+        }
+        if (bossEntrySplit && currentSplits.splits.size > 3) {
+            val time = formatTime(times.take(3).sum(), numbersAfterDecimal)
+            mcText("§9Boss Entry", 1f, (currentSplits.splits.size) * getMCTextHeight(), 1f, Color.WHITE, shadow = true, center = false)
+            mcText(time, x, (currentSplits.splits.size) * getMCTextHeight(), 1f, Color.WHITE, shadow = true, center = false)
+        }
+        getMCTextWidth("Split 0: 0h 00m 00s") + 2f to 80f
     }
-
-    private val instanceSplits: Int by SelectorSetting("Instance Splits", "None", arrayListOf("None", "SinglePlayer", "Kuudra T5", "Kuudra T1-T4", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "M7"), description = "Shows splits for the current instance.")
-    private val dropdownSetting: Boolean by BooleanSetting("Dropdown", false, description = "Shows the splits in a dropdown menu.").withDependency { instanceSplits != 0 }
-    private val aaa: String by StringSetting("aaa", "Supplies").withDependency { dropdownSetting && instanceSplits == 1 }
-    private val bbb: String by StringSetting("bbb", "Build").withDependency { dropdownSetting && instanceSplits == 1 }
-    private val ccc: String by StringSetting("ccc", "Fuel/Stun").withDependency { dropdownSetting && instanceSplits == 1 }
-    private val ddd: String by StringSetting("ddd", "Kill").withDependency { dropdownSetting && instanceSplits == 1 }
-    private val eee: String by StringSetting("eee", "WTF").withDependency { dropdownSetting && instanceSplits == 1 }
-    private val fff: String by StringSetting("fff", "WTFv3").withDependency { dropdownSetting && instanceSplits == 1 }
-
-    private val emptyPB = +NumberSetting("aaa PB", 99999.0, increment = 0.001, hidden = true)
-    private val bbbPB = +NumberSetting("bbb PB", 99999.0, increment = 0.001, hidden = true)
-    private val cccPB = +NumberSetting("ccc PB", 99999.0, increment = 0.001, hidden = true)
-    private val dddPB = +NumberSetting("ddd PB", 99999.0, increment = 0.001, hidden = true)
-    private val eeePB = +NumberSetting("eee PB", 99999.0, increment = 0.001, hidden = true)
-    private val fffPB = +NumberSetting("fff PB", 99999.0, increment = 0.001, hidden = true)
-    private val totalLettersPB = +NumberSetting("Total PB", 999.0, increment = 0.001, hidden = true)
-
-    private var hasChangeWorld = false
-    init {
-        onWorldLoad{
-            hasChangeWorld = true
-            allSplits.forEach{ (_, splits) ->
-                splits.forEach { it.time = 0L }
-            }
-            SplitsManager.currentSplits.clear()
-        }
-
-        onMessage(Regex(".*")){
-            SplitsManager.handleMessage(it)
-        }
-
-        execute(500) {
-            if (!hasChangeWorld || LocationUtils.currentArea == null) return@execute
-            hasChangeWorld = false
-            modMessage("Loading splits for ${LocationUtils.currentArea?.name}")
-            val currentInstance = allSplits[LocationUtils.currentArea?.name] ?: return@execute
-            currentInstance.forEach { it.time = 0L }
-            SplitsManager.currentSplits = currentInstance.toMutableList()
-        }
-    }
-
-    private val singlePlayer = mutableListOf(
-        Split("aaa", aaa, emptyPB),
-        Split("bbb", bbb, bbbPB),
-        Split("ccc", ccc, cccPB),
-        Split("ddd", ddd, dddPB),
-        Split("eee", eee, eeePB),
-        Split("fff", fff, fffPB),
-        Split("end", "Run Total", totalLettersPB),
-    )
-
-    private val allSplits = mutableMapOf(
-        "SinglePlayer" to singlePlayer
-    )
+    private val bossEntrySplit: Boolean by BooleanSetting("Boss Entry Split", true, description = "Split for boss entry.")
+    val sendSplits: Boolean by BooleanSetting("Send Splits", true, description = "Send splits to chat.")
+    val sendOnlyPB: Boolean by BooleanSetting("Send Only PB", false, description = "Send only personal bests.")
+    private val numbersAfterDecimal: Int by NumberSetting("Numbers After Decimal", 2, 0, 5, 1, description = "Numbers after decimal in time.")
 }

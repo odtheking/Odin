@@ -6,20 +6,16 @@ import kotlinx.coroutines.*
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.render.ClickGUIModule.devSize
 import me.odinmain.utils.getDataFromServer
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.scale
+import me.odinmain.utils.render.*
 import net.minecraft.client.entity.AbstractClientPlayer
-import net.minecraft.client.model.ModelBase
-import net.minecraft.client.model.ModelRenderer
+import net.minecraft.client.model.*
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.RenderPlayerEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.lang.reflect.Type
-import kotlin.math.cos
-import kotlin.math.sin
-
+import kotlin.math.*
 
 object DevPlayers {
     private var devs: HashMap<String, DevPlayer> = HashMap()
@@ -28,6 +24,8 @@ object DevPlayers {
     data class DevPlayer(val xScale: Float = 1f, val yScale: Float = 1f, val zScale: Float = 1f,
                          val wings: Boolean = false, val wingsColor: Color = Color(255, 255, 255))
     data class DevData(val devName: String, val wingsColor: Triple<Int, Int, Int>, val size: Triple<Float, Float, Float>, val wings: Boolean)
+
+    @Suppress("UNCHECKED_CAST")
     class DevDeserializer : JsonDeserializer<DevData> {
         override fun deserialize(
             json: JsonElement?,
@@ -55,7 +53,7 @@ object DevPlayers {
     }
 
     private fun convertDecimalToNumber(s: String): String {
-        val pattern = Regex("""Decimal\('(\d+(?:\.\d+)?)'\)""")
+        val pattern = Regex("""Decimal\('(-?\d+(?:\.\d+)?)'\)""")
 
         return s.replace(pattern) { match -> match.groupValues[1] }
     }
@@ -76,11 +74,12 @@ object DevPlayers {
         updateDevs()
     }
 
-    fun preRenderCallbackScaleHook(entityLivingBaseIn: AbstractClientPlayer ) {
+    fun preRenderCallbackScaleHook(entityLivingBaseIn: AbstractClientPlayer) {
         if (!devs.containsKey(entityLivingBaseIn.name)) return
         if (!devSize && entityLivingBaseIn.name == mc.thePlayer.name) return
-        val dev = devs[entityLivingBaseIn.name]
-        if (dev != null) { scale(dev.xScale, dev.yScale, dev.zScale) }
+        val dev = devs[entityLivingBaseIn.name] ?: return
+        scale(dev.xScale, dev.yScale, dev.zScale)
+        if (dev.yScale < 0) translate(0f, dev.yScale * -2, 0f)
     }
 
     @SubscribeEvent
@@ -125,6 +124,8 @@ object DevPlayers {
             val x = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks
             val y = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks
             val z = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks
+            if (dev.yScale < 0) translate(0f, dev.yScale * -2, 0f)
+
             GlStateManager.translate(-mc.renderManager.viewerPosX + x, -mc.renderManager.viewerPosY + y, -mc.renderManager.viewerPosZ + z)
             GlStateManager.scale(-0.2 * dev.xScale, -0.2 * dev.yScale, 0.2 * dev.zScale)
             GlStateManager.rotate(180 + rotation, 0f, 1f, 0f)
@@ -156,7 +157,6 @@ object DevPlayers {
             GlStateManager.disableCull()
             GlStateManager.color(1f, 1f, 1f, 1f)
             GlStateManager.popMatrix()
-
         }
 
         private fun interpolate(yaw1: Float, yaw2: Float, percent: Float): Float {
@@ -166,6 +166,5 @@ object DevPlayers {
             }
             return f
         }
-
     }
 }

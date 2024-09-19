@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.floor7.p3.termsim
 
-import me.odinmain.config.Config
-import me.odinmain.features.impl.floor7.p3.TerminalTimes
+import me.odinmain.features.impl.floor7.TerminalSimulator
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.setLoreWidth
@@ -42,14 +41,13 @@ object StartGui : TermSimGui(
     fun onTooltip(event: ItemTooltipEvent) {
         if (event.itemStack.item != dye || event.toolTip.size == 0) return
         val index = termItems.indexOfFirst { it.displayName == event.itemStack.displayName }.takeIf { it != -1 } ?: return
-        event.toolTip.add(1, "§7Personal Best: §d${TerminalTimes.simPBs.pb?.get(index)?.round(2) ?: 999.0}")
+        event.toolTip.add(1, "§7Personal Best: §d${TerminalSimulator.simPBs.pb?.get(index)?.round(2) ?: 999.0}")
     }
 
     private var areYouSure = false
 
     override fun slotClick(slot: Slot, button: Int) {
         val index = if (slot.slotIndex == 22) listOf(11,12,13,14,15).getRandom() else slot.slotIndex
-
         when (index) {
             4 -> {
                 if (!areYouSure) {
@@ -61,7 +59,7 @@ object StartGui : TermSimGui(
                     }
                     return
                 }
-                repeat(5) { i -> TerminalTimes.simPBs.set(i, 999.0) }
+                repeat(5) { i -> TerminalSimulator.simPBs.set(i, 999.0) }
                 modMessage("§cPBs reset!")
                 StartGui.open(ping)
             }

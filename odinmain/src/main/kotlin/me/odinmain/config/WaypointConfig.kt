@@ -4,6 +4,7 @@ import com.google.gson.*
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import me.odinmain.OdinMain.logger
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
 import me.odinmain.features.impl.render.WaypointManager.Waypoint
@@ -37,8 +38,9 @@ object WaypointConfig {
         }  catch (e: JsonSyntaxException) {
             println("Error parsing configs.")
             println(e.message)
-            e.printStackTrace()
+            logger.error("Error parsing configs.", e)
         } catch (e: JsonIOException) {
+            logger.error("Error parsing configs.", e)
             println("Error reading configs.")
         }
     }

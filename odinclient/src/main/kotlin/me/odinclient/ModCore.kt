@@ -33,12 +33,15 @@ class ModCore {
     @EventHandler
     fun init(event: FMLInitializationEvent) {
         OdinMain.init()
-        MinecraftForge.EVENT_BUS.register(this)
+        listOf(
+            this
+        ).forEach { MinecraftForge.EVENT_BUS.register(it) }
 
         registerCommands(
             autoSellCommand,
             OdinClientCommand
         )
+
         FramebufferShader.setupCameraTransform =
             { (mc.entityRenderer as? IEntityRendererAccessor)?.invokeSetupCameraTransform(RenderUtils.partialTicks, 0) }
     }
@@ -51,12 +54,11 @@ class ModCore {
     @EventHandler
     fun loadComplete(event: FMLLoadCompleteEvent) {
         ModuleManager.addModules(
-            AutoGFS, /*AutoIceFill,*/ AutoSell, CancelInteract, CloseChest, GhostPick, SecretHitboxes,
-            SwapStonk, Arrows, ArrowAlign, CancelWrongTerms, HoverTerms, LightsDevice, SimonSays,
-            DioriteFucker, RelicAura, Trajectories, Ghosts, NoDebuff,
-            ChocolateFactory, AutoExperiments, FarmingHitboxes, NoBlock, TermAC, Triggerbot, GhostBlocks, FreezeGame,
-            AbilityKeybind, EtherWarpHelper, ChestEsp, NoBreakReset, EscrowFix, TerminalMove,
-            TerminalAura, AutoTerms, Camera, AutoUlt
+            AutoGFS, /*AutoIceFill,*/ AutoSell, CancelInteract, CloseChest, SecretHitboxes,
+            ArrowAlign, CancelWrongTerms, HoverTerms, LightsDevice, SimonSays, ArrowsDevice,
+            DioriteFucker, RelicAura, Trajectories, Ghosts, NoDebuff, ChocolateFactory, AutoExperiments,
+            FarmingHitboxes, NoBlock, TermAC, Triggerbot, GhostBlocks, FreezeGame, EtherWarpHelper, ChestEsp,
+            EscrowFix, TerminalMove, TerminalAura, AutoTerms, Camera, DungeonAbilities/*, QueueTerms*/, HidePlayers, AutoHarp
         )
         OdinMain.loadComplete()
     }

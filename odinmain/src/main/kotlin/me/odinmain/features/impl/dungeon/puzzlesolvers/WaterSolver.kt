@@ -2,7 +2,6 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import kotlinx.coroutines.*
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.showOrder
 import me.odinmain.utils.Vec2
@@ -22,6 +21,7 @@ import net.minecraft.util.Vec3
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
@@ -31,8 +31,7 @@ object WaterSolver {
     private var waterSolutions: JsonObject
 
     init {
-        val isr = WaterSolver::class.java.getResourceAsStream("/watertimes.json")
-            ?.let { InputStreamReader(it, StandardCharsets.UTF_8) }
+        val isr = WaterSolver::class.java.getResourceAsStream("/watertimes.json")?.let { InputStreamReader(it, StandardCharsets.UTF_8) }
         waterSolutions = JsonParser().parse(isr).asJsonObject
     }
 
@@ -43,22 +42,15 @@ object WaterSolver {
     private var solutions = mutableMapOf<LeverBlock, Array<Double>>()
     private var openedWater = -1L
 
-    @OptIn(DelicateCoroutinesApi::class)
     fun scan() {
-        val room = DungeonUtils.currentRoom?.room ?: return
+        val room = DungeonUtils.currentFullRoom?.room ?: return
         if (room.data.name != "Water Board" || variant != -1) return
-
-        GlobalScope.launch {
-            solve(room)
-        }
+        solve(room)
     }
 
     private fun solve(room: Room) {
-        val rotation = room.rotation
-
-        chestPosition = room.vec2.addRotationCoords(rotation, -7)
-
-        roomFacing = rotation
+        roomFacing = room.rotation
+        chestPosition = room.vec2.addRotationCoords(roomFacing, -7)
 
         val pistonHeadPosition = chestPosition.addRotationCoords(roomFacing, -5).let { BlockPos(it.x, 82, it.z) }
         val blockList = BlockPos.getAllInBox(BlockPos(pistonHeadPosition.x + 1, 78, pistonHeadPosition.z + 1),
@@ -120,6 +112,8 @@ object WaterSolver {
     fun waterRender() {
         if (DungeonUtils.currentRoomName != "Water Board" || variant == -1) return
 
+        val solutions = ConcurrentHashMap(solutions)
+
         val solutionList = solutions
             .flatMap { (lever, times) -> times.drop(lever.i).map { Pair(lever, it) } }
             .sortedBy { (lever, time) -> time + if (lever == LeverBlock.WATER) 0.01 else 0.0 }
@@ -134,7 +128,7 @@ object WaterSolver {
 
         val first = solutionList.firstOrNull() ?: return
 
-        if (PuzzleSolvers.showTracer) Renderer.draw3DLine(mc.thePlayer.renderVec, Vec3(first.first.leverPos).addVector(.5, .5, .5), PuzzleSolvers.tracerColorFirst, depth = true)
+        if (PuzzleSolvers.showTracer) Renderer.draw3DLine(mc.thePlayer.renderVec, Vec3(first.first.leverPos).addVector(.5, .5, .5), color = PuzzleSolvers.tracerColorFirst, depth = true)
 
         if (solutionList.size > 1 && PuzzleSolvers.showTracer) {
             val second = solutionList[1]
@@ -143,14 +137,14 @@ object WaterSolver {
                 Renderer.draw3DLine(
                     Vec3(solutionList.first().first.leverPos).addVector(0.5, 0.5, 0.5),
                     Vec3(second.first.leverPos).addVector(0.5, 0.5, 0.5),
-                    PuzzleSolvers.tracerColorSecond,
+                    color = PuzzleSolvers.tracerColorSecond,
                     lineWidth = 1.5f,
                     depth = true
                 )
             }
         }
-        val finalSolution = solutions
-        for (solution in finalSolution) {
+
+        for (solution in solutions) {
             var orderText = ""
             solution.value.drop(solution.key.i).forEach {
                 orderText = if (it == 0.0) orderText.plus("0")

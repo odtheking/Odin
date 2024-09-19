@@ -2,22 +2,17 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import me.odinmain.events.impl.EnteredDungeonRoomEvent
+import me.odinmain.OdinMain.logger
+import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils
-import me.odinmain.utils.render.RenderUtils.bind
-import me.odinmain.utils.render.RenderUtils.worldRenderer
-import me.odinmain.utils.skyblock.IceFillFloors.floors
+import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.skyblock.IceFillFloors.IceFillFloors
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.tiles.Rotations
 import me.odinmain.utils.skyblock.isAir
 import me.odinmain.utils.skyblock.modMessage
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.Tessellator
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.*
-import org.lwjgl.opengl.GL11
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 
@@ -25,7 +20,7 @@ object IceFillSolver {
     var scanned = false
     var currentPatterns: MutableList<List<Vec3i>> = ArrayList()
     private var renderRotation: Rotations? = null
-    private var rPos: MutableList<Vec3> = ArrayList()
+    private var patternStartPositions: MutableList<Vec3> = ArrayList()
 
     private var representativeFloors: List<List<List<Int>>>
     private val gson = GsonBuilder().setPrettyPrinting().create()
@@ -35,57 +30,39 @@ object IceFillSolver {
     init {
         try {
             val text = isr?.readText()
-            representativeFloors = gson.fromJson(
-                text, object : TypeToken<List<List<List<Int>>>>() {}.type
-            )
+            representativeFloors = gson.fromJson(text, object : TypeToken<List<List<List<Int>>>>() {}.type)
             isr?.close()
         } catch (e: Exception) {
-            e.printStackTrace()
+            logger.error("Error loading ice fill floors", e)
             representativeFloors = emptyList()
         }
     }
 
-    private fun renderPattern(pos: Vec3, rotation: Rotations) {
-        renderRotation = rotation
-        rPos.add(Vec3(pos.xCoord + 0.5, pos.yCoord + 0.1, pos.zCoord + 0.5))
-    }
-
     fun onRenderWorldLast(color: Color) {
-        if (currentPatterns.size == 0 || rPos.size == 0 || DungeonUtils.currentRoomName != "Ice Fill") return
+        if (currentPatterns.size == 0 || patternStartPositions.size == 0 || DungeonUtils.currentRoomName != "Ice Fill") return
         val rotation = renderRotation ?: return
 
-        GlStateManager.pushMatrix()
-        color.bind()
-        RenderUtils.preDraw()
-        GlStateManager.depthMask(true)
-        GL11.glEnable(GL11.GL_LINE_SMOOTH)
-        GL11.glLineWidth(3f)
-
-        worldRenderer.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)
-        for (i in currentPatterns.indices) {
-            val pattern = currentPatterns[i]
-            val startPos = rPos[i]
-            worldRenderer.pos(startPos.xCoord, startPos.yCoord, startPos.zCoord).endVertex()
+        val pointsList = mutableListOf<Vec3>()
+        for (index in currentPatterns.indices) {
+            val pattern = currentPatterns[index]
+            val startPos = patternStartPositions[index]
+            pointsList.add(startPos)
             for (point in pattern) {
-                startPos.add(transformTo(point, rotation)).let { worldRenderer.pos(it.xCoord, it.yCoord, it.zCoord).endVertex() }
+                val transformedPoint = startPos.add(transformTo(point, rotation))
+                pointsList.add(transformedPoint)
             }
-            val stairPos = startPos + transformTo(pattern.last().addVec(1, 1), rotation)
-            worldRenderer.pos(stairPos.xCoord, stairPos.yCoord, stairPos.zCoord).endVertex()
+            val stairPos = startPos.add(transformTo(pattern.last().addVec(1, 1), rotation))
+            pointsList.add(stairPos)
         }
-
-        Tessellator.getInstance().draw()
-        GlStateManager.depthMask(true)
-        RenderUtils.postDraw()
-        GlStateManager.popMatrix()
+        Renderer.draw3DLine(*pointsList.toTypedArray(), color = color, depth = true)
     }
 
-    fun enterDungeonRoom(event: EnteredDungeonRoomEvent) {
-        val room = event.room?.room ?: return
+    fun enterDungeonRoom(event: RoomEnterEvent) {
+        val room = event.fullRoom?.room ?: return
         if (room.data.name != "Ice Fill" || scanned) return
-        val rotation = room.rotation
 
-        val startPos = room.vec2.addRotationCoords(rotation, 8)
-        scanAllFloors(Vec3(startPos.x.toDouble(), 70.0, startPos.z.toDouble()), rotation)
+        val startPos = room.vec2.addRotationCoords(room.rotation, 8)
+        scanAllFloors(Vec3(startPos.x.toDouble(), 70.0, startPos.z.toDouble()), room.rotation)
         scanned = true
     }
 
@@ -98,20 +75,19 @@ object IceFillSolver {
     }
 
     private fun scan(pos: Vec3, floorIndex: Int, rotation: Rotations) {
-        val bPos = BlockPos(pos)
-
         val floorHeight = representativeFloors[floorIndex]
         val startTime = System.nanoTime()
 
-        for (index in floorHeight.indices) {
+        for (patternIndex in floorHeight.indices) {
             if (
-                isAir(bPos.add(transform(floorHeight[index][0], floorHeight[index][1], rotation))) &&
-                !isAir(bPos.add(transform(floorHeight[index][2], floorHeight[index][3], rotation)))
+                isAir(BlockPos(pos).add(transform(floorHeight[patternIndex][0], floorHeight[patternIndex][1], rotation))) &&
+                !isAir(BlockPos(pos).add(transform(floorHeight[patternIndex][2], floorHeight[patternIndex][3], rotation)))
             ) {
-                modMessage("Section ${floorIndex + 1} scan took ${(System.nanoTime() - startTime) / 1000000.0}ms pattern: ${index + 1}")
+                modMessage("Section $floorIndex scan took ${(System.nanoTime() - startTime) / 1000000.0}ms pattern: $patternIndex")
 
-                renderPattern(pos, rotation)
-                currentPatterns.add(floors[floorIndex][index].toMutableList())
+                renderRotation = rotation
+                patternStartPositions.add(pos.addVec(x= 0.5, y = 0.1, z = 0.5))
+                currentPatterns.add(IceFillFloors[floorIndex][patternIndex].toMutableList())
                 return
             }
         }
@@ -129,12 +105,8 @@ object IceFillSolver {
     }
 
     fun transformTo(vec: Vec3i, rotation: Rotations): Vec3 {
-        return when (rotation) {
-            Rotations.NORTH -> Vec3(vec.z.toDouble(), vec.y.toDouble(), -vec.x.toDouble())
-            Rotations.WEST -> Vec3(-vec.x.toDouble(), vec.y.toDouble(), -vec.z.toDouble())
-            Rotations.SOUTH -> Vec3(-vec.z.toDouble(), vec.y.toDouble(), vec.x.toDouble())
-            Rotations.EAST -> Vec3(vec.x.toDouble(), vec.y.toDouble(), vec.z.toDouble())
-            else -> Vec3(vec.x.toDouble(), vec.y.toDouble(), vec.z.toDouble())
+        return with(transform(vec.x, vec.z, rotation)) {
+            Vec3(x.toDouble(), vec.y.toDouble(), z.toDouble())
         }
     }
 
@@ -142,6 +114,6 @@ object IceFillSolver {
         currentPatterns = ArrayList()
         scanned = false
         renderRotation = null
-        rPos = ArrayList()
+        patternStartPositions = ArrayList()
     }
 }

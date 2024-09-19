@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.render
 
-import me.odinmain.features.Category
-import me.odinmain.features.Module
+import me.odinmain.features.*
 import me.odinmain.features.settings.impl.StringSetting
 
 /**
@@ -12,7 +11,7 @@ object NameChanger : Module(
     category = Category.RENDER,
     description = "Replaces your name with the given nick, color codes work (&)."
 ) {
-    private val nick: String by StringSetting("Nick")
+    private val nick: String by StringSetting("Nick", "Odin", 32, description = "The nick to replace your name with.")
 
     @JvmStatic
     fun modifyString(string: String?): String? {

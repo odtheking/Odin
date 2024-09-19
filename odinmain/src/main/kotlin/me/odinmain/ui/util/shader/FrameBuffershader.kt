@@ -8,7 +8,6 @@ import net.minecraft.client.shader.Framebuffer
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL20.glUseProgram
 
-
 abstract class FramebufferShader(fragmentShader: String) : Shader(fragmentShader) {
     protected var color = Color.WHITE
     protected var radius: Float = 2f
@@ -16,7 +15,7 @@ abstract class FramebufferShader(fragmentShader: String) : Shader(fragmentShader
 
     private var entityShadows = false
 
-    fun startDraw(partialTicks: Float) {
+    fun startDraw() {
         GlStateManager.pushMatrix()
         GlStateManager.pushAttrib()
 
@@ -29,8 +28,6 @@ abstract class FramebufferShader(fragmentShader: String) : Shader(fragmentShader
 
     fun stopDraw(color: Color, radius: Float, quality: Float) {
         mc.gameSettings.entityShadows = entityShadows
-        glEnable(GL_BLEND)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         mc.framebuffer.bindFramebuffer(true)
         this.color = color
         this.radius = radius
@@ -39,11 +36,15 @@ abstract class FramebufferShader(fragmentShader: String) : Shader(fragmentShader
 
         startShader()
         mc.entityRenderer.setupOverlayRendering()
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 0, 1);
         framebuffer?.let { drawFramebuffer(it) }
+        GlStateManager.disableBlend();
+
         stopShader()
 
-        GlStateManager.popMatrix()
         GlStateManager.popAttrib()
+        GlStateManager.popMatrix()
     }
 
     /**
@@ -60,7 +61,7 @@ abstract class FramebufferShader(fragmentShader: String) : Shader(fragmentShader
         }
     }
 
-    /**
+    /**=-./'
      * @author TheSlowly
      */
     fun drawFramebuffer(framebuffer: Framebuffer) {

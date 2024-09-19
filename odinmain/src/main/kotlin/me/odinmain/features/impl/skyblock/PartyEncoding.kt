@@ -12,13 +12,13 @@ import net.minecraft.network.play.server.S02PacketChat
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.*
 
-
+// idk about this design wise
 object PartyEncoding: Module(
     "Party Encoding",
     category = Category.SKYBLOCK,
     description = "Encodes and decodes party messages."
 ) {
-    private val key: String by StringSetting("Key", "odin", description = "Key")
+    private val key: String by StringSetting("Key", "odin", description = "Key.")
 
     private val urlRegex = Regex("https?://\\S+")
 
@@ -45,7 +45,7 @@ object PartyEncoding: Module(
 
     @SubscribeEvent
     fun onMessageSent(event: MessageSentEvent) {
-        if (!event.message.startsWith("/pcd")) return
+        if (!event.message.startsWith("/pc")) return
 
         val encoded = encodeMessage(event.message.drop(5), key)
         if (encoded.length > 160 || encoded.isEmpty()) return

@@ -26,10 +26,8 @@ object EtherWarpHelper {
     fun getEtherPos(pos: Vec3, yaw: Float, pitch: Float): EtherPos {
         mc.thePlayer ?: return EtherPos.NONE
 
-        val lookVec = getLook(yaw = yaw, pitch = pitch).normalize().multiply(60.0)
         val startPos: Vec3 = getPositionEyes(pos)
-
-        val endPos = lookVec.add(startPos)
+        val endPos = getLook(yaw = yaw, pitch = pitch).normalize().multiply(factor = 60.0).add(startPos)
 
         return traverseVoxels(startPos, endPos)
     }
@@ -44,34 +42,34 @@ object EtherWarpHelper {
      */
     private fun traverseVoxels(start: Vec3, end: Vec3): EtherPos {
         val direction = end.subtract(start)
-        val step = direction.toDoubleArray().map { sign(it) }
-        val thing = direction.toDoubleArray().map { 1 / it }
-        val tDelta = thing.mapIndexed { index, value -> min(value * step[index], 1.0) }
-        val tMax = thing.mapIndexed { index, value -> abs((floor(start.get(index)) + max(step[index], .0) - start.get(index)) * value) }.toMutableList()
+        val step = DoubleArray(3) { sign(direction.get(it)) }
+        val invDirection = DoubleArray(3) { 1.0 / direction.get(it) }
+        val tDelta = DoubleArray(3) { invDirection[it] * step[it] }
+        val tMax = DoubleArray(3) {
+            val startCoord = start.get(it)
+            abs((floor(startCoord) + max(step[it], 0.0) - startCoord) * invDirection[it])
+        }
 
-        val currentPos = start.toDoubleArray().map { floor(it) }.toDoubleArray()
-        val endPos = end.toDoubleArray().map { floor(it) }.toDoubleArray()
-        var iters = 0
-        while (iters < 1000) {
-            iters++
+        val currentPos = DoubleArray(3) { floor(start.get(it)) }
+        val endPos = DoubleArray(3) { floor(end.get(it)) }
+        var iterations = 0
 
+        while (iterations < 1000) {
+            iterations++
             val pos = BlockPos(currentPos[0].toInt(), currentPos[1].toInt(), currentPos[2].toInt())
-            val currentBlock = getBlockIdAt(pos)
 
-            if (currentBlock != 0) {
-                return EtherPos(isValidEtherWarpBlock(pos), pos)
-            }
+            if (getBlockIdAt(pos) != 0) return EtherPos(isValidEtherWarpBlock(pos), pos)
 
             if (currentPos.contentEquals(endPos)) break // reached end
 
-            val minIndex = tMax.indexOf(min(tMax[0], min(tMax[1], tMax[2])))
+            val minIndex = tMax.indices.minByOrNull { tMax[it] } ?: 0
             tMax[minIndex] += tDelta[minIndex]
             currentPos[minIndex] += step[minIndex]
         }
 
         return EtherPos.NONE
     }
-
+    
     /**
      * Checks if the block at the given position is a valid block to etherwarp onto.
      * @author Bloom
@@ -79,12 +77,9 @@ object EtherWarpHelper {
     private fun isValidEtherWarpBlock(pos: BlockPos): Boolean {
         // Checking the actual block to etherwarp ontop of
         // Can be at foot level, but not etherwarped onto directly.
-        if (mc.theWorld.getBlockState(pos).block.registryName in validEtherwarpFeetBlocks) return false
+        if (getBlockAt(pos).registryName in validEtherwarpFeetBlocks || getBlockAt(pos.up(1)).registryName !in validEtherwarpFeetBlocks) return false
 
-        // The block at foot level
-        if (mc.theWorld.getBlockState(pos.up(1)).block.registryName !in validEtherwarpFeetBlocks) return false
-
-        return mc.theWorld.getBlockState(pos.up(2)).block.registryName in validEtherwarpFeetBlocks
+        return getBlockAt(pos.up(2)).registryName in validEtherwarpFeetBlocks
     }
 
     private val validEtherwarpFeetBlocks = setOf(
@@ -129,5 +124,4 @@ object EtherWarpHelper {
         "minecraft:torch",
         "minecraft:vine",
     )
-
 }

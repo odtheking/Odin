@@ -2,178 +2,99 @@ package me.odinmain.utils.render
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.RenderEntityModelEvent
-import net.minecraft.client.model.ModelBase
-import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.shader.Framebuffer
-import net.minecraft.entity.Entity
-import net.minecraft.entity.EntityLivingBase
-import org.lwjgl.opengl.*
-
+import org.lwjgl.opengl.EXTFramebufferObject
+import org.lwjgl.opengl.EXTPackedDepthStencil
+import org.lwjgl.opengl.GL11.*
 
 /**
  * Modified from LiquidBounce under GPL-3.0
  * https://github.com/CCBlueX/LiquidBounce/blob/legacy/LICENSE
  */
 object OutlineUtils {
-    private fun outlineEntity(
-        model: ModelBase,
-        livingBase: EntityLivingBase?,
-        limbSwing: Float,
-        limbSwingAmount: Float,
-        ageInTicks: Float,
-        headYaw: Float,
-        headPitch: Float,
-        scaleFactor: Float,
-        color: Color,
-        thickness: Float,
-        shouldCancelHurt: Boolean
+    fun outlineEntity(
+        event: RenderEntityModelEvent,
+        color: Color = Color.WHITE,
+        lineWidth: Float = 2f,
+        shouldCancelHurt: Boolean = true
     ) {
-        val fancyGraphics: Boolean = mc.gameSettings.fancyGraphics
-        val gamma: Float = mc.gameSettings.gammaSetting
+        if (shouldCancelHurt) event.entity.hurtTime = 0
+        val fancyGraphics = mc.gameSettings.fancyGraphics
+        val gamma = mc.gameSettings.gammaSetting
         mc.gameSettings.fancyGraphics = false
-        mc.gameSettings.gammaSetting = Float.MAX_VALUE
-        if (shouldCancelHurt) livingBase?.hurtTime = 0
-        val entity = livingBase as? Entity
-        GlStateManager.resetColor()
-        setColor(color)
-        renderOne(thickness)
-        model.render(
-            entity,
-            limbSwing,
-            limbSwingAmount,
-            ageInTicks,
-            headYaw,
-            headPitch,
-            scaleFactor
-        )
-        setColor(color)
+        mc.gameSettings.gammaSetting = 100000f
+        glPushMatrix()
+        glPushAttrib(GL_ALL_ATTRIB_BITS)
+        checkSetupFBO()
+        glColor4d((color.r / 255f).toDouble(), (color.g / 255f).toDouble(), (color.b / 255f).toDouble(), (color.a / 255f).toDouble())
+        renderOne(lineWidth)
+        render(event)
         renderTwo()
-        model.render(
-            entity,
-            limbSwing,
-            limbSwingAmount,
-            ageInTicks,
-            headYaw,
-            headPitch,
-            scaleFactor
-        )
-        setColor(color)
+        render(event)
         renderThree()
-        model.render(
-            entity,
-            limbSwing,
-            limbSwingAmount,
-            ageInTicks,
-            headYaw,
-            headPitch,
-            scaleFactor
-        )
-        setColor(color)
-        renderFour(color)
-        model.render(
-            entity,
-            limbSwing,
-            limbSwingAmount,
-            ageInTicks,
-            headYaw,
-            headPitch,
-            scaleFactor
-        )
-        setColor(color)
-        renderFive()
-        setColor(Color.WHITE)
+        render(event)
+        renderFour()
+        render(event)
+        glPopAttrib()
+        glPopMatrix()
         mc.gameSettings.fancyGraphics = fancyGraphics
         mc.gameSettings.gammaSetting = gamma
     }
 
-    fun outlineEntity(event: RenderEntityModelEvent, thickness: Float, color: Color, shouldCancelHurt: Boolean) {
-        outlineEntity(
-            event.model,
+    private fun render(event: RenderEntityModelEvent) {
+        event.model.render(
             event.entity,
             event.limbSwing,
             event.limbSwingAmount,
             event.ageInTicks,
             event.headYaw,
             event.headPitch,
-            event.scaleFactor,
-            color,
-            thickness,
-            shouldCancelHurt
+            event.scaleFactor
         )
     }
 
-    private fun renderOne(lineWidth: Float) {
-        checkSetupFBO()
-        GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS)
-        GL11.glDisable(GL11.GL_ALPHA_TEST)
-        GL11.glDisable(GL11.GL_TEXTURE_2D)
-        GL11.glDisable(GL11.GL_LIGHTING)
-        GL11.glEnable(GL11.GL_BLEND)
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-        GL11.glLineWidth(lineWidth)
-        GL11.glEnable(GL11.GL_LINE_SMOOTH)
-        GL11.glEnable(GL11.GL_STENCIL_TEST)
-        GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT)
-        GL11.glClearStencil(0xF)
-        GL11.glStencilFunc(GL11.GL_NEVER, 1, 0xF)
-        GL11.glStencilOp(GL11.GL_REPLACE, GL11.GL_REPLACE, GL11.GL_REPLACE)
-        GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE)
+    private fun renderOne(lineWidth: Float = 2f) {
+        glDisable(GL_ALPHA_TEST)
+        glDisable(GL_TEXTURE_2D)
+        glDisable(GL_LIGHTING)
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glLineWidth(lineWidth)
+        glEnable(GL_LINE_SMOOTH)
+        glEnable(GL_STENCIL_TEST)
+        glClear(GL_STENCIL_BUFFER_BIT)
+        glClearStencil(0xF)
+        glStencilFunc(GL_NEVER, 1, 0xF)
+        glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE)
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
     }
 
     private fun renderTwo() {
-        GL11.glStencilFunc(GL11.GL_NEVER, 0, 0xF)
-        GL11.glStencilOp(GL11.GL_REPLACE, GL11.GL_REPLACE, GL11.GL_REPLACE)
-        GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL)
+        glStencilFunc(GL_NEVER, 0, 0xF)
+        glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE)
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
     }
 
     private fun renderThree() {
-        GL11.glStencilFunc(GL11.GL_EQUAL, 1, 0xF)
-        GL11.glStencilOp(GL11.GL_KEEP, GL11.GL_KEEP, GL11.GL_KEEP)
-        GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE)
+        glStencilFunc(GL_EQUAL, 1, 0xF)
+        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP)
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
     }
 
-    private fun renderFour(color: Color) {
-        setColor(color)
-        GL11.glDepthMask(false)
-        GL11.glDisable(GL11.GL_DEPTH_TEST)
-        GL11.glEnable(GL11.GL_POLYGON_OFFSET_LINE)
-        GL11.glPolygonOffset(1.0f, -2000000f)
+    private fun renderFour() {
+        glDepthMask(false)
+        glDisable(GL_DEPTH_TEST)
+        glEnable(GL_POLYGON_OFFSET_LINE)
+        glPolygonOffset(1.0f, -2000000f)
         OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240.0f, 240.0f)
     }
 
-    private fun renderFive() {
-        GL11.glPolygonOffset(1.0f, 2000000f)
-        GL11.glDisable(GL11.GL_POLYGON_OFFSET_LINE)
-        GL11.glEnable(GL11.GL_DEPTH_TEST)
-        GL11.glDepthMask(true)
-        GL11.glDisable(GL11.GL_STENCIL_TEST)
-        GL11.glDisable(GL11.GL_LINE_SMOOTH)
-        GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_DONT_CARE)
-        GL11.glEnable(GL11.GL_BLEND)
-        GL11.glEnable(GL11.GL_LIGHTING)
-        GL11.glEnable(GL11.GL_TEXTURE_2D)
-        GL11.glEnable(GL11.GL_ALPHA_TEST)
-        GL11.glPopAttrib()
-    }
-
-    private fun setColor(color: Color) {
-        GL11.glColor4d(
-            (color.r / 255f).toDouble(),
-            (color.g / 255f).toDouble(),
-            (color.b / 255f).toDouble(),
-            (color.a / 255f).toDouble()
-        )
-    }
-
     private fun checkSetupFBO() {
-        val fbo = mc.framebuffer
-        if (fbo != null) {
-            if (fbo.depthBuffer > -1) {
-                setupFBO(fbo)
-                fbo.depthBuffer = -1
-            }
-        }
+        val fbo = mc.framebuffer ?: return
+        if (fbo.depthBuffer <= -1) return
+        setupFBO(fbo)
+        fbo.depthBuffer = -1
     }
 
     private fun setupFBO(fbo: Framebuffer) {

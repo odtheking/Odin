@@ -9,8 +9,7 @@
     "mixins.MixinNetworkManager",
     "mixins.MixinRendererLivingEntity",
     "mixins.MixinS1CPacketEntityMetadata",
-    "mixins.MixinWorld",
-    "mixins.other.MixinNEURenderListener"
+    "mixins.MixinWorld"
   ],
   "client": [
     "accessors.EntityRendererAccessor",
@@ -24,13 +23,13 @@
     "mixins.MixinGuiScreen",
     "mixins.MixinItem",
     "mixins.MixinItemRenderer",
-    "mixins.MixinLayerCape",
     "mixins.MixinMinecraft",
     "mixins.MixinModList",
     "mixins.MixinMouseHelper",
     "mixins.MixinNetworkManager",
     "mixins.MixinPlayerControllerMP",
     "mixins.MixinRenderDragon",
+    "mixins.MixinRenderEntityItem",
     "mixins.MixinRendererLivingEntity",
     "mixins.MixinRenderItem",
     "mixins.MixinRenderPlayer",

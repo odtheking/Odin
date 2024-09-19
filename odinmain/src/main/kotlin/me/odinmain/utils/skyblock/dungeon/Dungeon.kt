@@ -1,23 +1,38 @@
 package me.odinmain.utils.skyblock.dungeon
 
-import me.odinmain.utils.cleanSB
-import me.odinmain.utils.clock.Executor
-import me.odinmain.utils.clock.Executor.Companion.register
-import me.odinmain.utils.sidebarLines
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import me.odinmain.OdinMain.mc
+import me.odinmain.OdinMain.scope
+import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
+import me.odinmain.events.impl.PacketReceivedEvent
+import me.odinmain.features.impl.dungeon.LeapMenu
+import me.odinmain.features.impl.dungeon.LeapMenu.odinSorting
+import me.odinmain.features.impl.dungeon.MapInfo.shownTitle
+import me.odinmain.features.impl.dungeon.Mimic
+import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.PlayerUtils.posX
 import me.odinmain.utils.skyblock.PlayerUtils.posZ
-import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getDungeonPuzzles
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getDungeonTeammates
+import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
 import net.minecraft.client.network.NetworkPlayerInfo
+import net.minecraft.network.play.server.*
 
-// In future maybe add stats about the dungeon like time elapsed, deaths, total secrets etc.
 // could add some system to look back at previous runs.
-class Dungeon {
+class Dungeon(val floor: Floor) {
 
-    lateinit var floor: Floor
+    var expectingBloodUpdate: Boolean = false
+
+    var paul = false
     val inBoss: Boolean get() = getBoss()
-    var deathCount = 0
-    var secretCount = 0
-    var cryptsCount = 0
+    var dungeonTeammates: List<DungeonPlayer> = emptyList()
+    var dungeonTeammatesNoSelf: List<DungeonPlayer> = emptyList()
+    var leapTeammates: List<DungeonPlayer> = emptyList()
+    var dungeonStats = DungeonStats()
+    var currentFullRoom: FullRoom? = null
+    var passedRooms = mutableListOf<FullRoom>()
+    var puzzles = listOf<Puzzle>()
 
     private fun getBoss(): Boolean {
         return when (floor.floorNumber) {
@@ -29,96 +44,135 @@ class Dungeon {
         }
     }
 
-
     init {
-        getCurrentFloor()
-        Executor(500) {
-            DungeonUtils.getDungeonTabList()?.let { updateRunInformation(it) }
-        }.register()
+        scope.launch(Dispatchers.IO) {
+            paul = hasBonusPaulScore()
+        }
+
+        shownTitle = false
     }
 
-    private fun getCurrentFloor() {
-        for (i in sidebarLines) {
+    fun enterDungeonRoom(event: RoomEnterEvent) {
+        currentFullRoom = event.fullRoom
+        val fullRoom = currentFullRoom ?: return
+        if (passedRooms.any { it.room.data.name == fullRoom.room.data.name }) return
+        passedRooms.add(fullRoom)
+        val roomSecrets = ScanUtils.getRoomSecrets(fullRoom.room.data.name)
+        dungeonStats.knownSecrets = dungeonStats.knownSecrets?.plus(roomSecrets) ?: roomSecrets
+    }
 
-            val line = cleanSB(i)
-
-            if (line.contains("The Catacombs (")) {
-                runCatching { floor = Floor.valueOf(line.substringAfter("(").substringBefore(")")) }
-                .onFailure { modMessage("Could not get correct floor. Please report this.") }
-            }
+    fun onPacket(event: PacketReceivedEvent) {
+        when (event.packet) {
+            is S38PacketPlayerListItem -> handleTabListPacket(event.packet)
+            is S3EPacketTeams -> handleScoreboardPacket(event.packet)
+            is S47PacketPlayerListHeaderFooter -> handleHeaderFooterPacket(event.packet)
+            is S02PacketChat -> handleChatPacket(event.packet)
         }
     }
 
-    /**
-     * Enumeration representing different floors in a dungeon.
-     *
-     * This enum class defines various floors, including both regular floors (F1 to F7) and special mini-boss floors (M1 to M7).
-     * Each floor has an associated floor number and an indicator of whether it is a mini-boss floor.
-     *
-     * @property floorNumber The numerical representation of the floor, where E represents the entrance floor.
-     * @property isInMM Indicates whether the floor is a mini-boss floor (M1 to M7).
-     */
-    enum class Floor {
-        E, F1, F2, F3, F4, F5, F6, F7,
-        M1, M2, M3, M4, M5, M6, M7;
+    private fun handleChatPacket(packet: S02PacketChat) {
+        val message = packet.chatComponent.unformattedText.noControlCodes
+        if (Regex("\\[BOSS] The Watcher: You have proven yourself. You may pass.").matches(message)) dungeonStats.bloodDone = true
+        Regex("(?:\\[\\w+] )?(\\w+) opened a (?:WITHER|Blood) door!").find(message)?.let { dungeonStats.doorOpener = it.groupValues[1] }
 
-        /**
-         * Gets the numerical representation of the floor.
-         *
-         * @return The floor number. E has a floor number of 0, F1 to F7 have floor numbers from 1 to 7, and M1 to M7 have floor numbers from 1 to 7.
-         */
-        val floorNumber: Int
-            get() {
-                return when (this) {
-                    E -> 0
-                    F1, M1 -> 1
-                    F2, M2 -> 2
-                    F3, M3 -> 3
-                    F4, M4 -> 4
-                    F5, M5 -> 5
-                    F6, M6 -> 6
-                    F7, M7 -> 7
-                }
-            }
-
-        /**
-         * Indicates whether the floor is a mini-boss floor.
-         *
-         * @return `true` if the floor is a mini-boss floor (M1 to M7), otherwise `false`.
-         */
-        val isInMM: Boolean
-            get() {
-                return when (this) {
-                    E, F1, F2, F3, F4, F5, F6, F7 -> false
-                    M1, M2, M3, M4, M5, M6, M7 -> true
-                }
-            }
+        val partyMessage = Regex("Party > .*?: (.+)\$").find(message)?.groupValues?.get(1)?.lowercase() ?: return
+        if (partyMessage.equalsOneOf("mimic killed", "mimic slain", "mimic killed!", "mimic dead", "mimic dead!", "\$skytils-dungeon-score-mimic\$", Mimic.mimicMessage))
+            dungeonStats.mimicKilled = true
+        if (partyMessage.equalsOneOf("blaze done!", "blaze done", "blaze puzzle solved!"))  //more completion messages may be necessary.
+            puzzles.find { it.name == Puzzle.Blaze.name }.let { it?.status = PuzzleStatus.Completed }
     }
 
-
-
-    private val deathsPattern = Regex("§r§a§lDeaths: §r§f\\((?<deaths>\\d+)\\)§r")
-    private val secretsFoundPattern = Regex("§r Secrets Found: §r§b(?<secrets>\\d+)§r")
-    private val cryptsPattern = Regex("§r Crypts: §r§6(?<crypts>\\d+)§r")
-
-    private fun updateRunInformation(tabEntries: List<Pair<NetworkPlayerInfo, String>>) {
-        tabEntries.forEach {
-            val text = it.second
-            when {
-                text.contains("Deaths: ") -> {
-                    val matcher = deathsPattern.find(text) ?: return@forEach
-                    deathCount = matcher.groups["deaths"]?.value?.toIntOrNull() ?: deathCount
-                }
-                text.contains("Secrets Found: ") && !text.contains("%") -> {
-                    val matcher = secretsFoundPattern.find(text) ?: return@forEach
-                    secretCount = matcher.groups["secrets"]?.value?.toIntOrNull() ?: secretCount
-                }
-                text.contains("Crypts: ") -> {
-                    val matcher = cryptsPattern.find(text) ?: return@forEach
-                    cryptsCount = matcher.groups["crypts"]?.value?.toIntOrNull() ?: cryptsCount
-                }
-            }
+    private fun handleHeaderFooterPacket(packet: S47PacketPlayerListHeaderFooter) {
+        Blessing.entries.forEach { blessing ->
+            blessing.regex.find(packet.footer.unformattedText.noControlCodes)?.let { match -> blessing.current = romanToInt(match.groupValues[1]) }
         }
     }
 
+    private fun handleScoreboardPacket(packet: S3EPacketTeams) {
+        if (packet.action != 2) return
+        val text = packet.prefix.plus(packet.suffix)
+
+        val cleared = Regex("^Cleared: §[c6a](\\d+)% §8(?:§8)?\\(\\d+\\)$").find(text)
+        cleared?.groupValues[1]?.toInt()?.let {
+            if (dungeonStats.percentCleared != it && expectingBloodUpdate) dungeonStats.bloodDone = true
+            dungeonStats.percentCleared = it
+        }
+        Regex("^Time Elapsed: §a§a([\\dsmh ]+)$").find(text)?.let { dungeonStats.elapsedTime = it.groupValues[1] }
+    }
+
+    private fun handleTabListPacket(packet: S38PacketPlayerListItem) {
+        if (packet.action != S38PacketPlayerListItem.Action.UPDATE_DISPLAY_NAME) return
+        
+        packet.entries.forEach { entry ->
+            entry?.displayName?.formattedText?.let { dungeonStats = updateDungeonStats(it, dungeonStats) }
+        }
+
+        val tabList = getDungeonTabList() ?: emptyList()
+
+        updateDungeonPuzzles(tabList)
+        updateDungeonTeammates(tabList)
+    }
+
+    private val secretCountRegex = Regex("^§r Secrets Found: §r§b(\\d+)§r$")
+    private val secretPercentRegex = Regex("^§r Secrets Found: §r§[ea]([\\d.]+)%§r$")
+    private val cryptRegex = Regex("^§r Crypts: §r§6(\\d+)§r$")
+    private val openedRoomsRegex = Regex("^§r Opened Rooms: §r§5(\\d+)§r$")
+    private val completedRoomsRegex = Regex("^§r Completed Rooms: §r§d(\\d+)§r$")
+    private val deathsRegex = Regex("^§r§a§lTeam Deaths: §r§f(\\d+)§r$")
+    private val puzzleCountRegex = Regex("^§r§[a-z]§lPuzzles: §r§f\\((\\d)\\)§r$")
+
+    data class DungeonStats(
+        var secretsFound: Int? = null,
+        var secretsPercent: Float? = null,
+        var knownSecrets: Int? = null,
+        var crypts: Int? = null,
+        var openedRooms: Int? = null,
+        var completedRooms: Int? = null,
+        var deaths: Int? = null,
+        var percentCleared: Int? = null,
+        var elapsedTime: String? = null,
+        var mimicKilled: Boolean = false,
+        var doorOpener: String? = null,
+        var bloodDone: Boolean = false,
+    )
+
+    private fun updateDungeonStats(text: String, currentStats: DungeonStats): DungeonStats {
+        when {
+            secretCountRegex.matches(text) -> currentStats.secretsFound = secretCountRegex.find(text)?.groupValues?.get(1)?.toIntOrNull()
+
+            secretPercentRegex.matches(text) -> currentStats.secretsPercent = secretPercentRegex.find(text)?.groupValues?.get(1)?.toFloatOrNull()
+
+            cryptRegex.matches(text) -> currentStats.crypts = cryptRegex.find(text)?.groupValues?.get(1)?.toIntOrNull()
+
+            openedRoomsRegex.matches(text) -> currentStats.openedRooms = openedRoomsRegex.find(text)?.groupValues?.get(1)?.toIntOrNull()
+
+            completedRoomsRegex.matches(text) -> currentStats.completedRooms = completedRoomsRegex.find(text)?.groupValues?.get(1)?.toIntOrNull()
+
+            deathsRegex.matches(text) -> currentStats.deaths = deathsRegex.find(text)?.groupValues?.get(1)?.toIntOrNull()
+        }
+
+        return currentStats
+    }
+
+    private fun updateDungeonPuzzles(tabList: List<Pair<NetworkPlayerInfo, String>>){
+        with(tabList.map { it.second }) {
+            val puzzleText = this.find { puzzleCountRegex.matches(it) } ?: return
+            val index = this.indexOf(puzzleText)
+            val puzzleCount = puzzleCountRegex.find(puzzleText)?.groupValues?.get(1)?.toIntOrNull() ?: return
+            puzzles = getDungeonPuzzles(this.filterIndexed { i, _ -> i in index + 1..index + puzzleCount })
+        }
+    }
+
+    private fun updateDungeonTeammates(tabList:List<Pair<NetworkPlayerInfo, String>>) {
+        dungeonTeammates = getDungeonTeammates(dungeonTeammates, tabList)
+        dungeonTeammatesNoSelf = dungeonTeammates.filter { it.entity != mc.thePlayer }
+
+        leapTeammates =
+            when (LeapMenu.type) {
+                0 -> odinSorting(dungeonTeammatesNoSelf.sortedBy { it.clazz.priority }).toMutableList()
+                1 -> dungeonTeammatesNoSelf.sortedWith(compareBy({ it.clazz.ordinal }, { it.name })).toMutableList()
+                2 -> dungeonTeammatesNoSelf.sortedBy { it.name }.toMutableList()
+                else -> dungeonTeammatesNoSelf.toMutableList()
+            }
+    }
 }
