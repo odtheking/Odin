@@ -34,7 +34,7 @@ object DungeonUtils {
         currentDungeon?.floor ?: Floor.E
 
     inline val inBoss: Boolean get() =
-        currentDungeon?.inBoss ?: false
+        currentDungeon?.inBoss == true
 
     inline val secretCount: Int get() =
         currentDungeon?.dungeonStats?.secretsFound ?: 0
@@ -45,10 +45,8 @@ object DungeonUtils {
     inline val secretPercentage: Float get() =
         currentDungeon?.dungeonStats?.secretsPercent ?: 0f
 
-    inline val totalSecrets: Int get() {
-        return if (secretCount == 0 || secretPercentage == 0f) 0
-        else floor(100 / secretPercentage * secretCount + 0.5).toInt()
-    }
+    inline val totalSecrets: Int get() =
+        if (secretCount == 0 || secretPercentage == 0f) 0 else floor(100 / secretPercentage * secretCount + 0.5).toInt()
 
     inline val deathCount: Int get() =
         currentDungeon?.dungeonStats?.deaths ?: 0
@@ -65,13 +63,8 @@ object DungeonUtils {
     inline val percentCleared: Int get() =
         currentDungeon?.dungeonStats?.percentCleared ?: 0
 
-    inline val secretsRemaining: Int get() =
-        totalSecrets - secretCount
-
-    inline val totalRooms: Int get() {
-        return if (completedRoomCount == 0 || percentCleared == 0) 0
-        else floor((completedRoomCount/((percentCleared * 0.01).toFloat())) + 0.4).toInt()
-    }
+    inline val totalRooms: Int get() =
+        if (completedRoomCount == 0 || percentCleared == 0) 0 else floor((completedRoomCount/((percentCleared * 0.01).toFloat())) + 0.4).toInt()
 
     inline val puzzles get() =
         currentDungeon?.puzzles ?: emptyList()
@@ -104,7 +97,7 @@ object DungeonUtils {
         currentDungeon?.dungeonStats?.doorOpener ?: "Unknown"
 
     inline val mimicKilled: Boolean get() =
-        currentDungeon?.dungeonStats?.mimicKilled ?: false
+        currentDungeon?.dungeonStats?.mimicKilled == true
 
     inline val currentFullRoom: FullRoom? get() =
         currentDungeon?.currentFullRoom
@@ -113,37 +106,33 @@ object DungeonUtils {
         currentDungeon?.passedRooms ?: emptyList()
 
     inline val isPaul: Boolean get() =
-         currentDungeon?.paul ?: false
+        currentDungeon?.paul == true
 
     inline val getBonusScore: Int get() {
-        var score = 0
-        score += cryptCount.coerceAtMost(5)
+        var score = cryptCount.coerceAtMost(5)
         if (mimicKilled) score += 2
         if ((isPaul && togglePaul == 0) || togglePaul == 2) score += 10
         return score
     }
 
     inline val bloodDone: Boolean get() =
-        currentDungeon?.dungeonStats?.bloodDone ?: false
+        currentDungeon?.dungeonStats?.bloodDone == true
 
     inline val score: Int get() {
         val completed: Float = completedRoomCount.toFloat() + (if (!bloodDone) 1f else 0f) + (if (!inBoss) 1f else 0f)
         val total: Float = if (totalRooms != 0) totalRooms.toFloat() else 36f
 
-        val exploration = floor((secretPercentage/floor.secretPercentage)/100f * 40f).coerceIn(0f, 40f).toInt() +
-                floor(completed/total * 60f).coerceIn(0f, 60f).toInt()
+        val exploration = floor((secretPercentage / floor.secretPercentage) / 100f * 40f).coerceIn(0f, 40f).toInt() +
+                floor(completed / total * 60f).coerceIn(0f, 60f).toInt()
 
-        val skillRooms = floor(completed/total * 80f).coerceIn(0f, 80f).toInt()
+        val skillRooms = floor(completed / total * 80f).coerceIn(0f, 80f).toInt()
         val puzzlePenalty = puzzles.filter { it.status != PuzzleStatus.Completed }.size * 10
-        val skill = (20 + skillRooms - puzzlePenalty - (deathCount * 2 - 1).coerceAtLeast(0)).coerceIn(20, 100)
 
-        return exploration + skill + getBonusScore + 100
+        return exploration + (20 + skillRooms - puzzlePenalty - (deathCount * 2 - 1).coerceAtLeast(0)).coerceIn(20, 100) + getBonusScore + 100
     }
 
-    inline val neededSecretsAmount: Int get() {
-        val scoreFactor = 40 - getBonusScore + (deathCount * 2 - 1).coerceAtLeast(0)
-        return ceil((totalSecrets * floor.secretPercentage) * scoreFactor / 40.0).toInt()
-    }
+    inline val neededSecretsAmount: Int get() =
+        ceil((totalSecrets * floor.secretPercentage) * (40 - getBonusScore + (deathCount * 2 - 1).coerceAtLeast(0)) / 40.0).toInt()
 
     /**
      * Checks if the current dungeon floor number matches any of the specified options.
@@ -160,7 +149,7 @@ object DungeonUtils {
      *
      * @return The current phase of floor 7 boss, or `null` if the player is not in the boss room.
      */
-    fun getPhase(): M7Phases {
+    fun getF7Phase(): M7Phases {
         if (!isFloor(7) || !inBoss) return M7Phases.Unknown
 
         return when {

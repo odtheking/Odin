@@ -86,8 +86,12 @@ val ItemStack?.isLeap: Boolean
         return this?.itemID?.equalsOneOf("INFINITE_SPIRIT_LEAP", "SPIRIT_LEAP") == true
     }
 
-val EntityPlayerSP.holdingEtherWarp: Boolean
-    get() = this.heldItem?.extraAttributes?.getBoolean("ethermerge") == true
+val EntityPlayerSP.usingEtherWarp: Boolean
+    get() {
+        val item = heldItem ?: return false
+        if (item.itemID == "ETHERWARP_CONDUIT") return true
+        return isSneaking && item.extraAttributes?.getBoolean("ethermerge") == true
+    }
 
 /**
  * Returns the ID of held item

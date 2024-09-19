@@ -8,6 +8,7 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.PersonalBest
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.entity.Entity
+import net.minecraft.entity.boss.EntityDragon
 import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraft.util.*
 
@@ -21,7 +22,7 @@ enum class WitherDragonsEnum (
     var particleSpawnTime: Long = 0L,
     var state: WitherDragonState = WitherDragonState.DEAD,
     var timesSpawned: Int = 0,
-    var entity: Entity? = null,
+    var entity: EntityDragon? = null,
     var isSprayed: Boolean = false,
     var spawnedTime: Long = 0,
     val skipKillTime: Long = 0L

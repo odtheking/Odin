@@ -24,7 +24,7 @@ object TerminalMove : Module(
 
     @SubscribeEvent
     fun onDrawOverlay(event: RenderGameOverlayEvent.Post) {
-        if (DungeonUtils.getPhase() != M7Phases.P3 || !isInTerminal() || event.type != RenderGameOverlayEvent.ElementType.ALL) return
+        if (DungeonUtils.getF7Phase() != M7Phases.P3 || !isInTerminal() || event.type != RenderGameOverlayEvent.ElementType.ALL) return
         val containerName = (mc.thePlayer.openContainer as ContainerChest).lowerChestInventory.name
         text(containerName, mc.displayWidth / 2 / scaleFactor, (mc.displayHeight / 2 + 32) / scaleFactor, ClickGUIModule.color, 8f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Middle, true)
         text("Clicks left: ${TerminalSolver.solution.size}", mc.displayWidth / 2 / scaleFactor, (mc.displayHeight / 2 + 64) / scaleFactor, ClickGUIModule.color, 8f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Middle, true)
@@ -32,7 +32,7 @@ object TerminalMove : Module(
 
     @SubscribeEvent
     fun onPacket(event: PacketReceivedEvent) {
-        if (event.packet is S2DPacketOpenWindow && DungeonUtils.getPhase() == M7Phases.P3 && isInTerminal()) event.isCanceled = true
+        if (event.packet is S2DPacketOpenWindow && DungeonUtils.getF7Phase() == M7Phases.P3 && isInTerminal()) event.isCanceled = true
     }
 
     private fun isInTerminal(): Boolean {

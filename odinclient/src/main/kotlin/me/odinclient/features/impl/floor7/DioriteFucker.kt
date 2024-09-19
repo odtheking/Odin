@@ -45,7 +45,7 @@ object DioriteFucker : Module(
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         profile("Diorite Fucker") {
-            if (DungeonUtils.getPhase() == M7Phases.P2 && event.phase == TickEvent.Phase.END && mc.theWorld != null) replaceDiorite()
+            if (DungeonUtils.getF7Phase() == M7Phases.P2 && event.phase == TickEvent.Phase.END && mc.theWorld != null) replaceDiorite()
         }
     }
 
