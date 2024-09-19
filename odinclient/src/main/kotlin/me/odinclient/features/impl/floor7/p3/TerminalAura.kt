@@ -56,14 +56,14 @@ object TerminalAura : Module(
 
     @SubscribeEvent
     fun onEntityLoaded(event: PostEntityMetadata) {
-        if (DungeonUtils.getPhase() != M7Phases.P3) return
+        if (DungeonUtils.getF7Phase() != M7Phases.P3) return
         val entity = mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityArmorStand ?: return
         if (entity.name.noControlCodes == "Inactive Terminal") terminalEntityList.add(entity)
     }
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (DungeonUtils.getPhase() != M7Phases.P3 || mc.thePlayer?.openContainer !is ContainerPlayer || (!mc.thePlayer.onGround && onGround) || !clickClock.hasTimePassed()) return
+        if (DungeonUtils.getF7Phase() != M7Phases.P3 || mc.thePlayer?.openContainer !is ContainerPlayer || (!mc.thePlayer.onGround && onGround) || !clickClock.hasTimePassed()) return
         val terminal = terminalEntityList.firstOrNull {
             mc.thePlayer.positionVector.addVec(y = mc.thePlayer.getEyeHeight()).distanceTo(Vec3(it.posX, it.posY + it.height / 2, it.posZ)) < 3.5
         } ?: return

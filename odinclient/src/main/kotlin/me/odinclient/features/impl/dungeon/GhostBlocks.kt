@@ -11,7 +11,7 @@ import me.odinmain.utils.rangeAdd
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getPhase
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getF7Phase
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import net.minecraft.block.state.IBlockState
 import net.minecraft.enchantment.Enchantment
@@ -92,7 +92,7 @@ object GhostBlocks : Module(
 
         execute(1000) {
             if (!DungeonUtils.isFloor(7) || !DungeonUtils.inBoss || !preGhostBlock || !enabled) return@execute
-            val phase = getPhase().displayName.drop(1).toIntOrNull() ?: return@execute
+            val phase = getF7Phase().displayName.drop(1).toIntOrNull() ?: return@execute
             for (i in blocks[phase] ?: return@execute) {
                 mc.theWorld?.setBlockToAir(i)
             }

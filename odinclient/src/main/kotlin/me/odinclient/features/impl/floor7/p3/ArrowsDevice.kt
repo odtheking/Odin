@@ -103,7 +103,7 @@ object ArrowsDevice : Module(
         }
 
         execute(1000) {
-            if (DungeonUtils.getPhase() != M7Phases.P3) return@execute
+            if (DungeonUtils.getF7Phase() != M7Phases.P3) return@execute
 
             // Cast is safe since we won't return an entity that isn't an armor stand
             activeArmorStand = mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()?.find {
@@ -118,7 +118,7 @@ object ArrowsDevice : Module(
         }
 
         execute(10) {
-            if (!triggerBot || !triggerBotClock.hasTimePassed(triggerBotDelay) || mc.thePlayer?.heldItem?.isShortbow == false || DungeonUtils.getPhase() != M7Phases.P3) return@execute
+            if (!triggerBot || !triggerBotClock.hasTimePassed(triggerBotDelay) || mc.thePlayer?.heldItem?.isShortbow == false || DungeonUtils.getF7Phase() != M7Phases.P3) return@execute
             setBowTrajectoryHeading(0f)
             if (!isHolding("TERMINATOR")) return@execute
             setBowTrajectoryHeading(-5f)
@@ -360,7 +360,7 @@ object ArrowsDevice : Module(
 
     @SubscribeEvent
     fun onBlockChange(event: BlockChangeEvent) {
-        if (!DungeonUtils.inDungeons || DungeonUtils.getPhase() != M7Phases.P3 || !positions.contains(event.pos)) return
+        if (!DungeonUtils.inDungeons || DungeonUtils.getF7Phase() != M7Phases.P3 || !positions.contains(event.pos)) return
 
         // Target was hit
         if (event.old.block == Blocks.emerald_block && event.update.block == Blocks.stained_hardened_clay) {
@@ -396,7 +396,7 @@ object ArrowsDevice : Module(
 
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
-        if (!DungeonUtils.inDungeons || DungeonUtils.getPhase() != M7Phases.P3 || !solver) return
+        if (!DungeonUtils.inDungeons || DungeonUtils.getF7Phase() != M7Phases.P3 || !solver) return
         markedPositions.forEach {
             Renderer.drawBlock(it, markedPositionColor, depth = depthCheck)
         }

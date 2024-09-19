@@ -44,9 +44,7 @@ object Sidebar : Module(
             val scoreY: Int = index * mc.fontRendererObj.FONT_HEIGHT
             drawRect(-2, scoreY, width, scoreY + mc.fontRendererObj.FONT_HEIGHT, color)
             drawString(s1, 0, scoreY)
-            if (this.redNumbers) {
-                drawString(s2, width - getStringWidth(s2), scoreY)
-            }
+            if (this.redNumbers) drawString(s2, width - getStringWidth(s2), scoreY)
             if (index == scoreList.size) {
                 val s3 = scoreObjective.displayName
                 drawRect(-2, 0, width, mc.fontRendererObj.FONT_HEIGHT, color)

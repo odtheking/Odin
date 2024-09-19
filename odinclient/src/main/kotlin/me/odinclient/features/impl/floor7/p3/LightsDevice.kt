@@ -35,7 +35,7 @@ object LightsDevice : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (!triggerBotClock.hasTimePassed(delay) || DungeonUtils.getPhase() != M7Phases.P3 || !triggerBot) return
+        if (!triggerBotClock.hasTimePassed(delay) || DungeonUtils.getF7Phase() != M7Phases.P3 || !triggerBot) return
         val pos = mc.objectMouseOver?.blockPos ?: return
         if (pos !in levers || mc.theWorld.getBlockState(pos).getValue(BlockLever.POWERED)) return
         rightClick()

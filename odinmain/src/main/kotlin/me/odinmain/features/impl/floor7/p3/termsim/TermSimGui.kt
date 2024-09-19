@@ -11,6 +11,7 @@ import me.odinmain.features.impl.floor7.p3.TerminalSounds.completeSounds
 import me.odinmain.features.impl.floor7.p3.TerminalSounds.playCompleteSound
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.utils.*
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.*
@@ -64,8 +65,8 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
 
     @SubscribeEvent
     fun onPacketSend(event: PacketSentEvent) {
-        val packet = event.packet
-        if (packet !is C0EPacketClickWindow || mc.currentScreen != this) return
+        val packet = event.packet as? C0EPacketClickWindow ?: return
+        if (mc.currentScreen != this) return
         delaySlotClick(this.inventorySlots.inventorySlots[packet.slotId], packet.usedButton)
         event.isCanceled = true
     }
@@ -101,14 +102,13 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
 
     final override fun handleMouseClick(slotIn: Slot?, slotId: Int, clickedButton: Int, clickType: Int) {
         val slot = slotIn ?: return
-        if (slot.stack?.item == pane && slot.stack?.metadata == 15 || clickedButton != 4) return
+        if (slot.stack?.item == pane && slot.stack?.metadata == 15) return
         if (!GuiEvent.GuiWindowClickEvent(mc.thePlayer.openContainer.windowId, slot.slotIndex, clickedButton, clickType, mc.thePlayer).postAndCatch())
         delaySlotClick(slot, 0)
     }
 }
 
 fun openTerminal(ping: Long = 0L, const: Long = 0L) {
-
     when (listOf(TerminalTypes.PANES, TerminalTypes.RUBIX, TerminalTypes.ORDER, TerminalTypes.STARTS_WITH, TerminalTypes.SELECT).random()) {
         TerminalTypes.PANES -> CorrectPanes.open(ping, const)
         TerminalTypes.RUBIX -> Rubix.open(ping, const)

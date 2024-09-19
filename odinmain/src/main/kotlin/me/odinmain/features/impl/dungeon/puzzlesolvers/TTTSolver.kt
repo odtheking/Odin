@@ -98,7 +98,7 @@ object TTTSolver {
     }
 
     private fun findSlotState(blockPos: BlockPos): State {
-        val itemFrameBlock = mc.theWorld?.getEntitiesWithinAABB(EntityItemFrame::class.java, blockPos.toAABB())?.filterIsInstance<EntityItemFrame>()?.firstOrNull() ?: return State.Blank
+        val itemFrameBlock = mc.theWorld?.getEntitiesWithinAABB(EntityItemFrame::class.java, blockPos.toAABB())?.firstOrNull() ?: return State.Blank
         val mapData = Items.filled_map.getMapData(itemFrameBlock.displayedItem, mc.theWorld) ?: return State.Blank
         return if ((mapData.colors[8256] and 255.toByte()).toInt() == 114) State.X else State.O
     }

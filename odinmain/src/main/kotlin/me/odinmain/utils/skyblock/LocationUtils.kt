@@ -1,13 +1,13 @@
 package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.events.impl.SkyblockJoinIslandEvent
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.skyblock.dungeon.Dungeon
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.Floor
 import net.minecraft.client.network.NetHandlerPlayClient
 import net.minecraftforge.event.world.WorldEvent
@@ -19,7 +19,6 @@ object LocationUtils {
     private var onHypixel: Boolean = false
     var inSkyblock: Boolean = false
 
-    private val dungeonsList: MutableList<Dungeon> = mutableListOf()
     var currentDungeon: Dungeon? = null
     var currentArea: Island = Island.Unknown
     var kuudraTier: Int = 0
@@ -27,7 +26,7 @@ object LocationUtils {
     init {
         Executor(500) {
             if (!inSkyblock)
-                inSkyblock = onHypixel && mc.theWorld?.scoreboard?.getObjectiveInDisplaySlot(1)?.let { cleanSB(it.displayName).contains("SKYBLOCK") } ?: false
+                inSkyblock = onHypixel && mc.theWorld?.scoreboard?.getObjectiveInDisplaySlot(1)?.let { cleanSB(it.displayName).contains("SKYBLOCK") } == true
 
             if (currentArea.isArea(Island.Kuudra) && kuudraTier == 0)
                 getLines().find { cleanLine(it).contains("Kuudra's Hollow (") }?.let {
@@ -39,20 +38,9 @@ object LocationUtils {
                 if (!currentArea.isArea(Island.Unknown) && previousArea != currentArea) SkyblockJoinIslandEvent(currentArea).postAndCatch()
             }
 
+            if (DungeonUtils.inDungeons && currentDungeon == null) currentDungeon = Dungeon(getFloor() ?: return@Executor)
+
         }.register()
-    }
-
-    private var dungeonEnded = false
-
-    @SubscribeEvent
-    fun onChatPacketEvent(event: ChatPacketEvent) {
-        if (Regex("\\[NPC] Mort: Here, I found this map when I first entered the dungeon\\.").matches(event.message))
-            currentDungeon = Dungeon(getFloor())
-
-        if (Regex(" {29}> EXTRA STATS <").matches(event.message)) {
-            dungeonsList.add(currentDungeon ?: return)
-            dungeonEnded = true
-        }
     }
 
     @SubscribeEvent
@@ -66,10 +54,7 @@ object LocationUtils {
 
     @SubscribeEvent
     fun onWorldChange(event: WorldEvent.Unload) {
-        if (dungeonEnded) {
-            currentDungeon = null
-            dungeonEnded = false
-        }
+        currentDungeon = null
         inSkyblock = false
         currentArea = Island.Unknown
     }

@@ -38,7 +38,6 @@
     "mixins.MixinPlayerControllerMP",
     "mixins.MixinRenderDragon",
     "mixins.MixinRenderEntityItem",
-    "mixins.MixinRenderGlobal",
     "mixins.MixinRenderItem",
     "mixins.MixinRenderPlayer",
     "mixins.MixinSoundManager",

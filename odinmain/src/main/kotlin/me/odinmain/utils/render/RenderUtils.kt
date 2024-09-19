@@ -538,12 +538,11 @@ object RenderUtils {
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
         translate(x, y, 0f)
         scale(scale, scale, scale)
-        color.bind()
         var yOffset = y - mc.fontRendererObj.FONT_HEIGHT
         text.split("\n").forEach {
             yOffset += mc.fontRendererObj.FONT_HEIGHT
             val xOffset = if (center) mc.fontRendererObj.getStringWidth(it) / -2f else 0f
-            mc.fontRendererObj.drawString(it, xOffset, 0f, color.rgba, shadow)
+            mc.fontRendererObj.drawString("${it}§r", xOffset, 0f, color.rgba, shadow)
         }
         GlStateManager.resetColor()
         GlStateManager.disableBlend()

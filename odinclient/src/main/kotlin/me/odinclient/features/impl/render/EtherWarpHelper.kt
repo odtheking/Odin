@@ -71,8 +71,7 @@ object EtherWarpHelper : Module(
             etherWarpTriggerBot &&
             tbClock.hasTimePassed(etherWarpTBDelay) &&
             DungeonUtils.currentFullRoom?.waypoints?.any { etherPos.vec?.equal(it.toVec3()) == true } == true &&
-            mc.thePlayer.isSneaking &&
-            mc.thePlayer.holdingEtherWarp
+            mc.thePlayer.usingEtherWarp
         ) {
             tbClock.update()
             PlayerUtils.rightClick()
@@ -86,7 +85,7 @@ object EtherWarpHelper : Module(
                 PositionLook(mc.thePlayer.renderVec, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
 
         etherPos = EtherWarpHelper.getEtherPos(positionLook)
-        if (render && mc.thePlayer.isSneaking && mc.thePlayer.heldItem.extraAttributes?.getBoolean("ethermerge") == true && (etherPos.succeeded || renderFail))
+        if (render && mc.thePlayer.usingEtherWarp && (etherPos.succeeded || renderFail))
             Renderer.drawStyledBlock(etherPos.pos ?: return, if (etherPos.succeeded) color else wrongColor, style, lineWidth, depthCheck)
     }
 
@@ -94,9 +93,8 @@ object EtherWarpHelper : Module(
     fun onClick(event: ClickEvent.RightClickEvent) {
         if (
             zeroPing &&
-            mc.thePlayer.holdingEtherWarp &&
+            mc.thePlayer.usingEtherWarp &&
             etherPos.succeeded &&
-            mc.thePlayer.isSneaking &&
             LocationUtils.currentArea.isArea(Island.SinglePlayer)
         ) {
             val pos = etherPos.pos ?: return
@@ -109,8 +107,7 @@ object EtherWarpHelper : Module(
     fun onLeftClick(event: ClickEvent.LeftClickEvent) {
         if (
             etherWarpHelper &&
-            mc.thePlayer.holdingEtherWarp &&
-            mc.thePlayer.isSneaking
+            mc.thePlayer.usingEtherWarp
         ) {
             val waypoints = DungeonUtils.currentFullRoom?.waypoints ?: return
             val wp = waypoints.mapNotNull {

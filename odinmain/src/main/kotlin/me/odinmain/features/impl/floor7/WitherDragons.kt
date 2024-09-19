@@ -108,7 +108,7 @@ object WitherDragons : Module(
             lastDragonDeath = WitherDragonsEnum.None
         }
 
-        onPacket(S2APacketParticles::class.java, { DungeonUtils.getPhase() == M7Phases.P5 }) {
+        onPacket(S2APacketParticles::class.java, { DungeonUtils.getF7Phase() == M7Phases.P5 }) {
             handleSpawnPacket(it)
         }
 
@@ -116,12 +116,12 @@ object WitherDragons : Module(
             if (relicAnnounce || relicAnnounceTime) relicsBlockPlace(it)
         }
 
-        onPacket(S29PacketSoundEffect::class.java, { DungeonUtils.getPhase() == M7Phases.P5 }) {
+        onPacket(S29PacketSoundEffect::class.java, { DungeonUtils.getF7Phase() == M7Phases.P5 }) {
             if (it.soundName != "random.successful_hit" || !sendArrowHit || !::priorityDragon.isInitialized) return@onPacket
             if (priorityDragon.entity?.isEntityAlive == true && System.currentTimeMillis() - priorityDragon.spawnedTime < priorityDragon.skipKillTime) arrowsHit++
         }
 
-        onPacket(S04PacketEntityEquipment::class.java, { DungeonUtils.getPhase() == M7Phases.P5 }) {
+        onPacket(S04PacketEntityEquipment::class.java, { DungeonUtils.getF7Phase() == M7Phases.P5 }) {
             dragonSprayed(it)
         }
 
@@ -129,7 +129,7 @@ object WitherDragons : Module(
             if (relicAnnounce || relicAnnounceTime) relicsOnMessage()
         }
 
-        onMessage(Regex("^\\[BOSS] Wither King: (Oh, this one hurts!|I have more of those\\.|My soul is disposable\\.)$"), { enabled && DungeonUtils.getPhase() != M7Phases.P5 } ) {
+        onMessage(Regex("^\\[BOSS] Wither King: (Oh, this one hurts!|I have more of those\\.|My soul is disposable\\.)$"), { enabled && DungeonUtils.getF7Phase() != M7Phases.P5 } ) {
             onChatPacket()
         }
 
@@ -140,7 +140,7 @@ object WitherDragons : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (DungeonUtils.getPhase() != M7Phases.P5) return
+        if (DungeonUtils.getF7Phase() != M7Phases.P5) return
 
         if (dragonHealth) renderHP()
         if (dragonTimer) renderTime()
@@ -151,13 +151,13 @@ object WitherDragons : Module(
 
     @SubscribeEvent
     fun onEntityJoin(event: EntityJoinWorldEvent) {
-        if (DungeonUtils.getPhase() != M7Phases.P5) return
+        if (DungeonUtils.getF7Phase() != M7Phases.P5) return
         dragonJoinWorld(event)
     }
 
     @SubscribeEvent
     fun onEntityLeave(event: LivingDeathEvent) {
-        if (DungeonUtils.getPhase() != M7Phases.P5) return
+        if (DungeonUtils.getF7Phase() != M7Phases.P5) return
         dragonLeaveWorld(event)
     }
 
