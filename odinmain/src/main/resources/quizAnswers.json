@@ -17,9 +17,7 @@
   "What is the status of Sadan?": ["Necromancer Lord"],
   "How many Fairy Souls are there in Spiders Den?": ["19 Fairy Souls"],
   "How many Fairy Souls are there in The End?": ["12 Fairy Souls"],
-  "What is the status of Maxor, Storm, Goldor, and Necron?": [
-    "The Wither Lords"
-  ],
+  "What is the status of Maxor, Storm, Goldor, and Necron?": ["The Wither Lords"],
   "How many Fairy Souls are there in The Farming Islands?": ["20 Fairy Souls"],
   "How many Fairy Souls are there in Crimson Isle?": ["29 Fairy Souls"],
   "What is the status of Livid?": ["Master Necromancer"],
@@ -48,7 +46,7 @@
     "Stable Dragon",
     "Professor Dragon"
   ],
-  "What is the name of the Painter in the Hub?": ["Marco"],
+  "What is the name of the vendor in the Hub who sells stained glass?": ["Wool Weaver"],
   "What is the name of the person that upgrades pets?": ["Kat"],
   "Which of these enemies does not spawn in the Spider's Den?": [
     "Zombie Spider",

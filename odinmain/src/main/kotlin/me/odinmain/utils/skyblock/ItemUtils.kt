@@ -185,7 +185,7 @@ fun getSkullValue(entity: Entity?): String? {
         ?.getCompoundTag("Properties")
         ?.getTagList("textures", Constants.NBT.TAG_COMPOUND)
         ?.getCompoundTagAt(0)
-        ?.getString("Value") ?: return null
+        ?.getString("Value")
 }
 
 fun ItemStack.setLore(lines: List<String>): ItemStack {

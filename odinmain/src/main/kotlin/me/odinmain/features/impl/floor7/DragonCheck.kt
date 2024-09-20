@@ -29,7 +29,6 @@ object DragonCheck {
         val dragon = WitherDragonsEnum.entries.find { isVecInXZ(entity.positionVector, it.boxesDimensions) } ?: return
 
         dragon.state = WitherDragonState.ALIVE
-        dragon.particleSpawnTime = 0L
         dragon.timesSpawned += 1
         dragon.entity = entity
         dragon.spawnedTime = System.currentTimeMillis()

@@ -87,7 +87,6 @@ fun devMessage(message: Any?, prefix: Boolean = true) {
  * Sends a message in all chat on Hypixel.
  *
  * @param message Message to be sent.
- * @param name Person to send to.
  */
 fun allMessage(message: Any) {
     sendCommand("ac $message")
@@ -125,7 +124,7 @@ fun privateMessage(message: Any, name: String) {
  * Sends a message in the corresponding channel.
  *
  * @param message Message to be sent.
- * @param name Name for private message.
+ * @param name Name of the person to send the message to.
  * @param channel Channel to send the message.
  */
 fun channelMessage(message: Any, name: String, channel: ChatCommands.ChatChannel) {

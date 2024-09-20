@@ -94,7 +94,7 @@ object TerminalSolver : Module(
                 solveStartsWith(items, letter)
             }
             TerminalTypes.SELECT -> {
-                val colorNeeded = EnumDyeColor.entries.find { event.name.contains(it.getName().replace("_", " ").uppercase()) }?.unlocalizedName ?: return modMessage("Failed to find color, please report this!")
+                val colorNeeded = EnumDyeColor.entries.find { event.name.contains(it.name.replace("_", " ").uppercase()) }?.unlocalizedName ?: return modMessage("Failed to find color, please report this!")
                 solveSelect(items, colorNeeded.lowercase())
             }
             else -> return

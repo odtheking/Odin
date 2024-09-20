@@ -34,10 +34,9 @@ object Relic {
     fun relicsBlockPlace(packet: C08PacketPlayerBlockPlacement) {
         if (timer == 0L || !getBlockAt(packet.position).equalsOneOf(Blocks.cauldron, Blocks.anvil)) return
 
-        val relic = Relic.entries.find { it.id == currentRelic } ?: return
-        val hasPassed = (System.currentTimeMillis() - timer) / 1000.0
-
-        relicPBs.time(relic.ordinal, hasPassed, "s§7!", "§${relic.colorCode}${relic.name} relic §7took §6", addPBString = true, addOldPBString = true, sendOnlyPB = false, sendMessage = relicAnnounceTime)
-        timer = 0L
+        Relic.entries.find { it.id == currentRelic }?.let {
+            relicPBs.time(it.ordinal, (System.currentTimeMillis() - timer) / 1000.0, "s§7!", "§${it.colorCode}${it.name} relic §7took §6", addPBString = true, addOldPBString = true, sendOnlyPB = false, sendMessage = relicAnnounceTime)
+            timer = 0L
+        }
     }
 }

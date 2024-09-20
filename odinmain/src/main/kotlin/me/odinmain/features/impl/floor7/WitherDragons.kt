@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.floor7
 
+import me.odinmain.events.impl.RealServerTick
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.DragonBoxes.renderBoxes
@@ -9,16 +10,14 @@ import me.odinmain.features.impl.floor7.DragonCheck.dragonSprayed
 import me.odinmain.features.impl.floor7.DragonCheck.lastDragonDeath
 import me.odinmain.features.impl.floor7.DragonCheck.onChatPacket
 import me.odinmain.features.impl.floor7.DragonHealth.renderHP
+import me.odinmain.features.impl.floor7.DragonTimer.colorDragonTimer
 import me.odinmain.features.impl.floor7.DragonTimer.renderTime
 import me.odinmain.features.impl.floor7.DragonTracer.renderTracers
 import me.odinmain.features.impl.floor7.Relic.relicsBlockPlace
 import me.odinmain.features.impl.floor7.Relic.relicsOnMessage
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.ui.hud.HudElement
-import me.odinmain.utils.max
-import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
@@ -41,23 +40,19 @@ object WitherDragons : Module(
     private val dragonTimer: Boolean by BooleanSetting("Dragon Timer", true, description = "Displays a timer for when M7 dragons spawn.").withDependency { dragonTimerDropDown }
     private val hud: HudElement by HudSetting("Dragon Timer HUD", 10f, 10f, 1f, true) {
         if (it) {
-            if (timerBackground) roundedRectangle(1f, 1f, getMCTextWidth("Purple spawning in 4500ms") + 1f, 32f, Color.DARK_GRAY.withAlpha(.75f), 3f)
-            mcText("§5Purple spawning in §a4500ms", 2f, 5f, 1, Color.WHITE, center = false)
-            mcText("§cRed spawning in §e1200ms", 2f, 20f, 1, Color.WHITE, center = false)
+            mcText("§5P §a4.5s", 2f, 5f, 1, Color.WHITE, center = false)
+            mcText("§cR §e1.2s", 2f, 20f, 1, Color.WHITE, center = false)
 
-            getMCTextWidth("Purple spawning in 4500ms")+ 2f to 33f
-        } else if (DragonTimer.toRender.size != 0) {
+            getMCTextWidth("§5P §a4.5s")+ 2f to 33f
+        } else {
             if (!dragonTimer) return@HudSetting 0f to 0f
-            var width = 0f
-            DragonTimer.toRender.forEachIndexed { index, triple ->
-                mcText(triple.first, 2, 5f + (index - 1) * 15f, 1, Color.WHITE, center = false)
-                width = max(width, getMCTextWidth(triple.first.noControlCodes))
+            WitherDragonsEnum.entries.forEachIndexed { index, dragon ->
+                if (dragon.state != WitherDragonState.SPAWNING) return@forEachIndexed
+                mcText("§${dragon.colorCode}${dragon.name.first()}${colorDragonTimer(dragon.timeToSpawn / 20)}s", 2, 5f + (index - 1) * 15f, 1, Color.WHITE, center = false)
             }
-            if (timerBackground) roundedRectangle(1f, 1f, getMCTextWidth("Purple spawning in 4500ms") + 1f, 32f, Color.DARK_GRAY.withAlpha(.75f), 3f)
-            width to DragonTimer.toRender.size * 17f
-        } else 0f to 0f
+            getMCTextWidth("§5P §a4.5s")+ 2f to 33f
+        }
     }.withDependency { dragonTimer && dragonTimerDropDown }
-    private val timerBackground: Boolean by BooleanSetting("HUD Timer Background", false, description = "Displays a background for the timer.").withDependency { dragonTimer && hud.displayToggle && hud.enabled && dragonTimer && dragonTimerDropDown }
 
     private val dragonBoxesDropDown: Boolean by DropdownSetting("Dragon Boxes Dropdown")
     private val dragonBoxes: Boolean by BooleanSetting("Dragon Boxes", true, description = "Displays boxes for where M7 dragons spawn.").withDependency { dragonBoxesDropDown }
@@ -98,13 +93,11 @@ object WitherDragons : Module(
     init {
         onWorldLoad {
             WitherDragonsEnum.entries.forEach {
-                it.particleSpawnTime = 0L
+                it.timeToSpawn = 100
                 it.timesSpawned = 0
                 it.state = WitherDragonState.DEAD
                 it.entity = null
-                it.spawnTime()
             }
-            DragonTimer.toRender = ArrayList()
             lastDragonDeath = WitherDragonsEnum.None
         }
 
@@ -121,7 +114,7 @@ object WitherDragons : Module(
             if (priorityDragon.entity?.isEntityAlive == true && System.currentTimeMillis() - priorityDragon.spawnedTime < priorityDragon.skipKillTime) arrowsHit++
         }
 
-        onPacket(S04PacketEntityEquipment::class.java, { DungeonUtils.getF7Phase() == M7Phases.P5 }) {
+        onPacket(S04PacketEntityEquipment::class.java, { DungeonUtils.getF7Phase() == M7Phases.P5 && enabled }) {
             dragonSprayed(it)
         }
 
@@ -161,23 +154,25 @@ object WitherDragons : Module(
         dragonLeaveWorld(event)
     }
 
+    @SubscribeEvent
+    fun onServerTick(event: RealServerTick) {
+        DragonTimer.updateTime()
+    }
+
     fun arrowDeath(dragon: WitherDragonsEnum) {
-        if (::priorityDragon.isInitialized && dragon == priorityDragon) {
-            if (sendArrowHit && System.currentTimeMillis() - dragon.spawnedTime < dragon.skipKillTime) {
-                modMessage("§fYou hit §6$arrowsHit §farrows on §${priorityDragon.colorCode}${priorityDragon.name}.")
-                arrowsHit = 0
-            }
-        }
+        if (!::priorityDragon.isInitialized || dragon != priorityDragon) return
+        if (!sendArrowHit || System.currentTimeMillis() - dragon.spawnedTime >= dragon.skipKillTime) return
+        modMessage("§fYou hit §6$arrowsHit §farrows on §${priorityDragon.colorCode}${priorityDragon.name}.")
+        arrowsHit = 0
     }
 
     fun arrowSpawn(dragon: WitherDragonsEnum) {
-        if (::priorityDragon.isInitialized && dragon == priorityDragon) {
-            arrowsHit = 0
-            Timer().schedule(dragon.skipKillTime) {
-                if (dragon.entity?.isEntityAlive == true || arrowsHit > 0) {
-                    modMessage("§fYou hit §6${arrowsHit} §farrows on §${dragon.colorCode}${dragon.name}${if (dragon.entity?.isEntityAlive == true) " §fin §c${String.format("%.2f", dragon.skipKillTime.toFloat()/1000)} §fSeconds." else "."}")
-                    arrowsHit = 0
-                }
+        if (!::priorityDragon.isInitialized || dragon != priorityDragon) return
+        arrowsHit = 0
+        Timer().schedule(dragon.skipKillTime) {
+            if (dragon.entity?.isEntityAlive == true || arrowsHit > 0) {
+                modMessage("§fYou hit §6${arrowsHit} §farrows on §${dragon.colorCode}${dragon.name}${if (dragon.entity?.isEntityAlive == true) " §fin §c${String.format("%.2f", dragon.skipKillTime.toFloat()/1000)} §fSeconds." else "."}")
+                arrowsHit = 0
             }
         }
     }

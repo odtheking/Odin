@@ -3,7 +3,6 @@ package me.odinmain.utils.skyblock
 import me.odinmain.OdinMain.mc
 import net.minecraft.block.Block
 import net.minecraft.init.Blocks
-import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 
 /**
@@ -85,6 +84,3 @@ fun getBlockAt(pos: BlockPos): Block =
  */
 fun getBlockAt(x: Int, y: Int, z: Int): Block =
     getBlockAt(BlockPos(x, y, z))
-
-val Block.blockBounds: AxisAlignedBB
-    get() = AxisAlignedBB(blockBoundsMinX, blockBoundsMinY, blockBoundsMinZ, blockBoundsMaxX, blockBoundsMaxY, blockBoundsMaxZ)

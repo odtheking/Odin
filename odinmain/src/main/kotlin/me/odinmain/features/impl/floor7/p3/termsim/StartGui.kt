@@ -1,13 +1,18 @@
 package me.odinmain.features.impl.floor7.p3.termsim
 
 import me.odinmain.features.impl.floor7.TerminalSimulator
-import me.odinmain.utils.*
+import me.odinmain.utils.getRandom
+import me.odinmain.utils.round
+import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.setLoreWidth
 import net.minecraft.inventory.Slot
-import net.minecraft.item.*
+import net.minecraft.item.EnumDyeColor
+import net.minecraft.item.Item
+import net.minecraft.item.ItemStack
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+
 
 object StartGui : TermSimGui(
     "Terminal Simulator",
@@ -39,7 +44,7 @@ object StartGui : TermSimGui(
 
     @SubscribeEvent
     fun onTooltip(event: ItemTooltipEvent) {
-        if (event.itemStack.item != dye || event.toolTip.size == 0) return
+        if (event.itemStack.item != dye || event.toolTip.isEmpty()) return
         val index = termItems.indexOfFirst { it.displayName == event.itemStack.displayName }.takeIf { it != -1 } ?: return
         event.toolTip.add(1, "§7Personal Best: §d${TerminalSimulator.simPBs.pb?.get(index)?.round(2) ?: 999.0}")
     }

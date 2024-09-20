@@ -46,7 +46,7 @@ object DevPlayers {
                 sizeJsonArray?.get(1)?.asFloat ?: 0,
                 sizeJsonArray?.get(2)?.asFloat ?: 0
             )
-            val wings = jsonObject?.get("Wings")?.asBoolean ?: false
+            val wings = jsonObject?.get("Wings")?.asBoolean == true
 
             return DevData(devName ?: "", wingsColorTriple, sizeTriple as Triple<Float, Float, Float>, wings)
         }

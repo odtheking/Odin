@@ -111,7 +111,7 @@ object KuudraUtils {
             val (_, _, name) = Regex("^\\[(\\d+)] (?:\\[\\w+] )*(\\w+)").find(text)?.groupValues ?: return@forEach
             val previousTeammate = previousTeammates.find { it.playerName == name }
             val entity = mc.theWorld?.getPlayerEntityByName(name)
-            teammates.add(KuudraPlayer(name, previousTeammate?.eatFresh ?: false, previousTeammate?.eatFreshTime ?: 0, entity))
+            teammates.add(KuudraPlayer(name, previousTeammate?.eatFresh == true, previousTeammate?.eatFreshTime ?: 0, entity))
         }
         return teammates
     }

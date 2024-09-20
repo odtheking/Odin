@@ -285,7 +285,7 @@ private fun isInterceptable3(start: Vec3, goal: Vec3, aabb: AxisAlignedBB): Bool
                 isVecInXY(start.getIntermediateWithZValue(goal, aabb.minZ), aabb) ||
                 isVecInXY(start.getIntermediateWithZValue(goal, aabb.maxZ), aabb)
         )
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         false
     }
 }
