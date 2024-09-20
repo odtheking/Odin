@@ -2,7 +2,10 @@ package me.odinclient.mixin.mixins.block;
 
 import me.odinclient.features.impl.skyblock.FarmingHitboxes;
 import net.minecraft.block.BlockNetherWart;
-import net.minecraft.util.*;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;

@@ -20,7 +20,7 @@ object SkyblockPlayer {
     current overflow mana
      */
 
-    val currentHealth: Int get() = (maxHealth * (mc.thePlayer?.health ?: 0f) / 40f).toInt()
+    val currentHealth: Int get() = (maxHealth * (mc.thePlayer?.health ?: 0f) / mc.thePlayer.maxHealth).toInt()
     var maxHealth: Int = 0
     var currentMana: Int = 0
     var maxMana: Int = 0

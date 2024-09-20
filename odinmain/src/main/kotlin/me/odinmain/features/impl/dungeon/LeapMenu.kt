@@ -28,7 +28,6 @@ import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.Display
-import kotlin.math.roundToInt
 
 object LeapMenu : Module(
     name = "Leap Menu",

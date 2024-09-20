@@ -58,7 +58,8 @@ class ModCore {
             ArrowAlign, CancelWrongTerms, HoverTerms, LightsDevice, SimonSays, ArrowsDevice,
             DioriteFucker, RelicAura, Trajectories, Ghosts, NoDebuff, ChocolateFactory, AutoExperiments,
             FarmingHitboxes, NoBlock, TermAC, Triggerbot, GhostBlocks, FreezeGame, EtherWarpHelper, ChestEsp,
-            EscrowFix, TerminalMove, TerminalAura, AutoTerms, Camera, DungeonAbilities/*, QueueTerms*/, HidePlayers, AutoHarp
+            EscrowFix, TerminalMove, TerminalAura, AutoTerms, Camera, DungeonAbilities/*, QueueTerms*/, HidePlayers,
+            AutoHarp, HideArmor
         )
         OdinMain.loadComplete()
     }

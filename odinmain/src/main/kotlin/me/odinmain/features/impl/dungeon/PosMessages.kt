@@ -1,12 +1,11 @@
 package me.odinmain.features.impl.dungeon
 
+import me.odinmain.events.impl.PacketSentEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.events.impl.PacketSentEvent
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ListSetting
 import me.odinmain.utils.isVecInXZ
-import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.partyMessage

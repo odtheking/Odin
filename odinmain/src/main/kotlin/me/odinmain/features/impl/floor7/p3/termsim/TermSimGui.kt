@@ -11,7 +11,6 @@ import me.odinmain.features.impl.floor7.p3.TerminalSounds.completeSounds
 import me.odinmain.features.impl.floor7.p3.TerminalSounds.playCompleteSound
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.utils.*
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.*
