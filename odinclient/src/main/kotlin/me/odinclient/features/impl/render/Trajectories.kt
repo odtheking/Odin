@@ -23,6 +23,7 @@ import net.minecraft.entity.projectile.EntityArrow
 import net.minecraft.item.ItemBow
 import net.minecraft.item.ItemEnderPearl
 import net.minecraft.util.*
+import net.minecraft.util.MathHelper.sqrt_double
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.*
@@ -96,16 +97,25 @@ object Trajectories : Module(
     }
 
     private fun setPearlTrajectoryHeading(): Pair<ArrayList<Vec3>, MovingObjectPosition?> {
-        val (yaw, pitch) = mc.thePlayer?.rotation ?: return Pair(arrayListOf(), null)
-        val posVec = mc.thePlayer?.renderVec?.addVec(y = mc.thePlayer.eyeHeight)
-            ?.subtractVec(cos(yaw / 180 * PI) * 0.16, .1, sin(yaw / 180 * PI) * 0.16) ?: return Pair(arrayListOf(), null)
-        val motionVec = Vec3(
-            -sin(Math.toRadians(yaw.toDouble())) * cos(Math.toRadians(pitch.toDouble())),
-            cos(Math.toRadians(yaw.toDouble())) * cos(Math.toRadians(pitch.toDouble())),
-            -sin(Math.toRadians(pitch.toDouble()))
-        ).multiply(factor = 0.6)
+        val player = mc.thePlayer ?: return Pair(arrayListOf(), null)
 
-        return calculatePearlTrajectory(motionVec.divide(hypot(motionVec.xCoord, motionVec.yCoord, motionVec.zCoord)), posVec)
+        val yawRadians = Math.toRadians(player.rotationYaw.toDouble())
+        val pitchRadians = Math.toRadians(player.rotationPitch.toDouble())
+
+        var motionX = -sin(yawRadians) * cos(pitchRadians) * 0.4
+        var motionZ = cos(yawRadians) * cos(pitchRadians) * 0.4
+        var motionY = -sin(pitchRadians) * 0.4
+
+        var posX = player.renderX - cos(yawRadians) * 0.16
+        var posY = player.renderY + player.eyeHeight - 0.1
+        var posZ = player.renderZ - sin(yawRadians) * 0.16
+
+        val f = sqrt_double(motionX * motionX + motionY * motionY + motionZ * motionZ)
+        motionX = (motionX / f) * 1.5
+        motionY = (motionY / f) * 1.5
+        motionZ = (motionZ / f) * 1.5
+
+        return calculatePearlTrajectory(Vec3(motionX, motionY, motionZ), Vec3(posX, posY, posZ))
     }
 
     private fun calculatePearlTrajectory(mV: Vec3,pV: Vec3): Pair<ArrayList<Vec3>, MovingObjectPosition?> {
@@ -114,54 +124,47 @@ object Trajectories : Module(
         var posVec = pV
         val lines = arrayListOf<Vec3>()
         var rayTraceHit: MovingObjectPosition? = null
-        for (i in 0..range) {
-            if (hitResult) break
+        repeat(range + 1) {
+            if (hitResult) return@repeat
             lines.add(posVec)
-            val rayTrace = mc.theWorld?.rayTraceBlocks(posVec, motionVec.add(posVec), false, true, false) ?: continue
-            rayTraceHit = rayTrace
-            lines.add(rayTrace.hitVec)
-            pearlImpactPos =
-                AxisAlignedBB(
-                    rayTrace.hitVec.xCoord - 0.15 * boxSize,
-                    rayTrace.hitVec.yCoord - 0.15 * boxSize,
-                    rayTrace.hitVec.zCoord - 0.15 * boxSize,
-                    rayTrace.hitVec.xCoord + 0.15 * boxSize,
-                    rayTrace.hitVec.yCoord + 0.15 * boxSize,
-                    rayTrace.hitVec.zCoord + 0.15 * boxSize
+            mc.theWorld?.rayTraceBlocks(posVec, motionVec.add(posVec), false, true, false)?.let {
+                rayTraceHit = it
+                lines.add(it.hitVec)
+                pearlImpactPos =  AxisAlignedBB(
+                    it.hitVec.xCoord - 0.15 * boxSize, it.hitVec.yCoord - 0.15 * boxSize, it.hitVec.zCoord - 0.15 * boxSize,
+                    it.hitVec.xCoord + 0.15 * boxSize, it.hitVec.yCoord + 0.15 * boxSize, it.hitVec.zCoord + 0.15 * boxSize
                 )
-            hitResult = true
+                hitResult = true
+            }
             posVec = posVec.add(motionVec)
             motionVec = Vec3(motionVec.xCoord * 0.99, motionVec.yCoord * 0.99 - 0.03, motionVec.zCoord * 0.99)
         }
+
         return Pair(lines, rayTraceHit)
     }
 
     private fun setBowTrajectoryHeading(yawOffset: Float, bowCharge: Boolean): Pair<ArrayList<Vec3>, MovingObjectPosition?> {
-        var charge = 2f
-        if (bowCharge) {
-            charge = (72000 - mc.thePlayer.itemInUseCount) / 20f
-            if (charge > 1.0f) charge = 1.0f
-            charge *= 2
-        }
+        var charge = if (bowCharge) {
+            val calculatedCharge = (72000 - mc.thePlayer.itemInUseCount) / 20f
+            minOf(calculatedCharge, 1.0f) * 2
+        } else 2f
 
-        val yawRadians = ((mc.thePlayer.rotationYaw + yawOffset) / 180) * Math.PI.toFloat()
-        val pitchRadians = (mc.thePlayer.rotationPitch / 180) * Math.PI.toFloat()
-        val thePlayer = mc.thePlayer ?: return Pair(arrayListOf(), null)
-        var posX = thePlayer.renderX
-        var posY = thePlayer.renderY + mc.thePlayer.eyeHeight
-        var posZ = thePlayer.renderZ
-        posX -= (MathHelper.cos(mc.thePlayer.rotationYaw / 180.0f * Math.PI.toFloat()) * 0.16f).toDouble()
-        posY -= 0.1
-        posZ -= (MathHelper.sin(mc.thePlayer.rotationYaw / 180.0f * Math.PI.toFloat()) * 0.16f).toDouble()
+        val yawRadians = Math.toRadians((mc.thePlayer.rotationYaw + yawOffset).toDouble())
+        val pitchRadians = Math.toRadians(mc.thePlayer.rotationPitch.toDouble())
+        val player = mc.thePlayer ?: return Pair(arrayListOf(), null)
 
-        var motionX = (-MathHelper.sin(yawRadians) * MathHelper.cos(pitchRadians)).toDouble()
-        var motionY = -MathHelper.sin(pitchRadians).toDouble()
-        var motionZ = (MathHelper.cos(yawRadians) * MathHelper.cos(pitchRadians)).toDouble()
+        var posX = player.renderX - cos(Math.toRadians(mc.thePlayer.rotationYaw.toDouble())) * 0.16
+        var posY = player.renderY + mc.thePlayer.eyeHeight - 0.1
+        var posZ = player.renderZ - sin(Math.toRadians(mc.thePlayer.rotationYaw.toDouble())) * 0.16
+
+        var motionX = -sin(yawRadians) * cos(pitchRadians)
+        var motionY = -sin(pitchRadians)
+        var motionZ = cos(yawRadians) * cos(pitchRadians)
 
         val lengthOffset = sqrt(motionX * motionX + motionY * motionY + motionZ * motionZ)
-        motionX = motionX / lengthOffset * charge * 1.5f
-        motionY = motionY / lengthOffset * charge * 1.5f
-        motionZ = motionZ / lengthOffset * charge * 1.5f
+        motionX = (motionX / lengthOffset) * charge * 1.5
+        motionY = (motionY / lengthOffset) * charge * 1.5
+        motionZ = (motionZ / lengthOffset) * charge * 1.5
 
         return calculateBowTrajectory(Vec3(motionX, motionY, motionZ), Vec3(posX, posY, posZ))
     }
@@ -172,11 +175,9 @@ object Trajectories : Module(
         var posVec = pV
         val lines = arrayListOf<Vec3>()
         var rayTraceHit: MovingObjectPosition? = null
-        for (i in 0..range) {
-            if (hitResult) break
+        repeat(range + 1) {
+            if (hitResult) return@repeat
             lines.add(posVec)
-            val vec = motionVec.add(posVec)
-            val rayTrace = mc.theWorld.rayTraceBlocks(posVec, vec, false, true, false)
             val aabb = AxisAlignedBB(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
                 .offset(posVec.xCoord, posVec.yCoord, posVec.zCoord)
                 .addCoord(motionVec.xCoord, motionVec.yCoord, motionVec.zCoord)
@@ -185,20 +186,20 @@ object Trajectories : Module(
             if (entityHit.isNotEmpty()) {
                 hitResult = true
                 entityRenderQueue.addAll(entityHit)
-            } else if (rayTrace != null) {
-                rayTraceHit = rayTrace
-                lines.add(rayTrace.hitVec)
-                boxRenderQueue.add(
-                    AxisAlignedBB(
-                        rayTrace.hitVec.xCoord - 0.15 * boxSize,
-                        rayTrace.hitVec.yCoord - 0.15 * boxSize,
-                        rayTrace.hitVec.zCoord - 0.15 * boxSize,
-                        rayTrace.hitVec.xCoord + 0.15 * boxSize,
-                        rayTrace.hitVec.yCoord + 0.15 * boxSize,
-                        rayTrace.hitVec.zCoord + 0.15 * boxSize
-                    )
-                )
-                hitResult = true
+            } else {
+                mc.theWorld?.rayTraceBlocks(posVec, motionVec.add(posVec), false, true, false)?.let {
+                    rayTraceHit = it
+                    lines.add(it.hitVec)
+                    if (boxes) {
+                        boxRenderQueue.add(
+                            AxisAlignedBB(
+                                it.hitVec.xCoord - 0.15 * boxSize, it.hitVec.yCoord - 0.15 * boxSize, it.hitVec.zCoord - 0.15 * boxSize,
+                                it.hitVec.xCoord + 0.15 * boxSize, it.hitVec.yCoord + 0.15 * boxSize, it.hitVec.zCoord + 0.15 * boxSize
+                            )
+                        )
+                    }
+                    hitResult = true
+                }
             }
             posVec = posVec.add(motionVec)
             motionVec = Vec3(motionVec.xCoord * 0.99, motionVec.yCoord * 0.99 - 0.05, motionVec.zCoord * 0.99)
@@ -228,8 +229,6 @@ object Trajectories : Module(
     }
 
     private fun drawLine(lines: ArrayList<Vec3>) {
-        if (lines.isEmpty()) return
-
         Renderer.draw3DLine(*lines.toTypedArray(), color = color, lineWidth = width, depth = true)
     }
 
@@ -238,11 +237,10 @@ object Trajectories : Module(
             Renderer.drawBox(aabb, color, width, depth = false, fillAlpha = 0)
             pearlImpactPos = null
         }
-
     }
 
     private fun drawBowCollisionBoxes() {
-        if (boxRenderQueue.size == 0) return
+        if (boxRenderQueue.isEmpty()) return
         val renderVec = mc.thePlayer?.renderVec ?: return
         for (axisAlignedBB in boxRenderQueue) {
             if (
