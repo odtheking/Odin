@@ -55,7 +55,7 @@ object OdinMain {
             termSimCommand, chatCommandsCommand,
             devCommand, highlightCommand,
             waypointCommand, dungeonWaypointsCommand,
-            petCommand, visualWordsCommand
+            petCommand, visualWordsCommand, PosMsgCommand
         )
         OdinFont.init()
     }
