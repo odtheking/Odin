@@ -41,7 +41,7 @@ val petCommand = commodore("petkeys") {
     }
 
     literal("list").runs {
-        if (petList.size == 0) return@runs modMessage("Pet list is empty")
+        if (petList.isEmpty()) return@runs modMessage("Pet list is empty")
         modMessage("Pet list:\n${petList.joinToString("\n")}")
     }
 

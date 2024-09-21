@@ -27,6 +27,7 @@ object DragonCheck {
     fun dragonJoinWorld(event: EntityJoinWorldEvent) {
         val entity = event.entity as? EntityDragon ?: return
         val dragon = WitherDragonsEnum.entries.find { isVecInXZ(entity.positionVector, it.boxesDimensions) } ?: return
+        if (dragon.state != WitherDragonState.SPAWNING) return
 
         dragon.state = WitherDragonState.ALIVE
         dragon.timesSpawned += 1

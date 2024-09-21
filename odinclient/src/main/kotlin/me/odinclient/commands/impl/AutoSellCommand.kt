@@ -35,7 +35,7 @@ val autoSellCommand = commodore("autosell") {
     }
 
     literal("list").runs {
-        if (sellList.size == 0) return@runs modMessage("Auto sell list is empty")
+        if (sellList.isEmpty()) return@runs modMessage("Auto sell list is empty")
         val chunkedList = sellList.chunked(10)
         modMessage("Auto sell list:\n${chunkedList.joinToString("\n")}")
     }

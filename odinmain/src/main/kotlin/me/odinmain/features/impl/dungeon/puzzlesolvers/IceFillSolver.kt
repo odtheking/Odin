@@ -39,7 +39,7 @@ object IceFillSolver {
     }
 
     fun onRenderWorldLast(color: Color) {
-        if (currentPatterns.size == 0 || patternStartPositions.size == 0 || DungeonUtils.currentRoomName != "Ice Fill") return
+        if (currentPatterns.isEmpty() || patternStartPositions.isEmpty() || DungeonUtils.currentRoomName != "Ice Fill") return
         val rotation = renderRotation ?: return
 
         val pointsList = mutableListOf<Vec3>()

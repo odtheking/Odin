@@ -22,14 +22,30 @@ import java.io.FileNotFoundException
 import kotlin.math.roundToInt
 
 object ScanUtils {
-    private val roomList: Set<RoomData> = try {
-        GsonBuilder()
-            .registerTypeAdapter(RoomData::class.java, RoomDataDeserializer())
-            .create().fromJson(
-                (ScanUtils::class.java.getResourceAsStream("/rooms.json") ?: throw FileNotFoundException()).bufferedReader(),
-                object : TypeToken<Set<RoomData>>() {}.type
-            )
-    } catch (e: Exception) {
+    private const val ROOM_SIZE = 32
+    private const val START_X = -185
+    private const val START_Z = -185
+    private const val DEFAULT_HEIGHT = 170
+
+    private val roomList: Set<RoomData> = loadRoomData()
+    private var lastRoomPos: Vec2 = Vec2(0, 0)
+    private var noneRotationList: MutableList<FullRoom?> = mutableListOf()
+
+    private fun loadRoomData(): Set<RoomData> {
+        return try {
+            GsonBuilder()
+                .registerTypeAdapter(RoomData::class.java, RoomDataDeserializer())
+                .create().fromJson(
+                    (ScanUtils::class.java.getResourceAsStream("/rooms.json") ?: throw FileNotFoundException()).bufferedReader(),
+                    object : TypeToken<Set<RoomData>>() {}.type
+                )
+        } catch (e: Exception) {
+            handleRoomDataError(e)
+            setOf()
+        }
+    }
+
+    private fun handleRoomDataError(e: Exception) {
         when (e) {
             is JsonSyntaxException -> println("Error parsing room data.")
             is JsonIOException -> println("Error reading room data.")
@@ -40,53 +56,44 @@ object ScanUtils {
                 println(e.message)
             }
         }
-        setOf()
     }
-
-    private const val ROOM_SIZE = 32
-    private const val START_X = -185
-    private const val START_Z = -185
-    private var lastRoomPos: Vec2 = Vec2(0, 0)
-    private var noneRotationList: MutableList<FullRoom?> = mutableListOf()
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.END || mc.theWorld == null || mc.thePlayer == null) return
 
         if ((!inDungeons && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) || inBoss) {
-            if (DungeonUtils.currentFullRoom == null) return
-            RoomEnterEvent(null).postAndCatch()
+            DungeonUtils.currentFullRoom?.let { RoomEnterEvent(null).postAndCatch() }
             return
-        }
+        } // If not in dungeon or in boss room, return and register current room as null
 
         val roomCenter = getRoomCenter(mc.thePlayer.posX.toInt(), mc.thePlayer.posZ.toInt())
 
         noneRotationList.find { it?.extraRooms?.any { room -> room.x == roomCenter.x && room.z == roomCenter.z } == true }?.let { room ->
             updateRotation(room)
+
             if (room.room.rotation != Rotations.NONE) {
                 noneRotationList.remove(room)
                 RoomEnterEvent(room).postAndCatch()
             }
-        }
+        } // If room is in noneRotationList, update rotation and remove from list if rotation is not NONE
 
-        if (lastRoomPos.equal(roomCenter)) return
+        if (lastRoomPos.equal(roomCenter)) return // If player is in the same room part of the previously scanned room return
         lastRoomPos = roomCenter
 
         passedRooms.find { previousRoom -> previousRoom.extraRooms.any { it.x == roomCenter.x && it.z == roomCenter.z } }?.let { room ->
             if (DungeonUtils.currentFullRoom?.extraRooms?.any { it.x == roomCenter.x && it.z == roomCenter.z } == false) RoomEnterEvent(room).postAndCatch()
             return
-        }
+        } // If room is in passedRooms, post RoomEnterEvent and return only posts Event if room is not in currentFullRoom
 
-        val room = scanRoom(roomCenter) ?: return
-        val fullRoom = FullRoom(room, BlockPos(0, 0, 0), findRoomTilesRecursively(room.vec2, room, mutableSetOf()), emptyList()).apply { updateRotation(this) }
-            .also {
-                if (it.room.rotation == Rotations.NONE) {
-                    noneRotationList.add(it)
-                    return
-                }
+        scanRoom(roomCenter)?.let { room ->
+            val fullRoom = FullRoom(room, BlockPos(0, 0, 0), findRoomTilesRecursively(room.vec2, room, mutableSetOf()), emptyList()).apply { updateRotation(this) }
+            if (fullRoom.room.rotation == Rotations.NONE) {
+                noneRotationList.add(fullRoom)
+                return
             }
-
-        RoomEnterEvent(fullRoom).postAndCatch()
+            RoomEnterEvent(fullRoom).postAndCatch()
+        } // Scan room and post RoomEnterEvent if room rotation is found
     }
 
     private fun updateRotation(fullRoom: FullRoom) {
@@ -116,29 +123,22 @@ object ScanUtils {
     private fun scanRoom(vec2: Vec2): Room? =
         getCore(vec2).let { core -> getRoomData(core)?.let { Room(vec2.x, vec2.z, it).apply { this.core = core } } }
 
-    fun getRoomSecrets(name: String): Int {
-        return roomList.find { it.name == name }?.secrets ?: return 0
-    }
+    fun getRoomSecrets(name: String): Int =
+        roomList.find { it.name == name }?.secrets ?: 0
+
 
     private fun getRoomData(hash: Int): RoomData? =
         roomList.find { hash in it.cores }
 
     fun getRoomCenter(posX: Int, posZ: Int): Vec2 {
-        val roomX = ((posX - START_X) / 32f).roundToInt()
-        val roomZ = ((posZ - START_Z) / 32f).roundToInt()
-        return Vec2(roomX * 32 + START_X, roomZ * 32 + START_Z)
+        val roomX = ((posX - START_X) / ROOM_SIZE.toFloat()).roundToInt()
+        val roomZ = ((posZ - START_Z) / ROOM_SIZE.toFloat()).roundToInt()
+        return Vec2(roomX * ROOM_SIZE + START_X, roomZ * ROOM_SIZE + START_Z)
     }
 
-    /**
-     * Gets the core of a room.
-     *
-     * @param vec2 The x and z values of the room.
-     * @author Harry282
-     * @return The core of the room.
-     */
     fun getCore(vec2: Vec2): Int {
         val sb = StringBuilder(150)
-        val chunk = mc.theWorld.getChunkFromChunkCoords(vec2.x shr 4, vec2.z shr 4)
+        val chunk = mc.theWorld?.getChunkFromChunkCoords(vec2.x shr 4, vec2.z shr 4) ?: return 0
         val height = chunk.getHeightValue(vec2.x and 15, vec2.z and 15).coerceIn(11..140)
         sb.append(CharArray(140 - height) { '0' })
         var bedrock = 0
@@ -159,14 +159,7 @@ object ScanUtils {
         return sb.toString().hashCode()
     }
 
-    /**
-     * Gets the top layer of blocks in a room (the roof) for finding the rotation of the room.
-     *
-     * @param vec2 The x and z values of the room.
-     * @param currentHeight The current height to scan at, default is 170
-     * @return The y-value of the roof, this is the y-value of the blocks.
-     */
-    private fun getTopLayerOfRoom(vec2: Vec2, currentHeight: Int = 170): Int {
+    private fun getTopLayerOfRoom(vec2: Vec2, currentHeight: Int = DEFAULT_HEIGHT): Int {
         return if ((isAir(vec2.x, currentHeight, vec2.z) || isGold(vec2.x, currentHeight, vec2.z)) && currentHeight > 70) getTopLayerOfRoom(vec2, currentHeight - 1) else currentHeight
     }
 

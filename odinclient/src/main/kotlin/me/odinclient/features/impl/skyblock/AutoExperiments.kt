@@ -33,7 +33,6 @@ object AutoExperiments : Module(
     private var lastAdded = 0
     private var ultrasequencerOrder = HashMap<Int, Int>()
 
-
     private fun reset() {
         currentExperiment = ExperimentType.NONE
         hasAdded = false

@@ -87,6 +87,17 @@ object WitherDragons : Module(
     val relicAnnounce: Boolean by BooleanSetting("Relic Announce", false, description = "Announce your relic to the rest of the party.").withDependency { relics }
     val selected: Int by SelectorSetting("Color", "Green", colors, description = "The color of your relic.").withDependency { relicAnnounce && relics}
     val relicAnnounceTime: Boolean by BooleanSetting("Relic Time", true, description = "Sends how long it took you to get that relic.").withDependency { relics }
+    val relicSpawnTicks: Int by NumberSetting("Relic Spawn Ticks", 42, 0, 100, description = "The amount of ticks for the relic to spawn.").withDependency { relicAnnounceTime && relics }
+    private val relicHud: HudElement by HudSetting("Relic HUD", 10f, 10f, 1f, true) {
+        if (it) {
+            mcText("§e1.2s", 2f, 20f, 1, Color.WHITE, center = false)
+
+            getMCTextWidth("§5P §a4.5s")+ 2f to 33f
+        } else {
+            mcText("${Relic.ticks / 20}", 2f, 20f, 1, Color.WHITE, center = false)
+            getMCTextWidth("§a4.5s")+ 2f to 33f
+        }
+    }.withDependency { relicAnnounce && relics }
 
     lateinit var priorityDragon: WitherDragonsEnum
 
@@ -119,7 +130,7 @@ object WitherDragons : Module(
         }
 
         onMessage("[BOSS] Necron: All this, for nothing...", false) {
-            if (relicAnnounce || relicAnnounceTime) relicsOnMessage()
+            relicsOnMessage()
         }
 
         onMessage(Regex("^\\[BOSS] Wither King: (Oh, this one hurts!|I have more of those\\.|My soul is disposable\\.)$"), { enabled && DungeonUtils.getF7Phase() != M7Phases.P5 } ) {
@@ -157,6 +168,7 @@ object WitherDragons : Module(
     @SubscribeEvent
     fun onServerTick(event: RealServerTick) {
         DragonTimer.updateTime()
+        Relic.onServerTick()
     }
 
     fun arrowDeath(dragon: WitherDragonsEnum) {

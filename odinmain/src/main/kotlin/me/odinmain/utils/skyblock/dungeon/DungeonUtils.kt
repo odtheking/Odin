@@ -24,115 +24,117 @@ import kotlin.math.floor
 
 object DungeonUtils {
 
-    inline val inDungeons: Boolean get() =
-        LocationUtils.currentArea.isArea(Island.Dungeon)
+    val inDungeons: Boolean
+        get() = LocationUtils.currentArea.isArea(Island.Dungeon)
 
-    inline val floorNumber: Int get() =
-        currentDungeon?.floor?.floorNumber ?: 0
+    val floorNumber: Int
+        get() = currentDungeon?.floor?.floorNumber ?: 0
 
-    inline val floor: Floor get() =
-        currentDungeon?.floor ?: Floor.E
+    val floor: Floor
+        get() = currentDungeon?.floor ?: Floor.E
 
-    inline val inBoss: Boolean get() =
-        currentDungeon?.inBoss == true
+    val inBoss: Boolean
+        get() = currentDungeon?.inBoss == true
 
-    inline val secretCount: Int get() =
-        currentDungeon?.dungeonStats?.secretsFound ?: 0
+    val secretCount: Int
+        get() = currentDungeon?.dungeonStats?.secretsFound ?: 0
 
-    inline val knownSecrets: Int get() =
-        currentDungeon?.dungeonStats?.knownSecrets ?: 0
+    val knownSecrets: Int
+        get() = currentDungeon?.dungeonStats?.knownSecrets ?: 0
 
-    inline val secretPercentage: Float get() =
-        currentDungeon?.dungeonStats?.secretsPercent ?: 0f
+    val secretPercentage: Float
+        get() = currentDungeon?.dungeonStats?.secretsPercent ?: 0f
 
-    inline val totalSecrets: Int get() =
-        if (secretCount == 0 || secretPercentage == 0f) 0 else floor(100 / secretPercentage * secretCount + 0.5).toInt()
+    val totalSecrets: Int
+        get() = if (secretCount == 0 || secretPercentage == 0f) 0 else floor(100 / secretPercentage * secretCount + 0.5).toInt()
 
-    inline val deathCount: Int get() =
-        currentDungeon?.dungeonStats?.deaths ?: 0
+    val deathCount: Int
+        get() = currentDungeon?.dungeonStats?.deaths ?: 0
 
-    inline val cryptCount: Int get() =
-        currentDungeon?.dungeonStats?.crypts ?: 0
+    val cryptCount: Int
+        get() = currentDungeon?.dungeonStats?.crypts ?: 0
 
-    inline val openRoomCount: Int get() =
-        currentDungeon?.dungeonStats?.openedRooms ?: 0
+    val openRoomCount: Int
+        get() = currentDungeon?.dungeonStats?.openedRooms ?: 0
 
-    inline val completedRoomCount: Int get() =
-        currentDungeon?.dungeonStats?.completedRooms ?: 0
+    val completedRoomCount: Int
+        get() = currentDungeon?.dungeonStats?.completedRooms ?: 0
 
-    inline val percentCleared: Int get() =
-        currentDungeon?.dungeonStats?.percentCleared ?: 0
+    val percentCleared: Int
+        get() = currentDungeon?.dungeonStats?.percentCleared ?: 0
 
-    inline val totalRooms: Int get() =
-        if (completedRoomCount == 0 || percentCleared == 0) 0 else floor((completedRoomCount/((percentCleared * 0.01).toFloat())) + 0.4).toInt()
+    val totalRooms: Int
+        get() = if (completedRoomCount == 0 || percentCleared == 0) 0 else floor((completedRoomCount / (percentCleared * 0.01).toFloat()) + 0.4).toInt()
 
-    inline val puzzles get() =
-        currentDungeon?.puzzles ?: emptyList()
+    val puzzles: List<Puzzle>
+        get() = currentDungeon?.puzzles ?: emptyList()
 
-    inline val puzzleCount get() =
-        currentDungeon?.puzzles?.size ?: 0
+    val puzzleCount: Int
+        get() = currentDungeon?.puzzles?.size ?: 0
 
-    inline val dungeonTime: String get() =
-        currentDungeon?.dungeonStats?.elapsedTime ?: "00m 00s"
+    val dungeonTime: String
+        get() = currentDungeon?.dungeonStats?.elapsedTime ?: "00m 00s"
 
-    inline val isGhost: Boolean get() =
-        getItemSlot("Haunt", true) != null
+    val isGhost: Boolean
+        get() = getItemSlot("Haunt", true) != null
 
-    inline val currentRoomName get() =
-        currentDungeon?.currentFullRoom?.room?.data?.name ?: "Unknown"
+    val currentRoomName: String
+        get() = currentDungeon?.currentFullRoom?.room?.data?.name ?: "Unknown"
 
-    inline val dungeonTeammates get() =
-        currentDungeon?.dungeonTeammates ?: emptyList()
+    val dungeonTeammates: List<DungeonPlayer>
+        get() = currentDungeon?.dungeonTeammates ?: emptyList()
 
-    inline val dungeonTeammatesNoSelf get() =
-        currentDungeon?.dungeonTeammatesNoSelf ?: emptyList()
+    val dungeonTeammatesNoSelf: List<DungeonPlayer>
+        get() = currentDungeon?.dungeonTeammatesNoSelf ?: emptyList()
 
-    inline val leapTeammates get() =
-        currentDungeon?.leapTeammates ?: emptyList()
+    val leapTeammates: List<DungeonPlayer>
+        get() = currentDungeon?.leapTeammates ?: emptyList()
 
-    inline val currentDungeonPlayer get() =
-        dungeonTeammates.find { it.name == mc.thePlayer?.name } ?: DungeonPlayer(mc.thePlayer?.name ?: "Unknown", DungeonClass.Unknown, entity = mc.thePlayer)
+    val currentDungeonPlayer: DungeonPlayer
+        get() = dungeonTeammates.find { it.name == mc.thePlayer?.name } ?: DungeonPlayer(mc.thePlayer?.name ?: "Unknown", DungeonClass.Unknown, entity = mc.thePlayer)
 
-    inline val doorOpener: String get() =
-        currentDungeon?.dungeonStats?.doorOpener ?: "Unknown"
+    val doorOpener: String
+        get() = currentDungeon?.dungeonStats?.doorOpener ?: "Unknown"
 
-    inline val mimicKilled: Boolean get() =
-        currentDungeon?.dungeonStats?.mimicKilled == true
+    val mimicKilled: Boolean
+        get() = currentDungeon?.dungeonStats?.mimicKilled == true
 
-    inline val currentFullRoom: FullRoom? get() =
-        currentDungeon?.currentFullRoom
+    val currentFullRoom: FullRoom?
+        get() = currentDungeon?.currentFullRoom
 
-    inline val passedRooms get() =
-        currentDungeon?.passedRooms ?: emptyList()
+    val passedRooms: List<FullRoom>
+        get() = currentDungeon?.passedRooms ?: emptyList()
 
-    inline val isPaul: Boolean get() =
-        currentDungeon?.paul == true
+    val isPaul: Boolean
+        get() = currentDungeon?.paul == true
 
-    inline val getBonusScore: Int get() {
-        var score = cryptCount.coerceAtMost(5)
-        if (mimicKilled) score += 2
-        if ((isPaul && togglePaul == 0) || togglePaul == 2) score += 10
-        return score
-    }
+    val getBonusScore: Int
+        get() {
+            var score = cryptCount.coerceAtMost(5)
+            if (mimicKilled) score += 2
+            if ((isPaul && togglePaul == 0) || togglePaul == 2) score += 10
+            return score
+        }
 
-    inline val bloodDone: Boolean get() =
-        currentDungeon?.dungeonStats?.bloodDone == true
+    val bloodDone: Boolean
+        get() = currentDungeon?.dungeonStats?.bloodDone == true
 
-    inline val score: Int get() {
-        val completed: Float = completedRoomCount.toFloat() + (if (!bloodDone) 1f else 0f) + (if (!inBoss) 1f else 0f)
-        val total: Float = if (totalRooms != 0) totalRooms.toFloat() else 36f
+    val score: Int
+        get() {
+            val completed: Float = completedRoomCount.toFloat() + (if (!bloodDone) 1f else 0f) + (if (!inBoss) 1f else 0f)
+            val total: Float = if (totalRooms != 0) totalRooms.toFloat() else 36f
 
-        val exploration = floor((secretPercentage / floor.secretPercentage) / 100f * 40f).coerceIn(0f, 40f).toInt() +
-                floor(completed / total * 60f).coerceIn(0f, 60f).toInt()
+            val exploration = floor((secretPercentage / floor.secretPercentage) / 100f * 40f).coerceIn(0f, 40f).toInt() +
+                    floor(completed / total * 60f).coerceIn(0f, 60f).toInt()
 
-        val skillRooms = floor(completed / total * 80f).coerceIn(0f, 80f).toInt()
-        val puzzlePenalty = puzzles.filter { it.status != PuzzleStatus.Completed }.size * 10
+            val skillRooms = floor(completed / total * 80f).coerceIn(0f, 80f).toInt()
+            val puzzlePenalty = puzzles.filter { it.status != PuzzleStatus.Completed }.size * 10
 
-        return exploration + (20 + skillRooms - puzzlePenalty - (deathCount * 2 - 1).coerceAtLeast(0)).coerceIn(20, 100) + getBonusScore + 100
-    }
+            return exploration + (20 + skillRooms - puzzlePenalty - (deathCount * 2 - 1).coerceAtLeast(0)).coerceIn(20, 100) + getBonusScore + 100
+        }
 
-    inline val neededSecretsAmount: Int get() =
-        ceil((totalSecrets * floor.secretPercentage) * (40 - getBonusScore + (deathCount * 2 - 1).coerceAtLeast(0)) / 40.0).toInt()
+    val neededSecretsAmount: Int
+        get() = ceil((totalSecrets * floor.secretPercentage) * (40 - getBonusScore + (deathCount * 2 - 1).coerceAtLeast(0)) / 40.0).toInt()
 
     /**
      * Checks if the current dungeon floor number matches any of the specified options.
@@ -203,24 +205,19 @@ object DungeonUtils {
         val teammates = mutableListOf<DungeonPlayer>()
 
         for ((networkPlayerInfo, line) in tabList) {
-
-            val (_, _, name, clazz, _) = tablistRegex.find(line.noControlCodes)?.groupValues ?: continue
-
-            addTeammate(name, clazz, teammates, networkPlayerInfo.locationSkin) // will fail to find the EMPTY or DEAD class and won't add them to the list
-            if (clazz == "DEAD" || clazz == "EMPTY") {
-                val previousClass = previousTeammates.find { it.name == name }?.clazz ?: continue
-                addTeammate(name, previousClass.name, teammates, networkPlayerInfo.locationSkin) // will add the player with the previous class
-            }
-            teammates.find { it.name == name }?.isDead = clazz == "DEAD" // set the player as dead if they are
+            val (_, name, clazz, _) = tablistRegex.find(line.noControlCodes)?.destructured ?: continue
+            addTeammate(name, clazz, teammates, networkPlayerInfo.locationSkin, previousTeammates)
         }
         return teammates
     }
 
-    private fun addTeammate(name: String, clazz: String, teammates: MutableList<DungeonPlayer>, locationSkin: ResourceLocation) {
-        DungeonClass.entries.find { it.name == clazz }?.let { foundClass ->
-            mc.theWorld?.getPlayerEntityByName(name)?.let { player ->
-                teammates.add(DungeonPlayer(name, foundClass, locationSkin, player))
-            } ?: teammates.add(DungeonPlayer(name, foundClass, locationSkin, null))
+    private fun addTeammate(name: String, clazz: String, teammates: MutableList<DungeonPlayer>, locationSkin: ResourceLocation, previousTeammates: List<DungeonPlayer>) {
+        if (clazz == "DEAD") {
+            val previousClass = previousTeammates.find { it.name == name }?.clazz ?: return
+            teammates.add(DungeonPlayer(name, previousClass, locationSkin, mc.theWorld?.getPlayerEntityByName(name)).apply { isDead = true })
+        } else {
+            val foundClass = DungeonClass.entries.find { it.name == clazz } ?: return
+            teammates.add(DungeonPlayer(name, foundClass, locationSkin, mc.theWorld?.getPlayerEntityByName(name)))
         }
     }
 
@@ -238,12 +235,13 @@ object DungeonUtils {
      * @return `true` if the specified block state and position indicate a secret location, otherwise `false`.
      */
     fun isSecret(state: IBlockState, pos: BlockPos): Boolean {
-        if (state.block.equalsOneOf(Blocks.chest, Blocks.trapped_chest, Blocks.lever, Blocks.lever)) return true
-        else if (state.block is BlockSkull) {
-            val tile = mc.theWorld?.getTileEntity(pos) ?: return false
-            if (tile !is TileEntitySkull) return false
-            return tile.playerProfile?.id.toString().equalsOneOf(WITHER_ESSENCE_ID, REDSTONE_KEY)
+        return when {
+            state.block.equalsOneOf(Blocks.chest, Blocks.trapped_chest, Blocks.lever) -> true
+            state.block is BlockSkull -> {
+                val tile = mc.theWorld?.getTileEntity(pos) as? TileEntitySkull ?: return false
+                tile.playerProfile?.id.toString().equalsOneOf(WITHER_ESSENCE_ID, REDSTONE_KEY)
+            }
+            else -> false
         }
-        return false
     }
 }

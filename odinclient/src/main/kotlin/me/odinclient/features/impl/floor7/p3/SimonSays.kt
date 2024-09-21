@@ -124,7 +124,7 @@ object SimonSays : Module(
     }
 
     private fun triggerBot() {
-        if (!triggerBotClock.hasTimePassed(triggerBotDelay) || clickInOrder.size == 0 || mc.currentScreen != null) return
+        if (!triggerBotClock.hasTimePassed(triggerBotDelay) || clickInOrder.isEmpty() || mc.currentScreen != null) return
         val pos = mc.objectMouseOver?.blockPos ?: return
         if (clickInOrder[clickNeeded] != pos.east()) return
         if (clickNeeded == 0) { // Stops spamming the first button and breaking the puzzle.
@@ -147,7 +147,7 @@ object SimonSays : Module(
         if (
             !isInSSRange ||
             !autoSSClock.hasTimePassed(autoSSDelay) ||
-            clickInOrder.size == 0 ||
+            clickInOrder.isEmpty() ||
             mc.currentScreen != null ||
             autoSSClickInQueue ||
             clickNeeded >= clickInOrder.size ||

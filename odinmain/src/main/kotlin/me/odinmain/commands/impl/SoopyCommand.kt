@@ -34,7 +34,7 @@ val soopyCommand = commodore("soopycmd", "spcmd", "spc") {
                     fetchURLData(url)
                 }
                 modMessage(result)
-            } catch (e: TimeoutCancellationException) {
+            } catch (_: TimeoutCancellationException) {
                 modMessage("Request timed out")
             } catch (e: Exception) {
                 modMessage("Failed to fetch data: ${e.message}")
