@@ -24,7 +24,8 @@ object StartGui : TermSimGui(
         ItemStack(dye, 1, 14).setStackDisplayName("§6Change all to same color!"),
         ItemStack(dye, 1, 6).setStackDisplayName("§3Click in order!"),
         ItemStack(dye, 1, 5).setStackDisplayName("§5What starts with: \"*\"?"),
-        ItemStack(dye, 1, 12).setStackDisplayName("§bSelect all the \"*\" items!")
+        ItemStack(dye, 1, 12).setStackDisplayName("§bSelect all the \"*\" items!"),
+        ItemStack(dye, 1, 9).setStackDisplayName("§dMelody")
     )
     private val resetButton = ItemStack(dye, 1, 8).setStackDisplayName("§cReset PBs")
     private val randomButton = ItemStack(dye, 1, 15).setStackDisplayName("§7Random")
@@ -34,7 +35,7 @@ object StartGui : TermSimGui(
         this.inventorySlots.inventorySlots.subList(0, 27).forEachIndexed { index, it ->
             when (index) {
                 4 -> it.putStack(resetButton)
-                in 11..15 -> it.putStack(termItems[index - 11])
+                in 11..16 -> it.putStack(termItems[index - 11])
                 22 -> it.putStack(randomButton)
                 26 -> it.putStack(redstoneTorch)
                 else -> it.putStack(blackPane)
@@ -52,7 +53,7 @@ object StartGui : TermSimGui(
     private var areYouSure = false
 
     override fun slotClick(slot: Slot, button: Int) {
-        val index = if (slot.slotIndex == 22) listOf(11,12,13,14,15).getRandom() else slot.slotIndex
+        val index = if (slot.slotIndex == 22) listOf(11,12,13,14,15,16).getRandom() else slot.slotIndex
         when (index) {
             4 -> {
                 if (!areYouSure) {
@@ -73,6 +74,7 @@ object StartGui : TermSimGui(
             13 -> InOrder.open(ping)
             14 -> StartsWith(StartsWith.letters.shuffled().first()).open(ping)
             15 -> SelectAll(EnumDyeColor.entries.getRandom().name.replace("_", " ").uppercase()).open(ping)
+            16 -> Melody.open(ping)
         }
     }
 }

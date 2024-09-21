@@ -48,6 +48,7 @@ object TerminalSolver : Module(
     private val removeWrongRubix: Boolean by BooleanSetting("Stop Rubix", true, description = "Stops rendering wrong colors in the rubix terminal.").withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings && removeWrong }
     private val removeWrongStartsWith: Boolean by BooleanSetting("Stop Starts With", true, description = "Stops rendering wrong items in the starts with terminal.").withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings && removeWrong }
     private val removeWrongSelect: Boolean by BooleanSetting("Stop Select", true, description = "Stops rendering wrong items in the select terminal.").withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings && removeWrong }
+    private val removeWrongMelody: Boolean by BooleanSetting("Stop Melody", true, description = "Stops rendering wrong items in the melody terminal.").withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings && removeWrong }
 
     private val showColors: Boolean by DropdownSetting("Color Settings")
     private val backgroundColor: Color by ColorSetting("Background Color", Color(45, 45, 45), true, description = "Background color of the terminal solver.").withDependency { renderType == 0 && showColors }
@@ -65,6 +66,10 @@ object TerminalSolver : Module(
     val orderColor3: Color by ColorSetting("Order Color 3", Color(0, 65, 65, 1f), true, description = "Color of the order terminal solver for 3rd item.").withDependency { showColors }
     val startsWithColor: Color by ColorSetting("Starts With Color", Color(0, 170, 170), true, description = "Color of the starts with terminal solver.").withDependency { showColors }
     val selectColor: Color by ColorSetting("Select Color", Color(0, 170, 170), true, description = "Color of the select terminal solver.").withDependency { showColors }
+    val melodyColumColor: Color by ColorSetting("Melody Column Color", Color.PURPLE.withAlpha(0.75f), true, description = "Color of the colum indicator for melody.").withDependency { showColors }
+    val melodyRowColor: Color by ColorSetting("Melody Row Color", Color.GREEN.withAlpha(0.75f), true, description = "Color of the row indicator for melody.").withDependency { showColors }
+    val melodyPressColor: Color by ColorSetting("Melody Press Color", Color.CYAN.withAlpha(0.75f), true, description = "Color of the location for pressing for melody.").withDependency { showColors }
+
 
     private var lastRubixSolution: Int? = null
     private val zLevel get() = if (renderType == 1 && currentTerm.equalsOneOf(TerminalTypes.STARTS_WITH, TerminalTypes.SELECT)) 100f else 400f
@@ -97,6 +102,7 @@ object TerminalSolver : Module(
                 val colorNeeded = EnumDyeColor.entries.find { event.name.contains(it.name.replace("_", " ").uppercase()) }?.unlocalizedName ?: return modMessage("Failed to find color, please report this!")
                 solveSelect(items, colorNeeded.lowercase())
             }
+            TerminalTypes.MELODY -> solveMelody(items)
             else -> return
         }
         if (renderType == 3 && Loader.instance().activeModList.any { it.modId == "notenoughupdates" }) NEUApi.setInventoryButtonsToDisabled()
@@ -105,8 +111,8 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun onGuiRender(event: GuiEvent.DrawGuiContainerScreenEvent) {
-        if (currentTerm == TerminalTypes.NONE || currentTerm == TerminalTypes.MELODY || !enabled || !renderType.equalsOneOf(0,3) || event.container !is ContainerChest) return
-        if (renderType == 3) {
+        if (currentTerm == TerminalTypes.NONE || !enabled || !renderType.equalsOneOf(0,3) || event.container !is ContainerChest) return
+        if (renderType == 3 && currentTerm != TerminalTypes.MELODY) {
             CustomTermGui.render()
             event.isCanceled = true
             return
@@ -124,6 +130,7 @@ object TerminalSolver : Module(
             TerminalTypes.ORDER -> true
             TerminalTypes.STARTS_WITH -> removeWrongStartsWith
             TerminalTypes.SELECT -> removeWrongSelect
+            TerminalTypes.MELODY -> removeWrongMelody
             else -> false
         }
     }
@@ -174,6 +181,17 @@ object TerminalSolver : Module(
             TerminalTypes.SELECT ->
                 if (renderType != 1 || (renderType == 1 && !removeWrong)) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, startsWithColor.rgba)
 
+            TerminalTypes.MELODY -> {
+                if (renderType != 1 || (renderType == 1 && !removeWrong)) {
+                    val colorMelody = when {
+                        event.slot.stack?.metadata == 5 && Item.getIdFromItem(event.slot.stack.item) == 160 -> melodyRowColor
+                        event.slot.stack?.metadata == 2 && Item.getIdFromItem(event.slot.stack.item) == 160 -> melodyColumColor
+                        else -> melodyPressColor
+                    }
+                    Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, colorMelody.rgba)
+                }
+            }
+
             else -> {}
         }
         GlStateManager.enableLighting()
@@ -220,9 +238,9 @@ object TerminalSolver : Module(
         solution = emptyList()
     }
 
-    private fun solvePanes(items: List<ItemStack?>): List<Int> {
-        return items.filter { it?.metadata == 14 }.map { items.indexOf(it) }
-    }
+    private fun solvePanes(items: List<ItemStack?>): List<Int> =
+        items.filter { it?.metadata == 14 }.map { items.indexOf(it) }
+
 
     private val colorOrder = listOf(1, 4, 13, 11, 14)
     private fun solveColor(items: List<ItemStack?>): List<Int> {
@@ -260,15 +278,15 @@ object TerminalSolver : Module(
     }
 
     private fun dist(pane: Int, most: Int): Int =
-            if (pane > most) (most + colorOrder.size) - pane else most - pane
+        if (pane > most) (most + colorOrder.size) - pane else most - pane
 
-    private fun solveNumbers(items: List<ItemStack?>): List<Int> {
-        return items.filter { it?.metadata == 14 && Item.getIdFromItem(it.item) == 160 }.filterNotNull().sortedBy { it.stackSize }.map { items.indexOf(it) }
-    }
+    private fun solveNumbers(items: List<ItemStack?>): List<Int> =
+        items.filter { it?.metadata == 14 && Item.getIdFromItem(it.item) == 160 }.filterNotNull().sortedBy { it.stackSize }.map { items.indexOf(it) }
 
-    private fun solveStartsWith(items: List<ItemStack?>, letter: String): List<Int> {
-        return items.filter { it?.unformattedName?.startsWith(letter, true) == true && !it.isItemEnchanted }.map { items.indexOf(it) }
-    }
+
+    private fun solveStartsWith(items: List<ItemStack?>, letter: String): List<Int> =
+        items.filter { it?.unformattedName?.startsWith(letter, true) == true && !it.isItemEnchanted }.map { items.indexOf(it) }
+
 
     private fun solveSelect(items: List<ItemStack?>, color: String): List<Int> {
         return items.filter {
@@ -277,6 +295,19 @@ object TerminalSolver : Module(
             (color == "lightblue" || it.unlocalizedName?.contains("lightBlue", true) == false) && // color BLUE should not accept light blue items.
             Item.getIdFromItem(it.item) != 160
         }.map { items.indexOf(it) }
+    }
+
+    private fun solveMelody(items: List<ItemStack?>): List<Int> {
+        val green = items.indexOfFirst { it?.metadata == 5 && Item.getIdFromItem(it.item) == 160 }.takeIf { it != -1 } ?: return emptyList()
+        val magenta = items.indexOfFirst { it?.metadata == 2 && Item.getIdFromItem(it.item) == 160 }.takeIf { it != -1 } ?: return emptyList()
+        val greenClay = items.indexOfFirst { it?.metadata == 5 && Item.getIdFromItem(it.item) == 159 }.takeIf { it != -1 } ?: return emptyList()
+        return items.mapIndexedNotNull { index, item ->
+            when {
+                index == green || item?.metadata == 2 && Item.getIdFromItem(item.item) == 160 -> index
+                index == greenClay && green % 9 == magenta % 9 -> index
+                else -> null
+            }
+        }
     }
 }
 

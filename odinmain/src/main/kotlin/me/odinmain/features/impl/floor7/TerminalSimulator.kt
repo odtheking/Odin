@@ -16,7 +16,7 @@ object TerminalSimulator : Module(
     private val repetitiveTerminals: Int by NumberSetting("Random Terminals", 1, 1, 100, description = "Amount of random terminals.")
     val openStart: Boolean by BooleanSetting("Open Start", false, description = "Open the start menu after you finish a terminal.")
 
-    val simPBs = PersonalBest("Termsim", 5)
+    val simPBs = PersonalBest("Termsim", 6)
 
     override fun onKeybind() {
         sendCommand(if (repetitiveTerminals == 1) "termsim $ping" else "termsim $ping $repetitiveTerminals", clientSide = true)

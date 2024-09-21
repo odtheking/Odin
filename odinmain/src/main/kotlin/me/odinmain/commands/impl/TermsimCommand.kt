@@ -16,13 +16,14 @@ val termSimCommand = commodore("termsim") {
         listOf(round(ServerUtils.averagePing).toLong().toString())
     }
 
-    runs{ string: String, ping: Long? ->
+    runs { string: String, ping: Long? ->
         when (string) {
             "pains" -> CorrectPanes.open(ping ?: 0, 1)
             "rubix" -> Rubix.open(ping ?: 0, 1)
             "order" -> InOrder.open(ping ?: 0, 1)
             "sw" -> StartsWith(StartsWith.letters.shuffled().first()).open(ping ?: 0, 1)
             "select" -> SelectAll(EnumDyeColor.entries.getRandom().name.replace("_", " ").uppercase()).open(ping ?: 0, 1)
+            "melody" -> Melody.open(ping ?: 0, 1)
         }
     }
 }
