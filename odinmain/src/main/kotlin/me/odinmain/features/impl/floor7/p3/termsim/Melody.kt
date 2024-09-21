@@ -64,7 +64,7 @@ object Melody : TermSimGui(
         if (slot.slotIndex % 9 != 7 || (limeColumn != magentaColumn) || clickedRow != currentRow) return
 
         currentRow++
-        magentaColumn = (2 until 5).random()
+        magentaColumn = (1 until 5).random()
 
         if (!TerminalSounds.enabled || !clickSounds) mc.thePlayer.playSound("random.orb", 1f, 1f)
         GuiEvent.GuiLoadedEvent(name, inventorySlots as ContainerChest).postAndCatch()

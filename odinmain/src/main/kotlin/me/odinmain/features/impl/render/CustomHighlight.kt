@@ -56,7 +56,7 @@ object CustomHighlight : Module(
         checkEntity(entity)
         if (starredMobESP) checkStarred(entity)
         if (shadowAssasin && isLegitVersion) checkAssassin(entity)
-        if (showInvisible && entity.isInvisible && isLegitVersion && entity !in currentEntities) entity.isInvisible = false
+        if (showInvisible && entity.isInvisible && isLegitVersion && entity in currentEntities) entity.isInvisible = false
     }
 
     private fun getEntities() {
