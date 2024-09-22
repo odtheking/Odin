@@ -6,9 +6,10 @@ import com.github.stivais.ui.UIScreen.Companion.open
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.constraints.constrain
 import com.github.stivais.ui.constraints.copies
+import com.github.stivais.ui.constraints.measurements.Pixel
+import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.constraints.size
 import com.github.stivais.ui.constraints.sizes.Bounding
-import com.github.stivais.ui.elements.scope.draggable
 import com.github.stivais.ui.utils.loop
 import me.odinmain.OdinMain.mc
 import me.odinmain.config.Config
@@ -31,6 +32,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import kotlin.math.abs
 import kotlin.math.sign
 
 /**
@@ -65,6 +67,8 @@ object ModuleManager {
         hudUI.render()
     }
 
+    private const val SNAP_THRESHOLD = 10f
+
     fun openHUDEditor(/*huds: List<Module.HUD>*/) = UI {
         // temp fix for scaling bs
 //        operation { redraw(); false }
@@ -91,8 +95,61 @@ object ModuleManager {
                     hud.x.percent = element.x / ui.main.width
                     hud.y.percent = element.y / ui.main.height
                 }
-                draggable()
+
                 block(copies(), Color.TRANSPARENT).outline(Color.WHITE)
+
+                val px: Pixel = 0.px
+                val py: Pixel = 0.px
+
+                afterCreation {
+                    px.pixels = (element.x - (element.parent?.x ?: 0f))
+                    py.pixels = (element.y - (element.parent?.y ?: 0f))
+                    element.constraints.x = px
+                    element.constraints.y = py
+                }
+
+                var pressed = false
+                var x = 0f
+                var y = 0f
+
+                onClick(0) {
+                    pressed = true
+                    x = ui.mx - (element.x - (element.parent?.x ?: 0f))
+                    y = ui.my - (element.y - (element.parent?.y ?: 0f))
+                    true
+                }
+
+                onMouseMove {
+                    if (pressed) {
+                        val parentWidth = parent?.width ?: 0f
+                        val parentHeight = parent?.height ?: 0f
+
+                        var newX = ui.mx - x
+                        var newY = ui.my - y
+
+                        newX = newX.coerceIn(0f, parentWidth - element.width)
+                        newY = newY.coerceIn(0f, parentHeight - element.height)
+
+                        this.parent?.elements?.filter { it != element }?.forEach { other ->
+
+                            if (abs(newX + element.width - other.x) <= SNAP_THRESHOLD) newX = other.x - element.width
+                            else if (abs(newX - (other.x + other.width)) <= SNAP_THRESHOLD) newX = other.x + other.width
+
+                            if (abs(newY + element.height - other.y) <= SNAP_THRESHOLD) newY = other.y - element.height // Snap above the other element
+                            else if (abs(newY - (other.y + other.height)) <= SNAP_THRESHOLD) newY = other.y + other.height
+                        }
+
+                        px.pixels = newX.coerceIn(0f, parentWidth - element.width)
+                        py.pixels = newY.coerceIn(0f, parentHeight - element.height)
+
+                        redraw()
+                    }
+                    true
+                }
+
+                onRelease(0) {
+                    pressed = false
+                }
             }
         }
     }.open()

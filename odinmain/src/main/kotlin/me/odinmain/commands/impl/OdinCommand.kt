@@ -127,7 +127,7 @@ val mainCommand = commodore("od", "odin") {
         if (tier[0].equalsOneOf('f', 'm')) {
             if (tier.length != 2 || tier[1] !in '1'..'7') throw SyntaxException()
             sendCommand("joininstance ${if (tier[0] == 'm') "master_" else ""}catacombs_floor_${floors[tier[1]]}")
-        } else if (!tier[0].equals('t')) {
+        } else if (tier[0] != 't') {
             if (tier.length != 2 || tier[1] !in '1'..'5') throw SyntaxException()
             sendCommand("joininstance kuudra_${tiers[tier[1]]}")
         }
