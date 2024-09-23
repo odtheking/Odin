@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.floor7.p3.termsim
 
 
-import me.odinmain.OdinMain
 import me.odinmain.OdinMain.display
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.events.impl.PacketSentEvent
@@ -119,5 +118,3 @@ fun openRandomTerminal(ping: Long = 0L, const: Long = 0L) {
         TerminalTypes.NONE -> {}
     }
 }
-
-fun isTermSimOpen() = OdinMain.mc.currentScreen is TermSimGui
