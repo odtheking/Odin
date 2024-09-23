@@ -3,6 +3,7 @@ package me.odinmain.features.impl.floor7.p3
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.impl.floor7.p3.termsim.TermSimGui
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.StringSetting
@@ -26,7 +27,7 @@ object MelodyMessage : Module(
 
     @SubscribeEvent
     fun onGuiLoad(event: GuiEvent.GuiLoadedEvent) {
-        if (!DungeonUtils.inDungeons || saidMelody || !event.name.startsWith("Click the button on time!")) return
+        if (!DungeonUtils.inDungeons || saidMelody || !event.name.startsWith("Click the button on time!") || mc.currentScreen is TermSimGui) return
         if (sendMelodyMessage) partyMessage(melodyMessage)
 
         claySlots = hashMapOf(25 to "Melody terminal is at 25%", 34 to "Melody terminal is at 50%", 43 to "Melody terminal is at 75%")
@@ -45,6 +46,7 @@ object MelodyMessage : Module(
     init {
         execute(50){
             val containerChest = mc.thePlayer.openContainer as? ContainerChest ?: return@execute
+            if (mc.currentScreen is TermSimGui) return@execute
             if (containerChest.name != "Click the button on time!" || !melodyProgress) return@execute
 
             val greenClayIndices = claySlots.keys.filter { index -> containerChest.getSlot(index)?.stack?.metadata == 5 }.ifEmpty { return@execute }
