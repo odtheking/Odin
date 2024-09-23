@@ -53,13 +53,9 @@ object WaterSolver {
         chestPosition = room.vec2.addRotationCoords(roomFacing, -7)
 
         val pistonHeadPosition = chestPosition.addRotationCoords(roomFacing, -5).let { BlockPos(it.x, 82, it.z) }
-        val blockList = BlockPos.getAllInBox(BlockPos(pistonHeadPosition.x + 1, 78, pistonHeadPosition.z + 1),
-            BlockPos(pistonHeadPosition.x - 1, 77, pistonHeadPosition.z - 1))
-
         val foundBlocks = mutableListOf(false, false, false, false, false)
-
-        for (blockPos in blockList) {
-            when (getBlockAt(blockPos)) {
+        BlockPos.getAllInBox(BlockPos(pistonHeadPosition.x + 1, 78, pistonHeadPosition.z + 1), BlockPos(pistonHeadPosition.x - 1, 77, pistonHeadPosition.z - 1)).forEach {
+            when (getBlockAt(it)) {
                 Blocks.gold_block -> foundBlocks[0] = true
                 Blocks.hardened_clay -> foundBlocks[1] = true
                 Blocks.emerald_block -> foundBlocks[2] = true
@@ -131,12 +127,10 @@ object WaterSolver {
         if (PuzzleSolvers.showTracer) Renderer.draw3DLine(mc.thePlayer.renderVec, Vec3(first.first.leverPos).addVector(.5, .5, .5), color = PuzzleSolvers.tracerColorFirst, depth = true)
 
         if (solutionList.size > 1 && PuzzleSolvers.showTracer) {
-            val second = solutionList[1]
-
-            if (first.first.leverPos != second.first.leverPos) {
+            if (first.first.leverPos != solutionList[1].first.leverPos) {
                 Renderer.draw3DLine(
                     Vec3(solutionList.first().first.leverPos).addVector(0.5, 0.5, 0.5),
-                    Vec3(second.first.leverPos).addVector(0.5, 0.5, 0.5),
+                    Vec3(solutionList[1].first.leverPos).addVector(0.5, 0.5, 0.5),
                     color = PuzzleSolvers.tracerColorSecond,
                     lineWidth = 1.5f,
                     depth = true
@@ -204,13 +198,11 @@ object WaterSolver {
 
         val leverPos: BlockPos
             get() {
-                return if (this == WATER) {
+                return if (this == WATER)
                     chestPosition.addRotationCoords(roomFacing, 17).let { BlockPos(it.x, 60, it.z) }
-                } else {
-                    val shiftBy = ordinal % 3 * 5
-                    val leverSide = if (ordinal < 3) roomFacing.rotateY() else roomFacing.rotateYCCW()
-                    chestPosition.addRotationCoords(leverSide, 5).addRotationCoords(roomFacing, shiftBy + 2).let { BlockPos(it.x, 61, it.z) }
-                }
+                else
+                    chestPosition.addRotationCoords(if (ordinal < 3) roomFacing.rotateY() else roomFacing.rotateYCCW(), 5)
+                        .addRotationCoords(roomFacing, (ordinal % 3 * 5) + 2).let { BlockPos(it.x, 61, it.z) }
             }
 
     }

@@ -56,12 +56,11 @@ object QuizSolver {
         val room = event.fullRoom?.room ?: return
         if (room.data.name != "Quiz") return
 
-        val rotation = room.rotation
-        val middleAnswerBlock = room.vec3.addRotationCoords(rotation, 0, 6)
-
-        triviaOptions[0].vec3 = middleAnswerBlock.addRotationCoords(rotation, -5, 3)
-        triviaOptions[1].vec3 = middleAnswerBlock
-        triviaOptions[2].vec3 = middleAnswerBlock.addRotationCoords(rotation, 5, 3)
+        room.vec3.addRotationCoords(room.rotation, 0, 6).let { middleAnswerBlock ->
+            triviaOptions[0].vec3 = middleAnswerBlock.addRotationCoords(room.rotation, -5, 3)
+            triviaOptions[1].vec3 = middleAnswerBlock
+            triviaOptions[2].vec3 = middleAnswerBlock.addRotationCoords(room.rotation, 5, 3)
+        }
     }
 
     fun renderWorldLastQuiz() {

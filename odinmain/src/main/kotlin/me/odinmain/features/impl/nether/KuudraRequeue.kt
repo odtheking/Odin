@@ -14,7 +14,7 @@ object KuudraRequeue : Module(
     description = "Automatically starts a new kuudra at the end of a kuudra.",
     category = Category.NETHER
 ) {
-    private val delay: Int by NumberSetting("Delay", 10, 0, 30, 1, description = "The delay in seconds before requeuing.")
+    private val delay: Int by NumberSetting("Delay", 10, 0, 30, 1, description = "The delay in seconds before requeuing.", unit = "s")
     private val disablePartyLeave: Boolean by BooleanSetting("Disable Party Leave", false, description = "Disables the requeue on party leave message.")
 
     init {

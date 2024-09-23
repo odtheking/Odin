@@ -36,17 +36,14 @@ object BoulderSolver {
         var str = ""
         for (z in -3..2) {
             for (x in -3..3) {
-                room.vec2.addRotationCoords(room.rotation, x * 3, z * 3).let {
-                    str += if (getBlockIdAt(it.x, 66, it.z) == 0) "0" else "1"
-                }
+                room.vec2.addRotationCoords(room.rotation, x * 3, z * 3).let { str += if (getBlockIdAt(it.x, 66, it.z) == 0) "0" else "1" }
             }
         }
-        val coords = solutions[str] ?: return
-        currentPositions = coords.map { sol ->
+        currentPositions = solutions[str]?.map { sol ->
             val render = room.vec2.addRotationCoords(room.rotation, sol[0], sol[1])
             val click = room.vec2.addRotationCoords(room.rotation, sol[2], sol[3])
             BoxPosition(BlockPos(render.x, 65, render.z), BlockPos(click.x, 65, click.z))
-        }.toMutableList()
+        }?.toMutableList() ?: return
     }
 
     fun onRenderWorld() {
@@ -60,8 +57,8 @@ object BoulderSolver {
     }
 
     fun playerInteract(event: PlayerInteractEvent) {
-        if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || !getBlockIdAt(event.pos).equalsOneOf(77, 323)) return
-        currentPositions.removeFirstOrNull { it.click == event.pos }
+        if (event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK && getBlockIdAt(event.pos).equalsOneOf(77, 323))
+            currentPositions.removeFirstOrNull { it.click == event.pos }
     }
 
     fun reset() {

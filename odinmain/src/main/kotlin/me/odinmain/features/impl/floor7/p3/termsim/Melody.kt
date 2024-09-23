@@ -16,7 +16,7 @@ object Melody : TermSimGui(
     private val magentaPane get() = ItemStack(pane, 1, 2 ).apply { setStackDisplayName("") }
     private val greenPane   get() = ItemStack(pane, 1, 5 ).apply { setStackDisplayName("") }
     private val redPane     get() = ItemStack(pane, 1, 14).apply { setStackDisplayName("") }
-    private val whitePane    get() = ItemStack(pane, 1, 0).apply { setStackDisplayName("") }
+    private val whitePane   get() = ItemStack(pane, 1, 0 ).apply { setStackDisplayName("") }
     private val redClay     get() = ItemStack(Item.getItemById(159), 1, 14).apply { setStackDisplayName("") }
     private val greenClay   get() = ItemStack(Item.getItemById(159), 1, 5 ).apply { setStackDisplayName("") }
 
@@ -65,10 +65,10 @@ object Melody : TermSimGui(
 
         currentRow++
         magentaColumn = (1 until 5).random()
+        updateGui()
 
         if (!TerminalSounds.enabled || !clickSounds) mc.thePlayer.playSound("random.orb", 1f, 1f)
-        GuiEvent.GuiLoadedEvent(name, inventorySlots as ContainerChest).postAndCatch()
-        if (clickedRow == 4) solved(this.name, 0)
+        if (clickedRow == 4) solved(this.name, 5)
     }
 
     override fun onGuiClosed() {

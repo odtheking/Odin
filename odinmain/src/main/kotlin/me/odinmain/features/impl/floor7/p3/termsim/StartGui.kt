@@ -25,7 +25,7 @@ object StartGui : TermSimGui(
         ItemStack(dye, 1, 6).setStackDisplayName("§3Click in order!"),
         ItemStack(dye, 1, 5).setStackDisplayName("§5What starts with: \"*\"?"),
         ItemStack(dye, 1, 12).setStackDisplayName("§bSelect all the \"*\" items!"),
-        ItemStack(dye, 1, 9).setStackDisplayName("§dMelody")
+        ItemStack(dye, 1, 9).setStackDisplayName("§dClick the button on time!")
     )
     private val resetButton = ItemStack(dye, 1, 8).setStackDisplayName("§cReset PBs")
     private val randomButton = ItemStack(dye, 1, 15).setStackDisplayName("§7Random")
@@ -35,9 +35,10 @@ object StartGui : TermSimGui(
         this.inventorySlots.inventorySlots.subList(0, 27).forEachIndexed { index, it ->
             when (index) {
                 4 -> it.putStack(resetButton)
-                in 11..16 -> it.putStack(termItems[index - 11])
-                22 -> it.putStack(randomButton)
-                26 -> it.putStack(redstoneTorch)
+                13  -> it.putStack(randomButton)
+                in 10..12 -> it.putStack(termItems[index - 10])
+                in 14..16 -> it.putStack(termItems[index - 11])
+                22 -> it.putStack(redstoneTorch)
                 else -> it.putStack(blackPane)
             }
         }
@@ -53,8 +54,7 @@ object StartGui : TermSimGui(
     private var areYouSure = false
 
     override fun slotClick(slot: Slot, button: Int) {
-        val index = if (slot.slotIndex == 22) listOf(11,12,13,14,15,16).getRandom() else slot.slotIndex
-        when (index) {
+        when (slot.slotIndex) {
             4 -> {
                 if (!areYouSure) {
                     modMessage("§cAre you sure you want to reset your PBs? Click again to confirm.")
@@ -65,16 +65,17 @@ object StartGui : TermSimGui(
                     }
                     return
                 }
-                repeat(5) { i -> TerminalSimulator.simPBs.set(i, 999.0) }
+                repeat(6) { i -> TerminalSimulator.simPBs.set(i, 999.0) }
                 modMessage("§cPBs reset!")
                 StartGui.open(ping)
             }
-            11 -> CorrectPanes.open(ping)
-            12 -> Rubix.open(ping)
-            13 -> InOrder.open(ping)
+            10 -> CorrectPanes.open(ping)
+            11 -> Rubix.open(ping)
+            12 -> InOrder.open(ping)
             14 -> StartsWith(StartsWith.letters.shuffled().first()).open(ping)
             15 -> SelectAll(EnumDyeColor.entries.getRandom().name.replace("_", " ").uppercase()).open(ping)
             16 -> Melody.open(ping)
+            13 -> openRandomTerminal(ping)
         }
     }
 }

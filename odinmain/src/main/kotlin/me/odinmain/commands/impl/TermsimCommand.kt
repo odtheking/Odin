@@ -10,7 +10,7 @@ import kotlin.math.round
 val termSimCommand = commodore("termsim") {
     runs { ping: Long?, amount: Long? ->
         if (amount == null) StartGui.open(ping ?: 0)
-        else openTerminal(ping ?: 0, amount)
+        else openRandomTerminal(ping ?: 0, amount)
 
     } suggests {
         listOf(round(ServerUtils.averagePing).toLong().toString())

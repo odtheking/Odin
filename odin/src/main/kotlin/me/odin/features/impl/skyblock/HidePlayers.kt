@@ -19,7 +19,7 @@ object HidePlayers : Module(
     category = Category.SKYBLOCK
 ) {
     private val hideAll: Boolean by BooleanSetting("Hide all", default = false, false, "Hides all players, regardless of distance.")
-    private val distance: Double by NumberSetting("distance", 3.0, 0.0, 32.0, .5, false, "The number of blocks away to hide players.").withDependency { !hideAll }
+    private val distance: Double by NumberSetting("distance", 3.0, 0.0, 32.0, .5, false, "The number of blocks away to hide players.", unit = "blocks").withDependency { !hideAll }
     private val onlyDevs: Boolean by BooleanSetting("only at Devs", default = false, false, "Only hides players when standing at ss or fourth device.")
 
     @SubscribeEvent

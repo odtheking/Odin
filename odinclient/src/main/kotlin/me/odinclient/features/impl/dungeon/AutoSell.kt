@@ -16,7 +16,7 @@ object AutoSell : Module(
     category = Category.DUNGEON
 ) {
     val sellList: MutableSet<String> by ListSetting("Sell list", mutableSetOf())
-    private val delay: Long by NumberSetting("Delay", 100, 30.0, 300.0, 5.0, description = "The delay between each sell action.")
+    private val delay: Long by NumberSetting("Delay", 100, 30.0, 300.0, 5.0, description = "The delay between each sell action.", unit = "ms")
     private val clickType: Int by SelectorSetting("Click Type", "Shift", arrayListOf("Shift", "Middle", "Left"), description = "The type of click to use when selling items.")
     private val addDefaults: () -> Unit by ActionSetting("Add defaults", description = "Add default dungeon items to the auto sell list.") {
         sellList.addAll(defaultItems)
@@ -27,7 +27,7 @@ object AutoSell : Module(
     init {
         execute(delay = { delay }) {
             if (!enabled || sellList.isEmpty()) return@execute
-            val container = mc.thePlayer.openContainer as? ContainerChest ?: return@execute
+            val container = mc.thePlayer?.openContainer as? ContainerChest ?: return@execute
 
             if (!container.name.equalsOneOf("Trades", "Booster Cookie", "Farm Merchant")) return@execute
             val index = container.inventorySlots?.subList(54, 90)?.firstOrNull { it.stack?.displayName?.containsOneOf(sellList, true) == true }?.slotNumber ?: return@execute

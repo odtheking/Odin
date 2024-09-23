@@ -33,7 +33,7 @@ object CloseChest : Module(
         val gui = event.gui as? GuiChest ?: return
         if (!inDungeons || !mode) return
         if ((gui.inventorySlots as? ContainerChest)?.name?.noControlCodes?.equalsOneOf("Chest", "Large Chest") == true)
-            mc.thePlayer.closeScreen()
+            mc.thePlayer?.closeScreen()
     }
 
     @SubscribeEvent
@@ -41,6 +41,6 @@ object CloseChest : Module(
         val gui = event.gui as? GuiChest ?: return
         if (!inDungeons || !mode) return
         if ((gui.inventorySlots as? ContainerChest)?.name?.noControlCodes?.equalsOneOf("Chest", "Large Chest") == true)
-            mc.thePlayer.closeScreen()
+            mc.thePlayer?.closeScreen()
     }
 }
