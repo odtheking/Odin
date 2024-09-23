@@ -4,7 +4,6 @@ import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.termsim.TermSimGui
-import me.odinmain.features.impl.floor7.p3.termsim.isTermSimOpen
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.StringSetting
