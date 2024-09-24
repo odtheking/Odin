@@ -208,9 +208,9 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
-        val match = Regex("(.{1,16}) (?:activated|completed) a (?:terminal|device|lever)! \\((\\d)/(\\d)\\)").find(event.message) ?: return
-        val (playerName, completionStatus, total) = match.destructured
-        TerminalSolvedEvent(lastTermOpened, playerName, completionStatus.toIntOrNull() ?: return, total.toIntOrNull() ?: return).postAndCatch()
+        val match = Regex("(.{1,16}) (?:activated|completed) a (terminal|device|lever)! \\((\\d)/(\\d)\\)").find(event.message) ?: return
+        val (playerName, completionStatus, deviceType, total) = match.destructured
+        TerminalSolvedEvent(if (deviceType == "terminal") lastTermOpened else TerminalTypes.NONE, playerName, completionStatus.toIntOrNull() ?: return, total.toIntOrNull() ?: return).postAndCatch()
     }
 
     private fun leftTerm() {
