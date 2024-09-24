@@ -69,7 +69,8 @@ object TerminalSolver : Module(
     val melodyColumColor: Color by ColorSetting("Melody Column Color", Color.PURPLE.withAlpha(0.75f), true, description = "Color of the colum indicator for melody.").withDependency { showColors }
     val melodyRowColor: Color by ColorSetting("Melody Row Color", Color.GREEN.withAlpha(0.75f), true, description = "Color of the row indicator for melody.").withDependency { showColors }
     val melodyPressColor: Color by ColorSetting("Melody Press Color", Color.CYAN.withAlpha(0.75f), true, description = "Color of the location for pressing for melody.").withDependency { showColors }
-
+    val melodyCorrectRowColor: Color by ColorSetting("Melody Correct Row Color", Color.WHITE.withAlpha(0.75f), true, description = "Color of the whole row for melody.").withDependency { showColors }
+    val melodyPressColumnColor: Color by ColorSetting("Melody Press Column Color", Color.PURPLE.withAlpha(0.35f), true, description = "Color of the whole click column for melody.").withDependency { showColors }
 
     private var lastRubixSolution: Int? = null
     private val zLevel get() = if (renderType == 1 && currentTerm.equalsOneOf(TerminalTypes.STARTS_WITH, TerminalTypes.SELECT)) 100f else 400f
@@ -112,7 +113,7 @@ object TerminalSolver : Module(
     @SubscribeEvent
     fun onGuiRender(event: GuiEvent.DrawGuiContainerScreenEvent) {
         if (currentTerm == TerminalTypes.NONE || !enabled || !renderType.equalsOneOf(0,3) || event.container !is ContainerChest) return
-        if (renderType == 3 && currentTerm != TerminalTypes.MELODY) {
+        if (renderType == 3) {
             CustomTermGui.render()
             event.isCanceled = true
             return
@@ -206,7 +207,7 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun guiClick(event: GuiEvent.GuiMouseClickEvent) {
-        if (renderType != 3 || currentTerm == TerminalTypes.NONE || currentTerm == TerminalTypes.MELODY || !enabled) return
+        if (renderType != 3 || currentTerm == TerminalTypes.NONE || !enabled) return
         CustomTermGui.mouseClicked(MouseUtils.mouseX.toInt(), MouseUtils.mouseY.toInt(), event.button)
         event.isCanceled = true
     }
