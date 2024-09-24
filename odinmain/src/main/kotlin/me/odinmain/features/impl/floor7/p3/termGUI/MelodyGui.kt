@@ -19,7 +19,6 @@ import me.odinmain.utils.render.TextPos
 import me.odinmain.utils.render.getTextWidth
 import me.odinmain.utils.render.roundedRectangle
 import me.odinmain.utils.render.text
-import me.odinmain.utils.skyblock.modMessage
 import kotlin.math.ceil
 
 object MelodyGui : TermGui() {
@@ -34,7 +33,7 @@ object MelodyGui : TermGui() {
             text("Click the button on time!", 0, -238, Color.WHITE, 20, align = TextAlign.Middle, verticalAlign = TextPos.Top)
             roundedRectangle(-getTextWidth("Click the button on time!", 20f) / 2, -210, getTextWidth("Click the button on time!", 20f), 3, Color.WHITE, radius = 5f)
         }
-        //modMessage("${-110 + 6 * 70}")
+
         roundedRectangle((-163 + ((gap-20).unaryPlus() * 0.5)) + 5*70, -115,70 - gap, 280 - gap, melodyPressColumnColor)
         solution.forEach { pane ->
             val row = pane / 9 - 1
