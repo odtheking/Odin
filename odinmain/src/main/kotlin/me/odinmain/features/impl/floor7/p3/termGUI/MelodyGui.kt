@@ -35,7 +35,7 @@ object MelodyGui : TermGui() {
             roundedRectangle(-getTextWidth("Click the button on time!", 20f) / 2, -210, getTextWidth("Click the button on time!", 20f), 3, Color.WHITE, radius = 5f)
         }
         //modMessage("${-110 + 6 * 70}")
-        roundedRectangle((-163 + ((gap-20).unaryPlus() * 0.5)) + 5*70, -110,70 - gap, 280 - gap, melodyPressColumnColor)
+        roundedRectangle((-163 + ((gap-20).unaryPlus() * 0.5)) + 5*70, -115,70 - gap, 280 - gap, melodyPressColumnColor)
         solution.forEach { pane ->
             val row = pane / 9 - 1
             val col = pane % 9 - 2
@@ -45,9 +45,9 @@ object MelodyGui : TermGui() {
                 else -> melodyPressColor
             }
             if ((pane % 9).equalsOneOf(1, 2, 3, 4, 5) && pane / 9 != 0 && pane / 9 != 5) {
-                roundedRectangle((-163 + ((gap-20).unaryPlus() * 0.5)) -1*70, -110 + row * 70,350 - gap, 70 - gap, melodyCorrectRowColor)
+                roundedRectangle((-163 + ((gap-20).unaryPlus() * 0.5)) -1*70, -115 + row * 70,350 - gap, 70 - gap, melodyCorrectRowColor)
             }
-            val box = BoxWithClass(ceil(-163 + ((gap-20).unaryPlus() * 0.5)) + col * 70, -110 + row * 70, 70 - gap, 70 - gap)
+            val box = BoxWithClass(ceil(-163 + ((gap-20).unaryPlus() * 0.5)) + col * 70, -115 + row * 70, 70 - gap, 70 - gap)
             roundedRectangle(box, colorMelody)
             itemIndexMap[pane] = Box(
                 box.x.toFloat() * customScale + mc.displayWidth / 2,
