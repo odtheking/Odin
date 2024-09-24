@@ -1,13 +1,12 @@
 package me.odinmain.features.impl.floor7
 
-import me.odinmain.features.impl.floor7.DragonPriority.dragonPrioritySpawn
+import me.odinmain.features.impl.floor7.DragonPriority.displaySpawningDragon
 import me.odinmain.features.impl.floor7.DragonPriority.findPriority
 import me.odinmain.features.impl.floor7.WitherDragons.priorityDragon
 import me.odinmain.features.impl.floor7.WitherDragons.sendSpawning
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.PersonalBest
 import me.odinmain.utils.skyblock.modMessage
-import net.minecraft.entity.Entity
 import net.minecraft.entity.boss.EntityDragon
 import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraft.util.*
@@ -19,7 +18,7 @@ enum class WitherDragonsEnum (
     val color: Color,
     val xRange: ClosedRange<Double>,
     val zRange: ClosedRange<Double>,
-    var particleSpawnTime: Long = 0L,
+    var timeToSpawn: Int = 100,
     var state: WitherDragonState = WitherDragonState.DEAD,
     var timesSpawned: Int = 0,
     var entity: EntityDragon? = null,
@@ -44,10 +43,6 @@ enum class WitherDragonsEnum (
 
     None(Vec3(0.0, 0.0, 0.0), AxisAlignedBB(0.0, 0.0, 0.0, 0.0, 0.0, 0.0), 'f', Color.WHITE,
         0.0..0.0, 0.0..0.0);
-
-    fun spawnTime(): Long {
-        return 5000L - (System.currentTimeMillis() - this.particleSpawnTime)
-    }
 }
 
 enum class WitherDragonState {
@@ -73,19 +68,18 @@ fun handleSpawnPacket(particle: S2APacketParticles) {
     ) return
 
     WitherDragonsEnum.entries.forEach { dragon ->
-        if (checkParticle(particle, dragon) && dragon.particleSpawnTime == 0L) {
-            if (sendSpawning) modMessage("§${dragon.colorCode}$dragon §fdragon is spawning.")
-            dragon.particleSpawnTime = System.currentTimeMillis()
+        if (checkParticle(particle, dragon) && dragon.timeToSpawn == 100) {
             dragon.state = WitherDragonState.SPAWNING
+            if (sendSpawning && WitherDragons.enabled) modMessage("§${dragon.colorCode}$dragon §fdragon is spawning.")
         }
     }
-    val spawningDragons = WitherDragonsEnum.entries.filter { it.state == WitherDragonState.SPAWNING }.toMutableList()
-    if (spawningDragons.isEmpty()) return
-    findPriority(spawningDragons).also { if (it != WitherDragonsEnum.None) priorityDragon = it }
-    if (priorityDragon.particleSpawnTime in System.currentTimeMillis()-100..System.currentTimeMillis()+100) dragonPrioritySpawn(priorityDragon)
+
+    val spawningDragons = WitherDragonsEnum.entries.filter { it.state == WitherDragonState.SPAWNING }.toMutableList().ifEmpty { return }
+    priorityDragon = findPriority(spawningDragons)
+    if (priorityDragon.timeToSpawn in 80..100) displaySpawningDragon(priorityDragon)
 }
 
-private fun checkParticle(event: S2APacketParticles, color: WitherDragonsEnum): Boolean {
-    return event.xCoordinate in color.xRange && event.zCoordinate in color.zRange
+private fun checkParticle(event: S2APacketParticles, dragon: WitherDragonsEnum): Boolean {
+    return event.xCoordinate in dragon.xRange && event.zCoordinate in dragon.zRange
 }
 

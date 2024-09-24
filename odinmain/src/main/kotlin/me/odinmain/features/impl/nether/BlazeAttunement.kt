@@ -61,7 +61,7 @@ object BlazeAttunement : Module(
     }
 
     fun changeBlazeColor(entity: Entity) {
-        if (currentBlazes.size == 0 || !overlay) return
+        if (currentBlazes.isEmpty() || !overlay) return
         val color = currentBlazes[entity] ?: return
         GlStateManager.disableTexture2D()
         GlStateManager.enableBlend()
@@ -70,13 +70,13 @@ object BlazeAttunement : Module(
     }
 
     fun renderModelBlazePost() {
-        if (currentBlazes.size == 0 || !overlay) return
+        if (currentBlazes.isEmpty() || !overlay) return
         GlStateManager.disableBlend()
         GlStateManager.enableTexture2D()
     }
 
     fun changeBipedColor(entity: Entity) {
-        if (currentBlazes.size == 0 || !overlay) return
+        if (currentBlazes.isEmpty() || !overlay) return
         val color = currentBlazes[entity] ?: return
         GlStateManager.disableTexture2D()
         GlStateManager.enableBlend()
@@ -85,7 +85,7 @@ object BlazeAttunement : Module(
     }
 
     fun renderModelBipedPost() {
-        if (currentBlazes.size == 0 || !overlay) return
+        if (currentBlazes.isEmpty() || !overlay) return
         GlStateManager.disableBlend()
         GlStateManager.enableTexture2D()
     }

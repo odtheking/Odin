@@ -22,6 +22,10 @@ val mainCommand = commodore("od", "odin") {
         display = ClickGUI
     }
 
+    literal("edithud").runs {
+        display = EditHUDGui
+    }
+
     literal("ep").runs {
         fillItemFromSack(16, "ENDER_PEARL", "ender_pearl", true)
     }
@@ -106,7 +110,7 @@ val mainCommand = commodore("od", "odin") {
         modMessage("Opening SkyCrypt for $targetUser.")
         try {
             Desktop.getDesktop().browse(URI("https://sky.shiiyu.moe/$targetUser"))
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             modMessage("Failed to open in browser.")
         }
     }

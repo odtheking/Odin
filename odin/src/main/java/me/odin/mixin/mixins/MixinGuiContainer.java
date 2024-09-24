@@ -5,7 +5,9 @@ import me.odinmain.utils.EventExtensions;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -14,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MixinGuiContainer {
 
     @Unique
-    private final GuiContainer gui = (GuiContainer) (Object) this;
+    private final GuiContainer odinMod$gui = (GuiContainer) (Object) this;
 
     @Shadow
     public Container inventorySlots;
@@ -33,13 +35,13 @@ public abstract class MixinGuiContainer {
 
     @Inject(method = "drawSlot", at = @At("HEAD"), cancellable = true)
     private void onDrawSlot(Slot slotIn, CallbackInfo ci) {
-        if (EventExtensions.postAndCatch(new GuiEvent.DrawSlotEvent(inventorySlots, gui, slotIn, slotIn.xDisplayPosition, slotIn.yDisplayPosition)))
+        if (EventExtensions.postAndCatch(new GuiEvent.DrawSlotEvent(inventorySlots, odinMod$gui, slotIn, slotIn.xDisplayPosition, slotIn.yDisplayPosition)))
             ci.cancel();
     }
 
     @Inject(method = "drawScreen", at = @At(value = "HEAD"), cancellable = true)
     private void startDrawScreen(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-        if (EventExtensions.postAndCatch(new GuiEvent.DrawGuiContainerScreenEvent(gui.inventorySlots, gui, this.xSize, this.ySize, guiLeft, guiTop))) {
+        if (EventExtensions.postAndCatch(new GuiEvent.DrawGuiContainerScreenEvent(odinMod$gui.inventorySlots, odinMod$gui, this.xSize, this.ySize, guiLeft, guiTop))) {
             ci.cancel();
 
             this.theSlot = null;
@@ -53,6 +55,6 @@ public abstract class MixinGuiContainer {
 
     @Inject(method = "onGuiClosed", at = @At("HEAD"))
     private void onGuiClosed(CallbackInfo ci) {
-        EventExtensions.postAndCatch(new GuiEvent.GuiClosedEvent(gui));
+        EventExtensions.postAndCatch(new GuiEvent.GuiClosedEvent(odinMod$gui));
     }
 }

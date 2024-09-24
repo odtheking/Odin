@@ -62,6 +62,7 @@ object HoverTerms : Module(
                     return
                 }
             }
+
             TerminalTypes.ORDER -> {
                 if (TerminalSolver.solution.first() == hoveredItem) {
                     windowClick(hoveredItem, if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
@@ -69,6 +70,12 @@ object HoverTerms : Module(
                 }
                 return
             }
+
+            TerminalTypes.MELODY ->
+                if (hoveredItem % 9 == 7) {
+                    windowClick(hoveredItem, if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
+                    triggerBotClock.update()
+                }
             TerminalTypes.PANES, TerminalTypes.STARTS_WITH, TerminalTypes.SELECT -> windowClick(hoveredItem, if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
             else -> return
         }

@@ -115,7 +115,7 @@ object BloodCamp : Module(
     }
 
     fun onTick() {
-        if (entityList.isEmpty()) return
+        entityList.ifEmpty { return }
         watcher.removeAll {it.isDead}
         entityList.filter { (entity) -> watcher.any { it.getDistanceToEntity(entity) < 20 }
         }.forEach { (entity, data) ->

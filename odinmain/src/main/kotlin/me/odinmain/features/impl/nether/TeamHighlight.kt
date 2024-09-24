@@ -46,7 +46,7 @@ object TeamHighlight : Module(
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (!showName || !KuudraUtils.inKuudra || KuudraUtils.phase < 1) return
 
-        kuudraTeammatesNoSelf.forEach{ teammate ->
+        kuudraTeammatesNoSelf.forEach { teammate ->
             if (teammate.entity == null) return@forEach
             if (teammate.entity?.let { mc.thePlayer.distanceSquaredTo(it) >= 2100 } == true) return@forEach
 

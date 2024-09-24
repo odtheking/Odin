@@ -112,16 +112,15 @@ fun isFacingAABB(aabb: AxisAlignedBB, range: Float, yaw: Float = mc.thePlayer.ro
  */
 fun isXZInterceptable(aabb: AxisAlignedBB, range: Float, pos: Vec3, yaw: Float, pitch: Float): Boolean {
     val position = getPositionEyes(pos)
-    val look = getLook(yaw, pitch)
     return isXZInterceptable(
         position,
-        position.addVector(look.xCoord * range, look.yCoord * range, look.zCoord * range),
+        position.add(getLook(yaw, pitch).multiply(range)),
         aabb
     )
 }
 
 private fun isXZInterceptable(start: Vec3, goal: Vec3?, aabb: AxisAlignedBB): Boolean {
-    return isVecInZ(start.getIntermediateWithXValue(goal, aabb.minX), aabb) ||
+    return  isVecInZ(start.getIntermediateWithXValue(goal, aabb.minX), aabb) ||
             isVecInZ(start.getIntermediateWithXValue(goal, aabb.maxX), aabb) ||
             isVecInX(start.getIntermediateWithZValue(goal, aabb.minZ), aabb) ||
             isVecInX(start.getIntermediateWithZValue(goal, aabb.maxZ), aabb)
@@ -258,11 +257,9 @@ private fun isInterceptable(aabb: AxisAlignedBB, range: Float, yaw: Float, pitch
     val player = mc.thePlayer ?: return false
     val position = Vec3(player.posX, player.posY + fastEyeHeight(), player.posZ)
 
-    val look = getLook(yaw, pitch)
-
     return isInterceptable3(
         position,
-        position.addVector(look.xCoord * range, look.yCoord * range, look.zCoord * range),
+        position.add(getLook(yaw, pitch).multiply(range)),
         aabb
     )
 }
@@ -285,7 +282,7 @@ private fun isInterceptable3(start: Vec3, goal: Vec3, aabb: AxisAlignedBB): Bool
                 isVecInXY(start.getIntermediateWithZValue(goal, aabb.minZ), aabb) ||
                 isVecInXY(start.getIntermediateWithZValue(goal, aabb.maxZ), aabb)
         )
-    } catch (e: Exception) {
+    } catch (_: Exception) {
         false
     }
 }
@@ -590,12 +587,10 @@ fun etherwarpRotateTo(targetPos: BlockPos, dist: Double = 61.0): Triple<Double, 
     )
 
     var target: Vec3? = null
+    val eyeVec = getPositionEyes()
+
     for (targetVec in targets) {
-        val eyeVec = getPositionEyes()
-
-        val dirVec = targetVec.subtract(eyeVec).normalize()
-
-        val vec32 = eyeVec.addVector(dirVec.xCoord * dist, dirVec.yCoord * dist, dirVec.zCoord * dist)
+        val vec32 = eyeVec.add(targetVec.subtract(eyeVec).normalize().multiply(dist))
         // TODO: Make this use etherwarp raytracing, not default minecraft (Take from EtherWarpHelper)
         val obj = mc.theWorld?.rayTraceBlocks(eyeVec, vec32, true, false, true) ?: return null
         if (obj.blockPos == targetPos) {

@@ -14,7 +14,7 @@ object SpaceHelmet : Module(
     category = Category.RENDER,
     description = "Equips you with a space helmet."
 ) {
-    private val speed: Long by NumberSetting("Speed", 250, 100, 1000, 10, description = "The speed at which the color changes.")
+    private val speed: Long by NumberSetting("Speed", 250, 100, 1000, 10, description = "The speed at which the color changes.", unit = "ms")
     private var edition = 0
     private val values = listOf(14, 1, 4, 5, 13, 9, 11, 10, 6)
     private var currentIndex = 0

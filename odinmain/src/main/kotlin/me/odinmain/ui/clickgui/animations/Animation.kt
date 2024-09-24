@@ -3,7 +3,7 @@ package me.odinmain.ui.clickgui.animations
 import me.odinmain.utils.clock.Clock
 
 /**
- * Simple class that calculates a "point" between 2 values and a percentage.
+ * Simple class that calculates a "point" between two values and a percentage.
  * @author Stivais
  */
 abstract class Animation<T>(private var duration: Long) {

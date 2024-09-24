@@ -5,33 +5,22 @@ import me.odinmain.utils.render.Renderer
 
 object DragonTimer {
 
-    var toRender: MutableList<Triple<String, Int, WitherDragonsEnum>> = ArrayList()
-
-    private fun updateTime() {
-        toRender = ArrayList()
-
-        WitherDragonsEnum.entries.forEachIndexed { index, dragon ->
-            if (dragon.state == WitherDragonState.SPAWNING && dragon.spawnTime() > 0)
-                toRender.add(Triple("§${dragon.colorCode}${dragon} spawn: ${colorTime(dragon.spawnTime())}ms", index, dragon))
-        }
-    }
-
     fun renderTime() {
-        updateTime()
-        if (toRender.isEmpty()) return
-        toRender.forEach {
+        WitherDragonsEnum.entries.forEachIndexed { index, dragon ->
+            if (dragon.state != WitherDragonState.SPAWNING) return@forEachIndexed
+
             Renderer.drawStringInWorld(
-                it.first, it.third.spawnPos,
+                "§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn / 20.0)}", dragon.spawnPos,
                 color = Color.WHITE, depth = false,
                 scale = 0.16f
             )
         }
     }
 
-    private fun colorTime(spawnTime: Long): String {
+    fun colorDragonTimer(spawnTime: Double): String {
         return when {
-            spawnTime <= 1000 -> "§c$spawnTime"
-            spawnTime <= 3000 -> "§e$spawnTime"
+            spawnTime <= 1.0 -> "§c$spawnTime"
+            spawnTime <= 3.0 -> "§e$spawnTime"
             else -> "§a$spawnTime"
         }
     }

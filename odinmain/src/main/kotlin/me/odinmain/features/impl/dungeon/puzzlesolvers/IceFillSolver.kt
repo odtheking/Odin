@@ -39,7 +39,7 @@ object IceFillSolver {
     }
 
     fun onRenderWorldLast(color: Color) {
-        if (currentPatterns.size == 0 || patternStartPositions.size == 0 || DungeonUtils.currentRoomName != "Ice Fill") return
+        if (currentPatterns.isEmpty() || patternStartPositions.isEmpty() || DungeonUtils.currentRoomName != "Ice Fill") return
         val rotation = renderRotation ?: return
 
         val pointsList = mutableListOf<Vec3>()
@@ -47,10 +47,7 @@ object IceFillSolver {
             val pattern = currentPatterns[index]
             val startPos = patternStartPositions[index]
             pointsList.add(startPos)
-            for (point in pattern) {
-                val transformedPoint = startPos.add(transformTo(point, rotation))
-                pointsList.add(transformedPoint)
-            }
+            pattern.forEach { point -> pointsList.add(startPos.add(transformTo(point, rotation))) }
             val stairPos = startPos.add(transformTo(pattern.last().addVec(1, 1), rotation))
             pointsList.add(stairPos)
         }

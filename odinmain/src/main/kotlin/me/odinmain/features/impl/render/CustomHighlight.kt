@@ -27,7 +27,7 @@ object CustomHighlight : Module(
     private val color: Color by ColorSetting("Color", Color.WHITE, true, description = "The color of the highlight.")
     private val thickness: Float by NumberSetting("Line Width", 1f, .1f, 4f, .1f, description = "The line width of Outline / Boxes/ 2D Boxes.").withDependency { mode != HighlightRenderer.HighlightType.Overlay.ordinal }
     private val style: Int by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { mode == HighlightRenderer.HighlightType.Boxes.ordinal }
-    private val scanDelay: Long by NumberSetting("Scan Delay", 500L, 10L, 2000L, 100L, description = "The delay between entity scans.")
+    private val scanDelay: Long by NumberSetting("Scan Delay", 500L, 10L, 2000L, 100L, description = "The delay between entity scans.", unit = "ms")
 
     private val xray: Boolean by BooleanSetting("Depth Check", false, description = "Highlights entities through walls.").withDependency { !isLegitVersion }
     private val showInvisible: Boolean by BooleanSetting("Show Invisible", false, description = "Highlights invisible entities.").withDependency { isLegitVersion }
@@ -56,7 +56,7 @@ object CustomHighlight : Module(
         checkEntity(entity)
         if (starredMobESP) checkStarred(entity)
         if (shadowAssasin && isLegitVersion) checkAssassin(entity)
-        if (showInvisible && entity.isInvisible && isLegitVersion && entity !in currentEntities) entity.isInvisible = false
+        if (showInvisible && entity.isInvisible && isLegitVersion && entity in currentEntities) entity.isInvisible = false
     }
 
     private fun getEntities() {

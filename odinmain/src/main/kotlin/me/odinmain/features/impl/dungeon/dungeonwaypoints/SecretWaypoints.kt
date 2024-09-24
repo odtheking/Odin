@@ -21,8 +21,7 @@ object SecretWaypoints {
     fun onLocked() {
         val room = DungeonUtils.currentFullRoom ?: return
         val vec = Vec3(lastClicked ?: return).subtractVec(x = room.clayPos.x, z = room.clayPos.z).rotateToNorth(room.room.rotation)
-        val waypoints = getWaypoints(room)
-        waypoints.find { wp -> wp.toVec3().equal(vec) && wp.secret && wp.clicked }?.let {
+        getWaypoints(room).find { wp -> wp.toVec3().equal(vec) && wp.secret && wp.clicked }?.let {
             it.clicked = false
             setWaypoints(room)
             devMessage("unclicked ${it.toVec3()}")
@@ -58,7 +57,7 @@ object SecretWaypoints {
             waypointsList.filter { it.clicked }.forEach { it.clicked = false }
         }
 
-        if (room != null) setWaypoints(room)
+        room?.let { setWaypoints(it) }
         glList = -1
     }
 }

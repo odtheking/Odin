@@ -55,17 +55,14 @@ object ChocolateFactory : Module(
 
             if (clickFactory) windowClick(13, PlayerUtils.ClickType.Right)
             
-            if (claimStray) {
-                val container = mc.thePlayer.openContainer as? ContainerChest ?: return@execute
-                val found = container.inventorySlots.find { it.stack.displayName.contains("CLICK ME!") } ?: return@execute
-                windowClick(found.slotNumber, PlayerUtils.ClickType.Left)
-            }
+            if (!claimStray) return@execute
+            val found = (mc.thePlayer?.openContainer as? ContainerChest)?.inventorySlots?.find { it.stack.displayName.contains("CLICK ME!") } ?: return@execute
+            windowClick(found.slotNumber, PlayerUtils.ClickType.Left)
         }
 
         execute(delay = { upgradeDelay }) {
             val container = mc.thePlayer.openContainer as? ContainerChest ?: return@execute
             if (container.name != "Chocolate Factory") return@execute
-
             val choco = container.getSlot(13)?.stack ?: return@execute
 
             chocolate = choco.displayName.noControlCodes.replace(Regex("\\D"), "").toLongOrNull() ?: 0L
@@ -87,7 +84,7 @@ object ChocolateFactory : Module(
             if(!eggEsp) return@onMessage
             val match = Regex(".*(A|found|collected).+Chocolate (Lunch|Dinner|Breakfast).*").find(it) ?: return@onMessage
             val egg = ChocolateEggs.entries.find { it.type.contains(match.groupValues[2]) } ?: return@onMessage
-            when(match.groupValues[1]) {
+            when (match.groupValues[1]) {
                 "A" -> currentDetectedEggs[egg.index] = null
                 "found", "collected" -> currentDetectedEggs[egg.index]?.isFound = true
             }
@@ -159,12 +156,11 @@ object ChocolateFactory : Module(
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
         currentDetectedEggs.filterNotNull().filter { !it.isFound }.forEach { egg ->
-            val eggLocation = Vec3(egg.entity.posX - 0.5, egg.entity.posY + 1.47, egg.entity.posZ - 0.5)
-            Renderer.drawCustomBeacon(egg.renderName, eggLocation, egg.color, increase = true, beacon = false)
+            Renderer.drawCustomBeacon(egg.renderName, Vec3(egg.entity.posX - 0.5, egg.entity.posY + 1.47, egg.entity.posZ - 0.5), egg.color, increase = true, beacon = false)
         }
     }
 
     private fun isInChocolateFactory(): Boolean {
-        return mc.thePlayer.openContainer is ContainerChest && mc.thePlayer.openContainer.name == "Chocolate Factory"
+        return mc.thePlayer?.openContainer is ContainerChest && mc.thePlayer?.openContainer?.name == "Chocolate Factory"
     }
 }

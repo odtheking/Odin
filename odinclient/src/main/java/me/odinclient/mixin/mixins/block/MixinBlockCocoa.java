@@ -23,7 +23,6 @@ public abstract class MixinBlockCocoa extends BlockDirectional {
         super(material);
     }
 
-
     @Inject(method = "getCollisionBoundingBox", at = @At("HEAD"), cancellable = true)
     private void onGetCollisionBoundingBox(World worldIn, BlockPos pos, IBlockState state, CallbackInfoReturnable<AxisAlignedBB> cir)
     {
@@ -72,5 +71,4 @@ public abstract class MixinBlockCocoa extends BlockDirectional {
             ci.cancel();
         }
     }
-
 }

@@ -1,7 +1,9 @@
 package me.odinclient.mixin.mixins;
 
 import me.odinclient.features.impl.skyblock.CancelInteract;
-import me.odinmain.events.impl.*;
+import me.odinmain.events.impl.ClickEvent;
+import me.odinmain.events.impl.PreKeyInputEvent;
+import me.odinmain.events.impl.PreMouseInputEvent;
 import me.odinmain.features.impl.render.Animations;
 import me.odinmain.features.impl.render.CPSDisplay;
 import me.odinmain.utils.EventExtensions;
@@ -16,7 +18,9 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = {Minecraft.class}, priority = 800)

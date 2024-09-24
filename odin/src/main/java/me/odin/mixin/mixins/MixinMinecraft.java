@@ -1,6 +1,8 @@
 package me.odin.mixin.mixins;
 
-import me.odinmain.events.impl.*;
+import me.odinmain.events.impl.ClickEvent;
+import me.odinmain.events.impl.PreKeyInputEvent;
+import me.odinmain.events.impl.PreMouseInputEvent;
 import me.odinmain.features.impl.render.Animations;
 import me.odinmain.features.impl.render.CPSDisplay;
 import me.odinmain.utils.EventExtensions;

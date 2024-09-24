@@ -4,7 +4,6 @@ import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.impl.floor7.p3.TerminalSounds
 import me.odinmain.features.impl.floor7.p3.TerminalSounds.clickSounds
 import me.odinmain.utils.postAndCatch
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.Slot
 import net.minecraft.item.ItemStack
@@ -39,7 +38,6 @@ object Rubix : TermSimGui(
         }
         if (!TerminalSounds.enabled || !clickSounds) mc.thePlayer?.playSound("random.orb", 1f, 1f)
         GuiEvent.GuiLoadedEvent(name, inventorySlots as ContainerChest).postAndCatch()
-        modMessage(grid.joinToString { it.stack.displayName })
         if (grid.all { it?.stack?.metadata == grid.firstOrNull()?.stack?.metadata }) solved(this.name, 1)
     }
 

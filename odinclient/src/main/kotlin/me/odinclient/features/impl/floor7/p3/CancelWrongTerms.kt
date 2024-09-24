@@ -6,6 +6,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.utils.equalsOneOf
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -19,7 +20,7 @@ object CancelWrongTerms : Module(
     @SubscribeEvent
     fun onSlotClick(event: GuiEvent.GuiMouseClickEvent) {
         val gui = event.gui as? GuiChest ?: return
-        if (TerminalSolver.currentTerm == TerminalTypes.NONE) return
+        if (TerminalSolver.currentTerm.equalsOneOf(TerminalTypes.NONE, TerminalTypes.MELODY)) return
         if (TerminalSolver.currentTerm == TerminalTypes.RUBIX && disableRubix) return
         if (gui.slotUnderMouse?.slotIndex !in TerminalSolver.solution) return
         event.isCanceled = true

@@ -57,8 +57,7 @@ object PlayerUtils {
         get() = mc.thePlayer.positionVector.floored()
 
     fun EntityPlayerSP?.isHolding(vararg names: String, ignoreCase: Boolean = false, mode: Int = 0): Boolean {
-        val regex = Regex("${if (ignoreCase) "(?i)" else ""}${names.joinToString("|")}")
-        return this.isHolding(regex, mode)
+        return this.isHolding(Regex("${if (ignoreCase) "(?i)" else ""}${names.joinToString("|")}"), mode)
     }
 
     fun EntityPlayerSP?.isHolding(regex: Regex, mode: Int = 0): Boolean {
@@ -72,10 +71,8 @@ object PlayerUtils {
         }
     }
 
-    private fun EntityPlayerSP?.isHolding(predicate: (ItemStack?) -> Boolean): Boolean {
-        if (this == null) return false
-        return predicate(this.heldItem)
-    }
+    private fun EntityPlayerSP?.isHolding(predicate: (ItemStack?) -> Boolean) =
+        this?.let { predicate(it.heldItem) } == true
 
     sealed class ClickType {
         data object Left : ClickType()

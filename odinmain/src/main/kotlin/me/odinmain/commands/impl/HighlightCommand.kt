@@ -32,7 +32,7 @@ val highlightCommand = commodore("highlight") {
     }
 
     literal("list").runs {
-        if (highlightList.size == 0) return@runs modMessage("Highlight list is empty")
+        if (highlightList.isEmpty()) return@runs modMessage("Highlight list is empty")
         modMessage("Highlight list:\n${highlightList.joinToString("\n")}")
     }
 }

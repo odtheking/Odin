@@ -20,7 +20,7 @@ object SkyblockPlayer {
     current overflow mana
      */
 
-    val currentHealth: Int get() = (maxHealth * (mc.thePlayer?.health ?: 0f) / 40f).toInt()
+    val currentHealth: Int get() = (mc.thePlayer?.let { player -> (maxHealth * player.health / player.maxHealth).toInt() } ?: 0)
     var maxHealth: Int = 0
     var currentMana: Int = 0
     var maxMana: Int = 0
@@ -33,9 +33,8 @@ object SkyblockPlayer {
     fun onPacket(event: PacketReceivedEvent) {
         if (event.packet !is S02PacketChat || event.packet.type != 2.toByte()) return
         val msg = event.packet.chatComponent.unformattedText.noControlCodes
-        // https://regex101.com/r/3IFer3/3
-        val (currentHp, maxHp, middleRegion, cMana, mMana, oMana) = Regex("([\\d,]+)/([\\d,]+)❤\\s{3,}((?:\\(-?\\d+\\s\\w+\\)\\s\\w+\\s?\\w*?|[-\\d\\w\\s]+❈ Defense)?)\\s{3,}([\\d,]+)/([\\d,]+)✎\\s?(Mana|\\d+ʬ|\\d+¨)?").find(msg)?.destructured ?: return
-
+        // https://regex101.com/r/3IFer3/1
+        val (currentHp, maxHp, middleRegion, cMana, mMana, oMana) = Regex(".*?([\\d|,]+)/([\\d|,]+)❤ {5}(.+) {5}([\\d|,]+)/([\\d|,]+)✎ (Mana|§?[\\d|,]+ʬ).*").find(msg)?.destructured ?: return
         maxHealth = maxHp.replace(",", "").toIntOrNull() ?: return
         currentMana = cMana.replace(",", "").toIntOrNull() ?: return
         maxMana = mMana.replace(",", "").toIntOrNull() ?: return

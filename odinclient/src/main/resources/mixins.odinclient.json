@@ -30,6 +30,8 @@
     "mixins.MixinGuiScreen",
     "mixins.MixinItem",
     "mixins.MixinItemRenderer",
+    "mixins.MixinLayerArmorBase",
+    "mixins.MixinLayerCustomHead",
     "mixins.MixinMinecraft",
     "mixins.MixinModList",
     "mixins.MixinMouseHelper",

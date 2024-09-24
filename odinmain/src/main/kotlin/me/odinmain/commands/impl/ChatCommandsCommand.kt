@@ -29,7 +29,7 @@ val chatCommandsCommand = commodore("chatcommandslist", "cclist", "chatclist", "
     }
 
     literal("list").runs {
-        if (blacklist.size == 0) return@runs modMessage("List is empty.")
+        if (blacklist.isEmpty()) return@runs modMessage("List is empty.")
         modMessage("List:\n${blacklist.joinToString("\n")}")
     }
 }

@@ -10,5 +10,4 @@ public interface IMinecraftAccessor {
 
     @Accessor("timer")
     Timer getTimer();
-
 }

@@ -1,5 +1,3 @@
-@file:Suppress("FunctionName")
-
 package me.odinmain.utils
 
 import me.odinmain.OdinMain
@@ -144,7 +142,7 @@ fun Event.postAndCatch(): Boolean {
     }.onFailure {
         it.printStackTrace()
         logger.error("An error occurred", it)
-        modMessage("${OdinMain.VERSION} Caught and logged an ${it::class.simpleName ?: "error"} at ${this::class.simpleName}. Please report this!")
+        modMessage("${OdinMain.VERSION} Caught and logged an ${it::class.simpleName ?: "error"} at ${this::class.simpleName}. Please send your latest log in the Odin discord server!")
     }.getOrDefault(isCanceled)
 }
 
@@ -310,7 +308,7 @@ fun writeToClipboard(text: String, successMessage: String?) {
         clipboard.setContents(stringSelection, null)
         if (successMessage != null)
             modMessage(successMessage)
-    } catch (exception: Exception) {
+    } catch (_: Exception) {
         devMessage("Clipboard not available!")
     }
 }

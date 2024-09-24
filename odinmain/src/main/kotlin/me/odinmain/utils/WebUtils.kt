@@ -133,9 +133,6 @@ suspend fun hasBonusPaulScore(): Boolean = coroutineScope {
     val mayor = jsonObject.getAsJsonObject("mayor") ?: return@coroutineScope false
     val name = mayor.get("name")?.asString ?: return@coroutineScope false
     return@coroutineScope if (name == "Paul") {
-        val perks = mayor.getAsJsonArray("perks")
-        perks?.any {
-            it.asJsonObject.get("name")?.asString == "EZPZ"
-        } ?: false
+        mayor.getAsJsonArray("perks")?.any { it.asJsonObject.get("name")?.asString == "EZPZ" } == true
     } else false
 }

@@ -152,16 +152,16 @@ object ArrowsDevice : Module(
     private fun calculateBowTrajectory(mV: Vec3, pV: Vec3) {
         var motionVec = mV
         var posVec = pV
-        for (i in 0..20) {
+        repeat(21) {
             val vec = motionVec.add(posVec)
             val rayTrace = mc.theWorld?.rayTraceBlocks(posVec, vec, false, true, false)
             if (rayTrace?.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
                 if (getBlockIdAt(rayTrace.blockPos) == 133) {
                     if (rayTrace.blockPos.x !in 64..68 || rayTrace.blockPos.y !in 126..130) return // not on device
-                    me.odinclient.utils.skyblock.PlayerUtils.rightClick()
+                    rightClick()
                     triggerBotClock.update()
                 }
-                break
+                return@repeat
             }
             posVec = posVec.add(motionVec)
             motionVec = Vec3(motionVec.xCoord * 0.99, motionVec.yCoord * 0.99 - 0.05, motionVec.zCoord * 0.99)

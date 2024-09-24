@@ -10,7 +10,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object NoCursorReset : Module(
-    "No Cursor Reset",
+    name = "No Cursor Reset",
     description = "Makes your cursor stop resetting between guis.",
     category = Category.RENDER
 ) {

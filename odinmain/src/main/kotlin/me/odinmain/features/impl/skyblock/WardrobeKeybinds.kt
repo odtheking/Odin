@@ -22,7 +22,7 @@ object WardrobeKeybinds : Module(
     private val unequipKeybind: Keybinding by KeybindSetting("Unequip Keybind", Keyboard.KEY_NONE, "Unequips the current armor.")
     private val nextPageKeybind: Keybinding by KeybindSetting("Next Page Keybind", Keyboard.KEY_NONE, "Goes to the next page.")
     private val previousPageKeybind: Keybinding by KeybindSetting("Previous Page Keybind", Keyboard.KEY_NONE, "Goes to the previous page.")
-    private val delay: Long by NumberSetting("Delay", 0, 0.0, 10000.0, 10.0, description = "The delay between each click.")
+    private val delay: Long by NumberSetting("Delay", 0, 0.0, 10000.0, 10.0, description = "The delay between each click.", unit = "ms")
     private val disallowUnequippingEquipped: Boolean by BooleanSetting("Disable Unequip", false, description = "Prevents unequipping equipped armor.")
 
     private val advanced: Boolean by DropdownSetting("Show Settings", false)

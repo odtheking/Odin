@@ -7,6 +7,7 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.DropdownSetting
 import me.odinmain.utils.*
+import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
 import me.odinmain.utils.skyblock.getSkullValue
@@ -70,6 +71,7 @@ object RenderOptimizer : Module(
 
     @SubscribeEvent
     fun onPacket(event: PacketReceivedEvent) {
+        if (!LocationUtils.inSkyblock) return
         if (event.packet is S1CPacketEntityMetadata && hide0HealthNames) {
             val entity = mc.theWorld?.getEntityByID(event.packet.entityId) ?: return
             val list = event.packet.func_149376_c() ?: return
