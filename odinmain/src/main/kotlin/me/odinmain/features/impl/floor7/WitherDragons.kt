@@ -48,7 +48,7 @@ object WitherDragons : Module(
             if (!dragonTimer) return@HudSetting 0f to 0f
             WitherDragonsEnum.entries.forEachIndexed { index, dragon ->
                 if (dragon.state != WitherDragonState.SPAWNING) return@forEachIndexed
-                mcText("§${dragon.colorCode}${dragon.name.first()}${colorDragonTimer(dragon.timeToSpawn / 20)}s", 2, 5f + (index - 1) * 15f, 1, Color.WHITE, center = false)
+                mcText("§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn / 20.0)}s", 2, 5f + (index - 1) * 15f, 1, Color.WHITE, center = false)
             }
             getMCTextWidth("§5P §a4.5s")+ 2f to 33f
         }
@@ -99,7 +99,7 @@ object WitherDragons : Module(
         }
     }.withDependency { relicAnnounce && relics }
 
-    lateinit var priorityDragon: WitherDragonsEnum
+    var priorityDragon = WitherDragonsEnum.None
 
     init {
         onWorldLoad {
@@ -109,6 +109,7 @@ object WitherDragons : Module(
                 it.state = WitherDragonState.DEAD
                 it.entity = null
             }
+            priorityDragon = WitherDragonsEnum.None
             lastDragonDeath = WitherDragonsEnum.None
         }
 
@@ -121,7 +122,7 @@ object WitherDragons : Module(
         }
 
         onPacket(S29PacketSoundEffect::class.java, { DungeonUtils.getF7Phase() == M7Phases.P5 }) {
-            if (it.soundName != "random.successful_hit" || !sendArrowHit || !::priorityDragon.isInitialized) return@onPacket
+            if (it.soundName != "random.successful_hit" || !sendArrowHit || priorityDragon == WitherDragonsEnum.None) return@onPacket
             if (priorityDragon.entity?.isEntityAlive == true && System.currentTimeMillis() - priorityDragon.spawnedTime < priorityDragon.skipKillTime) arrowsHit++
         }
 
@@ -149,7 +150,7 @@ object WitherDragons : Module(
         if (dragonHealth) renderHP()
         if (dragonTimer) renderTime()
         if (dragonBoxes) renderBoxes()
-        if (::priorityDragon.isInitialized)
+        if (priorityDragon != WitherDragonsEnum.None)
             if (dragonTracers) renderTracers(priorityDragon)
     }
 
@@ -167,19 +168,19 @@ object WitherDragons : Module(
 
     @SubscribeEvent
     fun onServerTick(event: RealServerTick) {
-        DragonTimer.updateTime()
+        DragonCheck.updateTime()
         Relic.onServerTick()
     }
 
     fun arrowDeath(dragon: WitherDragonsEnum) {
-        if (!::priorityDragon.isInitialized || dragon != priorityDragon) return
+        if (priorityDragon == WitherDragonsEnum.None || dragon != priorityDragon) return
         if (!sendArrowHit || System.currentTimeMillis() - dragon.spawnedTime >= dragon.skipKillTime) return
         modMessage("§fYou hit §6$arrowsHit §farrows on §${priorityDragon.colorCode}${priorityDragon.name}.")
         arrowsHit = 0
     }
 
     fun arrowSpawn(dragon: WitherDragonsEnum) {
-        if (!::priorityDragon.isInitialized || dragon != priorityDragon) return
+        if (priorityDragon == WitherDragonsEnum.None || dragon != priorityDragon) return
         arrowsHit = 0
         Timer().schedule(dragon.skipKillTime) {
             if (dragon.entity?.isEntityAlive == true || arrowsHit > 0) {

@@ -30,6 +30,7 @@ object DragonCheck {
         if (dragon.state != WitherDragonState.SPAWNING) return
 
         dragon.state = WitherDragonState.ALIVE
+        dragon.timeToSpawn = 100
         dragon.timesSpawned += 1
         dragon.entity = entity
         dragon.spawnedTime = System.currentTimeMillis()
@@ -71,14 +72,21 @@ object DragonCheck {
     }
 
     fun onChatPacket() {
-        val dragon = WitherDragonsEnum.entries.find { lastDragonDeath == it } ?: return
-        if (sendNotification && WitherDragons.enabled) modMessage("§${dragon.colorCode}${dragon.name} dragon counts.")
+        WitherDragonsEnum.entries.find { lastDragonDeath == it }?.let {
+            if (sendNotification && WitherDragons.enabled) modMessage("§${it.colorCode}${it.name} dragon counts.")
+        }
     }
 
     fun dragonStateConfirmation() {
         val entities = mc.theWorld?.loadedEntityList.orEmpty()
         WitherDragonsEnum.entries.forEach { dragon ->
             dragon.state = if (dragon.entity !in entities && dragon.state == WitherDragonState.ALIVE) WitherDragonState.DEAD else dragon.state
+        }
+    }
+
+    fun updateTime() {
+        WitherDragonsEnum.entries.forEachIndexed { index, dragon ->
+            if (dragon.state == WitherDragonState.SPAWNING) dragon.timeToSpawn = (dragon.timeToSpawn - 1).coerceAtLeast(0)
         }
     }
 }

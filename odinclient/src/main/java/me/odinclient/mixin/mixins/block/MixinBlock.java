@@ -16,12 +16,9 @@ public abstract class MixinBlock {
 
     @Inject(method = "getSelectedBoundingBox", at = @At("HEAD"))
     public void getSelectedBoundingBox(World worldIn, BlockPos pos, CallbackInfoReturnable<AxisAlignedBB> cir) {
-
     }
 
     @Inject(method = "collisionRayTrace", at = @At("HEAD"))
     public void collisionRayTrace(World worldIn, BlockPos pos, Vec3 start, Vec3 end, CallbackInfoReturnable<MovingObjectPosition> cir) {
-
     }
-
 }

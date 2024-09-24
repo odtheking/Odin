@@ -1,5 +1,3 @@
-@file:Suppress("FunctionName")
-
 package me.odinmain.utils
 
 import me.odinmain.OdinMain

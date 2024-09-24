@@ -24,5 +24,4 @@ public interface IBlockAccessor {
 
     @Accessor
     void setMaxZ(double maxY);
-
 }

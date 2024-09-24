@@ -28,5 +28,4 @@ public class MixinBlockMushroom extends BlockBush {
         }
         return super.collisionRayTrace(worldIn, pos, start, end);
     }
-
 }

@@ -39,12 +39,7 @@ public abstract class MixinItemRenderer {
 
     @Redirect(method = "renderItemInFirstPerson", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ItemRenderer;transformFirstPersonItem(FF)V", ordinal = 0))
     private void renderItemHook(ItemRenderer instance, float equipProgress, float swingProgress) {
-        if (Animations.INSTANCE.getEnabled()) {
-            this.transformFirstPersonItem(equipProgress, swingProgress);
-        }
-        else {
-            this.transformFirstPersonItem(equipProgress, swingProgress);
-        }
+        this.transformFirstPersonItem(equipProgress, swingProgress);
     }
 
     @Redirect(method = "renderItemInFirstPerson", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ItemRenderer;transformFirstPersonItem(FF)V", ordinal = 1))
@@ -79,17 +74,11 @@ public abstract class MixinItemRenderer {
 
     @Redirect(method = "renderItemInFirstPerson", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ItemRenderer;transformFirstPersonItem(FF)V", ordinal = 4))
     private void renderItemHook4(ItemRenderer instance, float equipProgress, float swingProgress) {
-        if (Animations.INSTANCE.getEnabled()) {
-            this.transformFirstPersonItem(equipProgress, swingProgress);
-        }
-        else {
-            this.transformFirstPersonItem(equipProgress, swingProgress);
-        }
+        this.transformFirstPersonItem(equipProgress, swingProgress);
     }
 
     @Inject(method = "doItemUsedTransformations", at = @At("HEAD"), cancellable = true)
     private void noSwing(float swingProgress, CallbackInfo ci) {
         if (Animations.INSTANCE.getShouldStopSwing()) ci.cancel();
     }
-
 }

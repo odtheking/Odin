@@ -25,5 +25,4 @@ public class MixinBlockChest extends Block {
             ci.cancel();
         }
     }
-
 }

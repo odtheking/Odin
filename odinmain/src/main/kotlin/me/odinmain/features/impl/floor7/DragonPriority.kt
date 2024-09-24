@@ -23,7 +23,7 @@ object DragonPriority {
         return priorityDragon
     }
 
-    fun dragonPrioritySpawn(dragon: WitherDragonsEnum) {
+    fun displaySpawningDragon(dragon: WitherDragonsEnum) {
         if (dragonTitle && WitherDragons.enabled) PlayerUtils.alert("§${dragon.colorCode}${dragon.name} is spawning!")
         if (dragonPriorityToggle && WitherDragons.enabled && WitherDragonsEnum.entries.filter { it.state == WitherDragonState.SPAWNING }.toMutableList().size == 2) modMessage("§${dragon.colorCode}${dragon.name} §7is your priority dragon!")
     }
@@ -32,7 +32,7 @@ object DragonPriority {
         val totalPower = Blessing.POWER.current * (if (paulBuff) 1.25 else 1.0) + (if (Blessing.TIME.current > 0) 2.5 else 0.0)
 
         val playerClass = DungeonUtils.currentDungeonPlayer.clazz.also { if (it == DungeonClass.Unknown) modMessage("§cFailed to get dungeon class.") }
-        devMessage("§8Getting priority dragon for §${playerClass.colorCode}${playerClass.name}§8 with §4$totalPower§8 power.")
+
         val dragonList = listOf(WitherDragonsEnum.Orange, WitherDragonsEnum.Green, WitherDragonsEnum.Red, WitherDragonsEnum.Blue, WitherDragonsEnum.Purple)
         val priorityList =
             if (totalPower >= normalPower || (spawningDragon.any { it == WitherDragonsEnum.Purple } && totalPower >= easyPower))

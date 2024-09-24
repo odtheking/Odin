@@ -26,26 +26,17 @@ public class MixinBlockSkull extends Block {
     }
 
     @Inject(method = "setBlockBoundsBasedOnState", at = @At("HEAD"), cancellable = true)
-    private void onSetBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos, CallbackInfo ci)
-    {
-        if (SecretHitboxes.INSTANCE.isEssence(pos) && SecretHitboxes.INSTANCE.getEnabled())
-        {
+    private void onSetBlockBoundsBasedOnState(IBlockAccess worldIn, BlockPos pos, CallbackInfo ci) {
+        if (SecretHitboxes.INSTANCE.isEssence(pos) && SecretHitboxes.INSTANCE.getEnabled()) {
             this.setBlockBounds(0, 0, 0, 1, 1, 1);
             ci.cancel();
         }
     }
 
-
     @Inject(method = "getCollisionBoundingBox", at = @At("HEAD"), cancellable = true)
-    private void onGetCollisionBoundingBox(World worldIn, BlockPos pos, IBlockState state, CallbackInfoReturnable<AxisAlignedBB> cir)
-    {
-        if (SecretHitboxes.INSTANCE.getEnabled() && SecretHitboxes.INSTANCE.getEssence())
-        {
+    private void onGetCollisionBoundingBox(World worldIn, BlockPos pos, IBlockState state, CallbackInfoReturnable<AxisAlignedBB> cir) {
+        if (SecretHitboxes.INSTANCE.getEnabled() && SecretHitboxes.INSTANCE.getEssence()) {
             switch (worldIn.getBlockState(pos).getValue(FACING)) {
-                default: {
-                    this.setBlockBounds(0.25f, 0.0f, 0.25f, 0.75f, 0.5f, 0.75f);
-                    break;
-                }
                 case NORTH: {
                     this.setBlockBounds(0.25f, 0.25f, 0.5f, 0.75f, 0.75f, 1.0f);
                     break;
@@ -61,6 +52,10 @@ public class MixinBlockSkull extends Block {
                 case EAST: {
                     this.setBlockBounds(0.0f, 0.25f, 0.25f, 0.5f, 0.75f, 0.75f);
                 }
+                default: {
+                    this.setBlockBounds(0.25f, 0.0f, 0.25f, 0.75f, 0.5f, 0.75f);
+                    break;
+                }
             }
 
             AxisAlignedBB collisionBoundingBox = super.getCollisionBoundingBox(worldIn, pos, state);
@@ -69,5 +64,4 @@ public class MixinBlockSkull extends Block {
             cir.cancel();
         }
     }
-
 }

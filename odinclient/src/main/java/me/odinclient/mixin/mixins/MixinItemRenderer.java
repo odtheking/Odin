@@ -91,5 +91,4 @@ public abstract class MixinItemRenderer {
     private void noSwing(float swingProgress, CallbackInfo ci) {
         if (Animations.INSTANCE.getShouldStopSwing()) ci.cancel();
     }
-
 }

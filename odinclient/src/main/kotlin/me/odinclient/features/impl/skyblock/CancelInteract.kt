@@ -38,7 +38,7 @@ object CancelInteract : Module(
     )
 
     /**
-     * Set containing all the block which interactions should be cancelled with.
+     * Set containing all the block which interactions should be canceled with.
      */
     private val interactionBlacklist = setOf<Block>(
         Blocks.cobblestone_wall, Blocks.oak_fence, Blocks.dark_oak_fence,

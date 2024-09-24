@@ -56,5 +56,4 @@ public class MixinBlockButton extends Block {
             ci.cancel();
         }
     }
-
 }

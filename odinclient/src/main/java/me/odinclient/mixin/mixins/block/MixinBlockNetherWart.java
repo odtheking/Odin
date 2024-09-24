@@ -26,5 +26,4 @@ public abstract class MixinBlockNetherWart extends MixinBlock {
             FarmingHitboxes.INSTANCE.setFullBlock(worldIn.getBlockState(pos).getBlock());
         }
     }
-
 }
