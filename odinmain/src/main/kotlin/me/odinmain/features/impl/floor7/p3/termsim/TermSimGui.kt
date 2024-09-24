@@ -5,11 +5,11 @@ import me.odinmain.OdinMain.display
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.events.impl.PacketSentEvent
 import me.odinmain.features.impl.floor7.TerminalSimulator
+import me.odinmain.features.impl.floor7.TerminalSimulator.openRandomTerminal
 import me.odinmain.features.impl.floor7.TerminalSimulator.sendMessage
 import me.odinmain.features.impl.floor7.p3.TerminalSounds
 import me.odinmain.features.impl.floor7.p3.TerminalSounds.completeSounds
 import me.odinmain.features.impl.floor7.p3.TerminalSounds.playCompleteSound
-import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.utils.*
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiChest
@@ -104,17 +104,5 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
         if (slot.stack?.item == pane && slot.stack?.metadata == 15) return
         if (!GuiEvent.GuiWindowClickEvent(mc.thePlayer.openContainer.windowId, slot.slotIndex, clickedButton, clickType, mc.thePlayer).postAndCatch())
         delaySlotClick(slot, 0)
-    }
-}
-
-fun openRandomTerminal(ping: Long = 0L, const: Long = 0L) {
-    when (listOf(TerminalTypes.PANES, TerminalTypes.RUBIX, TerminalTypes.ORDER, TerminalTypes.STARTS_WITH, TerminalTypes.SELECT).random()) {
-        TerminalTypes.PANES -> CorrectPanes.open(ping, const)
-        TerminalTypes.RUBIX -> Rubix.open(ping, const)
-        TerminalTypes.ORDER -> InOrder.open(ping, const)
-        TerminalTypes.STARTS_WITH -> StartsWith(StartsWith.letters.shuffled().first()).open(ping, const)
-        TerminalTypes.SELECT -> SelectAll(EnumDyeColor.entries.getRandom().name.replace("_", " ").uppercase()).open(ping, const)
-        TerminalTypes.MELODY -> {}
-        TerminalTypes.NONE -> {}
     }
 }

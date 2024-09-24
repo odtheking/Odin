@@ -31,12 +31,15 @@ object KuudraUtils {
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
-        phase = 0
         kuudraTeammates = mutableListOf()
         kuudraTeammatesNoSelf = mutableListOf()
-        supplies = BooleanArray(6) { true }
         giantZombies = mutableListOf()
+        supplies = BooleanArray(6) { true }
         kuudraEntity = EntityMagmaCube(mc.theWorld)
+        builders = 0
+        build = 0
+        phase = 0
+        buildingPiles = listOf()
         NoPre.missing = ""
     }
 
@@ -77,10 +80,9 @@ object KuudraUtils {
 
             entities.filterIsInstance<EntityArmorStand>().forEach {
                 if (phase == 2) {
-                    val message = Regex("Building Progress (\\d+)% \\((\\d+) Players Helping\\)").find(it.name.noControlCodes)
-                    if (message != null) {
-                        build = message.groupValues[1].toIntOrNull() ?: 0
-                        builders = message.groupValues[2].toIntOrNull() ?: 0
+                    Regex("Building Progress (\\d+)% \\((\\d+) Players Helping\\)").find(it.name.noControlCodes)?.let {
+                        build = it.groupValues[1].toIntOrNull() ?: 0
+                        builders = it.groupValues[2].toIntOrNull() ?: 0
                     }
                 }
 

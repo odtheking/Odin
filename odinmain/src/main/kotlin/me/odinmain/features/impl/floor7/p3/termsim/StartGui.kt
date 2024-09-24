@@ -1,6 +1,7 @@
 package me.odinmain.features.impl.floor7.p3.termsim
 
 import me.odinmain.features.impl.floor7.TerminalSimulator
+import me.odinmain.features.impl.floor7.TerminalSimulator.openRandomTerminal
 import me.odinmain.utils.getRandom
 import me.odinmain.utils.round
 import me.odinmain.utils.runIn
@@ -72,10 +73,10 @@ object StartGui : TermSimGui(
             10 -> CorrectPanes.open(ping)
             11 -> Rubix.open(ping)
             12 -> InOrder.open(ping)
+            13 -> openRandomTerminal(ping)
             14 -> StartsWith(StartsWith.letters.shuffled().first()).open(ping)
             15 -> SelectAll(EnumDyeColor.entries.getRandom().name.replace("_", " ").uppercase()).open(ping)
             16 -> Melody.open(ping)
-            13 -> openRandomTerminal(ping)
         }
     }
 }

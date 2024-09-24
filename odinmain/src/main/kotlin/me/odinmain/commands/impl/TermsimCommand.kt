@@ -1,6 +1,7 @@
 package me.odinmain.commands.impl
 
 import me.odinmain.commands.commodore
+import me.odinmain.features.impl.floor7.TerminalSimulator.openRandomTerminal
 import me.odinmain.features.impl.floor7.p3.termsim.*
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.getRandom
@@ -21,9 +22,11 @@ val termSimCommand = commodore("termsim") {
             "pains" -> CorrectPanes.open(ping ?: 0, 1)
             "rubix" -> Rubix.open(ping ?: 0, 1)
             "order" -> InOrder.open(ping ?: 0, 1)
-            "sw" -> StartsWith(StartsWith.letters.shuffled().first()).open(ping ?: 0, 1)
+            "start" -> StartsWith(StartsWith.letters.shuffled().first()).open(ping ?: 0, 1)
             "select" -> SelectAll(EnumDyeColor.entries.getRandom().name.replace("_", " ").uppercase()).open(ping ?: 0, 1)
             "melody" -> Melody.open(ping ?: 0, 1)
         }
+    } suggests {
+        listOf("pains", "rubix", "order", "start", "select", "melody")
     }
 }

@@ -2,9 +2,18 @@ package me.odinmain.features.impl.floor7
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.impl.floor7.p3.TerminalTypes
+import me.odinmain.features.impl.floor7.p3.termsim.CorrectPanes
+import me.odinmain.features.impl.floor7.p3.termsim.InOrder
+import me.odinmain.features.impl.floor7.p3.termsim.Melody
+import me.odinmain.features.impl.floor7.p3.termsim.Rubix
+import me.odinmain.features.impl.floor7.p3.termsim.SelectAll
+import me.odinmain.features.impl.floor7.p3.termsim.StartsWith
 import me.odinmain.features.settings.impl.*
+import me.odinmain.utils.getRandom
 import me.odinmain.utils.skyblock.PersonalBest
 import me.odinmain.utils.skyblock.sendCommand
+import net.minecraft.item.EnumDyeColor
 
 object TerminalSimulator : Module(
     name = "Terminal Simulator",
@@ -27,5 +36,17 @@ object TerminalSimulator : Module(
         sendCommand(if (repetitiveTerminals == 1) "termsim $ping" else "termsim $ping $repetitiveTerminals", clientSide = true)
         super.onEnable()
         toggle()
+    }
+
+    fun openRandomTerminal(ping: Long = 0L, cons: Long = 0L) {
+        when (listOf(TerminalTypes.PANES, TerminalTypes.RUBIX, TerminalTypes.ORDER, TerminalTypes.STARTS_WITH, TerminalTypes.SELECT).random()) {
+            TerminalTypes.PANES -> CorrectPanes.open(ping, cons)
+            TerminalTypes.RUBIX -> Rubix.open(ping, cons)
+            TerminalTypes.ORDER -> InOrder.open(ping, cons)
+            TerminalTypes.STARTS_WITH -> StartsWith(StartsWith.letters.shuffled().first()).open(ping, cons)
+            TerminalTypes.SELECT -> SelectAll(EnumDyeColor.entries.getRandom().name.replace("_", " ").uppercase()).open(ping, cons)
+            TerminalTypes.MELODY -> Melody.open(ping, cons)
+            TerminalTypes.NONE -> {}
+        }
     }
 }

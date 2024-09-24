@@ -169,7 +169,6 @@ class Color(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f)
         inline val Int.green get() = this shr 8 and 0xFF
         inline val Int.blue get() = this and 0xFF
         inline val Int.alpha get() = this shr 24 and 0xFF
-
     }
 
     class ColorSerializer : JsonSerializer<Color>, JsonDeserializer<Color> {
