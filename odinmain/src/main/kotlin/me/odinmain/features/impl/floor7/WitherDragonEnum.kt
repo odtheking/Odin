@@ -74,7 +74,7 @@ fun handleSpawnPacket(particle: S2APacketParticles) {
         }
     }
 
-    val spawningDragons = WitherDragonsEnum.entries.filter { it.state == WitherDragonState.SPAWNING }.toMutableList().ifEmpty { return }
+    val spawningDragons = WitherDragonsEnum.entries.filter { it.state == WitherDragonState.SPAWNING }.toMutableList().takeIf { it.size >= 2 } ?: return
     priorityDragon = findPriority(spawningDragons)
     displaySpawningDragon(priorityDragon)
 }

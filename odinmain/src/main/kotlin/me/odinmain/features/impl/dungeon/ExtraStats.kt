@@ -96,7 +96,7 @@ object ExtraStats : Module(
             ) event.isCanceled = true
     }
 
-    data class PostDungeonStats(
+    private data class PostDungeonStats(
         var score: Int = 0,
         var scoreLetter: String? = null,
         var bossKilled: String? = null,

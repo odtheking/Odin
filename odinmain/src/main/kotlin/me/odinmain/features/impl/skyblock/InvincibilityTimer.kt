@@ -32,7 +32,7 @@ object InvincibilityTimer : Module(
         }
     }
 
-    data class Timer(var time: Int, var type: String)
+    private data class Timer(var time: Int, var type: String)
     private var invincibilityTime = Timer(0, "")
     private val bonzoMaskRegex = Regex("^Your (?:. )?Bonzo's Mask saved your life!$")
     private val phoenixPetRegex = Regex("^Your Phoenix Pet saved you from certain death!$")

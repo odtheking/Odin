@@ -20,6 +20,7 @@ import net.minecraft.block.BlockButtonStone
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.init.Blocks
 import net.minecraft.item.Item
+import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -193,13 +194,16 @@ object SimonSays : Module(
         if (triggerBot) triggerBot()
 
         for (index in clickNeeded until clickInOrder.size) {
-            val position = clickInOrder[index]
+            val pos = clickInOrder[index]
+            val x = pos.x - .125
+            val y = pos.y + .3125
+            val z = pos.z + .25
             val color = when (index) {
                 clickNeeded -> Color(0, 170, 0)
                 clickNeeded + 1 -> Color(255, 170, 0)
                 else -> Color(170, 0, 0)
             }.withAlpha(.5f)
-            Renderer.drawBlock(position, color, 1f, depth = true, outlineAlpha = 0)
+            Renderer.drawBox(AxisAlignedBB(x, y, z, x + .25, y + .375, z + .5), color, outlineAlpha = 1f, fillAlpha = 0.6f)
         }
     }
 }

@@ -139,7 +139,7 @@ object ChocolateFactory : Module(
         Dinner(BunnyEggTextures.DINNER_EGG_TEXTURE, "§aDinner Egg", Color.GREEN, 2),
     }
 
-    data class Egg(val entity: EntityArmorStand, val renderName: String, val color: Color, var isFound: Boolean = false)
+    private data class Egg(val entity: EntityArmorStand, val renderName: String, val color: Color, var isFound: Boolean = false)
 
     private fun getEggType(entity: EntityArmorStand): ChocolateEggs? {
         val texture = getSkullValue(entity)

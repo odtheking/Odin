@@ -56,7 +56,7 @@ object DeployableTimer : Module(
         Plasma  ("placeholder", "§d§lPlasmaflux",   5, 60000,  20f),
     }
 
-    data class Deployable(val deployable: DeployableTypes, val entity: EntityArmorStand, val duration: Int, val timeAdded: Long = System.currentTimeMillis())
+    private data class Deployable(val deployable: DeployableTypes, val entity: EntityArmorStand, val duration: Int, val timeAdded: Long = System.currentTimeMillis())
 
     private val activeDeployables = mutableListOf<Deployable>()
     private val orbRegex = Regex("(.+) (\\d+)s")

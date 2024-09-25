@@ -26,7 +26,7 @@ object TTTSolver {
         )
     }
 
-    data class BoardSlot(val state: State, val location: BlockPos, val row: Int, val column: Int, val position: BoardPosition)
+    private data class BoardSlot(val state: State, val location: BlockPos, val row: Int, val column: Int, val position: BoardPosition)
 
     private var toRender: BlockPos? = null
 

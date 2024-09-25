@@ -24,7 +24,7 @@ object Ragaxe : Module(
                 PlayerUtils.alert("§aCasted Rag Axe")
             }
         }
-        onMessage(Regex("Ragnarock was cancelled due to being hit!"), { alertCancelled && enabled }) {
+        onMessage(Regex("Ragnarock was cancelled due to (?:being hit|taking damage)!"), { alertCancelled && enabled }) {
             PlayerUtils.alert("§cRag Axe Cancelled")
             cancelled = true
         }

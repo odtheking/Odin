@@ -17,7 +17,7 @@ object NoPre : Module(
     private var preLoc = PreSpot("", Vec3(0.0, 0.0, 0.0))
     var missing = ""
 
-    data class PreSpot(val name: String, val location: Vec3)
+    private data class PreSpot(val name: String, val location: Vec3)
     private val preSpots = listOf(
         PreSpot("triangle", Vec3(-67.5, 77.0, -122.5)),
         PreSpot("X", Vec3(-142.5, 77.0, -151.0)),

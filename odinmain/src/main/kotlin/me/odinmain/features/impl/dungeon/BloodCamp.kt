@@ -90,13 +90,13 @@ object BloodCamp : Module(
     private var tickTime: Long = 0
 
     private val forRender = hashMapOf<EntityArmorStand, RenderEData>()
-    data class RenderEData(
+    private data class RenderEData(
         var currVector: Vec3? = null, var lastEndVector: Vec3? = null, var endVector: Vec3? = null, var lastEndPoint: Vec3? = null,
         val startVector: Vec3, var time: Long? = null, var endVecUpdated: Long? = null, var speedVectors: Vec3? = null, var lastPingPoint: Vec3? = null
     )
 
     private val entityList = hashMapOf<EntityArmorStand, EntityData>()
-    data class EntityData(
+    private data class EntityData(
         val vectors: MutableList<Vec3?> = mutableListOf(), var startVector: Vec3? = null, var finalVector: Vec3? = null,
         var time: Int? = null, val started: Long? = null, var timetook: Long? = null, var firstSpawns: Boolean = true
     )

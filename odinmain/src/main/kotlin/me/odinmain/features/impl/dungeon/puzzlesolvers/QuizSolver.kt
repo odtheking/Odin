@@ -19,7 +19,7 @@ object QuizSolver {
     private var triviaAnswers: List<String>? = null
 
     private var triviaOptions: MutableList<TriviaAnswer> = MutableList(3) { TriviaAnswer(null, false) }
-    data class TriviaAnswer(var vec3: Vec3?, var correct: Boolean)
+    private data class TriviaAnswer(var vec3: Vec3?, var correct: Boolean)
 
     init {
         try {

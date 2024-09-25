@@ -230,8 +230,8 @@ object TerminalSolver : Module(
             }
         }
 
-        onPacket(S2FPacketSetSlot::class.java) {
-            if (currentTerm == TerminalTypes.MELODY) mc.thePlayer?.openContainer?.inventoryItemStacks?.let { solution = solveMelody(it) }
+        onPacket(S2FPacketSetSlot::class.java, {currentTerm == TerminalTypes.MELODY}) {
+            mc.thePlayer?.openContainer?.inventory?.let { solution = solveMelody(it) }
         }
     }
 
