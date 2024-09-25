@@ -12,15 +12,29 @@ object ServerHud : Module(
     name = "Server Hud",
     description = "Displays your current ping, FPS and server's TPS."
 ) {
+    // todo:
+    // create something for texts with multiple colors and if the text is varying or not
     private val fps by HUD(2.percent, 2.percent) {
-        text("FPS ", color = ClickGUI.color, size = 30.px) and text({ ServerUtils.fps })
+        text(
+            text = "FPS ",
+            color = ClickGUI.color,
+            size = 30.px
+        ) and text({ ServerUtils.fps })
     }.setting("FPS HUD", "HUD, which displays your frames per second.")
 
     private val ping by HUD(8.percent, 2.percent) {
-        text("Ping ", color = ClickGUI.color, size = 30.px) and text({ ServerUtils.averagePing.toInt() })
+        text(
+            text = "Ping ",
+            color = ClickGUI.color,
+            size = 30.px
+        ) and text({ ServerUtils.averagePing.toInt() })
     }.setting("Ping HUD", "HUD, which displays your ping.")
 
     private val tps by HUD(14.percent, 2.percent) {
-        text("TPS ", color = ClickGUI.color, size = 30.px) and text({ ServerUtils.averageTps.toInt() })
+        text(
+            text = "TPS ",
+            color = ClickGUI.color,
+            size = 30.px
+        ) and text({ ServerUtils.averageTps.toInt() })
     }.setting("TPS HUD", "HUD, which displays the server's TPS.")
 }

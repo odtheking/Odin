@@ -142,7 +142,7 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
 
     fun clip() {
         elements?.loop {
-            it.renders = it.intersects(x, y, width, height)// && it.width != 0f && it.height != 0f
+            it.renders = it.intersects(x, y, screenWidth(), screenHeight())// && it.width != 0f && it.height != 0f
             if (it.renders) {
                 it.clip()
             }
@@ -192,8 +192,8 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
             element.render()
         }
         if (scissors) renderer.popScissor()
-//        if (hovered) renderer.hollowRect(x, y, width, height, 1f, Color.WHITE.rgba)
         renderer.pop()
+        if (scale != 1f) renderer.hollowRect(x, y, width, height, 1f, Color.WHITE.rgba)
     }
 
     open fun accept(event: Event): Boolean {
@@ -276,5 +276,13 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
         val tw = this.width
         val th = this.height
         return (x < tx + tw && tx < x + width) && (y < ty + th && ty < y + height)
+    }
+
+    fun screenWidth(): Float {
+        return width * scale
+    }
+
+    fun screenHeight(): Float {
+        return height * scale
     }
 }

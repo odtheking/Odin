@@ -244,7 +244,7 @@ abstract class Module(
 
         var scale = 1f
             set(value) {
-                field = value.coerceAtLeast(0.25f)
+                field = value.coerceAtLeast(1f)
             }
 
         init {
@@ -274,6 +274,9 @@ abstract class Module(
     }
 
     class HUDScope(element: HUD.Drawable) : ElementScope<HUD.Drawable>(element) {
+
+        inline val preview: Boolean get() = element.preview
+
         inline fun needs(crossinline block: () -> Boolean) {
             if (!element.preview) {
                 operation {

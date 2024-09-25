@@ -70,8 +70,6 @@ object ModuleManager {
     private const val SNAP_THRESHOLD = 10f
 
     fun openHUDEditor(/*huds: List<Module.HUD>*/) = UI {
-        // temp fix for scaling bs
-//        operation { redraw(); false }
         onCreation { hudUI.empty() }
         onRemove {
             HUDs.loop { setupHUD(it) }
@@ -121,26 +119,30 @@ object ModuleManager {
 
                 onMouseMove {
                     if (pressed) {
-                        val parentWidth = parent?.width ?: 0f
-                        val parentHeight = parent?.height ?: 0f
-
                         var newX = ui.mx - x
                         var newY = ui.my - y
 
-                        newX = newX.coerceIn(0f, parentWidth - element.width)
-                        newY = newY.coerceIn(0f, parentHeight - element.height)
+                        newX = newX.coerceIn(0f, parent!!.width - element.screenWidth())
+                        newY = newY.coerceIn(0f, parent!!.height - element.screenHeight())
 
-                        this.parent?.elements?.filter { it != element }?.forEach { other ->
+                        parent?.elements?.loop snap@ { other ->
+                            if (other == element) return@snap
 
-                            if (abs(newX + element.width - other.x) <= SNAP_THRESHOLD) newX = other.x - element.width
-                            else if (abs(newX - (other.x + other.width)) <= SNAP_THRESHOLD) newX = other.x + other.width
+                            if (abs(newX + element.screenWidth() - other.x) <= SNAP_THRESHOLD) {
+                                newX = other.x - element.screenWidth()
+                            } else if (abs(newX - (other.x + other.screenWidth())) <= SNAP_THRESHOLD) {
+                                newX = other.x + other.screenWidth()
+                            }
 
-                            if (abs(newY + element.height - other.y) <= SNAP_THRESHOLD) newY = other.y - element.height // Snap above the other element
-                            else if (abs(newY - (other.y + other.height)) <= SNAP_THRESHOLD) newY = other.y + other.height
+                            if (abs(newY + element.screenHeight() - other.y) <= SNAP_THRESHOLD) {
+                                newY = other.y - element.screenHeight()
+                            } else if (abs(newY - (other.y + other.screenHeight())) <= SNAP_THRESHOLD) {
+                                newY = other.y + other.screenHeight()
+                            }
                         }
 
-                        px.pixels = newX.coerceIn(0f, parentWidth - element.width)
-                        py.pixels = newY.coerceIn(0f, parentHeight - element.height)
+                        px.pixels = newX.coerceIn(0f, parent!!.width - element.screenWidth())
+                        py.pixels = newY.coerceIn(0f, parent!!.height - element.screenHeight())
 
                         redraw()
                     }

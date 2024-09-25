@@ -1,51 +1,57 @@
 package me.odinmain.features.impl.render
 
+import com.github.stivais.ui.color.Color
+import com.github.stivais.ui.constraints.percent
+import com.github.stivais.ui.constraints.px
 import me.odinmain.features.Module
+import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.round
-import net.minecraft.network.play.client.C07PacketPlayerDigging
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import me.odinmain.utils.ui.and
+import net.minecraft.network.play.client.C07PacketPlayerDigging.Action.START_DESTROY_BLOCK
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
+import kotlin.math.roundToInt
+import net.minecraft.network.play.client.C07PacketPlayerDigging as PacketPlayerDigging
 
 object BPSDisplay : Module(
     name = "BPS Display",
     description = "Displays how many blocks per second you're breaking."
 ) {
+    private val roundNumber by BooleanSetting("Round number", true, description = "If the number should be rounded.")
+
+    private val hud by HUD(0.percent, 0.percent) {
+        text(
+            text = "BPS ",
+            color = Color.GREEN,
+            size = 30.px
+        ) and if (preview) text(text = "20.0") else text({ if (roundNumber) bps.roundToInt() else bps.round(1) })
+    }.setting("Display", "")
+
     private var startTime: Long = 0
     private var isBreaking: Boolean = false
     private var blocksBroken: Int = 0
     private var lastBrokenBlock: Long = 0
     private var bps: Double = 0.0
 
-   /* private val hud: HudElement by HudSetting("Display", 10f, 10f, 2f, false) {
-        if (it) { // example
-            mcText("§7BPS: §r17.8", 1f, 1f, 1, Color.WHITE, center = false)
-        } else {
-            mcText("§7BPS: §r${bps.round(1)}", 1f, 1f, 1, Color.WHITE, center = false)
-        }
-        getMCTextWidth("BPS: 17.5") + 2f to 10f
-    }*/
 
     init {
-        onPacket(C07PacketPlayerDigging::class.java) {
-            if (it.status != C07PacketPlayerDigging.Action.START_DESTROY_BLOCK) return@onPacket
+        onPacket { packet: PacketPlayerDigging ->
+            if (packet.status != START_DESTROY_BLOCK) return@onPacket
             if (startTime == 0L) startTime = System.currentTimeMillis()
             isBreaking = true
             blocksBroken++
             lastBrokenBlock = System.currentTimeMillis()
         }
-    }
-
-    @SubscribeEvent
-    fun tick(event: ClientTickEvent) {
-        if (!isBreaking) return
-        val secondsElapsed = (System.currentTimeMillis() - startTime) / 1000.0
-        bps = (blocksBroken / secondsElapsed).round(2).toDouble()
-        if (System.currentTimeMillis() - lastBrokenBlock > 1000) {
-            bps = 0.0
-            isBreaking = false
-            blocksBroken = 0
-            startTime = 0
-            lastBrokenBlock = 0
+        onEvent<ClientTickEvent> {
+            if (!isBreaking) return@onEvent
+            val secondsElapsed = (System.currentTimeMillis() - startTime) / 1000.0
+            bps = (blocksBroken / secondsElapsed).round(2).toDouble()
+            if (System.currentTimeMillis() - lastBrokenBlock > 1000) {
+                bps = 0.0
+                isBreaking = false
+                blocksBroken = 0
+                startTime = 0
+                lastBrokenBlock = 0
+            }
         }
     }
 }
