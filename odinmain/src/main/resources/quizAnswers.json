@@ -56,5 +56,6 @@
     "Broodfather",
     "Night Spider"
   ],
-  "Which of these monsters only spawns at night?": ["Zombie Villager", "Ghast"]
+  "Which of these monsters only spawns at night?": ["Zombie Villager", "Ghast"],
+  "What is the name of the vendor in the Hub who sells stained": ["Wool Weaver"]
 }
