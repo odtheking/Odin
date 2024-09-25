@@ -340,14 +340,9 @@ object RenderUtils {
     ) {
         val renderPos = getRenderPos(vec3)
 
-        if (!depthTest) {
-            GlStateManager.disableDepth()
-            GlStateManager.depthMask(false)
-        }
+        GlStateManager.pushMatrix()
 
         val xMultiplier = if (mc.gameSettings.thirdPersonView == 2) -1 else 1
-
-        GlStateManager.pushMatrix()
         GlStateManager.translate(renderPos.xCoord, renderPos.yCoord, renderPos.zCoord)
         GlStateManager.rotate(-renderManager.playerViewY, 0.0f, 1.0f, 0.0f)
         GlStateManager.rotate(renderManager.playerViewX * xMultiplier, 1.0f, 0.0f, 0.0f)
@@ -356,16 +351,12 @@ object RenderUtils {
 
         GlStateManager.enableBlend()
         blendFactor()
+        depth(depthTest)
 
         val textWidth = mc.fontRendererObj.getStringWidth(text)
         mc.fontRendererObj.drawString("$text§r", -textWidth / 2f, 0f, color.rgba, shadow)
 
-        if (!depthTest) {
-            GlStateManager.enableDepth()
-            GlStateManager.depthMask(true)
-        }
-
-        GlStateManager.enableLighting()
+        if (!depthTest) resetDepth()
         GlStateManager.disableBlend()
         GlStateManager.resetColor()
         GlStateManager.popMatrix()
