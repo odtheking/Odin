@@ -9,7 +9,7 @@ import me.odinmain.utils.render.Renderer
 
 object DragonTracer {
     fun renderTracers(dragon: WitherDragonsEnum) {
-        if (dragon.state == WitherDragonState.SPAWNING) return
+        if (dragon.state == WitherDragonState.SPAWNING)
             Renderer.draw3DLine(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), dragon.spawnPos.addVec(0.5, 3.5, 0.5), color = dragon.color, lineWidth = tracerThickness)
     }
 }

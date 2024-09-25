@@ -150,8 +150,8 @@ object WitherDragons : Module(
         if (dragonHealth) renderHP()
         if (dragonTimer) renderTime()
         if (dragonBoxes) renderBoxes()
-        if (priorityDragon != WitherDragonsEnum.None)
-            if (dragonTracers) renderTracers(priorityDragon)
+        if (priorityDragon != WitherDragonsEnum.None && dragonTracers)
+            renderTracers(priorityDragon)
     }
 
     @SubscribeEvent
