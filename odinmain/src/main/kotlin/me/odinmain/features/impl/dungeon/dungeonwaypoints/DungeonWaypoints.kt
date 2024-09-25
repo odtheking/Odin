@@ -186,11 +186,10 @@ object DungeonWaypoints : Module(
      * Sets the waypoints for the current room.
      */
     fun setWaypoints(curRoom: FullRoom) {
-        val room = curRoom.room
         curRoom.waypoints = mutableListOf<DungeonWaypoint>().apply {
-            DungeonWaypointConfigCLAY.waypoints[room.data.name]?.let { waypoints ->
+            DungeonWaypointConfigCLAY.waypoints[curRoom.room.data.name]?.let { waypoints ->
                 addAll(waypoints.map { waypoint ->
-                    val vec = waypoint.toVec3().rotateAroundNorth(room.rotation).addVec(x = curRoom.clayPos.x, z = curRoom.clayPos.z)
+                    val vec = waypoint.toVec3().rotateAroundNorth(curRoom.room.rotation).addVec(x = curRoom.clayPos.x, z = curRoom.clayPos.z)
                     DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, waypoint.color, waypoint.filled, waypoint.depth, waypoint.aabb, waypoint.title, waypoint.secret, waypoint.clicked)
                 })
             }

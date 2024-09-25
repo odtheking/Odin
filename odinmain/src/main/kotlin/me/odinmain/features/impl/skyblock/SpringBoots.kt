@@ -29,11 +29,11 @@ object SpringBoots : Module(
 ) {
     private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, true) {
         if (it) {
-            mcText("Jump: 5", 2f, 5f, 1, Color.WHITE)
-            getTextWidth("Can Clip", 12f) to 12f
+            mcText("Jump: 6.5", 2f, 5f, 1, Color.WHITE)
+            getTextWidth("Jump: 6.5", 12f) to 12f
         } else {
             mcText("Jump: ${blocksList.getSafe(pitchCounts.sum()) ?: "61 (MAX)"}", 2f, 5f, 1, Color.WHITE)
-            getTextWidth("Can Clip", 12f) to 12f
+            getTextWidth("Jump: ${blocksList.getSafe(pitchCounts.sum()) ?: "61 (MAX)"}", 12f) to 12f
         }
     }
     private val renderGoal: Boolean by BooleanSetting("Render Goal", true, description = "Render the goal block.")

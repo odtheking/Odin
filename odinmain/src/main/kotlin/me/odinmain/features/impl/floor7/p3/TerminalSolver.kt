@@ -22,6 +22,7 @@ import net.minecraft.entity.player.InventoryPlayer
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.ContainerPlayer
 import net.minecraft.item.*
+import net.minecraft.network.play.server.S2FPacketSetSlot
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -200,8 +201,7 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun onTooltip(event: ItemTooltipEvent) {
-        if (!cancelToolTip || currentTerm == TerminalTypes.NONE || !enabled) return
-        event.toolTip.clear()
+        if (cancelToolTip && currentTerm != TerminalTypes.NONE && enabled) event.toolTip.clear()
     }
 
     @SubscribeEvent
@@ -213,22 +213,25 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun itemStack(event: GuiEvent.DrawSlotOverlayEvent) {
-        val stack = event.stack?.item?.registryName ?: return
-        if (currentTerm != TerminalTypes.ORDER || !enabled || stack != "minecraft:stained_glass_pane") return
-        event.isCanceled = true
+        if (currentTerm == TerminalTypes.ORDER && enabled && (event.stack?.item?.registryName ?: return) == "minecraft:stained_glass_pane") event.isCanceled = true
     }
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.END) return
-        if (mc.thePlayer?.openContainer is ContainerPlayer) leftTerm()
+        if (event.phase == TickEvent.Phase.END && mc.thePlayer?.openContainer is ContainerPlayer) leftTerm()
     }
 
-    @SubscribeEvent
-    fun onChat(event: ChatPacketEvent) {
-        val match = Regex("(.{1,16}) (?:activated|completed) a (terminal|device|lever)! \\((\\d)/(\\d)\\)").find(event.message) ?: return
-        val (playerName, completionStatus, deviceType, total) = match.destructured
-        TerminalSolvedEvent(if (deviceType == "terminal") lastTermOpened else TerminalTypes.NONE, playerName, completionStatus.toIntOrNull() ?: return, total.toIntOrNull() ?: return).postAndCatch()
+    init {
+        onMessage(Regex("(.{1,16}) (?:activated|completed) a (terminal|device|lever)! \\((\\d)/(\\d)\\)")) {
+            Regex("(.{1,16}) (?:activated|completed) a (terminal|device|lever)! \\((\\d)/(\\d)\\)").find(it)?.let {
+                val (playerName, completionStatus, deviceType, total) = it.destructured
+                TerminalSolvedEvent(if (deviceType == "terminal") lastTermOpened else TerminalTypes.NONE, playerName, completionStatus.toIntOrNull() ?: return@let, total.toIntOrNull() ?: return@let).postAndCatch()
+            }
+        }
+
+        onPacket(S2FPacketSetSlot::class.java) {
+            if (currentTerm == TerminalTypes.MELODY) mc.thePlayer?.openContainer?.inventoryItemStacks?.let { solution = solveMelody(it) }
+        }
     }
 
     private fun leftTerm() {
