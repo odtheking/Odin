@@ -18,7 +18,7 @@ object CustomTermGui {
         scale(1f / sr.scaleFactor, 1f / sr.scaleFactor)
         translate(mc.displayWidth / 2, mc.displayHeight / 2)
         scale(TerminalSolver.customScale, TerminalSolver.customScale)
-        when (currentTerm) {
+        when (currentTerm.type) {
             TerminalTypes.PANES -> PanesGui.render()
             TerminalTypes.RUBIX -> RubixGui.render()
             TerminalTypes.ORDER -> OrderGui.render()
@@ -33,7 +33,7 @@ object CustomTermGui {
     }
 
     fun mouseClicked(x: Int, y: Int, button: Int) {
-        when (currentTerm) {
+        when (currentTerm.type) {
             TerminalTypes.PANES -> PanesGui.mouseClicked(x, y, button)
             TerminalTypes.RUBIX -> RubixGui.mouseClicked(x, y, button)
             TerminalTypes.ORDER -> OrderGui.mouseClicked(x, y, button)

@@ -92,8 +92,7 @@ class Dungeon(val floor: Floor) {
         if (packet.action != 2) return
         val text = packet.prefix.plus(packet.suffix)
 
-        val cleared = Regex("^Cleared: §[c6a](\\d+)% §8(?:§8)?\\(\\d+\\)$").find(text)
-        cleared?.groupValues[1]?.toInt()?.let {
+        Regex("^Cleared: §[c6a](\\d+)% §8(?:§8)?\\(\\d+\\)$").find(text)?.groupValues[1]?.toIntOrNull()?.let {
             if (dungeonStats.percentCleared != it && expectingBloodUpdate) dungeonStats.bloodDone = true
             dungeonStats.percentCleared = it
         }

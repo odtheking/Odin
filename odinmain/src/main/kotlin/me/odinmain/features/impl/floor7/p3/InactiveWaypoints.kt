@@ -4,9 +4,7 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.*
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils
-import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
 import net.minecraft.entity.Entity
@@ -38,8 +36,7 @@ object InactiveWaypoints : Module(
         execute(500) {
             if (DungeonUtils.getF7Phase() != M7Phases.P3) return@execute
             inactiveList = mc.theWorld?.loadedEntityList?.filter {
-                it is EntityArmorStand && it.name.noControlCodes.containsOneOf("Inactive", "Not Activated", "CLICK HERE", ignoreCase = true)
-            } ?: emptyList()
+                it is EntityArmorStand && it.name.noControlCodes.containsOneOf("Inactive", "Not Activated", "CLICK HERE", ignoreCase = true) } ?: emptyList()
         }
 
         onWorldLoad {
@@ -50,18 +47,20 @@ object InactiveWaypoints : Module(
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (inactiveList.isEmpty()) return
-        profile("Inactive Waypoints") { inactiveList.forEach {
-            var name = it.name.noControlCodes
-            if ((name == "Inactive Terminal" && showTerminals) || (name == "Inactive" && showDevices) || (name == "Not Activated" && showLevers)) {
-                name = if (name == "Inactive Terminal") "Terminal" else if (name == "Inactive") "Device" else "Lever"
-                if (renderBox)
-                    Renderer.drawStyledBox(it.positionVector.addVec(-0.5, z = -0.5).toAABB(), color, style, lineWidth, depthCheck)
-                if (renderText)
-                    Renderer.drawStringInWorld(name, it.positionVector.add(Vec3(0.0, 2.0, 0.0)), depth = false, color = Color.WHITE, scale = 0.05f)
-                if (renderBeacon)
-                    RenderUtils.drawBeaconBeam(it.positionVector.addVec(-0.5, z = -0.5), color, false)
+        profile("Inactive Waypoints") {
+            inactiveList.forEach {
+                var name = it.name.noControlCodes
+                if ((name == "Inactive Terminal" && showTerminals) || (name == "Inactive" && showDevices) || (name == "Not Activated" && showLevers)) {
+                    name = if (name == "Inactive Terminal") "Terminal" else if (name == "Inactive") "Device" else "Lever"
+                    if (renderBox)
+                        Renderer.drawStyledBox(it.positionVector.addVec(-0.5, z = -0.5).toAABB(), color, style, lineWidth, depthCheck)
+                    if (renderText)
+                        Renderer.drawStringInWorld(name, it.positionVector.add(Vec3(0.0, 2.0, 0.0)), depth = false, color = Color.WHITE, scale = 0.05f)
+                    if (renderBeacon)
+                        RenderUtils.drawBeaconBeam(it.positionVector.addVec(-0.5, z = -0.5), color, false)
+                }
+                it.alwaysRenderNameTag = !hideDefault
             }
-            it.alwaysRenderNameTag = !hideDefault
-        }}
+        }
     }
 }

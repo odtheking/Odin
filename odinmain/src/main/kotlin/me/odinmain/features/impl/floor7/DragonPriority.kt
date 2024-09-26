@@ -8,30 +8,30 @@ import me.odinmain.features.impl.floor7.WitherDragons.paulBuff
 import me.odinmain.features.impl.floor7.WitherDragons.soloDebuff
 import me.odinmain.features.impl.floor7.WitherDragons.soloDebuffOnAll
 import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.*
+import me.odinmain.utils.skyblock.modMessage
 
 object DragonPriority {
 
     fun findPriority(spawningDragon: MutableList<WitherDragonsEnum>): WitherDragonsEnum {
         val priorityList = listOf(WitherDragonsEnum.Red, WitherDragonsEnum.Orange, WitherDragonsEnum.Blue, WitherDragonsEnum.Purple, WitherDragonsEnum.Green)
-        val priorityDragon = if (!dragonPriorityToggle) {
+        return if (!dragonPriorityToggle) {
             spawningDragon.sortBy { priorityList.indexOf(it) }
             spawningDragon[0]
         } else
             sortPriority(spawningDragon)
-        return priorityDragon
     }
 
     fun displaySpawningDragon(dragon: WitherDragonsEnum) {
+        if (dragon == WitherDragonsEnum.None) return
         if (dragonTitle && WitherDragons.enabled) PlayerUtils.alert("§${dragon.colorCode}${dragon.name} is spawning!")
-        if (dragonPriorityToggle && WitherDragons.enabled && WitherDragonsEnum.entries.filter { it.state == WitherDragonState.SPAWNING }.toMutableList().size == 2) modMessage("§${dragon.colorCode}${dragon.name} §7is your priority dragon!")
+        if (dragonPriorityToggle && WitherDragons.enabled) modMessage("§${dragon.colorCode}${dragon.name} §7is your priority dragon!")
     }
 
     private fun sortPriority(spawningDragon: MutableList<WitherDragonsEnum>): WitherDragonsEnum {
         val totalPower = Blessing.POWER.current * (if (paulBuff) 1.25 else 1.0) + (if (Blessing.TIME.current > 0) 2.5 else 0.0)
-
-        val playerClass = DungeonUtils.currentDungeonPlayer.clazz.also { if (it == DungeonClass.Unknown) modMessage("§cFailed to get dungeon class.") }
+        val playerClass = DungeonUtils.currentDungeonPlayer.clazz.apply { if (this == DungeonClass.Unknown) modMessage("§cFailed to get dungeon class.") }
 
         val dragonList = listOf(WitherDragonsEnum.Orange, WitherDragonsEnum.Green, WitherDragonsEnum.Red, WitherDragonsEnum.Blue, WitherDragonsEnum.Purple)
         val priorityList =

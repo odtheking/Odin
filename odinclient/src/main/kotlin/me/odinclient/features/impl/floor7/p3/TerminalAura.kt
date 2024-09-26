@@ -51,7 +51,7 @@ object TerminalAura : Module(
         val packet = event.packet as? C02PacketUseEntity ?: return
         val entity = packet.getEntityFromWorld(mc.theWorld) ?: return
         if (entity.name.noControlCodes != "Inactive Terminal") return
-        if (!interactClock.hasTimePassed() || TerminalSolver.currentTerm != TerminalTypes.NONE) event.isCanceled = true else interactClock.update()
+        if (!interactClock.hasTimePassed() || TerminalSolver.currentTerm.type != TerminalTypes.NONE) event.isCanceled = true else interactClock.update()
     }
 
     @SubscribeEvent

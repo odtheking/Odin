@@ -431,6 +431,7 @@ object RenderUtils {
         val f = 1.0f / tileWidth
         val g = 1.0f / tileHeight
         Color.WHITE.bind()
+        GlStateManager.resetColor()
         worldRenderer {
             begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
             pos(x.toDouble(), (y + height).toDouble(), 0.0).tex((u * f).toDouble(), ((v + vHeight.toFloat()) * g).toDouble()).endVertex()
@@ -439,7 +440,6 @@ object RenderUtils {
             pos(x.toDouble(), y.toDouble(), 0.0).tex((u * f).toDouble(), (v * g).toDouble()).endVertex()
         }
         tessellator.draw()
-        GlStateManager.resetColor()
     }
 
     private val BUF_FLOAT_4 = BufferUtils.createFloatBuffer(4)

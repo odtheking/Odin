@@ -5,12 +5,13 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.*
 import me.odinmain.OdinMain.logger
 import me.odinmain.OdinMain.mc
+import me.odinmain.OdinMain.scope
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.DungeonWaypoint
 import me.odinmain.utils.render.Color
 import java.io.File
 import java.io.IOException
 
-object DungeonWaypointConfigCLAY {
+object DungeonWaypointConfig {
     private val gson = GsonBuilder().registerTypeAdapter(Color::class.java, Color.ColorSerializer()).setPrettyPrinting().create()
 
     var waypoints: MutableMap<String, MutableList<DungeonWaypoint>> = mutableMapOf()
@@ -18,7 +19,7 @@ object DungeonWaypointConfigCLAY {
     private val configFile = File(mc.mcDataDir, "config/odin/dungeon-waypoint-config-CLAY.json").apply {
         try {
             createNewFile()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             println("Error initializing module config")
         }
     }
@@ -37,19 +38,19 @@ object DungeonWaypointConfigCLAY {
             println("Error parsing configs.")
             println(e.message)
             logger.error("Error parsing configs.", e)
-        } catch (e: JsonIOException) {
+        } catch (_: JsonIOException) {
             println("Error reading configs.")
         }
     }
 
     @OptIn(DelicateCoroutinesApi::class)
     fun saveConfig() {
-        GlobalScope.launch(Dispatchers.IO) {
+        scope.launch(Dispatchers.IO) {
             try {
                 configFile.bufferedWriter().use {
                     it.write(gson.toJson(waypoints))
                 }
-            } catch (e: IOException) {
+            } catch (_: IOException) {
                 println("Error saving Waypoint config.")
             }
         }

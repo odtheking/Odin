@@ -19,7 +19,6 @@ import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.profile
 import me.odinmain.utils.render.getTextWidth
 import net.minecraft.network.Packet
-import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -156,8 +155,8 @@ object ModuleManager {
     }
 
     @SubscribeEvent
-    fun onRenderOverlay(event: RenderGameOverlayEvent.Post) {
-        if ((mc.currentScreen != null && !hudChat) || event.type != RenderGameOverlayEvent.ElementType.ALL || mc.currentScreen == EditHUDGui) return
+    fun onRenderOverlay(event: RenderOverlayNoCaching) {
+        if ((mc.currentScreen != null && !hudChat) || mc.currentScreen == EditHUDGui) return
 
         mc.mcProfiler.startSection("Odin Hud")
 
@@ -181,11 +180,8 @@ object ModuleManager {
     fun getModuleByName(name: String?): Module? = modules.firstOrNull { it.name.equals(name, true) }
 
     fun generateFeatureList(): String {
-        val moduleList = modules.sortedByDescending { getTextWidth(it.name, 18f) }
-        val categories = moduleList.groupBy { it.category }
-
-        val categoryOrder = Category.entries.associateWith { it.ordinal }
-        val sortedCategories = categories.entries.sortedBy { categoryOrder[it.key] }
+        val sortedCategories = modules.sortedByDescending { getTextWidth(it.name, 18f) }.groupBy { it.category }.entries
+            .sortedBy{ Category.entries.associateWith { it.ordinal }[it.key] }
 
         val featureList = StringBuilder()
 
