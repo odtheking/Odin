@@ -9,16 +9,8 @@ import me.odinmain.features.impl.floor7.p3.TerminalSolver.melodyCorrectRowColor
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.melodyPressColor
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.melodyPressColumnColor
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.melodyRowColor
-import me.odinmain.features.impl.floor7.p3.TerminalSolver.solution
 import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.render.Box
-import me.odinmain.utils.render.BoxWithClass
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.TextAlign
-import me.odinmain.utils.render.TextPos
-import me.odinmain.utils.render.getTextWidth
-import me.odinmain.utils.render.roundedRectangle
-import me.odinmain.utils.render.text
+import me.odinmain.utils.render.*
 import kotlin.math.ceil
 
 object MelodyGui : TermGui() {
@@ -35,7 +27,7 @@ object MelodyGui : TermGui() {
         }
 
         roundedRectangle((-163 + ((gap-20).unaryPlus() * 0.5)) + 5*70, -115,70 - gap, 280 - gap, melodyPressColumnColor)
-        solution.forEach { pane ->
+        TerminalSolver.currentTerm.solution.forEach { pane ->
             val row = pane / 9 - 1
             val col = pane % 9 - 2
             val colorMelody = when {

@@ -20,9 +20,9 @@ object CancelWrongTerms : Module(
     @SubscribeEvent
     fun onSlotClick(event: GuiEvent.GuiMouseClickEvent) {
         val gui = event.gui as? GuiChest ?: return
-        if (TerminalSolver.currentTerm.equalsOneOf(TerminalTypes.NONE, TerminalTypes.MELODY)) return
-        if (TerminalSolver.currentTerm == TerminalTypes.RUBIX && disableRubix) return
-        if (gui.slotUnderMouse?.slotIndex !in TerminalSolver.solution) return
+        if (TerminalSolver.currentTerm.type.equalsOneOf(TerminalTypes.NONE, TerminalTypes.MELODY)) return
+        if (TerminalSolver.currentTerm.type == TerminalTypes.RUBIX && disableRubix) return
+        if (gui.slotUnderMouse?.slotIndex !in TerminalSolver.currentTerm.solution) return
         event.isCanceled = true
     }
 }

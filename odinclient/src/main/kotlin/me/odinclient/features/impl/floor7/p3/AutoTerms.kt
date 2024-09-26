@@ -37,7 +37,7 @@ object AutoTerms : Module(
     fun onTick(event: TickEvent.ClientTickEvent) {
         if (breakClock.hasTimePassed(breakThreshold) && clickedThisWindow) clickedThisWindow = false
         if (
-            TerminalSolver.solution.isEmpty() ||
+            TerminalSolver.currentTerm.solution.isEmpty() ||
             !clock.hasTimePassed(autoDelay) ||
             System.currentTimeMillis() - TerminalSolver.openedTerminalTime <= firstClickDelay ||
             clickedThisWindow ||
@@ -45,17 +45,18 @@ object AutoTerms : Module(
             mc.thePlayer?.openContainer !is ContainerChest
         ) return
 
-        val item = if (clickingOrder == 0) TerminalSolver.solution.firstOrNull() ?: return else if (clickingOrder == 1) TerminalSolver.solution.lastOrNull() ?: return else TerminalSolver.solution.random()
+        val item =
+            if (clickingOrder == 0) TerminalSolver.currentTerm.solution.firstOrNull() ?: return else if (clickingOrder == 1) TerminalSolver.currentTerm.solution.lastOrNull() ?: return else TerminalSolver.currentTerm.solution.random()
 
-        when (TerminalSolver.currentTerm) {
+        when (TerminalSolver.currentTerm.type) {
             TerminalTypes.RUBIX ->
-                windowClick(item, if (TerminalSolver.solution.count { it == item } >= 3) PlayerUtils.ClickType.Right else if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
+                windowClick(item, if (TerminalSolver.currentTerm.solution.count { it == item } >= 3) PlayerUtils.ClickType.Right else if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
 
             TerminalTypes.ORDER ->
-                windowClick(TerminalSolver.solution.first(), if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
+                windowClick(TerminalSolver.currentTerm.solution.first(), if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
 
             TerminalTypes.MELODY ->
-                windowClick(TerminalSolver.solution.find { it % 9 == 7 } ?: return, if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
+                windowClick(TerminalSolver.currentTerm.solution.find { it % 9 == 7 } ?: return, if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
 
             else -> windowClick(item, if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
         }

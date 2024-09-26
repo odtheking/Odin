@@ -8,7 +8,6 @@ import me.odinmain.features.impl.floor7.p3.TerminalSolver.orderColor
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.orderColor2
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.orderColor3
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.renderOrderNumbers
-import me.odinmain.features.impl.floor7.p3.TerminalSolver.solution
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.textScale
 import me.odinmain.utils.render.*
 
@@ -24,12 +23,12 @@ object OrderGui : TermGui() {
             text("Click in order!", 0, -113, Color.WHITE, 20, align = TextAlign.Middle, verticalAlign = TextPos.Top)
             roundedRectangle(-getTextWidth("Click in order!", 20f) / 2, -85, getTextWidth("Click in order!", 20f), 3, Color.WHITE, radius = 5f)
         }
-        solution.forEach { pane ->
+        TerminalSolver.currentTerm.solution.forEach { pane ->
             val row = pane / 9 - 1
             val col = pane % 9 - 2
             val amount = mc.thePlayer.openContainer.inventorySlots[pane]?.stack?.stackSize ?: 0
             if (amount == 0) return@forEach
-            val index = solution.indexOf(pane)
+            val index = TerminalSolver.currentTerm.solution.indexOf(pane)
             if (index < 3) {
                 val color = when (index) {
                     0    -> orderColor
