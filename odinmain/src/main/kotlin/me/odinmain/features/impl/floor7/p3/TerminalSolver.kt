@@ -71,7 +71,6 @@ object TerminalSolver : Module(
     val melodyRowColor: Color by ColorSetting("Melody Row Color", Color.GREEN.withAlpha(0.75f), true, description = "Color of the row indicator for melody.").withDependency { showColors }
     val melodyPressColor: Color by ColorSetting("Melody Press Color", Color.CYAN.withAlpha(0.75f), true, description = "Color of the location for pressing for melody.").withDependency { showColors }
     val melodyCorrectRowColor: Color by ColorSetting("Melody Correct Row Color", Color.WHITE.withAlpha(0.75f), true, description = "Color of the whole row for melody.").withDependency { showColors }
-    val melodyPressColumnColor: Color by ColorSetting("Melody Press Column Color", Color.PURPLE.withAlpha(0.35f), true, description = "Color of the whole click column for melody.").withDependency { showColors }
 
     private var lastRubixSolution: Int? = null
     private val zLevel get() = if (renderType == 1 && currentTerm.equalsOneOf(TerminalTypes.STARTS_WITH, TerminalTypes.SELECT)) 100f else 400f
@@ -303,12 +302,12 @@ object TerminalSolver : Module(
 
     private fun solveMelody(items: List<ItemStack?>): List<Int> {
         val green = items.indexOfFirst { it?.metadata == 5 && Item.getIdFromItem(it.item) == 160 }.takeIf { it != -1 } ?: return emptyList()
-        val magenta = items.indexOfFirst { it?.metadata == 2 && Item.getIdFromItem(it.item) == 160 }.takeIf { it != -1 } ?: return emptyList()
-        val greenClay = items.indexOfFirst { it?.metadata == 5 && Item.getIdFromItem(it.item) == 159 }.takeIf { it != -1 } ?: return emptyList()
+
+        val greenClay = items.mapIndexed { i, item -> i to item }.filter { (i, item) -> item?.metadata.equalsOneOf(14, 5) && Item.getIdFromItem(item?.item) == 159 && i != -1}.map { it.first }
         return items.mapIndexedNotNull { index, item ->
             when {
                 index == green || item?.metadata == 2 && Item.getIdFromItem(item.item) == 160 -> index
-                index == greenClay && green % 9 == magenta % 9 -> index
+                greenClay.contains(index) -> index
                 else -> null
             }
         }

@@ -7,7 +7,6 @@ import me.odinmain.features.impl.floor7.p3.TerminalSolver.gap
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.melodyColumColor
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.melodyCorrectRowColor
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.melodyPressColor
-import me.odinmain.features.impl.floor7.p3.TerminalSolver.melodyPressColumnColor
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.melodyRowColor
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.solution
 import me.odinmain.utils.equalsOneOf
@@ -34,7 +33,6 @@ object MelodyGui : TermGui() {
             roundedRectangle(-getTextWidth("Click the button on time!", 20f) / 2, -210, getTextWidth("Click the button on time!", 20f), 3, Color.WHITE, radius = 5f)
         }
 
-        roundedRectangle((-163 + ((gap-20).unaryPlus() * 0.5)) + 5*70, -115,70 - gap, 280 - gap, melodyPressColumnColor)
         solution.forEach { pane ->
             val row = pane / 9 - 1
             val col = pane % 9 - 2
