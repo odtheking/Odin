@@ -25,7 +25,6 @@ object MelodyGui : TermGui() {
             roundedRectangle(-getTextWidth("Click the button on time!", 20f) / 2, -210, getTextWidth("Click the button on time!", 20f), 3, Color.WHITE, radius = 5f)
         }
 
-        roundedRectangle((-163 + ((gap-20).unaryPlus() * 0.5)) + 5*70, -115,70 - gap, 280 - gap, melodyPressColumnColor)
         TerminalSolver.currentTerm.solution.forEach { pane ->
             val row = pane / 9 - 1
             val col = pane % 9 - 2
