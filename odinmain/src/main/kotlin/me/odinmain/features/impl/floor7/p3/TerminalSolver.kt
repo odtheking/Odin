@@ -78,6 +78,7 @@ object TerminalSolver : Module(
     var openedTerminalTime = 0L
 
     var currentTerm = TerminalTypes.NONE
+    private var currentItems = mutableListOf<ItemStack>()
     private var lastTermOpened = TerminalTypes.NONE
     var solution = listOf<Int>()
 
@@ -92,6 +93,7 @@ object TerminalSolver : Module(
         }
         if (currentTerm == TerminalTypes.NONE) return leftTerm()
         val items = event.gui.inventory.subList(0, event.gui.inventory.size - 37)
+        currentItems = items
         solution = when (currentTerm) {
             TerminalTypes.PANES -> solvePanes(items)
             TerminalTypes.RUBIX -> solveColor(items)
@@ -230,8 +232,9 @@ object TerminalSolver : Module(
             }
         }
 
-        onPacket(S2FPacketSetSlot::class.java, {currentTerm == TerminalTypes.MELODY}) {
-            mc.thePlayer?.openContainer?.inventory?.let { solution = solveMelody(it) }
+        onPacket(S2FPacketSetSlot::class.java, { currentTerm == TerminalTypes.MELODY }) {
+            currentItems[it.func_149173_d()] = it.func_149174_e()
+            solution = solveMelody(currentItems)
         }
     }
 
@@ -244,7 +247,6 @@ object TerminalSolver : Module(
 
     private fun solvePanes(items: List<ItemStack?>): List<Int> =
         items.filter { it?.metadata == 14 }.map { items.indexOf(it) }
-
 
     private val colorOrder = listOf(1, 4, 13, 11, 14)
     private fun solveColor(items: List<ItemStack?>): List<Int> {

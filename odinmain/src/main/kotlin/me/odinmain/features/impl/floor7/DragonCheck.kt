@@ -1,8 +1,11 @@
 package me.odinmain.features.impl.floor7
 
 import me.odinmain.OdinMain.mc
+import me.odinmain.features.impl.floor7.DragonPriority.displaySpawningDragon
+import me.odinmain.features.impl.floor7.DragonPriority.findPriority
 import me.odinmain.features.impl.floor7.WitherDragons.arrowDeath
 import me.odinmain.features.impl.floor7.WitherDragons.arrowSpawn
+import me.odinmain.features.impl.floor7.WitherDragons.priorityDragon
 import me.odinmain.features.impl.floor7.WitherDragons.sendArrowHit
 import me.odinmain.features.impl.floor7.WitherDragons.sendNotification
 import me.odinmain.features.impl.floor7.WitherDragons.sendSpawned
@@ -85,8 +88,12 @@ object DragonCheck {
     }
 
     fun updateTime() {
-        WitherDragonsEnum.entries.forEachIndexed { index, dragon ->
-            if (dragon.state == WitherDragonState.SPAWNING) dragon.timeToSpawn = (dragon.timeToSpawn - 1).coerceAtLeast(0)
+        WitherDragonsEnum.entries.forEach { dragon ->
+            if (dragon.state != WitherDragonState.SPAWNING) return@forEach
+            dragon.timeToSpawn--.coerceAtLeast(0)
+            if (dragon.timesSpawned != 95) return@forEach
+            priorityDragon = findPriority(WitherDragonsEnum.entries.filter { it.state == WitherDragonState.SPAWNING }.toMutableList())
+            displaySpawningDragon(priorityDragon)
         }
     }
 }

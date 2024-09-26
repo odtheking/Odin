@@ -1,8 +1,5 @@
 package me.odinmain.features.impl.floor7
 
-import me.odinmain.features.impl.floor7.DragonPriority.displaySpawningDragon
-import me.odinmain.features.impl.floor7.DragonPriority.findPriority
-import me.odinmain.features.impl.floor7.WitherDragons.priorityDragon
 import me.odinmain.features.impl.floor7.WitherDragons.sendSpawning
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.PersonalBest
@@ -68,15 +65,10 @@ fun handleSpawnPacket(particle: S2APacketParticles) {
     ) return
 
     WitherDragonsEnum.entries.forEach { dragon ->
-        if (checkParticle(particle, dragon) && dragon.timeToSpawn == 100) {
-            dragon.state = WitherDragonState.SPAWNING
-            if (sendSpawning && WitherDragons.enabled) modMessage("§${dragon.colorCode}$dragon §fdragon is spawning.")
-        }
+        if (!checkParticle(particle, dragon) || dragon.timeToSpawn != 100) return@forEach
+        if (sendSpawning && WitherDragons.enabled) modMessage("§${dragon.colorCode}$dragon §fdragon is spawning.")
+        dragon.state = WitherDragonState.SPAWNING
     }
-
-    val spawningDragons = WitherDragonsEnum.entries.filter { it.state == WitherDragonState.SPAWNING }.toMutableList().takeIf { it.size >= 2 } ?: return
-    priorityDragon = findPriority(spawningDragons)
-    displaySpawningDragon(priorityDragon)
 }
 
 private fun checkParticle(event: S2APacketParticles, dragon: WitherDragonsEnum): Boolean {
