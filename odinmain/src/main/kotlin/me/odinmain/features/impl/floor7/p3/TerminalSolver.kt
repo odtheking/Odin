@@ -303,7 +303,7 @@ object TerminalSolver : Module(
     private fun solveMelody(items: List<ItemStack?>): List<Int> {
         val green = items.indexOfFirst { it?.metadata == 5 && Item.getIdFromItem(it.item) == 160 }.takeIf { it != -1 } ?: return emptyList()
 
-        val greenClay = items.mapIndexed { i, item -> i to item }.filter { (i, item) -> item?.metadata.equalsOneOf(14, 5) && Item.getIdFromItem(item?.item) == 159 && i != -1}.map { it.first }
+        val greenClay = items.filter {it?.metadata.equalsOneOf(14, 5) && Item.getIdFromItem(it?.item) == 159}.map { items.indexOf(it) }
         return items.mapIndexedNotNull { index, item ->
             when {
                 index == green || item?.metadata == 2 && Item.getIdFromItem(item.item) == 160 -> index
