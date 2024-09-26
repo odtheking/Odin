@@ -5,7 +5,6 @@ import me.odinmain.utils.skyblock.PersonalBest
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
 
-
 /**
  * Data class representing a player in a dungeon, including their name, class, skin location, and associated player entity.
  *

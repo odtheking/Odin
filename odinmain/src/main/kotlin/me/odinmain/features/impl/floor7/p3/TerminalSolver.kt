@@ -72,26 +72,26 @@ object TerminalSolver : Module(
     val melodyPressColor: Color by ColorSetting("Melody Press Color", Color.CYAN.withAlpha(0.75f), true, description = "Color of the location for pressing for melody.").withDependency { showColors }
     val melodyCorrectRowColor: Color by ColorSetting("Melody Correct Row Color", Color.WHITE.withAlpha(0.75f), true, description = "Color of the whole row for melody.").withDependency { showColors }
 
-    private var lastRubixSolution: Int? = null
     private val zLevel get() = if (renderType == 1 && currentTerm.equalsOneOf(TerminalTypes.STARTS_WITH, TerminalTypes.SELECT)) 100f else 400f
-    var openedTerminalTime = 0L
 
-    var currentTerm = TerminalTypes.NONE
+    data class Terminal(var type: TerminalTypes, var solution: List<Int>, var items: MutableList<ItemStack>)
+    var currentTerm = Terminal(TerminalTypes.NONE, listOf(), mutableListOf())
+    private var lastRubixSolution: Int? = null
     private var lastTermOpened = TerminalTypes.NONE
-    var solution = listOf<Int>()
+    var openedTerminalTime = 0L
 
     @SubscribeEvent
     fun onGuiLoad(event: GuiEvent.GuiLoadedEvent) {
         val newTerm = TerminalTypes.entries.find { event.name.startsWith(it.guiName) } ?: TerminalTypes.NONE
-        if (newTerm != currentTerm) {
-            currentTerm = newTerm
-            lastTermOpened = currentTerm
+        val items = event.gui.inventory.subList(0, event.gui.inventory.size - 37)
+        if (newTerm != currentTerm.type) {
+            currentTerm = Terminal(newTerm, listOf(), items)
+            lastTermOpened = currentTerm.type
             openedTerminalTime = System.currentTimeMillis()
             lastRubixSolution = null
         }
-        if (currentTerm == TerminalTypes.NONE) return leftTerm()
-        val items = event.gui.inventory.subList(0, event.gui.inventory.size - 37)
-        solution = when (currentTerm) {
+        if (currentTerm.type == TerminalTypes.NONE) return leftTerm()
+        currentTerm.solution = when (currentTerm.type) {
             TerminalTypes.PANES -> solvePanes(items)
             TerminalTypes.RUBIX -> solveColor(items)
             TerminalTypes.ORDER -> solveNumbers(items)
@@ -107,12 +107,12 @@ object TerminalSolver : Module(
             else -> return
         }
         if (renderType == 3 && Loader.instance().activeModList.any { it.modId == "notenoughupdates" }) NEUApi.setInventoryButtonsToDisabled()
-        TerminalOpenedEvent(currentTerm, solution).postAndCatch()
+        TerminalOpenedEvent(currentTerm.type, currentTerm.solution).postAndCatch()
     }
 
     @SubscribeEvent
     fun onGuiRender(event: GuiEvent.DrawGuiContainerScreenEvent) {
-        if (currentTerm == TerminalTypes.NONE || !enabled || !renderType.equalsOneOf(0,3) || event.container !is ContainerChest) return
+        if (currentTerm.type == TerminalTypes.NONE || !enabled || !renderType.equalsOneOf(0,3) || event.container !is ContainerChest) return
         if (renderType == 3) {
             CustomTermGui.render()
             event.isCanceled = true
@@ -125,7 +125,7 @@ object TerminalSolver : Module(
 
     private fun getShouldBlockWrong(): Boolean {
         if (!removeWrong) return false
-        return when (currentTerm) {
+        return when (currentTerm.type) {
             TerminalTypes.PANES -> removeWrongPanes
             TerminalTypes.RUBIX -> removeWrongRubix
             TerminalTypes.ORDER -> true
@@ -138,17 +138,17 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun drawSlot(event: GuiEvent.DrawSlotEvent) {
-        if ((removeWrong || renderType == 0) && enabled && getShouldBlockWrong() && event.slot.slotIndex <= event.container.inventorySlots.size - 37 && event.slot.slotIndex !in solution && event.slot.inventory !is InventoryPlayer) event.isCanceled = true
-        if (event.slot.slotIndex !in solution || event.slot.slotIndex > event.container.inventorySlots.size - 37 || !enabled || renderType == 3 || event.slot.inventory is InventoryPlayer) return
+        if ((removeWrong || renderType == 0) && enabled && getShouldBlockWrong() && event.slot.slotIndex <= event.container.inventorySlots.size - 37 && event.slot.slotIndex !in currentTerm.solution && event.slot.inventory !is InventoryPlayer) event.isCanceled = true
+        if (event.slot.slotIndex !in currentTerm.solution || event.slot.slotIndex > event.container.inventorySlots.size - 37 || !enabled || renderType == 3 || event.slot.inventory is InventoryPlayer) return
 
         translate(0f, 0f, zLevel)
         GlStateManager.disableLighting()
         GlStateManager.enableDepth()
-        when (currentTerm) {
+        when (currentTerm.type) {
             TerminalTypes.PANES -> Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, panesColor.rgba)
 
             TerminalTypes.RUBIX -> {
-                val needed = solution.count { it == event.slot.slotIndex }
+                val needed = currentTerm.solution.count { it == event.slot.slotIndex }
                 val text = if (needed < 3) needed else (needed - 5)
                 val color = when {
                     needed < 3 && text == 2 -> rubixColor2
@@ -161,7 +161,7 @@ object TerminalSolver : Module(
                 mcText(text.toString(), event.x + 8f - getMCTextWidth(text.toString()) / 2, event.y + 4.5, 1, textColor, shadow = textShadow, false)
             }
             TerminalTypes.ORDER -> {
-                val index = solution.indexOf(event.slot.slotIndex)
+                val index = currentTerm.solution.indexOf(event.slot.slotIndex)
                 if (index < 3) {
                     val color = when (index) {
                         0 -> orderColor
@@ -192,7 +192,6 @@ object TerminalSolver : Module(
                     Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, colorMelody.rgba)
                 }
             }
-
             else -> {}
         }
         GlStateManager.enableLighting()
@@ -201,19 +200,19 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun onTooltip(event: ItemTooltipEvent) {
-        if (cancelToolTip && currentTerm != TerminalTypes.NONE && enabled) event.toolTip.clear()
+        if (cancelToolTip && currentTerm.type != TerminalTypes.NONE && enabled) event.toolTip.clear()
     }
 
     @SubscribeEvent
     fun guiClick(event: GuiEvent.GuiMouseClickEvent) {
-        if (renderType != 3 || currentTerm == TerminalTypes.NONE || !enabled) return
+        if (renderType != 3 || currentTerm.type == TerminalTypes.NONE || !enabled) return
         CustomTermGui.mouseClicked(MouseUtils.mouseX.toInt(), MouseUtils.mouseY.toInt(), event.button)
         event.isCanceled = true
     }
 
     @SubscribeEvent
     fun itemStack(event: GuiEvent.DrawSlotOverlayEvent) {
-        if (currentTerm == TerminalTypes.ORDER && enabled && (event.stack?.item?.registryName ?: return) == "minecraft:stained_glass_pane") event.isCanceled = true
+        if (currentTerm.type == TerminalTypes.ORDER && enabled && (event.stack?.item?.registryName ?: return) == "minecraft:stained_glass_pane") event.isCanceled = true
     }
 
     @SubscribeEvent
@@ -229,21 +228,21 @@ object TerminalSolver : Module(
             }
         }
 
-        onPacket(S2FPacketSetSlot::class.java, {currentTerm == TerminalTypes.MELODY}) {
-            mc.thePlayer?.openContainer?.inventory?.let { solution = solveMelody(it) }
+        onPacket(S2FPacketSetSlot::class.java, { currentTerm.type == TerminalTypes.MELODY }) {
+            currentTerm.items[it.func_149173_d()] = it.func_149174_e()
+            currentTerm.solution = solveMelody(currentTerm.items)
         }
     }
 
     private fun leftTerm() {
-        if (currentTerm == TerminalTypes.NONE && solution.isEmpty()) return
-        TerminalClosedEvent(currentTerm).postAndCatch()
-        currentTerm = TerminalTypes.NONE
-        solution = emptyList()
+        if (currentTerm.type == TerminalTypes.NONE && currentTerm.solution.isEmpty()) return
+        TerminalClosedEvent(currentTerm.type).postAndCatch()
+        currentTerm.type = TerminalTypes.NONE
+        currentTerm.solution = emptyList()
     }
 
     private fun solvePanes(items: List<ItemStack?>): List<Int> =
         items.filter { it?.metadata == 14 }.map { items.indexOf(it) }
-
 
     private val colorOrder = listOf(1, 4, 13, 11, 14)
     private fun solveColor(items: List<ItemStack?>): List<Int> {

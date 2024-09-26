@@ -33,7 +33,7 @@ object HoverTerms : Module(
     @SubscribeEvent
     fun onDrawGuiContainer(event: GuiEvent.DrawGuiContainerScreenEvent) {
         if (
-            TerminalSolver.solution.isEmpty() ||
+            TerminalSolver.currentTerm.solution.isEmpty() ||
             mc.currentScreen !is GuiChest ||
             !enabled ||
             !triggerBotClock.hasTimePassed(triggerDelay) ||
@@ -51,11 +51,11 @@ object HoverTerms : Module(
                 }
             } ?: return
 
-        if (hoveredItem !in TerminalSolver.solution) return
+        if (hoveredItem !in TerminalSolver.currentTerm.solution) return
 
-        when (currentTerm) {
+        when (currentTerm.type) {
             TerminalTypes.RUBIX -> {
-                val needed = TerminalSolver.solution.count { it == hoveredItem }
+                val needed = TerminalSolver.currentTerm.solution.count { it == hoveredItem }
                 if (needed >= 3) {
                     windowClick(hoveredItem, PlayerUtils.ClickType.Right)
                     triggerBotClock.update()
@@ -64,7 +64,7 @@ object HoverTerms : Module(
             }
 
             TerminalTypes.ORDER -> {
-                if (TerminalSolver.solution.first() == hoveredItem) {
+                if (TerminalSolver.currentTerm.solution.first() == hoveredItem) {
                     windowClick(hoveredItem, if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
                     triggerBotClock.update()
                 }

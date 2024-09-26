@@ -83,11 +83,11 @@ object TerminalSounds : Module(
 
     private fun clickSlot(slot: Int) {
         if (
-            (!currentTerm.equalsOneOf(TerminalTypes.MELODY, TerminalTypes.ORDER) && slot !in TerminalSolver.solution) ||
-            (currentTerm == TerminalTypes.ORDER && slot != TerminalSolver.solution.first()) ||
-            (currentTerm == TerminalTypes.MELODY && slot !in arrayOf(43, 34, 25, 16))
+            (!currentTerm.type.equalsOneOf(TerminalTypes.MELODY, TerminalTypes.ORDER) && slot !in TerminalSolver.currentTerm.solution) ||
+            (currentTerm.type == TerminalTypes.ORDER && slot != TerminalSolver.currentTerm.solution.first()) ||
+            (currentTerm.type == TerminalTypes.MELODY && slot !in arrayOf(43, 34, 25, 16))
         ) return
-        if ((TerminalSolver.solution.size == 1 || (currentTerm == TerminalTypes.MELODY && slot == 43)) && completeSounds) {
+        if ((TerminalSolver.currentTerm.solution.size == 1 || (currentTerm.type == TerminalTypes.MELODY && slot == 43)) && completeSounds) {
             if (!cancelLastClick) playTerminalSound()
             playCompleteSound()
         } else playTerminalSound()
@@ -105,5 +105,5 @@ object TerminalSounds : Module(
         lastPlayed = System.currentTimeMillis()
     }
 
-    private val shouldReplaceSounds get() = (currentTerm != TerminalTypes.NONE && clickSounds)
+    private val shouldReplaceSounds get() = (currentTerm.type != TerminalTypes.NONE && clickSounds)
 }

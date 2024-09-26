@@ -4,7 +4,6 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.customScale
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.gap
-import me.odinmain.features.impl.floor7.p3.TerminalSolver.solution
 import me.odinmain.utils.render.*
 
 object PanesGui : TermGui() {
@@ -19,7 +18,7 @@ object PanesGui : TermGui() {
             text("Correct All the Panes", 0, -138, Color.WHITE, 20, align = TextAlign.Middle, verticalAlign = TextPos.Top)
             roundedRectangle(-getTextWidth("Correct All the Panes", 20f) / 2, -110, getTextWidth("Correct All the Panes", 20f), 3, Color.WHITE, radius = 5f)
         }
-        solution.forEach { pane ->
+        TerminalSolver.currentTerm.solution.forEach { pane ->
             val row = pane / 9 - 1
             val col = pane % 9 - 2
             val box = BoxWithClass((-168 + ((gap - 20).unaryPlus() * 0.5)) + col * 70, -85 + row * 70, 70 - gap, 70 - gap)

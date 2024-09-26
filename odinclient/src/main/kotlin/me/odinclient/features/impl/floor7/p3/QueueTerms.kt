@@ -39,7 +39,7 @@ object QueueTerms : Module(
         if (
             event.phase != TickEvent.Phase.START ||
             System.currentTimeMillis() - lastClickTime < 140 ||
-            TerminalSolver.currentTerm == TerminalTypes.NONE ||
+            TerminalSolver.currentTerm.type == TerminalTypes.NONE ||
             queue.isEmpty() ||
             clickedThisWindow
         ) return
@@ -51,7 +51,7 @@ object QueueTerms : Module(
 
     @SubscribeEvent(priority = EventPriority.LOW)
     fun onMouseClick(event: GuiEvent.GuiMouseClickEvent) {
-        if (TerminalSolver.currentTerm == TerminalTypes.NONE || event.isCanceled) return
+        if (TerminalSolver.currentTerm.type == TerminalTypes.NONE || event.isCanceled) return
         if (!clickedThisWindow) {
             clickedThisWindow = true
             return
@@ -63,7 +63,7 @@ object QueueTerms : Module(
 
     @SubscribeEvent
     fun onCustomTermClick(event: GuiEvent.CustomTermGuiClick) {
-        if (TerminalSolver.currentTerm == TerminalTypes.NONE) return
+        if (TerminalSolver.currentTerm.type == TerminalTypes.NONE) return
         if (!clickedThisWindow) {
             clickedThisWindow = true
             return
@@ -73,8 +73,8 @@ object QueueTerms : Module(
     }
 
     fun handleWindowClick(slot: Int, mode: Int, button: Int) {
-        if (slot !in TerminalSolver.solution) return
-        if (TerminalSolver.currentTerm == TerminalTypes.ORDER && slot != TerminalSolver.solution.first()) return
+        if (slot !in TerminalSolver.currentTerm.solution) return
+        if (TerminalSolver.currentTerm.type == TerminalTypes.ORDER && slot != TerminalSolver.currentTerm.solution.first()) return
         clickedThisWindow = true
         queue.add(Click(slot = slot, mode = mode, button = button))
         devMessage("added ${queue.last()}")

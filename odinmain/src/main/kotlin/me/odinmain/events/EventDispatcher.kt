@@ -5,6 +5,7 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.*
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.dungeonItemDrops
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.isSecret
 import net.minecraft.client.gui.inventory.GuiChest
@@ -18,17 +19,12 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object EventDispatcher {
 
-    private val drops = listOf(
-        "Health Potion VIII Splash Potion", "Healing Potion 8 Splash Potion", "Healing Potion VIII Splash Potion", "Healing VIII Splash Potion", "Healing 8 Splash Potion",
-        "Decoy", "Inflatable Jerry", "Spirit Leap", "Trap", "Training Weights", "Defuse Kit", "Dungeon Chest Key", "Treasure Talisman", "Revive Stone", "Architect's First Draft"
-    )
-
     /**
      * Dispatches [SecretPickupEvent.Item]
      */
     @SubscribeEvent
     fun onRemoveEntity(event: EntityLeaveWorldEvent) {
-        if (!inDungeons || event.entity !is EntityItem || !event.entity.entityItem.displayName.noControlCodes.containsOneOf(drops, true) || mc.thePlayer.getDistanceToEntity(event.entity) > 6) return
+        if (!inDungeons || event.entity !is EntityItem || !event.entity.entityItem.displayName.noControlCodes.containsOneOf(dungeonItemDrops, true) || mc.thePlayer.getDistanceToEntity(event.entity) > 6) return
         SecretPickupEvent.Item(event.entity).postAndCatch()
     }
 
