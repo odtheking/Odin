@@ -301,13 +301,13 @@ object TerminalSolver : Module(
     }
 
     private fun solveMelody(items: List<ItemStack?>): List<Int> {
-        val green = items.indexOfFirst { it?.metadata == 5 && Item.getIdFromItem(it.item) == 160 }.takeIf { it != -1 } ?: return emptyList()
-        val magenta = items.indexOfFirst { it?.metadata == 2 && Item.getIdFromItem(it.item) == 160 }.takeIf { it != -1 } ?: return emptyList()
+        val greenPane = items.indexOfLast { it?.metadata == 5 && Item.getIdFromItem(it.item) == 160 }.takeIf { it != -1 } ?: return emptyList()
+        val magentaPane = items.indexOfFirst { it?.metadata == 2 && Item.getIdFromItem(it.item) == 160 }.takeIf { it != -1 } ?: return emptyList()
         val greenClay = items.indexOfFirst { it?.metadata == 5 && Item.getIdFromItem(it.item) == 159 }.takeIf { it != -1 } ?: return emptyList()
         return items.mapIndexedNotNull { index, item ->
             when {
-                index == green || item?.metadata == 2 && Item.getIdFromItem(item.item) == 160 -> index
-                index == greenClay && green % 9 == magenta % 9 -> index
+                index == greenPane || item?.metadata == 2 && Item.getIdFromItem(item.item) == 160 -> index
+                index == greenClay && greenPane % 9 == magentaPane % 9 -> index
                 else -> null
             }
         }

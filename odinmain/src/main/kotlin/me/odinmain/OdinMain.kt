@@ -64,7 +64,7 @@ object OdinMain {
         val config = File(mc.mcDataDir, "config/odin")
         if (!config.exists()) config.mkdirs()
         launch { WaypointConfig.loadConfig() }
-        launch { DungeonWaypointConfigCLAY.loadConfig() }
+        launch { DungeonWaypointConfig.loadConfig() }
     }
 
     fun loadComplete() = runBlocking {

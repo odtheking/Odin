@@ -1,6 +1,6 @@
 package me.odinmain.features.impl.dungeon.dungeonwaypoints
 
-import me.odinmain.config.DungeonWaypointConfigCLAY
+import me.odinmain.config.DungeonWaypointConfig
 import me.odinmain.events.impl.SecretPickupEvent
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.getWaypoints
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.glList
@@ -53,7 +53,7 @@ object SecretWaypoints {
 
     fun resetSecrets() {
         val room = DungeonUtils.currentFullRoom
-        for (waypointsList in DungeonWaypointConfigCLAY.waypoints.filter { waypoints -> waypoints.value.any { it.clicked } }.values) {
+        for (waypointsList in DungeonWaypointConfig.waypoints.filter { waypoints -> waypoints.value.any { it.clicked } }.values) {
             waypointsList.filter { it.clicked }.forEach { it.clicked = false }
         }
 

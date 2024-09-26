@@ -1,6 +1,6 @@
 package me.odinmain.features.impl.dungeon.dungeonwaypoints
 
-import me.odinmain.config.DungeonWaypointConfigCLAY
+import me.odinmain.config.DungeonWaypointConfig
 import me.odinmain.events.impl.*
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -49,10 +49,10 @@ object DungeonWaypoints : Module(
     private val resetButton: () -> Unit by ActionSetting("Reset Current Room", description = "Resets the waypoints for the current room.") {
         val room = DungeonUtils.currentFullRoom ?: return@ActionSetting modMessage("§cRoom not found!")
 
-        val waypoints = DungeonWaypointConfigCLAY.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
+        val waypoints = DungeonWaypointConfig.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
         if (!waypoints.removeAll { true }) return@ActionSetting modMessage("§cCurrent room does not have any waypoints!")
 
-        DungeonWaypointConfigCLAY.saveConfig()
+        DungeonWaypointConfig.saveConfig()
         setWaypoints(room)
         glList = -1
         modMessage("Successfully reset current room!")
@@ -156,7 +156,7 @@ object DungeonWaypoints : Module(
             waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, aabb, "", secretWaypoint))
             devMessage("Added waypoint at $vec")
         }
-        DungeonWaypointConfigCLAY.saveConfig()
+        DungeonWaypointConfig.saveConfig()
         setWaypoints(room)
         glList = -1
     }
@@ -187,7 +187,7 @@ object DungeonWaypoints : Module(
      */
     fun setWaypoints(curRoom: FullRoom) {
         curRoom.waypoints = mutableListOf<DungeonWaypoint>().apply {
-            DungeonWaypointConfigCLAY.waypoints[curRoom.room.data.name]?.let { waypoints ->
+            DungeonWaypointConfig.waypoints[curRoom.room.data.name]?.let { waypoints ->
                 addAll(waypoints.map { waypoint ->
                     val vec = waypoint.toVec3().rotateAroundNorth(curRoom.room.rotation).addVec(x = curRoom.clayPos.x, z = curRoom.clayPos.z)
                     DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, waypoint.color, waypoint.filled, waypoint.depth, waypoint.aabb, waypoint.title, waypoint.secret, waypoint.clicked)
@@ -197,7 +197,7 @@ object DungeonWaypoints : Module(
     }
 
     fun getWaypoints(room: FullRoom) : MutableList<DungeonWaypoint> {
-        return DungeonWaypointConfigCLAY.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
+        return DungeonWaypointConfig.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
     }
 }
 
