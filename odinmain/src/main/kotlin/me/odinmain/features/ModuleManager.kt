@@ -4,6 +4,7 @@ import com.github.stivais.ui.UI
 import com.github.stivais.ui.UIScreen.Companion.init
 import com.github.stivais.ui.UIScreen.Companion.open
 import com.github.stivais.ui.color.Color
+import com.github.stivais.ui.color.withAlpha
 import com.github.stivais.ui.constraints.constrain
 import com.github.stivais.ui.constraints.copies
 import com.github.stivais.ui.constraints.measurements.Pixel
@@ -27,12 +28,14 @@ import me.odinmain.features.impl.skyblock.*
 import me.odinmain.features.settings.impl.KeybindSetting
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.profile
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.Packet
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.abs
+import kotlin.math.absoluteValue
 import kotlin.math.sign
 
 /**
@@ -44,7 +47,7 @@ object ModuleManager {
 
     val HUDs = arrayListOf<Module.HUD>()
 
-    private val hudUI = UI().init()
+    internal val hudUI = UI().init()
 
     fun setupHUD(hud: Module.HUD) {
         val drawable = hud.Drawable(constrain(hud.x, hud.y, Bounding, Bounding), preview = false)
@@ -66,95 +69,6 @@ object ModuleManager {
         }
         hudUI.render()
     }
-
-    private const val SNAP_THRESHOLD = 10f
-
-    fun openHUDEditor(/*huds: List<Module.HUD>*/) = UI {
-        onCreation { hudUI.empty() }
-        onRemove {
-            HUDs.loop { setupHUD(it) }
-            hudUI.init()
-            Config.save()
-        }
-
-        HUDs.loop { hud ->
-            row(constrain(x = hud.x, y = hud.y, w = Bounding, h = Bounding)) {
-                element.scaledCentered = false
-                element.scale = hud.scale
-                val drawable = hud.Drawable(size(Bounding, Bounding), preview = true).add()
-                hud.builder(Module.HUDScope(drawable))
-
-                onScroll { (amount) ->
-                    hud.scale += 0.1f * amount.sign
-                    element.scale = hud.scale
-                    true
-                }
-                onRelease {
-                    hud.x.percent = element.x / ui.main.width
-                    hud.y.percent = element.y / ui.main.height
-                }
-
-                block(copies(), Color.TRANSPARENT).outline(Color.WHITE)
-
-                val px: Pixel = 0.px
-                val py: Pixel = 0.px
-
-                afterCreation {
-                    px.pixels = (element.x - (element.parent?.x ?: 0f))
-                    py.pixels = (element.y - (element.parent?.y ?: 0f))
-                    element.constraints.x = px
-                    element.constraints.y = py
-                }
-
-                var pressed = false
-                var x = 0f
-                var y = 0f
-
-                onClick(0) {
-                    pressed = true
-                    x = ui.mx - (element.x - (element.parent?.x ?: 0f))
-                    y = ui.my - (element.y - (element.parent?.y ?: 0f))
-                    true
-                }
-
-                onMouseMove {
-                    if (pressed) {
-                        var newX = ui.mx - x
-                        var newY = ui.my - y
-
-                        newX = newX.coerceIn(0f, parent!!.width - element.screenWidth())
-                        newY = newY.coerceIn(0f, parent!!.height - element.screenHeight())
-
-                        parent?.elements?.loop snap@ { other ->
-                            if (other == element) return@snap
-
-                            if (abs(newX + element.screenWidth() - other.x) <= SNAP_THRESHOLD) {
-                                newX = other.x - element.screenWidth()
-                            } else if (abs(newX - (other.x + other.screenWidth())) <= SNAP_THRESHOLD) {
-                                newX = other.x + other.screenWidth()
-                            }
-
-                            if (abs(newY + element.screenHeight() - other.y) <= SNAP_THRESHOLD) {
-                                newY = other.y - element.screenHeight()
-                            } else if (abs(newY - (other.y + other.screenHeight())) <= SNAP_THRESHOLD) {
-                                newY = other.y + other.screenHeight()
-                            }
-                        }
-
-                        px.pixels = newX.coerceIn(0f, parent!!.width - element.screenWidth())
-                        py.pixels = newY.coerceIn(0f, parent!!.height - element.screenHeight())
-
-                        redraw()
-                    }
-                    true
-                }
-
-                onRelease(0) {
-                    pressed = false
-                }
-            }
-        }
-    }.open()
 
     // todo: cleanup
     data class PacketFunction<T : Packet<*>>(
@@ -180,7 +94,6 @@ object ModuleManager {
     val worldLoadFunctions = mutableListOf<() -> Unit>()
     val tickTasks = mutableListOf<TickTask>()
 
-    //val huds = arrayListOf<HudElement>()
     // todo: cleanup
     val executors = ArrayList<Pair<Module, Executor>>()
 

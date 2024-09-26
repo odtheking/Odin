@@ -33,15 +33,11 @@ import org.lwjgl.input.Keyboard
 object ClickGUI: Module(
     name = "Click GUI",
     key = Keyboard.KEY_RSHIFT,
-    description = "Allows you to customize the UI"
+    description = "Allows you to customize the UI."
 ) {
     val color by ColorSetting("Color", Color.RGB(50, 150, 220), allowAlpha = false, description = "Color mainly used within the UI")
-    // todo: look into a blur screen?
-//    val blur: Boolean by BooleanSetting("Blur", false, description = "Toggles the background blur for the gui.")
-    val enableNotification: Boolean by BooleanSetting("Enable chat notifications", true, description = "Sends a message when you toggle a module with a keybind")
 
-    // by default on?
-    val hudChat by BooleanSetting("Shows HUDs in GUIs", true, description = "Shows HUDs in GUIs")
+    val enableNotification by BooleanSetting("Enable chat notifications", true, description = "Sends a message when you toggle a module with a keybind")
 
     val forceHypixel by BooleanSetting("Force Hypixel", false, description = "Forces the hypixel check to be on (Mainly used for development. Only use if you know what you're doing)")
 
@@ -70,13 +66,13 @@ object ClickGUI: Module(
 
     val action by ActionSetting("Open HUD Editor", description = "Opens the HUD Editor, allowing you to reposition HUDs") { /*OdinMain.display = EditHUDGui*/ }
 
-    private var joined by BooleanSetting("First join", false).hide()
-    private var warned by BooleanSetting("Warned", false).hide()
-    var lastSeenVersion by StringSetting("Last seen version", "1.0.0").hide()
+    private var joined by BooleanSetting("first.join", false).hide()
+    private var warned by BooleanSetting("ui.branch.warning", false).hide()
+    var lastSeenVersion by StringSetting("last.seen.version", "1.0.0").hide()
 
     var firstTimeOnVersion = false
 
-    val panelSettings by MapSetting("Panel Data", mutableMapOf<Category, PanelData>()).also { setting ->
+    private val panelSettings by MapSetting("panel.data", mutableMapOf<Category, PanelData>()).also { setting ->
         Category.entries.forEach { setting.value[it] = PanelData(x = 10f + 260f * it.ordinal, y = 10f, extended = true) }
     }
 
@@ -205,7 +201,7 @@ object ClickGUI: Module(
     }
 
     private fun ElementDSL.module(module: Module) = column(size(h = Animatable(from = 32.px, to = Bounding))) {
-        // used to lazily load setting elements, as they're not visible until clicked and most of them go unseen
+        // used to lazily load setting elements, as they're not visible until clicked and most of them go unsee n
         var loaded = false
         val color = Color.Animated(from = `gray 26`, to = this@ClickGUI.color, swapIf = module.enabled)
         block(

@@ -35,6 +35,7 @@ abstract class Module(
     @Transient val tag: TagType = TagType.NONE,
     toggled: Boolean = false,
 ) : EventDSL() {
+
     /**
      * Category for this module.
      *
@@ -164,6 +165,7 @@ abstract class Module(
      *
      * @author Bonsai
      */
+    // todo: use new event stuff
     fun onMessage(filter: Regex, shouldRun: () -> Boolean = { alwaysActive || enabled }, func: (String) -> Unit) {
         ModuleManager.messageFunctions.add(ModuleManager.MessageFunction(filter, shouldRun, func))
     }
@@ -192,6 +194,7 @@ abstract class Module(
         ModuleManager.cancellableMessageFunctions.add(ModuleManager.MessageFunctionCancellable(filter, shouldRun, func))
     }
 
+    // todo: use new event stuff
     fun onWorldLoad(func: () -> Unit) {
         ModuleManager.worldLoadFunctions.add(func)
     }
@@ -259,14 +262,11 @@ abstract class Module(
 
             init {
                 scaledCentered = false
-                if (!preview) {
-                    scale = this@HUD.scale
-                }
+                scale = this@HUD.scale
+
             }
             override fun draw() {
-                if (!preview) {
-                    scale = this@HUD.scale
-                }
+                scale = this@HUD.scale
             }
             override fun onElementAdded(element: Element) {
             }

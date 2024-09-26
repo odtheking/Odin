@@ -14,7 +14,7 @@ import net.minecraft.network.play.client.C07PacketPlayerDigging as PacketPlayerD
 
 object BPSDisplay : Module(
     name = "BPS Display",
-    description = "Displays how many blocks per second you're breaking."
+    description = "Displays how many blocks you're breaking per second."
 ) {
     private val roundNumber by BooleanSetting("Round number", true, description = "If the number should be rounded.")
 
@@ -26,13 +26,14 @@ object BPSDisplay : Module(
         ) and if (preview) text(text = "20.0") else text({ if (roundNumber) bps.roundToInt() else bps.round(1) })
     }.setting("Display", "")
 
-    private var startTime: Long = 0
-    private var isBreaking: Boolean = false
-    private var blocksBroken: Int = 0
-    private var lastBrokenBlock: Long = 0
-    private var bps: Double = 0.0
+    private var startTime = 0L
+    private var isBreaking = false
+    private var blocksBroken = 0
+    private var lastBrokenBlock = 0L
+    private var bps = 0.0
 
 
+    // this doesn't work properly Ithink Someone please fix
     init {
         onPacket { packet: PacketPlayerDigging ->
             if (packet.status != START_DESTROY_BLOCK) return@onPacket

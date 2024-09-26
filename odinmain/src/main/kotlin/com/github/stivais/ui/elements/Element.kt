@@ -142,7 +142,7 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
 
     fun clip() {
         elements?.loop {
-            it.renders = it.intersects(x, y, screenWidth(), screenHeight())// && it.width != 0f && it.height != 0f
+            it.renders = it.intersects(x, y, width, height) && !(it.width == 0f && it.height == 0f)
             if (it.renders) {
                 it.clip()
             }

@@ -9,6 +9,7 @@ import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
 import me.odinmain.features.impl.render.ClickGUI
 import me.odinmain.features.impl.render.ClickGUI.clickGUI
 import me.odinmain.features.impl.skyblock.DianaHelper
+import me.odinmain.features.openHUDEditor
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.skyblock.PlayerUtils.posX
@@ -26,7 +27,7 @@ val mainCommand = commodore("od", "odin") {
     }
 
     literal("edithuds").runs {
-        ModuleManager.openHUDEditor()
+        openHUDEditor().open()
     }
 
     literal("ep").runs {
