@@ -44,7 +44,7 @@ object ClickGUI: Module(
     // make useful someday
     val updateMessage by SelectorSetting("Update Message", "Beta", arrayListOf("Beta", "Full", "None")).hide()
 
-    val devMessages by BooleanSetting("Dev Messages", true, description = "Enables dev messages in chat.").withDependency { DevPlayers.isDev }
+    val devMessages by BooleanSetting("Dev Messages", true, description = "Enables dev messages in chat.").withDependency { DevPlayers.isDev } // make dev-specific modules and put this there
     val devSize by BooleanSetting("Dev Size", true, description = "Toggles client side dev size.").withDependency { DevPlayers.isDev }
     private val devWings by BooleanSetting("Dev Wings", false, description = "Toggles client side dev wings.").withDependency { DevPlayers.isDev }
     private val devWingsColor by ColorSetting("Dev Wings Color", Color.RGB(255, 255, 255), description = "Color of the dev wings.").withDependency { DevPlayers.isDev }
@@ -161,7 +161,7 @@ object ClickGUI: Module(
                 column(size(h = Animatable(from = Bounding, to = 0.px, swapIf = !data.extended))) {
                     background(color = Color.RGB(38, 38, 38, 0.7f))
                     scissors()
-                    for (module in ModuleManager.modules.sortedBy { ui.renderer.textWidth(it.name, 16f) }) {
+                    for (module in ModuleManager.modules.sortedByDescending { ui.renderer.textWidth(it.name, 16f) }) {
                         if (module.category != panel) continue
                         val it = module(module)
                         moduleElements.add(module to it)
@@ -180,7 +180,7 @@ object ClickGUI: Module(
         block(constrain(y = 80.percent, w = 25.percent, h = 5.percent), color = `gray 38`, radius = 10.radii()) {
             textInput(placeholder = "Search") { str ->
                 moduleElements.loop { (module, element) ->
-                    element.enabled = module.name.contains(str, true)
+                    element.enabled = module.name.contains(str, true) // do we want to add an option for search bar to also find setting names
                 }
                 this@UI.redraw()
             }

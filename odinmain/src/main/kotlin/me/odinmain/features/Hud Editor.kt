@@ -4,10 +4,8 @@ import com.github.stivais.ui.UI
 import com.github.stivais.ui.UIScreen.Companion.init
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.color.withAlpha
-import com.github.stivais.ui.constraints.constrain
-import com.github.stivais.ui.constraints.copies
+import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Pixel
-import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.constraints.sizes.Bounding
 import com.github.stivais.ui.elements.impl.Popup
 import com.github.stivais.ui.elements.impl.popup
@@ -176,12 +174,14 @@ private fun ElementDSL.selection() {
     }
 }
 
-private const val SNAP_THRESHOLD = 10f
+private const val SNAP_THRESHOLD = 5f
 
 // slightly modified version of draggable that snaps to nearby elements
 private fun ElementDSL.draggableSnapping() {
     val px = 0.px
     val py = 0.px
+    var snappedLineX: Float? = null
+    var snappedLineY: Float? = null
 
     afterCreation {
         px.pixels = element.x
@@ -203,6 +203,9 @@ private fun ElementDSL.draggableSnapping() {
 
     onRelease(0) {
         mousePressed = false
+        snappedLineX = null
+        snappedLineY = null
+        redraw()
     }
 
     onMouseMove {
@@ -213,19 +216,48 @@ private fun ElementDSL.draggableSnapping() {
             newX = newX.coerceIn(0f, parent!!.width - element.screenWidth())
             newY = newY.coerceIn(0f, parent!!.height - element.screenHeight())
 
-            parent?.elements?.loop snap@ { other ->
-                if (other == element) return@snap
+            snappedLineX = null
+            snappedLineY = null
 
-                if (abs(newX + element.screenWidth() - other.x) <= SNAP_THRESHOLD) {
-                    newX = other.x - element.screenWidth()
-                } else if (abs(newX - (other.x + other.screenWidth())) <= SNAP_THRESHOLD) {
-                    newX = other.x + other.screenWidth()
-                }
+            // Calculate center lines
+            val centerX = parent!!.width / 2
+            val centerY = parent!!.height / 2
 
-                if (abs(newY + element.screenHeight() - other.y) <= SNAP_THRESHOLD) {
-                    newY = other.y - element.screenHeight()
-                } else if (abs(newY - (other.y + other.screenHeight())) <= SNAP_THRESHOLD) {
-                    newY = other.y + other.screenHeight()
+            // Check for center snapping
+            if (abs(newX + element.screenWidth() / 2 - centerX) <= SNAP_THRESHOLD) {
+                newX = centerX - element.screenWidth() / 2
+                snappedLineX = centerX.toFloat()
+            }
+            if (abs(newY + element.screenHeight() / 2 - centerY) <= SNAP_THRESHOLD) {
+                newY = centerY - element.screenHeight() / 2
+                snappedLineY = centerY.toFloat()
+            }
+
+            parent?.elements?.forEach { other ->
+                if (other != element) {
+                    // Check horizontal edges
+                    if (abs(newY - other.y) <= SNAP_THRESHOLD) {
+                        newY = other.y
+                        snappedLineY = newY
+                    } else if (abs(newY + element.screenHeight() - other.y) <= SNAP_THRESHOLD) {
+                        newY = other.y - element.screenHeight()
+                        snappedLineY = other.y
+                    } else if (abs(newY - (other.y + other.screenHeight())) <= SNAP_THRESHOLD) {
+                        newY = other.y + other.screenHeight()
+                        snappedLineY = newY
+                    }
+
+                    // Check vertical edges
+                    if (abs(newX - other.x) <= SNAP_THRESHOLD) {
+                        newX = other.x
+                        snappedLineX = newX
+                    } else if (abs(newX + element.screenWidth() - other.x) <= SNAP_THRESHOLD) {
+                        newX = other.x - element.screenWidth()
+                        snappedLineX = other.x
+                    } else if (abs(newX - (other.x + other.screenWidth())) <= SNAP_THRESHOLD) {
+                        newX = other.x + other.screenWidth()
+                        snappedLineX = newX
+                    }
                 }
             }
 
@@ -239,3 +271,6 @@ private fun ElementDSL.draggableSnapping() {
         }
     }
 }
+
+
+
