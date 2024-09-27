@@ -4,10 +4,13 @@ import com.github.stivais.ui.UI
 import com.github.stivais.ui.UIScreen.Companion.init
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.color.withAlpha
-import com.github.stivais.ui.constraints.*
+import com.github.stivais.ui.constraints.constrain
+import com.github.stivais.ui.constraints.copies
 import com.github.stivais.ui.constraints.measurements.Pixel
+import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.constraints.sizes.Bounding
 import com.github.stivais.ui.elements.impl.Popup
+import com.github.stivais.ui.elements.impl.canvas
 import com.github.stivais.ui.elements.impl.popup
 import com.github.stivais.ui.elements.scope.ElementDSL
 import com.github.stivais.ui.utils.loop
@@ -18,7 +21,16 @@ import kotlin.math.abs
 import kotlin.math.sign
 import me.odinmain.features.ModuleManager.hudUI as screen
 
+private var snapX: Float = -1f
+private var snapY: Float = -1f
+
 fun openHUDEditor() = UI {
+
+    // snapping lines
+    canvas(copies()) { renderer ->
+        if (snapX != -1f) renderer.line(snapX, 0f, snapX, ui.main.height, 1f, Color.WHITE.rgba)
+        if (snapY != -1f) renderer.line(0f, snapY, ui.main.width, snapY, 1f, Color.WHITE.rgba)
+    }.add()
 
     // multi-"editing"
     selection()
@@ -72,15 +84,7 @@ private fun ElementDSL.selection() {
 
     var popup: Popup? = null
 
-//    canvas(at(0.px, 0.px)) { renderer ->
-//        renderer.hollowRect(minX, minY, maxX - minX, maxY - minY, 1f, Color.WHITE.rgba)
-//    }.add()
-
     onClick {
-        if (popup != null) {
-            popup!!.closePopup()
-            popup = null
-        }
         box.enabled = true
         clickedX = ui.mx
         clickedY = ui.my
@@ -92,6 +96,12 @@ private fun ElementDSL.selection() {
         true
     }
     onRelease {
+        if (popup != null) {
+            if (!popup!!.element.isInside(ui.mx, ui.my)) {
+                popup!!.closePopup()
+                popup = null
+            }
+        }
         if (box.enabled) {
 
             val selectedHUDs = arrayListOf<Module.HUD.Drawable>()
@@ -110,49 +120,8 @@ private fun ElementDSL.selection() {
                     selectedHUDs.add(it)
                 }
             }
-
-            maxX -= minX
-            maxY -= minY
-            val popupX = (minX).px
-            val popupY = (minY).px
-
-            popup = popup(constraints = constrain(popupX, popupY, maxX.px, maxY.px)) {
-                block(
-                    constraints = copies(),
-                    color = Color.TRANSPARENT
-                ).outline(Color.WHITE)
-
-                var pressed = false
-                var tx = 0f
-                var ty = 0f
-
-                onClick {
-                    pressed = true
-                    tx = ui.mx - (popupX.pixels)
-                    ty = ui.my - (popupY.pixels)
-                    true
-                }
-                onRelease {
-                    pressed = false
-                }
-                onMouseMove {
-                    if (pressed) {
-                        val lastX = popupX.pixels
-                        val lastY = popupY.pixels
-                        popupX.pixels = ui.mx - tx
-                        popupY.pixels = ui.my - ty
-
-                        selectedHUDs.loop {
-                            (it.constraints.x as Pixel).pixels += popupX.pixels - lastX
-                            (it.constraints.y as Pixel).pixels += popupY.pixels - lastY
-                        }
-                        redraw()
-                        true
-                    } else {
-                        false
-                    }
-                }
-            }
+            popup?.closePopup()
+            popup = selectionPopup(minX, minY, maxX - minX, maxY - minY, selectedHUDs)
             redraw()
 
             box.enabled = false
@@ -174,14 +143,62 @@ private fun ElementDSL.selection() {
     }
 }
 
+fun ElementDSL.selectionPopup(
+    x: Float,
+    y: Float,
+    w: Float,
+    h: Float,
+    selectedHUDs: ArrayList<Module.HUD.Drawable>
+): Popup {
+    val px = x.px
+    val py = y.px
+    return popup(constraints = constrain(px, py, w.px, h.px)) {
+
+        block(
+            constraints = copies(),
+            color = Color.TRANSPARENT
+        ).outline(Color.WHITE)
+
+        var pressed = false
+        var tx = 0f
+        var ty = 0f
+
+        onClick {
+            pressed = true
+            tx = ui.mx - (px.pixels)
+            ty = ui.my - (py.pixels)
+            true
+        }
+        onRelease {
+            pressed = false
+        }
+        // maybe make it snapping?
+        onMouseMove {
+            if (pressed) {
+                val lastX = px.pixels
+                val lastY = py.pixels
+                px.pixels = (ui.mx - tx).coerceIn(0f, parent!!.width - element.screenWidth())
+                py.pixels = (ui.my - ty).coerceIn(0f, parent!!.height - element.screenHeight())
+
+                selectedHUDs.loop {
+                    if (lastX != px.pixels) (it.constraints.x as Pixel).pixels += px.pixels - lastX
+                    if (lastY != py.pixels) (it.constraints.y as Pixel).pixels += py.pixels - lastY
+                }
+                redraw()
+                true
+            } else {
+                false
+            }
+        }
+    }
+}
+
 private const val SNAP_THRESHOLD = 5f
 
 // slightly modified version of draggable that snaps to nearby elements
 private fun ElementDSL.draggableSnapping() {
     val px = 0.px
     val py = 0.px
-    var snappedLineX: Float? = null
-    var snappedLineY: Float? = null
 
     afterCreation {
         px.pixels = element.x
@@ -203,8 +220,8 @@ private fun ElementDSL.draggableSnapping() {
 
     onRelease(0) {
         mousePressed = false
-        snappedLineX = null
-        snappedLineY = null
+        snapX = -1f
+        snapY = -1f
         redraw()
     }
 
@@ -216,8 +233,8 @@ private fun ElementDSL.draggableSnapping() {
             newX = newX.coerceIn(0f, parent!!.width - element.screenWidth())
             newY = newY.coerceIn(0f, parent!!.height - element.screenHeight())
 
-            snappedLineX = null
-            snappedLineY = null
+            snapX = -1f
+            snapY = -1f
 
             // Calculate center lines
             val centerX = parent!!.width / 2
@@ -226,37 +243,37 @@ private fun ElementDSL.draggableSnapping() {
             // Check for center snapping
             if (abs(newX + element.screenWidth() / 2 - centerX) <= SNAP_THRESHOLD) {
                 newX = centerX - element.screenWidth() / 2
-                snappedLineX = centerX.toFloat()
+                snapX = centerX
             }
             if (abs(newY + element.screenHeight() / 2 - centerY) <= SNAP_THRESHOLD) {
                 newY = centerY - element.screenHeight() / 2
-                snappedLineY = centerY.toFloat()
+                snapY = centerY
             }
 
-            parent?.elements?.forEach { other ->
+            parent?.elements?.loop { other ->
                 if (other != element) {
                     // Check horizontal edges
                     if (abs(newY - other.y) <= SNAP_THRESHOLD) {
                         newY = other.y
-                        snappedLineY = newY
+                        snapY = newY
                     } else if (abs(newY + element.screenHeight() - other.y) <= SNAP_THRESHOLD) {
                         newY = other.y - element.screenHeight()
-                        snappedLineY = other.y
+                        snapY = other.y
                     } else if (abs(newY - (other.y + other.screenHeight())) <= SNAP_THRESHOLD) {
                         newY = other.y + other.screenHeight()
-                        snappedLineY = newY
+                        snapY = newY
                     }
 
                     // Check vertical edges
                     if (abs(newX - other.x) <= SNAP_THRESHOLD) {
                         newX = other.x
-                        snappedLineX = newX
+                        snapX = newX
                     } else if (abs(newX + element.screenWidth() - other.x) <= SNAP_THRESHOLD) {
                         newX = other.x - element.screenWidth()
-                        snappedLineX = other.x
+                        snapX = other.x
                     } else if (abs(newX - (other.x + other.screenWidth())) <= SNAP_THRESHOLD) {
                         newX = other.x + other.screenWidth()
-                        snappedLineX = newX
+                        snapX = newX
                     }
                 }
             }

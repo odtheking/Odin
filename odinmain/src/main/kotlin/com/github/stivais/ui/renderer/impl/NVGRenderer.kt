@@ -118,6 +118,16 @@ object NVGRenderer : Renderer {
 
     override fun popScissor() = nvgResetScissor(vg)
 
+    override fun line(x1: Float, y1: Float, x2: Float, y2: Float, thickness: Float, color: Int) {
+        nvgBeginPath(vg)
+        nvgMoveTo(vg, x1, y1)
+        nvgLineTo(vg, x2, y2)
+        nvgStrokeWidth(vg, thickness)
+        color(color)
+        nvgStrokeColor(vg, nvgColor)
+        nvgStroke(vg)
+    }
+
     override fun rect(x: Float, y: Float, w: Float, h: Float, color: Int) {
         nvgBeginPath(vg)
         nvgRect(vg, x, y, w, h + .5f)

@@ -23,7 +23,7 @@ object BPSDisplay : Module(
             text = "BPS ",
             color = Color.GREEN,
             size = 30.px
-        ) and if (preview) text(text = "20.0") else text({ if (roundNumber) bps.roundToInt() else bps.round(1) })
+        ) and text({ if (roundNumber) bps.roundToInt() else bps.round(1) })
     }.setting("Display", "")
 
     private var startTime = 0L

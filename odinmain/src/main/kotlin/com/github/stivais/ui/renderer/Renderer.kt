@@ -39,6 +39,8 @@ interface Renderer {
 
     fun popScissor()
 
+    fun line(x1: Float, y1: Float, x2: Float, y2: Float, thickness: Float, color: Int)
+
     fun rect(x: Float, y: Float, w: Float, h: Float, color: Int)
 
     fun rect(x: Float, y: Float, w: Float, h: Float, color: Int, tl: Float, bl: Float, br: Float, tr: Float)
