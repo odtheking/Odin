@@ -32,9 +32,7 @@ object ServerUtils {
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
-        prevTime = 0L
-        averageTps = 20.0
-        averagePing = 0.0
+        reset()
     }
 
     init {
@@ -64,6 +62,7 @@ object ServerUtils {
 
     private fun sendPing() {
         if (isPinging || mc.thePlayer == null) return
+        if (pingStartTime - System.nanoTime() > 10e6) reset()
         pingStartTime = System.nanoTime()
         isPinging = true
         sendPacketNoEvent(C16PacketClientStatus(C16PacketClientStatus.EnumState.REQUEST_STATS))
@@ -71,5 +70,11 @@ object ServerUtils {
 
     fun Entity.getPing(): Int {
         return mc.netHandler.getPlayerInfo(this.uniqueID)?.responseTime ?: -1
+    }
+
+    private fun reset() {
+        prevTime = 0L
+        averageTps = 20.0
+        averagePing = 0.0
     }
 }
