@@ -5,8 +5,12 @@ import com.github.stivais.ui.UIScreen.Companion.init
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.color.withAlpha
 import com.github.stivais.ui.constraints.constrain
+import com.github.stivais.ui.constraints.copies
+import com.github.stivais.ui.constraints.measurements.Pixel
 import com.github.stivais.ui.constraints.px
 import com.github.stivais.ui.constraints.sizes.Bounding
+import com.github.stivais.ui.elements.impl.Popup
+import com.github.stivais.ui.elements.impl.popup
 import com.github.stivais.ui.elements.scope.ElementDSL
 import com.github.stivais.ui.utils.loop
 import me.odinmain.config.Config
@@ -29,7 +33,7 @@ fun openHUDEditor() = UI {
                 hud.scale += 0.1f * amount.sign
                 true
             }
-            onRelease {
+            onRemove {
                 hud.x.percent = element.x / ui.main.width
                 hud.y.percent = element.y / ui.main.height
             }
@@ -68,7 +72,17 @@ private fun ElementDSL.selection() {
     var clickedX = 0f
     var clickedY = 0f
 
+    var popup: Popup? = null
+
+//    canvas(at(0.px, 0.px)) { renderer ->
+//        renderer.hollowRect(minX, minY, maxX - minX, maxY - minY, 1f, Color.WHITE.rgba)
+//    }.add()
+
     onClick {
+        if (popup != null) {
+            popup!!.closePopup()
+            popup = null
+        }
         box.enabled = true
         clickedX = ui.mx
         clickedY = ui.my
@@ -81,6 +95,68 @@ private fun ElementDSL.selection() {
     }
     onRelease {
         if (box.enabled) {
+
+            val selectedHUDs = arrayListOf<Module.HUD.Drawable>()
+
+            var minX = 9999f
+            var minY = 9999f
+            var maxX = 0f
+            var maxY = 0f
+
+            element.elements?.loop {
+                if (it is Module.HUD.Drawable && it.enabled && it.intersects(box.element)) {
+                    if (it.x < minX) minX = it.x
+                    if (it.x + it.screenWidth() > maxX) maxX = it.screenWidth() + it.x
+                    if (it.y < minY) minY = it.y
+                    if (it.y + it.screenHeight() > maxY) maxY = it.screenHeight() + it.y
+                    selectedHUDs.add(it)
+                }
+            }
+
+            maxX -= minX
+            maxY -= minY
+            val popupX = (minX).px
+            val popupY = (minY).px
+
+            popup = popup(constraints = constrain(popupX, popupY, maxX.px, maxY.px)) {
+                block(
+                    constraints = copies(),
+                    color = Color.TRANSPARENT
+                ).outline(Color.WHITE)
+
+                var pressed = false
+                var tx = 0f
+                var ty = 0f
+
+                onClick {
+                    pressed = true
+                    tx = ui.mx - (popupX.pixels)
+                    ty = ui.my - (popupY.pixels)
+                    true
+                }
+                onRelease {
+                    pressed = false
+                }
+                onMouseMove {
+                    if (pressed) {
+                        val lastX = popupX.pixels
+                        val lastY = popupY.pixels
+                        popupX.pixels = ui.mx - tx
+                        popupY.pixels = ui.my - ty
+
+                        selectedHUDs.loop {
+                            (it.constraints.x as Pixel).pixels += popupX.pixels - lastX
+                            (it.constraints.y as Pixel).pixels += popupY.pixels - lastY
+                        }
+                        redraw()
+                        true
+                    } else {
+                        false
+                    }
+                }
+            }
+            redraw()
+
             box.enabled = false
         }
     }

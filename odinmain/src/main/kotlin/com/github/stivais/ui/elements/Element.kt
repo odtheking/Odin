@@ -270,7 +270,11 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
         return x in tx..tx + (width) * scale && y in ty..ty + (height - sy) * scale
     }
 
-    private fun intersects(x: Float, y: Float, width: Float, height: Float): Boolean {
+    fun intersects(other: Element): Boolean {
+        return intersects(other.x, other.y, other.width, other.height)
+    }
+
+    fun intersects(x: Float, y: Float, width: Float, height: Float): Boolean {
         val tx = this.x
         val ty = this.y
         val tw = this.width

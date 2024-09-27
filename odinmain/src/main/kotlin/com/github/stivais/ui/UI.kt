@@ -111,7 +111,7 @@ class UI(val renderer: Renderer = NVGRenderer) {
 
     fun cleanup() {
         unfocus()
-        eventManager.dispatchToAll(Lifetime.Uninitialized, main)
+        eventManager.dispatchToAllReverse(Lifetime.Uninitialized, main)
     }
 
     fun focus(element: Element) {

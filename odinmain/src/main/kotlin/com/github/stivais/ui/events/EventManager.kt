@@ -164,4 +164,13 @@ class EventManager(private val ui: UI) {
             dispatchToAll(event, it)
         }
     }
+
+    // rename i think
+    fun dispatchToAllReverse(event: Event, element: Element) {
+        if (!element.renders) return
+        element.elements?.loop {
+            dispatchToAll(event, it)
+        }
+        element.accept(event)
+    }
 }
