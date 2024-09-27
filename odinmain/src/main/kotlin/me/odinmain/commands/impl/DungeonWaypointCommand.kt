@@ -32,9 +32,11 @@ val dungeonWaypointsCommand = commodore("dwp", "dungeonwaypoints") {
         modMessage("reset secret waypoints")
     }
 
-    literal("secret").runs {
-        DungeonWaypoints.secretWaypoint = !DungeonWaypoints.secretWaypoint
-        modMessage("Changed secret to: ${DungeonWaypoints.secretWaypoint}")
+    literal("type").runs { type: String ->
+        DungeonWaypoints.WaypointType.getByName(type)?.let {
+            DungeonWaypoints.waypointType = it.ordinal
+            modMessage("Changed waypoint type to: ${it.displayName}")
+        } ?: modMessage("Invalid type!")
     }
 
     literal("useblocksize").runs {

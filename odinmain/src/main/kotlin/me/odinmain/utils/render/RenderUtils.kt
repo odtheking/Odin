@@ -6,12 +6,17 @@ import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.DungeonWaypoint
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
-import net.minecraft.client.renderer.*
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.Tessellator
+import net.minecraft.client.renderer.WorldRenderer
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.Entity
-import net.minecraft.util.*
+import net.minecraft.util.AxisAlignedBB
+import net.minecraft.util.MathHelper
+import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -21,7 +26,9 @@ import org.lwjgl.opengl.GL13
 import org.lwjgl.util.glu.Cylinder
 import org.lwjgl.util.glu.GLU
 import java.awt.image.BufferedImage
-import kotlin.math.*
+import kotlin.math.cos
+import kotlin.math.floor
+import kotlin.math.sin
 
 
 object RenderUtils {
@@ -338,6 +345,7 @@ object RenderUtils {
         scale: Float = 0.3f,
         shadow: Boolean = false
     ) {
+        if (text.isBlank()) return
         val renderPos = getRenderPos(vec3)
 
         GlStateManager.pushMatrix()
@@ -566,8 +574,8 @@ object RenderUtils {
         }
 
         for (box in boxes) {
-            if (!box.depth || disableDepth) GlStateManager.disableDepth()
-            else GlStateManager.enableDepth()
+            if (box.clicked) continue
+            depth(box.depth && !disableDepth)
             val aabb = box.aabb.offset(box.x, box.y, box.z)
             box.color.bind()
 
@@ -575,9 +583,9 @@ object RenderUtils {
             else addVertexesForOutlinedBox(aabb)
             tessellator.draw()
         }
+        resetDepth()
         GL11.glEndList()
         postDraw()
-        resetDepth()
         GlStateManager.enableCull()
         GlStateManager.resetColor()
         GlStateManager.popMatrix()
