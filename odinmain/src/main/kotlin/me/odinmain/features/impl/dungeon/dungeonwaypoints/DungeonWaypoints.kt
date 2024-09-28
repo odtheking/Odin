@@ -75,6 +75,8 @@ object DungeonWaypoints : Module(
     private val debugWaypoint: Boolean by BooleanSetting("Debug Waypoint", false, description = "Shows a waypoint in the middle of every extra room.").withDependency { DevPlayers.isDev }
     var glList = -1
 
+    var offset = BlockPos(0.0, 0.0, 0.0)
+
     enum class WaypointType {
         NONE, NORMAL, SECRET, ETHERWARP,
         ;
@@ -177,10 +179,13 @@ object DungeonWaypoints : Module(
             }
         }
         val pos = if (!reachEdits) mc.objectMouseOver?.blockPos ?: return else reachPos?.pos ?: return
-        if (!allowEdits || isAir(pos)) return
+        if (!allowEdits) return
+        val offsetPos = pos.add(offset)
+        offset = BlockPos(0.0, 0.0, 0.0)
+        if (isAir(offsetPos)) return
         val room = DungeonUtils.currentFullRoom ?: return
-        val vec = Vec3(pos).subtractVec(x = room.clayPos.x, z = room.clayPos.z).rotateToNorth(room.room.rotation)
-        val block = getBlockAt(pos)
+        val vec = Vec3(offsetPos).subtractVec(x = room.clayPos.x, z = room.clayPos.z).rotateToNorth(room.room.rotation)
+        val block = getBlockAt(offsetPos)
         val aabb =
             if (useBlockSize && block !is BlockSign) block.getSelectedBoundingBox(mc.theWorld, BlockPos(0, 0, 0))?.outlineBounds() ?: return
             else AxisAlignedBB(.5 - (size / 2), .5 - (size / 2), .5 - (size / 2), .5 + (size / 2), .5 + (size / 2), .5 + (size / 2)).expand(0.002, 0.002, 0.002)

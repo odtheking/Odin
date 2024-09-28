@@ -6,6 +6,7 @@ import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.resetS
 import me.odinmain.utils.isHexaDecimal
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.modMessage
+import net.minecraft.util.BlockPos
 
 val dungeonWaypointsCommand = commodore("dwp", "dungeonwaypoints") {
     runs {
@@ -42,6 +43,11 @@ val dungeonWaypointsCommand = commodore("dwp", "dungeonwaypoints") {
     literal("useblocksize").runs {
         DungeonWaypoints.useBlockSize = !DungeonWaypoints.useBlockSize
         modMessage("Changed use block size to: ${DungeonWaypoints.useBlockSize}")
+    }
+
+    literal("offset").runs { x: Double, y: Double, z: Double ->
+        DungeonWaypoints.offset = BlockPos(x, y, z)
+        modMessage("Next waypoint will be added with an offset of: ${DungeonWaypoints.offset}")
     }
 
     literal("through").runs {
