@@ -92,9 +92,9 @@ object DragonCheck {
             if (dragon.state != WitherDragonState.SPAWNING) return@forEach
             dragon.timeToSpawn--.coerceAtLeast(0)
             if (
-                dragon.timeToSpawn != 95 &&
+                (dragon.timeToSpawn != 95 &&
                 WitherDragonsEnum.entries.filter { it.state == WitherDragonState.SPAWNING }.size < 2 &&
-                WitherDragonsEnum.entries.sumOf { it.timesSpawned } <= 2 ||
+                WitherDragonsEnum.entries.sumOf { it.timesSpawned } <= 2) ||
                 dragon.timeToSpawn < 95
                 ) return@forEach
             priorityDragon = findPriority(WitherDragonsEnum.entries.filter { it.state == WitherDragonState.SPAWNING }.toMutableList())
