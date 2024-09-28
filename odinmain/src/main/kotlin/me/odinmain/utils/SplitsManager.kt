@@ -43,7 +43,7 @@ object SplitsManager {
 
         currentSplits = when (LocationUtils.currentArea) {
             Island.Dungeon -> {
-                val floor = LocationUtils.getFloor() ?: return modMessage("§Couldn't get floor.")
+                val floor = LocationUtils.getFloor() ?: return modMessage("§cCouldn't get floor.")
                 val split = dungeonSplits[floor.floorNumber].toMutableList()
 
                 split.add(0, Split(Regex("\\[NPC] Mort: Here, I found this map when I first entered the dungeon\\.|\\[NPC] Mort: Right-click the Orb for spells, and Left-click \\(or Drop\\) to use your Ultimate!"), "§2Blood Open"))

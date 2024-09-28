@@ -347,8 +347,7 @@ object RenderUtils {
         GlStateManager.rotate(-renderManager.playerViewY, 0.0f, 1.0f, 0.0f)
         GlStateManager.rotate(renderManager.playerViewX * xMultiplier, 1.0f, 0.0f, 0.0f)
         GlStateManager.scale(-scale, -scale, scale)
-        GlStateManager.disableLighting()
-
+ q
         GlStateManager.enableBlend()
         blendFactor()
         depth(depthTest)
