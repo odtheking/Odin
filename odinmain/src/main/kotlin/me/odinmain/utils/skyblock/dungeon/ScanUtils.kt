@@ -126,7 +126,6 @@ object ScanUtils {
     fun getRoomSecrets(name: String): Int =
         roomList.find { it.name == name }?.secrets ?: 0
 
-
     private fun getRoomData(hash: Int): RoomData? =
         roomList.find { hash in it.cores }
 

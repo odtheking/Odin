@@ -30,7 +30,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
  */
 object DungeonWaypoints : Module(
     name = "Dungeon Waypoints",
-    description = "Shows waypoints for dungeons. Currently it's quite buggy and doesn't work well with some rooms.",
+    description = "Custom Waypoints for Dungeon Rooms.",
     category = Category.DUNGEON,
     tag = TagType.NEW
 ) {
