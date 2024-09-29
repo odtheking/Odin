@@ -60,21 +60,23 @@ object HighlightRenderer {
         entities[HighlightType.Box2d]?.filter { !it.depth || mc.thePlayer.isEntitySeen(it.entity) }?.forEach {
             Renderer.draw2DEntity(it.entity, it.color, it.thickness)
         }
-        if (entities[HighlightType.Outline]?.isEmpty() == true && entities[HighlightType.Glow]?.isEmpty() == true) return
+        val entitiesToOutline = entities[HighlightType.Outline]?.filter { (!it.depth || mc.thePlayer.isEntitySeen(it.entity)) && it.entity.isEntityAlive} ?: emptyList()
+        val entitiesToGlow = entities[HighlightType.Glow]?.filter { (!it.depth || mc.thePlayer.isEntitySeen(it.entity)) && it.entity.isEntityAlive} ?: emptyList()
+        if (entitiesToOutline.isEmpty() && entitiesToGlow.isEmpty()) return
         GlStateManager.pushMatrix()
         mc.renderManager.setRenderOutlines(true)
         RenderUtils.enableOutlineMode()
-        if (entities[HighlightType.Outline]?.isNotEmpty() == true) {
+        if (entitiesToOutline.isNotEmpty()) {
             OutlineShader.startDraw()
-            entities[HighlightType.Outline]?.filter { (!it.depth || mc.thePlayer.isEntitySeen(it.entity)) && it.entity.isEntityAlive}?.forEach {
+            entitiesToOutline.forEach {
                 RenderUtils.outlineColor(it.color)
                 mc.renderManager.renderEntityStatic(it.entity, event.partialTicks, true)
             }
             OutlineShader.stopDraw(Color.WHITE, ((entities[HighlightType.Outline]?.firstOrNull()?.thickness ?: 1f) / 3f).coerceIn(0.4f, 1f), 1f)
         }
-        if (entities[HighlightType.Glow]?.isNotEmpty() == true) {
+        if (entitiesToGlow.isNotEmpty()) {
             GlowShader.startDraw()
-            entities[HighlightType.Glow]?.filter { (!it.depth || mc.thePlayer.isEntitySeen(it.entity)) && it.entity.isEntityAlive }?.forEach {
+            entitiesToGlow.forEach {
                 RenderUtils.outlineColor(it.color)
                 mc.renderManager.renderEntityStatic(it.entity, event.partialTicks, true)
             }

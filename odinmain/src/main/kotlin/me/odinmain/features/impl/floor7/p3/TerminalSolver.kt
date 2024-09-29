@@ -42,6 +42,7 @@ object TerminalSolver : Module(
     val renderOrderNumbers: Boolean by BooleanSetting("Render Order Numbers", false, description = "Renders all numbers in the order terminal.")
     private val lockRubixSolution: Boolean by BooleanSetting("Lock Rubix Solution", true, description = "Locks the 'correct' color of the rubix terminal to the one that was scanned first, should make the solver less 'jumpy'.")
     private val cancelToolTip: Boolean by BooleanSetting("Stop Tooltips", true, description = "Stops rendering tooltips in terminals.")
+    private val cancelMelodySolver: Boolean by BooleanSetting("Stop Melody Solver", false, description = "Stops rendering the melody solver.")
 
     private val showRemoveWrongSettings: Boolean by DropdownSetting("Render Wrong Settings").withDependency { renderType.equalsOneOf(1,2) }
     private val removeWrong: Boolean by BooleanSetting("Stop Rendering Wrong", true, description = "Main toggle for stopping the rendering of incorrect items in terminals.").withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings }
@@ -113,7 +114,7 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun onGuiRender(event: GuiEvent.DrawGuiContainerScreenEvent) {
-        if (currentTerm.type == TerminalTypes.NONE || !enabled || !renderType.equalsOneOf(0,3) || event.container !is ContainerChest) return
+        if (currentTerm.type == TerminalTypes.NONE || !enabled || !renderType.equalsOneOf(0,3) || event.container !is ContainerChest || (currentTerm.type == TerminalTypes.MELODY && cancelMelodySolver)) return
         if (renderType == 3) {
             CustomTermGui.render()
             event.isCanceled = true
@@ -139,6 +140,7 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun drawSlot(event: GuiEvent.DrawSlotEvent) {
+        if (currentTerm.type == TerminalTypes.MELODY && cancelMelodySolver) return
         if ((removeWrong || renderType == 0) && enabled && getShouldBlockWrong() && event.slot.slotIndex <= event.container.inventorySlots.size - 37 && event.slot.slotIndex !in currentTerm.solution && event.slot.inventory !is InventoryPlayer) event.isCanceled = true
         if (event.slot.slotIndex !in currentTerm.solution || event.slot.slotIndex > event.container.inventorySlots.size - 37 || !enabled || renderType == 3 || event.slot.inventory is InventoryPlayer) return
 
@@ -229,9 +231,11 @@ object TerminalSolver : Module(
             }
         }
 
-        onPacket(S2FPacketSetSlot::class.java, { currentTerm.type == TerminalTypes.MELODY }) {
-            currentTerm.items[it.func_149173_d()] = it.func_149174_e() ?: currentTerm.items[it.func_149173_d()]
-            currentTerm.solution = solveMelody(currentTerm.items)
+        onPacket(S2FPacketSetSlot::class.java, { currentTerm.type == TerminalTypes.MELODY }) { packet ->
+            packet.func_149174_e()?.let {
+                currentTerm.items[packet.func_149173_d()] = it
+                currentTerm.solution = solveMelody(currentTerm.items)
+            }
         }
     }
 

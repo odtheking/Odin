@@ -54,7 +54,7 @@ object DragonCheck {
 
     fun dragonLeaveWorld(event: LivingDeathEvent) {
         val entity = event.entity as? EntityDragon ?: return
-        val dragon = WitherDragonsEnum.entries.find {it.entity?.entityId == entity.entityId} ?: return
+        val dragon = WitherDragonsEnum.entries.find { it.entity?.entityId == entity.entityId } ?: return
         dragon.state = WitherDragonState.DEAD
         lastDragonDeath = dragon
 

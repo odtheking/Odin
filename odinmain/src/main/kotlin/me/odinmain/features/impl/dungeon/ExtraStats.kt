@@ -59,7 +59,9 @@ object ExtraStats : Module(
         }
 
         onMessage(Regex("^\\s*(\\+[\\d,.]+\\s?\\w+ Experience)\\s?(?:\\(.+\\))?\$")) { event ->
-            Regex("^\\s*(\\+[\\d,.]+\\s?\\w+ Experience)\\s?(?:\\(.+\\))?\$").matchEntire(event)?.let { it.groupValues[1] }
+            Regex("^\\s*(\\+[\\d,.]+\\s?\\w+ Experience)\\s?(?:\\(.+\\))?\$").matchEntire(event)?.let {
+                extraStats.xp.add("§3${it.groupValues[1].replace("Experience", "EXP").replace("Catacombs", "Cata")}")
+            }
         }
 
         onMessage(Regex("^\\s*Secrets Found: (\\d+)\$")) { event ->
@@ -91,6 +93,7 @@ object ExtraStats : Module(
                 Regex("^\\s*The Catacombs - .+ Stats\$"),
                 Regex("^\\s*Deaths: \\d+\$"),
                 Regex("^\\s*Master Mode Catacombs - .+ Stats\$"),
+                Regex("^\\s*Master Mode The Catacombs - .+ Stats\$"),
                 Regex("^\\s*\\+(\\d+) Bits\$"),
                 Regex("^\\s*Enemies Killed: \\d+\\s?(?:\\(NEW RECORD!\\))?\$"),)
             ) event.isCanceled = true
