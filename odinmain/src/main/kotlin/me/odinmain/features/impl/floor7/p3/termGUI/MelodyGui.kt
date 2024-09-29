@@ -7,9 +7,11 @@ import me.odinmain.features.impl.floor7.p3.TerminalSolver.gap
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.melodyColumColor
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.melodyCorrectRowColor
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.melodyPressColor
+import me.odinmain.features.impl.floor7.p3.TerminalSolver.melodyPressColumColor
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.melodyRowColor
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.*
+import net.minecraft.item.Item
 import kotlin.math.ceil
 
 object MelodyGui : TermGui() {
@@ -38,7 +40,15 @@ object MelodyGui : TermGui() {
             }
             val box = BoxWithClass(ceil(-163 + ((gap-20).unaryPlus() * 0.5)) + col * 70, -115 + row * 70, 70 - gap, 70 - gap)
             roundedRectangle(box, colorMelody)
-            itemIndexMap[pane] = Box(
+        }
+
+        TerminalSolver.currentTerm.items.forEachIndexed { index, item ->
+            if (Item.getIdFromItem(item.item) != 159) return@forEachIndexed
+            val row = index / 9 - 1
+            val col = index % 9 - 2
+            val box = BoxWithClass(ceil(-163 + ((gap-20).unaryPlus() * 0.5)) + col * 70, -115 + row * 70, 70 - gap, 70 - gap)
+            if (index !in TerminalSolver.currentTerm.solution) roundedRectangle(box, melodyPressColumColor)
+            itemIndexMap[index] = Box(
                 box.x.toFloat() * customScale + mc.displayWidth / 2,
                 box.y.toFloat() * customScale + mc.displayHeight / 2,
                 box.w.toFloat() * customScale,

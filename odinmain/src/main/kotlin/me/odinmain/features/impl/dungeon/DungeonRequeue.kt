@@ -14,7 +14,7 @@ object DungeonRequeue : Module(
 ) {
     private val delay: Int by NumberSetting("Delay", 10, 0, 30, 1, description = "The delay in seconds before requeuing.", unit = "s")
     private val type: Boolean by DualSetting("Type", "Normal", "Requeue", default = true, description = "The type of command to execute to fulfill the requeue request.")
-    private val disablePartyLeave: Boolean by BooleanSetting("Disable Party Leave", false, description = "Disables the requeue on party leave message.")
+    private val disablePartyLeave: Boolean by BooleanSetting("Disable on party leave", true, description = "Disables the requeue on party leave message.")
 
     var disableRequeue = false
     init {

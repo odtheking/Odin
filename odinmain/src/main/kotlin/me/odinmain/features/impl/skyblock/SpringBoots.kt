@@ -32,8 +32,10 @@ object SpringBoots : Module(
             mcText("Jump: 6.5", 2f, 5f, 1, Color.WHITE)
             getTextWidth("Jump: 6.5", 12f) to 12f
         } else {
-            mcText("Jump: ${blocksList.getSafe(pitchCounts.sum()) ?: "61 (MAX)"}", 2f, 5f, 1, Color.WHITE)
-            getTextWidth("Jump: ${blocksList.getSafe(pitchCounts.sum()) ?: "61 (MAX)"}", 12f) to 12f
+            val blockAmount = blocksList.getSafe(pitchCounts.sum())
+            if (blockAmount == 0.0) return@HudSetting 0f to 0f
+            mcText("Jump: ${blockAmount ?: "61 (MAX)"}", 2f, 5f, 1, Color.WHITE)
+            getTextWidth("Jump: ${blockAmount ?: "61 (MAX)"}", 12f) to 12f
         }
     }
     private val renderGoal: Boolean by BooleanSetting("Render Goal", true, description = "Render the goal block.")

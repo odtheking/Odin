@@ -69,6 +69,7 @@ object TerminalSolver : Module(
     val selectColor: Color by ColorSetting("Select Color", Color(0, 170, 170), true, description = "Color of the select terminal solver.").withDependency { showColors }
     val melodyColumColor: Color by ColorSetting("Melody Column Color", Color.PURPLE.withAlpha(0.75f), true, description = "Color of the colum indicator for melody.").withDependency { showColors }
     val melodyRowColor: Color by ColorSetting("Melody Row Color", Color.GREEN.withAlpha(0.75f), true, description = "Color of the row indicator for melody.").withDependency { showColors }
+    val melodyPressColumColor: Color by ColorSetting("Melody Press Column Color", Color.YELLOW.withAlpha(0.75f), true, description = "Color of the location for pressing for melody.").withDependency { showColors }
     val melodyPressColor: Color by ColorSetting("Melody Press Color", Color.CYAN.withAlpha(0.75f), true, description = "Color of the location for pressing for melody.").withDependency { showColors }
     val melodyCorrectRowColor: Color by ColorSetting("Melody Correct Row Color", Color.WHITE.withAlpha(0.75f), true, description = "Color of the whole row for melody.").withDependency { showColors }
 
@@ -229,7 +230,7 @@ object TerminalSolver : Module(
         }
 
         onPacket(S2FPacketSetSlot::class.java, { currentTerm.type == TerminalTypes.MELODY }) {
-            currentTerm.items[it.func_149173_d()] = it.func_149174_e()
+            currentTerm.items[it.func_149173_d()] = it.func_149174_e() ?: currentTerm.items[it.func_149173_d()]
             currentTerm.solution = solveMelody(currentTerm.items)
         }
     }
@@ -301,12 +302,12 @@ object TerminalSolver : Module(
 
     private fun solveMelody(items: List<ItemStack?>): List<Int> {
         val greenPane = items.indexOfLast { it?.metadata == 5 && Item.getIdFromItem(it.item) == 160 }.takeIf { it != -1 } ?: return emptyList()
-
-        val greenClay = items.filter {it?.metadata.equalsOneOf(14, 5) && Item.getIdFromItem(it?.item) == 159}.map { items.indexOf(it) }
+        val magentaPane = items.indexOfFirst { it?.metadata == 2 && Item.getIdFromItem(it.item) == 160 }.takeIf { it != -1 } ?: return emptyList()
+        val greenClay = items.indexOfFirst { it?.metadata == 5 && Item.getIdFromItem(it.item) == 159 }.takeIf { it != -1 } ?: return emptyList()
         return items.mapIndexedNotNull { index, item ->
             when {
                 index == greenPane || item?.metadata == 2 && Item.getIdFromItem(item.item) == 160 -> index
-                greenClay.contains(index) -> index
+                index == greenClay && greenPane % 9 == magentaPane % 9 -> index
                 else -> null
             }
         }
