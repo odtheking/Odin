@@ -61,7 +61,7 @@ object ModuleManager {
         // render
         BPSDisplay, ClickGUIModule, CustomHighlight, CPSDisplay, DragonHitboxes, GyroWand, NameChanger,
         PersonalDragon, RenderOptimizer, ServerHud, Waypoints, CanClip, Animations, SpaceHelmet,
-        BlockOverlay, VisualWords, DVD, Sidebar,
+        BlockOverlay, VisualWords, DVD, Sidebar, HideArmor,
 
         //skyblock
         NoCursorReset, AutoSprint, BlazeAttunement, ChatCommands, DeployableTimer, DianaHelper, ArrowHit,

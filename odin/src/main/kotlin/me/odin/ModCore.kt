@@ -3,7 +3,6 @@ package me.odin
 import me.odin.features.impl.floor7.p3.*
 import me.odin.features.impl.render.Camera
 import me.odin.features.impl.render.EtherWarpHelper
-import me.odin.features.impl.render.HideArmor
 import me.odin.features.impl.skyblock.HidePlayers
 import me.odin.mixin.accessors.EntityRendererAccessor
 import me.odinmain.OdinMain
@@ -47,7 +46,7 @@ class ModCore {
 
     @EventHandler
     fun loadComplete(event: FMLLoadCompleteEvent) {
-        ModuleManager.addModules(SimonSays, ArrowsDevice, ArrowAlign, EtherWarpHelper, Camera, HidePlayers, HideArmor)
+        ModuleManager.addModules(SimonSays, ArrowsDevice, ArrowAlign, EtherWarpHelper, Camera, HidePlayers)
 
         OdinMain.loadComplete()
     }

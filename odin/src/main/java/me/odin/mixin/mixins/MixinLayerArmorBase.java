@@ -1,6 +1,6 @@
 package me.odin.mixin.mixins;
 
-import me.odin.features.impl.render.HideArmor;
+import me.odinmain.features.impl.render.HideArmor;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.entity.layers.LayerArmorBase;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;

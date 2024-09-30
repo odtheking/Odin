@@ -1,4 +1,4 @@
-package me.odinclient.features.impl.render
+package me.odinmain.features.impl.render
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
