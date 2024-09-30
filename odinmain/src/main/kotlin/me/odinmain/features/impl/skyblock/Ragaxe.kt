@@ -18,15 +18,20 @@ object Ragaxe : Module(
 
     init {
         onMessage(Regex("^.+CASTING IN 3s(.+)?\$"), { alert && enabled }) {
-            cancelled = false
             runIn(62) {
-                if (cancelled) return@runIn
+                if (cancelled) {
+                    cancelled = false
+                    return@runIn
+                }
                 PlayerUtils.alert("§aCasted Rag Axe")
             }
         }
+
         onMessage(Regex("Ragnarock was cancelled due to (?:being hit|taking damage)!"), { alertCancelled && enabled }) {
             PlayerUtils.alert("§cRag Axe Cancelled")
             cancelled = true
         }
+
+        onWorldLoad { cancelled = false }
     }
 }

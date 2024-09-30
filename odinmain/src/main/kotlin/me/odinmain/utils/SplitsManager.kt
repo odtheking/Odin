@@ -135,9 +135,8 @@ private val floor2SplitGroup = mutableListOf(
 )
 
 private val floor3SplitGroup = mutableListOf(
-    Split(entryRegexes[2], "§cProfessor's Guardians"),
+    Split(entryRegexes[2], "§cThe Guardians"),
     Split(Regex("^\\[BOSS] The Professor: Oh\\? You found my Guardians' one weakness\\?$"), "§aThe Professor"),
-    Split(Regex("^\\[BOSS] The Professor: I see\\. You have forced me to use my ultimate technique$"), "§9Professor dying"),
     Split(Regex("^\\[BOSS] The Professor: What\\?! My Guardian power is unbeatable!$"), "§4Cleared"),
 )
 

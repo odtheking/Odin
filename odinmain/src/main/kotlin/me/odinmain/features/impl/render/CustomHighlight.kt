@@ -30,7 +30,7 @@ object CustomHighlight : Module(
     private val scanDelay: Long by NumberSetting("Scan Delay", 500L, 10L, 2000L, 100L, description = "The delay between entity scans.", unit = "ms")
 
     private val xray: Boolean by BooleanSetting("Depth Check", false, description = "Highlights entities through walls.").withDependency { !isLegitVersion }
-    private val showInvisible: Boolean by BooleanSetting("Show Invisible", false, description = "Highlights invisible entities.").withDependency { isLegitVersion }
+    private val showInvisible: Boolean by BooleanSetting("Show Invisible", false, description = "Highlights invisible entities.").withDependency { !isLegitVersion }
 
     val highlightList: MutableList<String> by ListSetting("List", mutableListOf())
     private val depthCheck: Boolean get() = if (isLegitVersion) true else xray
@@ -55,8 +55,8 @@ object CustomHighlight : Module(
         val entity = mc.theWorld?.getEntityByID(event.packet.entityId) ?: return
         checkEntity(entity)
         if (starredMobESP) checkStarred(entity)
-        if (shadowAssasin && isLegitVersion) checkAssassin(entity)
-        if (showInvisible && entity.isInvisible && isLegitVersion && entity in currentEntities) entity.isInvisible = false
+        if (shadowAssasin && !isLegitVersion) checkAssassin(entity)
+        if (showInvisible && entity.isInvisible && !isLegitVersion && entity in currentEntities) entity.isInvisible = false
     }
 
     private fun getEntities() {
