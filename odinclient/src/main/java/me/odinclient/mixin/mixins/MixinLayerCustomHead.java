@@ -1,6 +1,6 @@
 package me.odinclient.mixin.mixins;
 
-import me.odinclient.features.impl.render.HideArmor;
+import me.odinmain.features.impl.render.HideArmor;
 import net.minecraft.client.renderer.entity.layers.LayerCustomHead;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.entity.EntityLivingBase;
