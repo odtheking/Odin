@@ -26,6 +26,7 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent
 object DragonCheck {
 
     var lastDragonDeath: WitherDragonsEnum = WitherDragonsEnum.None
+    var dragonEntityList = emptyList<EntityDragon>()
 
     fun dragonJoinWorld(event: EntityJoinWorldEvent) {
         val entity = event.entity as? EntityDragon ?: return
@@ -81,9 +82,9 @@ object DragonCheck {
     }
 
     fun dragonStateConfirmation() {
-        val entities = mc.theWorld?.loadedEntityList.orEmpty()
+        dragonEntityList = mc.theWorld?.loadedEntityList?.filterIsInstance<EntityDragon>() ?: return
         WitherDragonsEnum.entries.forEach { dragon ->
-            dragon.state = if (dragon.entity !in entities && dragon.state == WitherDragonState.ALIVE) WitherDragonState.DEAD else dragon.state
+            dragon.state = if (dragon.entity !in dragonEntityList && dragon.state == WitherDragonState.ALIVE) WitherDragonState.DEAD else dragon.state
         }
     }
 

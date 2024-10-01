@@ -46,7 +46,7 @@ class ModCore {
 
     @EventHandler
     fun loadComplete(event: FMLLoadCompleteEvent) {
-        ModuleManager.addModules(SimonSays, ArrowsDevice, ArrowAlign, EtherWarpHelper, Camera, HidePlayers)
+        ModuleManager.addModules(SimonSays, ArrowsDevice, EtherWarpHelper, Camera, HidePlayers)
 
         OdinMain.loadComplete()
     }

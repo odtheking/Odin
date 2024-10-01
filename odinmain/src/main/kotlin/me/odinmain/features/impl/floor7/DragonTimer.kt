@@ -2,6 +2,7 @@ package me.odinmain.features.impl.floor7
 
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
+import java.util.Locale
 
 object DragonTimer {
 
@@ -10,7 +11,7 @@ object DragonTimer {
             if (dragon.state != WitherDragonState.SPAWNING) return@forEachIndexed
 
             Renderer.drawStringInWorld(
-                "§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn / 20.0)}", dragon.spawnPos,
+                "§${dragon.colorCode}${dragon.name.first()}: ${String.format(Locale.US, "%.2f", colorDragonTimer(dragon.timeToSpawn / 20.0))}", dragon.spawnPos,
                 color = Color.WHITE, depth = false,
                 scale = 0.16f
             )

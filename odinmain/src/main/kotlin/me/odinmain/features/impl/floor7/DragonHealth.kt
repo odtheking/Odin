@@ -7,10 +7,9 @@ import me.odinmain.utils.render.Renderer
 
 object DragonHealth{
     fun renderHP() {
-        WitherDragonsEnum.entries.forEach {
-            val dragon = it.entity ?: return
-            if (dragon.health > 0)
-                Renderer.drawStringInWorld(colorHealth(dragon.health), dragon.renderVec.addVec(y = 1.5), Color.WHITE, depth = false, scale = 0.2f, shadow = true)
+        DragonCheck.dragonEntityList.forEach {
+            if (it.health > 0)
+                Renderer.drawStringInWorld(colorHealth(it.health), it.renderVec.addVec(y = 1.5), Color.WHITE, depth = false, scale = 0.2f, shadow = true)
         }
     }
 

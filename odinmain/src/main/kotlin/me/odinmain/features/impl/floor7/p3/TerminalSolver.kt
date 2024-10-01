@@ -17,6 +17,7 @@ import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.unformattedName
 import net.minecraft.client.gui.Gui
+import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.InventoryPlayer
 import net.minecraft.inventory.ContainerChest
@@ -42,6 +43,7 @@ object TerminalSolver : Module(
     val renderOrderNumbers: Boolean by BooleanSetting("Render Order Numbers", false, description = "Renders all numbers in the order terminal.")
     private val lockRubixSolution: Boolean by BooleanSetting("Lock Rubix Solution", true, description = "Locks the 'correct' color of the rubix terminal to the one that was scanned first, should make the solver less 'jumpy'.")
     private val cancelToolTip: Boolean by BooleanSetting("Stop Tooltips", true, description = "Stops rendering tooltips in terminals.")
+    private val blockIncorrectClicks: Boolean by BooleanSetting("Block Incorrect Clicks", true, description = "Blocks incorrect clicks in terminals.")
     private val cancelMelodySolver: Boolean by BooleanSetting("Stop Melody Solver", false, description = "Stops rendering the melody solver.")
 
     private val showRemoveWrongSettings: Boolean by DropdownSetting("Render Wrong Settings").withDependency { renderType.equalsOneOf(1,2) }
@@ -208,9 +210,23 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun guiClick(event: GuiEvent.GuiMouseClickEvent) {
-        if (renderType != 3 || currentTerm.type == TerminalTypes.NONE || !enabled) return
-        CustomTermGui.mouseClicked(MouseUtils.mouseX.toInt(), MouseUtils.mouseY.toInt(), event.button)
-        event.isCanceled = true
+        val gui = event.gui as? GuiChest ?: return
+        if (currentTerm.type == TerminalTypes.NONE || !enabled) return
+        if (renderType == 3) {
+            CustomTermGui.mouseClicked(MouseUtils.mouseX.toInt(), MouseUtils.mouseY.toInt(), event.button)
+            event.isCanceled = true
+            return
+        }
+
+        if (blockIncorrectClicks && currentTerm.type != TerminalTypes.MELODY) {
+            val needed = currentTerm.solution.count { it == gui.slotUnderMouse?.slotIndex }
+            
+            event.isCanceled = when {
+                gui.slotUnderMouse?.slotIndex !in currentTerm.solution -> true
+                currentTerm.type == TerminalTypes.RUBIX && ((needed < 3 && event.button != 0) || (needed >= 3 && event.button != 1)) -> true
+                else -> false
+            }
+        }
     }
 
     @SubscribeEvent

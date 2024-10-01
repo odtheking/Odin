@@ -15,6 +15,7 @@ import me.odinmain.features.impl.floor7.DragonTimer.renderTime
 import me.odinmain.features.impl.floor7.DragonTracer.renderTracers
 import me.odinmain.features.impl.floor7.Relic.relicsBlockPlace
 import me.odinmain.features.impl.floor7.Relic.relicsOnMessage
+import me.odinmain.features.impl.floor7.Relic.relicsOnWorldLast
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.hud.HudElement
@@ -48,7 +49,7 @@ object WitherDragons : Module(
             if (!dragonTimer) return@HudSetting 0f to 0f
             WitherDragonsEnum.entries.forEachIndexed { index, dragon ->
                 if (dragon.state != WitherDragonState.SPAWNING) return@forEachIndexed
-                mcText("§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn / 20.0)}s", 2, 5f + (index - 1) * 15f, 1, Color.WHITE, center = false)
+                mcText("§${dragon.colorCode}${dragon.name.first()}: ${String.format(Locale.US, "%.2f", colorDragonTimer(dragon.timeToSpawn / 20.0))}s", 2, 5f + (index - 1) * 15f, 1, Color.WHITE, center = false)
             }
             getMCTextWidth("§5P §a4.5s")+ 2f to 33f
         }
@@ -87,17 +88,8 @@ object WitherDragons : Module(
     val relicAnnounce: Boolean by BooleanSetting("Relic Announce", false, description = "Announce your relic to the rest of the party.").withDependency { relics }
     val selected: Int by SelectorSetting("Color", "Green", colors, description = "The color of your relic.").withDependency { relicAnnounce && relics}
     val relicAnnounceTime: Boolean by BooleanSetting("Relic Time", true, description = "Sends how long it took you to get that relic.").withDependency { relics }
+    val relicSpawnTimer: Boolean by BooleanSetting("Relic Spawn Timer", false, description = "Sends how long it took for the relic to spawn.").withDependency { relics }
     val relicSpawnTicks: Int by NumberSetting("Relic Spawn Ticks", 42, 0, 100, description = "The amount of ticks for the relic to spawn.").withDependency { relicAnnounceTime && relics }
-    private val relicHud: HudElement by HudSetting("Relic HUD", 10f, 10f, 1f, true) {
-        if (it) {
-            mcText("§e1.2s", 2f, 20f, 1, Color.WHITE, center = false)
-
-            getMCTextWidth("§5P §a4.5s")+ 2f to 33f
-        } else {
-            mcText("${Relic.ticks / 20}", 2f, 20f, 1, Color.WHITE, center = false)
-            getMCTextWidth("§a4.5s")+ 2f to 33f
-        }
-    }.withDependency { relicAnnounce && relics }
 
     var priorityDragon = WitherDragonsEnum.None
 
@@ -139,6 +131,7 @@ object WitherDragons : Module(
         }
 
         execute(200) {
+            if (DungeonUtils.getF7Phase() != M7Phases.P5) return@execute
             DragonCheck.dragonStateConfirmation()
         }
     }
@@ -150,6 +143,7 @@ object WitherDragons : Module(
         if (dragonHealth) renderHP()
         if (dragonTimer) renderTime()
         if (dragonBoxes) renderBoxes()
+        if (relicSpawnTimer) relicsOnWorldLast()
         if (priorityDragon != WitherDragonsEnum.None && dragonTracers)
             renderTracers(priorityDragon)
     }
