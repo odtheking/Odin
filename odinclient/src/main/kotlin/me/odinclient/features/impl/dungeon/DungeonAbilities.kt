@@ -4,7 +4,6 @@ import me.odinclient.utils.skyblock.PlayerUtils.dropItem
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.modMessage
 import org.lwjgl.input.Keyboard
@@ -23,19 +22,17 @@ object DungeonAbilities : Module(
     init {
         onMessage("⚠ Maxor is enraged! ⚠", false, { enabled && autoUlt }) {
             dropItem()
-            modMessage("§cUsing ult!")
+            modMessage("§aUsing ult!")
         }
 
         onMessage("[BOSS] Goldor: You have done it, you destroyed the factory…", false, { enabled && autoUlt }) {
             dropItem()
-            modMessage("§cUsing ult!")
+            modMessage("§aUsing ult!")
         }
 
         onMessage("[BOSS] Sadan: My giants! Unleashed!", false, { enabled && autoUlt }) {
-            runIn(20) {
-                dropItem()
-                modMessage("§cUsing ult!")
-            }
+            dropItem(ticks = 25)
+            modMessage("§aUsing ult!")
         }
     }
 }

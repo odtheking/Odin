@@ -205,19 +205,24 @@ object DungeonUtils {
         val teammates = mutableListOf<DungeonPlayer>()
 
         for ((networkPlayerInfo, line) in tabList) {
-            val (_, name, clazz, _) = tablistRegex.find(line.noControlCodes)?.destructured ?: continue
-            addTeammate(name, clazz, teammates, networkPlayerInfo.locationSkin, previousTeammates)
+
+            val (_, _, name, clazz, _) = tablistRegex.find(line.noControlCodes)?.groupValues ?: continue
+
+            addTeammate(name, clazz, teammates, networkPlayerInfo.locationSkin) // will fail to find the EMPTY or DEAD class and won't add them to the list
+            if (clazz == "DEAD" || clazz == "EMPTY") {
+                val previousClass = previousTeammates.find { it.name == name }?.clazz ?: continue
+                addTeammate(name, previousClass.name, teammates, networkPlayerInfo.locationSkin) // will add the player with the previous class
+            }
+            teammates.find { it.name == name }?.isDead = clazz == "DEAD" // set the player as dead if they are
         }
         return teammates
     }
 
-    private fun addTeammate(name: String, clazz: String, teammates: MutableList<DungeonPlayer>, locationSkin: ResourceLocation, previousTeammates: List<DungeonPlayer>) {
-        if (clazz == "DEAD") {
-            val previousClass = previousTeammates.find { it.name == name }?.clazz ?: return
-            teammates.add(DungeonPlayer(name, previousClass, locationSkin, mc.theWorld?.getPlayerEntityByName(name)).apply { isDead = true })
-        } else {
-            val foundClass = DungeonClass.entries.find { it.name == clazz } ?: return
-            teammates.add(DungeonPlayer(name, foundClass, locationSkin, mc.theWorld?.getPlayerEntityByName(name)))
+    private fun addTeammate(name: String, clazz: String, teammates: MutableList<DungeonPlayer>, locationSkin: ResourceLocation) {
+        DungeonClass.entries.find { it.name == clazz }?.let { foundClass ->
+            mc.theWorld?.getPlayerEntityByName(name)?.let { player ->
+                teammates.add(DungeonPlayer(name, foundClass, locationSkin, player))
+            } ?: teammates.add(DungeonPlayer(name, foundClass, locationSkin, null))
         }
     }
 

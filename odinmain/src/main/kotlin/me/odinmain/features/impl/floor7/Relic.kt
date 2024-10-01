@@ -10,6 +10,7 @@ import me.odinmain.utils.skyblock.*
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.util.Vec3
+import java.util.Locale
 
 object Relic {
     val currentRelic get() = mc.thePlayer?.heldItem?.itemID ?: ""
@@ -46,12 +47,13 @@ object Relic {
     }
 
     fun relicsOnWorldLast() {
+        if (ticks == 0) return
         Relic.entries.forEach {
-            Renderer.drawStringInWorld("§${it.colorCode}${it.name.first()}: $ticks", it.position, depth = false, scale = 0.2f, shadow = true)
+            Renderer.drawStringInWorld("§${it.colorCode}${it.name.first()}: ${String.format(Locale.US, "%.2f", ticks / 20.0)}s", it.position, depth = false, scale = 0.2f, shadow = true)
         }
     }
 
     fun onServerTick() {
-        ticks--
+        ticks--.coerceAtLeast(0)
     }
 }
