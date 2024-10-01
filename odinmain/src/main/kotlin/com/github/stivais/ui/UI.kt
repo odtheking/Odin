@@ -66,7 +66,7 @@ class UI(val renderer: Renderer = NVGRenderer) {
     fun render() {
         renderer.beginFrame(main.width, main.height)
         renderer.push()
-        operations?.removeIf {
+        operations?.removeAll {
             it.run()
         }
         main.render()
