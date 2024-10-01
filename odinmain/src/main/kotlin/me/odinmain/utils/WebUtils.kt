@@ -139,3 +139,14 @@ suspend fun hasBonusPaulScore(): Boolean = coroutineScope {
         } ?: false
     } else false
 }
+
+fun setupConnection(url: String, userAgent: String, timeout: Int, useCaches: Boolean): InputStream {
+    val connection = URL(url).openConnection() as HttpURLConnection
+    connection.setRequestMethod("GET");
+    connection.setUseCaches(useCaches);
+    connection.addRequestProperty("User-Agent", userAgent);
+    connection.setReadTimeout(timeout);
+    connection.setConnectTimeout(timeout);
+    connection.setDoOutput(true);
+    return connection.inputStream
+}

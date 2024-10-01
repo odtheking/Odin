@@ -220,21 +220,21 @@ object DungeonUtils {
 
             val (_, _, name, clazz, _) = tablistRegex.find(line.noControlCodes)?.groupValues ?: continue
 
-            addTeammate(name, clazz, teammates, networkPlayerInfo) // will fail to find the EMPTY or DEAD class and won't add them to the list
+            addTeammate(name, clazz, teammates) // will fail to find the EMPTY or DEAD class and won't add them to the list
             if (clazz == "DEAD" || clazz == "EMPTY") {
                 val previousClass = previousTeammates.find { it.name == name }?.clazz ?: continue
-                addTeammate(name, previousClass.name, teammates, networkPlayerInfo) // will add the player with the previous class
+                addTeammate(name, previousClass.name, teammates) // will add the player with the previous class
             }
             teammates.find { it.name == name }?.isDead = clazz == "DEAD" // set the player as dead if they are
         }
         return teammates
     }
 
-    private fun addTeammate(name: String, clazz: String, teammates: MutableList<DungeonPlayer>, networkPlayerInfo: NetworkPlayerInfo) {
+    private fun addTeammate(name: String, clazz: String, teammates: MutableList<DungeonPlayer>) {
         DungeonClass.entries.find { it.name == clazz }?.let { foundClass ->
             mc.theWorld.getPlayerEntityByName(name)?.let { player ->
-                teammates.add(DungeonPlayer(name, foundClass, networkPlayerInfo.locationSkin, player))
-            } ?: teammates.add(DungeonPlayer(name, foundClass, networkPlayerInfo.locationSkin, null))
+                teammates.add(DungeonPlayer(name, foundClass, player))
+            } ?: teammates.add(DungeonPlayer(name, foundClass, null))
         }
     }
 

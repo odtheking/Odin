@@ -2,9 +2,11 @@ package me.odinmain.features.impl.dungeon
 
 import com.github.stivais.ui.UI
 import com.github.stivais.ui.UIScreen.Companion.open
+import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Animatable
+import com.github.stivais.ui.elements.impl.Grid
 import com.github.stivais.ui.renderer.Image
 import com.github.stivais.ui.utils.*
 import io.github.moulberry.notenoughupdates.NEUApi
@@ -23,7 +25,6 @@ import me.odinmain.utils.skyblock.dungeon.DungeonClass
 import me.odinmain.utils.skyblock.dungeon.DungeonPlayer
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
-import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -47,57 +48,57 @@ object LeapMenu : Module(
     val delay by NumberSetting("Reset Leap Helper Delay", 30, 10.0, 120.0, 1.0, description = "Delay for clearing the leap helper highlight").withDependency { leapHelperToggle }
     private val leapAnnounce by BooleanSetting("Leap Announce", false, description = "Announces when you leap to a player.")
 
-    private val EMPTY = DungeonPlayer("Empty", DungeonClass.Unknown, ResourceLocation("textures/entity/steve.png"))
+    private val EMPTY = DungeonPlayer("Empty", DungeonClass.Unknown)
 
     fun leapMenu() = UI {
-        leapTeammates.forEachIndexed { index, it ->
-            if (it == EMPTY) return@forEachIndexed modMessage("Empty")
-            val x = when (index) {
-                0, 2 -> 16.percent
-                else -> 6.percent
-            }
+        Grid(copies()).scope {
+            leapTeammates.forEachIndexed { index, it ->
+                if (it == EMPTY) return@forEachIndexed
+                val x = when (index) {
+                    0, 2 -> 16.percent
+                    else -> 6.percent
+                }
 
-            val y = when (index) {
-                0, 1 -> 38.percent
-                else -> 10.percent
-            }
+                val y = when (index) {
+                    0, 1 -> 38.percent
+                    else -> 10.percent
+                }
+                val sizeX = Animatable(from = 80.percent, to = 83.percent) // this keeps the starting x and y while enlarging the width and height which isnt what we want
+                val sizeY = Animatable(from = 50.percent, to = 53.percent)
+                group(size(50.percent, 50.percent)) {
+                    val block = block(
+                        constraints = constrain(x, y, sizeX, sizeY),
+                        color = `gray 38`,
+                        radius = 12.radii()
+                    ) {
 
-            val groupY = when (index) {
-                0, 1 -> 0.percent
-                else -> 50.percent
-            }
-
-            val groupX = when (index) {
-                0, 2 -> 0.percent
-                else -> 50.percent
-            }
-            group(constraints = constrain(groupX, groupY, 50.percent, 50.percent)) {
-                val sizeX = Animatable(from = 80.percent, to = 85.percent)
-                val sizeY = Animatable(from = 50.percent, to = 55.percent)
-                val block = block(
-                    constraints = constrain(x, y, sizeX, sizeY),
-                    color = `gray 38`,
-                    radius = 12.radii()
-                ) {
-                    image(
-                        Image("/assets/odinmain/clickgui/MovementIcon.svg", type = Image.Type.VECTOR),
-                        constraints = constrain(5.percent, 10.percent, 30.percent, 80.percent)
-                    )
-                    column(constraints = constrain(38.percent, 40.percent)) {
-                        text(it.name, size = 48.px, color = it.clazz.color)
-                        divider(15.px)
-                        text(if (it.isDead) "§cDEAD" else it.clazz.name, size = 30.px, color = Color.WHITE)
+                        image(
+                            Image("https://mc-heads.net/avatar/${it.name}/128", Image.Type.RASTER),
+                            constraints = constrain(5.percent, 10.percent, 30.percent, 80.percent),
+                            12f.radii()
+                        )
+                        column(constraints = constrain(38.percent, 40.percent)) {
+                            text(it.name, size = 48.px, color = it.clazz.color)
+                            divider(15.px)
+                            text(if (it.isDead) "§cDEAD" else it.clazz.name, size = 30.px, color = Color.WHITE)
+                        }
                     }
-                }
-                onClick {
-                    handleMouseClick()
-                    true
-                }
-                onMouseEnter {
-                    block.outline(color = Color.WHITE)
-                }
-                onMouseExit {
-                    block.outline(color = Color.TRANSPARENT)
+                    onClick { // make it possible to click any mouse button
+                        handleMouseClick()
+                        true
+                    }
+                    onMouseEnter {
+                        sizeX.animate(0.25.seconds, Animations.EaseInOutQuint)
+                        sizeY.animate(0.25.seconds, Animations.EaseInOutQuint)
+                        block.outline(color = Color.WHITE)
+                        redraw()
+                    }
+                    onMouseExit {
+                        sizeX.animate(0.25.seconds, Animations.EaseInOutQuint)
+                        sizeY.animate(0.25.seconds, Animations.EaseInOutQuint)
+                        block.outline(color = Color.TRANSPARENT)
+                        redraw()
+                    }
                 }
             }
         }
@@ -113,6 +114,7 @@ object LeapMenu : Module(
 
     private fun handleMouseClick() {
         val quadrant = getQuadrant()
+
         if ((type.equalsOneOf(1,2,3)) && leapTeammates.size < quadrant) return
 
         val playerToLeap = leapTeammates[quadrant - 1]
@@ -170,9 +172,9 @@ object LeapMenu : Module(
 
 
    private val leapTeammates: MutableList<DungeonPlayer> = mutableListOf(
-        DungeonPlayer("Stiviaisd", DungeonClass.Healer),
+        DungeonPlayer("Stivais", DungeonClass.Healer),
         DungeonPlayer("Odtheking", DungeonClass.Archer),
-        DungeonPlayer("Bonzi", DungeonClass.Mage),
+        DungeonPlayer("freebonsai", DungeonClass.Mage),
         DungeonPlayer("Cezar", DungeonClass.Tank)
     )
 

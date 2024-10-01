@@ -3,7 +3,6 @@ package me.odinmain.utils.skyblock.dungeon
 import com.github.stivais.ui.color.Color
 import me.odinmain.utils.skyblock.PersonalBest
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.util.ResourceLocation
 
 /**
  * Data class representing a player in a dungeon, including their name, class, skin location, and associated player entity.
@@ -17,7 +16,6 @@ import net.minecraft.util.ResourceLocation
 data class DungeonPlayer(
     val name: String,
     var clazz: DungeonClass,
-    val locationSkin: ResourceLocation = ResourceLocation("textures/entity/steve.png"),
     val entity: EntityPlayer? = null,
     var isDead: Boolean = false
 )
