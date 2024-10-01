@@ -78,9 +78,9 @@ object LeapMenu : Module(
                             12f.radii()
                         )
                         column(constraints = constrain(38.percent, 40.percent)) {
-                            text(it.name, size = 48.px, color = it.clazz.color)
-                            divider(15.px)
-                            text(if (it.isDead) "§cDEAD" else it.clazz.name, size = 30.px, color = Color.WHITE)
+                            text(it.name, size = 20.percent, color = it.clazz.color)
+                            divider(5.percent)
+                            text(if (it.isDead) "§cDEAD" else it.clazz.name, size = 10.percent, color = Color.WHITE)
                         }
                     }
                     onClick { // make it possible to click any mouse button
@@ -109,7 +109,7 @@ object LeapMenu : Module(
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
         if (chest !is ContainerChest || chest.name != "Spirit Leap" || leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return
         if (Loader.instance().activeModList.any { it.modId == "notenoughupdates" }) NEUApi.setInventoryButtonsToDisabled()
-        open(leapMenu())
+        leapMenu().open()
     }
 
     private fun handleMouseClick() {
