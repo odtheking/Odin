@@ -19,14 +19,14 @@ object NoPre : Module(
 
     private data class PreSpot(val name: String, val location: Vec3)
     private val preSpots = listOf(
-        PreSpot("triangle", Vec3(-67.5, 77.0, -122.5)),
+        PreSpot("Triangle", Vec3(-67.5, 77.0, -122.5)),
         PreSpot("X", Vec3(-142.5, 77.0, -151.0)),
-        PreSpot("equals", Vec3(-65.5, 76.0, -87.5)),
-        PreSpot("slash", Vec3(-113.5, 77.0, -68.5)),
+        PreSpot("Equals", Vec3(-65.5, 76.0, -87.5)),
+        PreSpot("Slash", Vec3(-113.5, 77.0, -68.5)),
 
-        PreSpot("shop", Vec3(-81.0, 76.0, -143.0)),
+        PreSpot("Shop", Vec3(-81.0, 76.0, -143.0)),
         PreSpot("xCannon", Vec3(-143.0, 76.0, -125.0)),
-        PreSpot("square", Vec3(-143.0, 76.0, -80.0))
+        PreSpot("Square", Vec3(-143.0, 76.0, -80.0))
     )
 
     private val partyChatRegex = Regex("^Party > (\\[.+])? ?(.{1,16}): No ?(Triangle|X|Equals|Slash)!\$")

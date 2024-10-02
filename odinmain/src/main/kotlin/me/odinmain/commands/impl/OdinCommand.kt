@@ -134,5 +134,5 @@ private val floors = mapOf(
 )
 
 private val tiers = mapOf(
-    '1' to "basic", '2' to "hot", '3' to "burning", '4' to "fiery", '5' to "infernal"
+    '1' to "none", '2' to "hot", '3' to "burning", '4' to "fiery", '5' to "infernal"
 )

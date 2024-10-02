@@ -14,8 +14,8 @@ object Waypoints : Module(
     val onlyBox: Boolean by BooleanSetting("Only shows the box", false, description = "Only shows the box, not the name.")
     val onlyDistance: Boolean by BooleanSetting("Only shows the distance as name", false, description = "Only shows the distance as name.")
 
-    private val partyChatRegex = Regex("^Party > \\[.{1,7}]? ?(.{1,16}): x: (-?\\d+), y: (-?\\d+), z: (-?\\d+).*")
-    private val allChatRegex = Regex("(?:\\[\\d+])? \\[.{1,7}]? (.{1,16}): x: (-?\\d+),? y: (-?\\d+),? z: (-?\\d+).*")
+    private val partyChatRegex = Regex("^Party > (?:\\[\\w+] )?(?:\\[.{1,7}]? )?(.{1,16}): x: (-?\\d+), y: (-?\\d+), z: (-?\\d+).*")
+    private val allChatRegex = Regex("(?:\\[\\d+])? (\\[(.{1,7})]? )(.{1,16}): x: (-?\\d+),? y: (-?\\d+),? z: (-?\\d+).*")
 
     init {
         onMessage(partyChatRegex, { fromParty && enabled }) {

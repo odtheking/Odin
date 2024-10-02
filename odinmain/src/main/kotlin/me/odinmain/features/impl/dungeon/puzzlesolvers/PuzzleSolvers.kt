@@ -54,7 +54,7 @@ object PuzzleSolvers : Module(
     private val blazeSolver: Boolean by BooleanSetting("Blaze Solver", description = "Shows you the solution for the Blaze puzzle").withDependency { blazeDropDown }
     val blazeLineNext: Boolean by BooleanSetting("Blaze Solver Next Line", true, description = "Shows the next line to click.").withDependency { blazeSolver && blazeDropDown }
     val blazeLineAmount: Int by NumberSetting("Blaze Solver Lines", 1, 1, 10, 1, description = "Amount of lines to show.").withDependency { blazeSolver && blazeDropDown }
-    val blazeStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { blazeSolver && blazeDropDown }
+    val blazeStyle: Int by SelectorSetting("Blaze Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { blazeSolver && blazeDropDown }
     val blazeFirstColor: Color by ColorSetting("First Color", Color.GREEN, true, description = "Color for the first blaze.").withDependency { blazeSolver && blazeDropDown }
     val blazeSecondColor: Color by ColorSetting("Second Color", Color.ORANGE, true, description = "Color for the second blaze.").withDependency { blazeSolver && blazeDropDown }
     val blazeAllColor: Color by ColorSetting("Other Color", Color.WHITE.withAlpha(.3f), true, description = "Color for the other blazes.").withDependency { blazeSolver && blazeDropDown }
@@ -67,7 +67,7 @@ object PuzzleSolvers : Module(
 
     private val beamsDropDown: Boolean by DropdownSetting("Creeper Beams")
     private val beamsSolver: Boolean by BooleanSetting("Creeper Beams Solver", false, description = "Shows you the solution for the Creeper Beams puzzle.").withDependency { beamsDropDown }
-    val beamStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { beamsSolver && beamsDropDown }
+    val beamStyle: Int by SelectorSetting("Beam Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { beamsSolver && beamsDropDown }
     val beamsDepth: Boolean by BooleanSetting("Depth", false, description = "Depth check for the beams puzzle.").withDependency { beamsSolver && beamsDropDown }
     val beamsTracer: Boolean by BooleanSetting("Tracer", false, description = "Shows a tracer to the next lantern.").withDependency { beamsSolver && beamsDropDown }
     val beamsAlpha: Float by NumberSetting("Color Alpha", .7f, 0f, 1f, .05f, description = "The alpha of the color.").withDependency { beamsSolver && beamsDropDown }
@@ -79,7 +79,7 @@ object PuzzleSolvers : Module(
     private val weirdosSolver: Boolean by BooleanSetting("Weirdos Solver", false, description = "Shows you the solution for the Weirdos puzzle.").withDependency { weirdosDropDown }
     val weirdosColor: Color by ColorSetting("Weirdos Color", Color.GREEN.withAlpha(0.7f), true, description = "Color for the weirdos solver.").withDependency { weirdosSolver && weirdosDropDown }
     val weirdosWrongColor: Color by ColorSetting("Weirdos Wrong Color", Color.RED.withAlpha(.7f), true,  description = "Color for the incorrect Weirdos.").withDependency { weirdosSolver && weirdosDropDown }
-    val weirdosStyle: Int by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { weirdosSolver && weirdosDropDown }
+    val weirdosStyle: Int by SelectorSetting("Weirdos Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { weirdosSolver && weirdosDropDown }
     private val weirdosReset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
         WeirdosSolver.reset()
     }.withDependency { weirdosSolver && weirdosDropDown }

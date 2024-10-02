@@ -74,7 +74,7 @@ object KuudraUtils {
         Executor(500) {
             if (!LocationUtils.currentArea.isArea(Island.Kuudra)) return@Executor
             val entities = mc.theWorld?.loadedEntityList ?: return@Executor
-            giantZombies = entities.filterIsInstance<EntityGiantZombie>().filter{ it.heldItem.unformattedName == "Head" }.toMutableList()
+            giantZombies = entities.filterIsInstance<EntityGiantZombie>().filter { it.heldItem.unformattedName == "Head" }.toMutableList()
 
             kuudraEntity = entities.filterIsInstance<EntityMagmaCube>().filter { it.slimeSize == 30 && it.getEntityAttribute(SharedMonsterAttributes.maxHealth).baseValue.toFloat() == 100000f }[0]
 
@@ -86,7 +86,7 @@ object KuudraUtils {
                     }
                 }
 
-                if (phase != 1 || it.name.contains("SUPPLIES RECEIVED")) return@forEach
+                if (phase != 1 || !it.name.contains("SUPPLIES RECEIVED")) return@forEach
                 val x = it.posX.toInt()
                 val z = it.posZ.toInt()
                 if (x == -98 && z == -112) supplies[0] = false
