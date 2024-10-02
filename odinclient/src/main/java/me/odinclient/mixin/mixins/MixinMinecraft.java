@@ -4,15 +4,12 @@ import me.odinclient.features.impl.skyblock.CancelInteract;
 import me.odinmain.events.impl.ClickEvent;
 import me.odinmain.events.impl.PreKeyInputEvent;
 import me.odinmain.events.impl.PreMouseInputEvent;
-import me.odinmain.features.impl.render.Animations;
 import me.odinmain.features.impl.render.CPSDisplay;
 import me.odinmain.utils.EventExtensions;
 import me.odinmain.utils.skyblock.PlayerUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.item.EnumAction;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.util.BlockPos;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -50,17 +47,6 @@ public class MixinMinecraft {
         if (EventExtensions.postAndCatch(new ClickEvent.RightClickEvent())) {
             ci.cancel();
             return;
-        }
-        /*
-        Taken from [Sk1erLLC's OldAnimations Mod](https://github.com/Sk1erLLC/OldAnimations) to enable block hitting
-        */
-        if (
-            Animations.INSTANCE.getBlockHit() &&
-            Minecraft.getMinecraft().playerController.getIsHittingBlock() &&
-            Minecraft.getMinecraft().thePlayer.getHeldItem() != null &&
-            ( Minecraft.getMinecraft().thePlayer.getHeldItem().getItemUseAction() != EnumAction.NONE || Minecraft.getMinecraft().thePlayer.getHeldItem().getItem() instanceof ItemBlock )
-        ) {
-            Minecraft.getMinecraft().playerController.resetBlockRemoving();
         }
     }
 

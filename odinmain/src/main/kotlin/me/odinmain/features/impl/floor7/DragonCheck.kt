@@ -31,7 +31,7 @@ object DragonCheck {
     fun dragonJoinWorld(event: EntityJoinWorldEvent) {
         val entity = event.entity as? EntityDragon ?: return
         val dragon = WitherDragonsEnum.entries.find { isVecInXZ(entity.positionVector, it.boxesDimensions) } ?: return
-        if (dragon.state != WitherDragonState.SPAWNING) return
+        if (dragon.state == WitherDragonState.DEAD) return
 
         dragon.state = WitherDragonState.ALIVE
         dragon.timeToSpawn = 100
@@ -85,6 +85,7 @@ object DragonCheck {
         dragonEntityList = mc.theWorld?.loadedEntityList?.filterIsInstance<EntityDragon>() ?: return
         WitherDragonsEnum.entries.forEach { dragon ->
             dragon.state = if (dragon.entity !in dragonEntityList && dragon.state == WitherDragonState.ALIVE) WitherDragonState.DEAD else dragon.state
+            dragon.state = if (dragon.state == WitherDragonState.SPAWNING && dragon.timeToSpawn == 0) WitherDragonState.ALIVE else dragon.state
         }
     }
 

@@ -4,13 +4,7 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.skyblock.isHolding
-import net.minecraft.client.entity.AbstractClientPlayer
-import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.item.ItemStack
-import net.minecraft.item.ItemSword
-import net.minecraft.potion.Potion
-import net.minecraft.util.MovingObjectPosition
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
@@ -37,7 +31,6 @@ object Animations : Module(
     val noEquipReset: Boolean by BooleanSetting("No Equip Reset", false, description = "Disables the equipping animation when switching items.")
     private val noSwing: Boolean by BooleanSetting("No Swing", false, description = "Prevents your item from visually swinging forward.")
     private val noTermSwing: Boolean by BooleanSetting("No Terminator Swing", false, description = "Prevents your Terminator from swinging.")
-    val noBlock: Boolean by BooleanSetting("No Block", false, description = "Disables the visual block animation.")
 
     val reset: () -> Unit by ActionSetting("Reset", description = "Resets the settings to their default values.") {
         this.settings.forEach { it.reset() }
@@ -68,23 +61,6 @@ object Animations : Module(
         return true
     }
 
-    fun getItemInUseCountHook(player: AbstractClientPlayer, itemToRender: ItemStack): Int {
-        return if (this.noBlock && itemToRender.item is ItemSword && player.itemInUseDuration <= 7) 0 else player.itemInUseCount
-    }
-
-    private fun getArmSwingAnimationEnd(player: EntityPlayerSP): Int {
-        val length = when {
-            ignoreHaste -> 6
-            player.isPotionActive(Potion.digSpeed) -> 6 - (1 + player.getActivePotionEffect(Potion.digSpeed).amplifier)
-            player.isPotionActive(Potion.digSlowdown) -> 6 + (1 + player.getActivePotionEffect(Potion.digSlowdown).amplifier) * 2
-            else -> 6
-        }
-        return max((length * exp(-speed)),1.0f).toInt()
-    }
-
-    /**
-    Taken from [Sk1erLLC's OldAnimations Mod](https://github.com/Sk1erLLC/OldAnimations) to enable block hitting
-     */
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.END) return
@@ -95,12 +71,5 @@ object Animations : Module(
             player.swingProgressInt = -1
             return
         }
-
-        if (!blockHit) return
-
-        if (!mc.gameSettings.keyBindAttack.isKeyDown || mc.objectMouseOver == null || mc.objectMouseOver.typeOfHit !== MovingObjectPosition.MovingObjectType.BLOCK) return
-        if (player.isSwingInProgress && player.swingProgressInt < getArmSwingAnimationEnd(player) / 2 && player.swingProgressInt >= 0) return
-        player.isSwingInProgress = true
-        player.swingProgressInt = -1
     }
 }
