@@ -16,7 +16,6 @@ object CorrectPanes : TermSimGui(
     private val redPane   get() = ItemStack(pane, 1, 14).apply { setStackDisplayName("") }
 
     override fun create() {
-        cleanInventory()
         this.inventorySlots.inventorySlots.subList(0, 45).forEachIndexed { index, it ->
             if (floor(index / 9.0) in 1.0..3.0 && index % 9 in 2..6) it.putStack(getPane())
             else it.putStack(blackPane)
@@ -34,10 +33,5 @@ object CorrectPanes : TermSimGui(
         GuiEvent.GuiLoadedEvent(name, inventorySlots as ContainerChest).postAndCatch()
         if (inventorySlots.inventorySlots.subList(0, 45).none { it?.stack?.metadata == 14 })
             solved(this.name, 0)
-    }
-
-    override fun onGuiClosed() {
-        resetInv()
-        super.onGuiClosed()
     }
 }

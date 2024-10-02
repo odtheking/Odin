@@ -26,7 +26,6 @@ object Melody : TermSimGui(
     var limeDirection = 1
 
     override fun create() {
-        cleanInventory()
         currentRow = 1
         magentaColumn = (1..5).random()
         limeColumn = 1
@@ -69,11 +68,6 @@ object Melody : TermSimGui(
 
         if (!TerminalSounds.enabled || !clickSounds) mc.thePlayer.playSound("random.orb", 1f, 1f)
         if (clickedRow == 4) solved(this.name, 5)
-    }
-
-    override fun onGuiClosed() {
-        resetInv()
-        super.onGuiClosed()
     }
 }
 

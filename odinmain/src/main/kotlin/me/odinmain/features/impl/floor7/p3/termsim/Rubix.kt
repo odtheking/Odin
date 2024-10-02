@@ -18,7 +18,6 @@ object Rubix : TermSimGui(
     private val grid get() = indices.map { inventorySlots.inventorySlots[it] }.filter { it?.stack?.metadata != 15 }
 
     override fun create() {
-        cleanInventory()
         this.inventorySlots.inventorySlots.subList(0, 45).forEachIndexed { index, it ->
             if (floor(index / 9.0) in 1.0..3.0 && index % 9 in 3..5) it.putStack(getPane())
             else it.putStack(blackPane)
@@ -50,11 +49,6 @@ object Rubix : TermSimGui(
             a < .8 -> genStack(order[3])
             else ->   genStack(order[4])
         }
-    }
-
-    override fun onGuiClosed() {
-        resetInv()
-        super.onGuiClosed()
     }
 
     private fun genStack(meta: Int) = ItemStack(pane, 1, meta).apply { setStackDisplayName("") } // This makes unique itemstacks, so terminalsolver works.

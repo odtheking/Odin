@@ -3,6 +3,7 @@ package me.odinmain.features.impl.floor7.p3.termsim
 
 import me.odinmain.OdinMain.display
 import me.odinmain.events.impl.GuiEvent
+import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.events.impl.PacketSentEvent
 import me.odinmain.features.impl.floor7.TerminalSimulator
 import me.odinmain.features.impl.floor7.TerminalSimulator.openRandomTerminal
@@ -13,24 +14,24 @@ import me.odinmain.features.impl.floor7.p3.TerminalSounds.playCompleteSound
 import me.odinmain.utils.*
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiChest
+import net.minecraft.entity.player.InventoryPlayer
 import net.minecraft.inventory.*
 import net.minecraft.item.*
 import net.minecraft.network.play.client.C0EPacketClickWindow
+import net.minecraft.network.play.server.S2FPacketSetSlot
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 open class TermSimGui(val name: String, val size: Int, private val inv: InventoryBasic = InventoryBasic(name, true, size)) : GuiChest(
-    Minecraft.getMinecraft().thePlayer.inventory,
+    InventoryPlayer(Minecraft.getMinecraft().thePlayer),
     inv
 ) {
     val pane: Item = Item.getItemById(160)
     val blackPane = ItemStack(pane, 1, 15).apply { setStackDisplayName("") }
-    private var inventoryBefore = arrayOf<ItemStack>()
     private var startTime = 0L
     protected var ping = 0L
     private var consecutive = 0L
     private var doesAcceptClick = true
-    private val minecraft get() = Minecraft.getMinecraft() // this is needed here for some fucking reason and I have no clue but the OdinMain one is sometimes (but not always) null when open() runs ???? (this took like 30 minutes to figure out)
 
     open fun create() {
         this.inventorySlots.inventorySlots.subList(0, size).forEach { it.putStack(blackPane) } // override
@@ -70,17 +71,14 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
         event.isCanceled = true
     }
 
-    protected fun resetInv() {
-        if (inventoryBefore.isNotEmpty())
-            minecraft.thePlayer.inventory.mainInventory = inventoryBefore
-    }
-
-    protected fun cleanInventory() {
-        minecraft.thePlayer?.inventory?.mainInventory?.let { inventoryBefore = it.clone() }
-
-        for (i in minecraft.thePlayer?.inventory?.mainInventory?.indices ?: 0..0) {
-            minecraft.thePlayer?.inventory?.setInventorySlotContents(i, null)
+    @SubscribeEvent
+    fun onPacketReceived(event: PacketReceivedEvent) {
+        val packet = event.packet as? S2FPacketSetSlot ?: return
+        if (mc.currentScreen != this) return
+        packet.func_149174_e()?.let {
+            mc.thePlayer?.inventoryContainer?.putStackInSlot(packet.func_149173_d(), it)
         }
+        event.isCanceled = true
     }
 
     fun delaySlotClick(slot: Slot, button: Int) {

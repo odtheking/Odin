@@ -17,7 +17,6 @@ class StartsWith(private val letter: String) : TermSimGui(
     54
 ) {
     override fun create() {
-        cleanInventory()
         val guaranteed = (10..16).getRandom()
         inventorySlots.inventorySlots.subList(0, size).forEachIndexed { index, it ->
             if (floor(index / 9.0) in 1.0..4.0 && index % 9 in 1..7) {
@@ -51,11 +50,6 @@ class StartsWith(private val letter: String) : TermSimGui(
         if (inventorySlots?.inventorySlots?.subList(0, size)?.none { it?.stack?.displayName?.startsWith(letter, true) == true && !it.stack.isItemEnchanted } == true) {
             solved(this.name, 3)
         }
-    }
-
-    override fun onGuiClosed() {
-        resetInv()
-        super.onGuiClosed()
     }
 
     companion object {
