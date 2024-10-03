@@ -8,6 +8,7 @@ import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.animations.impl.EaseInOut
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.*
+import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.getBlockAt
 import me.odinmain.utils.skyblock.isAir
 import me.odinmain.utils.toVec3
@@ -19,8 +20,6 @@ import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
-import java.util.*
-import kotlin.concurrent.schedule
 import kotlin.math.abs
 
 object CanClip : Module(
@@ -57,7 +56,7 @@ object CanClip : Module(
         }
 
         val prev = canClip
-        canClip = ranges.any { abs(player.posX % 1) in it || abs(player.posZ % 1) in it}
+        canClip = ranges.any { abs(player.posX % 1) in it || abs(player.posZ % 1) in it }
         if (prev != canClip) animation.start()
     }
 
@@ -65,16 +64,14 @@ object CanClip : Module(
 
     init {
         onPacket(C07PacketPlayerDigging::class.java) {
-            if (it.status != C07PacketPlayerDigging.Action.START_DESTROY_BLOCK || !line) return@onPacket
-            val block = getBlockAt(it.position)
+            if (it.status != C07PacketPlayerDigging.Action.START_DESTROY_BLOCK || !line || getBlockAt(it.position) !is BlockStairs) return@onPacket
             val state = mc.theWorld?.getBlockState(it.position) ?: return@onPacket
-            if (block is BlockStairs) {
-                val dir = getDirection(state)
-                Timer().schedule(1) {
-                    if (isAir(it.position)) Blocks[it.position.toVec3()] = dir
-                }
+
+            runIn(1) {
+                if (isAir(it.position)) Blocks[it.position.toVec3()] = getDirection(state)
             }
         }
+
         onWorldLoad {
             Blocks.clear()
         }

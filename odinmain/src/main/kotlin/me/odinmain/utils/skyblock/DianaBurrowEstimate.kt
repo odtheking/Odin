@@ -55,8 +55,8 @@ object DianaBurrowEstimate {
             burrows.remove(pos)
             DianaHelper.burrowsRender.remove(pos)
         }
-        if (pos !in burrows.keys || !isHolding("ANCESTRAL_SPADE")) return
-        lastBurrow = pos
+        if (pos in burrows.keys && isHolding("ANCESTRAL_SPADE"))
+            lastBurrow = pos
     }
 
     fun chat(message: String) {
@@ -71,7 +71,7 @@ object DianaBurrowEstimate {
     }
 
     fun handleSoundPacket(packetSound: S29PacketSoundEffect) {
-        if (packetSound.soundName != "note.harp") return
+        if (packetSound.soundName != "note.harp" || packetSound.volume != 1f) return
 
         lastDingTime = System.currentTimeMillis()
 
@@ -94,8 +94,6 @@ object DianaBurrowEstimate {
         lastSoundPoint = packetSound.positionVector
         lastDingPitch = packetSound.pitch
 
-        val secondLastPosition = secondLastParticlePosition ?: return
-        val currentPosition = currentParticlePosition ?: return
         val firstPosition = firstParticlePoint ?: return
 
         estimatedBurrowDistance = (Math.E / if (dingPitchSlopes.isNotEmpty()) dingPitchSlopes.average() else 0.0) - firstPosition.distanceTo(packetSound.positionVector)
@@ -106,7 +104,7 @@ object DianaBurrowEstimate {
         }
 
         estimatedBurrowDistance?.let { distance ->
-            estimatedBurrowPosition = lastSoundPoint?.add(currentPosition.subtract(secondLastPosition)?.normalize()?.multiply(distance))
+            estimatedBurrowPosition = lastSoundPoint?.add(currentParticlePosition?.subtract(secondLastParticlePosition)?.normalize()?.multiply(distance))
         }
     }
 
@@ -123,10 +121,8 @@ object DianaBurrowEstimate {
         lastParticlePosition = currentParticlePosition
         currentParticlePosition = currLoc.clone()
 
-        val secondLastPosition = secondLastParticlePosition ?: return
         val estimatedDistance = estimatedBurrowDistance ?: return
-
-        val changes = currentParticlePosition?.subtract(secondLastPosition)?.normalize() ?: return
+        val changes = currentParticlePosition?.subtract(secondLastParticlePosition)?.normalize() ?: return
 
         lastParticlePosition?.let {
             estimatedBurrowPosition = it.add(changes.multiply(estimatedDistance, 1.0, estimatedDistance))
@@ -139,11 +135,9 @@ object DianaBurrowEstimate {
         val distMultiplier = particlePositions.takeIf { it.size > 2 }?.let { currLoc.distanceTo(it.last()) / (0.06507 * it.size + 0.259) } ?: 1.0
 
         particlePositions.add(currLoc)
-
         if (particlePositions.size <= 5 || estimatedBurrowPosition == null) return
 
         val slopeValues = particlePositions.asSequence().zipWithNext { a, b -> atan((a.xCoord - b.xCoord) / (a.zCoord - b.zCoord)) }.toList()
-
         val (a, b, c) = calculateCoefficientsFromVectors(
             Vec3(slopeValues.size - 5.0, slopeValues.size - 3.0, slopeValues.size - 1.0),
             Vec3(slopeValues[slopeValues.size - 5], slopeValues[slopeValues.size - 3], slopeValues[slopeValues.size - 1])
@@ -231,8 +225,7 @@ object DianaBurrowEstimate {
 
         companion object {
             fun getParticleType(packet: S2APacketParticles): ParticleType? {
-                if (!packet.isLongDistance) return null
-                return entries.find { it.check(packet) }
+                return if (!packet.isLongDistance) null else entries.find { it.check(packet) }
             }
         }
     }

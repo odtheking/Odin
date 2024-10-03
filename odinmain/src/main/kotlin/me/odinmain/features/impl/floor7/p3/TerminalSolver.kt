@@ -211,7 +211,7 @@ object TerminalSolver : Module(
     @SubscribeEvent
     fun guiClick(event: GuiEvent.GuiMouseClickEvent) {
         val gui = event.gui as? GuiChest ?: return
-        if (currentTerm.type == TerminalTypes.NONE || !enabled) return
+        if (currentTerm.type == TerminalTypes.NONE || !enabled || (currentTerm.type == TerminalTypes.MELODY && cancelMelodySolver)) return
         if (renderType == 3) {
             CustomTermGui.mouseClicked(MouseUtils.mouseX.toInt(), MouseUtils.mouseY.toInt(), event.button)
             event.isCanceled = true
