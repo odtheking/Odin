@@ -249,6 +249,7 @@ object TerminalSolver : Module(
 
         onPacket(S2FPacketSetSlot::class.java, { currentTerm.type == TerminalTypes.MELODY }) { packet ->
             packet.func_149174_e()?.let {
+                if (packet.func_149173_d() !in 0..53) return@onPacket
                 currentTerm.items[packet.func_149173_d()] = it
                 currentTerm.solution = solveMelody(currentTerm.items)
             }
