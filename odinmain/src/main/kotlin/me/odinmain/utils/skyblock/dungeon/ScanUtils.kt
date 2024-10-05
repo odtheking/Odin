@@ -86,13 +86,15 @@ object ScanUtils {
         } // If room is in passedRooms, post RoomEnterEvent and return only posts Event if room is not in currentFullRoom
 
         scanRoom(roomCenter)?.let { room ->
-            val fullRoom = FullRoom(room, BlockPos(0, 0, 0), findRoomTilesRecursively(room.vec2, room, mutableSetOf()), emptyList()).apply { updateRotation(this) }
-            if (fullRoom.room.rotation == Rotations.NONE) {
-                if (noneRotationList.none { it?.room?.data?.name == fullRoom.room.data.name }) noneRotationList.add(fullRoom)
-                return
+            FullRoom(room, BlockPos(0, 0, 0), findRoomTilesRecursively(room.vec2, room, mutableSetOf()), emptyList()).apply {
+                updateRotation(this)
+                if (room.rotation == Rotations.NONE) {
+                    if (noneRotationList.none { it?.room?.data?.name == room.data.name }) noneRotationList.add(this)
+                    return
+                }
+                RoomEnterEvent(this).postAndCatch()
             }
-            RoomEnterEvent(fullRoom).postAndCatch()
-        } // Scan room and post RoomEnterEvent if room rotation is found
+        }
     }
 
     private fun updateRotation(fullRoom: FullRoom) {
@@ -164,10 +166,10 @@ object ScanUtils {
     @SubscribeEvent
     fun enterDungeonRoom(event: RoomEnterEvent) {
         currentFullRoom = event.fullRoom
-        val fullRoom = currentFullRoom ?: return // ensuring passedRooms doesn't contain null
-        lastRoomPos = fullRoom.room.vec2
-        if (passedRooms.any { it.room.data.name == fullRoom.room.data.name }) return
-        passedRooms.add(fullRoom)
+        currentFullRoom?.let { fullRoom ->
+            lastRoomPos = fullRoom.room.vec2
+            if (passedRooms.none { it.room.data.name == fullRoom.room.data.name }) passedRooms.add(fullRoom)
+        }
     }
 
     @SubscribeEvent

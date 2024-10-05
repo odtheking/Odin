@@ -102,10 +102,16 @@ object RenderUtils {
     private fun preDraw() {
         GlStateManager.disableTexture2D()
         GlStateManager.enableBlend()
-        GlStateManager.disableLighting()
         GlStateManager.disableAlpha()
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
         translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
+    }
+
+    private fun postDraw() {
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
+        GlStateManager.enableAlpha()
+        Color.WHITE.bind()
     }
 
     fun depth(depth: Boolean) {
@@ -118,24 +124,13 @@ object RenderUtils {
         GlStateManager.depthMask(true)
     }
 
-    private fun postDraw() {
-        GlStateManager.enableTexture2D()
-        GlStateManager.disableBlend()
-        GlStateManager.enableLighting()
-        GlStateManager.enableAlpha()
-        Color.WHITE.bind()
-    }
-
     fun Color.bind() {
         GlStateManager.resetColor()
         GlStateManager.color(r / 255f, g / 255f, b / 255f, a / 255f)
     }
 
     private fun getRenderPos(vec: Vec3): Vec3 {
-        val renderPosX = mc.renderManager.viewerPosX
-        val renderPosY = mc.renderManager.viewerPosY
-        val renderPosZ = mc.renderManager.viewerPosZ
-        return Vec3(vec.xCoord - renderPosX, vec.yCoord - renderPosY, vec.zCoord - renderPosZ)
+        return Vec3(vec.xCoord - renderManager.viewerPosX, vec.yCoord - renderManager.viewerPosY, vec.zCoord - renderManager.viewerPosZ)
     }
 
     /**
@@ -210,7 +205,6 @@ object RenderUtils {
         GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT.toFloat())
         GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT.toFloat())
 
-        GlStateManager.disableLighting()
         GlStateManager.enableCull()
         GlStateManager.enableTexture2D()
         GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE, GL11.GL_ZERO)
@@ -392,21 +386,30 @@ object RenderUtils {
         val renderPos = getRenderPos(pos)
 
         GlStateManager.pushMatrix()
-        preDraw()
+        GL11.glLineWidth(2.0f)
+        GlStateManager.disableCull()
+        GlStateManager.enableBlend()
+        blendFactor()
+        GlStateManager.depthMask(false)
+        GlStateManager.disableTexture2D()
 
+        if (depth) GlStateManager.disableDepth()
+
+        color.bind()
         GlStateManager.translate(renderPos.xCoord, renderPos.yCoord, renderPos.zCoord)
         GlStateManager.rotate(rot1.toFloat(), 1f, 0f, 0f)
         GlStateManager.rotate(rot2.toFloat(), 0f, 0f, 1f)
         GlStateManager.rotate(rot3.toFloat(), 0f, 1f, 0f)
 
-        if (depth) GlStateManager.disableDepth()
-        color.bind()
-
         Cylinder().draw(baseRadius.toFloat(), topRadius.toFloat(), height.toFloat(), slices.toInt(), stacks.toInt())
 
+        GlStateManager.enableCull()
+        GlStateManager.disableBlend()
+        GlStateManager.depthMask(true)
+        GlStateManager.enableTexture2D()
         if (depth) GlStateManager.enableDepth()
-
-        postDraw()
+        GlStateManager.resetColor()
+        Color.WHITE.bind()
         GlStateManager.popMatrix()
     }
 
@@ -539,57 +542,57 @@ object RenderUtils {
 
     fun drawBoxes(boxes: Collection<DungeonWaypoint>, glList: Int, disableDepth: Boolean = false): Int {
         if (boxes.isEmpty()) return -1
-        GL11.glTranslated(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
         var newGlList = glList
 
-        if (newGlList != -1) {
-            GL11.glCallList(newGlList)
-            return newGlList
-        } else {
+        if (newGlList == -1) {
             newGlList = GL11.glGenLists(1)
             GL11.glNewList(newGlList, GL11.GL_COMPILE)
-        }
-        GL11.glPushMatrix()
-        GL11.glDisable(GL11.GL_CULL_FACE)
-        GL11.glLineWidth(3f)
 
-        GL11.glDisable(GL11.GL_TEXTURE_2D)
-        GL11.glEnable(GL11.GL_BLEND)
-        GL11.glDisable(GL11.GL_LIGHTING)
-        GL11.glDisable(GL11.GL_ALPHA_TEST)
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+            GL11.glDisable(GL11.GL_CULL_FACE)
+            GL11.glLineWidth(3f)
 
-        for (box in boxes) {
-            if (box.clicked) continue
-            val depth = box.depth && !disableDepth
-            if (depth) GL11.glEnable(GL11.GL_DEPTH_TEST)
-            else GL11.glDisable(GL11.GL_DEPTH_TEST)
-            GL11.glDepthMask(depth)
+            GL11.glDisable(GL11.GL_TEXTURE_2D)
+            GL11.glEnable(GL11.GL_BLEND)
+            GL11.glDisable(GL11.GL_ALPHA_TEST)
+            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
 
-            box.aabb.offset(box.x, box.y, box.z).let {
-                box.color.bind()
+            for (box in boxes) {
+                if (box.clicked) continue
+                val depth = box.depth && !disableDepth
+                if (depth) GL11.glEnable(GL11.GL_DEPTH_TEST)
+                else GL11.glDisable(GL11.GL_DEPTH_TEST)
+                GL11.glDepthMask(depth)
 
-                if (box.filled) addVertexesForFilledBox(it)
-                else addVertexesForOutlinedBox(it)
+                box.aabb.offset(box.x, box.y, box.z).let {
+                    box.color.bind()
 
-                tessellator.draw()
+                    if (box.filled) addVertexesForFilledBox(it)
+                    else addVertexesForOutlinedBox(it)
+
+                    tessellator.draw()
+                }
             }
+
+            GL11.glEnable(GL11.GL_DEPTH_TEST)
+            GL11.glDepthMask(true)
+
+            GL11.glEnable(GL11.GL_TEXTURE_2D)
+            GL11.glDisable(GL11.GL_BLEND)
+            GL11.glEnable(GL11.GL_ALPHA_TEST)
+
+            GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
+            GL11.glLineWidth(2f)
+            GL11.glEnable(GL11.GL_CULL_FACE)
+
+            GL11.glEndList()
         }
 
-        GL11.glEnable(GL11.GL_DEPTH_TEST)
-        GL11.glDepthMask(true)
+        GL11.glPushMatrix()
+        GL11.glTranslated(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
 
-        GL11.glEnable(GL11.GL_TEXTURE_2D)
-        GL11.glDisable(GL11.GL_BLEND)
-        GL11.glEnable(GL11.GL_LIGHTING)
-        GL11.glEnable(GL11.GL_ALPHA_TEST)
-
-        GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
-        GL11.glLineWidth(2f)
-        GL11.glEnable(GL11.GL_CULL_FACE)
+        GL11.glCallList(newGlList)
         GL11.glPopMatrix()
-        GL11.glEndList()
-        GL11.glTranslated(renderManager.viewerPosX, renderManager.viewerPosY, renderManager.viewerPosZ)
+
         return newGlList
     }
 
