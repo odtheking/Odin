@@ -69,21 +69,21 @@ val devCommand = commodore("oddev") {
     }
 
 	literal("roomdata").runs {
-        val room = DungeonUtils.currentFullRoom ?: return@runs modMessage("§cYou are not in a dungeon!")
+        val room = DungeonUtils.currentFullRoom
         val roomCenter = getRoomCenter(mc.thePlayer.posX.toInt(), mc.thePlayer.posZ.toInt())
         val core = ScanUtils.getCore(roomCenter)
         modMessage(
             """
             ${getChatBreak()}
             Middle: ${roomCenter.x}, ${roomCenter.z}
-            Room: ${room.room.data.name}
+            Room: ${DungeonUtils.currentRoomName}
             Core: $core
-            Rotation: ${room.room.rotation}
-            Positions: ${room.extraRooms.joinToString { "(${it.x}, ${it.z})" }}
+            Rotation: ${room?.room?.rotation ?: "NONE"}
+            Positions: ${room?.extraRooms?.joinToString { "(${it.x}, ${it.z})" } ?: "None"}
             ${getChatBreak()}
             """.trimIndent(), false
         )
-        writeToClipboard(core.toString(), "Copied $core to clipboard!")
+        writeToClipboard(core.toString(), "§aCopied $core to clipboard!")
     }
 
     literal("generatereadme").runs {

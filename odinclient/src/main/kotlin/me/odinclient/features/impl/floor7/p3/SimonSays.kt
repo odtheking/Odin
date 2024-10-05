@@ -160,9 +160,7 @@ object SimonSays : Module(
         val (_, yaw, pitch) = getDirectionToVec3(buttonToClick.toVec3().addVec(x = -0.1, y = .5, z = .5))
         autoSSClickInQueue = true
         smoothRotateTo(yaw, pitch, autoSSRotateTime) {
-            if (clickNeeded == 4) {
-                autoSSLastClickClock.update()
-            }
+            if (clickNeeded == 4) autoSSLastClickClock.update()
             rightClick()
             autoSSClock.update()
             autoSSClickInQueue = false
@@ -180,10 +178,7 @@ object SimonSays : Module(
             event.pos.x != 110 || event.pos.y !in 120..123 || event.pos.z !in 91..95
         ) return
 
-        if (
-            (event.pos.east() != clickInOrder.getOrNull(clickNeeded)) || // normal buttons
-            (event.pos == BlockPos(110, 121, 91) && clickInOrder.isNotEmpty()) // start button
-        ) event.isCanceled = true
+        if (event.pos.east() != clickInOrder.getOrNull(clickNeeded)) event.isCanceled = true
     }
 
     @SubscribeEvent

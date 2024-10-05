@@ -24,7 +24,6 @@ import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL13
 import org.lwjgl.util.glu.Cylinder
-import org.lwjgl.util.glu.GLU
 import java.awt.image.BufferedImage
 import kotlin.math.cos
 import kotlin.math.floor
@@ -120,9 +119,10 @@ object RenderUtils {
     }
 
     private fun postDraw() {
-        GlStateManager.disableBlend()
-        GlStateManager.enableAlpha()
         GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
+        GlStateManager.enableLighting()
+        GlStateManager.enableAlpha()
         Color.WHITE.bind()
     }
 
@@ -149,8 +149,8 @@ object RenderUtils {
         if (color.isTransparent) return
 
         GlStateManager.pushMatrix()
-        preDraw()
         GlStateManager.disableCull()
+        preDraw()
         depth(depth)
         color.bind()
         addVertexesForFilledBox(aabb)
@@ -188,8 +188,8 @@ object RenderUtils {
         if (smoothLines) GL11.glDisable(GL11.GL_LINE_SMOOTH)
 
         if (!depth) resetDepth()
-        postDraw()
         GL11.glLineWidth(2f)
+        postDraw()
         GlStateManager.popMatrix()
     }
 
@@ -382,44 +382,31 @@ object RenderUtils {
      * @param rot2        Rotation parameter.
      * @param rot3        Rotation parameter.
      * @param color       The color of the cylinder.
-     * @param depth       Indicates whether to phase the cylinder (default is false).
-     * @param lineMode    Indicates whether to draw the cylinder in line mode (default is false).
+     * @param depth       Indicates whether to phase the cylinder (default is false)
      */
     fun drawCylinder(
         pos: Vec3, baseRadius: Number, topRadius: Number, height: Number,
         slices: Number, stacks: Number, rot1: Number, rot2: Number, rot3: Number,
-        color: Color, depth: Boolean = false, lineMode: Boolean = false
+        color: Color, depth: Boolean = false
     ) {
         val renderPos = getRenderPos(pos)
 
         GlStateManager.pushMatrix()
-        GL11.glLineWidth(2.0f)
-        GlStateManager.disableCull()
-        GlStateManager.enableBlend()
-        blendFactor()
-        GlStateManager.depthMask(false)
-        GlStateManager.disableTexture2D()
+        preDraw()
 
-        if (depth) GlStateManager.disableDepth()
-
-        color.bind()
         GlStateManager.translate(renderPos.xCoord, renderPos.yCoord, renderPos.zCoord)
         GlStateManager.rotate(rot1.toFloat(), 1f, 0f, 0f)
         GlStateManager.rotate(rot2.toFloat(), 0f, 0f, 1f)
         GlStateManager.rotate(rot3.toFloat(), 0f, 1f, 0f)
 
-        val cyl = Cylinder()
-        cyl.drawStyle = GLU.GLU_LINE
-        if (lineMode) cyl.draw(baseRadius.toFloat(), topRadius.toFloat(), height.toFloat(), slices.toInt(), stacks.toInt())
-        else Cylinder().draw(baseRadius.toFloat(), topRadius.toFloat(), height.toFloat(), slices.toInt(), stacks.toInt())
+        if (depth) GlStateManager.disableDepth()
+        color.bind()
 
-        GlStateManager.enableCull()
-        GlStateManager.disableBlend()
-        GlStateManager.depthMask(true)
-        GlStateManager.enableTexture2D()
+        Cylinder().draw(baseRadius.toFloat(), topRadius.toFloat(), height.toFloat(), slices.toInt(), stacks.toInt())
+
         if (depth) GlStateManager.enableDepth()
-        GlStateManager.resetColor()
-        Color.WHITE.bind()
+
+        postDraw()
         GlStateManager.popMatrix()
     }
 
@@ -438,7 +425,6 @@ object RenderUtils {
         val f = 1.0f / tileWidth
         val g = 1.0f / tileHeight
         Color.WHITE.bind()
-        GlStateManager.resetColor()
         worldRenderer {
             begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
             pos(x.toDouble(), (y + height).toDouble(), 0.0).tex((u * f).toDouble(), ((v + vHeight.toFloat()) * g).toDouble()).endVertex()
@@ -552,42 +538,58 @@ object RenderUtils {
 
 
     fun drawBoxes(boxes: Collection<DungeonWaypoint>, glList: Int, disableDepth: Boolean = false): Int {
+        if (boxes.isEmpty()) return -1
+        GL11.glTranslated(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
         var newGlList = glList
-        GlStateManager.pushMatrix()
-        GlStateManager.disableCull()
-        GlStateManager.depthMask(false)
-        preDraw()
 
-        GL11.glLineWidth(3f)
         if (newGlList != -1) {
             GL11.glCallList(newGlList)
-            postDraw()
-            resetDepth()
-            GlStateManager.enableCull()
-            GlStateManager.resetColor()
-            GlStateManager.popMatrix()
             return newGlList
         } else {
             newGlList = GL11.glGenLists(1)
             GL11.glNewList(newGlList, GL11.GL_COMPILE)
         }
+        GL11.glPushMatrix()
+        GL11.glDisable(GL11.GL_CULL_FACE)
+        GL11.glLineWidth(3f)
+
+        GL11.glDisable(GL11.GL_TEXTURE_2D)
+        GL11.glEnable(GL11.GL_BLEND)
+        GL11.glDisable(GL11.GL_LIGHTING)
+        GL11.glDisable(GL11.GL_ALPHA_TEST)
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
 
         for (box in boxes) {
             if (box.clicked) continue
-            depth(box.depth && !disableDepth)
-            val aabb = box.aabb.offset(box.x, box.y, box.z)
-            box.color.bind()
+            val depth = box.depth && !disableDepth
+            if (depth) GL11.glEnable(GL11.GL_DEPTH_TEST)
+            else GL11.glDisable(GL11.GL_DEPTH_TEST)
+            GL11.glDepthMask(depth)
 
-            if (box.filled) addVertexesForFilledBox(aabb)
-            else addVertexesForOutlinedBox(aabb)
-            tessellator.draw()
+            box.aabb.offset(box.x, box.y, box.z).let {
+                box.color.bind()
+
+                if (box.filled) addVertexesForFilledBox(it)
+                else addVertexesForOutlinedBox(it)
+
+                tessellator.draw()
+            }
         }
-        resetDepth()
+
+        GL11.glEnable(GL11.GL_DEPTH_TEST)
+        GL11.glDepthMask(true)
+
+        GL11.glEnable(GL11.GL_TEXTURE_2D)
+        GL11.glDisable(GL11.GL_BLEND)
+        GL11.glEnable(GL11.GL_LIGHTING)
+        GL11.glEnable(GL11.GL_ALPHA_TEST)
+
+        GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
+        GL11.glLineWidth(2f)
+        GL11.glEnable(GL11.GL_CULL_FACE)
+        GL11.glPopMatrix()
         GL11.glEndList()
-        postDraw()
-        GlStateManager.enableCull()
-        GlStateManager.resetColor()
-        GlStateManager.popMatrix()
+        GL11.glTranslated(renderManager.viewerPosX, renderManager.viewerPosY, renderManager.viewerPosZ)
         return newGlList
     }
 

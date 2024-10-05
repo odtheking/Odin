@@ -174,15 +174,14 @@ object Renderer {
      * @param rot2        Rotation parameter.
      * @param rot3        Rotation parameter.
      * @param color       The color of the cylinder.
-     * @param phase       Indicates whether to phase the cylinder (default is false).
-     * @param lineMode    Indicates whether to draw the cylinder in line mode (default is false).
+     * @param depth       Indicates whether to phase the cylinder (default is false).
      */
     fun drawCylinder(
-        pos: Vec3, baseRadius: Float, topRadius: Float, height: Float,
-        slices: Int, stacks: Int, rot1: Float, rot2: Float, rot3: Float,
-        color: Color, phase: Boolean = false, lineMode: Boolean = false
+        pos: Vec3, baseRadius: Number, topRadius: Number, height: Number,
+        slices: Number, stacks: Number, rot1: Number, rot2: Number, rot3: Number,
+        color: Color, depth: Boolean = false
     ) {
-        RenderUtils.drawCylinder(pos, baseRadius, topRadius, height, slices, stacks, rot1, rot2, rot3, color, lineMode, phase)
+        RenderUtils.drawCylinder(pos, baseRadius, topRadius, height, slices, stacks, rot1, rot2, rot3, color, depth)
     }
 
     fun draw2DEntity(entity: Entity, color: Color, lineWidth: Float) {

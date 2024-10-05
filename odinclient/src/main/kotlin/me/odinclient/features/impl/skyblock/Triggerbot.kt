@@ -2,6 +2,7 @@ package me.odinclient.features.impl.skyblock
 
 import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinclient.utils.skyblock.PlayerUtils.leftClick
+import me.odinclient.utils.skyblock.PlayerUtils.swapToIndex
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.Relic.currentRelic
@@ -16,7 +17,6 @@ import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.item.EntityEnderCrystal
 import net.minecraft.init.Blocks
-import net.minecraft.tileentity.TileEntityChest
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
@@ -114,14 +114,11 @@ object Triggerbot : Module(
 
             val pos = mc.objectMouseOver?.blockPos ?: return@execute
             val state = mc.theWorld?.getBlockState(pos) ?: return@execute
-            val tileEntity = mc.theWorld?.getTileEntity(pos) ?: return@execute
             clickedPositions = clickedPositions.filter { it.value + 1000L > System.currentTimeMillis() }
             if (
                 (pos.x in 58..62 && pos.y in 133..136 && pos.z == 142) || // looking at lights device
                 clickedPositions.containsKey(pos) // already clicked
             ) return@execute
-
-            if (tileEntity is TileEntityChest && tileEntity.numPlayersUsing >= 1) return@execute
 
             if (stbCH && LocationUtils.currentArea.isArea(Island.CrystalHollows) && state.block == Blocks.chest) {
                 PlayerUtils.rightClick()
@@ -133,11 +130,11 @@ object Triggerbot : Module(
             if (!DungeonUtils.inDungeons || (!secretTBInBoss && DungeonUtils.inBoss) || !DungeonUtils.isSecret(state, pos)) return@execute
 
             val currentSlot = mc.thePlayer?.inventory?.currentItem ?: 0
-            if (swapSlot) mc.thePlayer?.inventory?.currentItem = secretTriggerBotSlot
+            if (swapSlot) swapToIndex(secretTriggerBotSlot)
             PlayerUtils.rightClick()
-            if (swapSlot) mc.thePlayer?.inventory?.currentItem = currentSlot
+            if (swapSlot) swapToIndex(currentSlot)
             triggerBotClock.update()
-            if (tileEntity is TileEntityChest) return@execute
+
             clickedPositions = clickedPositions.plus(pos to System.currentTimeMillis())
         }
     }

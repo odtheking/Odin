@@ -20,12 +20,12 @@ object DianaBurrowEstimate {
     private var estimatedBurrowPosition: Vec3? = null
 
     private var lastSoundPoint: Vec3? = null
-    private var particlePositions = mutableListOf<Vec3>()
+    private val particlePositions = mutableListOf<Vec3>()
     private val burrows = mutableMapOf<Vec3i, Burrow>()
     private var lastBurrow: Vec3i? = null
     val recentBurrows = mutableListOf<Vec3i>()
 
-    private var dingPitchSlopes = mutableListOf<Float>()
+    private val dingPitchSlopes = mutableListOf<Float>()
 
     private var estimatedBurrowDistance: Double? = null
 
