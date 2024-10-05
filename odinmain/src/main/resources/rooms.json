@@ -402,23 +402,11 @@
     "secrets": 2
   },
   {
-    "name": "Entrance 1",
+    "name": "Entrance",
     "type": "ENTRANCE",
     "cores": [
-      274652966
-    ]
-  },
-  {
-    "name": "Entrance 2",
-    "type": "ENTRANCE",
-    "cores": [
-      -1092072828
-    ]
-  },
-  {
-    "name": "Entrance 3",
-    "type": "ENTRANCE",
-    "cores": [
+      274652966,
+      -1092072828,
       1913969999
     ]
   },

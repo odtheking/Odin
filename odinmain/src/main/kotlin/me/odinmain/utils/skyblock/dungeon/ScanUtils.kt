@@ -74,12 +74,12 @@ object ScanUtils {
 
             if (room.room.rotation != Rotations.NONE) {
                 noneRotationList.remove(room)
+                lastRoomPos = roomCenter
                 RoomEnterEvent(room).postAndCatch()
             }
         } // If room is in noneRotationList, update rotation and remove from list if rotation is not NONE
 
         if (lastRoomPos.equal(roomCenter)) return // If player is in the same room part of the previously scanned room return
-        lastRoomPos = roomCenter
 
         passedRooms.find { previousRoom -> previousRoom.extraRooms.any { it.x == roomCenter.x && it.z == roomCenter.z } }?.let { room ->
             if (DungeonUtils.currentFullRoom?.extraRooms?.any { it.x == roomCenter.x && it.z == roomCenter.z } == false) RoomEnterEvent(room).postAndCatch()
@@ -92,6 +92,7 @@ object ScanUtils {
                 noneRotationList.add(fullRoom)
                 return
             }
+            lastRoomPos = roomCenter
             RoomEnterEvent(fullRoom).postAndCatch()
         } // Scan room and post RoomEnterEvent if room rotation is found
     }
