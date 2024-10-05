@@ -9,7 +9,6 @@ import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inBoss
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils.passedRooms
 import me.odinmain.utils.skyblock.dungeon.tiles.*
 import net.minecraft.block.Block
 import net.minecraft.util.BlockPos
@@ -30,6 +29,8 @@ object ScanUtils {
     private val roomList: Set<RoomData> = loadRoomData()
     private var lastRoomPos: Vec2 = Vec2(0, 0)
     private var noneRotationList: MutableList<FullRoom?> = mutableListOf()
+    var currentFullRoom: FullRoom? = null
+    var passedRooms = mutableListOf<FullRoom>()
 
     private fun loadRoomData(): Set<RoomData> {
         return try {
@@ -63,7 +64,7 @@ object ScanUtils {
         if (event.phase != TickEvent.Phase.END || mc.theWorld == null || mc.thePlayer == null) return
 
         if ((!inDungeons && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) || inBoss) {
-            DungeonUtils.currentFullRoom?.let { RoomEnterEvent(null).postAndCatch() }
+            currentFullRoom?.let { RoomEnterEvent(null).postAndCatch() }
             return
         } // If not in dungeon or in boss room, return and register current room as null
 
@@ -71,10 +72,8 @@ object ScanUtils {
 
         noneRotationList.find { it?.extraRooms?.any { room -> room.x == roomCenter.x && room.z == roomCenter.z } == true }?.let { room ->
             updateRotation(room)
-
             if (room.room.rotation != Rotations.NONE) {
                 noneRotationList.remove(room)
-                lastRoomPos = roomCenter
                 RoomEnterEvent(room).postAndCatch()
             }
         } // If room is in noneRotationList, update rotation and remove from list if rotation is not NONE
@@ -82,17 +81,16 @@ object ScanUtils {
         if (lastRoomPos.equal(roomCenter)) return // If player is in the same room part of the previously scanned room return
 
         passedRooms.find { previousRoom -> previousRoom.extraRooms.any { it.x == roomCenter.x && it.z == roomCenter.z } }?.let { room ->
-            if (DungeonUtils.currentFullRoom?.extraRooms?.any { it.x == roomCenter.x && it.z == roomCenter.z } == false) RoomEnterEvent(room).postAndCatch()
+            if (currentFullRoom?.extraRooms?.any { it.x == roomCenter.x && it.z == roomCenter.z } == false) RoomEnterEvent(room).postAndCatch()
             return
         } // If room is in passedRooms, post RoomEnterEvent and return only posts Event if room is not in currentFullRoom
 
         scanRoom(roomCenter)?.let { room ->
             val fullRoom = FullRoom(room, BlockPos(0, 0, 0), findRoomTilesRecursively(room.vec2, room, mutableSetOf()), emptyList()).apply { updateRotation(this) }
             if (fullRoom.room.rotation == Rotations.NONE) {
-                noneRotationList.add(fullRoom)
+                if (noneRotationList.none { it?.room?.data?.name == fullRoom.room.data.name }) noneRotationList.add(fullRoom)
                 return
             }
-            lastRoomPos = roomCenter
             RoomEnterEvent(fullRoom).postAndCatch()
         } // Scan room and post RoomEnterEvent if room rotation is found
     }
@@ -164,7 +162,17 @@ object ScanUtils {
     }
 
     @SubscribeEvent
+    fun enterDungeonRoom(event: RoomEnterEvent) {
+        currentFullRoom = event.fullRoom
+        val fullRoom = currentFullRoom ?: return // ensuring passedRooms doesn't contain null
+        lastRoomPos = fullRoom.room.vec2
+        if (passedRooms.any { it.room.data.name == fullRoom.room.data.name }) return
+        passedRooms.add(fullRoom)
+    }
+
+    @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Unload) {
+        passedRooms.clear()
         noneRotationList.clear()
         lastRoomPos = Vec2(0, 0)
     }
