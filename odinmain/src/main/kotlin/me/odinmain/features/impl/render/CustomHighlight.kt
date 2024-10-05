@@ -20,20 +20,20 @@ object CustomHighlight : Module(
     tag = TagType.FPSTAX,
     description = "Allows you to highlight selected mobs. (/highlight)"
 ) {
-    private val starredMobESP: Boolean by BooleanSetting("Starred Mob Highlight", true, description = "Highlights mobs with a star in their name (remove star from the separate list).")
-    private val shadowAssasin: Boolean by BooleanSetting("Shadow Assassin", false, description = "Highlights Shadow Assassins.").withDependency { !isLegitVersion }
-    private val mode: Int by SelectorSetting("Mode", HighlightRenderer.HIGHLIGHT_MODE_DEFAULT, HighlightRenderer.highlightModeList, description = HighlightRenderer.HIGHLIGHT_MODE_DESCRIPTION)
+    private val starredMobESP by BooleanSetting("Starred Mob Highlight", true, description = "Highlights mobs with a star in their name (remove star from the separate list).")
+    private val shadowAssassin by BooleanSetting("Shadow Assassin", false, description = "Highlights Shadow Assassins.").withDependency { !isLegitVersion }
+    private val mode by SelectorSetting("Mode", HighlightRenderer.HIGHLIGHT_MODE_DEFAULT, HighlightRenderer.highlightModeList, description = HighlightRenderer.HIGHLIGHT_MODE_DESCRIPTION)
 
-    private val color: Color by ColorSetting("Color", Color.WHITE, true, description = "The color of the highlight.")
-    private val thickness: Float by NumberSetting("Line Width", 1f, .1f, 4f, .1f, description = "The line width of Outline / Boxes/ 2D Boxes.").withDependency { mode != HighlightRenderer.HighlightType.Overlay.ordinal }
-    private val style: Int by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { mode == HighlightRenderer.HighlightType.Boxes.ordinal }
-    private val scanDelay: Long by NumberSetting("Scan Delay", 500L, 10L, 2000L, 100L, description = "The delay between entity scans.", unit = "ms")
+    private val color by ColorSetting("Color", Color.WHITE, true, description = "The color of the highlight.")
+    private val thickness by NumberSetting("Line Width", 1f, .1f, 4f, .1f, description = "The line width of Outline / Boxes/ 2D Boxes.").withDependency { mode != HighlightRenderer.HighlightType.Overlay.ordinal }
+    private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { mode == HighlightRenderer.HighlightType.Boxes.ordinal }
+    private val scanDelay by NumberSetting("Scan Delay", 500L, 10L, 2000L, 100L, description = "The delay between entity scans.", unit = "ms")
 
-    private val xray: Boolean by BooleanSetting("Depth Check", false, description = "Highlights entities through walls.").withDependency { !isLegitVersion }
-    private val showInvisible: Boolean by BooleanSetting("Show Invisible", false, description = "Highlights invisible entities.").withDependency { !isLegitVersion }
+    private val xray by BooleanSetting("Depth Check", false, description = "Highlights entities through walls.").withDependency { !isLegitVersion }
+    private val showInvisible by BooleanSetting("Show Invisible", false, description = "Highlights invisible entities.").withDependency { !isLegitVersion }
 
     val highlightList: MutableList<String> by ListSetting("List", mutableListOf())
-    private val depthCheck: Boolean get() = if (isLegitVersion) true else xray
+    private val depthCheck get() = if (isLegitVersion) true else xray
     private var currentEntities = mutableSetOf<Entity>()
 
     init {
@@ -55,7 +55,7 @@ object CustomHighlight : Module(
         val entity = mc.theWorld?.getEntityByID(event.packet.entityId) ?: return
         checkEntity(entity)
         if (starredMobESP) checkStarred(entity)
-        if (shadowAssasin && !isLegitVersion) checkAssassin(entity)
+        if (shadowAssassin && !isLegitVersion) checkAssassin(entity)
         if (showInvisible && entity.isInvisible && !isLegitVersion && entity in currentEntities) entity.isInvisible = false
     }
 

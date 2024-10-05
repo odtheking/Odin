@@ -12,7 +12,7 @@ object NoPre : Module(
     description = "Alerts the party about the state of a pre spot.",
     category = Category.NETHER
 ) {
-    private val showAlert: Boolean by BooleanSetting("Show Alert", false, description = "Shows an alert when you miss a pre spot.")
+    private val showAlert by BooleanSetting("Show Alert", false, description = "Shows an alert when you miss a pre spot.")
 
     private var preLoc = PreSpot("", Vec3(0.0, 0.0, 0.0))
     var missing = ""

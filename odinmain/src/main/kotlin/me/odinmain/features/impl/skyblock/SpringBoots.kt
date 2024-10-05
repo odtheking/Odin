@@ -5,7 +5,6 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.HudSetting
-import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.addVec
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.getSafe
@@ -27,7 +26,7 @@ object SpringBoots : Module(
     description = "Shows how many blocks you can jump.",
     category = Category.SKYBLOCK
 ) {
-    private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, true) {
+    private val hud by HudSetting("Display", 10f, 10f, 1f, true) {
         if (it) {
             mcText("Jump: 6.5", 2f, 5f, 1, Color.WHITE)
             getTextWidth("Jump: 6.5", 12f) to 12f
@@ -38,8 +37,8 @@ object SpringBoots : Module(
             getTextWidth("Jump: ${blockAmount ?: "61 (MAX)"}", 12f) to 12f
         }
     }
-    private val renderGoal: Boolean by BooleanSetting("Render Goal", true, description = "Render the goal block.")
-    private val goalColor: Color by ColorSetting("Goal Color", Color.GREEN, description = "Color of the goal block.")
+    private val renderGoal by BooleanSetting("Render Goal", true, description = "Render the goal block.")
+    private val goalColor by ColorSetting("Goal Color", Color.GREEN, description = "Color of the goal block.")
 
     private val blocksList: List<Double> = listOf(
         0.0, 3.0, 6.5, 9.0, 11.5, 13.5, 16.0, 18.0, 19.0,

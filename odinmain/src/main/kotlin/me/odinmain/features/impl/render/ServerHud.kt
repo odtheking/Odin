@@ -3,7 +3,6 @@ package me.odinmain.features.impl.render
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.*
 import me.odinmain.utils.render.*
 
@@ -12,12 +11,12 @@ object ServerHud : Module(
     category = Category.RENDER,
     description = "Displays your current ping, FPS and server's TPS."
 ) {
-    private val ping: Boolean by BooleanSetting("Ping", true, description = "Displays your current ping.")
-    private val tps: Boolean by BooleanSetting("TPS", true, description = "Displays the server's TPS.")
-    private val fps: Boolean by BooleanSetting("FPS", false, description = "Displays your current FPS.")
-    private val style: Int by SelectorSetting("Style", "Row", arrayListOf("Row", "Stacked"), description = "The style of the server hud.")
+    private val ping by BooleanSetting("Ping", true, description = "Displays your current ping.")
+    private val tps by BooleanSetting("TPS", true, description = "Displays the server's TPS.")
+    private val fps by BooleanSetting("FPS", false, description = "Displays your current FPS.")
+    private val style by SelectorSetting("Style", "Row", arrayListOf("Row", "Stacked"), description = "The style of the server hud.")
 
-    val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, false) {
+    val hud by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {
             if (style == 0) {
                 var width = 0f

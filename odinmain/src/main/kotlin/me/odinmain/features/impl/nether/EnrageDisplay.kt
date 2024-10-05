@@ -5,7 +5,6 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.font.OdinFont
-import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.itemID
 import net.minecraft.network.play.server.S29PacketSoundEffect
@@ -16,7 +15,7 @@ object EnrageDisplay : Module(
     description = "Timer for cooldown of reaper armor enrage.",
     category = Category.NETHER
 ) {
-    private val hud: HudElement by HudSetting("Enrage Timer Hud", 10f, 10f, 1f, false) {
+    private val hud by HudSetting("Enrage Timer Hud", 10f, 10f, 1f, false) {
         if (it) {
             text("§4Enrage: §a119t", 1f, 9f, Color.RED, 12f, OdinFont.REGULAR, shadow = true)
             getTextWidth("Enrage: 119t", 12f) + 2f to 16f

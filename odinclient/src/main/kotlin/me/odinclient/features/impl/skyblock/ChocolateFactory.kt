@@ -23,15 +23,15 @@ object ChocolateFactory : Module(
     description = "Automates the Chocolate Factory.",
     category = Category.SKYBLOCK
 ) {
-    private val clickFactory: Boolean by BooleanSetting("Click Factory", false, description = "Click the cookie in the Chocolate Factory menu.")
-    private val autoUpgrade: Boolean by BooleanSetting("Auto Upgrade", false, description = "Automatically upgrade the worker.")
-    private val delay: Long by NumberSetting("Delay", 150, 50, 300, 5, unit = "ms", description = "Delay between actions.")
-    private val upgradeDelay: Long by NumberSetting("Upgrade delay", 500, 300, 2000, 100, unit = "ms", description = "Delay between upgrades.")
-    private val claimStray: Boolean by BooleanSetting("Claim Strays", false, description = "Claim stray rabbits in the Chocolate Factory menu.")
-    private val cancelSound: Boolean by BooleanSetting("Cancel Sound", false, description = "Cancels the eating sound in the Chocolate Factory.")
-    private val upgradeMessage: Boolean by BooleanSetting("Odin Upgrade Message", false, description = "Prints a message when upgrading.")
-    private val eggEsp: Boolean by BooleanSetting("Egg ESP", false, description = "Shows the location of the egg.")
-    private var chocolate: Long = 0L
+    private val clickFactory by BooleanSetting("Click Factory", false, description = "Click the cookie in the Chocolate Factory menu.")
+    private val autoUpgrade by BooleanSetting("Auto Upgrade", false, description = "Automatically upgrade the worker.")
+    private val delay by NumberSetting("Delay", 150L, 50, 300, 5, unit = "ms", description = "Delay between actions.")
+    private val upgradeDelay by NumberSetting("Upgrade delay", 500L, 300, 2000, 100, unit = "ms", description = "Delay between upgrades.")
+    private val claimStray by BooleanSetting("Claim Strays", false, description = "Claim stray rabbits in the Chocolate Factory menu.")
+    private val cancelSound by BooleanSetting("Cancel Sound", false, description = "Cancels the eating sound in the Chocolate Factory.")
+    private val upgradeMessage by BooleanSetting("Odin Upgrade Message", false, description = "Prints a message when upgrading.")
+    private val eggEsp by BooleanSetting("Egg ESP", false, description = "Shows the location of the egg.")
+    private var chocolate = 0L
 
     private val indexToName = mapOf(28 to "Bro", 29 to "Cousin", 30 to "Sis", 31 to "Daddy", 32 to "Granny", 33 to "Uncle", 34 to "Dog")
     private val possibleLocations = arrayOf(
@@ -162,5 +162,11 @@ object ChocolateFactory : Module(
 
     private fun isInChocolateFactory(): Boolean {
         return mc.thePlayer?.openContainer is ContainerChest && mc.thePlayer?.openContainer?.name == "Chocolate Factory"
+    }
+
+    private data object BunnyEggTextures {
+        const val DINNER_EGG_TEXTURE = "ewogICJ0aW1lc3RhbXAiIDogMTcxMTQ2MjY0OTcwMSwKICAicHJvZmlsZUlkIiA6ICI3NGEwMzQxNWY1OTI0ZTA4YjMyMGM2MmU1NGE3ZjJhYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZXp6aXIiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTVlMzYxNjU4MTlmZDI4NTBmOTg1NTJlZGNkNzYzZmY5ODYzMTMxMTkyODNjMTI2YWNlMGM0Y2M0OTVlNzZhOCIKICAgIH0KICB9Cn0"
+        const val LUNCH_EGG_TEXTURE = "ewogICJ0aW1lc3RhbXAiIDogMTcxMTQ2MjU2ODExMiwKICAicHJvZmlsZUlkIiA6ICI3NzUwYzFhNTM5M2Q0ZWQ0Yjc2NmQ4ZGUwOWY4MjU0NiIsCiAgInByb2ZpbGVOYW1lIiA6ICJSZWVkcmVsIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzdhZTZkMmQzMWQ4MTY3YmNhZjk1MjkzYjY4YTRhY2Q4NzJkNjZlNzUxZGI1YTM0ZjJjYmM2NzY2YTAzNTZkMGEiCiAgICB9CiAgfQp9"
+        const val BREAKFAST_EGG_TEXTURE = "ewogICJ0aW1lc3RhbXAiIDogMTcxMTQ2MjY3MzE0OSwKICAicHJvZmlsZUlkIiA6ICJiN2I4ZTlhZjEwZGE0NjFmOTY2YTQxM2RmOWJiM2U4OCIsCiAgInByb2ZpbGVOYW1lIiA6ICJBbmFiYW5hbmFZZzciLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTQ5MzMzZDg1YjhhMzE1ZDAzMzZlYjJkZjM3ZDhhNzE0Y2EyNGM1MWI4YzYwNzRmMWI1YjkyN2RlYjUxNmMyNCIKICAgIH0KICB9Cn0"
     }
 }

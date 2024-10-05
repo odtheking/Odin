@@ -25,9 +25,9 @@ object HoverTerms : Module(
     category = Category.FLOOR7,
     tag = TagType.RISKY
 ) {
-    private val triggerDelay: Long by NumberSetting("Delay", 200L, 50, 800, unit = "ms", description = "Delay between clicks.")
-    private val firstClickDelay: Long by NumberSetting("First Click Delay", 200L, 50, 500, unit = "ms", description = "Delay before first click.")
-    private val middleClick: Boolean by DualSetting("Click Type", "Left", "Middle", default = true, description = "What Click type to use.")
+    private val triggerDelay by NumberSetting("Delay", 200L, 50, 800, unit = "ms", description = "Delay between clicks.")
+    private val firstClickDelay by NumberSetting("First Click Delay", 200L, 50, 500, unit = "ms", description = "Delay before first click.")
+    private val middleClick by DualSetting("Click Type", "Left", "Middle", default = true, description = "What Click type to use.")
     private val triggerBotClock = Clock(triggerDelay)
 
     @SubscribeEvent

@@ -19,14 +19,14 @@ object TeammatesHighlight : Module(
     category = Category.DUNGEON,
     description = "Enhances visibility of your dungeon teammates and their name tags."
 ) {
-    private val mode: Int by SelectorSetting("Mode", HighlightRenderer.HIGHLIGHT_MODE_DEFAULT, HighlightRenderer.highlightModeList, description = HighlightRenderer.HIGHLIGHT_MODE_DESCRIPTION)
-    private val thickness: Float by NumberSetting("Line Width", 1f, .1f, 4f, .1f, description = "The line width of Outline / Boxes / 2D Boxes.").withDependency { mode != HighlightRenderer.HighlightType.Overlay.ordinal }
-    private val style: Int by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { mode == HighlightRenderer.HighlightType.Boxes.ordinal }
-    private val showClass: Boolean by BooleanSetting("Show class", true, description = "Shows the class of the teammate.")
-    private val showHighlight: Boolean by BooleanSetting("Show highlight", true, description = "Highlights teammates with an outline.")
-    private val showName: Boolean by BooleanSetting("Show name", true, description = "Highlights teammates with a name tag.")
-    private val depthCheck: Boolean by BooleanSetting("Depth check", false, description = "Highlights teammates only when they are visible.")
-    private val inBoss: Boolean by BooleanSetting("In boss", true, description = "Highlights teammates in boss rooms.")
+    private val mode by SelectorSetting("Mode", HighlightRenderer.HIGHLIGHT_MODE_DEFAULT, HighlightRenderer.highlightModeList, description = HighlightRenderer.HIGHLIGHT_MODE_DESCRIPTION)
+    private val thickness by NumberSetting("Line Width", 1f, .1f, 4f, .1f, description = "The line width of Outline / Boxes / 2D Boxes.").withDependency { mode != HighlightRenderer.HighlightType.Overlay.ordinal }
+    private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { mode == HighlightRenderer.HighlightType.Boxes.ordinal }
+    private val showClass by BooleanSetting("Show class", true, description = "Shows the class of the teammate.")
+    private val showHighlight by BooleanSetting("Show highlight", true, description = "Highlights teammates with an outline.")
+    private val showName by BooleanSetting("Show name", true, description = "Highlights teammates with a name tag.")
+    private val depthCheck by BooleanSetting("Depth check", false, description = "Highlights teammates only when they are visible.")
+    private val inBoss by BooleanSetting("In boss", true, description = "Highlights teammates in boss rooms.")
 
     init {
         HighlightRenderer.addEntityGetter({ HighlightRenderer.HighlightType.entries[mode] }) {

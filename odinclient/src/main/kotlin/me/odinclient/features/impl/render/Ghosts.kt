@@ -15,9 +15,9 @@ object Ghosts : Module(
     description = "Diverse QOL for ghosts in the Dwarven Mines.",
     category = Category.SKYBLOCK
 ) {
-    private var showGhostNametag: Boolean by BooleanSetting(name = "Show Ghost Nametag", description = "Show the ghost's name tag.")
-    private var showGhosts: Boolean by BooleanSetting(name = "Hide Ghosts", description = "Hide ghosts.")
-    private var hideChargedLayer: Boolean by BooleanSetting(name = "Hide Charged Layer", description = "Hide the charged layer of the ghost.")
+    private var showGhostNametag by BooleanSetting(name = "Show Ghost Nametag", description = "Show the ghost's name tag.")
+    private var showGhosts by BooleanSetting(name = "Hide Ghosts", description = "Hide ghosts.")
+    private var hideChargedLayer by BooleanSetting(name = "Hide Charged Layer", description = "Hide the charged layer of the ghost.")
 
     init {
         execute(500) {

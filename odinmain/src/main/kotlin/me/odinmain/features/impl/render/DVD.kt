@@ -18,12 +18,12 @@ object DVD : Module(
     category = Category.RENDER,
     description = "No further explanation."
 ) {
-    private val boxWidth: Int by NumberSetting("Box Width", 50, 0, 150, 1, description = "Width of the DVD box.")
-    private val boxHeight: Int by NumberSetting("Box Height", 50, 0, 150, 1, description = "Height of the DVD box.")
-    private val roundedCorners: Boolean by BooleanSetting("Rounded Corners", true, description = "Whether the DVD box should have rounded corners.")
+    private val boxWidth by NumberSetting("Box Width", 50, 0, 150, 1, description = "Width of the DVD box.")
+    private val boxHeight by NumberSetting("Box Height", 50, 0, 150, 1, description = "Height of the DVD box.")
+    private val roundedCorners by BooleanSetting("Rounded Corners", true, description = "Whether the DVD box should have rounded corners.")
 
-    private val text: String by StringSetting("Text", "ODVD", description = "Text to display on the DVD box.")
-    private val textScale: Float by NumberSetting("Text Scale", 1.5f, 0.1f, 2f, 0.1f, description = "Scale of the text.")
+    private val text by StringSetting("Text", "ODVD", description = "Text to display on the DVD box.")
+    private val textScale by NumberSetting("Text Scale", 1.5f, 0.1f, 2f, 0.1f, description = "Scale of the text.")
 
     override fun onEnable() {
         x = Display.getWidth() / 4

@@ -15,10 +15,10 @@ object SecretHitboxes : Module(
     description = "Full block Secret hitboxes.",
     category = Category.DUNGEON
 ) {
-    val lever: Boolean by BooleanSetting("Lever", default = false, description = "Extends the lever hitbox.")
-    val button: Boolean by BooleanSetting("Button", default = false, description = "Extends the button hitbox.")
-    val essence: Boolean by BooleanSetting("Essence", default = false, description = "Extends the essence hitbox.")
-    val chests: Boolean by BooleanSetting("Chests", default = false, description = "Extends the chest hitbox.")
+    val lever by BooleanSetting("Lever", default = false, description = "Extends the lever hitbox.")
+    val button by BooleanSetting("Button", default = false, description = "Extends the button hitbox.")
+    val essence by BooleanSetting("Essence", default = false, description = "Extends the essence hitbox.")
+    val chests by BooleanSetting("Chests", default = false, description = "Extends the chest hitbox.")
 
     private val mostSignificantBits = UUID.fromString("26bb1a8d-7c66-31c6-82d5-a9c04c94fb02").mostSignificantBits
 

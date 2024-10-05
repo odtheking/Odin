@@ -25,13 +25,13 @@ object Mimic : Module(
     description = "Helpful mimic utilities.",
     category = Category.DUNGEON
 ) {
-    private val mimicMessageToggle: Boolean by BooleanSetting("Toggle Mimic Message", default = true, description = "Toggles the mimic killed message.")
-    val mimicMessage: String by StringSetting("Mimic Message", "Mimic Killed!", 128, description = "Message sent when mimic is detected as killed.").withDependency { mimicMessageToggle }
-    val reset: () -> Unit by ActionSetting("Mimic Killed", description = "Sends Mimic killed message in party chat.") { mimicKilled() }
-    private val mimicBox: Boolean by BooleanSetting("Mimic Box", false, description = "Draws a box around the mimic chest.")
-    private val style: Int by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { mimicBox }
-    private val color: Color by ColorSetting("Color", Color.RED.withAlpha(0.5f), allowAlpha = true, description = "The color of the box.").withDependency { mimicBox }
-    private val lineWidth: Float by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.").withDependency { mimicBox }
+    private val mimicMessageToggle by BooleanSetting("Toggle Mimic Message", default = true, description = "Toggles the mimic killed message.")
+    val mimicMessage by StringSetting("Mimic Message", "Mimic Killed!", 128, description = "Message sent when mimic is detected as killed.").withDependency { mimicMessageToggle }
+    val reset by ActionSetting("Mimic Killed", description = "Sends Mimic killed message in party chat.") { mimicKilled() }
+    private val mimicBox by BooleanSetting("Mimic Box", false, description = "Draws a box around the mimic chest.")
+    private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { mimicBox }
+    private val color by ColorSetting("Color", Color.RED.withAlpha(0.5f), allowAlpha = true, description = "The color of the box.").withDependency { mimicBox }
+    private val lineWidth by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.").withDependency { mimicBox }
 
     private const val MIMIC_TEXTURE ="eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTE5YzEyNTQzYmM3NzkyNjA1ZWY2OGUxZjg3NDlhZThmMmEzODFkOTA4NWQ0ZDRiNzgwYmExMjgyZDM1OTdhMCJ9fX0K"
 

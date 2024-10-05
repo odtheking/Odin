@@ -22,10 +22,10 @@ object SupplyHelper : Module(
     description = "Helps with supplies in kuudra.",
     category = Category.NETHER
 ) {
-    private val suppliesWaypoints: Boolean by BooleanSetting("Supplies Waypoints", true, description = "Renders the supply waypoints.")
-    private val supplyWaypointColor: Color by ColorSetting("Supply Waypoint Color", Color.YELLOW, true, description = "Color of the supply waypoints.").withDependency { suppliesWaypoints }
-    private val supplyDropWaypoints: Boolean by BooleanSetting("Supply Drop Waypoints", true, description = "Renders the supply drop waypoints.")
-    private val sendSupplyTime: Boolean by BooleanSetting("Send Supply Time", true, description = "Sends a message when a supply is collected.")
+    private val suppliesWaypoints by BooleanSetting("Supplies Waypoints", true, description = "Renders the supply waypoints.")
+    private val supplyWaypointColor by ColorSetting("Supply Waypoint Color", Color.YELLOW, true, description = "Color of the supply waypoints.").withDependency { suppliesWaypoints }
+    private val supplyDropWaypoints by BooleanSetting("Supply Drop Waypoints", true, description = "Renders the supply drop waypoints.")
+    private val sendSupplyTime by BooleanSetting("Send Supply Time", true, description = "Sends a message when a supply is collected.")
 
     private var startRun = 0L
 

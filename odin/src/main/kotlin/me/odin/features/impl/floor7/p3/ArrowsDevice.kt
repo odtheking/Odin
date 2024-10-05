@@ -27,17 +27,17 @@ object ArrowsDevice : Module(
     description = "Solver for the Sharp Shooter puzzle in floor 7.",
     category = Category.FLOOR7,
 ) {
-    private val solver: Boolean by BooleanSetting("Solver", default = true, description = "Enables the solver.")
-    private val markedPositionColor: Color by ColorSetting("Marked Position", Color.RED, description = "Color of the marked position.").withDependency { solver }
-    private val targetPositionColor: Color by ColorSetting("Target Position", Color.GREEN, description = "Color of the target position.").withDependency { solver }
-    private val resetKey: Keybinding by KeybindSetting("Reset", Keyboard.KEY_NONE, description = "Resets the solver.").onPress {
+    private val solver by BooleanSetting("Solver", default = true, description = "Enables the solver.")
+    private val markedPositionColor by ColorSetting("Marked Position", Color.RED, description = "Color of the marked position.").withDependency { solver }
+    private val targetPositionColor by ColorSetting("Target Position", Color.GREEN, description = "Color of the target position.").withDependency { solver }
+    private val resetKey by KeybindSetting("Reset", Keyboard.KEY_NONE, description = "Resets the solver.").onPress {
         reset()
     }.withDependency { solver }
-    private val depthCheck: Boolean by BooleanSetting("Depth check", true, description = "Marked positions show through walls.").withDependency { solver }
-    private val reset: () -> Unit by ActionSetting("Reset", description = "Resets the solver.") {
+    private val depthCheck by BooleanSetting("Depth check", true, description = "Marked positions show through walls.").withDependency { solver }
+    private val reset by ActionSetting("Reset", description = "Resets the solver.") {
         markedPositions.clear()
     }.withDependency { solver }
-    private val alertOnDeviceComplete: Boolean by BooleanSetting("Device complete alert", default = true, description = "Send an alert when device is complete.")
+    private val alertOnDeviceComplete by BooleanSetting("Device complete alert", default = true, description = "Send an alert when device is complete.")
 
     private val markedPositions = mutableSetOf<BlockPos>()
     private var targetPosition: BlockPos? = null

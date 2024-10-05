@@ -3,7 +3,6 @@ package me.odinmain.features.impl.render
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.HudSetting
-import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.*
 import me.odinmain.utils.round
 import net.minecraft.network.play.client.C07PacketPlayerDigging
@@ -21,7 +20,7 @@ object BPSDisplay : Module(
     private var lastBrokenBlock: Long = 0
     private var bps: Double = 0.0
 
-    private val hud: HudElement by HudSetting("Display", 10f, 10f, 2f, false) {
+    private val hud by HudSetting("Display", 10f, 10f, 2f, false) {
         if (it) { // example
             mcText("§7BPS: §r17.8", 1f, 1f, 1, Color.WHITE, center = false)
         } else {

@@ -38,7 +38,7 @@ open class HudElement(
     var enabled = false
 
     private val isEnabled: Boolean
-        get() = parentModule?.enabled ?: false && enabled
+        get() = parentModule?.enabled == true && enabled
 
     internal val xSetting: NumberSetting<Float>
     internal val ySetting: NumberSetting<Float>

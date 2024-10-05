@@ -18,13 +18,13 @@ object Camera : Module(
     category = Category.RENDER,
     description = "Various camera improvements and settings."
 ) {
-    private val frontCamera: Boolean by BooleanSetting("No Front Camera", false, description = "Disables front camera.")
-    private val cameraClip: Boolean by BooleanSetting("Camera Clip", false, description = "Allows the camera to clip through blocks.")
-    private val cameraDist: Float by NumberSetting("Distance", 4f, 3.0, 12.0, 0.1, description = "The distance of the camera from the player.")
-    private val fov: Float by NumberSetting("FOV", mc.gameSettings.fovSetting, 1f, 180f, 1f, description = "The field of view of the camera.")
-    private val freelookDropdown: Boolean by DropdownSetting("Freelook")
-    private val toggle: Boolean by DualSetting("Type", "Hold", "Toggle", false, description = "The type of freelook.").withDependency { freelookDropdown }
-    private val freelookKeybind: Keybinding by KeybindSetting("Freelook Key", Keyboard.KEY_NONE, description = "Keybind to toggle/ hold for freelook.")
+    private val frontCamera by BooleanSetting("No Front Camera", false, description = "Disables front camera.")
+    private val cameraClip by BooleanSetting("Camera Clip", false, description = "Allows the camera to clip through blocks.")
+    private val cameraDist by NumberSetting("Distance", 4f, 3.0, 12.0, 0.1, description = "The distance of the camera from the player.")
+    private val fov by NumberSetting("FOV", mc.gameSettings.fovSetting, 1f, 180f, 1f, description = "The field of view of the camera.")
+    private val freelookDropdown by DropdownSetting("Freelook")
+    private val toggle by DualSetting("Type", "Hold", "Toggle", false, description = "The type of freelook.").withDependency { freelookDropdown }
+    private val freelookKeybind by KeybindSetting("Freelook Key", Keyboard.KEY_NONE, description = "Keybind to toggle/ hold for freelook.")
         .withDependency { freelookDropdown }
         .onPress {
             if (!freelookToggled && enabled) enable()
@@ -35,6 +35,17 @@ object Camera : Module(
     private var cameraPitch = 0f
     private var lastPerspective = -1
 
+    private var previousFov = mc.gameSettings.fovSetting
+
+    override fun onEnable() {
+        previousFov = mc.gameSettings.fovSetting
+        super.onEnable()
+    }
+
+    override fun onDisable() {
+        mc.gameSettings.fovSetting = previousFov
+        super.onDisable()
+    }
 
     fun getCameraDistance(): Float {
         return if (enabled) cameraDist else 4f

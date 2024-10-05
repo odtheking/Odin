@@ -12,9 +12,9 @@ object DungeonRequeue : Module(
     description = "Automatically starts a new dungeon at the end of a dungeon.",
     category = Category.DUNGEON
 ) {
-    private val delay: Int by NumberSetting("Delay", 10, 0, 30, 1, description = "The delay in seconds before requeuing.", unit = "s")
-    private val type: Boolean by DualSetting("Type", "Normal", "Requeue", default = true, description = "The type of command to execute to fulfill the requeue request.")
-    private val disablePartyLeave: Boolean by BooleanSetting("Disable on leave/kick", true, description = "Disables the requeue on party leave message.")
+    private val delay by NumberSetting("Delay", 10, 0, 30, 1, description = "The delay in seconds before requeuing.", unit = "s")
+    private val type by DualSetting("Type", "Normal", "Requeue", default = true, description = "The type of command to execute to fulfill the requeue request.")
+    private val disablePartyLeave by BooleanSetting("Disable on leave/kick", true, description = "Disables the requeue on party leave message.")
 
     var disableRequeue = false
     init {

@@ -13,12 +13,12 @@ object AutoGFS : Module(
     description = "Automatically refills certain items from sack.",
     category = Category.DUNGEON
 ) {
-    private val inKuudra: Boolean by BooleanSetting("In Kuudra", true, description = "Only gfs in Kuudra.")
-    private val inDungeon: Boolean by BooleanSetting("In Dungeon", true, description = "Only gfs in Dungeons.")
-    private val refillOnDungeonStart: Boolean by BooleanSetting("Refill on Dungeon Start", true, description = "Refill when a dungeon starts.")
-    private val refillPearl: Boolean by BooleanSetting("Refill Pearl", true, description = "Refill ender pearls.")
-    private val refillJerry: Boolean by BooleanSetting("Refill Jerry", true, description = "Refill inflatable jerrys.")
-    private val refillOnTimer: Boolean by BooleanSetting("Refill on Timer", true, description = "Refill on a 5s intervals.")
+    private val inKuudra by BooleanSetting("In Kuudra", true, description = "Only gfs in Kuudra.")
+    private val inDungeon by BooleanSetting("In Dungeon", true, description = "Only gfs in Dungeons.")
+    private val refillOnDungeonStart by BooleanSetting("Refill on Dungeon Start", true, description = "Refill when a dungeon starts.")
+    private val refillPearl by BooleanSetting("Refill Pearl", true, description = "Refill ender pearls.")
+    private val refillJerry by BooleanSetting("Refill Jerry", true, description = "Refill inflatable jerrys.")
+    private val refillOnTimer by BooleanSetting("Refill on Timer", true, description = "Refill on a 5s intervals.")
 
     init {
         execute(5000) {

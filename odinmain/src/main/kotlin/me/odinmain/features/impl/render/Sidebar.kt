@@ -4,7 +4,6 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.*
 import me.odinmain.utils.render.RenderUtils.bind
 import net.minecraft.client.gui.Gui.drawRect
@@ -20,7 +19,7 @@ object Sidebar : Module(
     description = "Various settings to change the look of the minecraft sidebar."
 ) {
     private var variableScoreObjective: ScoreObjective? = null
-    private val hud: HudElement by HudSetting("Hud", 500f, 500f, 2f, false) {
+    private val hud by HudSetting("Hud", 500f, 500f, 2f, false) {
         val scoreObjective = variableScoreObjective ?: return@HudSetting 0f to 0f
         val scoreboard: Scoreboard = scoreObjective.scoreboard
         val scoreList: MutableList<Score> = ArrayList()
@@ -56,9 +55,9 @@ object Sidebar : Module(
         width.toFloat() to (scoreList.size + 1) * mc.fontRendererObj.FONT_HEIGHT.toFloat()
     }
     private val customFont: Boolean by DualSetting("Font", "Minecraft", "Custom", description = "The font to use for the sidebar.")
-    private val textShadow: Boolean by BooleanSetting("Text Shadow", true, description = "Whether to render a shadow behind the text.")
-    private val redNumbers: Boolean by BooleanSetting("Show Red Numbers", true, description = "Whether to show the numbers in red.")
-    private val backgroundColor: Color by ColorSetting("Background Color", Color.GRAY.withAlpha(.5f), allowAlpha = true, description = "The color of the sidebar background.")
+    private val textShadow by BooleanSetting("Text Shadow", true, description = "Whether to render a shadow behind the text.")
+    private val redNumbers by BooleanSetting("Show Red Numbers", true, description = "Whether to show the numbers in red.")
+    private val backgroundColor by ColorSetting("Background Color", Color.GRAY.withAlpha(.5f), allowAlpha = true, description = "The color of the sidebar background.")
 
     fun renderSidebar(scoreObjective: ScoreObjective, scaledResolution: ScaledResolution): Boolean {
         variableScoreObjective = scoreObjective

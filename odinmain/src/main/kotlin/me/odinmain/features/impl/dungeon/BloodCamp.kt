@@ -34,19 +34,19 @@ object BloodCamp : Module(
     description = "Features for Blood Camping.",
     category = Category.DUNGEON
 ) {
-    private val bloodHelper: Boolean by BooleanSetting("Blood Camp Assist", default = true, description = "Draws boxes to spawning mobs in the blood room. WARNING: not perfectly accurate. Mobs spawn randomly between 37 - 41 ticks, adjust offset to adjust between ticks.")
-    private val pboxColor: Color by ColorSetting("Spawn Color", Color.RED, true, description = "Color for Spawn render box. Set alpha to 0 to disable.").withDependency { bloodHelper }
-    private val fboxColor: Color by ColorSetting("Final Color", Color.CYAN, true, description = "Color for when Spawn and Mob boxes are merged. Set alpha to 0 to disable.").withDependency { bloodHelper }
-    private val mboxColor: Color by ColorSetting("Position Color", Color.GREEN, true, description = "Color for current position box. Set alpha to 0 to disable.").withDependency { bloodHelper }
-    private val boxSize: Double by NumberSetting("Box Size", default = 1.0, increment = 0.1, min = 0.1, max = 1.0, description = "The size of the boxes. Lower values may seem less accurate.").withDependency { bloodHelper }
-    private val drawLine: Boolean by BooleanSetting("Line", default = true, description = "Line between Position box and Spawn box.").withDependency { bloodHelper }
-    private val drawTime: Boolean by BooleanSetting("Time Left", default = true, description = "Time before the blood mob spawns. Adjust offset depending on accuracy. May be up to ~100ms off.").withDependency { bloodHelper }
-    private val advanced: Boolean by DropdownSetting("Advanced", default = false).withDependency { bloodHelper }
-    private val offset: Int by NumberSetting("Offset", default = 20, increment = 1, max = 100, min = -100, description = "Tick offset to adjust between ticks.").withDependency { advanced && bloodHelper }
-    private val tick: Int by NumberSetting("Tick", default = 40, increment = 1, max = 41, min = 37, description = "Tick to assume spawn. Adjust offset to offset this value to the ms.").withDependency { advanced && bloodHelper}
-    private val interpolation: Boolean by BooleanSetting("Interpolation", default = true, description = "Interpolates rendering boxes between ticks. Makes the jitter smoother, at the expense of some accuracy.").withDependency { advanced && bloodHelper}
-    private val watcherBar: Boolean by BooleanSetting("Watcher Bar", default = true, description = "Shows the watcher's health.")
-    private val watcherHighlight: Boolean by BooleanSetting("Watcher Highlight", default = false, description = "Highlights the watcher.")
+    private val bloodHelper by BooleanSetting("Blood Camp Assist", default = true, description = "Draws boxes to spawning mobs in the blood room. WARNING: not perfectly accurate. Mobs spawn randomly between 37 - 41 ticks, adjust offset to adjust between ticks.")
+    private val pboxColor by ColorSetting("Spawn Color", Color.RED, true, description = "Color for Spawn render box. Set alpha to 0 to disable.").withDependency { bloodHelper }
+    private val fboxColor by ColorSetting("Final Color", Color.CYAN, true, description = "Color for when Spawn and Mob boxes are merged. Set alpha to 0 to disable.").withDependency { bloodHelper }
+    private val mboxColor by ColorSetting("Position Color", Color.GREEN, true, description = "Color for current position box. Set alpha to 0 to disable.").withDependency { bloodHelper }
+    private val boxSize by NumberSetting("Box Size", default = 1.0, increment = 0.1, min = 0.1, max = 1.0, description = "The size of the boxes. Lower values may seem less accurate.").withDependency { bloodHelper }
+    private val drawLine by BooleanSetting("Line", default = true, description = "Line between Position box and Spawn box.").withDependency { bloodHelper }
+    private val drawTime by BooleanSetting("Time Left", default = true, description = "Time before the blood mob spawns. Adjust offset depending on accuracy. May be up to ~100ms off.").withDependency { bloodHelper }
+    private val advanced by DropdownSetting("Advanced", default = false).withDependency { bloodHelper }
+    private val offset by NumberSetting("Offset", default = 20, increment = 1, max = 100, min = -100, description = "Tick offset to adjust between ticks.").withDependency { advanced && bloodHelper }
+    private val tick by NumberSetting("Tick", default = 40, increment = 1, max = 41, min = 37, description = "Tick to assume spawn. Adjust offset to offset this value to the ms.").withDependency { advanced && bloodHelper}
+    private val interpolation by BooleanSetting("Interpolation", default = true, description = "Interpolates rendering boxes between ticks. Makes the jitter smoother, at the expense of some accuracy.").withDependency { advanced && bloodHelper}
+    private val watcherBar by BooleanSetting("Watcher Bar", default = true, description = "Shows the watcher's health.")
+    private val watcherHighlight by BooleanSetting("Watcher Highlight", default = false, description = "Highlights the watcher.")
 
     private var currentName: String? = null
     private val firstSpawnRegex = Regex("^\\[BOSS] The Watcher: Let's see how you can handle this.$")

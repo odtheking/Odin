@@ -21,7 +21,7 @@ object ArrowAlign : Module(
     description = "Shows a solution for the Arrow Align device.",
     category = Category.FLOOR7
 ) {
-    private val blockWrong: Boolean by BooleanSetting("Block Wrong Clicks", false, description = "Blocks wrong clicks, shift will override this.")
+    private val blockWrong by BooleanSetting("Block Wrong Clicks", false, description = "Blocks wrong clicks, shift will override this.")
 
     private val frameGridCorner = Vec3(-2.0, 120.0, 75.0)
     private val recentClickTimestamps = mutableMapOf<Int, Long>()

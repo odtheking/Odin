@@ -11,8 +11,8 @@ object Ragaxe : Module(
     description = "Tracks rag axe cooldowns.",
     category = Category.SKYBLOCK
 ) {
-    private val alert: Boolean by BooleanSetting("Alert", true, description = "Alerts you when you start casting rag axe.")
-    private val alertCancelled: Boolean by BooleanSetting("Alert Cancelled", true, description = "Alerts you when your rag axe is cancelled.")
+    private val alert by BooleanSetting("Alert", true, description = "Alerts you when you start casting rag axe.")
+    private val alertCancelled by BooleanSetting("Alert Cancelled", true, description = "Alerts you when your rag axe is cancelled.")
 
     var cancelled = false
 

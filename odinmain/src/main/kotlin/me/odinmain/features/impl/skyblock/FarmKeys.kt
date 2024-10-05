@@ -11,9 +11,9 @@ object FarmKeys: Module(
     description = "Temporarily changes your keybinds for farming in Skyblock.",
     category = Category.RENDER
 ) {
-    private val blockBreakKey: Keybinding by KeybindSetting("Block breaking", Keyboard.KEY_NONE, "Changes the keybind for breaking blocks.")
-    private val jumpKey: Keybinding by KeybindSetting("Jump", Keyboard.KEY_NONE, "Changes the keybind for jumping.")
-    private val previousSensitivity: Float by NumberSetting("Previous Sensitivity", 100f, 0f, 200f, description = "The sensitivity before enabling the module.")
+    private val blockBreakKey by KeybindSetting("Block breaking", Keyboard.KEY_NONE, "Changes the keybind for breaking blocks.")
+    private val jumpKey by KeybindSetting("Jump", Keyboard.KEY_NONE, "Changes the keybind for jumping.")
+    private val previousSensitivity by NumberSetting("Previous Sensitivity", 100f, 0f, 200f, description = "The sensitivity before enabling the module.")
 
     private val gameSettings = mc.gameSettings
 

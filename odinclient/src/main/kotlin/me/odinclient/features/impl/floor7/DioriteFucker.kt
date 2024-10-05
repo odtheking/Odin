@@ -20,8 +20,8 @@ object DioriteFucker : Module(
     description = "Replaces the pillars in the storm fight with glass.",
     category = Category.FLOOR7,
 ) {
-    private val stainedGlass: Boolean by BooleanSetting("Stained glass", default = false, description = "Swaps the diorite with stained glass.")
-    private val color: Int by NumberSetting("Color", 0, 0.0, 15.0, 1.0, description = "Color for the stained glass.").withDependency { stainedGlass }
+    private val stainedGlass by BooleanSetting("Stained glass", default = false, description = "Swaps the diorite with stained glass.")
+    private val color by NumberSetting("Color", 0, 0.0, 15.0, 1.0, description = "Color for the stained glass.").withDependency { stainedGlass }
     private val pillars = listOf(listOf(46, 169, 41), listOf(46, 169, 65), listOf(100, 169, 65), listOf(100, 179, 41))
     private val coordinates: MutableList<BlockPos> = mutableListOf<BlockPos>().apply {
         pillars.forEach { (x, y, z) ->

@@ -1,3 +1,6 @@
+@file:Suppress("FunctionName")
+@file:JvmName("Utils")
+
 package me.odinmain.utils
 
 import me.odinmain.OdinMain
@@ -20,7 +23,6 @@ import java.time.Month
 import java.time.format.TextStyle
 import java.util.*
 import kotlin.math.*
-
 
 private val FORMATTING_CODE_PATTERN = Regex("§[0-9a-fk-or]", RegexOption.IGNORE_CASE)
 
@@ -78,12 +80,37 @@ fun Pair<Any?, Any?>?.equal(first: Any?, second: Any?): Boolean {
 }
 
 /**
- * Floors the current number.
- * @return The floored number.
+ * Floors the current Double number.
+ * @return The floored Double number.
  */
-fun Number.floor(): Number {
-    return floor(this.toDouble())
+fun Double.floor(): Double {
+    return floor(this)
 }
+
+/**
+ * Floors the current Float number.
+ * @return The floored Float number.
+ */
+fun Float.floor(): Float {
+    return floor(this.toDouble()).toFloat()
+}
+
+/**
+ * Floors the current Long number.
+ * @return The floored Long number (no change as Long is already an integer).
+ */
+fun Long.floor(): Long {
+    return this
+}
+
+/**
+ * Floors the current Int number.
+ * @return The floored Int number (no change as Int is already an integer).
+ */
+fun Int.floor(): Int {
+    return this
+}
+
 
 /**
  * Rounds the current number to the specified number of decimals.
@@ -142,16 +169,8 @@ fun Event.postAndCatch(): Boolean {
     }.onFailure {
         it.printStackTrace()
         logger.error("An error occurred", it)
-        modMessage("${OdinMain.VERSION} Caught and logged an ${it::class.simpleName ?: "error"} at ${this::class.simpleName}. Please send your latest log in the Odin discord server!")
+        modMessage("${OdinMain.VERSION} Caught and logged an ${it::class.simpleName ?: "error"} at ${this::class.simpleName}. §cPlease report this with a log in the discord!")
     }.getOrDefault(isCanceled)
-}
-
-// Companion object to expose the extension function statically for Java
-object EventExtensions {
-    @JvmStatic
-    fun postAndCatch(event: Event): Boolean {
-        return event.postAndCatch()
-    }
 }
 
 /**
@@ -265,7 +284,6 @@ fun formatTime(time: Long, decimalPlaces: Int = 2): String {
         if (it > 0) "${it}m " else ""
     }
     val seconds = (remaining / 1000f).let {
-        // Adjust formatting based on decimalPlaces parameter
         String.format("%.${decimalPlaces}f", it)
     }
     return "$hours$minutes${seconds}s"
@@ -273,20 +291,6 @@ fun formatTime(time: Long, decimalPlaces: Int = 2): String {
 
 val Char.isHexaDecimal
     get() = isDigit() || lowercase().equalsOneOf("a","b","c","d","e","f")
-
-// Used in DeployableTimer.kt
-data object FlareTextures {
-    const val WARNING_FLARE_TEXTURE = "ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzMwNjIyMywKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjJlMmJmNmMxZWMzMzAyNDc5MjdiYTYzNDc5ZTU4NzJhYzY2YjA2OTAzYzg2YzgyYjUyZGFjOWYxYzk3MTQ1OCIKICAgIH0KICB9Cn0="
-    const val ALERT_FLARE_TEXTURE = "ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzMyNjQzMiwKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWQyYmY5ODY0NzIwZDg3ZmQwNmI4NGVmYTgwYjc5NWM0OGVkNTM5YjE2NTIzYzNiMWYxOTkwYjQwYzAwM2Y2YiIKICAgIH0KICB9Cn0="
-    const val SOS_FLARE_TEXTURE = "ewogICJ0aW1lc3RhbXAiIDogMTY0NjY4NzM0NzQ4OSwKICAicHJvZmlsZUlkIiA6ICI0MWQzYWJjMmQ3NDk0MDBjOTA5MGQ1NDM0ZDAzODMxYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZWdha2xvb24iLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzAwNjJjYzk4ZWJkYTcyYTZhNGI4OTc4M2FkY2VmMjgxNWI0ODNhMDFkNzNlYTg3YjNkZjc2MDcyYTg5ZDEzYiIKICAgIH0KICB9Cn0="
-}
-
-// Used in ChocolateFactory.kt
-data object BunnyEggTextures {
-    const val DINNER_EGG_TEXTURE = "ewogICJ0aW1lc3RhbXAiIDogMTcxMTQ2MjY0OTcwMSwKICAicHJvZmlsZUlkIiA6ICI3NGEwMzQxNWY1OTI0ZTA4YjMyMGM2MmU1NGE3ZjJhYiIsCiAgInByb2ZpbGVOYW1lIiA6ICJNZXp6aXIiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTVlMzYxNjU4MTlmZDI4NTBmOTg1NTJlZGNkNzYzZmY5ODYzMTMxMTkyODNjMTI2YWNlMGM0Y2M0OTVlNzZhOCIKICAgIH0KICB9Cn0"
-    const val LUNCH_EGG_TEXTURE = "ewogICJ0aW1lc3RhbXAiIDogMTcxMTQ2MjU2ODExMiwKICAicHJvZmlsZUlkIiA6ICI3NzUwYzFhNTM5M2Q0ZWQ0Yjc2NmQ4ZGUwOWY4MjU0NiIsCiAgInByb2ZpbGVOYW1lIiA6ICJSZWVkcmVsIiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzdhZTZkMmQzMWQ4MTY3YmNhZjk1MjkzYjY4YTRhY2Q4NzJkNjZlNzUxZGI1YTM0ZjJjYmM2NzY2YTAzNTZkMGEiCiAgICB9CiAgfQp9"
-    const val BREAKFAST_EGG_TEXTURE = "ewogICJ0aW1lc3RhbXAiIDogMTcxMTQ2MjY3MzE0OSwKICAicHJvZmlsZUlkIiA6ICJiN2I4ZTlhZjEwZGE0NjFmOTY2YTQxM2RmOWJiM2U4OCIsCiAgInByb2ZpbGVOYW1lIiA6ICJBbmFiYW5hbmFZZzciLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTQ5MzMzZDg1YjhhMzE1ZDAzMzZlYjJkZjM3ZDhhNzE0Y2EyNGM1MWI4YzYwNzRmMWI1YjkyN2RlYjUxNmMyNCIKICAgIH0KICB9Cn0"
-}
 
 fun checkGLError(message: String) {
     var i: Int
@@ -326,13 +330,6 @@ fun romanToInt(s: String): Int {
         result += if (current < next) -current else current
     }
     return result + (romanMap[s.last()] ?: 0)
-}
-
-inline fun <T> List<T>.forEachIndexedReturn(action: (index: Int, T) -> Unit): List<T> {
-    for (i in indices) {
-        action(i, this[i])
-    }
-    return this
 }
 
 fun fillItemFromSack(amount: Int, itemId: String, sackName: String, sendMessage: Boolean) {

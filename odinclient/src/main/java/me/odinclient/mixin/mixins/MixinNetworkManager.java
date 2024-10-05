@@ -3,7 +3,6 @@ package me.odinclient.mixin.mixins;
 import io.netty.channel.ChannelHandlerContext;
 import me.odinmain.events.impl.PacketReceivedEvent;
 import me.odinmain.events.impl.PacketSentEvent;
-import me.odinmain.utils.EventExtensions;
 import me.odinmain.utils.ServerUtils;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
@@ -14,6 +13,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import static me.odinmain.utils.Utils.postAndCatch;
+
 @Mixin(value = {NetworkManager.class}, priority = 800)
 public class MixinNetworkManager {
 
@@ -22,7 +23,7 @@ public class MixinNetworkManager {
 
     @Inject(method = "channelRead0*", at = @At("HEAD"), cancellable = true)
     private void onReceivePacket(ChannelHandlerContext context, Packet<?> packet, CallbackInfo ci) {
-        if (EventExtensions.postAndCatch(new PacketReceivedEvent(packet)))
+        if (postAndCatch(new PacketReceivedEvent(packet)))
             ci.cancel();
     }
 
@@ -39,7 +40,7 @@ public class MixinNetworkManager {
     @ModifyVariable(method = "sendPacket(Lnet/minecraft/network/Packet;)V", at = @At("HEAD"), argsOnly = true)
     private Packet<?> onSendPacket(Packet<?> packet) {
         PacketSentEvent event = new PacketSentEvent(packet);
-        odinClient$isCancelled = EventExtensions.postAndCatch(event);
+        odinClient$isCancelled = postAndCatch(event);
         return event.getPacket();
     }
 }

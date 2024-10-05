@@ -26,7 +26,7 @@ object TerminalAura : Module(
     description = "Automatically interacts with inactive terminals.",
     tag = TagType.RISKY
 ) {
-    private val onGround: Boolean by BooleanSetting("On Ground", true, description = "Only click when on the ground.")
+    private val onGround by BooleanSetting("On Ground", true, description = "Only click when on the ground.")
 
     private val clickClock = Clock(1000)
     private val interactClock = Clock(500)

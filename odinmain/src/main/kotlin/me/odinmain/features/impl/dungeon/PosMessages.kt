@@ -20,7 +20,7 @@ object PosMessages : Module(
     category = Category.DUNGEON,
     description = "Sends a message when you're near a certain position. /posmsg"
 ) {
-    private val onlyDungeons: Boolean by BooleanSetting("Only in Dungeons", true, description = "Only sends messages when you're in a dungeon.")
+    private val onlyDungeons by BooleanSetting("Only in Dungeons", true, description = "Only sends messages when you're in a dungeon.")
 
     data class PosMessage(val x: Double, val y: Double, val z: Double, val x2: Double?, val y2: Double?, val z2: Double?, val delay: Long, val distance: Double?, val message: String)
     val posMessageStrings: MutableList<String> by ListSetting("Pos Messages Strings", mutableListOf())

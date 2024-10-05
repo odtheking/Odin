@@ -16,31 +16,31 @@ object ChatCommands : Module(
     category = Category.SKYBLOCK,
     description = "Type !help in the corresponding channel for cmd list. Use /blacklist.",
 ) {
-    private var party: Boolean by BooleanSetting(name = "Party commands", default = true, description = "Toggles chat commands in party chat.")
-    private var guild: Boolean by BooleanSetting(name = "Guild commands", default = true, description = "Toggles chat commands in guild chat.")
-    private var private: Boolean by BooleanSetting(name = "Private commands", default = true, description = "Toggles chat commands in private chat.")
-    private val whitelistOnly: Boolean by DualSetting("Whitelist Only", left = "blacklist", right = "Whitelist", default = false, description = "Whether the list should act like a whitelist or a blacklist.")
-    private var showSettings: Boolean by DropdownSetting(name = "Show Settings", default = false)
+    private var party by BooleanSetting(name = "Party commands", default = true, description = "Toggles chat commands in party chat.")
+    private var guild by BooleanSetting(name = "Guild commands", default = true, description = "Toggles chat commands in guild chat.")
+    private var private by BooleanSetting(name = "Private commands", default = true, description = "Toggles chat commands in private chat.")
+    private val whitelistOnly by DualSetting("Whitelist Only", left = "blacklist", right = "Whitelist", default = false, description = "Whether the list should act like a whitelist or a blacklist.")
+    private var showSettings by DropdownSetting(name = "Show Settings", default = false)
 
-    private var warp: Boolean by BooleanSetting(name = "Warp", default = true, description = "Executes the /party warp commnad.").withDependency { showSettings }
-    private var warptransfer: Boolean by BooleanSetting(name = "Warp & pt (warptransfer)", default = true, description = "Executes the /party warp and /party transfer commands.").withDependency { showSettings }
-    private var coords: Boolean by BooleanSetting(name = "Coords (coords)", default = true, description = "Sends your current coordinates.").withDependency { showSettings }
-    private var allinvite: Boolean by BooleanSetting(name = "Allinvite", default = true, description = "Executes the /party settings allinvite command.").withDependency { showSettings }
-    private var odin: Boolean by BooleanSetting(name = "Odin", default = true, description = "Sends the odin discord link.").withDependency { showSettings }
-    private var boop: Boolean by BooleanSetting(name = "Boop", default = true, description = "Executes the /boop command.").withDependency { showSettings }
-    private var cf: Boolean by BooleanSetting(name = "Coinflip (cf)", default = true, description = "Sends the result of a coinflip..").withDependency { showSettings }
-    private var eightball: Boolean by BooleanSetting(name = "Eightball", default = true, description = "Sends a random 8ball response.").withDependency { showSettings }
-    private var dice: Boolean by BooleanSetting(name = "Dice", default = true, description = "Rolls a dice.").withDependency { showSettings }
-    private var pt: Boolean by BooleanSetting(name = "Party transfer (pt)", default = true, description = "Executes the /party transfer command.").withDependency { showSettings }
-    private var ping: Boolean by BooleanSetting(name = "Ping", default = true, description = "Sends your current ping.").withDependency { showSettings }
-    private var tps: Boolean by BooleanSetting(name = "TPS", default = true, description = "Sends the server's current TPS.").withDependency { showSettings }
-    private var fps: Boolean by BooleanSetting(name = "FPS", default = true, description = "Sends your current FPS.").withDependency { showSettings }
-    private var dt: Boolean by BooleanSetting(name = "DT", default = true, description = "Sets a reminder for the end of the run.").withDependency { showSettings }
-    private var inv: Boolean by BooleanSetting(name = "inv", default = true, description = "Invites the player to your party.").withDependency { showSettings }
-    private val invite: Boolean by BooleanSetting(name = "invite", default = true, description = "Invites the player to your party.").withDependency { showSettings }
-    private val racism: Boolean by BooleanSetting(name = "Racism", default = true, description = "Sends a random racism percentage.").withDependency { showSettings }
-    private val queDungeons: Boolean by BooleanSetting(name = "Queue dungeons cmds", default = true, description = "Queue dungeons commands.").withDependency { showSettings }
-    private val queKuudra: Boolean by BooleanSetting(name = "Queue kuudra cmds", default = true, description = "Queue kuudra commands.").withDependency { showSettings }
+    private var warp by BooleanSetting(name = "Warp", default = true, description = "Executes the /party warp commnad.").withDependency { showSettings }
+    private var warptransfer by BooleanSetting(name = "Warp & pt (warptransfer)", default = true, description = "Executes the /party warp and /party transfer commands.").withDependency { showSettings }
+    private var coords by BooleanSetting(name = "Coords (coords)", default = true, description = "Sends your current coordinates.").withDependency { showSettings }
+    private var allinvite by BooleanSetting(name = "Allinvite", default = true, description = "Executes the /party settings allinvite command.").withDependency { showSettings }
+    private var odin by BooleanSetting(name = "Odin", default = true, description = "Sends the odin discord link.").withDependency { showSettings }
+    private var boop by BooleanSetting(name = "Boop", default = true, description = "Executes the /boop command.").withDependency { showSettings }
+    private var cf by BooleanSetting(name = "Coinflip (cf)", default = true, description = "Sends the result of a coinflip..").withDependency { showSettings }
+    private var eightball by BooleanSetting(name = "Eightball", default = true, description = "Sends a random 8ball response.").withDependency { showSettings }
+    private var dice by BooleanSetting(name = "Dice", default = true, description = "Rolls a dice.").withDependency { showSettings }
+    private var pt by BooleanSetting(name = "Party transfer (pt)", default = true, description = "Executes the /party transfer command.").withDependency { showSettings }
+    private var ping by BooleanSetting(name = "Ping", default = true, description = "Sends your current ping.").withDependency { showSettings }
+    private var tps by BooleanSetting(name = "TPS", default = true, description = "Sends the server's current TPS.").withDependency { showSettings }
+    private var fps by BooleanSetting(name = "FPS", default = true, description = "Sends your current FPS.").withDependency { showSettings }
+    private var dt by BooleanSetting(name = "DT", default = true, description = "Sets a reminder for the end of the run.").withDependency { showSettings }
+    private var inv by BooleanSetting(name = "inv", default = true, description = "Invites the player to your party.").withDependency { showSettings }
+    private val invite by BooleanSetting(name = "invite", default = true, description = "Invites the player to your party.").withDependency { showSettings }
+    private val racism by BooleanSetting(name = "Racism", default = true, description = "Sends a random racism percentage.").withDependency { showSettings }
+    private val queDungeons by BooleanSetting(name = "Queue dungeons cmds", default = true, description = "Queue dungeons commands.").withDependency { showSettings }
+    private val queKuudra by BooleanSetting(name = "Queue kuudra cmds", default = true, description = "Queue kuudra commands.").withDependency { showSettings }
 
     private var dtPlayer: String? = null
     private val dtReason = mutableListOf<Pair<String, String>>()

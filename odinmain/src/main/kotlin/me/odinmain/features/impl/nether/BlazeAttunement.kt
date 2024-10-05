@@ -23,8 +23,8 @@ object BlazeAttunement : Module(
     category = Category.NETHER,
     description = "Displays what attunement a blaze boss currently needs."
 ) {
-    private val overlay: Boolean by BooleanSetting("Overlay Entities", false, description = "Overlay the entities with the color of the attunement.")
-    private val thickness: Float by NumberSetting("Outline Thickness", 5f, 5f, 20f, 0.5f, description = "The thickness of the outline.")
+    private val overlay by BooleanSetting("Overlay Entities", false, description = "Overlay the entities with the color of the attunement.")
+    private val thickness by NumberSetting("Outline Thickness", 5f, 5f, 20f, 0.5f, description = "The thickness of the outline.")
 
     private var currentBlazes = hashMapOf<Entity, Color>()
 

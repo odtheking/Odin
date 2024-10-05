@@ -6,7 +6,6 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.animations.impl.EaseInOut
-import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.*
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.getBlockAt
@@ -27,8 +26,8 @@ object CanClip : Module(
     description = "Tells you if you are currently able to clip through a stair under you.",
     category = Category.DUNGEON
 ) {
-    private val line: Boolean by BooleanSetting("Line", true, description = "Draws a line where you can clip.")
-    private val hud: HudElement by HudSetting("Display", 10f, 10f, 1f, true) {
+    private val line by BooleanSetting("Line", true, description = "Draws a line where you can clip.")
+    private val hud by HudSetting("Display", 10f, 10f, 1f, true) {
         if (it) {
             text("Can Clip", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR)
             getTextWidth("Can Clip", 12f) to 12f

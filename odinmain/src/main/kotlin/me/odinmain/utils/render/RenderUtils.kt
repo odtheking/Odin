@@ -194,22 +194,25 @@ object RenderUtils {
      * @param color The color of the beacon beam.
      * @param depth Whether to enable depth testing.
      */
-    fun drawBeaconBeam(vec3: Vec3, color: Color, depth: Boolean = false, height: Int = 300) {
+    fun drawBeaconBeam(vec3: Vec3, color: Color, depth: Boolean = true, height: Int = 300) {
         if (color.isTransparent) return
         val bottomOffset = 0
         val topOffset = bottomOffset + height
-        if (!depth) GlStateManager.disableDepth()
+        depth(depth)
 
         mc.textureManager.bindTexture(beaconBeam)
 
         GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT.toFloat())
         GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT.toFloat())
 
+        GlStateManager.pushMatrix()
+
         GlStateManager.enableCull()
         GlStateManager.enableTexture2D()
-        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE, GL11.GL_ZERO)
+        GlStateManager.tryBlendFuncSeparate(770, 1, 1, 0)
         GlStateManager.enableBlend()
-        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
 
         val time: Double = mc.theWorld.worldTime.toDouble() + partialTicks
         val x = vec3.xCoord
@@ -227,11 +230,6 @@ object RenderUtils {
         val d11 = 0.5 + sin(d2 + 5.497787143782138) * 0.2
         val d14 = -1 + d1
         val d15 = height * 2.5 + d14
-
-        GlStateManager.pushMatrix()
-        GlStateManager.enableBlend()
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
 
         fun WorldRenderer.color(alpha: Float = color.alpha) { // local function is used to simplify this.
             this.color(color.r / 255f, color.g / 255f, color.b / 255f, alpha).endVertex()
@@ -258,14 +256,7 @@ object RenderUtils {
             pos(x + d4, y + topOffset, z + d5).tex(0.0, d15).color()
         }
         tessellator.draw()
-        GlStateManager.disableBlend()
-        GlStateManager.resetColor()
-        GlStateManager.popMatrix()
-        GlStateManager.pushMatrix()
-        GlStateManager.enableBlend()
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        GlStateManager.translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
-
+        GlStateManager.disableCull()
         val d12 = -1 + d1
         val d13 = height + d12
         val alpha = color.alpha
@@ -292,10 +283,9 @@ object RenderUtils {
         }
         tessellator.draw()
         GlStateManager.resetColor()
-        GlStateManager.disableBlend()
+        if (!depth) resetDepth()
+        GlStateManager.enableCull()
         GlStateManager.popMatrix()
-        GlStateManager.enableTexture2D()
-        if (!depth) GlStateManager.enableDepth()
     }
 
     fun drawLines(vararg points: Vec3, color: Color, lineWidth: Float, depth: Boolean) {

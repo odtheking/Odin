@@ -18,7 +18,7 @@ object CloseChest : Module(
     category = Category.DUNGEON,
     description = "Allows you to close the chest with any key or automatically."
 ) {
-    private val mode: Boolean by DualSetting("Mode", "Auto", "Any Key", description = "The mode to use, auto will automatically close the chest, any key will make any key input close the chest.")
+    private val mode by DualSetting("Mode", "Auto", "Any Key", description = "The mode to use, auto will automatically close the chest, any key will make any key input close the chest.")
 
     @SubscribeEvent
     fun onOpenWindow(event: PacketReceivedEvent) {

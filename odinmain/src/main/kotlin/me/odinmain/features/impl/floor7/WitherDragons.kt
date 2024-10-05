@@ -18,7 +18,6 @@ import me.odinmain.features.impl.floor7.Relic.relicsOnMessage
 import me.odinmain.features.impl.floor7.Relic.relicsOnWorldLast
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
@@ -37,9 +36,9 @@ object WitherDragons : Module(
     description = "Various features for Wither dragons (boxes, timer, HP, priority and more).",
     category = Category.FLOOR7
 ) {
-    private val dragonTimerDropDown: Boolean by DropdownSetting("Dragon Timer Dropdown")
-    private val dragonTimer: Boolean by BooleanSetting("Dragon Timer", true, description = "Displays a timer for when M7 dragons spawn.").withDependency { dragonTimerDropDown }
-    private val hud: HudElement by HudSetting("Dragon Timer HUD", 10f, 10f, 1f, true) {
+    private val dragonTimerDropDown by DropdownSetting("Dragon Timer Dropdown")
+    private val dragonTimer by BooleanSetting("Dragon Timer", true, description = "Displays a timer for when M7 dragons spawn.").withDependency { dragonTimerDropDown }
+    private val hud by HudSetting("Dragon Timer HUD", 10f, 10f, 1f, true) {
         if (it) {
             mcText("§5P §a4.5s", 2f, 5f, 1, Color.WHITE, center = false)
             mcText("§cR §e1.2s", 2f, 20f, 1, Color.WHITE, center = false)
@@ -56,41 +55,41 @@ object WitherDragons : Module(
         }
     }.withDependency { dragonTimer && dragonTimerDropDown }
 
-    private val dragonBoxesDropDown: Boolean by DropdownSetting("Dragon Boxes Dropdown")
-    private val dragonBoxes: Boolean by BooleanSetting("Dragon Boxes", true, description = "Displays boxes for where M7 dragons spawn.").withDependency { dragonBoxesDropDown }
-    val lineThickness: Float by NumberSetting("Line Width", 2f, 1.0, 5.0, 0.5, description = "The thickness of the lines for the boxes.").withDependency { dragonBoxes && dragonBoxesDropDown }
+    private val dragonBoxesDropDown by DropdownSetting("Dragon Boxes Dropdown")
+    private val dragonBoxes by BooleanSetting("Dragon Boxes", true, description = "Displays boxes for where M7 dragons spawn.").withDependency { dragonBoxesDropDown }
+    val lineThickness by NumberSetting("Line Width", 2f, 1.0, 5.0, 0.5, description = "The thickness of the lines for the boxes.").withDependency { dragonBoxes && dragonBoxesDropDown }
 
-    private val dragonTitleDropDown: Boolean by DropdownSetting("Dragon Spawn Dropdown")
-    val dragonTitle: Boolean by BooleanSetting("Dragon Title", true, description = "Displays a title for spawning dragons.").withDependency { dragonTitleDropDown }
-    private val dragonTracers: Boolean by BooleanSetting("Dragon Tracer", false, description = "Draws a line to spawning dragons.").withDependency { dragonTitleDropDown }
-    val tracerThickness: Float by NumberSetting("Tracer Width", 5f, 1f, 20f, 0.5, description = "The thickness of the tracers.").withDependency { dragonTracers && dragonTitleDropDown }
+    private val dragonTitleDropDown by DropdownSetting("Dragon Spawn Dropdown")
+    val dragonTitle by BooleanSetting("Dragon Title", true, description = "Displays a title for spawning dragons.").withDependency { dragonTitleDropDown }
+    private val dragonTracers by BooleanSetting("Dragon Tracer", false, description = "Draws a line to spawning dragons.").withDependency { dragonTitleDropDown }
+    val tracerThickness by NumberSetting("Tracer Width", 5f, 1f, 20f, 0.5, description = "The thickness of the tracers.").withDependency { dragonTracers && dragonTitleDropDown }
 
-    private val dragonAlerts: Boolean by DropdownSetting("Dragon Alerts Dropdown")
-    val sendNotification: Boolean by BooleanSetting("Send Dragon Confirmation", true, description = "Sends a confirmation message when a dragon dies.").withDependency { dragonAlerts }
-    val sendTime: Boolean by BooleanSetting("Send Dragon Time Alive", true, description = "Sends a message when a dragon dies with the time it was alive.").withDependency { dragonAlerts }
-    val sendSpawning: Boolean by BooleanSetting("Send Dragon Spawning", true, description = "Sends a message when a dragon is spawning.").withDependency { dragonAlerts }
-    val sendSpawned: Boolean by BooleanSetting("Send Dragon Spawned", true, description = "Sends a message when a dragon has spawned.").withDependency { dragonAlerts }
-    val sendSpray: Boolean by BooleanSetting("Send Ice Sprayed", true, description = "Sends a message when a dragon has been ice sprayed.").withDependency { dragonAlerts }
-    val sendArrowHit: Boolean by BooleanSetting("Send Arrows Hit", true, description = "Sends a message when a dragon dies with how many arrows were hit.").withDependency { dragonAlerts }
+    private val dragonAlerts by DropdownSetting("Dragon Alerts Dropdown")
+    val sendNotification by BooleanSetting("Send Dragon Confirmation", true, description = "Sends a confirmation message when a dragon dies.").withDependency { dragonAlerts }
+    val sendTime by BooleanSetting("Send Dragon Time Alive", true, description = "Sends a message when a dragon dies with the time it was alive.").withDependency { dragonAlerts }
+    val sendSpawning by BooleanSetting("Send Dragon Spawning", true, description = "Sends a message when a dragon is spawning.").withDependency { dragonAlerts }
+    val sendSpawned by BooleanSetting("Send Dragon Spawned", true, description = "Sends a message when a dragon has spawned.").withDependency { dragonAlerts }
+    val sendSpray by BooleanSetting("Send Ice Sprayed", true, description = "Sends a message when a dragon has been ice sprayed.").withDependency { dragonAlerts }
+    val sendArrowHit by BooleanSetting("Send Arrows Hit", true, description = "Sends a message when a dragon dies with how many arrows were hit.").withDependency { dragonAlerts }
     private var arrowsHit: Int = 0
 
-    private val dragonHealth: Boolean by BooleanSetting("Dragon Health", true, description = "Displays the health of M7 dragons.")
+    private val dragonHealth by BooleanSetting("Dragon Health", true, description = "Displays the health of M7 dragons.")
 
-    private val dragonPriorityDropDown: Boolean by DropdownSetting("Dragon Priority Dropdown")
-    val dragonPriorityToggle: Boolean by BooleanSetting("Dragon Priority", false, description = "Displays the priority of dragons spawning.").withDependency { dragonPriorityDropDown }
-    val normalPower: Double by NumberSetting("Normal Power", 22.0, 0.0, 32.0, description = "Power needed to split.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
-    val easyPower: Double by NumberSetting("Easy Power", 19.0, 0.0, 32.0, description = "Power needed when its Purple and another dragon.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
-    val soloDebuff: Boolean by DualSetting("Purple Solo Debuff", "Tank", "Healer", false, description = "Displays the debuff of the config. The class that solo debuffs purple, the other class helps b/m.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
-    val soloDebuffOnAll: Boolean by BooleanSetting("Solo Debuff on All Splits", true, description = "Same as Purple Solo Debuff but for all dragons (A will only have 1 debuff).").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
-    val paulBuff: Boolean by BooleanSetting("Paul Buff", false, description = "Multiplies the power in your run by 1.25.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
+    private val dragonPriorityDropDown by DropdownSetting("Dragon Priority Dropdown")
+    val dragonPriorityToggle by BooleanSetting("Dragon Priority", false, description = "Displays the priority of dragons spawning.").withDependency { dragonPriorityDropDown }
+    val normalPower by NumberSetting("Normal Power", 22.0, 0.0, 32.0, description = "Power needed to split.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
+    val easyPower by NumberSetting("Easy Power", 19.0, 0.0, 32.0, description = "Power needed when its Purple and another dragon.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
+    val soloDebuff by DualSetting("Purple Solo Debuff", "Tank", "Healer", false, description = "Displays the debuff of the config. The class that solo debuffs purple, the other class helps b/m.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
+    val soloDebuffOnAll by BooleanSetting("Solo Debuff on All Splits", true, description = "Same as Purple Solo Debuff but for all dragons (A will only have 1 debuff).").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
+    val paulBuff by BooleanSetting("Paul Buff", false, description = "Multiplies the power in your run by 1.25.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
 
     val colors = arrayListOf("Green", "Purple", "Blue", "Orange", "Red")
-    private val relics: Boolean by DropdownSetting("Relics Dropdown")
-    val relicAnnounce: Boolean by BooleanSetting("Relic Announce", false, description = "Announce your relic to the rest of the party.").withDependency { relics }
-    val selected: Int by SelectorSetting("Color", "Green", colors, description = "The color of your relic.").withDependency { relicAnnounce && relics}
-    val relicAnnounceTime: Boolean by BooleanSetting("Relic Time", true, description = "Sends how long it took you to get that relic.").withDependency { relics }
-    val relicSpawnTimer: Boolean by BooleanSetting("Relic Spawn Timer", false, description = "Sends how long it took for the relic to spawn.").withDependency { relics }
-    val relicSpawnTicks: Int by NumberSetting("Relic Spawn Ticks", 42, 0, 100, description = "The amount of ticks for the relic to spawn.").withDependency { relicAnnounceTime && relics }
+    private val relics by DropdownSetting("Relics Dropdown")
+    val relicAnnounce by BooleanSetting("Relic Announce", false, description = "Announce your relic to the rest of the party.").withDependency { relics }
+    val selected by SelectorSetting("Color", "Green", colors, description = "The color of your relic.").withDependency { relicAnnounce && relics}
+    val relicAnnounceTime by BooleanSetting("Relic Time", true, description = "Sends how long it took you to get that relic.").withDependency { relics }
+    val relicSpawnTimer by BooleanSetting("Relic Spawn Timer", false, description = "Sends how long it took for the relic to spawn.").withDependency { relics }
+    val relicSpawnTicks by NumberSetting("Relic Spawn Ticks", 42, 0, 100, description = "The amount of ticks for the relic to spawn.").withDependency { relicAnnounceTime && relics }
 
     var priorityDragon = WitherDragonsEnum.None
 

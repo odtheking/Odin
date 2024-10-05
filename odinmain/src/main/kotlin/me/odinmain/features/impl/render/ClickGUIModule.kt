@@ -25,25 +25,25 @@ object ClickGUIModule: Module(
     category = Category.RENDER,
     description = "Allows you to customize the GUI."
 ) {
-    val blur: Boolean by BooleanSetting("Blur", false, description = "Toggles the background blur for the gui.")
-    val enableNotification: Boolean by BooleanSetting("Enable notifications", true, description = "Shows you a notification in chat when you toggle an option with a keybind.")
-    val color: Color by ColorSetting("Gui Color", Color(50, 150, 220), allowAlpha = false, description = "Color theme in the gui.")
-    val switchType: Boolean by DualSetting("Switch Type", "Checkbox", "Switch", default = true, description = "Switches the type of the settings in the gui.")
-    val hudChat: Boolean by BooleanSetting("Shows HUDs in GUIs", true, description = "Shows HUDs in GUIs.")
-    val forceHypixel: Boolean by BooleanSetting("Force Hypixel", false, description = "Forces the hypixel check to be on (not recommended).")
-    val updateMessage: Int by SelectorSetting("Update Message", "Beta", arrayListOf("Beta", "Full", "None"), description = "Shows the update message in chat.")
+    val blur by BooleanSetting("Blur", false, description = "Toggles the background blur for the gui.")
+    val enableNotification by BooleanSetting("Enable notifications", true, description = "Shows you a notification in chat when you toggle an option with a keybind.")
+    val color by ColorSetting("Gui Color", Color(50, 150, 220), allowAlpha = false, description = "Color theme in the gui.")
+    val switchType by DualSetting("Switch Type", "Checkbox", "Switch", default = true, description = "Switches the type of the settings in the gui.")
+    val hudChat by BooleanSetting("Shows HUDs in GUIs", true, description = "Shows HUDs in GUIs.")
+    val forceHypixel by BooleanSetting("Force Hypixel", false, description = "Forces the hypixel check to be on (not recommended).")
+    val updateMessage by SelectorSetting("Update Message", "Beta", arrayListOf("Beta", "Full", "None"), description = "Shows the update message in chat.")
 
-    val devMessages: Boolean by BooleanSetting("Dev Messages", false, description = "Enables dev messages in chat.").withDependency { DevPlayers.isDev }
-    val devSize: Boolean by BooleanSetting("Dev Size", true, description = "Toggles client side dev size.").withDependency { DevPlayers.isDev }
-    private val devWings: Boolean by BooleanSetting("Dev Wings", false, description = "Toggles client side dev wings.").withDependency { DevPlayers.isDev }
-    private val devWingsColor: Color by ColorSetting("Dev Wings Color", Color(255, 255, 255), description = "Color of the dev wings.").withDependency { DevPlayers.isDev }
-    private val devSizeX: Float by NumberSetting("Dev Size X", 1f, -1f, 3f, 0.1, description = "X scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
-    private val devSizeY: Float by NumberSetting("Dev Size Y", 1f, -1f, 3f, 0.1, description = "Y scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
-    private val devSizeZ: Float by NumberSetting("Dev Size Z", 1f, -1f, 3f, 0.1, description = "Z scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
-    private var showHidden: Boolean by DropdownSetting("Show Hidden", false).withDependency { DevPlayers.isDev }
-    private val passcode: String by StringSetting("Passcode", "odin", description = "Passcode for dev features.").withDependency { DevPlayers.isDev && showHidden }
+    val devMessages by BooleanSetting("Dev Messages", false, description = "Enables dev messages in chat.").withDependency { DevPlayers.isDev }
+    val devSize by BooleanSetting("Dev Size", true, description = "Toggles client side dev size.").withDependency { DevPlayers.isDev }
+    private val devWings by BooleanSetting("Dev Wings", false, description = "Toggles client side dev wings.").withDependency { DevPlayers.isDev }
+    private val devWingsColor by ColorSetting("Dev Wings Color", Color(255, 255, 255), description = "Color of the dev wings.").withDependency { DevPlayers.isDev }
+    private val devSizeX by NumberSetting("Dev Size X", 1f, -1f, 3f, 0.1, description = "X scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
+    private val devSizeY by NumberSetting("Dev Size Y", 1f, -1f, 3f, 0.1, description = "Y scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
+    private val devSizeZ by NumberSetting("Dev Size Z", 1f, -1f, 3f, 0.1, description = "Z scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
+    private var showHidden by DropdownSetting("Show Hidden", false).withDependency { DevPlayers.isDev }
+    private val passcode by StringSetting("Passcode", "odin", description = "Passcode for dev features.").withDependency { DevPlayers.isDev && showHidden }
 
-    val reset: () -> Unit by ActionSetting("Send Dev Data", description = "Sends dev data to the server.") {
+    val reset by ActionSetting("Send Dev Data", description = "Sends dev data to the server.") {
         showHidden = false
         scope.launch {
             modMessage(sendDataToServer(body = "${mc.thePlayer.name}, [${devWingsColor.r},${devWingsColor.g},${devWingsColor.b}], [$devSizeX,$devSizeY,$devSizeZ], $devWings, $passcode", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
@@ -51,11 +51,11 @@ object ClickGUIModule: Module(
         }
     }.withDependency { DevPlayers.isDev }
 
-    val action: () -> Unit by ActionSetting("Open Example Hud", description = "Opens an example hud to allow configuration of huds.") {
+    val action by ActionSetting("Open Example Hud", description = "Opens an example hud to allow configuration of huds.") {
         OdinMain.display = EditHUDGui
     }
 
-    private var joined: Boolean by BooleanSetting("First join", false, hidden = true, "")
+    private var joined by BooleanSetting("First join", false, hidden = true, "")
     var lastSeenVersion: String by StringSetting("Last seen version", "1.0.0", hidden = true, description = "")
     var firstTimeOnVersion = false
 

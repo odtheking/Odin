@@ -19,11 +19,12 @@ object AutoTerms : Module(
     category = Category.FLOOR7,
     tag = TagType.RISKY
 ) {
-    private val autoDelay: Long by NumberSetting("Delay", 170L, 130, 300, unit = "ms", description = "Delay between clicks.")
-    private val firstClickDelay: Long by NumberSetting("First Click Delay", 350L, 300, 500, unit = "ms", description = "Delay before first click.")
-    private val middleClick: Boolean by DualSetting("Click Type", "Left", "Middle", default = true, description = "What Click type to use.")
-    private val breakThreshold: Long by NumberSetting("Break Threshold", 500L, 350L, 1000L, 10L, unit = "ms", description = "Time before breaking the click.")
-    private val clickingOrder: Int by SelectorSetting("Clicking order", "from first", arrayListOf("from first", "from last", "random"), description = "The order to click the items in.")
+    private val autoDelay by NumberSetting("Delay", 170L, 130, 300, unit = "ms", description = "Delay between clicks.")
+    private val firstClickDelay by NumberSetting("First Click Delay", 350L, 300, 500, unit = "ms", description = "Delay before first click.")
+    private val middleClick by DualSetting("Click Type", "Left", "Middle", default = true, description = "What Click type to use.")
+    private val breakThreshold by NumberSetting("Break Threshold", 500L, 350L, 1000L, 10L, unit = "ms", description = "Time before breaking the click.")
+    private val clickingOrder by SelectorSetting("Clicking order", "from first", arrayListOf("from first", "from last", "random"), description = "The order to click the items in.")
+    private val disableMelody by BooleanSetting("Disable Melody", false, description = "Disables melody terminals.")
     private val clock = Clock(autoDelay)
     private var breakClock = Clock(breakThreshold)
     private var clickedThisWindow = false
@@ -42,7 +43,8 @@ object AutoTerms : Module(
             System.currentTimeMillis() - TerminalSolver.openedTerminalTime <= firstClickDelay ||
             clickedThisWindow ||
             event.phase != TickEvent.Phase.START ||
-            mc.thePlayer?.openContainer !is ContainerChest
+            mc.thePlayer?.openContainer !is ContainerChest ||
+            (disableMelody && TerminalSolver.currentTerm.type == TerminalTypes.MELODY)
         ) return
 
         val item =

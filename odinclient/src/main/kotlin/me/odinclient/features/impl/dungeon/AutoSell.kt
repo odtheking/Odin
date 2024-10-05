@@ -16,9 +16,9 @@ object AutoSell : Module(
     category = Category.DUNGEON
 ) {
     val sellList: MutableSet<String> by ListSetting("Sell list", mutableSetOf())
-    private val delay: Long by NumberSetting("Delay", 100, 30.0, 300.0, 5.0, description = "The delay between each sell action.", unit = "ms")
-    private val clickType: Int by SelectorSetting("Click Type", "Shift", arrayListOf("Shift", "Middle", "Left"), description = "The type of click to use when selling items.")
-    private val addDefaults: () -> Unit by ActionSetting("Add defaults", description = "Add default dungeon items to the auto sell list.") {
+    private val delay by NumberSetting("Delay", 100L, 30L, 300L, 5L, description = "The delay between each sell action.", unit = "ms")
+    private val clickType by SelectorSetting("Click Type", "Shift", arrayListOf("Shift", "Middle", "Left"), description = "The type of click to use when selling items.")
+    private val addDefaults by ActionSetting("Add defaults", description = "Add default dungeon items to the auto sell list.") {
         sellList.addAll(defaultItems)
         modMessage("§aAdded default items to auto sell list")
         Config.save()

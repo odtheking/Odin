@@ -18,21 +18,21 @@ object Animations : Module(
     category = Category.RENDER,
     description = "Changes the appearance of the first-person view model."
 ) {
-    val size: Float by NumberSetting("Size", 0.0f, -1.5, 1.5, 0.05, description = "Scales the size of your currently held item. Default: 0")
-    val x: Float by NumberSetting("X", 0.0f, -2.5, 1.5, 0.05, description = "Moves the held item. Default: 0")
-    val y: Float by NumberSetting("Y", 0.0f, -1.5, 1.5, 0.05, description = "Moves the held item. Default: 0")
-    val z: Float by NumberSetting("Z", 0.0f, -1.5, 3.0, 0.05, description = "Moves the held item. Default: 0")
-    private val yaw: Float by NumberSetting("Yaw", 0.0f, -180.0, 180.0, 1.0, description = "Rotates your held item. Default: 0")
-    private val pitch: Float by NumberSetting("Pitch", 0.0f, -180.0, 180.0, 1.0, description = "Rotates your held item. Default: 0")
-    private val roll: Float by NumberSetting("Roll", 0.0f, -180.0, 180.0, 1.0, description = "Rotates your held item. Default: 0")
-    val speed: Float by NumberSetting("Speed", 0.0f, -2.0, 1.0, 0.05, description = "Speed of the swing animation.")
-    val ignoreHaste: Boolean by BooleanSetting("Ignore Haste", false, description = "Makes the chosen speed override haste modifiers.")
-    val blockHit: Boolean by BooleanSetting("Block Hit", false, description = "Visual 1.7 block hit animation.")
-    val noEquipReset: Boolean by BooleanSetting("No Equip Reset", false, description = "Disables the equipping animation when switching items.")
-    private val noSwing: Boolean by BooleanSetting("No Swing", false, description = "Prevents your item from visually swinging forward.")
-    private val noTermSwing: Boolean by BooleanSetting("No Terminator Swing", false, description = "Prevents your Terminator from swinging.")
+    val size by NumberSetting("Size", 0.0f, -1.5, 1.5, 0.05, description = "Scales the size of your currently held item. Default: 0")
+    val x by NumberSetting("X", 0.0f, -2.5, 1.5, 0.05, description = "Moves the held item. Default: 0")
+    val y by NumberSetting("Y", 0.0f, -1.5, 1.5, 0.05, description = "Moves the held item. Default: 0")
+    val z by NumberSetting("Z", 0.0f, -1.5, 3.0, 0.05, description = "Moves the held item. Default: 0")
+    private val yaw by NumberSetting("Yaw", 0.0f, -180.0, 180.0, 1.0, description = "Rotates your held item. Default: 0")
+    private val pitch by NumberSetting("Pitch", 0.0f, -180.0, 180.0, 1.0, description = "Rotates your held item. Default: 0")
+    private val roll by NumberSetting("Roll", 0.0f, -180.0, 180.0, 1.0, description = "Rotates your held item. Default: 0")
+    val speed by NumberSetting("Speed", 0.0f, -2.0, 1.0, 0.05, description = "Speed of the swing animation.")
+    val ignoreHaste by BooleanSetting("Ignore Haste", false, description = "Makes the chosen speed override haste modifiers.")
+    val blockHit by BooleanSetting("Block Hit", false, description = "Visual 1.7 block hit animation.")
+    val noEquipReset by BooleanSetting("No Equip Reset", false, description = "Disables the equipping animation when switching items.")
+    private val noSwing by BooleanSetting("No Swing", false, description = "Prevents your item from visually swinging forward.")
+    private val noTermSwing by BooleanSetting("No Terminator Swing", false, description = "Prevents your Terminator from swinging.")
 
-    val reset: () -> Unit by ActionSetting("Reset", description = "Resets the settings to their default values.") {
+    val reset by ActionSetting("Reset", description = "Resets the settings to their default values.") {
         this.settings.forEach { it.reset() }
     }
 

@@ -12,8 +12,20 @@ object Camera : Module(
     category = Category.RENDER,
     description = "Allows you to change camera settings."
 ) {
-    private val frontCamera: Boolean by BooleanSetting("No Front Camera", description = "Disables the front camera.")
-    private val fov: Float by NumberSetting("FOV", mc.gameSettings.fovSetting, 1f, 180f, 1f, description = "Changes the FOV.")
+    private val frontCamera by BooleanSetting("No Front Camera", description = "Disables the front camera.")
+    private val fov by NumberSetting("FOV", mc.gameSettings.fovSetting, 1f, 180f, 1f, description = "Changes the FOV.")
+
+    private var previousFov = mc.gameSettings.fovSetting
+
+    override fun onEnable() {
+        previousFov = mc.gameSettings.fovSetting
+        super.onEnable()
+    }
+
+    override fun onDisable() {
+        mc.gameSettings.fovSetting = previousFov
+        super.onDisable()
+    }
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {

@@ -25,21 +25,21 @@ object RenderOptimizer : Module(
     category = Category.RENDER,
     description = "Disables certain render function when they are not necessary."
 ) {
-    private val fallingBlocks: Boolean by BooleanSetting(name = "Remove Falling Blocks", default = true, description = "Removes falling blocks that are not necessary.")
-    private val removeTentacles: Boolean by BooleanSetting(name = "Remove P5 Tentacles", default = true, description = "Removes armorstands of tentacles which are not necessary.")
-    private val hideHealerFairy: Boolean by BooleanSetting(name = "Hide Healer Fairy", default = true, description = "Hides the healer fairy.")
-    private val hideSoulWeaver: Boolean by BooleanSetting(name = "Hide Soul Weaver", default = true, description = "Hides the soul weaver.")
-    private val hideArcherBones: Boolean by BooleanSetting(name = "Hide Archer Bones", default = true, description = "Hides the archer bones.")
-    private val hide0HealthNames: Boolean by BooleanSetting(name = "Hide 0 Health", default = true, description = "Hides the names of entities with 0 health.")
-    private val hideWitherMinerName: Boolean by BooleanSetting(name = "Hide WitherMiner Name", default = true, description = "Hides the wither miner name.")
-    private val hideTerracottaName: Boolean by BooleanSetting(name = "Hide Terracota Name", default = true, description = "Hides the terracota name.")
-    private val hideNonStarredMobName: Boolean by BooleanSetting(name = "Hide Non-Starred Mob Name", default = true, description = "Hides the non-starred mob name.")
-    private val removeBlazePuzzleNames: Boolean by BooleanSetting(name = "Hide blazes", default = false, description = "Hides the blazes in the blaze puzzle room.")
+    private val fallingBlocks by BooleanSetting(name = "Remove Falling Blocks", default = true, description = "Removes falling blocks that are not necessary.")
+    private val removeTentacles by BooleanSetting(name = "Remove P5 Tentacles", default = true, description = "Removes armorstands of tentacles which are not necessary.")
+    private val hideHealerFairy by BooleanSetting(name = "Hide Healer Fairy", default = true, description = "Hides the healer fairy.")
+    private val hideSoulWeaver by BooleanSetting(name = "Hide Soul Weaver", default = true, description = "Hides the soul weaver.")
+    private val hideArcherBones by BooleanSetting(name = "Hide Archer Bones", default = true, description = "Hides the archer bones.")
+    private val hide0HealthNames by BooleanSetting(name = "Hide 0 Health", default = true, description = "Hides the names of entities with 0 health.")
+    private val hideWitherMinerName by BooleanSetting(name = "Hide WitherMiner Name", default = true, description = "Hides the wither miner name.")
+    private val hideTerracottaName by BooleanSetting(name = "Hide Terracota Name", default = true, description = "Hides the terracota name.")
+    private val hideNonStarredMobName by BooleanSetting(name = "Hide Non-Starred Mob Name", default = true, description = "Hides the non-starred mob name.")
+    private val removeBlazePuzzleNames by BooleanSetting(name = "Hide blazes", default = false, description = "Hides the blazes in the blaze puzzle room.")
 
-    private val showParticleOptions: Boolean by DropdownSetting("Show Particles Options")
-    private val removeExplosion: Boolean by BooleanSetting("Remove Explosion", default = false, description = "Removes explosion particles.").withDependency { showParticleOptions }
-    private val hideParticles: Boolean by BooleanSetting(name = "Hide P5 Particles", default = true, description = "Hides particles that are not necessary.").withDependency { showParticleOptions }
-    private val hideHeartParticles: Boolean by BooleanSetting(name = "Hide Heart Particles", default = false, description = "Hides heart particles.").withDependency { showParticleOptions }
+    private val showParticleOptions by DropdownSetting("Show Particles Options")
+    private val removeExplosion by BooleanSetting("Remove Explosion", default = false, description = "Removes explosion particles.").withDependency { showParticleOptions }
+    private val hideParticles by BooleanSetting(name = "Hide P5 Particles", default = true, description = "Hides particles that are not necessary.").withDependency { showParticleOptions }
+    private val hideHeartParticles by BooleanSetting(name = "Hide Heart Particles", default = false, description = "Hides heart particles.").withDependency { showParticleOptions }
 
     private const val TENTACLE_TEXTURE = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzM3MjIzZDAxOTA2YWI2M2FmMWExNTk4ODM0M2I4NjM3ZTg1OTMwYjkwNWMzNTEyNWI1NDViMzk4YzU5ZTFjNSJ9fX0="
     private const val HEALER_FAIRY_TEXTURE = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTZjM2UzMWNmYzY2NzMzMjc1YzQyZmNmYjVkOWE0NDM0MmQ2NDNiNTVjZDE0YzljNzdkMjczYTIzNTIifX19"

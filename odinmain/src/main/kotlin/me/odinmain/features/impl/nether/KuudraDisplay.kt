@@ -4,7 +4,6 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.addVec
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderBoundingBox
@@ -23,15 +22,15 @@ object KuudraDisplay : Module(
     description = "Displays information about Kuudra.",
     category = Category.NETHER
 ) {
-    private val highlightKuudra: Boolean by BooleanSetting("Highlight Kuudra", true, description = "Highlights the kuudra entity.")
-    private val kuudraColor: Color by ColorSetting("Kuudra Color", Color.RED, true, description = "Color of the kuudra highlight.").withDependency { highlightKuudra }
-    private val thickness: Float by NumberSetting("Thickness", 3f, 0.1, 8f, description = "Thickness of the kuudra highlight.").withDependency { highlightKuudra }
-    private val kuudraSpawnAlert: Boolean by BooleanSetting("Kuudra Spawn Alert", true, description = "Alerts you where kuudra spawns.")
-    private val kuudraHPDisplay: Boolean by BooleanSetting("Kuudra HP", true, description = "Renders kuudra's hp on him.")
-    private val healthSize: Float by NumberSetting("Health Size", 0.3f, 0.1f, 1.0f, 0.1, description = "Size of the health display.").withDependency { kuudraHPDisplay }
-    private val healthFormat: Boolean by DualSetting("Health Format", "Absolute", "Percentage", description = "Format of the health display.").withDependency { kuudraHPDisplay }
-    private val scaledHealth: Boolean by BooleanSetting("Use Scaled", true, description = "Use scaled health display.").withDependency { kuudraHPDisplay }
-    private val hud: HudElement by HudSetting("Health Display", 10f, 10f, 1f, true) {
+    private val highlightKuudra by BooleanSetting("Highlight Kuudra", true, description = "Highlights the kuudra entity.")
+    private val kuudraColor by ColorSetting("Kuudra Color", Color.RED, true, description = "Color of the kuudra highlight.").withDependency { highlightKuudra }
+    private val thickness by NumberSetting("Thickness", 3f, 0.1, 8f, description = "Thickness of the kuudra highlight.").withDependency { highlightKuudra }
+    private val kuudraSpawnAlert by BooleanSetting("Kuudra Spawn Alert", true, description = "Alerts you where kuudra spawns.")
+    private val kuudraHPDisplay by BooleanSetting("Kuudra HP", true, description = "Renders kuudra's hp on him.")
+    private val healthSize by NumberSetting("Health Size", 0.3f, 0.1f, 1.0f, 0.1, description = "Size of the health display.").withDependency { kuudraHPDisplay }
+    private val healthFormat by DualSetting("Health Format", "Absolute", "Percentage", description = "Format of the health display.").withDependency { kuudraHPDisplay }
+    private val scaledHealth by BooleanSetting("Use Scaled", true, description = "Use scaled health display.").withDependency { kuudraHPDisplay }
+    private val hud by HudSetting("Health Display", 10f, 10f, 1f, true) {
         if (it) {
             mcText("§a99.975M/300M", 1f, 1f, 1, Color.WHITE, center = false)
             getMCTextWidth("99.975k/100k") + 2f to 10f

@@ -137,7 +137,7 @@ object Renderer {
         )
 
         val alpha = if (noFade) 1f else min(1f, max(0f, dist.toFloat()) / 60f)
-        if (beacon) drawBeaconBeam(vec3, color.withAlpha(alpha), depth = false)
+        if (beacon) drawBeaconBeam(vec3, color.withAlpha(alpha), depth = true)
     }
 
     /**

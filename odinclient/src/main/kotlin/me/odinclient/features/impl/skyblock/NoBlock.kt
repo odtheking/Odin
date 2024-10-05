@@ -17,7 +17,7 @@ object NoBlock : Module(
     description = "Prevents you from blocking with items that have an ability, this is effectively NoSlow.",
     category = Category.SKYBLOCK
 ) {
-    private val onlyBoss: Boolean by BooleanSetting("Only Boss", false, description = "Only prevent blocking in boss fights.")
+    private val onlyBoss by BooleanSetting("Only Boss", false, description = "Only prevent blocking in boss fights.")
     private var isRightClickKeyDown = false
 
     @SubscribeEvent

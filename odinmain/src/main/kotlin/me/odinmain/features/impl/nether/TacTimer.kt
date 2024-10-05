@@ -4,7 +4,6 @@ import me.odinmain.events.impl.RealServerTick
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.HudSetting
-import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.mcTextAndWidth
 import me.odinmain.utils.skyblock.itemID
@@ -16,7 +15,7 @@ object TacTimer : Module(
     category = Category.NETHER,
     description = "Tactical Insertion Timer."
 ) {
-    private val hud: HudElement by HudSetting("Timer Hud", 10f, 10f, 1f, false) {
+    private val hud by HudSetting("Timer Hud", 10f, 10f, 1f, false) {
         if (it) {
             val width = mcTextAndWidth("§6Tac: 59t", 1f, 1f, 1f, color = Color.WHITE, center = false)
             width + 2f to 12f

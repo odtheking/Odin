@@ -19,9 +19,9 @@ object LightsDevice : Module(
     description = "Features to help with the lights device.",
     category = Category.FLOOR7
 ) {
-    private val triggerBot: Boolean by BooleanSetting("Triggerbot", false, description = "Toggles correct levers automatically when you look at them.")
-    private val delay: Long by NumberSetting("Delay", 200L, 70, 500, unit = "ms", description = "The delay between each click.").withDependency { triggerBot }
-    val bigLevers: Boolean by BooleanSetting("Big Levers", false, description = "Makes the levers you want to toggle a 1x1x1 hitbox so they are easier to hit.")
+    private val triggerBot by BooleanSetting("Triggerbot", false, description = "Toggles correct levers automatically when you look at them.")
+    private val delay by NumberSetting("Delay", 200L, 70, 500, unit = "ms", description = "The delay between each click.").withDependency { triggerBot }
+    val bigLevers by BooleanSetting("Big Levers", false, description = "Makes the levers you want to toggle a 1x1x1 hitbox so they are easier to hit.")
     private val triggerBotClock = Clock(delay)
 
     val levers = setOf(

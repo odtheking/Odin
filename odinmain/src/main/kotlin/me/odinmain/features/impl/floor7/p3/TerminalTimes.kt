@@ -16,14 +16,14 @@ object TerminalTimes : Module(
     description = "Records the time taken to complete terminals in floor 7.",
     category = Category.FLOOR7
 ) {
-    private val sendMessage: Boolean by DualSetting("Send Message", "Always", "Only PB", true, description = "Send a message when a terminal is completed.")
-    private val reset: () -> Unit by ActionSetting("Reset pbs", description = "Resets the terminal PBs.") {
+    private val sendMessage by DualSetting("Send Message", "Always", "Only PB", true, description = "Send a message when a terminal is completed.")
+    private val reset by ActionSetting("Reset pbs", description = "Resets the terminal PBs.") {
         repeat(6) { i -> termPBs.set(i, 999.0) }
         modMessage("§6Terminal PBs §fhave been reset.")
     }
 
-    private val terminalSplits: Boolean by BooleanSetting("Terminal Splits", default = true, description = "Adds the time when a term was completed to its message, and sends the total term time after terms are done.")
-    private val useRealTime: Boolean by BooleanSetting("Use Real Time", default = true, description = "Use real time rather than server ticks.")
+    private val terminalSplits by BooleanSetting("Terminal Splits", default = true, description = "Adds the time when a term was completed to its message, and sends the total term time after terms are done.")
+    private val useRealTime by BooleanSetting("Use Real Time", default = true, description = "Use real time rather than server ticks.")
 
     private val termPBs = PersonalBest("Terminals", 7)
     private var startTimer = 0L
