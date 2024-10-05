@@ -100,7 +100,7 @@ object TerminalSolver : Module(
             TerminalTypes.RUBIX -> solveColor(items)
             TerminalTypes.ORDER -> solveNumbers(items)
             TerminalTypes.STARTS_WITH -> {
-                val letter = Regex("What starts with: '(\\w+)'?").find(event.name)?.groupValues?.get(1) ?: return modMessage("Failed to find letter, please report this!")
+                val letter = Regex("What starts with: '(\\w+)'").find(event.name)?.groupValues?.get(1) ?: return modMessage("Failed to find letter, please report this!")
                 solveStartsWith(items, letter)
             }
             TerminalTypes.SELECT -> {
