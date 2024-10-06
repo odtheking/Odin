@@ -44,26 +44,27 @@ object SplitsManager {
         currentSplits = when (LocationUtils.currentArea) {
             Island.Dungeon -> {
                 val floor = LocationUtils.getFloor() ?: return modMessage("§cCouldn't get floor.")
-                val split = dungeonSplits[floor.floorNumber].toMutableList()
 
-                split.add(0, Split(Regex("\\[NPC] Mort: Here, I found this map when I first entered the dungeon\\.|\\[NPC] Mort: Right-click the Orb for spells, and Left-click \\(or Drop\\) to use your Ultimate!"), "§2Blood Open"))
-                split.add(1, Split(Regex(BLOOD_OPEN_REGEX), "§bBlood Clear"))
-                split.add(2, Split(Regex("\\[BOSS] The Watcher: You have proven yourself\\. You may pass\\."), "§dPortal Entry"))
-                split.add(Split(Regex("^\\s*☠ Defeated (.+) in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?\$"), "§1Total"))
-                val newSplit = split.map { it.copy(time = 0L) }
-                SplitsGroup(newSplit, floor.personalBest)
-            }
-
-            Island.Kuudra -> {
-                when (LocationUtils.kuudraTier) {
-                    5 -> SplitsGroup(kuudraT5SplitsGroup.map { it.copy(time = 0L) }, kuudraT5PBs)
-                    4 -> SplitsGroup(kuudraSplitsGroup.map { it.copy(time = 0L) }, kuudraT4PBs)
-                    3 -> SplitsGroup(kuudraSplitsGroup.map { it.copy(time = 0L) }, kuudraT3PBs)
-                    2 -> SplitsGroup(kuudraSplitsGroup.map { it.copy(time = 0L) }, kuudraT2PBs)
-                    1 -> SplitsGroup(kuudraSplitsGroup.map { it.copy(time = 0L) }, kuudraT1PBs)
-                    else -> SplitsGroup(emptyList(), null)
+                with(dungeonSplits[floor.floorNumber].toMutableList()) {
+                    addAll(0, listOf(
+                        Split(Regex("\\[NPC] Mort: Here, I found this map when I first entered the dungeon\\.|\\[NPC] Mort: Right-click the Orb for spells, and Left-click \\(or Drop\\) to use your Ultimate!"), "§2Blood Open") ,
+                        Split(Regex(BLOOD_OPEN_REGEX), "§bBlood Clear"),
+                        Split(Regex("\\[BOSS] The Watcher: You have proven yourself\\. You may pass\\."), "§dPortal Entry")
+                    ))
+                    add(Split(Regex("^\\s*☠ Defeated (.+) in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?\$"), "§1Total"))
+                    SplitsGroup(map { it.copy(time = 0L) }, floor.personalBest)
                 }
             }
+
+            Island.Kuudra -> when (LocationUtils.kuudraTier) {
+                5 -> SplitsGroup(kuudraT5SplitsGroup.map { it.copy(time = 0L) }, kuudraT5PBs)
+                4 -> SplitsGroup(kuudraSplitsGroup.map   { it.copy(time = 0L) }, kuudraT4PBs)
+                3 -> SplitsGroup(kuudraSplitsGroup.map   { it.copy(time = 0L) }, kuudraT3PBs)
+                2 -> SplitsGroup(kuudraSplitsGroup.map   { it.copy(time = 0L) }, kuudraT2PBs)
+                1 -> SplitsGroup(kuudraSplitsGroup.map   { it.copy(time = 0L) }, kuudraT1PBs)
+                else -> SplitsGroup(emptyList(), null)
+            }
+
             else -> SplitsGroup(emptyList(), null)
         }
     }
