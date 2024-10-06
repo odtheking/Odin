@@ -68,4 +68,10 @@ interface Renderer {
     fun image(image: Image, x: Float, y: Float, w: Float, h: Float, radius: Float) {
         image(image, x, y, w, h, radius, radius, radius, radius)
     }
+
+    fun scissor(x: Float, y: Float, width: Float, height: Float): Scissor
+
+    fun resetScissor(scissor: Scissor)
+
+    fun clearScissors()
 }

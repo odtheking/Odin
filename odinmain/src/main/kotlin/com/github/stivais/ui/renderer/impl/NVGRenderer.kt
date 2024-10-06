@@ -16,6 +16,7 @@ import org.lwjgl.nanovg.NanoVGGL2.*
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.stb.STBImage
 import org.lwjgl.system.MemoryUtil
+import java.util.Stack
 
 object NVGRenderer : Renderer {
 
@@ -31,6 +32,8 @@ object NVGRenderer : Renderer {
 
     // used in getTextWidth to avoid reallocating
     private val fontBounds = FloatArray(4)
+
+    private val scissorStack = Stack<Scissor>()
 
     var drawing: Boolean = false
 
@@ -211,7 +214,6 @@ object NVGRenderer : Renderer {
         nvgClosePath(vg)
     }
 
-
     override fun textWidth(text: String, size: Float, font: Font): Float {
         nvgFontSize(vg, size)
         nvgFontFaceId(vg, getIDFromFont(font))
@@ -292,5 +294,57 @@ object NVGRenderer : Renderer {
         return fonts[font] ?: nvgCreateFontMem(vg, font.name, font.buffer, false).also {
             fonts[font] = it
         }
+    }
+
+    override fun scissor(x: Float, y: Float, width: Float, height: Float): Scissor {
+        val scissor = Scissor(x, y, width, height)
+        if (scissor in scissorStack) return scissor
+        scissorStack.push(scissor)
+        applyScissors()
+        return scissor
+    }
+
+    override fun resetScissor(scissor: Scissor) {
+        if (scissorStack.isEmpty()) {
+            nvgResetScissor(vg)
+        } else {
+            if (scissorStack.contains(scissor)) {
+                scissorStack.remove(scissor)
+                applyScissors()
+            }
+        }
+    }
+
+    override fun clearScissors() {
+        scissorStack.clear()
+        nvgResetScissor(vg)
+    }
+
+    private fun applyScissors() {
+        nvgResetScissor(vg)
+        if (scissorStack.isEmpty()) return
+        if (scissorStack.size == 1) {
+            val scissor = scissorStack.peek()
+            nvgScissor(vg, scissor.x, scissor.y, scissor.width, scissor.height)
+            return
+        }
+        val finalScissor = getFinalScissor()
+        nvgScissor(vg, finalScissor.x, finalScissor.y, finalScissor.width, finalScissor.height)
+    }
+
+    private fun getFinalScissor(): Scissor {
+        var finalScissor = Scissor(scissorStack[0])
+        for (i in 1 until scissorStack.size) {
+            val scissor = scissorStack[i]
+            val rightX = minOf(scissor.x + scissor.width, finalScissor.x + finalScissor.width)
+            val rightY = minOf(scissor.y + scissor.height, finalScissor.y + finalScissor.height)
+            finalScissor = Scissor(
+                x = maxOf(finalScissor.x, scissor.x),
+                y = maxOf(finalScissor.y, scissor.y),
+                width = rightX - maxOf(finalScissor.x, scissor.x),
+                height = rightY - maxOf(finalScissor.y, scissor.y)
+            )
+        }
+        return finalScissor
     }
 }
