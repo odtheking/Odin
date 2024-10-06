@@ -145,7 +145,7 @@ object DungeonWaypoints : Module(
         }
 
         if (debugWaypoint) {
-            room.extraRooms.forEach {
+            room.components.forEach {
                 Renderer.drawBox(Vec3(it.x.toDouble(), 70.0, it.z.toDouble()).toAABB(), Color.GREEN, fillAlpha = 0)
             }
         }
@@ -248,7 +248,7 @@ object DungeonWaypoints : Module(
      * Sets the waypoints for the current room.
      */
     fun setWaypoints(curRoom: FullRoom) {
-        curRoom.waypoints = mutableListOf<DungeonWaypoint>().apply {
+        curRoom.waypoints = arrayListOf<DungeonWaypoint>().apply {
             DungeonWaypointConfig.waypoints[curRoom.room.data.name]?.let { waypoints ->
                 addAll(waypoints.map { waypoint ->
                     val vec = waypoint.toVec3().rotateAroundNorth(curRoom.room.rotation).addVec(x = curRoom.clayPos.x, z = curRoom.clayPos.z)

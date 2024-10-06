@@ -27,10 +27,10 @@ object ScanUtils {
     private const val DEFAULT_HEIGHT = 170
 
     private val roomList: Set<RoomData> = loadRoomData()
-    private var lastRoomPos: Vec2 = Vec2(0, 0)
-    private var noneRotationList: MutableList<FullRoom?> = mutableListOf()
     var currentFullRoom: FullRoom? = null
-    var passedRooms = mutableListOf<FullRoom>()
+        private set
+    var passedRooms = ArrayList<FullRoom>()
+        private set
 
     private fun loadRoomData(): Set<RoomData> {
         return try {
@@ -70,47 +70,33 @@ object ScanUtils {
 
         val roomCenter = getRoomCenter(mc.thePlayer.posX.toInt(), mc.thePlayer.posZ.toInt())
 
-        noneRotationList.find { it?.extraRooms?.any { room -> room.x == roomCenter.x && room.z == roomCenter.z } == true }?.let { room ->
-            updateRotation(room)
-            if (room.room.rotation != Rotations.NONE) {
-                noneRotationList.remove(room)
-                RoomEnterEvent(room).postAndCatch()
-            }
-        } // If room is in noneRotationList, update rotation and remove from list if rotation is not NONE
-
-        if (lastRoomPos.equal(roomCenter)) return // If player is in the same room part of the previously scanned room return
-
-        passedRooms.find { previousRoom -> previousRoom.extraRooms.any { it.x == roomCenter.x && it.z == roomCenter.z } }?.let { room ->
-            if (currentFullRoom?.extraRooms?.any { it.x == roomCenter.x && it.z == roomCenter.z } == false) RoomEnterEvent(room).postAndCatch()
+        passedRooms.find { previousRoom -> previousRoom.components.any { it.x == roomCenter.x && it.z == roomCenter.z } }?.let { room ->
+            if (currentFullRoom?.components?.none { it.x == roomCenter.x && it.z == roomCenter.z } == true) RoomEnterEvent(room).postAndCatch()
             return
         } // If room is in passedRooms, post RoomEnterEvent and return only posts Event if room is not in currentFullRoom
 
         scanRoom(roomCenter)?.let { room ->
-            FullRoom(room, BlockPos(0, 0, 0), findRoomTilesRecursively(room.vec2, room, mutableSetOf()), emptyList()).apply {
+            FullRoom(room, BlockPos(0, 0, 0), findRoomTilesRecursively(room.vec2, room, mutableSetOf()), arrayListOf()).apply {
                 updateRotation(this)
-                if (room.rotation == Rotations.NONE) {
-                    if (noneRotationList.none { it?.room?.data?.name == room.data.name }) noneRotationList.add(this)
-                    return
-                }
-                RoomEnterEvent(this).postAndCatch()
+                if (room.rotation != Rotations.NONE) RoomEnterEvent(this).postAndCatch()
             }
         }
     }
 
     private fun updateRotation(fullRoom: FullRoom) {
         fullRoom.room.rotation = Rotations.entries.dropLast(1).find { rotation ->
-            fullRoom.extraRooms.any { pos ->
+            fullRoom.components.any { pos ->
                 BlockPos(pos.x + rotation.x, getTopLayerOfRoom(fullRoom.room.vec2), pos.z + rotation.z).let { blockPos ->
-                    getBlockIdAt(blockPos) == 159 && EnumFacing.HORIZONTALS.all { facing ->
+                    getBlockIdAt(blockPos) == 159 && (fullRoom.components.size == 1 || EnumFacing.HORIZONTALS.all { facing ->
                         getBlockIdAt(blockPos.add(facing.frontOffsetX, 0, facing.frontOffsetZ)).equalsOneOf(159, 0)
-                    }.also { isCorrectClay -> if (isCorrectClay) fullRoom.clayPos = blockPos }
+                    }).also { isCorrectClay -> if (isCorrectClay) fullRoom.clayPos = blockPos }
                 }
             }
         } ?: Rotations.NONE
     }
 
-    private fun findRoomTilesRecursively(vec2: Vec2, room: Room, visited: MutableSet<Vec2>): List<ExtraRoom> {
-        val tiles = mutableListOf<ExtraRoom>()
+    private fun findRoomTilesRecursively(vec2: Vec2, room: Room, visited: MutableSet<Vec2>): ArrayList<ExtraRoom> {
+        val tiles = arrayListOf<ExtraRoom>()
         val core = getCore(vec2.takeIf { it !in visited }?.also { visited.add(it) } ?: return tiles)
         if (core in room.data.cores) {
             tiles.add(ExtraRoom(vec2.x, vec2.z, core))
@@ -166,16 +152,12 @@ object ScanUtils {
     @SubscribeEvent
     fun enterDungeonRoom(event: RoomEnterEvent) {
         currentFullRoom = event.fullRoom
-        currentFullRoom?.let { fullRoom ->
-            lastRoomPos = fullRoom.room.vec2
-            if (passedRooms.none { it.room.data.name == fullRoom.room.data.name }) passedRooms.add(fullRoom)
-        }
+        if (passedRooms.none { it.room.data.name == currentFullRoom?.room?.data?.name }) passedRooms.add(currentFullRoom ?: return)
     }
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Unload) {
         passedRooms.clear()
-        noneRotationList.clear()
-        lastRoomPos = Vec2(0, 0)
+        currentFullRoom = null
     }
 }

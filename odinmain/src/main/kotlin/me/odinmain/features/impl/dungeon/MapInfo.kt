@@ -15,10 +15,10 @@ object MapInfo : Module(
     category = Category.DUNGEON,
     description = "Displays various information about the current dungeon map."
 ) {
-    private val disableInBoss: Boolean by BooleanSetting("Disable in boss", default = true, description = "Disables the information display when you're in boss.")
-    private val scoreTitle: Boolean by BooleanSetting("300 Score Title", default = true, description = "Displays a title on 300 score.")
-    private val scoreText: String by StringSetting("Title Text", default = "&c300 Score!", description = "Text to be displayed on 300 score.").withDependency { scoreTitle }
-    val togglePaul: Int by SelectorSetting("Paul Settings", "Automatic", options = arrayListOf("Automatic", "Force Disable", "Force Enable"), description = "Toggle Paul's settings.")
+    private val disableInBoss by BooleanSetting("Disable in boss", default = true, description = "Disables the information display when you're in boss.")
+    private val scoreTitle by BooleanSetting("300 Score Title", default = true, description = "Displays a title on 300 score.")
+    private val scoreText by StringSetting("Title Text", default = "&c300 Score!", description = "Text to be displayed on 300 score.").withDependency { scoreTitle }
+    val togglePaul by SelectorSetting("Paul Settings", "Automatic", options = arrayListOf("Automatic", "Force Disable", "Force Enable"), description = "Toggle Paul's settings.")
 
     private val fullHud: HudElement by HudSetting("Full Hud", 10f, 10f, 1f, true) {
         if ((!DungeonUtils.inDungeons || (disableInBoss && DungeonUtils.inBoss)) && !it) return@HudSetting 0f to 0f
@@ -46,16 +46,16 @@ object MapInfo : Module(
         fullWidth to 19f
     }
 
-    private val alternate: Boolean by  BooleanSetting("Flip Crypts and Score", default = false, description = "Flips crypts and score.").withDependency { fullHud.enabled }
-    private val fullAddRemaining: Boolean by BooleanSetting("Include Remaining", default = false, description = "Adds remaining to the secrets display.").withDependency { alternate && fullHud.enabled }
-    private val fullRemaining: Boolean by DualSetting("Remaining Secrets", "Minimum", "Remaining", default = false, description = "Display minimum secrets or secrets until s+.").withDependency { !(fullAddRemaining && alternate) && fullHud.enabled }
-    private val fullWidth: Float by NumberSetting("Width", default = 160f, min = 160f, max = 200f, increment = 1f, description = "The width of the hud.").withDependency { fullHud.enabled }
-    private val unknown: Boolean by DualSetting("Deaths", "Deaths", "Unfound", default = false, description = "Display deaths or unfound secrets. (Unknown secrets are secrets in rooms that haven't been discovered yet. May not be helpful in full party runs.)").withDependency { fullHud.enabled }
-    private val fullBackground: Boolean by BooleanSetting("Hud Background", default = false, description = "Render a background behind the score info.").withDependency { fullHud.enabled }
-    private val fullMargin: Float by NumberSetting("Hud Margin", default = 0f, min = 0f, max = 5f, increment = 1f, description = "The margin around the hud.").withDependency { fullBackground && fullHud.enabled }
-    private val fullColor: Color by ColorSetting("Hud Background Color", default = Color.DARK_GRAY.withAlpha(0.5f), true, description = "The color of the background.").withDependency { fullBackground && fullHud.enabled }
+    private val alternate by  BooleanSetting("Flip Crypts and Score", default = false, description = "Flips crypts and score.").withDependency { fullHud.enabled }
+    private val fullAddRemaining by BooleanSetting("Include Remaining", default = false, description = "Adds remaining to the secrets display.").withDependency { alternate && fullHud.enabled }
+    private val fullRemaining by DualSetting("Remaining Secrets", "Minimum", "Remaining", default = false, description = "Display minimum secrets or secrets until s+.").withDependency { !(fullAddRemaining && alternate) && fullHud.enabled }
+    private val fullWidth by NumberSetting("Width", default = 160f, min = 160f, max = 200f, increment = 1f, description = "The width of the hud.").withDependency { fullHud.enabled }
+    private val unknown by DualSetting("Deaths", "Deaths", "Unfound", default = false, description = "Display deaths or unfound secrets. (Unknown secrets are secrets in rooms that haven't been discovered yet. May not be helpful in full party runs.)").withDependency { fullHud.enabled }
+    private val fullBackground by BooleanSetting("Hud Background", default = false, description = "Render a background behind the score info.").withDependency { fullHud.enabled }
+    private val fullMargin by NumberSetting("Hud Margin", default = 0f, min = 0f, max = 5f, increment = 1f, description = "The margin around the hud.").withDependency { fullBackground && fullHud.enabled }
+    private val fullColor by ColorSetting("Hud Background Color", default = Color.DARK_GRAY.withAlpha(0.5f), true, description = "The color of the background.").withDependency { fullBackground && fullHud.enabled }
 
-    private val compactSecrets: HudElement by HudSetting("Compact Secrets", 10f, 10f, 1f, true) {
+    private val compactSecrets by HudSetting("Compact Secrets", 10f, 10f, 1f, true) {
         if ((!DungeonUtils.inDungeons || (disableInBoss && DungeonUtils.inBoss)) && !it) return@HudSetting 0f to 0f
         val secretText = "§7Secrets: §b${DungeonUtils.secretCount}" +
                 (if (compactAddRemaining) "§7-§d${(DungeonUtils.neededSecretsAmount - DungeonUtils.secretCount).coerceAtLeast(0)}" else "") +
@@ -73,7 +73,7 @@ object MapInfo : Module(
     private val compactSecretMargin: Float by NumberSetting("Secret Margin", default = 0f, min = 0f, max = 5f, increment = 1f, description = "The margin around the hud.").withDependency { compactSecretBackground && compactSecrets.enabled }
     private val compactSecretColor: Color by ColorSetting("Secret Background Color", default = Color.DARK_GRAY.withAlpha(0.5f), true, description = "The color of the background.").withDependency { compactSecretBackground && compactSecrets.enabled }
 
-    private val compactScore: HudElement by HudSetting("Compact Score", 10f, 10f, 1f, true) {
+    private val compactScore by HudSetting("Compact Score", 10f, 10f, 1f, true) {
         if ((!DungeonUtils.inDungeons || (disableInBoss && DungeonUtils.inBoss)) && !it) return@HudSetting 0f to 0f
         val scoreText = "§7Score: ${colorizeScore(DungeonUtils.score)}" + if (!DungeonUtils.mimicKilled) " §7(§6+2?§7)" else ""
         val width = getMCTextWidth(scoreText)

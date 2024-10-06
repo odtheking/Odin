@@ -39,7 +39,7 @@ object SplitsManager {
 
     @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
-        if (event.message != "Starting in 4 seconds.") return
+        if (event.message != "Starting in 3 seconds.") return
 
         currentSplits = when (LocationUtils.currentArea) {
             Island.Dungeon -> {
