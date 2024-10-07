@@ -4,6 +4,7 @@ package me.odinmain.features.impl.render
 import com.google.gson.*
 import kotlinx.coroutines.*
 import me.odinmain.OdinMain.mc
+import me.odinmain.OdinMain.scope
 import me.odinmain.features.impl.render.ClickGUIModule.devSize
 import me.odinmain.utils.getDataFromServer
 import me.odinmain.utils.render.*
@@ -60,9 +61,9 @@ object DevPlayers {
 
     @OptIn(DelicateCoroutinesApi::class)
     fun updateDevs(): HashMap<String, DevPlayer> {
-        GlobalScope.launch {
+        scope.launch {
             val data = convertDecimalToNumber(getDataFromServer("https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
-            val gson = GsonBuilder().registerTypeAdapter(DevData::class.java, DevDeserializer()).create()
+            val gson = GsonBuilder().registerTypeAdapter(DevData::class.java, DevDeserializer()).create() ?: return@launch
             gson.fromJson(data, Array<DevData>::class.java).forEach {
                 devs[it.devName] = DevPlayer(it.size.first, it.size.second, it.size.third, it.wings, Color(it.wingsColor.first, it.wingsColor.second, it.wingsColor.third))
             }

@@ -665,4 +665,27 @@ object RenderUtils {
             pos(maxX, minY, minZ).endVertex()
         }
     }
+
+    fun drawMinecraftLabel(entityIn: Entity, str: String, x: Double, y: Double, z: Double, scale: Double) { // figure out how to add shadows and what can be removed
+        val fontRenderer = mc.renderManager.fontRenderer
+        GlStateManager.pushMatrix()
+        GlStateManager.translate(x + 0.0f, y + entityIn.height + 0.5f, z)
+        GL11.glNormal3f(0.0f, 1.0f, 0.0f)
+        GlStateManager.rotate(-this.renderManager.playerViewY, 0.0f, 1.0f, 0.0f)
+        GlStateManager.rotate(this.renderManager.playerViewX, 1.0f, 0.0f, 0.0f)
+        GlStateManager.scale(-scale, -scale, scale)
+        GlStateManager.disableLighting()
+        GlStateManager.depthMask(false)
+        GlStateManager.disableDepth()
+        GlStateManager.enableBlend()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        fontRenderer.drawString(str, -fontRenderer.getStringWidth(str) / 2f, 0f, 0x20FFFFFF, true)
+        GlStateManager.enableDepth()
+        GlStateManager.depthMask(true)
+        fontRenderer.drawString(str, -fontRenderer.getStringWidth(str) / 2f, 0f, -1, true)
+        GlStateManager.enableLighting()
+        GlStateManager.disableBlend()
+        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
+        GlStateManager.popMatrix()
+    }
 }

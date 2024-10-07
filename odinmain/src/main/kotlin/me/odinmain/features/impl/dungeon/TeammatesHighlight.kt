@@ -4,14 +4,13 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.addVec
-import me.odinmain.utils.distanceSquaredTo
 import me.odinmain.utils.render.HighlightRenderer
-import me.odinmain.utils.render.RenderUtils.renderVec
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.dungeonTeammatesNoSelf
-import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraft.entity.EntityLivingBase
+import net.minecraftforge.client.event.RenderLivingEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object TeammatesHighlight : Module(
@@ -40,18 +39,12 @@ object TeammatesHighlight : Module(
     }
 
     @SubscribeEvent
-    fun onRenderWorld(event: RenderWorldLastEvent) {
+    fun onRenderEntity(event: RenderLivingEvent.Specials.Pre<EntityLivingBase>) {
         if (!showName || !shouldRender()) return
-        dungeonTeammatesNoSelf.forEach { teammate ->
-            val entity = teammate.entity ?: return@forEach
-            if (entity.distanceSquaredTo(mc.thePlayer) >= 2100) return@forEach
-            Renderer.drawStringInWorld(
-                if (showClass) "§${teammate.clazz.colorCode}${teammate.name} §e[${teammate.clazz.name[0]}]" else "§${teammate.clazz.colorCode}${teammate.name}",
-                entity.renderVec.addVec(y = 2.6),
-                color = teammate.clazz.color,
-                depth = depthCheck, scale = 0.05f
-            )
-        }
+        val teammate = dungeonTeammatesNoSelf.find { it.entity == event.entity } ?: return
+        val text = if (showClass) "§${teammate.clazz.colorCode}${teammate.name} §e[${teammate.clazz.name[0]}]" else "§${teammate.clazz.colorCode}${teammate.name}"
+        RenderUtils.drawMinecraftLabel(event.entity, text, event.x, event.y + 0.5, event.z, 0.05)
+        event.isCanceled = true
     }
 
     private fun shouldRender(): Boolean {

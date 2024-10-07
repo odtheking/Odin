@@ -16,8 +16,8 @@ import java.net.URL
  *
  * @returns The response code from the server (can be used as a bad get request)
  */
-suspend fun sendDataToServer(body: String, url: String = "https://gi2wsqbyse6tnfhqakbnq6f2su0vujgz.lambda-url.eu-north-1.on.aws/"): String {
-    return try {
+suspend fun sendDataToServer(body: String, url: String = "https://gi2wsqbyse6tnfhqakbnq6f2su0vujgz.lambda-url.eu-north-1.on.aws/"): String = withTimeoutOrNull(5000) {
+    return@withTimeoutOrNull try {
         val connection = withContext(Dispatchers.IO) {
             URL(url).openConnection()
         } as HttpURLConnection
@@ -43,7 +43,7 @@ suspend fun sendDataToServer(body: String, url: String = "https://gi2wsqbyse6tnf
 
         response
     } catch (_: Exception) { "" }
-}
+} ?: ""
 
 /**
  * Fetches data from a specified URL and returns it as a string.
@@ -52,23 +52,25 @@ suspend fun sendDataToServer(body: String, url: String = "https://gi2wsqbyse6tnf
  * @return A string containing the data fetched from the URL, or an empty string in case of an exception.
  */
 suspend fun getDataFromServer(url: String): String {
-    return try {
-        val connection = withContext(Dispatchers.IO) {
-            URL(url).openConnection()
-        } as HttpURLConnection
-        connection.requestMethod = "GET"
+    return withTimeoutOrNull(5000) {
+        try {
+            val connection = withContext(Dispatchers.IO) {
+                URL(url).openConnection()
+            } as HttpURLConnection
+            connection.requestMethod = "GET"
 
-        val responseCode = connection.responseCode
-        if (DevPlayers.isDev) println("Response Code: $responseCode")
-        if (responseCode != 200) return ""
-        val inputStream = connection.inputStream
-        val response = inputStream.bufferedReader().use { it.readText() }
-        if (DevPlayers.isDev) println("Response: $response")
+            val responseCode = connection.responseCode
+            if (DevPlayers.isDev) println("Response Code: $responseCode")
+            if (responseCode != 200) return@withTimeoutOrNull ""
+            val inputStream = connection.inputStream
+            val response = inputStream.bufferedReader().use { it.readText() }
+            if (DevPlayers.isDev) println("Response: $response")
 
-        connection.disconnect()
+            connection.disconnect()
 
-        response
-    } catch (_: Exception) { "" }
+            response
+        } catch (_: Exception) { "" }
+    } ?: ""
 }
 
 /**
@@ -127,12 +129,12 @@ fun downloadFile(url: String, outputPath: String) {
     inputStream.close()
 }
 
-suspend fun hasBonusPaulScore(): Boolean = coroutineScope {
+suspend fun hasBonusPaulScore(): Boolean = withTimeoutOrNull(5000) {
     val response: String = URL("https://api.hypixel.net/resources/skyblock/election").readText()
     val jsonObject = JsonParser().parse(response).asJsonObject
-    val mayor = jsonObject.getAsJsonObject("mayor") ?: return@coroutineScope false
-    val name = mayor.get("name")?.asString ?: return@coroutineScope false
-    return@coroutineScope if (name == "Paul") {
+    val mayor = jsonObject.getAsJsonObject("mayor") ?: return@withTimeoutOrNull false
+    val name = mayor.get("name")?.asString ?: return@withTimeoutOrNull false
+    return@withTimeoutOrNull if (name == "Paul") {
         mayor.getAsJsonArray("perks")?.any { it.asJsonObject.get("name")?.asString == "EZPZ" } == true
     } else false
-}
+} == true
