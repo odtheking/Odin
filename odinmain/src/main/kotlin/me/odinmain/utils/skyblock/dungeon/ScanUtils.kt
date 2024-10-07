@@ -151,7 +151,6 @@ object ScanUtils {
     @SubscribeEvent
     fun enterDungeonRoom(event: RoomEnterEvent) {
         currentFullRoom = event.fullRoom
-        //if (event.fullRoom?.room?.data?.name == "Entrance") devMessage(DungeonUtils.dungeonTeammates.joinToString { it.name })
         if (passedRooms.none { it.room.data.name == currentFullRoom?.room?.data?.name }) passedRooms.add(currentFullRoom ?: return)
     }
 

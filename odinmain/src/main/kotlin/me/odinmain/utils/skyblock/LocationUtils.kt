@@ -38,7 +38,7 @@ object LocationUtils {
                 if (!currentArea.isArea(Island.Unknown) && previousArea != currentArea) SkyblockJoinIslandEvent(currentArea).postAndCatch()
             }
 
-            if (DungeonUtils.inDungeons && currentDungeon == null) currentDungeon = Dungeon(getFloor() ?: return@Executor)
+            if ((DungeonUtils.inDungeons || currentArea.isArea(Island.SinglePlayer)) && currentDungeon == null) currentDungeon = Dungeon(getFloor() ?: return@Executor)
 
         }.register()
     }
@@ -93,6 +93,7 @@ object LocationUtils {
     }
 
     fun getFloor(): Floor? {
+        if (currentArea.isArea(Island.SinglePlayer)) return Floor.E
         for (i in sidebarLines) {
             val floor = Regex("The Catacombs \\((\\w+)\\)\$").find(cleanSB(i))?.groupValues?.get(1) ?: continue
             return Floor.valueOf(floor)
@@ -100,4 +101,3 @@ object LocationUtils {
         return null
     }
 }
-

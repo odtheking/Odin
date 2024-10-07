@@ -21,5 +21,5 @@ enum class Island(val displayName: String) {
     Kuudra("Kuudra"),
     Unknown("(Unknown)");
 
-    fun isArea(vararg areas: Island): Boolean { return areas.any { it == this } }
+    fun isArea(vararg areas: Island): Boolean = this in areas
 }
