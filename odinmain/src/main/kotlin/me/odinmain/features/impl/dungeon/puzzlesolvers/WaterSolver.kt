@@ -103,7 +103,6 @@ object WaterSolver {
         }
     }
 
-
     fun waterRender() {
         if (DungeonUtils.currentRoomName != "Water Board" || variant == -1) return
 
@@ -185,11 +184,7 @@ object WaterSolver {
         PURPLE, ORANGE, BLUE, GREEN, RED;
 
         val isExtended: Boolean
-            get() =
-                run {
-                    val extendedPos = chestPosition.addRotationCoords(roomFacing, 3 + ordinal)
-                    getBlockAt(extendedPos.x, 56, extendedPos.z ) == Blocks.wool
-                }
+            get() = chestPosition.addRotationCoords(roomFacing, 3 + ordinal).let { getBlockAt(it.x, 56, it.z ) == Blocks.wool }
     }
 
     enum class LeverBlock(var i: Int = 0) {

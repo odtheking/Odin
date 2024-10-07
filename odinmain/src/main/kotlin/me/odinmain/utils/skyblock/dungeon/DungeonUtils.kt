@@ -12,7 +12,6 @@ import me.odinmain.utils.skyblock.PlayerUtils.posY
 import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
 import net.minecraft.block.BlockSkull
 import net.minecraft.block.state.IBlockState
-import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S38PacketPlayerListItem
 import net.minecraft.tileentity.TileEntitySkull
@@ -210,7 +209,7 @@ object DungeonUtils {
                 player.isDead = clazz == "DEAD"
                 player.entity = mc.theWorld?.getPlayerEntityByName(name)
             } ?: previousTeammates.add(DungeonPlayer(name, DungeonClass.entries.find { it.name == clazz } ?: DungeonClass.Unknown,
-                                       AbstractClientPlayer.getLocationSkin(name), mc.theWorld?.getPlayerEntityByName(name), clazz == "DEAD"))
+                 mc.netHandler.getPlayerInfo(name).locationSkin, mc.theWorld?.getPlayerEntityByName(name), clazz == "DEAD"))
         }
         return previousTeammates
     }
