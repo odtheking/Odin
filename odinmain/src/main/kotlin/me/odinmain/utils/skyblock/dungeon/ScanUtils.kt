@@ -18,10 +18,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 import java.io.FileNotFoundException
-import kotlin.math.roundToInt
 
 object ScanUtils {
-    private const val ROOM_SIZE = 32
+    private const val ROOM_SIZE_SHIFT = 5  // Since ROOM_SIZE = 32 (2^5)
     private const val START = -185
     private const val DEFAULT_HEIGHT = 170
 
@@ -69,8 +68,8 @@ object ScanUtils {
 
         val roomCenter = getRoomCenter(mc.thePlayer.posX.toInt(), mc.thePlayer.posZ.toInt())
 
-        passedRooms.find { previousRoom -> previousRoom.components.any { it.x == roomCenter.x && it.z == roomCenter.z } }?.let { room ->
-            if (currentFullRoom?.components?.none { it.x == roomCenter.x && it.z == roomCenter.z } == true) RoomEnterEvent(room).postAndCatch()
+        passedRooms.find { previousRoom -> previousRoom.components.any { it.vec2.equal(roomCenter) } }?.let { room ->
+            if (currentFullRoom?.components?.none { it.vec2.equal(roomCenter) } == true) RoomEnterEvent(room).postAndCatch()
             return
         } // If room is in passedRooms, post RoomEnterEvent and return only posts Event if room is not in currentFullRoom
 
@@ -94,20 +93,21 @@ object ScanUtils {
         } ?: Rotations.NONE
     }
 
-    private fun findRoomTilesRecursively(vec2: Vec2, room: Room, visited: MutableSet<Vec2>): ArrayList<ExtraRoom> {
-        val tiles = arrayListOf<ExtraRoom>()
-        val core = getCore(vec2.takeIf { it !in visited }?.also { visited.add(it) } ?: return tiles)
+    private fun findRoomTilesRecursively(vec2: Vec2, room: Room, visited: MutableSet<Vec2>, tiles: ArrayList<ExtraRoom> = arrayListOf()): ArrayList<ExtraRoom> {
+        if (vec2 in visited) return tiles
+        visited.add(vec2)
+        val core = getCore(vec2)
         if (core in room.data.cores) {
             tiles.add(ExtraRoom(vec2.x, vec2.z, core))
-            EnumFacing.HORIZONTALS.forEach {
-                tiles.addAll(findRoomTilesRecursively(Vec2(vec2.x + it.frontOffsetX * ROOM_SIZE, vec2.z + it.frontOffsetZ * ROOM_SIZE), room, visited))
+            EnumFacing.HORIZONTALS.forEach { facing ->
+                findRoomTilesRecursively(Vec2(vec2.x + (facing.frontOffsetX shl ROOM_SIZE_SHIFT), vec2.z + (facing.frontOffsetZ shl ROOM_SIZE_SHIFT)), room, visited, tiles)
             }
         }
         return tiles
     }
 
     private fun scanRoom(vec2: Vec2): Room? =
-        getCore(vec2).let { core -> getRoomData(core)?.let { Room(vec2.x, vec2.z, it).apply { this.core = core } } }
+        getCore(vec2).let { core -> getRoomData(core)?.let { Room(vec2.x, vec2.z, it, core) } }
 
     fun getRoomSecrets(name: String): Int =
         roomList.find { it.name == name }?.secrets ?: 0
@@ -116,9 +116,9 @@ object ScanUtils {
         roomList.find { hash in it.cores }
 
     fun getRoomCenter(posX: Int, posZ: Int): Vec2 {
-        val roomX = ((posX - START) / ROOM_SIZE.toFloat()).roundToInt()
-        val roomZ = ((posZ - START) / ROOM_SIZE.toFloat()).roundToInt()
-        return Vec2(roomX * ROOM_SIZE + START, roomZ * ROOM_SIZE + START)
+        val roomX = (posX - START + (1 shl (ROOM_SIZE_SHIFT - 1))) shr ROOM_SIZE_SHIFT
+        val roomZ = (posZ - START + (1 shl (ROOM_SIZE_SHIFT - 1))) shr ROOM_SIZE_SHIFT
+        return Vec2((roomX shl ROOM_SIZE_SHIFT) + START, (roomZ shl ROOM_SIZE_SHIFT) + START)
     }
 
     fun getCore(vec2: Vec2): Int {

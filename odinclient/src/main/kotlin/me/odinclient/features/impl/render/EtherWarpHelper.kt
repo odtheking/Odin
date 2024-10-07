@@ -76,6 +76,7 @@ object EtherWarpHelper : Module(
             tbClock.update()
             PlayerUtils.rightClick()
         }
+        if (!mc.thePlayer.usingEtherWarp) return
 
         val player = mc.thePlayer as? IEntityPlayerSPAccessor ?: return
         val positionLook =
@@ -85,7 +86,7 @@ object EtherWarpHelper : Module(
                 PositionLook(mc.thePlayer.renderVec, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
 
         etherPos = EtherWarpHelper.getEtherPos(positionLook)
-        if (render && mc.thePlayer.usingEtherWarp && (etherPos.succeeded || renderFail))
+        if (render && (etherPos.succeeded || renderFail))
             Renderer.drawStyledBlock(etherPos.pos ?: return, if (etherPos.succeeded) color else wrongColor, style, lineWidth, depthCheck)
     }
 
