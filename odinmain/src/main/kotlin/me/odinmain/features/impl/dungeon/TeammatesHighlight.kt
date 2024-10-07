@@ -47,7 +47,7 @@ object TeammatesHighlight : Module(
             if (entity.distanceSquaredTo(mc.thePlayer) >= 2100) return@forEach
             Renderer.drawStringInWorld(
                 if (showClass) "§${teammate.clazz.colorCode}${teammate.name} §e[${teammate.clazz.name[0]}]" else "§${teammate.clazz.colorCode}${teammate.name}",
-                teammate.entity.renderVec.addVec(y = 2.6),
+                entity.renderVec.addVec(y = 2.6),
                 color = teammate.clazz.color,
                 depth = depthCheck, scale = 0.05f
             )

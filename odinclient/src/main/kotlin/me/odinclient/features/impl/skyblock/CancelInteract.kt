@@ -68,15 +68,13 @@ object CancelInteract : Module(
      */
     @JvmStatic
     fun isHittingPositionHook(blockPos: BlockPos, currentItemHittingBlock: ItemStack?, currentBlock: BlockPos): Boolean {
-        var flag: Boolean
         val itemStack: ItemStack? = mc.thePlayer?.heldItem
-        flag = currentItemHittingBlock == null && itemStack == null
+        var flag = currentItemHittingBlock == null && itemStack == null
         if (currentItemHittingBlock != null && itemStack != null) {
-            if (noBreakReset && enabled && itemStack.tagCompound != null) {
-                val lore: String = itemStack.lore.toString()
-                if (lore.containsOneOf("GAUNTLET", "DRILL", "PICKAXE"))
+            if (noBreakReset && enabled && itemStack.tagCompound != null)
+                if (itemStack.lore.toString().containsOneOf("GAUNTLET", "DRILL", "PICKAXE"))
                     return blockPos == currentBlock && itemStack.item === currentItemHittingBlock.item
-            }
+
             flag = itemStack.item === currentItemHittingBlock.item && ItemStack.areItemStackTagsEqual(itemStack, currentItemHittingBlock)
                     && (itemStack.isItemStackDamageable || itemStack.metadata == currentItemHittingBlock.metadata)
         }

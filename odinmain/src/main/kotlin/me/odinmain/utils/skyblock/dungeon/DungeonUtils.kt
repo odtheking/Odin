@@ -12,11 +12,11 @@ import me.odinmain.utils.skyblock.PlayerUtils.posY
 import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
 import net.minecraft.block.BlockSkull
 import net.minecraft.block.state.IBlockState
-import net.minecraft.client.network.NetworkPlayerInfo
+import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.init.Blocks
+import net.minecraft.network.play.server.S38PacketPlayerListItem
 import net.minecraft.tileentity.TileEntitySkull
 import net.minecraft.util.BlockPos
-import net.minecraft.util.ResourceLocation
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.ceil
@@ -175,7 +175,7 @@ object DungeonUtils {
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
-        Blessing.entries.forEach { it.current = 0 }
+        currentDungeon?.onWorldLoad()
     }
 
     private val puzzleRegex = Regex("^§r (\\w+(?: \\w+)*|\\?\\?\\?): §r§7\\[(§r§c§l✖|§r§a§l✔|§r§6§l✦)§r§7] ?(?:§r§f\\(§r§[a-z](\\w+)§r§f\\))?§r$")
@@ -201,29 +201,18 @@ object DungeonUtils {
 
     private val tablistRegex = Regex("^\\[(\\d+)] (?:\\[\\w+] )*(\\w+) .*?\\((\\w+)(?: (\\w+))*\\)$")
 
-    fun getDungeonTeammates(previousTeammates: List<DungeonPlayer>, tabList: List<Pair<NetworkPlayerInfo, String>>): List<DungeonPlayer> {
-        val teammates = mutableListOf<DungeonPlayer>()
+    fun getDungeonTeammates(previousTeammates: MutableList<DungeonPlayer>, tabList: List<S38PacketPlayerListItem.AddPlayerData>): List<DungeonPlayer> {
+        for (line in tabList) {
+            val displayName = line.displayName?.unformattedText?.noControlCodes ?: continue
+            val (_, name, clazz, _) = tablistRegex.find(displayName)?.destructured ?: continue
 
-        for ((networkPlayerInfo, line) in tabList) {
-
-            val (_, _, name, clazz, _) = tablistRegex.find(line.noControlCodes)?.groupValues ?: continue
-
-            addTeammate(name, clazz, teammates, networkPlayerInfo.locationSkin) // will fail to find the EMPTY or DEAD class and won't add them to the list
-            if (clazz == "DEAD" || clazz == "EMPTY") {
-                val previousClass = previousTeammates.find { it.name == name }?.clazz ?: continue
-                addTeammate(name, previousClass.name, teammates, networkPlayerInfo.locationSkin) // will add the player with the previous class
-            }
-            teammates.find { it.name == name }?.isDead = clazz == "DEAD" // set the player as dead if they are
+            previousTeammates.find { it.name == name }?.let { player ->
+                player.isDead = clazz == "DEAD"
+                player.entity = mc.theWorld?.getPlayerEntityByName(name)
+            } ?: previousTeammates.add(DungeonPlayer(name, DungeonClass.entries.find { it.name == clazz } ?: DungeonClass.Unknown,
+                                       AbstractClientPlayer.getLocationSkin(name), mc.theWorld?.getPlayerEntityByName(name), clazz == "DEAD"))
         }
-        return teammates
-    }
-
-    private fun addTeammate(name: String, clazz: String, teammates: MutableList<DungeonPlayer>, locationSkin: ResourceLocation) {
-        DungeonClass.entries.find { it.name == clazz }?.let { foundClass ->
-            mc.theWorld?.getPlayerEntityByName(name)?.let { player ->
-                teammates.add(DungeonPlayer(name, foundClass, locationSkin, player))
-            } ?: teammates.add(DungeonPlayer(name, foundClass, locationSkin, null))
-        }
+        return previousTeammates
     }
 
     private const val WITHER_ESSENCE_ID = "26bb1a8d-7c66-31c6-82d5-a9c04c94fb02"

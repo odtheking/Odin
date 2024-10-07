@@ -16,7 +16,6 @@ import me.odinmain.utils.skyblock.PlayerUtils.posZ
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getDungeonPuzzles
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getDungeonTeammates
 import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
-import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.network.play.server.*
 
 // could add some system to look back at previous runs.
@@ -66,6 +65,14 @@ class Dungeon(val floor: Floor) {
         }
     }
 
+    fun onWorldLoad() {
+        dungeonTeammates = emptyList()
+        dungeonTeammatesNoSelf = emptyList()
+        leapTeammates = emptyList()
+        puzzles = emptyList()
+        Blessing.entries.forEach { it.current = 0 }
+    }
+
     private fun handleChatPacket(packet: S02PacketChat) {
         val message = packet.chatComponent.unformattedText.noControlCodes
         if (Regex("\\[BOSS] The Watcher: You have proven yourself. You may pass.").matches(message)) dungeonStats.bloodDone = true
@@ -86,35 +93,31 @@ class Dungeon(val floor: Floor) {
 
     private fun handleScoreboardPacket(packet: S3EPacketTeams) {
         if (packet.action != 2) return
-        val text = packet.prefix.plus(packet.suffix)
 
-        Regex("^Cleared: §[c6a](\\d+)% §8(?:§8)?\\(\\d+\\)$").find(text)?.groupValues[1]?.toIntOrNull()?.let {
+        clearedRegex.find(packet.prefix.plus(packet.suffix))?.groupValues[1]?.toIntOrNull()?.let {
             if (dungeonStats.percentCleared != it && expectingBloodUpdate) dungeonStats.bloodDone = true
             dungeonStats.percentCleared = it
         }
-        Regex("^Time Elapsed: §a§a([\\dsmh ]+)$").find(text)?.let { dungeonStats.elapsedTime = it.groupValues[1] }
     }
 
     private fun handleTabListPacket(packet: S38PacketPlayerListItem) {
-        if (packet.action != S38PacketPlayerListItem.Action.UPDATE_DISPLAY_NAME) return
-        
+        if (!packet.action.equalsOneOf(S38PacketPlayerListItem.Action.UPDATE_DISPLAY_NAME, S38PacketPlayerListItem.Action.ADD_PLAYER)) return
         packet.entries.forEach { entry ->
             entry?.displayName?.formattedText?.let { dungeonStats = updateDungeonStats(it, dungeonStats) }
         }
 
-        val tabList = getDungeonTabList() ?: emptyList()
-
-        updateDungeonPuzzles(tabList)
-        updateDungeonTeammates(tabList)
+        updateDungeonTeammates(packet.entries)
+        puzzles = getDungeonPuzzles(getTabList.map { it.second }) // transfer to packet based
     }
 
+    private val timeRegex = Regex("§r Time: §r§6((?:\\d+h ?)?(?:\\d+m ?)?\\d+s)§r")
+    private val clearedRegex = Regex("^Cleared: §[c6a](\\d+)% §8(?:§8)?\\(\\d+\\)$")
     private val secretCountRegex = Regex("^§r Secrets Found: §r§b(\\d+)§r$")
     private val secretPercentRegex = Regex("^§r Secrets Found: §r§[ea]([\\d.]+)%§r$")
     private val cryptRegex = Regex("^§r Crypts: §r§6(\\d+)§r$")
     private val openedRoomsRegex = Regex("^§r Opened Rooms: §r§5(\\d+)§r$")
     private val completedRoomsRegex = Regex("^§r Completed Rooms: §r§d(\\d+)§r$")
     private val deathsRegex = Regex("^§r§a§lTeam Deaths: §r§f(\\d+)§r$")
-    private val puzzleCountRegex = Regex("^§r§[a-z]§lPuzzles: §r§f\\((\\d)\\)§r$")
 
     data class DungeonStats(
         var secretsFound: Int? = null,
@@ -144,22 +147,15 @@ class Dungeon(val floor: Floor) {
             completedRoomsRegex.matches(text) -> currentStats.completedRooms = completedRoomsRegex.find(text)?.groupValues?.get(1)?.toIntOrNull()
 
             deathsRegex.matches(text) -> currentStats.deaths = deathsRegex.find(text)?.groupValues?.get(1)?.toIntOrNull()
+
+            timeRegex.matches(text) -> currentStats.elapsedTime = timeRegex.find(text)?.groupValues?.get(1)
         }
 
         return currentStats
     }
 
-    private fun updateDungeonPuzzles(tabList: List<Pair<NetworkPlayerInfo, String>>){
-        with(tabList.map { it.second }) {
-            val puzzleText = this.find { puzzleCountRegex.matches(it) } ?: return
-            val index = this.indexOf(puzzleText)
-            val puzzleCount = puzzleCountRegex.find(puzzleText)?.groupValues?.get(1)?.toIntOrNull() ?: return
-            puzzles = getDungeonPuzzles(this.filterIndexed { i, _ -> i in index + 1..index + puzzleCount })
-        }
-    }
-
-    private fun updateDungeonTeammates(tabList:List<Pair<NetworkPlayerInfo, String>>) {
-        dungeonTeammates = getDungeonTeammates(dungeonTeammates, tabList)
+    private fun updateDungeonTeammates(tabList: List<S38PacketPlayerListItem.AddPlayerData>) {
+        dungeonTeammates = getDungeonTeammates(dungeonTeammates.toMutableList(), tabList)
         dungeonTeammatesNoSelf = dungeonTeammates.filter { it.entity != mc.thePlayer }
 
         leapTeammates =

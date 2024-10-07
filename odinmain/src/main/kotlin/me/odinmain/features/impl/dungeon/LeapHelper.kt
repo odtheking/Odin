@@ -32,8 +32,8 @@ object LeapHelper {
         if (currentPos == NONE) return ""
         return DungeonUtils.dungeonTeammatesNoSelf
             .filter {
-                it.entity != null &&
-                if (currentPos.equal(Vec3(54.0, 4.0, 95.0))) it.entity.posY < 54.0 else true // To make sure the player is underneath necron's platform
+                val entity = it.entity
+                entity != null && (if (currentPos.equal(Vec3(54.0, 4.0, 95.0))) entity.posY < 54.0 else true) // To make sure the player is underneath necron's platform
             }
             .minByOrNull { it.entity?.positionVector?.distanceTo(currentPos) ?: 10000.0 }
             ?.entity

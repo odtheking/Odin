@@ -109,16 +109,14 @@ object EtherWarpHelper : Module(
             etherWarpHelper &&
             mc.thePlayer.usingEtherWarp
         ) {
-            val waypoints = DungeonUtils.currentFullRoom?.waypoints ?: return
-            val wp = waypoints.mapNotNull {
+            val (_, yaw, pitch) = DungeonUtils.currentFullRoom?.waypoints?.mapNotNull {
                 etherwarpRotateTo(it.toBlockPos()) ?: return@mapNotNull null
-            }.minByOrNull {
+            }?.minByOrNull {
                 val (_, yaw, pitch) = it
 
                 (yaw - MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw)).absoluteValue +
                 (pitch - MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationPitch)).absoluteValue
             } ?: return
-            val (_, yaw, pitch) = wp
             if (
                 (yaw - MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw)).absoluteValue +
                 (pitch - MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationPitch)).absoluteValue > maxRot

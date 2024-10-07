@@ -131,14 +131,14 @@ object WitherDragons : Module(
         }
 
         execute(200) {
-            if (DungeonUtils.getF7Phase() != M7Phases.P5) return@execute
+            if (enabled && DungeonUtils.getF7Phase() != M7Phases.P5) return@execute
             DragonCheck.dragonStateConfirmation()
         }
     }
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (DungeonUtils.getF7Phase() != M7Phases.P5) return
+        if (DungeonUtils.getF7Phase() != M7Phases.P5 && enabled) return
 
         if (dragonHealth) renderHP()
         if (dragonTimer) renderTime()

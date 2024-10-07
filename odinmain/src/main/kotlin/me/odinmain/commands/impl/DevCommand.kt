@@ -63,6 +63,24 @@ val devCommand = commodore("oddev") {
         modMessage("currentarea: ${LocationUtils.currentArea}, isDungeon ${DungeonUtils.inDungeons}, inKuudra: ${KuudraUtils.inKuudra} kuudratier: ${LocationUtils.kuudraTier}, dungeonfloor: ${DungeonUtils.floorNumber}")
     }
 
+    literal("kuudrainfo") {
+        runs {
+            modMessage("""
+                ${getChatBreak()}
+                |inKuudra: ${KuudraUtils.inKuudra}
+                |kuudraTeammates: ${KuudraUtils.kuudraTeammates.joinToString { it.playerName }}
+                |kuudraTeammatesNoSelf: ${KuudraUtils.kuudraTeammatesNoSelf.joinToString { it.playerName }}
+                |giantZombies: ${KuudraUtils.giantZombies.joinToString { it.positionVector.toString() }}
+                |supplies: ${KuudraUtils.supplies.joinToString()}
+                |kuudraEntity: ${KuudraUtils.kuudraEntity}
+                |builders: ${KuudraUtils.builders}
+                |build: ${KuudraUtils.build}
+                |phase: ${KuudraUtils.phase}
+                |buildingPiles: ${KuudraUtils.buildingPiles.joinToString { it.positionVector.toString() }}
+                ${getChatBreak()}
+            """.trimIndent(), false)
+        }
+    }
     literal("simulate").runs { str: GreedyString ->
         mc.thePlayer.addChatMessage(ChatComponentText(str.string))
         PacketReceivedEvent(S02PacketChat(ChatComponentText(str.string))).postAndCatch()

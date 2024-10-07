@@ -2,6 +2,7 @@ package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.ChatPacketEvent
+import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.features.impl.nether.NoPre
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Executor
@@ -11,13 +12,14 @@ import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.monster.EntityGiantZombie
 import net.minecraft.entity.monster.EntityMagmaCube
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.network.play.server.S38PacketPlayerListItem
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object KuudraUtils {
     var kuudraTeammates: List<KuudraPlayer> = emptyList()
     var kuudraTeammatesNoSelf: List<KuudraPlayer> = emptyList()
-    var giantZombies: List<EntityGiantZombie> = mutableListOf()
+    var giantZombies: List<EntityGiantZombie> = emptyList()
     var supplies = BooleanArray(6) { true }
     var kuudraEntity: EntityMagmaCube = EntityMagmaCube(mc.theWorld)
     var builders = 0
@@ -31,9 +33,9 @@ object KuudraUtils {
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
-        kuudraTeammates = mutableListOf()
-        kuudraTeammatesNoSelf = mutableListOf()
-        giantZombies = mutableListOf()
+        kuudraTeammates = emptyList()
+        kuudraTeammatesNoSelf = emptyList()
+        giantZombies = emptyList()
         supplies = BooleanArray(6) { true }
         kuudraEntity = EntityMagmaCube(mc.theWorld)
         builders = 0
@@ -72,7 +74,7 @@ object KuudraUtils {
 
     init {
         Executor(500) {
-            if (!LocationUtils.currentArea.isArea(Island.Kuudra)) return@Executor
+            if (!inKuudra) return@Executor
             val entities = mc.theWorld?.loadedEntityList ?: return@Executor
             giantZombies = entities.filterIsInstance<EntityGiantZombie>().filter { it.heldItem.unformattedName == "Head" }.toMutableList()
 
@@ -98,23 +100,28 @@ object KuudraUtils {
             }
 
             buildingPiles = entities.filterIsInstance<EntityArmorStand>().filter { it.name.noControlCodes.matches(Regex("PROGRESS: (\\d+)%")) }.map { it }
-
-            kuudraTeammates = updateKuudraTeammates(kuudraTeammates)
-            kuudraTeammatesNoSelf = kuudraTeammates.filter { it.playerName != mc.thePlayer?.name }
         }.register()
     }
 
-    private fun updateKuudraTeammates(previousTeammates: List<KuudraPlayer>): List<KuudraPlayer> {
-        val teammates = mutableListOf<KuudraPlayer>()
-        val tabList = getTabList
+    @SubscribeEvent
+    fun handleTabListPacket(event: PacketReceivedEvent) {
+        if (!inKuudra || event.packet !is S38PacketPlayerListItem || !event.packet.action.equalsOneOf(S38PacketPlayerListItem.Action.UPDATE_DISPLAY_NAME, S38PacketPlayerListItem.Action.ADD_PLAYER)) return
+        kuudraTeammates = updateKuudraTeammates(kuudraTeammates.toMutableList(), event.packet.entries)
+        kuudraTeammatesNoSelf = kuudraTeammates.filter { it.playerName != mc.thePlayer?.name }
+    }
 
-        tabList.forEach { entry ->
-            val text = entry.first.displayName?.formattedText?.noControlCodes ?: return@forEach
-            val (_, _, name) = Regex("^\\[(\\d+)] (?:\\[\\w+] )*(\\w+)").find(text)?.groupValues ?: return@forEach
-            val previousTeammate = previousTeammates.find { it.playerName == name }
-            val entity = mc.theWorld?.getPlayerEntityByName(name)
-            teammates.add(KuudraPlayer(name, previousTeammate?.eatFresh == true, previousTeammate?.eatFreshTime ?: 0, entity))
+    private val tablistRegex = Regex("^\\[(\\d+)] (?:\\[\\w+] )*(\\w+)")
+
+    private fun updateKuudraTeammates(previousTeammates: MutableList<KuudraPlayer>, tabList: List<S38PacketPlayerListItem.AddPlayerData>): List<KuudraPlayer> {
+
+        for (line in tabList) {
+            val text = line.displayName?.unformattedText?.noControlCodes ?: continue
+            val (_, name) = tablistRegex.find(text)?.destructured ?: continue
+
+            previousTeammates.find { it.playerName == name }?.let { kuudraPlayer ->
+                kuudraPlayer.entity = mc.theWorld?.getPlayerEntityByName(name)
+            } ?: previousTeammates.add(KuudraPlayer(name, entity = mc.theWorld?.getPlayerEntityByName(name)))
         }
-        return teammates
+        return previousTeammates
     }
 }

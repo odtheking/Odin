@@ -18,7 +18,7 @@ data class DungeonPlayer(
     val name: String,
     var clazz: DungeonClass,
     val locationSkin: ResourceLocation = ResourceLocation("textures/entity/steve.png"),
-    val entity: EntityPlayer? = null,
+    var entity: EntityPlayer? = null,
     var isDead: Boolean = false
 )
 

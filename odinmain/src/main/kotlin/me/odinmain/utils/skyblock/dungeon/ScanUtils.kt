@@ -22,8 +22,7 @@ import kotlin.math.roundToInt
 
 object ScanUtils {
     private const val ROOM_SIZE = 32
-    private const val START_X = -185
-    private const val START_Z = -185
+    private const val START = -185
     private const val DEFAULT_HEIGHT = 170
 
     private val roomList: Set<RoomData> = loadRoomData()
@@ -117,9 +116,9 @@ object ScanUtils {
         roomList.find { hash in it.cores }
 
     fun getRoomCenter(posX: Int, posZ: Int): Vec2 {
-        val roomX = ((posX - START_X) / ROOM_SIZE.toFloat()).roundToInt()
-        val roomZ = ((posZ - START_Z) / ROOM_SIZE.toFloat()).roundToInt()
-        return Vec2(roomX * ROOM_SIZE + START_X, roomZ * ROOM_SIZE + START_Z)
+        val roomX = ((posX - START) / ROOM_SIZE.toFloat()).roundToInt()
+        val roomZ = ((posZ - START) / ROOM_SIZE.toFloat()).roundToInt()
+        return Vec2(roomX * ROOM_SIZE + START, roomZ * ROOM_SIZE + START)
     }
 
     fun getCore(vec2: Vec2): Int {
@@ -152,6 +151,7 @@ object ScanUtils {
     @SubscribeEvent
     fun enterDungeonRoom(event: RoomEnterEvent) {
         currentFullRoom = event.fullRoom
+        //if (event.fullRoom?.room?.data?.name == "Entrance") devMessage(DungeonUtils.dungeonTeammates.joinToString { it.name })
         if (passedRooms.none { it.room.data.name == currentFullRoom?.room?.data?.name }) passedRooms.add(currentFullRoom ?: return)
     }
 
