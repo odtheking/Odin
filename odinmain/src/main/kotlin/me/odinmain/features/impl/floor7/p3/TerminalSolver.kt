@@ -242,7 +242,7 @@ object TerminalSolver : Module(
     init {
         onMessage(Regex("(.{1,16}) (?:activated|completed) a (terminal|device|lever)! \\((\\d)/(\\d)\\)")) {
             Regex("(.{1,16}) (?:activated|completed) a (terminal|device|lever)! \\((\\d)/(\\d)\\)").find(it)?.let {
-                val (playerName, completionStatus, deviceType, total) = it.destructured
+                val (playerName, deviceType, completionStatus, total) = it.destructured
                 TerminalSolvedEvent(if (deviceType == "terminal") lastTermOpened else TerminalTypes.NONE, playerName, completionStatus.toIntOrNull() ?: return@let, total.toIntOrNull() ?: return@let).postAndCatch()
             }
         }

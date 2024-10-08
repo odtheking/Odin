@@ -100,6 +100,8 @@ object WitherDragons : Module(
                 it.timesSpawned = 0
                 it.state = WitherDragonState.DEAD
                 it.entity = null
+                it.isSprayed = false
+                it.spawnedTime = 0
             }
             priorityDragon = WitherDragonsEnum.None
             lastDragonDeath = WitherDragonsEnum.None

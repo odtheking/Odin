@@ -43,7 +43,7 @@ object TeammatesHighlight : Module(
         if (!showName || !shouldRender()) return
         val teammate = dungeonTeammatesNoSelf.find { it.entity == event.entity } ?: return
         val text = if (showClass) "§${teammate.clazz.colorCode}${teammate.name} §e[${teammate.clazz.name[0]}]" else "§${teammate.clazz.colorCode}${teammate.name}"
-        RenderUtils.drawMinecraftLabel(event.entity, text, event.x, event.y + 0.5, event.z, 0.05)
+        RenderUtils.drawMinecraftLabel(event.entity, text, event.x, event.y + 0.5, event.z, 0.05, false)
         event.isCanceled = true
     }
 

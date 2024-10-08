@@ -666,26 +666,22 @@ object RenderUtils {
         }
     }
 
-    fun drawMinecraftLabel(entityIn: Entity, str: String, x: Double, y: Double, z: Double, scale: Double) { // figure out how to add shadows and what can be removed
-        val fontRenderer = mc.renderManager.fontRenderer
+    fun drawMinecraftLabel(entityIn: Entity, str: String, x: Double, y: Double, z: Double, scale: Double, depth: Boolean = true) {
         GlStateManager.pushMatrix()
+        depth(depth)
         GlStateManager.translate(x + 0.0f, y + entityIn.height + 0.5f, z)
         GL11.glNormal3f(0.0f, 1.0f, 0.0f)
         GlStateManager.rotate(-this.renderManager.playerViewY, 0.0f, 1.0f, 0.0f)
         GlStateManager.rotate(this.renderManager.playerViewX, 1.0f, 0.0f, 0.0f)
         GlStateManager.scale(-scale, -scale, scale)
         GlStateManager.disableLighting()
-        GlStateManager.depthMask(false)
-        GlStateManager.disableDepth()
         GlStateManager.enableBlend()
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        fontRenderer.drawString(str, -fontRenderer.getStringWidth(str) / 2f, 0f, 0x20FFFFFF, true)
-        GlStateManager.enableDepth()
-        GlStateManager.depthMask(true)
-        fontRenderer.drawString(str, -fontRenderer.getStringWidth(str) / 2f, 0f, -1, true)
-        GlStateManager.enableLighting()
+        mc.fontRendererObj.drawString(str, -mc.fontRendererObj.getStringWidth(str) / 2f, 0f, -1, true)
         GlStateManager.disableBlend()
+        GlStateManager.enableLighting()
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
+        if (!depth) resetDepth()
         GlStateManager.popMatrix()
     }
 }
