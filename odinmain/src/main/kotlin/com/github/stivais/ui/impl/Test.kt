@@ -5,7 +5,6 @@ import com.github.stivais.ui.constraints.copies
 import com.github.stivais.ui.constraints.percent
 import com.github.stivais.ui.constraints.size
 import com.github.stivais.ui.elements.impl.Grid
-import me.odinmain.features.impl.render.ClickGUI.`gray 38`
 
 
 fun basic() = UI {
@@ -19,10 +18,14 @@ fun basic() = UI {
 //        text("ghjijk", pos = at(x = Center), size = 20.px)
 //    }
 
+
+
    Grid(copies()).scope {
        repeat(4) {
            group(size(50.percent, 50.percent)) {
-               block(size(80.percent, 50.percent), `gray 38`)
+               image(
+                   "https://mc-heads.net/avatar/Stivais/128"
+               )
            }
        }
    }

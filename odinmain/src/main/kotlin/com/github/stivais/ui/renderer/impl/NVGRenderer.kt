@@ -27,8 +27,10 @@ object NVGRenderer : Renderer {
     private val fonts = HashMap<Font, Int>()
 
     // implement image removing with reference counting
-    private val images = HashMap<Image, Int>()
-    private val svgs = HashMap<Image, Int>()
+    private val images = HashMap<Image, NVGImage>()
+
+    // not needed afaik
+    // private val svgs = HashMap<Image, NVGSvg>()
 
 
     private val fbos = HashMap<Framebuffer, NVGLUFramebuffer>()
@@ -242,13 +244,29 @@ object NVGRenderer : Renderer {
         nvgFill(vg)
     }
 
-    private fun getImage(image: Image): Int {
-        return when (image.type) {
-            Image.Type.RASTER -> images.getOrPut(image) { loadImage(image) }
+    override fun createImage(image: Image) {
+        when (image.type) {
+            Image.Type.RASTER -> {
+                images.getOrPut(image) { NVGImage(0, loadImage(image)) }.count++
+            }
             Image.Type.VECTOR -> {
-                svgs.getOrPut(image) { loadSVG(image) }
+                images.getOrPut(image) { NVGImage(0, loadSVG(image)) }.count++
             }
         }
+    }
+
+    // lowers reference count by 1, if it reaches 0 it gets deleted from mem
+    override fun deleteImage(image: Image) {
+        val nvgImage = images[image] ?: return
+        nvgImage.count--
+        if (nvgImage.count == 0) {
+            nvgDeleteImage(vg, nvgImage.nvg)
+            images.remove(image)
+        }
+    }
+
+    private fun getImage(image: Image): Int {
+        return images[image]?.nvg ?: throw IllegalStateException("Image (${image.resourcePath}) doesn't exist")
     }
 
     private fun loadImage(image: Image): Int {
@@ -351,4 +369,6 @@ object NVGRenderer : Renderer {
         }
         return finalScissor
     }
+
+    private data class NVGImage(var count: Int, val nvg: Int)
 }

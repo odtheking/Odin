@@ -69,6 +69,10 @@ interface Renderer {
         image(image, x, y, w, h, radius, radius, radius, radius)
     }
 
+    // should use rc
+    fun createImage(image: Image)
+    fun deleteImage(image: Image)
+
     fun scissor(x: Float, y: Float, width: Float, height: Float): Scissor
 
     fun resetScissor(scissor: Scissor)

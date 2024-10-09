@@ -16,12 +16,14 @@ class Image(
     var width = 0f
     var height = 0f
 
-    val trimmedPath = resourcePath.trim()
     val stream: InputStream
 
     init {
-        val cachedBuffer = cache[resourcePath]
-        stream = cachedBuffer?.asInputStream() ?: if (trimmedPath.startsWith("http")) {
+
+        val trimmedPath = resourcePath.trim()
+
+//        val cachedBuffer = cache[resourcePath]
+        stream = if (trimmedPath.startsWith("http")) {
             setupConnection(trimmedPath, "Odin", 5000, true)
         } else {
             val file = File(trimmedPath)
@@ -47,30 +49,13 @@ class Image(
     }
 
     fun buffer(): ByteBuffer {
-        val cachedBuffer = cache[resourcePath]
-        if (cachedBuffer != null) return cachedBuffer
-
         val bytes: ByteArray
-
-        stream.use {
-            bytes = IOUtils.toByteArray(it)
-        }
-
+        stream.use { bytes = IOUtils.toByteArray(it) }
         val buffer = ByteBuffer.allocateDirect(bytes.size).order(ByteOrder.nativeOrder()).put(bytes).also { it.flip() }
-        cache[resourcePath] = buffer
         return buffer
     }
 
     companion object {
-        private const val MAX_CACHE_SIZE = 20
-
-        // this is pointless, images are mostly stored in vram
-        private val cache = object : LinkedHashMap<String, ByteBuffer>(MAX_CACHE_SIZE, 0.75f, true) {
-            override fun removeEldestEntry(eldest: Map.Entry<String, ByteBuffer>): Boolean {
-                return size > MAX_CACHE_SIZE
-            }
-        }
-
         fun getType(path: String): Type {
             return if (path.substringAfterLast('.') == "svg") Type.VECTOR else Type.RASTER
         }
