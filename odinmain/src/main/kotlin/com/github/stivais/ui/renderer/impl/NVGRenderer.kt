@@ -295,7 +295,7 @@ object NVGRenderer : Renderer {
     }
 
     private fun getIDFromFont(font: Font): Int {
-        return fonts[font] ?: nvgCreateFontMem(vg, font.name, font.buffer, false).also {
+        return fonts[font] ?: nvgCreateFontMem(vg, font.name, font.buffer, 0).also {
             fonts[font] = it
         }
     }
