@@ -122,7 +122,8 @@ object DianaBurrowEstimate {
         currentParticlePosition = currLoc.clone()
 
         val estimatedDistance = estimatedBurrowDistance ?: return
-        val changes = currentParticlePosition?.subtract(secondLastParticlePosition)?.normalize() ?: return
+        val secondParticlePosition = secondLastParticlePosition ?: return
+        val changes = currentParticlePosition?.subtract(secondParticlePosition)?.normalize() ?: return
 
         lastParticlePosition?.let {
             estimatedBurrowPosition = it.add(changes.multiply(estimatedDistance, 1.0, estimatedDistance))

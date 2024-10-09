@@ -206,6 +206,7 @@ object RenderUtils {
 
         GlStateManager.pushMatrix()
 
+        GlStateManager.disableLighting()
         GlStateManager.enableCull()
         GlStateManager.enableTexture2D()
         GlStateManager.tryBlendFuncSeparate(770, 1, 1, 0)

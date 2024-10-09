@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.render
 
 import me.odinmain.OdinMain.isLegitVersion
-import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -12,7 +11,6 @@ import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.Entity
 import net.minecraft.entity.boss.EntityWither
 import net.minecraft.entity.item.EntityArmorStand
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object CustomHighlight : Module(
     name = "Custom Highlight",
@@ -27,7 +25,7 @@ object CustomHighlight : Module(
     private val color by ColorSetting("Color", Color.WHITE, true, description = "The color of the highlight.")
     private val thickness by NumberSetting("Line Width", 1f, .1f, 4f, .1f, description = "The line width of Outline / Boxes/ 2D Boxes.").withDependency { mode != HighlightRenderer.HighlightType.Overlay.ordinal }
     private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { mode == HighlightRenderer.HighlightType.Boxes.ordinal }
-    private val scanDelay by NumberSetting("Scan Delay", 500L, 10L, 2000L, 100L, description = "The delay between entity scans.", unit = "ms")
+    private val scanDelay by NumberSetting("Scan Delay", 100L, 20L, 2000L, 20L, description = "The delay between entity scans.", unit = "ms")
 
     private val xray by BooleanSetting("Depth Check", false, description = "Highlights entities through walls.").withDependency { !isLegitVersion }
     private val showInvisible by BooleanSetting("Show Invisible", false, description = "Highlights invisible entities.").withDependency { !isLegitVersion }
@@ -38,7 +36,7 @@ object CustomHighlight : Module(
 
     init {
         execute({ scanDelay }) {
-            currentEntities.removeAll { mc.theWorld?.getEntityByID(it.entityId) == null }
+            currentEntities.clear()
             getEntities()
         }
 
@@ -50,19 +48,12 @@ object CustomHighlight : Module(
         }
     }
 
-    @SubscribeEvent
-    fun postMeta(event: PostEntityMetadata) {
-        val entity = mc.theWorld?.getEntityByID(event.packet.entityId) ?: return
-        checkEntity(entity)
-        if (starredMobESP) checkStarred(entity)
-        if (shadowAssassin && !isLegitVersion) checkAssassin(entity)
-        if (showInvisible && entity.isInvisible && !isLegitVersion && entity in currentEntities) entity.isInvisible = false
-    }
-
     private fun getEntities() {
-        mc.theWorld?.loadedEntityList?.forEach {
-            checkEntity(it)
-            if (starredMobESP) checkStarred(it)
+        mc.theWorld?.loadedEntityList?.forEach { entity ->
+            checkEntity(entity)
+            if (starredMobESP) checkStarred(entity)
+            if (shadowAssassin && !isLegitVersion) checkAssassin(entity)
+            if (showInvisible && entity.isInvisible && !isLegitVersion && entity in currentEntities) entity.isInvisible = false
         }
     }
 
