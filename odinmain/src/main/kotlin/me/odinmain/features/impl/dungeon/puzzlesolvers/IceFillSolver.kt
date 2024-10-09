@@ -7,7 +7,7 @@ import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.skyblock.IceFillFloors.IceFillFloors
+import me.odinmain.utils.skyblock.IceFillFloors
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.tiles.Rotations
 import me.odinmain.utils.skyblock.isAir
@@ -84,7 +84,10 @@ object IceFillSolver {
 
                 renderRotation = rotation
                 patternStartPositions.add(pos.addVec(x= 0.5, y = 0.1, z = 0.5))
-                currentPatterns.add(IceFillFloors[floorIndex][patternIndex].toMutableList())
+                val pattern = if (PuzzleSolvers.useOptimizedPatterns) IceFillFloors.advanced[floorIndex][patternIndex]
+                else IceFillFloors.IceFillFloors[floorIndex][patternIndex]
+
+                currentPatterns.add(pattern.toMutableList())
                 return
             }
         }

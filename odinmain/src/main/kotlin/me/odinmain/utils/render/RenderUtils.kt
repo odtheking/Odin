@@ -100,18 +100,17 @@ object RenderUtils {
     }
 
     private fun preDraw() {
-        GlStateManager.disableTexture2D()
+        GlStateManager.enableAlpha()
         GlStateManager.enableBlend()
-        GlStateManager.disableAlpha()
+        GlStateManager.disableLighting()
+        GlStateManager.disableTexture2D()
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
         translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
     }
 
     private fun postDraw() {
-        GlStateManager.enableTexture2D()
         GlStateManager.disableBlend()
-        GlStateManager.enableAlpha()
-        Color.WHITE.bind()
+        GlStateManager.enableTexture2D()
     }
 
     fun depth(depth: Boolean) {
@@ -307,6 +306,8 @@ object RenderUtils {
         tessellator.draw()
 
         if (!depth) resetDepth()
+        GL11.glDisable(GL11.GL_LINE_SMOOTH)
+        GL11.glLineWidth(2f)
         postDraw()
         GlStateManager.popMatrix()
     }
@@ -342,6 +343,7 @@ object RenderUtils {
 
         GlStateManager.enableBlend()
         blendFactor()
+        GlStateManager.disableLighting()
         depth(depthTest)
 
         val textWidth = mc.fontRendererObj.getStringWidth(text)
@@ -377,11 +379,13 @@ object RenderUtils {
 
         GlStateManager.pushMatrix()
         GL11.glLineWidth(2.0f)
+
+        GlStateManager.disableTexture2D()
+        GlStateManager.disableLighting()
+        GlStateManager.depthMask(false)
         GlStateManager.disableCull()
         GlStateManager.enableBlend()
         blendFactor()
-        GlStateManager.depthMask(false)
-        GlStateManager.disableTexture2D()
 
         if (depth) GlStateManager.disableDepth()
 
@@ -399,7 +403,6 @@ object RenderUtils {
         GlStateManager.enableTexture2D()
         if (depth) GlStateManager.enableDepth()
         GlStateManager.resetColor()
-        Color.WHITE.bind()
         GlStateManager.popMatrix()
     }
 
@@ -542,6 +545,7 @@ object RenderUtils {
             GL11.glLineWidth(3f)
 
             GL11.glDisable(GL11.GL_TEXTURE_2D)
+            GL11.glDisable(GL11.GL_LIGHTING)
             GL11.glEnable(GL11.GL_BLEND)
             GL11.glDisable(GL11.GL_ALPHA_TEST)
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)

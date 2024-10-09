@@ -52,7 +52,7 @@ suspend fun sendDataToServer(body: String, url: String = "https://gi2wsqbyse6tnf
  * @return A string containing the data fetched from the URL, or an empty string in case of an exception.
  */
 suspend fun getDataFromServer(url: String): String {
-    return withTimeoutOrNull(5000) {
+    return withTimeoutOrNull(10000) {
         try {
             val connection = withContext(Dispatchers.IO) {
                 URL(url).openConnection()

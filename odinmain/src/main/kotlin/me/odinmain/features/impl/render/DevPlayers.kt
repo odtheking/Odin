@@ -61,9 +61,9 @@ object DevPlayers {
 
     @OptIn(DelicateCoroutinesApi::class)
     fun updateDevs(): HashMap<String, DevPlayer> {
-        scope.launch {
-            val data = convertDecimalToNumber(getDataFromServer("https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
-            val gson = GsonBuilder().registerTypeAdapter(DevData::class.java, DevDeserializer()).create() ?: return@launch
+        runBlocking(scope.coroutineContext) {
+            val data = convertDecimalToNumber(getDataFromServer("https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/")).ifEmpty { return@runBlocking }
+            val gson = GsonBuilder().registerTypeAdapter(DevData::class.java, DevDeserializer()).create() ?: return@runBlocking
             gson.fromJson(data, Array<DevData>::class.java).forEach {
                 devs[it.devName] = DevPlayer(it.size.first, it.size.second, it.size.third, it.wings, Color(it.wingsColor.first, it.wingsColor.second, it.wingsColor.third))
             }
