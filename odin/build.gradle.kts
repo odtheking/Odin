@@ -70,12 +70,23 @@ dependencies {
         exclude(module = "kotlin-reflect")
     }
 
-    lwjgl("org.lwjgl:lwjgl:${lwjglVersion}")
-    lwjgl("org.lwjgl:lwjgl-nanovg:${lwjglVersion}")
-    lwjgl("org.lwjgl:lwjgl-stb:${lwjglVersion}")
-    lwjglNative("org.lwjgl:lwjgl:${lwjglVersion}:${lwjglNatives}")
-    lwjglNative("org.lwjgl:lwjgl-nanovg:${lwjglVersion}:${lwjglNatives}")
-    lwjglNative("org.lwjgl:lwjgl-stb:${lwjglVersion}:${lwjglNatives}")
+    lwjgl("org.lwjgl:lwjgl:3.3.1")
+    lwjgl("org.lwjgl:lwjgl-stb:3.3.1")
+    lwjgl("org.lwjgl:lwjgl-tinyfd:3.3.1")
+    lwjgl("org.lwjgl:lwjgl-nanovg:3.3.1")
+
+    lwjglNative("org.lwjgl:lwjgl:3.3.1:natives-windows")
+    lwjglNative("org.lwjgl:lwjgl-stb:3.3.1:natives-windows")
+    lwjglNative("org.lwjgl:lwjgl-tinyfd:3.3.1:natives-windows")
+    lwjglNative("org.lwjgl:lwjgl-nanovg:3.3.1:natives-windows")
+    lwjglNative("org.lwjgl:lwjgl:3.3.1:natives-linux")
+    lwjglNative("org.lwjgl:lwjgl-stb:3.3.1:natives-linux")
+    lwjglNative("org.lwjgl:lwjgl-tinyfd:3.3.1:natives-linux")
+    lwjglNative("org.lwjgl:lwjgl-nanovg:3.3.1:natives-linux")
+    lwjglNative("org.lwjgl:lwjgl:3.3.1:natives-macos")
+    lwjglNative("org.lwjgl:lwjgl-stb:3.3.1:natives-macos")
+    lwjglNative("org.lwjgl:lwjgl-tinyfd:3.3.1:natives-macos")
+    lwjglNative("org.lwjgl:lwjgl-nanovg:3.3.1:natives-macos")
     shadowImpl(lwjglJar.outputs.files)
 }
 

@@ -84,7 +84,7 @@ object LeapMenu : Module(
                         }
                     }
                     onClick { // make it possible to click any mouse button
-                        handleMouseClick()
+                        handleMouseClick(index)
                         true
                     }
                     onMouseEnter {
@@ -112,9 +112,7 @@ object LeapMenu : Module(
         leapMenu().open()
     }
 
-    private fun handleMouseClick() {
-        val quadrant = getQuadrant()
-
+    private fun handleMouseClick(quadrant: Int) {
         if ((type.equalsOneOf(1,2,3)) && leapTeammates.size < quadrant) return
 
         val playerToLeap = leapTeammates[quadrant - 1]

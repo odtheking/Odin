@@ -30,16 +30,6 @@ val lwjglJar = tasks.create<ShadowJar>("lwjglJar") {
     }
 }
 
-val lwjglVersion = "3.3.3"
-
-val lwjglNatives: String = run {
-    val arch = System.getProperty("os.arch")!!
-    if (arch.contains("64")) {
-        "natives-windows${if (arch.startsWith("aarch64")) "-arm64" else ""}"
-    } else {
-        "natives-windows-x86"
-    }
-}
 
 sourceSets.main {
     java.srcDir(file("$projectDir/src/main/kotlin"))
@@ -57,19 +47,30 @@ dependencies {
     forge("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9")
 
     implementation(kotlin("stdlib-jdk8"))
-    shadowImpl("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC")
-    compileOnly("com.github.notenoughupdates:notenoughupdates:v2.1.0:all")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC")
+    compileOnly("com.github.NotEnoughUpdates:NotEnoughUpdates:2.4.0:all")
 
     shadowImpl("com.github.Stivais:Commodore:3f4a14b1cf") {
         exclude(module = "kotlin-stdlib-jdk8")
     }
 
-    lwjgl("org.lwjgl:lwjgl:${lwjglVersion}")
-    lwjgl("org.lwjgl:lwjgl-nanovg:${lwjglVersion}")
-    lwjgl("org.lwjgl:lwjgl-stb:${lwjglVersion}")
-    lwjglNative("org.lwjgl:lwjgl:${lwjglVersion}:${lwjglNatives}")
-    lwjglNative("org.lwjgl:lwjgl-nanovg:${lwjglVersion}:${lwjglNatives}")
-    lwjglNative("org.lwjgl:lwjgl-stb:${lwjglVersion}:${lwjglNatives}")
+    lwjgl("org.lwjgl:lwjgl:3.3.1")
+    lwjgl("org.lwjgl:lwjgl-stb:3.3.1")
+    lwjgl("org.lwjgl:lwjgl-tinyfd:3.3.1")
+    lwjgl("org.lwjgl:lwjgl-nanovg:3.3.1")
+
+    lwjglNative("org.lwjgl:lwjgl:3.3.1:natives-windows")
+    lwjglNative("org.lwjgl:lwjgl-stb:3.3.1:natives-windows")
+    lwjglNative("org.lwjgl:lwjgl-tinyfd:3.3.1:natives-windows")
+    lwjglNative("org.lwjgl:lwjgl-nanovg:3.3.1:natives-windows")
+    lwjglNative("org.lwjgl:lwjgl:3.3.1:natives-linux")
+    lwjglNative("org.lwjgl:lwjgl-stb:3.3.1:natives-linux")
+    lwjglNative("org.lwjgl:lwjgl-tinyfd:3.3.1:natives-linux")
+    lwjglNative("org.lwjgl:lwjgl-nanovg:3.3.1:natives-linux")
+    lwjglNative("org.lwjgl:lwjgl:3.3.1:natives-macos")
+    lwjglNative("org.lwjgl:lwjgl-stb:3.3.1:natives-macos")
+    lwjglNative("org.lwjgl:lwjgl-tinyfd:3.3.1:natives-macos")
+    lwjglNative("org.lwjgl:lwjgl-nanovg:3.3.1:natives-macos")
     shadowImpl(lwjglJar.outputs.files)
 }
 
