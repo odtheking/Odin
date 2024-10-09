@@ -24,16 +24,10 @@ val lwjglJar = tasks.create<ShadowJar>("lwjglJar") {
     exclude("META-INF/versions/**")
     exclude("**/module-info.class")
     exclude("**/package-info.class")
-
-    // Relocate LWJGL packages
-    relocate("org.lwjgl", "me.odinmain.lwjgl") {
-        include("**")
+    relocate("org.lwjgl", "org.lwjgl3") {
+        include("org.lwjgl.PointerBuffer")
+        include("org.lwjgl.BufferUtils")
     }
-
-    // Optionally relocate other dependencies you want to avoid conflicts with
-    relocate("me.odinmain.lwjgl.nanovg", "me.odinmain.nanovg")
-    relocate("org.lwjgl.stb", "me.odinmain.stb")
-    relocate("org.lwjgl.tinyfd", "me.odinmain.tinyfd")
 }
 
 
