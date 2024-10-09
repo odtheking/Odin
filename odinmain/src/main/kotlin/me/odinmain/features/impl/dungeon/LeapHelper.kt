@@ -10,6 +10,7 @@ import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 
+// this is only used in LeapMenu, merge into LeapMenu module?
 object LeapHelper {
     private val NONE = Vec3(0.0, 0.0, 0.0)
     private val messageMap = mapOf(

@@ -7,6 +7,8 @@ import com.github.stivais.ui.utils.reverseLoop
 
 class EventManager(private val ui: UI) {
 
+    var recalculate = false
+
     var mouseX: Float = 0f
         set(value) {
             field = value * ui.main.scale // maybe make mouse scale depending on current hovered element?
@@ -37,7 +39,7 @@ class EventManager(private val ui: UI) {
     }
 
     fun check(): Boolean {
-        return hoveredElement?.isInside(mouseX, mouseY) == false
+        return recalculate || hoveredElement?.isInside(mouseX, mouseY) == false
     }
 
     //

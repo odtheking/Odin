@@ -142,6 +142,7 @@ abstract class Module(
         }
     }
 
+    // todo: replace
     /**
      * Helper function to make cleaner code, and more performance, since we don't need multiple registers for packet received events.
      *
@@ -236,6 +237,7 @@ abstract class Module(
         }
     }
 
+    // figure way to separate from module file while still having reference to it
     inner class HUD(
         val x: Percent,
         val y: Percent,
@@ -244,6 +246,13 @@ abstract class Module(
     ) {
         val defaultX: Float = x.percent
         val defaultY: Float = y.percent
+
+        val settings: ArrayList<Setting<*>> = arrayListOf()
+
+        // test for now
+        fun setting(setting: Setting<*>) {
+            settings.add(setting)
+        }
 
         var scale = 1f
             set(value) {

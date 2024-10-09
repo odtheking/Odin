@@ -4,30 +4,34 @@ import com.github.stivais.ui.UI
 import com.github.stivais.ui.UIScreen.Companion.init
 import com.github.stivais.ui.color.Color
 import com.github.stivais.ui.color.withAlpha
-import com.github.stivais.ui.constraints.constrain
-import com.github.stivais.ui.constraints.copies
+import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Pixel
-import com.github.stivais.ui.constraints.px
+import com.github.stivais.ui.constraints.positions.Linked
 import com.github.stivais.ui.constraints.sizes.Bounding
+import com.github.stivais.ui.constraints.sizes.Copying
 import com.github.stivais.ui.elements.impl.Popup
 import com.github.stivais.ui.elements.impl.canvas
 import com.github.stivais.ui.elements.impl.popup
 import com.github.stivais.ui.elements.scope.ElementDSL
 import com.github.stivais.ui.utils.loop
+import com.github.stivais.ui.utils.radius
 import me.odinmain.config.Config
 import me.odinmain.features.ModuleManager.HUDs
 import me.odinmain.features.ModuleManager.setupHUD
+import me.odinmain.features.impl.render.ClickGUI
+import me.odinmain.features.impl.render.ClickGUI.`gray 26`
+import me.odinmain.features.impl.render.ClickGUI.`gray 38`
 import me.odinmain.utils.ui.outline
 import kotlin.math.abs
 import kotlin.math.sign
 import me.odinmain.features.ModuleManager.hudUI as screen
 
+private var selection: Popup? = null
+
 private var snapX: Float = -1f
 private var snapY: Float = -1f
 
 fun openHUDEditor() = UI {
-
-    var selected: Popup? = null
 
     // snapping lines
     canvas(copies()) { renderer ->
@@ -35,52 +39,147 @@ fun openHUDEditor() = UI {
         if (snapY != -1f) renderer.line(0f, snapY, ui.main.width, snapY, 1f, Color.WHITE.rgba)
     }.add()
 
+    var advancedOptions: Popup? = null
+
     onClick {
-        selected?.closePopup()
-        selected = null
+        advancedOptions?.closePopup()
+        advancedOptions = null
+
+        selection?.closePopup()
+        selection = null
         false
     }
-
-
-    // multi-"editing"
-    selection()
 
     // preview huds
     HUDs.loop { hud ->
         val drawable = hud.Drawable(constrain(hud.x, hud.y, Bounding, Bounding), preview = true).add()
         hud.builder(Module.HUDScope(drawable).apply {
 
+            // converts to px for mutability
             afterCreation {
                 element.constraints.x = element.x.px
                 element.constraints.y = element.y.px
             }
-
-            onScroll { (amount) ->
-                hud.scale += 0.1f * amount.sign
-                true
-            }
+            // converts back to percent based value
             onRemove {
                 hud.x.percent = element.x / ui.main.width
                 hud.y.percent = element.y / ui.main.height
             }
 
+            // resize
+            onScroll { (amount) ->
+                hud.scale += 0.1f * amount.sign
+                true
+            }
+
+            // dragging
             var removePopup = false
 
             onClick {
-                selected?.closePopup()
-                selected = selectionPopup(element.x, element.y, element.screenWidth(), element.screenHeight(), true, arrayListOf(element))
+                advancedOptions?.closePopup()
+                advancedOptions = null
+
+                selection?.closePopup()
+                selection = selectionPopup(pressed = true, arrayListOf(element))
                 removePopup = true
                 true
             }
             onRelease {
                 if (removePopup) {
-                    selected?.closePopup()
-                    selected = null
+                    selection?.closePopup()
+                    selection = null
                     removePopup = false
                 }
             }
+
+            // advanced options
+
+            onClick(1) {
+                advancedOptions?.closePopup()
+                advancedOptions = popup(
+                    constraints = at(Linked(element) + 15.px, element.y.px),
+                    smooth = true
+                ) {
+                    column(constrain(0.px, 0.px, Bounding, Bounding)) {
+                        block(
+                            size(160.px, 10.px),
+                            color = `gray 26`,
+                            radius(tl = 5, tr = 5)
+                        )
+                        column(size(160.px, Bounding)) {
+                            background(color = Color.RGB(38, 38, 38, 0.7f))
+                            hud.settings.loop {
+                                it.apply {
+                                    createElement()
+                                }
+                            }
+
+                            group(size(Copying, h = 40.px)) {
+                                block(
+                                    size(90.percent, 70.percent),
+                                    color = `gray 38`,
+                                    radius(5)
+                                ) {
+                                    outline(ClickGUI.color)
+                                    text("Reset")
+                                }
+                            }
+                        }
+                        block(
+                            size(160.px, 10.px),
+                            color = `gray 26`,
+                            radius(bl = 5, br = 5)
+                        )
+                    }
+                    // consume event
+                    onClick { true }
+
+
+//                    column(size(Bounding, Bounding)) {
+//                        block(
+//                            size(160.px, 10.px),
+//                            color = `gray 26`,
+//                            radius = radius(tl = 7, tr = 7)
+//                        )
+//
+//                        column(size(h = Animatable(from = 35.px, to = Bounding))) {
+//                            background(color = Color.RGB(38, 38, 38, 0.7f))
+//                            block(
+//                                size(160.px, 35.px),
+//                                color = `gray 26`,
+//                            ) {
+//                                text("Options")
+//                                onClick(0, 1) {
+//                                    parent()!!.height.animate(0.25.seconds, Animations.EaseOutQuint)
+//                                    true
+//                                }
+//                            }
+//                            block(size(160.px, 140.px), Color.TRANSPARENT)
+//                        }
+//
+//                        block(
+//                            size(160.px, 50.px),
+//                            color = `gray 26`,
+//                            radius = radius(bl = 7, br = 7)
+//                        ) {
+//                            block(
+//                                size(90.percent, 60.percent),
+//                                color = `gray 38`,
+//                                radius = radius(7)
+//                            ) {
+//                                outline(ClickGUI.color)
+//                                text("Reset")
+//                            }
+//                        }
+//                    }
+                }
+                true
+            }
         })
     }
+
+    // multi-"editing"
+    selection()
 
     // removes actual hud elements, so it can display previewed ones, and refresh when closed
     onCreation {
@@ -113,8 +212,6 @@ private fun ElementDSL.selection() {
     var clickedX = 0f
     var clickedY = 0f
 
-    var popup: Popup? = null
-
     onClick {
         box.enabled = true
         clickedX = ui.mx
@@ -127,32 +224,22 @@ private fun ElementDSL.selection() {
         true
     }
     onRelease {
-        if (popup != null) {
-            if (!popup!!.element.isInside(ui.mx, ui.my)) {
-                popup!!.closePopup()
-                popup = null
+        if (selection != null) {
+            if (!selection!!.element.isInside(ui.mx, ui.my)) {
+                selection!!.closePopup()
+                selection = null
             }
         }
         if (box.enabled) {
-
             val selectedHUDs = arrayListOf<Module.HUD.Drawable>()
-
-            var minX = 9999f
-            var minY = 9999f
-            var maxX = 0f
-            var maxY = 0f
 
             element.elements?.loop {
                 if (it is Module.HUD.Drawable && it.enabled && it.intersects(box.element)) {
-                    if (it.x < minX) minX = it.x
-                    if (it.x + it.screenWidth() > maxX) maxX = it.screenWidth() + it.x
-                    if (it.y < minY) minY = it.y
-                    if (it.y + it.screenHeight() > maxY) maxY = it.screenHeight() + it.y
                     selectedHUDs.add(it)
                 }
             }
-            popup?.closePopup()
-            popup = selectionPopup(minX, minY, maxX - minX, maxY - minY, false, selectedHUDs)
+            selection?.closePopup()
+            selection = selectionPopup(pressed = false, selectedHUDs)
             redraw()
 
             box.enabled = false
@@ -174,17 +261,20 @@ private fun ElementDSL.selection() {
     }
 }
 
-fun ElementDSL.selectionPopup(
-    x: Float,
-    y: Float,
-    w: Float,
-    h: Float,
-    pressed: Boolean,
-    selectedHUDs: ArrayList<Module.HUD.Drawable>
-): Popup {
-    val px = x.px
-    val py = y.px
-    return popup(constraints = constrain(px, py, w.px, h.px), smooth = true) {
+fun ElementDSL.selectionPopup(pressed: Boolean, selectedHUDs: ArrayList<Module.HUD.Drawable>): Popup {
+    var minX = 9999f
+    var minY = 9999f
+    var maxX = 0f
+    var maxY = 0f
+    selectedHUDs.loop {
+        if (it.x < minX) minX = it.x
+        if (it.x + it.screenWidth() > maxX) maxX = it.screenWidth() + it.x
+        if (it.y < minY) minY = it.y
+        if (it.y + it.screenHeight() > maxY) maxY = it.screenHeight() + it.y
+    }
+    val px = minX.px
+    val py = minY.px
+    return popup(constraints = constrain(px, py, (maxX - minX).px, (maxY - minY).px), smooth = true) {
 
         outline(
             constraints = copies(),

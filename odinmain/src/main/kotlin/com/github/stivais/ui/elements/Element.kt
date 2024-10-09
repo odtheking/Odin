@@ -33,8 +33,6 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
 
     var events: HashMap<Event, ArrayList<(Event) -> Boolean>>? = null
 
-//    var scaledCentered = true
-
     val initialized
         get() = ::ui.isInitialized
 
@@ -157,7 +155,6 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
             size()
             positionChildren()
             clip()
-//            renderer.hollowRect(x, y, width, height, 1f, Color.WHITE.rgba)
         }
         if (!renders) return
         renderer.push()
@@ -193,7 +190,6 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
         }
         if (scissors) renderer.popScissor()
         renderer.pop()
-        if (scale != 1f) renderer.hollowRect(x, y, width, height, 1f, Color.WHITE.rgba)
     }
 
     open fun accept(event: Event): Boolean {
@@ -223,7 +219,9 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
         if (elements == null) elements = arrayListOf()
         elements!!.add(element)
         element.parent = this
-        if (::ui.isInitialized) element.initialize(ui)
+        if (::ui.isInitialized) {
+            element.initialize(ui)
+        }
     }
 
     fun removeElement(element: Element?) {

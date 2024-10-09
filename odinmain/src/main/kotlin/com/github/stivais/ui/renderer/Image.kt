@@ -8,7 +8,6 @@ import java.io.InputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.file.Files
-import java.util.LinkedHashMap
 
 class Image(
     val resourcePath: String,
@@ -22,18 +21,14 @@ class Image(
 
     init {
         val cachedBuffer = cache[resourcePath]
-        stream = if (cachedBuffer != null) {
-            cachedBuffer.asInputStream()
+        stream = cachedBuffer?.asInputStream() ?: if (trimmedPath.startsWith("http")) {
+            setupConnection(trimmedPath, "Odin", 5000, true)
         } else {
-            if (trimmedPath.startsWith("http")) {
-                setupConnection(trimmedPath, "Odin", 5000, true)
+            val file = File(trimmedPath)
+            if (file.exists() && file.isFile) {
+                Files.newInputStream(file.toPath())
             } else {
-                val file = File(trimmedPath)
-                if (file.exists() && file.isFile) {
-                    Files.newInputStream(file.toPath())
-                } else {
-                    this::class.java.getResourceAsStream(trimmedPath) ?: throw FileNotFoundException(trimmedPath)
-                }
+                this::class.java.getResourceAsStream(trimmedPath) ?: throw FileNotFoundException(trimmedPath)
             }
         }
     }
@@ -69,6 +64,7 @@ class Image(
     companion object {
         private const val MAX_CACHE_SIZE = 20
 
+        // this is pointless, images are mostly stored in vram
         private val cache = object : LinkedHashMap<String, ByteBuffer>(MAX_CACHE_SIZE, 0.75f, true) {
             override fun removeEldestEntry(eldest: Map.Entry<String, ByteBuffer>): Boolean {
                 return size > MAX_CACHE_SIZE

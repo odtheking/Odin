@@ -16,9 +16,9 @@ class Popup(element: Group, private val smooth: Boolean) : ElementScope<Group>(e
 
         if (smooth) {
             // todo: clean animations like these up
-            AnimationOperation(Animation(0.25.seconds, Animations.EaseInQuint).onFinish { finished = true }) {
+            AnimationOperation(Animation(0.1.seconds, Animations.EaseInQuint).onFinish { finished = true }) {
                 element.alpha = 1f - it
-//                element.scale = 1f - it
+                element.scale = 1f - it
             }.add()
         } else {
             finished = true
@@ -44,6 +44,7 @@ fun ElementDSL.popup(
 
         AnimationOperation(Animation(0.25.seconds, Animations.EaseOutQuint)) {
             group.alpha = it
+            group.scale = it
         }.add()
     }
     return Popup(group, smooth).also(block)

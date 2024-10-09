@@ -178,6 +178,12 @@ open class ElementScope<E: Element>(val element: E) {
         element.registerEvent(Mouse.Clicked(button), block)
     }
 
+    fun onClick(vararg buttons: Int, block: (Mouse.Clicked) -> Boolean) {
+        for (i in buttons) {
+            element.registerEvent(Mouse.Clicked(i), block)
+        }
+    }
+
     fun onFocusedClick(button: Int = 0, block: (Focused.Clicked) -> Boolean) {
         element.registerEvent(Focused.Clicked(button), block)
     }

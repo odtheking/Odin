@@ -11,4 +11,4 @@ infix fun TextScope.and(other: TextScope) {
     other.size = size
 }
 
-fun ElementDSL.outline(constraints: Constraints, color: Color) = block(constraints, Color.TRANSPARENT).outline(color)
+fun ElementDSL.outline(constraints: Constraints, color: Color, radius: FloatArray? = null) = block(constraints, Color.TRANSPARENT, radius).outline(color)

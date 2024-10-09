@@ -16,7 +16,7 @@ import org.lwjgl.nanovg.NanoVGGL2.*
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.stb.STBImage
 import org.lwjgl.system.MemoryUtil
-import java.util.Stack
+import java.util.*
 
 object NVGRenderer : Renderer {
 
@@ -25,8 +25,12 @@ object NVGRenderer : Renderer {
     private val nvgColor2: NVGColor = NVGColor.malloc()
 
     private val fonts = HashMap<Font, Int>()
+
+    // implement image removing with reference counting
     private val images = HashMap<Image, Int>()
     private val svgs = HashMap<Image, Int>()
+
+
     private val fbos = HashMap<Framebuffer, NVGLUFramebuffer>()
     private var vg: Long = -1
 
@@ -35,7 +39,7 @@ object NVGRenderer : Renderer {
 
     private val scissorStack = Stack<Scissor>()
 
-    var drawing: Boolean = false
+    private var drawing: Boolean = false
 
     init {
         vg = nvgCreate(NVG_ANTIALIAS)

@@ -5,6 +5,7 @@ import com.github.stivais.ui.constraints.Position
 import com.github.stivais.ui.constraints.Type
 import com.github.stivais.ui.elements.Element
 
+// todo: delete
 class OldLinked(val element: Element, private val previous: OldLinked?) : Position {
     override fun get(element: Element, type: Type): Float {
         val link = getNextValid(previous)?.element ?: return 0f
@@ -26,9 +27,9 @@ class OldLinked(val element: Element, private val previous: OldLinked?) : Positi
 class Linked(private val link: Element) : Position {
     override fun get(element: Element, type: Type): Float {
         return if (type.axis == HORIZONTAL) {
-            (link.x - (link.parent?.x ?: 0f)) + link.width
+            (link.x - (link.parent?.x ?: 0f)) + link.screenWidth()
         } else {
-            (link.y - (link.parent?.y ?: 0f)) + link.height
+            (link.y - (link.parent?.y ?: 0f)) + link.screenHeight()
         }
     }
 }
