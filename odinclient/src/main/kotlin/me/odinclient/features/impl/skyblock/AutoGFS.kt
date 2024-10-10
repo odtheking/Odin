@@ -3,6 +3,7 @@ package me.odinclient.features.impl.skyblock
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.fillItemFromSack
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -19,9 +20,10 @@ object AutoGFS : Module(
     private val refillPearl by BooleanSetting("Refill Pearl", true, description = "Refill ender pearls.")
     private val refillJerry by BooleanSetting("Refill Jerry", true, description = "Refill inflatable jerrys.")
     private val refillOnTimer by BooleanSetting("Refill on Timer", true, description = "Refill on a 5s intervals.")
+    private val timerIncrements by NumberSetting("Timer Increments", 5L, 0.5, 60, description = "The interval in which to refill.")
 
     init {
-        execute(5000) {
+        execute({ timerIncrements * 1000 }) {
             if (refillOnTimer) refill()
         }
 

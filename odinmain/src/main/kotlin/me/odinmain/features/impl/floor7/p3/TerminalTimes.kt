@@ -16,7 +16,7 @@ object TerminalTimes : Module(
     description = "Records the time taken to complete terminals in floor 7.",
     category = Category.FLOOR7
 ) {
-    private val sendMessage by DualSetting("Send Message", "Always", "Only PB", true, description = "Send a message when a terminal is completed.")
+    private val sendMessage by DualSetting("Send Message", "Always", "Only PB", false, description = "Send a message when a terminal is completed.")
     private val reset by ActionSetting("Reset pbs", description = "Resets the terminal PBs.") {
         repeat(6) { i -> termPBs.set(i, 999.0) }
         modMessage("§6Terminal PBs §fhave been reset.")
