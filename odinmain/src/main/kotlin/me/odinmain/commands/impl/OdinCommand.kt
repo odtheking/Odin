@@ -38,6 +38,10 @@ val mainCommand = commodore("od", "odin") {
         fillItemFromSack(16, "SPIRIT_LEAP", "spirit_leap", true)
     }
 
+    literal("sb").runs {
+        fillItemFromSack(64, "SUPERBOOM_TNT", "superboom_tnt", true)
+    }
+
     literal("reset") {
         literal("clickgui").runs {
             ClickGUIModule.resetPositions()
