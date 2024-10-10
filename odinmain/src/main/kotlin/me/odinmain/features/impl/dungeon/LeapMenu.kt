@@ -160,7 +160,7 @@ object LeapMenu : Module(
     private fun leapTo(name: String, containerChest: ContainerChest) {
         val index = getItemIndexInContainerChest(containerChest, name, 11..16) ?: return modMessage("Cant find player $name. This shouldn't be possible!")
         modMessage("Teleporting to $name.")
-        if (leapAnnounce) partyMessage("Leaping to $name.")
+        if (leapAnnounce) partyMessage("Leaped to $name!")
         mc.playerController.windowClick(containerChest.windowId, index, 2, 3, mc.thePlayer)
     }
 
