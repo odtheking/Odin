@@ -671,7 +671,7 @@ object RenderUtils {
         }
     }
 
-    fun drawMinecraftLabel(entityIn: Entity, str: String, x: Double, y: Double, z: Double, scale: Double, depth: Boolean = true) {
+    fun drawMinecraftLabel(entityIn: Entity, str: String, x: Double, y: Double, z: Double, scale: Double, depth: Boolean = true, color: Color = Color.WHITE) {
         GlStateManager.pushMatrix()
         depth(depth)
         GlStateManager.translate(x + 0.0f, y + entityIn.height + 0.5f, z)
@@ -682,7 +682,7 @@ object RenderUtils {
         GlStateManager.disableLighting()
         GlStateManager.enableBlend()
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        mc.fontRendererObj.drawString(str, -mc.fontRendererObj.getStringWidth(str) / 2f, 0f, -1, true)
+        mc.fontRendererObj.drawString(str, -mc.fontRendererObj.getStringWidth(str) / 2f, 0f, color.rgba, true)
         GlStateManager.disableBlend()
         GlStateManager.enableLighting()
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)

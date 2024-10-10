@@ -6,15 +6,14 @@ import me.odinmain.features.impl.nether.FreshTimer.highlightFresh
 import me.odinmain.features.impl.nether.FreshTimer.highlightFreshColor
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.addVec
-import me.odinmain.utils.distanceSquaredTo
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.HighlightRenderer
-import me.odinmain.utils.render.RenderUtils.renderVec
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.KuudraUtils.kuudraTeammatesNoSelf
-import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraft.entity.EntityLivingBase
+import net.minecraftforge.client.event.RenderLivingEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object TeamHighlight : Module(
@@ -43,18 +42,11 @@ object TeamHighlight : Module(
     }
 
     @SubscribeEvent
-    fun onRenderWorld(event: RenderWorldLastEvent) {
+    fun onRenderEntity(event: RenderLivingEvent.Specials.Pre<EntityLivingBase>) {
         if (!showName || !KuudraUtils.inKuudra || KuudraUtils.phase < 1) return
+        val teammate = kuudraTeammatesNoSelf.find { it.entity == event.entity } ?: return
 
-        kuudraTeammatesNoSelf.forEach { teammate ->
-            if (teammate.entity == null) return@forEach
-            if (teammate.entity?.let { mc.thePlayer.distanceSquaredTo(it) >= 2100 } == true) return@forEach
-
-            Renderer.drawStringInWorld(
-                teammate.playerName, teammate.entity?.renderVec?.addVec(y = 2.6) ?: return,
-                if (teammate.eatFresh) highlightFreshColor else nameColor,
-                depth = false, scale = 0.05f
-            )
-        }
+        RenderUtils.drawMinecraftLabel(event.entity, teammate.playerName, event.x, event.y + 0.5, event.z, 0.05, false, if (teammate.eatFresh) highlightFreshColor else nameColor)
+        event.isCanceled = true
     }
 }
