@@ -73,8 +73,6 @@ object RenderUtils {
     val Entity.renderVec: Vec3
         get() = Vec3(renderX, renderY, renderZ)
 
-    private fun blendFactor() = GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-
     /**
      * Gets the rendered bounding box of an entity based on its last tick and current tick positions.
      *
@@ -127,10 +125,6 @@ object RenderUtils {
     fun Color.bind() {
         GlStateManager.resetColor()
         GlStateManager.color(r / 255f, g / 255f, b / 255f, a / 255f)
-    }
-
-    private fun getRenderPos(vec: Vec3): Vec3 {
-        return Vec3(vec.xCoord - renderManager.viewerPosX, vec.yCoord - renderManager.viewerPosY, vec.zCoord - renderManager.viewerPosZ)
     }
 
     /**
