@@ -84,10 +84,8 @@ object IceFillSolver {
 
                 renderRotation = rotation
                 patternStartPositions.add(pos.addVec(x= 0.5, y = 0.1, z = 0.5))
-                val pattern = if (PuzzleSolvers.useOptimizedPatterns) IceFillFloors.advanced[floorIndex][patternIndex]
-                else IceFillFloors.IceFillFloors[floorIndex][patternIndex]
-
-                currentPatterns.add(pattern.toMutableList())
+                currentPatterns.add((if (PuzzleSolvers.useOptimizedPatterns) IceFillFloors.advanced[floorIndex][patternIndex]
+                else IceFillFloors.IceFillFloors[floorIndex][patternIndex]).toMutableList())
                 return
             }
         }

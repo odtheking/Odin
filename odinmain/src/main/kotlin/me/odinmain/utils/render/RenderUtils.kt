@@ -99,11 +99,11 @@ object RenderUtils {
         pos(x, y, z).normal(nx, ny, nz).endVertex()
     }
 
-    private fun preDraw() {
+    private fun preDraw(disableTexture2D: Boolean = true) {
         GlStateManager.enableAlpha()
         GlStateManager.enableBlend()
         GlStateManager.disableLighting()
-        GlStateManager.disableTexture2D()
+        if (disableTexture2D) GlStateManager.disableTexture2D() else GlStateManager.enableTexture2D()
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
         translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
     }
@@ -111,6 +111,7 @@ object RenderUtils {
     private fun postDraw() {
         GlStateManager.disableBlend()
         GlStateManager.enableTexture2D()
+        GlStateManager.resetColor()
     }
 
     fun depth(depth: Boolean) {
@@ -332,27 +333,22 @@ object RenderUtils {
         shadow: Boolean = false
     ) {
         if (text.isBlank()) return
-        val renderPos = getRenderPos(vec3)
-
         GlStateManager.pushMatrix()
 
         val xMultiplier = if (mc.gameSettings.thirdPersonView == 2) -1 else 1
-        GlStateManager.translate(renderPos.xCoord, renderPos.yCoord, renderPos.zCoord)
+
+        preDraw(false)
+        GlStateManager.translate(vec3.xCoord, vec3.yCoord, vec3.zCoord)
         GlStateManager.rotate(-renderManager.playerViewY, 0.0f, 1.0f, 0.0f)
         GlStateManager.rotate(renderManager.playerViewX * xMultiplier, 1.0f, 0.0f, 0.0f)
         GlStateManager.scale(-scale, -scale, scale)
 
-        GlStateManager.enableBlend()
-        blendFactor()
-        GlStateManager.disableLighting()
         depth(depthTest)
 
-        val textWidth = mc.fontRendererObj.getStringWidth(text)
-        mc.fontRendererObj.drawString("$text§r", -textWidth / 2f, 0f, color.rgba, shadow)
+        mc.fontRendererObj.drawString("$text§r", -mc.fontRendererObj.getStringWidth(text) / 2f, 0f, color.rgba, shadow)
 
         if (!depthTest) resetDepth()
-        GlStateManager.disableBlend()
-        GlStateManager.resetColor()
+        postDraw()
         GlStateManager.popMatrix()
     }
 
@@ -376,34 +372,24 @@ object RenderUtils {
         slices: Number, stacks: Number, rot1: Number, rot2: Number, rot3: Number,
         color: Color, depth: Boolean = false
     ) {
-        val renderPos = getRenderPos(pos)
-
         GlStateManager.pushMatrix()
-        GL11.glLineWidth(2.0f)
-
-        GlStateManager.disableTexture2D()
-        GlStateManager.disableLighting()
-        GlStateManager.depthMask(false)
         GlStateManager.disableCull()
-        GlStateManager.enableBlend()
-        blendFactor()
+        GL11.glLineWidth(2.0f)
+        preDraw()
+        depth(depth)
 
-        if (depth) GlStateManager.disableDepth()
 
         color.bind()
-        GlStateManager.translate(renderPos.xCoord, renderPos.yCoord, renderPos.zCoord)
+        GlStateManager.translate(pos.xCoord, pos.yCoord, pos.zCoord)
         GlStateManager.rotate(rot1.toFloat(), 1f, 0f, 0f)
         GlStateManager.rotate(rot2.toFloat(), 0f, 0f, 1f)
         GlStateManager.rotate(rot3.toFloat(), 0f, 1f, 0f)
 
         Cylinder().draw(baseRadius.toFloat(), topRadius.toFloat(), height.toFloat(), slices.toInt(), stacks.toInt())
 
+        postDraw()
         GlStateManager.enableCull()
-        GlStateManager.disableBlend()
-        GlStateManager.depthMask(true)
-        GlStateManager.enableTexture2D()
-        if (depth) GlStateManager.enableDepth()
-        GlStateManager.resetColor()
+        if (!depth) resetDepth()
         GlStateManager.popMatrix()
     }
 
@@ -553,10 +539,11 @@ object RenderUtils {
 
             for (box in boxes) {
                 if (box.clicked) continue
-                val depth = box.depth && !disableDepth
-                if (depth) GL11.glEnable(GL11.GL_DEPTH_TEST)
-                else GL11.glDisable(GL11.GL_DEPTH_TEST)
-                GL11.glDepthMask(depth)
+                (box.depth && !disableDepth).let {
+                    if (it) GL11.glEnable(GL11.GL_DEPTH_TEST)
+                    else GL11.glDisable(GL11.GL_DEPTH_TEST)
+                    GL11.glDepthMask(it)
+                }
 
                 box.aabb.offset(box.x, box.y, box.z).let {
                     box.color.bind()
@@ -582,11 +569,11 @@ object RenderUtils {
             GL11.glEndList()
         }
 
-        GL11.glPushMatrix()
-        GL11.glTranslated(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
+        GlStateManager.pushMatrix()
+        GlStateManager.translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
 
         GL11.glCallList(newGlList)
-        GL11.glPopMatrix()
+        GlStateManager.popMatrix()
 
         return newGlList
     }

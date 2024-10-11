@@ -116,7 +116,7 @@ object WaypointGUI : GuiScreen() {
             return
         }
         if (mouseHandler.isAreaHovered(10f, 5f, 78.5f, 15f)) {
-            val waypoint = WaypointManager.Waypoint(if (Waypoints.onlyDistance) "" else "§fWaypoint", mc.thePlayer.positionVector.floored(), randomColor())
+            val waypoint = WaypointManager.Waypoint("§fWaypoint", mc.thePlayer.positionVector.floored(), randomColor())
             WaypointManager.addWaypoint(waypoint, displayArea ?: "")
             list.add(WaypointElement(waypoint))
             return

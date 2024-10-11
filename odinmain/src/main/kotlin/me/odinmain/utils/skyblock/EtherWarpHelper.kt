@@ -23,17 +23,17 @@ object EtherWarpHelper {
      * @param pitch The pitch angle representing the player's vertical viewing direction.
      * @return An `EtherPos` representing the calculated position in the "ether" or `EtherPos.NONE` if the player is not present.
      */
-    fun getEtherPos(pos: Vec3, yaw: Float, pitch: Float): EtherPos {
+    fun getEtherPos(pos: Vec3, yaw: Float, pitch: Float, distance: Double = 60.0): EtherPos {
         mc.thePlayer ?: return EtherPos.NONE
 
         val startPos: Vec3 = getPositionEyes(pos)
-        val endPos = getLook(yaw = yaw, pitch = pitch).normalize().multiply(factor = 60.0).add(startPos)
+        val endPos = getLook(yaw = yaw, pitch = pitch).normalize().multiply(factor = distance).add(startPos)
 
         return traverseVoxels(startPos, endPos)
     }
 
-    fun getEtherPos(positionLook: PositionLook): EtherPos {
-        return getEtherPos(positionLook.pos, positionLook.yaw, positionLook.pitch)
+    fun getEtherPos(positionLook: PositionLook, distance: Double = 60.0): EtherPos {
+        return getEtherPos(positionLook.pos, positionLook.yaw, positionLook.pitch, distance)
     }
 
     /**
@@ -54,10 +54,8 @@ object EtherWarpHelper {
         val endPos = DoubleArray(3) { floor(end.get(it)) }
         var iterations = 0
 
-        while (iterations < 1000) {
-            iterations++
+        while (iterations++ < 1000) {
             val pos = BlockPos(currentPos[0].toInt(), currentPos[1].toInt(), currentPos[2].toInt())
-
             if (getBlockIdAt(pos) != 0) return EtherPos(isValidEtherWarpBlock(pos), pos)
 
             if (currentPos.contentEquals(endPos)) break // reached end

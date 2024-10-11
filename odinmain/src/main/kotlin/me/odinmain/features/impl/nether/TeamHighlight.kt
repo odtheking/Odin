@@ -12,7 +12,7 @@ import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.KuudraUtils.kuudraTeammatesNoSelf
-import net.minecraft.entity.EntityLivingBase
+import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraftforge.client.event.RenderLivingEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -42,7 +42,7 @@ object TeamHighlight : Module(
     }
 
     @SubscribeEvent
-    fun onRenderEntity(event: RenderLivingEvent.Specials.Pre<EntityLivingBase>) {
+    fun onRenderEntity(event: RenderLivingEvent.Specials.Pre<EntityOtherPlayerMP>) {
         if (!showName || !KuudraUtils.inKuudra || KuudraUtils.phase < 1) return
         val teammate = kuudraTeammatesNoSelf.find { it.entity == event.entity } ?: return
 
