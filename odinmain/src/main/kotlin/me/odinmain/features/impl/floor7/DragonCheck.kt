@@ -69,7 +69,7 @@ object DragonCheck {
         if (packet.itemStack?.item != Item.getItemFromBlock(Blocks.packed_ice)) return
         val sprayedEntity = mc.theWorld?.getEntityByID(packet.entityID) as? EntityArmorStand ?: return
 
-        WitherDragonsEnum.entries.filter{ !it.isSprayed && it.state == WitherDragonState.ALIVE && sprayedEntity.getDistanceToEntity(it.entity) <= 8 }.forEach {
+        WitherDragonsEnum.entries.filter { !it.isSprayed && it.state == WitherDragonState.ALIVE && it.entity != null && sprayedEntity.getDistanceToEntity(it.entity) <= 8 }.forEach {
             if (sendSpray) modMessage("§${it.colorCode}${it.name} §fdragon was sprayed in §c${System.currentTimeMillis() - it.spawnedTime}§fms ")
             it.isSprayed = true
         }

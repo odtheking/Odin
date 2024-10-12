@@ -372,7 +372,6 @@ object RenderUtils {
         preDraw()
         depth(depth)
 
-
         color.bind()
         GlStateManager.translate(pos.xCoord, pos.yCoord, pos.zCoord)
         GlStateManager.rotate(rot1.toFloat(), 1f, 0f, 0f)
@@ -499,12 +498,7 @@ object RenderUtils {
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
         translate(x, y, 0f)
         scale(scale, scale, scale)
-        var yOffset = y - mc.fontRendererObj.FONT_HEIGHT
-        text.split("\n").forEach {
-            yOffset += mc.fontRendererObj.FONT_HEIGHT
-            val xOffset = if (center) mc.fontRendererObj.getStringWidth(it) / -2f else 0f
-            mc.fontRendererObj.drawString("${it}§r", xOffset, 0f, color.rgba, shadow)
-        }
+        mc.fontRendererObj.drawString("${text}§r", if (center) mc.fontRendererObj.getStringWidth(text) / -2f else 0f, 0f, color.rgba, shadow)
         GlStateManager.resetColor()
         GlStateManager.disableBlend()
         GlStateManager.popMatrix()
@@ -512,7 +506,6 @@ object RenderUtils {
 
     fun AxisAlignedBB.outlineBounds(): AxisAlignedBB =
         expand(0.0020000000949949026, 0.0020000000949949026, 0.0020000000949949026)
-
 
     fun drawBoxes(boxes: Collection<DungeonWaypoint>, glList: Int, disableDepth: Boolean = false): Int {
         if (boxes.isEmpty()) return -1

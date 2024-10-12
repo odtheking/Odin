@@ -7,10 +7,11 @@ import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.util.Vec3
+import java.util.concurrent.CopyOnWriteArraySet
 
 object WeirdosSolver {
     private var correctPos: Vec3? = null
-    private var wrongPositions = mutableListOf<Vec3>()
+    private var wrongPositions = CopyOnWriteArraySet<Vec3>()
 
     fun onNPCMessage(npc: String, msg: String) {
         if (solutions.none { it.matches(msg) } && wrong.none { it.matches(msg) }) return

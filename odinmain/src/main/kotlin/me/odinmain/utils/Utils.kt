@@ -19,6 +19,7 @@ import org.lwjgl.opengl.GL11
 import org.lwjgl.util.glu.GLU
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
+import java.time.LocalDateTime
 import java.time.Month
 import java.time.format.TextStyle
 import java.util.*
@@ -110,7 +111,6 @@ fun Long.floor(): Long {
 fun Int.floor(): Int {
     return this
 }
-
 
 /**
  * Rounds the current number to the specified number of decimals.
@@ -259,8 +259,7 @@ fun <T> Collection<T>.getSafe(index: Int?): T? {
 }
 
 fun getCurrentMonthName(): String {
-    val currentMonth = Month.entries[java.time.LocalDateTime.now().monthValue - 1]
-    return currentMonth.getDisplayName(TextStyle.FULL, Locale.getDefault())
+    return Month.entries[LocalDateTime.now().monthValue - 1].getDisplayName(TextStyle.FULL, Locale.getDefault())
 }
 
 /**
