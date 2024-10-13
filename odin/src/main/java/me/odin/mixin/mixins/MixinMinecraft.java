@@ -45,7 +45,7 @@ public class MixinMinecraft {
     @Inject(method = "rightClickMouse", at = @At("HEAD"), cancellable = true)
     private void rightClickMouse(CallbackInfo ci) {
         if (postAndCatch(new ClickEvent.Right())) ci.cancel();
-        CPSDisplay.INSTANCE.onRightClick();
+        CPSDisplay.onRightClick();
         /*
         Taken from [Sk1erLLC's OldAnimations Mod](https://github.com/Sk1erLLC/OldAnimations) to enable block hitting
         */
@@ -60,6 +60,6 @@ public class MixinMinecraft {
     @Inject(method = "clickMouse", at = @At("HEAD"), cancellable = true)
     private void clickMouse(CallbackInfo ci) {
         if (postAndCatch(new ClickEvent.Left())) ci.cancel();
-        CPSDisplay.INSTANCE.onLeftClick();
+        CPSDisplay.onLeftClick();
     }
 }

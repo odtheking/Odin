@@ -2,9 +2,15 @@ package me.odinmain.features.impl.skyblock
 
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.DungeonRequeue.disableRequeue
+import me.odinmain.features.impl.render.ServerHud
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.*
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.DropdownSetting
+import me.odinmain.features.settings.impl.ListSetting
+import me.odinmain.features.settings.impl.SelectorSetting
+import me.odinmain.utils.ServerUtils
+import me.odinmain.utils.floor
+import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.*
 import net.minecraft.event.ClickEvent
 import kotlin.math.floor
@@ -94,7 +100,7 @@ object ChatCommands : Module(
             "racism" -> if (racism) channelMessage("$name is ${Random.nextInt(1, 101)}% racist. Racism is not allowed!", name, channel)
             "ping" -> if (ping) channelMessage("Current Ping: ${floor(ServerUtils.averagePing).toInt()}ms", name, channel)
             "tps" -> if (tps) channelMessage("Current TPS: ${ServerUtils.averageTps.floor()}", name, channel)
-            "fps" -> if (fps) channelMessage("Current FPS: ${ServerUtils.fps}", name, channel)
+            "fps" -> if (fps) channelMessage("Current FPS: ${ServerHud.getFPS()}", name, channel)
 
             // Party cmds only
 

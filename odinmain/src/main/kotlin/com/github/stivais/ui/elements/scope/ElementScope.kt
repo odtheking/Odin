@@ -114,7 +114,7 @@ open class ElementScope<E: Element>(val element: E) {
         size: Size = 50.percent,
         color: Color = Color.WHITE,
         block: TextScope.() -> Unit = {}
-    ) = create(TextScope(Text(text, font, color, pos, size)), block)
+    ) = create(TextScope(TextElement(text, font, color, pos, size)), block)
 
     @DSL
     fun text(
@@ -124,7 +124,7 @@ open class ElementScope<E: Element>(val element: E) {
         pos: Positions? = null,
         size: Size = 50.percent,
         block: TextScope.() -> Unit = {}
-    ) = create(TextScope(Text.Supplied(text, font, color, pos, size)), block)
+    ) = create(TextScope(TextElement.Supplied(text, font, color, pos, size)), block)
 
     @DSL
     fun textInput(

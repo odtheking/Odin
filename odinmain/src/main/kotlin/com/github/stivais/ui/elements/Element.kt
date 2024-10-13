@@ -58,8 +58,10 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
             field = value
         }
 
+    // todo: needs change
     var alphaAnim: Animatable? = null
 
+    // todo: needs change
     var rotateAnim: Animatable? = null
 
     var alpha = 1f
@@ -78,7 +80,7 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
 
     open var enabled: Boolean = true
 
-    var scissors: Boolean = true
+    var scissors: Boolean = false
 
     var renders: Boolean = true
         get() {

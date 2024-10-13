@@ -75,7 +75,7 @@ class NumberSetting<E>(
                 size = 35.percent
             )
 
-            val sliderAmount = Animatable.Raw((((value.toDouble() - min) / (max - min)) * 228).toFloat())
+            val sliderAmount = Animatable.Raw((((value.toDouble() - min) / (max - min)) * (elementWidth.pixels * 0.95)).toFloat())
             block(
                 constraints = constrain(y = 75.percent, w = 95.percent, h = 20.percent),
                 color = `gray 26`,
@@ -86,6 +86,7 @@ class NumberSetting<E>(
                     color = ClickGUI.color,
                     radius = 4.radii()
                 ).hoverEffect(handler = this@block)
+
                 slider(
                     onChange = { percent, _, wasClick ->
                         val to = percent * element.width

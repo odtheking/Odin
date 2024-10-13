@@ -12,7 +12,7 @@ import com.github.stivais.ui.elements.scope.ElementScope
 import com.github.stivais.ui.renderer.Font
 import com.github.stivais.ui.utils.replaceUndefined
 
-open class Text(
+open class TextElement(
     text: String,
     val font: Font = UI.defaultFont,
     color: Color = Color.WHITE,
@@ -55,7 +55,7 @@ open class Text(
         color: Color,
         constraints: Positions?,
         size: Size
-    ) : Text(supplier().toString(), font, color, constraints, size) {
+    ) : TextElement(supplier().toString(), font, color, constraints, size) {
 
         override fun draw() {
             text = supplier().toString()
@@ -64,7 +64,7 @@ open class Text(
     }
 }
 
-class TextScope(text: Text) : ElementScope<Text>(text) {
+class TextScope(text: TextElement) : ElementScope<TextElement>(text) {
     var string: String
         get() = element.text
         set(value) {

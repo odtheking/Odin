@@ -4,8 +4,12 @@ import com.github.stivais.ui.animation.Animations
 import com.github.stivais.ui.color.*
 import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Animatable
+import com.github.stivais.ui.constraints.sizes.Aspect
+import com.github.stivais.ui.constraints.sizes.Bounding
 import com.github.stivais.ui.constraints.sizes.Copying
-import com.github.stivais.ui.elements.scope.*
+import com.github.stivais.ui.elements.scope.ElementDSL
+import com.github.stivais.ui.elements.scope.ElementScope
+import com.github.stivais.ui.elements.scope.slider
 import com.github.stivais.ui.renderer.Gradient.LeftToRight
 import com.github.stivais.ui.renderer.Gradient.TopToBottom
 import com.github.stivais.ui.utils.radii
@@ -14,6 +18,7 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import me.odinmain.features.settings.Saving
 import me.odinmain.features.settings.Setting
+import me.odinmain.utils.skyblock.modMessage
 import java.awt.Color.HSBtoRGB
 
 class ColorSetting(
@@ -41,9 +46,11 @@ class ColorSetting(
     }
 
     override fun ElementScope<*>.createElement() {
-        val size = Animatable(from = 40.px, to = if (allowAlpha) 260.px else 240.px)
+        val size = Animatable(from = 40.px, to = Bounding)
         val alpha = Animatable(0.px, 1.px)
+
         val hueMax = color { HSBtoRGB(value.hue, 1f, 1f) }
+
         setting(size) {
             group(constrain(0.px, 0.px, w = Copying, h = 40.px)) {
                 text(
@@ -74,10 +81,12 @@ class ColorSetting(
 
             column(constraints = constrain(0.px, 40.px, w = Copying)) {
                 element.alphaAnim = alpha
+                text("wip, need popup color picker", size = 10.px)
                 saturationAndBrightness(hueMax)
                 divider(10.px)
                 hueSlider()
                 if (allowAlpha) {
+                    modMessage("a")
                     divider(10.px)
                     alphaSlider(hueMax)
                 }
@@ -89,7 +98,7 @@ class ColorSetting(
         val x = Animatable.Raw((228f * value.saturation).coerceIn(8f, 220f))
         val y = Animatable.Raw((170f * (1f - value.brightness)).coerceIn(8f, 220f))
         block(
-            size(w = 95.percent, h = 170.px),
+            size(w = 95.percent, h = Aspect(228f / 170f)),
             colors = Color.WHITE to hueMax,
             radius = 5.radii(),
             gradient = LeftToRight

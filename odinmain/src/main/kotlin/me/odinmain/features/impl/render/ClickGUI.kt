@@ -5,26 +5,37 @@ import com.github.stivais.ui.UIScreen
 import com.github.stivais.ui.UIScreen.Companion.open
 import com.github.stivais.ui.animation.Animation
 import com.github.stivais.ui.animation.Animations
-import com.github.stivais.ui.color.*
+import com.github.stivais.ui.color.Color
+import com.github.stivais.ui.color.blue
+import com.github.stivais.ui.color.green
+import com.github.stivais.ui.color.red
 import com.github.stivais.ui.constraints.*
 import com.github.stivais.ui.constraints.measurements.Animatable
 import com.github.stivais.ui.constraints.sizes.Bounding
 import com.github.stivais.ui.elements.impl.Popup
 import com.github.stivais.ui.elements.impl.popup
-import com.github.stivais.ui.elements.scope.*
+import com.github.stivais.ui.elements.scope.ElementDSL
+import com.github.stivais.ui.elements.scope.draggable
+import com.github.stivais.ui.elements.scope.hoverEffect
 import com.github.stivais.ui.operation.AnimationOperation
 import com.github.stivais.ui.utils.*
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.scope
 import me.odinmain.config.Config
-import me.odinmain.features.*
+import me.odinmain.features.Category
+import me.odinmain.features.Module
+import me.odinmain.features.ModuleManager
 import me.odinmain.features.settings.AlwaysActive
+import me.odinmain.features.settings.Setting.Companion.elementWidth
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.capitalizeFirst
 import me.odinmain.utils.sendDataToServer
-import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.LocationUtils
+import me.odinmain.utils.skyblock.createClickStyle
+import me.odinmain.utils.skyblock.getChatBreak
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.event.ClickEvent
 import net.minecraft.util.ChatComponentText
 import org.lwjgl.input.Keyboard
@@ -126,6 +137,8 @@ object ClickGUI: Module(
     val `gray 38`: Color = Color.RGB(38, 38, 38)
 
     fun clickGUI() = UI {
+        elementWidth = 240.px
+
         // used for search bar to not require iterating over all elements
         val moduleElements = arrayListOf<Pair<Module, ElementDSL>>()
         onRemove {

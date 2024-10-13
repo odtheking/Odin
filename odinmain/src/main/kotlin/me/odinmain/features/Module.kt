@@ -22,7 +22,9 @@ import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.Packet
 import net.minecraftforge.common.MinecraftForge
 import org.lwjgl.input.Keyboard
+import kotlin.reflect.KProperty0
 import kotlin.reflect.full.hasAnnotation
+import kotlin.reflect.jvm.isAccessible
 
 /**
  * Class that represents a module. And handles all the settings.
@@ -212,7 +214,7 @@ abstract class Module(
         executors.add(this to Executor(delay, profileName, func))
     }
 
-    fun HUD.setting(name: String, desciption: String): HUDSetting {
+    fun HUD.setting(name: String, desciption: String = ""): HUDSetting {
         return HUDSetting(name, this, desciption)
     }
 
@@ -238,7 +240,8 @@ abstract class Module(
     }
 
     // figure way to separate from module file while still having reference to it
-    inner class HUD(
+    // make related settings get taken from module and placed in hud and make it save there
+    open inner class HUD(
         val x: Percent,
         val y: Percent,
         var enabled: Boolean = true,
@@ -249,9 +252,16 @@ abstract class Module(
 
         val settings: ArrayList<Setting<*>> = arrayListOf()
 
-        // test for now
-        fun setting(setting: Setting<*>) {
-            settings.add(setting)
+        fun setting(vararg settings: KProperty0<*>): HUD {
+            for (property in settings) {
+                property.isAccessible = true
+                val delegate = property.getDelegate() as? Setting<*> ?: throw IllegalArgumentException(
+                    "Invalid Arguments. Must use a delegated setting as the argument for the HUD setting."
+                )
+                this.settings.add(delegate)
+                delegate.hide()
+            }
+            return this
         }
 
         var scale = 1f
@@ -274,6 +284,12 @@ abstract class Module(
                 scale = this@HUD.scale
 
             }
+
+            fun refresh(scope: HUDScope) {
+                removeAll()
+                builder.invoke(scope)
+            }
+
             override fun draw() {
                 scale = this@HUD.scale
             }
@@ -293,6 +309,12 @@ abstract class Module(
                     false
                 }
             }
+        }
+
+        fun refreshHUD() {
+            element.removeAll()
+            element.refresh(this)
+            element.redraw = true
         }
     }
 }

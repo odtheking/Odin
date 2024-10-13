@@ -1,15 +1,23 @@
 package com.github.stivais.ui.elements.impl
 
 import com.github.stivais.ui.UI
-import com.github.stivais.ui.color.*
-import com.github.stivais.ui.constraints.*
-import com.github.stivais.ui.events.*
+import com.github.stivais.ui.color.Color
+import com.github.stivais.ui.color.color
+import com.github.stivais.ui.color.darker
+import com.github.stivais.ui.constraints.Positions
+import com.github.stivais.ui.constraints.Size
+import com.github.stivais.ui.constraints.Type
+import com.github.stivais.ui.events.Focused
+import com.github.stivais.ui.events.Key
+import com.github.stivais.ui.events.Mouse
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.devMessage
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.util.ChatAllowedCharacters
 import org.lwjgl.input.Keyboard
-import kotlin.math.*
+import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
 
 /*
 * TODO
@@ -24,7 +32,7 @@ class TextInput(
     censor: Boolean = false,
     val onlyNumbers: Boolean = false,
     val onTextChange: (string: String) -> Unit = {}
-) : Text(text, UI.defaultFont, Color.WHITE, position, size) {
+) : TextElement(text, UI.defaultFont, Color.WHITE, position, size) {
 
     override var text: String = text
         set(value) {

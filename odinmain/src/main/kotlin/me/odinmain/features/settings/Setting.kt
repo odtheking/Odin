@@ -1,8 +1,11 @@
 package me.odinmain.features.settings
 
 import com.github.stivais.ui.animation.Animations
-import com.github.stivais.ui.constraints.*
+import com.github.stivais.ui.constraints.Size
 import com.github.stivais.ui.constraints.measurements.Animatable
+import com.github.stivais.ui.constraints.measurements.Pixel
+import com.github.stivais.ui.constraints.px
+import com.github.stivais.ui.constraints.size
 import com.github.stivais.ui.elements.Element
 import com.github.stivais.ui.elements.scope.ElementDSL
 import com.github.stivais.ui.elements.scope.ElementScope
@@ -43,7 +46,7 @@ abstract class Setting<T> (
     /**
      * Dependency for if it should be shown in the UI
      *
-     * @see Component
+     * @see Drawable
      */
     var visibilityDependency: (() -> Boolean)? = null
 
@@ -76,6 +79,9 @@ abstract class Setting<T> (
 
     companion object {
 
+        // temp
+        var elementWidth: Pixel = 240.px
+
         /**
          * [Gson] for saving and loading settings
          */
@@ -84,7 +90,7 @@ abstract class Setting<T> (
         /**
          * Adds a dependency for a setting, for it to only be rendered if it matches true
          *
-         * @see Component
+         * @see Drawable
          */
         fun <K : Setting<T>, T> K.withDependency(dependency: () -> Boolean): K {
             visibilityDependency = dependency
@@ -120,12 +126,12 @@ abstract class Setting<T> (
      * Intended to be used as a base in [createElement] to easily provide animations for settings with potential requirements
      */
     protected fun ElementDSL.setting(height: Size, block: ElementDSL.() -> Unit = {}): ElementScope<*> {
-        return create(ElementScope(Component(height)), block)
+        return create(ElementScope(Drawable(height)), block)
     }
 
     // TODO: Find out why ClickGUI runs 2x slower until a setting visibility changes
     // TODO: Make custom event to tell if value has changed so it can update visually if it was changed externally
-    protected inner class Component(height: Size) : Element(size(240.px, Animatable(from = height, to = 0.px))) {
+    protected inner class Drawable(height: Size) : Element(size(elementWidth, Animatable(from = height, to = 0.px))) {
 
         private var visible: Boolean = visibilityDependency?.invoke() ?: true
 

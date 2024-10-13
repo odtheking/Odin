@@ -13,14 +13,17 @@ import com.github.stivais.ui.elements.impl.Popup
 import com.github.stivais.ui.elements.impl.canvas
 import com.github.stivais.ui.elements.impl.popup
 import com.github.stivais.ui.elements.scope.ElementDSL
+import com.github.stivais.ui.elements.scope.hoverEffect
 import com.github.stivais.ui.utils.loop
 import com.github.stivais.ui.utils.radius
+import com.github.stivais.ui.utils.seconds
 import me.odinmain.config.Config
 import me.odinmain.features.ModuleManager.HUDs
 import me.odinmain.features.ModuleManager.setupHUD
 import me.odinmain.features.impl.render.ClickGUI
 import me.odinmain.features.impl.render.ClickGUI.`gray 26`
 import me.odinmain.features.impl.render.ClickGUI.`gray 38`
+import me.odinmain.features.settings.Setting.Companion.elementWidth
 import me.odinmain.utils.ui.outline
 import kotlin.math.abs
 import kotlin.math.sign
@@ -32,6 +35,8 @@ private var snapX: Float = -1f
 private var snapY: Float = -1f
 
 fun openHUDEditor() = UI {
+
+    elementWidth = 180.px
 
     // snapping lines
     canvas(copies()) { renderer ->
@@ -100,13 +105,21 @@ fun openHUDEditor() = UI {
                     constraints = at(Linked(element) + 15.px, element.y.px),
                     smooth = true
                 ) {
+                    // really slow, since rebuilding every frame, but it's simple
+                    operation {
+                        refreshHUD()
+                        advancedOptions == null
+                    }
+
                     column(constrain(0.px, 0.px, Bounding, Bounding)) {
                         block(
-                            size(160.px, 10.px),
+                            size(180.px, 35.px),
                             color = `gray 26`,
                             radius(tl = 5, tr = 5)
-                        )
-                        column(size(160.px, Bounding)) {
+                        ) {
+                            text("HUD (temp name)")
+                        }
+                        column(size(180.px, Bounding)) {
                             background(color = Color.RGB(38, 38, 38, 0.7f))
                             hud.settings.loop {
                                 it.apply {
@@ -120,58 +133,20 @@ fun openHUDEditor() = UI {
                                     color = `gray 38`,
                                     radius(5)
                                 ) {
+                                    hoverEffect(0.25.seconds)
                                     outline(ClickGUI.color)
                                     text("Reset")
                                 }
                             }
                         }
                         block(
-                            size(160.px, 10.px),
+                            size(180.px, 10.px),
                             color = `gray 26`,
                             radius(bl = 5, br = 5)
                         )
                     }
                     // consume event
                     onClick { true }
-
-
-//                    column(size(Bounding, Bounding)) {
-//                        block(
-//                            size(160.px, 10.px),
-//                            color = `gray 26`,
-//                            radius = radius(tl = 7, tr = 7)
-//                        )
-//
-//                        column(size(h = Animatable(from = 35.px, to = Bounding))) {
-//                            background(color = Color.RGB(38, 38, 38, 0.7f))
-//                            block(
-//                                size(160.px, 35.px),
-//                                color = `gray 26`,
-//                            ) {
-//                                text("Options")
-//                                onClick(0, 1) {
-//                                    parent()!!.height.animate(0.25.seconds, Animations.EaseOutQuint)
-//                                    true
-//                                }
-//                            }
-//                            block(size(160.px, 140.px), Color.TRANSPARENT)
-//                        }
-//
-//                        block(
-//                            size(160.px, 50.px),
-//                            color = `gray 26`,
-//                            radius = radius(bl = 7, br = 7)
-//                        ) {
-//                            block(
-//                                size(90.percent, 60.percent),
-//                                color = `gray 38`,
-//                                radius = radius(7)
-//                            ) {
-//                                outline(ClickGUI.color)
-//                                text("Reset")
-//                            }
-//                        }
-//                    }
                 }
                 true
             }

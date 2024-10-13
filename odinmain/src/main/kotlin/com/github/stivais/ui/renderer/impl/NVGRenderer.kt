@@ -237,7 +237,8 @@ object NVGRenderer : Renderer {
         br: Float,
         tr: Float
     ) {
-        nvgImagePattern(vg, x, y, w, h, 0f, getImage(image), 1f, nvgPaint)
+        val nvgImage = getImage(image) ?: return
+        nvgImagePattern(vg, x, y, w, h, 0f, nvgImage, 1f, nvgPaint)
         nvgBeginPath(vg)
         nvgRoundedRectVarying(vg, x, y, w, h, tl, tr, br, bl)
         nvgFillPaint(vg, nvgPaint)
@@ -265,8 +266,8 @@ object NVGRenderer : Renderer {
         }
     }
 
-    private fun getImage(image: Image): Int {
-        return images[image]?.nvg ?: throw IllegalStateException("Image (${image.resourcePath}) doesn't exist")
+    private fun getImage(image: Image): Int? {
+        return images[image]?.nvg//throw IllegalStateException("Image (${image.resourcePath}) doesn't exist")
     }
 
     private fun loadImage(image: Image): Int {
