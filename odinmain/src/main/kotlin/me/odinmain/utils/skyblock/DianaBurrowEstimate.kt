@@ -96,16 +96,16 @@ object DianaBurrowEstimate {
 
         val firstPosition = firstParticlePoint ?: return
 
-        estimatedBurrowDistance = (Math.E / if (dingPitchSlopes.isNotEmpty()) dingPitchSlopes.average() else 0.0) - firstPosition.distanceTo(packetSound.positionVector)
-
-        if (estimatedBurrowDistance?.let { it > 1000 } == true) {
+        val burrowDistance = (Math.E / if (dingPitchSlopes.isNotEmpty()) dingPitchSlopes.average() else return) - firstPosition.distanceTo(packetSound.positionVector)
+        if (burrowDistance > 100) {
             estimatedBurrowDistance = null
             return
         }
+        estimatedBurrowDistance = burrowDistance
 
-        estimatedBurrowDistance?.let { distance ->
-            estimatedBurrowPosition = lastSoundPoint?.add(currentParticlePosition?.subtract(secondLastParticlePosition)?.normalize()?.multiply(distance))
-        }
+        val currentParticle = currentParticlePosition ?: return
+        val secondLastParticle = secondLastParticlePosition ?: return
+        estimatedBurrowPosition = lastSoundPoint?.add(currentParticle.subtract(secondLastParticle).normalize().multiply(burrowDistance))
     }
 
     fun handleParticlePacket(packet: S2APacketParticles) {
