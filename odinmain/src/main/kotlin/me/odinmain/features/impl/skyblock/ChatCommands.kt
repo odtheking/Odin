@@ -46,7 +46,8 @@ object ChatCommands : Module(
     private val dtReason = mutableListOf<Pair<String, String>>()
     val blacklist: MutableList<String> by ListSetting("Blacklist", mutableListOf())
 
-    private val messageRegex = Regex("^(?:Party > (\\[.+])? ?(.{1,16}): ?(.+)\$|Guild > (\\[.+])? ?(.{1,16}?)(?= ?\\[| ?: ) ?\\[.+] ?: ?(.+)\$|From (\\[.+])? ?(.{1,16}): ?(.+)\$)")
+    // https://regex101.com/r/cxWqYg/1
+    private val messageRegex = Regex("^(?:Party > (\\[.+])? ?(.{1,16}): ?(.+)\$|Guild > (\\[.+])? ?(.{1,16}?)(?= ?\\[| ?: ) ?(\\[.+])? ?: ?(.+)|From (\\[.+])? ?(.{1,16}): ?(.+)\$)")
 
     init {
         onMessage(Regex(" {29}> EXTRA STATS <|^\\[NPC] Elle: Good job everyone. A hard fought battle come to an end. Let's get out of here before we run into any more trouble!$")) {
