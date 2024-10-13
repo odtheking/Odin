@@ -2,13 +2,14 @@ package me.odinmain.features.impl.floor7
 
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
+import java.util.Locale
 
 object DragonTimer {
 
     fun renderTime() {
         WitherDragonsEnum.entries.forEachIndexed { index, dragon ->
             if (dragon.state != WitherDragonState.SPAWNING) return@forEachIndexed
-            val coloredTime = colorDragonTimer(String.format("%.2f", dragon.timeToSpawn / 20.0).toDouble())
+            val coloredTime = colorDragonTimer(String.format(Locale.US, "%.2f", dragon.timeToSpawn / 20.0).toDouble())
 
             Renderer.drawStringInWorld(
                 "§${dragon.colorCode}${dragon.name.first()}: $coloredTime", dragon.spawnPos,

@@ -283,7 +283,7 @@ fun formatTime(time: Long, decimalPlaces: Int = 2): String {
         if (it > 0) "${it}m " else ""
     }
     val seconds = (remaining / 1000f).let {
-        String.format("%.${decimalPlaces}f", it)
+        String.format(Locale.US, "%.${decimalPlaces}f", it)
     }
     return "$hours$minutes${seconds}s"
 }
